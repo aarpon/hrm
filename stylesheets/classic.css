@@ -1,0 +1,317 @@
+/*
+ 
+HRM classic style v0.1
+
+This file is part of huygens remote manager.
+
+Copyright: Montpellier RIO Imaging (CNRS)
+
+contributors :
+	     Pierre Travo	(concept)
+	     Volker Baecker	(concept, implementation)
+
+email:
+	pierre.travo@crbm.cnrs.fr
+	volker.baecker@crbm.cnrs.fr
+
+Web:     www.mri.cnrs.fr
+
+huygens remote manager is a software that has been developed at 
+Montpellier Rio Imaging (mri) in 2004 by Pierre Travo and Volker 
+Baecker. It allows running image restoration jobs that are processed 
+by 'Huygens professional' from SVI. Users can create and manage parameter 
+settings, apply them to multiple images and start image processing 
+jobs from a web interface. A queue manager component is responsible for 
+the creation and the distribution of the jobs and for informing the user 
+when jobs finished.
+
+This software is governed by the CeCILL license under French law and 
+abiding by the rules of distribution of free software. You can use, 
+modify and/ or redistribute the software under the terms of the CeCILL 
+license as circulated by CEA, CNRS and INRIA at the following URL 
+"http://www.cecill.info".
+
+As a counterpart to the access to the source code and  rights to copy, 
+modify and redistribute granted by the license, users are provided only 
+with a limited warranty and the software's author, the holder of the 
+economic rights, and the successive licensors  have only limited 
+liability.
+
+In this respect, the user's attention is drawn to the risks associated 
+with loading, using, modifying and/or developing or reproducing the 
+software by the user in light of its specific status of free software, 
+that may mean that it is complicated to manipulate, and that also 
+therefore means that it is reserved for developers and experienced 
+professionals having in-depth IT knowledge. Users are therefore encouraged 
+to load and test the software's suitability as regards their requirements 
+in conditions enabling the security of their systems and/or data to be 
+ensured and, more generally, to use and operate it in the same conditions 
+as regards security.
+
+The fact that you are presently reading this means that you have had 
+knowledge of the CeCILL license and that you accept its terms.
+
+*/
+
+BODY {
+	BACKGROUND-COLOR: #fff;
+	TEXT-ALIGN: center;
+}
+
+img {
+	border-style: none;
+}
+
+H1 {
+	FONT-FAMILY: Georgia, Times New Roman, Times, serif;
+}
+
+H2 {
+	FONT-FAMILY: Georgia, Times New Roman, Times, serif;
+}
+
+H3 {
+	FONT-FAMILY: Georgia, Times New Roman, Times, serif;
+}
+
+A {
+	COLOR: #576;
+}
+
+A:hover {
+	COLOR: #413;
+}
+
+#basket {
+	border-bottom-style: solid;
+	margin-bottom: 0px;
+	border-top-width: 1px;
+	border-left-style: solid;
+	PADDING-BOTTOM: 0px;
+	border-right-style: solid;
+	WIDTH: 750px;
+	border-top-style: solid;
+	PADDING-LEFT: 0px;
+	PADDING-RIGHT: 0px;
+	border-bottom-color: #ccc;
+	PADDING-TOP: 0px;
+	border-left-color: #ccc;
+	margin-top: 0px;
+	border-right-color: #ccc;
+	border-bottom-width: 1px;
+	border-left-width: 1px;
+	margin-right: auto;
+	border-top-color: #ccc;
+	border-right-width: 1px;
+	margin-left: auto;
+}
+
+#title {
+	MARGIN: 0px;
+	border-bottom-style: solid;
+	border-top-color: #fff;
+	border-bottom-color: #ccc;
+	border-top-width: 1px;
+	border-bottom-width: 1px;
+	BACKGROUND-REPEAT: no-repeat;
+	/*FONT-FAMILY: Georgia, Times New Roman, Times, serif;
+	font: italic 32pt/64pt georgia;*/
+	border-top-style: solid;
+}
+
+#title H1 {
+	PADDING-LEFT: 10px;
+	PADDING-RIGHT: 10px;
+	MARGIN: 0px;
+	PADDING-BOTTOM: 10px;
+	PADDING-TOP: 10px;
+}
+
+#title h1 {
+	text-align: center;
+	font-family: georgia;
+	font-style: italic;
+}
+
+UL#nav {
+	PADDING-BOTTOM: 0px;
+	BACKGROUND-POSITION: 95% 0px;
+	PADDING-RIGHT: 0px;
+	border-bottom-style: solid;
+	BACKGROUND-REPEAT: no-repeat;
+	MARGIN: 0px;
+	FONT-SIZE: 0.8em;
+	border-bottom-color: #ccc;
+	PADDING-TOP: 0px;
+	PADDING-LEFT: 0px;
+	border-bottom-width: 1px;
+	FONT-FAMILY: tahoma,georgia,verdana,arial, sans-serif;
+	LIST-STYLE-TYPE: none;
+	text-align: left;
+}
+
+UL#nav A {
+	TEXT-DECORATION: none;
+}
+
+UL#nav LI {
+	PADDING-RIGHT: 5px;
+	DISPLAY: inline;
+	PADDING-LEFT: 5px;
+}
+
+#content {
+	FONT-FAMILY: Trebuchet MS,georgia,verdana, arial, sans-serif;
+	FLOAT: left;
+	TEXT-ALIGN: left;
+	FONT-SIZE: small;
+	WIDTH: 60%;
+	PADDING-LEFT: 30px;
+}
+
+#content H2 {
+	COLOR: #142;
+}
+
+#content P {
+	TEXT-INDENT: 1em;
+}
+
+#stuff {
+	WIDTH: 25%;
+	TEXT-ALIGN: right;
+	PADDING-RIGHT: 30px;
+	FONT-SIZE: small;
+	FLOAT: right;
+	FONT-FAMILY: arial, sans-serif;
+}
+
+#stuff H3 {
+	MARGIN-BOTTOM: 3px;
+}
+
+#stuff UL {
+	LIST-STYLE-TYPE: none;
+	MARGIN-TOP: 3px;
+}
+
+
+
+/****************************************************************/
+
+#info {
+	FONT-SIZE: small;
+	FONT-FAMILY: arial, sans-serif;
+	TEXT-ALIGN: left;
+	FLOAT: right;
+	WIDTH: 25%;
+	PADDING-TOP: 30px;
+	PADDING-RIGHT: 30px;
+}
+
+
+
+#chooseLevel3 {
+	TEXT-INDENT: 4em;
+	TEXT-ALIGN: left;
+}
+
+
+
+#footer {
+	BACKGROUND-POSITION: 95% 50%;
+	border-top-color: #ccc;
+	border-top-width: 1px;
+	border-top-style: solid;
+	BACKGROUND-REPEAT: no-repeat;
+	CLEAR: both;
+}
+
+#group2 {
+	margin: 10px;
+	padding: 6px;
+	background-color: #a3ff4f;
+}
+
+#imageselectionbuttons {
+	PADDING-TOP: 10px;
+	WIDTH: 100%;
+	TEXT-ALIGN: center;
+	PADDING-BOTTOM: 10px;
+}
+
+#chooseLevel2 {
+	TEXT-ALIGN: left;
+	TEXT-INDENT: 3em;
+}
+
+
+FIELDSET {
+	BORDER-BOTTOM-WIDTH: 0px;
+	BORDER-LEFT-WIDTH: 0px;
+	BORDER-RIGHT-WIDTH: 0px;
+	BORDER-TOP-WIDTH: 0px;
+}
+
+#logos {
+	margin-left: -28px;
+}
+
+#listusers a.selected {
+	color: black;
+	font-weight: normal;
+	text-decoration: none;
+	border: solid 1px;
+	margin-left: 0.5px;
+	margin-right: 0.5px;
+}
+    
+#listusers a.filled {
+	color: blue;
+	font-weight: bold;
+	text-decoration: none;
+	margin-left: 1.5px;
+	margin-right: 1.5px;
+}
+    
+#listusers a.empty {
+	color: rgb(194, 26, 26);
+	font-weight: normal;
+	text-decoration: none;
+	margin-left: 1.5px;
+	margin-right: 1.5px;
+}
+
+
+
+#chooseLevel1 {
+	TEXT-INDENT: 1em;
+	TEXT-ALIGN: left;
+}
+
+#group1 {
+	background-color: #6fff3e;
+}
+
+#imageselection {
+	WIDTH: 100%;
+}
+
+#group3 {
+	background-color: #baff6f;
+}
+
+
+
+#message {
+    COLOR: #fa3200;
+}
+
+#note {
+	COLOR: #078d1b;
+}
+.multichannelinput {
+	vertical-align:middle;
+	text-align:right;
+}
+
