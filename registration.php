@@ -132,7 +132,7 @@ include("header.inc.php");
 
     <div id="nav">
         <ul>
-            <li><a href="..">back</a></li>
+            <li><a href="login.php">back</a></li>
             <li><a href="javascript:openWindow('help/helpRegistrationPage.html')">help</a></li>
         </ul>
     </div>

@@ -649,7 +649,7 @@ Class QueueManager {
     $emailAddress = $user->emailAddress();
     $sourceFileName = $desc->sourceImageName();
     //$destFileName = $desc->destinationImageName();
-    $destFileName = $desc->sourceImageName();
+    $destFileName = $desc->destinationImageFullName();
     $text = "This is a mail generated automatically by huygens remote manager.\n";
     $text = $text . "Your job started at $startTime finished at " . date("l d of F Y h:i:s A") . ". ";
     $text = $text . "The image \n$sourceFileName\n has been successfully treated by Huygens.\n";
@@ -672,7 +672,6 @@ Class QueueManager {
     $emailAddress = $user->emailAddress();
     $sourceFileName = $desc->sourceImageName();
     //$destFileName = $desc->destinationImageName();
-    $destFileName = $desc->sourceImageName();
     $text = "This is a mail generated automatically by huygens remote manager.\n";
     $text = $text . "Sorry, the processing of the image \n$sourceFileName\n has been terminated by an unknown error.\n";
     $text = $text . "Your job started at $startTime finished at " . date("l d of F Y h:i:s A") . ".";

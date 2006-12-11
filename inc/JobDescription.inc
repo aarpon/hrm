@@ -673,9 +673,11 @@ Class JobDescription {
   function sourceImageShortName() {
     $files = $this->files();
     $inputFile = end($files);
-    $inputFile = explode("/", $inputFile); 
-    $inputFile = explode(".", end($inputFile));
-    $inputFile = $inputFile[0];
+    $inputFile = explode("/", $inputFile);
+    // remove file extension
+    //$inputFile = explode(".", end($inputFile));
+    //$inputFile = $inputFile[0];
+    $inputFile = substr(end($inputFile), 0, strrpos(end($inputFile), "."));
     return $inputFile;
   } 
 
@@ -707,8 +709,15 @@ Class JobDescription {
   function destinationImageFullName() {
     global $resultImagesRenamed;
     // use source filename as destination filename
-    if (!$resultImagesRenamed) return $this->destinationFolder() . $this->sourceImageShortName();
-    $result = $this->destinationFolder() . $this->destinationImageName();
+    if (!$resultImagesRenamed) {
+      $files = $this->files();
+      $result = $this->destinationFolder() . ereg_replace("^/", "", end($files));
+      $result = substr($result, 0, strrpos($result, "."));
+    }
+    else {
+      $result = $this->destinationFolder() . $this->destinationImageName();
+    }
+    error_log("result filename: " . $result);
     return $result;
   }
 

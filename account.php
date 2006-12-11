@@ -92,19 +92,21 @@ if (isset($_POST['modify'])) {
   }
   else {
     $result = False;
-    $message = "            <p class=\"warning\">Please fill email field in with a valid address</p>";
+    $message = "            <p class=\"warning\">Please fill email field in with a valid address<br />&nbsp;</p>";
   }
-  if ($_POST['group'] != "") {
-    $query .= ", research_group ='".$_POST['group']."'";
-  }
-  else {
-    $result = False;
-    $message .= "\n            <p class=\"warning\">Please fill group field in</p>";
+  if (isset($_POST['group'])) {
+    if ($_POST['group'] != "") {
+      $query .= ", research_group ='".$_POST['group']."'";
+    }
+    else {
+      $result = False;
+      $message = "\n            <p class=\"warning\">Please fill group field in<br />&nbsp;</p>";
+    }
   }
   if ($_POST['pass1'] != "" || $_POST['pass2'] != "") {
     if ($_POST['pass1'] == "" || $_POST['pass2'] == "") {
       $result = False;
-      $message .= "\n            <p class=\"warning\">Please fill both password fields in</p>";
+      $message = "\n            <p class=\"warning\">Please fill both password fields in</p>";
     }
     else {
       if ($_POST['pass1'] == $_POST['pass2']) {
@@ -112,7 +114,7 @@ if (isset($_POST['modify'])) {
       }
       else {
         $result = False;
-        $message .= "\n            <p class=\"warning\">Passwords do not match</p>";
+        $message = "\n            <p class=\"warning\">Passwords do not match</p>";
       }
     }
   }
@@ -133,7 +135,7 @@ if (isset($_POST['modify'])) {
         header("Location: " . $_SESSION['referer']); exit();
       }
     }
-    else $message = "            <p class=\"warning\">Database error, please inform the person in charge</p>";
+    else $message = "            <p class=\"warning\">Database error, please inform the person in charge</p>\n";
   }
 }
 
@@ -157,9 +159,20 @@ include("header.inc.php");
             <div id="adduser">
                 <label for="email">E-mail address: </label>
                 <input name="email" id="email" type="text" value="<?php echo $user->email() ?>" />
+<?php
+
+// add user management
+if ($_SESSION['user']->name() == "admin") {
+
+?>
                 <br />
                 <label for="group">Research group: </label>
                 <input name="group" id="group" type="text" value="<?php echo $user->group() ?>" />
+<?
+
+}
+
+?>
                 <br />
                 <br />
                 <label for="pass1">New password: </label>
@@ -178,21 +191,21 @@ include("header.inc.php");
     <div id="stuff">
     
         <div id="info">
-        
-            <p>
-                Click the modify button to change e-mail address and/or 
-                password. Click the back link to return without changing 
-                anything.
-            </p>
-            
+          
 <?php
 
 $referer = $_SESSION['referer'];
 
 ?>
 
-          <input type="button" value="cancel" onclick="document.location.href='<?php echo $referer ?>'" class="icon cancel" />
-          <input type="button" value="apply" onclick="document.forms['useraccount'].submit()" class="icon apply" />
+            <input type="button" value="cancel" onclick="document.location.href='<?php echo $referer ?>'" class="icon cancel" />
+            <input type="button" value="apply" onclick="document.forms['useraccount'].submit()" class="icon apply" />
+            
+            <p>
+                Click the modify button to change e-mail address and/or 
+                password. Click the back link to return without changing 
+                anything.
+            </p>
             
         </div>
         

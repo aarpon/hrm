@@ -560,7 +560,7 @@ for ($i=1; $i <= 4; $i++) {
 <?php
 
 $parameter = $_SESSION['task_setting']->parameter("QualityChangeStoppingCriterion");
-$value = 0;
+$value = 0.1;
 if ($parameter->value() != null) {
   $value = $parameter->value();
 }
