@@ -515,9 +515,13 @@ for ($i=1; $i <= 4; $i++) {
 <?php
 
 $parameter = $_SESSION['task_setting']->parameter("NumberOfIterations");
+$value = 40;
+if ($parameter->value() != null) {
+  $value = $parameter->value();
+}
 
 ?>
-                            <input name="NumberOfIterations" type="text" size="3" value="<?php echo $parameter->value() ?>" />
+                            <input name="NumberOfIterations" type="text" size="3" value="<?php echo $value ?>" />
                             
                             <p>
 <?php
