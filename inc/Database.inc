@@ -481,14 +481,6 @@ Class DatabaseConnection {
     $result = $this->flatten($answer);
     return $result;
   }
-  
-  function readTranslatedPossibleValues($parameter) {
-    $name = $parameter->name();
-    $query = "select translation from possible_values where parameter = '" .$name . "'";
-    $answer = $this->query($query);
-    $result = $this->flatten($answer);
-    return $result;
-  }
 
   function translationFor($parameter) {
     $name = $parameter->name();
@@ -644,17 +636,7 @@ Class DatabaseConnection {
       $index++;
     } 
     return $result;
-  }
-  
-  // TODO better management of multiple hosts
-  function huscriptPathOn($host) {
-    $query = "SELECT huscript_path FROM server where name = '" . $host . "'";
-    $result = $this->queryLastValue($query);
-    if (!$result) {
-      return NULL;
-    } 
-    return $result; 
-  }
+  } 
 
   function freeServer() {
     $query = "select name from server where status='free'";
@@ -743,6 +725,12 @@ Class DatabaseConnection {
     return $result;
   } 
   
+  function now() {
+    $query = "select now()";
+    $result = $this->queryLastValue($query);
+    return $result;	
+  }	
+
   function pauseJob($id) {
     $query = "update job_queue set status='paused' where id='" . $id . "'";
     $result = $this->execute($query);
@@ -765,6 +753,22 @@ Class DatabaseConnection {
     $conditions['status'] = 'broken'; 
     $ids = $this->retrieveColumnFromTableWhere('id', 'job_queue', $conditions);
     return $ids;
-  } 
+  }
+  
+  function saveAccountingData($id, $credit, $group) {
+    $query = "insert into job_accounting_data values ('$id', '$credit', '$group')";
+    $result = $this->execute($query);
+    return $result;
+  }
+
+  function loadAccountingData($jobDescription) {
+    $id = $jobDescription->id();
+    $query = "select * from job_accounting_data where id='$id'";
+    $row = $this->query($query);
+    if ($row) { 
+      return $row[0];
+    }
+    return false;
+  }
 } 
 ?>
