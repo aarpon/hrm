@@ -1,7 +1,7 @@
 <?php
 // parameter for accessing the microscope reservation database
-$reservation_db_host = "apsara";
-$reservation_db_user = "root";
-$reservation_db_password = "1mAg3r13";
-$reservation_db_name = "grr";
+$reservation_db_host = "your_host";
+$reservation_db_user = "your_user";
+$reservation_db_password = "your_password";
+$reservation_db_name = "your_db_name";
 ?>
