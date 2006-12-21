@@ -97,6 +97,33 @@ Class Setting {
 		$this->parameter[$parameter->name()] = $parameter;
 	}
 
+	// TODO refactor
+	//!---------------------------------------------------------
+	// @function    Setting::values
+	// @desc        Answer the parameter values
+	// @param       name  String  The name of the parameter
+	// @return      Array
+	//!---------------------------------------------------------
+	function values($name) {
+		$db = new DatabaseConnection();
+		$parameter = $this->parameter($name);
+		return $db->readPossibleValues($parameter);
+	}
+
+	// TODO refactor
+	//!---------------------------------------------------------
+	// @function    Setting::translatedValues
+	// @desc        Answer the translated parameter values
+	// @param       name  String  The name of the parameter
+	// @return      Array
+	//!---------------------------------------------------------
+	function translation($name, $value) {
+		$db = new DatabaseConnection();
+		$parameter = new Parameter($name);
+		$parameter->setValue($value);
+		return $db->translationFor($parameter);
+	}
+
 	//!---------------------------------------------------------
 	// @function    Setting::message
 	// @desc        Answer the message set by the last check
@@ -171,6 +198,8 @@ Class Setting {
 		$result = True;
 		$theLabel = $label;
 		$values = $parameter->internalValue();
+		if ($name == "BackgroundOffsetPercent" && $values[0] == "#auto")
+			return True;
 		for ($i = 1; $i <= $numberOfChannels; $i++) {
 			$ok = $parameter->checkValue($values[$i]);
 			if (!$ok) {
@@ -356,15 +385,18 @@ Class Setting {
 				continue;
 			if (!$this->isThreeDimensional() && $parameter->name() == 'ZStepSize')
 				continue;
-			if ($parameter->name() == 'ExcitationWavelength' || $parameter->name() == 'EmissionWavelength') {
-				$oldValue = $parameter->value();
-				$values = array ();
-				for ($i = 0; $i <= $this->numberOfChannels(); $i++) {
-					$values[] = $oldValue[$i];
-				}
-				$parameter->setValue($values);
-			}
+			if ($parameter->name() == 'IsMultiChannel' || $parameter->name() == 'HasAdaptedValues' || $parameter->name() == 'PSF')
+				continue;
 			$result = $result . $parameter->displayString();
+			/*if ($parameter->name() == 'ExcitationWavelength' || $parameter->name() == 'EmissionWavelength' || $parameter->name() == 'PinholeSize') {
+			    // we want the array to start at index 0
+			    $oldValue = $parameter->value();
+			    $values = array();
+			    for ($i=1; $i<=$this->numberOfChannels(); $i++) {
+			        $values[] = $oldValue[$i];
+			    }
+			    $parameter->setValue($values);
+			}*/
 		}
 		return $result;
 	}
@@ -383,9 +415,13 @@ Class ParameterSetting extends Setting {
 	//!---------------------------------------------------------
 	function ParameterSetting() {
 		$this->Setting();
+		// manage parameter adaption
+		// manage measured PSF
+		// support for Nipkow spinning disk
 		$parameterClasses = array (
-			"IsMultiChannel",
-			"ImageFileFormat",
+			'HasAdaptedValues',
+			'IsMultiChannel',
+			'ImageFileFormat',
 			'NumberOfChannels',
 			'ImageGeometry',
 			'MicroscopeType',
@@ -401,7 +437,10 @@ Class ParameterSetting extends Setting {
 			'CCDCaptorSizeX',
 			'ZStepSize',
 			'TimeInterval',
-			'PinholeSize'
+			'PinholeSize',
+			'PinholeSpacing',
+			'PointSpreadFunction',
+			'PSF'
 		);
 		$db = new DatabaseConnection();
 		foreach ($parameterClasses as $class) {
@@ -465,19 +504,11 @@ Class ParameterSetting extends Setting {
 	function checkImageParameter() {
 		$result = True;
 		$this->message = '';
-		$parameter = $this->parameter('IsMultiChannel');
-		$channel = $parameter->value();
-		if ($channel != 'True' && $channel != 'False') {
-			$this->message = "Please select single or multichannel image!";
-			return False;
-		}
-		if ($channel == 'True') {
+		if ($this->isMultiChannel()) {
 			$result = $this->checkMultiChannelImageParameter();
-		}
-		if ($channel == 'False') {
+		} else {
 			$result = $this->checkSingleChannelImageParameter();
 		}
-
 		return $result;
 	}
 	//!---------------------------------------------------------
@@ -537,15 +568,99 @@ Class ParameterSetting extends Setting {
 			}
 		}
 		if ($this->isMultiPointOrSinglePointConfocal()) {
-			if (!$this->checkNumericalValue('PinholeSize', 'pinhole size')) {
+			// Check pinhole radius for every channel
+			if (!$this->checkPinholeSize()) {
 				return False;
 			}
 		}
-		if (!$this->checkNyquistRate()) {
+		// Support for Nipkow spinning disk
+		if ($this->isNipkowDisk()) {
+			if (!$this->checkPinholeSpacing()) {
+				return False;
+			}
+		}
+		// Check Nyquist rate only if parameters are not already adapted
+		if (!$this->hasAdaptedParameters() && !$this->checkNyquistRate()) {
 			return False;
 		}
 		return True;
 	}
+
+	// manage parameter adaption
+	function hasAdaptedParameters() {
+		$parameter = $this->parameter('HasAdaptedValues');
+		if ($parameter->value() == "True")
+			return True;
+		else
+			return False;
+	}
+
+	// manage parameter adaption
+	function setAdaptedParameters($value) {
+		$parameter = $this->parameter('HasAdaptedValues');
+		if ($value)
+			$parameter->setValue("True");
+		else
+			$parameter->setValue("False");
+		$this->parameter['HasAdaptedValues'] = $parameter;
+	}
+
+	//!---------------------------------------------------------
+	// @function    ParameterSetting::checkPointSpreadFunction()
+	// @desc        Answer true if a PSF file is selected for every
+	//              channel. Answer false and set the message
+	//              otherwise.
+	// @return      Boolean
+	//!---------------------------------------------------------    
+	function checkPointSpreadFunction() {
+		$this->message = '';
+		$parameter = $this->parameter('PSF');
+		$value = $parameter->value();
+		for ($i = 1; $i <= $this->numberOfChannels(); $i++) {
+			if ($value[$i] == NULL) {
+				$this->message = "Please select a PSF file for channel $i!";
+				return False;
+			}
+		}
+		return True;
+	}
+
+	// Support for Nipkow spinning disk
+	//!---------------------------------------------------------
+	// @function    ParameterSetting::checkPinholeSpacing
+	// @desc        TODO
+	// @return      Boolean
+	//!---------------------------------------------------------
+	function checkPinholeSpacing() {
+		$result = True;
+		$parameter = $this->parameter('PinholeSpacing');
+		$pinholeSpacingInputString = $parameter->value();
+		if (!is_numeric($pinholeSpacingInputString)) {
+			$this->message = "The pinhole spacing must be a number!";
+			if (strstr($pinholeSpacingInputString, ',')) {
+				$this->message = $this->message . " Please use a point (.) instead of a comma (,)!";
+			}
+			$result = False;
+		}
+		return $result;
+	}
+
+	//!---------------------------------------------------------
+	// @function    ParameterSetting::checkPinholeSize
+	// @desc        TODO
+	// @return      Boolean
+	//!---------------------------------------------------------    
+	function checkPinholeSize() {
+		$parameter = $this->parameter('PinholeSize');
+		for ($i = 1; $i <= $this->numberOfChannels(); $i++) {
+			if (!$parameter->checkValue($parameter->value[$i])) {
+				$this->message = "Please enter a valid pinhole size for channel $i!";
+				return False;
+			}
+		}
+		return True;
+	}
+
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::checkNumericalAperture
 	// @desc        The numerical aperture must not be bigger 
@@ -585,6 +700,7 @@ Class ParameterSetting extends Setting {
 		return $result;
 	}
 
+	// TODO refactor
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::adaptedLateralSampleSize
 	// @desc        Test if the sampling size lies around the ideal
@@ -595,9 +711,53 @@ Class ParameterSetting extends Setting {
 	// @param       size  float  The sample size entered by the user
 	// @return      float
 	//!---------------------------------------------------------    
-	function adaptedLateralSampleSize($size) {
+	function adaptedLateralSampleSize() {
 		$result = False;
-		// Check for undersampling and oversampling using the nyquist criterium
+		// Use the most restrictive wavelength to compute the adaption
+		$parameter = $this->parameter('EmissionWavelength');
+		if ($this->isTwoPhoton() || $this->isMultiPointOrSinglePointConfocal()) {
+			$parameter = $this->parameter('ExcitationWavelength');
+		}
+		$value = $parameter->value();
+		$mostRestrictiveWavelengthChannel = 1;
+		$mostRestrictiveWavelength = $value[1];
+		for ($i = 2; $i <= $this->numberOfChannels(); $i++) {
+			if ($value[$i] < $mostRestrictiveWavelength) {
+				$mostRestrictiveWavelengthChannel = $i;
+				$mostRestrictiveWavelength = $value[$i];
+			}
+		}
+		// Check for undersampling and oversampling using the Nyquist criterium
+		$parameter = $this->parameter('CCDCaptorSizeX');
+		$deltaX = (float) $parameter->value();
+		$parameter = $this->parameter('NumericalAperture');
+		$na = (float) $parameter->value();
+		$lambda = $mostRestrictiveWavelength;
+		$idealDeltaX = $lambda / (4 * $na);
+		if ($this->isMultiPointOrSinglePointConfocal())
+			$idealDeltaX = $idealDeltaX / 2;
+		if ((0.5 * $idealDeltaX <= $deltaX) && ($deltaX <= 1.2 * $idealDeltaX)) {
+			$result = $deltaX;
+		} else {
+			$result = $idealDeltaX;
+		}
+		return $result;
+	}
+
+	// TODO refactor
+	//!---------------------------------------------------------
+	// @function    ParameterSetting::adaptedLateralSampleSize
+	// @desc        Test if the sampling size lies around the ideal
+	//              sampling size according to the nyquist criterium.
+	//              If this is not the case adapt the sample size 
+	//              to the ideal value according to the nyquist
+	//              criterium.
+	// @param       size  float  The sample size entered by the user
+	// @return      float
+	//!---------------------------------------------------------    
+	function adaptedLateralSampleSizeFor($size) {
+		$result = False;
+		// Check for undersampling and oversampling using the Nyquist criterium
 		$deltaX = $size;
 		$parameter = $this->parameter('NumericalAperture');
 		$na = (float) $parameter->value();
@@ -614,6 +774,80 @@ Class ParameterSetting extends Setting {
 		return $result;
 	}
 
+	/* TODO refactor
+	//!---------------------------------------------------------
+	// @function    ParameterSetting::adaptedLateralSampleSizeFor
+	// @desc        Test if the sampling size lies around the ideal
+	//              sampling size according to the nyquist criterium.
+	//              If this is not the case adapt the sample size 
+	//              to the ideal value according to the nyquist
+	//              criterium.
+	// @param       channel  int  The number of the channel (1-4)
+	// @return      float
+	//!---------------------------------------------------------   
+	function adaptedLateralSampleSizeFor($channel) {
+	    $result = False;
+	    // Check for undersampling and oversampling using the Nyquist criterium
+	    $parameter = $this->parameter('CCDCaptorSizeX');    
+	    $deltaX = (float)$parameter->value();
+	    $parameter = $this->parameter('NumericalAperture');    
+	    $na = (float)$parameter->value();
+	    $parameter = $this->parameter('ExcitationWavelength');
+	    $value = $parameter->value();
+	    $lambda = $value[$channel];
+	    $idealDeltaX = $lambda / (4 * $na); 	
+	    $idealDeltaX = $idealDeltaX / 2;
+	    if ((0.5 * $idealDeltaX <= $deltaX) && ($deltaX <= 1.2 * $idealDeltaX)) {
+	        $result = $deltaX;
+	    } else {
+	        $result = $idealDeltaX;
+	    } 
+	    return $result; 
+	}*/
+
+	/* TODO refactor
+	//!---------------------------------------------------------
+	// @function    ParameterSetting::adaptedNumericalAperture
+	// @desc        Test if the sampling size lies around the ideal
+	//              sampling size according to the nyquist criterium.
+	//              If this is not the case lower the numerical 
+	//              aperture until the condition is met. Answer the
+	//              adapted numerical aperture if one was found. Uses
+	//              the most restrictive wavelength.
+	//              Otherwise answer Null.
+	// @return      Boolean
+	//!---------------------------------------------------------    
+	function adaptedNumericalAperture() {
+	    $result = Null;
+	    // use most restrictive wavelength
+	    $parameter = $this->parameter('EmissionWavelength');
+	    if ($this->isTwoPhoton()) {
+	        $parameter = $this->parameter('ExcitationWavelength');
+	    } 
+	    $value = $parameter->value();
+	    $mostRestrictiveWavelengthChannel = 1;
+	    $mostRestrictiveWavelength = $value[1];
+	    for ($i=2; $i<=$this->numberOfChannels(); $i++) {
+	        if ($value[$i] < $mostRestrictiveWavelength) {
+	            $mostRestrictiveWavelengthChannel = $i;
+	            $mostRestrictiveWavelength = $value[$i];
+	        }
+	    }
+	    $parameter = $this->parameter('CCDCaptorSizeX');    
+	    $deltaX = (float)$parameter->value();
+	    $parameter = $this->parameter('NumericalAperture');    
+	    $na = (float)$parameter->value();
+	    $lambda = $mostRestrictiveWavelength;
+	    for ($adapted_na = $na; $adapted_na >= 0.2; $adapted_na = $adapted_na - 0.0025) {
+	        $idealDeltaX = $lambda / (4 * $adapted_na);
+	        if ((0.5 * $idealDeltaX <= $deltaX) && ($deltaX <= 1.2 * $idealDeltaX)) {
+	            $result = $adapted_na;
+	            break;
+	        } 
+	    }
+	    return $result;     
+	}
+	
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::adaptedNumericalApertureFor
 	// @desc        Test if the sampling size lies around the ideal
@@ -626,62 +860,169 @@ Class ParameterSetting extends Setting {
 	// @return      Boolean
 	//!---------------------------------------------------------    
 	function adaptedNumericalApertureFor($channel) {
-		$result = Null;
-		$deltaX = $this->sampleSizeX() * 1000;
-		$parameter = $this->parameter('NumericalAperture');
-		$na = (float) $parameter->value();
-		$parameter = $this->parameter('EmissionWavelength');
-		if ($this->isTwoPhoton()) {
-			$parameter = $this->parameter('ExcitationWavelength');
-		}
-		$value = $parameter->value();
-		$lambda = $value[$channel];
-		for ($adapted_na = $na; $adapted_na >= 0.2; $adapted_na = $adapted_na -0.0025) {
-			$idealDeltaX = $lambda / (4 * $adapted_na);
-			if ((0.5 * $idealDeltaX <= $deltaX) && ($deltaX <= 1.2 * $idealDeltaX)) {
-				$result = $adapted_na;
-				break;
-			}
-		}
-		return $result;
-	}
+	    $result = Null;
+	    $parameter = $this->parameter('CCDCaptorSizeX');    
+	    $deltaX = (float)$parameter->value();
+	    $parameter = $this->parameter('NumericalAperture');    
+	    $na = (float)$parameter->value();
+	    $parameter = $this->parameter('EmissionWavelength');
+	    if ($this->isTwoPhoton()) { 
+	        $parameter = $this->parameter('ExcitationWavelength');
+	    } 
+	    $value = $parameter->value();
+	    $lambda = $value[$channel];
+	    for ($adapted_na = $na; $adapted_na >= 0.2; $adapted_na = $adapted_na - 0.0025) {
+	        $idealDeltaX = $lambda / (4 * $adapted_na);
+	        if ((0.5 * $idealDeltaX <= $deltaX) && ($deltaX <= 1.2 * $idealDeltaX)) {
+	            $result = $adapted_na;
+	            break;
+	        } 
+	    }
+	    return $result;     
+	}*/
 
+	// sample size adaption for all microscopes
+	// TODO don't answer false if data is over sampled
+	// TODO refactor
 	//!---------------------------------------------------------
-	// @function    ParameterSetting::checkNyquistRateWidefield
-	// @desc        For each channel try to adapt the numerical
-	//              aperture according to the nyquist criterium.
-	//              If under or over sampling is to strong 
-	//              answer false and set the error message.
+	// @function    ParameterSetting::isNyquistRateOK
+	// @desc        TODO
 	// @return      Boolean
 	//!---------------------------------------------------------    
 	function isNyquistRateOK() {
 		$result = True;
-		for ($i = 1; $i <= $this->numberOfChannels(); $i++) {
-			if ($this->adaptedNumericalApertureFor($i) == Null) {
+		$adaption = False;
+		// Use the most restrictive wavelength to compute the adaption
+		$parameter = $this->parameter('EmissionWavelength');
+		if ($this->isTwoPhoton() || $this->isMultiPointOrSinglePointConfocal()) {
+			$parameter = $this->parameter('ExcitationWavelength');
+		}
+		$value = $parameter->value();
+		$mostRestrictiveWavelengthChannel = 1;
+		$mostRestrictiveWavelength = $value[1];
+		for ($i = 2; $i <= $this->numberOfChannels(); $i++) {
+			if ($value[$i] < $mostRestrictiveWavelength) {
+				$mostRestrictiveWavelengthChannel = $i;
+				$mostRestrictiveWavelength = $value[$i];
+			}
+		}
+		// Check if data is under sampled and if parameter values can be adapted
+		/*if ($this->isWidefield() || $this->isTwoPhoton()) {
+		    // In the case of widefield and two photon miscroscopes, the NA is adapted 
+		    
+		    // 1) check if undersampled or oversampled
+		    // sample size
+		    $parameter = $this->parameter('CCDCaptorSizeX');    
+		    $deltaX = (float)$parameter->value();
+		    // ideal sample size
+		    $lambda = $mostRestrictiveWavelength;
+		    $parameter = $this->parameter('NumericalAperture');    
+		    $na = (float)$parameter->value();
+		    $idealDeltaX = $lambda / (4 * $na);
+		    // sampling factor
+		    $factor = $idealDeltaX / $deltaX;
+		    
+		    // 2) if undersampled, check if NA can be adapted
+		    if ($factor < 1) {
+		        $adapted_na = $this->adaptedNumericalApertureFor($mostRestrictiveWavelengthChannel);
+		        if ($adapted_na == null) {
+		            // a. if no, warn and request coherent values
+		            $result = False;
+		            $this->message = "The image is undersampled by a factor of $factor for channel $mostRestrictiveWavelengthChannel";
+		        }
+		        else  if ($adapted_na != $na) {
+		            // b. if yes, warn and ask for confirmation
+		            // TODO refactor here
+		            $this->message = "<p>WARNING: numerical aperture will be adapted</p>\n";
+		            $this->message = $this->message."<p>NA $adapted_na instead of $na</p>\n";
+		            $this->message = $this->message."<p>Minimal sampling distance according to the Nyquist rate is ".floor($this->adaptedLateralSampleSizeFor($mostRestrictiveWavelengthChannel))." (in the lateral direction)";
+		            if ($this->isThreeDimensional()) {
+		               $this->message = $this->message." and ".floor($this->idealSampleSizeZFor($mostRestrictiveWavelengthChannel))." (in the axial direction)";
+		            }
+		            $this->message = $this->message.".</p>\n";
+		            $this->message = $this->message."<p>If you still want to use these parameter settings, press the OK button again.</p>\n";
+		            $this->setAdaptedParameters(True);
+		            $result = False;
+		        }
+		    }
+		    
+		    // 3) else if oversampled by factor > 1.5, warn and ask for confirmation
+		    else if ($factor >= 1.5) {
+		        $result = False;
+		        $this->message = "The image is oversampled by a factor of $factor for channel $mostRestrictiveWavelengthChannel";
+		    }
+		    
+		    // 4) else accept happily
+		    else {
+		        $result = True;
+		    }
+		}
+		else if ($this->isMultiPointOrSinglePointConfocal()) {*/
+		// In the case of confocal microscopes, the sample size is adapted
+
+		// 1) check if undersampled or oversampled
+		// sample size
+		$parameter = $this->parameter('CCDCaptorSizeX');
+		$deltaX = (float) $parameter->value();
+		// ideal sample size
+		$lambda = $mostRestrictiveWavelength;
+		$parameter = $this->parameter('NumericalAperture');
+		$na = (float) $parameter->value();
+		$idealDeltaX = $lambda / (4 * $na);
+		if ($this->isMultiPointOrSinglePointConfocal())
+			$idealDeltaX /= 2;
+		// sampling factor
+		$factor = $idealDeltaX / $deltaX;
+
+		// if 3-D, check if sample size in z direction also has to be adapted
+		if ($this->isThreeDimensional()) {
+			$parameter = $this->parameter('ZStepSize');
+			$sampleSizeZ = (float) $parameter->value();
+			$idealSampleSizeZ = $this->idealSampleSizeZ(); // EDIT
+			$z_factor = $idealSampleSizeZ / $sampleSizeZ;
+		}
+
+		// 2) if undersampled, compute adapted sample size, warn and ask for confirmation
+		if ($factor < 1 || !((0.5 * $idealSampleSizeZ <= $sampleSizeZ) && ($sampleSizeZ <= 1.2 * $idealSampleSizeZ))) { // EDIT
+			// TODO refactor here
+			$this->message = "<p>WARNING: sample size will be adapted to ideal</p>\n";
+			$this->message = $this->message . "<p>Sampling rate w.r.t. Nyquist criterion:<br />";
+			$this->message = $this->message . "X-dir: " . number_format(round($idealDeltaX / $deltaX, 2), 2, ',', '') . "<br />Y-dir: " . number_format(round($idealDeltaX / $deltaX, 2), 2, ',', '');
+			if ($this->isThreeDimensional()) {
+				$param = $this->parameter('ZStepSize');
+				$size = (float) $param->value();
+				$this->message = $this->message . "<br />Z-dir: " . number_format(round($idealSampleSizeZ / $sampleSizeZ, 2), 2, ',', ''); // EDIT
+			}
+			$this->message = $this->message . "<br />(values > 1 represent supersampling)</p>\n";
+			$this->message = $this->message . "<p>Sampling precisely according to the Nyquist criterion would involve sampling distances (nm):<br />";
+			$this->message = $this->message . "X-dir: " . floor($idealDeltaX) . "<br />Y-dir: " . floor($idealDeltaX);
+			if ($this->isThreeDimensional()) {
+				$this->message = $this->message . "<br />Z-dir: " . floor($idealSampleSizeZ) . "<br />"; // EDIT
+			}
+			$this->message = $this->message . "</p>\n<p>If you still want to use these parameter settings, press the OK button again.</p>\n";
+			$this->setAdaptedParameters(True);
+			$result = False;
+		}
+
+		// 3) else if oversampled by factor > 1.5, warn and ask for confirmation
+		else
+			if ($factor >= 1.5 || $z_factor > 1.5) {
+				$this->message = "";
+				if ($factor >= 1.5) {
+					$this->message .= "The image is oversampled by a factor of " . number_format(round($factor, 2), 2, ',', '') . " in lateral direction";
+				}
+				if ($z_factor > 1.5) {
+					$this->message .= "\nThe image is oversampled by a factor of " . number_format(round($z_factor, 2), 2, ',', '') . " in axial direction";
+				}
+				$this->message .= "\nIf you still want to use these parameter settings, press the OK button again.\n";
 				$result = False;
-				$failedForChannel = $i;
-				break;
 			}
+
+		// 4) else accept happily
+		else {
+			$result = True;
 		}
-		if (!$result) {
-			$parameter = $this->parameter('EmissionWavelength');
-			if ($this->isTwoPhoton()) {
-				$parameter = $this->parameter('ExcitationWavelength');
-			}
-			$value = $parameter->value();
-			$lambda = $value[$failedForChannel];
-			$parameter = $this->parameter('NumericalAperture');
-			$na = (float) $parameter->value();
-			$deltaX = $this->sampleSizeX() * 1000;
-			$idealDeltaX = $lambda / (4 * $na);
-			$factor = $idealDeltaX / $deltaX;
-			if ($factor > 1) {
-				$this->message = "The image is oversampled by a factor of $factor for channel $failedForChannel";
-			} else {
-				$factor = $deltaX / $idealDeltaX;
-				$this->message = "The image is undersampled by a factor of $factor for channel $failedForChannel";
-			}
-		}
+		//}
 		return $result;
 	}
 
@@ -695,12 +1036,9 @@ Class ParameterSetting extends Setting {
 	// @return      Boolean
 	//!---------------------------------------------------------    
 	function checkNyquistRate() {
-		if ($this->isMultiPointOrSinglePointConfocal()) {
-			$result = True;
-		} else {
-			$result = $this->isNyquistRateOK();
-		}
-		return $result;
+		// Check Nyquist Rate for every microscope
+		//return $this->isNyquistRateOK();
+		return True;
 	}
 
 	//!---------------------------------------------------------
@@ -730,10 +1068,17 @@ Class ParameterSetting extends Setting {
 	// @return      Boolean
 	//!---------------------------------------------------------    
 	function checkSingleChannelImageParameter() {
+
+		// Modification by Aaron Ponti, 2005/12/13
+
+		return True;
+
+		// End of modification by Aaron Ponti, 2005/12/13
+
 		$result = True;
 		$parameter = $this->parameter('ImageFileFormat');
 		$fileFormat = $parameter->value();
-		if ($parameter->isMultiChannel() || (!in_array($fileFormat, $this->singleChannelFileFormats()))) {
+		if ((!in_array($fileFormat, $this->singleChannelFileFormats()))) {
 			$this->message = "Please select a single channel file format (" . implode(", ", $this->singleChannelFileFormats()) . ")!";
 			return False;
 		}
@@ -752,7 +1097,7 @@ Class ParameterSetting extends Setting {
 		$result = True;
 		$parameter = $this->parameter('ImageFileFormat');
 		$fileFormat = $parameter->value();
-		if ($parameter->isSingleChannel() || (!in_array($fileFormat, $this->multiChannelFileFormats()))) {
+		if ((!in_array($fileFormat, $this->multiChannelFileFormats()))) {
 			$this->message = "Please select a multichannel file format (" . implode(", ", $this->multiChannelFileFormats()) . ")!";
 			return False;
 		}
@@ -899,10 +1244,12 @@ Class ParameterSetting extends Setting {
 	// @return      boolean
 	//!---------------------------------------------------------    
 	function isMultiChannel() {
-		$result = False;
-		$parameter = $this->parameter('IsMultiChannel');
-		if ($parameter->value() == 'True') {
+		$parameter = $this->parameter('NumberOfChannels');
+		$num_channels = (int) $parameter->value();
+		if ($num_channels > 1) {
 			$result = True;
+		} else {
+			$result = False;
 		}
 		return $result;
 	}
@@ -941,6 +1288,17 @@ Class ParameterSetting extends Setting {
 		return $result;
 	}
 
+	// Support for Nipkow spinning disk
+	//!---------------------------------------------------------
+	// @function    ParameterSetting::isNipkowDisk
+	// @desc        Answer true if the setting is for a Nipkow
+	//              spinning disk microscope.
+	// @return      bool
+	//!---------------------------------------------------------    
+	function isNipkowDisk() {
+		return $this->isMultiPointConfocal();
+	}
+
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::isTwoPhoton
 	// @desc        Answer true if the setting is for a two
@@ -974,7 +1332,7 @@ Class ParameterSetting extends Setting {
 	function isMultiPointConfocal() {
 		$parameter = $this->parameter('MicroscopeType');
 		$value = $parameter->value();
-		return ($value == 'multipoint confocal');
+		return ($value == 'multipoint confocal (spinning disk)');
 	}
 
 	//!---------------------------------------------------------
@@ -1047,15 +1405,30 @@ Class ParameterSetting extends Setting {
 		return (in_array($value, $this->timeSeriesGeometries()));
 	}
 
+	// pixel size = lateral sample size (nm)
+	// TODO rename CCDCaptorSizeX to SampleSizeX
+	//!---------------------------------------------------------
+	// @function    ParameterSetting::pixelSize
+	// @desc        Answer the lateral sample size in nanometer
+	// @return      number
+	//!---------------------------------------------------------        
+	function pixelSize() {
+		$param = $this->parameter('CCDCaptorSizeX');
+		$size = (float) $param->value();
+		//return $this->sampleSize($size);
+		return $size;
+	}
+
+	// TODO refactor
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::sampleSizeX
 	// @desc        Answer the lateral sample size in micron
 	// @return      number
 	//!---------------------------------------------------------        
 	function sampleSizeX() {
-		$param = $this->parameter('CCDCaptorSizeX');
-		$size = (float) $param->value();
-		return $this->sampleSize($size) / 1000;
+		$size = $this->pixelSize();
+		//return $this->sampleSize($size) / 1000;
+		return $size / 1000;
 	}
 
 	//!---------------------------------------------------------
@@ -1075,7 +1448,7 @@ Class ParameterSetting extends Setting {
 	function sampleSizeZ() {
 		$param = $this->parameter('ZStepSize');
 		$size = (float) $param->value();
-		$size = $size * $this->sampleSizeAdaptionFactor();
+		//if ($this->hasAdaptedParameters()) $size = $size * $this->sampleSizeAdaptionFactor();
 		return $size / 1000;
 	}
 
@@ -1091,41 +1464,39 @@ Class ParameterSetting extends Setting {
 		return $size / 1;
 	}
 
+	// sample size adaption for all microscopes
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::sampleSize
 	// @desc        Answer the lateral sample size in nanometer.
 	//              For confocal microscopes the sample size
 	//              may be adapted to fit the nyquist criterium.
 	// @param       size  float  The ccd captor or sampling size
-	//              in nanometer. This is the value the user 
+	//              in nanometer. This Bloquer les numéros 0900?is the value the user 
 	//              entered. 
 	// @return      number
 	//!---------------------------------------------------------          
 	function sampleSize($size) {
-		$newSize = $size;
-		if ($this->usesCCDCamera()) {
-			$newSize = $this->sampleSizeForCCDCaptorElementSize($size);
-		}
-		$result = $newSize;
-		if ($this->isSinglePointConfocal() || $this->isMultiPointConfocal()) {
-			// adapt sample size if necessary according to the nyquist criterium
-			$result = $this->sampleSizeForConfocal($newSize);
-		}
+		$result = $size;
+		//if ($this->isMultiPointOrSinglePointConfocal()) {
+		// Adapt sample size if necessary according to the nyquist criterium
+		//    $result = $this->sampleSizeForConfocal($size);
+		//}
+		if ($this->hasAdaptedParameters())
+			$result = $this->adaptedLateralSampleSizeFor($size);
 		return $result;
 	}
 
+	// sample size adaption for all micrsocopes
 	function sampleSizeAdaptionFactor() {
-		$result = 1; // for widefield and two photon since na is adapted and sample size is not changed
-		$param = $this->parameter('CCDCaptorSizeX');
-		$size = (float) $param->value();
-		$newSize = $size;
-		if ($this->usesCCDCamera()) {
-			$newSize = $this->sampleSizeForCCDCaptorElementSize($size);
-		}
-		$result = $this->sampleSize($size) / $newSize;
+		$result = 1; // for widefield and two photon since NA is adapted and sample size is not changed
+		/*if ($this->isMultiPointOrSinglePointConfocal()) {
+		    $size = $this->pixelSize();
+		    $result = $this->sampleSize($size) / $size;
+		}*/
 		return $result;
 	}
 
+	/* TODO refactor
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::sampleSizeForCCDCaptorElementSize
 	// @desc        Compute and answer the sample size (pixel size) 
@@ -1136,18 +1507,19 @@ Class ParameterSetting extends Setting {
 	// @return      number
 	//!---------------------------------------------------------
 	function sampleSizeForCCDCaptorElementSize($size) {
-		$param = $this->parameter('Binning');
-		$binning = (float) $param->value();
-		$param = $this->parameter('ObjectiveMagnification');
-		$magnification = (float) $param->value();
-		$param = $this->parameter('CMount');
-		$cmount = (float) $param->value();
-		$param = $this->parameter('TubeFactor');
-		$tube = (float) $param->value();
-		$result = ($size * $binning) / ($magnification * $cmount * $tube);
-		return $result;
-	}
+	    $param = $this->parameter('Binning');
+	    $binning = (float)$param->value();
+	    $param = $this->parameter('ObjectiveMagnification');
+	    $magnification = (float)$param->value();
+	    $param = $this->parameter('CMount');
+	    $cmount = (float)$param->value();
+	    $param = $this->parameter('TubeFactor');
+	    $tube = (float)$param->value();
+	    $result = ($size * $binning) / ($magnification * $cmount * $tube);
+	    return $result;
+	}*/
 
+	/* TODO refactor
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::sampleSizeForConfocal
 	// @desc        If necessary adapt the sample size to fit
@@ -1156,9 +1528,9 @@ Class ParameterSetting extends Setting {
 	// @return      number
 	//!---------------------------------------------------------
 	function sampleSizeForConfocal($size) {
-		$result = $this->adaptedLateralSampleSize($size);
-		return $result;
-	}
+	    $result = $this->adaptedLateralSampleSize(1);
+	    return $result;
+	}*/
 
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::table()
@@ -1183,6 +1555,7 @@ Class ParameterSetting extends Setting {
 		return "parameter";
 	}
 
+	// TODO refactor and remove if not needed
 	function usesPhotomultiplier() {
 		if ($this->isSinglePointConfocal() || $this->isTwoPhoton()) {
 			$result = True;
@@ -1192,6 +1565,7 @@ Class ParameterSetting extends Setting {
 		return $result;
 	}
 
+	// TODO refactor and remove if not needed
 	function usesCCDCamera() {
 		if ($this->isMultiPointConfocal() || $this->isWidefield()) {
 			$result = True;
@@ -1201,6 +1575,7 @@ Class ParameterSetting extends Setting {
 		return $result;
 	}
 
+	// TODO refactor and remove if not needed
 	function captorSizeText() {
 		$result = 'x size of the ccd captor';
 		if ($this->usesPhotomultiplier()) {
@@ -1209,18 +1584,53 @@ Class ParameterSetting extends Setting {
 		return $result;
 	}
 
+	// TODO refactor if needed
 	function idealSampleSizeZ() {
+		// use most restrictive wavelength
 		if ($this->isWidefield()) {
 			$parameter = $this->parameter('EmissionWavelength');
-			$lambda = (int) $parameter->value();
+		} else {
+			$parameter = $this->parameter('ExcitationWavelength');
+		}
+		$value = $parameter->value();
+		$mostRestrictiveWavelengthChannel = 1;
+		$mostRestrictiveWavelength = $value[1];
+		for ($i = 2; $i <= $this->numberOfChannels(); $i++) {
+			if ($value[$i] < $mostRestrictiveWavelength) {
+				$mostRestrictiveWavelengthChannel = $i;
+				$mostRestrictiveWavelength = $value[$i];
+			}
+		}
+		$lambda = $mostRestrictiveWavelength;
+		if ($this->isWidefield()) {
+			$factor = 2;
+		} else {
+			$factor = 4;
+		}
+		$parameter = $this->parameter('ObjectiveType');
+		$rim = (float) $parameter->translatedValue();
+		// TODO check if NA should be adapted in case of widefield and two-photon
+		$parameter = $this->parameter('NumericalAperture');
+		$na = (float) $parameter->value();
+		$deltaZ = $lambda / ($factor * $rim * (1 - cos(asin($na / $rim))));
+		return $deltaZ;
+	}
+
+	function idealSampleSizeZFor($channel) {
+		if ($this->isWidefield()) {
+			$parameter = $this->parameter('EmissionWavelength');
+			$value = $parameter->value();
+			$lambda = $value[$channel];
 			$factor = 2;
 		} else {
 			$parameter = $this->parameter('ExcitationWavelength');
-			$lambda = (int) $parameter->value();
+			$value = $parameter->value();
+			$lambda = $value[$channel];
 			$factor = 4;
 		}
-		$parameter = $this->parameter('SampleMedium');
+		$parameter = $this->parameter('ObjectiveType');
 		$rim = (float) $parameter->translatedValue();
+		// TODO check if NA should be adapted in case of widefield and two-photon
 		$parameter = $this->parameter('NumericalAperture');
 		$na = (float) $parameter->value();
 		$deltaZ = $lambda / ($factor * $rim * (1 - cos(asin($na / $rim))));
@@ -1256,10 +1666,11 @@ Class TaskSetting extends Setting {
 			'BackgroundOffsetUseRange',
 			'BackgroundOffsetRange',
 			'NumberOfIterations',
-			'QualityChangeThreshold',
 			'NumberOfIterationsUseRange',
 			'NumberOfIterationsRange',
-			'OutputFileFormat'
+			'OutputFileFormat',
+			'MultiChannelOutput',
+			'QualityChangeStoppingCriterion'
 		);
 		$db = new DatabaseConnection();
 		foreach ($parameterClasses as $class) {
@@ -1343,6 +1754,22 @@ Class TaskSetting extends Setting {
 	}
 
 	//!---------------------------------------------------------
+	// @function    TaskSetting::checkSignalNoiseRatio
+	// @desc        TODO
+	// @return      Boolean
+	//!---------------------------------------------------------    
+	function checkSignalNoiseRatio() {
+		$parameter = $this->parameter('SignalNoiseRatio');
+		for ($i = 1; $i <= $this->numberOfChannels(); $i++) {
+			if (!$parameter->checkValue($parameter->value[$i])) {
+				$this->message = "Please enter a valid signal/noise ratio for channel " . $i . "! The value must be between 3 and 100.";
+				return False;
+			}
+		}
+		return True;
+	}
+
+	//!---------------------------------------------------------
 	// @function    TaskSetting::checkParameter
 	// @desc        Check the entered parameter. Answer true if
 	//              they are ok and false if some illegal values
@@ -1376,7 +1803,8 @@ Class TaskSetting extends Setting {
 					return False;
 				}
 			} else {
-				if (!$this->checkNumericalValue('SignalNoiseRatio', 'signal/noise ratio')) {
+				if (!$this->checkSignalNoiseRatio() /*!$this->checkNumericalValue('SignalNoiseRatio', 'signal/noise ratio')*/
+					) {
 					return False;
 				}
 			}
@@ -1400,9 +1828,13 @@ Class TaskSetting extends Setting {
 					return False;
 				}
 			}
+			if (!$this->checkNumericalValue('QualityChangeStoppingCriterion', 'quality change stopping criterion')) {
+				return False;
+			}
 		}
-		if (!$this->checkNumericalValue('QualityChangeThreshold', 'quality change threshold')) {
-			return False;
+		$parameter = $this->parameter('MultiChannelOutput');
+		if ($parameter->value() == 'True') {
+			$numberOfOperations++;
 		}
 		if ($numberOfOperations < 1) {
 			$this->message = "Please choose at least one operation!";
@@ -1534,6 +1966,8 @@ Class TaskSetting extends Setting {
 				)) && !$fullRestoration) {
 				continue;
 			}
+			if ($parameter->name() == 'FullRestoration' || $parameter->name() == 'RemoveNoise' || $parameter->name() == 'RemoveBackground')
+				continue;
 			$result = $result . $parameter->displayString();
 		}
 		return $result;
@@ -1613,15 +2047,19 @@ Class JobParameterSetting extends ParameterSetting {
 		$newScript = $newScript . $this->microscopeParameterString();
 		$newScript = $newScript . $this->microscopeTypeString();
 		$newScript = $newScript . $this->numericalApertureString();
-		if ($this->isMultiPointOrSinglePointConfocal()) {
-			$newScript = $newScript . $this->pinholeRadiusString();
-		}
 		$newScript = $newScript . $this->lensRefractiveIndexString();
 		$newScript = $newScript . $this->mediumRefractiveIndexString();
+		// Support for Nipkow spinning disk
+		if ($this->isNipkowDisk()) {
+			$newScript = $newScript . $this->pinholeSpacingString();
+		}
 		$newScript = $newScript . $this->photonCountString();
 		$newScript = $newScript . "\n";
 		$newScript = $newScript . $this->excitationWavelengthsString();
 		$newScript = $newScript . $this->emissionWavelengthsString();
+		if ($this->isMultiPointOrSinglePointConfocal()) {
+			$newScript = $newScript . $this->pinholeRadiusString();
+		}
 		return $newScript;
 	}
 
@@ -1639,13 +2077,19 @@ Class JobParameterSetting extends ParameterSetting {
 		$parameter = $this->parameter($name);
 		$values = $parameter->value();
 		$result = "";
-		for ($i = 1; $i <= $this->numberOfChannels(); $i++) {
-			$result = $result . '$imageName setp -chan ';
-			$chan = (int) $i -1;
-			$result = $result . $chan;
-			$result = $result . ' -' . "$command ";
-			$result = $result . $values[$i];
-			$result = $result . "\n";
+		$currentChannel = 0;
+			for ($i = 1; $i <= 1 /*$this->numberOfChannels()*/; $i++) {
+			//error_log("GENERATING SCRIPT (Setting): ".$name." -> ".$values[$i]);
+			if (!empty ($values[$i])) {
+				$result = $result . '$imageName setp -chan ';
+				$chan = (int) $currentChannel;
+				$result = $result . $chan;
+				$result = $result . ' -' . "$command ";
+				$result = $result . $values[$i];
+				$result = $result . "\n";
+				// Update $currentChannel
+				$currentChannel++;
+			}
 		}
 		return $result;
 	}
@@ -1663,21 +2107,28 @@ Class JobParameterSetting extends ParameterSetting {
 		return $result;
 	}
 
+	// sample size adaption for all microscopes
 	function numericalApertureString() {
-		if ($this->isMultiPointOrSinglePointConfocal()) {
-			$param = $this->parameter('NumericalAperture');
-			$value = $param->translatedValue();
-		} else {
-			$value = $this->adaptedNumericalApertureFor(1);
-		}
+		//if ($this->isMultiPointOrSinglePointConfocal()) {
+		$param = $this->parameter('NumericalAperture');
+		$value = $param->translatedValue();
+		//} else {
+		//    $value = $this->adaptedNumericalApertureFor(1);
+		//} 
 		$result = "-na $value ";
 		return $result;
 	}
 
 	function pinholeRadiusString() {
-		$param = $this->parameter('PinholeSize');
+		$result = $this->multiChannelParameterString('PinholeSize', 'pr');
+		return $result;
+	}
+
+	// Support for Nipkow spinning disk
+	function pinholeSpacingString() {
+		$param = $this->parameter('PinholeSpacing');
 		$value = $param->translatedValue();
-		$result = "-pr $value ";
+		$result = "-ps $value ";
 		return $result;
 	}
 
@@ -1688,7 +2139,8 @@ Class JobParameterSetting extends ParameterSetting {
 		if ($this->isThreeDimensional()) {
 			$result = $result . ' ' . (string) $this->sampleSizeZ();
 		} else {
-			$result = $result . ' ' . (string) ($this->idealSampleSizeZ());
+			// Use current channel
+			$result = $result . ' ' . (string) ($this->idealSampleSizeZFor(1));
 		}
 		if ($this->isTimeSeries()) {
 			$result = $result . ' ' . (string) $this->sampleSizeT();
@@ -1703,7 +2155,8 @@ Class JobParameterSetting extends ParameterSetting {
 		if ($this->isThreeDimensional()) {
 			$result = $result . ' ' . (string) ($this->sampleSizeZ() / $this->sampleSizeAdaptionFactor());
 		} else {
-			$result = $result . ' ' . (string) ($this->idealSampleSizeZ());
+			// Use current channel
+			$result = $result . ' ' . (string) ($this->idealSampleSizeZFor(1));
 		}
 		if ($this->isTimeSeries()) {
 			$result = $result . ' ' . (string) $this->sampleSizeT();
@@ -1798,6 +2251,37 @@ Class JobTaskSetting extends TaskSetting {
 		return $newScript;
 	}
 
+	// manage measured PSF
+	function putScriptForMeasuredPointSpreadFunctionOn($script) {
+		$step = 1;
+		$newScript = $script;
+		$parameter = $this->parameter('RemoveNoise');
+		if ($parameter->isTrue()) {
+			$source = $this->sourceForStep($step);
+			$dest = $this->destinationForStep($step);
+			$newScript = $newScript . $this->removeNoiseString($source, $dest);
+			$newScript = $newScript . $this->destroyImageString($source);
+			$step++;
+		}
+		$parameter = $this->parameter('RemoveBackground');
+		if ($parameter->isTrue()) {
+			$source = $this->sourceForStep($step);
+			$dest = $this->destinationForStep($step);
+			$newScript = $newScript . $this->removeBackgroundForMeasuredPointSpreadFunctionString($source, $dest);
+			$newScript = $newScript . $this->destroyImageString($source);
+			$step++;
+		}
+		$parameter = $this->parameter('FullRestoration');
+		if ($parameter->isTrue()) {
+			$source = $this->sourceForStep($step);
+			$dest = $this->destinationForStep($step);
+			$newScript = $newScript . $this->fullRestorationForMeasuredPointSpreadFunctionString($source, $dest);
+			$newScript = $newScript . $this->destroyImageString($source);
+			$step++;
+		}
+		return $newScript;
+	}
+
 	function destroyImageString($imageName) {
 		$result = '';
 		$result = $result . $imageName . ' del';
@@ -1875,6 +2359,20 @@ Class JobTaskSetting extends TaskSetting {
 		$result = $result . $source . ' cmle psf -> ' . $dest . ' ';
 		$result = $result . "-it 3 ";
 		$result = $result . '-bgMode object ';
+		$result = $result . '-blMode auto ';
+		$result = $result . '-q 0 ';
+		$result = $result . '-mode highQ ';
+		$result = $result . '-pad fullpadpar';
+		$result = $result . "\n";
+		return $result;
+	}
+
+	// manage measured PSF
+	function removeBackgroundForMeasuredPointSpreadFunctionString($source, $dest) {
+		$result = '';
+		$result = $result . $source . ' cmle $psf -> ' . $dest . ' ';
+		$result = $result . "-it 3 ";
+		$result = $result . '-bgMode object ';
 		$result = $result . $this->removeBackgroundPercentString();
 		$result = $result . '-blMode auto ';
 		$result = $result . '-q 0 ';
@@ -1889,10 +2387,49 @@ Class JobTaskSetting extends TaskSetting {
 		$result = $result . $source . ' cmle psf -> ' . $dest . ' ';
 		$result = $result . $this->sginalNoiseRatioString();
 		$result = $result . $this->maxIterationsString();
-		$result = $result . '-bgMode object ';
-		$result = $result . $this->backgroundPerChannelString();
+		// background estimation manual/auto
+		$parameter = $this->parameter("BackgroundOffsetPercent");
+		$value = $parameter->value();
+		$internalValue = $parameter->internalValue();
+		//$result = $result . '-bgMode object ';
+		//error_log("GENERATING SCRIPT (Setting): background offset percent -> ".$value[0].", ".$value[1]." | ".$internalValue[0].", ".$internalValue[1]." |");
+		if ($value[1] == "auto" || $internalValue[1] == "auto") {
+			$result = $result . '-bgMode auto ';
+		} else {
+			$result = $result . '-bgMode manual ';
+			$result = $result . $this->backgroundPerChannelString();
+		}
 		$result = $result . '-blMode auto ';
-		$result = $result . $this->qualityChangeThresholdString();
+		$result = $result . '-q ';
+		$parameter = $this->parameter("QualityChangeStoppingCriterion");
+		$result = $result . $parameter->value() . " ";
+		$result = $result . '-mode highQ ';
+		$result = $result . '-pad fullpadpar';
+		$result = $result . "\n";
+		return $result;
+	}
+
+	// manage measured PSF
+	function fullRestorationForMeasuredPointSpreadFunctionString($source, $dest) {
+		$result = '';
+		$result = $result . $source . ' cmle $psf -> ' . $dest . ' ';
+		$result = $result . $this->sginalNoiseRatioString();
+		$result = $result . $this->maxIterationsString();
+		// background estimation manual/auto
+		$parameter = $this->parameter("BackgroundOffsetPercent");
+		$value = $parameter->value();
+		$internalValue = $parameter->internalValue();
+		//$result = $result . '-bgMode object ';
+		if ($value[1] == "auto" || $internalValue[1] == "auto") {
+			$result = $result . '-bgMode auto ';
+		} else {
+			$result = $result . '-bgMode manual ';
+			$result = $result . $this->backgroundPerChannelString();
+		}
+		$result = $result . '-blMode auto ';
+		$result = $result . '-q ';
+		$parameter = $this->parameter("QualityChangeStoppingCriterion");
+		$result = $result . $parameter->value() . " ";
 		$result = $result . '-mode highQ ';
 		$result = $result . '-pad fullpadpar';
 		$result = $result . "\n";
@@ -1968,12 +2505,4 @@ Class JobTaskSetting extends TaskSetting {
 		$result = "-it $value ";
 		return $result;
 	}
-
-	function qualityChangeThresholdString() {
-		$parameter = $this->parameter('QualityChangeThreshold');
-		$value = $parameter->value();
-		$result = "-q $value ";
-		return $result;
-	}
-
 }
