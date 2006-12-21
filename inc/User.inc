@@ -54,7 +54,6 @@ require_once "Database.inc";
 require_once "Setting.inc";
 require_once "hrm_config.inc";
 require_once "Ldap.inc";
-
 //!---------------------------------------------------------
 // @class    Owner
 // @desc     Represents an owner of a setting. Superclass of
@@ -62,9 +61,6 @@ require_once "Ldap.inc";
 //!---------------------------------------------------------
 Class Owner {
   var $name;          // @var name          String    The owners name might be a job id or a user's login name
-  // add user management
-  var $email;         // @var email         String    The owners email address
-  var $group;         // @var group         String    The owners group
 
   //!---------------------------------------------------------
   // @function    Owner::Owner
@@ -73,10 +69,7 @@ Class Owner {
   //!---------------------------------------------------------
   function Owner() {
     $this->name = '';
-    // add user management
-    $this->email = '';
-    $this->group = '';
-  }
+  } 
 
   //!---------------------------------------------------------
   // @function    Owner::name
@@ -85,26 +78,6 @@ Class Owner {
   //!---------------------------------------------------------
   function name() {
     return $this->name;
-  }
-
-  // add user management
-  //!---------------------------------------------------------
-  // @function    Owner::email
-  // @desc        Answer the email address of the owner
-  // @return      String
-  //!---------------------------------------------------------
-  function email() {
-    return $this->email;
-  }
-
-  // add user management
-  //!---------------------------------------------------------
-  // @function    Owner::group
-  // @desc        Answer the group of the owner
-  // @return      String
-  //!---------------------------------------------------------
-  function group() {
-    return $this->group;
   }
 
   //!---------------------------------------------------------
@@ -117,28 +90,6 @@ Class Owner {
   function setName($name) {
     $this->name = $name;
   } 
-
-  // add user management
-  //!---------------------------------------------------------
-  // @function    Owner::setEmail
-  // @desc        Set the email address of the owner
-  // @param       email   String    The email address of the owner
-  // @return      void
-  //!---------------------------------------------------------
-  function setEmail($email) {
-    $this->email = $email;
-  }
-  
-  // add user management
-  //!---------------------------------------------------------
-  // @function    Owner::setGroup
-  // @desc        Set the group of the owner
-  // @param       name    String    The group of the owner
-  // @return      void
-  //!---------------------------------------------------------
-  function setGroup($group) {
-    $this->group = $group;
-  }
 
 } // end of class Owner
 
@@ -187,26 +138,6 @@ Class User extends Owner{
     } 
     return $result;
   }
-  //!---------------------------------------------------------
-  // @function    User::ldap_encrypt
-  // @desc        Answer an encrypted version of string
-  // @param       string     String    The string to be encrypted; form {type}passwd
-  // @return      String
-  //!---------------------------------------------------------  
-  function parse_ldap_password($dbPassword) {
-      preg_match("/^\{(.*)\}(.*)$/", $dbPassword, $dbp);
-      return array($dbp[2], $dbp[1]);
-  }
-  function ldap_encrypt($string, $dbPasswordType, $dbPassword) {
-      if ($dbPasswordType == "crypt") {
-          $result = crypt($string, $dbPassword);
-      } else if ($dbPasswordType == "md5") {
-          $result = md5($string);
-      } else {
-          $result = "unknown type '$dbPasswordType'";
-      }
-      return $result;
-  }
 
   //!---------------------------------------------------------
   // @function    User::logIn
@@ -248,22 +179,10 @@ Class User extends Owner{
   // @param       name     String    The login name of the user
   // @return      String
   //!---------------------------------------------------------  
-  function password($name, $password) {
-      global $authenticateAgainst;
-      if ($authenticateAgainst == "LDAP") {
-          // ldap code
-          $my_ldap = new Ldap();
-          $my_ldap->connectForReading();
-          $user_data = $my_ldap->loadUser($name, $password);
-          return $user_data;
-          return $user_data["password"];
-          //print_r($user_data);
-      } else {
-          // db code
-          $db = new DatabaseConnection();
-          $password = $db->queryLastValue($db->passwordQueryString($name));
-          return $password; 
-      }
+  function password($name) {
+    $db = new DatabaseConnection();
+    $password = $db->queryLastValue($db->passwordQueryString($name));
+    return $password; 
   }
 
   //!---------------------------------------------------------
@@ -287,34 +206,26 @@ Class User extends Owner{
   // @return      Boolean
   //!---------------------------------------------------------    
   function checkLogin($name, $password) {
-    global $allow_reservation_users,$authenticateAgainst;
-    // add user management
-    $db = new DatabaseConnection();
-    $result = $db->queryLastValue("SELECT * FROM user WHERE name = '".$name."'");
-    if ($result != "a") {
-      return False;
-    }
+    global $allow_reservation_users;
+    global $use_ldap;
+	
     $dbPassword = NULL;
+    if ($use_ldap) {
+	$ldap = new Ldap();
+	$result = $ldap->authenticate(strtolower($name), $password);
+	return $result;
+    }			
     if ($allow_reservation_users) {
-        $dbPassword = $this->passwordFromReservationSystem($name);
+      $dbPassword = $this->passwordFromReservationSystem($name);
     } 
-    if ($dbPassword == NULL) {
-        $dbPassword = $this->password($name, $password);
+    if ($dbPassword == NULL) { 
+      $dbPassword = $this->password($name);
     } 
     if (!$dbPassword) return False; 
     $result = False;
-    // decode password type
-    if ($authenticateAgainst == "LDAP") {
-        $result = True;
-//        list($dbPassword, $dbPasswordType) = $this->parse_ldap_password($dbPassword);
- //       if ($dbPassword === ($this->ldap_encrypt($password, $dbPasswordType, $dbPassword))) {
-    //        $result = True;
-  //      } 
-    } else {
-        if ($dbPassword === ($this->encrypt($password, substr($dbPassword, 0, 2)))) {
-            $result = True;
-        }
-    }
+    if ($dbPassword === ($this->encrypt($password, substr($dbPassword, 0, 2)))) {
+      $result = True;
+    } 
     return $result;
   }
 
@@ -327,7 +238,6 @@ Class User extends Owner{
     global $allow_reservation_users;
 
     $db = new DatabaseConnection();
-    //return "lang@init.at";
     $result = NULL;
     if ($allow_reservation_users) {
       $result = $db->emailAddressFromReservationSystem($this->name);
