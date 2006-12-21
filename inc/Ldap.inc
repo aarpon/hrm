@@ -33,8 +33,7 @@ Class Ldap {
     $result = false;
     $this->closeConnection();
     $this->connection = ldap_connect($ldap_host);
-    ldap_set_option($this->connection, LDAP_OPT_REFERRALS, 0);
-   if ($this->connection) {
+    if ($this->connection) {
       $result = true;
     }
     return $result;
@@ -48,7 +47,7 @@ Class Ldap {
     $result = false;
     if ($this->connectForReading()) {
       ldap_set_option($this->connection, LDAP_OPT_PROTOCOL_VERSION, 3);
-      $dn = "$ldap_manager";
+      $dn = "cn=$ldap_manager" . "," . $ldap_root;
       $this->writeConnection = ldap_bind($this->connection, $dn, $ldap_password);
       if ($this->writeConnection) {
 	$result = true;
@@ -90,44 +89,28 @@ Class Ldap {
   }
   
   function userAttributeNames() {
-      return array('uidNumber', 'sn', 'email', 'givenname', 'mssfu30password');
-      //return array('givenname', 'sn', 'mail', 'status', 'accounttype', 'userpassword');
+    return array('givenname', 'sn', 'mail', 'status', 'accounttype', 'userpassword');
   }
 
-  function loadUser($loginname, $password) {
+  function loadUser($loginname) {
     global $ldap_root;
     $result = true;
     if (!$this->connectForWriting()) {
       return false;
     }
-    $filter = "sAMAccountName=$loginname";
+    $filter = '(uid=' . $loginname . ')';
     $attributeNames = $this->userAttributeNames();
-    $searchResults = ldap_search($this->connection, $ldap_root, $filter, array('distinguishedName'));
+    $searchResults = ldap_search($this->connection, $ldap_root, $filter, $attributeNames);
     $resultSet = ldap_get_entries($this->connection, $searchResults);
-     $BIND_username = $resultSet[0]['distinguishedname'][0];
-    $BIND_password = $password;
-    $b2_result=ldap_bind($this->connection,$BIND_username,$BIND_password);
-    if (!$b2_result) {
-	return false;
-}
-    $b2_search=ldap_search($this->connection, $ldap_root, $filter, $attributeNames);
-    if (!$b2_search) {
-        return false;
-}
-    $resultSet2=ldap_get_entries($this->connection,$b2_search);
     if ($resultSet['count']<1) {
       return false;
     }
     $result = array();
-    foreach ($attributeNames as $key) {
-      $out_key = $key;
-      $pre_str="";
-      if (in_array($key, $resultSet2[0])) {
-          $value = $resultSet2[0][$key][0];
-          $result[$out_key]="$pre_str$value"; 
-      }
+    for ($i=0; $i<count($attributeNames); $i++) {
+      $key = $attributeNames[$i];
+      $value = $resultSet[0][$key][0];
+      $result[$key]=$value; 
     }
-    //print_r( $result);
     $this->closeConnection();
     return $result;
   }
