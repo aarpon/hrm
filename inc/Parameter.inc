@@ -195,7 +195,7 @@ Class Parameter {
 		if ($value == $this->internalValue()) {
 			$result = $result . 'checked="checked" ';
 		}
-		$result = $result . $customHTML . '>';
+		$result = $result . $customHTML . ' />';
 		print $result;
 	}
 
@@ -215,14 +215,20 @@ Class Parameter {
 		if ($value == 'False' && $this->isBoolean()) {
 			return '';
 		}
-		if (is_array($value)) {
-			array_shift($value);
-			$value = array_filter($value);
-			$value = implode(", ", $value);
-		}
-		$split = explode("_", $value);
-		if (count($split) > 1) {
-			$value = $split[1];
+		$internalValue = $this->internalValue();
+		;
+		if ($this->name() == "BackgroundOffsetPercent" && $internalValue[1] == "auto") {
+			$value = "auto";
+		} else {
+			if (is_array($value)) {
+				array_shift($value);
+				$value = array_filter($value);
+				$value = implode(", ", $value);
+			}
+			$split = explode("_", $value);
+			if (count($split) > 1) {
+				$value = $split[1];
+			}
 		}
 		$name = $this->name();
 		if (!$this->isBoolean()) {
@@ -416,7 +422,7 @@ Class ChoiceParameter extends Parameter {
 		if ($valueChecked == $this->value()) {
 			$result = $result . 'checked="checked" ';
 		}
-		$result = $result . $customHTML . '>';
+		$result = $result . $customHTML . ' />';
 		print $result;
 	}
 
@@ -686,7 +692,7 @@ Class VariableChannelsParameter extends NumericalParameter {
 			NULL
 		);
 		for ($i = 1; $i <= $this->numberOfChannels(); $i++) {
-			if ($this->checkValue($value[$i])) {
+			if ($i < sizeof($value) && $this->checkValue($value[$i])) {
 				$newValue[$i] = $value[$i];
 			} else {
 				$newValue[$i] = $newValue[$i -1];
@@ -713,6 +719,38 @@ Class VariableChannelsParameter extends NumericalParameter {
 			$result = $result && $this->checkValue($value[$i]);
 		}
 		return $result;
+	}
+}
+
+// manage parameter adaption
+Class HasAdaptedValues extends ChoiceParameter {
+	function HasAdaptedValues() {
+		$this->ChoiceParameter("HasAdaptedValues");
+	}
+}
+
+// manage measured PSF
+Class PointSpreadFunction extends ChoiceParameter {
+	function PointSpreadFunction() {
+		$this->ChoiceParameter("PointSpreadFunction");
+	}
+}
+
+// TODO refactor
+Class PSF extends Parameter {
+	function PSF() {
+		$this->Parameter('PSF');
+		$this->value = array (
+			NULL,
+			NULL,
+			NULL,
+			NULL,
+			NULL
+		);
+	}
+
+	function setupAllowedValues($db) {
+		// TODO
 	}
 }
 
@@ -958,6 +996,8 @@ Class SampleMedium extends ChoiceParameter {
 		$value = $this->value;
 		$db = new DatabaseConnection();
 		$result = $db->translationFor($this);
+		if ($result == 0)
+			return $value;
 		return $result;
 	}
 }
@@ -1038,7 +1078,7 @@ Class CCDCaptorSizeX extends NumericalParameter {
 	function displayString() {
 		$value = $this->value();
 		$result = '';
-		$name = ' pixel or ccd captor size:';
+		$name = ' pixel size:';
 		$result = $result . str_pad($name, 35, ' ', STR_PAD_RIGHT);
 		$result = $result . $value;
 		$result = $result . "\n";
@@ -1069,10 +1109,35 @@ Class TimeInterval extends NumericalParameter {
 Class PinholeSize extends NumericalParameter {
 	function PinholeSize() {
 		$this->NumericalParameter("PinholeSize");
+		// manage one pinhole radius per channel
+		$this->value = array (
+			NULL,
+			NULL,
+			NULL,
+			NULL,
+			NULL
+		);
 	}
 
 	function isForCapture() {
 		return True;
+	}
+}
+
+// Support for Nipkow spinning disk
+Class PinholeSpacing extends NumericalParameter {
+	function PinholeSpacing() {
+		$this->NumericalParameter("PinholeSpacing");
+	}
+
+	function isForCapture() {
+		return True;
+	}
+}
+
+Class MultiChannelOutput extends BooleanParameter {
+	function MultiChannelOutput() {
+		$this->BooleanParameter("MultiChannelOutput");
 	}
 }
 
@@ -1085,6 +1150,73 @@ Class RemoveNoise extends BooleanParameter {
 Class StyleOfProcessing extends ChoiceParameter {
 	function StyleOfProcessing() {
 		$this->ChoiceParameter("StyleOfProcessing");
+	}
+
+	function displayString() {
+		$name = $this->name() . ":";
+		$uppercase = array (
+			'A',
+			'B',
+			'C',
+			'D',
+			'E',
+			'F',
+			'G',
+			'H',
+			'I',
+			'J',
+			'K',
+			'L',
+			'M',
+			'N',
+			'O',
+			'P',
+			'Q',
+			'R',
+			'S',
+			'T',
+			'U',
+			'V',
+			'W',
+			'X',
+			'Y',
+			'Z'
+		);
+		$lowercase = array (
+			' a',
+			' b',
+			' c',
+			' d',
+			' e',
+			' f',
+			' g',
+			' h',
+			' i',
+			' j',
+			' k',
+			' l',
+			' m',
+			' n',
+			' o',
+			' p',
+			' q',
+			' r',
+			' s',
+			' t',
+			' u',
+			' v',
+			' w',
+			' x',
+			' y',
+			' z'
+		);
+		$name = str_replace($uppercase, $lowercase, $name);
+		$result = str_pad($name, 35, ' ', STR_PAD_RIGHT);
+		$db = new DatabaseConnection();
+		$translatedValue = $db->translationFor($this);
+		$result = $result . $translatedValue;
+		$result = $result . "\n";
+		return $result;
 	}
 }
 
@@ -1115,6 +1247,14 @@ Class RemoveBackgroundPercent extends VariableChannelsParameter {
 Class SignalNoiseRatio extends NumericalParameter {
 	function SignalNoiseRatio() {
 		$this->NumericalParameter("SignalNoiseRatio");
+		// manage one S/N per channel
+		$this->value = array (
+			NULL,
+			NULL,
+			NULL,
+			NULL,
+			NULL
+		);
 	}
 }
 
@@ -1127,6 +1267,17 @@ Class SignalNoiseRatioUseRange extends BooleanParameter {
 Class BackgroundOffsetPercent extends VariableChannelsParameter {
 	function BackgroundOffsetPercent() {
 		$this->VariableChannelsParameter("BackgroundOffsetPercent");
+	}
+
+	function check() {
+		$value = $this->internalValue();
+		$result = True;
+		if ($value[0] == "#auto")
+			return True;
+		for ($i = 1; $i <= $this->numberOfChannels; $i++) {
+			$result = $result && $this->checkValue($value[$i]);
+		}
+		return $result;
 	}
 }
 
@@ -1142,15 +1293,15 @@ Class NumberOfIterations extends NumericalParameter {
 	}
 }
 
-Class NumberOfIterationsUseRange extends BooleanParameter {
-	function NumberOfIterationsUseRange() {
-		$this->BooleanParameter("NumberOfIterationsUseRange");
+Class QualityChangeStoppingCriterion extends NumericalParameter {
+	function QualityChangeStoppingCriterion() {
+		$this->NumericalParameter("QualityChangeStoppingCriterion");
 	}
 }
 
-Class QualityChangeThreshold extends NumericalParameter {
-	function QualityChangeThreshold() {
-		$this->NumericalParameter("QualityChangeThreshold");
+Class NumberOfIterationsUseRange extends BooleanParameter {
+	function NumberOfIterationsUseRange() {
+		$this->BooleanParameter("NumberOfIterationsUseRange");
 	}
 }
 
@@ -1259,7 +1410,6 @@ Class OutputFileFormat extends ChoiceParameter {
 	// @return      string
 	//!---------------------------------------------------------    
 	function translatedValue() {
-		$value = $this->value;
 		$db = new DatabaseConnection();
 		$result = $db->translationFor($this);
 		return $result;
