@@ -125,7 +125,7 @@ Class ExternalProcess {
         global $huygens_user;
         $this->shell = proc_open("bash", $this->descriptorSpec, $this->pipes);
         if (!is_resource($this->shell)) {
-            return $False;
+            return False;
         } 
         return True;
     } 
@@ -245,7 +245,7 @@ Class LocalExternalProcess extends ExternalProcess {
       global $huygens_user;
       $this->shell = proc_open("sh", $this->descriptorSpec, $this->pipes);
       if (!is_resource($this->shell)) {
-          return $False;
+          return False;
       } 
       return True;
   }
