@@ -1,0 +1,90 @@
+<?php
+
+//==============================================================================
+// database settings
+//==============================================================================
+
+// ADOdb database abstraction library
+$adodb = "/path/to/adodb.inc.php";
+
+// The database type (mysql, oracle, ...)
+$db_type = "mysql";
+
+// The name of the database host machine (this may be localhost if it is the 
+// machine on which the web server runs)
+$db_host = "localhost";
+
+// The name of the database used by HRM
+$db_name = "hrm";
+
+// The name of the user with which the database is accessed
+$db_user = "root";
+
+// The password of the account with which the database is accessed
+$db_password = "";
+
+//==============================================================================
+// Huygens settings
+//==============================================================================
+
+// Huygens server parameter
+$huygens_user = "huygens";
+$huygens_group = "huygens";
+
+//==============================================================================
+// file server settings
+//==============================================================================
+
+// file server host name
+$image_host = "localhost";
+
+// file server base folder
+$image_folder = "/path/to/hrm_data";
+
+// file server image source folder
+$image_source = "huygens_src";
+
+// file server image destination folder
+$image_destination = "huygens_dst";
+
+// file server base folder as seen from the Huygens server machines
+$huygens_server_image_folder = "/path/to/hrm_data";
+
+//==============================================================================
+// HRM configuration parameters
+//==============================================================================
+
+// URL
+$hrm_url = "http://localhost/hrm";
+
+// logging
+$log_verbosity = 2;         // 0=quiet, 1=normal, 2=debug
+$logfile = "hrm.log";
+$logfile_max_size = 100;    // maximum size of the logfile in MB
+
+// email
+$email_sender = "hrm@localhost";
+$email_admin = "hrm@localhost";
+
+// authentication type (LDAP or MYSQL)
+$authenticateAgainst = "MYSQL";
+
+// if true, users of the microscope reservation system may have access to HRM 
+// as well
+$allow_reservation_users = False;
+
+// if true, use DES password encryption; if false, use MD5
+$useDESEncryption = False;
+
+// if true, the queue manager and the image processing server run on the same 
+// machine
+$imageProcessingIsOnQueueManager = True;
+
+// if true, result images will be owned by the user; if false, they will be 
+// owned by the user who runs the queue manager
+$resultImagesOwnedByUser = False;
+
+// if true, result images will have the job id appended to their names
+$resultImagesRenamed = True;
+
+?>
