@@ -94,7 +94,9 @@ for ($i=1; $i <= $_SESSION['setting']->numberOfChannels(); $i++) {
   } 
 }
 // get rid of extra values in case the number of channels is changed
-$pinhole = array_slice($pinhole, 0, $_SESSION['setting']->numberOfChannels() + 1);
+if (is_array($pinhole)) {
+	$pinhole = array_slice($pinhole, 0, $_SESSION['setting']->numberOfChannels() + 1);
+}
 $pinholeParam->setValue($pinhole);
 $_SESSION['setting']->set($pinholeParam);
 // TODO refactor
