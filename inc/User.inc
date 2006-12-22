@@ -280,6 +280,21 @@ Class User extends Owner{
   } 
 
   //!---------------------------------------------------------
+  // @function    User::isStatusAccepted
+  // @desc        Answer true if the subscription of the user 
+  //              has been accepted by the administrtator.
+  // @param       name     String    The login name of the user 
+  // @return      Boolean
+  //!---------------------------------------------------------
+  function isStatusAccepted() {
+  	$result = false;
+  	$db = new DatabaseConnection();
+  	$status = $db->getUserStatus($this->name());
+  	$result = ($status==$this->getAcceptedStatus());
+  	return $result;
+  }
+  
+  //!---------------------------------------------------------
   // @function    User::checkLogin
   // @desc        Answer true if the login is granted.
   // @param       name     String    The login name of the user
@@ -290,18 +305,15 @@ Class User extends Owner{
     global $allow_reservation_users,$authenticateAgainst;
     global $use_ldap;
     
-    if ($use_ldap) {
+    if ($name!=$this->getAdminName() && $use_ldap) {
 		$ldap = new Ldap();
 		$result = $ldap->authenticate(strtolower($name), $password);
 		return $result;
     }	
     
     // add user management
-    $db = new DatabaseConnection();
-    $result = $db->queryLastValue("SELECT * FROM user WHERE name = '".$name."'");
-    if ($result != "a") {
-      return False;
-    }
+    if (!$this->isStatusAccepted()) return False;
+    
     $dbPassword = NULL;
     if ($allow_reservation_users) {
         $dbPassword = $this->passwordFromReservationSystem($name);
@@ -345,5 +357,13 @@ Class User extends Owner{
     } 
     return $result;
   } 
+  
+  function getAcceptedStatus() {
+  	return 'a';
+  }
+  
+  function getAdminName() {
+  	return 'admin';
+  }
 } 
 ?>
