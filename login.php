@@ -53,6 +53,8 @@
 
 require_once("./inc/User.inc");
 require_once("./inc/Database.inc"); // for account management (email & last_access fields)
+require_once("./inc/CreditOwner.inc");
+require_once("./inc/hrm_config.inc");
 
 global $email_admin;
 
@@ -75,7 +77,7 @@ if (isset($_POST['password'])) {
       $db->execute("UPDATE user SET email = '".$email_admin."' WHERE name = 'admin'");
     }
     else {
-      $user->setEmail($db->emailAddress($user->name()));
+      $user->setEmail($user->emailAddress());
     }
     // get user group
     $user->setGroup($db->queryLastValue("SELECT research_group FROM user WHERE name= '".$user->name()."'"));
