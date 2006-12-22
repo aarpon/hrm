@@ -74,6 +74,7 @@ Class DatabaseConnection {
     global $db_name;
     global $db_user;
     global $db_password;
+    
     $this->connection = ADONewConnection($db_type);
     $this->connection->Connect($db_host, $db_user, $db_password, $db_name);
   } 
@@ -95,6 +96,7 @@ Class DatabaseConnection {
   // @return      String
   //!---------------------------------------------------------
   function type() {
+  	global $db_type;
     return $db_type;
   }  
   //!---------------------------------------------------------
@@ -103,6 +105,7 @@ Class DatabaseConnection {
   // @return      String
   //!---------------------------------------------------------
   function host() {
+	global $db_host;
     return $db_host;
   }
   //!---------------------------------------------------------
@@ -111,6 +114,7 @@ Class DatabaseConnection {
   // @return      String
   //!---------------------------------------------------------  
   function name() {
+  	global $db_name;
     return $db_name;
   }
   //!---------------------------------------------------------
@@ -119,6 +123,7 @@ Class DatabaseConnection {
   // @return      String
   //!---------------------------------------------------------   
   function user() {
+  	global $db_user;
     return $db_user;
   }
   //!---------------------------------------------------------
@@ -127,6 +132,7 @@ Class DatabaseConnection {
   // @return      String
   //!---------------------------------------------------------  
   function password() {
+  	global $db_password;
     return $db_password;
   }
   //!---------------------------------------------------------
@@ -766,5 +772,11 @@ Class DatabaseConnection {
     $ids = $this->retrieveColumnFromTableWhere('id', 'job_queue', $conditions);
     return $ids;
   } 
+  
+  function getUserStatus($name) {
+  	$query = "select status from user where name = '" . $name . "'";
+  	$result = $this->queryLastValue($query);
+  	return $result;
+  }
 } 
 ?>
