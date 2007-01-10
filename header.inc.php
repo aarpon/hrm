@@ -69,12 +69,14 @@ if (isset($meta)) {
 }
 
 ?>
+    
     <script type="text/javascript" src="scripts/common.js"></script>
 <?php
 
 if (isset($script)) {
 
 ?>
+    
     <script type="text/javascript" src="scripts/<?php echo $script ?>"></script>
 <?php
 

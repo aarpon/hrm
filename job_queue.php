@@ -86,7 +86,9 @@ else if (isset($_POST['update']) && $_POST['update']=='update') {
   header("Location: " . $_SESSION['referer']); exit();
 }*/
 
-$meta = "<meta http-equiv=\"refresh\" content=\"10\">";
+$meta = "<meta http-equiv=\"refresh\" content=\"10\" />";
+
+$script = "queue.js";
 
 include("header.inc.php");
 
@@ -115,7 +117,7 @@ $referer = $_SESSION['referer'];
         
         <h3>Job Queue Status</h3>
         
-        <form method="post" action="">
+        <form method="post" action="" id="jobqueue">
         
             <div id="input">
             
@@ -147,7 +149,7 @@ echo "                    ".date("l d F Y, H:i:s")."\n";
                 <table>
                 
                     <tr>
-                        <td class="del">del</td>
+                        <td class="del"></td>
                         <td class="nr">nr</td>
                         <td class="owner">owner</td>
                         <td class="files">file(s)</td>
@@ -183,21 +185,26 @@ else {
 
 ?>
                     <tr style="background: <?php echo $color ?>">
-                        <td>
 <?php
 
     if ($row['user'] == $_SESSION['user']->name() || $_SESSION['user']->name() == "admin") {
       if ($row['status'] != "started" && $row['status'] != "broken") {
 
 ?>
-                            <input name="jobs_to_kill[]" type="checkbox" value="<?php echo $row['id'] ?>" />
+                            <td><input name="jobs_to_kill[]" type="checkbox" value="<?php echo $row['id'] ?>" /></td>
 <?php
 
       }
     }
+    else {
 
 ?>
-                        </td>
+                        <td></td>
+<?php
+
+    }
+
+?>
                         <td><?php echo $index ?></td>
                         <td><?php echo $row['user'] ?></td>
                         <td><?php echo implode(';', $queue->getJobFilesFor($row['id'])) ?></td>
@@ -219,9 +226,17 @@ else {
 <?php
 
 if (count($rows) != 0) {
+    // <input name="jobs_to_kill[]" type="checkbox" value="45a4bd343e852" />
 
 ?>
-                <label>
+                <label style="padding-left: 3px">
+                    <img src="images/arrow.png" alt="arrow" />
+                    <a href="javascript:mark()">Check All</a> / <a href="javascript:unmark()">Uncheck All</a>
+                </label>
+                
+                &nbsp;
+                
+                <label style="font-style: italic">
                     With selected:
                     <input name="delete" type="submit" value="delete selected jobs" class="icon delete" />
                 </label>
