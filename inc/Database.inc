@@ -778,5 +778,11 @@ Class DatabaseConnection {
   	$result = $this->queryLastValue($query);
   	return $result;
   }
+  
+  function now() {
+    $query = "select now()";
+    $result = $this->queryLastValue($query);
+    return $result;	
+  }
 } 
 ?>
