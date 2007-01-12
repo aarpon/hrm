@@ -195,13 +195,13 @@ else {
 <?php
 
       }
-    }
-    else {
+      else {
 
 ?>
                         <td></td>
 <?php
 
+      }
     }
 
 ?>
