@@ -112,7 +112,12 @@ Class ExternalProcess {
     } 
     
     function ping() {
-        $answer = system("ping -w 4 " . $this->host . " > hrm_tmp", $result);
+    	global $ping_command;
+    	global $ping_parameter;
+    	
+    	$result = "";
+    	$command = $ping_command . " " . $this->host . " " . $ping_parameter . " > hrm_tmp";
+        $answer = system($command, $result);
         if ($result==0) {return True;} 
         return False;   
     } 
