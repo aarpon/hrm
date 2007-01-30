@@ -89,6 +89,7 @@ Class AccountingDatabaseConnection extends DatabaseConnection {
   // @return      String
   //!---------------------------------------------------------
   function type() {
+  	global $accounting_db_type;
     return $accounting_db_type;
   }  
   //!---------------------------------------------------------
@@ -97,6 +98,7 @@ Class AccountingDatabaseConnection extends DatabaseConnection {
   // @return      String
   //!---------------------------------------------------------
   function host() {
+  	global $accounting_db_host;
     return $accounting_db_host;
   }
   //!---------------------------------------------------------
@@ -105,6 +107,7 @@ Class AccountingDatabaseConnection extends DatabaseConnection {
   // @return      String
   //!---------------------------------------------------------  
   function name() {
+  	global $accounting_db_name;
     return $accounting_db_name;
   }
   //!---------------------------------------------------------
@@ -113,6 +116,7 @@ Class AccountingDatabaseConnection extends DatabaseConnection {
   // @return      String
   //!---------------------------------------------------------   
   function user() {
+  	global $accounting_db_user;
     return $accounting_db_user;
   }
   //!---------------------------------------------------------
@@ -121,6 +125,7 @@ Class AccountingDatabaseConnection extends DatabaseConnection {
   // @return      String
   //!---------------------------------------------------------  
   function password() {
+  	global $accounting_db_password;
     return $accounting_db_password;
   }
 
