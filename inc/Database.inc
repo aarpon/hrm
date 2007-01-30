@@ -211,32 +211,6 @@ Class DatabaseConnection {
     return $string;
   }
 
-  //!---------------------------------------------------------------
-  // @function    DatabaseConnection::passwordFromReservationSystem
-  // @desc        Answer the password of the user with the name name
-  //              from the microscope reservation system.
-  // @param       name    string    The name of the user
-  // @return      String
-  //!---------------------------------------------------------------
-  function passwordFromReservationSystem($name) { 
-    global $db_type;
-    global $reservation_db_host;
-    global $reservation_db_user;
-    global $reservation_db_password;
-    global $reservation_db_name;
-
-    $connection = ADONewConnection($db_type);
-    $isConnected = $connection->Connect($reservation_db_host, $reservation_db_user, $reservation_db_password, $reservation_db_name);
-    $normalConnection = $this->connection;
-    $this->connection = $connection;
-    if (!$isConnected) return NULL;
-    $query = "select password from utilisateurs where login='" . $name . "'"; 
-    $result = $this->queryLastValue($query);
-    $this->connection = $normalConnection;
-    if (!$result) return NULL;
-    return $result;
-  }
-
   //!---------------------------------------------------------
   // @function    DatabaseConnection::emailAddress
   // @desc        Answer the email address of the user with
@@ -783,6 +757,23 @@ Class DatabaseConnection {
     $query = "select now()";
     $result = $this->queryLastValue($query);
     return $result;	
+  }
+  
+  function getGroup($userName) {
+  	$query = "SELECT research_group FROM user WHERE name= '" . $userName . "'";
+  	$result = $this->queryLastValue($query);
+  	return $result;
+  }
+  
+  function updateMail($userName, $email) {
+  	$result = $this->execute("UPDATE user SET email = '". $email ."' WHERE name = $userName");
+  	return $result;
+  }
+  
+  function updateLastAccessDate($userName) {
+  	$query = "UPDATE user SET last_access_date = CURRENT_TIMESTAMP WHERE name = '". $userName . "'";
+  	$result = $this->execute($query);
+  	return $result;
   }
 } 
 ?>
