@@ -775,5 +775,21 @@ Class DatabaseConnection {
   	$result = $this->execute($query);
   	return $result;
   }
+  
+   function saveAccountingData($id, $credit, $group) {
+    $query = "insert into job_accounting_data values ('$id', '$credit', '$group')";
+    $result = $this->execute($query);
+    return $result;
+  }
+
+  function loadAccountingData($jobDescription) {
+    $id = $jobDescription->id();
+    $query = "select * from job_accounting_data where id='$id'";
+    $row = $this->query($query);
+    if ($row) { 
+      return $row[0];
+    }
+    return false;
+  }
 } 
 ?>
