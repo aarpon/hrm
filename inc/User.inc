@@ -197,6 +197,7 @@ Class User extends Owner{
       preg_match("/^\{(.*)\}(.*)$/", $dbPassword, $dbp);
       return array($dbp[2], $dbp[1]);
   }
+  
   function ldap_encrypt($string, $dbPasswordType, $dbPassword) {
       if ($dbPasswordType == "crypt") {
           $result = crypt($string, $dbPassword);
@@ -249,15 +250,13 @@ Class User extends Owner{
   // @return      String
   //!---------------------------------------------------------  
   function password($name, $password) {
-      global $authenticateAgainst;
-      if ($authenticateAgainst == "LDAP") {
+      global $use_ldap;
+      if ($use_ldap && $name!=$this->getAdminName()) {
           // ldap code
           $my_ldap = new Ldap();
           $my_ldap->connectForReading();
           $user_data = $my_ldap->loadUser($name, $password);
-          return $user_data;
           return $user_data["password"];
-          //print_r($user_data);
       } else {
           // db code
           $db = new DatabaseConnection();
@@ -265,19 +264,6 @@ Class User extends Owner{
           return $password; 
       }
   }
-
-  //!---------------------------------------------------------
-  // @function    User::passwordFromReservationSystem
-  // @desc        Answer the users encrypted password from
-  //              the microscope reservation system. 
-  // @param       name     String    The login name of the user
-  // @return      String
-  //!---------------------------------------------------------  
-  function passwordFromReservationSystem($name) {
-    $db = new DatabaseConnection();
-    $password = $db->passwordFromReservationSystem($name);
-    return $password;
-  } 
 
   //!---------------------------------------------------------
   // @function    User::isStatusAccepted
@@ -302,40 +288,42 @@ Class User extends Owner{
   // @return      Boolean
   //!---------------------------------------------------------    
   function checkLogin($name, $password) {
-    global $allow_reservation_users,$authenticateAgainst;
     global $use_ldap;
+    $result = false;
     
-    if ($name!=$this->getAdminName() && $use_ldap) {
+    if ($use_ldap && $name!=$this->getAdminName()) $result = $this->checkLoginAgainstLDAP($name, $password);
+    else $result = $this->checkLoginAgainstHRMDatabase($name, $password);
+    	
+    return $result;
+  }
+
+  //!---------------------------------------------------------
+  // @function    User::checkLoginAgainstHRMDatabase
+  // @desc        Answer true if the login is granted.
+  // @param       name     String    The login name of the user
+  // @param       password String    The password of the user 
+  // @return      Boolean
+  //!---------------------------------------------------------    
+  function checkLoginAgainstHRMDatabase($name, $password) {
+  	// add user management
+    if (!$this->isStatusAccepted()) return false;
+    $dbPassword = $this->password($name, $password);
+    if (!$dbPassword) return false;
+    $result = ($dbPassword == ($this->encrypt($password, substr($dbPassword, 0, 2))));
+    return $result;
+  }
+  	
+  //!---------------------------------------------------------
+  // @function    User::checkLoginAgainstLDAP
+  // @desc        Answer true if the login is granted.
+  // @param       name     String    The login name of the user
+  // @param       password String    The password of the user 
+  // @return      Boolean
+  //!---------------------------------------------------------    
+  function checkLoginAgainstLDAP($name, $password) {
 		$ldap = new Ldap();
 		$result = $ldap->authenticate(strtolower($name), $password);
 		return $result;
-    }	
-    
-    // add user management
-    if (!$this->isStatusAccepted()) return False;
-    
-    $dbPassword = NULL;
-    if ($allow_reservation_users) {
-        $dbPassword = $this->passwordFromReservationSystem($name);
-    } 
-    if ($dbPassword == NULL) {
-        $dbPassword = $this->password($name, $password);
-    } 
-    if (!$dbPassword) return False; 
-    $result = False;
-    // decode password type
-    if ($authenticateAgainst == "LDAP") {
-        $result = True;
-//        list($dbPassword, $dbPasswordType) = $this->parse_ldap_password($dbPassword);
- //       if ($dbPassword === ($this->ldap_encrypt($password, $dbPasswordType, $dbPassword))) {
-    //        $result = True;
-  //      } 
-    } else {
-        if ($dbPassword === ($this->encrypt($password, substr($dbPassword, 0, 2)))) {
-            $result = True;
-        }
-    }
-    return $result;
   }
 
   //!---------------------------------------------------------
@@ -344,26 +332,98 @@ Class User extends Owner{
   // @return      String
   //!---------------------------------------------------------    
   function emailAddress() {
-    global $allow_reservation_users;
-
-    $db = new DatabaseConnection();
-    //return "lang@init.at";
-    $result = NULL;
-    if ($allow_reservation_users) {
-      $result = $db->emailAddressFromReservationSystem($this->name);
+    global $use_ldap;
+	
+	$result = "";
+    if ($use_ldap) {
+      $ldap = new Ldap();
+      $user_data = $ldap->loadUser($this->name());
+      $result =  $user_data['mail'];
     } 
-    if ($result == NULL) { 
-      $result = $db->emailAddress($this->name);
+    else {
+      $db = new DatabaseConnection(); 
+  	  $result = $db->emailAddress($this->name);
     } 
     return $result;
   } 
   
+  //!---------------------------------------------------------
+  // @function    User::getAcceptedStatus
+  // @desc        Answer the status that signifies that the user
+  // 			  is accepted in the hrm-database
+  // @return      String
+  //!---------------------------------------------------------    
   function getAcceptedStatus() {
   	return 'a';
   }
-  
+
+  //!---------------------------------------------------------
+  // @function    User::getAdminName
+  // @desc        The name of the system administrator account
+  // @return      String
+  //!---------------------------------------------------------  
   function getAdminName() {
   	return 'admin';
+  }
+  
+  //!---------------------------------------------------------
+  // @function    User::isAdmin
+  // @desc        Answer wether the receiver is the system 
+  // 			  administrator.
+  // @return      String
+  //!---------------------------------------------------------  
+  function isAdmin() {
+  	return $this->name()==$this->getAdminName();
+  }
+  
+  //!---------------------------------------------------------
+  // @function    User::load
+  // @desc        load email and group of the user
+  // @return      
+  //!--------------------------------------------------------- 
+  function load() {
+  	global $email_admin;
+  	if ($this->isAdmin()) {
+  	  $db = new DatabaseConnection();
+      $this->setEmail($email_admin);
+      $db->updateMail($this->name(), $email_admin);
+    }
+    else {
+      $this->setEmail($this->emailAddress());
+    }
+    // get user group
+    $this->setGroup($this->group());
+  }
+  
+  //!---------------------------------------------------------
+  // @function    User::group
+  // @desc        Answer the group name from the database or
+  //			  the default group name if ldap is used.
+  // @return      String
+  //!--------------------------------------------------------- 
+  function group() {
+  	global $use_ldap;
+  	$result = $this->defaultGroupName();
+  	if (!$use_ldap) {
+  		$db = new DatabaseConnection();
+  		$result = $db->getGroup($this->name());
+  	}
+  	return $result; 
+  }
+  
+  //!---------------------------------------------------------
+  // @function    User::updateLastAccessDate
+  // @desc        update the last accesss date in the database
+  // @return      
+  //!--------------------------------------------------------- 
+  function updateLastAccessDate() {
+  	// TODO: user will not exist in db when ldap is used
+  	$db = new DatabaseConnection();
+  	$db->updateLastAccessDate($this->name());
+  }
+  
+  function defaultGroupName() {
+  	return 'hrm';
   }
 } 
 ?>
