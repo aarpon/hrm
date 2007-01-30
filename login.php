@@ -70,23 +70,14 @@ if (isset($_POST['password'])) {
     session_register("user");
     $user->setName(strtolower($_POST['username']));
     // account management
-    $db = new DatabaseConnection();
-    // get email address
-    if ($user->name() == "admin") {
-      $user->setEmail($email_admin);
-      $db->execute("UPDATE user SET email = '".$email_admin."' WHERE name = 'admin'");
-    }
-    else {
-      $user->setEmail($user->emailAddress());
-    }
-    // get user group
-    $user->setGroup($db->queryLastValue("SELECT research_group FROM user WHERE name= '".$user->name()."'"));
+    // get email address and group
+    $user->load();
     $_SESSION['user'] = $user;
     // update last access date
-    $db->execute("UPDATE user SET last_access_date = CURRENT_TIMESTAMP WHERE name = '".$user->name()."'");
+    $user->updateLastAccessDate();
     // TODO unregister also "setting" and "task_setting"
     unset($_SESSION['editor']);
-    if ($user->name() == "admin") {
+    if ($user->isAdmin()) {
       header("Location: " . "user_management.php"); exit();
     }
     else {
