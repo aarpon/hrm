@@ -56,18 +56,15 @@ require_once("./inc/Parameter.inc");
 require_once("./inc/Setting.inc");
 
 session_start();
-
 if (isset($_GET['exited'])) {
   $_SESSION['user']->logout();
   session_unset();
   session_destroy();
   header("Location: " . "login.php"); exit();
 }
-
 if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
   header("Location: " . "login.php"); exit();
 }
-
 $message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
 
 $names = $_SESSION['setting']->capturingParameterNames();
@@ -102,6 +99,10 @@ $_SESSION['setting']->set($pinholeParam);
 // TODO refactor
 $_SESSION['setting']->setAdaptedParameters(False);
 
+if (isset($_POST["calculate"])) {
+  	header("Location: " . "calculate_pixel_size.php");
+  	exit();
+} 	
 if (count($_POST) > 0) {
   foreach ($names as $name) {
     // get rid of non relevant values
@@ -169,6 +170,7 @@ $textForCaptorSize = "pixel size (nm)";
                     <li>
                         <?php echo $textForCaptorSize ?>:
                         <input name="CCDCaptorSizeX" type="text" size="5" value="<?php echo $value ?>" />
+                        <input name="calculate" type="submit" value="calculate" style="width:110px; margin: 2px;">
 <?php
 
 // display adaption info
