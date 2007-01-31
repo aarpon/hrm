@@ -272,7 +272,7 @@ else if (isset($_POST['OK'])) {
   $message = "            <p class=\"warning\">Please select a style of processing.<br />&nbsp;</p>\n";
 }
 
-$noRange = True;
+$noRange = False;
 
 $script = "settings.js";
 
@@ -404,8 +404,8 @@ $parameter->printCheckBox("True", "");
 ?>
 
                                   
-                                or use range
-                    
+                                or try multiple values
+<br>                    
 <?php
 
 $signalNoiseRatioRangeParam = $_SESSION['task_setting']->parameter("SignalNoiseRatioRange");
@@ -482,7 +482,8 @@ $parameter->printCheckBox("True", "");
 
 ?>
 
-                                    or use range
+                                    or try multiple values
+<br>    
 <?php
 
 $backgroundOffsetRangeParam = $_SESSION['task_setting']->parameter("BackgroundOffsetRange");
@@ -533,7 +534,9 @@ $parameter->printCheckBox("True", "");
 
 ?>
 
-                                or use range
+                                or try multiple values
+                                
+<br>    
 <?php
 
 $numberOfIterationsRangeParam = $_SESSION['task_setting']->parameter("NumberOfIterationsRange");
