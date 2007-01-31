@@ -318,28 +318,6 @@ Class QueueManager {
 	}
 
 	function executeScript() {
-		global $imageProcessingIsOnQueueManager;
-		global $image_folder;
-		global $image_source;
-		global $image_destination;
-		global $huygens_server_image_folder;
-		global $huygens_user;
-		global $copy_images_to_huygens_server;
-
-		//	// Debug - Added by Aaron Ponti
-		//	//global $email_sender;	
-
-		//	$emailAddress = $user->emailAddress();
-		//	$text = "This is a test email sent before the job was started.\n";
-		//	//$mail = new Mail($email_sender);
-		//	$mail = new Mail("hrm");
-		//	$mail->setReceiver($emailAddress);
-		//	$mail->setSubject('Test email');
-		//	$mail->setMessage($text);
-		//	$mail->send();
-
-		//	// end of Debug
-
 		$job = $this->job;
 		$server = $this->freeServer;
 		// server name without proc number
@@ -349,10 +327,58 @@ Class QueueManager {
 		$clientScriptPath = $desc->sourceFolder();
 		$scriptName = $job->scriptName();
 		error_log("expected script filename: " . $scriptName);
-		// substitute spaces by underscores in image name
+		$this->copyImagesToServer($server_hostname);
+		$proc = newExternalProcessFor($server, $server . "_out.txt", $server . "_error.txt");
+		report("shell process created", 1);
+		$ssh = $proc->runShell();
+		report("running shell", 1);
+		$pid = $proc->runHuygensScript($clientScriptPath . $scriptName);
+		error_log("script PID=" . $pid);
+		// check if Huygens outputs any interactive dialog
+		// TODO refactor
+		sleep(5);
+		while (True) {
+			if (feof($proc->out_file))
+				break;
+			$input = fgets($proc->out_file);
+			if (strstr($input, "Microscope types of original and PSF differ:")) {
+				$warning_file = fopen($server . "_warning.txt", "a");
+				fwrite($warning_file, "[" . $desc->id() . "] Microscope types of original and PSF differ\n");
+				fclose($warning_file);
+				break;
+			} else
+				if (strstr($input, "After necessary resampling the PSF is too small.")) {
+					$warning_file = fopen($server . "_warning.txt", "a");
+					fwrite($warning_file, "[" . $desc->id() . "] After necessary resampling the PSF is too small\n");
+					fclose($warning_file);
+					break;
+				}
+		}
+		report("running script (pid $pid)", 1);
+		$proc->release();
+		$job->setPid($pid);
+		$job->setServer($server);
+		$this->job = $job;
+		return ($pid > 0);
+	}
+
+ 	function copyImagesToServer($server_hostname) { 
+		global $image_folder;
+		global $image_source;
+		global $image_destination;
+		global $huygens_user;
+		global $copy_images_to_huygens_server;
+		global $imageProcessingIsOnQueueManager;
+		global $huygens_server_image_folder;
+		
+		$job = $this->job;
+		$desc = $job->description();
+		$scriptName = $job->scriptName();
+		
 		// TODO
-		//exec($image_folder."/".$user."/".$image_source."/*");
+		// substitute spaces by underscores in image name
 		// if fileshare is not on the same host as Huygens, send files to server
+		//exec($image_folder."/".$user."/".$image_source."/*");
 		// TODO refactor batchfile
 		if (!$imageProcessingIsOnQueueManager && $copy_images_to_huygens_server) {
 			$batch = "cd \"" . $huygens_server_image_folder . "\"\n";
@@ -402,45 +428,14 @@ Class QueueManager {
 			exec("sftp -b batchfile " . $huygens_user . "@" . $server_hostname);
 			exec("rm -f batchfile");
 			//exec("rm -f ".$image_folder."/".$user."/".$image_source."/".$scriptName);
+			return $batch;
 		}
-		$proc = newExternalProcessFor($server, $server . "_out.txt", $server . "_error.txt");
-		report("shell process created", 1);
-		$ssh = $proc->runShell();
-		report("running shell", 1);
-		$pid = $proc->runHuygensScript($clientScriptPath . $scriptName);
-		error_log("script PID=" . $pid);
-		// check if Huygens outputs any interactive dialog
-		// TODO refactor
-		sleep(5);
-		while (True) {
-			if (feof($proc->out_file))
-				break;
-			$input = fgets($proc->out_file);
-			if (strstr($input, "Microscope types of original and PSF differ:")) {
-				$warning_file = fopen($server . "_warning.txt", "a");
-				fwrite($warning_file, "[" . $desc->id() . "] Microscope types of original and PSF differ\n");
-				fclose($warning_file);
-				break;
-			} else
-				if (strstr($input, "After necessary resampling the PSF is too small.")) {
-					$warning_file = fopen($server . "_warning.txt", "a");
-					fwrite($warning_file, "[" . $desc->id() . "] After necessary resampling the PSF is too small\n");
-					fclose($warning_file);
-					break;
-				}
-		}
-		report("running script (pid $pid)", 1);
-		$proc->release();
-		$job->setPid($pid);
-		$job->setServer($server);
-		$this->job = $job;
-		return ($pid > 0);
 	}
-
+	
 	function nextJobFromQueue() {
 		$queue = $this->queue;
-		$foundExecutableJob = False;
-		$pausedJobs = False;
+		$foundExecutableJob = false;
+		$pausedJobs = false;
 		$jobDescription = $queue->getNextJobDescription();
 		while ($jobDescription != NULL && !$foundExecutableJob) {
 			$user = $jobDescription->owner();
@@ -456,8 +451,9 @@ Class QueueManager {
 			}
 			$jobDescription = $queue->getNextJobDescription();
 		}
-		if ($pausedJobs)
-			$queue->restartPausedJobs();
+		if ($pausedJobs){
+					$queue->restartPausedJobs();
+		}
 		if ($jobDescription == NULL)
 			return NULL;
 		$job = new Job($jobDescription);
@@ -467,14 +463,6 @@ Class QueueManager {
 	}
 
 	function cleanUpFileServer($job) {
-		global $imageProcessingIsOnQueueManager;
-		global $image_folder;
-		global $image_source;
-		global $image_destination;
-		global $huygens_server_image_folder;
-		global $huygens_user;
-		global $copy_images_to_huygens_server;
-		
 		report("Cleaning up file server", 1);
 		$server = $job->server();
 		// server name without proc number
@@ -502,6 +490,19 @@ Class QueueManager {
 		$this->stopTime = $queue->stopJob($job);
 		// if fileshare is not on the same host as Huygens, retrieve result images
 		// remove images from server
+		$this->retrieveImagesFromServer($server_hostname, $username);
+		report("stopped job (" . date("l d of F Y h:i:s A") . ")\n", 1);
+	}
+	
+	function retrieveImagesFromServer($server_hostname, $username) {
+		global $imageProcessingIsOnQueueManager;
+		global $image_folder;
+		global $image_source;
+		global $image_destination;
+		global $huygens_server_image_folder;
+		global $huygens_user;
+		global $huygens_group;
+		global $copy_images_to_huygens_server;
 		if (!$imageProcessingIsOnQueueManager && $copy_images_to_huygens_server) {
 			$lpath = $image_folder . "/" . $username;
 			$rpath = $huygens_server_image_folder . $username;
@@ -516,11 +517,10 @@ Class QueueManager {
 			exec("ssh " . $huygens_user . "@" . $server_hostname . " rm -rf " . $rpath . "/" . $image_source . "/*");
 			//error_log("("."ssh ".$huygens_user."@".$server_hostname." rm -rf ".$rpath."/".$image_destination."/*".")");
 			error_log("> " . $output);
-			exec("chown -R imagerie:imagerie " . $lpath);
+			exec("chown -R " . $huygens_user . ":" . $huygens_group . " " . $lpath);
 		}
-		report("stopped job (" . date("l d of F Y h:i:s A") . ")\n", 1);
 	}
-
+	
 	function updateJobAndServerStatus() {
 		global $imageProcessingIsOnQueueManager;
 		global $use_accounting_system;
