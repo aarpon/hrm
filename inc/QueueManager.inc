@@ -869,7 +869,7 @@ Class QueueManager {
 			report("huygens server updated status", 2);
 
 			// Process compound jobs
-			//$this->processCompoundJobs();
+			$this->processCompoundJobs();
 
 			// TODO && -> &
 			// Read in a free huygens server
