@@ -1146,9 +1146,9 @@ Class ParameterSetting extends Setting {
 		$result = True;
 		$parameter = $this->parameter('NumberOfChannels');
 		$numberOfChannels = (int) $parameter->value();
-		if ($numberOfChannels < 1 || $numberOfChannels > 4) {
+		if ($numberOfChannels < 1 || $numberOfChannels > 5 ) {
 			$result = False;
-			$this->message = "Please select the number of channels (1-4)!";
+			$this->message = "Please select the number of channels (1-5)!";
 		}
 		return $result;
 	}
