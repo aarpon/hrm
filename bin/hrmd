@@ -5,7 +5,7 @@
 HRM_HOME="/var/www/html/hrm"
 
 start() {
-	php -q "$HRM_HOME"/run/runHuygensRemoteManager.php > "$HRM_HOME"/run/log.txt &
+	php -q "$HRM_HOME"/run/runHuygensRemoteManager.php 1> "$HRM_HOME"/run/log.txt 2> /dev/null &
 	
 	if [ "$?" = 0 ]
 	then
@@ -17,7 +17,7 @@ start() {
 
 
 stop() {
-	if [ -f hrmd.pid ]
+	if [ -f "$HRM_HOME"/run/hrmd.pid ]
 	then
 		kill -9 $(more "$HRM_HOME"/run/hrmd.pid)
 		
