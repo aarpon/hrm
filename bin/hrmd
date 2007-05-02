@@ -2,7 +2,7 @@
 #
 # HRM server daemon
 
-HRM_HOME="/var/www/html/hrm"
+HRM_HOME="/var/www/html/hrm-prerelease"
 
 start() {
 	php -q "$HRM_HOME"/run/runHuygensRemoteManager.php 1> "$HRM_HOME"/run/log.txt 2> /dev/null &

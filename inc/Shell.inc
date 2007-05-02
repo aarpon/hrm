@@ -85,14 +85,14 @@ Class ExternalProcess {
     // TODO refactor
     function existsHuygensProcess($pid) {
         global $huygens_user;
-        $answer = system("ssh $huygens_user" . '@' . $this->host . " " . "ps -p $pid | grep -e huscript > hrm_tmp" , $result); // -p
+        $answer = system("ssh $huygens_user" . '@' . $this->host . " " . "ps -p $pid | grep -e huscript > ".$hrm_path."/run/hrm_tmp" , $result); // -p
         if ($result==0) {return True;} 
         return False;
     } 
     
     function isHuygensProcessSleeping($pid) {
         global $huygens_user;
-        $answer = system("ssh $huygens_user" . '@' . $this->host . " " . "ps -lf -p " ."$pid | grep -e huscript | grep -e S > hrm_tmp",  $result);
+        $answer = system("ssh $huygens_user" . '@' . $this->host . " " . "ps -lf -p " ."$pid | grep -e huscript | grep -e S > ".$hrm_path."/run/hrm_tmp",  $result);
         if ($result==0) {return True;} 
         return False;    
     } 
@@ -114,9 +114,10 @@ Class ExternalProcess {
     function ping() {
     	global $ping_command;
     	global $ping_parameter;
+        global $hrm_path;
     	
     	$result = "";
-    	$command = $ping_command . " " . $this->host . " " . $ping_parameter . " > hrm_tmp";
+    	$command = $ping_command . " " . $this->host . " " . $ping_parameter . " > ".$hrm_path."/run/hrm_tmp";
         $answer = system($command, $result);
         if ($result==0) {return True;} 
         return False;   
@@ -215,7 +216,7 @@ Class LocalExternalProcess extends ExternalProcess {
  
   function existsHuygensProcess($pid) {
     global $huygens_user;
-    $answer = system("ps -p $pid | grep -e huscript > hrm_tmp" , $result);
+    $answer = system("ps -p $pid | grep -e huscript > ".$hrm_path."/run/hrm_tmp" , $result);
     if ($result==0) {return True;} 
     return False;
   } 

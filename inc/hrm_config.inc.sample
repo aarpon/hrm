@@ -57,6 +57,9 @@ $huygens_server_image_folder = "/path/to/hrm_data";
 // URL
 $hrm_url = "http://localhost/hrm";
 
+// install dir
+$hrm_path = "/var/www/html/hrm";
+
 // logging
 $log_verbosity = 2;         // 0=quiet, 1=normal, 2=debug
 $logfile = "hrm.log";
