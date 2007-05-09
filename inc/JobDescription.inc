@@ -669,6 +669,9 @@ Class JobDescription {
        $result = $result . "c convert -type auto\n";
     }
     $imageFileName = $this->destinationImageFullName();
+    if ($type== 'tiff' || $type == 'tiff16') {
+    	$imageFileName = imageFileName . '.tif';
+    }
     $result = $result . "c save " . '"' . $imageFileName .'"' . " -type $type";
     if ($type == 'tiff' || $type == 'tiff16') {
         $result = $result . " -tiffMultiDir";
