@@ -670,7 +670,7 @@ Class JobDescription {
     }
     $imageFileName = $this->destinationImageFullName();
     if ($type== 'tiff' || $type == 'tiff16') {
-    	$imageFileName = imageFileName . '.tif';
+    	$imageFileName = $imageFileName . '.tif';
     }
     $result = $result . "c save " . '"' . $imageFileName .'"' . " -type $type";
     if ($type == 'tiff' || $type == 'tiff16') {
