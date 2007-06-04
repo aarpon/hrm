@@ -133,7 +133,7 @@ include("header.inc.php");
     <div id="nav">
         <ul>
             <li><a href="login.php">back</a></li>
-            <li><a href="javascript:openWindow('help/helpRegistrationPage.html')">help</a></li>
+            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/HuygensRemoteManagerHelpRegistrationPage')">help</a></li>
         </ul>
     </div>
     
@@ -150,27 +150,27 @@ if (!$processed) {
         
             <div id="adduser">
             
-                <label for="username">Username: </label>
+                <label for="username">*Username: </label>
                 <input type="text" name="username" id="username" value="<?php if (isset($user)) echo $user->name() ?>" />
                 
                 <br />
                 
-                <label for="email">E-mail address: </label>
+                <label for="email">*E-mail address: </label>
                 <input type="text" name="email" id="email" value="<?php if (isset($user)) echo $user->email() ?>" />
                 
                 <br />
                 
-                <label for="group">Research group: </label>
+                <label for="group">*Research group: </label>
                 <input type="text" name="group" id="group" value="<?php if (isset($user)) echo $user->group() ?>" />
                 
                 <br />
                 
-                <label for="pass1">Password: </label>
+                <label for="pass1">*Password: </label>
                 <input type="password" name="pass1" id="pass1" />
                 
                 <br />
                 
-                <label for="pass2">(verify) Password: </label>
+                <label for="pass2">*(verify) Password: </label>
                 <input type="password" name="pass2" id="pass2" />
                 
                 <br />
@@ -207,7 +207,7 @@ if (!$processed) {
 ?>
         <div id="info">
         
-            <p>Please provide a value for every field.</p>
+            <p>* Required fields.</p>
             
         </div>
 <?php

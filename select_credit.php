@@ -89,7 +89,7 @@ include("header.inc.php");
 ?>
 
 <UL id=nav>
-  <LI><A href="help/helpLoginPage.html" target="_blank">help</A> 
+  <LI><A href="http://support.svi.nl/wiki/HuygensRemoteManagerHelpLogin" target="_blank">help</A> 
   <LI><A href="about.php">about</A>
   <LI><A href="last_changes.php">changes</A>
 </UL>

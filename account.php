@@ -146,7 +146,7 @@ include("header.inc.php");
     <div id="nav">
         <ul>
             <li><a href="select_images.php?exited=exited">exit</a></li>
-            <li><a href="javascript:openWindow('help/helpSelectParameterSettingPage.html')">help</a></li>
+            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/HuygensRemoteManagerHelpAccount')">help</a></li>
         </ul>
     </div>
     

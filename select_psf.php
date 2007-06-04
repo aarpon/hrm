@@ -123,7 +123,7 @@ include("header.inc.php");
     <div id="nav">
         <ul>
             <li><a href="select_images.php?exited=exited">exit</a></li>
-            <li><a href="javascript:openWindow('help/helpMicroscopeParameterPage.html')">help</a></li>
+            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/HuygensRemoteManagerHelpSelectPSFFiles')">help</a></li>
         </ul>
     </div>
     
@@ -193,9 +193,7 @@ for ($i = 1; $i <= $_SESSION['setting']->numberOfChannels(); $i++) {
             <p>Select a PSF file in ICS format for every channel.</p>
             
             <p>
-                When you made your selection press the OK button to save your 
-                parameter settings and to go back to the parameter selection 
-                page.
+                When you are done with your selection press the forward button to go back to the Image Format page.
             </p>
             
         </div>

@@ -198,7 +198,7 @@ if ($_SESSION['user']->name() != "admin") {
 
 ?>
             <li><a href="job_queue.php">queue</a></li>
-            <li><a href="javascript:openWindow('help/helpSelectParameterSettingPage.html')">help</a></li>
+            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/HuygensRemoteManagerHelpSelectParameterSettings')">help</a></li>
         </ul>
     </div>
     

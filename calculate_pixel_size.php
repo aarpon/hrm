@@ -108,7 +108,7 @@ include ("header.inc.php");
 <div id="nav">
         <ul>
             <li><a href="select_images.php?exited=exited">exit</a></li>
-            <li><a href="javascript:openWindow('help/helpCapturingParameterPage.html')">help</a></li>
+            <li><a href="javascript:openWindow('')">help</a></li>
         </ul>
 </div>
     
@@ -124,14 +124,14 @@ include ("header.inc.php");
 $textForCaptorSize = "size of the ccd element (nm)";
 $value = $_SESSION['CCDCaptorSize'];
 ?>
-    <a href="javascript:openWindow('help/helpCapturingParameterPage.html#ccdcaptorsize')"><img src="images/help.png" alt="?" /></a>
+    <a href="javascript:openWindow('http://support.svi.nl/wiki/HuygensRemoteManagerHelpCCD')"><img src="images/help.png" alt="?" /></a>
     		 <?php echo $textForCaptorSize ?>:
     		 
            <input name="CCDCaptorSize" type="text" size="5" value="<?php echo $value ?>" />
             
          <br>
             
-                <a href="javascript:openWindow('help/helpCapturingParameterPage.html#binning')"><img src="images/help.png" alt="?" /></a>
+                <a href="javascript:openWindow('http://support.svi.nl/wiki/PixelBinning')"><img src="images/help.png" alt="?" /></a>
                 binning:
                 
                 <select name="Binning" size="1">
@@ -154,7 +154,7 @@ foreach ($parameter->possibleValues() as $possibleValue) {
 
                 </select>
                 <br>
- <a href="javascript:openWindow('help/helpMicroscopeParameterPage.html#cmount')"><img src="images/help.png"alt="?" /></a>
+ <a href="javascript:openWindow('http://support.svi.nl/wiki/HuygensRemoteManagerHelpCMount')"><img src="images/help.png"alt="?" /></a>
 <?php
 
 
@@ -164,7 +164,7 @@ $value = $parameter->value();
 <?php echo "c-mount-factor" ?>:
                         <input name="CMount" type="text" size="5" value="<?php echo $value ?>" /> <br>
                         
- <a href="javascript:openWindow('help/helpMicroscopeParameterPage.html#tubefactor')"><img src="images/help.png"alt="?" /></a>
+ <a href="javascript:openWindow('http://support.svi.nl/wiki/HuygensRemoteManagerHelpTubeFactor')"><img src="images/help.png"alt="?" /></a>
 <?php
 
 

@@ -121,7 +121,7 @@ include("header.inc.php");
     <div id="nav">
         <ul>
             <li><a href="select_images.php?exited=exited">exit</a></li>
-            <li><a href="javascript:openWindow('help/helpMicroscopeParameterPage.html')">help</a></li>
+            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/HuygensRemoteManagerHelpOptics')">help</a></li>
         </ul>
     </div>
     
@@ -131,12 +131,12 @@ include("header.inc.php");
         
         <form method="post" action="" id="select">
         
-            <h4>How did you make the the images to be processed with these settings?</h4>
+            <h4>How did you set up your microscope?</h4>
             
             <fieldset class="setting">
             
                 <legend>
-                    <a href="javascript:openWindow('help/helpMicroscopeParameterPage.html#microscope')"><img src="images/help.png" alt="?" /></a>
+                    <a href="javascript:openWindow('http://support.svi.nl/wiki/MicroscopeType')"><img src="images/help.png" alt="?" /></a>
                     microscope type
                 </legend>
 <?php
@@ -160,7 +160,7 @@ foreach($possibleValues as $possibleValue) {
             
             <fieldset class="setting">
             
-                <a href="javascript:openWindow('help/helpMicroscopeParameterPage.html#na')"><img src="images/help.png" alt="?" /></a>
+                <a href="javascript:openWindow('http://support.svi.nl/wiki/NumericalAperture')"><img src="images/help.png" alt="?" /></a>
                 numerical aperture:
 <?php
 
@@ -178,7 +178,7 @@ $parameter = $_SESSION['setting']->parameter("NumericalAperture");
             <fieldset class="setting">
             
                 <legend>
-                    <a href="javascript:openWindow('help/helpMicroscopeParameterPage.html#light')"><img src="images/help.png" alt="?" /></a>
+                    <a href="javascript:openWindow('http://support.svi.nl/wiki/WaveLength')"><img src="images/help.png" alt="?" /></a>
                     light
                 </legend>
                 
@@ -223,7 +223,7 @@ for ($i=1; $i <= $_SESSION['setting']->numberOfChannels(); $i++) {
             
             <fieldset class="setting">
             
-                <a href="javascript:openWindow('help/helpMicroscopeParameterPage.html#magnification')"><img src="images/help.png"alt="?" /></a>
+                <a href="javascript:openWindow('http://support.svi.nl/wiki/ObjectiveMagnification')"><img src="images/help.png"alt="?" /></a>
                 objective magnification:
                 
                 <select name="ObjectiveMagnification" size="1">
@@ -249,7 +249,7 @@ foreach ($parameter->possibleValues() as $possibleValue) {
             <fieldset class="setting">
             
                 <legend>
-                    <a href="javascript:openWindow('help/helpMicroscopeParameterPage.html#objective')"><img src="images/help.png" alt="?" /></a>
+                    <a href="javascript:openWindow('http://support.svi.nl/wiki/LensImmersionMedium')"><img src="images/help.png" alt="?" /></a>
                     objective type
                 </legend>
                 
@@ -277,7 +277,7 @@ foreach ($possibleValues as $possibleValue) {
             
             <fieldset class="setting">
             
-                <a href="javascript:openWindow('help/helpMicroscopeParameterPage.html#cmount')"><img src="images/help.png" alt="?" /></a>
+                <a href="javascript:openWindow('http://support.svi.nl/wiki/HuygensRemoteManagerHelpCMount')"><img src="images/help.png" alt="?" /></a>
                 cmount (0-1):
                 
 <?php
@@ -291,7 +291,7 @@ foreach ($possibleValues as $possibleValue) {
             
             <fieldset class="setting">
             
-                <a href="javascript:openWindow('help/helpMicroscopeParameterPage.html#tube')"><img src="images/help.png" alt="?" /></a>
+                <a href="javascript:openWindow('http://support.svi.nl/wiki/HuygensRemoteManagerHelpTubeFactor')"><img src="images/help.png" alt="?" /></a>
                 tube factor (max. 2):
                 
 <?php
@@ -308,7 +308,7 @@ foreach ($possibleValues as $possibleValue) {
             <fieldset class="setting">
             
                 <legend>
-                    <a href="javascript:openWindow('help/helpMicroscopeParameterPage.html#medium')"><img src="images/help.png" alt="?" /></a>
+                    <a href="javascript:openWindow('http://support.svi.nl/wiki/SpecimenEmbeddingMedium')"><img src="images/help.png" alt="?" /></a>
                     sample medium
                 </legend>
                 
@@ -358,13 +358,14 @@ if (!$default) {
             <input type="submit" class="icon apply" onclick="process()" />
             
             <p>
-                Please choose or fill in the eight parameter values on the left 
+                Please choose or fill in the parameter values on the left 
                 side.
             </p>
             
             <p>
-                Use the help link at the top of the page if you need more 
-                information about the parameters on this page.
+                Use the help link at the top of the page or next 
+                to the parameters if you need more information 
+                about the parameters on this page.
             </p>
             
             <p>Press the OK button to go to the next step.</p>

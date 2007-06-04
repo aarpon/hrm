@@ -145,7 +145,7 @@ include("header.inc.php");
     <div id="nav">
         <ul>
             <li><a href="select_images.php?exited=exited">exit</a></li>
-            <li><a href="javascript:openWindow('help/helpImageFormatPage.html')">help</a></li>
+            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/HuygensRemoteManagerHelpImageFormat')">help</a></li>
         </ul>
     </div>
     
@@ -160,7 +160,7 @@ include("header.inc.php");
             <fieldset class="setting">
             
                 <legend>
-                    <a href="javascript:openWindow('help/helpImageFormatPage.html#format')"><img src="images/help.png" alt="?" /></a>
+                    <a href="javascript:openWindow('http://support.svi.nl/wiki/FileFormats')"><img src="images/help.png" alt="?" /></a>
                     image format
                 </legend>
                 
@@ -190,7 +190,7 @@ foreach($values as $value) {
             <fieldset class="setting">
             
                 <legend>
-                    <a href="javascript:openWindow('help/helpImageFormatPage.html#geometry')"><img src="images/help.png" alt="?" /></a>
+                    <a href="javascript:openWindow('http://support.svi.nl/wiki/ImageGeometry')"><img src="images/help.png" alt="?" /></a>
                     image geometry
                 </legend>
                 
@@ -217,7 +217,7 @@ foreach($possibleValues as $possibleValue) {
             <fieldset class="setting">
             
                 <legend>
-                    <a href="javascript:openWindow('help/helpImageFormatPage.html#channel')"><img src="images/help.png" alt="?" /></a>
+                    <a href="javascript:openWindow('http://support.svi.nl/wiki/NumberOfChannels')"><img src="images/help.png" alt="?" /></a>
                     number of channels
                 </legend>
                 
@@ -250,13 +250,13 @@ $parameter = $_SESSION['setting']->parameter("PointSpreadFunction");
             <fieldset class="setting">
             
                 <legend>
-                    <a href="javascript:openWindow('help/helpImageFormatPage.html#psf')"><img src="images/help.png" alt="?" /></a>
+                    <a href="javascript:openWindow('http://support.svi.nl/wiki/PointSpreadFunction')"><img src="images/help.png" alt="?" /></a>
                     PSF
                 </legend>
                 
-                <input type="radio" name="PointSpreadFunction" value="theoretical" <?php if ($parameter->value() == "theoretical") echo "checked=\"checked\"" ?>/>Theoretical
+                <input type="radio" name="PointSpreadFunction" value="theoretical" <?php if ($parameter->value() == "theoretical") echo "checked=\"checked\"" ?>/><a href="javascript:openWindow('http://support.svi.nl/wiki/TheoreticalPsf')"><img src="images/help.png" alt="?" /></a>Theoretical
                 
-                <input type="radio" name="PointSpreadFunction" value="measured" <?php if ($parameter->value() == "measured") echo "checked=\"checked\"" ?>/>Measured
+                <input type="radio" name="PointSpreadFunction" value="measured" <?php if ($parameter->value() == "measured") echo "checked=\"checked\"" ?>/><a href="javascript:openWindow('http://support.svi.nl/wiki/ExperimentalPsf')"><img src="images/help.png" alt="?" /></a>Measured
                 
             </fieldset>
             
@@ -276,8 +276,8 @@ $parameter = $_SESSION['setting']->parameter("PointSpreadFunction");
             <p>Please define file type, number of channels and geometry.</p>
             
             <p>
-                If you select "TIFF, single plane (XY)", the image geometry 
-                field below will be ignored.
+		If you select one of the "single XY plane" formats,
+                the image geometry field below will be ignored.
             </p>
             
             <p>

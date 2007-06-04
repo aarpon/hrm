@@ -119,7 +119,7 @@ include("header.inc.php");
 
     <div id="nav">
         <ul>
-            <li><a href="javascript:openWindow('help/helpLoginPage.html')">help</a></li> 
+            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/HuygensRemoteManagerHelpLogin')">help</a></li> 
             <li><a href="about.php">about</a></li>
             <li><a href="last_changes.php">changes</a></li>
         </ul>
@@ -132,7 +132,7 @@ include("header.inc.php");
         <h3>Welcome</h3>
         <p>
             Welcome to the remote image restoration interface. HRM lets you 
-            process large-scale deconvolution of multiple images using 
+            perform large-scale deconvolution of multiple images using 
             Huygens Software by 
             <a href="javascript:openWindow('http://www.svi.nl')">Scientific 
             Volume Imaging B.V.</a>
@@ -163,7 +163,7 @@ include("header.inc.php");
             <form method="post" action="">
                 <fieldset>
                     <legend>
-                        <a href="javascript:openWindow('help/helpLoginPage.html')"><img src="images/help.png" alt="?"/></a>
+                        <a href="javascript:openWindow('http://support.svi.nl/wiki/HuygensRemoteManagerHelpLogin')"><img src="images/help.png" alt="?"/></a>
                         Login
                     </legend>
                     <p>If you do not have an account, please register <a href="registration.php">here</a>.</p>
@@ -190,7 +190,7 @@ echo $message;
         
             <h3>Internal Links</h3>
             <ul>
-                <li><a href="javascript:openWindow('http://svintranet.epfl.ch')">Faculté SV - Intranet</a></li>
+                <li><a href="javascript:openWindow('http://iwww.fmi.ch')">FMI intranet</a></li>
             </ul>
             
             <h3>External Links</h3>

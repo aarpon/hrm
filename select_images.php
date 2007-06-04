@@ -116,7 +116,7 @@ include("header.inc.php");
             <li><a href="select_images.php?exited=exited">exit</a></li>
             <li><a href="account.php">account</a></li>
             <li><a href="job_queue.php">queue</a></li>
-            <li><a href="javascript:openWindow('help/helpSelectParameterSettingPage.html')">help</a></li>
+            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/HuygensRemoteManagerHelpSelectImages')">help</a></li>
         </ul>
     </div>
     
@@ -210,9 +210,9 @@ else echo "                        <option>&nbsp;</option>\n";
             <input type="submit" class="icon next" onclick="process()" />
             
             <p>
-                Select the image files in the upper file list. You can use SHIFT 
-                and CTRL to select multiple files. Use the down-arrow to add files 
-                to your selection.
+                Select the image files in the upper file list. You can use SHIFT- 
+		and CTRL-click to select multiple files. Use the down-arrow to 
+                add files to your selection.
             </p>
             
             <p>
@@ -221,8 +221,8 @@ else echo "                        <option>&nbsp;</option>\n";
             </p>
             
             <p>
-                When you made your selection press the OK button to go to the next 
-                step.
+		When you are done with your selection press the forward button to go 
+                to the next step.
             </p>
             
         </div>

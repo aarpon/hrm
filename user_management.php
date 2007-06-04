@@ -229,7 +229,7 @@ if ($_SESSION['user']->name() == "admin") {
 
 ?>
             <li><a href="job_queue.php" onclick="clean()">queue</a></li>
-            <li><a href="javascript:openWindow('help/helpUserManagementPage.html')">help</a></li>
+            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/HuygensRemoteManagerHelpUserManagement')">help</a></li>
         </ul>
     </div>
     

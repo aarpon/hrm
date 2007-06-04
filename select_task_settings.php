@@ -170,7 +170,7 @@ if ($_SESSION['user']->name() != "admin") {
 
 ?>
             <li><a href="job_queue.php">queue</a></li>
-            <li><a href="javascript:openWindow('help/helpSelectTaskSettingPage.html')">help</a></li>
+            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/HuygensRemoteManagerHelpSelectTaskSettings')">help</a></li>
         </ul>
     </div>
     
