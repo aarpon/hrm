@@ -75,6 +75,10 @@ if (!isset($_SESSION['setting'])) {
 
 $message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
 
+if (!isset($_POST["ImageGeometry"])) {
+  $_POST["ImageGeometry"] = "multi_XYZ";
+}
+
 // TODO refactor from here
 $names = $_SESSION['setting']->imageParameterNames();
 foreach ($names as $name) {
@@ -172,11 +176,14 @@ $values = $_SESSION['setting']->values("ImageFileFormat");
 sort($values);
 foreach($values as $value) {
   $translation = $_SESSION['setting']->translation("ImageFileFormat", $value);
+  $event = " onclick=\"javascript:release()\"";
+  if ($value == "lsm-single" || $value == "tiff-single") $event = " onclick=\"javascript:forceGeometry()\"";
+  else if ($value == "tiff-series") $event = " onclick=\"javascript:forceChannel()\"";
   $flag = "";
-  if ($value == $parameter->value()) $flag = "checked=\"checked\" ";
+  if ($value == $parameter->value()) $flag = " checked=\"checked\"";
 
 ?>
-                <input name="ImageFileFormat" type="radio" value="<?php echo $value ?>" <?php echo $flag ?>/><?php echo $translation ?>
+                <input name="ImageFileFormat" type="radio" value="<?php echo $value ?>"<?php echo $event ?><?php echo $flag ?> /><?php echo $translation ?>
                 
                 <br />
 <?php
@@ -187,7 +194,7 @@ foreach($values as $value) {
 
             </fieldset>
             
-            <fieldset class="setting">
+            <fieldset id="geometry" class="setting">
             
                 <legend>
                     <a href="javascript:openWindow('http://support.svi.nl/wiki/ImageGeometry')"><img src="images/help.png" alt="?" /></a>
@@ -214,7 +221,7 @@ foreach($possibleValues as $possibleValue) {
 
             </fieldset>
             
-            <fieldset class="setting">
+            <fieldset id="channels" class="setting">
             
                 <legend>
                     <a href="javascript:openWindow('http://support.svi.nl/wiki/NumberOfChannels')"><img src="images/help.png" alt="?" /></a>

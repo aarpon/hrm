@@ -147,7 +147,7 @@ else if (isset($_POST['OK'])) {
     if ($psfParam->value() == "measured") {
       $psf = $_SESSION['setting']->parameter("PSF");
       $value = $psf->value();
-      $files = $_SESSION['fileserver']->files("ics");
+      $files = $_SESSION['fileserver']->files();
       if ($files != null) {
         for ($i=1; $i <= $_SESSION['setting']->numberOfChannels(); $i++) {
           if (!in_array($value[$i], $files)) {

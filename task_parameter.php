@@ -77,199 +77,121 @@ else $_SESSION['task_setting']->setNumberOfChannels($_SESSION['setting']->number
 
 $message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
 
-if (isset($_POST['StyleOfProcessing'])) {
+$parameter = $_SESSION['task_setting']->parameter("FullRestoration");
 
-  if ($_POST['StyleOfProcessing'] == "FullRestoration") {
-    
-    $parameter = $_SESSION['task_setting']->parameter("StyleOfProcessing");
-    $parameter->setValue("FullRestoration");
-    $_SESSION['task_setting']->set($parameter);
-      
-    $parameter = $_SESSION['task_setting']->parameter("FullRestoration");
-    
-    if ($parameter->value() == "False") {
-      
-      $parameter->setValue("True");
-      $_SESSION['task_setting']->set($parameter);
-      
-      $parameter = $_SESSION['task_setting']->parameter("RemoveBackground");
-      $parameter->setValue("False");
-      $_SESSION['task_setting']->set($parameter);
-      
-    }
-    else {
-      
-      $parameter = $_SESSION['task_setting']->parameter("RemoveNoise");
-      
-      if (isset($_POST['RemoveNoise'])) {
-        $parameter->setValue("True");
-      }
-      else {
-        $parameter->setValue("False");
-      }
-      $_SESSION['task_setting']->set($parameter);
-      
-      $names = $_SESSION['task_setting']->parameterNames();
-      foreach ($names as $name) {
-        $parameter = $_SESSION['task_setting']->parameter($name);
-        if (isset($_POST[$name])) {
-          $parameter->setValue($_POST[$name]);
-          $_SESSION['task_setting']->set($parameter);
-        }
-        /*else {
-          $value = $parameter->value();
-          if ($parameter->isBoolean() && isset($_POST['OK'])) {
-            $parameter->setValue("False");
-            $_SESSION['task_setting']->set($parameter);
-          }
-        }*/
-      }
-      
-      $signalNoiseRatioParam =  $_SESSION['task_setting']->parameter("SignalNoiseRatio");
-      $signalNoiseRatio = $signalNoiseRatioParam->internalValue();
-      $backgroundOffsetPercentParam =  $_SESSION['task_setting']->parameter("BackgroundOffsetPercent");
-      $backgroundOffset = $backgroundOffsetPercentParam->internalValue();
-      for ($i=1; $i <= $_SESSION['task_setting']->numberOfChannels(); $i++) {
-        $signalNoiseRatioKey = "SignalNoiseRatio{$i}";
-        $backgroundOffsetKey = "BackgroundOffsetPercent{$i}";
-        if (isset($_POST[$signalNoiseRatioKey])) {
-          $signalNoiseRatio[$i] = $_POST[$signalNoiseRatioKey];
-        } 
-        if (isset($_POST[$backgroundOffsetKey])) {
-          $backgroundOffset[$i] = $_POST[$backgroundOffsetKey];
-        } 
-      }
-      // get rid of extra values in case the number of channels is changed
-      /*$signalNoiseRatio = array_slice($signalNoiseRatio, 0, $_SESSION['setting']->numberOfChannels() + 1);
-      $backgroundOffset = array_slice($backgroundOffset, 0, $_SESSION['setting']->numberOfChannels() + 1);*/
-      $signalNoiseRatioParam->setValue($signalNoiseRatio);
-      $_SESSION['task_setting']->set($signalNoiseRatioParam);
-      $backgroundOffsetPercentParam->setValue($backgroundOffset);
-      $_SESSION['task_setting']->set($backgroundOffsetPercentParam);
-      
-      if (isset($_POST['BackgroundEstimationMode']) && $_POST['BackgroundEstimationMode'] == "auto") {
-        $parameter = $_SESSION['task_setting']->parameter("BackgroundOffsetPercent");
-        $parameter->setValue(array("#auto"));
-        $_SESSION['task_setting']->set($parameter);
-      }
-      
-      $signalNoiseRatioRangeParam = $_SESSION['task_setting']->parameter("SignalNoiseRatioRange");
-      $backgroundOffsetRangeParam = $_SESSION['task_setting']->parameter("BackgroundOffsetRange");
-      $numberOfIterationsRangeParam = $_SESSION['task_setting']->parameter("NumberOfIterationsRange");
-      $signalNoiseRatioRange = $signalNoiseRatioRangeParam->value();
-      $backgroundOffsetRange = $backgroundOffsetRangeParam->value();
-      $numberOfIterationsRange = $numberOfIterationsRangeParam->value();
-      for ($i=1; $i <= 4; $i++) {
-        $signalNoiseRatioRangeKey = "SignalNoiseRatioRange{$i}";
-        if (isset($_POST[$signalNoiseRatioRangeKey])) {
-          $signalNoiseRatioRange[$i] = $_POST[$signalNoiseRatioRangeKey];
-        }
-        $backgroundOffsetRangeKey = "BackgroundOffsetRange{$i}";
-        if (isset($_POST[$backgroundOffsetRangeKey])) {
-          $backgroundOffsetRange[$i] = $_POST[$backgroundOffsetRangeKey];
-        } 
-        $numberOfIterationsRangeKey = "NumberOfIterationsRange{$i}";
-        if (isset($_POST[$numberOfIterationsRangeKey])) {
-          $numberOfIterationsRange[$i] = $_POST[$numberOfIterationsRangeKey];
-        } 
-      }
-      $signalNoiseRatioRangeParam->setValue($signalNoiseRatioRange);
-      $backgroundOffsetRangeParam->setValue($backgroundOffsetRange);
-      $numberOfIterationsRangeParam->setValue($numberOfIterationsRange);
-      $_SESSION['task_setting']->set($signalNoiseRatioRangeParam);
-      $_SESSION['task_setting']->set($backgroundOffsetRangeParam);
-      $_SESSION['task_setting']->set($numberOfIterationsRangeParam);
-      
-      if (isset($_POST['QualityChangeStoppingCriterion'])) {
-        $parameter = $_SESSION['task_setting']->parameter("QualityChangeStoppingCriterion");
-        $parameter->setValue($_POST['QualityChangeStoppingCriterion']);
-        $_SESSION['task_setting']->set($parameter);
-      }
-      
-      if (count($_POST) > 0) {
-        $ok = $_SESSION['task_setting']->checkParameter();
-        $message = "            <p class=\"warning\">".$_SESSION['task_setting']->message()."</p>\n";
-        if ($ok) {
-          $saved = $_SESSION['task_setting']->save();			
-          $message = "            <p class=\"warning\">".$_SESSION['task_setting']->message()."</p>\n";
-          if ($saved) {
-            header("Location: " . "select_task_settings.php"); exit();
-          }
-        }	 
-      }
-    
-    }
-
-  }
-  else if ($_POST['StyleOfProcessing'] == "RemoveBackground") {
-    
-    $parameter = $_SESSION['task_setting']->parameter("StyleOfProcessing");
-    $parameter->setValue("RemoveBackground");
-    $_SESSION['task_setting']->set($parameter);
-      
-    $parameter = $_SESSION['task_setting']->parameter("RemoveBackground");
-    
-    if ($parameter->value() == "False") {
-      
-      $parameter->setValue("True");
-      $_SESSION['task_setting']->set($parameter);
-      
-      $parameter = $_SESSION['task_setting']->parameter("FullRestoration");
-      $parameter->setValue("False");
-      $_SESSION['task_setting']->set($parameter);
-      
-      $parameter = $_SESSION['task_setting']->parameter("RemoveNoise");
-      $parameter->setValue("False");
-      $_SESSION['task_setting']->set($parameter);
-      
-    }
-    else {
-    
-      $names = $_SESSION['task_setting']->parameterNames();
-      foreach ($names as $name) {
-        $parameter = $_SESSION['task_setting']->parameter($name);
-        if (isset($_POST[$name])) {
-          $parameter->setValue($_POST[$name]);
-          $_SESSION['task_setting']->set($parameter);
-        }
-        /*else {
-          $value = $parameter->value();
-          if ($parameter->isBoolean() && isset($_POST['OK'])) {
-            $parameter->setValue("False");
-            $_SESSION['task_setting']->set($parameter);
-          }
-        }*/
-      }
-      
-      $removeBackgroundPercentParam = $_SESSION['task_setting']->parameter("RemoveBackgroundPercent");
-      $removeBackground = $removeBackgroundPercentParam->internalValue();
-      for ($i=1; $i <= $_SESSION['task_setting']->numberOfChannels(); $i++) {
-        $removeBackgroundKey = "RemoveBackgroundPercent{$i}";
-        if (isset($_POST[$removeBackgroundKey])) {
-          $removeBackground[$i] = $_POST[$removeBackgroundKey];
-        } 
-      }
-      $removeBackgroundPercentParam->setValue($removeBackground);
-      $_SESSION['task_setting']->set($removeBackgroundPercentParam);
-      
-      if (count($_POST) > 0) {
-        $ok = $_SESSION['task_setting']->checkParameter();
-        $message = "            <p class=\"warning\">".$_SESSION['task_setting']->message()."</p>\n";
-        if ($ok) {
-          $saved = $_SESSION['task_setting']->save();			
-          $message = "            <p class=\"warning\">".$_SESSION['task_setting']->message()."</p>\n";
-          if ($saved) {
-            header("Location: " . "select_task_settings.php"); exit();
-          }
-        }	 
-      }
-    
-    }
-  }
-
+// TODO refactor code to consider only full restorations
+if ($parameter->value() == "False") {
+  
+  $parameter->setValue("True");
+  $_SESSION['task_setting']->set($parameter);
+  
+  $parameter = $_SESSION['task_setting']->parameter("RemoveBackground");
+  $parameter->setValue("False");
+  $_SESSION['task_setting']->set($parameter);
+  
 }
-else if (isset($_POST['OK'])) {
-  $message = "            <p class=\"warning\">Please select a style of processing.<br />&nbsp;</p>\n";
+else {
+
+  // TODO refactor code to never consider remove noise
+  $parameter = $_SESSION['task_setting']->parameter("RemoveNoise");
+  
+  if (isset($_POST['RemoveNoise'])) {
+    $parameter->setValue("True");
+  }
+  else {
+    $parameter->setValue("False");
+  }
+  $_SESSION['task_setting']->set($parameter);
+  
+  $names = $_SESSION['task_setting']->parameterNames();
+  foreach ($names as $name) {
+    $parameter = $_SESSION['task_setting']->parameter($name);
+    if (isset($_POST[$name])) {
+      $parameter->setValue($_POST[$name]);
+      $_SESSION['task_setting']->set($parameter);
+    }
+    /*else {
+      $value = $parameter->value();
+      if ($parameter->isBoolean() && isset($_POST['OK'])) {
+        $parameter->setValue("False");
+        $_SESSION['task_setting']->set($parameter);
+      }
+    }*/
+  }
+  
+  $signalNoiseRatioParam =  $_SESSION['task_setting']->parameter("SignalNoiseRatio");
+  $signalNoiseRatio = $signalNoiseRatioParam->internalValue();
+  $backgroundOffsetPercentParam =  $_SESSION['task_setting']->parameter("BackgroundOffsetPercent");
+  $backgroundOffset = $backgroundOffsetPercentParam->internalValue();
+  for ($i=1; $i <= $_SESSION['task_setting']->numberOfChannels(); $i++) {
+    $signalNoiseRatioKey = "SignalNoiseRatio{$i}";
+    $backgroundOffsetKey = "BackgroundOffsetPercent{$i}";
+    if (isset($_POST[$signalNoiseRatioKey])) {
+      $signalNoiseRatio[$i] = $_POST[$signalNoiseRatioKey];
+    } 
+    if (isset($_POST[$backgroundOffsetKey])) {
+      $backgroundOffset[$i] = $_POST[$backgroundOffsetKey];
+    } 
+  }
+  // get rid of extra values in case the number of channels is changed
+  /*$signalNoiseRatio = array_slice($signalNoiseRatio, 0, $_SESSION['setting']->numberOfChannels() + 1);
+  $backgroundOffset = array_slice($backgroundOffset, 0, $_SESSION['setting']->numberOfChannels() + 1);*/
+  $signalNoiseRatioParam->setValue($signalNoiseRatio);
+  $_SESSION['task_setting']->set($signalNoiseRatioParam);
+  $backgroundOffsetPercentParam->setValue($backgroundOffset);
+  $_SESSION['task_setting']->set($backgroundOffsetPercentParam);
+  
+  if (isset($_POST['BackgroundEstimationMode']) && $_POST['BackgroundEstimationMode'] == "auto") {
+    $parameter = $_SESSION['task_setting']->parameter("BackgroundOffsetPercent");
+    $parameter->setValue(array("#auto"));
+    $_SESSION['task_setting']->set($parameter);
+  }
+  
+  $signalNoiseRatioRangeParam = $_SESSION['task_setting']->parameter("SignalNoiseRatioRange");
+  $backgroundOffsetRangeParam = $_SESSION['task_setting']->parameter("BackgroundOffsetRange");
+  $numberOfIterationsRangeParam = $_SESSION['task_setting']->parameter("NumberOfIterationsRange");
+  $signalNoiseRatioRange = $signalNoiseRatioRangeParam->value();
+  $backgroundOffsetRange = $backgroundOffsetRangeParam->value();
+  $numberOfIterationsRange = $numberOfIterationsRangeParam->value();
+  for ($i=1; $i <= 4; $i++) {
+    $signalNoiseRatioRangeKey = "SignalNoiseRatioRange{$i}";
+    if (isset($_POST[$signalNoiseRatioRangeKey])) {
+      $signalNoiseRatioRange[$i] = $_POST[$signalNoiseRatioRangeKey];
+    }
+    $backgroundOffsetRangeKey = "BackgroundOffsetRange{$i}";
+    if (isset($_POST[$backgroundOffsetRangeKey])) {
+      $backgroundOffsetRange[$i] = $_POST[$backgroundOffsetRangeKey];
+    } 
+    $numberOfIterationsRangeKey = "NumberOfIterationsRange{$i}";
+    if (isset($_POST[$numberOfIterationsRangeKey])) {
+      $numberOfIterationsRange[$i] = $_POST[$numberOfIterationsRangeKey];
+    } 
+  }
+  $signalNoiseRatioRangeParam->setValue($signalNoiseRatioRange);
+  $backgroundOffsetRangeParam->setValue($backgroundOffsetRange);
+  $numberOfIterationsRangeParam->setValue($numberOfIterationsRange);
+  $_SESSION['task_setting']->set($signalNoiseRatioRangeParam);
+  $_SESSION['task_setting']->set($backgroundOffsetRangeParam);
+  $_SESSION['task_setting']->set($numberOfIterationsRangeParam);
+  
+  if (isset($_POST['QualityChangeStoppingCriterion'])) {
+    $parameter = $_SESSION['task_setting']->parameter("QualityChangeStoppingCriterion");
+    $parameter->setValue($_POST['QualityChangeStoppingCriterion']);
+    $_SESSION['task_setting']->set($parameter);
+  }
+  
+  if (count($_POST) > 0) {
+    $ok = $_SESSION['task_setting']->checkParameter();
+    $message = "            <p class=\"warning\">".$_SESSION['task_setting']->message()."</p>\n";
+    if ($ok) {
+      $saved = $_SESSION['task_setting']->save();			
+      $message = "            <p class=\"warning\">".$_SESSION['task_setting']->message()."</p>\n";
+      if ($saved) {
+        header("Location: " . "select_task_settings.php"); exit();
+      }
+    }	 
+  }
+
 }
 
 $noRange = False;
@@ -293,78 +215,6 @@ include("header.inc.php");
         
         <form method="post" action="" id="select">
         
-            <!-- <fieldset class="setting">
-            
-                <legend>
-                    <a href="javascript:openWindow('help/helpTaskParameterPage.html#step')"><img src="images/help.png" alt="?" /></a>
-                    style of processing
-                </legend>
-                
-<?php
-
-$parameter = $_SESSION['task_setting']->parameter("StyleOfProcessing");
-echo $parameter->value();
-$parameter->printRadioButtons();
-
-?>
-
-            </fieldset> -->
-            
-            <h4>What do you want to do?</h4>
-            
-            <fieldset class="setting">
-            
-<?php
-
-$parameter = $_SESSION['task_setting']->parameter("StyleOfProcessing");
-$values = $_SESSION['task_setting']->values("StyleOfProcessing");
-foreach($values as $value) {
-  $translation = $_SESSION['task_setting']->translation("StyleOfProcessing", $value);
-  $flag = "";
-  if ($value == $parameter->value()) $flag = "checked=\"checked\" ";
-
-?>
-              <input type="radio" name="StyleOfProcessing" value="<?php echo $value ?>" <?php echo $flag ?>/>
-              <?php echo $translation ?>
-              
-              
-<?php
-
-}
-
-?>
-            </fieldset>
-            
-<?php
-
-$param = $_SESSION['task_setting']->parameter("StyleOfProcessing");
-$processing = $param->value();
-if ($processing == "FullRestoration") {
-
-?>
-
-            <fieldset class="setting"> <!-- remove noise -->
-            
-                <legend>
-                    <a href="javascript:openWindow('help/helpTaskParameterPage.html#noise')"><img src="images/help.png" alt="?" /></a>
-                    optional tasks before actual processing
-                </legend>
-<?php
-
-$parameter = $_SESSION['task_setting']->parameter("RemoveNoise");
-$parameter->printCheckBox("True", "");
-
-?>
-                remove noise effectiveness:
-<?php
-
-$parameter = $_SESSION['task_setting']->parameter("RemoveNoiseEffectiveness");
-$parameter->printSingleLineRadioButtons();  
-
-?>
-
-            </fieldset>  <!-- remove noise -->
-            
             <fieldset class="setting">  <!-- full restoration -->
             
                 <legend>
@@ -582,47 +432,6 @@ if ($parameter->value() != null) {
                 
             </fieldset>  <!-- full restoration -->
             
-<?php
-
-}
-else if ($processing == "RemoveBackground") {
-
-?>
-
-            <fieldset class="setting">  <!-- remove background -->
-            
-                <legend>
-                    <a href="javascript:openWindow('help/helpTaskParameterPage.html#background')"><img src="images/help.png" alt="?" /></a>
-                    remove background
-                </legend>
-                
-                remove
-<?php
-
-for ($i=1; $i <= $_SESSION['task_setting']->numberOfChannels(); $i++) {
-  $removeBackgroundPercentParam = $_SESSION['task_setting']->parameter("RemoveBackgroundPercent");
-  $removeBackground = $removeBackgroundPercentParam->internalValue();
-  $val = "";
-  if ($i < sizeof($removeBackground)) $val = $removeBackground[$i];
-
-?>
-                <!-- <span class="footnote">(Ch<?php echo $i ?>:)</span> --><span class="multichannel"><input name="RemoveBackgroundPercent<?php echo $i ?>" type="text" size="3" value="<?php echo $val ?>"  class="multichannelinput" /><!-- <?php if ($_SESSION['task_setting']->numberOfChannels() > $i) echo "," ?></span> -->
-                
-<?php
-
-}
-
-?>
-                % of the detected background
-                
-            </fieldset>  <!-- remove background -->
-            
-<?php
-
-}
-
-?>
-
             <div><input name="OK" type="hidden" /></div>
             
         </form>
