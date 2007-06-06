@@ -322,29 +322,16 @@ if ($_SESSION['user']->name() != "admin") {
 
 ?>
 
-            <p>Select a task setting and press OK to go to the next step</p>
-            
-            <p>
-                Before selecting a task setting you can create a new one or 
-                edit an existing one.
-            </p>
-            
-            <p>
-                To create a new task setting enter its name and press the 
-                "create new setting" button.
-            </p>
-            
-            <p>
-                "Copy selected setting" creates a new setting with the name you 
-                entered that has the same task values set as the selected 
-                setting.
-            </p>
-            
-            <p>
-                "Edit selected setting" allows you to change the task values of 
-                the selected setting.
-            </p>
-            
+		<p>Select a task setting and press the forward button to go to the next step.</p>
+
+		<p>You can "Create" new settings or "Edit" existing ones.</p>
+
+		<p>To create a new task setting enter its name and press the "Create" button.</p>
+
+		<p>"Copy" creates a clone of the selected setting with the name you entered.</p>
+
+		<p>"Edit" allows you to change the parameter values of the selected setting. </p>
+          
         </div>
         
         <div id="message">

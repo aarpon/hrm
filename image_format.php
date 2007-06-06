@@ -273,7 +273,7 @@ $parameter = $_SESSION['setting']->parameter("PointSpreadFunction");
             <input type="button" class="icon cancel" onclick="document.location.href='select_parameter_settings.php'" />
             <input type="submit" class="icon apply" onclick="process()" />
             
-            <p>Please define file type, number of channels and geometry.</p>
+            <p>Please define image format, geometry, and mumber of channels.</p>
             
             <p>
 		If you select one of the "single XY plane" formats,
@@ -281,8 +281,7 @@ $parameter = $_SESSION['setting']->parameter("PointSpreadFunction");
             </p>
             
             <p>
-                When you are ready, press the OK button to go to the next 
-                step.
+                When you are ready, press the forward button to go to the next step.
             </p>
             
         </div>

@@ -368,7 +368,7 @@ if (!$default) {
                 about the parameters on this page.
             </p>
             
-            <p>Press the OK button to go to the next step.</p>
+            <p>Press the forward button to go to the next step.</p>
             
         </div>
         
