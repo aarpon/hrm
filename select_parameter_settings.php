@@ -351,28 +351,25 @@ if ($_SESSION['user']->name() != "admin") {
 ?>
 
             <p>
-                Select a parameter setting and press OK to go to the next step.
+                Select a parameter setting and press the forward button to go to the next step.
             </p>
             
             <p>
-                Before selecting a parameter setting you can create a new one 
-                or edit an existing one.
+                You can "Create" new settings or "Edit" existing ones.
             </p>
             
             <p>
                 To create a new parameter setting enter its name and press the 
-                "create new setting" button.
+                "Create" button.
             </p>
             
             <p>
-                "Copy selected setting" creates a new setting with the name you 
-                entered that has the same parameter values set as the selected 
-                setting.
+                "Copy" creates a clone of the selected setting with the name you 
+                entered.
             </p>
             
             <p>
-                "Edit selected setting" allows you to change the parameter 
-                values of the selected setting.
+                "Edit" allows you to change the parameter values of the selected setting.
             </p>
             
         </div>

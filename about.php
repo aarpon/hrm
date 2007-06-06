@@ -65,32 +65,36 @@ include("header.inc.php");
     
         <h2>About HRM version <?php readfile("version"); ?></h2>
         
-        <pre>
- Copyright: Montpellier RIO Imaging (CNRS) 
 
- contributors : 
- 	     Pierre Travo	(concept)	     
- 	     Volker Baecker	(concept, implementation)
+	<h3>Copyright</h3>
+	<p>2004 - 2007, Montpellier RIO Imaging (CNRS)</p>
 
- email:
- 	pierre.travo@crbm.cnrs.fr
- 	volker.baecker@crbm.cnrs.fr
+ 	<h3>Contributors</h3>
+ 	<p>Pierre Travo	(concept)<br>
+	Volker Baecker	(concept, implementation)<br>
+	Aaron Ponti	(contributor)<br>
+	Asheesh Gulati	(contributor)<p>
 
- Web:     www.mri.cnrs.fr
+	<h3>Email</h3>
+	<p>volker.baecker@users.sourceforge.net<br>
+	aarpon@users.sourceforge.net<br>
+	gulati9@users.sourceforge.net</p>
 
- huygens remote manager is a software that has been developed at 
- Montpellier Rio Imaging (mri) in 2004 by Pierre Travo and Volker 
- Baecker. It allows running image restoration jobs that are processed 
- by 'Huygens professional' from SVI. Users can create and manage parameter 
- settings, apply them to multiple images and start image processing 
- jobs from a web interface. A queue manager component is responsible for 
- the creation and the distribution of the jobs and for informing the user 
- when jobs finished.
+	<h3>Web</h3>
+	<p>http://hrm.sourceforge.net</p>
 
- This software is governed by the CeCILL license under French law and
- abiding by the rules of distribution of free software.
-        </pre>
-        
+	 <p>The Huygens Remote Manager (HRM) is a web-based deconvolution platform primarily targeted to microscopy
+	 and imaging facilities in academic and industrial environments that must handle large user bases.
+	 HRM in an interface to the Huygens software from Scientific Volume Imaging.
+
+	 HRM was originally developed at Montpellier Rio Imaging in 2004 by Pierre Travo and Volker Baecker.
+ 
+	 Now, HRM is a joint project of Montpellier Rio Imaging, the Friedrich Miescher Institute in Basel, the 
+	 BioImaging and Optics platform at the Ecole Polytechnique Fédérale de Lausanne and Scientific Volume 
+	 Imaging.
+
+	 This software is governed by the CeCILL license under French law and abiding by the rules of distribution of free software.</p>
+
     </div> <!-- content -->
     
 <?php
