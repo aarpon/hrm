@@ -2,7 +2,8 @@
 #
 # HRM server daemon
 
-HRM_HOME="/srv/www/htdocs/php/hrm"
+# hrm.conf defines variable HRM_HOME
+. /etc/hrm.conf
 
 start() {
 	php -q "$HRM_HOME"/run/runHuygensRemoteManager.php 1> "$HRM_HOME"/run/log.txt 2> /dev/null &

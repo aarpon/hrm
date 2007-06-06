@@ -139,7 +139,7 @@ if (isset($_POST['accept'])) {
     $mail->setSubject("Account activated");
     $mail->setMessage($text);
     $mail->send();
-    shell_exec("bin/hrm2share create " . $_POST['username']);
+    shell_exec("bin/hrm create " . $_POST['username']);
   }
   else $message = "            <p class=\"warning\">Database error, please inform the person in charge</p>";
 }
@@ -172,7 +172,7 @@ else if (isset($_POST['annihilate']) && $_POST['annihilate'] == "yes") {
       $db->execute($query);
       // TODO refactor
       if ($result) {
-        shell_exec("bin/hrm2share delete " . $_POST['username']);
+        shell_exec("bin/hrm delete " . $_POST['username']);
       }
       else {
         $message = "            <p class=\"warning\">Database error, please inform the person in charge</p>";

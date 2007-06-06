@@ -1,0 +1,35 @@
+#!/bin/bash
+#
+# HRM administration script
+
+# hrm.conf defines variable HRM_DATA
+. /etc/hrm.conf
+
+create() {
+	if [ ! -d "$HRM_DATA"/"$1" ]
+	then
+		mkdir "$HRM_DATA"/"$1"
+		mkdir "$HRM_DATA"/"$1"/huygens_src
+		mkdir "$HRM_DATA"/"$1"/huygens_dst
+		# chown -R "$2":users "$HRM_DATA"/"$1"
+		chmod -R 0777 "$HRM_DATA"/"$1"
+	fi
+}
+
+delete() {
+	if [ -d "$HRM_DATA"/"$1" ]
+	then
+		rm -R "$HRM_DATA"/"$1"
+	fi
+}
+
+case "$1" in
+	create)
+		create $2
+		;;
+	delete)
+		delete $2
+		;;
+	*)
+		echo $"Usage: $0 {create|delete} username"
+esac
