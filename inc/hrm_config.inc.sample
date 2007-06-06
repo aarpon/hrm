@@ -90,4 +90,10 @@ $resultImagesOwnedByUser = False;
 // if true, result images will have the job id appended to their names
 $resultImagesRenamed = True;
 
+// internal links
+$internal_link["url"] = "<link>";
+
+// external links
+$external_link["url"] = "<link> followed by text";
+
 ?>

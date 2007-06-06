@@ -127,9 +127,8 @@ include("header.inc.php");
     
     <div id="content">
     
-        <h2>HRM - Huygens Remote Manager</h2>
+        <h2>Welcome</h2>
         
-        <h3>Welcome</h3>
         <p>
             Welcome to the remote image restoration interface. HRM lets you 
             perform large-scale deconvolution of multiple images using 
@@ -188,17 +187,54 @@ echo $message;
         
         <div id="linklist">
         
+<?php
+
+if (isset($internal_link)) {
+
+?>
             <h3>Internal Links</h3>
             <ul>
-                <li><a href="javascript:openWindow('http://iwww.fmi.ch')">FMI intranet</a></li>
+<?php
+
+  foreach ($internal_link as $url => $link) {
+
+?>
+                <li><a href="javascript:openWindow('<?php echo $url ?>')"><?php echo substr($link, strpos($link, '<') + 1, strpos($link, '>') - strpos($link, '<') - 1) ?></a><?php echo substr($link, strpos($link, '>') + 1) ?></li>
+<?php
+
+  }
+
+?>
             </ul>
             
+<?php
+
+}
+
+if (isset($external_link)) {
+
+?>
             <h3>External Links</h3>
             <ul>
-                <li><a href="javascript:openWindow('http://www.svi.nl')">Scientific Volume Imaging B.V.</a></li>
-                <li><a href="javascript:openWindow('http://support.svi.nl/wiki')">SVI-wiki</a> on 3D microscopy, deconvolution, visualization and analysis</li>
+<?php
+
+  foreach ($external_link as $url => $link) {
+
+?>
+                <li><a href="javascript:openWindow('<?php echo $url ?>')"><?php echo substr($link, strpos($link, '<') + 1, strpos($link, '>') - strpos($link, '<') - 1) ?></a><?php echo substr($link, strpos($link, '>') + 1) ?></li>
+<?php
+
+  }
+
+?>
             </ul>
             
+<?php
+
+  }
+
+?>
+
         </div>
         
     </div> <!-- stuff -->
