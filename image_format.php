@@ -75,10 +75,6 @@ if (!isset($_SESSION['setting'])) {
 
 $message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
 
-if (!isset($_POST["ImageGeometry"])) {
-  $_POST["ImageGeometry"] = "multi_XYZ";
-}
-
 // TODO refactor from here
 $names = $_SESSION['setting']->imageParameterNames();
 foreach ($names as $name) {
@@ -120,6 +116,11 @@ if (isset($_POST["PointSpreadFunction"])) {
 }
 
 if (count($_POST)>0) {
+        if ($_POST["ImageGeometry"] == "") {
+          $parameter = $_SESSION['setting']->parameter("ImageGeometry");
+          $parameter->setValue("multi_XYZ");
+          $_SESSION['setting']->set($parameter);
+        }
        if (!isset($_POST["PointSpreadFunction"])) {
             $ok = False;
             $message = "Please indicate whether you would like to calculate a theoretical PSF or use an existing measured one";
@@ -173,14 +174,27 @@ include("header.inc.php");
 // new file formats support
 $parameter = $_SESSION['setting']->parameter("ImageFileFormat");
 $values = $_SESSION['setting']->values("ImageFileFormat");
+$geometryFlag = "";
+$channelsFlag = "";
 sort($values);
 foreach($values as $value) {
   $translation = $_SESSION['setting']->translation("ImageFileFormat", $value);
   $event = " onclick=\"javascript:release()\"";
-  if ($value == "lsm-single" || $value == "tiff-single") $event = " onclick=\"javascript:forceGeometry()\"";
-  else if ($value == "tiff-series") $event = " onclick=\"javascript:forceChannel()\"";
+  if ($value == "lsm-single" || $value == "tiff-single") {
+    $event = " onclick=\"javascript:forceGeometry()\"";
+  }
+  else if ($value == "tiff-series") $event = " onclick=\"javascript:fixGeometryAndChannels('multi_XYZ', '1')\"";
   $flag = "";
-  if ($value == $parameter->value()) $flag = " checked=\"checked\"";
+  if ($value == $parameter->value()) {
+    $flag = " checked=\"checked\"";
+    if ($value == "lsm-single" || $value == "tiff-single") {
+      $geometryFlag = "disabled=\"disabled\" ";
+    }
+    else if ($value == "tiff-series") {
+      $geometryFlag = "disabled=\"disabled\" ";
+      $channelsFlag = "disabled=\"disabled\" ";
+    }
+  }
 
 ?>
                 <input name="ImageFileFormat" type="radio" value="<?php echo $value ?>"<?php echo $event ?><?php echo $flag ?> /><?php echo $translation ?>
@@ -194,7 +208,7 @@ foreach($values as $value) {
 
             </fieldset>
             
-            <fieldset id="geometry" class="setting">
+            <fieldset id="geometry" class="setting"<?php if ($geometryFlag != "") echo " style=\"color: grey\"" ?>>
             
                 <legend>
                     <a href="javascript:openWindow('http://support.svi.nl/wiki/ImageGeometry')"><img src="images/help.png" alt="?" /></a>
@@ -208,10 +222,10 @@ $possibleValues = $aParameter->possibleValues();
 foreach($possibleValues as $possibleValue) {
   $value = "multi_" . $possibleValue;
   $flag = "";
-  if ($possibleValue == $aParameter->value()) $flag = "checked=\"checked\" ";
+  if ($geometryFlag == "" && $possibleValue == $aParameter->value()) $flag = "checked=\"checked\" ";
 
 ?>
-                <input name="ImageGeometry" type="radio" value="<?php echo $value ?>" <?php echo $flag ?>/><?php echo $possibleValue ?>
+                <input name="ImageGeometry" type="radio" value="<?php echo $value ?>" <?php echo $geometryFlag ?><?php echo $flag ?>/><?php echo $possibleValue ?>
                 
 <?php
 
@@ -221,7 +235,7 @@ foreach($possibleValues as $possibleValue) {
 
             </fieldset>
             
-            <fieldset id="channels" class="setting">
+            <fieldset id="channels" class="setting"<?php if ($channelsFlag != "") echo " style=\"color: grey\"" ?>>
             
                 <legend>
                     <a href="javascript:openWindow('http://support.svi.nl/wiki/NumberOfChannels')"><img src="images/help.png" alt="?" /></a>
@@ -237,11 +251,11 @@ function check($value) {
 }
 
 ?>
-                <input name="NumberOfChannels" type="radio" value="1" <?php check(1) ?>/>1
-                <input name="NumberOfChannels" type="radio" value="2" <?php check(2) ?>/>2
-                <input name="NumberOfChannels" type="radio" value="3" <?php check(3) ?>/>3
-                <input name="NumberOfChannels" type="radio" value="4" <?php check(4) ?>/>4
-                <input name="NumberOfChannels" type="radio" value="5" <?php check(5) ?>/>5
+                <input name="NumberOfChannels" type="radio" value="1" <?php echo $channelsFlag ?><?php check(1) ?>/>1
+                <input name="NumberOfChannels" type="radio" value="2" <?php echo $channelsFlag ?><?php check(2) ?>/>2
+                <input name="NumberOfChannels" type="radio" value="3" <?php echo $channelsFlag ?><?php check(3) ?>/>3
+                <input name="NumberOfChannels" type="radio" value="4" <?php echo $channelsFlag ?><?php check(4) ?>/>4
+                <input name="NumberOfChannels" type="radio" value="5" <?php echo $channelsFlag ?><?php check(5) ?>/>5
                 
             </fieldset>
             

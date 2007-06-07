@@ -8,16 +8,25 @@ function process() {
 }
 
 function release() {
+    var geometryFirst = true;
+    var channelsFirst = true;
     for (var i = 0; i < document.forms["select"].elements.length; i++) {
         var e = document.forms["select"].elements[i];
         if (e.name == 'ImageGeometry') {
-           e.disabled = false;
-           if (e.value == 'multi_XYZ')
+            e.disabled = false;
+            if (geometryFirst) {
                 e.checked = true;
+                geometryFirst = false;
+            }
         }
         if (e.name == 'NumberOfChannels') {
-           e.readonly = false;
+            e.disabled = false;
+            if (channelsFirst) {
+                e.checked = true;
+                channelsFirst = false;
+            }
         }
+        
     }
     document.forms["select"].elements["geometry"].style.color = "black";
     document.forms["select"].elements["channels"].style.color = "black";
@@ -35,17 +44,34 @@ function forceGeometry() {
     document.forms["select"].elements["geometry"].style.color = "grey";
 }
 
-function forceChannel() {
-    release();
+function fixGeometry(geometry) {
+    for (var i = 0; i < document.forms["select"].elements.length; i++) {
+        var e = document.forms["select"].elements[i];
+        if (e.name == 'ImageGeometry') {
+           e.disabled = true;
+           if (e.value == geometry)
+                e.checked = true;
+        }
+    }
+    document.forms["select"].elements["geometry"].style.color = "grey";
+}
+
+function fixChannels(channels) {
     for (var i = 0; i < document.forms["select"].elements.length; i++) {
         var e = document.forms["select"].elements[i];
         if (e.name == 'NumberOfChannels') {
-           e.readonly = true;
-           if (e.value == '1')
+           e.disabled = true;
+           if (e.value == channels)
                 e.checked = true;
         }
     }
     document.forms["select"].elements["channels"].style.color = "grey";
+}
+
+function fixGeometryAndChannels(geometry, channels) {
+    release();
+    fixGeometry(geometry);
+    fixChannels(channels);
 }
 
 function seek(channel) {

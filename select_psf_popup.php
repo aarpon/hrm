@@ -110,7 +110,7 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
           <select name="userfiles[]" size="10" onchange="lock(this)">
 <?php
 
-$files = $_SESSION['fileserver']->files();
+$files = $_SESSION['fileserver']->allFiles();
 foreach ($files as $file) {
   print "            <option value=\"$file\">$file</option>\n";
 }

@@ -39,16 +39,16 @@ $huygens_group = "huygens";
 $image_host = "localhost";
 
 // file server base folder
-$image_folder = "/path/to/hrm_data";
+$image_folder = "/path/to/hrm_data/";
 
-// file server image source folder
+// file server image source folder (with trailing /)
 $image_source = "huygens_src";
 
 // file server image destination folder
 $image_destination = "huygens_dst";
 
-// file server base folder as seen from the Huygens server machines
-$huygens_server_image_folder = "/path/to/hrm_data";
+// file server base folder as seen from the Huygens server machines (with trailing /)
+$huygens_server_image_folder = "/path/to/hrm_data/";
 
 //==============================================================================
 // HRM configuration parameters

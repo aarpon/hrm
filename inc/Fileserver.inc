@@ -149,6 +149,21 @@ Class Fileserver {
         return $files;
     }
   }
+  
+  // Answer all files under the users image folder. Searches
+  // subdirectories recursively. 
+  //!---------------------------------------------------------
+  // @function    Fileserver::allFiles
+  // @desc        Answer all image files under the users image
+  //              folder. Searches subdirectories recursively.  
+  // @return      Array
+  //!---------------------------------------------------------  
+  function allFiles() {
+    if (!file_exists($this->sourceFolder())) return False;
+    $files = $this->listFilesFrom($this->sourceFolder(), "", "");
+    sort($files);
+    return $files;
+  }
 
   // convenient method to get TIFF files
   function tiffFiles() {
@@ -171,6 +186,14 @@ Class Fileserver {
     // TODO refactor
     $this->trimTiffLeica();
     $this->condenseTiffLeica();
+    return $this->files;
+  }
+  
+  // convenient method to get STK series
+  function stkSeriesFiles() {
+    $this->getFiles();
+    // TODO refactor
+    $this->condenseStkSeries();
     return $this->files;
   }
 
@@ -365,7 +388,7 @@ Class Fileserver {
     $basename = preg_replace("/([^_]+|\/)(_)(t|z|ch)([0-9]+)(\w+)(\.)(\w+)/", "$1$6$7", $filename);
     return $basename;
   }
-  // trim TIFF series to the first file in the sequence
+  // stack TIFF series to the first file in the sequence
   //!---------------------------------------------------------
   // @function    Fileserver::condenseTiffSeries
   // @desc        Remove all but the first file from each TIFF
@@ -383,7 +406,40 @@ Class Fileserver {
       } 
       $lastValue = $value;
     } 
-  } 
+  }
+  // stack STK series to the first file in the sequence
+  //!---------------------------------------------------------
+  // @function    Fileserver::stkSeriesBasename
+  // @desc        Answer the filename of the image without the
+  //              numbers marking its time point in an STK 
+  //              series. These numbers are expected to be 
+  //              directly before the . of the file extension.
+  // @param       filename  String  
+  // @return      String
+  //!---------------------------------------------------------  
+  function stkSeriesBasename($filename) {
+    $basename = preg_replace("/([^_]+|\/)(_)(t|T)([0-9]+)(\.)(\w+)/", "$1$5$6", $filename);
+    return $basename;
+  }
+  // stack STK series to the first file in the sequence
+  //!---------------------------------------------------------
+  // @function    Fileserver::condenseStkSeries
+  // @desc        Remove all but the first file from each STK
+  //              series in the files attribute.
+  // @return      Void
+  //!---------------------------------------------------------      
+  function condenseStkSeries() {
+    if (count($this->files)==0) return False;
+    $stk_series =  preg_grep("/[^_]+_(t|T)[0-9]+\.\w+/", $this->files);
+    $lastValue = "";
+    foreach ($stk_series as $key => $value) { 
+       if ($this->stkSeriesBasename($lastValue)==$this->stkSeriesBasename($value)) { 
+          //echo $value;
+          unset($this->files[$key]); 
+      } 
+      $lastValue = $value;
+    } 
+  }
   //!---------------------------------------------------------
   // @function    Fileserver::getFilesFrom
   // @desc        The recursive function that collects the 
@@ -428,7 +484,7 @@ Class Fileserver {
   // @param       startDir  String  The folder to start with  
   // @param       prefix    String  The actual path prefix 
   //              relative to the user's image folder. 
-  // @return      Void
+  // @return      Array
   //!---------------------------------------------------------  
   function listFilesFrom($startDir, $prefix, $extension) {
     $files = array();
@@ -446,7 +502,9 @@ Class Fileserver {
 	} else {
           $ext = substr(strrchr($entry, "."),1);
           $ext = strtolower($ext);
-	  if ($ext != $extension) continue;
+	  if ($extension != "") {
+            if ($ext != $extension) continue;
+          }
       //echo $entry,$prefix,",";
 	  if ($prefix=="") { 
 	    $files[] = $entry;

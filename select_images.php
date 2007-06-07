@@ -77,9 +77,11 @@ if (!isset($_SESSION['fileserver'])) {
   $_SESSION['fileserver'] = new Fileserver($name);
 }
 
-$param = $_SESSION['setting']->parameter("ImageFileFormat");
-$extensions = $param->fileExtensions();
+$fileFormat = $_SESSION['setting']->parameter("ImageFileFormat");
+$extensions = $fileFormat->fileExtensions();
 $_SESSION['fileserver']->setImageExtensions($extensions);
+
+$geometry = $_SESSION['setting']->parameter("ImageGeometry");
 
 $message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
 
@@ -132,14 +134,22 @@ include("header.inc.php");
 <?php
 
 // display only relevant files
-if ($param->value() == "tiff") {
+if ($fileFormat->value() == "tiff") {
   $files = $_SESSION['fileserver']->tiffFiles();
 }
-else if ($param->value() == "tiff-series") {
+else if ($fileFormat->value() == "tiff-series") {
   $files = $_SESSION['fileserver']->tiffSeriesFiles();
 }
-else if ($param->value() == "tiff-leica") {
+else if ($fileFormat->value() == "tiff-leica") {
   $files = $_SESSION['fileserver']->tiffLeicaFiles();
+}
+else if ($fileFormat->value() == "stk") {
+  if ($geometry->value() == "XY - time" || $geometry->value() == "XYZ - time") {
+    $files = $_SESSION['fileserver']->stkSeriesFiles();
+  }
+  else {
+    $files = $_SESSION['fileserver']->files("stk");
+  }
 }
 else {
   $files = $_SESSION['fileserver']->files();
