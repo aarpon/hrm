@@ -157,23 +157,31 @@ include("header.inc.php");
         <form method="post" action="" id="useraccount">
         
             <div id="adduser">
-                <label for="email">E-mail address: </label>
-                <input name="email" id="email" type="text" value="<?php echo $user->email() ?>" />
 <?php
 
-// add user management
-if ($_SESSION['user']->name() == "admin") {
+if (isset($_SESSION['account_user']) || $_SESSION['user']->name() != "admin") {
 
 ?>
+                <label for="email">E-mail address: </label>
+                <input name="email" id="email" type="text" value="<?php echo $user->email() ?>" />
                 <br />
+<?php
+
+}
+
+// add user management
+// TODO refactor
+if (isset($_SESSION['account_user'])/* && $_SESSION['user']->name() == "admin"*/) {
+
+?>
                 <label for="group">Research group: </label>
                 <input name="group" id="group" type="text" value="<?php echo $user->group() ?>" />
+                <br />
 <?
 
 }
 
 ?>
-                <br />
                 <br />
                 <label for="pass1">New password: </label>
                 <input name="pass1" id="pass1" type="password" />

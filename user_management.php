@@ -214,20 +214,10 @@ include("header.inc.php");
     <div id="nav">
         <ul>
             <li><a href="select_images.php?exited=exited" onclick="clean()">exit</a></li>
-<?php
-
-// add user management
-if ($_SESSION['user']->name() == "admin") {
-
-?>
             <li>users</li>
             <li><a href="select_parameter_settings.php" onclick="clean()">parameters</a></li>
             <li><a href="select_task_settings.php" onclick="clean()">tasks</a></li>
-<?php
-
-}
-
-?>
+            <li><a href="account.php">account</a></li>
             <li><a href="job_queue.php" onclick="clean()">queue</a></li>
             <li><a href="javascript:openWindow('http://support.svi.nl/wiki/HuygensRemoteManagerHelpUserManagement')">help</a></li>
         </ul>

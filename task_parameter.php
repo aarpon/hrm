@@ -146,6 +146,11 @@ else {
     $parameter->setValue(array("#auto"));
     $_SESSION['task_setting']->set($parameter);
   }
+  else if (isset($_POST['BackgroundEstimationMode']) && $_POST['BackgroundEstimationMode'] == "object") {
+    $parameter = $_SESSION['task_setting']->parameter("BackgroundOffsetPercent");
+    $parameter->setValue(array("#object"));
+    $_SESSION['task_setting']->set($parameter);
+  }
   
   $signalNoiseRatioRangeParam = $_SESSION['task_setting']->parameter("SignalNoiseRatioRange");
   $backgroundOffsetRangeParam = $_SESSION['task_setting']->parameter("BackgroundOffsetRange");
@@ -297,11 +302,20 @@ if ($backgroundOffset[1] == "auto") $flag = " checked=\"checked\"";
 
                                 <li><input type="radio" name="BackgroundEstimationMode" value="auto"<?php echo $flag ?> />automatic background estimation<p /></li>
                                 
+<?php
+
+$flag = "";
+if ($backgroundOffset[1] == "object") $flag = " checked=\"checked\"";
+
+?>
+
+                                <li><input type="radio" name="BackgroundEstimationMode" value="object"<?php echo $flag ?> />in/near object<p /></li>
+                                
                                 <li>
 <?php
 
 $flag = "";
-if ($backgroundOffset[1] != "auto" && $backgroundOffset[1] != null) $flag = " checked=\"checked\"";
+if ($backgroundOffset[1] != "auto" && $backgroundOffset[1] != "object" && $backgroundOffset[1] != null) $flag = " checked=\"checked\"";
 
 ?>
                                     <input type="radio" name="BackgroundEstimationMode" value="manual"<?php echo $flag ?> />
@@ -310,7 +324,7 @@ if ($backgroundOffset[1] != "auto" && $backgroundOffset[1] != null) $flag = " ch
 
 for ($i=1; $i <= $_SESSION['task_setting']->numberOfChannels(); $i++) {
   $val = "";
-  if ($backgroundOffset[1] != "auto" && $i < sizeof($backgroundOffset)) $val = $backgroundOffset[$i];
+  if ($backgroundOffset[1] != "auto" && $backgroundOffset[1] != "object" && $i < sizeof($backgroundOffset)) $val = $backgroundOffset[$i];
 
 ?>
                                     <!-- <span class="footnote">(Ch<?php echo $i ?>:)</span> --><span class="multichannel"><input name="BackgroundOffsetPercent<?php echo $i ?>" type="text" size="3" value="<?php echo $val ?>" class="multichannelinput" /><!-- %<?php if ($_SESSION['task_setting']->numberOfChannels() > $i) echo "," ?></span> -->

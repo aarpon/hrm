@@ -57,6 +57,8 @@ require_once("./inc/Setting.inc");
 require_once("./inc/SettingEditor.inc");
 require_once("./inc/Fileserver.inc");
 
+global $enableUserAdmin;
+
 session_start();
 
 if (isset($_GET['exited'])) {
@@ -179,16 +181,22 @@ include("header.inc.php");
 
 // add user management
 if ($_SESSION['user']->name() == "admin") {
+  if ($enableUserAdmin) {
 
 ?>
             <li><a href="user_management.php">users</a></li>
+<?php
+
+  }
+
+?>
             <li>parameters</li>
             <li><a href="select_task_settings.php">tasks</a></li>
 <?php
 
 }
 
-if ($_SESSION['user']->name() != "admin") {
+if ($enableUserAdmin) {
 
 ?>
             <li><a href="account.php">account</a></li>

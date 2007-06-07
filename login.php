@@ -57,6 +57,7 @@ require_once("./inc/CreditOwner.inc");
 require_once("./inc/hrm_config.inc");
 
 global $email_admin;
+global $enableUserAdmin;
 
 $message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
 
@@ -71,42 +72,46 @@ if (isset($_POST['password'])) {
 		$positiveCredits = $creditOwner->positiveCredits();
 		if (count($positiveCredits) == 0) {
 			$user->logOut();
-			$message = "You don't have any hours left.<br>Please contact the MRI team!";		
+			$message = "You don't have any hours left.<br>Please contact the microscopy team!";		
 		}
 	}
   	if ($user->isLoggedIn()) {
-    	session_start();
-    	session_register("user");
-    	$user->setName(strtolower($_POST['username']));
-    	// account management
-	    // get email address and group
-	    $user->load();
-	    $_SESSION['user'] = $user;
-    	// update last access date
-    	$user->updateLastAccessDate();
-    	// TODO unregister also "setting" and "task_setting"
-    	unset($_SESSION['editor']);
-    	if ($use_accounting_system) {
-			if (count($positiveCredits)>1) {
-		   		header("Location: " . "select_credit.php"); exit();				
-			}
-			$firstCredit = $positiveCredits[0];
-			$groups = $creditOwner->myGroupsForCredit($firstCredit);
-			if (count($positiveCredits)==1 && count($groups)>1) {
-				$_SESSION['credit'] = $firstCredit->id();
-				header("Location: " . "select_group.php"); exit();
-			}
-			if (count($positiveCredits)==1 && count($groups)==1) {
-				$_SESSION['credit'] = $firstCredit->id();
-				$_SESSION['group'] = $groups[0]->id();
-			}
-
-		}
-    	if ($user->isAdmin()) {
-      		header("Location: " . "user_management.php"); exit();
-    	} else {
-      		header("Location: " . "select_parameter_settings.php"); exit();
-    	}
+            session_start();
+            session_register("user");
+            $user->setName(strtolower($_POST['username']));
+            // account management
+                // get email address and group
+                $user->load();
+                $_SESSION['user'] = $user;
+            // update last access date
+            $user->updateLastAccessDate();
+            // TODO unregister also "setting" and "task_setting"
+            unset($_SESSION['editor']);
+            if ($use_accounting_system) {
+                if (count($positiveCredits)>1) {
+                        header("Location: " . "select_credit.php"); exit();				
+                }
+                $firstCredit = $positiveCredits[0];
+                $groups = $creditOwner->myGroupsForCredit($firstCredit);
+                if (count($positiveCredits)==1 && count($groups)>1) {
+                        $_SESSION['credit'] = $firstCredit->id();
+                        header("Location: " . "select_group.php"); exit();
+                }
+                if (count($positiveCredits)==1 && count($groups)==1) {
+                        $_SESSION['credit'] = $firstCredit->id();
+                        $_SESSION['group'] = $groups[0]->id();
+                }
+            }
+            if ($user->isAdmin()) {
+                if ($enableUserAdmin) {
+                    header("Location: " . "user_management.php"); exit();
+                }
+                else {
+                    header("Location: " . "select_parameter_settings.php"); exit();
+                }
+            } else {
+                header("Location: " . "select_parameter_settings.php"); exit();
+            }
   	}
   } else {
     $message = "            <p class=\"warning\">This account does not exist, please try again!</p>\n";

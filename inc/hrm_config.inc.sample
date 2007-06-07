@@ -69,6 +69,9 @@ $logfile_max_size = 100;    // maximum size of the logfile in MB
 $email_sender = "hrm@localhost";
 $email_admin = "hrm@localhost";
 
+// user administration module
+$enableUserAdmin = True;
+
 // authentication type (LDAP or MYSQL)
 $authenticateAgainst = "MYSQL";
 

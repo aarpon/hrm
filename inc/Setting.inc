@@ -198,7 +198,7 @@ Class Setting {
 		$result = True;
 		$theLabel = $label;
 		$values = $parameter->internalValue();
-		if ($name == "BackgroundOffsetPercent" && $values[0] == "#auto")
+		if ($name == "BackgroundOffsetPercent" && ($values[0] == "#auto" || $values[0] == "#object"))
 			return True;
 		for ($i = 1; $i <= $numberOfChannels; $i++) {
 			$ok = $parameter->checkValue($values[$i]);
@@ -1762,7 +1762,7 @@ Class TaskSetting extends Setting {
 		$parameter = $this->parameter('SignalNoiseRatio');
 		for ($i = 1; $i <= $this->numberOfChannels(); $i++) {
 			if (!$parameter->checkValue($parameter->value[$i])) {
-				$this->message = "Please enter a valid signal/noise ratio for channel " . $i . "! The value must be between 3 and 100.";
+				$this->message = "Please enter a valid signal/noise ratio for channel " . $i . "! The value must be between 0 and 100.";
 				return False;
 			}
 		}

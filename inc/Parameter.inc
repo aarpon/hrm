@@ -219,6 +219,9 @@ Class Parameter {
 		;
 		if ($this->name() == "BackgroundOffsetPercent" && $internalValue[1] == "auto") {
 			$value = "auto";
+		}
+		else if ($this->name() == "BackgroundOffsetPercent" && $internalValue[1] == "object") {
+			$value = "in/near object";
 		} else {
 			if (is_array($value)) {
 				array_shift($value);
@@ -1273,6 +1276,8 @@ Class BackgroundOffsetPercent extends VariableChannelsParameter {
 		$value = $this->internalValue();
 		$result = True;
 		if ($value[0] == "#auto")
+			return True;
+		else if ($value[0] == "#object")
 			return True;
 		for ($i = 1; $i <= $this->numberOfChannels; $i++) {
 			$result = $result && $this->checkValue($value[$i]);
