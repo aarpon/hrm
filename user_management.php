@@ -205,7 +205,19 @@ else if (isset($_POST['disable'])) {
   $query = "UPDATE user SET status = 'd' WHERE name = '".$_POST['username']."'";
   $result = $db->execute($query);
 }
+else if (isset($_POST['action'])) {
+  if ($_POST['action'] == "disable") {
+    $query = "UPDATE user SET status = 'd' WHERE name NOT LIKE 'admin'";
+    $result = $db->execute($query);
+  }
+  else if ($_POST['action'] == "enable") {
+    $query = "UPDATE user SET status = 'a' WHERE name NOT LIKE 'admin'";
+    $result = $db->execute($query);
+  }
+}
 // TODO refactor to here
+
+$script = "admin.js";
 
 include("header.inc.php");
 
@@ -301,6 +313,11 @@ sort($emails);
                 <legend>existing users (<?php echo $count - 1 ?>)</legend>
                 <p class="menu">
                     <a href="javascript:openPopup('add_user')">add new user</a>&nbsp;|&nbsp;<a href="mailto:<?php echo implode(";", $emails) ?>">distribution list</a>
+                    <br />
+                    <a href="javascript:disableUsers()">disable</a>/<a href="javascript:enableUsers()">enable</a> all users
+                    <form method="post" action="" name="user_management">
+                      <input type="hidden" name="action" />
+                    </form>
                 </p>
                 <table>
                     <tr>
@@ -315,7 +332,7 @@ echo "[<a href=\"?index=all\"".$style.">&nbsp;all&nbsp;</a>]&nbsp;[";
 while (True) {
   $c = chr(97 + $i);
   $style = "";
-  $result = $db->queryLastValue("SELECT * FROM user WHERE name LIKE '".$c."%' AND (status = 'a' OR status = 'd')");
+  $result = $db->queryLastValue("SELECT * FROM user WHERE name LIKE '".$c."%' AND name NOT LIKE 'admin' AND (status = 'a' OR status = 'd')");
   if ($_SESSION['index'] == $c) $style = " class=\"selected\"";
   else if (!$result) $style = " class=\"empty\"";
   else $style = " class=\"filled\"";

@@ -114,7 +114,12 @@ if (isset($_POST['password'])) {
             }
   	}
   } else {
-    $message = "            <p class=\"warning\">This account does not exist, please try again!</p>\n";
+    if ($user->exists()) {
+      $message = "            <p class=\"warning\">Your account has been suspended, please contact the administrator.</p>\n";
+    }
+    else {
+      $message = "            <p class=\"warning\">This account does not exist, please try again.</p>\n";
+    }
   }
 }
 

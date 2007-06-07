@@ -281,6 +281,18 @@ Class User extends Owner{
   }
   
   //!---------------------------------------------------------
+  // @function    User::exists
+  // @desc        Answer true if the user's account exists.
+  // @param       name     String    The login name of the user 
+  // @return      Boolean
+  //!---------------------------------------------------------
+  function exists() {
+  	$result = false;
+  	$db = new DatabaseConnection();
+  	return $db->checkUser($this->name());
+  }
+  
+  //!---------------------------------------------------------
   // @function    User::checkLogin
   // @desc        Answer true if the login is granted.
   // @param       name     String    The login name of the user

@@ -745,7 +745,14 @@ Class DatabaseConnection {
     $conditions['status'] = 'broken'; 
     $ids = $this->retrieveColumnFromTableWhere('id', 'job_queue', $conditions);
     return $ids;
-  } 
+  }
+  
+  function checkUser($name) {
+    $query = "select status from user where name = '" . $name . "'";
+    $result = $this->queryLastValue($query);
+    if ($result) $result = true;
+    return $result;
+  }
   
   function getUserStatus($name) {
   	$query = "select status from user where name = '" . $name . "'";
