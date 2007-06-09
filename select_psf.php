@@ -190,12 +190,15 @@ for ($i = 1; $i <= $_SESSION['setting']->numberOfChannels(); $i++) {
             <input type="button" class="icon cancel" onclick="document.location.href='image_format.php'" />
             <input type="submit" class="icon apply" onclick="process()" />
             
-            <p>Select a PSF file in ICS format for every channel.</p>
+            <p>Select a PSF file for each of the channels.</p>
             
-            <p>
-                When you are done with your selection press the forward button to go back to the Image Format page.
+           <p>
+                When you are done with the selection, press the
+                <img src="images/apply_help.png" name="Create" width="22" height="22"> <b>apply</b>
+                button to go back to the Image Format page.
             </p>
-            
+
+
         </div>
         
         <div id="message">

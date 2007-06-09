@@ -221,20 +221,31 @@ else echo "                        <option>&nbsp;</option>\n";
             
             <p>
                 Select the image files in the upper file list. You can use SHIFT- 
-		and CTRL-click to select multiple files. Use the down-arrow to 
-                add files to your selection.
+		and CTRL-click to select multiple files. Use the down-arrow to
+		<img src="images/add_help.png" name="Add" width="22" height="22">    
+		<b>add</b> files to your selection.
             </p>
             
             <p>
-                Select files in the lower file list and use the up-arrow to remove 
-                them from your selection again.
+		Select files in the lower file list and use the up-arrow to 
+                <img src="images/remove_help.png" name="Remove" width="22" height="22">
+		<b>remove</b> them from your selection again.
             </p>
             
+	   <p>
+	      	Use the 
+                <img src="images/update_help.png" name="Update" width="22" height="22">
+                <b>refresh</b> button to reload the list of available images on the server.
+	   </p>      
+
             <p>
-		When you are done with your selection press the forward button to go 
+                When you are done with your selection press the
+                <img src="images/next_help.png" name="Down" width="22" height="22">
+                <b>forward</b> button to go
                 to the next step.
             </p>
-            
+
+
         </div>
         
         <div id="message">

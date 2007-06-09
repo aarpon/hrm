@@ -352,8 +352,9 @@ if ($_SESSION['setting']->isNipkowDisk()) {
             <input type="submit" class="icon apply" onclick="process()" />
             
             <p>
-                This is the last step. Press the OK button to save your 
-                parameter settings and to go back to the parameter selection 
+		This is the last step. Press <br>the 
+                <img src="images/apply_help.png" name="Apply" width="22" height="22"> <b>apply</b>
+                button to save your parameter settings and to go back to the parameter settings
                 page.
             </p>
             

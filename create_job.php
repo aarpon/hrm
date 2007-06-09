@@ -94,7 +94,7 @@ if (isset($_POST['create'])) {
 	}
     if ($job->createJob()) {
       $_SESSION['jobcreated'] = True;
-      $message = "            <p class=\"warning\">The job has been created.</p>";
+      $message = "            <p class=\"warning\">The job has been created and added to the queue.</p><p class=\"warning\">Press the <img src='images/restart_help.png' name='Restart' width='22' height='22'> <b>home</b> button to restart.</p>";
     }
     else {
       $message = "            <p class=\"warning\">".$job->message()."</p>";
@@ -272,17 +272,11 @@ else {
             </form>
             
             <p>
-                Check the parameters you have chosen. Press the "Create Job" 
-                button to create the job.
+		Check the parameters you have chosen. Press the 
+		<img src="images/ok_help.png" name="Create job" width="22" height="22">
+		<b>create job</b> button to add the job to the queue.
             </p>
-            
-            <p>
-                Use the cancel / start again button to restart specifing a job 
-                or to create another job.
-            </p>
-            
-            <p>Use the exit link at the top of the page to quit.</p>
-            
+         
         </div>
         
         <div id="message">
@@ -300,3 +294,6 @@ echo $message;
 include("footer.inc.php");
 
 ?>
+
+
+

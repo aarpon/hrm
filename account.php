@@ -209,13 +209,16 @@ $referer = $_SESSION['referer'];
             <input type="button" value="cancel" onclick="document.location.href='<?php echo $referer ?>'" class="icon cancel" />
             <input type="button" value="apply" onclick="document.forms['useraccount'].submit()" class="icon apply" />
             
+
             <p>
-                Click the modify button to change e-mail address and/or 
-                password. Click the back link to return without changing 
-                anything.
+                Click on 
+                <img src="images/apply_help.png" name="Apply" width="22" height="22"> <b>apply</b>
+		to store the changes or on
+                <img src="images/cancel_help.png" name="Cancel" width="22" height="22"> <b>cancel</b>
+                to discard them.
             </p>
-            
-        </div>
+
+       </div>
         
         <div id="message">
 <?php

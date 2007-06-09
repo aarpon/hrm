@@ -460,19 +460,21 @@ if ($parameter->value() != null) {
             <input type="submit" class="icon apply" onclick="process()" />
             
             <p>
-                Choose the tasks you want to run. Enter the parameter for each 
-                task.
+                Define the parameters for restoration.
             </p>
-            
-            <p>
-                If you choose range for a task parameter, you must enter 
-                between 2 and 4 values for the parameter. One job will be 
-                created for each parameter supplied by the range option. Please 
-                use the range option with care!
-            </p>
-            
-            <p>Press the OK button after you made your choice.</p>
-            
+
+	   <p>
+		You will find detailed explanations by following the help button in the navigation bar.
+	   </p>
+
+           <p>
+                When you are ready, press the <br>
+                <img src="images/apply_help.png" name="Apply" width="22" height="22"> <b>apply</b>
+                button to go to the next <br>step
+                or <img src="images/cancel_help.png" name="Cancel" width="22" height="22"> <b>cancel</b>
+                to discard your changes.
+            </p> 
+    
         </div>
         
         <div id="message">

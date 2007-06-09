@@ -363,12 +363,21 @@ if (!$default) {
             </p>
             
             <p>
-                Use the help link at the top of the page or next 
-                to the parameters if you need more information 
-                about the parameters on this page.
+		You will find more detailed information on the parameters
+		by clicking on <br> the 
+                <img src="images/help.png" name="Help" width="22" height="22"> <b>help</b> 
+                buttons or following the help link in the navigation bar.
             </p>
             
-            <p>Press the forward button to go to the next step.</p>
+            <p>
+                When you are ready, press the <br>
+                <img src="images/apply_help.png" name="Apply" width="22" height="22"> <b>apply</b>
+                button to go to the next <br>step
+                or <img src="images/cancel_help.png" name="Cancel" width="22" height="22"> <b>cancel</b>
+                to discard your changes.
+            </p>
+
+
             
         </div>
         
