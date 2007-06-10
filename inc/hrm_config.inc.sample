@@ -38,10 +38,10 @@ $huygens_group = "huygens";
 // file server host name
 $image_host = "localhost";
 
-// file server base folder
-$image_folder = "/path/to/hrm_data/";
+// file server base folder (without trailing /)
+$image_folder = "/path/to/hrm_data";
 
-// file server image source folder (with trailing /)
+// file server image source folder
 $image_source = "huygens_src";
 
 // file server image destination folder
@@ -94,9 +94,10 @@ $resultImagesOwnedByUser = False;
 $resultImagesRenamed = True;
 
 // internal links
-$internal_link["url"] = "<link>";
+$internal_link["url"] = "<link> followed by text";
 
 // external links
-$external_link["url"] = "<link> followed by text";
+$external_link["http://www.svi.nl"] = "<Scientific Volume Imaging B.V.>";
+$external_link["http://support.svi.nl/wiki"] = "<SVI-wiki> on 3D microscopy, deconvolution, visualization and analysis";
 
 ?>
