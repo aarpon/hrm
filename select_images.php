@@ -116,7 +116,17 @@ include("header.inc.php");
     <div id="nav">
         <ul>
             <li><a href="select_images.php?exited=exited">exit</a></li>
+<?php
+
+if ($enableUserAdmin) {
+
+?>
             <li><a href="account.php">account</a></li>
+<?php
+
+}
+
+?>
             <li><a href="job_queue.php">queue</a></li>
             <li><a href="javascript:openWindow('http://support.svi.nl/wiki/HuygensRemoteManagerHelpSelectImages')">help</a></li>
         </ul>

@@ -168,7 +168,7 @@ if ($_SESSION['user']->name() == "admin") {
 
 }
 
-if ($enableUserAdmin) {
+if ($enableUserAdmin || $_SESSION['user']->name() == "admin") {
 
 ?>
             <li><a href="account.php">account</a></li>
