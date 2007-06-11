@@ -117,13 +117,13 @@ if (isset($_POST['OK'])) {
             }
             else $message = "            <p class=\"warning\">Passwords do not match</p>\n";
           }
-          else $message = "            <p class=\"warning\">Please fill in password fields</p>\n";
+          else $message = "            <p class=\"warning\">Please fill in both password fields</p>\n";
         }
-        else $message = "            <p class=\"warning\">Please fill group field in</p>\n";
+        else $message = "            <p class=\"warning\">Please fill in the group field</p>\n";
       }
-      else $message = "            <p class=\"warning\">Please fill email field in with a valid address</p>\n";
+      else $message = "            <p class=\"warning\">Please fill in the email field with a valid address</p>\n";
     }
-    else $message = "            <p class=\"warning\">Please fill name field in</p>\n";
+    else $message = "            <p class=\"warning\">Please fill in the name field</p>\n";
 }
 
 include("header.inc.php");

@@ -92,7 +92,7 @@ if (isset($_POST['modify'])) {
   }
   else {
     $result = False;
-    $message = "            <p class=\"warning\">Please fill email field in with a valid address<br />&nbsp;</p>";
+    $message = "            <p class=\"warning\">Please fill in the email field with a valid address<br />&nbsp;</p>";
   }
   if (isset($_POST['group'])) {
     if ($_POST['group'] != "") {
@@ -100,13 +100,13 @@ if (isset($_POST['modify'])) {
     }
     else {
       $result = False;
-      $message = "\n            <p class=\"warning\">Please fill group field in<br />&nbsp;</p>";
+      $message = "\n            <p class=\"warning\">Please fill in the group field<br />&nbsp;</p>";
     }
   }
   if ($_POST['pass1'] != "" || $_POST['pass2'] != "") {
     if ($_POST['pass1'] == "" || $_POST['pass2'] == "") {
       $result = False;
-      $message = "\n            <p class=\"warning\">Please fill both password fields in</p>";
+      $message = "\n            <p class=\"warning\">Please fill in both password fields</p>";
     }
     else {
       if ($_POST['pass1'] == $_POST['pass2']) {
