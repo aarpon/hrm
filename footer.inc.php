@@ -55,7 +55,7 @@
 
     <div id="footer">
         created 2004 by <a href="mailto:volker.baecker@crbm.cnrs.fr">Volker 
-        Baecker</a>, modified 2006 by <a href="mailto:asheesh.gulati@epfl.ch">
+        Baecker</a>, modified 2006-2007 by <a href="mailto:asheesh.gulati@epfl.ch">
         Asheesh Gulati</a> &amp; <a href="mailto:aaron.ponti@fmi.ch">Aaron 
         Ponti</a>
     </div>
