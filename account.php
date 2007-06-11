@@ -86,17 +86,24 @@ $message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
 
 if (isset($_POST['modify'])) {
   $result = True;
-  $query = "UPDATE user SET ";
-  if ($_POST['email'] != "" && strstr($_POST['email'], "@") && strstr(strstr($_POST['email'], "@"), ".")) {
-    $query .= " email ='".$_POST['email']."'";
-  }
-  else {
-    $result = False;
-    $message = "            <p class=\"warning\">Please fill in the email field with a valid address<br />&nbsp;</p>";
+  $baseQuery = "UPDATE user SET ";
+  $query = $baseQuery;
+  if ( isset( $_POST['email'] ) ) {
+    if ( $_POST['email'] != "" && strstr($_POST['email'], "@") && strstr(strstr($_POST['email'], "@"), ".")) {
+      $query .= " email ='".$_POST['email']."'";
+    }
+    else {
+      $result = False;
+      $message = "            <p class=\"warning\">Please fill in the email field with a valid address<br />&nbsp;</p>";
+    }
   }
   if (isset($_POST['group'])) {
     if ($_POST['group'] != "") {
-      $query .= ", research_group ='".$_POST['group']."'";
+      if ( strcmp( $query, $baseQuery ) == 0 ) {
+        $query .= "research_group ='".$_POST['group']."'";
+      } else {
+        $query .= ", research_group ='".$_POST['group']."'";
+      }
     }
     else {
       $result = False;
@@ -110,7 +117,11 @@ if (isset($_POST['modify'])) {
     }
     else {
       if ($_POST['pass1'] == $_POST['pass2']) {
-        $query .= ", password = '".md5($_POST['pass1'])."'";
+        if ( strcmp( $query, $baseQuery ) == 0 ) {
+          $query .= "password = '".md5($_POST['pass1'])."'";
+        } else {
+          $query .= ", password = '".md5($_POST['pass1'])."'";
+        }
       }
       else {
         $result = False;
@@ -128,8 +139,12 @@ if (isset($_POST['modify'])) {
         header("Location: " . "user_management.php"); exit();
       }
       else {
-        $user->setEmail($_POST['email']);
-        $user->setGroup($_POST['group']);
+        if ( isset( $_POST['email'] ) ) {
+          $user->setEmail($_POST['email']);
+        }
+        if ( isset( $_POST['group'] ) ) {
+          $user->setGroup($_POST['group']);
+        }
         $_SESSION['user'] = $user;
         $message = "            <p class=\"warning\">Account details successfully modified</p>";
         header("Location: " . $_SESSION['referer']); exit();
