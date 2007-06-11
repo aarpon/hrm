@@ -281,6 +281,21 @@ Class User extends Owner{
   }
   
   //!---------------------------------------------------------
+  // @function    User::isSuspended
+  // @desc        Answer true if the user's account has been
+  //              suspended by the administrtator.
+  // @param       name     String    The login name of the user 
+  // @return      Boolean
+  //!---------------------------------------------------------
+  function isSuspended() {
+  	$result = false;
+  	$db = new DatabaseConnection();
+  	$status = $db->getUserStatus($this->name());
+  	$result = ($status==$this->getSuspendedStatus());
+  	return $result;
+  }
+  
+  //!---------------------------------------------------------
   // @function    User::exists
   // @desc        Answer true if the user's account exists.
   // @param       name     String    The login name of the user 
@@ -367,6 +382,16 @@ Class User extends Owner{
   //!---------------------------------------------------------    
   function getAcceptedStatus() {
   	return 'a';
+  }
+  
+  //!---------------------------------------------------------
+  // @function    User::getSuspendedStatus
+  // @desc        Answer the status that signifies that the
+  //              user's account is suspended
+  // @return      String
+  //!---------------------------------------------------------    
+  function getSuspendedStatus() {
+  	return 'd';
   }
 
   //!---------------------------------------------------------

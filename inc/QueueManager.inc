@@ -597,25 +597,25 @@ Class QueueManager {
 					//if (file_exists($errorFile)) { 
 					//    unlink($errorFile);
 					//} 
-				} else
-					if ($finished && $result) {
-						report("job $id completed on " . $job->server(), 1);
-						// finsihed. remove job, write email, clean up huygens server
-						// clean up server
-						$this->cleanUpFileServer($job);
-						// remove job
-						$this->stopTime = $queue->stopJob($job);
-						// write email
-						$this->writeParameterFile($job, $startTime);
-						if ($send_mail) $this->notifySuccess($job, $startTime);
-						//if (file_exists($errorFile)) { 
-						//    unlink($errorFile);
-						//} 
-						// make withdrawal of hours
-						if ($use_accounting_system) {
-							$this->makeWithdrawal($desc->owner(), $accounting_client_name, $startTime, $this->stopTime, $desc->credit(), $desc->group);
-						}
+				}
+				else if ($finished && $result) {
+					report("job $id completed on " . $job->server(), 1);
+					// finsihed. remove job, write email, clean up huygens server
+					// clean up server
+					$this->cleanUpFileServer($job);
+					// remove job
+					$this->stopTime = $queue->stopJob($job);
+					// write email
+					$this->writeParameterFile($job, $startTime);
+					if ($send_mail) $this->notifySuccess($job, $startTime);
+					//if (file_exists($errorFile)) { 
+					//    unlink($errorFile);
+					//} 
+					// make withdrawal of hours
+					if ($use_accounting_system) {
+						$this->makeWithdrawal($desc->owner(), $accounting_client_name, $startTime, $this->stopTime, $desc->credit(), $desc->group);
 					}
+				}
 		}
 	}
 
@@ -661,6 +661,7 @@ Class QueueManager {
 	}
 
 	// TODO check what happens if a job fails and the next one succeeds
+	// TODO refactor this!
 	function errorOccured($job) {
 		global $imageProcessingIsOnQueueManager;
 		if ($imageProcessingIsOnQueueManager) {
