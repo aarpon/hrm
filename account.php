@@ -192,7 +192,7 @@ if (isset($_SESSION['account_user'])/* && $_SESSION['user']->name() == "admin"*/
                 <label for="group">Research group: </label>
                 <input name="group" id="group" type="text" value="<?php echo $user->group() ?>" />
                 <br />
-<?
+<?php
 
 }
 
