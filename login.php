@@ -178,7 +178,14 @@ include("header.inc.php");
                         <a href="javascript:openWindow('http://support.svi.nl/wiki/HuygensRemoteManagerHelpLogin')"><img src="images/help.png" alt="?"/></a>
                         Login
                     </legend>
-                    <p>If you do not have an account, please register <a href="registration.php">here</a>.</p>
+                    <?php
+                    if ( $enableUserAdmin == True ) {
+                      $login_message = "<p>If you do not have an account, please register <a href=\"registration.php\">here</a>.</p>";
+                    } else {
+                      $login_message = "<p>If you do not have an account, please contact your administrator.</p>";
+                    }
+                    echo $login_message;
+                    ?>
                     <label for="username">Name:</label>
                     <input id="username" name="username" type="text" class="textfield" tabindex="1" />
                     <br />
