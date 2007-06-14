@@ -623,7 +623,7 @@ Class JobDescription {
       $newScript = $newScript . 'c convert3d22d' . "\n";   
     }
     
-    $newScript = $newScript .   "catch { exec mkdir -m0775 -p " . '"' . $this->destinationFolder() . '"' . " }\n"; 
+    $newScript = $newScript .   "catch { exec mkdir -m0777 -p " . '"' . $this->destinationFolder() . '"' . " }\n"; 
     if ($resultImagesOwnedByUser) {
       $user = $this->owner();
       $newScript = $newScript .   "catch { exec chown -Rf " . $user->name() . ':' . $huygens_group . ' "' . $this->destinationFolderTop() . '"' . " }\n"; 

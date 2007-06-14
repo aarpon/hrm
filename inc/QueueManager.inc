@@ -384,9 +384,9 @@ Class QueueManager {
 			$batch = "cd \"" . $huygens_server_image_folder . "\"\n";
 			$owner = $desc->owner();
 			$user = $owner->name();
-			$batch .= "-mkdir \"" . $user . "\"\n";
+			$batch .= "-mkdir 0777 \"" . $user . "\"\n";
 			$batch .= "cd \"" . $user . "\"\n";
-			$batch .= "-mkdir \"" . $image_source . "\"\n";
+			$batch .= "-mkdir 0777 \"" . $image_source . "\"\n";
 			$batch .= "cd \"" . $image_source . "\"\n";
 			$batch .= "put \"" . $image_folder . "/" . $user . "/" . $image_source . "/" . $scriptName . "\"\n";
 			$files = $desc->files();
@@ -394,7 +394,7 @@ Class QueueManager {
 				$path = split("/", $file);
 				if (sizeof($path) > 0) {
 					for ($i = 0; $i < sizeof($path) - 1; $i++) {
-						$batch .= "-mkdir \"" . $path[$i] . "\"\n";
+						$batch .= "-mkdir 0777\"" . $path[$i] . "\"\n";
 						$batch .= "cd \"" . $path[$i] . "\"\n";
 					}
 				}
@@ -420,7 +420,7 @@ Class QueueManager {
 				}
 			}
 			$batch .= "cd ..\n";
-			$batch .= "-mkdir \"" . $image_destination . "\"\n";
+			$batch .= "-mkdir 0777 \"" . $image_destination . "\"\n";
 			$batch .= "quit\n";
 			$batchfile = fopen("batchfile", 'w');
 			fwrite($batchfile, $batch);
