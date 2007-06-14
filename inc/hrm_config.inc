@@ -1,7 +1,7 @@
 <?php
 
 if (!isset($isServer))
-	$isServer = true; // or false
+	$isServer = False;
 
 if ($isServer) 
 	require_once('hrm_server_config.inc');

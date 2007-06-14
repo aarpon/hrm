@@ -56,13 +56,13 @@ require_once("Fileserver.inc");
 Class ExternalProcess {
     var $pid;                         // os pid of the process
     var $host;                        // host on which the process will be started
-    // TODO better management of multiple hosts
+    // TODO better manage multiple hosts
     var $huscript_path;               // HuScript executable path on host
     var $pipes;                       // pipes for commiunication with the process
     var $shell;                       // The shell process resource
     var $logfileName;                 // Name of the process error log
     var $descriptorSpec;
-    // TODO better management of file handles
+    // TODO better manage file handles
     var $out_file;                    // handle for the output file
     
     function ExternalProcess($host, $huscript_path, $logfileName, $errfileName) {
@@ -76,7 +76,7 @@ Class ExternalProcess {
         if (strpos($host, " ")) { 
             $components = explode(" ", $host);
             array_pop($components);
-            $realHost = implode('', $components);
+            $realHost = implode("", $components);
             $this->host = $realHost;
         } 
         $this->pid = NULL;
@@ -84,15 +84,17 @@ Class ExternalProcess {
     
     // TODO refactor
     function existsHuygensProcess($pid) {
+        global $hrm_path;
         global $huygens_user;
-        $answer = system("ssh $huygens_user" . '@' . $this->host . " " . "ps -p $pid | grep -e huscript > ".$hrm_path."/run/hrm_tmp" , $result); // -p
+        $answer = system("ssh $huygens_user" . '@' . $this->host . " " . "ps -p $pid | grep -e huscript > " . $hrm_path . "/run/hrm_tmp" , $result); // -p
         if ($result==0) {return True;} 
         return False;
     } 
     
     function isHuygensProcessSleeping($pid) {
+        global $hrm_path;
         global $huygens_user;
-        $answer = system("ssh $huygens_user" . '@' . $this->host . " " . "ps -lf -p " ."$pid | grep -e huscript | grep -e S > ".$hrm_path."/run/hrm_tmp",  $result);
+        $answer = system("ssh $huygens_user" . '@' . $this->host . " " . "ps -lf -p " . "$pid | grep -e huscript | grep -e S > " . $hrm_path . "/run/hrm_tmp",  $result);
         if ($result==0) {return True;} 
         return False;    
     } 
@@ -112,14 +114,11 @@ Class ExternalProcess {
     } 
     
     function ping() {
-    	global $ping_command;
-    	global $ping_parameter;
         global $hrm_path;
     	
-    	$result = "";
-    	$command = $ping_command . " " . $this->host . " " . $ping_parameter . " > ".$hrm_path."/run/hrm_tmp";
-        $answer = system($command, $result);
-        if ($result==0) {return True;} 
+        $answer = system("ping -w 4 " . $this->host . " > ". $hrm_path . "/run/hrm_tmp", $result);
+        if ($result == 0)
+            return True;
         return False;   
     } 
 
@@ -129,6 +128,7 @@ Class ExternalProcess {
     
     function runShell() {
         global $huygens_user;
+        
         $this->shell = proc_open("bash", $this->descriptorSpec, $this->pipes);
         if (!is_resource($this->shell)) {
             return False;

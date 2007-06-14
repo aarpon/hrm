@@ -90,16 +90,15 @@ function report($text, $level) {
 	fclose($file);
 }
 
-// TODO better management of multiple hosts
+// TODO better manage multiple hosts
 function newExternalProcessFor($host, $logfilename, $errfilename) {
 	global $imageProcessingIsOnQueueManager;
 	$db = new DatabaseConnection();
 	$huscript_path = $db->huscriptPathOn($host);
-	if ($imageProcessingIsOnQueueManager) {
+	if ($imageProcessingIsOnQueueManager)
 		$shell = new LocalExternalProcess($host, $huscript_path, $logfilename, $errfilename);
-	} else {
+	else
 		$shell = new ExternalProcess($host, $huscript_path, $logfilename, $errfilename);
-	}
 	return $shell;
 }
 
@@ -140,10 +139,8 @@ Class Job {
 				$result = False;
 			}
 		} else {
-			error_log("Job is elementary");
 			report("Job is elementary", 1);
 			$this->createScript();
-			error_log("Created script");
 			report("Created script", 1);
 			$result = $result && $this->writeScript();
 			/*if ($result) {
@@ -216,8 +213,6 @@ Class Job {
 		$file = fopen($scriptFile, "w");
 		$result = $result && (fwrite($file, $this->script) > 0);
 		fclose($file);
-		if ($result)
-			error_log("Wrote script $scriptFile");
 		report("Wrote script $scriptFile", 1);
 		return $result;
 	}
@@ -225,10 +220,9 @@ Class Job {
 	// TODO refactor
 	function checkResultImage() {
 		global $imageProcessingIsOnQueueManager;
-		global $huygens_server_image_folder;
-		global $image_source;
 		global $huygens_user;
-		global $copy_images_to_huygens_server;
+		global $image_source;
+		global $huygens_server_image_folder;
 		
 		clearstatcache();
 		$server = $this->server;
@@ -243,10 +237,10 @@ Class Job {
 		$path = $fileserver->destinationFolderFor($desc);
 		$outfilename = $desc->id();
 		// if fileshare is not on the same host as Huygens
-		if (!$imageProcessingIsOnQueueManager && $copy_images_to_huygens_server) {
-			$image = $huygens_server_image_folder . $user->name() . "/" . $image_source . "/" . $outfilename;
+		if (!$imageProcessingIsOnQueueManager) {
+			$image = $huygens_server_image_folder . $user->name() . "/" . $image_source . "/*" . $outfilename . "*";
 			exec("(cd " . $path . " && scp " . $huygens_user . "@" . $server_hostname . ":" . $image . " .)");
-			//error_log("retrieving result image");
+			error_log("retrieving result image -> " . "(cd " . $path . " && scp " . $huygens_user . "@" . $server_hostname . ":" . $image . " .)");
 		}
 		$fileNameExists = $fileserver->folderContains($path, $outfilename);
 		$newFileWritten = $fileserver->folderContainsNewerFile($path, $queue->startTime($this));
@@ -318,6 +312,8 @@ Class QueueManager {
 	}
 
 	function executeScript() {
+		global $imageProcessingIsOnQueueManager;
+		
 		$job = $this->job;
 		$server = $this->freeServer;
 		// server name without proc number
@@ -326,16 +322,15 @@ Class QueueManager {
 		$desc = $job->description();
 		$clientScriptPath = $desc->sourceFolder();
 		$scriptName = $job->scriptName();
-		error_log("expected script filename: " . $scriptName);
-		$this->copyImagesToServer($server_hostname);
+		if (!$imageProcessingIsOnQueueManager)
+			$clientScriptPath = $this->copyImagesToServer($server_hostname);
 		$proc = newExternalProcessFor($server, $server . "_out.txt", $server . "_error.txt");
 		report("shell process created", 1);
 		$ssh = $proc->runShell();
 		report("running shell", 1);
 		$pid = $proc->runHuygensScript($clientScriptPath . $scriptName);
-		error_log("script PID=" . $pid);
+		// TODO refactor this <<
 		// check if Huygens outputs any interactive dialog
-		// TODO refactor
 		sleep(5);
 		while (True) {
 			if (feof($proc->out_file))
@@ -346,14 +341,15 @@ Class QueueManager {
 				fwrite($warning_file, "[" . $desc->id() . "] Microscope types of original and PSF differ\n");
 				fclose($warning_file);
 				break;
-			} else
-				if (strstr($input, "After necessary resampling the PSF is too small.")) {
-					$warning_file = fopen($server . "_warning.txt", "a");
-					fwrite($warning_file, "[" . $desc->id() . "] After necessary resampling the PSF is too small\n");
-					fclose($warning_file);
-					break;
-				}
+			}
+			else if (strstr($input, "After necessary resampling the PSF is too small.")) {
+				$warning_file = fopen($server . "_warning.txt", "a");
+				fwrite($warning_file, "[" . $desc->id() . "] After necessary resampling the PSF is too small\n");
+				fclose($warning_file);
+				break;
+			}
 		}
+		// >>
 		report("running script (pid $pid)", 1);
 		$proc->release();
 		$job->setPid($pid);
@@ -361,81 +357,81 @@ Class QueueManager {
 		$this->job = $job;
 		return ($pid > 0);
 	}
-
- 	function copyImagesToServer($server_hostname) { 
+	
+ 	function copyImagesToServer($server_hostname) {
+		global $huygens_user;
 		global $image_folder;
 		global $image_source;
 		global $image_destination;
-		global $huygens_user;
-		global $copy_images_to_huygens_server;
-		global $imageProcessingIsOnQueueManager;
 		global $huygens_server_image_folder;
 		
 		$job = $this->job;
 		$desc = $job->description();
-		$scriptName = $job->scriptName();
+		$user = $desc->owner();
 		
-		// TODO
-		// substitute spaces by underscores in image name
-		// if fileshare is not on the same host as Huygens, send files to server
-		//exec($image_folder."/".$user."/".$image_source."/*");
-		// TODO refactor batchfile
-		if (!$imageProcessingIsOnQueueManager && $copy_images_to_huygens_server) {
-			$batch = "cd \"" . $huygens_server_image_folder . "\"\n";
-			$owner = $desc->owner();
-			$user = $owner->name();
-			$batch .= "-mkdir \"" . $user . "\"\n";
-			$batch .= "cd \"" . $user . "\"\n";
-			$batch .= "-mkdir \"" . $image_source . "\"\n";
-			$batch .= "cd \"" . $image_source . "\"\n";
-			$batch .= "put \"" . $image_folder . "/" . $user . "/" . $image_source . "/" . $scriptName . "\"\n";
-			$files = $desc->files();
-			foreach ($files as $file) {
-				$path = split("/", $file);
-				if (sizeof($path) > 0) {
-					for ($i = 0; $i < sizeof($path) - 1; $i++) {
-						$batch .= "-mkdir \"" . $path[$i] . "\"\n";
-						$batch .= "cd \"" . $path[$i] . "\"\n";
-					}
-				}
-				$filename = $image_folder . "/" . $user . "/" . $image_source . "/" . $file;
-				$components = split(".", strtolower($filename));
-				if ($components[1] == ".ics")  {
-					$batch .= "put \"" . $filename . "\"\n";
-					$filename = eregi_replace(".ics", ".ids", $filename);
-					$batch .= "put \"" . $filename . "\"\n";
-				} else
-					if (strstr($filename, ".tif") || strstr($filename, ".tiff")) {
-						// TODO: if ImageFileFormat = single TIFF file, do not send corresponding series
-						$basename = preg_replace("/([^_]+|\/)(_)(t|z|ch)([0-9]+)(\w+)(\.)(\w+)/", "$1$6$7", $filename);
-						$name = preg_replace("/(.*)\.tiff?$/", "$1", $basename);
-						$batch .= "put \"" . $name . "*\"\n";
-					} else {
-						$batch .= "put \"" . $filename . "\"\n";
-					}
-				if (sizeof($path) > 0) {
-					for ($i = 0; $i < sizeof($path) - 1; $i++) {
-						$batch .= "cd ..\n";
-					}
+		// TODO substitute spaces by underscores in image name to avoid processing problems with Huygens
+		
+		$batch = "cd \"" . $huygens_server_image_folder . "\"\n";
+		$batch .= "-mkdir \"" . $user->name() . "\"\n";
+		$batch .= "cd \"" . $user->name() . "\"\n";
+		$batch .= "-mkdir \"" . $image_source . "\"\n";
+		$batch .= "cd \"" . $image_source . "\"\n";
+		$batch .= "put \"" . $image_folder . "/" . $user->name() . "/" . $image_source . "/" . $job->scriptName() . "\"\n";
+		
+		$files = $desc->files();
+		foreach ($files as $file) {
+			$path = split("/", $file);
+			if (sizeof($path) > 0) {
+				for ($i = 0; $i < sizeof($path) - 1; $i++) {
+					$batch .= "-mkdir \"" . $path[$i] . "\"\n";
+					$batch .= "cd \"" . $path[$i] . "\"\n";
 				}
 			}
-			$batch .= "cd ..\n";
-			$batch .= "-mkdir \"" . $image_destination . "\"\n";
-			$batch .= "quit\n";
-			$batchfile = fopen("batchfile", 'w');
-			fwrite($batchfile, $batch);
-			fclose($batchfile);
-			exec("sftp -b batchfile " . $huygens_user . "@" . $server_hostname);
-			exec("rm -f batchfile");
-			//exec("rm -f ".$image_folder."/".$user."/".$image_source."/".$scriptName);
-			return $batch;
+			$filename = $image_folder . "/" . $user->name() . "/" . $image_source . "/" . $file;
+			$components = split(".", strtolower($filename));
+			if ($components[1] == ".ics")  {
+				$batch .= "put \"" . $filename . "\"\n";
+				$filename = eregi_replace(".ics", ".ids", $filename);
+				$batch .= "put \"" . $filename . "\"\n";
+			}
+			else if (strstr($filename, ".tif") || strstr($filename, ".tiff")) {
+				// TODO: if ImageFileFormat = single TIFF file, do not send corresponding series
+				$basename = preg_replace("/([^_]+|\/)(_)(t|z|ch)([0-9]+)(\w+)(\.)(\w+)/", "$1$6$7", $filename);
+				$name = preg_replace("/(.*)\.tiff?$/", "$1", $basename);
+				$batch .= "put \"" . $name . "*\"\n";
+			}
+			else {
+				$batch .= "put \"" . $filename . "\"\n";
+			}
+			if (sizeof($path) > 0) {
+				for ($i = 0; $i < sizeof($path) - 1; $i++) {
+					$batch .= "cd ..\n";
+				}
+			}
 		}
+		
+		$batch .= "cd ..\n";
+		$batch .= "-mkdir \"" . $image_destination . "\"\n";
+		$batch .= "quit\n";
+		
+		$batch_filename = $image_folder . "/" . $user->name() . "/" . "batchfile_" . $desc->id();
+		
+		$batchfile = fopen($batch_filename, 'w');
+		fwrite($batchfile, $batch);
+		fclose($batchfile);
+		
+		// TODO refactor this << move to Shell
+		exec("sftp -b " . $batch_filename . " " . $huygens_user . "@" . $server_hostname);
+		exec("rm -f " . $batch_filename);
+		// >>
+		
+		return $huygens_server_image_folder . $user->name() . "/" . $image_source . "/";
 	}
 	
 	function nextJobFromQueue() {
 		$queue = $this->queue;
-		$foundExecutableJob = false;
-		$pausedJobs = false;
+		$foundExecutableJob = False;
+		$pausedJobs = False;
 		$jobDescription = $queue->getNextJobDescription();
 		while ($jobDescription != NULL && !$foundExecutableJob) {
 			$user = $jobDescription->owner();
@@ -451,9 +447,8 @@ Class QueueManager {
 			}
 			$jobDescription = $queue->getNextJobDescription();
 		}
-		if ($pausedJobs){
-					$queue->restartPausedJobs();
-		}
+		if ($pausedJobs)
+			$queue->restartPausedJobs();
 		if ($jobDescription == NULL)
 			return NULL;
 		$job = new Job($jobDescription);
@@ -463,7 +458,7 @@ Class QueueManager {
 	}
 
 	function cleanUpFileServer($job) {
-		report("Cleaning up file server", 1);
+		report("cleaning up file server", 1);
 		$server = $job->server();
 		// server name without proc number
 		$s = split(" ", $server);
@@ -488,12 +483,10 @@ Class QueueManager {
 		}
 		// remove job
 		$this->stopTime = $queue->stopJob($job);
-		// if fileshare is not on the same host as Huygens, retrieve result images
-		// remove images from server
-		$this->retrieveImagesFromServer($server_hostname, $username);
 		report("stopped job (" . date("l d of F Y h:i:s A") . ")\n", 1);
 	}
 	
+	// TODO refactor this
 	function retrieveImagesFromServer($server_hostname, $username) {
 		global $imageProcessingIsOnQueueManager;
 		global $image_folder;
@@ -521,12 +514,14 @@ Class QueueManager {
 		}
 	}
 	
+	// TODO refactor this
 	function updateJobAndServerStatus() {
 		global $imageProcessingIsOnQueueManager;
 		global $use_accounting_system;
 		global $accounting_client_name;
-		global $send_mail;
-
+		
+		$send_mail = True;
+		
 		$queue = $this->queue;
 		$queue->removeMarkedJobs();
 		$runningJobs = $queue->runningJobs();
@@ -551,11 +546,19 @@ Class QueueManager {
 			// check finished marker
 			$finished = $job->checkProcessFinished();
 			report("checked finished marker", 2);
+			
 			// check result image AGAIN?
+			$result = False;
 			if ($imageProcessingIsOnQueueManager || (!$imageProcessingIsOnQueueManager && $finished)) {
 				$result = $job->checkResultImage();
 				report("checked result image", 2);
 			}
+			
+			// TODO check for redundant file retrieval
+			/*if (!$imageProcessingIsOnQueueManager && $result) {
+				$this->retrieveImagesFromServer($server_hostname, $username);
+			}*/
+			
 			// notify user
 			$startTime = $queue->startTime($job);
 			$errorOccured = $this->errorOccured($job);
@@ -576,7 +579,7 @@ Class QueueManager {
 					$this->stopTime = $queue->stopJob($job);
 					// write email
 					$message = $input;
-					if ($send_mail)$this->notifyWarning($job, $message, $startTime);
+					if ($send_mail) $this->notifyWarning($job, $message, $startTime);
 					//if (file_exists($errorFile)) { 
 					//    unlink($errorFile);
 					//}
@@ -664,9 +667,9 @@ Class QueueManager {
 	// TODO refactor this!
 	function errorOccured($job) {
 		global $imageProcessingIsOnQueueManager;
-		if ($imageProcessingIsOnQueueManager) {
+		//if ($imageProcessingIsOnQueueManager) {
 			return False;
-		}
+		//}
 		$errorFile = $job->server() . '_error.txt';
 		$message = '';
 		if (file_exists($errorFile)) {
@@ -793,10 +796,10 @@ Class QueueManager {
 		foreach ($serverNames as $name) {
 			$status = $db->statusOfServer($name);
 			if ($status == 'free') {
-				$proc = newExternalProcessFor($name, "", $name . "_out.txt", $name . "_error.txt");
+				$proc = newExternalProcessFor($name, $name . "_out.txt", $name . "_error.txt");
 				report("found free server", 2);
 				if ($proc->ping()) {
-					report("ping succeded for $name", 2);
+					report("ping succeeded for $name", 2);
 					$this->freeServer = $name;
 					return True;
 				}
@@ -840,11 +843,12 @@ Class QueueManager {
 
 	function run() {
 		global $imageProcessingIsOnQueueManager;
-
+		
 		$queue = $this->queue;
-
+		
 		$this->waitForDatabaseConnection();
 		$server = $queue->availableServer();
+		// TODO refactor this in order to manage error logs per job
 		foreach ($server as $name) {
 			if (!$queue->isServerBusy($name)) {
 				$errorFile = $name . "_error.txt";
@@ -854,42 +858,44 @@ Class QueueManager {
 				}
 			}
 		}
+		
 		report("Huygens Remote Manager started on " . date("l d of F Y h:i:s A") . "\n", 1);
 		while (!$this->shallStop()) {
 			set_time_limit(0);
 			$this->queue = $queue;
 			$result = True;
-
+			
 			// reduce the used cycles by going to sleep for one second
 			if ($imageProcessingIsOnQueueManager) {
 				sleep(1);
 			}
-
+			
 			// Check if jobs finished and update the database. Inform the user via email.
 			$this->updateJobAndServerStatus();
-			report("huygens server updated status", 2);
-
+			report("Huygens server updated status", 2);
+			
 			// Process compound jobs
 			$this->processCompoundJobs();
-
-			// TODO && -> &
+			
 			// Read in a free huygens server
 			while ($this->getFreeServer() && $this->nextJobFromQueue() != NULL) {
-				report("Using huygens server: " . $this->freeServer, 2);
-
+				report("using Huygens server: " . $this->freeServer, 2);
+				
 				// Read in a queued job 
 				$job = $this->job;
 				$desc = $job->description();
 				$id = $desc->id();
 				report("processing job " . $id . " on " . $job->server(), 1);
-
+				
+				// TODO check this <<
 				// If the job is compound create sub jobs and remove job otherwise create script
-				$result = /*$result &&*/
-				$job->createSubJobsOrScript();
+				//$result = $result && $job->createSubJobsOrScript();
+				$result = $job->createSubJobsOrScript();
 				if (!$result || $desc->isCompound()) {
 					error_log("error or compound job");
 					continue;
 				}
+				// >>
 				report("script has been created", 1);
 
 				// Execute the script on the huygens server and update the database state

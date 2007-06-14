@@ -585,7 +585,7 @@ Class DatabaseConnection {
   }
 
   function getNextIdFromQueue() {
-    $query = "select id from job_queue where status='queued' order by queued desc";
+    $query = "SELECT id FROM job_queue WHERE status='queued' order by queued desc";
     $result = $this->queryLastValue($query);
     if (!$result) {
       return NULL;

@@ -56,6 +56,8 @@ require_once("./inc/Fileserver.inc");
 require_once("./inc/Setting.inc");
 require_once("./inc/JobDescription.inc");
 
+global $use_accounting_system;
+
 session_start();
 
 if (isset($_GET['exited'])) {
