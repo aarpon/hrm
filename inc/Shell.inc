@@ -216,6 +216,7 @@ Class LocalExternalProcess extends ExternalProcess {
  
   function existsHuygensProcess($pid) {
     global $huygens_user;
+    global $hrm_path;
     $answer = system("ps -p $pid | grep -e huscript > ".$hrm_path."/run/hrm_tmp" , $result);
     if ($result==0) {return True;} 
     return False;
