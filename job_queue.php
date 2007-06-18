@@ -203,6 +203,13 @@ else {
 
       }
     }
+    else {
+
+?>
+                        <td></td>
+<?php
+
+    }
 
 ?>
                         <td><?php echo $index ?></td>

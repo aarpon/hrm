@@ -179,7 +179,7 @@ Class Job {
 
 		$desc = $this->description();
 		$setting = $desc->parameterSetting();
-		$this->script = "set id [pid]" . "\n" . 'puts "pid=$id\n"' . "\n";
+		$this->script = "set id [pid]" . "\n" . 'puts "\npid=$id"' . "\n";
 		$this->script = $this->script . "huOpt verb -mode noQs\n";
 		$this->script = $this->script . "catch {\n";
 		$this->script = $this->script . "huOpt gundo off\n";
@@ -216,69 +216,91 @@ Class Job {
 		report("Wrote script $scriptFile", 1);
 		return $result;
 	}
-
+	
 	// TODO refactor
 	function checkResultImage() {
 		global $imageProcessingIsOnQueueManager;
 		global $huygens_user;
-		global $image_source;
+		global $huygens_group;
 		global $huygens_server_image_folder;
+		global $image_destination;
 		
 		clearstatcache();
+		
+		$queue = new JobQueue();
+		
+		// Server name without proc number
 		$server = $this->server;
-		// server name without proc number
 		$s = split(" ", $server);
 		$server_hostname = $s[0];
-		$queue = new JobQueue();
+		
 		$desc = $this->description();
 		$user = $desc->owner();
-		$username = $user->name();
-		$fileserver = new Fileserver($username);
+		
+		$fileserver = new Fileserver($user->name());
 		$path = $fileserver->destinationFolderFor($desc);
-		$outfilename = $desc->id();
-		// if fileshare is not on the same host as Huygens
+		
+		// TODO refactor JobDescription
+		$resultImage = $desc->sourceImageShortName() . "*" . "_" . $desc->id() . "*";
+		
+		// If fileshare is not on the same host as Huygens
 		if (!$imageProcessingIsOnQueueManager) {
-			$image = $huygens_server_image_folder . $user->name() . "/" . $image_source . "/*" . $outfilename . "*";
-			exec("(cd " . $path . " && scp " . $huygens_user . "@" . $server_hostname . ":" . $image . " .)");
-			error_log("retrieving result image -> " . "(cd " . $path . " && scp " . $huygens_user . "@" . $server_hostname . ":" . $image . " .)");
+			$image = $huygens_server_image_folder . $user->name() . "/" . $image_destination . "/" . $desc->relativeSourcePath() . $resultImage;
+			// escape special characters in image path
+			$image = eregi_replace(" ", "\\ ", $image);
+			exec("mkdir -p " . escapeshellarg($path));
+			exec("(cd " . escapeshellarg($path) . " && scp " . $huygens_user . "@" . $server_hostname . ":" . escapeshellarg($image) . " .)");
 		}
-		$fileNameExists = $fileserver->folderContains($path, $outfilename);
-		$newFileWritten = $fileserver->folderContainsNewerFile($path, $queue->startTime($this));
-		$result = $fileNameExists || $newFileWritten;
+		
+		// TODO is checking for job id only a good idea?
+		$fileNameExists = $fileserver->folderContains($path, $desc->id());
+		// TODO is checking for new files a relevant criterion?
+		//$newFileWritten = $fileserver->folderContainsNewerFile($path, $queue->startTime($this));
+		$result = $fileNameExists/* || $newFileWritten*/;
 		return $result;
 	}
 
 	function checkProcessFinished() {
 		global $imageProcessingIsOnQueueManager;
-		global $image_source;
-		global $huygens_server_image_folder;
 		global $huygens_user;
+		global $huygens_server_image_folder;
+		global $image_source;
+		
 		clearstatcache();
+		
+		// Server name without proc number
 		$server = $this->server;
-		// server name without proc number
 		$s = split(" ", $server);
 		$server_hostname = $s[0];
+		
 		$desc = $this->description();
 		$user = $desc->owner();
-		$username = $user->name();
-		$fileserver = new Fileserver($username);
+		
+		$fileserver = new Fileserver($user->name());
 		$path = $fileserver->sourceFolder();
-		$id = $desc->id();
-		$finishedMarker = '.finished_' . "$id";
-		// if fileshare is not on the same host as Huygens
+		
+		$finishedMarker = ".finished_" . $desc->id();
+		
+		// If fileshare is not on the same host as Huygens
 		if (!$imageProcessingIsOnQueueManager) {
 			$marker = $huygens_server_image_folder . $user->name() . "/" . $image_source . "/" . $finishedMarker;
 			$result = exec("ssh " . $huygens_user . "@" . $server_hostname . " ls " . $marker);
-			if (strstr($result, "No such file or directory")) {
+			//error_log("ssh " . $huygens_user . "@" . $server_hostname . " ls " . $marker);
+			//error_log($result);
+			if ($result == $marker) {
 				exec("(cd " . $path . " && scp " . $huygens_user . "@" . $server_hostname . ":" . $marker . " .)");
-				error_log("retrieving finished marker");
 			}
 		}
+		
+		// TODO check why $result is overwritten
+		// Why bother checking for finished marker if process can be checked instead?
 		$result = file_exists($path . '/' . $finishedMarker);
-		$proc = newExternalProcessFor($this->server(), $this->server() . "_out.txt", $this->server() . "_error.txt");
-		$result = !$proc->existsHuygensProcess($this->pid());
-		if (!$result && $proc->isHuygensProcessSleeping($this->pid())) {
-			$proc->rewakeHuygensProcess($this->pid());
+		if ($imageProcessingIsOnQueueManager) {
+			$proc = newExternalProcessFor($this->server(), $this->server() . "_out.txt", $this->server() . "_error.txt");
+			$result = !$proc->existsHuygensProcess($this->pid());
+			if (!$result && $proc->isHuygensProcessSleeping($this->pid())) {
+				$proc->rewakeHuygensProcess($this->pid());
+			}
 		}
 		return $result;
 	}
@@ -295,6 +317,7 @@ Class QueueManager {
 	var $freeServer;
 	var $job;
 	var $shallStop;
+	// TODO make it a local variable
 	var $stopTime;
 
 	function QueueManager() {
@@ -487,7 +510,7 @@ Class QueueManager {
 	}
 	
 	// TODO refactor this
-	function retrieveImagesFromServer($server_hostname, $username) {
+	/*function retrieveImagesFromServer($server_hostname, $username) {
 		global $imageProcessingIsOnQueueManager;
 		global $image_folder;
 		global $image_source;
@@ -512,6 +535,20 @@ Class QueueManager {
 			error_log("> " . $output);
 			exec("chown -R " . $huygens_user . ":" . $huygens_group . " " . $lpath);
 		}
+	}*/
+			
+	function restoreOwnership($username) {
+		global $resultImagesOwnedByUser;
+		global $huygens_user;
+		global $huygens_group;
+		global $image_folder;
+		
+		//if ($resultImagesOwnedByUser)
+		//	;
+		//else
+			//$result = exec("chown -R " . $huygens_user . ":" . $huygens_group . " " . $image_folder . "/" . $username);
+			//error_log($result);
+
 	}
 	
 	// TODO refactor this
@@ -520,47 +557,94 @@ Class QueueManager {
 		global $use_accounting_system;
 		global $accounting_client_name;
 		
+		// TODO make it a global variable
 		$send_mail = True;
 		
+		// TODO check if it is necessary
 		$queue = $this->queue;
+		// Remove broken jobs
 		$queue->removeMarkedJobs();
 		$runningJobs = $queue->runningJobs();
-		report(count($runningJobs) . " jobs are running", 2);
+		report(count($runningJobs) . " job" . (count($runningJobs) == 1 ? " is" : "s are") . " running", 2);
 		foreach ($runningJobs as $job) {
 			$desc = $job->description();
-			$id = $desc->id();
-			$errorFile = $job->server() . '_error.txt';
 			$user = $desc->owner();
-			$username = $user->name();
-			// check if fileserver is reachable
-			$fileserver = new Fileserver($username);
+			//$id = $desc->id();
+			
+			// Check if fileserver is reachable
+			$fileserver = new Fileserver($user->name());
 			if (!$fileserver->isReachable())
 				continue;
-			// check result image
-			/*$result = $job->checkResultImage();
-			report("checked result image", 2);*/
-			// check if Huygens host is reachable
+			
+			// Check if Huygens host is reachable
 			$proc = newExternalProcessFor($job->server(), $job->server() . "_out.txt", $job->server() . "_error.txt");
 			if (!$proc->ping())
 				continue;
-			// check finished marker
+			
+			// Check finished marker
 			$finished = $job->checkProcessFinished();
+			if (!$finished)
+				continue;
 			report("checked finished marker", 2);
 			
-			// check result image AGAIN?
-			$result = False;
+			// Check result image
+			$result = $job->checkResultImage();
+			report("checked finished marker", 2);
+			
+			// If fileshare is not on the same host as Huygens
+			if (!$imageProcessingIsOnQueueManager)
+				$this->restoreOwnership($user->name());
+			
+			// Check if error occured
+			$errorOccured = $this->errorOccured($job);
+			
+			// Notify user
+			$startTime = $queue->startTime($job);
+			// TODO add warning messages notification
+			if (!$result || $errorOccured) {
+				report("finishing job " . $desc->id() . " with error on " . $job->server(), 1);
+				// Clean up server
+				$this->cleanUpFileServer($job);
+				// Remove job
+				$this->stopTime = $queue->stopJob($job);
+				// Write email
+				$message = "";
+				$errorFile = $job->server() . "_error.txt";
+				if (file_exists($errorFile))
+					$message = file_get_contents($errorFile);
+				if ($send_mail) $this->notifyError($job, $message, $startTime);
+				if (file_exists($errorFile))
+					unlink($errorFile);
+			}
+			else {
+				report("job " . $desc->id() . " completed on " . $job->server(), 1);
+				// Clean up server
+				$this->cleanUpFileServer($job);
+				// Remove job
+				$this->stopTime = $queue->stopJob($job);
+				// Write email
+				$this->writeParameterFile($job, $startTime);
+				if ($send_mail) $this->notifySuccess($job, $startTime);
+				//if (file_exists($errorFile)) { 
+				//    unlink($errorFile);
+				//} 
+				// make withdrawal of hours
+				if ($use_accounting_system) $this->makeWithdrawal($desc->owner(), $accounting_client_name, $startTime, $this->stopTime, $desc->credit(), $desc->group);
+			}
+			
+			/*$result = False;
 			if ($imageProcessingIsOnQueueManager || (!$imageProcessingIsOnQueueManager && $finished)) {
 				$result = $job->checkResultImage();
 				report("checked result image", 2);
-			}
+			}*/
 			
 			// TODO check for redundant file retrieval
 			/*if (!$imageProcessingIsOnQueueManager && $result) {
 				$this->retrieveImagesFromServer($server_hostname, $username);
 			}*/
 			
-			// notify user
-			$startTime = $queue->startTime($job);
+			// Notify user
+			/*$startTime = $queue->startTime($job);
 			$errorOccured = $this->errorOccured($job);
 			// TODO
 			$warningOccured = file_exists($job->server() . '_warning.txt');
@@ -618,7 +702,7 @@ Class QueueManager {
 					if ($use_accounting_system) {
 						$this->makeWithdrawal($desc->owner(), $accounting_client_name, $startTime, $this->stopTime, $desc->credit(), $desc->group);
 					}
-				}
+				}*/
 		}
 	}
 
@@ -865,7 +949,7 @@ Class QueueManager {
 			$this->queue = $queue;
 			$result = True;
 			
-			// reduce the used cycles by going to sleep for one second
+			// Reduce the used cycles by going to sleep for one second
 			if ($imageProcessingIsOnQueueManager) {
 				sleep(1);
 			}
@@ -898,7 +982,7 @@ Class QueueManager {
 				// >>
 				report("script has been created", 1);
 
-				// Execute the script on the huygens server and update the database state
+				// Execute the script on the Huygens server and update the database state
 				$result = $result && $this->executeScript();
 				if (!$result)
 					continue;

@@ -751,7 +751,6 @@ Class JobDescription {
     else {
       $result = $this->destinationFolder() . $this->destinationImageName();
     }
-    error_log("result filename: " . $result);
     return $result;
   }
 
