@@ -86,7 +86,7 @@ Class ExternalProcess {
     function existsHuygensProcess($pid) {
         global $hrm_path;
         global $huygens_user;
-        $answer = system("ssh $huygens_user" . '@' . $this->host . " " . "ps -p $pid | grep -e huscript > " . $hrm_path . "/run/hrm_tmp" , $result); // -p
+        $answer = system("ssh $huygens_user" . '@' . $this->host . " " . "ps -p $pid | grep -e hucore > " . $hrm_path . "/run/hrm_tmp" , $result); // -p
         if ($result==0) {return True;} 
         return False;
     } 
@@ -94,7 +94,7 @@ Class ExternalProcess {
     function isHuygensProcessSleeping($pid) {
         global $hrm_path;
         global $huygens_user;
-        $answer = system("ssh $huygens_user" . '@' . $this->host . " " . "ps -lf -p " . "$pid | grep -e huscript | grep -e S > " . $hrm_path . "/run/hrm_tmp",  $result);
+        $answer = system("ssh $huygens_user" . '@' . $this->host . " " . "ps -lf -p " . "$pid | grep -e hucore | grep -e S > " . $hrm_path . "/run/hrm_tmp",  $result);
         if ($result==0) {return True;} 
         return False;    
     } 
@@ -158,7 +158,9 @@ Class ExternalProcess {
   } 
 
   function runHuygensScript($scriptName) {
-      $command = $this->huscript_path." -noTk -script ".$scriptName;
+ // The hucore executable gets scripts to run through the -task option.
+ // That is the only command line option necesary.
+      $command = $this->huscript_path." -task ".$scriptName;
       // TODO better management of file handles
       //$out_file = fopen($this->descriptorSpec[1][1], "r");
       $this->out_file = fopen($this->descriptorSpec[1][1], "r");
@@ -217,14 +219,14 @@ Class LocalExternalProcess extends ExternalProcess {
   function existsHuygensProcess($pid) {
     global $huygens_user;
     global $hrm_path;
-    $answer = system("ps -p $pid | grep -e huscript > ".$hrm_path."/run/hrm_tmp" , $result);
+    $answer = system("ps -p $pid | grep -e hucore > ".$hrm_path."/run/hrm_tmp" , $result);
     if ($result==0) {return True;} 
     return False;
   } 
 
   function isHuygensProcessSleeping($pid) {
     //    global $huygens_user;
-    //    $answer = system("ps -lf -p " ."$pid | grep -e huscript | grep -e S > hrm_tmp",  $result);
+    //    $answer = system("ps -lf -p " ."$pid | grep -e hucore | grep -e S > hrm_tmp",  $result);
     //    if ($result==0) {return True;} 
     return False;    
   }  
