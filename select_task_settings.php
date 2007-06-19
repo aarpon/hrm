@@ -225,8 +225,8 @@ if ($_SESSION['user']->name() != "admin") {
     echo "                        <option>&nbsp;</option>\n";
   }
   else {
-    foreach ($settings as $setting) {
-      echo "                        <option>".$setting->name()."</option>\n";
+    foreach ($settings as $set) {
+      echo "                        <option>".$set->name()."</option>\n";
     }
   }
 
@@ -270,15 +270,15 @@ if (sizeof($settings) == 0) {
   echo "                        <option>&nbsp;</option>\n";
 }
 else {
-  foreach ($settings as $setting) {
+  foreach ($settings as $set) {
     echo "                        <option";
-    if ($setting->isDefault()) {
+    if ($set->isDefault()) {
       echo " style=\"color: #078d1b\"";
     }
-    if ($_SESSION['taskeditor']->selected() == $setting->name()) {
+    if ($_SESSION['taskeditor']->selected() == $set->name()) {
       echo " selected=\"selected\"";
     }
-    echo ">".$setting->name()."</option>\n";
+    echo ">".$set->name()."</option>\n";
   }
 }
 
