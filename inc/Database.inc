@@ -146,6 +146,9 @@ Class DatabaseConnection {
 
   function execute($query) {
     $connection = $this->connection();
+# The following is a hack not to use "user" in the queries, that is a
+# keyword for postgres. It should better be rewritten in the rest of the code...
+    $query = str_replace ("user", "username", $query);
     $result = $connection->Execute($query); 
     return $result;
   } 
@@ -158,6 +161,9 @@ Class DatabaseConnection {
   //!---------------------------------------------------------  
   function query($queryString) {
     $connection = $this->connection();
+# The following is a hack not to use "user" in the queries, that is a
+# keyword for postgres. It should better be rewritten in the rest of the code...
+    $queryString = str_replace ("user", "username", $queryString);
     $resultSet = $connection->Execute($queryString);
     if (!$resultSet) {
       return False;
