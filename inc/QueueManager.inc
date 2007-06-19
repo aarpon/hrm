@@ -73,6 +73,8 @@ function report($text, $level) {
 	global $logfile;
 	global $logfile_max_size;
 
+    $text = date("Y-m-d H:i:s"). " ".$text;
+
 	if ($log_verbosity == 0)
 		return True;
 	if (file_exists($logfile) && (filesize($logfile) > $logfile_max_size * 1000 * 1000)) {
