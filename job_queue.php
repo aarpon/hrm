@@ -97,7 +97,7 @@ include("header.inc.php");
     <div id="nav">
         <ul>
             <li><a href="select_images.php?exited=exited">exit</a></li>
-            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/HuygensRemoteManagerHelpQueue')">help</a></li>
+            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&help=HuygensRemoteManagerHelpQueue')">help</a></li>
         </ul>
     </div>
     

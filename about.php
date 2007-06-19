@@ -95,6 +95,12 @@ include("header.inc.php");
 
 	 This software is governed by the CeCILL license under French law and abiding by the rules of distribution of free software.</p>
 
+	<h3>Third-party software</h3>
+
+	<p>Huygens Remote Manager uses the <a href="http://adodb.sourceforge.net/" target="_blank">ADOdb Database Abstraction Library</a>.</p>
+
+	<p>Icons in Huygens Remote Manager are taken from the <a href="http://icon-king.com/?p=15" target="_blank">Nuvola icon theme v1.0 by David Vignoni</a>.</p>
+
     </div> <!-- content -->
     
 <?php

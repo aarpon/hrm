@@ -123,7 +123,7 @@ include("header.inc.php");
     <div id="nav">
         <ul>
             <li><a href="select_images.php?exited=exited">exit</a></li>
-            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/HuygensRemoteManagerHelpSelectPSFFiles')">help</a></li>
+            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&help=HuygensRemoteManagerHelpSelectPSFFiles')">help</a></li>
         </ul>
     </div>
     

@@ -231,7 +231,7 @@ include("header.inc.php");
             <li><a href="select_task_settings.php" onclick="clean()">tasks</a></li>
             <li><a href="account.php">account</a></li>
             <li><a href="job_queue.php" onclick="clean()">queue</a></li>
-            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/HuygensRemoteManagerHelpUserManagement')">help</a></li>
+            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&help=HuygensRemoteManagerHelpUserManagement')">help</a></li>
         </ul>
     </div>
     

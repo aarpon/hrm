@@ -210,7 +210,7 @@ include("header.inc.php");
     <div id="nav">
         <ul>
             <li><a href="select_images.php?exited=exited">exit</a></li>
-            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/HuygensRemoteManagerHelpRestorationParameters')">help</a></li>
+            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&help=HuygensRemoteManagerHelpRestorationParameters')">help</a></li>
         </ul>
     </div>
     
@@ -223,7 +223,7 @@ include("header.inc.php");
             <fieldset class="setting">  <!-- full restoration -->
             
                 <legend>
-                    <a href="javascript:openWindow('http://support.svi.nl/wiki/HuygensRemoteManagerHelpRestorationParameters')"><img src="images/help.png" alt="?" /></a>
+                    <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&help=HuygensRemoteManagerHelpRestorationParameters')"><img src="images/help.png" alt="?" /></a>
                     full restoration
                 </legend>
                 

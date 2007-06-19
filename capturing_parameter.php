@@ -139,7 +139,7 @@ include("header.inc.php");
     <div id="nav">
         <ul>
             <li><a href="select_images.php?exited=exited">exit</a></li>
-            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/HuygensRemoteManagerHelpCaptor')">help</a></li>
+            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&help=HuygensRemoteManagerHelpCaptor')">help</a></li>
         </ul>
     </div>
     
@@ -154,7 +154,7 @@ include("header.inc.php");
             <fieldset class="setting">
             
                 <legend>
-                    <a href="javascript:openWindow('http://support.svi.nl/wiki/SampleSize')"><img src="images/help.png" alt="?" /></a>
+                    <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&help=SampleSize')"><img src="images/help.png" alt="?" /></a>
                     sample size
                 </legend>
 <?php
@@ -221,7 +221,7 @@ if ($_SESSION['setting']->isThreeDimensional()) {
 
                 </ul>
                 
-                <a href="javascript:openWindow('http://support.svi.nl/wiki/NyquistCalculator')">
+                <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&help=NyquistCalculator')">
                     Nyquist rate and PSF calculator
                     <img src="images/web.png" alt="external link" />
                 </a>
@@ -230,7 +230,7 @@ if ($_SESSION['setting']->isThreeDimensional()) {
             
             <fieldset class="setting">
             
-                <a href="javascript:openWindow('http://support.svi.nl/wiki/PixelBinning')"><img src="images/help.png" alt="?" /></a>
+                <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&help=PixelBinning')"><img src="images/help.png" alt="?" /></a>
                 binning:
                 
                 <select name="Binning" size="1">
@@ -261,7 +261,7 @@ if ($_SESSION['setting']->isTimeSeries()) {
 ?>
             <fieldset class="setting">
             
-                <a href="javascript:openWindow('http://support.svi.nl/wiki/TimeSeries')"><img src="images/help.png" alt="?" /></a>
+                <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&help=TimeSeries')"><img src="images/help.png" alt="?" /></a>
                 time interval (s):
                 
 <?php
@@ -285,7 +285,7 @@ if ($_SESSION['setting']->isMultiPointOrSinglePointConfocal()) {
 ?>
             <fieldset class="setting">
             
-                <a href="javascript:openWindow('http://support.svi.nl/wiki/PinholeRadius')"><img src="images/help.png" alt="?" /></a>
+                <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&help=PinholeRadius')"><img src="images/help.png" alt="?" /></a>
                 pinhole radius (nm):
                 
 <?php
@@ -302,7 +302,7 @@ if ($_SESSION['setting']->isMultiPointOrSinglePointConfocal()) {
 ?>
                 <p />
                 
-                <a href="javascript:openWindow('http://support.svi.nl/wiki/BackprojectedPinholeCalculator')">
+                <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&help=BackprojectedPinholeCalculator')">
                     Backprojected pinhole calculator
                     <img src="images/web.png" alt="external link" />
                 </a>
@@ -321,7 +321,7 @@ if ($_SESSION['setting']->isNipkowDisk()) {
 ?>
             <fieldset class="setting">
             
-                <a href="javascript:openWindow('http://support.svi.nl/wiki/PinholeSpacing')"><img src="images/help.png" alt="?" /></a>
+                <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&help=PinholeSpacing')"><img src="images/help.png" alt="?" /></a>
                 pinhole spacing (micron):
                 
 <?php

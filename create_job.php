@@ -127,7 +127,7 @@ if ($enableUserAdmin) {
 
 ?>
             <li><a href="job_queue.php">queue</a></li>
-            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/HuygensRemoteManagerHelpCreateJob')">help</a></li>
+            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&help=HuygensRemoteManagerHelpCreateJob')">help</a></li>
         </ul>
     </div>
     
@@ -206,7 +206,7 @@ foreach ($possibleValues as $possibleValue) {
         
         <fieldset class="report">
             <legend>
-                <a href="javascript:openWindow('http://support.svi.nl/wiki/HuygensRemoteManagerHelpCreateJob')"><img src="images/help.png" alt="?" /></a>
+                <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&help=HuygensRemoteManagerHelpCreateJob')"><img src="images/help.png" alt="?" /></a>
                 <a href="select_parameter_settings.php">parameter setting</a>: <?php print $_SESSION['setting']->name() ?>
             </legend>
             <textarea name="parameter_settings_report" cols="50" rows="10" readonly="readonly">
@@ -220,7 +220,7 @@ echo $_SESSION['setting']->display();
         
         <fieldset class="report">
             <legend>
-                <a href="javascript:openWindow('http://support.svi.nl/wiki/HuygensRemoteManagerHelpCreateJob')"><img src="images/help.png"alt="?" /></a>
+                <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&help=HuygensRemoteManagerHelpCreateJob')"><img src="images/help.png"alt="?" /></a>
                 <a href="select_task_settings.php">task setting</a>: <?php echo $_SESSION['task_setting']->name() ?>
             </legend>
             <textarea name="task_settings_report" cols="50" rows="5" readonly="readonly">
@@ -234,7 +234,7 @@ echo $_SESSION['task_setting']->displayWithoutOutputFileFormat();
         
         <fieldset class="report">
             <legend>
-                <a href="javascript:openWindow('http://support.svi.nl/wiki/HuygensRemoteManagerHelpCreateJob')"><img src="images/help.png" alst="?" /></a>
+                <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&help=HuygensRemoteManagerHelpCreateJob')"><img src="images/help.png" alst="?" /></a>
                 <a href="select_images.php">selected images</a>
             </legend>
             <textarea name="task_settings_report" cols="50" rows="5" readonly="readonly">
