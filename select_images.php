@@ -144,7 +144,10 @@ if ($enableUserAdmin) {
 <?php
 
 // display only relevant files
-if ($fileFormat->value() == "tiff") {
+if ($fileFormat->value() == "ics") {
+    $files = $_SESSION['fileserver']->files("ics");
+}
+else if ($fileFormat->value() == "tiff") {
   $files = $_SESSION['fileserver']->tiffFiles();
 }
 else if ($fileFormat->value() == "tiff-series") {
