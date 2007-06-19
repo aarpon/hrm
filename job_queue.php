@@ -187,7 +187,7 @@ else {
                     <tr style="background: <?php echo $color ?>">
 <?php
 
-    if ($row['user'] == $_SESSION['user']->name() || $_SESSION['user']->name() == "admin") {
+    if ($row['username'] == $_SESSION['user']->name() || $_SESSION['user']->name() == "admin") {
       if ($row['status'] != "started" && $row['status'] != "broken") {
 
 ?>
@@ -213,7 +213,7 @@ else {
 
 ?>
                         <td><?php echo $index ?></td>
-                        <td><?php echo $row['user'] ?></td>
+                        <td><?php echo $row['username'] ?></td>
                         <td><?php echo implode(';', $queue->getJobFilesFor($row['id'])) ?></td>
                         <td><?php echo $row['queued'] ?></td>
                         <td><?php echo $row['status'] ?></td>
