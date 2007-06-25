@@ -50,9 +50,24 @@ $image_destination = "huygens_dst";
 // file server base folder as seen from the Huygens server machines (with trailing /)
 $huygens_server_image_folder = "/path/to/hrm_data/";
 
+// Allow HTTP transfer of the original (upload) and restored (download) images
+$allowHttpTransfer = true;
+
+// archiver, including options
+$compressBin = "/bin/tar cfhz ";
+$dlMimeType = "application/x-force-download";
+$compressExt = ".tar.gz";
+
+// ImageMagick convert, for (future) thumbnail handling
+$convertBin = "/usr/bin/convert";
+
+
 //==============================================================================
 // HRM configuration parameters
 //==============================================================================
+
+// Text about the current running location
+$runningLocation = "Running at the FMI - Basel";
 
 // URL
 $hrm_url = "http://localhost/hrm";
