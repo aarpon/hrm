@@ -9,8 +9,8 @@ create() {
 	if [ ! -d "$HRM_DATA"/"$1" ]
 	then
 		mkdir "$HRM_DATA"/"$1"
-		mkdir "$HRM_DATA"/"$1"/huygens_src
-		mkdir "$HRM_DATA"/"$1"/huygens_dst
+		mkdir "$HRM_DATA"/"$1"/"$HRM_SOURCE"
+		mkdir "$HRM_DATA"/"$1"/"$HRM_DEST"
 		# chown -R "$2":users "$HRM_DATA"/"$1"
 		chmod -R 0777 "$HRM_DATA"/"$1"
 	fi

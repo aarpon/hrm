@@ -7,3 +7,7 @@ HRM_HOME="/path/to/hrm/home"
 
 # HRM image share
 HRM_DATA="/path/to/hrm/data"
+
+# Source and destination folder names
+HRM_SOURCE="huygens_src";
+HRM_DEST="huygens_dst";
