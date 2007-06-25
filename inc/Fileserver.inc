@@ -65,6 +65,8 @@ Class Fileserver {
   var $files;                 // @var files            Array      The image files under the users home directory    
   var $imageExtensions;       // @var imageExtensions  Array      File extensions indicating an image file  
   var $selectedFiles;         // @var selectedFiles    Array      Files actually selected to be processed
+
+  var $validImageExtensions =  array("tif", "tiff", "stk", "lsm", "ims", "pic", "ome", "lif", "ics");
   
   //!---------------------------------------------------------
   // @function    Fileserver::Fileserver
@@ -149,6 +151,20 @@ Class Fileserver {
         return $files;
     }
   }
+
+  function destFiles() {
+    switch(func_num_args()) {
+      case 0:
+        if ($this->destFiles == NULL) $this->getDestFiles();
+        return $this->destFiles;
+      case 1:
+        if (!file_exists($this->destinationFolder())) return False;
+        list($extension) = func_get_args();
+        $files = $this->listFilesFrom($this->destinationFolder(), "", $extension);
+        sort($files);
+        return $files;
+    }
+  }
   
   // Answer all files under the users image folder. Searches
   // subdirectories recursively. 
@@ -207,6 +223,17 @@ Class Fileserver {
   function updateAvailableFiles() {
     $this->files = NULL;
   } 
+  //!---------------------------------------------------------
+  // @function    Fileserver::updateAvailableDestFiles
+  // @desc        Reset the list of available result files. When the
+  //              list is accessed the next time it is newley
+  //              computed.
+  // @return      void
+  //!---------------------------------------------------------  
+  function updateAvailableDestFiles() {
+    $this->destFiles = NULL;
+  } 
+
 
   //!---------------------------------------------------------
   // @function    Fileserver::selectedFiles
@@ -244,6 +271,51 @@ Class Fileserver {
   function removeFilesFromSelection($files) { 
     $this->selectedFiles = array_diff($this->selectedFiles, $files);
   }  
+
+  //!---------------------------------------------------------
+  // @function    Fileserver::downloadResults
+  // @desc        Packs a series of files to download.
+  // @param       files  Array  List of files to be added.
+  // @return      Void
+  //!---------------------------------------------------------  
+  function downloadResults($files) { 
+      global $compressBin, $compressExt, $dlMimeType;
+
+      $date = date("Y-m-d_Hi");
+      $zipfile = "/tmp/download_".$compressExt;
+      $command = $compressBin." ".$zipfile;
+
+      foreach ($files as $file) {
+          $path = $this->destinationFolder()."/".$file;
+          if (preg_match("/.*\.ics$/i",$file,$match)) {
+              $path = str_replace(".ics", ".i*", $path);
+          }
+          $command .= " ".$path;
+      }
+
+      $answer = exec($command , $output, $result);
+
+      $size = filesize($zipfile);
+
+      $type = $dlMimeType;
+
+      $dlname = "hrm_results$compressExt";
+
+      if ($size) {
+          header ("Accept-Ranges: bytes");
+          header ("Connection: close");
+          header ("Content-Disposition-type: attachment");
+          header ("Content-Disposition: attachment; filename=\"$dlname\"");
+          header ("Content-Length: $size"); 
+          header ("Content-Type: $type; name=\"$dlname\"");
+        readfile($zipfile);
+        unlink($zipfile);
+        return "<p>OK</p>"; 
+    } else {
+        return "<p class=\"warning\">Problems with the packaging of the files</p>";
+    }
+  }
+
 
   //!---------------------------------------------------------
   // @function    Fileserver::imageExtensions
@@ -284,13 +356,13 @@ Class Fileserver {
   //!---------------------------------------------------------  
   function setDefaultImageExtensions() {
     // new file formats support
-    $this->imageExtensions = array("tif", "tiff", "stk", "lsm", "ims", "pic", "ome", "lif", "ics");
+    $this->imageExtensions = $this->validImageExtensions;
   } 
   //!---------------------------------------------------------
   // @function    Fileserver::isImage
   // @desc        Answers True if filename has an extension
-  //              which is among the extensions of known image
-  //              formats.
+  //              which is among the extensions of the currently 
+  //              relected file format, or any if not specified.
   // @param       filename  String  The filename to be checked
   // @return      Boolean
   //!---------------------------------------------------------  
@@ -303,6 +375,24 @@ Class Fileserver {
     }
     return $result;
   }
+  //!---------------------------------------------------------
+  // @function    Fileserver::isValidImage
+  // @desc        Answers True if filename has an extension
+  //              which is among the extensions of known image
+  //              formats. 
+  // @param       filename  String  The filename to be checked
+  // @return      Boolean
+  //!---------------------------------------------------------  
+  function isValidImage($filename) {
+    $ext = substr(strrchr($filename, "."),1);
+    $ext = strtolower($ext);
+    $result = False;
+    if (in_array($ext, $this->validImageExtensions)) {
+      $result = True;
+    }
+    return $result;
+  }
+ 
   //!---------------------------------------------------------
   // @function    Fileserver::getFiles
   // @desc        Create the list of image files of the user.
@@ -321,6 +411,25 @@ Class Fileserver {
     // trim TIFF series to the first file in the sequence
     //$this->condenseTiffSeries();
   } 
+  //!---------------------------------------------------------
+  // @function    Fileserver::getDestFiles
+  // @desc        Create the list of restored image files of the user.
+  //              Time series are represented by their first
+  //              image file.
+  // @return      Void
+  //!---------------------------------------------------------    
+  function getDestFiles() {
+    $this->destFiles = array();
+    if (!file_exists($this->destinationFolder())) return False;
+    $this->getDestFilesFrom($this->destinationFolder(), "");
+    if (count($this->destFiles) == 0) return False;
+    sort($this->destFiles());
+    // TODO refactor
+    //$this->condenseTimeSeries();
+    // trim TIFF series to the first file in the sequence
+    //$this->condenseTiffSeries();
+  } 
+ 
   //!---------------------------------------------------------
   // @function    Fileserver::basename
   // @desc        Answer the filename of the image without the
@@ -475,6 +584,44 @@ Class Fileserver {
     }
     $dir->close();
   }
+  //!---------------------------------------------------------
+  // @function    Fileserver::getDestFilesFrom
+  // @desc        The recursive function that collects the 
+  //              image files from the user's destination image folder and
+  //              its subfolders.
+  // @param       startDir  String  The folder to start with  
+  // @param       prefix    String  The actual path prefix 
+  //              relative to the user's image folder. 
+  // @return      Void
+  //!---------------------------------------------------------  
+  function getDestFilesFrom($startDir, $prefix) {
+    $dir = dir($startDir);
+    while ($entry = $dir->read()) { 
+      if ($entry != "." && $entry != "..") { 
+	if (is_dir($startDir . "/" . $entry)) { 
+	  $newDir = $startDir . "/" . $entry;
+	  if ($prefix=="") { 
+	    $newPrefix = $entry;
+	  } else {  
+	    $newPrefix = $prefix . "/" . $entry;
+	  } 
+	  $this->getDestFilesFrom($newDir, $newPrefix);
+	} else {
+	  if (!$this->isValidImage($entry)) {
+          continue;
+      }
+      //echo $entry,$prefix,",";
+	  if ($prefix=="") { 
+	    $this->destFiles[] = $entry;
+	  } else { 
+	    $this->destFiles[] = $prefix . "/" . $entry;
+	  } 
+	}
+      }
+    }
+    $dir->close();
+  }
+ 
   // TODO refactor
   //!---------------------------------------------------------
   // @function    Fileserver::pointSpreadFunctionFilesFrom
