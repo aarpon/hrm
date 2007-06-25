@@ -282,14 +282,12 @@ Class Fileserver {
       global $compressBin, $compressExt, $dlMimeType;
 
       $date = date("Y-m-d_Hi");
-      $zipfile = "/tmp/download_".$compressExt;
+      $zipfile = "/tmp/download_".session_id().$compressExt;
       $command = $compressBin." ".$zipfile;
 
       foreach ($files as $file) {
-          $path = $this->destinationFolder()."/".$file;
-          if (preg_match("/.*\.ics$/i",$file,$match)) {
-              $path = str_replace(".ics", ".i*", $path);
-          }
+          $path = preg_replace("/(.*)\.(.{3,4})/","\\1.*",$file);
+          $path = $this->destinationFolder()."/".$path;
           $command .= " ".$path;
       }
 
@@ -299,7 +297,7 @@ Class Fileserver {
 
       $type = $dlMimeType;
 
-      $dlname = "hrm_results$compressExt";
+      $dlname = "hrm_results_$date$compressExt";
 
       if ($size) {
           header ("Accept-Ranges: bytes");
