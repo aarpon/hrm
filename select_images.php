@@ -168,7 +168,11 @@ else {
   $files = $_SESSION['fileserver']->files();
 }
 $flag = "";
-if ($files == null) $flag = " disabled=\"disabled\"";
+if ($files == null) {
+    $flag = " disabled=\"disabled\"";
+    $message .= "<p class=\"warning\">No images of type '".
+                 $fileFormat->value()."'.</p>";
+}
 
 ?>
                     <select name="userfiles[]" size="10" multiple="multiple"<?php echo $flag ?>>
