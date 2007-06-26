@@ -53,6 +53,16 @@
 require_once("hrm_config.inc");
 require_once("Fileserver.inc");
 
+global $isHrmDevelop, $hucore, $hutask;
+
+if (!isset($isHrmDevelop) || $isHrmDevelop == false) {
+    $hucore = "hucore";
+    $hutask = "-task";
+} else {
+    $hucore = "huscript";
+    $hutask = "-noTk -script";
+}
+
 Class ExternalProcess {
     var $pid;                         // os pid of the process
     var $host;                        // host on which the process will be started
@@ -64,6 +74,11 @@ Class ExternalProcess {
     var $descriptorSpec;
     // TODO better manage file handles
     var $out_file;                    // handle for the output file
+
+
+    // This is temporary, remove before the final release and use the
+    // first case only.
+        
     
     function ExternalProcess($host, $huscript_path, $logfileName, $errfileName) {
         $this->descriptorSpec = array(
@@ -84,17 +99,17 @@ Class ExternalProcess {
     
     // TODO refactor
     function existsHuygensProcess($pid) {
-        global $hrm_path;
+        global $hrm_path, $hucore;
         global $huygens_user;
-        $answer = system("ssh $huygens_user" . '@' . $this->host . " " . "ps -p $pid | grep -e huscript > " . $hrm_path . "/run/hrm_tmp" , $result); // -p
+        $answer = system("ssh $huygens_user" . '@' . $this->host . " " . "ps -p $pid | grep -e $hucore > " . $hrm_path . "/run/hrm_tmp" , $result); // -p
         if ($result==0) {return True;} 
         return False;
     } 
     
     function isHuygensProcessSleeping($pid) {
-        global $hrm_path;
+        global $hrm_path, $hucore;
         global $huygens_user;
-        $answer = system("ssh $huygens_user" . '@' . $this->host . " " . "ps -lf -p " . "$pid | grep -e huscript | grep -e S > " . $hrm_path . "/run/hrm_tmp",  $result);
+        $answer = system("ssh $huygens_user" . '@' . $this->host . " " . "ps -lf -p " . "$pid | grep -e $hucore | grep -e S > " . $hrm_path . "/run/hrm_tmp",  $result);
         if ($result==0) {return True;} 
         return False;    
     } 
@@ -158,7 +173,8 @@ Class ExternalProcess {
   } 
 
   function runHuygensScript($scriptName) {
-      $command = $this->huscript_path." -noTk -script ".$scriptName;
+      global $hutask;
+      $command = $this->huscript_path." $hutask ".$scriptName;
       // TODO better management of file handles
       //$out_file = fopen($this->descriptorSpec[1][1], "r");
       $this->out_file = fopen($this->descriptorSpec[1][1], "r");
@@ -215,16 +231,16 @@ Class LocalExternalProcess extends ExternalProcess {
   }
  
   function existsHuygensProcess($pid) {
-    global $huygens_user;
+    global $huygens_user, $hucore;
     global $hrm_path;
-    $answer = system("ps -p $pid | grep -e huscript > ".$hrm_path."/run/hrm_tmp" , $result);
+    $answer = system("ps -p $pid | grep -e $hucore > ".$hrm_path."/run/hrm_tmp" , $result);
     if ($result==0) {return True;} 
     return False;
   } 
 
   function isHuygensProcessSleeping($pid) {
-    //    global $huygens_user;
-    //    $answer = system("ps -lf -p " ."$pid | grep -e huscript | grep -e S > hrm_tmp",  $result);
+    //    global $huygens_user, $hucore;
+    //    $answer = system("ps -lf -p " ."$pid | grep -e $hucore | grep -e S > hrm_tmp",  $result);
     //    if ($result==0) {return True;} 
     return False;    
   }  
