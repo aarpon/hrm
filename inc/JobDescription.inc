@@ -728,7 +728,12 @@ Class JobDescription {
     $files = $this->files();
     $outputFile = $this->sourceImageShortName();
     $outputFile = end(explode($taskSetting->name(), $this->sourceImageShortName()));
-    $result = $outputFile . "_" . $taskSetting->name();
+    $result = $outputFile . "_" . $taskSetting->name() . "_hrm";
+        # Add a non-numeric string at the end: if the task name ends with a
+        # number, that will be removed when saving using some file formats that
+        # use numbers to identify Z planes. Therefore the result file won't
+        # be found later and an error will be generated.
+
     if ($taskSetting->isStepCombinedProcessing()) {
       if ($this->pass == 1) {
           $extension = 'A';
