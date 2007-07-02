@@ -565,10 +565,12 @@ Class JobDescription {
     // loading and converting
     $newScript = $newScript . $this->loadImageString();
     $parameterSetting = $this->parameterSetting;
-     if ($parameterSetting->isTimeSeries()) 
-		$newScript = $newScript . 'catch {$imageName convertZ2T}' . "\n";
+    // This test is PARTIALLY overlapping with the test a few lines below
+    // TODO Refactor
+    if ( $parameterSetting->isTimeSeries() && !$parameterSetting->isThreeDimensional() ) 
+	$newScript = $newScript . 'catch {$imageName convertZ2T}' . "\n";
     else 
-		$newScript = $newScript . 'catch {$imageName convertT2Z}' . "\n";
+	$newScript = $newScript . 'catch {$imageName convertT2Z}' . "\n";
 		
     $taskSetting = $this->taskSetting;
     $numberOfChannels = $parameterSetting->numberOfChannels();
