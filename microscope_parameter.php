@@ -121,7 +121,7 @@ include("header.inc.php");
     <div id="nav">
         <ul>
             <li><a href="select_images.php?exited=exited">exit</a></li>
-            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&help=HuygensRemoteManagerHelpOptics')">help</a></li>
+            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpOptics')">help</a></li>
         </ul>
     </div>
     
@@ -136,7 +136,7 @@ include("header.inc.php");
             <fieldset class="setting">
             
                 <legend>
-                    <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&help=MicroscopeType')"><img src="images/help.png" alt="?" /></a>
+                    <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=MicroscopeType')"><img src="images/help.png" alt="?" /></a>
                     microscope type
                 </legend>
 <?php
@@ -160,7 +160,7 @@ foreach($possibleValues as $possibleValue) {
             
             <fieldset class="setting">
             
-                <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&help=NumericalAperture')"><img src="images/help.png" alt="?" /></a>
+                <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=NumericalAperture')"><img src="images/help.png" alt="?" /></a>
                 numerical aperture:
 <?php
 
@@ -178,7 +178,7 @@ $parameter = $_SESSION['setting']->parameter("NumericalAperture");
             <fieldset class="setting">
             
                 <legend>
-                    <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&help=WaveLength')"><img src="images/help.png" alt="?" /></a>
+                    <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=WaveLength')"><img src="images/help.png" alt="?" /></a>
                     light
                 </legend>
                 
@@ -223,7 +223,7 @@ for ($i=1; $i <= $_SESSION['setting']->numberOfChannels(); $i++) {
             
             <fieldset class="setting">
             
-                <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&help=ObjectiveMagnification')"><img src="images/help.png"alt="?" /></a>
+                <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=ObjectiveMagnification')"><img src="images/help.png"alt="?" /></a>
                 objective magnification:
                 
                 <select name="ObjectiveMagnification" size="1">
@@ -249,7 +249,7 @@ foreach ($parameter->possibleValues() as $possibleValue) {
             <fieldset class="setting">
             
                 <legend>
-                    <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&help=LensImmersionMedium')"><img src="images/help.png" alt="?" /></a>
+                    <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=LensImmersionMedium')"><img src="images/help.png" alt="?" /></a>
                     objective type
                 </legend>
                 
@@ -277,7 +277,7 @@ foreach ($possibleValues as $possibleValue) {
             
             <fieldset class="setting">
             
-                <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&help=HuygensRemoteManagerHelpCMount')"><img src="images/help.png" alt="?" /></a>
+                <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpCMount')"><img src="images/help.png" alt="?" /></a>
                 cmount (0-1):
                 
 <?php
@@ -291,7 +291,7 @@ foreach ($possibleValues as $possibleValue) {
             
             <fieldset class="setting">
             
-                <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&help=HuygensRemoteManagerHelpTubeFactor')"><img src="images/help.png" alt="?" /></a>
+                <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpTubeFactor')"><img src="images/help.png" alt="?" /></a>
                 tube factor (max. 2):
                 
 <?php
@@ -308,7 +308,7 @@ foreach ($possibleValues as $possibleValue) {
             <fieldset class="setting">
             
                 <legend>
-                    <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&help=SpecimenEmbeddingMedium')"><img src="images/help.png" alt="?" /></a>
+                    <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=SpecimenEmbeddingMedium')"><img src="images/help.png" alt="?" /></a>
                     sample medium
                 </legend>
                 

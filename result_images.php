@@ -7,7 +7,7 @@
 // Copyright: Montpellier RIO Imaging (CNRS)
 
 // contributors :
-//       Jose Viña
+//       Jose Viï¿½a
 // 	     Pierre Travo	(concept)
 // 	     Volker Baecker	(concept, implementation)
 
@@ -111,7 +111,7 @@ if ($enableUserAdmin) {
 
 ?>
             <li><a href="job_queue.php">queue</a></li>
-            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&help=HuygensRemoteManagerHelpResultImages')">help</a></li>
+            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpResultImages')">help</a></li>
         </ul>
     </div>
     

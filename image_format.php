@@ -150,7 +150,7 @@ include("header.inc.php");
     <div id="nav">
         <ul>
             <li><a href="select_images.php?exited=exited">exit</a></li>
-            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&help=HuygensRemoteManagerHelpImageFormat')">help</a></li>
+            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpImageFormat')">help</a></li>
         </ul>
     </div>
     
@@ -165,7 +165,7 @@ include("header.inc.php");
             <fieldset class="setting">
             
                 <legend>
-                    <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&help=FileFormats')"><img src="images/help.png" alt="?" /></a>
+                    <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=FileFormats')"><img src="images/help.png" alt="?" /></a>
                     image format
                 </legend>
                 
@@ -211,7 +211,7 @@ foreach($values as $value) {
             <fieldset id="geometry" class="setting"<?php if ($geometryFlag != "") echo " style=\"color: grey\"" ?>>
             
                 <legend>
-                    <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&help=ImageGeometry')"><img src="images/help.png" alt="?" /></a>
+                    <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=ImageGeometry')"><img src="images/help.png" alt="?" /></a>
                     image geometry
                 </legend>
                 
@@ -238,7 +238,7 @@ foreach($possibleValues as $possibleValue) {
             <fieldset id="channels" class="setting"<?php if ($channelsFlag != "") echo " style=\"color: grey\"" ?>>
             
                 <legend>
-                    <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&help=NumberOfChannels')"><img src="images/help.png" alt="?" /></a>
+                    <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=NumberOfChannels')"><img src="images/help.png" alt="?" /></a>
                     number of channels
                 </legend>
                 
@@ -271,13 +271,13 @@ $parameter = $_SESSION['setting']->parameter("PointSpreadFunction");
             <fieldset class="setting">
             
                 <legend>
-                    <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&help=PointSpreadFunction')"><img src="images/help.png" alt="?" /></a>
+                    <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=PointSpreadFunction')"><img src="images/help.png" alt="?" /></a>
                     PSF
                 </legend>
                 
-                <input type="radio" name="PointSpreadFunction" value="theoretical" <?php if ($parameter->value() == "theoretical") echo "checked=\"checked\"" ?>/><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&help=TheoreticalPsf')"><img src="images/help.png" alt="?" /></a>Theoretical
+                <input type="radio" name="PointSpreadFunction" value="theoretical" <?php if ($parameter->value() == "theoretical") echo "checked=\"checked\"" ?>/><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=TheoreticalPsf')"><img src="images/help.png" alt="?" /></a>Theoretical
                 
-                <input type="radio" name="PointSpreadFunction" value="measured" <?php if ($parameter->value() == "measured") echo "checked=\"checked\"" ?>/><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&help=ExperimentalPsf')"><img src="images/help.png" alt="?" /></a>Measured
+                <input type="radio" name="PointSpreadFunction" value="measured" <?php if ($parameter->value() == "measured") echo "checked=\"checked\"" ?>/><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=ExperimentalPsf')"><img src="images/help.png" alt="?" /></a>Measured
                 
             </fieldset>
             

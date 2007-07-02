@@ -132,7 +132,7 @@ include("header.inc.php");
 
     <div id="nav">
         <ul>
-            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&help=HuygensRemoteManagerHelpLogin')">help</a></li> 
+            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpLogin')">help</a></li> 
             <li><a href="about.php">about</a></li>
             <li><a href="last_changes.php">changes</a></li>
         </ul>
@@ -175,7 +175,7 @@ include("header.inc.php");
             <form method="post" action="">
                 <fieldset>
                     <legend>
-                        <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&help=HuygensRemoteManagerHelpLogin')"><img src="images/help.png" alt="?"/></a>
+                        <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpLogin')"><img src="images/help.png" alt="?"/></a>
                         Login
                     </legend>
                     <?php

@@ -1,3 +1,4 @@
+
 <?php
 
 // php page: select_task_settings.php
@@ -178,7 +179,7 @@ if ($enableUserAdmin || $_SESSION['user']->name() == "admin") {
 
 ?>
             <li><a href="job_queue.php">queue</a></li>
-            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&help=HuygensRemoteManagerHelpSelectTaskSettings')">help</a></li>
+            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpSelectTaskSettings')">help</a></li>
         </ul>
     </div>
     

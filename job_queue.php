@@ -98,7 +98,7 @@ include("header.inc.php");
         <ul>
             <li><a href="select_images.php?exited=exited">exit</a></li>
             <li><a href="result_images.php">results</a></li>
-            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&help=HuygensRemoteManagerHelpQueue')">help</a></li>
+            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpQueue')">help</a></li>
         </ul>
     </div>
     
