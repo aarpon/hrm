@@ -157,12 +157,12 @@ else if ($fileFormat->value() == "tiff-leica") {
   $files = $_SESSION['fileserver']->tiffLeicaFiles();
 }
 else if ($fileFormat->value() == "stk") {
-  if ($geometry->value() == "XY - time" || $geometry->value() == "XYZ - time") {
+  //if ($geometry->value() == "XY - time" || $geometry->value() == "XYZ - time") {
     $files = $_SESSION['fileserver']->stkSeriesFiles();
-  }
-  else {
-    $files = $_SESSION['fileserver']->files("stk");
-  }
+  //}
+  //else {
+  //  $files = $_SESSION['fileserver']->files("stk");
+  //}
 }
 else {
   $files = $_SESSION['fileserver']->files();
