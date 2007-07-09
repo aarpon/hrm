@@ -104,7 +104,7 @@ if (isset($_POST['add'])) {
             $user->setEmail('');
             $user->setGroup('');
             $message = "            <p class=\"warning\">New user successfully added to the system</p>";
-            shell_exec("hrm2share create " . strtolower($_POST['username']));
+            shell_exec("bin/hrm create " . strtolower($_POST['username']));
             $added = True;
           }
           else $message = "            <p class=\"warning\">Database error, please inform the person in charge</p>";
