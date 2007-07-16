@@ -8,18 +8,18 @@
 create() {
 	if [ ! -d "$HRM_DATA"/"$1" ]
 	then
-		sudo -u imagerie mkdir "$HRM_DATA"/"$1"
-		sudo -u imagerie mkdir "$HRM_DATA"/"$1"/"$HRM_SOURCE"
-		sudo -u imagerie mkdir "$HRM_DATA"/"$1"/"$HRM_DEST"
-		# sudo -u imagerie chown -R "$2":users "$HRM_DATA"/"$1"
-		sudo -u imagerie chmod -R 0777 "$HRM_DATA"/"$1"
+		sudo -u "$SUSER" mkdir "$HRM_DATA"/"$1"
+		sudo -u "$SUSER" mkdir "$HRM_DATA"/"$1"/"$HRM_SOURCE"
+		sudo -u "$SUSER" mkdir "$HRM_DATA"/"$1"/"$HRM_DEST"
+		# sudo -u "$SUSER" chown -R "$2":users "$HRM_DATA"/"$1"
+		sudo -u "$SUSER" chmod -R 0777 "$HRM_DATA"/"$1"
 	fi
 }
 
 delete() {
 	if [ -d "$HRM_DATA"/"$1" ]
 	then
-		sudo -u imagerie rm -R "$HRM_DATA"/"$1"
+		sudo -u "$SUSER" rm -R "$HRM_DATA"/"$1"
 	fi
 }
 

@@ -11,3 +11,9 @@ HRM_DATA="/path/to/hrm/data"
 # Source and destination folder names
 HRM_SOURCE="huygens_src";
 HRM_DEST="huygens_dst";
+
+# User with rights to run /bin/mkdir, /bin/chown,
+# /bin/chmod and /bin/rm on the file manager for
+# user management
+SUSER="apache";
+
