@@ -194,8 +194,8 @@ else echo "                        <option>&nbsp;</option>\n";
             </fieldset>
             
             <div id="selection">
-                <input name="down" type="submit" value="down" class="icon down" />
-                <input name="up" type="submit" value="up" class="icon up" />
+                <input name="down" type="submit" value="" class="icon down" />
+                <input name="up" type="submit" value="" class="icon up" />
             </div>
             
             <fieldset>
@@ -224,7 +224,7 @@ else echo "                        <option>&nbsp;</option>\n";
             </fieldset>
             
             <div id="actions" class="imageselection">
-                <input name="update" type="submit" value="update view" class="icon update" />
+                <input name="update view" type="submit" value="" class="icon update" />
                 <input name="OK" type="hidden" />
             </div>
             
@@ -236,8 +236,8 @@ else echo "                        <option>&nbsp;</option>\n";
     
         <div id="info">
         
-            <input type="button" class="icon previous" onclick="document.location.href='select_task_settings.php'" />
-            <input type="submit" class="icon next" onclick="process()" />
+            <input type="button" value="" class="icon previous" onclick="document.location.href='select_task_settings.php'" />
+            <input type="submit" value="" class="icon next" onclick="process()" />
             
             <p>
                 Select the image files in the upper file list. You can use SHIFT- 

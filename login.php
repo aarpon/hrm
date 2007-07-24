@@ -143,14 +143,14 @@ include("header.inc.php");
         <h2>Welcome</h2>
         
         <p>
-            Welcome to the remote image restoration interface. HRM lets you 
-            perform large-scale deconvolution of multiple images using 
+	    <a href="http://hrm.sourceforge.net" target="_blank">Huygens
+	    Remote Manager</a> is an easy to use interface to the
             Huygens Software by 
             <a href="javascript:openWindow('http://www.svi.nl')">Scientific 
-            Volume Imaging B.V.</a>
+            Volume Imaging B.V.</a> that allows for multi-user, large-scale deconvolution.
         </p>
-        
-        <div id="logos">
+
+	<div id="logos">
             <div class="logo-fmi">
                 <a href="javascript:openWindow('http://www.fmi.ch')"><img src="images/logo_fmi.png" alt="FMI" /></a>
                 <p>Friedrich Miescher Institute</p>

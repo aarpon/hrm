@@ -264,8 +264,8 @@ foreach ($files as $file) {
 if (!isset($_SESSION['jobcreated'])) {
 
 ?>
-                    <input type="button" value="previous" onclick="document.location.href='select_images.php'" class="icon previous" />
-                    <input type="button" value="create job" onclick="document.forms['createjob'].submit()" class="icon ok" />
+                    <input type="button" name="previous"   value="" onclick="document.location.href='select_images.php'" class="icon previous" />
+                    <input type="button" name="create job" value="" onclick="document.forms['createjob'].submit()" class="icon ok" />
 <?php
 
 }

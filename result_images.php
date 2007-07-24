@@ -150,13 +150,13 @@ else echo "                        <option>&nbsp;</option>\n";
             
 <?php if ($allowHttpTransfer) { ?>
             <div id="selection">
-                <input name="download" type="submit" value="download" class="icon down" />
+                <input name="download" type="submit" value="" class="icon down" />
             </div>
             
             <?php } ?>
            
             <div id="actions" class="imageselection">
-                <input name="update" type="submit" value="update view" class="icon update" />
+                <input name="update view" type="submit" value="" class="icon update" />
                 <input name="OK" type="hidden" />
             </div>
             
@@ -166,7 +166,7 @@ else echo "                        <option>&nbsp;</option>\n";
     
     <div id="stuff">
             
-    <input type="button" value="restart" onclick="document.location.href='select_parameter_settings.php'" class="icon restart" />
+    <input type="button" name="restart" value="" onclick="document.location.href='select_parameter_settings.php'" class="icon restart" />
     <div id="info">
         
             

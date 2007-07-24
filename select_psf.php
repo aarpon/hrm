@@ -187,8 +187,8 @@ for ($i = 1; $i <= $_SESSION['setting']->numberOfChannels(); $i++) {
     
         <div id="info">
         
-            <input type="button" class="icon cancel" onclick="document.location.href='image_format.php'" />
-            <input type="submit" class="icon apply" onclick="process()" />
+            <input type="button" value="" class="icon cancel" onclick="document.location.href='image_format.php'" />
+            <input type="submit" value="" class="icon apply" onclick="process()" />
             
             <p>Select a PSF file for each of the channels.</p>
             

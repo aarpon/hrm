@@ -112,7 +112,7 @@ $referer = $_SESSION['referer'];
 
 ?>
 
-            <input type="button" value="back" class="icon back" onclick="document.location.href='<?php echo $referer ?>'" />
+            <input type="button" name="back" value="" class="icon back" onclick="document.location.href='<?php echo $referer ?>'" />
         
         </div>
         
@@ -135,7 +135,7 @@ if ($_SESSION['user']->name() != "admin")  {
 ?>
 
                 <p>
-                    <input name="update" type="submit" value="update" class="icon update" />
+                    <input name="update" type="submit" value="" class="icon update" />
 <?php
 
 echo "                    ".date("l d F Y, H:i:s")."\n";
@@ -246,7 +246,7 @@ if (count($rows) != 0) {
                 
                 <label style="font-style: italic">
                     With selected:
-                    <input name="delete" type="submit" value="delete selected jobs" class="icon delete" />
+                    <input name="delete" type="submit" value="" class="icon delete" />
                 </label>
 <?php
 

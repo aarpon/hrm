@@ -123,7 +123,7 @@ foreach ($files as $file) {
         
       <div>
         <input name="channel" type="hidden" value="<?php echo $_GET["channel"] ?>" />
-        <input name="update" type="submit" value="update view" class="icon update" />
+        <input name="update" type="submit" value="" class="icon update" />
       </div>
       
       <div>

@@ -348,8 +348,8 @@ if ($_SESSION['setting']->isNipkowDisk()) {
     
         <div id="info">
         
-            <input type="button" class="icon cancel" onclick="document.location.href='microscope_parameter.php'" />
-            <input type="submit" class="icon apply" onclick="process()" />
+            <input type="button" value="" class="icon cancel" onclick="document.location.href='microscope_parameter.php'" />
+            <input type="submit" value="" class="icon apply" onclick="process()" />
             
             <p>
 		This is the last step. Press <br>the 

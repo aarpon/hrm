@@ -221,8 +221,8 @@ $referer = $_SESSION['referer'];
 
 ?>
 
-            <input type="button" value="cancel" onclick="document.location.href='<?php echo $referer ?>'" class="icon cancel" />
-            <input type="button" value="apply" onclick="document.forms['useraccount'].submit()" class="icon apply" />
+            <input type="button" name="cancel" value="" onclick="document.location.href='<?php echo $referer ?>'" class="icon cancel" />
+            <input type="button" name="apply" value="" onclick="document.forms['useraccount'].submit()" class="icon apply" />
             
 
             <p>

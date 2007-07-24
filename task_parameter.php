@@ -457,8 +457,8 @@ if ($parameter->value() != null) {
     
         <div id="info">
         
-            <input type="button" class="icon cancel" onclick="document.location.href='select_task_settings.php'" />
-            <input type="submit" class="icon apply" onclick="process()" />
+            <input type="button" value="" class="icon cancel" onclick="document.location.href='select_task_settings.php'" />
+            <input type="submit" value="" class="icon apply" onclick="process()" />
             
             <p>
                 Define the parameters for restoration.

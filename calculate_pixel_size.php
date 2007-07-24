@@ -186,8 +186,8 @@ $value = $parameter->value();
     
         <div id="info">
         
-            <input type="button" class="icon cancel" onclick="document.location.href='capturing_parameter.php'" />
-            <input type="submit" class="icon apply" onclick="process()" />
+            <input type="button" value="" class="icon cancel" onclick="document.location.href='capturing_parameter.php'" />
+            <input type="submit" value="" class="icon apply" onclick="process()" />
             
             <p>
                Enter the values and press the ok button to calculate the

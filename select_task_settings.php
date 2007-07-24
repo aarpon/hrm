@@ -237,7 +237,7 @@ if ($_SESSION['user']->name() != "admin") {
             </fieldset>
             
             <div id="selection">
-                <input name="copy_public" type="submit" value="copy_public" class="icon copy" />
+                <input name="copy_public" type="submit" value="" class="icon copy" />
             </div>
             
         </form>
@@ -290,21 +290,21 @@ else {
             </fieldset>
             
             <div id="actions" class="taskselection">
-                <input name="create" type="submit" value="create" class="icon create" />
-                <input name="edit" type="submit" value="edit" class="icon edit" />
-                <input name="copy" type="submit" value="copy" class="icon clone" />
+                <input name="create" type="submit" value="" class="icon create" />
+                <input name="edit" type="submit" value="" class="icon edit" />
+                <input name="copy" type="submit" value="" class="icon clone" />
 <?php
 
 if ($_SESSION['user']->name() != "admin") {
 
 ?>
-                <input name="make_default" type="submit" value="make_default" class="icon mark" />
+                <input name="make_default" type="submit" value="" class="icon mark" />
 <?php
 
 }
 
 ?>
-                <input name="delete" type="submit" value="delete" class="icon delete" />
+                <input name="delete" type="submit" value="" class="icon delete" />
                 <label>new/clone setting name: <input name="new_setting" type="text" class="textfield" /></label>
                 <input name="OK" type="hidden" />
             </div>
@@ -323,8 +323,8 @@ if ($_SESSION['user']->name() != "admin") {
 if ($_SESSION['user']->name() != "admin") {
 
 ?>
-            <input type="button" class="icon previous" onclick="document.location.href='select_parameter_settings.php'" />
-            <input type="submit" class="icon next" onclick="process()" />
+            <input type="button" value="" class="icon previous" onclick="document.location.href='select_parameter_settings.php'" />
+            <input type="submit" value="" class="icon next" onclick="process()" />
 <?php
 
 }
