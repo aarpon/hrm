@@ -156,7 +156,7 @@ else echo "                        <option>&nbsp;</option>\n";
             <?php } ?>
            
             <div id="actions" class="imageselection">
-                <input name="update view" type="submit" value="" class="icon update" />
+                <input name="update" type="submit" value="" class="icon update" />
                 <input name="OK" type="hidden" />
             </div>
             
