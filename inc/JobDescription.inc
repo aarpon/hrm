@@ -354,11 +354,14 @@ Class JobDescription {
     $type = $param->translatedValue();
     // Use appropriate output file format
     switch ($type) {
+        case "ics":
+            $fileFormat = "ics";
+            break;
         case "imaris":
             $fileFormat = "ims";
             break;
-        case "ics":
-            $fileFormat = "ics";
+        case "ome":
+            $fileFormat = "ome";
             break;
         case "tiff":
         case "tiff16":

@@ -5,21 +5,28 @@
 # hrm.conf defines variable HRM_DATA
 . /etc/hrm.conf
 
+if [ "$SUSER" = "" ]
+then
+	CMD=""
+else
+	CMD="sudo -u $SUSER"
+fi
+
 create() {
 	if [ ! -d "$HRM_DATA"/"$1" ]
 	then
-		sudo -u "$SUSER" mkdir "$HRM_DATA"/"$1"
-		sudo -u "$SUSER" mkdir "$HRM_DATA"/"$1"/"$HRM_SOURCE"
-		sudo -u "$SUSER" mkdir "$HRM_DATA"/"$1"/"$HRM_DEST"
+		$CMD mkdir "$HRM_DATA"/"$1"
+		$CMD mkdir "$HRM_DATA"/"$1"/"$HRM_SOURCE"
+		$CMD mkdir "$HRM_DATA"/"$1"/"$HRM_DEST"
 		# sudo -u "$SUSER" chown -R "$2":users "$HRM_DATA"/"$1"
-		sudo -u "$SUSER" chmod -R 0777 "$HRM_DATA"/"$1"
+		$CMD chmod -R 0777 "$HRM_DATA"/"$1"
 	fi
 }
 
 delete() {
 	if [ -d "$HRM_DATA"/"$1" ]
 	then
-		sudo -u "$SUSER" rm -R "$HRM_DATA"/"$1"
+		$CMD rm -R "$HRM_DATA"/"$1"
 	fi
 }
 
