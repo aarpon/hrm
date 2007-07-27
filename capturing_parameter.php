@@ -170,7 +170,7 @@ $textForCaptorSize = "pixel size (nm)";
                     <li>
                         <?php echo $textForCaptorSize ?>:
                         <input name="CCDCaptorSizeX" type="text" size="5" value="<?php echo $value ?>" />
-                        <input name="calculate" type="submit" value="calculate" style="width:110px; margin: 2px;">
+                        <input name="calculate" type="submit" value="calculate" style="width:110px; margin: 2px;" />
 <?php
 
 // display adaption info
@@ -269,7 +269,7 @@ if ($_SESSION['setting']->isTimeSeries()) {
   $parameter = $_SESSION['setting']->parameter("TimeInterval");
 
 ?>
-                <input name="TimeInterval" type="text" size="5" value="<?php echo $parameter->value() ?>">
+                <input name="TimeInterval" type="text" size="5" value="<?php echo $parameter->value() ?>" />
                 
             </fieldset>
 <?php
@@ -329,7 +329,7 @@ if ($_SESSION['setting']->isNipkowDisk()) {
   $parameter = $_SESSION['setting']->parameter('PinholeSpacing');
 
 ?>
-                <input name="PinholeSpacing" type="text" size="5" value="<?php echo $parameter->value() ?>">
+                <input name="PinholeSpacing" type="text" size="5" value="<?php echo $parameter->value() ?>" />
                 
             </fieldset>
 <?php
@@ -352,8 +352,8 @@ if ($_SESSION['setting']->isNipkowDisk()) {
             <input type="submit" value="" class="icon apply" onclick="process()" />
             
             <p>
-		This is the last step. Press <br>the 
-                <img src="images/apply_help.png" name="Apply" width="22" height="22"> <b>apply</b>
+		This is the last step. Press <br />the 
+                <img src="images/apply_help.png" alt="Apply" width="22" height="22" /> <b>apply</b>
                 button to save your parameter settings and to go back to the parameter settings
                 page.
             </p>

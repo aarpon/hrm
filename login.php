@@ -143,7 +143,7 @@ include("header.inc.php");
         <h2>Welcome</h2>
         
         <p>
-	    <a href="http://hrm.sourceforge.net" target="_blank">Huygens
+	    <a href="javascript:openWindow('http://hrm.sourceforge.net')">Huygens
 	    Remote Manager</a> is an easy to use interface to the
             Huygens Software by 
             <a href="javascript:openWindow('http://www.svi.nl')">Scientific 

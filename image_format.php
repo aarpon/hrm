@@ -302,10 +302,10 @@ $parameter = $_SESSION['setting']->parameter("PointSpreadFunction");
             </p>
             
             <p>
-                When you are ready, press the <br>
-	      	<img src="images/apply_help.png" name="Apply" width="22" height="22"> <b>apply</b>
-		button to go to the next <br>step  
-		or <img src="images/cancel_help.png" name="Cancel" width="22" height="22"> <b>cancel</b>
+                When you are ready, press the <br />
+	      	<img src="images/apply_help.png" alt="Apply" width="22" height="22" /> <b>apply</b>
+		button to go to the next <br />step  
+		or <img src="images/cancel_help.png" alt="Cancel" width="22" height="22" /> <b>cancel</b>
                 to discard your changes.
 	    </p>
 

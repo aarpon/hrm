@@ -223,7 +223,7 @@ for ($i=1; $i <= $_SESSION['setting']->numberOfChannels(); $i++) {
             
             <fieldset class="setting">
             
-                <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=ObjectiveMagnification')"><img src="images/help.png"alt="?" /></a>
+                <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=ObjectiveMagnification')"><img src="images/help.png" alt="?" /></a>
                 objective magnification:
                 
                 <select name="ObjectiveMagnification" size="1">
@@ -364,16 +364,16 @@ if (!$default) {
             
             <p>
 		You will find more detailed information on the parameters
-		by clicking on <br> the 
-                <img src="images/help.png" name="Help" width="22" height="22"> <b>help</b> 
+		by clicking on <br /> the 
+                <img src="images/help.png" alt="Help" width="22" height="22" /> <b>help</b> 
                 buttons or following the help link in the navigation bar.
             </p>
             
             <p>
-                When you are ready, press the <br>
-                <img src="images/apply_help.png" name="Apply" width="22" height="22"> <b>apply</b>
-                button to go to the next <br>step
-                or <img src="images/cancel_help.png" name="Cancel" width="22" height="22"> <b>cancel</b>
+                When you are ready, press the <br />
+                <img src="images/apply_help.png" alt="Apply" width="22" height="22" /> <b>apply</b>
+                button to go to the next <br />step
+                or <img src="images/cancel_help.png" alt="Cancel" width="22" height="22" /> <b>cancel</b>
                 to discard your changes.
             </p>
 

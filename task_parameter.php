@@ -261,7 +261,7 @@ $parameter->printCheckBox("True", "");
 
                                   
                                 or try multiple values
-<br>                    
+<br />                    
 <?php
 
 $signalNoiseRatioRangeParam = $_SESSION['task_setting']->parameter("SignalNoiseRatioRange");
@@ -348,7 +348,7 @@ $parameter->printCheckBox("True", "");
 ?>
 
                                     or try multiple values
-<br>    
+<br />    
 <?php
 
 $backgroundOffsetRangeParam = $_SESSION['task_setting']->parameter("BackgroundOffsetRange");
@@ -401,7 +401,7 @@ $parameter->printCheckBox("True", "");
 
                                 or try multiple values
                                 
-<br>    
+<br />    
 <?php
 
 $numberOfIterationsRangeParam = $_SESSION['task_setting']->parameter("NumberOfIterationsRange");
@@ -469,10 +469,10 @@ if ($parameter->value() != null) {
 	   </p>
 
            <p>
-                When you are ready, press the <br>
-                <img src="images/apply_help.png" name="Apply" width="22" height="22"> <b>apply</b>
-                button to go to the next <br>step
-                or <img src="images/cancel_help.png" name="Cancel" width="22" height="22"> <b>cancel</b>
+                When you are ready, press the <br />
+                <img src="images/apply_help.png" alt="Apply" width="22" height="22" /> <b>apply</b>
+                button to go to the next <br />step
+                or <img src="images/cancel_help.png" alt="Cancel" width="22" height="22" /> <b>cancel</b>
                 to discard your changes.
             </p> 
     

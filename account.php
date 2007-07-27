@@ -227,9 +227,9 @@ $referer = $_SESSION['referer'];
 
             <p>
                 Click on 
-                <img src="images/apply_help.png" name="Apply" width="22" height="22"> <b>apply</b>
+                <img src="images/apply_help.png" alt="Apply" width="22" height="22"/> <b>apply</b>
 		to store the changes or on
-                <img src="images/cancel_help.png" name="Cancel" width="22" height="22"> <b>cancel</b>
+                <img src="images/cancel_help.png" alt="Cancel" width="22" height="22"/> <b>cancel</b>
                 to discard them.
             </p>
 

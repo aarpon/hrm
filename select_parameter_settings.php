@@ -359,30 +359,30 @@ if ($_SESSION['user']->name() != "admin") {
 ?>
 
             <p>
-		Select a parameter setting and press <br> 
-                the <img src="images/next_help.png" name="Forward" width="22" height="22"> <b>forward</b>
-                button to go to the <br> next step.
+		Select a parameter setting and press <br /> 
+                the <img src="images/next_help.png" alt="Forward" width="22" height="22" /> <b>forward</b>
+                button to go to the <br /> next step.
             </p>
 
             <p>
-		You can <img src="images/create_help.png" name="Create" width="22" height="22"> <b>create</b> 
-                new settings or <br><img src="images/edit_help.png" name="Create" width="22" height="22"><b>edit</b> 
+		You can <img src="images/create_help.png" alt="Create" width="22" height="22" /> <b>create</b> 
+                new settings or <br /><img src="images/edit_help.png" alt="Create" width="22" height="22" /><b>edit</b> 
                 existing ones.
             </p>
             
            <p>
-		<img src="images/clone_help.png" name="Copy" width="22" height="22"> <b>Copy</b> 
+		<img src="images/clone_help.png" alt="Copy" width="22" height="22" /> <b>Copy</b> 
                 creates a clone of the selected setting with the specified name.
             </p>
             
             <p>
 		You can set the current selection as the 
-		<img src="images/mark_help.png" name="Default" width="22" height="22"> <b>default</b> setting.
+		<img src="images/mark_help.png" alt="Default" width="22" height="22" /> <b>default</b> setting.
 	    </p>
 
             <p>
-                You can permanently destroy the current selection by pressing <br>on the 
-                <img src="images/delete_help.png" name="Delete" width="22" height="22"> <b>delete</b> button.
+                You can permanently destroy the current selection by pressing <br />on the 
+                <img src="images/delete_help.png" alt="Delete" width="22" height="22" /> <b>delete</b> button.
             </p>
 
             <p>

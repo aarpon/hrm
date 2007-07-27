@@ -70,14 +70,14 @@ include("header.inc.php");
 	<p>2004 - 2007, Montpellier RIO Imaging (CNRS)</p>
 
  	<h3>Contributors</h3>
- 	<p>Pierre Travo	(concept)<br>
-	Volker Baecker	(concept, implementation)<br>
-	Aaron Ponti	(contributor)<br>
-	Asheesh Gulati	(contributor)<p>
+ 	<p>Pierre Travo	(concept)<br />
+	Volker Baecker	(concept, implementation)<br />
+	Aaron Ponti	(contributor)<br />
+	Asheesh Gulati	(contributor)</p>
 
 	<h3>Email</h3>
-	<p>volker.baecker@users.sourceforge.net<br>
-	aarpon@users.sourceforge.net<br>
+	<p>volker.baecker@users.sourceforge.net<br />
+	aarpon@users.sourceforge.net<br />
 	gulati9@users.sourceforge.net</p>
 
 	<h3>Web</h3>
@@ -85,21 +85,21 @@ include("header.inc.php");
 
 	 <p>The Huygens Remote Manager (HRM) is a web-based deconvolution platform primarily targeted to microscopy
 	 and imaging facilities in academic and industrial environments that must handle large user bases.
-	 HRM in an interface to the Huygens software from Scientific Volume Imaging.
+	 HRM in an interface to the Huygens software from Scientific Volume Imaging.</p>
 
-	 HRM was originally developed at Montpellier Rio Imaging in 2004 by Pierre Travo and Volker Baecker.
+	 <p>HRM was originally developed at Montpellier Rio Imaging in 2004 by Pierre Travo and Volker Baecker.</p>
  
-	 Now, HRM is a joint project of Montpellier Rio Imaging, the Friedrich Miescher Institute in Basel, the 
+	 <p>Now, HRM is a joint project of Montpellier Rio Imaging, the Friedrich Miescher Institute in Basel, the 
 	 BioImaging and Optics platform at the Ecole Polytechnique Fédérale de Lausanne and Scientific Volume 
-	 Imaging.
+	 Imaging.</p>
 
-	 This software is governed by the CeCILL license under French law and abiding by the rules of distribution of free software.</p>
+	 <p>This software is governed by the CeCILL license under French law and abiding by the rules of distribution of free software.</p>
 
 	<h3>Third-party software</h3>
 
-	<p>Huygens Remote Manager uses the <a href="http://adodb.sourceforge.net/" target="_blank">ADOdb Database Abstraction Library</a>.</p>
+	<p>Huygens Remote Manager uses the <a href="javascript:openWindow('http://adodb.sourceforge.net/')">ADOdb Database Abstraction Library</a>.</p>
 
-	<p>Icons in Huygens Remote Manager are taken from the <a href="http://icon-king.com/?p=15" target="_blank">Nuvola icon theme v1.0 by David Vignoni</a>.</p>
+	<p>Icons in Huygens Remote Manager are taken from the <a href="javascript:openWindow('http://icon-king.com/?p=15')">Nuvola icon theme v1.0 by David Vignoni</a>.</p>
 
     </div> <!-- content -->
     

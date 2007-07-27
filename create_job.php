@@ -96,7 +96,7 @@ if (isset($_POST['create'])) {
 	}
     if ($job->createJob()) {
       $_SESSION['jobcreated'] = True;
-      $message = "            <p class=\"warning\">The job has been created and added to the queue.</p><p class=\"warning\">Press the <img src='images/restart_help.png' name='Restart' width='22' height='22'> <b>home</b> button to restart.</p>";
+      $message = "            <p class=\"warning\">The job has been created and added to the queue.</p><p class=\"warning\">Press the <img src='images/restart_help.png' alt='Restart' width='22' height='22' /> <b>home</b> button to restart.</p>";
     }
     else {
       $message = "            <p class=\"warning\">".$job->message()."</p>";
@@ -220,7 +220,7 @@ echo $_SESSION['setting']->display();
         
         <fieldset class="report">
             <legend>
-                <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpCreateJob')"><img src="images/help.png"alt="?" /></a>
+                <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpCreateJob')"><img src="images/help.png" alt="?" /></a>
                 <a href="select_task_settings.php">task setting</a>: <?php echo $_SESSION['task_setting']->name() ?>
             </legend>
             <textarea name="task_settings_report" cols="50" rows="5" readonly="readonly">
@@ -234,7 +234,7 @@ echo $_SESSION['task_setting']->displayWithoutOutputFileFormat();
         
         <fieldset class="report">
             <legend>
-                <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpCreateJob')"><img src="images/help.png" alst="?" /></a>
+                <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpCreateJob')"><img src="images/help.png" alt="?" /></a>
                 <a href="select_images.php">selected images</a>
             </legend>
             <textarea name="task_settings_report" cols="50" rows="5" readonly="readonly">
@@ -285,7 +285,7 @@ else {
             
             <p>
 		Check the parameters you have chosen. Press the 
-		<img src="images/ok_help.png" name="Create job" width="22" height="22">
+		<img src="images/ok_help.png" alt="Create job" width="22" height="22" />
 		<b>create job</b> button to add the job to the queue.
             </p>
          

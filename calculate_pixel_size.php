@@ -129,7 +129,7 @@ $value = $_SESSION['CCDCaptorSize'];
     		 
            <input name="CCDCaptorSize" type="text" size="5" value="<?php echo $value ?>" />
             
-         <br>
+         <br />
             
                 <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=PixelBinning')"><img src="images/help.png" alt="?" /></a>
                 binning:
@@ -153,8 +153,8 @@ foreach ($parameter->possibleValues() as $possibleValue) {
 ?>
 
                 </select>
-                <br>
- <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpCMount')"><img src="images/help.png"alt="?" /></a>
+                <br />
+ <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpCMount')"><img src="images/help.png" alt="?" /></a>
 <?php
 
 
@@ -162,9 +162,9 @@ $parameter = $_SESSION['setting']->parameter("CMount");
 $value = $parameter->value();
 ?>                
 <?php echo "c-mount-factor" ?>:
-                        <input name="CMount" type="text" size="5" value="<?php echo $value ?>" /> <br>
+                        <input name="CMount" type="text" size="5" value="<?php echo $value ?>" /> <br />
                         
- <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpTubeFactor')"><img src="images/help.png"alt="?" /></a>
+ <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpTubeFactor')"><img src="images/help.png" alt="?" /></a>
 <?php
 
 

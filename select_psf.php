@@ -194,7 +194,7 @@ for ($i = 1; $i <= $_SESSION['setting']->numberOfChannels(); $i++) {
             
            <p>
                 When you are done with the selection, press the
-                <img src="images/apply_help.png" name="Create" width="22" height="22"> <b>apply</b>
+                <img src="images/apply_help.png" alt="Create" width="22" height="22" /> <b>apply</b>
                 button to go back to the Image Format page.
             </p>
 

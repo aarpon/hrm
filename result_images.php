@@ -176,7 +176,7 @@ else echo "                        <option>&nbsp;</option>\n";
             You can use SHIFT- and CTRL-click to select multiple files. 
             </p><p>
             Use the down-arrow to
-		<img src="images/add_help.png" name="Add" width="22" height="22">    
+		<img src="images/add_help.png" alt="Add" width="22" height="22" />    
 		    start the downloading.
             That will
             create first a compressed archive including the selected files.
