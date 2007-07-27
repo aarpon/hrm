@@ -370,7 +370,7 @@ Class JobDescription {
     if ($multichanneloutput->value()) {
         $newScript = $newScript . "# join\n";
         for($channel=0; $channel < $numberOfChannels; $channel++) {
-            $newScript = $newScript . "set imageName$channel [ img open \"".$dst_files[$channel].".".$fileFormat."\"]\n";
+            $newScript = $newScript . "set imageName$channel [ img open \"".$dst_files[$channel].".ics\"]\n";
             if ($channel > 1) {
                 $newScript = $newScript . "c join \$imageName$channel -> c\n";
             } else if ($channel == 1) {
@@ -381,12 +381,10 @@ Class JobDescription {
         // avoid redundant slashes in path
         $this->files = array($this->relativeSourcePath() . $tmpfilename . ".ics");
         $dstfilename = $this->destinationImageFullName() ;
-        $newScript = $newScript . "c save \"$dstfilename\" -type $type\n";
+        $newScript = $newScript . "c save \"$dstfilename.$fileFormat\" -type $type\n";
         foreach ($dst_files as $dst_file) {
-            $newScript .= "catch { exec rm -f \"" . $dst_file . "." . $fileFormat . "\" }\n";
-            if ($fileFormat == "ics") {
-              $newScript .= "catch { exec rm -f \"" . $dst_file . ".ids\" }\n";
-            }
+            $newScript .= "catch { exec rm -f \"" . $dst_file . ".ics\" }\n";
+            $newScript .= "catch { exec rm -f \"" . $dst_file . ".ids\" }\n";
         }
     }
     $this->files = $files;
@@ -663,6 +661,7 @@ Class JobDescription {
     return 'set imageName [img open "' . $imageFileName . '"]' . "\n" . '$imageName lundo -off' . "\n";
   } 
 
+  // TODO refactor this part
   function saveImageString() {
     global $resultImagesOwnedByUser;
     $result = '';
@@ -677,7 +676,7 @@ Class JobDescription {
     if ($type== 'tiff' || $type == 'tiff16') {
     	$imageFileName = $imageFileName . '.tif';
     }
-    $result = $result . "c save " . '"' . $imageFileName .'"' . " -type $type";
+    $result = $result . "c save " . '"' . $imageFileName .'"' . " -type ics";
     if ($type == 'tiff' || $type == 'tiff16') {
         $result = $result . " -tiffMultiDir";
     }
