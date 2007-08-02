@@ -221,7 +221,7 @@ if ($_SESSION['setting']->isThreeDimensional()) {
 
                 </ul>
                 
-                <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=NyquistCalculator')">
+                <a href="javascript:openWindow('http://support.svi.nl/wiki/NyquistCalculator')">
                     Nyquist rate and PSF calculator
                     <img src="images/web.png" alt="external link" />
                 </a>
@@ -302,7 +302,7 @@ if ($_SESSION['setting']->isMultiPointOrSinglePointConfocal()) {
 ?>
                 <p />
                 
-                <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=BackprojectedPinholeCalculator')">
+                <a href="javascript:openWindow('http://support.svi.nl/wiki/BackprojectedPinholeCalculator')">
                     Backprojected pinhole calculator
                     <img src="images/web.png" alt="external link" />
                 </a>
