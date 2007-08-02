@@ -2385,7 +2385,7 @@ Class JobTaskSetting extends TaskSetting {
 	function fullRestorationString($source, $dest) {
 		$result = '';
 		$result = $result . $source . ' cmle psf -> ' . $dest . ' ';
-		$result = $result . $this->sginalNoiseRatioString();
+		$result = $result . $this->signalNoiseRatioString();
 		$result = $result . $this->maxIterationsString();
 		// background estimation manual/auto
 		$parameter = $this->parameter("BackgroundOffsetPercent");
@@ -2413,7 +2413,7 @@ Class JobTaskSetting extends TaskSetting {
 	function fullRestorationForMeasuredPointSpreadFunctionString($source, $dest) {
 		$result = '';
 		$result = $result . $source . ' cmle $psf -> ' . $dest . ' ';
-		$result = $result . $this->sginalNoiseRatioString();
+		$result = $result . $this->signalNoiseRatioString();
 		$result = $result . $this->maxIterationsString();
 		// background estimation manual/auto
 		$parameter = $this->parameter("BackgroundOffsetPercent");
@@ -2482,20 +2482,21 @@ Class JobTaskSetting extends TaskSetting {
 		return $result;
 	}
 
-	function sginalNoiseRatioString() {
+	function signalNoiseRatioString() {
 		$parameter = $this->parameter('SignalNoiseRatio');
 		$values = $parameter->value();
-		if (!is_array($values)) {
-			$values = array_fill(1, $this->numberOfChannels(), $values);
-		}
-		$result = '-sn {';
-		for ($i = 1; $i <= $this->numberOfChannels(); $i++) {
-			$result = $result . $values[$i];
-			if ($i < $this->numberOfChannels()) {
-				$result = $result . " ";
-			}
-		}
-		$result = $result . '} ';
+		//if (!is_array($values)) {
+		//	$values = array_fill(1, $this->numberOfChannels(), $values);
+		//}
+		//$result = '-sn {';
+		//for ($i = 1; $i <= $this->numberOfChannels(); $i++) {
+		//	$result = $result . $values[$i];
+		//	if ($i < $this->numberOfChannels()) {
+		//		$result = $result . " ";
+		//	}
+		//}
+		//$result = $result . '} ';
+		$result = '-sn ' . $values[1] . " ";		
 		return $result;
 	}
 

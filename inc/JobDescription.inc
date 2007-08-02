@@ -489,6 +489,12 @@ Class JobDescription {
     //$value = $newBackgroundOffsetPercent->value();
     $newBackgroundOffsetPercent->setValue(array('', $originalBackgroundOffsetPercentValue[$channel]));    
     $taskSetting->set($newBackgroundOffsetPercent);
+    // Signal to noise ratio
+    $newSignalNoiseRatio = $taskSetting->parameter('SignalNoiseRatio');
+    $originalSignalNoiseRatioValue = $newSignalNoiseRatio->value();
+    $newSignalNoiseRatio->setValue( array( '', $originalSignalNoiseRatioValue[$channel] ) );
+    $taskSetting->set($newSignalNoiseRatio);
+    //
     $taskSetting->setNumberOfChannels(1);
     // Create script
     $this->setParameterSetting($parameterSetting);
@@ -513,6 +519,8 @@ Class JobDescription {
     $this->setParameterSetting($parameterSetting);
     // ... and for task setting
     $taskSetting = $this->taskSetting;
+    $newSignalNoiseRatio->setValue( $originalSignalNoiseRatioValue );
+    $taskSetting->set($newSignalNoiseRatio);
     $taskSetting->setNumberOfChannels($numberOfChannels);
     // DEBUG
     $removeBackgroundPercent->setValue($originalRemoveBackgroundPercentValue);
