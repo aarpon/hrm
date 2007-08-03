@@ -97,7 +97,13 @@ include("header.inc.php");
     <div id="nav">
         <ul>
             <li><a href="select_images.php?exited=exited">exit</a></li>
-            <li><a href="result_images.php">results</a></li>
+	    <?php
+		if ($_SESSION['user']->name() != "admin") {
+		?>
+			<li><a href="result_images.php">results</a></li>
+		<?php
+		}
+	    ?>
             <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpQueue')">help</a></li>
         </ul>
     </div>
