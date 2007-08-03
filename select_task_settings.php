@@ -328,38 +328,45 @@ if ($_SESSION['user']->name() != "admin") {
 
 }
 
-?>
-
+        if ($_SESSION['user']->name() != "admin") {
+        ?>
             <p>
                 Select a task setting and press <br />
                 the <img src="images/next_help.png" alt="Forward" width="22" height="22" /> <b>forward</b>
                 button to go to the <br /> next step.
-            </p>
+           </p>
+        <?php
+        } else {
+        ?>
+                <p>&nbsp;</p>
+        <?php
+        }
+        ?>
 
-            <p>
-                You can <img src="images/create_help.png" alt="Create" width="22" height="22" /> <b>create</b>
+	<p>
+		You can <img src="images/create_help.png" alt="Create" width="22" height="22" /> <b>create</b>
                 new settings or <br /><img src="images/edit_help.png" alt="Create" width="22" height="22" /><b>edit</b>
                 existing ones.
-            </p>
+        </p>
 
-           <p>
-                <img src="images/clone_help.png" alt="Copy" width="22" height="22" /> <b>Copy</b>
+        <p>
+	        <img src="images/clone_help.png" alt="Copy" width="22" height="22" /> <b>Copy</b>
                 creates a clone of the selected setting with the specified name.
-            </p>
+        </p>
 
-            <p>
+        <p>
                 You can set the current selection as the
                 <img src="images/mark_help.png" alt="Default" width="22" height="22" /> <b>default</b> setting.
-            </p>
+        </p>
 
-            <p>
+        <p>
                 You can permanently destroy the current selection by pressing <br />on the
                 <img src="images/delete_help.png" alt="Delete" width="22" height="22" /> <b>delete</b> button.
-            </p>
+        </p>
 
-            <p>
+        <p>
                 For more detailed explanations please follow the help link in the navigation bar.
-            </p>
+        </p>
 
         </div>
         

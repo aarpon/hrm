@@ -356,14 +356,20 @@ if ($_SESSION['user']->name() != "admin") {
 
 }
 
-?>
-
-            <p>
-		Select a parameter setting and press <br /> 
+	if ($_SESSION['user']->name() != "admin") {
+	?>
+	    <p>
+		Select a parameter setting and press  
                 the <img src="images/next_help.png" alt="Forward" width="22" height="22" /> <b>forward</b>
-                button to go to the <br /> next step.
-            </p>
-
+                button to go to the next step.
+	   </p>
+	<?php
+	} else {
+	?>
+		<p>&nbsp;</p>
+	<?php
+	}
+	?>
             <p>
 		You can <img src="images/create_help.png" alt="Create" width="22" height="22" /> <b>create</b> 
                 new settings or <br /><img src="images/edit_help.png" alt="Create" width="22" height="22" /><b>edit</b> 
