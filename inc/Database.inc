@@ -146,9 +146,6 @@ Class DatabaseConnection {
 
   function execute($query) {
     $connection = $this->connection();
-# The following is a hack not to use "user" in the queries, that is a
-# keyword for postgres. It should better be rewritten in the rest of the code...
-    $query = str_replace ("user", "username", $query);
     $result = $connection->Execute($query); 
     return $result;
   } 
@@ -161,9 +158,6 @@ Class DatabaseConnection {
   //!---------------------------------------------------------  
   function query($queryString) {
     $connection = $this->connection();
-# The following is a hack not to use "user" in the queries, that is a
-# keyword for postgres. It should better be rewritten in the rest of the code...
-    $queryString = str_replace ("user", "username", $queryString);
     $resultSet = $connection->Execute($queryString);
     if (!$resultSet) {
       return False;
@@ -213,7 +207,7 @@ Class DatabaseConnection {
   // @return      String
   //!---------------------------------------------------------  
   function passwordQueryString($name) {
-    $string = "select password from user where name='" . $name . "'";
+    $string = "select password from username where name='" . $name . "'";
     return $string;
   }
 
@@ -225,7 +219,7 @@ Class DatabaseConnection {
   // @return      String
   //!---------------------------------------------------------  
   function emailAddress($username) {
-    $query = "select email from user where name = '" . $username . "'";
+    $query = "select email from username where name = '" . $username . "'";
     $result = $this->queryLastValue($query);
     return $result;
   }
@@ -448,7 +442,7 @@ Class DatabaseConnection {
   } 
   
   function queueJob($id, $username) {
-    $query = "insert into job_queue (id, user, queued, status) values ('" .$id . "', '" . $username . "', NOW(), 'queued')";
+    $query = "insert into job_queue (id, username, queued, status) values ('" .$id . "', '" . $username . "', NOW(), 'queued')";
     return $this->execute($query);
   } 
   
@@ -600,7 +594,7 @@ Class DatabaseConnection {
   } 
 
   function getQueueContents() {
-    $query = "select id, user, queued, start, server, process_info, status from job_queue order by queued, status desc";
+    $query = "select id, username, queued, start, server, process_info, status from job_queue order by queued, status desc";
     $result = $this->query($query);
     return $result;
   } 
@@ -613,7 +607,7 @@ Class DatabaseConnection {
   } 
 
   function userWhoCreatedJob($id) {
-    $query = "select user from job_queue where id = '" . $id . "'";
+    $query = "select username from job_queue where id = '" . $id . "'";
     $result = $this->queryLastValue($query);
     if (!$result) {
       return NULL;
@@ -754,14 +748,14 @@ Class DatabaseConnection {
   }
   
   function checkUser($name) {
-    $query = "select status from user where name = '" . $name . "'";
+    $query = "select status from username where name = '" . $name . "'";
     $result = $this->queryLastValue($query);
     if ($result) $result = true;
     return $result;
   }
   
   function getUserStatus($name) {
-  	$query = "select status from user where name = '" . $name . "'";
+  	$query = "select status from username where name = '" . $name . "'";
   	$result = $this->queryLastValue($query);
   	return $result;
   }
@@ -773,18 +767,18 @@ Class DatabaseConnection {
   }
   
   function getGroup($userName) {
-  	$query = "SELECT research_group FROM user WHERE name= '" . $userName . "'";
+  	$query = "SELECT research_group FROM username WHERE name= '" . $userName . "'";
   	$result = $this->queryLastValue($query);
   	return $result;
   }
   
   function updateMail($userName, $email) {
-  	$result = $this->execute("UPDATE user SET email = '". $email ."' WHERE name = $userName");
+  	$result = $this->execute("UPDATE username SET email = '". $email ."' WHERE name = $userName");
   	return $result;
   }
   
   function updateLastAccessDate($userName) {
-  	$query = "UPDATE user SET last_access_date = CURRENT_TIMESTAMP WHERE name = '". $userName . "'";
+  	$query = "UPDATE username SET last_access_date = CURRENT_TIMESTAMP WHERE name = '". $userName . "'";
   	$result = $this->execute($query);
   	return $result;
   }
