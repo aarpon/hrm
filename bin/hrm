@@ -3,7 +3,7 @@
 # HRM administration script
 
 # hrm.conf defines variable HRM_DATA
-. /etc/hrm.conf
+. /etc/hrm1.conf
 
 if [ "$SUSER" = "" ]
 then

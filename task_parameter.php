@@ -221,19 +221,16 @@ include("header.inc.php");
         
         <form method="post" action="" id="select">
         
-            <fieldset class="setting">  <!-- full restoration -->
+            <fieldset class="setting">  <!-- signal/noise ratio -->
             
                 <legend>
-                    <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpRestorationParameters')"><img src="images/help.png" alt="?" /></a>
-                    full restoration
+                    <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=SignalToNoiseRatio')"><img src="images/help.png" alt="?" /></a>
+                    signal/noise ratio
                 </legend>
                 
-                <div id="full">
+                <div id="snr">
                 
-                    <ul>
-                        <li>
-                            signal/noise ratio:&nbsp;
-                    
+                    <div class="multichannel">
 <?php
 
 $parameter = $_SESSION['task_setting']->parameter("SignalNoiseRatio");
@@ -241,56 +238,27 @@ $value = $parameter->value();
 for ($i=1; $i <= $_SESSION['task_setting']->numberOfChannels(); $i++) {
 
 ?>
-                            <span class="multichannel"><input name="SignalNoiseRatio<?php echo $i ?>" type="text" size="3" value="<?php echo $value[$i] ?>" class="multichannelinput" /></span>
-                            
+                        <span class="nowrap">Ch<?php echo $i ?>:<span class="multichannel"><input name="SignalNoiseRatio<?php echo $i ?>" type="text" size="8" value="<?php echo $value[$i] ?>" class="multichannelinput" /></span>&nbsp;</span>
 <?php
 
 }
 
 ?>
-                            <p>
-                            
-<?php
-
-if (!$noRange) {
-
-$parameter = $_SESSION['task_setting']->parameter("SignalNoiseRatioUseRange");
-$parameter->printCheckBox("True", "");
-
-?>
-
-                                  
-                                or try multiple values
-<br />                    
-<?php
-
-$signalNoiseRatioRangeParam = $_SESSION['task_setting']->parameter("SignalNoiseRatioRange");
-$signalNoiseRatioRange = $signalNoiseRatioRangeParam->value();
-
-for ($i=1; $i <= 4; $i++) {
-
-?>
-                                <input name="SignalNoiseRatioRange<?php echo $i ?>" type="text" size="3" value="<?php echo $signalNoiseRatioRange[$i] ?>" class="multichannelinput" /> <?php if ($i < 4) echo "/" ?>
-                                
-<?php
-
-}
-
-}
-
-?>
-
-                            </p>
-                            
-                        </li>
-                        
-                        <li>
-                            background offset:
-                            
-                            <p>
-                            
-                            <ul>
-                            
+                    </div>
+                    
+                </div>
+                
+            </fieldset>
+            
+            <fieldset class="setting">  <!-- background mode -->
+            
+                <legend>
+                    <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=BackgroundMode')"><img src="images/help.png" alt="?" /></a>
+                    background mode
+                </legend>
+                
+                <div id="background">
+                
 <?php
 
 $backgroundOffsetPercentParam =  $_SESSION['task_setting']->parameter("BackgroundOffsetPercent");
@@ -301,8 +269,8 @@ if ($backgroundOffset[1] == "auto") $flag = " checked=\"checked\"";
 
 ?>
 
-                                <li><input type="radio" name="BackgroundEstimationMode" value="auto"<?php echo $flag ?> />automatic background estimation<p /></li>
-                                
+                    <input type="radio" name="BackgroundEstimationMode" value="auto"<?php echo $flag ?> />automatic background estimation<p />
+                    
 <?php
 
 $flag = "";
@@ -310,17 +278,18 @@ if ($backgroundOffset[1] == "object") $flag = " checked=\"checked\"";
 
 ?>
 
-                                <li><input type="radio" name="BackgroundEstimationMode" value="object"<?php echo $flag ?> />in/near object<p /></li>
-                                
-                                <li>
+                    <input type="radio" name="BackgroundEstimationMode" value="object"<?php echo $flag ?> />in/near object<p />
+                    
 <?php
 
 $flag = "";
 if ($backgroundOffset[1] != "auto" && $backgroundOffset[1] != "object" && $backgroundOffset[1] != null) $flag = " checked=\"checked\"";
 
 ?>
-                                    <input type="radio" name="BackgroundEstimationMode" value="manual"<?php echo $flag ?> />
-                                    remove
+                    <input type="radio" name="BackgroundEstimationMode" value="manual"<?php echo $flag ?> />
+                    remove % of the detected background
+                    
+                    <div class="multichannel">
 <?php
 
 for ($i=1; $i <= $_SESSION['task_setting']->numberOfChannels(); $i++) {
@@ -328,56 +297,30 @@ for ($i=1; $i <= $_SESSION['task_setting']->numberOfChannels(); $i++) {
   if ($backgroundOffset[1] != "auto" && $backgroundOffset[1] != "object" && $i < sizeof($backgroundOffset)) $val = $backgroundOffset[$i];
 
 ?>
-                                    <!-- <span class="footnote">(Ch<?php echo $i ?>:)</span> --><span class="multichannel"><input name="BackgroundOffsetPercent<?php echo $i ?>" type="text" size="3" value="<?php echo $val ?>" class="multichannelinput" /><!-- %<?php if ($_SESSION['task_setting']->numberOfChannels() > $i) echo "," ?></span> -->
-                                
-<?php
-
-}
-
-?>
-                                    % of the detected background
-                                    
-                                    <p />
-<?php	
-
-if (!$noRange) {
-
-$parameter = $_SESSION['task_setting']->parameter("BackgroundOffsetUseRange");
-$parameter->printCheckBox("True", "");
-
-?>
-
-                                    or try multiple values
-<br />    
-<?php
-
-$backgroundOffsetRangeParam = $_SESSION['task_setting']->parameter("BackgroundOffsetRange");
-$backgroundOffsetRange = $backgroundOffsetRangeParam->value();
-
-for ($i=1; $i <= 4; $i++) {
-
-?>
-                                    <input name="BackgroundOffsetRange<?php echo $i ?>" type="text" size="3" value="<?php echo $backgroundOffsetRange[$i] ?>" class="multichannelinput" /> <?php if ($i < 4) echo "/" ?>
-                                
-<?php
-
-}
-
-}
-
-?>
-
-                                </li>
-                                
-                            </ul>
-                            
-                            </p>
-                            
-                        </li>
+                        <span class="nowrap">Ch<?php echo $i ?>:<span class="multichannel"><input name="BackgroundOffsetPercent<?php echo $i ?>" type="text" size="8" value="<?php echo $val ?>" class="multichannelinput" /></span>&nbsp;</span>
                         
-                        <li>
-                            number of iterations:
-                            
+<?php
+
+}
+
+?>
+                    </div>
+                    
+                </div>
+                
+            </fieldset>
+            
+            <fieldset class="setting">  <!-- stopping criteria -->
+            
+                <legend>
+                    stopping criteria
+                </legend>
+                
+                <div id="criteria">
+                
+                    <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=MaxNumOfIterations')"><img src="images/help.png" alt="?" /></a>
+                    number of iterations:
+                    
 <?php
 
 $parameter = $_SESSION['task_setting']->parameter("NumberOfIterations");
@@ -387,48 +330,54 @@ if ($parameter->value() != null) {
 }
 
 ?>
-                            <input name="NumberOfIterations" type="text" size="3" value="<?php echo $value ?>" />
-                            
-                            <p>
+                    <input name="NumberOfIterations" type="text" size="3" value="<?php echo $value ?>" />
+                    
+                    <p />
+                    
 <?php
 
 if (!$noRange) {
+
+?>
+                    <div style="text-align: left">
+                    
+<?php
 
 $parameter = $_SESSION['task_setting']->parameter("NumberOfIterationsUseRange");
 $parameter->printCheckBox("True", "");
 
 ?>
 
-                                or try multiple values
-                                
-<br />    
+                        try multiple values
+                    
 <?php
 
 $numberOfIterationsRangeParam = $_SESSION['task_setting']->parameter("NumberOfIterationsRange");
 $numberOfIterationsRange = $numberOfIterationsRangeParam->value();
 
 
-for ($i=1; $i <= 4; $i++) {
+  for ($i=1; $i <= 4; $i++) {
 
 ?>
-                                <input name="NumberOfIterationsRange<?php echo $i ?>" type="text" size="3" value="<?php echo $numberOfIterationsRange[$i] ?>" class="multichannelinput" /> <?php if ($i < 4) echo "/" ?>
-                                
+                        <input name="NumberOfIterationsRange<?php echo $i ?>" type="text" size="3" value="<?php echo $numberOfIterationsRange[$i] ?>" class="multichannelinput" />
+                        
+<?php
+
+  }
+
+?>
+                    </div>
 <?php
 
 }
 
-}
-
 ?>
 
-                            </p>
-                            
-                        </li>
-                        
-                        
-                        <li>
-                            quality change stopping criterion:
-                            
+                    <p />
+                    
+                    <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=QualityCriterion')"><img src="images/help.png" alt="?" /></a>
+                    quality change:
+                    
 <?php
 
 $parameter = $_SESSION['task_setting']->parameter("QualityChangeStoppingCriterion");
@@ -438,14 +387,11 @@ if ($parameter->value() != null) {
 }
 
 ?>
-                            <input name="QualityChangeStoppingCriterion" type="text" size="3" value="<?php echo $value ?>" />
-                        </li>
-                        
-                    </ul>
+                    <input name="QualityChangeStoppingCriterion" type="text" size="3" value="<?php echo $value ?>" />
                     
                 </div>
                 
-            </fieldset>  <!-- full restoration -->
+            </fieldset>
             
             <div><input name="OK" type="hidden" /></div>
             

@@ -559,8 +559,16 @@ input.restart {
     background: url(../images/restart.png) no-repeat center;
 }
 
-.multichannel {
+span.multichannel {
     margin-left: -8px;
+}
+
+div.multichannel {
+    text-align: center;
+}
+
+.nowrap {
+    white-space: nowrap;
 }
 
 .multichannelinput {
