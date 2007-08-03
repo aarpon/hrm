@@ -1,4 +1,3 @@
-
 <?php
 
 // php page: select_task_settings.php
