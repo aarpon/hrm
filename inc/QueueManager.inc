@@ -538,20 +538,23 @@ Class QueueManager {
 			exec("chown -R " . $huygens_user . ":" . $huygens_group . " " . $lpath);
 		}
 	}*/
-			
-	function restoreOwnership($username) {
-		global $resultImagesOwnedByUser;
-		global $huygens_user;
-		global $huygens_group;
-		global $image_folder;
-		
-		//if ($resultImagesOwnedByUser)
-		//	;
-		//else
-			//$result = exec("chown -R " . $huygens_user . ":" . $huygens_group . " " . $image_folder . "/" . $username);
-			//error_log($result);
-
-	}
+        
+        // TODO refactor semantics of this method
+        function restoreOwnership($username) {
+                global $resultImagesOwnedByUser;
+                global $image_user;
+                global $image_group;
+                global $image_folder;
+                
+                //if ($resultImagesOwnedByUser)
+                //      ;
+                //else
+                        //$result = exec("chown -R " . $huygens_user . ":" . $huygens_group . " " . $image_folder . "/" . $username);
+                        //error_log($result);
+                        
+                $result = exec("chown -R " . $image_user . ":" . $image_group . " " . $image_folder . "/" . $username);
+                error_log($result);
+        }
 	
 	// TODO refactor this
 	function updateJobAndServerStatus() {

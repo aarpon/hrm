@@ -27,7 +27,7 @@ $db_password = "";
 // Huygens settings
 //==============================================================================
 
-// Huygens server parameter
+// Huygens server default user
 $huygens_user = "huygens";
 $huygens_group = "huygens";
 
@@ -37,6 +37,10 @@ $huygens_group = "huygens";
 
 // file server host name
 $image_host = "localhost";
+
+// file server default user
+$image_user = "imagerie";
+$image_group = "imagerie";
 
 // file server base folder (without trailing /)
 $image_folder = "/path/to/hrm_data";
