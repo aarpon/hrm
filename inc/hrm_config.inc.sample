@@ -39,8 +39,8 @@ $huygens_group = "huygens";
 $image_host = "localhost";
 
 // file server default user
-$image_user = "imagerie";
-$image_group = "imagerie";
+$image_user = "apache";
+$image_group = "apache";
 
 // file server base folder (without trailing /)
 $image_folder = "/path/to/hrm_data";
