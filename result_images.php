@@ -164,10 +164,12 @@ else echo "                        <option>&nbsp;</option>\n";
         
     </div> <!-- content -->
     
+    <div id="controls">
+      <input type="button" name="restart" value="" onclick="document.location.href='select_parameter_settings.php'" class="icon restart" />
+    </div>
+    
     <div id="stuff">
-            
-    <input type="button" name="restart" value="" onclick="document.location.href='select_parameter_settings.php'" class="icon restart" />
-    <div id="info">
+        <div id="info">
         
             
 <?php if ($allowHttpTransfer) { ?>
