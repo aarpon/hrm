@@ -315,10 +315,10 @@ sort($emails);
                     <a href="javascript:openPopup('add_user')">add new user</a>&nbsp;|&nbsp;<a href="mailto:<?php echo implode(";", $emails) ?>">distribution list</a>
                     <br />
                     <a href="javascript:disableUsers()">disable</a>/<a href="javascript:enableUsers()">enable</a> all users
-                    <form method="post" action="" name="user_management">
-                      <input type="hidden" name="action" />
-                    </form>
                 </p>
+                <form method="post" action="" id="user_management">
+                    <div><input type="hidden" name="action" /></div>
+                </form>
                 <table>
                     <tr>
                         <td colspan="3" class="menu">
