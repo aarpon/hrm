@@ -70,91 +70,64 @@ if (isset($_POST['SelectedCredit'])) {
 }
 ?>
 
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3c.org/TR/1999/REC-html401-19991224/loose.dtd">
-<HTML xmlns="http://www.w3.org/1999/xhtml">
-<HEAD>
-<TITLE>Huygens Remote Manager - Select Credit</TITLE>
-<link rel="stylesheet" type="text/css" href="huygens_style.css">
-<style type="text/css">
-<!--
-  ... page specific style ...
--->
-</style>
-<META http-equiv=Content-Type content="text/html; charset=windows-1252">
-<META content="MSHTML 6.00.2800.1400" name=GENERATOR></HEAD>
-<BODY>
-
 <?php
 include("header.inc.php"); 
 ?>
 
-<UL id=nav>
-  <LI><A href="http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpSelectCredit" target="_blank">help</A> 
-  <LI><A href="about.php">about</A>
-  <LI><A href="last_changes.php">changes</A>
-</UL>
-<DIV id=content>
-<H2>Huygens Remote Manager</H2>
-<H3>Select Credit</H3>
-<P>You have access to multiple credits. Please select the one you want to use for 
-this session. Only the treatment of the images by our image processing servers will 
-be taken into account.
-</P>
-<div  align="center">
-<form action="select_credit.php" method='POST' name="credit">
-<select name="SelectedCredit" size="1" style="width: 60%; vertical-align:middle; text-align:middle;">
+<div id="content">
+<h3>Select credit</h3>
 <?php
 	$positiveCreditsNames = $creditOwner->positiveCreditsNames();
-	foreach ($positiveCreditsNames as $positiveCredit) {
-		if ($positiveCredit == $_SESSION['credit']) {
-		   $selected="selected";
-		} else {
-		   $selected='';
+		
+	if ( count( $positiveCreditsNames ) < 2 ) {
+		?>
+		<p>No multiple credits found.</p>
+		<?php
+	}
+	else
+	{	
+		?>
+		<p>You have access to multiple credits. Please select the one you want to use for this session.</p>
+		<div>
+		<form action="select_credit.php" method="post">
+		<p>
+		<select name="SelectedCredit" size="1" style="width: 60%; vertical-align:middle; text-align:middle;">
+		<?php
+		foreach ($positiveCreditsNames as $positiveCredit) {
+			if ($positiveCredit == $_SESSION['credit']) {
+			   $selected="selected";
+			} else {
+			   $selected='';
+			}
+			print '<option style="text-align:right;" ' . $selected . '>' . $positiveCredit . "</option>\n";
 		}
-		print '<option style="text-align:right;" align="right" ' . $selected . '>' . $positiveCredit . "</option>\n";
-	} 
+		?>
+		</select>
+		<button style="width: 25%;" type="submit" name="OK">OK</button>
+		</p>
+		</form>
+		</div>
+		<hr />
+		<table>
+			<tr><td><b>available credits</b></td><td><b>remaining hours</b></td><td><b>remaining hour for hrm</b></td></tr>
+			<?php
+			foreach ($positiveCreditsNames as $creditName) {
+				$credit = new CreditOwner($creditName);
+				$credit->load();
+				print "<tr>";
+				print "<td>$creditName</td><td>" . 
+					$credit->remainingHoursString() . 
+					"</td><td>" . 
+					$credit->remainingHoursForHrmString() . 
+					"</td></tr>\n";   
+			}
+			?>
+		</table>
+		<?php
+	}
 ?>
-</select>
-<button style="width: 25%;" type="submit" name="OK">OK</button>
-</form>
-<table>
-<tr><td><b>available credits</b></td><td><b>remaining hours</b></td><td><b>remaining hour for hrm</b></td> 
-<?php
-foreach ($positiveCreditsNames as $creditName) {
-	$credit = new CreditOwner($creditName);
-	$credit->load();
-	print "<tr>";
-	print "<td>$creditName</td><td>" . 
-		  $credit->remainingHoursString() . 
-		  "</td><td>" . 
-		  $credit->remainingHoursForHrmString() . 
-		  "</td></tr>\n";   
-}
-?>
-</table>
+<br />
 </div>
-</DIV>
-<DIV id=stuff>
-<br>
-<?php 
-	  echo $message; 
-?>
-<H3>Internal Links</H3>
-<UL>
-  <LI><a href="http://www.mri.cnrs.fr/">
-  		 MONTPELLIER RIO IMAGING </a></LI>   
-  <LI><a href="http://www.mri.cnrs.fr/welcome.php">Microscope Reservation System</a></LI></UL>
-<H3>External Links</H3>
-<UL>
-  <LI><a href="http://www.svi.nl/">Scientific Volume Imaging B.V.</a> 
- </UL>
-</DIV>
-
-<DIV id=footer align="center"><small>created 2004 by <a href="mailto:volker.baecker@crbm.cnrs.fr">
-Volker Baecker</a></small></DIV>
-<hr>
 <?php
 include("footer.inc.php");
 ?>
-</DIV>
-</BODY></HTML>
