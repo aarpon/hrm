@@ -184,6 +184,7 @@ Class Fileserver {
   // convenient method to get TIFF files
   function tiffFiles() {
     $this->getFiles();
+    $this->trimTiff();
     return $this->files;
   }
   
@@ -476,7 +477,20 @@ Class Fileserver {
   // remove single TIFF and numbered TIFF series from the file list
   function trimTiffLeica() {
     if (count($this->files)==0) return False;
-    $tiff_series = preg_grep("/[^_]+_(t|z|ch)[0-9]+\w+\.\w+/", $this->files, PREG_GREP_INVERT);
+    $tiff = preg_grep("/[^_]+_(t|z|ch)[0-9]+\w+\.\w+/", $this->files, PREG_GREP_INVERT);
+    foreach ($tiff as $key => $value) {
+	unset($this->files[$key]);
+    }
+  }
+  // TODO refactor
+  // remove numbered TIFF series and TIFF series with Leica style numbering from the file list
+  function trimTiff() {
+    if (count($this->files)==0) return False;
+    $tiff_series = preg_grep("/[^_]+_(t|z|ch)[0-9]+\w+\.\w+/", $this->files);
+    foreach ($tiff_series as $key => $value) {
+	unset($this->files[$key]);
+    }
+    $tiff_series = preg_grep("/\w+[0-9]+\.\w+/", $this->files);
     foreach ($tiff_series as $key => $value) {
 	unset($this->files[$key]);
     }

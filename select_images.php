@@ -150,7 +150,7 @@ if ($fileFormat->value() == "dv") {
 if ($fileFormat->value() == "ics") {
     $files = $_SESSION['fileserver']->files("ics");
 }
-else if ($fileFormat->value() == "tiff") {
+else if ($fileFormat->value() == "tiff" || $fileFormat->value() == "tiff-single") {
   $files = $_SESSION['fileserver']->tiffFiles();
 }
 else if ($fileFormat->value() == "tiff-series") {
