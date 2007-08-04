@@ -1913,6 +1913,7 @@ Class TaskSetting extends Setting {
 		print $this->displayString();
 	}
 
+	// TODO refactor!
 	//!---------------------------------------------------------
 	// @function    TaskSetting::displayString
 	// @desc        Answer the display string of the setting.
@@ -1968,7 +1969,14 @@ Class TaskSetting extends Setting {
 			}
 			if ($parameter->name() == 'FullRestoration' || $parameter->name() == 'RemoveNoise' || $parameter->name() == 'RemoveBackground')
 				continue;
+			if ($parameter->name() == 'SignalNoiseRatio') {
+				$snr = $parameter->value();
+				$parameter->setValue(array_slice($snr, 0, $this->numberOfChannels() + 1));
+			}
 			$result = $result . $parameter->displayString();
+			if ($parameter->name() == 'SignalNoiseRatio') {
+				$parameter->setValue($snr);
+			}
 		}
 		return $result;
 	}
