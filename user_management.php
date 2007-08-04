@@ -76,7 +76,7 @@ if (isset($_GET['exited'])) {
 }
 
 if (isset($_GET['seed'])) {
-  $query = "SELECT status FROM user WHERE status = '".$_GET['seed']."'";
+  $query = "SELECT status FROM username WHERE status = '".$_GET['seed']."'";
   if ($db->queryLastValue($query) != $_GET['seed']) {
     header("Location: " . "login.php"); exit();
   }
@@ -145,7 +145,7 @@ if (isset($_POST['accept'])) {
 }
 else if (isset($_POST['reject'])) {
   $email = $db->emailAddress($_POST['username']);
-  $query = "DELETE FROM user WHERE name = '".$_POST['username']."'";
+  $query = "DELETE FROM username WHERE name = '".$_POST['username']."'";
   $result = $db->execute($query);
   // TODO refactor
   if (!$result) $message = "            <p class=\"warning\">Database error, please inform the person in charge</p>";
@@ -158,7 +158,7 @@ else if (isset($_POST['reject'])) {
 }
 else if (isset($_POST['annihilate']) && $_POST['annihilate'] == "yes") {
   if ($_POST['username'] != "admin") {
-    $query = "DELETE FROM user WHERE name = '".$_POST['username']."'";
+    $query = "DELETE FROM username WHERE name = '".$_POST['username']."'";
     $result = $db->execute($query);
     if ($result) {
       // delete user's settings
@@ -246,7 +246,7 @@ include("header.inc.php");
                     <table>
 <?php
 
-$rows = $db->query("SELECT * FROM user");
+$rows = $db->query("SELECT * FROM username");
 sort($rows);
 $i = 0;
 foreach ($rows as $row) {
@@ -300,8 +300,8 @@ if (!$i) {
             <fieldset>
 <?php
 
-$count = $db->queryLastValue("SELECT count(*) FROM user WHERE status = 'a' OR status = 'd'");
-$rows = $db->query("SELECT email FROM user WHERE status = 'a'");
+$count = $db->queryLastValue("SELECT count(*) FROM username WHERE status = 'a' OR status = 'd'");
+$rows = $db->query("SELECT email FROM username WHERE status = 'a'");
 $emails = array();
 foreach ($rows as $row) {
   array_push($emails, $row['email']);
@@ -332,7 +332,7 @@ echo "[<a href=\"?index=all\"".$style.">&nbsp;all&nbsp;</a>]&nbsp;[";
 while (True) {
   $c = chr(97 + $i);
   $style = "";
-  $result = $db->queryLastValue("SELECT * FROM user WHERE name LIKE '".$c."%' AND name NOT LIKE 'admin' AND (status = 'a' OR status = 'd')");
+  $result = $db->queryLastValue("SELECT * FROM username WHERE name LIKE '".$c."%' AND name NOT LIKE 'admin' AND (status = 'a' OR status = 'd')");
   if ($_SESSION['index'] == $c) $style = " class=\"selected\"";
   else if (!$result) $style = " class=\"empty\"";
   else $style = " class=\"filled\"";
@@ -353,7 +353,7 @@ while (True) {
 if ($_SESSION['index'] != "") {
   $condition = "";
   if ($_SESSION['index'] != "all") $condition = " WHERE name LIKE '".$_SESSION['index']."%'";
-  $rows = $db->query("SELECT * FROM user".$condition);
+  $rows = $db->query("SELECT * FROM username".$condition);
   sort($rows);
   $i = 0;
   foreach ($rows as $row) {
