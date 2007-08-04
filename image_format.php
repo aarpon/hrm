@@ -222,7 +222,8 @@ $possibleValues = $aParameter->possibleValues();
 foreach($possibleValues as $possibleValue) {
   $value = "multi_" . $possibleValue;
   $flag = "";
-  if ($geometryFlag == "" && $possibleValue == $aParameter->value()) $flag = "checked=\"checked\" ";
+  if (!($parameter->value() == "lsm-single" || $parameter->value() == "tiff-single") && $possibleValue == $aParameter->value())
+    $flag = "checked=\"checked\" ";
 
 ?>
                 <input name="ImageGeometry" type="radio" value="<?php echo $value ?>" <?php echo $geometryFlag ?><?php echo $flag ?>/><?php echo $possibleValue ?>
