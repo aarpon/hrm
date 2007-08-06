@@ -105,6 +105,9 @@ $useDESEncryption = False;
 // machine
 $imageProcessingIsOnQueueManager = True;
 
+// if true the images are copied to the huygens server machine
+$copy_images_to_huygens_server = false;
+
 // if true, result images will be owned by the user; if false, they will be 
 // owned by the user who runs the queue manager
 $resultImagesOwnedByUser = False;
@@ -119,4 +122,11 @@ $internal_link["url"] = "<link> followed by text";
 $external_link["http://www.svi.nl"] = "<Scientific Volume Imaging B.V.>";
 $external_link["http://support.svi.nl/wiki"] = "<SVI-wiki> on 3D microscopy, deconvolution, visualization and analysis";
 
+// A shell command that executes ping four times and stops afterwards
+$ping_command = 'ping -w 4';		    // use this on linux systems
+//$ping_command = 'ping';				// use this on cygwin
+
+// The parameter for the ping command after the hostname
+$ping_parameter = '';			    // use this on linux systems
+//$ping_parameter = '56 4';			// use this on cygwin
 ?>
