@@ -130,8 +130,12 @@ Class ExternalProcess {
     
     function ping() {
         global $hrm_path;
+    	global $ping_command;
+    	global $ping_parameter;
     	
-        $answer = system("ping -w 4 " . $this->host . " > ". $hrm_path . "/run/hrm_tmp", $result);
+    	$result = "";
+    	$command = $ping_command . " " . $this->host . " " . $ping_parameter . " > ". $hrm_path . "/run/hrm_tmp";
+        $answer = system($command, $result);
         if ($result == 0)
             return True;
         return False;   
