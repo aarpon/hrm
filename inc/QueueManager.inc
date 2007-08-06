@@ -222,6 +222,7 @@ Class Job {
 	// TODO refactor
 	function checkResultImage() {
 		global $imageProcessingIsOnQueueManager;
+		global $copy_images_to_huygens_server;
 		global $huygens_user;
 		global $huygens_group;
 		global $huygens_server_image_folder;
@@ -246,7 +247,7 @@ Class Job {
 		$resultImage = $desc->sourceImageShortName() . "*" . "_" . $desc->id() . "*";
 		
 		// If fileshare is not on the same host as Huygens
-		if (!$imageProcessingIsOnQueueManager) {
+		if (!$imageProcessingIsOnQueueManager && $copy_images_to_huygens_server) {
 			$image = $huygens_server_image_folder . $user->name() . "/" . $image_destination . "/" . $desc->relativeSourcePath() . $resultImage;
 			// escape special characters in image path
 			$image = eregi_replace(" ", "\\ ", $image);
@@ -338,6 +339,7 @@ Class QueueManager {
 
 	function executeScript() {
 		global $imageProcessingIsOnQueueManager;
+		global $copy_images_to_huygens_server;
 		
 		$job = $this->job;
 		$server = $this->freeServer;
@@ -347,7 +349,7 @@ Class QueueManager {
 		$desc = $job->description();
 		$clientScriptPath = $desc->sourceFolder();
 		$scriptName = $job->scriptName();
-		if (!$imageProcessingIsOnQueueManager)
+		if (!$imageProcessingIsOnQueueManager && $copy_images_to_huygens_server)
 			$clientScriptPath = $this->copyImagesToServer($server_hostname);
 		$proc = newExternalProcessFor($server, $server . "_out.txt", $server . "_error.txt");
 		report("shell process created", 1);
@@ -561,9 +563,7 @@ Class QueueManager {
 		global $imageProcessingIsOnQueueManager;
 		global $use_accounting_system;
 		global $accounting_client_name;
-		
-		// TODO make it a global variable
-		$send_mail = True;
+		global $send_mail;
 		
 		// TODO check if it is necessary
 		$queue = $this->queue;
@@ -986,7 +986,6 @@ Class QueueManager {
 				}
 				// >>
 				report("script has been created", 1);
-
 				// Execute the script on the Huygens server and update the database state
 				$result = $result && $this->executeScript();
 				if (!$result)
