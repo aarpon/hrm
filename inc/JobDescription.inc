@@ -684,7 +684,7 @@ Class JobDescription {
     if ($type== 'tiff' || $type == 'tiff16') {
     	$imageFileName = $imageFileName . '.tif';
     }
-    $result = $result . "c save " . '"' . $imageFileName .'"' . " -type ics";
+    $result = $result . "c save " . '"' . $imageFileName .'"' . " -type $type";
     if ($type == 'tiff' || $type == 'tiff16') {
         $result = $result . " -tiffMultiDir";
     }
