@@ -1,0 +1,652 @@
+/*
+ 
+HRM default style v0.1
+
+This file is part of huygens remote manager.
+
+Copyright: Montpellier RIO Imaging (CNRS)
+
+contributors :
+	     Pierre Travo	(concept)
+	     Volker Baecker	(concept, implementation)
+
+email:
+	pierre.travo@crbm.cnrs.fr
+	volker.baecker@crbm.cnrs.fr
+
+Web:     www.mri.cnrs.fr
+
+huygens remote manager is a software that has been developed at 
+Montpellier Rio Imaging (mri) in 2004 by Pierre Travo and Volker 
+Baecker. It allows running image restoration jobs that are processed 
+by 'Huygens professional' from SVI. Users can create and manage parameter 
+settings, apply them to multiple images and start image processing 
+jobs from a web interface. A queue manager component is responsible for 
+the creation and the distribution of the jobs and for informing the user 
+when jobs finished.
+
+This software is governed by the CeCILL license under French law and 
+abiding by the rules of distribution of free software. You can use, 
+modify and/ or redistribute the software under the terms of the CeCILL 
+license as circulated by CEA, CNRS and INRIA at the following URL 
+"http://www.cecill.info".
+
+As a counterpart to the access to the source code and  rights to copy, 
+modify and redistribute granted by the license, users are provided only 
+with a limited warranty and the software's author, the holder of the 
+economic rights, and the successive licensors  have only limited 
+liability.
+
+In this respect, the user's attention is drawn to the risks associated 
+with loading, using, modifying and/or developing or reproducing the 
+software by the user in light of its specific status of free software, 
+that may mean that it is complicated to manipulate, and that also 
+therefore means that it is reserved for developers and experienced 
+professionals having in-depth IT knowledge. Users are therefore encouraged 
+to load and test the software's suitability as regards their requirements 
+in conditions enabling the security of their systems and/or data to be 
+ensured and, more generally, to use and operate it in the same conditions 
+as regards security.
+
+The fact that you are presently reading this means that you have had 
+knowledge of the CeCILL license and that you accept its terms.
+
+*/
+
+/* basic elements */
+
+body {
+    background: #fff;
+    color: #000;
+    font-family: "verdana", "bitsream vera sans", sans-serif;
+    text-align: center;
+    margin: 0px;
+}
+
+a:link {
+    text-decoration: none;
+}
+
+a:visited {
+    text-decoration: none;
+}
+
+a:hover, a:active {
+    color: rgb(196, 0, 9);
+}
+
+p {
+    text-align: left;
+}
+
+img {
+    vertical-align: middle;
+    border: none;
+}
+
+textarea {
+    width: 100%;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+fieldset select {
+    margin: 8px;
+}
+
+/* specific div elements */
+
+#basket {
+    width: 800px;
+    border: #ccc 2px solid;
+    margin: 8px auto 8px auto;
+}
+
+#title {
+    height: 95px;
+    background: url(../images/logo.png) no-repeat top left;
+    padding-left: 180px;
+    margin: 0px;
+    border: #fff 2px solid;
+}
+
+#title h1 {
+    margin-top: 20px;
+}
+
+#nav {
+    color: #ccc;
+    font-weight: bold;
+    text-align: left;
+    border-top: #ccc 2px solid;
+    border-bottom: #ccc 2px solid;
+}
+
+#nav ul {
+    list-style-type: none;
+    padding: 2px 0px 4px 6px;
+    margin: 0px;
+}
+
+#nav li {
+    display: inline;
+    padding-right: 10px;
+}
+
+#nav a:link {
+    font-weight: bold;
+}
+
+#nav a:visited {
+    font-weight: bold;
+}
+
+#content {
+    float: left;
+    width: 60%;
+    text-align: left;
+    margin-left: 10px;
+    padding-right: 25px;
+}
+
+#content h2 {
+    margin-top: 15px;
+}
+
+#content h3 {
+    font-size: 100%;
+    margin-top: 15px;
+}
+
+#content h4 {
+    font-size: 75%;
+}
+
+#logos {
+    font-size: 70%;
+    text-align: center;
+    padding-top: 7em;
+}
+
+#logos div {
+    float: left;
+    width: 150px;
+    padding-right: 4px;
+    padding-bottom: 1em;
+    padding-left: 4px;
+}
+
+#logos div p {
+    text-align: center;
+    padding-right: 5px;
+    padding-left: 5px;
+}
+
+#templates select {
+    width: 100%;
+}
+
+#userfiles select {
+    width: 100%;
+}
+
+#selection {
+    text-align: center;
+}
+
+#selection select {
+    width: 50%;
+}
+
+#settings select {
+    width: 100%;
+}
+
+#selectedfiles select {
+    width: 100%;
+}
+
+#actions {
+    text-align: center;
+    padding: 15px 0px 15px 0px;
+}
+
+input.copy {
+    background: url(../images/copy.png) no-repeat center;
+}
+
+input.down {
+    background: url(../images/add.png) no-repeat center;
+}
+
+input.up {
+    background: url(../images/remove.png) no-repeat center;
+}
+
+input.create {
+    background: url(../images/create.png) no-repeat center;
+}
+
+input.edit {
+    background: url(../images/edit.png) no-repeat center;
+}
+
+input.clone {
+    background: url(../images/clone.png) no-repeat center;
+}
+
+input.mark {
+    background: url(../images/mark.png) no-repeat center;
+}
+
+input.delete {
+    background: url(../images/delete.png) no-repeat center;
+}
+
+input.update {
+    background: url(../images/update.png) no-repeat center;
+}
+
+#actions label {
+    display: block;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    padding-left: 5px;
+}
+
+#stuff {
+    float: right;
+    width: 33%;
+    font-size: 80%;
+    text-align: right;
+    padding-right: 7px;
+}
+
+#login legend {
+    font-size: 130%;
+    font-weight: bold;
+}
+
+#login p {
+    text-align: left;
+    padding-left: 10px;
+}
+
+#linklist {
+    padding-right: 15px;
+}
+
+#linklist li {
+    padding-bottom: 10px;
+}
+
+#info {
+    text-align: center;
+    padding-top: 1em;
+    padding-right: 8px;
+}
+
+#footer {
+    clear: both;
+    font-size: 60%;
+    padding: 5px 0px 5px 0px;
+    border-top: #ccc 2px solid;
+    border-bottom: #ccc 2px solid;
+}
+
+#validation {
+    text-align: center;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+#joblist {
+    text-align: left;
+    margin-left: 10px;
+    padding-right: 25px;
+}
+
+#input input {
+    vertical-align: middle;
+}
+
+#queue {
+    margin-bottom: 1em;
+}
+
+#queue table {
+    font-size: 80%;
+    padding-bottom: 1em;
+}
+
+#queue td {
+    text-align: center;
+    border: thin solid;
+}
+
+#queue td.del {
+    width: 3%;
+}
+
+#queue td.nr {
+    width: 3%;
+}
+
+#queue td.owner {
+    width: 10%;
+}
+
+#queue td.files {
+    width: 24%;
+}
+
+#queue td.created {
+    width: 15%;
+}
+
+#queue td.status {
+    width: 8%;
+}
+
+#queue td.started {
+    width: 15%;
+}
+
+#queue td.pid {
+    width: 8%;
+}
+
+#queue td.server {
+    width: 14%;
+}
+
+#queue input {
+    vertical-align: middle;
+}
+
+
+#queuecontrols {
+    float: right;
+    width: 33%;
+    text-align: center;
+}
+
+#listusers {
+    text-align: center;
+    padding-bottom: 1em;
+}
+
+#listusers table {
+    font-size: 70%;
+}
+
+#listusers tr.upline {
+    border-right: thin solid;
+    border-top: thin solid;
+    border-left: thin solid;
+}
+
+#listusers tr.bottomline {
+    margin-bottom: 1em;
+    border-right: thin solid;
+    border-left: thin solid;
+    border-bottom: thin solid;
+}
+
+#listusers td {
+    padding: 3px;
+}
+
+#listusers td.menu {
+    padding: 0px;
+}
+
+#listusers td.hr {
+    padding: 0px;
+}
+
+#listusers td.notice {
+    font-size: medium;
+}
+
+td {
+    text-align: center;
+}
+
+td.name {
+    text-align: left;
+}
+
+td.group {
+    text-align: center;
+}
+
+td.email {
+    width: 50%;
+    text-align: right;
+}
+
+td.date {
+    text-align: left;
+}
+
+td.operations {
+    text-align: right;
+}
+
+td.operations input {
+    font-size: 70%;
+}
+
+tr.disabled {
+    background: lightgrey;
+}
+
+a.selected {
+    color: black;
+    text-decoration: none;
+    border: solid 1px;
+}
+
+a.empty {
+    color: rgb(194, 26, 26);
+    text-decoration: none;
+    border: solid 1px white;
+    font-size: 9px;
+}
+
+a.filled {
+    color: blue;
+    text-decoration: none;
+    border: solid 1px white;
+    font-size: 9px;
+}
+
+#box #adduser {
+    padding-right: 5em;
+}
+
+#adduser {
+    text-align: right;
+    padding-right: 3em;
+}
+
+#adduser textarea {
+    width: 50%;
+}
+
+span.spacer {
+    display: block;
+    clear: both;
+}
+
+fieldset.setting {
+    margin-bottom: 1em;
+    padding-bottom: 6px;
+}
+
+fieldset.setting input {
+    margin: 1px 4px 1px 10px;
+}
+
+ol li {
+    display: inline;
+}
+
+fieldset.report {
+    margin-bottom: 1em;
+}
+
+input.icon {
+    width: 60px;
+    height: 32px;
+    color: #fff;
+    font-size: 0px;
+    text-align: left;
+    cursor: pointer;
+    border: none;
+}
+
+input.empty {
+    width: 60px;
+    height: 60px;
+    cursor: default;
+    background: url(../images/empty.png);
+}
+
+input.previous {
+    width: 60px;
+    height: 60px;
+    background: url(../images/previous.png) no-repeat right;
+}
+
+input.next {
+    width: 60px;
+    height: 60px;
+    background: url(../images/next.png) no-repeat right;
+}
+
+input.ok {
+    width: 60px;
+    height: 60px;
+    background: url(../images/ok.png) no-repeat center;
+}
+
+input.cancel {
+    width: 60px;
+    height: 60px;
+    background: url(../images/cancel.png) no-repeat center;
+}
+
+input.apply {
+    width: 60px;
+    height: 60px;
+    background: url(../images/apply.png) no-repeat center;
+}
+
+input.back {
+    width: 60px;
+    height: 60px;
+    background: url(../images/back.png) no-repeat center;
+}
+
+input.restart {
+    width: 60px;
+    height: 60px;
+    background: url(../images/restart.png) no-repeat center;
+}
+
+span.multichannel {
+    margin-left: -8px;
+}
+
+div.multichannel {
+    text-align: center;
+}
+
+.nowrap {
+    white-space: nowrap;
+}
+
+.multichannelinput {
+    text-align: right;
+}
+
+option.default {
+    color: #078d1b;
+}
+
+.line {
+    display: block;
+}
+
+.textfield {
+    width: 50%;
+    text-align: left;
+    vertical-align: middle;
+    margin-right: 5px;
+}
+
+.psffile {
+    width: 70%;
+}
+
+.psfmissing {
+    width: 70%;
+    color: red;
+}
+
+.button {
+    width: 25%;
+    text-align: center;
+    margin: 5px 15px 5px 0px;
+}
+
+.submit {
+    width: 30%;
+}
+
+.message {
+    text-align: left;
+    margin-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 10px;
+}
+
+.warning {
+    text-align: left;
+    color: red;
+    margin-bottom: 10px;
+}
+
+.notice {
+    text-align: center;
+}
+
+.info {
+    color: red;
+}
+
+.title {
+    font-weight: bold;
+}
+
+.menu {
+    font-size: 80%;
+    text-align: center;
+}
+
+.normal {
+    
+}
+
+.footnote {
+    font-size: 70%;
+}
+
+.disabled {
+    background: grey;
+}

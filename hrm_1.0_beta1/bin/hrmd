@@ -1,0 +1,48 @@
+#!/bin/bash
+#
+# HRM server daemon
+
+# hrm.conf defines variable HRM_HOME
+. /etc/hrm.conf
+
+start() {
+    cd  "$HRM_HOME"/run
+	php -q "$HRM_HOME"/run/runHuygensRemoteManager.php 1> "$HRM_HOME"/run/log.txt 2> /dev/null &
+	
+	if [ "$?" = 0 ]
+	then
+		sleep 3
+		ps -C php -o pid,command | grep "$HRM_HOME" | sed -e "s/^ * //" | cut -d" " -f1 > "$HRM_HOME"/run/hrmd.pid
+		echo "Starting HRM daemon...................ok"
+	fi
+}
+
+
+stop() {
+	if [ -f "$HRM_HOME"/run/hrmd.pid ]
+	then
+		kill -9 $(more "$HRM_HOME"/run/hrmd.pid)
+		
+		if [ "$?" = 0 ]
+		then
+			rm -f "$HRM_HOME"/run/hrmd.pid
+			echo "Shutting down HRM daemon..............ok"
+		fi
+	fi
+}
+
+
+case "$1" in
+	start)
+		start
+		;;
+	stop)
+		stop
+		;;
+	restart)
+		stop
+		start
+		;;
+	*)
+		echo "Usage: hrmd {start|stop|restart}"
+esac
