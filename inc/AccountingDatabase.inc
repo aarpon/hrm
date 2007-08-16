@@ -140,7 +140,7 @@ Class AccountingDatabaseConnection extends DatabaseConnection {
   }
 
   function loadCreditOwnerFromUserTableQueryString($id) {
-    $result = "select credit from username where identifier = '$id'";
+    $result = "select credit from user where identifier = '$id'";
     return $result;
   } 
 
