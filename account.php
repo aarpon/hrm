@@ -86,7 +86,7 @@ $message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
 
 if (isset($_POST['modify'])) {
   $result = True;
-  $baseQuery = "UPDATE user SET ";
+  $baseQuery = "UPDATE username SET ";
   $query = $baseQuery;
   if ( isset( $_POST['email'] ) ) {
     if ( $_POST['email'] != "" && strstr($_POST['email'], "@") && strstr(strstr($_POST['email'], "@"), ".")) {
