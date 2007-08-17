@@ -85,6 +85,7 @@ $logfile = "hrm.log";
 $logfile_max_size = 100;    // maximum size of the logfile in MB
 
 // email
+$send_mail = True;
 $email_sender = "hrm@localhost";
 $email_admin = "hrm@localhost";
 
