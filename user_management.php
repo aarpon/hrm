@@ -122,7 +122,7 @@ else if (isset($_GET['index'])) {
 $message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
 
 if (isset($_POST['accept'])) {
-  $query = "UPDATE user SET status = 'a' WHERE name = '".$_POST['username']."'";
+  $query = "UPDATE username SET status = 'a' WHERE name = '".$_POST['username']."'";
   $result = $db->execute($query);
   // TODO refactor
   if ($result) {
@@ -198,20 +198,20 @@ else if (isset($_POST['edit'])) {
   header("Location: " . "account.php"); exit();
 }
 else if (isset($_POST['enable'])) {
-  $query = "UPDATE user SET status = 'a' WHERE name = '".$_POST['username']."'";
+  $query = "UPDATE username SET status = 'a' WHERE name = '".$_POST['username']."'";
   $result = $db->execute($query);
 }
 else if (isset($_POST['disable'])) {
-  $query = "UPDATE user SET status = 'd' WHERE name = '".$_POST['username']."'";
+  $query = "UPDATE username SET status = 'd' WHERE name = '".$_POST['username']."'";
   $result = $db->execute($query);
 }
 else if (isset($_POST['action'])) {
   if ($_POST['action'] == "disable") {
-    $query = "UPDATE user SET status = 'd' WHERE name NOT LIKE 'admin'";
+    $query = "UPDATE username SET status = 'd' WHERE name NOT LIKE 'admin'";
     $result = $db->execute($query);
   }
   else if ($_POST['action'] == "enable") {
-    $query = "UPDATE user SET status = 'a' WHERE name NOT LIKE 'admin'";
+    $query = "UPDATE username SET status = 'a' WHERE name NOT LIKE 'admin'";
     $result = $db->execute($query);
   }
 }
