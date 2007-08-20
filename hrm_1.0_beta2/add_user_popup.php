@@ -79,7 +79,7 @@ if (isset($_POST['add'])) {
         $db = new DatabaseConnection();
         if ($db->emailAddress(strtolower($_POST['username'])) == "") {
           $password = get_rand_id(8);
-          $query = "INSERT INTO user (name, password, email, research_group, status) ".
+          $query = "INSERT INTO username (name, password, email, research_group, status) ".
                     "VALUES ('".strtolower($_POST['username'])."', ".
                             "'".md5($password)."', ".
                             "'".$_POST['email']."', ".
