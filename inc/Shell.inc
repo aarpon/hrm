@@ -57,7 +57,7 @@ global $isHrmDevelop, $hucore, $hutask;
 
 if (!isset($isHrmDevelop) || $isHrmDevelop == false) {
     $hucore = "hucore";
-    $hutask = "-task";
+    $hutask = "-checkUpdates disable -task";
 } else {
     $hucore = "huscript";
     $hutask = "-noTk -script";
