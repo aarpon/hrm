@@ -404,7 +404,7 @@ Class Fileserver {
     if (!file_exists($this->sourceFolder())) return False;
     $this->getFilesFrom($this->sourceFolder(), "");
     if (count($this->files) == 0) return False;
-    sort($this->files());
+    sort($this->files);
     // TODO refactor
     //$this->condenseTimeSeries();
     // trim TIFF series to the first file in the sequence
