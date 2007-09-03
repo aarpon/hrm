@@ -119,6 +119,14 @@ else {
     }*/
   }
   
+  // number of iterations: set the use of range to false if checkbox is unchecked
+  $parameter = $_SESSION["task_setting"]->parameter("NumberOfIterationsUseRange");
+  if (isset($_POST["OK"]) && !isset($_POST["NumberOfIterationsUseRange"])) {
+        $parameter = $_SESSION["task_setting"]->parameter("NumberOfIterationsUseRange");
+        $parameter->setValue("False");
+        $_SESSION["task_setting"]->set($parameter);
+  }
+  
   $signalNoiseRatioParam =  $_SESSION['task_setting']->parameter("SignalNoiseRatio");
   $signalNoiseRatio = $signalNoiseRatioParam->internalValue();
   $backgroundOffsetPercentParam =  $_SESSION['task_setting']->parameter("BackgroundOffsetPercent");
@@ -143,12 +151,12 @@ else {
   
   if (isset($_POST['BackgroundEstimationMode']) && $_POST['BackgroundEstimationMode'] == "auto") {
     $parameter = $_SESSION['task_setting']->parameter("BackgroundOffsetPercent");
-    $parameter->setValue(array("#auto"));
+    $parameter->setValue(array(1 => "auto"));
     $_SESSION['task_setting']->set($parameter);
   }
   else if (isset($_POST['BackgroundEstimationMode']) && $_POST['BackgroundEstimationMode'] == "object") {
     $parameter = $_SESSION['task_setting']->parameter("BackgroundOffsetPercent");
-    $parameter->setValue(array("#object"));
+    $parameter->setValue(array(1 => "object"));
     $_SESSION['task_setting']->set($parameter);
   }
   
@@ -282,7 +290,7 @@ if ($backgroundOffset[1] == "object") $flag = " checked=\"checked\"";
 <?php
 
 $flag = "";
-if ($backgroundOffset[1] != "auto" && $backgroundOffset[1] != "object" && $backgroundOffset[1] != null) $flag = " checked=\"checked\"";
+if ($backgroundOffset != null && $backgroundOffset[1] == "") $flag = " checked=\"checked\"";
 
 ?>
                     <input type="radio" name="BackgroundEstimationMode" value="manual"<?php echo $flag ?> />
@@ -343,10 +351,10 @@ if (!$noRange) {
 <?php
 
 $parameter = $_SESSION['task_setting']->parameter("NumberOfIterationsUseRange");
-$parameter->printCheckBox("True", "");
 
 ?>
-
+                        <?php echo $parameter->printCheckBox(""); ?>
+                        
                         try multiple values
                     
 <?php

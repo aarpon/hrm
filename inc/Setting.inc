@@ -191,15 +191,16 @@ Class Setting {
 	//!---------------------------------------------------------  
 	function checkNumericalValues($name, $label, $numberOfChannels) {
 		$parameter = $this->parameter($name);
+		// TODO: check if this should be the normal behavior
 		if ($numberOfChannels < 2) {
 			$result = $this->checkNumericalValue($name, $label);
 			return $result;
 		}
+		$values = $parameter->internalValue();
+		if ($name == "BackgroundOffsetPercent" && ($values[1] == "auto" || $values[1] == "object"))
+			return True;
 		$result = True;
 		$theLabel = $label;
-		$values = $parameter->internalValue();
-		if ($name == "BackgroundOffsetPercent" && ($values[0] == "#auto" || $values[0] == "#object"))
-			return True;
 		for ($i = 1; $i <= $numberOfChannels; $i++) {
 			$ok = $parameter->checkValue($values[$i]);
 			if (!$ok) {

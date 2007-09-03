@@ -472,6 +472,15 @@ Class BooleanParameter extends ChoiceParameter {
 		}
 		return $result;
 	}
+	
+	function printCheckBox($customHTML) {
+		$result = '<input type="checkbox" name="' . $this->name() . '" value="True" ';
+		if ($this->value == "True") {
+			$result = $result . 'checked="checked" ';
+		}
+		$result = $result . $customHTML . ' />';
+		return $result;
+	}
 
 	function set() {
 		$this->value = 'True';
@@ -1275,9 +1284,9 @@ Class BackgroundOffsetPercent extends VariableChannelsParameter {
 	function check() {
 		$value = $this->internalValue();
 		$result = True;
-		if ($value[0] == "#auto")
+		if ($value[1] == "auto")
 			return True;
-		else if ($value[0] == "#object")
+		else if ($value[1] == "object")
 			return True;
 		for ($i = 1; $i <= $this->numberOfChannels; $i++) {
 			$result = $result && $this->checkValue($value[$i]);
