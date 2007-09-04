@@ -415,8 +415,7 @@ Class QueueManager {
 				}
 			}
 			$filename = $image_folder . "/" . $user->name() . "/" . $image_source . "/" . $file;
-			$components = split(".", strtolower($filename));
-			if ($components[1] == ".ics")  {
+			if (strstr($filename, ".ics"))  {
 				$batch .= "put \"" . $filename . "\"\n";
 				$filename = eregi_replace(".ics", ".ids", $filename);
 				$batch .= "put \"" . $filename . "\"\n";
@@ -449,7 +448,7 @@ Class QueueManager {
 		
 		// TODO refactor this << move to Shell
 		exec("sftp -b " . $batch_filename . " " . $huygens_user . "@" . $server_hostname);
-		exec("rm -f " . $batch_filename);
+                exec("rm -f " . $batch_filename);
 		// >>
 		
 		return $huygens_server_image_folder . $user->name() . "/" . $image_source . "/";
@@ -748,6 +747,10 @@ Class QueueManager {
 		fclose($file);
 		if ($resultImagesOwnedByUser) {
 			chown($parameterFileName, $username);
+		}
+		// TODO refactor this
+		else if (!$imageProcessingIsOnQueueManager) {
+			$this->restoreOwnership($user->name());
 		}
 		return $result;
 	}
