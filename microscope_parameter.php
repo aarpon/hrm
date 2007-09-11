@@ -76,7 +76,6 @@ foreach ($names as $name) {
     $parameter = $_SESSION['setting']->parameter($name);
     if ($name == "SampleMedium" && $_POST[$name] == "custom") {
       if (isset($_POST['SampleMediumCustomValue'])) {
-        echo "BAKA ".$_POST['SampleMediumCustomValue'];
         $parameter->setValue($_POST['SampleMediumCustomValue']);
       }
     }
