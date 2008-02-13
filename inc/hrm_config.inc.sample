@@ -57,10 +57,40 @@ $huygens_server_image_folder = "/path/to/hrm_data/";
 // Allow HTTP transfer of the original (upload) and restored (download) images
 $allowHttpTransfer = true;
 
-// archiver, including options
-$compressBin = "/bin/tar cfhz ";
-$dlMimeType = "application/x-force-download";
-$compressExt = ".tar.gz";
+// Archiver for downloading the results via the web browser:
+// $compressBin is the archiver, including options.  %DEST% will be replaced
+// with the user's destination path; can be used as an option or part of the
+// command to change directories with 'cd'. Separate commands with "\n".
+// $packExcludePath controls whether the archiving command excludes the whole
+// file path per file when this is aken into account in the $compressBin
+// command itself by using %DEST% properly.
+
+$compressExt = ".zip";
+
+switch ($compressExt) {
+    case ".tgz":
+    case ".tar.gz":
+        $compressBin = "cd %DEST% \n /bin/tar chzf ";
+        $packExcludePath = true;
+        $dlMimeType = "application/x-force-download";
+        break;
+    case ".tar":
+        $compressBin = "cd %DEST% \n /bin/tar cfh ";
+        $packExcludePath = true;
+        $dlMimeType = "application/x-force-download";
+        break;
+    case ".zip":
+        $compressBin = "cd %DEST% \n /usr/bin/zip ";
+        $packExcludePath =true;
+        $dlMimeType = "application/x-force-download";
+        break;
+    default:
+        $compressExt = ".zip";
+        $compressBin = "cd %DEST% \n/usr/bin/zip -D";
+        $packExcludePath = true;
+        $dlMimeType = "application/x-force-download";
+}
+
 
 // ImageMagick convert, for (future) thumbnail handling
 $convertBin = "/usr/bin/convert";

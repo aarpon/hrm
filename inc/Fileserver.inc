@@ -280,24 +280,26 @@ Class Fileserver {
   // @return      Void
   //!---------------------------------------------------------  
   function downloadResults($files) { 
-      global $compressBin, $compressExt, $dlMimeType;
+      global $compressBin, $compressExt, $dlMimeType, $packExcludePath;
 
-      $date = date("Y-m-d_Hi");
-      $zipfile = "/tmp/download_".session_id().$compressExt;
-      $command = $compressBin." ".$zipfile;
+      $date = date("Y-m-d_His");
+      $zipfile = "/tmp/download_".session_id().$date.$compressExt;
+      $command = str_replace("%DEST%",
+              $this->destinationFolder(), $compressBin);
+      $command .= " ".$zipfile;
 
       foreach ($files as $file) {
           $path = preg_replace("/(.*)\.(.{3,4})/","\\1.*",$file);
-          $path = $this->destinationFolder()."/".$path;
+          if (! $packExcludePath) {
+              $path = $this->destinationFolder()."/".$path;
+          }
           $command .= " ".$path;
       }
 
       $answer = exec($command , $output, $result);
 
       $size = filesize($zipfile);
-
       $type = $dlMimeType;
-
       $dlname = "hrm_results_$date$compressExt";
 
       if ($size) {
@@ -307,12 +309,14 @@ Class Fileserver {
           header ("Content-Disposition: attachment; filename=\"$dlname\"");
           header ("Content-Length: $size"); 
           header ("Content-Type: $type; name=\"$dlname\"");
-        readfile($zipfile);
-        unlink($zipfile);
-        return "<p>OK</p>"; 
-    } else {
-        return "<p class=\"warning\">Problems with the packaging of the files</p>";
-    }
+          readfile($zipfile);
+          unlink($zipfile);
+          return "<p>OK</p>"; 
+      } else {
+          $error_msg = "No output from command $command.";
+      }
+      return "<p class=\"warning\">Problems with the packaging of the files:".
+          " $error_msg</p>";
   }
 
 
