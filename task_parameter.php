@@ -272,7 +272,7 @@ $backgroundOffsetPercentParam =  $_SESSION['task_setting']->parameter("Backgroun
 $backgroundOffset = $backgroundOffsetPercentParam->internalValue();
 
 $flag = "";
-if ($backgroundOffset[1] == "auto") $flag = " checked=\"checked\"";
+if ($backgroundOffset[1] == "" || $backgroundOffset[1] == "auto") $flag = " checked=\"checked\"";
 
 ?>
 
@@ -290,7 +290,7 @@ if ($backgroundOffset[1] == "object") $flag = " checked=\"checked\"";
 <?php
 
 $flag = "";
-if ($backgroundOffset != null && $backgroundOffset[1] == "") $flag = " checked=\"checked\"";
+if ($backgroundOffset[1] != "" && $backgroundOffset[1] != "auto" && $backgroundOffset[1] != "object") $flag = " checked=\"checked\"";
 
 ?>
                     <input type="radio" name="BackgroundEstimationMode" value="manual"<?php echo $flag ?> />
