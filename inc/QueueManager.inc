@@ -422,7 +422,7 @@ Class QueueManager {
 			}
 			else if (strstr($filename, ".tif") || strstr($filename, ".tiff")) {
 				// TODO: if ImageFileFormat = single TIFF file, do not send corresponding series
-				$basename = preg_replace("/([^_]+|\/)(_)(t|z|ch)([0-9]+)(\w+)(\.)(\w+)/", "$1$6$7", $filename);
+				$basename = preg_replace("/([^_]+|\/)(_)(T|t|Z|z|CH|ch)([0-9]+)(\w+)(\.)(\w+)/", "$1$6$7", $filename);
 				$name = preg_replace("/(.*)\.tiff?$/", "$1", $basename);
 				$batch .= "put \"" . $name . "*\"\n";
 			}
