@@ -687,8 +687,8 @@ Class ParameterSetting extends Setting {
 			$this->message = "The numerical aperture cannot be larger than the medium refractive index which is $mediumRefractiveIndex for the selected medium. Please lower the numerical aperture!";
 			$result = False;
 		}
-		if ($numericalAperture < 0.2) {
-			$this->message = "The numerical aperture must not be smaller than 0.2!";
+		if ($numericalAperture < 0.1) {
+			$this->message = "The numerical aperture must not be smaller than 0.1!";
 			$result = False;
 		}
 		if (!is_numeric($numericalApertureInputString)) {
@@ -2404,6 +2404,8 @@ Class JobTaskSetting extends TaskSetting {
 		//error_log("GENERATING SCRIPT (Setting): background offset percent -> ".$value[0].", ".$value[1]." | ".$internalValue[0].", ".$internalValue[1]." |");
 		if ($value[1] == "auto" || $internalValue[1] == "auto") {
 			$result = $result . '-bgMode auto ';
+		} else if ($value[1] == "object" || $internalValue[1] == "object") {
+			$result = $result . '-bgMode object ';
 		} else {
 			$result = $result . '-bgMode manual ';
 			$result = $result . $this->backgroundPerChannelString();
@@ -2431,6 +2433,8 @@ Class JobTaskSetting extends TaskSetting {
 		//$result = $result . '-bgMode object ';
 		if ($value[1] == "auto" || $internalValue[1] == "auto") {
 			$result = $result . '-bgMode auto ';
+		} else if ($value[1] == "object" || $internalValue[1] == "object") {
+			$result = $result . '-bgMode object ';
 		} else {
 			$result = $result . '-bgMode manual ';
 			$result = $result . $this->backgroundPerChannelString();
