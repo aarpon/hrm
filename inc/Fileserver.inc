@@ -468,7 +468,7 @@ Class Fileserver {
   // remove single TIFF and TIFF series with Leica style numbering from the file list
   function trimTiffSeries() {
     if (count($this->files)==0) return False;
-    $tiff_series = preg_grep("/[^_]+_(t|z|ch)[0-9]+\w+\.\w+/", $this->files);
+    $tiff_series = preg_grep("/[^_]+_(T|t|Z|z|CH|ch)[0-9]+\w+\.\w+/", $this->files);
     foreach ($tiff_series as $key => $value) {
 	unset($this->files[$key]);
     }
@@ -481,7 +481,7 @@ Class Fileserver {
   // remove single TIFF and numbered TIFF series from the file list
   function trimTiffLeica() {
     if (count($this->files)==0) return False;
-    $tiff = preg_grep("/[^_]+_(t|z|ch)[0-9]+\w+\.\w+/", $this->files, PREG_GREP_INVERT);
+    $tiff = preg_grep("/[^_]+_(T|t|Z|z|CH|ch)[0-9]+\w+\.\w+/", $this->files, PREG_GREP_INVERT);
     foreach ($tiff as $key => $value) {
 	unset($this->files[$key]);
     }
@@ -490,14 +490,15 @@ Class Fileserver {
   // remove numbered TIFF series and TIFF series with Leica style numbering from the file list
   function trimTiff() {
     if (count($this->files)==0) return False;
-    $tiff_series = preg_grep("/[^_]+_(t|z|ch)[0-9]+\w+\.\w+/", $this->files);
+    $tiff_series = preg_grep("/[^_]+_(T|t|Z|z|CH|ch)[0-9]+\w+\.\w+/", $this->files);
     foreach ($tiff_series as $key => $value) {
 	unset($this->files[$key]);
     }
+    /* too restrictive
     $tiff_series = preg_grep("/\w+[0-9]+\.\w+/", $this->files);
     foreach ($tiff_series as $key => $value) {
 	unset($this->files[$key]);
-    }
+    }*/
   }
   // condense TIFF series to the first file in the sequence
   //!---------------------------------------------------------
@@ -510,7 +511,7 @@ Class Fileserver {
   // @return      String
   //!---------------------------------------------------------  
   function leicaStyleNumberingBasename($filename) {
-    $basename = preg_replace("/([^_]+|\/)(_)(t|z|ch)([0-9]+)(\w+)(\.)(\w+)/", "$1$6$7", $filename);
+    $basename = preg_replace("/([^_]+|\/)(_)(T|t|Z|z|CH|ch)([0-9]+)(\w+)(\.)(\w+)/", "$1$6$7", $filename);
     return $basename;
   }
   // stack TIFF series to the first file in the sequence
@@ -522,7 +523,7 @@ Class Fileserver {
   //!---------------------------------------------------------      
   function condenseTiffLeica() {
     if (count($this->files)==0) return False;
-    $tiff_series =  preg_grep("/[^_]+_(t|z|ch)[0-9]+\w+\.\w+/", $this->files);
+    $tiff_series =  preg_grep("/[^_]+_(T|t|Z|z|CH|ch)[0-9]+\w+\.\w+/", $this->files);
     $lastValue = "";
     foreach ($tiff_series as $key => $value) { 
        if ($this->leicaStyleNumberingBasename($lastValue)==$this->leicaStyleNumberingBasename($value)) { 
@@ -543,7 +544,7 @@ Class Fileserver {
   // @return      String
   //!---------------------------------------------------------  
   function stkSeriesBasename($filename) {
-    $basename = preg_replace("/([^_]+|\/)(_)(t|T)([0-9]+)(\.)(\w+)/", "$1$5$6", $filename);
+    $basename = preg_replace("/([^_]+|\/)(_)(T|t)([0-9]+)(\.)(\w+)/", "$1$5$6", $filename);
     return $basename;
   }
   // stack STK series to the first file in the sequence
@@ -555,7 +556,7 @@ Class Fileserver {
   //!---------------------------------------------------------      
   function condenseStkSeries() {
     if (count($this->files)==0) return False;
-    $stk_series =  preg_grep("/[^_]+_(t|T)[0-9]+\.\w+/", $this->files);
+    $stk_series =  preg_grep("/[^_]+_(T|t)[0-9]+\.\w+/", $this->files);
     $lastValue = "";
     foreach ($stk_series as $key => $value) { 
        if ($this->stkSeriesBasename($lastValue)==$this->stkSeriesBasename($value)) { 
