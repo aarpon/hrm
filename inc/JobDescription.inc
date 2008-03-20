@@ -893,7 +893,10 @@ Class JobQueue {
     $ids = $db->getMarkedJobIds();
     foreach ($ids as $id) {
       $this->removeJobWithId($id);
-    } 
+    }
+    if ($ids != null && size($ids) > 0)
+      return True;
+    return False;
   } 
 
   function removeJobWithId($id) {

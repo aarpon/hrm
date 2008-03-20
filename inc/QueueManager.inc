@@ -322,11 +322,13 @@ Class QueueManager {
 	var $shallStop;
 	// TODO make it a local variable
 	var $stopTime;
+	var $nping;
 
 	function QueueManager() {
 		$this->runningJobs = array ();
 		$this->queue = new JobQueue();
 		$this->shallStop = False;
+		$this->nping = array();
 	}
 
 	function setJob($job) {
@@ -567,9 +569,11 @@ Class QueueManager {
 		// TODO check if it is necessary
 		$queue = $this->queue;
 		// Remove broken jobs
-		$queue->removeMarkedJobs();
+		if ($queue->removeMarkedJobs())
+                        report("broken jobs removed", 2);
 		$runningJobs = $queue->runningJobs();
-		report(count($runningJobs) . " job" . (count($runningJobs) == 1 ? " is" : "s are") . " running", 2);
+                if (count($runningJobs) > 0)
+                        report(count($runningJobs) . " job" . (count($runningJobs) == 1 ? " is" : "s are") . " running", 2);
 		foreach ($runningJobs as $job) {
 			$desc = $job->description();
 			$user = $desc->owner();
@@ -862,6 +866,19 @@ Class QueueManager {
 		$mail->setReceiver($db->emailAddress('admin'));
 		$mail->send();*/
 	}
+	
+	function notifyPingError($name) {
+                report("Here", 2);
+                global $email_sender;
+                global $email_admin;
+                $text = "Huygens Remote Manager warning:\n"
+                        . $name . " could not be pinged on " . date("r", time());
+                $mail = new Mail($email_sender);
+		$mail->setReceiver($email_admin);
+		$mail->setSubject('Huygens Remote Manager - ping error');
+		$mail->setMessage($text);
+		$mail->send(); 
+        }
 
 	function parameterText($job) {
 		$desc = $job->description();
@@ -889,16 +906,27 @@ Class QueueManager {
 			$status = $db->statusOfServer($name);
 			if ($status == 'free') {
 				$proc = newExternalProcessFor($name, $name . "_out.txt", $name . "_error.txt");
-				report("found free server", 2);
+				//report("found free server", 2);
 				if ($proc->ping()) {
-					report("ping succeeded for $name", 2);
+					//report("ping succeeded for $name", 2);
+                                        $this->nping[$name] = 0;
 					$this->freeServer = $name;
 					return True;
 				}
+                                else {
+                                        $this->incNPing($name);
+                                        if ($this->nping[$name]  ==  4) {
+                                                $this->notifyPingError($name);
+                                        }
+                                }
 			}
 		}
 		$this->freeServer = False;
 		return $this->freeServer;
+	}
+	
+	function incNPing($name) {
+		$this->nping[$name] ++;
 	}
 
 	function stop() {
@@ -942,6 +970,7 @@ Class QueueManager {
 		$server = $queue->availableServer();
 		// TODO refactor this in order to manage error logs per job
 		foreach ($server as $name) {
+			$this->nping[$name] = 0;
 			if (!$queue->isServerBusy($name)) {
 				$errorFile = $name . "_error.txt";
 				if (file_exists($errorFile)) {
@@ -964,7 +993,7 @@ Class QueueManager {
 			
 			// Check if jobs finished and update the database. Inform the user via email.
 			$this->updateJobAndServerStatus();
-			report("Huygens server updated status", 2);
+			//report("Huygens server updated status", 2);
 			
 			// Process compound jobs
 			$this->processCompoundJobs();
