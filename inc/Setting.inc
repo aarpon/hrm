@@ -1654,7 +1654,7 @@ Class TaskSetting extends Setting {
 	function TaskSetting() {
 		$this->Setting();
 		$parameterClasses = array (
-			'StyleOfProcessing',
+			'StyleOfProcessing',	// step processing or not
 			'RemoveNoise',
 			'RemoveNoiseEffectiveness',
 			'RemoveBackground',
@@ -1663,7 +1663,7 @@ Class TaskSetting extends Setting {
 			'SignalNoiseRatio',
 			'SignalNoiseRatioUseRange',
 			'SignalNoiseRatioRange',
-			'BackgroundOffsetPercent',
+			'BackgroundOffsetPercent',	// intensity value(s) to be remove from each channel (background mode: remove constant value) 
 			'BackgroundOffsetUseRange',
 			'BackgroundOffsetRange',
 			'NumberOfIterations',
@@ -1678,7 +1678,8 @@ Class TaskSetting extends Setting {
 			$param = new $class;
 			$name = $param->name();
 			$param->setupAllowedValues($db);
-			$this->parameter[$name] = $param;
+			// definition of the associative array that contains all the pairs task parametr name / task parameter value
+			$this->parameter[$name] = $param;	// parameter is a member of the class 'Setting'
 			$this->numberOfChannels = NULL;
 		}
 	}
@@ -1922,7 +1923,7 @@ Class TaskSetting extends Setting {
 	//              task settings parameters.
 	// @return      Void
 	//!---------------------------------------------------------        
-	function displayString() {
+	function displayString() {	// return the string that will be attach to the success notification message 
 		$result = '';
 		$parameter = $this->parameter('SignalNoiseRatioUseRange');
 		$rangeUsedForSignalNoiseRatio = ($parameter->value() == 'True');
@@ -1937,7 +1938,7 @@ Class TaskSetting extends Setting {
 		$parameter = $this->parameter('FullRestoration');
 		$fullRestoration = ($parameter->value() == 'True');
 		foreach ($this->parameter as $parameter) {
-			if ($parameter->name() == 'SignalNoiseRatio' && $rangeUsedForSignalNoiseRatio) {
+			if ($parameter->name() == 'SignalNoiseRatio' && $rangeUsedForSignalNoiseRatio) {	
 				continue;
 			}
 			if ($parameter->name() == 'SignalNoiseRatioRange' && !$rangeUsedForSignalNoiseRatio) {
@@ -2248,6 +2249,7 @@ Class JobTaskSetting extends TaskSetting {
 			$newScript = $newScript . $this->destroyImageString($source);
 			$step++;
 		}
+		// effective deconvolution script; step = 3 -> $source = b; $dest = c;
 		$parameter = $this->parameter('FullRestoration');
 		if ($parameter->isTrue()) {
 			$source = $this->sourceForStep($step);
@@ -2363,6 +2365,7 @@ Class JobTaskSetting extends TaskSetting {
 		return $result;
 	}
 
+	// never called: to remove
 	function removeBackgroundString($source, $dest) {
 		$result = '';
 		$result = $result . $source . ' cmle psf -> ' . $dest . ' ';
@@ -2377,10 +2380,11 @@ Class JobTaskSetting extends TaskSetting {
 	}
 
 	// manage measured PSF
+	// never called: to remove
 	function removeBackgroundForMeasuredPointSpreadFunctionString($source, $dest) {
 		$result = '';
 		$result = $result . $source . ' cmle $psf -> ' . $dest . ' ';
-		$result = $result . "-it 3 ";
+		$result = $result . "-it 3 ";		// !!
 		$result = $result . '-bgMode object ';
 		$result = $result . $this->removeBackgroundPercentString();
 		$result = $result . '-blMode auto ';
@@ -2460,7 +2464,7 @@ Class JobTaskSetting extends TaskSetting {
 	function backgroundPerChannelString() {
 		$parameter = $this->parameter('BackgroundOffsetPercent');
 		$values = $parameter->value();
-		if (!is_array($values)) {
+		/*if (!is_array($values)) {
 			$channels = $this->numberOfChannels();
 			$values = array_fill(1, $channels, $values);
 		}
@@ -2472,7 +2476,8 @@ Class JobTaskSetting extends TaskSetting {
 				$result = $result . " ";
 			}
 		}
-		$result = $result . '} ';
+		$result = $result . '} ';*/
+		$result = '-bg ' . $values[1] . " ";
 		return $result;
 	}
 

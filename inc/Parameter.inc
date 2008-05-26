@@ -144,7 +144,7 @@ Class Parameter {
 
 	//!---------------------------------------------------------
 	// @function    Parameter::internalValue
-	// @desc        Answers the interbal representation of the
+	// @desc        Answers the internal representation of the
 	//              parameters value. 
 	// @return      Object
 	//!---------------------------------------------------------  
@@ -215,8 +215,7 @@ Class Parameter {
 		if ($value == 'False' && $this->isBoolean()) {
 			return '';
 		}
-		$internalValue = $this->internalValue();
-		;
+		$internalValue = $this->internalValue();	// answers the internal representation of the parameters value.
 		if ($this->name() == "BackgroundOffsetPercent" && $internalValue[1] == "auto") {
 			$value = "auto";
 		}
@@ -295,7 +294,15 @@ Class Parameter {
 			' z'
 		);
 		$name = str_replace($uppercase, $lowercase, $name);
-		$result = $result . str_pad($name, 35, ' ', STR_PAD_RIGHT);
+		
+		if (strcmp($this->name,"BackgroundOffsetPercent") == 0) {
+			$tempstring = " background absolute offset:";
+			$result = $result . str_pad($tempstring, 35, ' ', STR_PAD_RIGHT);
+		}
+		else {
+			$result = $result . str_pad($name, 35, ' ', STR_PAD_RIGHT);
+		}
+		
 		if (!$this->isBoolean()) {
 			$result = $result . $value;
 		}

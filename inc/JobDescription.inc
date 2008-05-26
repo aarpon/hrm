@@ -568,7 +568,7 @@ Class JobDescription {
     $newScript = $newScript . "if {![img exists a]} {img create a}\n";
     $newScript = $newScript . "if {![img exists b]} {img create b}\n";
     $newScript = $newScript . "if {![img exists c]} {img create c}\n";
-    if ($this->mustReplaceSourceName()) { 
+    if ($this->mustReplaceSourceName()) {     // if it is not 3D && is not time serie && is Tif && ends with number     
       $newScript = $newScript . "exec cp " . '"' . $this->sourceImageName() . '" "' . $this->newNameForSingleTif() . '"' . "\n";
     }  
     // loading and converting
@@ -600,7 +600,8 @@ Class JobDescription {
     $z2t = False;
     if (!$parameterSetting->isThreeDimensional() && $parameterSetting->isTimeSeries() && !$parameterSetting->isTif())
       $z2t = True;
-    if ($taskSetting->isStepProcessing() && !$parameterSetting->isTimeSeries()) $z2t = True;
+    if ($taskSetting->isStepProcessing() && !$parameterSetting->isTimeSeries())
+      $z2t = True;
     if ($z2t) {
       $newScript = $newScript . 'catch {$imageName convertZ2T}' . "\n";
     }

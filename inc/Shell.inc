@@ -57,10 +57,10 @@ global $isHrmDevelop, $hucore, $hutask;
 
 if (!isset($isHrmDevelop) || $isHrmDevelop == false) {
     $hucore = "hucore";
-    $hutask = "-checkUpdates disable -task";
+    $hutask = "-task";
 } else {
     $hucore = "huscript";
-    $hutask = "-noTk -script";
+    $hutask = "-script";
 }
 
 Class ExternalProcess {

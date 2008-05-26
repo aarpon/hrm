@@ -868,7 +868,7 @@ Class QueueManager {
 	}
 	
 	function notifyPingError($name) {
-                report("Here", 2);
+                report("A ping error notification was sent on " . date("r", time()), 2);
                 global $email_sender;
                 global $email_admin;
                 $text = "Huygens Remote Manager warning:\n"
@@ -915,7 +915,7 @@ Class QueueManager {
 				}
                                 else {
                                         $this->incNPing($name);
-                                        if ($this->nping[$name]  ==  4) {
+                                        if ($this->nping[$name]  ==  40) {
                                                 $this->notifyPingError($name);
                                         }
                                 }
@@ -981,6 +981,7 @@ Class QueueManager {
 		}
 		
 		report("Huygens Remote Manager started on " . date("l d of F Y h:i:s A") . "\n", 1);
+                
 		while (!$this->shallStop()) {
 			set_time_limit(0);
 			$this->queue = $queue;

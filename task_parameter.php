@@ -294,7 +294,7 @@ if ($backgroundOffset[1] != "" && $backgroundOffset[1] != "auto" && $backgroundO
 
 ?>
                     <input type="radio" name="BackgroundEstimationMode" value="manual"<?php echo $flag ?> />
-                    remove % of the detected background
+                    remove constant absolute value
                     
                     <div class="multichannel">
 <?php
