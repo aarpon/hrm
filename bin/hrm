@@ -3,7 +3,7 @@
 # HRM administration script
 
 # hrm.conf defines variable HRM_DATA
-. /etc/hrm-griffa.conf
+. /etc/hrm.conf
 
 if [ "$SUSER" = "" ]
 then
