@@ -316,7 +316,7 @@ Class JobDescription {
     $files = $this->files();
     $newScript = $script;
     $newScript = $newScript . $this->loadImageString();
-    $newScript = $newScript . '$imageName split -mode all' . "\n";    
+    $newScript = $newScript . '$imageName split -mode all' . "\n";
     $newScript = $newScript . '$imageName del' . "\n"; 
     $fileBase = $this->sourceImageShortName();
     $newScript = $newScript . "catch {\n";
@@ -655,7 +655,7 @@ Class JobDescription {
     $script = '';
     $script = $script . 'if {[img exists $imageName]} {$imageName del}' . "\n";
     $script = $script . 'c genpsf -> psf -dims fullpadpar -z -reflCorr' . "\n";
-    $script = $script . 'c cmle psf -> c -sn {80} -it 7 -bgMode object -bg {-100} -blMode auto -q 0 -mode highQ -pad fullpadpar' . "\n";
+    $script = $script . 'c cmle psf -> c -sn {80} -it 7 -bgMode object -bg {-100} -blMode auto -q 0 -mode fast -pad fullpadpar' . "\n";
     $script = $script . $this->saveImageString();
     $this->pass = 1;
     return $script;
@@ -666,7 +666,7 @@ Class JobDescription {
       $imageFileName = $this->newNameForSingleTif();
     } else { 
       $imageFileName = $this->sourceImageName(); 
-    } 
+    }
     return 'set imageName [img open "' . $imageFileName . '"]' . "\n" . '$imageName lundo -off' . "\n";
   } 
 

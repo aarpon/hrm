@@ -2245,7 +2245,7 @@ Class JobTaskSetting extends TaskSetting {
 		return "job_task_parameter";
 	}
 
-	function putScriptOn($script) {
+  	function putScriptOn($script) {
 		$step = 1;
 		$newScript = $script;
 		$parameter = $this->parameter('RemoveNoise');
@@ -2389,7 +2389,7 @@ Class JobTaskSetting extends TaskSetting {
 		$result = $result . '-bgMode object ';
 		$result = $result . '-blMode auto ';
 		$result = $result . '-q 0 ';
-		$result = $result . '-mode highQ ';
+		$result = $result . '-mode fast ';
 		$result = $result . '-pad fullpadpar';
 		$result = $result . "\n";
 		return $result;
@@ -2405,7 +2405,7 @@ Class JobTaskSetting extends TaskSetting {
 		$result = $result . $this->removeBackgroundPercentString();
 		$result = $result . '-blMode auto ';
 		$result = $result . '-q 0 ';
-		$result = $result . '-mode highQ ';
+		$result = $result . '-mode fast ';
 		$result = $result . '-pad fullpadpar';
 		$result = $result . "\n";
 		return $result;
@@ -2434,7 +2434,7 @@ Class JobTaskSetting extends TaskSetting {
 		$result = $result . '-q ';
 		$parameter = $this->parameter("QualityChangeStoppingCriterion");
 		$result = $result . $parameter->value() . " ";
-		$result = $result . '-mode highQ ';
+		$result = $result . '-mode fast ';
 		$result = $result . '-pad fullpadpar';
 		$result = $result . "\n";
 		return $result;
@@ -2463,7 +2463,7 @@ Class JobTaskSetting extends TaskSetting {
 		$result = $result . '-q ';
 		$parameter = $this->parameter("QualityChangeStoppingCriterion");
 		$result = $result . $parameter->value() . " ";
-		$result = $result . '-mode highQ ';
+		$result = $result . '-mode fast ';
 		$result = $result . '-pad fullpadpar';
 		$result = $result . "\n";
 		return $result;

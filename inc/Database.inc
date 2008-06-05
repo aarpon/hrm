@@ -736,7 +736,7 @@ Class DatabaseConnection {
   }
 
   function markJobAsRemoved($id) {
-    $query = "update job_queue set status='broken' where status='queued' and id='" . $id . "'"; 
+    $query = "update job_queue set status='broken' where status='queued' or status='paused' and id='" . $id . "'"; 
     $result = $this->execute($query);
     return $result;    
   } 
