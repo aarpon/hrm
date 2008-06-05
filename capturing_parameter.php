@@ -99,10 +99,12 @@ $_SESSION['setting']->set($pinholeParam);
 // TODO refactor
 $_SESSION['setting']->setAdaptedParameters(False);
 
-if (isset($_POST["calculate"])) {
-  	header("Location: " . "calculate_pixel_size.php");
-  	exit();
-} 	
+// deal with the computation of theoretical pixel size from microscope parameters
+//if (isset($_POST["calculate"])) {
+//  	header("Location: " . "calculate_pixel_size.php");	// send a raw HTTP header
+//  	exit();
+//}
+
 if (count($_POST) > 0) {
   foreach ($names as $name) {
     // get rid of non relevant values
@@ -169,8 +171,9 @@ $textForCaptorSize = "pixel size (nm)";
                 
                     <li>
                         <?php echo $textForCaptorSize ?>:
-                        <input name="CCDCaptorSizeX" type="text" size="5" value="<?php echo $value ?>" />
-                        <input name="calculate" type="submit" value="calculate" style="width:110px; margin: 2px;" />
+                        <input name="CCDCaptorSizeX" type="text" size="5" value="<?php echo $value ?>" /> <br/>
+			<a href="calculate_pixel_size.php">calculate</a> pixel size from microscope and camera parameters <br/>
+                        <!-- <input name="calculate" type="submit" value="calculate" style="width:110px; margin: 2px;" /> -->
 <?php
 
 // display adaption info
@@ -228,6 +231,7 @@ if ($_SESSION['setting']->isThreeDimensional()) {
                 
             </fieldset>
             
+<!--	    
             <fieldset class="setting">
             
                 <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=PixelBinning')"><img src="images/help.png" alt="?" /></a>
@@ -236,23 +240,24 @@ if ($_SESSION['setting']->isThreeDimensional()) {
                 <select name="Binning" size="1">
 <?php
 
-$parameter = $_SESSION['setting']->parameter("Binning");
-foreach ($parameter->possibleValues() as $possibleValue) {
-  $flag = "";
-  if ($possibleValue == $parameter->value()) {
-    $flag = " selected=\"selected\"";
-  }
+//$parameter = $_SESSION['setting']->parameter("Binning");
+//foreach ($parameter->possibleValues() as $possibleValue) {
+//  $flag = "";
+//  if ($possibleValue == $parameter->value()) {
+//    $flag = " selected=\"selected\"";
+//  }
 ?>
-                    <option<?php echo $flag ?>><?php echo $possibleValue ?></option>
+                    <option<?php //echo $flag ?>><?php //echo $possibleValue ?></option>
 <?php
 
-}   
+//}   
 
 ?>
 
                 </select>
                 
             </fieldset>
+-->
             
 <?php
 

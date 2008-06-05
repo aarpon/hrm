@@ -586,6 +586,22 @@ Class ParameterSetting extends Setting {
 		}
 		return True;
 	}
+	
+	//!---------------------------------------------------------
+	// @function    ParameterSetting::checkCalculateParameter()
+	// @desc        Check the parameters needed the compute the pixel size
+	//		from the microscope and camera parameters. Answer true
+	//              if they are valid. Answer false and set the message
+	//              otherwise.
+	// @return      Boolean
+	//!---------------------------------------------------------    
+	function checkCalculateParameter() {
+		$this->message = '';
+		if (!$this->checkNumericalValue('CCDCaptorSizeX', 'CCD element size')) {
+			return False;
+		}
+		return True;
+	}
 
 	// manage parameter adaption
 	function hasAdaptedParameters() {

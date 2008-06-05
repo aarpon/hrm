@@ -219,7 +219,8 @@ for ($i=1; $i <= $_SESSION['setting']->numberOfChannels(); $i++) {
                 </ul>
                 
             </fieldset>
-            
+
+<!--          
             <fieldset class="setting">
             
                 <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=ObjectiveMagnification')"><img src="images/help.png" alt="?" /></a>
@@ -228,23 +229,25 @@ for ($i=1; $i <= $_SESSION['setting']->numberOfChannels(); $i++) {
                 <select name="ObjectiveMagnification" size="1">
 <?php
 
-$parameter = $_SESSION['setting']->parameter("ObjectiveMagnification");
-foreach ($parameter->possibleValues() as $possibleValue) {
-  $flag = "";
-  if ($possibleValue == $parameter->value()) $flag = " selected=\"selected\"";
+//$parameter = $_SESSION['setting']->parameter("ObjectiveMagnification");
+//foreach ($parameter->possibleValues() as $possibleValue) {
+//  $flag = "";
+//  if ($possibleValue == $parameter->value()) $flag = " selected=\"selected\"";
 
 ?>
-                    <option<?php echo $flag ?>><?php echo $possibleValue ?></option>
+                  <option<?php //echo $flag ?>><?php //echo $possibleValue ?></option>
 <?php
 
-}
+//}
 
 ?>
+
                 </select>
                 X
                 
             </fieldset>
-            
+-->
+
             <fieldset class="setting">
             
                 <legend>
