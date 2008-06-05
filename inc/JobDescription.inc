@@ -418,9 +418,14 @@ Class JobDescription {
     for ($i = 1; $i <= $parameterSetting->numberOfChannels(); $i++) {
       $originalPinholeSizeValue[$i] = $val[$i];
     }
-    // save original measured PSF
+    // save original measured PSF (file names)
     if ($psfParam->value() == "measured") {
       $psf = $parameterSetting->parameter('PSF');
+      $val = $psf->value();
+      $originalPSFValue = array();
+      for ($i = 1; $i <= $parameterSetting->numberOfChannels(); $i++) {
+        $originalPSFValue[$i] = $val[$i];
+      }
     }
     // make single channel setting for current channel
     $isMultiChannel = $parameterSetting->parameter('IsMultiChannel');
@@ -514,6 +519,7 @@ Class JobDescription {
     $parameterSetting->set($pinholeSize);
     if ($psfParam->value() == "measured") {
       // restore multi channel setting with original measured PSF
+      $psf->setValue( $originalPSFValue );
       $parameterSetting->set($psf);
     }
     $this->setParameterSetting($parameterSetting);
@@ -576,15 +582,13 @@ Class JobDescription {
     $parameterSetting = $this->parameterSetting;
     // This test is PARTIALLY overlapping with the test a few lines below
     // TODO Refactor
-    if ( $parameterSetting->isTimeSeries() && !$parameterSetting->isThreeDimensional() ) 
+    if ( $parameterSetting->isTimeSeries() && !$parameterSetting->isThreeDimensional() )
 	$newScript = $newScript . 'catch {$imageName convertZ2T}' . "\n";
-    else 
-	$newScript = $newScript . 'catch {$imageName convertT2Z}' . "\n";
-		
+
     $taskSetting = $this->taskSetting;
     $numberOfChannels = $parameterSetting->numberOfChannels();
     $taskSetting->setNumberOfChannels($numberOfChannels);
-    
+
     // manage measured PSF
     $psfParam = $parameterSetting->parameter('PointSpreadFunction');
     if ($psfParam->value() == "measured") {
