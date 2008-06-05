@@ -296,7 +296,6 @@ Class Job {
 		}
 		
 		// TODO check why $result is overwritten
-		// Why bother checking for finished marker if process can be checked instead?
 		$result = file_exists($path . '/' . $finishedMarker);
 		if ($imageProcessingIsOnQueueManager) {
 			$proc = newExternalProcessFor($this->server(), $this->server() . "_out.txt", $this->server() . "_error.txt");
@@ -417,16 +416,27 @@ Class QueueManager {
 				}
 			}
 			$filename = $image_folder . "/" . $user->name() . "/" . $image_source . "/" . $file;
-			if (strstr($filename, ".ics"))  {
+			if (stristr($filename, ".ics"))  {
 				$batch .= "put \"" . $filename . "\"\n";
 				$filename = eregi_replace(".ics", ".ids", $filename);
 				$batch .= "put \"" . $filename . "\"\n";
 			}
-			else if (strstr($filename, ".tif") || strstr($filename, ".tiff")) {
+			else if (stristr($filename, ".tif") || stristr($filename, ".tiff")) {
 				// TODO: if ImageFileFormat = single TIFF file, do not send corresponding series
 				$basename = preg_replace("/([^_]+|\/)(_)(T|t|Z|z|CH|ch)([0-9]+)(\w+)(\.)(\w+)/", "$1$6$7", $filename);
 				$name = preg_replace("/(.*)\.tiff?$/", "$1", $basename);
 				$batch .= "put \"" . $name . "*\"\n";
+			}
+                        else if (stristr($filename, ".stk")) {
+				// if ImageFileFormat = STK time series, send all timepoints
+                                if (stripos($filename, "_t")) {
+                                        $basename = preg_replace("/([^_]+|\/)(_)(T|t)([0-9]+)(\.)(\w+)/", "$1", $filename);
+                                        //$name = preg_replace("/(.*)\.[STK|stk]$/", "$1", $basename);
+                                        $batch .= "put \"" . $basename . "*\"\n";
+                                }
+                                else {
+                                        $batch .= "put \"" . $filename . "\"\n";
+                                }
 			}
 			else {
 				$batch .= "put \"" . $filename . "\"\n";
@@ -731,6 +741,7 @@ Class QueueManager {
 
 	function writeParameterFile($job, $startTime) {
 		global $resultImagesOwnedByUser;
+                global $imageProcessingIsOnQueueManager;
 		$result = True;
 		$desc = $job->description();
 		$sourceFileName = $desc->sourceImageName();

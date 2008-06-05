@@ -669,9 +669,16 @@ Class JobDescription {
     if ($this->mustReplaceSourceName()) { 
       $imageFileName = $this->newNameForSingleTif();
     } else { 
-      $imageFileName = $this->sourceImageName(); 
+      $imageFileName = $this->sourceImageName();
     }
-    return 'set imageName [img open "' . $imageFileName . '"]' . "\n" . '$imageName lundo -off' . "\n";
+    $options = "";
+    if (stristr($imageFileName, ".stk")) {
+      // TODO we should provide more convenience methods in ParameterSettings
+      if (!$this->parameterSetting->isTimeSeries()) {
+        $options .= " -series off";
+      }
+    }
+    return 'set imageName [img open "' . $imageFileName . '"' . $options . ']' . "\n" . '$imageName lundo -off' . "\n";
   } 
 
   // TODO refactor this part

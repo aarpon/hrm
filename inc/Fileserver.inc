@@ -206,10 +206,19 @@ Class Fileserver {
     return $this->files;
   }
   
+  // convenient method to get STK files without series
+  function stkFiles() {
+    $this->getFiles();
+    // TODO refactor
+    $this->trimStkSeries();
+    return $this->files;
+  }
+  
   // convenient method to get STK series
   function stkSeriesFiles() {
     $this->getFiles();
     // TODO refactor
+    $this->trimStk();
     $this->condenseStkSeries();
     return $this->files;
   }
@@ -499,6 +508,20 @@ Class Fileserver {
     foreach ($tiff_series as $key => $value) {
 	unset($this->files[$key]);
     }*/
+  }
+  function trimStk() {
+    if (count($this->files)==0) return False;
+    $stk = preg_grep("/[^_]+_(T|t)[0-9]+\.\w+/", $this->files, PREG_GREP_INVERT);
+    foreach ($stk as $key => $value) {
+	unset($this->files[$key]);
+    }
+  }
+  function trimStkSeries() {
+    if (count($this->files)==0) return False;
+    $stk = preg_grep("/[^_]+_(T|t)[0-9]+\.\w+/", $this->files);
+    foreach ($stk as $key => $value) {
+	unset($this->files[$key]);
+    }
   }
   // condense TIFF series to the first file in the sequence
   //!---------------------------------------------------------
