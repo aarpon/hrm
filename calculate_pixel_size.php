@@ -192,7 +192,9 @@ $value = $parameter->value();
 <?php
 
 $parameter = $_SESSION['setting']->parameter("ObjectiveMagnification");
-foreach ($parameter->possibleValues() as $possibleValue) {
+$sortedPossibleValues = $parameter->possibleValues();
+sort( $sortedPossibleValues, SORT_NUMERIC );
+foreach ( $sortedPossibleValues as $possibleValue) {
   $flag = "";
   if ($possibleValue == $parameter->value()) $flag = " selected=\"selected\"";
 
