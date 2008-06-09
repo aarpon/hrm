@@ -536,12 +536,12 @@ Class ParameterSetting extends Setting {
 		if (!$this->checkChoiceValue('ObjectiveType', 'objective type')) {
 			return False;
 		}
-		if (!$this->checkNumericalValue('CMount', 'cmount')) {
-			return False;
-		}
-		if (!$this->checkNumericalValue('TubeFactor', 'tube factor')) {
-			return False;
-		}
+		//if (!$this->checkNumericalValue('CMount', 'cmount')) {
+		//	return False;
+		//}
+		//if (!$this->checkNumericalValue('TubeFactor', 'tube factor')) {
+		//	return False;
+		//}
 		return True;
 	}
 	//!---------------------------------------------------------
@@ -598,6 +598,13 @@ Class ParameterSetting extends Setting {
 	function checkCalculateParameter() {
 		$this->message = '';
 		if (!$this->checkNumericalValue('CCDCaptorSizeX', 'CCD element size')) {
+			$this->message = "Please enter a valid CCD element size!";
+			return False;
+		}
+		if (!$this->checkNumericalValue('CMount', 'cmount')) {
+			return False;
+		}
+		if (!$this->checkNumericalValue('TubeFactor', 'tube factor')) {
 			return False;
 		}
 		return True;
@@ -688,11 +695,14 @@ Class ParameterSetting extends Setting {
 	//!---------------------------------------------------------    
 	function checkNumericalAperture() {
 		$result = True;
+		
 		$parameter = $this->parameter('NumericalAperture');
 		$numericalApertureInputString = $parameter->value();
 		$numericalAperture = (float) $parameter->value();
+		
 		$parameter = $this->parameter('ObjectiveType');
 		$lensRefractiveIndex = (float) $parameter->translatedValue();
+		
 		if ($numericalAperture > $lensRefractiveIndex) {
 			$this->message = "The numerical aperture cannot be larger than the lens refractive index which is $lensRefractiveIndex for the selected objective type. Please lower the numerical aperture!";
 			$result = False;

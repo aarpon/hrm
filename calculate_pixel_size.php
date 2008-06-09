@@ -84,21 +84,28 @@ foreach ($names as $name) {
 }
 
 if (isset($_POST['CCDCaptorSize'])) {
-	$ccd = $_SESSION['CCDCaptorSize'];
+        
+	$ccd = $_SESSION['CCDCaptorSize'];      // ccd captor size (different form 'CCDCaptorSizeX'!). It's of use uf calculating CCDCaptorSizeX.
+        
 	$bin = $_SESSION['setting']->parameter('Binning'); // now $bin is an object Parameter
 	$bin = $bin->value();   // now $bin is just a value
+        
 	$obm = $_SESSION['setting']->parameter('ObjectiveMagnification');
 	$obm = $obm->value();
+        
 	$cmf =  $_SESSION['setting']->parameter('CMount');
 	$cmf = $cmf->value();
+        
 	$tf =  $_SESSION['setting']->parameter('TubeFactor');
 	$tf = $tf->value();
-	$pixelSize =  (floatval($ccd) * floatval($bin)) / (floatval($obm)*floatval($cmf)*floatval($tf));        //compute the theoretical value for the pixel size!!
-	$parameter = $_SESSION['setting']->parameter('CCDCaptorSizeX');
+        
+	$pixelSize =  (floatval($ccd) * floatval($bin)) / (floatval($obm)*floatval($cmf)*floatval($tf));        // compute the theoretical value for the pixel size
+        
+	$parameter = $_SESSION['setting']->parameter('CCDCaptorSizeX'); // set the value for CCDCaptorSizeX 
 	$parameter->setValue($pixelSize);
 	$_SESSION['setting']->set($parameter);
         
-        //check if CCDCaptorSize has been correctly set
+        //check if the paramaters of this page have been correctly set
         $ok = $_SESSION['setting']->checkCalculateParameter();  // $_SESSION['setting'] is an object ParameterSetting
         $message = "            <p class=\"warning\">".$_SESSION['setting']->message()."</p>\n";
         if($ok) {
