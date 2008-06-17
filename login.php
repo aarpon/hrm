@@ -61,6 +61,8 @@ global $enableUserAdmin;
 
 $message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
 
+session_start();
+
 $user = new User();
 
 if (isset($_POST['password'])) {
@@ -76,8 +78,9 @@ if (isset($_POST['password'])) {
 		}
 	}
   	if ($user->isLoggedIn()) {
-            session_start();
             session_register("user");
+            # printDebug("user", $user->isLoggedIn(), $user, 
+                    # "session", $_SESSION); exit;
             $user->setName(strtolower($_POST['username']));
             // account management
                 // get email address and group
