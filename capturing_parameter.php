@@ -172,7 +172,7 @@ $textForCaptorSize = "pixel size (nm)";
                     <li>
                         <?php echo $textForCaptorSize ?>:
                         <input name="CCDCaptorSizeX" type="text" size="5" value="<?php echo $value ?>" /> <br/>
-			<a href="calculate_pixel_size.php">calculate</a> pixel size from microscope and camera parameters <br/>
+			<a href="calculate_pixel_size.php">calculate</a> from microscope and camera parameters <br/>
                         <!-- <input name="calculate" type="submit" value="calculate" style="width:110px; margin: 2px;" /> -->
 <?php
 
@@ -291,8 +291,12 @@ if ($_SESSION['setting']->isMultiPointOrSinglePointConfocal()) {
             <fieldset class="setting">
             
                 <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=PinholeRadius')"><img src="images/help.png" alt="?" /></a>
-                pinhole radius (nm):
-                
+                backprojected pinhole radius (nm):
+            <?php
+              if ( $_SESSION['setting']->numberOfChannels() > 1 ) {
+              ?>  <p /> <?php
+            }
+            ?>
 <?php
 
   // manage one pinhole radius per channel
