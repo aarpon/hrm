@@ -1435,4 +1435,29 @@ Class OutputFileFormat extends ChoiceParameter {
 		$result = $db->translationFor($this);
 		return $result;
 	}
+	
+	//!---------------------------------------------------------
+	// @function    OutputFileFormat::extension
+	// @desc        Returns the extension associated with a given
+	//              output format
+	//
+	// @return      string
+	//!---------------------------------------------------------    
+	function extension( ) {
+		$result = $this->translatedValue( );
+		switch ( $result ) {
+			case "tiff":
+			case "tiff16":
+				return "tif";
+			case "imaris":
+				return "ims";
+			case "ome":
+				return "ome";
+			case "ics":
+				return "ics";
+			default:
+				return "";
+		}
+	}
+	
 }

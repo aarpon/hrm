@@ -353,39 +353,42 @@ Class JobDescription {
     $param = $taskSetting->parameter('OutputFileFormat');
     $type = $param->translatedValue();
     // Use appropriate output file format
-    switch ($type) {
-        case "ics":
-            $fileFormat = "ics";
-            break;
-        case "imaris":
-            $fileFormat = "ims";
-            break;
-        case "ome":
-            $fileFormat = "ome";
-            break;
-        case "tiff":
-        case "tiff16":
-            $fileFormat = "tif";
-    }
+    $fileFormat = $param->extension( );
     if ($multichanneloutput->value()) {
         $newScript = $newScript . "# join\n";
         for($channel=0; $channel < $numberOfChannels; $channel++) {
-            $newScript = $newScript . "set imageName$channel [ img open \"".$dst_files[$channel].".ics\"]\n";
+            $newScript = $newScript . "set imageName$channel [ img open \"".$dst_files[$channel]. "." . $fileFormat ."\"]\n";
             if ($channel > 1) {
                 $newScript = $newScript . "c join \$imageName$channel -> c\n";
             } else if ($channel == 1) {
                 $newScript = $newScript . "\$imageName0 join \$imageName1 -> c\n";
             }
         }
-        $tmpfilename = $this->id() . $fileBase . "Ch_all";
+        $tmpfilename = $this->id() . $fileBase; // . "Ch_all";
         // avoid redundant slashes in path
-        $this->files = array($this->relativeSourcePath() . $tmpfilename . ".ics");
+        $this->files = array($this->relativeSourcePath() . $tmpfilename . "." . $fileFormat );
         $dstfilename = $this->destinationImageFullName() ;
-        $newScript = $newScript . "c save \"$dstfilename.$fileFormat\" -type $type\n";
+        // Save
+        switch ($type) {
+          case "tiff":
+          case "tiff16":
+            $newScript = $newScript . "c save \"$dstfilename.$fileFormat\" -type $type -tiffMultiDir\n";
+            break;
+          default:
+            $newScript = $newScript . "c save \"$dstfilename.$fileFormat\" -type $type\n";
+        }
+        // Delete temporaty files
         foreach ($dst_files as $dst_file) {
+          if ( $type == "ics" ) {
             $newScript .= "catch { exec rm -f \"" . $dst_file . ".ics\" }\n";
             $newScript .= "catch { exec rm -f \"" . $dst_file . ".ids\" }\n";
+          }
+          else {
+            $newScript .= "catch { exec rm -f \"" . $dst_file . "." . $fileFormat ."\" }\n";
+          }
         }
+        // Save processing history
+        // $result = $result . "\n" . 'c history -format txt -save "' . $imageFileName. '_history.txt"' . "\n";
     }
     $this->files = $files;
     return $newScript;
@@ -571,9 +574,9 @@ Class JobDescription {
     global $huygens_group;
     
     $newScript = $script;
-    $newScript = $newScript . "if {![img exists a]} {img create a}\n";
-    $newScript = $newScript . "if {![img exists b]} {img create b}\n";
-    $newScript = $newScript . "if {![img exists c]} {img create c}\n";
+    $newScript = $newScript . "if {![img exists a]} {img create a --logEnable} else { a keepLog }\n";
+    $newScript = $newScript . "if {![img exists b]} {img create b --logEnable} else { b keepLog }\n";
+    $newScript = $newScript . "if {![img exists c]} {img create c --logEnable} else { c keepLog }\n";
     if ($this->mustReplaceSourceName()) {     // if it is not 3D && is not time serie && is Tif && ends with number     
       $newScript = $newScript . "exec cp " . '"' . $this->sourceImageName() . '" "' . $this->newNameForSingleTif() . '"' . "\n";
     }  
@@ -678,6 +681,8 @@ Class JobDescription {
         $options .= " -series off";
       }
     }
+    // Turn on history
+    $options .= " -logEnable";
     return 'set imageName [img open "' . $imageFileName . '"' . $options . ']' . "\n" . '$imageName lundo -off' . "\n";
   } 
 
@@ -689,17 +694,20 @@ Class JobDescription {
     $parameterSetting = $this->parameterSetting;
     $param = $setting->parameter('OutputFileFormat');
     $type = $param->translatedValue();
+    $extension = $param->extension( );
     if ($type=='ics') {
        $result = $result . "c convert -type auto\n";
     }
     $imageFileName = $this->destinationImageFullName();
-    if ($type== 'tiff' || $type == 'tiff16') {
-    	$imageFileName = $imageFileName . '.tif';
-    }
-    $result = $result . "c save " . '"' . $imageFileName .'"' . " -type $type";
+//    if ($type== 'tiff' || $type == 'tiff16') {
+//    	$imageFileName = $imageFileName . '.tif';
+//    }
+    $result = $result . "c save " . '"' . $imageFileName . "." . $extension .'"' . " -type $type";
     if ($type == 'tiff' || $type == 'tiff16') {
         $result = $result . " -tiffMultiDir";
     }
+    // Save processing history
+    // $result = $result . "\n" . 'c history -format txt -save "' . $imageFileName. '_history.txt"';
     $result = $result . "\n";
     if ($resultImagesOwnedByUser) {
       $user = $this->owner();
