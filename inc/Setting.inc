@@ -2378,8 +2378,18 @@ Class JobTaskSetting extends TaskSetting {
 		return $row[$index];
 	}
 
-	function psfComputationString($source) {
-		return 'catch { ' . $source . ' genpsf -> psf -dims fullpadpar -z -reflCorr }' . "\n";
+	function psfComputationString($source, $constant = 0, $position = 0) {
+        # To calculate a theoretical PSF, the best thing is to provide an emtpy
+        # one. Huygens will take the necessary decissions, see
+        # http://support.svi.nl/wiki/TheoreticalPsf
+        if (!$constant ) {
+            return "catch { psf clear }\n";
+        }
+        # Alternatively, this calculates a constant PSF for the provided
+        # parameters, but it won't be adapted to the sample depth if spherical
+        # aberration is present.
+		return 'catch { ' . $source . ' genpsf -> psf -dims fullpadpar -zPos '.
+               $position .' }' . "\n";
 	}
 
 	function removeNoiseString($source, $dest) {
