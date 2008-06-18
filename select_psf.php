@@ -70,7 +70,7 @@ if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
 
 // fileserver related code
 if (!isset($_SESSION['fileserver'])) {
-  session_register('fileserver');
+  # session_register('fileserver');
   $name = $_SESSION['user']->name();
   $_SESSION['fileserver'] = new Fileserver($name);
 }

@@ -72,7 +72,7 @@ if (isset($_SESSION['jobcreated'])) {
 }
 
 if (!isset($_SESSION['fileserver'])) {
-  session_register("fileserver");
+  # session_register("fileserver");
   $name = $_SESSION['user']->name();
   $_SESSION['fileserver'] = new Fileserver($name);
 }

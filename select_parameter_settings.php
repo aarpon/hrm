@@ -73,12 +73,12 @@ if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
 }
 
 if (!isset($_SESSION['editor'])) {
-  session_register("editor");
+  # session_register("editor");
   $_SESSION['editor'] = new SettingEditor($_SESSION['user']);
 }
 
 if (isset($_SESSION['setting'])) {
-  session_register("setting");
+  # session_register("setting");
 }
 
 // add public setting support
@@ -90,7 +90,7 @@ if ($_SESSION['user']->name() != "admin") {
 
 // fileserver related code (for measured PSF files check)
 if (!isset($_SESSION['fileserver'])) {
-  session_register("fileserver");
+  # session_register("fileserver");
   $name = $_SESSION['user']->name();
   $_SESSION['fileserver'] = new Fileserver($name);
 }

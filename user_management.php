@@ -66,6 +66,7 @@ global $image_source;
 
 session_start();
 
+
 $db = new DatabaseConnection();
 
 if (isset($_GET['exited'])) {
@@ -87,7 +88,7 @@ if (isset($_GET['seed'])) {
     $admin->name = "admin";
     if (isset($_SERVER['REMOTE_ADDR'])) $admin->ip = $_SERVER["REMOTE_ADDR"];
     else $admin->ip = $HTTP_SERVER_VARS["REMOTE_ADDR"];
-    session_register("user");
+    # session_register("user");
     $_SESSION['user'] = $admin;
   }
 }
@@ -112,7 +113,7 @@ if (isset($_SESSION['account_user']) && gettype($_SESSION['account_user']) != "o
 }
 
 if (!isset($_SESSION['index'])) {
-  session_register("index");
+  # session_register("index");
   $_SESSION['index'] = "";
 }
 else if (isset($_GET['index'])) {
@@ -184,14 +185,14 @@ else if (isset($_POST['annihilate']) && $_POST['annihilate'] == "yes") {
   }
 }
 else if (isset($_POST['edit'])) {
-  $account_user = new User();
-  $account_user->setName($_POST['username']);
-  $account_user->setEmail($_POST['email']);
-  $account_user->setGroup($_POST['group']);
-  session_register("account_user");
-  $_SESSION['account_user'] = $account_user;
+  $_SESSION['account_user'] = new User();
+  $_SESSION['account_user']->setName($_POST['username']);
+  $_SESSION['account_user']->setEmail($_POST['email']);
+  $_SESSION['account_user']->setGroup($_POST['group']);
+  # session_register("account_user");
+  # $_SESSION['account_user'] = $account_user;
   if (isset($c) || isset($_GET['c']) || isset($_POST['c'])) {
-    session_register("c");
+    # session_register("c");
     if (isset($_GET['c'])) $_SESSION['c'] = $_GET['c'];
     else if (isset($_POST['c'])) $_SESSION['c'] = $_POST['c'];
   }

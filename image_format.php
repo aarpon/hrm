@@ -69,7 +69,7 @@ if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
 }
 
 if (!isset($_SESSION['setting'])) {
-       session_register('setting'); 		   
+       # session_register('setting'); 		   
        $_SESSION['setting'] = new ParameterSetting();
 }	
 

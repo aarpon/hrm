@@ -72,12 +72,12 @@ if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
 }
 
 if (!isset($_SESSION['taskeditor'])) {
-  session_register('taskeditor');
+  # session_register('taskeditor');
   $_SESSION['taskeditor'] = new TaskSettingEditor($_SESSION['user']);
 }
 
 if (isset($_SESSION['task_setting'])) {
-  session_register("task_setting");
+  # session_register("task_setting");
 }
 
 // add public setting support

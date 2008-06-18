@@ -67,7 +67,7 @@ $message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
 
 if (isset($_POST['OK'])) {
   if (!isset($_SESSION['note'])) {
-    session_register("note");
+    # session_register("note");
   }
   
   $user = new User();
