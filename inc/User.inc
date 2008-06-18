@@ -440,18 +440,14 @@ Class User extends Owner{
   //			  the default group name if ldap is used.
   // @return      String
   //!--------------------------------------------------------- 
-  function group() {
+  function userGroup() {
   	global $use_ldap;
   	$result = $this->defaultGroupName();
   	if (!$use_ldap) {
   		$db = new DatabaseConnection();
   		$result = $db->getGroup($this->name());
   	}
-    if ($result != "") {
-        return $result; 
-    } else {
-        return parent::group();
-    }
+    return $result; 
   }
   
   //!---------------------------------------------------------
