@@ -69,7 +69,7 @@ if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
 }
 
 if (!isset($_SESSION['task_setting'])) {
-  session_register("task_setting"); 
+  # session_register("task_setting"); 
   $_SESSION['task_setting'] = new TaskSetting();
 }
 if ($_SESSION['user']->name() == "admin") $_SESSION['task_setting']->setNumberOfChannels(5);
