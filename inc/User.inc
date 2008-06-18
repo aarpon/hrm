@@ -447,7 +447,11 @@ Class User extends Owner{
   		$db = new DatabaseConnection();
   		$result = $db->getGroup($this->name());
   	}
-  	return $result; 
+    if ($result != "") {
+        return $result; 
+    } else {
+        return parent::group();
+    }
   }
   
   //!---------------------------------------------------------
