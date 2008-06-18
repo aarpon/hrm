@@ -66,15 +66,12 @@ $processed = False;
 $message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
 
 if (isset($_POST['OK'])) {
-  if (!isset($_SESSION['note'])) {
-    # session_register("note");
-  }
   
   $user = new User();
   $user->setName(strtolower($_POST['username']));
   $user->setEmail($_POST['email']);
   $user->setGroup($_POST['group']);
-  
+
   $_SESSION['note'] = $_POST['note'];
   
   if (strtolower($_POST['username']) != "") {
@@ -176,7 +173,7 @@ if (!$processed) {
                 <br />
                 
                 <label for="note">Request message:</label>
-                <textarea name="note" id="note" rows="3" cols="30"></textarea>
+                <textarea name="note" id="note" rows="3" cols="30"><?php echo $_SESSION['note'] ?></textarea>
                 
                 <div>
                     <input name="OK" type="submit" value="register" class="button" />
