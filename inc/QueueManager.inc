@@ -531,7 +531,7 @@ Class QueueManager {
 		}
 		// remove job
 		$this->stopTime = $queue->stopJob($job);
-		report("stopped job (" . date("l d of F Y h:i:s A") . ")\n", 1);
+		report("stopped job (" . date("l d F Y h:i:s A") . ")\n", 1);
 	}
 	
 	// TODO refactor this
@@ -592,8 +592,12 @@ Class QueueManager {
 		if ($queue->removeMarkedJobs())
                         report("broken jobs removed", 2);
 		$runningJobs = $queue->runningJobs();
-                if (count($runningJobs) > 0)
-                        report(count($runningJobs) . " job" . (count($runningJobs) == 1 ? " is" : "s are") . " running", 2);
+        if (count($runningJobs) > 0) {
+            report(count($runningJobs) . " job" . (count($runningJobs) == 1 ? " is" : "s are") . " running", 2);
+            // Because something is running, we are not in a hurry to continue.
+            // Delay execution.
+            sleep(5);
+        }
 		foreach ($runningJobs as $job) {
 			$desc = $job->description();
 			$user = $desc->owner();
