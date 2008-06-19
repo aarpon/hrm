@@ -2119,7 +2119,7 @@ Class JobParameterSetting extends ParameterSetting {
 		$values = $parameter->value();
 		$result = "";
 		$currentChannel = 0;
-			for ($i = 1; $i <= 1 /*$this->numberOfChannels()*/; $i++) {
+			for ($i = 0; $i < 1 /*$this->numberOfChannels()*/; $i++) {
 			//error_log("GENERATING SCRIPT (Setting): ".$name." -> ".$values[$i]);
 			if (!empty ($values[$i])) {
 				$result = $result . '$imageName setp -chan ';
