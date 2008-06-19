@@ -191,9 +191,10 @@ Class Job {
 			$this->script = $this->script . $desc->putScriptOn('');
 		}
 		$this->script = $this->script . "}\n";
-		$id = $desc->id();
-		$finishedMarker = $desc->sourceFolder() . '.finished_' . "$id";
-		$this->script = $this->script . "exec touch " . '"' . $finishedMarker . '"' . "\n";
+        $id = $desc->id();
+        $finishedMarker = $desc->sourceFolder() . '.finished_' . "$id";
+        $this->script = $this->script . "exec touch " . '"' . 
+            $finishedMarker . '"' . "\n";
 		$this->script = $this->script . "exit\n";
 	}
 
@@ -213,9 +214,18 @@ Class Job {
 		$scriptPath = $fileserver->sourceFolder();
 		$scriptFile = $scriptPath . "/" . $scriptName;
 		$file = fopen($scriptFile, "w");
-		$result = $result && (fwrite($file, $this->script) > 0);
-		fclose($file);
-		report("Wrote script $scriptFile", 1);
+        if (! $file ) {
+            report ("Error opening file $scriptFile, verify permissions!", 0);
+            // If permissions fail, introduce some delay not to saturate the
+            // log file!
+            report ("Waiting 15 seconds...", 1);
+            sleep(15);
+            return False;
+        } else {
+            $result = $result && (fwrite($file, $this->script) > 0);
+            fclose($file);
+            report("Wrote script $scriptFile", 1);
+        }
 		return $result;
 	}
 	
@@ -1029,7 +1039,7 @@ Class QueueManager {
 					continue;
 				}
 				// >>
-				report("script has been created", 1);
+                report("script has been created", 1);
 				// Execute the script on the Huygens server and update the database state
 				$result = $result && $this->executeScript();
 				if (!$result)
