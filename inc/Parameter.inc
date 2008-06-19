@@ -216,20 +216,20 @@ Class Parameter {
 			return '';
 		}
 		$internalValue = $this->internalValue();	// answers the internal representation of the parameters value.
-		if ($this->name() == "BackgroundOffsetPercent" && $internalValue[1] == "auto") {
+		if ($this->name() == "BackgroundOffsetPercent" && $internalValue[0] == "auto") {
 			$value = "auto";
 		}
-		else if ($this->name() == "BackgroundOffsetPercent" && $internalValue[1] == "object") {
+		else if ($this->name() == "BackgroundOffsetPercent" && $internalValue[0] == "object") {
 			$value = "in/near object";
 		} else {
 			if (is_array($value)) {
-				array_shift($value);
+				# array_shift($value);
 				$value = array_filter($value);
 				$value = implode(", ", $value);
 			}
 			$split = explode("_", $value);
 			if (count($split) > 1) {
-				$value = $split[1];
+				$value = $split[0];
 			}
 		}
 		$name = $this->name();
@@ -675,7 +675,7 @@ Class VariableChannelsParameter extends NumericalParameter {
 	// @desc        Set the value of the parameter to value.
 	//              If value is not an array the value of the 
 	//              parameter is set to an array with the value
-	//              at index 1. 
+	//              at index 0. 
 	// @param       value  Object  The new value of the parameter
 	// @return      Void
 	//!---------------------------------------------------------  
@@ -683,8 +683,8 @@ Class VariableChannelsParameter extends NumericalParameter {
 		$theValue = $value;
 		if (!is_array($value)) {
 			$theValue = array (
-				NULL,
 				$value,
+				NULL,
 				NULL,
 				NULL,
 				NULL
@@ -710,7 +710,9 @@ Class VariableChannelsParameter extends NumericalParameter {
 		$newValue = array (
 			NULL
 		);
-		for ($i = 1; $i <= $this->numberOfChannels(); $i++) {
+        # printDebug($this);
+        # printDebug(debug_backtrace());
+		for ($i = 0; $i < $this->numberOfChannels(); $i++) {
 			if ($i < sizeof($value) && $this->checkValue($value[$i])) {
 				$newValue[$i] = $value[$i];
 			} else {
@@ -733,7 +735,7 @@ Class VariableChannelsParameter extends NumericalParameter {
 	//!---------------------------------------------------------  
 	function check() {
 		$result = True;
-		for ($i = 1; $i <= $this->numberOfChannels; $i++) {
+		for ($i = 0; $i < $this->numberOfChannels; $i++) {
 			$value = $this->internalValue();
 			$result = $result && $this->checkValue($value[$i]);
 		}
@@ -1291,11 +1293,11 @@ Class BackgroundOffsetPercent extends VariableChannelsParameter {
 	function check() {
 		$value = $this->internalValue();
 		$result = True;
-		if ($value[1] == "auto")
+		if ($value[0] == "auto")
 			return True;
-		else if ($value[1] == "object")
+		else if ($value[0] == "object")
 			return True;
-		for ($i = 1; $i <= $this->numberOfChannels; $i++) {
+		for ($i = 0; $i < $this->numberOfChannels; $i++) {
 			$result = $result && $this->checkValue($value[$i]);
 		}
 		return $result;

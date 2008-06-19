@@ -84,7 +84,7 @@ foreach ($names as $name) {
 // manage one pinhole radius per channel
 $pinholeParam = $_SESSION['setting']->parameter("PinholeSize");
 $pinhole = $pinholeParam->value();
-for ($i=1; $i <= $_SESSION['setting']->numberOfChannels(); $i++) {
+for ($i=0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
   $pinholeKey = "PinholeSize{$i}";
   if (isset($_POST[$pinholeKey])) {
     $pinhole[$i] = $_POST[$pinholeKey];
@@ -92,7 +92,7 @@ for ($i=1; $i <= $_SESSION['setting']->numberOfChannels(); $i++) {
 }
 // get rid of extra values in case the number of channels is changed
 if (is_array($pinhole)) {
-	$pinhole = array_slice($pinhole, 0, $_SESSION['setting']->numberOfChannels() + 1);
+	$pinhole = array_slice($pinhole, 0, $_SESSION['setting']->numberOfChannels() );
 }
 $pinholeParam->setValue($pinhole);
 $_SESSION['setting']->set($pinholeParam);
@@ -300,7 +300,7 @@ if ($_SESSION['setting']->isMultiPointOrSinglePointConfocal()) {
 <?php
 
   // manage one pinhole radius per channel
-  for ($i = 1; $i <= $_SESSION['setting']->numberOfChannels(); $i++) {
+  for ($i = 0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
 
 ?>
                 <input name="PinholeSize<?php echo $i ?>" type="text" size="5" value="<?php if ($i < sizeof($pinhole)) echo $pinhole[$i] ?>" class="multichannelinput" />

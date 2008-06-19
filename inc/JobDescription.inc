@@ -334,7 +334,8 @@ Class JobDescription {
       // avoid redundant slashes in path
       $this->files = array($this->relativeSourcePath() . $tmpfilename . ".ics");
       // TODO refactor
-      $newScript = $newScript . $this->putScriptOnForChannel('', $channel + 1);
+      // j-) removed + 1
+      $newScript = $newScript . $this->putScriptOnForChannel('', $channel);
       $filename = $this->sourceFolder() . $this->relativeSourcePath() . $tmpfilename . ".ics";
       $filename2 = $this->sourceFolder() . $this->relativeSourcePath() . $tmpfilename . ".ids";
       $dst_files[] = $this->destinationImageFullName() ;
@@ -403,13 +404,13 @@ Class JobDescription {
     // DEBUG
     $val = $excitationWavelength->value();
     $originalExcitationWavelengthValue = array();
-    for ($i = 1; $i <= $parameterSetting->numberOfChannels(); $i++) {
+    for ($i = 0; $i < $parameterSetting->numberOfChannels(); $i++) {
       $originalExcitationWavelengthValue[$i] = $val[$i];
       //error_log("GENERATING SCRIPT (JobDescription): excitation wavelength -> ".$originalExcitationWavelengthValue[$i]." [".$i."]");
     }
     $val = $emissionWavelength->value();
     $originalEmissionWavelengthValue = array();
-    for ($i = 1; $i <= $parameterSetting->numberOfChannels(); $i++) {
+    for ($i = 0; $i < $parameterSetting->numberOfChannels(); $i++) {
       $originalEmissionWavelengthValue[$i] = $val[$i];
       //error_log("GENERATING SCRIPT (JobDescription): emission wavelength -> ".$originalEmissionWavelengthValue[$i]." [".$i."]");
     }
@@ -418,7 +419,7 @@ Class JobDescription {
     $pinholeSize = $parameterSetting->parameter('PinholeSize');
     $val = $pinholeSize->value();
     $originalPinholeSizeValue = array();
-    for ($i = 1; $i <= $parameterSetting->numberOfChannels(); $i++) {
+    for ($i = 0; $i < $parameterSetting->numberOfChannels(); $i++) {
       $originalPinholeSizeValue[$i] = $val[$i];
     }
     // save original measured PSF (file names)
@@ -426,7 +427,7 @@ Class JobDescription {
       $psf = $parameterSetting->parameter('PSF');
       $val = $psf->value();
       $originalPSFValue = array();
-      for ($i = 1; $i <= $parameterSetting->numberOfChannels(); $i++) {
+      for ($i = 0; $i < $parameterSetting->numberOfChannels(); $i++) {
         $originalPSFValue[$i] = $val[$i];
       }
     }
@@ -437,25 +438,25 @@ Class JobDescription {
     $newExcitationWavelength = $parameterSetting->parameter('ExcitationWavelength');
     $value = $newExcitationWavelength->value();
     //error_log("GENERATING SCRIPT (JobDescription): excitation wavelength (before trimming) -> ".$value[$channel]);
-    $newExcitationWavelength->setValue(array('', $value[$channel]));
+    $newExcitationWavelength->setValue(array($value[$channel]));
     $val = $newExcitationWavelength->value();
-    //error_log("GENERATING SCRIPT (JobDescription): excitation wavelength (after trimming) -> ".$val[1]);
+    //error_log("GENERATING SCRIPT (JobDescription): excitation wavelength (after trimming) -> ".$val[0]);
     $parameterSetting->set($newExcitationWavelength);
     $newEmissionWavelength = $parameterSetting->parameter('EmissionWavelength');    
     $value = $newEmissionWavelength->value();
     //error_log("GENERATING SCRIPT (JobDescription): emission wavelength (before trimming) -> ".$value[$channel]);
-    $newEmissionWavelength->setValue(array('', $value[$channel]));
+    $newEmissionWavelength->setValue(array($value[$channel]));
     $val = $newEmissionWavelength->value();
-    //error_log("GENERATING SCRIPT (JobDescription): emission wavelength (after trimming) -> ".$val[1]);
+    //error_log("GENERATING SCRIPT (JobDescription): emission wavelength (after trimming) -> ".$val[0]);
     $parameterSetting->set($newEmissionWavelength);
     $newPinholeSize = $parameterSetting->parameter('PinholeSize');
     $value = $newPinholeSize->value();
-    $newPinholeSize->setValue(array('', $value[$channel]));
+    $newPinholeSize->setValue(array($value[$channel]));
     $parameterSetting->set($newPinholeSize);
     if ($psfParam->value() == "measured") {
       $newPSF = $parameterSetting->parameter('PSF');
       $value = $newPSF->value();
-      $newPSF->setValue(array('', $value[$channel]));
+      $newPSF->setValue(array($value[$channel]));
       $parameterSetting->set($newPSF);
     }
     // ... and for task setting
@@ -465,8 +466,8 @@ Class JobDescription {
     $removeBackgroundPercent = $taskSetting->parameter('RemoveBackgroundPercent');
     $val = $removeBackgroundPercent->internalValue();
     $originalRemoveBackgroundPercentValue = array();
-    for ($i = 1; $i <= $numberOfChannels; $i++) {
-      if ($val[1] == "auto") {
+    for ($i = 0; $i < $numberOfChannels; $i++) {
+      if ($val[0] == "auto") {
         $originalRemoveBackgroundPercentValue[$i] = "auto";
       }
       else {
@@ -477,8 +478,8 @@ Class JobDescription {
     $backgroundOffsetPercent = $taskSetting->parameter('BackgroundOffsetPercent');
     $val = $backgroundOffsetPercent->internalValue();
     $originalBackgroundOffsetPercentValue = array();
-    for ($i = 1; $i <= $numberOfChannels; $i++) {
-      if ($val[1] == "auto") {
+    for ($i = 0; $i < $numberOfChannels; $i++) {
+      if ($val[0] == "auto") {
         $originalBackgroundOffsetPercentValue[$i] = "auto";
       }
       else {
@@ -490,17 +491,17 @@ Class JobDescription {
     $newRemoveBackgroundPercent = $taskSetting->parameter('RemoveBackgroundPercent');
     // DEBUG
     //$value = $newRemoveBackgroundPercent->value();
-    $newRemoveBackgroundPercent->setValue(array('', $originalRemoveBackgroundPercentValue[$channel]));    
+    $newRemoveBackgroundPercent->setValue(array($originalRemoveBackgroundPercentValue[$channel]));    
     $taskSetting->set($newRemoveBackgroundPercent);
     $newBackgroundOffsetPercent = $taskSetting->parameter('BackgroundOffsetPercent');
     // DEBUG
     //$value = $newBackgroundOffsetPercent->value();
-    $newBackgroundOffsetPercent->setValue(array('', $originalBackgroundOffsetPercentValue[$channel]));    
+    $newBackgroundOffsetPercent->setValue(array($originalBackgroundOffsetPercentValue[$channel]));    
     $taskSetting->set($newBackgroundOffsetPercent);
     // Signal to noise ratio
     $newSignalNoiseRatio = $taskSetting->parameter('SignalNoiseRatio');
     $originalSignalNoiseRatioValue = $newSignalNoiseRatio->value();
-    $newSignalNoiseRatio->setValue( array( '', $originalSignalNoiseRatioValue[$channel] ) );
+    $newSignalNoiseRatio->setValue( array( $originalSignalNoiseRatioValue[$channel] ) );
     $taskSetting->set($newSignalNoiseRatio);
     //
     $taskSetting->setNumberOfChannels(1);
@@ -577,6 +578,7 @@ Class JobDescription {
     $newScript = $newScript . "if {![img exists a]} {img create a --logEnable} else { a keepLog }\n";
     $newScript = $newScript . "if {![img exists b]} {img create b --logEnable} else { b keepLog }\n";
     $newScript = $newScript . "if {![img exists c]} {img create c --logEnable} else { c keepLog }\n";
+    $newScript = $newScript . "if {![img exists psf]} {img create psf}\n";
     if ($this->mustReplaceSourceName()) {     // if it is not 3D && is not time serie && is Tif && ends with number     
       $newScript = $newScript . "exec cp " . '"' . $this->sourceImageName() . '" "' . $this->newNameForSingleTif() . '"' . "\n";
     }  

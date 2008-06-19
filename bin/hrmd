@@ -7,7 +7,7 @@
 
 start() {
     cd  "$HRM_HOME"/run
-	php -q "$HRM_HOME"/run/runHuygensRemoteManager.php 1> "$HRM_HOME"/run/log.txt 2> /dev/null &
+	php -q "$HRM_HOME"/run/runHuygensRemoteManager.php 1> "$HRM_HOME"/run/log.txt 2> "$HRM_HOME"/run/error_log.txt &
 	
 	if [ "$?" = 0 ]
 	then

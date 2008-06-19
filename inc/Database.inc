@@ -293,7 +293,12 @@ Class DatabaseConnection {
       $parameter = $settings->parameter($parameterName);
       $parameterValue = $parameter->internalValue();
       if (is_array($parameterValue)) { 
-	$parameterValue = implode("#", $parameterValue);
+          // Before, # was used as a separator, but the first element with
+          // index zero was always NULL because channels started their indexing
+          // at one. To keep backwards compatibility with the database, we use
+          // # now as a channel marker, and even the first channel has a # in
+          // front of its value.
+          $parameterValue = "#".implode("#", $parameterValue);
       }
       if (!$existsAlready) {       
 	$query = "insert into $table values ('" . $user . "', '" . $name . "', '" . $parameterName . "', '" . $parameterValue . "')";
@@ -311,7 +316,7 @@ Class DatabaseConnection {
   //              a copy of aSetting with the loaded parameter 
   //              values. If a value starts with # the value is
   //              considered to be an array with the first value at
-  //              the index 1.
+  //              the index 0.
   // @param       settings    Setting      The setting for which the
   //                                       parameter values will be 
   //                                       loaded.
@@ -327,10 +332,11 @@ Class DatabaseConnection {
       $query = "select value from $table where owner='" . $user . "' and setting='" . $name . "' and name='" . $parameterName . "'";
       $newValue = $this->queryLastValue($query);
       if ($newValue == NULL) { 
-	continue;
+          continue;
       } 
       if ($newValue{0}=='#') {
-	$newValue = explode("#", $newValue);
+          $newValue = substr($newValue,1);
+          $newValue = explode("#", $newValue);
       } 
       $parameter->setValue($newValue);
       $aSetting->set($parameter);

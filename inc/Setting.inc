@@ -197,11 +197,11 @@ Class Setting {
 			return $result;
 		}
 		$values = $parameter->internalValue();
-		if ($name == "BackgroundOffsetPercent" && ($values[1] == "auto" || $values[1] == "object"))
+		if ($name == "BackgroundOffsetPercent" && ($values[0] == "auto" || $values[0] == "object"))
 			return True;
 		$result = True;
 		$theLabel = $label;
-		for ($i = 1; $i <= $numberOfChannels; $i++) {
+		for ($i = 0; $i < $numberOfChannels; $i++) {
 			$ok = $parameter->checkValue($values[$i]);
 			if (!$ok) {
 				$theLabel = $label . " for channel $i";
@@ -393,7 +393,7 @@ Class Setting {
 			    // we want the array to start at index 0
 			    $oldValue = $parameter->value();
 			    $values = array();
-			    for ($i=1; $i<=$this->numberOfChannels(); $i++) {
+			    for ($i=0; $i<$this->numberOfChannels(); $i++) {
 			        $values[] = $oldValue[$i];
 			    }
 			    $parameter->setValue($values);
@@ -640,7 +640,7 @@ Class ParameterSetting extends Setting {
 		$this->message = '';
 		$parameter = $this->parameter('PSF');
 		$value = $parameter->value();
-		for ($i = 1; $i <= $this->numberOfChannels(); $i++) {
+		for ($i = 0; $i < $this->numberOfChannels(); $i++) {
 			if ($value[$i] == NULL) {
 				$this->message = "Please select a PSF file for channel $i!";
 				return False;
@@ -676,7 +676,7 @@ Class ParameterSetting extends Setting {
 	//!---------------------------------------------------------    
 	function checkPinholeSize() {
 		$parameter = $this->parameter('PinholeSize');
-		for ($i = 1; $i <= $this->numberOfChannels(); $i++) {
+		for ($i = 0; $i < $this->numberOfChannels(); $i++) {
 			if (!$parameter->checkValue($parameter->value[$i])) {
 				$this->message = "Please enter a valid pinhole size for channel $i!";
 				return False;
@@ -746,9 +746,9 @@ Class ParameterSetting extends Setting {
 			$parameter = $this->parameter('ExcitationWavelength');
 		}
 		$value = $parameter->value();
-		$mostRestrictiveWavelengthChannel = 1;
-		$mostRestrictiveWavelength = $value[1];
-		for ($i = 2; $i <= $this->numberOfChannels(); $i++) {
+		$mostRestrictiveWavelengthChannel = 0;
+		$mostRestrictiveWavelength = $value[0];
+		for ($i = 1; $i < $this->numberOfChannels(); $i++) {
 			if ($value[$i] < $mostRestrictiveWavelength) {
 				$mostRestrictiveWavelengthChannel = $i;
 				$mostRestrictiveWavelength = $value[$i];
@@ -790,7 +790,7 @@ Class ParameterSetting extends Setting {
 		$na = (float) $parameter->value();
 		$parameter = $this->parameter('ExcitationWavelength');
 		$value = $parameter->value();
-		$lambda = $value[1];
+		$lambda = $value[0];
 		$idealDeltaX = $lambda / (4 * $na);
 		$idealDeltaX = $idealDeltaX / 2;
 		if ((0.5 * $idealDeltaX <= $deltaX) && ($deltaX <= 1.2 * $idealDeltaX)) {
@@ -852,9 +852,9 @@ Class ParameterSetting extends Setting {
 	        $parameter = $this->parameter('ExcitationWavelength');
 	    } 
 	    $value = $parameter->value();
-	    $mostRestrictiveWavelengthChannel = 1;
-	    $mostRestrictiveWavelength = $value[1];
-	    for ($i=2; $i<=$this->numberOfChannels(); $i++) {
+	    $mostRestrictiveWavelengthChannel = 0;
+	    $mostRestrictiveWavelength = $value[0];
+	    for ($i=1; $i< $this->numberOfChannels(); $i++) {
 	        if ($value[$i] < $mostRestrictiveWavelength) {
 	            $mostRestrictiveWavelengthChannel = $i;
 	            $mostRestrictiveWavelength = $value[$i];
@@ -925,9 +925,9 @@ Class ParameterSetting extends Setting {
 			$parameter = $this->parameter('ExcitationWavelength');
 		}
 		$value = $parameter->value();
-		$mostRestrictiveWavelengthChannel = 1;
-		$mostRestrictiveWavelength = $value[1];
-		for ($i = 2; $i <= $this->numberOfChannels(); $i++) {
+		$mostRestrictiveWavelengthChannel = 0;
+		$mostRestrictiveWavelength = $value[0];
+		for ($i = 1; $i < $this->numberOfChannels(); $i++) {
 			if ($value[$i] < $mostRestrictiveWavelength) {
 				$mostRestrictiveWavelengthChannel = $i;
 				$mostRestrictiveWavelength = $value[$i];
@@ -1080,7 +1080,7 @@ Class ParameterSetting extends Setting {
 		$parameterName = $name . 'Wavelength';
 		$label = strtolower($name);
 		$parameter = $this->parameter($parameterName);
-		for ($i = 1; $i <= $this->numberOfChannels(); $i++) {
+		for ($i = 0; $i < $this->numberOfChannels(); $i++) {
 			if (!$parameter->checkValue($parameter->value[$i])) {
 				$this->message = "Please enter a valid $label wavelength for channel $i!";
 				return False;
@@ -1166,7 +1166,7 @@ Class ParameterSetting extends Setting {
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::checkNumberOfChannels()
 	// @desc        Check the number of channels. Must be between 
-	//              1 and 4.
+	//              1 to 5.
 	// @return      Boolean
 	//!---------------------------------------------------------    
 	function checkNumberOfChannels() {
@@ -1502,14 +1502,19 @@ Class ParameterSetting extends Setting {
 	//              entered. 
 	// @return      number
 	//!---------------------------------------------------------          
+
+    // WARNING: the sampling sizes is a property of the image, not something
+    // taht can be adapted after the acquisition!!! It makes no sense to adapt
+    // the samplign to the Nyquist rate. What must be done is to ACQUIRE the
+    // image with the Nyquist rate, but never describe it with fake parameters!
 	function sampleSize($size) {
 		$result = $size;
 		//if ($this->isMultiPointOrSinglePointConfocal()) {
 		// Adapt sample size if necessary according to the nyquist criterium
 		//    $result = $this->sampleSizeForConfocal($size);
 		//}
-		if ($this->hasAdaptedParameters())
-			$result = $this->adaptedLateralSampleSizeFor($size);
+		// if ($this->hasAdaptedParameters() && 1 == 0 )
+		//	$result = $this->adaptedLateralSampleSizeFor($size);
 		return $result;
 	}
 
@@ -1620,9 +1625,9 @@ Class ParameterSetting extends Setting {
 			$parameter = $this->parameter('ExcitationWavelength');
 		}
 		$value = $parameter->value();
-		$mostRestrictiveWavelengthChannel = 1;
-		$mostRestrictiveWavelength = $value[1];
-		for ($i = 2; $i <= $this->numberOfChannels(); $i++) {
+		$mostRestrictiveWavelengthChannel = 0;
+		$mostRestrictiveWavelength = $value[0];
+		for ($i = 1; $i < $this->numberOfChannels(); $i++) {
 			if ($value[$i] < $mostRestrictiveWavelength) {
 				$mostRestrictiveWavelengthChannel = $i;
 				$mostRestrictiveWavelength = $value[$i];
@@ -1788,7 +1793,7 @@ Class TaskSetting extends Setting {
 	//!---------------------------------------------------------    
 	function checkSignalNoiseRatio() {
 		$parameter = $this->parameter('SignalNoiseRatio');
-		for ($i = 1; $i <= $this->numberOfChannels(); $i++) {
+		for ($i = 0; $i < $this->numberOfChannels(); $i++) {
 			if (!$parameter->checkValue($parameter->value[$i])) {
 				$this->message = "Please enter a valid signal/noise ratio for channel " . $i . "! The value must be larger than 0.";
 				return False;
@@ -1884,7 +1889,7 @@ Class TaskSetting extends Setting {
 		$originalValues = $param->value();
 		$values = $param->value();
 		$result = True;
-		if ($values[1] == NULL || $values[2] == NULL || $values[1] == '' || $values[2] = '') {
+		if ($values[0] == NULL || $values[1] == NULL || $values[0] == '' || $values[1] = '') {
 			$this->message = "Please enter at least two values for the $originalLabel, or don't use range.";
 			return False;
 		}
@@ -1999,7 +2004,7 @@ Class TaskSetting extends Setting {
 				continue;
 			if ($parameter->name() == 'SignalNoiseRatio') {
 				$snr = $parameter->value();
-				$parameter->setValue(array_slice($snr, 0, $this->numberOfChannels() + 1));
+				$parameter->setValue(array_slice($snr, 0, $this->numberOfChannels() ));
 			}
 			$result = $result . $parameter->displayString();
 			if ($parameter->name() == 'SignalNoiseRatio') {
@@ -2379,15 +2384,15 @@ Class JobTaskSetting extends TaskSetting {
 	}
 
 	function psfComputationString($source, $constant = 0, $position = 0) {
-        # To calculate a theoretical PSF, the best thing is to provide an emtpy
-        # one. Huygens will take the necessary decissions, see
-        # http://support.svi.nl/wiki/TheoreticalPsf
+        // To calculate a theoretical PSF, the best thing is to provide an emtpy
+        // one. Huygens will take the necessary decissions, see
+        // http://support.svi.nl/wiki/TheoreticalPsf
         if (!$constant ) {
             return "catch { psf clear }\n";
         }
-        # Alternatively, this calculates a constant PSF for the provided
-        # parameters, but it won't be adapted to the sample depth if spherical
-        # aberration is present.
+        // Alternatively, this calculates a constant PSF for the provided
+        // parameters, but it won't be adapted to the sample depth if spherical
+        // aberration is present.
 		return 'catch { ' . $source . ' genpsf -> psf -dims fullpadpar -zPos '.
                $position .' }' . "\n";
 	}
@@ -2438,13 +2443,15 @@ Class JobTaskSetting extends TaskSetting {
 		$result = $result . $this->maxIterationsString();
 		// background estimation manual/auto
 		$parameter = $this->parameter("BackgroundOffsetPercent");
+        #printDebug("fullRestorationString", $parameter);
+        #printDebug(debug_backtrace()); exit;
 		$value = $parameter->value();
 		$internalValue = $parameter->internalValue();
 		//$result = $result . '-bgMode object ';
 		//error_log("GENERATING SCRIPT (Setting): background offset percent -> ".$value[0].", ".$value[1]." | ".$internalValue[0].", ".$internalValue[1]." |");
-		if ($value[1] == "auto" || $internalValue[1] == "auto") {
+		if ($value[0] == "auto" || $internalValue[0] == "auto") {
 			$result = $result . '-bgMode auto ';
-		} else if ($value[1] == "object" || $internalValue[1] == "object") {
+		} else if ($value[0] == "object" || $internalValue[0] == "object") {
 			$result = $result . '-bgMode object ';
 		} else {
 			$result = $result . '-bgMode manual ';
@@ -2471,9 +2478,9 @@ Class JobTaskSetting extends TaskSetting {
 		$value = $parameter->value();
 		$internalValue = $parameter->internalValue();
 		//$result = $result . '-bgMode object ';
-		if ($value[1] == "auto" || $internalValue[1] == "auto") {
+		if ($value[0] == "auto" || $internalValue[0] == "auto") {
 			$result = $result . '-bgMode auto ';
-		} else if ($value[1] == "object" || $internalValue[1] == "object") {
+		} else if ($value[0] == "object" || $internalValue[0] == "object") {
 			$result = $result . '-bgMode object ';
 		} else {
 			$result = $result . '-bgMode manual ';
@@ -2505,7 +2512,7 @@ Class JobTaskSetting extends TaskSetting {
 			$values = array_fill(1, $channels, $values);
 		}
 		$result = '-bg {';
-		for ($i = 1; $i <= $this->numberOfChannels(); $i++) {
+		for ($i = 0; $i < $this->numberOfChannels(); $i++) {
 			$newValue = -1 * (100 - $values[$i]);
 			$result = $result . $newValue;
 			if ($i < $this->numberOfChannels()) {
@@ -2513,7 +2520,9 @@ Class JobTaskSetting extends TaskSetting {
 			}
 		}
 		$result = $result . '} ';*/
-		$result = '-bg ' . $values[1] . " ";
+
+        /* TODO: why does this return channel zero's? */
+		$result = '-bg ' . $values[0] . " ";
 		return $result;
 	}
 
@@ -2550,7 +2559,7 @@ Class JobTaskSetting extends TaskSetting {
 		//	}
 		//}
 		//$result = $result . '} ';
-		$result = '-sn ' . $values[1] . " ";		
+		$result = '-sn ' . $values[0] . " ";		
 		return $result;
 	}
 

@@ -79,14 +79,14 @@ $message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
 
 $psfParam = $_SESSION['setting']->parameter("PSF");
 $psf = $psfParam->value();
-for ($i = 1; $i <= $_SESSION['setting']->numberOfChannels(); $i++) {
+for ($i = 0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
   $psfKey = "psf{$i}";
   if (isset($_POST[$psfKey])) {
     $psf[$i] = $_POST[$psfKey];
   } 
 }
 // get rid of extra values in case the number of channels is changed
-$psf = array_slice($psf, 0, $_SESSION['setting']->numberOfChannels() + 1);
+$psf = array_slice($psf, 0, $_SESSION['setting']->numberOfChannels() );
 $psfParam->setValue($psf);
 $_SESSION['setting']->set($psfParam);
 
@@ -136,7 +136,7 @@ include("header.inc.php");
             <div id="psfselection">
 <?php
 
-for ($i = 1; $i <= $_SESSION['setting']->numberOfChannels(); $i++) {
+for ($i = 0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
   $parameter = $_SESSION['setting']->parameter("PSF");
   $value = $parameter->value();
   $missing = False;
