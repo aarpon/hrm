@@ -683,6 +683,12 @@ Class JobDescription {
         $options .= " -series off";
       }
     }
+    if (preg_match("/^(.*) \((.*)\)$/", $imageFileName, $match)) {
+        // If a (string) comes after the file name, it is interpreted as a sub
+        // image. Currently this is for LIF files only.
+        $imageFileName = $match[1];
+        $options .= " -subImage \"$match[2]\"";
+    }
     // Turn on history
     $options .= " -logEnable";
     return 'set imageName [img open "' . $imageFileName . '"' . $options . ']' . "\n" . '$imageName lundo -off' . "\n";

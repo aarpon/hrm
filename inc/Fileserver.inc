@@ -53,6 +53,7 @@
 
 include ("hrm_config.inc");
 require_once("Database.inc");
+require_once("Util.inc");
 
 //!---------------------------------------------------------
 // @class    FileSelection
@@ -67,6 +68,8 @@ Class Fileserver {
   var $selectedFiles;         // @var selectedFiles    Array      Files actually selected to be processed
 
   var $validImageExtensions =  array("tif", "tiff", "stk", "lsm", "ims", "pic", "ome", "lif", "ics", "dv");
+
+  var $multiImageExtensions =  array("lif");
   
   //!---------------------------------------------------------
   // @function    Fileserver::Fileserver
@@ -404,6 +407,87 @@ Class Fileserver {
     }
     return $result;
   }
+
+  //!---------------------------------------------------------
+  // @function    Fileserver::getSubImages
+  // @desc        When the selected file type is one that can contain subimages
+  //              (like LIF), the already built list of $this->files is 
+  //              extended to show all the available subimages. 
+  //              This is done by querying Huygens.
+  // @return      Void
+  //!---------------------------------------------------------    
+  function getSubImages() {
+      global $hrm_path;
+
+      $i = 0;
+      $imgList = "";
+      foreach ($this->files as $path) {
+          $imgList .= " -img_$i \"$path\"";
+          $i ++;
+      }
+
+      $opt = "-count $i $imgList -dir \"". $this->sourceFolder() ."\"";
+
+      $answer = huCoreTools( "reportSubImages", $opt);
+
+      if (! $answer ) return;
+      # printDebug ($answer);
+
+      $lines = count($answer);
+
+      $tree = array();
+      $new_files = array();
+      $cur = NULL;
+
+      for ($i = 0; $i < $lines; $i++ ) {
+          $key = $answer[$i];
+
+          switch ($key) {
+              case "BEGIN IMG":
+                  $i ++;
+                  $cur = $answer[$i];
+                  break;
+              case "ERROR":
+                  $i ++;
+                  echo($answer[$i]);
+              case "END IMG":
+                  $cur = NULL;
+                  break;
+              case "PATH":
+                  if ($cur) {
+                      $i ++;
+                      $tree[$cur]['path'] = $answer[$i];
+                  }
+                  break;
+              case "COUNT":
+                  if ($cur) {
+                      $i ++;
+                      $tree[$cur]['count'] = $answer[$i];
+                  }
+                  break;
+              case "TYPE":
+                  if ($cur) {
+                      $i ++;
+                      $tree[$cur]['type'] = $answer[$i];
+                  }
+                  break;
+              case "SUBIMG":
+                  if ($cur) {
+                      $i ++;
+                      $tree[$cur]['subimg'][] = $answer[$i];
+                      $new_files[] = $cur ." (". $answer[$i] .") ";
+                  }
+                  break;
+
+          }
+      }
+
+      $this->files = $new_files;
+
+      # printDebug ($tree);
+
+  }
+
  
   //!---------------------------------------------------------
   // @function    Fileserver::getFiles
@@ -418,6 +502,13 @@ Class Fileserver {
     $this->getFilesFrom($this->sourceFolder(), "");
     if (count($this->files) == 0) return False;
     sort($this->files);
+    if ( count ( $this->imageExtensions() ) == 1 ) {
+        $extArr = $this->imageExtensions();
+        $ext = $extArr[0];
+        if ( in_array( $ext, $this->multiImageExtensions)) {
+            $this->getSubImages();
+        }
+    }
     // TODO refactor
     //$this->condenseTimeSeries();
     // trim TIFF series to the first file in the sequence

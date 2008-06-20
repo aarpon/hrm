@@ -189,3 +189,37 @@ function get_rand_id($length) {
   }
   return $rand_id;
 }
+
+
+//!---------------------------------------------------------
+// @function    huCoreTool  
+// @desc        Calls a local hucore (that must be in the $PATH) to
+//              execute some freeware image processing tools, or report
+//              parameters. This local hucore doesn't need to have a license!
+// @param       $tool is the procedure in scripts/hucore.tcl to be executed.
+//              $options are extra command line options to send to that script
+// @return      An array with all stdout lines
+//!---------------------------------------------------------
+function huCoreTools ($tool, $options) {
+    global $hrm_path, $local_huygens_core;
+
+    $cmd = "$local_huygens_core -task $hrm_path/scripts/hucore.tcl ".
+           "-tool $tool $options";
+
+    $answer = exec($cmd, $output, $result);
+
+    # printDebug ($cmd, $output, "res: $result ans: $answer");
+
+    if ($result == 0) {
+        $begin = array_search("BEGIN PROC", $output);
+        return array_slice($output, $begin);
+    } else {
+        echo ("<pre>huCoreTools error (last lines):\n");
+        foreach ( array_slice($output, -4) as $line ) {
+            echo ("$line\n");
+        }
+        echo "</pre>";
+        return NULL;
+    }
+
+}

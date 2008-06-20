@@ -144,9 +144,6 @@ if ($enableUserAdmin) {
 <?php
 
 // display only relevant files
-if ($fileFormat->value() == "dv") {
-    $files = $_SESSION['fileserver']->files("dv");
-}
 if ($fileFormat->value() == "ics") {
     $files = $_SESSION['fileserver']->files("ics");
 }
@@ -166,6 +163,9 @@ else if ($fileFormat->value() == "stk") {
   //else {
   //  $files = $_SESSION['fileserver']->files("stk");
   //}
+}
+else if ($fileFormat->value() == "dv") {
+    $files = $_SESSION['fileserver']->files("dv");
 }
 else {
   $files = $_SESSION['fileserver']->files();

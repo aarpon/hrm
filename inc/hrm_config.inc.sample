@@ -31,6 +31,13 @@ $db_password = "";
 $huygens_user = "huygens";
 $huygens_group = "huygens";
 
+// Path to a local Huygens Core executable, to handle image information and
+// thumbnails. This installatation of hucore doesn't require a license unless
+// this is also the computation server. (For image information and thumbnails
+// only freeware functions will be used).
+
+$local_huygens_core = "/usr/local/bin/hucore";
+
 //==============================================================================
 // file server settings
 //==============================================================================
