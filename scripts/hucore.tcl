@@ -3,13 +3,11 @@
 # This script contains some procedures that report throught stdout to the HRM
 # about image properties. They may also write thumbnails in the future.
 
+# ---------------------------------------------------------------------------
 
-# Script for Huygens Core to explore multi-image files and return their
-# subimages. Currently valid for Leica LIF files.
-
-
-
-
+# Auxiliary procedure isMultiImgFile.
+# Return 1 if the image is of a type that supports sub-images. Currently, only
+# LIF.
 
 proc isMultiImgFile { filename } {
     set multiImgExtensions { ".lif" }
@@ -24,6 +22,9 @@ proc isMultiImgFile { filename } {
     return $isMulti
 }   
 
+
+# Script for Huygens Core to explore multi-image files and return their
+# subimages. Currently valid for Leica LIF files.
 
 proc reportSubImages {} {
 
@@ -83,13 +84,21 @@ proc reportSubImages {} {
             puts "0"
         }
         puts "END IMG"
-
     }
 }
 
 
+# ----------------   MAIN routine -----------------
+# Execute selected procedure
 
 set tool [Hu_getOpt -tool]
+
+if { $tool == -1 } {
+    puts "Wrong arguments.\
+        Use option -tool to specify the utility procedure to execute."
+    exit 1
+}
+
 # Execute procedure
 puts "BEGIN PROC"
 puts "$tool"
