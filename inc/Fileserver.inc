@@ -82,7 +82,7 @@ Class Fileserver {
     $this->username = $name;
     $this->files = NULL;
     $this->selectedFiles = NULL;
-    $this->destFiles = NULL
+    $this->destFiles = NULL;
     $this->imageExtensions = NULL;
   }
   
