@@ -57,7 +57,7 @@ require_once("./inc/Fileserver.inc");
 session_start();
 
 if (isset($_GET['exited'])) {
-  $_SESSION['user']->logout();
+  if ( isset( $_SESSION['user'] ) ) $_SESSION['user']->logout();
   session_unset();
   session_destroy();
   header("Location: " . "login.php"); exit();
