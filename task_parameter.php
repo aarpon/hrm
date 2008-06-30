@@ -152,12 +152,12 @@ else {
   
   if (isset($_POST['BackgroundEstimationMode']) && $_POST['BackgroundEstimationMode'] == "auto") {
     $parameter = $_SESSION['task_setting']->parameter("BackgroundOffsetPercent");
-    $parameter->setValue(array(1 => "auto"));
+    $parameter->setValue(array(0 => "auto"));
     $_SESSION['task_setting']->set($parameter);
   }
   else if (isset($_POST['BackgroundEstimationMode']) && $_POST['BackgroundEstimationMode'] == "object") {
     $parameter = $_SESSION['task_setting']->parameter("BackgroundOffsetPercent");
-    $parameter->setValue(array(1 => "object"));
+    $parameter->setValue(array(0 => "object"));
     $_SESSION['task_setting']->set($parameter);
   }
   
