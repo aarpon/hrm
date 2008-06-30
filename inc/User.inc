@@ -467,43 +467,5 @@ Class User extends Owner{
 } 
 
 
-/* A global debugging function, that will print all its arguments whether they
- * are strings, arrays or objects. This works if a global variable $debug =
- * true, that can be defined in hrm_client_config.inc. Otherwise it does
- * nothing. */
-
-/* Nothing to do with Users, but this file is included everywhere and it makes
- * this function available to all other php files. */
-
-if ( ! function_exists('printDebug') ) {
-    function printDebug ( ) {
-        global $debug;
-
-        if ( ! $debug ) return;
-
-        $args = func_get_args();
-
-        echo "<small><kbd><font color=\"red\">Debugging: </font></kbd></small>";
-
-        foreach ($args as $item) {
-
-            if (is_object($item)) {
-                $msg = (array) $item;
-            } else {
-                $msg = $item;
-            }
-
-            if (is_array($msg)) {
-                echo "<pre>";
-                print_r($msg);
-                echo "</pre>";
-            } else {
-                echo "<kbd>$msg</kbd>";
-            }
-        }
-    }
-}
-
-
 
 ?>
