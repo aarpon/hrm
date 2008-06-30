@@ -12,7 +12,7 @@ start() {
 	if [ "$?" = 0 ]
 	then
 		sleep 3
-		ps -C php -o pid,command | grep "$HRM_HOME" | sed -e "s/^ * //" | cut -d" " -f1 > "$HRM_HOME"/run/hrmd.pid
+		ps -o pid,command | grep "$HRM_HOME" | grep "php" | sed -e "s/^ * //" | cut -d" " -f1 > "$HRM_HOME"/run/hrmd.pid
 		echo "Starting HRM daemon...................ok"
 	fi
 }
