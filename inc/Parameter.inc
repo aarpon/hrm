@@ -683,11 +683,22 @@ Class VariableChannelsParameter extends NumericalParameter {
 		$theValue = $value;
 		if (!is_array($value)) {
 			$theValue = array (
-				$value,
-				NULL,
-				NULL,
-				NULL,
-				NULL
+				1 => $value,
+				2 => NULL,
+				3 => NULL,
+				4 => NULL,
+				5 => NULL
+			);
+			
+		}
+		//TODO: check if useful
+		else if (is_array($value) && count($value) == 1) {
+			$theValue = array (
+				1 => $value[0],
+				2 => NULL,
+				3 => NULL,
+				4 => NULL,
+				5 => NULL
 			);
 		}
 		$this->value = $theValue;
@@ -1293,14 +1304,23 @@ Class BackgroundOffsetPercent extends VariableChannelsParameter {
 	function check() {
 		$value = $this->internalValue();
 		$result = True;
-		if ($value[0] == "auto")
+		if ($value[1] == "auto")
 			return True;
-		else if ($value[0] == "object")
+		else if ($value[1] == "object")
 			return True;
-		for ($i = 0; $i < $this->numberOfChannels; $i++) {
+		for ($i = 1; $i <= $this->numberOfChannels; $i++) {
 			$result = $result && $this->checkValue($value[$i]);
 		}
 		return $result;
+	}
+	
+	function setValue($value) {
+		$args = $value;
+		if (is_array($value) && isset($value[0])) {
+			$args = $value[0];
+		}
+		$parent_class=get_parent_class($this);
+		call_user_func_array(array($parent_class, 'setValue'), $args);
 	}
 }
 

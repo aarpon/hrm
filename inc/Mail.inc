@@ -74,7 +74,7 @@ Class Mail {
 
   function send() {
     mail($this->receiver, $this->subject, $this->message, 'From: ' . $this->sender); 
-    report("Mail '". $this->subject. "' sent to ".$this->receiver, 2);
+    //report("Mail '". $this->subject. "' sent to ".$this->receiver, 2);
   } 
 } 
 
