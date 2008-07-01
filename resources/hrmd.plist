@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- 
+HRM server daemon for launchd in MacOS X.
+As root:
+1) Edit this file to refer to the proper locations of your HRM installation
+2) Place the file in /Library/LaunchDaemons/
+3) Load it with:
+   sudo launchctl load -w /Library/LaunchDaemons/hrmd.plist
+
+-->
+<plist version="1.0">
+<dict>
+	<key>EnvironmentVariables</key>
+        <!-- EDIT THE STRING VALUES OF THESE FOUR VARIABLES: -->
+	<dict>
+		<key>HRM_DATA</key>
+		<string>/Library/WebServer/hrm_images</string>
+		<key>HRM_DEST</key>
+		<string>huygens_dst</string>
+		<key>HRM_HOME</key>
+		<string>/Users/jose/Sites/hrm</string>
+		<key>HRM_SOURCE</key>
+		<string>huygens_src</string>
+	</dict>
+	<key>KeepAlive</key>
+	<true/>
+	<key>Label</key>
+	<string>hrmd</string>
+	<key>OnDemand</key>
+	<false/>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/usr/bin/php</string>
+		<string>-q</string>
+                <!-- EDIT THIS PATH: -->
+		<string>/Users/jose/Sites/hrm/run/runHuygensRemoteManager.php</string>
+	</array>
+	<key>RunAtLoad</key>
+	<true/>
+	<key>StandardErrorPath</key>
+        <!-- EDIT THIS PATH -->
+	<string>/Users/jose/Sites/hrm/run/log_error_d.txt</string>
+	<key>StandardOutPath</key>
+        <!-- EDIT THIS PATH -->
+	<string>/Users/jose/Sites/hrm/run/log_d.txt</string>
+	<key>UserName</key>
+	<string>root</string>
+	<key>WorkingDirectory</key>
+        <!-- EDIT THIS PATH -->
+	<string>/Users/jose/Sites/hrm/run</string>
+</dict>
+</plist>
