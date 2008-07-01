@@ -235,6 +235,7 @@ function huCoreTools ($tool, $options) {
 //!---------------------------------------------------------
 function report($text, $level) {
 	global $log_verbosity;
+        global $hrm_path;
 	global $logfile;
 	global $logfile_max_size;
 
@@ -248,7 +249,7 @@ function report($text, $level) {
 		}
 		rename($logfile, $logfile . ".old");
 	}
-	$file = fopen($logfile, 'a');
+	$file = fopen($hrm_path."/run/".$logfile, 'a');
 	if ($log_verbosity >= $level) {
 		fwrite($file, $text);
 		fwrite($file, "\n");
