@@ -8,7 +8,7 @@ if ($isServer)
 else 
 	require_once('hrm_client_config.inc');
 
-require_once ("CommonProcedures.inc");
+require_once ("Util.inc");
 
 
 ?>
