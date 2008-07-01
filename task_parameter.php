@@ -143,8 +143,8 @@ else {
     } 
   }
   // get rid of extra values in case the number of channels is changed
-  /*$signalNoiseRatio = array_slice($signalNoiseRatio, 0, $_SESSION['setting']->numberOfChannels() );
-  $backgroundOffset = array_slice($backgroundOffset, 0, $_SESSION['setting']->numberOfChannels() );*/
+  //$signalNoiseRatio = array_slice($signalNoiseRatio, 0, $_SESSION['setting']->numberOfChannels() );
+  //$backgroundOffset = array_slice($backgroundOffset, 0, $_SESSION['setting']->numberOfChannels() );
   $signalNoiseRatioParam->setValue($signalNoiseRatio);
   $_SESSION['task_setting']->set($signalNoiseRatioParam);
   $backgroundOffsetPercentParam->setValue($backgroundOffset);
@@ -152,12 +152,12 @@ else {
   
   if (isset($_POST['BackgroundEstimationMode']) && $_POST['BackgroundEstimationMode'] == "auto") {
     $parameter = $_SESSION['task_setting']->parameter("BackgroundOffsetPercent");
-    $parameter->setValue(array(0 => "auto"));
+    $parameter->setValue("auto");
     $_SESSION['task_setting']->set($parameter);
   }
   else if (isset($_POST['BackgroundEstimationMode']) && $_POST['BackgroundEstimationMode'] == "object") {
     $parameter = $_SESSION['task_setting']->parameter("BackgroundOffsetPercent");
-    $parameter->setValue(array(0 => "object"));
+    $parameter->setValue("object");
     $_SESSION['task_setting']->set($parameter);
   }
   
@@ -273,7 +273,7 @@ $backgroundOffsetPercentParam =  $_SESSION['task_setting']->parameter("Backgroun
 $backgroundOffset = $backgroundOffsetPercentParam->internalValue();
 
 $flag = "";
-if ($backgroundOffset[0] == "" || $backgroundOffset[0] == "auto") $flag = " checked=\"checked\"";
+if ($backgroundOffset[1] == "" || $backgroundOffset[1] == "auto") $flag = " checked=\"checked\"";
 
 ?>
 
@@ -282,7 +282,7 @@ if ($backgroundOffset[0] == "" || $backgroundOffset[0] == "auto") $flag = " chec
 <?php
 
 $flag = "";
-if ($backgroundOffset[0] == "object") $flag = " checked=\"checked\"";
+if ($backgroundOffset[1] == "object") $flag = " checked=\"checked\"";
 
 ?>
 
@@ -291,7 +291,7 @@ if ($backgroundOffset[0] == "object") $flag = " checked=\"checked\"";
 <?php
 
 $flag = "";
-if ($backgroundOffset[0] != "" && $backgroundOffset[0] != "auto" && $backgroundOffset[0] != "object") $flag = " checked=\"checked\"";
+if ($backgroundOffset[1] != "" && $backgroundOffset[1] != "auto" && $backgroundOffset[1] != "object") $flag = " checked=\"checked\"";
 
 ?>
                     <input type="radio" name="BackgroundEstimationMode" value="manual"<?php echo $flag ?> />
@@ -302,7 +302,7 @@ if ($backgroundOffset[0] != "" && $backgroundOffset[0] != "auto" && $backgroundO
 
 for ($i=0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
   $val = "";
-  if ($backgroundOffset[0] != "auto" && $backgroundOffset[0] != "object" && $i < sizeof($backgroundOffset)) $val = $backgroundOffset[$i];
+  if ($backgroundOffset[1] != "auto" && $backgroundOffset[1] != "object") $val = $backgroundOffset[$i+1];
 
 ?>
                         <span class="nowrap">Ch<?php echo $i+1 ?>:<span class="multichannel"><input name="BackgroundOffsetPercent<?php echo $i ?>" type="text" size="8" value="<?php echo $val ?>" class="multichannelinput" /></span>&nbsp;</span>

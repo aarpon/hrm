@@ -136,7 +136,12 @@ else if (isset($_POST['OK'])) {
   else {
     $_SESSION['task_setting'] = $_SESSION['taskeditor']->loadSelectedSetting();
     $_SESSION['task_setting']->setNumberOfChannels($_SESSION['setting']->numberOfChannels());
-    header("Location: " . "select_images.php"); exit();
+    $ok = $_SESSION['task_setting']->checkParameter();
+    if ($ok) {
+      header("Location: " . "select_images.php"); exit();
+    }
+    //$message = "            <p class=\"warning\">Values for some channels are missing, please edit the selected task setting</p>\n";
+    $message = "            <p class=\"warning\">".$_SESSION['task_setting']->message()."</p>\n";
   }
 }
 
