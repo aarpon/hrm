@@ -3,7 +3,7 @@
 # HRM server daemon
 
 # hrm.conf defines variable HRM_HOME
-. /etc/hrm-asheesh.conf
+. /etc/hrm.conf
 
 start() {
     cd  "$HRM_HOME"/run
