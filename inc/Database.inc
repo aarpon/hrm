@@ -337,8 +337,16 @@ Class DatabaseConnection {
       if ($newValue{0}=='#') {
           $newValue = substr($newValue,1);
           $newValue = explode("#", $newValue);
-      } 
-      $parameter->setValue($newValue);
+      }
+      $shiftedNewValue = array(1 => NULL, 2 => NULL, 3 => NULL, 4 => NULL, 5 => NULL);
+      if (is_array($newValue)) {
+        // start array at 1
+        for ($i = 1; $i <= count($newValue); $i++) {
+          $shiftedNewValue[$i] = $newValue[$i - 1];
+        }
+      }
+      else $shiftedNewValue = $newValue;
+      $parameter->setValue($shiftedNewValue);
       $aSetting->set($parameter);
     }
     return $aSetting;

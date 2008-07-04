@@ -228,8 +228,10 @@ Class Job {
 			$image = $huygens_server_image_folder . $user->name() . "/" . $image_destination . "/" . $desc->relativeSourcePath() . $resultImage;
 			// escape special characters in image path
 			$image = eregi_replace(" ", "\\ ", $image);
-			exec("mkdir -p " . escapeshellarg($path));
+			exec("sudo mkdir -p " . escapeshellarg($path));
+			error_log("sudo mkdir -p " . escapeshellarg($path));
 			exec("(cd " . escapeshellarg($path) . " && scp " . $huygens_user . "@" . $server_hostname . ":" . escapeshellarg($image) . " .)");
+			error_log("(cd " . escapeshellarg($path) . " && scp " . $huygens_user . "@" . $server_hostname . ":" . escapeshellarg($image) . " .)");
 		}
 		
 		// TODO is checking for job id only a good idea?
@@ -542,7 +544,7 @@ Class QueueManager {
                         //$result = exec("chown -R " . $huygens_user . ":" . $huygens_group . " " . $image_folder . "/" . $username);
                         //error_log($result);
                         
-                $result = exec("chown -R " . $image_user . ":" . $image_group . " " . $image_folder . "/" . $username);
+                $result = exec("sudo chown -R " . $image_user . ":" . $image_group . " " . $image_folder . "/" . $username);
                 error_log($result);
         }
 	

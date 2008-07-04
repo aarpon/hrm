@@ -1080,7 +1080,7 @@ Class ParameterSetting extends Setting {
 		$parameterName = $name . 'Wavelength';
 		$label = strtolower($name);
 		$parameter = $this->parameter($parameterName);
-		for ($i = 0; $i < $this->numberOfChannels(); $i++) {
+		for ($i = 1; $i <= $this->numberOfChannels(); $i++) {
 			if (!$parameter->checkValue($parameter->value[$i])) {
 				$this->message = "Please enter a valid $label wavelength for channel $i!";
 				return False;
@@ -1793,7 +1793,7 @@ Class TaskSetting extends Setting {
 	//!---------------------------------------------------------    
 	function checkSignalNoiseRatio() {
 		$parameter = $this->parameter('SignalNoiseRatio');
-		for ($i = 0; $i < $this->numberOfChannels(); $i++) {
+		for ($i = 1; $i <= $this->numberOfChannels(); $i++) {
 			if (!$parameter->checkValue($parameter->value[$i])) {
 				$this->message = "Please enter a valid signal/noise ratio for channel " . $i . "! The value must be larger than 0.";
 				return False;
@@ -2002,14 +2002,14 @@ Class TaskSetting extends Setting {
 			}
 			if ($parameter->name() == 'FullRestoration' || $parameter->name() == 'RemoveNoise' || $parameter->name() == 'RemoveBackground')
 				continue;
-			if ($parameter->name() == 'SignalNoiseRatio') {
-				$snr = $parameter->value();
-				$parameter->setValue(array_slice($snr, 0, $this->numberOfChannels() ));
-			}
+			//if ($parameter->name() == 'SignalNoiseRatio') {
+			//	$snr = $parameter->value();
+			//	$parameter->setValue(array_slice($snr, 0, $this->numberOfChannels() ));
+			//}
 			$result = $result . $parameter->displayString();
-			if ($parameter->name() == 'SignalNoiseRatio') {
-				$parameter->setValue($snr);
-			}
+			//if ($parameter->name() == 'SignalNoiseRatio') {
+			//	$parameter->setValue($snr);
+			//}
 		}
 		return $result;
 	}
@@ -2449,9 +2449,9 @@ Class JobTaskSetting extends TaskSetting {
 		$internalValue = $parameter->internalValue();
 		//$result = $result . '-bgMode object ';
 		//error_log("GENERATING SCRIPT (Setting): background offset percent -> ".$value[0].", ".$value[1]." | ".$internalValue[0].", ".$internalValue[1]." |");
-		if ($value[0] == "auto" || $internalValue[0] == "auto") {
+		if ($value[1] == "auto" || $internalValue[1] == "auto") {
 			$result = $result . '-bgMode auto ';
-		} else if ($value[0] == "object" || $internalValue[0] == "object") {
+		} else if ($value[1] == "object" || $internalValue[1] == "object") {
 			$result = $result . '-bgMode object ';
 		} else {
 			$result = $result . '-bgMode manual ';
@@ -2559,7 +2559,7 @@ Class JobTaskSetting extends TaskSetting {
 		//	}
 		//}
 		//$result = $result . '} ';
-		$result = '-sn ' . $values[0] . " ";		
+		$result = '-sn ' . $values[1] . " ";		
 		return $result;
 	}
 
