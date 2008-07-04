@@ -58,6 +58,7 @@ require_once("./inc/hrm_config.inc");
 
 global $email_admin;
 global $enableUserAdmin;
+global $use_accounting_system;
 
 $message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
 

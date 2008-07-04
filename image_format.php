@@ -116,7 +116,7 @@ if (isset($_POST["PointSpreadFunction"])) {
 }
 
 if (count($_POST)>0) {
-        if ($_POST["ImageGeometry"] == "") {
+        if (!isset($_POST["ImageGeometry"]) || $_POST["ImageGeometry"] == "") {
           $parameter = $_SESSION['setting']->parameter("ImageGeometry");
           $parameter->setValue("multi_XYZ");
           $_SESSION['setting']->set($parameter);

@@ -37,8 +37,8 @@ function forceGeometry() {
     for (var i = 0; i < document.forms["select"].elements.length; i++) {
         var e = document.forms["select"].elements[i];
         if (e.name == 'ImageGeometry') {
-           e.disabled = true;
-           e.checked = false;
+            e.disabled = true;
+            e.checked = false;
         }
     }
     document.forms["select"].elements["geometry"].style.color = "grey";
@@ -48,8 +48,8 @@ function fixGeometry(geometry) {
     for (var i = 0; i < document.forms["select"].elements.length; i++) {
         var e = document.forms["select"].elements[i];
         if (e.name == 'ImageGeometry') {
-           e.disabled = true;
-           if (e.value == geometry)
+            e.disabled = true;
+            if (e.value == geometry)
                 e.checked = true;
         }
     }
@@ -60,8 +60,8 @@ function fixChannels(channels) {
     for (var i = 0; i < document.forms["select"].elements.length; i++) {
         var e = document.forms["select"].elements[i];
         if (e.name == 'NumberOfChannels') {
-           e.disabled = true;
-           if (e.value == channels)
+            e.disabled = true;
+            if (e.value == channels)
                 e.checked = true;
         }
     }

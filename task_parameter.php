@@ -132,7 +132,7 @@ else {
   $signalNoiseRatio = $signalNoiseRatioParam->internalValue();
   $backgroundOffsetPercentParam =  $_SESSION['task_setting']->parameter("BackgroundOffsetPercent");
   $backgroundOffset = $backgroundOffsetPercentParam->internalValue();
-  for ($i=0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
+  for ($i=1; $i <= $_SESSION['task_setting']->numberOfChannels(); $i++) {
     $signalNoiseRatioKey = "SignalNoiseRatio{$i}";
     $backgroundOffsetKey = "BackgroundOffsetPercent{$i}";
     if (isset($_POST[$signalNoiseRatioKey])) {
@@ -243,10 +243,10 @@ include("header.inc.php");
 
 $parameter = $_SESSION['task_setting']->parameter("SignalNoiseRatio");
 $value = $parameter->value();
-for ($i=0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
+for ($i=1; $i <= $_SESSION['task_setting']->numberOfChannels(); $i++) {
 
 ?>
-                        <span class="nowrap">Ch<?php echo $i+1 ?>:<span class="multichannel"><input name="SignalNoiseRatio<?php echo $i ?>" type="text" size="8" value="<?php echo $value[$i] ?>" class="multichannelinput" /></span>&nbsp;</span>
+                        <span class="nowrap">Ch<?php echo $i ?>:<span class="multichannel"><input name="SignalNoiseRatio<?php echo $i ?>" type="text" size="8" value="<?php echo $value[$i] ?>" class="multichannelinput" /></span>&nbsp;</span>
 <?php
 
 }
@@ -300,12 +300,12 @@ if ($backgroundOffset[1] != "" && $backgroundOffset[1] != "auto" && $backgroundO
                     <div class="multichannel">
 <?php
 
-for ($i=0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
+for ($i=1; $i <= $_SESSION['task_setting']->numberOfChannels(); $i++) {
   $val = "";
   if ($backgroundOffset[1] != "auto" && $backgroundOffset[1] != "object") $val = $backgroundOffset[$i+1];
 
 ?>
-                        <span class="nowrap">Ch<?php echo $i+1 ?>:<span class="multichannel"><input name="BackgroundOffsetPercent<?php echo $i ?>" type="text" size="8" value="<?php echo $val ?>" class="multichannelinput" /></span>&nbsp;</span>
+                        <span class="nowrap">Ch<?php echo $i ?>:<span class="multichannel"><input name="BackgroundOffsetPercent<?php echo $i ?>" type="text" size="8" value="<?php echo $val ?>" class="multichannelinput" /></span>&nbsp;</span>
                         
 <?php
 
@@ -364,7 +364,7 @@ $numberOfIterationsRangeParam = $_SESSION['task_setting']->parameter("NumberOfIt
 $numberOfIterationsRange = $numberOfIterationsRangeParam->value();
 
 
-  for ($i=0; $i < 4; $i++) {
+  for ($i=1; $i <= 4; $i++) {
 
 ?>
                         <input name="NumberOfIterationsRange<?php echo $i ?>" type="text" size="3" value="<?php echo $numberOfIterationsRange[$i] ?>" class="multichannelinput" />
