@@ -228,10 +228,13 @@ Class Job {
 			$image = $huygens_server_image_folder . $user->name() . "/" . $image_destination . "/" . $desc->relativeSourcePath() . $resultImage;
 			// escape special characters in image path
 			$image = eregi_replace(" ", "\\ ", $image);
-			exec("sudo mkdir -p " . escapeshellarg($path));
-			error_log("sudo mkdir -p " . escapeshellarg($path));
-			exec("(cd " . escapeshellarg($path) . " && scp " . $huygens_user . "@" . $server_hostname . ":" . escapeshellarg($image) . " .)");
-			error_log("(cd " . escapeshellarg($path) . " && scp " . $huygens_user . "@" . $server_hostname . ":" . escapeshellarg($image) . " .)");
+			//error_log("Retrieving result image...");
+			//error_log("sudo mkdir -p " . escapeshellarg($path));
+			$result = exec("sudo mkdir -p " . escapeshellarg($path));
+			//error_log($result);
+			//error_log("(cd " . escapeshellarg($path) . " && scp " . $huygens_user . "@" . $server_hostname . ":" . escapeshellarg($image) . " .)");
+			$result = exec("(cd " . escapeshellarg($path) . " && sudo scp " . $huygens_user . "@" . $server_hostname . ":" . escapeshellarg($image) . " .)");
+			//error_log($result);
 		}
 		
 		// TODO is checking for job id only a good idea?
@@ -270,7 +273,7 @@ Class Job {
 			//error_log("ssh " . $huygens_user . "@" . $server_hostname . " ls " . $marker);
 			//error_log($result);
 			if ($result == $marker) {
-				exec("(cd " . $path . " && scp " . $huygens_user . "@" . $server_hostname . ":" . $marker . " .)");
+				exec("(cd " . $path . " && sudo scp " . $huygens_user . "@" . $server_hostname . ":" . $marker . " .)");
 			}
 		}
 		
@@ -545,7 +548,7 @@ Class QueueManager {
                         //error_log($result);
                         
                 $result = exec("sudo chown -R " . $image_user . ":" . $image_group . " " . $image_folder . "/" . $username);
-                error_log($result);
+                error_log("Restoring ownership... " . $result);
         }
 	
 	// TODO refactor this
@@ -725,7 +728,7 @@ Class QueueManager {
 	function writeParameterFile($job, $startTime) {
 		global $resultImagesOwnedByUser;
                 global $imageProcessingIsOnQueueManager;
-		$result = True;
+		$result = False;
 		$desc = $job->description();
 		$sourceFileName = $desc->sourceImageName();
 		$destFileName = $desc->destinationImageName();
@@ -739,16 +742,19 @@ Class QueueManager {
 		$username = $user->name();
 		$fileserver = new Fileserver($username);
 		$path = $fileserver->destinationFolderFor($desc);
-		$parameterFileName = $path . '/' . $imageName . '.txt';
-		$file = fopen($parameterFileName, "w");
-		$result = $result && (fwrite($file, $text) > 0);
-		fclose($file);
-		if ($resultImagesOwnedByUser) {
-			chown($parameterFileName, $username);
-		}
-		// TODO refactor this
-		else if (!$imageProcessingIsOnQueueManager) {
-			$this->restoreOwnership($user->name());
+		if (file_exists($path . $imageName . '.txt')) {
+			//$parameterFileName = $path . '/' . $imageName . '.txt';
+			$parameterFileName = $path . $imageName . '.txt';
+			$file = fopen($parameterFileName, "w");
+			$result = !$result && (fwrite($file, $text) > 0);
+			fclose($file);
+			if ($resultImagesOwnedByUser) {
+				chown($parameterFileName, $username);
+			}
+			// TODO refactor this
+			else if (!$imageProcessingIsOnQueueManager) {
+				$this->restoreOwnership($user->name());
+			}
 		}
 		return $result;
 	}

@@ -1061,6 +1061,9 @@ Class ExcitationWavelength extends NumericalParameter {
 			for ($i = 1; $i <= count($value); $i++)
 				$this->value[$i] = $value[$i];
 		}
+		else {
+			$this->value[1] = $value;
+		}
 	}
 
 	function isForMicroscope() {
@@ -1084,6 +1087,9 @@ Class EmissionWavelength extends NumericalParameter {
 		if (is_array($value)) {
 			for ($i = 1; $i <= count($value); $i++)
 				$this->value[$i] = $value[$i];
+		}
+		else {
+			$this->value[1] = $value;
 		}
 	}
 
@@ -1307,6 +1313,9 @@ Class SignalNoiseRatio extends NumericalParameter {
 		if (is_array($value)) {
 			for ($i = 1; $i <= count($value); $i++)
 				$this->value[$i] = $value[$i];
+		}
+		else {
+			$this->value[1] = $value;
 		}
 	}
 }
