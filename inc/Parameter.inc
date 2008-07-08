@@ -1511,5 +1511,12 @@ Class OutputFileFormat extends ChoiceParameter {
 				return "";
 		}
 	}
-	
 }
+	
+Class DeconvolutionAlgorithm extends ChoiceParameter {
+	function DeconvolutionAlgorithm() {
+		$this->ChoiceParameter('DeconvolutionAlgorithm');
+		}
+}
+	
+

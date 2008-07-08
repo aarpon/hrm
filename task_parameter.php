@@ -194,6 +194,12 @@ else {
     $_SESSION['task_setting']->set($parameter);
   }
   
+  if (isset($_POST['DeconvolutionAlgorithm'])) {
+    $parameter = $_SESSION['task_setting']->parameter("DeconvolutionAlgorithm");
+    $parameter->setValue($_POST['DeconvolutionAlgorithm']);
+    $_SESSION['task_setting']->set($parameter);
+  }
+  
   if (count($_POST) > 0) {
     $ok = $_SESSION['task_setting']->checkParameter();
     $message = "            <p class=\"warning\">".$_SESSION['task_setting']->message()."</p>\n";
@@ -228,6 +234,31 @@ include("header.inc.php");
         <h3>Task Setting</h3>
         
         <form method="post" action="" id="select">
+          
+             <fieldset class="setting">  <!-- deconvolution algorithm -->
+            
+                <legend>
+                    <a href="javascript:openWindow('http://support.svi.nl/wiki/MaximumLikelihoodEstimation')"><img src="images/help.png" alt="?" /></a>
+                    deconvolution algorithm
+                </legend>
+                
+                <select name="DeconvolutionAlgorithm">
+                
+<?php
+
+$parameter = $_SESSION['task_setting']->parameter("DeconvolutionAlgorithm");
+$possibleValues = $parameter->possibleValues();
+foreach($possibleValues as $possibleValue) {
+  $translation = $_SESSION['task_setting']->translation("DeconvolutionAlgorithm", $possibleValue);
+
+?>
+                    <option value="<?php echo $possibleValue?>"><?php echo $translation?></option>                  
+<?php
+}
+?>
+                </select>
+                
+            </fieldset>
         
             <fieldset class="setting">  <!-- signal/noise ratio -->
             

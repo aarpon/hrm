@@ -1702,7 +1702,8 @@ Class TaskSetting extends Setting {
 			'NumberOfIterationsRange',
 			'OutputFileFormat',
 			'MultiChannelOutput',
-			'QualityChangeStoppingCriterion'
+			'QualityChangeStoppingCriterion',
+			'DeconvolutionAlgorithm'
 		);
 		$db = new DatabaseConnection();
 		foreach ($parameterClasses as $class) {
@@ -2438,7 +2439,17 @@ Class JobTaskSetting extends TaskSetting {
 
 	function fullRestorationString($source, $dest) {
 		$result = '';
-		$result = $result . $source . ' cmle psf -> ' . $dest . ' ';
+
+$parameter = $this->parameter('DeconvolutionAlgorithm');
+$string = $parameter->possibleValuesString();
+error_log('Possible values for deconvolution algorithm: ' . $string);
+$string = $parameter->name();
+error_log('DeconvolutionAlgorithm name = ' . $string);
+$value = $parameter->value();
+error_log('DeconvolutionAlgorithm value = ' . $value);
+
+		$result = $result . $source . ' ' . $value . ' psf -> ' . $dest . ' ';	
+	//$result = $result . $source . ' cmle psf -> ' . $dest . ' ';
 		$result = $result . $this->signalNoiseRatioString();
 		$result = $result . $this->maxIterationsString();
 		// background estimation manual/auto
@@ -2470,7 +2481,8 @@ Class JobTaskSetting extends TaskSetting {
 	// manage measured PSF
 	function fullRestorationForMeasuredPointSpreadFunctionString($source, $dest) {
 		$result = '';
-		$result = $result . $source . ' cmle $psf -> ' . $dest . ' ';
+		$result = $result . $source . $this->decAlgorithmString() . ' psf -> ' . $dest . ' ';
+	//$result = $result . $source . ' cmle $psf -> ' . $dest . ' ';
 		$result = $result . $this->signalNoiseRatioString();
 		$result = $result . $this->maxIterationsString();
 		// background estimation manual/auto
@@ -2559,7 +2571,19 @@ Class JobTaskSetting extends TaskSetting {
 		//	}
 		//}
 		//$result = $result . '} ';
-		$result = '-sn ' . $values[1] . " ";		
+		
+		$parameter = $this->parameter('DeconvolutionAlgorithm');
+		$deconvolutionAlgorithm = $parameter->value();
+		
+		$value = $values[1];
+		if ($deconvolutionAlgorithm == "qmle") {
+			if ($value == "1")	$value = "low";
+			else if ($value == "2")	$value = "fair";
+			else if ($value == "3")	$value = "good";
+			else			$value = "inf";
+		}
+		
+		$result = '-sn ' . $value . " ";
 		return $result;
 	}
 
@@ -2567,6 +2591,14 @@ Class JobTaskSetting extends TaskSetting {
 		$parameter = $this->parameter('NumberOfIterations');
 		$value = $parameter->value();
 		$result = "-it $value ";
+		return $result;
+	}
+	
+	function decAlgorithmString() {
+		$parameter = $this->parameter('DeconvolutionAlgorithm');
+		$value = $parameter->value();
+		$result = " $value";
+error_log($result);
 		return $result;
 	}
 }

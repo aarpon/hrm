@@ -223,7 +223,7 @@ echo $_SESSION['setting']->display();
                 <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpCreateJob')"><img src="images/help.png" alt="?" /></a>
                 <a href="select_task_settings.php">task setting</a>: <?php echo $_SESSION['task_setting']->name() ?>
             </legend>
-            <textarea name="task_settings_report" cols="50" rows="5" readonly="readonly">
+            <textarea name="task_settings_report" cols="50" rows="6" readonly="readonly">
 <?php
 
 echo $_SESSION['task_setting']->displayWithoutOutputFileFormat();
