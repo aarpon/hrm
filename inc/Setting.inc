@@ -201,7 +201,7 @@ Class Setting {
 		}
 		$result = True;
 		$theLabel = $label;
-		for ($i = 1; $i <= $numberOfChannels; $i++) {
+		for ($i = 0; $i < $numberOfChannels; $i++) {
 			$ok = $parameter->checkValue($values[$i]);
 			if (!$ok) {
 				$theLabel = $label . " for channel $i";
@@ -1080,7 +1080,7 @@ Class ParameterSetting extends Setting {
 		$parameterName = $name . 'Wavelength';
 		$label = strtolower($name);
 		$parameter = $this->parameter($parameterName);
-		for ($i = 1; $i <= $this->numberOfChannels(); $i++) {
+		for ($i = 0; $i < $this->numberOfChannels(); $i++) {
 			if (!$parameter->checkValue($parameter->value[$i])) {
 				$this->message = "Please enter a valid $label wavelength for channel $i!";
 				return False;
@@ -1794,7 +1794,7 @@ Class TaskSetting extends Setting {
 	//!---------------------------------------------------------    
 	function checkSignalNoiseRatio() {
 		$parameter = $this->parameter('SignalNoiseRatio');
-		for ($i = 1; $i <= $this->numberOfChannels(); $i++) {
+		for ($i = 0; $i < $this->numberOfChannels(); $i++) {
 			if (!$parameter->checkValue($parameter->value[$i])) {
 				$this->message = "Please enter a valid signal/noise ratio for channel " . $i . "! The value must be larger than 0.";
 				return False;
@@ -2460,9 +2460,9 @@ error_log('DeconvolutionAlgorithm value = ' . $value);
 		$internalValue = $parameter->internalValue();
 		//$result = $result . '-bgMode object ';
 		//error_log("GENERATING SCRIPT (Setting): background offset percent -> ".$value[0].", ".$value[1]." | ".$internalValue[0].", ".$internalValue[1]." |");
-		if ($value[1] == "auto" || $internalValue[1] == "auto") {
+		if ($value[0] == "auto" || $internalValue[0] == "auto") {
 			$result = $result . '-bgMode auto ';
-		} else if ($value[1] == "object" || $internalValue[1] == "object") {
+		} else if ($value[0] == "object" || $internalValue[0] == "object") {
 			$result = $result . '-bgMode object ';
 		} else {
 			$result = $result . '-bgMode manual ';
@@ -2546,7 +2546,7 @@ error_log('DeconvolutionAlgorithm value = ' . $value);
 			$values = array_fill(1, $channels, $values);
 		}
 		$result = '-bg {';
-		for ($i = 1; $i <= $this->numberOfChannels(); $i++) {
+		for ($i = 0; $i < $this->numberOfChannels(); $i++) {
 			$newValue = -1 * (100 - $values[$i]);
 			$result = $result . $newValue;
 			if ($i < $this->numberOfChannels()) {
@@ -2575,7 +2575,7 @@ error_log('DeconvolutionAlgorithm value = ' . $value);
 		$parameter = $this->parameter('DeconvolutionAlgorithm');
 		$deconvolutionAlgorithm = $parameter->value();
 		
-		$value = $values[1];
+		$value = $values[0];
 		if ($deconvolutionAlgorithm == "qmle") {
 			if ($value == "1")	$value = "low";
 			else if ($value == "2")	$value = "fair";
