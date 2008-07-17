@@ -149,37 +149,14 @@ $value = $parameter->value();
                 <select name="OutputFileFormat" id="OutputFileFormat" size="1">
 <?php
 
-// TODO refactor
+$possibleValues = $parameter->possibleValues(); // extract possible values for OutputFileFormat
 
-$possibleValues = $parameter->possibleValues();
-if ($_SESSION['setting']->isThreeDimensional() && $_SESSION['setting']->isTimeSeries()) {
-  if (!isset($_SESSION['first_visit'])) {
-    $parameter->setValue("ICS (Image Cytometry Standard)");
-    $_SESSION['first_visit'] = False;
-  }
-  $_SESSION['task_setting']->set($parameter);
-  $newPossibleValues = array();
-  foreach ($possibleValues as $possibleValue) {
-    if (!strstr($possibleValue, 'tiff')) {
-      $newPossibleValues[] = $possibleValue;
-    }
-  }
-  $possibleValues = $newPossibleValues;
+if (!isset($_SESSION['first_visit'])) { // if 'first visit' is not set, set the OutputFileFormat as ICS
+  $parameter->setValue("ICS (Image Cytometry Standard)");
+  $_SESSION['first_visit'] = False;
 }
-else {
-  if (!isset($_SESSION['first_visit'])) {
-    if ($_SESSION['setting']->isTwoPhoton()) {
-      $parameter->setValue("IMS (Imaris Classic)");
-      $_SESSION['first_visit'] = False;
-    }
-    // set default output file format to ICS
-    else {
-      $parameter->setValue("ICS (Image Cytometry Standard)");
-      $_SESSION['first_visit'] = False;
-    }
-    $_SESSION['task_setting']->set($parameter);
-  }
-}
+
+$_SESSION['task_setting']->set($parameter); // set the OutputFileFormat in the TaskSetting object
 
 foreach ($possibleValues as $possibleValue) {
   if ($possibleValue == $parameter->value()) {

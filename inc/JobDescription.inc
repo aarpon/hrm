@@ -328,7 +328,7 @@ Class JobDescription {
     } 
     $newScript = $newScript . "}\n";
     $dst_files = array();
-    for($channel=0; $channel<$numberOfChannels; $channel++) {
+    for($channel=1; $channel<=$numberOfChannels; $channel++) {
       $newScript = $newScript . "catch {\n";
       $tmpfilename = $this->id() . $fileBase . "Ch$channel";
       // avoid redundant slashes in path
@@ -404,13 +404,13 @@ Class JobDescription {
     // DEBUG
     $val = $excitationWavelength->value();
     $originalExcitationWavelengthValue = array();
-    for ($i = 0; $i < $parameterSetting->numberOfChannels(); $i++) {
+    for ($i = 1; $i <= $parameterSetting->numberOfChannels(); $i++) {
       $originalExcitationWavelengthValue[$i] = $val[$i];
       //error_log("GENERATING SCRIPT (JobDescription): excitation wavelength -> ".$originalExcitationWavelengthValue[$i]." [".$i."]");
     }
     $val = $emissionWavelength->value();
     $originalEmissionWavelengthValue = array();
-    for ($i = 0; $i < $parameterSetting->numberOfChannels(); $i++) {
+    for ($i = 1; $i <= $parameterSetting->numberOfChannels(); $i++) {
       $originalEmissionWavelengthValue[$i] = $val[$i];
       //error_log("GENERATING SCRIPT (JobDescription): emission wavelength -> ".$originalEmissionWavelengthValue[$i]." [".$i."]");
     }
@@ -419,7 +419,7 @@ Class JobDescription {
     $pinholeSize = $parameterSetting->parameter('PinholeSize');
     $val = $pinholeSize->value();
     $originalPinholeSizeValue = array();
-    for ($i = 0; $i < $parameterSetting->numberOfChannels(); $i++) {
+    for ($i = 1; $i <= $parameterSetting->numberOfChannels(); $i++) {
       $originalPinholeSizeValue[$i] = $val[$i];
     }
     // save original measured PSF (file names)
@@ -427,7 +427,7 @@ Class JobDescription {
       $psf = $parameterSetting->parameter('PSF');
       $val = $psf->value();
       $originalPSFValue = array();
-      for ($i = 0; $i < $parameterSetting->numberOfChannels(); $i++) {
+      for ($i = 1; $i <= $parameterSetting->numberOfChannels(); $i++) {
         $originalPSFValue[$i] = $val[$i];
       }
     }
@@ -466,8 +466,8 @@ Class JobDescription {
     $removeBackgroundPercent = $taskSetting->parameter('RemoveBackgroundPercent');
     $val = $removeBackgroundPercent->internalValue();
     $originalRemoveBackgroundPercentValue = array();
-    for ($i = 0; $i < $numberOfChannels; $i++) {
-      if ($val[0] == "auto") {
+    for ($i = 1; $i <= $numberOfChannels; $i++) {
+      if ($val[1] == "auto") {
         $originalRemoveBackgroundPercentValue[$i] = "auto";
       }
       else {
@@ -478,8 +478,8 @@ Class JobDescription {
     $backgroundOffsetPercent = $taskSetting->parameter('BackgroundOffsetPercent');
     $val = $backgroundOffsetPercent->internalValue();
     $originalBackgroundOffsetPercentValue = array();
-    for ($i = 0; $i < $numberOfChannels; $i++) {
-      if ($val[0] == "auto") {
+    for ($i = 1; $i <= $numberOfChannels; $i++) {
+      if ($val[1] == "auto") {
         $originalBackgroundOffsetPercentValue[$i] = "auto";
       }
       else {
