@@ -248,8 +248,18 @@ include("header.inc.php");
 
 $parameter = $_SESSION['task_setting']->parameter("DeconvolutionAlgorithm");
 $possibleValues = $parameter->possibleValues();
+
+// This restores the default behavior in case the entry "DeconvolutionAlgorithm"
+// is not in the database
+if ( empty( $possibleValues ) == true )
+  $possibleValues[0] = "cmle";
+  
 foreach($possibleValues as $possibleValue) {
   $translation = $_SESSION['task_setting']->translation("DeconvolutionAlgorithm", $possibleValue);
+  // This restores the default behavior in case the entry "DeconvolutionAlgorithm"
+  // is not in the database
+  if ( $translation == false )
+    $translation = "cmle";
 
 ?>
                     <option value="<?php echo $possibleValue?>"><?php echo $translation?></option>                  
@@ -277,7 +287,7 @@ $value = $parameter->value();
 for ($i=0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
 
 ?>
-                        <span class="nowrap">Ch<?php echo $i ?>:<span class="multichannel"><input name="SignalNoiseRatio<?php echo $i ?>" type="text" size="8" value="<?php echo $value[$i] ?>" class="multichannelinput" /></span>&nbsp;</span>
+                        <span class="nowrap">Ch<?php echo $i+1 ?>:<span class="multichannel"><input name="SignalNoiseRatio<?php echo $i+1 ?>" type="text" size="8" value="<?php echo $value[$i+1] ?>" class="multichannelinput" /></span>&nbsp;</span>
 <?php
 
 }

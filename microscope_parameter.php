@@ -91,10 +91,10 @@ for ($i=0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
   $excitationKey = "ExcitationWavelength{$i}";
   $emissionKey = "EmissionWavelength{$i}";
   if (isset($_POST[$excitationKey])) {
-    $excitation[$i] = $_POST[$excitationKey];
+    $excitation[$i+1] = $_POST[$excitationKey];
   } 
   if (isset($_POST[$emissionKey])) {
-    $emission[$i] = $_POST[$emissionKey];
+    $emission[$i+1] = $_POST[$emissionKey];
   } 
 }
 // get rid of extra values in case the number of channels is changed
@@ -192,7 +192,7 @@ $parameter = $_SESSION['setting']->parameter("NumericalAperture");
 for ($i = 0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
 
 ?>
-                            <li><input name="ExcitationWavelength<?php echo $i ?>" type="text" size="5" value="<?php if ($i < sizeof($excitation)) echo $excitation[$i] ?>" class="multichannelinput" /></li>
+                            <li><input name="ExcitationWavelength<?php echo $i ?>" type="text" size="5" value="<?php if ($i <= sizeof($excitation)) echo $excitation[$i+1] ?>" class="multichannelinput" /></li>
 <?php
 
 }
@@ -210,7 +210,7 @@ for ($i = 0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
 for ($i=0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
 
 ?>
-                            <li><input name="EmissionWavelength<?php echo $i ?>" type="text" size="5" value="<?php if ($i < sizeof($emission)) echo $emission[$i] ?>" class="multichannelinput" /></li>
+                            <li><input name="EmissionWavelength<?php echo $i ?>" type="text" size="5" value="<?php if ($i <= sizeof($emission)) echo $emission[$i+1] ?>" class="multichannelinput" /></li>
 <?php
 
 }

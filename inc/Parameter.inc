@@ -1058,7 +1058,7 @@ Class ExcitationWavelength extends NumericalParameter {
 	
 	function setValue($value) {
 		if (is_array($value)) {
-			for ($i = 1; $i <= count($value); $i++)
+			for ($i = 1; $i <= count($value) && $i <= count( $this->value ); $i++)
 				$this->value[$i] = $value[$i];
 		}
 		else {
@@ -1085,7 +1085,7 @@ Class EmissionWavelength extends NumericalParameter {
 	
 	function setValue($value) {
 		if (is_array($value)) {
-			for ($i = 1; $i <= count($value); $i++)
+			for ($i = 1; $i <= count($value) && $i <= count( $this->value ); $i++)
 				$this->value[$i] = $value[$i];
 		}
 		else {

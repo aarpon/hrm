@@ -333,10 +333,14 @@ Class DatabaseConnection {
       $newValue = $this->queryLastValue($query);
       if ($newValue == NULL) { 
           continue;
-      } 
+      }
       if ($newValue{0}=='#') {
-          $newValue = substr($newValue,1);
-          $newValue = explode("#", $newValue);
+        if ( strcmp( $parameterName, "ExcitationWavelength" ) != 0 &&
+          strcmp( $parameterName, "EmissionWavelength" ) != 0 &&
+          strcmp( $parameterName, "SignalNoiseRatio" ) != 0 ) {
+            $newValue = substr($newValue,1);
+        }
+        $newValue = explode("#", $newValue);
       }
       //$shiftedNewValue = array(1 => NULL, 2 => NULL, 3 => NULL, 4 => NULL, 5 => NULL);
       //if (is_array($newValue)) {
