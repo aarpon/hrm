@@ -183,6 +183,17 @@ if ($enableUserAdmin || $_SESSION['user']->name() == "admin") {
 
 ?>
             <li><a href="job_queue.php">queue</a></li>
+<?php
+
+if ($enableUserAdmin && $_SESSION['user']->name() == "admin") {
+
+?>
+            <li><a href="update.php">update</a></li>
+<?php
+
+}
+
+?>
             <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpSelectTaskSettings')">help</a></li>
         </ul>
     </div>
