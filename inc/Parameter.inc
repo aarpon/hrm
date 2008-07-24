@@ -216,10 +216,10 @@ Class Parameter {
 			return '';
 		}
 		$internalValue = $this->internalValue();	// answers the internal representation of the parameters value.
-		if ($this->name() == "BackgroundOffsetPercent" && $internalValue[1] == "auto") {
+		if ($this->name() == "BackgroundOffsetPercent" && $internalValue[0] == "auto") {
 			$value = "auto";
 		}
-		else if ($this->name() == "BackgroundOffsetPercent" && $internalValue[1] == "object") {
+		else if ($this->name() == "BackgroundOffsetPercent" && $internalValue[0] == "object") {
 			$value = "in/near object";
 		} else {
 			if (is_array($value)) {
@@ -653,11 +653,11 @@ Class VariableChannelsParameter extends NumericalParameter {
 	function VariableChannelsParameter($name) {
 		$this->NumericalParameter($name);
 		$this->value = array (
-			NULL,
-			NULL,
-			NULL,
-			NULL,
-			NULL
+			0 => NULL,
+			1 => NULL,
+			2 => NULL,
+			3 => NULL,
+			4 => NULL
 		);
 		$numberOfChannels = 1;
 	}
@@ -683,24 +683,30 @@ Class VariableChannelsParameter extends NumericalParameter {
 		$theValue = $value;
 		if (!is_array($value)) {
 			$theValue = array (
-				1 => $value,
+				0 => $value,
+				1 => NULL,
 				2 => NULL,
 				3 => NULL,
-				4 => NULL,
-				5 => NULL
+				4 => NULL
 			);
 			
 		}
 		//TODO: check if useful
-		else if (is_array($value) && count($value) == 1) {
+		else if (is_array($value) && count($value) < 5) {
+			$theValue = array(5);
+			for ($i = 0; $i < count($value); $i++) {
+				$theValue[] = $value[$i];
+			}
+		}
+		/*else if (is_array($value) && count($value) == 1) {
 			$theValue = array (
-				1 => $value[0],
+				0 => $value[0],
+				1 => NULL,
 				2 => NULL,
 				3 => NULL,
-				4 => NULL,
-				5 => NULL
+				4 => NULL
 			);
-		}
+		}*/
 		$this->value = $theValue;
 	}
 
@@ -723,12 +729,13 @@ Class VariableChannelsParameter extends NumericalParameter {
 		);
         # printDebug($this);
         # printDebug(debug_backtrace());
-		for ($i = 1; $i <= $this->numberOfChannels(); $i++) {
+		for ($i = 0; $i < $this->numberOfChannels(); $i++) {
 			if ($i < sizeof($value) && $this->checkValue($value[$i])) {
 				$newValue[$i] = $value[$i];
-			} else {
-				$newValue[$i] = $newValue[$i -1];
 			}
+			/*else {
+				$newValue[$i] = $newValue[$i -1];
+			}*/
 		}
 		return $newValue;
 	}
@@ -1048,21 +1055,21 @@ Class ExcitationWavelength extends NumericalParameter {
 	function ExcitationWavelength() {
 		$this->NumericalParameter("ExcitationWavelength");
 		$this->value = array (
+			0 => NULL,
 			1 => NULL,
 			2 => NULL,
 			3 => NULL,
-			4 => NULL,
-			5 => NULL
+			4 => NULL
 		);
 	}
 	
 	function setValue($value) {
 		if (is_array($value)) {
-			for ($i = 1; $i <= count($value) && $i <= count( $this->value ); $i++)
+			for ($i = 0; $i < count($value) && $i <= count( $this->value ); $i++)
 				$this->value[$i] = $value[$i];
 		}
 		else {
-			$this->value[1] = $value;
+			$this->value[0] = $value;
 		}
 	}
 
@@ -1075,21 +1082,21 @@ Class EmissionWavelength extends NumericalParameter {
 	function EmissionWavelength() {
 		$this->NumericalParameter("EmissionWavelength");
 		$this->value = array (
+			0 => NULL,
 			1 => NULL,
 			2 => NULL,
 			3 => NULL,
-			4 => NULL,
-			5 => NULL
+			4 => NULL
 		);
 	}
 	
 	function setValue($value) {
 		if (is_array($value)) {
-			for ($i = 1; $i <= count($value) && $i <= count( $this->value ); $i++)
+			for ($i = 0; $i < count($value) && $i <= count( $this->value ); $i++)
 				$this->value[$i] = $value[$i];
 		}
 		else {
-			$this->value[1] = $value;
+			$this->value[0] = $value;
 		}
 	}
 
@@ -1170,7 +1177,17 @@ Class PinholeSize extends NumericalParameter {
 			NULL
 		);
 	}
-
+	
+	function setValue($value) {
+                if (is_array($value)) {
+                        for ($i = 0; $i < count($value); $i++)
+				$this->value[$i] = $value[$i];
+                }
+                else {
+			$this->value[0] = $value;
+                }
+        }
+	
 	function isForCapture() {
 		return True;
 	}
@@ -1301,21 +1318,21 @@ Class SignalNoiseRatio extends NumericalParameter {
 		$this->NumericalParameter("SignalNoiseRatio");
 		// manage one S/N per channel
 		$this->value = array (
+			0 => NULL,
 			1 => NULL,
 			2 => NULL,
 			3 => NULL,
-			4 => NULL,
-			5 => NULL
+			4 => NULL
 		);
 	}
 	
 	function setValue($value) {
 		if (is_array($value)) {
-			for ($i = 1; $i <= count($value); $i++)
+			for ($i = 0; $i < count($value); $i++)
 				$this->value[$i] = $value[$i];
 		}
 		else {
-			$this->value[1] = $value;
+			$this->value[0] = $value;
 		}
 	}
 }
@@ -1334,23 +1351,12 @@ Class BackgroundOffsetPercent extends VariableChannelsParameter {
 	function check() {
 		$value = $this->internalValue();
 		$result = True;
-		if ($value[1] == "auto")
+		if ($value[0] == "auto" || $value[0] == "object")
 			return True;
-		else if ($value[1] == "object")
-			return True;
-		for ($i = 1; $i <= $this->numberOfChannels; $i++) {
+		for ($i = 0; $i < $this->numberOfChannels; $i++) {
 			$result = $result && $this->checkValue($value[$i]);
 		}
 		return $result;
-	}
-	
-	function setValue($value) {
-		$args = $value;
-		if (is_array($value) && isset($value[0])) {
-			$args = $value[0];
-		}
-		$parent_class=get_parent_class($this);
-		call_user_func_array(array($parent_class, 'setValue'), $args);
 	}
 }
 

@@ -335,9 +335,10 @@ Class DatabaseConnection {
           continue;
       }
       if ($newValue{0}=='#') {
-        if ( strcmp( $parameterName, "ExcitationWavelength" ) != 0 &&
-          strcmp( $parameterName, "EmissionWavelength" ) != 0 &&
-          strcmp( $parameterName, "SignalNoiseRatio" ) != 0 ) {
+        if ( strcmp( $parameterName, "ExcitationWavelength" ) != 0 ||
+          strcmp( $parameterName, "EmissionWavelength" ) != 0 ||
+          strcmp( $parameterName, "SignalNoiseRatio" ||
+          strcmp( $parameterName, "BackgroundOffsetPercent" ) != 0) != 0 ) {
             $newValue = substr($newValue,1);
         }
         $newValue = explode("#", $newValue);

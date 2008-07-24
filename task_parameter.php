@@ -287,7 +287,7 @@ $value = $parameter->value();
 for ($i=0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
 
 ?>
-                        <span class="nowrap">Ch<?php echo $i+1 ?>:<span class="multichannel"><input name="SignalNoiseRatio<?php echo $i+1 ?>" type="text" size="8" value="<?php echo $value[$i+1] ?>" class="multichannelinput" /></span>&nbsp;</span>
+                        <span class="nowrap">Ch<?php echo $i ?>:<span class="multichannel"><input name="SignalNoiseRatio<?php echo $i ?>" type="text" size="8" value="<?php echo $value[$i] ?>" class="multichannelinput" /></span>&nbsp;</span>
 <?php
 
 }
@@ -323,7 +323,7 @@ if ($backgroundOffset[0] == "" || $backgroundOffset[0] == "auto") $flag = " chec
 <?php
 
 $flag = "";
-if ($backgroundOffset[1] == "object") $flag = " checked=\"checked\"";
+if ($backgroundOffset[0] == "object") $flag = " checked=\"checked\"";
 
 ?>
 
@@ -343,7 +343,7 @@ if ($backgroundOffset[0] != "" && $backgroundOffset[0] != "auto" && $backgroundO
 
 for ($i=0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
   $val = "";
-  if ($backgroundOffset[0] != "auto" && $backgroundOffset[0] != "object") $val = $backgroundOffset[$i+1];
+  if ($backgroundOffset[0] != "auto" && $backgroundOffset[0] != "object") $val = $backgroundOffset[$i];
 
 ?>
                         <span class="nowrap">Ch<?php echo $i ?>:<span class="multichannel"><input name="BackgroundOffsetPercent<?php echo $i ?>" type="text" size="8" value="<?php echo $val ?>" class="multichannelinput" /></span>&nbsp;</span>
