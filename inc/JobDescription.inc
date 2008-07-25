@@ -359,9 +359,9 @@ Class JobDescription {
         $newScript = $newScript . "# join\n";
         for($channel=0; $channel < $numberOfChannels; $channel++) {
             $newScript = $newScript . "set imageName$channel [ img open \"".$dst_files[$channel]. "." . $fileFormat ."\"]\n";
-            if ($channel > 0) {
+            if ($channel > 1) {
                 $newScript = $newScript . "c join \$imageName$channel -> c\n";
-            } else if ($channel == 0) {
+            } else if ($channel == 1) {
                 $newScript = $newScript . "\$imageName0 join \$imageName1 -> c\n";
             }
         }
