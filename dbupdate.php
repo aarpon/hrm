@@ -65,23 +65,33 @@ $last_version = 2;
 // Current data
 $current_date = date('l jS \of F Y h:i:s A');
 
+function write_message($msg) {
+    global $interface;
+    global $message;
+    if (isset($interface)) {
+        $message = "            <p class=\"warning\">".$msg."</p>\n";
+    }
+    else echo $msg."\n";
+}
 
 // Error file
 $error_file = "run/dbupdate_error.log";
-$efh = fopen($error_file, 'a') or die(); // If the file does not exist, it is created
+if (!($efh = @fopen($error_file, 'a'))) { // If the file does not exist, it is created
+    write_message("Can't open the dbupdate error file.");
+    return;
+}
 write_to_error($current_date . "\n");
 
 
 // Log file
 $log_file = "run/dbupdate.log";
-$fh = fopen($log_file, 'a');
-if(!$fh) {
-    $message = "Can't open the dbupdate log file.\n";
-    write_to_error($message);
-    die();
+if (!($fh = @fopen($log_file, 'a'))) {
+    write_message("Can't open the dbupdate log file.");
+    return;
 }
 write_to_log($current_date . "\n");
 
+//TODO: change $message to $msg
  
 // Connect to the database   
 $connection = ADONewConnection($db_type);
