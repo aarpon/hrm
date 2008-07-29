@@ -86,8 +86,11 @@ write_to_log($current_date . "\n");
 // Connect to the database   
 $connection = ADONewConnection($db_type);
 $result = $connection->Connect($db_host, $db_user, $db_password, $db_name_test); 
-if(!$result)
-    exit("Database connection failed.\n");   // OK cosi , poi ridirezione??
+if(!$result) {
+    $message = "An error occured in the connection with the database.\n";
+    write_to_error($message);
+    die();
+}
 
 
 // Read the database current version
@@ -125,8 +128,8 @@ else {
 }
 
 
-// Check existing database
-// -----------------------
+// Check existing database - check record by record
+// ------------------------------------------------
 
 // Check 'boundary_values'
 // -----------------------
@@ -202,18 +205,45 @@ check_table_existence($table_structure);
 check_records($table_content,$n_key);
 
 
-// Check 'geometry'
+// Check 'geometry'  -> here I'm working with the functions that test the table structure
 // ----------------
 $table = "geometry";
 $table_structure = "`name` VARCHAR( 30 ) NOT NULL DEFAULT '0',
                     `isThreeDimensional` ENUM( 't', 'f' ) NULL DEFAULT 'NULL' ,
                     `isTimeSeries` ENUM( 't', 'f' ) NULL DEFAULT 'NULL'";
-$table_content = array("name"=>array("'XYZ'","'XYZ - time'","'XY - time'"),
+// what "format" is better to use for the table structure description?
+$table_structure_new = array("name"=>array("VARCHAR(30)","NOT NULL","DEFAULT '0'"),
+                             "isThreeDimensional"=>array("ENUM( 't', 'f' )","NULL","DEFAULT '0'"),
+                             "isTimeSeries"=>array("ENUM( 't', 'f' )","NULL","DEFAULT 'NULL'"));
+$table_content = array("name"=>array("'XYZ'","'XYZ - time'","'XY - time'"), 
                        "isThreeDimensional"=>array("'t'","'t'","'f'"),
                        "isTimeSeries"=>array("'f'","'t'","'t'"));
 $n_key = 0;
-check_table_existence($table_structure);
-check_records($table_content,$n_key);
+$test = check_table_existence($table_structure);
+echo "test = " . $test . "\n";
+if($test) {
+echo "I was here 1\n";
+//    check_table_fields($table_structure_new); // to check! it does not work
+//    check_table_structure($table_structure_new);    // to finish!
+}
+echo "I was here 2\n";
+check_records($table_content,$n_key);   // to change!!
+
+//$query = "DESCRIBE " . $table;
+//$result = $connection->Execute($query);
+//echo "!!!!!!!!!!!!!!! result = " . $result . "\n";
+//$description = $result->GetRows(); 
+//echo "!!!!!!!!!!!!!!! n rows = " . count($description) . "\n";
+//for($l=0;$l<count($description);$l++) {
+//    echo "\nline " . $l . "\n";
+//    echo $description[$l][0] . "\n";
+//    echo $description[$l][1] . "\n";
+//    echo $description[$l][2] . "\n";
+//    echo $description[$l][3] . "\n";
+//    echo $description[$l][4] . "\n";
+//}
+
+
 
 
 // Check 'global_variables'
@@ -226,6 +256,7 @@ $table_content = array("variable"=>array("'dbversion'"),
 $n_key = 0;
 check_table_existence($table_structure);
 check_records($table_content,$n_key);
+
 
 
 // Check 'possible_values'
@@ -243,17 +274,35 @@ $table_content = array("parameter"=>array("'IsMultiChannel'","'IsMultiChannel'",
                                           "'MicroscopeType'","'MicroscopeType'","'MicroscopeType'","'MicroscopeType'",
                                           "'ObjectiveMagnification'","'ObjectiveMagnification'","'ObjectiveMagnification'","'ObjectiveMagnification'",
                                           "'ObjectiveType'","'ObjectiveType'","'ObjectiveType'",
-                                          "'SampleMedium'","'SampleMedium'"
-                                          ),
+                                          "'SampleMedium'","'SampleMedium'",
+                                          "'Binning'","'Binning'","'Binning'","'Binning'","'Binning'",
+                                          "'MicroscopeName'","'MicroscopeName'","'MicroscopeName'","'MicroscopeName'","'MicroscopeName'","'MicroscopeName'","'MicroscopeName'","'MicroscopeName'",
+                                          "'Resolution'","'Resolution'","'Resolution'","'Resolution'","'Resolution'",
+                                          "'RemoveNoiseEffectiveness'","'RemoveNoiseEffectiveness'","'RemoveNoiseEffectiveness'",
+                                          "'OutputFileFormat'","'OutputFileFormat'","'OutputFileFormat'","'OutputFileFormat'","'OutputFileFormat'",
+                                          "'ObjectiveMagnification'","'ObjectiveMagnification'",
+                                          "'PointSpreadFunction'","'PointSpreadFunction'",
+                                          "'HasAdaptedValues'","'HasAdaptedValues'",
+                                          "'ImageFileFormat'","'ImageFileFormat'","'ImageFileFormat'","'ImageFileFormat'","'ImageFileFormat'",
+                                          "'ObjectiveType'"),
                        "value"=>array("'True'","'False'",
                                       "'dv'","'stk'","'tiff-series'","'tiff-single'","'ims'","'lsm'","'lsm-single'","'pic'",
-                                      "1","2","3","4",
+                                      "'1'","'2'","'3'","'4'",
                                       "'XYZ'","'XY - time'","'XYZ - time'",
                                       "'widefield'","'multipoint confocal (spinning disk)'","'single point confocal'","'two photon '",
                                       "'10'","'20'","'25'","'40'",
                                       "'oil'","'water'","'air'",
-                                      "'water / buffer'","'liquid vectashield / 90-10 (v:v) glycerol - PBS ph 7.4'"
-                                      ),
+                                      "'water / buffer'","'liquid vectashield / 90-10 (v:v) glycerol - PBS ph 7.4'",
+                                      "'1'","'2'","'3'","'4'","'5'",
+                                      "'Zeiss 510'","'Zeiss 410'","'Zeiss Two Photon 1'","'Zeiss Two Photon 2'","'Leica DMRA'","'Leica DMRB'","'Leica Two Photon 1'","'Leica Two Photon 2'",
+                                      "'128'","'256'","'512'","'1024'","'2048'",
+                                      "'1'","'2'","'3'",
+                                      "'TIFF 8-bit'","'TIFF 16-bit'","'IMS (Imaris Classic)'","'ICS (Image Cytometry Standard)'","'OME-XML'",
+                                      "'63'","'100'",
+                                      "'theoretical'","'measured'",
+                                      "'True'","'False'",
+                                      "'ome-xml'","'tiff'","'lif'","'tiff-leica'","'ics'",
+                                      "'glycerol'"),
                        "translation"=>array("''","''",
                                             "'Delta Vision (*.dv)'","'Metamorph (*.stk)'","'Numbered TIFF series (*.tif, *.tiff)'","'TIFF (*.tif, *.tiff) single XY plane'","'Imaris Classic (*.ims)'","'Zeiss (*.lsm)'","'Zeiss (*.lsm) single XY plane'","'Biorad (*.pic)'",
                                             "''","''","''","''",
@@ -261,16 +310,35 @@ $table_content = array("parameter"=>array("'IsMultiChannel'","'IsMultiChannel'",
                                             "'widefield'","'nipkow'","'confocal'","'widefield'",
                                             "''","''","''","''",
                                             "'1.515'","'1.3381'","'1.0'",
-                                            "'1.339 '","'1.47'"
-                                            ),
-                       "isDafault"=>array("'f'","'f'",
+                                            "'1.339 '","'1.47'",
+                                            "''","''","''","''","''",
+                                            "''","''","''","''","''","''","''","''",
+                                            "''","''","''","''","''",
+                                            "''","''","''",
+                                            "'tiff'","'tiff16'","'imaris'","'ics'","'ome'",
+                                            "''","''",
+                                            "''","''",
+                                            "''","''",
+                                            "'OME-XML (*.ome)'","'Olympus TIFF (*.tif, *.tiff)'","'Leica (*.lif)'","'Leica TIFF series (*.tif, *.tiff)'","'Image Cytometry Standard (*.ics/*.ids)'",
+                                            "'1.4729'"),
+                       "isDefault"=>array("'f'","'f'",
                                           "'f'","'f'","'f'","'f'","'f'","'f'","'f'","'f'",
                                           "'f'","'f'","'f'","'f'",
                                           "'f'","'f'","'f'",
                                           "'f'","'f'","'f'","'f'",
                                           "'f'","'f'","'f'","'f'",
-                                          "'f'","'f'","'f'"
-                                          ),
+                                          "'f'","'f'","'f'",
+                                          "'f'","'f'", 
+                                          "'f'","'f'","'f'","'f'","'f'",
+                                          "'f'","'f'","'f'","'f'","'f'","'f'","'f'","'f'",
+                                          "'f'","'f'","'f'","'f'","'f'",
+                                          "'f'","'f'","'f'",
+                                          "'f'","'f'","'t'","'f'","'f'",
+                                          "'f'","'f'",
+                                          "'f'","'f'",
+                                          "'f'","'f'",
+                                          "'f'","'f'","'f'","'f'","'f'",
+                                          "'f'"),
                        "parameter_key"=>array("'IsMultiChannel1'","'IsMultiChannel2'",
                                               "'ImageFileFormat1'","'ImageFileFormat2'","'ImageFileFormat3'","'ImageFileFormat4'","'ImageFileFormat5'","'ImageFileFormat6'","'ImageFileFormat7'","'ImageFileFormat8'",
                                               "'NumberOfChannels1'","'NumberOfChannels2'","'NumberOfChannels3'","'NumberOfChannels4'",
@@ -278,30 +346,56 @@ $table_content = array("parameter"=>array("'IsMultiChannel'","'IsMultiChannel'",
                                               "'MicroscopeType1'","'MicroscopeType2'","'MicroscopeType3'","'MicroscopeType4'",
                                               "'ObjectiveMagnification1'","'ObjectiveMagnification2'","'ObjectiveMagnification3'","'ObjectiveMagnification4'",
                                               "'ObjectiveType1'","'ObjectiveType2'","'ObjectiveType3'",
-                                              "'SampleMedium1'","'SampleMedium2'"
-                                              ));
+                                              "'SampleMedium1'","'SampleMedium2'",
+                                              "'Binning1'","'Binning2'","'Binning3'","'Binning4'","'Binning5'",
+                                              "'MicroscopeName1'","'MicroscopeName2'","'MicroscopeName3'","'MicroscopeName4'","'MicroscopeName5'","'MicroscopeName6'","'MicroscopeName7'","'MicroscopeName8'",
+                                              "'Resolution1'","'Resolution2'","'Resolution3'","'Resolution4'","'Resolution5'",
+                                              "'RemoveNoiseEffectiveness1'","'RemoveNoiseEffectiveness2'","'RemoveNoiseEffectiveness3'",
+                                              "'OutputFileFormat1'","'OutputFileFormat2'","'OutputFileFormat3'","'OutputFileFormat4'","'OutputFileFormat5'",
+                                              "'ObjectiveMagnification1'","'ObjectiveMagnification2'",
+                                              "'PointSpreadFunction1'","'PointSpreadFunction2'",
+                                              "'HasAdaptedValues1'","'HasAdaptedValues2'",
+                                              "'ImageFileFormat1'","'ImageFileFormat2'","'ImageFileFormat3'","'ImageFileFormat4'","'ImageFileFormat5'",
+                                              "'ObjectiveType'"));
 $n_key = 4;
-//if($current_version == 1) { // it is necessary to create a column that works as a key
-//    $query = "SELECT * FROM ". $table;  // check if the table exist   
-//    $result = $connection->Execute($query);
-//    if($result) {     
-//        $query = "DROP TABLE ". $table; // delete the table
-//        $test = $connection->Execute($query);
-//        if(!$test) {
-//            $message = error_message($table);
-//            write_to_error($message);
-//            die();
-//        }
-//        $message = "The table possible_values need a ribuild, therefore it has been deleted.\n";
-//        write_to_log($message);
+if($current_version == 1) { // it is necessary to create a column that works as a key
+    $query = "SELECT * FROM ". $table;  // check if the table exist   
+    $result = $connection->Execute($query);
+    if($result) {     
+        $query = "DROP TABLE ". $table; // delete the table
+        $test = $connection->Execute($query);
+        if(!$test) {
+            $message = error_message($table);
+            write_to_error($message);
+            die();
+        }
+        $message = "The table possible_values need a ribuild, therefore it has been deleted.\n";
+        write_to_log($message);
+    }
+}
+check_table_existence($table_structure);
+check_records($table_content,$n_key);
+
+
+
+// Check existing database - check table structure only
+// ----------------------------------------------------
+
+// Check 'possible_values'
+// -----------------------
+$table = "job_files";
+$table_structure = "`job` VARCHAR( 30 ) NULL DEFAULT '0',
+                    `owner` VARCHAR( 30 ) NULL DEFAULT '0',
+                    `file` VARCHAR( 255 ) NULL DEFAULT '0'";
+check_table_existence($table_structure);
+
+
+
+
+//if(!$out) {
+//    if(isset($interface)) {
 //    }
 //}
-//check_table_existence($table_structure);
-//check_records($table_content,$n_key);
-
-
-
-
 
 
 
@@ -312,6 +406,14 @@ fclose($fh);
 echo "current version = " . $current_version . "\n";
 echo "last version = " . $last_version . "\n";
 //
+
+
+
+//Update possivle_values!!!! (dbversion 2)
+//
+//DeconvolutionAlgorithm 	qmle 	Quick Maximum Likelihood Estimation 	f
+//DeconvolutionAlgorithm 	cmle 	Classic Maximum Likelihood Estimation 	f
+//OutputFileFormat 	ICS2 (Image Cytometry Standard 2) 	ics2 	f
 
 
 
@@ -367,12 +469,76 @@ function check_table_existence($var) {
         }
 echo "the table " . $table . " has been created\n";
         $message = "The table '" . $table . "' has been created in the database.\n";
-        $control = 'false';
+        $out = "false";
     }
     else {
         $message = "The table '" . $table . "' exists.\n";
+        $out = "true";
     }
     write_to_log($message);
+    return($out);
+}
+
+
+// Check the existence of the single fields
+function check_table_fields($var) {
+    global $table, $connection;
+    
+    $keys = array_keys($var);
+    
+    $query = "DESCRIBE " . $table;
+    $result = $connection->Execute($query);
+    $description = $result->GetRows();
+    
+    for($i=0; $i<count($keys); $i++) {
+        // Check the existence of the field
+echo "keys[" . $i . "] = " . $keys[$i] . "\n";
+echo "in_array result = " . in_array($keys[$i],$description) . "\n";
+        if(!in_array($keys[$i],$description)){
+            $query = "ALTER TABLE '" . $table . "' ADD '" . $keys[$i] .
+                     "' " . $var[$keys[$i]][0] . " " . $var[$keys[$i]][1] . " " . $var[$keys[$i]][2];
+            $result = $connection->Execute($query);
+echo "query = " . $query . "\n";
+echo "result = " . $result . "\n";
+            if(!$result) {
+                $message = error_message($table);
+                write_to_error($message);
+                die();
+            }
+            else{
+                $message = "The field " . $keys[$i] . " has been inserted into the table " . $table . "\n";
+                write_to_log($message);
+echo $message;
+            }
+        }
+    }
+    return;
+}
+
+
+// Check the structure of the table $table
+function check_table_structure($tale_structure_new) { // to finish!!!!!!!!!
+    global $table, $connection;
+    
+    $keys = array_keys($table_structure);
+    
+    $query = "DESCRIBE " . $table;
+    $result = $connection->Execute($query);
+    $description = $result->GetRows();
+    
+    // Rebuild $description in such a way that it can be compared with $table_structure
+    $adapted_description = $description;
+    for($i=0; $i<count($description); $i++) {
+        if (strcmp($adapted_description[$i][2],"YES") == 0)
+            $adapted_description[$i][2] = "NULL";
+        else
+            $adapted_description[$i][2] = "NOT NULL";
+        if(strcmp($adapted_description[$i][4],"") == 0)
+            $adapted_description[$i][4] = "DEFAULT 'NULL'";
+        else 
+            $adapted_description[$i][4] = "DEFAULT '" . $adapted_description[$i][4] . "'";
+    }
+    
     return;
 }
 
@@ -412,6 +578,7 @@ echo "rows number = " . count($rows) . "\n";
             $query .= ")";
             $message = "\tThe record ". $var[$keys[$n_key]][$i] ." has been inserted into the table " . $table . ".\n";
 echo "The record ". $var[$keys[$n_key]][$i] ." has been inserted into the table " . $table . ".\n";
+echo "query = " . $query . "\n";
         }
         
         else {
