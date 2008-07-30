@@ -97,9 +97,13 @@ include("changelog");
         <div id="info">
         
             <p>
-                This page allows you to check and update the database using a
-                patch script release downloaded from the project website
-                (<a href="http://sourceforge.net/projects/hrm">http://sourceforge.net/projects/hrm</a>).
+                This page allows you to verify and patch the database after an
+                update to a new release. The interface might not function
+                properly until you do so.
+            </p>
+            
+            <p>
+                New HRM releases are available from the project <a href="javascript:openWindow('http://sourceforge.net/projects/hrm')">website</a>.
             </p>
             
             <form method="GET" action="" id="dbupdate">
