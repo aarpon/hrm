@@ -461,38 +461,31 @@ Class JobDescription {
     }
     // ... and for task setting
     // save original RemoveBackgroundPercent and BackgroundOffsetPercent
+    //WARNING do not confuse REMOVEBackgroundPercent and BackgroundOffsetPercent
     $taskSetting = $this->taskSetting;
     $numberOfChannels = $taskSetting->numberOfChannels();
     $removeBackgroundPercent = $taskSetting->parameter('RemoveBackgroundPercent');
     $val = $removeBackgroundPercent->internalValue();
     $originalRemoveBackgroundPercentValue = array();
+    //TODO remove RemoveBackgroundPercent
     for ($i = 0; $i < $numberOfChannels; $i++) {
-      if ($val[0] == "auto") {
-        $originalRemoveBackgroundPercentValue[$i] = "auto";
-      }
-      else {
-        $originalRemoveBackgroundPercentValue[$i] = $val[$i];
-      }
-      //error_log("GENERATING SCRIPT (JobDescription): remove background percent -> ".$originalRemoveBackgroundPercentValue[$i]." [".$i."]");
+      $originalRemoveBackgroundPercentValue[$i] = $val[$i];
     }
+    //error_log("GENERATING SCRIPT (JobDescription): remove background percent -> ".$originalRemoveBackgroundPercentValue[$i]." [".$i."]");
     $backgroundOffsetPercent = $taskSetting->parameter('BackgroundOffsetPercent');
-    $val = $backgroundOffsetPercent->internalValue();
-    $originalBackgroundOffsetPercentValue = array();
-    for ($i = 0; $i < $numberOfChannels; $i++) {
-      if ($val[0] == "auto") {
-        $originalBackgroundOffsetPercentValue[$i] = "auto";
-      }
-      else {
-        $originalBackgroundOffsetPercentValue[$i] = $val[$i];
-      }
-      //error_log("GENERATING SCRIPT (JobDescription): background offset percent -> ".$originalBackgroundOffsetPercentValue[$i]." [".$i."]");
-    }
+    //$val = $backgroundOffsetPercent->internalValue();
+    //$originalBackgroundOffsetPercentValue = array();
+    $originalBackgroundOffsetPercentValue = $backgroundOffsetPercent->internalValue();
+    //for ($i = 0; $i < $numberOfChannels; $i++) {
+    //  $originalBackgroundOffsetPercentValue[] = $val[$i];
+    //}
     // make single channel setting for current channel
     $newRemoveBackgroundPercent = $taskSetting->parameter('RemoveBackgroundPercent');
     // DEBUG
     //$value = $newRemoveBackgroundPercent->value();
     $newRemoveBackgroundPercent->setValue($originalRemoveBackgroundPercentValue[$channel]);
     $taskSetting->set($newRemoveBackgroundPercent);
+    // Backgriund Offset Percent
     $newBackgroundOffsetPercent = $taskSetting->parameter('BackgroundOffsetPercent');
     // DEBUG
     //$value = $newBackgroundOffsetPercent->value();
