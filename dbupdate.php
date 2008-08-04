@@ -54,56 +54,284 @@ include "inc/hrm_config.inc";
 include "inc/reservation_config.inc";
 include $adodb;
 
-global $message;
+// From update.php
 global $interface;
+global $message;
+
+// For test purposes
+$db_name = "hrm-test";
+
+// Current database revision
+$current_revision = 2;
 
 
-// Temporary part
-$db_name_test = "hrm-test";
+// -----------------------------------------------------------------------------
+// Utility functions
+// -----------------------------------------------------------------------------
 
-
-// Last database version
-$last_version = 2;
-
-
-// Current data
-$current_date = date('l jS \of F Y h:i:s A');
-
-
-// Error file
-$error_file = "run/dbupdate_error.log";
-if (!($efh = @fopen($error_file, 'a'))) { // If the file does not exist, it is created
-    write_message("Can't open the dbupdate error file."); // If the file does not exist and cannot be created, an error message is displayed in the html page
-    return;
+// Returns a timestamp
+function timestamp() {
+    return date('l jS \of F Y h:i:s A');
 }
-write_to_error($current_date . "\n");
+
+// Return an error message
+function error_message($table) {
+    return "An error occured while updating table " . $table . ".";
+}
+
+// Write a message in the log file
+function write_to_log($msg) {
+    global $fh;
+    fwrite($fh, timestamp() . " " . $msg . "\n"); 
+}
+
+// Write a message in the error log file
+function write_to_error($msg) {
+    global $efh;
+    fwrite($efh, timestamp() . " " . $msg . "\n"); 
+}
+
+// Write a message to the standard output
+function write_message($msg) {
+    global $interface;
+    global $message;
+    if (isset($interface)) {
+        $message = "            <p class=\"warning\">" . $msg . "</p>\n";
+    }
+    else echo $msg."\n";
+}
 
 
-// Log file
+// -----------------------------------------------------------------------------
+// Query functions
+// -----------------------------------------------------------------------------
+
+// Search a value into a multidimensional array. Return true if the value has been found, false otherwise
+function in_array_multi($needle,$haystack) {
+    $found = false;
+    foreach($haystack as $value) {
+        if((is_array($value) && in_array_multi($needle,$value)) || $value == $needle) {
+            $found = true;
+        }
+    }
+    return $found;
+}
+
+// From the associative array that describe the table structure, create a string for the query
+function create_string_for_update($key,$table_structure) {
+    $string = "`" . $key . "`";
+    for($i=0; $i<count($table_structure[$key]); $i++) {
+        $string .= " " . $table_structure[$key][$i];
+    }
+    return $string;
+}
+
+// Check if the table $table exists; if not, create the table
+function check_table_existence($var,$table_existance) {
+echo "Enter into check_table_existence\n";
+    global $table, $connection;
+
+    $query = "SELECT * FROM ". $table;   
+    $result = $connection->Execute($query);
+    
+    if(!$result) {  // the table does not exist
+        $table_existance = false;
+        
+        $keys = array_keys($var);
+        $n_fields = count($keys);
+        $n_attributes = count($var[$keys[0]]);
+        
+        $query = "CREATE TABLE `" . $table . "` (";
+        
+        for($i=0; $i<$n_fields; $i++) {
+            $query .= " " . create_string_for_update($keys[$i],$var);
+            if($i!=($n_fields-1)) {
+                $query .= ",";
+            }
+            
+        }
+        
+        $query .= ")";
+ 
+echo "query for check table existance = " . $query . "\n";
+
+        $test = $connection->Execute($query);
+        
+echo "test = " . $test . "\n";
+        if(!$test) {
+            $msg = error_message($table);
+            write_to_error($msg);
+            return false;
+        }
+        $msg = "\nThe table '" . $table . "' has been created in the database\n";
+    }
+    else {
+        $msg = "\nThe table '" . $table . "' exists\n";
+    }
+    write_to_log($msg);
+    return true;
+}
+
+// Check the existence and the structure of the single fields
+function check_table_fields($var) {
+echo "Enter into check_table_fields\n";
+    global $table, $connection;
+    
+    $keys = array_keys($var);
+    
+    $query = "DESCRIBE " . $table;
+    $result = $connection->Execute($query);
+    $description = $result->GetRows();
+    
+    for($i=0; $i<count($keys); $i++) {  // Loop through all the fileds
+        
+        // Check the existence of the single field
+        if(!in_array_multi($keys[$i],$description)){    // if the field does not exist, it is created
+            $query = "ALTER TABLE `" . $table . "` ADD `" . $keys[$i] .
+                     "` " . $var[$keys[$i]][0] . " " . $var[$keys[$i]][1] . " " . $var[$keys[$i]][2];
+            $result = $connection->Execute($query);
+            if(!$result) {
+                $msg = error_message($table);
+                write_to_error($msg);
+                return false;
+            }
+            else{
+                write_to_log("\tThe field '" . $keys[$i] . "' has been inserted into the table '" . $table . "'\n");
+            }
+        }
+        
+        else {  // if the field exists, its attributes are checked
+            
+            // Find the position of $keys[i]in the $description 2d array
+            for($j=0; $j<count($description); $j++) {
+                if($description[$j][0] == $keys[$i]) {
+                    $index = $j;
+                    break;
+                }
+            }
+
+            // Extract an array from $description, suited to the comparison
+            $test1 = array($description[$index][1],"","");
+            if($description[$index][2] == "YES") 
+                $test1[1] = "NULL";
+            else
+                $test1[1] = "NOT NULL";
+            if($description[$index][4] == "") 
+                $test1[2] = "DEFAULT NULL";
+            else
+                $test1[2] = "DEFAULT '" . $description[$index][4] . "'";
+                
+            $test2 = array($var[$keys[$i]]);
+            
+            if(!in_array($test1,$test2)) {
+                $string = create_string_for_update($keys[$i],$var);
+                $query = "ALTER TABLE `" . $table . "` CHANGE `" . $description[$index][0] . "` " . $string;
+                $result = $connection->Execute($query);
+                if(!$result) {
+                $msg = error_message($table);
+                write_to_error($msg);
+                return false;
+                }
+                write_to_log("\tThe field '" . $keys[$i] . "' in the table '" . $table . "' has been rebuild\n");
+            }
+            else{
+                write_to_log("\tThe field '" . $keys[$i] . "' in the table '" . $table . "' has been checked\n");
+            }
+        }
+    }
+    return true;
+}
+
+// Check table content: for a table of fix content, it empty the table and refill it
+function check_table_content($var) {
+echo "Enter into check_table_content\n";
+    global $connection, $table;
+    
+    // Empty the table
+    $query =  "TRUNCATE TABLE " . $table;
+    $result = $connection->Execute($query);
+echo "truncate table, result = " . $result . "\n";
+    if(!$result) {
+        $msg = error_message($table);
+        write_to_error($msg);
+        return false;
+    }
+    
+    $keys = array_keys($var);
+    $n_columns = count($keys);
+    $n_rows = count($var[$keys[0]]);
+    
+echo "n columns = " . $n_columns . "\n";
+echo "n rows = " . $n_rows . "\n";
+    
+    for($i = 0; $i < $n_rows; $i++) {    // rebuild all the records (rows) of the table
+        $query = "INSERT INTO " . $table . " (" . $keys[0];
+        
+        for($j = 1; $j < $n_columns; $j++) {
+            $query .= ", " . $keys[$j]; 
+        }
+        
+        $query .= ") VALUES (" . $var[$keys[0]][$i];
+        
+        for($j = 1; $j < $n_columns; $j++) {
+            $query .= ", " . $var[$keys[$j]][$i];
+        }
+        
+        $query .= ")";
+        
+echo "query = " . $query . "\n";
+        
+        $result = $connection->Execute($query);
+
+echo "result for insert field = " . $result . "\n";        
+
+        if(!$result) {
+            $msg = error_message($table);
+            write_to_error($msg);
+            return false;
+        }
+        
+        write_to_log("\tThe record ". $var[$keys[0]][$i] ." in the table '" . $table . "' hes been checked\n");
+    }
+    
+    return true;
+}
+
+
+// -----------------------------------------------------------------------------
+// Script
+// -----------------------------------------------------------------------------
+
+//TODO: change $message to $msg and die() to return
+//TODO: add conditions for the comparison table_structure - result of DESCRIBE (problems when an attribute is not define)
+//NOTE: this rutine is not robust if the name of a field (column) of a table has been modified
+
+// Open log file
 $log_file = "run/dbupdate.log";
 if (!($fh = @fopen($log_file, 'a'))) {
     write_message("Can't open the dbupdate log file.");
     return;
 }
-write_to_log($current_date . "\n");
+write_to_log("");
 
-
-//TODO: change $message to $msg and die() to return
-//TODO: add conditions for the comparison table_structure - result of DESCRIBE (problems when an attribute is not define)
-//NOTE: this rutine is not robust if the name of a field (column) of a table has been modified
+// Open error log file
+$error_file = "run/dbupdate_error.log";
+if (!($efh = @fopen($error_file, 'a'))) { // If the file does not exist, it is created
+    write_message("Can't open the dbupdate error log file."); // If the file does not exist and cannot be created, an error message is displayed
+    return;
+}
+write_to_error("");
  
- 
-// Connect to the database   
-$connection = ADONewConnection($db_type);
-$result = $connection->Connect($db_host, $db_user, $db_password, $db_name_test); 
-if(!$result) {
+// Connect to the database
+$dsn = $db_type."://".$db_user.":".$db_password."@".$db_host."/".$db_name;
+$connection = ADONewConnection($dsn); 
+if(!$connection) {
     write_message("Can't connect to the database.");
-    write_to_error("An error occured in the connection with the database.\n");
+    write_to_error("An error occured while connecting to the database.");
     return;
 }
 
-
-// Read the database current version
+// Read the current database revision
 $query = "SELECT * FROM global_variables";  // Check if the table global_variables exists
 $result = $connection->Execute($query);
 if(!$result) {  // If the table does not exist, create it
@@ -420,254 +648,5 @@ echo "last version = " . $last_version . "\n";
 //DeconvolutionAlgorithm 	qmle 	Quick Maximum Likelihood Estimation 	f
 //DeconvolutionAlgorithm 	cmle 	Classic Maximum Likelihood Estimation 	f
 //OutputFileFormat 	ICS2 (Image Cytometry Standard 2) 	ics2 	f
-
-
-
-
-
-
-
-
-
-
-
-
-// Methods
-// -------
-
-// Return an error message
-function error_message($table) {
-    $string = "An error occured in the update of the table " . $table . ".\n";
-    return($string);
-}
-
-
-// Write a message in the log file
-function write_to_log($message) {
-    global $fh;
-    fwrite($fh, $message); 
-    return;
-}
-
-
-// Write a message in the error file
-function write_to_error($message) {
-    global $efh;
-    fwrite($efh, $message); 
-    return;
-}
-
-
-// Write a message in the html page
-function write_message($msg) {
-    global $interface;
-    global $message;
-    if (isset($interface)) {
-        $message = "            <p class=\"warning\">".$msg."</p>\n";
-    }
-    else echo $msg."\n";
-}
-
-
-// Search a value into a multidimensional array. Return true if the value has been found, false otherwise
-function in_array_multi($needle,$haystack) {
-    $found = false;
-    foreach($haystack as $value) {
-        if((is_array($value) && in_array_multi($needle,$value)) || $value == $needle) {
-            $found = true;
-        }
-    }
-    return $found;
-}
-
-
-// From the associative array that describe the table structure, create a string for the query
-function create_string_for_update($key,$table_structure) {
-    $string = "`" . $key . "`";
-    for($i=0; $i<count($table_structure[$key]); $i++) {
-        $string .= " " . $table_structure[$key][$i];
-    }
-    return $string;
-}
-
-//------------------------------------------------------------------------------
-
-// Check if the table $table exists; if not, create the table
-function check_table_existence($var,$table_existance) {
-echo "Enter into check_table_existence\n";
-    global $table, $connection;
-
-    $query = "SELECT * FROM ". $table;   
-    $result = $connection->Execute($query);
-    
-    if(!$result) {  // the table does not exist
-        $table_existance = false;
-        
-        $keys = array_keys($var);
-        $n_fields = count($keys);
-        $n_attributes = count($var[$keys[0]]);
-        
-        $query = "CREATE TABLE `" . $table . "` (";
-        
-        for($i=0; $i<$n_fields; $i++) {
-            $query .= " " . create_string_for_update($keys[$i],$var);
-            if($i!=($n_fields-1)) {
-                $query .= ",";
-            }
-            
-        }
-        
-        $query .= ")";
- 
-echo "query for check table existance = " . $query . "\n";
-
-        $test = $connection->Execute($query);
-        
-echo "test = " . $test . "\n";
-        if(!$test) {
-            $msg = error_message($table);
-            write_to_error($msg);
-            return false;
-        }
-        $msg = "\nThe table '" . $table . "' has been created in the database\n";
-    }
-    else {
-        $msg = "\nThe table '" . $table . "' exists\n";
-    }
-    write_to_log($msg);
-    return true;
-}
-
-
-// Check the existence and the structure of the single fields
-function check_table_fields($var) {
-echo "Enter into check_table_fields\n";
-    global $table, $connection;
-    
-    $keys = array_keys($var);
-    
-    $query = "DESCRIBE " . $table;
-    $result = $connection->Execute($query);
-    $description = $result->GetRows();
-    
-    for($i=0; $i<count($keys); $i++) {  // Loop through all the fileds
-        
-        // Check the existence of the single field
-        if(!in_array_multi($keys[$i],$description)){    // if the field does not exist, it is created
-            $query = "ALTER TABLE `" . $table . "` ADD `" . $keys[$i] .
-                     "` " . $var[$keys[$i]][0] . " " . $var[$keys[$i]][1] . " " . $var[$keys[$i]][2];
-            $result = $connection->Execute($query);
-            if(!$result) {
-                $msg = error_message($table);
-                write_to_error($msg);
-                return false;
-            }
-            else{
-                write_to_log("\tThe field '" . $keys[$i] . "' has been inserted into the table '" . $table . "'\n");
-            }
-        }
-        
-        else {  // if the field exists, its attributes are checked
-            
-            // Find the position of $keys[i]in the $description 2d array
-            for($j=0; $j<count($description); $j++) {
-                if($description[$j][0] == $keys[$i]) {
-                    $index = $j;
-                    break;
-                }
-            }
-
-            // Extract an array from $description, suited to the comparison
-            $test1 = array($description[$index][1],"","");
-            if($description[$index][2] == "YES") 
-                $test1[1] = "NULL";
-            else
-                $test1[1] = "NOT NULL";
-            if($description[$index][4] == "") 
-                $test1[2] = "DEFAULT NULL";
-            else
-                $test1[2] = "DEFAULT '" . $description[$index][4] . "'";
-                
-            $test2 = array($var[$keys[$i]]);
-            
-            if(!in_array($test1,$test2)) {
-                $string = create_string_for_update($keys[$i],$var);
-                $query = "ALTER TABLE `" . $table . "` CHANGE `" . $description[$index][0] . "` " . $string;
-                $result = $connection->Execute($query);
-                if(!$result) {
-                $msg = error_message($table);
-                write_to_error($msg);
-                return false;
-                }
-                write_to_log("\tThe field '" . $keys[$i] . "' in the table '" . $table . "' has been rebuild\n");
-            }
-            else{
-                write_to_log("\tThe field '" . $keys[$i] . "' in the table '" . $table . "' has been checked\n");
-            }
-        }
-    }
-    return true;
-}
-
-
-// Check table content: for a table of fix content, it empty the table and refill it
-function check_table_content($var) {
-echo "Enter into check_table_content\n";
-    global $connection, $table;
-    
-    // Empty the table
-    $query =  "TRUNCATE TABLE " . $table;
-    $result = $connection->Execute($query);
-echo "truncate table, result = " . $result . "\n";
-    if(!$result) {
-        $msg = error_message($table);
-        write_to_error($msg);
-        return false;
-    }
-    
-    $keys = array_keys($var);
-    $n_columns = count($keys);
-    $n_rows = count($var[$keys[0]]);
-    
-echo "n columns = " . $n_columns . "\n";
-echo "n rows = " . $n_rows . "\n";
-    
-    for($i = 0; $i < $n_rows; $i++) {    // rebuild all the records (rows) of the table
-        $query = "INSERT INTO " . $table . " (" . $keys[0];
-        
-        for($j = 1; $j < $n_columns; $j++) {
-            $query .= ", " . $keys[$j]; 
-        }
-        
-        $query .= ") VALUES (" . $var[$keys[0]][$i];
-        
-        for($j = 1; $j < $n_columns; $j++) {
-            $query .= ", " . $var[$keys[$j]][$i];
-        }
-        
-        $query .= ")";
-        
-echo "query = " . $query . "\n";
-        
-        $result = $connection->Execute($query);
-
-echo "result for insert field = " . $result . "\n";        
-
-        if(!$result) {
-            $msg = error_message($table);
-            write_to_error($msg);
-            return false;
-        }
-        
-        write_to_log("\tThe record ". $var[$keys[0]][$i] ." in the table '" . $table . "' hes been checked\n");
-    }
-    
-    return true;
-}
-
-
-
-
-
 
 ?>
