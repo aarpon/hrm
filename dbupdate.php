@@ -55,28 +55,26 @@ include "inc/reservation_config.inc";
 include $adodb;
 
 // From update.php
-global $interface;
-global $message;
+//global $interface;
+//global $message;
+
+// Latest database revision
+$LATEST_REVISION = 2;
+
+// Current database revision
+$current_revision = 0;
 
 // For test purposes
 $db_name = "hrm-test";
 
-// Current database revision
-$current_revision = 2;
 
-
-// -----------------------------------------------------------------------------
+// =============================================================================
 // Utility functions
-// -----------------------------------------------------------------------------
+// =============================================================================
 
 // Returns a timestamp
 function timestamp() {
     return date('l jS \of F Y h:i:s A');
-}
-
-// Return an error message
-function error_message($table) {
-    return "An error occured while updating table " . $table . ".";
 }
 
 // Write a message in the log file
@@ -93,18 +91,41 @@ function write_to_error($msg) {
 
 // Write a message to the standard output
 function write_message($msg) {
-    global $interface;
-    global $message;
+    //global $interface;
+    //global $message;
     if (isset($interface)) {
         $message = "            <p class=\"warning\">" . $msg . "</p>\n";
     }
     else echo $msg."\n";
 }
 
+// Return an error message
+function error_message($table) {
+    return "An error occured while updating table " . $table . ".";
+}
 
-// -----------------------------------------------------------------------------
+
+// =============================================================================
 // Query functions
-// -----------------------------------------------------------------------------
+// =============================================================================
+
+// Create a table with the specified name and fields
+function create_table($name, $fields) {
+    global $datadict;
+    $sqlarray = $datadict->CreateTableSQL($name, $fields);
+    foreach ($sqlarray as $str) {
+        echo $str."\n";
+    }
+    $rs = $datadict->ExecuteSQLArray($sqlarray);
+    if(!$rs) {
+       $msg = error_message($name);
+       write_message($msg);
+       write_to_error($msg);
+       return False;
+    }
+    write_to_log("Table " . $name . " has been created.");
+    return True;
+}
 
 // Search a value into a multidimensional array. Return true if the value has been found, false otherwise
 function in_array_multi($needle,$haystack) {
@@ -298,13 +319,18 @@ echo "result for insert field = " . $result . "\n";
 }
 
 
-// -----------------------------------------------------------------------------
+// =============================================================================
 // Script
-// -----------------------------------------------------------------------------
+// =============================================================================
 
 //TODO: change $message to $msg and die() to return
 //TODO: add conditions for the comparison table_structure - result of DESCRIBE (problems when an attribute is not define)
 //NOTE: this rutine is not robust if the name of a field (column) of a table has been modified
+
+
+// -----------------------------------------------------------------------------
+// Initialization
+// -----------------------------------------------------------------------------
 
 // Open log file
 $log_file = "run/dbupdate.log";
@@ -324,53 +350,78 @@ write_to_error("");
  
 // Connect to the database
 $dsn = $db_type."://".$db_user.":".$db_password."@".$db_host."/".$db_name;
-$connection = ADONewConnection($dsn); 
-if(!$connection) {
+$db = ADONewConnection($dsn); 
+if(!$db) {
     write_message("Can't connect to the database.");
     write_to_error("An error occured while connecting to the database.");
     return;
 }
 
+// Construct a data dictionary to automate the creation of tables
+$datadict = NewDataDictionary($db, $db_type);
+
+// Extract the list of available tables
+$tables = $db->MetaTables("TABLES");
+
+
+// -----------------------------------------------------------------------------
 // Read the current database revision
-$query = "SELECT * FROM global_variables";  // Check if the table global_variables exists
-$result = $connection->Execute($query);
-if(!$result) {  // If the table does not exist, create it
-    $query = "CREATE TABLE `global_variables` (`variable` varchar(30) NOT NULL,
-                                                `value` varchar(30) NOT NULL DEFAULT 0)";
-    $test = $connection->Execute($query);
-    if(!$test) {
-       $msg = error_message("global_variables");
-       write_to_error($msg);
-       write_message($msg);
-       return;
-    }
-    write_to_log("The table global_variables has been created\n");
+// -----------------------------------------------------------------------------
+
+// Check if table global_variables exists
+if (!in_array("global_variables", $tables)) {
+    // If the table does not exist, create it
+    $flds = "
+        name C(30) KEY,
+        value C(30) NOTNULL
+    ";
+    if (!create_table("global_variables", $flds)) return;
 }
-$query = "SELECT value FROM global_variables WHERE variable = 'dbversion'"; // Check if the record dbversion does exist
-$result = $connection->Execute($query);
-$rows = $result->GetRows();
-if(count($rows) == 0) { // If the record dbversion does not exist, create it and set the value to 0
-    $query = "INSERT INTO global_variables (variable, value) VALUES ('dbversion','0')";
-    $result = $connection->Execute($query);
-    if(!$result) {
-        $message = error_message("global_variables");
-        write_to_error($message);
-        write_message($msg);
-        return;
-    }
-    $current_version = 0;
-    write_to_log("The db version has been set to 0\n");
+
+// Check if variable dbrevision exists
+$rs = $db->Execute("SELECT * FROM global_variables WHERE name = 'dbrevision'");
+if ($rs->EOF) { // If the variable dbrevision does not exist, create it and set its value to 0
+    $record = array();
+    $record["name"] = "dbrevision";
+    $record["value"] = "0";
+    $insertSQL = $db->GetInsertSQL($rs, $record);
+    $db->Execute($insertSQL);
+    write_to_log("The database revision has been set to 0.");
 }
 else {
-    $current_version = $rows[0][0];
+    $o = $rs->FetchObj();
+    $current_revision = $o->value;
 }
 
+// -----------------------------------------------------------------------------
+// Drop and Create fixed tables
+// -----------------------------------------------------------------------------
 
-// Check database - check existence, structure and content
-// -------------------------------------------------------
+// NOTE: ENUM is not available as a portable type code, which forces us to
+//       hardcode the type string in the following descriptions, which in turn
+//       forces us to use uppercase 'T' and 'F' enum values (because of some
+//       stupid rule in adodb data dictionary class).
 
-// Check 'boundary_values'
-// -----------------------
+
+// boundary_values
+// -----------------------------------------------------------------------------
+if (in_array("boundary_values", $tables)) {
+    // Drop table
+    // TODO: drop table
+}
+// Create table with fixed records
+$flds = "
+    parameter C(255) KEY,
+    min C(30),
+    max C(30),
+    min_included \"enum ('T', 'F')\" DEFAULT T,
+    max_included \"enum ('T', 'F')\" DEFAULT T,
+    standard C(30)
+";
+if (!create_table("boundary_values", $flds)) return;
+
+return;
+
 $table = "boundary_values";
 $table_structure = array("parameter"=>array("varchar(255)","NOT NULL","DEFAULT '0'"),
                         "min"=>array("varchar(30)","NULL","DEFAULT NULL"),
