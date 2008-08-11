@@ -107,7 +107,7 @@ else {
   $names = $_SESSION['task_setting']->parameterNames();
   foreach ($names as $name) {
     $parameter = $_SESSION['task_setting']->parameter($name);
-    if (isset($_POST[$name])) {
+    if ($name != "NumberOfIterations" && isset($_POST[$name])) {
       $parameter->setValue($_POST[$name]);
       $_SESSION['task_setting']->set($parameter);
     }
@@ -118,14 +118,6 @@ else {
         $_SESSION['task_setting']->set($parameter);
       }
     }*/
-  }
-  
-  // number of iterations: set the use of range to false if checkbox is unchecked
-  $parameter = $_SESSION["task_setting"]->parameter("NumberOfIterationsUseRange");
-  if (isset($_POST["OK"]) && !isset($_POST["NumberOfIterationsUseRange"])) {
-        $parameter = $_SESSION["task_setting"]->parameter("NumberOfIterationsUseRange");
-        $parameter->setValue("False");
-        $_SESSION["task_setting"]->set($parameter);
   }
   
   $signalNoiseRatioParam =  $_SESSION['task_setting']->parameter("SignalNoiseRatio");
@@ -161,6 +153,7 @@ else {
     $_SESSION['task_setting']->set($parameter);
   }
   
+  /*
   $signalNoiseRatioRangeParam = $_SESSION['task_setting']->parameter("SignalNoiseRatioRange");
   $backgroundOffsetRangeParam = $_SESSION['task_setting']->parameter("BackgroundOffsetRange");
   $numberOfIterationsRangeParam = $_SESSION['task_setting']->parameter("NumberOfIterationsRange");
@@ -187,6 +180,40 @@ else {
   $_SESSION['task_setting']->set($signalNoiseRatioRangeParam);
   $_SESSION['task_setting']->set($backgroundOffsetRangeParam);
   $_SESSION['task_setting']->set($numberOfIterationsRangeParam);
+  */
+  // number of iterations: set the use of range to false if checkbox is unchecked
+  /*$parameter = $_SESSION["task_setting"]->parameter("NumberOfIterationsUseRange");
+  if (isset($_POST["OK"]) && !isset($_POST["NumberOfIterationsUseRange"])) {
+        $parameter = $_SESSION["task_setting"]->parameter("NumberOfIterationsUseRange");
+        $parameter->setValue("False");
+        $_SESSION["task_setting"]->set($parameter);
+  }*/
+  // enable ranges for the number of iterations
+  if (isset($_POST["NumberOfIterations"])) {
+    $value = $_POST["NumberOfIterations"];
+    $values = explode(" ", $value);
+    if (count($values) > 1) {
+      $parameter = $_SESSION["task_setting"]->parameter("NumberOfIterationsUseRange");
+      $parameter->setValue("True");
+      $_SESSION["task_setting"]->set($parameter);
+      $numberOfIterationsRangeParam = $_SESSION['task_setting']->parameter("NumberOfIterationsRange");
+      $numberOfIterationsRange = $numberOfIterationsRangeParam->value();
+      //$numberOfIterationsRange = array(NULL, NULL, NULL, NULL);
+      for ($i = 0; $i < count($values); $i++) {
+        $numberOfIterationsRange[$i] = $values[$i];
+      }
+      $numberOfIterationsRangeParam->setValue($numberOfIterationsRange);
+      $_SESSION['task_setting']->set($numberOfIterationsRangeParam);
+    }
+    else {
+      $parameter = $_SESSION["task_setting"]->parameter("NumberOfIterationsUseRange");
+      $parameter->setValue("False");
+      $_SESSION["task_setting"]->set($parameter);
+      $parameter = $_SESSION['task_setting']->parameter("NumberOfIterations");
+      $parameter->setValue($value);
+      $_SESSION['task_setting']->set($parameter);
+    }
+  }
   
   if (isset($_POST['QualityChangeStoppingCriterion'])) {
     $parameter = $_SESSION['task_setting']->parameter("QualityChangeStoppingCriterion");
@@ -374,54 +401,24 @@ for ($i=0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
 
 $parameter = $_SESSION['task_setting']->parameter("NumberOfIterations");
 $value = 40;
-if ($parameter->value() != null) {
+if ($parameter->value() != NULL) {
   $value = $parameter->value();
 }
 
-?>
-                    <input name="NumberOfIterations" type="text" size="3" value="<?php echo $value ?>" />
-                    
-                    <p />
-                    
-<?php
-
-if (!$noRange) {
-
-?>
-                    <div style="text-align: left">
-                    
-<?php
-
-$parameter = $_SESSION['task_setting']->parameter("NumberOfIterationsUseRange");
-
-?>
-                        <?php echo $parameter->printCheckBox(""); ?>
-                        
-                        try multiple values
-                    
-<?php
-
-$numberOfIterationsRangeParam = $_SESSION['task_setting']->parameter("NumberOfIterationsRange");
-$numberOfIterationsRange = $numberOfIterationsRangeParam->value();
-
-
-  for ($i=1; $i <= 4; $i++) {
-
-?>
-                        <input name="NumberOfIterationsRange<?php echo $i ?>" type="text" size="3" value="<?php echo $numberOfIterationsRange[$i] ?>" class="multichannelinput" />
-                        
-<?php
-
+$parameter = $_SESSION["task_setting"]->parameter("NumberOfIterationsUseRange");
+if ($parameter->isTrue()) {
+  $numberOfIterationsRangeParam = $_SESSION['task_setting']->parameter("NumberOfIterationsRange");
+  $numberOfIterationsRange = $numberOfIterationsRangeParam->value();
+  $value = $numberOfIterationsRange[0];
+  for ($i = 1; $i < 4; $i++){
+    if ($numberOfIterationsRange[$i] != NULL)
+      $value .= " " . $numberOfIterationsRange[$i];
   }
-
-?>
-                    </div>
-<?php
-
 }
 
 ?>
-
+                    <input name="NumberOfIterations" type="text" size="8" value="<?php echo $value ?>" />
+                    
                     <p />
                     
                     <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=QualityCriterion')"><img src="images/help.png" alt="?" /></a>

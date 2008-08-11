@@ -74,6 +74,7 @@ Class JobDescription {
   var $pass;                // @var pass             Integer           pass 1 or 2 of step combined processing
   var $credit;              // @var credit           String            name of the credit to be used
   var $group;               // @var group            String            name of the group to be used
+  //var $rangeParameters;     // why not use a global variable from the beginning?!
 
   function JobDescription() {
     $this->id = (string)(uniqid(''));
@@ -195,6 +196,7 @@ Class JobDescription {
   } 
 
   function rangeParameter() {
+    //global $rangeParameters;
     $result = array();
     $setting = $this->taskSetting;
     $rangeParameter = $setting->rangeParameter();
@@ -202,7 +204,8 @@ Class JobDescription {
       $useParameterName = $parameter->useParameterName();
       $useParameter = $setting->parameter($useParameterName);
       if ($useParameter->isTrue()) {
-	$result[$parameter->name()] = $parameter;    
+	$result[$parameter->name()] = $parameter;
+        //$this->rangeParameters[] = $parameter;
       } 
     } 
     return $result;
@@ -220,24 +223,32 @@ Class JobDescription {
   } 
 
   function createSubJobs() {
+    //global $rangeParameters;
+    $rangeParameters = $this->rangeParameter();
+    $rangeParameterCombinations = $this->rangeParameterCombinations($rangeParameters);
     $result = True;
-    if (count($this->rangeParameterCombinations())==0) {
+    if (count($rangeParameterCombinations)==0) {
       return $this->createSubJobsforFiles();
     }  
     foreach ($this->files as $file) {
-      foreach ($this->rangeParameterCombinations() as $combination) {
+      error_log("range combinations = " . count($rangeParameterCombinations));
+      foreach ($rangeParameterCombinations as $combination) {
+        error_log("combination [" . implode(" ", $combination) . "]");
 	$newJobDescription = new JobDescription();
 	$newJobDescription->copyFrom($this);
 	$newJobDescription->setFiles(array($file));	
 	$index = 0;
 	$setting = $newJobDescription->taskSetting();
-	foreach ($this->rangeParameterNames() as $rangeParameterName) {
-	  $rangeParameter = $setting->parameter($rangeParameterName);
+	//foreach ($this->rangeParameterNames() as $rangeParameterName) {
+        foreach ($rangeParameters as $rangeParameter) {
+          $rangeParameterName = $rangeParameter->name();
+	  //$rangeParameter = $setting->parameter($rangeParameterName);
 	  $realParameterName = $rangeParameter->realParameterName();
 	  $realParameter = $setting->parameter($realParameterName);
 	  $useParameterName = $rangeParameter->useParameterName();
 	  $useParameter = $setting->parameter($useParameterName);
 	  $useParameter->reset();
+          error_log("range parameter " . $realParameterName . " = " . $combination[$index]);
 	  $realParameter->setValue($combination[$index]);
 	  $setting->set($realParameter);
 	  $setting->set($useParameter);
@@ -245,7 +256,6 @@ Class JobDescription {
 	}
 	$newJobDescription->setTaskSetting($setting);
 	$result = $result && $newJobDescription->createJob();
-
       } 
     } 
     return $result;
@@ -281,15 +291,15 @@ Class JobDescription {
     return $result;
   } 
   
-  function rangeParameterCombinations() {
+  function rangeParameterCombinations($rangeParameter) {
     $jobDescriptions = array();
-    $rangeParameter = $this->rangeParameter();
+    //$rangeParameter = $this->rangeParameter();
     $matrix = array();
     if (count($rangeParameter)==1) {
       $range = array_pop($rangeParameter);
       $value = array_filter($range->value());
       foreach ($value as $number) {
-	$matrix[count($matrix)] = array($number); 
+	$matrix[] = array($number);
       }
       return $matrix;
     } else { 
@@ -304,7 +314,7 @@ Class JobDescription {
 
   function rangeParameterNames() {
     $names = array();
-    foreach ($this->rangeParameter() as $parameter) {
+    foreach ($this->rangeParameters as $parameter) {
       $names[] = $parameter->name(); 
     } 
     return $names;

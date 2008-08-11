@@ -461,7 +461,7 @@ Class BooleanParameter extends ChoiceParameter {
 	}
 
 	function isTrue() {
-		return ($this->value == 'True');
+		return ($this->value == "True");
 	}
 
 	function isBoolean() {
@@ -1392,7 +1392,6 @@ Class SignalNoiseRatioRange extends NumericalParameter {
 			NULL,
 			NULL,
 			NULL,
-			NULL
 		);
 	}
 
@@ -1452,7 +1451,6 @@ Class NumberOfIterationsRange extends NumericalParameter {
 			NULL,
 			NULL,
 			NULL,
-			NULL
 		);
 	}
 
