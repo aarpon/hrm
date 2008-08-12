@@ -493,18 +493,20 @@ Class JobDescription {
     $newRemoveBackgroundPercent = $taskSetting->parameter('RemoveBackgroundPercent');
     // DEBUG
     //$value = $newRemoveBackgroundPercent->value();
-    if ($originalBackgroundOffsetPercentValue[0] == "auto" || $originalBackgroundOffsetPercentValue[0] == "object") {
-      $newRemoveBackgroundPercent->setValue($originalRemoveBackgroundPercentValue[0]);
-    }
-    else {
-      $newRemoveBackgroundPercent->setValue($originalRemoveBackgroundPercentValue[$channel]);
-    }
+    $newRemoveBackgroundPercent->setValue($originalRemoveBackgroundPercentValue[$channel]);
     $taskSetting->set($newRemoveBackgroundPercent);
     // Backgriund Offset Percent
     $newBackgroundOffsetPercent = $taskSetting->parameter('BackgroundOffsetPercent');
     // DEBUG
     //$value = $newBackgroundOffsetPercent->value();
-    $newBackgroundOffsetPercent->setValue($originalBackgroundOffsetPercentValue[$channel]);
+    if ($originalBackgroundOffsetPercentValue[0] == "auto" || $originalBackgroundOffsetPercentValue[0] == "object") {
+      $newBackgroundOffsetPercent->setValue($originalBackgroundOffsetPercentValue[0]);
+      $test = $newBackgroundOffsetPercent->internalValue();
+      error_log("auto/object ".$test[0]);
+    }
+    else {
+      $newBackgroundOffsetPercent->setValue($originalBackgroundOffsetPercentValue[$channel]);
+    }
     $taskSetting->set($newBackgroundOffsetPercent);
     // Signal to noise ratio
     $newSignalNoiseRatio = $taskSetting->parameter('SignalNoiseRatio');
