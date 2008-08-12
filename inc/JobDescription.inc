@@ -493,7 +493,12 @@ Class JobDescription {
     $newRemoveBackgroundPercent = $taskSetting->parameter('RemoveBackgroundPercent');
     // DEBUG
     //$value = $newRemoveBackgroundPercent->value();
-    $newRemoveBackgroundPercent->setValue($originalRemoveBackgroundPercentValue[$channel]);
+    if ($originalBackgroundOffsetPercentValue[0] == "auto" || $originalBackgroundOffsetPercentValue[0] == "object") {
+      $newRemoveBackgroundPercent->setValue($originalRemoveBackgroundPercentValue[0]);
+    }
+    else {
+      $newRemoveBackgroundPercent->setValue($originalRemoveBackgroundPercentValue[$channel]);
+    }
     $taskSetting->set($newRemoveBackgroundPercent);
     // Backgriund Offset Percent
     $newBackgroundOffsetPercent = $taskSetting->parameter('BackgroundOffsetPercent');
