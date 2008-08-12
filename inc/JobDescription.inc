@@ -734,7 +734,17 @@ Class JobDescription {
     // avoid redundant slashes in path
     $result = $this->sourceFolder() . ereg_replace("^/", "", end($files));
     return $result;
-  } 
+  }
+
+  function sourceImageNameWithoutPath() {
+    $name = $this->sourceImageName();
+    $pos = strrpos( $name, '/' );
+    if ( $pos ) {
+      return ( substr( $name, ( $pos + 1 ) ) );
+    } else {
+      return $name;
+    }
+  }
 
   function relativeSourcePath() {
     $files = $this->files();
@@ -787,6 +797,19 @@ Class JobDescription {
     } 
     return $result; 
   } 
+
+  function destinationImageNameWithoutPath() {
+    $name = $this->destinationImageName();
+    $pos = strrpos( $name, '/' );
+    if ( $pos ) {
+      $name = substr( $name, ( $pos + 1 ) );
+    }
+    // Append extension
+    $taskSetting = $this->taskSetting();
+    $param = $taskSetting->parameter('OutputFileFormat');
+    $fileFormat = $param->extension( );
+    return ( $name . "." . $fileFormat );
+  }
 
   function destinationImageFullName() {
     global $resultImagesRenamed;
