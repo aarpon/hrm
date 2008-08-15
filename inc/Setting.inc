@@ -2448,8 +2448,13 @@ error_log('DeconvolutionAlgorithm name = ' . $string);
 $value = $parameter->value();
 error_log('DeconvolutionAlgorithm value = ' . $value);
 
+		// This restores the default behavior in case the entry "DeconvolutionAlgorithm"
+		// is not in the database
+		if ( empty( $value ) == true )
+		  $value = "cmle";
+
 		$result = $result . $source . ' ' . $value . ' psf -> ' . $dest . ' ';	
-	//$result = $result . $source . ' cmle psf -> ' . $dest . ' ';
+		//$result = $result . $source . ' cmle psf -> ' . $dest . ' ';
 		$result = $result . $this->signalNoiseRatioString();
 		$result = $result . $this->maxIterationsString();
 		// background estimation manual/auto
@@ -2481,8 +2486,16 @@ error_log('DeconvolutionAlgorithm value = ' . $value);
 	// manage measured PSF
 	function fullRestorationForMeasuredPointSpreadFunctionString($source, $dest) {
 		$result = '';
-		$result = $result . $source . $this->decAlgorithmString() . ' psf -> ' . $dest . ' ';
-	//$result = $result . $source . ' cmle $psf -> ' . $dest . ' ';
+		
+		// This restores the default behavior in case the entry "DeconvolutionAlgorithm"
+		// is not in the database
+		$value = $this->decAlgorithmString();
+		if ( empty( $value ) == true )
+			$value = "cmle";
+		$result = $result . $source . ' ' .$value . ' psf -> ' . $dest . ' ';
+
+		//$result = $result . $source . $this->decAlgorithmString() . ' psf -> ' . $dest . ' ';
+		//$result = $result . $source . ' cmle $psf -> ' . $dest . ' ';
 		$result = $result . $this->signalNoiseRatioString();
 		$result = $result . $this->maxIterationsString();
 		// background estimation manual/auto

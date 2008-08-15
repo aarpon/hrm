@@ -279,7 +279,12 @@ $possibleValues = $parameter->possibleValues();
 // This restores the default behavior in case the entry "DeconvolutionAlgorithm"
 // is not in the database
 if ( empty( $possibleValues ) == true )
+{
   $possibleValues[0] = "cmle";
+  $parameter = $_SESSION['task_setting']->parameter("DeconvolutionAlgorithm");
+  $parameter->setValue( "cmle" );
+  $_SESSION['task_setting']->set($parameter);
+}
   
 foreach($possibleValues as $possibleValue) {
   $translation = $_SESSION['task_setting']->translation("DeconvolutionAlgorithm", $possibleValue);
