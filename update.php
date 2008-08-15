@@ -1,6 +1,6 @@
 <?php
 
-// php page: login.php
+// php page: update.php
 
 // This file is part of huygens remote manager.
 
@@ -71,7 +71,7 @@ include("header.inc.php");
             <li><a href="account.php">account</a></li>
             <li><a href="job_queue.php" onclick="clean()">queue</a></li>
             <li>update</li>
-            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpUserManagement')">help</a></li>
+            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpUpdate')">help</a></li>
         </ul>
     </div>
     

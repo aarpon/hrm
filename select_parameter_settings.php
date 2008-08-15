@@ -206,6 +206,7 @@ if ($enableUserAdmin || $_SESSION['user']->name() == "admin") {
 
 ?>
             <li><a href="job_queue.php">queue</a></li>
+            <li><a href="file_management.php">files</a></li>
 <?php
 
 if ($enableUserAdmin && $_SESSION['user']->name() == "admin") {
