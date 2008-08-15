@@ -190,9 +190,9 @@ if ($files == null) {
 if ($files != null) {
   foreach ($files as $file) {
     //trim filename
-    if (strlen($file) > 50) {
-      $file = substr($file, -50);
-    }
+    /*if (strlen($file) > 60) {
+      $file = substr($file, -60);
+    }*/
     echo "                        <option>$file</option>\n";
   }
 }
@@ -224,9 +224,9 @@ if ($files == null) $flag = " disabled=\"disabled\"";
 if ($files != null) {
   foreach ($files as $file) {
     //trim filename
-    if (strlen($file) > 50) {
-      $file = substr($file, -50)."     ";
-    }
+    /*if (strlen($file) > 60) {
+      $file = substr($file, -60)."     ";
+    }*/
     echo "                        <option>$file</option>\n";
   }
 }
