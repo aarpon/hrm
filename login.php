@@ -55,6 +55,7 @@ require_once("./inc/User.inc");
 require_once("./inc/Database.inc"); // for account management (email & last_access fields)
 require_once("./inc/CreditOwner.inc");
 require_once("./inc/hrm_config.inc");
+require_once("./inc/Fileserver.inc");
 
 global $email_admin;
 global $enableUserAdmin;
@@ -86,6 +87,15 @@ if (isset($_POST['password'])) {
 	}
   	if ($_SESSION['user']->isLoggedIn()) {
             $_SESSION['user']->setName(strtolower($_POST['username']));
+
+            // Make sure that the user source and destination folders exist
+            {
+              $fileServer = new FileServer( strtolower($_POST['username']) );
+              if ( $fileServer->isReachable() == false ) {
+                shell_exec("bin/hrm create " . $_POST['username']);
+              }
+            }
+            
             // account management
                 // get email address and group
                 $_SESSION['user']->load();
