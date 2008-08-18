@@ -188,12 +188,11 @@ if ($files == null) {
 <?php
 
 if ($files != null) {
-  foreach ($files as $file) {
-    //trim filename
-    /*if (strlen($file) > 60) {
-      $file = substr($file, -60);
-    }*/
-    echo "                        <option>$file</option>\n";
+  foreach ($files as $key => $filename) {
+    $path = explode("/", $filename);
+    if (count($path) > 2)
+      $filename = $path[0] . "/.../" . $path[count($path) - 1];
+    echo "                        <option value=\"$files[$key]\">$filename</option>\n";
   }
 }
 else echo "                        <option>&nbsp;</option>\n";
@@ -222,12 +221,11 @@ if ($files == null) $flag = " disabled=\"disabled\"";
 <?php
 
 if ($files != null) {
-  foreach ($files as $file) {
-    //trim filename
-    /*if (strlen($file) > 60) {
-      $file = substr($file, -60)."     ";
-    }*/
-    echo "                        <option>$file</option>\n";
+  foreach ($files as $key => $filename) {
+    $path = explode("/", $filename);
+    if (count($path) > 2)
+      $filename = $path[0] . "/.../" . $path[count($path) - 1];
+    echo "                        <option value=\"$files[$key]\">$filename</option>\n";
   }
 }
 else echo "                        <option>&nbsp;</option>\n";
