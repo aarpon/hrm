@@ -166,6 +166,8 @@ $value = $parameter->value();
 // always ask for pixel size
 $textForCaptorSize = "pixel size (nm)";
 
+// TODO: display visual feedback for values validity using the following CSS classes: optimal | valid | invalid
+
 ?>
                 <ul>
                 

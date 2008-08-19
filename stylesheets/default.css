@@ -559,6 +559,18 @@ input.restart {
     background: url(../images/restart.png) no-repeat center;
 }
 
+input.optimal {
+    background-color: limegreen;
+}
+
+input.valid {
+    background-color: orange;
+}
+
+input.invalid {
+    background-color: orangered;
+}
+
 span.multichannel {
     margin-left: -8px;
 }
