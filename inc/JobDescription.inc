@@ -53,7 +53,9 @@
 require_once("Parameter.inc");
 require_once("Database.inc");
 require_once("User.inc");
+require_once("Shell.inc");
 require_once("hrm_config.inc");
+
 
 //!---------------------------------------------------------
 // @class    JobDescription
@@ -939,14 +941,36 @@ Class JobQueue {
     return $result;
   } 
 
-  function markJobsAsRemoved($ids) {
+  function markJobsAsRemoved($ids) {  
     $result = True;
     if (count($ids)==0) return $result;
     $db = new DatabaseConnection();
-    foreach($ids as $id) {
-      $result = $result && $db->markJobAsRemoved($id);
+    foreach($ids as $id) {  // loop through all the jobs selected, which have to be deleted
+      $row = $db->getQueueContentsForId($id);
+      if ($row['status'] == 'started') {  // if the job is started, kill the process and update the databese (job_queue and server)  
+        $pid = $row['process_info'];
+        $server = $row['server'];
+        $proc = $this->newExternalProcess($server, $server . "_out.txt", $server . "_error.txt");
+        $proc->killHucoreProcess($pid);
+        $result = $result && $db->markJobAsRemoved($id);
+        $result = $result && $db->markServerAsFree($server);
+      }
+      else {  // if the job is not started, update the database (job_queue)
+        $result = $result && $db->markJobAsRemoved($id);   
+      }
     } 
     return $result;
+  }
+  
+  function newExternalProcess($host, $logfilename, $errfilename) {
+	global $imageProcessingIsOnQueueManager;
+	$db = new DatabaseConnection();
+	$huscript_path = $db->huscriptPathOn($host);
+	if ($imageProcessingIsOnQueueManager)
+		$shell = new LocalExternalProcess($host, $huscript_path, $logfilename, $errfilename);
+	else
+		$shell = new ExternalProcess($host, $huscript_path, $logfilename, $errfilename);
+	return $shell;
   } 
 
   function removeMarkedJobs() {
@@ -955,7 +979,7 @@ Class JobQueue {
     foreach ($ids as $id) {
       $this->removeJobWithId($id);
     }
-    if ($ids != null && size($ids) > 0)
+    if ($ids != null && count($ids) > 0)
       return True;
     return False;
   } 

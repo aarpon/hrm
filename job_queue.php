@@ -188,7 +188,8 @@ else {
 <?php
 
     if ($row['username'] == $_SESSION['user']->name() || $_SESSION['user']->name() == "admin") {
-      if ($row['status'] != "started" && $row['status'] != "broken") {
+      //if ($row['status'] != "started" && $row['status'] != "broken") {
+      if($row['status'] != "broken") {
 
 ?>
                             <td><input name="jobs_to_kill[]" type="checkbox" value="<?php echo $row['id'] ?>" /></td>

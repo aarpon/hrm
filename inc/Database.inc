@@ -616,7 +616,13 @@ Class DatabaseConnection {
     $query = "select id, username, queued, start, server, process_info, status from job_queue order by queued, status desc";
     $result = $this->query($query);
     return $result;
-  } 
+  }
+  
+  function getQueueContentsForId($id) { 
+    $query = "select id, username, queued, start, server, process_info, status from job_queue where id='" . $id . "'";
+    $result = $this->queryLastRow($query);  // it is supposed that just one job exists with a given id
+    return $result;
+  }
 
   function getJobFilesFor($id) {
     $query = "select file from job_files where job = '" . $id . "'";
@@ -754,11 +760,18 @@ Class DatabaseConnection {
     return $result;    
   }
 
-  function markJobAsRemoved($id) {
-    $query = "update job_queue set status='broken' where status='queued' or status='paused' and id='" . $id . "'"; 
+  function markJobAsRemoved($id) {  
+    //$query = "update job_queue set status='broken' where status='queued' or status='paused' and id='" . $id . "'"; 
+    $query = "update job_queue set status='broken' where id='" . $id . "'"; 
     $result = $this->execute($query);
     return $result;    
-  } 
+  }
+  
+  function markServerAsFree($server) {
+    $query = "update server set status='free' where name='" . $server . "'";
+    $result = $this->execute($query);
+    return $result;
+  }
 
   function getMarkedJobIds() {
     $conditions['status'] = 'broken'; 

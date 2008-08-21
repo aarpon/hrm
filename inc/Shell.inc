@@ -225,7 +225,14 @@ Class ExternalProcess {
     // TODO better management of file handles
     fclose($this->out_file);
     $result = proc_close($this->shell);
-  } 
+  }
+  
+  function killHucoreProcess($pid) {    
+    $command = "kill " . $pid . "\n";
+    $this->runShell();
+    $this->execute($command);
+    return;
+  }
 }
 
 Class LocalExternalProcess extends ExternalProcess {
