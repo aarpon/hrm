@@ -695,7 +695,7 @@ Class JobDescription {
         $options .= " -series off";
       }
     }
-    if (preg_match("/^(.*) \((.*)\)$/", $imageFileName, $match)) {
+    if (preg_match("/^(.*) \((.*)\)/", $imageFileName, $match)) {
         // If a (string) comes after the file name, it is interpreted as a sub
         // image. Currently this is for LIF files only.
         $imageFileName = $match[1];
