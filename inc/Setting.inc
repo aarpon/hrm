@@ -2182,7 +2182,7 @@ Class JobParameterSetting extends ParameterSetting {
 			$result = $result . ' ' . (string) $this->sampleSizeZ();
 		} else {
 			// Use current channel
-			$result = $result . ' ' . (string) ($this->idealSampleSizeZFor(1));
+			//$result = $result . ' ' . (string) ($this->idealSampleSizeZFor(1));
 		}
 		if ($this->isTimeSeries()) {
 			$result = $result . ' ' . (string) $this->sampleSizeT();
