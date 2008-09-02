@@ -707,12 +707,15 @@ Class ParameterSetting extends Setting {
 			$this->message = "The numerical aperture cannot be larger than the lens refractive index which is $lensRefractiveIndex for the selected objective type. Please lower the numerical aperture!";
 			$result = False;
 		}
-		$parameter = $this->parameter('SampleMedium');
-		$mediumRefractiveIndex = (float) $parameter->translatedValue();
-		if ($numericalAperture > $mediumRefractiveIndex) {
-			$this->message = "The numerical aperture cannot be larger than the medium refractive index which is $mediumRefractiveIndex for the selected medium. Please lower the numerical aperture!";
-			$result = False;
-		}
+		// The following check (numericalAperture>mediumRefractiveIndex) was
+		// removed in HuygensPro, and we therefore de-activate it in the HRM
+		// as well
+		//$parameter = $this->parameter('SampleMedium');
+		//$mediumRefractiveIndex = (float) $parameter->translatedValue();
+		//if ($numericalAperture > $mediumRefractiveIndex) {
+		//	$this->message = "The numerical aperture cannot be larger than the medium refractive index which is $mediumRefractiveIndex for the selected medium. Please lower the numerical aperture!";
+		//	$result = False;
+		//}
 		if ($numericalAperture < 0.1) {
 			$this->message = "The numerical aperture must not be smaller than 0.1!";
 			$result = False;
