@@ -298,6 +298,12 @@ Class DatabaseConnection {
           // at one. To keep backwards compatibility with the database, we use
           // # now as a channel marker, and even the first channel has a # in
           // front of its value.
+          // "/" separator is used to mark range values for signal to noise ratio
+          if (is_array($parameterValue[0])) {
+            for ($i = 0; $i < 5; $i++) {
+              $parameterValue[$i] = implode("/", array_filter($parameterValue[$i]));
+            }
+          }
           $parameterValue = "#".implode("#", $parameterValue);
       }
       if (!$existsAlready) {       
@@ -341,7 +347,27 @@ Class DatabaseConnection {
           strcmp( $parameterName, "BackgroundOffsetPercent" ) != 0) != 0 ) {
             $newValue = substr($newValue,1);
         }
-        $newValue = explode("#", $newValue);
+        $newValues = explode("#", $newValue);
+        if (strpos($newValue, "/")) {
+          $newValue = array();
+          for ($i = 0; $i < count($newValues); $i++) {
+            //$val = explode("/", $newValues[$i]);
+            //$range = array(NULL, NULL, NULL, NULL);
+            //for ($j = 0; $j < count($val); $j++) {
+            //  $range[$j] = $val[$j];
+            //}
+            //$newValue[] = $range;
+            if (strpos($newValues[$i], "/")) {
+              $newValue[] = explode("/", $newValues[$i]);
+            }
+            else {
+              $newValue[] = array($newValues[$i]);
+            }
+          }
+        }
+        else {
+          $newValue = $newValues;
+        }
       }
       //$shiftedNewValue = array(1 => NULL, 2 => NULL, 3 => NULL, 4 => NULL, 5 => NULL);
       //if (is_array($newValue)) {

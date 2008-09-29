@@ -937,57 +937,6 @@ Class ParameterSetting extends Setting {
 			}
 		}
 		// Check if data is under sampled and if parameter values can be adapted
-		/*if ($this->isWidefield() || $this->isTwoPhoton()) {
-		    // In the case of widefield and two photon miscroscopes, the NA is adapted 
-		    
-		    // 1) check if undersampled or oversampled
-		    // sample size
-		    $parameter = $this->parameter('CCDCaptorSizeX');    
-		    $deltaX = (float)$parameter->value();
-		    // ideal sample size
-		    $lambda = $mostRestrictiveWavelength;
-		    $parameter = $this->parameter('NumericalAperture');    
-		    $na = (float)$parameter->value();
-		    $idealDeltaX = $lambda / (4 * $na);
-		    // sampling factor
-		    $factor = $idealDeltaX / $deltaX;
-		    
-		    // 2) if undersampled, check if NA can be adapted
-		    if ($factor < 1) {
-		        $adapted_na = $this->adaptedNumericalApertureFor($mostRestrictiveWavelengthChannel);
-		        if ($adapted_na == null) {
-		            // a. if no, warn and request coherent values
-		            $result = False;
-		            $this->message = "The image is undersampled by a factor of $factor for channel $mostRestrictiveWavelengthChannel";
-		        }
-		        else  if ($adapted_na != $na) {
-		            // b. if yes, warn and ask for confirmation
-		            // TODO refactor here
-		            $this->message = "<p>WARNING: numerical aperture will be adapted</p>\n";
-		            $this->message = $this->message."<p>NA $adapted_na instead of $na</p>\n";
-		            $this->message = $this->message."<p>Minimal sampling distance according to the Nyquist rate is ".floor($this->adaptedLateralSampleSizeFor($mostRestrictiveWavelengthChannel))." (in the lateral direction)";
-		            if ($this->isThreeDimensional()) {
-		               $this->message = $this->message." and ".floor($this->idealSampleSizeZFor($mostRestrictiveWavelengthChannel))." (in the axial direction)";
-		            }
-		            $this->message = $this->message.".</p>\n";
-		            $this->message = $this->message."<p>If you still want to use these parameter settings, press the OK button again.</p>\n";
-		            $this->setAdaptedParameters(True);
-		            $result = False;
-		        }
-		    }
-		    
-		    // 3) else if oversampled by factor > 1.5, warn and ask for confirmation
-		    else if ($factor >= 1.5) {
-		        $result = False;
-		        $this->message = "The image is oversampled by a factor of $factor for channel $mostRestrictiveWavelengthChannel";
-		    }
-		    
-		    // 4) else accept happily
-		    else {
-		        $result = True;
-		    }
-		}
-		else if ($this->isMultiPointOrSinglePointConfocal()) {*/
 		// In the case of confocal microscopes, the sample size is adapted
 
 		// 1) check if undersampled or oversampled
@@ -1035,18 +984,17 @@ Class ParameterSetting extends Setting {
 		}
 
 		// 3) else if oversampled by factor > 1.5, warn and ask for confirmation
-		else
-			if ($factor >= 1.5 || $z_factor > 1.5) {
-				$this->message = "";
-				if ($factor >= 1.5) {
-					$this->message .= "The image is oversampled by a factor of " . number_format(round($factor, 2), 2, ',', '') . " in lateral direction";
-				}
-				if ($z_factor > 1.5) {
-					$this->message .= "\nThe image is oversampled by a factor of " . number_format(round($z_factor, 2), 2, ',', '') . " in axial direction";
-				}
-				$this->message .= "\nIf you still want to use these parameter settings, press the OK button again.\n";
-				$result = False;
+		else if ($factor >= 1.5 || $z_factor > 1.5) {
+			$this->message = "";
+			if ($factor >= 1.5) {
+				$this->message .= "The image is oversampled by a factor of " . number_format(round($factor, 2), 2, ',', '') . " in lateral direction";
 			}
+			if ($z_factor > 1.5) {
+				$this->message .= "\nThe image is oversampled by a factor of " . number_format(round($z_factor, 2), 2, ',', '') . " in axial direction";
+			}
+			$this->message .= "\nIf you still want to use these parameter settings, press the OK button again.\n";
+			$result = False;
+		}
 
 		// 4) else accept happily
 		else {
@@ -1893,10 +1841,11 @@ Class TaskSetting extends Setting {
 		$originalValues = $param->value();
 		$values = $param->value();
 		$result = True;
+		/* normally useless
 		if ($values[0] == NULL || $values[1] == NULL || $values[0] == '' || $values[1] = '') {
 			$this->message = "Please enter at least two values for the $originalLabel, or don't use range.";
 			return False;
-		}
+		}*/
 		$index = 0;
 		foreach ($originalValues as $value) {
 			$label = $originalLabel . " value $index";

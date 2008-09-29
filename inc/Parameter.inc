@@ -1392,6 +1392,7 @@ Class SignalNoiseRatioRange extends NumericalParameter {
 			NULL,
 			NULL,
 			NULL,
+			NULL,
 		);
 	}
 
@@ -1410,6 +1411,27 @@ Class SignalNoiseRatioRange extends NumericalParameter {
 	}
 	function useParameterName() {
 		return 'SignalNoiseRatioUseRange';
+	}
+	
+	function setValue($value) {
+		for ($i = 0; $i < count($value); $i++) {
+			$this->value[$i] = $value[$i];
+		}
+        }
+	
+	function checkValue($value) {
+		$valid = True;
+		for ($i = 0; $i < 5; $i++) {
+			if ($value[$i] != NULL) {
+				$range = $value[$i];
+				for ($j = 0; $j < 4; $j++) {
+					if (!empty($range[$j])) {
+						$valid &= NumericalParameter :: checkValue($range[$j]);
+					}
+				}
+			}
+		}
+		return $valid;
 	}
 }
 

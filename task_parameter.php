@@ -120,25 +120,59 @@ else {
     }*/
   }
   
-  $signalNoiseRatioParam =  $_SESSION['task_setting']->parameter("SignalNoiseRatio");
-  $signalNoiseRatio = $signalNoiseRatioParam->internalValue();
+  $signalNoiseRatio = array();
+  $signalNoiseRatioRange = array();
   $backgroundOffsetPercentParam =  $_SESSION['task_setting']->parameter("BackgroundOffsetPercent");
   $backgroundOffset = $backgroundOffsetPercentParam->internalValue();
-  for ($i=0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
+  for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
     $signalNoiseRatioKey = "SignalNoiseRatio{$i}";
     $backgroundOffsetKey = "BackgroundOffsetPercent{$i}";
     if (isset($_POST[$signalNoiseRatioKey])) {
-      $signalNoiseRatio[$i] = $_POST[$signalNoiseRatioKey];
+      // enable ranges for the signal to noise ratio
+      $value = $_POST[$signalNoiseRatioKey];
+      $val = explode(" ", $value);
+      if (count($val) > 1) {
+        $values = array(NULL, NULL, NULL, NULL);
+        for ($j = 0; $j < count($val); $j++) {
+          $values[$j] = $val[$j];
+        }
+        $signalNoiseRatioRange[$i] = $values;
+      }
+      else {
+        $signalNoiseRatio[$i] = $_POST[$signalNoiseRatioKey];
+      }
     }
     if (isset($_POST[$backgroundOffsetKey])) {
       $backgroundOffset[$i] = $_POST[$backgroundOffsetKey];
     } 
   }
-  // get rid of extra values in case the number of channels is changed
-  //$signalNoiseRatio = array_slice($signalNoiseRatio, 0, $_SESSION['setting']->numberOfChannels() );
-  //$backgroundOffset = array_slice($backgroundOffset, 0, $_SESSION['setting']->numberOfChannels() );
-  $signalNoiseRatioParam->setValue($signalNoiseRatio);
-  $_SESSION['task_setting']->set($signalNoiseRatioParam);
+  $parameter = $_SESSION["task_setting"]->parameter("SignalNoiseRatioUseRange");
+  if (count($signalNoiseRatioRange) > 0) {
+    for ($i = 0; $i < count($signalNoiseRatioRange); $i++) {
+      $range = $signalNoiseRatioRange[$i];
+      for ($j = 0; $j < count($range); $j++) {
+        $val = $range[$j];
+        if ($val == NULL) $val = "NULL";
+        echo "signalNoiseRatioRange, channel ".$i." value ".$j." = ".$val."<br>";
+      }
+    }
+    $parameter->setValue("True");
+    $signalNoiseRatioRangeParam = $_SESSION['task_setting']->parameter("SignalNoiseRatioRange");
+    for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
+      if ($signalNoiseRatioRange[$i] == NULL) {
+        $signalNoiseRatioRange[$i] = array($signalNoiseRatio[$i], NULL, NULL, NULL);
+      }
+    }
+    $signalNoiseRatioRangeParam->setValue($signalNoiseRatioRange);
+    $_SESSION['task_setting']->set($signalNoiseRatioRangeParam);
+  }
+  else if (count($_POST) > 0) {
+    $parameter->setValue("False");
+    $signalNoiseRatioParam = $_SESSION['task_setting']->parameter("SignalNoiseRatio");
+    $signalNoiseRatioParam->setValue($signalNoiseRatio);
+    $_SESSION['task_setting']->set($signalNoiseRatioParam);
+  }
+  $_SESSION["task_setting"]->set($parameter);
   $backgroundOffsetPercentParam->setValue($backgroundOffset);
   $_SESSION['task_setting']->set($backgroundOffsetPercentParam);
   
@@ -314,12 +348,32 @@ foreach($possibleValues as $possibleValue) {
                     <div class="multichannel">
 <?php
 
-$parameter = $_SESSION['task_setting']->parameter("SignalNoiseRatio");
-$value = $parameter->value();
-for ($i=0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
+$parameter = $_SESSION["task_setting"]->parameter("SignalNoiseRatioUseRange");
+if ($parameter->isTrue()) {
+  $signalNoiseRatioRangeParam = $_SESSION['task_setting']->parameter("SignalNoiseRatioRange");
+  $signalNoiseRatioRange = $signalNoiseRatioRangeParam->value();
+}
+else {
+  $signalNoiseRatioParam = $_SESSION['task_setting']->parameter("SignalNoiseRatio");
+  $signalNoiseRatioValue = $signalNoiseRatioParam->value();
+}
+
+for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
+  
+  if ($parameter->isTrue()) {
+    $signalNoiseRatioValues = $signalNoiseRatioRange[$i];
+    $value = $signalNoiseRatioValues[0];
+    for ($j = 1; $j < count($signalNoiseRatioValues); $j++){
+      if ($signalNoiseRatioValues[$j])
+        $value .= " " . $signalNoiseRatioValues[$j];
+    }
+  }
+  else {
+    $value = $signalNoiseRatioValue[$i];
+  }
 
 ?>
-                        <span class="nowrap">Ch<?php echo $i ?>:<span class="multichannel"><input name="SignalNoiseRatio<?php echo $i ?>" type="text" size="8" value="<?php echo $value[$i] ?>" class="multichannelinput" /></span>&nbsp;</span>
+                        <span class="nowrap">Ch<?php echo $i ?>:<span class="multichannel"><input name="SignalNoiseRatio<?php echo $i ?>" type="text" size="8" value="<?php echo $value ?>" class="multichannelinput" /></span>&nbsp;</span>
 <?php
 
 }
