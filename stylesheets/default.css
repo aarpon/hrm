@@ -297,6 +297,12 @@ input.update {
     border-bottom: #ccc 2px solid;
 }
 
+#about {
+    clear: both;
+    font-size: 60%;
+    padding: 5px 0px 5px 0px;
+}
+
 #validation {
     text-align: center;
     padding-top: 10px;
@@ -557,6 +563,10 @@ input.restart {
     width: 60px;
     height: 60px;
     background: url(../images/restart.png) no-repeat center;
+}
+
+input.oversampled {
+    background-color: lightblue;
 }
 
 input.optimal {

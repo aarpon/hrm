@@ -299,7 +299,7 @@ include("header.inc.php");
              <fieldset class="setting">  <!-- deconvolution algorithm -->
             
                 <legend>
-                    <a href="javascript:openWindow('http://support.svi.nl/wiki/MaximumLikelihoodEstimation')"><img src="images/help.png" alt="?" /></a>
+                    <a href="javascript:openWindow('http://support.svi.nl/wiki/RestorationMethod')"><img src="images/help.png" alt="?" /></a>
                     deconvolution algorithm
                 </legend>
                 

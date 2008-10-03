@@ -126,7 +126,7 @@ if (count($_POST) > 0) {
     $saved = $_SESSION['setting']->save();			
     $message = "            <p class=\"warning\">".$_SESSION['setting']->message()."</p>";
     if ($saved) {
-      header("Location: " . "select_parameter_settings.php"); exit();
+        header("Location: " . "select_parameter_settings.php"); exit();
     }
   }
 }
@@ -166,14 +166,24 @@ $value = $parameter->value();
 // always ask for pixel size
 $textForCaptorSize = "pixel size (nm)";
 
-// TODO: display visual feedback for values validity using the following CSS classes: optimal | valid | invalid
+// display visual feedback for values validity using the following CSS classes: oversampled | optimal | valid | invalid
+$lateralSamplingValidity = $_SESSION['setting']->isLateralNyquistRateOK();
+if ( $lateralSamplingValidity == -1 ) {
+  $lateralClass = "oversampled";
+} elseif ( $lateralSamplingValidity == 0 ) {
+  $lateralClass = "optimal";
+} elseif ( $lateralSamplingValidity == 1 ) {
+  $lateralClass = "valid";
+} else {
+  $lateralClass = "invalid";
+}
 
 ?>
                 <ul>
                 
                     <li>
                         <?php echo $textForCaptorSize ?>:
-                        <input name="CCDCaptorSizeX" type="text" size="5" value="<?php echo $value ?>" /> <br/>
+                        <input name="CCDCaptorSizeX" type="text" class="<?php echo $lateralClass ?>" size="5" value="<?php echo $value ?>" /> <br/>
 			<a href="calculate_pixel_size.php">calculate</a> from microscope and camera parameters <br/>
                         <!-- <input name="calculate" type="submit" value="calculate" style="width:110px; margin: 2px;" /> -->
 <?php
@@ -201,8 +211,19 @@ if ($_SESSION['setting']->isThreeDimensional()) {
 
   $parameter = $_SESSION['setting']->parameter("ZStepSize");
 
+  $axialSamplingValidity   = $_SESSION['setting']->isAxialNyquistRateOK();
+  if ( $axialSamplingValidity == -1 ) {
+    $axialClass = "oversampled";
+  } elseif ( $axialSamplingValidity == -1 ) {
+    $axialClass = "optimal";
+  } elseif ( $axialSamplingValidity == 1 ) {
+    $axialClass = "valid";
+  } else {
+    $axialClass = "invalid";
+  }
+
 ?>
-                        <input name="ZStepSize" type="text" size="5" value="<?php echo $parameter->value() ?>" />
+                        <input name="ZStepSize" type="text" class="<?php echo $axialClass ?>" size="5" value="<?php echo $parameter->value() ?>" />
 <?php
             
   // display adaption info
@@ -368,7 +389,14 @@ if ($_SESSION['setting']->isNipkowDisk()) {
                 button to save your parameter settings and to go back to the parameter settings
                 page.
             </p>
-            
+            <p>Sampling rates for the pixel size and the z-step are color-coded as
+            follows: <span style="background-color:lightblue; ">oversampled</span>, 
+            <span style="background-color:limegreen">optimal</span>,
+            <span style="background-color:orange">valid</span>,
+            <span style="background-color:orangered">invalid</span>.</p>
+            <p>The Huygens Remote Manager will not try to stop you from running a deconvolution with
+            <span style="background-color:orangered">invalid</span> sampling, but do not
+            expect meaningful results!</p>
         </div>
         
         <div id="message">

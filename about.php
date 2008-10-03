@@ -60,49 +60,49 @@ include("header.inc.php");
             <li><a href="login.php">back</a></li>
         </ul>
     </div>
-    
-    <div id="content">
-    
-        <h2>About HRM version <?php readfile("version"); ?></h2>
-        
 
-	<h3>Copyright</h3>
-	<p>2004 - 2007, Montpellier RIO Imaging (CNRS)</p>
+<div id="content">
 
- 	<h3>Contributors</h3>
- 	<p>Pierre Travo	(concept)<br />
-	Volker Baecker	(concept, implementation)<br />
-	Aaron Ponti	(contributor)<br />
-	Asheesh Gulati	(contributor)</p>
+	<div id="about">
 
-	<h3>Email</h3>
-	<p>volker.baecker@users.sourceforge.net<br />
-	aarpon@users.sourceforge.net<br />
-	gulati9@users.sourceforge.net</p>
+		<h2>About HRM version <?php readfile("version"); ?></h2>
+	
+		<h3>Copyright</h3>
+		<p>2004 - 2009, Montpellier RIO Imaging (CNRS)</p>
 
-	<h3>Web</h3>
-	<p>http://hrm.sourceforge.net</p>
+		<h3>Contributors</h3>
+		<p>Pierre Travo	(concept)<br />
+		Volker Baecker (volker.baecker@users.sourceforge.net): concept, implementation<br />
+		Aaron Ponti (aarpon@users.sourceforge.net): contributor<br />
+		Alessandra Griffa (agriffa@users.sourceforge.net): contributor<br />
+		Asheesh Gulati (gulati9@users.sourceforge.net) :contributor<br />
+		José Viña (jose@svi.nl): contributor</p>
 
-	 <p>The Huygens Remote Manager (HRM) is a web-based deconvolution platform primarily targeted to microscopy
-	 and imaging facilities in academic and industrial environments that must handle large user bases.
-	 HRM in an interface to the Huygens software from Scientific Volume Imaging.</p>
+		<h3>Web</h3>
+		<p>http://hrm.sourceforge.net</p>
 
-	 <p>HRM was originally developed at Montpellier Rio Imaging in 2004 by Pierre Travo and Volker Baecker.</p>
- 
-	 <p>Now, HRM is a joint project of Montpellier Rio Imaging, the Friedrich Miescher Institute in Basel, the 
-	 BioImaging and Optics platform at the Ecole Polytechnique Fédérale de Lausanne and Scientific Volume 
-	 Imaging.</p>
+		<p>The Huygens Remote Manager (HRM) is a web-based deconvolution platform primarily targeted to microscopy
+		and imaging facilities in academic and industrial environments that must handle large user bases.
+		HRM in an interface to the Huygens software from Scientific Volume Imaging.</p>
 
-	 <p>This software is governed by the CeCILL license under French law and abiding by the rules of distribution of free software.</p>
+		<p>HRM was originally developed at Montpellier Rio Imaging in 2004 by Pierre Travo and Volker Baecker.</p>
 
-	<h3>Third-party software</h3>
+		<p>Now, HRM is a joint project of Montpellier Rio Imaging, the Friedrich Miescher Institute in Basel, the 
+		BioImaging and Optics platform at the Ecole Polytechnique Fédérale de Lausanne and Scientific Volume 
+		Imaging.</p>
 
-	<p>Huygens Remote Manager uses the <a href="javascript:openWindow('http://adodb.sourceforge.net/')">ADOdb Database Abstraction Library</a>.</p>
+		<p>This software is governed by the CeCILL license under French law and abiding by the rules of distribution of free software.</p>
 
-	<p>Icons in Huygens Remote Manager are taken from the <a href="javascript:openWindow('http://icon-king.com/?p=15')">Nuvola icon theme v1.0 by David Vignoni</a>.</p>
+		<h3>Third-party software</h3>
 
-    </div> <!-- content -->
-    
+		<p>Huygens Remote Manager uses the <a href="javascript:openWindow('http://adodb.sourceforge.net/')">ADOdb Database Abstraction Library</a>.</p>
+
+		<p>Icons in Huygens Remote Manager are taken from the <a href="javascript:openWindow('http://icon-king.com/?p=15')">Nuvola icon theme v1.0 by David Vignoni</a>.</p>
+	
+	</div> <!-- about -->
+
+</div> <!-- content -->
+
 <?php
 
 include("footer.inc.php");

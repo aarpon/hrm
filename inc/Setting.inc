@@ -911,6 +911,97 @@ Class ParameterSetting extends Setting {
 	    return $result;     
 	}*/
 
+    // sample size adaption for all microscopes
+    // TODO don't answer false if data is over sampled
+    // TODO refactor
+    //!---------------------------------------------------------
+    // @function    ParameterSetting::isLateralNyquistRateOK
+    // @return      -1 : oversampled, 0 : optimal, 1: valid, 2 : invalid
+    //!---------------------------------------------------------    
+    function isLateralNyquistRateOK() {
+
+        // Use the most restrictive wavelength to compute the adaption
+        $parameter = $this->parameter('EmissionWavelength');
+        if ($this->isTwoPhoton() || $this->isMultiPointOrSinglePointConfocal()) {
+            $parameter = $this->parameter('ExcitationWavelength');
+        }
+        $value = $parameter->value();
+        $mostRestrictiveWavelengthChannel = 0;
+        $mostRestrictiveWavelength = $value[0];
+        for ($i = 1; $i < $this->numberOfChannels(); $i++) {
+            if ($value[$i] < $mostRestrictiveWavelength) {
+                $mostRestrictiveWavelengthChannel = $i;
+                $mostRestrictiveWavelength = $value[$i];
+            }
+        }
+
+        // check if undersampled or oversampled sample size
+        $parameter = $this->parameter('CCDCaptorSizeX');
+        $deltaX = (float) $parameter->value();
+        // ideal sample size
+        $lambda = $mostRestrictiveWavelength;
+        $parameter = $this->parameter('NumericalAperture');
+        $na = (float) $parameter->value();
+        $idealDeltaX = $lambda / (4 * $na);
+        if ($this->isMultiPointOrSinglePointConfocal())
+            $idealDeltaX /= 2;
+        // sampling factor
+        $factor = $idealDeltaX / $deltaX;
+
+        if ( $factor >= 1.0 ) {
+			return -1; // Oversampled
+        } elseif ( $factor >= 0.7 && $factor <= 1.0 ) {
+            return 0; // Optimal
+        } elseif ( $factor > 0.3 && $factor < 0.7 ) {
+            return 1; // Valid
+        } else {
+            return 2; // Invalid
+        }
+    }
+
+    // sample size adaption for all microscopes
+    // TODO don't answer false if data is over sampled
+    // TODO refactor
+    //!---------------------------------------------------------
+    // @function    ParameterSetting::isAxialNyquistRateOK
+    // @return      -1 : oversampled, 0 : optimal, 1: valid, 2 : invalid
+    //!---------------------------------------------------------    
+    function isAxialNyquistRateOK() {
+
+        // Use the most restrictive wavelength to compute the adaption
+        $parameter = $this->parameter('EmissionWavelength');
+        if ($this->isTwoPhoton() || $this->isMultiPointOrSinglePointConfocal()) {
+            $parameter = $this->parameter('ExcitationWavelength');
+        }
+        $value = $parameter->value();
+        $mostRestrictiveWavelengthChannel = 0;
+        $mostRestrictiveWavelength = $value[0];
+        for ($i = 1; $i < $this->numberOfChannels(); $i++) {
+            if ($value[$i] < $mostRestrictiveWavelength) {
+                $mostRestrictiveWavelengthChannel = $i;
+                $mostRestrictiveWavelength = $value[$i];
+            }
+        }
+
+        // if 3-D, check if undersampling in z direction
+        if ($this->isThreeDimensional()) {
+            $parameter = $this->parameter('ZStepSize');
+            $sampleSizeZ = (float) $parameter->value();
+            $idealSampleSizeZ = $this->idealSampleSizeZ(); // EDIT
+            $z_factor = $idealSampleSizeZ / $sampleSizeZ;
+        }
+
+        if ( $z_factor >= 1.0 ) {
+			return -1; // Oversampled
+        } elseif ( $z_factor >= 0.7 && $z_factor <= 1.0 ) {
+            return 0; // Optimal
+        } elseif ( $z_factor > 0.3 && $z_factor < 0.7 ) {
+            return 1; // Valid
+        } else {
+            return 2; // Invalid
+        }
+    }
+
 	// sample size adaption for all microscopes
 	// TODO don't answer false if data is over sampled
 	// TODO refactor

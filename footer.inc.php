@@ -55,8 +55,10 @@
 
     <div id="footer">
         created 2004 by <a href="mailto:volker.baecker@mri.cnrs.fr">Volker 
-        Baecker</a>, modified 2006-2007 by <a href="mailto:asheesh.gulati@epfl.ch">
-        Asheesh Gulati</a> &amp; <a href="mailto:aaron.ponti@fmi.ch">Aaron 
+        Baecker</a><br />modified 2006-2009 by <a href="mailto:asheesh.gulati@epfl.ch">
+	Asheesh Gulati</a>, <a href="mailto:alessandra.griffa@epfl.ch">Alessandra Griffa</a>, 
+	<a href="mailto:jose@svi.nl">Jos&eacute; Vi&ntilde;a</a> &amp; 
+	<a href="mailto:aaron.ponti@fmi.ch">Aaron 
         Ponti</a>
     </div>
     
