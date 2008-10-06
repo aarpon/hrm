@@ -773,7 +773,17 @@ Class JobDescription {
     // remove file extension
     //$inputFile = explode(".", end($inputFile));
     //$inputFile = $inputFile[0];
-    $inputFile = substr(end($inputFile), 0, strrpos(end($inputFile), "."));
+    $parameterSetting = $this->parameterSetting;
+    $parameter = $parameterSetting->parameter('ImageFileFormat');
+	$fileFormat = $parameter->value();
+    if ( strcasecmp( $fileFormat, 'lif' ) == 0 ) {
+      if ( preg_match("/^(.*)\.lif\s\((.*)\)/i", $inputFile[0], $match) ) {
+        $inputFile = $match[ 1 ] . '_' . $match[ 2 ];
+      } else {
+        $inputFile = substr(end($inputFile), 0, strrpos(end($inputFile), ".")); }
+    } else {
+      $inputFile = substr(end($inputFile), 0, strrpos(end($inputFile), "."));
+    }
     return $inputFile;
   } 
 

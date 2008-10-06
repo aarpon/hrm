@@ -911,12 +911,10 @@ Class ParameterSetting extends Setting {
 	    return $result;     
 	}*/
 
-    // sample size adaption for all microscopes
-    // TODO don't answer false if data is over sampled
-    // TODO refactor
+    // checks whether the pixel size satisfies the Nyquist criterion
     //!---------------------------------------------------------
     // @function    ParameterSetting::isLateralNyquistRateOK
-    // @return      -1 : oversampled, 0 : optimal, 1: valid, 2 : invalid
+    // @return      'oversampled', 'optimal', 'valid', 'invalid'
     //!---------------------------------------------------------    
     function isLateralNyquistRateOK() {
 
@@ -949,25 +947,28 @@ Class ParameterSetting extends Setting {
         $factor = $idealDeltaX / $deltaX;
 
         if ( $factor >= 1.0 ) {
-			return -1; // Oversampled
+			return 'oversampled';
         } elseif ( $factor >= 0.7 && $factor <= 1.0 ) {
-            return 0; // Optimal
+            return 'optimal';
         } elseif ( $factor > 0.3 && $factor < 0.7 ) {
-            return 1; // Valid
+            return 'valid';
         } else {
-            return 2; // Invalid
+            return 'invalid';
         }
     }
 
-    // sample size adaption for all microscopes
-    // TODO don't answer false if data is over sampled
-    // TODO refactor
+    // checks whether the z step satisfies the Nyquist criterion
     //!---------------------------------------------------------
     // @function    ParameterSetting::isAxialNyquistRateOK
-    // @return      -1 : oversampled, 0 : optimal, 1: valid, 2 : invalid
+    // @return      'oversampled', 'optimal', 'valid', 'invalid'
     //!---------------------------------------------------------    
     function isAxialNyquistRateOK() {
 
+		// If 2D, then return
+        if ($this->isThreeDimensional() == false) {
+			return 'invalid';
+		}
+			
         // Use the most restrictive wavelength to compute the adaption
         $parameter = $this->parameter('EmissionWavelength');
         if ($this->isTwoPhoton() || $this->isMultiPointOrSinglePointConfocal()) {
@@ -983,22 +984,19 @@ Class ParameterSetting extends Setting {
             }
         }
 
-        // if 3-D, check if undersampling in z direction
-        if ($this->isThreeDimensional()) {
-            $parameter = $this->parameter('ZStepSize');
-            $sampleSizeZ = (float) $parameter->value();
-            $idealSampleSizeZ = $this->idealSampleSizeZ(); // EDIT
-            $z_factor = $idealSampleSizeZ / $sampleSizeZ;
-        }
+		$parameter = $this->parameter('ZStepSize');
+        $sampleSizeZ = (float) $parameter->value();
+        $idealSampleSizeZ = $this->idealSampleSizeZ(); // EDIT
+        $z_factor = $idealSampleSizeZ / $sampleSizeZ;
 
         if ( $z_factor >= 1.0 ) {
-			return -1; // Oversampled
+			return 'oversampled';
         } elseif ( $z_factor >= 0.7 && $z_factor <= 1.0 ) {
-            return 0; // Optimal
+            return 'optimal';
         } elseif ( $z_factor > 0.3 && $z_factor < 0.7 ) {
-            return 1; // Valid
+            return 'valid';
         } else {
-            return 2; // Invalid
+            return 'invalid';
         }
     }
 

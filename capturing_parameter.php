@@ -167,23 +167,12 @@ $value = $parameter->value();
 $textForCaptorSize = "pixel size (nm)";
 
 // display visual feedback for values validity using the following CSS classes: oversampled | optimal | valid | invalid
-$lateralSamplingValidity = $_SESSION['setting']->isLateralNyquistRateOK();
-if ( $lateralSamplingValidity == -1 ) {
-  $lateralClass = "oversampled";
-} elseif ( $lateralSamplingValidity == 0 ) {
-  $lateralClass = "optimal";
-} elseif ( $lateralSamplingValidity == 1 ) {
-  $lateralClass = "valid";
-} else {
-  $lateralClass = "invalid";
-}
-
 ?>
                 <ul>
                 
                     <li>
                         <?php echo $textForCaptorSize ?>:
-                        <input name="CCDCaptorSizeX" type="text" class="<?php echo $lateralClass ?>" size="5" value="<?php echo $value ?>" /> <br/>
+                        <input name="CCDCaptorSizeX" type="text" class="<?php echo $_SESSION['setting']->isLateralNyquistRateOK(); ?>" size="5" value="<?php echo $value ?>" /> <br/>
 			<a href="calculate_pixel_size.php">calculate</a> from microscope and camera parameters <br/>
                         <!-- <input name="calculate" type="submit" value="calculate" style="width:110px; margin: 2px;" /> -->
 <?php
@@ -211,19 +200,8 @@ if ($_SESSION['setting']->isThreeDimensional()) {
 
   $parameter = $_SESSION['setting']->parameter("ZStepSize");
 
-  $axialSamplingValidity   = $_SESSION['setting']->isAxialNyquistRateOK();
-  if ( $axialSamplingValidity == -1 ) {
-    $axialClass = "oversampled";
-  } elseif ( $axialSamplingValidity == -1 ) {
-    $axialClass = "optimal";
-  } elseif ( $axialSamplingValidity == 1 ) {
-    $axialClass = "valid";
-  } else {
-    $axialClass = "invalid";
-  }
-
 ?>
-                        <input name="ZStepSize" type="text" class="<?php echo $axialClass ?>" size="5" value="<?php echo $parameter->value() ?>" />
+                        <input name="ZStepSize" type="text" class="<?php echo $_SESSION['setting']->isAxialNyquistRateOK(); ?>" size="5" value="<?php echo $parameter->value() ?>" />
 <?php
             
   // display adaption info
