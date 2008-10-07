@@ -109,21 +109,70 @@ function error_message($table) {
 // Query functions
 // =============================================================================
 
-// Create a table with the specified name and fields
+// Create a table with the specified name and fields        OK
 function create_table($name, $fields) {
     global $datadict;
     $sqlarray = $datadict->CreateTableSQL($name, $fields);
     foreach ($sqlarray as $str) {
         echo $str."\n";
     }
-    $rs = $datadict->ExecuteSQLArray($sqlarray);
-    if(!$rs) {
+    $rs = $datadict->ExecuteSQLArray($sqlarray);    // return 0 if failed, 1 if executed all but with errors, 2 if executed successfully 
+    if($rs != 2) {
+echo "An error occured in creating table " . $name . "\n";
        $msg = error_message($name);
        write_message($msg);
        write_to_error($msg);
        return False;
     }
+echo "Table " . $name . " has been created\n";
     write_to_log("Table " . $name . " has been created.");
+    return True;
+}
+
+// Drop the table with the specified name       OK
+function drop_table($tabname) {
+   global $datadict, $db;
+   
+   $sqlarray = $datadict->DropTableSQL($tabname);
+   $rs = $datadict->ExecuteSQLArray($sqlarray);
+   if($rs != 2) {
+echo "An error occured in dropping table " . $tabname . "\n";
+        $msg = error_message($tabname);
+        write_message($msg);
+        write_to_error($msg);
+        return False;
+   }
+echo "Table " . $tabname . " has been dropped\n";
+   write_to_log("Table " . $tabname . " has been dropped.");
+   return True;
+}
+
+// Insert a set of records ($records in a multidimensional associative array) into the table $tabname       OK
+function insert_records($records,$tabname) {
+    global $db;
+    
+    $keys = array_keys($records);
+    for($i=0; $i<count($records[$keys[0]]); $i++) {
+        $record = array();
+        foreach($keys as $key)
+            $record[$key] = $records[$key][$i];
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        $db->Execute($insertSQL);
+    }
+    return True;
+}
+
+// Check the existence and the structure of a table     OK
+// If the table does not exist, it is created;
+// if a field is not correct, it is altered;
+// if a field does not exist, it is added and the default value for that field is put in the records 
+function check_table_existence_and_structure($tabname,$flds) {
+    global $datadict;
+    
+    $sqlarray = $datadict->ChangeTableSQL($tabname, $flds);
+    $rs = $datadict->ExecuteSQLArray($sqlarray);    // return 0 if failed, 1 if executed all but with errors, 2 if executed successfully 
+    if($rs != 2)
+        return False;
     return True;
 }
 
@@ -148,7 +197,7 @@ function create_string_for_update($key,$table_structure) {
 }
 
 // Check if the table $table exists; if not, create the table
-function check_table_existence($var,$table_existance) {
+function check_table_existence($var,$table_existence) {
 echo "Enter into check_table_existence\n";
     global $table, $connection;
 
@@ -156,7 +205,7 @@ echo "Enter into check_table_existence\n";
     $result = $connection->Execute($query);
     
     if(!$result) {  // the table does not exist
-        $table_existance = false;
+        $table_existence = false;
         
         $keys = array_keys($var);
         $n_fields = count($keys);
@@ -174,7 +223,7 @@ echo "Enter into check_table_existence\n";
         
         $query .= ")";
  
-echo "query for check table existance = " . $query . "\n";
+echo "query for check table existence = " . $query . "\n";
 
         $test = $connection->Execute($query);
         
@@ -323,7 +372,7 @@ echo "result for insert field = " . $result . "\n";
 // Script
 // =============================================================================
 
-//TODO: change $message to $msg and die() to return
+
 //TODO: add conditions for the comparison table_structure - result of DESCRIBE (problems when an attribute is not define)
 //NOTE: this rutine is not robust if the name of a field (column) of a table has been modified
 
@@ -338,7 +387,7 @@ if (!($fh = @fopen($log_file, 'a'))) {
     write_message("Can't open the dbupdate log file.");
     return;
 }
-write_to_log("");
+write_to_log(timestamp());
 
 // Open error log file
 $error_file = "run/dbupdate_error.log";
@@ -346,8 +395,8 @@ if (!($efh = @fopen($error_file, 'a'))) { // If the file does not exist, it is c
     write_message("Can't open the dbupdate error log file."); // If the file does not exist and cannot be created, an error message is displayed
     return;
 }
-write_to_error("");
- 
+write_to_error(timestamp());
+
 // Connect to the database
 $dsn = $db_type."://".$db_user.":".$db_password."@".$db_host."/".$db_name;
 $db = ADONewConnection($dsn); 
@@ -375,7 +424,8 @@ if (!in_array("global_variables", $tables)) {
         name C(30) KEY,
         value C(30) NOTNULL
     ";
-    if (!create_table("global_variables", $flds)) return;
+    if (!create_table("global_variables", $flds))
+        return;
 }
 
 // Check if variable dbrevision exists
@@ -393,6 +443,7 @@ else {
     $current_revision = $o->value;
 }
 
+
 // -----------------------------------------------------------------------------
 // Drop and Create fixed tables
 // -----------------------------------------------------------------------------
@@ -405,11 +456,17 @@ else {
 
 // boundary_values
 // -----------------------------------------------------------------------------
-if (in_array("boundary_values", $tables)) {
-    // Drop table
-    // TODO: drop table
+// Drop table if it exists
+$tabname = "boundary_values";
+if (in_array($tabname, $tables)) {
+    if (!drop_table($tabname)) {
+        $msg = error_message($tabname);
+        write_message($msg);
+        write_to_error($msg);    
+    return;
+    }
 }
-// Create table with fixed records
+// Create table
 $flds = "
     parameter C(255) KEY,
     min C(30),
@@ -418,9 +475,123 @@ $flds = "
     max_included \"enum ('T', 'F')\" DEFAULT T,
     standard C(30)
 ";
-if (!create_table("boundary_values", $flds)) return;
+if (!create_table("boundary_values", $flds)) {
+    $msg = error_message($tabname);
+    write_message($msg);
+    write_to_error($msg);    
+    return;
+}
+$sqlarray = $datadict->ChangeTableSQL($tabname, $flds);
+$rs = $datadict->ExecuteSQLArray($sqlarray);    // return 0 if failed, 1 if executed all but with errors, 2 if executed successfully 
+if($rs != 2) {
+echo "An error occured in creating table " . $tabname . "\n";
+    $msg = error_message($tabname);
+    write_message($msg);
+    write_to_error($msg);
+    return;
+}
+else
+    echo "Table " . $tabname . " has been created\n";
+// Insert records in table
+$records = array("parameter"=>array("PinholeSize","RemoveBackgroundPercent","BackgroundOffsetPercent","ExcitationWavelength",
+                    "EmissionWavelength","CMount","TubeFactor","CCDCaptorSizeX","CCDCaptorSizeY","ZStepSize","TimeInterval",
+                    "SignalNoiseRatio","NumberOfIterations","QualityChangeStoppingCriterion"),
+                 "min"=>array("0","0","0","0","0","0.4","1","1","1","50","0.001","0","1","0"),
+                 "max"=>array("NULL","100","","NULL","NULL","1","2","25000","25000","600000","NULL","100","100","NULL"),
+                 "min_included"=>array("F","F","T","F","F","T","T","T","T","T","F","F","T","T"),
+                 "max_included"=>array("T","T","F","T","T","T","T","T","T","T","T","T","T","T"),
+                 "standard"=>array("NULL","NULL","NULL","NULL","NULL","1","1","NULL","NULL","NULL","NULL","NULL","NULL","NULL"));
+if(!insert_records($records,$tabname)) {
+    $msg = error_message($tabname);
+    write_message($msg);
+    write_to_error($msg);    
+    return;
+}
+
+
+////TODO:
+//$tabname = "possible_values";
+//$tabname = "geometry";
+//$tabname = "file_format";
+//$tabname = "file_extension";
+
+
+// -----------------------------------------------------------------------------
+// Check the existence and the structure of the tables with variable contents
+// -----------------------------------------------------------------------------
+
+// job_files
+// -----------------------------------------------------------------------------
+$tabname = "job_files";
+$flds = "
+    job C(30) KEY DEFAULT 0,
+    owner C(30) DEFAULT 0,
+    file C(255) DEFAULT 0
+";
+if(!check_table_existence_and_structure($tabname,$flds)) {
+    $msg = error_message($tabname);
+    write_message($msg);
+    write_to_error($msg);    
+    return;
+}
+
+////TODO:
+//$tabname = "job_parameter_setting";
+//$tabname = "job_queue";
+//$tabname = "job_task_setting";
+//$tabname = "parameter_setting";
+//$tabname = "server";
+//$tabname = "task_setting";
+//$tabname = "username";
+
+
+// -----------------------------------------------------------------------------
+// Check the existence and the structure of the tables with variable contents
+// and the format of the content of the field 'value'
+// -----------------------------------------------------------------------------
+
+// task_parameter
+// -----------------------------------------------------------------------------
+$tabname = "task_parameter";
+$flds = "
+    owner C(30) NOTNULL DEFAULT 0,
+    setting C(30) NOTNULL,
+    name C(30) NOTNULL,
+    value C(255) DEFAULT NULL
+";
+if (in_array($tabname, $tables)) {
+    $rs = $db->Execute("SELECT value FROM " . $tabname . " WHERE name = 'NumberOfIterationsRange'");
+    if($rs) {
+        while ($value = $rs->FetchRow()) {
+            //TODO: control the format of value
+        }
+    }
+}
+if(!check_table_existence_and_structure($tabname,$flds)) {
+    $msg = error_message($tabname);
+    write_message($msg);
+    write_to_error($msg);    
+    return;
+}
+
+
+//// TODO:
+//$tabname = "parameter";
+//$tabname = "job_task_parameter";
+//$tabname = "job_parameter";
+
+
+// TODO: part of the script that handle the modification of the database in time
+
+
+fclose($fh);
+
 
 return;
+
+
+
+
 
 $table = "boundary_values";
 $table_structure = array("parameter"=>array("varchar(255)","NOT NULL","DEFAULT '0'"),
