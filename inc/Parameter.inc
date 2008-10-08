@@ -1545,4 +1545,12 @@ Class DeconvolutionAlgorithm extends ChoiceParameter {
 		}
 }
 	
-
+Class CoverslipRelativePosition extends ChoiceParameter {
+	function CoverslipRelativePosition( ) {
+		$this->ChoiceParameter('CoverslipRelativePosition');
+	}
+	
+	function isForImage() {
+		return True;
+	}
+}

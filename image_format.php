@@ -282,6 +282,42 @@ $parameter = $_SESSION['setting']->parameter("PointSpreadFunction");
                 
             </fieldset>
             
+            <h4>Do you want to enable depth-specific PSF correction? For this to work properly, you have to specify the relative position of the coverslip. You can also decide to use a static PSF without correction.</h4>
+            
+            <fieldset class="setting">
+            
+                <legend>
+                    <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=MismatchDistortsPsf')"><img src="images/help.png" alt="?" /></a>
+                    Depth-dependent PSF correction
+                </legend>
+                
+                <select name="CoverslipRelativePosition">
+
+                <?php
+
+                  $parameter = $_SESSION['setting']->parameter("CoverslipRelativePosition");
+                  $possibleValues = $parameter->possibleValues();
+                  $selectedValue  = $parameter->value();
+
+                  foreach($possibleValues as $possibleValue) {
+                  $translation = $_SESSION['setting']->translation("CoverslipRelativePosition", $possibleValue);
+                  if ( $possibleValue == $selectedValue ) {
+                    $option = "\"selected\"";
+                  } else {
+                    $option = "";
+                  }
+                ?>
+
+                <option <?php echo $option?> value="<?php echo $possibleValue?>"><?php echo $translation?></option>                  
+
+                <?php
+                  }
+                ?>
+                
+                </select>
+                
+            </fieldset>
+            
             <div><input name="OK" type="hidden" /></div>
             
         </form>

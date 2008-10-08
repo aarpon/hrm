@@ -306,10 +306,17 @@ Class DatabaseConnection {
           }
           $parameterValue = "#".implode("#", $parameterValue);
       }
-      if (!$existsAlready) {       
-	$query = "insert into $table values ('" . $user . "', '" . $name . "', '" . $parameterName . "', '" . $parameterValue . "')";
+      if (!$existsAlready) {
+        $query = "insert into $table values ('" . $user . "', '" . $name . "', '" . $parameterName . "', '" . $parameterValue . "')";
       } else {
-	$query = "update $table set value = '" . $parameterValue . "' where owner='" . $user . "' and setting='" . $name . "' and name='" . $parameterName . "'"; 
+        // Check that the parameter itself exists
+        $query = "select name from $table where owner='" . $user . "' and setting='" . $name . "' and name='" . $parameterName . "' limit 1";
+        $newValue = $this->queryLastValue($query);
+        if ( $newValue != NULL ) {
+          $query = "update $table set value = '" . $parameterValue . "' where owner='" . $user . "' and setting='" . $name . "' and name='" . $parameterName . "'"; 
+        } else {
+          $query = "insert into $table values ('" . $user . "', '" . $name . "', '" . $parameterName . "', '" . $parameterValue . "')";
+        }
       } 
       $result = $result && $this->execute($query);
     } 

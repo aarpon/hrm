@@ -441,7 +441,8 @@ Class ParameterSetting extends Setting {
 			'PinholeSize',
 			'PinholeSpacing',
 			'PointSpreadFunction',
-			'PSF'
+			'PSF',
+			'CoverslipRelativePosition'
 		);
 		$db = new DatabaseConnection();
 		foreach ($parameterClasses as $class) {
