@@ -266,7 +266,11 @@ function check($value) {
 $parameter = $_SESSION['setting']->parameter("PointSpreadFunction");
 
 ?>
-
+            <?php
+            $turnOnPSFAdaptationOnClick  = " onclick=\"javascript:fixCoverslip( false )\"";
+            $turnOffPSFAdaptationOnClick = " onclick=\"javascript:fixCoverslip( true )\"";
+            ?>
+            
             <h4>Would you like to use an existing measured PSF obtained from bead images or a theoretical PSF generated from explicitly specified parameters?</h4>
             
             <fieldset class="setting">
@@ -276,9 +280,9 @@ $parameter = $_SESSION['setting']->parameter("PointSpreadFunction");
                     PSF
                 </legend>
                 
-                <input type="radio" name="PointSpreadFunction" value="theoretical" <?php if ($parameter->value() == "theoretical") echo "checked=\"checked\"" ?>/><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=TheoreticalPsf')"><img src="images/help.png" alt="?" /></a>Theoretical
+                <input type="radio" name="PointSpreadFunction" value="theoretical" <?php if ($parameter->value() == "theoretical") echo "checked=\"checked\""?> <?php echo $turnOnPSFAdaptationOnClick ?>/><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=TheoreticalPsf')"><img src="images/help.png" alt="?" /></a>Theoretical
                 
-                <input type="radio" name="PointSpreadFunction" value="measured" <?php if ($parameter->value() == "measured") echo "checked=\"checked\"" ?>/><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=ExperimentalPsf')"><img src="images/help.png" alt="?" /></a>Measured
+                <input type="radio" name="PointSpreadFunction" value="measured" <?php if ($parameter->value() == "measured") echo "checked=\"checked\"" ?> <?php echo $turnOffPSFAdaptationOnClick ?>/><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=ExperimentalPsf')"><img src="images/help.png" alt="?" /></a>Measured
                 
             </fieldset>
             
@@ -290,8 +294,21 @@ $parameter = $_SESSION['setting']->parameter("PointSpreadFunction");
                     <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=MismatchDistortsPsf')"><img src="images/help.png" alt="?" /></a>
                     Depth-dependent PSF correction
                 </legend>
+
+                <?php
                 
-                <select name="CoverslipRelativePosition">
+                  // Make sure that the adaptation select form item is on if the PSF mode is 'theoretical'
+                  // and 'off' if it is 'measured'
+                  $PSFparameter = $_SESSION['setting']->parameter("PointSpreadFunction");
+                  if ($PSFparameter->value() == "theoretical") {
+                    $state = "";
+                  } else {
+                    $state = "disabled=\"disabled\" ";
+                  }
+                
+                ?>
+                
+                <select name="CoverslipRelativePosition" <?php echo $state ?> >
 
                 <?php
 
@@ -302,13 +319,14 @@ $parameter = $_SESSION['setting']->parameter("PointSpreadFunction");
                   foreach($possibleValues as $possibleValue) {
                   $translation = $_SESSION['setting']->translation("CoverslipRelativePosition", $possibleValue);
                   if ( $possibleValue == $selectedValue ) {
-                    $option = "\"selected\"";
+                    $option = "selected=\"selected\"";
                   } else {
                     $option = "";
                   }
+
                 ?>
 
-                <option <?php echo $option?> value="<?php echo $possibleValue?>"><?php echo $translation?></option>                  
+                <option <?php echo $option?> <?php echo $state?> value="<?php echo $possibleValue?>"><?php echo $translation?></option>                  
 
                 <?php
                   }
