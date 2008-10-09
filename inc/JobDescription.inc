@@ -322,12 +322,12 @@ Class JobDescription {
     return $names;
   } 
 
-  function putMultiChannelScriptOn($script) {
+  function putMultiChannelScriptOn($script, $checkMirror = false) {
     $parameterSetting = $this->parameterSetting;
     $numberOfChannels = $parameterSetting->numberOfChannels();
     $files = $this->files();
     $newScript = $script;
-    $newScript = $newScript . $this->loadImageString();
+    $newScript = $newScript . $this->loadImageString( $checkMirror );
     $newScript = $newScript . '$imageName split -mode all' . "\n";
     $newScript = $newScript . '$imageName del' . "\n"; 
     $fileBase = $this->sourceImageShortName();
@@ -582,7 +582,7 @@ Class JobDescription {
     return $result;
   } 
 
-  function putScriptOn($script) {
+  function putScriptOn($script, $checkMirror = false ) {
     global $resultImagesOwnedByUser;
     global $huygens_group;
     
@@ -595,7 +595,7 @@ Class JobDescription {
       $newScript = $newScript . "exec cp " . '"' . $this->sourceImageName() . '" "' . $this->newNameForSingleTif() . '"' . "\n";
     }  
     // loading and converting
-    $newScript = $newScript . $this->loadImageString();
+    $newScript = $newScript . $this->loadImageString( $checkMirror );
     $parameterSetting = $this->parameterSetting;
     // This test is PARTIALLY overlapping with the test a few lines below
     // TODO Refactor
@@ -627,10 +627,14 @@ Class JobDescription {
       $newScript = $newScript . 'catch {$imageName convertZ2T}' . "\n";
     }
     
+    // We need to pass the the position of the coverslip selected by the user as
+    // an input parameter to JobTaskSetting::putScriptOn( )
+    $coverslipParameter=$parameterSetting->parameter('CoverslipRelativePosition');
+    $coverslipParameterValue=$coverslipParameter->value();
     // manage measured PSF
     if ($psfParam->value() == "theoretical") {
       // operations
-      $newScript = $taskSetting->putScriptOn($newScript);
+      $newScript = $taskSetting->putScriptOn($newScript, $coverslipParameterValue);
     }
     else if ($psfParam->value() == "measured") {
       // operations
@@ -682,7 +686,7 @@ Class JobDescription {
     return $script;
   } 
 
-  function loadImageString() {
+  function loadImageString( $checkForMirror = false ) {
     if ($this->mustReplaceSourceName()) { 
       $imageFileName = $this->newNameForSingleTif();
     } else { 
@@ -703,8 +707,22 @@ Class JobDescription {
     }
     // Turn on history
     $options .= " -logEnable";
-    return 'set imageName [img open "' . $imageFileName . '"' . $options . ']' . "\n" . '$imageName lundo -off' . "\n";
-  } 
+
+    // If the user specified that the coverslip is at the top we need to mirror
+    // the image. But this must be done only when the original dataset is loaded, not
+    // when the splitted channels are loaded. Therefore, by default this function does
+    // check for mirroring only if its input parameter $checkForMirror is
+	// true, and this occurs only when this function is called from Job::createScript( ).
+    $mirror = "";
+    if ( $checkForMirror == true ) {
+      $coverslipParameter=$this->parameterSetting->parameter('CoverslipRelativePosition');
+      $coverslipParameterValue=$coverslipParameter->value();
+      if ( $coverslipParameterValue == 'top' ) {
+        $mirror = 'catch { $imageName mir z }' . "\n";
+      }
+    }
+    return 'set imageName [img open "' . $imageFileName . '"' . $options . ']' . "\n" . '$imageName lundo -off' . "\n" . $mirror;
+  }
 
   // TODO refactor this part
   function saveImageString() {

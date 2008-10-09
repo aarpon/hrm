@@ -153,9 +153,9 @@ Class Job {
 		$this->script = $this->script . "catch {\n";
 		$this->script = $this->script . "huOpt gundo off\n";
 		if ($setting->isMultiChannel() && ($setting->numberOfChannels() > 1)) {
-			$this->script = $this->script . $desc->putMultiChannelScriptOn('');
+			$this->script = $this->script . $desc->putMultiChannelScriptOn('', true);
 		} else {
-			$this->script = $this->script . $desc->putScriptOn('');
+			$this->script = $this->script . $desc->putScriptOn('', true);
 		}
 		$this->script = $this->script . "}\n";
         $id = $desc->id();

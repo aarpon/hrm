@@ -2303,7 +2303,7 @@ Class JobTaskSetting extends TaskSetting {
 		return "job_task_parameter";
 	}
 
-  	function putScriptOn($script) {
+  	function putScriptOn($script, $coverslipRelativePosition) {
 		$step = 1;
 		$newScript = $script;
 		$parameter = $this->parameter('RemoveNoise');
@@ -2314,11 +2314,20 @@ Class JobTaskSetting extends TaskSetting {
 			$newScript = $newScript . $this->destroyImageString($source);
 			$step++;
 		}
+		
+		// The psf computation string depends on the position of the coverslip
+		// selected by the user. If it is either 'bottom' or 'top' we let
+		// Huygens adapt the PSF, if it is 'ignore' we ask to create a fixed
+		// PSF with the given parameters
+		$constant = 0;
+		if ( $coverslipRelativePosition == 'ignore' ) {
+			$constant = 1;
+		}
 		$parameter = $this->parameter('RemoveBackground');
 		if ($parameter->isTrue()) {
 			$source = $this->sourceForStep($step);
 			$dest = $this->destinationForStep($step);
-			$newScript = $newScript . $this->psfComputationString($source);
+			$newScript = $newScript . $this->psfComputationString($source, $constant, 0);
 			$newScript = $newScript . $this->removeBackgroundString($source, $dest);
 			$newScript = $newScript . $this->destroyImageString($source);
 			$step++;
@@ -2328,7 +2337,7 @@ Class JobTaskSetting extends TaskSetting {
 		if ($parameter->isTrue()) {
 			$source = $this->sourceForStep($step);
 			$dest = $this->destinationForStep($step);
-			$newScript = $newScript . $this->psfComputationString($source);
+			$newScript = $newScript . $this->psfComputationString($source, $constant, 0);
 			$newScript = $newScript . $this->fullRestorationString($source, $dest);
 			$newScript = $newScript . $this->destroyImageString($source);
 			$step++;
@@ -2427,7 +2436,7 @@ Class JobTaskSetting extends TaskSetting {
 	}
 
 	function psfComputationString($source, $constant = 0, $position = 0) {
-        // To calculate a theoretical PSF, the best thing is to provide an emtpy
+		// To calculate a theoretical PSF, the best thing is to provide an empty
         // one. Huygens will take the necessary decissions, see
         // http://support.svi.nl/wiki/TheoreticalPsf
         if (!$constant ) {
@@ -2437,7 +2446,7 @@ Class JobTaskSetting extends TaskSetting {
         // parameters, but it won't be adapted to the sample depth if spherical
         // aberration is present.
 		return 'catch { ' . $source . ' genpsf -> psf -dims fullpadpar -zPos '.
-               $position .' }' . "\n";
+			$position .' }' . "\n";
 	}
 
 	function removeNoiseString($source, $dest) {
