@@ -475,7 +475,7 @@ $flds = "
     max_included \"enum ('T', 'F')\" DEFAULT T,
     standard C(30)
 ";
-if (!create_table("boundary_values", $flds)) {
+if (!create_table($tabname, $flds)) {
     $msg = error_message($tabname);
     write_message($msg);
     write_to_error($msg);    
@@ -509,8 +509,142 @@ if(!insert_records($records,$tabname)) {
 }
 
 
-////TODO:
-//$tabname = "possible_values";
+// possible_values
+// -----------------------------------------------------------------------------
+// Drop table if it exists
+$tabname = "possible_values";
+if (in_array($tabname, $tables)) {
+    if (!drop_table($tabname)) {
+        $msg = error_message($tabname);
+        write_message($msg);
+        write_to_error($msg);    
+    return;
+    }
+}
+// Create table
+$flds = "
+    parameter C(30) NOTNULL DEFAULT 0,
+    value C(255) DEFAULT NULL,
+    translation C(50) DEFAULT NULL,
+    isDefault \"enum ('T', 'F')\" DEFAULT F
+";
+// PRIMARY KEY (parameter value)
+if (!create_table($tabname, $flds)) {
+    $msg = error_message($tabname);
+    write_message($msg);
+    write_to_error($msg);    
+    return;
+}
+$sqlarray = $datadict->ChangeTableSQL($tabname, $flds);
+$rs = $datadict->ExecuteSQLArray($sqlarray);    // return 0 if failed, 1 if executed all but with errors, 2 if executed successfully 
+if($rs != 2) {
+echo "An error occured in creating table " . $tabname . "\n";
+    $msg = error_message($tabname);
+    write_message($msg);
+    write_to_error($msg);
+    return;
+}
+else
+    echo "Table " . $tabname . " has been created\n";
+// Insert records in table
+$records = array("parameter"=>array("IsMultiChannel","IsMultiChannel",
+                            "ImageFileFormat","ImageFileFormat","ImageFileFormat","ImageFileFormat","ImageFileFormat","ImageFileFormat","ImageFileFormat","ImageFileFormat",
+                            "NumberOfChannels","NumberOfChannels","NumberOfChannels","NumberOfChannels",
+                            "ImageGeometry","ImageGeometry","ImageGeometry",
+                            "MicroscopeType","MicroscopeType","MicroscopeType","MicroscopeType",
+                            "ObjectiveMagnification","ObjectiveMagnification","ObjectiveMagnification","ObjectiveMagnification",
+                            "ObjectiveType","ObjectiveType","ObjectiveType",
+                            "SampleMedium","SampleMedium",
+                            "Binning","Binning","Binning","Binning","Binning",
+                            "MicroscopeName","MicroscopeName","MicroscopeName","MicroscopeName","MicroscopeName","MicroscopeName","MicroscopeName","MicroscopeName",
+                            "Resolution","Resolution","Resolution","Resolution","Resolution",
+                            "RemoveNoiseEffectiveness","RemoveNoiseEffectiveness","RemoveNoiseEffectiveness",
+                            "OutputFileFormat","OutputFileFormat","OutputFileFormat","OutputFileFormat","OutputFileFormat",
+                            "ObjectiveMagnification","ObjectiveMagnification",
+                            "PointSpreadFunction","PointSpreadFunction",
+                            "HasAdaptedValues","HasAdaptedValues",
+                            "ImageFileFormat","ImageFileFormat","ImageFileFormat","ImageFileFormat","ImageFileFormat",
+                            "ObjectiveType"),
+                       "value"=>array("True","False",
+                            "dv","stk","tiff-series","tiff-single","ims","lsm","lsm-single","pic",
+                            "1","2","3","4",
+                            "XYZ","XY - time","XYZ - time",
+                            "widefield","multipoint confocal (spinning disk)","single point confocal","two photon",
+                            "10","20","25","40",
+                            "oil","water","air",
+                            "water / buffer","liquid vectashield / 90-10 (v:v) glycerol - PBS ph 7.4",
+                            "1","2","3","4","5",
+                            "Zeiss 510","Zeiss 410","Zeiss Two Photon 1","Zeiss Two Photon 2","Leica DMRA","Leica DMRB","Leica Two Photon 1","Leica Two Photon 2",
+                            "128","256","512","1024","2048",
+                            "1","2","3",
+                            "TIFF 8-bit","TIFF 16-bit","IMS (Imaris Classic)","ICS (Image Cytometry Standard)","OME-XML",
+                            "63","100",
+                            "theoretical","measured",
+                            "True","False",
+                            "ome-xml","tiff","lif","tiff-leica","ics",
+                            "glycerol"),
+                       "translation"=>array("","",
+                            "Delta Vision (*.dv)","Metamorph (*.stk)","Numbered TIFF series (*.tif, *.tiff)","TIFF (*.tif, *.tiff) single XY plane","Imaris Classic (*.ims)","Zeiss (*.lsm)","Zeiss (*.lsm) single XY plane","Biorad (*.pic)",
+                            "","","","",
+                            "","","",
+                            "widefield","nipkow","confocal","widefield",
+                            "","","","",
+                            "1.515","1.3381","1.0",
+                            "1.339","1.47",
+                            "","","","","",
+                            "","","","","","","","",
+                            "","","","","",
+                            "","","",
+                            "tiff","tiff16","imaris","ics","ome",
+                            "","",
+                            "","",
+                            "","",
+                            "OME-XML (*.ome)","Olympus TIFF (*.tif, *.tiff)","Leica (*.lif)","Leica TIFF series (*.tif, *.tiff)","Image Cytometry Standard (*.ics/*.ids)",
+                            "1.4729"),
+                       "isDefault"=>array("f","f",
+                            "f","f","f","f","f","f","f","f",
+                            "f","f","f","f",
+                            "f","f","f",
+                            "f","f","f","f",
+                            "f","f","f","f",
+                            "f","f","f",
+                            "f","f",
+                            "f","f","f","f","f",
+                            "f","f","f","f","f","f","f","f",
+                            "f","f","f","f","f",
+                            "f","f","f",
+                            "f","f","t","f","f",
+                            "f","f",
+                            "f","f",
+                            "f","f",
+                            "f","f","f","f","f",
+                            "f"),
+                       "parameter_key"=>array("IsMultiChannel1","IsMultiChannel2",
+                            "ImageFileFormat1","ImageFileFormat2","ImageFileFormat3","ImageFileFormat4","ImageFileFormat5","ImageFileFormat6","ImageFileFormat7","ImageFileFormat8",
+                            "NumberOfChannels1","NumberOfChannels2","NumberOfChannels3","NumberOfChannels4",
+                            "ImageGeometry1","ImageGeometry2","ImageGeometry3",
+                            "MicroscopeType1","MicroscopeType2","MicroscopeType3","MicroscopeType4",
+                            "ObjectiveMagnification1","ObjectiveMagnification2","ObjectiveMagnification3","ObjectiveMagnification4",
+                            "ObjectiveType1","ObjectiveType2","ObjectiveType3",
+                            "SampleMedium1","SampleMedium2",
+                            "Binning1","Binning2","Binning3","Binning4","Binning5",
+                            "MicroscopeName1","MicroscopeName2","MicroscopeName3","MicroscopeName4","MicroscopeName5","MicroscopeName6","MicroscopeName7","MicroscopeName8",
+                            "Resolution1","Resolution2","Resolution3","Resolution4","Resolution5",
+                            "RemoveNoiseEffectiveness1","RemoveNoiseEffectiveness2","RemoveNoiseEffectiveness3",
+                            "OutputFileFormat1","OutputFileFormat2","OutputFileFormat3","OutputFileFormat4","OutputFileFormat5",
+                            "ObjectiveMagnification1","ObjectiveMagnification2",
+                            "PointSpreadFunction1","PointSpreadFunction2",
+                            "HasAdaptedValues1","HasAdaptedValues2",
+                            "ImageFileFormat1","ImageFileFormat2","ImageFileFormat3","ImageFileFormat4","ImageFileFormat5",
+                            "ObjectiveType"));
+if(!insert_records($records,$tabname)) {
+    $msg = error_message($tabname);
+    write_message($msg);
+    write_to_error($msg);    
+    return;
+}
+
+// TODO
 //$tabname = "geometry";
 //$tabname = "file_format";
 //$tabname = "file_extension";
@@ -593,31 +727,6 @@ return;
 
 
 
-$table = "boundary_values";
-$table_structure = array("parameter"=>array("varchar(255)","NOT NULL","DEFAULT '0'"),
-                        "min"=>array("varchar(30)","NULL","DEFAULT NULL"),
-                        "max"=>array("varchar(30)","NULL","DEFAULT NULL"),
-                        "min_included"=>array("enum('t','f')","NULL","DEFAULT 't'"),
-                        "max_included"=>array("enum('t','f')","NULL","DEFAULT 't'"),
-                        "standard"=>array("varchar(30)","NULL","DEFAULT NULL"));
-$table_content = array("parameter"=>array("'PinholeSize'","'RemoveBackgroundPercent'","'BackgroundOffsetPercent'","'ExcitationWavelength'",
-                                          "'EmissionWavelength'","'CMount'","'TubeFactor'","'CCDCaptorSizeX'",
-                                          "'CCDCaptorSizeY'","'ZStepSize'","'TimeInterval'","'SignalNoiseRatio'",
-                                          "'NumberOfIterations'","'QualityChangeStoppingCriterion'"),
-                       "min"=>array("'0'","'0'","'0'","'0'","'0'","'0.4'","'1'","'1'","'1'","'50'","'0.001'","'0'","'1'","'0'"),
-                       "max"=>array("'NULL'","'100'","''","'NULL'","'NULL'","'1'","'2'","'25000'","'25000'","'600000'","'NULL'","'100'","'100'","'NULL'"),
-                       "min_included"=>array("'f'","'f'","'t'","'f'","'f'","'t'","'t'","'t'","'t'","'t'","'f'","'f'","'t'","'t'"),
-                       "max_included"=>array("'t'","'t'","'f'","'t'","'t'","'t'","'t'","'t'","'t'","'t'","'t'","'t'","'t'","'t'"),
-                       "standard"=>array("'NULL'","'NULL'","'NULL'","'NULL'","'NULL'","'1'","'1'","'NULL'","'NULL'","'NULL'","'NULL'","'NULL'","'NULL'","'NULL'"));
-$table_existance = true;
-if(!check_table_existence($table_structure,$table_existance))
-    return;
-if($table_existance) {  // if the table has been created by the script, the fileds are not checked
-    if(!check_table_fields($table_structure))
-        return;
-}
-if(!check_table_content($table_content))
-    return;
 
 
 // Check 'file_extension'
@@ -696,116 +805,6 @@ $table_structure = array("variable"=>array("varchar(30)","NOT NUL",""),
                         "value"=>array("varchar(30)","NOT NULL","DEFAULT '0'"));
 $table_content = array("variable"=>array("'dbversion'"),
                        "value"=>array("'" . $current_version . "'"));
-$table_existance = true;
-if(!check_table_existence($table_structure,$table_existance))
-    return;
-if($table_existance) {  // if the table has been created by the script, the fileds are not checked
-    if(!check_table_fields($table_structure))
-        return;
-}
-if(!check_table_content($table_content))
-    return;
-
-
-
-// Check 'possible_values'
-// -----------------------
-$table = "possible_values";
-$table_structure = array("parameter"=>array("varchar(30)","NOT NULL","DEFAULT '0'"),
-                        "value"=>array("varchar(255)","NULL","DEFAULT NULL"),
-                        "translation"=>array("varchar(50)","NULL","DEFAULT NULL"),
-                        "isDefault"=>array("enum('t','f')","NULL","DEFAULT 'f'"),
-                        "parameter_key"=>array("varchar(30)","NOT NULL","DEFAULT '0'"));
-$table_content = array("parameter"=>array("'IsMultiChannel'","'IsMultiChannel'",
-                                          "'ImageFileFormat'","'ImageFileFormat'","'ImageFileFormat'","'ImageFileFormat'","'ImageFileFormat'","'ImageFileFormat'","'ImageFileFormat'","'ImageFileFormat'",
-                                          "'NumberOfChannels'","'NumberOfChannels'","'NumberOfChannels'","'NumberOfChannels'",
-                                          "'ImageGeometry'","'ImageGeometry'","'ImageGeometry'",
-                                          "'MicroscopeType'","'MicroscopeType'","'MicroscopeType'","'MicroscopeType'",
-                                          "'ObjectiveMagnification'","'ObjectiveMagnification'","'ObjectiveMagnification'","'ObjectiveMagnification'",
-                                          "'ObjectiveType'","'ObjectiveType'","'ObjectiveType'",
-                                          "'SampleMedium'","'SampleMedium'",
-                                          "'Binning'","'Binning'","'Binning'","'Binning'","'Binning'",
-                                          "'MicroscopeName'","'MicroscopeName'","'MicroscopeName'","'MicroscopeName'","'MicroscopeName'","'MicroscopeName'","'MicroscopeName'","'MicroscopeName'",
-                                          "'Resolution'","'Resolution'","'Resolution'","'Resolution'","'Resolution'",
-                                          "'RemoveNoiseEffectiveness'","'RemoveNoiseEffectiveness'","'RemoveNoiseEffectiveness'",
-                                          "'OutputFileFormat'","'OutputFileFormat'","'OutputFileFormat'","'OutputFileFormat'","'OutputFileFormat'",
-                                          "'ObjectiveMagnification'","'ObjectiveMagnification'",
-                                          "'PointSpreadFunction'","'PointSpreadFunction'",
-                                          "'HasAdaptedValues'","'HasAdaptedValues'",
-                                          "'ImageFileFormat'","'ImageFileFormat'","'ImageFileFormat'","'ImageFileFormat'","'ImageFileFormat'",
-                                          "'ObjectiveType'"),
-                       "value"=>array("'True'","'False'",
-                                      "'dv'","'stk'","'tiff-series'","'tiff-single'","'ims'","'lsm'","'lsm-single'","'pic'",
-                                      "'1'","'2'","'3'","'4'",
-                                      "'XYZ'","'XY - time'","'XYZ - time'",
-                                      "'widefield'","'multipoint confocal (spinning disk)'","'single point confocal'","'two photon '",
-                                      "'10'","'20'","'25'","'40'",
-                                      "'oil'","'water'","'air'",
-                                      "'water / buffer'","'liquid vectashield / 90-10 (v:v) glycerol - PBS ph 7.4'",
-                                      "'1'","'2'","'3'","'4'","'5'",
-                                      "'Zeiss 510'","'Zeiss 410'","'Zeiss Two Photon 1'","'Zeiss Two Photon 2'","'Leica DMRA'","'Leica DMRB'","'Leica Two Photon 1'","'Leica Two Photon 2'",
-                                      "'128'","'256'","'512'","'1024'","'2048'",
-                                      "'1'","'2'","'3'",
-                                      "'TIFF 8-bit'","'TIFF 16-bit'","'IMS (Imaris Classic)'","'ICS (Image Cytometry Standard)'","'OME-XML'",
-                                      "'63'","'100'",
-                                      "'theoretical'","'measured'",
-                                      "'True'","'False'",
-                                      "'ome-xml'","'tiff'","'lif'","'tiff-leica'","'ics'",
-                                      "'glycerol'"),
-                       "translation"=>array("''","''",
-                                            "'Delta Vision (*.dv)'","'Metamorph (*.stk)'","'Numbered TIFF series (*.tif, *.tiff)'","'TIFF (*.tif, *.tiff) single XY plane'","'Imaris Classic (*.ims)'","'Zeiss (*.lsm)'","'Zeiss (*.lsm) single XY plane'","'Biorad (*.pic)'",
-                                            "''","''","''","''",
-                                            "''","''","''",
-                                            "'widefield'","'nipkow'","'confocal'","'widefield'",
-                                            "''","''","''","''",
-                                            "'1.515'","'1.3381'","'1.0'",
-                                            "'1.339 '","'1.47'",
-                                            "''","''","''","''","''",
-                                            "''","''","''","''","''","''","''","''",
-                                            "''","''","''","''","''",
-                                            "''","''","''",
-                                            "'tiff'","'tiff16'","'imaris'","'ics'","'ome'",
-                                            "''","''",
-                                            "''","''",
-                                            "''","''",
-                                            "'OME-XML (*.ome)'","'Olympus TIFF (*.tif, *.tiff)'","'Leica (*.lif)'","'Leica TIFF series (*.tif, *.tiff)'","'Image Cytometry Standard (*.ics/*.ids)'",
-                                            "'1.4729'"),
-                       "isDefault"=>array("'f'","'f'",
-                                          "'f'","'f'","'f'","'f'","'f'","'f'","'f'","'f'",
-                                          "'f'","'f'","'f'","'f'",
-                                          "'f'","'f'","'f'",
-                                          "'f'","'f'","'f'","'f'",
-                                          "'f'","'f'","'f'","'f'",
-                                          "'f'","'f'","'f'",
-                                          "'f'","'f'", 
-                                          "'f'","'f'","'f'","'f'","'f'",
-                                          "'f'","'f'","'f'","'f'","'f'","'f'","'f'","'f'",
-                                          "'f'","'f'","'f'","'f'","'f'",
-                                          "'f'","'f'","'f'",
-                                          "'f'","'f'","'t'","'f'","'f'",
-                                          "'f'","'f'",
-                                          "'f'","'f'",
-                                          "'f'","'f'",
-                                          "'f'","'f'","'f'","'f'","'f'",
-                                          "'f'"),
-                       "parameter_key"=>array("'IsMultiChannel1'","'IsMultiChannel2'",
-                                              "'ImageFileFormat1'","'ImageFileFormat2'","'ImageFileFormat3'","'ImageFileFormat4'","'ImageFileFormat5'","'ImageFileFormat6'","'ImageFileFormat7'","'ImageFileFormat8'",
-                                              "'NumberOfChannels1'","'NumberOfChannels2'","'NumberOfChannels3'","'NumberOfChannels4'",
-                                              "'ImageGeometry1'","'ImageGeometry2'","'ImageGeometry3'",
-                                              "'MicroscopeType1'","'MicroscopeType2'","'MicroscopeType3'","'MicroscopeType4'",
-                                              "'ObjectiveMagnification1'","'ObjectiveMagnification2'","'ObjectiveMagnification3'","'ObjectiveMagnification4'",
-                                              "'ObjectiveType1'","'ObjectiveType2'","'ObjectiveType3'",
-                                              "'SampleMedium1'","'SampleMedium2'",
-                                              "'Binning1'","'Binning2'","'Binning3'","'Binning4'","'Binning5'",
-                                              "'MicroscopeName1'","'MicroscopeName2'","'MicroscopeName3'","'MicroscopeName4'","'MicroscopeName5'","'MicroscopeName6'","'MicroscopeName7'","'MicroscopeName8'",
-                                              "'Resolution1'","'Resolution2'","'Resolution3'","'Resolution4'","'Resolution5'",
-                                              "'RemoveNoiseEffectiveness1'","'RemoveNoiseEffectiveness2'","'RemoveNoiseEffectiveness3'",
-                                              "'OutputFileFormat1'","'OutputFileFormat2'","'OutputFileFormat3'","'OutputFileFormat4'","'OutputFileFormat5'",
-                                              "'ObjectiveMagnification1'","'ObjectiveMagnification2'",
-                                              "'PointSpreadFunction1'","'PointSpreadFunction2'",
-                                              "'HasAdaptedValues1'","'HasAdaptedValues2'",
-                                              "'ImageFileFormat1'","'ImageFileFormat2'","'ImageFileFormat3'","'ImageFileFormat4'","'ImageFileFormat5'",
-                                              "'ObjectiveType'"));
 $table_existance = true;
 if(!check_table_existence($table_structure,$table_existance))
     return;
