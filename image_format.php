@@ -286,7 +286,7 @@ $parameter = $_SESSION['setting']->parameter("PointSpreadFunction");
                 
             </fieldset>
             
-            <h4>Do you want to enable depth-specific PSF correction? For this to work properly, you have to specify the relative position of the coverslip. You can also decide to use a static PSF without correction.</h4>
+            <h4>Do you want to enable depth-specific PSF correction? For this to work properly, you have to specify the relative position of the coverslip with respect to the first acquired plane of the dataset. You can also decide to use a static PSF without correction.</h4>
             
             <fieldset class="setting">
             
