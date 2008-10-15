@@ -59,10 +59,7 @@ include $adodb;
 //global $message;
 
 // Latest database revision
-$LATEST_REVISION = 2;
-
-// Current database revision
-$current_revision = 0;
+$LAST_REVISION = 2;
 
 // For test purposes
 $db_name = "hrm-test";
@@ -437,6 +434,7 @@ if ($rs->EOF) { // If the variable dbrevision does not exist, create it and set 
     $insertSQL = $db->GetInsertSQL($rs, $record);
     $db->Execute($insertSQL);
     write_to_log("The database revision has been set to 0.");
+    $current_revision = 0;
 }
 else {
     $o = $rs->FetchObj();
@@ -644,10 +642,151 @@ if(!insert_records($records,$tabname)) {
     return;
 }
 
-// TODO
-//$tabname = "geometry";
-//$tabname = "file_format";
-//$tabname = "file_extension";
+
+// geometry
+// -----------------------------------------------------------------------------
+// Drop table if it exists
+$tabname = "geometry";
+if (in_array($tabname, $tables)) {
+    if (!drop_table($tabname)) {
+        $msg = error_message($tabname);
+        write_message($msg);
+        write_to_error($msg);    
+    return;
+    }
+}
+// Create table
+$flds = "
+    name C(30) KEY DEFAULT 0,
+    isThreeDimensional \"enum ('T', 'F')\" DEFAULT NULL,
+    isTimeSeries \"enum ('T', 'F')\" DEFAULT NULL
+";
+if (!create_table($tabname, $flds)) {
+    $msg = error_message($tabname);
+    write_message($msg);
+    write_to_error($msg);    
+    return;
+}
+$sqlarray = $datadict->ChangeTableSQL($tabname, $flds);
+$rs = $datadict->ExecuteSQLArray($sqlarray);    // return 0 if failed, 1 if executed all but with errors, 2 if executed successfully 
+if($rs != 2) {
+echo "An error occured in creating table " . $tabname . "\n";
+    $msg = error_message($tabname);
+    write_message($msg);
+    write_to_error($msg);
+    return;
+}
+else
+    echo "Table " . $tabname . " has been created\n";
+// Insert records in table
+$records = array("name"=>array("XYZ","XYZ - time","XY - time"), 
+                "isThreeDimensional"=>array("t","t","f"),
+                "isTimeSeries"=>array("f","t","t"));
+if(!insert_records($records,$tabname)) {
+    $msg = error_message($tabname);
+    write_message($msg);
+    write_to_error($msg);    
+    return;
+}
+
+
+// file_format
+// -----------------------------------------------------------------------------
+// Drop table if it exists
+$tabname = "file_format";
+if (in_array($tabname, $tables)) {
+    if (!drop_table($tabname)) {
+        $msg = error_message($tabname);
+        write_message($msg);
+        write_to_error($msg);    
+    return;
+    }
+}
+// Create table
+$flds = "
+    name C(30) NOTNULL DEFAULT 0,
+    isFixedGeometry \"enum ('T', 'F')\" NOTNULL DEFAULT T,
+    isSingleChannel \"enum ('T', 'F')\" NOTNULL DEFAULT T,
+    isVariableChannel \"enum ('T', 'F')\" NOTNULL DEFAULT T
+";
+if (!create_table($tabname, $flds)) {
+    $msg = error_message($tabname);
+    write_message($msg);
+    write_to_error($msg);    
+    return;
+}
+$sqlarray = $datadict->ChangeTableSQL($tabname, $flds);
+$rs = $datadict->ExecuteSQLArray($sqlarray);    // return 0 if failed, 1 if executed all but with errors, 2 if executed successfully 
+if($rs != 2) {
+echo "An error occured in creating table " . $tabname . "\n";
+    $msg = error_message($tabname);
+    write_message($msg);
+    write_to_error($msg);
+    return;
+}
+else
+    echo "Table " . $tabname . " has been created\n";
+// Insert records in table
+$records = array("name"=>array("dv","ics","ics2","ims","lif","lsm","lsm-single","ome-xml","pic","stk","tiff","tiff-leica","tiff-series","tiff-single"),
+                "isFixedGeometry"=>array("F","F","F","F","F","F","T","F","F","F","F","F","F","T"),
+                "isSingleChannel"=>array("F","F","F","F","F","F","F","F","F","F","F","F","F","F"),
+                "isVariableChannel"=>array("T","T","T","T","T","T","T","T","T","T","T","T","T","T"));
+if(!insert_records($records,$tabname)) {
+    $msg = error_message($tabname);
+    write_message($msg);
+    write_to_error($msg);    
+    return;
+}
+
+
+// file_extension
+// -----------------------------------------------------------------------------
+// Drop table if it exists
+$tabname = "file_extension";
+if (in_array($tabname, $tables)) {
+    if (!drop_table($tabname)) {
+        $msg = error_message($tabname);
+        write_message($msg);
+        write_to_error($msg);    
+    return;
+    }
+}
+// Create table
+$flds = "
+    file_format C(30) NOTNULL DEFAULT 0,
+    extension C(4) NOTNULL
+";
+if (!create_table($tabname, $flds)) {
+    $msg = error_message($tabname);
+    write_message($msg);
+    write_to_error($msg);    
+    return;
+}
+$sqlarray = $datadict->ChangeTableSQL($tabname, $flds);
+$rs = $datadict->ExecuteSQLArray($sqlarray);    // return 0 if failed, 1 if executed all but with errors, 2 if executed successfully 
+if($rs != 2) {
+echo "An error occured in creating table " . $tabname . "\n";
+    $msg = error_message($tabname);
+    write_message($msg);
+    write_to_error($msg);
+    return;
+}
+else
+    echo "Table " . $tabname . " has been created\n";
+// Insert records in table
+$records = array("file_format"=>array("dv","ics","ics2","ims","lif","lsm","lsm-single","ome-xml","pic","stk","tiff","tiff-leica","tiff-series","tiff-single",
+                                        "tiff","tiff-leica","tiff-series","tiff-single"),
+                "extension"=>array("dv","ics","ics2","ims","lif","lsm","lsm","ome","pic","stk","tif","tif","tif","tif",
+                                        "tiff","tiff","tiff","tiff"));
+if(!insert_records($records,$tabname)) {
+    $msg = error_message($tabname);
+    write_message($msg);
+    write_to_error($msg);    
+    return;
+}
+
+
+
 
 
 // -----------------------------------------------------------------------------
@@ -715,7 +854,41 @@ if(!check_table_existence_and_structure($tabname,$flds)) {
 //$tabname = "job_parameter";
 
 
-// TODO: part of the script that handle the modification of the database in time
+
+// -----------------------------------------------------------------------------
+// Update the database to the last revision
+// -----------------------------------------------------------------------------
+if ($current_revision < $LAST_REVISION) {
+    $msg = "The revision of your database is " . $current_revision . ".\n";
+    $msg .= "Your database is going to be update to revision " . $LAST_REVISION . ".";
+    write_message($msg);
+    write_to_log($msg);
+    
+    
+    // --------------------
+    // Update to revision 1
+    // --------------------
+    if ($current_revision < 1) {
+        // update to revision 1
+    }
+    
+    
+    // --------------------
+    // Update to revision 2
+    // --------------------
+    if ($current_revision < 2) {
+        // update to revision 2
+    }
+}
+else {
+    $msg = "The revision of your database is " . $current_revision . ", that is the last revision.\n";
+    $msg .= "Your database does not need an update.";
+    write_message($msg);
+    write_to_log($msg);
+}
+
+
+
 
 
 fclose($fh);
@@ -726,76 +899,6 @@ return;
 
 
 
-
-
-
-// Check 'file_extension'
-// ----------------------
-$table = "file_extension";
-$table_structure = array("file_format"=>array("varchar(30)","NOT NULL","DEFAULT '0'"),
-                        "extension"=>array("varchar(4)","NOT NULL",""),     // is it ok here????????
-                        "file_format_key"=>array("varchar(30)","NOT NULL","DEFAULT '0'"));
-$table_content = array("file_format"=>array("'dv'","'ics'","'ics2'","'ims'","'lif'","'lsm'","'lsm-single'","'ome-xml'",
-                                              "'pic'","'stk'","'tiff'","'tiff-leica'","'tiff-series'","'tiff-single'",
-                                              "'tiff'","'tiff-leica'","'tiff-series'","'tiff-single'"),
-                       "extension"=>array("'dv'","'ics'","'ics2'","'ims'","'lif'","'lsm'","'lsm'","'ome'",
-                                              "'pic'","'stk'","'tif'","'tif'","'tif'","'tif'",
-                                              "'tiff'","'tiff'","'tiff'","'tiff'"),
-                       "file_format_key"=>array("'dv'","'ics'","'ics2'","'ims'","'lif'","'lsm'","'lsm-single'","'ome-xml'",
-                                              "'pic'","'stk'","'tiff'","'tiff-leica'","'tiff-series'","'tiff-single'",
-                                              "'tiff2'","'tiff-leica2'","'tiff-series2'","'tiff-single2'"));
-$table_existance = true;
-if(!check_table_existence($table_structure,$table_existance))
-    return;
-if($table_existance) {  // if the table has been created by the script, the fileds are not checked
-    if(!check_table_fields($table_structure))
-        return;
-}
-if(!check_table_content($table_content))
-    return;
-
-
-// Check 'file_format'
-// -------------------
-$table = "file_format";
-$table_structure = array("name"=>array("varchar(30)","NOT NULL","DEFAULT '0'"),
-                        "isFixedGeometry"=>array("enum('t','f')","NOT NULL","DEFAULT 't'"),
-                        "isSingleChannel"=>array("enum('t','f')","NOT NULL","DEFAULT 't'"),
-                        "isVariableChannel"=>array("enum('t','f')","NOT NULL","DEFAULT 't'"));
-$table_content = array("name"=>array("'dv'","'ics'","'ics2'","'ims'","'lif'","'lsm'","'lsm-single'","'ome-xml'",
-                                    "'pic'","'stk'","'tiff'","'tiff-leica'","'tiff-series'","'tiff-single'"),
-                       "isFixedGeometry"=>array("'f'","'f'","'f'","'f'","'f'","'f'","'t'","'f'","'f'","'f'","'f'","'f'","'f'","'t'"),
-                       "isSingleChannel"=>array("'f'","'f'","'f'","'f'","'f'","'f'","'f'","'f'","'f'","'f'","'f'","'f'","'f'","'f'"),
-                       "isVariableChannel"=>array("'t'","'t'","'t'","'t'","'t'","'t'","'t'","'t'","'t'","'t'","'t'","'t'","'t'","'t'"));
-$table_existance = true;
-if(!check_table_existence($table_structure,$table_existance))
-    return;
-if($table_existance) {  // if the table has been created by the script, the fileds are not checked
-    if(!check_table_fields($table_structure))
-        return;
-}
-if(!check_table_content($table_content))
-    return;
-
-
-// Check 'geometry' 
-// ----------------
-$table = "geometry";
-$table_structure = array("name"=>array("varchar(30)","NOT NULL","DEFAULT '0'"),
-                             "isThreeDimensional"=>array("enum('t','f')","NULL","DEFAULT NULL"),
-                             "isTimeSeries"=>array("enum('t','f')","NULL","DEFAULT NULL"));
-$table_content = array("name"=>array("'XYZ'","'XYZ - time'","'XY - time'"), 
-                       "isThreeDimensional"=>array("'t'","'t'","'f'"),
-                       "isTimeSeries"=>array("'f'","'t'","'t'"));
-$table_existance = true;
-if(!check_table_existence($table_structure,$table_existance))
-    return;
-if($table_existance) {  // if the table has been created by the script, the fileds are not checked
-    if(!check_table_fields($table_structure))
-        return;
-}
-if(!check_table_content($table_content))
-    return;
 
 
 // Check 'global_variables'
