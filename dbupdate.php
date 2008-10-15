@@ -59,7 +59,7 @@ include $adodb;
 //global $message;
 
 // Latest database revision
-$LAST_REVISION = 2;
+$LAST_REVISION = 3;
 
 // For test purposes
 $db_name = "hrm-test";
@@ -171,6 +171,25 @@ function check_table_existence_and_structure($tabname,$flds) {
     if($rs != 2)
         return False;
     return True;
+}
+
+// Update table global_varables         OK
+// (function to be used in the actual updating part of the script)
+function update_dbrevision($n) {
+    global $db, $current_revision;
+    $tabname = "global_variables";
+    $record = array();
+    $record["value"] = $n;
+    if (!$db->AutoExecute($tabname, $record, 'UPDATE', "name like 'dbrevision'")) {
+        write_to_error("An error occured while updateing the database to revision " . $n . ".");
+        return false;
+    }
+    if($current_revision < $n) {
+        $msg = "The database has been updated to revision " . $n . ".";
+        write_to_log($msg);
+        write_message($msg);
+    }
+    return true;
 }
 
 // Search a value into a multidimensional array. Return true if the value has been found, false otherwise
@@ -421,8 +440,12 @@ if (!in_array("global_variables", $tables)) {
         name C(30) KEY,
         value C(30) NOTNULL
     ";
-    if (!create_table("global_variables", $flds))
+    if (!create_table("global_variables", $flds)) {
+        $msg = "An error occured while creating the table \"global_variables\".";
+        write_message($msg);
+        write_to_error($msg);
         return;
+    }
 }
 
 // Check if variable dbrevision exists
@@ -432,9 +455,15 @@ if ($rs->EOF) { // If the variable dbrevision does not exist, create it and set 
     $record["name"] = "dbrevision";
     $record["value"] = "0";
     $insertSQL = $db->GetInsertSQL($rs, $record);
-    $db->Execute($insertSQL);
-    write_to_log("The database revision has been set to 0.");
-    $current_revision = 0;
+    if(!$db->Execute($insertSQL)) {
+        $msg = "An error occured while updating the table \"global_variables\".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+    $msg = "The database revision has been set to 0.";
+write_message($msg);
+    write_to_log($msg);
 }
 else {
     $o = $rs->FetchObj();
@@ -443,8 +472,11 @@ else {
 
 
 // -----------------------------------------------------------------------------
-// Drop and Create fixed tables
+// Drop and Create fixed tables (structure and content)
 // -----------------------------------------------------------------------------
+
+// NOTE: if some record will be added to the table 'global_variables', then this
+//       table will have to be cheacked at this point 
 
 // NOTE: ENUM is not available as a portable type code, which forces us to
 //       hardcode the type string in the following descriptions, which in turn
@@ -787,6 +819,56 @@ if(!insert_records($records,$tabname)) {
 
 
 
+// -----------------------------------------------------------------------------
+// Drop and Create fixed tables (structure only)
+// -----------------------------------------------------------------------------
+
+// job_queue
+// -----------------------------------------------------------------------------
+// Drop table if it exists
+$tabname = "job_queue";
+if (in_array($tabname, $tables)) {
+    if (!drop_table($tabname)) {
+        $msg = error_message($tabname);
+        write_message($msg);
+        write_to_error($msg);    
+    return;
+    }
+}
+// Create table
+$flds = "
+    id C(30) NOTNULL DEFAULT 0,
+    username C(30) NOTNULL,
+    queued T NOTNULL DEFAULT '0000-00-00 00:00:00',
+    start T DEFAULT NULL,
+    stop T DEFAULT NULL,
+    server C(30) DEFAULT NULL,
+    process_info C(30) DEFAULT NULL,
+    status \"enum ('QUEUED', 'STARTED', 'FINISHED', 'BROKEN', 'PAUSED')\" NOTNULL DEFAULT QUEUED  
+";
+if (!create_table($tabname, $flds)) {
+    $msg = error_message($tabname);
+    write_message($msg);
+    write_to_error($msg);    
+    return;
+}
+$sqlarray = $datadict->ChangeTableSQL($tabname, $flds);
+$rs = $datadict->ExecuteSQLArray($sqlarray);    // return 0 if failed, 1 if executed all but with errors, 2 if executed successfully 
+if($rs != 2) {
+echo "An error occured in creating table " . $tabname . "\n";
+    $msg = error_message($tabname);
+    write_message($msg);
+    write_to_error($msg);
+    return;
+}
+else
+    echo "Table " . $tabname . " has been created\n";
+    
+    
+// TODO:
+// job_parameter_setting
+// job_task_setting 
+
 
 
 // -----------------------------------------------------------------------------
@@ -809,18 +891,19 @@ if(!check_table_existence_and_structure($tabname,$flds)) {
 }
 
 ////TODO:
-//$tabname = "job_parameter_setting";
-//$tabname = "job_queue";
-//$tabname = "job_task_setting";
 //$tabname = "parameter_setting";
 //$tabname = "server";
 //$tabname = "task_setting";
 //$tabname = "username";
+//$tabname = "parameter";
+//$tabname = "job_task_parameter";
+//$tabname = "job_parameter";
+// task_parameter
 
 
 // -----------------------------------------------------------------------------
 // Check the existence and the structure of the tables with variable contents
-// and the format of the content of the field 'value'
+// Check the format of the records content
 // -----------------------------------------------------------------------------
 
 // task_parameter
@@ -832,6 +915,12 @@ $flds = "
     name C(30) NOTNULL,
     value C(255) DEFAULT NULL
 ";
+if(!check_table_existence_and_structure($tabname,$flds)) {
+    $msg = error_message($tabname);
+    write_message($msg);
+    write_to_error($msg);    
+    return;
+}
 if (in_array($tabname, $tables)) {
     $rs = $db->Execute("SELECT value FROM " . $tabname . " WHERE name = 'NumberOfIterationsRange'");
     if($rs) {
@@ -840,15 +929,9 @@ if (in_array($tabname, $tables)) {
         }
     }
 }
-if(!check_table_existence_and_structure($tabname,$flds)) {
-    $msg = error_message($tabname);
-    write_message($msg);
-    write_to_error($msg);    
-    return;
-}
-
 
 //// TODO:
+//$task_parameter
 //$tabname = "parameter";
 //$tabname = "job_task_parameter";
 //$tabname = "job_parameter";
@@ -858,119 +941,109 @@ if(!check_table_existence_and_structure($tabname,$flds)) {
 // -----------------------------------------------------------------------------
 // Update the database to the last revision
 // -----------------------------------------------------------------------------
-if ($current_revision < $LAST_REVISION) {
-    $msg = "The revision of your database is " . $current_revision . ".\n";
-    $msg .= "Your database is going to be update to revision " . $LAST_REVISION . ".";
-    write_message($msg);
-    write_to_log($msg);
-    
-    
-    // --------------------
-    // Update to revision 1
-    // --------------------
-    if ($current_revision < 1) {
-        // update to revision 1
-    }
-    
-    
-    // --------------------
-    // Update to revision 2
-    // --------------------
-    if ($current_revision < 2) {
-        // update to revision 2
-    }
-}
-else {
-    $msg = "The revision of your database is " . $current_revision . ", that is the last revision.\n";
-    $msg .= "Your database does not need an update.";
-    write_message($msg);
-    write_to_log($msg);
+$msg = "\nThe last available revision for the HRM database is the number " . $LAST_REVISION . ".\n";
+$msg .= "The current revision of your HRM database is " . $current_revision . ".";
+write_message($msg);
+write_to_log($msg);
+
+      
+// -------------------------------------------------------------------------
+// Update to revision 1
+// Description: add qmle algorithm as option
+// -------------------------------------------------------------------------   
+$n = 1;
+
+$tabname = "possible_values";
+$record = array();
+$record["parameter"] = "DeocnvolutionAlgorithm";
+$record["value"] = "cmle";
+$record["translation"] = "Classic Maximum Likelihood Estimation";
+$record["isDefault"] = "T";
+$insertSQL = $db->GetInsertSQL($tabname, $record);
+if(!$db->Execute($insertSQL)) {
+    write_to_error("An error occured while updateing the database to revision " . $n . ".");
+    return;
 }
 
+$record["value"] = "qmle";
+$record["translation"] = "Quick Maximum Likelihood Estimation";
+$record["isDefault"] = "T";
+$insertSQL = $db->GetInsertSQL($tabname, $record);
+if(!$db->Execute($insertSQL)) {
+    write_to_error("An error occured while updateing the database to revision " . $n . ".");
+    return;
+}
+
+if(!update_dbrevision($n)) {
+    return;
+}
+        
+
+
+// -------------------------------------------------------------------------
+// Update to revision 2
+// Description: add ICS2 as possible output file format
+// -------------------------------------------------------------------------
+$n = 2;
+
+$tabname = "possible_values";
+$record = array();
+$record["parameter"] = "OutputFileFormat";
+$record["value"] = "ICS2 (Image Cytometry Standard 2)";
+$record["translation"] = "ics2";
+$record["isDefault"] = "F";
+$insertSQL = $db->GetInsertSQL($tabname, $record);
+if(!$db->Execute($insertSQL)) {
+    write_to_error("An error occured while updateing the database to revision " . $n . ".");
+    return;
+}
+
+
+
+// -------------------------------------------------------------------------
+// Update to revision 3
+// Description: remove psf generation in script (check sample orientation)
+// -------------------------------------------------------------------------
+$n = 3;
+
+$tabname = "possible_values";
+$record = array();
+$record["parameter"] = "CoverslipRelativePosition";
+$record["value"] = "bottom";
+$record["translation"] = "Plane 0 is closest to the coverslip";
+$record["isDefault"] = "T";
+$insertSQL = $db->GetInsertSQL($tabname, $record);
+if(!$db->Execute($insertSQL)) {
+    write_to_error("An error occured while updateing the database to revision " . $n . ".");
+    return;
+}
+
+$record["value"] = "top";
+$record["translation"] = "Plane 0 is farthest from the coverslip";
+$record["isDefault"] = "F";
+$insertSQL = $db->GetInsertSQL($tabname, $record);
+if(!$db->Execute($insertSQL)) {
+    write_to_error("An error occured while updateing the database to revision " . $n . ".");
+    return;
+}
+
+$record["value"] = "ignore";
+$record["translation"] = "Do not perform depth-dependent correction";
+$insertSQL = $db->GetInsertSQL($tabname, $record);
+if(!$db->Execute($insertSQL)) {
+    write_to_error("An error occured while updateing the database to revision " . $n . ".");
+    return;
+}
+
+if(!update_dbrevision($n)) {
+    return;
+}
 
 
 
 
 fclose($fh);
-
 
 return;
-
-
-
-
-
-
-// Check 'global_variables'
-// ------------------------
-$table = "global_variables";
-$table_structure = array("variable"=>array("varchar(30)","NOT NUL",""),
-                        "value"=>array("varchar(30)","NOT NULL","DEFAULT '0'"));
-$table_content = array("variable"=>array("'dbversion'"),
-                       "value"=>array("'" . $current_version . "'"));
-$table_existance = true;
-if(!check_table_existence($table_structure,$table_existance))
-    return;
-if($table_existance) {  // if the table has been created by the script, the fileds are not checked
-    if(!check_table_fields($table_structure))
-        return;
-}
-if(!check_table_content($table_content))
-    return;
-
-
-
-// Check existing database - check table existance and structure only
-// ------------------------------------------------------------------
-
-// Check 'job_files'
-// -----------------
-$table = "job_files";
-$table_structure = array("job"=>array("varchar(30)","NULL","DEFAULT '0'"),
-                        "owner"=>array("varchar(30)","NULL","DEFAULT '0'"),
-                        "file"=>array("varchar(255)","NULL","DEFAULT '0'"));
-$table_existance = true;
-if(!check_table_existence($table_structure,$table_existance))
-    return;
-if($table_existance) {  // if the table has been created by the script, the fileds are not checked
-    if(!check_table_fields($table_structure))
-        return;
-}
-
-
-// TODO:
-# job_files
-# job_parameter
-# job_parameter_setting
-# job_queue
-# job_task_parameter
-# job_task_setting
-# parameter_setting
-# server
-# task_setting
-# username
-
-// TODO: check also table content structure
-# parameter
-# task_parameter
-
-// TODO: check queuemanager 
-
-
-
-fclose($fh);
-
-//
-echo "current version = " . $current_version . "\n";
-echo "last version = " . $last_version . "\n";
-//
-
-
-
-//Update possivle_values!!!! (dbversion 2)
-//
-//DeconvolutionAlgorithm 	qmle 	Quick Maximum Likelihood Estimation 	f
-//DeconvolutionAlgorithm 	cmle 	Classic Maximum Likelihood Estimation 	f
-//OutputFileFormat 	ICS2 (Image Cytometry Standard 2) 	ics2 	f
 
 ?>
