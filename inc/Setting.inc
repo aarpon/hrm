@@ -2316,7 +2316,7 @@ Class JobTaskSetting extends TaskSetting {
 		}
 		
 		// The psf computation string depends on the position of the coverslip
-		// selected by the user. If it is either 'bottom' or 'top' we let
+		// selected by the user. If it is either 'closest' or 'farthest' we let
 		// Huygens adapt the PSF, if it is 'ignore' we ask to create a fixed
 		// PSF with the given parameters
 		$constant = 0;

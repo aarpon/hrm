@@ -381,6 +381,12 @@ Class JobDescription {
         // avoid redundant slashes in path
         $this->files = array($this->relativeSourcePath() . $tmpfilename . "." . $fileFormat );
         $dstfilename = $this->destinationImageFullName() ;
+        // If the user chose CoverslipRelativePosition to be 'farthest', we z-mirror the dataset back
+        $coverslipParameter=$parameterSetting->parameter('CoverslipRelativePosition');
+        $coverslipParameterValue=$coverslipParameter->value();
+        if ( $coverslipParameterValue == 'farthest' ) {
+          $newScript = $newScript . 'catch { c mir z }' . "\n";
+        }
         // Save
         switch ($type) {
           case "tiff":
@@ -708,16 +714,16 @@ Class JobDescription {
     // Turn on history
     $options .= " -logEnable";
 
-    // If the user specified that the coverslip is at the top we need to mirror
+    // If the user specified that the coverslip is 'farthest' we need to mirror
     // the image. But this must be done only when the original dataset is loaded, not
     // when the splitted channels are loaded. Therefore, by default this function does
     // check for mirroring only if its input parameter $checkForMirror is
-	// true, and this occurs only when this function is called from Job::createScript( ).
+    // true, and this occurs only when this function is called from Job::createScript( ).
     $mirror = "";
     if ( $checkForMirror == true ) {
       $coverslipParameter=$this->parameterSetting->parameter('CoverslipRelativePosition');
       $coverslipParameterValue=$coverslipParameter->value();
-      if ( $coverslipParameterValue == 'top' ) {
+      if ( $coverslipParameterValue == 'farthest' ) {
         $mirror = 'catch { $imageName mir z }' . "\n";
       }
     }
