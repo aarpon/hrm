@@ -170,9 +170,6 @@ else if ($fileFormat->value() == "stk") {
   //  $files = $_SESSION['fileserver']->files("stk");
   //}
 }
-else if ($fileFormat->value() == "dv") {
-    $files = $_SESSION['fileserver']->files("dv");
-}
 else {
   $files = $_SESSION['fileserver']->files();
 }
