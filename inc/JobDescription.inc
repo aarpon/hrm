@@ -617,7 +617,7 @@ Class JobDescription {
     if ($psfParam->value() == "measured") {
       $param = $parameterSetting->parameter('PSF');
       $value = $param->value();
-      $filename = $this->sourceFolder() . $value[1];
+      $filename = $this->sourceFolder() . $value; //[1];
       $newScript = $newScript . "set psf [img open \"".$filename."\"]\n";
     }
     else if ($psfParam->value() == "theoretical") {
