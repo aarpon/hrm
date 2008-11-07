@@ -239,17 +239,20 @@ function report($text, $level) {
 	global $logfile;
 	global $logfile_max_size;
 
-    $text = date("Y-m-d H:i:s"). " ".$text;
+        $text = date("Y-m-d H:i:s"). " ".$text;
+
+        $logpath = $hrm_path."/run/".$logfile;
 
 	if ($log_verbosity == 0)
 		return True;
-	if (file_exists($logfile) && (filesize($logfile) > $logfile_max_size * 1000 * 1000)) {
-		if (file_exists($logfile . ".old")) {
-			unlink($logfile . ".old");
+	if (file_exists($logpath) 
+            && (filesize($logpath) > $logfile_max_size * 1000 * 1000)) {
+		if (file_exists($logpath . ".old")) {
+			unlink($logpath . ".old");
 		}
-		rename($logfile, $logfile . ".old");
+		rename($logpath, $logpath . ".old");
 	}
-	$file = fopen($hrm_path."/run/".$logfile, 'a');
+	$file = fopen($logpath, 'a');
 	if ($log_verbosity >= $level) {
 		fwrite($file, $text);
 		fwrite($file, "\n");
