@@ -617,7 +617,13 @@ Class JobDescription {
     if ($psfParam->value() == "measured") {
       $param = $parameterSetting->parameter('PSF');
       $value = $param->value();
-      $filename = $this->sourceFolder() . $value; //[1];
+      if ( is_array( $value ) ) {
+        // This is the case if the number of channel is == 1
+        $filename = $this->sourceFolder() . $value[0];
+      } else {
+        // This is the case if the number of channel is > 1
+        $filename = $this->sourceFolder() . $value;
+      }
       $newScript = $newScript . "set psf [img open \"".$filename."\"]\n";
     }
     else if ($psfParam->value() == "theoretical") {
