@@ -979,7 +979,7 @@ Class QueueManager {
 			}
 		}
 		
-		report("Huygens Remote Manager started on " . date("l d of F Y h:i:s A") . "\n", 1);
+		report("Huygens Remote Manager started on " . date("Y-m-d H:i:s") . "\n", 1);
                 
 		while (!$this->shallStop()) {
 			set_time_limit(0);
@@ -1024,10 +1024,10 @@ Class QueueManager {
 					continue;
 				report("script has been executed", 1);
 				$result = $result && $queue->startJob($this->job);
-				report("job has been started (" . date("l d of F Y h:i:s A") . ")", 1);
+				report("job has been started (" . date("Y-m-d H:i:s") . ")", 1);
 			}
 		}
-		report("Huygens Remote Manager stopped via database switch on " . date("l d of F Y h:i:s A"), 1);
+		report("Huygens Remote Manager stopped via database switch on " . date("Y-m-d H:i:s"), 1);
 	}
 }
 ?>
