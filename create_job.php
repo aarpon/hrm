@@ -203,7 +203,8 @@ echo $_SESSION['setting']->display();
             <textarea name="task_settings_report" cols="50" rows="6" readonly="readonly">
 <?php
 
-echo $_SESSION['task_setting']->displayWithoutOutputFileFormat();
+$numberOfChannels = $_SESSION['setting']->parameter( "NumberOfChannels" )->value( );
+echo $_SESSION['task_setting']->displayWithoutOutputFileFormat( $numberOfChannels );
 
 ?>
             </textarea>

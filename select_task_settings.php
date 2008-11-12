@@ -131,7 +131,7 @@ else if (isset($_POST['delete'])) {
 }
 else if (isset($_POST['OK'])) {
   if (!isset($_POST['task_setting'])) {
-    $message = "            <p class=\"warning\">Please select a parameter setting</p>\n";
+    $message = "            <p class=\"warning\">Please select a task setting</p>\n";
   }
   else {
     $_SESSION['task_setting'] = $_SESSION['taskeditor']->loadSelectedSetting();

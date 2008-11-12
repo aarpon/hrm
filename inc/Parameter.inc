@@ -203,7 +203,7 @@ Class Parameter {
 		return False;
 	}
 
-	function displayString() {
+	function displayString( $numberOfChannels = 0 ) {
 		$result = '';
 		$value = $this->value();
 		if ($value == NULL) {
@@ -216,6 +216,17 @@ Class Parameter {
 			return '';
 		}
 		$internalValue = $this->internalValue();	// answers the internal representation of the parameters value.
+
+		if ($this->name() == "ExcitationWavelength" ||
+			$this->name() == "EmissionWavelength" ||
+			$this->name() == "SignalNoiseRatio" ||
+			$this->name() == "PinholeSize" ) {
+			if ( $numberOfChannels > count( $value ) ) {
+				$numberOfChannels = count( $value );
+			}
+			$value = array_slice( $value, 0, $numberOfChannels );
+		}
+		
 		if ($this->name() == "BackgroundOffsetPercent" && $internalValue[0] == "auto") {
 			$value = "auto";
 		}

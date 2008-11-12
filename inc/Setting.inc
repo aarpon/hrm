@@ -377,6 +377,14 @@ Class Setting {
 	//!---------------------------------------------------------        
 	function displayString() {
 		$result = '';
+		
+		// These parameters are important to properly display all the others
+		$numberOfChannels = $this->parameter( "NumberOfChannels" )->value( );
+		$PSF = $this->parameter( "PointSpreadFunction" )->value( );
+		
+		// The relevant parameters for theoretical vs. measured PSF are
+		// displayed, making sure that the number of entries (e.g. for the
+		// wavelengths) reflect the user-defined number of channels
 		foreach ($this->parameter as $parameter) {
 			if ($this->isFixedGeometryFormat() && $parameter->name() == 'ImageGeometry')
 				continue;
@@ -388,16 +396,19 @@ Class Setting {
 				continue;
 			if ($parameter->name() == 'IsMultiChannel' || $parameter->name() == 'HasAdaptedValues' || $parameter->name() == 'PSF')
 				continue;
-			$result = $result . $parameter->displayString();
-			/*if ($parameter->name() == 'ExcitationWavelength' || $parameter->name() == 'EmissionWavelength' || $parameter->name() == 'PinholeSize') {
-			    // we want the array to start at index 0
-			    $oldValue = $parameter->value();
-			    $values = array();
-			    for ($i=0; $i<$this->numberOfChannels(); $i++) {
-			        $values[] = $oldValue[$i];
-			    }
-			    $parameter->setValue($values);
-			}*/
+			if ( ( $parameter->name() == 'ExcitationWavelength' || $parameter->name() == 'EmissionWavelength' ) && $PSF == 'measured' )
+				continue;
+			if ($parameter->name() == 'SampleMedium' && $PSF == 'measured' )
+				continue;		
+			if ($parameter->name() == 'CMount' ) // This is obsolete
+				continue;		
+			if ($parameter->name() == 'TubeFactor' ) // This is obsolete
+				continue;		
+			if ($parameter->name() == 'CCDCaptorSizeX' && $PSF == 'measured' )
+				continue;		
+			if ($parameter->name() == 'CoverslipRelativePosition' && $PSF == 'measured' )
+				continue;		
+			$result = $result . $parameter->displayString( $numberOfChannels );
 		}
 		return $result;
 	}
@@ -1997,7 +2008,7 @@ Class TaskSetting extends Setting {
 	//              task settings parameters.
 	// @return      Void
 	//!---------------------------------------------------------        
-	function displayString() {	// return the string that will be attach to the success notification message 
+	function displayString( $numberOfChannels = 0 ) {	// return the string that will be attach to the success notification message 
 		$result = '';
 		$parameter = $this->parameter('SignalNoiseRatioUseRange');
 		$rangeUsedForSignalNoiseRatio = ($parameter->value() == 'True');
@@ -2012,6 +2023,10 @@ Class TaskSetting extends Setting {
 		$parameter = $this->parameter('FullRestoration');
 		$fullRestoration = ($parameter->value() == 'True');
 		foreach ($this->parameter as $parameter) {
+			if ($parameter->name() == 'StyleOfProcessing' ) {
+				// There is only one style of processing
+				continue;
+			}
 			if ($parameter->name() == 'SignalNoiseRatio' && $rangeUsedForSignalNoiseRatio) {	
 				continue;
 			}
@@ -2049,7 +2064,7 @@ Class TaskSetting extends Setting {
 			//	$snr = $parameter->value();
 			//	$parameter->setValue(array_slice($snr, 0, $this->numberOfChannels() ));
 			//}
-			$result = $result . $parameter->displayString();
+			$result = $result . $parameter->displayString( $numberOfChannels );
 			//if ($parameter->name() == 'SignalNoiseRatio') {
 			//	$parameter->setValue($snr);
 			//}
@@ -2066,8 +2081,8 @@ Class TaskSetting extends Setting {
 	//              output file format has not been choosen yet.
 	// @return      Void
 	//!---------------------------------------------------------        
-	function displayWithoutOutputFileFormat() {
-		print $this->displayStringWithoutOutputFileFormat();
+	function displayWithoutOutputFileFormat( $numberOfChannels = 0 ) {
+		print $this->displayStringWithoutOutputFileFormat( $numberOfChannels );
 	}
 
 	//!---------------------------------------------------------
@@ -2080,12 +2095,12 @@ Class TaskSetting extends Setting {
 	//              output file format has not been choosen yet.
 	// @return      Void
 	//!---------------------------------------------------------
-	function displayStringWithoutOutputFileFormat() {
+	function displayStringWithoutOutputFileFormat( $numberOfChannels = 0 ) {
 		$parameter = $this->parameter('OutputFileFormat');
 		$parameterList = $this->parameter;
 		unset ($parameterList['OutputFileFormat']);
 		$this->parameter = $parameterList;
-		$result = $this->displayString();
+		$result = $this->displayString( $numberOfChannels );
 		$parameterList['OutputFileFormat'] = $parameter;
 		$this->parameter = $parameterList;
 		return $result;
