@@ -60,6 +60,12 @@ proc reportSubImages {} {
         puts "PATH" 
         puts "$path"
 
+        if { ![file exists $path] } {
+            puts "ERROR"
+            puts "Unexisting image '$image'. "
+            continue
+        }
+
 
         if { [isMultiImgFile $path] } {
             puts "TYPE"
@@ -68,7 +74,7 @@ proc reportSubImages {} {
                 img preOpen $path } contents]
             if { $error } {
                 puts "ERROR"
-                puts "Can't find subimages: $contents"
+                puts "Can't find subimages for $image: $contents"
             } else {
                 puts "COUNT"
                 puts "[llength $contents]"
