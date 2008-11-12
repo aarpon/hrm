@@ -241,11 +241,6 @@ include("header.inc.php");
     
         <h3>User Management</h3>
         
-        <form method="post" action="">
-            <div id="registeruser">
-                <fieldset>
-                    <legend>registrations</legend>
-                    <table>
 <?php
 
 $rows = $db->query("SELECT * FROM username");
@@ -258,9 +253,13 @@ foreach ($rows as $row) {
   $creation_date = date("j M Y, G:i", strtotime($row["creation_date"]));
   $status = $row["status"];
   if ($status != "a" && $status != "d") {
-    if ($i > 0) echo "                    <tr><td colspan=\"3\" class=\"hr\">&nbsp;</td></tr>\n";
-
+    
 ?>
+        <form method="post" action="">
+            <div >
+                <fieldset>
+                    <legend>pending request</legend>
+                    <table>
                         <tr class="upline">
                             <td class="name"><span class="title"><?php echo $name ?></span></td>
                             <td class="group"><?php echo $group ?></td>
@@ -278,6 +277,11 @@ foreach ($rows as $row) {
                                 </div>
                             </td>
                         </tr>
+                    </table>
+                </fieldset>
+            </div>
+        </form>
+        <br />
 <?php
 
     $i++;
@@ -287,17 +291,13 @@ foreach ($rows as $row) {
 if (!$i) {
 
 ?>
-                        <tr><td>no pending requests</td></tr>
+        <p>There are no pending requests.</p>
 <?php
 
 }
 
 ?>
-                    </table>
-                </fieldset>
-            </div>
-        </form>
-        
+
         <div id="listusers">
             <fieldset>
 <?php
