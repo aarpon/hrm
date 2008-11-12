@@ -153,7 +153,7 @@ echo "                    ".date("l d F Y, H:i:s")."\n";
                         <td class="nr">nr</td>
                         <td class="owner">owner</td>
                         <td class="files">file(s)</td>
-                        <td class="creted">created</td>
+                        <td class="created">created</td>
                         <td class="status">status</td>
                         <td class="started">started</td>
                         <td class="pid">pid</td>
