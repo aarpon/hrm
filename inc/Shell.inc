@@ -229,8 +229,9 @@ Class ExternalProcess {
   
   function killHucoreProcess($pid) {    
     $command = "kill " . $pid . "\n";
-    $this->runShell();
-    $this->execute($command);
+    shell_exec( $command );
+    //$this->runShell();
+    //$this->execute($command);
     return;
   }
 }
