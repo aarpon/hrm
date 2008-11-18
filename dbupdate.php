@@ -54,15 +54,15 @@ include "inc/hrm_config.inc";
 include "inc/reservation_config.inc";
 include $adodb;
 
-// From update.php
-//global $interface;
-//global $message;
 
-// Latest database revision
+// Last database revision
 $LAST_REVISION = 3;
+
 
 // For test purposes
 $db_name = "hrm-test";
+
+
 
 
 // =============================================================================
@@ -100,6 +100,8 @@ function write_message($msg) {
 function error_message($table) {
     return "An error occured while updating table " . $table . ".";
 }
+
+
 
 
 // =============================================================================
@@ -173,8 +175,7 @@ function check_table_existence_and_structure($tabname,$flds) {
     return True;
 }
 
-// Update table global_varables         OK
-// (function to be used in the actual updating part of the script)
+// Update dbrevision table global_variables (to revidision $n)        OK
 function update_dbrevision($n) {
     global $db, $current_revision;
     $tabname = "global_variables";
@@ -189,7 +190,7 @@ function update_dbrevision($n) {
         write_to_log($msg);
         write_message($msg);
     }
-    return true;
+    return True;
 }
 
 // Search a value into a multidimensional array. Return true if the value has been found, false otherwise
@@ -384,6 +385,8 @@ echo "result for insert field = " . $result . "\n";
 }
 
 
+
+
 // =============================================================================
 // Script
 // =============================================================================
@@ -433,6 +436,7 @@ $tables = $db->MetaTables("TABLES");
 // Read the current database revision
 // -----------------------------------------------------------------------------
 
+
 // Check if table global_variables exists
 if (!in_array("global_variables", $tables)) {
     // If the table does not exist, create it
@@ -462,7 +466,7 @@ if ($rs->EOF) { // If the variable dbrevision does not exist, create it and set 
         return;
     }
     $msg = "The database revision has been set to 0.";
-write_message($msg);
+    write_message($msg);
     write_to_log($msg);
 }
 else {
@@ -471,471 +475,693 @@ else {
 }
 
 
-// -----------------------------------------------------------------------------
-// Drop and Create fixed tables (structure and content)
-// -----------------------------------------------------------------------------
+// If the current revision is 0, it is necessary to (re)fill the database and eventually check its content
+if ($current_revision == 0) { // DA CHIUDERE!!!!!!!!!!!!!! 
 
-// NOTE: if some record will be added to the table 'global_variables', then this
-//       table will have to be cheacked at this point 
-
-// NOTE: ENUM is not available as a portable type code, which forces us to
-//       hardcode the type string in the following descriptions, which in turn
-//       forces us to use uppercase 'T' and 'F' enum values (because of some
-//       stupid rule in adodb data dictionary class).
-
-
-// boundary_values
-// -----------------------------------------------------------------------------
-// Drop table if it exists
-$tabname = "boundary_values";
-if (in_array($tabname, $tables)) {
-    if (!drop_table($tabname)) {
-        $msg = error_message($tabname);
-        write_message($msg);
-        write_to_error($msg);    
-    return;
-    }
-}
-// Create table
-$flds = "
-    parameter C(255) KEY,
-    min C(30),
-    max C(30),
-    min_included \"enum ('T', 'F')\" DEFAULT T,
-    max_included \"enum ('T', 'F')\" DEFAULT T,
-    standard C(30)
-";
-if (!create_table($tabname, $flds)) {
-    $msg = error_message($tabname);
-    write_message($msg);
-    write_to_error($msg);    
-    return;
-}
-$sqlarray = $datadict->ChangeTableSQL($tabname, $flds);
-$rs = $datadict->ExecuteSQLArray($sqlarray);    // return 0 if failed, 1 if executed all but with errors, 2 if executed successfully 
-if($rs != 2) {
-echo "An error occured in creating table " . $tabname . "\n";
-    $msg = error_message($tabname);
-    write_message($msg);
-    write_to_error($msg);
-    return;
-}
-else
-    echo "Table " . $tabname . " has been created\n";
-// Insert records in table
-$records = array("parameter"=>array("PinholeSize","RemoveBackgroundPercent","BackgroundOffsetPercent","ExcitationWavelength",
-                    "EmissionWavelength","CMount","TubeFactor","CCDCaptorSizeX","CCDCaptorSizeY","ZStepSize","TimeInterval",
-                    "SignalNoiseRatio","NumberOfIterations","QualityChangeStoppingCriterion"),
-                 "min"=>array("0","0","0","0","0","0.4","1","1","1","50","0.001","0","1","0"),
-                 "max"=>array("NULL","100","","NULL","NULL","1","2","25000","25000","600000","NULL","100","100","NULL"),
-                 "min_included"=>array("F","F","T","F","F","T","T","T","T","T","F","F","T","T"),
-                 "max_included"=>array("T","T","F","T","T","T","T","T","T","T","T","T","T","T"),
-                 "standard"=>array("NULL","NULL","NULL","NULL","NULL","1","1","NULL","NULL","NULL","NULL","NULL","NULL","NULL"));
-if(!insert_records($records,$tabname)) {
-    $msg = error_message($tabname);
-    write_message($msg);
-    write_to_error($msg);    
-    return;
-}
-
-
-// possible_values
-// -----------------------------------------------------------------------------
-// Drop table if it exists
-$tabname = "possible_values";
-if (in_array($tabname, $tables)) {
-    if (!drop_table($tabname)) {
-        $msg = error_message($tabname);
-        write_message($msg);
-        write_to_error($msg);    
-    return;
-    }
-}
-// Create table
-$flds = "
-    parameter C(30) NOTNULL DEFAULT 0,
-    value C(255) DEFAULT NULL,
-    translation C(50) DEFAULT NULL,
-    isDefault \"enum ('T', 'F')\" DEFAULT F
-";
-// PRIMARY KEY (parameter value)
-if (!create_table($tabname, $flds)) {
-    $msg = error_message($tabname);
-    write_message($msg);
-    write_to_error($msg);    
-    return;
-}
-$sqlarray = $datadict->ChangeTableSQL($tabname, $flds);
-$rs = $datadict->ExecuteSQLArray($sqlarray);    // return 0 if failed, 1 if executed all but with errors, 2 if executed successfully 
-if($rs != 2) {
-echo "An error occured in creating table " . $tabname . "\n";
-    $msg = error_message($tabname);
-    write_message($msg);
-    write_to_error($msg);
-    return;
-}
-else
-    echo "Table " . $tabname . " has been created\n";
-// Insert records in table
-$records = array("parameter"=>array("IsMultiChannel","IsMultiChannel",
-                            "ImageFileFormat","ImageFileFormat","ImageFileFormat","ImageFileFormat","ImageFileFormat","ImageFileFormat","ImageFileFormat","ImageFileFormat",
-                            "NumberOfChannels","NumberOfChannels","NumberOfChannels","NumberOfChannels",
-                            "ImageGeometry","ImageGeometry","ImageGeometry",
-                            "MicroscopeType","MicroscopeType","MicroscopeType","MicroscopeType",
-                            "ObjectiveMagnification","ObjectiveMagnification","ObjectiveMagnification","ObjectiveMagnification",
-                            "ObjectiveType","ObjectiveType","ObjectiveType",
-                            "SampleMedium","SampleMedium",
-                            "Binning","Binning","Binning","Binning","Binning",
-                            "MicroscopeName","MicroscopeName","MicroscopeName","MicroscopeName","MicroscopeName","MicroscopeName","MicroscopeName","MicroscopeName",
-                            "Resolution","Resolution","Resolution","Resolution","Resolution",
-                            "RemoveNoiseEffectiveness","RemoveNoiseEffectiveness","RemoveNoiseEffectiveness",
-                            "OutputFileFormat","OutputFileFormat","OutputFileFormat","OutputFileFormat","OutputFileFormat",
-                            "ObjectiveMagnification","ObjectiveMagnification",
-                            "PointSpreadFunction","PointSpreadFunction",
-                            "HasAdaptedValues","HasAdaptedValues",
-                            "ImageFileFormat","ImageFileFormat","ImageFileFormat","ImageFileFormat","ImageFileFormat",
-                            "ObjectiveType"),
-                       "value"=>array("True","False",
-                            "dv","stk","tiff-series","tiff-single","ims","lsm","lsm-single","pic",
-                            "1","2","3","4",
-                            "XYZ","XY - time","XYZ - time",
-                            "widefield","multipoint confocal (spinning disk)","single point confocal","two photon",
-                            "10","20","25","40",
-                            "oil","water","air",
-                            "water / buffer","liquid vectashield / 90-10 (v:v) glycerol - PBS ph 7.4",
-                            "1","2","3","4","5",
-                            "Zeiss 510","Zeiss 410","Zeiss Two Photon 1","Zeiss Two Photon 2","Leica DMRA","Leica DMRB","Leica Two Photon 1","Leica Two Photon 2",
-                            "128","256","512","1024","2048",
-                            "1","2","3",
-                            "TIFF 8-bit","TIFF 16-bit","IMS (Imaris Classic)","ICS (Image Cytometry Standard)","OME-XML",
-                            "63","100",
-                            "theoretical","measured",
-                            "True","False",
-                            "ome-xml","tiff","lif","tiff-leica","ics",
-                            "glycerol"),
-                       "translation"=>array("","",
-                            "Delta Vision (*.dv)","Metamorph (*.stk)","Numbered TIFF series (*.tif, *.tiff)","TIFF (*.tif, *.tiff) single XY plane","Imaris Classic (*.ims)","Zeiss (*.lsm)","Zeiss (*.lsm) single XY plane","Biorad (*.pic)",
-                            "","","","",
-                            "","","",
-                            "widefield","nipkow","confocal","widefield",
-                            "","","","",
-                            "1.515","1.3381","1.0",
-                            "1.339","1.47",
-                            "","","","","",
-                            "","","","","","","","",
-                            "","","","","",
-                            "","","",
-                            "tiff","tiff16","imaris","ics","ome",
-                            "","",
-                            "","",
-                            "","",
-                            "OME-XML (*.ome)","Olympus TIFF (*.tif, *.tiff)","Leica (*.lif)","Leica TIFF series (*.tif, *.tiff)","Image Cytometry Standard (*.ics/*.ids)",
-                            "1.4729"),
-                       "isDefault"=>array("f","f",
-                            "f","f","f","f","f","f","f","f",
-                            "f","f","f","f",
-                            "f","f","f",
-                            "f","f","f","f",
-                            "f","f","f","f",
-                            "f","f","f",
-                            "f","f",
-                            "f","f","f","f","f",
-                            "f","f","f","f","f","f","f","f",
-                            "f","f","f","f","f",
-                            "f","f","f",
-                            "f","f","t","f","f",
-                            "f","f",
-                            "f","f",
-                            "f","f",
-                            "f","f","f","f","f",
-                            "f"),
-                       "parameter_key"=>array("IsMultiChannel1","IsMultiChannel2",
-                            "ImageFileFormat1","ImageFileFormat2","ImageFileFormat3","ImageFileFormat4","ImageFileFormat5","ImageFileFormat6","ImageFileFormat7","ImageFileFormat8",
-                            "NumberOfChannels1","NumberOfChannels2","NumberOfChannels3","NumberOfChannels4",
-                            "ImageGeometry1","ImageGeometry2","ImageGeometry3",
-                            "MicroscopeType1","MicroscopeType2","MicroscopeType3","MicroscopeType4",
-                            "ObjectiveMagnification1","ObjectiveMagnification2","ObjectiveMagnification3","ObjectiveMagnification4",
-                            "ObjectiveType1","ObjectiveType2","ObjectiveType3",
-                            "SampleMedium1","SampleMedium2",
-                            "Binning1","Binning2","Binning3","Binning4","Binning5",
-                            "MicroscopeName1","MicroscopeName2","MicroscopeName3","MicroscopeName4","MicroscopeName5","MicroscopeName6","MicroscopeName7","MicroscopeName8",
-                            "Resolution1","Resolution2","Resolution3","Resolution4","Resolution5",
-                            "RemoveNoiseEffectiveness1","RemoveNoiseEffectiveness2","RemoveNoiseEffectiveness3",
-                            "OutputFileFormat1","OutputFileFormat2","OutputFileFormat3","OutputFileFormat4","OutputFileFormat5",
-                            "ObjectiveMagnification1","ObjectiveMagnification2",
-                            "PointSpreadFunction1","PointSpreadFunction2",
-                            "HasAdaptedValues1","HasAdaptedValues2",
-                            "ImageFileFormat1","ImageFileFormat2","ImageFileFormat3","ImageFileFormat4","ImageFileFormat5",
-                            "ObjectiveType"));
-if(!insert_records($records,$tabname)) {
-    $msg = error_message($tabname);
-    write_message($msg);
-    write_to_error($msg);    
-    return;
-}
-
-
-// geometry
-// -----------------------------------------------------------------------------
-// Drop table if it exists
-$tabname = "geometry";
-if (in_array($tabname, $tables)) {
-    if (!drop_table($tabname)) {
-        $msg = error_message($tabname);
-        write_message($msg);
-        write_to_error($msg);    
-    return;
-    }
-}
-// Create table
-$flds = "
-    name C(30) KEY DEFAULT 0,
-    isThreeDimensional \"enum ('T', 'F')\" DEFAULT NULL,
-    isTimeSeries \"enum ('T', 'F')\" DEFAULT NULL
-";
-if (!create_table($tabname, $flds)) {
-    $msg = error_message($tabname);
-    write_message($msg);
-    write_to_error($msg);    
-    return;
-}
-$sqlarray = $datadict->ChangeTableSQL($tabname, $flds);
-$rs = $datadict->ExecuteSQLArray($sqlarray);    // return 0 if failed, 1 if executed all but with errors, 2 if executed successfully 
-if($rs != 2) {
-echo "An error occured in creating table " . $tabname . "\n";
-    $msg = error_message($tabname);
-    write_message($msg);
-    write_to_error($msg);
-    return;
-}
-else
-    echo "Table " . $tabname . " has been created\n";
-// Insert records in table
-$records = array("name"=>array("XYZ","XYZ - time","XY - time"), 
-                "isThreeDimensional"=>array("t","t","f"),
-                "isTimeSeries"=>array("f","t","t"));
-if(!insert_records($records,$tabname)) {
-    $msg = error_message($tabname);
-    write_message($msg);
-    write_to_error($msg);    
-    return;
-}
-
-
-// file_format
-// -----------------------------------------------------------------------------
-// Drop table if it exists
-$tabname = "file_format";
-if (in_array($tabname, $tables)) {
-    if (!drop_table($tabname)) {
-        $msg = error_message($tabname);
-        write_message($msg);
-        write_to_error($msg);    
-    return;
-    }
-}
-// Create table
-$flds = "
-    name C(30) NOTNULL DEFAULT 0,
-    isFixedGeometry \"enum ('T', 'F')\" NOTNULL DEFAULT T,
-    isSingleChannel \"enum ('T', 'F')\" NOTNULL DEFAULT T,
-    isVariableChannel \"enum ('T', 'F')\" NOTNULL DEFAULT T
-";
-if (!create_table($tabname, $flds)) {
-    $msg = error_message($tabname);
-    write_message($msg);
-    write_to_error($msg);    
-    return;
-}
-$sqlarray = $datadict->ChangeTableSQL($tabname, $flds);
-$rs = $datadict->ExecuteSQLArray($sqlarray);    // return 0 if failed, 1 if executed all but with errors, 2 if executed successfully 
-if($rs != 2) {
-echo "An error occured in creating table " . $tabname . "\n";
-    $msg = error_message($tabname);
-    write_message($msg);
-    write_to_error($msg);
-    return;
-}
-else
-    echo "Table " . $tabname . " has been created\n";
-// Insert records in table
-$records = array("name"=>array("dv","ics","ics2","ims","lif","lsm","lsm-single","ome-xml","pic","stk","tiff","tiff-leica","tiff-series","tiff-single"),
-                "isFixedGeometry"=>array("F","F","F","F","F","F","T","F","F","F","F","F","F","T"),
-                "isSingleChannel"=>array("F","F","F","F","F","F","F","F","F","F","F","F","F","F"),
-                "isVariableChannel"=>array("T","T","T","T","T","T","T","T","T","T","T","T","T","T"));
-if(!insert_records($records,$tabname)) {
-    $msg = error_message($tabname);
-    write_message($msg);
-    write_to_error($msg);    
-    return;
-}
-
-
-// file_extension
-// -----------------------------------------------------------------------------
-// Drop table if it exists
-$tabname = "file_extension";
-if (in_array($tabname, $tables)) {
-    if (!drop_table($tabname)) {
-        $msg = error_message($tabname);
-        write_message($msg);
-        write_to_error($msg);    
-    return;
-    }
-}
-// Create table
-$flds = "
-    file_format C(30) NOTNULL DEFAULT 0,
-    extension C(4) NOTNULL
-";
-if (!create_table($tabname, $flds)) {
-    $msg = error_message($tabname);
-    write_message($msg);
-    write_to_error($msg);    
-    return;
-}
-$sqlarray = $datadict->ChangeTableSQL($tabname, $flds);
-$rs = $datadict->ExecuteSQLArray($sqlarray);    // return 0 if failed, 1 if executed all but with errors, 2 if executed successfully 
-if($rs != 2) {
-echo "An error occured in creating table " . $tabname . "\n";
-    $msg = error_message($tabname);
-    write_message($msg);
-    write_to_error($msg);
-    return;
-}
-else
-    echo "Table " . $tabname . " has been created\n";
-// Insert records in table
-$records = array("file_format"=>array("dv","ics","ics2","ims","lif","lsm","lsm-single","ome-xml","pic","stk","tiff","tiff-leica","tiff-series","tiff-single",
-                                        "tiff","tiff-leica","tiff-series","tiff-single"),
-                "extension"=>array("dv","ics","ics2","ims","lif","lsm","lsm","ome","pic","stk","tif","tif","tif","tif",
-                                        "tiff","tiff","tiff","tiff"));
-if(!insert_records($records,$tabname)) {
-    $msg = error_message($tabname);
-    write_message($msg);
-    write_to_error($msg);    
-    return;
-}
-
-
-
-// -----------------------------------------------------------------------------
-// Drop and Create fixed tables (structure only)
-// -----------------------------------------------------------------------------
-
-// job_queue
-// -----------------------------------------------------------------------------
-// Drop table if it exists
-$tabname = "job_queue";
-if (in_array($tabname, $tables)) {
-    if (!drop_table($tabname)) {
-        $msg = error_message($tabname);
-        write_message($msg);
-        write_to_error($msg);    
-    return;
-    }
-}
-// Create table
-$flds = "
-    id C(30) NOTNULL DEFAULT 0,
-    username C(30) NOTNULL,
-    queued T NOTNULL DEFAULT '0000-00-00 00:00:00',
-    start T DEFAULT NULL,
-    stop T DEFAULT NULL,
-    server C(30) DEFAULT NULL,
-    process_info C(30) DEFAULT NULL,
-    status \"enum ('QUEUED', 'STARTED', 'FINISHED', 'BROKEN', 'PAUSED')\" NOTNULL DEFAULT QUEUED  
-";
-if (!create_table($tabname, $flds)) {
-    $msg = error_message($tabname);
-    write_message($msg);
-    write_to_error($msg);    
-    return;
-}
-$sqlarray = $datadict->ChangeTableSQL($tabname, $flds);
-$rs = $datadict->ExecuteSQLArray($sqlarray);    // return 0 if failed, 1 if executed all but with errors, 2 if executed successfully 
-if($rs != 2) {
-echo "An error occured in creating table " . $tabname . "\n";
-    $msg = error_message($tabname);
-    write_message($msg);
-    write_to_error($msg);
-    return;
-}
-else
-    echo "Table " . $tabname . " has been created\n";
+    // -----------------------------------------------------------------------------
+    // Drop and Create fixed tables (structure and content)
+    // -----------------------------------------------------------------------------
+    
+    // NOTE: ENUM is not available as a portable type code, which forces us to
+    //       hardcode the type string in the following descriptions, which in turn
+    //       forces us to use uppercase 'T' and 'F' enum values (because of some
+    //       stupid rule in adodb data dictionary class).
     
     
-// TODO:
-// job_parameter_setting
-// job_task_setting 
-
-
-
-// -----------------------------------------------------------------------------
-// Check the existence and the structure of the tables with variable contents
-// -----------------------------------------------------------------------------
-
-// job_files
-// -----------------------------------------------------------------------------
-$tabname = "job_files";
-$flds = "
-    job C(30) KEY DEFAULT 0,
-    owner C(30) DEFAULT 0,
-    file C(255) DEFAULT 0
-";
-if(!check_table_existence_and_structure($tabname,$flds)) {
-    $msg = error_message($tabname);
-    write_message($msg);
-    write_to_error($msg);    
-    return;
-}
-
-////TODO:
-//$tabname = "parameter_setting";
-//$tabname = "server";
-//$tabname = "task_setting";
-//$tabname = "username";
-//$tabname = "parameter";
-//$tabname = "job_task_parameter";
-//$tabname = "job_parameter";
-// task_parameter
-
-
-// -----------------------------------------------------------------------------
-// Check the existence and the structure of the tables with variable contents
-// Check the format of the records content
-// -----------------------------------------------------------------------------
-
-// task_parameter
-// -----------------------------------------------------------------------------
-$tabname = "task_parameter";
-$flds = "
-    owner C(30) NOTNULL DEFAULT 0,
-    setting C(30) NOTNULL,
-    name C(30) NOTNULL,
-    value C(255) DEFAULT NULL
-";
-if(!check_table_existence_and_structure($tabname,$flds)) {
-    $msg = error_message($tabname);
-    write_message($msg);
-    write_to_error($msg);    
-    return;
-}
-if (in_array($tabname, $tables)) {
-    $rs = $db->Execute("SELECT value FROM " . $tabname . " WHERE name = 'NumberOfIterationsRange'");
-    if($rs) {
-        while ($value = $rs->FetchRow()) {
-            //TODO: control the format of value
+    // boundary_values
+    // -----------------------------------------------------------------------------
+    // Drop table if it exists
+    $tabname = "boundary_values";
+    if (in_array($tabname, $tables)) {
+        if (!drop_table($tabname)) {
+            $msg = error_message($tabname);
+            write_message($msg);
+            write_to_error($msg);    
+        return;
         }
     }
+    // Create table
+    $flds = "
+        parameter C(255) KEY,
+        min C(30),
+        max C(30),
+        min_included \"enum ('T', 'F')\" DEFAULT T,
+        max_included \"enum ('T', 'F')\" DEFAULT T,
+        standard C(30)
+    ";
+    if (!create_table($tabname, $flds)) {
+        $msg = error_message($tabname);
+        write_message($msg);
+        write_to_error($msg);    
+        return;
+    }
+    $sqlarray = $datadict->ChangeTableSQL($tabname, $flds);
+    $rs = $datadict->ExecuteSQLArray($sqlarray);    // return 0 if failed, 1 if executed all but with errors, 2 if executed successfully 
+    if($rs != 2) {
+    echo "An error occured in creating table " . $tabname . "\n";
+        $msg = error_message($tabname);
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+    else
+        echo "Table " . $tabname . " has been created\n";
+    // Insert records in table
+    $records = array("parameter"=>array("PinholeSize","RemoveBackgroundPercent","BackgroundOffsetPercent","ExcitationWavelength",
+                        "EmissionWavelength","CMount","TubeFactor","CCDCaptorSizeX","CCDCaptorSizeY","ZStepSize","TimeInterval",
+                        "SignalNoiseRatio","NumberOfIterations","QualityChangeStoppingCriterion"),
+                     "min"=>array("0","0","0","0","0","0.4","1","1","1","50","0.001","0","1","0"),
+                     "max"=>array("NULL","100","","NULL","NULL","1","2","25000","25000","600000","NULL","100","100","NULL"),
+                     "min_included"=>array("F","F","T","F","F","T","T","T","T","T","F","F","T","T"),
+                     "max_included"=>array("T","T","F","T","T","T","T","T","T","T","T","T","T","T"),
+                     "standard"=>array("NULL","NULL","NULL","NULL","NULL","1","1","NULL","NULL","NULL","NULL","NULL","NULL","NULL"));
+    if(!insert_records($records,$tabname)) {
+        $msg = error_message($tabname);
+        write_message($msg);
+        write_to_error($msg);    
+        return;
+    }
+    
+    
+    // possible_values
+    // -----------------------------------------------------------------------------
+    // Drop table if it exists
+    $tabname = "possible_values";
+    if (in_array($tabname, $tables)) {
+        if (!drop_table($tabname)) {
+            $msg = error_message($tabname);
+            write_message($msg);
+            write_to_error($msg);    
+        return;
+        }
+    }
+    // Create table
+    $flds = "
+        parameter C(30) NOTNULL DEFAULT 0,
+        value C(255) DEFAULT NULL,
+        translation C(50) DEFAULT NULL,
+        isDefault \"enum ('T', 'F')\" DEFAULT F
+    ";
+    // PRIMARY KEY (parameter value)
+    if (!create_table($tabname, $flds)) {
+        $msg = error_message($tabname);
+        write_message($msg);
+        write_to_error($msg);    
+        return;
+    }
+    $sqlarray = $datadict->ChangeTableSQL($tabname, $flds);
+    $rs = $datadict->ExecuteSQLArray($sqlarray);    // return 0 if failed, 1 if executed all but with errors, 2 if executed successfully 
+    if($rs != 2) {
+    echo "An error occured in creating table " . $tabname . "\n";
+        $msg = error_message($tabname);
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+    else
+        echo "Table " . $tabname . " has been created\n";
+    // Insert records in table
+    $records = array("parameter"=>array("IsMultiChannel","IsMultiChannel",
+                                "ImageFileFormat","ImageFileFormat","ImageFileFormat","ImageFileFormat","ImageFileFormat","ImageFileFormat","ImageFileFormat","ImageFileFormat",
+                                "NumberOfChannels","NumberOfChannels","NumberOfChannels","NumberOfChannels",
+                                "ImageGeometry","ImageGeometry","ImageGeometry",
+                                "MicroscopeType","MicroscopeType","MicroscopeType","MicroscopeType",
+                                "ObjectiveMagnification","ObjectiveMagnification","ObjectiveMagnification","ObjectiveMagnification",
+                                "ObjectiveType","ObjectiveType","ObjectiveType",
+                                "SampleMedium","SampleMedium",
+                                "Binning","Binning","Binning","Binning","Binning",
+                                "MicroscopeName","MicroscopeName","MicroscopeName","MicroscopeName","MicroscopeName","MicroscopeName","MicroscopeName","MicroscopeName",
+                                "Resolution","Resolution","Resolution","Resolution","Resolution",
+                                "RemoveNoiseEffectiveness","RemoveNoiseEffectiveness","RemoveNoiseEffectiveness",
+                                "OutputFileFormat","OutputFileFormat","OutputFileFormat","OutputFileFormat","OutputFileFormat",
+                                "ObjectiveMagnification","ObjectiveMagnification",
+                                "PointSpreadFunction","PointSpreadFunction",
+                                "HasAdaptedValues","HasAdaptedValues",
+                                "ImageFileFormat","ImageFileFormat","ImageFileFormat","ImageFileFormat","ImageFileFormat",
+                                "ObjectiveType"),
+                           "value"=>array("True","False",
+                                "dv","stk","tiff-series","tiff-single","ims","lsm","lsm-single","pic",
+                                "1","2","3","4",
+                                "XYZ","XY - time","XYZ - time",
+                                "widefield","multipoint confocal (spinning disk)","single point confocal","two photon",
+                                "10","20","25","40",
+                                "oil","water","air",
+                                "water / buffer","liquid vectashield / 90-10 (v:v) glycerol - PBS ph 7.4",
+                                "1","2","3","4","5",
+                                "Zeiss 510","Zeiss 410","Zeiss Two Photon 1","Zeiss Two Photon 2","Leica DMRA","Leica DMRB","Leica Two Photon 1","Leica Two Photon 2",
+                                "128","256","512","1024","2048",
+                                "1","2","3",
+                                "TIFF 8-bit","TIFF 16-bit","IMS (Imaris Classic)","ICS (Image Cytometry Standard)","OME-XML",
+                                "63","100",
+                                "theoretical","measured",
+                                "True","False",
+                                "ome-xml","tiff","lif","tiff-leica","ics",
+                                "glycerol"),
+                           "translation"=>array("","",
+                                "Delta Vision (*.dv)","Metamorph (*.stk)","Numbered TIFF series (*.tif, *.tiff)","TIFF (*.tif, *.tiff) single XY plane","Imaris Classic (*.ims)","Zeiss (*.lsm)","Zeiss (*.lsm) single XY plane","Biorad (*.pic)",
+                                "","","","",
+                                "","","",
+                                "widefield","nipkow","confocal","widefield",
+                                "","","","",
+                                "1.515","1.3381","1.0",
+                                "1.339","1.47",
+                                "","","","","",
+                                "","","","","","","","",
+                                "","","","","",
+                                "","","",
+                                "tiff","tiff16","imaris","ics","ome",
+                                "","",
+                                "","",
+                                "","",
+                                "OME-XML (*.ome)","Olympus TIFF (*.tif, *.tiff)","Leica (*.lif)","Leica TIFF series (*.tif, *.tiff)","Image Cytometry Standard (*.ics/*.ids)",
+                                "1.4729"),
+                           "isDefault"=>array("f","f",
+                                "f","f","f","f","f","f","f","f",
+                                "f","f","f","f",
+                                "f","f","f",
+                                "f","f","f","f",
+                                "f","f","f","f",
+                                "f","f","f",
+                                "f","f",
+                                "f","f","f","f","f",
+                                "f","f","f","f","f","f","f","f",
+                                "f","f","f","f","f",
+                                "f","f","f",
+                                "f","f","t","f","f",
+                                "f","f",
+                                "f","f",
+                                "f","f",
+                                "f","f","f","f","f",
+                                "f"),
+                           "parameter_key"=>array("IsMultiChannel1","IsMultiChannel2",
+                                "ImageFileFormat1","ImageFileFormat2","ImageFileFormat3","ImageFileFormat4","ImageFileFormat5","ImageFileFormat6","ImageFileFormat7","ImageFileFormat8",
+                                "NumberOfChannels1","NumberOfChannels2","NumberOfChannels3","NumberOfChannels4",
+                                "ImageGeometry1","ImageGeometry2","ImageGeometry3",
+                                "MicroscopeType1","MicroscopeType2","MicroscopeType3","MicroscopeType4",
+                                "ObjectiveMagnification1","ObjectiveMagnification2","ObjectiveMagnification3","ObjectiveMagnification4",
+                                "ObjectiveType1","ObjectiveType2","ObjectiveType3",
+                                "SampleMedium1","SampleMedium2",
+                                "Binning1","Binning2","Binning3","Binning4","Binning5",
+                                "MicroscopeName1","MicroscopeName2","MicroscopeName3","MicroscopeName4","MicroscopeName5","MicroscopeName6","MicroscopeName7","MicroscopeName8",
+                                "Resolution1","Resolution2","Resolution3","Resolution4","Resolution5",
+                                "RemoveNoiseEffectiveness1","RemoveNoiseEffectiveness2","RemoveNoiseEffectiveness3",
+                                "OutputFileFormat1","OutputFileFormat2","OutputFileFormat3","OutputFileFormat4","OutputFileFormat5",
+                                "ObjectiveMagnification1","ObjectiveMagnification2",
+                                "PointSpreadFunction1","PointSpreadFunction2",
+                                "HasAdaptedValues1","HasAdaptedValues2",
+                                "ImageFileFormat1","ImageFileFormat2","ImageFileFormat3","ImageFileFormat4","ImageFileFormat5",
+                                "ObjectiveType"));
+    if(!insert_records($records,$tabname)) {
+        $msg = error_message($tabname);
+        write_message($msg);
+        write_to_error($msg);    
+        return;
+    }
+    
+    
+    // geometry
+    // -----------------------------------------------------------------------------
+    // Drop table if it exists
+    $tabname = "geometry";
+    if (in_array($tabname, $tables)) {
+        if (!drop_table($tabname)) {
+            $msg = error_message($tabname);
+            write_message($msg);
+            write_to_error($msg);    
+        return;
+        }
+    }
+    // Create table
+    $flds = "
+        name C(30) KEY DEFAULT 0,
+        isThreeDimensional \"enum ('T', 'F')\" DEFAULT NULL,
+        isTimeSeries \"enum ('T', 'F')\" DEFAULT NULL
+    ";
+    if (!create_table($tabname, $flds)) {
+        $msg = error_message($tabname);
+        write_message($msg);
+        write_to_error($msg);    
+        return;
+    }
+    $sqlarray = $datadict->ChangeTableSQL($tabname, $flds);
+    $rs = $datadict->ExecuteSQLArray($sqlarray);    // return 0 if failed, 1 if executed all but with errors, 2 if executed successfully 
+    if($rs != 2) {
+    echo "An error occured in creating table " . $tabname . "\n";
+        $msg = error_message($tabname);
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+    else
+        echo "Table " . $tabname . " has been created\n";
+    // Insert records in table
+    $records = array("name"=>array("XYZ","XYZ - time","XY - time"), 
+                    "isThreeDimensional"=>array("t","t","f"),
+                    "isTimeSeries"=>array("f","t","t"));
+    if(!insert_records($records,$tabname)) {
+        $msg = error_message($tabname);
+        write_message($msg);
+        write_to_error($msg);    
+        return;
+    }
+    
+    
+    // file_format
+    // -----------------------------------------------------------------------------
+    // Drop table if it exists
+    $tabname = "file_format";
+    if (in_array($tabname, $tables)) {
+        if (!drop_table($tabname)) {
+            $msg = error_message($tabname);
+            write_message($msg);
+            write_to_error($msg);    
+        return;
+        }
+    }
+    // Create table
+    $flds = "
+        name C(30) NOTNULL DEFAULT 0,
+        isFixedGeometry \"enum ('T', 'F')\" NOTNULL DEFAULT T,
+        isSingleChannel \"enum ('T', 'F')\" NOTNULL DEFAULT T,
+        isVariableChannel \"enum ('T', 'F')\" NOTNULL DEFAULT T
+    ";
+    if (!create_table($tabname, $flds)) {
+        $msg = error_message($tabname);
+        write_message($msg);
+        write_to_error($msg);    
+        return;
+    }
+    $sqlarray = $datadict->ChangeTableSQL($tabname, $flds);
+    $rs = $datadict->ExecuteSQLArray($sqlarray);    // return 0 if failed, 1 if executed all but with errors, 2 if executed successfully 
+    if($rs != 2) {
+    echo "An error occured in creating table " . $tabname . "\n";
+        $msg = error_message($tabname);
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+    else
+        echo "Table " . $tabname . " has been created\n";
+    // Insert records in table
+    $records = array("name"=>array("dv","ics","ics2","ims","lif","lsm","lsm-single","ome-xml","pic","stk","tiff","tiff-leica","tiff-series","tiff-single"),
+                    "isFixedGeometry"=>array("F","F","F","F","F","F","T","F","F","F","F","F","F","T"),
+                    "isSingleChannel"=>array("F","F","F","F","F","F","F","F","F","F","F","F","F","F"),
+                    "isVariableChannel"=>array("T","T","T","T","T","T","T","T","T","T","T","T","T","T"));
+    if(!insert_records($records,$tabname)) {
+        $msg = error_message($tabname);
+        write_message($msg);
+        write_to_error($msg);    
+        return;
+    }
+    
+    
+    // file_extension
+    // -----------------------------------------------------------------------------
+    // Drop table if it exists
+    $tabname = "file_extension";
+    if (in_array($tabname, $tables)) {
+        if (!drop_table($tabname)) {
+            $msg = error_message($tabname);
+            write_message($msg);
+            write_to_error($msg);    
+        return;
+        }
+    }
+    // Create table
+    $flds = "
+        file_format C(30) NOTNULL DEFAULT 0,
+        extension C(4) NOTNULL
+    ";
+    if (!create_table($tabname, $flds)) {
+        $msg = error_message($tabname);
+        write_message($msg);
+        write_to_error($msg);    
+        return;
+    }
+    $sqlarray = $datadict->ChangeTableSQL($tabname, $flds);
+    $rs = $datadict->ExecuteSQLArray($sqlarray);    // return 0 if failed, 1 if executed all but with errors, 2 if executed successfully 
+    if($rs != 2) {
+    echo "An error occured in creating table " . $tabname . "\n";
+        $msg = error_message($tabname);
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+    else
+        echo "Table " . $tabname . " has been created\n";
+    // Insert records in table
+    $records = array("file_format"=>array("dv","ics","ics2","ims","lif","lsm","lsm-single","ome-xml","pic","stk","tiff","tiff-leica","tiff-series","tiff-single",
+                                            "tiff","tiff-leica","tiff-series","tiff-single"),
+                    "extension"=>array("dv","ics","ics2","ims","lif","lsm","lsm","ome","pic","stk","tif","tif","tif","tif",
+                                            "tiff","tiff","tiff","tiff"));
+    if(!insert_records($records,$tabname)) {
+        $msg = error_message($tabname);
+        write_message($msg);
+        write_to_error($msg);    
+        return;
+    }
+    
+    
+    
+    // -----------------------------------------------------------------------------
+    // Drop and Create fixed tables (create structure only)
+    // -----------------------------------------------------------------------------
+    
+    // job_queue
+    // -----------------------------------------------------------------------------
+    // Drop table if it exists
+    $tabname = "job_queue";
+    if (in_array($tabname, $tables)) {
+        if (!drop_table($tabname)) {
+            $msg = error_message($tabname);
+            write_message($msg);
+            write_to_error($msg);    
+        return;
+        }
+    }
+    // Create table
+    $flds = "
+        id C(30) NOTNULL DEFAULT 0 PRIMARY,
+        username C(30) NOTNULL,
+        queued T NOTNULL DEFAULT '0000-00-00 00:00:00',
+        start T DEFAULT NULL,
+        stop T DEFAULT NULL,
+        server C(30) DEFAULT NULL,
+        process_info C(30) DEFAULT NULL,
+        status \"enum ('queued', 'started', 'finished', 'broken', 'paused')\" NOTNULL DEFAULT 'queued'  
+    ";
+    if (!create_table($tabname, $flds)) {
+        $msg = error_message($tabname);
+        write_message($msg);
+        write_to_error($msg);    
+        return;
+    }
+    $sqlarray = $datadict->ChangeTableSQL($tabname, $flds);
+    $rs = $datadict->ExecuteSQLArray($sqlarray);    // return 0 if failed, 1 if executed all but with errors, 2 if executed successfully 
+    if($rs != 2) {
+    echo "An error occured in creating table " . $tabname . "\n";
+        $msg = error_message($tabname);
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+    else
+        echo "Table " . $tabname . " has been created\n";
+    
+    
+    // job_files
+    // -----------------------------------------------------------------------------
+    // Drop table if it exists
+    $tabname = "job_files";
+    if (in_array($tabname, $tables)) {
+        if (!drop_table($tabname)) {
+            $msg = error_message($tabname);
+            write_message($msg);
+            write_to_error($msg);    
+        return;
+        }
+    }
+    // Create table
+    $flds = "
+        job C(30) DEFAULT 0 PRIMARY,
+        owner C(30) DEFAULT 0,
+        file C(30) DEFAULT 0
+    ";
+    if (!create_table($tabname, $flds)) {
+        $msg = error_message($tabname);
+        write_message($msg);
+        write_to_error($msg);    
+        return;
+    }
+    $sqlarray = $datadict->ChangeTableSQL($tabname, $flds);
+    $rs = $datadict->ExecuteSQLArray($sqlarray);    // return 0 if failed, 1 if executed all but with errors, 2 if executed successfully 
+    if($rs != 2) {
+    echo "An error occured in creating table " . $tabname . "\n";
+        $msg = error_message($tabname);
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+    else
+        echo "Table " . $tabname . " has been created\n";
+        
+        
+    // job_parameter
+    // -----------------------------------------------------------------------------
+    // Drop table if it exists
+    $tabname = "job_parameter";
+    if (in_array($tabname, $tables)) {
+        if (!drop_table($tabname)) {
+            $msg = error_message($tabname);
+            write_message($msg);
+            write_to_error($msg);    
+        return;
+        }
+    }
+    // Create table
+    $flds = "
+        owner C(30) NOTNULL DEFAULT 0 PRIMARY,
+        setting C(30) NOTNULL DEFAULT 0 PRIMARY,
+        name C(30) NOTNULL DEFAULT 0 PRIMARY,
+        value C(255) DEFAULT NULL
+    ";
+    if (!create_table($tabname, $flds)) {
+        $msg = error_message($tabname);
+        write_message($msg);
+        write_to_error($msg);    
+        return;
+    }
+    $sqlarray = $datadict->ChangeTableSQL($tabname, $flds);
+    $rs = $datadict->ExecuteSQLArray($sqlarray);    // return 0 if failed, 1 if executed all but with errors, 2 if executed successfully 
+    if($rs != 2) {
+    echo "An error occured in creating table " . $tabname . "\n";
+        $msg = error_message($tabname);
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+    else
+        echo "Table " . $tabname . " has been created\n";
+    
+    
+    // job_parameter_setting
+    // -----------------------------------------------------------------------------
+    // Drop table if it exists
+    $tabname = "job_parameter_setting";
+    if (in_array($tabname, $tables)) {
+        if (!drop_table($tabname)) {
+            $msg = error_message($tabname);
+            write_message($msg);
+            write_to_error($msg);    
+        return;
+        }
+    }
+    // Create table
+    $flds = "
+        owner C(30) NOTNULL DEFAULT 0 PRIMARY,
+        name C(30) NOTNULL DEFAULT 0 PRIMARY,
+        standard \"enum ('t','f')\" DEFAULT NULL
+    ";
+    if (!create_table($tabname, $flds)) {
+        $msg = error_message($tabname);
+        write_message($msg);
+        write_to_error($msg);    
+        return;
+    }
+    $sqlarray = $datadict->ChangeTableSQL($tabname, $flds);
+    $rs = $datadict->ExecuteSQLArray($sqlarray);    // return 0 if failed, 1 if executed all but with errors, 2 if executed successfully 
+    if($rs != 2) {
+    echo "An error occured in creating table " . $tabname . "\n";
+        $msg = error_message($tabname);
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+    else
+        echo "Table " . $tabname . " has been created\n";
+                  
+    
+    // job_task_parameter
+    // -----------------------------------------------------------------------------
+    // Drop table if it exists
+    $tabname = "job_task_parameter";
+    if (in_array($tabname, $tables)) {
+        if (!drop_table($tabname)) {
+            $msg = error_message($tabname);
+            write_message($msg);
+            write_to_error($msg);    
+        return;
+        }
+    }
+    // Create table
+    $flds = "
+        owner C(30) NOTNULL DEFAULT 0 PRIMARY,
+        setting C(30) NOTNULL PRIMARY,
+        name C(30) NOTNULL PRIMARY,
+        value C(255) DEFAULT NULL
+    ";
+    if (!create_table($tabname, $flds)) {
+        $msg = error_message($tabname);
+        write_message($msg);
+        write_to_error($msg);    
+        return;
+    }
+    $sqlarray = $datadict->ChangeTableSQL($tabname, $flds);
+    $rs = $datadict->ExecuteSQLArray($sqlarray);    // return 0 if failed, 1 if executed all but with errors, 2 if executed successfully 
+    if($rs != 2) {
+    echo "An error occured in creating table " . $tabname . "\n";
+        $msg = error_message($tabname);
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+    else
+        echo "Table " . $tabname . " has been created\n";
+        
+        
+    // job_task_setting
+    // -----------------------------------------------------------------------------
+    // Drop table if it exists
+    $tabname = "job_task_setting";
+    if (in_array($tabname, $tables)) {
+        if (!drop_table($tabname)) {
+            $msg = error_message($tabname);
+            write_message($msg);
+            write_to_error($msg);    
+        return;
+        }
+    }
+    // Create table
+    $flds = "
+        owner C(30) NOTNULL DEFAULT 0 PRIMARY,
+        name C(30) NOTNULL PRIMARY,
+        standard \"enum('t','f')\" DEFAULT 'f'
+    ";
+    if (!create_table($tabname, $flds)) {
+        $msg = error_message($tabname);
+        write_message($msg);
+        write_to_error($msg);    
+        return;
+    }
+    $sqlarray = $datadict->ChangeTableSQL($tabname, $flds);
+    $rs = $datadict->ExecuteSQLArray($sqlarray);    // return 0 if failed, 1 if executed all but with errors, 2 if executed successfully 
+    if($rs != 2) {
+    echo "An error occured in creating table " . $tabname . "\n";
+        $msg = error_message($tabname);
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+    else
+        echo "Table " . $tabname . " has been created\n";
+        
+    
+    
+    // -----------------------------------------------------------------------------
+    // Check the existence and the structure of the tables with variable contents
+    // -----------------------------------------------------------------------------
+    
+    // parameter_setting
+    // -----------------------------------------------------------------------------
+    $tabname = "parameter_setting";
+    $flds = "
+        owner C(30) NOTNULL DEFAULT 0 PRIMARY,
+        name C(30) NOTNULL PRIMARY,
+        standard \"enum('t','f')\" DEFAULT 'f'
+    ";
+    if(!check_table_existence_and_structure($tabname,$flds)) {
+        $msg = error_message($tabname);
+        write_message($msg);
+        write_to_error($msg);    
+        return;
+    }
+    
+    
+    // task_setting
+    // -----------------------------------------------------------------------------
+    $tabname = "task_setting";
+    $flds = "
+        owner C(30) NOTNULL DEFAULT 0 PRIMARY,
+        name C(30) NOTNULL PRIMARY,
+        standard \"enum('t','f')\" DEFAULT 'f'
+    ";
+    if(!check_table_existence_and_structure($tabname,$flds)) {
+        $msg = error_message($tabname);
+        write_message($msg);
+        write_to_error($msg);    
+        return;
+    }
+    
+
+    
+    // -----------------------------------------------------------------------------
+    // Check the existence and the structure of the tables with variable contents
+    // Check the format of the records content too
+    // -----------------------------------------------------------------------------
+    
+    // task_parameter
+    // -----------------------------------------------------------------------------
+    $tabname = "task_parameter";
+    $flds = "
+        owner C(30) NOTNULL DEFAULT 0 PRIMARY,
+        setting C(30) NOTNULL PRIMARY,
+        name C(30) NOTNULL PRIMARY,
+        value C(255) DEFAULT NULL
+    ";
+    if(!check_table_existence_and_structure($tabname,$flds)) {
+        $msg = error_message($tabname);
+        write_message($msg);
+        write_to_error($msg);    
+        return;
+    }
+
+    if (in_array($tabname, $tables)) {
+        $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE name = 'NumberOfIterationsRange'");
+        if($rs) {           
+            while ($row = $rs->FetchRow()) {
+echo "here: " . $row[3] . "\n";
+                $test = substr_count($row[3], '#');
+echo "number of #: " . $test . "\n";
+                if($test < 5) {
+echo "I know that there are less then 5 #\n";
+                    if(strpos($row[3], '#') != 0) {
+                        // concatenare un diesis all'inizio e un diesis alla fine
+                        
+                    }
+                }
+            }
+        }
+    }
+    
+    
+    // parameter
+    // -----------------------------------------------------------------------------
+    $tabname = "parameter";
+    $flds = "
+        owner C(30) NOTNULL DEFAULT 0 PRIMARY,
+        setting C(30) NOTNULL PRIMARY,
+        name C(30) NOTNULL PRIMARY,
+        value C(255) DEFAULT NULL
+    ";
+    if(!check_table_existence_and_structure($tabname,$flds)) {
+        $msg = error_message($tabname);
+        write_message($msg);
+        write_to_error($msg);    
+        return;
+    }
+    if (in_array($tabname, $tables)) {
+        $rs = $db->Execute("SELECT value FROM " . $tabname . " WHERE name = 'NumberOfIterationsRange'");
+        if($rs) {
+            while ($value = $rs->FetchRow()) {
+                //TODO: control the format of value
+            }
+        }
+    }
+    
+
+    
+
 }
-
-//// TODO:
-//$task_parameter
-//$tabname = "parameter";
-//$tabname = "job_task_parameter";
-//$tabname = "job_parameter";
-
 
 
 // -----------------------------------------------------------------------------
@@ -952,30 +1178,33 @@ write_to_log($msg);
 // Description: add qmle algorithm as option
 // -------------------------------------------------------------------------   
 $n = 1;
-
-$tabname = "possible_values";
-$record = array();
-$record["parameter"] = "DeocnvolutionAlgorithm";
-$record["value"] = "cmle";
-$record["translation"] = "Classic Maximum Likelihood Estimation";
-$record["isDefault"] = "T";
-$insertSQL = $db->GetInsertSQL($tabname, $record);
-if(!$db->Execute($insertSQL)) {
-    write_to_error("An error occured while updateing the database to revision " . $n . ".");
-    return;
-}
-
-$record["value"] = "qmle";
-$record["translation"] = "Quick Maximum Likelihood Estimation";
-$record["isDefault"] = "T";
-$insertSQL = $db->GetInsertSQL($tabname, $record);
-if(!$db->Execute($insertSQL)) {
-    write_to_error("An error occured while updateing the database to revision " . $n . ".");
-    return;
-}
-
-if(!update_dbrevision($n)) {
-    return;
+if ($current_revision < $n) {
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "DeocnvolutionAlgorithm";
+    $record["value"] = "cmle";
+    $record["translation"] = "Classic Maximum Likelihood Estimation";
+    $record["isDefault"] = "T";
+    $insertSQL = $db->GetInsertSQL($tabname, $record);
+    if(!$db->Execute($insertSQL)) {
+        write_to_error("An error occured while updateing the database to revision " . $n . ".");
+        return;
+    }
+    
+    $record["value"] = "qmle";
+    $record["translation"] = "Quick Maximum Likelihood Estimation";
+    $record["isDefault"] = "T";
+    $insertSQL = $db->GetInsertSQL($tabname, $record);
+    if(!$db->Execute($insertSQL)) {
+        write_to_error("An error occured while updateing the database to revision " . $n . ".");
+        return;
+    }
+    
+    if(!update_dbrevision($n)) {
+        return;
+    }
+    
+    $current_revision = $n;
 }
         
 
@@ -985,17 +1214,24 @@ if(!update_dbrevision($n)) {
 // Description: add ICS2 as possible output file format
 // -------------------------------------------------------------------------
 $n = 2;
-
-$tabname = "possible_values";
-$record = array();
-$record["parameter"] = "OutputFileFormat";
-$record["value"] = "ICS2 (Image Cytometry Standard 2)";
-$record["translation"] = "ics2";
-$record["isDefault"] = "F";
-$insertSQL = $db->GetInsertSQL($tabname, $record);
-if(!$db->Execute($insertSQL)) {
-    write_to_error("An error occured while updateing the database to revision " . $n . ".");
-    return;
+if ($current_revision < $n) {
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "OutputFileFormat";
+    $record["value"] = "ICS2 (Image Cytometry Standard 2)";
+    $record["translation"] = "ics2";
+    $record["isDefault"] = "F";
+    $insertSQL = $db->GetInsertSQL($tabname, $record);
+    if(!$db->Execute($insertSQL)) {
+        write_to_error("An error occured while updateing the database to revision " . $n . ".");
+        return;
+    }
+    
+    if(!update_dbrevision($n)) {
+        return;
+    }
+    
+    $current_revision = $n;
 }
 
 
@@ -1005,38 +1241,41 @@ if(!$db->Execute($insertSQL)) {
 // Description: remove psf generation in script (check sample orientation)
 // -------------------------------------------------------------------------
 $n = 3;
-
-$tabname = "possible_values";
-$record = array();
-$record["parameter"] = "CoverslipRelativePosition";
-$record["value"] = "bottom";
-$record["translation"] = "Plane 0 is closest to the coverslip";
-$record["isDefault"] = "T";
-$insertSQL = $db->GetInsertSQL($tabname, $record);
-if(!$db->Execute($insertSQL)) {
-    write_to_error("An error occured while updateing the database to revision " . $n . ".");
-    return;
-}
-
-$record["value"] = "top";
-$record["translation"] = "Plane 0 is farthest from the coverslip";
-$record["isDefault"] = "F";
-$insertSQL = $db->GetInsertSQL($tabname, $record);
-if(!$db->Execute($insertSQL)) {
-    write_to_error("An error occured while updateing the database to revision " . $n . ".");
-    return;
-}
-
-$record["value"] = "ignore";
-$record["translation"] = "Do not perform depth-dependent correction";
-$insertSQL = $db->GetInsertSQL($tabname, $record);
-if(!$db->Execute($insertSQL)) {
-    write_to_error("An error occured while updateing the database to revision " . $n . ".");
-    return;
-}
-
-if(!update_dbrevision($n)) {
-    return;
+if ($current_revision < $n) {
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "CoverslipRelativePosition";
+    $record["value"] = "bottom";
+    $record["translation"] = "Plane 0 is closest to the coverslip";
+    $record["isDefault"] = "T";
+    $insertSQL = $db->GetInsertSQL($tabname, $record);
+    if(!$db->Execute($insertSQL)) {
+        write_to_error("An error occured while updateing the database to revision 2.");
+        return;
+    }
+    
+    $record["value"] = "top";
+    $record["translation"] = "Plane 0 is farthest from the coverslip";
+    $record["isDefault"] = "F";
+    $insertSQL = $db->GetInsertSQL($tabname, $record);
+    if(!$db->Execute($insertSQL)) {
+        write_to_error("An error occured while updateing the database to revision 2.");
+        return;
+    }
+    
+    $record["value"] = "ignore";
+    $record["translation"] = "Do not perform depth-dependent correction";
+    $insertSQL = $db->GetInsertSQL($tabname, $record);
+    if(!$db->Execute($insertSQL)) {
+        write_to_error("An error occured while updateing the database to revision 2.");
+        return;
+    }
+    
+    if(!update_dbrevision($n)) {
+        return;
+    }
+    
+    $current_revision = $n;
 }
 
 
