@@ -1845,13 +1845,41 @@ Class TaskSetting extends Setting {
 	// @return      Boolean
 	//!---------------------------------------------------------    
 	function checkSignalNoiseRatio() {
-		$parameter = $this->parameter('SignalNoiseRatio');
-		for ($i = 0; $i < $this->numberOfChannels(); $i++) {
-			if (!$parameter->checkValue($parameter->value[$i])) {
-				$this->message = "Please enter a valid signal/noise ratio for channel " . $i . "! The value must be larger than 0.";
-				return False;
+		$parameter = $this->parameter('SignalNoiseRatioUseRange');
+		if ($parameter->value() == 'True') {
+			$parameter = $this->parameter('SignalNoiseRatioRange');
+			for ($i = 0; $i < $this->numberOfChannels(); $i++) {
+			
+				$val = $parameter->value[$i];
+			
+				if ($val[0] == NULL) {
+					$this->message = "Please enter a valid signal/noise ratio for channel " . $i . "! The value must be larger than 0.";
+					return False;
+				}
+				
+				/*for ($j = 0; $j < count($val); $j++) {
+					if (!$parameter->checkValue($val[$j])) {
+						$this->message = "Please enter a valid signal/noise ratio for channel " . $i . "! The value must be larger than 0.";
+						return False;
+					}
+					else {
+						$this->message .= " channel " . $i . " value " . $j . " OK";
+					}
+				}*/
+				
+			}
+			
+		}
+		else {
+			$parameter = $this->parameter('SignalNoiseRatio');
+			for ($i = 0; $i < $this->numberOfChannels(); $i++) {
+				if (!$parameter->checkValue($parameter->value[$i])) {
+					$this->message = "Please enter a valid signal/noise ratio for channel " . $i . "! The value must be larger than 0.";
+					return False;
+				}
 			}
 		}
+		
 		return True;
 	}
 
@@ -1883,17 +1911,17 @@ Class TaskSetting extends Setting {
 		$parameter = $this->parameter('FullRestoration');
 		if ($parameter->value() == 'True') {
 			$numberOfOperations++;
-			$parameter = $this->parameter('SignalNoiseRatioUseRange');
+			/*$parameter = $this->parameter('SignalNoiseRatioUseRange');
 			if ($parameter->value() == 'True') {
 				if (!$this->checkRange('SignalNoiseRatioRange', 'signal/noise ratio range')) {
 					return False;
 				}
-			} else {
+			} else {*/
 				if (!$this->checkSignalNoiseRatio() /*!$this->checkNumericalValue('SignalNoiseRatio', 'signal/noise ratio')*/
 					) {
 					return False;
 				}
-			}
+			//}
 			$parameter = $this->parameter('BackgroundOffsetUseRange');
 			if ($parameter->value() == 'True') {
 				if (!$this->checkRange('BackgroundOffsetRange', 'background offset range')) {

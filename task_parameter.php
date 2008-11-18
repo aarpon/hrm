@@ -148,19 +148,22 @@ else {
   }
   $parameter = $_SESSION["task_setting"]->parameter("SignalNoiseRatioUseRange");
   if (count($signalNoiseRatioRange) > 0) {
-    for ($i = 0; $i < count($signalNoiseRatioRange); $i++) {
+  	 // << ECHO
+    /*for ($i = 0; $i < count($signalNoiseRatioRange); $i++) {
       $range = $signalNoiseRatioRange[$i];
       for ($j = 0; $j < count($range); $j++) {
         $val = $range[$j];
         if ($val == NULL) $val = "NULL";
         echo "signalNoiseRatioRange, channel ".$i." value ".$j." = ".$val."<br>";
       }
-    }
+    }*/
+    // ECHO >>
     $parameter->setValue("True");
     $signalNoiseRatioRangeParam = $_SESSION['task_setting']->parameter("SignalNoiseRatioRange");
     for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
       if ($signalNoiseRatioRange[$i] == NULL) {
         $signalNoiseRatioRange[$i] = array($signalNoiseRatio[$i], NULL, NULL, NULL);
+        //echo "value " . $signalNoiseRatio[$i] . " added in array for channel " . $i;
       }
     }
     $signalNoiseRatioRangeParam->setValue($signalNoiseRatioRange);

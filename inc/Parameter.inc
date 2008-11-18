@@ -235,8 +235,20 @@ Class Parameter {
 		} else {
 			if (is_array($value)) {
 				# array_shift($value);
-				$value = array_filter($value);
-				$value = implode(", ", $value);
+				if (is_array($value[0])) {
+					$val = "";
+					for ($i = 0; $i < count($value); $i++) {
+						$value[$i] = array_filter($value[$i]);
+						if ($i > 0 && $value[$i] != null)
+							$val .= ", ";
+						$val .= implode("/", $value[$i]);
+					}
+					$value = $val;
+				}
+				else {
+					$value = array_filter($value);
+					$value = implode(", ", $value);
+				}
 			}
 			$split = explode("_", $value);
 			if (count($split) > 1) {
