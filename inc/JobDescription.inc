@@ -704,12 +704,19 @@ Class JobDescription {
     } else { 
       $imageFileName = $this->sourceImageName();
     }
+    // TODO we should provide more convenience methods in ParameterSettings
     $options = "";
     if (stristr($imageFileName, ".stk")) {
-      // TODO we should provide more convenience methods in ParameterSettings
+      // Metamorph: if not time series
       if (!$this->parameterSetting->isTimeSeries()) {
         $options .= " -series off";
       }
+    }
+    $formatParam = $this->parameterSetting->parameter('ImageFileFormat');
+    $format = $formatParam->value();
+    if ($format == "tiff" || $format == "tiff-single") {
+      // Olympus FluoView, or single XY plane: always
+      $options .= " -series off";
     }
     if (preg_match("/^(.*) \((.*)\)/", $imageFileName, $match)) {
         // If a (string) comes after the file name, it is interpreted as a sub

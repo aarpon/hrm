@@ -178,6 +178,13 @@ $geometryFlag = "";
 $channelsFlag = "";
 sort($values);
 foreach($values as $value) {
+  if ($value == "tiff") {
+    
+?>
+                <h4>TIFF (*.tif, *.tiff)</h4>
+<?php
+
+  }
   $translation = $_SESSION['setting']->translation("ImageFileFormat", $value);
   $event = " onclick=\"javascript:release()\"";
   if ($value == "lsm-single" || $value == "tiff-single") {
@@ -203,6 +210,8 @@ foreach($values as $value) {
 <?php
 
 }
+
+
 
 ?>
 
