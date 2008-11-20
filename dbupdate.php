@@ -60,7 +60,7 @@ $LAST_REVISION = 3;
 
 
 // For test purposes
-$db_name = "hrm-test";
+//$db_name = "hrm-test";
 
 
 
@@ -136,9 +136,6 @@ function error_message($table) {
 function create_table($name, $fields) {
     global $datadict;
     $sqlarray = $datadict->CreateTableSQL($name, $fields);
-    foreach ($sqlarray as $str) {
-        echo $str."\n";
-    }
     $rs = $datadict->ExecuteSQLArray($sqlarray);    // return 0 if failed, 1 if executed all but with errors, 2 if executed successfully 
     if($rs != 2) {
        $msg = error_message($name);
@@ -269,7 +266,7 @@ function check_number_gates($tabname, $value, $fields_set, $primary_key) {
         }
     }
     return True;
-} 
+}
 
 
 // Search a value into a multidimensional array. Return true if the value has been found, false otherwise
@@ -406,18 +403,6 @@ if ($current_revision == 0) {
     if (!create_table($tabname, $flds))     
         return;
     
-    $sqlarray = $datadict->ChangeTableSQL($tabname, $flds);
-    $rs = $datadict->ExecuteSQLArray($sqlarray);    // return 0 if failed, 1 if executed all but with errors, 2 if executed successfully 
-    if($rs != 2) {
-        $msg = error_message($tabname);
-        write_message($msg);
-        write_to_error($msg);
-        return;
-    }
-    else {
-        $msg = $tabname . " has been created\n";
-        write_to_log($msg);
-    }
     // Insert records in table
     $records = array("parameter"=>array("PinholeSize","RemoveBackgroundPercent","BackgroundOffsetPercent","ExcitationWavelength",
                         "EmissionWavelength","CMount","TubeFactor","CCDCaptorSizeX","CCDCaptorSizeY","ZStepSize","TimeInterval",
@@ -429,6 +414,8 @@ if ($current_revision == 0) {
                      "standard"=>array("NULL","NULL","NULL","NULL","NULL","1","1","NULL","NULL","NULL","NULL","NULL","NULL","NULL"));
     if(!insert_records($records,$tabname))     
         return;
+    
+
     
     
     // possible_values
@@ -449,18 +436,6 @@ if ($current_revision == 0) {
     if (!create_table($tabname, $flds)) 
         return;
     
-    $sqlarray = $datadict->ChangeTableSQL($tabname, $flds);
-    $rs = $datadict->ExecuteSQLArray($sqlarray);    // return 0 if failed, 1 if executed all but with errors, 2 if executed successfully 
-    if($rs != 2) {
-        $msg = error_message($tabname);
-        write_message($msg);
-        write_to_error($msg);
-        return;
-    }
-    else {
-        $msg = $tabname . " has been created\n";
-        write_to_log($msg);
-    }
     // Insert records in table
     $records = array("parameter"=>array("IsMultiChannel","IsMultiChannel",
                                 "ImageFileFormat","ImageFileFormat","ImageFileFormat","ImageFileFormat","ImageFileFormat","ImageFileFormat","ImageFileFormat","ImageFileFormat",
@@ -573,18 +548,6 @@ if ($current_revision == 0) {
     if (!create_table($tabname, $flds))     
         return;
     
-    $sqlarray = $datadict->ChangeTableSQL($tabname, $flds);
-    $rs = $datadict->ExecuteSQLArray($sqlarray);    // return 0 if failed, 1 if executed all but with errors, 2 if executed successfully 
-    if($rs != 2) {
-        $msg = error_message($tabname);
-        write_message($msg);
-        write_to_error($msg);
-        return;
-    }
-    else {
-        $msg = $tabname . " has been created\n";
-        write_to_log($msg);
-    }
     // Insert records in table
     $records = array("name"=>array("XYZ","XYZ - time","XY - time"), 
                     "isThreeDimensional"=>array("t","t","f"),
@@ -611,18 +574,6 @@ if ($current_revision == 0) {
     if (!create_table($tabname, $flds))     
         return;
     
-    $sqlarray = $datadict->ChangeTableSQL($tabname, $flds);
-    $rs = $datadict->ExecuteSQLArray($sqlarray);    // return 0 if failed, 1 if executed all but with errors, 2 if executed successfully 
-    if($rs != 2) {
-        $msg = error_message($tabname);
-        write_message($msg);
-        write_to_error($msg);
-        return;
-    }
-    else {
-        $msg = $tabname . " has been created\n";
-        write_to_log($msg);
-    }
     // Insert records in table
     $records = array("name"=>array("dv","ics","ics2","ims","lif","lsm","lsm-single","ome-xml","pic","stk","tiff","tiff-leica","tiff-series","tiff-single"),
                     "isFixedGeometry"=>array("F","F","F","F","F","F","T","F","F","F","F","F","F","T"),
@@ -648,23 +599,34 @@ if ($current_revision == 0) {
     if (!create_table($tabname, $flds))   
         return;
     
-    $sqlarray = $datadict->ChangeTableSQL($tabname, $flds);
-    $rs = $datadict->ExecuteSQLArray($sqlarray);    // return 0 if failed, 1 if executed all but with errors, 2 if executed successfully 
-    if($rs != 2) {
-        $msg = error_message($tabname);
-        write_message($msg);
-        write_to_error($msg);
-        return;
-    }
-    else {
-        $msg = $tabname . " has been created\n";
-        write_to_log($msg);
-    }
     // Insert records in table
     $records = array("file_format"=>array("dv","ics","ics2","ims","lif","lsm","lsm-single","ome-xml","pic","stk","tiff","tiff-leica","tiff-series","tiff-single",
                                             "tiff","tiff-leica","tiff-series","tiff-single"),
                     "extension"=>array("dv","ics","ics2","ims","lif","lsm","lsm","ome","pic","stk","tif","tif","tif","tif",
                                             "tiff","tiff","tiff","tiff"));
+    if(!insert_records($records,$tabname)) 
+        return;
+    
+    
+    // queuemanager
+    // -------------------------------------------------------------------------
+    // Drop table if it exists
+    $tabname = "queuemanager";
+    if (in_array($tabname, $tables)) {
+        if (!drop_table($tabname))    
+            return;
+    }
+    // Create table
+    $flds = "
+        field C(30) NOTNULL DEFAULT 0 PRIMARY,
+        value  \"enum ('ON', 'OFF')\" NOTNULL DEFAULT OFF
+    ";
+    if (!create_table($tabname, $flds))   
+        return;
+
+    // Insert records in table
+    $records = array("field"=>array("switch"),
+                    "value"=>array("ON"));
     if(!insert_records($records,$tabname)) 
         return;
     
@@ -694,19 +656,6 @@ if ($current_revision == 0) {
     ";
     if (!create_table($tabname, $flds))    
         return;
-
-    $sqlarray = $datadict->ChangeTableSQL($tabname, $flds);
-    $rs = $datadict->ExecuteSQLArray($sqlarray);    // return 0 if failed, 1 if executed all but with errors, 2 if executed successfully 
-    if($rs != 2) {
-        $msg = error_message($tabname);
-        write_message($msg);
-        write_to_error($msg);
-        return;
-    }
-    else {
-        $msg = $tabname . " has been created\n";
-        write_to_log($msg);
-    }
     
     
     // job_files
@@ -725,19 +674,6 @@ if ($current_revision == 0) {
     ";
     if (!create_table($tabname, $flds))     
         return;
-    
-    $sqlarray = $datadict->ChangeTableSQL($tabname, $flds);
-    $rs = $datadict->ExecuteSQLArray($sqlarray);    // return 0 if failed, 1 if executed all but with errors, 2 if executed successfully 
-    if($rs != 2) {
-        $msg = error_message($tabname);
-        write_message($msg);
-        write_to_error($msg);
-        return;
-    }
-    else {
-        $msg = $tabname . " has been created\n";
-        write_to_log($msg);
-    }
         
         
     // job_parameter
@@ -758,19 +694,6 @@ if ($current_revision == 0) {
     if (!create_table($tabname, $flds))    
         return;
     
-    $sqlarray = $datadict->ChangeTableSQL($tabname, $flds);
-    $rs = $datadict->ExecuteSQLArray($sqlarray);    // return 0 if failed, 1 if executed all but with errors, 2 if executed successfully 
-    if($rs != 2) {
-        $msg = error_message($tabname);
-        write_message($msg);
-        write_to_error($msg);
-        return;
-    }
-    else {
-        $msg = $tabname . " has been created\n";
-        write_to_log($msg);
-    }
-    
     
     // job_parameter_setting
     // -----------------------------------------------------------------------------
@@ -789,20 +712,7 @@ if ($current_revision == 0) {
     if (!create_table($tabname, $flds))    
         return;
     
-    $sqlarray = $datadict->ChangeTableSQL($tabname, $flds);
-    $rs = $datadict->ExecuteSQLArray($sqlarray);    // return 0 if failed, 1 if executed all but with errors, 2 if executed successfully 
-    if($rs != 2) {
-        $msg = error_message($tabname);
-        write_message($msg);
-        write_to_error($msg);
-        return;
-    }
-    else {
-        $msg = $tabname . " has been created\n";
-        write_to_log($msg);
-    }
-       
-                  
+                     
     // job_task_parameter
     // -----------------------------------------------------------------------------
     // Drop table if it exists
@@ -820,19 +730,6 @@ if ($current_revision == 0) {
     ";
     if (!create_table($tabname, $flds))    
         return;
-    
-    $sqlarray = $datadict->ChangeTableSQL($tabname, $flds);
-    $rs = $datadict->ExecuteSQLArray($sqlarray);    // return 0 if failed, 1 if executed all but with errors, 2 if executed successfully 
-    if($rs != 2) {
-        $msg = error_message($tabname);
-        write_message($msg);
-        write_to_error($msg);
-        return;
-    }
-    else {
-        $msg = $tabname . " has been created\n";
-        write_to_log($msg);
-    }
         
         
     // job_task_setting
@@ -850,20 +747,7 @@ if ($current_revision == 0) {
         standard \"enum('t','f')\" DEFAULT 'f'
     ";
     if (!create_table($tabname, $flds))     
-        return;
-    
-    $sqlarray = $datadict->ChangeTableSQL($tabname, $flds);
-    $rs = $datadict->ExecuteSQLArray($sqlarray);    // return 0 if failed, 1 if executed all but with errors, 2 if executed successfully 
-    if($rs != 2) {
-        $msg = error_message($tabname);
-        write_message($msg);
-        write_to_error($msg);
-        return;
-    }
-    else {
-        $msg = $tabname . " has been created\n";
-        write_to_log($msg);
-    }        
+        return;      
     
     
     // Check the existence and the structure of the tables with variable contents
@@ -993,7 +877,7 @@ if ($current_revision == 0) {
 // -----------------------------------------------------------------------------
 // Update the database to the last revision
 // -----------------------------------------------------------------------------
-$msg = "\n\nThe last available revision for the HRM database is the number " . $LAST_REVISION . ".\n";
+$msg = "\nThe last available revision for the HRM database is the number " . $LAST_REVISION . ".\n";
 $msg .= "The revision of your HRM database before this update was " . $current_revision . ".\n";
 write_message($msg);
 write_to_log($msg);
