@@ -291,17 +291,44 @@ Class JobDescription {
       $result = $this->combine($result, $row);
     } 
     return $result;
-  } 
+  }
   
   function rangeParameterCombinations($rangeParameter) {
+    $parameterSetting = $this->parameterSetting;
+    $numberOfChannels = $parameterSetting->numberOfChannels();
+    
     $jobDescriptions = array();
     //$rangeParameter = $this->rangeParameter();
     $matrix = array();
     if (count($rangeParameter)==1) {
       $range = array_pop($rangeParameter);
       $value = array_filter($range->value());
-      foreach ($value as $number) {
-	$matrix[] = array($number);
+      // what is the form of matrix?
+      // compute matrix dimensions
+      $dim = 1;
+      for ($i = 0; $i < $numberOfChannels; $i++) {
+        $dim *= count($value[$i]);
+      }
+      for ($i = 0; $i < $dim; $i++) {
+        $row = array();
+        $size = 1;
+        for ($j = 0; $j < $numberOfChannels; $j++) {
+          $val = $value[$j];
+          if (is_array($val)) {
+            $val = array_filter($val);
+            $row[] = $val[($i/$size) % count($val)];
+            $size *= count($val);
+          }
+          else {
+            $row[] = $val;
+          }
+        }
+        $matrix[$i] = $row;
+        $s = "";
+        for ($k = 0; $k < count($row); $k++) {
+          $s .= $row[$k] . " ";
+        }
+        error_log($s);
       }
       return $matrix;
     } else { 
