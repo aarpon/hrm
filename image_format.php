@@ -178,12 +178,8 @@ $geometryFlag = "";
 $channelsFlag = "";
 sort($values);
 foreach($values as $value) {
-  if ($value == "tiff") {
-    
-?>
-                <h4>TIFF (*.tif, *.tiff)</h4>
-<?php
-
+  if (stristr($value, "tiff")) {
+    continue;
   }
   $translation = $_SESSION['setting']->translation("ImageFileFormat", $value);
   $event = " onclick=\"javascript:release()\"";
@@ -202,7 +198,7 @@ foreach($values as $value) {
       $channelsFlag = "disabled=\"disabled\" ";
     }
   }
-
+  
 ?>
                 <input name="ImageFileFormat" type="radio" value="<?php echo $value ?>"<?php echo $event ?><?php echo $flag ?> /><?php echo $translation ?>
                 
@@ -211,7 +207,39 @@ foreach($values as $value) {
 
 }
 
+?>
+                <h4>TIFF (*.tif, *.tiff)</h4>
+<?php
 
+foreach($values as $value) {
+  if (!stristr($value, "tiff")) {
+    continue;
+  }
+  $translation = $_SESSION['setting']->translation("ImageFileFormat", $value);
+  $event = " onclick=\"javascript:release()\"";
+  if ($value == "lsm-single" || $value == "tiff-single") {
+    $event = " onclick=\"javascript:forceGeometry()\"";
+  }
+  else if ($value == "tiff-series") $event = " onclick=\"javascript:fixGeometryAndChannels('multi_XYZ', '1')\"";
+  $flag = "";
+  if ($value == $parameter->value()) {
+    $flag = " checked=\"checked\"";
+    if ($value == "lsm-single" || $value == "tiff-single") {
+      $geometryFlag = "disabled=\"disabled\" ";
+    }
+    else if ($value == "tiff-series") {
+      $geometryFlag = "disabled=\"disabled\" ";
+      $channelsFlag = "disabled=\"disabled\" ";
+    }
+  }
+  
+?>
+                <input name="ImageFileFormat" type="radio" value="<?php echo $value ?>"<?php echo $event ?><?php echo $flag ?> /><?php echo $translation ?>
+                
+                <br />
+<?php
+
+}
 
 ?>
 
