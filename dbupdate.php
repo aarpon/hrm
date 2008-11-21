@@ -631,6 +631,38 @@ if ($current_revision == 0) {
         return;
     
     
+    // username
+    // -------------------------------------------------------------------------
+    $tabname = "username";
+    $flds = "
+        name C(30) NOTNULL PRIMARY,
+        password C(255) NOTNULL,
+        email C(80) NOTNULL,
+        research_group C(30) NOTNULL,
+        creation_date T NOTNULL DEFAULT 'CURRENT_TIMESTAMP',
+        last_access_date T NOTNULL DEFAULT '0000-00-00 00:00:00',
+        status C(10) NOTNULL
+    ";
+    if (in_array($tabname, $tables)) {
+        if(!check_table_existence_and_structure($tabname,$flds))     
+            return;
+    }
+    else {
+        if (!create_table($tabname, $flds))   
+            return;
+        $records = array("name"=>array("admin"),
+                    "password"=>array("e903fece385fd2167780216958310b0d"),
+                    "email"=>array(" "),
+                    "research_group"=>array(" "),
+                    "creation_date"=>array(" "),
+                    "last_access"=>array(" "),
+                    "status"=>array("a")
+                    );
+    if(!insert_records($records,$tabname)) 
+        return;  
+    }
+    
+    
     // Drop and create fixed tables (create structure only)
     // -------------------------------------------------------------------------
     // -------------------------------------------------------------------------
@@ -773,22 +805,6 @@ if ($current_revision == 0) {
         owner C(30) NOTNULL DEFAULT 0 PRIMARY,
         name C(30) NOTNULL PRIMARY,
         standard \"enum('t','f')\" DEFAULT 'f'
-    ";
-    if(!check_table_existence_and_structure($tabname,$flds))     
-        return;
-    
-    
-    // username
-    // -------------------------------------------------------------------------
-    $tabname = "username";
-    $flds = "
-        name C(30) NOTNULL PRIMARY,
-        password C(255) NOTNULL,
-        email C(80) NOTNULL,
-        research_group C(30) NOTNULL,
-        creation_date T NOTNULL DEFAULT 'CURRENT_TIMESTAMP',
-        last_access_date T NOTNULL DEFAULT '0000-00-00 00:00:00',
-        status C(10) NOTNULL
     ";
     if(!check_table_existence_and_structure($tabname,$flds))     
         return;
