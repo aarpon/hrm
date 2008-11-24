@@ -226,6 +226,10 @@ Class JobDescription {
 
   function createSubJobs() {
     //global $rangeParameters;
+    
+    $parameterSetting = $this->parameterSetting;
+    $numberOfChannels = $parameterSetting->numberOfChannels();
+    
     $rangeParameters = $this->rangeParameter();
     $rangeParameterCombinations = $this->rangeParameterCombinations($rangeParameters);
     $result = True;
@@ -250,11 +254,15 @@ Class JobDescription {
 	  $useParameterName = $rangeParameter->useParameterName();
 	  $useParameter = $setting->parameter($useParameterName);
 	  $useParameter->reset();
-          error_log("range parameter " . $realParameterName . " = " . $combination[$index]);
-	  $realParameter->setValue($combination[$index]);
+          //error_log("range parameter " . $realParameterName . " = " . $combination[$index]);
+          $newVal = array(null, null, null, null, null);
+          for ($i = 0; $i < $numberOfChannels; $i++) {
+            $newVal[$i] = $combination[$i];
+          }
+	  $realParameter->setValue($newVal);
 	  $setting->set($realParameter);
 	  $setting->set($useParameter);
-	  $index++;
+	  //$index++;
 	}
 	$newJobDescription->setTaskSetting($setting);
 	$result = $result && $newJobDescription->createJob();

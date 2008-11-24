@@ -235,7 +235,7 @@ Class Parameter {
 		} else {
 			if (is_array($value)) {
 				# array_shift($value);
-				if (is_array($value[0])) {
+				if (count($value) > 0 && is_array($value[0])) {
 					$val = "";
 					for ($i = 0; $i < count($value); $i++) {
 						$value[$i] = array_filter($value[$i]);
