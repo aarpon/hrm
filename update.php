@@ -54,8 +54,11 @@
 $message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
 
 if (isset($_GET["action"])) {
-    if ($_GET["action"] == "dbupdate")
+    if ($_GET["action"] == "dbupdate") {
+        $interface = "hrm";
         include("dbupdate.php");
+    }
+        
 }
 
 include("header.inc.php");

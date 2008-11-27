@@ -114,10 +114,10 @@ function write_to_error($msg) {
 
 // Write a message to the standard output
 function write_message($msg) {
-    //global $interface;
-    //global $message;
+    global $interface;
+    global $message;
     if (isset($interface)) {
-        $message = "            <p class=\"warning\">" . $msg . "</p>\n";
+        $message .= "            <p class=\"warning\">" . $msg . "</p>\n";
     }
     else echo $msg . "\n";
 }
