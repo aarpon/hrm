@@ -2536,11 +2536,8 @@ Class JobTaskSetting extends TaskSetting {
 
 $parameter = $this->parameter('DeconvolutionAlgorithm');
 $string = $parameter->possibleValuesString();
-error_log('Possible values for deconvolution algorithm: ' . $string);
 $string = $parameter->name();
-error_log('DeconvolutionAlgorithm name = ' . $string);
 $value = $parameter->value();
-error_log('DeconvolutionAlgorithm value = ' . $value);
 
 		// This restores the default behavior in case the entry "DeconvolutionAlgorithm"
 		// is not in the database
@@ -2705,7 +2702,6 @@ error_log('DeconvolutionAlgorithm value = ' . $value);
 		$parameter = $this->parameter('DeconvolutionAlgorithm');
 		$value = $parameter->value();
 		$result = " $value";
-error_log($result);
 		return $result;
 	}
 }
