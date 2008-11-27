@@ -74,6 +74,8 @@ $LAST_REVISION = 3;
 // 1) a new user of HRM created an empty database and run this script. In this
 //    case all the tables are created and the tables with fixed content
 //    (ex: boundary_values)are filled. The database is updated to the last revision.
+//    In this case it is necessary to manually fill the 'server' table and complete
+//    the 'admin' row in the 'username' table
 // 2) a user has his database version, but he never run this script, the table
 //    global_variables does not exist and the revision number of the database is
 //    unknown. In this case the table global_variable is created and the field
@@ -117,7 +119,7 @@ function write_message($msg) {
     if (isset($interface)) {
         $message = "            <p class=\"warning\">" . $msg . "</p>\n";
     }
-    else echo $msg."\n";
+    else echo $msg . "\n";
 }
 
 // Return an error message
@@ -143,7 +145,7 @@ function create_table($name, $fields) {
        write_to_error($msg);
        return False;
     }
-    $msg = $name . " has been created\n";
+    $msg = $name . ": has been created\n";
     write_to_log($msg);
     return True;
 }
@@ -161,7 +163,7 @@ function drop_table($tabname) {
         write_to_error($msg);
         return False;
    }
-   $msg = $tabname . " has been dropped.\n";
+   $msg = $tabname . ": has been dropped\n";
    write_to_log($msg);
    return True;
 }
@@ -269,6 +271,28 @@ function check_number_gates($tabname, $value, $fields_set, $primary_key) {
 }
 
 
+// Manage ENUM problem derived from ADODataDictionary
+// (temporary function; next step: change hrm code concerning ENUM variables /
+// waiting for ADODataDictionary correction)
+function manage_enum($tabname, $field, $values_string, $default) {
+    global $db;
+
+    if (strcmp($default, 'NULL') != 0)
+        $SQLquery = "ALTER TABLE " . $tabname ." CHANGE " . $field . " " . $field . " ENUM(" . $values_string . ") DEFAULT '" . $default . "'";
+    else
+        $SQLquery = "ALTER TABLE " . $tabname ." CHANGE " . $field . " " . $field . " ENUM(" . $values_string . ")";
+
+    if(!$db->Execute($SQLquery)) {
+        $msg = "An error occured while updating the table " . $tabname . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return False;
+    }
+
+    return True;
+}
+
+
 // Search a value into a multidimensional array. Return true if the value has been found, false otherwise
 function in_array_multi($needle,$haystack) {
     $found = false;
@@ -298,6 +322,7 @@ if (!($fh = @fopen($log_file, 'a'))) {
     write_to_error($msg);
     return;
 }
+chmod($log_file, 0666);
 write_to_log(timestamp());
 
 // Open error log file
@@ -308,6 +333,7 @@ if (!($efh = @fopen($error_file, 'a'))) { // If the file does not exist, it is c
     write_to_error($msg);
     return;
 }
+chmod($log_file, 0666);
 write_to_error(timestamp());
 
 // Connect to the database
@@ -392,15 +418,22 @@ if ($current_revision == 0) {
             return;
     }
     // Create table
-    $flds = "
-        parameter C(255) PRIMARY,
+    $flds = ("
+        parameter C(255) DEFAULT 0 PRIMARY,
         min C(30),
         max C(30),
-        min_included \"enum ('T', 'F')\" DEFAULT T,
-        max_included \"enum ('T', 'F')\" DEFAULT T,
+        min_included \"enum ('t', 'f')\" DEFAULT t,
+        max_included \"enum ('t', 'f')\" DEFAULT t,
         standard C(30)
-    ";
-    if (!create_table($tabname, $flds))     
+    ");
+    if (!create_table($tabname, $flds))
+        return;
+    
+    // Manage enum problem
+    $values_string = "'t', 'f'";
+    if (!manage_enum($tabname, 'min_included', $values_string,'t'))
+        return;
+    if (!manage_enum($tabname, "max_included", $values_string,'t'))
         return;
     
     // Insert records in table
@@ -408,15 +441,13 @@ if ($current_revision == 0) {
                         "EmissionWavelength","CMount","TubeFactor","CCDCaptorSizeX","CCDCaptorSizeY","ZStepSize","TimeInterval",
                         "SignalNoiseRatio","NumberOfIterations","QualityChangeStoppingCriterion"),
                      "min"=>array("0","0","0","0","0","0.4","1","1","1","50","0.001","0","1","0"),
-                     "max"=>array("NULL","100","","NULL","NULL","1","2","25000","25000","600000","NULL","100","100","NULL"),
-                     "min_included"=>array("F","F","T","F","F","T","T","T","T","T","F","F","T","T"),
-                     "max_included"=>array("T","T","F","T","T","T","T","T","T","T","T","T","T","T"),
-                     "standard"=>array("NULL","NULL","NULL","NULL","NULL","1","1","NULL","NULL","NULL","NULL","NULL","NULL","NULL"));
+                     "max"=>array(NULL,"100","",NULL,NULL,"1","2","25000","25000","600000",NULL,"100","100",NULL),
+                     "min_included"=>array("f","f","t","f","f","t","t","t","t","t","f","f","t","t"),
+                     "max_included"=>array("t","t","f","t","t","t","t","t","t","t","t","t","t","t"),
+                     "standard"=>array(NULL,NULL,NULL,NULL,NULL,"1","1",NULL,NULL,NULL,NULL,NULL,NULL,NULL));
     if(!insert_records($records,$tabname))     
         return;
-    
 
-    
     
     // possible_values
     // -------------------------------------------------------------------------
@@ -431,9 +462,14 @@ if ($current_revision == 0) {
         parameter C(30) NOTNULL DEFAULT 0 PRIMARY,
         value C(255) NOTNULL DEFAULT 0 PRIMARY,
         translation C(50) DEFAULT NULL,
-        isDefault \"enum ('T', 'F')\" DEFAULT F
+        isDefault \"enum ('t', 'f')\" DEFAULT 'f'
     ";
     if (!create_table($tabname, $flds)) 
+        return;
+    
+    // Manage enum problem
+    $values_string = "'t', 'f'";
+    if (!manage_enum($tabname, 'isDefault', $values_string, 'f'))
         return;
     
     // Insert records in table
@@ -547,6 +583,13 @@ if ($current_revision == 0) {
     ";
     if (!create_table($tabname, $flds))     
         return;
+
+    // Manage enum problem
+    $values_string = "'t', 'f'";
+    if (!manage_enum($tabname, "isThreeDimensional", $values_string, "NULL")) 
+        return;
+    if (!manage_enum($tabname, "isTimeSeries", $values_string, "NULL")) 
+        return;
     
     // Insert records in table
     $records = array("name"=>array("XYZ","XYZ - time","XY - time"), 
@@ -574,11 +617,20 @@ if ($current_revision == 0) {
     if (!create_table($tabname, $flds))     
         return;
     
+    // Manage enum problem
+    $values_string = "'t', 'f'";
+    if (!manage_enum($tabname, 'isFixedGeometry', $values_string, 't'))
+        return;
+    if (!manage_enum($tabname, 'isSingleChannel', $values_string, 't'))
+        return;
+     if (!manage_enum($tabname, 'isVariableChannel', $values_string, 't'))
+        return;
+    
     // Insert records in table
     $records = array("name"=>array("dv","ics","ics2","ims","lif","lsm","lsm-single","ome-xml","pic","stk","tiff","tiff-leica","tiff-series","tiff-single"),
-                    "isFixedGeometry"=>array("F","F","F","F","F","F","T","F","F","F","F","F","F","T"),
-                    "isSingleChannel"=>array("F","F","F","F","F","F","F","F","F","F","F","F","F","F"),
-                    "isVariableChannel"=>array("T","T","T","T","T","T","T","T","T","T","T","T","T","T"));
+                    "isFixedGeometry"=>array("f","f","f","f","f","f","t","f","f","f","f","f","f","t"),
+                    "isSingleChannel"=>array("f","f","f","f","f","f","f","f","f","f","f","f","f","f"),
+                    "isVariableChannel"=>array("t","t","t","t","t","t","t","t","t","t","t","t","t","t"));
     if(!insert_records($records,$tabname))     
         return;
     
@@ -619,51 +671,25 @@ if ($current_revision == 0) {
     // Create table
     $flds = "
         field C(30) NOTNULL DEFAULT 0 PRIMARY,
-        value  \"enum ('ON', 'OFF')\" NOTNULL DEFAULT OFF
+        value  \"enum ('ON', 'OFF')\" NOTNULL DEFAULT ON
     ";
     if (!create_table($tabname, $flds))   
+        return;
+    
+    // Manage enum problem
+    $values_string = "'on', 'off'";
+    if (!manage_enum($tabname, 'value', $values_string, 'on'))
         return;
 
     // Insert records in table
     $records = array("field"=>array("switch"),
-                    "value"=>array("ON"));
+                    "value"=>array("on"));
     if(!insert_records($records,$tabname)) 
         return;
     
     
-    // username
-    // -------------------------------------------------------------------------
-    $tabname = "username";
-    $flds = "
-        name C(30) NOTNULL PRIMARY,
-        password C(255) NOTNULL,
-        email C(80) NOTNULL,
-        research_group C(30) NOTNULL,
-        creation_date T NOTNULL DEFAULT 'CURRENT_TIMESTAMP',
-        last_access_date T NOTNULL DEFAULT '0000-00-00 00:00:00',
-        status C(10) NOTNULL
-    ";
-    if (in_array($tabname, $tables)) {
-        if(!check_table_existence_and_structure($tabname,$flds))     
-            return;
-    }
-    else {
-        if (!create_table($tabname, $flds))   
-            return;
-        $records = array("name"=>array("admin"),
-                    "password"=>array("e903fece385fd2167780216958310b0d"),
-                    "email"=>array(" "),
-                    "research_group"=>array(" "),
-                    "creation_date"=>array(" "),
-                    "last_access"=>array(" "),
-                    "status"=>array("a")
-                    );
-    if(!insert_records($records,$tabname)) 
-        return;  
-    }
-    
-    
     // Drop and create fixed tables (create structure only)
+    // The content is deleted
     // -------------------------------------------------------------------------
     // -------------------------------------------------------------------------
     
@@ -689,6 +715,11 @@ if ($current_revision == 0) {
     if (!create_table($tabname, $flds))    
         return;
     
+    // Manage enum problem
+    $values_string = "'queued', 'started', 'finished', 'broken', 'paused'";
+    if (!manage_enum($tabname, 'status', $values_string, 'queued'))
+        return;
+    
     
     // job_files
     // -------------------------------------------------------------------------
@@ -702,7 +733,7 @@ if ($current_revision == 0) {
     $flds = "
         job C(30) DEFAULT 0 PRIMARY,
         owner C(30) DEFAULT 0,
-        file C(30) DEFAULT 0
+        file C(255) DEFAULT 0
     ";
     if (!create_table($tabname, $flds))     
         return;
@@ -738,10 +769,15 @@ if ($current_revision == 0) {
     // Create table
     $flds = "
         owner C(30) NOTNULL DEFAULT 0 PRIMARY,
-        name C(30) NOTNULL DEFAULT 0 PRIMARY,
-        standard \"enum ('t','f')\" DEFAULT NULL
+        name C(30) NOTNULL PRIMARY,
+        standard \"enum ('t','f')\" DEFAULT t
     ";
     if (!create_table($tabname, $flds))    
+        return;
+    
+    // Manage enum problem
+    $values_string = "'t', 'f'";
+    if (!manage_enum($tabname, 'standard', $values_string, 'f'))
         return;
     
                      
@@ -776,13 +812,19 @@ if ($current_revision == 0) {
     $flds = "
         owner C(30) NOTNULL DEFAULT 0 PRIMARY,
         name C(30) NOTNULL PRIMARY,
-        standard \"enum('t','f')\" DEFAULT 'f'
+        standard \"enum('t','f')\" DEFAULT f
     ";
     if (!create_table($tabname, $flds))     
-        return;      
+        return;
+    
+    // Manage enum problem
+    $values_string = "'t', 'f'";
+    if (!manage_enum($tabname, 'standard', $values_string, 'f'))
+        return;
     
     
     // Check the existence and the structure of the tables with variable contents
+    // Keep the content
     // -------------------------------------------------------------------------
     // -------------------------------------------------------------------------
     
@@ -797,6 +839,11 @@ if ($current_revision == 0) {
     if(!check_table_existence_and_structure($tabname,$flds))     
         return;
     
+    // Manage enum problem
+    $values_string = "'t', 'f'";
+    if (!manage_enum($tabname, 'standard', $values_string, 'f'))
+        return;
+    
     
     // task_setting
     // -------------------------------------------------------------------------
@@ -809,12 +856,17 @@ if ($current_revision == 0) {
     if(!check_table_existence_and_structure($tabname,$flds))     
         return;
     
+    // Manage enum problem
+    $values_string = "'t', 'f'";
+    if (!manage_enum($tabname, 'standard', $values_string, 'f'))
+        return;
+    
     
     // server
     // -------------------------------------------------------------------------
     $tabname = "server";
     $flds = "
-        name C(60) NOTNULL PRIMARY,
+        name C(60) NOTNULL DEFAULT 0 PRIMARY,
         huscript_path C(60) NOTNULL,
         status \"enum ('busy', 'disconnected', 'free')\" NOTNULL DEFAULT 'free',
         job C(30) DEFAULT NULL
@@ -822,9 +874,50 @@ if ($current_revision == 0) {
     if(!check_table_existence_and_structure($tabname,$flds))     
         return;
     
+    // Manage enum problem
+    $values_string = "'busy', 'disconnected', 'free'";
+    if (!manage_enum($tabname, 'status', $values_string, 'free'))
+        return;
+    
+    
+        // username
+    // -------------------------------------------------------------------------
+    $tabname = "username";
+    $flds = "
+        name C(30) NOTNULL PRIMARY,
+        password C(255) NOTNULL,
+        email C(80) NOTNULL,
+        research_group C(30) NOTNULL,
+        creation_date T NOTNULL DEFAULT 'CURRENT_TIMESTAMP',
+        last_access_date T NOTNULL DEFAULT '0000-00-00 00:00:00',
+        status C(10) NOTNULL
+    ";
+    if (in_array($tabname, $tables)) {
+        if(!check_table_existence_and_structure($tabname,$flds))     
+            return;
+    }
+    else {
+        if (!create_table($tabname, $flds))   
+            return;
+    }
+    $rs = $db->Execute("SELECT * FROM username WHERE name = 'admin'");
+    if($rs->EOF) {
+        $records = array("name"=>array("admin"),
+                    "password"=>array("e903fece385fd2167780216958310b0d"),
+                    "email"=>array(" "),
+                    "research_group"=>array(" "),
+                    "creation_date"=>array(" "),
+                    "last_access"=>array(" "),
+                    "status"=>array("a")
+                    );
+        if(!insert_records($records,$tabname)) 
+            return;
+    }
+    
 
-    // Check the existence and the structure of the tables with variable contents
-    // Check the format of the records content too
+    // Check the existence and the structure of the tables with variable contents;
+    // check the format of the records content (number of #).
+    // Keep the content
     // -------------------------------------------------------------------------
     // -------------------------------------------------------------------------
     
@@ -866,8 +959,8 @@ if ($current_revision == 0) {
     $tabname = "parameter";
     $flds = "
         owner C(30) NOTNULL DEFAULT 0 PRIMARY,
-        setting C(30) NOTNULL PRIMARY,
-        name C(30) NOTNULL PRIMARY,
+        setting C(30) NOTNULL DEFAULT 0 PRIMARY,
+        name C(30) NOTNULL DEFAULT 0 PRIMARY,
         value C(255) DEFAULT NULL
     ";
     if(!check_table_existence_and_structure($tabname,$flds))   
@@ -908,10 +1001,10 @@ $n = 1;
 if ($current_revision < $n) {
     $tabname = "possible_values";
     $record = array();
-    $record["parameter"] = "DeocnvolutionAlgorithm";
+    $record["parameter"] = "DeconvolutionAlgorithm";
     $record["value"] = "cmle";
     $record["translation"] = "Classic Maximum Likelihood Estimation";
-    $record["isDefault"] = "T";
+    $record["isDefault"] = "t";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
     if(!$db->Execute($insertSQL)) {
         $msg = "An error occured while updateing the database to revision " . $n . ".";
@@ -922,7 +1015,7 @@ if ($current_revision < $n) {
     
     $record["value"] = "qmle";
     $record["translation"] = "Quick Maximum Likelihood Estimation";
-    $record["isDefault"] = "T";
+    $record["isDefault"] = "f";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
     if(!$db->Execute($insertSQL)) {
         $msg = "An error occured while updateing the database to revision " . $n . ".";

@@ -278,11 +278,10 @@ Class DatabaseConnection {
     $name = $settings->name();
     $settingTable = $settings->table();
     $table = $settings->parameterTable();
-    if ($settings->isDefault) {
+    if ($settings->isDefault) 
       $standard = "t";
-    } else {
+    else   
       $standard = "f";
-    } 
     $result = True;
     if (!$this->existsSetting($settings)) { 
       $query = "insert into $settingTable values ('" . $user."', '" . $name . "', '" .$standard . "')";
@@ -403,11 +402,10 @@ Class DatabaseConnection {
     $owner = $settings->owner();
     $user = $owner->name();
     $name = $settings->name();
-    if ($settings->isDefault) {
+    if ($settings->isDefault) 
       $standard = "t";
-    } else {
+    else 
       $standard = "f";
-    } 
     $table = $settings->table();
     $query = "update $table set standard = '" . $standard . "' where owner='" . $user . "' and name='" . $name . "'";
     $result = $this->execute($query);
@@ -493,7 +491,7 @@ Class DatabaseConnection {
     return $result;
   } 
   
-  function queueJob($id, $username) {
+  function queueJob($id, $username) {   
     $query = "insert into job_queue (id, username, queued, status) values ('" .$id . "', '" . $username . "', NOW(), 'queued')";
     return $this->execute($query);
   } 
@@ -537,10 +535,11 @@ Class DatabaseConnection {
     return $result;    
   } 
 
-  function readNumericalValueRestrictions($parameter) {
+  function readNumericalValueRestrictions($parameter) { 
     $name = $parameter->name();
     $query = "select min, max, min_included, max_included, standard from boundary_values where parameter = '" .$name . "'";
     $result = $this->queryLastRow($query);
+    
     return $result;
   } 
 
@@ -556,7 +555,7 @@ Class DatabaseConnection {
   //                                          variable (False) or if it doesn't matter (NULL).
   // @return      array
   //!---------------------------------------------------------------
-  function fileFormatsWith($isSingleChannel, $isVariableChannel, $isFixedGeometry) {
+  function fileFormatsWith($isSingleChannel, $isVariableChannel, $isFixedGeometry) {  
     $isSingleChannelValue = 'f';
     $isVariableChannelValue = 'f';
     $isFixedGeometryValue ='f';
@@ -582,7 +581,7 @@ Class DatabaseConnection {
     return $this->retrieveColumnFromTableWhere('name', 'file_format', $conditions);
   } 
 
-  function geometriesWith($isThreeDimensional, $isTimeSeries) {
+  function geometriesWith($isThreeDimensional, $isTimeSeries) { 
     $isThreeDimensionalValue = 'f';
     $isTimeSeriesValue = 'f';
     if ($isThreeDimensional) { 
@@ -629,6 +628,7 @@ Class DatabaseConnection {
 
   function defaultValue($parameterName) {
     $query = "select value from possible_values where parameter='" .$parameterName . "' and isDefault='t'";
+    
     $result = $this->queryLastValue($query);
     if (!$result) {
       return NULL;
@@ -636,7 +636,7 @@ Class DatabaseConnection {
     return $result;
   }
 
-  function getNextIdFromQueue() {
+  function getNextIdFromQueue() { 
     $query = "SELECT id FROM job_queue WHERE status='queued' order by queued desc";
     $result = $this->queryLastValue($query);
     if (!$result) {
@@ -651,7 +651,7 @@ Class DatabaseConnection {
     return $result;
   }
   
-  function getQueueContentsForId($id) { 
+  function getQueueContentsForId($id) {   
     $query = "select id, username, queued, start, server, process_info, status from job_queue where id='" . $id . "'";
     $result = $this->queryLastRow($query);  // it is supposed that just one job exists with a given id
     return $result;
@@ -694,59 +694,69 @@ Class DatabaseConnection {
     return $result; 
   }
 
-  function freeServer() {
+  function freeServer() { 
     $query = "select name from server where status='free'";
     $result = $this->queryLastValue($query);
     return $result;
   } 
 
-  function statusOfServer($name) {
+  function statusOfServer($name) {  
     $query = "select status from server where name='$name'";
-    $result = $this->queryLastValue($query);
+    $result = $this->queryLastValue($query);  
     return $result;
   } 
 
-  function isServerBusy($name) {
+  function isServerBusy($name) {  
     $status = $this->statusOfServer($name);
     $result = ($status == 'busy');
     return $result;
   } 
 
-  function isSwitchOn() {
-    $query = "select switch from queuemanager";
-    $answer = $this->queryLastValue($query);
-    $result = False;
-    if ($answer=='on') $result = True;
+  function isSwitchOn() { 
+    if ($this->isDatabaseUpdated()) {
+      $query = "SELECT value FROM queuemanager WHERE field = 'switch'";
+      $answer = $this->queryLastValue($query);
+      $result = False;
+      if ($answer=='on') $result = True;
+    }
+    else {
+      $query = "select switch from queuemanager";
+      $answer = $this->queryLastValue($query);
+      $result = False;
+      if ($answer=='on') $result = True;
+    }
+  
     return $result;
-  } 
-
-  function reserveServer($name, $pid) {
+  }
+  
+  function reserveServer($name, $pid) { 
     $query = "update server set status='busy', job='$pid' where name='$name'";
     $result = $this->execute($query);
     return $result;
   } 
 
-  function resetServer($name, $pid) {
+  function resetServer($name, $pid) { 
     $query = "update server set status='free', job=NULL where name='$name'";
     $result = $this->execute($query);
     return $result;
   } 
 
-  function startJob($job) {
+  function startJob($job) { 
     $desc = $job->description();
     $id = $desc->id();
     $server = $job->server();
     $process_info = $job->pid();
-    $query = "update job_queue set start=NOW(), server='$server', process_info='$process_info', status='started' where id='" .$id . "'";
+    $query = "update job_queue set start=NOW(), server='$server', process_info='$process_info', status='started' where id='" .$id . "'";  
     $result = $this->execute($query);
     return $result;
   } 
 
-  function getRunningJobs() {
+  function getRunningJobs() { 
     $result = array();
     $query = "select id, process_info, server from job_queue where status = 'started'";
     $rows = $this->query($query);
     if (!$rows) return $result;
+    
     foreach ($rows as $row) {
       $desc = new JobDescription();
       $desc->setId($row['id']);
@@ -781,33 +791,33 @@ Class DatabaseConnection {
     return $result;
   } 
   
-  function pauseJob($id) {
+  function pauseJob($id) {   
     $query = "update job_queue set status='paused' where id='" . $id . "'";
     $result = $this->execute($query);
     return $result;
   } 
 
-  function restartPausedJobs() {
+  function restartPausedJobs() {  
     $query = "update job_queue set status='queued' where status='paused'";
     $result = $this->execute($query);
     return $result;    
   }
 
   function markJobAsRemoved($id) {  
-    //$query = "update job_queue set status='broken' where status='queued' or status='paused' and id='" . $id . "'"; 
+    //$query = "update job_queue set status='broken' where status='queued' or status='paused' and id='" . $id . "'";
     $query = "update job_queue set status='broken' where id='" . $id . "'"; 
     $result = $this->execute($query);
     return $result;    
   }
   
-  function markServerAsFree($server) {
+  function markServerAsFree($server) {  
     $query = "update server set status='free' where name='" . $server . "'";
     $result = $this->execute($query);
     return $result;
   }
 
-  function getMarkedJobIds() {
-    $conditions['status'] = 'broken'; 
+  function getMarkedJobIds() { 
+    $conditions['status'] = 'broken';
     $ids = $this->retrieveColumnFromTableWhere('id', 'job_queue', $conditions);
     return $ids;
   }
@@ -862,6 +872,26 @@ Class DatabaseConnection {
       return $row[0];
     }
     return false;
+  }
+  
+  function isDatabaseUpdated() {
+    global $db_type;
+    global $db_host;
+    global $db_name;
+    global $db_user;
+    global $db_password;
+    
+    $test = False;
+    
+    $dsn = $db_type."://".$db_user.":".$db_password."@".$db_host."/".$db_name;
+    $db = ADONewConnection($dsn); 
+    if(!$db) 
+      return;
+    $tables = $db->MetaTables("TABLES");
+    if (in_array("global_variables", $tables))
+      $test = True;
+
+    return $test;
   }
 } 
 ?>
