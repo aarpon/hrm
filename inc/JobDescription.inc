@@ -255,9 +255,17 @@ Class JobDescription {
 	  $useParameter = $setting->parameter($useParameterName);
 	  $useParameter->reset();
           //error_log("range parameter " . $realParameterName . " = " . $combination[$index]);
-          $newVal = array(null, null, null, null, null);
-          for ($i = 0; $i < $numberOfChannels; $i++) {
-            $newVal[$i] = $combination[$i];
+          if ($realParameterName == "SignalNoiseRatio") {
+            $newVal = array(null, null, null, null, null);
+            for ($i = 0; $i < $numberOfChannels; $i++) {
+              $newVal[$i] = $combination[$i];
+            }
+          }
+          else if ($realParameterName == "NumberOfIterations") {
+            if (count($combination) > 1)
+              $newVal = $combination[$numberOfChannels];
+            else
+              $newVal = $combination[0];
           }
 	  $realParameter->setValue($newVal);
 	  $setting->set($realParameter);
@@ -308,28 +316,72 @@ Class JobDescription {
     $jobDescriptions = array();
     //$rangeParameter = $this->rangeParameter();
     $matrix = array();
-    if (count($rangeParameter)==1) {
+    //if (count($rangeParameter)==1) {
       $range = array_pop($rangeParameter);
       $value = array_filter($range->value());
+      $snrValue = null;
+      $iterationValue = null;
+      // process SignalNoiseRatioRange, if applicable
+      if ($range->name() == "SignalNoiseRatioRange") {
+        error_log("SignalNoiseRatio range");
+        $snrRange = $range;
+        $snrValue = $value;
+      }
+      else if ($range->name() == "NumberOfIterationsRange") {
+        error_log("NumberOfIterations range");
+        $iterationRange = $range;
+        $iterationValue = $value;
+      }
+      // process NumberOfIterationsRange, if applicable
+      if (count($rangeParameter) > 0) {
+        $range = array_pop($rangeParameter);
+        $value = array_filter($range->value());
+        if ($range->name() == "SignalNoiseRatioRange") {
+          error_log("SignalNoiseRatio range");
+          $snrRange = $range;
+          $snrValue = $value;
+        }
+        else if ($range->name() == "NumberOfIterationsRange") {
+          error_log("NumberOfIterations range");
+          $iterationRange = $range;
+          $iterationValue = $value;
+        }
+      }
       // what is the form of matrix?
       // compute matrix dimensions
       $dim = 1;
-      for ($i = 0; $i < $numberOfChannels; $i++) {
-        $dim *= count($value[$i]);
+      if ($snrValue != null) {
+        for ($i = 0; $i < $numberOfChannels; $i++) {
+          $dim *= count($snrValue[$i]);
+        }
       }
+      if ($iterationValue != null) {
+        $dim *= count($iterationValue);
+      }
+      error_log("dimension = " . $dim);
       for ($i = 0; $i < $dim; $i++) {
         $row = array();
         $size = 1;
-        for ($j = 0; $j < $numberOfChannels; $j++) {
-          $val = $value[$j];
-          if (is_array($val)) {
-            $val = array_filter($val);
-            $row[] = $val[($i/$size) % count($val)];
-            $size *= count($val);
+        if ($snrValue != null) {
+          for ($j = 0; $j < $numberOfChannels; $j++) {
+            $val = $snrValue[$j];
+            if (is_array($val)) {
+              $val = array_filter($val);
+              $row[] = $val[($i/$size) % count($val)];
+              $size *= count($val);
+            }
+            else {
+              $row[] = $val;
+            }
           }
-          else {
-            $row[] = $val;
-          }
+        }
+        if ($iterationValue != null) {
+          $val = $iterationValue;
+          $val = array_filter($val);
+          $row[] = $val[($i/$size) % count($val)];
+          error_log("index = " . ($i/$size) % count($val));
+          error_log("value = " . $val[($i/$size) % count($val)]);
+          $size *= count($val);
         }
         $matrix[$i] = $row;
         $s = "";
@@ -339,14 +391,14 @@ Class JobDescription {
         error_log($s);
       }
       return $matrix;
-    } else { 
+    /*} else { 
       foreach ($rangeParameter as $range) {
 	$value = array_filter($range->value());
 	$matrix[] = $value;
       }
       $combinations = $this->combineAll($matrix);
       return $combinations;
-    } 
+    }*/
   } 
 
   function rangeParameterNames() {
