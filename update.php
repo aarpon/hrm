@@ -51,7 +51,7 @@
 // The fact that you are presently reading this means that you have had 
 // knowledge of the CeCILL license and that you accept its terms.
 
-$message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
+$message = "";
 
 if (isset($_GET["action"])) {
     if ($_GET["action"] == "dbupdate") {
@@ -83,11 +83,12 @@ include("header.inc.php");
         <h3>Update</h3>
         
         <fieldset>
-            <legend>changelog</legend>
+            <legend>log</legend>
             <textarea rows="15" readonly="readonly">
 <?php
 
-include("changelog");
+//include("changelog");
+echo $message;
 
 ?>
             </textarea>
@@ -109,6 +110,8 @@ include("changelog");
                 New HRM releases are available from the project <a href="javascript:openWindow('http://sourceforge.net/projects/hrm')">website</a>.
             </p>
             
+            <br>
+            
             <form method="GET" action="" id="dbupdate">
                 <input type="hidden" name="action" value="dbupdate">
             </form>
@@ -120,7 +123,7 @@ include("changelog");
         <div id="message">
 <?php
 
-echo $message;
+//echo $message;
 
 ?>
         </div>

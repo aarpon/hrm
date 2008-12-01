@@ -50,6 +50,42 @@
 // The fact that you are presently reading this means that you have had
 // knowledge of the CeCILL license and that you accept its terms.
 
+
+
+
+// =============================================================================
+// Description
+// =============================================================================
+// This script has the objective of updating the database linked to HRM.
+// Moreover the number of the last revision for the database is contained in the
+// script (this is the only place where this information can be found).
+//
+// When you want to change something in the database, thta is, to create a new
+// database release, it is necessary to insert the modifications in the last part
+// of the script and to update the variable $LAST_REVISION at the very beginning
+// of the script.
+//
+// When running the script, three situations are possible:
+// 1) a new user of HRM run the script from command line, the database does not
+//    exist yet. In this case the database $db_name is created. Then all the tables
+//    are created and the tables with fixed content (ex: boundary_values) are filled.
+//    The admin user is created in the table username.
+//    The database is updated to the last revision.
+// 2) a user has his database version, but he never run this script: the table
+//    global_variables does not exist and the revision number of the database is
+//    unknown. In this case the table global_variable is created and the field
+//    dbrevision is set to 0; the structure of all the tables is checked and
+//    eventually corrected; the content of the fixed tables is checked and
+//    eventually corrected; the number of # in the field value, in the tables
+//    parameter and task_parameter, is checked and eventually corrected (it should
+//    be 5). The content of the tables parameter, parameter_setting, task_parameter
+//    and task_setting is preserved.
+//    The database is updated to the last revision.
+// 3) the user has a database identified by a revision number (field dbrevision
+//    in the table global_variables). In this case the database is not checked and
+//    it is simply updated to the last revision.
+
+
 include "inc/hrm_config.inc";
 include "inc/reservation_config.inc";
 include $adodb;
@@ -60,35 +96,7 @@ $LAST_REVISION = 3;
 
 
 // For test purposes
-//$db_name = "hrm-test";
-
-
-
-// =============================================================================
-// Description
-// =============================================================================
-// This script has the objective of updating the database linked to HRM.
-// Moreover the number of the last revision for the database is contained in the
-// script (this is the only place where this information can be found).
-// Three situations are possible:
-// 1) a new user of HRM created an empty database and run this script. In this
-//    case all the tables are created and the tables with fixed content
-//    (ex: boundary_values)are filled. The database is updated to the last revision.
-//    In this case it is necessary to manually fill the 'server' table and complete
-//    the 'admin' row in the 'username' table
-// 2) a user has his database version, but he never run this script, the table
-//    global_variables does not exist and the revision number of the database is
-//    unknown. In this case the table global_variable is created and the field
-//    dbrevision is set to 0; the structure of all the tables is checked and
-//    eventually corrected; the content of the the fixed tables is checked and
-//    eventually corrected; the number of # in the field value, in the tables
-//    parameter and task_parameter, is checked and eventually corrected (it should
-//    be 5). The content of the tables parameter, parameter_setting, task_parameter
-//    and task_setting is preserved. The database is updated to the last revision.
-// 3) the user has a database identified by a revision number (field dbrevision
-//    in the table global_variables). In this case the database is not checked and
-//    it is updated to the last revision.
-
+//$db_name = "prova";
 
 
 // =============================================================================
@@ -117,7 +125,7 @@ function write_message($msg) {
     global $interface;
     global $message;
     if (isset($interface)) {
-        $message .= "            <p class=\"warning\">" . $msg . "</p>\n";
+        $message .= $msg . "\n";
     }
     else echo $msg . "\n";
 }
@@ -336,9 +344,33 @@ if (!($efh = @fopen($error_file, 'a'))) { // If the file does not exist, it is c
 chmod($log_file, 0666);
 write_to_error(timestamp());
 
+//  Check if the database exists; if it does not exist, create it
+$dsn = $db_type."://".$db_user.":".$db_password."@".$db_host;
+$db = ADONewConnection($dsn);
+if(!$db) {
+    $msg = "Cannot connect to database host.";
+    write_message($msg);
+    write_to_error($msg);
+    return;
+}
+$datadict = NewDataDictionary($db, $db_type);   // Build a data dictionary
+$databases = $db->MetaDatabases();
+if (!in_array($db_name, $databases)) {
+    $createDb = $datadict->CreateDatabase($db_name);
+    if(!$datadict->ExecuteSQLArray($createDb)) {
+        $msg = "An error occured in the creation of the HRM database.";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+    $msg = "The database has been created.\n";
+    write_message($msg);
+    write_to_log($msg);
+}
+
 // Connect to the database
 $dsn = $db_type."://".$db_user.":".$db_password."@".$db_host."/".$db_name;
-$db = ADONewConnection($dsn); 
+$db = ADONewConnection($dsn);
 if(!$db) {
     $msg = "Cannot connect to the database.";
     write_message($msg);
@@ -351,6 +383,7 @@ $datadict = NewDataDictionary($db, $db_type);
 
 // Extract the list of existing tables
 $tables = $db->MetaTables("TABLES");
+
 
 
 // -----------------------------------------------------------------------------
@@ -383,7 +416,7 @@ if ($rs->EOF) { // If the variable dbrevision does not exist, create it and set 
         return;
     }
     $current_revision = 0;
-    $msg = "The database revision has been set to 0.\n\n";
+    $msg = "The database revision has been set to 0.\n";
     write_message($msg);
     write_to_log($msg);
 }
@@ -510,7 +543,7 @@ if ($current_revision == 0) {
                                 "ome-xml","tiff","lif","tiff-leica","ics",
                                 "glycerol"),
                            "translation"=>array("","",
-                                "Delta Vision (*.dv)","Metamorph (*.stk)","Numbered TIFF series (*.tif, *.tiff)","TIFF (*.tif, *.tiff) single XY plane","Imaris Classic (*.ims)","Zeiss (*.lsm)","Zeiss (*.lsm) single XY plane","Biorad (*.pic)",
+                                "Delta Vision (*.dv)","Metamorph (*.stk)","Numbered series","single XY plane","Imaris Classic (*.ims)","Zeiss (*.lsm)","Zeiss (*.lsm) single XY plane","Biorad (*.pic)",
                                 "","","","",
                                 "","","",
                                 "widefield","nipkow","confocal","widefield",
@@ -525,7 +558,7 @@ if ($current_revision == 0) {
                                 "","",
                                 "","",
                                 "","",
-                                "OME-XML (*.ome)","Olympus TIFF (*.tif, *.tiff)","Leica (*.lif)","Leica TIFF series (*.tif, *.tiff)","Image Cytometry Standard (*.ics/*.ids)",
+                                "OME-XML (*.ome)","Olympus FluoView","Leica (*.lif)","Leica series","Image Cytometry Standard (*.ics/*.ids)",
                                 "1.4729"),
                            "isDefault"=>array("f","f",
                                 "f","f","f","f","f","f","f","f",
@@ -986,7 +1019,7 @@ if ($current_revision == 0) {
 // -----------------------------------------------------------------------------
 // Update the database to the last revision
 // -----------------------------------------------------------------------------
-$msg = "\nThe last available revision for the HRM database is the number " . $LAST_REVISION . ".\n";
+$msg = "The last available revision for the HRM database is the number " . $LAST_REVISION . ".\n";
 $msg .= "The revision of your HRM database before this update was " . $current_revision . ".\n";
 write_message($msg);
 write_to_log($msg);
@@ -1115,9 +1148,6 @@ if ($current_revision < $n) {
     write_message($msg);
     write_to_log($msg);
 }
-
-
-
 
 $msg = "\nThe current revision of your HRM database is " . $current_revision . ".";
 write_message($msg);
