@@ -120,8 +120,6 @@ else {
     }*/
   }
   
-  $signalNoiseRatio = array(null, null, null, null, null);
-  $signalNoiseRatioRange = array(null, null, null, null, null);
   $backgroundOffsetPercentParam =  $_SESSION['task_setting']->parameter("BackgroundOffsetPercent");
   $backgroundOffset = $backgroundOffsetPercentParam->internalValue();
   for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
