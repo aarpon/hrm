@@ -7,6 +7,9 @@ As root:
 2) Place the file in /Library/LaunchDaemons/
 3) Load it with:
    sudo launchctl load -w /Library/LaunchDaemons/hrmd.plist
+4) Restart it in two steps:
+   sudo launchctl unload /Library/LaunchDaemons/hrmd.plist
+   sudo launchctl load /Library/LaunchDaemons/hrmd.plist
 
 -->
 <plist version="1.0">
