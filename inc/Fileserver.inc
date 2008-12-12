@@ -301,7 +301,7 @@ Class Fileserver {
       $command .= " ".$zipfile;
 
       foreach ($files as $file) {
-          $path = preg_replace("/(.*)\.(.{3,4})/","\\1.*",$file);
+          $path = preg_replace("/(.*)\.(.{3,4})/","\"\\1\".*",$file);
           if (! $packExcludePath) {
               $path = $this->destinationFolder()."/".$path;
           }
@@ -417,7 +417,6 @@ Class Fileserver {
   // @return      Void
   //!---------------------------------------------------------    
   function getSubImages() {
-      global $hrm_path;
 
       $i = 0;
       $imgList = "";
@@ -475,7 +474,7 @@ Class Fileserver {
                   if ($cur) {
                       $i ++;
                       $tree[$cur]['subimg'][] = $answer[$i];
-                      $new_files[] = $cur ." (". $answer[$i] .") ";
+                      $new_files[] = $cur ." (". $answer[$i] .")";
                   }
                   break;
 
@@ -486,6 +485,46 @@ Class Fileserver {
 
       # printDebug ($tree);
 
+  }
+
+  //!---------------------------------------------------------
+  // @function    Fileserver::getImageOptionLine
+  // @desc        Generates a html line for a form listing images in the
+  //              server.
+  // @return      The html code for the form.
+  //!---------------------------------------------------------    
+ 
+  function getImageOptionLine ($file, $index, $dir, $type, $ref = 0, $data = 1) {
+      global $useThumbnails;
+      global $genThumbnails;
+
+      $path = explode("/", $file);
+      if (count($path) > 2)
+          $filename = $path[0] . "/.../" . $path[count($path) - 1];
+      else
+          $filename = $file;
+
+
+      if ($useThumbnails) {
+          $mode = $this->imgPreviewMode($file, $dir, $type) ;
+          if ( $ref ) {
+              $referer = "?ref=". $_SESSION['referer'];
+          } else {
+              $referer = "";
+          }
+
+          # The first comparison mode is the 400x400 pixels preview.
+          $compare = $this->imgCompareMode($file, $dir, "400") ;
+          if ($compare > 0) { $compare = 400; }
+
+          return "                        <option ".
+          " onClick=\"imgPrev('$file', $mode, $genThumbnails, $compare, 
+                             $index, '$dir', ".
+                            "'$referer', $data)\">$filename</option>\n";
+
+      } else {
+          return "                        <option>$file</option>\n";
+      }
   }
 
  
@@ -514,6 +553,356 @@ Class Fileserver {
     // trim TIFF series to the first file in the sequence
     //$this->condenseTiffSeries();
   } 
+
+
+  //!---------------------------------------------------------
+  // @function    Fileserver::imgPreview
+  // @desc        Generates a link to retreive an image thumbnail,
+  //              which is a jpg file saved along with the file itself.
+  // @return      A <img src> link to securely get the thumbnail.
+  //!---------------------------------------------------------    
+  function imgPreview ($image, $dir, $type = "preview_xy", $escape = true ) {
+      global $genThumbnails;
+
+      if ( $dir == "src" ) {
+          $pdir =  $this->sourceFolder();
+      } else {
+          $pdir =  $this->destinationFolder();
+      }
+
+ 
+      # The thumbnail is saved along with the image, and it has a suffix
+      # indicating the thumbnail type plus the jpg extension.
+      $path = $pdir."/".$image.".".$type.".jpg";
+      $thumb = urlencode($image.".".$type.".jpg");
+      if (file_exists($path)) {
+          $ret =  "<img src=\"file_management.php?getThumbnail=$thumb&".
+              "dir=$dir\">";
+      } else {
+           $imgsrc =  "<img src=\"images/no_preview.jpg>";
+           # $ret = "<p><center>No preview available.</center></p>";
+           $ret .= "$imgsrc<br>No preview available";
+      }
+
+      if ($escape) {
+          return escapeJavaScript($ret);
+      } else {
+          return $ret;
+      }
+  }
+
+  //!---------------------------------------------------------
+  // @function    Fileserver::imgPreviewMode
+  // @desc        Checks whether an image preview is available
+  // @return      Numeric code: 0 not available, 2 2D, 3 3D
+  //!---------------------------------------------------------
+  function imgPreviewMode ($image, $dir, $type) {
+      global $genThumbnails;
+
+      if ( $dir == "src" ) {
+          $pdir =  $this->sourceFolder();
+      } else {
+          $pdir =  $this->destinationFolder();
+      }
+
+      # The thumbnail is saved along with the image, and it has a suffix
+      # indicating the thumbnail type plus the jpg extension.
+      $path = $pdir."/".$image.".".$type."_xy.jpg";
+      echo $path;
+      $ret = 0;
+      if (file_exists($path)) {
+          // 2D preview
+          $ret = 2;
+          $path2 = $pdir."/".$image.".".$type."_xz.jpg";
+          if (file_exists($path2)) {
+          // 3D preview
+              $ret = 3;
+          }
+      } else {
+          // No preview available
+          $ret = 0;
+      }
+
+      return $ret;
+
+  }
+
+  //!---------------------------------------------------------
+  // @function    Fileserver::imgCompareMode
+  // @desc        Checks whether a restored image preview is available for
+  //              comparison with the original one.
+  // @return      Numeric code: 0 not available, 2 2D, 3 3D
+  //!---------------------------------------------------------
+  function imgCompareMode ($image, $dir, $type) {
+      global $genThumbnails;
+
+      if ( $dir == "src" ) {
+          // Only images in the destination directory, after deconvolution, can
+          // be compared with the originals.
+          return 0;
+
+      }
+      $pdir =  $this->destinationFolder();
+
+      # The thumbnail is saved along with the image, and it has a suffix
+      # indicating the thumbnail type plus the jpg extension.
+      $path = $pdir."/".$image.".".$type."_xy.jpg";
+      $opath = $pdir."/".$image.".original.".$type."_xy.jpg";
+      $ret = 0;
+      if (file_exists($path) && file_exists($opath) ) {
+          // 2D preview
+          $ret = 2;
+          $path2 = $pdir."/".$image.".".$type."_xz.jpg";
+          $opath2 = $pdir."/".$image.".original.".$type."_xz.jpg";
+          if (file_exists($path2) && file_exists($opath2) ) {
+          // 3D preview
+              $ret = 3;
+          }
+      } else {
+          // No preview available for comparison
+          $ret = 0;
+      }
+      return $ret;
+
+  }
+
+
+
+  //!---------------------------------------------------------
+  // @function    Fileserver::compareResult
+  // @desc        Shows original/result previews side by side.
+  // @return      
+  //!---------------------------------------------------------
+
+  function compareResult( $file, $size = "400") {
+      global $allowHttpTransfer;
+
+      $excludeTitle = true;
+      include("header.inc.php");
+
+      echo "</div>";
+
+      echo "<h3>Image comparison</h3>\n";
+
+      $pdest =  $this->destinationFolder();
+
+      if (!file_exists($pdest."/".$file)) {
+          echo "File '$file' does not exist in the server.";
+          echo "</body></html>";
+          exit;
+      }
+
+      echo "<table><tr>\n";
+
+      echo "<td>Original</td><td>Restored</td></tr><tr>\n";
+
+      $othumb_0 = urlencode($file.".original.".$size."_xy.jpg");
+      $rthumb_0 = urlencode($file.".".$size."_xy.jpg");
+
+      # YZ slices not shown by now, but here they are:
+      $othumb_2 = urlencode($file.".original.".$size."_xy.jpg");
+      $rthumb_2 = urlencode($file.".".$size."_xy.jpg");
+
+      echo "<td><img src=\"file_management.php?getThumbnail=$othumb_0&".
+              "dir=dest\"></td>";
+
+      echo "<td><img src=\"file_management.php?getThumbnail=$rthumb_0&".
+              "dir=dest\"></td>";
+
+      echo "</tr><tr>\n";
+
+      $othumb_1 = urlencode($file.".original.".$size."_xz.jpg");
+      $rthumb_1 = urlencode($file.".".$size."_xz.jpg");
+      echo "<td><img src=\"file_management.php?getThumbnail=$othumb_1&".
+              "dir=dest\"></td>";
+      echo "<td><img src=\"file_management.php?getThumbnail=$rthumb_1&".
+              "dir=dest\"></td>";
+
+      echo "</tr></table>\n";
+
+      echo "<div id=\"info\">";
+      if ( $allowHttpTransfer ) {
+          echo "<br><small><a href=\"file_management.php?download=".urlencode($file)."\" onClick=\"changeDiv('info','Packaging files, please wait')\" >Download $file</a></small>\n";
+      } else {
+          echo "<br><small>$file</small>\n";
+      }
+      echo "</div>";
+      echo "<br><br><a href=\"#\" onClick=\"window.close()\">Close</a>\n";
+      # echo "<script type=\"text/javascript\"> window.close(); <script>\n";
+      echo "</body></html>";
+      ob_flush();
+      flush();
+  }
+
+
+
+
+  //!---------------------------------------------------------
+  // @function    Fileserver::genPreview
+  // @desc        Calls hucore to open an image and generate a jpeg preview.
+  // @return      
+  //!---------------------------------------------------------
+
+  function genPreview( $file, $src, $dest, $index, $sizes = "preview", $data = 0 ) {
+
+      $excludeTitle = true;
+      include("header.inc.php");
+
+      echo "</div><div id=\"info\">".
+      "<img src=\"images/spin.gif\"><br>".
+      "Generating preview for $file, please wait...<br><br>\n\n<pre>";
+      ob_flush();
+      flush();
+
+      if ( $src == "src" ) {
+          $psrc =  $this->sourceFolder();
+      } else {
+          $psrc =  $this->destinationFolder();
+      }
+      if ( $dest == "src" ) {
+          $pdest =  $this->sourceFolder();
+      } else {
+          $pdest =  $this->destinationFolder();
+      }
+
+      # echo "$file, $src, $dest, $sizes<br>";
+      # flush;
+
+      $extra = "";
+      $series = "auto";
+
+      if ( $data ) {
+          $nchan = $_SESSION['setting']->NumberOfChannels();
+          $lmbV = "\"";
+          $lambda = $_SESSION['setting']->parameter("EmissionWavelength");
+          $l = $lambda->value();
+          for ( $i = 0; $i < $nchan; $i++ ) {
+              $lmbV .= " ".$l[$i];
+          }
+          $lmbV .= "\"";
+
+          $xy = $_SESSION['setting']->parameter("CCDCaptorSizeX");
+          $z = $_SESSION['setting']->parameter("ZStepSize");
+          $xy_s = $xy->value() / 1000.0;
+          $z_s = $z->value() / 1000.0;
+          $extra = " -emission $lmbV -sampling \"$xy_s $xy_s $z_s\"";
+
+          # Enable the -series off option depending on the file type.
+          if (stristr($file, ".stk")) {
+              $geom = $_SESSION['setting']->parameter("ImageGeometry");
+              $geometry = $geom->value();
+              if ( !stristr($geometry, "time") ) {
+                  $series = "off";
+              }
+          }
+          $formatParam = $_SESSION['setting']->parameter('ImageFileFormat');
+          $format = $formatParam->value();
+          if ($format == "tiff" || $format == "tiff-single") {
+              // Olympus FluoView, or single XY plane: always
+              $series = "off";
+          }
+
+      }
+
+      $opt = "-filename \"$file\" -src \"$psrc\" -dest \"$pdest\" ".
+             "-scheme auto -sizes \{$sizes\} -series $series $extra";
+
+      $answer = huCoreTools( "generateImagePreview", $opt);
+
+      if (! $answer ) return;
+      # printDebug ($answer);
+
+      $lines = count($answer);
+      $html = "";
+
+      $tree = array();
+      $new_files = array();
+      $cur = NULL;
+
+      $ok = true;
+      for ($i = 0; $i < $lines; $i++ ) {
+          $key = $answer[$i];
+
+          switch ($key) {
+              case "ERROR":
+                  $i ++;
+                  $html .= $answer[$i]."<br>";
+                  $ok = false;
+                  break;
+              case "REPORT":
+                  $i ++;
+                  echo $answer[$i]."\n";
+                  ob_flush();
+                  flush();
+              default :
+                  # $html .= $answer[$i]."<br>";
+                  break;
+
+                  
+          }
+      }
+
+      echo "Processing finished.\n";
+      echo "</pre></div>";
+      ob_flush();
+      flush();
+
+      $path = $pdest."/".$file.".preview_xy.jpg";
+      if ($ok && ! file_exists($path)) {
+          $ok = false;
+          $html .= "$path does not exist.<br>";
+      }
+
+      echo "<script type=\"text/javascript\"> changeDiv('info',''); </script>";
+      echo $html;
+
+      if ($ok) {
+          $nMode = $this->imgPreviewMode($file, $dest, "preview");
+          $img = $this->imgPreview($file, $dest, "preview_xy", false) ;
+          if ($nMode == 3) {
+              $img .= "<br>".
+                      $this->imgPreview($file, $dest, "preview_xz", false) ;
+          }
+          # $img .= "<p><center><kbd>$file</kbd></center></p>";
+          echo $img;
+      }
+
+      echo "\n\n<script type=\"text/javascript\"> ";
+      if ($ok) {
+          echo "\nsetPrevGen($index, $nMode);";
+          echo "\nchangeOpenerDiv('info','". escapeJavaScript($img). "'); ";
+      } else {
+          echo "\nchangeOpenerDiv('info','Preview generation failed.<br><br><kbd>".escapeJavaScript($html)."</kbd>'); ";
+      }
+      echo "\nwindow.close();";
+      echo "\n</script>\n\n";
+      echo "<br><br><a href=\"#\" onClick=\"window.close()\">Close</a>\n";
+      # echo "<script type=\"text/javascript\"> window.close(); <script>\n";
+      echo "</body></html>";
+      ob_flush();
+      flush();
+  }
+
+  //!---------------------------------------------------------
+  // @function    Fileserver::getThumbnail
+  // @desc        Serve a certain file from the dest directory. Intended to
+  //              serve jpg thumbails in combination with imgThumbnail.
+  // @return      The binary file.
+  //!---------------------------------------------------------    
+ 
+  function getThumbnail($file, $dir) {
+      if ( $dir == "src" ) {
+          $pdir =  $this->sourceFolder();
+      } else {
+          $pdir =  $this->destinationFolder();
+      }
+      $path = $pdir."/".$file;
+      if (!file_exists($path)) {
+          $path = "images/no_preview.jpg";
+      }
+      Header("Content-Type: image/jpeg");
+      readfile ($path);
+  }
   //!---------------------------------------------------------
   // @function    Fileserver::getDestFiles
   // @desc        Create the list of restored image files of the user.

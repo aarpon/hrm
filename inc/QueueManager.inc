@@ -460,7 +460,10 @@ Class QueueManager {
 			if ($fileserver->isReachable()) {
 				$foundExecutableJob = True;
 			} else {
-				report("fileserver not reachable", 2);
+                                $src = $fileserver->sourceFolder();
+                                $dest = $fileserver->destionationFolder();
+                                report("fileserver not reachable: $src or $dest".
+                                "do not exist", 2);
 				$pausedJobs = True;
 				$queue->pauseJob($jobDescription);
 				return NULL;
@@ -785,6 +788,8 @@ Class QueueManager {
 
 	function notifySuccess($job, $startTime) {
 		global $email_sender;
+                global $hrm_url;
+                global $useThumbnails;
 		$desc = $job->description();
 		$user = $desc->owner();
 		$emailAddress = $user->emailAddress();
@@ -795,6 +800,12 @@ Class QueueManager {
 		$text = $text . "Your job started at $startTime and finished at " . date("Y-m-d H:i:s") . ".\n";
 		$text = $text . "The image $sourceFileName was successfully processed by Huygens.\n";
 		$text = $text . "You will find the resulting image ($destFileName) in your destination folder.\n";
+                if ( $useThumbnails ) {
+                    $link = $hrm_url.
+                           "/file_management.php?compareResult=$destFileName";
+                    $text .= "\nYou can find a preview of the result at ".$link.
+                             "\n\n";
+                }
 		$text = $text . "Best regards,\n";
 		$text = $text . "Huygens Remote Manager\n";
 		$text = $text . $this->parameterText($job);

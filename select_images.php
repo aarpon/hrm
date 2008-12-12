@@ -136,6 +136,16 @@ if ($enableUserAdmin) {
     <div id="content">
     
         <h3>Step 3 - Select Images</h3>
+        <?php 
+        #print "<pre>"; 
+        #print_r($_SESSION['setting']->EmissionWavelength);
+        #print_r($_SESSION['setting']->CCDCaptorSizeX);
+        #print_r($_SESSION['setting']->ZStepSize);
+        
+        # print_r($_SESSION['setting']); 
+        
+        #print "</pre>"; 
+        ?>
         
         <form method="post" action="" id="select">
         
@@ -183,13 +193,13 @@ if ($files == null) {
 ?>
                     <select name="userfiles[]" size="10" multiple="multiple"<?php echo $flag ?>>
 <?php
-
+$keyArr = array();
 if ($files != null) {
   foreach ($files as $key => $filename) {
-    $path = explode("/", $filename);
-    if (count($path) > 2)
-      $filename = $path[0] . "/.../" . $path[count($path) - 1];
-    echo "                        <option value=\"$files[$key]\">$filename</option>\n";
+          echo $_SESSION['fileserver']->getImageOptionLine($filename, $key, 
+                                                      "src","preview", 0, 1) ;
+          $keyArr[$filename] = $key;
+
   }
 }
 else echo "                        <option>&nbsp;</option>\n";
@@ -218,11 +228,10 @@ if ($files == null) $flag = " disabled=\"disabled\"";
 <?php
 
 if ($files != null) {
-  foreach ($files as $key => $filename) {
-    $path = explode("/", $filename);
-    if (count($path) > 2)
-      $filename = $path[0] . "/.../" . $path[count($path) - 1];
-    echo "                        <option value=\"$files[$key]\">$filename</option>\n";
+  foreach ($files as $filename) {
+          $key = $keyArr[$filename];
+          echo $_SESSION['fileserver']->getImageOptionLine($filename,
+                                             $key, "src", "preview", 0, 1) ;
   }
 }
 else echo "                        <option>&nbsp;</option>\n";
@@ -241,13 +250,15 @@ else echo "                        <option>&nbsp;</option>\n";
         
     </div> <!-- content -->
     
-    <div id="stuff">
     
-        <div id="info">
+        <div id="controls">
         
             <input type="button" value="" class="icon previous" onclick="document.location.href='select_task_settings.php'" />
             <input type="submit" value="" class="icon next" onclick="process()" />
+        </div>    
             
+    <div id="stuff">
+        <div id="info">
             <p>
                 Select the image files in the upper file list. You can use SHIFT- 
 		and CTRL-click to select multiple files. Use the down-arrow to

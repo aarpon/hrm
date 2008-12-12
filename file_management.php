@@ -71,11 +71,76 @@ if (isset($_SERVER['HTTP_REFERER']) && !strstr($_SERVER['HTTP_REFERER'], 'job_qu
   $_SESSION['referer'] = $_SERVER['HTTP_REFERER'];
 }
 
+if (isset($_GET['ref'])) {
+    $_SESSION['referer'] = $_GET['ref'];
+} else if (isset($_POST['ref'])) {
+    $_SESSION['referer'] = $_POST['ref']; 
+} else {
+    $_SESSION['referer'] = $_SERVER['HTTP_REFERER'];
+}
+
 if (!isset($_SESSION['fileserver'])) {
     # session_register("fileserver");
     $name = $_SESSION['user']->name();
     $_SESSION['fileserver'] = new Fileserver($name);
 }
+
+if (isset($_GET['getThumbnail'])) {
+    if (isset($_GET['dir'])) {
+        $dir = $_GET['dir'];
+    } else {
+        $dir = "dest";
+    }
+    $_SESSION['fileserver']->getThumbnail( urldecode($_GET['getThumbnail']),
+         $dir );
+    exit;
+}
+
+if (isset($_GET['genPreview'])) {
+    if (isset($_GET['size'])) {
+        $size = $_GET['size'];
+    } else {
+        $size = "preview";
+    }
+    if (isset($_GET['src'])) {
+        $src = $_GET['src'];
+    } else {
+        $src = "dest";
+    }
+    if (isset($_GET['dest'])) {
+        $dest = $_GET['dest'];
+    } else {
+        $dest = $src;
+    }
+    if (isset($_GET['data'])) {
+        $data = $_GET['data'];
+    } else {
+        $data = 0;
+    }
+    if (isset($_GET['index'])) {
+        $index = $_GET['index'];
+    } else {
+        $index = 0;
+    }
+
+
+    $_SESSION['fileserver']->genPreview( $_GET['genPreview'],
+                                         $src, $dest, $index, $size, $data );
+    exit;
+}
+
+if (isset($_GET['compareResult'])) {
+    if (isset($_GET['size'])) {
+        $size = $_GET['size'];
+    } else {
+        $size = "400";
+    }
+    $_SESSION['fileserver']->compareResult( urldecode($_GET['compareResult']),
+                             $size);
+    exit;
+}
+
+
 if (isset($_POST['update'])) {
     $_SESSION['fileserver']->updateAvailableDestFiles();
 }
@@ -86,6 +151,10 @@ if ($allowHttpTransfer) {
         if (isset($_POST['userfiles']) && is_array($_POST['userfiles'])) {
            $message = $_SESSION['fileserver']->downloadResults($_POST['userfiles']);
         }
+    } else if (isset($_GET['download']) ) {
+        $downloadArr = array ( $_GET['download'] );
+           $message = $_SESSION['fileserver']->downloadResults($downloadArr);
+           exit;
     }
 } else {
     $message = "            <p class=\"warning\">HTTP transfer not allowed&nbsp;</p>\n";
@@ -99,7 +168,7 @@ include("header.inc.php");
 
     <div id="nav">
         <ul>
-            <li><a href="result_images.php?exited=exited">exit</a></li>
+            <li><a href="file_management.php?exited=exited">exit</a></li>
             <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpFileManagement')">help</a></li>
         </ul>
     </div>
@@ -115,6 +184,23 @@ include("header.inc.php");
                 <div id="userfiles">
 <?php
 
+$instructions =
+            "<p>
+            This is a list of the images in your destination directory.
+            You can use SHIFT- and CTRL-click to select multiple files. 
+            </p><p>
+            Use the down-arrow to
+            <img src=\"images/add_help.png\" alt=\"Add\
+               width=\"22\" height=\"22\" />
+            start the downloading.
+            That will
+            create first a compressed archive including the selected files.
+            </p><p>
+            Please mind that large files may take a <b>long
+            time </b>to be packaged.
+            </p>";
+
+
 // display only relevant files
 $files = $_SESSION['fileserver']->destFiles();
 $flag = "";
@@ -126,8 +212,9 @@ if ($files == null) $flag = " disabled=\"disabled\"";
 <?php
 
 if ($files != null) {
-  foreach ($files as $file) {
-    echo "                        <option>$file</option>\n";
+  foreach ($files as $key => $file) {
+      echo $_SESSION['fileserver']->getImageOptionLine($file,
+                                       $key, "dest", "preview", 1, 0);
   }
 }
 else echo "                        <option>&nbsp;</option>\n";
@@ -138,7 +225,7 @@ else echo "                        <option>&nbsp;</option>\n";
             </fieldset>
             
 <?php if ($allowHttpTransfer) { ?>
-            <div id="selection">
+    <div id="selection">
                 <input name="download" type="submit" value="" class="icon down" />
             </div>
             
@@ -146,6 +233,7 @@ else echo "                        <option>&nbsp;</option>\n";
            
             <div id="actions" class="imageselection">
                 <input name="update" type="submit" value="" class="icon update" />
+                <input name="ref" type="hidden" value="<?php echo $_SESSION['referer']; ?>" />
                 <input name="OK" type="hidden" />
             </div>
             
@@ -154,28 +242,16 @@ else echo "                        <option>&nbsp;</option>\n";
     </div> <!-- content -->
     
     <div id="controls">
-      <input type="button" name="back" value="" class="icon back" onclick="document.location.href='<?php echo $_SESSION['referer'] ?>'" />
+      <input type="button" name="back" value="" class="icon back" onclick="document.location.href='<?php echo $_SESSION['referer']; ?>'" />
     </div>
     
     <div id="stuff">
         <div id="info">
         
             
-<?php if ($allowHttpTransfer) { ?>
-            <p>
-            This is a list of the images in your destination directory.
-            You can use SHIFT- and CTRL-click to select multiple files. 
-            </p><p>
-            Use the down-arrow to
-		<img src="images/add_help.png" alt="Add" width="22" height="22" />    
-		    start the downloading.
-            That will
-            create first a compressed archive including the selected files.
-            </p><p>
-            Please mind that large files may take a <b>long
-            time </b>to be packaged.
-            </p>
-            <?php } ?>
+<?php if ($allowHttpTransfer) { 
+    echo $instructions;
+            } ?>
             
         </div>
         

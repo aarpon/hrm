@@ -409,12 +409,14 @@ Class JobDescription {
     return $names;
   } 
 
-  function putMultiChannelScriptOn($script, $checkMirror = false) {
+  function putMultiChannelScriptOn($script, $isOriginal = false) {
+    global $useThumbnails;
     $parameterSetting = $this->parameterSetting;
     $numberOfChannels = $parameterSetting->numberOfChannels();
     $files = $this->files();
     $newScript = $script;
-    $newScript = $newScript . $this->loadImageString( $checkMirror );
+    $loadOriginalFile =  $this->loadImageString( $isOriginal );
+    $newScript = $newScript . $loadOriginalFile;
     $newScript = $newScript . '$imageName split -mode all' . "\n";
     $newScript = $newScript . '$imageName del' . "\n"; 
     $fileBase = $this->sourceImageShortName();
@@ -483,6 +485,37 @@ Class JobDescription {
           default:
             $newScript = $newScript . "c save \"$dstfilename.$fileFormat\" -type $type\n";
         }
+
+        if ( $useThumbnails ) {
+            $newScript = $newScript . 
+'catch { 
+    # Previews: Huygens Core 3.3.1 required for this to work.
+    set path "'.$dstfilename.".".$fileFormat.'"
+    set ddir [file dirname $path]
+    set fn [file tail $path]
+    ::WebTools::savePreview c $ddir $fn {preview 400}
+    '."\n";
+             // Save also a preview of the original image, adopting the same
+             // parameters as in the result.
+            $newScript = $newScript . "    ".
+            'set orig [eval img open \"$originalFile\" $originalOptions]'."\n";
+
+            $newScript = $newScript . "    ". 'c adopt -> $orig' . "\n"; 
+
+            $newScript = $newScript . '
+    set path "'.$dstfilename.".".$fileFormat.".original".'"
+    set ddir [file dirname $path]
+    set fn [file tail $path]
+    ::WebTools::savePreview $orig $ddir $fn {preview 400}
+    # Save preview of the original also in source directory
+    set ddir [file dirname $hrmFileName]
+    set fn [file tail $hrmFileName]
+    ::WebTools::savePreview $orig $ddir $fn {preview}'.
+    "\n" ;
+            $newScript = $newScript . '$orig del' . "\n"; 
+            $newScript = $newScript . '}'."\n";
+
+        }
         // Delete temporaty files
         foreach ($dst_files as $dst_file) {
           if ( $type == "ics" ) {
@@ -494,7 +527,8 @@ Class JobDescription {
           }
         }
         // Save processing history
-        // $result = $result . "\n" . 'c history -format txt -save "' . $imageFileName. '_history.txt"' . "\n";
+        // j-)
+        $newScript = $newScript . "\n" . 'catch { c history -format txt -save "' . $imageFileName. '_history.txt" }' . "\n";
     }
     $this->files = $files;
     return $newScript;
@@ -675,20 +709,20 @@ Class JobDescription {
     return $result;
   } 
 
-  function putScriptOn($script, $checkMirror = false ) {
+  function putScriptOn($script, $isOriginal = false ) {
     global $resultImagesOwnedByUser;
     global $huygens_group;
     
     $newScript = $script;
-    $newScript = $newScript . "if {![img exists a]} {img create a --logEnable} else { a keepLog }\n";
-    $newScript = $newScript . "if {![img exists b]} {img create b --logEnable} else { b keepLog }\n";
-    $newScript = $newScript . "if {![img exists c]} {img create c --logEnable} else { c keepLog }\n";
+    $newScript = $newScript . "if {![img exists a]} {img create a -logEnable} else { a keepLog }\n";
+    $newScript = $newScript . "if {![img exists b]} {img create b -logEnable} else { b keepLog }\n";
+    $newScript = $newScript . "if {![img exists c]} {img create c -logEnable} else { c keepLog }\n";
     $newScript = $newScript . "if {![img exists psf]} {img create psf}\n";
     if ($this->mustReplaceSourceName()) {     // if it is not 3D && is not time serie && is Tif && ends with number     
       $newScript = $newScript . "exec cp " . '"' . $this->sourceImageName() . '" "' . $this->newNameForSingleTif() . '"' . "\n";
     }  
     // loading and converting
-    $newScript = $newScript . $this->loadImageString( $checkMirror );
+    $newScript = $newScript . $this->loadImageString( $isOriginal );
     $parameterSetting = $this->parameterSetting;
     // This test is PARTIALLY overlapping with the test a few lines below
     // TODO Refactor
@@ -764,7 +798,7 @@ Class JobDescription {
       $user = $this->owner();
       $newScript = $newScript .   "catch { exec chown -Rf " . $user->name() . ':' . $huygens_group . ' "' . $this->destinationFolderTop() . '"' . " }\n"; 
     } 
-    $newScript = $newScript . $this->saveImageString();
+    $newScript = $newScript . $this->saveImageString( $isOriginal );
     if ($taskSetting->isStepCombinedProcessing()) {
       $newScript = $newScript . $this->passTwoScript();
     }
@@ -785,7 +819,8 @@ Class JobDescription {
     return $script;
   } 
 
-  function loadImageString( $checkForMirror = false ) {
+  function loadImageString( $isOriginal = false ) {
+    global $useThumbnail;
     if ($this->mustReplaceSourceName()) { 
       $imageFileName = $this->newNameForSingleTif();
     } else { 
@@ -805,34 +840,44 @@ Class JobDescription {
       // Olympus FluoView, or single XY plane: always
       $options .= " -series off";
     }
-    if (preg_match("/^(.*) \((.*)\)/", $imageFileName, $match)) {
+    if ( preg_match("/^(.*\.lif)\s\((.*)\)/i", $imageFileName, $match) ) {
         // If a (string) comes after the file name, it is interpreted as a sub
         // image. Currently this is for LIF files only.
-        $imageFileName = $match[1];
+        $huygensFileName = $match[1];
         $options .= " -subImage \"$match[2]\"";
+    } else {
+        $huygensFileName = $imageFileName;
     }
     // Turn on history
     $options .= " -logEnable";
 
     // If the user specified that the coverslip is 'farthest' we need to mirror
-    // the image. But this must be done only when the original dataset is loaded, not
-    // when the splitted channels are loaded. Therefore, by default this function does
-    // check for mirroring only if its input parameter $checkForMirror is
-    // true, and this occurs only when this function is called from Job::createScript( ).
+    // the image. But this must be done only when the original dataset is
+    // loaded, not when the splitted channels are loaded. Therefore, by default
+    // this function does check for mirroring only if its input parameter
+    // $isOriginal is true, and this occurs only when this function is called
+    // from Job::createScript( ).
+    // We use the same hack to keep the name of the original image, in order
+    // to generate its preview later.
     $mirror = "";
-    if ( $checkForMirror == true ) {
+    $thumbn = "";
+    if ( $isOriginal == true ) {
       $coverslipParameter=$this->parameterSetting->parameter('CoverslipRelativePosition');
       $coverslipParameterValue=$coverslipParameter->value();
       if ( $coverslipParameterValue == 'farthest' ) {
         $mirror = 'catch { $imageName mir z }' . "\n";
       }
+      $thumbn = "\nset originalFile \"$huygensFileName\"".
+                "\nset hrmFileName \"$imageFileName\"".
+                "\nset originalOptions [list $options]\n";
     }
-    return 'set imageName [img open "' . $imageFileName . '"' . $options . ']' . "\n" . '$imageName lundo -off' . "\n" . $mirror;
+    return 'set imageName [img open "' . $huygensFileName . '"' . $options . ']' . "\n" . '$imageName lundo -off' . "\n" . $mirror. $thumbn;
   }
 
   // TODO refactor this part
-  function saveImageString() {
+  function saveImageString( $isResult = false ) {
     global $resultImagesOwnedByUser;
+    global $useThumbnails;
     $result = '';
     $setting = $this->taskSetting;
     $parameterSetting = $this->parameterSetting;
@@ -847,8 +892,46 @@ Class JobDescription {
 //    	$imageFileName = $imageFileName . '.tif';
 //    }
     $result = $result . "c save " . '"' . $imageFileName . "." . $extension .'"' . " -type $type";
+
     if ($type == 'tiff' || $type == 'tiff16') {
         $result = $result . " -tiffMultiDir";
+    }
+
+    if ( $isResult ) {
+        // Save preview.
+        if ( $useThumbnails ) {
+            $newScript = "\n".
+'catch { 
+    # Previews: Huygens Core 3.3.1 required for this to work.
+    set path "'.$imageFileName.".".$extension.'"
+    set ddir [file dirname $path]
+    set fn [file tail $path]
+    ::WebTools::savePreview c $ddir $fn {preview 400}
+    '."\n";
+             // Save also a preview of the original image, adopting the same
+             // parameters as in the result.
+            $newScript = $newScript . "    ".
+            'set orig [eval img open \"$originalFile\" $originalOptions]'."\n";
+
+            $newScript = $newScript . "    ". 'c adopt -> $orig' . "\n"; 
+
+            $newScript = $newScript . '
+    set path "'.$imageFileName.".".$extension.".original".'"
+    set ddir [file dirname $path]
+    set fn [file tail $path]
+    ::WebTools::savePreview $orig $ddir $fn {preview 400}
+    # Save preview of the original also in source directory
+    set ddir [file dirname $hrmFileName]
+    set fn [file tail $hrmFileName]
+    ::WebTools::savePreview $orig $ddir $fn {preview}'.
+    "\n" ;
+            $newScript = $newScript . '$orig del' . "\n"; 
+            $newScript = $newScript . '}'."\n";
+            $result = $result . $newScript;
+
+        }
+
+
     }
     // Save processing history
     // $result = $result . "\n" . 'c history -format txt -save "' . $imageFileName. '_history.txt"';

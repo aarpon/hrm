@@ -190,9 +190,23 @@ function get_rand_id($length) {
   return $rand_id;
 }
 
+//!---------------------------------------------------------
+// @function    escapeJavaScript
+// @desc        Escapes html strings generated in PHP so that can be used as
+//              arguments in JavaScript functions.
+//              parameters. This local hucore doesn't need to have a license!
+// @param       A html string.
+// @return      Conveniently formated string.
+//!---------------------------------------------------------
+function escapeJavaScript ($str) {
+      $str = str_replace("'", "\'", $str);
+      $str = str_replace('"', "'+String.fromCharCode(34)+'", $str);
+      return $str;
+}
+
 
 //!---------------------------------------------------------
-// @function    huCoreTool  
+// @function    huCoreTools  
 // @desc        Calls a local hucore (that must be in the $PATH) to
 //              execute some freeware image processing tools, or report
 //              parameters. This local hucore doesn't need to have a license!

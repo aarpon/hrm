@@ -581,6 +581,13 @@ input.invalid {
     background-color: orangered;
 }
 
+input.noPreview {
+    width: 200px;
+    height: 200px;
+    background: url(../images/no_preview.jpg) no-repeat center;
+}
+
+
 span.multichannel {
     margin-left: -8px;
 }

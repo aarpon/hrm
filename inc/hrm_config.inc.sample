@@ -153,6 +153,21 @@ $resultImagesOwnedByUser = False;
 // if true, result images will have the job id appended to their names
 $resultImagesRenamed = True;
 
+// Thumbnails require Huygens Core 3.3.1 or higher.
+// To patch Huygens 3.3.0p3 to be able to use it, see
+// http://support.svi.nl/wiki/HH_HRMpreviews
+
+// If true, allows generates thumbnails and previews for the originals and the results during the deconvolution (i.e. in the computation servers).
+$useThumbnails = true;
+
+// If true, allows on-demand generation of a preview of the original images in
+// this web server prior to the deconvolution. For this to work the variable
+// $local_huygens_core must be set correctly above. Notice that not all file
+// formats are readable in a freeware Huygens Core and for full functionality
+// you may need a license string. Otherwise just let the original thumbnails
+// be generated during the deconvolution itself with the previous option.
+$genThumbnails = true;
+
 // internal links
 $internal_link["url"] = "<link> followed by text";
 
