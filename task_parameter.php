@@ -311,6 +311,7 @@ include("header.inc.php");
 
 $parameter = $_SESSION['task_setting']->parameter("DeconvolutionAlgorithm");
 $possibleValues = $parameter->possibleValues();
+$selectedValue  = $parameter->value();
 
 // This restores the default behavior in case the entry "DeconvolutionAlgorithm"
 // is not in the database
@@ -329,8 +330,13 @@ foreach($possibleValues as $possibleValue) {
   if ( $translation == false )
     $translation = "cmle";
 
+  if ( $possibleValue == $selectedValue ) {
+      $option = "selected=\"selected\"";
+  } else {
+      $option = "";
+  }
 ?>
-                    <option value="<?php echo $possibleValue?>"><?php echo $translation?></option>                  
+                    <option <?php echo $option?> value="<?php echo $possibleValue?>"><?php echo $translation?></option>
 <?php
 }
 ?>
