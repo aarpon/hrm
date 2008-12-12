@@ -709,16 +709,23 @@ Class Fileserver {
       echo "<td><img src=\"file_management.php?getThumbnail=$rthumb_0&".
               "dir=dest\"></td>";
 
-      echo "</tr><tr>\n";
+      echo "</tr>\n";
 
       $othumb_1 = urlencode($file.".original.".$size."_xz.jpg");
       $rthumb_1 = urlencode($file.".".$size."_xz.jpg");
-      echo "<td><img src=\"file_management.php?getThumbnail=$othumb_1&".
+      $path = $pdest."/".$rthumb_1;
+      if (file_exists($path)) {
+          # is a 3D image, so it has a lateral view.
+          echo "<tr>\n";
+          echo "<td><img src=\"file_management.php?getThumbnail=$othumb_1&".
               "dir=dest\"></td>";
-      echo "<td><img src=\"file_management.php?getThumbnail=$rthumb_1&".
+          echo "<td><img src=\"file_management.php?getThumbnail=$rthumb_1&".
               "dir=dest\"></td>";
 
-      echo "</tr></table>\n";
+          echo "</tr>";
+      }
+      
+      echo "</table>\n";
 
       echo "<div id=\"info\">";
       if ( $allowHttpTransfer ) {

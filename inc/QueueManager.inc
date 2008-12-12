@@ -802,7 +802,8 @@ Class QueueManager {
 		$text = $text . "You will find the resulting image ($destFileName) in your destination folder.\n";
                 if ( $useThumbnails ) {
                     $link = $hrm_url.
-                           "/file_management.php?compareResult=$destFileName";
+                           "/file_management.php?compareResult=".
+                           urlencode($destFileName);
                     $text .= "\nYou can find a preview of the result at ".$link.
                              "\n\n";
                 }
