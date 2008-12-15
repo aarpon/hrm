@@ -92,7 +92,7 @@ include $adodb;
 
 
 // Database last revision
-$LAST_REVISION = 3;
+$LAST_REVISION = 4;
 
 
 // For test purposes
@@ -1172,8 +1172,6 @@ if ($current_revision < $n) {
         }
     }
                 
-    
-    
     if(!update_dbrevision($n)) 
         return;
     
@@ -1181,6 +1179,62 @@ if ($current_revision < $n) {
     $msg = "Your HRM database has been updated to revision " . $current_revision . ".";
     write_message($msg);
     write_to_log($msg);
+}
+
+
+// -----------------------------------------------------------------------------
+// Update to revision 4
+// Description: support for zvi file format in HRM
+// -----------------------------------------------------------------------------
+$n = 4;
+if ($current_revision < $n) {
+    $tabname = "file_extension";
+    $record = array();
+    $record["file_format"] = "zvi";
+    $record["extension"] = "zvi";
+    $insertSQL = $db->GetInsertSQL($tabname, $record);
+    if(!$db->Execute($insertSQL)) {
+        $msg = "An error occured while updateing the database to revision " . $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+    
+    $tabname = "file_format";
+    $record = array();
+    $record["name"] = "zvi";
+    $record["isFixedGeometry"] = "f";
+    $record["isSingleChannel"] = "f";
+    $record["isVariableChannel"] = "t";
+    $insertSQL = $db->GetInsertSQL($tabname, $record);
+    if(!$db->Execute($insertSQL)) {
+        $msg = "An error occured while updateing the database to revision " . $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+    
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "ImageFileFormat";
+    $record["value"] = "zvi";
+    $record["translation"] = "Zeiss Vision ZVI (*.zvi)";
+    $record["isDefault"] = "f";
+    $insertSQL = $db->GetInsertSQL($tabname, $record);
+    if(!$db->Execute($insertSQL)) {
+        $msg = "An error occured while updateing the database to revision " . $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+    
+    if(!update_dbrevision($n)) 
+        return;
+    
+    $current_revision = $n;
+    $msg = "Your HRM database has been updated to revision " . $current_revision . ".";
+    write_message($msg);
+    write_to_log($msg);  
 }
 
 $msg = "\nThe current revision of your HRM database is " . $current_revision . ".";
