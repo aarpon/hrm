@@ -1106,9 +1106,16 @@ if ($current_revision < $n) {
 $n = 3;
 if ($current_revision < $n) {
     $tabname = "possible_values";
+    $rs = $db->Execute("DELETE FROM " . $tabname . " WHERE parameter = 'CoverslipRelativePosition'");
+    if(!$rs) {
+        $msg = "An error occured while updateing the database to revision " . $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return; 
+    }
     $record = array();
     $record["parameter"] = "CoverslipRelativePosition";
-    $record["value"] = "bottom";
+    $record["value"] = "closest";
     $record["translation"] = "Plane 0 is closest to the coverslip";
     $record["isDefault"] = "T";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
@@ -1119,7 +1126,7 @@ if ($current_revision < $n) {
         return;
     }
     
-    $record["value"] = "top";
+    $record["value"] = "farthest";
     $record["translation"] = "Plane 0 is farthest from the coverslip";
     $record["isDefault"] = "F";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
@@ -1139,6 +1146,33 @@ if ($current_revision < $n) {
         write_to_error($msg);
         return;
     }
+    
+    // Check if the value are correct in parameter (correction respect to the previous version top/bottom/ignore)
+    $rs = $db->Execute("SELECT * FROM parameter WHERE name = 'CoverslipRelativePosition'");
+    if($rs) {
+        while ($row = $rs->FetchRow()) {
+            if(strcmp($row[2],'CoverslipRelativePosition') == 0) {
+                if(strcmp($row[3],'top') == 0)
+                    $row[3] = 'closest';
+                elseif(strcmp($row[3],'bottom') == 0)
+                    $row[3] = 'farthest';
+                    
+                $fields_set = array('owner','setting','name','value');
+                for($i = 0; $i < count($fields_set); $i++) {
+                    $temp[$fields_set[$i]] = $row[$i];
+                }
+                $primary_key = array('owner', 'setting', 'name');
+                if(!$ret = $db->Replace('parameter',$temp,$primary_key,$autoquote=true)) {
+                    $msg = error_message('parameter');
+                    write_message($msg);
+                    write_to_error($msg);    
+                    return False;
+                }
+            }
+        }
+    }
+                
+    
     
     if(!update_dbrevision($n)) 
         return;
