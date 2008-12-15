@@ -766,7 +766,7 @@ if ($current_revision == 0) {
     $flds = "
         job C(30) DEFAULT 0 PRIMARY,
         owner C(30) DEFAULT 0,
-        file C(255) DEFAULT 0
+        file C(255) DEFAULT 0 PRIMARY
     ";
     if (!create_table($tabname, $flds))     
         return;
