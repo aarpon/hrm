@@ -152,6 +152,21 @@ Class Setting {
 	}
 
 	//!---------------------------------------------------------
+	// @function    Setting::checkSampleMedium
+	// @desc        Check if the sample medium is defined
+	// @return      Bool
+	//!---------------------------------------------------------  
+	function checkSampleMedium() {
+		$parameter = $this->parameter('SampleMedium');
+		$value = $parameter->value( );
+		if ( empty( $value ) == true ) {
+			$this->message = "Please choose one of the preset sample media or specify a refractive index yourself!";
+			return False;
+		}
+		return True;
+	}
+
+	//!---------------------------------------------------------
 	// @function    Setting::checkNumericalValue
 	// @desc        Check if a numerical parameter has a valid value
 	// @param       name  String  The name of the parameter
@@ -548,7 +563,9 @@ Class ParameterSetting extends Setting {
 		if (!$this->checkChoiceValue('ObjectiveType', 'objective type')) {
 			return False;
 		}
-		//if (!$this->checkNumericalValue('CMount', 'cmount')) {
+		if (!$this->checkSampleMedium()) {
+			return False;
+		}		//if (!$this->checkNumericalValue('CMount', 'cmount')) {
 		//	return False;
 		//}
 		//if (!$this->checkNumericalValue('TubeFactor', 'tube factor')) {

@@ -340,7 +340,9 @@ $value = "";
 $flag = "";
 if (!$default) {
   $value = $parameter->value();
-  $flag = " checked=\"checked\"";
+  if ( $value != "" ) {
+    $flag = " checked=\"checked\"";
+  }
 }
 
 ?>
