@@ -116,28 +116,36 @@ if (isset($_POST["PointSpreadFunction"])) {
 }
 
 if (count($_POST)>0) {
-        if (!isset($_POST["ImageGeometry"]) || $_POST["ImageGeometry"] == "") {
-          $parameter = $_SESSION['setting']->parameter("ImageGeometry");
-          $parameter->setValue("multi_XYZ");
-          $_SESSION['setting']->set($parameter);
-        }
-       if (!isset($_POST["PointSpreadFunction"])) {
-            $ok = False;
-            $message = "Please indicate whether you would like to calculate a theoretical PSF or use an existing measured one";
-       }
-       else {
-            $ok = $_SESSION['setting']->checkImageParameter();
-            $message = $_SESSION['setting']->message();
-       }
-       if ($ok) {
-            // manage measured PSF
-            if ($_POST["PointSpreadFunction"] == "theoretical") {
-              header("Location: " . "microscope_parameter.php"); exit();
-            }
-            else if ($_POST["PointSpreadFunction"] == "measured") {
-              header("Location: " . "select_psf.php"); exit();
-            }
-       }
+  if (!isset($_POST["ImageGeometry"]) || $_POST["ImageGeometry"] == "") {
+    $parameter = $_SESSION['setting']->parameter("ImageGeometry");
+    $parameter->setValue("multi_XYZ");
+    $_SESSION['setting']->set($parameter);
+  }
+  if (!isset($_POST["ImageFileFormat"])) {
+    $ok = False;
+    $message = "<p class=\"warning\">Please choose a file format!</p>";
+  }
+  elseif (!isset($_POST["NumberOfChannels"])) {
+    $ok = False;
+    $message = "<p class=\"warning\">Please specify the number of channels!</p>";
+  }
+  elseif (!isset($_POST["PointSpreadFunction"])) {
+    $ok = False;
+    $message = "<p class=\"warning\">Please indicate whether you would like to calculate a theoretical PSF or use an existing measured one</p>";
+  } else {
+    $ok = $_SESSION['setting']->checkImageParameter();
+    $message = $_SESSION['setting']->message();
+  }
+
+  if ($ok) {
+    // manage measured PSF
+    if ($_POST["PointSpreadFunction"] == "theoretical") {
+      header("Location: " . "microscope_parameter.php"); exit();
+    }
+    else if ($_POST["PointSpreadFunction"] == "measured") {
+      header("Location: " . "select_psf.php"); exit();
+    }
+  }
 }
 // TODO refactor until here
 
