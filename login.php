@@ -63,8 +63,18 @@ global $use_accounting_system;
 
 $message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
 
-/* Reset all! */
+
 session_start();
+if (isset($_SESSION['request'])) {
+    $req = $_SESSION['request'];
+} else {
+    $req = false;
+}
+if (isset($_POST['request'])) {
+    $req = $_POST['request'];
+}
+
+/* Reset all! */
 session_unset();
 session_destroy();
 
@@ -119,7 +129,10 @@ if (isset($_POST['password'])) {
                         $_SESSION['group'] = $groups[0]->id();
                 }
             }
-            if ($_SESSION['user']->isAdmin()) {
+            if ( $req != false ) {
+                header("Location: " . $req); 
+                exit();
+            } else if ($_SESSION['user']->isAdmin()) {
                 if ($enableUserAdmin) {
                     header("Location: " . "user_management.php"); exit();
                 }
@@ -127,7 +140,8 @@ if (isset($_POST['password'])) {
                     header("Location: " . "select_parameter_settings.php"); exit();
                 }
             } else {
-                header("Location: " . "select_parameter_settings.php"); exit();
+                header("Location: " . "select_parameter_settings.php"); 
+                exit();
             }
   	}
   } else {
@@ -209,6 +223,7 @@ include("header.inc.php");
                     <label for="password">Password:</label>
                     <input id="password" name="password" type="password" class="textfield" tabindex="2" />
                     <br />
+                    <input type="hidden" name="request" value="<?php echo $req?>">
                     <input type="submit" class="button" value="login" />
                 </fieldset>
             </form>

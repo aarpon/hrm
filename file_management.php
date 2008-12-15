@@ -64,6 +64,8 @@ if (isset($_GET['exited'])) {
 }
 
 if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
+  $req = $_SERVER['REQUEST_URI'];
+  $_SESSION['request'] = $req;
   header("Location: " . "login.php"); exit();
 }
 
@@ -135,8 +137,14 @@ if (isset($_GET['compareResult'])) {
     } else {
         $size = "400";
     }
+    if (isset($_GET['op'])) {
+        $op = $_GET['op'];
+    } else {
+        $op = "home";
+    }
+
     $_SESSION['fileserver']->compareResult( urldecode($_GET['compareResult']),
-                             $size);
+                             $size, $op);
     exit;
 }
 

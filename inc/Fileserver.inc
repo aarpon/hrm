@@ -674,7 +674,7 @@ Class Fileserver {
   // @return      
   //!---------------------------------------------------------
 
-  function compareResult( $file, $size = "400") {
+  function compareResult( $file, $size = "400", $op = "close" ) {
       global $allowHttpTransfer;
 
       $excludeTitle = true;
@@ -734,7 +734,18 @@ Class Fileserver {
           echo "<br><small>$file</small>\n";
       }
       echo "</div>";
-      echo "<br><br><a href=\"#\" onClick=\"window.close()\">Close</a>\n";
+      switch ($op) {
+          case "close":
+             echo "<br><br><a href=\"#\" onClick=\"window.close()\">".
+                  "Close</a>\n";
+             break;     
+          case "home":
+              echo "<input type=\"button\" name=\"restart\"   value=\"\" ".
+                   "onclick=\"document.location.href=".
+                   "'select_parameter_settings.php'\" ".
+                   "class=\"icon restart\" />";
+             break;
+      }
       # echo "<script type=\"text/javascript\"> window.close(); <script>\n";
       echo "</body></html>";
       ob_flush();

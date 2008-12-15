@@ -138,7 +138,7 @@ function imgPrev(file, mode, gen, compare, index, dir, referer, data) {
     }
     if ( compare > 0 ) {
            link = "file_management.php?compareResult=" + escape(file)
-                  + "&size=" + compare;
+                  + "&size=" + compare + "&op=close";
 
            html = '<br><a '
                   +    'onClick="'
