@@ -180,6 +180,18 @@ if ($allowHttpTransfer) {
     $message = "            <p class=\"warning\">HTTP transfer not allowed&nbsp;</p>\n";
 }
 
+if (isset($_POST['delete'])) {
+    if (isset($_POST['userfiles']) && is_array($_POST['userfiles'])) {
+        $message = $_SESSION['fileserver']->deleteFiles($_POST['userfiles']);
+        $_SESSION['fileserver']->updateAvailableDestFiles();
+    }
+} else if (isset($_GET['delete']) ) {
+    $deleteArr = array ( $_GET['delete'] );
+    $message = $_SESSION['fileserver']->deleteFiles($deleteArr);
+    exit;
+}
+
+
 $script = "common.js";
 
 include("header.inc.php");
@@ -244,12 +256,12 @@ else echo "                        <option>&nbsp;</option>\n";
                 </div>
             </fieldset>
             
-<?php if ($allowHttpTransfer) { ?>
     <div id="selection">
-                <input name="download" type="submit" value="" class="icon down" />
+    <?php if ($allowHttpTransfer) { ?>
+                <img src="images/download.png" onClick="downloadImages()" />
+                <?php } ?>
+            <img src="images/delete.png" onClick="deleteImages()" />
             </div>
-            
-            <?php } ?>
            
             <div id="actions" class="imageselection">
                 <input name="update" type="submit" value="" class="icon update" />

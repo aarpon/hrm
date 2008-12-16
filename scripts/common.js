@@ -54,6 +54,29 @@ function setPrevGen(index, mode) {
     window.generated[index] = mode;
 }
 
+function deleteImages() {
+
+    control = document.getElementById('selection').innerHTML;
+    changeDiv('selection', 'Selected files will be deleted, please confirm:' 
+       + '<br><input name="delete" type="submit" value="" class="icon delete"/>'
+       + ' <img src="images/cancel.png" onClick="cancelSelection()">');
+
+}
+
+function downloadImages() {
+
+    control = document.getElementById('selection').innerHTML;
+    changeDiv('selection', 'Selected files will be packed for downloading, '
+       +  'please confirm:' 
+       + '<br><input name="download" type="submit" value="" '
+       + 'class="icon download"/>'
+       + ' <img src="images/cancel.png" onClick="cancelSelection()">');
+
+}
+
+function cancelSelection() {
+    changeDiv('selection', control);
+}
 
 function imgPrev(infile, mode, gen, compare, index, dir, referer, data) {
 

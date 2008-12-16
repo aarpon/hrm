@@ -331,6 +331,33 @@ Class Fileserver {
           " $error_msg</p>";
   }
 
+  //!---------------------------------------------------------
+  // @function    Fileserver::deleteFiles
+  // @desc        Deletes a list of files and all dependent sub-files (like
+  //              thumbnails and so) from a user directory.
+  // @param       files  Array  List of files to be added.
+  // @param       dir  'src' or 'dest'
+  // @return      Void
+  //!---------------------------------------------------------  
+  function deleteFiles($files, $dir = "dest" ) { 
+
+      if ( $dir == "src" ) {
+          $pdir =  $this->sourceFolder();
+      } else {
+          $pdir =  $this->destinationFolder();
+      }
+
+      foreach ($files as $file) {
+          $path = preg_replace("/(.*)\.(.{3,4})/","\\1.*",$file);
+          $allFiles = glob($pdir."/".$path);
+          foreach ($allFiles as $f) {
+             unlink($f);
+          }
+      }
+  }
+
+
+
 
   //!---------------------------------------------------------
   // @function    Fileserver::imageExtensions

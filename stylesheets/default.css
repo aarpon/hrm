@@ -250,6 +250,10 @@ input.update {
     background: url(../images/update.png) no-repeat center;
 }
 
+input.download {
+    background: url(../images/download.png) no-repeat center;
+}
+
 #actions label {
     display: block;
     margin-top: 20px;
