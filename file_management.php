@@ -176,8 +176,6 @@ if ($allowHttpTransfer) {
            $message = $_SESSION['fileserver']->downloadResults($downloadArr);
            exit;
     }
-} else {
-    $message = "            <p class=\"warning\">HTTP transfer not allowed&nbsp;</p>\n";
 }
 
 if (isset($_POST['delete'])) {
@@ -221,10 +219,7 @@ $instructions =
             This is a list of the images in your destination directory.
             You can use SHIFT- and CTRL-click to select multiple files. 
             </p><p>
-            Use the down-arrow to
-            <img src=\"images/add_help.png\" alt=\"Add\
-               width=\"22\" height=\"22\" />
-            start the downloading.
+            Use the disk icon to start the downloading.
             That will
             create first a compressed archive including the selected files.
             </p><p>

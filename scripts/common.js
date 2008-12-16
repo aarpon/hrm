@@ -66,8 +66,8 @@ function deleteImages() {
 function downloadImages() {
 
     control = document.getElementById('selection').innerHTML;
-    changeDiv('selection', 'Selected files will be packed for downloading, '
-       +  'please confirm:' 
+    changeDiv('selection', 'Selected files will be packed for downloading '
+       +  '(that may take a while). Please confirm and wait:' 
        + '<br><input name="download" type="submit" value="" '
        + 'class="icon download"/>'
        + ' <img src="images/cancel.png" onClick="cancelSelection()">');

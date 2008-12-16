@@ -772,8 +772,6 @@ Class Fileserver {
 
       if ( $allowHttpTransfer ) {
           echo "<br><small><a href=\"file_management.php?download=".rawurlencode($file)."\" onClick=\"changeDiv('info','Packaging files, please wait')\" >Download restored files</a></small>\n";
-      } else {
-          echo "<br><small>$file</small>\n";
       }
 
       switch ($op) {
