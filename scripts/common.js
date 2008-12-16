@@ -55,8 +55,9 @@ function setPrevGen(index, mode) {
 }
 
 
-function imgPrev(file, mode, gen, compare, index, dir, referer, data) {
+function imgPrev(infile, mode, gen, compare, index, dir, referer, data) {
 
+    file = unescape(infile);
 
     if (mode == 0 && gen == 1) {
         try
@@ -84,7 +85,8 @@ function imgPrev(file, mode, gen, compare, index, dir, referer, data) {
            } else {
 
            // Preview doesn't exist, but you can create it now.
-           link = "file_management.php?genPreview=" + escape(file) + "&src=" + dir + "&data=" + data + '&index=' + index;
+           link = "file_management.php?genPreview=" + infile + "&src=" + dir + "&data=" + data + '&index=' + index;
+
            // html = "<a href=\"" + referer + "\" onClick=\"changeDiv('info','<center><img src=\"images/spin.gif\"><p>Generating preview in another window.</p><p><small>Please wait...</small></p></center>'); openTool('" + link + "');\"><img src=\"images/no_preview.jpg\"><br>Generate preview now</a>";
 
            onClick =  '<center><img src=\\\'images/spin.gif\\\'><br>'
@@ -106,14 +108,14 @@ function imgPrev(file, mode, gen, compare, index, dir, referer, data) {
         case 2:
            // 2D Preview exists
            html = '<img src="file_management.php?getThumbnail='
-                  + escape(file) + '.preview_xy.jpg&dir=' + dir + '">';
+                  + infile + '.preview_xy.jpg&dir=' + dir + '">';
            break;
         case 3:
            // 3D Preview exists
            html = '<img src="file_management.php?getThumbnail='
-                  + escape(file) + '.preview_xy.jpg&dir=' + dir + '">';
+                  + infile + '.preview_xy.jpg&dir=' + dir + '">';
            html = html + '<br><img src="file_management.php?getThumbnail='
-                  + escape(file) + '.preview_xz.jpg&dir=' + dir + '">';
+                  + infile + '.preview_xz.jpg&dir=' + dir + '">';
            break;
 
     }
@@ -121,7 +123,7 @@ function imgPrev(file, mode, gen, compare, index, dir, referer, data) {
     if ( gen == 1 && mode > 1 && dir == "src" ) {
 
            // Preview exists, and you can re-create it now.
-           link = "file_management.php?genPreview=" + escape(file) + "&src=" + dir + "&data=" + data + '&index=' + index;
+           link = "file_management.php?genPreview=" + infile + "&src=" + dir + "&data=" + data + '&index=' + index;
 
            onClick =  '<center><img src=\\\'images/spin.gif\\\'><br>'
                 + '<small>Generating preview in another window.<br>'
@@ -137,7 +139,7 @@ function imgPrev(file, mode, gen, compare, index, dir, referer, data) {
                   + '</a>';
     }
     if ( compare > 0 ) {
-           link = "file_management.php?compareResult=" + escape(file)
+           link = "file_management.php?compareResult=" + infile
                   + "&size=" + compare + "&op=close";
 
            html = '<br><a '

@@ -93,10 +93,22 @@ if (isset($_GET['getThumbnail'])) {
     } else {
         $dir = "dest";
     }
-    $_SESSION['fileserver']->getThumbnail( urldecode($_GET['getThumbnail']),
+    $_SESSION['fileserver']->getThumbnail( rawurldecode($_GET['getThumbnail']),
          $dir );
     exit;
 }
+
+if (isset($_GET['getMovie'])) {
+    if (isset($_GET['dir'])) {
+        $dir = $_GET['dir'];
+    } else {
+        $dir = "dest";
+    }
+    $_SESSION['fileserver']->getMovie( rawurldecode($_GET['getMovie']),
+         $dir );
+    exit;
+}
+
 
 if (isset($_GET['genPreview'])) {
     if (isset($_GET['size'])) {
@@ -143,7 +155,7 @@ if (isset($_GET['compareResult'])) {
         $op = "home";
     }
 
-    $_SESSION['fileserver']->compareResult( urldecode($_GET['compareResult']),
+    $_SESSION['fileserver']->compareResult(rawurldecode($_GET['compareResult']),
                              $size, $op);
     exit;
 }

@@ -518,9 +518,9 @@ Class Fileserver {
           if ($compare > 0) { $compare = 400; }
 
           return "                        <option ".
-          " onClick=\"imgPrev('$file', $mode, $genThumbnails, $compare, 
-                             $index, '$dir', ".
-                            "'$referer', $data)\">$filename</option>\n";
+          " onClick=\"imgPrev('".rawurlencode($file)."', $mode, ".
+          "$genThumbnails, $compare, $index, '$dir', ".
+          "'$referer', $data)\">$filename</option>\n";
 
       } else {
           return "                        <option>$file</option>\n";
@@ -574,7 +574,7 @@ Class Fileserver {
       # The thumbnail is saved along with the image, and it has a suffix
       # indicating the thumbnail type plus the jpg extension.
       $path = $pdir."/".$image.".".$type.".jpg";
-      $thumb = urlencode($image.".".$type.".jpg");
+      $thumb = rawurlencode($image.".".$type.".jpg");
       if (file_exists($path)) {
           $ret =  "<img src=\"file_management.php?getThumbnail=$thumb&".
               "dir=$dir\">";
@@ -608,7 +608,6 @@ Class Fileserver {
       # The thumbnail is saved along with the image, and it has a suffix
       # indicating the thumbnail type plus the jpg extension.
       $path = $pdir."/".$image.".".$type."_xy.jpg";
-      echo $path;
       $ret = 0;
       if (file_exists($path)) {
           // 2D preview
@@ -696,12 +695,12 @@ Class Fileserver {
 
       echo "<td>Original</td><td>Restored</td></tr><tr>\n";
 
-      $othumb_0 = urlencode($file.".original.".$size."_xy.jpg");
-      $rthumb_0 = urlencode($file.".".$size."_xy.jpg");
+      $othumb_0 = rawurlencode($file.".original.".$size."_xy.jpg");
+      $rthumb_0 = rawurlencode($file.".".$size."_xy.jpg");
 
       # YZ slices not shown by now, but here they are:
-      $othumb_2 = urlencode($file.".original.".$size."_xy.jpg");
-      $rthumb_2 = urlencode($file.".".$size."_xy.jpg");
+      $othumb_2 = rawurlencode($file.".original.".$size."_xy.jpg");
+      $rthumb_2 = rawurlencode($file.".".$size."_xy.jpg");
 
       echo "<td><img src=\"file_management.php?getThumbnail=$othumb_0&".
               "dir=dest\"></td>";
@@ -711,9 +710,11 @@ Class Fileserver {
 
       echo "</tr>\n";
 
-      $othumb_1 = urlencode($file.".original.".$size."_xz.jpg");
-      $rthumb_1 = urlencode($file.".".$size."_xz.jpg");
+
+      $othumb_1 = rawurlencode($file.".original.".$size."_xz.jpg");
+      $rthumb_1 = $file.".".$size."_xz.jpg";
       $path = $pdest."/".$rthumb_1;
+      $rthumb_1 = rawurlencode($rthumb_1);
       if (file_exists($path)) {
           # is a 3D image, so it has a lateral view.
           echo "<tr>\n";
@@ -727,20 +728,34 @@ Class Fileserver {
       
       echo "</table>\n";
 
+      echo "<br><font size=-2>$file</font>\n";
       echo "<div id=\"info\">";
+
+      $mpath =  $pdest."/".$file.".stack.avi";
+      if (file_exists($mpath)) {
+          $mSize = round(filesize($mpath) / 1024.0);
+          echo "<br><small><a href=\"file_management.php?getMovie=".rawurlencode($file.".stack.avi")."\" >Download stack preview video ($mSize kB) </a></small>\n";
+      }
+      $tspath =  $pdest."/".$file.".tSeries.avi";
+      if (file_exists($tspath)) {
+          $tsSize = round(filesize($tspath) / 1024.0);
+          echo "<br><small><a href=\"file_management.php?getMovie=".rawurlencode($file.".tSeries.avi")."\" >Download time-series preview video ($tsSize kB) </a></small>\n";
+      }
+
+
       if ( $allowHttpTransfer ) {
-          echo "<br><small><a href=\"file_management.php?download=".urlencode($file)."\" onClick=\"changeDiv('info','Packaging files, please wait')\" >Download $file</a></small>\n";
+          echo "<br><small><a href=\"file_management.php?download=".rawurlencode($file)."\" onClick=\"changeDiv('info','Packaging files, please wait')\" >Download restored files</a></small>\n";
       } else {
           echo "<br><small>$file</small>\n";
       }
-      echo "</div>";
+
       switch ($op) {
           case "close":
              echo "<br><br><a href=\"#\" onClick=\"window.close()\">".
                   "Close</a>\n";
              break;     
           case "home":
-              echo "<input type=\"button\" name=\"restart\"   value=\"\" ".
+              echo "<br><input type=\"button\" name=\"restart\"   value=\"\" ".
                    "onclick=\"document.location.href=".
                    "'select_parameter_settings.php'\" ".
                    "class=\"icon restart\" />";
@@ -921,6 +936,43 @@ Class Fileserver {
       Header("Content-Type: image/jpeg");
       readfile ($path);
   }
+
+  //!---------------------------------------------------------
+  // @function    Fileserver::getMovie
+  // @desc        Serves an existing AVI movie.
+  // @param       file and diretory label ('src' or 'dest').
+  // @return      Void
+  //!---------------------------------------------------------  
+  function getMovie($file, $dir = "dest" ) { 
+
+      if ( $dir == "src" ) {
+          $pdir =  $this->sourceFolder();
+      } else {
+          $pdir =  $this->destinationFolder();
+      }
+
+      $path = $pdir."/".$file;
+      if (!file_exists($path)) {
+          $path = "images/no_preview.jpg";
+          Header("Content-Type: image/jpeg");
+          readfile ($path);
+      }
+
+      $size = filesize($path);
+      $type = "video/x-msvideo";
+
+      if ($size) {
+          header ("Accept-Ranges: bytes");
+          header ("Connection: close");
+          header ("Content-Disposition-type: attachment");
+          header ("Content-Disposition: attachment; filename=\"$file\"");
+          header ("Content-Length: $size"); 
+          header ("Content-Type: $type; name=\"$file\"");
+          readfile($path);
+      }
+  }
+
+
   //!---------------------------------------------------------
   // @function    Fileserver::getDestFiles
   // @desc        Create the list of restored image files of the user.

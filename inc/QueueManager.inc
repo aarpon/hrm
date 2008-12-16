@@ -801,9 +801,10 @@ Class QueueManager {
 		$text = $text . "The image $sourceFileName was successfully processed by Huygens.\n";
 		$text = $text . "You will find the resulting image ($destFileName) in your destination folder.\n";
                 if ( $useThumbnails ) {
+                    $imageName = $desc->destinationImageNameAndExtension();
                     $link = $hrm_url.
                            "/file_management.php?compareResult=".
-                           urlencode($destFileName);
+                           urlencode($imageName);
                     $text .= "\nYou can find a preview of the result at ".$link.
                              "\n\n";
                 }

@@ -218,7 +218,7 @@ function huCoreTools ($tool, $options) {
     global $hrm_path, $local_huygens_core;
 
     $cmd = "$local_huygens_core -task $hrm_path/scripts/hucore.tcl ".
-           "-tool $tool $options";
+           "-tool $tool $options 2>&1";
 
     $answer = exec($cmd, $output, $result);
 
@@ -228,9 +228,18 @@ function huCoreTools ($tool, $options) {
         $begin = array_search("BEGIN PROC", $output);
         return array_slice($output, $begin);
     } else {
-        echo ("<pre>huCoreTools error (last lines):\n");
-        foreach ( array_slice($output, -4) as $line ) {
-            echo ("$line\n");
+        $more = 0;
+        echo "<pre>";
+        foreach ( $output as $line ) {
+            if ($more > 0) {
+                echo ("$line\n");
+                $more -= 1;
+                if ( $more == 0 ) echo ("...\n");
+            }
+            if (stristr($line, "error")) {
+                echo ("$line\n");
+                $more = 2;
+            }
         }
         echo "</pre>";
         return NULL;

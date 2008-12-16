@@ -411,6 +411,7 @@ Class JobDescription {
 
   function putMultiChannelScriptOn($script, $isOriginal = false) {
     global $useThumbnails;
+    global $movieMaxSize;
     $parameterSetting = $this->parameterSetting;
     $numberOfChannels = $parameterSetting->numberOfChannels();
     $files = $this->files();
@@ -495,6 +496,13 @@ Class JobDescription {
     set fn [file tail $path]
     ::WebTools::savePreview c $ddir $fn {preview 400}
     '."\n";
+            if ( $movieMaxSize > 0 ) {
+                $newScript = $newScript . 
+                '    catch {::WebTools::saveStackMovie c $ddir ${fn}.stack '.
+                $movieMaxSize . '}'.  "\n".
+                '    catch {::WebTools::saveTimeSeriesMovie c $ddir'.
+                ' ${fn}.tSeries '.$movieMaxSize . '}'.  "\n\n";
+            }
              // Save also a preview of the original image, adopting the same
              // parameters as in the result.
             $newScript = $newScript . "    ".
@@ -512,7 +520,7 @@ Class JobDescription {
     set fn [file tail $hrmFileName]
     ::WebTools::savePreview $orig $ddir $fn {preview}'.
     "\n" ;
-            $newScript = $newScript . '$orig del' . "\n"; 
+            $newScript = $newScript . '    $orig del' . "\n"; 
             $newScript = $newScript . '}'."\n";
 
         }
@@ -878,6 +886,7 @@ Class JobDescription {
   function saveImageString( $isResult = false ) {
     global $resultImagesOwnedByUser;
     global $useThumbnails;
+    global $movieMaxSize;
     $result = '';
     $setting = $this->taskSetting;
     $parameterSetting = $this->parameterSetting;
@@ -908,6 +917,13 @@ Class JobDescription {
     set fn [file tail $path]
     ::WebTools::savePreview c $ddir $fn {preview 400}
     '."\n";
+            if ( $movieMaxSize > 0 ) {
+                $newScript = $newScript . 
+                '    catch {::WebTools::saveStackMovie c $ddir ${fn}.stack '.
+                $movieMaxSize . '}'.  "\n".
+                '    catch {::WebTools::saveTimeSeriesMovie c $ddir'.
+                ' ${fn}.tSeries '. $movieMaxSize . '}'.  "\n\n";
+            }
              // Save also a preview of the original image, adopting the same
              // parameters as in the result.
             $newScript = $newScript . "    ".
@@ -925,7 +941,7 @@ Class JobDescription {
     set fn [file tail $hrmFileName]
     ::WebTools::savePreview $orig $ddir $fn {preview}'.
     "\n" ;
-            $newScript = $newScript . '$orig del' . "\n"; 
+            $newScript = $newScript . '    $orig del' . "\n"; 
             $newScript = $newScript . '}'."\n";
             $result = $result . $newScript;
 
@@ -1036,6 +1052,17 @@ Class JobDescription {
     $fileFormat = $param->extension( );
     return ( $name . "." . $fileFormat );
   }
+
+  function destinationImageNameAndExtension() {
+    $name = $this->destinationImageName();
+    // Append extension
+    $taskSetting = $this->taskSetting();
+    $param = $taskSetting->parameter('OutputFileFormat');
+    $fileFormat = $param->extension( );
+    return ( $this->relativeSourcePath(). $name . "." . $fileFormat );
+  }
+
+
 
   function destinationImageFullName() {
     global $resultImagesRenamed;

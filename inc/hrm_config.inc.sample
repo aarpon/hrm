@@ -166,7 +166,15 @@ $useThumbnails = true;
 // formats are readable in a freeware Huygens Core and for full functionality
 // you may need a license string. Otherwise just let the original thumbnails
 // be generated during the deconvolution itself with the previous option.
+// This requires $useThumbnails = true;
 $genThumbnails = true;
+
+// If larger than zero, generates an AVI movie for 3D stacks that allows
+// browsing along the XY slices, and for time series to browse along MIPs in
+// time. The movie will have this maximum number of pixels in the largest
+// dimension.
+// This requires $useThumbnails = true;
+$movieMaxSize = 300;
 
 // internal links
 $internal_link["url"] = "<link> followed by text";
