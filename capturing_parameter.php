@@ -67,6 +67,8 @@ if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
 }
 $message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
 
+$parameter = $_SESSION['setting']->parameter("NumericalAperture");
+$na = $parameter->value();
 $names = $_SESSION['setting']->capturingParameterNames();
 foreach ($names as $name) {
   if (isset($_POST[$name])) {
@@ -228,7 +230,7 @@ if ($_SESSION['setting']->isThreeDimensional()) {
                 </ul>
                 
                 <a href="javascript:openWindow('http://support.svi.nl/wiki/NyquistCalculator')">
-                    Nyquist rate and PSF calculator
+                    On-line Nyquist rate and PSF calculator
                     <img src="images/web.png" alt="external link" />
                 </a>
                 
@@ -314,9 +316,8 @@ if ($_SESSION['setting']->isMultiPointOrSinglePointConfocal()) {
 ?>
                 <p />
                 
-                <a href="javascript:openWindow('http://support.svi.nl/wiki/BackprojectedPinholeCalculator')">
+                <a href="calculate_bp_pinhole.php?na=<?php echo $na;?>">
                     Backprojected pinhole calculator
-                    <img src="images/web.png" alt="external link" />
                 </a>
                 
             </fieldset>
@@ -334,7 +335,7 @@ if ($_SESSION['setting']->isNipkowDisk()) {
             <fieldset class="setting">
             
                 <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=PinholeSpacing')"><img src="images/help.png" alt="?" /></a>
-                pinhole spacing (micron):
+                backprojected pinhole spacing (micron):
                 
 <?php
 
@@ -342,6 +343,11 @@ if ($_SESSION['setting']->isNipkowDisk()) {
 
 ?>
                 <input name="PinholeSpacing" type="text" size="5" value="<?php echo $parameter->value() ?>" />
+                <p />
+                
+                <a href="calculate_bp_pinhole.php?na=<?php echo $na;?>">
+                    Backprojected pinhole calculator
+                </a>
                 
             </fieldset>
 <?php
