@@ -203,6 +203,29 @@ proc generateImagePreview {} {
 
 }
 
+proc calculateNyquistRate {} {
+
+    foreach var {micr na ex em pcnt} {
+        set $var [Hu_getOpt -$var]
+        if { [set $var] == -1 } {
+            puts "ERROR"
+            puts "Wrong arguments, -$var is missing."
+        } else {
+            puts "$var [set $var]"
+        }
+    }
+    a setp -na $na -ex $ex -em $em -pcnt $pcnt \
+        -micr $micr -s {1 1 1}
+
+    set nrate [a nyq -tclReturn]
+
+    set sampxy [expr int( 1000 * [lindex $nrate 0] ) ]
+    set sampz [expr int( 1000 * [lindex $nrate 2] ) ]
+
+    puts "calculateNyquistRate RETURN"
+    puts "$sampxy $sampz"
+}
+
 
 # ----------------   MAIN routine -----------------
 # Execute selected procedure

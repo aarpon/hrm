@@ -248,6 +248,62 @@ function huCoreTools ($tool, $options) {
 }
 
 //!---------------------------------------------------------
+// @function    askHuCore  
+// @desc        A wrapper around huCoreTools to retrieve a particular string,
+//              which is 'calculated' by hucore in the background.
+// @param       $tool is the procedure in scripts/hucore.tcl to be executed.
+//              $options are extra command line options to send to that script
+//              $param is the KEYWORD that identifies the string we want in the
+//              hucore output.
+// @return      The requested string.
+//!---------------------------------------------------------
+function askHuCore ($tool, $options, $param = "") {
+
+      // If no keyword is provided, then it is assumed that the keyword Huygens
+      // will use is the same function name plus " RETURN".
+      if ($param == "" ) { $param = "$tool RETURN"; }
+
+      $answer = huCoreTools( $tool, $options );
+
+      if (! $answer ) return "(nothing)";
+      # printDebug ($answer);
+
+      $lines = count($answer);
+      $msg = "";
+      $ret = "";
+      $sep = "";
+
+      $ok = true;
+      for ($i = 0; $i < $lines; $i++ ) {
+          $key = $answer[$i];
+
+          switch ($key) {
+              case "ERROR":
+                  $i ++;
+                  $msg .= $answer[$i]."<br>";
+                  $ok = false;
+                  break;
+              case "REPORT":
+                  $i ++;
+                  echo $answer[$i]."\n";
+                  ob_flush();
+                  flush();
+              case $param :
+                  $i ++;
+                  $ret .= $sep.$answer[$i];
+                  $sep = " ";
+              default :
+                  break;
+
+          }
+      }
+
+      return $msg.$ret;
+}
+
+
+
+//!---------------------------------------------------------
 // @function    report
 // @desc        Write text to the logfile if level is not
 //              bigger than log_verbosity. If logfile becomes

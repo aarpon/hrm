@@ -136,6 +136,8 @@ $script = "settings.js";
 
 include("header.inc.php");
 
+$nyquist = $_SESSION['setting']->calculateNyquistRate();
+
 ?>
 
     <div id="nav">
@@ -157,14 +159,14 @@ include("header.inc.php");
             
                 <legend>
                     <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=SampleSize')"><img src="images/help.png" alt="?" /></a>
-                    sample size
+                    voxel size
                 </legend>
 <?php
 
 $parameter = $_SESSION['setting']->parameter("CCDCaptorSizeX");
 $value = $parameter->value();
 // always ask for pixel size
-$textForCaptorSize = "pixel size (nm)";
+$textForCaptorSize = "xy pixel size (nm)";
 
 // display visual feedback for values validity using the following CSS classes: oversampled | optimal | valid | invalid
 ?>
@@ -362,19 +364,36 @@ if ($_SESSION['setting']->isNipkowDisk()) {
             <input type="submit" value="" class="icon apply" onclick="process()" />
             
             <p>
-		This is the last step. Press <br />the 
-                <img src="images/apply_help.png" alt="Apply" width="22" height="22" /> <b>apply</b>
-                button to save your parameter settings and to go back to the parameter settings
-                page.
+		This is the last step of the image settings edition. 
             </p>
-            <p>Sampling rates for the pixel size and the z-step are color-coded as
-            follows: <span style="background-color:lightblue; ">oversampled</span>, 
+            <p>Here you have to enter the voxel size as it was set during the
+            image acquisition. Remember that the quality of the image and its
+            restoration improves the closer the sampling during the acquistion
+            gets to the Nyquist <b>ideal sampling rate:</b>
+            <span style="background-color:yellow"><?php echo $nyquist[0];?>
+            nm</span><?php
+             if ($_SESSION['setting']->isThreeDimensional() ) {
+                 echo " for xy and <span style=\"background-color:yellow\">".
+                     $nyquist[1]." nm</span> for the z-step";
+             }
+             ?>
+            (for these optical conditions).  </p>
+            <p>The values you entered for the pixel size and the z-step are
+            color-coded, in relation to that ideal sampling, as follows: <span
+            style="background-color:lightblue;
+            ">oversampled</span>, 
             <span style="background-color:limegreen">optimal</span>,
             <span style="background-color:orange">valid</span>,
             <span style="background-color:orangered">invalid</span>.</p>
             <p>The Huygens Remote Manager will not try to stop you from running a deconvolution with
             <span style="background-color:orangered">invalid</span> sampling, but do not
             expect meaningful results!</p>
+            <p>
+		Press the 
+                <img src="images/apply_help.png" alt="Apply" width="22" height="22" /> <b>apply</b>
+                button to save your parameter settings and to go back to the parameter settings
+                page.
+            </p>
         </div>
         
         <div id="message">

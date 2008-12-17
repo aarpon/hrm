@@ -940,6 +940,54 @@ Class ParameterSetting extends Setting {
 	    return $result;     
 	}*/
 
+        //!---------------------------------------------------------
+        // @function    ParameterSetting::calculateNyquistRate
+        // @desc        Ask hucore for the ideal (Nyquist) sampling rate
+        //              for the current conditions. 
+        // @return      An array with the XY and Z ideal sampling.
+        //!---------------------------------------------------------    
+        function calculateNyquistRate() {
+            // Use the most restrictive wavelength to compute the adaption
+            $parameter = $this->parameter('EmissionWavelength');
+            if ( $this->isTwoPhoton()
+                || $this->isMultiPointOrSinglePointConfocal()) {
+                $parameter = $this->parameter('ExcitationWavelength');
+            }
+            $value = $parameter->value();
+            $mostRestrictiveChannel = 0;
+            $mostRestrictiveWavelength = $value[0];
+            for ($i = 1; $i < $this->numberOfChannels(); $i++) {
+                if ($value[$i] < $mostRestrictiveWavelength) {
+                    $mostRestrictiveChannel = $i;
+                    $mostRestrictiveWavelength = $value[$i];
+                }
+            }
+            $parameter = $this->parameter('EmissionWavelength');
+            $value = $parameter->value();
+            $em = $value[$mostRestrictiveChannel];
+            $parameter = $this->parameter('ExcitationWavelength');
+            $value = $parameter->value();
+            $ex = $value[$mostRestrictiveChannel];
+
+            $parameter = $this->parameter('NumericalAperture');
+            $na = (float) $parameter->value();
+
+            $parameter = $this->parameter('MicroscopeType');
+            $micr = $parameter->translatedValue();
+
+            if ($this->isTwoPhoton()) {
+                $pcnt = 2;
+            } else {
+                $pcnt = 1;
+            }
+            // Only micr, na, em, ex and pcnt are necessary to calculate it.
+
+            $opt = "-micr $micr -na $na -em $em -ex $ex -pcnt $pcnt";
+            $ideal = askHuCore ("calculateNyquistRate", $opt);
+            // echo "NYQUIST: $ideal";
+            return explode(' ', $ideal);
+        }
+
     // checks whether the pixel size satisfies the Nyquist criterion
     //!---------------------------------------------------------
     // @function    ParameterSetting::isLateralNyquistRateOK
