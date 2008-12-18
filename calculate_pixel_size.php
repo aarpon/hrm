@@ -74,31 +74,16 @@ if (isset($_POST['CCDCaptorSize'])) {
 	$_SESSION['CCDCaptorSize'] = $_POST['CCDCaptorSize'];
 }
 
-$names = array("Binning", "CMount", "TubeFactor", "ObjectiveMagnification");
-foreach ($names as $name) {
-  if (isset($_POST[$name])) {
-    $parameter = $_SESSION['setting']->parameter($name);
-    $parameter->setValue($_POST[$name]);
-    $_SESSION['setting']->set($parameter);
-  }
-}
-
 if (isset($_POST['CCDCaptorSize'])) {
         
 	$ccd = $_SESSION['CCDCaptorSize'];      // ccd captor size (different form 'CCDCaptorSizeX'!). It's of use uf calculating CCDCaptorSizeX.
-        
-	$bin = $_SESSION['setting']->parameter('Binning'); // now $bin is an object Parameter
-	$bin = $bin->value();   // now $bin is just a value
 
- 	$obm = $_SESSION['setting']->parameter('ObjectiveMagnification');
-	$obm = $obm->value();
-        
-	$cmf =  $_SESSION['setting']->parameter('CMount');
-	$cmf = $cmf->value();
-        
-	$tf =  $_SESSION['setting']->parameter('TubeFactor');
-	$tf = $tf->value();
-        
+	// Get all parameters from the form
+	$bin = $_POST['Binning'];
+	$obm = $_POST['ObjectiveMagnification'];
+	$cmf = $_POST['CMount'];
+	$tf  = $_POST['TubeFactor'];
+       
 	$pixelSize =  (floatval($ccd) * floatval($bin)) / (floatval($obm)*floatval($cmf)*floatval($tf));        // compute the theoretical value for the pixel size
         
 	$parameter = $_SESSION['setting']->parameter('CCDCaptorSizeX'); // set the value for CCDCaptorSizeX 
@@ -129,11 +114,13 @@ include ("header.inc.php");
 <div id="content">
     
     <h3>Parameter Setting - Calculate Pixel Size</h3>
-    
+
+    <h4>Please mind that these parameters are only used to calculate the pixel size are not stored!</h4> 
+ 
     <form method="post" action="calculate_pixel_size.php" id="select">
     
        <fieldset class="setting">
-        
+
     <?php
 
 $textForCaptorSize = "size of the ccd element (nm)";
