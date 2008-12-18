@@ -371,7 +371,7 @@ $parameter = $_SESSION['setting']->parameter("PointSpreadFunction");
 
                 ?>
 
-                <option <?php echo $option?> <?php echo $state?> value="<?php echo $possibleValue?>"><?php echo $translation?></option>                  
+                <option <?php echo $option?> value="<?php echo $possibleValue?>"><?php echo $translation?></option>                  
 
                 <?php
                   }
