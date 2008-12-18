@@ -123,7 +123,7 @@ include ("header.inc.php");
 
     <?php
 
-$textForCaptorSize = "size of the ccd element (nm)";
+$textForCaptorSize = "size of the CCD element (nm)";
 $value = '';
 if(isset($_SESSION['CCDCaptorSize']))
         $value = $_SESSION['CCDCaptorSize'];

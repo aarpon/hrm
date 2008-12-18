@@ -170,20 +170,19 @@ $value = $parameter->value();
 // always ask for pixel size
 $textForCaptorSize = "xy pixel size (nm)";
 
-// display visual feedback for values validity using the following CSS classes: oversampled | optimal | valid | invalid
 ?>
                 <ul>
                 
                     <li>
                         <?php echo $textForCaptorSize ?>:
-                        <input name="CCDCaptorSizeX" type="text" class="<?php echo $_SESSION['setting']->isLateralNyquistRateOK(); ?>" size="5" value="<?php echo $value ?>" /> <br/>
+                        <input name="CCDCaptorSizeX" type="text" size="5" value="<?php echo $value ?>" /> <br/>
 			<?php
                   // The calculation of pixel size from CCD chip makes sense only for widefield microscopes
                   $microscopeType  = $_SESSION['setting']->parameter('MicroscopeType' );
                   $microscopeValue = $microscopeType->value( );
                   if ( $microscopeValue == 'widefield' ) {
             ?>
-            <a href="calculate_pixel_size.php">calculate</a> from microscope and camera parameters <br/>
+            <a href="calculate_pixel_size.php">calculate</a> from CCD pixel size<br/>
                         <!-- <input name="calculate" type="submit" value="calculate" style="width:110px; margin: 2px;" /> -->
             <br/>
             <?php
@@ -215,7 +214,7 @@ if ($_SESSION['setting']->isThreeDimensional()) {
   $parameter = $_SESSION['setting']->parameter("ZStepSize");
 
 ?>
-                        <input name="ZStepSize" type="text" class="<?php echo $_SESSION['setting']->isAxialNyquistRateOK(); ?>" size="5" value="<?php echo $parameter->value() ?>" />
+                        <input name="ZStepSize" type="text" size="5" value="<?php echo $parameter->value() ?>" />
 <?php
             
   // display adaption info
@@ -388,27 +387,19 @@ if ($_SESSION['setting']->isNipkowDisk()) {
 		This is the last step of the image settings edition. 
             </p>
             <p>Here you have to enter the voxel size as it was set during the
-            image acquisition. Remember that the quality of the image and its
-            restoration improves the closer the sampling during the acquistion
-            gets to the Nyquist <b>ideal sampling rate:</b>
+            image acquisition. Remember that the closer the acquisition sampling 
+            is to the Nyquist <b>ideal sampling rate</b>, the better both the input
+            and the deconvolved images will be!</p>
+            <p>With current optical parameters, the ideal pixel size is
             <span style="background-color:yellow"><?php echo $nyquist[0];?>
             nm</span><?php
              if ($_SESSION['setting']->isThreeDimensional() ) {
-                 echo " for xy and <span style=\"background-color:yellow\">".
-                     $nyquist[1]." nm</span> for the z-step";
+                 echo " and the ideal z-step is <span style=\"background-color:yellow\">".
+                     $nyquist[1]." nm</span>";
              }
-             ?>
-            (for these optical conditions).  </p>
-            <p>The values you entered for the pixel size and the z-step are
-            color-coded, in relation to that ideal sampling, as follows: <span
-            style="background-color:lightblue;
-            ">oversampled</span>, 
-            <span style="background-color:limegreen">optimal</span>,
-            <span style="background-color:orange">valid</span>,
-            <span style="background-color:orangered">invalid</span>.</p>
-            <p>The Huygens Remote Manager will not try to stop you from running a deconvolution with
-            <span style="background-color:orangered">invalid</span> sampling, but do not
-            expect meaningful results!</p>
+             ?>.</p>
+            <p>The Huygens Remote Manager will not try to stop you from running a deconvolution on
+            undersampled data (i.e. with a sampling rate much larger than the ideal), but do not expect meaningful results!</p>
             <p>
 		Press the 
                 <img src="images/apply_help.png" alt="Apply" width="22" height="22" /> <b>apply</b>
