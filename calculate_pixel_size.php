@@ -74,7 +74,7 @@ if (isset($_POST['CCDCaptorSize'])) {
 	$_SESSION['CCDCaptorSize'] = $_POST['CCDCaptorSize'];
 }
 
-$names = array("Binning", "CMount", "TubeFactor");
+$names = array("Binning", "CMount", "TubeFactor", "ObjectiveMagnification");
 foreach ($names as $name) {
   if (isset($_POST[$name])) {
     $parameter = $_SESSION['setting']->parameter($name);
@@ -89,8 +89,8 @@ if (isset($_POST['CCDCaptorSize'])) {
         
 	$bin = $_SESSION['setting']->parameter('Binning'); // now $bin is an object Parameter
 	$bin = $bin->value();   // now $bin is just a value
-        
-	$obm = $_SESSION['setting']->parameter('ObjectiveMagnification');
+
+ 	$obm = $_SESSION['setting']->parameter('ObjectiveMagnification');
 	$obm = $obm->value();
         
 	$cmf =  $_SESSION['setting']->parameter('CMount');

@@ -337,7 +337,7 @@ $parameter = $_SESSION['setting']->parameter("PointSpreadFunction");
             
                 <legend>
                     <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=MismatchDistortsPsf')"><img src="images/help.png" alt="?" /></a>
-                    Depth-dependent PSF correction
+                    depth-dependent PSF correction
                 </legend>
 
                 <?php

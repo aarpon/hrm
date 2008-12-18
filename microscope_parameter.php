@@ -160,9 +160,11 @@ foreach($possibleValues as $possibleValue) {
             </fieldset>
             
             <fieldset class="setting">
-            
-                <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=NumericalAperture')"><img src="images/help.png" alt="?" /></a>
-                numerical aperture:
+              <legend> 
+		<a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=NumericalAperture')"><img src="images/help.png" alt="?" /></a>
+		NA
+              </legend>
+              <p />numerical aperture: 
 <?php
 
 $parameter = $_SESSION['setting']->parameter("NumericalAperture");
@@ -180,47 +182,42 @@ $parameter = $_SESSION['setting']->parameter("NumericalAperture");
             
                 <legend>
                     <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=WaveLength')"><img src="images/help.png" alt="?" /></a>
-                    light
-                </legend>
-                
-                <ul>
-                    <li>
-                        excitation wavelength for channel (nm)
-                        <ol>
+                    wavelengths
+		</legend>
+		<ul>
+		<li>excitation (nm):
+
+		<div class="multichannel">
 <?php
 
 for ($i = 0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
 
 ?>
-                            <li><input name="ExcitationWavelength<?php echo $i ?>" type="text" size="5" value="<?php if ($i <= sizeof($excitation)) echo $excitation[$i] ?>" class="multichannelinput" /></li>
+	<span class="nowrap">Ch<?php echo $i ?>:<span class="multichannel"><input name="ExcitationWavelength<?php echo $i ?>" type="text" size="8" value="<?php if ($i <= sizeof($excitation)) echo $excitation[$i] ?>" class="multichannelinput" /></span>&nbsp;</span>
 <?php
 
 }
 
 ?>
-                        </ol>
-                    </li>
-
-                    <li>
-                        emission wavelength for channel (nm)
-                        <ol>
-
+</div></li>
+	<li>emission (nm):
+	
+	<div class="multichannel">
 <?php
 
 for ($i=0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
 
 ?>
-                            <li><input name="EmissionWavelength<?php echo $i ?>" type="text" size="5" value="<?php if ($i <= sizeof($emission)) echo $emission[$i] ?>" class="multichannelinput" /></li>
+	<span class="nowrap">Ch<?php echo $i ?>:<span class="multichannel"><input name="EmissionWavelength<?php echo $i ?>" type="text" size="8" value="<?php if ($i <= sizeof($emission)) echo $emission[$i] ?>" class="multichannelinput" /></span>&nbsp;</span>
 <?php
 
 }
 
 ?>
-                        </ol>
-                    </li>
-                </ul>
+        </div></li>
+        </ul>
                 
-            </fieldset>
+        </fieldset>
 
 <!--          
             <fieldset class="setting">

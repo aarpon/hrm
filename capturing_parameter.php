@@ -177,8 +177,18 @@ $textForCaptorSize = "xy pixel size (nm)";
                     <li>
                         <?php echo $textForCaptorSize ?>:
                         <input name="CCDCaptorSizeX" type="text" class="<?php echo $_SESSION['setting']->isLateralNyquistRateOK(); ?>" size="5" value="<?php echo $value ?>" /> <br/>
-			<a href="calculate_pixel_size.php">calculate</a> from microscope and camera parameters <br/>
+			<?php
+                  // The calculation of pixel size from CCD chip makes sense only for widefield microscopes
+                  $microscopeType  = $_SESSION['setting']->parameter('MicroscopeType' );
+                  $microscopeValue = $microscopeType->value( );
+                  if ( $microscopeValue == 'widefield' ) {
+            ?>
+            <a href="calculate_pixel_size.php">calculate</a> from microscope and camera parameters <br/>
                         <!-- <input name="calculate" type="submit" value="calculate" style="width:110px; margin: 2px;" /> -->
+            <br/>
+            <?php
+                  }
+            ?>
 <?php
 
 // display adaption info
@@ -270,10 +280,10 @@ if ($_SESSION['setting']->isTimeSeries()) {
 
 ?>
             <fieldset class="setting">
-            
+           	<legend> 
                 <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=TimeSeries')"><img src="images/help.png" alt="?" /></a>
-                time interval (s):
-                
+                time interval
+                </legend> <p />Time interval (s):
 <?php
 
   $parameter = $_SESSION['setting']->parameter("TimeInterval");
@@ -295,25 +305,29 @@ if ($_SESSION['setting']->isMultiPointOrSinglePointConfocal()) {
 ?>
             <fieldset class="setting">
             
+              <legend>
                 <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=PinholeRadius')"><img src="images/help.png" alt="?" /></a>
-                backprojected pinhole radius (nm):
+                pinhole radius
+	      </legend>
+		<p />back-projected pinhole radius (nm):
             <?php
               if ( $_SESSION['setting']->numberOfChannels() > 1 ) {
               ?>  <p /> <?php
             }
             ?>
+<div class="multichannel">
 <?php
 
   // manage one pinhole radius per channel
   for ($i = 0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
 
 ?>
-                <input name="PinholeSize<?php echo $i ?>" type="text" size="5" value="<?php if ($i < sizeof($pinhole)) echo $pinhole[$i] ?>" class="multichannelinput" />
+	<span class="nowrap">Ch<?php echo $i ?>:<span class="multichannel"><input name="PinholeSize<?php echo $i ?>" type="text" size="8" value="<?php if ($i < sizeof($pinhole)) echo $pinhole[$i] ?>" class="multichannelinput" /></span>&nbsp;</span>
 <?php
 
   }
 
-?>
+?></div>
                 <p />
                 
                 <a href="calculate_bp_pinhole.php?na=<?php echo $na;?>">
@@ -333,10 +347,11 @@ if ($_SESSION['setting']->isNipkowDisk()) {
       
 ?>
             <fieldset class="setting">
-            
+              <legend>            
                 <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=PinholeSpacing')"><img src="images/help.png" alt="?" /></a>
-                backprojected pinhole spacing (micron):
-                
+                pinhole spacing
+	      </legend>
+ 		<p />backprojected pinhole spacing (micron):
 <?php
 
   $parameter = $_SESSION['setting']->parameter('PinholeSpacing');
