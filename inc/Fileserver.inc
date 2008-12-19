@@ -735,9 +735,9 @@ Class Fileserver {
       $rsfp = rawurlencode($file.".sfp.jpg");
 
       if ( $mode == "MIP" ) {
-          $altPath = $pdest."/".$rsfp;
+          $altPath = $pdest."/".$file.".sfp.jpg";
       } else {
-          $altPath = $pdest."/".$rthumb_0;
+          $altPath = $pdest."/".$file.".".$size."_xy.jpg";
       }
 
       # YZ slices not shown by now, but here they are:
