@@ -411,7 +411,7 @@ Class JobDescription {
 
   function putMultiChannelScriptOn($script, $isOriginal = false) {
     global $useThumbnails;
-    global $movieMaxSize;
+    global $movieMaxSize, $saveSfpPreviews;
     $parameterSetting = $this->parameterSetting;
     $numberOfChannels = $parameterSetting->numberOfChannels();
     $files = $this->files();
@@ -494,7 +494,7 @@ Class JobDescription {
     set path "'.$dstfilename.".".$fileFormat.'"
     set ddir [file dirname $path]
     set fn [file tail $path]
-    ::WebTools::savePreview c $ddir $fn {preview 400}
+    catch { ::WebTools::savePreview c $ddir $fn {preview 400} }
     '."\n";
             if ( $movieMaxSize > 0 ) {
                 $newScript = $newScript . 
@@ -502,6 +502,16 @@ Class JobDescription {
                 $movieMaxSize . '}'.  "\n".
                 '    catch {::WebTools::saveTimeSeriesMovie c $ddir'.
                 ' ${fn}.tSeries '.$movieMaxSize . '}'.  "\n\n";
+            }
+            if ( $saveSfpPreviews ) {
+                $newScript = $newScript . 
+                '    catch {::WebTools::saveTopViewSfp c $ddir ${fn}.sfp } '.
+                 "\n";
+                if ( $movieMaxSize > 0 ) {
+                    $newScript = $newScript . 
+                '    catch {::WebTools::saveTimeSeriesMovie c $ddir '
+                . '${fn}.tSeries.sfp - SFP } '.  "\n";
+                }
             }
              // Save also a preview of the original image, adopting the same
              // parameters as in the result.
@@ -514,11 +524,18 @@ Class JobDescription {
     set path "'.$dstfilename.".".$fileFormat.".original".'"
     set ddir [file dirname $path]
     set fn [file tail $path]
-    ::WebTools::savePreview $orig $ddir $fn {preview 400}
+    catch { ::WebTools::savePreview $orig $ddir $fn {preview 400} }'."\n";
+
+            if ( $saveSfpPreviews ) {
+                $newScript = $newScript . 
+                '    catch {::WebTools::saveTopViewSfp $orig $ddir ${fn}.sfp }'.
+                 "\n";
+            }
+            $newScript = $newScript . '
     # Save preview of the original also in source directory
     set ddir [file dirname $hrmFileName]
     set fn [file tail $hrmFileName]
-    ::WebTools::savePreview $orig $ddir $fn {preview}'.
+    catch { ::WebTools::savePreview $orig $ddir $fn preview }'.
     "\n" ;
             $newScript = $newScript . '    $orig del' . "\n"; 
             $newScript = $newScript . '}'."\n";
@@ -886,7 +903,7 @@ Class JobDescription {
   function saveImageString( $isResult = false ) {
     global $resultImagesOwnedByUser;
     global $useThumbnails;
-    global $movieMaxSize;
+    global $movieMaxSize, $saveSfpPreviews;
     $result = '';
     $setting = $this->taskSetting;
     $parameterSetting = $this->parameterSetting;
@@ -924,6 +941,16 @@ Class JobDescription {
                 '    catch {::WebTools::saveTimeSeriesMovie c $ddir'.
                 ' ${fn}.tSeries '. $movieMaxSize . '}'.  "\n\n";
             }
+            if ( $saveSfpPreviews ) {
+                $newScript = $newScript . 
+                '    catch {::WebTools::saveTopViewSfp c $ddir ${fn}.sfp } '.
+                 "\n";
+                if ( $movieMaxSize > 0 ) {
+                    $newScript = $newScript . 
+                '    catch {::WebTools::saveTimeSeriesMovie c $ddir '
+                . '${fn}.tSeries.sfp - SFP } '.  "\n";
+                }
+            }
              // Save also a preview of the original image, adopting the same
              // parameters as in the result.
             $newScript = $newScript . "    ".
@@ -935,7 +962,15 @@ Class JobDescription {
     set path "'.$imageFileName.".".$extension.".original".'"
     set ddir [file dirname $path]
     set fn [file tail $path]
-    ::WebTools::savePreview $orig $ddir $fn {preview 400}
+    ::WebTools::savePreview $orig $ddir $fn {preview 400}'."\n";
+
+            if ( $saveSfpPreviews ) {
+                $newScript = $newScript . 
+                '    catch {::WebTools::saveTopViewSfp $orig $ddir ${fn}.sfp }'.
+                 "\n";
+            }
+
+            $newScript = $newScript . '
     # Save preview of the original also in source directory
     set ddir [file dirname $hrmFileName]
     set fn [file tail $hrmFileName]

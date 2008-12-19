@@ -307,6 +307,7 @@ global $cmsys, $table, $extra1, $txt1, $extra2, $txt2, $checked1, $checked2;
         print "\n<form action=\"calculate_bp_pinhole.php\" method=\"post\"".
             " id=\"select\">";
         print "\n<fieldset class=\"setting\">";
+        print "\nEnter the parameters as reported by your microscope:";
 
         print "\n<INPUT TYPE=\"hidden\" name=\"task\" value=\"calc\">";
         print "\n<INPUT TYPE=\"hidden\" name=\"ref\" value=\""

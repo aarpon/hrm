@@ -154,9 +154,16 @@ if (isset($_GET['compareResult'])) {
     } else {
         $op = "home";
     }
+    if (isset($_GET['mode'])) {
+        $mode = $_GET['mode'];
+    } else {
+        $mode = "MIP";
+    }
+
+
 
     $_SESSION['fileserver']->compareResult(rawurldecode($_GET['compareResult']),
-                             $size, $op);
+                             $size, $op, $mode);
     exit;
 }
 

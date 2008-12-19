@@ -700,15 +700,21 @@ Class Fileserver {
   // @return      
   //!---------------------------------------------------------
 
-  function compareResult( $file, $size = "400", $op = "close" ) {
+  function compareResult( $file, $size = "400", $op = "close", $mode="MIP" ) {
       global $allowHttpTransfer;
 
       $excludeTitle = true;
       include("header.inc.php");
 
+      if ( $mode == "MIP" ) {
+          $altMode = "SFP";
+      } else {
+          $altMode = "MIP";
+      }
+
       echo "</div>";
 
-      echo "<h3>Image comparison</h3>\n";
+      echo "<h3>Image comparison ($mode)</h3>\n";
 
       $pdest =  $this->destinationFolder();
 
@@ -724,16 +730,35 @@ Class Fileserver {
 
       $othumb_0 = rawurlencode($file.".original.".$size."_xy.jpg");
       $rthumb_0 = rawurlencode($file.".".$size."_xy.jpg");
+      
+      $osfp = rawurlencode($file.".original.sfp.jpg");
+      $rsfp = rawurlencode($file.".sfp.jpg");
+
+      if ( $mode == "MIP" ) {
+          $altPath = $pdest."/".$rsfp;
+      } else {
+          $altPath = $pdest."/".$rthumb_0;
+      }
 
       # YZ slices not shown by now, but here they are:
       $othumb_2 = rawurlencode($file.".original.".$size."_xy.jpg");
       $rthumb_2 = rawurlencode($file.".".$size."_xy.jpg");
 
-      echo "<td><img src=\"file_management.php?getThumbnail=$othumb_0&".
+      if ( $mode == "MIP" ) {
+
+          echo "<td><img src=\"file_management.php?getThumbnail=$othumb_0&".
               "dir=dest\"></td>";
 
-      echo "<td><img src=\"file_management.php?getThumbnail=$rthumb_0&".
+          echo "<td><img src=\"file_management.php?getThumbnail=$rthumb_0&".
               "dir=dest\"></td>";
+      } else {
+          echo "<td><img src=\"file_management.php?getThumbnail=$osfp&".
+              "dir=dest\"></td>";
+
+          echo "<td><img src=\"file_management.php?getThumbnail=$rsfp&".
+              "dir=dest\"></td>";
+
+      }
 
       echo "</tr>\n";
 
@@ -742,7 +767,7 @@ Class Fileserver {
       $rthumb_1 = $file.".".$size."_xz.jpg";
       $path = $pdest."/".$rthumb_1;
       $rthumb_1 = rawurlencode($rthumb_1);
-      if (file_exists($path)) {
+      if ($mode == "MIP" && file_exists($path)) {
           # is a 3D image, so it has a lateral view.
           echo "<tr>\n";
           echo "<td><img src=\"file_management.php?getThumbnail=$othumb_1&".
@@ -758,15 +783,27 @@ Class Fileserver {
       echo "<br><font size=-2>$file</font>\n";
       echo "<div id=\"info\">";
 
+      if (file_exists($altPath)) {
+          echo "<br><small><a href=\"file_management.php?compareResult=".rawurlencode($file)."&mode=$altMode\" >Compare images in $altMode view</a></small>\n";
+      }
+
+
+
       $mpath =  $pdest."/".$file.".stack.avi";
-      if (file_exists($mpath)) {
+      if ($mode == "MIP" && file_exists($mpath)) {
           $mSize = round(filesize($mpath) / 1024.0);
           echo "<br><small><a href=\"file_management.php?getMovie=".rawurlencode($file.".stack.avi")."\" >Download stack preview video ($mSize kB) </a></small>\n";
       }
-      $tspath =  $pdest."/".$file.".tSeries.avi";
+      if ( $mode == "MIP" ) {
+          $tspath =  $pdest."/".$file.".tSeries.avi";
+          $vname = $file.".tSeries.avi";
+      } else {
+          $tspath =  $pdest."/".$file.".tSeries.sfp.avi";
+          $vname = $file.".tSeries.sfp.avi";
+      }
       if (file_exists($tspath)) {
           $tsSize = round(filesize($tspath) / 1024.0);
-          echo "<br><small><a href=\"file_management.php?getMovie=".rawurlencode($file.".tSeries.avi")."\" >Download time-series preview video ($tsSize kB) </a></small>\n";
+          echo "<br><small><a href=\"file_management.php?getMovie=".rawurlencode($vname)."\" >Download time-series $mode preview video ($tsSize kB) </a></small>\n";
       }
 
 
@@ -774,16 +811,23 @@ Class Fileserver {
           echo "<br><small><a href=\"file_management.php?download=".rawurlencode($file)."\" onClick=\"changeDiv('info','Packaging files, please wait')\" >Download restored files</a></small>\n";
       }
 
+      echo "<br><br><a href=\"javascript:openWindow(".
+          "'http://support.svi.nl/wiki/style=hrm&amp;".
+          "help=HuygensRemoteManagerHelpCompareResult')\">".
+          "<img src=\"images/help.png\">".
+          "</a>";
+ 
       switch ($op) {
           case "close":
-             echo "<br><br><a href=\"#\" onClick=\"window.close()\">".
-                  "Close</a>\n";
+             echo " <a href=\"#\" onClick=\"window.close()\">".
+             "<img src=\"images/cancel_help.png\">".
+             "</a>\n";
              break;     
           case "home":
-              echo "<br><input type=\"button\" name=\"restart\"   value=\"\" ".
-                   "onclick=\"document.location.href=".
-                   "'select_parameter_settings.php'\" ".
-                   "class=\"icon restart\" />";
+             echo " <a href=\"#\" onClick=\"document.location.href=".
+             "'select_parameter_settings.php'\">".
+             "<img src=\"images/restart_help.png\">".
+             "</a>\n";
              break;
       }
       # echo "<script type=\"text/javascript\"> window.close(); <script>\n";

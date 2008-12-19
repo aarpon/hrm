@@ -157,7 +157,10 @@ $resultImagesRenamed = True;
 // To patch Huygens 3.3.0p3 to be able to use it, see
 // http://support.svi.nl/wiki/HH_HRMpreviews
 
-// If true, allows generates thumbnails and previews for the originals and the results during the deconvolution (i.e. in the computation servers).
+// If true, allows generates thumbnails and previews for the originals and the
+// results during the deconvolution (i.e. in the computation servers). These
+// are maximum intensity projections (MIP) of the stacks along the main axes,
+// so they provide xy, xz and zy views.
 $useThumbnails = true;
 
 // If true, allows on-demand generation of a preview of the original images in
@@ -175,6 +178,13 @@ $genThumbnails = true;
 // dimension.
 // This requires $useThumbnails = true;
 $movieMaxSize = 300;
+
+// If true, (and $useThumbnails is also true), it generates not only the MIP
+// previews but also Simulated Fluorescence Process top-view renderings of the
+// original and the restored images (http://support.svi.nl/wiki/SFP).
+$saveSfpPreviews = true;
+
+
 
 // internal links
 $internal_link["url"] = "<link> followed by text";
