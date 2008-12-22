@@ -146,7 +146,7 @@ else {
   }
   $parameter = $_SESSION["task_setting"]->parameter("SignalNoiseRatioUseRange");
   
-  if (count($signalNoiseRatioRange) > 0) {
+  if (isset($signalNoiseRatioRange) && count($signalNoiseRatioRange) > 0) {
     // << ECHO
     /*for ($i = 0; $i < count($signalNoiseRatioRange); $i++) {
       $range = $signalNoiseRatioRange[$i];
