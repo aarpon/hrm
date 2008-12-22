@@ -216,6 +216,7 @@ Class JobDescription {
   function createSubJobsforFiles() {
     $result = True;
     foreach ($this->files as $file) {
+      error_log("file=".$file);
       $newJobDescription = new JobDescription();
       $newJobDescription->copyFrom($this);
       $newJobDescription->setFiles(array($file));	
@@ -318,6 +319,9 @@ Class JobDescription {
     $matrix = array();
     //if (count($rangeParameter)==1) {
       $range = array_pop($rangeParameter);
+      if ($range == null) {
+          return;
+      }
       $value = array_filter($range->value());
       $snrValue = null;
       $iterationValue = null;
