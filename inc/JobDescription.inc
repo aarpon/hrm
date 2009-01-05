@@ -841,8 +841,8 @@ Class JobDescription {
     $this->pass = 2;
     $script = '';
     $script = $script . 'if {[img exists $imageName]} {$imageName del}' . "\n";
-    $script = $script . 'c genpsf -> psf -dims fullpadpar -z -reflCorr' . "\n";
-    $script = $script . 'c cmle psf -> c -sn {80} -it 7 -bgMode object -bg {-100} -blMode auto -q 0 -mode fast -pad fullpadpar' . "\n";
+    $script = $script . 'c genpsf -> psf -dims auto -z -reflCorr' . "\n";
+    $script = $script . 'c cmle psf -> c -sn {80} -it 7 -bgMode object -bg {-100} -blMode auto -q 0 -mode fast -pad auto' . "\n";
     $script = $script . $this->saveImageString();
     $this->pass = 1;
     return $script;

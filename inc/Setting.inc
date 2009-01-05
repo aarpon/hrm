@@ -2464,7 +2464,7 @@ Class JobTaskSetting extends TaskSetting {
         // Alternatively, this calculates a constant PSF for the provided
         // parameters, but it won't be adapted to the sample depth if spherical
         // aberration is present.
-		return 'catch { ' . $source . ' genpsf -> psf -dims fullpadpar -zPos '.
+		return 'catch { ' . $source . ' genpsf -> psf -dims auto -zPos '.
 			$position .' }' . "\n";
 	}
 
@@ -2486,7 +2486,7 @@ Class JobTaskSetting extends TaskSetting {
 		$result = $result . '-blMode auto ';
 		$result = $result . '-q 0 ';
 		$result = $result . '-mode fast ';
-		$result = $result . '-pad fullpadpar';
+		$result = $result . '-pad auto';
 		$result = $result . "\n";
 		return $result;
 	}
@@ -2502,7 +2502,7 @@ Class JobTaskSetting extends TaskSetting {
 		$result = $result . '-blMode auto ';
 		$result = $result . '-q 0 ';
 		$result = $result . '-mode fast ';
-		$result = $result . '-pad fullpadpar';
+		$result = $result . '-pad auto';
 		$result = $result . "\n";
 		return $result;
 	}
@@ -2545,7 +2545,7 @@ $value = $parameter->value();
 		$parameter = $this->parameter("QualityChangeStoppingCriterion");
 		$result = $result . $parameter->value() . " ";
 		$result = $result . '-mode fast ';
-		$result = $result . '-pad fullpadpar';
+		$result = $result . '-pad auto';
 		$result = $result . "\n";
 		return $result;
 	}
@@ -2583,7 +2583,7 @@ $value = $parameter->value();
 		$parameter = $this->parameter("QualityChangeStoppingCriterion");
 		$result = $result . $parameter->value() . " ";
 		$result = $result . '-mode fast ';
-		$result = $result . '-pad fullpadpar';
+		$result = $result . '-pad auto';
 		$result = $result . "\n";
 		return $result;
 	}
