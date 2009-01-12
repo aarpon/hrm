@@ -230,8 +230,10 @@ $instructions =
             That will
             create first a compressed archive including the selected files.
             </p><p>
+            Use the trash icon to delete the selected files.
+            </p><p>
             Please mind that large files may take a <b>long
-            time </b>to be packaged.
+            time </b>to be packaged before downloading.
             </p>";
 
 
