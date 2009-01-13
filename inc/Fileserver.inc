@@ -797,7 +797,7 @@ Class Fileserver {
       echo "<div id=\"info\">";
 
       if (file_exists($altPath)) {
-          echo "<br><small><a href=\"file_management.php?compareResult=".rawurlencode($file)."&mode=$altMode\" >Compare images in $altMode view</a></small>\n";
+          echo "<br><small><a href=\"file_management.php?compareResult=".rawurlencode($file)."&mode=$altMode&op=$op\" >Compare images in $altMode view</a></small>\n";
       }
 
 
