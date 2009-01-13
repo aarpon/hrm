@@ -196,8 +196,34 @@ if (isset($_POST['delete'])) {
     exit;
 }
 
+$files = $_SESSION['fileserver']->destFiles();
 
-$script = "common.js";
+if ($files != null) {
+
+    $generatedScript = "
+function imageAction (list) {
+    var n = list.selectedIndex;     // Which menu item is selected
+    var val = list[n].value;
+
+    switch ( val )
+    {
+";
+
+    foreach ($files as $key => $file) {
+        $generatedScript .= "
+        case \"$file\" :
+            ". $_SESSION['fileserver']->getImageAction($file,
+                $key, "dest", "preview", 1, 0). "
+            break;
+            ";
+    }
+
+
+    $generatedScript .= "
+    }
+}
+";
+}
 
 include("header.inc.php");
 
@@ -238,13 +264,12 @@ $instructions =
 
 
 // display only relevant files
-$files = $_SESSION['fileserver']->destFiles();
 $flag = "";
 if ($files == null) $flag = " disabled=\"disabled\"";
 
 
 ?>
-                    <select name="userfiles[]" size="10" multiple="multiple"<?php echo $flag ?>>
+                    <select onclick="javascript:imageAction(this)" name="userfiles[]" size="10" multiple="multiple"<?php echo $flag ?>>
 <?php
 
 if ($files != null) {

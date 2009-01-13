@@ -109,6 +109,65 @@ else if (isset($_POST['OK'])) {
 
 $script = "settings.js";
 
+// display only relevant files
+if ($fileFormat->value() == "ics") {
+    $files = $_SESSION['fileserver']->files("ics");
+}
+else if ($fileFormat->value() == "tiff" || $fileFormat->value() == "tiff-single") {
+  $files = $_SESSION['fileserver']->tiffFiles();
+}
+else if ($fileFormat->value() == "tiff-series") {
+  $files = $_SESSION['fileserver']->tiffSeriesFiles();
+}
+else if ($fileFormat->value() == "tiff-leica") {
+  $files = $_SESSION['fileserver']->tiffLeicaFiles();
+}
+else if ($fileFormat->value() == "stk") {
+  //if ($geometry->value() == "XY - time" || $geometry->value() == "XYZ - time") {
+    if ($_SESSION['setting']->isTimeSeries()) {
+      $files = $_SESSION['fileserver']->stkSeriesFiles();
+    }
+    else {
+      $files = $_SESSION['fileserver']->stkFiles();
+    }
+  //}
+  //else {
+  //  $files = $_SESSION['fileserver']->files("stk");
+  //}
+}
+else {
+  $files = $_SESSION['fileserver']->files();
+}
+
+if ($files != null) {
+
+    $generatedScript = "
+function imageAction (list) {
+    var n = list.selectedIndex;    // Which menu item is selected
+    var val = list[n].value;
+
+    switch ( val )
+    {
+";
+
+    foreach ($files as $key => $file) {
+        $generatedScript .= "
+        case \"$file\" :
+            ". $_SESSION['fileserver']->getImageAction($file,
+                $key, "src", "preview", 0, 1). "
+            break;
+            ";
+    }
+
+
+    $generatedScript .= "
+    }
+}
+";
+}
+
+
+
 include("header.inc.php");
 
 ?>
@@ -154,35 +213,6 @@ if ($enableUserAdmin) {
                 <div id="userfiles">
 <?php
 
-// display only relevant files
-if ($fileFormat->value() == "ics") {
-    $files = $_SESSION['fileserver']->files("ics");
-}
-else if ($fileFormat->value() == "tiff" || $fileFormat->value() == "tiff-single") {
-  $files = $_SESSION['fileserver']->tiffFiles();
-}
-else if ($fileFormat->value() == "tiff-series") {
-  $files = $_SESSION['fileserver']->tiffSeriesFiles();
-}
-else if ($fileFormat->value() == "tiff-leica") {
-  $files = $_SESSION['fileserver']->tiffLeicaFiles();
-}
-else if ($fileFormat->value() == "stk") {
-  //if ($geometry->value() == "XY - time" || $geometry->value() == "XYZ - time") {
-    if ($_SESSION['setting']->isTimeSeries()) {
-      $files = $_SESSION['fileserver']->stkSeriesFiles();
-    }
-    else {
-      $files = $_SESSION['fileserver']->stkFiles();
-    }
-  //}
-  //else {
-  //  $files = $_SESSION['fileserver']->files("stk");
-  //}
-}
-else {
-  $files = $_SESSION['fileserver']->files();
-}
 $flag = "";
 if ($files == null) {
     $flag = " disabled=\"disabled\"";
@@ -191,7 +221,7 @@ if ($files == null) {
 }
 
 ?>
-                    <select name="userfiles[]" size="10" multiple="multiple"<?php echo $flag ?>>
+                    <select onclick="javascript:imageAction(this)" name="userfiles[]" size="10" multiple="multiple"<?php echo $flag ?>>
 <?php
 $keyArr = array();
 if ($files != null) {
@@ -224,7 +254,7 @@ $flag = "";
 if ($files == null) $flag = " disabled=\"disabled\"";
 
 ?>
-                    <select name="selectedfiles[]" size="5" multiple="multiple"<?php echo $flag ?>>
+                    <select onclick="javascript:imageAction(this)" name="selectedfiles[]" size="5" multiple="multiple"<?php echo $flag ?>>
 <?php
 
 if ($files != null) {

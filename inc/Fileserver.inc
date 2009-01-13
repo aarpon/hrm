@@ -522,6 +522,23 @@ Class Fileserver {
   //!---------------------------------------------------------    
  
   function getImageOptionLine ($file, $index, $dir, $type, $ref = 0, $data = 1) {
+      $path = explode("/", $file);
+      if (count($path) > 2)
+          $filename = $path[0] . "/.../" . $path[count($path) - 1];
+      else
+          $filename = $file;
+
+      return 
+      "                        <option value=\"$file\">$filename</option>\n";
+  }
+
+  //!---------------------------------------------------------
+  // @function    Fileserver::getImageAction
+  // @desc        Generates a javascript command to show an image preview.
+  // @return      The javascript code.
+  //!---------------------------------------------------------    
+ 
+  function getImageAction ($file, $index, $dir, $type, $ref = 0, $data = 1) {
       global $useThumbnails;
       global $genThumbnails;
 
@@ -532,26 +549,23 @@ Class Fileserver {
           $filename = $file;
 
 
-      if ($useThumbnails) {
-          $mode = $this->imgPreviewMode($file, $dir, $type) ;
-          if ( $ref ) {
-              $referer = "?ref=". $_SESSION['referer'];
-          } else {
-              $referer = "";
-          }
-
-          # The first comparison mode is the 400x400 pixels preview.
-          $compare = $this->imgCompareMode($file, $dir, "400") ;
-          if ($compare > 0) { $compare = 400; }
-          return "                        <option ".
-          " onclick=\"javascript:imgPrev('".rawurlencode($file)."', $mode, ".
-          "$genThumbnails, $compare, $index, '$dir', ".
-          "'$referer', $data)\" value=\"$file\">$filename</option>\n";
-
+      $mode = $this->imgPreviewMode($file, $dir, $type) ;
+      if ( $ref ) {
+          $referer = "?ref=". $_SESSION['referer'];
       } else {
-          return "                        <option value=\"$file\">$filename</option>\n";
+          $referer = "";
       }
+
+      // The first comparison mode is the 400x400 pixels preview.
+      $compare = $this->imgCompareMode($file, $dir, "400") ;
+      if ($compare > 0) { $compare = 400; }
+      return 
+          "imgPrev('".rawurlencode($file)."', $mode, ".
+          "$genThumbnails, $compare, $index, '$dir', ".
+          "'$referer', $data)";
   }
+
+
 
  
   //!---------------------------------------------------------

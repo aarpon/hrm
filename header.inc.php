@@ -82,6 +82,21 @@ if (isset($script)) {
 
 }
 
+if (isset($generatedScript)) {
+
+?>
+    
+    <script>
+    <!--
+    <?php echo $generatedScript ?>
+    -->
+    </script>
+<?php
+
+}
+
+
+
 ?>
     <style type="text/css">
         @import "stylesheets/default.css";
