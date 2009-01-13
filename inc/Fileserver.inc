@@ -543,14 +543,13 @@ Class Fileserver {
           # The first comparison mode is the 400x400 pixels preview.
           $compare = $this->imgCompareMode($file, $dir, "400") ;
           if ($compare > 0) { $compare = 400; }
-
           return "                        <option ".
-          " onClick=\"imgPrev('".rawurlencode($file)."', $mode, ".
+          " onclick=\"javascript:imgPrev('".rawurlencode($file)."', $mode, ".
           "$genThumbnails, $compare, $index, '$dir', ".
-          "'$referer', $data)\">$filename</option>\n";
+          "'$referer', $data)\" value=\"$file\">$filename</option>\n";
 
       } else {
-          return "                        <option>$file</option>\n";
+          return "                        <option value=\"$file\">$filename</option>\n";
       }
   }
 
