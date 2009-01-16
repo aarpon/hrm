@@ -220,30 +220,36 @@ function huCoreTools ($tool, $options) {
     $cmd = "$local_huygens_core -task $hrm_path/scripts/hucore.tcl ".
            "-tool $tool $options 2>&1";
 
+
     $answer = exec($cmd, $output, $result);
 
     # printDebug ($cmd, $output, "res: $result ans: $answer");
 
     if ($result == 0) {
         $begin = array_search("BEGIN PROC", $output);
-        return array_slice($output, $begin);
-    } else {
-        $more = 0;
-        echo "<pre>";
-        foreach ( $output as $line ) {
-            if ($more > 0) {
-                echo ("$line\n");
-                $more -= 1;
-                if ( $more == 0 ) echo ("...\n");
-            }
-            if (stristr($line, "error")) {
-                echo ("$line\n");
-                $more = 2;
-            }
+        if ($begin) {
+            $ret = array_slice($output, $begin);
+            return $ret;
         }
-        echo "</pre>";
-        return NULL;
+    } 
+    $more = 0;
+    echo "<pre>ERROR with $cmd\n";
+    if ($result != 0) {
+        echo "$answer\n";
     }
+    foreach ( $output as $line ) {
+        if ($more > 0) {
+            echo ("$line\n");
+            $more -= 1;
+            if ( $more == 0 ) echo ("...\n");
+        }
+        if (stristr($line, "error")) {
+            echo ("$line\n");
+            $more = 2;
+        }
+    }
+    echo "</pre>";
+    return NULL;
 
 }
 

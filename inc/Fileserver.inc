@@ -924,7 +924,7 @@ Class Fileserver {
 
       $answer = huCoreTools( "generateImagePreview", $opt);
 
-      if (! $answer ) return;
+      # if (! $answer ) return;
       # printDebug ($answer);
 
       $lines = count($answer);
@@ -968,7 +968,9 @@ Class Fileserver {
           $html .= "$path does not exist.<br>";
       }
 
-      echo "<script type=\"text/javascript\"> changeDiv('info',''); </script>";
+      if ($answer !== NULL) 
+          echo "<script type=\"text/javascript\"> changeDiv('info','');".
+               "</script>";
       echo $html;
 
       if ($ok) {
@@ -989,7 +991,7 @@ Class Fileserver {
       } else {
           echo "\nchangeOpenerDiv('info','Preview generation failed.<br><br><kbd>".escapeJavaScript($html)."</kbd>'); ";
       }
-      echo "\nwindow.close();";
+      if ($answer !== NULL) echo "\nwindow.close();";
       echo "\n</script>\n\n";
       echo "<br><br><a href=\"#\" onClick=\"window.close()\">Close</a>\n";
       # echo "<script type=\"text/javascript\"> window.close(); <script>\n";
