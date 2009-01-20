@@ -96,7 +96,7 @@ $LAST_REVISION = 4;
 
 
 // For test purposes
-//$db_name = "prova";
+//$db_name = "hrm-test";
 
 
 // =============================================================================
@@ -132,7 +132,7 @@ function write_message($msg) {
 
 // Return an error message
 function error_message($table) {
-    return "An error occured while updating table " . $table . ".";
+    return "An error occurred while updating table " . $table . ".";
 }
 
 
@@ -291,7 +291,7 @@ function manage_enum($tabname, $field, $values_string, $default) {
         $SQLquery = "ALTER TABLE " . $tabname ." CHANGE " . $field . " " . $field . " ENUM(" . $values_string . ")";
 
     if(!$db->Execute($SQLquery)) {
-        $msg = "An error occured while updating the table " . $tabname . ".";
+        $msg = "An error occurred while updating the table " . $tabname . ".";
         write_message($msg);
         write_to_error($msg);
         return False;
@@ -353,12 +353,12 @@ if(!$db) {
     write_to_error($msg);
     return;
 }
-$datadict = NewDataDictionary($db, $db_type);   // Build a data dictionary
+$datadict = NewDataDictionary($db);   // Build a data dictionary   
 $databases = $db->MetaDatabases();
 if (!in_array($db_name, $databases)) {
     $createDb = $datadict->CreateDatabase($db_name);
     if(!$datadict->ExecuteSQLArray($createDb)) {
-        $msg = "An error occured in the creation of the HRM database.";
+        $msg = "An error occurred in the creation of the HRM database.";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -379,7 +379,7 @@ if(!$db) {
 }
 
 // Build a data dictionary to automate the creation of tables
-$datadict = NewDataDictionary($db, $db_type);
+$datadict = NewDataDictionary($db);
 
 // Extract the list of existing tables
 $tables = $db->MetaTables("TABLES");
@@ -410,7 +410,7 @@ if ($rs->EOF) { // If the variable dbrevision does not exist, create it and set 
     $record["value"] = "0";
     $insertSQL = $db->GetInsertSQL($rs, $record);
     if(!$db->Execute($insertSQL)) {
-        $msg = "An error occured while updating the table \"global_variables\".";
+        $msg = "An error occurred while updating the table \"global_variables\".";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -459,6 +459,16 @@ if ($current_revision == 0) {
         max_included \"enum ('t', 'f')\" DEFAULT t,
         standard C(30)
     ");
+    //$flds = ("
+    //    parameter C(255) DEFAULT 0 PRIMARY,
+    //    min C(30),
+    //    max C(30),
+    //    min_included C(1) DEFAULT t,
+    //    max_included C(1) DEFAULT t,
+    //    standard C(30)
+    //    CHECK(min_included IN('t','f'));
+    //    CHECK(max_included IN('t','f'));
+    //");
     if (!create_table($tabname, $flds))
         return;
     
@@ -1040,7 +1050,7 @@ if ($current_revision < $n) {
     $record["isDefault"] = "t";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
     if(!$db->Execute($insertSQL)) {
-        $msg = "An error occured while updateing the database to revision " . $n . ".";
+        $msg = "An error occurred while updateing the database to revision " . $n . ".";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -1051,7 +1061,7 @@ if ($current_revision < $n) {
     $record["isDefault"] = "f";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
     if(!$db->Execute($insertSQL)) {
-        $msg = "An error occured while updateing the database to revision " . $n . ".";
+        $msg = "An error occurred while updateing the database to revision " . $n . ".";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -1082,7 +1092,7 @@ if ($current_revision < $n) {
     $record["isDefault"] = "F";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
     if(!$db->Execute($insertSQL)) {
-        $msg = "An error occured while updateing the database to revision " . $n . ".";
+        $msg = "An error occurred while updateing the database to revision " . $n . ".";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -1108,7 +1118,7 @@ if ($current_revision < $n) {
     $tabname = "possible_values";
     $rs = $db->Execute("DELETE FROM " . $tabname . " WHERE parameter = 'CoverslipRelativePosition'");
     if(!$rs) {
-        $msg = "An error occured while updateing the database to revision " . $n . ".";
+        $msg = "An error occurred while updateing the database to revision " . $n . ".";
         write_message($msg);
         write_to_error($msg);
         return; 
@@ -1120,7 +1130,7 @@ if ($current_revision < $n) {
     $record["isDefault"] = "T";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
     if(!$db->Execute($insertSQL)) {
-        $msg = "An error occured while updateing the database to revision " . $n . ".";
+        $msg = "An error occurred while updateing the database to revision " . $n . ".";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -1131,7 +1141,7 @@ if ($current_revision < $n) {
     $record["isDefault"] = "F";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
     if(!$db->Execute($insertSQL)) {
-        $msg = "An error occured while updateing the database to revision " . $n . ".";
+        $msg = "An error occurred while updateing the database to revision " . $n . ".";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -1141,7 +1151,7 @@ if ($current_revision < $n) {
     $record["translation"] = "Do not perform depth-dependent correction";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
     if(!$db->Execute($insertSQL)) {
-        $msg = "An error occured while updateing the database to revision " . $n . ".";
+        $msg = "An error occurred while updateing the database to revision " . $n . ".";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -1194,7 +1204,7 @@ if ($current_revision < $n) {
     $record["extension"] = "zvi";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
     if(!$db->Execute($insertSQL)) {
-        $msg = "An error occured while updateing the database to revision " . $n . ".";
+        $msg = "An error occurred while updateing the database to revision " . $n . ".";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -1208,7 +1218,7 @@ if ($current_revision < $n) {
     $record["isVariableChannel"] = "t";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
     if(!$db->Execute($insertSQL)) {
-        $msg = "An error occured while updateing the database to revision " . $n . ".";
+        $msg = "An error occurred while updateing the database to revision " . $n . ".";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -1222,7 +1232,7 @@ if ($current_revision < $n) {
     $record["isDefault"] = "f";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
     if(!$db->Execute($insertSQL)) {
-        $msg = "An error occured while updateing the database to revision " . $n . ".";
+        $msg = "An error occurred while updateing the database to revision " . $n . ".";
         write_message($msg);
         write_to_error($msg);
         return;
