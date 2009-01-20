@@ -119,12 +119,22 @@ else {
       }
     }*/
   }
+
+  if (isset($_POST["DeconvolutionAlgorithm"]))
+      $algorithm = strtoupper($_POST["DeconvolutionAlgorithm"]);
+  else {
+      $algorithmValue = $_SESSION['task_setting']->parameter("DeconvolutionAlgorithm")->value();
+      if ($algorithmValue != null)
+        $algorithm = strtoupper($algorithmValue);
+      else
+        $algorithm = "CMLE";
+  }
   
   $backgroundOffsetPercentParam =  $_SESSION['task_setting']->parameter("BackgroundOffsetPercent");
   $backgroundOffset = $backgroundOffsetPercentParam->internalValue();
   for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
-    $signalNoiseRatioKey = "SignalNoiseRatio{$i}";
-    $backgroundOffsetKey = "BackgroundOffsetPercent{$i}";
+    $signalNoiseRatioKey = "SignalNoiseRatio".$algorithm.$i;
+    $backgroundOffsetKey = "BackgroundOffsetPercent".$algorithm.$i;
     if (isset($_POST[$signalNoiseRatioKey])) {
       // enable ranges for the signal to noise ratio
       $value = $_POST[$signalNoiseRatioKey];
@@ -138,6 +148,7 @@ else {
       }
       else {
         $signalNoiseRatio[$i] = $_POST[$signalNoiseRatioKey];
+        //echo $signalNoiseRatio[$i]."<br />";
       }
     }
     if (isset($_POST[$backgroundOffsetKey])) {
@@ -156,7 +167,6 @@ else {
         echo "signalNoiseRatioRange, channel ".$i." value ".$j." = ".$val."<br>";
       }
     }*/
-    // ECHO >>
     $parameter->setValue("True");
     $signalNoiseRatioRangeParam = $_SESSION['task_setting']->parameter("SignalNoiseRatioRange");
     for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
@@ -304,8 +314,13 @@ include("header.inc.php");
                     <a href="javascript:openWindow('http://support.svi.nl/wiki/RestorationMethod')"><img src="images/help.png" alt="?" /></a>
                     deconvolution algorithm
                 </legend>
-                
-                <select name="DeconvolutionAlgorithm">
+
+<?php
+
+$onChange = "onChange=\"javascript:switchSnrMode()\"";
+
+?>
+                <select name="DeconvolutionAlgorithm" <?php echo $onChange ?>>
                 
 <?php
 
@@ -350,10 +365,7 @@ foreach($possibleValues as $possibleValue) {
                     <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=SignalToNoiseRatio')"><img src="images/help.png" alt="?" /></a>
                     signal/noise ratio
                 </legend>
-                
-                <div id="snr">
-                
-                    <div class="multichannel">
+
 <?php
 
 $parameter = $_SESSION["task_setting"]->parameter("SignalNoiseRatioUseRange");
@@ -366,6 +378,19 @@ else {
   $signalNoiseRatioValue = $signalNoiseRatioParam->value();
 }
 
+?>
+                <div id="snr">
+
+<?php
+
+$visibility = " style=\"display: none\"";
+if ($selectedValue == "cmle")
+  $visibility = " style=\"display: block\"";
+
+?>
+                    <div id="cmle-snr" class="multichannel"<?php echo $visibility?>>
+<?php
+
 for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
   
   if ($parameter->isTrue()) {
@@ -377,16 +402,73 @@ for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
     }
   }
   else {
-    $value = $signalNoiseRatioValue[$i];
+    $value = "";
+    if ($selectedValue == "cmle")
+        $value = $signalNoiseRatioValue[$i];
   }
 
 ?>
-                        <span class="nowrap">Ch<?php echo $i ?>:<span class="multichannel"><input name="SignalNoiseRatio<?php echo $i ?>" type="text" size="8" value="<?php echo $value ?>" class="multichannelinput" /></span>&nbsp;</span>
+                        <span class="nowrap">Ch<?php echo $i ?>:<span class="multichannel"><input name="SignalNoiseRatioCMLE<?php echo $i ?>" type="text" size="8" value="<?php echo $value ?>" class="multichannelinput" /></span>&nbsp;</span>
 <?php
 
 }
 
 ?>
+                    </div>
+                    
+<?php
+
+$visibility = " style=\"display: none\"";
+if ($selectedValue == "qmle")
+  $visibility = " style=\"display: block\"";
+
+?>
+                    <div id="qmle-snr" class="multichannel"<?php echo $visibility?>>
+
+<?php
+
+for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
+
+?>
+                        <span class="nowrap">Ch<?php echo $i ?>:
+                            <select name="SignalNoiseRatioQMLE<?php echo $i ?>">
+<?php
+
+  for ($j = 1; $j <= 3; $j++) {
+      $option = "                                <option ";
+      if (isset($signalNoiseRatioValue)) {
+          if ($signalNoiseRatioValue[$i] >= 1 && $signalNoiseRatioValue[$i] <= 3) {
+            if ($j == $signalNoiseRatioValue[$i])
+                $option .= "selected=\"selected\" ";
+          }
+          else {
+              if ($j == 2)
+                $option .= "selected=\"selected\" ";
+          }
+      }
+      else {
+          if ($j == 2)
+            $option .= "selected=\"selected\" ";
+      }
+      $option .= "value=\"".$j."\">";
+      if ($j == 1)
+        $option .= "low</option>";
+      else if ($j == 2)
+        $option .= "fair</option>";
+      else if ($j == 3)
+        $option .= "good</option>";
+      echo $option;
+  }
+
+?>
+                            </select>
+                        </span>
+<?php
+
+}
+
+?>
+
                     </div>
                     
                 </div>

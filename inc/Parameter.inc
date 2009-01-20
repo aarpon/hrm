@@ -1358,6 +1358,171 @@ Class SignalNoiseRatio extends NumericalParameter {
 			$this->value[0] = $value;
 		}
 	}
+
+    function displayCMLEString($numberOfChannels = 0) {
+        $result = '';
+
+		$value = $this->value();
+        if ( $numberOfChannels > count( $value ) ) {
+            $numberOfChannels = count( $value );
+        }
+        $value = array_slice( $value, 0, $numberOfChannels );
+        if (count($value) > 0 && is_array($value[0])) {
+            $val = "";
+            for ($i = 0; $i < count($value); $i++) {
+                $value[$i] = array_filter($value[$i]);
+                if ($i > 0 && $value[$i] != null)
+                    $val .= ", ";
+                $val .= implode("/", $value[$i]);
+            }
+            $value = $val;
+        }
+        else {
+            $value = array_filter($value);
+            $value = implode(", ", $value);
+        }
+
+        $name = $this->name() . ":";
+		$uppercase = array (
+			'A',
+			'B',
+			'C',
+			'D',
+			'E',
+			'F',
+			'G',
+			'H',
+			'I',
+			'J',
+			'K',
+			'L',
+			'M',
+			'N',
+			'O',
+			'P',
+			'Q',
+			'R',
+			'S',
+			'T',
+			'U',
+			'V',
+			'W',
+			'X',
+			'Y',
+			'Z'
+		);
+		$lowercase = array (
+			' a',
+			' b',
+			' c',
+			' d',
+			' e',
+			' f',
+			' g',
+			' h',
+			' i',
+			' j',
+			' k',
+			' l',
+			' m',
+			' n',
+			' o',
+			' p',
+			' q',
+			' r',
+			' s',
+			' t',
+			' u',
+			' v',
+			' w',
+			' x',
+			' y',
+			' z'
+		);
+		$name = str_replace($uppercase, $lowercase, $name);
+		$result .= str_pad($name, 35, ' ', STR_PAD_RIGHT);
+
+		return $result . $value . "\n";
+    }
+
+    function displayQMLEString($numberOfChannels = 0) {
+        $snr = array("1" => "low", "2" => "fair", "3" => "good");
+        
+        $result = '';
+
+		$value = $this->value();
+        if ( $numberOfChannels > count( $value ) ) {
+            $numberOfChannels = count( $value );
+        }
+        $value = array_slice( $value, 0, $numberOfChannels );
+        $value = array_filter($value);
+        for ($i = 0; $i < count($value); $i++) {
+            $val[$i] = $snr[$value[$i]];
+        }
+        $value = implode(", ", $val);
+
+        $name = $this->name() . ":";
+		$uppercase = array (
+			'A',
+			'B',
+			'C',
+			'D',
+			'E',
+			'F',
+			'G',
+			'H',
+			'I',
+			'J',
+			'K',
+			'L',
+			'M',
+			'N',
+			'O',
+			'P',
+			'Q',
+			'R',
+			'S',
+			'T',
+			'U',
+			'V',
+			'W',
+			'X',
+			'Y',
+			'Z'
+		);
+		$lowercase = array (
+			' a',
+			' b',
+			' c',
+			' d',
+			' e',
+			' f',
+			' g',
+			' h',
+			' i',
+			' j',
+			' k',
+			' l',
+			' m',
+			' n',
+			' o',
+			' p',
+			' q',
+			' r',
+			' s',
+			' t',
+			' u',
+			' v',
+			' w',
+			' x',
+			' y',
+			' z'
+		);
+		$name = str_replace($uppercase, $lowercase, $name);
+		$result .= str_pad($name, 35, ' ', STR_PAD_RIGHT);
+
+		return $result . $value . "\n";
+    }
 }
 
 Class SignalNoiseRatioUseRange extends BooleanParameter {

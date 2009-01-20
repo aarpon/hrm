@@ -422,8 +422,8 @@ Class Setting {
 			if ($parameter->name() == 'CCDCaptorSizeX' && $PSF == 'measured' )
 				continue;		
 			if ($parameter->name() == 'CoverslipRelativePosition' && $PSF == 'measured' )
-				continue;		
-			$result = $result . $parameter->displayString( $numberOfChannels );
+				continue;
+            $result = $result . $parameter->displayString( $numberOfChannels );
 		}
 		return $result;
 	}
@@ -2014,6 +2014,7 @@ Class TaskSetting extends Setting {
 	//!---------------------------------------------------------        
 	function displayString( $numberOfChannels = 0 ) {	// return the string that will be attach to the success notification message 
 		$result = '';
+        $algorithm = $this->parameter('DeconvolutionAlgorithm')->value();
 		$parameter = $this->parameter('SignalNoiseRatioUseRange');
 		$rangeUsedForSignalNoiseRatio = ($parameter->value() == 'True');
 		$parameter = $this->parameter('BackgroundOffsetUseRange');
@@ -2056,7 +2057,6 @@ Class TaskSetting extends Setting {
 				continue;
 			}
 			if (in_array($parameter->name(), array (
-					'SignalNoiseRatio',
 					'BackgroundOffsetPercent',
 					'NumberOfIterations'
 				)) && !$fullRestoration) {
@@ -2068,7 +2068,16 @@ Class TaskSetting extends Setting {
 			//	$snr = $parameter->value();
 			//	$parameter->setValue(array_slice($snr, 0, $this->numberOfChannels() ));
 			//}
-			$result = $result . $parameter->displayString( $numberOfChannels );
+            if ($parameter->name() == 'SignalNoiseRatio') {
+                $snr = $parameter->value();
+				$parameter->setValue(array_slice($snr, 0, $this->numberOfChannels() ));
+                if ($algorithm == 'cmle')
+                    $result = $result . $parameter->displayCMLEString($numberOfChannels);
+                else if ($algorithm == 'qmle')
+                    $result = $result . $parameter->displayQMLEString($numberOfChannels);
+            }
+            else
+                $result = $result . $parameter->displayString( $numberOfChannels );
 			//if ($parameter->name() == 'SignalNoiseRatio') {
 			//	$parameter->setValue($snr);
 			//}

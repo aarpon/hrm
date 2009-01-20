@@ -92,3 +92,8 @@ function fixCoverslip( state ) {
         }
     }
 }
+
+function switchSnrMode() {
+    changeVisibility('cmle-snr');
+    changeVisibility('qmle-snr');
+}

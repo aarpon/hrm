@@ -38,8 +38,6 @@ function openTool(url) {
     popup.focus();
 }
 
-
-
 function changeDiv(div, html) {
     document.getElementById(div).innerHTML= html;
 }
@@ -180,4 +178,10 @@ function imgPrev(infile, mode, gen, compare, index, dir, referer, data) {
     changeDiv('info', html);
 }
 
-
+function changeVisibility(id) {
+    blockElement = document.getElementById(id);
+    if (blockElement.style.display == "none")
+        blockElement.style.display = "block";
+    else if (blockElement.style.display == "block")
+        blockElement.style.display = "none";
+}
