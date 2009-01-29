@@ -452,7 +452,7 @@ td.operations input {
 }
 
 tr.disabled {
-    background: lightgrey;
+    background: silver;
 }
 
 a.selected {
@@ -570,19 +570,19 @@ input.restart {
 }
 
 input.oversampled {
-    background-color: lightblue;
+    background-color: #ADDFFF; /* This was lightblue */
 }
 
 input.optimal {
-    background-color: limegreen;
+    background-color: #41A317; /* This was limegreen */
 }
 
 input.valid {
-    background-color: orange;
+    background-color: #FF8040; /* This was orange */
 }
 
 input.invalid {
-    background-color: orangered;
+    background-color: #FF0000; /* This was orangered */
 }
 
 input.noPreview {
@@ -681,5 +681,5 @@ option.default {
 }
 
 .disabled {
-    background: grey;
+    background: gray;
 }
