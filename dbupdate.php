@@ -342,7 +342,6 @@ if (!($fh = @fopen($log_file, 'a'))) {
 }
 chmod($log_file, 0666);
 write_to_log(timestamp());
-//write_message(timestampADODB());
 
 // Open error log file
 $error_file = "run/dbupdate_error.log";
@@ -788,7 +787,7 @@ if ($current_revision == 0) {
     $flds = "
         id C(30) NOTNULL DEFAULT 0 PRIMARY,
         username C(30) NOTNULL,
-        queued T NOTNULL DEFAULT '0000-00-00 00:00:00',
+        queued T DEFAULT NULL,
         start T DEFAULT NULL,
         stop T DEFAULT NULL,
         server C(30) DEFAULT NULL,
@@ -1001,13 +1000,14 @@ if ($current_revision == 0) {
     //    last_access_date T NOTNULL DEFAULT '0000-00-00 00:00:00',
     //    status C(10) NOTNULL
     //";
+    $defaultTimestamp = timestampADODB();
     $flds = "
         name C(30) NOTNULL PRIMARY,
         password C(255) NOTNULL,
         email C(80) NOTNULL,
         research_group C(30) NOTNULL,
-        creation_date T NOTNULL DEFAULT '" . timestampADODB() ."',
-        last_access_date T NOTNULL DEFAULT '" . timestampADODB() . "',
+        creation_date T NOTNULL DEFAULT '" . $defaultTimestamp ."',
+        last_access_date T NOTNULL DEFAULT '" . $defaultTimestamp . "',
         status C(10) NOTNULL
     ";
     if (in_array($tabname, $tables)) {
@@ -1024,8 +1024,8 @@ if ($current_revision == 0) {
                     "password"=>array("e903fece385fd2167780216958310b0d"),
                     "email"=>array(" "),
                     "research_group"=>array(" "),
-                    "creation_date"=>array(" "),
-                    "last_access"=>array(" "),
+                    "creation_date"=>array($defaultTimestamp),
+                    "last_access"=>array($defaultTimestamp),
                     "status"=>array("a")
                     );
         if(!insert_records($records,$tabname)) 
