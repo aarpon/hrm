@@ -218,7 +218,7 @@ function check_table_existence_and_structure($tabname,$flds) {
     global $datadict;
     
     $sqlarray = $datadict->ChangeTableSQL($tabname, $flds);
-    $rs = $datadict->ExecuteSQLArray($sqlarray);    // return 0 if failed, 1 if executed all but with errors, 2 if executed successfully 
+    $rs = $datadict->ExecuteSQLArray($sqlarray);    // return 0 if failed, 1 if executed all but with errors, 2 if executed successfully
     if($rs != 2) {
         $msg = error_message($tabname);
         write_message($msg);
@@ -933,8 +933,12 @@ if ($current_revision == 0) {
         name C(30) NOTNULL PRIMARY,
         standard C(1) DEFAULT f
     ";
-    if(!check_table_existence_and_structure($tabname,$flds))     
-        return;
+    if (!in_array($tabname, $tables)) {
+        if (!create_table($tabname, $flds))     
+            return;
+    }
+    //if(!check_table_existence_and_structure($tabname,$flds))     
+    //    return;
     
     // Manage enum problem
     //$values_string = "'t', 'f'";
@@ -955,8 +959,12 @@ if ($current_revision == 0) {
         name C(30) NOTNULL PRIMARY,
         standard C(1) DEFAULT f
     ";
-    if(!check_table_existence_and_structure($tabname,$flds))     
-        return;
+    if (!in_array($tabname, $tables)) {
+        if (!create_table($tabname, $flds))     
+            return;
+    }
+    //if(!check_table_existence_and_structure($tabname,$flds))     
+    //    return;
     
     // Manage enum problem
     //$values_string = "'t', 'f'";
@@ -979,8 +987,12 @@ if ($current_revision == 0) {
         status C(12) NOTNULL DEFAULT free,
         job C(30) DEFAULT NULL
     ";
-    if(!check_table_existence_and_structure($tabname,$flds))     
-        return;
+    if (!in_array($tabname, $tables)) {
+        if (!create_table($tabname, $flds))     
+            return;
+    }
+    //if(!check_table_existence_and_structure($tabname,$flds))     
+    //    return;
     
     // Manage enum problem
     //$values_string = "'busy', 'disconnected', 'free'";
@@ -988,7 +1000,7 @@ if ($current_revision == 0) {
     //    return;
     
     
-        // username
+    // username
     // -------------------------------------------------------------------------
     $tabname = "username";
     //$flds = "
@@ -1010,14 +1022,13 @@ if ($current_revision == 0) {
         last_access_date T NOTNULL DEFAULT '" . $defaultTimestamp . "',
         status C(10) NOTNULL
     ";
-    if (in_array($tabname, $tables)) {
-        if(!check_table_existence_and_structure($tabname,$flds))     
+    if (!in_array($tabname, $tables)) {
+        if (!create_table($tabname, $flds))     
             return;
     }
-    else {
-        if (!create_table($tabname, $flds))   
-            return;
-    }
+    //if(!check_table_existence_and_structure($tabname,$flds))     
+    //        return;
+
     $rs = $db->Execute("SELECT * FROM username WHERE name = 'admin'");
     if($rs->EOF) {
         $records = array("name"=>array("admin"),
@@ -1048,8 +1059,12 @@ if ($current_revision == 0) {
         name C(30) NOTNULL PRIMARY,
         value C(255) DEFAULT NULL
     ";
-    if(!check_table_existence_and_structure($tabname,$flds))    
-        return;
+    if (!in_array($tabname, $tables)) {
+        if (!create_table($tabname, $flds))     
+            return;
+    }
+    //if(!check_table_existence_and_structure($tabname,$flds))    
+    //    return;
     $fields_set = array('owner','setting','name','value');
     $primary_key = array('owner','setting','name');
     // Verify fields (number of #) where value = 'NumberOfIterationsRange'
@@ -1081,8 +1096,12 @@ if ($current_revision == 0) {
         name C(30) NOTNULL DEFAULT 0 PRIMARY,
         value C(255) DEFAULT NULL
     ";
-    if(!check_table_existence_and_structure($tabname,$flds))   
-        return;
+    if (!in_array($tabname, $tables)) {
+        if (!create_table($tabname, $flds))     
+            return;
+    }
+    //if(!check_table_existence_and_structure($tabname,$flds))   
+    //    return;
     $fields_set = array('owner','setting','name','value');
     $primary_key = array('owner','setting','name');
     // Verify fields (number of #) where value = 'PSF'
