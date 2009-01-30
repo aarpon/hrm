@@ -351,9 +351,10 @@ Class JobDescription {
           $iterationValue = $value;
         }
       }
+      // COMBINATORIAL combinations
       // what is the form of matrix?
       // compute matrix dimensions
-      $dim = 1;
+      /*$dim = 1;
       if ($snrValue != null) {
         for ($i = 0; $i < $numberOfChannels; $i++) {
           $dim *= count($snrValue[$i]);
@@ -393,6 +394,37 @@ Class JobDescription {
           $s .= $row[$k] . " ";
         }
         error_log($s);
+      }*/
+      // SIMPLE combinations
+      if ($snrValue != null) {
+          $val = array_filter($snrValue);
+          $range = count($val[0]);
+          for ($i = 0; $i < $range; $i++) {
+              $matrix[$i] = array();
+              for ($j = 0; $j < $numberOfChannels; $j++) {
+                  $matrix[$i][] = $val[$j][$i];
+              }
+          }
+      }
+      if ($iterationValue != null) {
+          $val = array_filter($iterationValue);
+          if (count($matrix) != 0) {
+              for ($j = 0; $j < count($iterationValue); $j++) {
+                  for ($i = 0; $i < $range; $i++) {
+                      if ($j == 0) {
+                          $matrix[$i][] = $iterationValue[$j];
+                      }
+                      else {
+                          $matrix[] = $matrix[$i];
+                          $matrix[count($matrix) - 1][count($matrix[0]) - 1] = $iterationValue[$j];
+                      }
+                  }
+              }
+          }
+          else {
+              for ($j = 0; $j < count($iterationValue); $j++)
+                $matrix[] = array($iterationValue[$j]);
+          }
       }
       return $matrix;
     /*} else { 

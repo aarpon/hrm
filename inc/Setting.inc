@@ -1824,10 +1824,14 @@ Class TaskSetting extends Setting {
 		$parameter = $this->parameter('SignalNoiseRatioUseRange');
 		if ($parameter->value() == 'True') {
 			$parameter = $this->parameter('SignalNoiseRatioRange');
+            $range = count(array_filter($parameter->value[0]));
 			for ($i = 0; $i < $this->numberOfChannels(); $i++) {
-			
 				$val = $parameter->value[$i];
-			
+                if ($range != count(array_filter($val))) {
+                    $this->message = "Please enter the same number of values for all channels!";
+                    return False;
+                }
+
 				if ($val[0] == NULL) {
 					$this->message = "Please enter a valid signal/noise ratio for channel " . $i . "! The value must be larger than 0.";
 					return False;
