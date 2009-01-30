@@ -18,10 +18,10 @@ $db_host = "localhost";
 $db_name = "hrm";
 
 // The name of the user with which the database is accessed
-$db_user = "root";
+$db_user = "dbuser";
 
 // The password of the account with which the database is accessed
-$db_password = "";
+$db_password = "dbpasswd";
 
 //==============================================================================
 // Huygens settings
