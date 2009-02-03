@@ -2079,12 +2079,12 @@ Class TaskSetting extends Setting {
                 $snr = $parameter->value();
 				$parameter->setValue(array_slice($snr, 0, $this->numberOfChannels() ));
                 if ($algorithm == 'cmle')
-                    $result = $result . $parameter->displayCMLEString($numberOfChannels);
+                    $result = $result . $parameter->displayCMLEString($this->numberOfChannels());
                 else if ($algorithm == 'qmle')
-                    $result = $result . $parameter->displayQMLEString($numberOfChannels);
+                    $result = $result . $parameter->displayQMLEString($this->numberOfChannels());
             }
             else
-                $result = $result . $parameter->displayString( $numberOfChannels );
+                $result = $result . $parameter->displayString($this->numberOfChannels());
 			//if ($parameter->name() == 'SignalNoiseRatio') {
 			//	$parameter->setValue($snr);
 			//}
