@@ -86,8 +86,8 @@
 //    it is simply updated to the last revision.
 
 
-include "inc/hrm_config.inc";
-include "inc/reservation_config.inc";
+include "../inc/hrm_config.inc";
+include "../inc/reservation_config.inc";
 include $adodb;
 
 
@@ -333,7 +333,7 @@ function in_array_multi($needle,$haystack) {
 // -----------------------------------------------------------------------------
 
 // Open log file
-$log_file = "run/dbupdate.log";
+$log_file = "dbupdate.log";
 if (!($fh = @fopen($log_file, 'a'))) {
     $msg = "Cannot open the dbupdate log file.";
     write_message($msg);
@@ -344,7 +344,7 @@ chmod($log_file, 0666);
 write_to_log(timestamp());
 
 // Open error log file
-$error_file = "run/dbupdate_error.log";
+$error_file = "dbupdate_error.log";
 if (!($efh = @fopen($error_file, 'a'))) { // If the file does not exist, it is created
     $msg = "Cannot open the dbupdate error file."; // If the file does not exist and cannot be created, an error message is displayed 
     write_message($msg);
