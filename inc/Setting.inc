@@ -975,6 +975,9 @@ Class ParameterSetting extends Setting {
             $parameter = $this->parameter('MicroscopeType');
             $micr = $parameter->translatedValue();
 
+            $parameter = $this->parameter('ObjectiveType');
+            $ril = $parameter->translatedValue();
+
             if ($this->isTwoPhoton()) {
                 $pcnt = 2;
             } else {
@@ -982,7 +985,7 @@ Class ParameterSetting extends Setting {
             }
             // Only micr, na, em, ex and pcnt are necessary to calculate it.
 
-            $opt = "-micr $micr -na $na -em $em -ex $ex -pcnt $pcnt";
+            $opt = "-micr $micr -na $na -em $em -ex $ex -pcnt $pcnt -ril $ril";
             $ideal = askHuCore ("calculateNyquistRate", $opt);
             // echo "NYQUIST: $ideal";
             return explode(' ', $ideal);

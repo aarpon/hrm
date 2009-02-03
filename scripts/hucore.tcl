@@ -205,16 +205,20 @@ proc generateImagePreview {} {
 
 proc calculateNyquistRate {} {
 
-    foreach var {micr na ex em pcnt} {
+    set error 0
+    foreach var {micr na ex em pcnt ril} {
         set $var [Hu_getOpt -$var]
         if { [set $var] == -1 } {
             puts "ERROR"
             puts "Wrong arguments, -$var is missing."
+            set error 1
         } else {
             puts "$var [set $var]"
         }
     }
-    a setp -na $na -ex $ex -em $em -pcnt $pcnt \
+
+    if { $error } { exit 1 }
+    a setp -na $na -ex $ex -em $em -pcnt $pcnt -ril $ril \
         -micr $micr -s {1 1 1}
 
     set nrate [a nyq -tclReturn]
