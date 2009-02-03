@@ -434,10 +434,10 @@ for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
                             <select name="SignalNoiseRatioQMLE<?php echo $i ?>">
 <?php
 
-  for ($j = 1; $j <= 3; $j++) {
+  for ($j = 1; $j <= 4; $j++) {
       $option = "                                <option ";
       if (isset($signalNoiseRatioValue)) {
-          if ($signalNoiseRatioValue[$i] >= 1 && $signalNoiseRatioValue[$i] <= 3) {
+          if ($signalNoiseRatioValue[$i] >= 1 && $signalNoiseRatioValue[$i] <= 4) {
             if ($j == $signalNoiseRatioValue[$i])
                 $option .= "selected=\"selected\" ";
           }
@@ -457,6 +457,8 @@ for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
         $option .= "fair</option>";
       else if ($j == 3)
         $option .= "good</option>";
+      else if ($j == 4)
+        $option .= "inf</option>";
       echo $option;
   }
 

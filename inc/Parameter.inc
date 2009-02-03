@@ -1446,7 +1446,7 @@ Class SignalNoiseRatio extends NumericalParameter {
     }
 
     function displayQMLEString($numberOfChannels = 0) {
-        $snr = array("1" => "low", "2" => "fair", "3" => "good");
+        $snr = array("1" => "low", "2" => "fair", "3" => "good", "4" => "inf");
         
         $result = '';
 
