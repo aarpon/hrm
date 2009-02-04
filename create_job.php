@@ -145,12 +145,31 @@ if ($enableUserAdmin) {
 $parameter = $_SESSION['task_setting']->parameter("OutputFileFormat");
 $value = $parameter->value();
 
+// Make sure that if we had TIFF-16 bit as output file format and a multichannel
+// dataset, we reset the value to ics
+if ( $value == 'TIFF 16-bit' ) {
+  $nChannelsParameter = $_SESSION['setting']->parameter("NumberOfChannels");
+  $numberOfChannels = $nChannelsParameter->value( );
+  if ( $numberOfChannels > 1 ) {
+    $parameter->setValue("ICS (Image Cytometry Standard)");
+    $_SESSION['first_visit'] = False;
+  }
+}
+
 ?>
                 <select name="OutputFileFormat" id="OutputFileFormat" size="1">
 <?php
 
 $possibleValues = $parameter->possibleValues(); // extract possible values for OutputFileFormat
 
+// If the dataset is multi-channel, we remove the TIFF-16 bit option from the list
+$nChannelsParameter = $_SESSION['setting']->parameter("NumberOfChannels");
+$numberOfChannels = $nChannelsParameter->value( );
+if ( $numberOfChannels > 1 ) {
+  $possibleValues = array_diff($possibleValues, array( 'TIFF 16-bit' ) );
+  $possibleValues = array_values( $possibleValues );
+}
+  
 if (!isset($_SESSION['first_visit'])) { // if 'first visit' is not set, set the OutputFileFormat as ICS
   $parameter->setValue("ICS (Image Cytometry Standard)");
   $_SESSION['first_visit'] = False;
@@ -266,6 +285,11 @@ else {
 		<img src="images/ok_help.png" alt="Create job" width="22" height="22" />
 		<b>create job</b> button to add the job to the queue.
             </p>
+            <?php
+              if ( $numberOfChannels > 1 ) {
+                echo "<p>Please notice that is not possible to save multichannel datasets in TIFF-16 bit format.</p>";
+              }
+            ?>
          
         </div>
         
