@@ -351,7 +351,7 @@ if (!($efh = @fopen($error_file, 'a'))) { // If the file does not exist, it is c
     write_to_error($msg);
     return;
 }
-chmod($log_file, 0666);
+chmod($error_file, 0666);
 write_to_error(timestamp());
 
 //  Check if the database exists; if it does not exist, create it
