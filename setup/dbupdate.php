@@ -87,7 +87,6 @@
 
 
 include "../inc/hrm_config.inc";
-include "../inc/reservation_config.inc";
 include $adodb;
 
 
