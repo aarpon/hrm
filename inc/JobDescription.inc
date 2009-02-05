@@ -517,7 +517,7 @@ Class JobDescription {
         switch ($type) {
           case "tiff":
           case "tiff16":
-            $newScript = $newScript . "c save \"$dstfilename.$fileFormat\" -type $type -tiffMultiDir\n";
+            $newScript = $newScript . "c save \"$dstfilename.$fileFormat\" -type $type -tiffMultiDir -cmode scale\n";
             break;
           default:
             $newScript = $newScript . "c save \"$dstfilename.$fileFormat\" -type $type\n";
@@ -955,10 +955,11 @@ Class JobDescription {
 //    }
     $result = $result . "c save " . '"' . $imageFileName . "." . $extension .'"' . " -type $type";
 
+    // Set -cmode to 'scale' for 8 bit datasets
     if ($type == 'tiff' || $type == 'tiff16') {
-        $result = $result . " -tiffMultiDir";
+        $result = $result . " -tiffMultiDir -cmode scale";
     }
-
+    
     if ( $isResult ) {
         // Save preview.
         if ( $useThumbnails ) {
