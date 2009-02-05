@@ -65,8 +65,10 @@ include("header.inc.php");
     <div id="content">
     
         <h2>Changes in HRM version <?php readfile("version"); ?></h2>
-        
-        <p>...</p>
+
+	<div id="about">
+		<p><?php readfile("changelog"); ?></p>
+	</div> <!-- about -->
         
     </div> <!-- content -->
     

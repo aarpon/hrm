@@ -66,20 +66,29 @@ include("header.inc.php");
 	<div id="about">
 
 		<h2>About HRM version <?php readfile("version"); ?></h2>
-	
+		<p><strong>Important: </strong>The HRM requires <strong>Huygens Core v3.3.1 and above</strong> for full functionality.</p>
+
 		<h3>Copyright</h3>
 		<p>2004 - 2009, Montpellier RIO Imaging (CNRS)</p>
 
-		<h3>Contributors</h3>
-		<p>Pierre Travo	(concept)<br />
-		Volker Baecker (volker.baecker@users.sourceforge.net): concept, implementation<br />
-		Aaron Ponti (aarpon@users.sourceforge.net): contributor<br />
-		Alessandra Griffa (agriffa@users.sourceforge.net): contributor<br />
-		Asheesh Gulati (gulati9@users.sourceforge.net) :contributor<br />
-		José Viña (jose@svi.nl): contributor</p>
+		<h3>Original concept</h3>
+		<p><strong>Pierre Travo<sup>1</sup></strong> (concept);<br />
+		<strong>Volker Bäcker<sup>1</sup></strong> (concept and implementation).</p>
+		<p><sup><strong>1</strong></sup> Montpellier RIO Imaging (CNRS).</p>
 
+		<h3>Further development</h3>
+		<p><strong>Patrick Schwarb<sup>2</sup></strong> (initiator);<br />
+		<strong>Aaron Ponti<sup>2</sup></strong> (concept and implementation);<br />
+		<strong>Asheesh Gulati<sup>3</sup></strong> (concept and implementation);<br />
+		<strong>Alessandra Griffa<sup>3</sup></strong> (concept and implementation);<br />
+		<strong>José Viña<sup>4</sup></strong> (concept and implementation).</p>
+		
+		<p><sup><strong>2</strong></sup> Friedrich Miescher Institute, Basel (FMI);<br />
+		<sup><strong>3</strong></sup> École Polytechnique Fédérale de Lausanne (EPFL);<br />
+		<sup><strong>4</strong></sup> Scientific Volume Imaging, Hilversum (SVI).</p>
+		
 		<h3>Web</h3>
-		<p>http://hrm.sourceforge.net</p>
+		<p><a href="javascript:openWindow('http://hrm.sourceforge.net')">http://hrm.sourceforge.net</a></p>
 
 		<p>The Huygens Remote Manager (HRM) is a web-based deconvolution platform primarily targeted to microscopy
 		and imaging facilities in academic and industrial environments that must handle large user bases.
