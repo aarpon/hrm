@@ -231,6 +231,29 @@ proc calculateNyquistRate {} {
 }
 
 
+proc reportVersionNumberAsInteger { } {
+
+    set version [huOpt version -engine]
+    set exp {([0-9]+)\.([0-9]+)\.([0-9]+)p([0-9]+)}
+
+    set matched [ regexp $exp $version match \
+              ceMajor ceMinor1 ceMinor2 cePatch ]
+
+    if { !$matched } {
+        puts "ERROR"
+        puts "Can't parse version number '$version'"
+        exit 1
+    } else {
+        set verInteger [expr $ceMajor * 1000000  + $ceMinor1 * 10000 \
+                                    + $ceMinor2 * 100 + $cePatch]
+    }
+
+    puts "reportVersionNumberAsInteger RETURN"
+    puts "$verInteger"
+
+}
+
+
 # ----------------   MAIN routine -----------------
 # Execute selected procedure
 

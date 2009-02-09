@@ -263,11 +263,11 @@ function huCoreTools ($tool, $options) {
 //              hucore output.
 // @return      The requested string.
 //!---------------------------------------------------------
-function askHuCore ($tool, $options, $param = "") {
+function askHuCore ($tool, $options = "", $keyword = "") {
 
       // If no keyword is provided, then it is assumed that the keyword Huygens
-      // will use is the same function name plus " RETURN".
-      if ($param == "" ) { $param = "$tool RETURN"; }
+      // will use to report back is the same function name plus " RETURN".
+      if ($keyword == "" ) { $keyword = "$tool RETURN"; }
 
       $answer = huCoreTools( $tool, $options );
 
@@ -294,7 +294,7 @@ function askHuCore ($tool, $options, $param = "") {
                   echo $answer[$i]."\n";
                   ob_flush();
                   flush();
-              case $param :
+              case $keyword :
                   $i ++;
                   $ret .= $sep.$answer[$i];
                   $sep = " ";
