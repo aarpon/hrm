@@ -96,7 +96,7 @@ include $adodb;
 
 
 // Database last revision
-$LAST_REVISION = 4;
+$LAST_REVISION = 5;
 
 
 // For test purposes
@@ -522,7 +522,7 @@ if ($current_revision == 0) {
     $flds = "
         parameter C(30) NOTNULL DEFAULT 0 PRIMARY,
         value C(255) NOTNULL DEFAULT 0 PRIMARY,
-        translation C(50) DEFAULT NULL,
+        translation C(255) DEFAULT NULL,
         isDefault C(1) DEFAULT f
     ";
     if (!create_table($tabname, $flds)) 
@@ -1221,6 +1221,7 @@ if ($current_revision < $n) {
         write_to_error($msg);
         return; 
     }
+    
     $record = array();
     $record["parameter"] = "CoverslipRelativePosition";
     $record["value"] = "closest";
@@ -1344,6 +1345,166 @@ if ($current_revision < $n) {
     write_message($msg);
     write_to_log($msg);  
 }
+
+
+// -----------------------------------------------------------------------------
+// Update to revision 5
+// Description: modification for Spherical Aberration correction 
+// -----------------------------------------------------------------------------
+$n = 5;
+if ($current_revision < $n) {
+    $tabname = "possible_values";
+    
+    $rs = $db->Execute("DELETE FROM " . $tabname . " WHERE parameter = 'CoverslipRelativePosition' AND value = 'ignore'");
+    if(!$rs) {
+        $msg = "An error occurred while updateing the database to revision " . $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return; 
+    }
+    
+    $record = array();
+    $record["parameter"] = "AberrationCorrectionNecessary";
+    $record["value"] = "0";
+    $record["translation"] = "no";
+    $record["isDefault"] = "T";
+    $insertSQL = $db->GetInsertSQL($tabname, $record);
+    if(!$db->Execute($insertSQL)) {
+        $msg = "An error occurred while updateing the database to revision " . $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+    
+    $record["value"] = "1";
+    $record["translation"] = "yes";
+    $record["isDefault"] = "F";
+    $insertSQL = $db->GetInsertSQL($tabname, $record);
+    if(!$db->Execute($insertSQL)) {
+        $msg = "An error occurred while updateing the database to revision " . $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+    
+    $record["parameter"] = "PerformAberrationCorrection";
+    $record["value"] = "0";
+    $record["translation"] = "Do not perform depth-dependent correction";
+    $record["isDefault"] = "T";
+    $insertSQL = $db->GetInsertSQL($tabname, $record);
+    if(!$db->Execute($insertSQL)) {
+        $msg = "An error occurred while updateing the database to revision " . $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+    
+    $record["value"] = "1";
+    $record["translation"] = "Yes, perform depth-dependent correction";
+    $record["isDefault"] = "F";
+    $insertSQL = $db->GetInsertSQL($tabname, $record);
+    if(!$db->Execute($insertSQL)) {
+        $msg = "An error occurred while updateing the database to revision " . $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+    
+    $record["parameter"] = "AberrationCorrectionMode";
+    $record["value"] = "automatic";
+    $record["translation"] = "Perform automatic correction";
+    $record["isDefault"] = "T";
+    $insertSQL = $db->GetInsertSQL($tabname, $record);
+    if(!$db->Execute($insertSQL)) {
+        $msg = "An error occurred while updateing the database to revision " . $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+    
+    $record["value"] = "advanced";
+    $record["translation"] = "Perform advanced correction";
+    $record["isDefault"] = "F";
+    $insertSQL = $db->GetInsertSQL($tabname, $record);
+    if(!$db->Execute($insertSQL)) {
+        $msg = "An error occurred while updateing the database to revision " . $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+    
+    $record["parameter"] = "AdvancedCorrectionOptions";
+    $record["value"] = "user";
+    $record["translation"] = "Deconvolution with PSF generated at user-defined depth";
+    $record["isDefault"] = "T";
+    $insertSQL = $db->GetInsertSQL($tabname, $record);
+    if(!$db->Execute($insertSQL)) {
+        $msg = "An error occurred while updateing the database to revision " . $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+    
+    $record["value"] = "slice";
+    $record["translation"] = "Depth-dependent correction performed slice by slice";
+    $record["isDefault"] = "F";
+    $insertSQL = $db->GetInsertSQL($tabname, $record);
+    if(!$db->Execute($insertSQL)) {
+        $msg = "An error occurred while updateing the database to revision " . $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+    
+    $record["value"] = "few";
+    $record["translation"] = "Depth-dependent correction performed on few bricks";
+    $record["isDefault"] = "F";
+    $insertSQL = $db->GetInsertSQL($tabname, $record);
+    if(!$db->Execute($insertSQL)) {
+        $msg = "An error occurred while updateing the database to revision " . $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+    
+    $record["parameter"] = "PSFGenerationDepth";
+    $record["value"] = "0";
+    $record["translation"] = "0";
+    $record["isDefault"] = "T";
+    $insertSQL = $db->GetInsertSQL($tabname, $record);
+    if(!$db->Execute($insertSQL)) {
+        $msg = "An error occurred while updateing the database to revision " . $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+    
+    $tabname = "boundary_values";
+    
+    $record = array();
+    $record["parameter"] = "PSFGenerationDepth";
+    $record["min"] = "0";
+    $record["max"] = "NULL";
+    $record["min_included"] = "T";
+    $record["max_included"] = "T";
+    $record["standard"] = "0";
+    $insertSQL = $db->GetInsertSQL($tabname, $record);
+    if(!$db->Execute($insertSQL)) {
+        $msg = "An error occurred while updateing the database to revision " . $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+    
+    if(!update_dbrevision($n)) 
+        return;
+    
+    $current_revision = $n;
+    $msg = "Your HRM database has been updated to revision " . $current_revision . ".";
+    write_message($msg);
+    write_to_log($msg);  
+}
+
 
 $msg = "\nThe current revision of your HRM database is " . $current_revision . ".";
 write_message($msg);
