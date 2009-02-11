@@ -331,56 +331,6 @@ $parameter = $_SESSION['setting']->parameter("PointSpreadFunction");
                 
             </fieldset>
             
-            <h4>Do you want to enable depth-specific PSF correction? For this to work properly, you have to specify the relative position of the coverslip with respect to the first acquired plane of the dataset. You can also decide to use a static PSF without correction.</h4>
-            
-            <fieldset class="setting">
-            
-                <legend>
-                    <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=MismatchDistortsPsf')"><img src="images/help.png" alt="?" /></a>
-                    depth-dependent PSF correction
-                </legend>
-
-                <?php
-                
-                  // Make sure that the adaptation select form item is on if the PSF mode is 'theoretical'
-                  // and 'off' if it is 'measured'
-                  $PSFparameter = $_SESSION['setting']->parameter("PointSpreadFunction");
-                  if ($PSFparameter->value() == "theoretical") {
-                    $state = "";
-                  } else {
-                    $state = "disabled=\"disabled\" ";
-                  }
-                
-                ?>
-                
-                <select name="CoverslipRelativePosition" <?php echo $state ?> >
-
-                <?php
-
-                  $parameter = $_SESSION['setting']->parameter("CoverslipRelativePosition");
-                  $possibleValues = $parameter->possibleValues();
-                  $selectedValue  = $parameter->value();
-
-                  foreach($possibleValues as $possibleValue) {
-                  $translation = $_SESSION['setting']->translation("CoverslipRelativePosition", $possibleValue);
-                  if ( $possibleValue == $selectedValue ) {
-                    $option = "selected=\"selected\"";
-                  } else {
-                    $option = "";
-                  }
-
-                ?>
-
-                <option <?php echo $option?> value="<?php echo $possibleValue?>"><?php echo $translation?></option>                  
-
-                <?php
-                  }
-                ?>
-                
-                </select>
-                
-            </fieldset>
-            
             <div><input name="OK" type="hidden" /></div>
             
         </form>

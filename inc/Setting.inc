@@ -468,7 +468,12 @@ Class ParameterSetting extends Setting {
 			'PinholeSpacing',
 			'PointSpreadFunction',
 			'PSF',
-			'CoverslipRelativePosition'
+			'CoverslipRelativePosition',
+			'AberrationCorrectionNecessary',
+			'PerformAberrationCorrection',
+			'AberrationCorrectionMode',
+			'AdvancedCorrectionOptions',
+			'PSFGenerationDepth'
 		);
 		$db = new DatabaseConnection();
 		foreach ($parameterClasses as $class) {
@@ -479,6 +484,22 @@ Class ParameterSetting extends Setting {
 		}
 	}
 
+	//!---------------------------------------------------------
+	// @function    ParameterSetting::getAberractionCorrectionParameters()
+	// @desc        Returns the parameters needed for the aberration correction.
+	// @return      Array
+	//!---------------------------------------------------------    
+	function getAberractionCorrectionParameters() {
+		$parameters = array(
+			'AberrationCorrectionNecessary' => $this->parameter('AberrationCorrectionNecessary')->value(),
+			'PerformAberrationCorrection' => $this->parameter('PerformAberrationCorrection')->value(),
+			'CoverslipRelativePosition' => $this->parameter('CoverslipRelativePosition')->value(),
+			'AberrationCorrectionMode' => $this->parameter('AberrationCorrectionMode')->value(),
+			'AdvancedCorrectionOptions'=>$this->parameter('AdvancedCorrectionOptions')->value(),
+			'PSFGenerationDepth'=> $this->parameter('PSFGenerationDepth')->value() );
+		return $parameters;
+	}
+	
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::imageParameterNames()
 	// @desc        Answer the names of parameters concerning the image.
@@ -615,7 +636,7 @@ Class ParameterSetting extends Setting {
 		}
 		return True;
 	}
-	
+
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::checkCalculateParameter()
 	// @desc        Check the parameters needed the compute the pixel size
@@ -2160,7 +2181,7 @@ Class JobParameterSetting extends ParameterSetting {
 		return "job_parameter";
 	}
 
-	function putScriptOn($script) {
+	function putScriptOn($script) { 
 		$newScript = $script;
 		$newScript = $newScript . '$imageName setp ';
 		$newScript = $newScript . $this->microscopeParameterString();
@@ -2338,42 +2359,90 @@ Class JobTaskSetting extends TaskSetting {
 		return "job_task_parameter";
 	}
 
-  	function putScriptOn($script, $coverslipRelativePosition) {
+  	function putScriptOn($script, $corrParams) {
 		$step = 1;
 		$newScript = $script;
-		$parameter = $this->parameter('RemoveNoise');
+		
+		// Obsolete
+		/*
+		 $parameter = $this->parameter('RemoveNoise');
 		if ($parameter->isTrue()) {
 			$source = $this->sourceForStep($step);
 			$dest = $this->destinationForStep($step);
 			$newScript = $newScript . $this->removeNoiseString($source, $dest);
 			$newScript = $newScript . $this->destroyImageString($source);
 			$step++;
-		}
-		
-		// The psf computation string depends on the position of the coverslip
-		// selected by the user. If it is either 'closest' or 'farthest' we let
-		// Huygens adapt the PSF, if it is 'ignore' we ask to create a fixed
-		// PSF with the given parameters
-		$constant = 0;
-		if ( $coverslipRelativePosition == 'ignore' ) {
-			$constant = 1;
-		}
+
 		$parameter = $this->parameter('RemoveBackground');
 		if ($parameter->isTrue()) {
 			$source = $this->sourceForStep($step);
 			$dest = $this->destinationForStep($step);
-			$newScript = $newScript . $this->psfComputationString($source, $constant, 0);
+			$newScript = $newScript . $this->psfComputationString($source, $constant, $depth);
 			$newScript = $newScript . $this->removeBackgroundString($source, $dest);
 			$newScript = $newScript . $this->destroyImageString($source);
 			$step++;
 		}
+		}
+		*/
+		
+		// Depending on the PSF selection and the settings for the spherical
+		// aberration corrections, we have to call the psfComputationString( )
+		// function below specifying either a constant or an adaptive PSF.
+		// A constant PSF is used when there is a need for correction (i.e.
+		// the PSF is theoretical with refractive index mismatch) but (i) the 
+		// user chose not to let Huygens correct for aberrations; or (ii) when
+		// the user performs an advanced correction with static FSF generated
+		// at a given depth (this is combined with next check).
+		$constant = 0;
+		if ( ( $corrParams[ 'AberrationCorrectionNecessary' ] == 1 ) &&
+			( $corrParams[ 'PerformAberrationCorrection' ] == 0 ) ) {
+			$constant = 1;
+		}
+
+		// If the user chose the advanced correction mode 'partial correction
+		// at user defined PSF depth', we also need to pass the depth to the
+		// psfComputationString( ) function.
+		$depth = 0;
+		if ( ( $corrParams[ 'AberrationCorrectionNecessary' ] == 1 ) &&
+			( $corrParams[ 'PerformAberrationCorrection' ] == 1 ) &&
+			( $corrParams[ 'AberrationCorrectionMode' ] == 'advanced' ) &&
+			( $corrParams[ 'AdvancedCorrectionOptions' ] == 'user' ) ) {
+			$depth = $corrParams[ 'PSFGenerationDepth' ];
+			$constant = 1; // See comment above
+		}
+
+		// The various options result in a different value for the -brMode
+		// deconvolution flag. This value is to be passed to the
+		// fullRestorationString( ) function below.
+		if ( $corrParams[ 'AberrationCorrectionNecessary' ] == 0 ) {
+			$brMode = 'auto';
+		} else {
+			if ( $corrParams[ 'PerformAberrationCorrection' ] == 0 ) {
+				$brMode = 'one';
+			} else {
+				if ( $corrParams[ 'AberrationCorrectionMode' ] == 'automatic' ) {
+					$brMode = 'auto';
+				} else {
+					if ( $corrParams[ 'AdvancedCorrectionOptions' ] == 'user' ) {
+						$brMode = 'one';
+					}
+					if ( $corrParams[ 'AdvancedCorrectionOptions' ] == 'slice' ) {
+						$brMode = 'sliceBySlice';
+					}
+					if ( $corrParams[ 'AdvancedCorrectionOptions' ] == 'few' ) {
+						$brMode = 'few';
+					}
+				}
+			}
+		}
+		
 		// effective deconvolution script; step = 3 -> $source = b; $dest = c;
 		$parameter = $this->parameter('FullRestoration');
 		if ($parameter->isTrue()) {
 			$source = $this->sourceForStep($step);
 			$dest = $this->destinationForStep($step);
-			$newScript = $newScript . $this->psfComputationString($source, $constant, 0);
-			$newScript = $newScript . $this->fullRestorationString($source, $dest);
+			$newScript = $newScript . $this->psfComputationString($source, $constant, $depth);
+			$newScript = $newScript . $this->fullRestorationString($source, $dest, $brMode);
 			$newScript = $newScript . $this->destroyImageString($source);
 			$step++;
 		}
@@ -2384,7 +2453,9 @@ Class JobTaskSetting extends TaskSetting {
 	function putScriptForMeasuredPointSpreadFunctionOn($script) {
 		$step = 1;
 		$newScript = $script;
-		$parameter = $this->parameter('RemoveNoise');
+		// Obsolete
+		/*
+		 $parameter = $this->parameter('RemoveNoise');
 		if ($parameter->isTrue()) {
 			$source = $this->sourceForStep($step);
 			$dest = $this->destinationForStep($step);
@@ -2400,6 +2471,7 @@ Class JobTaskSetting extends TaskSetting {
 			$newScript = $newScript . $this->destroyImageString($source);
 			$step++;
 		}
+		*/
 		$parameter = $this->parameter('FullRestoration');
 		if ($parameter->isTrue()) {
 			$source = $this->sourceForStep($step);
@@ -2472,13 +2544,13 @@ Class JobTaskSetting extends TaskSetting {
 
 	function psfComputationString($source, $constant = 0, $position = 0) {
 		// To calculate a theoretical PSF, the best thing is to provide an empty
-        // one. Huygens will take the necessary decissions, see
+        // one. Huygens will take the necessary decisions, see
         // http://support.svi.nl/wiki/TheoreticalPsf
         if (!$constant ) {
             return "catch { psf clear }\n";
         }
         // Alternatively, this calculates a constant PSF for the provided
-        // parameters, but it won't be adapted to the sample depth if spherical
+        // parameters, and will be adapted to the sample depth if spherical
         // aberration is present.
 		return 'catch { ' . $source . ' genpsf -> psf -dims auto -zPos '.
 			$position .' }' . "\n";
@@ -2523,15 +2595,14 @@ Class JobTaskSetting extends TaskSetting {
 		return $result;
 	}
 
-	function fullRestorationString($source, $dest) {
+	function fullRestorationString($source, $dest, $brMode) {
 		$result = '';
 
-$parameter = $this->parameter('DeconvolutionAlgorithm');
-$string = $parameter->possibleValuesString();
-$string = $parameter->name();
-$value = $parameter->value();
+		$parameter = $this->parameter('DeconvolutionAlgorithm');
+		$string = $parameter->name();
+		$value = $parameter->value();
 
-		// This restores the default behavior in case the entry "DeconvolutionAlgorithm"
+		// (Obsolete) This restores the default behavior in case the entry "DeconvolutionAlgorithm"
 		// is not in the database
 		if ( empty( $value ) == true )
 		  $value = "cmle";
@@ -2560,6 +2631,7 @@ $value = $parameter->value();
 		$result = $result . '-q ';
 		$parameter = $this->parameter("QualityChangeStoppingCriterion");
 		$result = $result . $parameter->value() . " ";
+		$result = $result . '-brMode ' . $brMode . " ";
 		$result = $result . '-mode fast ';
 		$result = $result . '-pad auto';
 		$result = $result . "\n";
@@ -2570,7 +2642,7 @@ $value = $parameter->value();
 	function fullRestorationForMeasuredPointSpreadFunctionString($source, $dest) {
 		$result = '';
 		
-		// This restores the default behavior in case the entry "DeconvolutionAlgorithm"
+		// (Obsolete) This restores the default behavior in case the entry "DeconvolutionAlgorithm"
 		// is not in the database
 		$value = $this->decAlgorithmString();
 		if ( empty( $value ) == true )
@@ -2598,6 +2670,7 @@ $value = $parameter->value();
 		$result = $result . '-q ';
 		$parameter = $this->parameter("QualityChangeStoppingCriterion");
 		$result = $result . $parameter->value() . " ";
+		$result = $result . '-brMode auto ';
 		$result = $result . '-mode fast ';
 		$result = $result . '-pad auto';
 		$result = $result . "\n";

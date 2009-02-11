@@ -821,14 +821,12 @@ Class JobDescription {
       $newScript = $newScript . 'catch {$imageName convertZ2T}' . "\n";
     }
     
-    // We need to pass the the position of the coverslip selected by the user as
-    // an input parameter to JobTaskSetting::putScriptOn( )
-    $coverslipParameter=$parameterSetting->parameter('CoverslipRelativePosition');
-    $coverslipParameterValue=$coverslipParameter->value();
     // manage measured PSF
     if ($psfParam->value() == "theoretical") {
-      // operations
-      $newScript = $taskSetting->putScriptOn($newScript, $coverslipParameterValue);
+      // We need to pass the array of parameters for the aberraction correction
+      // an input parameter to JobTaskSetting::putScriptOn( )
+      $newScript = $taskSetting->putScriptOn($newScript,
+          $this->parameterSetting->getAberractionCorrectionParameters( ) );
     }
     else if ($psfParam->value() == "measured") {
       // operations
@@ -923,9 +921,12 @@ Class JobDescription {
     $mirror = "";
     $thumbn = "";
     if ( $isOriginal == true ) {
-      $coverslipParameter=$this->parameterSetting->parameter('CoverslipRelativePosition');
-      $coverslipParameterValue=$coverslipParameter->value();
-      if ( $coverslipParameterValue == 'farthest' ) {
+      // Two additional conditions are (1) that the dataset needs correction
+      // and (2) that the user decided to perform correction
+      $absCorr=$this->parameterSetting->getAberractionCorrectionParameters( );
+      if ( ( $absCorr[ 'AberrationCorrectionNecessary' ] == 1 ) &&
+        ( $absCorr[ 'PerformAberrationCorrection' ] == 1 ) &&
+        ( $absCorr[ 'CoverslipRelativePosition' ] == 'farthest' ) ) {
         $mirror = 'catch { $imageName mir z }' . "\n";
       }
       $thumbn = "\nset originalFile \"$huygensFileName\"".

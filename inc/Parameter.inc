@@ -1560,6 +1560,12 @@ Class NumberOfIterations extends NumericalParameter {
 	}
 }
 
+Class PSFGenerationDepth extends NumericalParameter {
+	function PSFGenerationDepth() {
+		$this->NumericalParameter("PSFGenerationDepth");
+	}
+}
+
 Class QualityChangeStoppingCriterion extends NumericalParameter {
 	function QualityChangeStoppingCriterion() {
 		$this->NumericalParameter("QualityChangeStoppingCriterion");
@@ -1736,6 +1742,46 @@ Class DeconvolutionAlgorithm extends ChoiceParameter {
 Class CoverslipRelativePosition extends ChoiceParameter {
 	function CoverslipRelativePosition( ) {
 		$this->ChoiceParameter('CoverslipRelativePosition');
+	}
+	
+	function isForImage() {
+		return True;
+	}
+}
+
+Class PerformAberrationCorrection extends ChoiceParameter {
+	function PerformAberrationCorrection( ) {
+		$this->ChoiceParameter('PerformAberrationCorrection');
+	}
+	
+	function isForImage() {
+		return True;
+	}
+}
+
+Class AberrationCorrectionMode extends ChoiceParameter {
+	function AberrationCorrectionMode( ) {
+		$this->ChoiceParameter('AberrationCorrectionMode');
+	}
+	
+	function isForImage() {
+		return True;
+	}
+}
+
+Class AdvancedCorrectionOptions extends ChoiceParameter {
+	function AdvancedCorrectionOptions( ) {
+		$this->ChoiceParameter('AdvancedCorrectionOptions');
+	}
+	
+	function isForImage() {
+		return True;
+	}
+}
+
+Class AberrationCorrectionNecessary extends ChoiceParameter {
+	function AberrationCorrectionNecessary( ) {
+		$this->ChoiceParameter('AberrationCorrectionNecessary');
 	}
 	
 	function isForImage() {

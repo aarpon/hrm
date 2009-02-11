@@ -128,7 +128,42 @@ if (count($_POST) > 0) {
     $saved = $_SESSION['setting']->save();			
     $message = "            <p class=\"warning\">".$_SESSION['setting']->message()."</p>";
     if ($saved) {
-        header("Location: " . "select_parameter_settings.php"); exit();
+
+      // Depending on the selection of the PSF (theoretical) and on a possible
+      // refractive index mismatch (i.e. larger than 1%) between the sample 
+      // medium and the objective medium we might have to show an aberration
+      // correction page. Otherwise, we make sure to turn off the correction.
+      
+      // First check the selection of the PSF
+      $PSF = $_SESSION['setting']->parameter( 'PointSpreadFunction' )->value( );
+      if ($PSF == 'measured' ) {
+          $pageToGo = 'select_parameter_settings.php';
+          // Make sure to turn off the correction
+          $_SESSION['setting']->parameter( 'AberrationCorrectionNecessary' )->setValue( '0' );
+	  $_SESSION['setting']->parameter( 'PerformAberrationCorrection' )->setValue( '0' );
+          $_SESSION['setting']->save();
+      } else {
+        // Get the refractive indices
+        $sampleRI    = $_SESSION['setting']->parameter( 'SampleMedium' )->translatedValue( );
+        $objectiveRI = $_SESSION['setting']->parameter( 'ObjectiveType' )->translatedValue( );              
+
+        // Calculate the deviation
+        $deviation = abs( $sampleRI - $objectiveRI ) / $objectiveRI;
+              
+        // Do we need to go to the aberration correction page? We 
+        if ( $deviation < 0.01 ) {
+          $pageToGo = 'select_parameter_settings.php';
+          // Make sure to turn off the correction
+          $_SESSION['setting']->parameter( 'AberrationCorrectionNecessary' )->setValue( '0' );
+          $_SESSION['setting']->parameter( 'PerformAberrationCorrection' )->setValue( '0' );
+          $_SESSION['setting']->save();
+        } else {
+          $pageToGo = 'aberration_correction.php';
+          $_SESSION['setting']->parameter( 'AberrationCorrectionNecessary' )->setValue( '1' );
+          $_SESSION['setting']->save();
+        }
+      }
+      header("Location: " . $pageToGo ); exit();
     }
   }
 }

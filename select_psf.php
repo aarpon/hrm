@@ -109,6 +109,10 @@ if (count($_POST) > 0) {
     $saved = $_SESSION['setting']->save();			
     $message = "            <p class=\"warning\">".$_SESSION['setting']->message()."<br />&nbsp;</p>";
     if ($saved) {
+      // Make sure to turn off the aberration correction since we use a measured PSF
+      $_SESSION['setting']->parameter( 'AberrationCorrectionNecessary' )->setValue( '0' );
+      $_SESSION['setting']->parameter( 'PerformAberrationCorrection' )->setValue( '0' );
+      $_SESSION['setting']->save();
       header("Location: " . "select_parameter_settings.php"); exit();
     }
   }
