@@ -254,7 +254,7 @@ include("header.inc.php");
                 $parameter = $_SESSION['setting']->parameter("AdvancedCorrectionOptions");
                 $possibleValues = $parameter->possibleValues();
                 $selectedValue  = $parameter->value();
-                if ( $version <= 3030200 ) {
+                if ( $version < 3030200 ) {
                     $possibleValues = array_diff($possibleValues, array( 'slice' ) );
                     $possibleValues = array_values( $possibleValues );
                     if ( $selectedValue == 'slice' ) {
