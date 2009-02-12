@@ -382,4 +382,32 @@ if ( ! function_exists('printDebug') ) {
     }
 }
 
+//!---------------------------------------------------------
+// @function    getHucoreVersionAsInteger
+// @desc        Returns the hucore version (as set in the configuration file)
+//              as an integer for comparisons
+// @return      The version number as integer
+//!---------------------------------------------------------
+function getHucoreVersionAsInteger( $hucoreVersion ) {
+
+        $matches = array( );
+        //$enable_code_for_huygens = "3.3.2p2";
+        // Is there a patch information?
+        $ver = preg_match("/([0-9]+)\.([0-9]+)\.([0-9]+)p([0-9]+)/",
+          $hucoreVersion, $matches );
+        if ( $ver == 0 ) {
+          $ver = preg_match("/([0-9]+)\.([0-9]+)\.([0-9]+)/",
+            $hucoreVersion, $matches );
+        }
+        // Now calculate the integer version
+        $version = 0;
+        if ( count( $matches ) != 0 ) {
+          $version = $matches[1] * 1000000  + $matches[2] * 10000 + $matches[3] * 100;
+          if ( count( $matches ) == 5 ) {
+            $version = $version + $matches[ 4 ];
+          }
+        }
+        return $version;
+}
+      
 ?>

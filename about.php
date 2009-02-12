@@ -66,7 +66,10 @@ include("header.inc.php");
 	<div id="about">
 
 		<h2>About HRM version <?php readfile("version"); ?></h2>
-		<p><strong>Important: </strong>The HRM requires <strong>Huygens Core v3.3.1 and above</strong> for full functionality.</p>
+		<p><strong>Important: </strong>The HRM requires <strong>Huygens Core v3.3.2
+        and above</strong> for full functionality and <strong>will try</strong>
+        to hide unsupported features to prevent incompatibilities with older
+        hucore versions.</p>
 
 		<h3>Copyright</h3>
 		<p>2004 - 2009, Montpellier RIO Imaging (CNRS)</p>

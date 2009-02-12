@@ -54,6 +54,7 @@
 require_once("./inc/User.inc");
 require_once("./inc/Parameter.inc");
 require_once("./inc/Setting.inc");
+require_once("./inc/Util.inc");
 
 session_start();
 if (isset($_GET['exited'])) {
@@ -249,9 +250,17 @@ include("header.inc.php");
 
             <?php
 
+                $version = getHucoreVersionAsInteger( $enable_code_for_huygens );
                 $parameter = $_SESSION['setting']->parameter("AdvancedCorrectionOptions");
                 $possibleValues = $parameter->possibleValues();
                 $selectedValue  = $parameter->value();
+                if ( $version <= 3030200 ) {
+                    $possibleValues = array_diff($possibleValues, array( 'slice' ) );
+                    $possibleValues = array_values( $possibleValues );
+                    if ( $selectedValue == 'slice' ) {
+                        $selectedValue == 'user';
+                    }
+                }
 
                 foreach($possibleValues as $possibleValue) {
                     $translation = $_SESSION['setting']->translation("AdvancedCorrectionOptions", $possibleValue);

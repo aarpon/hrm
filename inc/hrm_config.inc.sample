@@ -35,8 +35,12 @@ $huygens_group = "huygens";
 // thumbnails. This installatation of hucore doesn't require a license unless
 // this is also the computation server. (For image information and thumbnails
 // only freeware functions will be used).
-
 $local_huygens_core = "/usr/local/bin/hucore";
+
+// The HRM needs to know the version of the hucore executable on the
+// computation server to make sure that only supported functionalities
+// can be accessed.
+$enable_code_for_huygens = "3.3.2";
 
 //==============================================================================
 // File server settings
