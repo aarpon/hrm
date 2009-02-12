@@ -7,6 +7,7 @@
 
 start() {
     cd  "$HRM_HOME"/run
+        echo Reporting to "$HRM_HOME"/run/log.txt "$HRM_HOME"/run/error_log.txt
 	php -q "$HRM_HOME"/run/runHuygensRemoteManager.php 1> "$HRM_HOME"/run/log.txt 2> "$HRM_HOME"/run/error_log.txt &
 	
 	if [ "$?" = 0 ]
@@ -15,6 +16,8 @@ start() {
 		ps -o pid,command | grep "$HRM_HOME" | grep "php" | sed -e "s/^ * //" | cut -d" " -f1 > "$HRM_HOME"/run/hrmd.pid
 		echo "Starting HRM daemon...................ok"
 	fi
+        # This will show if anything went wrong during the start up.
+        tail "$HRM_HOME"/run/log.txt
 }
 
 
