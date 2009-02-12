@@ -97,7 +97,7 @@ include("header.inc.php");
    <div id="nav">
         <ul>
          <li><a href="select_images.php?exited=exited">exit</a></li>
-        <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=CorrectionOfSphericalAberrations')">help</a></li>
+        <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpEnableSACorrection')">help</a></li>
         </ul>
     </div> <!-- nav -->
     
@@ -114,11 +114,11 @@ include("header.inc.php");
         <fieldset class="setting">
             
             <legend>
-                <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=MismatchDistortsPsf')"><img src="images/help.png" alt="?" /></a>
+                <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&help=HuygensRemoteManagerHelpDepthDependentPsf')"><img src="images/help.png" alt="?" /></a>
                     enable depth-dependent PSF correction?
             </legend>
 
-            <select name="PerformAberrationCorrection">
+            <select name="PerformAberrationCorrection" style="width: 420px">
                 
             <?php
 
@@ -155,11 +155,11 @@ include("header.inc.php");
         <fieldset class="setting">
             
             <legend>
-                <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=MismatchDistortsPsf')"><img src="images/help.png" alt="?" /></a>
+                <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&help=HuygensRemoteManagerHelpSpecifySampleOrientation')"><img src="images/help.png" alt="?" /></a>
                     specify sample orientation
             </legend>
                 
-            <select name="CoverslipRelativePosition">
+            <select name="CoverslipRelativePosition" style="width: 420px">
 
             <?php
 
@@ -198,11 +198,11 @@ include("header.inc.php");
         <fieldset class="setting">
             
             <legend>
-                <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=MismatchDistortsPsf')"><img src="images/help.png" alt="?" /></a>
+                <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&help=HuygensRemoteManagerHelpSaCorrectionMode')"><img src="images/help.png" alt="?" /></a>
                     correction mode
             </legend>
                 
-            <select name="AberrationCorrectionMode">
+            <select name="AberrationCorrectionMode" style="width: 420px">
 
             <?php
 
@@ -236,16 +236,16 @@ include("header.inc.php");
 
     <div id="AdvancedCorrectionOptionsDiv">
         
-    <h4>Please choose the advanced correction scheme.</h4>
+    <h4>Here you can choose an advanced correction scheme.</h4>
             
         <fieldset class="setting">
             
             <legend>
-                <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=MismatchDistortsPsf')"><img src="images/help.png" alt="?" /></a>
+                <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&help=HuygensRemoteManagerHelpAdvancedSaCorrection')"><img src="images/help.png" alt="?" /></a>
                     advanced correction scheme
             </legend>
                 
-            <select name="AdvancedCorrectionOptions">
+            <select name="AdvancedCorrectionOptions" style="width: 420px">
 
             <?php
 
@@ -295,7 +295,16 @@ include("header.inc.php");
             <input type="button" value="" class="icon cancel" onclick="document.location.href='capturing_parameter.php'" />
             <input type="submit" value="" class="icon apply" onclick="process()" />
             
-            <p>Put descriptions here.</p>
+            <p>The main cause of spherical aberration is a mismatch between the
+            refractive index of the lens immersion medium and specimen embedding
+            medium and causes the PSF to become asymmetric at depths of already
+            a few um. SA is especially harmful for widefield microscope
+            deconvolution.</p>
+            
+            <p>The HRM can correct for SA automatically, but in case of very
+            large refractive index mismatches some artifacts can be generated.
+            Advanced parameters allow for fine-tuning of the correction.</p>
+            
         </div>
         
         <div id="message">
