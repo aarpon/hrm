@@ -396,6 +396,9 @@ Class Setting {
 		// These parameters are important to properly display all the others
 		$numberOfChannels = $this->parameter( "NumberOfChannels" )->value( );
 		$PSF = $this->parameter( "PointSpreadFunction" )->value( );
+		$performAberrationCorrection = $this->parameter( "PerformAberrationCorrection" )->value( );
+		$aberrationCorrectionMode = $this->parameter( "AberrationCorrectionMode" )->value( );
+		$advancedCorrectionOptions = $this->parameter( "AdvancedCorrectionOptions" )->value( );
 		
 		// The relevant parameters for theoretical vs. measured PSF are
 		// displayed, making sure that the number of entries (e.g. for the
@@ -422,6 +425,14 @@ Class Setting {
 			if ($parameter->name() == 'CCDCaptorSizeX' && $PSF == 'measured' )
 				continue;		
 			if ($parameter->name() == 'CoverslipRelativePosition' && $PSF == 'measured' )
+				continue;
+			if ($parameter->name() == 'CoverslipRelativePosition' && $performAberrationCorrection == 0 )
+				continue;
+			if ($parameter->name() == 'AberrationCorrectionMode' && $performAberrationCorrection == 0 )
+				continue;
+			if ($parameter->name() == 'AdvancedCorrectionOptions' && !( $performAberrationCorrection == 1 && $aberrationCorrectionMode == 'advanced' ) )
+				continue;
+			if ($parameter->name() == 'PSFGenerationDepth' && !( $performAberrationCorrection == 1 && $aberrationCorrectionMode == 'advanced' && $advancedCorrectionOptions == 'user' ) )
 				continue;
             $result = $result . $parameter->displayString( $numberOfChannels );
 		}

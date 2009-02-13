@@ -232,6 +232,33 @@ Class Parameter {
 		}
 		else if ($this->name() == "BackgroundOffsetPercent" && $internalValue[0] == "object") {
 			$value = "in/near object";
+		}
+		else if ($this->name() == "PerformAberrationCorrection") {
+			if ($this->value( ) == 0 ) {
+				$value = "no";
+			} else {
+				$value = "yes";
+			}
+		}
+		else if ($this->name() == "AberrationCorrectionNecessary") {
+			if ($this->value( ) == 0 ) {
+				$value = "no";
+			} else {
+				$value = "yes";
+			}
+		}
+		else if ($this->name() == "AdvancedCorrectionOptions") {
+			switch ( $this->value( ) ) {
+			case 'user':
+				$value = "user-defined depth";
+				break;
+			case 'slice':
+				$value = "slice by slice";
+				break;
+			case 'few':
+				$value = "few bricks";
+				break;
+			}
 		} else {
 			if (is_array($value)) {
 				# array_shift($value);
