@@ -53,7 +53,7 @@
 require_once("hrm_config.inc");
 require_once("Fileserver.inc");
 
-global $isHrmDevelop, $hucore, $hutask;
+global $isHrmDevelop, $hucore, $hutask, $logdir;
 
 if (!isset($isHrmDevelop) || $isHrmDevelop == false) {
     $hucore = "hucore";
@@ -81,6 +81,10 @@ Class ExternalProcess {
         
     
     function ExternalProcess($host, $huscript_path, $logfileName, $errfileName) {
+        global $logdir;
+        // Make sure to save into the log dir
+        $logfileName = $logdir . "/" . $logfileName;
+        $errfileName = $logdir . "/" . $errfileName;
         $this->descriptorSpec = array(
                                       0 => array("pipe", "r"),
                                       1 => array("file", $logfileName, "a"),
@@ -99,17 +103,17 @@ Class ExternalProcess {
     
     // TODO refactor
     function existsHuygensProcess($pid) {
-        global $hrm_path, $hucore;
+        global $logdir, $hucore;
         global $huygens_user;
-        $answer = system("ssh $huygens_user" . '@' . $this->host . " " . "ps -p $pid | grep -e $hucore > " . $hrm_path . "/run/hrm_tmp" , $result); // -p
+        $answer = system("ssh $huygens_user" . '@' . $this->host . " " . "ps -p $pid | grep -e $hucore > " . $logdir . "/hrm_tmp" , $result); // -p
         if ($result==0) {return True;} 
         return False;
     } 
     
     function isHuygensProcessSleeping($pid) {
-        global $hrm_path, $hucore;
+        global $logdir, $hucore;
         global $huygens_user;
-        $answer = system("ssh $huygens_user" . '@' . $this->host . " " . "ps -lf -p " . "$pid | grep -e $hucore | grep -e S > " . $hrm_path . "/run/hrm_tmp",  $result);
+        $answer = system("ssh $huygens_user" . '@' . $this->host . " " . "ps -lf -p " . "$pid | grep -e $hucore | grep -e S > " . $logdir . "/hrm_tmp",  $result);
         if ($result==0) {return True;} 
         return False;    
     } 
@@ -129,12 +133,12 @@ Class ExternalProcess {
     } 
     
     function ping() {
-        global $hrm_path;
+        global $logdir;
     	global $ping_command;
     	global $ping_parameter;
     	
     	$result = "";
-    	$command = $ping_command . " " . $this->host . " " . $ping_parameter . " > ". $hrm_path . "/run/hrm_tmp";
+    	$command = $ping_command . " " . $this->host . " " . $ping_parameter . " > ". $logdir . "/hrm_tmp";
         $answer = system($command, $result);
         if ($result == 0)
             return True;
@@ -244,8 +248,8 @@ Class LocalExternalProcess extends ExternalProcess {
  
   function existsHuygensProcess($pid) {
     global $huygens_user, $hucore;
-    global $hrm_path;
-    $answer = system("ps -p $pid | grep -e $hucore > ".$hrm_path."/run/hrm_tmp" , $result);
+    global $logdir;
+    $answer = system("ps -p $pid | grep -e $hucore > ".$logdir."/hrm_tmp" , $result);
     if ($result==0) {return True;} 
     return False;
   } 

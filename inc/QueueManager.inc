@@ -560,6 +560,7 @@ Class QueueManager {
 		global $use_accounting_system;
 		global $accounting_client_name;
 		global $send_mail;
+		global $logdir;
 		
 		// TODO check if it is necessary
 		$queue = $this->queue;
@@ -616,7 +617,7 @@ Class QueueManager {
 				$this->stopTime = $queue->stopJob($job);
 				// Write email
 				$message = "";
-				$errorFile = $job->server() . "_error.txt";
+				$errorFile = $logdir . "/" . $job->server() . "_error.txt";
 				if (file_exists($errorFile))
 					$message = file_get_contents($errorFile);
 				if ($send_mail) $this->notifyError($job, $message, $startTime);
@@ -769,7 +770,9 @@ Class QueueManager {
 		//if ($imageProcessingIsOnQueueManager) {
 			return False;
 		//}
-		$errorFile = $job->server() . '_error.txt';
+		// The following is never run, but for completeness we add the logdir
+		global $logdir;
+		$errorFile = $logdir . "/" . $job->server() . '_error.txt';
 		$message = '';
 		if (file_exists($errorFile)) {
 			$message = file_get_contents($errorFile);
@@ -975,6 +978,7 @@ Class QueueManager {
 
 	function run() {
 		global $imageProcessingIsOnQueueManager;
+		global $logdir;
 		
 		$queue = $this->queue;
 		
@@ -984,7 +988,7 @@ Class QueueManager {
 		foreach ($server as $name) {
 			$this->nping[$name] = 0;
 			if (!$queue->isServerBusy($name)) {
-				$errorFile = $name . "_error.txt";
+				$errorFile = $logdir . "/" . $name . "_error.txt";
 				if (file_exists($errorFile)) {
 					report("resetting error log for $name", 1);
 					//unlink($errorFile);

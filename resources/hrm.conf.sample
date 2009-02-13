@@ -18,3 +18,7 @@ HRM_DEST="huygens_dst";
 # read/write access to the fileserver and thus
 # does not need to sudo these commands
 SUSER="apache";
+
+# HRM log directory
+HRM_LOG="/var/log/hrm"
+

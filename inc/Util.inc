@@ -320,13 +320,14 @@ function askHuCore ($tool, $options = "", $keyword = "") {
 //!---------------------------------------------------------
 function report($text, $level) {
 	global $log_verbosity;
-        global $hrm_path;
+    global $hrm_path;
+    global $logdir;
 	global $logfile;
 	global $logfile_max_size;
 
-        $text = date("Y-m-d H:i:s"). " ".$text;
+    $text = date("Y-m-d H:i:s"). " ".$text;
 
-        $logpath = $hrm_path."/run/".$logfile;
+    $logpath = $logdir."/".$logfile;
 
 	if ($log_verbosity == 0)
 		return True;

@@ -337,7 +337,19 @@ function in_array_multi($needle,$haystack) {
 // -----------------------------------------------------------------------------
 
 // Open log file
-$log_file = $hrm_path . "/run/dbupdate.log";
+if (isset($logdir)==false) {
+    echo "<strong>Error: the log directory was not set in the configuration!
+       Please do it and try again!</strong>";
+    return;
+}
+if ( file_exists($logdir)==false) {
+    echo "<strong>Error: the log directory specified in the configuration does
+       not exist! Please create it and make sure that the web server uses
+       has read/write access to it!</strong>";
+    return;
+}
+
+$log_file = $logdir . "/dbupdate.log";
 if (!($fh = @fopen($log_file, 'a'))) {
     $msg = "Cannot open the dbupdate log file.";
     write_message($msg);
@@ -348,7 +360,7 @@ chmod($log_file, 0666);
 write_to_log(timestamp());
 
 // Open error log file
-$error_file = $hrm_path . "/run/dbupdate_error.log";
+$error_file = $logdir . "/dbupdate_error.log";
 if (!($efh = @fopen($error_file, 'a'))) { // If the file does not exist, it is created
     $msg = "Cannot open the dbupdate error file."; // If the file does not exist and cannot be created, an error message is displayed 
     write_message($msg);
