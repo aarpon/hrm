@@ -285,7 +285,9 @@ include("header.inc.php");
                 $selectedValue  = $parameter->value();
             ?>
             
-            <p>Please enter depth for PSF generation (um): <input name="PSFGenerationDepth" type="text" value="<?php echo $selectedValue; ?>" /></p>
+            <div id="PSFGenerationDepthDiv" >
+                <p>Please enter depth for PSF generation (um): <input name="PSFGenerationDepth" type="text" value="<?php echo $selectedValue; ?>" /></p>
+            </div>
             
         </fieldset>
 

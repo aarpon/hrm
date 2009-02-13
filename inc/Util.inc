@@ -392,7 +392,6 @@ if ( ! function_exists('printDebug') ) {
 function getHucoreVersionAsInteger( $hucoreVersion ) {
 
         $matches = array( );
-        //$enable_code_for_huygens = "3.3.2p2";
         // Is there a patch information?
         $ver = preg_match("/([0-9]+)\.([0-9]+)\.([0-9]+)p([0-9]+)/",
           $hucoreVersion, $matches );
