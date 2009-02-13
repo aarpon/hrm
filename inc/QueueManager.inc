@@ -323,6 +323,7 @@ Class QueueManager {
 	function executeScript() {
 		global $imageProcessingIsOnQueueManager;
 		global $copy_images_to_huygens_server;
+		global $logdir;
 		
 		$job = $this->job;
 		$server = $this->freeServer;
@@ -347,13 +348,13 @@ Class QueueManager {
 				break;
 			$input = fgets($proc->out_file);
 			if (strstr($input, "Microscope types of original and PSF differ:")) {
-				$warning_file = fopen($server . "_warning.txt", "a");
+				$warning_file = fopen($logdir . "/" . $server . "_warning.txt", "a");
 				fwrite($warning_file, "[" . $desc->id() . "] Microscope types of original and PSF differ\n");
 				fclose($warning_file);
 				break;
 			}
 			else if (strstr($input, "After necessary resampling the PSF is too small.")) {
-				$warning_file = fopen($server . "_warning.txt", "a");
+				$warning_file = fopen($logdir . "/" . $server . "_warning.txt", "a");
 				fwrite($warning_file, "[" . $desc->id() . "] After necessary resampling the PSF is too small\n");
 				fclose($warning_file);
 				break;
