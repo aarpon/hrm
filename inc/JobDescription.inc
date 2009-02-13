@@ -807,6 +807,8 @@ Class JobDescription {
         $filename = $this->sourceFolder() . $value;
       }
       $newScript = $newScript . "set psf [img open \"".$filename."\"]\n";
+      $newScript = $newScript . "\$psf -> psf\n";
+      $newScript = $newScript . "\$psf del\n";
     }
     else if ($psfParam->value() == "theoretical") {
       $newScript = $parameterSetting->putScriptOn($newScript);

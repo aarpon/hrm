@@ -2632,7 +2632,6 @@ Class JobTaskSetting extends TaskSetting {
 		$parameter = $this->parameter("QualityChangeStoppingCriterion");
 		$result = $result . $parameter->value() . " ";
 		$result = $result . '-brMode ' . $brMode . " ";
-		$result = $result . '-mode fast ';
 		$result = $result . '-pad auto';
 		$result = $result . "\n";
 		return $result;
