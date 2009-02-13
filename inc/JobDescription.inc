@@ -589,7 +589,7 @@ Class JobDescription {
         }
         // Save processing history
         // j-)
-        $newScript = $newScript . "\n" . 'catch { c history -format txt -save "' . $imageFileName. '_history.txt" }' . "\n";
+        $newScript = $newScript . "\n" . 'catch { c history -format txt -save "' . $dstfilename. '_history.txt" }' . "\n";
     }
     $this->files = $files;
     return $newScript;
