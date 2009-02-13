@@ -860,15 +860,18 @@ Class JobDescription {
       $newScript = $newScript .   "catch { exec chown -Rf " . $user->name() . ':' . $huygens_group . ' "' . $this->destinationFolderTop() . '"' . " }\n"; 
     } 
     $newScript = $newScript . $this->saveImageString( $isOriginal );
+    /* TODO This is obsolete code that should be removed! isStepCombinedProcessing( ) always returns false.
     if ($taskSetting->isStepCombinedProcessing()) {
       $newScript = $newScript . $this->passTwoScript();
     }
+    */
     if ($this->mustReplaceSourceName()) { 
       $newScript = $newScript . "catch { exec rm -f " . '"' . $this->newNameForSingleTif() . '"' . " }\n";
     }  
     return $newScript;
   }
 
+  /* OBSOLETE
   function passTwoScript() {
     $this->pass = 2;
     $script = '';
@@ -879,7 +882,8 @@ Class JobDescription {
     $this->pass = 1;
     return $script;
   } 
-
+  */
+  
   function loadImageString( $isOriginal = false ) {
     global $useThumbnail;
     if ($this->mustReplaceSourceName()) { 

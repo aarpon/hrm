@@ -1815,8 +1815,11 @@ Class TaskSetting extends Setting {
 	// @return      Boolean
 	//!---------------------------------------------------------
 	function isStepCombinedProcessing() {
-		$parameter = $this->parameter('StyleOfProcessing');
-		return $parameter->value() == 'step combined';
+		return false;
+		// TODO This is obsolete code that should be removed!!
+		
+		//$parameter = $this->parameter('StyleOfProcessing');
+		//return $parameter->value() == 'step combined';
 	}
 
 	//!---------------------------------------------------------
@@ -2567,6 +2570,7 @@ Class JobTaskSetting extends TaskSetting {
 			$position .' }' . "\n";
 	}
 
+	/* TODO This is obsolete code and should be removed!
 	function removeNoiseString($source, $dest) {
 		$result = '';
 		$result = $result . $source . ' gauss -> ' . $dest . ' -sigma ';
@@ -2600,12 +2604,13 @@ Class JobTaskSetting extends TaskSetting {
 		$result = $result . $this->removeBackgroundPercentString();
 		$result = $result . '-blMode auto ';
 		$result = $result . '-q 0 ';
-		$result = $result . '-mode fast ';
+		//$result = $result . '-mode fast ';
 		$result = $result . '-pad auto';
 		$result = $result . "\n";
 		return $result;
 	}
-
+	*/
+	
 	function fullRestorationString($source, $dest, $brMode) {
 		$result = '';
 
