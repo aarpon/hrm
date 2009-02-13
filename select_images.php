@@ -279,16 +279,15 @@ else echo "                        <option>&nbsp;</option>\n";
         </form>
         
     </div> <!-- content -->
-    
-    
+            
+    <div id="stuff">
+        <div id="info">
+
         <div id="controls">
         
             <input type="button" value="" class="icon previous" onclick="document.location.href='select_task_settings.php'" />
             <input type="submit" value="" class="icon next" onclick="process()" />
         </div>    
-            
-    <div id="stuff">
-        <div id="info">
             <p>
                 Select the image files in the upper file list. You can use SHIFT- 
 		and CTRL-click to select multiple files. Use the down-arrow to
