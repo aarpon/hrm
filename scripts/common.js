@@ -185,3 +185,13 @@ function changeVisibility(id) {
     else if (blockElement.style.display == "block")
         blockElement.style.display = "none";
 }
+
+function hide(id) {
+    blockElement = document.getElementById(id);
+    blockElement.style.display = "none";
+}
+
+function show(id) {
+    blockElement = document.getElementById(id);
+    blockElement.style.display = "block";
+}

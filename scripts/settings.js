@@ -97,3 +97,42 @@ function switchSnrMode() {
     changeVisibility('cmle-snr');
     changeVisibility('qmle-snr');
 }
+
+function switchCorrection() {
+    var element = document.getElementById('PerformAberrationCorrection');
+    if (element.selectedIndex == 1) {
+        show('CoverslipRelativePositionDiv');
+        show('AberrationCorrectionModeDiv');
+        show('AdvancedCorrectionOptionsDiv');
+        show('PSFGenerationDepthDiv');
+    }
+    else {
+        hide('CoverslipRelativePositionDiv');
+        hide('AberrationCorrectionModeDiv');
+        hide('AdvancedCorrectionOptionsDiv');
+        hide('PSFGenerationDepthDiv');
+    }
+}
+
+function switchAdvancedCorrection() {
+    var element = document.getElementById('AberrationCorrectionMode');
+    var chosenoption = element.options[element.selectedIndex];
+    if (chosenoption.value == 'advanced') {
+        show('AdvancedCorrectionOptionsDiv');
+    }
+    else {
+        hide('AdvancedCorrectionOptionsDiv');
+    }
+    switchAdvancedCorrectionScheme();
+}
+
+function switchAdvancedCorrectionScheme() {
+    var element = document.getElementById('AdvancedCorrectionOptions');
+    var chosenoption = element.options[element.selectedIndex];
+    if (chosenoption.value == 'user') {
+        show('PSFGenerationDepthDiv');
+    }
+    else {
+        hide('PSFGenerationDepthDiv');
+    }
+}

@@ -119,7 +119,13 @@ include("header.inc.php");
                     enable depth-dependent PSF correction?
             </legend>
 
-            <select name="PerformAberrationCorrection" style="width: 420px">
+<?php
+
+$onChange = "onChange=\"javascript:switchCorrection()\"";
+
+?>
+
+            <select id="PerformAberrationCorrection" name="PerformAberrationCorrection" style="width: 420px" <?php echo $onChange ?>>
                 
             <?php
 
@@ -149,7 +155,15 @@ include("header.inc.php");
 
     <!-- (2) SPECIFY SAMPLE ORIENTATION -->
 
-    <div id="CoverslipRelativePositionDiv">
+<?php
+
+$visibility = " style=\"display: none\"";
+if ($_SESSION['setting']->parameter("PerformAberrationCorrection")->value( ) == 1)
+  $visibility = " style=\"display: block\"";
+
+?>
+
+    <div id="CoverslipRelativePositionDiv"<?php echo $visibility?>>
         
     <h4>For depth-dependent correction to work properly, you have to specify the relative position of the coverslip with respect to the first acquired plane of the dataset.</h4>
             
@@ -159,16 +173,8 @@ include("header.inc.php");
                 <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&help=HuygensRemoteManagerHelpSpecifySampleOrientation')"><img src="images/help.png" alt="?" /></a>
                     specify sample orientation
             </legend>
-            
-            <?php
-                if ( $_SESSION['setting']->parameter("PerformAberrationCorrection")->value( ) == 0 ) {
-                    $disabled = 'disabled = \"disabled\"';
-                } else {
-                    $disabled = '';
-                }
-            ?>
                     
-            <select name="CoverslipRelativePosition" style="width: 420px" <?php echo $disabled; ?>>
+            <select name="CoverslipRelativePosition" style="width: 420px">
 
             <?php
 
@@ -200,7 +206,15 @@ include("header.inc.php");
 
     <!-- (3) CHOOSE ADVANCED CORRECTION MODE -->
 
-    <div id="AberrationCorrectionModeDiv">
+<?php
+
+$visibility = " style=\"display: none\"";
+if ($_SESSION['setting']->parameter("PerformAberrationCorrection")->value( ) == 1)
+  $visibility = " style=\"display: block\"";
+
+?>
+
+    <div id="AberrationCorrectionModeDiv"<?php echo $visibility?>>
         
     <h4>At this point the HRM hs enough information to perform depth-dependent aberration correction. Please notice that in certain circumstances, the automatic correction scheme might generate artifacts in the result. If this is the case, please choose the advanced correction mode.</h4>
             
@@ -211,15 +225,13 @@ include("header.inc.php");
                     correction mode
             </legend>
 
-            <?php
-                if ( $_SESSION['setting']->parameter("PerformAberrationCorrection")->value( ) == 0 ) {
-                    $disabled = 'disabled = \"disabled\"';
-                } else {
-                    $disabled = '';
-                }
-            ?>
-            
-            <select name="AberrationCorrectionMode" style="width: 420px" <?php echo $disabled; ?>>
+<?php
+
+$onChange = "onChange=\"javascript:switchAdvancedCorrection()\"";
+
+?>
+
+            <select id="AberrationCorrectionMode" name="AberrationCorrectionMode" style="width: 420px" <?php echo $onChange ?>>
 
             <?php
 
@@ -251,7 +263,16 @@ include("header.inc.php");
     
     <!-- (4) ADVANCED CORRECTION MODE -->
 
-    <div id="AdvancedCorrectionOptionsDiv">
+<?php
+
+$visibility = " style=\"display: none\"";
+if ( ($_SESSION['setting']->parameter("PerformAberrationCorrection")->value( ) == 1) &&
+     ($_SESSION['setting']->parameter("AberrationCorrectionMode")->value( ) == "advanced") )
+  $visibility = " style=\"display: block\"";
+
+?>
+
+    <div id="AdvancedCorrectionOptionsDiv"<?php echo $visibility?>>
         
     <h4>Here you can choose an advanced correction scheme.</h4>
             
@@ -261,17 +282,14 @@ include("header.inc.php");
                 <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&help=HuygensRemoteManagerHelpAdvancedSaCorrection')"><img src="images/help.png" alt="?" /></a>
                     advanced correction scheme
             </legend>
-            
-            <?php
-                if ( ( $_SESSION['setting']->parameter("PerformAberrationCorrection")->value( ) == 1 ) &&
-                    ( $_SESSION['setting']->parameter("AberrationCorrectionMode")->value( ) == "advanced" ) ) {
-                    $disabled = '';
-                } else {
-                    $disabled = 'disabled = \"disabled\"';
-                }
-            ?>
-                
-            <select name="AdvancedCorrectionOptions" style="width: 420px" <?php echo $disabled; ?>>
+
+<?php
+
+$onChange = "onChange=\"javascript:switchAdvancedCorrectionScheme()\"";
+
+?>
+
+            <select id="AdvancedCorrectionOptions" name="AdvancedCorrectionOptions" style="width: 420px" <?php echo $onChange ?>>
 
             <?php
 
@@ -304,23 +322,22 @@ include("header.inc.php");
             ?>
                 
             </select>
+
+<?php
+
+$visibility = " style=\"display: none\"";
+if ( ($_SESSION['setting']->parameter("PerformAberrationCorrection")->value( ) == 1) &&
+     ($_SESSION['setting']->parameter("AberrationCorrectionMode")->value( ) == "advanced") &&
+     ($_SESSION['setting']->parameter("AdvancedCorrectionOptions")->value( ) == "user") )
+  $visibility = " style=\"display: block\"";
+
+$parameter = $_SESSION['setting']->parameter("PSFGenerationDepth");
+$selectedValue  = $parameter->value();
+
+?>
             
-            <?php
-            
-                if ( ( $_SESSION['setting']->parameter("PerformAberrationCorrection")->value( ) == 1 ) &&
-                    ( $_SESSION['setting']->parameter("AberrationCorrectionMode")->value( ) == "advanced" ) &&
-                    ( $_SESSION['setting']->parameter("AdvancedCorrectionOptions")->value( ) == "user" ) ) {
-                    $disabled = '';
-                } else {
-                    $disabled = 'disabled = \"disabled\"';
-                }
-            
-                $parameter = $_SESSION['setting']->parameter("PSFGenerationDepth");
-                $selectedValue  = $parameter->value();
-            ?>
-            
-            <div id="PSFGenerationDepthDiv" >
-                <p>Please enter depth for PSF generation (um): <input name="PSFGenerationDepth" type="text" <?php echo $disabled; ?> value="<?php echo $selectedValue; ?>" /></p>
+            <div id="PSFGenerationDepthDiv"<?php echo $visibility?>>
+                <p>Please enter depth for PSF generation (um): <input name="PSFGenerationDepth" type="text" value="<?php echo $selectedValue; ?>" /></p>
             </div>
             
         </fieldset>
