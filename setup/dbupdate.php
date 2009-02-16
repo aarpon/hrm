@@ -357,9 +357,7 @@ $error_file = $logdir . "/dbupdate_error.log";
 foreach ( array( $log_file, $error_file ) as $currentFile ) {
     if ( file_exists($currentFile)==false) {
         if (!($fh = @fopen($currentFile, 'a'))) {
-            $msg = "Cannot open file " . $currentFile . ".";
-            write_message($msg);
-            write_to_error($msg);
+            echo "<strong>Cannot create file " . $currentFile . ".</strong>";
             return;
         }
         //Close the file
@@ -371,18 +369,14 @@ foreach ( array( $log_file, $error_file ) as $currentFile ) {
 
 // Now open the files for use
 if (!($fh = @fopen($log_file, 'a'))) {
-    $msg = "Cannot open the dbupdate log file.";
-    write_message($msg);
-    write_to_error($msg);
+    echo "<strong>Cannot open the dbupdate log file!</strong>";
     return;
 }
 write_to_log(timestamp());
 
 // Open error log file
 if (!($efh = @fopen($error_file, 'a'))) { // If the file does not exist, it is created
-    $msg = "Cannot open the dbupdate error file."; // If the file does not exist and cannot be created, an error message is displayed 
-    write_message($msg);
-    write_to_error($msg);
+    echo "<strong>Cannot open the dbupdate error file.</strong>";
     return;
 }
 write_to_error(timestamp());
