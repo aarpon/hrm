@@ -96,7 +96,7 @@ include $adodb;
 
 
 // Database last revision
-$LAST_REVISION = 5;
+$LAST_REVISION = 6;
 
 
 // For test purposes
@@ -1412,7 +1412,7 @@ if ($current_revision < $n) {
     
     $record["parameter"] = "PerformAberrationCorrection";
     $record["value"] = "0";
-    $record["translation"] = "Do not perform depth-dependent correction";
+    $record["translation"] = "No, do not perform depth-dependent correction";
     $record["isDefault"] = "T";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
     if(!$db->Execute($insertSQL)) {
@@ -1516,6 +1516,44 @@ if ($current_revision < $n) {
         $msg = "An error occurred while updateing the database to revision " . $n . ".";
         write_message($msg);
         write_to_error($msg);
+        return;
+    }
+    
+    if(!update_dbrevision($n)) 
+        return;
+    
+    $current_revision = $n;
+    $msg = "Your HRM database has been updated to revision " . $current_revision . ".";
+    write_message($msg);
+    write_to_log($msg);  
+}
+
+
+// -----------------------------------------------------------------------------
+// Update to revision 6
+// Description: correct bug concrning the length of the settings name
+// -----------------------------------------------------------------------------
+$n = 6;
+if ($current_revision < $n) {
+    $tabname = "parameter";
+    $flds = "
+        owner C(30) NOTNULL DEFAULT 0 PRIMARY,
+        setting C(255) NOTNULL DEFAULT 0 PRIMARY,
+        name C(30) NOTNULL DEFAULT 0 PRIMARY,
+        value C(255) DEFAULT NULL
+    ";
+//write_message("Ok before check");
+//    check_table_existence_and_structure($tabname,$flds);
+//write_message("I was after check");
+
+    $query = "ALTER TABLE " . $tabname . " MODIFY setting C(255)";
+write_message($query);
+    $rs = $db->Execute($query);
+    if(!$rs) {
+        $msg = error_message($tabname);
+        write_to_error($msg);
+        write_to_log($msg);
+        write_message($msg);
         return;
     }
     
