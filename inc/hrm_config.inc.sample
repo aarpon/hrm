@@ -159,8 +159,6 @@ $resultImagesOwnedByUser = false;
 $resultImagesRenamed = true;
 
 // Thumbnails require Huygens Core 3.3.1 or higher.
-// To patch Huygens 3.3.0p3 to be able to use it, see
-// http://support.svi.nl/wiki/HH_HRMpreviews
 
 // If true, allows generates thumbnails and previews for the originals and the
 // results during the deconvolution (i.e. in the computation servers). These
