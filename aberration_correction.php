@@ -159,8 +159,16 @@ include("header.inc.php");
                 <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&help=HuygensRemoteManagerHelpSpecifySampleOrientation')"><img src="images/help.png" alt="?" /></a>
                     specify sample orientation
             </legend>
-                
-            <select name="CoverslipRelativePosition" style="width: 420px">
+            
+            <?php
+                if ( $_SESSION['setting']->parameter("PerformAberrationCorrection")->value( ) == 0 ) {
+                    $disabled = 'disabled = \"disabled\"';
+                } else {
+                    $disabled = '';
+                }
+            ?>
+                    
+            <select name="CoverslipRelativePosition" style="width: 420px" <?php echo $disabled; ?>>
 
             <?php
 
@@ -202,8 +210,16 @@ include("header.inc.php");
                 <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&help=HuygensRemoteManagerHelpSaCorrectionMode')"><img src="images/help.png" alt="?" /></a>
                     correction mode
             </legend>
-                
-            <select name="AberrationCorrectionMode" style="width: 420px">
+
+            <?php
+                if ( $_SESSION['setting']->parameter("PerformAberrationCorrection")->value( ) == 0 ) {
+                    $disabled = 'disabled = \"disabled\"';
+                } else {
+                    $disabled = '';
+                }
+            ?>
+            
+            <select name="AberrationCorrectionMode" style="width: 420px" <?php echo $disabled; ?>>
 
             <?php
 
@@ -217,7 +233,7 @@ include("header.inc.php");
                         $option = "selected=\"selected\"";
                     } else {
                         $option = "";
-                    }
+                }
 
             ?>
 
@@ -245,8 +261,17 @@ include("header.inc.php");
                 <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&help=HuygensRemoteManagerHelpAdvancedSaCorrection')"><img src="images/help.png" alt="?" /></a>
                     advanced correction scheme
             </legend>
+            
+            <?php
+                if ( ( $_SESSION['setting']->parameter("PerformAberrationCorrection")->value( ) == 1 ) &&
+                    ( $_SESSION['setting']->parameter("AberrationCorrectionMode")->value( ) == "advanced" ) ) {
+                    $disabled = '';
+                } else {
+                    $disabled = 'disabled = \"disabled\"';
+                }
+            ?>
                 
-            <select name="AdvancedCorrectionOptions" style="width: 420px">
+            <select name="AdvancedCorrectionOptions" style="width: 420px" <?php echo $disabled; ?>>
 
             <?php
 
@@ -281,12 +306,21 @@ include("header.inc.php");
             </select>
             
             <?php
+            
+                if ( ( $_SESSION['setting']->parameter("PerformAberrationCorrection")->value( ) == 1 ) &&
+                    ( $_SESSION['setting']->parameter("AberrationCorrectionMode")->value( ) == "advanced" ) &&
+                    ( $_SESSION['setting']->parameter("AdvancedCorrectionOptions")->value( ) == "user" ) ) {
+                    $disabled = '';
+                } else {
+                    $disabled = 'disabled = \"disabled\"';
+                }
+            
                 $parameter = $_SESSION['setting']->parameter("PSFGenerationDepth");
                 $selectedValue  = $parameter->value();
             ?>
             
             <div id="PSFGenerationDepthDiv" >
-                <p>Please enter depth for PSF generation (um): <input name="PSFGenerationDepth" type="text" value="<?php echo $selectedValue; ?>" /></p>
+                <p>Please enter depth for PSF generation (um): <input name="PSFGenerationDepth" type="text" <?php echo $disabled; ?> value="<?php echo $selectedValue; ?>" /></p>
             </div>
             
         </fieldset>
