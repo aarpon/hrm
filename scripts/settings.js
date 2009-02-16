@@ -104,14 +104,13 @@ function switchCorrection() {
         show('CoverslipRelativePositionDiv');
         show('AberrationCorrectionModeDiv');
         show('AdvancedCorrectionOptionsDiv');
-        show('PSFGenerationDepthDiv');
     }
     else {
         hide('CoverslipRelativePositionDiv');
         hide('AberrationCorrectionModeDiv');
         hide('AdvancedCorrectionOptionsDiv');
-        hide('PSFGenerationDepthDiv');
     }
+    switchAdvancedCorrectionScheme()
 }
 
 function switchAdvancedCorrection() {
