@@ -96,7 +96,7 @@ include $adodb;
 
 
 // Database last revision
-$LAST_REVISION = 6;
+$LAST_REVISION = 5;
 
 
 // For test purposes
@@ -957,7 +957,7 @@ if ($current_revision == 0) {
     ";*/
     $flds = "
         owner C(30) NOTNULL DEFAULT 0 PRIMARY,
-        name C(30) NOTNULL PRIMARY,
+        name C(255) NOTNULL PRIMARY,
         standard C(1) DEFAULT f
     ";
     if (!in_array($tabname, $tables)) {
@@ -983,7 +983,7 @@ if ($current_revision == 0) {
     //";
     $flds = "
         owner C(30) NOTNULL DEFAULT 0 PRIMARY,
-        name C(30) NOTNULL PRIMARY,
+        name C(255) NOTNULL PRIMARY,
         standard C(1) DEFAULT f
     ";
     if (!in_array($tabname, $tables)) {
@@ -1082,7 +1082,7 @@ if ($current_revision == 0) {
     $tabname = "task_parameter";
     $flds = "
         owner C(30) NOTNULL DEFAULT 0 PRIMARY,
-        setting C(30) NOTNULL PRIMARY,
+        setting C(255) NOTNULL PRIMARY,
         name C(30) NOTNULL PRIMARY,
         value C(255) DEFAULT NULL
     ";
@@ -1119,7 +1119,7 @@ if ($current_revision == 0) {
     $tabname = "parameter";
     $flds = "
         owner C(30) NOTNULL DEFAULT 0 PRIMARY,
-        setting C(30) NOTNULL DEFAULT 0 PRIMARY,
+        setting C(255) NOTNULL DEFAULT 0 PRIMARY,
         name C(30) NOTNULL DEFAULT 0 PRIMARY,
         value C(255) DEFAULT NULL
     ";
@@ -1516,44 +1516,6 @@ if ($current_revision < $n) {
         $msg = "An error occurred while updateing the database to revision " . $n . ".";
         write_message($msg);
         write_to_error($msg);
-        return;
-    }
-    
-    if(!update_dbrevision($n)) 
-        return;
-    
-    $current_revision = $n;
-    $msg = "Your HRM database has been updated to revision " . $current_revision . ".";
-    write_message($msg);
-    write_to_log($msg);  
-}
-
-
-// -----------------------------------------------------------------------------
-// Update to revision 6
-// Description: correct bug concrning the length of the settings name
-// -----------------------------------------------------------------------------
-$n = 6;
-if ($current_revision < $n) {
-    $tabname = "parameter";
-    $flds = "
-        owner C(30) NOTNULL DEFAULT 0 PRIMARY,
-        setting C(255) NOTNULL DEFAULT 0 PRIMARY,
-        name C(30) NOTNULL DEFAULT 0 PRIMARY,
-        value C(255) DEFAULT NULL
-    ";
-//write_message("Ok before check");
-//    check_table_existence_and_structure($tabname,$flds);
-//write_message("I was after check");
-
-    $query = "ALTER TABLE " . $tabname . " MODIFY setting C(255)";
-write_message($query);
-    $rs = $db->Execute($query);
-    if(!$rs) {
-        $msg = error_message($tabname);
-        write_to_error($msg);
-        write_to_log($msg);
-        write_message($msg);
         return;
     }
     
