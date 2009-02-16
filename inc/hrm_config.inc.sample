@@ -122,7 +122,7 @@ $hrm_path = "/var/www/html/hrm";
 // Please create a directory for the logging (default and recommended is /var/log/hrm)
 // and make sure to grant read/write access to the web server user. 
 $log_verbosity = 1;         // 0=quiet, 1=normal, 2=debug
-$logdir  = "/var/log/hrm"
+$logdir  = "/var/log/hrm";
 $logfile = "hrm.log";
 $logfile_max_size = 100;    // maximum size of the logfile in MB
 
