@@ -349,25 +349,42 @@ if ( file_exists($logdir)==false) {
     return;
 }
 
-$log_file = $logdir . "/dbupdate.log";
+// Define the log and error_log file names
+$log_file   = $logdir . "/dbupdate.log";
+$error_file = $logdir . "/dbupdate_error.log";
+
+// If the log files do not exist, we create them and set the correct file mode
+foreach ( array( $log_file, $error_file ) as $currentFile ) {
+    if ( file_exists($currentFile)==false) {
+        if (!($fh = @fopen($currentFile, 'a'))) {
+            $msg = "Cannot open file " . $currentFile . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+        //Close the file
+        fclose($fh);
+        // Set the mode to 0666
+        chmod($currentFile, 0666);
+    }
+}    
+
+// Now open the files for use
 if (!($fh = @fopen($log_file, 'a'))) {
     $msg = "Cannot open the dbupdate log file.";
     write_message($msg);
     write_to_error($msg);
     return;
 }
-chmod($log_file, 0666);
 write_to_log(timestamp());
 
 // Open error log file
-$error_file = $logdir . "/dbupdate_error.log";
 if (!($efh = @fopen($error_file, 'a'))) { // If the file does not exist, it is created
     $msg = "Cannot open the dbupdate error file."; // If the file does not exist and cannot be created, an error message is displayed 
     write_message($msg);
     write_to_error($msg);
     return;
 }
-chmod($error_file, 0666);
 write_to_error(timestamp());
 
 //  Check if the database exists; if it does not exist, create it
