@@ -17,14 +17,20 @@ As root:
 	<key>EnvironmentVariables</key>
         <!-- EDIT THE STRING VALUES OF THESE FOUR VARIABLES: -->
 	<dict>
+                <!-- The HRM home directory, served by Apache -->
+		<key>HRM_HOME</key>
+		<string>/Library/WebServer/Documents/hrm</string>
+                <!-- This directory shouldn't be served by Apache:
+                     it contains all user's personal directories with images.-->
 		<key>HRM_DATA</key>
 		<string>/Library/WebServer/hrm_images</string>
-		<key>HRM_DEST</key>
-		<string>huygens_dst</string>
-		<key>HRM_HOME</key>
-		<string>/Users/jose/Sites/hrm</string>
+                <!-- The subdirectory names under each user directory,
+                     containing the raw images... -->
 		<key>HRM_SOURCE</key>
 		<string>huygens_src</string>
+                <!-- ... and the deconvolved results. -->
+		<key>HRM_DEST</key>
+		<string>huygens_dst</string>
 	</dict>
 	<key>KeepAlive</key>
 	<true/>
@@ -37,20 +43,20 @@ As root:
 		<string>/usr/bin/php</string>
 		<string>-q</string>
                 <!-- EDIT THIS PATH: -->
-		<string>/Users/jose/Sites/hrm/run/runHuygensRemoteManager.php</string>
+		<string>/Library/WebServer/Documents/hrm/run/runHuygensRemoteManager.php</string>
 	</array>
 	<key>RunAtLoad</key>
 	<true/>
+        <!-- EDIT THIS PATH and make sure the directory is writable by _www-->
 	<key>StandardErrorPath</key>
-        <!-- EDIT THIS PATH -->
-	<string>/Users/jose/Sites/hrm/run/log_error_d.txt</string>
+	<string>/var/log/hrm/log_error_d.txt</string>
+        <!-- EDIT THIS PATH and make sure the directory is writable by _www -->
 	<key>StandardOutPath</key>
-        <!-- EDIT THIS PATH -->
-	<string>/Users/jose/Sites/hrm/run/log_d.txt</string>
+	<string>/var/log/hrm/log_d.txt</string>
 	<key>UserName</key>
 	<string>root</string>
-	<key>WorkingDirectory</key>
         <!-- EDIT THIS PATH -->
-	<string>/Users/jose/Sites/hrm/run</string>
+	<key>WorkingDirectory</key>
+	<string>/Library/WebServer/Documents/hrm/run</string>
 </dict>
 </plist>
