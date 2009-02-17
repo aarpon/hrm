@@ -115,13 +115,13 @@ include("header.inc.php");
         <fieldset class="setting">
             
             <legend>
-                <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&help=HuygensRemoteManagerHelpDepthDependentPsf')"><img src="images/help.png" alt="?" /></a>
+                <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpDepthDependentPsf')"><img src="images/help.png" alt="?" /></a>
                     enable depth-dependent PSF correction?
             </legend>
 
 <?php
 
-$onChange = "onChange=\"javascript:switchCorrection()\"";
+$onChange = "onchange=\"javascript:switchCorrection()\"";
 
 ?>
 
@@ -170,7 +170,7 @@ if ($_SESSION['setting']->parameter("PerformAberrationCorrection")->value( ) == 
         <fieldset class="setting">
             
             <legend>
-                <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&help=HuygensRemoteManagerHelpSpecifySampleOrientation')"><img src="images/help.png" alt="?" /></a>
+                <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpSpecifySampleOrientation')"><img src="images/help.png" alt="?" /></a>
                     specify sample orientation
             </legend>
                     
@@ -221,13 +221,13 @@ if ($_SESSION['setting']->parameter("PerformAberrationCorrection")->value( ) == 
         <fieldset class="setting">
             
             <legend>
-                <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&help=HuygensRemoteManagerHelpSaCorrectionMode')"><img src="images/help.png" alt="?" /></a>
+                <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpSaCorrectionMode')"><img src="images/help.png" alt="?" /></a>
                     correction mode
             </legend>
 
 <?php
 
-$onChange = "onChange=\"javascript:switchAdvancedCorrection()\"";
+$onChange = "onchange=\"javascript:switchAdvancedCorrection()\"";
 
 ?>
 
@@ -279,13 +279,13 @@ if ( ($_SESSION['setting']->parameter("PerformAberrationCorrection")->value( ) =
         <fieldset class="setting">
             
             <legend>
-                <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&help=HuygensRemoteManagerHelpAdvancedSaCorrection')"><img src="images/help.png" alt="?" /></a>
+                <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpAdvancedSaCorrection')"><img src="images/help.png" alt="?" /></a>
                     advanced correction scheme
             </legend>
 
 <?php
 
-$onChange = "onChange=\"javascript:switchAdvancedCorrectionScheme()\"";
+$onChange = "onchange=\"javascript:switchAdvancedCorrectionScheme()\"";
 
 ?>
 
@@ -337,7 +337,7 @@ $selectedValue  = $parameter->value();
 ?>
             
             <div id="PSFGenerationDepthDiv"<?php echo $visibility?>>
-                <p>Please enter depth for PSF generation (um): <input name="PSFGenerationDepth" type="text" value="<?php echo $selectedValue; ?>" /></p>
+                <p>Please enter depth for PSF generation (&micro;m): <input name="PSFGenerationDepth" type="text" value="<?php echo $selectedValue; ?>" /></p>
             </div>
             
         </fieldset>
