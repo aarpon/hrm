@@ -100,7 +100,7 @@ $LAST_REVISION = 6;
 
 
 // For test purposes
-//$db_name = "hrm-test";
+$db_name = "hrm-FMI";
 
 
 // =============================================================================
@@ -1289,7 +1289,7 @@ if ($current_revision < $n) {
     if (!($rs->EOF)) {
         $rss = $db->Execute("DELETE FROM " . $tabname . " WHERE parameter = 'CoverslipRelativePosition' AND value = 'ignore'");
         if(!$rss) {
-            $msg = "1 An error occurred while updateing the database to revision " . $n . ".";
+            $msg = "An error occurred while updateing the database to revision " . $n . ".";
             write_message($msg);
             write_to_error($msg);
             return; 
@@ -1300,7 +1300,7 @@ if ($current_revision < $n) {
     if (!($rs->EOF)) {
         $rss = $db->Execute("DELETE FROM " . $tabname . " WHERE parameter = 'PerformAberrationCorrection' AND translation = 'Do not perform depth-dependent correction'");
         if(!$rss) {
-            $msg = "2 An error occurred while updateing the database to revision " . $n . ".";
+            $msg = "An error occurred while updateing the database to revision " . $n . ".";
             write_message($msg);
             write_to_error($msg);
             return; 
@@ -1316,7 +1316,7 @@ if ($current_revision < $n) {
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
         if(!$db->Execute($insertSQL)) {
-            $msg = "3 An error occurred while updateing the database to revision " . $n . ".";
+            $msg = "An error occurred while updateing the database to revision " . $n . ".";
             write_message($msg);
             write_to_error($msg);
             return;
@@ -1330,7 +1330,7 @@ if ($current_revision < $n) {
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
         if(!$db->Execute($insertSQL)) {
-            $msg = "4 An error occurred while updateing the database to revision " . $n . ".";
+            $msg = "An error occurred while updateing the database to revision " . $n . ".";
             write_message($msg);
             write_to_error($msg);
             return;
@@ -1345,7 +1345,7 @@ if ($current_revision < $n) {
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
         if(!$db->Execute($insertSQL)) {
-            $msg = "5 An error occurred while updateing the database to revision " . $n . ".";
+            $msg = "An error occurred while updateing the database to revision " . $n . ".";
             write_message($msg);
             write_to_error($msg);
             return;
@@ -1359,7 +1359,7 @@ if ($current_revision < $n) {
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
         if(!$db->Execute($insertSQL)) {
-            $msg = "6 An error occurred while updateing the database to revision " . $n . ".";
+            $msg = "An error occurred while updateing the database to revision " . $n . ".";
             write_message($msg);
             write_to_error($msg);
             return;
@@ -1374,7 +1374,7 @@ if ($current_revision < $n) {
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
         if(!$db->Execute($insertSQL)) {
-            $msg = "7 An error occurred while updateing the database to revision " . $n . ".";
+            $msg = "An error occurred while updateing the database to revision " . $n . ".";
             write_message($msg);
             write_to_error($msg);
             return;
@@ -1388,7 +1388,7 @@ if ($current_revision < $n) {
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
         if(!$db->Execute($insertSQL)) {
-            $msg = "8 An error occurred while updateing the database to revision " . $n . ".";
+            $msg = "An error occurred while updateing the database to revision " . $n . ".";
             write_message($msg);
             write_to_error($msg);
             return;
@@ -1403,7 +1403,7 @@ if ($current_revision < $n) {
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
         if(!$db->Execute($insertSQL)) {
-            $msg = "9 An error occurred while updateing the database to revision " . $n . ".";
+            $msg = "An error occurred while updateing the database to revision " . $n . ".";
             write_message($msg);
             write_to_error($msg);
             return;
@@ -1417,7 +1417,7 @@ if ($current_revision < $n) {
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
         if(!$db->Execute($insertSQL)) {
-            $msg = "10 An error occurred while updateing the database to revision " . $n . ".";
+            $msg = "An error occurred while updateing the database to revision " . $n . ".";
             write_message($msg);
             write_to_error($msg);
             return;
@@ -1431,7 +1431,7 @@ if ($current_revision < $n) {
     if ($rs->EOF) {    
         $insertSQL = $db->GetInsertSQL($tabname, $record);
         if(!$db->Execute($insertSQL)) {
-            $msg = "11 An error occurred while updateing the database to revision " . $n . ".";
+            $msg = "An error occurred while updateing the database to revision " . $n . ".";
             write_message($msg);
             write_to_error($msg);
             return;
@@ -1446,7 +1446,7 @@ if ($current_revision < $n) {
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
         if(!$db->Execute($insertSQL)) {
-            $msg = "12 An error occurred while updateing the database to revision " . $n . ".";
+            $msg = "An error occurred while updateing the database to revision " . $n . ".";
             write_message($msg);
             write_to_error($msg);
             return;
@@ -1509,6 +1509,7 @@ if ($current_revision < $n) {
         if(!insert_record($tabname, $array, $colnames))
             return;
     }
+write_message("Ok 1!");
     
     $tabname = "parameter_setting";
     $flds = "
@@ -1526,6 +1527,7 @@ if ($current_revision < $n) {
         if(!insert_record($tabname, $array, $colnames))
             return;
     }
+write_message("Ok 2!");
     
     $tabname = "task_parameter";
     $flds = "
@@ -1544,6 +1546,7 @@ if ($current_revision < $n) {
         if(!insert_record($tabname, $array, $colnames))
             return;
     }
+write_message("Ok 3!");
     
     $tabname = "task_setting";
     $flds = "
@@ -1561,6 +1564,7 @@ if ($current_revision < $n) {
         if(!insert_record($tabname, $array, $colnames))
             return;
     }
+write_message("Ok 4!");
     
     $tabname = "possible_values";
     $flds = "
@@ -1579,6 +1583,7 @@ if ($current_revision < $n) {
         if(!insert_record($tabname, $array, $colnames))
             return;
     }
+write_message("Ok 5!");
     
     $record[$colnames[0]] = "PerformAberrationCorrection";
     $record[$colnames[1]] = "0";
@@ -1594,8 +1599,13 @@ if ($current_revision < $n) {
             return;
         }
     }
-    if(!insert_record($tabname, $array, $colnames))
-        return;       
+write_message("Ok 6!");
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "' AND translation='" . $record["translation"] . "' AND isDefault='" . $record["isDefault"] . "'");
+    if ($rs->EOF) { 
+        if(!insert_record($tabname, $array, $colnames))
+            return;
+    }
+write_message("Ok 7!");
 
     if(!update_dbrevision($n)) 
         return;
