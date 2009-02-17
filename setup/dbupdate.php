@@ -1509,7 +1509,6 @@ if ($current_revision < $n) {
         if(!insert_record($tabname, $array, $colnames))
             return;
     }
-write_message("Ok 1!");
     
     $tabname = "parameter_setting";
     $flds = "
@@ -1527,7 +1526,6 @@ write_message("Ok 1!");
         if(!insert_record($tabname, $array, $colnames))
             return;
     }
-write_message("Ok 2!");
     
     $tabname = "task_parameter";
     $flds = "
@@ -1546,7 +1544,6 @@ write_message("Ok 2!");
         if(!insert_record($tabname, $array, $colnames))
             return;
     }
-write_message("Ok 3!");
     
     $tabname = "task_setting";
     $flds = "
@@ -1564,7 +1561,6 @@ write_message("Ok 3!");
         if(!insert_record($tabname, $array, $colnames))
             return;
     }
-write_message("Ok 4!");
     
     $tabname = "possible_values";
     $flds = "
@@ -1583,7 +1579,6 @@ write_message("Ok 4!");
         if(!insert_record($tabname, $array, $colnames))
             return;
     }
-write_message("Ok 5!");
     
     $record[$colnames[0]] = "PerformAberrationCorrection";
     $record[$colnames[1]] = "0";
@@ -1599,13 +1594,11 @@ write_message("Ok 5!");
             return;
         }
     }
-write_message("Ok 6!");
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "' AND translation='" . $record["translation"] . "' AND isDefault='" . $record["isDefault"] . "'");
     if ($rs->EOF) { 
         if(!insert_record($tabname, $array, $colnames))
             return;
     }
-write_message("Ok 7!");
 
     if(!update_dbrevision($n)) 
         return;
