@@ -794,6 +794,9 @@ Class JobDescription {
     $numberOfChannels = $parameterSetting->numberOfChannels();
     $taskSetting->setNumberOfChannels($numberOfChannels);
 
+    // Apply the parameters to the image in all cases:
+    $newScript = $parameterSetting->putScriptOn($newScript);
+
     // manage measured PSF
     $psfParam = $parameterSetting->parameter('PointSpreadFunction');
     if ($psfParam->value() == "measured") {
@@ -809,9 +812,6 @@ Class JobDescription {
       $newScript = $newScript . "set psf [img open \"".$filename."\"]\n";
       $newScript = $newScript . "\$psf -> psf\n";
       $newScript = $newScript . "\$psf del\n";
-    }
-    else if ($psfParam->value() == "theoretical") {
-      $newScript = $parameterSetting->putScriptOn($newScript);
     }
     
     $z2t = False;
