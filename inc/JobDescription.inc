@@ -809,7 +809,8 @@ Class JobDescription {
         // This is the case if the number of channel is > 1
         $filename = $this->sourceFolder() . $value;
       }
-      $newScript = $newScript . "set psf [img open \"".$filename."\"]\n";
+      $newScript = $newScript . "set psf [img open \"". $filename.
+                    "\" -logEnable]\n";
       $newScript = $newScript . "\$psf -> psf\n";
       $newScript = $newScript . "\$psf del\n";
     }
