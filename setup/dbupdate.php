@@ -96,7 +96,7 @@ include $adodb;
 
 
 // Database last revision
-$LAST_REVISION = 5;
+$LAST_REVISION = 6;
 
 
 // For test purposes
@@ -210,6 +210,50 @@ function insert_records($records,$tabname) {
     }
     $msg = $tabname . ": records have been inserted.\n";
     write_to_log($msg);
+    return True;
+}
+
+
+// Insert a single record in the table $tabname.
+// $array id the record to be insert, $colnames contains the names of the columns of the table.
+// $array anb $colnames are simple 1D arrays.
+function insert_record($tabname, $array, $colnames) {
+    global $db;
+    
+    for($i=0; $i<count($colnames); $i++) 
+        $record[$colnames[$i]] = $array[$i];
+        
+    $insertSQL = $db->GetInsertSQL($tabname, $record);
+    if(!$db->Execute($insertSQL)) {
+        $msg = error_message($tabname);
+        write_message($msg);
+        write_to_error($msg);
+        return False;
+    }
+    return True;
+}
+
+
+// Insert a column into the table $tabname
+function insert_column($tabname,$flds) {
+    global $datadict;
+    
+    $query = $datadict->AddColumnSQL($tabname, $flds);
+    if (!$query) {
+        $msg = error_message($tabname);
+        write_message($msg);
+        write_to_log($msg);
+        write_to_error($msg);
+        return False;
+    }
+    $rs = $datadict->executeSQLArray($array);
+    if (!$result) {
+        $msg = error_message($tabname);
+        write_message($msg);
+        write_to_log($msg);
+        write_to_error($msg);
+        return False;
+    }
     return True;
 }
 
@@ -488,14 +532,6 @@ if ($current_revision == 0) {
             return;
     }
     // Create table
-    //$flds = ("
-    //    parameter C(255) DEFAULT 0 PRIMARY,
-    //    min C(30),
-    //    max C(30),
-    //    min_included \"enum ('t', 'f')\" DEFAULT t,
-    //    max_included \"enum ('t', 'f')\" DEFAULT t,
-    //    standard C(30)
-    //");
     $flds = ("
         parameter C(255) DEFAULT 0 PRIMARY,
         min C(30),
@@ -506,13 +542,6 @@ if ($current_revision == 0) {
     ");
     if (!create_table($tabname, $flds))
         return;
-    
-    // Manage enum problem
-    //$values_string = "'t', 'f'";
-    //if (!manage_enum($tabname, 'min_included', $values_string,'t'))
-    //    return;
-    //if (!manage_enum($tabname, "max_included", $values_string,'t'))
-    //    return;
     
     // Insert records in table
     $records = array("parameter"=>array("PinholeSize","RemoveBackgroundPercent","BackgroundOffsetPercent","ExcitationWavelength",
@@ -536,25 +565,14 @@ if ($current_revision == 0) {
             return;
     }
     // Create table
-    /*$flds = "
-        parameter C(30) NOTNULL DEFAULT 0 PRIMARY,
-        value C(255) NOTNULL DEFAULT 0 PRIMARY,
-        translation C(50) DEFAULT NULL,
-        isDefault \"enum ('t', 'f')\" DEFAULT 'f'
-    ";*/
     $flds = "
         parameter C(30) NOTNULL DEFAULT 0 PRIMARY,
         value C(255) NOTNULL DEFAULT 0 PRIMARY,
-        translation C(255) DEFAULT NULL,
+        translation C(50) DEFAULT NULL,
         isDefault C(1) DEFAULT f
     ";
     if (!create_table($tabname, $flds)) 
         return;
-    
-    // Manage enum problem
-    //$values_string = "'t', 'f'";
-    //if (!manage_enum($tabname, 'isDefault', $values_string, 'f'))
-    //    return;
     
     // Insert records in table
     $records = array("parameter"=>array("IsMultiChannel","IsMultiChannel",
@@ -660,11 +678,6 @@ if ($current_revision == 0) {
             return;
     }
     // Create table
-    //$flds = "
-    //    name C(30) KEY DEFAULT 0 PRIMARY,
-    //    isThreeDimensional \"enum ('T', 'F')\" DEFAULT NULL,
-    //    isTimeSeries \"enum ('T', 'F')\" DEFAULT NULL
-    //";
     $flds = "
         name C(30) KEY DEFAULT 0 PRIMARY,
         isThreeDimensional C(1) DEFAULT NULL,
@@ -672,13 +685,6 @@ if ($current_revision == 0) {
     ";
     if (!create_table($tabname, $flds))     
         return;
-
-    // Manage enum problem
-    //$values_string = "'t', 'f'";
-    //if (!manage_enum($tabname, "isThreeDimensional", $values_string, "NULL")) 
-    //    return;
-    //if (!manage_enum($tabname, "isTimeSeries", $values_string, "NULL")) 
-    //    return;
     
     // Insert records in table
     $records = array("name"=>array("XYZ","XYZ - time","XY - time"), 
@@ -697,12 +703,6 @@ if ($current_revision == 0) {
             return;
     }
     // Create table
-    //$flds = "
-    //    name C(30) NOTNULL DEFAULT 0 PRIMARY,
-    //    isFixedGeometry \"enum ('T', 'F')\" NOTNULL DEFAULT T PRIMARY,
-    //    isSingleChannel \"enum ('T', 'F')\" NOTNULL DEFAULT T PRIMARY,
-    //    isVariableChannel \"enum ('T', 'F')\" NOTNULL DEFAULT T PRIMARY
-    //";
     $flds = "
         name C(30) NOTNULL DEFAULT 0 PRIMARY,
         isFixedGeometry C(1) NOTNULL DEFAULT t PRIMARY,
@@ -711,15 +711,6 @@ if ($current_revision == 0) {
     ";
     if (!create_table($tabname, $flds))     
         return;
-    
-    // Manage enum problem
-    //$values_string = "'t', 'f'";
-    //if (!manage_enum($tabname, 'isFixedGeometry', $values_string, 't'))
-    //    return;
-    //if (!manage_enum($tabname, 'isSingleChannel', $values_string, 't'))
-    //    return;
-    // if (!manage_enum($tabname, 'isVariableChannel', $values_string, 't'))
-    //    return;
     
     // Insert records in table
     $records = array("name"=>array("dv","ics","ics2","ims","lif","lsm","lsm-single","ome-xml","pic","stk","tiff","tiff-leica","tiff-series","tiff-single"),
@@ -764,21 +755,12 @@ if ($current_revision == 0) {
             return;
     }
     // Create table
-    //$flds = "
-    //    field C(30) NOTNULL DEFAULT 0 PRIMARY,
-    //    value  \"enum ('ON', 'OFF')\" NOTNULL DEFAULT ON
-    //";
     $flds = "
         field C(30) NOTNULL DEFAULT 0 PRIMARY,
         value  C(3) NOTNULL DEFAULT on
     ";
     if (!create_table($tabname, $flds))   
         return;
-    
-    // Manage enum problem
-    //$values_string = "'on', 'off'";
-    //if (!manage_enum($tabname, 'value', $values_string, 'on'))
-    //    return;
 
     // Insert records in table
     $records = array("field"=>array("switch"),
@@ -801,16 +783,6 @@ if ($current_revision == 0) {
             return;
     }
     // Create table
-    //$flds = "
-    //    id C(30) NOTNULL DEFAULT 0 PRIMARY,
-    //    username C(30) NOTNULL,
-    //    queued T NOTNULL DEFAULT '0000-00-00 00:00:00',
-    //    start T DEFAULT NULL,
-    //    stop T DEFAULT NULL,
-    //    server C(30) DEFAULT NULL,
-    //    process_info C(30) DEFAULT NULL,
-    //    status \"enum ('queued', 'started', 'finished', 'broken', 'paused')\" NOTNULL DEFAULT 'queued'  
-    //";
     $flds = "
         id C(30) NOTNULL DEFAULT 0 PRIMARY,
         username C(30) NOTNULL,
@@ -823,11 +795,6 @@ if ($current_revision == 0) {
     ";
     if (!create_table($tabname, $flds))    
         return;
-    
-    // Manage enum problem
-    //$values_string = "'queued', 'started', 'finished', 'broken', 'paused'";
-    //if (!manage_enum($tabname, 'status', $values_string, 'queued'))
-    //    return;
     
     
     // job_files
@@ -876,11 +843,6 @@ if ($current_revision == 0) {
             return; 
     }
     // Create table
-    //$flds = "
-    //    owner C(30) NOTNULL DEFAULT 0 PRIMARY,
-    //    name C(30) NOTNULL PRIMARY,
-    //    standard \"enum ('t','f')\" DEFAULT t
-    //";
     $flds = "
         owner C(30) NOTNULL DEFAULT 0 PRIMARY,
         name C(30) NOTNULL PRIMARY,
@@ -888,11 +850,6 @@ if ($current_revision == 0) {
     ";
     if (!create_table($tabname, $flds))    
         return;
-    
-    // Manage enum problem
-    //$values_string = "'t', 'f'";
-    //if (!manage_enum($tabname, 'standard', $values_string, 'f'))
-    //    return;
     
                      
     // job_task_parameter
@@ -923,11 +880,6 @@ if ($current_revision == 0) {
             return;
     }
     // Create table
-    //$flds = "
-    //    owner C(30) NOTNULL DEFAULT 0 PRIMARY,
-    //    name C(30) NOTNULL PRIMARY,
-    //    standard \"enum('t','f')\" DEFAULT f
-    //";
     $flds = "
         owner C(30) NOTNULL DEFAULT 0 PRIMARY,
         name C(30) NOTNULL PRIMARY,
@@ -935,11 +887,6 @@ if ($current_revision == 0) {
     ";
     if (!create_table($tabname, $flds))     
         return;
-    
-    // Manage enum problem
-    //$values_string = "'t', 'f'";
-    //if (!manage_enum($tabname, 'standard', $values_string, 'f'))
-    //    return;
     
     
     // Check the existence and the structure of the tables with variable contents
@@ -950,27 +897,15 @@ if ($current_revision == 0) {
     // parameter_setting
     // -------------------------------------------------------------------------
     $tabname = "parameter_setting";
-    /*$flds = "
-        owner C(30) NOTNULL DEFAULT 0 PRIMARY,
-        name C(30) NOTNULL PRIMARY,
-        standard \"enum('t','f')\" DEFAULT 'f'
-    ";*/
     $flds = "
         owner C(30) NOTNULL DEFAULT 0 PRIMARY,
-        name C(255) NOTNULL PRIMARY,
+        name C(30) NOTNULL PRIMARY,
         standard C(1) DEFAULT f
     ";
     if (!in_array($tabname, $tables)) {
         if (!create_table($tabname, $flds))     
             return;
     }
-    //if(!check_table_existence_and_structure($tabname,$flds))     
-    //    return;
-    
-    // Manage enum problem
-    //$values_string = "'t', 'f'";
-    //if (!manage_enum($tabname, 'standard', $values_string, 'f'))
-    //    return;
     
     
     // task_setting
@@ -983,7 +918,7 @@ if ($current_revision == 0) {
     //";
     $flds = "
         owner C(30) NOTNULL DEFAULT 0 PRIMARY,
-        name C(255) NOTNULL PRIMARY,
+        name C(30) NOTNULL PRIMARY,
         standard C(1) DEFAULT f
     ";
     if (!in_array($tabname, $tables)) {
@@ -1002,12 +937,6 @@ if ($current_revision == 0) {
     // server
     // -------------------------------------------------------------------------
     $tabname = "server";
-    //$flds = "
-    //    name C(60) NOTNULL DEFAULT 0 PRIMARY,
-    //    huscript_path C(60) NOTNULL,
-    //    status \"enum ('busy', 'disconnected', 'free')\" NOTNULL DEFAULT 'free',
-    //    job C(30) DEFAULT NULL
-    //";
     $flds = "
         name C(60) NOTNULL DEFAULT 0 PRIMARY,
         huscript_path C(60) NOTNULL,
@@ -1018,27 +947,11 @@ if ($current_revision == 0) {
         if (!create_table($tabname, $flds))     
             return;
     }
-    //if(!check_table_existence_and_structure($tabname,$flds))     
-    //    return;
-    
-    // Manage enum problem
-    //$values_string = "'busy', 'disconnected', 'free'";
-    //if (!manage_enum($tabname, 'status', $values_string, 'free'))
-    //    return;
     
     
     // username
     // -------------------------------------------------------------------------
     $tabname = "username";
-    //$flds = "
-    //    name C(30) NOTNULL PRIMARY,
-    //    password C(255) NOTNULL,
-    //    email C(80) NOTNULL,
-    //    research_group C(30) NOTNULL,
-    //    creation_date T NOTNULL DEFAULT 'CURRENT_TIMESTAMP',
-    //    last_access_date T NOTNULL DEFAULT '0000-00-00 00:00:00',
-    //    status C(10) NOTNULL
-    //";
     $defaultTimestamp = timestampADODB();
     $flds = "
         name C(30) NOTNULL PRIMARY,
@@ -1053,8 +966,6 @@ if ($current_revision == 0) {
         if (!create_table($tabname, $flds))     
             return;
     }
-    //if(!check_table_existence_and_structure($tabname,$flds))     
-    //        return;
 
     $rs = $db->Execute("SELECT * FROM username WHERE name = 'admin'");
     if($rs->EOF) {
@@ -1082,7 +993,7 @@ if ($current_revision == 0) {
     $tabname = "task_parameter";
     $flds = "
         owner C(30) NOTNULL DEFAULT 0 PRIMARY,
-        setting C(255) NOTNULL PRIMARY,
+        setting C(30) NOTNULL PRIMARY,
         name C(30) NOTNULL PRIMARY,
         value C(255) DEFAULT NULL
     ";
@@ -1090,8 +1001,6 @@ if ($current_revision == 0) {
         if (!create_table($tabname, $flds))     
             return;
     }
-    //if(!check_table_existence_and_structure($tabname,$flds))    
-    //    return;
     $fields_set = array('owner','setting','name','value');
     $primary_key = array('owner','setting','name');
     // Verify fields (number of #) where value = 'NumberOfIterationsRange'
@@ -1119,7 +1028,7 @@ if ($current_revision == 0) {
     $tabname = "parameter";
     $flds = "
         owner C(30) NOTNULL DEFAULT 0 PRIMARY,
-        setting C(255) NOTNULL DEFAULT 0 PRIMARY,
+        setting C(30) NOTNULL DEFAULT 0 PRIMARY,
         name C(30) NOTNULL DEFAULT 0 PRIMARY,
         value C(255) DEFAULT NULL
     ";
@@ -1127,8 +1036,6 @@ if ($current_revision == 0) {
         if (!create_table($tabname, $flds))     
             return;
     }
-    //if(!check_table_existence_and_structure($tabname,$flds))   
-    //    return;
     $fields_set = array('owner','setting','name','value');
     $primary_key = array('owner','setting','name');
     // Verify fields (number of #) where value = 'PSF'
@@ -1378,12 +1285,26 @@ $n = 5;
 if ($current_revision < $n) {
     $tabname = "possible_values";
     
-    $rs = $db->Execute("DELETE FROM " . $tabname . " WHERE parameter = 'CoverslipRelativePosition' AND value = 'ignore'");
-    if(!$rs) {
-        $msg = "An error occurred while updateing the database to revision " . $n . ".";
-        write_message($msg);
-        write_to_error($msg);
-        return; 
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter = 'CoverslipRelativePosition' AND value = 'ignore'");
+    if (!($rs->EOF)) {
+        $rss = $db->Execute("DELETE FROM " . $tabname . " WHERE parameter = 'CoverslipRelativePosition' AND value = 'ignore'");
+        if(!$rss) {
+            $msg = "1 An error occurred while updateing the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return; 
+        }
+    }
+    
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter = 'PerformAberrationCorrection' AND translation = 'Do not perform depth-dependent correction'");
+    if (!($rs->EOF)) {
+        $rss = $db->Execute("DELETE FROM " . $tabname . " WHERE parameter = 'PerformAberrationCorrection' AND translation = 'Do not perform depth-dependent correction'");
+        if(!$rss) {
+            $msg = "2 An error occurred while updateing the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return; 
+        }
     }
     
     $record = array();
@@ -1391,115 +1312,145 @@ if ($current_revision < $n) {
     $record["value"] = "0";
     $record["translation"] = "no";
     $record["isDefault"] = "T";
-    $insertSQL = $db->GetInsertSQL($tabname, $record);
-    if(!$db->Execute($insertSQL)) {
-        $msg = "An error occurred while updateing the database to revision " . $n . ".";
-        write_message($msg);
-        write_to_error($msg);
-        return;
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "' AND translation='" . $record["translation"] . "' AND isDefault='" . $record["isDefault"] . "'");
+    if ($rs->EOF) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "3 An error occurred while updateing the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
     }
     
     $record["value"] = "1";
     $record["translation"] = "yes";
     $record["isDefault"] = "F";
-    $insertSQL = $db->GetInsertSQL($tabname, $record);
-    if(!$db->Execute($insertSQL)) {
-        $msg = "An error occurred while updateing the database to revision " . $n . ".";
-        write_message($msg);
-        write_to_error($msg);
-        return;
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "' AND translation='" . $record["translation"] . "' AND isDefault='" . $record["isDefault"] . "'");
+    if ($rs->EOF) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "4 An error occurred while updateing the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
     }
     
     $record["parameter"] = "PerformAberrationCorrection";
     $record["value"] = "0";
-    $record["translation"] = "No, do not perform depth-dependent correction";
+    $record["translation"] = "Do not perform depth-dependent correction";
     $record["isDefault"] = "T";
-    $insertSQL = $db->GetInsertSQL($tabname, $record);
-    if(!$db->Execute($insertSQL)) {
-        $msg = "An error occurred while updateing the database to revision " . $n . ".";
-        write_message($msg);
-        write_to_error($msg);
-        return;
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "' AND translation='" . $record["translation"] . "' AND isDefault='" . $record["isDefault"] . "'");
+    if ($rs->EOF) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "5 An error occurred while updateing the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
     }
     
     $record["value"] = "1";
     $record["translation"] = "Yes, perform depth-dependent correction";
     $record["isDefault"] = "F";
-    $insertSQL = $db->GetInsertSQL($tabname, $record);
-    if(!$db->Execute($insertSQL)) {
-        $msg = "An error occurred while updateing the database to revision " . $n . ".";
-        write_message($msg);
-        write_to_error($msg);
-        return;
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "' AND translation='" . $record["translation"] . "' AND isDefault='" . $record["isDefault"] . "'");
+    if ($rs->EOF) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "6 An error occurred while updateing the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
     }
     
     $record["parameter"] = "AberrationCorrectionMode";
     $record["value"] = "automatic";
     $record["translation"] = "Perform automatic correction";
     $record["isDefault"] = "T";
-    $insertSQL = $db->GetInsertSQL($tabname, $record);
-    if(!$db->Execute($insertSQL)) {
-        $msg = "An error occurred while updateing the database to revision " . $n . ".";
-        write_message($msg);
-        write_to_error($msg);
-        return;
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "' AND translation='" . $record["translation"] . "' AND isDefault='" . $record["isDefault"] . "'");
+    if ($rs->EOF) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "7 An error occurred while updateing the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
     }
     
     $record["value"] = "advanced";
     $record["translation"] = "Perform advanced correction";
     $record["isDefault"] = "F";
-    $insertSQL = $db->GetInsertSQL($tabname, $record);
-    if(!$db->Execute($insertSQL)) {
-        $msg = "An error occurred while updateing the database to revision " . $n . ".";
-        write_message($msg);
-        write_to_error($msg);
-        return;
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "' AND translation='" . $record["translation"] . "' AND isDefault='" . $record["isDefault"] . "'");
+    if ($rs->EOF) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "8 An error occurred while updateing the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
     }
     
     $record["parameter"] = "AdvancedCorrectionOptions";
     $record["value"] = "user";
     $record["translation"] = "Deconvolution with PSF generated at user-defined depth";
     $record["isDefault"] = "T";
-    $insertSQL = $db->GetInsertSQL($tabname, $record);
-    if(!$db->Execute($insertSQL)) {
-        $msg = "An error occurred while updateing the database to revision " . $n . ".";
-        write_message($msg);
-        write_to_error($msg);
-        return;
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "' AND translation='" . $record["translation"] . "' AND isDefault='" . $record["isDefault"] . "'");
+    if ($rs->EOF) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "9 An error occurred while updateing the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
     }
     
     $record["value"] = "slice";
     $record["translation"] = "Depth-dependent correction performed slice by slice";
     $record["isDefault"] = "F";
-    $insertSQL = $db->GetInsertSQL($tabname, $record);
-    if(!$db->Execute($insertSQL)) {
-        $msg = "An error occurred while updateing the database to revision " . $n . ".";
-        write_message($msg);
-        write_to_error($msg);
-        return;
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "' AND translation='" . $record["translation"] . "' AND isDefault='" . $record["isDefault"] . "'");
+    if ($rs->EOF) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "10 An error occurred while updateing the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
     }
     
     $record["value"] = "few";
     $record["translation"] = "Depth-dependent correction performed on few bricks";
     $record["isDefault"] = "F";
-    $insertSQL = $db->GetInsertSQL($tabname, $record);
-    if(!$db->Execute($insertSQL)) {
-        $msg = "An error occurred while updateing the database to revision " . $n . ".";
-        write_message($msg);
-        write_to_error($msg);
-        return;
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "' AND translation='" . $record["translation"] . "' AND isDefault='" . $record["isDefault"] . "'");
+    if ($rs->EOF) {    
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "11 An error occurred while updateing the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
     }
     
     $record["parameter"] = "PSFGenerationDepth";
     $record["value"] = "0";
     $record["translation"] = "0";
     $record["isDefault"] = "T";
-    $insertSQL = $db->GetInsertSQL($tabname, $record);
-    if(!$db->Execute($insertSQL)) {
-        $msg = "An error occurred while updateing the database to revision " . $n . ".";
-        write_message($msg);
-        write_to_error($msg);
-        return;
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "' AND translation='" . $record["translation"] . "' AND isDefault='" . $record["isDefault"] . "'");
+    if ($rs->EOF) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "12 An error occurred while updateing the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
     }
     
     $tabname = "boundary_values";
@@ -1511,12 +1462,15 @@ if ($current_revision < $n) {
     $record["min_included"] = "T";
     $record["max_included"] = "T";
     $record["standard"] = "0";
-    $insertSQL = $db->GetInsertSQL($tabname, $record);
-    if(!$db->Execute($insertSQL)) {
-        $msg = "An error occurred while updateing the database to revision " . $n . ".";
-        write_message($msg);
-        write_to_error($msg);
-        return;
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND min='" . $record["min"] . "' AND max='" . $record["max"] . "' AND min_included='" . $record["min_included"] . "' AND max_included='" . $record["max_included"] . "' AND standard='" . $record["standard"] . "'");
+    if ($rs->EOF) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "13 An error occurred while updateing the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
     }
     
     if(!update_dbrevision($n)) 
@@ -1528,6 +1482,130 @@ if ($current_revision < $n) {
     write_to_log($msg);  
 }
 
+
+
+// -----------------------------------------------------------------------------
+// Update to revision 6
+// Description: change lenght of text fields (settings name and translation).
+//              Coorect field in possible_values
+// -----------------------------------------------------------------------------
+$n = 6;
+if ($current_revision < $n) {
+    
+    $tabname = "parameter";
+    $flds = "
+        owner C(30) NOTNULL DEFAULT 0 PRIMARY,
+        setting C(255) NOTNULL DEFAULT 0 PRIMARY,
+        name C(30) NOTNULL DEFAULT 0 PRIMARY,
+        value C(255) DEFAULT NULL
+    ";
+    $colnames = array("owner","setting","name","value");
+    $multiarray = $db->GetArray("SELECT * from " . $tabname);
+    if(!drop_table($tabname))
+        return;
+    if(!create_table($tabname, $flds))
+        return;
+    foreach($multiarray as $array) { 
+        if(!insert_record($tabname, $array, $colnames))
+            return;
+    }
+    
+    $tabname = "parameter_setting";
+    $flds = "
+        owner C(30) NOTNULL DEFAULT 0 PRIMARY,
+        name C(255) NOTNULL PRIMARY,
+        standard C(1) DEFAULT f
+    ";
+    $colnames = array("owner","name","standard");
+    $multiarray = $db->GetArray("SELECT * from " . $tabname);
+    if(!drop_table($tabname))
+        return;
+    if(!create_table($tabname, $flds))
+        return;
+    foreach($multiarray as $array) { 
+        if(!insert_record($tabname, $array, $colnames))
+            return;
+    }
+    
+    $tabname = "task_parameter";
+    $flds = "
+        owner C(30) NOTNULL DEFAULT 0 PRIMARY,
+        setting C(255) NOTNULL PRIMARY,
+        name C(30) NOTNULL PRIMARY,
+        value C(255) DEFAULT NULL
+    ";
+    $colnames = array("owner","setting","name","value");
+    $multiarray = $db->GetArray("SELECT * from " . $tabname);
+    if(!drop_table($tabname))
+        return;
+    if(!create_table($tabname, $flds))
+        return;
+    foreach($multiarray as $array) { 
+        if(!insert_record($tabname, $array, $colnames))
+            return;
+    }
+    
+    $tabname = "task_setting";
+    $flds = "
+        owner C(30) NOTNULL DEFAULT 0 PRIMARY,
+        name C(255) NOTNULL PRIMARY,
+        standard C(1) DEFAULT f
+    ";
+    $colnames = array("owner","name","standard");
+    $multiarray = $db->GetArray("SELECT * from " . $tabname);
+    if(!drop_table($tabname))
+        return;
+    if(!create_table($tabname, $flds))
+        return;
+    foreach($multiarray as $array) { 
+        if(!insert_record($tabname, $array, $colnames))
+            return;
+    }
+    
+    $tabname = "possible_values";
+    $flds = "
+        parameter C(30) NOTNULL DEFAULT 0 PRIMARY,
+        value C(255) NOTNULL DEFAULT 0 PRIMARY,
+        translation C(255) DEFAULT NULL,
+        isDefault C(1) DEFAULT f
+    ";
+    $colnames = array("parameter","value","translation","isDefault");
+    $multiarray = $db->GetArray("SELECT * from " . $tabname);
+    if(!drop_table($tabname))
+        return;
+    if(!create_table($tabname, $flds))
+        return;
+    foreach($multiarray as $array) { 
+        if(!insert_record($tabname, $array, $colnames))
+            return;
+    }
+    
+    $record[$colnames[0]] = "PerformAberrationCorrection";
+    $record[$colnames[1]] = "0";
+    $record[$colnames[2]] = "No, do not perform depth-dependent correction";
+    $record[$colnames[3]] = "T";
+    $array = array("PerformAberrationCorrection","0","No, do not perform depth-dependent correction","t");
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "' AND translation='Do not perform depth-dependent correction' AND isDefault='" . $record["isDefault"] . "'");
+    if (!($rs->EOF)) {
+        if(!$db->Execute("DELETE FROM " . $tabname . " WHERE translation = 'Do not perform depth-dependent correction'")) {
+            write_message($msg);
+            write_to_log($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+    if(!insert_record($tabname, $array, $colnames))
+        return;       
+
+    if(!update_dbrevision($n)) 
+        return;
+    
+    $current_revision = $n;
+    $msg = "Your HRM database has been updated to revision " . $current_revision . ".";
+    write_message($msg);
+    write_to_log($msg);
+}
+    
 
 $msg = "\nThe current revision of your HRM database is " . $current_revision . ".";
 write_message($msg);
