@@ -120,7 +120,7 @@ include("header.inc.php");
     
     <div id="content">
     
-        <h3>Parameter Setting - Page 2</h3>
+        <h3>Distilled PSF file selection</h3>
         
         <form method="post" action="select_psf.php" id="select">
         

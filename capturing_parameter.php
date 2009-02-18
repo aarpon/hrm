@@ -186,7 +186,7 @@ $nyquist = $_SESSION['setting']->calculateNyquistRate();
     
     <div id="content">
     
-        <h3>Parameter Setting - Page 3</h3>
+        <h3>Optical parameters / 2</h3>
         
         <form method="post" action="capturing_parameter.php" id="select">
         

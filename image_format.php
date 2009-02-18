@@ -164,7 +164,7 @@ include("header.inc.php");
     
     <div id="content">
     
-        <h3>Parameter Setting - Page 1</h3>
+        <h3>Image format and PSF modality</h3>
         
         <form method="post" action="" id="select">
         

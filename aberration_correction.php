@@ -104,7 +104,7 @@ include("header.inc.php");
     
     <div id="content">
     
-        <h3>Parameter Setting - Page 4</h3>
+        <h3>Spherical aberration correction</h3>
           
         <form method="post" action="" id="select">
             
