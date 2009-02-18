@@ -86,7 +86,7 @@ foreach ($names as $name) {
                           $_SESSION['setting']->setAdaptedParameters(False);
                    }
                }
-       $parameter->setValue($_POST[$name]);
+               $parameter->setValue($_POST[$name]);
                $_SESSION['setting']->set($parameter);
                // set IsMultiChannel parameter value
                if ($name == "NumberOfChannels") {
@@ -121,11 +121,17 @@ if (count($_POST)>0) {
     $parameter->setValue("multi_XYZ");
     $_SESSION['setting']->set($parameter);
   }
+  if (!isset($_POST["NumberOfChannels"]) && ($_POST["ImageFileFormat"] == "tiff-series")) {
+      $parameter = $_SESSION['setting']->parameter("NumberOfChannels");
+      $parameter->setValue("1");
+      $_SESSION['setting']->set($parameter);
+      $_POST["NumberOfChannels"] == "1";
+  }
   if (!isset($_POST["ImageFileFormat"])) {
     $ok = False;
     $message = "<p class=\"warning\">Please choose a file format!</p>";
   }
-  elseif (!isset($_POST["NumberOfChannels"])) {
+  elseif (!isset($_POST["NumberOfChannels"]) && ($_POST["ImageFileFormat"] != "tiff-series")) {
     $ok = False;
     $message = "<p class=\"warning\">Please specify the number of channels!</p>";
   }
