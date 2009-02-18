@@ -103,7 +103,7 @@ function switchCorrection() {
     if (element.selectedIndex == 1) {
         show('CoverslipRelativePositionDiv');
         show('AberrationCorrectionModeDiv');
-        show('AdvancedCorrectionOptionsDiv');
+        switchAdvancedCorrection();
     }
     else {
         hide('CoverslipRelativePositionDiv');
