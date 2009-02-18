@@ -356,7 +356,7 @@ Class DatabaseConnection {
             $newValue = substr($newValue,1);
         }
         $newValues = explode("#", $newValue);
-        if (strpos($newValue, "/")) {
+        if (strcmp( $parameterName, "PSF" ) != 0 && strpos($newValue, "/")) {
           $newValue = array();
           for ($i = 0; $i < count($newValues); $i++) {
             //$val = explode("/", $newValues[$i]);
