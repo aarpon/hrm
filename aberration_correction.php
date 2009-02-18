@@ -360,7 +360,7 @@ $selectedValue  = $parameter->value();
             <p>The main cause of spherical aberration is a mismatch between the
             refractive index of the lens immersion medium and specimen embedding
             medium and causes the PSF to become asymmetric at depths of already
-            a few um. SA is especially harmful for widefield microscope
+            a few &micro;m. SA is especially harmful for widefield microscope
             deconvolution.</p>
             
             <p>The HRM can correct for SA automatically, but in case of very

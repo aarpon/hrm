@@ -357,7 +357,15 @@ if (!$default) {
     
         <div id="info">
         
-            <input type="button" value="" class="icon cancel" onclick="document.location.href='image_format.php'" />
+            <?php
+              if ( $_SESSION['setting']->parameter('PointSpreadFunction')->value == "measured" ) {
+                $onclick = 'onclick="document.location.href=\'select_psf.php\'"';
+              } else {
+                $onclick = 'onclick="document.location.href=\'image_format.php\'"';
+              }
+            ?>
+                              
+            <input type="button" value="" class="icon cancel" <?php echo $onclick; ?> />
             <input type="submit" value="" class="icon apply" onclick="process()" />
             
             <p>
