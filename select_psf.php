@@ -91,29 +91,16 @@ $psfParam->setValue($psf);
 $_SESSION['setting']->set($psfParam);
 
 if (count($_POST) > 0) {
-  // get rid of non relevant values
-  $names = array_merge($_SESSION['setting']->microscopeParameterNames(), $_SESSION['setting']->capturingParameterNames());
-  foreach ($names as $name) {
-    $parameter = $_SESSION['setting']->parameter($name);
-    if ($name == "ExcitationWavelength" || $name == "EmissionWavelength" || $name == "PinholeSize") {
-      $parameter->setValue(array(NULL, NULL, NULL, NULL, NULL));
-    }
-    else {
-      $parameter->setValue("");
-    }
-    $_SESSION['setting']->set($parameter);
-  }
   $ok = $_SESSION['setting']->checkPointSpreadFunction();
   $message = "            <p class=\"warning\">".$_SESSION['setting']->message()."<br />&nbsp;</p>";
   if ($ok) {
+    // Make sure to turn off the aberration correction since we use a measured PSF
+    $_SESSION['setting']->parameter( 'AberrationCorrectionNecessary' )->setValue( '0' );
+    $_SESSION['setting']->parameter( 'PerformAberrationCorrection' )->setValue( '0' );
     $saved = $_SESSION['setting']->save();			
     $message = "            <p class=\"warning\">".$_SESSION['setting']->message()."<br />&nbsp;</p>";
     if ($saved) {
-      // Make sure to turn off the aberration correction since we use a measured PSF
-      $_SESSION['setting']->parameter( 'AberrationCorrectionNecessary' )->setValue( '0' );
-      $_SESSION['setting']->parameter( 'PerformAberrationCorrection' )->setValue( '0' );
-      $_SESSION['setting']->save();
-      header("Location: " . "select_parameter_settings.php"); exit();
+      header("Location: " . "microscope_parameter.php"); exit();
     }
   }
 }
