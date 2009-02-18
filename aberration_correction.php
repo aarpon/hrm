@@ -135,9 +135,13 @@ $onChange = "onchange=\"javascript:switchCorrection()\"";
 
                 foreach($possibleValues as $possibleValue) {
                     $translation = $_SESSION['setting']->translation("PerformAberrationCorrection", $possibleValue);
-                    if ( $possibleValue == $selectedValue ) {
+                    if ($possibleValue == "0" && $selectedValue == "") {
                         $option = "selected=\"selected\"";
-                    } else {
+                    }
+                    else if ( $possibleValue == $selectedValue ) {
+                        $option = "selected=\"selected\"";
+                    }
+                    else {
                         $option = "";
                     }
 
