@@ -116,6 +116,9 @@ $data = $_SESSION['fileserver']->getMetaData("ics");
 foreach ($files as $file) {
   $mType =  $data[$file]['mType'][0];
   $nChan = $data[$file]['dimensions'][4];
+  if ( $nChan == 0 ) {
+      $nChan = 1;
+  }
   $NA = $data[$file]['NA'][0];
   $pCnt = $data[$file]['photonCnt'][0];
   if ($pCnt > 1) { 
