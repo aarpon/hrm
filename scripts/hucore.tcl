@@ -76,6 +76,17 @@ proc reportSubImages {} {
                 puts "ERROR"
                 puts "Can't find subimages for $image: $contents"
             } else {
+                set ver [versionAsInteger]
+                if { $ver >= 3030300 } {
+                    # Since Huygens 3.3.3, the preOpen command returns an
+                    # option-value list
+                    catch { array set res $contents }
+                    if { ! [info exists res(subImages)] } {
+                        set contents {}
+                    } else {
+                        set contents $res(subImages)
+                    }
+                }
                 puts "COUNT"
                 puts "[llength $contents]"
                 foreach subImg $contents {
@@ -107,14 +118,18 @@ proc hrmImgOpen { dir file args } {
 
     if { $matched } {
         puts "Opening image: '$path' -subImage $subimage"
-        if { [ catch { set img [eval img open \"$path\" -subImage \"$subimage\" $args] } res ] } {
+        if { [ catch {
+            set img [eval img open \"$path\" -subImage \"$subimage\" $args]
+          } res ] } {
             puts "ERROR"
             puts "\"$path\" ($subimage), $res"
             set img -1
         }
     } else {
         puts "Opening image: '$path'"
-        if { [ catch { set img [eval img open \"$path\" $args] } res ] } {
+        if { [ catch {
+            set img [eval img open \"$path\" $args] } res ]
+          } {
             puts "ERROR"
             puts "\"$path\" $res"
             set img -1
@@ -230,8 +245,7 @@ proc calculateNyquistRate {} {
     puts "$sampxy $sampz"
 }
 
-
-proc reportVersionNumberAsInteger { } {
+proc versionAsInteger { } {
 
     set version [huOpt version -engine]
     set exp {([0-9]+)\.([0-9]+)\.([0-9]+)p([0-9]+)}
@@ -248,9 +262,87 @@ proc reportVersionNumberAsInteger { } {
                                     + $ceMinor2 * 100 + $cePatch]
     }
 
+    return $verInteger
+
+}
+
+
+proc reportVersionNumberAsInteger { } {
+
+    set verInteger [ versionAsInteger ]
+
     puts "reportVersionNumberAsInteger RETURN"
     puts "$verInteger"
 
+}
+
+proc getIcsMetaData { } {
+
+    set imgCount [Hu_getOpt -count]
+    set dir [Hu_getOpt -dir]
+
+    if { $imgCount == -1 || $dir == -1 } {
+        puts "ERROR"
+        puts "Wrong arguments.\
+            Use indexed options -img_# to pass the image list to hucore.\
+            The number of images must be passed with option -count.\
+            The directory that contains them must be passed with -dir."
+        exit 1
+    }
+
+    for {set i 0} {$i < $imgCount} {incr i} {
+
+        set image [Hu_getOpt -img_$i]
+
+        if { $image == -1 } {
+            puts "ERROR"
+            puts "Wrong arguments.\
+                The number of images must be passed with option -count.\
+                The indexed arguments to pass the image list run from 0 to\
+                (count - 1)."
+            exit 1
+        }
+
+        set path "$dir/$image"
+        puts "----------------"
+        puts "BEGIN IMG"
+        puts $image
+        puts "PATH" 
+        puts "$path"
+
+        if { ![file exists $path] } {
+            puts "ERROR"
+            puts "Unexisting image '$image'. "
+            continue
+        }
+
+        puts "BEGIN COMMENTS"
+        set error [ catch { \
+            img preOpen $path } metaData]
+        puts "END COMMENTS"
+
+        if { $error } {
+            puts "ERROR"
+            puts "Can't find metadata for $image: $metaData"
+        } else {
+            puts "PARAMETERS"
+            puts "COUNT"
+            puts "[expr [llength $metaData] / 2]"
+            foreach {param val} $metaData {
+                puts "DATA"
+                puts "$param"
+                puts "LENGTH"
+                puts [llength $val]
+                set i 0
+                foreach item $val {
+                    puts "$param $i"
+                    puts $item
+                    incr i
+                }
+            }
+        }
+        puts "END IMG"
+    }
 }
 
 
