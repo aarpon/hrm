@@ -100,7 +100,7 @@ if (count($_POST) > 0) {
     $saved = $_SESSION['setting']->save();			
     $message = "            <p class=\"warning\">".$_SESSION['setting']->message()."<br />&nbsp;</p>";
     if ($saved) {
-      header("Location: " . "microscope_parameter.php"); exit();
+      header("Location: " . "select_parameter_settings.php"); exit();
     }
   }
 }
@@ -178,7 +178,7 @@ for ($i = 0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
     
         <div id="info">
         
-            <input type="button" value="" class="icon cancel" onclick="document.location.href='image_format.php'" />
+            <input type="button" value="" class="icon cancel" onclick="document.location.href='capturing_parameter.php'" />
             <input type="submit" value="" class="icon apply" onclick="process()" />
             
             <p>Select a PSF file for each of the channels. Only <strong>single-channel PSF files</strong> are supported.</p>

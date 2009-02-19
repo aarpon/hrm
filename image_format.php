@@ -144,13 +144,7 @@ if (count($_POST)>0) {
   }
 
   if ($ok) {
-    // manage measured PSF
-    if ($_POST["PointSpreadFunction"] == "theoretical") {
-      header("Location: " . "microscope_parameter.php"); exit();
-    }
-    else if ($_POST["PointSpreadFunction"] == "measured") {
-      header("Location: " . "select_psf.php"); exit();
-    }
+    header("Location: " . "microscope_parameter.php"); exit();
   }
 }
 // TODO refactor until here

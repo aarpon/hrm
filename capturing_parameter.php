@@ -132,12 +132,13 @@ if (count($_POST) > 0) {
       // Depending on the selection of the PSF (theoretical) and on a possible
       // refractive index mismatch (i.e. larger than 1%) between the sample 
       // medium and the objective medium we might have to show an aberration
-      // correction page. Otherwise, we make sure to turn off the correction.
+      // correction page. Otherwise, we make sure to turn off the correction
+      // and proceed to the PSF selection page.
       
       // First check the selection of the PSF
       $PSF = $_SESSION['setting']->parameter( 'PointSpreadFunction' )->value( );
       if ($PSF == 'measured' ) {
-          $pageToGo = 'select_parameter_settings.php';
+          $pageToGo = 'select_psf.php';
           // Make sure to turn off the correction
           $_SESSION['setting']->parameter( 'AberrationCorrectionNecessary' )->setValue( '0' );
 	  $_SESSION['setting']->parameter( 'PerformAberrationCorrection' )->setValue( '0' );
