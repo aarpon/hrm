@@ -185,7 +185,7 @@ include("header.inc.php");
             <div class="logo-fmi">
                 <a href="javascript:openWindow('http://www.fmi.ch')"><img src="images/logo_fmi.png" alt="FMI" /></a>
                 <p>Friedrich Miescher Institute</p>
-                <p><a href="javascript:openWindow('http://www.fmi.ch/html/technical_resources/microscopy/homepage2/home.html')">Facility for Advanced Imaging and Microscopy</a></p>
+                <p><a href="javascript:openWindow('http://www.fmi.ch/faim')">Facility for Advanced Imaging and Microscopy</a></p>
             </div>
             <div class="logo-mri">
                 <a href="javascript:openWindow('http://www.mri.cnrs.fr')"><img src="images/logo_mri.png" alt="MRI" /></a>
