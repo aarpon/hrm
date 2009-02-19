@@ -201,8 +201,8 @@ include("header.inc.php");
     </div> <!-- content -->
     
     <div id="stuff">
-    
-        <div id="login">
+	<p />    
+	<div id="login">
             <form method="post" action="">
                 <fieldset>
                     <legend>
@@ -223,7 +223,7 @@ include("header.inc.php");
                     <label for="password">Password:</label>
                     <input id="password" name="password" type="password" class="textfield" tabindex="2" />
                     <br />
-                    <input type="hidden" name="request" value="<?php echo $req?>">
+                    <input type="hidden" name="request" value="<?php echo $req?>" />
                     <input type="submit" class="button" value="login" />
                 </fieldset>
             </form>
