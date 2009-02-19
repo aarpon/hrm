@@ -105,14 +105,26 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
       <fieldset>
       
         <legend>available PSF files</legend>
-        
+<?php        
+$files = $_SESSION['fileserver']->files("ics");
+$data = $_SESSION['fileserver']->getMetaData("ics");
+?>
         <div id="userfiles">
           <select name="userfiles[]" size="10" onchange="lock(this)">
 <?php
 
-$files = $_SESSION['fileserver']->files("ics");
 foreach ($files as $file) {
-  print "            <option value=\"$file\">$file</option>\n";
+  $mType =  $data[$file]['mType'][0];
+  $nChan = $data[$file]['dimensions'][4];
+  $NA = $data[$file]['NA'][0];
+  $pCnt = $data[$file]['photonCnt'][0];
+  if ($pCnt > 1) { 
+      $mType = "multiphoton";
+  }
+  $ex = $data[$file]['lambdaEx'][0];
+  $em = $data[$file]['lambdaEm'][0];
+
+  print "            <option value=\"$file\">$file ($mType, NA = $NA, em = $em nm, $nChan chan) </option>\n";
 }
 
 ?>

@@ -217,7 +217,15 @@ function escapeJavaScript ($str) {
 function huCoreTools ($tool, $options) {
     global $hrm_path, $local_huygens_core;
 
-    $cmd = "$local_huygens_core -task $hrm_path/scripts/hucore.tcl ".
+    if (! isset($local_huygens_core) ) {
+        echo "Huygens tools can only work if you define a variable ".
+        "'local_huygens_core' in the configuration files pointing to a local ".
+        "hucore. Administrator: see hrm_config.inc.sample."; 
+        return;
+    }
+
+    $cmd = "$local_huygens_core -checkUpdates disable -noExecLog ".
+           "-task $hrm_path/scripts/hucore.tcl ".
            "-tool $tool $options 2>&1";
 
 

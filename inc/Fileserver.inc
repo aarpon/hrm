@@ -515,6 +515,100 @@ Class Fileserver {
   }
 
   //!---------------------------------------------------------
+  // @function    Fileserver::getMetaData
+  // @desc        some files like ICS can report their metadata without having
+  //              to open the whole image, which is good e.g. to see the
+  //              compatibility of the selected PSF with the current Parameter
+  //              Setting.  This is done by querying Huygens.
+  // @return      Void
+  //!---------------------------------------------------------    
+  function getMetaData( $type = "ics", $file = "all" ) {
+
+      $i = 0;
+      $imgList = "";
+
+      if ( $file == "all" ) {
+          $files = $this->files($type);
+      } else {
+          $files[] = $file;
+      }
+
+      foreach ($files as $path) {
+          $imgList .= " -img_$i \"$path\"";
+          $i ++;
+      }
+
+      $opt = "-count $i $imgList -dir \"". $this->sourceFolder() ."\"";
+
+
+      $answer = huCoreTools( "getMetaData", $opt);
+
+      if (! $answer ) return;
+      # printDebug ($answer);
+
+      $lines = count($answer);
+
+      $tree = array();
+      $new_files = array();
+      $cur = NULL;
+      $param = NULL;
+
+      for ($i = 0; $i < $lines; $i++ ) {
+          $key = $answer[$i];
+
+          switch ($key) {
+              case "BEGIN IMG":
+                  $i ++;
+                  $cur = $answer[$i];
+                  break;
+              case "ERROR":
+                  $i ++;
+                  echo($answer[$i]);
+              case "END IMG":
+                  $cur = NULL;
+                  $param = NULL;
+                  $len = 1;
+                  break;
+              case "PATH":
+                  if ($cur) {
+                      $i ++;
+                      $tree[$cur]['path'] = $answer[$i];
+                  }
+                  break;
+              case "LENGTH":
+                  if ($cur) {
+                      $i ++;
+                      $len = $answer[$i];
+                  }
+                  break;
+              case "DATA":
+                  if ($cur) {
+                      $i ++;
+                      $param= $answer[$i];
+                      $tree[$cur]['parameters'][] = $param;
+                  }
+                  break;
+              case "VALUE":
+                  if ($cur && $param) {
+                      $i ++;
+                      # This is always an array even if $len == 1, because in
+                      # other images this could be a multichannel parameter.
+                      $tree[$cur][$param][] = $answer[$i];
+                  }
+                  break;
+
+          }
+      }
+
+
+      # printDebug ($tree);
+      return $tree;
+
+  }
+
+
+
+  //!---------------------------------------------------------
   // @function    Fileserver::getImageOptionLine
   // @desc        Generates a html line for a form listing images in the
   //              server.

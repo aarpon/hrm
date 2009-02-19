@@ -276,7 +276,7 @@ proc reportVersionNumberAsInteger { } {
 
 }
 
-proc getIcsMetaData { } {
+proc getMetaData { } {
 
     set imgCount [Hu_getOpt -count]
     set dir [Hu_getOpt -dir]
@@ -333,11 +333,9 @@ proc getIcsMetaData { } {
                 puts "$param"
                 puts "LENGTH"
                 puts [llength $val]
-                set i 0
                 foreach item $val {
-                    puts "$param $i"
+                    puts "VALUE"
                     puts $item
-                    incr i
                 }
             }
         }
