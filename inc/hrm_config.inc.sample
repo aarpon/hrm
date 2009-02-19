@@ -158,7 +158,7 @@ $resultImagesOwnedByUser = false;
 // If true, result images will have the job id appended to their names
 $resultImagesRenamed = true;
 
-// Thumbnails require Huygens Core 3.3.1 or higher.
+// Thumbnails require Huygens Core 3.3.2 or higher.
 
 // If true, allows generates thumbnails and previews for the originals and the
 // results during the deconvolution (i.e. in the computation servers). These
