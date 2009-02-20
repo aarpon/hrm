@@ -67,9 +67,16 @@ if (!isset($_SESSION['fileserver'])) {
   $_SESSION['fileserver'] = new Fileserver($name);
 }
 
-$message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
-
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
+$mTypeSetting = $_SESSION['setting']->parameter("MicroscopeType")->translatedValue();
+$twoPhoton = $_SESSION['setting']->isTwoPhoton();
+if ( $twoPhoton ) {
+    $mTypeSetting = "multiphoton";
+}
+$NAsetting = $_SESSION['setting']->parameter("NumericalAperture")->value();
+$emSettingArr = $_SESSION['setting']->parameter("EmissionWavelength")->value();
+$chan = $_GET["channel"];
+$emSetting = $emSettingArr[$chan];
 
 ?>
 
@@ -113,6 +120,8 @@ $data = $_SESSION['fileserver']->getMetaData("ics");
           <select name="userfiles[]" size="10" onchange="lock(this)">
 <?php
 
+$showWarning = false;
+
 foreach ($files as $file) {
   $mType =  $data[$file]['mType'][0];
   $nChan = $data[$file]['dimensions'][4];
@@ -127,7 +136,24 @@ foreach ($files as $file) {
   $ex = $data[$file]['lambdaEx'][0];
   $em = $data[$file]['lambdaEm'][0];
 
-  print "            <option value=\"$file\">$file ($mType, NA = $NA, em = $em nm, $nChan chan) </option>\n";
+  $style = "";
+  $mismatch = false;
+  if ($mType != $mTypeSetting ) {
+      $mismatch = true;
+  }
+  if (abs($NA - $NAsetting) / $NA > .02 ) {
+      $mismatch = true;
+  }
+  if (abs($em - $emSetting) / $emSetting > .05 ) {
+      $mismatch = true;
+  }
+  if ($mismatch ) {
+      $showWarning = true;
+      $style = "class=\"info\" ";
+  }
+
+  print "            <option value=\"$file\" $style>$file ".
+        "($mType, NA = $NA, em = $em nm, $nChan chan) </option>\n";
 }
 
 ?>
@@ -150,7 +176,17 @@ foreach ($files as $file) {
     <div id="message">
 <?php
 
-  print $message;
+  # print $message;
+
+  if ( $showWarning ) {
+        print "<p class=\"message\">&nbsp;<br />".
+        "Files with parameters very different than those ".
+        "in the current setting ".
+        "($mTypeSetting, NA=$NAsetting, emission = $emSetting nm) ".
+        "are <i class=\"info\">highligthed</i> and could produce ".
+        "unexpected results.</p>";
+  }
+
 
 ?>
     </div>
