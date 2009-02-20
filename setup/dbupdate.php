@@ -1466,7 +1466,7 @@ if ($current_revision < $n) {
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
         if(!$db->Execute($insertSQL)) {
-            $msg = "13 An error occurred while updateing the database to revision " . $n . ".";
+            $msg = "An error occurred while updateing the database to revision " . $n . ".";
             write_message($msg);
             write_to_error($msg);
             return;
