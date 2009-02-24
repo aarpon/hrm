@@ -86,7 +86,7 @@ if (isset($generatedScript)) {
 
 ?>
     
-    <script>
+    <script type="text/javascript">
     <!--
     <?php echo $generatedScript ?>
     -->

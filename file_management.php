@@ -248,19 +248,18 @@ include("header.inc.php");
 <?php
 
 $instructions =
-            "<p>
-            This is a list of the images in your destination directory.
-            You can use SHIFT- and CTRL-click to select multiple files. 
-            </p><p>
-            Use the disk icon to start the downloading.
-            That will
-            create first a compressed archive including the selected files.
-            </p><p>
-            Use the trash icon to delete the selected files.
-            </p><p>
-            Please mind that large files may take a <b>long
-            time </b>to be packaged before downloading.
-            </p>";
+            "<p>This is a list of the images in your destination directory.</p>
+            <p>Click on a file to see (or create) a preview.</p>
+            <p>Select the files you want to download (you can <b>SHIFT-</b> and
+            <b>CTRL-click</b> for multiple selection) and press the
+            <img src=\"images/download_help.png\" alt=\"Download\"
+            width=\"22\" height=\"22\" /> <b>download</b> icon to compress the
+            files into an archive and start the download process. (Please mind
+            that large files may take a <b>long time </b>to be packaged before
+            downloading.)</p>
+            <p> Use the <img src=\"images/delete_help.png\" alt=\"Download\"
+            width=\"22\" height=\"22\" /> <b>delete</b> icon to delete the
+            selected files instead.</p>";
 
 
 // display only relevant files
@@ -287,9 +286,9 @@ else echo "                        <option>&nbsp;</option>\n";
             
     <div id="selection">
     <?php if ($allowHttpTransfer) { ?>
-                <img src="images/download.png" onClick="downloadImages()" />
+                <img src="images/download.png" onclick="downloadImages()" alt="Download" />
                 <?php } ?>
-            <img src="images/delete.png" onClick="deleteImages()" />
+            <img src="images/delete.png" onclick="deleteImages()" alt="Delete" />
             </div>
            
             <div id="actions" class="imageselection">
