@@ -710,12 +710,12 @@ Class Fileserver {
       $path = $pdir."/".$image.".".$type.".jpg";
       $thumb = rawurlencode($image.".".$type.".jpg");
       if (file_exists($path)) {
-          $ret =  "<img src=\"file_management.php?getThumbnail=$thumb&".
-              "dir=$dir\">";
+          $ret =  "<img src=\"file_management.php?getThumbnail=$thumb&amp;".
+              "dir=$dir\" alt=\"Preview\" />";
       } else {
-           $imgsrc =  "<img src=\"images/no_preview.jpg>";
+           $imgsrc = "<img src=\"images/no_preview.jpg\" alt=\"No preview\" />";
            # $ret = "<p><center>No preview available.</center></p>";
-           $ret .= "$imgsrc<br>No preview available";
+           $ret .= "$imgsrc<br />No preview available";
       }
 
       if ($escape) {
@@ -821,7 +821,7 @@ Class Fileserver {
 
       echo "</div>";
 
-      echo "<h3>Image comparison ($mode)</h3>\n";
+      echo "\n\n<h3>Image comparison ($mode)</h3>\n";
 
       $pdest =  $this->destinationFolder();
 
@@ -831,9 +831,9 @@ Class Fileserver {
           exit;
       }
 
-      echo "<table><tr>\n";
+      echo "\n<table>\n<tr>\n";
 
-      echo "<td>Original</td><td>Restored</td></tr><tr>\n";
+      echo "<td>Original</td><td>Restored</td>\n</tr>\n<tr>";
 
       $othumb_0 = rawurlencode($file.".original.".$size."_xy.jpg");
       $rthumb_0 = rawurlencode($file.".".$size."_xy.jpg");
@@ -853,21 +853,21 @@ Class Fileserver {
 
       if ( $mode == "MIP" ) {
 
-          echo "<td><img src=\"file_management.php?getThumbnail=$othumb_0&".
-              "dir=dest\"></td>";
+          echo "\n<td><img src=\"file_management.php?getThumbnail=$othumb_0".
+              "&amp;dir=dest\" alt=\"Original preview XY\" /></td>";
 
-          echo "<td><img src=\"file_management.php?getThumbnail=$rthumb_0&".
-              "dir=dest\"></td>";
+          echo "\n<td><img src=\"file_management.php?getThumbnail=$rthumb_0".
+              "&amp;dir=dest\" alt=\"Restored preview XY\" /></td>";
       } else {
-          echo "<td><img src=\"file_management.php?getThumbnail=$osfp&".
-              "dir=dest\"></td>";
+          echo "\n<td><img src=\"file_management.php?getThumbnail=$osfp".
+              "&amp;dir=dest\" alt=\"Original SFP preview\" /></td>";
 
-          echo "<td><img src=\"file_management.php?getThumbnail=$rsfp&".
-              "dir=dest\"></td>";
+          echo "\n<td><img src=\"file_management.php?getThumbnail=$rsfp".
+              "&amp;dir=dest\" alt=\"Restored SFP preview\" /></td>";
 
       }
 
-      echo "</tr>\n";
+      echo "\n</tr>";
 
 
       $othumb_1 = rawurlencode($file.".original.".$size."_xz.jpg");
@@ -876,22 +876,22 @@ Class Fileserver {
       $rthumb_1 = rawurlencode($rthumb_1);
       if ($mode == "MIP" && file_exists($path)) {
           # is a 3D image, so it has a lateral view.
-          echo "<tr>\n";
-          echo "<td><img src=\"file_management.php?getThumbnail=$othumb_1&".
-              "dir=dest\"></td>";
-          echo "<td><img src=\"file_management.php?getThumbnail=$rthumb_1&".
-              "dir=dest\"></td>";
+          echo "\n<tr>";
+          echo "\n<td><img src=\"file_management.php?getThumbnail=$othumb_1".
+              "&amp;dir=dest\" alt=\"Original preview XZ\" /></td>";
+          echo "\n<td><img src=\"file_management.php?getThumbnail=$rthumb_1".
+              "&amp;dir=dest\" alt=\"Restored preview XZ\" /></td>";
 
-          echo "</tr>";
+          echo "\n</tr>";
       }
       
-      echo "</table>\n";
+      echo "\n</table>\n\n";
 
-      echo "<br><font size=-2>$file</font>\n";
-      echo "<div id=\"info\">";
+      echo "\n<div id=\"message\"><br /><small>$file</small></div>\n";
+      echo "\n<div id=\"info\">";
 
       if (file_exists($altPath)) {
-          echo "<br><small><a href=\"file_management.php?compareResult=".rawurlencode($file)."&mode=$altMode&op=$op\" >Compare images in $altMode view</a></small>\n";
+          echo "\n<br /><small><a href=\"file_management.php?compareResult=".rawurlencode($file)."&amp;mode=$altMode&amp;op=$op\" >Compare images in $altMode view</a></small>\n";
       }
 
 
@@ -899,7 +899,7 @@ Class Fileserver {
       $mpath =  $pdest."/".$file.".stack.avi";
       if ($mode == "MIP" && file_exists($mpath)) {
           $mSize = round(filesize($mpath) / 1024.0);
-          echo "<br><small><a href=\"file_management.php?getMovie=".rawurlencode($file.".stack.avi")."\" >Download stack preview video ($mSize kB) </a></small>\n";
+          echo "\n<br /><small><a href=\"file_management.php?getMovie=".rawurlencode($file.".stack.avi")."\" >Download stack preview video ($mSize kB) </a></small>\n";
       }
       if ( $mode == "MIP" ) {
           $tspath =  $pdest."/".$file.".tSeries.avi";
@@ -910,33 +910,36 @@ Class Fileserver {
       }
       if (file_exists($tspath)) {
           $tsSize = round(filesize($tspath) / 1024.0);
-          echo "<br><small><a href=\"file_management.php?getMovie=".rawurlencode($vname)."\" >Download time-series $mode preview video ($tsSize kB) </a></small>\n";
+          echo "\n<br /><small><a href=\"file_management.php?getMovie=".rawurlencode($vname)."\" >Download time-series $mode preview video ($tsSize kB) </a></small>\n";
       }
 
 
       if ( $allowHttpTransfer ) {
-          echo "<br><small><a href=\"file_management.php?download=".rawurlencode($file)."\" onClick=\"changeDiv('info','Packaging files, please wait')\" >Download restored files</a></small>\n";
+          echo "\n<br /><small><a href=\"file_management.php?download=".rawurlencode($file)."\" onclick=\"changeDiv('info','Packaging files, please wait')\" >Download restored files</a></small>\n";
       }
 
-      echo "<br><br><a href=\"javascript:openWindow(".
+      echo "</div>\n";
+      echo "<div>\n";
+      echo "\n<br /><br /><a href=\"javascript:openWindow(".
           "'http://support.svi.nl/wiki/style=hrm&amp;".
           "help=HuygensRemoteManagerHelpCompareResult')\">".
-          "<img src=\"images/help.png\">".
+          "<img src=\"images/help.png\" alt=\"help\" />".
           "</a>";
  
       switch ($op) {
           case "close":
-             echo " <a href=\"#\" onClick=\"window.close()\">".
-             "<img src=\"images/cancel_help.png\">".
+             echo " <a href=\"#\" onclick=\"window.close()\">".
+             "<img src=\"images/cancel_help.png\" alt=\"cancel\" />".
              "</a>\n";
              break;     
           case "home":
-             echo " <a href=\"#\" onClick=\"document.location.href=".
+             echo " <a href=\"#\" onclick=\"document.location.href=".
              "'select_parameter_settings.php'\">".
-             "<img src=\"images/restart_help.png\">".
+             "<img src=\"images/restart_help.png\" alt=\"home\" />".
              "</a>\n";
              break;
       }
+      echo "</div>\n";
       # echo "<script type=\"text/javascript\"> window.close(); <script>\n";
       echo "</body></html>";
       ob_flush();
@@ -958,8 +961,8 @@ Class Fileserver {
       include("header.inc.php");
 
       echo "</div><div id=\"info\">".
-      "<img src=\"images/spin.gif\"><br>".
-      "Generating preview for $file, please wait...<br><br>\n\n<pre>";
+      "<img src=\"images/spin.gif\" alt=\"busy...\" /><br />".
+      "Generating preview for $file, please wait...<br /><br />\n\n<pre>";
       ob_flush();
       flush();
 
@@ -974,7 +977,7 @@ Class Fileserver {
           $pdest =  $this->destinationFolder();
       }
 
-      # echo "$file, $src, $dest, $sizes<br>";
+      # echo "$file, $src, $dest, $sizes<br />";
       # flush;
 
       $extra = "";
@@ -1035,7 +1038,7 @@ Class Fileserver {
           switch ($key) {
               case "ERROR":
                   $i ++;
-                  $html .= $answer[$i]."<br>";
+                  $html .= $answer[$i]."<br />";
                   $ok = false;
                   break;
               case "REPORT":
@@ -1044,7 +1047,7 @@ Class Fileserver {
                   ob_flush();
                   flush();
               default :
-                  # $html .= $answer[$i]."<br>";
+                  # $html .= $answer[$i]."<br />";
                   break;
 
                   
@@ -1059,7 +1062,7 @@ Class Fileserver {
       $path = $pdest."/".$file.".preview_xy.jpg";
       if ($ok && ! file_exists($path)) {
           $ok = false;
-          $html .= "$path does not exist.<br>";
+          $html .= "$path does not exist.<br />";
       }
 
       if ($answer !== NULL) 
@@ -1071,7 +1074,7 @@ Class Fileserver {
           $nMode = $this->imgPreviewMode($file, $dest, "preview");
           $img = $this->imgPreview($file, $dest, "preview_xy", false) ;
           if ($nMode == 3) {
-              $img .= "<br>".
+              $img .= "<br />".
                       $this->imgPreview($file, $dest, "preview_xz", false) ;
           }
           # $img .= "<p><center><kbd>$file</kbd></center></p>";
@@ -1083,11 +1086,11 @@ Class Fileserver {
           echo "\nsetPrevGen($index, $nMode);";
           echo "\nchangeOpenerDiv('info','". escapeJavaScript($img). "'); ";
       } else {
-          echo "\nchangeOpenerDiv('info','Preview generation failed.<br><br><kbd>".escapeJavaScript($html)."</kbd>'); ";
+          echo "\nchangeOpenerDiv('info','Preview generation failed.<br /><br /><kbd>".escapeJavaScript($html)."</kbd>'); ";
       }
       if ($answer !== NULL) echo "\nwindow.close();";
       echo "\n</script>\n\n";
-      echo "<br><br><a href=\"#\" onClick=\"window.close()\">Close</a>\n";
+      echo "<br /><br /><a href=\"#\" onclick=\"window.close()\">Close</a>\n";
       # echo "<script type=\"text/javascript\"> window.close(); <script>\n";
       echo "</body></html>";
       ob_flush();
