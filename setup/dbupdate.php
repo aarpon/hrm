@@ -100,7 +100,7 @@ $LAST_REVISION = 6;
 
 
 // For test purposes
-//$db_name = "hrm-FMI";
+//$db_name = "hrm-test";
 
 
 // =============================================================================
@@ -1289,7 +1289,7 @@ if ($current_revision < $n) {
     if (!($rs->EOF)) {
         $rss = $db->Execute("DELETE FROM " . $tabname . " WHERE parameter = 'CoverslipRelativePosition' AND value = 'ignore'");
         if(!$rss) {
-            $msg = "An error occurred while updateing the database to revision " . $n . ".";
+            $msg = "An error occurred while updateing the database to revision " . $n . ".\n";
             write_message($msg);
             write_to_error($msg);
             return; 
@@ -1338,23 +1338,9 @@ if ($current_revision < $n) {
     }
     
     $record["parameter"] = "PerformAberrationCorrection";
-    $record["value"] = "0";
-    $record["translation"] = "Do not perform depth-dependent correction";
-    $record["isDefault"] = "T";
-    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "' AND translation='" . $record["translation"] . "' AND isDefault='" . $record["isDefault"] . "'");
-    if ($rs->EOF) {
-        $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
-            $msg = "An error occurred while updateing the database to revision " . $n . ".";
-            write_message($msg);
-            write_to_error($msg);
-            return;
-        }
-    }
-    
     $record["value"] = "1";
     $record["translation"] = "Yes, perform depth-dependent correction";
-    $record["isDefault"] = "F";
+    $record["isDefault"] = "f";
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "' AND translation='" . $record["translation"] . "' AND isDefault='" . $record["isDefault"] . "'");
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
@@ -1386,49 +1372,6 @@ if ($current_revision < $n) {
     $record["isDefault"] = "F";
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "' AND translation='" . $record["translation"] . "' AND isDefault='" . $record["isDefault"] . "'");
     if ($rs->EOF) {
-        $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
-            $msg = "An error occurred while updateing the database to revision " . $n . ".";
-            write_message($msg);
-            write_to_error($msg);
-            return;
-        }
-    }
-    
-    $record["parameter"] = "AdvancedCorrectionOptions";
-    $record["value"] = "user";
-    $record["translation"] = "Deconvolution with PSF generated at user-defined depth";
-    $record["isDefault"] = "T";
-    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "' AND translation='" . $record["translation"] . "' AND isDefault='" . $record["isDefault"] . "'");
-    if ($rs->EOF) {
-        $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
-            $msg = "An error occurred while updateing the database to revision " . $n . ".";
-            write_message($msg);
-            write_to_error($msg);
-            return;
-        }
-    }
-    
-    $record["value"] = "slice";
-    $record["translation"] = "Depth-dependent correction performed slice by slice";
-    $record["isDefault"] = "F";
-    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "' AND translation='" . $record["translation"] . "' AND isDefault='" . $record["isDefault"] . "'");
-    if ($rs->EOF) {
-        $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
-            $msg = "An error occurred while updateing the database to revision " . $n . ".";
-            write_message($msg);
-            write_to_error($msg);
-            return;
-        }
-    }
-    
-    $record["value"] = "few";
-    $record["translation"] = "Depth-dependent correction performed on few bricks";
-    $record["isDefault"] = "F";
-    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "' AND translation='" . $record["translation"] . "' AND isDefault='" . $record["isDefault"] . "'");
-    if ($rs->EOF) {    
         $insertSQL = $db->GetInsertSQL($tabname, $record);
         if(!$db->Execute($insertSQL)) {
             $msg = "An error occurred while updateing the database to revision " . $n . ".";
@@ -1585,20 +1528,83 @@ if ($current_revision < $n) {
     $record[$colnames[2]] = "No, do not perform depth-dependent correction";
     $record[$colnames[3]] = "T";
     $array = array("PerformAberrationCorrection","0","No, do not perform depth-dependent correction","t");
-    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "' AND translation='Do not perform depth-dependent correction' AND isDefault='" . $record["isDefault"] . "'");
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "'");
     if (!($rs->EOF)) {
-        if(!$db->Execute("DELETE FROM " . $tabname . " WHERE translation = 'Do not perform depth-dependent correction'")) {
+        if(!$db->Execute("DELETE FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "'")) {
+            $msg = "An error occurred while updateing the database to revision " . $n . ".";
             write_message($msg);
             write_to_log($msg);
             write_to_error($msg);
             return;
         }
     }
-    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "' AND translation='" . $record["translation"] . "' AND isDefault='" . $record["isDefault"] . "'");
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "'");
     if ($rs->EOF) { 
         if(!insert_record($tabname, $array, $colnames))
             return;
     }
+    
+    $record[$colnames[0]] = "AdvancedCorrectionOptions";
+    $record[$colnames[1]] = "user";
+    $record[$colnames[2]] = "Deconvolution with PSF generated at user-defined depth";
+    $record[$colnames[3]] = "T";
+    $array = array("AdvancedCorrectionOptions","user","Deconvolution with PSF generated at user-defined depth","T");
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record[$colnames[0]] . "' AND value='" . $record[$colnames[1]] . "'");
+    if (!($rs->EOF)) {
+        if(!$db->Execute("DELETE FROM " . $tabname . " WHERE parameter='" . $record[$colnames[0]] . "' AND value='" . $record[$colnames[1]] . "'")) {
+            $msg = "An error occurred while updateing the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_log($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "'");
+    if ($rs->EOF) {
+        if(!insert_record($tabname, $array, $colnames))
+            return;
+    }
+
+    $record[$colnames[1]] = "slice";
+    $record[$colnames[2]] = "Depth-dependent correction performed slice by slice";
+    $record[$colnames[3]] = "F";
+    $array = array("AdvancedCorrectionOptions","slice","Depth-dependent correction performed slice by slice","F");
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "'");
+    if (!($rs->EOF)) {
+        if(!$db->Execute("DELETE FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "'")) {
+            $msg = "An error occurred while updateing the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_log($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "'");
+    if ($rs->EOF) { 
+        if(!insert_record($tabname, $array, $colnames))
+            return;
+    }
+    
+    $record[$colnames[1]] = "few";
+    $record[$colnames[2]] = "Depth-dependent correction performed on few bricks";
+    $record[$colnames[3]] = "F";
+    $array = array("AdvancedCorrectionOptions","few","Depth-dependent correction performed on few bricks","F");
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "'");
+    if (!($rs->EOF)) {
+        if(!$db->Execute("DELETE FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "'")) {
+            $msg = "An error occurred while updateing the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_log($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "'");
+    if ($rs->EOF) { 
+        if(!insert_record($tabname, $array, $colnames))
+            return;
+    }
+    
 
     if(!update_dbrevision($n)) 
         return;
