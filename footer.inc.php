@@ -55,15 +55,18 @@
 
     <div id="footer">
         created 2004 by <a href="mailto:volker.baecker@mri.cnrs.fr">Volker 
-        Baecker</a>, modified 2006-2007 by <a href="mailto:asheesh.gulati@epfl.ch">
-        Asheesh Gulati</a> &amp; <a href="mailto:aaron.ponti@fmi.ch">Aaron 
+        Baecker</a><br />modified 2006-2009 by <a href="mailto:asheesh.gulati@epfl.ch">
+	Asheesh Gulati</a>, <a href="mailto:alessandra.griffa@epfl.ch">Alessandra Griffa</a>, 
+	<a href="mailto:jose@svi.nl">Jos&eacute; Vi&ntilde;a</a> &amp; 
+	<a href="mailto:aaron.ponti@fmi.ch">Aaron 
         Ponti</a>
     </div>
     
     <div id="validation">
-        <a href="http://validator.w3.org/check?uri=referer" onclick="clean()">
-                <img src="images/valid-xhtml10.png" alt="Valid XHTML 1.0 Strict" height="31" width="88" />
+        <a href="http://validator.w3.org/" onclick="clean()">
+            <img style="border:0;width:88px;height:31px" src="images/valid-xhtml10.png" alt="Valid XHTML 1.0 Strict" />
         </a>
+        <img style="border:0;width:88px;height:31px" src="images/valid-css21.png" alt="Valid CSS!" />
     </div>
     
 </div> <!-- basket -->

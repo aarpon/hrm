@@ -161,6 +161,8 @@ Class User extends Owner{
     $this->isLoggedIn = False;
     $this->lastActivity = time();
     $this->ip = '';
+    // Call the parent constructor too.
+    parent::__construct();
   } 
 
   //!---------------------------------------------------------
@@ -438,14 +440,14 @@ Class User extends Owner{
   //			  the default group name if ldap is used.
   // @return      String
   //!--------------------------------------------------------- 
-  function group() {
+  function userGroup() {
   	global $use_ldap;
   	$result = $this->defaultGroupName();
   	if (!$use_ldap) {
   		$db = new DatabaseConnection();
   		$result = $db->getGroup($this->name());
   	}
-  	return $result; 
+    return $result; 
   }
   
   //!---------------------------------------------------------
@@ -463,4 +465,7 @@ Class User extends Owner{
   	return 'hrm';
   }
 } 
+
+
+
 ?>

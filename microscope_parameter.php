@@ -87,7 +87,7 @@ $excitationParam = $_SESSION['setting']->parameter("ExcitationWavelength");
 $emissionParam =  $_SESSION['setting']->parameter("EmissionWavelength");
 $excitation = $excitationParam->value();
 $emission = $emissionParam->value();
-for ($i=1; $i <= $_SESSION['setting']->numberOfChannels(); $i++) {
+for ($i=0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
   $excitationKey = "ExcitationWavelength{$i}";
   $emissionKey = "EmissionWavelength{$i}";
   if (isset($_POST[$excitationKey])) {
@@ -98,8 +98,10 @@ for ($i=1; $i <= $_SESSION['setting']->numberOfChannels(); $i++) {
   } 
 }
 // get rid of extra values in case the number of channels is changed
-$excitation = array_slice($excitation, 0, $_SESSION['setting']->numberOfChannels() + 1);
-$emission = array_slice($emission, 0, $_SESSION['setting']->numberOfChannels() + 1);
+//$excitation = array_slice($excitation, 1,
+//        $_SESSION['setting']->numberOfChannels() );
+//$emission = array_slice($emission, 1, 
+//        $_SESSION['setting']->numberOfChannels() );
 $excitationParam->setValue($excitation);
 $emissionParam->setValue($emission);
 $_SESSION['setting']->set($excitationParam);
@@ -126,7 +128,7 @@ include("header.inc.php");
     
     <div id="content">
     
-        <h3>Parameter Setting - Page 2</h3>
+        <h3>Optical parameters / 1</h3>
         
         <form method="post" action="" id="select">
         
@@ -158,9 +160,11 @@ foreach($possibleValues as $possibleValue) {
             </fieldset>
             
             <fieldset class="setting">
-            
-                <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=NumericalAperture')"><img src="images/help.png" alt="?" /></a>
-                numerical aperture:
+              <legend> 
+		<a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=NumericalAperture')"><img src="images/help.png" alt="?" /></a>
+		NA
+              </legend>
+              <p />numerical aperture: 
 <?php
 
 $parameter = $_SESSION['setting']->parameter("NumericalAperture");
@@ -178,48 +182,44 @@ $parameter = $_SESSION['setting']->parameter("NumericalAperture");
             
                 <legend>
                     <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=WaveLength')"><img src="images/help.png" alt="?" /></a>
-                    light
-                </legend>
-                
-                <ul>
-                    <li>
-                        excitation wavelength for channel (nm)
-                        <ol>
+                    wavelengths
+		</legend>
+		<ul>
+		<li>excitation (nm):
+
+		<div class="multichannel">
 <?php
 
-for ($i = 1; $i <= $_SESSION['setting']->numberOfChannels(); $i++) {
+for ($i = 0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
 
 ?>
-                            <li><input name="ExcitationWavelength<?php echo $i ?>" type="text" size="5" value="<?php if ($i < sizeof($excitation)) echo $excitation[$i] ?>" class="multichannelinput" /></li>
-<?php
-
-}
-
-?>
-                        </ol>
-                    </li>
-
-                    <li>
-                        emission wavelength for channel (nm)
-                        <ol>
-
-<?php
-
-for ($i=1; $i <= $_SESSION['setting']->numberOfChannels(); $i++) {
-
-?>
-                            <li><input name="EmissionWavelength<?php echo $i ?>" type="text" size="5" value="<?php if ($i < sizeof($emission)) echo $emission[$i] ?>" class="multichannelinput" /></li>
+	<span class="nowrap">Ch<?php echo $i ?>:<span class="multichannel"><input name="ExcitationWavelength<?php echo $i ?>" type="text" size="8" value="<?php if ($i <= sizeof($excitation)) echo $excitation[$i] ?>" class="multichannelinput" /></span>&nbsp;</span>
 <?php
 
 }
 
 ?>
-                        </ol>
-                    </li>
-                </ul>
+</div></li>
+	<li>emission (nm):
+	
+	<div class="multichannel">
+<?php
+
+for ($i=0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
+
+?>
+	<span class="nowrap">Ch<?php echo $i ?>:<span class="multichannel"><input name="EmissionWavelength<?php echo $i ?>" type="text" size="8" value="<?php if ($i <= sizeof($emission)) echo $emission[$i] ?>" class="multichannelinput" /></span>&nbsp;</span>
+<?php
+
+}
+
+?>
+        </div></li>
+        </ul>
                 
-            </fieldset>
-            
+        </fieldset>
+
+<!--          
             <fieldset class="setting">
             
                 <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=ObjectiveMagnification')"><img src="images/help.png" alt="?" /></a>
@@ -228,23 +228,25 @@ for ($i=1; $i <= $_SESSION['setting']->numberOfChannels(); $i++) {
                 <select name="ObjectiveMagnification" size="1">
 <?php
 
-$parameter = $_SESSION['setting']->parameter("ObjectiveMagnification");
-foreach ($parameter->possibleValues() as $possibleValue) {
-  $flag = "";
-  if ($possibleValue == $parameter->value()) $flag = " selected=\"selected\"";
+//$parameter = $_SESSION['setting']->parameter("ObjectiveMagnification");
+//foreach ($parameter->possibleValues() as $possibleValue) {
+//  $flag = "";
+//  if ($possibleValue == $parameter->value()) $flag = " selected=\"selected\"";
 
 ?>
-                    <option<?php echo $flag ?>><?php echo $possibleValue ?></option>
+                  <option<?php //echo $flag ?>><?php //echo $possibleValue ?></option>
 <?php
 
-}
+//}
 
 ?>
+
                 </select>
                 X
                 
             </fieldset>
-            
+-->
+
             <fieldset class="setting">
             
                 <legend>
@@ -335,7 +337,9 @@ $value = "";
 $flag = "";
 if (!$default) {
   $value = $parameter->value();
-  $flag = " checked=\"checked\"";
+  if ( $value != "" ) {
+    $flag = " checked=\"checked\"";
+  }
 }
 
 ?>

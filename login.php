@@ -55,36 +55,63 @@ require_once("./inc/User.inc");
 require_once("./inc/Database.inc"); // for account management (email & last_access fields)
 require_once("./inc/CreditOwner.inc");
 require_once("./inc/hrm_config.inc");
+require_once("./inc/Fileserver.inc");
 
 global $email_admin;
 global $enableUserAdmin;
+global $use_accounting_system;
 
 $message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
 
-$user = new User();
+
+session_start();
+if (isset($_SESSION['request'])) {
+    $req = $_SESSION['request'];
+} else {
+    $req = false;
+}
+if (isset($_POST['request'])) {
+    $req = $_POST['request'];
+}
+
+/* Reset all! */
+session_unset();
+session_destroy();
+
+session_start();
+
+$_SESSION['user'] = new User();
+
 
 if (isset($_POST['password'])) {
-  $user->setName(strtolower($_POST['username']));
-  $user->logOut(); // TODO
-  if ($user->logIn(strtolower($_POST['username']), $_POST['password'], $_SERVER['REMOTE_ADDR'])) {
+  $_SESSION['user']->setName(strtolower($_POST['username']));
+  $_SESSION['user']->logOut(); // TODO
+  if ($_SESSION['user']->logIn(strtolower($_POST['username']), $_POST['password'], $_SERVER['REMOTE_ADDR'])) {
   	if ($use_accounting_system) {
-		$creditOwner = new CreditOwner($user->name());
+		$creditOwner = new CreditOwner($_SESSION['user']->name());
 		$positiveCredits = $creditOwner->positiveCredits();
 		if (count($positiveCredits) == 0) {
-			$user->logOut();
+			$_SESSION['user']->logOut();
 			$message = "You don't have any hours left.<br>Please contact the microscopy team!";		
 		}
 	}
-  	if ($user->isLoggedIn()) {
-            session_start();
-            session_register("user");
-            $user->setName(strtolower($_POST['username']));
+  	if ($_SESSION['user']->isLoggedIn()) {
+            $_SESSION['user']->setName(strtolower($_POST['username']));
+
+            // Make sure that the user source and destination folders exist
+            {
+              $fileServer = new FileServer( strtolower($_POST['username']) );
+              if ( $fileServer->isReachable() == false ) {
+                shell_exec("bin/hrm create " . $_POST['username']);
+              }
+            }
+            
             // account management
                 // get email address and group
-                $user->load();
-                $_SESSION['user'] = $user;
+                $_SESSION['user']->load();
             // update last access date
-            $user->updateLastAccessDate();
+            $_SESSION['user']->updateLastAccessDate();
+            #$_SESSION['registered_user'] = $_SESSION['user'];
             // TODO unregister also "setting" and "task_setting"
             unset($_SESSION['editor']);
             if ($use_accounting_system) {
@@ -102,7 +129,10 @@ if (isset($_POST['password'])) {
                         $_SESSION['group'] = $groups[0]->id();
                 }
             }
-            if ($user->isAdmin()) {
+            if ( $req != false ) {
+                header("Location: " . $req); 
+                exit();
+            } else if ($_SESSION['user']->isAdmin()) {
                 if ($enableUserAdmin) {
                     header("Location: " . "user_management.php"); exit();
                 }
@@ -110,14 +140,15 @@ if (isset($_POST['password'])) {
                     header("Location: " . "select_parameter_settings.php"); exit();
                 }
             } else {
-                header("Location: " . "select_parameter_settings.php"); exit();
+                header("Location: " . "select_parameter_settings.php"); 
+                exit();
             }
   	}
   } else {
-    if ($user->isSuspended()) {
+    if ($_SESSION['user']->isSuspended()) {
       $message = "            <p class=\"warning\">Your account has been suspended, please contact the administrator.</p>\n";
     }
-    else if ($user->exists()) {
+    else if ($_SESSION['user']->exists()) {
       $message = "            <p class=\"warning\">This username/password combination does not match, please try again.</p>\n";
     }
     else {
@@ -154,7 +185,7 @@ include("header.inc.php");
             <div class="logo-fmi">
                 <a href="javascript:openWindow('http://www.fmi.ch')"><img src="images/logo_fmi.png" alt="FMI" /></a>
                 <p>Friedrich Miescher Institute</p>
-                <p><a href="javascript:openWindow('http://www.fmi.ch/html/technical_resources/microscopy/database/home.html')">Facility for Advanced Imaging and Microscopy</a></p>
+                <p><a href="javascript:openWindow('http://www.fmi.ch/faim')">Facility for Advanced Imaging and Microscopy</a></p>
             </div>
             <div class="logo-mri">
                 <a href="javascript:openWindow('http://www.mri.cnrs.fr')"><img src="images/logo_mri.png" alt="MRI" /></a>
@@ -170,8 +201,8 @@ include("header.inc.php");
     </div> <!-- content -->
     
     <div id="stuff">
-    
-        <div id="login">
+	<p />    
+	<div id="login">
             <form method="post" action="">
                 <fieldset>
                     <legend>
@@ -192,6 +223,7 @@ include("header.inc.php");
                     <label for="password">Password:</label>
                     <input id="password" name="password" type="password" class="textfield" tabindex="2" />
                     <br />
+                    <input type="hidden" name="request" value="<?php echo $req?>" />
                     <input type="submit" class="button" value="login" />
                 </fieldset>
             </form>

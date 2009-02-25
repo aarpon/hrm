@@ -189,3 +189,234 @@ function get_rand_id($length) {
   }
   return $rand_id;
 }
+
+//!---------------------------------------------------------
+// @function    escapeJavaScript
+// @desc        Escapes html strings generated in PHP so that can be used as
+//              arguments in JavaScript functions.
+//              parameters. This local hucore doesn't need to have a license!
+// @param       A html string.
+// @return      Conveniently formated string.
+//!---------------------------------------------------------
+function escapeJavaScript ($str) {
+      $str = str_replace("'", "\'", $str);
+      $str = str_replace('"', "'+String.fromCharCode(34)+'", $str);
+      return $str;
+}
+
+
+//!---------------------------------------------------------
+// @function    huCoreTools  
+// @desc        Calls a local hucore (that must be in the $PATH) to
+//              execute some freeware image processing tools, or report
+//              parameters. This local hucore doesn't need to have a license!
+// @param       $tool is the procedure in scripts/hucore.tcl to be executed.
+//              $options are extra command line options to send to that script
+// @return      An array with all stdout lines
+//!---------------------------------------------------------
+function huCoreTools ($tool, $options) {
+    global $hrm_path, $local_huygens_core;
+
+    if (! isset($local_huygens_core) ) {
+        echo "Huygens tools can only work if you define a variable ".
+        "'local_huygens_core' in the configuration files pointing to a local ".
+        "hucore. Administrator: see hrm_config.inc.sample."; 
+        return;
+    }
+
+    $cmd = "$local_huygens_core -checkUpdates disable ".
+           "-task \"$hrm_path/scripts/hucore.tcl\" ".
+           "-huCoreTcl \"$hrm_path/scripts/hucore.tcl\" ".
+           "-tool $tool $options 2>&1";
+
+
+    $answer = exec($cmd, $output, $result);
+
+    # printDebug ($cmd, $output, "res: $result ans: $answer");
+
+    if ($result == 0) {
+        $begin = array_search("BEGIN PROC", $output);
+        if ($begin) {
+            $ret = array_slice($output, $begin);
+            return $ret;
+        }
+    } 
+    $more = 0;
+    echo "<pre>ERROR with $cmd\n";
+    if ($result != 0) {
+        echo "$answer\n";
+    }
+    foreach ( $output as $line ) {
+        if ($more > 0) {
+            echo ("$line\n");
+            $more -= 1;
+            if ( $more == 0 ) echo ("...\n");
+        }
+        if (stristr($line, "error")) {
+            echo ("$line\n");
+            $more = 2;
+        }
+    }
+    echo "</pre>";
+    return NULL;
+
+}
+
+//!---------------------------------------------------------
+// @function    askHuCore  
+// @desc        A wrapper around huCoreTools to retrieve a particular string,
+//              which is 'calculated' by hucore in the background.
+// @param       $tool is the procedure in scripts/hucore.tcl to be executed.
+//              $options are extra command line options to send to that script
+//              $param is the KEYWORD that identifies the string we want in the
+//              hucore output.
+// @return      The requested string.
+//!---------------------------------------------------------
+function askHuCore ($tool, $options = "", $keyword = "") {
+
+      // If no keyword is provided, then it is assumed that the keyword Huygens
+      // will use to report back is the same function name plus " RETURN".
+      if ($keyword == "" ) { $keyword = "$tool RETURN"; }
+
+      $answer = huCoreTools( $tool, $options );
+
+      if (! $answer ) return "(nothing)";
+      # printDebug ($answer);
+
+      $lines = count($answer);
+      $msg = "";
+      $ret = "";
+      $sep = "";
+
+      $ok = true;
+      for ($i = 0; $i < $lines; $i++ ) {
+          $key = $answer[$i];
+
+          switch ($key) {
+              case "ERROR":
+                  $i ++;
+                  $msg .= $answer[$i]."<br>";
+                  $ok = false;
+                  break;
+              case "REPORT":
+                  $i ++;
+                  echo $answer[$i]."\n";
+                  ob_flush();
+                  flush();
+              case $keyword :
+                  $i ++;
+                  $ret .= $sep.$answer[$i];
+                  $sep = " ";
+              default :
+                  break;
+
+          }
+      }
+
+      return $msg.$ret;
+}
+
+
+
+//!---------------------------------------------------------
+// @function    report
+// @desc        Write text to the logfile if level is not
+//              bigger than log_verbosity. If logfile becomes
+//              to big it is renamed and started over.
+// @param       text  String  The text to be logged
+// @param       level  Int    The log level of the text
+// @return      Void
+//!---------------------------------------------------------
+function report($text, $level) {
+	global $log_verbosity;
+    global $hrm_path;
+    global $logdir;
+	global $logfile;
+	global $logfile_max_size;
+
+    $text = date("Y-m-d H:i:s"). " ".$text;
+
+    $logpath = $logdir."/".$logfile;
+
+	if ($log_verbosity == 0)
+		return True;
+	if (file_exists($logpath) 
+            && (filesize($logpath) > $logfile_max_size * 1000 * 1000)) {
+		if (file_exists($logpath . ".old")) {
+			unlink($logpath . ".old");
+		}
+		rename($logpath, $logpath . ".old");
+	}
+	$file = fopen($logpath, 'a');
+	if ($log_verbosity >= $level) {
+		fwrite($file, $text);
+		fwrite($file, "\n");
+		fflush($file);
+	}
+	fclose($file);
+}
+
+
+
+/* A global debugging function, that will print all its arguments whether they
+ * are strings, arrays or objects. This works if a global variable $debug =
+ * true, that can be defined in hrm_client_config.inc. Otherwise it does
+ * nothing. */
+
+if ( ! function_exists('printDebug') ) {
+    function printDebug ( ) {
+        global $debug;
+
+        if ( ! $debug ) return;
+
+        $args = func_get_args();
+
+        echo "<small><kbd><font color=\"red\">Debugging: </font></kbd></small>";
+
+        foreach ($args as $item) {
+
+            if (is_object($item)) {
+                $msg = (array) $item;
+            } else {
+                $msg = $item;
+            }
+
+            if (is_array($msg)) {
+                echo "<pre>";
+                print_r($msg);
+                echo "</pre>";
+            } else {
+                echo "<kbd>$msg</kbd>";
+            }
+        }
+    }
+}
+
+//!---------------------------------------------------------
+// @function    getHucoreVersionAsInteger
+// @desc        Returns the hucore version (as set in the configuration file)
+//              as an integer for comparisons
+// @return      The version number as integer
+//!---------------------------------------------------------
+function getHucoreVersionAsInteger( $hucoreVersion ) {
+
+        $matches = array( );
+        // Is there a patch information?
+        $ver = preg_match("/([0-9]+)\.([0-9]+)\.([0-9]+)p([0-9]+)/",
+          $hucoreVersion, $matches );
+        if ( $ver == 0 ) {
+          $ver = preg_match("/([0-9]+)\.([0-9]+)\.([0-9]+)/",
+            $hucoreVersion, $matches );
+        }
+        // Now calculate the integer version
+        $version = 0;
+        if ( count( $matches ) != 0 ) {
+          $version = $matches[1] * 1000000  + $matches[2] * 10000 + $matches[3] * 100;
+          if ( count( $matches ) == 5 ) {
+            $version = $version + $matches[ 4 ];
+          }
+        }
+        return $version;
+}
+      
+?>

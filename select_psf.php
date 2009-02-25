@@ -70,7 +70,7 @@ if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
 
 // fileserver related code
 if (!isset($_SESSION['fileserver'])) {
-  session_register('fileserver');
+  # session_register('fileserver');
   $name = $_SESSION['user']->name();
   $_SESSION['fileserver'] = new Fileserver($name);
 }
@@ -79,33 +79,24 @@ $message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
 
 $psfParam = $_SESSION['setting']->parameter("PSF");
 $psf = $psfParam->value();
-for ($i = 1; $i <= $_SESSION['setting']->numberOfChannels(); $i++) {
+for ($i = 0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
   $psfKey = "psf{$i}";
   if (isset($_POST[$psfKey])) {
     $psf[$i] = $_POST[$psfKey];
   } 
 }
 // get rid of extra values in case the number of channels is changed
-$psf = array_slice($psf, 0, $_SESSION['setting']->numberOfChannels() + 1);
+$psf = array_slice($psf, 0, $_SESSION['setting']->numberOfChannels() );
 $psfParam->setValue($psf);
 $_SESSION['setting']->set($psfParam);
 
 if (count($_POST) > 0) {
-  // get rid of non relevant values
-  $names = array_merge($_SESSION['setting']->microscopeParameterNames(), $_SESSION['setting']->capturingParameterNames());
-  foreach ($names as $name) {
-    $parameter = $_SESSION['setting']->parameter($name);
-    if ($name == "ExcitationWavelength" || $name == "EmissionWavelength" || $name == "PinholeSize") {
-      $parameter->setValue(array(NULL, NULL, NULL, NULL, NULL));
-    }
-    else {
-      $parameter->setValue("");
-    }
-    $_SESSION['setting']->set($parameter);
-  }
   $ok = $_SESSION['setting']->checkPointSpreadFunction();
   $message = "            <p class=\"warning\">".$_SESSION['setting']->message()."<br />&nbsp;</p>";
   if ($ok) {
+    // Make sure to turn off the aberration correction since we use a measured PSF
+    $_SESSION['setting']->parameter( 'AberrationCorrectionNecessary' )->setValue( '0' );
+    $_SESSION['setting']->parameter( 'PerformAberrationCorrection' )->setValue( '0' );
     $saved = $_SESSION['setting']->save();			
     $message = "            <p class=\"warning\">".$_SESSION['setting']->message()."<br />&nbsp;</p>";
     if ($saved) {
@@ -129,14 +120,14 @@ include("header.inc.php");
     
     <div id="content">
     
-        <h3>Parameter Setting - Page 2</h3>
+        <h3>Distilled PSF file selection</h3>
         
         <form method="post" action="select_psf.php" id="select">
         
             <div id="psfselection">
 <?php
 
-for ($i = 1; $i <= $_SESSION['setting']->numberOfChannels(); $i++) {
+for ($i = 0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
   $parameter = $_SESSION['setting']->parameter("PSF");
   $value = $parameter->value();
   $missing = False;
@@ -187,15 +178,15 @@ for ($i = 1; $i <= $_SESSION['setting']->numberOfChannels(); $i++) {
     
         <div id="info">
         
-            <input type="button" value="" class="icon cancel" onclick="document.location.href='image_format.php'" />
+            <input type="button" value="" class="icon cancel" onclick="document.location.href='capturing_parameter.php'" />
             <input type="submit" value="" class="icon apply" onclick="process()" />
             
-            <p>Select a PSF file for each of the channels.</p>
+            <p>Select a PSF file for each of the channels. Only <strong>single-channel PSF files</strong> are supported.</p>
             
            <p>
                 When you are done with the selection, press the
                 <img src="images/apply_help.png" alt="Create" width="22" height="22" /> <b>apply</b>
-                button to go back to the Image Format page.
+                button to continue.
             </p>
 
 

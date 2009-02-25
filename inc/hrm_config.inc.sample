@@ -1,13 +1,13 @@
 <?php
 
 //==============================================================================
-// database settings
+// Database settings
 //==============================================================================
 
 // ADOdb database abstraction library
 $adodb = "/path/to/adodb.inc.php";
 
-// The database type (mysql, oracle, ...)
+// The database type (mysql, postgres, ...)
 $db_type = "mysql";
 
 // The name of the database host machine (this may be localhost if it is the 
@@ -18,10 +18,10 @@ $db_host = "localhost";
 $db_name = "hrm";
 
 // The name of the user with which the database is accessed
-$db_user = "root";
+$db_user = "dbuser";
 
 // The password of the account with which the database is accessed
-$db_password = "";
+$db_password = "dbpasswd";
 
 //==============================================================================
 // Huygens settings
@@ -31,27 +31,38 @@ $db_password = "";
 $huygens_user = "huygens";
 $huygens_group = "huygens";
 
+// Path to a local Huygens Core executable, to handle image information and
+// thumbnails. This installatation of hucore doesn't require a license unless
+// this is also the computation server. (For image information and thumbnails
+// only freeware functions will be used).
+$local_huygens_core = "/usr/local/bin/hucore";
+
+// The HRM needs to know the version of the hucore executable on the
+// computation server to make sure that only supported functionalities
+// can be accessed.
+$enable_code_for_huygens = "3.3.2";
+
 //==============================================================================
-// file server settings
+// File server settings
 //==============================================================================
 
-// file server host name
+// File server host name
 $image_host = "localhost";
 
-// file server default user
+// File server default user
 $image_user = "apache";
 $image_group = "apache";
 
-// file server base folder (without trailing /)
+// File server base folder (without trailing /)
 $image_folder = "/path/to/hrm_data";
 
-// file server image source folder
+// File server image source folder
 $image_source = "huygens_src";
 
-// file server image destination folder
+// File server image destination folder
 $image_destination = "huygens_dst";
 
-// file server base folder as seen from the Huygens server machines (with trailing /)
+// File server base folder as seen from the Huygens server machines (with trailing /)
 $huygens_server_image_folder = "/path/to/hrm_data/";
 
 // Allow HTTP transfer of the original (upload) and restored (download) images
@@ -91,10 +102,8 @@ switch ($compressExt) {
         $dlMimeType = "application/x-force-download";
 }
 
-
-// ImageMagick convert, for (future) thumbnail handling
+// ImageMagick convert, for thumbnail handling
 $convertBin = "/usr/bin/convert";
-
 
 //==============================================================================
 // HRM configuration parameters
@@ -106,58 +115,90 @@ $runningLocation = "Running at the FMI - Basel";
 // URL
 $hrm_url = "http://localhost/hrm";
 
-// install dir
+// Install dir
 $hrm_path = "/var/www/html/hrm";
 
-// logging
-$log_verbosity = 2;         // 0=quiet, 1=normal, 2=debug
+// Logging
+// Please create a directory for the logging (default and recommended is /var/log/hrm)
+// and make sure to grant read/write access to the web server user. 
+$log_verbosity = 1;         // 0=quiet, 1=normal, 2=debug
+$logdir  = "/var/log/hrm";
 $logfile = "hrm.log";
 $logfile_max_size = 100;    // maximum size of the logfile in MB
 
-// email
-$send_mail = True;
+// Email
+$send_mail = true;
 $email_sender = "hrm@localhost";
 $email_admin = "hrm@localhost";
 
-// user administration module
-$enableUserAdmin = True;
+// User administration module
+$enableUserAdmin = true;
 
-// authentication type (LDAP or MYSQL)
+// Authentication type (LDAP or MYSQL)
 $authenticateAgainst = "MYSQL";
 
-// if true, users of the microscope reservation system may have access to HRM 
+// If true, users of the microscope reservation system may have access to HRM 
 // as well
-$allow_reservation_users = False;
+$allow_reservation_users = false;
 
-// if true, use DES password encryption; if false, use MD5
-$useDESEncryption = False;
+// If true, use DES password encryption; if false, use MD5
+$useDESEncryption = false;
 
-// if true, the queue manager and the image processing server run on the same 
+// If true, the queue manager and the image processing server run on the same 
 // machine
-$imageProcessingIsOnQueueManager = True;
+$imageProcessingIsOnQueueManager = true;
 
-// if true the images are copied to the huygens server machine
+// If true the images are copied to the huygens server machine
 $copy_images_to_huygens_server = false;
 
-// if true, result images will be owned by the user; if false, they will be 
+// If true, result images will be owned by the user; if false, they will be 
 // owned by the user who runs the queue manager
-$resultImagesOwnedByUser = False;
+$resultImagesOwnedByUser = false;
 
-// if true, result images will have the job id appended to their names
-$resultImagesRenamed = True;
+// If true, result images will have the job id appended to their names
+$resultImagesRenamed = true;
 
-// internal links
+// Thumbnails require Huygens Core 3.3.2 or higher.
+
+// If true, allows generates thumbnails and previews for the originals and the
+// results during the deconvolution (i.e. in the computation servers). These
+// are maximum intensity projections (MIP) of the stacks along the main axes,
+// so they provide xy, xz and zy views.
+$useThumbnails = true;
+
+// If true, allows on-demand generation of a preview of the original images in
+// this web server prior to the deconvolution. For this to work the variable
+// $local_huygens_core must be set correctly above. Notice that not all file
+// formats are readable in a freeware Huygens Core and for full functionality
+// you may need a license string. Otherwise just let the original thumbnails
+// be generated during the deconvolution itself with the previous option.
+// This requires $useThumbnails = true;
+$genThumbnails = true;
+
+// If larger than zero, generates an AVI movie for 3D stacks that allows
+// browsing along the XY slices, and for time series to browse along MIPs in
+// time. The movie will have this maximum number of pixels in the largest
+// dimension.
+// This requires $useThumbnails = true;
+$movieMaxSize = 300;
+
+// If true, (and $useThumbnails is also true), it generates not only the MIP
+// previews but also Simulated Fluorescence Process top-view renderings of the
+// original and the restored images (http://support.svi.nl/wiki/SFP).
+$saveSfpPreviews = true;
+
+// Internal links
 $internal_link["url"] = "<link> followed by text";
 
-// external links
+// External links
 $external_link["http://www.svi.nl"] = "<Scientific Volume Imaging B.V.>";
 $external_link["http://support.svi.nl/wiki"] = "<SVI-wiki> on 3D microscopy, deconvolution, visualization and analysis";
 
 // A shell command that executes ping four times and stops afterwards
-$ping_command = 'ping -w 4';		    // use this on linux systems
-//$ping_command = 'ping';				// use this on cygwin
+$ping_command = 'ping -w 4';	// use this on linux systems
+//$ping_command = 'ping';	// use this on cygwin
 
 // The parameter for the ping command after the hostname
-$ping_parameter = '';			    // use this on linux systems
-//$ping_parameter = '56 4';			// use this on cygwin
+$ping_parameter = '';	        // use this on linux systems
+//$ping_parameter = '56 4';	// use this on cygwin
 ?>

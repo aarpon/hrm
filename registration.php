@@ -55,7 +55,6 @@ require_once("./inc/User.inc");
 require_once("./inc/Database.inc");
 require_once("./inc/hrm_config.inc");
 require_once("./inc/Mail.inc");
-require_once("./inc/Util.inc");
 
 global $hrm_url;
 global $email_sender;
@@ -66,17 +65,12 @@ $processed = False;
 $message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
 
 if (isset($_POST['OK'])) {
-  if (!isset($_SESSION['note'])) {
-    session_register("note");
-  }
   
   $user = new User();
   $user->setName(strtolower($_POST['username']));
   $user->setEmail($_POST['email']);
   $user->setGroup($_POST['group']);
-  
-  $_SESSION['note'] = $_POST['note'];
-  
+
   if (strtolower($_POST['username']) != "") {
     if ($_POST['email'] != "" && strstr($_POST['email'], "@") && strstr(strstr($_POST['email'], "@"), ".")) {
       if ($_POST['group'] != "") {
@@ -106,14 +100,13 @@ if (isset($_POST['OK'])) {
                 $mail->setSubject("New user registration");
                 $mail->setMessage($text);
                 $mail->send();
-                $notice = "            <p class=\"info\">Registration successful!</p>\n";
-                $notice .= "            <p>Your registration will be processed and your account activated soon. You will receive a confirmation by e-mail.</p>\n";
-                unset($_SESSION['note']);
+                $notice = "            <p class=\"info\">Application successfully sent!</p>\n";
+                $notice .= "            <p>Your application will be processed by the administrator. You will receive a confirmation by e-mail.</p>\n";
                 $processed = True;
               }
                 else $message = "            <p class=\"warning\">Database error, please inform the person in charge</p>\n";
               }
-              else $message = "            <p class=\"warning\">This user name is already in use</p>\n";
+              else $message = "            <p class=\"warning\">This user name is already in use. Please enter another one.</p>\n";
             }
             else $message = "            <p class=\"warning\">Passwords do not match</p>\n";
           }
@@ -176,7 +169,7 @@ if (!$processed) {
                 <br />
                 
                 <label for="note">Request message:</label>
-                <textarea name="note" id="note" rows="3" cols="30"></textarea>
+                <textarea name="note" id="note" rows="3" cols="30"><?php if (isset($_POST['note']))  echo $_POST['note'] ?></textarea>
                 
                 <div>
                     <input name="OK" type="submit" value="register" class="button" />

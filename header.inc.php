@@ -82,6 +82,21 @@ if (isset($script)) {
 
 }
 
+if (isset($generatedScript)) {
+
+?>
+    
+    <script type="text/javascript">
+    <!--
+    <?php echo $generatedScript ?>
+    -->
+    </script>
+<?php
+
+}
+
+
+
 ?>
     <style type="text/css">
         @import "stylesheets/default.css";
@@ -92,7 +107,9 @@ if (isset($script)) {
 
 <div id="basket">
 
+<?php if (!isset($excludeTitle)) { ?>
     <div id="title">
-        <h1>Huygens Remote Manager</h1>
+	<h1>Huygens Remote Manager <span id="about">v<?php readfile("version"); ?></span></h1>
     </div>
+<?php } ?>
     

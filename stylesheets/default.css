@@ -250,6 +250,10 @@ input.update {
     background: url(../images/update.png) no-repeat center;
 }
 
+input.download {
+    background: url(../images/download.png) no-repeat center;
+}
+
 #actions label {
     display: block;
     margin-top: 20px;
@@ -295,6 +299,12 @@ input.update {
     padding: 5px 0px 5px 0px;
     border-top: #ccc 2px solid;
     border-bottom: #ccc 2px solid;
+}
+
+#about {
+    clear: both;
+    font-size: 60%;
+    padding: 5px 0px 5px 0px;
 }
 
 #validation {
@@ -442,7 +452,7 @@ td.operations input {
 }
 
 tr.disabled {
-    background: lightgrey;
+    background: silver;
 }
 
 a.selected {
@@ -559,6 +569,29 @@ input.restart {
     background: url(../images/restart.png) no-repeat center;
 }
 
+input.oversampled {
+    background-color: #ADDFFF; /* This was lightblue */
+}
+
+input.optimal {
+    background-color: #41A317; /* This was limegreen */
+}
+
+input.valid {
+    background-color: #FF8040; /* This was orange */
+}
+
+input.invalid {
+    background-color: #FF0000; /* This was orangered */
+}
+
+input.noPreview {
+    width: 200px;
+    height: 200px;
+    background: url(../images/no_preview.jpg) no-repeat center;
+}
+
+
 span.multichannel {
     margin-left: -8px;
 }
@@ -648,5 +681,5 @@ option.default {
 }
 
 .disabled {
-    background: grey;
+    background: gray;
 }

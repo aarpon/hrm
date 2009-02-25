@@ -53,15 +53,17 @@
 
 require_once("./inc/User.inc");
 require_once("./inc/Database.inc");
+require_once("./inc/hrm_config.inc");
 
 global $email_sender;
+
 
 session_start();
 
 $db = new DatabaseConnection();
 
 if (isset($_GET['exited'])) {
-  $_SESSION['user']->logout();
+  if (isset( $_SESSION['user']) ) $_SESSION['user']->logout();
   session_unset();
   session_destroy();
   header("Location: " . "login.php"); exit();
@@ -76,13 +78,14 @@ if (isset($_SERVER['HTTP_REFERER']) && !strstr($_SERVER['HTTP_REFERER'], 'accoun
 }
 
 if (isset($_SESSION['account_user'])) {
-  $user = $_SESSION['account_user'];
+  $edit_user = $_SESSION['account_user'];
 }
 else {
-  $user = $_SESSION['user'];
+  $edit_user = $_SESSION['user'];
 }
 
 $message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
+
 
 if (isset($_POST['modify'])) {
   $result = True;
@@ -130,7 +133,7 @@ if (isset($_POST['modify'])) {
     }
   }
   if ($result) {
-    $query .= " WHERE name = '".$user->name()."'";
+    $query .= " WHERE name = '".$edit_user->name()."'";
     $result = $db->execute($query);
     // TODO refactor
     if ($result) {
@@ -140,12 +143,12 @@ if (isset($_POST['modify'])) {
       }
       else {
         if ( isset( $_POST['email'] ) ) {
-          $user->setEmail($_POST['email']);
+          $edit_user->setEmail($_POST['email']);
         }
         if ( isset( $_POST['group'] ) ) {
-          $user->setGroup($_POST['group']);
+          $edit_user->setGroup($_POST['group']);
         }
-        $_SESSION['user'] = $user;
+        #$_SESSION['user'] = $user;
         $message = "            <p class=\"warning\">Account details successfully modified</p>";
         header("Location: " . $_SESSION['referer']); exit();
       }
@@ -178,7 +181,7 @@ if (isset($_SESSION['account_user']) || $_SESSION['user']->name() != "admin") {
 
 ?>
                 <label for="email">E-mail address: </label>
-                <input name="email" id="email" type="text" value="<?php echo $user->email() ?>" />
+                <input name="email" id="email" type="text" value="<?php echo $edit_user->email() ?>" />
                 <br />
 <?php
 
@@ -190,7 +193,7 @@ if (isset($_SESSION['account_user'])/* && $_SESSION['user']->name() == "admin"*/
 
 ?>
                 <label for="group">Research group: </label>
-                <input name="group" id="group" type="text" value="<?php echo $user->group() ?>" />
+                <input name="group" id="group" type="text" value="<?php echo $edit_user->userGroup() ?>" />
                 <br />
 <?php
 

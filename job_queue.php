@@ -97,13 +97,6 @@ include("header.inc.php");
     <div id="nav">
         <ul>
             <li><a href="select_images.php?exited=exited">exit</a></li>
-	    <?php
-		if ($_SESSION['user']->name() != "admin") {
-		?>
-			<li><a href="result_images.php">results</a></li>
-		<?php
-		}
-	    ?>
             <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpQueue')">help</a></li>
         </ul>
     </div>
@@ -160,7 +153,7 @@ echo "                    ".date("l d F Y, H:i:s")."\n";
                         <td class="nr">nr</td>
                         <td class="owner">owner</td>
                         <td class="files">file(s)</td>
-                        <td class="creted">created</td>
+                        <td class="created">created</td>
                         <td class="status">status</td>
                         <td class="started">started</td>
                         <td class="pid">pid</td>
@@ -195,7 +188,8 @@ else {
 <?php
 
     if ($row['username'] == $_SESSION['user']->name() || $_SESSION['user']->name() == "admin") {
-      if ($row['status'] != "started" && $row['status'] != "broken") {
+      //if ($row['status'] != "started" && $row['status'] != "broken") {
+      if($row['status'] != "broken") {
 
 ?>
                             <td><input name="jobs_to_kill[]" type="checkbox" value="<?php echo $row['id'] ?>" /></td>

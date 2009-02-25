@@ -57,7 +57,7 @@ require_once("./inc/Fileserver.inc");
 session_start();
 
 if (isset($_GET['exited'])) {
-  $_SESSION['user']->logout();
+  if ( isset( $_SESSION['user'] ) ) $_SESSION['user']->logout();
   session_unset();
   session_destroy();
   header("Location: " . "login.php"); exit();
@@ -72,7 +72,7 @@ if (isset($_SESSION['jobcreated'])) {
 }
 
 if (!isset($_SESSION['fileserver'])) {
-  session_register("fileserver");
+  # session_register("fileserver");
   $name = $_SESSION['user']->name();
   $_SESSION['fileserver'] = new Fileserver($name);
 }
@@ -109,6 +109,65 @@ else if (isset($_POST['OK'])) {
 
 $script = "settings.js";
 
+// display only relevant files
+if ($fileFormat->value() == "ics") {
+    $files = $_SESSION['fileserver']->files("ics");
+}
+else if ($fileFormat->value() == "tiff" || $fileFormat->value() == "tiff-single") {
+  $files = $_SESSION['fileserver']->tiffFiles();
+}
+else if ($fileFormat->value() == "tiff-series") {
+  $files = $_SESSION['fileserver']->tiffSeriesFiles();
+}
+else if ($fileFormat->value() == "tiff-leica") {
+  $files = $_SESSION['fileserver']->tiffLeicaFiles();
+}
+else if ($fileFormat->value() == "stk") {
+  //if ($geometry->value() == "XY - time" || $geometry->value() == "XYZ - time") {
+    if ($_SESSION['setting']->isTimeSeries()) {
+      $files = $_SESSION['fileserver']->stkSeriesFiles();
+    }
+    else {
+      $files = $_SESSION['fileserver']->stkFiles();
+    }
+  //}
+  //else {
+  //  $files = $_SESSION['fileserver']->files("stk");
+  //}
+}
+else {
+  $files = $_SESSION['fileserver']->files();
+}
+
+if ($files != null) {
+
+    $generatedScript = "
+function imageAction (list) {
+    var n = list.selectedIndex;    // Which menu item is selected
+    var val = list[n].value;
+
+    switch ( val )
+    {
+";
+
+    foreach ($files as $key => $file) {
+        $generatedScript .= "
+        case \"$file\" :
+            ". $_SESSION['fileserver']->getImageAction($file,
+                $key, "src", "preview", 0, 1). "
+            break;
+            ";
+    }
+
+
+    $generatedScript .= "
+    }
+}
+";
+}
+
+
+
 include("header.inc.php");
 
 ?>
@@ -128,6 +187,7 @@ if ($enableUserAdmin) {
 
 ?>
             <li><a href="job_queue.php">queue</a></li>
+            <li><a href="file_management.php">files</a></li>
             <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpSelectImages')">help</a></li>
         </ul>
     </div>
@@ -135,6 +195,16 @@ if ($enableUserAdmin) {
     <div id="content">
     
         <h3>Step 3 - Select Images</h3>
+        <?php 
+        #print "<pre>"; 
+        #print_r($_SESSION['setting']->EmissionWavelength);
+        #print_r($_SESSION['setting']->CCDCaptorSizeX);
+        #print_r($_SESSION['setting']->ZStepSize);
+        
+        # print_r($_SESSION['setting']); 
+        
+        #print "</pre>"; 
+        ?>
         
         <form method="post" action="" id="select">
         
@@ -143,33 +213,6 @@ if ($enableUserAdmin) {
                 <div id="userfiles">
 <?php
 
-// display only relevant files
-if ($fileFormat->value() == "dv") {
-    $files = $_SESSION['fileserver']->files("dv");
-}
-if ($fileFormat->value() == "ics") {
-    $files = $_SESSION['fileserver']->files("ics");
-}
-else if ($fileFormat->value() == "tiff" || $fileFormat->value() == "tiff-single") {
-  $files = $_SESSION['fileserver']->tiffFiles();
-}
-else if ($fileFormat->value() == "tiff-series") {
-  $files = $_SESSION['fileserver']->tiffSeriesFiles();
-}
-else if ($fileFormat->value() == "tiff-leica") {
-  $files = $_SESSION['fileserver']->tiffLeicaFiles();
-}
-else if ($fileFormat->value() == "stk") {
-  //if ($geometry->value() == "XY - time" || $geometry->value() == "XYZ - time") {
-    $files = $_SESSION['fileserver']->stkSeriesFiles();
-  //}
-  //else {
-  //  $files = $_SESSION['fileserver']->files("stk");
-  //}
-}
-else {
-  $files = $_SESSION['fileserver']->files();
-}
 $flag = "";
 if ($files == null) {
     $flag = " disabled=\"disabled\"";
@@ -178,12 +221,15 @@ if ($files == null) {
 }
 
 ?>
-                    <select name="userfiles[]" size="10" multiple="multiple"<?php echo $flag ?>>
+                    <select onclick="javascript:imageAction(this)" name="userfiles[]" size="10" multiple="multiple"<?php echo $flag ?>>
 <?php
-
+$keyArr = array();
 if ($files != null) {
-  foreach ($files as $file) {
-    echo "                        <option>$file</option>\n";
+  foreach ($files as $key => $filename) {
+          echo $_SESSION['fileserver']->getImageOptionLine($filename, $key, 
+                                                      "src","preview", 0, 1) ;
+          $keyArr[$filename] = $key;
+
   }
 }
 else echo "                        <option>&nbsp;</option>\n";
@@ -208,12 +254,14 @@ $flag = "";
 if ($files == null) $flag = " disabled=\"disabled\"";
 
 ?>
-                    <select name="selectedfiles[]" size="5" multiple="multiple"<?php echo $flag ?>>
+                    <select onclick="javascript:imageAction(this)" name="selectedfiles[]" size="5" multiple="multiple"<?php echo $flag ?>>
 <?php
 
 if ($files != null) {
-  foreach ($files as $file) {
-    echo "                        <option>$file</option>\n";
+  foreach ($files as $filename) {
+          $key = $keyArr[$filename];
+          echo $_SESSION['fileserver']->getImageOptionLine($filename,
+                                             $key, "src", "preview", 0, 1) ;
   }
 }
 else echo "                        <option>&nbsp;</option>\n";
@@ -231,14 +279,15 @@ else echo "                        <option>&nbsp;</option>\n";
         </form>
         
     </div> <!-- content -->
-    
+            
     <div id="stuff">
-    
         <div id="info">
+
+        <div id="controls">
         
             <input type="button" value="" class="icon previous" onclick="document.location.href='select_task_settings.php'" />
             <input type="submit" value="" class="icon next" onclick="process()" />
-            
+        </div>    
             <p>
                 Select the image files in the upper file list. You can use SHIFT- 
 		and CTRL-click to select multiple files. Use the down-arrow to

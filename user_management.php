@@ -55,7 +55,6 @@ require_once("./inc/User.inc");
 require_once("./inc/Database.inc");
 require_once("./inc/hrm_config.inc");
 require_once("./inc/Mail.inc");
-require_once("./inc/Util.inc");
 
 global $hrm_url;
 global $email_sender;
@@ -65,6 +64,7 @@ global $image_folder;
 global $image_source;
 
 session_start();
+
 
 $db = new DatabaseConnection();
 
@@ -87,7 +87,7 @@ if (isset($_GET['seed'])) {
     $admin->name = "admin";
     if (isset($_SERVER['REMOTE_ADDR'])) $admin->ip = $_SERVER["REMOTE_ADDR"];
     else $admin->ip = $HTTP_SERVER_VARS["REMOTE_ADDR"];
-    session_register("user");
+    # session_register("user");
     $_SESSION['user'] = $admin;
   }
 }
@@ -112,7 +112,7 @@ if (isset($_SESSION['account_user']) && gettype($_SESSION['account_user']) != "o
 }
 
 if (!isset($_SESSION['index'])) {
-  session_register("index");
+  # session_register("index");
   $_SESSION['index'] = "";
 }
 else if (isset($_GET['index'])) {
@@ -184,14 +184,14 @@ else if (isset($_POST['annihilate']) && $_POST['annihilate'] == "yes") {
   }
 }
 else if (isset($_POST['edit'])) {
-  $account_user = new User();
-  $account_user->setName($_POST['username']);
-  $account_user->setEmail($_POST['email']);
-  $account_user->setGroup($_POST['group']);
-  session_register("account_user");
-  $_SESSION['account_user'] = $account_user;
+  $_SESSION['account_user'] = new User();
+  $_SESSION['account_user']->setName($_POST['username']);
+  $_SESSION['account_user']->setEmail($_POST['email']);
+  $_SESSION['account_user']->setGroup($_POST['group']);
+  # session_register("account_user");
+  # $_SESSION['account_user'] = $account_user;
   if (isset($c) || isset($_GET['c']) || isset($_POST['c'])) {
-    session_register("c");
+    # session_register("c");
     if (isset($_GET['c'])) $_SESSION['c'] = $_GET['c'];
     else if (isset($_POST['c'])) $_SESSION['c'] = $_POST['c'];
   }
@@ -231,6 +231,8 @@ include("header.inc.php");
             <li><a href="select_task_settings.php" onclick="clean()">tasks</a></li>
             <li><a href="account.php">account</a></li>
             <li><a href="job_queue.php" onclick="clean()">queue</a></li>
+            <li><a href="file_management.php">files</a></li>
+            <li><a href="update.php">update</a></li>
             <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpUserManagement')">help</a></li>
         </ul>
     </div>
@@ -239,11 +241,6 @@ include("header.inc.php");
     
         <h3>User Management</h3>
         
-        <form method="post" action="">
-            <div id="registeruser">
-                <fieldset>
-                    <legend>registrations</legend>
-                    <table>
 <?php
 
 $rows = $db->query("SELECT * FROM username");
@@ -256,9 +253,13 @@ foreach ($rows as $row) {
   $creation_date = date("j M Y, G:i", strtotime($row["creation_date"]));
   $status = $row["status"];
   if ($status != "a" && $status != "d") {
-    if ($i > 0) echo "                    <tr><td colspan=\"3\" class=\"hr\">&nbsp;</td></tr>\n";
-
+    
 ?>
+        <form method="post" action="">
+            <div >
+                <fieldset>
+                    <legend>pending request</legend>
+                    <table>
                         <tr class="upline">
                             <td class="name"><span class="title"><?php echo $name ?></span></td>
                             <td class="group"><?php echo $group ?></td>
@@ -276,6 +277,11 @@ foreach ($rows as $row) {
                                 </div>
                             </td>
                         </tr>
+                    </table>
+                </fieldset>
+            </div>
+        </form>
+        <br />
 <?php
 
     $i++;
@@ -285,17 +291,13 @@ foreach ($rows as $row) {
 if (!$i) {
 
 ?>
-                        <tr><td>no pending requests</td></tr>
+        <p>There are no pending requests.</p>
 <?php
 
 }
 
 ?>
-                    </table>
-                </fieldset>
-            </div>
-        </form>
-        
+
         <div id="listusers">
             <fieldset>
 <?php

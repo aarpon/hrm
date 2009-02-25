@@ -67,6 +67,8 @@ if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
 }
 $message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
 
+$parameter = $_SESSION['setting']->parameter("NumericalAperture");
+$na = $parameter->value();
 $names = $_SESSION['setting']->capturingParameterNames();
 foreach ($names as $name) {
   if (isset($_POST[$name])) {
@@ -84,7 +86,7 @@ foreach ($names as $name) {
 // manage one pinhole radius per channel
 $pinholeParam = $_SESSION['setting']->parameter("PinholeSize");
 $pinhole = $pinholeParam->value();
-for ($i=1; $i <= $_SESSION['setting']->numberOfChannels(); $i++) {
+for ($i=0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
   $pinholeKey = "PinholeSize{$i}";
   if (isset($_POST[$pinholeKey])) {
     $pinhole[$i] = $_POST[$pinholeKey];
@@ -92,17 +94,19 @@ for ($i=1; $i <= $_SESSION['setting']->numberOfChannels(); $i++) {
 }
 // get rid of extra values in case the number of channels is changed
 if (is_array($pinhole)) {
-	$pinhole = array_slice($pinhole, 0, $_SESSION['setting']->numberOfChannels() + 1);
+	$pinhole = array_slice($pinhole, 0, $_SESSION['setting']->numberOfChannels() );
 }
 $pinholeParam->setValue($pinhole);
 $_SESSION['setting']->set($pinholeParam);
 // TODO refactor
 $_SESSION['setting']->setAdaptedParameters(False);
 
-if (isset($_POST["calculate"])) {
-  	header("Location: " . "calculate_pixel_size.php");
-  	exit();
-} 	
+// deal with the computation of theoretical pixel size from microscope parameters
+//if (isset($_POST["calculate"])) {
+//  	header("Location: " . "calculate_pixel_size.php");	// send a raw HTTP header
+//  	exit();
+//}
+
 if (count($_POST) > 0) {
   foreach ($names as $name) {
     // get rid of non relevant values
@@ -124,7 +128,43 @@ if (count($_POST) > 0) {
     $saved = $_SESSION['setting']->save();			
     $message = "            <p class=\"warning\">".$_SESSION['setting']->message()."</p>";
     if ($saved) {
-      header("Location: " . "select_parameter_settings.php"); exit();
+
+      // Depending on the selection of the PSF (theoretical) and on a possible
+      // refractive index mismatch (i.e. larger than 1%) between the sample 
+      // medium and the objective medium we might have to show an aberration
+      // correction page. Otherwise, we make sure to turn off the correction
+      // and proceed to the PSF selection page.
+      
+      // First check the selection of the PSF
+      $PSF = $_SESSION['setting']->parameter( 'PointSpreadFunction' )->value( );
+      if ($PSF == 'measured' ) {
+          $pageToGo = 'select_psf.php';
+          // Make sure to turn off the correction
+          $_SESSION['setting']->parameter( 'AberrationCorrectionNecessary' )->setValue( '0' );
+	  $_SESSION['setting']->parameter( 'PerformAberrationCorrection' )->setValue( '0' );
+          $_SESSION['setting']->save();
+      } else {
+        // Get the refractive indices
+        $sampleRI    = $_SESSION['setting']->parameter( 'SampleMedium' )->translatedValue( );
+        $objectiveRI = $_SESSION['setting']->parameter( 'ObjectiveType' )->translatedValue( );              
+
+        // Calculate the deviation
+        $deviation = abs( $sampleRI - $objectiveRI ) / $objectiveRI;
+              
+        // Do we need to go to the aberration correction page? We 
+        if ( $deviation < 0.01 ) {
+          $pageToGo = 'select_parameter_settings.php';
+          // Make sure to turn off the correction
+          $_SESSION['setting']->parameter( 'AberrationCorrectionNecessary' )->setValue( '0' );
+          $_SESSION['setting']->parameter( 'PerformAberrationCorrection' )->setValue( '0' );
+          $_SESSION['setting']->save();
+        } else {
+          $pageToGo = 'aberration_correction.php';
+          $_SESSION['setting']->parameter( 'AberrationCorrectionNecessary' )->setValue( '1' );
+          $_SESSION['setting']->save();
+        }
+      }
+      header("Location: " . $pageToGo ); exit();
     }
   }
 }
@@ -133,6 +173,8 @@ if (count($_POST) > 0) {
 $script = "settings.js";
 
 include("header.inc.php");
+
+$nyquist = $_SESSION['setting']->calculateNyquistRate();
 
 ?>
 
@@ -145,7 +187,7 @@ include("header.inc.php");
     
     <div id="content">
     
-        <h3>Parameter Setting - Page 3</h3>
+        <h3>Optical parameters / 2</h3>
         
         <form method="post" action="capturing_parameter.php" id="select">
         
@@ -155,22 +197,33 @@ include("header.inc.php");
             
                 <legend>
                     <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=SampleSize')"><img src="images/help.png" alt="?" /></a>
-                    sample size
+                    voxel size
                 </legend>
 <?php
 
 $parameter = $_SESSION['setting']->parameter("CCDCaptorSizeX");
 $value = $parameter->value();
 // always ask for pixel size
-$textForCaptorSize = "pixel size (nm)";
+$textForCaptorSize = "xy pixel size (nm)";
 
 ?>
                 <ul>
                 
                     <li>
                         <?php echo $textForCaptorSize ?>:
-                        <input name="CCDCaptorSizeX" type="text" size="5" value="<?php echo $value ?>" />
-                        <input name="calculate" type="submit" value="calculate" style="width:110px; margin: 2px;" />
+                        <input name="CCDCaptorSizeX" type="text" size="5" value="<?php echo $value ?>" /> <br/>
+			<?php
+                  // The calculation of pixel size from CCD chip makes sense only for widefield microscopes
+                  $microscopeType  = $_SESSION['setting']->parameter('MicroscopeType' );
+                  $microscopeValue = $microscopeType->value( );
+                  if ( $microscopeValue == 'widefield' ) {
+            ?>
+            <a href="calculate_pixel_size.php">calculate</a> from CCD pixel size<br/>
+                        <!-- <input name="calculate" type="submit" value="calculate" style="width:110px; margin: 2px;" /> -->
+            <br/>
+            <?php
+                  }
+            ?>
 <?php
 
 // display adaption info
@@ -222,12 +275,13 @@ if ($_SESSION['setting']->isThreeDimensional()) {
                 </ul>
                 
                 <a href="javascript:openWindow('http://support.svi.nl/wiki/NyquistCalculator')">
-                    Nyquist rate and PSF calculator
+                    On-line Nyquist rate and PSF calculator
                     <img src="images/web.png" alt="external link" />
                 </a>
                 
             </fieldset>
             
+<!--	    
             <fieldset class="setting">
             
                 <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=PixelBinning')"><img src="images/help.png" alt="?" /></a>
@@ -236,23 +290,24 @@ if ($_SESSION['setting']->isThreeDimensional()) {
                 <select name="Binning" size="1">
 <?php
 
-$parameter = $_SESSION['setting']->parameter("Binning");
-foreach ($parameter->possibleValues() as $possibleValue) {
-  $flag = "";
-  if ($possibleValue == $parameter->value()) {
-    $flag = " selected=\"selected\"";
-  }
+//$parameter = $_SESSION['setting']->parameter("Binning");
+//foreach ($parameter->possibleValues() as $possibleValue) {
+//  $flag = "";
+//  if ($possibleValue == $parameter->value()) {
+//    $flag = " selected=\"selected\"";
+//  }
 ?>
-                    <option<?php echo $flag ?>><?php echo $possibleValue ?></option>
+                    <option<?php //echo $flag ?>><?php //echo $possibleValue ?></option>
 <?php
 
-}   
+//}   
 
 ?>
 
                 </select>
                 
             </fieldset>
+-->
             
 <?php
 
@@ -260,10 +315,10 @@ if ($_SESSION['setting']->isTimeSeries()) {
 
 ?>
             <fieldset class="setting">
-            
+           	<legend> 
                 <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=TimeSeries')"><img src="images/help.png" alt="?" /></a>
-                time interval (s):
-                
+                time interval
+                </legend> <p />Time interval (s):
 <?php
 
   $parameter = $_SESSION['setting']->parameter("TimeInterval");
@@ -285,26 +340,33 @@ if ($_SESSION['setting']->isMultiPointOrSinglePointConfocal()) {
 ?>
             <fieldset class="setting">
             
+              <legend>
                 <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=PinholeRadius')"><img src="images/help.png" alt="?" /></a>
-                pinhole radius (nm):
-                
+                pinhole radius
+	      </legend>
+		<p />back-projected pinhole radius (nm):
+            <?php
+              if ( $_SESSION['setting']->numberOfChannels() > 1 ) {
+              ?>  <p /> <?php
+            }
+            ?>
+<div class="multichannel">
 <?php
 
   // manage one pinhole radius per channel
-  for ($i = 1; $i <= $_SESSION['setting']->numberOfChannels(); $i++) {
+  for ($i = 0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
 
 ?>
-                <input name="PinholeSize<?php echo $i ?>" type="text" size="5" value="<?php if ($i < sizeof($pinhole)) echo $pinhole[$i] ?>" class="multichannelinput" />
+	<span class="nowrap">Ch<?php echo $i ?>:<span class="multichannel"><input name="PinholeSize<?php echo $i ?>" type="text" size="8" value="<?php if ($i < sizeof($pinhole)) echo $pinhole[$i] ?>" class="multichannelinput" /></span>&nbsp;</span>
 <?php
 
   }
 
-?>
+?></div>
                 <p />
                 
-                <a href="javascript:openWindow('http://support.svi.nl/wiki/BackprojectedPinholeCalculator')">
+                <a href="calculate_bp_pinhole.php?na=<?php echo $na;?>">
                     Backprojected pinhole calculator
-                    <img src="images/web.png" alt="external link" />
                 </a>
                 
             </fieldset>
@@ -320,16 +382,22 @@ if ($_SESSION['setting']->isNipkowDisk()) {
       
 ?>
             <fieldset class="setting">
-            
+              <legend>            
                 <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=PinholeSpacing')"><img src="images/help.png" alt="?" /></a>
-                pinhole spacing (micron):
-                
+                pinhole spacing
+	      </legend>
+ 		<p />backprojected pinhole spacing (micron):
 <?php
 
   $parameter = $_SESSION['setting']->parameter('PinholeSpacing');
 
 ?>
                 <input name="PinholeSpacing" type="text" size="5" value="<?php echo $parameter->value() ?>" />
+                <p />
+                
+                <a href="calculate_bp_pinhole.php?na=<?php echo $na;?>">
+                    Backprojected pinhole calculator
+                </a>
                 
             </fieldset>
 <?php
@@ -352,12 +420,28 @@ if ($_SESSION['setting']->isNipkowDisk()) {
             <input type="submit" value="" class="icon apply" onclick="process()" />
             
             <p>
-		This is the last step. Press <br />the 
+		This is the last step of the image settings edition. 
+            </p>
+            <p>Here you have to enter the voxel size as it was set during the
+            image acquisition. Remember that the closer the acquisition sampling 
+            is to the Nyquist <b>ideal sampling rate</b>, the better both the input
+            and the deconvolved images will be!</p>
+            <p>With current optical parameters, the ideal pixel size is
+            <span style="background-color:yellow"><?php echo $nyquist[0];?>
+            nm</span><?php
+             if ($_SESSION['setting']->isThreeDimensional() ) {
+                 echo " and the ideal z-step is <span style=\"background-color:yellow\">".
+                     $nyquist[1]." nm</span>";
+             }
+             ?>.</p>
+            <p>The Huygens Remote Manager will not try to stop you from running a deconvolution on
+            undersampled data (i.e. with a sampling rate much larger than the ideal), but do not expect meaningful results!</p>
+            <p>
+		Press the 
                 <img src="images/apply_help.png" alt="Apply" width="22" height="22" /> <b>apply</b>
                 button to save your parameter settings and to go back to the parameter settings
                 page.
             </p>
-            
         </div>
         
         <div id="message">

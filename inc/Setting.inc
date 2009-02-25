@@ -152,6 +152,21 @@ Class Setting {
 	}
 
 	//!---------------------------------------------------------
+	// @function    Setting::checkSampleMedium
+	// @desc        Check if the sample medium is defined
+	// @return      Bool
+	//!---------------------------------------------------------  
+	function checkSampleMedium() {
+		$parameter = $this->parameter('SampleMedium');
+		$value = $parameter->value( );
+		if ( empty( $value ) == true ) {
+			$this->message = "Please choose one of the preset sample media or specify a refractive index yourself!";
+			return False;
+		}
+		return True;
+	}
+
+	//!---------------------------------------------------------
 	// @function    Setting::checkNumericalValue
 	// @desc        Check if a numerical parameter has a valid value
 	// @param       name  String  The name of the parameter
@@ -191,17 +206,17 @@ Class Setting {
 	//!---------------------------------------------------------  
 	function checkNumericalValues($name, $label, $numberOfChannels) {
 		$parameter = $this->parameter($name);
+		$values = $parameter->internalValue();
+		if ($name == "BackgroundOffsetPercent" && ($values[0] == "auto" || $values[0] == "object"))
+			return True;
 		// TODO: check if this should be the normal behavior
 		if ($numberOfChannels < 2) {
 			$result = $this->checkNumericalValue($name, $label);
 			return $result;
 		}
-		$values = $parameter->internalValue();
-		if ($name == "BackgroundOffsetPercent" && ($values[1] == "auto" || $values[1] == "object"))
-			return True;
 		$result = True;
 		$theLabel = $label;
-		for ($i = 1; $i <= $numberOfChannels; $i++) {
+		for ($i = 0; $i < $numberOfChannels; $i++) {
 			$ok = $parameter->checkValue($values[$i]);
 			if (!$ok) {
 				$theLabel = $label . " for channel $i";
@@ -377,6 +392,17 @@ Class Setting {
 	//!---------------------------------------------------------        
 	function displayString() {
 		$result = '';
+		
+		// These parameters are important to properly display all the others
+		$numberOfChannels = $this->parameter( "NumberOfChannels" )->value( );
+		$PSF = $this->parameter( "PointSpreadFunction" )->value( );
+		$performAberrationCorrection = $this->parameter( "PerformAberrationCorrection" )->value( );
+		$aberrationCorrectionMode = $this->parameter( "AberrationCorrectionMode" )->value( );
+		$advancedCorrectionOptions = $this->parameter( "AdvancedCorrectionOptions" )->value( );
+		
+		// The relevant parameters for theoretical vs. measured PSF are
+		// displayed, making sure that the number of entries (e.g. for the
+		// wavelengths) reflect the user-defined number of channels
 		foreach ($this->parameter as $parameter) {
 			if ($this->isFixedGeometryFormat() && $parameter->name() == 'ImageGeometry')
 				continue;
@@ -388,16 +414,27 @@ Class Setting {
 				continue;
 			if ($parameter->name() == 'IsMultiChannel' || $parameter->name() == 'HasAdaptedValues' || $parameter->name() == 'PSF')
 				continue;
-			$result = $result . $parameter->displayString();
-			/*if ($parameter->name() == 'ExcitationWavelength' || $parameter->name() == 'EmissionWavelength' || $parameter->name() == 'PinholeSize') {
-			    // we want the array to start at index 0
-			    $oldValue = $parameter->value();
-			    $values = array();
-			    for ($i=1; $i<=$this->numberOfChannels(); $i++) {
-			        $values[] = $oldValue[$i];
-			    }
-			    $parameter->setValue($values);
-			}*/
+			if ( ( $parameter->name() == 'ExcitationWavelength' || $parameter->name() == 'EmissionWavelength' ) && $PSF == 'measured' )
+				continue;
+			if ($parameter->name() == 'SampleMedium' && $PSF == 'measured' )
+				continue;		
+			if ($parameter->name() == 'CMount' ) // This is obsolete
+				continue;		
+			if ($parameter->name() == 'TubeFactor' ) // This is obsolete
+				continue;		
+			if ($parameter->name() == 'CCDCaptorSizeX' && $PSF == 'measured' )
+				continue;		
+			if ($parameter->name() == 'CoverslipRelativePosition' && $PSF == 'measured' )
+				continue;
+			if ($parameter->name() == 'CoverslipRelativePosition' && $performAberrationCorrection == 0 )
+				continue;
+			if ($parameter->name() == 'AberrationCorrectionMode' && $performAberrationCorrection == 0 )
+				continue;
+			if ($parameter->name() == 'AdvancedCorrectionOptions' && !( $performAberrationCorrection == 1 && $aberrationCorrectionMode == 'advanced' ) )
+				continue;
+			if ($parameter->name() == 'PSFGenerationDepth' && !( $performAberrationCorrection == 1 && $aberrationCorrectionMode == 'advanced' && $advancedCorrectionOptions == 'user' ) )
+				continue;
+            $result = $result . $parameter->displayString( $numberOfChannels );
 		}
 		return $result;
 	}
@@ -441,7 +478,13 @@ Class ParameterSetting extends Setting {
 			'PinholeSize',
 			'PinholeSpacing',
 			'PointSpreadFunction',
-			'PSF'
+			'PSF',
+			'CoverslipRelativePosition',
+			'AberrationCorrectionNecessary',
+			'PerformAberrationCorrection',
+			'AberrationCorrectionMode',
+			'AdvancedCorrectionOptions',
+			'PSFGenerationDepth'
 		);
 		$db = new DatabaseConnection();
 		foreach ($parameterClasses as $class) {
@@ -452,6 +495,22 @@ Class ParameterSetting extends Setting {
 		}
 	}
 
+	//!---------------------------------------------------------
+	// @function    ParameterSetting::getAberractionCorrectionParameters()
+	// @desc        Returns the parameters needed for the aberration correction.
+	// @return      Array
+	//!---------------------------------------------------------    
+	function getAberractionCorrectionParameters() {
+		$parameters = array(
+			'AberrationCorrectionNecessary' => $this->parameter('AberrationCorrectionNecessary')->value(),
+			'PerformAberrationCorrection' => $this->parameter('PerformAberrationCorrection')->value(),
+			'CoverslipRelativePosition' => $this->parameter('CoverslipRelativePosition')->value(),
+			'AberrationCorrectionMode' => $this->parameter('AberrationCorrectionMode')->value(),
+			'AdvancedCorrectionOptions'=>$this->parameter('AdvancedCorrectionOptions')->value(),
+			'PSFGenerationDepth'=> $this->parameter('PSFGenerationDepth')->value() );
+		return $parameters;
+	}
+	
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::imageParameterNames()
 	// @desc        Answer the names of parameters concerning the image.
@@ -536,12 +595,14 @@ Class ParameterSetting extends Setting {
 		if (!$this->checkChoiceValue('ObjectiveType', 'objective type')) {
 			return False;
 		}
-		if (!$this->checkNumericalValue('CMount', 'cmount')) {
+		if (!$this->checkSampleMedium()) {
 			return False;
-		}
-		if (!$this->checkNumericalValue('TubeFactor', 'tube factor')) {
-			return False;
-		}
+		}		//if (!$this->checkNumericalValue('CMount', 'cmount')) {
+		//	return False;
+		//}
+		//if (!$this->checkNumericalValue('TubeFactor', 'tube factor')) {
+		//	return False;
+		//}
 		return True;
 	}
 	//!---------------------------------------------------------
@@ -587,6 +648,29 @@ Class ParameterSetting extends Setting {
 		return True;
 	}
 
+	//!---------------------------------------------------------
+	// @function    ParameterSetting::checkCalculateParameter()
+	// @desc        Check the parameters needed the compute the pixel size
+	//		from the microscope and camera parameters. Answer true
+	//              if they are valid. Answer false and set the message
+	//              otherwise.
+	// @return      Boolean
+	//!---------------------------------------------------------    
+	function checkCalculateParameter() {
+		$this->message = '';
+		if (!$this->checkNumericalValue('CCDCaptorSizeX', 'CCD element size')) {
+			$this->message = "Please enter a valid CCD element size!";
+			return False;
+		}
+		if (!$this->checkNumericalValue('CMount', 'cmount')) {
+			return False;
+		}
+		if (!$this->checkNumericalValue('TubeFactor', 'tube factor')) {
+			return False;
+		}
+		return True;
+	}
+
 	// manage parameter adaption
 	function hasAdaptedParameters() {
 		$parameter = $this->parameter('HasAdaptedValues');
@@ -617,7 +701,7 @@ Class ParameterSetting extends Setting {
 		$this->message = '';
 		$parameter = $this->parameter('PSF');
 		$value = $parameter->value();
-		for ($i = 1; $i <= $this->numberOfChannels(); $i++) {
+		for ($i = 0; $i < $this->numberOfChannels(); $i++) {
 			if ($value[$i] == NULL) {
 				$this->message = "Please select a PSF file for channel $i!";
 				return False;
@@ -653,7 +737,7 @@ Class ParameterSetting extends Setting {
 	//!---------------------------------------------------------    
 	function checkPinholeSize() {
 		$parameter = $this->parameter('PinholeSize');
-		for ($i = 1; $i <= $this->numberOfChannels(); $i++) {
+		for ($i = 0; $i < $this->numberOfChannels(); $i++) {
 			if (!$parameter->checkValue($parameter->value[$i])) {
 				$this->message = "Please enter a valid pinhole size for channel $i!";
 				return False;
@@ -672,23 +756,29 @@ Class ParameterSetting extends Setting {
 	//!---------------------------------------------------------    
 	function checkNumericalAperture() {
 		$result = True;
+		
 		$parameter = $this->parameter('NumericalAperture');
 		$numericalApertureInputString = $parameter->value();
 		$numericalAperture = (float) $parameter->value();
+		
 		$parameter = $this->parameter('ObjectiveType');
 		$lensRefractiveIndex = (float) $parameter->translatedValue();
+		
 		if ($numericalAperture > $lensRefractiveIndex) {
 			$this->message = "The numerical aperture cannot be larger than the lens refractive index which is $lensRefractiveIndex for the selected objective type. Please lower the numerical aperture!";
 			$result = False;
 		}
-		$parameter = $this->parameter('SampleMedium');
-		$mediumRefractiveIndex = (float) $parameter->translatedValue();
-		if ($numericalAperture > $mediumRefractiveIndex) {
-			$this->message = "The numerical aperture cannot be larger than the medium refractive index which is $mediumRefractiveIndex for the selected medium. Please lower the numerical aperture!";
-			$result = False;
-		}
-		if ($numericalAperture < 0.2) {
-			$this->message = "The numerical aperture must not be smaller than 0.2!";
+		// The following check (numericalAperture>mediumRefractiveIndex) was
+		// removed in HuygensPro, and we therefore de-activate it in the HRM
+		// as well
+		//$parameter = $this->parameter('SampleMedium');
+		//$mediumRefractiveIndex = (float) $parameter->translatedValue();
+		//if ($numericalAperture > $mediumRefractiveIndex) {
+		//	$this->message = "The numerical aperture cannot be larger than the medium refractive index which is $mediumRefractiveIndex for the selected medium. Please lower the numerical aperture!";
+		//	$result = False;
+		//}
+		if ($numericalAperture < 0.1) {
+			$this->message = "The numerical aperture must not be smaller than 0.1!";
 			$result = False;
 		}
 		if (!is_numeric($numericalApertureInputString)) {
@@ -720,9 +810,9 @@ Class ParameterSetting extends Setting {
 			$parameter = $this->parameter('ExcitationWavelength');
 		}
 		$value = $parameter->value();
-		$mostRestrictiveWavelengthChannel = 1;
-		$mostRestrictiveWavelength = $value[1];
-		for ($i = 2; $i <= $this->numberOfChannels(); $i++) {
+		$mostRestrictiveWavelengthChannel = 0;
+		$mostRestrictiveWavelength = $value[0];
+		for ($i = 1; $i < $this->numberOfChannels(); $i++) {
 			if ($value[$i] < $mostRestrictiveWavelength) {
 				$mostRestrictiveWavelengthChannel = $i;
 				$mostRestrictiveWavelength = $value[$i];
@@ -764,7 +854,7 @@ Class ParameterSetting extends Setting {
 		$na = (float) $parameter->value();
 		$parameter = $this->parameter('ExcitationWavelength');
 		$value = $parameter->value();
-		$lambda = $value[1];
+		$lambda = $value[0];
 		$idealDeltaX = $lambda / (4 * $na);
 		$idealDeltaX = $idealDeltaX / 2;
 		if ((0.5 * $idealDeltaX <= $deltaX) && ($deltaX <= 1.2 * $idealDeltaX)) {
@@ -826,9 +916,9 @@ Class ParameterSetting extends Setting {
 	        $parameter = $this->parameter('ExcitationWavelength');
 	    } 
 	    $value = $parameter->value();
-	    $mostRestrictiveWavelengthChannel = 1;
-	    $mostRestrictiveWavelength = $value[1];
-	    for ($i=2; $i<=$this->numberOfChannels(); $i++) {
+	    $mostRestrictiveWavelengthChannel = 0;
+	    $mostRestrictiveWavelength = $value[0];
+	    for ($i=1; $i< $this->numberOfChannels(); $i++) {
 	        if ($value[$i] < $mostRestrictiveWavelength) {
 	            $mostRestrictiveWavelengthChannel = $i;
 	            $mostRestrictiveWavelength = $value[$i];
@@ -882,6 +972,57 @@ Class ParameterSetting extends Setting {
 	    return $result;     
 	}*/
 
+        //!---------------------------------------------------------
+        // @function    ParameterSetting::calculateNyquistRate
+        // @desc        Ask hucore for the ideal (Nyquist) sampling rate
+        //              for the current conditions. 
+        // @return      An array with the XY and Z ideal sampling.
+        //!---------------------------------------------------------    
+        function calculateNyquistRate() {
+            // Use the most restrictive wavelength to compute the adaption
+            $parameter = $this->parameter('EmissionWavelength');
+            if ( $this->isTwoPhoton()
+                || $this->isMultiPointOrSinglePointConfocal()) {
+                $parameter = $this->parameter('ExcitationWavelength');
+            }
+            $value = $parameter->value();
+            $mostRestrictiveChannel = 0;
+            $mostRestrictiveWavelength = $value[0];
+            for ($i = 1; $i < $this->numberOfChannels(); $i++) {
+                if ($value[$i] < $mostRestrictiveWavelength) {
+                    $mostRestrictiveChannel = $i;
+                    $mostRestrictiveWavelength = $value[$i];
+                }
+            }
+            $parameter = $this->parameter('EmissionWavelength');
+            $value = $parameter->value();
+            $em = $value[$mostRestrictiveChannel];
+            $parameter = $this->parameter('ExcitationWavelength');
+            $value = $parameter->value();
+            $ex = $value[$mostRestrictiveChannel];
+
+            $parameter = $this->parameter('NumericalAperture');
+            $na = (float) $parameter->value();
+
+            $parameter = $this->parameter('MicroscopeType');
+            $micr = $parameter->translatedValue();
+
+            $parameter = $this->parameter('ObjectiveType');
+            $ril = $parameter->translatedValue();
+
+            if ($this->isTwoPhoton()) {
+                $pcnt = 2;
+            } else {
+                $pcnt = 1;
+            }
+            // Only micr, na, em, ex and pcnt are necessary to calculate it.
+
+            $opt = "-micr $micr -na $na -em $em -ex $ex -pcnt $pcnt -ril $ril";
+            $ideal = askHuCore ("calculateNyquistRate", $opt);
+            // echo "NYQUIST: $ideal";
+            return explode(' ', $ideal);
+        }
+
 	// sample size adaption for all microscopes
 	// TODO don't answer false if data is over sampled
 	// TODO refactor
@@ -899,66 +1040,15 @@ Class ParameterSetting extends Setting {
 			$parameter = $this->parameter('ExcitationWavelength');
 		}
 		$value = $parameter->value();
-		$mostRestrictiveWavelengthChannel = 1;
-		$mostRestrictiveWavelength = $value[1];
-		for ($i = 2; $i <= $this->numberOfChannels(); $i++) {
+		$mostRestrictiveWavelengthChannel = 0;
+		$mostRestrictiveWavelength = $value[0];
+		for ($i = 1; $i < $this->numberOfChannels(); $i++) {
 			if ($value[$i] < $mostRestrictiveWavelength) {
 				$mostRestrictiveWavelengthChannel = $i;
 				$mostRestrictiveWavelength = $value[$i];
 			}
 		}
 		// Check if data is under sampled and if parameter values can be adapted
-		/*if ($this->isWidefield() || $this->isTwoPhoton()) {
-		    // In the case of widefield and two photon miscroscopes, the NA is adapted 
-		    
-		    // 1) check if undersampled or oversampled
-		    // sample size
-		    $parameter = $this->parameter('CCDCaptorSizeX');    
-		    $deltaX = (float)$parameter->value();
-		    // ideal sample size
-		    $lambda = $mostRestrictiveWavelength;
-		    $parameter = $this->parameter('NumericalAperture');    
-		    $na = (float)$parameter->value();
-		    $idealDeltaX = $lambda / (4 * $na);
-		    // sampling factor
-		    $factor = $idealDeltaX / $deltaX;
-		    
-		    // 2) if undersampled, check if NA can be adapted
-		    if ($factor < 1) {
-		        $adapted_na = $this->adaptedNumericalApertureFor($mostRestrictiveWavelengthChannel);
-		        if ($adapted_na == null) {
-		            // a. if no, warn and request coherent values
-		            $result = False;
-		            $this->message = "The image is undersampled by a factor of $factor for channel $mostRestrictiveWavelengthChannel";
-		        }
-		        else  if ($adapted_na != $na) {
-		            // b. if yes, warn and ask for confirmation
-		            // TODO refactor here
-		            $this->message = "<p>WARNING: numerical aperture will be adapted</p>\n";
-		            $this->message = $this->message."<p>NA $adapted_na instead of $na</p>\n";
-		            $this->message = $this->message."<p>Minimal sampling distance according to the Nyquist rate is ".floor($this->adaptedLateralSampleSizeFor($mostRestrictiveWavelengthChannel))." (in the lateral direction)";
-		            if ($this->isThreeDimensional()) {
-		               $this->message = $this->message." and ".floor($this->idealSampleSizeZFor($mostRestrictiveWavelengthChannel))." (in the axial direction)";
-		            }
-		            $this->message = $this->message.".</p>\n";
-		            $this->message = $this->message."<p>If you still want to use these parameter settings, press the OK button again.</p>\n";
-		            $this->setAdaptedParameters(True);
-		            $result = False;
-		        }
-		    }
-		    
-		    // 3) else if oversampled by factor > 1.5, warn and ask for confirmation
-		    else if ($factor >= 1.5) {
-		        $result = False;
-		        $this->message = "The image is oversampled by a factor of $factor for channel $mostRestrictiveWavelengthChannel";
-		    }
-		    
-		    // 4) else accept happily
-		    else {
-		        $result = True;
-		    }
-		}
-		else if ($this->isMultiPointOrSinglePointConfocal()) {*/
 		// In the case of confocal microscopes, the sample size is adapted
 
 		// 1) check if undersampled or oversampled
@@ -1006,18 +1096,17 @@ Class ParameterSetting extends Setting {
 		}
 
 		// 3) else if oversampled by factor > 1.5, warn and ask for confirmation
-		else
-			if ($factor >= 1.5 || $z_factor > 1.5) {
-				$this->message = "";
-				if ($factor >= 1.5) {
-					$this->message .= "The image is oversampled by a factor of " . number_format(round($factor, 2), 2, ',', '') . " in lateral direction";
-				}
-				if ($z_factor > 1.5) {
-					$this->message .= "\nThe image is oversampled by a factor of " . number_format(round($z_factor, 2), 2, ',', '') . " in axial direction";
-				}
-				$this->message .= "\nIf you still want to use these parameter settings, press the OK button again.\n";
-				$result = False;
+		else if ($factor >= 1.5 || $z_factor > 1.5) {
+			$this->message = "";
+			if ($factor >= 1.5) {
+				$this->message .= "The image is oversampled by a factor of " . number_format(round($factor, 2), 2, ',', '') . " in lateral direction";
 			}
+			if ($z_factor > 1.5) {
+				$this->message .= "\nThe image is oversampled by a factor of " . number_format(round($z_factor, 2), 2, ',', '') . " in axial direction";
+			}
+			$this->message .= "\nIf you still want to use these parameter settings, press the OK button again.\n";
+			$result = False;
+		}
 
 		// 4) else accept happily
 		else {
@@ -1054,7 +1143,7 @@ Class ParameterSetting extends Setting {
 		$parameterName = $name . 'Wavelength';
 		$label = strtolower($name);
 		$parameter = $this->parameter($parameterName);
-		for ($i = 1; $i <= $this->numberOfChannels(); $i++) {
+		for ($i = 0; $i < $this->numberOfChannels(); $i++) {
 			if (!$parameter->checkValue($parameter->value[$i])) {
 				$this->message = "Please enter a valid $label wavelength for channel $i!";
 				return False;
@@ -1140,7 +1229,7 @@ Class ParameterSetting extends Setting {
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::checkNumberOfChannels()
 	// @desc        Check the number of channels. Must be between 
-	//              1 and 4.
+	//              1 to 5.
 	// @return      Boolean
 	//!---------------------------------------------------------    
 	function checkNumberOfChannels() {
@@ -1476,14 +1565,19 @@ Class ParameterSetting extends Setting {
 	//              entered. 
 	// @return      number
 	//!---------------------------------------------------------          
+
+    // WARNING: the sampling sizes is a property of the image, not something
+    // taht can be adapted after the acquisition!!! It makes no sense to adapt
+    // the samplign to the Nyquist rate. What must be done is to ACQUIRE the
+    // image with the Nyquist rate, but never describe it with fake parameters!
 	function sampleSize($size) {
 		$result = $size;
 		//if ($this->isMultiPointOrSinglePointConfocal()) {
 		// Adapt sample size if necessary according to the nyquist criterium
 		//    $result = $this->sampleSizeForConfocal($size);
 		//}
-		if ($this->hasAdaptedParameters())
-			$result = $this->adaptedLateralSampleSizeFor($size);
+		// if ($this->hasAdaptedParameters() && 1 == 0 )
+		//	$result = $this->adaptedLateralSampleSizeFor($size);
 		return $result;
 	}
 
@@ -1594,9 +1688,9 @@ Class ParameterSetting extends Setting {
 			$parameter = $this->parameter('ExcitationWavelength');
 		}
 		$value = $parameter->value();
-		$mostRestrictiveWavelengthChannel = 1;
-		$mostRestrictiveWavelength = $value[1];
-		for ($i = 2; $i <= $this->numberOfChannels(); $i++) {
+		$mostRestrictiveWavelengthChannel = 0;
+		$mostRestrictiveWavelength = $value[0];
+		for ($i = 1; $i < $this->numberOfChannels(); $i++) {
 			if ($value[$i] < $mostRestrictiveWavelength) {
 				$mostRestrictiveWavelengthChannel = $i;
 				$mostRestrictiveWavelength = $value[$i];
@@ -1654,7 +1748,7 @@ Class TaskSetting extends Setting {
 	function TaskSetting() {
 		$this->Setting();
 		$parameterClasses = array (
-			'StyleOfProcessing',
+			'StyleOfProcessing',	// step processing or not
 			'RemoveNoise',
 			'RemoveNoiseEffectiveness',
 			'RemoveBackground',
@@ -1663,7 +1757,7 @@ Class TaskSetting extends Setting {
 			'SignalNoiseRatio',
 			'SignalNoiseRatioUseRange',
 			'SignalNoiseRatioRange',
-			'BackgroundOffsetPercent',
+			'BackgroundOffsetPercent',	// intensity value(s) to be remove from each channel (background mode: remove constant value) 
 			'BackgroundOffsetUseRange',
 			'BackgroundOffsetRange',
 			'NumberOfIterations',
@@ -1671,14 +1765,16 @@ Class TaskSetting extends Setting {
 			'NumberOfIterationsRange',
 			'OutputFileFormat',
 			'MultiChannelOutput',
-			'QualityChangeStoppingCriterion'
+			'QualityChangeStoppingCriterion',
+			'DeconvolutionAlgorithm'
 		);
 		$db = new DatabaseConnection();
 		foreach ($parameterClasses as $class) {
 			$param = new $class;
 			$name = $param->name();
 			$param->setupAllowedValues($db);
-			$this->parameter[$name] = $param;
+			// definition of the associative array that contains all the pairs task parametr name / task parameter value
+			$this->parameter[$name] = $param;	// parameter is a member of the class 'Setting'
 			$this->numberOfChannels = NULL;
 		}
 	}
@@ -1719,8 +1815,11 @@ Class TaskSetting extends Setting {
 	// @return      Boolean
 	//!---------------------------------------------------------
 	function isStepCombinedProcessing() {
-		$parameter = $this->parameter('StyleOfProcessing');
-		return $parameter->value() == 'step combined';
+		return false;
+		// TODO This is obsolete code that should be removed!!
+		
+		//$parameter = $this->parameter('StyleOfProcessing');
+		//return $parameter->value() == 'step combined';
 	}
 
 	//!---------------------------------------------------------
@@ -1760,13 +1859,45 @@ Class TaskSetting extends Setting {
 	// @return      Boolean
 	//!---------------------------------------------------------    
 	function checkSignalNoiseRatio() {
-		$parameter = $this->parameter('SignalNoiseRatio');
-		for ($i = 1; $i <= $this->numberOfChannels(); $i++) {
-			if (!$parameter->checkValue($parameter->value[$i])) {
-				$this->message = "Please enter a valid signal/noise ratio for channel " . $i . "! The value must be between 0 and 100.";
-				return False;
+		$parameter = $this->parameter('SignalNoiseRatioUseRange');
+		if ($parameter->value() == 'True') {
+			$parameter = $this->parameter('SignalNoiseRatioRange');
+            $range = count(array_filter($parameter->value[0]));
+			for ($i = 0; $i < $this->numberOfChannels(); $i++) {
+				$val = $parameter->value[$i];
+                if ($range != count(array_filter($val))) {
+                    $this->message = "Please enter the same number of values for all channels!";
+                    return False;
+                }
+
+				if ($val[0] == NULL) {
+					$this->message = "Please enter a valid signal/noise ratio for channel " . $i . "! The value must be larger than 0.";
+					return False;
+				}
+				
+				/*for ($j = 0; $j < count($val); $j++) {
+					if (!$parameter->checkValue($val[$j])) {
+						$this->message = "Please enter a valid signal/noise ratio for channel " . $i . "! The value must be larger than 0.";
+						return False;
+					}
+					else {
+						$this->message .= " channel " . $i . " value " . $j . " OK";
+					}
+				}*/
+				
+			}
+			
+		}
+		else {
+			$parameter = $this->parameter('SignalNoiseRatio');
+			for ($i = 0; $i < $this->numberOfChannels(); $i++) {
+				if (!$parameter->checkValue($parameter->value[$i])) {
+					$this->message = "Please enter a valid signal/noise ratio for channel " . $i . "! The value must be larger than 0.";
+					return False;
+				}
 			}
 		}
+		
 		return True;
 	}
 
@@ -1798,17 +1929,17 @@ Class TaskSetting extends Setting {
 		$parameter = $this->parameter('FullRestoration');
 		if ($parameter->value() == 'True') {
 			$numberOfOperations++;
-			$parameter = $this->parameter('SignalNoiseRatioUseRange');
+			/*$parameter = $this->parameter('SignalNoiseRatioUseRange');
 			if ($parameter->value() == 'True') {
 				if (!$this->checkRange('SignalNoiseRatioRange', 'signal/noise ratio range')) {
 					return False;
 				}
-			} else {
+			} else {*/
 				if (!$this->checkSignalNoiseRatio() /*!$this->checkNumericalValue('SignalNoiseRatio', 'signal/noise ratio')*/
 					) {
 					return False;
 				}
-			}
+			//}
 			$parameter = $this->parameter('BackgroundOffsetUseRange');
 			if ($parameter->value() == 'True') {
 				if (!$this->checkRange('BackgroundOffsetRange', 'background offset range')) {
@@ -1857,10 +1988,11 @@ Class TaskSetting extends Setting {
 		$originalValues = $param->value();
 		$values = $param->value();
 		$result = True;
-		if ($values[1] == NULL || $values[2] == NULL || $values[1] == '' || $values[2] = '') {
+		/* normally useless
+		if ($values[0] == NULL || $values[1] == NULL || $values[0] == '' || $values[1] = '') {
 			$this->message = "Please enter at least two values for the $originalLabel, or don't use range.";
 			return False;
-		}
+		}*/
 		$index = 0;
 		foreach ($originalValues as $value) {
 			$label = $originalLabel . " value $index";
@@ -1922,8 +2054,9 @@ Class TaskSetting extends Setting {
 	//              task settings parameters.
 	// @return      Void
 	//!---------------------------------------------------------        
-	function displayString() {
+	function displayString( $numberOfChannels = 0 ) {	// return the string that will be attach to the success notification message 
 		$result = '';
+        $algorithm = $this->parameter('DeconvolutionAlgorithm')->value();
 		$parameter = $this->parameter('SignalNoiseRatioUseRange');
 		$rangeUsedForSignalNoiseRatio = ($parameter->value() == 'True');
 		$parameter = $this->parameter('BackgroundOffsetUseRange');
@@ -1937,7 +2070,11 @@ Class TaskSetting extends Setting {
 		$parameter = $this->parameter('FullRestoration');
 		$fullRestoration = ($parameter->value() == 'True');
 		foreach ($this->parameter as $parameter) {
-			if ($parameter->name() == 'SignalNoiseRatio' && $rangeUsedForSignalNoiseRatio) {
+			if ($parameter->name() == 'StyleOfProcessing' ) {
+				// There is only one style of processing
+				continue;
+			}
+			if ($parameter->name() == 'SignalNoiseRatio' && $rangeUsedForSignalNoiseRatio) {	
 				continue;
 			}
 			if ($parameter->name() == 'SignalNoiseRatioRange' && !$rangeUsedForSignalNoiseRatio) {
@@ -1962,7 +2099,6 @@ Class TaskSetting extends Setting {
 				continue;
 			}
 			if (in_array($parameter->name(), array (
-					'SignalNoiseRatio',
 					'BackgroundOffsetPercent',
 					'NumberOfIterations'
 				)) && !$fullRestoration) {
@@ -1970,14 +2106,23 @@ Class TaskSetting extends Setting {
 			}
 			if ($parameter->name() == 'FullRestoration' || $parameter->name() == 'RemoveNoise' || $parameter->name() == 'RemoveBackground')
 				continue;
-			if ($parameter->name() == 'SignalNoiseRatio') {
-				$snr = $parameter->value();
-				$parameter->setValue(array_slice($snr, 0, $this->numberOfChannels() + 1));
-			}
-			$result = $result . $parameter->displayString();
-			if ($parameter->name() == 'SignalNoiseRatio') {
-				$parameter->setValue($snr);
-			}
+			//if ($parameter->name() == 'SignalNoiseRatio') {
+			//	$snr = $parameter->value();
+			//	$parameter->setValue(array_slice($snr, 0, $this->numberOfChannels() ));
+			//}
+            if ($parameter->name() == 'SignalNoiseRatio') {
+                $snr = $parameter->value();
+				$parameter->setValue(array_slice($snr, 0, $this->numberOfChannels() ));
+                if ($algorithm == 'cmle')
+                    $result = $result . $parameter->displayCMLEString($this->numberOfChannels());
+                else if ($algorithm == 'qmle')
+                    $result = $result . $parameter->displayQMLEString($this->numberOfChannels());
+            }
+            else
+                $result = $result . $parameter->displayString($this->numberOfChannels());
+			//if ($parameter->name() == 'SignalNoiseRatio') {
+			//	$parameter->setValue($snr);
+			//}
 		}
 		return $result;
 	}
@@ -1991,8 +2136,8 @@ Class TaskSetting extends Setting {
 	//              output file format has not been choosen yet.
 	// @return      Void
 	//!---------------------------------------------------------        
-	function displayWithoutOutputFileFormat() {
-		print $this->displayStringWithoutOutputFileFormat();
+	function displayWithoutOutputFileFormat( $numberOfChannels = 0 ) {
+		print $this->displayStringWithoutOutputFileFormat( $numberOfChannels );
 	}
 
 	//!---------------------------------------------------------
@@ -2005,12 +2150,12 @@ Class TaskSetting extends Setting {
 	//              output file format has not been choosen yet.
 	// @return      Void
 	//!---------------------------------------------------------
-	function displayStringWithoutOutputFileFormat() {
+	function displayStringWithoutOutputFileFormat( $numberOfChannels = 0 ) {
 		$parameter = $this->parameter('OutputFileFormat');
 		$parameterList = $this->parameter;
 		unset ($parameterList['OutputFileFormat']);
 		$this->parameter = $parameterList;
-		$result = $this->displayString();
+		$result = $this->displayString( $numberOfChannels );
 		$parameterList['OutputFileFormat'] = $parameter;
 		$this->parameter = $parameterList;
 		return $result;
@@ -2050,7 +2195,7 @@ Class JobParameterSetting extends ParameterSetting {
 		return "job_parameter";
 	}
 
-	function putScriptOn($script) {
+	function putScriptOn($script) { 
 		$newScript = $script;
 		$newScript = $newScript . '$imageName setp ';
 		$newScript = $newScript . $this->microscopeParameterString();
@@ -2087,7 +2232,7 @@ Class JobParameterSetting extends ParameterSetting {
 		$values = $parameter->value();
 		$result = "";
 		$currentChannel = 0;
-			for ($i = 1; $i <= 1 /*$this->numberOfChannels()*/; $i++) {
+			for ($i = 0; $i < 1 /*$this->numberOfChannels()*/; $i++) {
 			//error_log("GENERATING SCRIPT (Setting): ".$name." -> ".$values[$i]);
 			if (!empty ($values[$i])) {
 				$result = $result . '$imageName setp -chan ';
@@ -2149,7 +2294,7 @@ Class JobParameterSetting extends ParameterSetting {
 			$result = $result . ' ' . (string) $this->sampleSizeZ();
 		} else {
 			// Use current channel
-			$result = $result . ' ' . (string) ($this->idealSampleSizeZFor(1));
+			//$result = $result . ' ' . (string) ($this->idealSampleSizeZFor(1));
 		}
 		if ($this->isTimeSeries()) {
 			$result = $result . ' ' . (string) $this->sampleSizeT();
@@ -2228,32 +2373,90 @@ Class JobTaskSetting extends TaskSetting {
 		return "job_task_parameter";
 	}
 
-	function putScriptOn($script) {
+  	function putScriptOn($script, $corrParams) {
 		$step = 1;
 		$newScript = $script;
-		$parameter = $this->parameter('RemoveNoise');
+		
+		// Obsolete
+		/*
+		 $parameter = $this->parameter('RemoveNoise');
 		if ($parameter->isTrue()) {
 			$source = $this->sourceForStep($step);
 			$dest = $this->destinationForStep($step);
 			$newScript = $newScript . $this->removeNoiseString($source, $dest);
 			$newScript = $newScript . $this->destroyImageString($source);
 			$step++;
-		}
+
 		$parameter = $this->parameter('RemoveBackground');
 		if ($parameter->isTrue()) {
 			$source = $this->sourceForStep($step);
 			$dest = $this->destinationForStep($step);
-			$newScript = $newScript . $this->psfComputationString($source);
+			$newScript = $newScript . $this->psfComputationString($source, $constant, $depth);
 			$newScript = $newScript . $this->removeBackgroundString($source, $dest);
 			$newScript = $newScript . $this->destroyImageString($source);
 			$step++;
 		}
+		}
+		*/
+		
+		// Depending on the PSF selection and the settings for the spherical
+		// aberration corrections, we have to call the psfComputationString( )
+		// function below specifying either a constant or an adaptive PSF.
+		// A constant PSF is used when there is a need for correction (i.e.
+		// the PSF is theoretical with refractive index mismatch) but (i) the 
+		// user chose not to let Huygens correct for aberrations; or (ii) when
+		// the user performs an advanced correction with static FSF generated
+		// at a given depth (this is combined with next check).
+		$constant = 0;
+		if ( ( $corrParams[ 'AberrationCorrectionNecessary' ] == 1 ) &&
+			( $corrParams[ 'PerformAberrationCorrection' ] == 0 ) ) {
+			$constant = 1;
+		}
+
+		// If the user chose the advanced correction mode 'partial correction
+		// at user defined PSF depth', we also need to pass the depth to the
+		// psfComputationString( ) function.
+		$depth = 0;
+		if ( ( $corrParams[ 'AberrationCorrectionNecessary' ] == 1 ) &&
+			( $corrParams[ 'PerformAberrationCorrection' ] == 1 ) &&
+			( $corrParams[ 'AberrationCorrectionMode' ] == 'advanced' ) &&
+			( $corrParams[ 'AdvancedCorrectionOptions' ] == 'user' ) ) {
+			$depth = $corrParams[ 'PSFGenerationDepth' ];
+			$constant = 1; // See comment above
+		}
+
+		// The various options result in a different value for the -brMode
+		// deconvolution flag. This value is to be passed to the
+		// fullRestorationString( ) function below.
+		if ( $corrParams[ 'AberrationCorrectionNecessary' ] == 0 ) {
+			$brMode = 'auto';
+		} else {
+			if ( $corrParams[ 'PerformAberrationCorrection' ] == 0 ) {
+				$brMode = 'one';
+			} else {
+				if ( $corrParams[ 'AberrationCorrectionMode' ] == 'automatic' ) {
+					$brMode = 'auto';
+				} else {
+					if ( $corrParams[ 'AdvancedCorrectionOptions' ] == 'user' ) {
+						$brMode = 'one';
+					}
+					if ( $corrParams[ 'AdvancedCorrectionOptions' ] == 'slice' ) {
+						$brMode = 'sliceBySlice';
+					}
+					if ( $corrParams[ 'AdvancedCorrectionOptions' ] == 'few' ) {
+						$brMode = 'few';
+					}
+				}
+			}
+		}
+		
+		// effective deconvolution script; step = 3 -> $source = b; $dest = c;
 		$parameter = $this->parameter('FullRestoration');
 		if ($parameter->isTrue()) {
 			$source = $this->sourceForStep($step);
 			$dest = $this->destinationForStep($step);
-			$newScript = $newScript . $this->psfComputationString($source);
-			$newScript = $newScript . $this->fullRestorationString($source, $dest);
+			$newScript = $newScript . $this->psfComputationString($source, $constant, $depth);
+			$newScript = $newScript . $this->fullRestorationString($source, $dest, $brMode);
 			$newScript = $newScript . $this->destroyImageString($source);
 			$step++;
 		}
@@ -2264,7 +2467,9 @@ Class JobTaskSetting extends TaskSetting {
 	function putScriptForMeasuredPointSpreadFunctionOn($script) {
 		$step = 1;
 		$newScript = $script;
-		$parameter = $this->parameter('RemoveNoise');
+		// Obsolete
+		/*
+		 $parameter = $this->parameter('RemoveNoise');
 		if ($parameter->isTrue()) {
 			$source = $this->sourceForStep($step);
 			$dest = $this->destinationForStep($step);
@@ -2280,6 +2485,7 @@ Class JobTaskSetting extends TaskSetting {
 			$newScript = $newScript . $this->destroyImageString($source);
 			$step++;
 		}
+		*/
 		$parameter = $this->parameter('FullRestoration');
 		if ($parameter->isTrue()) {
 			$source = $this->sourceForStep($step);
@@ -2350,10 +2556,21 @@ Class JobTaskSetting extends TaskSetting {
 		return $row[$index];
 	}
 
-	function psfComputationString($source) {
-		return 'catch { ' . $source . ' genpsf -> psf -dims fullpadpar -z -reflCorr }' . "\n";
+	function psfComputationString($source, $constant = 0, $position = 0) {
+		// To calculate a theoretical PSF, the best thing is to provide an empty
+        // one. Huygens will take the necessary decisions, see
+        // http://support.svi.nl/wiki/TheoreticalPsf
+        if (!$constant ) {
+            return "catch { psf clear }\n";
+        }
+        // Alternatively, this calculates a constant PSF for the provided
+        // parameters, and will be adapted to the sample depth if spherical
+        // aberration is present.
+		return 'catch { ' . $source . ' genpsf -> psf -dims auto -zPos '.
+			$position .' }' . "\n";
 	}
 
+	/* TODO This is obsolete code and should be removed!
 	function removeNoiseString($source, $dest) {
 		$result = '';
 		$result = $result . $source . ' gauss -> ' . $dest . ' -sigma ';
@@ -2363,6 +2580,7 @@ Class JobTaskSetting extends TaskSetting {
 		return $result;
 	}
 
+	// never called: to remove
 	function removeBackgroundString($source, $dest) {
 		$result = '';
 		$result = $result . $source . ' cmle psf -> ' . $dest . ' ';
@@ -2370,40 +2588,57 @@ Class JobTaskSetting extends TaskSetting {
 		$result = $result . '-bgMode object ';
 		$result = $result . '-blMode auto ';
 		$result = $result . '-q 0 ';
-		$result = $result . '-mode highQ ';
-		$result = $result . '-pad fullpadpar';
+		$result = $result . '-mode fast ';
+		$result = $result . '-pad auto';
 		$result = $result . "\n";
 		return $result;
 	}
 
 	// manage measured PSF
+	// never called: to remove
 	function removeBackgroundForMeasuredPointSpreadFunctionString($source, $dest) {
 		$result = '';
 		$result = $result . $source . ' cmle $psf -> ' . $dest . ' ';
-		$result = $result . "-it 3 ";
+		$result = $result . "-it 3 ";		// !!
 		$result = $result . '-bgMode object ';
 		$result = $result . $this->removeBackgroundPercentString();
 		$result = $result . '-blMode auto ';
 		$result = $result . '-q 0 ';
-		$result = $result . '-mode highQ ';
-		$result = $result . '-pad fullpadpar';
+		//$result = $result . '-mode fast ';
+		$result = $result . '-pad auto';
 		$result = $result . "\n";
 		return $result;
 	}
-
-	function fullRestorationString($source, $dest) {
+	*/
+	
+	function fullRestorationString($source, $dest, $brMode) {
 		$result = '';
-		$result = $result . $source . ' cmle psf -> ' . $dest . ' ';
+
+		$parameter = $this->parameter('DeconvolutionAlgorithm');
+		$string = $parameter->name();
+		$value = $parameter->value();
+
+		// (Obsolete) This restores the default behavior in case the entry "DeconvolutionAlgorithm"
+		// is not in the database
+		if ( empty( $value ) == true )
+		  $value = "cmle";
+
+		$result = $result . $source . ' ' . $value . ' psf -> ' . $dest . ' ';	
+		//$result = $result . $source . ' cmle psf -> ' . $dest . ' ';
 		$result = $result . $this->signalNoiseRatioString();
 		$result = $result . $this->maxIterationsString();
 		// background estimation manual/auto
 		$parameter = $this->parameter("BackgroundOffsetPercent");
+        #printDebug("fullRestorationString", $parameter);
+        #printDebug(debug_backtrace()); exit;
 		$value = $parameter->value();
 		$internalValue = $parameter->internalValue();
 		//$result = $result . '-bgMode object ';
 		//error_log("GENERATING SCRIPT (Setting): background offset percent -> ".$value[0].", ".$value[1]." | ".$internalValue[0].", ".$internalValue[1]." |");
-		if ($value[1] == "auto" || $internalValue[1] == "auto") {
+		if ($value[0] == "auto" || $internalValue[0] == "auto") {
 			$result = $result . '-bgMode auto ';
+		} else if ($value[0] == "object" || $internalValue[0] == "object") {
+			$result = $result . '-bgMode object ';
 		} else {
 			$result = $result . '-bgMode manual ';
 			$result = $result . $this->backgroundPerChannelString();
@@ -2412,8 +2647,8 @@ Class JobTaskSetting extends TaskSetting {
 		$result = $result . '-q ';
 		$parameter = $this->parameter("QualityChangeStoppingCriterion");
 		$result = $result . $parameter->value() . " ";
-		$result = $result . '-mode highQ ';
-		$result = $result . '-pad fullpadpar';
+		$result = $result . '-brMode ' . $brMode . " ";
+		$result = $result . '-pad auto';
 		$result = $result . "\n";
 		return $result;
 	}
@@ -2421,7 +2656,16 @@ Class JobTaskSetting extends TaskSetting {
 	// manage measured PSF
 	function fullRestorationForMeasuredPointSpreadFunctionString($source, $dest) {
 		$result = '';
-		$result = $result . $source . ' cmle $psf -> ' . $dest . ' ';
+		
+		// (Obsolete) This restores the default behavior in case the entry "DeconvolutionAlgorithm"
+		// is not in the database
+		$value = $this->decAlgorithmString();
+		if ( empty( $value ) == true )
+			$value = "cmle";
+		$result = $result . $source . ' ' .$value . ' psf -> ' . $dest . ' ';
+
+		//$result = $result . $source . $this->decAlgorithmString() . ' psf -> ' . $dest . ' ';
+		//$result = $result . $source . ' cmle $psf -> ' . $dest . ' ';
 		$result = $result . $this->signalNoiseRatioString();
 		$result = $result . $this->maxIterationsString();
 		// background estimation manual/auto
@@ -2429,8 +2673,10 @@ Class JobTaskSetting extends TaskSetting {
 		$value = $parameter->value();
 		$internalValue = $parameter->internalValue();
 		//$result = $result . '-bgMode object ';
-		if ($value[1] == "auto" || $internalValue[1] == "auto") {
+		if ($value[0] == "auto" || $internalValue[0] == "auto") {
 			$result = $result . '-bgMode auto ';
+		} else if ($value[0] == "object" || $internalValue[0] == "object") {
+			$result = $result . '-bgMode object ';
 		} else {
 			$result = $result . '-bgMode manual ';
 			$result = $result . $this->backgroundPerChannelString();
@@ -2439,8 +2685,8 @@ Class JobTaskSetting extends TaskSetting {
 		$result = $result . '-q ';
 		$parameter = $this->parameter("QualityChangeStoppingCriterion");
 		$result = $result . $parameter->value() . " ";
-		$result = $result . '-mode highQ ';
-		$result = $result . '-pad fullpadpar';
+		$result = $result . '-brMode auto ';
+		$result = $result . '-pad auto';
 		$result = $result . "\n";
 		return $result;
 	}
@@ -2456,19 +2702,22 @@ Class JobTaskSetting extends TaskSetting {
 	function backgroundPerChannelString() {
 		$parameter = $this->parameter('BackgroundOffsetPercent');
 		$values = $parameter->value();
-		if (!is_array($values)) {
+		/*if (!is_array($values)) {
 			$channels = $this->numberOfChannels();
 			$values = array_fill(1, $channels, $values);
 		}
 		$result = '-bg {';
-		for ($i = 1; $i <= $this->numberOfChannels(); $i++) {
+		for ($i = 0; $i < $this->numberOfChannels(); $i++) {
 			$newValue = -1 * (100 - $values[$i]);
 			$result = $result . $newValue;
 			if ($i < $this->numberOfChannels()) {
 				$result = $result . " ";
 			}
 		}
-		$result = $result . '} ';
+		$result = $result . '} ';*/
+
+        /* TODO: why does this return channel zero's? */
+		$result = '-bg ' . $values[0] . " ";
 		return $result;
 	}
 
@@ -2480,7 +2729,7 @@ Class JobTaskSetting extends TaskSetting {
 			$values = array_fill(1, $channels, $values);
 		}
 		$result = '-bg {';
-		for ($i = 1; $i <= $this->numberOfChannels(); $i++) {
+		for ($i = 0; $i < $this->numberOfChannels(); $i++) {
 			$newValue = -1 * (100 - $values[$i]);
 			$result = $result . $newValue;
 			if ($i < $this->numberOfChannels()) {
@@ -2505,7 +2754,20 @@ Class JobTaskSetting extends TaskSetting {
 		//	}
 		//}
 		//$result = $result . '} ';
-		$result = '-sn ' . $values[1] . " ";		
+		
+		$parameter = $this->parameter('DeconvolutionAlgorithm');
+		$deconvolutionAlgorithm = $parameter->value();
+		
+		$value = $values[0];
+		if ($deconvolutionAlgorithm == "qmle") {
+			if ($value == "1")	$value = "low";
+			else if ($value == "2")	$value = "fair";
+			else if ($value == "3")	$value = "good";
+            else if ($value == "4")	$value = "inf";
+			else			$value = "fair";
+		}
+		
+		$result = '-sn ' . $value . " ";
 		return $result;
 	}
 
@@ -2513,6 +2775,13 @@ Class JobTaskSetting extends TaskSetting {
 		$parameter = $this->parameter('NumberOfIterations');
 		$value = $parameter->value();
 		$result = "-it $value ";
+		return $result;
+	}
+	
+	function decAlgorithmString() {
+		$parameter = $this->parameter('DeconvolutionAlgorithm');
+		$value = $parameter->value();
+		$result = " $value";
 		return $result;
 	}
 }

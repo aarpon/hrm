@@ -69,7 +69,7 @@ if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
 }
 
 if (!isset($_SESSION['setting'])) {
-       session_register('setting'); 		   
+       # session_register('setting'); 		   
        $_SESSION['setting'] = new ParameterSetting();
 }	
 
@@ -86,7 +86,7 @@ foreach ($names as $name) {
                           $_SESSION['setting']->setAdaptedParameters(False);
                    }
                }
-       $parameter->setValue($_POST[$name]);
+               $parameter->setValue($_POST[$name]);
                $_SESSION['setting']->set($parameter);
                // set IsMultiChannel parameter value
                if ($name == "NumberOfChannels") {
@@ -116,28 +116,36 @@ if (isset($_POST["PointSpreadFunction"])) {
 }
 
 if (count($_POST)>0) {
-        if ($_POST["ImageGeometry"] == "") {
-          $parameter = $_SESSION['setting']->parameter("ImageGeometry");
-          $parameter->setValue("multi_XYZ");
-          $_SESSION['setting']->set($parameter);
-        }
-       if (!isset($_POST["PointSpreadFunction"])) {
-            $ok = False;
-            $message = "Please indicate whether you would like to calculate a theoretical PSF or use an existing measured one";
-       }
-       else {
-            $ok = $_SESSION['setting']->checkImageParameter();
-            $message = $_SESSION['setting']->message();
-       }
-       if ($ok) {
-            // manage measured PSF
-            if ($_POST["PointSpreadFunction"] == "theoretical") {
-              header("Location: " . "microscope_parameter.php"); exit();
-            }
-            else if ($_POST["PointSpreadFunction"] == "measured") {
-              header("Location: " . "select_psf.php"); exit();
-            }
-       }
+  if (!isset($_POST["ImageGeometry"]) || $_POST["ImageGeometry"] == "") {
+    $parameter = $_SESSION['setting']->parameter("ImageGeometry");
+    $parameter->setValue("multi_XYZ");
+    $_SESSION['setting']->set($parameter);
+  }
+  if (!isset($_POST["NumberOfChannels"]) && ($_POST["ImageFileFormat"] == "tiff-series")) {
+      $parameter = $_SESSION['setting']->parameter("NumberOfChannels");
+      $parameter->setValue("1");
+      $_SESSION['setting']->set($parameter);
+      $_POST["NumberOfChannels"] == "1";
+  }
+  if (!isset($_POST["ImageFileFormat"])) {
+    $ok = False;
+    $message = "<p class=\"warning\">Please choose a file format!</p>";
+  }
+  elseif (!isset($_POST["NumberOfChannels"]) && ($_POST["ImageFileFormat"] != "tiff-series")) {
+    $ok = False;
+    $message = "<p class=\"warning\">Please specify the number of channels!</p>";
+  }
+  elseif (!isset($_POST["PointSpreadFunction"])) {
+    $ok = False;
+    $message = "<p class=\"warning\">Please indicate whether you would like to calculate a theoretical PSF or use an existing measured one</p>";
+  } else {
+    $ok = $_SESSION['setting']->checkImageParameter();
+    $message = $_SESSION['setting']->message();
+  }
+
+  if ($ok) {
+    header("Location: " . "microscope_parameter.php"); exit();
+  }
 }
 // TODO refactor until here
 
@@ -156,7 +164,7 @@ include("header.inc.php");
     
     <div id="content">
     
-        <h3>Parameter Setting - Page 1</h3>
+        <h3>Image format and PSF modality</h3>
         
         <form method="post" action="" id="select">
         
@@ -178,6 +186,9 @@ $geometryFlag = "";
 $channelsFlag = "";
 sort($values);
 foreach($values as $value) {
+  if (stristr($value, "tiff")) {
+    continue;
+  }
   $translation = $_SESSION['setting']->translation("ImageFileFormat", $value);
   $event = " onclick=\"javascript:release()\"";
   if ($value == "lsm-single" || $value == "tiff-single") {
@@ -195,7 +206,41 @@ foreach($values as $value) {
       $channelsFlag = "disabled=\"disabled\" ";
     }
   }
+  
+?>
+                <input name="ImageFileFormat" type="radio" value="<?php echo $value ?>"<?php echo $event ?><?php echo $flag ?> /><?php echo $translation ?>
+                
+                <br />
+<?php
 
+}
+
+?>
+                <h4>TIFF (*.tif, *.tiff)</h4>
+<?php
+
+foreach($values as $value) {
+  if (!stristr($value, "tiff")) {
+    continue;
+  }
+  $translation = $_SESSION['setting']->translation("ImageFileFormat", $value);
+  $event = " onclick=\"javascript:release()\"";
+  if ($value == "lsm-single" || $value == "tiff-single") {
+    $event = " onclick=\"javascript:forceGeometry()\"";
+  }
+  else if ($value == "tiff-series") $event = " onclick=\"javascript:fixGeometryAndChannels('multi_XYZ', '1')\"";
+  $flag = "";
+  if ($value == $parameter->value()) {
+    $flag = " checked=\"checked\"";
+    if ($value == "lsm-single" || $value == "tiff-single") {
+      $geometryFlag = "disabled=\"disabled\" ";
+    }
+    else if ($value == "tiff-series") {
+      $geometryFlag = "disabled=\"disabled\" ";
+      $channelsFlag = "disabled=\"disabled\" ";
+    }
+  }
+  
 ?>
                 <input name="ImageFileFormat" type="radio" value="<?php echo $value ?>"<?php echo $event ?><?php echo $flag ?> /><?php echo $translation ?>
                 
@@ -266,7 +311,11 @@ function check($value) {
 $parameter = $_SESSION['setting']->parameter("PointSpreadFunction");
 
 ?>
-
+            <?php
+            $turnOnPSFAdaptationOnClick  = " onclick=\"javascript:fixCoverslip( false )\"";
+            $turnOffPSFAdaptationOnClick = " onclick=\"javascript:fixCoverslip( true )\"";
+            ?>
+            
             <h4>Would you like to use an existing measured PSF obtained from bead images or a theoretical PSF generated from explicitly specified parameters?</h4>
             
             <fieldset class="setting">
@@ -276,9 +325,9 @@ $parameter = $_SESSION['setting']->parameter("PointSpreadFunction");
                     PSF
                 </legend>
                 
-                <input type="radio" name="PointSpreadFunction" value="theoretical" <?php if ($parameter->value() == "theoretical") echo "checked=\"checked\"" ?>/><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=TheoreticalPsf')"><img src="images/help.png" alt="?" /></a>Theoretical
+                <input type="radio" name="PointSpreadFunction" value="theoretical" <?php if ($parameter->value() == "theoretical") echo "checked=\"checked\""?> <?php echo $turnOnPSFAdaptationOnClick ?>/><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=TheoreticalPsf')"><img src="images/help.png" alt="?" /></a>Theoretical
                 
-                <input type="radio" name="PointSpreadFunction" value="measured" <?php if ($parameter->value() == "measured") echo "checked=\"checked\"" ?>/><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=ExperimentalPsf')"><img src="images/help.png" alt="?" /></a>Measured
+                <input type="radio" name="PointSpreadFunction" value="measured" <?php if ($parameter->value() == "measured") echo "checked=\"checked\"" ?> <?php echo $turnOffPSFAdaptationOnClick ?>/><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=ExperimentalPsf')"><img src="images/help.png" alt="?" /></a>Measured
                 
             </fieldset>
             
@@ -295,7 +344,7 @@ $parameter = $_SESSION['setting']->parameter("PointSpreadFunction");
             <input type="button" value="" class="icon cancel" onclick="document.location.href='select_parameter_settings.php'" />
             <input type="submit" value="" class="icon apply" onclick="process()" />
             
-            <p>Please define image format, geometry, and mumber of channels.</p>
+            <p>Please define image format, geometry, and number of channels.</p>
             
             <p>
 		If you select one of the "single XY plane" formats,

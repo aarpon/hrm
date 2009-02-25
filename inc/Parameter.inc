@@ -144,7 +144,7 @@ Class Parameter {
 
 	//!---------------------------------------------------------
 	// @function    Parameter::internalValue
-	// @desc        Answers the interbal representation of the
+	// @desc        Answers the internal representation of the
 	//              parameters value. 
 	// @return      Object
 	//!---------------------------------------------------------  
@@ -203,7 +203,7 @@ Class Parameter {
 		return False;
 	}
 
-	function displayString() {
+	function displayString( $numberOfChannels = 0 ) {
 		$result = '';
 		$value = $this->value();
 		if ($value == NULL) {
@@ -215,22 +215,71 @@ Class Parameter {
 		if ($value == 'False' && $this->isBoolean()) {
 			return '';
 		}
-		$internalValue = $this->internalValue();
-		;
-		if ($this->name() == "BackgroundOffsetPercent" && $internalValue[1] == "auto") {
+		$internalValue = $this->internalValue();	// answers the internal representation of the parameters value.
+
+		if ($this->name() == "ExcitationWavelength" ||
+			$this->name() == "EmissionWavelength" ||
+			$this->name() == "SignalNoiseRatio" ||
+			$this->name() == "PinholeSize" ) {
+			if ( $numberOfChannels > count( $value ) ) {
+				$numberOfChannels = count( $value );
+			}
+			$value = array_slice( $value, 0, $numberOfChannels );
+		}
+		
+		if ($this->name() == "BackgroundOffsetPercent" && $internalValue[0] == "auto") {
 			$value = "auto";
 		}
-		else if ($this->name() == "BackgroundOffsetPercent" && $internalValue[1] == "object") {
+		else if ($this->name() == "BackgroundOffsetPercent" && $internalValue[0] == "object") {
 			$value = "in/near object";
+		}
+		else if ($this->name() == "PerformAberrationCorrection") {
+			if ($this->value( ) == 0 ) {
+				$value = "no";
+			} else {
+				$value = "yes";
+			}
+		}
+		else if ($this->name() == "AberrationCorrectionNecessary") {
+			if ($this->value( ) == 0 ) {
+				$value = "no";
+			} else {
+				$value = "yes";
+			}
+		}
+		else if ($this->name() == "AdvancedCorrectionOptions") {
+			switch ( $this->value( ) ) {
+			case 'user':
+				$value = "user-defined depth";
+				break;
+			case 'slice':
+				$value = "slice by slice";
+				break;
+			case 'few':
+				$value = "few bricks";
+				break;
+			}
 		} else {
 			if (is_array($value)) {
-				array_shift($value);
-				$value = array_filter($value);
-				$value = implode(", ", $value);
+				# array_shift($value);
+				if (count($value) > 0 && is_array($value[0])) {
+					$val = "";
+					for ($i = 0; $i < count($value); $i++) {
+						$value[$i] = array_filter($value[$i]);
+						if ($i > 0 && $value[$i] != null)
+							$val .= ", ";
+						$val .= implode("/", $value[$i]);
+					}
+					$value = $val;
+				}
+				else {
+					$value = array_filter($value);
+					$value = implode(", ", $value);
+				}
 			}
 			$split = explode("_", $value);
 			if (count($split) > 1) {
-				$value = $split[1];
+				$value = $split[0];
 			}
 		}
 		$name = $this->name();
@@ -295,7 +344,15 @@ Class Parameter {
 			' z'
 		);
 		$name = str_replace($uppercase, $lowercase, $name);
-		$result = $result . str_pad($name, 35, ' ', STR_PAD_RIGHT);
+		
+		if (strcmp($this->name,"BackgroundOffsetPercent") == 0) {
+			$tempstring = " background absolute offset:";
+			$result = $result . str_pad($tempstring, 35, ' ', STR_PAD_RIGHT);
+		}
+		else {
+			$result = $result . str_pad($name, 35, ' ', STR_PAD_RIGHT);
+		}
+		
 		if (!$this->isBoolean()) {
 			$result = $result . $value;
 		}
@@ -454,7 +511,7 @@ Class BooleanParameter extends ChoiceParameter {
 	}
 
 	function isTrue() {
-		return ($this->value == 'True');
+		return ($this->value == "True");
 	}
 
 	function isBoolean() {
@@ -646,11 +703,11 @@ Class VariableChannelsParameter extends NumericalParameter {
 	function VariableChannelsParameter($name) {
 		$this->NumericalParameter($name);
 		$this->value = array (
-			NULL,
-			NULL,
-			NULL,
-			NULL,
-			NULL
+			0 => NULL,
+			1 => NULL,
+			2 => NULL,
+			3 => NULL,
+			4 => NULL
 		);
 		$numberOfChannels = 1;
 	}
@@ -668,7 +725,7 @@ Class VariableChannelsParameter extends NumericalParameter {
 	// @desc        Set the value of the parameter to value.
 	//              If value is not an array the value of the 
 	//              parameter is set to an array with the value
-	//              at index 1. 
+	//              at index 0. 
 	// @param       value  Object  The new value of the parameter
 	// @return      Void
 	//!---------------------------------------------------------  
@@ -676,13 +733,30 @@ Class VariableChannelsParameter extends NumericalParameter {
 		$theValue = $value;
 		if (!is_array($value)) {
 			$theValue = array (
-				NULL,
-				$value,
-				NULL,
-				NULL,
-				NULL
+				0 => $value,
+				1 => NULL,
+				2 => NULL,
+				3 => NULL,
+				4 => NULL
 			);
+			
 		}
+		//TODO: check if useful
+		else if (is_array($value) && count($value) < 5) {
+			$theValue = array(5);
+			for ($i = 0; $i < count($value); $i++) {
+				$theValue[] = $value[$i];
+			}
+		}
+		/*else if (is_array($value) && count($value) == 1) {
+			$theValue = array (
+				0 => $value[0],
+				1 => NULL,
+				2 => NULL,
+				3 => NULL,
+				4 => NULL
+			);
+		}*/
 		$this->value = $theValue;
 	}
 
@@ -703,12 +777,15 @@ Class VariableChannelsParameter extends NumericalParameter {
 		$newValue = array (
 			NULL
 		);
-		for ($i = 1; $i <= $this->numberOfChannels(); $i++) {
+        # printDebug($this);
+        # printDebug(debug_backtrace());
+		for ($i = 0; $i < $this->numberOfChannels(); $i++) {
 			if ($i < sizeof($value) && $this->checkValue($value[$i])) {
 				$newValue[$i] = $value[$i];
-			} else {
-				$newValue[$i] = $newValue[$i -1];
 			}
+			/*else {
+				$newValue[$i] = $newValue[$i -1];
+			}*/
 		}
 		return $newValue;
 	}
@@ -726,7 +803,7 @@ Class VariableChannelsParameter extends NumericalParameter {
 	//!---------------------------------------------------------  
 	function check() {
 		$result = True;
-		for ($i = 1; $i <= $this->numberOfChannels; $i++) {
+		for ($i = 0; $i < $this->numberOfChannels; $i++) {
 			$value = $this->internalValue();
 			$result = $result && $this->checkValue($value[$i]);
 		}
@@ -1028,12 +1105,22 @@ Class ExcitationWavelength extends NumericalParameter {
 	function ExcitationWavelength() {
 		$this->NumericalParameter("ExcitationWavelength");
 		$this->value = array (
-			NULL,
-			NULL,
-			NULL,
-			NULL,
-			NULL
+			0 => NULL,
+			1 => NULL,
+			2 => NULL,
+			3 => NULL,
+			4 => NULL
 		);
+	}
+	
+	function setValue($value) {
+		if (is_array($value)) {
+			for ($i = 0; $i < count($value) && $i <= count( $this->value ); $i++)
+				$this->value[$i] = $value[$i];
+		}
+		else {
+			$this->value[0] = $value;
+		}
 	}
 
 	function isForMicroscope() {
@@ -1045,12 +1132,22 @@ Class EmissionWavelength extends NumericalParameter {
 	function EmissionWavelength() {
 		$this->NumericalParameter("EmissionWavelength");
 		$this->value = array (
-			NULL,
-			NULL,
-			NULL,
-			NULL,
-			NULL
+			0 => NULL,
+			1 => NULL,
+			2 => NULL,
+			3 => NULL,
+			4 => NULL
 		);
+	}
+	
+	function setValue($value) {
+		if (is_array($value)) {
+			for ($i = 0; $i < count($value) && $i <= count( $this->value ); $i++)
+				$this->value[$i] = $value[$i];
+		}
+		else {
+			$this->value[0] = $value;
+		}
 	}
 
 	function isForMicroscope() {
@@ -1130,7 +1227,17 @@ Class PinholeSize extends NumericalParameter {
 			NULL
 		);
 	}
-
+	
+	function setValue($value) {
+                if (is_array($value)) {
+                        for ($i = 0; $i < count($value); $i++)
+				$this->value[$i] = $value[$i];
+                }
+                else {
+			$this->value[0] = $value;
+                }
+        }
+	
 	function isForCapture() {
 		return True;
 	}
@@ -1261,13 +1368,188 @@ Class SignalNoiseRatio extends NumericalParameter {
 		$this->NumericalParameter("SignalNoiseRatio");
 		// manage one S/N per channel
 		$this->value = array (
-			NULL,
-			NULL,
-			NULL,
-			NULL,
-			NULL
+			0 => NULL,
+			1 => NULL,
+			2 => NULL,
+			3 => NULL,
+			4 => NULL
 		);
 	}
+	
+	function setValue($value) {
+		if (is_array($value)) {
+			for ($i = 0; $i < count($value); $i++)
+				$this->value[$i] = $value[$i];
+		}
+		else {
+			$this->value[0] = $value;
+		}
+	}
+
+    function displayCMLEString($numberOfChannels = 0) {
+        $result = '';
+
+		$value = $this->value();
+        if ( $numberOfChannels > count( $value ) ) {
+            $numberOfChannels = count( $value );
+        }
+        $value = array_slice( $value, 0, $numberOfChannels );
+        if (count($value) > 0 && is_array($value[0])) {
+            $val = "";
+            for ($i = 0; $i < count($value); $i++) {
+                $value[$i] = array_filter($value[$i]);
+                if ($i > 0 && $value[$i] != null)
+                    $val .= ", ";
+                $val .= implode("/", $value[$i]);
+            }
+            $value = $val;
+        }
+        else {
+            $value = array_filter($value);
+            $value = implode(", ", $value);
+        }
+
+        $name = $this->name() . ":";
+		$uppercase = array (
+			'A',
+			'B',
+			'C',
+			'D',
+			'E',
+			'F',
+			'G',
+			'H',
+			'I',
+			'J',
+			'K',
+			'L',
+			'M',
+			'N',
+			'O',
+			'P',
+			'Q',
+			'R',
+			'S',
+			'T',
+			'U',
+			'V',
+			'W',
+			'X',
+			'Y',
+			'Z'
+		);
+		$lowercase = array (
+			' a',
+			' b',
+			' c',
+			' d',
+			' e',
+			' f',
+			' g',
+			' h',
+			' i',
+			' j',
+			' k',
+			' l',
+			' m',
+			' n',
+			' o',
+			' p',
+			' q',
+			' r',
+			' s',
+			' t',
+			' u',
+			' v',
+			' w',
+			' x',
+			' y',
+			' z'
+		);
+		$name = str_replace($uppercase, $lowercase, $name);
+		$result .= str_pad($name, 35, ' ', STR_PAD_RIGHT);
+
+		return $result . $value . "\n";
+    }
+
+    function displayQMLEString($numberOfChannels = 0) {
+        $snr = array("1" => "low", "2" => "fair", "3" => "good", "4" => "inf");
+        
+        $result = '';
+
+		$value = $this->value();
+        if ( $numberOfChannels > count( $value ) ) {
+            $numberOfChannels = count( $value );
+        }
+        $value = array_slice( $value, 0, $numberOfChannels );
+        $value = array_filter($value);
+        for ($i = 0; $i < count($value); $i++) {
+            $val[$i] = $snr[$value[$i]];
+        }
+        $value = implode(", ", $val);
+
+        $name = $this->name() . ":";
+		$uppercase = array (
+			'A',
+			'B',
+			'C',
+			'D',
+			'E',
+			'F',
+			'G',
+			'H',
+			'I',
+			'J',
+			'K',
+			'L',
+			'M',
+			'N',
+			'O',
+			'P',
+			'Q',
+			'R',
+			'S',
+			'T',
+			'U',
+			'V',
+			'W',
+			'X',
+			'Y',
+			'Z'
+		);
+		$lowercase = array (
+			' a',
+			' b',
+			' c',
+			' d',
+			' e',
+			' f',
+			' g',
+			' h',
+			' i',
+			' j',
+			' k',
+			' l',
+			' m',
+			' n',
+			' o',
+			' p',
+			' q',
+			' r',
+			' s',
+			' t',
+			' u',
+			' v',
+			' w',
+			' x',
+			' y',
+			' z'
+		);
+		$name = str_replace($uppercase, $lowercase, $name);
+		$result .= str_pad($name, 35, ' ', STR_PAD_RIGHT);
+
+		return $result . $value . "\n";
+    }
 }
 
 Class SignalNoiseRatioUseRange extends BooleanParameter {
@@ -1284,11 +1566,9 @@ Class BackgroundOffsetPercent extends VariableChannelsParameter {
 	function check() {
 		$value = $this->internalValue();
 		$result = True;
-		if ($value[1] == "auto")
+		if ($value[0] == "auto" || $value[0] == "object")
 			return True;
-		else if ($value[1] == "object")
-			return True;
-		for ($i = 1; $i <= $this->numberOfChannels; $i++) {
+		for ($i = 0; $i < $this->numberOfChannels; $i++) {
 			$result = $result && $this->checkValue($value[$i]);
 		}
 		return $result;
@@ -1304,6 +1584,12 @@ Class BackgroundOffsetUseRange extends BooleanParameter {
 Class NumberOfIterations extends NumericalParameter {
 	function NumberOfIterations() {
 		$this->NumericalParameter("NumberOfIterations");
+	}
+}
+
+Class PSFGenerationDepth extends NumericalParameter {
+	function PSFGenerationDepth() {
+		$this->NumericalParameter("PSFGenerationDepth");
 	}
 }
 
@@ -1327,7 +1613,7 @@ Class SignalNoiseRatioRange extends NumericalParameter {
 			NULL,
 			NULL,
 			NULL,
-			NULL
+			NULL,
 		);
 	}
 
@@ -1346,6 +1632,27 @@ Class SignalNoiseRatioRange extends NumericalParameter {
 	}
 	function useParameterName() {
 		return 'SignalNoiseRatioUseRange';
+	}
+	
+	function setValue($value) {
+		for ($i = 0; $i < count($value); $i++) {
+			$this->value[$i] = $value[$i];
+		}
+        }
+	
+	function checkValue($value) {
+		$valid = True;
+		for ($i = 0; $i < 5; $i++) {
+			if ($value[$i] != NULL) {
+				$range = $value[$i];
+				for ($j = 0; $j < 4; $j++) {
+					if (!empty($range[$j])) {
+						$valid &= NumericalParameter :: checkValue($range[$j]);
+					}
+				}
+			}
+		}
+		return $valid;
 	}
 }
 
@@ -1387,7 +1694,6 @@ Class NumberOfIterationsRange extends NumericalParameter {
 			NULL,
 			NULL,
 			NULL,
-			NULL
 		);
 	}
 
@@ -1427,5 +1733,85 @@ Class OutputFileFormat extends ChoiceParameter {
 		$db = new DatabaseConnection();
 		$result = $db->translationFor($this);
 		return $result;
+	}
+	
+	//!---------------------------------------------------------
+	// @function    OutputFileFormat::extension
+	// @desc        Returns the extension associated with a given
+	//              output format
+	//
+	// @return      string
+	//!---------------------------------------------------------    
+	function extension( ) {
+		$result = $this->translatedValue( );
+		switch ( $result ) {
+			case "tiff":
+			case "tiff16":
+				return "tif";
+			case "imaris":
+				return "ims";
+			case "ome":
+				return "ome";
+			case "ics":
+				return "ics";
+			default:
+				return "";
+		}
+	}
+}
+	
+Class DeconvolutionAlgorithm extends ChoiceParameter {
+	function DeconvolutionAlgorithm() {
+		$this->ChoiceParameter('DeconvolutionAlgorithm');
+		}
+}
+	
+Class CoverslipRelativePosition extends ChoiceParameter {
+	function CoverslipRelativePosition( ) {
+		$this->ChoiceParameter('CoverslipRelativePosition');
+	}
+	
+	function isForImage() {
+		return True;
+	}
+}
+
+Class PerformAberrationCorrection extends ChoiceParameter {
+	function PerformAberrationCorrection( ) {
+		$this->ChoiceParameter('PerformAberrationCorrection');
+	}
+	
+	function isForImage() {
+		return True;
+	}
+}
+
+Class AberrationCorrectionMode extends ChoiceParameter {
+	function AberrationCorrectionMode( ) {
+		$this->ChoiceParameter('AberrationCorrectionMode');
+	}
+	
+	function isForImage() {
+		return True;
+	}
+}
+
+Class AdvancedCorrectionOptions extends ChoiceParameter {
+	function AdvancedCorrectionOptions( ) {
+		$this->ChoiceParameter('AdvancedCorrectionOptions');
+	}
+	
+	function isForImage() {
+		return True;
+	}
+}
+
+Class AberrationCorrectionNecessary extends ChoiceParameter {
+	function AberrationCorrectionNecessary( ) {
+		$this->ChoiceParameter('AberrationCorrectionNecessary');
+	}
+	
+	function isForImage() {
+		return True;
 	}
 }

@@ -57,6 +57,7 @@ require_once("./inc/Setting.inc");
 
 session_start();
 
+
 if (isset($_GET['exited'])) {
   $_SESSION['user']->logout();
   session_unset();
@@ -69,7 +70,7 @@ if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
 }
 
 if (!isset($_SESSION['task_setting'])) {
-  session_register("task_setting"); 
+  # session_register("task_setting"); 
   $_SESSION['task_setting'] = new TaskSetting();
 }
 if ($_SESSION['user']->name() == "admin") $_SESSION['task_setting']->setNumberOfChannels(5);
@@ -106,7 +107,7 @@ else {
   $names = $_SESSION['task_setting']->parameterNames();
   foreach ($names as $name) {
     $parameter = $_SESSION['task_setting']->parameter($name);
-    if (isset($_POST[$name])) {
+    if ($name != "NumberOfIterations" && isset($_POST[$name])) {
       $parameter->setValue($_POST[$name]);
       $_SESSION['task_setting']->set($parameter);
     }
@@ -118,55 +119,94 @@ else {
       }
     }*/
   }
-  
-  // number of iterations: set the use of range to false if checkbox is unchecked
-  $parameter = $_SESSION["task_setting"]->parameter("NumberOfIterationsUseRange");
-  if (isset($_POST["OK"]) && !isset($_POST["NumberOfIterationsUseRange"])) {
-        $parameter = $_SESSION["task_setting"]->parameter("NumberOfIterationsUseRange");
-        $parameter->setValue("False");
-        $_SESSION["task_setting"]->set($parameter);
+
+  if (isset($_POST["DeconvolutionAlgorithm"]))
+      $algorithm = strtoupper($_POST["DeconvolutionAlgorithm"]);
+  else {
+      $algorithmValue = $_SESSION['task_setting']->parameter("DeconvolutionAlgorithm")->value();
+      if ($algorithmValue != null)
+        $algorithm = strtoupper($algorithmValue);
+      else
+        $algorithm = "CMLE";
   }
   
-  $signalNoiseRatioParam =  $_SESSION['task_setting']->parameter("SignalNoiseRatio");
-  $signalNoiseRatio = $signalNoiseRatioParam->internalValue();
   $backgroundOffsetPercentParam =  $_SESSION['task_setting']->parameter("BackgroundOffsetPercent");
   $backgroundOffset = $backgroundOffsetPercentParam->internalValue();
-  for ($i=1; $i <= $_SESSION['task_setting']->numberOfChannels(); $i++) {
-    $signalNoiseRatioKey = "SignalNoiseRatio{$i}";
-    $backgroundOffsetKey = "BackgroundOffsetPercent{$i}";
+  for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
+    $signalNoiseRatioKey = "SignalNoiseRatio".$algorithm.$i;
+    $backgroundOffsetKey = "BackgroundOffsetPercent".$algorithm.$i;
     if (isset($_POST[$signalNoiseRatioKey])) {
-      $signalNoiseRatio[$i] = $_POST[$signalNoiseRatioKey];
-    } 
+      // enable ranges for the signal to noise ratio
+      $value = $_POST[$signalNoiseRatioKey];
+      $val = explode(" ", $value);
+      if (count($val) > 1) {
+        $values = array(NULL, NULL, NULL, NULL);
+        for ($j = 0; $j < count($val); $j++) {
+          $values[$j] = $val[$j];
+        }
+        $signalNoiseRatioRange[$i] = $values;
+      }
+      else {
+        $signalNoiseRatio[$i] = $_POST[$signalNoiseRatioKey];
+        //echo $signalNoiseRatio[$i]."<br />";
+      }
+    }
     if (isset($_POST[$backgroundOffsetKey])) {
       $backgroundOffset[$i] = $_POST[$backgroundOffsetKey];
     } 
   }
-  // get rid of extra values in case the number of channels is changed
-  /*$signalNoiseRatio = array_slice($signalNoiseRatio, 0, $_SESSION['setting']->numberOfChannels() + 1);
-  $backgroundOffset = array_slice($backgroundOffset, 0, $_SESSION['setting']->numberOfChannels() + 1);*/
-  $signalNoiseRatioParam->setValue($signalNoiseRatio);
-  $_SESSION['task_setting']->set($signalNoiseRatioParam);
+  $parameter = $_SESSION["task_setting"]->parameter("SignalNoiseRatioUseRange");
+  
+  if (isset($signalNoiseRatioRange) && count($signalNoiseRatioRange) > 0) {
+    // << ECHO
+    /*for ($i = 0; $i < count($signalNoiseRatioRange); $i++) {
+      $range = $signalNoiseRatioRange[$i];
+      for ($j = 0; $j < count($range); $j++) {
+        $val = $range[$j];
+        if ($val == NULL) $val = "NULL";
+        echo "signalNoiseRatioRange, channel ".$i." value ".$j." = ".$val."<br>";
+      }
+    }*/
+    $parameter->setValue("True");
+    $signalNoiseRatioRangeParam = $_SESSION['task_setting']->parameter("SignalNoiseRatioRange");
+    for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
+      if ($signalNoiseRatioRange[$i] == NULL) {
+        $signalNoiseRatioRange[$i] = array($signalNoiseRatio[$i], NULL, NULL, NULL);
+        //echo "value " . $signalNoiseRatio[$i] . " added in array for channel " . $i;
+      }
+    }
+    $signalNoiseRatioRangeParam->setValue($signalNoiseRatioRange);
+    $_SESSION['task_setting']->set($signalNoiseRatioRangeParam);
+  }
+  else if (count($_POST) > 0) {
+    $parameter->setValue("False");
+    $signalNoiseRatioParam = $_SESSION['task_setting']->parameter("SignalNoiseRatio");
+    $signalNoiseRatioParam->setValue($signalNoiseRatio);
+    $_SESSION['task_setting']->set($signalNoiseRatioParam);
+  }
+  $_SESSION["task_setting"]->set($parameter);
   $backgroundOffsetPercentParam->setValue($backgroundOffset);
   $_SESSION['task_setting']->set($backgroundOffsetPercentParam);
   
   if (isset($_POST['BackgroundEstimationMode']) && $_POST['BackgroundEstimationMode'] == "auto") {
     $parameter = $_SESSION['task_setting']->parameter("BackgroundOffsetPercent");
-    $parameter->setValue(array(1 => "auto"));
+    $parameter->setValue("auto");
     $_SESSION['task_setting']->set($parameter);
   }
   else if (isset($_POST['BackgroundEstimationMode']) && $_POST['BackgroundEstimationMode'] == "object") {
     $parameter = $_SESSION['task_setting']->parameter("BackgroundOffsetPercent");
-    $parameter->setValue(array(1 => "object"));
+    $parameter->setValue("object");
     $_SESSION['task_setting']->set($parameter);
   }
   
+  /*
   $signalNoiseRatioRangeParam = $_SESSION['task_setting']->parameter("SignalNoiseRatioRange");
   $backgroundOffsetRangeParam = $_SESSION['task_setting']->parameter("BackgroundOffsetRange");
   $numberOfIterationsRangeParam = $_SESSION['task_setting']->parameter("NumberOfIterationsRange");
   $signalNoiseRatioRange = $signalNoiseRatioRangeParam->value();
   $backgroundOffsetRange = $backgroundOffsetRangeParam->value();
   $numberOfIterationsRange = $numberOfIterationsRangeParam->value();
-  for ($i=1; $i <= 4; $i++) {
+  for ($i=0; $i < 4; $i++) {
     $signalNoiseRatioRangeKey = "SignalNoiseRatioRange{$i}";
     if (isset($_POST[$signalNoiseRatioRangeKey])) {
       $signalNoiseRatioRange[$i] = $_POST[$signalNoiseRatioRangeKey];
@@ -186,10 +226,50 @@ else {
   $_SESSION['task_setting']->set($signalNoiseRatioRangeParam);
   $_SESSION['task_setting']->set($backgroundOffsetRangeParam);
   $_SESSION['task_setting']->set($numberOfIterationsRangeParam);
+  */
+  // number of iterations: set the use of range to false if checkbox is unchecked
+  /*$parameter = $_SESSION["task_setting"]->parameter("NumberOfIterationsUseRange");
+  if (isset($_POST["OK"]) && !isset($_POST["NumberOfIterationsUseRange"])) {
+        $parameter = $_SESSION["task_setting"]->parameter("NumberOfIterationsUseRange");
+        $parameter->setValue("False");
+        $_SESSION["task_setting"]->set($parameter);
+  }*/
+  // enable ranges for the number of iterations
+  if (isset($_POST["NumberOfIterations"])) {
+    $value = $_POST["NumberOfIterations"];
+    $values = explode(" ", $value);
+    if (count($values) > 1) {
+      $parameter = $_SESSION["task_setting"]->parameter("NumberOfIterationsUseRange");
+      $parameter->setValue("True");
+      $_SESSION["task_setting"]->set($parameter);
+      $numberOfIterationsRangeParam = $_SESSION['task_setting']->parameter("NumberOfIterationsRange");
+      $numberOfIterationsRange = $numberOfIterationsRangeParam->value();
+      //$numberOfIterationsRange = array(NULL, NULL, NULL, NULL);
+      for ($i = 0; $i < count($values); $i++) {
+        $numberOfIterationsRange[$i] = $values[$i];
+      }
+      $numberOfIterationsRangeParam->setValue($numberOfIterationsRange);
+      $_SESSION['task_setting']->set($numberOfIterationsRangeParam);
+    }
+    else {
+      $parameter = $_SESSION["task_setting"]->parameter("NumberOfIterationsUseRange");
+      $parameter->setValue("False");
+      $_SESSION["task_setting"]->set($parameter);
+      $parameter = $_SESSION['task_setting']->parameter("NumberOfIterations");
+      $parameter->setValue($value);
+      $_SESSION['task_setting']->set($parameter);
+    }
+  }
   
   if (isset($_POST['QualityChangeStoppingCriterion'])) {
     $parameter = $_SESSION['task_setting']->parameter("QualityChangeStoppingCriterion");
     $parameter->setValue($_POST['QualityChangeStoppingCriterion']);
+    $_SESSION['task_setting']->set($parameter);
+  }
+  
+  if (isset($_POST['DeconvolutionAlgorithm'])) {
+    $parameter = $_SESSION['task_setting']->parameter("DeconvolutionAlgorithm");
+    $parameter->setValue($_POST['DeconvolutionAlgorithm']);
     $_SESSION['task_setting']->set($parameter);
   }
   
@@ -227,6 +307,57 @@ include("header.inc.php");
         <h3>Task Setting</h3>
         
         <form method="post" action="" id="select">
+          
+             <fieldset class="setting">  <!-- deconvolution algorithm -->
+            
+                <legend>
+                    <a href="javascript:openWindow('http://support.svi.nl/wiki/RestorationMethod')"><img src="images/help.png" alt="?" /></a>
+                    deconvolution algorithm
+                </legend>
+
+<?php
+
+$onChange = "onChange=\"javascript:switchSnrMode()\"";
+
+?>
+                <select name="DeconvolutionAlgorithm" <?php echo $onChange ?>>
+                
+<?php
+
+$parameter = $_SESSION['task_setting']->parameter("DeconvolutionAlgorithm");
+$possibleValues = $parameter->possibleValues();
+$selectedValue  = $parameter->value();
+
+// This restores the default behavior in case the entry "DeconvolutionAlgorithm"
+// is not in the database
+if ( empty( $possibleValues ) == true )
+{
+  $possibleValues[0] = "cmle";
+  $parameter = $_SESSION['task_setting']->parameter("DeconvolutionAlgorithm");
+  $parameter->setValue( "cmle" );
+  $_SESSION['task_setting']->set($parameter);
+}
+  
+foreach($possibleValues as $possibleValue) {
+  $translation = $_SESSION['task_setting']->translation("DeconvolutionAlgorithm", $possibleValue);
+  // This restores the default behavior in case the entry "DeconvolutionAlgorithm"
+  // is not in the database
+  if ( $translation == false )
+    $translation = "cmle";
+
+  if ( $possibleValue == $selectedValue ) {
+      $option = "selected=\"selected\"";
+  } else {
+      $option = "";
+  }
+?>
+                    <option <?php echo $option?> value="<?php echo $possibleValue?>"><?php echo $translation?></option>
+<?php
+}
+?>
+                </select>
+                
+            </fieldset>
         
             <fieldset class="setting">  <!-- signal/noise ratio -->
             
@@ -234,23 +365,112 @@ include("header.inc.php");
                     <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=SignalToNoiseRatio')"><img src="images/help.png" alt="?" /></a>
                     signal/noise ratio
                 </legend>
-                
-                <div id="snr">
-                
-                    <div class="multichannel">
+
 <?php
 
-$parameter = $_SESSION['task_setting']->parameter("SignalNoiseRatio");
-$value = $parameter->value();
-for ($i=1; $i <= $_SESSION['task_setting']->numberOfChannels(); $i++) {
+$parameter = $_SESSION["task_setting"]->parameter("SignalNoiseRatioUseRange");
+if ($parameter->isTrue()) {
+  $signalNoiseRatioRangeParam = $_SESSION['task_setting']->parameter("SignalNoiseRatioRange");
+  $signalNoiseRatioRange = $signalNoiseRatioRangeParam->value();
+}
+else {
+  $signalNoiseRatioParam = $_SESSION['task_setting']->parameter("SignalNoiseRatio");
+  $signalNoiseRatioValue = $signalNoiseRatioParam->value();
+}
 
 ?>
-                        <span class="nowrap">Ch<?php echo $i ?>:<span class="multichannel"><input name="SignalNoiseRatio<?php echo $i ?>" type="text" size="8" value="<?php echo $value[$i] ?>" class="multichannelinput" /></span>&nbsp;</span>
+                <div id="snr">
+
+<?php
+
+$visibility = " style=\"display: none\"";
+if ($selectedValue == "cmle")
+  $visibility = " style=\"display: block\"";
+
+?>
+                    <div id="cmle-snr" class="multichannel"<?php echo $visibility?>>
+<?php
+
+for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
+  
+  if ($parameter->isTrue()) {
+    $signalNoiseRatioValues = $signalNoiseRatioRange[$i];
+    $value = $signalNoiseRatioValues[0];
+    for ($j = 1; $j < count($signalNoiseRatioValues); $j++){
+      if ($signalNoiseRatioValues[$j])
+        $value .= " " . $signalNoiseRatioValues[$j];
+    }
+  }
+  else {
+    $value = "";
+    if ($selectedValue == "cmle")
+        $value = $signalNoiseRatioValue[$i];
+  }
+
+?>
+                        <span class="nowrap">Ch<?php echo $i ?>:<span class="multichannel"><input name="SignalNoiseRatioCMLE<?php echo $i ?>" type="text" size="8" value="<?php echo $value ?>" class="multichannelinput" /></span>&nbsp;</span>
 <?php
 
 }
 
 ?>
+                    </div>
+                    
+<?php
+
+$visibility = " style=\"display: none\"";
+if ($selectedValue == "qmle")
+  $visibility = " style=\"display: block\"";
+
+?>
+                    <div id="qmle-snr" class="multichannel"<?php echo $visibility?>>
+
+<?php
+
+for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
+
+?>
+                        <span class="nowrap">Ch<?php echo $i ?>:
+                            <select name="SignalNoiseRatioQMLE<?php echo $i ?>">
+<?php
+
+  for ($j = 1; $j <= 4; $j++) {
+      $option = "                                <option ";
+      if (isset($signalNoiseRatioValue)) {
+          if ($signalNoiseRatioValue[$i] >= 1 && $signalNoiseRatioValue[$i] <= 4) {
+            if ($j == $signalNoiseRatioValue[$i])
+                $option .= "selected=\"selected\" ";
+          }
+          else {
+              if ($j == 2)
+                $option .= "selected=\"selected\" ";
+          }
+      }
+      else {
+          if ($j == 2)
+            $option .= "selected=\"selected\" ";
+      }
+      $option .= "value=\"".$j."\">";
+      if ($j == 1)
+        $option .= "low</option>";
+      else if ($j == 2)
+        $option .= "fair</option>";
+      else if ($j == 3)
+        $option .= "good</option>";
+      else if ($j == 4)
+        $option .= "inf</option>";
+      echo $option;
+  }
+
+?>
+                            </select>
+                        </span>
+<?php
+
+}
+
+?>
+
                     </div>
                     
                 </div>
@@ -272,7 +492,7 @@ $backgroundOffsetPercentParam =  $_SESSION['task_setting']->parameter("Backgroun
 $backgroundOffset = $backgroundOffsetPercentParam->internalValue();
 
 $flag = "";
-if ($backgroundOffset[1] == "auto") $flag = " checked=\"checked\"";
+if ($backgroundOffset[0] == "" || $backgroundOffset[0] == "auto") $flag = " checked=\"checked\"";
 
 ?>
 
@@ -281,7 +501,7 @@ if ($backgroundOffset[1] == "auto") $flag = " checked=\"checked\"";
 <?php
 
 $flag = "";
-if ($backgroundOffset[1] == "object") $flag = " checked=\"checked\"";
+if ($backgroundOffset[0] == "object") $flag = " checked=\"checked\"";
 
 ?>
 
@@ -290,18 +510,18 @@ if ($backgroundOffset[1] == "object") $flag = " checked=\"checked\"";
 <?php
 
 $flag = "";
-if ($backgroundOffset != null && $backgroundOffset[1] == "") $flag = " checked=\"checked\"";
+if ($backgroundOffset[0] != "" && $backgroundOffset[0] != "auto" && $backgroundOffset[0] != "object") $flag = " checked=\"checked\"";
 
 ?>
                     <input type="radio" name="BackgroundEstimationMode" value="manual"<?php echo $flag ?> />
-                    remove % of the detected background
+                    remove constant absolute value
                     
                     <div class="multichannel">
 <?php
 
-for ($i=1; $i <= $_SESSION['task_setting']->numberOfChannels(); $i++) {
+for ($i=0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
   $val = "";
-  if ($backgroundOffset[1] != "auto" && $backgroundOffset[1] != "object" && $i < sizeof($backgroundOffset)) $val = $backgroundOffset[$i];
+  if ($backgroundOffset[0] != "auto" && $backgroundOffset[0] != "object") $val = $backgroundOffset[$i];
 
 ?>
                         <span class="nowrap">Ch<?php echo $i ?>:<span class="multichannel"><input name="BackgroundOffsetPercent<?php echo $i ?>" type="text" size="8" value="<?php echo $val ?>" class="multichannelinput" /></span>&nbsp;</span>
@@ -332,54 +552,24 @@ for ($i=1; $i <= $_SESSION['task_setting']->numberOfChannels(); $i++) {
 
 $parameter = $_SESSION['task_setting']->parameter("NumberOfIterations");
 $value = 40;
-if ($parameter->value() != null) {
+if ($parameter->value() != NULL) {
   $value = $parameter->value();
 }
 
-?>
-                    <input name="NumberOfIterations" type="text" size="3" value="<?php echo $value ?>" />
-                    
-                    <p />
-                    
-<?php
-
-if (!$noRange) {
-
-?>
-                    <div style="text-align: left">
-                    
-<?php
-
-$parameter = $_SESSION['task_setting']->parameter("NumberOfIterationsUseRange");
-
-?>
-                        <?php echo $parameter->printCheckBox(""); ?>
-                        
-                        try multiple values
-                    
-<?php
-
-$numberOfIterationsRangeParam = $_SESSION['task_setting']->parameter("NumberOfIterationsRange");
-$numberOfIterationsRange = $numberOfIterationsRangeParam->value();
-
-
-  for ($i=1; $i <= 4; $i++) {
-
-?>
-                        <input name="NumberOfIterationsRange<?php echo $i ?>" type="text" size="3" value="<?php echo $numberOfIterationsRange[$i] ?>" class="multichannelinput" />
-                        
-<?php
-
+$parameter = $_SESSION["task_setting"]->parameter("NumberOfIterationsUseRange");
+if ($parameter->isTrue()) {
+  $numberOfIterationsRangeParam = $_SESSION['task_setting']->parameter("NumberOfIterationsRange");
+  $numberOfIterationsRange = $numberOfIterationsRangeParam->value();
+  $value = $numberOfIterationsRange[0];
+  for ($i = 1; $i < 4; $i++){
+    if ($numberOfIterationsRange[$i] != NULL)
+      $value .= " " . $numberOfIterationsRange[$i];
   }
-
-?>
-                    </div>
-<?php
-
 }
 
 ?>
-
+                    <input name="NumberOfIterations" type="text" size="8" value="<?php echo $value ?>" />
+                    
                     <p />
                     
                     <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=QualityCriterion')"><img src="images/help.png" alt="?" /></a>

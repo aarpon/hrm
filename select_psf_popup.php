@@ -62,14 +62,21 @@ if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
 
 // fileserver related code
 if (!isset($_SESSION['fileserver'])) {
-  session_register("fileserver");
+  # session_register("fileserver");
   $name = $_SESSION['user']->name();
   $_SESSION['fileserver'] = new Fileserver($name);
 }
 
-$message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
-
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
+$mTypeSetting = $_SESSION['setting']->parameter("MicroscopeType")->translatedValue();
+$twoPhoton = $_SESSION['setting']->isTwoPhoton();
+if ( $twoPhoton ) {
+    $mTypeSetting = "multiphoton";
+}
+$NAsetting = $_SESSION['setting']->parameter("NumericalAperture")->value();
+$emSettingArr = $_SESSION['setting']->parameter("EmissionWavelength")->value();
+$chan = $_GET["channel"];
+$emSetting = $emSettingArr[$chan];
 
 ?>
 
@@ -105,14 +112,48 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
       <fieldset>
       
         <legend>available PSF files</legend>
-        
+<?php        
+$files = $_SESSION['fileserver']->files("ics");
+$data = $_SESSION['fileserver']->getMetaData("ics");
+?>
         <div id="userfiles">
           <select name="userfiles[]" size="10" onchange="lock(this)">
 <?php
 
-$files = $_SESSION['fileserver']->files("ics");
+$showWarning = false;
+
 foreach ($files as $file) {
-  print "            <option value=\"$file\">$file</option>\n";
+  $mType =  $data[$file]['mType'][0];
+  $nChan = $data[$file]['dimensions'][4];
+  if ( $nChan == 0 ) {
+      $nChan = 1;
+  }
+  $NA = $data[$file]['NA'][0];
+  $pCnt = $data[$file]['photonCnt'][0];
+  if ($pCnt > 1) { 
+      $mType = "multiphoton";
+  }
+  $ex = $data[$file]['lambdaEx'][0];
+  $em = $data[$file]['lambdaEm'][0];
+
+  $style = "";
+  $mismatch = false;
+  if ($mType != $mTypeSetting ) {
+      $mismatch = true;
+  }
+  if (abs($NA - $NAsetting) / $NA > .02 ) {
+      $mismatch = true;
+  }
+  if (abs($em - $emSetting) / $emSetting > .05 ) {
+      $mismatch = true;
+  }
+  if ($mismatch ) {
+      $showWarning = true;
+      $style = "class=\"info\" ";
+  }
+
+  print "            <option value=\"$file\" $style>$file ".
+        "($mType, NA = $NA, em = $em nm, $nChan chan) </option>\n";
 }
 
 ?>
@@ -135,7 +176,17 @@ foreach ($files as $file) {
     <div id="message">
 <?php
 
-  print $message;
+  # print $message;
+
+  if ( $showWarning ) {
+        print "<p class=\"message\">&nbsp;<br />".
+        "Files with parameters very different than those ".
+        "in the current setting ".
+        "($mTypeSetting, NA=$NAsetting, emission = $emSetting nm) ".
+        "are <i class=\"info\">highligthed</i> and could produce ".
+        "unexpected results.</p>";
+  }
+
 
 ?>
     </div>

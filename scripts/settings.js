@@ -37,8 +37,8 @@ function forceGeometry() {
     for (var i = 0; i < document.forms["select"].elements.length; i++) {
         var e = document.forms["select"].elements[i];
         if (e.name == 'ImageGeometry') {
-           e.disabled = true;
-           e.checked = false;
+            e.disabled = true;
+            e.checked = false;
         }
     }
     document.forms["select"].elements["geometry"].style.color = "grey";
@@ -48,8 +48,8 @@ function fixGeometry(geometry) {
     for (var i = 0; i < document.forms["select"].elements.length; i++) {
         var e = document.forms["select"].elements[i];
         if (e.name == 'ImageGeometry') {
-           e.disabled = true;
-           if (e.value == geometry)
+            e.disabled = true;
+            if (e.value == geometry)
                 e.checked = true;
         }
     }
@@ -60,8 +60,8 @@ function fixChannels(channels) {
     for (var i = 0; i < document.forms["select"].elements.length; i++) {
         var e = document.forms["select"].elements[i];
         if (e.name == 'NumberOfChannels') {
-           e.disabled = true;
-           if (e.value == channels)
+            e.disabled = true;
+            if (e.value == channels)
                 e.checked = true;
         }
     }
@@ -77,9 +77,61 @@ function fixGeometryAndChannels(geometry, channels) {
 function seek(channel) {
     var url = "select_psf_popup.php?channel=" + channel;
     var name = "snitch";
-    var options = "directories = no, menubar = no, status = no, width = 560, height = 280";
+    var options = "directories = no, menubar = no, status = no, width = 560, height = 400";
     snitch = window.open(url, name, options);
     snitch.focus();
 }
 
 window.onunload = function() {if (snitch != null) snitch.close()};
+
+function fixCoverslip( state ) {
+    for (var i = 0; i < document.forms["select"].elements.length; i++) {
+        var e = document.forms["select"].elements[i];
+        if (e.name == 'CoverslipRelativePosition') {
+            e.disabled = state;
+        }
+    }
+}
+
+function switchSnrMode() {
+    changeVisibility('cmle-snr');
+    changeVisibility('qmle-snr');
+}
+
+function switchCorrection() {
+    var element = document.getElementById('PerformAberrationCorrection');
+    if (element.selectedIndex == 1) {
+        show('CoverslipRelativePositionDiv');
+        show('AberrationCorrectionModeDiv');
+        switchAdvancedCorrection();
+    }
+    else {
+        hide('CoverslipRelativePositionDiv');
+        hide('AberrationCorrectionModeDiv');
+        hide('AdvancedCorrectionOptionsDiv');
+    }
+    switchAdvancedCorrectionScheme()
+}
+
+function switchAdvancedCorrection() {
+    var element = document.getElementById('AberrationCorrectionMode');
+    var chosenoption = element.options[element.selectedIndex];
+    if (chosenoption.value == 'advanced') {
+        show('AdvancedCorrectionOptionsDiv');
+    }
+    else {
+        hide('AdvancedCorrectionOptionsDiv');
+    }
+    switchAdvancedCorrectionScheme();
+}
+
+function switchAdvancedCorrectionScheme() {
+    var element = document.getElementById('AdvancedCorrectionOptions');
+    var chosenoption = element.options[element.selectedIndex];
+    if (chosenoption.value == 'user') {
+        show('PSFGenerationDepthDiv');
+    }
+    else {
+        hide('PSFGenerationDepthDiv');
+    }
+}

@@ -72,12 +72,12 @@ if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
 }
 
 if (!isset($_SESSION['taskeditor'])) {
-  session_register('taskeditor');
+  # session_register('taskeditor');
   $_SESSION['taskeditor'] = new TaskSettingEditor($_SESSION['user']);
 }
 
 if (isset($_SESSION['task_setting'])) {
-  session_register("task_setting");
+  # session_register("task_setting");
 }
 
 // add public setting support
@@ -131,12 +131,17 @@ else if (isset($_POST['delete'])) {
 }
 else if (isset($_POST['OK'])) {
   if (!isset($_POST['task_setting'])) {
-    $message = "            <p class=\"warning\">Please select a parameter setting</p>\n";
+    $message = "            <p class=\"warning\">Please select a task setting</p>\n";
   }
   else {
     $_SESSION['task_setting'] = $_SESSION['taskeditor']->loadSelectedSetting();
     $_SESSION['task_setting']->setNumberOfChannels($_SESSION['setting']->numberOfChannels());
-    header("Location: " . "select_images.php"); exit();
+    $ok = $_SESSION['task_setting']->checkParameter();
+    if ($ok) {
+      header("Location: " . "select_images.php"); exit();
+    }
+    //$message = "            <p class=\"warning\">Values for some channels are missing, please edit the selected task setting</p>\n";
+    $message = "            <p class=\"warning\">".$_SESSION['task_setting']->message()."</p>\n";
   }
 }
 
@@ -178,6 +183,18 @@ if ($enableUserAdmin || $_SESSION['user']->name() == "admin") {
 
 ?>
             <li><a href="job_queue.php">queue</a></li>
+            <li><a href="file_management.php">files</a></li>
+<?php
+
+if ($enableUserAdmin && $_SESSION['user']->name() == "admin") {
+
+?>
+            <li><a href="update.php">update</a></li>
+<?php
+
+}
+
+?>
             <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpSelectTaskSettings')">help</a></li>
         </ul>
     </div>

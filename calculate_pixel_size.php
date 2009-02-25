@@ -55,6 +55,8 @@ require_once ("./inc/User.inc");
 
 session_start();
 
+$message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
+
 if (isset ($_GET['exited'])) {
 	$_SESSION['user']->logout();
 	session_unset();
@@ -72,42 +74,39 @@ if (isset($_POST['CCDCaptorSize'])) {
 	$_SESSION['CCDCaptorSize'] = $_POST['CCDCaptorSize'];
 }
 
-$names = array("Binning", "CMount", "TubeFactor");
-foreach ($names as $name) {
-  if (isset($_POST[$name])) {
-    $parameter = $_SESSION['setting']->parameter($name);
-    $parameter->setValue($_POST[$name]);
-    $_SESSION['setting']->set($parameter);
-  }
-}
-
 if (isset($_POST['CCDCaptorSize'])) {
-	$ccd = $_SESSION['CCDCaptorSize'];
-	$bin = $_SESSION['setting']->parameter('Binning');
-	$bin = $bin->value();
-	$obm = $_SESSION['setting']->parameter('ObjectiveMagnification');
-	$obm = $obm->value();
-	$cmf =  $_SESSION['setting']->parameter('CMount');
-	$cmf = $cmf->value();
-	$tf =  $_SESSION['setting']->parameter('TubeFactor');
-	$tf = $tf->value();
-	$pixelSize =  (floatval($ccd) * floatval($bin)) / (floatval($obm)*floatval($cmf)*floatval($tf));
-	$parameter = $_SESSION['setting']->parameter('CCDCaptorSizeX');
+        
+	$ccd = $_SESSION['CCDCaptorSize'];      // ccd captor size (different form 'CCDCaptorSizeX'!). It's of use uf calculating CCDCaptorSizeX.
+
+	// Get all parameters from the form
+	$bin = $_POST['Binning'];
+	$obm = $_POST['ObjectiveMagnification'];
+	$cmf = $_POST['CMount'];
+	$tf  = $_POST['TubeFactor'];
+       
+	$pixelSize =  (floatval($ccd) * floatval($bin)) / (floatval($obm)*floatval($cmf)*floatval($tf));        // compute the theoretical value for the pixel size
+        
+	$parameter = $_SESSION['setting']->parameter('CCDCaptorSizeX'); // set the value for CCDCaptorSizeX 
 	$parameter->setValue($pixelSize);
 	$_SESSION['setting']->set($parameter);
-	header("Location: " . "capturing_parameter.php"); 
-	exit();
+        
+        //check if the paramaters of this page have been correctly set
+        $ok = $_SESSION['setting']->checkCalculateParameter();  // $_SESSION['setting'] is an object ParameterSetting
+        $message = "            <p class=\"warning\">".$_SESSION['setting']->message()."</p>\n";
+        if($ok) {
+                header("Location: " . "capturing_parameter.php"); 
+                exit();
+        }
 }
 
-$message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
 
 $script = "settings.js";
 include ("header.inc.php");
 ?>
 
-<div id="nav">
-        <ul>
-            <li><a href="select_images.php?exited=exited">exit</a></li>
+<div id="nav">  
+        <ul>       
+            <li><a href="select_images.php?exited=exited">exit</a></li>    
             <li><a href="javascript:openWindow('')">help</a></li>
         </ul>
 </div>
@@ -115,14 +114,20 @@ include ("header.inc.php");
 <div id="content">
     
     <h3>Parameter Setting - Calculate Pixel Size</h3>
-    
+
+    <h4>Please mind that these parameters are only used to calculate the pixel size are not stored!</h4> 
+ 
     <form method="post" action="calculate_pixel_size.php" id="select">
     
        <fieldset class="setting">
+
     <?php
 
-$textForCaptorSize = "size of the ccd element (nm)";
-$value = $_SESSION['CCDCaptorSize'];
+$textForCaptorSize = "size of the CCD element (nm)";
+$value = '';
+if(isset($_SESSION['CCDCaptorSize']))
+        $value = $_SESSION['CCDCaptorSize'];
+        
 ?>
     <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpCCD')"><img src="images/help.png" alt="?" /></a>
     		 <?php echo $textForCaptorSize ?>:
@@ -172,9 +177,30 @@ $parameter = $_SESSION['setting']->parameter("TubeFactor");
 $value = $parameter->value();
 ?>                
 <?php echo "tube-factor" ?>:
-                        <input name="TubeFactor" type="text" size="5" value="<?php echo $value ?>" />
+                        <input name="TubeFactor" type="text" size="5" value="<?php echo $value ?>" /> <br />
                         
+<a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=ObjectiveMagnification')"><img src="images/help.png" alt="?" /></a>
+                objective magnification:
+                
+                <select name="ObjectiveMagnification" size="1">
+<?php
 
+$parameter = $_SESSION['setting']->parameter("ObjectiveMagnification");
+$sortedPossibleValues = $parameter->possibleValues();
+sort( $sortedPossibleValues, SORT_NUMERIC );
+foreach ( $sortedPossibleValues as $possibleValue) {
+  $flag = "";
+  if ($possibleValue == $parameter->value()) $flag = " selected=\"selected\"";
+
+?>
+                    <option<?php echo $flag ?>><?php echo $possibleValue ?></option>
+<?php
+
+}
+
+?>
+                </select>
+                X
                         
             </fieldset>
     <div><input name="OK" type="hidden" /></div>
@@ -198,10 +224,11 @@ $value = $parameter->value();
         </div>
         
         <div id="message">
+                
 <?php
 
-
 echo $message;
+
 ?>
         </div>
         

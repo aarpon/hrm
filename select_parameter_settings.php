@@ -73,12 +73,12 @@ if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
 }
 
 if (!isset($_SESSION['editor'])) {
-  session_register("editor");
+  # session_register("editor");
   $_SESSION['editor'] = new SettingEditor($_SESSION['user']);
 }
 
 if (isset($_SESSION['setting'])) {
-  session_register("setting");
+  # session_register("setting");
 }
 
 // add public setting support
@@ -90,7 +90,7 @@ if ($_SESSION['user']->name() != "admin") {
 
 // fileserver related code (for measured PSF files check)
 if (!isset($_SESSION['fileserver'])) {
-  session_register("fileserver");
+  # session_register("fileserver");
   $name = $_SESSION['user']->name();
   $_SESSION['fileserver'] = new Fileserver($name);
 }
@@ -151,15 +151,30 @@ else if (isset($_POST['OK'])) {
       $value = $psf->value();
       $files = $_SESSION['fileserver']->allFiles();
       if ($files != null) {
-        for ($i=1; $i <= $_SESSION['setting']->numberOfChannels(); $i++) {
+        for ($i=0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
           if (!in_array($value[$i], $files)) {
             $message = "            <p class=\"warning\">Please verify selected setting, as some PSF files appear to be missing</p>\n";
             $ok = False;
             break;
           }
         }
-      }
-      else {
+        // If a parameter setting with measured PSF was created before HRM 1.1,
+        // all microscope parameters would be empty. This behavior was changed
+        // in HRM 1.1, thus meaning that existing settings must be checked for
+        // completeness.
+        // We will check just a couple of parameters -- we do not neet to check
+        // them all, since in case of measured PSF even existing parameters were
+        // purged.
+        $microscopeType    = $_SESSION['setting']->parameter("MicroscopeType")->value( );
+        $numericalAperture = $_SESSION['setting']->parameter("NumericalAperture")->value( );
+        $ccdCaptorSize     = $_SESSION['setting']->parameter("CCDCaptorSizeX")->value( );
+        if ( empty( $microscopeType ) ||
+             empty( $numericalAperture ) ||
+             empty( $ccdCaptorSize ) ) {
+                $message = "            <p class=\"warning\">Please check this setting for completeness! Current version of HRM requires that all parameters are set even if a measured PSF is chosen.</p>\n";
+                $ok = False;
+        }          
+      } else {
         $message = "            <p class=\"warning\">Source image folder not found! Make sure path ".$_SESSION['fileserver']->sourceFolder()." exists.</p>\n";
         $ok = False;
       }
@@ -206,6 +221,18 @@ if ($enableUserAdmin || $_SESSION['user']->name() == "admin") {
 
 ?>
             <li><a href="job_queue.php">queue</a></li>
+            <li><a href="file_management.php">files</a></li>
+<?php
+
+if ($enableUserAdmin && $_SESSION['user']->name() == "admin") {
+
+?>
+            <li><a href="update.php">update</a></li>
+<?php
+
+}
+
+?>
             <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpSelectParameterSettings')">help</a></li>
         </ul>
     </div>

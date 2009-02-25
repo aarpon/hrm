@@ -59,39 +59,6 @@ require_once ("Fileserver.inc");
 require_once ("Shell.inc");
 require_once ("Mail.inc");
 
-//!---------------------------------------------------------
-// @function    report
-// @desc        Write text to the logfile if level is not
-//              bigger than log_verbosity. If logfile becomes
-//              to big it is renamed and started over.
-// @param       text  String  The text to be logged
-// @param       level  Int    The log level of the text
-// @return      Void
-//!---------------------------------------------------------
-function report($text, $level) {
-	global $log_verbosity;
-	global $logfile;
-	global $logfile_max_size;
-
-    $text = date("Y-m-d H:i:s"). " ".$text;
-
-	if ($log_verbosity == 0)
-		return True;
-	if (file_exists($logfile) && (filesize($logfile) > $logfile_max_size * 1000 * 1000)) {
-		if (file_exists($logfile . ".old")) {
-			unlink($logfile . ".old");
-		}
-		rename($logfile, $logfile . ".old");
-	}
-	$file = fopen($logfile, 'a');
-	if ($log_verbosity >= $level) {
-		fwrite($file, $text);
-		fwrite($file, "\n");
-		fflush($file);
-	}
-	fclose($file);
-}
-
 // TODO better manage multiple hosts
 function newExternalProcessFor($host, $logfilename, $errfilename) {
 	global $imageProcessingIsOnQueueManager;
@@ -186,14 +153,15 @@ Class Job {
 		$this->script = $this->script . "catch {\n";
 		$this->script = $this->script . "huOpt gundo off\n";
 		if ($setting->isMultiChannel() && ($setting->numberOfChannels() > 1)) {
-			$this->script = $this->script . $desc->putMultiChannelScriptOn('');
+			$this->script = $this->script . $desc->putMultiChannelScriptOn('', true);
 		} else {
-			$this->script = $this->script . $desc->putScriptOn('');
+			$this->script = $this->script . $desc->putScriptOn('', true);
 		}
 		$this->script = $this->script . "}\n";
-		$id = $desc->id();
-		$finishedMarker = $desc->sourceFolder() . '.finished_' . "$id";
-		$this->script = $this->script . "exec touch " . '"' . $finishedMarker . '"' . "\n";
+        $id = $desc->id();
+        $finishedMarker = $desc->sourceFolder() . '.finished_' . "$id";
+        $this->script = $this->script . "exec touch " . '"' . 
+            $finishedMarker . '"' . "\n";
 		$this->script = $this->script . "exit\n";
 	}
 
@@ -213,9 +181,18 @@ Class Job {
 		$scriptPath = $fileserver->sourceFolder();
 		$scriptFile = $scriptPath . "/" . $scriptName;
 		$file = fopen($scriptFile, "w");
-		$result = $result && (fwrite($file, $this->script) > 0);
-		fclose($file);
-		report("Wrote script $scriptFile", 1);
+        if (! $file ) {
+            report ("Error opening file $scriptFile, verify permissions!", 0);
+            // If permissions fail, introduce some delay not to saturate the
+            // log file!
+            report ("Waiting 15 seconds...", 1);
+            sleep(15);
+            return False;
+        } else {
+            $result = $result && (fwrite($file, $this->script) > 0);
+            fclose($file);
+            report("Wrote script $scriptFile", 1);
+        }
 		return $result;
 	}
 	
@@ -251,8 +228,13 @@ Class Job {
 			$image = $huygens_server_image_folder . $user->name() . "/" . $image_destination . "/" . $desc->relativeSourcePath() . $resultImage;
 			// escape special characters in image path
 			$image = eregi_replace(" ", "\\ ", $image);
-			exec("mkdir -p " . escapeshellarg($path));
-			exec("(cd " . escapeshellarg($path) . " && scp " . $huygens_user . "@" . $server_hostname . ":" . escapeshellarg($image) . " .)");
+			//error_log("Retrieving result image...");
+			//error_log("sudo mkdir -p " . escapeshellarg($path));
+			$result = exec("sudo mkdir -p " . escapeshellarg($path));
+			//error_log($result);
+			//error_log("(cd " . escapeshellarg($path) . " && scp " . $huygens_user . "@" . $server_hostname . ":" . escapeshellarg($image) . " .)");
+			$result = exec("(cd " . escapeshellarg($path) . " && sudo scp " . $huygens_user . "@" . $server_hostname . ":" . escapeshellarg($image) . " .)");
+			//error_log($result);
 		}
 		
 		// TODO is checking for job id only a good idea?
@@ -291,12 +273,11 @@ Class Job {
 			//error_log("ssh " . $huygens_user . "@" . $server_hostname . " ls " . $marker);
 			//error_log($result);
 			if ($result == $marker) {
-				exec("(cd " . $path . " && scp " . $huygens_user . "@" . $server_hostname . ":" . $marker . " .)");
+				exec("(cd " . $path . " && sudo scp " . $huygens_user . "@" . $server_hostname . ":" . $marker . " .)");
 			}
 		}
 		
 		// TODO check why $result is overwritten
-		// Why bother checking for finished marker if process can be checked instead?
 		$result = file_exists($path . '/' . $finishedMarker);
 		if ($imageProcessingIsOnQueueManager) {
 			$proc = newExternalProcessFor($this->server(), $this->server() . "_out.txt", $this->server() . "_error.txt");
@@ -322,11 +303,13 @@ Class QueueManager {
 	var $shallStop;
 	// TODO make it a local variable
 	var $stopTime;
+	var $nping;
 
 	function QueueManager() {
 		$this->runningJobs = array ();
 		$this->queue = new JobQueue();
 		$this->shallStop = False;
+		$this->nping = array();
 	}
 
 	function setJob($job) {
@@ -340,6 +323,7 @@ Class QueueManager {
 	function executeScript() {
 		global $imageProcessingIsOnQueueManager;
 		global $copy_images_to_huygens_server;
+		global $logdir;
 		
 		$job = $this->job;
 		$server = $this->freeServer;
@@ -364,13 +348,13 @@ Class QueueManager {
 				break;
 			$input = fgets($proc->out_file);
 			if (strstr($input, "Microscope types of original and PSF differ:")) {
-				$warning_file = fopen($server . "_warning.txt", "a");
+				$warning_file = fopen($logdir . "/" . $server . "_warning.txt", "a");
 				fwrite($warning_file, "[" . $desc->id() . "] Microscope types of original and PSF differ\n");
 				fclose($warning_file);
 				break;
 			}
 			else if (strstr($input, "After necessary resampling the PSF is too small.")) {
-				$warning_file = fopen($server . "_warning.txt", "a");
+				$warning_file = fopen($logdir . "/" . $server . "_warning.txt", "a");
 				fwrite($warning_file, "[" . $desc->id() . "] After necessary resampling the PSF is too small\n");
 				fclose($warning_file);
 				break;
@@ -415,16 +399,27 @@ Class QueueManager {
 				}
 			}
 			$filename = $image_folder . "/" . $user->name() . "/" . $image_source . "/" . $file;
-			if (strstr($filename, ".ics"))  {
+			if (stristr($filename, ".ics"))  {
 				$batch .= "put \"" . $filename . "\"\n";
 				$filename = eregi_replace(".ics", ".ids", $filename);
 				$batch .= "put \"" . $filename . "\"\n";
 			}
-			else if (strstr($filename, ".tif") || strstr($filename, ".tiff")) {
+			else if (stristr($filename, ".tif") || stristr($filename, ".tiff")) {
 				// TODO: if ImageFileFormat = single TIFF file, do not send corresponding series
-				$basename = preg_replace("/([^_]+|\/)(_)(t|z|ch)([0-9]+)(\w+)(\.)(\w+)/", "$1$6$7", $filename);
+				$basename = preg_replace("/([^_]+|\/)(_)(T|t|Z|z|CH|ch)([0-9]+)(\w+)(\.)(\w+)/", "$1$6$7", $filename);
 				$name = preg_replace("/(.*)\.tiff?$/", "$1", $basename);
 				$batch .= "put \"" . $name . "*\"\n";
+			}
+                        else if (stristr($filename, ".stk")) {
+				// if ImageFileFormat = STK time series, send all timepoints
+                                if (stripos($filename, "_t")) {
+                                        $basename = preg_replace("/([^_]+|\/)(_)(T|t)([0-9]+)(\.)(\w+)/", "$1", $filename);
+                                        //$name = preg_replace("/(.*)\.[STK|stk]$/", "$1", $basename);
+                                        $batch .= "put \"" . $basename . "*\"\n";
+                                }
+                                else {
+                                        $batch .= "put \"" . $filename . "\"\n";
+                                }
 			}
 			else {
 				$batch .= "put \"" . $filename . "\"\n";
@@ -466,7 +461,10 @@ Class QueueManager {
 			if ($fileserver->isReachable()) {
 				$foundExecutableJob = True;
 			} else {
-				report("fileserver not reachable", 2);
+                                $src = $fileserver->sourceFolder();
+                                $dest = $fileserver->destionationFolder();
+                                report("fileserver not reachable: $src or $dest".
+                                "do not exist", 2);
 				$pausedJobs = True;
 				$queue->pauseJob($jobDescription);
 				return NULL;
@@ -509,7 +507,7 @@ Class QueueManager {
 		}
 		// remove job
 		$this->stopTime = $queue->stopJob($job);
-		report("stopped job (" . date("l d of F Y h:i:s A") . ")\n", 1);
+		report("stopped job (" . date("l d F Y h:i:s A") . ")\n", 1);
 	}
 	
 	// TODO refactor this
@@ -553,8 +551,8 @@ Class QueueManager {
                         //$result = exec("chown -R " . $huygens_user . ":" . $huygens_group . " " . $image_folder . "/" . $username);
                         //error_log($result);
                         
-                $result = exec("chown -R " . $image_user . ":" . $image_group . " " . $image_folder . "/" . $username);
-                error_log($result);
+                $result = exec("sudo chown -R " . $image_user . ":" . $image_group . " " . $image_folder . "/" . $username);
+                error_log("Restoring ownership... " . $result);
         }
 	
 	// TODO refactor this
@@ -563,13 +561,20 @@ Class QueueManager {
 		global $use_accounting_system;
 		global $accounting_client_name;
 		global $send_mail;
+		global $logdir;
 		
 		// TODO check if it is necessary
 		$queue = $this->queue;
 		// Remove broken jobs
-		$queue->removeMarkedJobs();
+		if ($queue->removeMarkedJobs())
+                        report("broken jobs removed", 2);
 		$runningJobs = $queue->runningJobs();
-		report(count($runningJobs) . " job" . (count($runningJobs) == 1 ? " is" : "s are") . " running", 2);
+        if (count($runningJobs) > 0) {
+            report(count($runningJobs) . " job" . (count($runningJobs) == 1 ? " is" : "s are") . " running", 2);
+            // Because something is running, we are not in a hurry to continue.
+            // Delay execution.
+            sleep(5);
+        }
 		foreach ($runningJobs as $job) {
 			$desc = $job->description();
 			$user = $desc->owner();
@@ -613,7 +618,7 @@ Class QueueManager {
 				$this->stopTime = $queue->stopJob($job);
 				// Write email
 				$message = "";
-				$errorFile = $job->server() . "_error.txt";
+				$errorFile = $logdir . "/" . $job->server() . "_error.txt";
 				if (file_exists($errorFile))
 					$message = file_get_contents($errorFile);
 				if ($send_mail) $this->notifyError($job, $message, $startTime);
@@ -727,30 +732,34 @@ Class QueueManager {
 
 	function writeParameterFile($job, $startTime) {
 		global $resultImagesOwnedByUser;
-		$result = True;
+                global $imageProcessingIsOnQueueManager;
+		$result = False;
 		$desc = $job->description();
-		$sourceFileName = $desc->sourceImageName();
-		$destFileName = $desc->destinationImageName();
+		$sourceFileName = $desc->sourceImageNameWithoutPath();
+		$destFileName = $desc->destinationImageNameWithoutPath();
 		$text = '';
-		$text = $text . "Your job started at $startTime finished at " . date("l d of F Y h:i:s A") . ". ";
-		$text = $text . "The image \n$sourceFileName\n has been successfully treated by Huygens.\n";
-		$text = $text . "The resulting image is $destFileName.\n";
+		$text = $text . "Your job started at $startTime and finished at " . date("Y-m-d H:i:s") . ". ";
+		$text = $text . "The image \n$sourceFileName\nhas been successfully treated by Huygens.\n";
+		$text = $text . "You will find the resulting image ($destFileName) in your destination folder.\n";
 		$text = $text . $this->parameterText($job);
 		$imageName = $desc->destinationImageName();
 		$user = $desc->owner();
 		$username = $user->name();
 		$fileserver = new Fileserver($username);
 		$path = $fileserver->destinationFolderFor($desc);
-		$parameterFileName = $path . '/' . $imageName . '.txt';
-		$file = fopen($parameterFileName, "w");
-		$result = $result && (fwrite($file, $text) > 0);
-		fclose($file);
-		if ($resultImagesOwnedByUser) {
-			chown($parameterFileName, $username);
-		}
-		// TODO refactor this
-		else if (!$imageProcessingIsOnQueueManager) {
-			$this->restoreOwnership($user->name());
+		if (file_exists($path . $imageName . '.txt')) {
+			//$parameterFileName = $path . '/' . $imageName . '.txt';
+			$parameterFileName = $path . $imageName . '.txt';
+			$file = fopen($parameterFileName, "w");
+			$result = !$result && (fwrite($file, $text) > 0);
+			fclose($file);
+			if ($resultImagesOwnedByUser) {
+				chown($parameterFileName, $username);
+			}
+			// TODO refactor this
+			else if (!$imageProcessingIsOnQueueManager) {
+				$this->restoreOwnership($user->name());
+			}
 		}
 		return $result;
 	}
@@ -762,7 +771,9 @@ Class QueueManager {
 		//if ($imageProcessingIsOnQueueManager) {
 			return False;
 		//}
-		$errorFile = $job->server() . '_error.txt';
+		// The following is never run, but for completeness we add the logdir
+		global $logdir;
+		$errorFile = $logdir . "/" . $job->server() . '_error.txt';
 		$message = '';
 		if (file_exists($errorFile)) {
 			$message = file_get_contents($errorFile);
@@ -781,16 +792,26 @@ Class QueueManager {
 
 	function notifySuccess($job, $startTime) {
 		global $email_sender;
+                global $hrm_url;
+                global $useThumbnails;
 		$desc = $job->description();
 		$user = $desc->owner();
 		$emailAddress = $user->emailAddress();
-		$sourceFileName = $desc->sourceImageName();
+		$sourceFileName = $desc->sourceImageNameWithoutPath();
 		//$destFileName = $desc->destinationImageName();
-		$destFileName = $desc->destinationImageFullName();
-		$text = "This is a mail generated automatically by huygens remote manager.\n";
-		$text = $text . "Your job started at $startTime finished at " . date("l d of F Y h:i:s A") . ". ";
-		$text = $text . "The image \n$sourceFileName\n has been successfully treated by Huygens.\n";
-		$text = $text . "The resulting image is $destFileName.\n";
+		$destFileName = $desc->destinationImageNameWithoutPath();
+		$text = "This is a mail generated automatically by the Huygens Remote Manager.\n";
+		$text = $text . "Your job started at $startTime and finished at " . date("Y-m-d H:i:s") . ".\n";
+		$text = $text . "The image $sourceFileName was successfully processed by Huygens.\n";
+		$text = $text . "You will find the resulting image ($destFileName) in your destination folder.\n";
+                if ( $useThumbnails ) {
+                    $imageName = $desc->destinationImageNameAndExtension();
+                    $link = $hrm_url.
+                           "/file_management.php?compareResult=".
+                           urlencode($imageName);
+                    $text .= "\nYou can find a preview of the result at ".$link.
+                             "\n\n";
+                }
 		$text = $text . "Best regards,\n";
 		$text = $text . "Huygens Remote Manager\n";
 		$text = $text . $this->parameterText($job);
@@ -807,11 +828,11 @@ Class QueueManager {
 		$desc = $job->description();
 		$user = $desc->owner();
 		$emailAddress = $user->emailAddress();
-		$sourceFileName = $desc->sourceImageName();
+		$sourceFileName = $desc->sourceImageNameWithoutPath();
 		//$destFileName = $desc->destinationImageName();
-		$text = "This is a mail generated automatically by huygens remote manager.\n";
+		$text = "This is a mail generated automatically by the Huygens Remote Manager.\n";
 		$text = $text . "Sorry, the processing of the image \n$sourceFileName\n has been terminated by an unknown error.\n";
-		$text = $text . "Your job started at $startTime finished at " . date("l d of F Y h:i:s A") . ".";
+		$text = $text . "Your job started at $startTime and failed at " . date("Y-m-d H:i:s") . ".";
 		$text = $text . "\n";
 		$text = $text . $message;
 		$text = $text . "\n";
@@ -819,7 +840,7 @@ Class QueueManager {
 		$text = $text . "Huygens Remote Manager\n";
 		$text = $text . $this->parameterText($job);
 		$text = $text . "\n";
-		$text = $text . "The script that was executed while the error occured is:";
+		$text = $text . "The script that was being executed when the error occured is:";
 		$text = $text . "\n";
 		$text = $text . $job->script();
 		$mail = new Mail($email_sender);
@@ -840,14 +861,13 @@ Class QueueManager {
 		$desc = $job->description();
 		$user = $desc->owner();
 		$emailAddress = $user->emailAddress();
-		$sourceFileName = $desc->sourceImageName();
+		$sourceFileName = $desc->sourceImageNameWithoutPath();
 		//$destFileName = $desc->destinationImageName();
-		$destFileName = $desc->sourceImageName();
-		$text = "This is a mail generated automatically by huygens remote manager.\n";
-		$text = $text . "The processing of the image \n$sourceFileName\n has been terminated with a warning: ";
+		$text = "This is a mail generated automatically by the Huygens Remote Manager.\n";
+		$text = $text . "The processing of the image \n$sourceFileName\n was completed with a warning: ";
 		$text = $text . $message . "\n";
 		$text = $text . "Huygens used a theoretical PSF instead of the measured PSF you provided.\n";
-		$text = $text . "Your job started at $startTime finished at " . date("l d of F Y h:i:s A") . ".";
+		$text = $text . "Your job started at $startTime and finished at " . date("Y-m-d H:i:s") . ".";
 		$text = $text . "\n";
 		$text = $text . "Best regards,\n";
 		$text = $text . "Huygens Remote Manager\n";
@@ -862,6 +882,19 @@ Class QueueManager {
 		$mail->setReceiver($db->emailAddress('admin'));
 		$mail->send();*/
 	}
+	
+	function notifyPingError($name) {
+                report("A ping error notification was sent on " . date("r", time()), 2);
+                global $email_sender;
+                global $email_admin;
+                $text = "Huygens Remote Manager warning:\n"
+                        . $name . " could not be pinged on " . date("r", time());
+                $mail = new Mail($email_sender);
+		$mail->setReceiver($email_admin);
+		$mail->setSubject('Huygens Remote Manager - ping error');
+		$mail->setMessage($text);
+		$mail->send(); 
+        }
 
 	function parameterText($job) {
 		$desc = $job->description();
@@ -889,16 +922,27 @@ Class QueueManager {
 			$status = $db->statusOfServer($name);
 			if ($status == 'free') {
 				$proc = newExternalProcessFor($name, $name . "_out.txt", $name . "_error.txt");
-				report("found free server", 2);
+				//report("found free server", 2);
 				if ($proc->ping()) {
-					report("ping succeeded for $name", 2);
+					//report("ping succeeded for $name", 2);
+                                        $this->nping[$name] = 0;
 					$this->freeServer = $name;
 					return True;
 				}
+                                else {
+                                        $this->incNPing($name);
+                                        if ($this->nping[$name]  ==  40) {
+                                                $this->notifyPingError($name);
+                                        }
+                                }
 			}
 		}
 		$this->freeServer = False;
 		return $this->freeServer;
+	}
+	
+	function incNPing($name) {
+		$this->nping[$name] ++;
 	}
 
 	function stop() {
@@ -935,6 +979,7 @@ Class QueueManager {
 
 	function run() {
 		global $imageProcessingIsOnQueueManager;
+		global $logdir;
 		
 		$queue = $this->queue;
 		
@@ -942,8 +987,9 @@ Class QueueManager {
 		$server = $queue->availableServer();
 		// TODO refactor this in order to manage error logs per job
 		foreach ($server as $name) {
+			$this->nping[$name] = 0;
 			if (!$queue->isServerBusy($name)) {
-				$errorFile = $name . "_error.txt";
+				$errorFile = $logdir . "/" . $name . "_error.txt";
 				if (file_exists($errorFile)) {
 					report("resetting error log for $name", 1);
 					//unlink($errorFile);
@@ -951,7 +997,8 @@ Class QueueManager {
 			}
 		}
 		
-		report("Huygens Remote Manager started on " . date("l d of F Y h:i:s A") . "\n", 1);
+		report("Huygens Remote Manager started on " . date("Y-m-d H:i:s") . "\n", 1);
+                
 		while (!$this->shallStop()) {
 			set_time_limit(0);
 			$this->queue = $queue;
@@ -964,7 +1011,7 @@ Class QueueManager {
 			
 			// Check if jobs finished and update the database. Inform the user via email.
 			$this->updateJobAndServerStatus();
-			report("Huygens server updated status", 2);
+			//report("Huygens server updated status", 2);
 			
 			// Process compound jobs
 			$this->processCompoundJobs();
@@ -988,17 +1035,17 @@ Class QueueManager {
 					continue;
 				}
 				// >>
-				report("script has been created", 1);
+                report("script has been created", 1);
 				// Execute the script on the Huygens server and update the database state
 				$result = $result && $this->executeScript();
 				if (!$result)
 					continue;
 				report("script has been executed", 1);
 				$result = $result && $queue->startJob($this->job);
-				report("job has been started (" . date("l d of F Y h:i:s A") . ")", 1);
+				report("job has been started (" . date("Y-m-d H:i:s") . ")", 1);
 			}
 		}
-		report("Huygens Remote Manager stopped via database switch on " . date("l d of F Y h:i:s A"), 1);
+		report("Huygens Remote Manager stopped via database switch on " . date("Y-m-d H:i:s"), 1);
 	}
 }
 ?>
