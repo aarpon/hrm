@@ -132,6 +132,8 @@ $onChange = "onchange=\"javascript:switchCorrection()\"";
                 $parameter = $_SESSION['setting']->parameter("PerformAberrationCorrection");
                 $possibleValues = $parameter->possibleValues();
                 $selectedValue  = $parameter->value();
+                // The javascript expects option values to match their indexes:
+                sort($possibleValues);
 
                 foreach($possibleValues as $possibleValue) {
                     $translation = $_SESSION['setting']->translation("PerformAberrationCorrection", $possibleValue);
