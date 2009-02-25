@@ -55,9 +55,11 @@ function setPrevGen(index, mode) {
 function deleteImages() {
 
     control = document.getElementById('selection').innerHTML;
-    changeDiv('selection', 'Selected files will be deleted, please confirm:' 
-       + '<br><input name="delete" type="submit" value="" class="icon delete"/>'
-       + ' <img src="images/cancel.png" onClick="cancelSelection()">');
+    changeDiv('selection', 'Selected files will be deleted, please confirm:'
+       + '<br />'
+       + '<input name="delete" type="submit" value="" class="icon delete"/>'
+       + ' <img src="images/cancel.png" onclick="cancelSelection()" '
+       +        'alt="cancel">');
 
 }
 
@@ -66,9 +68,10 @@ function downloadImages() {
     control = document.getElementById('selection').innerHTML;
     changeDiv('selection', 'Selected files will be packed for downloading '
        +  '(that may take a while). Please confirm and wait:' 
-       + '<br><input name="download" type="submit" value="" '
+       + '<br /><input name="download" type="submit" value="" '
        + 'class="icon download"/>'
-       + ' <img src="images/cancel.png" onClick="cancelSelection()">');
+       + ' <img src="images/cancel.png" onclick="cancelSelection()" '
+       +           'alt="cancel">');
 
 }
 
@@ -101,27 +104,30 @@ function imgPrev(infile, mode, gen, compare, index, dir, referer, data) {
         case 0:
            if ( gen == 0 ) {
            // Preview doesn't exist
-           html = "<img src=\"images/no_preview.jpg\"><br>No preview available";
+           html = "<img src=\"images/no_preview.jpg\" alt=\"No preview\">"
+                  + "<br />No preview available";
 
            } else {
 
            // Preview doesn't exist, but you can create it now.
-           link = "file_management.php?genPreview=" + infile + "&src=" + dir + "&data=" + data + '&index=' + index;
+           link = "file_management.php?genPreview=" + infile + "&src=" + dir 
+                  + "&data=" + data + '&index=' + index;
 
-           // html = "<a href=\"" + referer + "\" onClick=\"changeDiv('info','<center><img src=\"images/spin.gif\"><p>Generating preview in another window.</p><p><small>Please wait...</small></p></center>'); openTool('" + link + "');\"><img src=\"images/no_preview.jpg\"><br>Generate preview now</a>";
+           // html = "<a href=\"" + referer + "\" onclick=\"changeDiv('info','<center><img src=\"images/spin.gif\" alt=\"busy\"><p>Generating preview in another window.</p><p><small>Please wait...</small></p></center>'); openTool('" + link + "');\"><img src=\"images/no_preview.jpg\" alt=\"No preview\"><br />Generate preview now</a>";
 
-           onClick =  '<center><img src=\\\'images/spin.gif\\\'><br>'
-                + '<small>Generating preview in another window.<br>'
+           onClick =  '<center><img src=\\\'images/spin.gif\\\' '
+                +                           'alt=\\\'busy\\\'><br />'
+                + '<small>Generating preview in another window.<br />'
                 + 'Please wait...</small></center>';
 
            html =   '<input type="button" name="genPreview" value="" '
                   +    'class="icon noPreview" '
-                  +    'onClick="'
+                  +    'onclick="'
                   +        'changeDiv(\'info\',\'' + onClick + '\'); '
                   +        'openTool(\'' + link + '\'); '
                   +    '"'
                   + '>'
-                  + '<br>'
+                  + '<br />'
                   + '<small>Click to generate preview</small>';
            }
 
@@ -129,14 +135,16 @@ function imgPrev(infile, mode, gen, compare, index, dir, referer, data) {
         case 2:
            // 2D Preview exists
            html = '<img src="file_management.php?getThumbnail='
-                  + infile + '.preview_xy.jpg&dir=' + dir + '">';
+                  + infile + '.preview_xy.jpg&dir=' + dir + '" alt="Preview">';
            break;
         case 3:
            // 3D Preview exists
            html = '<img src="file_management.php?getThumbnail='
-                  + infile + '.preview_xy.jpg&dir=' + dir + '">';
-           html = html + '<br><img src="file_management.php?getThumbnail='
-                  + infile + '.preview_xz.jpg&dir=' + dir + '">';
+                  + infile + '.preview_xy.jpg&dir=' + dir
+                  + '" alt="XY preview">';
+           html = html + '<br /><img src="file_management.php?getThumbnail='
+                  + infile + '.preview_xz.jpg&dir=' + dir
+                  + '" alt="XZ preview">';
            break;
 
     }
@@ -144,14 +152,16 @@ function imgPrev(infile, mode, gen, compare, index, dir, referer, data) {
     if ( gen == 1 && mode > 1 && dir == "src" ) {
 
            // Preview exists, and you can re-create it now.
-           link = "file_management.php?genPreview=" + infile + "&src=" + dir + "&data=" + data + '&index=' + index;
+           link = "file_management.php?genPreview=" + infile + "&src=" + dir 
+                  + "&data=" + data + '&index=' + index;
 
-           onClick =  '<center><img src=\\\'images/spin.gif\\\'><br>'
-                + '<small>Generating preview in another window.<br>'
+           onClick =  '<center><img src=\\\'images/spin.gif\\\' '
+                +                     'alt=\\\'busy\\\'><br />'
+                + '<small>Generating preview in another window.<br />'
                 + 'Please wait...</small></center>';
 
-           html = html +  '<br><a '
-                  +    'onClick="'
+           html = html +  '<br /><a '
+                  +    'onclick="'
                   +        'changeDiv(\'info\',\'' + onClick + '\'); '
                   +        'openTool(\'' + link + '\'); '
                   +    '"'
@@ -163,8 +173,8 @@ function imgPrev(infile, mode, gen, compare, index, dir, referer, data) {
            link = "file_management.php?compareResult=" + infile
                   + "&size=" + compare + "&op=close";
 
-           html = '<br><a '
-                  +    'onClick="'
+           html = '<br /><a '
+                  +    'onclick="'
                   +        'openWindow(\'' + link + '\'); '
                   +    '"'
                   + '>'
