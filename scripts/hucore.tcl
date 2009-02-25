@@ -348,6 +348,7 @@ proc getMetaData { } {
 # Execute selected procedure
 
 set tool [Hu_getOpt -tool]
+set huTcl [Hu_getOpt -huCoreTcl]
 
 if { $tool == -1 } {
     puts "Wrong arguments.\
@@ -358,6 +359,9 @@ if { $tool == -1 } {
 # Execute procedure
 puts "BEGIN PROC"
 puts "$tool"
-eval $tool
+if { [ catch { eval $tool} errMsg ] } {
+    puts "ERROR"
+    puts "Problems running tool '$tool' in $huTcl: $errMsg"
+}
 puts "END PROC"
 exit 0
