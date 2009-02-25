@@ -850,7 +850,7 @@ Class DatabaseConnection {
   }
   
   function updateMail($userName, $email) {
-  	$result = $this->execute("UPDATE username SET email = '". $email ."' WHERE name = '". $userName. "'");
+  	$result = $this->execute("UPDATE username SET email = '". $email ."' WHERE name = $userName");
   	return $result;
   }
   
