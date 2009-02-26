@@ -279,8 +279,8 @@ else echo "                        <option>&nbsp;</option>\n";
         </form>
         
     </div> <!-- content -->
+         <br />
          <div id="controls">
-        
             <input type="button" value="" class="icon previous" onclick="document.location.href='select_task_settings.php'" />
             <input type="submit" value="" class="icon next" onclick="process()" />
         </div>    
