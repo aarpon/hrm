@@ -62,6 +62,7 @@ global $email_admin;
 global $image_host;
 global $image_folder;
 global $image_source;
+global $userManager;
 
 session_start();
 
