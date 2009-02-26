@@ -139,7 +139,7 @@ if (isset($_POST['accept'])) {
     $mail->setSubject("Account activated");
     $mail->setMessage($text);
     $mail->send();
-    shell_exec("bin/hrm create " . $_POST['username']);
+    shell_exec("$userManager create " . $_POST['username']);
   }
   else $message = "            <p class=\"warning\">Database error, please inform the person in charge</p>";
 }
