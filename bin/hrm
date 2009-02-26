@@ -16,8 +16,11 @@ create() {
 	if [ ! -d "$HRM_DATA"/"$1" ]
 	then
 		$CMD mkdir "$HRM_DATA"/"$1"
-		$CMD mkdir "$HRM_DATA"/"$1"/"$HRM_SOURCE"
+		# $CMD mkdir "$HRM_DATA"/"$1"/"$HRM_SOURCE"
+                ln -s "$HRM_DATA"/guest/"$HRM_SOURCE" "$HRM_DATA"/"$1"/"$HRM_SOURCE"
 		$CMD mkdir "$HRM_DATA"/"$1"/"$HRM_DEST"
+                # a demo result image
+                ln -s "$HRM_DATA"/guest/"$HRM_DEST"/zorigTwoChan_49a51fbd65e45* "$HRM_DATA"/"$1"/"$HRM_DEST"
 		# sudo -u "$SUSER" chown -R "$2":users "$HRM_DATA"/"$1"
 		$CMD chmod -R 0777 "$HRM_DATA"/"$1"
 
