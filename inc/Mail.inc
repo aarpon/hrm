@@ -73,7 +73,7 @@ Class Mail {
   } 
 
   function send() {
-    mail($this->receiver, $this->subject, $this->message, 'From: ' . $this->sender); 
+    mail($this->receiver, $this->subject, $this->message, 'From: ' . $this->sender . "\r\nReturn-Path: ".$this->sender, "-r ".$this->sender); 
     report("Mail '". $this->subject. "' sent to ".$this->receiver, 2);
   } 
 } 
