@@ -67,7 +67,19 @@ include("header.inc.php");
         <h2>Changes in HRM version <?php readfile("version"); ?></h2>
 
 	<div id="about">
-		<p><?php readfile("changelog"); ?></p>
+		<p>
+            <?php
+                $fH = fopen("changelog", "r");
+                if ($fH === FALSE ) {
+                    die( 'Could not find changelog file!' );
+                }
+                while (!feof($fH)) {
+                    $line = fgets($fH);
+                    echo $line . "<br />";
+                }
+                fclose( $file_handle );
+            ?>
+        </p>
 	</div> <!-- about -->
         
     </div> <!-- content -->

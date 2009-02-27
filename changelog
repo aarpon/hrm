@@ -1,2 +1,9 @@
+HRM 1.1.1
+
+- Fix in mail() to avoid spam filters.
+- Navigation arrows are shown in select_images.php when a preview is displayed.
+
+HRM 1.1
+
 - First official release. 
 
