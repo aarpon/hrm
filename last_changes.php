@@ -77,7 +77,7 @@ include("header.inc.php");
                     $line = fgets($fH);
                     echo $line . "<br />";
                 }
-                fclose( $file_handle );
+                fclose( $fH );
             ?>
         </p>
 	</div> <!-- about -->
