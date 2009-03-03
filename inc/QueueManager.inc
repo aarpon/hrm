@@ -810,7 +810,7 @@ Class QueueManager {
                            "/file_management.php?compareResult=".
                            urlencode($imageName);
                     $text .= "\nYou can find a preview of the result at ".$link.
-                             "\n\n";
+                             " (login required).\n\n";
                 }
 		$text = $text . "Best regards,\n";
 		$text = $text . "Huygens Remote Manager\n";
