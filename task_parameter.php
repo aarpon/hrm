@@ -134,7 +134,7 @@ else {
   $backgroundOffset = $backgroundOffsetPercentParam->internalValue();
   for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
     $signalNoiseRatioKey = "SignalNoiseRatio".$algorithm.$i;
-    $backgroundOffsetKey = "BackgroundOffsetPercent".$algorithm.$i;
+    $backgroundOffsetKey = "BackgroundOffsetPercent".$i;
     if (isset($_POST[$signalNoiseRatioKey])) {
       // enable ranges for the signal to noise ratio
       $value = $_POST[$signalNoiseRatioKey];
