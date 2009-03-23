@@ -75,7 +75,11 @@ include("header.inc.php");
                 }
                 while (!feof($fH)) {
                     $line = fgets($fH);
-                    echo $line . "<br />";
+                    if ( preg_match("/^HRM\s\d\./", $line ) ==1 ) {
+                        echo "<strong>" . $line . "</strong><br />";
+                    } else {
+                        echo $line . "<br />";
+                    }
                 }
                 fclose( $fH );
             ?>

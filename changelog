@@ -1,9 +1,17 @@
+HRM 1.1.2
+
+(F) the summary email informs the user that a login is required to access the mip preview.
+(B) 'remove constant absolute background value' in task setting was ignored by HRM.
+(B) in last_changes.php, the wrong file handle name was passed to fclose( ).
+
 HRM 1.1.1
 
-- Fix in mail() to avoid spam filters.
-- Navigation arrows are shown in select_images.php when a preview is displayed.
+(B) fix in mail() to avoid spam filters.
+(B) navigation arrows are shown in select_images.php when a preview is displayed.
 
 HRM 1.1
 
-- First official release. 
+(I) First official release. 
 
+
+Legend: (B): bug fix, (F): new feature, (I): info.
