@@ -333,8 +333,10 @@ Class QueueManager {
 		$desc = $job->description();
 		$clientScriptPath = $desc->sourceFolder();
 		$scriptName = $job->scriptName();
-		if (!$imageProcessingIsOnQueueManager && $copy_images_to_huygens_server)
+		if (!$imageProcessingIsOnQueueManager && $copy_images_to_huygens_server) {
 			$clientScriptPath = $this->copyImagesToServer($server_hostname);
+			report("images copied to IP server", 1);
+		}
 		$proc = newExternalProcessFor($server, $server . "_out.txt", $server . "_error.txt");
 		report("shell process created", 1);
 		$ssh = $proc->runShell();
@@ -389,6 +391,38 @@ Class QueueManager {
 		$batch .= "cd \"" . $image_source . "\"\n";
 		$batch .= "put \"" . $image_folder . "/" . $user->name() . "/" . $image_source . "/" . $job->scriptName() . "\"\n";
 		
+		// Transfer the experimental PSF(s) 
+		$parameterSetting = $desc->parameterSetting;
+		$psfParam = $parameterSetting->parameter('PointSpreadFunction');
+		if ($psfParam->value() == "measured") {
+			$psf = $parameterSetting->parameter('PSF');
+			$values = $psf->value();
+			foreach ($values as $value) {
+				$path = split("/", $value);
+				if (sizeof($path) > 0) {
+					for ($i = 0; $i < sizeof($path) - 1; $i++) {
+						$batch .= "-mkdir \"" . $path[$i] . "\"\n";
+						$batch .= "cd \"" . $path[$i] . "\"\n";
+					}
+				}
+				$filename = $image_folder . "/" . $user->name() . "/" . $image_source . "/" . $value;
+				if (stristr($filename, ".ics"))  {
+					$batch .= "put \"" . $filename . "\"\n";
+					$filename = eregi_replace(".ics", ".ids", $filename);
+					$batch .= "put \"" . $filename . "\"\n";
+				}
+				else {
+					$batch .= "put \"" . $filename . "\"\n";
+				}
+				if (sizeof($path) > 0) {
+					for ($i = 0; $i < sizeof($path) - 1; $i++) {
+						$batch .= "cd ..\n";
+					}
+				}
+			}
+			$batch .= "cd \"" . $huygens_server_image_folder . "/" . $user->name() . "/" . $image_source . "\"\n";
+		}
+		
 		$files = $desc->files();
 		foreach ($files as $file) {
 			$path = split("/", $file);
@@ -434,6 +468,8 @@ Class QueueManager {
 		$batch .= "cd ..\n";
 		$batch .= "-mkdir \"" . $image_destination . "\"\n";
 		$batch .= "quit\n";
+				
+		//report("\nBATCH \n$batch", 1);
 		
 		$batch_filename = $image_folder . "/" . $user->name() . "/" . "batchfile_" . $desc->id();
 		
