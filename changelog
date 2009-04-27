@@ -1,6 +1,6 @@
-HRM 1.2
+HRM 1.1.3
 
-(B) the experimental PSFs are now correctly transferd from the HRM server to the image processing server, if they are not on the same machine. 
+(B) the experimental PSFs are now correctly transferred from the HRM server to the image processing server, if they are not the same machine. 
 
 HRM 1.1.2
 
