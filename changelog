@@ -1,3 +1,7 @@
+HRM 1.2
+
+(B) the experimental PSFs are now correctly transferd from the HRM server to the image processing server, if they are not on the same machine. 
+
 HRM 1.1.2
 
 (F) the summary email informs the user that a login is required to access the mip preview.
