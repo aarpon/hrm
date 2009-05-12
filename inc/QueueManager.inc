@@ -424,6 +424,25 @@ Class QueueManager {
 		}
 		
 		$files = $desc->files();
+		
+		// Preprocess the files to check for lif files with subimages. If we
+		// find some, we have to:
+		// (1) remove the (subImage name);
+		// (2) make sure to copy the files only once.
+		$filteredFiles = array( );
+		$counter = -1;
+		foreach ($files as $file) {
+			$counter++;
+			$match = array( );
+			if ( preg_match("/^(.*\.lif)\s\((.*)\)/i", $file, $match) ) {
+				$filteredFiles[ $counter ] = $match[ 1 ];
+			} else {
+				$filteredFiles[ $counter ] = $file;
+			}
+		}
+		$files = array_unique( $filteredFiles );
+		
+		// Now copy the files
 		foreach ($files as $file) {
 			$path = split("/", $file);
 			if (sizeof($path) > 0) {
@@ -444,16 +463,16 @@ Class QueueManager {
 				$name = preg_replace("/(.*)\.tiff?$/", "$1", $basename);
 				$batch .= "put \"" . $name . "*\"\n";
 			}
-                        else if (stristr($filename, ".stk")) {
+			else if (stristr($filename, ".stk")) {
 				// if ImageFileFormat = STK time series, send all timepoints
-                                if (stripos($filename, "_t")) {
-                                        $basename = preg_replace("/([^_]+|\/)(_)(T|t)([0-9]+)(\.)(\w+)/", "$1", $filename);
-                                        //$name = preg_replace("/(.*)\.[STK|stk]$/", "$1", $basename);
-                                        $batch .= "put \"" . $basename . "*\"\n";
-                                }
-                                else {
-                                        $batch .= "put \"" . $filename . "\"\n";
-                                }
+				if (stripos($filename, "_t")) {
+					$basename = preg_replace("/([^_]+|\/)(_)(T|t)([0-9]+)(\.)(\w+)/", "$1", $filename);
+					//$name = preg_replace("/(.*)\.[STK|stk]$/", "$1", $basename);
+					$batch .= "put \"" . $basename . "*\"\n";
+                }
+                else {
+					$batch .= "put \"" . $filename . "\"\n";
+                }
 			}
 			else {
 				$batch .= "put \"" . $filename . "\"\n";
