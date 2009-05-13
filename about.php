@@ -52,6 +52,7 @@
 // knowledge of the CeCILL license and that you accept its terms.
 
 include("header.inc.php");
+require_once( "./inc/versions.inc" );
 
 ?>
 
@@ -65,8 +66,8 @@ include("header.inc.php");
 
 	<div id="about">
 
-		<h2>About HRM version <?php readfile("version"); ?></h2>
-		<p><strong>Important: </strong>The HRM v<?php readfile("version"); ?> 
+		<h2>About HRM version <?php Versions::printHRMVersion( ); ?></h2>
+		<p><strong>Important: </strong>The HRM v<?php Versions::printHRMVersion( ); ?> 
 	requires <strong>Huygens Core v3.3.2 and above</strong> for full functionality 
 	and <strong>will try</strong> to hide unsupported features to prevent 
 	incompatibilities with older hucore versions.</p>

@@ -51,6 +51,8 @@
 // The fact that you are presently reading this means that you have had 
 // knowledge of the CeCILL license and that you accept its terms.
 
+require_once( "./inc/versions.inc" );
+
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 
 ?>
@@ -109,7 +111,8 @@ if (isset($generatedScript)) {
 
 <?php if (!isset($excludeTitle)) { ?>
     <div id="title">
-	<h1>Huygens Remote Manager <span id="about">v<?php readfile("version"); ?></span></h1>
+    
+	<h1>Huygens Remote Manager <span id="about">v<?php echo Versions::getHRMVersion( ); ?></span></h1>
     </div>
 <?php } ?>
     

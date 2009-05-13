@@ -52,6 +52,7 @@
 // knowledge of the CeCILL license and that you accept its terms.
 
 include("header.inc.php");
+require_once( "./inc/versions.inc" );
 
 ?>
 
@@ -63,8 +64,8 @@ include("header.inc.php");
     </div>
     
     <div id="content">
-    
-        <h2>Changes in HRM version <?php readfile("version"); ?></h2>
+ 
+        <h2>Changes in HRM version <?php Versions::printHRMVersion( ); ?></h2>
 
 	<div id="about">
 		<p>

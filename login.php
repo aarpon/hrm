@@ -56,6 +56,7 @@ require_once("./inc/Database.inc"); // for account management (email & last_acce
 require_once("./inc/CreditOwner.inc");
 require_once("./inc/hrm_config.inc");
 require_once("./inc/Fileserver.inc");
+require_once("./inc/versions.inc");
 
 global $email_admin;
 global $enableUserAdmin;
@@ -171,6 +172,19 @@ include("header.inc.php");
     
     <div id="content">
     
+        <?php
+          // Check that the database is up-to-date!
+          if ( Versions::isDBUpToDate( ) == false ) {
+            echo "<h3>Warning: the database is not up-to-date!</h3>\n";
+            echo "<p>This happens if HRM was recently updated but the " . 
+            "database was not. You are now allowed to continue " .
+            "until this issue has been fixed. " .
+            "Please inform your administrator.</p>";
+            echo "</div>\n";
+            include("footer.inc.php");
+            return;
+          }
+        ?>
         <h2>Welcome</h2>
         
         <p>

@@ -1,5 +1,6 @@
 HRM 1.1.4
 
+(F) The login page informs the user if the database is not up-to-date.
 (B) lif files are now correctly transferred to the image processing server. 
 
 HRM 1.1.3

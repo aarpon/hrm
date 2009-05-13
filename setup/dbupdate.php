@@ -88,16 +88,16 @@
 // Check whether the script is run from the HRM or from bash (from $hrm/setup)
 if ( isset( $_GET['action'] ) && $_GET['action'] == 'dbupdate' ) {
     include "inc/hrm_config.inc";    // Run from HRM
+    include "inc/versions.inc";
 } else {
     include "../inc/hrm_config.inc"; // Run from console
+    include "../inc/versions.inc";
 }
 
 include $adodb;
 
-
 // Database last revision
-$LAST_REVISION = 6;
-
+$LAST_REVISION = Versions::getDBLastRevision( );
 
 // For test purposes
 //$db_name = "hrm-test";
