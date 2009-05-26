@@ -87,6 +87,7 @@ $_SESSION['user'] = new User();
 if (isset($_POST['password'])) {
   $_SESSION['user']->setName(strtolower($_POST['username']));
   $_SESSION['user']->logOut(); // TODO
+  
   if ($_SESSION['user']->logIn(strtolower($_POST['username']), $_POST['password'], $_SERVER['REMOTE_ADDR'])) {
   	if ($use_accounting_system) {
 		$creditOwner = new CreditOwner($_SESSION['user']->name());
@@ -145,13 +146,19 @@ if (isset($_POST['password'])) {
                 exit();
             }
   	}
+  } else if ($_SESSION['user']->isLoginRestrictedToAdmin()) {
+    if ( ( strcmp($_SESSION['user']->name( ), 'admin' ) == 0 ) && ($_SESSION['user']->exists()) ) {
+      $message = "            <p class=\"warning\">Wrong password.</p>\n";
+    } else {
+      $message = "            <p class=\"warning\">Only the administrator is allowed to login in order to perform maintenance.</p>\n";
+    }
   } else {
     if ($_SESSION['user']->isSuspended()) {
       $message = "            <p class=\"warning\">Your account has been suspended, please contact the administrator.</p>\n";
     }
     else if ($_SESSION['user']->exists()) {
       $message = "            <p class=\"warning\">This username/password combination does not match, please try again.</p>\n";
-    }
+    }    
     else {
       $message = "            <p class=\"warning\">This account does not exist, please use the link above to register.</p>\n";
     }
@@ -173,17 +180,21 @@ include("header.inc.php");
     <div id="content">
     
         <?php
-          // Check that the database is up-to-date!
+          // Check that the database is up-to-date! 
           if ( Versions::isDBUpToDate( ) == false ) {
-            echo "<h3>Warning: the database is not up-to-date!</h3>\n";
+            echo "<div class=\"dbOutDated\"><h3>Warning: the database is not up-to-date!</h3>\n";
             echo "<p>This happens if HRM was recently updated but the " . 
-            "database was not. You are now allowed to continue " .
-            "until this issue has been fixed. " .
-            "Please inform your administrator.</p>";
-            echo "</div>\n";
-            include("footer.inc.php");
-            return;
-          }
+                  "database was not. You are now allowed to login " .
+                  "until this issue has been fixed.</p>";
+            if ( $enableUserAdmin == true ) {
+              echo "<p>Only the administrator can login.</p></div>";
+            } else {
+              echo "<p>Please inform your administrator.</p></div>";
+              echo "</div>\n";
+              include("footer.inc.php");
+              return;
+            }
+          }  
         ?>
         <h2>Welcome</h2>
         

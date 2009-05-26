@@ -283,6 +283,17 @@ Class User extends Owner{
   }
   
   //!---------------------------------------------------------
+  // @function    User::isLoginRestrictedToAdmin
+  // @desc        Answer true if the login has been restricted to the
+  //              the administrtator.
+  // @return      Boolean
+  //!---------------------------------------------------------
+  function isLoginRestrictedToAdmin() {
+  	$result = !( Versions::isDBUpToDate( ) );
+  	return $result;
+  }
+ 
+  //!---------------------------------------------------------
   // @function    User::isSuspended
   // @desc        Answer true if the user's account has been
   //              suspended by the administrtator.
@@ -319,6 +330,11 @@ Class User extends Owner{
   function checkLogin($name, $password) {
     global $use_ldap;
     $result = false;
+    
+    // If the db is outdated and the user is not the admin, we do not allow
+    // the login
+    if ( ($this->isLoginRestrictedToAdmin() == true) && (strcmp($name, 'admin') != 0)  )
+      return $result;
     
     if ($use_ldap && $name!=$this->getAdminName()) $result = $this->checkLoginAgainstLDAP($name, $password);
     else $result = $this->checkLoginAgainstHRMDatabase($name, $password);

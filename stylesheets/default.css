@@ -663,6 +663,12 @@ option.default {
     color: red;
 }
 
+.dbOutDated {
+    background-color: #FF0000;
+    color: white;
+    font-size: 120%;
+}
+
 .title {
     font-weight: bold;
 }
