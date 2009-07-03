@@ -180,7 +180,18 @@ include("header.inc.php");
     <div id="content">
     
         <?php
-          // Check that the database is up-to-date! 
+          // Check that the database is reachable
+          $db   = new DatabaseConnection( );
+          if ( !$db->isReachable( ) ) {
+            echo "<div class=\"dbOutDated\"><h3>Warning: the database is not reachable!</h3>\n";
+            echo "<p>Please contact your administrator.</p>".
+                  "<p>You will not be allowed to login " .
+                  "until this issue has been fixed.</p></div>";
+            echo "</div>\n";
+            include("footer.inc.php");
+            return;
+          }
+          // Check that the database is up-to-date
           if ( Versions::isDBUpToDate( ) == false ) {
             echo "<div class=\"dbOutDated\"><h3>Warning: the database is not up-to-date!</h3>\n";
             echo "<p>This happens if HRM was recently updated but the " . 

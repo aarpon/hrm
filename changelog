@@ -1,3 +1,8 @@
+HRM 1.1.5
+
+(F) The login page checks whether the database is reachable.
+(F) If the database is not up-to-date, the 'admin' login is the only accepted one 
+
 HRM 1.1.4
 
 (F) The login page informs the user if the database is not up-to-date.
