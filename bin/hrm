@@ -45,10 +45,10 @@ delete() {
 
 case "$1" in
 	create)
-		create $2
+		create "$2"
 		;;
 	delete)
-		delete $2
+		delete "$2"
 		;;
 	*)
 		echo $"Usage: $0 {create|delete} username"
