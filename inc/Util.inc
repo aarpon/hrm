@@ -357,6 +357,27 @@ function report($text, $level) {
 }
 
 
+//!---------------------------------------------------------
+// @function    notifyRuntimeError
+// @desc        Sends an email to the admin to notify any message.
+//              It helps in debugging strange events, and in being
+//              aware of abnormal scheduler stops.
+// @param       subject  String  A string to be appended to the email subject.
+// @param       message  String  The body of the email.
+// @return      Void
+//!---------------------------------------------------------
+function notifyRuntimeError($subject, $message) {
+    global $email_sender;
+    global $email_admin;
+    $text = "Huygens Remote Manager warning:\n"
+        . $name . " could not be pinged on " . date("r", time());
+    $mail = new Mail($email_sender);
+    $mail->setReceiver($email_admin);
+    $mail->setSubject('Huygens Remote Manager - '.$subject);
+    $mail->setMessage($message);
+    $mail->send(); 
+    # No need to report to log, send() already did.
+}
 
 /* A global debugging function, that will print all its arguments whether they
  * are strings, arrays or objects. This works if a global variable $debug =

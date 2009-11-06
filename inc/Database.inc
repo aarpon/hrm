@@ -718,19 +718,23 @@ Class DatabaseConnection {
     if ($this->isDatabaseUpdated()) {
       $query = "SELECT value FROM queuemanager WHERE field = 'switch'";
       $answer = $this->queryLastValue($query);
-      $result = False;
-      if ($answer=='on') $result = True;
-      else {
-          report("'$query' returned '$answer'", 1);
+      $result = True;
+      if ($answer == 'off') {
+          $result = False;
+          report("$query; returned '$answer'", 1);
+          notifyRuntimeError("hrmd stopped", 
+           "$query; returned '$answer'\n\nThe HRM queue manage will stop.");
       }
     }
     else {
       $query = "select switch from queuemanager";
       $answer = $this->queryLastValue($query);
-      $result = False;
-      if ($answer=='on') $result = True;
-      else {
-          report("'$query' returned '$answer'", 1);
+      $result = True;
+      if ($answer == 'off') {
+          $result = False;
+          report("$query; returned '$answer'", 1);
+          notifyRuntimeError("hrmd stopped", 
+           "$query; returned '$answer'\n\nThe HRM queue manage will stop.");
       }
     }
   
