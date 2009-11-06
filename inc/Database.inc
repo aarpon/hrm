@@ -720,12 +720,18 @@ Class DatabaseConnection {
       $answer = $this->queryLastValue($query);
       $result = False;
       if ($answer=='on') $result = True;
+      else {
+          report("'$query' returned '$answer'", 1);
+      }
     }
     else {
       $query = "select switch from queuemanager";
       $answer = $this->queryLastValue($query);
       $result = False;
       if ($answer=='on') $result = True;
+      else {
+          report("'$query' returned '$answer'", 1);
+      }
     }
   
     return $result;
