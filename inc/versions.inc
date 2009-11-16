@@ -91,7 +91,7 @@ class Versions {
     public static function getDBCurrentRevision( ) {
         $db   = new DatabaseConnection();
         $rows = $db->query(
-            "SELECT * FROM `global_variables` WHERE `name` LIKE 'dbrevision';");
+            "SELECT * FROM global_variables WHERE name LIKE 'dbrevision';");
         if ( !$rows ) {
             return 0;
         } else {
