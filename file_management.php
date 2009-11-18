@@ -56,11 +56,8 @@ require_once("./inc/Fileserver.inc");
 
 session_start();
 
-if (isset($_GET['exited'])) {
-  $_SESSION['user']->logout();
-  session_unset();
-  session_destroy();
-  header("Location: " . "login.php"); exit();
+if (isset($_GET['home'])) {
+  header("Location: " . "home.php"); exit();
 }
 
 if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
@@ -231,8 +228,8 @@ include("header.inc.php");
 
     <div id="nav">
         <ul>
-            <li><a href="file_management.php?exited=exited">exit</a></li>
-            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpFileManagement')">help</a></li>
+            <li><a href="<?php echo getThisPageName();?>?home=home"><img src="images/restart_help.png" alt="home" />&nbsp;Home</a></li>
+            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpFileManagement')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
         </ul>
     </div>
     
@@ -300,14 +297,12 @@ else echo "                        <option>&nbsp;</option>\n";
         </form>
         
     </div> <!-- content -->
-    
-    <div id="controls">
-      <input type="button" name="back" value="" class="icon back" onclick="document.location.href='<?php echo $_SESSION['referer']; ?>'" />
-    </div>
-    
-    <div id="stuff">
+  
+    <div id="rightpanel">
+
         <div id="info">
-        
+          
+          <h3>Quick help</h3>
             
 <?php if ($allowHttpTransfer) { 
     echo $instructions;
@@ -323,7 +318,7 @@ echo $message;
 ?>
         </div>
         
-    </div> <!-- stuff -->
+    </div> <!-- rightpanel -->
     
 <?php
 

@@ -297,8 +297,7 @@ include("header.inc.php");
 
     <div id="nav">
         <ul>
-            <li><a href="select_images.php?exited=exited">exit</a></li>
-            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpRestorationParameters')">help</a></li>
+            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpRestorationParameters')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
         </ul>
     </div>
     
@@ -592,36 +591,29 @@ if ($parameter->value() != null) {
             
             <div><input name="OK" type="hidden" /></div>
             
+            <div id="controls">
+              <input type="button" value="" class="icon up" onclick="document.location.href='select_task_settings.php'" />
+              <input type="submit" value="" class="icon next" onclick="process()" />
+            </div>
+
         </form>
         
     </div> <!-- content -->
     
-    <div id="stuff">
+    <div id="rightpanel">
     
-        <div id="info">
-        
-            <input type="button" value="" class="icon cancel" onclick="document.location.href='select_task_settings.php'" />
-            <input type="submit" value="" class="icon apply" onclick="process()" />
+      <div id="info">
+          
+        <h3>Quick help</h3>
             
-            <p>
-                Define the parameters for restoration.
-            </p>
+        <p>Define the parameters for restoration.</p>
 
-	   <p>
-		You will find detailed explanations by following the help button in the navigation bar.
-	   </p>
-
-           <p>
-                When you are ready, press the <br />
-                <img src="images/apply_help.png" alt="Apply" width="22" height="22" /> <b>apply</b>
-                button to go to the next <br />step
-                or <img src="images/cancel_help.png" alt="Cancel" width="22" height="22" /> <b>cancel</b>
-                to discard your changes.
-            </p> 
+        <p>You will find detailed explanations by following the help button
+        in the navigation bar.</p>
     
-        </div>
+      </div>
         
-        <div id="message">
+      <div id="message">
 <?php
 
 echo $message;
@@ -629,7 +621,7 @@ echo $message;
 ?>
         </div>
         
-    </div> <!-- stuff -->
+    </div> <!-- rightpanel -->
     
 <?php
 

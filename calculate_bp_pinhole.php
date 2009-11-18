@@ -275,7 +275,7 @@ function start() {
     echo "\n</ul>";
     echo "\n</div> <!-- content -->\n";
     ?>
-         <div id="stuff">
+         <div id="rightpanel">
 
         <div id="info">
 
@@ -367,7 +367,7 @@ global $cmsys, $table, $extra1, $txt1, $extra2, $txt2, $checked1, $checked2;
         print "\n</form>";
 ?>  </div> <!-- content -->
 
-         <div id="stuff">
+         <div id="rightpanel">
 
         <div id="info">
 
@@ -393,7 +393,7 @@ global $cmsys, $table, $extra1, $txt1, $extra2, $txt2, $checked1, $checked2;
 
 <?php
 
-echo $message."\n\n       </div>\n\n    </div> <!-- stuff -->";
+echo $message."\n\n       </div>\n\n    </div> <!-- rightpanel -->";
 
 
 
@@ -554,7 +554,7 @@ if ($error) {
       $out .= "
        </div>
 
-    </div> <!-- stuff -->";
+    </div> <!-- rightpanel -->";
 
 
       return $out;

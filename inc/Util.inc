@@ -440,4 +440,14 @@ function getHucoreVersionAsInteger( $hucoreVersion ) {
         return $version;
 }
       
+//!---------------------------------------------------------
+// @function    getThisPageName
+// @desc        Returns the name of current page
+// @return      string containing the name of current page
+//!---------------------------------------------------------
+
+function getThisPageName() {
+  return substr($_SERVER["SCRIPT_NAME"],strrpos($_SERVER["SCRIPT_NAME"],"/")+1);
+}
+
 ?>

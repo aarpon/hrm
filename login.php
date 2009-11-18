@@ -134,15 +134,9 @@ if (isset($_POST['password'])) {
             if ( $req != false ) {
                 header("Location: " . $req); 
                 exit();
-            } else if ($_SESSION['user']->isAdmin()) {
-                if ($enableUserAdmin) {
-                    header("Location: " . "user_management.php"); exit();
-                }
-                else {
-                    header("Location: " . "select_parameter_settings.php"); exit();
-                }
-            } else {
-                header("Location: " . "select_parameter_settings.php"); 
+              }
+            else {
+                header("Location: " . "home.php"); 
                 exit();
             }
   	}
@@ -171,9 +165,9 @@ include("header.inc.php");
 
     <div id="nav">
         <ul>
-            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpLogin')">help</a></li> 
-            <li><a href="about.php">about</a></li>
-            <li><a href="last_changes.php">changes</a></li>
+            <li><a href="javascript:openWindow('http://huygens-rm.org/wiki/index.php?title=Changelog')"><img src="images/whatsnew.png" alt="website" />&nbsp;What's new?</a></li>
+            <li><a href="javascript:openWindow('http://www.huygens-rm.org')"><img src="images/logo_small.png" alt="website" />&nbsp;Website</a></li>
+            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpLogin')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li> 
         </ul>
     </div>
     
@@ -216,7 +210,7 @@ include("header.inc.php");
             <a href="javascript:openWindow('http://www.svi.nl')">Scientific 
             Volume Imaging B.V.</a> that allows for multi-user, large-scale deconvolution.
         </p>
-
+        <p />
 	<div id="logos">
             <div class="logo-fmi">
                 <a href="javascript:openWindow('http://www.fmi.ch')"><img src="images/logo_fmi.png" alt="FMI" /></a>
@@ -236,7 +230,7 @@ include("header.inc.php");
         
     </div> <!-- content -->
     
-    <div id="stuff">
+    <div id="rightpanel">
 	<p />    
 	<div id="login">
             <form method="post" action="">
@@ -325,7 +319,7 @@ if (isset($external_link)) {
 
         </div>
         
-    </div> <!-- stuff -->
+    </div> <!-- rightpanel -->
 
 <?php
 

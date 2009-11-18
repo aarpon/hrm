@@ -56,11 +56,8 @@ require_once("./inc/Fileserver.inc");
 
 session_start();
 
-if (isset($_GET['exited'])) {
-  if ( isset( $_SESSION['user'] ) ) $_SESSION['user']->logout();
-  session_unset();
-  session_destroy();
-  header("Location: " . "login.php"); exit();
+if (isset($_GET['home'])) {
+  header("Location: " . "home.php"); exit();
 }
 
 if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
@@ -174,37 +171,14 @@ include("header.inc.php");
 
     <div id="nav">
         <ul>
-            <li><a href="select_images.php?exited=exited">exit</a></li>
-<?php
-
-if ($enableUserAdmin) {
-
-?>
-            <li><a href="account.php">account</a></li>
-<?php
-
-}
-
-?>
-            <li><a href="job_queue.php">queue</a></li>
-            <li><a href="file_management.php">files</a></li>
-            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpSelectImages')">help</a></li>
+            <li><a href="<?php echo getThisPageName();?>?home=home"><img src="images/restart_help.png" alt="home" />&nbsp;Home</a></li>
+            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpSelectImages')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
         </ul>
     </div>
     
     <div id="content">
     
         <h3>Step 3 - Select Images</h3>
-        <?php 
-        #print "<pre>"; 
-        #print_r($_SESSION['setting']->EmissionWavelength);
-        #print_r($_SESSION['setting']->CCDCaptorSizeX);
-        #print_r($_SESSION['setting']->ZStepSize);
-        
-        # print_r($_SESSION['setting']); 
-        
-        #print "</pre>"; 
-        ?>
         
         <form method="post" action="" id="select">
         
@@ -241,7 +215,7 @@ else echo "                        <option>&nbsp;</option>\n";
             
             <div id="selection">
                 <input name="down" type="submit" value="" class="icon down" />
-                <input name="up" type="submit" value="" class="icon up" />
+                <input name="up" type="submit" value="" class="icon remove" />
             </div>
             
             <fieldset>
@@ -276,17 +250,20 @@ else echo "                        <option>&nbsp;</option>\n";
                 <input name="OK" type="hidden" />
             </div>
             
+            <div id="controls" >
+              <input type="button" value="" class="icon previous" onclick="document.location.href='select_task_settings.php'" />
+              <input type="submit" value="" class="icon next" onclick="process()" />
+            </div>
+
         </form>
-        
+
     </div> <!-- content -->
 
-    <div id="stuff">
-         <div id="controls" style="text-align: center; padding-top: 1em; padding-right: 8px;" >
-            <input type="button" value="" class="icon previous" onclick="document.location.href='select_task_settings.php'" />
-            <input type="submit" value="" class="icon next" onclick="process()" />
-        </div>    
+    <div id="rightpanel">
 
         <div id="info">
+
+            <h3>Quick help</h3>
 
             <p>
                 Select the image files in the upper file list. You can use SHIFT- 
@@ -325,7 +302,7 @@ echo $message;
 ?>
         </div>
         
-    </div> <!-- stuff -->
+    </div> <!-- rightpanel -->
     
 <?php
 

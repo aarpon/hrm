@@ -106,8 +106,9 @@ fieldset select {
 }
 
 #title {
-    height: 95px;
+    height: 86px;
     background: url(../images/logo.png) no-repeat top left;
+    background-color: #eee;
     padding-left: 180px;
     margin: 0px;
     border: #fff 2px solid;
@@ -118,9 +119,10 @@ fieldset select {
 }
 
 #nav {
-    color: #ccc;
+    color: #888;
+    font-size: 0.8em;
     font-weight: bold;
-    text-align: left;
+    text-align: right;
     border-top: #ccc 2px solid;
     border-bottom: #ccc 2px solid;
 }
@@ -138,18 +140,34 @@ fieldset select {
 
 #nav a:link {
     font-weight: bold;
+    color: #000;
 }
 
 #nav a:visited {
     font-weight: bold;
+    color: #000;
+}
+
+#controls {
+    text-align: center;
+    border: #ccc 1px dotted;
+}
+
+#fullpage {
+    width: 100%;
+    text-align: left;
+    margin: 15px;
 }
 
 #content {
     float: left;
     width: 60%;
     text-align: left;
-    margin-left: 10px;
-    padding-right: 25px;
+    margin-left: 15px;
+    padding-right: 15px;
+    margin-bottom: 15px;
+    border-right-style: dotted;
+    border-right-width: 1px;
 }
 
 #content h2 {
@@ -195,6 +213,7 @@ fieldset select {
 
 #selection {
     text-align: center;
+    padding-bottom: 10px;
 }
 
 #selection select {
@@ -222,7 +241,7 @@ input.down {
     background: url(../images/add.png) no-repeat center;
 }
 
-input.up {
+input.remove {
     background: url(../images/remove.png) no-repeat center;
 }
 
@@ -254,6 +273,12 @@ input.download {
     background: url(../images/download.png) no-repeat center;
 }
 
+input.save {
+    width: 60px;
+    height: 60px;
+    background: url(../images/save.png) no-repeat center;
+}
+
 #actions label {
     display: block;
     margin-top: 20px;
@@ -261,7 +286,7 @@ input.download {
     padding-left: 5px;
 }
 
-#stuff {
+#rightpanel {
     float: right;
     width: 33%;
     font-size: 80%;
@@ -291,6 +316,10 @@ input.download {
     text-align: center;
     padding-top: 1em;
     padding-right: 8px;
+}
+
+#info p {
+    text-align: justify;
 }
 
 #footer {
@@ -512,7 +541,7 @@ fieldset.report {
 
 input.icon {
     width: 60px;
-    height: 32px;
+    height: 60px;
     color: #fff;
     font-size: 0px;
     text-align: left;
@@ -537,6 +566,12 @@ input.next {
     width: 60px;
     height: 60px;
     background: url(../images/next.png) no-repeat right;
+}
+
+input.up {
+    width: 60px;
+    height: 60px;
+    background: url(../images/up.png) no-repeat right;
 }
 
 input.ok {

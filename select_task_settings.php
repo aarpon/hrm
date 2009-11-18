@@ -60,11 +60,8 @@ global $enableUserAdmin;
 
 session_start();
 
-if (isset($_GET['exited'])) {
-  $_SESSION['user']->logout();
-  session_unset();
-  session_destroy();
-  header("Location: " . "login.php"); exit();
+if (isset($_GET['home'])) {
+  header("Location: " . "home.php"); exit();
 }
 
 if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
@@ -153,49 +150,8 @@ include("header.inc.php");
 
     <div id="nav">
         <ul>
-            <li><a href="select_task_settings.php?exited=exited">exit</a></li>
-<?php
-
-// add user management
-if ($_SESSION['user']->name() == "admin") {
-  if ($enableUserAdmin) {
-
-?>
-            <li><a href="user_management.php">users</a></li>
-<?php
-
-  }
-
-?>
-            <li><a href="select_parameter_settings.php">parameters</a></li>
-            <li>tasks</li>
-<?php
-
-}
-
-if ($enableUserAdmin || $_SESSION['user']->name() == "admin") {
-
-?>
-            <li><a href="account.php">account</a></li>
-<?php
-
-}
-
-?>
-            <li><a href="job_queue.php">queue</a></li>
-            <li><a href="file_management.php">files</a></li>
-<?php
-
-if ($enableUserAdmin && $_SESSION['user']->name() == "admin") {
-
-?>
-            <li><a href="update.php">update</a></li>
-<?php
-
-}
-
-?>
-            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpSelectTaskSettings')">help</a></li>
+            <li><a href="<?php echo getThisPageName();?>?home=home"><img src="images/restart_help.png" alt="home" />&nbsp;Home</a></li>
+            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpSelectTaskSettings')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
         </ul>
     </div>
     
@@ -323,28 +279,34 @@ if ($_SESSION['user']->name() != "admin") {
                 <input name="delete" type="submit" value="" class="icon delete" />
                 <label>new/clone setting name: <input name="new_setting" type="text" class="textfield" /></label>
                 <input name="OK" type="hidden" />
+                
             </div>
+<?php
+
+if ($_SESSION['user']->name() != "admin") {
+
+?>
+                <div id="controls">      
+                  <input type="button" value="" class="icon previous" onclick="document.location.href='select_parameter_settings.php'" />
+                  <input type="submit" value="" class="icon next" onclick="process()" />
+                </div>
+<?php
+
+}
+
+?>
             
         </form> <!-- select -->
         
     </div> <!-- content -->
     
-    <div id="stuff">
+    <div id="rightpanel">
     
         <div id="info">
+          
+          <h3>Quick help</h3>
         
 <?php
-
-// add user management
-if ($_SESSION['user']->name() != "admin") {
-
-?>
-            <input type="button" value="" class="icon previous" onclick="document.location.href='select_parameter_settings.php'" />
-            <input type="submit" value="" class="icon next" onclick="process()" />
-<?php
-
-}
-
         if ($_SESSION['user']->name() != "admin") {
         ?>
             <p>
@@ -395,7 +357,7 @@ echo $message;
 ?>
         </div>
         
-    </div> <!-- stuff -->
+    </div> <!-- rightpanel -->
     
 <?php
 

@@ -62,11 +62,8 @@ session_start();
 
 $db = new DatabaseConnection();
 
-if (isset($_GET['exited'])) {
-  if (isset( $_SESSION['user']) ) $_SESSION['user']->logout();
-  session_unset();
-  session_destroy();
-  header("Location: " . "login.php"); exit();
+if (isset($_GET['home'])) {
+  header("Location: " . "home.php"); exit();
 }
 
 if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
@@ -163,8 +160,8 @@ include("header.inc.php");
 
     <div id="nav">
         <ul>
-            <li><a href="select_images.php?exited=exited">exit</a></li>
-            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpAccount')">help</a></li>
+            <li><a href="<?php echo getThisPageName();?>?home=home"><img src="images/restart_help.png" alt="home" />&nbsp;Home</a></li>
+            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpAccount')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
         </ul>
     </div>
     
@@ -206,36 +203,33 @@ if (isset($_SESSION['account_user'])/* && $_SESSION['user']->name() == "admin"*/
                 <br />
                 <label for="pass2">(verify) New password: </label>
                 <input name="pass2" id="pass2" type="password" />
-                <br />
-                (leave blank if you do not wish to change your password)
                 <input name="modify" type="hidden" value="modify" />
+
+                <p />
+
+                <?php
+                  $referer = $_SESSION['referer'];
+                ?>                
+
+                <div id="controls">
+                  <input type="button" name="cancel" value="" onclick="document.location.href='<?php echo $referer ?>'" class="icon cancel" />
+                  <input type="button" name="save" value="" onclick="document.forms['useraccount'].submit()" class="icon save" />
+                </div>
+            
             </div>
         </form>
         
     </div> <!-- content -->
     
-    <div id="stuff">
+    <div id="rightpanel">
     
         <div id="info">
+
+          <h3>Quick help</h3>
           
-<?php
-
-$referer = $_SESSION['referer'];
-
-?>
-
-            <input type="button" name="cancel" value="" onclick="document.location.href='<?php echo $referer ?>'" class="icon cancel" />
-            <input type="button" name="apply" value="" onclick="document.forms['useraccount'].submit()" class="icon apply" />
-            
-
-            <p>
-                Click on 
-                <img src="images/apply_help.png" alt="Apply" width="22" height="22"/> <b>apply</b>
-		to store the changes or on
-                <img src="images/cancel_help.png" alt="Cancel" width="22" height="22"/> <b>cancel</b>
-                to discard them.
-            </p>
-
+          <p>Leave the password fields blank if you do not wish to change
+          your password.</p>
+          
        </div>
         
         <div id="message">
@@ -246,7 +240,7 @@ echo $message;
 ?>
         </div>
         
-    </div> <!-- stuff -->
+    </div> <!-- rightpanel -->
     
 <?php
 

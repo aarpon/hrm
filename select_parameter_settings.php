@@ -61,11 +61,8 @@ global $enableUserAdmin;
 
 session_start();
 
-if (isset($_GET['exited'])) {
-  $_SESSION['user']->logout();
-  session_unset();
-  session_destroy();
-  header("Location: " . "login.php"); exit();
+if (isset($_GET['home'])) {
+  header("Location: " . "home.php"); exit();
 }
 
 if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
@@ -191,53 +188,23 @@ include("header.inc.php");
 
     <div id="nav">
         <ul>
-            <li><a href="select_images.php?exited=exited">exit</a></li>
-<?php
-
-// add user management
-if ($_SESSION['user']->name() == "admin") {
-  if ($enableUserAdmin) {
-
-?>
-            <li><a href="user_management.php">users</a></li>
-<?php
-
-  }
-
-?>
-            <li>parameters</li>
-            <li><a href="select_task_settings.php">tasks</a></li>
-<?php
-
-}
-
-if ($enableUserAdmin || $_SESSION['user']->name() == "admin") {
-
-?>
-            <li><a href="account.php">account</a></li>
-<?php
-
-}
-
-?>
-            <li><a href="job_queue.php">queue</a></li>
-            <li><a href="file_management.php">files</a></li>
-<?php
-
-if ($enableUserAdmin && $_SESSION['user']->name() == "admin") {
-
-?>
-            <li><a href="update.php">update</a></li>
-<?php
-
-}
-
-?>
-            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpSelectParameterSettings')">help</a></li>
+            <li><a href="<?php echo getThisPageName();?>?home=home"><img src="images/restart_help.png" alt="home" />&nbsp;Home</a></li>
+            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpSelectParameterSettings')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
         </ul>
     </div>
     
     <div id="content">
+
+    <!--
+      Tooltips
+    -->
+    <span id="ttSpanCreate">Create a new setting with the specified name.</span>  
+    <span id="ttSpanEdit">Edit the selected setting.</span>
+    <span id="ttSpanClone">Copy the selected setting to a new one with the
+      specified name.</span>
+    <span id="ttSpanDefault">Sets the selected setting as the default one.</span>
+    <span id="ttSpanDelete">Delete the selected setting.</span>
+    <span id="ttSpanCopyTemplate">Copy a template.</span>
     
 <?php
 
@@ -291,7 +258,10 @@ if ($_SESSION['user']->name() != "admin") {
             </fieldset>
             
             <div id="selection">
-                <input name="copy_public" type="submit" value="" class="icon copy" />
+                <input name="copy_public" type="submit" value=""
+                    class="icon copy"
+                    onmouseover="TagToTip('ttSpanCopyTemplate' )"
+                    onmouseout="UnTip()" />
             </div>
             
         </form>
@@ -344,32 +314,59 @@ else {
             </fieldset>
             
             <div id="actions" class="parameterselection">
-                <input name="create" type="submit" value="" class="icon create" />
-                <input name="edit" type="submit" value="" class="icon edit" />
-                <input name="copy" type="submit" value="" class="icon clone" />
+                <input name="create" type="submit" value="" class="icon create"
+                       onmouseover="TagToTip('ttSpanCreate' )"
+                       onmouseout="UnTip()" />
+                <input name="edit" type="submit" value="" class="icon edit"
+                      onmouseover="TagToTip('ttSpanEdit' )"
+                      onmouseout="UnTip()" />
+                <input name="copy" type="submit" value="" class="icon clone"
+                       onmouseover="TagToTip('ttSpanClone' )"
+                       onmouseout="UnTip()" />
 <?php
 
 if ($_SESSION['user']->name() != "admin") {
 
 ?>
-                <input name="make_default" type="submit" value="" class="icon mark" />
+                <input name="make_default" type="submit" value=""
+                      class="icon mark"
+                      onmouseover="TagToTip('ttSpanDefault' )"
+                      onmouseout="UnTip()" />
 <?php
 
 }
 
 ?>
-                <input name="delete" type="submit" value="" class="icon delete" />
+                <input name="delete" type="submit" value="" class="icon delete"
+                      onmouseover="TagToTip('ttSpanDelete' )"
+                      onmouseout="UnTip()" />
                 <label>new/clone setting name: <input name="new_setting" type="text" class="textfield" /></label>
                 <input name="OK" type="hidden" />
-            </div>
+        </div>                
+<?php
+
+if ($_SESSION['user']->name() != "admin") {
+
+?>
+                <div id="controls">      
+                  <input type="submit" value="" class="icon empty" disabled="disabled" />
+                  <input type="submit" value="" class="icon next" onclick="process()" />
+                </div>
+<?php
+
+}
+
+?>
             
         </form> <!-- select -->
         
     </div> <!-- content -->
     
-    <div id="stuff">
+    <div id="rightpanel">
     
         <div id="info">
+          
+          <h3>Quick help</h3>
         
 <?php
 
@@ -377,8 +374,7 @@ if ($_SESSION['user']->name() != "admin") {
 if ($_SESSION['user']->name() != "admin") {
 
 ?>
-            <input type="submit" value="" class="icon empty" disabled="disabled" />
-            <input type="submit" value="" class="icon next" onclick="process()" />
+
 <?php
 
 }
@@ -399,7 +395,7 @@ if ($_SESSION['user']->name() != "admin") {
 	?>
             <p>
 		You can <img src="images/create_help.png" alt="Create" width="22" height="22" /> <b>create</b> 
-                new settings or <br /><img src="images/edit_help.png" alt="Create" width="22" height="22" /><b>edit</b> 
+                new settings or <img src="images/edit_help.png" alt="Create" width="22" height="22" /><b>edit</b> 
                 existing ones.
             </p>
             
@@ -414,12 +410,14 @@ if ($_SESSION['user']->name() != "admin") {
 	    </p>
 
             <p>
-                You can permanently destroy the current selection by pressing <br />on the 
+                You can permanently destroy the current selection by pressing on the 
                 <img src="images/delete_help.png" alt="Delete" width="22" height="22" /> <b>delete</b> button.
             </p>
 
             <p>
-                For more detailed explanations please follow the help link in the navigation bar.
+                For more etailed explanations please follow the
+                <img src="images/help.png" alt="Help" width="22" height="22" /> <b>help</b> 
+                link in the navigation bar.
             </p>
 
 
@@ -434,7 +432,7 @@ echo $message;
 ?>
         </div>
         
-    </div> <!-- stuff -->
+    </div> <!-- rightpanel -->
     
 <?php
 

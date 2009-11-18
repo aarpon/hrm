@@ -208,7 +208,7 @@ foreach ( $sortedPossibleValues as $possibleValue) {
     
  </div> <!-- content -->
  
- <div id="stuff">
+ <div id="rightpanel">
     
         <div id="info">
         
@@ -232,7 +232,7 @@ echo $message;
 ?>
         </div>
         
-    </div> <!-- stuff -->
+    </div> <!-- rightpanel -->
     
 <?php
 

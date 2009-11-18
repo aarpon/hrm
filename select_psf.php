@@ -113,8 +113,7 @@ include("header.inc.php");
 
     <div id="nav">
         <ul>
-            <li><a href="select_images.php?exited=exited">exit</a></li>
-            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpSelectPSFFiles')">help</a></li>
+            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpSelectPSFFiles')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
         </ul>
     </div>
     
@@ -170,26 +169,24 @@ for ($i = 0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
             
             <div><input name="OK" type="hidden" /></div>
             
+            <div id="controls">
+              <input type="button" value="" class="icon previous" onclick="document.location.href='capturing_parameter.php'" />
+              <input type="button" value="" class="icon up" onclick="document.location.href='select_parameter_settings.php'" />
+              <input type="submit" value="" class="icon next" onclick="process()" />
+            </div>
+                        
         </form>
         
     </div> <!-- content -->
     
-    <div id="stuff">
+    <div id="rightpanel">
     
         <div id="info">
-        
-            <input type="button" value="" class="icon cancel" onclick="document.location.href='capturing_parameter.php'" />
-            <input type="submit" value="" class="icon apply" onclick="process()" />
+          
+          <h3>Quick help</h3>
+          
+          <p>Select a PSF file for each of the channels. Only <strong>single-channel PSF files</strong> are supported.</p>
             
-            <p>Select a PSF file for each of the channels. Only <strong>single-channel PSF files</strong> are supported.</p>
-            
-           <p>
-                When you are done with the selection, press the
-                <img src="images/apply_help.png" alt="Create" width="22" height="22" /> <b>apply</b>
-                button to continue.
-            </p>
-
-
         </div>
         
         <div id="message">
@@ -200,7 +197,7 @@ echo $message;
 ?>
         </div>
         
-    </div> <!-- stuff -->
+    </div> <!-- rightpanel -->
     
 <?php
 

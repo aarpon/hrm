@@ -1,5 +1,6 @@
 <?php
-// Module Versions.inc
+
+// php page: login.php
 
 // This file is part of huygens remote manager.
 
@@ -50,60 +51,79 @@
 // The fact that you are presently reading this means that you have had 
 // knowledge of the CeCILL license and that you accept its terms.
 
-/*
-  
-  CLASS VERSIONS
-  
-  This class centralizes all information about versions relevant to the HRM
-  and the tools to get and compare them.
+require_once("./inc/User.inc");
+require_once("./inc/Database.inc"); // for account management (email & last_access fields)
+require_once("./inc/CreditOwner.inc");
+require_once("./inc/hrm_config.inc");
+require_once("./inc/Fileserver.inc");
+require_once("./inc/versions.inc");
 
-  Versions are:
-  (1) The version of the HRM itself
-  (2) The database revision supported by current HRM version
-  (3) Current database revision (obtained by querying the DB itself)
-   
-*/
+global $email_admin;
+global $enableUserAdmin;
+global $use_accounting_system;
 
-require_once("Database.inc");
+$message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
 
-class Versions {
+session_start();
+
+if (isset($_GET['exited'])) {
+  $_SESSION['user']->logout();
+  session_unset();
+  session_destroy();
+  header("Location: " . "login.php"); exit();
+}
+
+if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
+  header("Location: " . "login.php"); exit();
+}
+
+$message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
+
+include("header.inc.php");
+
+?>
+
+    <div id="nav">
+        <ul>
+			<li><a href="<?php echo getThisPageName();?>?exited=exited"><img src="images/exit.png" alt="exit" />&nbsp;Logout</a></li>
+            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpHome')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li> 
+        </ul>
+    </div>
     
-    // These fields have to be updated by the developers!
-    const HRM_VERSION      = "1.2.0";
-    const DB_LAST_REVISION = 6;
+    <div id="fullpage">
     
-    // Return HRM version
-    public static function getHRMVersion( ) {
-        return self::HRM_VERSION;
-    }
+        <h2>Actions</h2>
 
-    // Print HRM version
-    public static function printHRMVersion( ) {
-        print self::HRM_VERSION;
-    }
-    
-    // Return DB revision expected by this version of the HRM
-    public static function getDBLastRevision( ) {
-        return self::DB_LAST_REVISION;
-    }
-  
-    // Return DB revision from the database
-    public static function getDBCurrentRevision( ) {
-        $db   = new DatabaseConnection();
-        $rows = $db->query(
-            "SELECT * FROM global_variables WHERE name LIKE 'dbrevision';");
-        if ( !$rows ) {
-            return 0;
+        <?php
+
+        if ($_SESSION['user']->name() == "admin") {
+            if ($enableUserAdmin) {
+        ?>        
+        <p><a href="./user_management.php">Manage users</a></p>
+        <p><a href="./select_parameter_settings.php">Create parameter settings templates</a></p>
+        <p><a href="./select_task_settings.php">Create task settings templates</a></p>
+        <p><a href="./update.php">Update the database</a></p>
+        <p><a href="./job_queue.php">Manage the job queue</a></p>
+        <p><a href="#">See the global statistics</a></p>
+        
+        <?php
+            }
         } else {
-            return $rows[0]['value'];
+        ?>
+        <p><a href="./select_parameter_settings.php">Start a job</a></p>
+        <p><a href="./job_queue.php">You currently have 0 jobs in the queue</a></p>
+        <p><a href="./file_management.php">Manage your files</a></p>
+        <p><a href="#">View your statistics</a></p>
+
+        <?php
         }
-    }
+        ?>        
+        <p><a href="./account.php">Modify your account information</a></p>
+   
+    </div> <!-- home -->
 
-    // Return true if the database is up-to-date
-    public static function isDBUpToDate( ) {
-        return ( self::getDBLastRevision( ) == self::getDBCurrentRevision( ) );
-    }
+<?php
 
-};
+include("footer.inc.php");
 
 ?>

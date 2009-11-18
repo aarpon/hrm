@@ -191,7 +191,7 @@ else {
 ?>
     </div> <!-- content -->
     
-    <div id="stuff">
+    <div id="rightpanel">
     
 <?php
 
@@ -217,7 +217,7 @@ if (!$processed) {
 ?>
         </div>
         
-    </div>  <!-- stuff -->
+    </div>  <!-- rightpanel -->
     
 <?php
 

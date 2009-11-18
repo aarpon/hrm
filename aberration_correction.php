@@ -95,12 +95,11 @@ include("header.inc.php");
 
 ?>
 
-   <div id="nav">
+    <div id="nav">
         <ul>
-         <li><a href="select_images.php?exited=exited">exit</a></li>
-        <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpEnableSACorrection')">help</a></li>
+            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpEnableSACorrection')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
         </ul>
-    </div> <!-- nav -->
+    </div>
     
     <div id="content">
     
@@ -348,30 +347,34 @@ $selectedValue  = $parameter->value();
             
         </fieldset>
 
-    </div> <!-- AdvancedCorrectionOptionsDiv -->
+      </div> <!-- AdvancedCorrectionOptionsDiv -->
             
-    <div><input name="OK" type="hidden" /></div>
-            
+      <div><input name="OK" type="hidden" /></div>
+
+      <div id="controls">      
+        <input type="button" value="" class="icon previous" onclick="document.location.href='capturing_parameter.php'" />
+        <input type="button" value="" class="icon up" onclick="document.location.href='select_parameter_settings.php'" />
+        <input type="submit" value="" class="icon next" onclick="process()" />
+      </div>            
     </form>
         
     </div> <!-- content -->
     
-    <div id="stuff">
+    <div id="rightpanel">
     
         <div id="info">
-        
-            <input type="button" value="" class="icon cancel" onclick="document.location.href='capturing_parameter.php'" />
-            <input type="submit" value="" class="icon apply" onclick="process()" />
+          
+          <h3>Quick help</h3>
             
-            <p>The main cause of spherical aberration is a mismatch between the
-            refractive index of the lens immersion medium and specimen embedding
-            medium and causes the PSF to become asymmetric at depths of already
-            a few &micro;m. SA is especially harmful for widefield microscope
-            deconvolution.</p>
+          <p>The main cause of spherical aberration is a mismatch between the
+          refractive index of the lens immersion medium and specimen embedding
+          medium and causes the PSF to become asymmetric at depths of already
+          a few &micro;m. SA is especially harmful for widefield microscope
+          deconvolution.</p>
             
-            <p>The HRM can correct for SA automatically, but in case of very
-            large refractive index mismatches some artifacts can be generated.
-            Advanced parameters allow for fine-tuning of the correction.</p>
+          <p>The HRM can correct for SA automatically, but in case of very
+          large refractive index mismatches some artifacts can be generated.
+          Advanced parameters allow for fine-tuning of the correction.</p>
             
         </div>
         
@@ -383,7 +386,7 @@ echo $message;
 ?>
         </div>
         
-    </div> <!-- stuff -->
+    </div> <!-- rightpanel -->
     
 <?php
 

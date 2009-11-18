@@ -69,11 +69,8 @@ session_start();
 
 $db = new DatabaseConnection();
 
-if (isset($_GET['exited'])) {
-  $_SESSION['user']->logout();
-  session_unset();
-  session_destroy();
-  header("Location: " . "login.php"); exit();
+if (isset($_GET['home'])) {
+  header("Location: " . "home.php"); exit();
 }
 
 if (isset($_GET['seed'])) {
@@ -226,15 +223,8 @@ include("header.inc.php");
 
     <div id="nav">
         <ul>
-            <li><a href="select_images.php?exited=exited" onclick="clean()">exit</a></li>
-            <li>users</li>
-            <li><a href="select_parameter_settings.php" onclick="clean()">parameters</a></li>
-            <li><a href="select_task_settings.php" onclick="clean()">tasks</a></li>
-            <li><a href="account.php">account</a></li>
-            <li><a href="job_queue.php" onclick="clean()">queue</a></li>
-            <li><a href="file_management.php">files</a></li>
-            <li><a href="update.php">update</a></li>
-            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpUserManagement')">help</a></li>
+            <li><a href="<?php echo getThisPageName();?>?home=home" onclick="clean()"><img src="images/restart_help.png" alt="home" />&nbsp;Home</a></li>
+            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpUserManagement')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
         </ul>
     </div>
     
@@ -442,7 +432,7 @@ if ($_SESSION['index'] != "") {
         
     </div> <!-- content -->
     
-    <div id="stuff">
+    <div id="rightpanel">
         <div id="info">
             <p>
                 You can add new users, accept or reject pending registration 
@@ -456,7 +446,7 @@ print $message;
 
 ?>
         </div>
-    </div>  <!-- stuff -->
+    </div>  <!-- rightpanel -->
     
 <?php
 

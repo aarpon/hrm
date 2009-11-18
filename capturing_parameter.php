@@ -56,12 +56,7 @@ require_once("./inc/Parameter.inc");
 require_once("./inc/Setting.inc");
 
 session_start();
-if (isset($_GET['exited'])) {
-  $_SESSION['user']->logout();
-  session_unset();
-  session_destroy();
-  header("Location: " . "login.php"); exit();
-}
+
 if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
   header("Location: " . "login.php"); exit();
 }
@@ -180,8 +175,7 @@ $nyquist = $_SESSION['setting']->calculateNyquistRate();
 
     <div id="nav">
         <ul>
-            <li><a href="select_images.php?exited=exited">exit</a></li>
-            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpCaptor')">help</a></li>
+            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpCaptor')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
         </ul>
     </div>
     
@@ -407,41 +401,53 @@ if ($_SESSION['setting']->isNipkowDisk()) {
 ?>
 
             <div><input name="OK" type="hidden" /></div>
+
+            <div id="controls">
+              <input type="button" value="" class="icon previous" onclick="document.location.href='microscope_parameter.php'" />
+              <input type="button" value="" class="icon up" onclick="document.location.href='select_parameter_settings.php'" />
+              <input type="submit" value="" class="icon next" onclick="process()" />
+            </div>
             
         </form>
         
     </div> <!-- content -->
     
-    <div id="stuff">
+    <div id="rightpanel">
     
         <div id="info">
-        
-            <input type="button" value="" class="icon cancel" onclick="document.location.href='microscope_parameter.php'" />
-            <input type="submit" value="" class="icon apply" onclick="process()" />
+
+          <h3>Quick help</h3>
+          
+          <p>Here you have to enter the voxel size as it was set during the
+          image acquisition. Remember that the closer the acquisition sampling 
+          is to the Nyquist <b>ideal sampling rate</b>, the better both the input
+          and the deconvolved images will be!</p>
+          <p>With current optical parameters, the ideal pixel size is
+          <span style="background-color:yellow"><?php echo $nyquist[0];?>
+          nm</span><?php
+          if ($_SESSION['setting']->isThreeDimensional() ) {
+            echo " and the ideal z-step is <span style=\"background-color:yellow\">".
+            $nyquist[1]." nm</span>";
+          }
+          ?>.</p>
+          
+          <p>The Huygens Remote Manager will not try to stop you from running a
+          deconvolution on undersampled data (i.e. with a sampling rate much
+          larger than the ideal), but do not expect meaningful results!</p>
+
+          <p>
+            When you are ready, press the
+            <img src="images/next_help.png" alt="Apply" width="22" height="22" />
+            <b>next</b> button to go to the next step.</p>
             
-            <p>
-		This is the last step of the image settings edition. 
-            </p>
-            <p>Here you have to enter the voxel size as it was set during the
-            image acquisition. Remember that the closer the acquisition sampling 
-            is to the Nyquist <b>ideal sampling rate</b>, the better both the input
-            and the deconvolved images will be!</p>
-            <p>With current optical parameters, the ideal pixel size is
-            <span style="background-color:yellow"><?php echo $nyquist[0];?>
-            nm</span><?php
-             if ($_SESSION['setting']->isThreeDimensional() ) {
-                 echo " and the ideal z-step is <span style=\"background-color:yellow\">".
-                     $nyquist[1]." nm</span>";
-             }
-             ?>.</p>
-            <p>The Huygens Remote Manager will not try to stop you from running a deconvolution on
-            undersampled data (i.e. with a sampling rate much larger than the ideal), but do not expect meaningful results!</p>
-            <p>
-		Press the 
-                <img src="images/apply_help.png" alt="Apply" width="22" height="22" /> <b>apply</b>
-                button to save your parameter settings and to go back to the parameter settings
-                page.
-            </p>
+          <p>
+            You can also press the
+            <img src="images/previous_help.png" alt="Apply" width="22" height="22" />
+            <b>previous</b> button to go back one step,
+            or <img src="images/up_help.png" alt="Cancel" width="22" height="22" /> <b>up</b>
+            to discard your changes and return to the parameter selection page.
+          </p>
+        
         </div>
         
         <div id="message">
@@ -452,7 +458,7 @@ echo $message;
 ?>
         </div>
         
-    </div> <!-- stuff -->
+    </div> <!-- rightpanel -->
     
 <?php
 

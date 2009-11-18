@@ -107,6 +107,11 @@ if (isset($generatedScript)) {
 
 <body>
 
+<!--
+    // Use the great Tooltip JavaScript Library by Walter Zorn
+-->
+<script type="text/javascript" src="./scripts/wz_tooltip/wz_tooltip.js"></script>
+
 <div id="basket">
 
 <?php if (!isset($excludeTitle)) { ?>

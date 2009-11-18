@@ -57,13 +57,6 @@ require_once("./inc/Setting.inc");
 
 session_start();
 
-if (isset($_GET['exited'])) {
-  $_SESSION['user']->logout();
-  session_unset();
-  session_destroy();
-  header("Location: " . "login.php"); exit();
-}
-
 if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
        header("Location: " . "login.php"); exit();
 }
@@ -157,8 +150,7 @@ include("header.inc.php");
 
     <div id="nav">
         <ul>
-            <li><a href="select_images.php?exited=exited">exit</a></li>
-            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpImageFormat')">help</a></li>
+            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpImageFormat')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
         </ul>
     </div>
     
@@ -330,6 +322,11 @@ $parameter = $_SESSION['setting']->parameter("PointSpreadFunction");
                 <input type="radio" name="PointSpreadFunction" value="measured" <?php if ($parameter->value() == "measured") echo "checked=\"checked\"" ?> <?php echo $turnOffPSFAdaptationOnClick ?>/><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=ExperimentalPsf')"><img src="images/help.png" alt="?" /></a>Measured
                 
             </fieldset>
+
+            <div id="controls">
+              <input type="button" value="" class="icon up" onclick="document.location.href='select_parameter_settings.php'" />
+              <input type="submit" value="" class="icon next" onclick="process()" />
+            </div>
             
             <div><input name="OK" type="hidden" /></div>
             
@@ -337,27 +334,33 @@ $parameter = $_SESSION['setting']->parameter("PointSpreadFunction");
         
     </div> <!-- content -->
     
-    <div id="stuff">
+    <div id="rightpanel">
     
         <div id="info">
-        
-            <input type="button" value="" class="icon cancel" onclick="document.location.href='select_parameter_settings.php'" />
-            <input type="submit" value="" class="icon apply" onclick="process()" />
+            
+            <h3>Quick help</h3>
             
             <p>Please define image format, geometry, and number of channels.</p>
             
             <p>
-		If you select one of the "single XY plane" formats,
+              If you select one of the "single XY plane" formats,
                 the image geometry field below will be ignored.
+            </p>
+
+            <p>
+              You will find more detailed information on the parameters
+              by clicking on the
+              <img src="images/help.png" alt="Help" width="22" height="22" /> <b>help</b> 
+              buttons or following the help link in the navigation bar.
             </p>
             
             <p>
-                When you are ready, press the <br />
-	      	<img src="images/apply_help.png" alt="Apply" width="22" height="22" /> <b>apply</b>
-		button to go to the next <br />step  
-		or <img src="images/cancel_help.png" alt="Cancel" width="22" height="22" /> <b>cancel</b>
-                to discard your changes.
-	    </p>
+              When you are ready, press the
+              <img src="images/next_help.png" alt="Apply" width="22" height="22" /> <b>next</b>
+              button to go to the next step  
+              or <img src="images/up_help.png" alt="Cancel" width="22" height="22" /> <b>up</b>
+              to discard your changes and return to the parameter selection page.
+            </p>
 
         </div>
         
@@ -369,7 +372,7 @@ echo $message;
 ?>
         </div>
         
-    </div> <!-- stuff -->
+    </div> <!-- rightpanel -->
     
 <?php
 

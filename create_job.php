@@ -60,11 +60,8 @@ global $use_accounting_system;
 
 session_start();
 
-if (isset($_GET['exited'])) {
-  $_SESSION['user']->logout();
-  session_unset();
-  session_destroy();
-  header("Location: " . "login.php"); exit();
+if (isset($_GET['home'])) {
+  header("Location: " . "home.php"); exit();
 }
 
 if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
@@ -111,26 +108,13 @@ else if (isset($_POST['OK'])) {
 include("header.inc.php");
 
 ?>
-
     <div id="nav">
         <ul>
-            <li><a href="select_images.php?exited=exited">exit</a></li>
-<?php
-
-if ($enableUserAdmin) {
-
-?>
-            <li><a href="account.php">account</a></li>
-<?php
-
-}
-
-?>
-            <li><a href="job_queue.php">queue</a></li>
-            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpCreateJob')">help</a></li>
+            <li><a href="<?php echo getThisPageName();?>?home=home"><img src="images/restart_help.png" alt="home" />&nbsp;Home</a></li>
+            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpCreateJob')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
         </ul>
     </div>
-    
+   
     <div id="content">
     
         <h3>Step 4 - Create Job</h3>
@@ -243,43 +227,45 @@ foreach ($files as $file) {
 }
 
 ?>
-            </textarea>    
+            </textarea>
+            
         </fieldset>
+
+        <form method="post" action="">
             
-    </div> <!-- content -->
-    
-    <div id="stuff">
-    
-        <div id="info">
-        
-            <form method="post" action="">
-            
-                <div id="controls">
+          <div id="controls">
                 
 <?php
 
 if (!isset($_SESSION['jobcreated'])) {
 
 ?>
-                    <input type="button" name="previous"   value="" onclick="document.location.href='select_images.php'" class="icon previous" />
-                    <input type="button" name="create job" value="" onclick="document.forms['createjob'].submit()" class="icon ok" />
+            <input type="button" name="previous"   value="" onclick="document.location.href='select_images.php'" class="icon previous" />
+            <input type="button" name="create job" value="" onclick="document.forms['createjob'].submit()" class="icon ok" />
 <?php
 
 }
 else {
 
 ?>
-                <input type="button" value="restart" onclick="document.location.href='select_parameter_settings.php'" class="icon restart" />
+            <input type="button" value="restart" onclick="document.location.href='home.php'" class="icon restart" />
 <?php
 
 }
 
 ?>
-
                 </div>
                 
             </form>
-            
+
+    </div> <!-- content -->
+    
+    <div id="rightpanel">
+    
+        <div id="info">
+          
+          <h3>Quick help</h3>
+        
             <p>
 		Check the parameters you have chosen. Press the 
 		<img src="images/ok_help.png" alt="Create job" width="22" height="22" />
@@ -301,7 +287,7 @@ echo $message;
 ?>
         </div>
         
-    </div> <!-- stuff -->
+    </div> <!-- rightpanel -->
     
 <?php
 
