@@ -177,6 +177,13 @@ include("header.inc.php");
     </div>
     
     <div id="content">
+
+    <!--
+      Tooltips
+    -->
+    <span id="ttSpanDown">Add files to the list of selected images.</span>
+    <span id="ttSpanUp">Remove files from the list of selected images.</span>
+    <span id="ttSpanRefresh">Refresh the list of available images on the server.</span>
     
         <h3>Step 3 - Select Images</h3>
         
@@ -214,8 +221,12 @@ else echo "                        <option>&nbsp;</option>\n";
             </fieldset>
             
             <div id="selection">
-                <input name="down" type="submit" value="" class="icon down" />
-                <input name="up" type="submit" value="" class="icon remove" />
+                <input name="down" type="submit" value="" class="icon down"
+                    onmouseover="TagToTip('ttSpanDown' )"
+                    onmouseout="UnTip()" />
+                <input name="up" type="submit" value="" class="icon remove"
+                    onmouseover="TagToTip('ttSpanUp' )"
+                    onmouseout="UnTip()" />
             </div>
             
             <fieldset>
@@ -246,7 +257,9 @@ else echo "                        <option>&nbsp;</option>\n";
             </fieldset>
             
             <div id="actions" class="imageselection">
-                <input name="update" type="submit" value="" class="icon update" />
+                <input name="update" type="submit" value="" class="icon update"
+                    onmouseover="TagToTip('ttSpanRefresh' )"
+                    onmouseout="UnTip()" />
                 <input name="OK" type="hidden" />
             </div>
             

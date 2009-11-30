@@ -156,6 +156,17 @@ include("header.inc.php");
     </div>
     
     <div id="content">
+
+    <!--
+      Tooltips
+    -->
+    <span id="ttSpanCreate">Create a new setting with the specified name.</span>  
+    <span id="ttSpanEdit">Edit the selected setting.</span>
+    <span id="ttSpanClone">Copy the selected setting to a new one with the
+      specified name.</span>
+    <span id="ttSpanDefault">Sets the selected setting as the default one.</span>
+    <span id="ttSpanDelete">Delete the selected setting.</span>
+    <span id="ttSpanCopyTemplate">Copy a template.</span>
     
 <?php
 
@@ -207,9 +218,13 @@ if ($_SESSION['user']->name() != "admin") {
                     </select>
                 </div>
             </fieldset>
+
             
             <div id="selection">
-                <input name="copy_public" type="submit" value="" class="icon copy" />
+                <input name="copy_public" type="submit" value=""
+                    class="icon copy"
+                    onmouseover="TagToTip('ttSpanCopyTemplate' )"
+                    onmouseout="UnTip()" />
             </div>
             
         </form>
@@ -262,21 +277,32 @@ else {
             </fieldset>
             
             <div id="actions" class="taskselection">
-                <input name="create" type="submit" value="" class="icon create" />
-                <input name="edit" type="submit" value="" class="icon edit" />
-                <input name="copy" type="submit" value="" class="icon clone" />
+                <input name="create" type="submit" value="" class="icon create"
+                       onmouseover="TagToTip('ttSpanCreate' )"
+                       onmouseout="UnTip()" />
+                <input name="edit" type="submit" value="" class="icon edit"
+                      onmouseover="TagToTip('ttSpanEdit' )"
+                      onmouseout="UnTip()" />
+                <input name="copy" type="submit" value="" class="icon clone"
+                       onmouseover="TagToTip('ttSpanClone' )"
+                       onmouseout="UnTip()" />
 <?php
 
 if ($_SESSION['user']->name() != "admin") {
 
 ?>
-                <input name="make_default" type="submit" value="" class="icon mark" />
+                <input name="make_default" type="submit" value=""
+                      class="icon mark"
+                      onmouseover="TagToTip('ttSpanDefault' )"
+                      onmouseout="UnTip()" />
 <?php
 
 }
 
 ?>
-                <input name="delete" type="submit" value="" class="icon delete" />
+                <input name="delete" type="submit" value="" class="icon delete"
+                      onmouseover="TagToTip('ttSpanDelete' )"
+                      onmouseout="UnTip()" />
                 <label>new/clone setting name: <input name="new_setting" type="text" class="textfield" /></label>
                 <input name="OK" type="hidden" />
                 
