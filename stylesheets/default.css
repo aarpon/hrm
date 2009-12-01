@@ -1,6 +1,6 @@
 /*
  
-HRM default style v0.1
+HRM default style v0.2
 
 This file is part of huygens remote manager.
 
@@ -151,12 +151,6 @@ fieldset select {
 #controls {
     text-align: center;
     border: #ccc 1px dotted;
-}
-
-#fullpage {
-    width: 100%;
-    text-align: left;
-    margin: 15px;
 }
 
 #content {
@@ -449,6 +443,48 @@ input.save {
 
 #listusers td.notice {
     font-size: medium;
+}
+
+#homepage {
+    width: 750px;
+    text-align: left;
+    margin: 15px;
+}
+
+#homepage table {
+    border: 0px;
+    font-size: 12px;
+}
+
+#homepage table tr {
+    height: 120px;
+    vertical-align: bottom;
+}
+
+#homepage table td.icon {
+    width: 120px;
+}
+
+#homepage table td img {
+    width: 96px;
+    height: 96px;
+}
+
+#homepage table td.text {
+    text-align: left;
+    width: 50%;
+}
+
+#homepage table a:link {
+    font-size: 20px;
+    font-weight: bold;
+    color: #000;
+}
+
+#homepage table a:visited {
+    font-size: 20px;
+    font-weight: bold;
+    color: #000;
 }
 
 td {

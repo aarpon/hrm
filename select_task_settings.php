@@ -164,9 +164,15 @@ include("header.inc.php");
     <span id="ttSpanEdit">Edit the selected setting.</span>
     <span id="ttSpanClone">Copy the selected setting to a new one with the
       specified name.</span>
-    <span id="ttSpanDefault">Sets the selected setting as the default one.</span>
     <span id="ttSpanDelete">Delete the selected setting.</span>
-    <span id="ttSpanCopyTemplate">Copy a template.</span>
+    <?php
+      if ($_SESSION['user']->name() != "admin") {
+        ?>
+        <span id="ttSpanDefault">Sets the selected setting as the default one.</span>
+        <span id="ttSpanCopyTemplate">Copy a template.</span>
+    <?php
+      }
+    ?>
     
 <?php
 

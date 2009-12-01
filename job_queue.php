@@ -58,13 +58,9 @@ session_start();
 
 $queue = new JobQueue();
 
-if (isset($_GET['exited'])) {
-  $_SESSION['user']->logout();
-  session_unset();
-  session_destroy();
-  header("Location: " . "login.php"); exit();
+if (isset($_GET['home'])) {
+  header("Location: " . "home.php"); exit();
 }
-
 if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
   header("Location: " . "login.php"); exit();
 }
@@ -95,10 +91,17 @@ include("header.inc.php");
 ?>
     <div id="nav">
         <ul>
+            <li><a href="<?php echo getThisPageName();?>?home=home"><img src="images/restart_help.png" alt="home" />&nbsp;Home</a></li>
             <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpQueue')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
         </ul>
     </div>
-    
+
+    <!--
+      Tooltips
+    -->
+    <span id="ttGoBack">Go back to the previous page.</span>  
+    <span id="ttRefresh">Refresh the queue.</span>
+   
     <div id="joblist">
     
         <div id="queuecontrols">
@@ -109,7 +112,10 @@ $referer = $_SESSION['referer'];
 
 ?>
 
-            <input type="button" name="back" value="" class="icon back" onclick="document.location.href='<?php echo $referer ?>'" />
+            <input type="button" name="back" value="" class="icon back"
+              onclick="document.location.href='<?php echo $referer ?>'"
+              onmouseover="TagToTip('ttGoBack' )"
+              onmouseout="UnTip()" />
         
         </div>
         
@@ -132,7 +138,9 @@ if ($_SESSION['user']->name() != "admin")  {
 ?>
 
                 <p>
-                    <input name="update" type="submit" value="" class="icon update" />
+                    <input name="update" type="submit" value="" class="icon update"
+                      onmouseover="TagToTip('ttRefresh' )"
+                      onmouseout="UnTip()" />
 <?php
 
 echo "                    ".date("l d F Y, H:i:s")."\n";

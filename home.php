@@ -90,35 +90,193 @@ include("header.inc.php");
         </ul>
     </div>
     
-    <div id="fullpage">
-    
-        <h2>Actions</h2>
+    <div id="homepage">
 
         <?php
 
         if ($_SESSION['user']->name() == "admin") {
             if ($enableUserAdmin) {
-        ?>        
-        <p><a href="./user_management.php">Manage users</a></p>
-        <p><a href="./select_parameter_settings.php">Create parameter settings templates</a></p>
-        <p><a href="./select_task_settings.php">Create task settings templates</a></p>
-        <p><a href="./update.php">Update the database</a></p>
-        <p><a href="./job_queue.php">Manage the job queue</a></p>
-        <p><a href="#">See the global statistics</a></p>
+        ?>
+		
+				<table>
+		  
+		  <tbody>
+			
+			<tr >
+			  
+			  <td class="icon">
+				<a href="./user_management.php">
+				<img alt="Users" src="./images/users.png" />
+				</a>
+			  </td>
+			  
+			  <td class="text"><a href="./user_management.php">Manage users</a><br />
+				<p />Here you can view, add, edit and delete users.
+			  </td>
+			  
+			  <td class="icon">
+				<a href="./job_queue.php">
+				<img alt="Queue" src="./images/queue.png" />
+				</a>
+			  </td>
+			  
+			  <td class="text"><a href="./job_queue.php">Queue status</a><br />
+				<p />Here you can see and manage all running jobs.
+			  </td>
+		    
+			</tr>
+			
+			<tr>
+			  
+			  <td class="icon">
+				<a href="./file_management.php">
+				<img alt="FileManager" src="./images/filemanager.png" />
+				</a>
+			  </td>
+			  
+			  <td class="text"><a href="./file_management.php">File manager</a><br />
+			  <p />Here you can upload, download and view your raw and deconvolved data.
+			  </td>
+			  
+			  <td class="icon">
+				<a href="#">
+				<img alt="Statistics" src="./images/stats.png" />
+				</a>
+			  </td>
+			  
+			  <td class="text"><a href="#">Global statistics</a><br />
+				<p />Here you will find a summary of usage statistics for all users.
+			  </td>
+			  
+		    </tr>
+
+			<tr>
+			  
+			  <td class="icon">
+				<a href="./select_parameter_settings.php">
+				<img alt="Parameter templates" src="./images/parameters.png" />
+				</a>
+			  </td>
+			  
+			  <td class="text"><a href="./select_parameter_settings.php">Parameter templates</a><br />
+			  <p />Here you can create templates for the optical parameters.
+			  </td>
+			  
+			  <td class="icon">
+				<a href="./select_tasks_settings.php">
+				<img alt="Task parameters" src="./images/tasks.png" />
+				</a>
+			  </td>
+			  
+			  <td class="text"><a href="./select_tasks_settings.php">Task templates</a><br />
+				<p />Here you can create templates for the deconvolution parameters.
+			  </td>
+			  
+		    </tr>
+
+			<tr>
+			
+			  <td class="icon">
+				<a href="./update.php">
+				<img alt="Update" src="./images/updatedb.png" />
+				</a>
+			  </td>
+			  
+			  <td class="text"><a href="./update.php">Database update</a><br />
+				<p />Here you can update the database to the latest version.
+			  </td>
+			  
+			  <td class="icon"></td>
+			  
+			  <td class="text">&nbsp;</td>
+			  
+		    </tr>
+			
+		  </tbody>
+		  
+		</table>
         
         <?php
             }
         } else {
         ?>
-        <p><a href="./select_parameter_settings.php">Start a job</a></p>
-        <p><a href="./job_queue.php">You currently have 0 jobs in the queue</a></p>
-        <p><a href="./file_management.php">Manage your files</a></p>
-        <p><a href="#">View your statistics</a></p>
+		<table>
+		  
+		  <tbody>
+			
+			<tr >
+			  
+			  <td class="icon">
+				<a href="./select_parameter_settings.php">
+				<img alt="Jobs" src="./images/start.png" />
+				</a>
+			  </td>
+			  
+			  <td class="text"><a href="./select_parameter_settings.php">Start a job</a><br />
+				<p />Here you can create and start deconvolution jobs.
+			  </td>
+			  
+			  <td class="icon">
+				<a href="./job_queue.php">
+				<img alt="Queue" src="./images/queue.png" />
+				</a>
+			  </td>
+			  
+			  <td class="text"><a href="./job_queue.php">Queue status</a><br />
+				<p />Here you will see all running jobs.<br />You have 0 jobs in the queue.
+			  </td>
+		    
+			</tr>
+			
+			<tr>
+			  
+			  <td class="icon">
+				<a href="./file_management.php">
+				<img alt="FileManager" src="./images/filemanager.png" />
+				</a>
+			  </td>
+			  
+			  <td class="text"><a href="./file_management.php">File manager</a><br />
+			  <p />Here you can upload, download and view your raw and deconvolved data.
+			  </td>
+			  
+			  <td class="icon">
+				<a href="#">
+				<img alt="Statistics" src="./images/stats.png" />
+				</a>
+			  </td>
+			  
+			  <td class="text"><a href="#">Your statistics</a><br />
+				<p />Here you will find a summary of your usage statistics.
+			  </td>
+			  
+		    </tr>
+			
+			<tr>
+			
+			  <td class="icon">
+				<a href="./account.php">
+				<img alt="Account" src="./images/account.png" />
+				</a>
+			  </td>
+			  
+			  <td class="text"><a href="./account.php">Your account</a><br />
+				<p />Here you can view and change your personal data.
+			  </td>
+			  
+			  <td class="icon"></td>
+			  
+			  <td class="text">&nbsp;</td>
+			  
+		    </tr>
+			
+		  </tbody>
+		  
+		</table>
 
         <?php
         }
         ?>        
-        <p><a href="./account.php">Modify your account information</a></p>
    
     </div> <!-- home -->
 
