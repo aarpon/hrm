@@ -954,9 +954,9 @@ Class JobDescription {
     $param = $setting->parameter('OutputFileFormat');
     $type = $param->translatedValue();
     $extension = $param->extension( );
-    if ($type=='ics') {
-       $result = $result . "c convert -type auto\n";
-    }
+//    if ($type=='ics') {
+//       $result = $result . "c convert -type auto\n";
+//    }
     $imageFileName = $this->destinationImageFullName();
 //    if ($type== 'tiff' || $type == 'tiff16') {
 //    	$imageFileName = $imageFileName . '.tif';

@@ -69,7 +69,7 @@ require_once("Database.inc");
 class Versions {
     
     // These fields have to be updated by the developers!
-    const HRM_VERSION      = "1.1.5";
+    const HRM_VERSION      = "1.1.6";
     const DB_LAST_REVISION = 6;
     
     // Return HRM version
@@ -91,7 +91,7 @@ class Versions {
     public static function getDBCurrentRevision( ) {
         $db   = new DatabaseConnection();
         $rows = $db->query(
-            "SELECT * FROM `global_variables` WHERE `name` LIKE 'dbrevision';");
+            "SELECT * FROM global_variables WHERE name LIKE 'dbrevision';");
         if ( !$rows ) {
             return 0;
         } else {
