@@ -1,7 +1,14 @@
+HRM 1.1.6
+
+(B) Removed the 'convert -type auto' option when saving ics files.
+(B) Removed `quotes` in queries because they are incompatible with PostgreSQL.
+(B) Fixed bug that would lead to the hrmd daemon to shut down if the job was stopped.
+(B) Preserve spaces in user names when passing them to functions and managing the accounts.
+
 HRM 1.1.5
 
 (F) The login page checks whether the database is reachable.
-(F) If the database is not up-to-date, the 'admin' login is the only accepted one 
+(F) If the database is not up-to-date, the 'admin' login is the only accepted one. 
 
 HRM 1.1.4
 
