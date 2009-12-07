@@ -167,6 +167,7 @@ include("header.inc.php");
         <ul>
             <li><a href="javascript:openWindow('http://huygens-rm.org/wiki/index.php?title=Changelog')"><img src="images/whatsnew.png" alt="website" />&nbsp;What's new?</a></li>
             <li><a href="javascript:openWindow('http://www.huygens-rm.org')"><img src="images/logo_small.png" alt="website" />&nbsp;Website</a></li>
+            <li><a href="javascript:openWindow('http://support.svi.nl/wiki')"><img src="images/wiki.png" alt="website" />&nbsp;SVI wiki</a></li>
             <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpLogin')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li> 
         </ul>
     </div>
@@ -204,13 +205,13 @@ include("header.inc.php");
         <h2>Welcome</h2>
         
         <p>
-	    <a href="javascript:openWindow('http://hrm.sourceforge.net')">Huygens
+	    The <a href="javascript:openWindow('http://hrm.sourceforge.net')">Huygens
 	    Remote Manager</a> is an easy to use interface to the
             Huygens Software by 
             <a href="javascript:openWindow('http://www.svi.nl')">Scientific 
             Volume Imaging B.V.</a> that allows for multi-user, large-scale deconvolution.
         </p>
-        <p />
+        
 	<div id="logos">
             <div class="logo-fmi">
                 <a href="javascript:openWindow('http://www.fmi.ch')"><img src="images/logo_fmi.png" alt="FMI" /></a>
@@ -247,7 +248,7 @@ include("header.inc.php");
                     }
                     echo $login_message;
                     ?>
-                    <label for="username">Name:</label>
+                    <label for="username">Username:</label>
                     <input id="username" name="username" type="text" class="textfield" tabindex="1" />
                     <br />
                     <label for="password">Password:</label>

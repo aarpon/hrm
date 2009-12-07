@@ -150,7 +150,7 @@ fieldset select {
 
 #controls {
     text-align: center;
-    border: #ccc 1px dotted;
+    border-top: #ccc 1px dotted;
 }
 
 #content {
@@ -159,9 +159,14 @@ fieldset select {
     text-align: left;
     margin-left: 15px;
     padding-right: 15px;
-    margin-bottom: 15px;
+    margin-bottom: 0px;
     border-right-style: dotted;
     border-right-width: 1px;
+}
+
+#content p {
+    font-size: 14px;
+    text-align: justify;
 }
 
 #content h2 {
@@ -169,7 +174,7 @@ fieldset select {
 }
 
 #content h3 {
-    font-size: 100%;
+    font-size: 1.0em;
     margin-top: 15px;
 }
 
@@ -299,11 +304,13 @@ input.save {
 }
 
 #linklist {
-    padding-right: 15px;
+    text-align: left;
 }
 
-#linklist li {
-    padding-bottom: 10px;
+#linklist h3 {
+    background-color: #eee;
+    font-size: 1.2em;
+    font-weight: bold;
 }
 
 #info {

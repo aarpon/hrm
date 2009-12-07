@@ -125,8 +125,8 @@ include("header.inc.php");
 
     <div id="nav">
         <ul>
-            <li><a href="login.php">back</a></li>
-            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpRegistrationPage')">help</a></li>
+            <li><a href="login.php"><img src="images/exit.png" alt="exit" />&nbsp;Exit</a></li>
+            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpRegistrationPage')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
         </ul>
     </div>
     
