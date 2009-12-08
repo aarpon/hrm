@@ -60,10 +60,9 @@
 // Moreover the number of the last revision for the database is contained in the
 // script (this is the only place where this information can be found).
 //
-// When you want to change something in the database, thta is, to create a new
+// When you want to change something in the database, that is, to create a new
 // database release, it is necessary to insert the modifications in the last part
-// of the script and to update the variable $LAST_REVISION at the very beginning
-// of the script.
+// of the script and to update the constant DB_LAST_REVISION in versions.inc.
 //
 // When running the script, three situations are possible:
 // 1) a new user of HRM run the script from command line, the database does not
@@ -1605,7 +1604,6 @@ if ($current_revision < $n) {
             return;
     }
     
-
     if(!update_dbrevision($n)) 
         return;
     
@@ -1614,7 +1612,45 @@ if ($current_revision < $n) {
     write_message($msg);
     write_to_log($msg);
 }
-    
+
+
+// -----------------------------------------------------------------------------
+// Update to revision 7
+// Description: insert statistics table 
+// -----------------------------------------------------------------------------
+$n = 7;
+if ($current_revision < $n) {
+    if (!in_array("statistics", $tables)) {
+    // If the table does not exist, create it
+    $flds = "
+        id C(30) NOTNULL DEFAULT 0 PRIMARY,
+        owner C(30) DEFAULT 0,
+        research_group C(30) DEFAULT 0,
+        start T DEFAULT NULL,
+        stop T DEFAULT NULL,
+        ImageFileFormat C(255) DEFAULT 0,
+        OutputFileFormat C(255) DEFAULT 0,
+        PointSpreadFunction C(255) DEFAULT 0,
+        ImageGeometry C(255) DEFAULT 0,
+        MicroscopeType C(255) DEFAULT 0
+    ";
+        if (!create_table("statistics", $flds)) {
+            $msg = "An error occurred while updateing the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_log($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    if(!update_dbrevision($n)) 
+        return;
+    $current_revision = $n;
+    $msg = "Your HRM database has been updated to revision " . $current_revision . ".";
+    write_message($msg);
+    write_to_log($msg);
+}  
+
 
 $msg = "\nThe current revision of your HRM database is " . $current_revision . ".";
 write_message($msg);
