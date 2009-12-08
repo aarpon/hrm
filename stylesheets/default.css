@@ -436,6 +436,10 @@ input.save {
     border-bottom: thin solid;
 }
 
+#listusers p {
+    text-align: center;
+}
+
 #listusers td {
     padding: 3px;
 }

@@ -222,8 +222,22 @@ include("header.inc.php");
 				</a>
 			  </td>
 			  
+			  <?php
+				$db = new DatabaseConnection();
+				$query = "SELECT COUNT(id) FROM job_queue WHERE username = '" . $_SESSION['user']->name( ) . "';";
+				$row = $db->Execute( $query )->FetchRow( );
+				$jobsInQueue = $row[ 0 ];
+				
+				if ( $jobsInQueue == 0 ) {
+				  $str = '<strong>no jobs</strong>';
+				} elseif ( $jobsInQueue == 1 ) {
+				  $str = '<strong>1 job</strong>';
+				} else {
+				  $str = '<strong>' .$jobsInQueue . ' jobs</strong>';
+				}
+			  ?>
 			  <td class="text"><a href="./job_queue.php">Queue status</a><br />
-				<p />Here you will see all running jobs.<br />You have 0 jobs in the queue.
+				<p />Here you will see all running jobs.<br />You have <?php echo $str; ?> in the queue.
 			  </td>
 		    
 			</tr>

@@ -93,7 +93,8 @@ if (isset($_POST['create'])) {
 	}
     if ($job->createJob()) {
       $_SESSION['jobcreated'] = True;
-      $message = "            <p class=\"warning\">The job has been created and added to the queue.</p><p class=\"warning\">Press the <img src='images/restart_help.png' alt='Restart' width='22' height='22' /> <b>home</b> button to add new jobs or see the result files.</p>";
+      header("Location: " . "home.php");
+      exit();
     }
     else {
       $message = "            <p class=\"warning\">".$job->message()."</p>";
