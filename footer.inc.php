@@ -51,16 +51,51 @@
 // The fact that you are presently reading this means that you have had 
 // knowledge of the CeCILL license and that you accept its terms.
 
+session_start();
+
+$loggedIn = ( isset($_SESSION['user'] ) && $_SESSION['user']->isLoggedIn( ) );
+
 ?>
 
     <div id="footer">
-        created 2004 by <a href="mailto:volker.baecker@mri.cnrs.fr">Volker 
-        Baecker</a><br />modified 2006-2010 by <a href="mailto:asheesh.gulati@epfl.ch">
-	Asheesh Gulati</a>, <a href="mailto:alessandra.griffa@epfl.ch">Alessandra Griffa</a>, 
-	<a href="mailto:jose@svi.nl">Jos&eacute; Vi&ntilde;a</a> &amp; 
-	<a href="mailto:aaron.ponti@fmi.ch">Aaron 
-        Ponti</a>
-    </div>
+        created 2004 by
+		<?php
+			if ( $loggedIn == true ) {
+				echo '<a href="mailto:volker.baecker@mri.cnrs.fr">Volker Baecker</a>';
+			} else
+				echo "<span onmouseover=\"Tip('Login to see contact information.' )\"
+					onmouseout=\"UnTip()\">Volker Baecker</span>";
+		?>
+		<br />modified 2006-2010 by
+		<?php
+			if ( $loggedIn == true ) {
+				echo '<a href="mailto:asheesh.gulati@epfl.ch">Asheesh Gulati</a>';
+			} else
+				echo "<span onmouseover=\"Tip('Login to see contact information.' )\"
+					onmouseout=\"UnTip()\">Asheesh Gulati</span>";
+		?>, 
+		<?php
+			if ( $loggedIn == true ) {
+				echo '<a href="mailto:alessandra.griffa@epfl.ch">Alessandra Griffa</a>';
+			} else
+				echo "<span onmouseover=\"Tip('Login to see contact information.' )\"
+					onmouseout=\"UnTip()\">Alessandra Griffa</span>";
+		?>, 
+		<?php
+			if ( $loggedIn == true ) {
+				echo '<a href="mailto:jose@svi.nl">Jos&eacute; Vi&ntilde;a</a>';
+			} else
+				echo "<span onmouseover=\"Tip('Login to see contact information.' )\"
+					onmouseout=\"UnTip()\">Jos&eacute; Vi&ntilde;a</span>";
+		?> &amp;
+		<?php
+			if ( $loggedIn == true ) {
+				echo '<a href="mailto:aaron.ponti@fmi.ch">Aaron Ponti</a>';
+			} else
+				echo "<span onmouseover=\"Tip('Login to see contact information.' )\"
+					onmouseout=\"UnTip()\">Aaron Ponti</span>";
+		?>
+	</div>
     
     <div id="validation">
         <a href="http://validator.w3.org/" onclick="clean()">
