@@ -32,9 +32,11 @@ $huygens_user = "huygens";
 $huygens_group = "huygens";
 
 // Path to a local Huygens Core executable, to handle image information and
-// thumbnails. This installatation of hucore doesn't require a license unless
-// this is also the computation server. (For image information and thumbnails
-// only freeware functions will be used).
+// thumbnails. This installatation of hucore doesn't require a full license
+// unless this is also the computation server. For image information and
+// thumbnails mostly freeware functions will be used, but support for certain
+// propietary file formats requires a B flag in the license string. (See
+// http://support.svi.nl/wiki/FileFormats).
 $local_huygens_core = "/usr/local/bin/hucore";
 
 // The HRM needs to know the version of the hucore executable on the
