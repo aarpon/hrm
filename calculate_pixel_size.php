@@ -105,7 +105,8 @@ include ("header.inc.php");
 ?>
 
 <div id="nav">  
-        <ul>       
+        <ul>
+            <li><?php echo $_SESSION['user']->name(); ?></li>
             <li><a href="select_images.php?exited=exited">exit</a></li>    
             <li><a href="javascript:openWindow('')">help</a></li>
         </ul>

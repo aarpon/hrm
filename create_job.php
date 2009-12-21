@@ -111,20 +111,27 @@ include("header.inc.php");
 ?>
     <div id="nav">
         <ul>
+            <li><?php echo $_SESSION['user']->name(); ?></li>
             <li><a href="<?php echo getThisPageName();?>?home=home"><img src="images/restart_help.png" alt="home" />&nbsp;Home</a></li>
             <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpCreateJob')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
         </ul>
     </div>
    
     <div id="content">
+      
+      <!--
+        Tooltips
+      -->
+      <span id="ttSpanBack">Go back to step 3/4 - Select images.</span>
+      <span id="ttSpanCreateJob">Create job, add it to the queue, and go back to your home page.</span>  
     
-        <h3>Step 4 - Create Job</h3>
+        <h3>Step 4/4 - Create job</h3>
         
         <form method="post" action="" id="createjob">
         
             <div id="selection">
             
-                <label for="OutputFileFormat">output file format:</label>
+                <label for="OutputFileFormat">Output file format:</label>
 <?php
 
 $parameter = $_SESSION['task_setting']->parameter("OutputFileFormat");
@@ -188,7 +195,7 @@ foreach ($possibleValues as $possibleValue) {
         <fieldset class="report">
             <legend>
                 <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpCreateJob')"><img src="images/help.png" alt="?" /></a>
-                <a href="select_parameter_settings.php">parameter setting</a>: <?php print $_SESSION['setting']->name() ?>
+                <a href="select_parameter_settings.php">Image parameters</a>: <?php print $_SESSION['setting']->name() ?>
             </legend>
             <textarea name="parameter_settings_report" cols="50" rows="10" readonly="readonly">
 <?php
@@ -202,7 +209,7 @@ echo $_SESSION['setting']->display();
         <fieldset class="report">
             <legend>
                 <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpCreateJob')"><img src="images/help.png" alt="?" /></a>
-                <a href="select_task_settings.php">task setting</a>: <?php echo $_SESSION['task_setting']->name() ?>
+                <a href="select_task_settings.php">Restoration parameters</a>: <?php echo $_SESSION['task_setting']->name() ?>
             </legend>
             <textarea name="task_settings_report" cols="50" rows="6" readonly="readonly">
 <?php
@@ -217,7 +224,7 @@ echo $_SESSION['task_setting']->displayWithoutOutputFileFormat( $numberOfChannel
         <fieldset class="report">
             <legend>
                 <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpCreateJob')"><img src="images/help.png" alt="?" /></a>
-                <a href="select_images.php">selected images</a>
+                <a href="select_images.php">Selected images</a>
             </legend>
             <textarea name="task_settings_report" cols="50" rows="5" readonly="readonly">
 <?php
@@ -241,8 +248,15 @@ foreach ($files as $file) {
 if (!isset($_SESSION['jobcreated'])) {
 
 ?>
-            <input type="button" name="previous"   value="" onclick="document.location.href='select_images.php'" class="icon previous" />
-            <input type="button" name="create job" value="" onclick="document.forms['createjob'].submit()" class="icon ok" />
+            <input type="button" name="previous"   value="" class="icon previous"
+              onclick="document.location.href='select_images.php'"
+              onmouseover="TagToTip('ttSpanBack' )"
+              onmouseout="UnTip()" />
+            <input type="button" name="create job" value="" class="icon ok"
+              onclick="document.forms['createjob'].submit()"
+              onmouseover="TagToTip('ttSpanCreateJob' )"
+              onmouseout="UnTip()" />
+            
 <?php
 
 }
@@ -267,11 +281,17 @@ else {
           
           <h3>Quick help</h3>
         
-            <p>
-		Check the parameters you have chosen. Press the 
-		<img src="images/ok_help.png" alt="Create job" width="22" height="22" />
-		<b>create job</b> button to add the job to the queue.
-            </p>
+            <p>As a last step, please choose the output file format for your
+            restored images.</p>
+            
+            <p>Also, use this is summary to check your parameters. If you spot
+            a mistake, use the links on the left to go back and fix it.</p>
+            
+            <p>Once you are okay with the parameters, press the
+            <img src="images/ok_help.png" alt="Create job" width="22" height="22" />
+		    <b>create job</b> button to add the job to the queue and go back to
+            the home page.</p>
+            
             <?php
               if ( $numberOfChannels > 1 ) {
                 echo "<p>Please notice that is not possible to save multichannel datasets in TIFF-16 bit format.</p>";

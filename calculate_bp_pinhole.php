@@ -573,6 +573,7 @@ include("header.inc.php");
 ?>
 <div id="nav">
         <ul>
+            <li><?php echo $_SESSION['user']->name(); ?></li>
             <li><a href="javascript:openWindow('http://support.svi.nl/wiki/BackprojectedPinholeCalculator')">help</a></li>
         </ul>
 </div>

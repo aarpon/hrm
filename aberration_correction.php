@@ -97,6 +97,7 @@ include("header.inc.php");
 
     <div id="nav">
         <ul>
+            <li><?php echo $_SESSION['user']->name(); ?></li>
             <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpEnableSACorrection')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
         </ul>
     </div>

@@ -128,7 +128,7 @@ else if (isset($_POST['delete'])) {
 }
 else if (isset($_POST['OK'])) {
   if (!isset($_POST['task_setting'])) {
-    $message = "            <p class=\"warning\">Please select a task setting</p>\n";
+    $message = "            <p class=\"warning\">Please select some restoration parameters.</p>\n";
   }
   else {
     $_SESSION['task_setting'] = $_SESSION['taskeditor']->loadSelectedSetting();
@@ -150,6 +150,7 @@ include("header.inc.php");
 
     <div id="nav">
         <ul>
+            <li><?php echo $_SESSION['user']->name(); ?></li>
             <li><a href="<?php echo getThisPageName();?>?home=home"><img src="images/restart_help.png" alt="home" />&nbsp;Home</a></li>
             <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpSelectTaskSettings')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
         </ul>
@@ -170,6 +171,8 @@ include("header.inc.php");
         ?>
         <span id="ttSpanDefault">Sets the selected setting as the default one.</span>
         <span id="ttSpanCopyTemplate">Copy a template.</span>
+        <span id="ttSpanBack">Go back to step 1/4 - Image parameters.</span>
+        <span id="ttSpanForward">Continue to step 3/4 - Select images.</span>  
     <?php
       }
     ?>
@@ -180,14 +183,14 @@ include("header.inc.php");
 if ($_SESSION['user']->name() == "admin") {
 
 ?>
-        <h3>Task Settings</h3>
+        <h3>Restoration parameters</h3>
 <?php
 
 }
 else {
 
 ?>
-        <h3>Step 2 - Select Task Setting</h3>
+        <h3>Step 2/4 - Restoration parameters</h3>
 <?php
 
 }
@@ -199,8 +202,8 @@ if ($_SESSION['user']->name() != "admin") {
         <form method="post" action="">
         
             <fieldset>
-                <legend>template parameter settings</legend>
-                <div id="templates">
+              <legend>Template restoration parameters</legend>
+              <div id="templates">
 <?php
 
   $settings = $admin_editor->settings();
@@ -228,7 +231,7 @@ if ($_SESSION['user']->name() != "admin") {
             
             <div id="selection">
                 <input name="copy_public" type="submit" value=""
-                    class="icon copy"
+                    class="icon down"
                     onmouseover="TagToTip('ttSpanCopyTemplate' )"
                     onmouseout="UnTip()" />
             </div>
@@ -245,9 +248,14 @@ if ($_SESSION['user']->name() != "admin") {
         
             <fieldset>
             
-                <legend>your parameter settings</legend>
-                
-                <div id="settings">
+              <?php
+                if ($_SESSION['user']->name() == "admin") {
+                  echo "<legend>Template restoration parameters</legend>";
+                } else {
+                  echo "<legend>Your restoration parameters</legend>";
+                }
+              ?>
+              <div id="settings">
 <?php
 
 $settings = $_SESSION['taskeditor']->settings();
@@ -309,7 +317,7 @@ if ($_SESSION['user']->name() != "admin") {
                 <input name="delete" type="submit" value="" class="icon delete"
                       onmouseover="TagToTip('ttSpanDelete' )"
                       onmouseout="UnTip()" />
-                <label>new/clone setting name: <input name="new_setting" type="text" class="textfield" /></label>
+                <label>New/clone setting name: <input name="new_setting" type="text" class="textfield" /></label>
                 <input name="OK" type="hidden" />
                 
             </div>
@@ -319,8 +327,14 @@ if ($_SESSION['user']->name() != "admin") {
 
 ?>
                 <div id="controls">      
-                  <input type="button" value="" class="icon previous" onclick="document.location.href='select_parameter_settings.php'" />
-                  <input type="submit" value="" class="icon next" onclick="process()" />
+                  <input type="button" value="" class="icon previous"
+                    onclick="document.location.href='select_parameter_settings.php'"
+                    onmouseover="TagToTip('ttSpanBack' )"
+                    onmouseout="UnTip()" />
+                  <input type="submit" value="" class="icon next"
+                    onclick="process()"
+                    onmouseover="TagToTip('ttSpanForward' )"
+                    onmouseout="UnTip()" />
                 </div>
 <?php
 
@@ -337,47 +351,37 @@ if ($_SESSION['user']->name() != "admin") {
         <div id="info">
           
           <h3>Quick help</h3>
-        
-<?php
-        if ($_SESSION['user']->name() != "admin") {
-        ?>
-            <p>
-                Select a task setting and press <br />
-                the <img src="images/next_help.png" alt="Forward" width="22" height="22" /> <b>forward</b>
-                button to go to the <br /> next step.
-           </p>
-        <?php
-        } else {
-        ?>
-                <p>&nbsp;</p>
-        <?php
-        }
-        ?>
+    
+    <?php    
+	if ($_SESSION['user']->name() != "admin") {
+      echo "<p>In this step, you are asked to specify all parameters relative
+        to the restoration of your images.</p>";
+	} else {
+	  echo "<p>Here, you can create template parameters relative to the
+      restoration procedure.</p>";
+	}
+	?>
+      <p>These are the choice of the deconvolution algorithm, the signal-to-noise
+      ratio, the background estimation mode and the stopping criteria.</p>
 
-	<p>
-		You can <img src="images/create_help.png" alt="Create" width="22" height="22" /> <b>create</b>
-                new settings or <br /><img src="images/edit_help.png" alt="Create" width="22" height="22" /><b>edit</b>
-                existing ones.
-        </p>
-
-        <p>
-	        <img src="images/clone_help.png" alt="Copy" width="22" height="22" /> <b>Copy</b>
-                creates a clone of the selected setting with the specified name.
-        </p>
-
-        <p>
-                You can set the current selection as the
-                <img src="images/mark_help.png" alt="Default" width="22" height="22" /> <b>default</b> setting.
-        </p>
-
-        <p>
-                You can permanently destroy the current selection by pressing <br />on the
-                <img src="images/delete_help.png" alt="Delete" width="22" height="22" /> <b>delete</b> button.
-        </p>
-
-        <p>
-                For more detailed explanations please follow the help link in the navigation bar.
-        </p>
+    <?php        
+	if ($_SESSION['user']->name() != "admin") {
+      echo "<p>'Template restoration parameters' created by your facility
+        manager can be copied to the list of 'Your restoration parameters' and
+        adapted to fit your restoration needs.</p>";
+	} else {
+	  echo "<p>The created templates will be visible for the users in an
+      additional selection field from which they can be copied to the user's
+      parameters.</p>";
+	}
+	?>
+      
+    <p>Placing the mouse pointer over the various icons will display a
+    tooltip with explanations. <p>
+    
+    <p>For a more detailed explanation on the possible actions, please follow the
+    <img src="images/help.png" alt="Help" width="22" height="22" /> <b>Help</b> 
+    link in the navigation bar.</p>
 
         </div>
         

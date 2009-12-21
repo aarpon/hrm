@@ -99,6 +99,7 @@ include("header.inc.php");
 
     <div id="nav">
         <ul>
+            <li><?php echo $_SESSION['user']->name(); ?></li>
             <li><a href="<?php echo getThisPageName();?>?home=home" onclick="clean()"><img src="images/restart_help.png" alt="home" />&nbsp;Home</a></li>
             <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpUpdate')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
         </ul>
@@ -126,6 +127,8 @@ echo $message;
     
         <div id="info">
         
+            <h3>Quick help</h3>
+            
             <p>
                 This page allows you to verify and patch the database after an
                 update to a new release. The interface might not function

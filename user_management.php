@@ -223,6 +223,7 @@ include("header.inc.php");
 
     <div id="nav">
         <ul>
+            <li><?php echo $_SESSION['user']->name(); ?></li>
             <li><a href="<?php echo getThisPageName();?>?home=home" onclick="clean()"><img src="images/restart_help.png" alt="home" />&nbsp;Home</a></li>
             <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpUserManagement')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
         </ul>
@@ -230,7 +231,7 @@ include("header.inc.php");
     
     <div id="content">
     
-        <h3>User Management</h3>
+        <h3>Manage users</h3>
         
 <?php
 
@@ -303,7 +304,7 @@ $emails = array_unique($emails);
 sort($emails);
 
 ?>
-                <legend>existing users (<?php echo $count - 1 ?>)</legend>
+                <legend>Existing users (<?php echo $count - 1 ?>)</legend>
                 <p class="menu">
                     <a href="javascript:openPopup('add_user')">add new user</a>&nbsp;|&nbsp;<a href="mailto:<?php echo implode(";", $emails) ?>">distribution list</a>
                     <br />
@@ -434,10 +435,9 @@ if ($_SESSION['index'] != "") {
     
     <div id="rightpanel">
         <div id="info">
-            <p>
-                You can add new users, accept or reject pending registration 
-                requests, and manage existing users.
-            </p>
+          <h3>Quick help</h3>
+            <p>You can add new users, accept or reject pending registration 
+                requests, and manage existing users.</p>
         </div>
         <div id="message">
 <?php

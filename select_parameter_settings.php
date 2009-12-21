@@ -136,7 +136,7 @@ else if (isset($_POST['delete'])) {
 }
 else if (isset($_POST['OK'])) {
   if (!isset($_POST['setting'])) {
-    $message = "            <p class=\"warning\">Please select a parameter setting</p>\n";
+    $message = "            <p class=\"warning\">Please select some image parameters.</p>\n";
   }
   else {
     $_SESSION['setting'] = $_SESSION['editor']->loadSelectedSetting();
@@ -188,6 +188,7 @@ include("header.inc.php");
 
     <div id="nav">
         <ul>
+            <li><?php echo $_SESSION['user']->name(); ?></li>
             <li><a href="<?php echo getThisPageName();?>?home=home"><img src="images/restart_help.png" alt="home" />&nbsp;Home</a></li>
             <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpSelectParameterSettings')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
         </ul>
@@ -208,24 +209,25 @@ include("header.inc.php");
         ?>
         <span id="ttSpanDefault">Sets the selected setting as the default one.</span>
         <span id="ttSpanCopyTemplate">Copy a template.</span>
+        <span id="ttSpanForward">Continue to step 2/4 - Restoration parameters.</span>
     <?php
       }
     ?>
-    
+ 
 <?php
 
 // add user management
 if ($_SESSION['user']->name() == "admin") {
 
 ?>
-        <h3>Parameter Settings</h3>
+        <h3>Image parameters</h3>
 <?php
 
 }
 else {
 
 ?>
-        <h3>Step 1 - Select Parameter Setting</h3>
+        <h3>Step 1/4 - Image parameters</h3>
 <?php
 
 }
@@ -237,7 +239,7 @@ if ($_SESSION['user']->name() != "admin") {
         <form method="post" action="">
         
             <fieldset>
-                <legend>template parameter settings</legend>
+                <legend>Template image parameters</legend>
                 <div id="templates">
 <?php
 
@@ -282,9 +284,15 @@ if ($_SESSION['user']->name() != "admin") {
         
             <fieldset>
             
-                <legend>your parameter settings</legend>
-                
-                <div id="settings">
+            <?php
+            if ($_SESSION['user']->name() == "admin") {
+              echo "<legend>Template image parameters</legend>";
+            } else {
+              echo "<legend>Your image parameters</legend>";
+            }
+            ?>
+        
+             <div id="settings">
 <?php
 
 $settings = $_SESSION['editor']->settings();
@@ -346,7 +354,7 @@ if ($_SESSION['user']->name() != "admin") {
                 <input name="delete" type="submit" value="" class="icon delete"
                       onmouseover="TagToTip('ttSpanDelete' )"
                       onmouseout="UnTip()" />
-                <label>new/clone setting name: <input name="new_setting" type="text" class="textfield" /></label>
+                <label>New/clone setting name: <input name="new_setting" type="text" class="textfield" /></label>
                 <input name="OK" type="hidden" />
         </div>                
 <?php
@@ -356,7 +364,10 @@ if ($_SESSION['user']->name() != "admin") {
 ?>
                 <div id="controls">      
                   <input type="submit" value="" class="icon empty" disabled="disabled" />
-                  <input type="submit" value="" class="icon next" onclick="process()" />
+                  <input type="submit" value="" class="icon next"
+                    onclick="process()"
+                    onmouseover="TagToTip('ttSpanForward' )"
+                    onmouseout="UnTip()" />
                 </div>
 <?php
 
@@ -386,50 +397,41 @@ if ($_SESSION['user']->name() != "admin") {
 }
 
 	if ($_SESSION['user']->name() != "admin") {
-	?>
-	    <p>
-		Select a parameter setting and press  
-                the <img src="images/next_help.png" alt="Forward" width="22" height="22" /> <b>forward</b>
-                button to go to the next step.
-	   </p>
-	<?php
+      echo "<p>In the first step, you are asked to specify all parameters relative
+        to the images you want to restore.</p>";
 	} else {
-	?>
-		<p>&nbsp;</p>
-	<?php
+	  echo "<p>Here, you can create template parameters relative to the images
+      to restore.</p>";
 	}
 	?>
-            <p>
-		You can <img src="images/create_help.png" alt="Create" width="22" height="22" /> <b>create</b> 
-                new settings or <img src="images/edit_help.png" alt="Create" width="22" height="22" /><b>edit</b> 
-                existing ones.
-            </p>
-            
-           <p>
-		<img src="images/clone_help.png" alt="Copy" width="22" height="22" /> <b>Copy</b> 
-                creates a clone of the selected setting with the specified name.
-            </p>
-            
-            <p>
-		You can set the current selection as the 
-		<img src="images/mark_help.png" alt="Default" width="22" height="22" /> <b>default</b> setting.
-	    </p>
+      <p>These include: file information (format, geometry, voxel size);
+      microscopic parameters (such as microscope type, numerical aperture of
+      the objective, fluorophore wavelengths); whether a measured or a
+      theoretical PSF should be used; whether depth-dependent correction
+      on the PSF should be applied.</p>
 
-            <p>
-                You can permanently destroy the current selection by pressing on the 
-                <img src="images/delete_help.png" alt="Delete" width="22" height="22" /> <b>delete</b> button.
-            </p>
+    <?php        
+	if ($_SESSION['user']->name() != "admin") {
+      echo "<p>'Template image parameters' created by your facility manager can
+        be copied to the list of 'Your image parameters' and adapted to fit your
+        specific experimental setup.</p>";
+	} else {
+	  echo "<p>The created templates will be visible for the users in an
+      additional selection field from which they can be copied to the user's
+      parameters.</p>";
+	}
+	?>
+      
+    <p>Placing the mouse pointer over the various icons will display a
+    tooltip with explanations. <p>
+    
+    <p>For a more detailed explanation on the possible actions, please follow the
+    <img src="images/help.png" alt="Help" width="22" height="22" /> <b>Help</b> 
+    link in the navigation bar.</p>
 
-            <p>
-                For more etailed explanations please follow the
-                <img src="images/help.png" alt="Help" width="22" height="22" /> <b>help</b> 
-                link in the navigation bar.
-            </p>
-
-
-        </div>
+  </div>
         
-        <div id="message">
+  <div id="message">
 <?php
 
 echo $message;

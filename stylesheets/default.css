@@ -1,5 +1,5 @@
 /*
- 
+
 HRM default style v0.2
 
 This file is part of huygens remote manager.
@@ -7,48 +7,48 @@ This file is part of huygens remote manager.
 Copyright: Montpellier RIO Imaging (CNRS)
 
 contributors :
-	     Pierre Travo	(concept)
-	     Volker Baecker	(concept, implementation)
+         Pierre Travo   (concept)
+         Volker Baecker (concept, implementation)
 
 email:
-	pierre.travo@crbm.cnrs.fr
-	volker.baecker@crbm.cnrs.fr
+    pierre.travo@crbm.cnrs.fr
+    volker.baecker@crbm.cnrs.fr
 
 Web:     www.mri.cnrs.fr
 
-huygens remote manager is a software that has been developed at 
-Montpellier Rio Imaging (mri) in 2004 by Pierre Travo and Volker 
-Baecker. It allows running image restoration jobs that are processed 
-by 'Huygens professional' from SVI. Users can create and manage parameter 
-settings, apply them to multiple images and start image processing 
-jobs from a web interface. A queue manager component is responsible for 
-the creation and the distribution of the jobs and for informing the user 
+huygens remote manager is a software that has been developed at
+Montpellier Rio Imaging (mri) in 2004 by Pierre Travo and Volker
+Baecker. It allows running image restoration jobs that are processed
+by 'Huygens professional' from SVI. Users can create and manage parameter
+settings, apply them to multiple images and start image processing
+jobs from a web interface. A queue manager component is responsible for
+the creation and the distribution of the jobs and for informing the user
 when jobs finished.
 
-This software is governed by the CeCILL license under French law and 
-abiding by the rules of distribution of free software. You can use, 
-modify and/ or redistribute the software under the terms of the CeCILL 
-license as circulated by CEA, CNRS and INRIA at the following URL 
+This software is governed by the CeCILL license under French law and
+abiding by the rules of distribution of free software. You can use,
+modify and/ or redistribute the software under the terms of the CeCILL
+license as circulated by CEA, CNRS and INRIA at the following URL
 "http://www.cecill.info".
 
-As a counterpart to the access to the source code and  rights to copy, 
-modify and redistribute granted by the license, users are provided only 
-with a limited warranty and the software's author, the holder of the 
-economic rights, and the successive licensors  have only limited 
+As a counterpart to the access to the source code and  rights to copy,
+modify and redistribute granted by the license, users are provided only
+with a limited warranty and the software's author, the holder of the
+economic rights, and the successive licensors  have only limited
 liability.
 
-In this respect, the user's attention is drawn to the risks associated 
-with loading, using, modifying and/or developing or reproducing the 
-software by the user in light of its specific status of free software, 
-that may mean that it is complicated to manipulate, and that also 
-therefore means that it is reserved for developers and experienced 
-professionals having in-depth IT knowledge. Users are therefore encouraged 
-to load and test the software's suitability as regards their requirements 
-in conditions enabling the security of their systems and/or data to be 
-ensured and, more generally, to use and operate it in the same conditions 
+In this respect, the user's attention is drawn to the risks associated
+with loading, using, modifying and/or developing or reproducing the
+software by the user in light of its specific status of free software,
+that may mean that it is complicated to manipulate, and that also
+therefore means that it is reserved for developers and experienced
+professionals having in-depth IT knowledge. Users are therefore encouraged
+to load and test the software's suitability as regards their requirements
+in conditions enabling the security of their systems and/or data to be
+ensured and, more generally, to use and operate it in the same conditions
 as regards security.
 
-The fact that you are presently reading this means that you have had 
+The fact that you are presently reading this means that you have had
 knowledge of the CeCILL license and that you accept its terms.
 
 */
@@ -93,16 +93,12 @@ table {
     border-collapse: collapse;
 }
 
-fieldset select {
-    margin: 8px;
-}
-
 /* specific div elements */
 
 #basket {
     width: 800px;
     border: #ccc 2px solid;
-    margin: 8px auto 8px auto;
+    margin: 0px auto 0px auto;
 }
 
 #title {
@@ -155,13 +151,12 @@ fieldset select {
 
 #content {
     float: left;
-    width: 60%;
+    width: 480px;
     text-align: left;
-    margin-left: 15px;
-    padding-right: 15px;
-    margin-bottom: 0px;
     border-right-style: dotted;
     border-right-width: 1px;
+    margin: 0px 0px 0px 0px;
+    padding: 0px 15px 0px 15px;
 }
 
 #content p {
@@ -174,8 +169,8 @@ fieldset select {
 }
 
 #content h3 {
+    background-color: #eee;
     font-size: 1.0em;
-    margin-top: 15px;
 }
 
 #content h4 {
@@ -211,8 +206,8 @@ fieldset select {
 }
 
 #selection {
+    font-size: 0.8em;
     text-align: center;
-    padding-bottom: 10px;
 }
 
 #selection select {
@@ -229,6 +224,7 @@ fieldset select {
 
 #actions {
     text-align: center;
+    font-size: 0.8em;
     padding: 15px 0px 15px 0px;
 }
 
@@ -287,10 +283,11 @@ input.save {
 
 #rightpanel {
     float: right;
-    width: 33%;
+    width: 250px;
     font-size: 80%;
     text-align: right;
-    padding-right: 7px;
+    margin: 0px 0px 0px 0px;
+    padding: 0px 15px 0px 15px;
 }
 
 #login legend {
@@ -315,12 +312,18 @@ input.save {
 
 #info {
     text-align: center;
-    padding-top: 1em;
-    padding-right: 8px;
+    padding: 0px;
+}
+
+#info h3 {
+    background-color: #eee;
+    font-size: 1.2em;
+    font-weight: bold;
 }
 
 #info p {
     text-align: justify;
+    font-size: 0.9em;
 }
 
 #footer {
@@ -464,12 +467,16 @@ input.save {
 
 #homepage table {
     border: 0px;
-    font-size: 12px;
+    font-size: 14px;
 }
 
 #homepage table tr {
     height: 120px;
     vertical-align: bottom;
+}
+
+#homepage table td {
+    padding: 3px;
 }
 
 #homepage table td.icon {
@@ -569,21 +576,23 @@ span.spacer {
     clear: both;
 }
 
-fieldset.setting {
-    margin-bottom: 1em;
-    padding-bottom: 6px;
+fieldset {
+    margin: 5px;
+    padding: 10px 5px 10px 5px;
 }
 
-fieldset.setting input {
-    margin: 1px 4px 1px 10px;
+fieldset legend {
+    font-size: 1.0em;
+    font-weight: bold;
+}
+
+fieldset.report {
+    margin-top:10px;
+    margin-bottom:10px;
 }
 
 ol li {
     display: inline;
-}
-
-fieldset.report {
-    margin-bottom: 1em;
 }
 
 input.icon {
@@ -725,16 +734,13 @@ option.default {
 }
 
 .message {
-    text-align: left;
-    margin-top: 10px;
-    padding-bottom: 10px;
-    padding-left: 10px;
+    margin: 0px;
+    padding: 0px;
 }
 
 .warning {
-    text-align: left;
+    font-weight: bold;
     color: red;
-    margin-bottom: 10px;
 }
 
 .notice {
@@ -761,7 +767,7 @@ option.default {
 }
 
 .normal {
-    
+
 }
 
 .footnote {

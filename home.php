@@ -85,6 +85,7 @@ include("header.inc.php");
 
     <div id="nav">
         <ul>
+			<li><?php echo $_SESSION['user']->name(); ?></li>
 			<li><a href="<?php echo getThisPageName();?>?exited=exited"><img src="images/exit.png" alt="exit" />&nbsp;Logout</a></li>
             <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpHome')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li> 
         </ul>
@@ -158,24 +159,34 @@ include("header.inc.php");
 				</a>
 			  </td>
 			  
-			  <td class="text"><a href="./select_parameter_settings.php">Parameter templates</a><br />
-			  <p />Here you can create templates for the optical parameters.
+			  <td class="text"><a href="./select_parameter_settings.php">Image templates</a><br />
+			  <p />Here you can create templates for the image parameters.
 			  </td>
 			  
 			  <td class="icon">
-				<a href="./select_tasks_settings.php">
+				<a href="./select_task_settings.php">
 				<img alt="Task parameters" src="./images/tasks.png" />
 				</a>
 			  </td>
 			  
-			  <td class="text"><a href="./select_tasks_settings.php">Task templates</a><br />
-				<p />Here you can create templates for the deconvolution parameters.
+			  <td class="text"><a href="./select_task_settings.php">Restoration templates</a><br />
+				<p />Here you can create templates for the restoration parameters.
 			  </td>
 			  
 		    </tr>
 
 			<tr>
 			
+			  <td class="icon">
+				<a href="./account.php">
+				<img alt="Account" src="./images/account.png" />
+				</a>
+			  </td>
+			  
+			  <td class="text"><a href="./account.php">Your account</a><br />
+				<p />Here you can view and change your personal data.
+			  </td>
+
 			  <td class="icon">
 				<a href="./update.php">
 				<img alt="Update" src="./images/updatedb.png" />
@@ -185,10 +196,6 @@ include("header.inc.php");
 			  <td class="text"><a href="./update.php">Database update</a><br />
 				<p />Here you can update the database to the latest version.
 			  </td>
-			  
-			  <td class="icon"></td>
-			  
-			  <td class="text">&nbsp;</td>
 			  
 		    </tr>
 			

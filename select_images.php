@@ -171,6 +171,7 @@ include("header.inc.php");
 
     <div id="nav">
         <ul>
+            <li><?php echo $_SESSION['user']->name(); ?></li>
             <li><a href="<?php echo getThisPageName();?>?home=home"><img src="images/restart_help.png" alt="home" />&nbsp;Home</a></li>
             <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpSelectImages')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
         </ul>
@@ -184,13 +185,15 @@ include("header.inc.php");
     <span id="ttSpanDown">Add files to the list of selected images.</span>
     <span id="ttSpanUp">Remove files from the list of selected images.</span>
     <span id="ttSpanRefresh">Refresh the list of available images on the server.</span>
+    <span id="ttSpanBack">Go back to step 2/4 - Restoration parameters.</span>
+    <span id="ttSpanForward">Continue to step 4/4 - Create job</span>  
     
-        <h3>Step 3 - Select Images</h3>
+        <h3>Step 3/4 - Select images</h3>
         
         <form method="post" action="" id="select">
         
             <fieldset>
-                <legend>available images on server</legend>
+                <legend>Images available on server</legend>
                 <div id="userfiles">
 <?php
 
@@ -230,7 +233,7 @@ else echo "                        <option>&nbsp;</option>\n";
             </div>
             
             <fieldset>
-                <legend>selected images</legend>
+                <legend>Selected images</legend>
                 <div id="selectedfiles">
 <?php
 
@@ -263,9 +266,15 @@ else echo "                        <option>&nbsp;</option>\n";
                 <input name="OK" type="hidden" />
             </div>
             
-            <div id="controls" >
-              <input type="button" value="" class="icon previous" onclick="document.location.href='select_task_settings.php'" />
-              <input type="submit" value="" class="icon next" onclick="process()" />
+            <div id="controls">      
+              <input type="button" value="" class="icon previous"
+                onclick="document.location.href='select_task_settings.php'"
+                onmouseover="TagToTip('ttSpanBack' )"
+                onmouseout="UnTip()" />
+              <input type="submit" value="" class="icon next"
+                onclick="process()"
+                onmouseover="TagToTip('ttSpanForward' )"
+                onmouseout="UnTip()" />
             </div>
 
         </form>
@@ -278,32 +287,14 @@ else echo "                        <option>&nbsp;</option>\n";
 
             <h3>Quick help</h3>
 
-            <p>
-                Select the image files in the upper file list. You can use SHIFT- 
-		and CTRL-click to select multiple files. Use the down-arrow to
-		<img src="images/add_help.png" alt="Add" width="22" height="22"/>    
-		<b>add</b> files to your selection.
-            </p>
+            <p>In this step, you will select the files from the list of
+               available images that will be restored using the image and
+               restoration parameters chosen in the previous two steps.</p>
             
-            <p>
-		Select files in the lower file list and use the up-arrow to 
-                <img src="images/remove_help.png" alt="Remove" width="22" height="22"/>
-		<b>remove</b> them from your selection again.
-            </p>
-            
-	   <p>
-	      	Use the 
-                <img src="images/update_help.png" alt="Update" width="22" height="22"/>
-                <b>refresh</b> button to reload the list of available images on the server.
-	   </p>      
+            <p>You can use SHIFT- and CTRL-click to select multiple files.</p>
 
-            <p>
-                When you are done with your selection press the
-                <img src="images/next_help.png" alt="Down" width="22" height="22"/>
-                <b>forward</b> button to go
-                to the next step.
-            </p>
-
+            <p>Placing the mouse pointer over the various icons will display a
+            tooltip with explanations. <p>
 
         </div>
         
