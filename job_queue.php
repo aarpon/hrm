@@ -89,6 +89,12 @@ $script = "queue.js";
 include("header.inc.php");
 
 ?>
+    <!--
+      Tooltips
+    -->
+    <span id="ttGoBack">Go back to the previous page.</span>  
+    <span id="ttRefresh">Refresh the queue.</span>
+    
     <div id="nav">
         <ul>
             <li><?php echo $_SESSION['user']->name(); ?></li>
@@ -96,12 +102,6 @@ include("header.inc.php");
             <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpQueue')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
         </ul>
     </div>
-
-    <!--
-      Tooltips
-    -->
-    <span id="ttGoBack">Go back to the previous page.</span>  
-    <span id="ttRefresh">Refresh the queue.</span>
    
     <div id="joblist">
     

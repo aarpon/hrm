@@ -151,7 +151,7 @@ if (isset($_POST['password'])) {
       $message = "            <p class=\"warning\">Your account has been suspended, please contact the administrator.</p>\n";
     }
     else if ($_SESSION['user']->exists()) {
-      $message = "            <p class=\"warning\">This username/password combination does not match, please try again.</p>\n";
+      $message = "            <p class=\"warning\">The password does not match, please try again.</p>\n";
     }    
     else {
       $message = "            <p class=\"warning\">This account does not exist, please use the link above to register.</p>\n";
@@ -178,7 +178,7 @@ include("header.inc.php");
           // Check that the database is reachable
           $db   = new DatabaseConnection( );
           if ( !$db->isReachable( ) ) {
-            echo "<div class=\"dbOutDated\"><h3>Warning: the database is not reachable!</h3>\n";
+            echo "<div class=\"dbOutDated\">Warning: the database is not reachable!\n";
             echo "<p>Please contact your administrator.</p>".
                   "<p>You will not be allowed to login " .
                   "until this issue has been fixed.</p></div>";
@@ -188,7 +188,7 @@ include("header.inc.php");
           }
           // Check that the database is up-to-date
           if ( Versions::isDBUpToDate( ) == false ) {
-            echo "<div class=\"dbOutDated\"><h3>Warning: the database is not up-to-date!</h3>\n";
+            echo "<div class=\"dbOutDated\">Warning: the database is not up-to-date!\n";
             echo "<p>This happens if HRM was recently updated but the " . 
                   "database was not. You are now allowed to login " .
                   "until this issue has been fixed.</p>";
@@ -204,7 +204,7 @@ include("header.inc.php");
         ?>
         <h2>Welcome</h2>
         
-        <p>
+        <p class="intro">
 	    The <a href="javascript:openWindow('http://hrm.sourceforge.net')">Huygens
 	    Remote Manager</a> is an easy to use interface to the
             Huygens Software by 
@@ -212,7 +212,7 @@ include("header.inc.php");
             Volume Imaging B.V.</a> that allows for multi-user, large-scale deconvolution.
         </p>
         
-	<div id="logos">
+        <div id="logos">
             <div class="logo-fmi">
                 <a href="javascript:openWindow('http://www.fmi.ch')"><img src="images/logo_fmi.png" alt="FMI" /></a>
                 <p>Friedrich Miescher Institute</p>
@@ -228,7 +228,7 @@ include("header.inc.php");
                 <p><a href="javascript:openWindow('http://biop.epfl.ch')">BioImaging and Optics platform</a></p>
             </div>
         </div>
-        
+
     </div> <!-- content -->
     
     <div id="rightpanel">
@@ -242,9 +242,9 @@ include("header.inc.php");
                     </legend>
                     <?php
                     if ( $enableUserAdmin == True ) {
-                      $login_message = "<p>If you do not have an account, please register <a href=\"registration.php\">here</a>.</p>";
+                      $login_message = "<p class=\"expl\">If you do not have an account, please register <a href=\"registration.php\">here</a>.</p>";
                     } else {
-                      $login_message = "<p>If you do not have an account, please contact your administrator.</p>";
+                      $login_message = "<p class=\"expl\">If you do not have an account, please contact your administrator.</p>";
                     }
                     echo $login_message;
                     ?>
@@ -266,58 +266,6 @@ include("header.inc.php");
 echo $message;
 
 ?>
-        </div>
-        
-        <div id="linklist">
-        
-<?php
-
-if (isset($internal_link)) {
-
-?>
-            <h3>Internal Links</h3>
-            <ul>
-<?php
-
-  foreach ($internal_link as $url => $link) {
-
-?>
-                <li><a href="javascript:openWindow('<?php echo $url ?>')"><?php echo substr($link, strpos($link, '<') + 1, strpos($link, '>') - strpos($link, '<') - 1) ?></a><?php echo substr($link, strpos($link, '>') + 1) ?></li>
-<?php
-
-  }
-
-?>
-            </ul>
-            
-<?php
-
-}
-
-if (isset($external_link)) {
-
-?>
-            <h3>External Links</h3>
-            <ul>
-<?php
-
-  foreach ($external_link as $url => $link) {
-
-?>
-                <li><a href="javascript:openWindow('<?php echo $url ?>')"><?php echo substr($link, strpos($link, '<') + 1, strpos($link, '>') - strpos($link, '<') - 1) ?></a><?php echo substr($link, strpos($link, '>') + 1) ?></li>
-<?php
-
-  }
-
-?>
-            </ul>
-            
-<?php
-
-  }
-
-?>
-
         </div>
         
     </div> <!-- rightpanel -->

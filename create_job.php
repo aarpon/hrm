@@ -109,7 +109,13 @@ else if (isset($_POST['OK'])) {
 include("header.inc.php");
 
 ?>
-    <div id="nav">
+    <!--
+      Tooltips
+    -->
+    <span id="ttSpanBack">Go back to step 3/4 - Select images.</span>
+    <span id="ttSpanCreateJob">Create job, add it to the queue, and go back to your home page.</span>  
+ 
+     <div id="nav">
         <ul>
             <li><?php echo $_SESSION['user']->name(); ?></li>
             <li><a href="<?php echo getThisPageName();?>?home=home"><img src="images/restart_help.png" alt="home" />&nbsp;Home</a></li>
@@ -118,13 +124,7 @@ include("header.inc.php");
     </div>
    
     <div id="content">
-      
-      <!--
-        Tooltips
-      -->
-      <span id="ttSpanBack">Go back to step 3/4 - Select images.</span>
-      <span id="ttSpanCreateJob">Create job, add it to the queue, and go back to your home page.</span>  
-    
+   
         <h3>Step 4/4 - Create job</h3>
         
         <form method="post" action="" id="createjob">

@@ -168,7 +168,15 @@ function imageAction (list) {
 include("header.inc.php");
 
 ?>
-
+    <!--
+      Tooltips
+    -->
+    <span id="ttSpanDown">Add files to the list of selected images.</span>
+    <span id="ttSpanUp">Remove files from the list of selected images.</span>
+    <span id="ttSpanRefresh">Refresh the list of available images on the server.</span>
+    <span id="ttSpanBack">Go back to step 2/4 - Restoration parameters.</span>
+    <span id="ttSpanForward">Continue to step 4/4 - Create job</span>
+    
     <div id="nav">
         <ul>
             <li><?php echo $_SESSION['user']->name(); ?></li>
@@ -178,15 +186,6 @@ include("header.inc.php");
     </div>
     
     <div id="content">
-
-    <!--
-      Tooltips
-    -->
-    <span id="ttSpanDown">Add files to the list of selected images.</span>
-    <span id="ttSpanUp">Remove files from the list of selected images.</span>
-    <span id="ttSpanRefresh">Refresh the list of available images on the server.</span>
-    <span id="ttSpanBack">Go back to step 2/4 - Restoration parameters.</span>
-    <span id="ttSpanForward">Continue to step 4/4 - Create job</span>  
     
         <h3>Step 3/4 - Select images</h3>
         
@@ -292,9 +291,6 @@ else echo "                        <option>&nbsp;</option>\n";
                restoration parameters chosen in the previous two steps.</p>
             
             <p>You can use SHIFT- and CTRL-click to select multiple files.</p>
-
-            <p>Placing the mouse pointer over the various icons will display a
-            tooltip with explanations. <p>
 
         </div>
         

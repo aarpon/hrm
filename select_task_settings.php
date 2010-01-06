@@ -147,17 +147,6 @@ $script = "settings.js";
 include("header.inc.php");
 
 ?>
-
-    <div id="nav">
-        <ul>
-            <li><?php echo $_SESSION['user']->name(); ?></li>
-            <li><a href="<?php echo getThisPageName();?>?home=home"><img src="images/restart_help.png" alt="home" />&nbsp;Home</a></li>
-            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpSelectTaskSettings')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
-        </ul>
-    </div>
-    
-    <div id="content">
-
     <!--
       Tooltips
     -->
@@ -176,10 +165,19 @@ include("header.inc.php");
     <?php
       }
     ?>
+
+    <div id="nav">
+        <ul>
+            <li><?php echo $_SESSION['user']->name(); ?></li>
+            <li><a href="<?php echo getThisPageName();?>?home=home"><img src="images/restart_help.png" alt="home" />&nbsp;Home</a></li>
+            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpSelectTaskSettings')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
+        </ul>
+    </div>
+    
+    <div id="content">
     
 <?php
 
-// add user management
 if ($_SESSION['user']->name() == "admin") {
 
 ?>
@@ -375,17 +373,10 @@ if ($_SESSION['user']->name() != "admin") {
       parameters.</p>";
 	}
 	?>
-      
-    <p>Placing the mouse pointer over the various icons will display a
-    tooltip with explanations. <p>
-    
-    <p>For a more detailed explanation on the possible actions, please follow the
-    <img src="images/help.png" alt="Help" width="22" height="22" /> <b>Help</b> 
-    link in the navigation bar.</p>
 
-        </div>
+    </div>
         
-        <div id="message">
+    <div id="message">
 <?php
 
 echo $message;

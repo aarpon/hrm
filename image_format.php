@@ -147,6 +147,11 @@ $script = "settings.js";
 include("header.inc.php");
 
 ?>
+    <!--
+      Tooltips
+    -->
+    <span id="ttSpanCancel">Abort editing and go back to the Image parameters selection page.</span>  
+    <span id="ttSpanForward">Continue to next page.</span>  
 
     <div id="nav">
         <ul>
@@ -156,7 +161,7 @@ include("header.inc.php");
     </div>
     
     <div id="content">
-    
+
         <h3>Image format and PSF modality</h3>
         
         <form method="post" action="" id="select">
@@ -325,8 +330,14 @@ $parameter = $_SESSION['setting']->parameter("PointSpreadFunction");
             </fieldset>
 
             <div id="controls">
-              <input type="button" value="" class="icon up" onclick="document.location.href='select_parameter_settings.php'" />
-              <input type="submit" value="" class="icon next" onclick="process()" />
+              <input type="button" value="" class="icon up"
+                  onmouseover="TagToTip('ttSpanCancel' )"
+                  onmouseout="UnTip()"
+                  onclick="document.location.href='select_parameter_settings.php'" />
+              <input type="submit" value="" class="icon next"
+                  onmouseover="TagToTip('ttSpanForward' )"
+                  onmouseout="UnTip()"
+                  onclick="process()" />
             </div>
             
             <div><input name="OK" type="hidden" /></div>
@@ -346,21 +357,6 @@ $parameter = $_SESSION['setting']->parameter("PointSpreadFunction");
             <p>
               If you select one of the "single XY plane" formats,
                 the image geometry field below will be ignored.
-            </p>
-
-            <p>
-              You will find more detailed information on the parameters
-              by clicking on the
-              <img src="images/help.png" alt="Help" width="22" height="22" /> <b>help</b> 
-              buttons or following the help link in the navigation bar.
-            </p>
-            
-            <p>
-              When you are ready, press the
-              <img src="images/next_help.png" alt="Apply" width="22" height="22" /> <b>next</b>
-              button to go to the next step  
-              or <img src="images/up_help.png" alt="Cancel" width="22" height="22" /> <b>up</b>
-              to discard your changes and return to the parameter selection page.
             </p>
 
         </div>

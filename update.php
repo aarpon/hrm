@@ -114,7 +114,6 @@ include("header.inc.php");
             <textarea rows="15" readonly="readonly">
 <?php
 
-//include("changelog");
 echo $message;
 
 ?>

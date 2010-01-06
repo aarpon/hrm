@@ -94,6 +94,12 @@ $script = "settings.js";
 include("header.inc.php");
 
 ?>
+    <!--
+      Tooltips
+    -->
+    <span id="ttSpanBack">Go back to previous page.</span>  
+    <span id="ttSpanCancel">Abort editing and go back to the Image parameters selection page.</span>  
+    <span id="ttSpanForward">Continue to next page.</span>
 
     <div id="nav">
         <ul>
@@ -353,9 +359,18 @@ $selectedValue  = $parameter->value();
       <div><input name="OK" type="hidden" /></div>
 
       <div id="controls">      
-        <input type="button" value="" class="icon previous" onclick="document.location.href='capturing_parameter.php'" />
-        <input type="button" value="" class="icon up" onclick="document.location.href='select_parameter_settings.php'" />
-        <input type="submit" value="" class="icon next" onclick="process()" />
+        <input type="button" value="" class="icon previous"
+                  onmouseover="TagToTip('ttSpanBack' )"
+                  onmouseout="UnTip()"
+                  onclick="document.location.href='capturing_parameter.php'" />
+        <input type="button" value="" class="icon up"
+                  onmouseover="TagToTip('ttSpanCancel' )"
+                  onmouseout="UnTip()"
+                  onclick="document.location.href='select_parameter_settings.php'" />
+        <input type="submit" value="" class="icon next"
+                  onmouseover="TagToTip('ttSpanForward' )"
+                  onmouseout="UnTip()"
+                  onclick="process()" />
       </div>            
     </form>
         

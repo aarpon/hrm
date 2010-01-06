@@ -157,6 +157,11 @@ if (isset($_POST['modify'])) {
 include("header.inc.php");
 
 ?>
+    <!--
+      Tooltips
+    -->
+    <span id="ttSpanCancel">Discard changes and go back to your home page.</span>  
+    <span id="ttSpanSave">Save the changes.</span>
 
     <div id="nav">
         <ul>
@@ -167,7 +172,7 @@ include("header.inc.php");
     </div>
     
     <div id="content">
-    
+
         <h3>Your account</h3>
         
         <form method="post" action="" id="useraccount">
@@ -213,8 +218,16 @@ if (isset($_SESSION['account_user'])/* && $_SESSION['user']->name() == "admin"*/
                 ?>                
 
                 <div id="controls">
-                  <input type="button" name="cancel" value="" onclick="document.location.href='<?php echo $referer ?>'" class="icon cancel" />
-                  <input type="button" name="save" value="" onclick="document.forms['useraccount'].submit()" class="icon save" />
+                  <input type="button" name="cancel" value=""
+                    class="icon cancel"
+                    onmouseover="TagToTip('ttSpanCancel' )"
+                    onmouseout="UnTip()"
+                    onclick="document.location.href='<?php echo $referer ?>'" />
+                  <input type="button" name="save" value="" 
+                    class="icon save"
+                    onmouseover="TagToTip('ttSpanSave' )"
+                    onmouseout="UnTip()"
+                    onclick="document.forms['useraccount'].submit()" />
                 </div>
             
             </div>

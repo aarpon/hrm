@@ -111,7 +111,13 @@ $script = "settings.js";
 include("header.inc.php");
 
 ?>
-
+    <!--
+      Tooltips
+    -->
+    <span id="ttSpanBack">Go back to previous page.</span>  
+    <span id="ttSpanCancel">Abort editing and go back to the Image parameters selection page.</span>  
+    <span id="ttSpanForward">Continue to next page.</span>  
+    
     <div id="nav">
         <ul>
             <li><?php echo $_SESSION['user']->name(); ?></li>
@@ -155,9 +161,10 @@ foreach($possibleValues as $possibleValue) {
             <fieldset class="setting">
               <legend> 
 		<a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=NumericalAperture')"><img src="images/help.png" alt="?" /></a>
-		NA
+		numerical aperture
               </legend>
-              <p />numerical aperture: 
+              <ul>
+                <li>NA:
 <?php
 
 $parameter = $_SESSION['setting']->parameter("NumericalAperture");
@@ -168,7 +175,9 @@ $parameter = $_SESSION['setting']->parameter("NumericalAperture");
 
 ?>
                 <input name="NumericalAperture" type="text" size="5" value="<?php echo $parameter->value() ?>" />
-                
+              
+                </li>
+              </ul>
             </fieldset>
             
             <fieldset class="setting">
@@ -343,9 +352,18 @@ if (!$default) {
             <div><input name="OK" type="hidden" /></div>
             
             <div id="controls">
-              <input type="button" value="" class="icon previous" onclick="document.location.href='image_format.php'" />
-              <input type="button" value="" class="icon up" onclick="document.location.href='select_parameter_settings.php'" />
-              <input type="submit" value="" class="icon next" onclick="process()" />
+              <input type="button" value="" class="icon previous"
+                  onmouseover="TagToTip('ttSpanBack' )"
+                  onmouseout="UnTip()"
+                  onclick="document.location.href='image_format.php'" />
+              <input type="button" value="" class="icon up"
+                  onmouseover="TagToTip('ttSpanCancel' )"
+                  onmouseout="UnTip()"
+                  onclick="document.location.href='select_parameter_settings.php'" />
+              <input type="submit" value="" class="icon next"
+                  onmouseover="TagToTip('ttSpanForward' )"
+                  onmouseout="UnTip()"
+                  onclick="process()" />
             </div>
 
         </form>
@@ -361,26 +379,6 @@ if (!$default) {
             <p>
                 Please choose or fill in the parameter values on the left 
                 side.
-            </p>
-            
-            <p>
-              You will find more detailed information on the parameters
-              by clicking on the 
-              <img src="images/help.png" alt="Help" width="22" height="22" /> <b>help</b> 
-              buttons or following the help link in the navigation bar.
-            </p>
-            
-            <p>
-              When you are ready, press the
-              <img src="images/next_help.png" alt="Apply" width="22" height="22" />
-              <b>next</b> button to go to the next step.</p>
-            
-            <p>
-              You can also press the
-              <img src="images/previous_help.png" alt="Apply" width="22" height="22" />
-              <b>previous</b> button to go back one step,
-              or <img src="images/up_help.png" alt="Cancel" width="22" height="22" /> <b>up</b>
-              to discard your changes and return to the parameter selection page.
             </p>
 
         </div>

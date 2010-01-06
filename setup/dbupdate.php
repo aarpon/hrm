@@ -496,7 +496,7 @@ if ($rs->EOF) { // If the variable dbrevision does not exist, create it and set 
         return;
     }
     $current_revision = 0;
-    $msg = "The database revision has been set to 0.\n";
+    $msg = "Initialized database revision to 0.\n";
     write_message($msg);
     write_to_log($msg);
 }
@@ -1056,8 +1056,13 @@ if ($current_revision == 0) {
 // -----------------------------------------------------------------------------
 // Update the database to the last revision
 // -----------------------------------------------------------------------------
-$msg = "The last available revision for the HRM database is the number " . $LAST_REVISION . ".\n";
-$msg .= "The revision of your HRM database before this update was " . $current_revision . ".\n";
+$msg = "Needed database revision is number " . $LAST_REVISION . ".\n";
+$msg .= "Current database revision is number " . $current_revision . ".\n";
+if( $LAST_REVISION == $current_revision ) {
+    $msg .= "Nothing to do.\n";
+} else {
+    $msg .= "Updating...\n";
+}
 write_message($msg);
 write_to_log($msg);
 
@@ -1077,7 +1082,7 @@ if ($current_revision < $n) {
     $record["isDefault"] = "t";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
     if(!$db->Execute($insertSQL)) {
-        $msg = "An error occurred while updateing the database to revision " . $n . ".";
+        $msg = "An error occurred while updating the database to revision " . $n . ".";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -1088,7 +1093,7 @@ if ($current_revision < $n) {
     $record["isDefault"] = "f";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
     if(!$db->Execute($insertSQL)) {
-        $msg = "An error occurred while updateing the database to revision " . $n . ".";
+        $msg = "An error occurred while updating the database to revision " . $n . ".";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -1098,7 +1103,7 @@ if ($current_revision < $n) {
         return;
     
     $current_revision = $n;
-    $msg = "Your HRM database has been updated to revision " . $current_revision . ".";
+    $msg = "Database successfully updated to revision " . $current_revision . ".";
     write_message($msg);
     write_to_log($msg);
 }
@@ -1119,7 +1124,7 @@ if ($current_revision < $n) {
     $record["isDefault"] = "F";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
     if(!$db->Execute($insertSQL)) {
-        $msg = "An error occurred while updateing the database to revision " . $n . ".";
+        $msg = "An error occurred while updating the database to revision " . $n . ".";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -1129,7 +1134,7 @@ if ($current_revision < $n) {
         return;
     
     $current_revision = $n;
-    $msg = "Your HRM database has been updated to revision " . $current_revision . ".";
+    $msg = "Database successfully updated to revision " . $current_revision . ".";
     write_message($msg);
     write_to_log($msg);
 }
@@ -1145,7 +1150,7 @@ if ($current_revision < $n) {
     $tabname = "possible_values";
     $rs = $db->Execute("DELETE FROM " . $tabname . " WHERE parameter = 'CoverslipRelativePosition'");
     if(!$rs) {
-        $msg = "An error occurred while updateing the database to revision " . $n . ".";
+        $msg = "An error occurred while updating the database to revision " . $n . ".";
         write_message($msg);
         write_to_error($msg);
         return; 
@@ -1158,7 +1163,7 @@ if ($current_revision < $n) {
     $record["isDefault"] = "T";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
     if(!$db->Execute($insertSQL)) {
-        $msg = "An error occurred while updateing the database to revision " . $n . ".";
+        $msg = "An error occurred while updating the database to revision " . $n . ".";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -1169,7 +1174,7 @@ if ($current_revision < $n) {
     $record["isDefault"] = "F";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
     if(!$db->Execute($insertSQL)) {
-        $msg = "An error occurred while updateing the database to revision " . $n . ".";
+        $msg = "An error occurred while updating the database to revision " . $n . ".";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -1179,7 +1184,7 @@ if ($current_revision < $n) {
     $record["translation"] = "Do not perform depth-dependent correction";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
     if(!$db->Execute($insertSQL)) {
-        $msg = "An error occurred while updateing the database to revision " . $n . ".";
+        $msg = "An error occurred while updating the database to revision " . $n . ".";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -1214,7 +1219,7 @@ if ($current_revision < $n) {
         return;
     
     $current_revision = $n;
-    $msg = "Your HRM database has been updated to revision " . $current_revision . ".";
+    $msg = "Database successfully updated to revision " . $current_revision . ".";
     write_message($msg);
     write_to_log($msg);
 }
@@ -1232,7 +1237,7 @@ if ($current_revision < $n) {
     $record["extension"] = "zvi";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
     if(!$db->Execute($insertSQL)) {
-        $msg = "An error occurred while updateing the database to revision " . $n . ".";
+        $msg = "An error occurred while updating the database to revision " . $n . ".";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -1246,7 +1251,7 @@ if ($current_revision < $n) {
     $record["isVariableChannel"] = "t";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
     if(!$db->Execute($insertSQL)) {
-        $msg = "An error occurred while updateing the database to revision " . $n . ".";
+        $msg = "An error occurred while updating the database to revision " . $n . ".";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -1260,7 +1265,7 @@ if ($current_revision < $n) {
     $record["isDefault"] = "f";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
     if(!$db->Execute($insertSQL)) {
-        $msg = "An error occurred while updateing the database to revision " . $n . ".";
+        $msg = "An error occurred while updating the database to revision " . $n . ".";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -1270,7 +1275,7 @@ if ($current_revision < $n) {
         return;
     
     $current_revision = $n;
-    $msg = "Your HRM database has been updated to revision " . $current_revision . ".";
+    $msg = "Database successfully updated to revision " . $current_revision . ".";
     write_message($msg);
     write_to_log($msg);  
 }
@@ -1288,7 +1293,7 @@ if ($current_revision < $n) {
     if (!($rs->EOF)) {
         $rss = $db->Execute("DELETE FROM " . $tabname . " WHERE parameter = 'CoverslipRelativePosition' AND value = 'ignore'");
         if(!$rss) {
-            $msg = "An error occurred while updateing the database to revision " . $n . ".\n";
+            $msg = "An error occurred while updating the database to revision " . $n . ".\n";
             write_message($msg);
             write_to_error($msg);
             return; 
@@ -1299,7 +1304,7 @@ if ($current_revision < $n) {
     if (!($rs->EOF)) {
         $rss = $db->Execute("DELETE FROM " . $tabname . " WHERE parameter = 'PerformAberrationCorrection' AND translation = 'Do not perform depth-dependent correction'");
         if(!$rss) {
-            $msg = "An error occurred while updateing the database to revision " . $n . ".";
+            $msg = "An error occurred while updating the database to revision " . $n . ".";
             write_message($msg);
             write_to_error($msg);
             return; 
@@ -1315,7 +1320,7 @@ if ($current_revision < $n) {
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
         if(!$db->Execute($insertSQL)) {
-            $msg = "An error occurred while updateing the database to revision " . $n . ".";
+            $msg = "An error occurred while updating the database to revision " . $n . ".";
             write_message($msg);
             write_to_error($msg);
             return;
@@ -1329,7 +1334,7 @@ if ($current_revision < $n) {
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
         if(!$db->Execute($insertSQL)) {
-            $msg = "An error occurred while updateing the database to revision " . $n . ".";
+            $msg = "An error occurred while updating the database to revision " . $n . ".";
             write_message($msg);
             write_to_error($msg);
             return;
@@ -1344,7 +1349,7 @@ if ($current_revision < $n) {
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
         if(!$db->Execute($insertSQL)) {
-            $msg = "An error occurred while updateing the database to revision " . $n . ".";
+            $msg = "An error occurred while updating the database to revision " . $n . ".";
             write_message($msg);
             write_to_error($msg);
             return;
@@ -1359,7 +1364,7 @@ if ($current_revision < $n) {
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
         if(!$db->Execute($insertSQL)) {
-            $msg = "An error occurred while updateing the database to revision " . $n . ".";
+            $msg = "An error occurred while updating the database to revision " . $n . ".";
             write_message($msg);
             write_to_error($msg);
             return;
@@ -1373,7 +1378,7 @@ if ($current_revision < $n) {
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
         if(!$db->Execute($insertSQL)) {
-            $msg = "An error occurred while updateing the database to revision " . $n . ".";
+            $msg = "An error occurred while updating the database to revision " . $n . ".";
             write_message($msg);
             write_to_error($msg);
             return;
@@ -1388,7 +1393,7 @@ if ($current_revision < $n) {
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
         if(!$db->Execute($insertSQL)) {
-            $msg = "An error occurred while updateing the database to revision " . $n . ".";
+            $msg = "An error occurred while updating the database to revision " . $n . ".";
             write_message($msg);
             write_to_error($msg);
             return;
@@ -1408,7 +1413,7 @@ if ($current_revision < $n) {
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
         if(!$db->Execute($insertSQL)) {
-            $msg = "An error occurred while updateing the database to revision " . $n . ".";
+            $msg = "An error occurred while updating the database to revision " . $n . ".";
             write_message($msg);
             write_to_error($msg);
             return;
@@ -1419,7 +1424,7 @@ if ($current_revision < $n) {
         return;
     
     $current_revision = $n;
-    $msg = "Your HRM database has been updated to revision " . $current_revision . ".";
+    $msg = "Database successfully updated to revision " . $current_revision . ".";
     write_message($msg);
     write_to_log($msg);  
 }
@@ -1530,7 +1535,7 @@ if ($current_revision < $n) {
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "'");
     if (!($rs->EOF)) {
         if(!$db->Execute("DELETE FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "'")) {
-            $msg = "An error occurred while updateing the database to revision " . $n . ".";
+            $msg = "An error occurred while updating the database to revision " . $n . ".";
             write_message($msg);
             write_to_log($msg);
             write_to_error($msg);
@@ -1551,7 +1556,7 @@ if ($current_revision < $n) {
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record[$colnames[0]] . "' AND value='" . $record[$colnames[1]] . "'");
     if (!($rs->EOF)) {
         if(!$db->Execute("DELETE FROM " . $tabname . " WHERE parameter='" . $record[$colnames[0]] . "' AND value='" . $record[$colnames[1]] . "'")) {
-            $msg = "An error occurred while updateing the database to revision " . $n . ".";
+            $msg = "An error occurred while updating the database to revision " . $n . ".";
             write_message($msg);
             write_to_log($msg);
             write_to_error($msg);
@@ -1571,7 +1576,7 @@ if ($current_revision < $n) {
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "'");
     if (!($rs->EOF)) {
         if(!$db->Execute("DELETE FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "'")) {
-            $msg = "An error occurred while updateing the database to revision " . $n . ".";
+            $msg = "An error occurred while updating the database to revision " . $n . ".";
             write_message($msg);
             write_to_log($msg);
             write_to_error($msg);
@@ -1591,7 +1596,7 @@ if ($current_revision < $n) {
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "'");
     if (!($rs->EOF)) {
         if(!$db->Execute("DELETE FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "'")) {
-            $msg = "An error occurred while updateing the database to revision " . $n . ".";
+            $msg = "An error occurred while updating the database to revision " . $n . ".";
             write_message($msg);
             write_to_log($msg);
             write_to_error($msg);
@@ -1608,7 +1613,7 @@ if ($current_revision < $n) {
         return;
     
     $current_revision = $n;
-    $msg = "Your HRM database has been updated to revision " . $current_revision . ".";
+    $msg = "Database successfully updated to revision " . $current_revision . ".";
     write_message($msg);
     write_to_log($msg);
 }
@@ -1635,7 +1640,7 @@ if ($current_revision < $n) {
         MicroscopeType C(255) DEFAULT 0
     ";
         if (!create_table("statistics", $flds)) {
-            $msg = "An error occurred while updateing the database to revision " . $n . ".";
+            $msg = "An error occurred while updating the database to revision " . $n . ".";
             write_message($msg);
             write_to_log($msg);
             write_to_error($msg);
@@ -1646,15 +1651,15 @@ if ($current_revision < $n) {
     if(!update_dbrevision($n)) 
         return;
     $current_revision = $n;
-    $msg = "Your HRM database has been updated to revision " . $current_revision . ".";
+    $msg = "Database successfully updated to revision " . $current_revision . ".";
     write_message($msg);
     write_to_log($msg);
 }  
 
 
-$msg = "\nThe current revision of your HRM database is " . $current_revision . ".";
-write_message($msg);
-write_to_log($msg);
+//$msg = "\nThe current revision of your HRM database is " . $current_revision . ".";
+//write_message($msg);
+//write_to_log($msg);
 
 fclose($fh);
 

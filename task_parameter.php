@@ -294,7 +294,12 @@ $script = "settings.js";
 include("header.inc.php");
 
 ?>
-
+    <!--
+      Tooltips
+    -->
+    <span id="ttSpanCancel">Abort editing and go back to the Restoration parameters selection page.</span>  
+    <span id="ttSpanForward">Finish and save your settings.</span>
+    
     <div id="nav">
         <ul>
             <li><?php echo $_SESSION['user']->name(); ?></li>
@@ -593,8 +598,14 @@ if ($parameter->value() != null) {
             <div><input name="OK" type="hidden" /></div>
             
             <div id="controls">
-              <input type="button" value="" class="icon up" onclick="document.location.href='select_task_settings.php'" />
-              <input type="submit" value="" class="icon next" onclick="process()" />
+              <input type="button" value="" class="icon up"
+                  onmouseover="TagToTip('ttSpanCancel' )"
+                  onmouseout="UnTip()"
+                  onclick="document.location.href='select_task_settings.php'" />
+              <input type="submit" value="" class="icon next"
+                  onmouseover="TagToTip('ttSpanForward' )"
+                  onmouseout="UnTip()"
+                  onclick="process()" />
             </div>
 
         </form>
@@ -608,9 +619,6 @@ if ($parameter->value() != null) {
         <h3>Quick help</h3>
             
         <p>Define the parameters for restoration.</p>
-
-        <p>You will find detailed explanations by following the help button
-        in the navigation bar.</p>
     
       </div>
         

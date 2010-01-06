@@ -75,6 +75,20 @@ a:hover, a:active {
     color: rgb(196, 0, 9);
 }
 
+h1 {
+    font-size: 32px;
+    margin-top: 20px;
+}
+
+h2 {
+    font-size: 20px;
+    margin-top: 15px;
+}
+
+h4 {
+    font-size: 12px;
+}
+
 p {
     text-align: left;
 }
@@ -95,6 +109,16 @@ table {
 
 /* specific div elements */
 
+.intro {
+    font-size: 16px;
+    padding-top: 15px;
+    border-top-style: dotted;
+    border-top-width: 1px;
+    padding-bottom: 15px;
+    border-bottom-style: dotted;
+    border-bottom-width: 1px;
+}
+
 #basket {
     width: 800px;
     border: #ccc 2px solid;
@@ -110,13 +134,9 @@ table {
     border: #fff 2px solid;
 }
 
-#title h1 {
-    margin-top: 20px;
-}
-
 #nav {
     color: #888;
-    font-size: 0.8em;
+    font-size: 12px;
     font-weight: bold;
     text-align: right;
     border-top: #ccc 2px solid;
@@ -156,31 +176,25 @@ table {
     border-right-style: dotted;
     border-right-width: 1px;
     margin: 0px 0px 0px 0px;
-    padding: 0px 15px 0px 15px;
-}
-
-#content p {
-    font-size: 14px;
-    text-align: justify;
-}
-
-#content h2 {
-    margin-top: 15px;
+    padding: 3px 15px 5px 15px;
 }
 
 #content h3 {
     background-color: #eee;
-    font-size: 1.0em;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
 }
 
-#content h4 {
-    font-size: 75%;
+#content p {
+    text-align: justify;
 }
 
 #logos {
     font-size: 70%;
     text-align: center;
-    padding-top: 7em;
+    padding-top: 1em;
+    padding-bottom: 3em;
 }
 
 #logos div {
@@ -281,33 +295,28 @@ input.save {
     padding-left: 5px;
 }
 
-#rightpanel {
-    float: right;
-    width: 250px;
-    font-size: 80%;
-    text-align: right;
-    margin: 0px 0px 0px 0px;
-    padding: 0px 15px 0px 15px;
+#login {
+    font-size: 14px;    
 }
 
 #login legend {
-    font-size: 130%;
+    font-size: 16px;
     font-weight: bold;
 }
 
-#login p {
+#login p.expl {
+    font-size: 14px;
+    font-weight: normal;
     text-align: left;
-    padding-left: 10px;
+    padding: 0px 5px;
 }
 
-#linklist {
-    text-align: left;
-}
-
-#linklist h3 {
-    background-color: #eee;
-    font-size: 1.2em;
-    font-weight: bold;
+#rightpanel {
+    float: right;
+    width: 250px;
+    text-align: right;
+    margin: 0px 0px 0px 0px;
+    padding: 3px 15px 5px 15px;
 }
 
 #info {
@@ -315,15 +324,16 @@ input.save {
     padding: 0px;
 }
 
-#info h3 {
-    background-color: #eee;
-    font-size: 1.2em;
-    font-weight: bold;
+#info p {
+    font-size: 11px;
+    text-align: justify;
 }
 
-#info p {
-    text-align: justify;
-    font-size: 0.9em;
+#info h3 {
+    background-color: #eee;
+    font-size: 1.0em;
+    font-weight: bold;
+    text-align: center;
 }
 
 #footer {
@@ -591,6 +601,11 @@ fieldset.report {
     margin-bottom:10px;
 }
 
+fieldset.p {
+    
+}
+
+
 ol li {
     display: inline;
 }
@@ -734,6 +749,8 @@ option.default {
 }
 
 .message {
+    font-size: 10px;
+    font-weight: bold;
     margin: 0px;
     padding: 0px;
 }
