@@ -86,7 +86,8 @@ h2 {
 }
 
 h4 {
-    font-size: 12px;
+    font-size: 14px;
+    font-weight: bold;
 }
 
 p {
@@ -167,6 +168,7 @@ table {
 #controls {
     text-align: center;
     border-top: #ccc 1px dotted;
+    margin-top: 30px;
 }
 
 #content {
@@ -643,6 +645,12 @@ input.up {
     width: 60px;
     height: 60px;
     background: url(../images/up.png) no-repeat right;
+}
+
+input.calc {
+    width: 60px;
+    height: 60px;
+    background: url(../images/calc.png) no-repeat right;
 }
 
 input.ok {

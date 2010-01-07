@@ -229,7 +229,7 @@ include("header.inc.php");
     <div id="nav">
         <ul>
             <li><?php echo $_SESSION['user']->name(); ?></li>
-            <li><a href="<?php echo getThisPageName();?>?home=home"><img src="images/restart_help.png" alt="home" />&nbsp;Home</a></li>
+            <li><a href="<?php echo getThisPageName();?>?home=home"><img src="images/home.png" alt="home" />&nbsp;Home</a></li>
             <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpFileManagement')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
         </ul>
     </div>
@@ -250,14 +250,11 @@ $instructions =
             <p>Click on a file to see (or create) a preview.</p>
             <p>Select the files you want to download (you can <b>SHIFT-</b> and
             <b>CTRL-click</b> for multiple selection) and press the
-            <img src=\"images/download_help.png\" alt=\"Download\"
-            width=\"22\" height=\"22\" /> <b>download</b> icon to compress the
-            files into an archive and start the download process. (Please mind
-            that large files may take a <b>long time </b>to be packaged before
-            downloading.)</p>
-            <p> Use the <img src=\"images/delete_help.png\" alt=\"Download\"
-            width=\"22\" height=\"22\" /> <b>delete</b> icon to delete the
-            selected files instead.</p>";
+            <b>download</b> icon to compress the files into an archive and start
+            the download process. (Please mind that large files may take a
+            <b>long time </b>to be packaged before downloading.)</p>
+            <p> Use the <b>delete</b> icon to delete the selected files
+            instead.</p>";
 
 
 // display only relevant files

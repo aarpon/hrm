@@ -56,14 +56,6 @@ require_once("./inc/Fileserver.inc");
 
 session_start();
 
-
-if (isset($_GET['exited'])) {
-  $_SESSION['user']->logout();
-  session_unset();
-  session_destroy();
-  header("Location: " . "login.php"); exit();
-}
-
 if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
   header("Location: " . "login.php"); exit();
 }
@@ -110,6 +102,12 @@ $script = "settings.js";
 include("header.inc.php");
 
 ?>
+    <!--
+      Tooltips
+    -->
+    <span id="ttSpanBack">Go back to previous page.</span>  
+    <span id="ttSpanCancel">Abort editing and go back to the image parameters selection page. All changes will be lost!</span>  
+    <span id="ttSpanForward">Save and return to the image parameters selection page.</span>
 
     <div id="nav">
         <ul>
@@ -171,9 +169,17 @@ for ($i = 0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
             <div><input name="OK" type="hidden" /></div>
             
             <div id="controls">
-              <input type="button" value="" class="icon previous" onclick="document.location.href='capturing_parameter.php'" />
-              <input type="button" value="" class="icon up" onclick="document.location.href='select_parameter_settings.php'" />
-              <input type="submit" value="" class="icon next" onclick="process()" />
+              <input type="button" value="" class="icon previous"
+                  onmouseover="TagToTip('ttSpanBack' )"
+                  onmouseout="UnTip()"
+                  onclick="document.location.href='capturing_parameter.php'" />
+              <input type="button" value="" class="icon up"
+                  onmouseover="TagToTip('ttSpanCancel' )"
+                  onmouseout="UnTip()"
+                  onclick="document.location.href='select_parameter_settings.php'" />
+              <input type="submit" value="" class="icon save"
+                  onmouseover="TagToTip('ttSpanForward' )"
+                  onmouseout="UnTip()" onclick="process()" />
             </div>
                         
         </form>

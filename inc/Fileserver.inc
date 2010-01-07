@@ -929,13 +929,13 @@ Class Fileserver {
       switch ($op) {
           case "close":
              echo " <a href=\"#\" onclick=\"window.close()\">".
-             "<img src=\"images/cancel_help.png\" alt=\"cancel\" />".
+             "<img src=\"images/cancel.png\" alt=\"cancel\" />".
              "</a>\n";
              break;     
           case "home":
              echo " <a href=\"#\" onclick=\"document.location.href=".
              "'select_parameter_settings.php'\">".
-             "<img src=\"images/restart_help.png\" alt=\"home\" />".
+             "<img src=\"images/home_large.png\" alt=\"home\" />".
              "</a>\n";
              break;
       }

@@ -103,20 +103,24 @@ if (isset($_POST['CCDCaptorSize'])) {
 $script = "settings.js";
 include ("header.inc.php");
 ?>
+<!--
+  Tooltips
+-->
+<span id="ttSpanCancel">Go back to previous page without calculating the pixel size.</span>  
+<span id="ttSpanForward">Update the pixel size field on previous page with the calculated value.</span>  
 
 <div id="nav">  
         <ul>
             <li><?php echo $_SESSION['user']->name(); ?></li>
-            <li><a href="select_images.php?exited=exited">exit</a></li>    
-            <li><a href="javascript:openWindow('')">help</a></li>
+            <li><a href="javascript:openWindow('')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
         </ul>
 </div>
     
 <div id="content">
     
-    <h3>Parameter Setting - Calculate Pixel Size</h3>
+    <h3>Calculate pixel size</h3>
 
-    <h4>Please mind that these parameters are only used to calculate the pixel size are not stored!</h4> 
+    <h4>Please mind that these parameters are only used to calculate the pixel size and are not stored!</h4> 
  
     <form method="post" action="calculate_pixel_size.php" id="select">
     
@@ -204,7 +208,18 @@ foreach ( $sortedPossibleValues as $possibleValue) {
                 X
                         
             </fieldset>
-    <div><input name="OK" type="hidden" /></div>
+       
+                <div id="controls">      
+                  <input type="button" value="" class="icon up"
+                    onmouseover="TagToTip('ttSpanCancel' )"
+                    onmouseout="UnTip()"
+                    onclick="document.location.href='capturing_parameter.php'" />
+                  <input type="submit" value="" class="icon next"
+                    onmouseover="TagToTip('ttSpanForward' )"
+                    onmouseout="UnTip()"
+                    onclick="process()" />
+                </div>
+
     </form>
     
  </div> <!-- content -->
@@ -212,15 +227,12 @@ foreach ( $sortedPossibleValues as $possibleValue) {
  <div id="rightpanel">
     
         <div id="info">
-        
-            <input type="button" value="" class="icon cancel" onclick="document.location.href='capturing_parameter.php'" />
-            <input type="submit" value="" class="icon apply" onclick="process()" />
-            
-            <p>
-               Enter the values and press the ok button to calculate the
-               pixel size. Press the cancel button to go back without changing
-               the pixel size.
-            </p>
+
+            <h3>Quick help</h3>           
+
+            <p>Here you can calculate the image pixel size from the physical
+            attributes of your CCD chip element and some of the relevant
+            microscope parameters.</p>
             
         </div>
         

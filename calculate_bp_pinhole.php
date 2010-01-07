@@ -51,14 +51,6 @@ require_once ("./inc/User.inc");
 
 session_start();
 
-if (isset ($_GET['exited'])) {
-    $_SESSION['user']->logout();
-    session_unset();
-    session_destroy();
-    header("Location: " . "login.php");
-    exit ();
-}
-
 if (!isset ($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
     header("Location: " . "login.php");
     exit ();
@@ -258,6 +250,8 @@ $Default = array("micro" => "Not specified",
 function start() {
     global $microscopes, $na;
 
+    echo "<h4>Please choose a microscope from the following list:</h4>";
+    
    echo "\n<ul>";
 
     $script = $_SERVER['PHP_SELF'];
@@ -273,21 +267,31 @@ function start() {
         echo "\n<li><a href=\"$script?$data[0]&help=$data[1]&task=form$extra\">$m</a></li>";
     }
     echo "\n</ul>";
+    
+    echo "<div id=\"controls\">
+    
+            <input type=\"button\" value=\"\" class=\"icon up\"
+                  onmouseover=\"Tip('Go back without calculating the backprojected pinhole radius for your microscope.')\"
+                  onmouseout=\"UnTip()\"
+                  onclick=\"document.location.href='capturing_parameter.php'\" /></div>";
+
     echo "\n</div> <!-- content -->\n";
     ?>
          <div id="rightpanel">
 
         <div id="info">
+            
+            <h3>Quick help</h3>
 
-            <input type="button" value="" class="icon cancel" onclick="document.location.href='capturing_parameter.php'" />
             <?php 
             echo "<p>The following forms will assist you in calculating the ".
             "(circular-equivalent) backprojected pinhole radius expressed in ".
             "nanometers, that you can enter directly in the HRM settings.</p>";
-            echo "<p>There is one special entry to calculate pinhole distances in spinning disks.</p>";
-    echo "<p>Click <b>help</b> on the top menu for more details.</p>";    
+            echo "<p>Please mind that there is one special entry to calculate ";
+            echo "pinhole distances in spinning disks.</p>";
+    echo "<p>Click <b>Help</b> on the top menu for more details.</p>";    
 
-    echo "<p>Start by selecting your microscope model from the list on the left, or click on cancel above to go back.</p>";
+    echo "<p>Start by selecting your microscope model from the list on the left, or click on cancel at the bottom to go back.</p>";
     echo "</div>";
     echo "</div>";
 
@@ -362,23 +366,35 @@ global $cmsys, $table, $extra1, $txt1, $extra2, $txt2, $checked1, $checked2;
 
         # print "\n<input type=\"submit\" Value=\"Calculate\">";
         # print "<input type=\"submit\" value=\"\" class=\"icon apply\" onclick=\"process()\" />";
+?>
 
-        print "\n</fieldset>";
-        print "\n</form>";
-?>  </div> <!-- content -->
+          </fieldset>
 
-         <div id="rightpanel">
+          <div id="controls">          
+            <input type="button" value="" class="icon previous"          
+                  onmouseover="Tip('Go back to the microscope list.' )"
+                  onmouseout="UnTip()"
+                  onclick="document.location.href='<?php echo $_SERVER['PHP_SELF']; ?>'" />
+            <input type="submit" value="" class="icon calc"
+                  onmouseover="Tip('Calculate the backprojected pinhole radius or distance from the entered parameters.' )"
+                  onmouseout="UnTip()"
+                  onclick="process()" />
+          </div>
+          
+        </form>
+      </div> <!-- content -->
 
+      <div id="rightpanel">
+        
         <div id="info">
 
-            <input type="button" value="" class="icon cancel" onclick="document.location.href='capturing_parameter.php'" />
-            <input type="submit" value="" class="icon apply" onclick="process()" />
-
+        <h3>Quick help</h3>
+        
             <p>
-               Enter or confirm the requested values and press the ok button to calculate the
+               Enter or confirm the requested values and press the calculator button to calculate the
                <a href=\"javascript:openWindow('http://support.svi.nl/wiki/BackProjected')\">back projected</a> 
                pinhole radius.
-               Press the cancel button to go back to the settings form.
+               Press the back button to go back to the list of microscopes.
             </p>
             <p>
                <?php
@@ -490,74 +506,68 @@ if ($na != 0 && $wl != 0) {  # Reported in Airy disks
     $error .= "Wrong equation: not enough parameters.<br>\n";
 }
 
-
-
-       #print("<pre>");
-#print("</pre>");
-
 if ($error) {
     $out .="<h2>Error!</h2>\n".$error;
-    /* $out .="<br>Please sent all the text above ".
-                 "to the <a href = 'http://support.svi.nl/contact.php'>".
-                 "system administrator</a><br>";
-                 */
-            }
-        else
-            {
-            $result = round($phr / $M,2);    
-            $out .= "<h3>Result</h3>";
-        $out .=  "\nBackprojected $rtag $runits: <b>$result</b><br><br>";
+}
+else
+{
+    $result = round($phr / $M,2);    
+    $out .= "<h4>Result</h4>";
+    $out .=  "\nBackprojected $rtag $runits: <b>$result</b><br><br>";
 
-            $out .= "\nThis is the parameter list used in this calculation:<br>";
-            $out .= $warning;
+    $out .= "\nThis is the parameter list used in this calculation:<br>";
+    $out .= $warning;
  
-             $out .= "\n<br>".field("micro").": ".$micro." ";
-             #$out .= "\n<br>".field("msys").": ".$msys." ";
-             foreach ( $reportparams as $entry ) {
-                 if ($$entry !=0 && isset($$entry)) {
-                   $out .= "\n<br>".field($entry).": ".$$entry." ";
-                   if ($entry == "msys") {
-                        if ($extra1) $out .= "&times;$extra1 ";
-                        if ($extra2) $out .= "&times;$extra2 ";
+    $out .= "\n<br>".field("micro").": ".$micro." ";
+    foreach ( $reportparams as $entry ) {
+        if ($$entry !=0 && isset($$entry)) {
+            $out .= "\n<br>".field($entry).": ".$$entry." ";
+            if ($entry == "msys") {
+                if ($extra1) $out .= "&times;$extra1 ";
+                if ($extra2) $out .= "&times;$extra2 ";
+            }
+        }
+    }
+    $out .= "<br>\n";
+}
 
-                   }
-                 }
-             }
-           $out .= "<br>\n";
+$out .= "<div id=\"controls\">";
 
+$toScript = $_SERVER['HTTP_REFERER'];
         
+$out .= "<input type=\"button\" value=\"\" class=\"icon previous\"
+    onmouseover=\"Tip('Try again.' )\"
+    onmouseout=\"UnTip()\"
+    onclick=\"document.location.href='" . $toScript ."'\" />";        
 
-      }
+$out .= "<input type=\"button\" value=\"\" class=\"icon next\"
+    onmouseover=\"Tip('Proceed to the optical parameters.' )\"
+    onmouseout=\"UnTip()\"
+    onclick=\"document.location.href='" . $ref ."'\" /></div>";
 
-      /* $out = "<table width=\"60%\" border=\"0\" cellspacing=\"0\" ".
-      "cellpadding=\"0\" align=\"center\"> <tr align=\"left\"> ".
-      "<td>\n".$out.
-      "</td> </tr> </table>\n"; */
-
-
-      $out .= "  </div> <!-- content -->";
-
-      $out .= "
-
-               <div id=\"stuff\">
+$out .= "</div> <!-- content -->";
+                  
+$out .= "<div id=\"rightpanel\">
         <div id=\"info\">
+        <h3>Quick help</h3>";
+        
+if ($error) {
+    $out .= "<p>Please go back and correct the wrong or missing parameter(s) or
+                proceed to the optical parameter pages.</p>";
+} else {
+    $out .= "<p>On the left you can see the result of the calculation and the
+                parameters used for it. Please annotate the calculated value
+                and enter it in the image parameter pages. The value <strong>
+                will not</strong> be transferred automatically.</p>
+             <p>You can repeat the calculation with different input values
+                (e.g. for other channels) or proceed to the image parameter
+                pages.</p>";
+}
 
-            <p>
-            On the left you can see the result of the calculation and the parameters used for it. Please annotate the calculated value and enter it in the parameter settings. 
-            </p>
-            <p>You can repeat the calculation with different input values (maybe for other channels) or proceed to the parameter settings form.
-            </p>";
-
-      $out .= "<p><a href=\"".$_SERVER['HTTP_REFERER']."\">Again (for other values)</a> - ";
-      $out .= " <a href='$ref'>Continue</a></p>";
-
-      $out .= "
-       </div>
-
+$out .= "</div>
     </div> <!-- rightpanel -->";
 
-
-      return $out;
+return $out;
 
 } # END calc
 
@@ -574,11 +584,11 @@ include("header.inc.php");
 <div id="nav">
         <ul>
             <li><?php echo $_SESSION['user']->name(); ?></li>
-            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/BackprojectedPinholeCalculator')">help</a></li>
+            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/BackprojectedPinholeCalculator')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
         </ul>
 </div>
 <?php
-echo "<div id=\"content\"> ";
+echo "<div id=\"content\"> <h3>Backprojected pinhole calculator</h3>";
 
 switch($task) {
     case 'calc':

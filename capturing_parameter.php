@@ -102,6 +102,51 @@ $_SESSION['setting']->setAdaptedParameters(False);
 //  	exit();
 //}
 
+// Here we try to figure out whether we have to continue after this page or not.
+// If the user chose to use a measured PSF or if there is a refractive index
+// mismatch, there will be more pages after this. Otherwise, we save the
+// settings to the database and go back to select_parameter_settings.php.
+// Besides the destination page, also the control buttons will need to be
+// adapted.
+
+// First check the selection of the PSF
+$PSF = $_SESSION['setting']->parameter( 'PointSpreadFunction' )->value( );
+if ($PSF == 'measured' ) {
+  $pageToGo = 'select_psf.php';
+  $controlIconToShow = "icon next";
+  $controlTextToShow = "Continue to next page.";
+  $saveParametersToDB = false;
+  // Make sure to turn off the correction
+  $_SESSION['setting']->parameter( 'AberrationCorrectionNecessary' )->setValue( '0' );
+  $_SESSION['setting']->parameter( 'PerformAberrationCorrection' )->setValue( '0' );
+} else {
+  // Get the refractive indices
+  $sampleRI    = $_SESSION['setting']->parameter( 'SampleMedium' )->translatedValue( );
+  $objectiveRI = $_SESSION['setting']->parameter( 'ObjectiveType' )->translatedValue( );              
+
+  // Calculate the deviation
+  $deviation = abs( $sampleRI - $objectiveRI ) / $objectiveRI;
+              
+  // Do we need to go to the aberration correction page? We 
+  if ( $deviation < 0.01 ) {
+    $pageToGo = 'select_parameter_settings.php';
+    $controlIconToShow = "icon save";
+    $controlTextToShow = "Save and return to the image parameters selection page.";
+    $saveParametersToDB = true;
+    // Make sure to turn off the correction
+    $_SESSION['setting']->parameter( 'AberrationCorrectionNecessary' )->setValue( '0' );
+    $_SESSION['setting']->parameter( 'PerformAberrationCorrection' )->setValue( '0' );
+  } else {
+    $pageToGo = 'aberration_correction.php';
+    $controlIconToShow = "icon next";
+    $controlTextToShow = "Continue to next page.";
+    $_SESSION['setting']->parameter( 'AberrationCorrectionNecessary' )->setValue( '1' );
+    $saveParametersToDB = false;
+  }
+}
+
+
+// Process the posted parameters
 if (count($_POST) > 0) {
   foreach ($names as $name) {
     // get rid of non relevant values
@@ -120,46 +165,14 @@ if (count($_POST) > 0) {
   $ok = $_SESSION['setting']->checkCapturingParameter();
   $message = "            <p class=\"warning\">".$_SESSION['setting']->message()."<p>";
   if ($ok) {
-    $saved = $_SESSION['setting']->save();			
-    $message = "            <p class=\"warning\">".$_SESSION['setting']->message()."</p>";
-    if ($saved) {
-
-      // Depending on the selection of the PSF (theoretical) and on a possible
-      // refractive index mismatch (i.e. larger than 1%) between the sample 
-      // medium and the objective medium we might have to show an aberration
-      // correction page. Otherwise, we make sure to turn off the correction
-      // and proceed to the PSF selection page.
-      
-      // First check the selection of the PSF
-      $PSF = $_SESSION['setting']->parameter( 'PointSpreadFunction' )->value( );
-      if ($PSF == 'measured' ) {
-          $pageToGo = 'select_psf.php';
-          // Make sure to turn off the correction
-          $_SESSION['setting']->parameter( 'AberrationCorrectionNecessary' )->setValue( '0' );
-	  $_SESSION['setting']->parameter( 'PerformAberrationCorrection' )->setValue( '0' );
-          $_SESSION['setting']->save();
-      } else {
-        // Get the refractive indices
-        $sampleRI    = $_SESSION['setting']->parameter( 'SampleMedium' )->translatedValue( );
-        $objectiveRI = $_SESSION['setting']->parameter( 'ObjectiveType' )->translatedValue( );              
-
-        // Calculate the deviation
-        $deviation = abs( $sampleRI - $objectiveRI ) / $objectiveRI;
-              
-        // Do we need to go to the aberration correction page? We 
-        if ( $deviation < 0.01 ) {
-          $pageToGo = 'select_parameter_settings.php';
-          // Make sure to turn off the correction
-          $_SESSION['setting']->parameter( 'AberrationCorrectionNecessary' )->setValue( '0' );
-          $_SESSION['setting']->parameter( 'PerformAberrationCorrection' )->setValue( '0' );
-          $_SESSION['setting']->save();
-        } else {
-          $pageToGo = 'aberration_correction.php';
-          $_SESSION['setting']->parameter( 'AberrationCorrectionNecessary' )->setValue( '1' );
-          $_SESSION['setting']->save();
-        }
+    if ( $saveParametersToDB == true ) {
+      $saved = $_SESSION['setting']->save();			
+      $message = "            <p class=\"warning\">".$_SESSION['setting']->message()."</p>";
+      if ($saved) {
+        header("Location: " . $pageToGo ); exit();
       }
-      header("Location: " . $pageToGo ); exit();
+    } else {
+        header("Location: " . $pageToGo ); exit();
     }
   }
 }
@@ -176,8 +189,8 @@ $nyquist = $_SESSION['setting']->calculateNyquistRate();
       Tooltips
     -->
     <span id="ttSpanBack">Go back to previous page.</span>  
-    <span id="ttSpanCancel">Abort editing and go back to the Image parameters selection page.</span>  
-    <span id="ttSpanForward">Continue to next page.</span>
+    <span id="ttSpanCancel">Abort editing and go back to the image parameters selection page. All changes will be lost!</span>  
+    <span id="ttSpanForward"><?php echo $controlTextToShow; ?></span>
 
     <div id="nav">
         <ul>
@@ -319,13 +332,17 @@ if ($_SESSION['setting']->isTimeSeries()) {
            	<legend> 
                 <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=TimeSeries')"><img src="images/help.png" alt="?" /></a>
                 time interval
-                </legend> <p />Time interval (s):
+                </legend>
+            <ul>
+              <li>Time interval (s):
 <?php
 
   $parameter = $_SESSION['setting']->parameter("TimeInterval");
 
 ?>
                 <input name="TimeInterval" type="text" size="5" value="<?php echo $parameter->value() ?>" />
+              </li>
+            </ul>
                 
             </fieldset>
 <?php
@@ -343,9 +360,12 @@ if ($_SESSION['setting']->isMultiPointOrSinglePointConfocal()) {
             
               <legend>
                 <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=PinholeRadius')"><img src="images/help.png" alt="?" /></a>
-                pinhole radius
+                backprojected pinhole radius
 	      </legend>
-		<p />back-projected pinhole radius (nm):
+            <ul>
+                <li>pinhole radius (nm):</li>
+            </ul>
+                
             <?php
               if ( $_SESSION['setting']->numberOfChannels() > 1 ) {
               ?>  <p /> <?php
@@ -385,16 +405,20 @@ if ($_SESSION['setting']->isNipkowDisk()) {
             <fieldset class="setting">
               <legend>            
                 <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=PinholeSpacing')"><img src="images/help.png" alt="?" /></a>
-                pinhole spacing
+                backprojected pinhole spacing
 	      </legend>
- 		<p />backprojected pinhole spacing (micron):
+          <ul>
+                <li>pinhole spacing (micron):
 <?php
 
   $parameter = $_SESSION['setting']->parameter('PinholeSpacing');
 
 ?>
+
                 <input name="PinholeSpacing" type="text" size="5" value="<?php echo $parameter->value() ?>" />
-                <p />
+                </li>
+          </ul>
+          <p />
                 
                 <a href="calculate_bp_pinhole.php?na=<?php echo $na;?>">
                     Backprojected pinhole calculator
@@ -418,7 +442,7 @@ if ($_SESSION['setting']->isNipkowDisk()) {
                   onmouseover="TagToTip('ttSpanCancel' )"
                   onmouseout="UnTip()"
                   onclick="document.location.href='select_parameter_settings.php'" />
-              <input type="submit" value="" class="icon next"
+              <input type="submit" value="" class="<?php echo $controlIconToShow; ?>" 
                   onmouseover="TagToTip('ttSpanForward' )"
                   onmouseout="UnTip()"
                   onclick="process()" />

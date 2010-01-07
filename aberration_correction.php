@@ -98,8 +98,8 @@ include("header.inc.php");
       Tooltips
     -->
     <span id="ttSpanBack">Go back to previous page.</span>  
-    <span id="ttSpanCancel">Abort editing and go back to the Image parameters selection page.</span>  
-    <span id="ttSpanForward">Continue to next page.</span>
+    <span id="ttSpanCancel">Abort editing and go back to the image parameters selection page. All changes will be lost!</span>  
+    <span id="ttSpanForward">Save and return to the image parameters selection page.</span>
 
     <div id="nav">
         <ul>
@@ -367,7 +367,7 @@ $selectedValue  = $parameter->value();
                   onmouseover="TagToTip('ttSpanCancel' )"
                   onmouseout="UnTip()"
                   onclick="document.location.href='select_parameter_settings.php'" />
-        <input type="submit" value="" class="icon next"
+        <input type="submit" value="" class="icon save"
                   onmouseover="TagToTip('ttSpanForward' )"
                   onmouseout="UnTip()"
                   onclick="process()" />

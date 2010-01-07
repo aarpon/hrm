@@ -115,7 +115,7 @@ include("header.inc.php");
       Tooltips
     -->
     <span id="ttSpanBack">Go back to previous page.</span>  
-    <span id="ttSpanCancel">Abort editing and go back to the Image parameters selection page.</span>  
+    <span id="ttSpanCancel">Abort editing and go back to the image parameters selection page. All changes will be lost!</span>  
     <span id="ttSpanForward">Continue to next page.</span>  
     
     <div id="nav">

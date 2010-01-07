@@ -297,8 +297,8 @@ include("header.inc.php");
     <!--
       Tooltips
     -->
-    <span id="ttSpanCancel">Abort editing and go back to the Restoration parameters selection page.</span>  
-    <span id="ttSpanForward">Finish and save your settings.</span>
+    <span id="ttSpanCancel">Abort editing and go back to the Restoration parameters selection page. All changes will be lost!</span>  
+    <span id="ttSpanForward">Save your settings.</span>
     
     <div id="nav">
         <ul>
@@ -385,7 +385,7 @@ else {
 
 ?>
                 <div id="snr">
-
+                      
 <?php
 
 $visibility = " style=\"display: none\"";
@@ -394,6 +394,9 @@ if ($selectedValue == "cmle")
 
 ?>
                     <div id="cmle-snr" class="multichannel"<?php echo $visibility?>>
+                      <ul>
+                        <li>SNR: 
+
 <?php
 
 for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
@@ -419,6 +422,8 @@ for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
 }
 
 ?>
+                        </li>
+                      </ul>
                     </div>
                     
 <?php
@@ -429,7 +434,8 @@ if ($selectedValue == "qmle")
 
 ?>
                     <div id="qmle-snr" class="multichannel"<?php echo $visibility?>>
-
+                      <ul>
+                        <li>SNR: 
 <?php
 
 for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
@@ -475,7 +481,8 @@ for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
 }
 
 ?>
-
+                        </li>
+                      </ul>
                     </div>
                     
                 </div>
@@ -602,7 +609,7 @@ if ($parameter->value() != null) {
                   onmouseover="TagToTip('ttSpanCancel' )"
                   onmouseout="UnTip()"
                   onclick="document.location.href='select_task_settings.php'" />
-              <input type="submit" value="" class="icon next"
+              <input type="submit" value="" class="icon save"
                   onmouseover="TagToTip('ttSpanForward' )"
                   onmouseout="UnTip()"
                   onclick="process()" />
