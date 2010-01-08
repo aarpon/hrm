@@ -125,7 +125,6 @@ include("header.inc.php");
 
     <div id="nav">
         <ul>
-            <li><?php echo $_SESSION['user']->name(); ?></li>
             <li><a href="login.php"><img src="images/exit.png" alt="exit" />&nbsp;Exit</a></li>
             <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpRegistrationPage')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
         </ul>
@@ -201,6 +200,8 @@ if (!$processed) {
 ?>
         <div id="info">
         
+            <h3>Quick help</h3>
+            
             <p>* Required fields.</p>
             
         </div>

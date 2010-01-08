@@ -103,69 +103,87 @@ include("header.inc.php");
         </ul>
     </div>
    
-    <div id="joblist">
+   <div id="content">
+    <h3>Job queue</h3>
+
+    <form method="post" action="" id="jobqueue">
+    <p><input name="update" type="submit" value="" class="icon update"
+        onmouseover="TagToTip('ttRefresh' )"
+        onmouseout="UnTip()" />
+    <?php echo "                    ".date("l d F Y, H:i:s")."\n"; ?></p>
+
+    <ul>
+      
+    <?php
     
-        <div id="queuecontrols">
+        // Get the total number of jobs
+        $db = new DatabaseConnection();
+        $query = "SELECT COUNT(id) FROM job_queue;";
+        $row = $db->Execute( $query )->FetchRow( );
+        $allJobsInQueue = $row[ 0 ];
         
-<?php
+        if ( $allJobsInQueue == 0 ) {
+          echo "<li>There are no jobs in the queue.</li>";
+        } else {
+          if ( $allJobsInQueue == 1 ) {
+            $str = 'is <strong>1 job</strong>';
+          } else {
+            $str = 'are <strong>' .$allJobsInQueue . ' jobs</strong>';
+          }
+          echo "<li>There " . $str . " in the queue.</li>";
 
-$referer = $_SESSION['referer'];
+          if ($_SESSION['user']->name() != "admin")  {
+            $query = "SELECT COUNT(id) FROM job_queue WHERE username = '" . $_SESSION['user']->name( ) . "';";
+            $row = $db->Execute( $query )->FetchRow( );
+            $jobsInQueue = $row[ 0 ];
 
-?>
-
-            <input type="button" name="back" value="" class="icon back"
-              onclick="document.location.href='<?php echo $referer ?>'"
-              onmouseover="TagToTip('ttGoBack' )"
-              onmouseout="UnTip()" />
-        
-        </div>
-        
-        <h3>Job Queue Status</h3>
-        
-        <form method="post" action="" id="jobqueue">
-        
-            <div id="input">
+            if ( $jobsInQueue == 0 ) {
+              $str = '<strong>no jobs</strong>';
+            } elseif ( $jobsInQueue == 1 ) {
+              $str = '<strong>1 job</strong>';
+            } else {
+              $str = '<strong>' .$jobsInQueue . ' jobs</strong>';
+            }
+            echo "<li>You own " . $str . ".</li>";
+          }
+        }
+    ?>
+    </ul>
+   </div>
+   
+   <div id="rightpanel">
+    <div id="info">
+      <h3>Quick help</h3>
+      <?php $referer = $_SESSION['referer']; ?>
+      <input type="button" name="back" value="" class="icon back"
+        onclick="document.location.href='<?php echo $referer ?>'"
+        onmouseover="TagToTip('ttGoBack' )"
+        onmouseout="UnTip()" />
+        <?php
+          if ($_SESSION['user']->name() != "admin")  {
+            echo "<p>You can delete queued jobs owned by yourself.</p>";
+          } else {
+            echo "<p>You can delete any queued jobs.</p>";
+          }
+        ?>
+    </div>
+   </div>
+   
+  <div id="joblist">
+    <div id="queue">
             
-<?php
-
-if ($_SESSION['user']->name() != "admin")  {
-
-?>
-                <p>You can delete queued jobs owned by yourself.</p>
-<?php
-
-}
-
-?>
-
-                <p>
-                    <input name="update" type="submit" value="" class="icon update"
-                      onmouseover="TagToTip('ttRefresh' )"
-                      onmouseout="UnTip()" />
-<?php
-
-echo "                    ".date("l d F Y, H:i:s")."\n";
-
-?>
-                </p>
-                
-            </div> <!-- input -->
-            
-            <div id="queue">
-            
-                <table>
-                
-                    <tr>
-                        <td class="del"></td>
-                        <td class="nr">nr</td>
-                        <td class="owner">owner</td>
-                        <td class="files">file(s)</td>
-                        <td class="created">created</td>
-                        <td class="status">status</td>
-                        <td class="started">started</td>
-                        <td class="pid">pid</td>
-                        <td class="server">server</td>
-                    </tr>
+      <table>
+        <tr>
+          <td class="del"></td>
+          <td class="nr">nr</td>
+          <td class="owner">owner</td>
+          <td class="files">file(s)</td>
+          <td class="created">created</td>
+          <td class="status">status</td>
+          <td class="started">started</td>
+          <td class="pid">pid</td>
+          <td class="server">server</td>
+        </tr>
 <?php
 
 $rows = $queue->getContents();

@@ -359,9 +359,12 @@ input.save {
 }
 
 #joblist {
+    float: left;
     text-align: left;
     margin-left: 10px;
-    padding-right: 25px;
+    margin-right: 10px;
+    width: 98%;
+    margin-top: 20px;
 }
 
 #input input {
@@ -420,13 +423,6 @@ input.save {
 
 #queue input {
     vertical-align: middle;
-}
-
-
-#queuecontrols {
-    float: right;
-    width: 33%;
-    text-align: center;
 }
 
 #listusers {

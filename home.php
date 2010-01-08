@@ -52,7 +52,7 @@
 // knowledge of the CeCILL license and that you accept its terms.
 
 require_once("./inc/User.inc");
-require_once("./inc/Database.inc"); // for account management (email & last_access fields)
+require_once("./inc/Database.inc"); 
 require_once("./inc/CreditOwner.inc");
 require_once("./inc/hrm_config.inc");
 require_once("./inc/Fileserver.inc");
