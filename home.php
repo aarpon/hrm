@@ -112,7 +112,7 @@ include("header.inc.php");
 			  </td>
 			  
 			  <td class="text"><a href="./user_management.php">Manage users</a><br />
-				<p />Here you can view, add, edit and delete users.
+				<p />View, add, edit and delete users.
 			  </td>
 			  
 			  <td class="icon">
@@ -122,7 +122,7 @@ include("header.inc.php");
 			  </td>
 			  
 			  <td class="text"><a href="./job_queue.php">Queue status</a><br />
-				<p />Here you can see and manage all running jobs.
+				<p />See and manage all running jobs.
 			  </td>
 		    
 			</tr>
@@ -136,7 +136,7 @@ include("header.inc.php");
 			  </td>
 			  
 			  <td class="text"><a href="./file_management.php">File manager</a><br />
-			  <p />Here you can upload, download and view your raw and deconvolved data.
+			  <p />Upload, download and view your raw and deconvolved data.
 			  </td>
 			  
 			  <td class="icon">
@@ -146,7 +146,7 @@ include("header.inc.php");
 			  </td>
 			  
 			  <td class="text"><a href="#">Global statistics</a><br />
-				<p />Here you will find a summary of usage statistics for all users.
+				<p />Summary of usage statistics for all users.
 			  </td>
 			  
 		    </tr>
@@ -160,7 +160,7 @@ include("header.inc.php");
 			  </td>
 			  
 			  <td class="text"><a href="./select_parameter_settings.php">Image templates</a><br />
-			  <p />Here you can create templates for the image parameters.
+			  <p />Create templates for the image parameters.
 			  </td>
 			  
 			  <td class="icon">
@@ -170,7 +170,7 @@ include("header.inc.php");
 			  </td>
 			  
 			  <td class="text"><a href="./select_task_settings.php">Restoration templates</a><br />
-				<p />Here you can create templates for the restoration parameters.
+				<p />Create templates for the restoration parameters.
 			  </td>
 			  
 		    </tr>
@@ -184,7 +184,7 @@ include("header.inc.php");
 			  </td>
 			  
 			  <td class="text"><a href="./account.php">Your account</a><br />
-				<p />Here you can view and change your personal data.
+				<p />View and change your personal data.
 			  </td>
 
 			  <td class="icon">
@@ -194,7 +194,7 @@ include("header.inc.php");
 			  </td>
 			  
 			  <td class="text"><a href="./update.php">Database update</a><br />
-				<p />Here you can update the database to the latest version.
+				<p />Update the database to the latest version.
 			  </td>
 			  
 		    </tr>
@@ -220,7 +220,7 @@ include("header.inc.php");
 			  </td>
 			  
 			  <td class="text"><a href="./select_parameter_settings.php">Start a job</a><br />
-				<p />Here you can create and start deconvolution jobs.
+				<p />Create and start deconvolution jobs.
 			  </td>
 			  
 			  <td class="icon">
@@ -244,7 +244,7 @@ include("header.inc.php");
 				}
 			  ?>
 			  <td class="text"><a href="./job_queue.php">Queue status</a><br />
-				<p />Here you will see all running jobs.<br />You have <?php echo $str; ?> in the queue.
+				<p />See all running jobs.<br />You have <?php echo $str; ?> in the queue.
 			  </td>
 		    
 			</tr>
@@ -258,7 +258,7 @@ include("header.inc.php");
 			  </td>
 			  
 			  <td class="text"><a href="./file_management.php">File manager</a><br />
-			  <p />Here you can upload, download and view your raw and deconvolved data.
+			  <p />Upload, download and view your raw and deconvolved data.
 			  </td>
 			  
 			  <td class="icon">
@@ -268,7 +268,7 @@ include("header.inc.php");
 			  </td>
 			  
 			  <td class="text"><a href="#">Your statistics</a><br />
-				<p />Here you will find a summary of your usage statistics.
+				<p />Summary of your usage statistics.
 			  </td>
 			  
 		    </tr>
@@ -282,7 +282,7 @@ include("header.inc.php");
 			  </td>
 			  
 			  <td class="text"><a href="./account.php">Your account</a><br />
-				<p />Here you can view and change your personal data.
+				<p />View and change your personal data.
 			  </td>
 			  
 			  <td class="icon"></td>
