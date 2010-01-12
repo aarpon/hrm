@@ -204,7 +204,7 @@ if ($files == null) {
 }
 
 ?>
-                    <select onclick="javascript:imageAction(this)" name="userfiles[]" size="10" multiple="multiple"<?php echo $flag ?>>
+                    <select onclick="javascript:imageAction(this)" onchange="javascript:imageAction(this)" name="userfiles[]" size="10" multiple="multiple"<?php echo $flag ?>>
 <?php
 $keyArr = array();
 if ($files != null) {
@@ -241,7 +241,7 @@ $flag = "";
 if ($files == null) $flag = " disabled=\"disabled\"";
 
 ?>
-                    <select onclick="javascript:imageAction(this)" name="selectedfiles[]" size="5" multiple="multiple"<?php echo $flag ?>>
+                    <select onclick="javascript:imageAction(this)" onchange="javascript:imageAction(this)" name="selectedfiles[]" size="5" multiple="multiple"<?php echo $flag ?>>
 <?php
 
 if ($files != null) {
