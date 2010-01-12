@@ -263,7 +263,7 @@ if ($files == null) $flag = " disabled=\"disabled\"";
 
 
 ?>
-                    <select onclick="javascript:imageAction(this)" name="userfiles[]" size="10" multiple="multiple"<?php echo $flag ?>>
+                    <select onclick="javascript:imageAction(this)" onchange="javascript:imageAction(this)" name="userfiles[]" size="10" multiple="multiple"<?php echo $flag ?>>
 <?php
 
 if ($files != null) {
