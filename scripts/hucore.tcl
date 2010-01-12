@@ -1,7 +1,7 @@
 # This file is part of huygens remote manager.
 
 # This script contains some procedures that report throught stdout to the HRM
-# about image properties. They may also write thumbnails in the future.
+# about image properties. They also handle image previews.
 
 # ---------------------------------------------------------------------------
 
@@ -118,11 +118,14 @@ proc hrmImgOpen { dir file args } {
 
     if { $matched } {
         puts "Opening image: '$path' -subImage $subimage"
+        set cmd "img open \"$path\" -subImage \"$subimage\" $args"
         if { [ catch {
-            set img [eval img open \"$path\" -subImage \"$subimage\" $args]
+            set img [eval $cmd]
           } res ] } {
             puts "ERROR"
             puts "\"$path\" ($subimage), $res"
+            puts "ERROR"
+            puts "command: $cmd"
             set img -1
         }
     } else {
@@ -171,6 +174,7 @@ proc generateImagePreview {} {
     set dPath [file join $dest $basename ]
     set dest [file dirname $dPath]
 
+
     set src [ hrmImgOpen $src $filename -series $series ]
     if { $src == -1 } {
         return
@@ -188,7 +192,7 @@ proc generateImagePreview {} {
 
     if { $emm != -1 } {
         puts "REPORT"
-        puts "Setting emission lamdas to $emm"
+        puts "Setting emission lambdas to $emm"
         if { [ catch { 
             set i 0
             foreach lambda [split [string trim $emm] ] {
@@ -208,13 +212,19 @@ proc generateImagePreview {} {
         puts "REPORT"
         puts "Processing image: generating MIP and scaling."
         ::WebTools::savePreview $src $dest $filename $sizes $scheme
+        # Make the preview directory writable/readable to all users.
+        if { [ catch { exec chmod 777 $dest } res ] } {
+            puts "ERROR"
+            puts "$res"
+        }
+        catch { exec chmod -R a+w $dest }
     }  res ] } {
         puts "ERROR"
         puts "$res"
     } else {
         puts "OK"
     }
-        
+
 
 }
 
