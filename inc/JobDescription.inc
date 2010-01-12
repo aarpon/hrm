@@ -530,22 +530,22 @@ Class JobDescription {
     set path "'.$dstfilename.".".$fileFormat.'"
     set ddir [file dirname $path]
     set fn [file tail $path]
-    catch { ::WebTools::savePreview c $ddir $fn {preview 400} }
+    catch { ::WebTools::savePreview c $ddir/hrm_previews $fn {preview 400} }
     '."\n";
             if ( $movieMaxSize > 0 ) {
                 $newScript = $newScript . 
-                '    catch {::WebTools::saveStackMovie c $ddir ${fn}.stack '.
+                '    catch {::WebTools::saveStackMovie c $ddir/hrm_previews ${fn}.stack '.
                 $movieMaxSize . '}'.  "\n".
-                '    catch {::WebTools::saveTimeSeriesMovie c $ddir'.
+                '    catch {::WebTools::saveTimeSeriesMovie c $ddir/hrm_previews'.
                 ' ${fn}.tSeries '.$movieMaxSize . '}'.  "\n\n";
             }
             if ( $saveSfpPreviews ) {
                 $newScript = $newScript . 
-                '    catch {::WebTools::saveTopViewSfp c $ddir ${fn}.sfp } '.
+                '    catch {::WebTools::saveTopViewSfp c $ddir/hrm_previews ${fn}.sfp } '.
                  "\n";
                 if ( $movieMaxSize > 0 ) {
                     $newScript = $newScript . 
-                '    catch {::WebTools::saveTimeSeriesMovie c $ddir '
+                '    catch {::WebTools::saveTimeSeriesMovie c $ddir/hrm_previews '
                 . '${fn}.tSeries.sfp - SFP } '.  "\n";
                 }
             }
@@ -560,18 +560,18 @@ Class JobDescription {
     set path "'.$dstfilename.".".$fileFormat.".original".'"
     set ddir [file dirname $path]
     set fn [file tail $path]
-    catch { ::WebTools::savePreview $orig $ddir $fn {preview 400} }'."\n";
+    catch { ::WebTools::savePreview $orig $ddir/hrm_previews $fn {preview 400} }'."\n";
 
             if ( $saveSfpPreviews ) {
                 $newScript = $newScript . 
-                '    catch {::WebTools::saveTopViewSfp $orig $ddir ${fn}.sfp }'.
+                '    catch {::WebTools::saveTopViewSfp $orig $ddir/hrm_previews ${fn}.sfp }'.
                  "\n";
             }
             $newScript = $newScript . '
     # Save preview of the original also in source directory
     set ddir [file dirname $hrmFileName]
     set fn [file tail $hrmFileName]
-    catch { ::WebTools::savePreview $orig $ddir $fn preview }'.
+    catch { ::WebTools::savePreview $orig $ddir/hrm_previews $fn preview }'.
     "\n" ;
             $newScript = $newScript . '    $orig del' . "\n"; 
             $newScript = $newScript . '}'."\n";
@@ -589,7 +589,7 @@ Class JobDescription {
         }
         // Save processing history
         // j-)
-        $newScript = $newScript . "\n" . 'catch { c history -format txt -save "' . $dstfilename. '_history.txt" }' . "\n";
+        $newScript = $newScript . "\n" . 'catch { c history -details -format txt -save "' . $dstfilename. '.history.txt" }' . "\n";
     }
     $this->files = $files;
     return $newScript;
@@ -860,6 +860,10 @@ Class JobDescription {
       $user = $this->owner();
       $newScript = $newScript .   "catch { exec chown -Rf " . $user->name() . ':' . $huygens_group . ' "' . $this->destinationFolderTop() . '"' . " }\n"; 
     } 
+    # Shouldn't we give 666 permissions to the result files, to make sure this
+    # works everywhere? Bad solution in general, but might be the most
+    # practical thing with the current code for a trusted multiuser
+    # environment. /// TODO ///
     $newScript = $newScript . $this->saveImageString( $isOriginal );
     /* TODO This is obsolete code that should be removed! isStepCombinedProcessing( ) always returns false.
     if ($taskSetting->isStepCombinedProcessing()) {
@@ -977,22 +981,22 @@ Class JobDescription {
     set path "'.$imageFileName.".".$extension.'"
     set ddir [file dirname $path]
     set fn [file tail $path]
-    ::WebTools::savePreview c $ddir $fn {preview 400}
+    catch { ::WebTools::savePreview c $ddir/hrm_previews $fn {preview 400} }
     '."\n";
             if ( $movieMaxSize > 0 ) {
                 $newScript = $newScript . 
-                '    catch {::WebTools::saveStackMovie c $ddir ${fn}.stack '.
+                '    catch {::WebTools::saveStackMovie c $ddir/hrm_previews ${fn}.stack '.
                 $movieMaxSize . '}'.  "\n".
-                '    catch {::WebTools::saveTimeSeriesMovie c $ddir'.
+                '    catch {::WebTools::saveTimeSeriesMovie c $ddir/hrm_previews'.
                 ' ${fn}.tSeries '. $movieMaxSize . '}'.  "\n\n";
             }
             if ( $saveSfpPreviews ) {
                 $newScript = $newScript . 
-                '    catch {::WebTools::saveTopViewSfp c $ddir ${fn}.sfp } '.
+                '    catch {::WebTools::saveTopViewSfp c $ddir/hrm_previews ${fn}.sfp } '.
                  "\n";
                 if ( $movieMaxSize > 0 ) {
                     $newScript = $newScript . 
-                '    catch {::WebTools::saveTimeSeriesMovie c $ddir '
+                '    catch {::WebTools::saveTimeSeriesMovie c $ddir/hrm_previews '
                 . '${fn}.tSeries.sfp - SFP } '.  "\n";
                 }
             }
@@ -1007,19 +1011,27 @@ Class JobDescription {
     set path "'.$imageFileName.".".$extension.".original".'"
     set ddir [file dirname $path]
     set fn [file tail $path]
-    ::WebTools::savePreview $orig $ddir $fn {preview 400}'."\n";
+    catch {::WebTools::savePreview $orig $ddir/hrm_previews $fn {preview 400}}'.
+    "\n";
 
             if ( $saveSfpPreviews ) {
                 $newScript = $newScript . 
-                '    catch {::WebTools::saveTopViewSfp $orig $ddir ${fn}.sfp }'.
+                '    catch {::WebTools::saveTopViewSfp $orig $ddir/hrm_previews ${fn}.sfp }'.
                  "\n";
             }
 
+            // We keep doing things assuming a trusted environment,
+            // but real security would require making all directories
+            // accessible to the deamon only, that runs all file
+            // management operation after the apache queries.
+            // By now, grant 777 permissions to the previews subdir.
             $newScript = $newScript . '
     # Save preview of the original also in source directory
-    set ddir [file dirname $hrmFileName]
+    set sdir [file dirname $hrmFileName]
     set fn [file tail $hrmFileName]
-    ::WebTools::savePreview $orig $ddir $fn {preview}'.
+    catch { ::WebTools::savePreview $orig $sdir/hrm_previews $fn {preview} }
+    catch { exec chmod -R a+w "$sdir/hrm_previews" }
+    catch { exec chmod -R a+w "$ddir/hrm_previews" }'.
     "\n" ;
             $newScript = $newScript . '    $orig del' . "\n"; 
             $newScript = $newScript . '}'."\n";
@@ -1030,13 +1042,17 @@ Class JobDescription {
 
     }
     // Save processing history
-    // $result = $result . "\n" . 'c history -format txt -save "' . $imageFileName. '_history.txt"';
+    $result = $result . "\n" . 'c history -details -format txt -save "' . $imageFileName. '.history.txt"';
     $result = $result . "\n";
     if ($resultImagesOwnedByUser) {
       $user = $this->owner();
       $username = $user->name();
       $result = $result . 'set modfiles [glob -nocomplain ' . '"' . $this->destinationFolder() . '*' . $this->sourceImageShortName() . '*' . '"]' . "\n";
       $result = $result . 'foreach modfile $modfiles { catch { exec chown ' . "$username " . '$modfile } }' . "\n";
+      $result = $result .
+             'catch { exec chown -R '.$username.' "$ddir/hrm_previews" }'."\n";
+      $result = $result .
+             'catch { exec chown -R '.$username.' "$sdir/hrm_previews" }'."\n";
     }
     return $result;
   } 

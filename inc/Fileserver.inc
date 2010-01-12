@@ -302,10 +302,13 @@ Class Fileserver {
 
       foreach ($files as $file) {
           $path = preg_replace("/(.*)\.(.{3,4})/","\"\\1\".*",$file);
-          if (! $packExcludePath) {
+          $preview_path = dirname($file)."/hrm_previews/".
+                  preg_replace("/(.*)\.(.{3,4})/","\"\\1\".*",$file);
+          if (! $packExcludePath ) {
               $path = $this->destinationFolder()."/".$path;
+              $preview_path = $this->destinationFolder()."/".$preview_path;
           }
-          $command .= " ".$path;
+          $command .= " ".$path." ".$preview_path;
       }
 
       $answer = exec($command , $output, $result);
@@ -348,10 +351,21 @@ Class Fileserver {
       }
 
       foreach ($files as $file) {
-          $path = preg_replace("/(.*)\.(.{3,4})/","\\1.*",$file);
-          $allFiles = glob($pdir."/".$path);
+          // Delete all files name like this one, with all different extensions.
+          $dirname = dirname($pdir."/".$file);
+          $basename = basename($pdir."/".$file);
+          $path = preg_replace("/(.*)\.(.{3,4})/","\\1.*",
+                  $dirname."/".$basename);
+          $allFiles = glob($path);
           foreach ($allFiles as $f) {
-             unlink($f);
+              unlink($f);
+          }
+          // Clean also the subdirectory hrm_previews
+          $path = preg_replace("/(.*)\.(.{3,4})/","\\1.*",
+                  $dirname."/hrm_previews/".$basename);
+          $allFiles = glob($path);
+          foreach ($allFiles as $f) {
+              unlink($f);
           }
       }
   }
@@ -591,8 +605,8 @@ Class Fileserver {
               case "VALUE":
                   if ($cur && $param) {
                       $i ++;
-                      # This is always an array even if $len == 1, because in
-                      # other images this could be a multichannel parameter.
+                      // This is always an array even if $len == 1, because in
+                      // other images this could be a multichannel parameter.
                       $tree[$cur][$param][] = $answer[$i];
                   }
                   break;
@@ -692,7 +706,7 @@ Class Fileserver {
   //!---------------------------------------------------------
   // @function    Fileserver::imgPreview
   // @desc        Generates a link to retreive an image thumbnail,
-  //              which is a jpg file saved along with the file itself.
+  //              which is a jpg file saved near the file itself.
   // @return      A <img src> link to securely get the thumbnail.
   //!---------------------------------------------------------    
   function imgPreview ($image, $dir, $type = "preview_xy", $escape = true ) {
@@ -704,17 +718,19 @@ Class Fileserver {
           $pdir =  $this->destinationFolder();
       }
 
- 
-      # The thumbnail is saved along with the image, and it has a suffix
-      # indicating the thumbnail type plus the jpg extension.
-      $path = $pdir."/".$image.".".$type.".jpg";
+      $dirname = dirname($pdir."/".$image);
+      $base = basename($pdir."/".$image);
+
+      // The thumbnail is saved in a subdirectory along with the image, and it
+      // has a suffix indicating the thumbnail type plus the jpg extension.
+      $path = $dirname."/hrm_previews/".$base.".".$type.".jpg";
       $thumb = rawurlencode($image.".".$type.".jpg");
       if (file_exists($path)) {
           $ret =  "<img src=\"file_management.php?getThumbnail=$thumb&amp;".
-              "dir=$dir\" alt=\"Preview\" />";
+              "dir=$dir\" alt=\"$image preview\" />";
       } else {
            $imgsrc = "<img src=\"images/no_preview.jpg\" alt=\"No preview\" />";
-           # $ret = "<p><center>No preview available.</center></p>";
+           // $ret = "<p><center>No preview available.</center></p>";
            $ret .= "$imgsrc<br />No preview available";
       }
 
@@ -739,14 +755,25 @@ Class Fileserver {
           $pdir =  $this->destinationFolder();
       }
 
-      # The thumbnail is saved along with the image, and it has a suffix
-      # indicating the thumbnail type plus the jpg extension.
-      $path = $pdir."/".$image.".".$type."_xy.jpg";
+      $dir = dirname($pdir."/".$image);
+      $base = basename($pdir."/".$image);
+      // The thumbnail is saved in a subdirectory along with the image, and it
+      // has a suffix indicating the thumbnail type plus the jpg extension.
+      $path = $dir."/hrm_previews/".$base.".".$type."_xy.jpg";
+
+      # $path2 = $dir."/hrm_previews/".$base.".".$type."_xz.jpg";
+      # unlink($path);
+      # unlink($path2);
+      # echo "Deleting $path2";
+      # rmdir($dir."/hrm_previews/");
+      # echo "Deleting dir";
+
+
       $ret = 0;
       if (file_exists($path)) {
           // 2D preview
           $ret = 2;
-          $path2 = $pdir."/".$image.".".$type."_xz.jpg";
+          $path2 = $dir."/hrm_previews/".$base.".".$type."_xz.jpg";
           if (file_exists($path2)) {
           // 3D preview
               $ret = 3;
@@ -769,24 +796,29 @@ Class Fileserver {
   function imgCompareMode ($image, $dir, $type) {
       global $genThumbnails;
 
+
       if ( $dir == "src" ) {
           // Only images in the destination directory, after deconvolution, can
           // be compared with the originals.
           return 0;
 
       }
-      $pdir =  $this->destinationFolder();
 
-      # The thumbnail is saved along with the image, and it has a suffix
-      # indicating the thumbnail type plus the jpg extension.
-      $path = $pdir."/".$image.".".$type."_xy.jpg";
-      $opath = $pdir."/".$image.".original.".$type."_xy.jpg";
+      $pdest =  $this->destinationFolder();
+
+      $pdir = dirname($pdest."/".$image);
+      $basename = basename($pdest."/".$image);
+
+      // The thumbnail is saved along with the image, and it has a suffix
+      // indicating the thumbnail type plus the jpg extension.
+      $path = $pdir."/hrm_previews/".$basename.".".$type."_xy.jpg";
+      $opath = $pdir."/hrm_previews/".$basename.".original.".$type."_xy.jpg";
       $ret = 0;
       if (file_exists($path) && file_exists($opath) ) {
           // 2D preview
           $ret = 2;
-          $path2 = $pdir."/".$image.".".$type."_xz.jpg";
-          $opath2 = $pdir."/".$image.".original.".$type."_xz.jpg";
+          $path2 = $pdir."/hrm_previews/".$basename.".".$type."_xz.jpg";
+          $opath2 = $pdir."/hrm_previews/".$basename.".original.".$type."_xz.jpg";
           if (file_exists($path2) && file_exists($opath2) ) {
           // 3D preview
               $ret = 3;
@@ -842,12 +874,12 @@ Class Fileserver {
       $rsfp = rawurlencode($file.".sfp.jpg");
 
       if ( $mode == "MIP" ) {
-          $altPath = $pdest."/".$file.".sfp.jpg";
+          $altPath = $pdest."/hrm_previews/".$file.".sfp.jpg";
       } else {
-          $altPath = $pdest."/".$file.".".$size."_xy.jpg";
+          $altPath = $pdest."/hrm_previews/".$file.".".$size."_xy.jpg";
       }
 
-      # YZ slices not shown by now, but here they are:
+      // YZ slices not shown by now, but here they are:
       $othumb_2 = rawurlencode($file.".original.".$size."_xy.jpg");
       $rthumb_2 = rawurlencode($file.".".$size."_xy.jpg");
 
@@ -872,10 +904,10 @@ Class Fileserver {
 
       $othumb_1 = rawurlencode($file.".original.".$size."_xz.jpg");
       $rthumb_1 = $file.".".$size."_xz.jpg";
-      $path = $pdest."/".$rthumb_1;
+      $path = $pdest."/hrm_previews/".$rthumb_1;
       $rthumb_1 = rawurlencode($rthumb_1);
       if ($mode == "MIP" && file_exists($path)) {
-          # is a 3D image, so it has a lateral view.
+          // is a 3D image, so it has a lateral view.
           echo "\n<tr>";
           echo "\n<td><img src=\"file_management.php?getThumbnail=$othumb_1".
               "&amp;dir=dest\" alt=\"Original preview XZ\" /></td>";
@@ -896,16 +928,16 @@ Class Fileserver {
 
 
 
-      $mpath =  $pdest."/".$file.".stack.avi";
+      $mpath =  $pdest."/hrm_previews/".$file.".stack.avi";
       if ($mode == "MIP" && file_exists($mpath)) {
           $mSize = round(filesize($mpath) / 1024.0);
           echo "\n<br /><small><a href=\"file_management.php?getMovie=".rawurlencode($file.".stack.avi")."\" >Download stack preview video ($mSize kB) </a></small>\n";
       }
       if ( $mode == "MIP" ) {
-          $tspath =  $pdest."/".$file.".tSeries.avi";
+          $tspath =  $pdest."/hrm_previews/".$file.".tSeries.avi";
           $vname = $file.".tSeries.avi";
       } else {
-          $tspath =  $pdest."/".$file.".tSeries.sfp.avi";
+          $tspath =  $pdest."/hrm_previews/".$file.".tSeries.sfp.avi";
           $vname = $file.".tSeries.sfp.avi";
       }
       if (file_exists($tspath)) {
@@ -940,7 +972,7 @@ Class Fileserver {
              break;
       }
       echo "</div>\n";
-      # echo "<script type=\"text/javascript\"> window.close(); <script>\n";
+      // echo "<script type=\"text/javascript\"> window.close(); <script>\n";
       echo "</body></html>";
       ob_flush();
       flush();
@@ -977,8 +1009,12 @@ Class Fileserver {
           $pdest =  $this->destinationFolder();
       }
 
-      # echo "$file, $src, $dest, $sizes<br />";
-      # flush;
+      $psrc = dirname($psrc."/".$file);
+      $basename = basename($pdest."/".$file);
+      $pdest = dirname($pdest."/".$file)."/hrm_previews";
+
+      // echo "$file, $src, $dest, $sizes<br />";
+      // flush;
 
       $extra = "";
       $series = "auto";
@@ -999,7 +1035,7 @@ Class Fileserver {
           $z_s = $z->value() / 1000.0;
           $extra = " -emission $lmbV -sampling \"$xy_s $xy_s $z_s\"";
 
-          # Enable the -series off option depending on the file type.
+          // Enable the -series off option depending on the file type.
           if (stristr($file, ".stk")) {
               $geom = $_SESSION['setting']->parameter("ImageGeometry");
               $geometry = $geom->value();
@@ -1016,7 +1052,7 @@ Class Fileserver {
 
       }
 
-      $opt = "-filename \"$file\" -src \"$psrc\" -dest \"$pdest\" ".
+      $opt = "-filename \"$basename\" -src \"$psrc\" -dest \"$pdest\" ".
              "-scheme auto -sizes \{$sizes\} -series $series $extra";
 
       $answer = huCoreTools( "generateImagePreview", $opt);
@@ -1059,7 +1095,7 @@ Class Fileserver {
       ob_flush();
       flush();
 
-      $path = $pdest."/".$file.".preview_xy.jpg";
+      $path = $pdest."/".$basename.".preview_xy.jpg";
       if ($ok && ! file_exists($path)) {
           $ok = false;
           $html .= "$path does not exist.<br />";
@@ -1110,7 +1146,9 @@ Class Fileserver {
       } else {
           $pdir =  $this->destinationFolder();
       }
-      $path = $pdir."/".$file;
+      $dir = dirname($pdir."/".$file);
+      $base = basename($pdir."/".$file);
+      $path = $dir."/hrm_previews/".$base;
       if (!file_exists($path)) {
           $path = "images/no_preview.jpg";
       }
@@ -1132,7 +1170,7 @@ Class Fileserver {
           $pdir =  $this->destinationFolder();
       }
 
-      $path = $pdir."/".$file;
+      $path = $pdir."/hrm_previews/".$file;
       if (!file_exists($path)) {
           $path = "images/no_preview.jpg";
           Header("Content-Type: image/jpeg");
@@ -1321,6 +1359,42 @@ Class Fileserver {
     } 
   }
   //!---------------------------------------------------------
+  // @function    Fileserver::relocateOldPreview
+  // @desc        Since HRM 1.2, thumbnails and previews
+  //              are located in a subdirectory hrm_previews.
+  //              When and old preview is found in the way, we
+  //              can use this function to move it to the new location. This
+  //              code is mostly harmless, but we can remove it after a
+  //              couple of releases.
+  // @param       dir  Path to the old preview file's directory;
+  // @param       entry File name;
+  // @return      Void
+  //!---------------------------------------------------------  
+ 
+  function relocateOldPreview($dir, $entry) {
+      if (strstr($entry, ".jpg") || strstr($entry, ".avi")) {
+          // Relocate old HRM previews to the new subdirectory.
+          // Since HRM 1.2, previews are all stored in a subdirectory
+          // 'hrm_previews', but old images may remain along with
+          // previous results.
+          if (!file_exists($dir."/hrm_previews")) {
+              // We keep doing things assuming a trusted environment,
+              // but real security would require making all directories
+              // accessible to the deamon only, that runs all file
+              // management operation after the apache queries.
+              // By now, grant 777 permissions.
+              @mkdir($dir."/hrm_previews", 0777);
+              // The creation mask doesn't seem to work correctly, chmod
+              // now:
+              @chmod($dir."/hrm_previews", 0777);
+          }
+          # echo "mv $dir/$entry -> $dir/hrm_previews/$entry <br>";
+          @rename ($dir."/".$entry, $dir."/hrm_previews/".$entry);
+          @chmod($dir."/hrm_previews/".$entry, 0666);
+      }
+  }
+
+  //!---------------------------------------------------------
   // @function    Fileserver::getFilesFrom
   // @desc        The recursive function that collects the 
   //              image files from the user's image folder and
@@ -1333,7 +1407,7 @@ Class Fileserver {
   function getFilesFrom($startDir, $prefix) {
     $dir = dir($startDir);
     while ($entry = $dir->read()) { 
-      if ($entry != "." && $entry != "..") { 
+      if ($entry != "." && $entry != ".." && $entry != "hrm_previews") { 
 	if (is_dir($startDir . "/" . $entry)) { 
 	  $newDir = $startDir . "/" . $entry;
 	  if ($prefix=="") { 
@@ -1343,8 +1417,13 @@ Class Fileserver {
 	  } 
 	  $this->getFilesFrom($newDir, $newPrefix);
 	} else {
-	  if (!$this->isImage($entry)) continue;
-      //echo $entry,$prefix,",";
+            if (!$this->isValidImage($entry)) {
+                $this->relocateOldPreview($startDir, $entry);
+                continue;
+            }
+            // Skip also if the image is not of the currently selected type.
+            if (!$this->isImage($entry)) continue;
+            //echo $entry,$prefix,",";
 	  if ($prefix=="") { 
 	    $this->files[] = $entry;
 	  } else { 
@@ -1368,7 +1447,7 @@ Class Fileserver {
   function getDestFilesFrom($startDir, $prefix) {
     $dir = dir($startDir);
     while ($entry = $dir->read()) { 
-      if ($entry != "." && $entry != "..") { 
+      if ($entry != "." && $entry != ".." && $entry != "hrm_previews") { 
 	if (is_dir($startDir . "/" . $entry)) { 
 	  $newDir = $startDir . "/" . $entry;
 	  if ($prefix=="") { 
@@ -1377,17 +1456,18 @@ Class Fileserver {
 	    $newPrefix = $prefix . "/" . $entry;
 	  } 
 	  $this->getDestFilesFrom($newDir, $newPrefix);
-	} else {
-	  if (!$this->isValidImage($entry)) {
-          continue;
-      }
-      //echo $entry,$prefix,",";
-	  if ($prefix=="") { 
-	    $this->destFiles[] = $entry;
-	  } else { 
-	    $this->destFiles[] = $prefix . "/" . $entry;
-	  } 
-	}
+        } else {
+            if (!$this->isValidImage($entry)) {
+                $this->relocateOldPreview($startDir, $entry);
+                continue;
+            }
+      # echo $entry,$prefix," VALID,";
+            if ($prefix=="") { 
+                $this->destFiles[] = $entry;
+            } else { 
+                $this->destFiles[] = $prefix . "/" . $entry;
+            } 
+        }
       }
     }
     $dir->close();
