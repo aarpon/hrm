@@ -187,6 +187,13 @@ foreach($values as $value) {
   if (stristr($value, "tiff")) {
     continue;
   }
+  if (stristr($value, "hdf5")) {
+    $version = getHucoreVersionAsInteger( $enable_code_for_huygens );
+    // HDF5 is supported only from Huygens 3.5.0
+    if ( $version < 3050000 ) {
+      continue;
+    }
+  }
   $translation = $_SESSION['setting']->translation("ImageFileFormat", $value);
   $event = " onclick=\"javascript:release()\"";
   if ($value == "lsm-single" || $value == "tiff-single") {

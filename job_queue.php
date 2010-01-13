@@ -110,7 +110,7 @@ include("header.inc.php");
     <p><input name="update" type="submit" value="" class="icon update"
         onmouseover="TagToTip('ttRefresh' )"
         onmouseout="UnTip()" />
-    <?php echo "                    ".date("l d F Y, H:i:s")."\n"; ?></p>
+    <?php echo "                    ".date("l d. F Y, H:i:s")."\n"; ?></p>
 
     <ul>
       

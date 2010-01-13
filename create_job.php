@@ -161,7 +161,14 @@ if ( $numberOfChannels > 1 ) {
   $possibleValues = array_diff($possibleValues, array( 'TIFF 16-bit' ) );
   $possibleValues = array_values( $possibleValues );
 }
-  
+
+// If the version if hucore is < 3.5.0, we remove SVI HDF5
+$version = getHucoreVersionAsInteger( $enable_code_for_huygens );
+if ( $version < 3050000 ) {
+  $possibleValues = array_diff($possibleValues, array( 'SVI HDF5' ) );
+  $possibleValues = array_values( $possibleValues );
+}
+
 if (!isset($_SESSION['first_visit'])) { // if 'first visit' is not set, set the OutputFileFormat as ICS
   $parameter->setValue("ICS (Image Cytometry Standard)");
   $_SESSION['first_visit'] = False;

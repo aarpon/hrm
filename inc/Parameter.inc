@@ -1753,7 +1753,10 @@ Class OutputFileFormat extends ChoiceParameter {
 			case "ome":
 				return "ome";
 			case "ics":
+			case "ics2":
 				return "ics";
+			case "hdf5":
+				return "h5";
 			default:
 				return "";
 		}

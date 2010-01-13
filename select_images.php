@@ -107,8 +107,11 @@ else if (isset($_POST['OK'])) {
 $script = "settings.js";
 
 // display only relevant files
-if ($fileFormat->value() == "ics") {
+if ($fileFormat->value() == "ics" || $fileFormat->value() == "ics2" ) {
     $files = $_SESSION['fileserver']->files("ics");
+}
+else if ($fileFormat->value() == "hdf5" ) {
+  $files = $_SESSION['fileserver']->files("h5");
 }
 else if ($fileFormat->value() == "tiff" || $fileFormat->value() == "tiff-single") {
   $files = $_SESSION['fileserver']->tiffFiles();

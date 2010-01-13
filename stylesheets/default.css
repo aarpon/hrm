@@ -685,22 +685,6 @@ input.restart {
     background: url(../images/restart.png) no-repeat center;
 }
 
-input.oversampled {
-    background-color: #ADDFFF; /* This was lightblue */
-}
-
-input.optimal {
-    background-color: #41A317; /* This was limegreen */
-}
-
-input.valid {
-    background-color: #FF8040; /* This was orange */
-}
-
-input.invalid {
-    background-color: #FF0000; /* This was orangered */
-}
-
 input.noPreview {
     width: 200px;
     height: 200px;
