@@ -497,8 +497,14 @@ input.save {
 }
 
 #homepage table td.text {
+    vertical-align: top;
     text-align: left;
     width: 50%;
+}
+
+#homepage .cell {
+    position:relative;
+    top: 25px;
 }
 
 #homepage table a:link {
@@ -798,3 +804,6 @@ option.default {
 .disabled {
     background: gray;
 }
+
+
+

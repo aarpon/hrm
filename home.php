@@ -111,8 +111,10 @@ include("header.inc.php");
 				</a>
 			  </td>
 			  
-			  <td class="text"><a href="./user_management.php">Manage users</a><br />
-				<p />View, add, edit and delete users.
+			  <td class="text"><div class="cell">
+                          <a href="./user_management.php">Manage users</a><br />
+                               <p />View, add, edit and delete users.
+                          </div>
 			  </td>
 			  
 			  <td class="icon">
@@ -121,8 +123,10 @@ include("header.inc.php");
 				</a>
 			  </td>
 			  
-			  <td class="text"><a href="./job_queue.php">Queue status</a><br />
+			  <td class="text"><div class="cell">
+                          <a href="./job_queue.php">Queue status</a><br />
 				<p />See and manage all running jobs.
+                          </div>
 			  </td>
 		    
 			</tr>
@@ -135,8 +139,10 @@ include("header.inc.php");
 				</a>
 			  </td>
 			  
-			  <td class="text"><a href="./file_management.php">File manager</a><br />
+			  <td class="text"><div class="cell">
+                          <a href="./file_management.php">File manager</a><br />
 			  <p />Upload, download and view your raw and deconvolved data.
+                          </div>
 			  </td>
 			  
 			  <td class="icon">
@@ -145,8 +151,10 @@ include("header.inc.php");
 				</a>
 			  </td>
 			  
-			  <td class="text"><a href="#">Global statistics</a><br />
+			  <td class="text"><div class="cell">
+                          <a href="#">Global statistics</a><br />
 				<p />Summary of usage statistics for all users.
+                                </div>
 			  </td>
 			  
 		    </tr>
@@ -159,8 +167,10 @@ include("header.inc.php");
 				</a>
 			  </td>
 			  
-			  <td class="text"><a href="./select_parameter_settings.php">Image templates</a><br />
+			  <td class="text"><div class="cell">
+                          <a href="./select_parameter_settings.php">Image templates</a><br />
 			  <p />Create templates for the image parameters.
+                          </div>
 			  </td>
 			  
 			  <td class="icon">
@@ -169,8 +179,10 @@ include("header.inc.php");
 				</a>
 			  </td>
 			  
-			  <td class="text"><a href="./select_task_settings.php">Restoration templates</a><br />
+			  <td class="text"><div class="cell">
+                          <a href="./select_task_settings.php">Restoration templates</a><br />
 				<p />Create templates for the restoration parameters.
+                                </div>
 			  </td>
 			  
 		    </tr>
@@ -183,8 +195,10 @@ include("header.inc.php");
 				</a>
 			  </td>
 			  
-			  <td class="text"><a href="./account.php">Your account</a><br />
+			  <td class="text"><div class="cell">
+                          <a href="./account.php">Your account</a><br />
 				<p />View and change your personal data.
+                                </div>
 			  </td>
 
 			  <td class="icon">
@@ -193,8 +207,10 @@ include("header.inc.php");
 				</a>
 			  </td>
 			  
-			  <td class="text"><a href="./update.php">Database update</a><br />
+			  <td class="text"><div class="cell">
+                          <a href="./update.php">Database update</a><br />
 				<p />Update the database to the latest version.
+                                </div>
 			  </td>
 			  
 		    </tr>
@@ -219,8 +235,10 @@ include("header.inc.php");
 				</a>
 			  </td>
 			  
-			  <td class="text"><a href="./select_parameter_settings.php">Start a job</a><br />
+			  <td class="text"><div class="cell">
+                          <a href="./select_parameter_settings.php">Start a job</a><br />
 				<p />Create and start deconvolution jobs.
+                              </div>
 			  </td>
 			  
 			  <td class="icon">
@@ -243,8 +261,11 @@ include("header.inc.php");
 				  $str = '<strong>' .$jobsInQueue . ' jobs</strong>';
 				}
 			  ?>
-			  <td class="text"><a href="./job_queue.php">Queue status</a><br />
-				<p />See all running jobs.<br />You have <?php echo $str; ?> in the queue.
+			  <td class="text"><div class="cell">
+                          <a href="./job_queue.php">Queue status</a><br />
+				<p />See all running jobs.<br />
+                                You have <?php echo $str; ?> in the queue.
+                                </div>
 			  </td>
 		    
 			</tr>
@@ -257,8 +278,10 @@ include("header.inc.php");
 				</a>
 			  </td>
 			  
-			  <td class="text"><a href="./file_management.php">File manager</a><br />
+			  <td class="text"><div class="cell">
+                          <a href="./file_management.php">File manager</a><br />
 			  <p />Upload, download and view your raw and deconvolved data.
+                          </div>
 			  </td>
 			  
 			  <td class="icon">
@@ -267,8 +290,10 @@ include("header.inc.php");
 				</a>
 			  </td>
 			  
-			  <td class="text"><a href="#">Your statistics</a><br />
+			  <td class="text"><div class="cell">
+                          <a href="#">Your statistics</a><br />
 				<p />Summary of your usage statistics.
+                            </div>
 			  </td>
 			  
 		    </tr>
@@ -281,8 +306,10 @@ include("header.inc.php");
 				</a>
 			  </td>
 			  
-			  <td class="text"><a href="./account.php">Your account</a><br />
+			  <td class="text"><div class="cell">
+                          <a href="./account.php">Your account</a><br />
 				<p />View and change your personal data.
+                            </div>
 			  </td>
 			  
 			  <td class="icon"></td>
