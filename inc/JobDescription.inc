@@ -55,7 +55,8 @@ require_once("Database.inc");
 require_once("User.inc");
 require_once("Shell.inc");
 require_once("hrm_config.inc");
-
+require_once("Job.inc");
+require_once("JobQueue.inc");
 
 //!---------------------------------------------------------
 // @class    JobDescription
@@ -129,8 +130,62 @@ Class JobDescription {
   function setGroup($group) {
     $this->group = $group;
   }
+  function addJob() {
+    // =========================================================================
+    //
+    // In previous versions of the HRM, the web interface would create compound
+    // jobs that the queue manager would then process. Now, this task has become
+    // responsibility of the web interface. Moreover, a few changes have been
+    // introduced:
+    //
+    // - Jobs with multiple file selection are 'processed' right-away, without
+    //   even generating any compound jobs;
+    // - Jobs with parameter ranges are treated as compound jobs as before
+    // - Jobs with multiple files and with parameter ranges are decomposed first
+    //
+    //      In a future HRM release, compound jobs should be removed completely!
+    //
+    // =========================================================================
+
+    $result = True;
+        
+    // createJob() function was originally called directly
+    $result = $result && $this->createJob();
+
+    if ( $result ) {
+      
+      // Only compound jobs due to parameter ranges still need to be processed
+      // here
+      $this->processCompoundJobs( );
+    
+      // Assign priorities
+      $db = new DatabaseConnection();
+      $result = $db->setJobPriorities();
+      if ( !$result ) {
+        error_log( "Could not set job priorities!" );
+      }
+    }
+    
+    return $result;
+  }
+     
   function createJob() {
     global $use_accounting_system;
+    $result = True;
+    $files = $this->files( );
+    for ( $i = 0; $i < count( $files ); $i++ ) {
+      // Create a job with univocal ID for current file
+      $this->id = (string)(uniqid(''));  // New ID
+      $this->setFiles( array( $files[ $i ] ) );   // Only current file 
+      $result = $this->createSingleFileJob( );
+    }
+    return $result;
+  }
+  
+  // This function create individual jobs for multiple files right-away,
+  // thereby bypassing the creation of multi-file compound jobs.
+  // Compound jobs generated from parameter ranges are still processed as usual.
+  function createSingleFileJob( ) {
     $result = True;
     $jobParameterSetting = new JobParameterSetting();
     $jobParameterSetting->setOwner($this->owner);
@@ -154,6 +209,16 @@ Class JobDescription {
     } 
     return $result;
   }
+  
+  function processCompoundJobs() {
+    $queue = new JobQueue();
+    $compoundJobs = $queue->getCompoundJobs();
+    foreach ($compoundJobs as $jobDescription) {
+      $job = new Job($jobDescription);
+      $job->createSubJobsOrScript();
+	}
+  }
+  
   function load() {
   	global $use_accounting_system;
     $db = new DatabaseConnection();
@@ -1198,181 +1263,3 @@ Class JobDescription {
     return $result;    
   } 
 } 
-
-
-Class JobQueue {
-  function JobQueue() {
-    
-  } 
-  
-  function timestampNowString() {
-    $db = new DatabaseConnection();
-    $date = $db->now();
-    $ms = microtime();
-    $ms = explode(" ", $ms);
-    $ms = $ms[0];
-    return $date . "." . substr($ms,2); 
-  } 
-  
-  function availableServer() {
-    $db = new DatabaseConnection();
-    $result = $db->availableServer();
-    return $result;
-  } 
-
-  function getContents() {
-    $db = new DatabaseConnection();
-    $rows = $db->getQueueContents();    
-    return $rows;
-  } 
-
-  function getJobFilesFor($id) {
-    $db = new DatabaseConnection();
-    $files = $db->getJobFilesFor($id);    
-    return $files;    
-  } 
-
-  function queueJob($jobDescription) {
-    $owner = $jobDescription->owner;
-    $ownerName = $owner->name();
-    $db = new DatabaseConnection();
-    $result = $db->queueJob($jobDescription->id(), $ownerName);
-    return $result;
-  } 
-
-  function startJob($job) {
-    $db = new DatabaseConnection();
-    $pid = $job->pid();
-    $result = $db->reserveServer($job->server(), $pid); 
-    $result = $result && $db->startJob($job);
-    return $result;
-   }
-
-  function getNextJobDescription() {
-    $db = new DatabaseConnection();
-    $id = $db->getNextIdFromQueue();
-    if ($id == NULL) {
-      return NULL;
-    } 
-    $jobDescription = new JobDescription;
-    $jobDescription->setId($id);
-    $jobDescription->load();
-    return $jobDescription;
-  }
-
-  function getCompoundJobs() {
-    $db = new DatabaseConnection();
-    $jobDescriptions = array();
-    $rows = $db->getQueueContents();
-    foreach ($rows as $row) {
-      $jobDescription = new JobDescription;
-      $jobDescription->setId($row['id']);
-      $jobDescription->load();
-      if ($jobDescription->isCompound()) {
-	$jobDescriptions[] = $jobDescription; 
-      }  
-    } 
-    return $jobDescriptions;
-  } 
-
-  function removeJob($jobDescription) {
-    $id = $jobDescription->id();
-    $result = $this->removeJobWithId($id);
-    return $result;
-  } 
-
-  function markJobsAsRemoved($ids) {  
-    $result = True;
-    if (count($ids)==0) return $result;
-    $db = new DatabaseConnection();
-    foreach($ids as $id) {  // loop through all the jobs selected, which have to be deleted
-      $row = $db->getQueueContentsForId($id);
-      if ($row['status'] == 'started') {  // if the job is started, kill the process and update the databese (job_queue and server)  
-        $pid = $row['process_info'];
-        $server = $row['server'];
-        $proc = $this->newExternalProcess($server, $server . "_out.txt", $server . "_error.txt");
-        $proc->killHucoreProcess($pid);
-        $result = $result && $db->markJobAsRemoved($id);
-        $result = $result && $db->markServerAsFree($server);
-      }
-      else {  // if the job is not started, update the database (job_queue)
-        $result = $result && $db->markJobAsRemoved($id);   
-      }
-    } 
-    return $result;
-  }
-  
-  function newExternalProcess($host, $logfilename, $errfilename) {
-	global $imageProcessingIsOnQueueManager;
-	$db = new DatabaseConnection();
-	$huscript_path = $db->huscriptPathOn($host);
-	if ($imageProcessingIsOnQueueManager)
-		$shell = new LocalExternalProcess($host, $huscript_path, $logfilename, $errfilename);
-	else
-		$shell = new ExternalProcess($host, $huscript_path, $logfilename, $errfilename);
-	return $shell;
-  } 
-
-  function removeMarkedJobs() {
-    $db = new DatabaseConnection();
-    $ids = $db->getMarkedJobIds();
-    foreach ($ids as $id) {
-      $this->removeJobWithId($id);
-    }
-    if ($ids != null && count($ids) > 0)
-      return True;
-    return False;
-  } 
-
-  function removeJobWithId($id) {
-  	global $use_accounting_system;
-    $result = True;
-    $db = new DatabaseConnection();
-    $tables = array('job_queue', 'job_files', 'job_parameter', 'job_parameter_setting', 'job_task_parameter', 'job_task_setting');
-    $columns = array('id', 'job', 'setting', 'name', 'setting', 'name');
-     if ($use_accounting_system) {
-      $tables[] = 'job_accounting_data';
-      $columns[] = 'id'; 
-    } 
-    $result = $result && $db->deleteFromTablesWhereColumnEquals($tables, $columns, $id);
-    return $result; 
-  } 
-  
-  function stopJob($job) {
-    $db = new DatabaseConnection();
-    $db->resetServer($job->server(), $job->pid());
-    $this->removeJob($job->description());
-    return $this->timestampNowString();
-  } 
-
-  function runningJobs() {
-    $db = new DatabaseConnection();
-    $jobs = $db->getRunningJobs();
-    return $jobs;
-  }
-
-  function startTime($job) {
-    $db = new DatabaseConnection();
-    $date = $db->startTimeOf($job);    
-    return $date;
-  }
-  
-  function pauseJob($jobDescription) {
-    $db = new DatabaseConnection();
-    $result = $db->pauseJob($jobDescription->id());
-    return $result;
-  } 
-
-  function restartPausedJobs() {
-    $db = new DatabaseConnection();
-    $result = $db->restartPausedJobs();
-    return $result;    
-  }
-  
-  function isServerBusy($name) {
-    $db = new DatabaseConnection();
-    $result = $db->isServerBusy($name);
-    return $result;
-  }  
-} 
-?>

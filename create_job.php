@@ -91,7 +91,7 @@ if (isset($_POST['create'])) {
 	 	$job->setCredit($_SESSION['credit']);
 		$job->setGroup($_SESSION['group']);
 	}
-    if ($job->createJob()) {
+    if ($job->addJob()) {
       $_SESSION['jobcreated'] = True;
       header("Location: " . "home.php");
       exit();

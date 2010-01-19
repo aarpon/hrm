@@ -53,6 +53,7 @@
 
 require_once("./inc/User.inc");
 require_once("./inc/JobDescription.inc");
+require_once("./inc/JobQueue.inc");
 
 session_start();
 

@@ -496,8 +496,109 @@ Class DatabaseConnection {
   function queueJob($id, $username) {   
     $query = "insert into job_queue (id, username, queued, status) values ('" .$id . "', '" . $username . "', NOW(), 'queued')";
     return $this->execute($query);
-  } 
-  
+  }
+
+  function setJobPriorities( ) {
+
+    $result = True;
+
+    ////////////////////////////////////////////////////////////////////////////
+    //
+    // First we analyze the queue
+    //
+    ////////////////////////////////////////////////////////////////////////////
+
+    // Get the number of users that currently have jobs in the queue
+    $users    = $this->execute( "SELECT DISTINCT( username ) FROM job_queue;" );
+    $row      = $this->execute( "SELECT COUNT( DISTINCT( username ) ) FROM job_queue;" )->FetchRow( );
+    $numUsers = $row[ 0 ];
+
+    // 'Highest' priority (i.e. lowest value) is 0
+    $currentPriority = 0;
+
+    // First, we make sure to give the highest priorities to paused and
+    // broken jobs
+    $rs = $this->execute( "SELECT id FROM job_queue WHERE status = 'broken' OR status = 'paused';" );
+    if ( $rs ) {
+      while ( $row = $rs->FetchRow( ) ) {
+        
+        // Update the priority for current job id
+        $query = "UPDATE job_queue SET priority = " . $currentPriority++ .
+        " WHERE id = '" . $row[ 0 ] . "';";
+        
+        $rs = $this->execute( $query );
+        if ( !$rs ) {
+          error_log( "Could not update priority for key " . $row[ 0 ] );
+          $result = False;
+          return $result;
+        }
+        
+      }
+    }
+    
+    // Then, we go through to running jobs
+    $rs = $this->execute( "SELECT id FROM job_queue WHERE status = 'started';" );
+    if ( $rs ) {
+      while ( $row = $rs->FetchRow( ) ) {
+        
+        // Update the priority for current job id
+        $query = "UPDATE job_queue SET priority = " . $currentPriority++ .
+        " WHERE id = '" . $row[ 0 ] . "';";
+      
+        $rs = $this->execute( $query );
+        if ( !$rs ) {
+          error_log( "Could not update priority for key " . $row[ 0 ] );
+          $result = False;
+          return $result;
+        }
+      }
+    }
+    
+    // Then we organize the queued jobs in a way that lets us then assign
+    // priorities easily in a second pass
+    $numJobsPerUser = array( );
+    $userJobs = array( );
+    for ( $i = 0; $i < $numUsers; $i++ ) {
+      // Get current username
+      $row = $users->FetchRow( );
+      $username = $row[ 0 ];
+      $rs = $this->execute( "SELECT id FROM job_queue WHERE username = '" . $username . "' AND status = 'queued' ORDER by queued ASC;" );
+      if ( $rs ) {
+        $userJobs[ $i ] = array( );
+        $counter = 0;
+        while ( $row = $rs->FetchRow( ) ) {
+          $userJobs[ $i ][ $counter++ ] = $row[ 0 ];
+        }
+        $numJobsPerUser[ $i ] = $counter;
+      }
+    }
+ 
+    // Now we can assign priorities to the queued jobs -- minimum priority is 1
+    // above the priorities assigned to all other types of jobs
+    $maxNumJobs = max( $numJobsPerUser );
+    for ( $j = 0; $j < $maxNumJobs; $j++ ) {
+      for ( $i = 0; $i < $numUsers; $i++ ) {
+        if ( $j < count( $userJobs[ $i ] ) ) {
+          // Update the priority for current job id
+          $query = "UPDATE job_queue SET priority = " .
+          $currentPriority ." WHERE id = '" .
+          $userJobs[ $i ][ $j ] . "';";
+          
+          $rs = $this->execute( $query );
+          if ( !$rs ) {
+            error_log( "Could not update priority for key " . $userJobs[ $i ][ $j ] );
+            $result = False;
+            return $result;
+          }
+          $currentPriority++;
+    	}
+      }
+    }
+    
+    // We can now return true
+    return $result;
+  }
+
   function flatten($anArray) {
     $result = array();
     foreach ($anArray as $row) {
@@ -639,16 +740,16 @@ Class DatabaseConnection {
   }
 
   function getNextIdFromQueue() { 
-    $query = "SELECT id FROM job_queue WHERE status='queued' order by queued desc";
+    $query = "SELECT id FROM job_queue WHERE status='queued' order by priority desc, status desc";
     $result = $this->queryLastValue($query);
     if (!$result) {
       return NULL;
     } 
     return $result;
-  } 
+  }
 
   function getQueueContents() {
-    $query = "select id, username, queued, start, server, process_info, status from job_queue order by queued, status desc";
+    $query = "select id, username, queued, start, server, process_info, status from job_queue order by priority asc, queued asc, status asc";
     $result = $this->query($query);
     return $result;
   }
