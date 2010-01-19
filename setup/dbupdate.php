@@ -437,13 +437,14 @@ $datadict = NewDataDictionary($db);   // Build a data dictionary
 $databases = $db->MetaDatabases();
 if (!in_array($db_name, $databases)) {
     $createDb = $datadict->CreateDatabase($db_name);
-    if(!$datadict->ExecuteSQLArray($createDb)) {
+    $ret = $datadict->ExecuteSQLArray($createDb);
+    if(!$ret) {
         $msg = "An error occurred in the creation of the HRM database.";
         write_message($msg);
         write_to_error($msg);
         return;
     }
-    $msg = "The database has been created.\n";
+    $msg = "Executed database creation query.\n";
     write_message($msg);
     write_to_log($msg);
 }
@@ -452,7 +453,9 @@ if (!in_array($db_name, $databases)) {
 $dsn = $db_type."://".$db_user.":".$db_password."@".$db_host."/".$db_name;
 $db = ADONewConnection($dsn);
 if(!$db) {
-    $msg = "Cannot connect to the database.";
+    $msg = "Cannot connect to the database, probably creation failed.\n".
+    "Please check that database user '$db_user' exists\n".
+    "and has privileges to administrate databases.";
     write_message($msg);
     write_to_error($msg);
     return;
