@@ -40,8 +40,15 @@ $huygens_group = "huygens";
 $local_huygens_core = "/usr/local/bin/hucore";
 
 // The HRM needs to know the version of the hucore executable on the
-// computation server to make sure that only supported functionalities
-// can be accessed.
+// computation and web servers to make sure that only supported functionalities
+// can be accessed. You can find your Huygens version number by running Huygens
+// Essential or Pro and going to Help > About, or by launching hucore from a
+// shell: then the version number is inmediately reported in a line like:
+//
+// "Huygens Core 3.5.0p1 initializing Compute Engine 3.5.0p1..."
+//
+// At least the first three numbers are required, the patch level is optional:
+
 $enable_code_for_huygens = "3.3.2";
 
 //==============================================================================
@@ -167,6 +174,11 @@ $resultImagesRenamed = true;
 // are maximum intensity projections (MIP) of the stacks along the main axes,
 // so they provide xy, xz and zy views.
 $useThumbnails = true;
+
+// Moreover, if $useThumbnails is true and Huygens 3.5.1 or higher is
+// installed (see $enable_code_for_huygens above), the Signal To Noise ratio
+// can be estimated visually from raw images, in the restoration parameters
+// editor.
 
 // If true, allows on-demand generation of a preview of the original images in
 // this web server prior to the deconvolution. For this to work the variable

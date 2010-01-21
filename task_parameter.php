@@ -299,6 +299,9 @@ include("header.inc.php");
     -->
     <span id="ttSpanCancel">Abort editing and go back to the Restoration parameters selection page. All changes will be lost!</span>  
     <span id="ttSpanForward">Save your settings.</span>
+    <?php if ($estimateSNR) { ?>
+    <span id="ttEstimateSnr">Use a sample raw image to find a SNR estimate for each channel.</span>
+    <?php } ?>
     
     <div id="nav">
         <ul>
@@ -394,7 +397,7 @@ if ($selectedValue == "cmle")
 
 ?>
                     <div id="cmle-snr" class="multichannel"<?php echo $visibility?>>
-                      <ul>
+                     <ul>
                         <li>SNR: 
 
 <?php
@@ -424,6 +427,17 @@ for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
 ?>
                         </li>
                       </ul>
+                    <?php
+                    if ($estimateSNR) {
+                        echo "<a href=\"estimate_snr_from_image.php\"
+                            onmouseover=\"TagToTip('ttEstimateSnr' )\"
+                            onmouseout=\"UnTip()\"
+                        >";
+                        echo "Estimate from image</a>";
+                    }
+
+                    ?>
+ 
                     </div>
                     
 <?php

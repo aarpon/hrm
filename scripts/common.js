@@ -57,9 +57,11 @@ function deleteImages() {
     control = document.getElementById('selection').innerHTML;
     changeDiv('selection', 'Selected files will be deleted, please confirm:'
        + '<br />'
-       + '<input name="delete" type="submit" value="" class="icon delete"/>'
-       + ' <img src="images/cancel.png" onclick="cancelSelection()" '
-       +        'alt="cancel">');
+       + '<input name="delete" type="submit" value="" class="icon delete" '
+       +     'onmouseover="Tip(\'Confirm deletion\')" onmouseout="UnTip()"/>'
+       + ' <img src="images/cancel.png" onclick="UnTip(); cancelSelection()" '
+       +        'alt="cancel" '
+       +        'onmouseover="Tip(\'Cancel\')" onmouseout="UnTip()"/>');
 
 }
 
@@ -69,9 +71,11 @@ function downloadImages() {
     changeDiv('selection', 'Selected files will be packed for downloading '
        +  '(that may take a while). Please confirm and wait:' 
        + '<br /><input name="download" type="submit" value="" '
-       + 'class="icon download"/>'
+       + 'class="icon download" '
+       +     'onmouseover="Tip(\'Confirm download\')" onmouseout="UnTip()"/>'
        + ' <img src="images/cancel.png" onclick="cancelSelection()" '
-       +           'alt="cancel">');
+       +           'alt="cancel" '
+       +        'onmouseover="Tip(\'Cancel\')" onmouseout="UnTip()"/>');
 
 }
 
@@ -182,7 +186,6 @@ function imgPrev(infile, mode, gen, compare, index, dir, referer, data) {
                   + '</a>'
                   + html ;
     }
-
 
 
     changeDiv('info', html);

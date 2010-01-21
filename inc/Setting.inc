@@ -1019,8 +1019,8 @@ Class ParameterSetting extends Setting {
 
             $opt = "-micr $micr -na $na -em $em -ex $ex -pcnt $pcnt -ril $ril";
             $ideal = askHuCore ("calculateNyquistRate", $opt);
-            // echo "NYQUIST: $ideal";
-            return explode(' ', $ideal);
+            // print_r($ideal);
+            return array( $ideal['xy'], $ideal['z'] );
         }
 
 	// sample size adaption for all microscopes

@@ -165,10 +165,6 @@ if (isset($_GET['compareResult'])) {
 }
 
 
-if (isset($_POST['update'])) {
-    $_SESSION['fileserver']->updateAvailableDestFiles();
-}
-
 if ($allowHttpTransfer) {
     $message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
     if (isset($_POST['download'])) {
@@ -193,60 +189,28 @@ if (isset($_POST['delete'])) {
     exit;
 }
 
-$files = $_SESSION['fileserver']->destFiles();
+# $browse_folder can be 'src' or 'dest'.
+$browse_folder = "dest";
+# Number of displayed files.
+$size = 10;
+$multiple_files = true;
+$page_title = "File management";
+$form_title = "available restored images on server";
+// To (re)generate the thumbnails, don't use template data, as it is not present
+// here.
+$useTemplateData = 0;
 
-if ($files != null) {
-
-    $generatedScript = "
-function imageAction (list) {
-    var n = list.selectedIndex;     // Which menu item is selected
-    var val = list[n].value;
-
-    switch ( val )
-    {
-";
-
-    foreach ($files as $key => $file) {
-        $generatedScript .= "
-        case \"$file\" :
-            ". $_SESSION['fileserver']->getImageAction($file,
-                $key, "dest", "preview", 1, 0). "
-            break;
-            ";
-    }
-
-
-    $generatedScript .= "
-    }
-}
-";
-}
-
-include("header.inc.php");
-
-?>
-
-    <div id="nav">
-        <ul>
-            <li><?php echo $_SESSION['user']->name(); ?></li>
-            <li><a href="<?php echo getThisPageName();?>?home=home"><img src="images/home.png" alt="home" />&nbsp;Home</a></li>
-            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpFileManagement')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
+$top_navigation = '
+            <ul>
+            <li>'.$_SESSION['user']->name().'</li>
+            <li><a href="'.getThisPageName().'?home=home"><img src="images/home.png" alt="home" />&nbsp;Home</a></li>
+            <li><a href="javascript:openWindow(\'http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpFileManagement\')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
         </ul>
-    </div>
-    
-    <div id="content">
-    
-        <h3>File Management</h3>
-        
-        <form method="post" action="" id="select">
-        
-            <fieldset>
-                <legend>available restored images on server</legend>
-                <div id="userfiles">
-<?php
+ ';
 
-$instructions =
-            "<p>This is a list of the images in your destination directory.</p>
+if ($allowHttpTransfer) {
+    $info = "<h3>Quick help</h3>
+            <p>This is a list of the images in your destination directory.</p>
             <p>Click on a file to see (or create) a preview.</p>
             <p>Select the files you want to download (you can <b>SHIFT-</b> and
             <b>CTRL-click</b> for multiple selection) and press the
@@ -255,70 +219,22 @@ $instructions =
             <b>long time </b>to be packaged before downloading.)</p>
             <p> Use the <b>delete</b> icon to delete the selected files
             instead.</p>";
-
-
-// display only relevant files
-$flag = "";
-if ($files == null) $flag = " disabled=\"disabled\"";
-
-
-?>
-                    <select onclick="javascript:imageAction(this)" onchange="javascript:imageAction(this)" name="userfiles[]" size="10" multiple="multiple"<?php echo $flag ?>>
-<?php
-
-if ($files != null) {
-  foreach ($files as $key => $file) {
-      echo $_SESSION['fileserver']->getImageOptionLine($file,
-                                       $key, "dest", "preview", 1, 0);
-  }
 }
-else echo "                        <option>&nbsp;</option>\n";
 
-?>
-                    </select>
-                </div>
-            </fieldset>
-            
-    <div id="selection">
-    <?php if ($allowHttpTransfer) { ?>
-                <img src="images/download.png" onclick="downloadImages()" alt="Download" />
-                <?php } ?>
-            <img src="images/delete.png" onclick="deleteImages()" alt="Delete" />
-            </div>
-           
-            <div id="actions" class="imageselection">
-                <input name="update" type="submit" value="" class="icon update" />
-                <input name="ref" type="hidden" value="<?php echo $_SESSION['referer']; ?>" />
-                <input name="OK" type="hidden" />
-            </div>
-            
-        </form>
-        
-    </div> <!-- content -->
-  
-    <div id="rightpanel">
+$file_buttons = array();
+if ($allowHttpTransfer) {
+    $file_buttons[] = "download";
+}
+$file_buttons[] = "delete";
+$file_buttons[] = "update";
 
-        <div id="info">
-          
-          <h3>Quick help</h3>
-            
-<?php if ($allowHttpTransfer) { 
-    echo $instructions;
-            } ?>
-            
-        </div>
-        
-        <div id="message">
-<?php
+$control_buttons = '
+<input name="ref" type="hidden" value="<?php echo $_SESSION[\'referer\']; ?>" />
+<input name="OK" type="hidden" /> 
+';
 
-echo $message;
 
-?>
-        </div>
-        
-    </div> <!-- rightpanel -->
-    
-<?php
+include("./inc/FileBrowser.inc");
 
 include("footer.inc.php");
 

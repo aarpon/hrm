@@ -5,6 +5,47 @@
 
 # ---------------------------------------------------------------------------
 
+# Check and retrieve input variables
+proc getInputVariables { varList } {
+    set error 0
+    foreach var $varList {
+        set value [Hu_getOpt -$var]
+        if { $value == -1 } {
+            reportError "Wrong arguments, -$var is missing."
+            set error 1
+        } else {
+            if { [ catch { uplevel set $var \"$value\" } err ] } {
+                reportError "ERR $err<br>$var \"$value\"<br>"
+            }
+            puts "$var $value"
+        }
+    }
+
+    return $error
+}
+
+
+# Return a key - value pair to the HRM code, to construct an array up there.
+proc reportKeyValue {key value} {
+
+    puts "KEY"
+    puts "$key"
+    puts "VALUE"
+    puts "$value"
+}
+
+proc reportError {msg} {
+    puts "ERROR"
+    puts $msg
+}
+
+proc reportMsg {msg} {
+    puts "REPORT"
+    puts $msg
+}
+
+
+
 # Auxiliary procedure isMultiImgFile.
 # Return 1 if the image is of a type that supports sub-images. Currently, only
 # LIF.
@@ -32,8 +73,7 @@ proc reportSubImages {} {
     set dir [Hu_getOpt -dir]
 
     if { $imgCount == -1 || $dir == -1 } {
-        puts "ERROR"
-        puts "Wrong arguments.\
+        reportError "Wrong arguments.\
             Use indexed options -img_# to pass the image list to hucore.\
             The number of images must be passed with option -count.\
             The directory that contains them must be passed with -dir."
@@ -45,8 +85,7 @@ proc reportSubImages {} {
         set image [Hu_getOpt -img_$i]
 
         if { $image == -1 } {
-            puts "ERROR"
-            puts "Wrong arguments.\
+            reportError "Wrong arguments.\
                 The number of images must be passed with option -count.\
                 The indexed arguments to pass the image list run from 0 to\
                 (count - 1)."
@@ -61,8 +100,7 @@ proc reportSubImages {} {
         puts "$path"
 
         if { ![file exists $path] } {
-            puts "ERROR"
-            puts "Unexisting image '$image'. "
+            reportError "Unexisting image '$image'. "
             continue
         }
 
@@ -73,8 +111,7 @@ proc reportSubImages {} {
             set error [ catch { \
                 img preOpen $path } contents]
             if { $error } {
-                puts "ERROR"
-                puts "Can't find subimages for $image: $contents"
+                reportError "Can't find subimages for $image: $contents"
             } else {
                 set ver [versionAsInteger]
                 if { $ver >= 3030300 } {
@@ -122,10 +159,8 @@ proc hrmImgOpen { dir file args } {
         if { [ catch {
             set img [eval $cmd]
           } res ] } {
-            puts "ERROR"
-            puts "\"$path\" ($subimage), $res"
-            puts "ERROR"
-            puts "command: $cmd"
+            reportError "\"$path\" ($subimage), $res"
+            reportError "command: $cmd"
             set img -1
         }
     } else {
@@ -133,8 +168,7 @@ proc hrmImgOpen { dir file args } {
         if { [ catch {
             set img [eval img open \"$path\" $args] } res ]
           } {
-            puts "ERROR"
-            puts "\"$path\" $res"
+            reportError "\"$path\" $res"
             set img -1
         }
     }
@@ -146,20 +180,12 @@ proc hrmImgOpen { dir file args } {
 proc generateImagePreview {} {
 
     if { [info proc ::WebTools::savePreview] == "" } {
-        puts "ERROR"
-        puts "This tool requires Huygens Core 3.3.1 or higher"
+        reportError "This tool requires Huygens Core 3.3.1 or higher"
         return
     }
 
-    foreach var {src dest filename sizes scheme series} {
-        set $var [Hu_getOpt -$var]
-        if { [set $var] == -1 } {
-            puts "ERROR"
-            puts "Wrong arguments, -$var is missing."
-        } else {
-            puts "$var [set $var]"
-        }
-    }
+    set error [ getInputVariables {src dest filename sizes scheme series} ]
+    if { $error } { exit 1 }
 
     set emm [ Hu_getOpt -emission ]
     set s [ Hu_getOpt -sampling ]
@@ -181,18 +207,15 @@ proc generateImagePreview {} {
     }
 
     if { $s != -1 } {
-        puts "REPORT"
-        puts "Setting voxel size $s"
+        reportMsg "Setting voxel size $s"
         if { [ catch { eval $src setp -s {$s} } err ] } {
-            puts "ERROR"
-            puts "Problems setting sampling $s: $err"
+            reportError "Problems setting sampling $s: $err"
             return
         }
     }
 
     if { $emm != -1 } {
-        puts "REPORT"
-        puts "Setting emission lambdas to $emm"
+        reportMsg "Setting emission lambdas to $emm"
         if { [ catch { 
             set i 0
             foreach lambda [split [string trim $emm] ] {
@@ -201,26 +224,22 @@ proc generateImagePreview {} {
             }
             
         } err ] } {
-            puts "ERROR"
-            puts "Problems setting wavelengths $emm: $err"
+            reportError "Problems setting wavelengths $emm: $err"
             return
         }
     }
     set channels [$src getdims -mode ch]
 
     if { [ catch {
-        puts "REPORT"
-        puts "Processing image: generating MIP and scaling."
+        reportMsg "Processing image: generating MIP and scaling."
         ::WebTools::savePreview $src $dest $filename $sizes $scheme
         # Make the preview directory writable/readable to all users.
         if { [ catch { exec chmod 777 $dest } res ] } {
-            puts "ERROR"
-            puts "$res"
+            reportError "$res"
         }
         catch { exec chmod -R a+w $dest }
     }  res ] } {
-        puts "ERROR"
-        puts "$res"
+        reportError "$res"
     } else {
         puts "OK"
     }
@@ -230,19 +249,9 @@ proc generateImagePreview {} {
 
 proc calculateNyquistRate {} {
 
-    set error 0
-    foreach var {micr na ex em pcnt ril} {
-        set $var [Hu_getOpt -$var]
-        if { [set $var] == -1 } {
-            puts "ERROR"
-            puts "Wrong arguments, -$var is missing."
-            set error 1
-        } else {
-            puts "$var [set $var]"
-        }
-    }
-
+    set error [ getInputVariables {micr na ex em pcnt ril} ]
     if { $error } { exit 1 }
+
     a setp -na $na -ex $ex -em $em -pcnt $pcnt -ril $ril \
         -micr $micr -s {1 1 1}
 
@@ -251,8 +260,8 @@ proc calculateNyquistRate {} {
     set sampxy [expr int( 1000 * [lindex $nrate 0] ) ]
     set sampz [expr int( 1000 * [lindex $nrate 2] ) ]
 
-    puts "calculateNyquistRate RETURN"
-    puts "$sampxy $sampz"
+    reportKeyValue "xy" $sampxy
+    reportKeyValue "z" $sampz
 }
 
 proc versionAsInteger { } {
@@ -264,8 +273,7 @@ proc versionAsInteger { } {
               ceMajor ceMinor1 ceMinor2 cePatch ]
 
     if { !$matched } {
-        puts "ERROR"
-        puts "Can't parse version number '$version'"
+        reportError "Can't parse version number '$version'"
         exit 1
     } else {
         set verInteger [expr $ceMajor * 1000000  + $ceMinor1 * 10000 \
@@ -280,8 +288,10 @@ proc versionAsInteger { } {
 proc reportVersionNumberAsInteger { } {
 
     set verInteger [ versionAsInteger ]
-
-    puts "reportVersionNumberAsInteger RETURN"
+    
+    puts "KEY"
+    puts "version"
+    puts "VALUE"
     puts "$verInteger"
 
 }
@@ -292,8 +302,7 @@ proc getMetaData { } {
     set dir [Hu_getOpt -dir]
 
     if { $imgCount == -1 || $dir == -1 } {
-        puts "ERROR"
-        puts "Wrong arguments.\
+        reportError "Wrong arguments.\
             Use indexed options -img_# to pass the image list to hucore.\
             The number of images must be passed with option -count.\
             The directory that contains them must be passed with -dir."
@@ -305,8 +314,7 @@ proc getMetaData { } {
         set image [Hu_getOpt -img_$i]
 
         if { $image == -1 } {
-            puts "ERROR"
-            puts "Wrong arguments.\
+            reportError "Wrong arguments.\
                 The number of images must be passed with option -count.\
                 The indexed arguments to pass the image list run from 0 to\
                 (count - 1)."
@@ -321,8 +329,7 @@ proc getMetaData { } {
         puts "$path"
 
         if { ![file exists $path] } {
-            puts "ERROR"
-            puts "Unexisting image '$image'. "
+            reportError "Unexisting image '$image'. "
             continue
         }
 
@@ -332,8 +339,7 @@ proc getMetaData { } {
         puts "END COMMENTS"
 
         if { $error } {
-            puts "ERROR"
-            puts "Can't find metadata for $image: $metaData"
+            reportError "Can't find metadata for $image: $metaData"
         } else {
             puts "PARAMETERS"
             puts "COUNT"
@@ -353,6 +359,92 @@ proc getMetaData { } {
     }
 }
 
+proc estimateSnrFromImage {} {
+
+    if { [info proc ::WebTools::estimateSnrFromImage] == "" } {
+        reportError "This tool requires Huygens Core 3.5.1 or higher"
+        return
+    }
+
+    # Mandatory arguments:
+
+    set error [ getInputVariables {basename src series dest returnImages} ]
+    if { $error } { exit 1 }
+
+    # Optional arguments:
+
+    set emm [ Hu_getOpt -emission ]
+    set s [ Hu_getOpt -sampling ]
+
+    # Opening images
+
+    set srcImg [ hrmImgOpen $src $basename -series $series ]
+
+    if { $s != -1 } {
+        reportMsg "Setting voxel size $s"
+        if { [ catch { eval $srcImg setp -s {$s} } err ] } {
+            reportError "Problems setting sampling $s: $err"
+            return
+        }
+    }
+
+    if { $emm != -1 } {
+        reportMsg "Setting emission lambdas to $emm"
+        if { [ catch { 
+            set i 0
+            foreach lambda [split [string trim $emm] ] {
+                $srcImg setp -chan $i -em $lambda
+                incr i
+            }
+            
+        } err ] } {
+            reportError "Problems setting wavelengths $emm: $err"
+            return
+        }
+    }
+
+
+    set result [ ::WebTools::estimateSnrFromImage $srcImg $dest \
+                 "snr_estimation_" jpeg 2 auto \
+                 returnImages $returnImages bg auto estimationSize 100 ]
+
+    # Report image name
+    reportKeyValue imageName [file join $src $basename]
+    reportKeyValue simulationDir $dest
+
+    # Report number of channels
+    reportKeyValue channelCnt [expr [llength $result] / 2]
+
+    # Per channel...
+    foreach {ch data} $result {
+        array set chArr $data
+
+        # Report estimated parameters
+        foreach key {estSNR estClipFactor estBG} {
+            reportKeyValue ${ch},$key $chArr($key)
+        }
+
+        # Report list of generated images
+        set simulationList {}
+        set simulationImages {}
+        set simulationZoom {}
+        foreach {snr img} $chArr(imageList) {
+            lappend simulationList $snr
+            lappend simulationImages "${img}.jpg"
+        }
+        foreach {snr img} $chArr(zoomList) {
+            lappend simulationZoom "${img}.jpg"
+        }
+
+        reportKeyValue ${ch},simulationList $simulationList
+        reportKeyValue ${ch},simulationImages $simulationImages
+        reportKeyValue ${ch},simulationZoom $simulationZoom
+    }
+
+}
+
+
+
 
 # ----------------   MAIN routine -----------------
 # Execute selected procedure
@@ -370,8 +462,7 @@ if { $tool == -1 } {
 puts "BEGIN PROC"
 puts "$tool"
 if { [ catch { eval $tool} errMsg ] } {
-    puts "ERROR"
-    puts "Problems running tool '$tool' in $huTcl: $errMsg"
+    reportError "Problems running tool '$tool' in $huTcl: $errMsg, $errorInfo"
 }
 puts "END PROC"
 exit 0

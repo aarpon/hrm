@@ -240,7 +240,7 @@ function huCoreTools ($tool, $options) {
             $ret = array_slice($output, $begin);
             return $ret;
         }
-    } 
+    }
     $more = 0;
     echo "<pre>ERROR with $cmd\n";
     if ($result != 0) {
@@ -264,13 +264,13 @@ function huCoreTools ($tool, $options) {
 
 //!---------------------------------------------------------
 // @function    askHuCore  
-// @desc        A wrapper around huCoreTools to retrieve a particular string,
+// @desc        A wrapper around huCoreTools to retrieve an array,
 //              which is 'calculated' by hucore in the background.
 // @param       $tool is the procedure in scripts/hucore.tcl to be executed.
 //              $options are extra command line options to send to that script
-//              $param is the KEYWORD that identifies the string we want in the
+//              $param is the KEYWORD that identifies the array we want in the
 //              hucore output.
-// @return      The requested string.
+// @return      The requested array.
 //!---------------------------------------------------------
 function askHuCore ($tool, $options = "", $keyword = "") {
 
@@ -287,6 +287,8 @@ function askHuCore ($tool, $options = "", $keyword = "") {
       $msg = "";
       $ret = "";
       $sep = "";
+      $retArr = array();
+      $array_key = NULL;
 
       $ok = true;
       for ($i = 0; $i < $lines; $i++ ) {
@@ -295,25 +297,36 @@ function askHuCore ($tool, $options = "", $keyword = "") {
           switch ($key) {
               case "ERROR":
                   $i ++;
+                  $retArr['error'][] = $answer[$i];
                   $msg .= $answer[$i]."<br>";
                   $ok = false;
                   break;
               case "REPORT":
                   $i ++;
+                  $retArr['report'][] = $answer[$i];
                   echo $answer[$i]."\n";
                   ob_flush();
                   flush();
-              case $keyword :
+                  break;
+              case "KEY":
                   $i ++;
-                  $ret .= $sep.$answer[$i];
-                  $sep = " ";
+                  $array_key = $answer[$i];
+                  break;
+              case "VALUE":
+                  if ($array_key) {
+                      $i ++;
+                      $retArr[$array_key] = $answer[$i];
+                  }
+                  break;
               default :
                   break;
 
           }
       }
 
-      return $msg.$ret;
+      if ( $msg != "" ) { echo $msg; }
+
+      return $retArr;
 }
 
 

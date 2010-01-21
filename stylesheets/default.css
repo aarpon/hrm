@@ -230,6 +230,10 @@ table {
     width: 50%;
 }
 
+#selection input {
+    vertical-align: middle;
+}
+
 #settings select {
     width: 100%;
 }
