@@ -10,6 +10,7 @@ else
 
 require_once ("Util.inc");
 
+$version = 0;
 // Overrule options that do not apply.
 if (isset ($enable_code_for_huygens) ) {
     $version = getHucoreVersionAsInteger( $enable_code_for_huygens );
@@ -23,7 +24,7 @@ if (isset ($enable_code_for_huygens) ) {
 
 // Huygens 3.5.1 contains tools to estimate the SNR from an image.
 $estimateSNR = false;
-if ( $useThumbnails && $version >= 3050100 ) {
+if ( $useThumbnails && $genThumbnails && $version >= 3050100 ) {
     $estimateSNR = true;
 }
 

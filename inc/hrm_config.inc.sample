@@ -175,11 +175,6 @@ $resultImagesRenamed = true;
 // so they provide xy, xz and zy views.
 $useThumbnails = true;
 
-// Moreover, if $useThumbnails is true and Huygens 3.5.1 or higher is
-// installed (see $enable_code_for_huygens above), the Signal To Noise ratio
-// can be estimated visually from raw images, in the restoration parameters
-// editor.
-
 // If true, allows on-demand generation of a preview of the original images in
 // this web server prior to the deconvolution. For this to work the variable
 // $local_huygens_core must be set correctly above. Notice that not all file
@@ -188,6 +183,11 @@ $useThumbnails = true;
 // be generated during the deconvolution itself with the previous option.
 // This requires $useThumbnails = true;
 $genThumbnails = true;
+
+// Moreover, if $genThumbnails is true and Huygens 3.5.1 or higher is
+// installed (see $enable_code_for_huygens above), the Signal To Noise ratio
+// can be estimated visually from raw images, in the restoration parameters
+// editor.
 
 // If larger than zero, generates an AVI movie for 3D stacks that allows
 // browsing along the XY slices, and for time series to browse along MIPs in
