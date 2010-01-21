@@ -1107,7 +1107,7 @@ Class JobDescription {
 
     }
     // Save processing history
-    $result = $result . "\n" . 'c history -details -format txt -save "' . $imageFileName. '.history.txt"';
+    $result = $result . "\n" . 'catch { c history -details -format txt -save "' . $imageFileName. '.history.txt }"';
     $result = $result . "\n";
     if ($resultImagesOwnedByUser) {
       $user = $this->owner();
