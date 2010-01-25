@@ -188,6 +188,26 @@ $nyquist = $_SESSION['setting']->calculateNyquistRate();
     <!--
       Tooltips
     -->
+    <?php
+      if ( $_SESSION['setting']->isWidefield() ) {
+    ?>
+    <span id="ttSpanPixelSizeFromCCD">Calculate the image pixel size from the CCD pixel size.</span>
+    <?php
+      }
+    ?>
+    <?php
+      if ( $_SESSION['setting']->isMultiPointOrSinglePointConfocal() ) {
+    ?>
+    <span id="ttSpanPinholeRadius">Calculate the back-projected pinhole radius for your microscope.</span>
+    <?php
+        if ($_SESSION['setting']->isNipkowDisk()) {
+    ?>
+    <span id="ttSpanPinholeSpacing">Calculate the back-projected pinhole spacing for your microscope.</span>
+    <?php
+      }
+    }
+    ?>
+    <span id="ttSpanNyquist">Check your sampling with the online Nyquist calculator.</span>
     <span id="ttSpanBack">Go back to previous page.</span>  
     <span id="ttSpanCancel">Abort editing and go back to the image parameters selection page. All changes will be lost!</span>  
     <span id="ttSpanForward"><?php echo $controlTextToShow; ?></span>
@@ -228,13 +248,18 @@ $textForCaptorSize = "xy pixel size (nm)";
                         <input name="CCDCaptorSizeX" type="text" size="5" value="<?php echo $value ?>" /> <br/>
 			<?php
                   // The calculation of pixel size from CCD chip makes sense only for widefield microscopes
-                  $microscopeType  = $_SESSION['setting']->parameter('MicroscopeType' );
-                  $microscopeValue = $microscopeType->value( );
-                  if ( $microscopeValue == 'widefield' ) {
+                  if ( $_SESSION['setting']->isWidefield() ) {
             ?>
-            <a href="calculate_pixel_size.php">calculate</a> from CCD pixel size<br/>
-                        <!-- <input name="calculate" type="submit" value="calculate" style="width:110px; margin: 2px;" /> -->
-            <br/>
+            
+            
+            
+            <a href="calculate_pixel_size.php"
+              onmouseover="TagToTip('ttSpanPixelSizeFromCCD' )"
+              onmouseout="UnTip()" >
+              <img src="images/calc_small.png" alt="" />
+              Calculate from CCD pixel size
+            </a>
+
             <?php
                   }
             ?>
@@ -288,7 +313,10 @@ if ($_SESSION['setting']->isThreeDimensional()) {
 
                 </ul>
                 
-                <a href="javascript:openWindow('http://support.svi.nl/wiki/NyquistCalculator')">
+                <a href="javascript:openWindow('http://support.svi.nl/wiki/NyquistCalculator')"
+                    onmouseover="TagToTip('ttSpanNyquist' )"
+                    onmouseout="UnTip()" >
+                    <img src="images/calc_small.png" alt="" />
                     On-line Nyquist rate and PSF calculator
                     <img src="images/web.png" alt="external link" />
                 </a>
@@ -386,8 +414,11 @@ if ($_SESSION['setting']->isMultiPointOrSinglePointConfocal()) {
 ?></div>
                 <p />
                 
-                <a href="calculate_bp_pinhole.php?na=<?php echo $na;?>">
-                    Backprojected pinhole calculator
+                <a href="calculate_bp_pinhole.php?na=<?php echo $na;?>"
+                  onmouseover="TagToTip('ttSpanPinholeRadius' )"
+                  onmouseout="UnTip()" >
+                  <img src="images/calc_small.png" alt="" />
+                  Backprojected pinhole calculator
                 </a>
                 
             </fieldset>
@@ -420,8 +451,11 @@ if ($_SESSION['setting']->isNipkowDisk()) {
           </ul>
           <p />
                 
-                <a href="calculate_bp_pinhole.php?na=<?php echo $na;?>">
-                    Backprojected pinhole calculator
+                <a href="calculate_bp_pinhole.php?na=<?php echo $na;?>"
+                  onmouseover="TagToTip('ttSpanPinholeSpacing' )"
+                  onmouseout="UnTip()" >
+                  <img src="images/calc_small.png" alt="" />
+                  Backprojected pinhole calculator
                 </a>
                 
             </fieldset>

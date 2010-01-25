@@ -295,6 +295,8 @@ else echo "                        <option>&nbsp;</option>\n";
             
             <p>You can use SHIFT- and CTRL-click to select multiple files.</p>
 
+            <p>Click on a file name in any of the fields to get a preview.</p>
+            
         </div>
         
         <div id="message">

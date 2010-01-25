@@ -228,7 +228,7 @@ if ($_SESSION['setting']->parameter("PerformAberrationCorrection")->value( ) == 
 
     <div id="AberrationCorrectionModeDiv"<?php echo $visibility?>>
         
-    <h4>At this point the HRM hs enough information to perform depth-dependent aberration correction. Please notice that in certain circumstances, the automatic correction scheme might generate artifacts in the result. If this is the case, please choose the advanced correction mode.</h4>
+    <h4>At this point the HRM has enough information to perform depth-dependent aberration correction. Please notice that in certain circumstances, the automatic correction scheme might generate artifacts in the result. If this is the case, please choose the advanced correction mode.</h4>
             
         <fieldset class="setting">
             

@@ -397,9 +397,9 @@ if ($selectedValue == "cmle")
 
 ?>
                     <div id="cmle-snr" class="multichannel"<?php echo $visibility?>>
-                     <ul>
-                        <li>SNR: 
-
+                    <ul>
+                      <li>SNR: 
+                      <div class="multichannel">
 <?php
 
 for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
@@ -419,27 +419,27 @@ for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
   }
 
 ?>
-                        <span class="nowrap">Ch<?php echo $i ?>:<span class="multichannel"><input name="SignalNoiseRatioCMLE<?php echo $i ?>" type="text" size="8" value="<?php echo $value ?>" class="multichannelinput" /></span>&nbsp;</span>
+                          <span class="nowrap">Ch<?php echo $i ?>:<span class="multichannel"><input name="SignalNoiseRatioCMLE<?php echo $i ?>" type="text" size="8" value="<?php echo $value ?>" class="multichannelinput" /></span>&nbsp;</span>
 <?php
 
 }
 
 ?>
+                          </div>
                         </li>
                       </ul>
+
                     <?php
                     if ($estimateSNR) {
                         echo "<a href=\"estimate_snr_from_image.php\"
-                            onmouseover=\"TagToTip('ttEstimateSnr' )\"
-                            onmouseout=\"UnTip()\"
-                        >";
-                        echo "Estimate from image</a>";
+                          onmouseover=\"TagToTip('ttEstimateSnr' )\"
+                          onmouseout=\"UnTip()\"
+                        ><img src=\"images/calc_small.png\" alt=\"\" />";
+                        echo "Estimate SNR from image</a>";
                     }
 
                     ?>
- 
                     </div>
-                    
 <?php
 
 $visibility = " style=\"display: none\"";
@@ -449,7 +449,8 @@ if ($selectedValue == "qmle")
 ?>
                     <div id="qmle-snr" class="multichannel"<?php echo $visibility?>>
                       <ul>
-                        <li>SNR: 
+                        <li>SNR:
+                        <div class="multichannel">
 <?php
 
 for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
@@ -495,6 +496,7 @@ for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
 }
 
 ?>
+                          </div>
                         </li>
                       </ul>
                     </div>
@@ -540,7 +542,7 @@ if ($backgroundOffset[0] != "" && $backgroundOffset[0] != "auto" && $backgroundO
 
 ?>
                     <input type="radio" name="BackgroundEstimationMode" value="manual"<?php echo $flag ?> />
-                    remove constant absolute value
+                    remove constant absolute value:
                     
                     <div class="multichannel">
 <?php
@@ -638,9 +640,19 @@ if ($parameter->value() != null) {
       <div id="info">
           
         <h3>Quick help</h3>
+
+        <p>On this page you specify the parameters for restoration.</p>
+        
+        <p>These parameters comprise the deconvolution algorithm, the
+        estimation of the SNR of the images, the mode for background
+        estimation, and the stopping criteria.</p>
+        
+        <p>The 'Estimate SNR from image' tool allows you to obtain an
+        estimation of the SNR of your images to be used with the
+        'Classic Maximum Lilelihood Estimation' algorithm.</p>
             
-        <p>Define the parameters for restoration.</p>
-    
+        <p>The first stopping criterium reached, will stop the restoration.</p>
+        
       </div>
         
       <div id="message">

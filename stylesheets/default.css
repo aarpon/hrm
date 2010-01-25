@@ -188,6 +188,12 @@ table {
     text-align: center;
 }
 
+#content h4 {
+    font-size: 12px;
+    font-weight: bold;
+    text-align: justify;
+}
+
 #content p {
     text-align: justify;
 }
@@ -523,6 +529,14 @@ input.save {
     color: #000;
 }
 
+#cmle-snr {
+    text-align: left;
+}
+
+#qmle-snr {
+    text-align: left;
+}
+
 td {
     text-align: center;
 }
@@ -596,6 +610,7 @@ span.spacer {
 
 fieldset {
     margin: 5px;
+    margin-top: 15px;
     padding: 10px 5px 10px 5px;
 }
 
@@ -701,6 +716,7 @@ span.multichannel {
 }
 
 div.multichannel {
+    padding-top: 5px;
     text-align: center;
 }
 

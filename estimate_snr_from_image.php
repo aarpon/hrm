@@ -94,8 +94,8 @@ function showFileBrowser() {
                Settings to deconvolve similar images, acquired in similar
                conditions.</p>
             <p>Please notice that undersampled or clipped images will provide
-            wrong estimations, apart from wrong deconvolution results.</p>
-            <p>A SNR value must be set per image channel: please select an
+            wrong estimations, as well as wrong deconvolution results!</p>
+            <p>An SNR value must be set per image channel: please select an
                image that is representative of the datasets you will deconvolve,
                as each channel may have a different noise level.</p>
             <p>Please remind that, in this context, the SNR
@@ -250,7 +250,7 @@ function estimateSnrFromFile($file) {
 
         $chKey = "Ch_$ch,";
         $estSNR = $estimation[$chKey.'estSNR'];
-        $msgSNR .= "Ch $ch: $estSNR<br />";
+        $msgSNR .= "Ch $ch: <strong>$estSNR</strong><br />";
         $estBG = $estimation[$chKey.'estBG'];
         $msgBG .= "Ch $ch: $estBG<br />";
         $estClipFactor = $estimation[$chKey.'estClipFactor'];
@@ -337,7 +337,7 @@ function estimateSnrFromFile($file) {
 
     # Do not report the $msgBG, not to confuse the users.
 
-    $message = "<h4>Estimation results</h4>".
+    $message = "<h3>Estimation results</h3>".
                "<p>Please <b>write down</b> these values to use them ".
                "in the settings editor.</p>".
                $msgClip.$msgSNR;

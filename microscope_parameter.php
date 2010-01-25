@@ -376,10 +376,13 @@ if (!$default) {
           
           <h3>Quick help</h3>
             
-            <p>
-                Please choose or fill in the parameter values on the left 
-                side.
-            </p>
+            <p>On this page you specify the parameters for the optical setup
+            of your experiment.</p>
+            
+            <p>These parameters comprise the microscope type,
+            the numerical aperture of the objective, the wavelenght of the used
+            fluorophores, and the refractive indices of the sample medium and of
+            the objective-embedding medium.</p>
 
         </div>
         

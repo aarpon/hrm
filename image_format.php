@@ -359,12 +359,12 @@ $parameter = $_SESSION['setting']->parameter("PointSpreadFunction");
             
             <h3>Quick help</h3>
             
-            <p>Please define image format, geometry, and number of channels.</p>
+            <p>Here you are asked to provide information on format and
+            geometry for the files you want to restore.</p>
             
-            <p>
-              If you select one of the "single XY plane" formats,
-                the image geometry field below will be ignored.
-            </p>
+            <p>Moreover, you must define whether you want to use a theoretical
+            PSF, or if you instead want to use a measured PSF you distilled
+            with the Huygens software.</p>
 
         </div>
         
