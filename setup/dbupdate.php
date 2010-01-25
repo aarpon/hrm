@@ -237,16 +237,9 @@ function insert_record($tabname, $array, $colnames) {
 function insert_column($tabname,$flds) {
     global $datadict;
     
-    $query = $datadict->AddColumnSQL($tabname, $flds);
-    if (!$query) {
-        $msg = error_message($tabname);
-        write_message($msg);
-        write_to_log($msg);
-        write_to_error($msg);
-        return False;
-    }
-    $rs = $datadict->executeSQLArray($array);
-    if (!$result) {
+    $sqlarray = $datadict->AddColumnSQL($tabname, $fields); // NOTE: ADOdb AddColumnSQL, not guaranteed to work under all situations.
+    $rs = $datadict->ExecuteSQLArray($sqlarray);    // return 0 if failed, 1 if executed all but with errors, 2 if executed successfully 
+    if($rs != 2) {
         $msg = error_message($tabname);
         write_message($msg);
         write_to_log($msg);
@@ -1657,8 +1650,124 @@ if ($current_revision < $n) {
     $msg = "Database successfully updated to revision " . $current_revision . ".";
     write_message($msg);
     write_to_log($msg);
-}  
+}
 
+
+// -----------------------------------------------------------------------------
+// Update to revision 8
+// Description: add 'priority' column in table 'job_queue';
+//              correct ics2 extension;
+//              add support for ics2 file format in intput
+//              add support for HDF5 file format (in input and output)
+// -----------------------------------------------------------------------------
+$n = 8;
+if ($current_revision < $n) {
+    
+    // Add 'priority' column in table 'job_queue'
+    $tabname = "job_queue";
+    if (in_array($tabname, $tables)) {
+        if (!drop_table($tabname))     
+            return;
+    }
+    $flds = "
+        id C(30) NOTNULL DEFAULT 0 PRIMARY,
+        username C(30) NOTNULL,
+        queued T DEFAULT NULL,
+        start T DEFAULT NULL,
+        stop T DEFAULT NULL,
+        server C(30) DEFAULT NULL,
+        process_info C(30) DEFAULT NULL,
+        status C(8) NOTNULL DEFAULT queued,
+        priority I NOTNULL DEFAULT 0
+    ";
+    if (!create_table($tabname, $flds))    
+        return;
+    
+    // Change ics2 extension in ics
+    $tabname = "file_extension";
+    $record = array();
+    $record["file_format"] = "ics2";
+    $record["extension"] = "ics";
+    if (!$db->AutoExecute($tabname, $record, 'UPDATE', "file_format like 'ics2'")) {
+        $msg = "An error occurred while updating the database to revision " . $n . ", update ics2 format information.";
+        write_message($msg);
+        write_to_error($msg);
+        return false;
+    }
+    
+    // Add support for HDF5 file format
+    $record = array();
+    $record["file_format"] = "hdf5";
+    $record["extension"] = "h5";
+    $insertSQL = $db->GetInsertSQL($tabname, $record);
+    if(!$db->Execute($insertSQL)) {
+        $msg = "An error occurred while updating the database to revision " . $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $tabname = "file_format";
+    $record = array();
+    $record["name"] = "hdf5";
+    $record["isFixedGeometry"] = "f";
+    $record["isSingleChannel"] = "f";
+    $record["isVariableChannel"] = "t";
+    $insertSQL = $db->GetInsertSQL($tabname, $record);
+    if(!$db->Execute($insertSQL)) {
+        $msg = "An error occurred while updating the database to revision " . $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+    
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "ImageFileFormat";
+    $record["value"] = "ics2";
+    $record["translation"] = "Image Cytometry Standard 2 (*.ics/*.ids)";
+    $record["isDefault"] = "f";
+    $insertSQL = $db->GetInsertSQL($tabname, $record);
+    if(!$db->Execute($insertSQL)) {
+        $msg = "An error occurred while updating the database to revision " . $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+    
+    $record = array();
+    $record["parameter"] = "ImageFileFormat";
+    $record["value"] = "hdf5";
+    $record["translation"] = "SVI HDF5 (.*h5)";
+    $record["isDefault"] = "f";
+    $insertSQL = $db->GetInsertSQL($tabname, $record);
+    if(!$db->Execute($insertSQL)) {
+        $msg = "An error occurred while updating the database to revision " . $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+    
+    $record = array();
+    $record["parameter"] = "OutputFileFormat";
+    $record["value"] = "hdf5";
+    $record["translation"] = "SVI HDF5";
+    $record["isDefault"] = "f";
+    $insertSQL = $db->GetInsertSQL($tabname, $record);
+    if(!$db->Execute($insertSQL)) {
+        $msg = "An error occurred while updating the database to revision " . $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+    
+    if(!update_dbrevision($n)) 
+        return;
+    $current_revision = $n;
+    $msg = "Database successfully updated to revision " . $current_revision . ".";
+    write_message($msg);
+    write_to_log($msg);
+}
 
 //$msg = "\nThe current revision of your HRM database is " . $current_revision . ".";
 //write_message($msg);
