@@ -335,10 +335,12 @@ function estimateSnrFromFile($file) {
     $msgBG .= "</p>";
     $msgClip .= "</p>";
 
+    # Do not report the $msgBG, not to confuse the users.
+
     $message = "<h4>Estimation results</h4>".
                "<p>Please <b>write down</b> these values to use them ".
                "in the settings editor.</p>".
-               $msgClip.$msgSNR.$msgBG;
+               $msgClip.$msgSNR;
     $message .= "<div id=\"thumb\">".$defaultView."</div>";
     $output .= "</table></fieldset>";
 
