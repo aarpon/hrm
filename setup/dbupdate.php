@@ -1617,7 +1617,11 @@ if ($current_revision < $n) {
 
 // -----------------------------------------------------------------------------
 // Update to revision 7
-// Description: insert statistics table 
+// Description: insert statistics table;
+//              add 'priority' column in table 'job_queue';
+//              correct ics2 extension;
+//              add support for ics2 file format in intput;
+//              add support for HDF5 file format (in input and output)
 // -----------------------------------------------------------------------------
 $n = 7;
 if ($current_revision < $n) {
@@ -1643,25 +1647,6 @@ if ($current_revision < $n) {
             return;
         }
     }
-
-    if(!update_dbrevision($n)) 
-        return;
-    $current_revision = $n;
-    $msg = "Database successfully updated to revision " . $current_revision . ".";
-    write_message($msg);
-    write_to_log($msg);
-}
-
-
-// -----------------------------------------------------------------------------
-// Update to revision 8
-// Description: add 'priority' column in table 'job_queue';
-//              correct ics2 extension;
-//              add support for ics2 file format in intput
-//              add support for HDF5 file format (in input and output)
-// -----------------------------------------------------------------------------
-$n = 8;
-if ($current_revision < $n) {
     
     // Add 'priority' column in table 'job_queue'
     $tabname = "job_queue";
@@ -1694,17 +1679,20 @@ if ($current_revision < $n) {
         write_to_error($msg);
         return false;
     }
-    
+
     // Add support for HDF5 file format
     $record = array();
     $record["file_format"] = "hdf5";
     $record["extension"] = "h5";
-    $insertSQL = $db->GetInsertSQL($tabname, $record);
-    if(!$db->Execute($insertSQL)) {
-        $msg = "An error occurred while updating the database to revision " . $n . ".";
-        write_message($msg);
-        write_to_error($msg);
-        return;
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE file_format='" . $record["file_format"] . "' AND extension='" . $record["extension"] . "'");
+    if ($rs->EOF) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
     }
 
     $tabname = "file_format";
@@ -1713,39 +1701,48 @@ if ($current_revision < $n) {
     $record["isFixedGeometry"] = "f";
     $record["isSingleChannel"] = "f";
     $record["isVariableChannel"] = "t";
-    $insertSQL = $db->GetInsertSQL($tabname, $record);
-    if(!$db->Execute($insertSQL)) {
-        $msg = "An error occurred while updating the database to revision " . $n . ".";
-        write_message($msg);
-        write_to_error($msg);
-        return;
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE name='" . $record["name"] . "' AND isFixedGeometry='" . $record["isFixedGeometry"] . "' AND isSingleChannel='" . $record["isSingleChannel"] . "'AND isVariableChannel='" . $record["isVariableChannel"] . "'");
+    if ($rs->EOF) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }   
     }
-    
+
     $tabname = "possible_values";
     $record = array();
     $record["parameter"] = "ImageFileFormat";
     $record["value"] = "ics2";
     $record["translation"] = "Image Cytometry Standard 2 (*.ics/*.ids)";
     $record["isDefault"] = "f";
-    $insertSQL = $db->GetInsertSQL($tabname, $record);
-    if(!$db->Execute($insertSQL)) {
-        $msg = "An error occurred while updating the database to revision " . $n . ".";
-        write_message($msg);
-        write_to_error($msg);
-        return;
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "'");
+    if ($rs->EOF) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
     }
-    
+
     $record = array();
     $record["parameter"] = "ImageFileFormat";
     $record["value"] = "hdf5";
     $record["translation"] = "SVI HDF5 (.*h5)";
     $record["isDefault"] = "f";
-    $insertSQL = $db->GetInsertSQL($tabname, $record);
-    if(!$db->Execute($insertSQL)) {
-        $msg = "An error occurred while updating the database to revision " . $n . ".";
-        write_message($msg);
-        write_to_error($msg);
-        return;
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "'");
+    if ($rs->EOF) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
     }
     
     $record = array();
@@ -1753,12 +1750,31 @@ if ($current_revision < $n) {
     $record["value"] = "hdf5";
     $record["translation"] = "SVI HDF5";
     $record["isDefault"] = "f";
-    $insertSQL = $db->GetInsertSQL($tabname, $record);
-    if(!$db->Execute($insertSQL)) {
-        $msg = "An error occurred while updating the database to revision " . $n . ".";
-        write_message($msg);
-        write_to_error($msg);
-        return;
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "'");
+    if (!($rs->EOF)) {
+        if(!$db->Execute("DELETE FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "'")) {
+            $msg = "An error occurred while updating the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_log($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $record = array();
+    $record["parameter"] = "OutputFileFormat";
+    $record["value"] = "SVI HDF5";
+    $record["translation"] = "hdf5";
+    $record["isDefault"] = "f";
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "'");
+    if ($rs->EOF) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
     }
     
     if(!update_dbrevision($n)) 
@@ -1768,6 +1784,7 @@ if ($current_revision < $n) {
     write_message($msg);
     write_to_log($msg);
 }
+
 
 //$msg = "\nThe current revision of your HRM database is " . $current_revision . ".";
 //write_message($msg);
