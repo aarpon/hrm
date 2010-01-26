@@ -131,7 +131,7 @@ $onChange = "onchange=\"javascript:switchCorrection()\"";
 
 ?>
 
-            <select id="PerformAberrationCorrection" name="PerformAberrationCorrection" style="width: 420px" <?php echo $onChange ?>>
+            <select id="PerformAberrationCorrection" name="PerformAberrationCorrection"  <?php echo $onChange ?>>
                 
             <?php
 
@@ -186,7 +186,7 @@ if ($_SESSION['setting']->parameter("PerformAberrationCorrection")->value( ) == 
                     specify sample orientation
             </legend>
                     
-            <select name="CoverslipRelativePosition" style="width: 420px">
+            <select name="CoverslipRelativePosition" >
 
             <?php
 
@@ -243,7 +243,7 @@ $onChange = "onchange=\"javascript:switchAdvancedCorrection()\"";
 
 ?>
 
-            <select id="AberrationCorrectionMode" name="AberrationCorrectionMode" style="width: 420px" <?php echo $onChange ?>>
+            <select id="AberrationCorrectionMode" name="AberrationCorrectionMode"  <?php echo $onChange ?>>
 
             <?php
 
@@ -301,7 +301,7 @@ $onChange = "onchange=\"javascript:switchAdvancedCorrectionScheme()\"";
 
 ?>
 
-            <select id="AdvancedCorrectionOptions" name="AdvancedCorrectionOptions" style="width: 420px" <?php echo $onChange ?>>
+            <select id="AdvancedCorrectionOptions" name="AdvancedCorrectionOptions"  <?php echo $onChange ?>>
 
             <?php
 
@@ -349,7 +349,7 @@ $selectedValue  = $parameter->value();
 ?>
             
             <div id="PSFGenerationDepthDiv"<?php echo $visibility?>>
-                <p>Please enter depth for PSF generation (&micro;m): <input name="PSFGenerationDepth" type="text" value="<?php echo $selectedValue; ?>" /></p>
+                <p>Depth for PSF generation (&micro;m): <input name="PSFGenerationDepth" type="text" style="width:100px;" value="<?php echo $selectedValue; ?>" /></p>
             </div>
             
         </fieldset>

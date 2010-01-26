@@ -175,6 +175,10 @@ include("header.inc.php");
                     image format
                 </legend>
                 
+                <select name="ImageFileFormat" id="ImageFileFormat" size="1"
+                  onchange="javascript:imageFormatProcess( this.name, this.options[this.selectedIndex].value )"
+                  onkeyup="this.blur();this.focus();" >
+                
 <?php
 
 // new file formats support
@@ -184,9 +188,6 @@ $geometryFlag = "";
 $channelsFlag = "";
 sort($values);
 foreach($values as $value) {
-  if (stristr($value, "tiff")) {
-    continue;
-  }
   if (stristr($value, "hdf5")) {
     $version = getHucoreVersionAsInteger( $enable_code_for_huygens );
     // HDF5 is supported only from Huygens 3.5.0
@@ -195,14 +196,12 @@ foreach($values as $value) {
     }
   }
   $translation = $_SESSION['setting']->translation("ImageFileFormat", $value);
-  $event = " onclick=\"javascript:release()\"";
-  if ($value == "lsm-single" || $value == "tiff-single") {
-    $event = " onclick=\"javascript:forceGeometry()\"";
+  if (stristr($value, "tiff")) {
+    $translation .= " (*.tiff)";
   }
-  else if ($value == "tiff-series") $event = " onclick=\"javascript:fixGeometryAndChannels('multi_XYZ', '1')\"";
-  $flag = "";
+  $selected = "";
   if ($value == $parameter->value()) {
-    $flag = " checked=\"checked\"";
+    $selected = " selected=\"selected\"";
     if ($value == "lsm-single" || $value == "tiff-single") {
       $geometryFlag = "disabled=\"disabled\" ";
     }
@@ -213,49 +212,15 @@ foreach($values as $value) {
   }
   
 ?>
-                <input name="ImageFileFormat" type="radio" value="<?php echo $value ?>"<?php echo $event ?><?php echo $flag ?> /><?php echo $translation ?>
-                
-                <br />
-<?php
-
-}
-
-?>
-                <h4>TIFF (*.tif, *.tiff)</h4>
-<?php
-
-foreach($values as $value) {
-  if (!stristr($value, "tiff")) {
-    continue;
-  }
-  $translation = $_SESSION['setting']->translation("ImageFileFormat", $value);
-  $event = " onclick=\"javascript:release()\"";
-  if ($value == "lsm-single" || $value == "tiff-single") {
-    $event = " onclick=\"javascript:forceGeometry()\"";
-  }
-  else if ($value == "tiff-series") $event = " onclick=\"javascript:fixGeometryAndChannels('multi_XYZ', '1')\"";
-  $flag = "";
-  if ($value == $parameter->value()) {
-    $flag = " checked=\"checked\"";
-    if ($value == "lsm-single" || $value == "tiff-single") {
-      $geometryFlag = "disabled=\"disabled\" ";
-    }
-    else if ($value == "tiff-series") {
-      $geometryFlag = "disabled=\"disabled\" ";
-      $channelsFlag = "disabled=\"disabled\" ";
-    }
-  }
-  
-?>
-                <input name="ImageFileFormat" type="radio" value="<?php echo $value ?>"<?php echo $event ?><?php echo $flag ?> /><?php echo $translation ?>
-                
-                <br />
+                <option <?php echo "value = \"" .$value . "\"" . $selected ?>><?php echo $translation ?></option>
 <?php
 
 }
 
 ?>
 
+                </select>
+                
             </fieldset>
             
             <fieldset id="geometry" class="setting"<?php if ($geometryFlag != "") echo " style=\"color: grey\"" ?>>

@@ -129,9 +129,13 @@ include("header.inc.php");
         
         <form method="post" action="" id="createjob">
         
-            <div id="selection">
+          <fieldset class="setting">
             
-                <label for="OutputFileFormat">Output file format:</label>
+          <legend>
+            <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=FileFormats')"><img src="images/help.png" alt="?" /></a>
+              Output file format
+            </legend>
+        
 <?php
 
 $parameter = $_SESSION['task_setting']->parameter("OutputFileFormat");
@@ -194,9 +198,9 @@ foreach ($possibleValues as $possibleValue) {
                 </select>
                 
                 <input name="create" type="hidden" value="create" />
-                
-            </div>
             
+          </fieldset>
+          
         </form>
         
         <fieldset class="report">

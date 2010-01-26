@@ -7,23 +7,41 @@ function process() {
     document.forms["select"].submit();
 }
 
+function imageFormatProcess(e, value) {
+    if ( e != "ImageFileFormat" ) {
+        return;
+    }
+    release( );
+    if ( value == "lsm-single" || value == "tiff-single") {
+        fixGeometry( 'multi_XY - time' );
+    } else if ( value == "tiff-series" ) {
+        fixGeometryAndChannels('multi_XYZ', '1');
+    } else {
+        setGeometry( 'multi_XYZ' );
+    }
+}
+
 function release() {
     var geometryFirst = true;
     var channelsFirst = true;
     for (var i = 0; i < document.forms["select"].elements.length; i++) {
         var e = document.forms["select"].elements[i];
         if (e.name == 'ImageGeometry') {
-            e.disabled = false;
-            if (geometryFirst) {
-                e.checked = true;
-                geometryFirst = false;
+            if ( e.disabled == true ) {
+                e.disabled = false;
+                if (geometryFirst) {
+                    e.checked = true;
+                    geometryFirst = false;
+                }
             }
         }
         if (e.name == 'NumberOfChannels') {
-            e.disabled = false;
-            if (channelsFirst) {
-                e.checked = true;
-                channelsFirst = false;
+            if ( e.disabled == true ) {
+                e.disabled = false;
+                if (channelsFirst) {
+                    e.checked = true;
+                    channelsFirst = false;
+                }
             }
         }
         
@@ -42,6 +60,16 @@ function forceGeometry() {
         }
     }
     document.forms["select"].elements["geometry"].style.color = "grey";
+}
+
+function setGeometry(geometry) {
+    for (var i = 0; i < document.forms["select"].elements.length; i++) {
+        var e = document.forms["select"].elements[i];
+        if (e.name == 'ImageGeometry') {
+            if (e.value == geometry)
+                e.checked = true;
+        }
+    }
 }
 
 function fixGeometry(geometry) {

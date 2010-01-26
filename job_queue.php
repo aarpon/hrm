@@ -95,7 +95,14 @@ include("header.inc.php");
     -->
     <span id="ttGoBack">Go back to the previous page.</span>  
     <span id="ttRefresh">Refresh the queue.</span>
-    
+    <?php
+      $rows = $queue->getContents();
+      if (count($rows) != 0) {
+    ?>
+    <span id="ttDelete">Delete selected job(s) from the queue. If a job is running, it will be killed!</span>
+    <?php
+      }
+    ?>
     <div id="nav">
         <ul>
             <li><?php echo $_SESSION['user']->name(); ?></li>
@@ -272,7 +279,10 @@ if (count($rows) != 0) {
                 
                 <label style="font-style: italic">
                     With selected:
-                    <input name="delete" type="submit" value="" class="icon delete" />
+                    <input name="delete" type="submit" value=""
+                      class="icon delete"
+                      onmouseover="TagToTip('ttDelete' )"
+                      onmouseout="UnTip()"/>
                 </label>
 <?php
 

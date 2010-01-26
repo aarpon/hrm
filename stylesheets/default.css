@@ -710,6 +710,10 @@ input.noPreview {
     background: url(../images/no_preview.jpg) no-repeat center;
 }
 
+select {
+    width: 100%;
+    text-align: center;
+}
 
 span.multichannel {
     margin-left: -8px;
