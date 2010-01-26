@@ -247,7 +247,7 @@ include("header.inc.php");
 
 
         <div id="userfiles">
-          <select onclick="javascript:imageAction(this)" onchange="javascript:imageAction(this)" name="userfiles[]" size="<?php echo $size;?>" <?php echo $multiple.$flag ?>>
+          <select onclick="javascript:imageAction(this)" onchange="javascript:imageAction(this)" onkeyup="this.blur();this.focus();" name="userfiles[]" size="<?php echo $size;?>" <?php echo $multiple.$flag ?>>
           <?php
 
           if ($files != null) {
