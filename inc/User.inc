@@ -55,6 +55,9 @@ require_once "Setting.inc";
 require_once "hrm_config.inc";
 require_once "Ldap.inc";
 
+global $authenticateAgainst;
+global $use_ldaps;
+
 //!---------------------------------------------------------
 // @class    Owner
 // @desc     Represents an owner of a setting. Superclass of
@@ -151,16 +154,26 @@ Class User extends Owner{
   var $isLoggedIn;    // @var isLoggedIn    Boolean   True if the user is logged in.
   var $lastActivity;  // @var lastActivity  Timestamp Time of the last activity of the user
   var $ip;            // @var ip            String    The user's current ip address
-
+  var $use_ldap;      // @var use_ldap      Boolean   If True, the user is authenticated against LDAP, otherwise SQL
+  
   //!---------------------------------------------------------
   // @function    User::User
   // @desc        Konstruktor. Creates a new empty user.
   // @return      void
   //!---------------------------------------------------------
-  function User() { 
+  function User() {
+    global $authenticateAgainst;
     $this->isLoggedIn = False;
     $this->lastActivity = time();
     $this->ip = '';
+    
+    // Should we use ldap for authentication?
+    if ( $authenticateAgainst == "LDAP" ) {
+      $this->use_ldap = true;
+    } else {
+      $this->use_ldap = false;
+    }
+    
     // Call the parent constructor too.
     parent::__construct();
   } 
@@ -252,8 +265,7 @@ Class User extends Owner{
   // @return      String
   //!---------------------------------------------------------  
   function password($name, $password) {
-      global $use_ldap;
-      if ($use_ldap && $name!=$this->getAdminName()) {
+      if ($this->use_ldap && $name!=$this->getAdminName()) {
           // ldap code
           $my_ldap = new Ldap();
           $my_ldap->connectForReading();
@@ -328,7 +340,6 @@ Class User extends Owner{
   // @return      Boolean
   //!---------------------------------------------------------    
   function checkLogin($name, $password) {
-    global $use_ldap;
     $result = false;
     
     // If the db is outdated and the user is not the admin, we do not allow
@@ -336,7 +347,7 @@ Class User extends Owner{
     if ( ($this->isLoginRestrictedToAdmin() == true) && (strcmp($name, 'admin') != 0)  )
       return $result;
     
-    if ($use_ldap && $name!=$this->getAdminName()) $result = $this->checkLoginAgainstLDAP($name, $password);
+    if ($this->use_ldap && $name!=$this->getAdminName()) $result = $this->checkLoginAgainstLDAP($name, $password);
     else $result = $this->checkLoginAgainstHRMDatabase($name, $password);
     	
     return $result;
@@ -377,10 +388,8 @@ Class User extends Owner{
   // @return      String
   //!---------------------------------------------------------    
   function emailAddress() {
-    global $use_ldap;
-	
 	$result = "";
-    if ($use_ldap) {
+    if ($this->use_ldap) {
       $ldap = new Ldap();
       $user_data = $ldap->loadUser($this->name());
       $result =  $user_data['mail'];
@@ -457,9 +466,8 @@ Class User extends Owner{
   // @return      String
   //!--------------------------------------------------------- 
   function userGroup() {
-  	global $use_ldap;
   	$result = $this->defaultGroupName();
-  	if (!$use_ldap) {
+  	if (!$this->use_ldap) {
   		$db = new DatabaseConnection();
   		$result = $db->getGroup($this->name());
   	}

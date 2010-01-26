@@ -29,11 +29,12 @@ Class Ldap {
   
   function connectForReading() {
     global $ldap_host;
-
+	global $ldap_port;
+	
     $result = false;
     $this->closeConnection();
-    $this->connection = ldap_connect($ldap_host);
-    if ($this->connection) {
+	$this->connection = ldap_connect($ldap_host, $ldap_port);
+	if ($this->connection) {
       $result = true;
     }
     return $result;
