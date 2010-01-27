@@ -4,9 +4,6 @@
 // Database settings
 //==============================================================================
 
-// ADOdb database abstraction library
-$adodb = "/path/to/adodb.inc.php";
-
 // The database type (mysql, postgres, ...)
 $db_type = "mysql";
 
@@ -43,13 +40,13 @@ $local_huygens_core = "/usr/local/bin/hucore";
 // computation and web servers to make sure that only supported functionalities
 // can be accessed. You can find your Huygens version number by running Huygens
 // Essential or Pro and going to Help > About, or by launching hucore from a
-// shell: then the version number is inmediately reported in a line like:
+// shell: then the version number is immediately reported in a line like:
 //
 // "Huygens Core 3.5.0p1 initializing Compute Engine 3.5.0p1..."
 //
 // At least the first three numbers are required, the patch level is optional:
 
-$enable_code_for_huygens = "3.3.2";
+$enable_code_for_huygens = "3.5.1";
 
 //==============================================================================
 // File server settings
@@ -82,7 +79,7 @@ $allowHttpTransfer = true;
 // with the user's destination path; can be used as an option or part of the
 // command to change directories with 'cd'. Separate commands with "\n".
 // $packExcludePath controls whether the archiving command excludes the whole
-// file path per file when this is aken into account in the $compressBin
+// file path per file when this is taken into account in the $compressBin
 // command itself by using %DEST% properly.
 
 $compressExt = ".zip";
@@ -118,9 +115,6 @@ $convertBin = "/usr/bin/convert";
 // HRM configuration parameters
 //==============================================================================
 
-// Text about the current running location
-$runningLocation = "Running at the FMI - Basel";
-
 // URL
 $hrm_url = "http://localhost/hrm";
 
@@ -143,7 +137,7 @@ $email_admin = "hrm@localhost";
 // User administration module
 $enableUserAdmin = true;
 
-// Authentication type (LDAP or MYSQL)
+// Authentication type (MYSQL, LDAP or ACTIVE_DIR)
 $authenticateAgainst = "MYSQL";
 
 // If true, users of the microscope reservation system may have access to HRM 
@@ -203,10 +197,6 @@ $saveSfpPreviews = true;
 
 // Internal links
 $internal_link["url"] = "<link> followed by text";
-
-// External links
-$external_link["http://www.svi.nl"] = "<Scientific Volume Imaging B.V.>";
-$external_link["http://support.svi.nl/wiki"] = "<SVI-wiki> on 3D microscopy, deconvolution, visualization and analysis";
 
 // A shell command that executes ping four times and stops afterwards
 $ping_command = 'ping -w 4';	// use this on linux systems

@@ -10,6 +10,9 @@ else
 
 require_once ("Util.inc");
 
+// Location of /adodb/adodb.inc.php
+$adodb = dirname(__FILE__) . "/extern/adodb/adodb.inc.php";
+
 $version = 0;
 // Overrule options that do not apply.
 if (isset ($enable_code_for_huygens) ) {
@@ -34,4 +37,5 @@ if (!isset ($userManager) ) {
     # creating an empty directory for each new user.
     $userManager = "bin/hrm";
 }
+
 ?>

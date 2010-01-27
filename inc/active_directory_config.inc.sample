@@ -1,0 +1,36 @@
+<?php
+
+    // See http://adldap.sourceforge.net/wiki/doku.php?id=api_configuration for
+    // detailed help on configuring adLdap.
+
+    // The account suffix for your domain
+	$ACCOUNT_SUFFIX = "@mydomain.local";
+    
+    // The base dn for your domain
+    $BASE_DN = "DC=mydomain,DC=local"; 
+	
+    // Array of domain controllers. Specifiy multiple controllers if you would
+    // like the class to balance the LDAP queries amongst multiple servers
+    $DOMAIN_CONTROLLERS = array ("dc01.mydomain.local");
+	
+    // Optional account with higher privileges for searching (otherwise
+    // leave it to NULL). This should be set to a domain admin account
+    $AD_USERNAME = NULL;
+    $AD_PASSWORD = NULL;
+    
+    // Tweak to get the real primary group from Active Directory. It works if
+    // the user's primary group is domain users.
+    // http://support.microsoft.com/?kbid=321360
+    $REAL_PRIMARY_GROUP = true;
+	
+    // Use SSL (LDAPS)
+    $USE_SSL = false;
+    
+    // Use TLS: if you wish to use TLS you should ensure that $USE_SSL is 
+    // set to false and vice-versa
+    $USE_TLS = false;
+    
+    // When querying group memberships, do it recursively 
+    $RECURSIVE_GROUPS = true;
+
+?>

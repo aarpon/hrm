@@ -1,0 +1,78 @@
+adLDAP - PHP LDAP CLASS FOR MANIPULATING ACTIVE DIRECTORY
+
+Written by Scott Barnett, Richard Hyland
+email: scott@wiggumworld.com, adldap@richardhyland.com
+http://adldap.sourceforge.net/
+
+
+CHANGELOG
+-------------------------------------------------------------------------------------------
+
+Version 3.3.1
+-------------
+[-] Bug fix: Prevent empty $username and $password in authenticate from falling through to the default administrator login
+
+Version 3.3
+-----------
+
+[+] New feature: Calling adLDAP without LDAP support in PHP will now throw an adLDAPException
+[+] New feature: Specifying a NULL $_base_dn will now automatically attempt to detect the base_dn from your domain controller
+[+] New feature: Most user objects can now be queried using a user's GUID as well as their username (samAccountName).  Set the $isGUID optional parameter to true. To obtain a user's GUID either use the username2guid() function or decodeGuid()
+[+] New function: username2guid($username) will return a string representation of the GUID for a given username
+[+] New function: decodeGuid($binaryGuid) will convert a binary GUID to a string
+[+] New function: find_base_dn() will return the base_dn from your domain controller
+[+] New function: get_root_dse($attributes) will return root domain controller configuration attributes such as the default naming context, current DC time, etc
+[+] New function: exchange_servers($attributes) will return a list of Exchange servers in your domain
+[+] New function: exchange_storage_groups($exchangeServer, $attributes, $recursive) will return a list of Storage groups on any given Exchange server.  Setting $recursive to true (or inheriting from the $_recursive_groups setting will automatically query the databases within a storage group)
+[+] New function: exchange_storage_databases($storageGroup, $attributes) will return a list of Databases in any given storage group on any given Exchange server
+[+] New function: exchange_add_X400($username, $country, $admd, $pdmd, $org, $surname, $givenname, $isGUID=false) will add an X400 address to the Exchange server
+[-] Bug fix: Null comparison error in contact_mailenable()
+
+Version 3.2
+-----------
+
+[+] New function: user_password_expiry($username) which will return the timestamp and formatted time of when a user's password expires based both on domain policy and user password expiry policy
+[+] New function: groups_in_group($group, $recursive = NULL) returns a list of groups within a group
+[+] New function: all_groups() function to list ALL types of group rather than just security groups alone
+[+] New function: folder_list($folder_name = NULL, $dn_type = ADLDAP_FOLDER, $recursive = NULL, $type = NULL) allows you to navigate the AD folder structure
+[+] New function: computer_ingroup()
+[+] New function: computer_groups()
+[+] New function: connect()
+[+] New function: disconnect()
+[+] New feature: Added recursive group lookups to group_members() to recursively get the username of users in a group
+[+] New feature: TLS support
+[+] New feature: Added getters and setters for core variables
+[-] Change: Renamed all_groups() to all_security_groups()
+[-] Change: Re-written ldap_slashes() function based on a port from Per's Net::LDAP::Util escape_filter_value
+[-] Bug fix: Attempt to deal with special char + in group_info()
+[-] Bug fix: user_ingroup() would not allow recursion to be disabled using the $recursive parameter and would only inherit from $_recursive_groups variable
+[-] Bug fix: Runtime overriding of $recursive group lookups failed due to changes in PHP 5.2
+
+
+Version 3.1
+-----------
+
+[+] New function: get_last_error() returns the last error returned by your domain controller
+[+] New feature: Automatically detect and encode 8bit characters when being added to an AD object
+[+] New feature: Exception handing added for connections or attempting methods that require SSL where it is not set
+[+] New feature: Added pager to the schema
+[+] New feature: New method to obtain a user's or contacts primary group that is far less intensive using get_primary_group().  The old group_cn() is now deprecated
+[-] Change: Only return primary group memberof if a user or contact is returned
+[-] Bug fix: Contact could not be added to a group
+[-] Bug fix: bool2str() function caused exchange mailbox creation to fail
+
+
+Version 3.0
+-----------
+
+[+] New function: user_delete()
+[+] New feature: Source code comments totally overhauled
+[+] New feature: Configuration options and functions now have their visibility defined.  adLDAP is now PHP 5 compatible only.
+[+] New feature: Exchange mailbox creation for users
+[+] New feature: Add new SMTP addresses to a user
+[+] New feature: Change the default SMTP address for a user
+[+] New feature: Remove an SMTP address for a user
+[+] New feature: Mail enable a contact
+[+] New feature: Create, query, delete contacts
+[+] New feature: Enable or disable a user with user_enable() or user_disable()
+[-] Bug fix: Disabling a user did not work
