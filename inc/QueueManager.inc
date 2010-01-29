@@ -225,11 +225,8 @@ Class QueueManager {
 			$filename = $image_folder . "/" . $user->name() . "/" . $image_source . "/" . $file;
 			if (stristr($filename, ".ics"))  {
 				$batch .= "put \"" . $filename . "\"\n";
-error_log("ICS FILE: put \"" . $filename . "\"\n");
-				//$filename = eregi_replace(".ics", ".ids", $filename);
 				$filename = substr($filename, 0, strrpos($filename, '.ics')) . ".ids";
 				$batch .= "put \"" . $filename . "\"\n";
-error_log("IDS FILE: put \"" . $filename . "\"\n");
 			}
 			else if (stristr($filename, ".tif") || stristr($filename, ".tiff")) {
 				// TODO: if ImageFileFormat = single TIFF file, do not send corresponding series
