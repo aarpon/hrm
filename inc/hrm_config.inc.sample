@@ -134,9 +134,6 @@ $send_mail = true;
 $email_sender = "hrm@localhost";
 $email_admin = "hrm@localhost";
 
-// User administration module
-$enableUserAdmin = true;
-
 // Authentication type (MYSQL, LDAP or ACTIVE_DIR)
 $authenticateAgainst = "MYSQL";
 

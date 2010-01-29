@@ -13,6 +13,12 @@ require_once ("Util.inc");
 // Location of /adodb/adodb.inc.php
 $adodb = dirname(__FILE__) . "/extern/adodb/adodb.inc.php";
 
+// If the authentication mechanism is not MYSQL, we turn off the user management
+$enableUserAdmin = true;
+if ( $authenticateAgainst != "MYSQL" ) {
+	$enableUserAdmin = false;
+}
+
 $version = 0;
 // Overrule options that do not apply.
 if (isset ($enable_code_for_huygens) ) {

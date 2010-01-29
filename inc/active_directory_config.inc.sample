@@ -14,7 +14,8 @@
     $DOMAIN_CONTROLLERS = array ("dc01.mydomain.local");
 	
     // Optional account with higher privileges for searching (otherwise
-    // leave it to NULL). This should be set to a domain admin account
+    // leave it to NULL). This should be set to a domain admin account (only
+    // read operations are performed!)
     $AD_USERNAME = NULL;
     $AD_PASSWORD = NULL;
     
@@ -32,5 +33,12 @@
     
     // When querying group memberships, do it recursively 
     $RECURSIVE_GROUPS = true;
+
+    // Users usually belong to several groups. GROUP_INDEX defines
+    // which level of the hierarchy to consider (starts by 0). This
+    // obviously assumes that the sequence of groups memberships is
+    // constant among users. Set $GROUP_INDEX to NULL to get an array
+    // with all groups for the user.
+    $GROUP_INDEX = 0;
 
 ?>

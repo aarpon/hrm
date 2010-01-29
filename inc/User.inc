@@ -54,6 +54,7 @@ require_once "Database.inc";
 require_once "Setting.inc";
 require_once "hrm_config.inc";
 require_once "Ldap.inc";
+require_once "ActiveDirectory.inc";
 
 global $authenticateAgainst;
 global $use_ldaps;
@@ -68,7 +69,7 @@ Class Owner {
   // add user management
   var $email;         // @var email         String    The owners email address
   var $group;         // @var group         String    The owners group
-
+ 
   //!---------------------------------------------------------
   // @function    Owner::Owner
   // @desc        Konstruktor. Creates a new owner.
@@ -151,10 +152,10 @@ Class Owner {
 //           state (is the user logged in, etc).
 //!---------------------------------------------------------
 Class User extends Owner{ 
-  var $isLoggedIn;    // @var isLoggedIn    Boolean   True if the user is logged in.
-  var $lastActivity;  // @var lastActivity  Timestamp Time of the last activity of the user
-  var $ip;            // @var ip            String    The user's current ip address
-  var $use_ldap;      // @var use_ldap      Boolean   If True, the user is authenticated against LDAP, otherwise SQL
+  var $isLoggedIn;   // @var isLoggedIn    Boolean   True if the user is logged in.
+  var $lastActivity; // @var lastActivity  Timestamp Time of the last activity of the user
+  var $ip;           // @var ip            String    The user's current ip address
+  var $authMode;     // @var authMode      String    One of "MYSQL", "LDAP", or "ACTIVE_DIR"
   
   //!---------------------------------------------------------
   // @function    User::User
@@ -166,14 +167,15 @@ Class User extends Owner{
     $this->isLoggedIn = False;
     $this->lastActivity = time();
     $this->ip = '';
-    
-    // Should we use ldap for authentication?
-    if ( $authenticateAgainst == "LDAP" ) {
-      $this->use_ldap = true;
-    } else {
-      $this->use_ldap = false;
+    if ( !(
+           ( $authenticateAgainst == "MYSQL"      ) ||
+           ( $authenticateAgainst == "LDAP"       ) ||
+           ( $authenticateAgainst == "ACTIVE_DIR" ) )) {
+      throw new Exception( "Bad value $authenticateAgainst." );
     }
     
+    $this->authMode  = $authenticateAgainst;
+      
     // Call the parent constructor too.
     parent::__construct();
   } 
@@ -265,18 +267,47 @@ Class User extends Owner{
   // @return      String
   //!---------------------------------------------------------  
   function password($name, $password) {
-      if ($this->use_ldap && $name!=$this->getAdminName()) {
-          // ldap code
-          $my_ldap = new Ldap();
-          $my_ldap->connectForReading();
-          $user_data = $my_ldap->loadUser($name, $password);
-          return $user_data["password"];
-      } else {
+
+    // If the user is the admin, we check against the MYSQL DB
+    if ( $name == $this->getAdminName() ) {
+        // db code
+        $db = new DatabaseConnection();
+        $password = $db->queryLastValue($db->passwordQueryString($name));
+        return $password; 
+    }
+
+    switch ( $this->authMode ) {
+
+      case "LDAP":
+          
+        // ldap code
+        $my_ldap = new Ldap();
+        $my_ldap->connectForReading();
+        $user_data = $my_ldap->loadUser($name, $password);
+        return $user_data["password"];
+        break;
+
+    case "ACTIVE_DIR":
+      
+      // This function must not be called for ACTIVE_DIR.
+      echo "User::password() cannot be called for ACTIVE_DIR!\n";
+      exit( 1 );
+    
+    case "MYSQL":
+      
           // db code
           $db = new DatabaseConnection();
           $password = $db->queryLastValue($db->passwordQueryString($name));
           return $password; 
-      }
+    
+      break;
+    
+    default:
+
+      throw new Exception("Bad value for $authMode in User::password().");
+
+    }
+    
   }
 
   //!---------------------------------------------------------
@@ -346,10 +377,36 @@ Class User extends Owner{
     // the login
     if ( ($this->isLoginRestrictedToAdmin() == true) && (strcmp($name, 'admin') != 0)  )
       return $result;
+
+    // If the user is the admin, we check the MYSQL DB
+    if ( $name == $this->getAdminName() ) {
+      $result = $this->checkLoginAgainstHRMDatabase($name, $password);
+      return $result;
+    }
     
-    if ($this->use_ldap && $name!=$this->getAdminName()) $result = $this->checkLoginAgainstLDAP($name, $password);
-    else $result = $this->checkLoginAgainstHRMDatabase($name, $password);
-    	
+    // Check other login names against the chosen authentication mechanism
+    switch ( $this->authMode ) {
+
+      case "LDAP":
+ 
+        $result = $this->checkLoginAgainstLDAP($name, $password);
+        break;
+      
+      case "ACTIVE_DIR":
+        
+        $result = $this->checkLoginAgainstACTIVEDIR($name, $password);
+        break;
+        
+      case "MYSQL":
+
+        $result = $this->checkLoginAgainstHRMDatabase($name, $password);
+        break;
+
+      default:
+      
+        throw new Exception("Bad value for $authMode in User::checkLogin().");
+    }
+    
     return $result;
   }
 
@@ -383,21 +440,54 @@ Class User extends Owner{
   }
 
   //!---------------------------------------------------------
+  // @function    User::checkLoginAgainstACTIVEDIR
+  // @desc        Answer true if the login is granted.
+  // @param       name     String    The login name of the user
+  // @param       password String    The password of the user 
+  // @return      Boolean
+  //!---------------------------------------------------------    
+  function checkLoginAgainstACTIVEDIR($name, $password) {
+    $activeDir = new ActiveDirectory( );
+    $result = $activeDir->authenticate( strtolower($name), $password );
+	return $result;
+  }
+  
+  //!---------------------------------------------------------
   // @function    User::emailAddress
   // @desc        Answer the user's email address.
   // @return      String
   //!---------------------------------------------------------    
   function emailAddress() {
+
 	$result = "";
-    if ($this->use_ldap) {
-      $ldap = new Ldap();
-      $user_data = $ldap->loadUser($this->name());
-      $result =  $user_data['mail'];
-    } 
-    else {
-      $db = new DatabaseConnection(); 
-  	  $result = $db->emailAddress($this->name);
-    } 
+    
+    switch ( $this->authMode ) {
+
+      case "LDAP":
+
+        $ldap = new Ldap();
+        $user_data = $ldap->loadUser($this->name());
+        $result =  $user_data['mail'];
+        break;
+
+      case "ACTIVE_DIR":
+
+        $activeDir = new ActiveDirectory( );
+        $result = $activeDir->emailAddress($this->name());
+        return $result;
+        break;
+        
+      case "MYSQL":
+
+        $db = new DatabaseConnection(); 
+        $result = $db->emailAddress($this->name);
+        break;
+
+      default:
+
+        throw new Exception("Bad value for $authMode in User::emailAddress().");
+    }
+    
     return $result;
   } 
   
@@ -447,16 +537,32 @@ Class User extends Owner{
   //!--------------------------------------------------------- 
   function load() {
   	global $email_admin;
-  	if ($this->isAdmin()) {
-  	  $db = new DatabaseConnection();
-      $this->setEmail($email_admin);
-      $db->updateMail($this->name(), $email_admin);
-    }
-    else {
-      $this->setEmail($this->emailAddress());
-    }
-    // get user group
-    $this->setGroup($this->group());
+    
+    switch ( $this->authMode ) {
+
+      case "LDAP":
+        
+        echo("User::load() not implemented for LDAP.\n");
+        exit( 1 );
+      
+      case "ACTIVE_DIR":
+        
+        echo("User::load() not implemented for ACTIVE_DIR.\n");
+        exit( 1 );
+      
+      case "MYSQL":
+        
+        if ($this->isAdmin()) {
+          $db = new DatabaseConnection();
+          $this->setEmail($email_admin);
+          $db->updateMail($this->name(), $email_admin);
+        } else {
+          $this->setEmail($this->emailAddress());
+        }
+        // get user group
+        $this->setGroup($this->group());
+        break;
+      }
   }
   
   //!---------------------------------------------------------
@@ -466,11 +572,31 @@ Class User extends Owner{
   // @return      String
   //!--------------------------------------------------------- 
   function userGroup() {
-  	$result = $this->defaultGroupName();
-  	if (!$this->use_ldap) {
+    switch ( $this->authMode ) {
+
+      case "LDAP":
+
+    	$result = $this->defaultGroupName();
+        break;
+
+      case "ACTIVE_DIR":
+
+        $activeDir = new ActiveDirectory( );
+        $result = $activeDir->getGroup( $this->name() );
+        return $result;
+        break;
+      
+      case "MYSQL":
+
   		$db = new DatabaseConnection();
   		$result = $db->getGroup($this->name());
-  	}
+        break;
+
+      default:
+
+        throw new Exception("Bad value for $authMode in User::userGroup().");
+    }
+
     return $result; 
   }
   

@@ -66,6 +66,11 @@ global $userManager;
 
 session_start();
 
+// Make sure that we don't even show this page if the user
+// management is disabled!
+if ( $enableUserAdmin == false ) {
+  header("Location: " . "home.php"); exit();
+}
 
 $db = new DatabaseConnection();
 

@@ -61,6 +61,7 @@ require_once("./inc/versions.inc");
 global $email_admin;
 global $enableUserAdmin;
 global $use_accounting_system;
+global $authenticateAgainst;
 
 $message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
 
@@ -79,6 +80,8 @@ if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
 
 $message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
 
+// Refresh the page every 30 seconds
+$meta = "<meta http-equiv=\"refresh\" content=\"30\" />";
 include("header.inc.php");
 
 ?>
@@ -96,26 +99,42 @@ include("header.inc.php");
         <?php
 
         if ($_SESSION['user']->name() == "admin") {
-            if ($enableUserAdmin) {
         ?>
 		
-				<table>
+		  <table>
 		  
 		  <tbody>
 			
 			<tr >
-			  
-			  <td class="icon">
-				<a href="./user_management.php">
-				<img alt="Users" src="./images/users.png" />
-				</a>
-			  </td>
-			  
-			  <td class="text"><div class="cell">
-                          <a href="./user_management.php">Manage users</a><br />
-                               <p />View, add, edit and delete users.
-                          </div>
-			  </td>
+
+			  <?php
+			    if ($enableUserAdmin) {
+			  ?>
+				<td class="icon">
+				  <a href="./user_management.php">
+				  <img alt="Users" src="./images/users.png" />
+				  </a>
+				</td>
+				
+				<td class="text"><div class="cell">
+                   <a href="./user_management.php">Manage users</a><br />
+                    <p />View, add, edit and delete users.
+                  </div>
+			    </td>
+
+			  <?php
+				} else {
+			  ?>
+				<td class="icon">
+				  <img alt="Users" src="./images/users_disabled.png" />
+				</td>
+				<td class="text"><div class="cell">
+                  <p />User management through the HRM is disabled.
+			    </td>
+
+			  <?php
+				}
+			  ?>
 			  
 			  <td class="icon">
 				<a href="./job_queue.php">
@@ -220,8 +239,7 @@ include("header.inc.php");
 		</table>
         
         <?php
-            }
-        } else {
+		  } else {
         ?>
 		<table>
 		  
@@ -298,6 +316,9 @@ include("header.inc.php");
 			  
 		    </tr>
 			
+			<?php
+			if ( $authenticateAgainst == "MYSQL" ) {
+			?>
 			<tr>
 			
 			  <td class="icon">
@@ -317,6 +338,9 @@ include("header.inc.php");
 			  <td class="text">&nbsp;</td>
 			  
 		    </tr>
+			<?php
+			}
+			?>
 			
 		  </tbody>
 		  

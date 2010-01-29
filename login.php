@@ -61,6 +61,7 @@ require_once("./inc/versions.inc");
 global $email_admin;
 global $enableUserAdmin;
 global $use_accounting_system;
+global $authenticateAgainst;
 
 $message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
 
@@ -108,36 +109,42 @@ if (isset($_POST['password'])) {
               }
             }
             
-            // account management
-                // get email address and group
-                $_SESSION['user']->load();
-            // update last access date
-            $_SESSION['user']->updateLastAccessDate();
-            #$_SESSION['registered_user'] = $_SESSION['user'];
-            // TODO unregister also "setting" and "task_setting"
-            unset($_SESSION['editor']);
-            if ($use_accounting_system) {
-                if (count($positiveCredits)>1) {
-                        header("Location: " . "select_credit.php"); exit();				
-                }
-                $firstCredit = $positiveCredits[0];
-                $groups = $creditOwner->myGroupsForCredit($firstCredit);
-                if (count($positiveCredits)==1 && count($groups)>1) {
-                        $_SESSION['credit'] = $firstCredit->id();
-                        header("Location: " . "select_group.php"); exit();
-                }
-                if (count($positiveCredits)==1 && count($groups)==1) {
-                        $_SESSION['credit'] = $firstCredit->id();
-                        $_SESSION['group'] = $groups[0]->id();
-                }
-            }
-            if ( $req != false ) {
-                header("Location: " . $req); 
-                exit();
+            if ( $authenticateAgainst == "MYSQL" ) {
+              // account management
+              // get email address and group
+              $_SESSION['user']->load();
+              // update last access date
+              $_SESSION['user']->updateLastAccessDate();
+              #$_SESSION['registered_user'] = $_SESSION['user'];
+              // TODO unregister also "setting" and "task_setting"
+              unset($_SESSION['editor']);
+              if ($use_accounting_system) {
+                  if (count($positiveCredits)>1) {
+                          header("Location: " . "select_credit.php"); exit();				
+                  }
+                  $firstCredit = $positiveCredits[0];
+                  $groups = $creditOwner->myGroupsForCredit($firstCredit);
+                  if (count($positiveCredits)==1 && count($groups)>1) {
+                          $_SESSION['credit'] = $firstCredit->id();
+                          header("Location: " . "select_group.php"); exit();
+                  }
+                  if (count($positiveCredits)==1 && count($groups)==1) {
+                          $_SESSION['credit'] = $firstCredit->id();
+                          $_SESSION['group'] = $groups[0]->id();
+                  }
               }
-            else {
-                header("Location: " . "home.php"); 
-                exit();
+              if ( $req != false ) {
+                  header("Location: " . $req); 
+                  exit();
+                }
+              else {
+                  header("Location: " . "home.php"); 
+                  exit();
+              }
+            } else {
+              // The admin goes straigth home
+              header("Location: " . "home.php"); 
+              exit();
             }
   	}
   } else if ($_SESSION['user']->isLoginRestrictedToAdmin()) {
@@ -150,11 +157,8 @@ if (isset($_POST['password'])) {
     if ($_SESSION['user']->isSuspended()) {
       $message = "            <p class=\"warning\">Your account has been suspended, please contact the administrator.</p>\n";
     }
-    else if ($_SESSION['user']->exists()) {
-      $message = "            <p class=\"warning\">The password does not match, please try again.</p>\n";
-    }    
     else {
-      $message = "            <p class=\"warning\">This account does not exist, please use the link above to register.</p>\n";
+      $message = "            <p class=\"warning\">Sorry, wrong user name or password.</p>\n";
     }
   }
 }
@@ -244,7 +248,7 @@ include("header.inc.php");
                     if ( $enableUserAdmin == True ) {
                       $login_message = "<p class=\"expl\">If you do not have an account, please register <a href=\"registration.php\">here</a>.</p>";
                     } else {
-                      $login_message = "<p class=\"expl\">If you do not have an account, please contact your administrator.</p>";
+                      $login_message = "<br />"; //<p class=\"expl\">If you do not have an account, please contact your administrator.</p>";
                     }
                     echo $login_message;
                     ?>
