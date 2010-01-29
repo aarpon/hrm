@@ -225,8 +225,11 @@ Class QueueManager {
 			$filename = $image_folder . "/" . $user->name() . "/" . $image_source . "/" . $file;
 			if (stristr($filename, ".ics"))  {
 				$batch .= "put \"" . $filename . "\"\n";
-				$filename = eregi_replace(".ics", ".ids", $filename);
+error_log("ICS FILE: put \"" . $filename . "\"\n");
+				//$filename = eregi_replace(".ics", ".ids", $filename);
+				$filename = substr($filename, 0, strrpos($filename, '.ics')) . ".ids";
 				$batch .= "put \"" . $filename . "\"\n";
+error_log("IDS FILE: put \"" . $filename . "\"\n");
 			}
 			else if (stristr($filename, ".tif") || stristr($filename, ".tiff")) {
 				// TODO: if ImageFileFormat = single TIFF file, do not send corresponding series
@@ -240,10 +243,10 @@ Class QueueManager {
 					$basename = preg_replace("/([^_]+|\/)(_)(T|t)([0-9]+)(\.)(\w+)/", "$1", $filename);
 					//$name = preg_replace("/(.*)\.[STK|stk]$/", "$1", $basename);
 					$batch .= "put \"" . $basename . "*\"\n";
-                }
-                else {
+				}
+				else {
 					$batch .= "put \"" . $filename . "\"\n";
-                }
+				}
 			}
 			else {
 				$batch .= "put \"" . $filename . "\"\n";
@@ -392,8 +395,9 @@ Class QueueManager {
 		// TODO check if it is necessary
 		$queue = $this->queue;
 		// Remove broken jobs
-		if ($queue->removeMarkedJobs())
+		if ($queue->removeMarkedJobs()) {
                         report("broken jobs removed", 2);
+		}
 		$runningJobs = $queue->runningJobs();
         if (count($runningJobs) > 0) {
             report(count($runningJobs) . " job" . (count($runningJobs) == 1 ? " is" : "s are") . " running", 2);
@@ -452,11 +456,15 @@ Class QueueManager {
 					unlink($errorFile);
 			}
 			else {
+				// THIS JOB HAS FINISHED WITH SUCCESS. WRITE DATA INTO THE STATISTICS TABLE
 				report("job " . $desc->id() . " completed on " . $job->server(), 1);
 				// Clean up server
 				$this->cleanUpFileServer($job);
 				// Remove job
 				$this->stopTime = $queue->stopJob($job);
+				// Report to statistics table
+				$this->updateStatistics($job, $startTime, $stopTime);
+	
 				// Write email
 				$this->writeParameterFile($job, $startTime);
 				if ($send_mail) $this->notifySuccess($job, $startTime);
@@ -588,6 +596,30 @@ Class QueueManager {
 			}
 		}
 		return $result;
+	}
+	
+	function updateStatistics($job, $startTime, $stopTime) {
+		$this->waitForDatabaseConnection();
+		$db = new DatabaseConnection();
+		
+		$desc = $job->description();
+		$id = $desc->id();
+	report(" ");
+	report("job id = $id");
+	report("owner = ");
+	report("group = ");
+	report("start = $startTime");
+	report("stop = $stopTime ");
+	report("input file format = ");
+	report("output file format = ");
+	report("PSF format = ");
+	report("geometry = ");
+	report("microscope type = ");
+	report(" ");	
+	
+		
+		
+		
 	}
 
 	// TODO check what happens if a job fails and the next one succeeds
@@ -804,6 +836,7 @@ Class QueueManager {
 		$server = $queue->availableServer();
 		// TODO refactor this in order to manage error logs per job
 		foreach ($server as $name) {
+	
 			$this->nping[$name] = 0;
 			if (!$queue->isServerBusy($name)) {
 				$errorFile = $logdir . "/" . $name . "_error.txt";
