@@ -159,21 +159,21 @@ include("header.inc.php");
 			  </td>
 			  
 			  <td class="text"><div class="cell">
-                          <a href="./file_management.php">File manager</a><br />
+                <a href="./file_management.php">File manager</a><br />
 			  <p />Upload, download and view your raw and deconvolved data.
-                          </div>
+                </div>
 			  </td>
 			  
 			  <td class="icon">
-				<a href="#">
+				<a href="./statistics.php">
 				<img alt="Statistics" src="./images/stats.png" />
 				</a>
 			  </td>
 			  
 			  <td class="text"><div class="cell">
-                          <a href="#">Global statistics</a><br />
+                  <a href="./statistics.php">Global statistics</a><br />
 				<p />Summary of usage statistics for all users.
-                                </div>
+                  </div>
 			  </td>
 			  
 		    </tr>
@@ -187,9 +187,9 @@ include("header.inc.php");
 			  </td>
 			  
 			  <td class="text"><div class="cell">
-                          <a href="./select_parameter_settings.php">Image templates</a><br />
+                <a href="./select_parameter_settings.php">Image templates</a><br />
 			  <p />Create templates for the image parameters.
-                          </div>
+                </div>
 			  </td>
 			  
 			  <td class="icon">
@@ -199,9 +199,9 @@ include("header.inc.php");
 			  </td>
 			  
 			  <td class="text"><div class="cell">
-                          <a href="./select_task_settings.php">Restoration templates</a><br />
+                <a href="./select_task_settings.php">Restoration templates</a><br />
 				<p />Create templates for the restoration parameters.
-                                </div>
+                </div>
 			  </td>
 			  
 		    </tr>
@@ -215,9 +215,9 @@ include("header.inc.php");
 			  </td>
 			  
 			  <td class="text"><div class="cell">
-                          <a href="./account.php">Your account</a><br />
+                <a href="./account.php">Your account</a><br />
 				<p />View and change your personal data.
-                                </div>
+                </div>
 			  </td>
 
 			  <td class="icon">
@@ -227,9 +227,9 @@ include("header.inc.php");
 			  </td>
 			  
 			  <td class="text"><div class="cell">
-                          <a href="./update.php">Database update</a><br />
+                <a href="./update.php">Database update</a><br />
 				<p />Update the database to the latest version.
-                                </div>
+                </div>
 			  </td>
 			  
 		    </tr>
@@ -254,9 +254,9 @@ include("header.inc.php");
 			  </td>
 			  
 			  <td class="text"><div class="cell">
-                          <a href="./select_parameter_settings.php">Start a job</a><br />
+                <a href="./select_parameter_settings.php">Start a job</a><br />
 				<p />Create and start deconvolution jobs.
-                              </div>
+                </div>
 			  </td>
 			  
 			  <td class="icon">
@@ -280,10 +280,10 @@ include("header.inc.php");
 				}
 			  ?>
 			  <td class="text"><div class="cell">
-                          <a href="./job_queue.php">Queue status</a><br />
+                <a href="./job_queue.php">Queue status</a><br />
 				<p />See all running jobs.<br />
-                                You have <?php echo $str; ?> in the queue.
-                                </div>
+                You have <?php echo $str; ?> in the queue.
+                </div>
 			  </td>
 		    
 			</tr>
@@ -297,21 +297,21 @@ include("header.inc.php");
 			  </td>
 			  
 			  <td class="text"><div class="cell">
-                          <a href="./file_management.php">File manager</a><br />
+                <a href="./file_management.php">File manager</a><br />
 			  <p />Upload, download and view your raw and deconvolved data.
-                          </div>
+                </div>
 			  </td>
 			  
 			  <td class="icon">
-				<a href="#">
+				<a href="./statistics.php">
 				<img alt="Statistics" src="./images/stats.png" />
 				</a>
 			  </td>
 			  
 			  <td class="text"><div class="cell">
-                          <a href="#">Your statistics</a><br />
+                <a href="./statistics.php">Your statistics</a><br />
 				<p />Summary of your usage statistics.
-                            </div>
+                </div>
 			  </td>
 			  
 		    </tr>
@@ -328,9 +328,9 @@ include("header.inc.php");
 			  </td>
 			  
 			  <td class="text"><div class="cell">
-                          <a href="./account.php">Your account</a><br />
+                <a href="./account.php">Your account</a><br />
 				<p />View and change your personal data.
-                            </div>
+                </div>
 			  </td>
 			  
 			  <td class="icon"></td>
