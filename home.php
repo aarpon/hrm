@@ -80,8 +80,8 @@ if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
 
 $message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
 
-// Refresh the page every 30 seconds
-$meta = "<meta http-equiv=\"refresh\" content=\"30\" />";
+// Refresh the page every 10 seconds
+$meta = "<meta http-equiv=\"refresh\" content=\"10\" />";
 include("header.inc.php");
 
 ?>

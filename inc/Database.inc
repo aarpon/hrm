@@ -562,7 +562,14 @@ Class DatabaseConnection {
       // Get current username
       $row = $users->FetchRow( );
       $username = $row[ 0 ];
-      $rs = $this->execute( "SELECT id FROM job_queue WHERE username = '" . $username . "' AND status = 'queued' ORDER by queued ASC;" );
+      $query = "SELECT id
+        FROM job_queue, job_files
+        WHERE job_queue.id = job_files.job AND
+          job_queue.username = job_files.owner AND
+          job_queue.username = '" . $username . "' AND
+          status = 'queued'
+        ORDER BY job_files.file asc";
+      $rs = $this->execute( $query );
       if ( $rs ) {
         $userJobs[ $i ] = array( );
         $counter = 0;
@@ -739,8 +746,12 @@ Class DatabaseConnection {
     return $result;
   }
 
-  function getNextIdFromQueue() { 
-    $query = "SELECT id FROM job_queue WHERE status='queued' order by priority desc, status desc";
+  function getNextIdFromQueue() {
+    // For the query we join job_queue and job_files, since we want to sort also by file name
+    $query = "SELECT id
+    FROM job_queue, job_files
+    WHERE job_queue.id = job_files.job AND job_queue.username = job_files.owner
+    ORDER BY job_queue.priority desc, job_queue.status desc, job_files.file desc";
     $result = $this->queryLastValue($query);
     if (!$result) {
       return NULL;
@@ -749,7 +760,11 @@ Class DatabaseConnection {
   }
 
   function getQueueContents() {
-    $query = "select id, username, queued, start, server, process_info, status from job_queue order by priority asc, queued asc, status asc";
+    // For the query we join job_queue and job_files, since we want to sort also by file name
+    $query = "SELECT id, username, queued, start, server, process_info, status, file
+    FROM job_queue, job_files
+    WHERE job_queue.id = job_files.job AND job_queue.username = job_files.owner
+    ORDER BY job_queue.priority asc, job_queue.queued asc, job_queue.status asc, job_files.file asc";
     $result = $this->query($query);
     return $result;
   }

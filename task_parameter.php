@@ -316,6 +316,8 @@ include("header.inc.php");
         
         <form method="post" action="" id="select">
           
+           <h4>How should your images be restored?</h4>
+           
              <fieldset class="setting">  <!-- deconvolution algorithm -->
             
                 <legend>

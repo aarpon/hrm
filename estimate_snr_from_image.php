@@ -89,9 +89,9 @@ function showFileBrowser() {
     $info = '
             <h3>Quick help</h3>
 
-            <p>Select a raw image to estimate the Signal-To-Noise ratio from it.
+            <p>Select a raw image to estimate the Signal-to-Noise Ratio (SNR).
                You can then use the estimated SNR values in the Restoration
-               Settings to deconvolve similar images, acquired in similar
+               Settings to deconvolve similar images, acquired under similar
                conditions.</p>
             <p>Please notice that undersampled or clipped images will provide
             wrong estimations, as well as wrong deconvolution results!</p>

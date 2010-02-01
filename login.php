@@ -248,7 +248,7 @@ include("header.inc.php");
                     if ( $enableUserAdmin == True ) {
                       $login_message = "<p class=\"expl\">If you do not have an account, please register <a href=\"registration.php\">here</a>.</p>";
                     } else {
-                      $login_message = "<br />"; //<p class=\"expl\">If you do not have an account, please contact your administrator.</p>";
+                      $login_message = "<p class=\"expl\">Please enter your credentials.</p>";
                     }
                     echo $login_message;
                     ?>
@@ -271,7 +271,7 @@ echo $message;
 
 ?>
         </div>
-        
+     
     </div> <!-- rightpanel -->
 
 <?php
