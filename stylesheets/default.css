@@ -813,5 +813,11 @@ option.default {
     background: gray;
 }
 
-
+.superscript {
+    vertical-align: super;
+    font-size: 0.75em;
+    font-weight: bold;
+    padding-left: 3px;
+    padding-right: 3px;
+}
 

@@ -216,7 +216,7 @@ Class Parameter {
 			return '';
 		}
 		$internalValue = $this->internalValue();	// answers the internal representation of the parameters value.
-
+		
 		if ($this->name() == "ExcitationWavelength" ||
 			$this->name() == "EmissionWavelength" ||
 			$this->name() == "SignalNoiseRatio" ||
@@ -259,6 +259,25 @@ Class Parameter {
 				$value = "few bricks";
 				break;
 			}
+		} elseif ( $this->name() == "SignalNoiseRatioRange" ) {
+			$val = "";
+			for ( $i = 0; $i < $numberOfChannels; $i++ ) {
+				for ( $j = 0; $j < count( $value[ $i ] ); $j++ ) {
+					$val .= $value[ $i ][ $j ];
+					if ( $j < ( count( $value[ $i ] ) - 1 ) ) {
+						$val .= "/";
+					}
+				}
+				if ( $i < ( $numberOfChannels - 1 ) ) {
+					$val .= ", ";
+				}
+			}
+			$value = $val;
+		} else if ( $this->name() == "NumberOfIterationsRange" ) {
+			$val = "";
+			$value = array_diff( $value, array( null ) );
+			$strVal = implode( "/", $value );
+			$value = $strVal;
 		} else {
 			if (is_array($value)) {
 				# array_shift($value);
@@ -345,7 +364,7 @@ Class Parameter {
 		);
 		$name = str_replace($uppercase, $lowercase, $name);
 		
-		if (strcmp($this->name,"BackgroundOffsetPercent") == 0) {
+		if (strcmp($this->name(),"BackgroundOffsetPercent") == 0) {
 			$tempstring = " background absolute offset:";
 			$result = $result . str_pad($tempstring, 35, ' ', STR_PAD_RIGHT);
 		}

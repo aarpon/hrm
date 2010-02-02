@@ -757,13 +757,13 @@ Class QueueManager {
 		$pid = $job->pid();
 		$server = $job->server();
 		$result = '';
-		$result = $result . "\n\nJob id: $id (pid $pid on $server)";
-		$result = $result . "\nparameter used:\n";
-		$result = $result . "\nparameter setting:\n";
+		$result = $result . "\nSummary:\n";
+		$result = $result . "\nJob id: $id (pid $pid on $server)\n";
+		$result = $result . "\nImage parameters:\n\n";
 		$parameterSetting = $desc->parameterSetting();
 		$parameterSettingString = $parameterSetting->displayString();
 		$result = $result . $parameterSettingString;
-		$result = $result . "\ntask setting:\n";
+		$result = $result . "\nRestoration parameters:\n\n";
 		$taskSetting = $desc->taskSetting();
 		$taskSettingString = $taskSetting->displayString();
 		$result = $result . $taskSettingString;

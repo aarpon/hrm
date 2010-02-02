@@ -144,7 +144,7 @@ include("header.inc.php");
 			  
 			  <td class="text"><div class="cell">
                           <a href="./job_queue.php">Queue status</a><br />
-				<p />See and manage all running jobs.
+				<p />See and manage all jobs.
                           </div>
 			  </td>
 		    
@@ -281,7 +281,7 @@ include("header.inc.php");
 			  ?>
 			  <td class="text"><div class="cell">
                 <a href="./job_queue.php">Queue status</a><br />
-				<p />See all running jobs.<br />
+				<p />See all jobs.<br />
                 You have <?php echo $str; ?> in the queue.
                 </div>
 			  </td>

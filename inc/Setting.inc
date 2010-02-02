@@ -2080,6 +2080,12 @@ Class TaskSetting extends Setting {
 			if ($parameter->name() == 'SignalNoiseRatioRange' && !$rangeUsedForSignalNoiseRatio) {
 				continue;
 			}
+			if ($parameter->name() == 'SignalNoiseRatioUseRange' ) {
+				continue;
+			}
+			if ($parameter->name() == 'NumberOfIterationsUseRange' ) {
+				continue;
+			}
 			if ($parameter->name() == 'BackgroundOffsetPercent' && $rangeUsedForBackgroundOffset) {
 				continue;
 			}
@@ -2106,10 +2112,6 @@ Class TaskSetting extends Setting {
 			}
 			if ($parameter->name() == 'FullRestoration' || $parameter->name() == 'RemoveNoise' || $parameter->name() == 'RemoveBackground')
 				continue;
-			//if ($parameter->name() == 'SignalNoiseRatio') {
-			//	$snr = $parameter->value();
-			//	$parameter->setValue(array_slice($snr, 0, $this->numberOfChannels() ));
-			//}
             if ($parameter->name() == 'SignalNoiseRatio') {
                 $snr = $parameter->value();
 				$parameter->setValue(array_slice($snr, 0, $this->numberOfChannels() ));
@@ -2118,11 +2120,9 @@ Class TaskSetting extends Setting {
                 else if ($algorithm == 'qmle')
                     $result = $result . $parameter->displayQMLEString($this->numberOfChannels());
             }
-            else
+            else {
                 $result = $result . $parameter->displayString($this->numberOfChannels());
-			//if ($parameter->name() == 'SignalNoiseRatio') {
-			//	$parameter->setValue($snr);
-			//}
+            }
 		}
 		return $result;
 	}

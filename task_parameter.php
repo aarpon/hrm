@@ -57,14 +57,6 @@ require_once("./inc/Setting.inc");
 
 session_start();
 
-
-if (isset($_GET['exited'])) {
-  $_SESSION['user']->logout();
-  session_unset();
-  session_destroy();
-  header("Location: " . "login.php"); exit();
-}
-
 if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
   header("Location: " . "login.php"); exit();
 }
@@ -244,7 +236,7 @@ else {
       $_SESSION["task_setting"]->set($parameter);
       $numberOfIterationsRangeParam = $_SESSION['task_setting']->parameter("NumberOfIterationsRange");
       $numberOfIterationsRange = $numberOfIterationsRangeParam->value();
-      //$numberOfIterationsRange = array(NULL, NULL, NULL, NULL);
+      $numberOfIterationsRange = array(NULL, NULL, NULL, NULL);
       for ($i = 0; $i < count($values); $i++) {
         $numberOfIterationsRange[$i] = $values[$i];
       }
@@ -400,7 +392,7 @@ if ($selectedValue == "cmle")
 ?>
                     <div id="cmle-snr" class="multichannel"<?php echo $visibility?>>
                     <ul>
-                      <li>SNR: 
+                      <li>SNR<span class="superscript">(*)</span>: 
                       <div class="multichannel">
 <?php
 
@@ -576,7 +568,7 @@ for ($i=0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
                 <div id="criteria">
                 
                     <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=MaxNumOfIterations')"><img src="images/help.png" alt="?" /></a>
-                    number of iterations:
+                    number of iterations<span class="superscript">(*)</span>:
                     
 <?php
 
@@ -654,6 +646,14 @@ if ($parameter->value() != null) {
         'Classic Maximum Lilelihood Estimation' algorithm.</p>
             
         <p>The first stopping criterium reached, will stop the restoration.</p>
+        
+        <p><span class="superscript">(*)</span>
+        The fields <strong>SNR</strong> (for the Classic Maximum Likelihood
+        Estimation algorithm only) and <strong>number of iterations</strong>
+        can accept multiple values. This is a commodity tool to optimize
+        restoration parameters. By setting the SNR value to '10 20 40', for
+        instances, three jobs will be run: the first with SNR value 10, the
+        second with SNR value 20, and the third with SNR value 40.</p>
         
       </div>
         

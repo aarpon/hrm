@@ -57,12 +57,7 @@ require_once("./inc/Setting.inc");
 require_once("./inc/Util.inc");
 
 session_start();
-if (isset($_GET['exited'])) {
-  $_SESSION['user']->logout();
-  session_unset();
-  session_destroy();
-  header("Location: " . "login.php"); exit();
-}
+
 if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
   header("Location: " . "login.php"); exit();
 }

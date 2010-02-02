@@ -135,15 +135,7 @@ Class JobDescription {
     //
     // In previous versions of the HRM, the web interface would create compound
     // jobs that the queue manager would then process. Now, this task has become
-    // responsibility of the web interface. Moreover, a few changes have been
-    // introduced:
-    //
-    // - Jobs with multiple file selection are 'processed' right-away, without
-    //   even generating any compound jobs;
-    // - Jobs with parameter ranges are treated as compound jobs as before
-    // - Jobs with multiple files and with parameter ranges are decomposed first
-    //
-    //      In a future HRM release, compound jobs should be removed completely!
+    // responsibility of the web interface.
     //
     // =========================================================================
 
@@ -154,8 +146,7 @@ Class JobDescription {
 
     if ( $result ) {
       
-      // Only compound jobs due to parameter ranges still need to be processed
-      // here
+      // Process compound jobs
       $this->processCompoundJobs( );
     
       // Assign priorities
@@ -171,21 +162,6 @@ Class JobDescription {
      
   function createJob() {
     global $use_accounting_system;
-    $result = True;
-    $files = $this->files( );
-    for ( $i = 0; $i < count( $files ); $i++ ) {
-      // Create a job with univocal ID for current file
-      $this->id = (string)(uniqid(''));  // New ID
-      $this->setFiles( array( $files[ $i ] ) );   // Only current file 
-      $result = $this->createSingleFileJob( );
-    }
-    return $result;
-  }
-  
-  // This function create individual jobs for multiple files right-away,
-  // thereby bypassing the creation of multi-file compound jobs.
-  // Compound jobs generated from parameter ranges are still processed as usual.
-  function createSingleFileJob( ) {
     $result = True;
     $jobParameterSetting = new JobParameterSetting();
     $jobParameterSetting->setOwner($this->owner);
