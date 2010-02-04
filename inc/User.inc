@@ -53,11 +53,14 @@
 require_once "Database.inc";
 require_once "Setting.inc";
 require_once "hrm_config.inc";
-require_once "Ldap.inc";
 require_once "ActiveDirectory.inc";
 
 global $authenticateAgainst;
 global $use_ldaps;
+
+if ( $authenticateAgainst == "LDAP" ) {
+  require_once "Ldap.inc";
+}
 
 //!---------------------------------------------------------
 // @class    Owner
