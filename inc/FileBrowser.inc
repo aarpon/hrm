@@ -79,6 +79,15 @@ function fileButton ($type) {
             $tip = 'Pack selected images and related files, and download';
             break;
 
+        case "upload":
+            $img = "images/upload.png";
+            $onClick = "uploadImages()";
+            $alt = "Upload";
+            $tip = 'Upload a file (or a compressed archive of files) to the server';
+            break;
+
+
+
         case "delete":
             $img = "images/delete.png";
             $onClick = "deleteImages()";
@@ -88,6 +97,9 @@ function fileButton ($type) {
 
         case "update":
             # This button posts the form.
+            # $img = "images/update.png";
+            # $onClick = "updateListing()";
+            # $alt = "Refresh";
             $mode = "post";
             $value = "";
             $name = "update";
@@ -196,6 +208,8 @@ if ($files != null) {
 function imageAction (list) {
     var n = list.selectedIndex;     // Which menu item is selected
     var val = list[n].value;
+    action = '';
+    changeDiv('actions', '');
 
     switch ( val )
     {
@@ -234,7 +248,7 @@ include("header.inc.php");
 
     <div id="content">
         <h3><?php echo $page_title; ?></h3>
-  <form method="post" action="" id="file_browser" >
+  <form method="post" action="" id="file_browser" onSubmit="return confirmSubmit()" >
 
     
       <fieldset>
@@ -264,6 +278,7 @@ include("header.inc.php");
         </div>
         
       </fieldset>
+      <div id="actions"><!-- do not remove !--></div>
 
       <div id="selection">
         <?php foreach ($file_buttons as $b) { echo fileButton($b); }; ?>

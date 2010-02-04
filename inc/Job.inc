@@ -228,6 +228,7 @@ Class Job {
 			$image = $huygens_server_image_folder . $user->name() . "/" . $image_destination . "/" . $desc->relativeSourcePath() . $resultImage;
 			// escape special characters in image path
 			$image = eregi_replace(" ", "\\ ", $image);
+                        $image = str_replace(".ics",".i*s", $image);
 			//error_log("Retrieving result image...");
 			//error_log("sudo mkdir -p " . escapeshellarg($path));
 			$result = exec("sudo mkdir -p " . escapeshellarg($path));

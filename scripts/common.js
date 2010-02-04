@@ -52,9 +52,17 @@ function setPrevGen(index, mode) {
     window.generated[index] = mode;
 }
 
+function updateListing() {
+
+    action = 'update';
+    document.file_browser.submit();
+}
+
+
 function deleteImages() {
 
     control = document.getElementById('selection').innerHTML;
+    action = 'delete';
     changeDiv('selection', 'Selected files will be deleted, please confirm:'
        + '<br />'
        + '<input name="delete" type="submit" value="" class="icon delete" '
@@ -65,11 +73,24 @@ function deleteImages() {
 
 }
 
+function confirmSubmit() {
+    if (action != '') {
+        changeDiv('actions', 'Please wait...<input type="hidden" name="'+action+'" value="1">');
+    } else {
+        changeDiv('actions', '');
+    }
+    action = '';
+    changeDiv('selection', control);
+    return true;
+}
+
 function downloadImages() {
 
     control = document.getElementById('selection').innerHTML;
+    action = 'download';
     changeDiv('selection', 'Selected files will be packed for downloading '
        +  '(that may take a while). Please confirm and wait:' 
+       + '<input type="hidden" name="jose" value="myself"> '
        + '<br /><input name="download" type="submit" value="" '
        + 'class="icon download" '
        +     'onmouseover="Tip(\'Confirm download\')" onmouseout="UnTip()"/>'
@@ -80,6 +101,8 @@ function downloadImages() {
 }
 
 function cancelSelection() {
+    action = '';
+    changeDiv('actions', '');
     changeDiv('selection', control);
 }
 

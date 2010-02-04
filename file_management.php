@@ -191,24 +191,27 @@ if (isset($_POST['delete'])) {
 
 # $browse_folder can be 'src' or 'dest'.
 $browse_folder = "dest";
-# Number of displayed files.
-$size = 10;
-$multiple_files = true;
-$page_title = "File management";
-$form_title = "available restored images on server";
+
+if (isset($_GET['folder']) ) {
+    $browse_folder = $_GET['folder'];
+}
+
 // To (re)generate the thumbnails, don't use template data, as it is not present
 // here.
+
 $useTemplateData = 0;
+$file_buttons = array();
 
-$top_navigation = '
-            <ul>
-            <li>'.$_SESSION['user']->name().'</li>
-            <li><a href="'.getThisPageName().'?home=home"><img src="images/home.png" alt="home" />&nbsp;Home</a></li>
-            <li><a href="javascript:openWindow(\'http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpFileManagement\')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
-        </ul>
- ';
+if ( $browse_folder == "dest" ) {
+    // Number of displayed files.
+    $size = 10;
+    $multiple_files = true;
+    $page_title = "Result files management";
+    $form_title = "available restored images on server";
+    $fileBrowserLinks = '<li><a href="'.getThisPageName().'?folder=src">'.
+        'Originals</a></li><li>Results</li>';
 
-if ($allowHttpTransfer) {
+    if ($allowHttpTransfer) {
     $info = "<h3>Quick help</h3>
             <p>This is a list of the images in your destination directory.</p>
             <p>Click on a file to see (or create) a preview.</p>
@@ -219,12 +222,41 @@ if ($allowHttpTransfer) {
             <b>long time </b>to be packaged before downloading.)</p>
             <p> Use the <b>delete</b> icon to delete the selected files
             instead.</p>";
+    $file_buttons[] = "download";
+    }
+
+
+} else {
+    $browse_folder = "src";
+    $size = 10;
+    $multiple_files = true;
+    $page_title = "Original files management";
+    $form_title = "available raw images on server";
+    $fileBrowserLinks = '<li>Originals</li>'.
+        '<li><a href="'.getThisPageName().'?folder=dest">'.
+        'Results</a></li>';
+
+    if ($allowHttpTransfer) {
+    $info = "<h3>Quick help</h3>
+            <p>This is a list of the images in your source directory.</p>
+            <p>Click on a file to see (or create) a preview.</p>
+            <p>Select the files you want to delete (you can <b>SHIFT-</b> and
+            <b>CTRL-click</b> for multiple selection) and press the
+            <b>delete</b> icon to delete them.
+            </p>";
+    $file_buttons[] = "upload";
+    }
 }
 
-$file_buttons = array();
-if ($allowHttpTransfer) {
-    $file_buttons[] = "download";
-}
+$top_navigation = '
+            <ul>
+            <li>'.$_SESSION['user']->name().'</li>
+            '.$fileBrowserLinks.'
+            <li><a href="'.getThisPageName().'?home=home"><img src="images/home.png" alt="home" />&nbsp;Home</a></li>
+            <li><a href="javascript:openWindow(\'http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpFileManagement\')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
+        </ul>
+ ';
+
 $file_buttons[] = "delete";
 $file_buttons[] = "update";
 
@@ -232,6 +264,7 @@ $control_buttons = '
 <input name="ref" type="hidden" value="<?php echo $_SESSION[\'referer\']; ?>" />
 <input name="OK" type="hidden" /> 
 ';
+
 
 
 include("./inc/FileBrowser.inc");
