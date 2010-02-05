@@ -80,8 +80,12 @@ function fileButton ($type) {
             break;
 
         case "upload":
+            $max = getMaxFileSize() / 1024 / 1024;
+            $maxFile = "$max MB";
+            $max = getMaxPostSize() / 1024 / 1024;
+            $maxPost = "$max MB";
             $img = "images/upload.png";
-            $onClick = "uploadImages()";
+            $onClick = "uploadImages('$maxFile', '$maxPost')";
             $alt = "Upload";
             $tip = 'Upload a file (or a compressed archive of files) to the server';
             break;
@@ -115,11 +119,11 @@ function fileButton ($type) {
     if ($error) { return $error; }
 
     if ($mode == "post" ) {
-        $ret = "<input name=\"$name\" type=\"submit\" 
+        $ret = "\n\n<input name=\"$name\" type=\"submit\" 
                  value=\"$value\" class=\"$class\" 
                  onmouseover=\"Tip('$tip')\" onmouseout=\"UnTip()\" />";
     } else {
-        $ret = "<img src=\"$img\" alt=\"$alt\"
+        $ret = "\n\n<img src=\"$img\" alt=\"$alt\"
             onclick=\"UnTip(); $onClick\"
             onmouseover=\"Tip('$tip')\" onmouseout=\"UnTip()\" />";
     }
@@ -287,6 +291,7 @@ include("header.inc.php");
         <?php echo $control_buttons; ?>
       </div>
   </form>
+    <div id="post_form"><!-- do not remove !--></div>
       
     </div> <!-- content -->
 

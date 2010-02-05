@@ -165,6 +165,14 @@ if (isset($_GET['compareResult'])) {
 }
 
 
+# $browse_folder can be 'src' or 'dest'.
+$browse_folder = "dest";
+
+if (isset($_GET['folder']) ) {
+    $browse_folder = $_GET['folder'];
+}
+
+
 if ($allowHttpTransfer) {
     $message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
     if (isset($_POST['download'])) {
@@ -178,22 +186,40 @@ if ($allowHttpTransfer) {
     }
 }
 
+if ($allowHttpUpload) {
+    # echo "<pre>"; print_r($_FILES); print_r($_POST); echo "</pre>"; exit;
+
+    if (isset($_POST['upload']) && isset($_FILES) ) {
+        $message = 
+            $_SESSION['fileserver']->uploadFiles($_FILES['upfile'], $browse_folder);
+
+    }
+}
+
+
 if (isset($_POST['delete'])) {
     if (isset($_POST['userfiles']) && is_array($_POST['userfiles'])) {
-        $message = $_SESSION['fileserver']->deleteFiles($_POST['userfiles']);
-        $_SESSION['fileserver']->updateAvailableDestFiles();
+        if ( $browse_folder == "dest" ) {
+            $message = 
+                $_SESSION['fileserver']->deleteFiles($_POST['userfiles'],
+                        "dest");
+        } else {
+            $message = 
+                $_SESSION['fileserver']->deleteFiles($_POST['userfiles'],
+                        "src");
+        }
     }
 } else if (isset($_GET['delete']) ) {
+    # This method is only for result files.
     $deleteArr = array ( $_GET['delete'] );
     $message = $_SESSION['fileserver']->deleteFiles($deleteArr);
     exit;
-}
-
-# $browse_folder can be 'src' or 'dest'.
-$browse_folder = "dest";
-
-if (isset($_GET['folder']) ) {
-    $browse_folder = $_GET['folder'];
+} else if (isset($_POST['update'])) {
+        if ( $browse_folder == "dest" ) {
+            $_SESSION['fileserver']->updateAvailableDestFiles();
+        } else {
+            $_SESSION['fileserver']->updateAvailableFiles();
+        }
 }
 
 // To (re)generate the thumbnails, don't use template data, as it is not present
@@ -204,12 +230,14 @@ $file_buttons = array();
 
 if ( $browse_folder == "dest" ) {
     // Number of displayed files.
-    $size = 10;
+    $size = 15;
     $multiple_files = true;
     $page_title = "Result files management";
     $form_title = "available restored images on server";
     $fileBrowserLinks = '<li><a href="'.getThisPageName().'?folder=src">'.
-        'Originals</a></li><li>Results</li>';
+        '<img src="images/upload_s.png" alt="originals" />&nbsp;Originals</a>'.
+        '</li><li><img src="images/download_s.png" alt="results" />&nbsp;'.
+        'Results</li>';
 
     if ($allowHttpTransfer) {
     $info = "<h3>Quick help</h3>
@@ -228,15 +256,16 @@ if ( $browse_folder == "dest" ) {
 
 } else {
     $browse_folder = "src";
-    $size = 10;
+    $size = 15;
     $multiple_files = true;
     $page_title = "Original files management";
     $form_title = "available raw images on server";
-    $fileBrowserLinks = '<li>Originals</li>'.
+    $fileBrowserLinks = '<li><img src="images/upload_s.png" alt="originals" />'.
+        '&nbsp;Originals</li>'.
         '<li><a href="'.getThisPageName().'?folder=dest">'.
-        'Results</a></li>';
+        '<img src="images/download_s.png" alt="results" />&nbsp;Results</a>'.
+        '</li>';
 
-    if ($allowHttpTransfer) {
     $info = "<h3>Quick help</h3>
             <p>This is a list of the images in your source directory.</p>
             <p>Click on a file to see (or create) a preview.</p>
@@ -244,7 +273,11 @@ if ( $browse_folder == "dest" ) {
             <b>CTRL-click</b> for multiple selection) and press the
             <b>delete</b> icon to delete them.
             </p>";
-    $file_buttons[] = "upload";
+    if ($allowHttpUpload) {
+        $info .= "<p>You can also upload files. To upload multiple files, it
+        may be convenient to ZIP them first in a single archive, that will be
+        decompressed after upload.";
+        $file_buttons[] = "upload";
     }
 }
 
@@ -261,7 +294,7 @@ $file_buttons[] = "delete";
 $file_buttons[] = "update";
 
 $control_buttons = '
-<input name="ref" type="hidden" value="<?php echo $_SESSION[\'referer\']; ?>" />
+<input name="ref" type="hidden" value="'.$_SESSION['referer'].'" />
 <input name="OK" type="hidden" /> 
 ';
 

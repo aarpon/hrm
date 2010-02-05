@@ -368,8 +368,89 @@ Class Fileserver {
               unlink($f);
           }
       }
-  }
 
+      if ( $dir == "src" ) {
+          $this->updateAvailableFiles();
+      } else {
+          $this->updateAvailableDestFiles();
+      }
+
+
+  }
+  //!---------------------------------------------------------
+  // @function    Fileserver::uploadFiles
+  // @desc        Processes the $_FILES array posted when uploading files, 
+  //              moving valid one to the specified directory. ZIP files are
+  //              decompressed.  
+  // @param       files  Array  List of files to be added. See PHP
+  //              documentation: POST method uploads
+  // @param       dir  'src' or 'dest'
+  // @return      Message with details.
+  //!---------------------------------------------------------  
+ 
+  function uploadFiles($files, $dir) {
+
+      if ( $dir == "src" ) {
+          $uploaddir =  $this->sourceFolder();
+      } else {
+          $uploaddir =  $this->destinationFolder();
+      }
+
+      $max = getMaxFileSize() / 1024 / 1024;
+      $maxFile = "$max MB";
+
+      $ok = "";
+      $err = "";
+      $okCnt = 0;
+
+      # print_r($files); exit;
+
+      // This needs some file type validation: only images should be allowed.
+
+      // Zip decompression still pending.
+
+      try {
+
+      foreach ($files['name'] as $i => $name) {
+
+          if ($files['error'][$i]) {
+              $err .= "Invalid file ".basename($name).
+              ", probably larger than $maxFile<br>\n";
+          }
+
+          $uploadfile = $uploaddir . "/" . basename($name);
+
+          if (move_uploaded_file($files['tmp_name'][$i], $uploadfile)) {
+              // echo "File is valid, and was successfully uploaded.\n";
+              $ok .= basename($name)." uploaded <br>\n";
+              $okCnt++;
+          } else {
+              $err .= "Invalid file ".basename($name)."<br>\n";
+          }
+      } 
+      } catch (Exception $e) {
+          $err .= "Error uploading files: ".$e->getMessage();
+      }
+
+      if ($ok == "") {
+          $msg = "No files uploaded!<br>$err";
+      } else {
+          $plural = "";
+          if ($okCnt > 1) {
+              $plural = "s";
+          }
+          $msg = "$okCnt file$plural uploaded.<br>$err";
+      }
+
+      if ( $dir == "src" ) {
+          $this->updateAvailableFiles();
+      } else {
+          $this->updateAvailableDestFiles();
+      }
+
+      return $msg;
+
+  }
 
 
 

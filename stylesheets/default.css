@@ -241,6 +241,25 @@ table {
     vertical-align: middle;
 }
 
+#post_form {
+    font-size: 0.8em;
+    text-align: center;
+}
+
+#post_form input {
+    vertical-align: middle;
+}
+
+#upload_list {
+    padding: 15px;
+    margin: 15px;
+    border: #ccc 2px solid;
+}
+
+#upload_list input {
+    width: 90%;
+}
+
 #settings select {
     width: 100%;
 }
@@ -294,6 +313,9 @@ input.update {
 
 input.download {
     background: url(../images/download.png) no-repeat center;
+}
+input.upload {
+    background: url(../images/upload.png) no-repeat center;
 }
 
 input.save {
@@ -605,6 +627,12 @@ a.filled {
     width: 50%;
 }
 
+#addanotherfile {
+    margin: 5px;
+    color: #f23;
+    font-size: 80%;
+}
+
 span.spacer {
     display: block;
     clear: both;
@@ -808,7 +836,7 @@ option.default {
 }
 
 .footnote {
-    font-size: 70%;
+    font-size: 80%;
 }
 
 .disabled {
@@ -821,5 +849,9 @@ option.default {
     font-weight: bold;
     padding-left: 3px;
     padding-right: 3px;
+}
+
+.removeFile {
+    font-size: 70%;
 }
 
