@@ -225,6 +225,7 @@ table {
 
 #userfiles select {
     width: 100%;
+    text-align: left;
 }
 
 #selection {
@@ -246,6 +247,7 @@ table {
 
 #selectedfiles select {
     width: 100%;
+    text-align: left;
 }
 
 #actions {
