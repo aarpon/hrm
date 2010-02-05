@@ -71,8 +71,14 @@ $image_destination = "huygens_dst";
 // File server base folder as seen from the Huygens server machines (with trailing /)
 $huygens_server_image_folder = "/path/to/hrm_data/";
 
-// Allow HTTP transfer of the original (upload) and restored (download) images
+// Allow HTTP transfer of the restored (download) images
 $allowHttpTransfer = true;
+
+// Allow HTTP transfer of original (upload) images
+// Limitations in upload size must be configured in the PHP settings (normally
+// in php.ini, with the options upload_max_filesize AND post_max_size).
+$allowHttpUpload = true;
+
 
 // Archiver for downloading the results via the web browser:
 // $compressBin is the archiver, including options.  %DEST% will be replaced
