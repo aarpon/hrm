@@ -605,6 +605,44 @@ Class DatabaseConnection {
     // We can now return true
     return $result;
   }
+  
+
+  //!---------------------------------------------------------------
+  // @function    DatabaseConnection::updateStatistics
+  // @desc        Log job information in the statistics table 
+  // @param       job   Job   the job whose information is logged in the database
+  // @return      void
+  //!---------------------------------------------------------------
+  function updateStatistics($job, $startTime) {
+      
+    $desc = $job->description();
+    $parameterSetting = $desc->parameterSetting();
+    $taskSetting = $desc->taskSetting();
+    
+    $stopTime = date("Y-m-d H:i:s");
+    $id = $desc->id();
+    $user = $desc->owner();
+    $owner = $user->name();
+    $group = $this->getGroup($owner);
+    //$group = $desc->group();
+    $parameter = $parameterSetting->parameter('ImageFileFormat');
+    $inFormat = $parameter->value();
+    $parameter = $parameterSetting->parameter('PointSpreadFunction');
+    $PSF = $parameter->value();
+    $parameter = $parameterSetting->parameter('ImageGeometry');
+    $geometry = $parameter->value();
+    $parameter = $parameterSetting->parameter('MicroscopeType');
+    $microscope = $parameter->value();
+    $parameter = $taskSetting->parameter('OutputFileFormat');
+    $outFormat = $parameter->value();
+    
+    $query = "insert into statistics values ('" . $id ."', '" . $owner ."', '" . $group . "','"
+              . $startTime . "', '" . $stopTime . "', '" . $inFormat . "', '" . $outFormat . "', '"
+              . $PSF . "', '" . $geometry . "', '" . $microscope . "')";
+    $this->execute($query);
+    
+  }
+
 
   function flatten($anArray) {
     $result = array();

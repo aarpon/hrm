@@ -441,7 +441,7 @@ Class QueueManager {
 				report("finishing job " . $desc->id() . " with error on " . $job->server(), 1);
 				// Clean up server
 				$this->cleanUpFileServer($job);
-				// Remove job
+				// Reset server and remove job from the job queue (update database) 
 				$this->stopTime = $queue->stopJob($job);
 				// Write email
 				$message = "";
@@ -450,18 +450,17 @@ Class QueueManager {
 					$message = file_get_contents($errorFile);
 				if ($send_mail) $this->notifyError($job, $message, $startTime);
 				if (file_exists($errorFile))
-					unlink($errorFile);
+					unlink($errorFile);	
 			}
 			else {
-				// THIS JOB HAS FINISHED WITH SUCCESS. WRITE DATA INTO THE STATISTICS TABLE
 				report("job " . $desc->id() . " completed on " . $job->server(), 1);
+				// Report information to statistics table
+				$db = new DatabaseConnection();
+				$db->updateStatistics($job, $startTime);
 				// Clean up server
 				$this->cleanUpFileServer($job);
-				// Remove job
+				// Reset server and remove job from the job queue (update database) 
 				$this->stopTime = $queue->stopJob($job);
-				// Report to statistics table
-				$this->updateStatistics($job, $startTime, $stopTime);
-	
 				// Write email
 				$this->writeParameterFile($job, $startTime);
 				if ($send_mail) $this->notifySuccess($job, $startTime);
@@ -595,30 +594,6 @@ Class QueueManager {
 		return $result;
 	}
 	
-	function updateStatistics($job, $startTime, $stopTime) {
-		$this->waitForDatabaseConnection();
-		$db = new DatabaseConnection();
-		
-		$desc = $job->description();
-		$id = $desc->id();
-	report(" ");
-	report("job id = $id");
-	report("owner = ");
-	report("group = ");
-	report("start = $startTime");
-	report("stop = $stopTime ");
-	report("input file format = ");
-	report("output file format = ");
-	report("PSF format = ");
-	report("geometry = ");
-	report("microscope type = ");
-	report(" ");	
-	
-		
-		
-		
-	}
-
 	// TODO check what happens if a job fails and the next one succeeds
 	// TODO refactor this!
 	function errorOccured($job) {
