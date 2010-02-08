@@ -77,6 +77,8 @@ $allowHttpTransfer = true;
 // Allow HTTP transfer of original (upload) images
 // Limitations in upload size must be configured in the PHP settings (normally
 // in php.ini, with the options upload_max_filesize AND post_max_size).
+// Unzipping large archives may also require high max_execution_time and
+// memory_limit variables.
 $allowHttpUpload = true;
 
 

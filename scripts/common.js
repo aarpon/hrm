@@ -62,7 +62,7 @@ function updateListing() {
 function deleteImages() {
 
     if (!checkSelection()) {
-        changeDiv('actions', 'Select one or more images to delete.');
+        changeDiv('upMsg', 'Select one or more images to delete.');
         return;
     }
 
@@ -92,9 +92,9 @@ function checkSelection() {
 function confirmSubmit() {
 
     if (action != '') {
-        changeDiv('actions', 'Please wait...<input type="hidden" name="'+action+'" value="1">');
+        changeDiv('upMsg', 'Please wait...<input type="hidden" name="'+action+'" value="1">');
     } else {
-        changeDiv('actions', '');
+        changeDiv('upMsg', '');
     }
     if (action != 'upload') {
         changeDiv('selection', control);
@@ -114,7 +114,7 @@ function confirmUpload() {
         return false;
     }
 
-    changeDiv('actions', 'Please wait until your browser finishes the file transfer: do not reload or go away from this page.');
+    changeDiv('upMsg', 'Please wait until your browser finishes the file transfer: do not reload or go away from this page.');
 
     spin =  '<center><img src="images/spin.gif" '
         +     'alt=\\\'busy\\\'><br />Please wait...</center>'
@@ -128,6 +128,7 @@ function confirmUpload() {
 function removeFile(file) {
 
     changeDiv('upfile_'+file, '');
+    UnTip();
 
     sel = document.getElementsByName('inputFile');
     cnt =  sel.length;
@@ -139,20 +140,37 @@ function removeFile(file) {
 
 function addFileEntry() {
 
-    flist = document.getElementById('upload_list').innerHTML;
+    /* flist = document.getElementById('upload_list').innerHTML;
     sel = document.getElementsByName('inputFile');
     newFile =  sel.length;
+    */
 
-    c = '<div class="inputFile" name="inputFile"><input type="file" name="upfile[]" size="30" onchange="enableAddMore()"><a onclick="removeFile('+newFile+')" class="removeFile">[X]</a></div>';
+    c = '<div class="inputFile" name="inputFile"><input type="file" name="upfile[]" size="30" onchange="handleAddMore()">&nbsp;<a onclick="removeFile('+fileInputs+')" class="removeFile" onmouseover="Tip(\'Remove this file\')" onmouseout="UnTip()"><img src="images/cancel_help.png" width="11"></a></div>';
 
-    changeDiv('upfile_'+newFile, c);
+    changeDiv('upfile_'+fileInputs, c);
+    fileInputs = fileInputs + 1;
     disableAddMore();
 }
 
-function enableAddMore() {
-    if (newFile > 19) {
+function handleAddMore() {
+    if (fileInputs > 19) {
         return;
     }
+
+    sel = document.getElementsByTagName('input');
+    for (i=0; i<sel.length; i++) {
+        if ( sel[i].name != 'upfile\[\]') { continue; }
+        if ( sel[i].value == '' ) {
+            disableAddMore();
+            return;
+        }
+
+    }
+    enableAddMore();
+}
+
+
+function enableAddMore() {
     changeDiv('addanotherfile', 
               '<a onclick="addFileEntry()">Add another file</a>');
 }
@@ -160,17 +178,18 @@ function disableAddMore() {
     changeDiv('addanotherfile', '');
 }
 
-function uploadImages(maxFile, maxPost) {
+function uploadImages(maxFile, maxPost, archiveExt) {
 
     control = document.getElementById('selection').innerHTML;
     action = 'upload';
     changeDiv('selection','');
-    changeDiv('actions', 'Select a file to upload. Multiple files can '
-           + 'also be uploaded in a single ZIP archive. '
-           + 'Maximum single file size is ' + maxFile
-           +', maximum total transfer size is ' + maxPost + '.');
-    changeDiv('post_form', 
-        '<form id="uploadForm" enctype="multipart/form-data" action="" method="POST" onSubmit="return confirmUpload()">'
+    changeDiv('message', '');
+    changeDiv('upMsg', 'Select a file to upload. Multiple files in a series '
+            + 'can also be uploaded in a single archive ('+archiveExt+'). '
+            + 'Maximum single file size is ' + maxFile
+            +', maximum total transfer size is ' + maxPost + '.');
+    changeDiv('up_form', 
+        '<form id="uploadForm" enctype="multipart/form-data" action="?folder=src&upload=1" method="POST" onSubmit="return confirmUpload()">'
        + '<div id="upload_list">'
        +      '<div id="upfile_0"></div>'
        +      '<div id="upfile_1"></div>'
@@ -202,6 +221,8 @@ function uploadImages(maxFile, maxPost) {
        +        'onmouseover="Tip(\'Cancel\')" onmouseout="UnTip()"/>'
        + ' </form>' );
 
+    fileInputs = 0;
+
     addFileEntry();
 
 }
@@ -210,8 +231,9 @@ function uploadImages(maxFile, maxPost) {
 
 function downloadImages() {
 
+    changeDiv('message', '');
     if (!checkSelection()) {
-        changeDiv('actions', 'Select one or more images to download.');
+        changeDiv('upMsg', 'Select one or more images to download.');
         return;
     }
 
@@ -230,8 +252,9 @@ function downloadImages() {
 
 function cancelSelection() {
     action = '';
-    changeDiv('actions', '');
-    changeDiv('post_form', '');
+    changeDiv('message', '');
+    changeDiv('upMsg', '');
+    changeDiv('up_form', '');
     changeDiv('selection', control);
 }
 

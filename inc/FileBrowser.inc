@@ -64,6 +64,7 @@
 //!---------------------------------------------------------
 
 function fileButton ($type) {
+    global $decompressBin;
 
     $error = false;
 
@@ -85,7 +86,9 @@ function fileButton ($type) {
             $max = getMaxPostSize() / 1024 / 1024;
             $maxPost = "$max MB";
             $img = "images/upload.png";
-            $onClick = "uploadImages('$maxFile', '$maxPost')";
+            $validExtensions = 
+                $_SESSION['fileserver']->getValidArchiveTypesAsString();
+            $onClick = "uploadImages('$maxFile', '$maxPost', '$validExtensions')";
             $alt = "Upload";
             $tip = 'Upload a file (or a compressed archive of files) to the server';
             break;
@@ -252,7 +255,7 @@ include("header.inc.php");
 
     <div id="content">
         <h3><?php echo $page_title; ?></h3>
-  <form method="post" action="" id="file_browser" onSubmit="return confirmSubmit()" >
+  <form method="post" action="?folder=<?php echo $browse_folder;?>" id="file_browser" onSubmit="return confirmSubmit()" >
 
     
       <fieldset>
@@ -282,7 +285,6 @@ include("header.inc.php");
         </div>
         
       </fieldset>
-      <div id="actions"><!-- do not remove !--></div>
 
       <div id="selection">
         <?php foreach ($file_buttons as $b) { echo fileButton($b); }; ?>
@@ -291,7 +293,8 @@ include("header.inc.php");
         <?php echo $control_buttons; ?>
       </div>
   </form>
-    <div id="post_form"><!-- do not remove !--></div>
+  <div id="upMsg"><!-- do not remove !--></div>
+  <div id="up_form"><!-- do not remove !--></div>
       
     </div> <!-- content -->
 

@@ -241,12 +241,12 @@ table {
     vertical-align: middle;
 }
 
-#post_form {
+#up_form {
     font-size: 0.8em;
     text-align: center;
 }
 
-#post_form input {
+#up_form input {
     vertical-align: middle;
 }
 
@@ -269,10 +269,10 @@ table {
     text-align: left;
 }
 
-#actions {
+#upMsg {
     text-align: center;
-    font-size: 0.8em;
-    padding: 15px 0px 15px 0px;
+    font-size: 70%;
+    padding: 5px 0 0 0;
 }
 
 input.copy {

@@ -187,12 +187,17 @@ if ($allowHttpTransfer) {
 }
 
 if ($allowHttpUpload) {
-    # echo "<pre>"; print_r($_FILES); print_r($_POST); echo "</pre>"; exit;
+    # echo "<pre>"; print_r($_FILES); print_r($_POST); print_r($_GET);echo "</pre>"; exit;
 
     if (isset($_POST['upload']) && isset($_FILES) ) {
         $message = 
             $_SESSION['fileserver']->uploadFiles($_FILES['upfile'], $browse_folder);
 
+    } else if (isset($_GET['upload'])) {
+        $max = getMaxPostSize() / 1024 / 1024;
+        $maxPost = "$max MB";
+        $message = "<b>Nothing uploaded!</b> Probably total post exceeds ".
+            "maximum allowed size of $maxPost.<br>\n";
     }
 }
 
@@ -274,9 +279,12 @@ if ( $browse_folder == "dest" ) {
             <b>delete</b> icon to delete them.
             </p>";
     if ($allowHttpUpload) {
+
+        $validExtensions = 
+            $_SESSION['fileserver']->getValidArchiveTypesAsString();
         $info .= "<p>You can also upload files. To upload multiple files, it
-        may be convenient to ZIP them first in a single archive, that will be
-        decompressed after upload.";
+        may be convenient to pack them first in a single <b>
+        archive ($validExtensions)</b>, that will be unpacked after upload.";
         $file_buttons[] = "upload";
     }
 }

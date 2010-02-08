@@ -68,7 +68,12 @@ Class Fileserver {
 
   var $validImageExtensions =  array("tif", "tiff", "stk", "lsm", "ims", "pic", "ome", "lif", "ics", "dv", "h5" );
 
+  var $validImageExtensionsExtras =  array("ids");
+
   var $multiImageExtensions =  array("lif");
+  var $validArchiveExtensions =  array();
+
+
   
   //!---------------------------------------------------------
   // @function    Fileserver::Fileserver
@@ -78,11 +83,16 @@ Class Fileserver {
   function Fileserver($name) { 
     global $image_folder;
     global $image_source;
+    global $decompressBin;
     $this->username = $name;
     $this->files = NULL;
     $this->selectedFiles = NULL;
     $this->destFiles = NULL;
     $this->imageExtensions = NULL;
+
+    // Only valid archive types are those for which decompression commands are
+    // specified.
+    $this->validArchiveExtensions = array_keys($decompressBin);
   }
   
   function isReachable() {
@@ -377,11 +387,90 @@ Class Fileserver {
 
 
   }
+
+  //!---------------------------------------------------------
+  // @function    Fileserver::decompressArchive
+  // @desc        Extracts files in compressed archives.
+  // @param       file  String  archive name
+  // @param       type  String  archive type (zip, tar, tgz...)
+  // @param       dest  String  destination path
+  // @param       okMsg String pointer A string to accumulate OK messages
+  // @param       errMsg String pointer A string to accumulate error messages
+  // @param       subdir String pointer An optional subdirectory under $dest to
+  //              expand the files to.
+  // @param       imagesOnly Boolean Apply a filter to delete non-image files
+  //              after extraction.
+  // @return      Void
+  //!---------------------------------------------------------  
+ 
+  function decompressArchive( $file, $type, $dest, &$okMsg, &$errMsg, 
+          $subdir = "", $imagesOnly = true ) {
+
+      global $decompressBin;
+
+      if ( $imagesOnly && $subdir == "" ) {
+          $errMsg .= "Can't decompress: filtering valid images requires ".
+              "expanding the archive to a subdirectory.";
+          return;
+      }
+
+      if ($subdir != "" ) {
+          $dest = $dest."/".$subdir;
+          @mkdir($dest, 0777);
+      }
+
+      $command = str_replace("%DEST%", $dest, $decompressBin[$type]).
+          " \"$file\"";
+
+      $answer = exec($command , $output, $result);
+
+      # $okMsg .= "$type $command: $result";
+      # foreach ($output as $line) {
+          # $okMsg .= "\n<br>$line";
+      # }
+
+      if ($imagesOnly) {
+          $deleted = "";
+          $this->cleanNonImages($dest, "", $deleted);
+          if ($deleted != "") {
+              $errMsg .= "<br>\nThe following files, not being valid images,".
+                  " were discarded: <kbd>$deleted</kbd>";
+          }
+      }
+
+      return;
+
+
+      while($zipEntry = zip_read($zip)) {
+          $fName = zip_entry_name($zipEntry);
+
+          if ( $imagesOnly && !$this->isValidImage($fName, true))  {
+              continue;
+          }
+          $okMsg .= "$fName <br>\n"; continue;
+
+          if(strpos($fName, '.')) {
+              $path = $dest .$fName;
+              touch($path);
+              $fp = fopen($path, 'w+');
+              fwrite($fp, zip_entry_read($zipEntry));
+              fclose($fp); 
+          } else {
+              @mkdir($root . $hedef . 'x/'.$fName);
+          }
+      }
+
+      return $msg;
+
+  }
+
+
+
   //!---------------------------------------------------------
   // @function    Fileserver::uploadFiles
   // @desc        Processes the $_FILES array posted when uploading files, 
-  //              moving valid one to the specified directory. ZIP files are
-  //              decompressed.  
+  //              moving valid one to the specified directory. Compressed files
+  //              are decompressed.  
   // @param       files  Array  List of files to be added. See PHP
   //              documentation: POST method uploads
   // @param       dir  'src' or 'dest'
@@ -407,39 +496,109 @@ Class Fileserver {
 
       // This needs some file type validation: only images should be allowed.
 
-      // Zip decompression still pending.
+      // decompression still pending.
 
       try {
 
       foreach ($files['name'] as $i => $name) {
 
+          if ( $name == "" ) {
+              // This is also error UPLOAD_ERR_NO_FILE;
+              continue;
+          }
+          $basename = basename($name);
+          $uploadfile = $uploaddir . "/" . $basename;
+          $info = pathinfo($uploadfile);
+          $file_name =  basename($uploadfile,'.'.$info['extension']);
+
           if ($files['error'][$i]) {
-              $err .= "Invalid file ".basename($name).
-              ", probably larger than $maxFile<br>\n";
+              $err .= "Invalid file <kbd>".$basename."</kbd>: <b>";
+              switch ($files['error'][$i]) {
+                  case UPLOAD_ERR_INI_SIZE:
+                     $err .= "larger than $maxFile.";
+                     break;
+                  case UPLOAD_ERR_PARTIAL:
+                     $err .= "file loaded only partially.";
+                     break;
+                  case UPLOAD_ERR_NO_TMP_DIR:
+                     $err .= "missing a temporary folder.";
+                     break;
+                  case UPLOAD_ERR_CANT_WRITE:
+                     $err .= "can't write to disk.";
+                     break;
+                  case UPLOAD_ERR_EXTENSION:
+                     $err .= "upload stopped by extension.";
+                     break;
+
+              }
+              $err .="</b><br>\n";
+              continue;
           }
 
-          $uploadfile = $uploaddir . "/" . basename($name);
+          $type = $this->getCompressedArchiveType($name);
+
+          if ( $type != "" ) {
+              # If this is a compressed archive, extract its files.
+              $subdir = $file_name;
+              $okCnt++;
+              $ok .= "Extracting <kbd>".$basename."</kbd>.<br>\n";
+              $this->decompressArchive($files['tmp_name'][$i], $type,
+                      $uploaddir, $ok, $err, $subdir, true);
+              continue;
+
+          }
+
+          if (!$this->isValidImage($name, true)) {
+              $err .= "<kbd>".$basename."</kbd> ";
+              $err .= "<b>unknown image type</b><br>\n";
+              continue;
+
+          }
+
+          $suffix = 0;
+          $maxSuffix = 20;
+
+          while (file_exists($uploadfile)) {
+              $suffix ++;
+              $uploadfile = $uploaddir . "/" . $file_name 
+                  . "_$suffix." . $info['extension'];
+              if ($suffix > $maxSuffix) {
+                  $err .= "File <kbd>".$basename.
+                      "</kbd> exists, <b>can't store more than 20 versions.</b>";
+                  break;
+              }
+          }
+          if ($suffix > 20) {
+              continue;
+          }
 
           if (move_uploaded_file($files['tmp_name'][$i], $uploadfile)) {
               // echo "File is valid, and was successfully uploaded.\n";
-              $ok .= basename($name)." uploaded <br>\n";
+              if ($suffix == 0) {
+                  $ok .= "<kbd>".$basename."</kbd> uploaded <br>\n";
+              } else {
+                  $ok .= "<kbd>".$basename.
+                      "</kbd> already exists, uploaded and <b>renamed</b> ".
+                      "to <kbd>$file_name"
+                      . "_$suffix." . $info['extension']. "</kbd><br>\n";
+              }
               $okCnt++;
           } else {
-              $err .= "Invalid file ".basename($name)."<br>\n";
+              $err .= "Invalid file ".$basename."<br>\n";
           }
       } 
       } catch (Exception $e) {
           $err .= "Error uploading files: ".$e->getMessage();
       }
 
-      if ($ok == "") {
+      if ($okCnt == 0) {
           $msg = "No files uploaded!<br>$err";
       } else {
           $plural = "";
           if ($okCnt > 1) {
               $plural = "s";
           }
-          $msg = "$okCnt file$plural uploaded.<br>$err";
+          $msg = "$okCnt file$plural uploaded.<br>$ok $err";
       }
 
       if ( $dir == "src" ) {
@@ -518,17 +677,53 @@ Class Fileserver {
   //              which is among the extensions of known image
   //              formats. 
   // @param       filename  String  The filename to be checked
+  //              boolean   alsoExtras: consider also extensions as ids
   // @return      Boolean
   //!---------------------------------------------------------  
-  function isValidImage($filename) {
+  function isValidImage($filename, $alsoExtras = false) {
     $ext = substr(strrchr($filename, "."),1);
     $ext = strtolower($ext);
     $result = False;
     if (in_array($ext, $this->validImageExtensions)) {
       $result = True;
     }
+    if ($alsoExtras && (in_array($ext, $this->validImageExtensionsExtras)) ) {
+        $result = True;
+    }
     return $result;
   }
+
+  //!---------------------------------------------------------
+  // @function    Fileserver::getCompressedArchiveType
+  // @desc        Returns the archive type of a filename, if it is a valid
+  //              known compressed archive.
+  // @param       filename  String  The filename to be checked
+  // @return      Type of archive, or "" if it is not an archive.
+  //!---------------------------------------------------------  
+  function getCompressedArchiveType($filename ) {
+
+      if (stristr($filename, ".tar.gz")) {
+          // This double extension is a special case.
+          return "tar.gz";
+      }
+      $ext = substr(strrchr($filename, "."),1);
+      $ext = strtolower($ext);
+      $result = "";
+      if (in_array($ext, $this->validArchiveExtensions)) {
+          $result = $ext;
+      }
+      return $result;
+  }
+
+  function getValidArchiveTypesAsString() {
+      $ret = ""; $sep = "";
+      foreach ($this->validArchiveExtensions as $ext) {
+          $ret .= $sep.".$ext";
+          $sep = " ";
+      }
+      return $ret;
+  }
+
 
   //!---------------------------------------------------------
   // @function    Fileserver::getSubImages
@@ -1498,7 +1693,7 @@ Class Fileserver {
 	  } 
 	  $this->getFilesFrom($newDir, $newPrefix);
 	} else {
-            if (!$this->isValidImage($entry)) {
+            if (!$this->isValidImage($entry, true)) {
                 $this->relocateOldPreview($startDir, $entry);
                 continue;
             }
@@ -1538,7 +1733,7 @@ Class Fileserver {
 	  } 
 	  $this->getDestFilesFrom($newDir, $newPrefix);
         } else {
-            if (!$this->isValidImage($entry)) {
+            if (!$this->isValidImage($entry, true)) {
                 $this->relocateOldPreview($startDir, $entry);
                 continue;
             }
@@ -1553,6 +1748,46 @@ Class Fileserver {
     }
     $dir->close();
   }
+
+  //!---------------------------------------------------------
+  // @function    Fileserver::cleanNonImages
+  // @desc        The recursive function that deletes all files in a directory
+  //              that are not valid images.
+  // @param       startDir  String  The folder to start with  
+  // @param       prefix    String  The actual path prefix 
+  //              relative to the user's image folder. 
+  // @param       msg       String pointer, to accumulate messages.
+  // @return      Void
+  //!---------------------------------------------------------  
+ 
+  function cleanNonImages($startDir, $prefix, &$msg) {
+    $dir = dir($startDir);
+    while ($entry = $dir->read()) { 
+        if ($entry != "." && $entry != ".." && $entry != "hrm_previews") { 
+            if (is_dir($startDir . "/" . $entry)) { 
+                $newDir = $startDir . "/" . $entry;
+                if ($prefix=="") { 
+                    $newPrefix = $entry;
+                } else {  
+                    $newPrefix = $prefix . "/" . $entry;
+                }
+                $this->cleanNonImages($newDir, $newPrefix, $msg);
+            } else {
+                if (!$this->isValidImage($entry, true)) {
+                    $msg .= " $entry";
+                    unlink( $startDir . "/" .$entry);
+                    continue;
+                }
+            }
+        }
+    }
+    // Try to delete the directory: if it is empty, we'll succeed.
+    // TODO: this removing still doesn't work well, debug.  j-)
+    # $msg .= " removing $startDir";
+    # @$rmdir($startDir);
+    $dir->close();
+  }
+ 
  
   // TODO refactor
   //!---------------------------------------------------------
