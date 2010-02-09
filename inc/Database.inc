@@ -623,8 +623,7 @@ Class DatabaseConnection {
     $id = $desc->id();
     $user = $desc->owner();
     $owner = $user->name();
-    $group = $this->getGroup($owner);
-    //$group = $desc->group();
+    $group = $user->userGroup($owner);
     $parameter = $parameterSetting->parameter('ImageFileFormat');
     $inFormat = $parameter->value();
     $parameter = $parameterSetting->parameter('PointSpreadFunction');
@@ -642,7 +641,6 @@ Class DatabaseConnection {
     $this->execute($query);
     
   }
-
 
   function flatten($anArray) {
     $result = array();
