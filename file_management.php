@@ -237,8 +237,8 @@ if ( $browse_folder == "dest" ) {
     // Number of displayed files.
     $size = 15;
     $multiple_files = true;
-    $page_title = "Result files management";
-    $form_title = "available restored images on server";
+    $page_title = "Result files";
+    $form_title = "restored images";
     $fileBrowserLinks = '<li><a href="'.getThisPageName().'?folder=src">'.
         '<img src="images/upload_s.png" alt="originals" />&nbsp;Originals</a>'.
         '</li><li><img src="images/download_s.png" alt="results" />&nbsp;'.
@@ -263,8 +263,8 @@ if ( $browse_folder == "dest" ) {
     $browse_folder = "src";
     $size = 15;
     $multiple_files = true;
-    $page_title = "Original files management";
-    $form_title = "available raw images on server";
+    $page_title = "Original files";
+    $form_title = "raw images";
     $fileBrowserLinks = '<li><img src="images/upload_s.png" alt="originals" />'.
         '&nbsp;Originals</li>'.
         '<li><a href="'.getThisPageName().'?folder=dest">'.
