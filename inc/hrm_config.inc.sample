@@ -45,7 +45,6 @@ $local_huygens_core = "/usr/local/bin/hucore";
 // "Huygens Core 3.5.0p1 initializing Compute Engine 3.5.0p1..."
 //
 // At least the first three numbers are required, the patch level is optional:
-
 $enable_code_for_huygens = "3.5.1";
 
 //==============================================================================
@@ -142,12 +141,8 @@ $send_mail = true;
 $email_sender = "hrm@localhost";
 $email_admin = "hrm@localhost";
 
-// Authentication type (MYSQL, LDAP or ACTIVE_DIR)
+// Authentication type: MYSQL, ACTIVE_DIR or LDAP (LDAP is experimental!)
 $authenticateAgainst = "MYSQL";
-
-// If true, users of the microscope reservation system may have access to HRM 
-// as well
-$allow_reservation_users = false;
 
 // If true, use DES password encryption; if false, use MD5
 $useDESEncryption = false;
@@ -199,9 +194,6 @@ $movieMaxSize = 300;
 // previews but also Simulated Fluorescence Process top-view renderings of the
 // original and the restored images (http://support.svi.nl/wiki/SFP).
 $saveSfpPreviews = true;
-
-// Internal links
-$internal_link["url"] = "<link> followed by text";
 
 // A shell command that executes ping four times and stops afterwards
 $ping_command = 'ping -w 4';	// use this on linux systems
