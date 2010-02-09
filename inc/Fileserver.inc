@@ -439,7 +439,7 @@ Class Fileserver {
           }
           if ($valid != "") {
               $okMsg .= "<br>\nThe following images were extracted: ".
-                  "<kbd>$valid</kbd>";
+                  "<kbd>$valid</kbd><br>\n";
           }
       }
 
@@ -543,12 +543,14 @@ Class Fileserver {
                   continue;
               }
 
-              if ($zsuffix > 0) {
-                  $subdir = $file_name."_".$suffix;
-              }
-
               $okCnt++;
-              $ok .= "Processed <kbd>".$basename."</kbd>.<br>\n";
+              $ok .= "<br>Processed <kbd>".$basename."</kbd>.<br>\n";
+
+
+              if ($zsuffix > 0) {
+                  $subdir = $file_name."_".$zsuffix;
+                  $ok .= "Extracting files to <kbd>$subdir</kbd>.<br>\n";
+              }
               $this->decompressArchive($files['tmp_name'][$i], $type,
                       $uploaddir, $ok, $err, $subdir, true);
               continue;
@@ -1796,8 +1798,12 @@ Class Fileserver {
     // Try to delete the directory: if it is empty, we'll succeed.
     // TODO: this removing still doesn't work well, debug.  j-)
     # $msg .= " removing $startDir";
-    # @$rmdir($startDir);
+
+    # $answer = exec($command , $output, $result);
     $dir->close();
+    if ( @rmdir($startDir) ) {
+        $msg .= " (empty dir '".basename($startDir). "' deleted)";
+    }
   }
  
  

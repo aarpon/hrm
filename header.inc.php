@@ -64,6 +64,7 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 
 <head>
     <title>Huygens Remote Manager</title>
+    <link rel="SHORTCUT ICON" href="images/hrm.ico"/>
 <?php
 
 if (isset($meta)) {
