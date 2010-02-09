@@ -19,6 +19,11 @@ if ( $authenticateAgainst != "MYSQL" ) {
 	$enableUserAdmin = false;
 }
 
+// This parameter is of use only for the MRI installation, and therefore we 
+// hide it from the configurable parameters. If true, users of the microscope
+// reservation system may have access to HRM as well
+$allow_reservation_users = false;
+ 
 $version = 0;
 // Overrule options that do not apply.
 if (isset ($enable_code_for_huygens) ) {
