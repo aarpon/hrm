@@ -431,36 +431,20 @@ Class Fileserver {
 
       if ($imagesOnly) {
           $deleted = "";
-          $this->cleanNonImages($dest, "", $deleted);
+          $valid = "";
+          $this->cleanNonImages($dest, "", $valid, $deleted);
           if ($deleted != "") {
               $errMsg .= "<br>\nThe following files, not being valid images,".
                   " were discarded: <kbd>$deleted</kbd>";
+          }
+          if ($valid != "") {
+              $okMsg .= "<br>\nThe following images were extracted: ".
+                  "<kbd>$valid</kbd>";
           }
       }
 
       return;
 
-
-      while($zipEntry = zip_read($zip)) {
-          $fName = zip_entry_name($zipEntry);
-
-          if ( $imagesOnly && !$this->isValidImage($fName, true))  {
-              continue;
-          }
-          $okMsg .= "$fName <br>\n"; continue;
-
-          if(strpos($fName, '.')) {
-              $path = $dest .$fName;
-              touch($path);
-              $fp = fopen($path, 'w+');
-              fwrite($fp, zip_entry_read($zipEntry));
-              fclose($fp); 
-          } else {
-              @mkdir($root . $hedef . 'x/'.$fName);
-          }
-      }
-
-      return $msg;
 
   }
 
@@ -540,8 +524,31 @@ Class Fileserver {
           if ( $type != "" ) {
               # If this is a compressed archive, extract its files.
               $subdir = $file_name;
+              $zsuffix = 0;
+              $zmaxSuffix = 100;
+
+              $testExpand = $uploaddir . "/" . $subdir;
+
+              while (file_exists($testExpand)) {
+                  $zsuffix ++;
+                  $testExpand = $uploaddir . "/" . $file_name. "_$zsuffix" ;
+                  if ($zsuffix > $zmaxSuffix) {
+                      $err .= "Directory <kbd>".$filename.
+                          "</kbd> exists, <b>can't store more ".
+                          " than $zmaxSuffix versions.</b><br>\n";
+                      break;
+                  }
+              }
+              if ($zsuffix > $zmaxSuffix) {
+                  continue;
+              }
+
+              if ($zsuffix > 0) {
+                  $subdir = $file_name."_".$suffix;
+              }
+
               $okCnt++;
-              $ok .= "Extracting <kbd>".$basename."</kbd>.<br>\n";
+              $ok .= "Processed <kbd>".$basename."</kbd>.<br>\n";
               $this->decompressArchive($files['tmp_name'][$i], $type,
                       $uploaddir, $ok, $err, $subdir, true);
               continue;
@@ -549,7 +556,7 @@ Class Fileserver {
           }
 
           if (!$this->isValidImage($name, true)) {
-              $err .= "<kbd>".$basename."</kbd> ";
+              $err .= "Skipped <kbd>".$basename."</kbd>: ";
               $err .= "<b>unknown image type</b><br>\n";
               continue;
 
@@ -564,11 +571,11 @@ Class Fileserver {
                   . "_$suffix." . $info['extension'];
               if ($suffix > $maxSuffix) {
                   $err .= "File <kbd>".$basename.
-                      "</kbd> exists, <b>can't store more than 20 versions.</b>";
+                      "</kbd> exists, <b>can't store more than $maxSuffix versions.</b>";
                   break;
               }
           }
-          if ($suffix > 20) {
+          if ($suffix > $maxSuffix) {
               continue;
           }
 
@@ -1400,7 +1407,9 @@ Class Fileserver {
       } else {
           echo "\nchangeOpenerDiv('info','Preview generation failed.<br /><br /><kbd>".escapeJavaScript($html)."</kbd>'); ";
       }
-      if ($answer !== NULL) echo "\nwindow.close();";
+      // Close the popup after a short delay, otherwise the image may not load
+      // in the parent window, with some browsers.
+      if ($answer !== NULL) echo "\nsetTimeout(\"window.close()\",200);";
       echo "\n</script>\n\n";
       echo "<br /><br /><a href=\"#\" onclick=\"window.close()\">Close</a>\n";
       # echo "<script type=\"text/javascript\"> window.close(); <script>\n";
@@ -1693,7 +1702,7 @@ Class Fileserver {
 	  } 
 	  $this->getFilesFrom($newDir, $newPrefix);
 	} else {
-            if (!$this->isValidImage($entry, true)) {
+            if (!$this->isValidImage($entry)) {
                 $this->relocateOldPreview($startDir, $entry);
                 continue;
             }
@@ -1721,32 +1730,32 @@ Class Fileserver {
   // @return      Void
   //!---------------------------------------------------------  
   function getDestFilesFrom($startDir, $prefix) {
-    $dir = dir($startDir);
-    while ($entry = $dir->read()) { 
-      if ($entry != "." && $entry != ".." && $entry != "hrm_previews") { 
-	if (is_dir($startDir . "/" . $entry)) { 
-	  $newDir = $startDir . "/" . $entry;
-	  if ($prefix=="") { 
-	    $newPrefix = $entry;
-	  } else {  
-	    $newPrefix = $prefix . "/" . $entry;
-	  } 
-	  $this->getDestFilesFrom($newDir, $newPrefix);
-        } else {
-            if (!$this->isValidImage($entry, true)) {
-                $this->relocateOldPreview($startDir, $entry);
-                continue;
-            }
-      # echo $entry,$prefix," VALID,";
-            if ($prefix=="") { 
-                $this->destFiles[] = $entry;
-            } else { 
-                $this->destFiles[] = $prefix . "/" . $entry;
-            } 
-        }
+      $dir = dir($startDir);
+      while ($entry = $dir->read()) { 
+          if ($entry != "." && $entry != ".." && $entry != "hrm_previews") { 
+              if (is_dir($startDir . "/" . $entry)) { 
+                  $newDir = $startDir . "/" . $entry;
+                  if ($prefix=="") { 
+                      $newPrefix = $entry;
+                  } else {  
+                      $newPrefix = $prefix . "/" . $entry;
+                  } 
+                  $this->getDestFilesFrom($newDir, $newPrefix);
+              } else {
+                  if (!$this->isValidImage($entry)) {
+                      $this->relocateOldPreview($startDir, $entry);
+                      continue;
+                  }
+                  // echo $entry,$prefix," VALID,";
+                  if ($prefix=="") { 
+                      $this->destFiles[] = $entry;
+                  } else { 
+                      $this->destFiles[] = $prefix . "/" . $entry;
+                  } 
+              }
+          }
       }
-    }
-    $dir->close();
+      $dir->close();
   }
 
   //!---------------------------------------------------------
@@ -1756,11 +1765,12 @@ Class Fileserver {
   // @param       startDir  String  The folder to start with  
   // @param       prefix    String  The actual path prefix 
   //              relative to the user's image folder. 
+  // @param       valid     String pointer, to accumulate extracted files.
   // @param       msg       String pointer, to accumulate messages.
   // @return      Void
   //!---------------------------------------------------------  
  
-  function cleanNonImages($startDir, $prefix, &$msg) {
+  function cleanNonImages($startDir, $prefix, &$valid, &$msg) {
     $dir = dir($startDir);
     while ($entry = $dir->read()) { 
         if ($entry != "." && $entry != ".." && $entry != "hrm_previews") { 
@@ -1771,9 +1781,11 @@ Class Fileserver {
                 } else {  
                     $newPrefix = $prefix . "/" . $entry;
                 }
-                $this->cleanNonImages($newDir, $newPrefix, $msg);
+                $this->cleanNonImages($newDir, $newPrefix, $valid, $msg);
             } else {
-                if (!$this->isValidImage($entry, true)) {
+                if ($this->isValidImage($entry, true)) {
+                    $valid .= " $entry";
+                } else {
                     $msg .= " $entry";
                     unlink( $startDir . "/" .$entry);
                     continue;

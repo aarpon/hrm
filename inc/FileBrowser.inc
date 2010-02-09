@@ -216,6 +216,7 @@ function imageAction (list) {
     var n = list.selectedIndex;     // Which menu item is selected
     var val = list[n].value;
     action = '';
+    changeDiv('upMsg', '');
     changeDiv('actions', '');
 
     switch ( val )
@@ -289,6 +290,7 @@ include("header.inc.php");
       <div id="selection">
         <?php foreach ($file_buttons as $b) { echo fileButton($b); }; ?>
       </div>
+      <div id="actions"><!-- do not remove !--></div>
       <div id="controls" class="imageselection">
         <?php echo $control_buttons; ?>
       </div>

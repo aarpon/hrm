@@ -115,8 +115,18 @@ switch ($compressExt) {
         $dlMimeType = "application/x-force-download";
 }
 
-// ImageMagick convert, for thumbnail handling
-$convertBin = "/usr/bin/convert";
+// Tools to decompress uploaded archives. This is an array, each key linked to
+// an archive extension.  %DEST% will be replaced with the user's destination
+// path; can be used as an option or part of the command to change directories
+// with 'cd'.
+// More formats are possible, just add more commands to the array.
+
+$decompressBin['zip'] = "cd %DEST% \n /usr/bin/unzip -o ";
+$decompressBin['tgz'] = "cd %DEST% \n /usr/bin/tar xzf ";
+$decompressBin['tar'] = "cd %DEST% \n /usr//bin/tar xf ";
+$decompressBin['tar.gz'] = "cd %DEST% \n /usr/bin/tar xzf ";
+
+
 
 //==============================================================================
 // HRM configuration parameters
