@@ -1625,22 +1625,25 @@ if ($current_revision < $n) {
 // -----------------------------------------------------------------------------
 $n = 7;
 if ($current_revision < $n) {
+    // Update tables array
+    $tables = $db->MetaTables("TABLES");
+
     if (!in_array("statistics", $tables)) {
-    // If the table does not exist, create it
-    $flds = "
-        id C(30) NOTNULL DEFAULT 0 PRIMARY,
-        owner C(30) DEFAULT 0,
-        research_group C(30) DEFAULT 0,
-        start T DEFAULT NULL,
-        stop T DEFAULT NULL,
-        ImageFileFormat C(255) DEFAULT 0,
-        OutputFileFormat C(255) DEFAULT 0,
-        PointSpreadFunction C(255) DEFAULT 0,
-        ImageGeometry C(255) DEFAULT 0,
-        MicroscopeType C(255) DEFAULT 0
-    ";
+        // If the table does not exist, create it
+        $flds = "
+            id C(30) NOTNULL DEFAULT 0 PRIMARY,
+            owner C(30) DEFAULT 0,
+            research_group C(30) DEFAULT 0,
+            start T DEFAULT NULL,
+            stop T DEFAULT NULL,
+            ImageFileFormat C(255) DEFAULT 0,
+            OutputFileFormat C(255) DEFAULT 0,
+            PointSpreadFunction C(255) DEFAULT 0,
+            ImageGeometry C(255) DEFAULT 0,
+            MicroscopeType C(255) DEFAULT 0
+        ";
         if (!create_table("statistics", $flds)) {
-            $msg = "An error occurred while updating the database to revision " . $n . ".";
+            $msg = "An error occurred while updating the database to revision " . $n . ", statistics table creation.";
             write_message($msg);
             write_to_log($msg);
             write_to_error($msg);
@@ -1651,9 +1654,15 @@ if ($current_revision < $n) {
     // Add 'priority' column in table 'job_queue'
     $tabname = "job_queue";
     if (in_array($tabname, $tables)) {
-        if (!drop_table($tabname))     
+        if (!drop_table($tabname)) {
+            $msg = "An error occurred while updating the database to revision " . $n . ", job_queue 1.";
+            write_message($msg);
+            write_to_log($msg);
+            write_to_error($msg);
             return;
+        }
     }
+    // Create table
     $flds = "
         id C(30) NOTNULL DEFAULT 0 PRIMARY,
         username C(30) NOTNULL,
@@ -1665,9 +1674,14 @@ if ($current_revision < $n) {
         status C(8) NOTNULL DEFAULT queued,
         priority I NOTNULL DEFAULT 0
     ";
-    if (!create_table($tabname, $flds))    
+    if (!create_table($tabname, $flds)) {   
+        $msg = "An error occurred while updating the database to revision " . $n . ", job_queue 2.";
+        write_message($msg);
+        write_to_log($msg);
+        write_to_error($msg);       
         return;
-    
+    }
+
     // Change ics2 extension in ics
     $tabname = "file_extension";
     $record = array();
