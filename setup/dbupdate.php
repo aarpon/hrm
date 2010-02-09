@@ -941,6 +941,13 @@ if ($current_revision == 0) {
     if (!in_array($tabname, $tables)) {
         if (!create_table($tabname, $flds))     
             return;
+        // Insert records in table
+        $records = array("name"=>array("localhost"), 
+                    "huscript_path"=>array("/usr/local/bin/hucore"),
+                    "status"=>array("free"),
+                    "job"=>array(""));
+        if(!insert_records($records,$tabname))    
+            return;
     }
     
     
@@ -1788,6 +1795,27 @@ if ($current_revision < $n) {
             write_message($msg);
             write_to_error($msg);
             return;
+        }
+    }
+    
+    // Check the existence of the server table and the presence of one entry at least
+    // If there is no entry, insert default values (localhost, /usr/local/bin/hucore, free, NULL)
+    $tabname = "server";
+    if (in_array($tabname, $tables)) {
+        $rs = $db->Execute("SELECT * FROM " . $tabname);
+        $temp = $rs->RecordCount();
+        //write_message("Record count = " . $temp);
+        if($temp == 0) {
+            $records = array("name"=>array("localhost"), 
+                    "huscript_path"=>array("/usr/local/bin/hucore"),
+                    "status"=>array("free"),
+                    "job"=>array(""));
+            if(!insert_records($records,$tabname)) {
+                $msg = "An error occurred while updating the database to revision " . $n . ".";
+                write_message($msg);
+                write_to_error($msg);
+                return;
+            }
         }
     }
     
