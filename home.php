@@ -268,7 +268,7 @@ include("header.inc.php");
 			  <?php
 				$db = new DatabaseConnection();
 				$query = "SELECT COUNT(id) FROM job_queue WHERE username = '" . $_SESSION['user']->name( ) . "';";
-				$row = $db->Execute( $query )->FetchRow( );
+				$row = $db->execute( $query )->FetchRow( );
 				$jobsInQueue = $row[ 0 ];
 				
 				if ( $jobsInQueue == 0 ) {

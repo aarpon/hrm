@@ -53,6 +53,7 @@
 
 require_once("./inc/User.inc");
 require_once("./inc/Fileserver.inc");
+require_once("./inc/Stats.inc");
 
 session_start();
 
@@ -66,6 +67,12 @@ if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
 
 $message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
 
+// Create a Stats object
+$stats = new Stats( $_SESSION['user']->name() );
+
+// Create default graph -- TODO: Let the user choose the statistics to display through a select element
+$generatedScript = $stats->getPieChart( 'owner' );
+
 include("header.inc.php");
 
 ?>
@@ -73,7 +80,7 @@ include("header.inc.php");
       Tooltips
     -->
     <span id="ttSpanUp">Go back home.</span>
-    <span id="ttSpanForward">Implement this action.</span>  
+    <span id="ttSpanForward">Implement this action.</span>
 
     <div id="nav">
         <ul>
@@ -82,44 +89,22 @@ include("header.inc.php");
             <li><a href="javascript:openWindow('')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
         </ul>
     </div>
-    
-    <div id="content">
-    
-        <h3>Statistics</h3>
-        
-            <div id="controls">      
-              <input type="button" value="" class="icon up"
-                onclick="document.location.href='home.php'"
-                onmouseover="TagToTip('ttSpanUp' )"
-                onmouseout="UnTip()" />
-              <input type="submit" value="" class="icon next"
-                onclick="process()"
-                onmouseover="TagToTip('ttSpanForward' )"
-                onmouseout="UnTip()" />
-            </div>
 
-    </div> <!-- content -->
+    <h3>Statistics</h3>
 
-    <div id="rightpanel">
+    <div id="container" style="width: 800px; height: 400px; margin: 0 auto"></div>
 
-        <div id="info">
+    <div id="controls">
+      <input type="button" value="" class="icon up"
+        onclick="document.location.href='home.php'"
+        onmouseover="TagToTip('ttSpanUp' )"
+        onmouseout="UnTip()" />
+      <input type="submit" value="" class="icon next"
+        onclick="process()"
+        onmouseover="TagToTip('ttSpanForward' )"
+        onmouseout="UnTip()" />
+      </div>
 
-            <h3>Quick help</h3>
-
-            <p></p>
-            
-        </div>
-        
-        <div id="message">
-<?php
-
-echo $message;
-
-?>
-        </div>
-        
-    </div> <!-- rightpanel -->
-    
 <?php
 
 include("footer.inc.php");
