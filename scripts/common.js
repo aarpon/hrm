@@ -417,10 +417,10 @@ function imgPrev(infile, mode, gen, compare, index, dir, referer, data) {
            break;
         case 3:
            // 3D Preview exists
-           html = '<img id="ithumb" src="file_management.php?getThumbnail='
+           html = '<img id="ithumba" src="file_management.php?getThumbnail='
                   + infile + '.preview_xy.jpg&dir=' + dir
                   + '" alt="XY preview">';
-           html = html + '<br /><img id="ithumb2" src="file_management.php?getThumbnail='
+           html = html + '<br /><img id="ithumbb" src="file_management.php?getThumbnail='
                   + infile + '.preview_xz.jpg&dir=' + dir
                   + '" alt="XZ preview">';
            break;
