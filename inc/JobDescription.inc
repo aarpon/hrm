@@ -188,11 +188,13 @@ Class JobDescription {
   
   function processCompoundJobs() {
     $queue = new JobQueue();
+    $queue->lock();
     $compoundJobs = $queue->getCompoundJobs();
     foreach ($compoundJobs as $jobDescription) {
       $job = new Job($jobDescription);
       $job->createSubJobsOrScript();
-	}
+    }
+    $queue->unlock();
   }
   
   function load() {

@@ -225,6 +225,34 @@ Class JobQueue {
     $result = $db->isServerBusy($name);
     return $result;
   }  
+
+  function isLocked() {
+    $db = new DatabaseConnection();
+    $ans = $db->getSwitchStatus();
+    $result = false;
+    if ( $ans == "lck" ) {
+        $result = true;
+    }
+    return $result;
+  }  
+
+  function lock() {
+    $db = new DatabaseConnection();
+    $result = $db->setSwitchStatus("lck");
+    return $result;
+  }  
+
+  function unlock() {
+    $result = false;  
+    if ($this->isLocked()) {
+        $db = new DatabaseConnection();
+        $result = $db->setSwitchStatus("on");
+    }
+    return $result;
+  }
+
+
+
 }
 
 ?>

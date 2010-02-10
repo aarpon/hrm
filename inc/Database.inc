@@ -892,7 +892,24 @@ Class DatabaseConnection {
   
     return $result;
   }
-  
+
+  function getSwitchStatus() { 
+    if ($this->isDatabaseUpdated()) {
+      $query = "SELECT value FROM queuemanager WHERE field = 'switch'";
+      $answer = $this->queryLastValue($query);
+    }
+    else {
+      $query = "select switch from queuemanager";
+      $answer = $this->queryLastValue($query);
+    }
+    return $answer;
+  }
+
+  function setSwitchStatus( $status ) {
+  	$result = $this->execute("UPDATE queuemanager SET value = '". $status ."' WHERE field = 'switch'");
+  	return $result;
+  }
+
   function reserveServer($name, $pid) { 
     $query = "update server set status='busy', job='$pid' where name='$name'";
     $result = $this->execute($query);

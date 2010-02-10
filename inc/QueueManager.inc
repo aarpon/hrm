@@ -836,7 +836,9 @@ Class QueueManager {
 			//report("Huygens server updated status", 2);
 			
 			// Read in a free huygens server
-			while ($this->getFreeServer() && $this->nextJobFromQueue() != NULL) {
+                        while (!( $queue->isLocked() ) 
+                                && $this->getFreeServer() 
+                                && $this->nextJobFromQueue() != NULL) {
 				report("using Huygens server: " . $this->freeServer, 2);
 				
 				// Read in a queued job 
