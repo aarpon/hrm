@@ -213,11 +213,61 @@ if ($files != null) {
 
     $generatedScript = "
 function imageAction (list) {
-    var n = list.selectedIndex;     // Which menu item is selected
-    var val = list[n].value;
     action = '';
     changeDiv('upMsg', '');
     changeDiv('actions', '');
+
+
+    var n = list.selectedIndex;     // Which item is the first selected one
+
+    if( undefined === window.lastSelectedImgs ){
+        window.lastSelectedImgs = [];
+        window.lastSelectedImgsKey = [];
+        window.lastShownIndex = -1;
+    }
+
+    var snew = 0;
+
+    count = 0;
+    for (i=0; i<list.options.length; i++) {
+        if (list.options[i].selected) {
+            if( undefined === window.lastSelectedImgsKey[i] ){
+                // New selected item
+                snew = 1;
+                n = i;
+            }
+            count++;
+        }
+    }
+
+    if (snew == 0) {
+        // deselected image
+        for (i=0; i<window.lastSelectedImgs.length; i++) {
+            key = window.lastSelectedImgs[i];
+            if ( !list.options[key].selected ) {
+                snew = -1
+                    n = key;
+            }
+        }
+    }
+
+    window.lastSelectedImgs = [];
+    window.lastSelectedImgsKey = [];
+    count = 0;
+    for (i=0; i<list.options.length; i++) {
+        if (list.options[i].selected) {
+            window.lastSelectedImgs[count] = i;
+            window.lastSelectedImgsKey[i] = true;
+            count++;
+        }
+    }
+
+    var val = list[n].value;
+
+    if ( n == window.lastShownIndex ) {
+        return
+    }
+    window.lastShownIndex = n;
 
     switch ( val )
     {
@@ -269,7 +319,7 @@ include("header.inc.php");
 
 
         <div id="userfiles">
-          <select onclick="javascript:imageAction(this)" onchange="javascript:imageAction(this)" onkeyup="this.blur();this.focus();" name="userfiles[]" size="<?php echo $size;?>" <?php echo $multiple.$flag ?>>
+          <select onchange="javascript:imageAction(this)" onkeyup="this.blur();this.focus();" name="userfiles[]" size="<?php echo $size;?>" <?php echo $multiple.$flag ?>>
           <?php
 
           if ($files != null) {

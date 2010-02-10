@@ -169,6 +169,7 @@ table {
     text-align: center;
     border-top: #ccc 1px dotted;
     margin-top: 30px;
+    width: 100%;
 }
 
 #content {
@@ -364,6 +365,11 @@ input.save {
 #info {
     text-align: center;
     padding: 0px;
+    width: 100%;
+}
+
+#output {
+    width: 100%;
 }
 
 #info p {

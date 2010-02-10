@@ -169,8 +169,13 @@ function estimateSnrFromFile($file) {
     }
 
 
+    // Change returnImages to \"0.6 1 1.66 \" in order to show SNR
+    // estimates calculated af given factors of the best match. This
+    // requires Huygens 3.5.1p2.
+
     $opt = "-basename \"$basename\" -src \"$psrc\" -dest \"$pdest\" ".
         "-returnImages sample -series $series $extra";
+
 
 
     // Navigations buttons are shown after the image is processed. No
@@ -210,7 +215,7 @@ function estimateSnrFromFile($file) {
 
       <div id="rightpanel" onmouseover="changeDiv('thumb','<?php echo escapeJavaScript($defaultView);?>');">
       <div id="info">
-      <?php echo $defaultView;  ?>
+      <?php // echo $defaultView;  ?>
       </div>
 
       <div id="message">
@@ -297,9 +302,9 @@ function estimateSnrFromFile($file) {
             }
             $zoomImg =  escapeJavaScript(
                     "<p><b>Portion of channel $ch:</b></p>".
-                    "<img src=\"file_management.php?getThumbnail=".
-                    $zoomFile."&amp;dir=src\" alt=\"SNR $snr\" ".
-                    " /><p>$tag</p>");
+                    "<p>$tag</p><img src=\"file_management.php?getThumbnail=".
+                    $zoomFile."&amp;dir=src\" alt=\"SNR $snr\" id=\"ithumb\"".
+                    " />");
 
             if ($snr == 0) {
                 for ($j = 1; $j < $bestColumn; $j++) {
@@ -308,12 +313,12 @@ function estimateSnrFromFile($file) {
                 }
                 $output .=  "<img src=\"file_management.php?getThumbnail=".
                           $tmbFile."&amp;dir=src\" alt=\"SNR $snr\" ".
-                          "onmouseover=\"changeDiv('thumb','$zoomImg');\" />";
+                          "onmouseover=\"smoothChangeDiv('thumb','$zoomImg', 300);\" />";
                 $output .= "<br /><small>Original</small>";
             } else {
                 $output .=  "<img src=\"file_management.php?getThumbnail=".
                           $tmbFile."&amp;dir=src\" alt=\"SNR $snr\" ".
-                          "onmouseover=\"changeDiv('thumb','$zoomImg');\" />";
+                          "onmouseover=\"smoothChangeDiv('thumb','$zoomImg', 300);\" />";
                 if ( $snr == $estSNR ) {
                     $output .= "<br /><small><b>SNR ~ $snr</b></small>";
                 } else {
@@ -341,6 +346,11 @@ function estimateSnrFromFile($file) {
                "<p>Please <b>write down</b> these values to use them ".
                "in the settings editor.</p>".
                $msgClip.$msgSNR;
+    if ( isset($estimation['error']) ) {
+        foreach ($estimation['error'] as $line) {
+            $message .= $line;
+        }
+    }
     $message .= "<div id=\"thumb\">".$defaultView."</div>";
     $output .= "</table></fieldset>";
 
@@ -348,9 +358,9 @@ function estimateSnrFromFile($file) {
     </div>
     <script type="text/javascript">
     <!--
-         changeDiv('output','<?php echo escapeJavaScript($output); ?>');
-         changeDiv('controls','<?php echo escapeJavaScript($buttons); ?>');
-         changeDiv('info','<?php echo escapeJavaScript($message); ?>');
+         smoothChangeDiv('info','<?php echo escapeJavaScript($message); ?>',1300);
+         smoothChangeDiv('output','<?php echo escapeJavaScript($output); ?>',1000);
+         smoothChangeDiv('controls','<?php echo escapeJavaScript($buttons); ?>',1500);
          changeDiv('tmp','');
     -->
     </script>

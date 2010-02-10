@@ -518,7 +518,7 @@ if ($backgroundOffset[0] == "" || $backgroundOffset[0] == "auto") $flag = " chec
 
 ?>
 
-                    <input type="radio" name="BackgroundEstimationMode" value="auto"<?php echo $flag ?> />automatic background estimation<p />
+                    <p><input type="radio" name="BackgroundEstimationMode" value="auto"<?php echo $flag ?> />automatic background estimation</p>
                     
 <?php
 
@@ -527,7 +527,7 @@ if ($backgroundOffset[0] == "object") $flag = " checked=\"checked\"";
 
 ?>
 
-                    <input type="radio" name="BackgroundEstimationMode" value="object"<?php echo $flag ?> />in/near object<p />
+                    <p><input type="radio" name="BackgroundEstimationMode" value="object"<?php echo $flag ?> />in/near object</p>
                     
 <?php
 
@@ -590,9 +590,9 @@ if ($parameter->isTrue()) {
 }
 
 ?>
-                    <input name="NumberOfIterations" type="text" size="8" value="<?php echo $value ?>" />
+                    <p><input name="NumberOfIterations" type="text" size="8" value="<?php echo $value ?>" />
                     
-                    <p />
+                    </p>
                     
                     <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=QualityCriterion')"><img src="images/help.png" alt="?" /></a>
                     quality change:

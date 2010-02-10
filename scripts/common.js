@@ -39,8 +39,78 @@ function openTool(url) {
 }
 
 function changeDiv(div, html) {
-    document.getElementById(div).innerHTML= html;
+    try { document.getElementById(div).innerHTML= html; } catch(err) {}
 }
+
+
+function SetOpacity(elem, opacityAsInt)
+{
+    var opacityAsDecimal = opacityAsInt;
+
+    if (opacityAsInt > 100)
+        opacityAsInt = opacityAsDecimal = 100; 
+    else if (opacityAsInt < 0)
+        opacityAsInt = opacityAsDecimal = 0; 
+
+    opacityAsDecimal /= 100;
+    if (opacityAsInt < 1)
+        opacityAsInt = 1; // IE7 bug, text smoothing cuts out if 0
+
+    elem.style.opacity = (opacityAsDecimal);
+    // This doesn't work very well for IE, at least with div's. Maybe it works
+    // with images.
+    elem.style.filter  = "alpha(opacity=" + 100 + ")";
+}
+
+function FadeOpacity(elem, fromOpacity, toOpacity, time, fps)
+{
+    try {
+        var steps = Math.ceil(fps * (time / 1000));
+        var delta = (toOpacity - fromOpacity) / steps;
+
+        FadeOpacityStep(elem, 0, steps, fromOpacity, 
+                delta, (time / steps));
+    } catch (err) {}
+}
+
+function FadeOpacityStep(elem, stepNum, steps, fromOpacity, 
+        delta, timePerStep)
+{
+    e = document.getElementById(elem);
+    SetOpacity(e,
+            Math.round(parseInt(fromOpacity) + (delta * stepNum)));
+
+    if (stepNum < steps)
+        setTimeout("FadeOpacityStep('" + elem + "', " + (stepNum+1) 
+                + ", " + steps + ", " + fromOpacity + ", "
+                + delta + ", " + timePerStep + ");", 
+                timePerStep);
+}
+
+
+function smoothChangeDiv(div, html, time) {
+
+    var tout = time / 4.0;
+    var tin = 3 * time / 4.0;
+    var t2 = tout * 1.05;
+    var t3 = tout * 1.05;
+
+    var elem = document.getElementById(div);
+
+    if (undefined === elem.style.opacity) {
+        // fading a <div> in IE doesn't work very well.
+        // FadeOpacity(div, 100, 0, tout, 12);
+        changeDiv(div,html);
+    } else {
+        FadeOpacity(div, 100, 0, tout, 12);
+        setTimeout(changeDiv, t2, div, html);
+        setTimeout(FadeOpacity, t3, div, 0, 100, tin, 12);
+    }
+}
+
+
+
+
 
 function changeOpenerDiv (div, html) {
     window.opener.document.getElementById(div).innerHTML= html;
@@ -342,15 +412,15 @@ function imgPrev(infile, mode, gen, compare, index, dir, referer, data) {
            break;
         case 2:
            // 2D Preview exists
-           html = '<img src="file_management.php?getThumbnail='
+           html = '<img id="ithumb" src="file_management.php?getThumbnail='
                   + infile + '.preview_xy.jpg&dir=' + dir + '" alt="Preview">';
            break;
         case 3:
            // 3D Preview exists
-           html = '<img src="file_management.php?getThumbnail='
+           html = '<img id="ithumb" src="file_management.php?getThumbnail='
                   + infile + '.preview_xy.jpg&dir=' + dir
                   + '" alt="XY preview">';
-           html = html + '<br /><img src="file_management.php?getThumbnail='
+           html = html + '<br /><img id="ithumb2" src="file_management.php?getThumbnail='
                   + infile + '.preview_xz.jpg&dir=' + dir
                   + '" alt="XZ preview">';
            break;
@@ -392,7 +462,9 @@ function imgPrev(infile, mode, gen, compare, index, dir, referer, data) {
     }
 
 
-    changeDiv('info', html);
+    // changeDiv('info', html);
+    // smoothChangeDiv2('info','ithumb', 'ithumb2', html, 200);
+    smoothChangeDiv('info',html, 200);
 }
 
 function changeVisibility(id) {
