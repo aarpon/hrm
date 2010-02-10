@@ -749,7 +749,7 @@ input.restart {
 input.noPreview {
     width: 200px;
     height: 200px;
-    background: url(../images/no_preview.jpg) no-repeat center;
+    background: url(../images/no_preview_button.png) no-repeat center;
 }
 
 select {
