@@ -85,19 +85,45 @@ Class Stats {
   }
   
   //!---------------------------------------------------------------------------
-  // @function    string Stats::getPieChart( $entity )
+  // @function    string Stats::getPieChart( $variable )
   // @desc        Get the JS script to create a pie chart of the requested
   //              column from the statistics table.
-  // @param       string $entity name of the column from the statistics page
+  // @param       string $variable name of the column from the statistics page
   //              for which a pie chart is requested.
   // @return      string JS script to generate the pie chart.
   //!---------------------------------------------------------------------------
-  public function getPieChart( $entity ) {
+  public function getPieChart( $variable ) {
     // Create script
-    return ( $this->generateDataForPieChart( $entity ) );
+    return ( $this->generateDataForPieChart( $variable ) );
    }
 
+  //!---------------------------------------------------------------------------
+  // @function    array Stats::getPieChartVariables( )
+  // @desc        Get an array of possible variables (columns) from the
+  //              statistics table that can be plotted as a pie chart.
+  // @return      array Possible variables for a pie chart.
+  //!---------------------------------------------------------------------------
+  public function getPieChartVariables( ) {
+    return ( array( "owner", "research_group", "ImageFileFormat",
+                       "OutputFileFormat", "PointSpreadFunction",
+                       "ImageGeometry", "MicroscopeType" ) );
+  }
 
+  //!---------------------------------------------------------------------------
+  // @function    array Stats::getPieChartVariables( )
+  // @desc        Get an array of possible variables (columns) from the
+  //              statistics table that can be plotted as a pie chart.
+  // @return      array Possible variables for a pie chart.
+  //!---------------------------------------------------------------------------
+  public function getPieChartStatistics( ) {
+    return ( array( "owner"               => "Number of jobs per user (%)",
+                    "research_group"      => "Number of jobs per group (%)",
+                    "ImageFileFormat"     => "Input file format (%)",
+                    "OutputFileFormat"    => "Output file format (%)",
+                    "PointSpreadFunction" => "Type of Point-Spread Function used (%)",
+                    "ImageGeometry"       => "Image geometry (%)",
+                    "MicroscopeType"      => "Microscope type (%)" ) );
+  }
 
   /* ===========================================================================
    *
@@ -117,12 +143,12 @@ Class Stats {
   }
 
   //!---------------------------------------------------------------------------
-  // @function    string Stats::generateDataForPieChart( $entity )
+  // @function    string Stats::generateDataForPieChart( $variable )
   // @desc        Generates the data (string) from the statistics table to
   //              feed into pieChart( ), the function that creates the complete
   //              JS script. 
   // $param       string Column name from the statistics table for which a pie
-  //              chart is requested; $entity is one of:
+  //              chart is requested; $variable is one of:
   //                               owner
   //                               research_group
   //                               ImageFileFormat
@@ -132,55 +158,31 @@ Class Stats {
   //                               MicroscopeType
   // @return      string JS script used to generate the requested pie chart.
   //!---------------------------------------------------------------------------
-  private function generateDataForPieChart( $entity ) {
-    switch ( $entity ) {
-      case 'owner':
-        $title = "Number of jobs per user (%)";
-        break;
-      case 'research_group':
-        $title = "Number of jobs per group (%)";
-        break;
-      case 'ImageFileFormat':
-        $title = "Input file format (%)";
-        break;
-      case 'OutputFileFormat':
-        $title = "Output file format (%)";
-        break;
-      case 'PointSpreadFunction':
-        $title = "Type of Point-Spread Function used (%)";
-        break;
-      case 'ImageGeometry':
-        $title = "Image geometry (%)";
-        break;
-      case 'MicroscopeType':
-        $title = "Microscope type (%)";
-        break;
-      default:
-        error_log( "Unknown column for the statistics table!");
-        exit( 1 );
-    }
+  private function generateDataForPieChart( $variable ) {
+    $titles = $this->getPieChartStatistics( );
+    $title = $titles[ $variable ];
   
     // Create data
     $row      = $this->m_DB->execute( "SELECT COUNT( id ) FROM statistics;" )->FetchRow( );
     $numJobs  = $row[ 0 ];
-    $entities    = $this->m_DB->execute( "SELECT DISTINCT( " . $entity . ") FROM statistics;" );
-    $row      = $this->m_DB->execute( "SELECT COUNT( DISTINCT( " . $entity . " ) ) FROM statistics;" )->FetchRow( );
+    $entities    = $this->m_DB->execute( "SELECT DISTINCT( " . $variable . ") FROM statistics;" );
+    $row      = $this->m_DB->execute( "SELECT COUNT( DISTINCT( " . $variable . " ) ) FROM statistics;" )->FetchRow( );
     $numEntities = $row[ 0 ];
     $data = "[";
     
     for ( $i = 0; $i < $numEntities; $i++ ) {
       // Get current username
       $row = $entities->FetchRow( );
-      $entityName = $row[ 0 ];
-      $query = "SELECT COUNT(id) FROM statistics WHERE " . $entity . " = '" . $entityName . "';";
+      $variableName = $row[ 0 ];
+      $query = "SELECT COUNT(id) FROM statistics WHERE " . $variable . " = '" . $variableName . "';";
 	  $row = $this->m_DB->execute( $query )->FetchRow( );
 	  $numUserJobs = $row[ 0 ];
       $percent = 100 * $numUserJobs / $numJobs;
       $percent = number_format($percent, 2);
       if ( $i < ( $numEntities - 1 ) ) {
-        $data .= "['" . $entityName . "', " . $percent . " ], ";
+        $data .= "['" . $variableName . "', " . $percent . " ], ";
       } else {
-        $data .= "['" . $entityName . "', " . $percent . " ] ]";
+        $data .= "['" . $variableName . "', " . $percent . " ] ]";
       }
     }
     
@@ -200,7 +202,7 @@ Class Stats {
     $script = "$(document).ready(function() {
 			var chart = new Highcharts.Chart({
 				chart: {
-					renderTo: 'container',
+					renderTo: 'statschart',
 					margin: [50, 200, 60, 170]
 				},
 				title: {

@@ -70,18 +70,27 @@ $message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
 // Create a Stats object
 $stats = new Stats( $_SESSION['user']->name() );
 
+// Get a list of possible variable to be plotted
+$possibleVariables = $stats->getPieChartVariables( );
+
+// Get a list of statistics names for the <select> element
+$possibleStats = $stats->getPieChartStatistics( );
+
+// Was some statistics chosen?
+if (isset($_POST["Statistics"] ) ) {
+  $chosen = $_POST["Statistics"];
+  $variable = array_search( $chosen, $possibleStats );
+} else {
+  $variable = $possibleVariables[ 0 ];
+  $chosen   = $possibleStats[ $variable ];
+}
+
 // Create default graph -- TODO: Let the user choose the statistics to display through a select element
-$generatedScript = $stats->getPieChart( 'owner' );
+$generatedScript = $stats->getPieChart( $variable );
 
 include("header.inc.php");
 
 ?>
-    <!--
-      Tooltips
-    -->
-    <span id="ttSpanUp">Go back home.</span>
-    <span id="ttSpanForward">Implement this action.</span>
-
     <div id="nav">
         <ul>
             <li><?php echo $_SESSION['user']->name(); ?></li>
@@ -90,20 +99,40 @@ include("header.inc.php");
         </ul>
     </div>
 
-    <h3>Statistics</h3>
+    <!-- Here we put a select element for the user to choose which stats he wants to display -->
+    <div id="stats">
+      
+      <form method="post" action="" id="displayStats">
 
-    <div id="container" style="width: 800px; height: 400px; margin: 0 auto"></div>
+          <select name="Statistics" id="Statistics" size="1">
+        
+          <?php
+        
+          foreach ($possibleStats as $stats) {
 
-    <div id="controls">
-      <input type="button" value="" class="icon up"
-        onclick="document.location.href='home.php'"
-        onmouseover="TagToTip('ttSpanUp' )"
-        onmouseout="UnTip()" />
-      <input type="submit" value="" class="icon next"
-        onclick="process()"
-        onmouseover="TagToTip('ttSpanForward' )"
-        onmouseout="UnTip()" />
-      </div>
+            if ( $stats == $chosen ) {
+              $selected = "selected=\"selected\"";
+            } else {
+              $selected = "";
+            }
+            
+          ?>
+            <option <?php echo $selected ?>><?php echo $stats ?></option>
+        
+          <?php
+          }
+          ?>
+        
+          </select>
+          
+          <input type="submit" name="Submit" value="Display">
+            
+      </form>
+        
+    </div>
+    
+    <!--  This is where the graph will be displayed -->
+    <div id="statschart"></div>
 
 <?php
 

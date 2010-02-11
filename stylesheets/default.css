@@ -135,6 +135,20 @@ table {
     border: #fff 2px solid;
 }
 
+#stats {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%; 
+}
+
+#statschart {
+    width: 800px;
+    height: 400px;
+    margin: 50px 0px 50px 0px;
+}
+
 #nav {
     color: #888;
     font-size: 12px;
