@@ -61,8 +61,8 @@ Class Stats {
    *
    ========================================================================== */
 
-  var $m_Username;
-  var $m_DB;
+  private $m_Username;
+  private $m_DB;
 
 
 
@@ -104,9 +104,15 @@ Class Stats {
   // @return      array Possible variables for a pie chart.
   //!---------------------------------------------------------------------------
   public function getPieChartVariables( ) {
-    return ( array( "owner", "research_group", "ImageFileFormat",
+    if ( $this->isAdmin() ) {
+      return ( array( "owner", "research_group", "ImageFileFormat",
                        "OutputFileFormat", "PointSpreadFunction",
                        "ImageGeometry", "MicroscopeType" ) );
+    } else {
+      return ( array( "ImageFileFormat",
+                       "OutputFileFormat", "PointSpreadFunction",
+                       "ImageGeometry", "MicroscopeType" ) );
+    }
   }
 
   //!---------------------------------------------------------------------------
@@ -116,13 +122,21 @@ Class Stats {
   // @return      array Possible variables for a pie chart.
   //!---------------------------------------------------------------------------
   public function getPieChartStatistics( ) {
-    return ( array( "owner"               => "Number of jobs per user (%)",
+    if ( $this->isAdmin() ) {
+      return ( array( "owner"               => "Number of jobs per user (%)",
                     "research_group"      => "Number of jobs per group (%)",
                     "ImageFileFormat"     => "Input file format (%)",
                     "OutputFileFormat"    => "Output file format (%)",
                     "PointSpreadFunction" => "Type of Point-Spread Function used (%)",
                     "ImageGeometry"       => "Image geometry (%)",
                     "MicroscopeType"      => "Microscope type (%)" ) );
+    } else {
+      return ( array( "ImageFileFormat"     => "Input file format (%)",
+                    "OutputFileFormat"    => "Output file format (%)",
+                    "PointSpreadFunction" => "Type of Point-Spread Function used (%)",
+                    "ImageGeometry"       => "Image geometry (%)",
+                    "MicroscopeType"      => "Microscope type (%)" ) );
+    }
   }
 
   /* ===========================================================================
@@ -132,12 +146,12 @@ Class Stats {
    ========================================================================== */
   
   //!---------------------------------------------------------------------------
-  // @function    bool Stats::isAdminMode( )
+  // @function    bool Stats::isAdmin( )
   // @desc        Compares the passed username to the admin user name and
   //              returns true if the user is the admin.
   // @return      bool True if the user is the admin user.
   //!---------------------------------------------------------------------------
-  private function isAdminMode(  ) {
+  private function isAdmin(  ) {
     $user = new User();
     return ( $this->m_Username == $user->getAdminName() );
   }
@@ -161,12 +175,21 @@ Class Stats {
   private function generateDataForPieChart( $variable ) {
     $titles = $this->getPieChartStatistics( );
     $title = $titles[ $variable ];
-  
+
+    if ( $this->isAdmin() ) {
+      $userQuery = "1";
+    } else {
+      $userQuery = "owner = '" . $this->m_Username . "'";
+    }
+    
     // Create data
-    $row      = $this->m_DB->execute( "SELECT COUNT( id ) FROM statistics;" )->FetchRow( );
+    $row      = $this->m_DB->execute( "SELECT COUNT( id ) FROM statistics WHERE " . $userQuery . ";" )->FetchRow( );
     $numJobs  = $row[ 0 ];
-    $entities    = $this->m_DB->execute( "SELECT DISTINCT( " . $variable . ") FROM statistics;" );
-    $row      = $this->m_DB->execute( "SELECT COUNT( DISTINCT( " . $variable . " ) ) FROM statistics;" )->FetchRow( );
+    if ( $numJobs == 0 ) {
+      return ( $this->pieChart( "[]", "Nothing to display!", "" ) );
+    }
+    $entities    = $this->m_DB->execute( "SELECT DISTINCT( " . $variable . ") FROM statistics WHERE " . $userQuery . ";" );
+    $row      = $this->m_DB->execute( "SELECT COUNT( DISTINCT( " . $variable . " ) ) FROM statistics WHERE " . $userQuery . ";" )->FetchRow( );
     $numEntities = $row[ 0 ];
     $data = "[";
     
@@ -174,7 +197,7 @@ Class Stats {
       // Get current username
       $row = $entities->FetchRow( );
       $variableName = $row[ 0 ];
-      $query = "SELECT COUNT(id) FROM statistics WHERE " . $variable . " = '" . $variableName . "';";
+      $query = "SELECT COUNT(id) FROM statistics WHERE " . $variable . " = '" . $variableName . "' AND " . $userQuery . ";";
 	  $row = $this->m_DB->execute( $query )->FetchRow( );
 	  $numUserJobs = $row[ 0 ];
       $percent = 100 * $numUserJobs / $numJobs;
@@ -186,8 +209,11 @@ Class Stats {
       }
     }
     
+    // Assemble also subtitle
+    $subtitle = "Total: " . $numJobs . " entries.";
+    
     // Create script
-    return ( $this->pieChart( $data, $title ) );
+    return ( $this->pieChart( $data, $title, $subtitle ) );
   }
 
   //!---------------------------------------------------------------------------
@@ -198,7 +224,7 @@ Class Stats {
   // $param       string $title Title of the pie chart.
   // @return      string Complete JS script used to generate the requested pie chart.
   //!---------------------------------------------------------------------------
-  private function pieChart( $data, $title ) {
+  private function pieChart( $data, $title, $subtitle ) {
     $script = "$(document).ready(function() {
 			var chart = new Highcharts.Chart({
 				chart: {
@@ -208,6 +234,9 @@ Class Stats {
 				title: {
 					text: '" . $title . "'
 				},
+                subtitle: {
+                  text: '" . $subtitle . "'
+                },
 				plotArea: {
 					shadow: null,
 					borderWidth: null,
@@ -225,10 +254,10 @@ Class Stats {
 							formatter: function() {
 								if (this.y > 5) return this.point.name;
 							},
-							color: 'white',
+							color: 'black',
 							style: {
-								font: '13px Trebuchet MS, Verdana, sans-serif'
-							}
+								font: '13px Trebuchet MS, Verdana, sans-serif',
+							},
 						}
 					}
 				},
