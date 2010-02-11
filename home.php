@@ -98,7 +98,7 @@ include("header.inc.php");
 
         <?php
 
-        if ($_SESSION['user']->name() == "admin") {
+        if ($_SESSION['user']->name() == $_SESSION['user']->getAdminName() ) {
         ?>
 		
 		  <table>
@@ -153,14 +153,14 @@ include("header.inc.php");
 			<tr>
 			  
 			  <td class="icon">
-				<a href="./file_management.php">
-				<img alt="FileManager" src="./images/filemanager.png" />
+				<a href="./update.php">
+				<img alt="Update" src="./images/updatedb.png" />
 				</a>
 			  </td>
 			  
 			  <td class="text"><div class="cell">
-                <a href="./file_management.php">File manager</a><br />
-			  <p />Upload, download and view your raw and deconvolved data.
+                <a href="./update.php">Database update</a><br />
+				<p />Update the database to the latest version.
                 </div>
 			  </td>
 			  
@@ -220,17 +220,9 @@ include("header.inc.php");
                 </div>
 			  </td>
 
-			  <td class="icon">
-				<a href="./update.php">
-				<img alt="Update" src="./images/updatedb.png" />
-				</a>
-			  </td>
+			  <td class="icon"></td>
 			  
-			  <td class="text"><div class="cell">
-                <a href="./update.php">Database update</a><br />
-				<p />Update the database to the latest version.
-                </div>
-			  </td>
+			  <td class="text">&nbsp;</td>
 			  
 		    </tr>
 			
