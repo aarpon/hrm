@@ -178,6 +178,7 @@ if ($allowHttpTransfer) {
     if (isset($_POST['download'])) {
         if (isset($_POST['userfiles']) && is_array($_POST['userfiles'])) {
            $message = $_SESSION['fileserver']->downloadResults($_POST['userfiles']);
+           exit;
         }
     } else if (isset($_GET['download']) ) {
         $downloadArr = array ( $_GET['download'] );
