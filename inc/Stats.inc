@@ -63,8 +63,9 @@ Class Stats {
 
   private $m_Username;
   private $m_DB;
-
-
+  private $m_Filter_FromDate;
+  private $m_Filter_ToDate;
+  private $m_Filter_Group;
 
   /* ===========================================================================
    *
@@ -82,6 +83,11 @@ Class Stats {
   public function __construct( $username ) {
     $this->m_Username = $username;
     $this->m_DB = new DatabaseConnection();
+    $fromDates = $this->getFromDates( );
+    $this->m_Filter_FromDate = $fromDates[ 0 ];
+    $toDates = $this->getToDates( );
+    $this->m_Filter_ToDate = $toDates[ count( $toDates ) - 1 ];
+    $this->m_Filter_Group = "All groups";
   }
   
   //!---------------------------------------------------------------------------
@@ -139,6 +145,116 @@ Class Stats {
     }
   }
 
+  //!---------------------------------------------------------------------------
+  // @function    array Stats::getStartTimes( )
+  // @desc        Gets all beginning of the months from February 2010 until now
+  // @return      array All beginning of monthts
+  //!---------------------------------------------------------------------------
+  public function getFromDates( ) {
+      
+      $fromDates = array( );
+      
+      // Today
+      $today = date( "Y-m-d" );
+      
+      // Start date
+      $fromDates[ 0 ] = "2010-02-01";
+      
+      $nextMonth = date( "Y-m-d", strtotime( $fromDates[ 0 ] . " + 1 month" ) );
+      
+      $counter = 1;
+      while ( strtotime( $nextMonth ) <= strtotime( $today ) ) {
+        $fromDates[ $counter ] = $nextMonth;
+        $nextMonth = date( "Y-m-d", strtotime( $fromDates[ $counter++ ] . " + 1 month" ) );
+      }
+      
+      return $fromDates;
+  }
+
+  //!---------------------------------------------------------------------------
+  // @function    array Stats::getEndTimes( )
+  // @desc        Gets all end of the months from February 2010 until now
+  // @return      array All ends of monthts
+  //!---------------------------------------------------------------------------
+  public function getToDates( ) {
+      
+      $toDates = array( );
+      
+      // Today
+      $today =  date( "Y-m-d", strtotime( date() . " + 1 month" ) );
+
+      // Start date
+      $toDates[ 0 ] = "2010-02-28";
+
+      // Make sure to get the end of the month
+      $year  = date( "Y", strtotime( $toDates[ 0 ] ) );
+      $month = date( "m", strtotime( $toDates[ 0 ] ) );
+      $nextMonth = date( "Y-m-d", strtotime( $year . "-" . ( $month + 2 ) . "-01 - 1 day" ) );
+      
+      $counter = 1;
+      while ( strtotime( $nextMonth ) <= strtotime( $today ) ) {
+        $toDates[ $counter ] = $nextMonth;
+        $year  = date( "Y", strtotime( $toDates[ $counter] ) );
+        $month = date( "m", strtotime( $toDates[ $counter ] ) ) + 2;
+        if ( $month > 12 ) {
+          $month -= 12;
+          $year++;
+        }
+        
+        $nextMonth = date( "Y-m-d", strtotime( $year . "-" . $month . "-01 - 1 day" ) );
+        $counter++;
+      }
+      
+      return $toDates;
+  }
+
+  //!---------------------------------------------------------------------------
+  // @function    array Stats::getGroupNames( )
+  // @desc        Gets an array of unique group names from the statistics table
+  // @return      array of all unique group names
+  //!---------------------------------------------------------------------------
+  public function getGroupNames( ) {
+      
+      $groupNames = array( "All groups" );
+      $row        = $this->m_DB->execute( "SELECT COUNT( DISTINCT( research_group ) ) FROM statistics;" )->FetchRow( );
+      $numGroups  = $row[ 0 ];
+      if ( $numGroups == 0 ) {
+        return $groupNames;
+      }
+      // List the group names
+      $res = $this->m_DB->execute( "SELECT DISTINCT( research_group ) FROM statistics;" );
+      $counter = 1;
+      for ( $i = 0; $i < $numGroups; $i++ ) {
+        $row = $res->FetchRow( );
+        $groupNames[ $counter++ ] = $row[ 0 ];
+      }
+      return $groupNames;
+  }
+
+  //!---------------------------------------------------------------------------
+  // @function    void Stats::setFromDateFilter( )
+  // @desc        Set the from date filter
+  //!---------------------------------------------------------------------------
+  public function setFromDateFilter( $fromDate ) {
+      $this->m_Filter_FromDate = $fromDate;
+  }
+
+  //!---------------------------------------------------------------------------
+  // @function    void Stats::setToDateFilter( )
+  // @desc        Set the to date filter
+  //!---------------------------------------------------------------------------
+  public function setToDateFilter( $toDate ) {
+      $this->m_Filter_ToDate = $toDate;
+  }
+
+  //!---------------------------------------------------------------------------
+  // @function    void Stats::setGroupFilter( )
+  // @desc        Set the group filter
+  //!---------------------------------------------------------------------------
+  public function setGroupFilter( $group ) {
+      $this->m_Filter_Group = $group;
+  }
+  
   /* ===========================================================================
    *
    * PRIVATE METHODS
@@ -176,20 +292,36 @@ Class Stats {
     $titles = $this->getPieChartStatistics( );
     $title = $titles[ $variable ];
 
+    // Date filters
+    $dateFilter = "start >= '" . $this->m_Filter_FromDate ."' AND stop <= '" .
+      $this->m_Filter_ToDate . "'";
+
+    // Group filters (admin only)
     if ( $this->isAdmin() ) {
-      $userQuery = "1";
+      if ( $this->m_Filter_Group == "All groups" ) {
+        $groupFilter = "";
+      } else {
+        $groupFilter = " AND research_group = '" . $this->m_Filter_Group . "'";
+      }
     } else {
-      $userQuery = "owner = '" . $this->m_Username . "'";
+      $groupFilter = "";
+    }
+    
+    // Non-admin users can only access their stats
+    if ( $this->isAdmin() ) {
+      $userNameFilter = "";
+    } else {
+      $userNameFilter = " AND owner = '" . $this->m_Username . "'";
     }
     
     // Create data
-    $row      = $this->m_DB->execute( "SELECT COUNT( id ) FROM statistics WHERE " . $userQuery . ";" )->FetchRow( );
+    $row      = $this->m_DB->execute( "SELECT COUNT( id ) FROM statistics WHERE " . $dateFilter . $groupFilter . $userNameFilter . ";" )->FetchRow( );
     $numJobs  = $row[ 0 ];
     if ( $numJobs == 0 ) {
       return ( $this->pieChart( "[]", "Nothing to display!", "" ) );
     }
-    $entities    = $this->m_DB->execute( "SELECT DISTINCT( " . $variable . ") FROM statistics WHERE " . $userQuery . ";" );
-    $row      = $this->m_DB->execute( "SELECT COUNT( DISTINCT( " . $variable . " ) ) FROM statistics WHERE " . $userQuery . ";" )->FetchRow( );
+    $entities    = $this->m_DB->execute( "SELECT DISTINCT( " . $variable . ") FROM statistics WHERE " . $dateFilter . $groupFilter . $userNameFilter . ";" );
+    $row      = $this->m_DB->execute( "SELECT COUNT( DISTINCT( " . $variable . " ) ) FROM statistics WHERE " . $dateFilter . $groupFilter . $userNameFilter . ";" )->FetchRow( );
     $numEntities = $row[ 0 ];
     $data = "[";
     
@@ -197,8 +329,7 @@ Class Stats {
       // Get current username
       $row = $entities->FetchRow( );
       $variableName = $row[ 0 ];
-      $query = "SELECT COUNT(id) FROM statistics WHERE " . $variable . " = '" . $variableName . "' AND " . $userQuery . ";";
-	  $row = $this->m_DB->execute( $query )->FetchRow( );
+	  $row = $this->m_DB->execute( "SELECT COUNT(id) FROM statistics WHERE " . $variable . " = '" . $variableName . "' AND " . $dateFilter . $groupFilter . $userNameFilter . ";" )->FetchRow( );
 	  $numUserJobs = $row[ 0 ];
       $percent = 100 * $numUserJobs / $numJobs;
       $percent = number_format($percent, 2);
@@ -210,7 +341,12 @@ Class Stats {
     }
     
     // Assemble also subtitle
-    $subtitle = "Total: " . $numJobs . " entries.";
+    if ( $this->m_Filter_Group != "All groups" ) {
+      $groupStr = " Group: " . $this->m_Filter_Group . "." ;
+    } else {
+      $groupStr = "";
+    }
+    $subtitle = "Total: " . $numJobs . " entries." . $groupStr;
     
     // Create script
     return ( $this->pieChart( $data, $title, $subtitle ) );

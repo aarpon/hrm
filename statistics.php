@@ -76,14 +76,45 @@ $possibleVariables = $stats->getPieChartVariables( );
 // Get a list of statistics names for the <select> element
 $possibleStats = $stats->getPieChartStatistics( );
 
+// Filters
+$fromDates  = $stats->getFromDates();
+$toDates    = $stats->getToDates();
+$groupNames = $stats->getGroupNames();
+
 // Was some statistics chosen?
 if (isset($_POST["Statistics"] ) ) {
-  $chosen = $_POST["Statistics"];
-  $variable = array_search( $chosen, $possibleStats );
+  $chosenStats = $_POST["Statistics"];
+  $variable = array_search( $chosenStats, $possibleStats );
 } else {
   $variable = $possibleVariables[ 0 ];
-  $chosen   = $possibleStats[ $variable ];
+  $chosenStats   = $possibleStats[ $variable ];
 }
+
+// Was some fromDate chosen?
+if (isset($_POST["FromDate"] ) ) {
+  $chosenFromDate = $_POST["FromDate"];
+} else {
+  $chosenFromDate = $fromDates[ 0 ];
+}
+
+// Was some toDate chosen?
+if (isset($_POST["ToDate"] ) ) {
+  $chosenToDate = $_POST["ToDate"];
+} else {
+  $chosenToDate = $toDates[ count( $toDates ) - 1 ];
+}
+
+// Was some Group chosen?
+if (isset($_POST["Group"] ) ) {
+  $chosenGroupName = $_POST["Group"];
+} else {
+  $chosenGroupName = $groupNames[ 0 ];
+}
+
+// Set the filters
+$stats->setFromDateFilter( $chosenFromDate );
+$stats->setToDateFilter( $chosenToDate );
+$stats->setGroupFilter( $chosenGroupName );
 
 // Create default graph -- TODO: Let the user choose the statistics to display through a select element
 $generatedScript = $stats->getPieChart( $variable );
@@ -110,7 +141,7 @@ include("header.inc.php");
         
           foreach ($possibleStats as $stats) {
 
-            if ( $stats == $chosen ) {
+            if ( $stats == $chosenStats ) {
               $selected = "selected=\"selected\"";
             } else {
               $selected = "";
@@ -124,6 +155,76 @@ include("header.inc.php");
           ?>
         
           </select>
+
+          <!-- Filter: from date -->
+          <select name="FromDate" id="FromDate" size="1">
+        
+          <?php
+          foreach ($fromDates as $fromDate) {
+
+            if ( $fromDate == $chosenFromDate ) {
+              $selected = "selected=\"selected\"";
+            } else {
+              $selected = "";
+            }
+            
+          ?>
+            <option <?php echo $selected ?>><?php echo $fromDate ?></option>
+        
+          <?php
+          }
+          ?>
+        
+          </select>
+
+          <!-- Filter: to date -->
+          <select name="ToDate" id="ToDate" size="1">
+        
+          <?php
+          foreach ($toDates as $toDate ) {
+
+            if ( $toDate == $chosenToDate ) {
+              $selected = "selected=\"selected\"";
+            } else {
+              $selected = "";
+            }
+            
+          ?>
+            <option <?php echo $selected ?>><?php echo $toDate ?></option>
+        
+          <?php
+          }
+          ?>
+        
+          </select>
+          
+          <!-- Filter: Group This is visible only for the admin user-->
+          <?php
+          if ( $_SESSION['user']->isAdmin() ) {
+          ?>
+          
+          <select name="Group" id="Group" size="1">
+        
+          <?php
+          foreach ($groupNames as $groupName ) {
+
+            if ( $groupName == $chosenGroupName ) {
+              $selected = "selected=\"selected\"";
+            } else {
+              $selected = "";
+            }
+            
+          ?>
+            <option <?php echo $selected ?>><?php echo $groupName ?></option>
+        
+          <?php
+          }
+          ?>
+        
+          </select>
+          <?php
+          }
+          ?>
           
           <input type="submit" name="Submit" value="Display">
             
