@@ -181,7 +181,8 @@ Class Stats {
       $toDates = array( );
       
       // Today
-      $today =  date( "Y-m-d", strtotime( date() . " + 1 month" ) );
+      $today =  date( "Y-m-d", strtotime( " + 1 month" ) );
+
 
       // Start date
       $toDates[ 0 ] = "2010-02-28";

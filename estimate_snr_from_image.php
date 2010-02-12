@@ -67,7 +67,12 @@ function showFileBrowser() {
     // Number of displayed files.
     $size = 15;
     // Show files of the same type as in the current task:
-    $restrictFileType = true;
+    if ( $_SESSION['user']->name() == "admin") {
+        # The administrator can edit templates without adding a task...
+        $restrictFileType = false;
+    } else {
+        $restrictFileType = true;
+    }
     // To (re)generate the thumbnails, use data from the current template for
     // colors (wavelengths).
     $useTemplateData = 1;
