@@ -795,6 +795,17 @@ Class DatabaseConnection {
     return $result;
   }
 
+  function getQueueJobs() {
+    // Get jobs as they are in the queue, compound or not, without splitting
+    // them.
+    $query = "SELECT id, username, queued, start, server, process_info, status
+    FROM job_queue
+    ORDER BY job_queue.priority asc, job_queue.queued asc, job_queue.status asc";
+    $result = $this->query($query);
+    return $result;
+  }
+ 
+
   function getQueueContents() {
     // For the query we join job_queue and job_files, since we want to sort also by file name
     $query = "SELECT id, username, queued, start, server, process_info, status, file

@@ -114,7 +114,7 @@ Class JobQueue {
   function getCompoundJobs() {
     $db = new DatabaseConnection();
     $jobDescriptions = array();
-    $rows = $db->getQueueContents();
+    $rows = $db->getQueueJobs();
     foreach ($rows as $row) {
       $jobDescription = new JobDescription;
       $jobDescription->setId($row['id']);

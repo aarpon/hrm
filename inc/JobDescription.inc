@@ -140,15 +140,18 @@ Class JobDescription {
     // =========================================================================
 
     $result = True;
-        
+
+    $lqueue = new JobQueue();
+    $lqueue->lock();
+
     // createJob() function was originally called directly
     $result = $result && $this->createJob();
 
     if ( $result ) {
-      
+
       // Process compound jobs
       $this->processCompoundJobs( );
-    
+
       // Assign priorities
       $db = new DatabaseConnection();
       $result = $db->setJobPriorities();
@@ -156,7 +159,9 @@ Class JobDescription {
         error_log( "Could not set job priorities!" );
       }
     }
-    
+
+    $lqueue->unlock();
+
     return $result;
   }
      
@@ -188,13 +193,11 @@ Class JobDescription {
   
   function processCompoundJobs() {
     $queue = new JobQueue();
-    $queue->lock();
     $compoundJobs = $queue->getCompoundJobs();
     foreach ($compoundJobs as $jobDescription) {
       $job = new Job($jobDescription);
       $job->createSubJobsOrScript();
     }
-    $queue->unlock();
   }
   
   function load() {
@@ -269,6 +272,7 @@ Class JobDescription {
   } 
 
   function createSubJobs() {
+
     //global $rangeParameters;
     
     $parameterSetting = $this->parameterSetting;
