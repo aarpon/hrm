@@ -304,6 +304,10 @@ Class Fileserver {
   function downloadResults($files) { 
       global $compressBin, $compressExt, $dlMimeType, $packExcludePath;
 
+      // Make sure that the script doesn't timeout before zipping and
+      // reading the file to serve is completed.
+      set_time_limit(0);
+      
       $date = date("Y-m-d_His");
       $zipfile = "/tmp/download_".session_id().$date.$compressExt;
       $command = str_replace("%DEST%",
@@ -320,7 +324,7 @@ Class Fileserver {
           }
           $command .= " ".$path." ".$preview_path;
       }
-
+      
       $answer = exec($command , $output, $result);
 
       $size = filesize($zipfile);
@@ -334,7 +338,9 @@ Class Fileserver {
           header ("Content-Disposition: attachment; filename=\"$dlname\"");
           header ("Content-Length: $size"); 
           header ("Content-Type: $type; name=\"$dlname\"");
-          readfile($zipfile);
+          ob_clean();
+          flush();
+          $this->readfile_chunked($zipfile);
           unlink($zipfile);
           return "<p>OK</p>"; 
       } else {
@@ -448,7 +454,40 @@ Class Fileserver {
 
   }
 
+  //!---------------------------------------------------------
+  // @function    Fileserver::readfile_chunked
+  // @desc        To be used instead of PHP's own readfile function to read
+  //              very large files. This should prevent memory errors.
+  // 
+  // @param       filename  String name of the file to read
+  // @param       retbytes  boolean
+  //
+  // @see         http://nl.php.net/manual/en/function.readfile.php#54295
+  //!---------------------------------------------------------  
 
+  function readfile_chunked($filename,$retbytes=true) {
+    $chunksize = 1*(1024*1024); // how many bytes per chunk
+    $buffer = '';
+    $cnt =0;
+    $handle = fopen($filename, 'rb');
+    if ($handle === false) {
+      return false;
+    }
+    while (!feof($handle)) {
+      $buffer = fread($handle, $chunksize);
+      echo $buffer;
+      ob_flush();
+      flush();
+      if ($retbytes) {
+          $cnt += strlen($buffer);
+      }
+    }
+    $status = fclose($handle);
+    if ($retbytes && $status) {
+      return $cnt; // return num. bytes delivered like readfile() does.
+    }
+    return $status;
+  } 
 
   //!---------------------------------------------------------
   // @function    Fileserver::uploadFiles
