@@ -3,6 +3,7 @@
 var popup;
 var generated = new Array();
 var debug = '';
+var control = '';
 
 function clean() {
     if (popup != null) popup.close();
