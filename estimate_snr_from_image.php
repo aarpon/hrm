@@ -177,9 +177,10 @@ function estimateSnrFromFile($file) {
     // Change returnImages to \"0.6 1 1.66 \" in order to show SNR
     // estimates calculated af given factors of the best match. This
     // requires Huygens 3.5.1p2.
+    // For 3.5.1p1, use '-returnImages sample' instead.
 
     $opt = "-basename \"$basename\" -src \"$psrc\" -dest \"$pdest\" ".
-        "-returnImages sample -series $series $extra";
+        "-returnImages \"0.5 0.71 1 1.71 \" -series $series $extra";
 
 
 
@@ -318,12 +319,12 @@ function estimateSnrFromFile($file) {
                 }
                 $output .=  "<img src=\"file_management.php?getThumbnail=".
                           $tmbFile."&amp;dir=src\" alt=\"SNR $snr\" ".
-                          "onmouseover=\"smoothChangeDiv('thumb','$zoomImg', 300);\" />";
+                          "onmouseover=\"Tip('$tag'); smoothChangeDiv('thumb','$zoomImg', 300);\"  onmouseout=\"UnTip()\"/>";
                 $output .= "<br /><small>Original</small>";
             } else {
                 $output .=  "<img src=\"file_management.php?getThumbnail=".
                           $tmbFile."&amp;dir=src\" alt=\"SNR $snr\" ".
-                          "onmouseover=\"smoothChangeDiv('thumb','$zoomImg', 300);\" />";
+                          "onmouseover=\"Tip('$tag'); smoothChangeDiv('thumb','$zoomImg', 300);\" onmouseout=\"UnTip()\"/>";
                 if ( $snr == $estSNR ) {
                     $output .= "<br /><small><b>SNR ~ $snr</b></small>";
                 } else {
