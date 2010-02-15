@@ -204,7 +204,7 @@ else {
     if ($row['status'] == "started") {
       $color='#99ffcc';
     }
-    else if ($row['status'] == "broken") {
+    else if ($row['status'] == "broken" || $row['status'] == "kill") {
       $color='#ff9999';
     }
     else if ($index % 2 == 0) {
