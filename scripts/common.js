@@ -452,13 +452,13 @@ function imgPrev(infile, mode, gen, compare, index, dir, referer, data) {
            link = "file_management.php?compareResult=" + infile
                   + "&size=" + compare + "&op=close";
 
-           html = '<br /><a '
+           html = '<br /><div class="expandedView"><a '
                   +    'onclick="'
                   +        'openWindow(\'' + link + '\'); '
                   +    '"'
                   + '>'
-                  + '<small>Expanded view</small>'
-                  + '</a>'
+                  + 'Expanded view <img src="images/eye.png">'
+                  + '</a></div>'
                   + html ;
     }
 
