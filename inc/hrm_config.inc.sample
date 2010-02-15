@@ -34,6 +34,10 @@ $huygens_group = "huygens";
 // thumbnails mostly freeware functions will be used, but support for certain
 // propietary file formats requires a B flag in the license string. (See
 // http://support.svi.nl/wiki/FileFormats).
+//
+// In combination with Huygens 3.5.1 or higher, HRM can also provide an
+// estimate of the Signal-To-Noise ratio (SNR) of an image, interactively. At
+// least that same simple license is required for this to work.
 $local_huygens_core = "/usr/local/bin/hucore";
 
 // The HRM needs to know the version of the hucore executable on the
