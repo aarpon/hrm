@@ -53,6 +53,201 @@
 require_once "inc/User.inc";
 require_once "inc/Database.inc";
 
+Class Type {
+  public $m_Name;
+  public $m_Variable;
+  public $m_DescriptiveName;
+  public $m_Type;        // One of 'text', 'piechart', 'linechart'
+  public $m_AdminOnly;
+  
+  //!---------------------------------------------------------------------------
+  // @function    __construct( $name, $variable, $descriptiveName, $type, $adminOnly )
+  //!---------------------------------------------------------------------------
+  function __construct( $name, $variable, $descriptiveName, $type, $adminOnly ) {
+    $this->m_Name            = $name;
+    $this->m_Variable        = $variable;
+    $this->m_DescriptiveName = $descriptiveName;
+    $this->m_Type            = $type;
+    $this->m_AdminOnly       = $adminOnly;
+  }
+  
+  //!---------------------------------------------------------------------------
+  // @function    string Type::isGraph( $variable )
+  // @desc        returns true is the requested statistics generates a graph,
+  //              and false if it returns a text/table
+  // @param       string $variable name of the column from the statistics page
+  // @return      bool True for graphs, False for text/table
+  //!---------------------------------------------------------------------------
+  public function isGraph( ) {
+    if ( ( $this->m_Type == "piechart" ) || ( $this->m_Type == "linechart" ) ) {
+      return true;
+    }
+    return false;
+  }
+  
+  //!---------------------------------------------------------------------------
+  // @function    string Type::getStatisticsScript( $dateFilter, $groupFilter, $userNameFilter )
+  // @desc        Get the JS/PHP script to display the statistics.
+  // $param       $dateFilter SQL query to filter by date
+  // $param       $groupFilter  SQL query to filter by group
+  // $param       $userNameFilter  SQL query to filter by user name
+  // @return      string JS/PHP script to display the statistics. 
+  //!---------------------------------------------------------------------------
+  public function getStatisticsScript( $db, $admin, $fromDate, $toDate, $group, $userName ) {
+    
+        // Date filters
+    $dateFilter = "start >= '" . $fromDate ."' AND stop <= '" . $toDate . "'";
+
+    // Group filters (admin only)
+    if ( $admin ) {
+      if ( $group == "All groups" ) {
+        $groupFilter = "";
+      } else {
+        $groupFilter = " AND research_group = '" . $group . "'";
+      }
+    } else {
+      $groupFilter = "";
+    }
+    
+    // Non-admin users can only access their stats
+    if ( $admin ) {
+      $userNameFilter = "";
+    } else {
+      $userNameFilter = " AND owner = '" . $userName . "'";
+    }
+
+    switch ( $this->m_Type ) {
+      case "text":
+        $script = "Not implemented yet!";
+        break;
+      case "piechart":
+        $script = $this->getPieChart( $db, $this->m_Variable, $group, $dateFilter, $groupFilter, $userNameFilter );
+        break;
+      case "linechart":
+        break;
+      default:
+        $script = "Error: bad statistics type!";
+    }
+    return $script;
+  }
+
+  //!---------------------------------------------------------------------------
+  // @function    string Stats::getPieChart( $variable )
+  // @desc        Get the JS script to create a pie chart of the requested
+  //              column from the statistics table.
+  // @param       string $variable name of the column from the statistics page
+  //              for which a pie chart is requested.
+  // @return      string JS script to generate the pie chart.
+  //!---------------------------------------------------------------------------
+  private function getPieChart( $db, $variable, $group, $dateFilter, $groupFilter, $userNameFilter ) {
+
+    // Get data
+    // -------------------------------------------------------------------------
+    $row      = $db->execute( "SELECT COUNT( id ) FROM statistics WHERE " . $dateFilter . $groupFilter . $userNameFilter . ";" )->FetchRow( );
+    $numJobs  = $row[ 0 ];
+    if ( $numJobs == 0 ) {
+
+      $data     = "[]";
+      $title    = "Nothing to display!";
+      $subTitle = "";
+
+    } else {
+      
+      $entities    = $db->execute( "SELECT DISTINCT( " . $variable . ") FROM statistics WHERE " . $dateFilter . $groupFilter . $userNameFilter . ";" );
+      $row      = $db->execute( "SELECT COUNT( DISTINCT( " . $variable . " ) ) FROM statistics WHERE " . $dateFilter . $groupFilter . $userNameFilter . ";" )->FetchRow( );
+      $numEntities = $row[ 0 ];
+      $data = "[";
+    
+      for ( $i = 0; $i < $numEntities; $i++ ) {
+        // Get current username
+        $row = $entities->FetchRow( );
+        $variableName = $row[ 0 ];
+        $row = $db->execute( "SELECT COUNT(id) FROM statistics WHERE " . $variable . " = '" . $variableName . "' AND " . $dateFilter . $groupFilter . $userNameFilter . ";" )->FetchRow( );
+        $numUserJobs = $row[ 0 ];
+        $percent = 100 * $numUserJobs / $numJobs;
+        $percent = number_format($percent, 2);
+        if ( $i < ( $numEntities - 1 ) ) {
+          $data .= "['" . $variableName . "', " . $percent . " ], ";
+        } else {
+          $data .= "['" . $variableName . "', " . $percent . " ] ]";
+        }
+      }
+    
+      // Title
+      $title = $this->m_DescriptiveName;
+      
+      // Assemble also subtitle
+      if ( $group != "All groups" ) {
+        $groupStr = " Group: " . $group . "." ;
+      } else {
+        $groupStr = "";
+      }
+      $subtitle = "Total: " . $numJobs . " entries." . $groupStr;
+    
+    }
+    
+    // Create script
+    // -------------------------------------------------------------------------
+    $script = "$(document).ready(function() {
+			var chart = new Highcharts.Chart({
+				chart: {
+					renderTo: 'statschart',
+					margin: [50, 200, 60, 170]
+				},
+				title: {
+					text: '" . $title . "'
+				},
+                subtitle: {
+                  text: '" . $subtitle . "'
+                },
+				plotArea: {
+					shadow: null,
+					borderWidth: null,
+					backgroundColor: null
+				},
+				tooltip: {
+					formatter: function() {
+						return '<b>'+ this.point.name +'</b>: '+ this.y +' %';
+					}
+				},
+				plotOptions: {
+					pie: {
+						dataLabels: {
+							enabled: true,
+							formatter: function() {
+								if (this.y > 5) return this.point.name;
+							},
+							color: 'black',
+							style: {
+								font: '13px Trebuchet MS, Verdana, sans-serif',
+							},
+						}
+					}
+				},
+				legend: {
+					layout: 'vertical',
+					style: {
+						left: 'auto',
+						bottom: 'auto',
+						right: '50px',
+						top: '100px'
+					}
+				}, series: [{
+					type: 'pie',
+					name: '" . $title . "', data: " . $data . "}] });
+		});
+    ";
+    return $script;
+  }
+
+}
+
+
+// =============================================================================
+// =============================================================================
+// =============================================================================
+
+
 Class Stats {
   
   /* ===========================================================================
@@ -63,9 +258,11 @@ Class Stats {
 
   private $m_Username;
   private $m_DB;
+  private $m_Stats_Array;
   private $m_Filter_FromDate;
   private $m_Filter_ToDate;
   private $m_Filter_Group;
+  private $m_Selected_Statistics;
 
   /* ===========================================================================
    *
@@ -88,65 +285,74 @@ Class Stats {
     $toDates = $this->getToDates( );
     $this->m_Filter_ToDate = $toDates[ count( $toDates ) - 1 ];
     $this->m_Filter_Group = "All groups";
+    // Now create the statistics array
+    $this->fillStatsArray( );
+    // Default statistics is the first added
+    $this->m_Selected_Statistics = 0;
   }
   
   //!---------------------------------------------------------------------------
-  // @function    string Stats::getPieChart( $variable )
-  // @desc        Get the JS script to create a pie chart of the requested
-  //              column from the statistics table.
+  // @function    string Stats::isGraph( $variable )
+  // @desc        returns true is the requested statistics generates a graph,
+  //              and false if it returns a text/table
   // @param       string $variable name of the column from the statistics page
-  //              for which a pie chart is requested.
-  // @return      string JS script to generate the pie chart.
+  // @return      bool True for graphs, False for text/table
   //!---------------------------------------------------------------------------
-  public function getPieChart( $variable ) {
+  public function isGraph( ) {
+    return ( $this->m_Stats_Array[ $this->m_Selected_Statistics ]->isGraph( ) );
+  }
+
+  //!---------------------------------------------------------------------------
+  // @function    string Stats::getAllDescriptiveNames( )
+  // @desc        returns an array with the descriptive names of all supported
+  //              statistics (e.g. to be used in a <select> element)
+  // @return      array of strings Descriptive names of supported statistics
+  //!---------------------------------------------------------------------------
+  public function getAllDescriptiveNames( ) {
+    $names = array( );
+    for ( $i = 0; $i < count( $this->m_Stats_Array ); $i++ ) {
+      if ( ( !$this->isAdmin( ) ) && $this->m_Stats_Array[ $i ]->m_AdminOnly ) {
+        continue;
+      }
+      $names[ ] = $this->m_Stats_Array[ $i ]->m_DescriptiveName;
+    }
+    return $names;
+  }
+
+  //!---------------------------------------------------------------------------
+  // @function    void Stats::setSelectedStatistics( $descriptiveName )
+  // @desc        sets the selected statistics
+  // $param       $descriptiveName Descriptive name of the selected statistics
+  //!---------------------------------------------------------------------------
+  public function setSelectedStatistics( $descriptiveName ) {
+    for ( $i = 0; $i < count( $this->m_Stats_Array ); $i++ ) {
+      if ( $this->m_Stats_Array[ $i ]->m_DescriptiveName == $descriptiveName ) {
+        $this->m_Selected_Statistics = $i;
+        return;
+      }
+    }
+    // If no match with the descriptive name, set selected statistics to 0.
+    $this->m_Selected_Statistics = 0;
+  }
+  
+  //!---------------------------------------------------------------------------
+  // @function    string Stats::getStatisticsScript( )
+  // @desc        Get the JS/PHP script to display the statistics. This function
+  //              call should be combined with a isGraph() call, to decide
+  //              whether the generated (JS) script should be passed on to the
+  //              HighCharts library or not.
+  // @return      string JS/PHP script to display the statistics.
+  //!---------------------------------------------------------------------------
+  public function getStatisticsScript( ) {
+    
     // Create script
-    return ( $this->generateDataForPieChart( $variable ) );
-   }
-
-  //!---------------------------------------------------------------------------
-  // @function    array Stats::getPieChartVariables( )
-  // @desc        Get an array of possible variables (columns) from the
-  //              statistics table that can be plotted as a pie chart.
-  // @return      array Possible variables for a pie chart.
-  //!---------------------------------------------------------------------------
-  public function getPieChartVariables( ) {
-    if ( $this->isAdmin() ) {
-      return ( array( "owner", "research_group", "ImageFileFormat",
-                       "OutputFileFormat", "PointSpreadFunction",
-                       "ImageGeometry", "MicroscopeType" ) );
-    } else {
-      return ( array( "ImageFileFormat",
-                       "OutputFileFormat", "PointSpreadFunction",
-                       "ImageGeometry", "MicroscopeType" ) );
-    }
+    return $this->m_Stats_Array[$this->m_Selected_Statistics]->getStatisticsScript(
+      $this->m_DB, $this->isAdmin(), $this->m_Filter_FromDate,
+      $this->m_Filter_ToDate, $this->m_Filter_Group, $this->m_Username );
   }
-
+   
   //!---------------------------------------------------------------------------
-  // @function    array Stats::getPieChartVariables( )
-  // @desc        Get an array of possible variables (columns) from the
-  //              statistics table that can be plotted as a pie chart.
-  // @return      array Possible variables for a pie chart.
-  //!---------------------------------------------------------------------------
-  public function getPieChartStatistics( ) {
-    if ( $this->isAdmin() ) {
-      return ( array( "owner"               => "Number of jobs per user (%)",
-                    "research_group"      => "Number of jobs per group (%)",
-                    "ImageFileFormat"     => "Input file format (%)",
-                    "OutputFileFormat"    => "Output file format (%)",
-                    "PointSpreadFunction" => "Type of Point-Spread Function used (%)",
-                    "ImageGeometry"       => "Image geometry (%)",
-                    "MicroscopeType"      => "Microscope type (%)" ) );
-    } else {
-      return ( array( "ImageFileFormat"     => "Input file format (%)",
-                    "OutputFileFormat"    => "Output file format (%)",
-                    "PointSpreadFunction" => "Type of Point-Spread Function used (%)",
-                    "ImageGeometry"       => "Image geometry (%)",
-                    "MicroscopeType"      => "Microscope type (%)" ) );
-    }
-  }
-
-  //!---------------------------------------------------------------------------
-  // @function    array Stats::getStartTimes( )
+  // @function    array Stats::getFromDates( )
   // @desc        Gets all beginning of the months from February 2010 until now
   // @return      array All beginning of monthts
   //!---------------------------------------------------------------------------
@@ -172,7 +378,7 @@ Class Stats {
   }
 
   //!---------------------------------------------------------------------------
-  // @function    array Stats::getEndTimes( )
+  // @function    array Stats::getToDates( )
   // @desc        Gets all end of the months from February 2010 until now
   // @return      array All ends of monthts
   //!---------------------------------------------------------------------------
@@ -261,6 +467,34 @@ Class Stats {
    * PRIVATE METHODS
    *
    ========================================================================== */
+
+  //!---------------------------------------------------------------------------
+  // @function    bool Stats::fill( )
+  // @desc        Creates the array of statistics types.
+  //!---------------------------------------------------------------------------
+  private function fillStatsArray(  ) {
+    // Make sure to clear
+    $this->m_Stats_Array = array();
+    
+    // Some alias...
+    $admin = true;
+    $user  = false;
+    
+    $this->m_Stats_Array[] = new Type(
+      "JobsPerUser",  "owner", "Number of jobs per user (%)", "piechart", $admin );
+    $this->m_Stats_Array[] = new Type(
+      "JobsPerGroup", "research_group", "Number of jobs per group (%)", "piechart", $admin );
+    $this->m_Stats_Array[] = new Type(
+      "ImageFileFormat", "ImageFileFormat", "Input file format (%)", "piechart", $user );
+    $this->m_Stats_Array[] = new Type(
+      "OutputFileFormat", "OutputFileFormat", "Output file format (%)", "piechart", $user );
+    $this->m_Stats_Array[] = new Type(
+      "PointSpreadFunction", "PointSpreadFunction", "Type of Point-Spread Function used (%)", "piechart", $user );
+    $this->m_Stats_Array[] = new Type(
+      "ImageGeometry", "ImageGeometry", "Image geometry (%)", "piechart", $user );
+    $this->m_Stats_Array[] = new Type(
+      "MicroscopeType", "MicroscopeType", "Microscope type (%)", "piechart", $user );
+  }
   
   //!---------------------------------------------------------------------------
   // @function    bool Stats::isAdmin( )
@@ -271,170 +505,6 @@ Class Stats {
   private function isAdmin(  ) {
     $user = new User();
     return ( $this->m_Username == $user->getAdminName() );
-  }
-
-  //!---------------------------------------------------------------------------
-  // @function    string Stats::generateDataForPieChart( $variable )
-  // @desc        Generates the data (string) from the statistics table to
-  //              feed into pieChart( ), the function that creates the complete
-  //              JS script. 
-  // $param       string $variable Column name from the statistics table for
-  //              which a pie chart is requested; $variable is one of:
-  //                               owner
-  //                               research_group
-  //                               ImageFileFormat
-  //                               OutputFileFormat
-  //                               PointSpreadFunction
-  //                               ImageGeometry
-  //                               MicroscopeType
-  // @return      string JS script used to generate the requested pie chart.
-  //!---------------------------------------------------------------------------
-  private function generateDataForPieChart( $variable ) {
-    $titles = $this->getPieChartStatistics( );
-    $title = $titles[ $variable ];
-
-    // Date filters
-    $dateFilter = "start >= '" . $this->m_Filter_FromDate ."' AND stop <= '" .
-      $this->m_Filter_ToDate . "'";
-
-    // Group filters (admin only)
-    if ( $this->isAdmin() ) {
-      if ( $this->m_Filter_Group == "All groups" ) {
-        $groupFilter = "";
-      } else {
-        $groupFilter = " AND research_group = '" . $this->m_Filter_Group . "'";
-      }
-    } else {
-      $groupFilter = "";
-    }
-    
-    // Non-admin users can only access their stats
-    if ( $this->isAdmin() ) {
-      $userNameFilter = "";
-    } else {
-      $userNameFilter = " AND owner = '" . $this->m_Username . "'";
-    }
-    
-    // Create data
-    $row      = $this->m_DB->execute( "SELECT COUNT( id ) FROM statistics WHERE " . $dateFilter . $groupFilter . $userNameFilter . ";" )->FetchRow( );
-    $numJobs  = $row[ 0 ];
-    if ( $numJobs == 0 ) {
-      return ( $this->pieChart( "[]", "Nothing to display!", "" ) );
-    }
-    $entities    = $this->m_DB->execute( "SELECT DISTINCT( " . $variable . ") FROM statistics WHERE " . $dateFilter . $groupFilter . $userNameFilter . ";" );
-    $row      = $this->m_DB->execute( "SELECT COUNT( DISTINCT( " . $variable . " ) ) FROM statistics WHERE " . $dateFilter . $groupFilter . $userNameFilter . ";" )->FetchRow( );
-    $numEntities = $row[ 0 ];
-    $data = "[";
-    
-    for ( $i = 0; $i < $numEntities; $i++ ) {
-      // Get current username
-      $row = $entities->FetchRow( );
-      $variableName = $row[ 0 ];
-	  $row = $this->m_DB->execute( "SELECT COUNT(id) FROM statistics WHERE " . $variable . " = '" . $variableName . "' AND " . $dateFilter . $groupFilter . $userNameFilter . ";" )->FetchRow( );
-	  $numUserJobs = $row[ 0 ];
-      $percent = 100 * $numUserJobs / $numJobs;
-      $percent = number_format($percent, 2);
-      if ( $i < ( $numEntities - 1 ) ) {
-        $data .= "['" . $variableName . "', " . $percent . " ], ";
-      } else {
-        $data .= "['" . $variableName . "', " . $percent . " ] ]";
-      }
-    }
-    
-    // Assemble also subtitle
-    if ( $this->m_Filter_Group != "All groups" ) {
-      $groupStr = " Group: " . $this->m_Filter_Group . "." ;
-    } else {
-      $groupStr = "";
-    }
-    $subtitle = "Total: " . $numJobs . " entries." . $groupStr;
-    
-    // Create script
-    return ( $this->pieChart( $data, $title, $subtitle ) );
-  }
-
-  //!---------------------------------------------------------------------------
-  // @function    string Stats::pieChart( $data, $title, $subtitle )
-  // @desc        Generates the complete JS script for the requested pie chart
-  //              from guven data string $data and title $title. 
-  // $param       string $data Data string generated by generateDataForPieChart( ).
-  // $param       string $title Title of the pie chart.
-  // $param       string $subtitle Subtitle of the pie chart.
-  // @return      string Complete JS script used to generate the requested pie chart.
-  //!---------------------------------------------------------------------------
-  private function pieChart( $data, $title, $subtitle ) {
-    $script = "$(document).ready(function() {
-			var chart = new Highcharts.Chart({
-				chart: {
-					renderTo: 'statschart',
-					margin: [50, 200, 60, 170]
-				},
-				title: {
-					text: '" . $title . "'
-				},
-                subtitle: {
-                  text: '" . $subtitle . "'
-                },
-				plotArea: {
-					shadow: null,
-					borderWidth: null,
-					backgroundColor: null
-				},
-				tooltip: {
-					formatter: function() {
-						return '<b>'+ this.point.name +'</b>: '+ this.y +' %';
-					}
-				},
-				plotOptions: {
-					pie: {
-						dataLabels: {
-							enabled: true,
-							formatter: function() {
-								if (this.y > 5) return this.point.name;
-							},
-							color: 'black',
-							style: {
-								font: '13px Trebuchet MS, Verdana, sans-serif',
-							},
-						}
-					}
-				},
-				legend: {
-					layout: 'vertical',
-					style: {
-						left: 'auto',
-						bottom: 'auto',
-						right: '50px',
-						top: '100px'
-					}
-				}, series: [{
-					type: 'pie',
-					name: '" . $title . "', data: " . $data . "}] });
-		});
-    ";
-    return $script;
-  }
-
-  //!---------------------------------------------------------------------------
-  // @function    array Stats::getLastMonths( $n )
-  // @desc        Generates an array with the dates of the beginning and the 
-  //              end of all of the last $n months. Useful to query a database
-  //              for entries that lie within a time range.
-  // $param       integer $n Number of months for which to return the start and
-  //              end dates.
-  // @return      array of arrays of all the dates of the last $n months
-  //!---------------------------------------------------------------------------
-  private function getLastMonths( $n ) {
-    // Get the dates of the first day of the month for the last 12 months
-    $lastMonths = array( );
-    $counter = 0;
-    for ( $i = 11; $i >= 0; $i-- ) {
-      $fromDate = date( "Y-m-d",
-            strtotime( date( "Y-m" ) . "-01 -" . $i . " months" ) );
-      $toDate = date( "Y-m-d",
-            strtotime( date( "Y-m" ) . "-01 -" . ( $i - 1 ). " months -1 day" ) );
-      $lastMonths[ $counter++ ] = array( "from" => $fromDate, "to" => $toDate );
-    }
   }
   
 }

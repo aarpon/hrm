@@ -150,6 +150,13 @@ table {
     border-top: #ccc 1px dotted;
 }
 
+#statstext {
+    width: 800px;
+    height: 400px;
+    margin: 50px 0px 50px 0px;
+    border-top: #ccc 1px dotted;
+}
+
 #nav {
     color: #888;
     font-size: 12px;

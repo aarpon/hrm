@@ -71,10 +71,10 @@ $message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
 $stats = new Stats( $_SESSION['user']->name() );
 
 // Get a list of possible variable to be plotted
-$possibleVariables = $stats->getPieChartVariables( );
+//$possibleVariables = $stats->getPieChartVariables( );
 
 // Get a list of statistics names for the <select> element
-$possibleStats = $stats->getPieChartStatistics( );
+$possibleStats = $stats->getAllDescriptiveNames( );
 
 // Filters
 $fromDates  = $stats->getFromDates();
@@ -83,11 +83,12 @@ $groupNames = $stats->getGroupNames();
 
 // Was some statistics chosen?
 if (isset($_POST["Statistics"] ) ) {
-  $chosenStats = $_POST["Statistics"];
-  $variable = array_search( $chosenStats, $possibleStats );
+  //$chosenStats = $_POST["Statistics"];
+  $stats->setSelectedStatistics( $_POST["Statistics"] );
+  //$variable = array_search( $chosenStats, $possibleStats );
 } else {
-  $variable = $possibleVariables[ 0 ];
-  $chosenStats   = $possibleStats[ $variable ];
+  //$variable = $possibleVariables[ 0 ];
+  //$chosenStats   = $stats->getSelectedStatistics( );
 }
 
 // Was some fromDate chosen?
@@ -116,8 +117,16 @@ $stats->setFromDateFilter( $chosenFromDate );
 $stats->setToDateFilter( $chosenToDate );
 $stats->setGroupFilter( $chosenGroupName );
 
-// Create default graph -- TODO: Let the user choose the statistics to display through a select element
-$generatedScript = $stats->getPieChart( $variable );
+// If the statistics is a graph, we display the generated javascript via the
+// '$generatedScript' header inclusion; otherwhise, we get the (PHP) script into
+// the differently-named variable $tableScript.
+if ( $stats->isGraph( ) == true ) {
+  $generatedScript = $stats->getStatisticsScript( );
+  $tableScript     = "";
+} else {
+  $generatedScript = "";
+  $tableScript     = $stats->getStatisticsScript( );
+}
 
 include("header.inc.php");
 
@@ -139,16 +148,16 @@ include("header.inc.php");
         
           <?php
         
-          foreach ($possibleStats as $stats) {
+          foreach ($possibleStats as $currentStats) {
 
-            if ( $stats == $chosenStats ) {
+            if ( $currentStats == $chosenStats ) {
               $selected = "selected=\"selected\"";
             } else {
               $selected = "";
             }
             
           ?>
-            <option <?php echo $selected ?>><?php echo $stats ?></option>
+            <option <?php echo $selected ?>><?php echo $currentStats ?></option>
         
           <?php
           }
@@ -232,8 +241,18 @@ include("header.inc.php");
         
     </div>
     
-    <!--  This is where the graph will be displayed -->
-    <div id="statschart"></div>
+    <?php
+      if ( $stats->isGraph( $variable ) ) {
+    ?>
+      <!--  This is where the graph will be displayed -->
+      <div id="statschart"></div>
+    <?php
+      } else {
+    ?>          
+      <div id="statstext"><?php echo $tableScript; ?></div>
+    <?php
+      }
+    ?>
 
 <?php
 
