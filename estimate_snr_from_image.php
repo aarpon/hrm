@@ -187,7 +187,7 @@ function estimateSnrFromFile($file) {
     // line-breaks in this declarations, as this is going to be escaped for
     // JavaScript.
 
-    $buttons = "<input type=\"button\" value=\"\" class=\"icon previous\" onmouseover=\"Tip('Select another image.' )\" onmouseout=\"UnTip()\" onclick=\"document.location.href=''\" />";
+    $buttons = "<input type=\"button\" value=\"\" class=\"icon previous\" onmouseover=\"Tip('Select another image.' )\" onmouseout=\"UnTip()\" onclick=\"document.location.href='estimate_snr_from_image.php'\" />";
 
     $buttons .= "<input type=\"button\" value=\"\" class=\"icon next\" onmouseover=\"Tip('Proceed to the restoration parameters.' )\" onmouseout=\"UnTip()\" onclick=\"document.location.href='task_parameter.php'\" /></div>";
 
