@@ -498,6 +498,39 @@ function getMaxFileSize() {
     return let_to_num(ini_get('upload_max_filesize'));
 }
 
+//!---------------------------------------------------------
+// @function    Util::readfile_chunked
+// @desc        To be used instead of PHP's own readfile function to read
+//              very large files. This should prevent memory errors.
+// 
+// @param       filename  String name of the file to read
+// @param       retbytes  boolean
+//
+// @see         http://nl.php.net/manual/en/function.readfile.php#54295
+//!---------------------------------------------------------  
 
+function readfile_chunked($filename,$retbytes=true) {
+  $chunksize = 1*(1024*1024); // how many bytes per chunk
+  $buffer = '';
+  $cnt =0;
+  $handle = fopen($filename, 'rb');
+  if ($handle === false) {
+    return false;
+  }
+  while (!feof($handle)) {
+    $buffer = fread($handle, $chunksize);
+    echo $buffer;
+    ob_flush();
+    flush();
+    if ($retbytes) {
+      $cnt += strlen($buffer);
+    }
+  }
+  $status = fclose($handle);
+  if ($retbytes && $status) {
+    return $cnt; // return num. bytes delivered like readfile() does.
+  }
+  return $status;
+} 
 
 ?>

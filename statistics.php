@@ -121,11 +121,11 @@ $stats->setGroupFilter( $chosenGroupName );
 // '$generatedScript' header inclusion; otherwhise, we get the (PHP) script into
 // the differently-named variable $tableScript.
 if ( $stats->isGraph( ) == true ) {
-  $generatedScript = $stats->getStatisticsScript( );
+  $generatedScript = $stats->getStatistics( );
   $tableScript     = "";
 } else {
   $generatedScript = "";
-  $tableScript     = $stats->getStatisticsScript( );
+  $tableScript     = $stats->getStatistics( );
 }
 
 include("header.inc.php");
@@ -150,7 +150,7 @@ include("header.inc.php");
         
           foreach ($possibleStats as $currentStats) {
 
-            if ( $currentStats == $chosenStats ) {
+            if ( $currentStats == $stats->getSelectedStatistics() ) {
               $selected = "selected=\"selected\"";
             } else {
               $selected = "";
@@ -235,21 +235,21 @@ include("header.inc.php");
           }
           ?>
           
-          <input type="submit" name="Submit" value="Display">
+          <input type="submit" name="Submit" value="Go!">
             
       </form>
         
     </div>
     
     <?php
-      if ( $stats->isGraph( $variable ) ) {
+      if ( $stats->isGraph( ) == true ) {
     ?>
       <!--  This is where the graph will be displayed -->
       <div id="statschart"></div>
     <?php
       } else {
     ?>          
-      <div id="statstext"><?php echo $tableScript; ?></div>
+      <div id="statstext"><?php echo "<h3>" . $tableScript ."</h3>"; ?></div>
     <?php
       }
     ?>

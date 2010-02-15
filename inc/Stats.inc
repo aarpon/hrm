@@ -50,14 +50,15 @@
 // The fact that you are presently reading this means that you have had
 // knowledge of the CeCILL license and that you accept its terms.
 
-require_once "inc/User.inc";
-require_once "inc/Database.inc";
+require_once( "User.inc" );
+require_once( "Database.inc" );
+require_once( "Util.inc" );
 
 Class Type {
   public $m_Name;
   public $m_Variable;
   public $m_DescriptiveName;
-  public $m_Type;        // One of 'text', 'piechart', 'linechart'
+  public $m_Type;        // One of 'text', 'piechart', 'linechart', 'dumptable'
   public $m_AdminOnly;
   
   //!---------------------------------------------------------------------------
@@ -86,14 +87,16 @@ Class Type {
   }
   
   //!---------------------------------------------------------------------------
-  // @function    string Type::getStatisticsScript( $dateFilter, $groupFilter, $userNameFilter )
+  // @function    string Type::getStatisticsScript( $db, $admin, $fromDate, $toDate, $group, $username )
   // @desc        Get the JS/PHP script to display the statistics.
-  // $param       $dateFilter SQL query to filter by date
-  // $param       $groupFilter  SQL query to filter by group
-  // $param       $userNameFilter  SQL query to filter by user name
+  // $param       $admin     true if the user is the admin
+  // $param       $fromDate  start date for filtering in the form "YYYY-mm-dd hh:mm:ss"
+  // $param       $toDate    end   date for filtering in the form "YYYY-mm-dd hh:mm:ss"
+  // $param       $group     group name
+  // $param       $username  user name
   // @return      string JS/PHP script to display the statistics. 
   //!---------------------------------------------------------------------------
-  public function getStatisticsScript( $db, $admin, $fromDate, $toDate, $group, $userName ) {
+  public function getStatisticsScript( $db, $admin, $fromDate, $toDate, $group, $username ) {
     
         // Date filters
     $dateFilter = "start >= '" . $fromDate ."' AND stop <= '" . $toDate . "'";
@@ -113,7 +116,7 @@ Class Type {
     if ( $admin ) {
       $userNameFilter = "";
     } else {
-      $userNameFilter = " AND owner = '" . $userName . "'";
+      $userNameFilter = " AND owner = '" . $username . "'";
     }
 
     switch ( $this->m_Type ) {
@@ -320,6 +323,14 @@ Class Stats {
   }
 
   //!---------------------------------------------------------------------------
+  // @function    string Stats::getSelectedStatistics( )
+  // @desc        returns the descriptive name of the selected statistics
+  //!---------------------------------------------------------------------------
+  public function getSelectedStatistics( ) {
+    return ( $this->m_Stats_Array[ $this->m_Selected_Statistics ]->m_DescriptiveName );
+  }
+
+  //!---------------------------------------------------------------------------
   // @function    void Stats::setSelectedStatistics( $descriptiveName )
   // @desc        sets the selected statistics
   // $param       $descriptiveName Descriptive name of the selected statistics
@@ -343,12 +354,17 @@ Class Stats {
   //              HighCharts library or not.
   // @return      string JS/PHP script to display the statistics.
   //!---------------------------------------------------------------------------
-  public function getStatisticsScript( ) {
+  public function getStatistics( ) {
     
-    // Create script
-    return $this->m_Stats_Array[$this->m_Selected_Statistics]->getStatisticsScript(
-      $this->m_DB, $this->isAdmin(), $this->m_Filter_FromDate,
-      $this->m_Filter_ToDate, $this->m_Filter_Group, $this->m_Username );
+    if ( $this->m_Stats_Array[$this->m_Selected_Statistics]->m_Type == "dumptable" ) {
+      // Download the whole statistics table
+      return ( $this->dumpStatsTableToFile() );
+    } else {
+      // Create script
+     return $this->m_Stats_Array[$this->m_Selected_Statistics]->getStatisticsScript(
+       $this->m_DB, $this->isAdmin(), $this->m_Filter_FromDate,
+       $this->m_Filter_ToDate, $this->m_Filter_Group, $this->m_Username );
+    }
   }
    
   //!---------------------------------------------------------------------------
@@ -494,6 +510,8 @@ Class Stats {
       "ImageGeometry", "ImageGeometry", "Image geometry (%)", "piechart", $user );
     $this->m_Stats_Array[] = new Type(
       "MicroscopeType", "MicroscopeType", "Microscope type (%)", "piechart", $user );
+    $this->m_Stats_Array[] = new Type(
+      "DumpTable", "", "Export all statistics to file", "dumptable", $admin );
   }
   
   //!---------------------------------------------------------------------------
@@ -505,6 +523,80 @@ Class Stats {
   private function isAdmin(  ) {
     $user = new User();
     return ( $this->m_Username == $user->getAdminName() );
+  }
+
+    //!---------------------------------------------------------
+  // @function    Type::dumpStatsTableToFile( $db )
+  // $param       $db Database object
+  // @desc        Dumps the statistics table to file and "downloads" it
+  //!---------------------------------------------------------  
+  private function dumpStatsTableToFile( ) { 
+      // Make sure that the script doesn't timeout.
+      set_time_limit(0);
+      
+      // Is there something to dump?
+      $row  = $this->m_DB->execute( "SELECT COUNT( id ) FROM statistics;" )->FetchRow( );
+      $numJobs  = $row[ 0 ];
+      if ( $numJobs == 0 ) {
+        return "Nothing to export!";
+      }
+      
+      // Get the data from the statistics table
+      $res = $this->m_DB->execute( "SELECT * FROM statistics;" );
+      if ( $res ) {
+        
+        // Open a temporary file
+        $fileName = "stats_dump_" . date( "Y-m-d_H-i-s" ) . ".txt";
+        $fullFileName = "/tmp/" .$fileName;
+        $fileHandle = fopen( $fullFileName, 'w+' );
+        if ( $fileHandle == 0 ) {
+          return "Error: could not open file.";
+        }
+        
+        // Now export the data
+        while ( $row = $res->FetchRow( ) ) {
+          
+          $currentRow =
+            $row[ "id" ] . "\t" .
+            $row[ "owner" ] . "\t" .
+            $row[ "research_group" ] . "\t" .
+            $row[ "start" ] . "\t" .
+            $row[ "stop" ] . "\t" .
+            $row[ "ImageFileFormat" ] . "\t" .
+            $row[ "OutputFileFormat" ] . "\t" .
+            $row[ "PointSpreadFunction" ] . "\t" .
+            $row[ "ImageGeometry" ] . "\t" .
+            $row[ "MicroscopeType" ] . "\n";
+
+          fwrite( $fileHandle, $currentRow );
+            
+        }
+      
+        // Close the file
+        fclose( $fileHandle );
+      }
+        
+      // Now serve the file
+      $size = filesize( $fullFileName );
+      $type = "Content-Type: text/plain";
+      $dlname = $fileName;
+
+      if ($size) {
+          header ("Accept-Ranges: bytes");
+          header ("Connection: close");
+          header ("Content-Disposition-type: attachment");
+          header ("Content-Disposition: attachment; filename=\"$dlname\"");
+          header ("Content-Length: $size"); 
+          header ("Content-Type: $type; name=\"$dlname\"");
+          ob_clean();
+          flush();
+          readfile_chunked($fullFileName);
+          unlink($fullFileName);
+          return ""; 
+      } else {
+          return ( "Error serving the file " . $fileName . "." );
+      }
+      return ( "Nothing to download!" );;
   }
   
 }
