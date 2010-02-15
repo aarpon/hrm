@@ -256,7 +256,7 @@ function estimateSnrFromFile($file) {
     for ($ch = 0; $ch < $chanCnt; $ch++ ) {
         $output .= "<tr><td>".
             "<table>".
-            "<tr><td colspan=\"3\">".
+            "<tr><td colspan=\"1\">".
             "<b><hr>Channel $ch</b></td></tr><tr>";
 
         $chKey = "Ch_$ch,";
@@ -287,6 +287,7 @@ function estimateSnrFromFile($file) {
         $simImg = explode(" ", $estimation[$chKey.'simulationImages']);
         $simZoom = explode(" ", $estimation[$chKey.'simulationZoom']);
         $bestColumn = array_search($estSNR, $simVals);
+        $preload = "if (document.images) {\n";
 
         $i = 0;
         foreach ($simVals as $snr) {
@@ -312,6 +313,10 @@ function estimateSnrFromFile($file) {
                     $zoomFile."&amp;dir=src\" alt=\"SNR $snr\" id=\"ithumb\"".
                     " />");
 
+            $preload .= ' pic'.$i.'= new Image(200,200); '."\n".
+                'pic'.$i.'.src="file_management.php?getThumbnail='.
+                $tmbFile.'&dir=src"; '."\n";
+
             if ($snr == 0) {
                 for ($j = 1; $j < $bestColumn; $j++) {
                     // Align the original with the best SNR result
@@ -319,12 +324,12 @@ function estimateSnrFromFile($file) {
                 }
                 $output .=  "<img src=\"file_management.php?getThumbnail=".
                           $tmbFile."&amp;dir=src\" alt=\"SNR $snr\" ".
-                          "onmouseover=\"Tip('$tag'); smoothChangeDiv('thumb','$zoomImg', 300);\"  onmouseout=\"UnTip()\"/>";
+                          "onmouseover=\"Tip('$tag'); changeDiv('thumb','$zoomImg', 300);\"  onmouseout=\"UnTip()\"/>";
                 $output .= "<br /><small>Original</small>";
             } else {
                 $output .=  "<img src=\"file_management.php?getThumbnail=".
                           $tmbFile."&amp;dir=src\" alt=\"SNR $snr\" ".
-                          "onmouseover=\"Tip('$tag'); smoothChangeDiv('thumb','$zoomImg', 300);\" onmouseout=\"UnTip()\"/>";
+                          "onmouseover=\"Tip('$tag'); changeDiv('thumb','$zoomImg', 300);\" onmouseout=\"UnTip()\"/>";
                 if ( $snr == $estSNR ) {
                     $output .= "<br /><small><b>SNR ~ $snr</b></small>";
                 } else {
@@ -359,11 +364,14 @@ function estimateSnrFromFile($file) {
     }
     $message .= "<div id=\"thumb\">".$defaultView."</div>";
     $output .= "</table></fieldset>";
+    $preload .= "} ";
+
 
     ?>
     </div>
     <script type="text/javascript">
     <!--
+         <?php // preloading code doesn't seem to help (at least if it doesn't go in the head of the document; echo $preload; ?>
          smoothChangeDiv('info','<?php echo escapeJavaScript($message); ?>',1300);
          smoothChangeDiv('output','<?php echo escapeJavaScript($output); ?>',1000);
          smoothChangeDiv('controls','<?php echo escapeJavaScript($buttons); ?>',1500);
