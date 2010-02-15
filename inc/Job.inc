@@ -76,6 +76,7 @@ Class Job {
 	var $jobDescription;
 	var $server;
 	var $pid;
+        var $id;
 	var $status;
 
 	function Job($jobDescription) {
@@ -129,6 +130,11 @@ Class Job {
 
 	function pid() {
 		return $this->pid;
+	}
+
+	function id() {
+                $desc = $this->description();
+		return $desc->id;
 	}
 
 	function setPid($pid) {
@@ -281,7 +287,7 @@ Class Job {
 		// TODO check why $result is overwritten
 		$result = file_exists($path . '/' . $finishedMarker);
 		if ($imageProcessingIsOnQueueManager) {
-			$proc = newExternalProcessFor($this->server(), $this->server() . "_out.txt", $this->server() . "_error.txt");
+			$proc = newExternalProcessFor($this->server(), $this->server() . "_out.txt", $this->server() .  "_" .$this->id(). "_error.txt");
 			$result = !$proc->existsHuygensProcess($this->pid());
 			if (!$result && $proc->isHuygensProcessSleeping($this->pid())) {
 				$proc->rewakeHuygensProcess($this->pid());

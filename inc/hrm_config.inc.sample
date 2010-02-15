@@ -213,6 +213,7 @@ $saveSfpPreviews = true;
 
 // A shell command that executes ping four times and stops afterwards
 $ping_command = 'ping -w 4';	// use this on linux systems
+// $ping_command = 'ping -t 4';	// use this on macosx systems
 //$ping_command = 'ping';	// use this on cygwin
 
 // The parameter for the ping command after the hostname

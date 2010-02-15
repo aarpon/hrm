@@ -147,6 +147,8 @@ Class JobQueue {
   }
 
   function killJobs($ids) {
+      global $logdir;
+
       $result = True;
       if (count($ids)==0) return $result;
       $db = new DatabaseConnection();
@@ -158,13 +160,15 @@ Class JobQueue {
           $pid = $row['process_info'];
           $server = $row['server'];
           $proc = $this->newExternalProcess($server, 
-                  $server . "_out.txt", $server . "_error.txt");
+                  $server . "_out.txt", $server . "_". $id . "_error.txt");
           $killed = $proc->killHucoreProcess($pid);
           report("Trying to kill running job with pid $pid: $killed",1);
           $result = $result && $killed;
           if ($killed) {
               $result = $result && $this->removeJobWithId($id);
               $result = $result && $db->markServerAsFree($server);
+              $errorFile = $logdir . "/" . $server .  "_" .$id. "_error.txt";
+              if (file_exists($errorFile)) unlink($errorFile);
           }
     } 
     return $result;

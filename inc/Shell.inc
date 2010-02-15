@@ -162,7 +162,10 @@ Class ExternalProcess {
     function execute($command) {
         global $huygens_user;
 
-        $ret = fwrite($this->pipes[0], 'ssh -f ' . $huygens_user . "@" . $this->host . " '" . $command . " &' \n" );
+        $cmd = 'ssh -f ' . $huygens_user . "@" . $this->host . " '" . $command . " &' \n";
+
+        $ret = fwrite($this->pipes[0], $cmd );
+        report ("$cmd: $ret", 2);
         if ( $ret ) {
             $ret = fwrite($this->pipes[0], "exit\n");
         }
@@ -242,7 +245,7 @@ Class ExternalProcess {
   }
   
   function killHucoreProcess($pid) {    
-    $command = "kill " . $pid . "\n";
+    $command = "kill " . $pid;
     $result = True;
     $result = $result && $this->runShell();
     if ($result) {

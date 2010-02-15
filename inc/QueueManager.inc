@@ -108,7 +108,7 @@ Class QueueManager {
 			$clientScriptPath = $this->copyImagesToServer($server_hostname);
 			report("images copied to IP server", 1);
 		}
-		$proc = newExternalProcessFor($server, $server . "_out.txt", $server . "_error.txt");
+		$proc = newExternalProcessFor($server, $server . "_out.txt", $server . "_" .$job->id(). "_error.txt");
 		report("shell process created", 1);
 		$ssh = $proc->runShell();
 		report("running shell", 1);
@@ -415,7 +415,7 @@ Class QueueManager {
 				continue;
 			
 			// Check if Huygens host is reachable
-			$proc = newExternalProcessFor($job->server(), $job->server() . "_out.txt", $job->server() . "_error.txt");
+			$proc = newExternalProcessFor($job->server(), $job->server() . "_out.txt", $job->server() .  "_" .$job->id(). "_error.txt");
 			if (!$proc->ping())
 				continue;
 			
@@ -438,6 +438,7 @@ Class QueueManager {
 			
 			// Notify user
 			$startTime = $queue->startTime($job);
+                        $errorFile = $logdir . "/" . $job->server() .  "_" .$job->id(). "_error.txt";
 			// TODO add warning messages notification
 			if (!$result || $errorOccured) {
 				report("finishing job " . $desc->id() . " with error on " . $job->server(), 1);
@@ -447,7 +448,6 @@ Class QueueManager {
 				$this->stopTime = $queue->stopJob($job);
 				// Write email
 				$message = "";
-				$errorFile = $logdir . "/" . $job->server() . "_error.txt";
 				if (file_exists($errorFile))
 					$message = file_get_contents($errorFile);
 				if ($send_mail) $this->notifyError($job, $message, $startTime);
@@ -466,9 +466,9 @@ Class QueueManager {
 				// Write email
 				$this->writeParameterFile($job, $startTime);
 				if ($send_mail) $this->notifySuccess($job, $startTime);
-				//if (file_exists($errorFile)) { 
-				//    unlink($errorFile);
-				//} 
+				if (file_exists($errorFile)) { 
+				    unlink($errorFile);
+				} 
 				// make withdrawal of hours
 				if ($use_accounting_system) $this->makeWithdrawal($desc->owner(), $accounting_client_name, $startTime, $this->stopTime, $desc->credit(), $desc->group);
 			}
@@ -605,7 +605,7 @@ Class QueueManager {
 		//}
 		// The following is never run, but for completeness we add the logdir
 		global $logdir;
-		$errorFile = $logdir . "/" . $job->server() . '_error.txt';
+		$errorFile = $logdir . "/" . $job->server() .  "_" .$job->id(). '_error.txt';
 		$message = '';
 		if (file_exists($errorFile)) {
 			$message = file_get_contents($errorFile);
@@ -753,7 +753,7 @@ Class QueueManager {
 		foreach ($serverNames as $name) {
 			$status = $db->statusOfServer($name);
 			if ($status == 'free') {
-				$proc = newExternalProcessFor($name, $name . "_out.txt", $name . "_error.txt");
+				$proc = newExternalProcessFor($name, $name . "_out.txt", $name .  "_error.txt");
 				//report("found free server", 2);
 				if ($proc->ping()) {
 					//report("ping succeeded for $name", 2);
@@ -810,16 +810,8 @@ Class QueueManager {
 		$server = $queue->availableServer();
 		// TODO refactor this in order to manage error logs per job
 		foreach ($server as $name) {
-	
-			$this->nping[$name] = 0;
-			if (!$queue->isServerBusy($name)) {
-				$errorFile = $logdir . "/" . $name . "_error.txt";
-				if (file_exists($errorFile)) {
-					report("resetting error log for $name", 1);
-					//unlink($errorFile);
-				}
-			}
-		}
+                    $this->nping[$name] = 0;
+                }
 		
 		report("Huygens Remote Manager started on " . date("Y-m-d H:i:s") . "\n", 1);
                 
