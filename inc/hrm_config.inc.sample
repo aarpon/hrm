@@ -173,6 +173,12 @@ $resultImagesRenamed = true;
 
 // Thumbnails require Huygens Core 3.3.2 or higher.
 
+// Notice that despite some script executions are relatively fast (like
+// thumbnail generation and SNR estimation), they still may take a long time if
+// the images are very large, or if deconvolution jobs are already running in
+// the local server. You may need to increase PHP's max_execution_time
+// directive in php.ini, and restart the web server.
+
 // If true, allows generates thumbnails and previews for the originals and the
 // results during the deconvolution (i.e. in the computation servers). These
 // are maximum intensity projections (MIP) of the stacks along the main axes,
