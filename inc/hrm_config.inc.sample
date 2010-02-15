@@ -47,6 +47,10 @@ $local_huygens_core = "/usr/local/bin/hucore";
 // At least the first three numbers are required, the patch level is optional:
 $enable_code_for_huygens = "3.5.1";
 
+// Huygens 3.3.1 allows the generation of image previews
+// HDF5 is supported only from Huygens 3.5.0
+// Huygens 3.5.1 contains tools to estimate the SNR from an image.
+
 //==============================================================================
 // File server settings
 //==============================================================================
