@@ -161,8 +161,18 @@ Class ExternalProcess {
 
     function execute($command) {
         global $huygens_user;
-        fwrite($this->pipes[0], 'ssh -f ' . $huygens_user . "@" . $this->host . " '" . $command . " &' \n" );
-        fwrite($this->pipes[0], "exit\n");
+
+        $ret = fwrite($this->pipes[0], 'ssh -f ' . $huygens_user . "@" . $this->host . " '" . $command . " &' \n" );
+        if ( $ret ) {
+            $ret = fwrite($this->pipes[0], "exit\n");
+        }
+
+        if ( $ret === False ) {
+            return False;
+        } else {
+            // Asume execution success!!
+            return True;
+        }
     } 
     
     function pidFromString($input) {
@@ -233,10 +243,12 @@ Class ExternalProcess {
   
   function killHucoreProcess($pid) {    
     $command = "kill " . $pid . "\n";
-    shell_exec( $command );
-    //$this->runShell();
-    //$this->execute($command);
-    return;
+    $result = True;
+    $result = $result && $this->runShell();
+    if ($result) {
+        $result = $result && $this->execute($command);
+    }
+    return $result;
   }
 }
 
@@ -270,9 +282,17 @@ Class LocalExternalProcess extends ExternalProcess {
 
   function execute($command) {
     global $huygens_user;
-    fwrite($this->pipes[0], $command . " & \n" );
+    $ret = fwrite($this->pipes[0], $command . " & \n" );
     fflush($this->pipes[0]);
-    sleep(5);
+    if ($ret === false) {
+        // Can't write to pipe.
+        return False;
+    } else {
+        sleep(5);
+        // Asume execution success!!
+        return True;
+    }
+
   }
 
   function ping() {
@@ -302,7 +322,13 @@ Class LocalExternalProcess extends ExternalProcess {
       } 
       $result = (strstr($answer, "\n" . $pid . " "));
       return $result;
-  } 
+  }
+
+  function killHucoreProcess($pid) {    
+      $dead = posix_kill($pid,15);
+      return $dead;
+  }
+
 }  
 
 ?>

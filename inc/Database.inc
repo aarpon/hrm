@@ -996,8 +996,10 @@ Class DatabaseConnection {
   }
 
   function markJobAsRemoved($id) {  
-    //$query = "update job_queue set status='broken' where status='queued' or status='paused' and id='" . $id . "'";
-    $query = "update job_queue set status='broken' where id='" . $id . "'"; 
+    $query = "update job_queue set status='broken' where status='queued' or status='paused' and id='" . $id . "'";
+    // $query = "update job_queue set status='broken' where id='" . $id . "'"; 
+    $result = $this->execute($query);
+    $query = "update job_queue set status='kill' where status='started' and id='" . $id . "'";
     $result = $this->execute($query);
     return $result;    
   }
@@ -1013,6 +1015,13 @@ Class DatabaseConnection {
     $ids = $this->retrieveColumnFromTableWhere('id', 'job_queue', $conditions);
     return $ids;
   }
+
+  function getJobIdsToKill() { 
+    $conditions['status'] = 'kill';
+    $ids = $this->retrieveColumnFromTableWhere('id', 'job_queue', $conditions);
+    return $ids;
+  }
+ 
   
   function checkUser($name) {
     $query = "select status from username where name = '" . $name . "'";

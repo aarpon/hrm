@@ -391,6 +391,8 @@ Class QueueManager {
 		
 		// TODO check if it is necessary
 		$queue = $this->queue;
+                // Kill marked running jobs
+		$queue->killMarkedJobs();
 		// Remove broken jobs
 		if ($queue->removeMarkedJobs()) {
                         report("broken jobs removed", 2);

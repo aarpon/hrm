@@ -136,19 +136,36 @@ Class JobQueue {
     $result = True;
     if (count($ids)==0) return $result;
     $db = new DatabaseConnection();
-    foreach($ids as $id) {  // loop through all the jobs selected, which have to be deleted
-      $row = $db->getQueueContentsForId($id);
-      if ($row['status'] == 'started') {  // if the job is started, kill the process and update the databese (job_queue and server)  
-        $pid = $row['process_info'];
-        $server = $row['server'];
-        $proc = $this->newExternalProcess($server, $server . "_out.txt", $server . "_error.txt");
-        $proc->killHucoreProcess($pid);
-        $result = $result && $db->markJobAsRemoved($id);
-        $result = $result && $db->markServerAsFree($server);
-      }
-      else {  // if the job is not started, update the database (job_queue)
+    foreach($ids as $id) {  
+        // loop through all the jobs selected, which have to be deleted
         $result = $result && $db->markJobAsRemoved($id);   
-      }
+
+        // The front end should NOT try to kill the job, it may not work. The
+        // Queue Manager will take care of it.
+    } 
+    return $result;
+  }
+
+  function killJobs($ids) {
+      $result = True;
+      if (count($ids)==0) return $result;
+      $db = new DatabaseConnection();
+      foreach($ids as $id) {  
+          // Loop through all the jobs selected, which have to be killed and
+          // deleted.
+
+          $row = $db->getQueueContentsForId($id);
+          $pid = $row['process_info'];
+          $server = $row['server'];
+          $proc = $this->newExternalProcess($server, 
+                  $server . "_out.txt", $server . "_error.txt");
+          $killed = $proc->killHucoreProcess($pid);
+          report("Trying to kill running job with pid $pid: $killed",1);
+          $result = $result && $killed;
+          if ($killed) {
+              $result = $result && $this->removeJobWithId($id);
+              $result = $result && $db->markServerAsFree($server);
+          }
     } 
     return $result;
   }
@@ -163,6 +180,20 @@ Class JobQueue {
 		$shell = new ExternalProcess($host, $huscript_path, $logfilename, $errfilename);
 	return $shell;
   } 
+
+  function killMarkedJobs() {
+    $db = new DatabaseConnection();
+    $ids = $db->getJobIdsToKill();
+    if ($ids != null && count($ids) > 0) {
+        if ( $this->killJobs($ids) ) {
+            report("running broken jobs killed and removed", 2);
+        } else {
+            report("killing running broken jobs failed", 2);
+        }
+    } else {
+        return False;
+    }
+  }
 
   function removeMarkedJobs() {
     $db = new DatabaseConnection();
