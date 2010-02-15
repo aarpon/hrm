@@ -407,7 +407,7 @@ function imgPrev(infile, mode, gen, compare, index, dir, referer, data) {
                   +    '"'
                   + '>'
                   + '<br />'
-                  + '<small>Click to generate preview</small>';
+                  + '<div class="expandedView">Click to generate preview</div>';
            }
 
            break;
@@ -445,21 +445,21 @@ function imgPrev(infile, mode, gen, compare, index, dir, referer, data) {
                   +        'openTool(\'' + link + '\'); '
                   +    '"'
                   + '>'
-                  + '<small>Re-create preview</small>'
+                  + '<div class="expandedView">Re-create preview</div>'
                   + '</a>';
     }
     if ( compare > 0 ) {
            link = "file_management.php?compareResult=" + infile
                   + "&size=" + compare + "&op=close";
 
-           html = '<br /><div class="expandedView"><a '
+           html = '<br /><a '
                   +    'onclick="'
                   +        'openWindow(\'' + link + '\'); '
                   +    '"'
-                  + '>'
-                  + 'Expanded view <img src="images/eye.png">'
-                  + '</a></div>'
-                  + html ;
+                  + '><div class="expandedView">'
+                  + 'Click for detailed view <img src="images/eye.png">'
+                  + '</div>'
+                  + html + '</a>' ;
     }
 
 
