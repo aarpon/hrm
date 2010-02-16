@@ -247,7 +247,8 @@ if ( $browse_folder == "dest" ) {
 
     if ($allowHttpTransfer) {
     $info = "<h3>Quick help</h3>
-            <p>This is a list of the images in your destination directory.</p>
+            <p>This is a list of the images in your <strong>destination
+            directory</strong> (i.e. where your results are).</p>
             <p>Click on a file to see (or create) a preview.</p>
             <p>Select the files you want to download (you can <b>SHIFT-</b> and
             <b>CTRL-click</b> for multiple selection) and press the
@@ -273,7 +274,8 @@ if ( $browse_folder == "dest" ) {
         '</li>';
 
     $info = "<h3>Quick help</h3>
-            <p>This is a list of the images in your source directory.</p>
+            <p>This is a list of the images in your <strong>source
+            directory</strong> (i.e. where your files to be deconvolved are).</p>
             <p>Click on a file to see (or create) a preview.</p>
             <p>Select the files you want to delete (you can <b>SHIFT-</b> and
             <b>CTRL-click</b> for multiple selection) and press the
