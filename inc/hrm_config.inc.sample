@@ -199,6 +199,8 @@ $useThumbnails = true;
 // formats are readable in a freeware Huygens Core and for full functionality
 // you may need a license string. Otherwise just let the original thumbnails
 // be generated during the deconvolution itself with the previous option.
+// If this is true and the correct version of Huygens is installed, the SNR
+// estimator tools is also enabled (see $enable_code_for_huygens above).
 // This requires $useThumbnails = true;
 $genThumbnails = true;
 
