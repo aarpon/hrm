@@ -344,8 +344,8 @@ include("header.inc.php");
       <div id="selection" onmouseover="showInstructions()">
         <?php foreach ($file_buttons as $b) { echo fileButton($b); }; ?>
       </div>
-      <div id="actions"><!-- do not remove !--></div>
-      <div id="controls" class="imageselection">
+      <div id="actions" onmouseover="showInstructions()"><!-- do not remove !--></div>
+      <div id="controls" class="imageselection" onmouseover="showInstructions()">
         <?php echo $control_buttons; ?>
       </div>
   </form>
