@@ -196,14 +196,7 @@ include("header.inc.php");
             echo "<p>This happens if HRM was recently updated but the " . 
                   "database was not. You are now allowed to login " .
                   "until this issue has been fixed.</p>";
-            if ( $enableUserAdmin == true ) {
-              echo "<p>Only the administrator can login.</p></div>";
-            } else {
-              echo "<p>Please inform your administrator.</p></div>";
-              echo "</div>\n";
-              include("footer.inc.php");
-              return;
-            }
+            echo "<p>Only the administrator can login.</p></div>";
           }  
         ?>
         <h2>Welcome</h2>
