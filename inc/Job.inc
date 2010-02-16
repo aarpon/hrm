@@ -94,11 +94,13 @@ Class Job {
 	function createSubJobsOrScript() {
 		$result = True;
 		$desc = $this->jobDescription;
+                # print "<pre>"; print_r($desc); print "</pre>"; print ($desc->isCompound());
 		if ($desc->isCompound()) {
 			$result = $result && $desc->createSubJobs();
-			if ($result)
+			if ($result) {
 				error_log("created sub jobs");
-			report("created sub jobs", 1);
+                                report("created sub jobs", 1);
+                        }
 			if ($result) {
 				$queue = new JobQueue();
 				$result = $result && $queue->removeJob($desc);

@@ -158,6 +158,10 @@ if (isset($_POST['update'])) {
 
 $script = "settings.js";
 
+if (!isset($operationResult)) {
+    $operationResult = "";
+}
+
 // $browse_folder can be 'src' or 'dest'.
 if ($browse_folder == "src") {
 
@@ -364,7 +368,7 @@ include("header.inc.php");
     </script>
     <div id="rightpanel">
         <div id="info">
-        <?php echo $info; ?>
+        <?php if ($operationResult != "") echo $operationResult; else echo $info; ?>
         </div>
 
 

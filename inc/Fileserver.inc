@@ -605,14 +605,16 @@ Class Fileserver {
           $err .= "Error uploading files: ".$e->getMessage();
       }
 
+      $msg = "<h3>Upload report</h3>\n";
+
       if ($okCnt == 0) {
-          $msg = "No files uploaded!<br>$err";
+          $msg .= "<p>No files uploaded!<p>$err";
       } else {
           $plural = "";
           if ($okCnt > 1) {
               $plural = "s";
           }
-          $msg = "$okCnt file$plural uploaded.<br>$ok $err";
+          $msg .= "<p class=\"report\">$okCnt file$plural uploaded.</p><p class=\"report\">$ok</p><p class=\"report\">$err</p>";
       }
 
       if ( $dir == "src" ) {
@@ -1014,10 +1016,10 @@ Class Fileserver {
       // The thumbnail is saved in a subdirectory along with the image, and it
       // has a suffix indicating the thumbnail type plus the jpg extension.
       $path = $dirname."/hrm_previews/".$base.".".$type.".jpg";
-      $thumb = rawurlencode($image.".".$type.".jpg");
-      if (file_exists($path)) {
+      $thumb = rawurlencode(stripslashes($image).".".$type.".jpg");
+      if (file_exists(stripslashes($path))) {
           $ret =  "<img src=\"file_management.php?getThumbnail=$thumb&amp;".
-              "dir=$dir\" alt=\"$image preview\" />";
+              "dir=$dir\" alt=\"preview\" />";
       } else {
            $imgsrc = "<img src=\"images/no_preview.jpg\" alt=\"No preview\" />";
            // $ret = "<p><center>No preview available.</center></p>";
@@ -1049,7 +1051,7 @@ Class Fileserver {
       $base = basename($pdir."/".$image);
       // The thumbnail is saved in a subdirectory along with the image, and it
       // has a suffix indicating the thumbnail type plus the jpg extension.
-      $path = $dir."/hrm_previews/".$base.".".$type."_xy.jpg";
+      $path = stripslashes($dir."/hrm_previews/".$base.".".$type."_xy.jpg");
 
       # $path2 = $dir."/hrm_previews/".$base.".".$type."_xz.jpg";
       # unlink($path);
@@ -1063,7 +1065,7 @@ Class Fileserver {
       if (file_exists($path)) {
           // 2D preview
           $ret = 2;
-          $path2 = $dir."/hrm_previews/".$base.".".$type."_xz.jpg";
+          $path2 = stripslashes($dir."/hrm_previews/".$base.".".$type."_xz.jpg");
           if (file_exists($path2)) {
           // 3D preview
               $ret = 3;
@@ -1102,13 +1104,17 @@ Class Fileserver {
       // The thumbnail is saved along with the image, and it has a suffix
       // indicating the thumbnail type plus the jpg extension.
       $path = $pdir."/hrm_previews/".$basename.".".$type."_xy.jpg";
+      $path = stripslashes($path);
       $opath = $pdir."/hrm_previews/".$basename.".original.".$type."_xy.jpg";
+      $opath = stripslashes($opath);
       $ret = 0;
       if (file_exists($path) && file_exists($opath) ) {
           // 2D preview
           $ret = 2;
           $path2 = $pdir."/hrm_previews/".$basename.".".$type."_xz.jpg";
+          $path2 = stripslashes($path2);
           $opath2 = $pdir."/hrm_previews/".$basename.".original.".$type."_xz.jpg";
+          $opath2 = stripslashes($opath2);
           if (file_exists($path2) && file_exists($opath2) ) {
           // 3D preview
               $ret = 3;
@@ -1169,6 +1175,7 @@ Class Fileserver {
           $altPath = $pdest."/hrm_previews/".$file.".".$size."_xy.jpg";
       }
 
+      $altPath = stripslashes($altPath);
       // YZ slices not shown by now, but here they are:
       $othumb_2 = rawurlencode($file.".original.".$size."_xy.jpg");
       $rthumb_2 = rawurlencode($file.".".$size."_xy.jpg");
@@ -1195,6 +1202,7 @@ Class Fileserver {
       $othumb_1 = rawurlencode($file.".original.".$size."_xz.jpg");
       $rthumb_1 = $file.".".$size."_xz.jpg";
       $path = $pdest."/hrm_previews/".$rthumb_1;
+      $path = stripslashes($path);
       $rthumb_1 = rawurlencode($rthumb_1);
       if ($mode == "MIP" && file_exists($path)) {
           // is a 3D image, so it has a lateral view.
@@ -1219,6 +1227,7 @@ Class Fileserver {
 
 
       $mpath =  $pdest."/hrm_previews/".$file.".stack.avi";
+      $mpath = stripslashes($mpath);
       if ($mode == "MIP" && file_exists($mpath)) {
           $mSize = round(filesize($mpath) / 1024.0);
           echo "\n<br /><small><a href=\"file_management.php?getMovie=".rawurlencode($file.".stack.avi")."\" >Download stack preview video ($mSize kB) </a></small>\n";
@@ -1230,6 +1239,7 @@ Class Fileserver {
           $tspath =  $pdest."/hrm_previews/".$file.".tSeries.sfp.avi";
           $vname = $file.".tSeries.sfp.avi";
       }
+      $tspath = stripslashes($tspath);
       if (file_exists($tspath)) {
           $tsSize = round(filesize($tspath) / 1024.0);
           echo "\n<br /><small><a href=\"file_management.php?getMovie=".rawurlencode($vname)."\" >Download time-series $mode preview video ($tsSize kB) </a></small>\n";
@@ -1385,7 +1395,7 @@ Class Fileserver {
       ob_flush();
       flush();
 
-      $path = $pdest."/".$basename.".preview_xy.jpg";
+      $path = stripslashes($pdest."/".$basename.".preview_xy.jpg");
       if ($ok && ! file_exists($path)) {
           $ok = false;
           $html .= "$path does not exist.<br />";
@@ -1433,6 +1443,7 @@ Class Fileserver {
   //!---------------------------------------------------------    
  
   function getThumbnail($file, $dir) {
+      // rawurldecode
       if ( $dir == "src" ) {
           $pdir =  $this->sourceFolder();
       } else {
@@ -1441,6 +1452,7 @@ Class Fileserver {
       $dir = dirname($pdir."/".$file);
       $base = basename($pdir."/".$file);
       $path = $dir."/hrm_previews/".$base;
+      $path = stripslashes($path);
       if (!file_exists($path)) {
           $path = "images/no_preview.jpg";
       }
@@ -1462,7 +1474,7 @@ Class Fileserver {
           $pdir =  $this->destinationFolder();
       }
 
-      $path = $pdir."/hrm_previews/".$file;
+      $path = stripslashes($pdir."/hrm_previews/".$file);
       if (!file_exists($path)) {
           $path = "images/no_preview.jpg";
           Header("Content-Type: image/jpeg");
