@@ -200,6 +200,7 @@ function get_rand_id($length) {
 //!---------------------------------------------------------
 function escapeJavaScript ($str) {
       $str = str_replace("'", "\'", $str);
+      $str = str_replace("\n", "\\n", $str);
       $str = str_replace('"', "'+String.fromCharCode(34)+'", $str);
       return $str;
 }

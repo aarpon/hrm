@@ -413,17 +413,27 @@ function imgPrev(infile, mode, gen, compare, index, dir, referer, data) {
            break;
         case 2:
            // 2D Preview exists
+           tip = '<i>2D image preview:</i><br>'+infile;
            html = '<img id="ithumb" src="file_management.php?getThumbnail='
-                  + infile + '.preview_xy.jpg&dir=' + dir + '" alt="Preview">';
+                  + infile + '.preview_xy.jpg&dir=' + dir 
+                  + '" alt="Preview" onmouseover="Tip(\''
+                  + tip + '\')" '
+                  + ' onmouseout="UnTip()">';
            break;
         case 3:
            // 3D Preview exists
+           tip = '<i>3D image XY preview:</i><br>'+infile;
            html = '<img id="ithumba" src="file_management.php?getThumbnail='
                   + infile + '.preview_xy.jpg&dir=' + dir
-                  + '" alt="XY preview">';
+                  + '" alt="XY preview" onmouseover="Tip(\'' 
+                  + tip + '\')" '
+                  + ' onmouseout="UnTip()" >';
+           tip = '<i>3D image XZ preview:</i><br>'+infile;
            html = html + '<br /><img id="ithumbb" src="file_management.php?getThumbnail='
                   + infile + '.preview_xz.jpg&dir=' + dir
-                  + '" alt="XZ preview">';
+                  + '" alt="XZ preview" onmouseover="Tip(\''
+                  + tip + '\')" '
+                  + ' onmouseout="UnTip()">';
            break;
 
     }
@@ -466,6 +476,22 @@ function imgPrev(infile, mode, gen, compare, index, dir, referer, data) {
     // changeDiv('info', html);
     // smoothChangeDiv2('info','ithumb', 'ithumb2', html, 200);
     smoothChangeDiv('info',html, 200);
+    window.infoShown = false;
+    window.previewSelected = html;
+}
+
+
+function showInstructions() {
+    if (window.infoShown) return;
+    smoothChangeDiv('info',window.pageInstructions, 200);
+    window.infoShown = true;
+}
+
+function showPreview() {
+    if (!window.infoShown) return;
+    if (window.previewSelected == -1) return;
+    smoothChangeDiv('info',window.previewSelected, 200);
+    window.infoShown = false;
 }
 
 function changeVisibility(id) {

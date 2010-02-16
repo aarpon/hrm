@@ -262,6 +262,10 @@ function imageAction (list) {
         }
     }
 
+    if (count == 0 ) {
+        window.previewSelected = -1;
+    }
+
     var val = list[n].value;
 
     if ( n == window.lastShownIndex ) {
@@ -304,12 +308,12 @@ include("header.inc.php");
 
 
 
-    <div id="content">
+    <div id="content" >
         <h3><?php echo $page_title; ?></h3>
   <form method="post" action="?folder=<?php echo $browse_folder;?>" id="file_browser" onSubmit="return confirmSubmit()" >
 
     
-      <fieldset>
+      <fieldset >
       
         <legend><?php echo $form_title; ?></legend>
 <?php        
@@ -318,7 +322,7 @@ include("header.inc.php");
 
 
 
-        <div id="userfiles">
+        <div id="userfiles" onmouseover="showPreview()">
           <select onchange="javascript:imageAction(this)" onkeyup="this.blur();this.focus();" name="userfiles[]" size="<?php echo $size;?>" <?php echo $multiple.$flag ?>>
           <?php
 
@@ -337,7 +341,7 @@ include("header.inc.php");
         
       </fieldset>
 
-      <div id="selection">
+      <div id="selection" onmouseover="showInstructions()">
         <?php foreach ($file_buttons as $b) { echo fileButton($b); }; ?>
       </div>
       <div id="actions"><!-- do not remove !--></div>
@@ -346,11 +350,18 @@ include("header.inc.php");
       </div>
   </form>
   <div id="upMsg"><!-- do not remove !--></div>
-  <div id="up_form"><!-- do not remove !--></div>
+  <div id="up_form" onmouseover="showInstructions()"><!-- do not remove !--></div>
       
     </div> <!-- content -->
 
 
+    <script type="text/javascript">
+        <!--
+            window.pageInstructions='<? echo escapeJavaScript($info); ?>';
+            window.infoShown = true;
+            window.previewSelected = -1;
+        -->
+    </script>
     <div id="rightpanel">
         <div id="info">
         <?php echo $info; ?>
