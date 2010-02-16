@@ -88,6 +88,16 @@ function FadeOpacityStep(elem, stepNum, steps, fromOpacity,
                 timePerStep);
 }
 
+// This function calls for a div replacement only if it hasn't been replaced
+// yet. This is flagged with a window.DivCondition variable.
+function smoothChangeDivCond(div, html, time) {
+
+    if (window.divCondition == 1) return;
+
+    smoothChangeDiv(div, html, time);
+    window.divCondition = 1;
+
+}
 
 function smoothChangeDiv(div, html, time) {
 

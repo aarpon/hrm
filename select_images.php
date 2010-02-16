@@ -143,8 +143,61 @@ if ($files != null) {
 
     $generatedScript = "
 function imageAction (list) {
-    var n = list.selectedIndex;    // Which menu item is selected
+
+    var n = list.selectedIndex;     // Which item is the first selected one
+
+    if( undefined === window.lastSelectedImgs ){
+        window.lastSelectedImgs = [];
+        window.lastSelectedImgsKey = [];
+        window.lastShownIndex = -1;
+    }
+
+    var snew = 0;
+
+    count = 0;
+    for (i=0; i<list.options.length; i++) {
+        if (list.options[i].selected) {
+            if( undefined === window.lastSelectedImgsKey[i] ){
+                // New selected item
+                snew = 1;
+                n = i;
+            }
+            count++;
+        }
+    }
+
+    if (snew == 0) {
+        // deselected image
+        for (i=0; i<window.lastSelectedImgs.length; i++) {
+            key = window.lastSelectedImgs[i];
+            if ( !list.options[key].selected ) {
+                snew = -1
+                    n = key;
+            }
+        }
+    }
+
+    window.lastSelectedImgs = [];
+    window.lastSelectedImgsKey = [];
+    count = 0;
+    for (i=0; i<list.options.length; i++) {
+        if (list.options[i].selected) {
+            window.lastSelectedImgs[count] = i;
+            window.lastSelectedImgsKey[i] = true;
+            count++;
+        }
+    }
+
+    if (count == 0 ) {
+        window.previewSelected = -1;
+    }
+
     var val = list[n].value;
+
+    if ( n == window.lastShownIndex ) {
+        return
+    }
+    window.lastShownIndex = n;
 
     switch ( val )
     {
@@ -169,6 +222,9 @@ function imageAction (list) {
 
 
 include("header.inc.php");
+
+$info = " <h3>Quick help</h3> <p>In this step, you will select the files from the list of available images that will be restored using the image and restoration parameters chosen in the previous two steps.</p> <p>You can use SHIFT- and CTRL-click to select multiple files.</p> <p>Click on a file name in any of the fields to get a preview.</p>";
+ 
 
 ?>
     <!--
@@ -196,7 +252,7 @@ include("header.inc.php");
         
             <fieldset>
                 <legend>Images available on server</legend>
-                <div id="userfiles">
+                <div id="userfiles"  onmouseover="showPreview()">
 <?php
 
 $flag = "";
@@ -207,7 +263,7 @@ if ($files == null) {
 }
 
 ?>
-                    <select onclick="javascript:imageAction(this)" onchange="javascript:imageAction(this)" name="userfiles[]" size="10" multiple="multiple"<?php echo $flag ?>>
+                    <select onchange="javascript:imageAction(this)" name="userfiles[]" size="10" multiple="multiple"<?php echo $flag ?>>
 <?php
 $keyArr = array();
 if ($files != null) {
@@ -236,7 +292,7 @@ else echo "                        <option>&nbsp;</option>\n";
             
             <fieldset>
                 <legend>Selected images</legend>
-                <div id="selectedfiles">
+                <div id="selectedfiles" onmouseover="showPreview()">
 <?php
 
 $files = $_SESSION['fileserver']->selectedFiles();
@@ -261,14 +317,14 @@ else echo "                        <option>&nbsp;</option>\n";
                 </div>
             </fieldset>
             
-            <div id="actions" class="imageselection">
+            <div id="actions" class="imageselection"  onmouseover="showInstructions()">
                 <input name="update" type="submit" value="" class="icon update"
                     onmouseover="TagToTip('ttSpanRefresh' )"
                     onmouseout="UnTip()" />
                 <input name="OK" type="hidden" />
             </div>
             
-            <div id="controls">      
+            <div id="controls"  onmouseover="showInstructions()">      
               <input type="button" value="" class="icon previous"
                 onclick="document.location.href='select_task_settings.php'"
                 onmouseover="TagToTip('ttSpanBack' )"
@@ -283,20 +339,19 @@ else echo "                        <option>&nbsp;</option>\n";
 
     </div> <!-- content -->
 
+    <script type="text/javascript">
+        <!--
+            window.pageInstructions='<? echo escapeJavaScript($info); ?>';
+            window.infoShown = true;
+            window.previewSelected = -1;
+        -->
+    </script>
+
+
     <div id="rightpanel">
 
         <div id="info">
-
-            <h3>Quick help</h3>
-
-            <p>In this step, you will select the files from the list of
-               available images that will be restored using the image and
-               restoration parameters chosen in the previous two steps.</p>
-            
-            <p>You can use SHIFT- and CTRL-click to select multiple files.</p>
-
-            <p>Click on a file name in any of the fields to get a preview.</p>
-            
+        <?php echo $info; ?>
         </div>
         
         <div id="message">

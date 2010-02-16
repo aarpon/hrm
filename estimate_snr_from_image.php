@@ -215,11 +215,11 @@ function estimateSnrFromFile($file) {
         </center>
         </fieldset>
       </div>
-      <div id="controls" class="" onmouseover="changeDiv('thumb','<?php echo escapeJavaScript($defaultView);?>');">
+      <div id="controls" class="" onmouseover="smoothChangeDivCond('thumb','<?php echo escapeJavaScript($defaultView);?>', 200);">
       </div>
       </div> <!-- content -->
 
-      <div id="rightpanel" onmouseover="changeDiv('thumb','<?php echo escapeJavaScript($defaultView);?>');">
+      <div id="rightpanel" onmouseover="smoothChangeDivCond('thumb','<?php echo escapeJavaScript($defaultView);?>',200;">
       <div id="info">
       <?php // echo $defaultView;  ?>
       </div>
@@ -324,12 +324,12 @@ function estimateSnrFromFile($file) {
                 }
                 $output .=  "<img src=\"file_management.php?getThumbnail=".
                           $tmbFile."&amp;dir=src\" alt=\"SNR $snr\" ".
-                          "onmouseover=\"Tip('$tag'); changeDiv('thumb','$zoomImg', 300);\"  onmouseout=\"UnTip()\"/>";
+                          "onmouseover=\"Tip('$tag'); changeDiv('thumb','$zoomImg', 300); window.divCondition = 0;\"  onmouseout=\"UnTip()\"/>";
                 $output .= "<br /><small>Original</small>";
             } else {
                 $output .=  "<img src=\"file_management.php?getThumbnail=".
                           $tmbFile."&amp;dir=src\" alt=\"SNR $snr\" ".
-                          "onmouseover=\"Tip('$tag'); changeDiv('thumb','$zoomImg', 300);\" onmouseout=\"UnTip()\"/>";
+                          "onmouseover=\"Tip('$tag'); changeDiv('thumb','$zoomImg', 300); window.divCondition = 0;\" onmouseout=\"UnTip()\"/>";
                 if ( $snr == $estSNR ) {
                     $output .= "<br /><small><b>SNR ~ $snr</b></small>";
                 } else {
@@ -371,6 +371,7 @@ function estimateSnrFromFile($file) {
     </div>
     <script type="text/javascript">
     <!--
+         window.divCondition = 1;
          <?php // preloading code doesn't seem to help (at least if it doesn't go in the head of the document; echo $preload; ?>
          smoothChangeDiv('info','<?php echo escapeJavaScript($message); ?>',1300);
          smoothChangeDiv('output','<?php echo escapeJavaScript($output); ?>',1000);
