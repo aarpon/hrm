@@ -413,7 +413,7 @@ function imgPrev(infile, mode, gen, compare, index, dir, referer, data) {
            break;
         case 2:
            // 2D Preview exists
-           tip = '<i>2D image preview:</i><br>'+infile;
+           tip = '<i>2D image preview:</i><br>'+file;
            html = '<img id="ithumb" src="file_management.php?getThumbnail='
                   + infile + '.preview_xy.jpg&dir=' + dir 
                   + '" alt="Preview" onmouseover="Tip(\''
@@ -422,14 +422,15 @@ function imgPrev(infile, mode, gen, compare, index, dir, referer, data) {
            break;
         case 3:
            // 3D Preview exists
-           tip = '<i>3D image XY preview:</i><br>'+infile;
+           tip = '<i>3D image XY preview:</i><br>'+file;
            html = '<img id="ithumba" src="file_management.php?getThumbnail='
                   + infile + '.preview_xy.jpg&dir=' + dir
                   + '" alt="XY preview" onmouseover="Tip(\'' 
                   + tip + '\')" '
                   + ' onmouseout="UnTip()" >';
-           tip = '<i>3D image XZ preview:</i><br>'+infile;
-           html = html + '<br /><img id="ithumbb" src="file_management.php?getThumbnail='
+           tip = '<i>3D image XZ preview:</i><br>'+file;
+           html = html + '<br /><img id="ithumbb" '
+                  + 'src="file_management.php?getThumbnail='
                   + infile + '.preview_xz.jpg&dir=' + dir
                   + '" alt="XZ preview" onmouseover="Tip(\''
                   + tip + '\')" '
