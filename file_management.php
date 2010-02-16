@@ -188,9 +188,9 @@ if ($allowHttpTransfer) {
 }
 
 if ($allowHttpUpload) {
-    # echo "<pre>"; print_r($_FILES); print_r($_POST); print_r($_GET);echo "</pre>"; exit;
+     # echo "<pre>"; print_r($_FILES); print_r($_POST); print_r($_GET);echo "</pre>"; exit;
 
-    if (isset($_POST['upload']) && isset($_FILES) ) {
+    if (isset($_POST['uploadForm']) && isset($_FILES) ) {
         $message = 
             $_SESSION['fileserver']->uploadFiles($_FILES['upfile'], $browse_folder);
 

@@ -298,6 +298,7 @@ function uploadImages(maxFile, maxPost, archiveExt) {
             +', maximum total transfer size is ' + maxPost + '.');
     changeDiv('up_form', 
         '<form id="uploadForm" enctype="multipart/form-data" action="?folder=src&upload=1" method="POST" onSubmit="return confirmUpload()" >'
+       + '<input type="hidden" name="uploadForm" value="1"> '
        + '<div id="upload_list">'
        +      '<div id="upfile_0"></div>'
        +      '<div id="upfile_1"></div>'
