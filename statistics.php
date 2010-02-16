@@ -83,12 +83,7 @@ $groupNames = $stats->getGroupNames();
 
 // Was some statistics chosen?
 if (isset($_POST["Statistics"] ) ) {
-  //$chosenStats = $_POST["Statistics"];
   $stats->setSelectedStatistics( $_POST["Statistics"] );
-  //$variable = array_search( $chosenStats, $possibleStats );
-} else {
-  //$variable = $possibleVariables[ 0 ];
-  //$chosenStats   = $stats->getSelectedStatistics( );
 }
 
 // Was some fromDate chosen?
@@ -144,6 +139,13 @@ include("header.inc.php");
       
       <form method="post" action="" id="displayStats">
 
+        <fieldset>
+          
+          <legend>
+            <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpStatistics')"><img src="images/help.png" alt="?" /></a>
+            Statistics
+          </legend>  
+            
           <select name="Statistics" id="Statistics" size="1">
         
           <?php
@@ -164,9 +166,11 @@ include("header.inc.php");
           ?>
         
           </select>
-
+    
+          <div class="nowrap_noborder">
+            
           <!-- Filter: from date -->
-          <select name="FromDate" id="FromDate" size="1">
+          <select name="FromDate" id="FromDate" size="1" style="width:49%">
         
           <?php
           foreach ($fromDates as $fromDate) {
@@ -187,7 +191,7 @@ include("header.inc.php");
           </select>
 
           <!-- Filter: to date -->
-          <select name="ToDate" id="ToDate" size="1">
+          <select name="ToDate" id="ToDate" size="1" style="width:49%">
         
           <?php
           foreach ($toDates as $toDate ) {
@@ -206,7 +210,9 @@ include("header.inc.php");
           ?>
         
           </select>
-          
+            
+          </div>
+    
           <!-- Filter: Group This is visible only for the admin user-->
           <?php
           if ( $_SESSION['user']->isAdmin() ) {
@@ -235,8 +241,10 @@ include("header.inc.php");
           }
           ?>
           
-          <input type="submit" name="Submit" value="Go!">
-            
+          <input type="submit" name="Submit" value="Go!" />
+
+          </fieldset>
+          
       </form>
         
     </div>
@@ -249,7 +257,7 @@ include("header.inc.php");
     <?php
       } else {
     ?>          
-      <div id="statstext"><?php echo "<h3>" . $tableScript ."</h3>"; ?></div>
+      <div id="statstable"><?php echo $tableScript; ?></div>
     <?php
       }
     ?>

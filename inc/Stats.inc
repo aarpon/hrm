@@ -98,30 +98,18 @@ Class Type {
   //!---------------------------------------------------------------------------
   public function getStatisticsScript( $db, $admin, $fromDate, $toDate, $group, $username ) {
     
-        // Date filters
-    $dateFilter = "start >= '" . $fromDate ."' AND stop <= '" . $toDate . "'";
+    // Date filters
+    $dateFilter = $this->getDateFilter( $fromDate, $toDate );
 
     // Group filters (admin only)
-    if ( $admin ) {
-      if ( $group == "All groups" ) {
-        $groupFilter = "";
-      } else {
-        $groupFilter = " AND research_group = '" . $group . "'";
-      }
-    } else {
-      $groupFilter = "";
-    }
+    $groupFilter = $this->getGroupFilter( $admin, $group );
     
     // Non-admin users can only access their stats
-    if ( $admin ) {
-      $userNameFilter = "";
-    } else {
-      $userNameFilter = " AND owner = '" . $username . "'";
-    }
-
+    $userNameFilter = $this->getUsernameFilter( $admin, $username );
+    
     switch ( $this->m_Type ) {
       case "text":
-        $script = "Not implemented yet!";
+        $script = $this->getTable( $db, $this->m_Name, $group, $dateFilter, $groupFilter, $userNameFilter );
         break;
       case "piechart":
         $script = $this->getPieChart( $db, $this->m_Variable, $group, $dateFilter, $groupFilter, $userNameFilter );
@@ -243,6 +231,209 @@ Class Type {
     return $script;
   }
 
+  //!---------------------------------------------------------------------------
+  // @function    string Stats::getTable( $db, $statsType, $group, $dateFilter, $groupFilter, $userNameFilter )
+  // @desc        Get the HTML code to create a table for the total run time per
+  //              user or total run time per group statistics
+  // @return      html code for the total run time per user/group table
+  //!---------------------------------------------------------------------------
+  private function getTable( $db, $statsType, $group, $dateFilter, $groupFilter, $userNameFilter ) {
+    
+    switch ( $statsType ) {
+      case "TotalRunTimePerUser":
+        return ( $this->getTotalRunTimePerUserTable(
+          $db, $statsType, $group, $dateFilter, $groupFilter, $userNameFilter ) );
+
+      case "TotalRunTimePerGroup":
+        return ( $this->getTotalRunTimePerGroupTable(
+          $db, $statsType, $group, $dateFilter, $groupFilter, $userNameFilter ) );
+
+      default:
+        return "";
+    }
+  }
+  
+  //!---------------------------------------------------------------------------
+  // @function    string Stats::getTotalRunTimePerUserTable( $db, $statsType, $group, $dateFilter, $groupFilter, $userNameFilter )
+  // @desc        Get the HTML code to create a table for the total run time per
+  //              user statistics
+  // @return      html code for the total run time per user table
+  //!---------------------------------------------------------------------------
+  private function getTotalRunTimePerUserTable( $db, $statsType, $group, $dateFilter, $groupFilter, $userNameFilter ) {
+
+    $script="<table>";
+    
+    // Get data
+    // -------------------------------------------------------------------------
+    $row      = $db->execute( "SELECT COUNT( id ) FROM statistics WHERE " . $dateFilter . $groupFilter . $userNameFilter . ";" )->FetchRow( );
+    $numJobs  = $row[ 0 ];
+    if ( $numJobs == 0 ) {
+
+      $script = "<h3>Nothing to display!</h3>";
+
+    } else {
+  
+      $script .= "<tr>
+        <th>Group</th>
+        <th>User</th>
+        <th>Number of jobs</th>
+        <th>Total runtime (s)</th>
+        <th>Time per job (s)</th>
+        </tr>";
+        
+      // Get all groups
+      $queryGroup = "SELECT DISTINCT( research_group ) FROM statistics WHERE " . $dateFilter . $groupFilter . $userNameFilter . ";";
+      $resGroup = $db->execute( $queryGroup );
+      
+      while ( $rowGroup = $resGroup->FetchRow( ) ) {
+        
+        // Gel all user names for current group
+        $queryUser = "SELECT DISTINCT( owner ) FROM statistics WHERE " . $dateFilter . " AND research_group = '" . $rowGroup[ 0 ] . "' " . $userNameFilter . ";";
+        $resUser = $db->execute( $queryUser );
+
+        $userNum = 0;
+        while ( $rowUser = $resUser->FetchRow( ) ) {
+          
+            // Query all jobs for current user
+            $queryJobsUser = "SELECT start, stop FROM statistics WHERE owner = '" . $rowUser[ 0 ] . "'; ";
+            $resJobsUser = $db->execute( $queryJobsUser );
+    
+            $nJobs = 0; $time = 0;
+            while ( $rowJobsUser = $resJobsUser->FetchRow( ) ) {
+              $time += strtotime( $rowJobsUser["stop"] ) - strtotime( $rowJobsUser["start"] );
+              $nJobs++;
+            }
+            
+            $userNum++;
+            if ( $userNum == 1 ) {
+              $groupEntry = $rowGroup[ 0 ];
+            } else {
+              $groupEntry = $nbsp;
+            }
+            $script .= "<tr>
+              <td>" . $groupEntry . "</td>
+              <td>" . $rowUser[ 0 ] . "</td>
+              <td>" . $nJobs . "</td>
+              <td>" . $time . "</td>
+              <td>" . number_format( $time/$nJobs, 2 ) . "</td></tr>";
+        
+        }
+      
+      }
+
+    }
+    $script .= "</table>";    
+    
+    return $script;
+  }
+
+  //!---------------------------------------------------------------------------
+  // @function    string Stats::getTotalRunTimePerUserTable( $db, $statsType, $group, $dateFilter, $groupFilter, $userNameFilter )
+  // @desc        Get the HTML code to create a table for the total run time per
+  //              user statistics
+  // @return      html code for the total run time per user table
+  //!---------------------------------------------------------------------------
+  private function getTotalRunTimePerGroupTable( $db, $statsType, $group, $dateFilter, $groupFilter, $userNameFilter ) {
+
+    $script="<table>";
+    
+    // Get data
+    // -------------------------------------------------------------------------
+    $row      = $db->execute( "SELECT COUNT( id ) FROM statistics WHERE " . $dateFilter . $groupFilter . $userNameFilter . ";" )->FetchRow( );
+    $numJobs  = $row[ 0 ];
+    if ( $numJobs == 0 ) {
+
+      $script = "<h3>Nothing to display!</h3>";
+
+    } else {
+  
+      $script .= "<tr>
+        <th>Group</th>
+        <th>Number of jobs</th>
+        <th>Total runtime (s)</th>
+        <th>Time per job (s)</th>
+        </tr>";
+        
+      // Get all groups
+      $queryGroup = "SELECT DISTINCT( research_group ) FROM statistics WHERE " . $dateFilter . $groupFilter . $userNameFilter . ";";
+      $resGroup = $db->execute( $queryGroup );
+      
+      while ( $rowGroup = $resGroup->FetchRow( ) ) {
+        
+        // Gel all user names for current group
+        $queryTime = "SELECT start, stop FROM statistics WHERE " . $dateFilter . " AND research_group = '" . $rowGroup[ 0 ] . "' " . $userNameFilter . ";";
+        $resTime = $db->execute( $queryTime );
+
+        $nJobs = 0; $time = 0;
+        while ( $rowTime = $resTime->FetchRow( ) ) {
+          
+          $time += strtotime( $rowTime["stop"] ) - strtotime( $rowTime["start"] );
+          $nJobs++;
+
+        }
+            
+        $script .= "<tr>
+          <td>" . $rowGroup[ 0 ] . "</td>
+          <td>" . $nJobs . "</td>
+          <td>" . $time . "</td>
+          <td>" . number_format( $time/$nJobs, 2 ) . "</td></tr>";
+        
+      }
+
+    }
+    $script .= "</table>";    
+    
+    return $script;
+  }
+  
+  //!---------------------------------------------------------------------------
+  // @function    string Stats::getDateFilter( $fromDate, $toDate )
+  // @desc        Get the SQL sub-query to filter by date
+  // @param       $fromDate: date to filter from
+  // @param       $fromDate: date to filter to
+  // @return      SQL sub-query for filtering by date
+  //!---------------------------------------------------------------------------
+  private function getDateFilter( $fromDate, $toDate ) {
+    $dateFilter = "start >= '" . $fromDate ."' AND stop <= '" . $toDate . "'";
+    return $dateFilter;
+  }
+
+  //!---------------------------------------------------------------------------
+  // @function    string Stats::getGroupFilter( $admin, $group )
+  // @desc        Get the SQL sub-query to filter by group
+  // @param       $admin: true if the user is the admin
+  // @param       $group: group name
+  // @return      SQL sub-query for filtering by group
+  //!---------------------------------------------------------------------------
+  private function getGroupFilter( $admin, $group ) {
+    if ( $admin ) {
+      if ( $group == "All groups" ) {
+        $groupFilter = "";
+      } else {
+        $groupFilter = " AND research_group = '" . $group . "'";
+      }
+    } else {
+      $groupFilter = "";
+    }
+    return $groupFilter;
+  }
+
+  //!---------------------------------------------------------------------------
+  // @function    string Stats::getUsernameFilter( $admin, $username )
+  // @desc        Get the SQL sub-query to filter by username
+  // @param       $admin: true if the user is the admin
+  // @param       $username: username
+  // @return      SQL sub-query for filtering by username
+  //!---------------------------------------------------------------------------
+  private function getUsernameFilter( $admin, $username ) {
+    if ( $admin ) {
+      $userNameFilter = "";
+    } else {
+      $userNameFilter = " AND owner = '" . $username . "'";
+    }
+    return $userNameFilter;
+  }
+  
 }
 
 
@@ -356,15 +547,25 @@ Class Stats {
   //!---------------------------------------------------------------------------
   public function getStatistics( ) {
     
-    if ( $this->m_Stats_Array[$this->m_Selected_Statistics]->m_Type == "dumptable" ) {
-      // Download the whole statistics table
-      return ( $this->dumpStatsTableToFile() );
-    } else {
-      // Create script
-     return $this->m_Stats_Array[$this->m_Selected_Statistics]->getStatisticsScript(
-       $this->m_DB, $this->isAdmin(), $this->m_Filter_FromDate,
-       $this->m_Filter_ToDate, $this->m_Filter_Group, $this->m_Username );
+    switch ( $this->m_Stats_Array[$this->m_Selected_Statistics]->m_Type ) {
+
+      case "dumptable":
+
+        // Download the whole statistics table
+        return ( $this->dumpStatsTableToFile() );
+        
+      case "piechart":
+      case "text":
+        
+        // Create JS script (HighCharts) or HTML Table
+        return ( $this->m_Stats_Array[$this->m_Selected_Statistics]->getStatisticsScript(
+         $this->m_DB, $this->isAdmin(), $this->m_Filter_FromDate,
+         $this->m_Filter_ToDate, $this->m_Filter_Group, $this->m_Username ) );
+        
+      default:
+        return "Error: bad value from Statistics type. Please report!\n";
     }
+  
   }
    
   //!---------------------------------------------------------------------------
@@ -511,6 +712,10 @@ Class Stats {
     $this->m_Stats_Array[] = new Type(
       "MicroscopeType", "MicroscopeType", "Microscope type (%)", "piechart", $user );
     $this->m_Stats_Array[] = new Type(
+      "TotalRunTimePerUser", "time", "Total run time per user", "text", $user );
+    $this->m_Stats_Array[] = new Type(
+      "TotalRunTimePerGroup", "time", "Total run time per group", "text", $admin );
+    $this->m_Stats_Array[] = new Type(
       "DumpTable", "", "Export all statistics to file", "dumptable", $admin );
   }
   
@@ -538,7 +743,7 @@ Class Stats {
       $row  = $this->m_DB->execute( "SELECT COUNT( id ) FROM statistics;" )->FetchRow( );
       $numJobs  = $row[ 0 ];
       if ( $numJobs == 0 ) {
-        return "Nothing to export!";
+        return "<h3>Nothing to export!</h3>";
       }
       
       // Get the data from the statistics table
@@ -550,7 +755,7 @@ Class Stats {
         $fullFileName = "/tmp/" .$fileName;
         $fileHandle = fopen( $fullFileName, 'w+' );
         if ( $fileHandle == 0 ) {
-          return "Error: could not open file.";
+          return "<h3>Error: could not open file.</h3>";
         }
         
         // Now export the data
@@ -594,9 +799,9 @@ Class Stats {
           unlink($fullFileName);
           return ""; 
       } else {
-          return ( "Error serving the file " . $fileName . "." );
+          return ( "<h3>Error serving the file " . $fileName . ".</h3>" );
       }
-      return ( "Nothing to download!" );;
+      return ( "<h3>Nothing to download!</h3>" );;
   }
   
 }
