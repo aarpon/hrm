@@ -481,8 +481,8 @@ Class Stats {
     $this->m_Filter_Group = "All groups";
     // Now create the statistics array
     $this->fillStatsArray( );
-    // Default statistics is the first added
-    $this->m_Selected_Statistics = 0;
+    // Set default (accessible) statistics
+    $this->setDefaultStats();
   }
   
   //!---------------------------------------------------------------------------
@@ -684,6 +684,24 @@ Class Stats {
    * PRIVATE METHODS
    *
    ========================================================================== */
+
+  //!---------------------------------------------------------------------------
+  // @function    void Stats::setDefaultStats( )
+  // @desc        Sets the default statistics
+  //!---------------------------------------------------------------------------
+  private function setDefaultStats(  ) {
+    if ( $this->isAdmin( ) ) {
+        $this->m_Selected_Statistics = 0;
+        return;
+    }
+
+    for ( $i = 0; $i < count( $this->m_Stats_Array ); $i++ ) {
+      if ( ( !$this->isAdmin() ) && ( !( $this->m_Stats_Array[ $i ]->m_AdminOnly ) ) ) {
+        $this->m_Selected_Statistics = $i;
+        return;
+      }
+    }
+  }
 
   //!---------------------------------------------------------------------------
   // @function    bool Stats::fill( )
