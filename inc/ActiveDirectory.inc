@@ -107,7 +107,7 @@ Class ActiveDirectory {
 	if ( count( $userGroups ) == 0 ) {
 	  return $userGroups;
 	}
-	if ( $this->m_GroupIndex == NULL ) {
+	if ( $this->m_GroupIndex == -1 ) {
 	  return $userGroups;
 	}
 	if ( $this->m_GroupIndex >= 0 &&
