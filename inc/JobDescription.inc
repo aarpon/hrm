@@ -262,7 +262,7 @@ Class JobDescription {
   function createSubJobsforFiles() {
     $result = True;
     foreach ($this->files as $file) {
-      error_log("file=".$file);
+      // error_log("file=".$file);
       $newJobDescription = new JobDescription();
       $newJobDescription->copyFrom($this);
       $newJobDescription->setFiles(array($file));	
@@ -285,9 +285,9 @@ Class JobDescription {
       return $this->createSubJobsforFiles();
     }  
     foreach ($this->files as $file) {
-      error_log("range combinations = " . count($rangeParameterCombinations));
+      // error_log("range combinations = " . count($rangeParameterCombinations));
       foreach ($rangeParameterCombinations as $combination) {
-        error_log("combination [" . implode(" ", $combination) . "]");
+        // error_log("combination [" . implode(" ", $combination) . "]");
 	$newJobDescription = new JobDescription();
 	$newJobDescription->copyFrom($this);
 	$newJobDescription->setFiles(array($file));	
@@ -374,12 +374,12 @@ Class JobDescription {
       $iterationValue = null;
       // process SignalNoiseRatioRange, if applicable
       if ($range->name() == "SignalNoiseRatioRange") {
-        error_log("SignalNoiseRatio range");
+        // // error_log("SignalNoiseRatio range");
         $snrRange = $range;
         $snrValue = $value;
       }
       else if ($range->name() == "NumberOfIterationsRange") {
-        error_log("NumberOfIterations range");
+        // error_log("NumberOfIterations range");
         $iterationRange = $range;
         $iterationValue = $value;
       }
@@ -388,12 +388,12 @@ Class JobDescription {
         $range = array_pop($rangeParameter);
         $value = array_filter($range->value());
         if ($range->name() == "SignalNoiseRatioRange") {
-          error_log("SignalNoiseRatio range");
+          // error_log("SignalNoiseRatio range");
           $snrRange = $range;
           $snrValue = $value;
         }
         else if ($range->name() == "NumberOfIterationsRange") {
-          error_log("NumberOfIterations range");
+          // error_log("NumberOfIterations range");
           $iterationRange = $range;
           $iterationValue = $value;
         }

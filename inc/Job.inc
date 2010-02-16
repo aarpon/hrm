@@ -251,6 +251,9 @@ Class Job {
 		// TODO is checking for new files a relevant criterion?
 		//$newFileWritten = $fileserver->folderContainsNewerFile($path, $queue->startTime($this));
 		$result = $fileNameExists/* || $newFileWritten*/;
+                if (!$result) { 
+                    report("Problem: no result file $resultImage in destination directory $path", 0);
+                    } else { report("File $resultImage available", 2); }
 		return $result;
 	}
 
