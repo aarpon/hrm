@@ -410,6 +410,11 @@ input.save {
     text-align: justify;
 }
 
+#info p.report {
+    font-size: 11px;
+    text-align: left;
+}
+
 #info h3 {
     background-color: #eee;
     font-size: 1.0em;

@@ -207,7 +207,7 @@ function confirmUpload() {
     changeDiv('upMsg', 'Please wait until your browser finishes the file transfer: do not reload or go away from this page.');
 
     spin =  '<center><img src="images/spin.gif" '
-        +     'alt=\\\'busy\\\'><br />Please wait...</center>'
+        +     'alt="busy"><br />Please wait...</center>'
     changeDiv('info', spin);
     changeDiv('actions', '');
     changeDiv('buttonUpload',

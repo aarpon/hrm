@@ -296,7 +296,7 @@ function estimateSnrFromFile($file) {
             $tmbFile = urlencode($subDir.$simImg[$i]);
             $zoomFile = urlencode($subDir.$simZoom[$i]);
             if ($snr == 0) {
-                $tag = "Original data";
+                $tag = "Original reference data";
             } else {
                 $tag = "SNR $snr";
                 if ($snr == $estSNR) {
@@ -329,7 +329,7 @@ function estimateSnrFromFile($file) {
             } else {
                 $output .=  "<img src=\"file_management.php?getThumbnail=".
                           $tmbFile."&amp;dir=src\" alt=\"SNR $snr\" ".
-                          "onmouseover=\"Tip('$tag'); changeDiv('thumb','$zoomImg', 300); window.divCondition = 0;\" onmouseout=\"UnTip()\"/>";
+                          "onmouseover=\"Tip('Simulation for $tag'); changeDiv('thumb','$zoomImg', 300); window.divCondition = 0;\" onmouseout=\"UnTip()\"/>";
                 if ( $snr == $estSNR ) {
                     $output .= "<br /><small><b>SNR ~ $snr</b></small>";
                 } else {

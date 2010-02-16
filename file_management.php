@@ -187,17 +187,19 @@ if ($allowHttpTransfer) {
     }
 }
 
+$operationResult = "";
+
 if ($allowHttpUpload) {
      # echo "<pre>"; print_r($_FILES); print_r($_POST); print_r($_GET);echo "</pre>"; exit;
 
     if (isset($_POST['uploadForm']) && isset($_FILES) ) {
-        $message = 
+        $operationResult = 
             $_SESSION['fileserver']->uploadFiles($_FILES['upfile'], $browse_folder);
 
     } else if (isset($_GET['upload'])) {
         $max = getMaxPostSize() / 1024 / 1024;
         $maxPost = "$max MB";
-        $message = "<b>Nothing uploaded!</b> Probably total post exceeds ".
+        $operationResult = "<b>Nothing uploaded!</b> Probably total post exceeds ".
             "maximum allowed size of $maxPost.<br>\n";
     }
 }

@@ -487,7 +487,7 @@ Class DatabaseConnection {
     $result = True;
     $username = $owner->name();
     foreach ($files as $file) {
-      $query = "insert into job_files values ('" . $id ."', '" . $username ."', '" . $file . "')";
+      $query = "insert into job_files values ('" . $id ."', '" . $username ."', '" . addslashes($file) . "')";
       $result = $result && $this->execute($query);
     } 
     return $result;

@@ -278,6 +278,9 @@ Class Fileserver {
   // @return      Void
   //!---------------------------------------------------------  
   function addFilesToSelection($files) { 
+      foreach ($files as $key => $file) {
+          $files[$key] = stripslashes($file);
+      }
     $selected = $this->selectedFiles();
     $new = array_diff($files, $selected);
     $this->selectedFiles = array_merge($new, $this->selectedFiles);
@@ -293,6 +296,9 @@ Class Fileserver {
   // @return      Void
   //!---------------------------------------------------------  
   function removeFilesFromSelection($files) { 
+      foreach ($files as $key => $file) {
+          $files[$key] = stripslashes($file);
+      }
     $this->selectedFiles = array_diff($this->selectedFiles, $files);
   }  
 
