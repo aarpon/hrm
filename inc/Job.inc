@@ -158,18 +158,22 @@ Class Job {
 		$setting = $desc->parameterSetting();
 		$this->script = "set id [pid]" . "\n" . 'puts "\npid=$id"' . "\n";
 		$this->script = $this->script . "huOpt verb -mode noQs\n";
-		$this->script = $this->script . "catch {\n";
+		$this->script = $this->script . 
+                    "if { [ catch {\n# A global catch to report important errors.\n";
 		$this->script = $this->script . "huOpt gundo off\n";
 		if ($setting->isMultiChannel() && ($setting->numberOfChannels() > 1)) {
 			$this->script = $this->script . $desc->putMultiChannelScriptOn('', true);
 		} else {
 			$this->script = $this->script . $desc->putScriptOn('', true);
 		}
-		$this->script = $this->script . "}\n";
+		$this->script = $this->script . "} err ] } { \n".
+                "huOpt printError \$err }\n";
         $id = $desc->id();
         $finishedMarker = $desc->sourceFolder() . '.finished_' . "$id";
         $this->script = $this->script . "exec touch " . '"' . 
-            $finishedMarker . '"' . "\n";
+            $finishedMarker . '"' . "\n".
+            "file attributes \"$finishedMarker\" -permissions 0666\n".
+            "puts \"- DONE --------------------------------\\n\\n\"\n";
 		$this->script = $this->script . "exit\n";
 	}
 
@@ -278,18 +282,18 @@ Class Job {
 		
 		$finishedMarker = ".finished_" . $desc->id();
 		
-		// If fileshare is not on the same host as Huygens
+		// If fileshare is not on the same host as Huygens.
 		if (!$imageProcessingIsOnQueueManager) {
 			$marker = $huygens_server_image_folder . $user->name() . "/" . $image_source . "/" . $finishedMarker;
-			$result = exec("ssh " . $huygens_user . "@" . $server_hostname . " ls " . $marker);
+			$remoteFile = exec("ssh " . $huygens_user . "@" . $server_hostname . " ls " . $marker);
 			//error_log("ssh " . $huygens_user . "@" . $server_hostname . " ls " . $marker);
 			//error_log($result);
-			if ($result == $marker) {
+                        // TODO: is the queue manager a sudoer?
+			if ($remoteFile == $marker) {
 				exec("(cd " . $path . " && sudo scp " . $huygens_user . "@" . $server_hostname . ":" . $marker . " .)");
 			}
 		}
-		
-		// TODO check why $result is overwritten
+
 		$result = file_exists($path . '/' . $finishedMarker);
 		if ($imageProcessingIsOnQueueManager) {
 			$proc = newExternalProcessFor($this->server(), $this->server() . "_out.txt", $this->server() .  "_" .$this->id(). "_error.txt");

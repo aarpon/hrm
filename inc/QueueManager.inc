@@ -426,8 +426,8 @@ Class QueueManager {
 			report("checked finished marker", 2);
 			
 			// Check result image
-			$result = $job->checkResultImage();
-			report("checked finished marker", 2);
+			$resultSaved = $job->checkResultImage();
+			report("checked result image", 2);
 			
 			// If fileshare is not on the same host as Huygens
 			if (!$imageProcessingIsOnQueueManager)
@@ -440,7 +440,7 @@ Class QueueManager {
 			$startTime = $queue->startTime($job);
                         $errorFile = $logdir . "/" . $job->server() .  "_" .$job->id(). "_error.txt";
 			// TODO add warning messages notification
-			if (!$result || $errorOccured) {
+			if (!$resultSaved || $errorOccured) {
 				report("finishing job " . $desc->id() . " with error on " . $job->server(), 1);
 				// Clean up server
 				$this->cleanUpFileServer($job);
@@ -448,8 +448,11 @@ Class QueueManager {
 				$this->stopTime = $queue->stopJob($job);
 				// Write email
 				$message = "";
+                                if (!$resultSaved) {
+                                    $message .= "\nNo result file stored in the destination directory.\n";
+                                }
 				if (file_exists($errorFile))
-					$message = file_get_contents($errorFile);
+					$message .= "\n\n- HUYGENS REPORT (stderr) --------------------\n\n". file_get_contents($errorFile);
 				if ($send_mail) $this->notifyError($job, $message, $startTime);
 				if (file_exists($errorFile))
 					unlink($errorFile);	
@@ -662,19 +665,21 @@ Class QueueManager {
 		$emailAddress = $user->emailAddress();
 		$sourceFileName = $desc->sourceImageNameWithoutPath();
 		//$destFileName = $desc->destinationImageName();
-		$text = "This is a mail generated automatically by the Huygens Remote Manager.\n";
-		$text = $text . "Sorry, the processing of the image \n$sourceFileName\n has been terminated by an unknown error.\n";
+		$text = "\nThis is a mail generated automatically by the Huygens Remote Manager.\n\n";
+		$text = $text . "Sorry, the processing of the image \n$sourceFileName\nhas been terminated with an error.\n\n";
 		$text = $text . "Your job started at $startTime and failed at " . date("Y-m-d H:i:s") . ".";
-		$text = $text . "\n";
-		$text = $text . $message;
-		$text = $text . "\n";
+		$text = $text . "\n\n";
 		$text = $text . "Best regards,\n";
 		$text = $text . "Huygens Remote Manager\n";
+		$text = $text . "-------------------------------------";
+		$text = $text . "\n\n";
+		$text = $text . $message;
+		$text = $text . "\n\n- SUMMARY ---------------------------\n\n";
 		$text = $text . $this->parameterText($job);
-		$text = $text . "\n";
-		$text = $text . "The script that was being executed when the error occured is:";
-		$text = $text . "\n";
+		$text = $text . "\n\n- SCRIPT ----------------------------\n\n";
+		$text = $text . "What follows is the Huygens Core script executed when the error occured:\n\n";
 		$text = $text . $job->script();
+		$text = $text . "\n\n-------------------------------------\n\n";
 		$mail = new Mail($email_sender);
 		$mail->setReceiver($emailAddress);
 		$mail->setSubject('Your huygens job finished with an error');
@@ -734,7 +739,6 @@ Class QueueManager {
 		$pid = $job->pid();
 		$server = $job->server();
 		$result = '';
-		$result = $result . "\nSummary:\n";
 		$result = $result . "\nJob id: $id (pid $pid on $server)\n";
 		$result = $result . "\nImage parameters:\n\n";
 		$parameterSetting = $desc->parameterSetting();

@@ -543,17 +543,25 @@ Class JobDescription {
     if ($multichanneloutput->value()) {
         $newScript = $newScript . "# join\n";
         for($channel=0; $channel < $numberOfChannels; $channel++) {
-            $newScript = $newScript . "set imageName$channel [ img open \"".$dst_files[$channel]. "." . $fileFormat ."\"]\n";
+            if ($channel != 0) {
+                $newScript = $newScript . "if { ! [";
+            }
+            $newScript = $newScript . "catch { img open \"".$dst_files[$channel]. "." . $fileFormat ."\"} imageName$channel ";
+            if ($channel != 0) {
+                $newScript = $newScript . "] } {\n";
+            } else {
+                $newScript = $newScript . "\n";
+            }
             if ($channel > 1) {
-                $newScript = $newScript . "c join \$imageName$channel -> c\n";
+                $newScript = $newScript . "    catch {c join \$imageName$channel -> c}\ni}\n";
             } else if ($channel == 1) {
-                $newScript = $newScript . "\$imageName0 join \$imageName1 -> c\n";
+                $newScript = $newScript . "    catch {\$imageName0 join \$imageName1 -> c}\n}\n";
             }
         }
         $tmpfilename = $this->id() . $fileBase; // . "Ch_all";
         // avoid redundant slashes in path
         $this->files = array($this->relativeSourcePath() . $tmpfilename . "." . $fileFormat );
-        $dstfilename = $this->destinationImageFullName() ;
+        $dstfilename = $this->destinationImageFullName();
         // If the user chose CoverslipRelativePosition to be 'farthest', we z-mirror the dataset back
         $coverslipParameter=$parameterSetting->parameter('CoverslipRelativePosition');
         $coverslipParameterValue=$coverslipParameter->value();
@@ -635,7 +643,6 @@ Class JobDescription {
           }
         }
         // Save processing history
-        // j-)
         $newScript = $newScript . "\n" . 'catch { c history -details -format txt -save "' . $dstfilename. '.history.txt" }' . "\n";
     }
     $this->files = $files;
@@ -1089,8 +1096,8 @@ Class JobDescription {
 
     }
     // Save processing history
-    $result = $result . "\n" . 'catch { c history -details -format txt -save "' . $imageFileName. '.history.txt }"';
-    $result = $result . "\n";
+    $result = $result . "\n" . 'catch { c history -details -format txt -save "' . $imageFileName. '.history.txt" }';
+    $result = $result . "\n\n";
     if ($resultImagesOwnedByUser) {
       $user = $this->owner();
       $username = $user->name();

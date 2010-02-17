@@ -162,12 +162,14 @@ Class ExternalProcess {
     function execute($command) {
         global $huygens_user;
 
-        $cmd = 'ssh -f ' . $huygens_user . "@" . $this->host . " '" . $command . " &' \n";
+        $cmd = 'ssh -f ' . $huygens_user . "@" . $this->host . " '" . $command . " ' \n";
 
         $ret = fwrite($this->pipes[0], $cmd );
+        fflush($this->pipes[0]);
         report ("$cmd: $ret", 2);
         if ( $ret ) {
-            $ret = fwrite($this->pipes[0], "exit\n");
+            // Why exiting here? This is commented out by now.
+            # $ret = fwrite($this->pipes[0], "exit\n");
         }
 
         if ( $ret === False ) {
@@ -238,10 +240,12 @@ Class ExternalProcess {
     // close pipes
     fclose($this->pipes[0]);
     // TODO check why stdout and stderr are not closed
-    //fclose($this->pipes[1]);
+    @fclose($this->pipes[1]);
+    @fclose($this->pipes[2]);
     // TODO better management of file handles
-    fclose($this->out_file);
+    @fclose($this->out_file);
     $result = proc_close($this->shell);
+    report("released external process", 2);
   }
   
   function killHucoreProcess($pid) {    
