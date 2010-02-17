@@ -713,6 +713,10 @@ ol li {
     display: inline;
 }
 
+input {
+    text-align: center;    
+}
+
 input.icon {
     width: 60px;
     height: 60px;
@@ -835,7 +839,7 @@ div.multichannel {
 }
 
 .multichannelinput {
-    text-align: right;
+    text-align: center;
 }
 
 option.default {

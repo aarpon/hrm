@@ -567,7 +567,7 @@ for ($i=0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
                 
                 <div id="criteria">
                 
-                    <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=MaxNumOfIterations')"><img src="images/help.png" alt="?" /></a>
+                    <p><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=MaxNumOfIterations')"><img src="images/help.png" alt="?" /></a>
                     number of iterations<span class="superscript">(*)</span>:
                     
 <?php
@@ -590,11 +590,11 @@ if ($parameter->isTrue()) {
 }
 
 ?>
-                    <p><input name="NumberOfIterations" type="text" size="8" value="<?php echo $value ?>" />
+                    <input name="NumberOfIterations" type="text" size="8" value="<?php echo $value ?>" />
                     
                     </p>
                     
-                    <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=QualityCriterion')"><img src="images/help.png" alt="?" /></a>
+                    <p><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=QualityCriterion')"><img src="images/help.png" alt="?" /></a>
                     quality change:
                     
 <?php
@@ -607,6 +607,8 @@ if ($parameter->value() != null) {
 
 ?>
                     <input name="QualityChangeStoppingCriterion" type="text" size="3" value="<?php echo $value ?>" />
+                    
+                    </p>
                     
                 </div>
                 

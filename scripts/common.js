@@ -153,9 +153,9 @@ function deleteImages() {
        + '<br />'
        + '<input name="delete" type="submit" value="" class="icon delete" '
        +     'onmouseover="Tip(\'Confirm deletion\')" onmouseout="UnTip()"/>'
-       + ' <img src="images/cancel.png" onclick="UnTip(); cancelSelection()" '
+       + ' <img src="images/cancel_small.png" onclick="UnTip(); cancelSelection()" '
        +        'alt="cancel" '
-       +        'onmouseover="Tip(\'Cancel\')" onmouseout="UnTip()"/>');
+       +        'onmouseover="Tip(\'Do not delete the file!\')" onmouseout="UnTip()"/>');
 
 }
 
