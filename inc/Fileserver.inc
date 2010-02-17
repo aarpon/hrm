@@ -1144,6 +1144,8 @@ Class Fileserver {
   function compareResult( $file, $size = "400", $op = "close", $mode="MIP" ) {
       global $allowHttpTransfer;
 
+      $file = stripslashes($file);
+
       $excludeTitle = true;
       include("header.inc.php");
 
