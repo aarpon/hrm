@@ -1268,8 +1268,9 @@ Class Fileserver {
  
       switch ($op) {
           case "close":
-             echo " <a href=\"#\" onclick=\"window.close()\">".
-             "<img src=\"images/cancel.png\" alt=\"cancel\" />".
+             echo " <a href=\"#\" onclick=\"window.close()\" ".
+             "onmouseover=\"Tip('Close this window and go back to the File Manager.')\" onmouseout=\"UnTip()\">".
+             "<img src=\"images/cancel_help.png\" alt=\"cancel\" />".
              "</a>\n";
              break;     
           case "home":
