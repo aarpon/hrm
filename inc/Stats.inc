@@ -180,52 +180,18 @@ Class Type {
     // Create script
     // -------------------------------------------------------------------------
     $script = "$(document).ready(function() {
-			var chart = new Highcharts.Chart({
-				chart: {
-					renderTo: 'statschart',
-					margin: [50, 200, 60, 170]
-				},
-				title: {
-					text: '" . $title . "'
-				},
-                subtitle: {
-                  text: '" . $subtitle . "'
-                },
-				plotArea: {
-					shadow: null,
-					borderWidth: null,
-					backgroundColor: null
-				},
-				tooltip: {
-					formatter: function() {
-						return '<b>'+ this.point.name +'</b>: '+ this.y +' %';
-					}
-				},
-				plotOptions: {
-					pie: {
-						dataLabels: {
-							enabled: true,
-							formatter: function() {
-								if (this.y > 5) return this.point.name;
-							},
-							color: 'black',
-							style: {
-								font: '13px Trebuchet MS, Verdana, sans-serif',
-							},
-						}
-					}
-				},
-				legend: {
-					layout: 'vertical',
-					style: {
-						left: 'auto',
-						bottom: 'auto',
-						right: '50px',
-						top: '100px'
-					}
-				}, series: [{
-					type: 'pie',
-					name: '" . $title . "', data: " . $data . "}] });
+        var chart = new Highcharts.Chart({
+        chart: { renderTo: 'statschart', margin: [50, 200, 60, 170] },
+        title: { text: '" . $title . "'  },
+        subtitle: { text: '" . $subtitle . "' },
+        plotArea: { shadow: null, borderWidth: null, backgroundColor: null },
+        tooltip: { formatter: function() { return '<b>'+ this.point.name +'</b>: '+ this.y +' %'; } },
+        plotOptions: { pie: { dataLabels: { enabled: true,
+                                            formatter: function() { if (this.y > 5) return this.point.name; },
+                                            color: 'black',
+                                            style: { font: '13px Trebuchet MS, Verdana, sans-serif' } } } },
+	legend: { layout: 'vertical', style: { left: 'auto', bottom: 'auto', right: '50px', top: '100px' } },
+        series: [{ type: 'pie', name: '" . $title . "', data: " . $data . " } ] });
 		});
     ";
     return $script;
