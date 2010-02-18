@@ -197,7 +197,7 @@ Class ExternalProcess {
 
   function runHuygensScript($scriptName) {
       global $hutask;
-      $command = $this->huscript_path." $hutask ".$scriptName;
+      $command = $this->huscript_path." $hutask \"".$scriptName."\"";
       // TODO better management of file handles
       //$out_file = fopen($this->descriptorSpec[1][1], "r");
       $this->out_file = fopen($this->descriptorSpec[1][1], "r");
