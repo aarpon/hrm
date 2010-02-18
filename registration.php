@@ -91,8 +91,8 @@ if (isset($_POST['OK'])) {
                 $text = "New user registration:\n\n";
                 $text .= "\t       Username: ".strtolower($_POST['username'])."\n";
                 $text .= "\t E-mail address: ".$_POST['email']."\n";
-                $text .= "\t          Group: ".$_POST['group']."\n";
-                $text .= "\tRequest message: ".$_POST['note']."\n\n";
+                $text .= "\t          Group: ".stripslashes($_POST['group'])."\n";
+                $text .= "\tRequest message: ".stripslashes($_POST['note'])."\n\n";
                 $text .= "Accept or reject this user here\n";
                 $text .= $hrm_url."/user_management.php?seed=" . $id;
                 $mail = new Mail($email_sender);
@@ -144,17 +144,17 @@ if (!$processed) {
             <div id="adduser">
             
                 <label for="username">*Username: </label>
-                <input type="text" name="username" id="username" value="<?php if (isset($user)) echo $user->name() ?>" />
+                <input type="text" name="username" id="username" maxlength="30" value="<?php if (isset($user)) echo $user->name() ?>" />
                 
                 <br />
                 
                 <label for="email">*E-mail address: </label>
-                <input type="text" name="email" id="email" value="<?php if (isset($user)) echo $user->email() ?>" />
+                <input type="text" name="email" id="email"  maxlength="80" value="<?php if (isset($user)) echo $user->email() ?>" />
                 
                 <br />
                 
                 <label for="group">*Research group: </label>
-                <input type="text" name="group" id="group" value="<?php if (isset($user)) echo $user->group() ?>" />
+                <input type="text" name="group" id="group" maxlength="30" value="<?php if (isset($user)) echo stripslashes($user->group()) ?>" />
                 
                 <br />
                 
@@ -169,7 +169,7 @@ if (!$processed) {
                 <br />
                 
                 <label for="note">Request message:</label>
-                <textarea name="note" id="note" rows="3" cols="30"><?php if (isset($_POST['note']))  echo $_POST['note'] ?></textarea>
+                <textarea name="note" id="note" rows="3" cols="30"><?php if (isset($_POST['note']))  echo stripslashes($_POST['note']) ?></textarea>
                 
                 <div>
                     <input name="OK" type="submit" value="register" class="button" />
