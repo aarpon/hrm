@@ -62,7 +62,10 @@ function showFileBrowser() {
     $browse_folder = "src";
     $page_title = "Estimate SNR from a raw image";
     $form_title = "Available images";
-    $top_navigation = "";
+    $top_navigation = "
+            <li>".$_SESSION['user']->name()."</li>
+            <li><a href=\"javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpSnrEstimator')\"><img src=\"images/help.png\" alt=\"help\" />&nbsp;Help</a></li>
+            ";
     $multiple_files = false;
     // Number of displayed files.
     $size = 15;
@@ -108,6 +111,7 @@ function showFileBrowser() {
                for the deconvolution that you can tune, to adapt the result to
                the experimental needs.
                The estimated value is just a reasonable initial parameter.</p>
+            <p>Click <b>Help</b> on the top menu for more details.</p>
 
                ';
 
@@ -120,6 +124,15 @@ function estimateSnrFromFile($file) {
 
     include("header.inc.php");
 
+    $top_navigation = "
+            <li>".$_SESSION['user']->name()."</li>
+            <li><a href=\"javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpSnrEstimator')\"><img src=\"images/help.png\" alt=\"help\" />&nbsp;Help</a></li>
+            ";
+
+    echo "<div id=\"nav\">
+        <ul>$top_navigation</ul>
+    </div>";
+ 
     // Noise estimations can be done only in raw images.
 
     $psrc =  $_SESSION['fileserver']->sourceFolder();
