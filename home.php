@@ -153,14 +153,14 @@ include("header.inc.php");
 			<tr>
 			  
 			  <td class="icon">
-				<a href="./update.php">
-				<img alt="Update" src="./images/updatedb.png" />
+				<a href="./file_management.php?folder=src">
+				<img alt="FileManager" src="./images/filemanager.png?folder=src" />
 				</a>
 			  </td>
 			  
 			  <td class="text"><div class="cell">
-                <a href="./update.php">Database update</a><br />
-				<p />Update the database to the latest version.
+                <a href="./file_management.php?folder=src">File manager</a><br />
+			  <p />Upload your raw data.
                 </div>
 			  </td>
 			  
@@ -220,9 +220,17 @@ include("header.inc.php");
                 </div>
 			  </td>
 
-			  <td class="icon"></td>
+			  <td class="icon">
+				<a href="./update.php">
+				<img alt="Update" src="./images/updatedb.png" />
+				</a>
+			  </td>
 			  
-			  <td class="text">&nbsp;</td>
+			  <td class="text"><div class="cell">
+                <a href="./update.php">Database update</a><br />
+				<p />Update the database to the latest version.
+                </div>
+			  </td>
 			  
 		    </tr>
 			
