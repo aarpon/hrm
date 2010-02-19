@@ -121,9 +121,24 @@ function fixCoverslip( state ) {
     }
 }
 
+function showRestorationHelp() {
+    if (window.divCondition == 'general') return;
+    if (window.restorationMode == 'cmle') {
+        smoothChangeDiv('contextHelp', window.helpCmle, 300);
+    } else {
+        smoothChangeDiv('contextHelp', window.helpQmle, 300);
+    };
+    window.divCondition = 'general';
+}
+
 function switchSnrMode() {
-    changeVisibility('cmle-snr');
-    changeVisibility('qmle-snr');
+    if ( changeVisibility('cmle-snr') != "none" ) {
+        window.restorationMode = 'cmle';
+    }
+    if ( changeVisibility('qmle-snr') != "none") {
+        window.restorationMode = 'qmle';
+    }
+    showRestorationHelp();
 }
 
 function switchCorrection() {

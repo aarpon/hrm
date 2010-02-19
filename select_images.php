@@ -223,7 +223,7 @@ function imageAction (list) {
 
 include("header.inc.php");
 
-$info = " <h3>Quick help</h3> <p>In this step, you will select the files from the list of available images that will be restored using the image and restoration parameters chosen in the previous two steps.</p> <p>You can use SHIFT- and CTRL-click to select multiple files.</p> <p>Click on a file name in any of the fields to get a preview.</p>";
+$info = " <h3>Quick help</h3> <p>In this step, you will select the files from the list of available images that will be restored using the image and restoration parameters chosen in the previous two steps.</p> <p>Only files of type <b>". $fileFormat->value()."</b>, as selected in the image paremeters, are shown.</p><p>You can use SHIFT- and CTRL-click to select multiple files.</p> <p>Click on a file name in any of the fields to get a preview.</p>";
  
 
 ?>

@@ -56,7 +56,7 @@
 require_once("./inc/User.inc");
 require_once("./inc/Fileserver.inc");
 
-function showFileBrowser() {
+function showFileBrowser($type = "") {
 
     //$browse_folder can be 'src' or 'dest'.
     $browse_folder = "src";
@@ -70,11 +70,14 @@ function showFileBrowser() {
     // Number of displayed files.
     $size = 15;
     // Show files of the same type as in the current task:
+    $type = "";
     if ( $_SESSION['user']->name() == "admin") {
         # The administrator can edit templates without adding a task...
         $restrictFileType = false;
     } else {
         $restrictFileType = true;
+        $fileFormat = $_SESSION['setting']->parameter("ImageFileFormat");
+        $type = $fileFormat->value();
     }
     // To (re)generate the thumbnails, use data from the current template for
     // colors (wavelengths).
@@ -100,10 +103,15 @@ function showFileBrowser() {
             <p>Select a raw image to estimate the Signal-to-Noise Ratio (SNR).
                You can then use the estimated SNR values in the Restoration
                Settings to deconvolve similar images, acquired under similar
-               conditions.</p>
-            <p>Please notice that undersampled or clipped images will provide
+               conditions.</p>';
+    if ($type != "") {
+        $info .= "<p>Only images of type <b>$type</b>, as set in the image
+        parameters, are shown.</p>"; 
+    }
+
+    $info .= '<p>Please notice that undersampled or clipped images will provide
             wrong estimations, as well as wrong deconvolution results!</p>
-            <p>An SNR value must be set per image channel: please select an
+            <p>A SNR value must be set per image channel: please select an
                image that is representative of the datasets you will deconvolve,
                as each channel may have a different noise level.</p>
             <p>Please remind that, in this context, the SNR
@@ -112,7 +120,6 @@ function showFileBrowser() {
                the experimental needs.
                The estimated value is just a reasonable initial parameter.</p>
             <p>Click <b>Help</b> on the top menu for more details.</p>
-
                ';
 
     include("./inc/FileBrowser.inc");
@@ -152,8 +159,8 @@ function estimateSnrFromFile($file) {
     if ($_SESSION['user']->name() != "admin") {
 
         // This is only for when template parameters are available, in a
-        // workflow. Admin can't see specific colors, just whatever comes
-        // from the image.
+        // 'add task' workflow. Admin can't see specific colors, just whatever
+        // comes from the image.
 
         $nchan = $_SESSION['setting']->NumberOfChannels();
         $lmbV = "\"";
@@ -228,11 +235,11 @@ function estimateSnrFromFile($file) {
         </center>
         </fieldset>
       </div>
-      <div id="controls" class="" onmouseover="smoothChangeDivCond('thumb','<?php echo escapeJavaScript($defaultView);?>', 200);">
+      <div id="controls" class="" onmouseover="smoothChangeDivCond('general','thumb','<?php echo escapeJavaScript($defaultView);?>', 200);">
       </div>
       </div> <!-- content -->
 
-      <div id="rightpanel" onmouseover="smoothChangeDivCond('thumb','<?php echo escapeJavaScript($defaultView);?>',200;">
+      <div id="rightpanel" onmouseover="smoothChangeDivCond('general','thumb','<?php echo escapeJavaScript($defaultView);?>',200;">
       <div id="info">
       <?php // echo $defaultView;  ?>
       </div>
@@ -337,12 +344,12 @@ function estimateSnrFromFile($file) {
                 }
                 $output .=  "<img src=\"file_management.php?getThumbnail=".
                           $tmbFile."&amp;dir=src\" alt=\"SNR $snr\" ".
-                          "onmouseover=\"Tip('$tag'); changeDiv('thumb','$zoomImg', 300); window.divCondition = 0;\"  onmouseout=\"UnTip()\"/>";
+                          "onmouseover=\"Tip('$tag'); changeDiv('thumb','$zoomImg', 300); window.divCondition = 'zoom';\"  onmouseout=\"UnTip()\"/>";
                 $output .= "<br /><small>Original</small>";
             } else {
                 $output .=  "<img src=\"file_management.php?getThumbnail=".
                           $tmbFile."&amp;dir=src\" alt=\"SNR $snr\" ".
-                          "onmouseover=\"Tip('Simulation for $tag'); changeDiv('thumb','$zoomImg', 300); window.divCondition = 0;\" onmouseout=\"UnTip()\"/>";
+                          "onmouseover=\"Tip('Simulation for $tag'); changeDiv('thumb','$zoomImg', 300); window.divCondition = 'zoom';\" onmouseout=\"UnTip()\"/>";
                 if ( $snr == $estSNR ) {
                     $output .= "<br /><small><b>SNR ~ $snr</b></small>";
                 } else {
@@ -384,7 +391,7 @@ function estimateSnrFromFile($file) {
     </div>
     <script type="text/javascript">
     <!--
-         window.divCondition = 1;
+         window.divCondition = 'general';
          <?php // preloading code doesn't seem to help (at least if it doesn't go in the head of the document; echo $preload; ?>
          smoothChangeDiv('info','<?php echo escapeJavaScript($message); ?>',1300);
          smoothChangeDiv('output','<?php echo escapeJavaScript($output); ?>',1000);
@@ -412,7 +419,7 @@ if (count($_POST) == 1 && isset($_POST['userfiles'] )) {
 
 
 if ( $task == "select") {
-  showFileBrowser();
+  showFileBrowser($type);
 } else {
    estimateSnrFromFile($file);
 }

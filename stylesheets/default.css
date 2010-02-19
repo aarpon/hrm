@@ -808,13 +808,17 @@ input.noPreview {
 }
 #ithumbb {
     padding-bottom: 0;
-    background: #333;
+    background: #444;
     padding-top: 1px;
 }
 
 select {
     width: 100%;
     text-align: center;
+}
+
+select.snrselect {
+    width: 30%;
 }
 
 span.multichannel {

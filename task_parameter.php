@@ -57,6 +57,161 @@ require_once("./inc/Setting.inc");
 
 session_start();
 
+function contextHelp($field, $text) {
+    echo " onmouseover=\"".
+        "smoothChangeDivCond('$field', 'contextHelp','".escapeJavaScript($text)."', 300)\" ";
+}
+
+$helpHeader = "
+        <p>On this page you specify the parameters for restoration.</p>
+
+        <p>These parameters comprise the deconvolution algorithm, the
+        signal-to-noise ratio (SNR) of the images, the mode for background
+        estimation, and the stopping criteria.</p>
+        ";
+
+$helpMethod =   "
+        <p>The Huygens software has different deconvolution algorithms as
+        restoration methods.  HRM offers the possibility of using the two most
+        important ones:</p>
+       <p>The <b>CMLE algorithm</a></b> is optimally suited for low-signal
+       images.  </p>
+       <p>The <b>QMLE algorithm</a></b> is faster than CMLE, but it only
+       works well with noise-free images (for example, good quality widefield
+       images).  </p>";
+
+
+$helpSnrCmle = "
+        <p>&nbsp;<p>
+        <p>&nbsp;<p>
+        <p>&nbsp;<p>
+       <p>The <b>SNR</b> is a parameter that controls the sharpness of the
+       result: only with noise-free images you can safely demand very sharp
+       results (high SNR values) without amplifying noise.</p>
+       <p>The <b>Estimate SNR from image</b> tool allows you to obtain a
+       best-guess initial value for this parameter.</p>
+        <p><span class=\"superscript\">(*)</span>
+        The field <strong>SNR</strong>
+        iterations</strong> can accept multiple values per channel.
+        This is a commodity tool to optimize restoration parameters. By setting
+        the SNR value to '10 20 40' in a single channel image, for instance,
+        three jobs will be run: the first with SNR value 10, the second with
+        SNR value 20, and the third with SNR value 40.</p>";
+
+$helpSnrQmle = "
+        <p>&nbsp;<p>
+        <p>&nbsp;<p>
+        <p>&nbsp;<p>
+        <p>&nbsp;<p>
+        <p>&nbsp;<p>
+       <p>The <b>SNR</b> is a parameter that controls the sharpness of the result:
+       only in images without much noise (high SNR) you can expect very sharp
+       results without amplifying noise.</p>";
+ 
+
+$helpBg = "
+        <p>&nbsp;<p>
+        <p>&nbsp;<p>
+        <p>&nbsp;<p>
+        <p>&nbsp;<p>
+        <p>&nbsp;<p>
+        <p>&nbsp;<p>
+        <p>&nbsp;<p>
+        <p>&nbsp;<p>
+        <p>&nbsp;<p>
+        <p>&nbsp;<p>
+        <p>&nbsp;<p>
+        <p>&nbsp;<p>
+        <p>&nbsp;<p>
+        <p>&nbsp;<p>
+       <p>The <b>background</b> is any additive and approximately constant
+       signal in your image that is not coming from the objects you are
+       interested in, like an electronic offset in your detector, or indirect
+       light. It will be removed during the restoration, to increase
+       contrast.</p>";
+
+$helpStopCrit = "
+        <p>&nbsp;<p>
+        <p>&nbsp;<p>
+        <p>&nbsp;<p>
+        <p>&nbsp;<p>
+        <p>&nbsp;<p>
+        <p>&nbsp;<p>
+        <p>&nbsp;<p>
+        <p>&nbsp;<p>
+        <p>&nbsp;<p>
+        <p>&nbsp;<p>
+        <p>&nbsp;<p>
+        <p>&nbsp;<p>
+        <p>&nbsp;<p>
+        <p>&nbsp;<p>
+        <p>&nbsp;<p>
+        <p>&nbsp;<p>
+        <p>The first <b>stopping criterium</b> reached will stop the
+        restoration.</p><p>The <i>quality change</i> criterium
+        may apply first and stop the iterations before the <i>maximum 
+        number</i> is reached: set the quality change to a low value or zero if
+        you want to make sure all the set iterations are run.)</p>
+        <p><span class=\"superscript\">(*)</span>
+        The field <strong>number of
+        iterations</strong> can accept multiple values. This is a commodity
+        tool to optimize restoration parameters. By setting this field value to
+        '20 50 70', for instance, three jobs will be run: the first with a 
+        maximum of 20 iterations, the second with a maximum of 50, and the
+        third with a maximum of 70. </p>
+        <p>Notice that the <b>quality change</b> criterium
+        may apply first and stop the iterations earlier in all cases.</p>";
+
+
+
+$helpCmle = $helpHeader .
+       "
+       <p>The <b><a
+       href=\"javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=MaximumLikelihoodEstimation')\">CMLE
+       algorithm</a></b> is optimally suited for low-signal images.  </p>
+
+       <p>The
+       <b>SNR</b> is a parameter that controls the sharpness of the
+       result.
+
+       <p>The <b>background</b> is the intensity to be removed during the
+       restoration, to increase contrast.
+
+        <p>The first <b>stopping criterium</b> reached will stop the
+        restoration.</p>
+
+        <p><span class=\"superscript\">(*)</span>
+        The fields <strong>SNR</strong> and <strong>number of
+        iterations</strong> can accept multiple values, separated by spaces.
+        </p>
+        ";
+
+
+
+$helpQmle = $helpHeader .
+       "<p>The <b><a
+       href=\"javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=QuickMaximumLikelihoodEstimation')\">QMLE
+       algorithm</a></b> is faster than CMLE, but it only works well with
+       noise-free images.  </p>
+
+       <p>The
+       <b>SNR</b> is a parameter that controls the sharpness of the
+       result.
+
+       <p>The <b>background</b> is the intensity to be removed during the
+       restoration, to increase contrast.
+
+        <p>The first <b>stopping criterium</b> reached will stop the
+        restoration.</p>
+
+        <p><span class=\"superscript\">(*)</span>
+        The field <strong>number of
+        iterations</strong> can accept multiple values, separated by spaces.
+        </p>
+        ";
+
+
+
 if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
   header("Location: " . "login.php"); exit();
 }
@@ -310,7 +465,7 @@ include("header.inc.php");
           
            <h4>How should your images be restored?</h4>
            
-             <fieldset class="setting">  <!-- deconvolution algorithm -->
+             <fieldset class="setting" <?php contextHelp("method", $helpMethod); ?>>  <!-- deconvolution algorithm -->
             
                 <legend>
                     <a href="javascript:openWindow('http://support.svi.nl/wiki/RestorationMethod')"><img src="images/help.png" alt="?" /></a>
@@ -328,7 +483,7 @@ $onChange = "onChange=\"javascript:switchSnrMode()\"";
 
 $parameter = $_SESSION['task_setting']->parameter("DeconvolutionAlgorithm");
 $possibleValues = $parameter->possibleValues();
-$selectedValue  = $parameter->value();
+$selectedMode  = $parameter->value();
 
 // This restores the default behavior in case the entry "DeconvolutionAlgorithm"
 // is not in the database
@@ -347,7 +502,7 @@ foreach($possibleValues as $possibleValue) {
   if ( $translation == false )
     $translation = "cmle";
 
-  if ( $possibleValue == $selectedValue ) {
+  if ( $possibleValue == $selectedMode ) {
       $option = "selected=\"selected\"";
   } else {
       $option = "";
@@ -385,12 +540,18 @@ else {
                       
 <?php
 
+
+
+
+
 $visibility = " style=\"display: none\"";
-if ($selectedValue == "cmle")
+if ($selectedMode == "cmle") {
   $visibility = " style=\"display: block\"";
+  $info = $helpCmle;
+}
 
 ?>
-                    <div id="cmle-snr" class="multichannel"<?php echo $visibility?>>
+                    <div id="cmle-snr" <?php contextHelp("snrcmle", $helpSnrCmle); ?> class="multichannel"<?php echo $visibility?>>
                     <ul>
                       <li>SNR<span class="superscript">(*)</span>: 
                       <div class="multichannel">
@@ -408,7 +569,7 @@ for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
   }
   else {
     $value = "";
-    if ($selectedValue == "cmle")
+    if ($selectedMode == "cmle")
         $value = $signalNoiseRatioValue[$i];
   }
 
@@ -429,7 +590,7 @@ for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
                           onmouseover=\"TagToTip('ttEstimateSnr' )\"
                           onmouseout=\"UnTip()\"
                         ><img src=\"images/calc_small.png\" alt=\"\" />";
-                        echo "Estimate SNR from image</a>";
+                        echo " Estimate SNR from image</a>";
                     }
 
                     ?>
@@ -437,11 +598,13 @@ for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
 <?php
 
 $visibility = " style=\"display: none\"";
-if ($selectedValue == "qmle")
+if ($selectedMode == "qmle") {
   $visibility = " style=\"display: block\"";
+  $info = $helpQmle;
+}
 
 ?>
-                    <div id="qmle-snr" class="multichannel"<?php echo $visibility?>>
+                    <div id="qmle-snr" <?php contextHelp("snrqmle", $helpSnrQmle); ?> class="multichannel"<?php echo $visibility?>>
                       <ul>
                         <li>SNR:
                         <div class="multichannel">
@@ -451,7 +614,7 @@ for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
 
 ?>
                         <span class="nowrap">Ch<?php echo $i ?>:
-                            <select name="SignalNoiseRatioQMLE<?php echo $i ?>">
+                            <select class="snrselect" name="SignalNoiseRatioQMLE<?php echo $i ?>">
 <?php
 
   for ($j = 1; $j <= 4; $j++) {
@@ -484,7 +647,7 @@ for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
 
 ?>
                             </select>
-                        </span>
+                        </span><br />
 <?php
 
 }
@@ -499,7 +662,7 @@ for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
                 
             </fieldset>
             
-            <fieldset class="setting">  <!-- background mode -->
+            <fieldset class="setting" <?php contextHelp("bg", $helpBg); ?>>  <!-- background mode -->
             
                 <legend>
                     <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=BackgroundMode')"><img src="images/help.png" alt="?" /></a>
@@ -559,13 +722,14 @@ for ($i=0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
                 
             </fieldset>
             
-            <fieldset class="setting">  <!-- stopping criteria -->
+            <fieldset class="setting" <?php contextHelp("stop", $helpStopCrit); ?>>  <!-- stopping criteria -->
             
                 <legend>
                     stopping criteria
                 </legend>
                 
                 <div id="criteria">
+                <p>
                 
                     <p><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=MaxNumOfIterations')"><img src="images/help.png" alt="?" /></a>
                     number of iterations<span class="superscript">(*)</span>:
@@ -592,7 +756,7 @@ if ($parameter->isTrue()) {
 ?>
                     <input name="NumberOfIterations" type="text" size="8" value="<?php echo $value ?>" />
                     
-                    </p>
+                    </p><p>
                     
                     <p><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=QualityCriterion')"><img src="images/help.png" alt="?" /></a>
                     quality change:
@@ -607,6 +771,7 @@ if ($parameter->value() != null) {
 
 ?>
                     <input name="QualityChangeStoppingCriterion" type="text" size="3" value="<?php echo $value ?>" />
+                    </p>
                     
                     </p>
                     
@@ -616,7 +781,7 @@ if ($parameter->value() != null) {
             
             <div><input name="OK" type="hidden" /></div>
             
-            <div id="controls">
+            <div id="controls"  onmouseover="showRestorationHelp()">
               <input type="button" value="" class="icon up"
                   onmouseover="TagToTip('ttSpanCancel' )"
                   onmouseout="UnTip()"
@@ -630,34 +795,25 @@ if ($parameter->value() != null) {
         </form>
         
     </div> <!-- content -->
+
+    <script type="text/javascript">
+        <!--
+            window.helpCmle='<? echo escapeJavaScript($helpCmle); ?>';
+            window.helpQmle='<? echo escapeJavaScript($helpQmle); ?>';
+            window.restorationMode='<? echo escapeJavaScript($selectedMode); ?>';
+            window.divCondition = 'general';
+        -->
+    </script>
+ 
     
-    <div id="rightpanel">
+    <div id="rightpanel" onmouseover="showRestorationHelp()">
     
       <div id="info">
-          
-        <h3>Quick help</h3>
-
-        <p>On this page you specify the parameters for restoration.</p>
-        
-        <p>These parameters comprise the deconvolution algorithm, the
-        estimation of the SNR of the images, the mode for background
-        estimation, and the stopping criteria.</p>
-        
-        <p>The 'Estimate SNR from image' tool allows you to obtain an
-        estimation of the SNR of your images to be used with the
-        'Classic Maximum Lilelihood Estimation' algorithm.</p>
-            
-        <p>The first stopping criterium reached, will stop the restoration.</p>
-        
-        <p><span class="superscript">(*)</span>
-        The fields <strong>SNR</strong> (for the Classic Maximum Likelihood
-        Estimation algorithm only) and <strong>number of iterations</strong>
-        can accept multiple values. This is a commodity tool to optimize
-        restoration parameters. By setting the SNR value to '10 20 40', for
-        instances, three jobs will be run: the first with SNR value 10, the
-        second with SNR value 20, and the third with SNR value 40.</p>
-        
-      </div>
+      <h3>Quick help</h3>
+      <div id="contextHelp">
+        <?php echo $info; ?>
+     </div>
+     </div>
         
       <div id="message">
 <?php
