@@ -146,7 +146,7 @@ table {
 #statschart {
     width: 800px;
     height: 400px;
-    margin: 10px 0px 10px 0px;
+    margin: 16px 0px 10px 0px;
     border-top: #ccc 1px dotted;
 }
 
@@ -156,6 +156,13 @@ table {
     margin-left: 50px;
     margin-right: 50px;
     border-top: #ccc 1px dotted;
+}
+
+#statstable h3 {
+    color: rgb(62,87,111);
+    font-family: "Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;
+    font-weight: normal;
+    font-size: 16px;
 }
 
 #statstable table {
