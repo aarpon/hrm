@@ -143,10 +143,6 @@ $helpStopCrit = "
         <p>&nbsp;<p>
         <p>&nbsp;<p>
         <p>&nbsp;<p>
-        <p>&nbsp;<p>
-        <p>&nbsp;<p>
-        <p>&nbsp;<p>
-        <p>&nbsp;<p>
         <p>The first <b>stopping criterium</b> reached will stop the
         restoration.</p><p>The <i>quality change</i> criterium
         may apply first and stop the iterations before the <i>maximum 
