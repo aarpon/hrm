@@ -56,7 +56,7 @@
 require_once("./inc/User.inc");
 require_once("./inc/Fileserver.inc");
 
-function showFileBrowser($type = "") {
+function showFileBrowser() {
 
     //$browse_folder can be 'src' or 'dest'.
     $browse_folder = "src";
@@ -69,19 +69,20 @@ function showFileBrowser($type = "") {
     $multiple_files = false;
     // Number of displayed files.
     $size = 15;
-    // Show files of the same type as in the current task:
     $type = "";
+    $useTemplateData = 0;
     if ( $_SESSION['user']->name() == "admin") {
-        # The administrator can edit templates without adding a task...
+        // The administrator can edit templates without adding a task...
         $restrictFileType = false;
     } else {
+        // Show files of the same type as in the current task:
         $restrictFileType = true;
         $fileFormat = $_SESSION['setting']->parameter("ImageFileFormat");
         $type = $fileFormat->value();
+        // To (re)generate the thumbnails, use data from the current template for
+        // colors (wavelengths). 
+        $useTemplateData = 1;
     }
-    // To (re)generate the thumbnails, use data from the current template for
-    // colors (wavelengths).
-    $useTemplateData = 1;
     $file_buttons = array();
     $file_buttons[] = "update";
 
@@ -239,7 +240,7 @@ function estimateSnrFromFile($file) {
       </div>
       </div> <!-- content -->
 
-      <div id="rightpanel" onmouseover="smoothChangeDivCond('general','thumb','<?php echo escapeJavaScript($defaultView);?>',200;">
+      <div id="rightpanel" onmouseover="smoothChangeDivCond('general','thumb','<?php echo escapeJavaScript($defaultView);?>', 200);">
       <div id="info">
       <?php // echo $defaultView;  ?>
       </div>
@@ -419,7 +420,7 @@ if (count($_POST) == 1 && isset($_POST['userfiles'] )) {
 
 
 if ( $task == "select") {
-  showFileBrowser($type);
+  showFileBrowser();
 } else {
    estimateSnrFromFile($file);
 }
