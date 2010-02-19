@@ -69,7 +69,7 @@ Class Fileserver {
 
   var $validImageExtensions =  array("tif", "tiff", "stk", "lsm", "ims", "pic", "ome", "lif", "ics", "dv", "h5" );
 
-  var $validImageExtensionsExtras =  array("ids");
+  var $validImageExtensionsExtras =  array("ids", "ids.gz");
 
   var $multiImageExtensions =  array("lif");
   var $validArchiveExtensions =  array();
@@ -703,16 +703,21 @@ Class Fileserver {
   // @return      Boolean
   //!---------------------------------------------------------  
   function isValidImage($filename, $alsoExtras = false) {
-    $ext = substr(strrchr($filename, "."),1);
-    $ext = strtolower($ext);
-    $result = False;
-    if (in_array($ext, $this->validImageExtensions)) {
-      $result = True;
-    }
-    if ($alsoExtras && (in_array($ext, $this->validImageExtensionsExtras)) ) {
-        $result = True;
-    }
-    return $result;
+      $filename = strtolower($filename);
+      $ext = substr(strrchr($filename, "."),1);
+      if ( $ext == "gz" ) {
+          // Use two suffixes as extension
+          $filename  = basename($filename, ".gz");
+          $ext = substr(strrchr($filename, "."),1) . ".gz";
+      }
+      $result = False;
+      if (in_array($ext, $this->validImageExtensions)) {
+          $result = True;
+      }
+      if ($alsoExtras && (in_array($ext, $this->validImageExtensionsExtras)) ) {
+          $result = True;
+      }
+      return $result;
   }
 
   //!---------------------------------------------------------
