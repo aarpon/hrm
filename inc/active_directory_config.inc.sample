@@ -38,7 +38,20 @@
     // which level of the hierarchy to consider (starts by 0). This
     // obviously assumes that the sequence of groups memberships is
     // constant among users. Set $GROUP_INDEX to -1 to get an array
-    // with all groups for the user.
+    // with all groups for the user. Please notice that this can also
+    // be used in combination with the next parameter.
     $GROUP_INDEX = 0;
+
+    // If there is no way to get the desired group by using $GROUP_INDEX,
+    // this is an additional little trick. For this to work, $GROUP_INDEX
+    // MUST be set to -1, and the following array must contain the list of
+    // valid groups to be considered. This way, for each user the complete
+    // list of groups will be returned from the Active Directory, and of
+    // those, the one that is contained in the following array will be picked.
+    // If more than one matching group is found, the first will be taken. If
+    // no match is found, all groups will be returned.
+    // Fill the array as follows: $VALID_GROUPS = array( "group1", "group2" )
+    // with as many groups as you need.
+    $VALID_GROUPS = array( );    
 
 ?>

@@ -58,14 +58,20 @@ require_once( dirname( __FILE__ ) . "/extern/adLDAP/adLDAP.php" );
 //!--------------------------------------------------------------------
 
 Class ActiveDirectory {
-  var $m_AdLDAP;      // @var m_adLDAP   the adLDAP object
-  var $m_GroupIndex;  // $m_GroupIndex   users usually belong to several groups,
-                      //                 m_GroupIndex define which level of the
-					  //                 hierarchy to consider. If $m_GroupIndex
-					  //                 is NULL, ActiveDirectory::getGroup( )
-					  //                 will return an array with all groups.
-  
-	function __construct ( ) {
+  private $m_AdLDAP;      // the adLDAP object
+  private $m_GroupIndex;  // users usually belong to several groups, m_GroupIndex 
+                          // defines which level of the hierarchy to consider. 
+					      // If $m_GroupIndex is -1 and the $m_ValidGroups array
+					      // is empty, ActiveDirectory::getGroup( ) will return
+					      // an array with all groups.
+  private $m_ValidGroups; // contains a list of valid groups. If $m_GroupIndex
+                          // is set to -1 and $m_ValidGroups is not empty, the
+						  // groups array returned by adLDAP->user_groups will
+						  // be compared with $m_ValidGroups and only the first
+						  // group in the intersection will be returned (ideally,
+						  // the intersection should contain only one group).
+
+  function __construct ( ) {
 
 		include( dirname( __FILE__ ) . "/active_directory_config.inc" );
 		
@@ -82,6 +88,7 @@ Class ActiveDirectory {
 		  'recursive_groups'   => $RECURSIVE_GROUPS );
 
 		$this->m_GroupIndex    = $GROUP_INDEX;
+		$this->m_ValidGroups   = $VALID_GROUPS;
 		
 		try {
 		  $this->m_AdLDAP = new adLDAP( $options );
@@ -108,7 +115,17 @@ Class ActiveDirectory {
 	  return $userGroups;
 	}
 	if ( $this->m_GroupIndex == -1 ) {
-	  return $userGroups;
+	  // Should we check against the $VALID_GROUP array?
+	  if ( count( $this->m_ValidGroups ) > 0 ) {
+		$groups = array_values( array_intersect( $userGroups, $this->m_ValidGroups ) );
+		if ( count( $groups ) > 0 ) {
+		  return $groups[ 0 ];
+		} else {
+		  return $userGroups;
+		}
+	  } else {
+		return $userGroups;
+	  }
 	}
 	if ( $this->m_GroupIndex >= 0 &&
 		 $this->m_GroupIndex < count( $userGroups ) ) {
