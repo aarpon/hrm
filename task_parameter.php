@@ -92,7 +92,7 @@ $helpSnrCmle = "
        best-guess initial value for this parameter.</p>
         <p><span class=\"superscript\">(*)</span>
         The field <strong>SNR</strong>
-        iterations</strong> can accept multiple values per channel.
+        can accept multiple values per channel.
         This is a commodity tool to optimize restoration parameters. By setting
         the SNR value to '10 20 40' in a single channel image, for instance,
         three jobs will be run: the first with SNR value 10, the second with
@@ -153,9 +153,9 @@ $helpStopCrit = "
         number</i> is reached: set the quality change to a low value or zero if
         you want to make sure all the set iterations are run.)</p>
         <p><span class=\"superscript\">(*)</span>
-        The field <strong>number of
-        iterations</strong> can accept multiple values. This is a commodity
-        tool to optimize restoration parameters. By setting this field value to
+        The field <strong>number of iterations</strong> can accept multiple
+        values. This is a commodity tool to optimize restoration parameters. By
+        setting this field value to
         '20 50 70', for instance, three jobs will be run: the first with a 
         maximum of 20 iterations, the second with a maximum of 50, and the
         third with a maximum of 70. </p>
