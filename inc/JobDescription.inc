@@ -494,7 +494,7 @@ Class JobDescription {
 
   function putMultiChannelScriptOn($script, $isOriginal = false) {
     global $useThumbnails;
-    global $movieMaxSize, $saveSfpPreviews;
+    global $movieMaxSize, $saveSfpPreviews, $saveComparisonMovies;
     $parameterSetting = $this->parameterSetting;
     $numberOfChannels = $parameterSetting->numberOfChannels();
     $files = $this->files();
@@ -593,6 +593,15 @@ Class JobDescription {
                 $movieMaxSize . '}'.  "\n".
                 '    catch {::WebTools::saveTimeSeriesMovie c $ddir/hrm_previews'.
                 ' ${fn}.tSeries '.$movieMaxSize . '}'.  "\n\n";
+                // Since Huygens 3.5.1p3, stacks and time series can also be
+                // saved in jpeg strips that can be viewed online with CSS
+                // tricks.
+                $newScript = $newScript . 
+                '    catch {::WebTools::saveStackMovie c $ddir/hrm_previews ${fn}.stack '.
+                $movieMaxSize . ' auto - strip}'.  "\n".
+                '    catch {::WebTools::saveTimeSeriesMovie c $ddir/hrm_previews'.
+                ' ${fn}.tSeries '.$movieMaxSize . ' MIP auto strip}'.  "\n\n";
+
             }
             if ( $saveSfpPreviews ) {
                 $newScript = $newScript . 
@@ -614,12 +623,27 @@ Class JobDescription {
             $newScript = $newScript . '
     set path "'.$dstfilename.".".$fileFormat.".original".'"
     set ddir [file dirname $path]
-    set fn [file tail $path]
-    catch { ::WebTools::savePreview $orig $ddir/hrm_previews $fn {preview 400} }'."\n";
+    set ofn [file tail $path]
+    catch { ::WebTools::savePreview $orig $ddir/hrm_previews $ofn {preview 400} }'."\n";
+
+    if ($saveComparisonMovies && $movieMaxSize > 0 ) {
+        // Since Huygens 3.5.1p3, stacks and time series can also be
+        // saved in jpeg strips that can be viewed online with CSS
+        // tricks.
+            $newScript .= 'catch {
+                set comb [img create comb]
+                $orig combine c -> $comb -along x
+                ::WebTools::saveStackMovie $comb $ddir/hrm_previews ${fn}.stack.comparison '. ($movieMaxSize * 2) .' auto - strip
+                ::WebTools::saveTimeSeriesMovie $comb $ddir/hrm_previews ${fn}.tSeries.comparison '. ($movieMaxSize * 2) . ' MIP auto strip
+                catch {$comb del}
+   }
+
+                ';
+    }
 
             if ( $saveSfpPreviews ) {
                 $newScript = $newScript . 
-                '    catch {::WebTools::saveTopViewSfp $orig $ddir/hrm_previews ${fn}.sfp }'.
+                '    catch {::WebTools::saveTopViewSfp $orig $ddir/hrm_previews ${ofn}.sfp }'.
                  "\n";
             }
             $newScript = $newScript . '
@@ -1005,7 +1029,7 @@ Class JobDescription {
   function saveImageString( $isResult = false ) {
     global $resultImagesOwnedByUser;
     global $useThumbnails;
-    global $movieMaxSize, $saveSfpPreviews;
+    global $movieMaxSize, $saveSfpPreviews, $saveComparisonMovies;
     $result = '';
     $setting = $this->taskSetting;
     $parameterSetting = $this->parameterSetting;
@@ -1064,13 +1088,28 @@ Class JobDescription {
             $newScript = $newScript . '
     set path "'.$imageFileName.".".$extension.".original".'"
     set ddir [file dirname $path]
-    set fn [file tail $path]
-    catch {::WebTools::savePreview $orig $ddir/hrm_previews $fn {preview 400}}'.
+    set ofn [file tail $path]
+    catch {::WebTools::savePreview $orig $ddir/hrm_previews $ofn {preview 400}}'.
     "\n";
+
+    if ($saveComparisonMovies && $movieMaxSize > 0 ) {
+            $newScript .= 'catch {
+                set comb [img create comb]
+                $orig combine c -> $comb -along x
+                ::WebTools::saveStackMovie $comb $ddir/hrm_previews ${fn}.stack.comparison '. ($movieMaxSize * 2) .' auto - strip
+                ::WebTools::saveTimeSeriesMovie $comb $ddir/hrm_previews ${fn}.tSeries.comparison '. ($movieMaxSize * 2) . ' MIP auto strip
+                catch {$comb del}
+   }
+
+                ';
+    }
+
+ 
+
 
             if ( $saveSfpPreviews ) {
                 $newScript = $newScript . 
-                '    catch {::WebTools::saveTopViewSfp $orig $ddir/hrm_previews ${fn}.sfp }'.
+                '    catch {::WebTools::saveTopViewSfp $orig $ddir/hrm_previews ${ofn}.sfp }'.
                  "\n";
             }
 

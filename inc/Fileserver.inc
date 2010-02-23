@@ -73,6 +73,7 @@ Class Fileserver {
 
   var $multiImageExtensions =  array("lif");
   var $validArchiveExtensions =  array();
+  var $expandSubImages = true;
 
 
   
@@ -258,6 +259,9 @@ Class Fileserver {
     $this->destFiles = NULL;
   } 
 
+  function expandSubImages($value) {
+      $this->expandSubImages = $value;
+  }
 
   //!---------------------------------------------------------
   // @function    Fileserver::selectedFiles
@@ -760,11 +764,11 @@ Class Fileserver {
   //              This is done by querying Huygens.
   // @return      Void
   //!---------------------------------------------------------    
-  function getSubImages() {
+  function getSubImages($files) {
 
       $i = 0;
       $imgList = "";
-      foreach ($this->files as $path) {
+      foreach ($files as $path) {
           $imgList .= " -img_$i \"$path\"";
           $i ++;
       }
@@ -825,7 +829,7 @@ Class Fileserver {
           }
       }
 
-      $this->files = $new_files;
+      return $new_files;
 
       # printDebug ($tree);
 
@@ -991,18 +995,44 @@ Class Fileserver {
     if (!file_exists($this->sourceFolder())) return False;
     $this->getFilesFrom($this->sourceFolder(), "");
     if (count($this->files) == 0) return False;
-    sort($this->files);
-    if ( count ( $this->imageExtensions() ) == 1 ) {
-        $extArr = $this->imageExtensions();
+    $extArr = $this->imageExtensions();
+
+    // When only one file type is listed, expand subimages if they exists.
+
+    if ( count ( $extArr ) == 1 ) {
         $ext = $extArr[0];
         if ( in_array( $ext, $this->multiImageExtensions)) {
-            $this->getSubImages();
+            $this->files = $this->getSubImages($this->files);
         }
     }
+
+    // Later adition: if multiple explicitly given types are listed, expand
+    // subimages. Therefore, subimages are only NOT listed when no explicit
+    // extension is given (useful to handle FILES, not IMAGES, like in the file
+    // manager).
+    if ( $this->expandSubImages && count ( $extArr ) > 1 ) {
+        $expandfiles = array();
+        foreach ($extArr as $mfext) {
+            if ( !in_array( $mfext, $this->multiImageExtensions)) { continue; }
+            foreach ($this->files as $key => $file) {
+                $ext = substr(strrchr($file, "."),1);
+                $ext = strtolower($ext);
+                if ($ext != $mfext) continue;
+                $expandfiles[] = $file;
+                unset ( $this->files[$key] );
+            }
+        }
+        if ( count($expandfiles) > 0 ) {
+          $this->files = array_merge($this->files,
+                  $this->getSubImages($expandfiles));
+        }
+    }
+    sort($this->files);
     // TODO refactor
     //$this->condenseTimeSeries();
     // trim TIFF series to the first file in the sequence
     //$this->condenseTiffSeries();
+    return True;
   } 
 
 
@@ -1091,6 +1121,145 @@ Class Fileserver {
   }
 
   //!---------------------------------------------------------
+  // @function    Fileserver::viewStrip
+  // @desc        Shows stacks and time series saved as jpeg strips in a css
+  //              container.
+  // @return      
+  //!---------------------------------------------------------
+
+  function viewStrip( $file, $type = "stack.comparison", $dir = "dest", $margin = 25 ) {
+      global $allowHttpTransfer;
+
+      if ( $dir == "src" ) {
+          $pdir =  $this->sourceFolder();
+      } else {
+          $pdir =  $this->destinationFolder();
+      }
+      $dir = dirname($pdir."/".$file);
+      $base = basename($pdir."/".$file.".".$type);
+      $path = $dir."/hrm_previews/".$base;
+      $path = stripslashes($path);
+
+      $files = glob($path.".strip_*");
+      if (count($files) != 1 ) {
+          echo "<html><body><img src=\"images/no_preview.jpg\"></body></html>";
+          exit;
+      }
+      preg_match ("/strip_(.+)x(.+)x(.+)_fr/", $files[0], $match);
+
+      $thumb = strstr($files[0],$file);
+
+      $sx = $match[1];
+      $sy = $match[2];
+      $width = $sx + $margin * 2;
+      $height = $sy + $margin * 2;
+      $jump = $height * 100;
+      $fCnt = $match[3];
+
+      $img = "file_management.php?getThumbnail=$thumb&amp;dir=$dir";
+
+      $file = stripslashes($file);
+
+      echo '
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"> 
+<head> 
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /> 
+        <title>' . $file . " ". $type. '</title> 
+        <style type="text/css"> 
+                body
+                {
+                        margin: 0;
+                        padding: 0;
+                        overflow: hidden;
+                }
+
+                #viewer
+                {
+                        width: '. ($width + $margin) .'px;
+                        height: '. $height .'px;
+                        overflow: auto;
+                }
+
+                div div
+                {
+                        float: left;
+                        width: '. $width .'px;
+                        height: '.$jump.'px;
+                        background-image: url('.$img.');
+                        background-attachment: fixed;
+                }
+
+                .left
+                {
+                        position:absolute;
+                        position:fixed;
+                        left: 0px;
+                        width: '.$margin.'px;
+                        height: '.$height.'px;
+                        background: grey;
+                        z-index: 9999;
+                }
+                .right
+                {
+                        position:absolute;
+                        position:fixed;
+                        left: '.( $sx + $margin).'px;
+                        width: '.$margin.'px;
+                        height: '.$height.'px;
+                        background: grey;
+                        z-index: 9999;
+                }
+ 
+                .top
+                {
+                        position:absolute;
+                        position:fixed;
+                        top: 0px;
+                        width: '.$width.'px;
+                        height: '.$margin.'px;
+                        background: grey;
+                        z-index: 9998;
+                }
+
+                .bottom
+                {
+                        position:absolute;
+                        position:fixed;
+                        top: '.($height - $margin).'px;
+                        width: '.$width.'px;
+                        height: '.$margin.'px;
+                        background: grey;
+                        z-index: 9998;
+                }
+
+
+
+
+
+';
+
+      for ($n = 0; $n < $fCnt; $n++) {
+          $pos = $sy * ($fCnt - $n  ) + $margin;
+          echo "#f$n {background-position: ".$margin."px ".$pos."px;}";
+      }
+
+
+echo '  </style> 
+    </head> 
+    <body> 
+    <div id="viewer"> ';
+      for ($n = 0; $n < $fCnt; $n++) {
+          echo "<div id=\"f$n\"><div class=\"top\"></div><div class=\"bottom\"></div><div class=\"left\"></div><div class=\"right\"></div></div>";
+      }
+
+echo '</div></body></html>';
+
+  }
+
+
+
+  //!---------------------------------------------------------
   // @function    Fileserver::imgCompareMode
   // @desc        Checks whether a restored image preview is available for
   //              comparison with the original one.
@@ -1157,7 +1326,7 @@ Class Fileserver {
       if ( $mode == "MIP" ) {
           $altMode = "SFP";
       } else {
-          $altMode = "MIP";
+          $altMod = "MIP";
       }
 
       echo "</div>";

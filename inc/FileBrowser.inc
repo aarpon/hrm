@@ -166,7 +166,16 @@ if (!isset($operationResult)) {
 if ($browse_folder == "src") {
 
     if (!isset($restrictFileType) || $restrictFileType === false ) {
-        $_SESSION['fileserver']->setImageExtensions(array());
+        $_SESSION['fileserver']->setDefaultImageExtensions(array());
+        // In certain conditions (e.g. the SNR estimator) we want to list all
+        // subimages.
+        if (isset($expandSubImages) && $expandSubImages ) {
+            $_SESSION['fileserver']->expandSubImages(true);
+        } else {
+        // In the file manager we want to treat files as such, not listing
+        // subimages.    
+            $_SESSION['fileserver']->expandSubImages(false);
+        }
         $files = $_SESSION['fileserver']->files();
     } else {
 

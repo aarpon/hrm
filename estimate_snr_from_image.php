@@ -74,6 +74,7 @@ function showFileBrowser() {
     if ( $_SESSION['user']->name() == "admin") {
         // The administrator can edit templates without adding a task...
         $restrictFileType = false;
+        $expandSubImages = true;
     } else {
         // Show files of the same type as in the current task:
         $restrictFileType = true;

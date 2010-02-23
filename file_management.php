@@ -106,6 +106,23 @@ if (isset($_GET['getMovie'])) {
     exit;
 }
 
+if (isset($_GET['viewStrip'])) {
+
+    if (isset($_GET['dir'])) {
+        $src = $_GET['dir'];
+    } else {
+        $src = "dest";
+    }
+    if (isset($_GET['type'])) {
+        $type = $_GET['type'];
+    } else {
+        $type = "stack.comparison";
+    }
+ 
+    $_SESSION['fileserver']->viewStrip( $_GET['viewStrip'], $type, $src );
+    exit;
+
+}
 
 if (isset($_GET['genPreview'])) {
     if (isset($_GET['size'])) {
