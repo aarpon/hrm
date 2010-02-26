@@ -118,8 +118,13 @@ if (isset($_GET['viewStrip'])) {
     } else {
         $type = "stack.comparison";
     }
+    if (isset($_GET['embed'])) {
+        $embed = true;
+    } else {
+        $embed = false;
+    }
  
-    $_SESSION['fileserver']->viewStrip( $_GET['viewStrip'], $type, $src );
+    $_SESSION['fileserver']->viewStrip( $_GET['viewStrip'], $type, $src, $embed );
     exit;
 
 }
@@ -175,10 +180,9 @@ if (isset($_GET['compareResult'])) {
     }
 
 
-
-    $_SESSION['fileserver']->compareResult(rawurldecode($_GET['compareResult']),
-                             $size, $op, $mode);
+    $_SESSION['fileserver']->previewPage(rawurldecode($_GET['compareResult']), $op, $mode, $size);
     exit;
+
 }
 
 

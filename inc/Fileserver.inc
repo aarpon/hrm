@@ -1120,16 +1120,7 @@ Class Fileserver {
 
   }
 
-  //!---------------------------------------------------------
-  // @function    Fileserver::viewStrip
-  // @desc        Shows stacks and time series saved as jpeg strips in a css
-  //              container.
-  // @return      
-  //!---------------------------------------------------------
-
-  function viewStrip( $file, $type = "stack.comparison", $dir = "dest", $margin = 25 ) {
-      global $allowHttpTransfer;
-
+  function findStrip ( $file, $type, $dir ) {
       if ( $dir == "src" ) {
           $pdir =  $this->sourceFolder();
       } else {
@@ -1141,9 +1132,25 @@ Class Fileserver {
       $path = stripslashes($path);
 
       $files = glob($path.".strip_*");
+      return $files;
+
+  }
+
+  //!---------------------------------------------------------
+  // @function    Fileserver::viewStrip
+  // @desc        Shows stacks and time series saved as jpeg strips in a css
+  //              container. Inspired by the paperbird code by Román Cortés:
+  //              http://www.romancortes.com/blog/css-paper-bird/
+  // @return      
+  //!---------------------------------------------------------
+
+  function viewStrip( $file, $type = "stack.comparison", $dir = "dest", $frame = false, $margin = 25 ) {
+      global $allowHttpTransfer;
+
+      $files = $this->findStrip($file, $type, $dir);
       if (count($files) != 1 ) {
-          echo "<html><body><img src=\"images/no_preview.jpg\"></body></html>";
-          exit;
+          echo "<img src=\"images/no_preview.jpg\">";
+          return;
       }
       preg_match ("/strip_(.+)x(.+)x(.+)_fr/", $files[0], $match);
 
@@ -1153,12 +1160,32 @@ Class Fileserver {
       $sy = $match[2];
       $width = $sx + $margin * 2;
       $height = $sy + $margin * 2;
-      $jump = $height * 100;
+      $jump = $height * 400;
       $fCnt = $match[3];
+
+      if ( $frame ) {
+          // Use this function in two steps: first to create the iframe with
+          // the correct width and height, using a link that calls this
+          // function again to generate the embedded slicer page.
+          echo ' <iframe src="?viewStrip='.$file.'&amp;type='.$type.
+          '&amp;dir='.$dir.'" width="'. ($width + 25). 
+          '" height="'. ($height).'"> ';
+          echo '</iframe>';
+          return;
+      }
+
+      $borderColor = "#666";
+      $textColor = "#bbb";
 
       $img = "file_management.php?getThumbnail=$thumb&amp;dir=$dir";
 
       $file = stripslashes($file);
+
+      # $legend = $type. " ". $file;
+      $legend = $type;
+      if (strlen($legend) > 75) {
+              $legend = substr($legend, 0, 70)."...";
+      }
 
       echo '
 
@@ -1169,19 +1196,21 @@ Class Fileserver {
         <style type="text/css"> 
                 body
                 {
-                        margin: 0;
-                        padding: 0;
-                        overflow: hidden;
+                       font-family: "verdana", "bitsream vera sans", sans-serif;
+                       margin: 0;
+                       padding: 0;
+                       overflow: hidden;
                 }
 
                 #viewer
                 {
                         width: '. ($width + $margin) .'px;
                         height: '. $height .'px;
+                        background: '.$borderColor.';
                         overflow: auto;
                 }
 
-                div div
+                #viewer div
                 {
                         float: left;
                         width: '. $width .'px;
@@ -1193,48 +1222,49 @@ Class Fileserver {
                 .left
                 {
                         position:absolute;
-                        position:fixed;
                         left: 0px;
+                        top: 0px;
                         width: '.$margin.'px;
                         height: '.$height.'px;
-                        background: grey;
-                        z-index: 9999;
+                        background: '.$borderColor.';
+                        z-index: 9998;
                 }
                 .right
                 {
                         position:absolute;
-                        position:fixed;
                         left: '.( $sx + $margin).'px;
+                        top: 0px;
                         width: '.$margin.'px;
                         height: '.$height.'px;
-                        background: grey;
-                        z-index: 9999;
+                        background: '.$borderColor.';
+                        z-index: 9998;
                 }
  
                 .top
                 {
                         position:absolute;
-                        position:fixed;
                         top: 0px;
+                        left: 0px;
                         width: '.$width.'px;
                         height: '.$margin.'px;
-                        background: grey;
-                        z-index: 9998;
+                        background: '.$borderColor.';
+                        z-index: 9999;
                 }
 
                 .bottom
                 {
                         position:absolute;
-                        position:fixed;
+                        left: 0px;
                         top: '.($height - $margin).'px;
-                        width: '.$width.'px;
-                        height: '.$margin.'px;
-                        background: grey;
-                        z-index: 9998;
+                        color: '.$textColor.';
+                        overflow: hidden;
+                        font-size: 11px;
+                        padding-left: '.$margin.'px;
+                        width: '.($width - $margin).'px;
+                        height: '.($margin ).'px;
+                        background: '.$borderColor.';
+                        z-index: 9999;
                 }
-
-
-
 
 
 ';
@@ -1250,10 +1280,17 @@ echo '  </style>
     <body> 
     <div id="viewer"> ';
       for ($n = 0; $n < $fCnt; $n++) {
-          echo "<div id=\"f$n\"><div class=\"top\"></div><div class=\"bottom\"></div><div class=\"left\"></div><div class=\"right\"></div></div>";
-      }
+          echo "<div id=\"f$n\">";
+          echo "</div>";
+          }
 
-echo '</div></body></html>';
+      echo "</div>";
+      echo "<div class=\"top\">&nbsp;</div><div
+          class=\"bottom\">$legend</div><div
+          class=\"left\">&nbsp;</div><div class=\"right\">&nbsp;</div>";
+
+echo '</body></html>';
+
 
   }
 
@@ -1305,6 +1342,241 @@ echo '</div></body></html>';
       }
       return $ret;
 
+  }
+
+  function previewPage ($file , $op = "close", $mode = "MIP", $size = 400) {
+      global $allowHttpTransfer;
+
+      $file = stripslashes($file);
+      echo '<?xml version=\"1.0\" encoding=\"UTF-8\"?'.'>';
+
+      echo ' <!DOCTYPE html 
+          PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+          <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+          <head>
+          <title>Huygens Remote Manager</title>
+          <link rel="SHORTCUT ICON" href="images/hrm.ico"/>
+          <script type="text/javascript" src="scripts/common.js"></script>
+          <style type="text/css">
+          @import "stylesheets/default.css";
+      </style>
+          </head>
+          <body>
+          <script type="text/javascript" src="./scripts/wz_tooltip/wz_tooltip.js"></script>
+          ';
+
+      echo '
+      <div id="prevBasket"> <!--basket-->
+      <div id="title">
+      <h1>HRM image preview</h1>
+      </div>';
+
+
+      $pdest =  $this->destinationFolder();
+      if (!file_exists($pdest."/".$file)) {
+          echo "File '$file' does not exist in the server.";
+          echo "</body></html>";
+          exit;
+      }
+
+      // Available views
+      $path = array();
+      $test = $pdest."/hrm_previews/".$file.".".$size."_xy.jpg";
+      if (file_exists($test)) {
+          $path['MIP'] = $test;
+      }
+      $test = $pdest."/hrm_previews/".$file.".sfp.jpg";
+      if (file_exists($test)) {
+          $path['SFP'] = $test;
+      }
+      $test = $this->findStrip($file, "stack.compare", $pdest);
+      if (count($test) == 1) {
+          $path['stack'] = $test[0];
+      }
+      $test =  $this->findStrip($file, "tSeries.compare", $pdest);
+      if (count($test) == 1) {
+          $path['tSeries'] = $test[0];
+      }
+
+      $test =  $pdest."/hrm_previews/".$file.".stack.avi";
+      if (file_exists($test)) {
+          $path['stackMovie'] = $test;
+          $movie['stackMovie'] = $file.".stack.avi";
+          $msize['stackMovie'] = round(filesize($test) / 1024.0);
+      }
+      $test =  $pdest."/hrm_previews/".$file.".tSeries.avi";
+      if (file_exists($test)) {
+          $path['tSeriesMovie'] = $test;
+          $movie['tSeriesMovie'] = $file.".tSeries.avi";
+          $msize['tSeriesMovie'] = round(filesize($test) / 1024.0);
+      }
+      $test =  $pdest."/hrm_previews/".$file.".tSeries.sfp.avi";
+      if (file_exists($test)) {
+          $path['tSeriesSfpMovie'] = $test;
+          $movie['tSeriesSfpMovie'] = $file.".tSeries.sfp.avi";
+          $msize['tSeriesSfpMovie'] = round(filesize($test) / 1024.0);
+      }
+
+
+      $desc['MIP'] = "MIP";
+      $desc['SFP'] = "SFP";
+      $desc['stack'] = "slicer";
+      $desc['tSeries'] = "series";
+
+      $desc['stackMovie'] = "stack movie";
+      $desc['tSeriesMovie'] = "series movie";
+      $desc['tSeriesSfpMovie'] = "series SFP movie";
+
+      $tip['MIP'] = "Compare Maximum Intensity Projections";
+      $tip['SFP'] = "Compare Simulated Fluorescence renderings";
+      $tip['stack'] = "Browse along the Z-planes";
+      $tip['tSeries'] = "Browse along the time series";
+
+      $tip['stackMovie'] = "Download Z-stack movie (".$msize['stackMovie']." kB)";
+      $tip['tSeriesMovie'] = "Download time series MIP movie (".$msize['tSeriesMovie']." kB)";
+      $tip['tSeriesSfpMovie'] = "Download time series SFP movie (".$msize['tSeriesSfpMovie']." kB)";
+
+
+
+      $link = "file_management.php?compareResult=".rawurlencode($file).
+          "&amp;op=$op&amp;mode=";
+      $mlink = "file_management.php?getMovie=";
+
+      echo "<div id=\"prevMenu\">\n";
+
+
+      foreach ($path as $key => $val) {
+          $class = 'menuEntry';
+          $doLink = true;
+          if ( $key == $mode ) {
+              $doLink = false;
+              $class = "menuEntryActive";
+          }
+          if ( isset($movie[$key]) ) {
+              $bLink = $mlink.rawurlencode($movie[$key]);
+          } else {
+              $bLink = $link.$key;
+          }
+          echo "\n<div class=\"$class\"";
+          if ($doLink) {
+              echo " onclick=\"document.location.href='".$bLink."'\"";
+          }
+              echo " onmouseover=\"Tip('".$tip[$key]."')\" onmouseout=\"UnTip()\"";
+
+          echo ">";
+          if ($doLink) {
+              echo "<a href=\"".$bLink."\">";
+          }
+          echo $desc[$key];
+          if ($doLink) {
+              echo "</a>";
+          }
+          echo "</div>";
+
+      }
+
+      if ( $allowHttpTransfer ) {
+          echo "\n<div class=\"menuEntry\"
+          onmouseover=\"Tip('Pack and download the restored image')\"
+          onmouseout=\"UnTip()\"
+          onclick=\"changeDiv('report','Packaging files, please wait'); setTimeout(smoothChangeDiv,5000,'report','',5000); document.location.href='file_management.php?download=".rawurlencode($file)."'\" ><a href='#'>download file</a></div>\n";
+      }
+
+      echo "\n<div class=\"menuEntry\" onclick=\"javascript:openWindow(".
+          "'http://support.svi.nl/wiki/style=hrm&amp;".
+          "help=HuygensRemoteManagerHelpCompareResult')\">".
+          "<a href=\"#\"><img src=\"images/help.png\" alt=\"help\" /> Help".
+          "</a></div>";
+
+      echo "\n<div class=\"menuEntry\" ";    
+ 
+      switch ($op) {
+          case "close":
+             echo "onclick=\"window.close()\"".
+             "onmouseover=\"Tip('Close this window and go back to the File Manager.')\" onmouseout=\"UnTip()\">".
+             "<a href=\"#\">".
+             "<img src=\"images/cancel_help.png\" alt=\"cancel\" /> Back".
+             "</a>\n";
+             break;     
+          case "home":
+             echo " onclick=\"document.location.href=".
+             "onmouseover=\"Tip('Go to your HRM home page.')\" onmouseout=\"UnTip()\">".
+             "'select_parameter_settings.php'\">".
+             "<a href=\"#\">".
+             "<img src=\"images/home_large.png\" alt=\"home\" /> Home".
+             "</a>\n";
+             break;
+      }
+      echo "</div>\n";
+      echo "</div>\n";
+      echo "<div id=\"previewContents\">\n";
+      echo "<div id=\"previewImg\">\n";
+
+      if ($mode == "stack" || $mode == "tSeries" ) {
+          $this->viewStrip( $file, "$mode.compare", "dest", true );
+          echo "<center>Original - Restored<br>(drag scrollbar for browsing)</center>";
+      } else {
+
+      echo "\n<table>\n<tr>\n";
+
+      echo "<td>Original</td><td>Restored</td>\n</tr>\n<tr>";
+
+      $othumb_0 = rawurlencode($file.".original.".$size."_xy.jpg");
+      $rthumb_0 = rawurlencode($file.".".$size."_xy.jpg");
+      
+      $osfp = rawurlencode($file.".original.sfp.jpg");
+      $rsfp = rawurlencode($file.".sfp.jpg");
+
+      // YZ slices not shown by now, but here they are:
+      $othumb_2 = rawurlencode($file.".original.".$size."_xy.jpg");
+      $rthumb_2 = rawurlencode($file.".".$size."_xy.jpg");
+
+      if ( $mode == "MIP" ) {
+
+          echo "\n<td><img src=\"file_management.php?getThumbnail=$othumb_0".
+              "&amp;dir=dest\" alt=\"Original preview XY\" /></td>";
+
+          echo "\n<td><img src=\"file_management.php?getThumbnail=$rthumb_0".
+              "&amp;dir=dest\" alt=\"Restored preview XY\" /></td>";
+      } else {
+          echo "\n<td><img src=\"file_management.php?getThumbnail=$osfp".
+              "&amp;dir=dest\" alt=\"Original SFP preview\" /></td>";
+
+          echo "\n<td><img src=\"file_management.php?getThumbnail=$rsfp".
+              "&amp;dir=dest\" alt=\"Restored SFP preview\" /></td>";
+
+      }
+
+      echo "\n</tr>";
+
+
+      $othumb_1 = rawurlencode($file.".original.".$size."_xz.jpg");
+      $rthumb_1 = $file.".".$size."_xz.jpg";
+      $path = $pdest."/hrm_previews/".$rthumb_1;
+      $path = stripslashes($path);
+      $rthumb_1 = rawurlencode($rthumb_1);
+      if ($mode == "MIP" && file_exists($path)) {
+          // is a 3D image, so it has a lateral view.
+          echo "\n<tr>";
+          echo "\n<td><img src=\"file_management.php?getThumbnail=$othumb_1".
+              "&amp;dir=dest\" alt=\"Original preview XZ\" /></td>";
+          echo "\n<td><img src=\"file_management.php?getThumbnail=$rthumb_1".
+              "&amp;dir=dest\" alt=\"Restored preview XZ\" /></td>";
+
+          echo "\n</tr>";
+      }
+      
+      echo "\n</table>\n\n";
+
+
+      }
+      echo "</div>\n";
+      echo "</div>\n";
+      echo "<div id=\"report\"></div>";
+      include("footer.inc.php");
+ 
   }
 
 

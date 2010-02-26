@@ -174,6 +174,8 @@ function confirmSubmit() {
 
     if (action != '') {
         changeDiv('actions', 'Please wait...<input type="hidden" name="'+action+'" value="1">');
+        // Make the message vanish after a reasonable time.
+        setTimeout(smoothChangeDiv,6000,'actions','',10000);
     } else {
         changeDiv('actions', '');
     }
