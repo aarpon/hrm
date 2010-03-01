@@ -223,8 +223,9 @@ $saveSfpPreviews = true;
 
 // If non-zero, save stack and time series previews of the original and restored
 // data side by side, to allow comparisons. (Requires $useThumbnails and
-// Huygens Core 3.5.2).
-$maxComparisonSize = 512;
+// Huygens Core 3.5.2). This is the max size in pixels for each of the images's
+// slicer.
+$maxComparisonSize = 300;
 
 // A shell command that executes ping four times and stops afterwards
 $ping_command = 'ping -w 4';	// use this on linux systems
