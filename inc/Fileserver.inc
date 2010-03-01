@@ -1381,13 +1381,17 @@ echo '</body></html>';
           exit;
       }
 
+      $dir = dirname($pdest."/".$file);
+      $base = basename($pdest."/".$file);
+      $dirp = $dir."/hrm_previews/".$base;
+
       // Available views
       $path = array();
-      $test = $pdest."/hrm_previews/".$file.".".$size."_xy.jpg";
+      $test = $dirp.".".$size."_xy.jpg";
       if (file_exists($test)) {
           $path['MIP'] = $test;
       }
-      $test = $pdest."/hrm_previews/".$file.".sfp.jpg";
+      $test = $dirp.".sfp.jpg";
       if (file_exists($test)) {
           $path['SFP'] = $test;
       }
@@ -1400,7 +1404,7 @@ echo '</body></html>';
           $path['tSeries'] = $test[0];
       }
 
-      $test =  $pdest."/hrm_previews/".$file.".stack.avi";
+      $test =  $dirp.".stack.avi";
       if (file_exists($test)) {
           $path['stackMovie'] = $test;
           $movie['stackMovie'] = $file.".stack.avi";
@@ -1434,9 +1438,9 @@ echo '</body></html>';
       $tip['stack'] = "Browse along the Z-planes";
       $tip['tSeries'] = "Browse along the time series";
 
-      $tip['stackMovie'] = "Download Z-stack movie (".$msize['stackMovie']." kB)";
-      $tip['tSeriesMovie'] = "Download time series MIP movie (".$msize['tSeriesMovie']." kB)";
-      $tip['tSeriesSfpMovie'] = "Download time series SFP movie (".$msize['tSeriesSfpMovie']." kB)";
+      $tip['stackMovie'] = "Download Z-stack movie<br>(".$msize['stackMovie']." kB)";
+      $tip['tSeriesMovie'] = "Download time series MIP movie<br>(".$msize['tSeriesMovie']." kB)";
+      $tip['tSeriesSfpMovie'] = "Download time series SFP movie<br>(".$msize['tSeriesSfpMovie']." kB)";
 
 
 
@@ -1575,8 +1579,8 @@ echo '</body></html>';
 
       }
       echo "</div>\n";
-      echo "</div>\n";
       echo "<div id=\"report\"></div>";
+      echo "</div>\n";
       include("footer.inc.php");
  
   }
@@ -1931,7 +1935,10 @@ echo '</body></html>';
           $pdir =  $this->destinationFolder();
       }
 
-      $path = stripslashes($pdir."/hrm_previews/".$file);
+      $dirname = dirname($pdir."/".$file);
+      $basename = basename($pdir."/".$file);
+
+      $path = stripslashes($dirname."/hrm_previews/".$basename);
       if (!file_exists($path)) {
           $path = "images/no_preview.jpg";
           Header("Content-Type: image/jpeg");
