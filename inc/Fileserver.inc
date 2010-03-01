@@ -1486,7 +1486,8 @@ echo '</body></html>';
 
       echo "\n<div class=\"menuEntry\" onclick=\"javascript:openWindow(".
           "'http://support.svi.nl/wiki/style=hrm&amp;".
-          "help=HuygensRemoteManagerHelpCompareResult')\">".
+          "help=HuygensRemoteManagerHelpCompareResult')\" ".
+             "onmouseover=\"Tip('Open a pop up with help about this window.')\" onmouseout=\"UnTip()\">".
           "<a href=\"#\"><img src=\"images/help.png\" alt=\"help\" /> Help".
           "</a></div>";
 
@@ -1501,11 +1502,12 @@ echo '</body></html>';
              "</a>\n";
              break;     
           case "home":
-             echo " onclick=\"document.location.href=".
-             "onmouseover=\"Tip('Go to your HRM home page.')\" onmouseout=\"UnTip()\">".
+             echo " onclick=\"document.location.href='home.php'\" ".
+             "onmouseover=\"Tip('Go to your HRM home page.')\" ".
+             " onmouseout=\"UnTip()\" ".
              "'select_parameter_settings.php'\">".
              "<a href=\"#\">".
-             "<img src=\"images/home_large.png\" alt=\"home\" /> Home".
+             "<img src=\"images/home.png\" alt=\"home\" /> Home".
              "</a>\n";
              break;
       }
@@ -1721,7 +1723,7 @@ echo '</body></html>';
              break;     
           case "home":
              echo " <a href=\"#\" onclick=\"document.location.href=".
-             "'select_parameter_settings.php'\">".
+             "'home.php'\">".
              "<img src=\"images/home_large.png\" alt=\"home\" />".
              "</a>\n";
              break;
