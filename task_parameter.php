@@ -794,9 +794,9 @@ if ($parameter->value() != null) {
 
     <script type="text/javascript">
         <!--
-            window.helpCmle='<? echo escapeJavaScript($helpCmle); ?>';
-            window.helpQmle='<? echo escapeJavaScript($helpQmle); ?>';
-            window.restorationMode='<? echo escapeJavaScript($selectedMode); ?>';
+            window.helpCmle='<?php echo escapeJavaScript($helpCmle); ?>';
+            window.helpQmle='<?php echo escapeJavaScript($helpQmle); ?>';
+            window.restorationMode='<?php echo escapeJavaScript($selectedMode); ?>';
             window.divCondition = 'general';
         -->
     </script>

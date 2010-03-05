@@ -370,7 +370,7 @@ include("header.inc.php");
 
     <script type="text/javascript">
         <!--
-            window.pageInstructions='<? echo escapeJavaScript($info); ?>';
+            window.pageInstructions='<?php echo escapeJavaScript($info); ?>';
             window.infoShown = true;
             window.previewSelected = -1;
         -->
