@@ -296,7 +296,7 @@ Class Job {
 
 		$result = file_exists($path . '/' . $finishedMarker);
 		if ($imageProcessingIsOnQueueManager) {
-			$proc = newExternalProcessFor($this->server(), $this->server() . "_out.txt", $this->server() .  "_" .$this->id(). "_error.txt");
+			$proc = newExternalProcessFor($this->server(), $this->server().  "_" .$this->id() . "_out.txt", $this->server() .  "_" .$this->id(). "_error.txt");
 			$result = !$proc->existsHuygensProcess($this->pid());
 			if (!$result && $proc->isHuygensProcessSleeping($this->pid())) {
 				$proc->rewakeHuygensProcess($this->pid());

@@ -160,7 +160,8 @@ Class JobQueue {
           $pid = $row['process_info'];
           $server = $row['server'];
           $proc = $this->newExternalProcess($server, 
-                  $server . "_out.txt", $server . "_". $id . "_error.txt");
+                  $server . "_". $id . "_out.txt", 
+                  $server . "_". $id . "_error.txt");
           $killed = $proc->killHucoreProcess($pid);
           report("Trying to kill running job with pid $pid: $killed",1);
           $result = $result && $killed;

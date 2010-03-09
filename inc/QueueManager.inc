@@ -108,7 +108,7 @@ Class QueueManager {
 			$clientScriptPath = $this->copyImagesToServer($server_hostname);
 			report("images copied to IP server", 1);
 		}
-		$proc = newExternalProcessFor($server, $server . "_out.txt", $server . "_" .$job->id(). "_error.txt");
+		$proc = newExternalProcessFor($server, $server . "_" .$job->id() . "_out.txt", $server . "_" .$job->id(). "_error.txt");
 		report("shell process created", 1);
 		$ssh = $proc->runShell();
 		report("running shell", 1);
@@ -307,6 +307,7 @@ Class QueueManager {
 		return $job;
 	}
 
+
 	function cleanUpFileServer($job) {
 		report("cleaning up file server", 1);
 		$server = $job->server();
@@ -415,7 +416,9 @@ Class QueueManager {
 				continue;
 			
 			// Check if Huygens host is reachable
-			$proc = newExternalProcessFor($job->server(), $job->server() . "_out.txt", $job->server() .  "_" .$job->id(). "_error.txt");
+			$proc = newExternalProcessFor($job->server(),
+                                $job->server() . "_" .$job->id() . "_out.txt",
+                                $job->server() . "_" .$job->id(). "_error.txt");
 			if (!$proc->ping())
 				continue;
 			
@@ -438,7 +441,10 @@ Class QueueManager {
 			
 			// Notify user
 			$startTime = $queue->startTime($job);
-                        $errorFile = $logdir . "/" . $job->server() .  "_" .$job->id(). "_error.txt";
+                        $errorFile = $logdir . "/" . $job->server() .
+                            "_" .$job->id(). "_error.txt";
+                        $logFile = $logdir . "/" . $job->server() .
+                            "_" .$job->id(). "_out.txt";
 			// TODO add warning messages notification
 			if (!$resultSaved || $errorOccured) {
 				report("finishing job " . $desc->id() . " with error on " . $job->server(), 1);
@@ -452,13 +458,28 @@ Class QueueManager {
                                     $message .= "\nNo result file stored in the destination directory.\n";
                                 }
 				if (file_exists($errorFile))
-					$message .= "\n\n- HUYGENS REPORT (stderr) --------------------\n\n". file_get_contents($errorFile);
-				if ($send_mail) $this->notifyError($job, $message, $startTime);
-				if (file_exists($errorFile))
-					unlink($errorFile);	
+                                    $message .= "\n\n- HUYGENS ERROR REPORT (stderr) --------------\n\n". file_get_contents($errorFile);
+                                if (file_exists($logFile))
+                                    $message .= "\n\n- HUYGENS REPORT (stdout) --------------------\n\n". file_get_contents($logFile);
+				if ($send_mail) 
+                                    $this->notifyError($job, $message, $startTime);
+
+                                // TODO: copy log files to fileserver using the
+                                // same name as the output result.
+                                if (file_exists($errorFile)) {
+                                    $gFile = $logdir . "/" . $job->server() .
+                                    "_error.txt";
+                                    # Accumulate error logs
+                                    exec ("echo \"$errorFile\" >> \"$gFile\"");
+                                    unlink($errorFile);	
+                                }
+
+				if (file_exists($logFile))
+					unlink($logFile);	
 			}
 			else {
-				report("job " . $desc->id() . " completed on " . $job->server(), 1);
+				report("job " . $desc->id() . 
+                                        " completed on " . $job->server(), 1);
 				// Report information to statistics table
 				$db = new DatabaseConnection();
 				$db->updateStatistics($job, $startTime);
@@ -466,12 +487,15 @@ Class QueueManager {
 				$this->cleanUpFileServer($job);
 				// Reset server and remove job from the job queue (update database) 
 				$this->stopTime = $queue->stopJob($job);
+				$this->writeParameterFile($job, $startTime,
+                                        $logFile, $errorFile);
 				// Write email
-				$this->writeParameterFile($job, $startTime);
 				if ($send_mail) $this->notifySuccess($job, $startTime);
 				if (file_exists($errorFile)) { 
 				    unlink($errorFile);
 				} 
+				if (file_exists($logFile))
+					unlink($logFile);	
 				// make withdrawal of hours
 				if ($use_accounting_system) $this->makeWithdrawal($desc->owner(), $accounting_client_name, $startTime, $this->stopTime, $desc->credit(), $desc->group);
 			}
@@ -537,7 +561,7 @@ Class QueueManager {
 					// remove job
 					$this->stopTime = $queue->stopJob($job);
 					// write email
-					$this->writeParameterFile($job, $startTime);
+					$this->writeParameterFile($job, $startTime, $logFile, $errorFile);
 					if ($send_mail) $this->notifySuccess($job, $startTime);
 					//if (file_exists($errorFile)) { 
 					//    unlink($errorFile);
@@ -565,7 +589,7 @@ Class QueueManager {
 		report("created transaction: $message", 1);
 	}
 
-	function writeParameterFile($job, $startTime) {
+	function writeParameterFile($job, $startTime, $logFile, $errorFile) {
 		global $resultImagesOwnedByUser;
                 global $imageProcessingIsOnQueueManager;
 		$result = False;
@@ -573,18 +597,30 @@ Class QueueManager {
 		$sourceFileName = $desc->sourceImageNameWithoutPath();
 		$destFileName = $desc->destinationImageNameWithoutPath();
 		$text = '';
-		$text = $text . "Your job started at $startTime and finished at " . date("Y-m-d H:i:s") . ". ";
-		$text = $text . "The image \n$sourceFileName\nhas been successfully treated by Huygens.\n";
-		$text = $text . "You will find the resulting image ($destFileName) in your destination folder.\n";
+		$text = $text . "Your job started at $startTime and finished".
+                    " at " . date("Y-m-d H:i:s") . ".\n\n";
+		$text = $text . "The image $sourceFileName has been ".
+                    "successfully treated by Huygens.\n\n";
+                $text = $text . "You will find the resulting image ".
+                    "($destFileName) in your destination folder.\n";
 		$text = $text . $this->parameterText($job);
 		$imageName = $desc->destinationImageName();
 		$user = $desc->owner();
 		$username = $user->name();
 		$fileserver = new Fileserver($username);
 		$path = $fileserver->destinationFolderFor($desc);
-		if (file_exists($path . $imageName . '.txt')) {
+
+                if (file_exists($errorFile))
+                    $text .= "\n\n- HUYGENS ERROR REPORT (stderr) --------------\n\n". file_get_contents($errorFile);
+                if (file_exists($logFile))
+                    $text .= "\n\n- HUYGENS REPORT (stdout) --------------------\n\n". file_get_contents($logFile);
+
+                $parameterFileName = $path . $imageName . '.log.txt';
+
+                // Why (over)writing this file only if it already exists? Make
+                // it true by now to always write it:
+		if (True || file_exists($parameterFileName)) {
 			//$parameterFileName = $path . '/' . $imageName . '.txt';
-			$parameterFileName = $path . $imageName . '.txt';
 			$file = fopen($parameterFileName, "w");
 			$result = !$result && (fwrite($file, $text) > 0);
 			fclose($file);

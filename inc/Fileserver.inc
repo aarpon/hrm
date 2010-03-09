@@ -1383,15 +1383,19 @@ echo '</body></html>';
 
       $dir = dirname($pdest."/".$file);
       $base = basename($pdest."/".$file);
-      $dirp = $dir."/hrm_previews/".$base;
+      $prevBase = $dir."/hrm_previews/".$base;
+
+      $fileBase = $dir."/".$base;
+      $path_info = pathinfo($fileBase);
+      $fileBase = $dir."/".$path_info['filename'];
 
       // Available views
       $path = array();
-      $test = $dirp.".".$size."_xy.jpg";
+      $test = $prevBase.".".$size."_xy.jpg";
       if (file_exists($test)) {
           $path['MIP'] = $test;
       }
-      $test = $dirp.".sfp.jpg";
+      $test = $prevBase.".sfp.jpg";
       if (file_exists($test)) {
           $path['SFP'] = $test;
       }
@@ -1404,7 +1408,7 @@ echo '</body></html>';
           $path['tSeries'] = $test[0];
       }
 
-      $test =  $dirp.".stack.avi";
+      $test =  $prevBase.".stack.avi";
       if (file_exists($test)) {
           $path['stackMovie'] = $test;
           $movie['stackMovie'] = $file.".stack.avi";
@@ -1423,6 +1427,15 @@ echo '</body></html>';
           $msize['tSeriesSfpMovie'] = round(filesize($test) / 1024.0);
       }
 
+      $test = $fileBase.".log.txt";
+      if (file_exists($test)) {
+          $path['log'] = $test;
+      }
+
+      $test = $fileBase.".history.txt";
+      if (file_exists($test)) {
+          $path['history'] = $test;
+      }
 
       $desc['MIP'] = "MIP";
       $desc['SFP'] = "SFP";
@@ -1433,6 +1446,9 @@ echo '</body></html>';
       $desc['tSeriesMovie'] = "series movie";
       $desc['tSeriesSfpMovie'] = "series SFP movie";
 
+      $desc['history'] = "history";
+      $desc['log'] = "log";
+
       $tip['MIP'] = "Compare Maximum Intensity Projections";
       $tip['SFP'] = "Compare Simulated Fluorescence renderings";
       $tip['stack'] = "Browse along the Z-planes";
@@ -1442,6 +1458,8 @@ echo '</body></html>';
       $tip['tSeriesMovie'] = "Download time series MIP movie<br>(".$msize['tSeriesMovie']." kB)";
       $tip['tSeriesSfpMovie'] = "Download time series SFP movie<br>(".$msize['tSeriesSfpMovie']." kB)";
 
+      $tip['history'] = "See the image restoration history, the executed Huygens - Tcl commands.";
+      $tip['log'] = "See the image restoration log file";
 
 
       $link = "file_management.php?compareResult=".rawurlencode($file).
@@ -1518,13 +1536,19 @@ echo '</body></html>';
       echo "</div>\n";
       echo "</div>\n";
       echo "<div id=\"previewContents\">\n";
-      echo "<div id=\"previewImg\">\n";
 
       if ($mode == "stack" || $mode == "tSeries" ) {
           $this->viewStrip( $file, "$mode.compare", "dest", true );
+          echo "<div id=\"previewImg\">\n";
           echo "<center>Original - Restored<br>(drag scrollbar for browsing)</center>";
+      } else if ( $mode == "log" || $mode == "history" ) {
+          echo "<div id=\"logFile\">\n";
+          print "<pre>";
+          readfile ($path[$mode]);
+          print "</pre>";
       } else {
 
+      echo "<div id=\"previewImg\">\n";
       echo "\n<table>\n<tr>\n";
 
       echo "<td>Original</td><td>Restored</td>\n</tr>\n<tr>";
