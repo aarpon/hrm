@@ -384,7 +384,7 @@ if ($_SESSION['user']->name() != "admin") {
           <h3>Quick help</h3>
 
           <p><strong>Placing the mouse pointer over the various icons will display a
-          tooltip with explanations.</strong><p>
+          tooltip with explanations.</strong></p>
     
           <p><strong>For a more detailed explanation on the possible actions, please follow the
           <img src="images/help.png" alt="Help" width="22" height="22" /> <b>Help</b> 
