@@ -129,7 +129,8 @@ include("header.inc.php");
 				  <img alt="Users" src="./images/users_disabled.png" />
 				</td>
 				<td class="text"><div class="cell">
-                  <p />User management through the HRM is disabled.
+                  <p>User management through the HRM is disabled.
+                  </p></div>
 			    </td>
 
 			  <?php
