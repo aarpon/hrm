@@ -46,8 +46,11 @@ function release() {
         }
         
     }
-    document.forms["select"].elements["geometry"].style.color = "black";
-    document.forms["select"].elements["channels"].style.color = "black";
+
+    var element = document.getElementById('geometry');
+    element.style.color = 'black';
+    var element = document.getElementById('channels');
+    element.style.color = 'black';
 }
 
 function forceGeometry() {
@@ -81,7 +84,9 @@ function fixGeometry(geometry) {
                 e.checked = true;
         }
     }
-    document.forms["select"].elements["geometry"].style.color = "grey";
+
+    var element = document.getElementById('geometry');
+    element.style.color = 'grey';
 }
 
 function fixChannels(channels) {
@@ -93,7 +98,8 @@ function fixChannels(channels) {
                 e.checked = true;
         }
     }
-    document.forms["select"].elements["channels"].style.color = "grey";
+    var element = document.getElementById('channels');
+    element.style.color = 'grey';
 }
 
 function fixGeometryAndChannels(geometry, channels) {
