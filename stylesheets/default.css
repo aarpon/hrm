@@ -974,7 +974,6 @@ option.default {
     overflow: auto;
     max-width: 98%;
     padding: 1em;
-    float: center;
 }
 #previewImg {
     text-align: center;
