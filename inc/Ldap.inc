@@ -79,16 +79,29 @@ Class Ldap {
 	if ( empty( $userPassword ) ) {
 	  return false;
 	}
+
+	// Searching for user $uid
+    $filter = "(uid=" . $uid . ")";
+	$searchbase = $ldap_user_search_DN . "," . $ldap_root;
+	$sr = @ldap_search( $this->connection, $searchbase, $filter, array('uid') );
+	if ( !$sr ) {
+	  return false;
+	}
+	if ( @ldap_count_entries( $this->connection, $sr ) != 1 ) {
+	  return false;
+	}
 	
-	// Create the dn	  
-	$dn = "uid=" . $uid . ", " .$ldap_user_search_DN . "," . $ldap_root;
-	
-	// Bind the user (and not the manager)
-	$r = @ldap_bind( $this->connection, $dn, $userPassword );
-    if ( $r ) {
-  	  return true;
-    }
-    return false;
+	// Now we try to bind with the found dn
+	$result = @ldap_get_entries( $this->connection, $sr );
+	if ( $result[ 0 ] ) {
+	  if (@ldap_bind( $this->connection, $result[0]['dn'], $userPassword ) ) {
+		return true;
+	  } else {
+		return false;
+	  }
+	} else {
+	  return false;
+	}
   }
 
   public function getGroup( $uid ) {
@@ -130,5 +143,4 @@ Class Ldap {
   }
   
 }
-
 ?>
