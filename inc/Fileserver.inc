@@ -180,6 +180,43 @@ Class Fileserver {
         return $files;
     }
   }
+
+  // A wrapper around the different functions to list files or certain type.
+  function filesOfType( $format ) {
+
+        if ($format == "ics") {
+            $files = $_SESSION['fileserver']->files("ics");
+        }
+        else if ($format == "tiff" || $format == "tiff-single") {
+            $files = $_SESSION['fileserver']->tiffFiles();
+        }
+        else if ($format == "tiff-series") {
+            $files = $_SESSION['fileserver']->tiffSeriesFiles();
+        }
+        else if ($format == "tiff-leica") {
+            $files = $_SESSION['fileserver']->tiffLeicaFiles();
+        }
+        else if ($format == "stk") {
+            //if ($geometry->value() == "XY - time" || $geometry->value() ==
+            //"XYZ - time") {
+            if ($_SESSION['setting']->isTimeSeries()) {
+                $files = $_SESSION['fileserver']->stkSeriesFiles();
+            }
+            else {
+                $files = $_SESSION['fileserver']->stkFiles();
+            }
+            //}
+            //else {
+            //  $files = $_SESSION['fileserver']->files("stk");
+            //}
+        }
+        else {
+            $files = $_SESSION['fileserver']->files();
+        }
+
+        return $files;
+
+  }
   
   // Answer all files under the users image folder. Searches
   // subdirectories recursively. 

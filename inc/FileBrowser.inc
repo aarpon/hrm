@@ -7,13 +7,10 @@
 // Copyright: Montpellier RIO Imaging (CNRS)
 
 // contributors :
-// 	     Pierre Travo	(concept)
-// 	     Volker Baecker	(concept, implementation)
 // >         Jose Viña          (file browser tools)
 
 // email:
-// 	pierre.travo@crbm.cnrs.fr
-// 	volker.baecker@crbm.cnrs.fr
+// 	jose@svi.nl
 
 // Web:     www.mri.cnrs.fr
 
@@ -52,13 +49,18 @@
 // The fact that you are presently reading this means that you have had 
 // knowledge of the CeCILL license and that you accept its terms.
 
+
+
+
+
 // This file is used to generate an image file browser in certain HRM tools,
 // like in estimate_snr_from_image.php or file_management.php. When a file
 // browser must be combined in a more complex page, like in select_image.php,
 // this can not be so easily used. This is an interface to Fileserver.inc.
 
+
 //!---------------------------------------------------------
-// @class    fileButton
+// @function fileButton
 // @desc     Generates some basic buttons to be used with the file browser,
 //           dependending on the tool needs.
 //!---------------------------------------------------------
@@ -88,9 +90,11 @@ function fileButton ($type) {
             $img = "images/upload.png";
             $validExtensions = 
                 $_SESSION['fileserver']->getValidArchiveTypesAsString();
-            $onClick = "uploadImages('$maxFile', '$maxPost', '$validExtensions')";
+            $onClick = "uploadImages('$maxFile', '$maxPost', ".
+                "'$validExtensions')";
             $alt = "Upload";
-            $tip = 'Upload a file (or a compressed archive of files) to the server';
+            $tip = 'Upload a file (or a compressed archive of files) to the '.
+                'server';
             break;
 
 
@@ -131,22 +135,22 @@ function fileButton ($type) {
             onmouseover=\"Tip('$tip')\" onmouseout=\"UnTip()\" />";
     }
 
-    # $ret = "<div class=\"fileBrowserButton\">".$ret."</div>";
-
     return $ret;
 
 }
 
+
+
 // This tool requires setting some configuration parameters, that are defined
 // in the code that includes this script.
 
-// fileserver related code
+// FileServer related code:
 if (!isset($_SESSION['fileserver'])) {
-  # session_register("fileserver");
-  $name = $_SESSION['user']->name();
-  $_SESSION['fileserver'] = new Fileserver($name);
+    $name = $_SESSION['user']->name();
+    $_SESSION['fileserver'] = new Fileserver($name);
 }
 
+// Refresh the directory listing:
 if (isset($_POST['update'])) {
     if ($browse_folder == "src") {
         $_SESSION['fileserver']->updateAvailableFiles();
@@ -156,73 +160,63 @@ if (isset($_POST['update'])) {
 }
 
 
+// JavaScript
 $script = "settings.js";
 
 if (!isset($operationResult)) {
     $operationResult = "";
 }
 
+// There are two possible main folders for the user to inspect: one for the
+// source (src) images, another for the result images (dest).
+
 // $browse_folder can be 'src' or 'dest'.
 if ($browse_folder == "src") {
 
+    // Files can be restricted to a certain image type only, or to all.
+
     if (!isset($restrictFileType) || $restrictFileType === false ) {
+        // Show all image files.
+
         $_SESSION['fileserver']->setDefaultImageExtensions(array());
-        // In certain conditions (e.g. the SNR estimator) we want to list all
-        // subimages.
         if (isset($expandSubImages) && $expandSubImages ) {
+            // In certain conditions (e.g. the SNR estimator) we want to list
+            // all subimages that every file may contain.
             $_SESSION['fileserver']->expandSubImages(true);
         } else {
-        // In the file manager we want to treat files as such, not listing
-        // subimages.    
+            // In the file manager we want to treat files as such, not listing
+            // subimages.
             $_SESSION['fileserver']->expandSubImages(false);
         }
         $files = $_SESSION['fileserver']->files();
+
     } else {
 
-        $fileFormat = $_SESSION['setting']->parameter("ImageFileFormat");
-        $extensions = $fileFormat->fileExtensions();
-        $_SESSION['fileserver']->setImageExtensions($extensions);
+        // Show files of one image type only.
 
-        if ($fileFormat->value() == "ics") {
-            $files = $_SESSION['fileserver']->files("ics");
-        }
-        else if ($fileFormat->value() == "tiff" || $fileFormat->value() == "tiff-single") {
-            $files = $_SESSION['fileserver']->tiffFiles();
-        }
-        else if ($fileFormat->value() == "tiff-series") {
-            $files = $_SESSION['fileserver']->tiffSeriesFiles();
-        }
-        else if ($fileFormat->value() == "tiff-leica") {
-            $files = $_SESSION['fileserver']->tiffLeicaFiles();
-        }
-        else if ($fileFormat->value() == "stk") {
-            //if ($geometry->value() == "XY - time" || $geometry->value() == "XYZ - time") {
-            if ($_SESSION['setting']->isTimeSeries()) {
-                $files = $_SESSION['fileserver']->stkSeriesFiles();
-            }
-            else {
-                $files = $_SESSION['fileserver']->stkFiles();
-            }
-            //}
-            //else {
-            //  $files = $_SESSION['fileserver']->files("stk");
-            //}
-        }
-        else {
-            $files = $_SESSION['fileserver']->files();
-        }
+        $fileFormatParam = $_SESSION['setting']->parameter("ImageFileFormat");
+        $fileFormat = $fileFormatParam->value();
+        $extensions = $fileFormatParam->fileExtensions();
+        $_SESSION['fileserver']->setImageExtensions($extensions);
+        $files = $_SESSION['fileserver']->filesOfType($fileFormat);
+
     }
 } else {
+    // When listing results images, all types are shown.
     $files = $_SESSION['fileserver']->destFiles();
 }
 
 if ($multiple_files) {
+    // Allow multiple selection.
     $multiple = "multiple=\"multiple\"";
 } else {
     $multiple = "";
 }
 
 if ($files != null) {
+
+    // JavaScript code to show image thumbnails when the user clicks some file
+    // in the list.
 
     $generatedScript = "
 function imageAction (list) {
@@ -239,30 +233,36 @@ function imageAction (list) {
         window.lastShownIndex = -1;
     }
 
-    var snew = 0;
+    var selectedNew = 0;
 
     count = 0;
+
+    // Compare last selection with the current one, to find which file has been
+    // selected or deselected.
+
     for (i=0; i<list.options.length; i++) {
         if (list.options[i].selected) {
             if( undefined === window.lastSelectedImgsKey[i] ){
                 // New selected item
-                snew = 1;
+                selectedNew = 1;
                 n = i;
             }
             count++;
         }
     }
 
-    if (snew == 0) {
-        // deselected image
+    if (selectedNew == 0) {
+        // If nothing was selected, it means that the click deselected an image
         for (i=0; i<window.lastSelectedImgs.length; i++) {
             key = window.lastSelectedImgs[i];
             if ( !list.options[key].selected ) {
-                snew = -1
-                    n = key;
+                selectedNew = -1;
+                n = key;
             }
         }
     }
+
+    // Remember the current selection for the next user interaction.
 
     window.lastSelectedImgs = [];
     window.lastSelectedImgsKey = [];
@@ -279,6 +279,8 @@ function imageAction (list) {
         window.previewSelected = -1;
     }
 
+    // Show image preview of the last clicked element in the list:
+
     var val = list[n].value;
 
     if ( n == window.lastShownIndex ) {
@@ -289,6 +291,10 @@ function imageAction (list) {
     switch ( val )
     {
 ";
+
+    # Generate at case for each of the available files, so that the
+    # correspondent thumbnail and information is shown when the user clicks on
+    # an image.
 
     foreach ($files as $key => $file) {
         $generatedScript .= "
@@ -306,7 +312,8 @@ function imageAction (list) {
 ";
 }
 
-// The form is enabled only if files are available.
+// The form is enabled only if files are available, otherwise there's nothing
+// to operate with.
 $flag = "";
 if ($files == null) $flag = " disabled=\"disabled\"";
 
@@ -314,11 +321,12 @@ include("header.inc.php");
 
 
 
+// HTML CODE:
 ?>
+
     <div id="nav">
         <ul><?php echo $top_navigation; ?></ul>
     </div>
-
 
 
     <div id="content" >
@@ -338,6 +346,7 @@ include("header.inc.php");
         <div id="userfiles" onmouseover="showPreview()">
           <select onchange="javascript:imageAction(this)" onkeyup="this.blur();this.focus();" name="userfiles[]" size="<?php echo $size;?>" <?php echo $multiple.$flag ?>>
           <?php
+          // Populate the select field with the list of available images:
 
           if ($files != null) {
               foreach ($files as $key => $file) {
@@ -383,6 +392,7 @@ include("header.inc.php");
 
     <div id="message">
 <?php
+     // Display any message coming from lower instances.
 
      echo $message;
 
