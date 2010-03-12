@@ -469,8 +469,8 @@ Class User extends Owner{
       case "LDAP":
 
         $ldap = new Ldap();
-        $user_data = $ldap->loadUser($this->name());
-        $result =  $user_data['mail'];
+        $result = $ldap->emailAddress($this->name());
+        return $result;
         break;
 
       case "ACTIVE_DIR":
@@ -579,7 +579,9 @@ Class User extends Owner{
 
       case "LDAP":
 
-    	$result = $this->defaultGroupName();
+        $ldap = new Ldap();
+        $result = $ldap->getGroup($this->name());
+        return $result;
         break;
 
       case "ACTIVE_DIR":
@@ -613,10 +615,7 @@ Class User extends Owner{
   	$db = new DatabaseConnection();
   	$db->updateLastAccessDate($this->name());
   }
-  
-  function defaultGroupName() {
-  	return 'hrm';
-  }
+
 } 
 
 
