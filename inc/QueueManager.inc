@@ -288,7 +288,7 @@ Class QueueManager {
 				$foundExecutableJob = True;
 			} else {
                                 $src = $fileserver->sourceFolder();
-                                $dest = $fileserver->destionationFolder();
+                                $dest = $fileserver->destinationFolder();
                                 report("fileserver not reachable: $src or $dest".
                                 "do not exist", 2);
 				$pausedJobs = True;
