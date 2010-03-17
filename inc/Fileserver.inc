@@ -67,7 +67,7 @@ Class Fileserver {
   var $imageExtensions;       // @var imageExtensions  Array      File extensions indicating an image file  
   var $selectedFiles;         // @var selectedFiles    Array      Files actually selected to be processed
 
-  var $validImageExtensions =  array("tif", "tiff", "stk", "lsm", "ims", "pic", "ome", "lif", "ics", "dv", "h5" );
+  var $validImageExtensions =  array("tif", "tiff", "stk", "lsm", "ims", "pic", "ome", "lif", "ics", "dv", "h5", "zvi" );
 
   var $validImageExtensionsExtras =  array("ids", "ids.gz");
 
