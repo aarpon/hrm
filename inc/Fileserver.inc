@@ -1469,10 +1469,18 @@ echo '</body></html>';
           $path['log'] = $test;
       }
 
+      // Old history filename didn't contain image type extension.
       $test = $fileBase.".history.txt";
       if (file_exists($test)) {
           $path['history'] = $test;
       }
+
+      // New filename for history includes the file destination extension.
+      $test = $pdest."/".$file.".history.txt";
+      if (file_exists($test)) {
+          $path['history'] = $test;
+      }
+
 
       $desc['MIP'] = "MIP";
       $desc['SFP'] = "SFP";
