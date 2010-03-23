@@ -132,12 +132,15 @@ Class JobQueue {
     return $result;
   } 
 
-  function markJobsAsRemoved($ids) {  
+  function markJobsAsRemoved($ids, $owner) {  
     $result = True;
     if (count($ids)==0) return $result;
     $db = new DatabaseConnection();
     foreach($ids as $id) {  
         // loop through all the jobs selected, which have to be deleted
+        if ( $owner != "admin" && $db->getJobOwner($id) != $owner ) {
+            continue;
+        }
         $result = $result && $db->markJobAsRemoved($id);   
 
         // The front end should NOT try to kill the job, it may not work. The

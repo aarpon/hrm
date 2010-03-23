@@ -787,6 +787,7 @@ Class DatabaseConnection {
     $query = "SELECT id
     FROM job_queue, job_files
     WHERE job_queue.id = job_files.job AND job_queue.username = job_files.owner
+    AND job_queue.status = 'queued'
     ORDER BY job_queue.priority desc, job_queue.status desc, job_files.file desc";
     $result = $this->queryLastValue($query);
     if (!$result) {
@@ -1035,6 +1036,13 @@ Class DatabaseConnection {
   	$result = $this->queryLastValue($query);
   	return $result;
   }
+
+  function getJobOwner($id) {
+  	$query = "select username from job_queue where id = '" . $id . "'";
+  	$result = $this->queryLastValue($query);
+  	return $result;
+  }
+ 
   
   function now() {
     $query = "select now()";
@@ -1049,7 +1057,9 @@ Class DatabaseConnection {
   }
   
   function updateMail($userName, $email) {
-  	$result = $this->execute("UPDATE username SET email = '". $email ."' WHERE name = $userName");
+  	$cmd = "UPDATE username SET email = '". $email ."' WHERE name = '".$userName."'";
+        die($cmd);
+  	$result = $this->execute($cmd);
   	return $result;
   }
   
