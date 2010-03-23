@@ -190,9 +190,7 @@ Class ExternalProcess {
     } 
 
   function read() {
-    $answer = '';
-    $answer = $answer . fgets($this->pipes[1], 2048);      
-    return $answer;
+    return fgets($this->pipes[1], 2048);      
   } 
 
   function runHuygensScript($scriptName) {
@@ -204,7 +202,7 @@ Class ExternalProcess {
       fseek($this->out_file, 0, SEEK_END);
       
       $this->execute($command);
-      sleep(5);
+      sleep(1);
       $found = False;
       while(!$found) {
           // TODO refactor

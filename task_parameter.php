@@ -197,13 +197,7 @@ $helpQmle = $helpHeader .
        <p>The <b>background</b> is the intensity to be removed during the
        restoration, to increase contrast.
 
-        <p>The first <b>stopping criterium</b> reached will stop the
-        restoration.</p>
-
-        <p><span class=\"superscript\">(*)</span>
-        The field <strong>number of
-        iterations</strong> can accept multiple values, separated by spaces.
-        </p>
+       <p>The iterations stop automatically.</p>
         ";
 
 
@@ -711,14 +705,22 @@ for ($i=0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
 
 }
 
+$visibility = " style=\"display: none\"";
+if ($selectedMode == "cmle") {
+  $visibility = " style=\"display: block\"";
+  $info = $helpCmle;
+}
+
 ?>
                     </div>
                     
                 </div>
                 
             </fieldset>
-            
-            <fieldset class="setting" <?php contextHelp("stop", $helpStopCrit); ?>>  <!-- stopping criteria -->
+
+            <div id="cmle-it" <?php echo $visibility ?>>
+
+            <fieldset class="setting" <?php contextHelp("stop", $helpStopCrit);?>>  <!-- stopping criteria -->
             
                 <legend>
                     stopping criteria
@@ -749,6 +751,7 @@ if ($parameter->isTrue()) {
   }
 }
 
+
 ?>
                     <input name="NumberOfIterations" type="text" size="8" value="<?php echo $value ?>" />
                     
@@ -774,6 +777,7 @@ if ($parameter->value() != null) {
                 </div>
                 
             </fieldset>
+            </div>
             
             <div><input name="OK" type="hidden" /></div>
             

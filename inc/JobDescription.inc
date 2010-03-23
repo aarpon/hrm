@@ -15,7 +15,7 @@
 
 // Web:     www.mri.cnrs.fr
 
-// huygens remote manager is a software that has been developed at 
+// huygens remote manager is a software that  has been developed at 
 // Montpellier Rio Imaging (mri) in 2004 by Pierre Travo and Volker 
 // Baecker. It allows running image restoration jobs that are processed 
 // by 'Huygens professional' from SVI. Users can create and manage parameter 
@@ -837,6 +837,394 @@ Class JobDescription {
     return $result;
   } 
 
+  // Return a single value parameters as a Tcl list for all channels. Since
+  // verssion 3.5 of Huygens, many parameters that where global before, can be
+  // now defined per channel, like the NA.
+  function getParamAsChannelTclList ( $setting, $param, $translate = false, 
+          $withQuotes = false ) {
+      if ( $translate ) {
+          $values = $setting->parameter($param)->translatedValue();
+      } else {
+          $values = $setting->parameter($param)->value();
+      }
+      $chanCnt = $setting->numberOfChannels();
+      $retList = "";
+      $quote == "";
+      if ( $withQuotes ) { 
+          $quote = "\"";
+      }
+      if ( is_array($values) ) {
+          $sep = "";    
+          foreach  ($values as $item) {
+              $retList .= $sep.$quote.$item.$quote;
+              $sep = " ";
+          }
+      } else {
+          for ($i = 0; $i < $chanCnt; $i ++ ) {
+              $retList .= $sep.$quote.$values.$quote;
+              $sep = " ";
+          }
+      }
+      $retList = trim($retList);
+      return "{ $retList }";
+  }
+
+
+
+  // Return an array of parameters from a setting as a Tcl list. Elements are
+  // optionally enclosed in quotes.
+  function getParamAsTclList ( $setting, $param, $withQuotes = false ) {
+      $values = $setting->parameter($param)->value();
+      $retList = "";
+      $quote == "";
+      if ( $withQuotes ) { 
+          $quote = "\"";
+      }
+      if ( is_array($values) ) {
+          $sep = "";    
+          foreach  ($values as $item) {
+              $retList .= $sep.$quote.$item.$quote;
+              $sep = " ";
+          }
+      } else {
+          $retList = $values;
+      }
+      $retList = trim($retList);
+      return "{ $retList }";
+  }
+
+  function getEmptyParameterList ($parameterSetting) {
+
+      $chanCnt = $parameterSetting->numberOfChannels();
+      $retList = "";
+      $sep = "";    
+      for ($i = 0; $i < $chanCnt; $i++ ) {
+          $retList .= $sep."(ignore)";
+          $sep = " ";
+      }
+      return "{ $retList } ";
+
+  }
+
+  function appendScriptParameters() {
+      global $resultImagesOwnedByUser, $huygens_group ;
+      global $useThumbnails;
+      global $movieMaxSize, $saveSfpPreviews, $maxComparisonSize;
+
+      $micr = $this->parameterSetting;
+      $decon = $this->taskSetting;
+
+      $data['jobID'] = $this->id;
+
+      // File parameters -------------------------------------------------
+
+      // The file may be in a subdirectory of the source folder.
+      $imageFileName = $this->sourceImageName();
+      $dirname = dirname($imageFileName);
+      $basename = basename($imageFileName);
+
+      $data['inputDir'] = "\"$dirname\"";
+      $data['inputFile'] = "\"$basename\"";
+      // But reporting goes always to the root of the source folder.
+      $data['reportDir'] = "\"".$this->sourceFolder()."\"";
+
+      $dstFileName = $this->destinationImageFullName();
+      $dirname = dirname($dstFileName);
+      $basename = basename($dstFileName);
+
+      $oFileFormat = $decon->parameter('OutputFileFormat');
+      $type = $oFileFormat->translatedValue();
+      $extension = $oFileFormat->extension( );
+
+      $data['outputDir'] = "\"$dirname\"";
+      $data['outputFile'] = "\"$basename.$extension\"";
+      $data['outputType'] = $type;
+
+      $data['seriesOption'] = "auto";
+
+      $formatParam = $micr->parameter('ImageFileFormat');
+      $format = $formatParam->value();
+
+      if ($format == "tiff" || $format == "tiff-single") {
+          // Olympus FluoView, or single XY plane: always
+          $data['seriesOption'] = "off";
+      }
+
+      $data['isTimeSeries'] = 1;
+
+      if (!$micr->isTimeSeries()) {
+          $data['isTimeSeries'] = 0;
+          if ($format == "stk") {
+              // Metamorph: if not time series
+              $data['seriesOption'] = "off";
+          }
+      }
+
+      $data['isThreeDimensional'] = 0;
+      if ($micr->isThreeDimensional()) {
+          $data['isThreeDimensional'] = 1;
+      }
+
+
+      // Microscopic parameters ------------------------------------------
+
+      // By now, force parameters from template. In the future, we can allow
+      // users to use some (those with value '-') or all parameters from each
+      // file metadata. For the latter, we can simply set this to 'metadata';
+      $data['parametersFrom'] = "template";
+
+
+      // Right now, microscope type is in the HRM a single value, but Huygens
+      // prefers since version 3.5 to have one value per channel.
+      $data['micr'] = 
+          $this->getParamAsChannelTclList($micr, 'MicroscopeType', true);
+
+      $data['dx'] = $micr->sampleSizeX();
+      $data['dy'] = $micr->sampleSizeY();
+      $data['dz'] = $micr->sampleSizeZ();
+      $data['dt'] = $micr->sampleSizeT();
+
+      // Right now, NA is in the HRM a single value, but Huygens prefers since
+      // version 3.5 to have one value per channel. The same for the r.i.
+      $data['na'] = $this->getParamAsChannelTclList($micr, 'NumericalAperture');
+
+      $data['ex'] = $this->getParamAsTclList($micr, 'ExcitationWavelength');
+      $data['em'] = $this->getParamAsTclList($micr, 'EmissionWavelength');
+
+      $data['pr'] = $this->getParamAsTclList($micr, 'PinholeSize');
+
+      if ( $data['micr'] != "nipkow" ) {
+          $data['ps'] = $this->getEmptyParameterList($micr);
+      } else {
+          $data['ps'] = $this->getParamAsTclList($micr, 'PinholeSpacing');
+      }
+
+
+      // Offsets a currently not used by HRM, but may be useful in the future
+      // for sticthing applications.
+      $data['offX'] = 0;
+      $data['offY'] = 0;
+      $data['offZ'] = 0;
+      $data['offT'] = 0;
+
+      // Excitation beam fill is an important parameter that affects the
+      // effective N.A., but most people don't know it. Leave it in a
+      // reasonable default value by now.
+      $data['exBeamFill'] = 2.0;
+
+      // Leave objective quality as 'perfect' for backwards compatibility, but
+      // in fact something else would produce better results, as most
+      // objectives very rarely are ideal.
+
+      // Notice that if this is not perfect, the orientation of the sample
+      // matters a lot, even if we deactivate S.A. correction: the PSF is not
+      // symmetrical anymore for imperfect objectives.
+      $data['objQuality'] = "perfect";
+
+      $data['ril'] =
+          $this->getParamAsChannelTclList($micr, 'ObjectiveType', true);
+      $data['ri'] =
+          $this->getParamAsChannelTclList($micr, 'SampleMedium', true);
+
+      // Number of photons could very well be a multichannel parameter!
+      // Currently, HRM treats the two photon as a microscope type, not as a
+      // channel parameter. You can make this parameter just a Tcl list to make
+      // it multiphoton.
+      if ($micr->isTwoPhoton()) {
+          $data['pcnt'] = 2;
+      } else {
+          $data['pcnt'] = 1;
+      }
+
+
+
+
+      // Restoration parameters ------------------------------------------
+
+      // Decide what to do with multichannel images: all in a go (all), or
+      // split and one by one (split).
+      $data['channelProcessing'] = "split";
+
+      $data['method'] = $decon->parameter('DeconvolutionAlgorithm')->value();
+      $data['sn'] = $this->getParamAsTclList($decon, 'SignalNoiseRatio');
+
+
+      if ( $data['method'] == "qmle" ) {
+          // For QMLE, the SNR values are given by keywords: replace them.
+          // No automatic estimation in this case by now.
+          $indexValues = array  (1, 2, 3, 4, 5);
+          $snrValues = array  ("low", "fair", "good", "inf", "auto");
+          $data['sn'] = str_replace($indexValues, $snrValues, $data['sn']);
+
+          // In the QMLE, there's no q parameter, but iteration mode.
+          $data['q'] = "-";
+          // Currently, the mode is automatic, so the iteration limit is
+          // disregarded.
+          $data['itMode'] = "auto";
+          $data['it'] = "10";
+      } else {
+          $data['itMode'] = "-";
+          $data['it'] = $this->getParamAsTclList($decon, 'NumberOfIterations');
+          $data['q'] =
+              $decon->parameter("QualityChangeStoppingCriterion")->value();
+      }
+
+      // Background level
+      $bgParam = $decon->parameter("BackgroundOffsetPercent");
+      $bgValue = $bgParam->value();
+      $internalValue = $bgParam->internalValue();
+      if ($bgValue[0] == "auto" || $internalValue[0] == "auto") {
+          $data['bgMode'] = "auto";
+          $data['bg'] = 0;
+      } else if ($value[0] == "object" || $internalValue[0] == "object") {
+          $data['bgMode'] = "object";
+          $data['bg'] = 0;
+      } else {
+          $data['bgMode'] = "manual";
+          $data['bg'] = $this->getParamAsTclList($decon, 'BackgroundOffsetPercent');
+      }
+
+      // Bleaching correction.
+      $data['blMode'] = "auto";
+
+
+
+      // Spherical Aberration (S.A.) correction
+
+      // The various S.A. correction options result in a different value for
+      // the -brMode deconvolution flag.
+      $constant = false;
+      $symmetrical = false;
+      $depth = 0;
+      $brMode = 'auto';
+
+      $SAcorr = $micr->getAberractionCorrectionParameters();
+
+      if ( $SAcorr[ 'AberrationCorrectionNecessary' ] == 1 ) {
+          if ( $SAcorr[ 'PerformAberrationCorrection' ] == 0 ) {
+              $brMode = 'one';
+              $constant = true;
+              $symmetrical = true;
+          } else {
+              $depth = $SAcorr[ 'PSFGenerationDepth' ];
+              if ( $SAcorr[ 'AberrationCorrectionMode' ] == 'automatic' ) {
+                  $brMode = 'auto';
+              } else {
+                  if ( $SAcorr[ 'AdvancedCorrectionOptions' ] == 'user' ) {
+                      $brMode = 'one';
+                      $constant = true;
+                  }
+                  if ( $SAcorr[ 'AdvancedCorrectionOptions' ] == 'slice' ) {
+                      $brMode = 'sliceBySlice';
+                  }
+                  if ( $SAcorr[ 'AdvancedCorrectionOptions' ] == 'few' ) {
+                      $brMode = 'few';
+                  }
+              }
+          }
+      }
+
+      $data['brMode'] = $brMode;
+
+      // S.A. correction requires knowing what is the position of the
+      // coverslip, and the orientation of the dataset. We don't need to mirror
+      // the stack, the orientation is an image parameter since Huygens 3.5.
+      $data['iFacePrim'] = $depth;
+
+      // When using a fixed PSF, the $depth is also the one to calculate it.
+      $data['psfDepth'] = $depth;
+
+      $coverslipPos = $micr->parameter('CoverslipRelativePosition')->value();
+      if ($coverslipPos == 'farthest' ) {
+          $data['imagingDir'] = "downward";
+      } else {
+          $data['imagingDir'] = "upward";
+      }
+
+      // Point Spread Function (PSF) -------------------------------------
+
+      $psfParam = $micr->parameter('PointSpreadFunction');
+      $psfType = $psfParam->value();
+      if ($psfType == "theoretical") {
+          if ($symmetrical) {
+              // A symmetrical PSF, no S.A. correction.
+              $data['psf'] = "theoretical-symmetrical";
+          } else {
+              if ($constant) {
+                  // Partial S.A. correction: asymmetrical PSF at a given
+                  // depth.
+                  $data['psf'] = "theoretical-fixed";
+              } else {
+                  // Variant PSF: better S.A. correction.
+                  $data['psf'] = "theoretical-variant";
+              }
+          }
+          $data['psfFile'] = "-";
+      } else {
+          $data['psf'] = "measured";
+          // A list of files, one per channel (or just one multichannel image)
+          $data['psfFile'] = $this->getParamAsTclList($micr, 'PSF', true);
+      }
+
+
+      // HRM parameters --------------------------------------------------
+
+      if ($resultImagesOwnedByUser) {
+          $data['imagesOwnedBy'] = $this->owner()->name();
+      } else {
+          $data['imagesOwnedBy'] = "-";
+      }
+      $data['imagesGroup'] = $huygens_group;
+
+      if ($useThumbnails) {
+          $data['useThumbnails'] = 1;
+      } else {
+          $data['useThumbnails'] = 0;
+      }
+
+      if ($saveSfpPreviews) {
+          $data['saveSfpPreviews'] = 1;
+      } else {
+          $data['saveSfpPreviews'] = 0;
+      }
+
+      $data['maxComparisonSize'] = $maxComparisonSize;
+      $data['movieMaxSize'] = $movieMaxSize;
+
+
+      // Build settings procedure ----------------------------------------
+
+
+      $s = "
+
+proc DefineScriptParameters {} {
+
+    global hrm
+
+    set hrm_list [list \\\n";
+
+    foreach ($data as $key => $val) {
+        $s .= "      $key $val \\\n";
+    }
+
+
+
+       $s .= "]
+
+    array set hrm \$hrm_list
+
+}
+
+
+# Start the job.
+HRMrun deconvolution
+";
+
+    return $s;
+
+
+    }
+
   function putScriptOn($script, $isOriginal = false ) {
     global $resultImagesOwnedByUser;
     global $huygens_group;
@@ -957,7 +1345,7 @@ Class JobDescription {
   */
   
   function loadImageString( $isOriginal = false ) {
-    global $useThumbnail;
+    global $useThumbnails;
     if ($this->mustReplaceSourceName()) { 
       $imageFileName = $this->newNameForSingleTif();
     } else { 
@@ -1249,6 +1637,10 @@ Class JobDescription {
       $files = $this->files();
       $result = $this->destinationFolder() . ereg_replace("^/", "", end($files));
       $result = substr($result, 0, strrpos($result, "."));
+      if ( $this->endsWithNumber($result) ) {
+          // Avoid output files ending in a number.
+          $result .= "_hrm";
+      }
     }
     else {
       $result = $this->destinationFolder() . $this->destinationImageName();

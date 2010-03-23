@@ -72,7 +72,7 @@ if (isset($_SERVER['HTTP_REFERER']) && !strstr($_SERVER['HTTP_REFERER'], 'job_qu
 
 if (isset($_POST['delete'])) {
   if (isset($_POST['jobs_to_kill'])) {
-    $queue->markJobsAsRemoved($_POST['jobs_to_kill']);
+    $queue->markJobsAsRemoved($_POST['jobs_to_kill'], $_SESSION['user']->name());
   }
 }
 else if (isset($_POST['update']) && $_POST['update']=='update') {
@@ -125,14 +125,18 @@ include("header.inc.php");
     <?php
     
         // Get the total number of jobs
-        $db = new DatabaseConnection();
-        $query = "SELECT COUNT(id) FROM job_queue;";
-        $row = $db->Execute( $query )->FetchRow( );
-        $allJobsInQueue = $row[ 0 ];
+        $rows = $queue->getContents();
+        $allJobsInQueue = count($rows);
+        $showStopTime = false;
         
         if ( $allJobsInQueue == 0 ) {
           echo "<li>There are no jobs in the queue.</li>";
         } else {
+            foreach ($rows as $r) {
+                if ($r['stop'] != "" ) {
+                    $showStopTime = true;
+                }
+            }
           if ( $allJobsInQueue == 1 ) {
             $str = 'is <strong>1 job</strong>';
           } else {
@@ -141,9 +145,10 @@ include("header.inc.php");
           echo "<li>There " . $str . " in the queue.</li>";
 
           if ($_SESSION['user']->name() != "admin")  {
-            $query = "SELECT COUNT(id) FROM job_queue WHERE username = '" . $_SESSION['user']->name( ) . "';";
-            $row = $db->Execute( $query )->FetchRow( );
-            $jobsInQueue = $row[ 0 ];
+              $db = new DatabaseConnection();
+              $query = "SELECT COUNT(id) FROM job_queue WHERE username = '" . $_SESSION['user']->name( ) . "';";
+              $row = $db->Execute( $query )->FetchRow( );
+              $jobsInQueue = $row[ 0 ];
 
             if ( $jobsInQueue == 0 ) {
               $str = '<strong>no jobs</strong>';
@@ -189,12 +194,12 @@ include("header.inc.php");
           <td class="created">created</td>
           <td class="status">status</td>
           <td class="started">started</td>
+          <?php if ($showStopTime) echo "<td class=\"stop\">end time</td>"; ?>
           <td class="pid">pid</td>
           <td class="server">server</td>
         </tr>
 <?php
 
-$rows = $queue->getContents();
 if (count($rows) == 0) {
   echo "                    <tr style=\"background: #ffffcc\"><td colspan=\"9\">The job queue is empty</td></tr>";
 }
@@ -252,6 +257,7 @@ else {
                         <td><?php echo $row['queued'] ?></td>
                         <td><?php echo $row['status'] ?></td>
                         <td><?php echo $row['start'] ?></td>
+                        <?php if ($showStopTime) echo "<td>".$row['stop']." </td>"; ?>
                         <td><?php echo $row['process_info'] ?></td> 
                         <td><?php echo $row['server'] ?></td> 		
                     </tr>

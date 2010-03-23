@@ -504,6 +504,10 @@ input.save {
     width: 15%;
 }
 
+#queue td.stop {
+    width: 15%;
+}
+
 #queue td.pid {
     width: 8%;
 }

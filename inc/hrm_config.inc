@@ -23,6 +23,11 @@ if ( $authenticateAgainst != "MYSQL" ) {
 // hide it from the configurable parameters. If true, users of the microscope
 // reservation system may have access to HRM as well
 $allow_reservation_users = false;
+
+// What HuCore script version to use:
+// 0: pre-1.3, custom made for every image.
+// 1: new script, with general procedures (requires Huygens 3.5.2).
+$useHuScriptVersion = 0;
  
 $version = 0;
 // Overrule options that do not apply.
@@ -31,6 +36,13 @@ if (isset ($enable_code_for_huygens) ) {
     if ( $version < 3030100 ) {
         $useThumbails = false;
     }
+
+    if ( $version >= 3050200 ) {
+        // Leave this deactivated by now (1.2.1) but activate for HRM 1.3
+        // $useHuScriptVersion = 1;
+    }
+
+
 } else {
     $useThumbails = false;
 }

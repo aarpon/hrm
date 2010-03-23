@@ -2763,7 +2763,7 @@ Class JobTaskSetting extends TaskSetting {
 			if ($value == "1")	$value = "low";
 			else if ($value == "2")	$value = "fair";
 			else if ($value == "3")	$value = "good";
-            else if ($value == "4")	$value = "inf";
+                        else if ($value == "4")	$value = "inf";
 			else			$value = "fair";
 		}
 		

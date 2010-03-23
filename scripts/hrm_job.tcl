@@ -1,5 +1,6 @@
-# TODO
-
+#TODO:
+# Report scaling factors
+# Generate symmetrical PSF
 
 # This file is part of Huygens Remote Manager.
 
@@ -62,20 +63,44 @@ proc ReportError { err } {
     huOpt printError $err
 }
 
+# Reporting the estimated end time requires Huygens Core 3.5.2p2 or higher.
 proc ReportEndTime { time } {
     global hrm
     global huygens
 
     # The end time of the deconvolution is not the end time of the job, as
     # normally image previews are also generated. Make it a bit longer.
-    set time [expr round ($time + 10 * $huygens(timer,pre)) ]
+    set ptime [expr round ($time + 10 * $huygens(timer,pre)) + 20 ]
 
     set now [Hu_timeStamp]
-    set finalDate [clock format $time -format {%Y-%m-%dT%H:%M:%S}]
-    Report "EstimatedEndTime: $time\
-        (+[expr round( $time - $huygens(timer,startTime) )]) $finalDate"
+    set deltaFromStart [expr round( $ptime - $huygens(timer,startTime) )]
+    set finalDate [clock format $ptime -format {%Y-%m-%d %H:%M:%S}]
+    Report "time $time, ptime $ptime"
+    Report "EstimatedEndTime: $ptime (+$deltaFromStart) $finalDate"
+
+    set rPath [ file join $hrm(reportDir) .EstimatedEndTime_$hrm(jobID)]
+
+    set fp [open $rPath "w"]
+    puts $fp $finalDate
+    close $fp
+
+}
 
 
+# In split multichannel deconvolution, we must keep count of the current
+# channel, as it won't be reported by the compute engine (that one always
+# deconvolves a channel 0 of a single image).
+proc SetTimerChannel { ch } {
+    global hrm
+    global huygens
+
+    if { $hrm(channelProcessing) == "split" && $hrm(chanCnt) > 1 } {
+        # Split channels deconvolution: at this point we know what channel we
+        # are deconvolving.
+        set huygens(timer,currentChannel) $ch
+    } elseif {  $hrm(chanCnt) == 1 } {
+        set huygens(timer,currentChannel) 0
+    }
 }
 
 proc MessageFilter { msg } {
@@ -83,17 +108,19 @@ proc MessageFilter { msg } {
     global huygens
 
 
-    if { [ string first "Classic MLE:" $msg ] > 0 || \
-         [ string first "Quick-MLE:" $msg ] > 0 } {
+    if { [ string first "Classic MLE:" $msg ] > -1 || \
+         [ string first "Quick-MLE:" $msg ] > -1 } {
       # New iterarion round, parse the coordinates:
       set chIt [ regexp {channel ([0-9]+)} $msg match ch ]
       set frIt [ regexp {frame ([0-9]+)} $msg match fr ]
       set brIt [ regexp {brick ([0-9]+) of (.+).?\.} $msg match br brRange ]
 
+
+
       if { $chIt } {
           set cCh $ch
       } else {
-          set cCh $hrm(currentChannel)
+          set cCh $huygens(timer,currentChannel)
       }
       set chMax $hrm(chanCnt)
 
@@ -185,7 +212,9 @@ proc MessageFilter { msg } {
       set huygens(timer,brMax) $brMax
 
       Report "Round $huygens(timer,rounds)/$expectedRounds: \
-          channel $cCh/$chMax frame $cFr/$frMax brick $cBr/$brMax"
+          channel $cCh/[expr $chMax -1]\
+          frame $cFr/[expr $frMax -1]\
+          brick $cBr/[expr $brMax -1]"
 
     }
 
@@ -226,14 +255,14 @@ proc MessageFilter { msg } {
                 set tPerBrick [expr $tPerIteration*($itMax - 1) + $timeFirstIt ]
             }
 
-            if { $cIt < 2 || [expr $cIt % 5] == 0 } {
+            if { $cIt < 5 || [expr $cIt % 5] == 0 } {
                 # Report estimate for the first iterations, and then every 5.
                 set tPerFrame [expr $tPerBrick * $huygens(timer,brMax) ]
                 set tPerChan [expr $tPerFrame * $hrm(frameCnt) ]
                 set totalTime [expr $tPerChan * $hrm(chanCnt) ]
 
                 set finalTime [expr $huygens(timer,startTime,0) + $totalTime]
-                Report "Iteration $cIt, time per it $tPerIteration"
+                Report "Iteration $cIt, time per it [format %.4f $tPerIteration]"
                 ReportEndTime $finalTime
             }
           }
@@ -333,6 +362,9 @@ proc ConfigureOriginalImage { img } {
     set hrm(chanCnt) [$img getdims -mode ch]
     set hrm(frameCnt) [$img getdims -mode t]
 
+    if { $hrm(chanCnt) < 1 } { set hrm(chanCnt) 1 }
+    if { $hrm(frameCnt) < 1 } { set hrm(frameCnt) 1 }
+
 }
 
 proc ConfigureResultImage { img } {
@@ -381,13 +413,21 @@ proc ConfigureResultImage { img } {
 
 }
 
-proc SaveImage { image destination filename { type hdf5 } {saveHistory 0} }  {
+proc SaveImage { image destination filename { type hdf5 } }  {
     global hrm
 
-    MakeOutDir $hrm(outputDir)
-
+    MakeOutDir $destination
 
     set path [file join $destination $filename]
+
+    if { [file exists $path] } {
+        if { ![file writable $path] } {
+            ReportError "Can't write to existing file $path"
+            FinishScript
+        }
+        Report "Overwriting existing file $path"
+    }
+
     set options "-type $type"
 
     if { [string first "tiff" $type] == 0 } {
@@ -395,19 +435,39 @@ proc SaveImage { image destination filename { type hdf5 } {saveHistory 0} }  {
     }
 
     if { [ catch { eval $image save "$path" $options } savedFile ] } {
-        ReportError "Problem saving image $image to $destination: $savedFile"
+        ReportError "Problem saving image $image to $path: $savedFile"
         FinishScript
     }
 
-    if { $saveHistory } {
-       if { [ catch { $image history -details -format txt \
-           -save "$path.history.txt" } err ] } {
-        ReportError "Problem saving image history to $destination: $err"
-       }
-    }
     return $savedFile
 
 }
+
+proc SaveImageHistory { image destination filename }  {
+    global hrm
+
+    MakeOutDir $destination
+
+    set path [file join $destination $filename]
+
+    if { [file exists $path] } {
+        if { ![file writable $path] } {
+            ReportError "Can't write to existing file $path"
+            FinishScript
+        }
+        Report "Overwriting existing file $path"
+    }
+
+    if { [ catch { 
+           $image history -details -format txt -save "$path"
+    } err ] } {
+        ReportError "Problem saving image history to $destination: $err"
+        return ""
+    }
+    return $path
+
+}
+
 
 
 proc SplitAndSaveChannels { image directory basename } {
@@ -420,7 +480,7 @@ proc SplitAndSaveChannels { image directory basename } {
     set files {}
     set i 0
     foreach chImg $channels {
-        set fname "${basename}.Ch$i"
+        set fname "${basename}.Ch$i.h5"
         set saved [SaveImage $chImg $directory $fname]
         lappend files $saved
         lappend hrm(deleteFiles) $saved
@@ -504,18 +564,23 @@ proc ReviewScriptParameters {} {
 
 proc InitScript {} {
     global huygens
+    global hrm
+
+    # In debug mode, more output: fixed theoretical PSF's are saved.
+    set hrm(debug) 1
 
     # Report process ID
     set id [pid]
     Report "\npid=$id"
+    Report "Huygens Core session ID [huOpt execLog -session]"
 
     set huygens(timer,startTime) [Hu_timeStamp]
     set huygens(timer,count) -1
     set huygens(timer,rounds) 0
 
     set huygens(timer,cCh) -1
-    set huygens(timer,cFr) -1
-    set huygens(timer,cBr) -1
+    set huygens(timer,cFr) 0
+    set huygens(timer,cBr) 0
 
     # Reduce verbosity, disable undo mechanism to save memory.
     huOpt verb -mode noQs
@@ -531,6 +596,7 @@ proc InitScript {} {
     # A list of temporary files to be deleted at the end of the script:
     set hrm(deleteFiles) {}
     set hrm(outputFiles) {}
+    set hrm(savedResult) ""
 
     CheckHuygensVersion
 
@@ -554,6 +620,15 @@ proc HandleOutputFiles {} {
         DeleteFile $file
     }
 
+    if { $hrm(savedResult) != "" } {
+        Report "* Final result saved at: $hrm(savedResult)\n\n"
+    }
+
+    Report "* All job output files:\n"
+    foreach file $hrm(outputFiles) {
+        Report "- $file"
+    }
+    Report ""
 
     if { $hrm(imagesOwnedBy) != "-" } {
         foreach file $hrm(outputFiles) {
@@ -586,14 +661,20 @@ proc FinishScript {} {
     global hrm
     global huygens
 
-    catch {
+    Report "\n\n- Finishing job -----------------------\n\n"
+    if { [ catch {
         # Can't afford this to fail: make sure it's catched.
-        HandleOutputFiles
+        HandleOutputFiles } err ] } {
+            ReportError "Error handling output files: $err"
     }
 
     # Report finish status.
-    exec touch "$hrm(inputDir)/.finished_$hrm(jobID)"
-    file attributes "$hrm(inputDir)/.finished_$hrm(jobID)" -permissions 0666
+    exec touch "$hrm(reportDir)/.finished_$hrm(jobID)"
+    file attributes "$hrm(reportDir)/.finished_$hrm(jobID)" -permissions 0666
+    if { [file exists "$hrm(reportDir)/.EstimatedEndTime_$hrm(jobID)"] } {
+        file attributes "$hrm(reportDir)/.EstimatedEndTime_$hrm(jobID)" \
+            -permissions 0666
+    }
 
     set now [Hu_timeStamp]
     Report "Total job time:\
@@ -662,6 +743,7 @@ proc GetParameter { param {channel 0} {notNull 0} } {
         FinishScript
     }
 
+    set value [string trim $value]
     return $value
 
 }
@@ -698,13 +780,21 @@ proc MakeOutDir { path } {
 proc SetGlobalParameters { imgName } {
     global huygens
 
+    set setP ""
+    set sep ""
+    set nsetP {}
+
     if { [ catch {
 
         # Common parameters
         foreach param $huygens(globalParam) {
             set value [ GetParameter $param ]
-            if {$value != "(null)" && $value != "-" } {
+            if {$value != "(null)" && $value != "-" && $value != "(ignore)" } {
                 $imgName setp -$param $value
+                append setP "$sep$param $value"
+                set sep "; "
+            } elseif { $value == "-" } {
+                lappend nsetP $param
             }
         }
 
@@ -712,28 +802,85 @@ proc SetGlobalParameters { imgName } {
         ReportError "Problem setting global parameters of $imgName: $err"
         FinishScript
     }
+
+    Report "Global parameters set: $setP."
+    if { [llength $nsetP ] > 0  } {
+        array set param [$imgName setp -tclReturn]
+        set nsep ""
+        set nsetPL ""
+        foreach p $nsetP {
+            append nsetPL "$nsep$p $param($p)"
+            set nsep "; "
+        }
+        Report "Global parameters taken from metadata: $nsetPL."
+    }
 }
 
 
 
-proc SetChannelParameters { imgName setChannel withElement  } {
+proc SetChannelParameters { imgName setChannel } {
     global huygens
     # HRM handles single channel images, but parameters may refer to a channel >
     # 0 in the original image.
+
+    set setP ""
+    set sep ""
+    set nsetP {}
 
     if { [ catch {
 
         # Per channel parameters:
         foreach param $huygens(channelParam) {
-            set value [ GetParameter $param $withElement ]
-            if {$value != "(null)" && $value != "-" } {
+            set value [ GetParameter $param $setChannel ]
+            if {$value != "(null)" && $value != "-" && $value != "" \
+                    && $value != "(ignore)" } {
                 $imgName setp -chan $setChannel -$param $value
+                append setP "$sep$param $value"
+                set sep "; "
+            } elseif { $value == "-" } {
+                lappend nsetP $param
             }
         }
     } err ] } {
         ReportError "Problem setting parameters of $imgName: $err"
         FinishScript
     }
+    Report "Channel $setChannel parameters set: $setP."
+
+    if { [llength $nsetP ] > 0  } {
+        array set param [$imgName setp -tclReturn]
+        set nsep ""
+        set nsetPL ""
+        foreach p $nsetP {
+            set val $param($p)
+            if { [llength $val] > 1 } {
+                set val [lindex $val $setChannel]
+            }
+            append nsetPL "$nsep$p $val"
+            set nsep "; "
+        }
+        Report "Channel $setChannel parameters taken from metadata: $nsetPL."
+    }
+
+}
+
+proc TranslateSnrToKeyword { snr } {
+    # The QMLE algorithm uses keywords instead of numeric values for the SNR.
+    # This roughly maps one into another, but more testing is required.
+
+    if {$snr > 100} {
+        return "inf"
+    }
+
+    if {$snr >= 40} {
+        return "good"
+    }
+
+    if {$snr >= 20 } {
+        return "fair"
+    }
+
+    return "low"
 }
 
 proc ProcessSNR { sn img currentCh method } {
@@ -759,12 +906,15 @@ proc ProcessSNR { sn img currentCh method } {
                 array set data $result
                 set val $data(SNR)
                 # Replace 'auto' by the estimated value
+                if { $method == "qmle" } {
+                    set val [TranslateSnrToKeyword $val]
+                }
                 set sn [lreplace $sn $ch $ch $val]
                 if { $hrm(channelProcessing) == "split" } {
-                    Report "Using estimated SNR for channel\
+                    Report "Using estimated SNR = $val for channel\
                         $currentCh: $result"
                 } else {
-                    Report "Using estimated SNR for channel $ch: $result"
+                    Report "Using estimated SNR = $val for channel $ch: $result"
                 }
             }
         }
@@ -775,7 +925,57 @@ proc ProcessSNR { sn img currentCh method } {
     return $sn
 }
 
-proc PreparePsf { img psf psfFile } {
+# Force a match in the image refractive indexes, per channel, and set the
+# coverslip at Z = 0; also correct for geometrical distortion.
+
+proc MatchImageRI {img} {
+
+    array set p [ $img setp -tclReturn ]
+
+    set ril $p(RILens)
+    set ri $p(RIMedia)
+    set depth $p(iFacePrim)
+    set dz $p(dz)
+    set q $p(objQuality)
+
+    # Use first channels' r.i. to correcto for the geometrical distortion.
+    set ndz [expr [lindex $ri 0] / [lindex $ril 0] * $dz ]
+
+    $img comment "# Temporarily changing parameters to force a symmetrical PSF:"
+    $img setp -iFacePrim 0 -dz $ndz
+
+    set ch 0
+    foreach v $ril {
+        $img setp -chan $ch -ri $v -objQuality perfect
+        incr ch
+    }
+
+    # Return original data, to restore it later
+    return [list ri $ri iFacePrim $depth dz $dz objQuality $q]
+
+}
+
+# After forcing the data for a symmetrical PSF generation, restore the original
+# values.
+proc RestoreOriginalData { img data } {
+
+    $img comment "# Restoring original parameters: $data"
+
+    array set origData $data
+
+    $img setp -dz $origData(dz) -iFacePrim $origData(iFacePrim)
+
+    set ch 0
+    foreach v $origData(ri) {
+        $img setp -chan $ch \
+            -ri $v -objQuality [lindex $origData(objQuality) $ch]
+        incr ch
+    }
+
+ 
+}
+
+proc PreparePsf { img psf psfFile psfDepth } {
 
     if { $psf == "measured" } {
         # Open an experimental PSF stored in a file.
@@ -785,24 +985,64 @@ proc PreparePsf { img psf psfFile } {
         set fCnt [llength $psfFile]
 
         if { $fCnt == 1 } {
+            Report "Loading experimental PSF $psfFile"
             set psfImg [ OpenImage $psfFile ]
         } else {
             set toJoin {}
             set psfImg [ CreateNewImage combinedExpPsf ]
             foreach f $psfFile {
+                Report "Loading experimental PSF $f"
                 lappend toJoin [ OpenImage $f ]
             }
+            Report "Combining PSF images into one multichannel image."
             JoinChannels $toJoin $psfImg
         }
     } else {
+        if { [ catch {
+
         set psfImg [ CreateNewImage theoPsf ]
 
-        if { $psf == "theoretical-fixed" } {
-            # Generate a fixed theoretical PSF here.
-            $img genpsf -> psfImg -dims padpar
+        if { $psf == "theoretical-symmetrical" } {
+            # Generate a fixed symmetrical theoretical PSF at depth zero:
+            # To make sure the PSF is symmetrical, we have to force a
+            # refractive index match. In order to be able to generate
+            # multichannel PSFs, we do this by tweaking the original image and
+            # then setting it back to the correct parameters.
+            Report "Generating theoretical PSF: symmetrical at depth zero, no\
+            spherical aberration correction."
+            set origData [ MatchImageRI $img ]
+            $img genpsf -> $psfImg -dims padpar -zPos 0
+
+            RestoreOriginalData $img $origData
+            RestoreOriginalData $psfImg $origData
+            global hrm
+            if { $hrm(debug) } {
+            lappend hrm(outputFiles) \
+                [SaveImage $psfImg $hrm(outputDir) $hrm(inputFile)_psf-sym.h5]
+            }
+
+        } elseif { $psf == "theoretical-fixed" } {
+            # Generate a fixed theoretical PSF at a given depth, not
+            # symmetrical.
+            Report "Generating theoretical PSF: fixed at depth $psfDepth,\
+            partial spherical aberration correction."
+            $img genpsf -> $psfImg -dims padpar -zPos $psfDepth
+            global hrm
+            if { $hrm(debug) } {
+            lappend hrm(outputFiles) \
+                [SaveImage $psfImg $hrm(outputDir) $hrm(inputFile)_psf-fix.h5]
+            }
+        } else {
+            # If PSF is variant, it's left empty here and calculated
+            # automatically during the restoration, accordingly to the brick
+            # mode.
+            Report "Using space-variant theoretical PSF"
+
         }
-        # If PSF is variant, it's left empty here and calculated automatically
-        # during the restoration, accordingly to the brick mode.
+        } err ] } {
+            ReportError "Problem generating $psf PSF: $err"
+            FinishScript
+        } 
     }
 
     return $psfImg
@@ -827,6 +1067,7 @@ proc GenerateDeconCommand { img ch } {
     # 'theoretical-fixed' 'theoretical-variant' or 'experimental'
     set psf [ GetParameter psf $ch ]
     set psfFile [ GetParameter psfFile $ch 1 ]
+    set psfDepth [ GetParameter psfDepth $ch ]
 
     # auto | manual | lowest | object
     set bgMode [ GetParameter bgMode $ch 1 ]
@@ -851,7 +1092,7 @@ proc GenerateDeconCommand { img ch } {
     # Brick mode: auto | one | few | normal | more | sliceBySlice
     set brMode [ GetParameter brMode $ch 1 ]
 
-    set psfImg [ PreparePsf $img $psf $psfFile ]
+    set psfImg [ PreparePsf $img $psf $psfFile $psfDepth ]
 
     set cmd "$img $method $psfImg -> $result -bgMode $bgMode -bg {$bg} \
         -blMode {$blMode} -it $it -sn {$sn} -brMode $brMode"
@@ -872,11 +1113,10 @@ proc Deconvolve { image {ch 0} } {
 
     if { [ catch {
 
-        # TODO
-
         array set dec [ GenerateDeconCommand $image $ch ]
 
-        Report "Running deconvolution: $dec(cmd)"
+        Report "\n- Restoration ---\n\nRunning deconvolution: $dec(cmd)"
+        SetTimerChannel $ch
 
         eval $dec(cmd)
 
@@ -954,13 +1194,12 @@ proc SaveImagePreview { img destination basename {types preview } } {
             }
         }
 
-    }
-    if { $o != "" } { 
-        foreach f $o {
-            lappend hrm(outputFiles) $f
+        if { $o != "" } { 
+            foreach f $o {
+                lappend hrm(outputFiles) $f
+            }
         }
     }
-
     } err ] } {
         ReportError "Problem generating previews: $err"
     }
@@ -1007,24 +1246,28 @@ proc RunDeconvolution {} {
 
     if { [ catch {
 
-    set opt ""
-    if { $hrm(isTimeSeries) != 1 } {
-        set opt " -series off"
-    }
+    set opt "-series $hrm(seriesOption)"
 
     set imageName [ OpenImage [file join $hrm(inputDir) $hrm(inputFile) ] $opt ]
 
     ConfigureOriginalImage $imageName
 
+    Report "\n- Image parameters ---\n\n"
+
     if { $hrm(parametersFrom) == "template" } {
         # Some file formats contain validated metadata that doesn't need to be
         # overwritten, if the user is certain about it.
+        Report "Using HRM parameter settings:"
         SetGlobalParameters $imageName
         for { set i 0 } { $i < $hrm(chanCnt) } { incr i } {
             # set all channels parameters
-            SetChannelParameters $imageName $i $i
+            SetChannelParameters $imageName $i
         }
+    } else {
+        Report "Using image metadata parameters."
     }
+
+    Report "--------------\n"
 
     SaveImagePreview $imageName $hrm(inputDir) $hrm(inputFile) preview
 
@@ -1048,7 +1291,8 @@ proc RunDeconvolution {} {
             Report "Processing channel $ch"
             set imageCh [OpenImage $chf]
             set resCh [Deconvolve $imageCh $ch]
-            set saved [SaveImage $resCh $hrm(outputDir) $hrm(outputFile)_Ch$ch]
+            set saved [SaveImage $resCh \
+                $hrm(outputDir) $hrm(outputFile)_Ch$ch.h5]
             lappend hrm(deleteFiles) $saved
             lappend resultFileList $saved
             DeleteImage $imageCh
@@ -1081,8 +1325,12 @@ proc RunDeconvolution {} {
         [expr round($now - $huygens(timer,startTime)) ] s"
 
     ConfigureResultImage $result
+    set savedResult \
+       [ SaveImage $result $hrm(outputDir) $hrm(outputFile) $hrm(outputType) ]
+    lappend hrm(outputFiles) $savedResult
+    set hrm(savedResult) $savedResult
     lappend hrm(outputFiles) \
-       [ SaveImage $result $hrm(outputDir) $hrm(outputFile) $hrm(outputType) 1 ]
+       [ SaveImageHistory $result $hrm(outputDir) $hrm(outputFile).history.txt ]
 
     if { $hrm(chanCnt) > 1 && $hrm(channelProcessing) == "split" } {
         # Open original, again...
@@ -1093,7 +1341,7 @@ proc RunDeconvolution {} {
         }
     }
 
-    SaveImagePreview $result $hrm(outputDir) $hrm(outputFile)\
+    SaveImagePreview $result $hrm(outputDir) $hrm(outputFile) \
         {MIP SFP stack tMIP tSFP}
     SaveImagePreview $imageName $hrm(outputDir) "$hrm(outputFile).original" \
         {MIP SFP}
@@ -1108,10 +1356,21 @@ proc RunDeconvolution {} {
     }
 }
 
-proc HRMrun {} {
-    InitScript
-    RunDeconvolution
-    FinishScript
+proc HRMrun { {task deconvolution } } {
+
+    if { [ catch { 
+
+        switch $task {
+            deconvolution {
+                InitScript
+                RunDeconvolution
+                FinishScript
+            }
+        }
+    } err ] } {
+        ReportError "Unexpected error: $err"
+        FinishScript
+    }
 }
 
 
@@ -1120,17 +1379,21 @@ proc HRMrun {} {
 
 
 # THIS PART CHANGES FOR EACH JOB ---------------------
-# These parameters must be set by JobDescription.php, overwriting this sample
-# procedure with the correct one.
+# These parameters must be set by JobDescription.php in a procedure called
+# DefineScriptParameters.
 
-proc DefineScriptParameters {} {
+proc DefineScriptParameters_DEBUG {} {
 
     global hrm
+
+    # HRM should check that the output file doesn't exist yet. If so, add a
+    # suffix to its name.
 
     set hrm_list [list \
     jobID "4b8bbadc0a32e" \
     \
     inputDir "/Users/jose/Sites/hrm_images/jose/huygens_src" \
+    reportDir "/Users/jose/Sites/hrm_images/jose/huygens_src" \
     inputFile "objectAnalyzer_test_image_comb_x_1.ics" \
     outputDir "/Users/jose/Sites/hrm_images/jose/huygens_dst" \
     outputFile "objectAnalyzer_test_image_comb_x_1Ch0_4b8bbadc0a32e_hrm.h5" \
@@ -1148,6 +1411,7 @@ proc DefineScriptParameters {} {
     channelProcessing "all" \
     isTimeSeries 0 \
     isThreeDimensional 1 \
+    seriesOption "auto" \
     \
     micr {"confocal"} \
     dx 0.05 \
@@ -1197,5 +1461,5 @@ proc DefineScriptParameters {} {
 
 
 # Start the job.
-HRMrun
+# HRMrun deconvolution
 

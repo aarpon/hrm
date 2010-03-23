@@ -246,6 +246,12 @@ Class JobQueue {
     $date = $db->startTimeOf($job);    
     return $date;
   }
+
+  function updateEstimatedEndTime($id, $date) {
+    $db = new DatabaseConnection();
+    return $db->setJobEndTime($id, $date);
+  }
+
   
   function pauseJob($jobDescription) {
     $db = new DatabaseConnection();

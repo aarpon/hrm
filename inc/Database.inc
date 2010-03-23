@@ -809,7 +809,7 @@ Class DatabaseConnection {
 
   function getQueueContents() {
     // For the query we join job_queue and job_files, since we want to sort also by file name
-    $query = "SELECT id, username, queued, start, server, process_info, status, file
+    $query = "SELECT id, username, queued, start, stop, server, process_info, status, file
     FROM job_queue, job_files
     WHERE job_queue.id = job_files.job AND job_queue.username = job_files.owner
     ORDER BY job_queue.priority asc, job_queue.queued asc, job_queue.status asc, job_files.file asc";
@@ -986,6 +986,12 @@ Class DatabaseConnection {
   
   function pauseJob($id) {   
     $query = "update job_queue set status='paused' where id='" . $id . "'";
+    $result = $this->execute($query);
+    return $result;
+  } 
+
+  function setJobEndTime($id, $date) {   
+    $query = "update job_queue set stop='".$date."' where id='" . $id . "'";
     $result = $this->execute($query);
     return $result;
   } 

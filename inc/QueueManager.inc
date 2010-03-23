@@ -91,12 +91,11 @@ Class QueueManager {
 		return $this->job();
 	}
 
-	function executeScript() {
+	function executeScript($job) {
 		global $imageProcessingIsOnQueueManager;
 		global $copy_images_to_huygens_server;
 		global $logdir;
 		
-		$job = $this->job;
 		$server = $this->freeServer;
 		// server name without proc number
 		$s = split(" ", $server);
@@ -111,15 +110,24 @@ Class QueueManager {
 		$proc = newExternalProcessFor($server, $server . "_" .$job->id() . "_out.txt", $server . "_" .$job->id(). "_error.txt");
 		report("shell process created", 1);
 		$ssh = $proc->runShell();
-		report("running shell", 1);
+		report("running shell: $clientScriptPath$scriptName", 1);
 		$pid = $proc->runHuygensScript($clientScriptPath . $scriptName);
 		// TODO refactor this <<
 		// check if Huygens outputs any interactive dialog
-		sleep(5);
-		while (True) {
-			if (feof($proc->out_file))
+		# sleep(5);
+
+                // This keeps the queue manager blocked until the job is
+                // completed. I guess that's not the intention! I'll deactivate
+                // it by now.
+                /*
+                while (True) {
+			if (feof($proc->out_file)) {
+                            report ("EOF ".$proc->out_file.": ", 1);
 				break;
+                        }
 			$input = fgets($proc->out_file);
+
+                        // Why is this error processing necessary here?
 			if (strstr($input, "Microscope types of original and PSF differ:")) {
 				$warning_file = fopen($logdir . "/" . $server . "_warning.txt", "a");
 				fwrite($warning_file, "[" . $desc->id() . "] Microscope types of original and PSF differ\n");
@@ -133,12 +141,13 @@ Class QueueManager {
 				break;
 			}
 		}
+                */
 		// >>
 		report("running script (pid $pid)", 1);
-		$proc->release();
+                // $proc->release();
+                $this->activeProcs[$job->id()] = $proc;
 		$job->setPid($pid);
 		$job->setServer($server);
-		$this->job = $job;
 		return ($pid > 0);
 	}
 	
@@ -303,7 +312,6 @@ Class QueueManager {
 			return NULL;
 		$job = new Job($jobDescription);
 		$job->setServer($this->freeServer);
-		$this->job = $job;
 		return $job;
 	}
 
@@ -329,12 +337,17 @@ Class QueueManager {
 		$id = $desc->id();
 		$finishedMarker = $path . '/' . '.finished_' . "$id";
 		if (file_exists($finishedMarker)) {
-			unlink($finishedMarker);
 			report("removing finished marker", 1);
+			unlink($finishedMarker);
+		}
+		$endTimeMarker = $path . '/' . '.EstimatedEndTime_' . "$id";
+		if (file_exists($endTimeMarker)) {
+			report("removing EstimatedEndTime report", 1);
+			unlink($endTimeMarker);
 		}
 		// remove job
 		$this->stopTime = $queue->stopJob($job);
-		report("stopped job (" . date("l d F Y h:i:s A") . ")\n", 1);
+		report("stopped job (" . date("l d F Y H:i:s") . ")\n", 1);
 	}
 	
 	// TODO refactor this
@@ -408,7 +421,7 @@ Class QueueManager {
 		foreach ($runningJobs as $job) {
 			$desc = $job->description();
 			$user = $desc->owner();
-			//$id = $desc->id();
+			$id = $job->id();
 			
 			// Check if fileserver is reachable
 			$fileserver = new Fileserver($user->name());
@@ -424,9 +437,10 @@ Class QueueManager {
 			
 			// Check finished marker
 			$finished = $job->checkProcessFinished();
-			if (!$finished)
-				continue;
-			report("checked finished marker", 2);
+			if (!$finished) {
+                            continue;
+                        }
+			report("checked finished process", 2);
 			
 			// Check result image
 			$resultSaved = $job->checkResultImage();
@@ -470,7 +484,7 @@ Class QueueManager {
                                     $gFile = $logdir . "/" . $job->server() .
                                     "_error.txt";
                                     # Accumulate error logs
-                                    exec ("echo \"$errorFile\" >> \"$gFile\"");
+                                    exec ("cat \"$errorFile\" >> \"$gFile\"");
                                     unlink($errorFile);	
                                 }
 
@@ -498,6 +512,13 @@ Class QueueManager {
 					unlink($logFile);	
 				// make withdrawal of hours
 				if ($use_accounting_system) $this->makeWithdrawal($desc->owner(), $accounting_client_name, $startTime, $this->stopTime, $desc->credit(), $desc->group);
+                                $proc = $this->activeProcs[$id];
+                                # $debug = var_export($this->activeProcs, true);
+
+                                report ("Releasing shell, ".
+                                        "unsetting activeProc $id", 2);
+                                $proc->release();
+                                unset($this->activeProcs[$id]);
 			}
 			
 			/*$result = False;
@@ -840,67 +861,74 @@ Class QueueManager {
 		}
 	}
 
-	function run() {
-		global $imageProcessingIsOnQueueManager;
-		global $logdir;
-		
-		$queue = $this->queue;
-		
-		$this->waitForDatabaseConnection();
-		$server = $queue->availableServer();
-		// TODO refactor this in order to manage error logs per job
-		foreach ($server as $name) {
-                    $this->nping[$name] = 0;
+        function run() {
+            global $imageProcessingIsOnQueueManager;
+            global $logdir;
+
+            $queue = $this->queue;
+
+            $this->waitForDatabaseConnection();
+            $server = $queue->availableServer();
+            // TODO refactor this in order to manage error logs per job
+            foreach ($server as $name) {
+                $this->nping[$name] = 0;
+            }
+
+            report("Huygens Remote Manager started on " 
+                    . date("Y-m-d H:i:s") . "\n", 1);
+
+            while (!$this->shallStop()) {
+                set_time_limit(0);
+                $this->queue = $queue;
+                $result = True;
+
+                // Reduce the used cycles by going to sleep for one second
+                if ($imageProcessingIsOnQueueManager) {
+                    sleep(1);
                 }
-		
-		report("Huygens Remote Manager started on " . date("Y-m-d H:i:s") . "\n", 1);
-                
-		while (!$this->shallStop()) {
-			set_time_limit(0);
-			$this->queue = $queue;
-			$result = True;
-			
-			// Reduce the used cycles by going to sleep for one second
-			if ($imageProcessingIsOnQueueManager) {
-				sleep(1);
-			}
-			
-			// Check if jobs finished and update the database. Inform the user via email.
-			$this->updateJobAndServerStatus();
-			//report("Huygens server updated status", 2);
-			
-			// Read in a free huygens server
-                        while (!( $queue->isLocked() ) 
-                                && $this->getFreeServer() 
-                                && $this->nextJobFromQueue() != NULL) {
-				report("using Huygens server: " . $this->freeServer, 2);
-				
-				// Read in a queued job 
-				$job = $this->job;
-				$desc = $job->description();
-				$id = $desc->id();
-				report("processing job " . $id . " on " . $job->server(), 1);
-				
-				// TODO check this <<
-				// If the job is compound create sub jobs and remove job otherwise create script
-				//$result = $result && $job->createSubJobsOrScript();
-				$result = $job->createSubJobsOrScript();
-				if (!$result || $desc->isCompound()) {
-					error_log("error or compound job");
-					continue;
-				}
-				// >>
-                report("script has been created", 1);
-				// Execute the script on the Huygens server and update the database state
-				$result = $result && $this->executeScript();
-				if (!$result)
-					continue;
-				report("script has been executed", 1);
-				$result = $result && $queue->startJob($this->job);
-				report("job has been started (" . date("Y-m-d H:i:s") . ")", 1);
-			}
-		}
-		report("Huygens Remote Manager stopped via database switch on " . date("Y-m-d H:i:s"), 1);
-	}
+
+                // Check if jobs finished and update the database. Inform the
+                // user via email.
+                $this->updateJobAndServerStatus();
+                //report("Huygens server updated status", 2);
+
+                // Read in a free huygens server
+                while (!( $queue->isLocked() ) && $this->getFreeServer() ) {
+
+                    $job =  $this->nextJobFromQueue();
+                    // Exit the loop when no job is queued.
+                    if ( $job == NULL ) { break; }
+
+                    report("using Huygens server: " . $this->freeServer, 2);
+
+                    // Read in a queued job 
+                    $desc = $job->description();
+                    $id = $desc->id();
+                    report("processing job " . $id ." on " . $job->server(), 1);
+
+                    // TODO check this <<
+                    // If the job is compound create sub jobs and
+                    // remove job otherwise create script
+                    //$result = $result && $job->createSubJobsOrScript();
+                    $result = $job->createSubJobsOrScript();
+                    if (!$result || $desc->isCompound()) {
+                        error_log("error or compound job");
+                        continue;
+                    }
+                    report("script has been created", 1);
+                    // Execute the script on the Huygens server and
+                    // update the database state
+                    $result = $result && $this->executeScript($job);
+                    if (!$result)
+                        continue;
+                    report("script has been executed", 1);
+                    $result = $result && $queue->startJob($job);
+                    report("job has been started (" 
+                            . date("Y-m-d H:i:s") . ")", 1);
+                }
+            }
+            report("Huygens Remote Manager stopped via database switch on " 
+                    . date("Y-m-d H:i:s"), 1);
+        }
 }
 ?>

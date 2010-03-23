@@ -141,6 +141,7 @@ function globalize_vars ($var_string, $type) {
 $post_string = "param, micro, d, a, b, c, u, wl, na, mo, msys, task, ref, ".
                "cmsys, extra1, extra2, table, txt1, txt2, checked1, checked2, ".
                "help, ru, rtag";
+
 globalize_vars ($post_string, "_POST");
 globalize_vars ($post_string, "_GET");
 

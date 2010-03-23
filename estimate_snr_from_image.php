@@ -2,7 +2,7 @@
 
 // php page: estimate_snr_from_image.php
 
-// This file is part of huygens remote manager.
+// This file is part of Huygens Remote Manager.
 
 // Copyright: Montpellier RIO Imaging (CNRS)
 
@@ -56,6 +56,12 @@
 require_once("./inc/User.inc");
 require_once("./inc/Fileserver.inc");
 
+
+// Two private functions, for the two tasks of this script:
+
+// This configures and shows the file browser module inc/FileBrowser.inc.
+// The Signal-to-noise estimator works only on raw images, so the listed
+// directory is the source ('src') one.
 function showFileBrowser() {
 
     //$browse_folder can be 'src' or 'dest'.
@@ -64,7 +70,11 @@ function showFileBrowser() {
     $form_title = "Available images";
     $top_navigation = "
             <li>".$_SESSION['user']->name()."</li>
-            <li><a href=\"javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpSnrEstimator')\"><img src=\"images/help.png\" alt=\"help\" />&nbsp;Help</a></li>
+            <li><a href=\"javascript:openWindow('".
+                "http://support.svi.nl/wiki/style=hrm&amp;".
+                "help=HuygensRemoteManagerHelpSnrEstimator".
+              "')\">".
+            "<img src=\"images/help.png\" alt=\"help\" />&nbsp;Help</a></li>
             ";
     $multiple_files = false;
     // Number of displayed files.
@@ -72,16 +82,19 @@ function showFileBrowser() {
     $type = "";
     $useTemplateData = 0;
     if ( $_SESSION['user']->name() == "admin") {
-        // The administrator can edit templates without adding a task...
+        // The administrator can edit templates without adding a task, so no
+        // image type is predefined in this case...
         $restrictFileType = false;
         $expandSubImages = true;
     } else {
-        // Show files of the same type as in the current task:
+        // Users can only estimate the SNR inside the workflow of a task
+        // creation, so a selected file type is known at this point. Show files
+        // of the same type as in the current task:
         $restrictFileType = true;
         $fileFormat = $_SESSION['setting']->parameter("ImageFileFormat");
         $type = $fileFormat->value();
-        // To (re)generate the thumbnails, use data from the current template for
-        // colors (wavelengths). 
+        // To (re)generate the thumbnails, use data from the current template
+        // for colors (wavelengths).
         $useTemplateData = 1;
     }
     $file_buttons = array();
@@ -106,6 +119,7 @@ function showFileBrowser() {
                You can then use the estimated SNR values in the Restoration
                Settings to deconvolve similar images, acquired under similar
                conditions.</p>';
+
     if ($type != "") {
         $info .= "<p>Only images of type <b>$type</b>, as set in the image
         parameters, are shown.</p>"; 
@@ -128,6 +142,14 @@ function showFileBrowser() {
 }
 
 
+
+
+// This function does the main job.
+// When a file name is posted, this function processes it by sending it to
+// Huygens in the background and showing the result images with the different
+// SNR estimations. The best value is shown, but other more pessimistic and
+// optimistic values are also included for the user to visually verify the
+// validity of the estimate.
 function estimateSnrFromFile($file) {
 
 
@@ -135,13 +157,17 @@ function estimateSnrFromFile($file) {
 
     $top_navigation = "
             <li>".$_SESSION['user']->name()."</li>
-            <li><a href=\"javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpSnrEstimator')\"><img src=\"images/help.png\" alt=\"help\" />&nbsp;Help</a></li>
+            <li><a href=\"javascript:openWindow('".
+                 "http://support.svi.nl/wiki/style=hrm&amp;".
+                 "help=HuygensRemoteManagerHelpSnrEstimator".
+              "')\">".
+              "<img src=\"images/help.png\" alt=\"help\" />&nbsp;Help</a></li>
             ";
 
     echo "<div id=\"nav\">
         <ul>$top_navigation</ul>
     </div>";
- 
+
     // Noise estimations can be done only in raw images.
 
     $psrc =  $_SESSION['fileserver']->sourceFolder();
@@ -204,17 +230,22 @@ function estimateSnrFromFile($file) {
     $opt = "-basename \"$basename\" -src \"$psrc\" -dest \"$pdest\" ".
         "-returnImages \"0.5 0.71 1 1.71 \" -series $series $extra";
 
-
-
     // Navigations buttons are shown after the image is processed. No
     // line-breaks in this declarations, as this is going to be escaped for
     // JavaScript.
 
-    $buttons = "<input type=\"button\" value=\"\" class=\"icon previous\" onmouseover=\"Tip('Select another image.' )\" onmouseout=\"UnTip()\" onclick=\"document.location.href='estimate_snr_from_image.php'\" />";
+    $buttons = "<input type=\"button\" value=\"\" class=\"icon previous\" ".
+               "onmouseover=\"Tip('Select another image.' )\" ".
+               "onmouseout=\"UnTip()\" ".
+          "onclick=\"document.location.href='estimate_snr_from_image.php'\" />";
 
-    $buttons .= "<input type=\"button\" value=\"\" class=\"icon next\" onmouseover=\"Tip('Proceed to the restoration parameters.' )\" onmouseout=\"UnTip()\" onclick=\"document.location.href='task_parameter.php'\" /></div>";
+    $buttons .= "<input type=\"button\" value=\"\" class=\"icon next\" ".
+             "onmouseover=\"Tip('Proceed to the restoration parameters.' )\" ".
+             "onmouseout=\"UnTip()\" ".
+             "onclick=\"document.location.href='task_parameter.php'\" /></div>";
 
-
+    // When no particular SNR estimation image is shown (in a small portion of
+    // the image), the image preview goes back to the whole image.
     $defaultView = $_SESSION['fileserver']->imgPreview($file, "src",
             "preview_xy", false);
 
@@ -257,6 +288,10 @@ function estimateSnrFromFile($file) {
 
     ob_flush();
     flush();
+
+    // Launch Huygens Core in the background to do the calculations. It will
+    // write the JPEG images in a predefined location for this script to
+    // display them.
 
     $estimation = askHuCore("estimateSnrFromImage", $opt);
     // No line-breaks in the output, it is going to be escaped for JavaScript.
@@ -346,12 +381,18 @@ function estimateSnrFromFile($file) {
                 }
                 $output .=  "<img src=\"file_management.php?getThumbnail=".
                           $tmbFile."&amp;dir=src\" alt=\"SNR $snr\" ".
-                          "onmouseover=\"Tip('$tag'); changeDiv('thumb','$zoomImg', 300); window.divCondition = 'zoom';\"  onmouseout=\"UnTip()\"/>";
+                          "onmouseover=\"Tip('$tag'); ".
+                          "changeDiv('thumb','$zoomImg', 300); ".
+                          "window.divCondition = 'zoom';\"  ".
+                          "onmouseout=\"UnTip()\"/>";
                 $output .= "<br /><small>Original</small>";
             } else {
                 $output .=  "<img src=\"file_management.php?getThumbnail=".
                           $tmbFile."&amp;dir=src\" alt=\"SNR $snr\" ".
-                          "onmouseover=\"Tip('Simulation for $tag'); changeDiv('thumb','$zoomImg', 300); window.divCondition = 'zoom';\" onmouseout=\"UnTip()\"/>";
+                          "onmouseover=\"Tip('Simulation for $tag'); ".
+                          "changeDiv('thumb','$zoomImg', 300); ".
+                          "window.divCondition = 'zoom';\" ".
+                          "onmouseout=\"UnTip()\"/>";
                 if ( $snr == $estSNR ) {
                     $output .= "<br /><small><b>SNR ~ $snr</b></small>";
                 } else {
@@ -379,6 +420,7 @@ function estimateSnrFromFile($file) {
                "<p>Please <b>write down</b> these values to use them ".
                "in the settings editor.</p>".
                $msgClip.$msgSNR;
+
     if ( isset($estimation['error']) ) {
         foreach ($estimation['error'] as $line) {
             $message .= $line;
@@ -394,10 +436,19 @@ function estimateSnrFromFile($file) {
     <script type="text/javascript">
     <!--
          window.divCondition = 'general';
-         <?php // preloading code doesn't seem to help (at least if it doesn't go in the head of the document; echo $preload; ?>
-         smoothChangeDiv('info','<?php echo escapeJavaScript($message); ?>',1300);
-         smoothChangeDiv('output','<?php echo escapeJavaScript($output); ?>',1000);
-         smoothChangeDiv('controls','<?php echo escapeJavaScript($buttons); ?>',1500);
+         <?php 
+         // Preloading code doesn't seem to help (at least if it doesn't go in
+         // the head of the document;
+         // echo $preload;
+         ?>
+
+         // Show the results with a nice JavaScript smooth transition.
+         smoothChangeDiv('info',
+             '<?php echo escapeJavaScript($message); ?>',1300);
+         smoothChangeDiv('output',
+             '<?php echo escapeJavaScript($output); ?>',1000);
+         smoothChangeDiv('controls',
+             '<?php echo escapeJavaScript($buttons); ?>',1500);
          changeDiv('tmp','');
     -->
     </script>
@@ -406,11 +457,18 @@ function estimateSnrFromFile($file) {
 }
 
 
+// This is the starting point of this script.
+
+
 session_start();
 
+// Ask the user to login if necessary.
 if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
   header("Location: " . "login.php"); exit();
 }
+
+// Two tasks are possible: selecting an image from the ones in the source
+// directory, and processing it to estimate its Signal-to-Noise ratio:
 
 $task = "select";
 
