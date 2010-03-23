@@ -1064,7 +1064,6 @@ Class DatabaseConnection {
   
   function updateMail($userName, $email) {
   	$cmd = "UPDATE username SET email = '". $email ."' WHERE name = '".$userName."'";
-        die($cmd);
   	$result = $this->execute($cmd);
   	return $result;
   }
