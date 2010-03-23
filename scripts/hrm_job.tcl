@@ -75,7 +75,6 @@ proc ReportEndTime { time } {
     set now [Hu_timeStamp]
     set deltaFromStart [expr round( $ptime - $huygens(timer,startTime) )]
     set finalDate [clock format $ptime -format {%Y-%m-%d %H:%M:%S}]
-    Report "time $time, ptime $ptime"
     Report "EstimatedEndTime: $ptime (+$deltaFromStart) $finalDate"
 
     set rPath [ file join $hrm(reportDir) .EstimatedEndTime_$hrm(jobID)]
@@ -255,7 +254,7 @@ proc MessageFilter { msg } {
                 set tPerBrick [expr $tPerIteration*($itMax - 1) + $timeFirstIt ]
             }
 
-            if { $cIt < 5 || [expr $cIt % 5] == 0 } {
+            if { $cIt < 5 || [expr $cIt % 10] == 0 } {
                 # Report estimate for the first iterations, and then every 5.
                 set tPerFrame [expr $tPerBrick * $huygens(timer,brMax) ]
                 set tPerChan [expr $tPerFrame * $hrm(frameCnt) ]
