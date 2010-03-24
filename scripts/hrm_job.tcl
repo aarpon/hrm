@@ -61,6 +61,24 @@
 
 proc ReportError { err } {
     huOpt printError $err
+    ReportImportant $err
+}
+
+proc ReportImportant { msg } {
+    global hrm
+
+    # An important message is reported to the log file...
+    Report $msg
+
+    # ...but also to a special file together with the file
+    if { [ catch {
+        set fp [open $hrm(warningFilePath) "a"]
+        puts $fp $msg
+        close $fp
+        set hrm(warningFile) $hrm(warningFilePath)
+    } err ] } {
+        Report "Problem writing to log file $rPath"
+    }
 }
 
 # Reporting the estimated end time requires Huygens Core 3.5.2p2 or higher.
@@ -106,6 +124,24 @@ proc MessageFilter { msg } {
     global hrm
     global huygens
 
+    # Search for especial messages that are unacceptable in a HRM job: in those
+    # cases, report and error and quit.
+
+    set exit 0
+    set messageType "normal"
+
+    if { [ string first \
+        "After necessary resampling the PSF is too small" $msg ] > -1  } {
+        set messageType "warning"
+    }
+
+    if { [ string first \
+        "Microscope types of original and PSF differ" $msg ] > -1  } {
+        set messageType "warning"
+    }
+
+    # Search for other strings that report about the deconvolution progress, to
+    # calculate an estimated end time.
 
     if { [ string first "Classic MLE:" $msg ] > -1 || \
          [ string first "Quick-MLE:" $msg ] > -1 } {
@@ -267,7 +303,13 @@ proc MessageFilter { msg } {
           }
     }
 
-    return "normal"
+
+    if { $exit } {
+        Report "Quitting: $msg"
+        FinishScript
+    }
+
+    return $messageType
 
 }
 
@@ -279,10 +321,11 @@ proc Hu_Print { {msg ""} } {
     }
     switch $type {
         timestamp {
-            puts "(TS [Hu_timeStamp]) $msg"
+            Report "(TS [Hu_timeStamp]) $msg"
         }
+        warning { ReportImportant $msg }
         normal {
-            puts $msg
+            Report $msg
         }
         hide {
         }
@@ -369,6 +412,9 @@ proc ConfigureOriginalImage { img } {
 proc ConfigureResultImage { img } {
     global hrm
 
+    # This is a good point to 'undo' the scaling factors if necessary. They are
+    # reported in $hrm(mleReport,$ch).
+
     if { $hrm(outputType) == "ims" } {
         # An old HRM hack to store 2D time series as Z stacks in Imaris files.
         set convert 0
@@ -404,6 +450,7 @@ proc ConfigureResultImage { img } {
             }
         }
     }
+
 
 
     $img comment "# Image restored via Huygens Remote Manager"
@@ -568,6 +615,9 @@ proc InitScript {} {
     # In debug mode, more output: fixed theoretical PSF's are saved.
     set hrm(debug) 1
 
+    # A succesfull job happens when saving the file.
+    set hrm(success) 0
+
     # Report process ID
     set id [pid]
     Report "\npid=$id"
@@ -610,6 +660,10 @@ proc InitScript {} {
         ReportError "HRM error, problem reviewing the script parameters: $err"
         FinishScript
     }
+
+    set hrm(warningFile) {}
+    set hrm(warningFilePath) \
+        [ file join $hrm(outputDir) $hrm(outputFile).remarks.txt ]
 }
 
 proc HandleOutputFiles {} {
@@ -620,13 +674,26 @@ proc HandleOutputFiles {} {
     }
 
     if { $hrm(savedResult) != "" } {
-        Report "* Final result saved at: $hrm(savedResult)\n\n"
+        ReportImportant "* Final result saved at: $hrm(savedResult)\n\n"
     }
 
     Report "* All job output files:\n"
     foreach file $hrm(outputFiles) {
         Report "- $file"
     }
+    if { $hrm(success) } {
+        foreach file $hrm(warningFile) {
+            Report "- $file"
+        }
+    } else {
+        # Without a result image properly saved, delete the comments file. The
+        # error report will need to be inspected anyway.
+        foreach file $hrm(warningFile) {
+            DeleteFile $file
+        }
+    }
+
+
     Report ""
 
     if { $hrm(imagesOwnedBy) != "-" } {
@@ -802,7 +869,7 @@ proc SetGlobalParameters { imgName } {
         FinishScript
     }
 
-    Report "Global parameters set: $setP."
+    ReportImportant "Global parameters set: $setP."
     if { [llength $nsetP ] > 0  } {
         array set param [$imgName setp -tclReturn]
         set nsep ""
@@ -811,7 +878,7 @@ proc SetGlobalParameters { imgName } {
             append nsetPL "$nsep$p $param($p)"
             set nsep "; "
         }
-        Report "Global parameters taken from metadata: $nsetPL."
+        ReportImportant "Global parameters taken from metadata: $nsetPL."
     }
 }
 
@@ -844,7 +911,7 @@ proc SetChannelParameters { imgName setChannel } {
         ReportError "Problem setting parameters of $imgName: $err"
         FinishScript
     }
-    Report "Channel $setChannel parameters set: $setP."
+    ReportImportant "Channel $setChannel parameters set: $setP."
 
     if { [llength $nsetP ] > 0  } {
         array set param [$imgName setp -tclReturn]
@@ -858,7 +925,8 @@ proc SetChannelParameters { imgName setChannel } {
             append nsetPL "$nsep$p $val"
             set nsep "; "
         }
-        Report "Channel $setChannel parameters taken from metadata: $nsetPL."
+        ReportImportant "Channel $setChannel parameters taken from metadata:\
+            $nsetPL."
     }
 
 }
@@ -910,10 +978,11 @@ proc ProcessSNR { sn img currentCh method } {
                 }
                 set sn [lreplace $sn $ch $ch $val]
                 if { $hrm(channelProcessing) == "split" } {
-                    Report "Using estimated SNR = $val for channel\
+                    ReportImportant "Using estimated SNR = $val for channel\
                         $currentCh: $result"
                 } else {
-                    Report "Using estimated SNR = $val for channel $ch: $result"
+                    ReportImportant"Using estimated SNR = $val for\
+                        channel $ch: $result"
                 }
             }
         }
@@ -974,27 +1043,74 @@ proc RestoreOriginalData { img data } {
  
 }
 
-proc PreparePsf { img psf psfFile psfDepth } {
+# Prepare a PSF for a single channel ch, or for "all" (in which case, psfFile
+# may be a list of files).
+proc PreparePsf { img psf psfFile psfDepth ch } {
+    global hrm
 
     if { $psf == "measured" } {
         # Open an experimental PSF stored in a file.
 
         # When processing all channels together, the PSF may be given as
-        # separate files per channel, or as a multichannel image.
+        # separate files per channel, or as a multichannel image. In this
+        # latter case, only one file is provided.
         set fCnt [llength $psfFile]
 
+
         if { $fCnt == 1 } {
-            Report "Loading experimental PSF $psfFile"
+            # Only one file name is passed to this function.
+            # This is the case for:
+            # 1) Single channel images (only one PSF is necessary).
+            # 2) Multichannel images, in split deconvolution, with multiple
+            # single-channel PSF files (the corresponding file name was already
+            # selected by GetParameter upstream).
+            # 3) Multichannel images, in non-split deconvolution, with a
+            # multichannel PSF file (only one file is passed to the script).
+            ReportImportant "Loading experimental PSF $psfFile"
             set psfImg [ OpenImage $psfFile ]
+
+            # A case is special: 4) Multichannel images in split deconvolution,
+            # with the PSF passed as a multichannel file. In this case, we have
+            # to split the PSF and isolate the channel currently being
+            # deconvolved.
+            if { $ch != "all" && $ch > 0 } {
+                set psfChanCnt [$psfImg getdims -mode ch]
+                if { $ch < $psfChanCnt } {
+                    set takech $ch
+                    ReportImportant "Extracting PSF channel $takech"
+                } else {
+                    ReportError "The provided PSF contains only $psfChanCnt\
+                        channels."
+                    set takech [expr $psfChanCnt -1 ]
+                    ReportError "Extracting PSF channel $takech for image\
+                        channel $ch"
+                }
+                set psfChan [$psfImg split -mode one -chan $takech]
+                DeleteImage $psfImg
+                set psfImg $psfChan
+            }
         } else {
+            # This is the case for:
+            # 5) Multichannel images in non-split deconvolution, with the PSF
+            # passed as multiple single-channel files. We have to join all the
+            # files.
             set toJoin {}
             set psfImg [ CreateNewImage combinedExpPsf ]
             foreach f $psfFile {
-                Report "Loading experimental PSF $f"
+                ReportImportant "Loading experimental PSF $f"
                 lappend toJoin [ OpenImage $f ]
             }
-            Report "Combining PSF images into one multichannel image."
+            ReportImportant "Combining PSF images into one multichannel image."
             JoinChannels $toJoin $psfImg
+            set psfChanCnt [$psfImg getdims -mode ch]
+            if { $hrm(chanCnt) > $psfChanCnt } {
+                ReportError "The provided PSF contains only $psfChanCnt\
+                    channels."
+                ReportError "Using theoretical PSF's for channels $psfChanCnt\
+                and beyond, but beware that results may not be correct if the\
+                parameters where not set correctly for this case (specially in\
+                the case of large refractive index mismatch)."
+            }
         }
     } else {
         if { [ catch {
@@ -1007,14 +1123,14 @@ proc PreparePsf { img psf psfFile psfDepth } {
             # refractive index match. In order to be able to generate
             # multichannel PSFs, we do this by tweaking the original image and
             # then setting it back to the correct parameters.
-            Report "Generating theoretical PSF: symmetrical at depth zero, no\
+            ReportImportant \
+            "Generating theoretical PSF: symmetrical at depth zero, no\
             spherical aberration correction."
             set origData [ MatchImageRI $img ]
             $img genpsf -> $psfImg -dims padpar -zPos 0
 
             RestoreOriginalData $img $origData
             RestoreOriginalData $psfImg $origData
-            global hrm
             if { $hrm(debug) } {
             lappend hrm(outputFiles) \
                 [SaveImage $psfImg $hrm(outputDir) $hrm(inputFile)_psf-sym.h5]
@@ -1023,10 +1139,10 @@ proc PreparePsf { img psf psfFile psfDepth } {
         } elseif { $psf == "theoretical-fixed" } {
             # Generate a fixed theoretical PSF at a given depth, not
             # symmetrical.
-            Report "Generating theoretical PSF: fixed at depth $psfDepth,\
+            ReportImportant\
+            "Generating theoretical PSF: fixed at depth $psfDepth,\
             partial spherical aberration correction."
             $img genpsf -> $psfImg -dims padpar -zPos $psfDepth
-            global hrm
             if { $hrm(debug) } {
             lappend hrm(outputFiles) \
                 [SaveImage $psfImg $hrm(outputDir) $hrm(inputFile)_psf-fix.h5]
@@ -1035,7 +1151,7 @@ proc PreparePsf { img psf psfFile psfDepth } {
             # If PSF is variant, it's left empty here and calculated
             # automatically during the restoration, accordingly to the brick
             # mode.
-            Report "Using space-variant theoretical PSF"
+            ReportImportant "Using space-variant theoretical PSF"
 
         }
         } err ] } {
@@ -1059,6 +1175,12 @@ proc GenerateDeconCommand { img ch } {
     if { $ch != "all" && $hrm(chanCnt) > 1 } {
         $result comment "# Intermediate image for channel $ch"
     }
+
+    # NOTICE that GetParameter returns one value if ch is a number, or a whole
+    # list if it is "all". This means that for multichannel deconvolution in
+    # one go (without first splitting the channels), lists of parameters are
+    # used that are used conveniently when generating the deconvolution
+    # command.
 
     # cmle or qmle
     set method [ GetParameter method $ch 1 ]
@@ -1091,10 +1213,10 @@ proc GenerateDeconCommand { img ch } {
     # Brick mode: auto | one | few | normal | more | sliceBySlice
     set brMode [ GetParameter brMode $ch 1 ]
 
-    set psfImg [ PreparePsf $img $psf $psfFile $psfDepth ]
+    set psfImg [ PreparePsf $img $psf $psfFile $psfDepth $ch ]
 
     set cmd "$img $method $psfImg -> $result -bgMode $bgMode -bg {$bg} \
-        -blMode {$blMode} -it $it -sn {$sn} -brMode $brMode"
+        -blMode {$blMode} -it $it -sn {$sn} -brMode $brMode -tclReturn "
 
     if { $method == "qmle" } {
         append cmd " -itMode $itMode"
@@ -1102,13 +1224,15 @@ proc GenerateDeconCommand { img ch } {
         append cmd " -q $q"
     }
 
+    ReportImportant "Deconvolution command:\n$cmd"
+
     return [list method $method cmd $cmd psf $psfImg result $result]
 
 }
 
 
+# This deconvolves one particular channel, or "all" in a go.
 proc Deconvolve { image {ch 0} } {
-    # Single channel deconvolution
 
     if { [ catch {
 
@@ -1117,7 +1241,11 @@ proc Deconvolve { image {ch 0} } {
         Report "\n- Restoration ---\n\nRunning deconvolution: $dec(cmd)"
         SetTimerChannel $ch
 
-        eval $dec(cmd)
+        set mleReport [ eval $dec(cmd) ]
+        # Scaling divisors are reported by the deconvolution command: see
+        # http://support.svi.nl/wiki/HuygensCommand_MLEreport
+        ReportImportant "Deconvolution report for channel $ch: $mleReport"
+        set hrm(mleReport,$ch) $scaling
 
 
     } err ] } {
@@ -1245,9 +1373,16 @@ proc RunDeconvolution {} {
 
     if { [ catch {
 
+    set fileName [file join $hrm(inputDir) $hrm(inputFile) ]
+    ReportImportant "\n\n# HRM job ID: $hrm(jobID)\n----------------------"
+    set startDate [clock format [expr round($huygens(timer,startTime))] \
+        -format {%Y-%m-%d %H:%M:%S} ]
+    ReportImportant "$startDate"
+    ReportImportant "\nRestoring file $fileName"
+
     set opt "-series $hrm(seriesOption)"
 
-    set imageName [ OpenImage [file join $hrm(inputDir) $hrm(inputFile) ] $opt ]
+    set imageName [ OpenImage $fileName $opt ]
 
     ConfigureOriginalImage $imageName
 
@@ -1256,14 +1391,14 @@ proc RunDeconvolution {} {
     if { $hrm(parametersFrom) == "template" } {
         # Some file formats contain validated metadata that doesn't need to be
         # overwritten, if the user is certain about it.
-        Report "Using HRM parameter settings:"
+        ReportImportant "Using HRM parameter settings:"
         SetGlobalParameters $imageName
         for { set i 0 } { $i < $hrm(chanCnt) } { incr i } {
             # set all channels parameters
             SetChannelParameters $imageName $i
         }
     } else {
-        Report "Using image metadata parameters."
+        ReportImportant "Using image metadata parameters."
     }
 
     Report "--------------\n"
@@ -1326,6 +1461,9 @@ proc RunDeconvolution {} {
     ConfigureResultImage $result
     set savedResult \
        [ SaveImage $result $hrm(outputDir) $hrm(outputFile) $hrm(outputType) ]
+
+    # A succesfull job happens when saving the file.
+    set hrm(success) 1
     lappend hrm(outputFiles) $savedResult
     set hrm(savedResult) $savedResult
     lappend hrm(outputFiles) \

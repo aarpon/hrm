@@ -1464,6 +1464,10 @@ echo '</body></html>';
           $msize['tSeriesSfpMovie'] = round(filesize($test) / 1024.0);
       }
 
+      $test = $pdest."/".$file.".remarks.txt";
+      if (file_exists($test)) {
+          $path['remarks'] = $test;
+
       $test = $fileBase.".log.txt";
       if (file_exists($test)) {
           $path['log'] = $test;
@@ -1480,6 +1484,8 @@ echo '</body></html>';
       if (file_exists($test)) {
           $path['history'] = $test;
       }
+      }
+
 
 
       $desc['MIP'] = "MIP";
@@ -1492,6 +1498,7 @@ echo '</body></html>';
       $desc['tSeriesSfpMovie'] = "series SFP movie";
 
       $desc['history'] = "history";
+      $desc['remarks'] = "remarks";
       $desc['log'] = "log";
 
       $tip['MIP'] = "Compare Maximum Intensity Projections";
@@ -1504,6 +1511,7 @@ echo '</body></html>';
       $tip['tSeriesSfpMovie'] = "Download time series SFP movie<br>(".$msize['tSeriesSfpMovie']." kB)";
 
       $tip['history'] = "See the image restoration history, the executed Huygens - Tcl commands.";
+      $tip['remarks'] = "See the image restoration warnings.";
       $tip['log'] = "See the image restoration log file";
 
 
@@ -1586,7 +1594,7 @@ echo '</body></html>';
           $this->viewStrip( $file, "$mode.compare", "dest", true );
           echo "<div id=\"previewImg\">\n";
           echo "<center>Original - Restored<br>(drag scrollbar for browsing)</center>";
-      } else if ( $mode == "log" || $mode == "history" ) {
+      } else if ( $mode == "log" || $mode == "history" || $mode == "remarks" ) {
           echo "<div id=\"logFile\">\n";
           print "<pre>";
           readfile ($path[$mode]);
