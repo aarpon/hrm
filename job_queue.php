@@ -194,7 +194,7 @@ include("header.inc.php");
           <td class="created">created</td>
           <td class="status">status</td>
           <td class="started">started</td>
-          <?php if ($showStopTime) echo "<td class=\"stop\">end time</td>"; ?>
+          <?php if ($showStopTime) echo "<td class=\"stop\">estimated end</td>"; ?>
           <td class="pid">pid</td>
           <td class="server">server</td>
         </tr>

@@ -359,7 +359,7 @@ Class Job {
             if ( !$result && file_exists($path . '/' . $endTimeMarker) ) {
                 // Tasks may report an estimated end time, whenever they can.
                 $estEndTime = file_get_contents($path . '/' . $endTimeMarker);
-                report("Estimated end time: $estEndTime", 1);
+                report("Estimated end time for ". $desc->id(). ": $estEndTime", 1);
                 $queue = new JobQueue();
                 $queue->updateEstimatedEndTime($desc->id(), $estEndTime );
                 // Delete the report file, to only look at it when the
