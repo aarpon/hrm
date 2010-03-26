@@ -688,6 +688,7 @@ Class QueueManager {
                 global $useThumbnails;
 		$desc = $job->description();
 		$user = $desc->owner();
+                $fileserver = new Fileserver($user->name());
 		$emailAddress = $user->emailAddress();
 		$sourceFileName = $desc->sourceImageNameWithoutPath();
 		//$destFileName = $desc->destinationImageName();
@@ -696,13 +697,19 @@ Class QueueManager {
 		$text = $text . "Your job started at $startTime and finished at " . date("Y-m-d H:i:s") . ".\n";
 		$text = $text . "The image $sourceFileName was successfully processed by Huygens.\n";
 		$text = $text . "You will find the resulting image ($destFileName) in your destination folder.\n";
+                $imageName = $desc->destinationImageNameAndExtension();
                 if ( $useThumbnails ) {
-                    $imageName = $desc->destinationImageNameAndExtension();
                     $link = $hrm_url.
                            "/file_management.php?compareResult=".
                            urlencode($imageName);
                     $text .= "\nYou can find a preview of the result at ".$link.
                              " (login required).\n\n";
+                }
+                $remarksFile =
+                    $fileserver->destinationFolder(). "/".
+                    $imageName.".remarks.txt";
+		if (file_exists($remarksFile)) {
+                    $text = $text . file_get_contents($remarksFile)."\n\n";
                 }
 		$text = $text . "Best regards,\n";
 		$text = $text . "Huygens Remote Manager\n";
@@ -733,6 +740,7 @@ Class QueueManager {
 		$text = $text . $message;
 		$text = $text . "\n\n- SUMMARY ---------------------------\n\n";
 		$text = $text . $this->parameterText($job);
+
 		$text = $text . "\n\n- SCRIPT ----------------------------\n\n";
 		$text = $text . "What follows is the Huygens Core script executed when the error occured:\n\n";
 		$text = $text . $job->script();

@@ -1088,6 +1088,11 @@ Class JobDescription {
       $data['blMode'] = "auto";
 
 
+      // Images may be scaled during deconvolution. If this is set to one,
+      // that scaling is "reverted" by renormalizing all channels and time
+      // frames so that their ratios remain as in the originals.
+      $data['undoScaling'] = 1;
+
 
       // Spherical Aberration (S.A.) correction
 

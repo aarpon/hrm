@@ -1,6 +1,5 @@
 #TODO:
 # Report scaling factors
-# Generate symmetrical PSF
 
 # This file is part of Huygens Remote Manager.
 
@@ -60,8 +59,10 @@
 
 
 proc ReportError { err } {
+    huOpt printError "***************************************"
     huOpt printError $err
-    ReportImportant $err
+    huOpt printError "***************************************"
+    ReportImportant "***** $err"
 }
 
 proc ReportImportant { msg } {
@@ -409,11 +410,58 @@ proc ConfigureOriginalImage { img } {
 
 }
 
+# This procedure optionally 'reverts' the image scaling that may have been
+# applied during deconvolution. It is demanding: every channel and frame must
+# be separated, corrected, and joined back. It is only interesting is some
+# experimental cases, like sensitive ratiometric experiments. See
+# http://support.svi.nl/wiki/RatiometricImages.
+proc CorrectImageScaling { img } {
+    global hrm
+    global huygens
+
+    if { $huygens(scaling,applied) } {
+        # Report the scaling in any case.
+        ReportImportant $huygens(scaling,report)
+        if { $hrm(undoScaling) } {
+            # Undo it, if selected.
+            set unscale "Converting image to 32-bit float and reverting\
+                scaling, multiplying by: "
+            $img convert -type float
+            if {  $hrm(chanCnt) == 1 && $hrm(frameCnt) == 1 } {
+                set scaling $huygens(scaling,0,0)
+                append unscale $scaling
+                $img * $scaling -> $img
+            } else {
+                # General case: the images are multichannel and/or time
+                # series, so we use an intermediate image for each correction.
+                set tmp [CreateNewImage tmp]
+                for { set ch 0 } { $ch < $hrm(chanCnt) } { incr ch } {
+                    append unscale "\nChannel $ch: "
+                    set sep ""
+                    for { set t 0 } { $t < $hrm(frameCnt) } { incr t } {
+                        # Take the frame away:
+                        $img getframe -> $tmp -chan $ch -frame $t -mode one
+                        set scaling $huygens(scaling,$ch,$t)
+                        # Revert scaling
+                        $tmp * $scaling -> $tmp
+                        # Put the frame back in place
+                        $tmp putframe -> $img -chan $ch -frame $t -mode one
+                        # Include in the report
+                        append unscale $sep $scaling
+                        set sep ", "
+                    }
+                }
+                DeleteImage $tmp
+            }
+            ReportImportant $unscale
+        }
+    } else {
+        ReportImportant "The image was not scaled during deconvolution."
+    }
+}
+
 proc ConfigureResultImage { img } {
     global hrm
-
-    # This is a good point to 'undo' the scaling factors if necessary. They are
-    # reported in $hrm(mleReport,$ch).
 
     if { $hrm(outputType) == "ims" } {
         # An old HRM hack to store 2D time series as Z stacks in Imaris files.
@@ -617,6 +665,7 @@ proc InitScript {} {
 
     # A succesfull job happens when saving the file.
     set hrm(success) 0
+    set hrm(savedResult) ""
 
     # Report process ID
     set id [pid]
@@ -645,7 +694,8 @@ proc InitScript {} {
     # A list of temporary files to be deleted at the end of the script:
     set hrm(deleteFiles) {}
     set hrm(outputFiles) {}
-    set hrm(savedResult) ""
+    set huygens(scaling,report) "Image was divided by the following numbers:"
+    set huygens(scaling,applied) 0
 
     CheckHuygensVersion
 
@@ -1233,6 +1283,8 @@ proc GenerateDeconCommand { img ch } {
 
 # This deconvolves one particular channel, or "all" in a go.
 proc Deconvolve { image {ch 0} } {
+    global hrm
+    global huygens
 
     if { [ catch {
 
@@ -1245,7 +1297,36 @@ proc Deconvolve { image {ch 0} } {
         # Scaling divisors are reported by the deconvolution command: see
         # http://support.svi.nl/wiki/HuygensCommand_MLEreport
         ReportImportant "Deconvolution report for channel $ch: $mleReport"
-        set hrm(mleReport,$ch) $scaling
+        set huygens(mleReport,$ch) $mleReport
+
+        array set data $mleReport
+        if { $ch == "all" } {
+            # All channels deconvolved at a time: everything was reported here.
+            for { set c 0 } { $t < $hrm(chanCnt) } { incr c } {
+                append huygens(scaling,report) "\nChannel $c: "
+                set sep ""
+                for { set t 0 } { $t < $hrm(frameCnt) } { incr t } {
+                    set huygens(scaling,$c,$t) $data(scale,ch$c,t$t)
+                    append huygens(scaling,report) $sep $data(scale,ch$c,t$t)
+                    set sep ", "
+                    if { [expr $data(scale,ch$c,t$t) - 1.0 ] != 0 } {
+                        set huygens(scaling,applied) 1
+                    }
+                }
+            }
+        } else {
+            # Only one channel was deconvolved here, but all time frames.
+            append huygens(scaling,report) "\nChannel $ch: "
+            set sep ""
+            for { set t 0 } { $t < $hrm(frameCnt) } { incr t } {
+                set huygens(scaling,$ch,$t) $data(scale,ch0,t$t)
+                append huygens(scaling,report) $sep $data(scale,ch0,t$t)
+                set sep ", "
+                if { [expr $data(scale,ch0,t$t) - 1.0 ] != 0 } {
+                    set huygens(scaling,applied) 1
+                }
+            }
+        }
 
 
     } err ] } {
@@ -1374,7 +1455,7 @@ proc RunDeconvolution {} {
     if { [ catch {
 
     set fileName [file join $hrm(inputDir) $hrm(inputFile) ]
-    ReportImportant "\n\n# HRM job ID: $hrm(jobID)\n----------------------"
+    ReportImportant "\n\n# HRM remarks for job ID: $hrm(jobID)\n----------------------"
     set startDate [clock format [expr round($huygens(timer,startTime))] \
         -format {%Y-%m-%d %H:%M:%S} ]
     ReportImportant "$startDate"
@@ -1458,6 +1539,7 @@ proc RunDeconvolution {} {
     Report "Total deconvolution time:\
         [expr round($now - $huygens(timer,startTime)) ] s"
 
+    CorrectImageScaling $result
     ConfigureResultImage $result
     set savedResult \
        [ SaveImage $result $hrm(outputDir) $hrm(outputFile) $hrm(outputType) ]
@@ -1578,6 +1660,7 @@ proc DefineScriptParameters_DEBUG {} {
     maxComparisonSize 300 \
     imagesOwnedBy "jose" \
     imagesGroup "staff" \
+    undoScaling 0 \
     \
     method cmle \
     psf theoretical-variant \

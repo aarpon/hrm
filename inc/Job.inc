@@ -270,15 +270,21 @@ Class Job {
 		// If fileshare is not on the same host as Huygens
 		if (!$imageProcessingIsOnQueueManager && $copy_images_to_huygens_server) {
 			$image = $huygens_server_image_folder . $user->name() . "/" . $image_destination . "/" . $desc->relativeSourcePath() . $resultImage;
+			$previews = $huygens_server_image_folder . $user->name() . "/" . $image_destination . "/" . $desc->relativeSourcePath() . "hrm_previews/". $resultImage;
 			// escape special characters in image path
 			$image = eregi_replace(" ", "\\ ", $image);
                         $image = str_replace(".ics",".i*s", $image);
+			$previews = eregi_replace(" ", "\\ ", $previews);
 			//error_log("Retrieving result image...");
 			//error_log("sudo mkdir -p " . escapeshellarg($path));
 			$result = exec("sudo mkdir -p " . escapeshellarg($path));
+			$result = exec("sudo mkdir -p " . escapeshellarg($path)
+                        . "/hrm_previews");
 			//error_log($result);
 			//error_log("(cd " . escapeshellarg($path) . " && scp " . $huygens_user . "@" . $server_hostname . ":" . escapeshellarg($image) . " .)");
 			$result = exec("(cd " . escapeshellarg($path) . " && sudo scp " . $huygens_user . "@" . $server_hostname . ":" . escapeshellarg($image) . " .)");
+			$result = exec("(cd " . escapeshellarg($path) . 
+                        "/hrm_previews && sudo scp " . $huygens_user . "@" . $server_hostname . ":" . escapeshellarg($previews) . " .)");
 			//error_log($result);
 		}
 		
@@ -297,7 +303,7 @@ Class Job {
             global $imageProcessingIsOnQueueManager;
             global $huygens_user;
             global $huygens_server_image_folder;
-            global $image_source;
+            global $image_source, $image_destination;
 
             clearstatcache();
 
@@ -311,12 +317,18 @@ Class Job {
 
             $fileserver = new Fileserver($user->name());
             $path = $fileserver->sourceFolder();
+            $dpath = $fileserver->destinationFolderFor($desc);
+
 
             $finishedMarker = ".finished_" . $desc->id();
             $endTimeMarker = ".EstimatedEndTime_" . $desc->id();
+            $remarksFile = $desc->sourceImageShortName() . "*" . "_" .
+                $desc->id() . "*.remarks.txt";
+
 
             // If fileshare is not on the same host as Huygens.
             if (!$imageProcessingIsOnQueueManager) {
+                // Copy the finished marker
                 $marker = $huygens_server_image_folder . $user->name() . 
                     "/" . $image_source . "/" . $finishedMarker;
                 $remoteFile = exec("ssh " . $huygens_user . "@" . 
@@ -325,21 +337,42 @@ Class Job {
                 //ls " . $marker);
                 //error_log($result);
                 // TODO: is the queue manager a sudoer?
+
                 if ($remoteFile == $marker) {
                     exec("(cd " . $path . " && sudo scp " . $huygens_user . "@"
                             . $server_hostname . ":" . $marker . " .)");
-                }
-                $marker = $huygens_server_image_folder . $user->name() . "/" .
-                    $image_source . "/" . $endTimeMarker;
-                $remoteFile = exec("ssh " . $huygens_user . "@" .
-                        $server_hostname . " ls " . $marker);
-                if ($remoteFile == $marker) {
-                    exec("(cd " . $path . " && sudo scp " . $huygens_user . "@"
-                            . $server_hostname . ":" . $marker . " .)");
-                    // Delete in the remote place, not to transfer again until
-                    // it is updated.
-                    exec("ssh " . $huygens_user . "@" .
-                        $server_hostname . " rm -f " . $marker);
+
+                    // If finished, copy also the remarks file.
+                    // Shouldn't this happen only if
+                    // $copy_images_to_huygens_server == true ?
+                    $marker = $huygens_server_image_folder . $user->name() .
+                        "/" . $image_destination . "/" .
+                        $desc->relativeSourcePath() . $remarksFile;
+                    $marker = $huygens_server_image_folder . 
+                        $user->name() . "/" .
+                        $image_destination . "/" . $remarksFile;
+                    $remoteFile = exec("ssh " . $huygens_user . "@" .
+                            $server_hostname . " ls " . $marker);
+                    if ($remoteFile == $marker) {
+                        exec("(cd " . $dpath . " && sudo scp " . 
+                            $huygens_user . "@" . $server_hostname . ":" .
+                            $marker . " .)");
+                    }
+                } else {
+
+                    // Copy the estimated end time little file.
+                    $marker = $huygens_server_image_folder . $user->name() 
+                        . "/" .  $image_source . "/" . $endTimeMarker;
+                    $remoteFile = exec("ssh " . $huygens_user . "@" .
+                            $server_hostname . " ls " . $marker);
+                    if ($remoteFile == $marker) {
+                        exec("(cd " . $path . " && sudo scp " . $huygens_user 
+                            . "@" . $server_hostname . ":" . $marker . " .)");
+                        // Delete in the remote place, not to transfer again
+                        // until it is updated.
+                        exec("ssh " . $huygens_user . "@" .
+                            $server_hostname . " rm -f " . $marker);
+                    }
                 }
 
             }
@@ -362,9 +395,9 @@ Class Job {
                 report("Estimated end time for ". $desc->id(). ": $estEndTime", 1);
                 $queue = new JobQueue();
                 $queue->updateEstimatedEndTime($desc->id(), $estEndTime );
-                // Delete the report file, to only look at it when the
+                // Delete the end time file, to only look at it when the
                 // estimation is updated.
-                $estEndTime = @unlink($path . '/' . $endTimeMarker);
+                @unlink($path . '/' . $endTimeMarker);
                 # $this->UpdateEstimatedEndTime($estEndTime);
             }
 
