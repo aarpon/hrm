@@ -1210,7 +1210,17 @@ Class JobDescription {
       } else {
           $data['psf'] = "measured";
           // A list of files, one per channel (or just one multichannel image)
-          $data['psfFile'] = $this->getParamAsTclList($micr, 'PSF', true);
+          $psfFiles = $micr->parameter('PSF')->value();
+          if ( !is_array( $psfFiles ) ) {
+              $data['psfFile'] = "\"".  $this->sourceFolder() .$psfFiles. "\"";
+          } else {
+              $data['psfFile'] = "{";
+              foreach ( $psfFiles as $f ) {
+                  $data['psfFile'] .= " \"".  $this->sourceFolder() . $f.  "\"";
+              }
+              $data['psfFile'] .= " }";
+          }
+
       }
 
 

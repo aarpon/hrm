@@ -1,7 +1,4 @@
-#TODO:
-# Report scaling factors
-
-# This file is part of Huygens Remote Manager.
+# This Tcl script file is part of Huygens Remote Manager.
 
 # Huygens Remote Manager is software that has been developed at 
 # Montpellier Rio Imaging (mri) in 2004 by Pierre Travo and Volker 
@@ -51,7 +48,7 @@
 # now the HRM must write a small procedure DefineScriptParameters that sets
 # everything as necessary (see example below).
 #
-# In the future, when huygens core works as a daemon, all these parameters
+# In the future, when Huygens Core works as a daemon, all these parameters
 # could be passed via a socket.
 #
 # Written by Jose Vina (jose@svi.nl) in March 2010 for HRM 1.3.
@@ -128,17 +125,16 @@ proc MessageFilter { msg } {
     # Search for especial messages that are unacceptable in a HRM job: in those
     # cases, report and error and quit.
 
-    set exit 0
     set messageType "normal"
 
     if { [ string first \
         "After necessary resampling the PSF is too small" $msg ] > -1  } {
-        set messageType "warning"
+        set messageType "error"
     }
 
     if { [ string first \
         "Microscope types of original and PSF differ" $msg ] > -1  } {
-        set messageType "warning"
+        set messageType "error"
     }
 
     # Search for other strings that report about the deconvolution progress, to
@@ -304,12 +300,6 @@ proc MessageFilter { msg } {
           }
     }
 
-
-    if { $exit } {
-        Report "Quitting: $msg"
-        FinishScript
-    }
-
     return $messageType
 
 }
@@ -324,7 +314,12 @@ proc Hu_Print { {msg ""} } {
         timestamp {
             Report "(TS [Hu_timeStamp]) $msg"
         }
-        warning { ReportImportant $msg }
+        warning { ReportImportant "******* $msg" }
+        error {
+            ReportError $msg
+            ReportError "Not accepted in HRM, quitting."
+            FinishScript
+        }
         normal {
             Report $msg
         }
@@ -383,7 +378,7 @@ proc OpenImage { filename {options ""} } {
     if { [ catch { 
             eval img open "$filename" -logEnable $subOpt $options
         } imgName ] } {
-        ReportError "Problem opening image $filename $subOpt: imgName"
+        ReportError "Problem opening image $filename $subOpt: $imgName"
         FinishScript
     }
     $imgName lundo -off
@@ -916,7 +911,7 @@ proc SetGlobalParameters { imgName } {
     } else {
         if { $csDistance != 0 } {
             ReportImportant "Coverslip is $csDistance um away from the\
-            begining of the stack."
+            limit of the stack."
         }
         set imgDir [ GetParameter imagingDir ]
         if { $imgDir == "upward" } {
@@ -1209,7 +1204,8 @@ proc PreparePsf { img psf psfFile psfDepth ch } {
             # multichannel PSFs, we do this by tweaking the original image and
             # then setting it back to the correct parameters.
             ReportImportant \
-            "Generating theoretical PSF: symmetrical at depth zero, no\
+            "Generating theoretical PSF: symmetrical and at \
+            the coverslip position, no\
             spherical aberration correction."
             set origData [ MatchImageRI $img ]
             $img genpsf -> $psfImg -dims padpar -zPos 0
@@ -1218,19 +1214,19 @@ proc PreparePsf { img psf psfFile psfDepth ch } {
             RestoreOriginalData $psfImg $origData
             if { $hrm(debug) } {
             lappend hrm(outputFiles) \
-                [SaveImage $psfImg $hrm(outputDir) $hrm(inputFile)_psf-sym.h5]
+                [SaveImage $psfImg $hrm(outputDir) $hrm(outputFile).psf-sym.h5]
             }
 
         } elseif { $psf == "theoretical-fixed" } {
             # Generate a fixed theoretical PSF at a given depth, not
             # symmetrical.
             ReportImportant\
-            "Generating theoretical PSF: fixed at depth $psfDepth,\
-            partial spherical aberration correction."
+            "Generating theoretical PSF: fixed at depth $psfDepth um from the\
+            coverslip, partial spherical aberration correction."
             $img genpsf -> $psfImg -dims padpar -zPos $psfDepth
             if { $hrm(debug) } {
             lappend hrm(outputFiles) \
-                [SaveImage $psfImg $hrm(outputDir) $hrm(inputFile)_psf-fix.h5]
+                [SaveImage $psfImg $hrm(outputDir) $hrm(outputFile).psf-fix.h5]
             }
         } else {
             # If PSF is variant, it's left empty here and calculated
@@ -1639,94 +1635,7 @@ proc HRMrun { {task deconvolution } } {
 }
 
 
-
-
-
-
 # THIS PART CHANGES FOR EACH JOB ---------------------
-# These parameters must be set by JobDescription.php in a procedure called
+# The parameters must be set by JobDescription.php in a Tcl procedure called
 # DefineScriptParameters.
-
-proc DefineScriptParameters_DEBUG {} {
-
-    global hrm
-
-    # HRM should check that the output file doesn't exist yet. If so, add a
-    # suffix to its name.
-
-    set hrm_list [list \
-    jobID "4b8bbadc0a32e" \
-    \
-    inputDir "/Users/jose/Sites/hrm_images/jose/huygens_src" \
-    reportDir "/Users/jose/Sites/hrm_images/jose/huygens_src" \
-    inputFile "objectAnalyzer_test_image_comb_x_1.ics" \
-    outputDir "/Users/jose/Sites/hrm_images/jose/huygens_dst" \
-    outputFile "objectAnalyzer_test_image_comb_x_1Ch0_4b8bbadc0a32e_hrm.h5" \
-    \
-    inputDir "/Users/jose/Desktop/HRM" \
-    inputFile "HRM_test_2_chan_2_frame.h5" \
-    inputDir "/Users/jose/Sites/hrm_images/jose/huygens_src" \
-    inputFile "objectAnalyzer_test_image_comb_x_1.ics" \
-    outputDir "/Users/jose/Desktop/HRM/results" \
-    outputFile "HRM_test_1_chan_1_frame_restored.h5" \
-    \
-    outputType "hdf5" \
-    \
-    parametersFrom "template" \
-    channelProcessing "all" \
-    isTimeSeries 0 \
-    isThreeDimensional 1 \
-    seriesOption "auto" \
-    forceProcessAsFloat 0 \
-    \
-    micr {"confocal"} \
-    dx 0.05 \
-    dy 0.05 \
-    dz 0.15 \
-    dt 1.0 \
-    na {1.4 1.4 1.4 1.4} \
-    ril {1.51 1.51 1.51 1.51} \
-    ri {1.44 1.44 1.44 1.44} \
-    ex {480 495 510 530} \
-    em {510 525 535 550} \
-    pr {250 250 250 250} \
-    ps {2.53 2.53 2.53 2.53} \
-    offX 0 \
-    offY 0 \
-    offZ 0 \
-    offT 0 \
-    imagingDir upward \
-    pcnt 1 \
-    exBeamFill 2.0 \
-    objQuality perfect \
-    \
-    coverslipDistanceFromStack 0 \
-    \
-    useThumbnails 1 \
-    movieMaxSize 300 \
-    saveSfpPreviews 1 \
-    maxComparisonSize 300 \
-    imagesOwnedBy "jose" \
-    imagesGroup "staff" \
-    \
-    method cmle \
-    psf theoretical-variant \
-    psfFile - \
-    bgMode auto \
-    bg 0 \
-    blMode auto \
-    q 0.1 \
-    it 20 \
-    itMode auto \
-    sn auto \
-    brMode auto \
-    ]
-
-    array set hrm $hrm_list
-
-}
-
-
-# Start the job.
-# HRMrun deconvolution
 

@@ -265,12 +265,19 @@ Class Job {
 		$path = $fileserver->destinationFolderFor($desc);
 		
 		// TODO refactor JobDescription
-		$resultImage = $desc->sourceImageShortName() . "*" . "_" . $desc->id() . "*";
+                $destFileName = $desc->destinationImageNameWithoutPath();
+                //$resultImage = $desc->sourceImageShortName() . "*" . "_" .
+                    //$desc->id() . "*";
 		
 		// If fileshare is not on the same host as Huygens
 		if (!$imageProcessingIsOnQueueManager && $copy_images_to_huygens_server) {
-			$image = $huygens_server_image_folder . $user->name() . "/" . $image_destination . "/" . $desc->relativeSourcePath() . $resultImage;
-			$previews = $huygens_server_image_folder . $user->name() . "/" . $image_destination . "/" . $desc->relativeSourcePath() . "hrm_previews/". $resultImage;
+                        $image = $huygens_server_image_folder . $user->name() .
+                            "/" . $image_destination . "/" .
+                            $desc->relativeSourcePath() . $destFileName .  "*";
+                        $previews = $huygens_server_image_folder .
+                            $user->name() . "/" . $image_destination . "/" .
+                            $desc->relativeSourcePath() . "hrm_previews/".
+                            $destFileName. "*";
 			// escape special characters in image path
 			$image = eregi_replace(" ", "\\ ", $image);
                         $image = str_replace(".ics",".i*s", $image);
@@ -289,13 +296,14 @@ Class Job {
 		}
 		
 		// TODO is checking for job id only a good idea?
-		$fileNameExists = $fileserver->folderContains($path, $desc->id());
+		$fileNameExists = $fileserver->folderContains($path, 
+                        $destFileName);
 		// TODO is checking for new files a relevant criterion?
 		//$newFileWritten = $fileserver->folderContainsNewerFile($path, $queue->startTime($this));
 		$result = $fileNameExists/* || $newFileWritten*/;
                 if (!$result) { 
-                    report("Problem: no result file $resultImage in destination directory $path", 0);
-                    } else { report("File $resultImage available", 2); }
+                    report("Problem: no result file $destFileName in destination directory $path", 0);
+                    } else { report("File $destFileName available", 2); }
 		return $result;
 	}
 
