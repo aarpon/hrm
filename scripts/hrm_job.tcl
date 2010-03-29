@@ -402,6 +402,15 @@ proc ConfigureOriginalImage { img } {
         }
     }
 
+    if { $hrm(forceProcessAsFloat) == 1 } {
+        if { [ catch {
+            $img convert -type float
+        } err ] } {
+            ReportError "Problem converting image to 32-bit float: $err"
+            FinishScript
+        }
+    }
+
     set hrm(chanCnt) [$img getdims -mode ch]
     set hrm(frameCnt) [$img getdims -mode t]
 
@@ -410,51 +419,19 @@ proc ConfigureOriginalImage { img } {
 
 }
 
-# This procedure optionally 'reverts' the image scaling that may have been
-# applied during deconvolution. It is demanding: every channel and frame must
-# be separated, corrected, and joined back. It is only interesting is some
-# experimental cases, like sensitive ratiometric experiments. See
-# http://support.svi.nl/wiki/RatiometricImages.
-proc CorrectImageScaling { img } {
+# This procedure reports the image scaling that may have been applied during
+# deconvolution.
+#
+# The best way to prevent scaling is to convert the image to 32-bit
+# float before deconvolution. The proc ConfigureOriginalImage takes care of
+# that if a certain option is passed.
+proc ReportImageScaling { img } {
     global hrm
     global huygens
 
     if { $huygens(scaling,applied) } {
-        # Report the scaling in any case.
+        ReportImportant "The image was divided by the following numbers:"
         ReportImportant $huygens(scaling,report)
-        if { $hrm(undoScaling) } {
-            # Undo it, if selected.
-            set unscale "Converting image to 32-bit float and reverting\
-                scaling, multiplying by: "
-            $img convert -type float
-            if {  $hrm(chanCnt) == 1 && $hrm(frameCnt) == 1 } {
-                set scaling $huygens(scaling,0,0)
-                append unscale $scaling
-                $img * $scaling -> $img
-            } else {
-                # General case: the images are multichannel and/or time
-                # series, so we use an intermediate image for each correction.
-                set tmp [CreateNewImage tmp]
-                for { set ch 0 } { $ch < $hrm(chanCnt) } { incr ch } {
-                    append unscale "\nChannel $ch: "
-                    set sep ""
-                    for { set t 0 } { $t < $hrm(frameCnt) } { incr t } {
-                        # Take the frame away:
-                        $img getframe -> $tmp -chan $ch -frame $t -mode one
-                        set scaling $huygens(scaling,$ch,$t)
-                        # Revert scaling
-                        $tmp * $scaling -> $tmp
-                        # Put the frame back in place
-                        $tmp putframe -> $img -chan $ch -frame $t -mode one
-                        # Include in the report
-                        append unscale $sep $scaling
-                        set sep ", "
-                    }
-                }
-                DeleteImage $tmp
-            }
-            ReportImportant $unscale
-        }
     } else {
         ReportImportant "The image was not scaled during deconvolution."
     }
@@ -694,7 +671,7 @@ proc InitScript {} {
     # A list of temporary files to be deleted at the end of the script:
     set hrm(deleteFiles) {}
     set hrm(outputFiles) {}
-    set huygens(scaling,report) "Image was divided by the following numbers:"
+    set huygens(scaling,report) ""
     set huygens(scaling,applied) 0
 
     CheckHuygensVersion
@@ -714,6 +691,13 @@ proc InitScript {} {
     set hrm(warningFile) {}
     set hrm(warningFilePath) \
         [ file join $hrm(outputDir) $hrm(outputFile).remarks.txt ]
+
+    set huygens(type,bin) "2 bit binary"
+    set huygens(type,byte) "8 bit unsigned bite"
+    set huygens(type,int) "16 bit signed integer"
+    set huygens(type,float) "32 bit signed float"
+    set huygens(type,complex) "2x32 bit signed complex"
+
 }
 
 proc HandleOutputFiles {} {
@@ -1464,8 +1448,15 @@ proc RunDeconvolution {} {
     set opt "-series $hrm(seriesOption)"
 
     set imageName [ OpenImage $fileName $opt ]
-
     ConfigureOriginalImage $imageName
+
+    set originalType [$imageName getconfig -mode type]
+    ReportImportant "Image read as of type '$huygens(type,$originalType)'"
+    set dims [$imageName getdims]
+    set dimMsg "[lindex $dims 0] x [lindex $dims 1] x [lindex $dims 2], "
+    append dimMsg "[lindex $dims 3] time frames, [lindex $dims 4] channels."
+    ReportImportant "Dimensions: $dimMsg"
+
 
     Report "\n- Image parameters ---\n\n"
 
@@ -1539,7 +1530,11 @@ proc RunDeconvolution {} {
     Report "Total deconvolution time:\
         [expr round($now - $huygens(timer,startTime)) ] s"
 
-    CorrectImageScaling $result
+    set resultType [$result getconfig -mode type]
+    ReportImportant \
+        "Deconvolution result is of type '$huygens(type,$resultType)'"
+
+    ReportImageScaling $result
     ConfigureResultImage $result
     set savedResult \
        [ SaveImage $result $hrm(outputDir) $hrm(outputFile) $hrm(outputType) ]
@@ -1631,6 +1626,7 @@ proc DefineScriptParameters_DEBUG {} {
     isTimeSeries 0 \
     isThreeDimensional 1 \
     seriesOption "auto" \
+    forceProcessAsFloat 0 \
     \
     micr {"confocal"} \
     dx 0.05 \
@@ -1660,7 +1656,6 @@ proc DefineScriptParameters_DEBUG {} {
     maxComparisonSize 300 \
     imagesOwnedBy "jose" \
     imagesGroup "staff" \
-    undoScaling 0 \
     \
     method cmle \
     psf theoretical-variant \

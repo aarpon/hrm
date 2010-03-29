@@ -1087,11 +1087,11 @@ Class JobDescription {
       // Bleaching correction.
       $data['blMode'] = "auto";
 
-
-      // Images may be scaled during deconvolution. If this is set to one,
-      // that scaling is "reverted" by renormalizing all channels and time
-      // frames so that their ratios remain as in the originals.
-      $data['undoScaling'] = 1;
+      // Doing the deconvolution with 32-bit signed float images prevents the
+      // use of any scaling factor. This is imporant for example ratiometric
+      // analysis, but maybe also for consistent between-image comparison.
+      // There should be an option in the interface to disable this.
+      $data['forceProcessAsFloat'] = 1;
 
 
       // Spherical Aberration (S.A.) correction

@@ -144,8 +144,12 @@ Class QueueManager {
                 */
 		// >>
 		report("running script (pid $pid)", 1);
-                // $proc->release();
-                $this->activeProcs[$job->id()] = $proc;
+
+                // Release the shell, the script in the background will keep
+                // running.
+                $proc->release();
+
+                # $this->activeProcs[$job->id()] = $proc;
 		$job->setPid($pid);
 		$job->setServer($server);
 		return ($pid > 0);
@@ -512,13 +516,12 @@ Class QueueManager {
 					unlink($logFile);	
 				// make withdrawal of hours
 				if ($use_accounting_system) $this->makeWithdrawal($desc->owner(), $accounting_client_name, $startTime, $this->stopTime, $desc->credit(), $desc->group);
-                                $proc = $this->activeProcs[$id];
+                                # $proc = $this->activeProcs[$id];
                                 # $debug = var_export($this->activeProcs, true);
-
-                                report ("Releasing shell, ".
-                                        "unsetting activeProc $id", 2);
-                                $proc->release();
-                                unset($this->activeProcs[$id]);
+                                # report ("Releasing shell, ".
+                                 #       "unsetting activeProc $id", 2);
+                                # $proc->release();
+                                # unset($this->activeProcs[$id]);
 			}
 			
 			/*$result = False;

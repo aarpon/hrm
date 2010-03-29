@@ -65,7 +65,6 @@ global $authenticateAgainst;
 
 $message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
 
-
 session_start();
 if (isset($_SESSION['request'])) {
     $req = $_SESSION['request'];

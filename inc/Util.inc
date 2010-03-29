@@ -269,15 +269,10 @@ function huCoreTools ($tool, $options) {
 //              which is 'calculated' by hucore in the background.
 // @param       $tool is the procedure in scripts/hucore.tcl to be executed.
 //              $options are extra command line options to send to that script
-//              $param is the KEYWORD that identifies the array we want in the
-//              hucore output.
+//              hucore output. By default, it uses the same tool name.
 // @return      The requested array.
 //!---------------------------------------------------------
-function askHuCore ($tool, $options = "", $keyword = "") {
-
-      // If no keyword is provided, then it is assumed that the keyword Huygens
-      // will use to report back is the same function name plus " RETURN".
-      if ($keyword == "" ) { $keyword = "$tool RETURN"; }
+function askHuCore ($tool, $options = "") {
 
       $answer = huCoreTools( $tool, $options );
 
