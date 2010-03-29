@@ -971,6 +971,7 @@ Class JobDescription {
       // By now, force parameters from template. In the future, we can allow
       // users to use some (those with value '-') or all parameters from each
       // file metadata. For the latter, we can simply set this to 'metadata';
+      // TODO GUI 1.3
       $data['parametersFrom'] = "template";
 
 
@@ -1010,6 +1011,7 @@ Class JobDescription {
       // Excitation beam fill is an important parameter that affects the
       // effective N.A., but most people don't know it. Leave it in a
       // reasonable default value by now.
+      // TODO GUI
       $data['exBeamFill'] = 2.0;
 
       // Leave objective quality as 'perfect' for backwards compatibility, but
@@ -1019,6 +1021,7 @@ Class JobDescription {
       // Notice that if this is not perfect, the orientation of the sample
       // matters a lot, even if we deactivate S.A. correction: the PSF is not
       // symmetrical anymore for imperfect objectives.
+      // TODO GUI
       $data['objQuality'] = "perfect";
 
       $data['ril'] =
@@ -1085,12 +1088,14 @@ Class JobDescription {
       }
 
       // Bleaching correction.
+      // TODO GUI
       $data['blMode'] = "auto";
 
       // Doing the deconvolution with 32-bit signed float images prevents the
       // use of any scaling factor. This is imporant for example ratiometric
       // analysis, but maybe also for consistent between-image comparison.
       // There should be an option in the interface to disable this.
+      // TODO GUI 1.3
       $data['forceProcessAsFloat'] = 1;
 
 
@@ -1134,11 +1139,22 @@ Class JobDescription {
       // S.A. correction requires knowing what is the position of the
       // coverslip, and the orientation of the dataset. We don't need to mirror
       // the stack, the orientation is an image parameter since Huygens 3.5.
+
+      // TODO GUI 1.3: ask the distance between the coverslip and the begining
+      // of the stack; since Huygens 3.5 this is considered for a good S.A.
+      // correction. Use the same 'depth' parameter here, but notice that in
+      // the HRM 1.2 this parameter is only asked when the user goes for a
+      // fixed-PSF. We need to know the distance to the coverslip for the
+      // space-variant PSF!
       $data['iFacePrim'] = $depth;
 
-      // When using a fixed PSF, the $depth is also the one to calculate it.
+      // When using a fixed PSF, the $depth is also the one to set on what
+      // position we want to calculate it.
+      // This is already asked by the current GUI.
       $data['psfDepth'] = $depth;
 
+      // We don't need to mirror the image, since Huygens 3.5 the stack
+      // orientation is an image parameter.
       $coverslipPos = $micr->parameter('CoverslipRelativePosition')->value();
       if ($coverslipPos == 'farthest' ) {
           $data['imagingDir'] = "downward";
@@ -1198,6 +1214,7 @@ Class JobDescription {
 
 
       // Build settings procedure ----------------------------------------
+      // Dump all the $data array in a convenient Tcl form.
 
 
       $s = "
