@@ -906,7 +906,7 @@ proc SetGlobalParameters { imgName } {
     # simpler for the user, and the templates more reusable.
     set csDistance [ GetParameter coverslipDistanceFromStack ]
 
-    if { $csDistance == "-" || $value == "(ignore)" } {
+    if { $csDistance == "-" || $csDistance == "(ignore)" } {
         set hrm(iFacePrim) "(ignore)"
     } else {
         if { $csDistance != 0 } {
@@ -1204,7 +1204,7 @@ proc PreparePsf { img psf psfFile psfDepth ch } {
             # multichannel PSFs, we do this by tweaking the original image and
             # then setting it back to the correct parameters.
             ReportImportant \
-            "Generating theoretical PSF: symmetrical and at \
+            "Generating theoretical PSF: symmetrical and at\
             the coverslip position, no\
             spherical aberration correction."
             set origData [ MatchImageRI $img ]

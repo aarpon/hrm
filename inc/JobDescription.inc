@@ -1110,25 +1110,31 @@ Class JobDescription {
 
       $SAcorr = $micr->getAberractionCorrectionParameters();
 
+
       if ( $SAcorr[ 'AberrationCorrectionNecessary' ] == 1 ) {
           if ( $SAcorr[ 'PerformAberrationCorrection' ] == 0 ) {
               $brMode = 'one';
               $constant = true;
               $symmetrical = true;
+              $coverslip = "(ignore)";
           } else {
               $depth = $SAcorr[ 'PSFGenerationDepth' ];
               if ( $SAcorr[ 'AberrationCorrectionMode' ] == 'automatic' ) {
                   $brMode = 'auto';
+                  $coverslip = $SAcorr[ 'PSFGenerationDepth' ];
               } else {
                   if ( $SAcorr[ 'AdvancedCorrectionOptions' ] == 'user' ) {
                       $brMode = 'one';
                       $constant = true;
+                      $coverslip = "(ignore)";
                   }
                   if ( $SAcorr[ 'AdvancedCorrectionOptions' ] == 'slice' ) {
                       $brMode = 'sliceBySlice';
+                      $coverslip = $SAcorr[ 'PSFGenerationDepth' ];
                   }
                   if ( $SAcorr[ 'AdvancedCorrectionOptions' ] == 'few' ) {
                       $brMode = 'few';
+                      $coverslip = $SAcorr[ 'PSFGenerationDepth' ];
                   }
               }
           }
@@ -1142,11 +1148,11 @@ Class JobDescription {
 
       // TODO GUI 1.3: ask the distance between the coverslip and the begining
       // of the stack; since Huygens 3.5 this is considered for a good S.A.
-      // correction. Use the same 'depth' parameter here, but notice that in
-      // the HRM 1.2 this parameter is only asked when the user goes for a
-      // fixed-PSF. We need to know the distance to the coverslip for the
-      // space-variant PSF!
-      $data['coverslipDistanceFromStack'] = $depth;
+      // correction. Use the same 'PSFGenerationDepth' parameter here, but
+      // notice that in the HRM 1.2 this parameter is only asked when the user
+      // goes for a fixed-PSF. We need to know the distance to the coverslip
+      // for the space-variant PSF!
+      $data['coverslipDistanceFromStack'] = $coverslip;
       // Notice: internally, Huygens uses a parameter 'iFacePrim' that sets the
       // distance in micrometers, measured from the
       // plane Z = 0 of the stack (the bottom one). We will translate the
