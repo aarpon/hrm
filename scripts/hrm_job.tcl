@@ -71,7 +71,7 @@ proc ReportImportant { msg } {
     # An important message is reported to the log file...
     Report $msg
 
-    # ...but also to a special file together with the file
+    # ...but also to a special file together with the result image.
     if { [ catch {
         set fp [open $hrm(warningFilePath) "a"]
         puts $fp $msg
@@ -663,7 +663,9 @@ proc InitScript {} {
 
     # Parameter names:
     set huygens(globalParam) \
-        {dx dy dz dt offX offY offZ offT iFacePrim imagingDir}
+        {dx dy dz dt offX offY offZ offT imagingDir}
+
+    set huygens(globalDerivedParam) iFacePrim
 
     set huygens(channelParam) \
         {micr na ri ril ex em pr ps pcnt exBeamFill objQuality}
@@ -879,6 +881,7 @@ proc MakeOutDir { path } {
 
 proc SetGlobalParameters { imgName } {
     global huygens
+    global hrm
 
     set setP ""
     set sep ""
@@ -902,6 +905,54 @@ proc SetGlobalParameters { imgName } {
         ReportError "Problem setting global parameters of $imgName: $err"
         FinishScript
     }
+
+    # iFacePrim is calculated depending on coverslipDistanceFromStack, the
+    # imaging direction, and the stack size. Like that, the HRM interface is
+    # simpler for the user, and the templates more reusable.
+    set csDistance [ GetParameter coverslipDistanceFromStack ]
+
+    if { $csDistance == "-" || $value == "(ignore)" } {
+        set hrm(iFacePrim) "(ignore)"
+    } else {
+        if { $csDistance != 0 } {
+            ReportImportant "Coverslip is $csDistance um away from the\
+            begining of the stack."
+        }
+        set imgDir [ GetParameter imagingDir ]
+        if { $imgDir == "upward" } {
+            # In this case, iFacePrim is directly:
+            set hrm(iFacePrim) $csDistance
+        } else {
+            set dz [ GetParameter dz ]
+            set z [ $imgName getdims -mode z ]
+            set stackSize [ expr $dz * $z ]
+            set hrm(iFacePrim) [expr $stackSize + $csDistance]
+            ReportImportant "Parameter iFacePrim set to $hrm(iFacePrim) um for\
+            a stack height of $stackSize um."
+        }
+    }
+
+    if { [ catch {
+
+        # Common parameters
+        foreach param $huygens(globalDerivedParam) {
+            set value [ GetParameter $param ]
+            if {$value != "(null)" && $value != "-" && $value != "(ignore)" } {
+                $imgName setp -$param $value
+                append setP "$sep$param $value"
+                set sep "; "
+            } elseif { $value == "-" } {
+                lappend nsetP $param
+            }
+        }
+
+    } err ] } {
+        ReportError "Problem setting global parameters of $imgName: $err"
+        FinishScript
+    }
+
+
+
 
     ReportImportant "Global parameters set: $setP."
     if { [llength $nsetP ] > 0  } {
@@ -1644,11 +1695,12 @@ proc DefineScriptParameters_DEBUG {} {
     offY 0 \
     offZ 0 \
     offT 0 \
-    iFacePrim 0 \
     imagingDir upward \
     pcnt 1 \
     exBeamFill 2.0 \
     objQuality perfect \
+    \
+    coverslipDistanceFromStack 0 \
     \
     useThumbnails 1 \
     movieMaxSize 300 \

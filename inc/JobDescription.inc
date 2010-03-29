@@ -1146,7 +1146,33 @@ Class JobDescription {
       // the HRM 1.2 this parameter is only asked when the user goes for a
       // fixed-PSF. We need to know the distance to the coverslip for the
       // space-variant PSF!
-      $data['iFacePrim'] = $depth;
+      $data['coverslipDistanceFromStack'] = $depth;
+      // Notice: internally, Huygens uses a parameter 'iFacePrim' that sets the
+      // distance in micrometers, measured from the
+      // plane Z = 0 of the stack (the bottom one). We will translate the
+      // variable to make the interface easier for the user.
+
+      // Some examples:
+
+      // 1) The stack is imaged upward (plane 0 is closest to the coverlip)
+      // but the image acquisition started 3 um away from the coverslip (so
+      // that the coverslip is not visible in the image, but 3 um below the
+      // stack).
+      // Here iFacePrim should be 3, and imagingDir = 'upward'. We pass the
+      // parameter coverslipDistanceFromStack = 3.
+
+      // 2) The stack is imaged downward (plane 0 is farthest from the
+      // coverslip), but the coverslip is 3 microns inside the stack (the
+      // imaging started quite above the coverslip).  In this case we pass
+      // coverslipDistanceFromStack = -3 (negative, because it is inside the
+      // stack) and imagingDir = 'downward'.
+      //
+      // In this case, to calculate iFacePrim,  we need to know the size of the
+      // stack, to set the position of the coverslip relative to plane 0. The
+      // backend script will take care of computing iFacePrim correctly in both
+      // cases.
+
+
 
       // When using a fixed PSF, the $depth is also the one to set on what
       // position we want to calculate it.
