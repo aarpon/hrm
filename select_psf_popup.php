@@ -113,8 +113,15 @@ $emSetting = $emSettingArr[$chan];
       
         <legend>available PSF files</legend>
 <?php        
-$files = $_SESSION['fileserver']->files("ics");
-$data = $_SESSION['fileserver']->getMetaData("ics");
+$icsFiles = $_SESSION['fileserver']->files("ics");
+$icsData = $_SESSION['fileserver']->getMetaData("ics");
+$hdfFiles = $_SESSION['fileserver']->files("h5");
+$hdfData = $_SESSION['fileserver']->getMetaData("h5");
+
+$files = array_merge( $hdfFiles, $icsFiles);
+$data = array_merge( $hdfData, $icsData);
+sort($files);
+
 ?>
         <div id="userfiles">
           <select name="userfiles[]" size="10" onchange="lock(this)">
