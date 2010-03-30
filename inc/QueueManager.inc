@@ -83,14 +83,6 @@ Class QueueManager {
 		$this->nping = array();
 	}
 
-	function setJob($job) {
-		$this->job = $job;
-	}
-
-	function job() {
-		return $this->job();
-	}
-
 	function executeScript($job) {
 		global $imageProcessingIsOnQueueManager;
 		global $copy_images_to_huygens_server;
@@ -103,8 +95,9 @@ Class QueueManager {
 		$desc = $job->description();
 		$clientScriptPath = $desc->sourceFolder();
 		$scriptName = $job->scriptName();
+                report(">>>>> Executing script: $imageProcessingIsOnQueueManager $copy_images_to_huygens_server", 2);
 		if (!$imageProcessingIsOnQueueManager && $copy_images_to_huygens_server) {
-			$clientScriptPath = $this->copyImagesToServer($server_hostname);
+			$clientScriptPath = $this->copyImagesToServer($job, $server_hostname);
 			report("images copied to IP server", 1);
 		}
 		$proc = newExternalProcessFor($server, $server . "_" .$job->id() . "_out.txt", $server . "_" .$job->id(). "_error.txt");
@@ -155,15 +148,16 @@ Class QueueManager {
 		return ($pid > 0);
 	}
 	
- 	function copyImagesToServer($server_hostname) {
+ 	function copyImagesToServer($job, $server_hostname) {
 		global $huygens_user;
 		global $image_folder;
 		global $image_source;
 		global $image_destination;
 		global $huygens_server_image_folder;
+
+		report("Copying images to IP server", 2);
 		
-		$job = $this->job;
-		$desc = $job->description();
+                $desc = $job->description();
 		$user = $desc->owner();
 		
 		// TODO substitute spaces by underscores in image name to avoid processing problems with Huygens
@@ -272,7 +266,7 @@ Class QueueManager {
 		$batch .= "-mkdir \"" . $image_destination . "\"\n";
 		$batch .= "quit\n";
 				
-		//report("\nBATCH \n$batch", 1);
+		// report("\nBATCH \n$batch", 2);
 		
 		$batch_filename = $image_folder . "/" . $user->name() . "/" . "batchfile_" . $desc->id();
 		
@@ -482,8 +476,6 @@ Class QueueManager {
 				if ($send_mail) 
                                     $this->notifyError($job, $message, $startTime);
 
-                                // TODO: copy log files to fileserver using the
-                                // same name as the output result.
                                 if (file_exists($errorFile)) {
                                     $gFile = $logdir . "/" . $job->server() .
                                     "_error.txt";
