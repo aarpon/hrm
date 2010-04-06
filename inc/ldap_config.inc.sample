@@ -6,6 +6,13 @@ $ldap_host = "localhost";
 // the port for the ldap connection
 $ldap_port="389";
 
+// Use SSL (LDAPS)
+$ldap_use_ssl = false;
+
+// Use TLS: if you wish to use TLS you should ensure that $ldap_use_ssl is 
+// set to false and vice-versa
+$ldap_use_tls = false;
+
 // the ldap root
 $ldap_root="dc=root,dc=country";
 

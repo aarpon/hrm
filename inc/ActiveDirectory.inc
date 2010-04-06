@@ -15,6 +15,8 @@
 
 // Web:     www.mri.cnrs.fr
 
+// Author: Aaron Ponti
+
 // huygens remote manager is a software that has been developed at 
 // Montpellier Rio Imaging (mri) in 2004 by Pierre Travo and Volker 
 // Baecker. It allows running image restoration jobs that are processed 

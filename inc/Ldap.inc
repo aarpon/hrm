@@ -1,5 +1,7 @@
 <?php
 
+// Author: Aaron Ponti
+
 //!--------------------------------------------------------------------
 // @class    Ldap
 // @desc     Manage ldap connections
@@ -21,15 +23,23 @@ Class Ldap {
 	$this->connection = null;
 
 	// Connect
-	$ds = @ldap_connect( $ldap_host, $ldap_port );
+	if ( $ldap_use_ssl == true ) {
+	  $ds = @ldap_connect( "ldaps://" . $ldap_host, $ldap_port );
+	} else {
+	  $ds = @ldap_connect( $ldap_host, $ldap_port );
+	}
 	if ( $ds ) {
-	  
-	  // Set the connection
-	  $this->connection = $ds;
 	  
 	  // Set protocol
 	  @ldap_set_option( $this->connection, LDAP_OPT_PROTOCOL_VERSION, 3 );
-	  //@ldap_set_option($con, LDAP_OPT_REFERRALS, 0);
+	  
+	  if ( $ldap_use_tls ) {
+        ldap_start_tls( $ds );
+      }
+	  
+ 	  // Set the connection
+	  $this->connection = $ds;
+	  
 	}
   
   }

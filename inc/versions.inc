@@ -69,7 +69,7 @@ require_once("Database.inc");
 class Versions {
     
     // These fields have to be updated by the developers!
-    const HRM_VERSION      = "1.2.0";
+    const HRM_VERSION      = "1.2.1";
     const DB_LAST_REVISION = 7;
     
     // Return HRM version
