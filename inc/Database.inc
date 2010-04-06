@@ -568,7 +568,7 @@ Class DatabaseConnection {
           job_queue.username = job_files.owner AND
           job_queue.username = '" . $username . "' AND
           status = 'queued'
-        ORDER BY job_files.file asc";
+        ORDER BY job_queue.queued asc, job_files.file asc";
       $rs = $this->execute( $query );
       if ( $rs ) {
         $userJobs[ $i ] = array( );
