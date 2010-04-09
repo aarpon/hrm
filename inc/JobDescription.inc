@@ -553,7 +553,7 @@ Class JobDescription {
                 $newScript = $newScript . "\n";
             }
             if ($channel > 1) {
-                $newScript = $newScript . "    catch {c join \$imageName$channel -> c}\ni}\n";
+                $newScript = $newScript . "    catch {c join \$imageName$channel -> c}\n}\n";
             } else if ($channel == 1) {
                 $newScript = $newScript . "    catch {\$imageName0 join \$imageName1 -> c}\n}\n";
             }
