@@ -1,4 +1,6 @@
 <?php
+// This file is part of the Huygens Remote Manager
+// Copyright and license notice: see license.txt
 
 // the machine on which the ldap server is running
 $ldap_host = "localhost";

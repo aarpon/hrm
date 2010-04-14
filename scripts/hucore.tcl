@@ -1,4 +1,5 @@
-# This file is part of huygens remote manager.
+# This file is part of the Huygens Remote Manager
+# Copyright and license notice: see license.txt
 
 # This script contains some procedures that report throught stdout to the HRM
 # about image properties. They also handle image previews.

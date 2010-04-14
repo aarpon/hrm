@@ -1,4 +1,6 @@
 <?php
+// This file is part of the Huygens Remote Manager
+// Copyright and license notice: see license.txt
 
     // See http://adldap.sourceforge.net/wiki/doku.php?id=api_configuration for
     // detailed help on configuring adLdap.

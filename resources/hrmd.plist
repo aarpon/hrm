@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<!-- 
+<!--
+// This file is part of the Huygens Remote Manager
+// Copyright and license notice: see license.txt
+
 HRM server daemon for launchd in MacOS X.
 As root:
 1) Edit this file to refer to the proper locations of your HRM installation

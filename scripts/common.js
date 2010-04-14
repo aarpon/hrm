@@ -1,4 +1,7 @@
 // common functions
+//
+// This file is part of the Huygens Remote Manager
+// Copyright and license notice: see license.txt
 
 var popup;
 var generated = new Array();
