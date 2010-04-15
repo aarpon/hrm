@@ -33,9 +33,6 @@ $helpMethod =   "
 
 
 $helpSnrCmle = "
-        <p>&nbsp;<p>
-        <p>&nbsp;<p>
-        <p>&nbsp;<p>
        <p>The <b>SNR</b> is a parameter that controls the sharpness of the
        result: only with noise-free images you can safely demand very sharp
        results (high SNR values) without amplifying noise.</p>
@@ -50,31 +47,12 @@ $helpSnrCmle = "
         SNR value 20, and the third with SNR value 40.</p>";
 
 $helpSnrQmle = "
-        <p>&nbsp;<p>
-        <p>&nbsp;<p>
-        <p>&nbsp;<p>
-        <p>&nbsp;<p>
-        <p>&nbsp;<p>
        <p>The <b>SNR</b> is a parameter that controls the sharpness of the result:
        only in images without much noise (high SNR) you can expect very sharp
        results without amplifying noise.</p>";
  
 
 $helpBg = "
-        <p>&nbsp;<p>
-        <p>&nbsp;<p>
-        <p>&nbsp;<p>
-        <p>&nbsp;<p>
-        <p>&nbsp;<p>
-        <p>&nbsp;<p>
-        <p>&nbsp;<p>
-        <p>&nbsp;<p>
-        <p>&nbsp;<p>
-        <p>&nbsp;<p>
-        <p>&nbsp;<p>
-        <p>&nbsp;<p>
-        <p>&nbsp;<p>
-        <p>&nbsp;<p>
        <p>The <b>background</b> is any additive and approximately constant
        signal in your image that is not coming from the objects you are
        interested in, like an electronic offset in your detector, or indirect
@@ -82,18 +60,6 @@ $helpBg = "
        contrast.</p>";
 
 $helpStopCrit = "
-        <p>&nbsp;<p>
-        <p>&nbsp;<p>
-        <p>&nbsp;<p>
-        <p>&nbsp;<p>
-        <p>&nbsp;<p>
-        <p>&nbsp;<p>
-        <p>&nbsp;<p>
-        <p>&nbsp;<p>
-        <p>&nbsp;<p>
-        <p>&nbsp;<p>
-        <p>&nbsp;<p>
-        <p>&nbsp;<p>
         <p>The first <b>stopping criterium</b> reached will stop the
         restoration.</p><p>The <i>quality change</i> criterium
         may apply first and stop the iterations before the <i>maximum 
