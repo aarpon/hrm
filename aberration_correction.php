@@ -6,6 +6,7 @@ require_once("./inc/User.inc");
 require_once("./inc/Parameter.inc");
 require_once("./inc/Setting.inc");
 require_once("./inc/Util.inc");
+require_once ("./inc/Database.inc");  
 
 session_start();
 
@@ -31,7 +32,7 @@ if (count($_POST) > 0) {
     $saved = $_SESSION['setting']->save();			
     $message = "            <p class=\"warning\">".$_SESSION['setting']->message()."</p>";
     if ($saved && isset( $_POST['OK'])) {
-        header("Location: " . "select_parameter_settings.php" ); exit();
+      header("Location: " . "select_parameter_settings.php" ); exit();
     }
 }
 
@@ -251,7 +252,10 @@ $onChange = "onchange=\"javascript:switchAdvancedCorrectionScheme()\"";
 
             <?php
 
-                $version = getHucoreVersionAsInteger( $enable_code_for_huygens );
+                //$version = getHucoreVersionAsInteger( $enable_code_for_huygens );
+                $db = new DatabaseConnection(); 
+                $version = $db->getHuCoreVersion();
+                
                 $parameter = $_SESSION['setting']->parameter("AdvancedCorrectionOptions");
                 $possibleValues = $parameter->possibleValues();
                 $selectedValue  = $parameter->value();

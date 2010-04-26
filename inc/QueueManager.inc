@@ -814,6 +814,16 @@ Class QueueManager {
 			}
 		}
 	}
+	
+	function readHuCoreVersion() {
+		$huversion = askHuCore("reportVersionNumberAsInteger");	
+		$huversion = $huversion["version"];	
+		report("HuCore version = " . $huversion . "\n");	
+		$db = new DatabaseConnection();
+		if(!$db->setHuCoreVersion($huversion))
+			return false;
+		return true;
+	}
 
         function run() {
             global $imageProcessingIsOnQueueManager;
@@ -830,6 +840,11 @@ Class QueueManager {
 
             report("Huygens Remote Manager started on " 
                     . date("Y-m-d H:i:s") . "\n", 1);
+	    
+	    if(!$this->readHuCoreVersion()) {
+		error_log("An error occurred while reading HuCore version");
+		return;
+	    }
 
             while (!$this->shallStop()) {
                 set_time_limit(0);

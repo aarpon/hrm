@@ -1061,5 +1061,27 @@ Class DatabaseConnection {
 
     return $test;
   }
+  
+  function setHuCoreVersion($value) {
+    $rs = $this->query("SELECT * FROM global_variables WHERE name = 'huversion'");
+    
+    if (!$rs) 
+      $query = "INSERT INTO global_variables VALUES ('huversion', '" . $value . "')";
+  
+    else 
+      $query = "UPDATE global_variables SET value = '" . $value . "' WHERE name = 'huversion'";
+    
+    $rs = $this->execute($query);
+    if(!$rs) 
+      return false;
+    
+    return true;
+  }
+  
+  function getHuCoreVersion() {
+    $query = "SELECT value FROM global_variables WHERE name= 'huversion'";
+    $result = $this->queryLastValue($query);
+    return $result;
+  }
 } 
 ?>
