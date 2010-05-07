@@ -16,16 +16,16 @@ if (!isset($isHrmDevelop) || $isHrmDevelop == false) {
 }
 
 Class ExternalProcess {
-    var $pid;                         // os pid of the process
-    var $host;                        // host on which the process will be started
+    public $pid;                         // os pid of the process
+    public $host;                        // host on which the process will be started
     // TODO better manage multiple hosts
-    var $huscript_path;               // HuScript executable path on host
-    var $pipes;                       // pipes for commiunication with the process
-    var $shell;                       // The shell process resource
-    var $logfileName;                 // Name of the process error log
-    var $descriptorSpec;
+    public $huscript_path;               // HuScript executable path on host
+    public $pipes;                       // pipes for commiunication with the process
+    public $shell;                       // The shell process resource
+    public $logfileName;                 // Name of the process error log
+    public $descriptorSpec;
     // TODO better manage file handles
-    var $out_file;                    // handle for the output file
+    public $out_file;                    // handle for the output file
 
 
     // This is temporary, remove before the final release and use the

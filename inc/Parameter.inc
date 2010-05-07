@@ -10,8 +10,8 @@ require_once ("Database.inc");
 //           Superclass of specific parameter classes
 //!---------------------------------------------------------
 Class Parameter {
-	var $value; // @var value Object  The current value of the parameter
-	var $name; // @var name  String  The name of the parameter
+	public $value; // @public value Object  The current value of the parameter
+	public $name; // @public name  String  The name of the parameter
 
 	//!---------------------------------------------------------
 	// @function    Parameter::Parameter
@@ -345,7 +345,7 @@ Class Parameter {
 }
 
 Class ChoiceParameter extends Parameter {
-	var $possibleValues; // @var possibleValues array  the possible values for the choice parameter
+	public $possibleValues; // @public possibleValues array  the possible values for the choice parameter
 
 	function ChoiceParameter($name) {
 		$this->Parameter($name);
@@ -519,12 +519,12 @@ Class BooleanParameter extends ChoiceParameter {
 }
 
 Class NumericalParameter extends Parameter {
-	var $min;
-	var $max;
-	var $checkMin;
-	var $checkMax;
-	var $isMinIncluded;
-	var $isMaxIncluded;
+	public $min;
+	public $max;
+	public $checkMin;
+	public $checkMax;
+	public $isMinIncluded;
+	public $isMaxIncluded;
 
 	function NumericalParameter($name) {
 		$this->Parameter($name);
@@ -668,7 +668,7 @@ Class NumericalParameter extends Parameter {
 	}
 }
 Class VariableChannelsParameter extends NumericalParameter {
-	var $numberOfChannels;
+	public $numberOfChannels;
 
 	function VariableChannelsParameter($name) {
 		$this->NumericalParameter($name);
@@ -834,7 +834,7 @@ Class IsMultiChannel extends ChoiceParameter {
 }
 
 Class SingleOrMultiChannelParameter extends ChoiceParameter {
-	var $isMultiChannel; // @var isMultiChannel  Boolean  tells whether this is a single or multi channel parameter
+	public $isMultiChannel; // @public isMultiChannel  Boolean  tells whether this is a single or multi channel parameter
 
 	//!---------------------------------------------------------
 	// @function    SingleOrMultiChannelParameter::isMultiChannel

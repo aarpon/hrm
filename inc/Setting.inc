@@ -11,11 +11,11 @@ require_once ("hrm_config.inc");
 // @desc     Abstract superclass of specific setting classes
 //!---------------------------------------------------------
 Class Setting {
-	var $parameter; // @var parameter    Array    The set of parameter
-	var $message; // @var message      String   The user message for the last inconsistent set of parameters  
-	var $owner; // @var owner        Owner    The user or owner of the setting         
-	var $name; // @var name         String   The name of the setting 
-	var $isDefault; // @var isDefault    Boolean  Tells whether the setting is the default setting
+	public $parameter; // @public parameter    Array    The set of parameter
+	public $message; // @public message      String   The user message for the last inconsistent set of papubliceters  
+	public $owner; // @public owner        Owner    The user or owner of the setting         
+	public $name; // @public name         String   The name of the setting 
+	public $isDefault; // @public isDefault    Boolean  Tells whether the setting is the default setting
 
 	//!---------------------------------------------------------
 	// @function    Setting::Setting
@@ -1690,7 +1690,7 @@ Class ParameterSetting extends Setting {
 //           image processing parameters.
 //!---------------------------------------------------------
 Class TaskSetting extends Setting {
-	var $numberOfChannels;
+	public $numberOfChannels;
 	//!---------------------------------------------------------
 	// @function    TaskSetting::TaskSetting
 	// @desc        Konstruktor. Creates a new TaskSetting

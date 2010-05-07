@@ -5,8 +5,8 @@
 require_once("AccountingDatabase.inc");
 
 Class CreditOwner {
-  var $id;
-  var $credit;
+  public $id;
+  public $credit;
 
   function CreditOwner($id) {
     $this->id = $id;

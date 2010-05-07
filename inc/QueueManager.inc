@@ -19,13 +19,13 @@ require_once ("JobQueue.inc");
 //!---------------------------------------------------------
 
 Class QueueManager {
-	var $queue;
-	var $freeServer;
-	var $job;
-	var $shallStop;
+	public $queue;
+	public $freeServer;
+	public $job;
+	public $shallStop;
 	// TODO make it a local variable
-	var $stopTime;
-	var $nping;
+	public $stopTime;
+	public $nping;
 
 	function QueueManager() {
 		$this->runningJobs = array ();
@@ -818,7 +818,7 @@ Class QueueManager {
 	function readHuCoreVersion() {
 		$huversion = askHuCore("reportVersionNumberAsInteger");	
 		$huversion = $huversion["version"];	
-		report("HuCore version = " . $huversion . "\n");	
+		report("HuCore version = " . $huversion . "\n", 2);	
 		$db = new DatabaseConnection();
 		if(!$db->setHuCoreVersion($huversion))
 			return false;

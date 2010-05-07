@@ -11,9 +11,9 @@ require_once("User.inc");
 // @desc     Editor for parameter settings
 //!---------------------------------------------------------
 Class SettingEditor {
-  var $user;            // @var user          User    The current user    
-  var $message;         // @var message       String  A message reporting errors that occured in the last operation
-  var $selected;        // @var selected      String  The name of the setting that is currently selected
+  public $user;            // @public user          User    The current user    
+  public $message;         // @public message       String  A message reporting errors that occured in the last operation
+  public $selected;        // @public selected      String  The name of the setting that is currently selected
 
   //!---------------------------------------------------------
   // @function    SettingEditor::SettingEditor

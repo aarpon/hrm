@@ -13,18 +13,18 @@ require_once("Util.inc");
 //!---------------------------------------------------------
 Class Fileserver {
   
-  var $username;              // @var username         String     The name of the user is his home directory in the same time
-  var $files;                 // @var files            Array      The image files under the users home directory    
-  var $imageExtensions;       // @var imageExtensions  Array      File extensions indicating an image file  
-  var $selectedFiles;         // @var selectedFiles    Array      Files actually selected to be processed
+  public $username;              // @public username         String     The name of the user is his home directory in the same time
+  public $files;                 // @public files            Array      The image files under the users home directory    
+  public $imageExtensions;       // @public imageExtensions  Array      File extensions indicating an image file  
+  public $selectedFiles;         // @public selectedFiles    Array      Files actually selected to be processed
 
-  var $validImageExtensions =  array("tif", "tiff", "stk", "lsm", "ims", "pic", "ome", "lif", "ics", "dv", "h5", "zvi" );
+  public $validImageExtensions =  array("tif", "tiff", "stk", "lsm", "ims", "pic", "ome", "lif", "ics", "dv", "h5", "zvi" );
 
-  var $validImageExtensionsExtras =  array("ids", "ids.gz");
+  public $validImageExtensionsExtras =  array("ids", "ids.gz");
 
-  var $multiImageExtensions =  array("lif");
-  var $validArchiveExtensions =  array();
-  var $expandSubImages = true;
+  public $multiImageExtensions =  array("lif");
+  public $validArchiveExtensions =  array();
+  public $expandSubImages = true;
 
 
   

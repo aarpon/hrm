@@ -176,7 +176,7 @@ function huCoreTools ($tool, $options) {
         return;
     }
 
-    $cmd = "$local_huygens_core -checkUpdates disable ".
+    $cmd = "$local_huygens_core -checkUpdates disable -noExecLog ".
            "-task \"$hrm_path/scripts/hucore.tcl\" ".
            "-huCoreTcl \"$hrm_path/scripts/hucore.tcl\" ".
            "-tool $tool $options 2>&1";

@@ -20,10 +20,10 @@ if ( $authenticateAgainst == "LDAP" ) {
 //           class user.
 //!---------------------------------------------------------
 Class Owner {
-  var $name;          // @var name          String    The owners name might be a job id or a user's login name
+  public $name;          // @public name          String    The owners name might be a job id or a user's login name
   // add user management
-  var $email;         // @var email         String    The owners email address
-  var $group;         // @var group         String    The owners group
+  public $email;         // @public email         String    The owners email address
+  public $group;         // @public group         String    The owners group
  
   //!---------------------------------------------------------
   // @function    Owner::Owner
@@ -107,10 +107,10 @@ Class Owner {
 //           state (is the user logged in, etc).
 //!---------------------------------------------------------
 Class User extends Owner{ 
-  var $isLoggedIn;   // @var isLoggedIn    Boolean   True if the user is logged in.
-  var $lastActivity; // @var lastActivity  Timestamp Time of the last activity of the user
-  var $ip;           // @var ip            String    The user's current ip address
-  var $authMode;     // @var authMode      String    One of "MYSQL", "LDAP", or "ACTIVE_DIR"
+  public $isLoggedIn;   // @public isLoggedIn    Boolean   True if the user is logged in.
+  public $lastActivity; // @public lastActivity  Timestamp Time of the last activity of the user
+  public $ip;           // @public ip            String    The user's current ip address
+  public $authMode;     // @public authMode      String    One of "MYSQL", "LDAP", or "ACTIVE_DIR"
   
   //!---------------------------------------------------------
   // @function    User::User

@@ -23,12 +23,12 @@ function newExternalProcessFor($host, $logfilename, $errfilename) {
 }
 
 Class Job {
-	var $script;
-	var $jobDescription;
-	var $server;
-	var $pid;
-        var $id;
-	var $status;
+	public $script;
+	public $jobDescription;
+	public $server;
+	public $pid;
+    public $id;
+	public $status;
 
 	function Job($jobDescription) {
 		$this->jobDescription = $jobDescription;

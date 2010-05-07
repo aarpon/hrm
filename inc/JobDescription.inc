@@ -20,16 +20,16 @@ require_once("JobQueue.inc");
 //!---------------------------------------------------------
 
 Class JobDescription {
-  var $id;                  // @var id               String            a unique id identifying the job    
-  var $parameterSetting;    // @var parameterSetting ParameterSetting  the jobs parameter setting
-  var $taskSetting;         // @var taskSetting      TaskSetting       the jobs task setting
-  var $files;               // @var files            Array             the list of files to be processed by the job
-  var $owner;               // @var owner            User              the user who created the job 
-  var $message;             // @var message          String            error message.
-  var $pass;                // @var pass             Integer           pass 1 or 2 of step combined processing
-  var $credit;              // @var credit           String            name of the credit to be used
-  var $group;               // @var group            String            name of the group to be used
-  //var $rangeParameters;     // why not use a global variable from the beginning?!
+  public $id;                  // @public id               String            a unique id identifying the job    
+  public $parameterSetting;    // @public parameterSetting ParameterSetting  the jobs parameter setting
+  public $taskSetting;         // @public taskSetting      TaskSetting       the jobs task setting
+  public $files;               // @public files            Array             the list of files to be processed by the job
+  public $owner;               // @public owner            User              the user who created the job 
+  public $message;             // @public message          String            error message.
+  public $pass;                // @public pass             Integer           pass 1 or 2 of step combined processing
+  public $credit;              // @public credit           String            name of the credit to be used
+  public $group;               // @public group            String            name of the group to be used
+  //public $rangeParameters;     // why not use a global variable from the beginning?!
 
   function JobDescription() {
     $this->id = (string)(uniqid(''));

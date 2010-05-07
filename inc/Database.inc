@@ -13,7 +13,7 @@ include $adodb;
  
 Class DatabaseConnection {
 
-  var $connection; // @var connection db_id  The database connection  
+  public $connection; // @public connection db_id  The database connection  
   
   //!---------------------------------------------------------
   // @function    DatabaseConnection::DatabaseConnection
