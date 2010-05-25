@@ -5,15 +5,10 @@
 require_once("hrm_config.inc");
 require_once("Fileserver.inc");
 
-global $isHrmDevelop, $hucore, $hutask, $logdir;
+global $hucore, $hutask, $logdir;
 
-if (!isset($isHrmDevelop) || $isHrmDevelop == false) {
-    $hucore = "hucore";
-    $hutask = "-checkUpdates disable -task";
-} else {
-    $hucore = "huscript";
-    $hutask = "-noTk -script";
-}
+$hucore = "hucore";
+$hutask = "-noExecLog -checkUpdates disable -task";
 
 Class ExternalProcess {
     public $pid;                         // os pid of the process

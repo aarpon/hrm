@@ -711,7 +711,7 @@ Class JobDescription {
     if ($originalBackgroundOffsetPercentValue[0] == "auto" || $originalBackgroundOffsetPercentValue[0] == "object") {
       $newBackgroundOffsetPercent->setValue($originalBackgroundOffsetPercentValue[0]);
       $test = $newBackgroundOffsetPercent->internalValue();
-      error_log("auto/object ".$test[0]);
+      //error_log("auto/object ".$test[0]);
     }
     else {
       $newBackgroundOffsetPercent->setValue($originalBackgroundOffsetPercentValue[$channel]);
