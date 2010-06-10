@@ -140,7 +140,7 @@ $nyquist = $_SESSION['setting']->calculateNyquistRate();
       Tooltips
     -->
     <?php
-      if ( $_SESSION['setting']->isWidefield() ) {
+      if ( $_SESSION['setting']->isWidefield() || $_SESSION['setting']->isMultiPointConfocal() ) {
     ?>
     <span id="ttSpanPixelSizeFromCCD">Calculate the image pixel size from the CCD pixel size.</span>
     <?php
@@ -199,7 +199,7 @@ $textForCaptorSize = "xy pixel size (nm)";
                         <input name="CCDCaptorSizeX" type="text" size="5" value="<?php echo $value ?>" /> <br/>
 			<?php
                   // The calculation of pixel size from CCD chip makes sense only for widefield microscopes
-                  if ( $_SESSION['setting']->isWidefield() ) {
+                  if ( $_SESSION['setting']->isWidefield() || $_SESSION['setting']->isMultiPointConfocal() ) {
             ?>
             
             
@@ -366,6 +366,7 @@ if ($_SESSION['setting']->isMultiPointOrSinglePointConfocal()) {
                 <p />
                 
                 <a href="calculate_bp_pinhole.php?na=<?php echo $na;?>"
+                  target="_blank"
                   onmouseover="TagToTip('ttSpanPinholeRadius' )"
                   onmouseout="UnTip()" >
                   <img src="images/calc_small.png" alt="" />
