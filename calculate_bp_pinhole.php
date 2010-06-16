@@ -51,6 +51,8 @@ $microscopes = array (
     "Nikon TE2000-E with the C1 scanning head" =>
     array ("micro=Nikon_TE2000E_C1&param=Pinhole+diameter+(microns)&a=1&b=0&na=0&wl=0&msys=1&c=0.5&u=-6&extra1=1.5&txt1=Optional+1.5x+magnification",
     "http://support.svi.nl/wiki/Nikon_TE2000E_C1"),
+    "Nikon TiE A1R" =>
+    array ("micro=Nikon_TiE_A1R&param=Pinhole+diameter+(microns)&a=1&b=0&na=0&wl=0&msys=1&c=0.456&u=-6","http://support.svi.nl/wiki/Nikon_TiE_A1R"),
     "Olympus FV300 and FVX" =>
     array( "micro=Olympus_FV300&param=Reported+pinhole+parameter&table=1&a=1&b=0&na=0&wl=0&msys=3.426&c=0.5&u=-6", "http://support.svi.nl/wiki/Olympus_FV300"),
     "Olympus FV500" =>
