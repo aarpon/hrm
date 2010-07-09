@@ -51,6 +51,22 @@ Class DatabaseConnection {
   	global $db_type;
     return $db_type;
   }  
+
+  //!---------------------------------------------------------
+  // @function    DatabaseConnection::version
+  // @desc        Attempts to get the version of the underlying database
+  // @return      String
+  //!---------------------------------------------------------
+  function version() {
+    try {
+      $query = "SELECT version( );";
+      $version = $this->queryLastValue($query);
+    } catch (Exception $e) {
+      $version = "Could not get version information.";
+    }
+    return $version;
+  }  
+
   //!---------------------------------------------------------
   // @function    DatabaseConnection::host
   // @desc        Answer the name of the database host

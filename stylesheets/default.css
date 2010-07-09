@@ -982,12 +982,11 @@ option.default {
 #previewImg {
     text-align: center;
 }
+
 #logFile {
     text-align: left;
 }
 
-
-
 #report {
-background: #ff9;
+    background: #ff9;
 }

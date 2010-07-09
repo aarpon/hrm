@@ -186,6 +186,26 @@ include("header.inc.php");
 			  
 		    </tr>
 			
+			<tr>
+			
+			  <td class="icon">
+				<a href="./system.php">
+				<img alt="System summary" src="./images/system.png" />
+				</a>
+			  </td>
+			  
+			  <td class="text"><div class="cell">
+                <a href="./system.php">System summary</a><br />
+				<p />Inspect your system.
+                </div>
+			  </td>
+
+			  <td class="icon"></td>
+			  
+			  <td class="text">&nbsp;</td>			  
+
+		    </tr>
+
 		  </tbody>
 		  
 		</table>
