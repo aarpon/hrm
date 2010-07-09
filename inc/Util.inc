@@ -438,11 +438,25 @@ function getMaxSingleUploadSize() {
 
     return $max_upload_size;
 }
+
 function getMaxPostSize() {
+
+  global $max_post_limit;
+  if ($max_post_limit != 0) {
+    return (1024 * 1024 * $max_post_limit);
+  } else {
     return let_to_num(ini_get('post_max_size'));
+  }
 }
+
 function getMaxFileSize() {
+
+  global $max_upload_limit;
+  if ($max_upload_limit != 0) {
+    return (1024 * 1024 * $max_upload_limit);
+  } else {
     return let_to_num(ini_get('upload_max_filesize'));
+  }
 }
 
 //!---------------------------------------------------------
