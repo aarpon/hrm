@@ -990,3 +990,41 @@ option.default {
 #report {
     background: #ff9;
 }
+
+
+#system {
+    width: 100%;
+    text-align: left;
+    margin: 0px;
+}
+
+#system table {
+    border-collapse: collapse;
+    border: 0px;
+    font-size: 75%;
+}
+
+#system table tr {
+    text-align: left;
+}
+
+#system table td {
+    padding: 0px;
+}
+
+#system table td.section {
+    padding-top: 5px;
+    text-align: left;
+    width: 70%;
+    font-weight: bold;
+}
+
+#system table td.key {
+    text-align: left;
+    width: 70%
+}
+
+#system table td.value {
+    text-align: left;
+    width: 30%
+}
