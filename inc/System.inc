@@ -17,6 +17,33 @@ class System {
     */
 
 	//!------------------------------------------------------------------------
+	// @function    System::operatingSystem
+	// @desc        Returns information about operating system and machine architecture
+	// @return      Returns a string with OS and architecture (e.g. GNU/Linux x86/64)
+	//!------------------------------------------------------------------------
+    public function operatingSystem( ) {
+        try {
+            return ( exec( 'uname --operating-system' ) . " " .
+                     exec( 'uname --hardware-platform' ) );
+        } catch ( Exception $e ) {
+            return "Unknown.";
+        }
+    }
+
+	//!------------------------------------------------------------------------
+	// @function    System::kernelRelease
+	// @desc        Returns the kernel release number
+	// @return      Returns the kernel release number (e.g. 2.6.33)
+	//!------------------------------------------------------------------------
+    public function kernelRelease( ) {
+        try {
+            return ( exec( 'uname --kernel-release' ) );
+        } catch ( Exception $e ) {
+            return "Unknown.";
+        }
+    }
+ 
+	//!------------------------------------------------------------------------
 	// @function    System::huCoreVersion
 	// @desc        Returns a string containig the HuCore version
 	//              as read from the database.
@@ -174,7 +201,7 @@ class System {
          return System::formatMemoryStringByUnit(
             getMaxFileSize(), $unit );
     }
-    
+   
 	//!------------------------------------------------------------------------
 	// @function    [Private] System::formatMemoryStringByUnit( $value, $unit = 'M' )
 	// @desc        Formats a number (in bytes) into a string with the desired unit.

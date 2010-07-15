@@ -1014,17 +1014,20 @@ option.default {
 
 #system table td.section {
     padding-top: 5px;
+    vertical-align: top;
     text-align: left;
     width: 70%;
     font-weight: bold;
 }
 
 #system table td.key {
+    vertical-align: top;
     text-align: left;
     width: 70%
 }
 
 #system table td.value {
+    vertical-align: top;
     text-align: left;
     width: 30%
 }

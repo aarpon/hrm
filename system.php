@@ -39,6 +39,18 @@ include("header.inc.php");
       <div id="system">
         <table>
           <tr>
+            <td class="section">System</td>
+            <td class="value">&nbsp;</td>
+          </tr>
+          <tr>
+            <td class="key">Operating system</td>
+            <td class="value"><?php echo System::operatingSystem(); ?></td>
+          </tr>
+          <tr>
+            <td class="key">Kernel release</td>
+            <td class="value"><?php echo System::kernelRelease(); ?></td>
+          </tr>
+          <tr>
             <td class="section">Huygens</td>
             <td class="value">&nbsp;</td>
           </tr>
