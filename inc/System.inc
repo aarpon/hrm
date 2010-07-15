@@ -23,8 +23,7 @@ class System {
 	//!------------------------------------------------------------------------
     public function operatingSystem( ) {
         try {
-            return ( exec( 'uname --operating-system' ) . " " .
-                     exec( 'uname --hardware-platform' ) );
+            return ( exec( 'uname -s' ) . " " . exec( 'uname -p' ) );
         } catch ( Exception $e ) {
             return "Unknown.";
         }
@@ -37,7 +36,7 @@ class System {
 	//!------------------------------------------------------------------------
     public function kernelRelease( ) {
         try {
-            return ( exec( 'uname --kernel-release' ) );
+            return ( exec( 'uname -r' ) );
         } catch ( Exception $e ) {
             return "Unknown.";
         }
