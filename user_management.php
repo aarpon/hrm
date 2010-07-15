@@ -262,7 +262,8 @@ sort($emails);
 ?>
                 <legend>Existing users (<?php echo $count - 1 ?>)</legend>
                 <p class="menu">
-                    <a href="javascript:openPopup('add_user')">add new user</a>&nbsp;|&nbsp;<a href="mailto:<?php echo implode(";", $emails) ?>">distribution list</a>
+                    <a href="javascript:openPopup('add_user')">add new user</a><br />
+                    distribution list (<a href="mailto:<?php echo implode(";", $emails) ?>">Outlook</a> or <a href="mailto:<?php echo implode(",", $emails) ?>">standard</a>)
                     <br />
                     <a href="javascript:disableUsers()">disable</a>/<a href="javascript:enableUsers()">enable</a> all users
                 </p>

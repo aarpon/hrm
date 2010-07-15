@@ -2,7 +2,7 @@
 // This script checks the configuration files for completeness
 
 // First version: Aaron Ponti, 2010/04/12
-// Checks against HRM version 1.2.x
+// Checks against HRM version 1.3.x
 
 // This file is part of huygens remote manager.
 
@@ -87,34 +87,56 @@
             return;
          }
          
-         echo "Check against HRM v1.2.x." . PHP_EOL;
+         echo "Check against HRM v1.3.x." . PHP_EOL;
          
          require_once $configFile;
          
-         // Variables that must exist
+        // Variables that must exist
         $variables = array( 
 			"db_type", "db_host", "db_name", "db_user", "db_password",
         	"huygens_user", "huygens_group", "local_huygens_core", 
 			"enable_code_for_huygens", "image_host", "image_user", 
 			"image_group", "image_folder", "image_source",
 			"image_destination", "huygens_server_image_folder",
-			"allowHttpTransfer", "allowHttpUpload", "compressExt",
-			"compressBin", "packExcludePath", "dlMimeType",
-			"decompressBin", "hrm_url", "hrm_path", "log_verbosity",
-			"logdir", "logfile", "logfile_max_size", "send_mail",
+			"allowHttpTransfer", "allowHttpUpload", "max_upload_limit",
+			"max_post_limit", "compressExt", "compressBin",
+			"packExcludePath", "dlMimeType", "decompressBin",
+			"hrm_url", "hrm_path", "log_verbosity", "logdir",
+			"logfile", "logfile_max_size", "send_mail",
 			"email_sender", "email_admin", "authenticateAgainst",
 			"useDESEncryption", "imageProcessingIsOnQueueManager",
-			"copy_images_to_huygens_server", "resultImagesOwnedByUser",
-			"resultImagesRenamed", "useThumbnails", "genThumbnails",
-			"movieMaxSize", "saveSfpPreviews", "maxComparisonSize",
-			"ping_command", "ping_parameter" );
-         
-         foreach ( $variables as &$variable ) {
+			"copy_images_to_huygens_server", "useThumbnails",
+			"genThumbnails", "movieMaxSize", "saveSfpPreviews",
+			"maxComparisonSize", "ping_command", "ping_parameter" );
+
+        // Variables that were removed
+		$variablesRemoved = array( "internal_link", "external_link",
+			"adodb", "enableUserAdmin", "allow_reservation_users",
+			"resultImagesOwnedByUser", "resultImagesRenamed",
+			"runningLocation", "convertBin" );
+        
+		// Check for variables that must exist
+		$numMissingVariables = 0;
+        foreach ( $variables as &$variable ) {
              if ( ! isset( $$variable ) ) {
-                 echo "Error: variable $variable not set or empty." . PHP_EOL;
+                 echo "* * * Error: variable $variable not set or empty." . PHP_EOL;
+				 $numMissingVariables++;
              }
-         }
-         
-         echo "Check completed." . PHP_EOL;
+        }
+		
+		// Check for variables that must be removed
+		$numVariablesToRemove = 0;
+        foreach ( $variablesRemoved as &$variable ) {
+             if ( isset( $$variable ) ) {
+                 echo "* * * Error: variable $variable must be removed from the configuration files!" . PHP_EOL;
+				 $numVariablesToRemove++;
+             }
+        }
+
+		if ( $numMissingVariables + $numVariablesToRemove == 0 ) {
+		    echo "Check completed succesfully! Your configuration file is valid!" . PHP_EOL;
+		} else {
+			echo "Check completed with errors! Please fix your configuration!" . PHP_EOL;
+		}
     }
 ?>
