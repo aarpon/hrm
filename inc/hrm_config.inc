@@ -27,6 +27,12 @@ if ( $authenticateAgainst != "MYSQL" ) {
 	$enableUserAdmin = false;
 }
 
+// The following two parameters should be removed from the config files soon. 
+// For the time being we fix them here to the only acceptable values.
+// TODO Remove them in a next HRM release. 
+$resultImagesRenamed = true;
+$resultImagesOwnedByUser = false;
+
 // This parameter is of use only for the MRI installation, and therefore we 
 // hide it from the configurable parameters. If true, users of the microscope
 // reservation system may have access to HRM as well

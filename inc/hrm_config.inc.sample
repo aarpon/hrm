@@ -6,7 +6,7 @@
 // Database settings
 //==============================================================================
 
-// The database type (mysql, postgres, ...)
+// The database type (mysql or postgres)
 $db_type = "mysql";
 
 // The name of the database host machine (this may be localhost if it is the 
@@ -142,8 +142,6 @@ $decompressBin['tgz'] = "cd %DEST% \n /usr/bin/tar xzf ";
 $decompressBin['tar'] = "cd %DEST% \n /usr//bin/tar xf ";
 $decompressBin['tar.gz'] = "cd %DEST% \n /usr/bin/tar xzf ";
 
-
-
 //==============================================================================
 // HRM configuration parameters
 //==============================================================================
@@ -167,7 +165,7 @@ $send_mail = true;
 $email_sender = "hrm@localhost";
 $email_admin = "hrm@localhost";
 
-// Authentication type: MYSQL, ACTIVE_DIR or LDAP (LDAP is experimental!)
+// Authentication type: MYSQL, ACTIVE_DIR or LDAP
 $authenticateAgainst = "MYSQL";
 
 // If true, use DES password encryption; if false, use MD5
@@ -179,13 +177,6 @@ $imageProcessingIsOnQueueManager = true;
 
 // If true the images are copied to the huygens server machine
 $copy_images_to_huygens_server = false;
-
-// If true, result images will be owned by the user; if false, they will be 
-// owned by the user who runs the queue manager
-$resultImagesOwnedByUser = false;
-
-// If true, result images will have the job id appended to their names
-$resultImagesRenamed = true;
 
 // Thumbnails require Huygens Core 3.3.2 or higher.
 
