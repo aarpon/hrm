@@ -103,8 +103,9 @@
 			"packExcludePath", "dlMimeType", "decompressBin",
 			"hrm_url", "hrm_path", "log_verbosity", "logdir",
 			"logfile", "logfile_max_size", "send_mail",
-			"email_sender", "email_admin", "authenticateAgainst",
-			"useDESEncryption", "imageProcessingIsOnQueueManager",
+			"email_sender", "email_admin", "email_list_separator",
+			"authenticateAgainst", "useDESEncryption",
+			"imageProcessingIsOnQueueManager",
 			"copy_images_to_huygens_server", "useThumbnails",
 			"genThumbnails", "movieMaxSize", "saveSfpPreviews",
 			"maxComparisonSize", "ping_command", "ping_parameter" );

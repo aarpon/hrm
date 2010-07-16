@@ -164,6 +164,14 @@ $logfile_max_size = 100;    // maximum size of the logfile in MB
 $send_mail = true;
 $email_sender = "hrm@localhost";
 $email_admin = "hrm@localhost";
+// Comma (',') is the standard separator for lists of email addresses. 
+// Please see: http://tools.ietf.org/html/rfc2822#section-3.6.3
+// Unfortunately, Microsoft Outlook uses semicolon (';') by default and
+// ',' only optionally. Please see: http://support.microsoft.com/kb/820868
+// on how to configure Outlook to support comma-separated lists.
+// If your users are mostly using Outlook, you can tell the HRM to use ';'
+// instead of the standard ',' for distribution lists.
+$email_list_separator = ",";    // Valid options are ',' and ';'.
 
 // Authentication type: MYSQL, ACTIVE_DIR or LDAP
 $authenticateAgainst = "MYSQL";
