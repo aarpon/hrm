@@ -4,7 +4,6 @@
 
 require_once("Util.inc");
 require_once("Database.inc");
-require_once("hrm_config.inc");
 
 class System {
     
@@ -160,7 +159,22 @@ class System {
     public function postMaxSize( $unit = 'M' ) {
         return System::formatMemoryStringByUnit( getMaxPostSize( ), $unit );
     }
-    
+
+	//!------------------------------------------------------------------------
+	// @function    System::uploadEnabledFromConfig
+	// @desc        Returns the status of file uploads through HTTP as set
+    //              in the HRM configuration
+	// @return      'enabled' if the upload is enabled; 'disabled' otherwise
+	//!------------------------------------------------------------------------
+    public function uploadEnabledFromConfig( ) {
+        global $allowHttpUpload;
+        if ( $allowHttpUpload == true ) {
+            return "enabled";
+        } else {
+            return "disabled";
+        }
+    }
+  
 	//!------------------------------------------------------------------------
 	// @function    System::uploadMaxFileSizeFromIni
 	// @desc        Max allowed size for a file upload as set in php.ini

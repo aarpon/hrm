@@ -188,7 +188,7 @@ include("header.inc.php");
                         Login
                     </legend>
                     <?php
-                    if ( $enableUserAdmin == True ) {
+                    if ( $authenticateAgainst == "MYSQL" ) {
                       $login_message = "<p class=\"expl\">If you do not have an account, please register <a href=\"registration.php\">here</a>.</p>";
                     } else {
                       $login_message = "<p class=\"expl\">Please enter your credentials.</p>";

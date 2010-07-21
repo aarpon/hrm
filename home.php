@@ -59,7 +59,7 @@ include("header.inc.php");
 			<tr >
 
 			  <?php
-			    if ($enableUserAdmin) {
+			    if ( $authenticateAgainst == "MYSQL" ) {
 			  ?>
 				<td class="icon">
 				  <a href="./user_management.php">

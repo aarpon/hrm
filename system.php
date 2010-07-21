@@ -96,6 +96,10 @@ include("header.inc.php");
             <td class="value"><?php echo System::postMaxSize(); ?></td>
           </tr>
           <tr>
+            <td class="key">File uploads (HRM configuration)</td>
+            <td class="value"><?php echo System::uploadEnabledFromConfig(); ?></td>
+          </tr>
+          <tr>
             <td class="key">Maximum upload file size (php.ini)</td>
             <td class="value"><?php echo System::uploadMaxFileSizeFromIni(); ?></td>
           </tr>

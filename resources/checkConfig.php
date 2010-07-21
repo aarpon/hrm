@@ -95,17 +95,16 @@
         $variables = array( 
 			"db_type", "db_host", "db_name", "db_user", "db_password",
         	"huygens_user", "huygens_group", "local_huygens_core", 
-			"enable_code_for_huygens", "image_host", "image_user", 
-			"image_group", "image_folder", "image_source",
-			"image_destination", "huygens_server_image_folder",
-			"allowHttpTransfer", "allowHttpUpload", "max_upload_limit",
-			"max_post_limit", "compressExt", "compressBin",
-			"packExcludePath", "dlMimeType", "decompressBin",
-			"hrm_url", "hrm_path", "log_verbosity", "logdir",
-			"logfile", "logfile_max_size", "send_mail",
-			"email_sender", "email_admin", "email_list_separator",
-			"authenticateAgainst", "useDESEncryption",
-			"imageProcessingIsOnQueueManager",
+			"image_host", "image_user", "image_group",
+			"image_folder", "image_source", "image_destination",
+			"huygens_server_image_folder", "allowHttpTransfer",
+			"allowHttpUpload", "max_upload_limit", "max_post_limit",
+			"compressExt", "compressBin", "packExcludePath",
+			"dlMimeType", "decompressBin", "hrm_url", "hrm_path",
+			"log_verbosity", "logdir", "logfile", "logfile_max_size",
+			"send_mail", "email_sender", "email_admin",
+			"email_list_separator", "authenticateAgainst",
+			"useDESEncryption", "imageProcessingIsOnQueueManager",
 			"copy_images_to_huygens_server", "useThumbnails",
 			"genThumbnails", "movieMaxSize", "saveSfpPreviews",
 			"maxComparisonSize", "ping_command", "ping_parameter" );
@@ -114,7 +113,7 @@
 		$variablesRemoved = array( "internal_link", "external_link",
 			"adodb", "enableUserAdmin", "allow_reservation_users",
 			"resultImagesOwnedByUser", "resultImagesRenamed",
-			"runningLocation", "convertBin" );
+			"runningLocation", "convertBin", "enable_code_for_huygens" );
         
 		// Check for variables that must exist
 		$numMissingVariables = 0;

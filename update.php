@@ -4,6 +4,7 @@
 
 require_once("./inc/User.inc");
 require_once("./inc/Database.inc");
+require_once("./inc/Util.inc");
 
 session_start();
 

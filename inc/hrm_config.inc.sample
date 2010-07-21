@@ -42,21 +42,6 @@ $huygens_group = "huygens";
 // least that same simple license is required for this to work.
 $local_huygens_core = "/usr/local/bin/hucore";
 
-// The HRM needs to know the version of the hucore executable on the
-// computation and web servers to make sure that only supported functionalities
-// can be accessed. You can find your Huygens version number by running Huygens
-// Essential or Pro and going to Help > About, or by launching hucore from a
-// shell: then the version number is immediately reported in a line like:
-//
-// "Huygens Core 3.5.0p1 initializing Compute Engine 3.5.0p1..."
-//
-// At least the first three numbers are required, the patch level is optional:
-$enable_code_for_huygens = "3.5.1";
-
-// Huygens 3.3.1 allows the generation of image previews
-// HDF5 is supported only from Huygens 3.5.0
-// Huygens 3.5.1 contains tools to estimate the SNR from an image.
-
 //==============================================================================
 // File server settings
 //==============================================================================
@@ -95,7 +80,6 @@ $allowHttpTransfer = true;
 $allowHttpUpload = true;
 $max_upload_limit = 0; // Maximum file size for uploads in Mb
 $max_post_limit = 0;   // Maximum post size for uploads in Mb
-
 
 // Archiver for downloading the results via the web browser:
 // $compressBin is the archiver, including options.  %DEST% will be replaced

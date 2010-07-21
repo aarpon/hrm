@@ -34,6 +34,8 @@
 //    in the table global_variables). In this case the database is not checked and
 //    it is simply updated to the last revision.
 
+global $adodb;
+
 // Check whether the script is run from the HRM or from bash (from $hrm/setup)
 if ( isset( $_GET['action'] ) && $_GET['action'] == 'dbupdate' ) {
     include "inc/hrm_config.inc";    // Run from HRM

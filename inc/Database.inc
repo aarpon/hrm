@@ -2,6 +2,9 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
+// Location of /adodb/adodb.inc.php
+$adodb = dirname(__FILE__) . "/extern/adodb/adodb.inc.php";
+
 include "hrm_config.inc";
 include "reservation_config.inc";
 include $adodb;

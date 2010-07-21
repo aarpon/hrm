@@ -20,7 +20,7 @@ $loggedIn = ( isset($_SESSION['user'] ) && $_SESSION['user']->isLoggedIn( ) );
 		<br />modified 2006-2010 by
 		<?php
 			if ( $loggedIn == true ) {
-				echo '<a href="mailto:asheesh.gulati@epfl.ch">Asheesh Gulati</a>';
+				echo 'Asheesh Gulati';  // Former developer - no email info
 			} else
 				echo "<span onmouseover=\"Tip('Login to see contact information.' )\"
 					onmouseout=\"UnTip()\">Asheesh Gulati</span>";
@@ -34,10 +34,17 @@ $loggedIn = ( isset($_SESSION['user'] ) && $_SESSION['user']->isLoggedIn( ) );
 		?>, 
 		<?php
 			if ( $loggedIn == true ) {
-				echo '<a href="mailto:jose@svi.nl">Jos&eacute; Vi&ntilde;a</a>';
+				echo 'Jos&eacute; Vi&ntilde;a';  // Former developer - no email info
 			} else
 				echo "<span onmouseover=\"Tip('Login to see contact information.' )\"
 					onmouseout=\"UnTip()\">Jos&eacute; Vi&ntilde;a</span>";
+		?>,
+		<?php
+			if ( $loggedIn == true ) {
+				echo '<a href="mailto:daniel@svi.nl">Daniel Sevilla</a>';
+			} else
+				echo "<span onmouseover=\"Tip('Login to see contact information.' )\"
+					onmouseout=\"UnTip()\">Daniel Sevilla</span>";
 		?> &amp;
 		<?php
 			if ( $loggedIn == true ) {

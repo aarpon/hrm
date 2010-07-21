@@ -5,8 +5,17 @@
 require_once("./inc/User.inc");
 require_once("./inc/Parameter.inc");
 require_once("./inc/Setting.inc");
+require_once("./inc/Util.inc");
 
 session_start();
+
+// Check if the SNR estimator can be turned on
+$estimateSNR = false;
+$db = new DatabaseConnection();
+$version = $db->getHuCoreVersion();
+if ( $useThumbnails && $genThumbnails && $version >= 3050100 ) {
+  $estimateSNR = true;
+}
 
 function contextHelp($field, $text) {
     echo " onmouseover=\"".
@@ -31,14 +40,21 @@ $helpMethod =   "
        works well with noise-free images (for example, good quality widefield
        images).  </p>";
 
+if ( $estimateSNR ) {
+  $snrToolDescr = "<p>The <b>Estimate SNR from image</b> tool allows you to obtain a
+       best-guess initial value for this parameter.</p>";  
+} else {
+  $snrToolDescr = "<p><b>Warning! If you upgrade the Huygens Core to a more 
+       the recent version, HRM can offer you to estimate the SNR online from
+       a selected image. Please consider upgrading!</b></p>";   
+}
 
 $helpSnrCmle = "
        <p>The <b>SNR</b> is a parameter that controls the sharpness of the
        result: only with noise-free images you can safely demand very sharp
-       results (high SNR values) without amplifying noise.</p>
-       <p>The <b>Estimate SNR from image</b> tool allows you to obtain a
-       best-guess initial value for this parameter.</p>
-        <p><span class=\"superscript\">(*)</span>
+       results (high SNR values) without amplifying noise.</p> " .
+       $snrToolDescr .
+       "<p><span class=\"superscript\">(*)</span>
         The field <strong>SNR</strong>
         can accept multiple values per channel.
         This is a commodity tool to optimize restoration parameters. By setting

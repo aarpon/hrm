@@ -6,6 +6,7 @@ require_once("./inc/User.inc");
 require_once("./inc/Database.inc");
 require_once("./inc/hrm_config.inc");
 require_once("./inc/Mail.inc");
+require_once("./inc/Util.inc");
 
 global $hrm_url;
 global $email_sender;
@@ -19,7 +20,7 @@ session_start();
 
 // Make sure that we don't even show this page if the user
 // management is disabled!
-if ( $enableUserAdmin == false ) {
+if ( $authenticateAgainst != "MYSQL" ) {
   header("Location: " . "home.php"); exit();
 }
 

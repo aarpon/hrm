@@ -9,23 +9,27 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 if (!isset($isServer))
-	$isServer = False;
+	$isServer = false;
 
-if ($isServer) 
+if ($isServer == true) 
 	require_once('hrm_server_config.inc');
 else 
 	require_once('hrm_client_config.inc');
 
-require_once ("Util.inc");
-
-// Location of /adodb/adodb.inc.php
-$adodb = dirname(__FILE__) . "/extern/adodb/adodb.inc.php";
-
-// If the authentication mechanism is not MYSQL, we turn off the user management
-$enableUserAdmin = true;
-if ( $authenticateAgainst != "MYSQL" ) {
-	$enableUserAdmin = false;
+// This is a hidden parameter for advanced users
+if (!isset ($userManager) ) {
+    // This default user manager script can be replaced in the configuration.
+    // A demo server, for example, may use links to a demo directory instead of
+    // creating an empty directory for each new user.
+    $userManager = "bin/hrm";
 }
+
+/*
+ * The following parameters are obsolete and will be removed in one of the 
+ * next versions of the HRM.
+ * For the time being, their values are set and MUST NOT BE CHANGED.
+ * 
+ */
 
 // The following two parameters should be removed from the config files soon. 
 // For the time being we fix them here to the only acceptable values.
@@ -42,37 +46,5 @@ $allow_reservation_users = false;
 // 0: pre-1.3, custom made for every image.
 // 1: new script, with general procedures (requires Huygens 3.5.2).
 $useHuScriptVersion = 0;
- 
-$version = 0;
-// Overrule options that do not apply.
-if (isset ($enable_code_for_huygens) ) {
-    $version = getHucoreVersionAsInteger( $enable_code_for_huygens );
-    if ( $version < 3030100 ) {
-        $useThumbails = false;
-    }
-
-    if ( $version >= 3050200 ) {
-        // Leave this deactivated by now (1.2.1) but activate for HRM 1.3
-        // $useHuScriptVersion = 1;
-    }
-
-
-} else {
-    $useThumbails = false;
-}
-
-
-// Huygens 3.5.1 contains tools to estimate the SNR from an image.
-$estimateSNR = false;
-if ( $useThumbnails && $genThumbnails && $version >= 3050100 ) {
-    $estimateSNR = true;
-}
-
-if (!isset ($userManager) ) {
-    # This default user manager script can be replaced in the configuration.
-    # A demo server, for example, may use links to a demo directory instead of
-    # creating an empty directory for each new user.
-    $userManager = "bin/hrm";
-}
 
 ?>

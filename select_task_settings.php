@@ -6,6 +6,7 @@ require_once("./inc/User.inc");
 require_once("./inc/Parameter.inc");
 require_once("./inc/Setting.inc");
 require_once("./inc/SettingEditor.inc");
+require_once("./inc/Util.inc");
 
 global $enableUserAdmin;
 
