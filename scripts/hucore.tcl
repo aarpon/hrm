@@ -404,10 +404,16 @@ proc estimateSnrFromImage {} {
         }
     }
 
+    # Since HuCore 3.6.1, there is a new SNR estimator available.
+    set verHuCo [versionAsInteger]
+    if { $verHuCo >= 3060100 } {
+	set result [ ::WebTools::computeSnr $srcImg $dest]
+    } else {
+	set result [ ::WebTools::estimateSnrFromImage $srcImg $dest \
+			 "snr_estimation_" jpeg 2 auto \
+			 returnImages $returnImages bg auto estimationSize 100 ]
 
-    set result [ ::WebTools::estimateSnrFromImage $srcImg $dest \
-                 "snr_estimation_" jpeg 2 auto \
-                 returnImages $returnImages bg auto estimationSize 100 ]
+    }
 
     # Report image name
     reportKeyValue imageName [file join $src $basename]
