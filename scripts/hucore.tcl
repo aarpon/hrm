@@ -412,7 +412,6 @@ proc estimateSnrFromImage {} {
 	set result [ ::WebTools::estimateSnrFromImage $srcImg $dest \
 			 "snr_estimation_" jpeg 2 auto \
 			 returnImages $returnImages bg auto estimationSize 100 ]
-
     }
 
     # Report image name
