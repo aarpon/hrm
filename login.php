@@ -88,13 +88,14 @@ if (isset($_POST['password'])) {
                   exit();
                 }
               else {
-                  header("Location: " . "home.php"); 
+                  // Proceed to home
+                  header("Location: " . "home.php");
                   exit();
               }
             } else {
-              // The admin goes straigth home
-              header("Location: " . "home.php"); 
-              exit();
+                // Proceed to home
+                header("Location: " . "home.php");
+                exit();
             }
   	}
   } else if ($_SESSION['user']->isLoginRestrictedToAdmin()) {
