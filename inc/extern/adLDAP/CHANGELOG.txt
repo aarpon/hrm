@@ -8,6 +8,20 @@ http://adldap.sourceforge.net/
 CHANGELOG
 -------------------------------------------------------------------------------------------
 
+Version 3.3.2
+-------------
+[+] New feature: Move the user to a new OU using user_move() function
+[-] Bug fix: Prevent an 'undefined index' error in recursive_groups() when full PHP E_ALL logging is enabled
+[-] Bug fix: user_groups() does not return primary group when objectsid is not given (Tracker ID:2931213)
+[-] Bug fix: Undefined index in function user_info for non-existent users (Tracker ID:2922729)
+[-] Bug fix: Force user_info to find objectCategory of person as if a sAMAccountName also exists in a group it will return that group. (Tracker ID:3006096)
+[-] Bug fix: Return false for user_info if the user does not exist
+[-] Bug fix: user_info, checks for for a "count" value that not exist in $entries array if "memberof" isn't passed in $fields array. (Tracker ID:2993172)
+[-] Bug fix: In authenticate() if user authentication fails function returns and does not rebind with admin credentials - so the other funcions don't work anymore as $this->_bind === false. (Tracker ID:2987887)
+[-] Bug fix: When calling $ldap->user_modify('user', array("expires"=>0)) the function fails due to the value being 0. Changed to isset (Tracker ID:3036726)
+[-] Bug fix: When calling user_info allow the username to be either a sAMAccountName or userPrincipalName attribute
+
+
 Version 3.3.1
 -------------
 [-] Bug fix: Prevent empty $username and $password in authenticate from falling through to the default administrator login
