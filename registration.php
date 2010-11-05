@@ -51,9 +51,13 @@ if (isset($_POST['OK'])) {
                 $mail->setReceiver($email_admin);
                 $mail->setSubject("New user registration");
                 $mail->setMessage($text);
-                $mail->send();
-                $notice = "            <p class=\"info\">Application successfully sent!</p>\n";
-                $notice .= "            <p>Your application will be processed by the administrator. You will receive a confirmation by e-mail.</p>\n";
+                if ( $mail->send() ) {
+                  $notice = "            <p class=\"info\">Application successfully sent!</p>\n";
+                  $notice .= "            <p>Your application will be processed by the administrator. You will receive a confirmation by e-mail.</p>\n";
+                } else {
+                  $notice = "            <p class=\"info\">Your application was successfully stored, but there was an error e-mailing the administrator!</p>\n";
+                  $notice .= "            <p>Please contact the reponsible person.</p>\n";
+                }
                 $processed = True;
               }
                 else $message = "            <p class=\"warning\">Database error, please inform the person in charge</p>\n";

@@ -26,16 +26,18 @@ Class Mail {
 
   public function send() {
       
-    $header   = 'From: ' . $this->sender . "\r\n" .
-                        'Reply-To: ' . $this->sender . "\r\n" .
-                        'Return-Path: ' . $this->sender . "\r\n" .
-                        'X-Mailer: PHP/' . phpversion();
+    $header  = 'From: ' . $this->sender . "\r\n";
+    $header .= 'Reply-To: ' . $this->sender . "\r\n";
+    $header .= 'Return-Path: ' . $this->sender . "\r\n";
       
-    mail( $this->receiver, 
-          $this->subject, 
-          $this->message, 
-          $header ); 
-    report( "Mail '" . $this->subject. "' sent to " . $this->receiver, 2 );
+    if ( mail( $this->receiver, $this->subject, $this->message, $header ) ) {
+      report( "Mail '" . $this->subject. "' sent to " . $this->receiver, 2 );
+      return true;
+    } else {
+      report( "Could not send mail '" . $this->subject. "' to " . $this->receiver, 1 );
+      return false;
+    }
+    
   } 
 } 
 
