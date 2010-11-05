@@ -4,10 +4,14 @@
 
 require_once("./inc/User.inc");
 require_once("./inc/Database.inc"); // for account management (email & last_access fields)
-require_once("./inc/CreditOwner.inc");
 require_once("./inc/hrm_config.inc");
 require_once("./inc/Fileserver.inc");
 require_once("./inc/versions.inc");
+
+// This is RIO only
+if ( $allow_reservation_users == true ) {
+    require_once("./inc/CreditOwner.inc");
+}
 
 global $email_admin;
 global $enableUserAdmin;

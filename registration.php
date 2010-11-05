@@ -6,6 +6,7 @@ require_once("./inc/User.inc");
 require_once("./inc/Database.inc");
 require_once("./inc/hrm_config.inc");
 require_once("./inc/Mail.inc");
+require_once("./inc/Util.inc");
 
 global $hrm_url;
 global $email_sender;

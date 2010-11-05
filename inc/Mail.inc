@@ -25,11 +25,16 @@ Class Mail {
   } 
 
   public function send() {
+      
+    $header   = 'From: ' . $this->sender . "\r\n" .
+                        'Reply-To: ' . $this->sender . "\r\n" .
+                        'Return-Path: ' . $this->sender . "\r\n" .
+                        'X-Mailer: PHP/' . phpversion();
+      
     mail( $this->receiver, 
           $this->subject, 
           $this->message, 
-          'From: ' . $this->sender . "\r\nReturn-Path: ". $this->sender,
-          "-r ". $this->sender ); 
+          $header ); 
     report( "Mail '" . $this->subject. "' sent to " . $this->receiver, 2 );
   } 
 } 
