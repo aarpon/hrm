@@ -7,6 +7,7 @@ require_once("./inc/Database.inc");
 require_once("./inc/hrm_config.inc");
 require_once("./inc/Mail.inc");
 require_once("./inc/Util.inc");
+require_once("./inc/Validator.inc");
 
 global $hrm_url;
 global $email_sender;
@@ -16,35 +17,100 @@ $processed = False;
 
 $message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
 
-if (isset($_POST['OK'])) {
-  
-  $user = new User();
-  $user->setName(strtolower($_POST['username']));
-  $user->setEmail($_POST['email']);
-  $user->setGroup($_POST['group']);
+/*
+ *
+ * SANITIZE INPUT
+ *   We check the relevant contents of $_POST for validity and store them in
+ *   a new array $clean that we will use in the rest of the code.
+ *
+ *   After this step, only the $clean array and no longer the $_POST array
+ *   should be used!
+ *
+ */
 
-  if (strtolower($_POST['username']) != "") {
-    if ($_POST['email'] != "" && strstr($_POST['email'], "@") && strstr(strstr($_POST['email'], "@"), ".")) {
-      if ($_POST['group'] != "") {
-        if ($_POST['pass1'] != "" && $_POST['pass2'] != "") {
-          if ($_POST['pass1'] == $_POST['pass2']) {
+  // Here we store the cleaned variables
+  $clean = array(
+    "username" => "",
+    "email"    => '',
+    "group"    => "",
+    "pass1"    => "",
+    "pass2"    => "",
+    "note"     => "" );
+  
+  // Username
+  if ( isset( $_POST["username"] ) ) {
+    if ( Validator::isUsernameValid( $_POST["username"] ) ) {
+      $clean["username"] = $_POST["username"];       
+    }
+  }
+
+  // Email
+  if ( isset( $_POST["email"] ) ) {
+    if ( Validator::isEmailValid( $_POST["email"] ) ) {
+      $clean["email"] = $_POST["email"];       
+    }
+  }
+  
+  // Group name
+  if ( isset( $_POST["group"] ) ) {
+    if ( Validator::isGroupNameValid( $_POST["group"] ) ) {
+      $clean["group"] = $_POST["group"];       
+    }
+  }
+  
+  // Passwords
+  if ( isset( $_POST["pass1"] ) ) {
+    if ( Validator::isPasswordValid( $_POST["pass1"] ) ) {
+      $clean["pass1"] = $_POST["pass1"];       
+    }
+  }  
+  if ( isset( $_POST["pass2"] ) ) {
+    if ( Validator::isPasswordValid( $_POST["pass2"] ) ) {
+      $clean["pass2"] = $_POST["pass2"];       
+    }
+  }  
+  
+  // Note
+  if ( isset( $_POST["note"] ) ) {
+    if ( Validator::isNoteValid( $_POST["note"] ) ) {
+      $clean["note"] = $_POST["note"];       
+    }
+  }
+  
+/*
+ *
+ * END OF SANITIZE INPUT
+ *
+ */
+  
+if (isset($_POST["OK"])) {
+
+  // Check whether all fields have been correctly filled and whether the user
+  // already exists
+  if ( $clean["username"] != "" ) {
+    if ( $clean["email"] != "") {
+      if ( $clean["group"] != "") {
+        if ($clean["pass1"] != "" && $clean["pass2"] != "" ) {
+          if ( $clean["pass1"] == $clean["pass2"] ) {
+            
+            // Store the new user into the database
             $db = new DatabaseConnection();
-            if ($db->emailAddress(strtolower($_POST['username'])) == "") {
+            if ( $db->emailAddress( $clean["username"] ) == "" ) {
               $id = get_rand_id(10);
               $query = "INSERT INTO username (name, password, email, research_group, status) ".
-                        "VALUES ('".strtolower($_POST['username'])."', ".
-                                "'".md5($_POST['pass1'])."', ".
-                                "'".$_POST['email']."', ".
-                                "'".$_POST['group']."', ".
+                        "VALUES ('".($clean["username"])."', ".
+                                "'".md5($clean["pass1"])."', ".
+                                "'".$clean["email"]."', ".
+                                "'".$clean["group"]."', ".
                                 "'".$id."')";
               $result = $db->execute($query);
               // TODO refactor
               if ($result) {
                 $text = "New user registration:\n\n";
-                $text .= "\t       Username: ".strtolower($_POST['username'])."\n";
-                $text .= "\t E-mail address: ".$_POST['email']."\n";
-                $text .= "\t          Group: ".stripslashes($_POST['group'])."\n";
-                $text .= "\tRequest message: ".stripslashes($_POST['note'])."\n\n";
+                $text .= "\t       Username: " . $clean["username"] ."\n";
+                $text .= "\t E-mail address: " . $clean["email"] ."\n";
+                $text .= "\t          Group: " . $clean["group"] . "\n";
+                $text .= "\tRequest message: " . $clean["note"] ."\n\n";
                 $text .= "Accept or reject this user here\n";
                 $text .= $hrm_url."/user_management.php?seed=" . $id;
                 $mail = new Mail($email_sender);
@@ -100,17 +166,17 @@ if (!$processed) {
             <div id="adduser">
             
                 <label for="username">*Username: </label>
-                <input type="text" name="username" id="username" maxlength="30" value="<?php if (isset($user)) echo $user->name() ?>" />
+                <input type="text" name="username" id="username" maxlength="30" value="<?php echo $clean["username"] ?>" />
                 
                 <br />
                 
                 <label for="email">*E-mail address: </label>
-                <input type="text" name="email" id="email"  maxlength="80" value="<?php if (isset($user)) echo $user->email() ?>" />
+                <input type="text" name="email" id="email"  maxlength="80" value="<?php echo $clean["email"] ?>" />
                 
                 <br />
                 
                 <label for="group">*Research group: </label>
-                <input type="text" name="group" id="group" maxlength="30" value="<?php if (isset($user)) echo stripslashes($user->group()) ?>" />
+                <input type="text" name="group" id="group" maxlength="30" value="<?php echo $clean["group"] ?>" />
                 
                 <br />
                 
@@ -125,8 +191,8 @@ if (!$processed) {
                 <br />
                 
                 <label for="note">Request message:</label>
-                <textarea name="note" id="note" rows="3" cols="30"><?php if (isset($_POST['note']))  echo stripslashes($_POST['note']) ?></textarea>
-                
+                <textarea name="note" id="note" rows="3" cols="30"><?php echo $clean["note"] ?></textarea>
+
                 <div>
                     <input name="OK" type="submit" value="register" class="button" />
                 </div>
