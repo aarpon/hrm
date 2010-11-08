@@ -171,6 +171,118 @@ Class DatabaseConnection {
   ////////////////////////////////////////////////////////////
 
   //!---------------------------------------------------------
+  // @function    DatabaseConnection::addNewUser
+  // @desc        Adds a new user to the database (all parameters are expected
+  //              to be already validated!
+  // @param       username  string    The name of the user
+  // @param       password  string    Password (plain)
+  // @param       email  	string    E-mail address
+  // @param       group  	string    Research group
+  // @param       status  	string    Status or ID
+  // @return      success	boolean	  True if success; false otherwise
+  //!---------------------------------------------------------  
+  function addNewUser($username, $password, $email, $group, $status) {
+	$query = "INSERT INTO username (name, password, email, research_group, status) ".
+                        "VALUES ('".$username."', ".
+                                "'".md5($password)."', ".
+                                "'".$email."', ".
+                                "'".$group."', ".
+                                "'".$status."')";
+	$result = $this->execute($query);
+	if ( $result ) {
+	  return true;
+	} else {
+	  return false;
+	}
+  }
+
+  //!---------------------------------------------------------
+  // @function    DatabaseConnection::updateExistingUser
+  // @desc        Updates an existing user in the database (all parameters are
+  //              expected to be already validated!
+  // @param       username  string    The name of the user
+  // @param       password  string    Password (plain)
+  // @param       email  	string    E-mail address
+  // @param       group  	string    Research group
+  // @return      success	boolean	  True if success; false otherwise
+  //!---------------------------------------------------------  
+  function updateExistingUser($username, $password, $email, $group) {
+	$query = "UPDATE username SET email ='".$email."', " .
+	  "research_group ='".$group."', ".
+	  "password = '".md5($password)."' " .
+	  "WHERE name = '".$username."';";
+	$result = $this->execute($query);
+	if ( $result ) {
+	  return true;
+	} else {
+	  return false;
+	}
+  }
+  
+  //!---------------------------------------------------------
+  // @function    DatabaseConnection::updateUserStatus
+  // @desc        Updates the status of an existing user in the database
+  //              (username is expected to be already validated!
+  // @param       username  string    The name of the user
+  // @param       status    string    One of 'd', 'a', ...
+  // @return      success	boolean	  True if success; false otherwise
+  //!---------------------------------------------------------  
+  function updateUserStatus($username, $status) {
+    $query = "UPDATE username SET status = '".$status."' WHERE name = '".$username."'";
+	$result = $this->execute($query);
+	if ( $result ) {
+	  return true;
+	} else {
+	  return false;
+	}
+  }
+
+  //!---------------------------------------------------------
+  // @function    DatabaseConnection::updateAllUsersStatus
+  // @desc        Updates the status of all non-admin users in the database
+  // @param       status    string    One of 'd', 'a', ...
+  // @return      success	boolean	  True if success; false otherwise
+  //!---------------------------------------------------------  
+  function updateAllUsersStatus($status) {
+    $query = "UPDATE username SET status = '".$status."' WHERE name NOT LIKE 'admin'";
+	$result = $this->execute($query);
+	if ( $result ) {
+	  return true;
+	} else {
+	  return false;
+	}
+  }
+
+  //!---------------------------------------------------------
+  // @function    DatabaseConnection::deleteUser
+  // @desc        Deletes an user and all data from the database
+  //              (username is expected to be already validated!
+  // @param       username  string    The name of the user
+  // @return      success	boolean	  True if success; false otherwise
+  //!---------------------------------------------------------  
+  function deleteUser($username) {
+	if ( $username == 'admin' ) {
+	  return false;
+	}
+	$query = "DELETE FROM username WHERE name = '".$username."'";
+    $result = $this->execute($query);
+    if ($result) {
+      // delete user's settings
+      $query = "DELETE FROM parameter WHERE owner = '".$username."'";
+      $this->execute($query);
+      $query = "DELETE FROM parameter_setting WHERE owner = '".$username."'";
+      $this->execute($query);
+      $query = "DELETE FROM task_parameter WHERE owner = '".$username."'";
+      $this->execute($query);
+      $query = "DELETE FROM task_setting WHERE owner = '".$username."'";
+      $this->execute($query);
+	  return true;
+	} else {
+	    return false;
+    }
+  }
+  
+  //!---------------------------------------------------------
   // @function    DatabaseConnection::passwordQueryString
   // @desc        Answer the sql query string that yields the
   //              the password of the user name

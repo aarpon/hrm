@@ -7,6 +7,7 @@ require_once("./inc/Database.inc");
 require_once("./inc/hrm_config.inc");
 require_once("./inc/Mail.inc");
 require_once("./inc/Util.inc");
+require_once("./inc/Validator.inc");
 
 global $hrm_url;
 global $email_sender;
@@ -24,11 +25,55 @@ if ( $authenticateAgainst != "MYSQL" ) {
   header("Location: " . "home.php"); exit();
 }
 
-$db = new DatabaseConnection();
+/*
+ *
+ * SANITIZE INPUT
+ *   We check the relevant contents of $_POST for validity and store them in
+ *   a new array $clean that we will use in the rest of the code.
+ *
+ *   After this step, only the $clean array and no longer the $_POST array
+ *   should be used!
+ *
+ */
+
+  // Here we store the cleaned variables
+  $clean = array(
+    "username" => "",
+    "email"    => '',
+    "group"    => "" );
+
+  // Email
+  if ( isset( $_POST["username"] ) ) {
+    if ( Validator::isUserNameValid( $_POST["username"] ) ) {
+      $clean["username"] = $_POST["username"];       
+    }
+  }
+  
+  // Email
+  if ( isset( $_POST["email"] ) ) {
+    if ( Validator::isEmailValid( $_POST["email"] ) ) {
+      $clean["email"] = $_POST["email"];       
+    }
+  }
+  
+  // Group name
+  if ( isset( $_POST["group"] ) ) {
+    if ( Validator::isGroupNameValid( $_POST["group"] ) ) {
+      $clean["group"] = $_POST["group"];       
+    }
+  }
+  
+/*
+ *
+ * END OF SANITIZE INPUT
+ *
+ */
 
 if (isset($_GET['home'])) {
   header("Location: " . "home.php"); exit();
 }
+
+$db = new DatabaseConnection();
 
 if (isset($_GET['seed'])) {
   $query = "SELECT status FROM username WHERE status = '".$_GET['seed']."'";
@@ -67,7 +112,6 @@ if (isset($_SESSION['account_user']) && gettype($_SESSION['account_user']) != "o
 }
 
 if (!isset($_SESSION['index'])) {
-  # session_register("index");
   $_SESSION['index'] = "";
 }
 else if (isset($_GET['index'])) {
@@ -77,31 +121,29 @@ else if (isset($_GET['index'])) {
 $message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
 
 if (isset($_POST['accept'])) {
-  $query = "UPDATE username SET status = 'a' WHERE name = '".$_POST['username']."'";
-  $result = $db->execute($query);
+  $result = $db->updateUserStatus($clean['username'], 'a');
   // TODO refactor
   if ($result) {
-    $email = $db->emailAddress($_POST['username']);
+    $email = $db->emailAddress($clean['username']);
     $text = "Your account has been activated:\n\n";
-    $text .= "\t      Username: ".$_POST['username']."\n";
+    $text .= "\t      Username: ".$clean['username']."\n";
     $text .= "\tE-mail address: ".$email."\n\n";
     $text .= "Login here\n";
     $text .= $hrm_url."\n\n";
-    $folder = $image_folder . "/" . $_POST['username'];
+    $folder = $image_folder . "/" . $clean['username'];
     $text .= "Source and destination folders for your images are located on server ".$image_host." under ".$folder.".";
     $mail = new Mail($email_sender);
     $mail->setReceiver($email);
     $mail->setSubject("Account activated");
     $mail->setMessage($text);
     $mail->send();
-    shell_exec("$userManager create \"" . $_POST['username']. "\"");
+    shell_exec("$userManager create \"" . $clean['username']. "\"");
   }
   else $message = "            <p class=\"warning\">Database error, please inform the person in charge</p>";
 }
 else if (isset($_POST['reject'])) {
-  $email = $db->emailAddress($_POST['username']);
-  $query = "DELETE FROM username WHERE name = '".$_POST['username']."'";
-  $result = $db->execute($query);
+  $email = $db->emailAddress($clean['username']);
+  $result = $db->deleteUser( $clean['username'] );
   // TODO refactor
   if (!$result) $message = "            <p class=\"warning\">Database error, please inform the person in charge</p>";
   $text = "Your request has been rejected. Please contact ".$email_admin." for any enquiries.\n";
@@ -112,19 +154,8 @@ else if (isset($_POST['reject'])) {
   $mail->send();
 }
 else if (isset($_POST['annihilate']) && $_POST['annihilate'] == "yes") {
-  if ($_POST['username'] != "admin") {
-    $query = "DELETE FROM username WHERE name = '".$_POST['username']."'";
-    $result = $db->execute($query);
-    if ($result) {
-      // delete user's settings
-      $query = "DELETE FROM parameter WHERE owner = '".$_POST['username']."'";
-      $db->execute($query);
-      $query = "DELETE FROM parameter_setting WHERE owner = '".$_POST['username']."'";
-      $db->execute($query);
-      $query = "DELETE FROM task_parameter WHERE owner = '".$_POST['username']."'";
-      $db->execute($query);
-      $query = "DELETE FROM task_setting WHERE owner = '".$_POST['username']."'";
-      $db->execute($query);
+  if ( $clean['username'] != "admin") {
+    $result = $db->deleteUser( $clean['username'] );
       // TODO refactor
       if ($result) {
         shell_exec("$userManager delete \"" . $_POST['username'] . "\"");
@@ -137,37 +168,27 @@ else if (isset($_POST['annihilate']) && $_POST['annihilate'] == "yes") {
       $message = "            <p class=\"warning\">Database error, please inform the person in charge</p>";
     }
   }
-}
 else if (isset($_POST['edit'])) {
   $_SESSION['account_user'] = new User();
-  $_SESSION['account_user']->setName($_POST['username']);
-  $_SESSION['account_user']->setEmail($_POST['email']);
-  $_SESSION['account_user']->setGroup($_POST['group']);
-  # session_register("account_user");
-  # $_SESSION['account_user'] = $account_user;
+  $_SESSION['account_user']->setName($clean['username']);
   if (isset($c) || isset($_GET['c']) || isset($_POST['c'])) {
-    # session_register("c");
     if (isset($_GET['c'])) $_SESSION['c'] = $_GET['c'];
     else if (isset($_POST['c'])) $_SESSION['c'] = $_POST['c'];
   }
   header("Location: " . "account.php"); exit();
 }
 else if (isset($_POST['enable'])) {
-  $query = "UPDATE username SET status = 'a' WHERE name = '".$_POST['username']."'";
-  $result = $db->execute($query);
+  $result = $db->updateUserStatus($clean['username'], 'a');
 }
 else if (isset($_POST['disable'])) {
-  $query = "UPDATE username SET status = 'd' WHERE name = '".$_POST['username']."'";
-  $result = $db->execute($query);
+  $result = $db->updateUserStatus($clean['username'], 'd');
 }
 else if (isset($_POST['action'])) {
   if ($_POST['action'] == "disable") {
-    $query = "UPDATE username SET status = 'd' WHERE name NOT LIKE 'admin'";
-    $result = $db->execute($query);
+    $result = $db->updateAllUsersStatus('d');
   }
   else if ($_POST['action'] == "enable") {
-    $query = "UPDATE username SET status = 'a' WHERE name NOT LIKE 'admin'";
-    $result = $db->execute($query);
+    $result = $db->updateAllUsersStatus('a');
   }
 }
 // TODO refactor to here

@@ -7,6 +7,7 @@ require_once("./inc/Database.inc");
 require_once("./inc/hrm_config.inc");
 require_once("./inc/Mail.inc");
 require_once("./inc/Util.inc");
+require_once("./inc/Validator.inc");
 
 session_start();
 
@@ -18,44 +19,85 @@ $message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
 
 $added = False;
 
+/*
+ *
+ * SANITIZE INPUT
+ *   We check the relevant contents of $_POST for validity and store them in
+ *   a new array $clean that we will use in the rest of the code.
+ *
+ *   After this step, only the $clean array and no longer the $_POST array
+ *   should be used!
+ *
+ */
+
+  // Here we store the cleaned variables
+  $clean = array(
+    "username" => "",
+    "email"    => '',
+    "group"    => "",
+    "pass1"    => "",
+    "pass2"    => "",
+    "note"     => "" );
+  
+  // Username
+  if ( isset( $_POST["username"] ) ) {
+    if ( Validator::isUsernameValid( $_POST["username"] ) ) {
+      $clean["username"] = $_POST["username"];       
+    }
+  }
+
+  // Email
+  if ( isset( $_POST["email"] ) ) {
+    if ( Validator::isEmailValid( $_POST["email"] ) ) {
+      $clean["email"] = $_POST["email"];       
+    }
+  }
+  
+  // Group name
+  if ( isset( $_POST["group"] ) ) {
+    if ( Validator::isGroupNameValid( $_POST["group"] ) ) {
+      $clean["group"] = $_POST["group"];       
+    }
+  }
+  
+/*
+ *
+ * END OF SANITIZE INPUT
+ *
+ */
+
 // TODO refactor from here
 if (isset($_POST['add'])) {
-  $user = new User();
-  $user->setName(strtolower($_POST['username']));
-  $user->setEmail($_POST['email']);
-  $user->setGroup($_POST['group']);
-  if (strtolower($_POST['username']) != "") {
-    if ($_POST['email'] != "" && strstr($_POST['email'], "@") && strstr(strstr($_POST['email'], "@"), ".")) {
-      if ($_POST['group'] != "") {
+  //$user = new User();
+  //$user->setName( $clean['username'] );
+
+  if ( $clean["username"] != "" ) {
+    if ( $clean["email"] != "" ) {
+      if ($clean['group'] != "") {
         $db = new DatabaseConnection();
-        if ($db->emailAddress(strtolower($_POST['username'])) == "") {
+        // Is the user name already taken?
+        if ($db->emailAddress($clean['username']) == "") {
           $password = get_rand_id(8);
-          $query = "INSERT INTO username (name, password, email, research_group, status) ".
-                    "VALUES ('".strtolower($_POST['username'])."', ".
-                            "'".md5($password)."', ".
-                            "'".$_POST['email']."', ".
-                            "'".$_POST['group']."', ".
-                            "'a')";
-          $result = $db->execute($query);
+          $result = $db->addNewUser( $clean["username"],
+                md5($password), $clean["email"], $clean["group"], 'a' );
+          
           // TODO refactor
           if ($result) {
             $text = "Your account has been activated:\n\n";
-            $text .= "\t      Username: ".strtolower($_POST['username'])."\n";
+            $text .= "\t      Username: ".$clean["username"]."\n";
             $text .= "\t      Password: ".$password."\n\n";
             $text .= "Login here\n";
             $text .= $hrm_url."\n\n";
-            $folder = $image_folder . "/" . strtolower($_POST['username']);
+            $folder = $image_folder . "/" . $clean["username"];
             $text .= "Source and destination folders for your images are located on server ".$image_host." under ".$folder.".";
             $mail = new Mail($email_sender);
-            $mail->setReceiver($_POST['email']);
+            $mail->setReceiver($clean['email']);
             $mail->setSubject('Account activated');
             $mail->setMessage($text);
             $mail->send();
-            $user->setName('');
-            $user->setEmail('');
-            $user->setGroup('');
+            //$user->setName( '' );
             $message = "            <p class=\"warning\">New user successfully added to the system</p>";
-            shell_exec("$userManager create \"" . strtolower($_POST['username']) . "\"" );
+            shell_exec("$userManager create \"" . $clean["username"] . "\"" );
             $added = True;
           }
           else $message = "            <p class=\"warning\">Database error, please inform the person in charge</p>";
@@ -110,17 +152,17 @@ else echo "        var added = false;\n";
         <div id="adduser">
           
           <label for="username">Username: </label>
-          <input type="text" name="username" id="username" value="<?php if (isset($user)) echo $user->name() ?>" class="texfield" />
+          <input type="text" name="username" id="username" value="" class="texfield" />
           
           <br />
           
           <label for="email">E-mail address: </label>
-          <input type="text" name="email" id="email" value="<?php if (isset($user)) echo $user->email() ?>" class="texfield" />
+          <input type="text" name="email" id="email" value="" class="texfield" />
           
           <br />
           
           <label for="group">Research group: </label>
-          <input type="text" name="group" id="group" value="<?php if (isset($user)) echo $user->group() ?>" class="texfield" />
+          <input type="text" name="group" id="group" value="" class="texfield" />
           
           <br />
           

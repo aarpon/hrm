@@ -5,14 +5,17 @@
 require_once "Database.inc";
 require_once "Setting.inc";
 require_once "hrm_config.inc";
-require_once "ActiveDirectory.inc";
 
-global $authenticateAgainst;
-global $use_ldaps;
+if ( $authenticateAgainst == "ACTIVE_DIR" ) {
+  require_once "ActiveDirectory.inc";
+}
 
 if ( $authenticateAgainst == "LDAP" ) {
   require_once "Ldap.inc";
 }
+
+global $authenticateAgainst;
+global $use_ldaps;
 
 //!---------------------------------------------------------
 // @class    Owner
@@ -21,20 +24,14 @@ if ( $authenticateAgainst == "LDAP" ) {
 //!---------------------------------------------------------
 Class Owner {
   public $name;          // @public name          String    The owners name might be a job id or a user's login name
-  // add user management
-  public $email;         // @public email         String    The owners email address
-  public $group;         // @public group         String    The owners group
  
   //!---------------------------------------------------------
   // @function    Owner::Owner
-  // @desc        Konstruktor. Creates a new owner.
+  // @desc        Constructor. Creates a new owner.
   // @return      void
   //!---------------------------------------------------------
   function Owner() {
     $this->name = '';
-    // add user management
-    $this->email = '';
-    $this->group = '';
   }
 
   //!---------------------------------------------------------
@@ -46,26 +43,6 @@ Class Owner {
     return $this->name;
   }
 
-  // add user management
-  //!---------------------------------------------------------
-  // @function    Owner::email
-  // @desc        Answer the email address of the owner
-  // @return      String
-  //!---------------------------------------------------------
-  function email() {
-    return $this->email;
-  }
-
-  // add user management
-  //!---------------------------------------------------------
-  // @function    Owner::group
-  // @desc        Answer the group of the owner
-  // @return      String
-  //!---------------------------------------------------------
-  function group() {
-    return $this->group;
-  }
-
   //!---------------------------------------------------------
   // @function    Owner::setName
   // @desc        Set the name of the owner. Might be the name
@@ -75,30 +52,8 @@ Class Owner {
   //!---------------------------------------------------------
   function setName($name) {
     $this->name = $name;
-  } 
-
-  // add user management
-  //!---------------------------------------------------------
-  // @function    Owner::setEmail
-  // @desc        Set the email address of the owner
-  // @param       email   String    The email address of the owner
-  // @return      void
-  //!---------------------------------------------------------
-  function setEmail($email) {
-    $this->email = $email;
   }
   
-  // add user management
-  //!---------------------------------------------------------
-  // @function    Owner::setGroup
-  // @desc        Set the group of the owner
-  // @param       name    String    The group of the owner
-  // @return      void
-  //!---------------------------------------------------------
-  function setGroup($group) {
-    $this->group = $group;
-  }
-
 } // end of class Owner
 
 //!---------------------------------------------------------
@@ -445,7 +400,7 @@ Class User extends Owner{
     
     return $result;
   } 
-  
+
   //!---------------------------------------------------------
   // @function    User::getAcceptedStatus
   // @desc        Answer the status that signifies that the user
@@ -483,41 +438,6 @@ Class User extends Owner{
   //!---------------------------------------------------------  
   function isAdmin() {
   	return $this->name()==$this->getAdminName();
-  }
-  
-  //!---------------------------------------------------------
-  // @function    User::load
-  // @desc        load email and group of the user
-  // @return      
-  //!--------------------------------------------------------- 
-  function load() {
-  	global $email_admin;
-    
-    switch ( $this->authMode ) {
-
-      case "LDAP":
-        
-        echo("User::load() not implemented for LDAP.\n");
-        exit( 1 );
-      
-      case "ACTIVE_DIR":
-        
-        echo("User::load() not implemented for ACTIVE_DIR.\n");
-        exit( 1 );
-      
-      case "MYSQL":
-        
-        if ($this->isAdmin()) {
-          $db = new DatabaseConnection();
-          $this->setEmail($email_admin);
-          $db->updateMail($this->name(), $email_admin);
-        } else {
-          $this->setEmail($this->emailAddress());
-        }
-        // get user group
-        $this->setGroup($this->group());
-        break;
-      }
   }
   
   //!---------------------------------------------------------

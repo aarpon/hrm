@@ -25,6 +25,9 @@ Class Validator {
   // Validates the user name
   public static function isUserNameValid( $inputUserName ) {
 
+    // Force the username to be lowercase
+    $inputUserName = strtolower( $inputUserName );
+    
     // Clean the string
     $tmp = filter_var( $inputUserName, FILTER_SANITIZE_STRING );
 

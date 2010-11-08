@@ -97,13 +97,9 @@ if (isset($_POST["OK"])) {
             $db = new DatabaseConnection();
             if ( $db->emailAddress( $clean["username"] ) == "" ) {
               $id = get_rand_id(10);
-              $query = "INSERT INTO username (name, password, email, research_group, status) ".
-                        "VALUES ('".($clean["username"])."', ".
-                                "'".md5($clean["pass1"])."', ".
-                                "'".$clean["email"]."', ".
-                                "'".$clean["group"]."', ".
-                                "'".$id."')";
-              $result = $db->execute($query);
+              $result = $db->addNewUser( $clean["username"],
+                md5($clean["pass1"]), $clean["email"], $clean["group"], $id );
+              
               // TODO refactor
               if ($result) {
                 $text = "New user registration:\n\n";

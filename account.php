@@ -6,13 +6,61 @@ require_once("./inc/User.inc");
 require_once("./inc/Database.inc");
 require_once("./inc/hrm_config.inc");
 require_once("./inc/Util.inc");
+require_once("./inc/Validator.inc");
 
 global $email_sender;
 
+/*
+ *
+ * SANITIZE INPUT
+ *   We check the relevant contents of $_POST for validity and store them in
+ *   a new array $clean that we will use in the rest of the code.
+ *
+ *   After this step, only the $clean array and no longer the $_POST array
+ *   should be used!
+ *
+ */
+
+  // Here we store the cleaned variables
+  $clean = array(
+    "email"    => '',
+    "group"    => "",
+    "pass1"    => "",
+    "pass2"    => "" );
+  
+  // Email
+  if ( isset( $_POST["email"] ) ) {
+    if ( Validator::isEmailValid( $_POST["email"] ) ) {
+      $clean["email"] = $_POST["email"];       
+    }
+  }
+  
+  // Group name
+  if ( isset( $_POST["group"] ) ) {
+    if ( Validator::isGroupNameValid( $_POST["group"] ) ) {
+      $clean["group"] = $_POST["group"];       
+    }
+  }
+  
+  // Passwords
+  if ( isset( $_POST["pass1"] ) ) {
+    if ( Validator::isPasswordValid( $_POST["pass1"] ) ) {
+      $clean["pass1"] = $_POST["pass1"];       
+    }
+  }  
+  if ( isset( $_POST["pass2"] ) ) {
+    if ( Validator::isPasswordValid( $_POST["pass2"] ) ) {
+      $clean["pass2"] = $_POST["pass2"];       
+    }
+  }  
+  
+/*
+ *
+ * END OF SANITIZE INPUT
+ *
+ */
 
 session_start();
-
-$db = new DatabaseConnection();
 
 if (isset($_GET['home'])) {
   header("Location: " . "home.php"); exit();
@@ -35,74 +83,47 @@ else {
 
 $message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
 
-
 if (isset($_POST['modify'])) {
   $result = True;
-  $baseQuery = "UPDATE username SET ";
-  $query = $baseQuery;
-  if ( isset( $_POST['email'] ) ) {
-    if ( $_POST['email'] != "" && strstr($_POST['email'], "@") && strstr(strstr($_POST['email'], "@"), ".")) {
-      $query .= " email ='".$_POST['email']."'";
-    }
-    else {
-      $result = False;
-      $message = "            <p class=\"warning\">Please fill in the email field with a valid address<br />&nbsp;</p>";
-    }
+  // Check that all required entries are set
+  if ( $clean['email'] == "" ) {
+    $result = False;
+    $message = "            <p class=\"warning\">Please fill in the email field with a valid address<br />&nbsp;</p>";
   }
-  if (isset($_POST['group'])) {
-    if ($_POST['group'] != "") {
-      if ( strcmp( $query, $baseQuery ) == 0 ) {
-        $query .= "research_group ='".$_POST['group']."'";
-      } else {
-        $query .= ", research_group ='".$_POST['group']."'";
-      }
-    }
-    else {
+  if ( $clean['group'] == "" ) {
+    if ( $_SESSION['user']->name() == "admin" ) {
       $result = False;
-      $message = "\n            <p class=\"warning\">Please fill in the group field<br />&nbsp;</p>";
+      $message = "            <p class=\"warning\">Please fill in the group field<br />&nbsp;</p>";
+    } else {
+      $groupToUse = $edit_user->userGroup( ); 
     }
+  } else {
+    $groupToUse = $clean['group'];
   }
-  if ($_POST['pass1'] != "" || $_POST['pass2'] != "") {
-    if ($_POST['pass1'] == "" || $_POST['pass2'] == "") {
+  if ( $clean['pass1'] == "" || $clean['pass2'] == "" ) {
       $result = False;
       $message = "\n            <p class=\"warning\">Please fill in both password fields</p>";
-    }
-    else {
-      if ($_POST['pass1'] == $_POST['pass2']) {
-        if ( strcmp( $query, $baseQuery ) == 0 ) {
-          $query .= "password = '".md5($_POST['pass1'])."'";
-        } else {
-          $query .= ", password = '".md5($_POST['pass1'])."'";
-        }
-      }
-      else {
-        $result = False;
-        $message = "\n            <p class=\"warning\">Passwords do not match</p>";
-      }
+  } else {
+    if ( $clean['pass1'] != $clean['pass2'] ) {
+      $result = False;
+      $message = "\n            <p class=\"warning\">Passwords do not match</p>";
     }
   }
-  if ($result) {
-    $query .= " WHERE name = '".$edit_user->name()."'";
-    $result = $db->execute($query);
-    // TODO refactor
-    if ($result) {
+  if ( $result == True ) {
+    $db = new DatabaseConnection();
+    $success = $db->updateExistingUser( $edit_user->name(),
+      $clean['pass1'], $clean['email'], $groupToUse );
+    if ( $success == True ) {
       if (isset($_SESSION['account_user'])) {
         $_SESSION['account_user'] = "Account details successfully modified";
         header("Location: " . "user_management.php"); exit();
-      }
-      else {
-        if ( isset( $_POST['email'] ) ) {
-          $edit_user->setEmail($_POST['email']);
-        }
-        if ( isset( $_POST['group'] ) ) {
-          $edit_user->setGroup($_POST['group']);
-        }
-        #$_SESSION['user'] = $user;
+      } else {
         $message = "            <p class=\"warning\">Account details successfully modified</p>";
         header("Location: " . $_SESSION['referer']); exit();
       }
+    } else {
+      $message = "            <p class=\"warning\">Database error, please inform the person in charge</p>\n";  
     }
-    else $message = "            <p class=\"warning\">Database error, please inform the person in charge</p>\n";
   }
 }
 
@@ -136,7 +157,18 @@ if (isset($_SESSION['account_user']) || $_SESSION['user']->name() != "admin") {
 
 ?>
                 <label for="email">E-mail address: </label>
-                <input name="email" id="email" type="text" value="<?php echo $edit_user->email() ?>" />
+                <?php
+                  if ( $clean['email'] != "" ) {
+                    ?>
+                    <input name="email" id="email" type="text" value="<?php echo $clean['email'] ?>" />
+                    <?php                    
+                  } else {
+                    ?>
+                    <input name="email" id="email" type="text" value="<?php echo $edit_user->emailAddress() ?>" />
+                    <?php
+                  }
+                ?>
+                
                 <br />
 <?php
 
@@ -148,7 +180,17 @@ if (isset($_SESSION['account_user'])/* && $_SESSION['user']->name() == "admin"*/
 
 ?>
                 <label for="group">Research group: </label>
-                <input name="group" id="group" type="text" value="<?php echo $edit_user->userGroup() ?>" />
+                <?php
+                  if ( $clean['group'] != "" ) {
+                    ?>
+                    <input name="group" id="group" type="text" value="<?php echo $clean['group'] ?>" />
+                    <?php                    
+                  } else {
+                    ?>
+                    <input name="group" id="group" type="text" value="<?php echo $edit_user->userGroup() ?>" />
+                    <?php
+                  }
+                ?>                
                 <br />
 <?php
 
