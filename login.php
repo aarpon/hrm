@@ -77,7 +77,7 @@ session_start();
 
 $_SESSION['user'] = new User();
 
-if ( $clean['password'] != "" ) {
+if ( $clean['password'] != "" && $clean['username'] != "" ) {
   $_SESSION['user']->setName($clean['username']);
   $_SESSION['user']->logOut(); // TODO
   
@@ -122,6 +122,8 @@ if ( $clean['password'] != "" ) {
         $message = "            <p class=\"warning\">Sorry, wrong user name or password.</p>\n";
       }
     }
+  } else {
+    $message = "            <p class=\"warning\">Invalid user name or password.</p>\n";
   }
 
 include("header.inc.php");
