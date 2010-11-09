@@ -77,53 +77,55 @@ session_start();
 
 $_SESSION['user'] = new User();
 
-if ( $clean['password'] != "" && $clean['username'] != "" ) {
-  $_SESSION['user']->setName($clean['username']);
-  $_SESSION['user']->logOut(); // TODO
+if ( isset( $_POST['password'] ) && isset( $_POST['username'] ) ) {
+  if ( $clean['password'] != "" && $clean['username'] != "" ) {
+    $_SESSION['user']->setName($clean['username']);
+    $_SESSION['user']->logOut(); // TODO
   
-  if ($_SESSION['user']->logIn($clean['username'], $clean['password'], $_SERVER['REMOTE_ADDR'])) {
-    if ($_SESSION['user']->isLoggedIn()) {
-      // Make sure that the user source and destination folders exist
-			{
-        $fileServer = new FileServer( $clean['username'] );
-        if ( $fileServer->isReachable() == false ) {
-          shell_exec("bin/hrm create " . $clean['username'] );
+    if ($_SESSION['user']->logIn($clean['username'], $clean['password'], $_SERVER['REMOTE_ADDR'])) {
+      if ($_SESSION['user']->isLoggedIn()) {
+        // Make sure that the user source and destination folders exist
+    		{
+          $fileServer = new FileServer( $clean['username'] );
+          if ( $fileServer->isReachable() == false ) {
+            shell_exec("bin/hrm create " . $clean['username'] );
+            }
           }
-        }
         
-        // TODO unregister also "setting" and "task_setting"
-        unset($_SESSION['editor']);
+          // TODO unregister also "setting" and "task_setting"
+          unset($_SESSION['editor']);
         
-        if ( $authenticateAgainst == "MYSQL" ) {
-          if ( $req != "" ) {
-            header("Location: " . $req);
-            exit();
+          if ( $authenticateAgainst == "MYSQL" ) {
+            if ( $req != "" ) {
+              header("Location: " . $req);
+              exit();
+            } else {
+              // Proceed to home
+              header("Location: " . "home.php");
+              exit();
+            }
           } else {
-            // Proceed to home
+            // Alternative authentication: proceed to home
             header("Location: " . "home.php");
             exit();
           }
+        }
+      } else if ($_SESSION['user']->isLoginRestrictedToAdmin()) {
+        if ( ( strcmp($_SESSION['user']->name( ), 'admin' ) == 0 ) && ($_SESSION['user']->exists()) ) {
+          $message = "            <p class=\"warning\">Wrong password.</p>\n";
         } else {
-          // Alternative authentication: proceed to home
-          header("Location: " . "home.php");
-          exit();
+          $message = "            <p class=\"warning\">Only the administrator is allowed to login in order to perform maintenance.</p>\n";
+        }
+      } else {
+        if ($_SESSION['user']->isSuspended()) {
+          $message = "            <p class=\"warning\">Your account has been suspended, please contact the administrator.</p>\n";
+        } else {
+          $message = "            <p class=\"warning\">Sorry, wrong user name or password.</p>\n";
         }
       }
-    } else if ($_SESSION['user']->isLoginRestrictedToAdmin()) {
-      if ( ( strcmp($_SESSION['user']->name( ), 'admin' ) == 0 ) && ($_SESSION['user']->exists()) ) {
-        $message = "            <p class=\"warning\">Wrong password.</p>\n";
-      } else {
-        $message = "            <p class=\"warning\">Only the administrator is allowed to login in order to perform maintenance.</p>\n";
-      }
     } else {
-      if ($_SESSION['user']->isSuspended()) {
-        $message = "            <p class=\"warning\">Your account has been suspended, please contact the administrator.</p>\n";
-      } else {
-        $message = "            <p class=\"warning\">Sorry, wrong user name or password.</p>\n";
-      }
+      $message = "            <p class=\"warning\">Sorry, invalid user name or password.</p>\n";
     }
-  } else {
-    $message = "            <p class=\"warning\">Invalid user name or password.</p>\n";
   }
 
 include("header.inc.php");
