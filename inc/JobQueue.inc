@@ -166,15 +166,10 @@ Class JobQueue {
   } 
 
   function removeJobWithId($id) {
-  	global $use_accounting_system;
     $result = True;
     $db = new DatabaseConnection();
     $tables = array('job_queue', 'job_files', 'job_parameter', 'job_parameter_setting', 'job_task_parameter', 'job_task_setting');
     $columns = array('id', 'job', 'setting', 'name', 'setting', 'name');
-     if ($use_accounting_system) {
-      $tables[] = 'job_accounting_data';
-      $columns[] = 'id'; 
-    } 
     $result = $result && $db->deleteFromTablesWhereColumnEquals($tables, $columns, $id);
     return $result; 
   } 

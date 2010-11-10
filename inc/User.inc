@@ -69,7 +69,7 @@ Class User extends Owner{
   
   //!---------------------------------------------------------
   // @function    User::User
-  // @desc        Konstruktor. Creates a new empty user.
+  // @desc        Constructor. Creates a new empty user.
   // @return      void
   //!---------------------------------------------------------
   function User() {

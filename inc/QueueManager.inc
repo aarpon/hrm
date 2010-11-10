@@ -347,8 +347,6 @@ Class QueueManager {
 	// TODO refactor this
 	function updateJobAndServerStatus() {
 		global $imageProcessingIsOnQueueManager;
-		global $use_accounting_system;
-		global $accounting_client_name;
 		global $send_mail;
 		global $logdir;
 		
@@ -457,8 +455,6 @@ Class QueueManager {
 				} 
 				if (file_exists($logFile))
 					unlink($logFile);	
-				// make withdrawal of hours
-				if ($use_accounting_system) $this->makeWithdrawal($desc->owner(), $accounting_client_name, $startTime, $this->stopTime, $desc->credit(), $desc->group);
                                 # $proc = $this->activeProcs[$id];
                                 # $debug = var_export($this->activeProcs, true);
                                 # report ("Releasing shell, ".
@@ -533,27 +529,8 @@ Class QueueManager {
 					//if (file_exists($errorFile)) { 
 					//    unlink($errorFile);
 					//} 
-					// make withdrawal of hours
-					if ($use_accounting_system) {
-						$this->makeWithdrawal($desc->owner(), $accounting_client_name, $startTime, $this->stopTime, $desc->credit(), $desc->group);
-					}
 				}*/
 		}
-	}
-
-	function makeWithdrawal($user, $client, $startTime, $stopTime, $credit, $group) {
-		global $accounting_transaction_path;
-		$stopTimeForFilename = str_replace(" ", "-", $stopTime);
-		$filename = $accounting_transaction_path . str_replace(":", "-", $stopTimeForFilename);
-		$startTimeForMessage = str_replace(":", "/", $startTime) . ".0";
-		$endTimeForMessage = explode(".", $stopTime);
-		$endTimeForMessage = str_replace(":", "/", $endTimeForMessage[0]) . ".0";
-		$message = 'MessageRequestExecuteWithdrawal:' . $user->name() . ':' . $client . ':' . $startTimeForMessage . ':' . $endTimeForMessage . ':' . $credit . ":" . $group;
-		$file = fopen($filename, 'w');
-		fwrite($file, $message);
-		fclose($file);
-		exec("hrmAccountingRelay");
-		report("created transaction: $message", 1);
 	}
 
 	function writeParameterFile($job, $startTime, $logFile, $errorFile) {

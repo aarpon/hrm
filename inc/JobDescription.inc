@@ -27,7 +27,6 @@ Class JobDescription {
   public $owner;               // @public owner            User              the user who created the job 
   public $message;             // @public message          String            error message.
   public $pass;                // @public pass             Integer           pass 1 or 2 of step combined processing
-  public $credit;              // @public credit           String            name of the credit to be used
   public $group;               // @public group            String            name of the group to be used
   //public $rangeParameters;     // why not use a global variable from the beginning?!
 
@@ -69,12 +68,6 @@ Class JobDescription {
   } 
   function setFiles($files) {
     $this->files = $files;
-  } 
-  function credit() {
-    return $this->credit;
-  } 
-  function setCredit($credit) {
-    $this->credit = $credit;
   } 
   function group() {
     return $this->group;
@@ -118,7 +111,6 @@ Class JobDescription {
   }
      
   function createJob() {
-    global $use_accounting_system;
     $result = True;
     $jobParameterSetting = new JobParameterSetting();
     $jobParameterSetting->setOwner($this->owner);
@@ -132,9 +124,6 @@ Class JobDescription {
     $result = $result && $taskParameterSetting->save();
     $db = new DatabaseConnection();
     $result = $result && $db->saveJobFiles($this->id, $this->owner, $this->files);
-    if ($use_accounting_system) {
-      $result = $result && $db->saveAccountingData($this->id, $this->credit, $this->group);
-    }
     $queue = new JobQueue();
     $result = $result && $queue->queueJob($this);
     if (!$result) {
@@ -153,7 +142,6 @@ Class JobDescription {
   }
   
   function load() {
-  	global $use_accounting_system;
     $db = new DatabaseConnection();
     $parameterSetting = new JobParameterSetting;
     $owner = new User;
@@ -170,18 +158,12 @@ Class JobDescription {
     $taskSetting = $taskSetting->load();
     $this->setTaskSetting($taskSetting);
     $this->setFiles($db->getJobFilesFor($this->id()));    
-    if ($use_accounting_system) {
-      $data = $db->loadAccountingData($this);
-      $this->setCredit($data['credit']);
-      $this->setGroup($data['group']);		
-    }
   }
 
   function copyFrom($aJobDescription) {
     $this->setParameterSetting($aJobDescription->parameterSetting());
     $this->setTaskSetting($aJobDescription->taskSetting());
     $this->setOwner($aJobDescription->owner());
-    $this->setCredit($aJobDescription->credit());
     $this->setGroup($aJobDescription->group());
   } 
 

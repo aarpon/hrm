@@ -6,16 +6,10 @@ require_once("./inc/User.inc");
 require_once("./inc/Database.inc"); 
 require_once("./inc/hrm_config.inc");
 require_once("./inc/Fileserver.inc");
-require_once("./inc/versions.inc");
-
-// This is RIO only
-if ( $allow_reservation_users == true ) {
-    require_once("./inc/CreditOwner.inc");
-}
+require_once("./inc/Versions.inc");
 
 global $email_admin;
 global $enableUserAdmin;
-global $use_accounting_system;
 global $authenticateAgainst;
 
 $message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";

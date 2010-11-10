@@ -8,8 +8,6 @@ require_once("./inc/Setting.inc");
 require_once("./inc/JobDescription.inc");
 require_once ("./inc/Database.inc");
 
-global $use_accounting_system;
-
 session_start();
 
 if (isset($_GET['home'])) {
@@ -39,10 +37,6 @@ if (isset($_POST['create'])) {
     $job->setParameterSetting($_SESSION['setting']);
     $job->setTaskSetting($_SESSION['task_setting']);
     $job->setFiles($_SESSION['fileserver']->selectedFiles()); 
-    if ($use_accounting_system) {
-	 	$job->setCredit($_SESSION['credit']);
-		$job->setGroup($_SESSION['group']);
-	}
     if ($job->addJob()) {
       $_SESSION['jobcreated'] = True;
       header("Location: " . "home.php");

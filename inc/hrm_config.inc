@@ -37,11 +37,6 @@ if (!isset ($userManager) ) {
 $resultImagesRenamed = true;
 $resultImagesOwnedByUser = false;
 
-// This parameter is of use only for the MRI installation, and therefore we 
-// hide it from the configurable parameters. If true, users of the microscope
-// reservation system may have access to HRM as well
-$allow_reservation_users = false;
-
 // What HuCore script version to use:
 // 0: pre-1.3, custom made for every image.
 // 1: new script, with general procedures (requires Huygens 3.5.2).

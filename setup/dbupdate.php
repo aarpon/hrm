@@ -12,7 +12,7 @@
 //
 // When you want to change something in the database, that is, to create a new
 // database release, it is necessary to insert the modifications in the last part
-// of the script and to update the constant DB_LAST_REVISION in versions.inc.
+// of the script and to update the constant DB_LAST_REVISION in Versions.inc.
 //
 // When running the script, three situations are possible:
 // 1) a new user of HRM run the script from command line, the database does not
@@ -39,10 +39,10 @@ global $adodb;
 // Check whether the script is run from the HRM or from bash (from $hrm/setup)
 if ( isset( $_GET['action'] ) && $_GET['action'] == 'dbupdate' ) {
     include "inc/hrm_config.inc";    // Run from HRM
-    include "inc/versions.inc";
+    include "inc/Versions.inc";
 } else {
     include "../inc/hrm_config.inc"; // Run from console
-    include "../inc/versions.inc";
+    include "../inc/Versions.inc";
 }
 
 include $adodb;

@@ -147,7 +147,7 @@ function switchSnrMode() {
     if ( changeVisibility('qmle-snr') != "none") {
         window.restorationMode = 'qmle';
     }
-    changeVisibility('cmle-it');
+    //changeVisibility('cmle-it');
     showRestorationHelp();
 }
 
