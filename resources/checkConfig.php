@@ -77,7 +77,7 @@
     
     function displayUsage( ) {
         echo PHP_EOL . "Usage: php check.php /path/to/config/file" . PHP_EOL . PHP_EOL . 
-    		"Example: php check.php /var/www/html/hrm/inc/hrm_server_config.inc" .
+    		"Example: php check.php /var/www/html/hrm/config/hrm_server_config.inc" .
         PHP_EOL . PHP_EOL;
     }
     

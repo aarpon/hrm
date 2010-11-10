@@ -172,7 +172,7 @@ function huCoreTools ($tool, $options) {
     if (! isset($local_huygens_core) ) {
         echo "Huygens tools can only work if you define a variable ".
         "'local_huygens_core' in the configuration files pointing to a local ".
-        "hucore. Administrator: see hrm_config.inc.sample."; 
+        "hucore. Administrator: see hrm_client_config.inc.sample."; 
         return;
     }
 

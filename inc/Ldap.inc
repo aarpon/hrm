@@ -8,7 +8,7 @@
 // @desc     Manage ldap connections
 //!--------------------------------------------------------------------
 
-include "ldap_config.inc";
+include( dirname( __FILE__ ) . "/../config/ldap_config.inc" );
 
 Class Ldap {
   

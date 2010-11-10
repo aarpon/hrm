@@ -6,7 +6,6 @@
 $adodb = dirname(__FILE__) . "/extern/adodb5/adodb.inc.php";
 
 include "hrm_config.inc";
-include "reservation_config.inc";
 include $adodb;
 
 //!---------------------------------------------------------

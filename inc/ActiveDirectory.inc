@@ -25,7 +25,7 @@ Class ActiveDirectory {
 
   function __construct ( ) {
 
-		include( dirname( __FILE__ ) . "/active_directory_config.inc" );
+		include( dirname( __FILE__ ) . "/../config/active_directory_config.inc" );
 		
     	// Set up the adLDAP object
 		$options = array(
