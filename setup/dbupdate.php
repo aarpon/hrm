@@ -34,18 +34,9 @@
 //    in the table global_variables). In this case the database is not checked and
 //    it is simply updated to the last revision.
 
-global $adodb;
-
-// Check whether the script is run from the HRM or from bash (from $hrm/setup)
-if ( isset( $_GET['action'] ) && $_GET['action'] == 'dbupdate' ) {
-    include "inc/hrm_config.inc";    // Run from HRM
-    include "inc/Versions.inc";
-} else {
-    include "../inc/hrm_config.inc"; // Run from console
-    include "../inc/Versions.inc";
-}
-
-include $adodb;
+// Include hrm_config.inc
+include( dirname( __FILE__ ) . "/../inc/hrm_config.inc" );
+include( dirname( __FILE__ ) . "/../inc/Versions.inc" );
 
 // Database last revision
 $LAST_REVISION = Versions::getDBLastRevision( );
@@ -1011,7 +1002,8 @@ if ($current_revision == 0) {
 // -----------------------------------------------------------------------------
 // Update the database to the last revision
 // -----------------------------------------------------------------------------
-$msg = "Needed database revision is number " . $LAST_REVISION . ".\n";
+$msg = "Needed database revision for HRM v" .Versions::getHRMVersion( ) .
+    " is number " . $LAST_REVISION . ".\n";
 $msg .= "Current database revision is number " . $current_revision . ".\n";
 if( $LAST_REVISION == $current_revision ) {
     $msg .= "Nothing to do.\n";
