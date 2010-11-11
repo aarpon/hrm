@@ -23,24 +23,24 @@ if (isset($meta)) {
 }
 
 ?>
-
-	<!-- HighChart JavaScript library inclusions -->
-	<script type="text/javascript" src="scripts/highcharts/jquery.min.js"></script>
-	<script type="text/javascript" src="scripts/highcharts/highcharts.js"></script>
-	<!--[if IE]>
-      <script type="text/javascript" src="scripts/highcharts/excanvas.compiled.js"></script>
-	<![endif]-->
-    
+ 
     <script type="text/javascript" src="scripts/common.js"></script>
+
 <?php
 
 if (isset($script)) {
-
+	if ( is_array( $script ) ) {
+		foreach ( $script as $current ) {
 ?>
-    
+	<script type="text/javascript" src="scripts/<?php echo $current ?>"></script>
+<?php
+		}
+	} else {
+?>
     <script type="text/javascript" src="scripts/<?php echo $script ?>"></script>
 <?php
 
+	}
 }
 
 if (isset($generatedScript)) {

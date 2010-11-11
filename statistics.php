@@ -74,6 +74,20 @@ if ( $stats->isGraph( ) == true ) {
   $tableScript     = $stats->getStatistics( );
 }
 
+// HighChart JavaScript library inclusions
+  $agent = $_SERVER['HTTP_USER_AGENT'];
+  // If IE we need to include the canvas
+  if( stripos($agent,'msie') !== false && stripos($agent,'opera') === false ) {
+    $script = array(
+      "highcharts/jquery.min.js",
+      "highcharts/highcharts.js",
+      "highcharts/excanvas.compiled.js" );
+  } else {
+    $script = array(
+      "highcharts/jquery.min.js",
+      "highcharts/highcharts.js" );    
+  }
+
 include("header.inc.php");
 
 ?>
