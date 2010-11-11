@@ -94,7 +94,7 @@ if (count($_POST)>0) {
 }
 // TODO refactor until here
 
-$script = "settings.js";
+$script = array( "settings.js", "quickhelp/imageformatHelp.js" );
 
 include("header.inc.php");
 
@@ -120,7 +120,8 @@ include("header.inc.php");
         
             <h4>What image format will be processed with these settings?</h4>
             
-            <fieldset class="setting">
+            <fieldset class="setting"
+              onmouseover="javascript:changeQuickHelp( 'format' );" >
             
                 <legend>
                     <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=FileFormats')"><img src="images/help.png" alt="?" /></a>
@@ -177,7 +178,9 @@ foreach($values as $value) {
                 
             </fieldset>
             
-            <fieldset id="geometry" class="setting"<?php if ($geometryFlag != "") echo " style=\"color: grey\"" ?>>
+            <fieldset id="geometry" class="setting"<?php if ($geometryFlag != "")
+              echo " style=\"color: grey\"" ?>
+              onmouseover="javascript:changeQuickHelp( 'geometry' );" >
             
                 <legend>
                     <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=ImageGeometry')"><img src="images/help.png" alt="?" /></a>
@@ -205,7 +208,9 @@ foreach($possibleValues as $possibleValue) {
 
             </fieldset>
             
-            <fieldset id="channels" class="setting"<?php if ($channelsFlag != "") echo " style=\"color: grey\"" ?>>
+            <fieldset id="channels" class="setting"<?php if ($channelsFlag != "")
+              echo " style=\"color: grey\"" ?>
+              onmouseover="javascript:changeQuickHelp( 'channels' );" >
             
                 <legend>
                     <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=NumberOfChannels')"><img src="images/help.png" alt="?" /></a>
@@ -242,7 +247,7 @@ $parameter = $_SESSION['setting']->parameter("PointSpreadFunction");
             
             <h4>Would you like to use an existing measured PSF obtained from bead images or a theoretical PSF generated from explicitly specified parameters?</h4>
             
-            <fieldset class="setting">
+            <fieldset class="setting" onmouseover="javascript:changeQuickHelp( 'PSF' );" >
             
                 <legend>
                     <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=PointSpreadFunction')"><img src="images/help.png" alt="?" /></a>
@@ -272,18 +277,20 @@ $parameter = $_SESSION['setting']->parameter("PointSpreadFunction");
         
     </div> <!-- content -->
     
-    <div id="rightpanel">
+    <div id="rightpanel"  onmouseover="changeQuickHelp( 'default' )">
     
         <div id="info">
             
             <h3>Quick help</h3>
             
-            <p>Here you are asked to provide information on format and
-            geometry for the files you want to restore.</p>
+            <div id="contextHelp">
+              <p>Here you are asked to provide information on format and
+              geometry for the files you want to restore.</p>
             
-            <p>Moreover, you must define whether you want to use a theoretical
-            PSF, or if you instead want to use a measured PSF you distilled
-            with the Huygens software.</p>
+              <p>Moreover, you must define whether you want to use a theoretical
+              PSF, or if you instead want to use a measured PSF you distilled
+              with the Huygens software.</p>
+            </div>
 
         </div>
         
