@@ -129,8 +129,9 @@ if (count($_POST) > 0) {
   }
 }
 
-
-$script = "settings.js";
+// Javascript includes
+$script = array( "settings.js", "quickhelp/help.js",
+                "quickhelp/capturingParameterHelp.js" );
 
 include("header.inc.php");
 
@@ -179,18 +180,28 @@ $nyquist = $_SESSION['setting']->calculateNyquistRate();
         
             <h4>How were these images captured?</h4>
             
-            <fieldset class="setting">
+            <fieldset class="setting"
+              onmouseover="javascript:changeQuickHelp( 'voxel' );" >
             
                 <legend>
                     <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=SampleSize')"><img src="images/help.png" alt="?" /></a>
                     voxel size
                 </legend>
+
+				<p class="message_small">Calculated from current optical parameters, the (Nyquist) ideal pixel size is
+				  <span style="background-color:yellow"><?php echo $nyquist[0];?>nm</span>
+				  <?php
+					if ($_SESSION['setting']->isThreeDimensional() ) {
+					  echo " and the ideal z-step is <span style=\"background-color:yellow\">".
+					  $nyquist[1]." nm</span>";
+					}
+				  ?>.</p>
 <?php
 
 $parameter = $_SESSION['setting']->parameter("CCDCaptorSizeX");
 $value = $parameter->value();
 // always ask for pixel size
-$textForCaptorSize = "xy pixel size (nm)";
+$textForCaptorSize = "pixel size (nm)";
 
 ?>
                 <ul>
@@ -234,7 +245,7 @@ if ($_SESSION['setting']->isThreeDimensional()) {
 ?>
 
                     <li>
-                        size of the z-step (nm):
+                        z-step (nm):
                 
 <?php
 
@@ -308,7 +319,8 @@ if ($_SESSION['setting']->isThreeDimensional()) {
 if ($_SESSION['setting']->isTimeSeries()) {
 
 ?>
-            <fieldset class="setting">
+            <fieldset class="setting"
+              onmouseover="javascript:changeQuickHelp( 'time' );" >
            	<legend> 
                 <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=TimeSeries')"><img src="images/help.png" alt="?" /></a>
                 time interval
@@ -336,7 +348,8 @@ if ($_SESSION['setting']->isTimeSeries()) {
 if ($_SESSION['setting']->isMultiPointOrSinglePointConfocal()) {
 
 ?>
-            <fieldset class="setting">
+            <fieldset class="setting"
+              onmouseover="javascript:changeQuickHelp( 'pinhole_radius' );" >
             
               <legend>
                 <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=PinholeRadius')"><img src="images/help.png" alt="?" /></a>
@@ -386,7 +399,8 @@ if ($_SESSION['setting']->isMultiPointOrSinglePointConfocal()) {
 if ($_SESSION['setting']->isNipkowDisk()) {
       
 ?>
-            <fieldset class="setting">
+            <fieldset class="setting"
+              onmouseover="javascript:changeQuickHelp( 'pinhole_spacing' );" >
               <legend>            
                 <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=PinholeSpacing')"><img src="images/help.png" alt="?" /></a>
                 backprojected pinhole spacing
@@ -439,29 +453,23 @@ if ($_SESSION['setting']->isNipkowDisk()) {
         
     </div> <!-- content -->
     
-    <div id="rightpanel">
+    <div id="rightpanel" onmouseover="javascript:changeQuickHelp( 'default' )">
     
         <div id="info">
 
           <h3>Quick help</h3>
           
-          <p>Here you have to enter the voxel size as it was set during the
-          image acquisition. Remember that the closer the acquisition sampling 
-          is to the Nyquist <b>ideal sampling rate</b>, the better both the input
-          and the deconvolved images will be!</p>
-          <p>With current optical parameters, the ideal pixel size is
-          <span style="background-color:yellow"><?php echo $nyquist[0];?>
-          nm</span><?php
-          if ($_SESSION['setting']->isThreeDimensional() ) {
-            echo " and the ideal z-step is <span style=\"background-color:yellow\">".
-            $nyquist[1]." nm</span>";
-          }
-          ?>.</p>
+		  <div id="contextHelp">
+            <p>Here you have to enter the voxel size as it was set during the
+            image acquisition. Remember that the closer the acquisition sampling 
+            is to the Nyquist <b>ideal sampling rate</b>, the better both the input
+            and the deconvolved images will be!</p>
           
-          <p>The Huygens Remote Manager will not try to stop you from running a
-          deconvolution on undersampled data (i.e. with a sampling rate much
-          larger than the ideal), but do not expect meaningful results!</p>
-        
+            <p>The Huygens Remote Manager will not try to stop you from running a
+            deconvolution on undersampled data (i.e. with a sampling rate much
+            larger than the ideal), but do not expect meaningful results!</p>
+		  </div>
+		  
         </div>
         
         <div id="message">

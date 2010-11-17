@@ -94,7 +94,9 @@ if (count($_POST)>0) {
 }
 // TODO refactor until here
 
-$script = array( "settings.js", "quickhelp/imageformatHelp.js" );
+// Javascript includes
+$script = array( "settings.js", "quickhelp/help.js",
+                "quickhelp/imageFormatHelp.js" );
 
 include("header.inc.php");
 
@@ -277,7 +279,7 @@ $parameter = $_SESSION['setting']->parameter("PointSpreadFunction");
         
     </div> <!-- content -->
     
-    <div id="rightpanel"  onmouseover="changeQuickHelp( 'default' )">
+    <div id="rightpanel"  onmouseover="javascript:changeQuickHelp( 'default' )">
     
         <div id="info">
             

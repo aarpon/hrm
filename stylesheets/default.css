@@ -898,6 +898,16 @@ option.default {
     padding: 0px;
 }
 
+.message_small {
+    font-size: 10px;
+    font-weight: normal;
+    margin-bottom: 0px;
+    margin-top: 0px;
+    margin-left: 15px;
+    margin-right: 15px;
+    padding: 0px;
+}
+
 .warning {
     font-weight: bold;
     color: red;

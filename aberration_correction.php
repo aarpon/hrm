@@ -36,7 +36,9 @@ if (count($_POST) > 0) {
     }
 }
 
-$script = "settings.js";
+// Javascript includes
+$script = array( "settings.js", "quickhelp/help.js",
+                "quickhelp/aberrationCorrectionHelp.js" );
 
 include("header.inc.php");
 
@@ -65,7 +67,8 @@ include("header.inc.php");
             
         <h4>Do you want to enable depth-specific PSF correction? This will try to compensate for spherical aberrations introduced by refractive index mismatches.</h4>
             
-        <fieldset class="setting">
+        <fieldset class="setting"
+              onmouseover="javascript:changeQuickHelp( 'enable' );" >
             
             <legend>
                 <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpDepthDependentPsf')"><img src="images/help.png" alt="?" /></a>
@@ -126,7 +129,8 @@ if ($_SESSION['setting']->parameter("PerformAberrationCorrection")->value( ) == 
         
     <h4>For depth-dependent correction to work properly, you have to specify the relative position of the coverslip with respect to the first acquired plane of the dataset.</h4>
             
-        <fieldset class="setting">
+        <fieldset class="setting"
+              onmouseover="javascript:changeQuickHelp( 'orientation' );" >
             
             <legend>
                 <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpSpecifySampleOrientation')"><img src="images/help.png" alt="?" /></a>
@@ -177,7 +181,8 @@ if ($_SESSION['setting']->parameter("PerformAberrationCorrection")->value( ) == 
         
     <h4>At this point the HRM has enough information to perform depth-dependent aberration correction. Please notice that in certain circumstances, the automatic correction scheme might generate artifacts in the result. If this is the case, please choose the advanced correction mode.</h4>
             
-        <fieldset class="setting">
+        <fieldset class="setting"
+              onmouseover="javascript:changeQuickHelp( 'mode' );" >
             
             <legend>
                 <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpSaCorrectionMode')"><img src="images/help.png" alt="?" /></a>
@@ -235,7 +240,8 @@ if ( ($_SESSION['setting']->parameter("PerformAberrationCorrection")->value( ) =
         
     <h4>Here you can choose an advanced correction scheme.</h4>
             
-        <fieldset class="setting">
+        <fieldset class="setting"
+              onmouseover="javascript:changeQuickHelp( 'advanced' );" >
             
             <legend>
                 <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpAdvancedSaCorrection')"><img src="images/help.png" alt="?" /></a>
@@ -326,21 +332,23 @@ $selectedValue  = $parameter->value();
         
     </div> <!-- content -->
     
-    <div id="rightpanel">
+    <div id="rightpanel"  onmouseover="javascript:changeQuickHelp( 'default' )">
     
         <div id="info">
           
           <h3>Quick help</h3>
+          
+          <div id="contextHelp">  
+            <p>The main cause of spherical aberration is a mismatch between the
+            refractive index of the lens immersion medium and specimen embedding
+            medium and causes the PSF to become asymmetric at depths of already
+            a few &micro;m. SA is especially harmful for widefield microscope
+            deconvolution.</p>
             
-          <p>The main cause of spherical aberration is a mismatch between the
-          refractive index of the lens immersion medium and specimen embedding
-          medium and causes the PSF to become asymmetric at depths of already
-          a few &micro;m. SA is especially harmful for widefield microscope
-          deconvolution.</p>
-            
-          <p>The HRM can correct for SA automatically, but in case of very
-          large refractive index mismatches some artifacts can be generated.
-          Advanced parameters allow for fine-tuning of the correction.</p>
+            <p>The HRM can correct for SA automatically, but in case of very
+            large refractive index mismatches some artifacts can be generated.
+            Advanced parameters allow for fine-tuning of the correction.</p>
+          </div>
             
         </div>
         

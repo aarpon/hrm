@@ -57,7 +57,9 @@ if (count($_POST) > 0) {
   if ($ok) {header("Location: " . "capturing_parameter.php"); exit();}
 }
 
-$script = "settings.js";
+// Javascript includes
+$script = array( "settings.js", "quickhelp/help.js",
+                "quickhelp/microscopeParameterHelp.js" );
 
 include("header.inc.php");
 
@@ -84,7 +86,8 @@ include("header.inc.php");
         
             <h4>How did you set up your microscope?</h4>
             
-            <fieldset class="setting">
+            <fieldset class="setting"
+              onmouseover="javascript:changeQuickHelp( 'type' );" >
             
                 <legend>
                     <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=MicroscopeType')"><img src="images/help.png" alt="?" /></a>
@@ -109,7 +112,9 @@ foreach($possibleValues as $possibleValue) {
 ?>
             </fieldset>
             
-            <fieldset class="setting">
+            <fieldset class="setting"
+              onmouseover="javascript:changeQuickHelp( 'NA' );" >
+              
               <legend> 
 		<a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=NumericalAperture')"><img src="images/help.png" alt="?" /></a>
 		numerical aperture
@@ -131,7 +136,8 @@ $parameter = $_SESSION['setting']->parameter("NumericalAperture");
               </ul>
             </fieldset>
             
-            <fieldset class="setting">
+            <fieldset class="setting"
+              onmouseover="javascript:changeQuickHelp( 'wavelengths' );" >
             
                 <legend>
                     <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=WaveLength')"><img src="images/help.png" alt="?" /></a>
@@ -200,7 +206,8 @@ for ($i=0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
             </fieldset>
 -->
 
-            <fieldset class="setting">
+            <fieldset class="setting"
+              onmouseover="javascript:changeQuickHelp( 'objective' );" >
             
                 <legend>
                     <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=LensImmersionMedium')"><img src="images/help.png" alt="?" /></a>
@@ -259,7 +266,8 @@ foreach ($possibleValues as $possibleValue) {
             
             -->
             
-            <fieldset class="setting">
+            <fieldset class="setting"            
+              onmouseover="javascript:changeQuickHelp( 'sample' );" >
             
                 <legend>
                     <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=SpecimenEmbeddingMedium')"><img src="images/help.png" alt="?" /></a>
@@ -321,20 +329,22 @@ if (!$default) {
         
     </div> <!-- content -->
     
-    <div id="rightpanel">
+    <div id="rightpanel" onmouseover="javascript:changeQuickHelp( 'default' );" >
     
         <div id="info">
           
           <h3>Quick help</h3>
             
-            <p>On this page you specify the parameters for the optical setup
-            of your experiment.</p>
-            
-            <p>These parameters comprise the microscope type,
-            the numerical aperture of the objective, the wavelenght of the used
-            fluorophores, and the refractive indices of the sample medium and of
-            the objective-embedding medium.</p>
+            <div id="contextHelp">
+              <p>On this page you specify the parameters for the optical setup
+              of your experiment.</p>
 
+              <p>These parameters comprise the microscope type,
+              the numerical aperture of the objective, the wavelenght of the used
+              fluorophores, and the refractive indices of the sample medium and of
+              the objective-embedding medium.</p>
+            </div>
+            
         </div>
         
         <div id="message">

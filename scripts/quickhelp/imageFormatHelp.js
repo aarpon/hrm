@@ -34,8 +34,3 @@ window.helpText[ "default" ] =
   '<p>Moreover, you must define whether you want to use a ' +
   'theoretical PSF, or if you instead want to use a measured PSF ' +
   'you distilled with the Huygens software.</p>';
-
-// Function that updates the text on mouseover
-function changeQuickHelp( id ) {
-  smoothChangeDivCond( id, 'contextHelp', window.helpText[ id ], 300 );
-}
