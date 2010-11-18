@@ -130,16 +130,6 @@ function fixCoverslip( state ) {
     }
 }
 
-function showRestorationHelp() {
-    if (window.divCondition == 'general') return;
-    if (window.restorationMode == 'cmle') {
-        smoothChangeDiv('contextHelp', window.helpCmle, 300);
-    } else {
-        smoothChangeDiv('contextHelp', window.helpQmle, 300);
-    };
-    window.divCondition = 'general';
-}
-
 function switchSnrMode() {
     if ( changeVisibility('cmle-snr') != "none" ) {
         window.restorationMode = 'cmle';
@@ -148,7 +138,6 @@ function switchSnrMode() {
         window.restorationMode = 'qmle';
     }
     //changeVisibility('cmle-it');
-    showRestorationHelp();
 }
 
 function switchCorrection() {

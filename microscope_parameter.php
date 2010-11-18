@@ -41,11 +41,6 @@ for ($i=0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
     $emission[$i] = $_POST[$emissionKey];
   } 
 }
-// get rid of extra values in case the number of channels is changed
-//$excitation = array_slice($excitation, 1,
-//        $_SESSION['setting']->numberOfChannels() );
-//$emission = array_slice($emission, 1, 
-//        $_SESSION['setting']->numberOfChannels() );
 $excitationParam->setValue($excitation);
 $emissionParam->setValue($emission);
 $_SESSION['setting']->set($excitationParam);
@@ -124,10 +119,6 @@ foreach($possibleValues as $possibleValue) {
 <?php
 
 $parameter = $_SESSION['setting']->parameter("NumericalAperture");
-// display adaption info
-//if (($_SESSION['setting']->isWidefield() || $_SESSION['setting']->isTwoPhoton()) && $_SESSION['setting']->hasAdaptedParameters()) {
-//    echo "&nbsp;<span style=\"color: red\">(adapted to ".$_SESSION['setting']->adaptedNumericalAperture().")</span>";
-//}
 
 ?>
                 <input name="NumericalAperture" type="text" size="5" value="<?php echo $parameter->value() ?>" />
@@ -152,7 +143,7 @@ $parameter = $_SESSION['setting']->parameter("NumericalAperture");
 for ($i = 0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
 
 ?>
-	<span class="nowrap">Ch<?php echo $i ?>:<span class="multichannel"><input name="ExcitationWavelength<?php echo $i ?>" type="text" size="8" value="<?php if ($i <= sizeof($excitation)) echo $excitation[$i] ?>" class="multichannelinput" /></span>&nbsp;</span>
+	<span class="nowrap">Ch<?php echo $i ?>:&nbsp;&nbsp;&nbsp;<span class="multichannel"><input name="ExcitationWavelength<?php echo $i ?>" type="text" size="8" value="<?php if ($i <= sizeof($excitation)) echo $excitation[$i] ?>" class="multichannelinput" /></span>&nbsp;</span>
 <?php
 
 }
@@ -167,7 +158,7 @@ for ($i = 0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
 for ($i=0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
 
 ?>
-	<span class="nowrap">Ch<?php echo $i ?>:<span class="multichannel"><input name="EmissionWavelength<?php echo $i ?>" type="text" size="8" value="<?php if ($i <= sizeof($emission)) echo $emission[$i] ?>" class="multichannelinput" /></span>&nbsp;</span>
+	<span class="nowrap">Ch<?php echo $i ?>:&nbsp;&nbsp;&nbsp;<span class="multichannel"><input name="EmissionWavelength<?php echo $i ?>" type="text" size="8" value="<?php if ($i <= sizeof($emission)) echo $emission[$i] ?>" class="multichannelinput" /></span>&nbsp;</span>
 <?php
 
 }
@@ -177,34 +168,6 @@ for ($i=0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
         </ul>
                 
         </fieldset>
-
-<!--          
-            <fieldset class="setting">
-            
-                <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=ObjectiveMagnification')"><img src="images/help.png" alt="?" /></a>
-                objective magnification:
-                
-                <select name="ObjectiveMagnification" size="1">
-<?php
-
-//$parameter = $_SESSION['setting']->parameter("ObjectiveMagnification");
-//foreach ($parameter->possibleValues() as $possibleValue) {
-//  $flag = "";
-//  if ($possibleValue == $parameter->value()) $flag = " selected=\"selected\"";
-
-?>
-                  <option<?php //echo $flag ?>><?php //echo $possibleValue ?></option>
-<?php
-
-//}
-
-?>
-
-                </select>
-                X
-                
-            </fieldset>
--->
 
             <fieldset class="setting"
               onmouseover="javascript:changeQuickHelp( 'objective' );" >
@@ -233,39 +196,7 @@ foreach ($possibleValues as $possibleValue) {
 ?>
                 
             </fieldset>
-            
-            <!--
-            
-            <fieldset class="setting">
-            
-                <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpCMount')"><img src="images/help.png" alt="?" /></a>
-                cmount (0-1):
-                
-<?php
-
-//$parameter = $_SESSION['setting']->parameter("CMount");
-
-?>
-                <input name="CMount" type="text" size="5" value="<?php echo $parameter->value() ?>" />
-                
-            </fieldset>
-            
-            <fieldset class="setting">
-            
-                <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpTubeFactor')"><img src="images/help.png" alt="?" /></a>
-                tube factor (max. 2):
-                
-<?php
-
-//$parameter = $_SESSION['setting']->parameter("TubeFactor");
-
-?>
-                <input name="TubeFactor" type="text" size="5" value="<?php echo $parameter->value() ?>" />
-                
-            </fieldset>
-            
-            -->
-            
+           
             <fieldset class="setting"            
               onmouseover="javascript:changeQuickHelp( 'sample' );" >
             
@@ -310,7 +241,7 @@ if (!$default) {
             
             <div><input name="OK" type="hidden" /></div>
             
-            <div id="controls">
+            <div id="controls" onmouseover="javascript:changeQuickHelp( 'default' )">
               <input type="button" value="" class="icon previous"
                   onmouseover="TagToTip('ttSpanBack' )"
                   onmouseout="UnTip()"

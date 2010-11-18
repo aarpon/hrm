@@ -262,7 +262,7 @@ $parameter = $_SESSION['setting']->parameter("PointSpreadFunction");
                 
             </fieldset>
 
-            <div id="controls">
+            <div id="controls" onmouseover="javascript:changeQuickHelp( 'default' )">
               <input type="button" value="" class="icon up"
                   onmouseover="TagToTip('ttSpanCancel' )"
                   onmouseout="UnTip()"
@@ -279,7 +279,7 @@ $parameter = $_SESSION['setting']->parameter("PointSpreadFunction");
         
     </div> <!-- content -->
     
-    <div id="rightpanel"  onmouseover="javascript:changeQuickHelp( 'default' )">
+    <div id="rightpanel" onmouseover="javascript:changeQuickHelp( 'default' )">
     
         <div id="info">
             

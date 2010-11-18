@@ -314,7 +314,7 @@ $selectedValue  = $parameter->value();
             
       <div><input name="OK" type="hidden" /></div>
 
-      <div id="controls">      
+      <div id="controls" onmouseover="javascript:changeQuickHelp( 'default' )">      
         <input type="button" value="" class="icon previous"
                   onmouseover="TagToTip('ttSpanBack' )"
                   onmouseout="UnTip()"
@@ -343,10 +343,8 @@ $selectedValue  = $parameter->value();
             refractive index of the lens immersion medium and specimen embedding
             medium and causes the PSF to become asymmetric at depths of already
             a few &micro;m. SA is especially harmful for widefield microscope
-            deconvolution.</p>
-            
-            <p>The HRM can correct for SA automatically, but in case of very
-            large refractive index mismatches some artifacts can be generated.
+            deconvolution. The HRM can correct for SA automatically, but in case of
+            very large refractive index mismatches some artifacts can be generated.
             Advanced parameters allow for fine-tuning of the correction.</p>
           </div>
             

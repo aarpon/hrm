@@ -15,7 +15,9 @@ window.helpText[ "format" ] =
   'formats.</p>';
 
 window.helpText[ "geometry" ] =
-  '<p>Image geometry describes how the data is organized in the file(s).</p>';
+  '<p>Image geometry describes how the data is organized in the file(s). ' +
+  'This can be useful, for instance, to tell Huygens whether a series of ' +
+  'TIFF files should be read as a time series or a 3D stack.</p>'
 
 window.helpText[ "channels" ] =
   '<p>The number of channels represent the number of colors or wavelengths ' +
@@ -24,7 +26,7 @@ window.helpText[ "channels" ] =
 window.helpText[ "PSF" ] =
   '<p>Deconvolution can be performed with either a theoretical PSF ' +
   'calculated from the optical parameters, or with a measured PSFs that ' +
-  'can be obtained from images of sub-resolution beads in Huygens. ' +
+  'can be obtained by distilling images of sub-resolution beads in Huygens. ' +
   'Please click on the help icons to get additional information on this ' +
   'topic.</p>';
 

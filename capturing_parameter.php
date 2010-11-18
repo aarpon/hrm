@@ -371,7 +371,7 @@ if ($_SESSION['setting']->isMultiPointOrSinglePointConfocal()) {
   for ($i = 0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
 
 ?>
-	<span class="nowrap">Ch<?php echo $i ?>:<span class="multichannel"><input name="PinholeSize<?php echo $i ?>" type="text" size="8" value="<?php if ($i < sizeof($pinhole)) echo $pinhole[$i] ?>" class="multichannelinput" /></span>&nbsp;</span>
+	<span class="nowrap">Ch<?php echo $i ?>:&nbsp;&nbsp;&nbsp;<span class="multichannel"><input name="PinholeSize<?php echo $i ?>" type="text" size="8" value="<?php if ($i < sizeof($pinhole)) echo $pinhole[$i] ?>" class="multichannelinput" /></span>&nbsp;</span>
 <?php
 
   }
@@ -434,7 +434,7 @@ if ($_SESSION['setting']->isNipkowDisk()) {
 
             <div><input name="OK" type="hidden" /></div>
 
-            <div id="controls">
+            <div id="controls" onmouseover="javascript:changeQuickHelp( 'default' )">
               <input type="button" value="" class="icon previous"
                   onmouseover="TagToTip('ttSpanBack' )"
                   onmouseout="UnTip()"
@@ -460,14 +460,15 @@ if ($_SESSION['setting']->isNipkowDisk()) {
           <h3>Quick help</h3>
           
 		  <div id="contextHelp">
-            <p>Here you have to enter the voxel size as it was set during the
-            image acquisition. Remember that the closer the acquisition sampling 
-            is to the Nyquist <b>ideal sampling rate</b>, the better both the input
-            and the deconvolved images will be!</p>
-          
-            <p>The Huygens Remote Manager will not try to stop you from running a
-            deconvolution on undersampled data (i.e. with a sampling rate much
-            larger than the ideal), but do not expect meaningful results!</p>
+			<p>Here you have to enter the voxel size as it was set during the
+			image acquisition. Depending on the microscope type and the dataset
+			geometry, you might have to enter additional parameters, such as the
+			back-projected pinhole size and spacing, and the time interval for time
+			series. For microscope type that use cameras (such as widefield and
+			spinning disk confocal), you have the possibility to calculate the image
+			pixel size from the camera pixel size, total magnification, and binning.
+			</p>
+
 		  </div>
 		  
         </div>

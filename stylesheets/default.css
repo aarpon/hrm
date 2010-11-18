@@ -406,6 +406,7 @@ input.save {
     text-align: center;
     padding: 0px;
     width: 100%;
+    line-height: 1.5;
 }
 
 #output {
@@ -413,7 +414,7 @@ input.save {
 }
 
 #info p {
-    font-size: 11px;
+    font-size: 12px;
     text-align: justify;
 }
 
