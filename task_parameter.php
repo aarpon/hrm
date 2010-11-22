@@ -6,13 +6,13 @@ require_once("./inc/User.inc");
 require_once("./inc/Parameter.inc");
 require_once("./inc/Setting.inc");
 require_once("./inc/Util.inc");
+require_once ("./inc/System.inc");
 
 session_start();
 
 // Check if the SNR estimator can be turned on
 $estimateSNR = false;
-$db = new DatabaseConnection();
-$version = $db->getHuCoreVersion();
+$version = System::huCoreVersion();
 if ( $useThumbnails && $genThumbnails && $version >= 3050100 ) {
   $estimateSNR = true;
 }

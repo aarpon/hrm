@@ -5,7 +5,7 @@
 require_once("./inc/User.inc");
 require_once("./inc/Parameter.inc");
 require_once("./inc/Setting.inc");
-require_once ("./inc/Database.inc");
+require_once ("./inc/System.inc");
 
 session_start();
 
@@ -144,9 +144,7 @@ $channelsFlag = "";
 sort($values);
 foreach($values as $value) {
   if (stristr($value, "hdf5")) {
-       //$version = getHucoreVersionAsInteger( $enable_code_for_huygens );
-       $db = new DatabaseConnection(); 
-       $version = $db->getHuCoreVersion();
+       $version = System::huCoreVersion();
        // HDF5 is supported only from Huygens 3.5.0
        if ( $version < 3050000 ) {
               continue;

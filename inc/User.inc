@@ -242,7 +242,7 @@ Class User extends Owner{
   // @return      Boolean
   //!---------------------------------------------------------
   function isLoginRestrictedToAdmin() {
-  	$result = !( Versions::isDBUpToDate( ) );
+  	$result = !( System::isDBUpToDate( ) );
   	return $result;
   }
  

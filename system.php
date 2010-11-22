@@ -39,6 +39,26 @@ include("header.inc.php");
       <div id="system">
         <table>
           <tr>
+            <td class="section">Huygens Remote Manager</td>
+            <td class="value">&nbsp;</td>
+          </tr>
+          <tr>
+            <td class="key">HRM version</td>
+            <td class="value"><?php echo System::getHRMVersion(); ?></td>
+          </tr>
+          <tr>
+            <td class="key">HRM required database version</td>
+            <td class="value"><?php echo System::getDBLastRevision(); ?></td>
+          </tr>
+          <tr>
+            <td class="key">HRM current database version</td>
+            <td class="value"><?php echo System::getDBCurrentRevision(); ?></td>
+          </tr>
+          <tr>
+            <td class="key">HuCore version</td>
+            <td class="value"><?php echo System::huCoreVersionAsString(); ?></td>
+          </tr>
+          <tr>
             <td class="section">System</td>
             <td class="value">&nbsp;</td>
           </tr>
@@ -49,14 +69,6 @@ include("header.inc.php");
           <tr>
             <td class="key">Kernel release</td>
             <td class="value"><?php echo System::kernelRelease(); ?></td>
-          </tr>
-          <tr>
-            <td class="section">Huygens</td>
-            <td class="value">&nbsp;</td>
-          </tr>
-          <tr>
-            <td class="key">HuCore version</td>
-            <td class="value"><?php echo System::huCoreVersion(); ?></td>
           </tr>
           <tr>
             <td class="section">LAMP versions</td>
@@ -84,31 +96,47 @@ include("header.inc.php");
             <td class="value"><?php echo System::memoryLimit(); ?></td>
           </tr>
           <tr>
-            <td class="key">Maximum post size (php.ini)</td>
+            <td class="key">File downloads</td>
+            <td class="value"><?php echo System::downloadEnabledFromConfig(); ?></td>
+          </tr>          
+          <tr>
+            <td class="key">Maximum post size</td>
+            <td class="value">&nbsp;</td>
+          </tr>
+          <tr>
+            <td class="subkey">php.ini</td>
             <td class="value"><?php echo System::postMaxSizeFromIni(); ?></td>
           </tr>
           <tr>
-            <td class="key">Maximum post size (HRM configuration)</td>
+            <td class="subkey">HRM configuration</td>
             <td class="value"><?php echo System::postMaxSizeFromConfig(); ?></td>
           </tr>
           <tr>
-            <td class="key">Maximum post size (in use)</td>
+            <td class="subkey">in use</td>
             <td class="value"><?php echo System::postMaxSize(); ?></td>
           </tr>
           <tr>
-            <td class="key">File uploads (HRM configuration)</td>
+            <td class="key">File uploads</td>
+            <td class="value">&nbsp;</td>
+          </tr>
+          <tr>
+            <td class="subkey">HRM configuration</td>
             <td class="value"><?php echo System::uploadEnabledFromConfig(); ?></td>
           </tr>
           <tr>
-            <td class="key">Maximum upload file size (php.ini)</td>
+            <td class="key">Maximum upload file size</td>
+            <td class="value">&nbsp;</td>
+          </tr>
+          <tr>
+            <td class="subkey">php.ini</td>
             <td class="value"><?php echo System::uploadMaxFileSizeFromIni(); ?></td>
           </tr>
           <tr>
-            <td class="key">Maximum upload file size (HRM configuration)</td>
+            <td class="subkey">HRM configuration</td>
             <td class="value"><?php echo System::uploadMaxFileSizeFromConfig(); ?></td>
           </tr>
           <tr>
-            <td class="key">Maximum upload file size (in use)</td>
+            <td class="subkey">in use</td>
             <td class="value"><?php echo System::uploadMaxFileSize(); ?></td>
           </tr>
         </table>
@@ -122,7 +150,7 @@ include("header.inc.php");
 
           <h3>Quick help</h3>
           
-          <p>This page (in construction) displays information about your installation.</p>
+          <p>This page displays information about your installation and server.</p>
           
        </div>
         

@@ -2,7 +2,7 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
-require_once( "./inc/Versions.inc" );
+require_once( "./inc/System.inc" );
 
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 
@@ -76,7 +76,7 @@ if (isset($generatedScript)) {
 <?php if (!isset($excludeTitle)) { ?>
     <div id="title">
     
-	<h1>Huygens Remote Manager <span id="about">v<?php echo Versions::getHRMVersion( ); ?></span></h1>
+	<h1>Huygens Remote Manager <span id="about">v<?php echo System::getHRMVersion( ); ?></span></h1>
     </div>
 <?php } ?>
     

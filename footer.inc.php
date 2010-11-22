@@ -27,7 +27,7 @@ $loggedIn = ( isset($_SESSION['user'] ) && $_SESSION['user']->isLoggedIn( ) );
 		?>, 
 		<?php
 			if ( $loggedIn == true ) {
-				echo '<a href="mailto:alessandra.griffa@epfl.ch">Alessandra Griffa</a>';
+				echo 'Alessandra Griffa';  // Former developer - no email info
 			} else
 				echo "<span onmouseover=\"Tip('Login to see contact information.' )\"
 					onmouseout=\"UnTip()\">Alessandra Griffa</span>";

@@ -12,7 +12,7 @@
 //
 // When you want to change something in the database, that is, to create a new
 // database release, it is necessary to insert the modifications in the last part
-// of the script and to update the constant DB_LAST_REVISION in Versions.inc.
+// of the script and to update the constant DB_LAST_REVISION in System.inc.
 //
 // When running the script, three situations are possible:
 // 1) a new user of HRM run the script from command line, the database does not
@@ -36,10 +36,10 @@
 
 // Include hrm_config.inc
 include( dirname( __FILE__ ) . "/../inc/hrm_config.inc" );
-include( dirname( __FILE__ ) . "/../inc/Versions.inc" );
+include( dirname( __FILE__ ) . "/../inc/System.inc" );
 
 // Database last revision
-$LAST_REVISION = Versions::getDBLastRevision( );
+$LAST_REVISION = System::getDBLastRevision( );
 
 // For test purposes
 //$db_name = "hrm-test";
@@ -1002,7 +1002,7 @@ if ($current_revision == 0) {
 // -----------------------------------------------------------------------------
 // Update the database to the last revision
 // -----------------------------------------------------------------------------
-$msg = "Needed database revision for HRM v" .Versions::getHRMVersion( ) .
+$msg = "Needed database revision for HRM v" .System::getHRMVersion( ) .
     " is number " . $LAST_REVISION . ".\n";
 $msg .= "Current database revision is number " . $current_revision . ".\n";
 if( $LAST_REVISION == $current_revision ) {

@@ -6,7 +6,7 @@ require_once("./inc/User.inc");
 require_once("./inc/Database.inc"); // for account management (email & last_access fields)
 require_once("./inc/hrm_config.inc");
 require_once("./inc/Fileserver.inc");
-require_once("./inc/Versions.inc");
+require_once("./inc/System.inc");
 require_once("./inc/Validator.inc");
 
 global $email_admin;
@@ -141,22 +141,31 @@ include("header.inc.php");
 		  // Check that the database is reachable
 		  $db   = new DatabaseConnection( );
 		  if ( !$db->isReachable( ) ) {
-			echo "<div class=\"dbOutDated\">Warning: the database is not reachable!\n";
-			echo "<p>Please contact your administrator.</p>".
-				  "<p>You will not be allowed to login " .
-				  "until this issue has been fixed.</p></div>";
-			echo "</div>\n";
-			include("footer.inc.php");
-			return;
+  			echo "<div class=\"dbOutDated\">Warning: the database is not reachable!\n";
+  			echo "<p>Please contact your administrator.</p>".
+  				  "<p>You will not be allowed to login " .
+  				  "until this issue has been fixed.</p></div>";
+  			echo "</div>\n";
+  			include("footer.inc.php");
+  			return;
 		  }
-		  // Check that the database is up-to-date
-		  if ( Versions::isDBUpToDate( ) == false ) {
-			echo "<div class=\"dbOutDated\">Warning: the database is not up-to-date!\n";
-			echo "<p>This happens if HRM was recently updated but the " . 
-				  "database was not. You are now allowed to login " .
-				  "until this issue has been fixed.</p>";
-			echo "<p>Only the administrator can login.</p></div>";
+ 		  // Check that the hucore version is known
+		  if ( System::huCoreVersion( ) == 0 ) {
+  			echo "<div class=\"dbOutDated\">Warning: unknown HuCore version!\n";
+  			echo "<p>Please ask the administrator to start the queue manager.<p>" . 
+  				"<p>You are now allowed to login until this issue has been fixed.</p></div>";
+  			echo "</div>\n";
+  			include("footer.inc.php");
+  			return;
 		  }  
+		  // Check that the database is up-to-date
+		  if ( System::isDBUpToDate( ) == false ) {
+  			echo "<div class=\"dbOutDated\">Warning: the database is not up-to-date!\n";
+  			echo "<p>This happens if HRM was recently updated but the " . 
+  				  "database was not. You are now allowed to login " .
+  				  "until this issue has been fixed.</p>";
+  			echo "<p>Only the administrator can login.</p></div>";
+		  }
 		?>
 		<h2>Welcome</h2>
 		

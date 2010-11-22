@@ -6,7 +6,7 @@ require_once("./inc/User.inc");
 require_once("./inc/Fileserver.inc");
 require_once("./inc/Setting.inc");
 require_once("./inc/JobDescription.inc");
-require_once ("./inc/Database.inc");
+require_once ("./inc/System.inc");
 
 session_start();
 
@@ -114,9 +114,7 @@ if ( $numberOfChannels > 1 ) {
 }
 
 // If the version if hucore is < 3.5.0, we remove SVI HDF5
-//$version = getHucoreVersionAsInteger( $enable_code_for_huygens );
-$db = new DatabaseConnection(); 
-$version = $db->getHuCoreVersion();
+$version = Sytem::huCoreVersion();
 if ( $version < 3050000 ) {
   $possibleValues = array_diff($possibleValues, array( 'SVI HDF5' ) );
   $possibleValues = array_values( $possibleValues );

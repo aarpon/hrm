@@ -792,7 +792,7 @@ Class QueueManager {
 		}
 	}
 	
-	function readHuCoreVersion() {
+	function askHuCoreVersionAndStoreIntoDB() {
 		$huversion = askHuCore("reportVersionNumberAsInteger");	
 		$huversion = $huversion["version"];	
 		report("HuCore version = " . $huversion . "\n", 2);	
@@ -818,7 +818,7 @@ Class QueueManager {
             report("Huygens Remote Manager started on " 
                     . date("Y-m-d H:i:s") . "\n", 1);
 	    
-	    if(!$this->readHuCoreVersion()) {
+	    if(!$this->askHuCoreVersionAndStoreIntoDB()) {
 		error_log("An error occurred while reading HuCore version");
 		return;
 	    }

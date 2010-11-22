@@ -6,7 +6,7 @@ require_once("./inc/User.inc");
 require_once("./inc/Parameter.inc");
 require_once("./inc/Setting.inc");
 require_once("./inc/Util.inc");
-require_once ("./inc/Database.inc");  
+require_once ("./inc/System.inc");
 
 session_start();
 
@@ -258,9 +258,7 @@ $onChange = "onchange=\"javascript:switchAdvancedCorrectionScheme()\"";
 
             <?php
 
-                //$version = getHucoreVersionAsInteger( $enable_code_for_huygens );
-                $db = new DatabaseConnection(); 
-                $version = $db->getHuCoreVersion();
+                $version = System::huCoreVersion();
                 
                 $parameter = $_SESSION['setting']->parameter("AdvancedCorrectionOptions");
                 $possibleValues = $parameter->possibleValues();
