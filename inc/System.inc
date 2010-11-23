@@ -79,7 +79,8 @@ class System {
 	//!------------------------------------------------------------------------
     public static function huCoreVersion ( ) {
         $db = new DatabaseConnection();
-        $version = $db->getHuCoreVersion();
+		$query = "SELECT value FROM global_variables WHERE name= 'huversion'";
+		$version = $db->queryLastValue( $query );
 		if ( $version == false ) {
 			return 0;
 		} else {
@@ -87,6 +88,27 @@ class System {
 		}
     }
 
+	//!------------------------------------------------------------------------
+	// @function    System::setHuCoreVersion
+	// @desc        Stores the HuCore version in integer notation into the DB
+	// @return      True if success, false otherwise
+	//!------------------------------------------------------------------------
+	function setHuCoreVersion( $value ) {
+		$db = new DatabaseConnection();
+		$rs = $db->query("SELECT * FROM global_variables WHERE name = 'huversion'");
+		if ( !$rs ) {
+			$query = "INSERT INTO global_variables VALUES ('huversion', '" . $value . "')";
+		} else {
+			$query = "UPDATE global_variables SET value = '" . $value . "' WHERE name = 'huversion'";
+		}
+        $rs = $db->execute( $query );
+		
+		if ( !$rs ) {
+			return false;
+		}
+		return true;
+	}
+  
 	//!---------------------------------------------------------
 	// @function    System::getHucoreVersionAsString
 	// @desc        Returns the hucore version as its string representation

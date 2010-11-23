@@ -11,6 +11,7 @@ require_once ("Shell.inc");
 require_once ("Mail.inc");
 require_once ("Job.inc");
 require_once ("JobQueue.inc");
+require_once ("System.inc");
 
 //!---------------------------------------------------------
 // @class    QueueManager
@@ -796,8 +797,7 @@ Class QueueManager {
 		$huversion = askHuCore("reportVersionNumberAsInteger");	
 		$huversion = $huversion["version"];	
 		report("HuCore version = " . $huversion . "\n", 2);	
-		$db = new DatabaseConnection();
-		if(!$db->setHuCoreVersion($huversion))
+		if(!System::setHuCoreVersion($huversion))
 			return false;
 		return true;
 	}
