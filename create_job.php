@@ -114,7 +114,7 @@ if ( $numberOfChannels > 1 ) {
 }
 
 // If the version if hucore is < 3.5.0, we remove SVI HDF5
-$version = Sytem::huCoreVersion();
+$version = System::huCoreVersion();
 if ( $version < 3050000 ) {
   $possibleValues = array_diff($possibleValues, array( 'SVI HDF5' ) );
   $possibleValues = array_values( $possibleValues );
