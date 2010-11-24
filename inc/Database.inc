@@ -15,7 +15,7 @@ include $adodb;
  
 Class DatabaseConnection {
 
-  public $connection; // @public connection db_id  The database connection  
+  private $connection; // @private connection db_id  The database connection  
   
   //!---------------------------------------------------------
   // @function    DatabaseConnection::DatabaseConnection
@@ -33,6 +33,11 @@ Class DatabaseConnection {
     $this->connection->Connect($db_host, $db_user, $db_password, $db_name);
   } 
 
+  //!---------------------------------------------------------
+  // @function    DatabaseConnection::isReachable
+  // @desc        Checks whether a connection to the DB is possible
+  // @return      Boolean
+  //!---------------------------------------------------------
   function isReachable() {
     global $db_type;
     global $db_host;
@@ -78,6 +83,7 @@ Class DatabaseConnection {
 	global $db_host;
     return $db_host;
   }
+
   //!---------------------------------------------------------
   // @function    DatabaseConnection::name
   // @desc        Answer the name of the database
@@ -87,6 +93,7 @@ Class DatabaseConnection {
   	global $db_name;
     return $db_name;
   }
+
   //!---------------------------------------------------------
   // @function    DatabaseConnection::user
   // @desc        Answer the name of the database user
@@ -96,6 +103,7 @@ Class DatabaseConnection {
   	global $db_user;
     return $db_user;
   }
+
   //!---------------------------------------------------------
   // @function    DatabaseConnection::password
   // @desc        Answer the password of the database user
@@ -105,6 +113,7 @@ Class DatabaseConnection {
   	global $db_password;
     return $db_password;
   }
+
   //!---------------------------------------------------------
   // @function    DatabaseConnection::connection
   // @desc        Answer a connection object
@@ -114,6 +123,11 @@ Class DatabaseConnection {
     return $this->connection;
   }  
 
+  //!---------------------------------------------------------
+  // @function    DatabaseConnection::execute
+  // @desc        Executes an sql query
+  // @return      Result of the query
+  //!---------------------------------------------------------  
   function execute($query) {
     $connection = $this->connection();
     $result = $connection->Execute($query); 
@@ -284,7 +298,7 @@ Class DatabaseConnection {
   //!---------------------------------------------------------
   // @function    DatabaseConnection::passwordQueryString
   // @desc        Answer the sql query string that yields the
-  //              the password of the user name
+  //              password of the user name
   // @param       name    string    The name of the user
   // @return      String
   //!---------------------------------------------------------  
@@ -565,6 +579,14 @@ Class DatabaseConnection {
     return $result;
   }
 
+  //!---------------------------------------------------------
+  // @function    DatabaseConnection::saveJobFiles
+  // @desc        Adds all files for a given job id and user to the database
+  // @param       id   		Job id
+  // @param       owner   	User name
+  // @param       files		Array of file names
+  // @return      Boolean
+  //!---------------------------------------------------------  
   function saveJobFiles($id, $owner, $files) {
     $result = True;
     $username = $owner->name();
@@ -575,11 +597,23 @@ Class DatabaseConnection {
     return $result;
   } 
   
+  //!---------------------------------------------------------
+  // @function    DatabaseConnection::queueJob
+  // @desc        Adds all files for a given job id and user to the database
+  // @param       id   		Job id
+  // @param       username	User name
+  // @return      Boolean
+  //!---------------------------------------------------------  
   function queueJob($id, $username) {   
     $query = "insert into job_queue (id, username, queued, status) values ('" .$id . "', '" . $username . "', NOW(), 'queued')";
     return $this->execute($query);
   }
 
+  //!---------------------------------------------------------
+  // @function  DatabaseConnection::setJobPriorities
+  // @desc      Assigns priorities to the jobs in the queue
+  // @return	Boolean: true if assigning priorities was possible
+  //!---------------------------------------------------------  
   function setJobPriorities( ) {
 
     $result = True;
@@ -724,6 +758,12 @@ Class DatabaseConnection {
     
   }
 
+  //!---------------------------------------------------------
+  // @function  DatabaseConnection::flatten
+  // @desc		Flattens a multi-dimensional array
+  // @param		anArray		Array
+  // @return	flattened array
+  //!---------------------------------------------------------  
   function flatten($anArray) {
     $result = array();
     foreach ($anArray as $row) {
@@ -732,6 +772,12 @@ Class DatabaseConnection {
     return $result;    
   } 
   
+  //!---------------------------------------------------------
+  // @function  DatabaseConnection::readPossibleValues
+  // @desc		Returns the values possible for a given parameter
+  // @param		parameter	Parameter (object)
+  // @return	Array of possible values
+  //!---------------------------------------------------------  
   function readPossibleValues($parameter) {
     $name = $parameter->name();
     $query = "select value from possible_values where parameter = '" .$name . "'";
@@ -740,6 +786,12 @@ Class DatabaseConnection {
     return $result;
   }
   
+  //!---------------------------------------------------------
+  // @function  DatabaseConnection::readTranslatedPossibleValues
+  // @desc		Returns the translated possible values for a given parameter
+  // @param		parameter	Parameter (object)
+  // @return	Array of translated possible values
+  //!---------------------------------------------------------  
   function readTranslatedPossibleValues($parameter) {
     $name = $parameter->name();
     $query = "select translation from possible_values where parameter = '" .$name . "'";
@@ -748,6 +800,12 @@ Class DatabaseConnection {
     return $result;
   }
 
+  //!---------------------------------------------------------
+  // @function  DatabaseConnection::translationFor
+  // @desc		Returns the translation of current value for a given parameter
+  // @param		parameter	Parameter (object)
+  // @return	Translated value
+  //!---------------------------------------------------------  
   function translationFor($parameter) {
     $name = $parameter->name();
     $value = $parameter->value();    
@@ -756,6 +814,12 @@ Class DatabaseConnection {
     return $result;
   } 
 
+  //!---------------------------------------------------------
+  // @function  DatabaseConnection::fileExtensions
+  // @desc		Returns an array of file extensions associated to a given file format
+  // @param		imageFormat	File format
+  // @return	Array of file extensions
+  //!---------------------------------------------------------  
   function fileExtensions($imageFormat) {
     $query = "select distinct extension from file_extension where file_format = '" . $imageFormat . "'";
     $answer = $this->query($query);
@@ -763,11 +827,16 @@ Class DatabaseConnection {
     return $result;    
   } 
 
+  //!---------------------------------------------------------
+  // @function  DatabaseConnection::readNumericalValueRestrictions
+  // @desc		Returns all restrictions for a given numerical parameter
+  // @param		parameter	Parameter (object)
+  // @return	Array of restrictions
+  //!---------------------------------------------------------  
   function readNumericalValueRestrictions($parameter) { 
     $name = $parameter->name();
     $query = "select min, max, min_included, max_included, standard from boundary_values where parameter = '" .$name . "'";
     $result = $this->queryLastRow($query);
-    
     return $result;
   } 
 
@@ -809,6 +878,14 @@ Class DatabaseConnection {
     return $this->retrieveColumnFromTableWhere('name', 'file_format', $conditions);
   } 
 
+  //!---------------------------------------------------------------
+  // @function    DatabaseConnection::geometriesWith
+  // @desc        Returns the geometries (XY, XY-time, XYZ, XYZ-time) that are
+  //              (or are not) 3D and time series
+  // @param       $isThreeDimensional   Boolean   true if 3D
+  // @param       $isTimeSeries 		Boolean   true if time-series
+  // @return      array of geometries
+  //!---------------------------------------------------------------
   function geometriesWith($isThreeDimensional, $isTimeSeries) { 
     $isThreeDimensionalValue = 'f';
     $isTimeSeriesValue = 'f';
@@ -854,9 +931,14 @@ Class DatabaseConnection {
     return $result;
   }
 
+  //!---------------------------------------------------------------
+  // @function    DatabaseConnection::defaultValue
+  // @desc        Returns the dafault value for a given parameter
+  // @param       $parameterName   String	Name of the parameter
+  // @return      Default value
+  //!---------------------------------------------------------------
   function defaultValue($parameterName) {
     $query = "select value from possible_values where parameter='" .$parameterName . "' and isDefault='t'";
-    
     $result = $this->queryLastValue($query);
     if (!$result) {
       return NULL;
@@ -864,6 +946,11 @@ Class DatabaseConnection {
     return $result;
   }
 
+  //!---------------------------------------------------------------
+  // @function    DatabaseConnection::getNextIdFromQueue
+  // @desc        Returns the id for next job from the queue, sorted by priority
+  // @return      Job id
+  //!---------------------------------------------------------------
   function getNextIdFromQueue() {
     // For the query we join job_queue and job_files, since we want to sort also by file name
     $query = "SELECT id
@@ -878,6 +965,12 @@ Class DatabaseConnection {
     return $result;
   }
 
+  //!---------------------------------------------------------------
+  // @function    DatabaseConnection::getQueueJobs
+  // @desc        Returns all jobs from the queue, both compound and simple,
+  //              ordered by priority
+  // @return      All jobs
+  //!---------------------------------------------------------------
   function getQueueJobs() {
     // Get jobs as they are in the queue, compound or not, without splitting
     // them.
@@ -887,8 +980,13 @@ Class DatabaseConnection {
     $result = $this->query($query);
     return $result;
   }
- 
 
+  //!---------------------------------------------------------------
+  // @function    DatabaseConnection::getQueueContents
+  // @desc        Returns all jobs from the queue, both compund and simple,
+  //              and the associated file names, ordered by priority
+  // @return      All jobs
+  //!---------------------------------------------------------------
   function getQueueContents() {
     // For the query we join job_queue and job_files, since we want to sort also by file name
     $query = "SELECT id, username, queued, start, stop, server, process_info, status, file
@@ -899,12 +997,24 @@ Class DatabaseConnection {
     return $result;
   }
   
+  //!---------------------------------------------------------------
+  // @function    DatabaseConnection::getQueueContentsForId
+  // @desc        Returns all jobs from the queue for a given id (that must be
+  //              univocal!)
+  // @param		  id	String	id of the job
+  // @return      All jobs for the id
+  //!---------------------------------------------------------------
   function getQueueContentsForId($id) {   
     $query = "select id, username, queued, start, server, process_info, status from job_queue where id='" . $id . "'";
     $result = $this->queryLastRow($query);  // it is supposed that just one job exists with a given id
     return $result;
   }
 
+  //!---------------------------------------------------------------
+  // @function    DatabaseConnection::getJobFilesFor
+  // @desc        Returns all file names associated to a job with given id
+  // @return      Array of file names
+  //!---------------------------------------------------------------
   function getJobFilesFor($id) {
     $query = "select file from job_files where job = '" . $id . "'";
     $result = $this->query($query);
@@ -912,6 +1022,25 @@ Class DatabaseConnection {
     return $result;
   } 
 
+  //!---------------------------------------------------------------
+  // @function    DatabaseConnection::getNumberOfQueuedJobsForUser
+  // @desc        Returns the number of jobs currently in the queue for a
+  //              given username
+  // @param	      username	String	Name of the user
+  // @return      Integer number of jobs in queue
+  //!---------------------------------------------------------------
+  function getNumberOfQueuedJobsForUser($username) {
+	$query = "SELECT COUNT(id) FROM job_queue WHERE username = '" . $_SESSION['user']->name( ) . "';";
+    $row = $this->Execute( $query )->FetchRow( );
+    return $row[ 0 ];
+  } 
+
+  //!---------------------------------------------------------------
+  // @function    DatabaseConnection::userWhoCreatedJob
+  // @desc        Returns the name of the user who created the job with given id
+  // @param	      id	String	id of the job
+  // @return      Integer number of jobs in queue
+  //!---------------------------------------------------------------
   function userWhoCreatedJob($id) {
     $query = "select username from job_queue where id = '" . $id . "'";
     $result = $this->queryLastValue($query);
@@ -921,6 +1050,14 @@ Class DatabaseConnection {
     return $result;    
   } 
 
+  //!---------------------------------------------------------------
+  // @function    DatabaseConnection::deleteFromTablesWhereColumnEquals
+  // @desc        Deletes entries from specified tables and columns for given id
+  // @param	      tables	Array of strings	Names of the tables
+  // @param	      columns	Array of strings	Names of the columns
+  // @param	      id		String				id of the job
+  // @return      Boolen True if success
+  //!---------------------------------------------------------------
   function deleteFromTablesWhereColumnEquals($tables, $columns, $id) {
     $result = True;
     $index = 0;
@@ -932,6 +1069,12 @@ Class DatabaseConnection {
     return $result;
   }
   
+  //!---------------------------------------------------------------
+  // @function    DatabaseConnection::huscriptPathOn
+  // @desc        Returns the path to hucore on given host
+  // @param	      host	String	Host name
+  // @return      Full path to hucore
+  //!---------------------------------------------------------------
   // TODO better management of multiple hosts
   function huscriptPathOn($host) {
     $query = "SELECT huscript_path FROM server where name = '" . $host . "'";
@@ -942,26 +1085,49 @@ Class DatabaseConnection {
     return $result; 
   }
 
+  //!---------------------------------------------------------
+  // @function    Database::freeServer
+  // @desc        Get the name of a free server
+  // @return      String
+  //!---------------------------------------------------------
   function freeServer() { 
     $query = "select name from server where status='free'";
     $result = $this->queryLastValue($query);
     return $result;
   } 
 
+  //!---------------------------------------------------------
+  // @function    Database::statusOfServer
+  // @desc        Get the status (i.e. free, busy, paused) of server $name
+  // @param       name     String    Name of the server
+  // @return      String
+  //!---------------------------------------------------------
   function statusOfServer($name) {  
     $query = "select status from server where name='$name'";
     $result = $this->queryLastValue($query);  
     return $result;
   } 
 
+  //!---------------------------------------------------------
+  // @function    Database::isServerBusy
+  // @desc        Checks whether server $name is busy
+  // @param       name     String    Name of the server
+  // @return      Boolean
+  //!---------------------------------------------------------
   function isServerBusy($name) {  
     $status = $this->statusOfServer($name);
     $result = ($status == 'busy');
     return $result;
   } 
 
-  function isSwitchOn() { 
-    if ($this->isDatabaseUpdated()) {
+  //!---------------------------------------------------------
+  // @function    Database::isSwitchOn
+  // @desc        Checks whether the switch in the queue manager is 'on'
+  // @return      Boolean
+  //!---------------------------------------------------------
+  function isSwitchOn() {
+	// Handle some back-compatibility issue
+    if ($this->doGlobalVariablesExist()) {
       $query = "SELECT value FROM queuemanager WHERE field = 'switch'";
       $answer = $this->queryLastValue($query);
       $result = True;
@@ -987,8 +1153,13 @@ Class DatabaseConnection {
     return $result;
   }
 
+  //!---------------------------------------------------------
+  // @function    Database::getSwitchStatus
+  // @desc        Gets the status of the queue manager's switch
+  // @return      'on' or 'off'
+  //!---------------------------------------------------------
   function getSwitchStatus() { 
-    if ($this->isDatabaseUpdated()) {
+    if ($this->doGlobalVariablesExist()) {
       $query = "SELECT value FROM queuemanager WHERE field = 'switch'";
       $answer = $this->queryLastValue($query);
     }
@@ -999,23 +1170,50 @@ Class DatabaseConnection {
     return $answer;
   }
 
+  //!---------------------------------------------------------
+  // @function    Database::setSwitchStatus
+  // @desc        Sets the status of the queue manager's switch
+  // @param		  status	String	Either 'on' or 'off'
+  // @return      Query result
+  //!---------------------------------------------------------
   function setSwitchStatus( $status ) {
   	$result = $this->execute("UPDATE queuemanager SET value = '". $status ."' WHERE field = 'switch'");
   	return $result;
   }
 
+  //!---------------------------------------------------------
+  // @function    Database::reserveServer
+  // @desc        Sets the state of the server to 'busy' and the pid for a running job
+  // @param		  name	String	Server name
+  // @param		  pid	String	Process identifier associated with a running job
+  // @return      Query result
+  //!---------------------------------------------------------
   function reserveServer($name, $pid) { 
     $query = "update server set status='busy', job='$pid' where name='$name'";
     $result = $this->execute($query);
     return $result;
   } 
 
+  //!---------------------------------------------------------
+  // @function    Database::resetServer
+  // @desc        Sets the state of the server to 'free' and deletes the the pid
+  // @param		  name	String	Server name
+  // @param		  pid	String	Process identifier (UNUSED!)
+  // @param		  pid	String	Process identifier associated with a running job
+  // @return      Query result
+  //!---------------------------------------------------------
   function resetServer($name, $pid) { 
     $query = "update server set status='free', job=NULL where name='$name'";
     $result = $this->execute($query);
     return $result;
   } 
 
+  //!---------------------------------------------------------
+  // @function    Database::startJob
+  // @desc        Starts a job
+  // @param		  job	Job object
+  // @return      Query result
+  //!---------------------------------------------------------
   function startJob($job) { 
     $desc = $job->description();
     $id = $desc->id();
@@ -1026,6 +1224,11 @@ Class DatabaseConnection {
     return $result;
   } 
 
+  //!---------------------------------------------------------
+  // @function    Database::getRunningJobs
+  // @desc        Get an array of running job (objects)
+  // @return      Array of job objects
+  //!---------------------------------------------------------
   function getRunningJobs() { 
     $result = array();
     $query = "select id, process_info, server from job_queue where status = 'started'";
@@ -1045,6 +1248,11 @@ Class DatabaseConnection {
     return $result;
   } 
 
+  //!---------------------------------------------------------
+  // @function    Database::availableServer
+  // @desc        Get all server names (independent of their status)
+  // @return      Array of strings
+  //!---------------------------------------------------------
   function availableServer() {
     $query = "select name from server";
     $result = $this->query($query);
@@ -1052,6 +1260,12 @@ Class DatabaseConnection {
     return $result;
   }
 
+  //!---------------------------------------------------------
+  // @function    Database::startTimeOf
+  // @desc        Get the starting time of given job object
+  // @param		  job	Job object
+  // @return      Time (String)
+  //!---------------------------------------------------------
   function startTimeOf($job) {
     $desc = $job->description();
     $id = $desc->id();
@@ -1060,30 +1274,60 @@ Class DatabaseConnection {
     return $result;
   }
 
+  //!---------------------------------------------------------
+  // @function    Database::fromUnixTime
+  // @desc        Returns a formatted time from a unix timestamp
+  // @param		  timestamp	String	Unix time stamp
+  // @return      Formatted time string: YYYY-MM-DD hh:mm:ss
+  //!---------------------------------------------------------
   function fromUnixTime($timestamp) {
     $query = "select FROM_UNIXTIME($timestamp)";
     $result = $this->queryLastValue($query);
     return $result;
   } 
   
+  //!---------------------------------------------------------
+  // @function    Database::pauseJob
+  // @desc        Pauses a job of given id
+  // @param		  id	String	Job id
+  // @return      Query result
+  //!---------------------------------------------------------
   function pauseJob($id) {   
     $query = "update job_queue set status='paused' where id='" . $id . "'";
     $result = $this->execute($query);
     return $result;
   } 
 
+  //!---------------------------------------------------------
+  // @function    Database::setJobEndTime
+  // @desc        Sets the end time of a job
+  // @param		  id	String	Job id
+  // @param		  date	String	Formatted date: YYYY-MM-DD hh:mm:ss
+  // @return      Query result
+  //!---------------------------------------------------------
   function setJobEndTime($id, $date) {   
     $query = "update job_queue set stop='".$date."' where id='" . $id . "'";
     $result = $this->execute($query);
     return $result;
   } 
 
+  //!---------------------------------------------------------
+  // @function    Database::restartPausedJobs
+  // @desc        Restart all paused jobs
+  // @return      Query result
+  //!---------------------------------------------------------
   function restartPausedJobs() {  
     $query = "update job_queue set status='queued' where status='paused'";
     $result = $this->execute($query);
     return $result;    
   }
 
+  //!---------------------------------------------------------
+  // @function    Database::markJobAsRemoved
+  // @desc        Mark a job with given id as 'broken' (i;e; to be removed)
+  // @param		  id	String	Job id
+  // @return      Query result
+  //!---------------------------------------------------------
   function markJobAsRemoved($id) {  
     $query = "update job_queue set status='broken' where (status='queued' or status='paused') and id='" . $id . "'";
     // $query = "update job_queue set status='broken' where id='" . $id . "'"; 
@@ -1093,25 +1337,46 @@ Class DatabaseConnection {
     return $result;    
   }
   
+  //!---------------------------------------------------------
+  // @function    Database::markServerAsFree
+  // @desc        Set the server status to free
+  // @param		  server	String	Server name
+  // @return      Query result
+  //!---------------------------------------------------------
   function markServerAsFree($server) {  
     $query = "update server set status='free' where name='" . $server . "'";
     $result = $this->execute($query);
     return $result;
   }
 
+  //!---------------------------------------------------------
+  // @function    Database::getMarkedJobIds
+  // @desc        Get all jobs with status 'broken'
+  // @return      Array of ids
+  //!---------------------------------------------------------
   function getMarkedJobIds() { 
     $conditions['status'] = 'broken';
     $ids = $this->retrieveColumnFromTableWhere('id', 'job_queue', $conditions);
     return $ids;
   }
 
+  //!---------------------------------------------------------
+  // @function    Database::getJobIdsToKill
+  // @desc        Get all jobs with status 'kill' to be killed by the Queue Manager
+  // @return      Array of ids
+  //!---------------------------------------------------------
   function getJobIdsToKill() { 
     $conditions['status'] = 'kill';
     $ids = $this->retrieveColumnFromTableWhere('id', 'job_queue', $conditions);
     return $ids;
   }
  
-  
+  //!---------------------------------------------------------
+  // @function    Database::checkUser
+  // @desc        Check whether a user exists
+  // @param		  name	String	Username
+  // @return      Boolean True if the user exists
+  //!---------------------------------------------------------
   function checkUser($name) {
     $query = "select status from username where name = '" . $name . "'";
     $result = $this->queryLastValue($query);
@@ -1119,44 +1384,84 @@ Class DatabaseConnection {
     return $result;
   }
   
+  //!---------------------------------------------------------
+  // @function    Database::getUserStatus
+  // @desc        Get the status of a user
+  // @param		  name	String	Username
+  // @return      Status (string)
+  //!---------------------------------------------------------
   function getUserStatus($name) {
   	$query = "select status from username where name = '" . $name . "'";
   	$result = $this->queryLastValue($query);
   	return $result;
   }
 
+  //!---------------------------------------------------------
+  // @function    Database::getJobOwner
+  // @desc        Get the name of the user who owns a job with given id
+  // @param		  id	String	Job id
+  // @return      Name of the user who owns the job
+  //!---------------------------------------------------------
   function getJobOwner($id) {
   	$query = "select username from job_queue where id = '" . $id . "'";
   	$result = $this->queryLastValue($query);
   	return $result;
   }
  
-  
+  //!---------------------------------------------------------
+  // @function    Database::now
+  // @desc        Returns current date and time
+  // @return      Formatted date (YYYY-MM-DD hh:mm:ss)
+  //!---------------------------------------------------------
   function now() {
     $query = "select now()";
     $result = $this->queryLastValue($query);
     return $result;	
   }
   
+  //!---------------------------------------------------------
+  // @function    Database::getGroup
+  // @desc        Returns the group to which the user belongs
+  // @param		  username	String	Name of the user
+  // @return      Group (string)
+  //!---------------------------------------------------------
   function getGroup($userName) {
   	$query = "SELECT research_group FROM username WHERE name= '" . $userName . "'";
   	$result = $this->queryLastValue($query);
   	return $result;
   }
   
+  //!---------------------------------------------------------
+  // @function    Database::updateMail
+  // @desc        Updates the e-mail address of a user
+  // @param		  username	String	Name of the user
+  // @param		  email		String	E-mail address
+  // @return      Query result
+  //!---------------------------------------------------------
   function updateMail($userName, $email) {
   	$cmd = "UPDATE username SET email = '". $email ."' WHERE name = '".$userName."'";
   	$result = $this->execute($cmd);
   	return $result;
   }
   
+  //!---------------------------------------------------------
+  // @function    Database::updateLastAccessDate
+  // @desc        Updates the last access date of a user
+  // @param		  username	String	Name of the user
+  // @return      Query result
+  //!---------------------------------------------------------
   function updateLastAccessDate($userName) {
   	$query = "UPDATE username SET last_access_date = CURRENT_TIMESTAMP WHERE name = '". $userName . "'";
   	$result = $this->execute($query);
   	return $result;
   }
  
-  function isDatabaseUpdated() {
+  //!---------------------------------------------------------
+  // @function    Database::doGlobalVariablesExist
+  // @desc        Ugly hack to check for old table structure
+  // @return      True if global variables exist
+  //!---------------------------------------------------------
+  function doGlobalVariablesExist() {
     global $db_type;
     global $db_host;
     global $db_name;

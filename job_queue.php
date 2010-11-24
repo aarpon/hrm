@@ -97,9 +97,7 @@ include("header.inc.php");
 
           if ($_SESSION['user']->name() != "admin")  {
               $db = new DatabaseConnection();
-              $query = "SELECT COUNT(id) FROM job_queue WHERE username = '" . $_SESSION['user']->name( ) . "';";
-              $row = $db->Execute( $query )->FetchRow( );
-              $jobsInQueue = $row[ 0 ];
+              $jobsInQueue = $db->getNumberOfQueuedJobsForUser( $_SESSION['user']->name( ) );
 
             if ( $jobsInQueue == 0 ) {
               $str = '<strong>no jobs</strong>';
