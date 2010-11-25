@@ -6,10 +6,10 @@ require_once( dirname( __FILE__ ) . "/extern/adLDAP/adLDAP.php" );
 
 //!--------------------------------------------------------------------
 // @class    ActiveDirectory
-// @desc     Manage active directory connections through adLDAP
+// @brief     Manage active directory connections through adLDAP
 //!--------------------------------------------------------------------
 
-Class ActiveDirectory {
+class ActiveDirectory {
   private $m_AdLDAP;      // the adLDAP object
   private $m_GroupIndex;  // users usually belong to several groups, m_GroupIndex 
                           // defines which level of the hierarchy to consider. 

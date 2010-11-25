@@ -22,7 +22,7 @@ function newExternalProcessFor($host, $logfilename, $errfilename) {
 	return $shell;
 }
 
-Class Job {
+class Job {
 	public $script;
 	public $jobDescription;
 	public $server;

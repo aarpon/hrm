@@ -2,7 +2,7 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
-Class Mail {
+class Mail {
   private $sender;
   private $receiver;
   private $subject;

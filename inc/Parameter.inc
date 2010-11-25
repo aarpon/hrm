@@ -6,16 +6,16 @@ require_once ("Database.inc");
 
 //!---------------------------------------------------------
 // @class    Parameter
-// @desc     A single parameter of a parameter setting
+// @brief     A single parameter of a parameter setting
 //           Superclass of specific parameter classes
 //!---------------------------------------------------------
-Class Parameter {
+class Parameter {
 	public $value; // @public value Object  The current value of the parameter
 	public $name; // @public name  String  The name of the parameter
 
 	//!---------------------------------------------------------
 	// @function    Parameter::Parameter
-	// @desc        Set a parameter. The parameter is stored
+	// @brief        Set a parameter. The parameter is stored
 	//              in the setting under its name.
 	// @param       name  String  The name of the new parameter
 	// @return      Void
@@ -27,7 +27,7 @@ Class Parameter {
 
 	//!---------------------------------------------------------
 	// @function    Parameter::numberOfValues
-	// @desc        Values may be single values or arrays of 
+	// @brief        Values may be single values or arrays of 
 	//              values. Answers the number of values for
 	//              the receiver.
 	// @return      Integer
@@ -40,7 +40,7 @@ Class Parameter {
 
 	//!---------------------------------------------------------
 	// @function    Parameter::check
-	// @desc        Answer true if the parameter is set to a valid
+	// @brief        Answer true if the parameter is set to a valid
 	//              value and false otherwise. 
 	// @return      Boolean
 	//!---------------------------------------------------------  
@@ -50,7 +50,7 @@ Class Parameter {
 
 	//!---------------------------------------------------------
 	// @function    Parameter::checkValue
-	// @desc        Answer true if value is a valid value for the
+	// @brief        Answer true if value is a valid value for the
 	//              receiver and false otherwise. Subclasses may
 	//              override the method to do something appropriate.
 	// @param       value  String   The value to be checked  
@@ -86,7 +86,7 @@ Class Parameter {
 
 	//!---------------------------------------------------------
 	// @function    Parameter::value
-	// @desc        Answers the value of the parameter.
+	// @brief        Answers the value of the parameter.
 	// @return      Object
 	//!---------------------------------------------------------  
 	function value() {
@@ -95,7 +95,7 @@ Class Parameter {
 
 	//!---------------------------------------------------------
 	// @function    Parameter::internalValue
-	// @desc        Answers the internal representation of the
+	// @brief        Answers the internal representation of the
 	//              parameters value. 
 	// @return      Object
 	//!---------------------------------------------------------  
@@ -105,7 +105,7 @@ Class Parameter {
 
 	//!---------------------------------------------------------
 	// @function    Parameter::internalPossibleValues
-	// @desc        Answer the possible values for the parameter
+	// @brief        Answer the possible values for the parameter
 	//              in their internal representation. This method
 	//              will be overriden when the internal 
 	//              representation differs from the external
@@ -118,7 +118,7 @@ Class Parameter {
 
 	//!---------------------------------------------------------
 	// @function    Parameter::setValue
-	// @desc        Set the value of the parameter to value.
+	// @brief        Set the value of the parameter to value.
 	//              value is usually a string but it might be
 	//              an array in some cases
 	// @param       value  String  The new value of the parameter
@@ -130,7 +130,7 @@ Class Parameter {
 
 	//!---------------------------------------------------------
 	// @function    Parameter::printRadioButtonForValue
-	// @desc        print one radio button for this parameter 
+	// @brief        print one radio button for this parameter 
 	//              for the value value. The button will be
 	//              checked if value is the internal value of
 	//              the parameter.
@@ -332,7 +332,7 @@ Class Parameter {
 
 	//!---------------------------------------------------------
 	// @function    Parameter::translatedValue
-	// @desc        Answer the value of the parameter in a 
+	// @brief        Answer the value of the parameter in a 
 	//              translated form that is in the form that
 	//              is used in the script. Per default it is
 	//              just the value but this will be changed
@@ -344,7 +344,7 @@ Class Parameter {
 	}
 }
 
-Class ChoiceParameter extends Parameter {
+class ChoiceParameter extends Parameter {
 	public $possibleValues; // @public possibleValues array  the possible values for the choice parameter
 
 	function ChoiceParameter($name) {
@@ -363,7 +363,7 @@ Class ChoiceParameter extends Parameter {
 
 	//!---------------------------------------------------------
 	// @function    ChoiceParameter::setPossibleValues
-	// @desc        Set the possible values of this parameter
+	// @brief        Set the possible values of this parameter
 	//              to values.
 	// @param       values  array  the possible values to be set
 	// @return      void
@@ -374,7 +374,7 @@ Class ChoiceParameter extends Parameter {
 
 	//!---------------------------------------------------------
 	// @function    ChoiceParameter::possibleValues
-	// @desc        Answer all values that are possible for this
+	// @brief        Answer all values that are possible for this
 	//              choice parameter.
 	// @return      array
 	//!---------------------------------------------------------  
@@ -384,7 +384,7 @@ Class ChoiceParameter extends Parameter {
 
 	//!---------------------------------------------------------
 	// @function    ChoiceParameter::possibleValuesString
-	// @desc        Answer a text containing the possible values
+	// @brief        Answer a text containing the possible values
 	//              for this parameter seperated by ',' 
 	// @return      string
 	//!---------------------------------------------------------  
@@ -415,7 +415,7 @@ Class ChoiceParameter extends Parameter {
 
 	//!---------------------------------------------------------
 	// @function    ChoiceParameter::printRadioButtons
-	// @desc        Print radio buttons for the possible values
+	// @brief        Print radio buttons for the possible values
 	//              of the parameter, one in a line. The button
 	//              for the current value of the parameter will
 	//              be checked.
@@ -434,7 +434,7 @@ Class ChoiceParameter extends Parameter {
 
 	//!---------------------------------------------------------
 	// @function    ChoiceParameter::printSingleLineRadioButtons
-	// @desc        Print radio buttons for the possible values
+	// @brief        Print radio buttons for the possible values
 	//              of the parameter, all in the same line. The 
 	//              button for the current value of the parameter 
 	//              will be checked.
@@ -458,7 +458,7 @@ Class ChoiceParameter extends Parameter {
 
 	//!---------------------------------------------------------
 	// @function    ChoiceParameter::checkValue
-	// @desc        Answer true if value is a valid value for the
+	// @brief        Answer true if value is a valid value for the
 	//              receiver and false otherwise. The value of a
 	//              choice parameter must be one of its possible
 	//              values.
@@ -472,7 +472,7 @@ Class ChoiceParameter extends Parameter {
 	}
 }
 
-Class BooleanParameter extends ChoiceParameter {
+class BooleanParameter extends ChoiceParameter {
 
 	function BooleanParameter($name) {
 		$this->ChoiceParameter($name);
@@ -518,7 +518,7 @@ Class BooleanParameter extends ChoiceParameter {
 	}
 }
 
-Class NumericalParameter extends Parameter {
+class NumericalParameter extends Parameter {
 	public $min;
 	public $max;
 	public $checkMin;
@@ -566,7 +566,7 @@ Class NumericalParameter extends Parameter {
 
 	//!---------------------------------------------------------
 	// @function    NumericalParameter::setMin
-	// @desc        Set the minimal allowed value for the 
+	// @brief        Set the minimal allowed value for the 
 	//              parameter (the value itself may be allowed
 	//              or not).
 	// @return      void
@@ -578,7 +578,7 @@ Class NumericalParameter extends Parameter {
 
 	//!---------------------------------------------------------
 	// @function    NumericalParameter::setMax
-	// @desc        Set the maximal allowed value for the 
+	// @brief        Set the maximal allowed value for the 
 	//              parameter (the value itself may be allowed
 	//              or not).
 	// @return      void
@@ -590,7 +590,7 @@ Class NumericalParameter extends Parameter {
 
 	//!---------------------------------------------------------
 	// @function    NumericalParameter::checkMin
-	// @desc        Answer whether the parameter should be 
+	// @brief        Answer whether the parameter should be 
 	//              checked against a minimum value.
 	// @return      Bool
 	//!---------------------------------------------------------  
@@ -600,7 +600,7 @@ Class NumericalParameter extends Parameter {
 
 	//!---------------------------------------------------------
 	// @function    NumericalParameter::checkMax
-	// @desc        Answer whether the parameter should be 
+	// @brief        Answer whether the parameter should be 
 	//              checked against a maximum value.
 	// @return      Bool
 	//!---------------------------------------------------------  
@@ -610,7 +610,7 @@ Class NumericalParameter extends Parameter {
 
 	//!---------------------------------------------------------
 	// @function    NumericalParameter::min
-	// @desc        Answer the minimal allowed value for the 
+	// @brief        Answer the minimal allowed value for the 
 	//              parameter (the value itself may be allowed
 	//              or not).
 	// @return      Number
@@ -621,7 +621,7 @@ Class NumericalParameter extends Parameter {
 
 	//!---------------------------------------------------------
 	// @function    NumericalParameter::max
-	// @desc        Answer the maximal allowed value for the 
+	// @brief        Answer the maximal allowed value for the 
 	//              parameter (the value itself may be allowed
 	//              or not).
 	// @return      Number
@@ -632,7 +632,7 @@ Class NumericalParameter extends Parameter {
 
 	//!---------------------------------------------------------
 	// @function    NumericalParameter::checkValue
-	// @desc        Answer true if value is a valid value for the
+	// @brief        Answer true if value is a valid value for the
 	//              receiver and false otherwise. The value of a
 	//              numerical parameter must be a number. It must
 	//              possibly be larger than a minimum or smaller
@@ -667,7 +667,8 @@ Class NumericalParameter extends Parameter {
 		return True;
 	}
 }
-Class VariableChannelsParameter extends NumericalParameter {
+
+class VariableChannelsParameter extends NumericalParameter {
 	public $numberOfChannels;
 
 	function VariableChannelsParameter($name) {
@@ -692,7 +693,7 @@ Class VariableChannelsParameter extends NumericalParameter {
 
 	//!---------------------------------------------------------
 	// @function    VariableChannelsParameter::setValue
-	// @desc        Set the value of the parameter to value.
+	// @brief        Set the value of the parameter to value.
 	//              If value is not an array the value of the 
 	//              parameter is set to an array with the value
 	//              at index 0. 
@@ -736,7 +737,7 @@ Class VariableChannelsParameter extends NumericalParameter {
 
 	//!---------------------------------------------------------
 	// @function    VariableChannelsParameter::value
-	// @desc        Answers an array of the values for the different 
+	// @brief        Answers an array of the values for the different 
 	//              channels of the parameter. If a value
 	//              for a channel is not valid set it to the value
 	//              of the preceding channel.
@@ -766,7 +767,7 @@ Class VariableChannelsParameter extends NumericalParameter {
 
 	//!---------------------------------------------------------
 	// @function    VariableChannelsParameter::check
-	// @desc        Answer true if the parameter is set to a valid
+	// @brief        Answer true if the parameter is set to a valid
 	//              value and false otherwise. The values are checked
 	//              for each channel.
 	// @return      Boolean
@@ -782,21 +783,21 @@ Class VariableChannelsParameter extends NumericalParameter {
 }
 
 // manage parameter adaption
-Class HasAdaptedValues extends ChoiceParameter {
+class HasAdaptedValues extends ChoiceParameter {
 	function HasAdaptedValues() {
 		$this->ChoiceParameter("HasAdaptedValues");
 	}
 }
 
 // manage measured PSF
-Class PointSpreadFunction extends ChoiceParameter {
+class PointSpreadFunction extends ChoiceParameter {
 	function PointSpreadFunction() {
 		$this->ChoiceParameter("PointSpreadFunction");
 	}
 }
 
 // TODO refactor
-Class PSF extends Parameter {
+class PSF extends Parameter {
 	function PSF() {
 		$this->Parameter('PSF');
 		$this->value = array (
@@ -813,7 +814,7 @@ Class PSF extends Parameter {
 	}
 }
 
-Class IsMultiChannel extends ChoiceParameter {
+class IsMultiChannel extends ChoiceParameter {
 	function IsMultiChannel() {
 		$this->ChoiceParameter("IsMultiChannel");
 	}
@@ -833,12 +834,12 @@ Class IsMultiChannel extends ChoiceParameter {
 	}
 }
 
-Class SingleOrMultiChannelParameter extends ChoiceParameter {
+class SingleOrMultiChannelParameter extends ChoiceParameter {
 	public $isMultiChannel; // @public isMultiChannel  Boolean  tells whether this is a single or multi channel parameter
 
 	//!---------------------------------------------------------
 	// @function    SingleOrMultiChannelParameter::isMultiChannel
-	// @desc        Answer true if the receiver is a multi channel
+	// @brief        Answer true if the receiver is a multi channel
 	//              parameter
 	// @return      bool
 	//!---------------------------------------------------------  
@@ -848,7 +849,7 @@ Class SingleOrMultiChannelParameter extends ChoiceParameter {
 
 	//!---------------------------------------------------------
 	// @function    SingleOrMultiChannelParameter::isSingleChannel
-	// @desc        Answer true if the receiver is a single channel
+	// @brief        Answer true if the receiver is a single channel
 	//              parameter
 	// @return      bool
 	//!---------------------------------------------------------  
@@ -858,7 +859,7 @@ Class SingleOrMultiChannelParameter extends ChoiceParameter {
 
 	//!---------------------------------------------------------
 	// @function    SingleOrMultiChannelParameter::beMultiChannel
-	// @desc        Make the receiver a multi channel parameter.
+	// @brief        Make the receiver a multi channel parameter.
 	// @return      void
 	//!---------------------------------------------------------  
 	function beMultiChannel() {
@@ -867,7 +868,7 @@ Class SingleOrMultiChannelParameter extends ChoiceParameter {
 
 	//!---------------------------------------------------------
 	// @function    SingleOrMultiChannelParameter::beSingleChannel
-	// @desc        Make the receiver a single channel parameter.
+	// @brief        Make the receiver a single channel parameter.
 	// @return      void
 	//!---------------------------------------------------------    
 	function beSingleChannel() {
@@ -876,7 +877,7 @@ Class SingleOrMultiChannelParameter extends ChoiceParameter {
 
 	//!---------------------------------------------------------
 	// @function    SingleOrMultiChannelParameter::setValue
-	// @desc        Set the value of the parameter to value.
+	// @brief        Set the value of the parameter to value.
 	//              If value contains the prefix single_ or multi_
 	//              the parameter is set to single or multi and 
 	//              the postfix of value is set as value of the 
@@ -924,7 +925,7 @@ Class SingleOrMultiChannelParameter extends ChoiceParameter {
 	}
 }
 
-Class ImageFileFormat extends SingleOrMultiChannelParameter {
+class ImageFileFormat extends SingleOrMultiChannelParameter {
 
 	function ImageFileFormat() {
 		$this->ChoiceParameter("ImageFileFormat");
@@ -941,7 +942,7 @@ Class ImageFileFormat extends SingleOrMultiChannelParameter {
 	}
 }
 
-Class NumberOfChannels extends ChoiceParameter {
+class NumberOfChannels extends ChoiceParameter {
 	function NumberOfChannels() {
 		$this->ChoiceParameter("NumberOfChannels");
 	}
@@ -951,7 +952,7 @@ Class NumberOfChannels extends ChoiceParameter {
 	}
 }
 
-Class ImageGeometry extends SingleOrMultiChannelParameter {
+class ImageGeometry extends SingleOrMultiChannelParameter {
 	function ImageGeometry() {
 		$this->ChoiceParameter("ImageGeometry");
 	}
@@ -961,7 +962,7 @@ Class ImageGeometry extends SingleOrMultiChannelParameter {
 	}
 }
 
-Class MicroscopeType extends ChoiceParameter {
+class MicroscopeType extends ChoiceParameter {
 	function MicroscopeType() {
 		$this->ChoiceParameter("MicroscopeType");
 	}
@@ -972,7 +973,7 @@ Class MicroscopeType extends ChoiceParameter {
 
 	//!---------------------------------------------------------
 	// @function    MicroscopeType::translatedValue
-	// @desc        Answer the value of the parameter in a 
+	// @brief        Answer the value of the parameter in a 
 	//              translated form that is in the form that
 	//              is used in the script. The translation of
 	//              the microscope type is read from the 
@@ -987,7 +988,7 @@ Class MicroscopeType extends ChoiceParameter {
 	}
 }
 
-Class NumericalAperture extends NumericalParameter {
+class NumericalAperture extends NumericalParameter {
 	function NumericalAperture() {
 		$this->NumericalParameter("NumericalAperture");
 	}
@@ -997,7 +998,7 @@ Class NumericalAperture extends NumericalParameter {
 	}
 }
 
-Class ObjectiveMagnification extends ChoiceParameter {
+class ObjectiveMagnification extends ChoiceParameter {
 	function ObjectiveMagnification() {
 		$this->ChoiceParameter("ObjectiveMagnification");
 	}
@@ -1007,7 +1008,7 @@ Class ObjectiveMagnification extends ChoiceParameter {
 	}
 }
 
-Class ObjectiveType extends ChoiceParameter {
+class ObjectiveType extends ChoiceParameter {
 	function ObjectiveType() {
 		$this->ChoiceParameter("ObjectiveType");
 	}
@@ -1018,7 +1019,7 @@ Class ObjectiveType extends ChoiceParameter {
 
 	//!---------------------------------------------------------
 	// @function    ObjectiveType::translatedValue
-	// @desc        Answer the value of the parameter in a 
+	// @brief        Answer the value of the parameter in a 
 	//              translated form that is in the form that
 	//              is used in the script. The translation of
 	//              the objective type is read from the 
@@ -1033,7 +1034,7 @@ Class ObjectiveType extends ChoiceParameter {
 	}
 }
 
-Class SampleMedium extends ChoiceParameter {
+class SampleMedium extends ChoiceParameter {
 	function SampleMedium() {
 		$this->ChoiceParameter("SampleMedium");
 	}
@@ -1044,7 +1045,7 @@ Class SampleMedium extends ChoiceParameter {
 
 	//!---------------------------------------------------------
 	// @function    SampleMedium::translatedValue
-	// @desc        Answer the value of the parameter in a 
+	// @brief        Answer the value of the parameter in a 
 	//              translated form that is in the form that
 	//              is used in the script. The translation of
 	//              the sample medium is read from the 
@@ -1061,7 +1062,7 @@ Class SampleMedium extends ChoiceParameter {
 	}
 }
 
-Class Binning extends ChoiceParameter {
+class Binning extends ChoiceParameter {
 	function Binning() {
 		$this->ChoiceParameter("Binning");
 	}
@@ -1071,7 +1072,7 @@ Class Binning extends ChoiceParameter {
 	}
 }
 
-Class ExcitationWavelength extends NumericalParameter {
+class ExcitationWavelength extends NumericalParameter {
 	function ExcitationWavelength() {
 		$this->NumericalParameter("ExcitationWavelength");
 		$this->value = array (
@@ -1098,7 +1099,7 @@ Class ExcitationWavelength extends NumericalParameter {
 	}
 }
 
-Class EmissionWavelength extends NumericalParameter {
+class EmissionWavelength extends NumericalParameter {
 	function EmissionWavelength() {
 		$this->NumericalParameter("EmissionWavelength");
 		$this->value = array (
@@ -1125,7 +1126,7 @@ Class EmissionWavelength extends NumericalParameter {
 	}
 }
 
-Class CMount extends NumericalParameter {
+class CMount extends NumericalParameter {
 	function CMount() {
 		$this->NumericalParameter("CMount");
 	}
@@ -1135,7 +1136,7 @@ Class CMount extends NumericalParameter {
 	}
 }
 
-Class TubeFactor extends NumericalParameter {
+class TubeFactor extends NumericalParameter {
 	function TubeFactor() {
 		$this->NumericalParameter("TubeFactor");
 	}
@@ -1145,7 +1146,7 @@ Class TubeFactor extends NumericalParameter {
 	}
 }
 
-Class CCDCaptorSizeX extends NumericalParameter {
+class CCDCaptorSizeX extends NumericalParameter {
 	function CCDCaptorSizeX() {
 		$this->NumericalParameter("CCDCaptorSizeX");
 	}
@@ -1165,7 +1166,7 @@ Class CCDCaptorSizeX extends NumericalParameter {
 	}
 }
 
-Class ZStepSize extends NumericalParameter {
+class ZStepSize extends NumericalParameter {
 	function ZStepSize() {
 		$this->NumericalParameter("ZStepSize");
 	}
@@ -1175,7 +1176,7 @@ Class ZStepSize extends NumericalParameter {
 	}
 }
 
-Class TimeInterval extends NumericalParameter {
+class TimeInterval extends NumericalParameter {
 	function TimeInterval() {
 		$this->NumericalParameter("TimeInterval");
 	}
@@ -1185,7 +1186,7 @@ Class TimeInterval extends NumericalParameter {
 	}
 }
 
-Class PinholeSize extends NumericalParameter {
+class PinholeSize extends NumericalParameter {
 	function PinholeSize() {
 		$this->NumericalParameter("PinholeSize");
 		// manage one pinhole radius per channel
@@ -1214,7 +1215,7 @@ Class PinholeSize extends NumericalParameter {
 }
 
 // Support for Nipkow spinning disk
-Class PinholeSpacing extends NumericalParameter {
+class PinholeSpacing extends NumericalParameter {
 	function PinholeSpacing() {
 		$this->NumericalParameter("PinholeSpacing");
 	}
@@ -1224,19 +1225,19 @@ Class PinholeSpacing extends NumericalParameter {
 	}
 }
 
-Class MultiChannelOutput extends BooleanParameter {
+class MultiChannelOutput extends BooleanParameter {
 	function MultiChannelOutput() {
 		$this->BooleanParameter("MultiChannelOutput");
 	}
 }
 
-Class RemoveNoise extends BooleanParameter {
+class RemoveNoise extends BooleanParameter {
 	function RemoveNoise() {
 		$this->BooleanParameter("RemoveNoise");
 	}
 }
 
-Class StyleOfProcessing extends ChoiceParameter {
+class StyleOfProcessing extends ChoiceParameter {
 	function StyleOfProcessing() {
 		$this->ChoiceParameter("StyleOfProcessing");
 	}
@@ -1309,31 +1310,31 @@ Class StyleOfProcessing extends ChoiceParameter {
 	}
 }
 
-Class RemoveBackground extends BooleanParameter {
+class RemoveBackground extends BooleanParameter {
 	function RemoveBackground() {
 		$this->BooleanParameter("RemoveBackground");
 	}
 }
 
-Class FullRestoration extends BooleanParameter {
+class FullRestoration extends BooleanParameter {
 	function FullRestoration() {
 		$this->BooleanParameter("FullRestoration");
 	}
 }
 
-Class RemoveNoiseEffectiveness extends ChoiceParameter {
+class RemoveNoiseEffectiveness extends ChoiceParameter {
 	function RemoveNoiseEffectiveness() {
 		$this->ChoiceParameter("RemoveNoiseEffectiveness");
 	}
 }
 
-Class RemoveBackgroundPercent extends VariableChannelsParameter {
+class RemoveBackgroundPercent extends VariableChannelsParameter {
 	function RemoveBackgroundPercent() {
 		$this->VariableChannelsParameter("RemoveBackgroundPercent");
 	}
 }
 
-Class SignalNoiseRatio extends NumericalParameter {
+class SignalNoiseRatio extends NumericalParameter {
 	function SignalNoiseRatio() {
 		$this->NumericalParameter("SignalNoiseRatio");
 		// manage one S/N per channel
@@ -1522,13 +1523,13 @@ Class SignalNoiseRatio extends NumericalParameter {
     }
 }
 
-Class SignalNoiseRatioUseRange extends BooleanParameter {
+class SignalNoiseRatioUseRange extends BooleanParameter {
 	function SignalNoiseRatioUseRange() {
 		$this->BooleanParameter("SignalNoiseRatioUseRange");
 	}
 }
 
-Class BackgroundOffsetPercent extends VariableChannelsParameter {
+class BackgroundOffsetPercent extends VariableChannelsParameter {
 	function BackgroundOffsetPercent() {
 		$this->VariableChannelsParameter("BackgroundOffsetPercent");
 	}
@@ -1545,37 +1546,37 @@ Class BackgroundOffsetPercent extends VariableChannelsParameter {
 	}
 }
 
-Class BackgroundOffsetUseRange extends BooleanParameter {
+class BackgroundOffsetUseRange extends BooleanParameter {
 	function BackgroundOffsetUseRange() {
 		$this->BooleanParameter("BackgroundOffsetUseRange");
 	}
 }
 
-Class NumberOfIterations extends NumericalParameter {
+class NumberOfIterations extends NumericalParameter {
 	function NumberOfIterations() {
 		$this->NumericalParameter("NumberOfIterations");
 	}
 }
 
-Class PSFGenerationDepth extends NumericalParameter {
+class PSFGenerationDepth extends NumericalParameter {
 	function PSFGenerationDepth() {
 		$this->NumericalParameter("PSFGenerationDepth");
 	}
 }
 
-Class QualityChangeStoppingCriterion extends NumericalParameter {
+class QualityChangeStoppingCriterion extends NumericalParameter {
 	function QualityChangeStoppingCriterion() {
 		$this->NumericalParameter("QualityChangeStoppingCriterion");
 	}
 }
 
-Class NumberOfIterationsUseRange extends BooleanParameter {
+class NumberOfIterationsUseRange extends BooleanParameter {
 	function NumberOfIterationsUseRange() {
 		$this->BooleanParameter("NumberOfIterationsUseRange");
 	}
 }
 
-Class SignalNoiseRatioRange extends NumericalParameter {
+class SignalNoiseRatioRange extends NumericalParameter {
 	function SignalNoiseRatioRange() {
 		$this->NumericalParameter("SignalNoiseRatioRange");
 		$this->value = array (
@@ -1626,7 +1627,7 @@ Class SignalNoiseRatioRange extends NumericalParameter {
 	}
 }
 
-Class BackgroundOffsetRange extends NumericalParameter {
+class BackgroundOffsetRange extends NumericalParameter {
 	function BackgroundOffsetRange() {
 		$this->NumericalParameter("BackgroundOffsetRange");
 		$this->value = array (
@@ -1656,7 +1657,7 @@ Class BackgroundOffsetRange extends NumericalParameter {
 	}
 }
 
-Class NumberOfIterationsRange extends NumericalParameter {
+class NumberOfIterationsRange extends NumericalParameter {
 	function NumberOfIterationsRange() {
 		$this->NumericalParameter("NumberOfIterationsRange");
 		$this->value = array (
@@ -1685,14 +1686,14 @@ Class NumberOfIterationsRange extends NumericalParameter {
 	}
 }
 
-Class OutputFileFormat extends ChoiceParameter {
+class OutputFileFormat extends ChoiceParameter {
 	function OutputFileFormat() {
 		$this->ChoiceParameter('OutputFileFormat');
 	}
 
 	//!---------------------------------------------------------
 	// @function    OutputFileFormat::translatedValue
-	// @desc        Answer the value of the parameter in a 
+	// @brief        Answer the value of the parameter in a 
 	//              translated form that is in the form that
 	//              is used in the script. The translation of
 	//              the output file format is read from the 
@@ -1707,7 +1708,7 @@ Class OutputFileFormat extends ChoiceParameter {
 	
 	//!---------------------------------------------------------
 	// @function    OutputFileFormat::extension
-	// @desc        Returns the extension associated with a given
+	// @brief        Returns the extension associated with a given
 	//              output format
 	//
 	// @return      string
@@ -1733,13 +1734,13 @@ Class OutputFileFormat extends ChoiceParameter {
 	}
 }
 	
-Class DeconvolutionAlgorithm extends ChoiceParameter {
+class DeconvolutionAlgorithm extends ChoiceParameter {
 	function DeconvolutionAlgorithm() {
 		$this->ChoiceParameter('DeconvolutionAlgorithm');
 		}
 }
 	
-Class CoverslipRelativePosition extends ChoiceParameter {
+class CoverslipRelativePosition extends ChoiceParameter {
 	function CoverslipRelativePosition( ) {
 		$this->ChoiceParameter('CoverslipRelativePosition');
 	}
@@ -1749,7 +1750,7 @@ Class CoverslipRelativePosition extends ChoiceParameter {
 	}
 }
 
-Class PerformAberrationCorrection extends ChoiceParameter {
+class PerformAberrationCorrection extends ChoiceParameter {
 	function PerformAberrationCorrection( ) {
 		$this->ChoiceParameter('PerformAberrationCorrection');
 	}
@@ -1759,7 +1760,7 @@ Class PerformAberrationCorrection extends ChoiceParameter {
 	}
 }
 
-Class AberrationCorrectionMode extends ChoiceParameter {
+class AberrationCorrectionMode extends ChoiceParameter {
 	function AberrationCorrectionMode( ) {
 		$this->ChoiceParameter('AberrationCorrectionMode');
 	}
@@ -1769,7 +1770,7 @@ Class AberrationCorrectionMode extends ChoiceParameter {
 	}
 }
 
-Class AdvancedCorrectionOptions extends ChoiceParameter {
+class AdvancedCorrectionOptions extends ChoiceParameter {
 	function AdvancedCorrectionOptions( ) {
 		$this->ChoiceParameter('AdvancedCorrectionOptions');
 	}
@@ -1779,7 +1780,7 @@ Class AdvancedCorrectionOptions extends ChoiceParameter {
 	}
 }
 
-Class AberrationCorrectionNecessary extends ChoiceParameter {
+class AberrationCorrectionNecessary extends ChoiceParameter {
 	function AberrationCorrectionNecessary( ) {
 		$this->ChoiceParameter('AberrationCorrectionNecessary');
 	}

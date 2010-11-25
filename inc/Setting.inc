@@ -8,9 +8,9 @@ require_once ("hrm_config.inc");
 
 //!---------------------------------------------------------
 // @class    Setting
-// @desc     Abstract superclass of specific setting classes
+// @brief     Abstract superclass of specific setting classes
 //!---------------------------------------------------------
-Class Setting {
+class Setting {
 	public $parameter; // @public parameter    Array    The set of parameter
 	public $message; // @public message      String   The user message for the last inconsistent set of papubliceters  
 	public $owner; // @public owner        Owner    The user or owner of the setting         
@@ -19,7 +19,7 @@ Class Setting {
 
 	//!---------------------------------------------------------
 	// @function    Setting::Setting
-	// @desc        Constructor. Creates an empty setting
+	// @brief        Constructor. Creates an empty setting
 	// @return      void
 	//!---------------------------------------------------------
 	function Setting() {
@@ -29,7 +29,7 @@ Class Setting {
 
 	//!---------------------------------------------------------
 	// @function    Setting::parameter
-	// @desc        Answer the parameter named name
+	// @brief        Answer the parameter named name
 	// @param       name  String  The name of the parameter
 	// @return      Parameter
 	//!---------------------------------------------------------
@@ -39,7 +39,7 @@ Class Setting {
 
 	//!---------------------------------------------------------
 	// @function    Setting::set
-	// @desc        Set a parameter. The parameter is stored
+	// @brief        Set a parameter. The parameter is stored
 	//              in the setting under its name.
 	// @param       parameter  Parameter  The parameter to be set
 	// @return      Void
@@ -51,7 +51,7 @@ Class Setting {
 	// TODO refactor
 	//!---------------------------------------------------------
 	// @function    Setting::values
-	// @desc        Answer the parameter values
+	// @brief        Answer the parameter values
 	// @param       name  String  The name of the parameter
 	// @return      Array
 	//!---------------------------------------------------------
@@ -64,7 +64,7 @@ Class Setting {
 	// TODO refactor
 	//!---------------------------------------------------------
 	// @function    Setting::translatedValues
-	// @desc        Answer the translated parameter values
+	// @brief        Answer the translated parameter values
 	// @param       name  String  The name of the parameter
 	// @return      Array
 	//!---------------------------------------------------------
@@ -77,7 +77,7 @@ Class Setting {
 
 	//!---------------------------------------------------------
 	// @function    Setting::message
-	// @desc        Answer the message set by the last check
+	// @brief        Answer the message set by the last check
 	//              performed on this setting
 	// @return      String
 	//!---------------------------------------------------------    
@@ -87,7 +87,7 @@ Class Setting {
 
 	//!---------------------------------------------------------
 	// @function    Setting::checkChoiceValue
-	// @desc        Check if a choice parameter has a valid value
+	// @brief        Check if a choice parameter has a valid value
 	// @param       name  String  The name of the parameter
 	// @param       label String  The name of the parameter as it is displayed on the screen
 	// @return      Void
@@ -104,7 +104,7 @@ Class Setting {
 
 	//!---------------------------------------------------------
 	// @function    Setting::checkSampleMedium
-	// @desc        Check if the sample medium is defined
+	// @brief        Check if the sample medium is defined
 	// @return      Bool
 	//!---------------------------------------------------------  
 	function checkSampleMedium() {
@@ -119,7 +119,7 @@ Class Setting {
 
 	//!---------------------------------------------------------
 	// @function    Setting::checkNumericalValue
-	// @desc        Check if a numerical parameter has a valid value
+	// @brief        Check if a numerical parameter has a valid value
 	// @param       name  String  The name of the parameter
 	// @param       label String  The name of the parameter as it is displayed on the screen
 	// @return      Void
@@ -148,7 +148,7 @@ Class Setting {
 
 	//!---------------------------------------------------------
 	// @function    Setting::checkNumericalValues
-	// @desc        Check if each of the numerical values (one 
+	// @brief        Check if each of the numerical values (one 
 	//              for each channel) is valid.
 	// @param       name             String  The name of the parameter
 	// @param       label            String  The name of the parameter as it is displayed on the screen
@@ -180,7 +180,7 @@ Class Setting {
 
 	//!---------------------------------------------------------
 	// @function    Setting::parameterNames()
-	// @desc        Answer the names of all parameters
+	// @brief        Answer the names of all parameters
 	// @return      Array
 	//!---------------------------------------------------------    
 	function parameterNames() {
@@ -193,7 +193,7 @@ Class Setting {
 
 	//!---------------------------------------------------------
 	// @function    Setting::rangeParameter()
-	// @desc        Answer all range parameter (parameter for 
+	// @brief        Answer all range parameter (parameter for 
 	//              which between 2 and 4 values can be entered)
 	// @return      Array
 	//!---------------------------------------------------------    
@@ -209,7 +209,7 @@ Class Setting {
 
 	//!---------------------------------------------------------
 	// @function    Setting::owner
-	// @desc        Answer the owner of the setting
+	// @brief        Answer the owner of the setting
 	// @return      Owner
 	//!---------------------------------------------------------
 	function owner() {
@@ -218,7 +218,7 @@ Class Setting {
 
 	//!---------------------------------------------------------
 	// @function    Setting::setOwner
-	// @desc        Set the owner of the setting
+	// @brief        Set the owner of the setting
 	// @param       owner    Owner    set the owner of the setting
 	// @return      void
 	//!---------------------------------------------------------
@@ -228,7 +228,7 @@ Class Setting {
 
 	//!---------------------------------------------------------
 	// @function    Setting::name
-	// @desc        Answer the name of the setting
+	// @brief        Answer the name of the setting
 	// @return      string
 	//!---------------------------------------------------------
 	function name() {
@@ -237,7 +237,7 @@ Class Setting {
 
 	//!---------------------------------------------------------
 	// @function    Setting::setName
-	// @desc        Set the name of the setting
+	// @brief        Set the name of the setting
 	// @param       name    String    set the name of the setting
 	// @return      void
 	//!---------------------------------------------------------
@@ -247,7 +247,7 @@ Class Setting {
 
 	//!---------------------------------------------------------
 	// @function    Setting::isDefault
-	// @desc        Answer whether the setting is the user's 
+	// @brief        Answer whether the setting is the user's 
 	//              default setting
 	// @return      boolean
 	//!---------------------------------------------------------
@@ -257,7 +257,7 @@ Class Setting {
 
 	//!---------------------------------------------------------
 	// @function    Setting::beDefault
-	// @desc        Make the setting the user's default setting
+	// @brief        Make the setting the user's default setting
 	// @return      void
 	//!---------------------------------------------------------
 	function beDefault() {
@@ -266,7 +266,7 @@ Class Setting {
 
 	//!---------------------------------------------------------
 	// @function    Setting::resetDefault
-	// @desc        The setting won't be the default setting 
+	// @brief        The setting won't be the default setting 
 	//              anymore
 	// @return      void
 	//!---------------------------------------------------------
@@ -276,7 +276,7 @@ Class Setting {
 
 	//!---------------------------------------------------------
 	// @function    Setting::copyParamterFrom
-	// @desc        Copy the parameter values from setting to
+	// @brief        Copy the parameter values from setting to
 	//              the receiver.
 	// @param       setting  Setting  The setting from which the
 	//                                values are copied to the 
@@ -295,7 +295,7 @@ Class Setting {
 
 	//!---------------------------------------------------------
 	// @function    Setting::load
-	// @desc        Load the parameter values for this setting
+	// @brief        Load the parameter values for this setting
 	//              from the database and answer a modified 
 	//              version of the receiver.
 	// @return      bool
@@ -311,7 +311,7 @@ Class Setting {
 
 	//!---------------------------------------------------------
 	// @function    Setting::save
-	// @desc        Save the parameter setting with the parameter
+	// @brief        Save the parameter setting with the parameter
 	//              values under its name in the database.
 	// @return      bool
 	//!---------------------------------------------------------    
@@ -326,7 +326,7 @@ Class Setting {
 
 	//!---------------------------------------------------------
 	// @function    Setting::display
-	// @desc        Display the setting as a text containing
+	// @brief        Display the setting as a text containing
 	//              the parameters and their values.
 	// @return      Void
 	//!---------------------------------------------------------      
@@ -336,7 +336,7 @@ Class Setting {
 
 	//!---------------------------------------------------------
 	// @function    Setting::displayString
-	// @desc        Answer the display string of the setting.
+	// @brief        Answer the display string of the setting.
 	//              It contains the names and values of the 
 	//              settings parameters.
 	// @return      Void
@@ -393,13 +393,13 @@ Class Setting {
 
 //!---------------------------------------------------------
 // @class    ParameterSetting
-// @desc     A parameter setting is a complete set of 
+// @brief     A parameter setting is a complete set of 
 //           microscope, image and capture parameters.
 //!---------------------------------------------------------
-Class ParameterSetting extends Setting {
+class ParameterSetting extends Setting {
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::ParameterSetting
-	// @desc        Constructor. Creates a new ParameterSetting
+	// @brief        Constructor. Creates a new ParameterSetting
 	// @return      void
 	//!---------------------------------------------------------
 	function ParameterSetting() {
@@ -448,7 +448,7 @@ Class ParameterSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::getAberractionCorrectionParameters()
-	// @desc        Returns the parameters needed for the aberration correction.
+	// @brief        Returns the parameters needed for the aberration correction.
 	// @return      Array
 	//!---------------------------------------------------------    
 	function getAberractionCorrectionParameters() {
@@ -464,7 +464,7 @@ Class ParameterSetting extends Setting {
 	
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::imageParameterNames()
-	// @desc        Answer the names of parameters concerning the image.
+	// @brief        Answer the names of parameters concerning the image.
 	// @return      Array
 	//!---------------------------------------------------------    
 	function imageParameterNames() {
@@ -479,7 +479,7 @@ Class ParameterSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::microscopeParameterNames()
-	// @desc        Answer the names of parameters concerning the microscope
+	// @brief        Answer the names of parameters concerning the microscope
 	// @return      Array
 	//!---------------------------------------------------------    
 	function microscopeParameterNames() {
@@ -493,7 +493,7 @@ Class ParameterSetting extends Setting {
 	}
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::capturingParameterNames()
-	// @desc        Answer the names of parameters concerning the captor
+	// @brief        Answer the names of parameters concerning the captor
 	// @return      Array
 	//!---------------------------------------------------------    
 	function capturingParameterNames() {
@@ -507,7 +507,7 @@ Class ParameterSetting extends Setting {
 	}
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::checkImageParameter()
-	// @desc        Check the image parameter. Answer true if they
+	// @brief        Check the image parameter. Answer true if they
 	//              are valid. Answer false and set the message
 	//              otherwise.
 	// @return      Boolean
@@ -524,7 +524,7 @@ Class ParameterSetting extends Setting {
 	}
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::checkMicroscopeParameter()
-	// @desc        Check the microscope parameter. Answer true if they
+	// @brief        Check the microscope parameter. Answer true if they
 	//              are valid. Answer false and set the message
 	//              otherwise.
 	// @return      Boolean
@@ -558,7 +558,7 @@ Class ParameterSetting extends Setting {
 	}
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::checkCapturingParameter()
-	// @desc        Check the capturing  parameter. Answer true if they
+	// @brief        Check the capturing  parameter. Answer true if they
 	//              are valid. Answer false and set the message
 	//              otherwise.
 	// @return      Boolean
@@ -601,7 +601,7 @@ Class ParameterSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::checkCalculateParameter()
-	// @desc        Check the parameters needed the compute the pixel size
+	// @brief        Check the parameters needed the compute the pixel size
 	//		from the microscope and camera parameters. Answer true
 	//              if they are valid. Answer false and set the message
 	//              otherwise.
@@ -643,7 +643,7 @@ Class ParameterSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::checkPointSpreadFunction()
-	// @desc        Answer true if a PSF file is selected for every
+	// @brief        Answer true if a PSF file is selected for every
 	//              channel. Answer false and set the message
 	//              otherwise.
 	// @return      Boolean
@@ -664,7 +664,7 @@ Class ParameterSetting extends Setting {
 	// Support for Nipkow spinning disk
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::checkPinholeSpacing
-	// @desc        TODO
+	// @brief        TODO
 	// @return      Boolean
 	//!---------------------------------------------------------
 	function checkPinholeSpacing() {
@@ -683,7 +683,7 @@ Class ParameterSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::checkPinholeSize
-	// @desc        TODO
+	// @brief        TODO
 	// @return      Boolean
 	//!---------------------------------------------------------    
 	function checkPinholeSize() {
@@ -699,7 +699,7 @@ Class ParameterSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::checkNumericalAperture
-	// @desc        The numerical aperture must not be bigger 
+	// @brief        The numerical aperture must not be bigger 
 	//              than the lens refractive index or the medium
 	//              refractive index. It must not be smaller than
 	//              0.2
@@ -745,7 +745,7 @@ Class ParameterSetting extends Setting {
 	// TODO refactor
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::adaptedLateralSampleSize
-	// @desc        Test if the sampling size lies around the ideal
+	// @brief        Test if the sampling size lies around the ideal
 	//              sampling size according to the nyquist criterium.
 	//              If this is not the case adapt the sample size 
 	//              to the ideal value according to the nyquist
@@ -789,7 +789,7 @@ Class ParameterSetting extends Setting {
 	// TODO refactor
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::adaptedLateralSampleSize
-	// @desc        Test if the sampling size lies around the ideal
+	// @brief        Test if the sampling size lies around the ideal
 	//              sampling size according to the nyquist criterium.
 	//              If this is not the case adapt the sample size 
 	//              to the ideal value according to the nyquist
@@ -819,7 +819,7 @@ Class ParameterSetting extends Setting {
 	/* TODO refactor
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::adaptedLateralSampleSizeFor
-	// @desc        Test if the sampling size lies around the ideal
+	// @brief        Test if the sampling size lies around the ideal
 	//              sampling size according to the nyquist criterium.
 	//              If this is not the case adapt the sample size 
 	//              to the ideal value according to the nyquist
@@ -850,7 +850,7 @@ Class ParameterSetting extends Setting {
 	/* TODO refactor
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::adaptedNumericalAperture
-	// @desc        Test if the sampling size lies around the ideal
+	// @brief        Test if the sampling size lies around the ideal
 	//              sampling size according to the nyquist criterium.
 	//              If this is not the case lower the numerical 
 	//              aperture until the condition is met. Answer the
@@ -892,7 +892,7 @@ Class ParameterSetting extends Setting {
 	
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::adaptedNumericalApertureFor
-	// @desc        Test if the sampling size lies around the ideal
+	// @brief        Test if the sampling size lies around the ideal
 	//              sampling size according to the nyquist criterium.
 	//              If this is not the case lower the numerical 
 	//              aperture until the condition is met. Answer the
@@ -925,7 +925,7 @@ Class ParameterSetting extends Setting {
 
         //!---------------------------------------------------------
         // @function    ParameterSetting::calculateNyquistRate
-        // @desc        Ask hucore for the ideal (Nyquist) sampling rate
+        // @brief        Ask hucore for the ideal (Nyquist) sampling rate
         //              for the current conditions. 
         // @return      An array with the XY and Z ideal sampling.
         //!---------------------------------------------------------    
@@ -979,7 +979,7 @@ Class ParameterSetting extends Setting {
 	// TODO refactor
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::isNyquistRateOK
-	// @desc        TODO
+	// @brief        TODO
 	// @return      Boolean
 	//!---------------------------------------------------------    
 	function isNyquistRateOK() {
@@ -1069,7 +1069,7 @@ Class ParameterSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::checkNyquistRate
-	// @desc        For widefield microscope check the nyquist
+	// @brief        For widefield microscope check the nyquist
 	//              rate. Adapt the numerical aperture for each
 	//              channel if necessary. Answer true if under
 	//              sampling and over sampling are limited to
@@ -1084,7 +1084,7 @@ Class ParameterSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::checkWavelength()
-	// @desc        Check the emission or excitation wavelengths.
+	// @brief        Check the emission or excitation wavelengths.
 	//              This case is treated seperately because there
 	//              is one wavelength value per channel.
 	// @param       name  String  Emission or Excitation
@@ -1104,7 +1104,7 @@ Class ParameterSetting extends Setting {
 	}
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::checkSingleChannelImageParameter()
-	// @desc        Check the parameter if single channel had been
+	// @brief        Check the parameter if single channel had been
 	//              chosen.
 	// @return      Boolean
 	//!---------------------------------------------------------    
@@ -1130,7 +1130,7 @@ Class ParameterSetting extends Setting {
 	}
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::checkMultiChannelImageParameter()
-	// @desc        Check the parameter if multichannel had been
+	// @brief        Check the parameter if multichannel had been
 	//              chosen.
 	// @return      Boolean
 	//!---------------------------------------------------------    
@@ -1152,7 +1152,7 @@ Class ParameterSetting extends Setting {
 	}
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::checkGeometry
-	// @desc        Check the image geometry parameter (two or
+	// @brief        Check the image geometry parameter (two or
 	//              three dimensional, time series or single image).
 	// @param       prefix  String  single or multi (for single 
 	//              channel or multi channel geometries.
@@ -1179,7 +1179,7 @@ Class ParameterSetting extends Setting {
 	}
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::checkNumberOfChannels()
-	// @desc        Check the number of channels. Must be between 
+	// @brief        Check the number of channels. Must be between 
 	//              1 to 5.
 	// @return      Boolean
 	//!---------------------------------------------------------    
@@ -1214,7 +1214,7 @@ Class ParameterSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::fixedGeometryFileFormats
-	// @desc        Answer an array of file formats that have a
+	// @brief        Answer an array of file formats that have a
 	//              fixed geometry (2d images).
 	// @return      array
 	//!---------------------------------------------------------    
@@ -1235,7 +1235,7 @@ Class ParameterSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::singleChannelFileFormats
-	// @desc        Answer an array of file formats that support
+	// @brief        Answer an array of file formats that support
 	//              single channel images.
 	// @return      array
 	//!---------------------------------------------------------    
@@ -1250,7 +1250,7 @@ Class ParameterSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::multiChannelFileFormats
-	// @desc        Answer an array of file formats that support
+	// @brief        Answer an array of file formats that support
 	//              multi channel images.
 	// @return      array
 	//!---------------------------------------------------------    
@@ -1265,7 +1265,7 @@ Class ParameterSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::variableChannelFileFormats
-	// @desc        Answer an array of file formats that support
+	// @brief        Answer an array of file formats that support
 	//              a variable number of channels in one file
 	// @return      array
 	//!---------------------------------------------------------    
@@ -1280,7 +1280,7 @@ Class ParameterSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::isMultiChannel
-	// @desc        Answer true if the setting is for a multi
+	// @brief        Answer true if the setting is for a multi
 	//              channel image.
 	// @return      boolean
 	//!---------------------------------------------------------    
@@ -1314,7 +1314,7 @@ Class ParameterSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::numberOfChannels
-	// @desc        Answer the number of channels of the setting.
+	// @brief        Answer the number of channels of the setting.
 	// @return      Integer
 	//!---------------------------------------------------------    
 	function numberOfChannels() {
@@ -1332,7 +1332,7 @@ Class ParameterSetting extends Setting {
 	// Support for Nipkow spinning disk
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::isNipkowDisk
-	// @desc        Answer true if the setting is for a Nipkow
+	// @brief        Answer true if the setting is for a Nipkow
 	//              spinning disk microscope.
 	// @return      bool
 	//!---------------------------------------------------------    
@@ -1342,7 +1342,7 @@ Class ParameterSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::isTwoPhoton
-	// @desc        Answer true if the setting is for a two
+	// @brief        Answer true if the setting is for a two
 	//              photon microscope.
 	// @return      bool
 	//!---------------------------------------------------------    
@@ -1354,7 +1354,7 @@ Class ParameterSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::isSinglePointConfocal
-	// @desc        Answer true if the setting is for a single
+	// @brief        Answer true if the setting is for a single
 	//              point confocal microscope.
 	// @return      bool
 	//!---------------------------------------------------------      
@@ -1366,7 +1366,7 @@ Class ParameterSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::isMultiPointConfocal
-	// @desc        Answer true if the setting is for a multi
+	// @brief        Answer true if the setting is for a multi
 	//              point confocal microscope.
 	// @return      bool
 	//!---------------------------------------------------------      
@@ -1378,7 +1378,7 @@ Class ParameterSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::isWidefield
-	// @desc        Answer true if the setting is for a widefield
+	// @brief        Answer true if the setting is for a widefield
 	//              microscope.
 	// @return      bool
 	//!---------------------------------------------------------      
@@ -1390,7 +1390,7 @@ Class ParameterSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::isWidefieldOrMultiPoint
-	// @desc        Answer true if the setting is for a widefield
+	// @brief        Answer true if the setting is for a widefield
 	//              or multi point confocal microscope.
 	// @return      bool
 	//!---------------------------------------------------------    
@@ -1400,7 +1400,7 @@ Class ParameterSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::isTwoPhotonOrSinglePoint
-	// @desc        Answer true if the setting is for a two photon
+	// @brief        Answer true if the setting is for a two photon
 	//              or single point confocal microscope.
 	// @return      bool
 	//!---------------------------------------------------------      
@@ -1410,7 +1410,7 @@ Class ParameterSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::isMultiPointOrSinglePointConfocal
-	// @desc        Answer true if the setting is for a single
+	// @brief        Answer true if the setting is for a single
 	//              point or multi point confocal microscope.
 	// @return      bool
 	//!---------------------------------------------------------      
@@ -1420,7 +1420,7 @@ Class ParameterSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::isThreeDimensional
-	// @desc        Answer true if the setting is for a three
+	// @brief        Answer true if the setting is for a three
 	//              dimensional image geometry.
 	// @return      bool
 	//!---------------------------------------------------------      
@@ -1434,7 +1434,7 @@ Class ParameterSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::isTimeSeries
-	// @desc        Answer true if the setting is for a time
+	// @brief        Answer true if the setting is for a time
 	//              series of images.
 	// @return      bool
 	//!---------------------------------------------------------      
@@ -1450,7 +1450,7 @@ Class ParameterSetting extends Setting {
 	// TODO rename CCDCaptorSizeX to SampleSizeX
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::pixelSize
-	// @desc        Answer the lateral sample size in nanometer
+	// @brief        Answer the lateral sample size in nanometer
 	// @return      number
 	//!---------------------------------------------------------        
 	function pixelSize() {
@@ -1463,7 +1463,7 @@ Class ParameterSetting extends Setting {
 	// TODO refactor
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::sampleSizeX
-	// @desc        Answer the lateral sample size in micron
+	// @brief        Answer the lateral sample size in micron
 	// @return      number
 	//!---------------------------------------------------------        
 	function sampleSizeX() {
@@ -1474,7 +1474,7 @@ Class ParameterSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::sampleSizeY
-	// @desc        Answer the lateral sample size in micron
+	// @brief        Answer the lateral sample size in micron
 	// @return      number
 	//!---------------------------------------------------------        
 	function sampleSizeY() {
@@ -1483,7 +1483,7 @@ Class ParameterSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::sampleSizeZ
-	// @desc        Answer the sample size in z direction in micron
+	// @brief        Answer the sample size in z direction in micron
 	// @return      number
 	//!---------------------------------------------------------        
 	function sampleSizeZ() {
@@ -1495,7 +1495,7 @@ Class ParameterSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::sampleSizeT
-	// @desc        Answer the time between to images of the 
+	// @brief        Answer the time between to images of the 
 	//              time series in seconds. 
 	// @return      number
 	//!---------------------------------------------------------        
@@ -1508,7 +1508,7 @@ Class ParameterSetting extends Setting {
 	// sample size adaption for all microscopes
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::sampleSize
-	// @desc        Answer the lateral sample size in nanometer.
+	// @brief        Answer the lateral sample size in nanometer.
 	//              For confocal microscopes the sample size
 	//              may be adapted to fit the nyquist criterium.
 	// @param       size  float  The ccd captor or sampling size
@@ -1545,7 +1545,7 @@ Class ParameterSetting extends Setting {
 	/* TODO refactor
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::sampleSizeForCCDCaptorElementSize
-	// @desc        Compute and answer the sample size (pixel size) 
+	// @brief        Compute and answer the sample size (pixel size) 
 	//              from the single ccd captor size and the microscope 
 	//              parameters
 	// @param       size  float  The ccd captor size in nanometer. 
@@ -1568,7 +1568,7 @@ Class ParameterSetting extends Setting {
 	/* TODO refactor
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::sampleSizeForConfocal
-	// @desc        If necessary adapt the sample size to fit
+	// @brief        If necessary adapt the sample size to fit
 	//              the nyquist criterium.
 	// @param       size  float  The pixel size the user entered. 
 	// @return      number
@@ -1580,7 +1580,7 @@ Class ParameterSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::table()
-	// @desc        Answer the name of the database table in 
+	// @brief        Answer the name of the database table in 
 	//              which the parameter settings are stored. The 
 	//              table contains the setting's name the owner 
 	//              and the standard (default) flag.
@@ -1592,7 +1592,7 @@ Class ParameterSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::parameterTable()
-	// @desc        Answer the name of the database table in
+	// @brief        Answer the name of the database table in
 	//              which the parameters for settings of the 
 	//              receiver's kind are stored. 
 	// @return      String
@@ -1686,14 +1686,14 @@ Class ParameterSetting extends Setting {
 
 //!---------------------------------------------------------
 // @class    TaskSetting
-// @desc     A task setting is a complete set of 
+// @brief     A task setting is a complete set of 
 //           image processing parameters.
 //!---------------------------------------------------------
-Class TaskSetting extends Setting {
+class TaskSetting extends Setting {
 	public $numberOfChannels;
 	//!---------------------------------------------------------
 	// @function    TaskSetting::TaskSetting
-	// @desc        Konstruktor. Creates a new TaskSetting
+	// @brief        Konstruktor. Creates a new TaskSetting
 	// @return      void
 	//!---------------------------------------------------------
 	function TaskSetting() {
@@ -1732,7 +1732,7 @@ Class TaskSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    TaskSetting::isOutputIms
-	// @desc        Answer true if the output file format ims
+	// @brief        Answer true if the output file format ims
 	//              (imaris) has been choosen
 	// @return      Boolean
 	//!---------------------------------------------------------    
@@ -1746,7 +1746,7 @@ Class TaskSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    TaskSetting::isStepProcessing
-	// @desc        Answer true if step processing will be performed
+	// @brief        Answer true if step processing will be performed
 	//              because either step processing or step combined
 	//              processing had been choosen as style of processingy
 	// @return      Boolean
@@ -1758,7 +1758,7 @@ Class TaskSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    TaskSetting::isStepCombinedProcessing
-	// @desc        Answer true if step combined processing has
+	// @brief        Answer true if step combined processing has
 	//              been choosen. The images will first be processed
 	//              using step processing. Afterwards a standard
 	//              full restoration with the same psf and fixed
@@ -1775,7 +1775,7 @@ Class TaskSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    TaskSetting::setNumberOfChannels
-	// @desc        Set the number of channels. The number has to be
+	// @brief        Set the number of channels. The number has to be
 	//              known for the parameters that have to be 
 	//              supplied per channel like background offset
 	//              and remove background.
@@ -1794,7 +1794,7 @@ Class TaskSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    TaskSetting::numberOfChannels
-	// @desc        Answer the number of channels. The number has to be
+	// @brief        Answer the number of channels. The number has to be
 	//              known for the parameters that have to be 
 	//              supplied per channel like background offset
 	//              and remove background.
@@ -1806,7 +1806,7 @@ Class TaskSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    TaskSetting::checkSignalNoiseRatio
-	// @desc        TODO
+	// @brief        TODO
 	// @return      Boolean
 	//!---------------------------------------------------------    
 	function checkSignalNoiseRatio() {
@@ -1854,7 +1854,7 @@ Class TaskSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    TaskSetting::checkParameter
-	// @desc        Check the entered parameter. Answer true if
+	// @brief        Check the entered parameter. Answer true if
 	//              they are ok and false if some illegal values
 	//              have been supplied.
 	// @return      Boolean
@@ -1928,7 +1928,7 @@ Class TaskSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    TaskSetting::checkRange
-	// @desc        Check the entered values for the range parameter. 
+	// @brief        Check the entered values for the range parameter. 
 	//              For a range parameter at least two values must
 	//              be entered. Each value must be a valid value
 	//              for the parameter.
@@ -1966,7 +1966,7 @@ Class TaskSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    TaskSetting::table()
-	// @desc        Answer the name of the database table in 
+	// @brief        Answer the name of the database table in 
 	//              which the task settings are stored. The 
 	//              table contains the setting's name the owner 
 	//              and the standard (default) flag.
@@ -1978,7 +1978,7 @@ Class TaskSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    TaskSetting::parameterTable()
-	// @desc        Answer the name of the database table in
+	// @brief        Answer the name of the database table in
 	//              which the parameters for settings of the 
 	//              receiver's kind are stored. 
 	// @return      String
@@ -1989,7 +1989,7 @@ Class TaskSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    TaskSetting::display
-	// @desc        Display the setting as a text containing
+	// @brief        Display the setting as a text containing
 	//              the parameters and their values.
 	// @return      Void
 	//!---------------------------------------------------------      
@@ -2000,7 +2000,7 @@ Class TaskSetting extends Setting {
 	// TODO refactor!
 	//!---------------------------------------------------------
 	// @function    TaskSetting::displayString
-	// @desc        Answer the display string of the setting.
+	// @brief        Answer the display string of the setting.
 	//              It contains the names and values of the 
 	//              task settings parameters.
 	// @return      Void
@@ -2080,7 +2080,7 @@ Class TaskSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    TaskSetting::displayWithoutOutputFileFormat
-	// @desc        Display the setting as a text containing
+	// @brief        Display the setting as a text containing
 	//              the parameters and their values. Only
 	//              the parameter OutputFileFormat is left out.
 	//              This is used for the web display where the
@@ -2093,7 +2093,7 @@ Class TaskSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    TaskSetting::displayStringWithoutOutputFileFormat
-	// @desc        Answer the display string of the setting.
+	// @brief        Answer the display string of the setting.
 	//              It contains the names and values of the 
 	//              task settings parameters. Only
 	//              the parameter OutputFileFormat is left out.
@@ -2115,7 +2115,7 @@ Class TaskSetting extends Setting {
 
 //!---------------------------------------------------------
 // @class    JobParameterSetting
-// @desc     A parameter setting is a complete set of 
+// @brief     A parameter setting is a complete set of 
 //           microscope, image and capture parameters. A job
 //           parameter setting is a parameter setting that 
 //           is used when a job is executed by the queue
@@ -2123,10 +2123,10 @@ Class TaskSetting extends Setting {
 //           knows how to put its parameter settings onto a 
 //           script.
 //!---------------------------------------------------------
-Class JobParameterSetting extends ParameterSetting {
+class JobParameterSetting extends ParameterSetting {
 	//!---------------------------------------------------------
 	// @function    JobParameterSetting::table()
-	// @desc        Answer the name of the database table in 
+	// @brief        Answer the name of the database table in 
 	//              which the job parameter settings are stored. The 
 	//              table contains the setting's name the owner 
 	//              and the standard (default) flag.
@@ -2137,7 +2137,7 @@ Class JobParameterSetting extends ParameterSetting {
 	}
 	//!---------------------------------------------------------
 	// @function    JobParameterSetting::parameterTable()
-	// @desc        Answer the name of the database table in
+	// @brief        Answer the name of the database table in
 	//              which the parameters for settings of the 
 	//              receiver's kind are stored. 
 	// @return      String
@@ -2296,14 +2296,14 @@ Class JobParameterSetting extends ParameterSetting {
 
 //!---------------------------------------------------------
 // @class    JobTaskSetting
-// @desc     A job task setting is a complete set of 
+// @brief     A job task setting is a complete set of 
 //           image processing parameters that is used when
 //           a job is processed by the queue manager.
 //!---------------------------------------------------------
-Class JobTaskSetting extends TaskSetting {
+class JobTaskSetting extends TaskSetting {
 	//!---------------------------------------------------------
 	// @function    JobTaskSetting::table()
-	// @desc        Answer the name of the database table in 
+	// @brief        Answer the name of the database table in 
 	//              which the job task settings are stored. The 
 	//              table contains the setting's name the owner 
 	//              and the standard (default) flag.
@@ -2315,7 +2315,7 @@ Class JobTaskSetting extends TaskSetting {
 
 	//!---------------------------------------------------------
 	// @function    JobTaskParameterSetting::parameterTable()
-	// @desc        Answer the name of the database table in
+	// @brief        Answer the name of the database table in
 	//              which the parameters for settings of the 
 	//              receiver's kind are stored. 
 	// @return      String

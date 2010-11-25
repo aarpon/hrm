@@ -8,10 +8,10 @@ require_once("Util.inc");
 
 //!---------------------------------------------------------
 // @class    FileSelection
-// @desc     Allows the user to select image files and stores
+// @brief     Allows the user to select image files and stores
 //           the selection.
 //!---------------------------------------------------------
-Class Fileserver {
+class Fileserver {
   
   public $username;              // @public username         String     The name of the user is his home directory in the same time
   public $files;                 // @public files            Array      The image files under the users home directory    
@@ -30,7 +30,7 @@ Class Fileserver {
   
   //!---------------------------------------------------------
   // @function    Fileserver::Fileserver
-  // @desc        Konstruktor. Creates a new Fileserver.
+  // @brief        Konstruktor. Creates a new Fileserver.
   // @return      void
   //!---------------------------------------------------------
   function Fileserver($name) { 
@@ -56,7 +56,7 @@ Class Fileserver {
 
   //!---------------------------------------------------------
   // @function    Fileserver::username
-  // @desc        Answer the name of the user 
+  // @brief        Answer the name of the user 
   // @return      String
   //!---------------------------------------------------------
   function username() {
@@ -64,7 +64,7 @@ Class Fileserver {
   } 
   //!---------------------------------------------------------
   // @function    Fileserver::sourceFolder
-  // @desc        Answer the users home folder under which
+  // @brief        Answer the users home folder under which
   //              his image files are stored. This is the 
   //              absolute path to the folder. The folder may
   //              be on the local network.
@@ -78,7 +78,7 @@ Class Fileserver {
   }
   //!---------------------------------------------------------
   // @function    Fileserver::destinationFolder
-  // @desc        Answer the users destination folder under which
+  // @brief        Answer the users destination folder under which
   //              his image results are stored. This is the 
   //              absolute path to the folder. The folder may
   //              be on the local network.
@@ -100,7 +100,7 @@ Class Fileserver {
   // folder. Searches subdirectories recursively. 
   //!---------------------------------------------------------
   // @function    Fileserver::files
-  // @desc        Answer all image files under the users image
+  // @brief        Answer all image files under the users image
   //              folder. Searches subdirectories recursively.  
   // @return      Array
   //!---------------------------------------------------------  
@@ -173,7 +173,7 @@ Class Fileserver {
   // subdirectories recursively. 
   //!---------------------------------------------------------
   // @function    Fileserver::allFiles
-  // @desc        Answer all image files under the users image
+  // @brief        Answer all image files under the users image
   //              folder. Searches subdirectories recursively.  
   // @return      Array
   //!---------------------------------------------------------  
@@ -228,7 +228,7 @@ Class Fileserver {
 
   //!---------------------------------------------------------
   // @function    Fileserver::updateAvailableFiles
-  // @desc        Reset the list of available files. When the
+  // @brief        Reset the list of available files. When the
   //              list is accessed the next time it is newley
   //              computed.
   // @return      void
@@ -238,7 +238,7 @@ Class Fileserver {
   } 
   //!---------------------------------------------------------
   // @function    Fileserver::updateAvailableDestFiles
-  // @desc        Reset the list of available result files. When the
+  // @brief        Reset the list of available result files. When the
   //              list is accessed the next time it is newley
   //              computed.
   // @return      void
@@ -253,7 +253,7 @@ Class Fileserver {
 
   //!---------------------------------------------------------
   // @function    Fileserver::selectedFiles
-  // @desc        Answer the actual selection of files for
+  // @brief        Answer the actual selection of files for
   //              which the user is going to create a job.
   // @return      Array
   //!---------------------------------------------------------  
@@ -264,7 +264,7 @@ Class Fileserver {
 
   //!---------------------------------------------------------
   // @function    Fileserver::addFilesToSelection
-  // @desc        Add files to the actual selection if they 
+  // @brief        Add files to the actual selection if they 
   //              are not already contained. 
   // @param       files  Array  List of files to be added.
   // @return      Void
@@ -281,7 +281,7 @@ Class Fileserver {
 
   //!---------------------------------------------------------
   // @function    Fileserver::removeFilesFromSelection
-  // @desc        Remove files from the selection if they are
+  // @brief        Remove files from the selection if they are
   //              contained.
   // @param       files  Array  List of files to be removed
   //              from the selection
@@ -296,7 +296,7 @@ Class Fileserver {
 
   //!---------------------------------------------------------
   // @function    Fileserver::downloadResults
-  // @desc        Packs a series of files to download.
+  // @brief        Packs a series of files to download.
   // @param       files  Array  List of files to be added.
   // @return      Void
   //!---------------------------------------------------------  
@@ -351,7 +351,7 @@ Class Fileserver {
 
   //!---------------------------------------------------------
   // @function    Fileserver::deleteFiles
-  // @desc        Deletes a list of files and all dependent sub-files (like
+  // @brief        Deletes a list of files and all dependent sub-files (like
   //              thumbnails and so) from a user directory.
   // @param       files  Array  List of files to be added.
   // @param       dir  'src' or 'dest'
@@ -395,7 +395,7 @@ Class Fileserver {
 
   //!---------------------------------------------------------
   // @function    Fileserver::decompressArchive
-  // @desc        Extracts files in compressed archives.
+  // @brief        Extracts files in compressed archives.
   // @param       file  String  archive name
   // @param       type  String  archive type (zip, tar, tgz...)
   // @param       dest  String  destination path
@@ -455,7 +455,7 @@ Class Fileserver {
 
   //!---------------------------------------------------------
   // @function    Fileserver::uploadFiles
-  // @desc        Processes the $_FILES array posted when uploading files, 
+  // @brief        Processes the $_FILES array posted when uploading files, 
   //              moving valid one to the specified directory. Compressed files
   //              are decompressed.  
   // @param       files  Array  List of files to be added. See PHP
@@ -635,7 +635,7 @@ Class Fileserver {
 
   //!---------------------------------------------------------
   // @function    Fileserver::imageExtensions
-  // @desc        Answer a list of file extensions of known
+  // @brief        Answer a list of file extensions of known
   //              images.
   // @return      Array
   //!---------------------------------------------------------  
@@ -646,7 +646,7 @@ Class Fileserver {
 
   //!---------------------------------------------------------
   // @function    Fileserver::setImageExtensions
-  // @desc        Set the list of image extensions. Files
+  // @brief        Set the list of image extensions. Files
   //              with these extensions under the user's source
   //              folder will be shown under available images.
   //              Whenever the image extensions are changed, the
@@ -666,7 +666,7 @@ Class Fileserver {
   } 
   //!---------------------------------------------------------
   // @function    Fileserver::setDefaultImageExtensions
-  // @desc        Creates the list of file extensions of known
+  // @brief        Creates the list of file extensions of known
   //              image formats.
   // @return      Void
   //!---------------------------------------------------------  
@@ -676,7 +676,7 @@ Class Fileserver {
   } 
   //!---------------------------------------------------------
   // @function    Fileserver::isImage
-  // @desc        Answers True if filename has an extension
+  // @brief        Answers True if filename has an extension
   //              which is among the extensions of the currently 
   //              relected file format, or any if not specified.
   // @param       filename  String  The filename to be checked
@@ -693,7 +693,7 @@ Class Fileserver {
   }
   //!---------------------------------------------------------
   // @function    Fileserver::isValidImage
-  // @desc        Answers True if filename has an extension
+  // @brief        Answers True if filename has an extension
   //              which is among the extensions of known image
   //              formats. 
   // @param       filename  String  The filename to be checked
@@ -720,7 +720,7 @@ Class Fileserver {
 
   //!---------------------------------------------------------
   // @function    Fileserver::getCompressedArchiveType
-  // @desc        Returns the archive type of a filename, if it is a valid
+  // @brief        Returns the archive type of a filename, if it is a valid
   //              known compressed archive.
   // @param       filename  String  The filename to be checked
   // @return      Type of archive, or "" if it is not an archive.
@@ -752,7 +752,7 @@ Class Fileserver {
 
   //!---------------------------------------------------------
   // @function    Fileserver::getSubImages
-  // @desc        When the selected file type is one that can contain subimages
+  // @brief        When the selected file type is one that can contain subimages
   //              (like LIF), the already built list of $this->files is 
   //              extended to show all the available subimages. 
   //              This is done by querying Huygens.
@@ -831,7 +831,7 @@ Class Fileserver {
 
   //!---------------------------------------------------------
   // @function    Fileserver::getMetaData
-  // @desc        some files like ICS can report their metadata without having
+  // @brief        some files like ICS can report their metadata without having
   //              to open the whole image, which is good e.g. to see the
   //              compatibility of the selected PSF with the current Parameter
   //              Setting.  This is done by querying Huygens.
@@ -925,7 +925,7 @@ Class Fileserver {
 
   //!---------------------------------------------------------
   // @function    Fileserver::getImageOptionLine
-  // @desc        Generates a html line for a form listing images in the
+  // @brief        Generates a html line for a form listing images in the
   //              server.
   // @return      The html code for the form.
   //!---------------------------------------------------------    
@@ -943,7 +943,7 @@ Class Fileserver {
 
   //!---------------------------------------------------------
   // @function    Fileserver::getImageAction
-  // @desc        Generates a javascript command to show an image preview.
+  // @brief        Generates a javascript command to show an image preview.
   // @return      The javascript code.
   //!---------------------------------------------------------    
  
@@ -979,7 +979,7 @@ Class Fileserver {
  
   //!---------------------------------------------------------
   // @function    Fileserver::getFiles
-  // @desc        Create the list of image files of the user.
+  // @brief        Create the list of image files of the user.
   //              Time series are represented by their first
   //              image file.
   // @return      Void
@@ -1032,7 +1032,7 @@ Class Fileserver {
 
   //!---------------------------------------------------------
   // @function    Fileserver::imgPreview
-  // @desc        Generates a link to retreive an image thumbnail,
+  // @brief        Generates a link to retreive an image thumbnail,
   //              which is a jpg file saved near the file itself.
   // @return      A <img src> link to securely get the thumbnail.
   //!---------------------------------------------------------    
@@ -1070,7 +1070,7 @@ Class Fileserver {
 
   //!---------------------------------------------------------
   // @function    Fileserver::imgPreviewMode
-  // @desc        Checks whether an image preview is available
+  // @brief        Checks whether an image preview is available
   // @return      Numeric code: 0 not available, 2 2D, 3 3D
   //!---------------------------------------------------------
   function imgPreviewMode ($image, $dir, $type) {
@@ -1132,7 +1132,7 @@ Class Fileserver {
 
   //!---------------------------------------------------------
   // @function    Fileserver::viewStrip
-  // @desc        Shows stacks and time series saved as jpeg strips in a css
+  // @brief        Shows stacks and time series saved as jpeg strips in a css
   //              container. Inspired by the paperbird code by Román Cortés:
   //              http://www.romancortes.com/blog/css-paper-bird/
   // @return      
@@ -1292,7 +1292,7 @@ echo '</body></html>';
 
   //!---------------------------------------------------------
   // @function    Fileserver::imgCompareMode
-  // @desc        Checks whether a restored image preview is available for
+  // @brief        Checks whether a restored image preview is available for
   //              comparison with the original one.
   // @return      Numeric code: 0 not available, 2 2D, 3 3D
   //!---------------------------------------------------------
@@ -1623,7 +1623,7 @@ echo '</body></html>';
 
   //!---------------------------------------------------------
   // @function    Fileserver::compareResult
-  // @desc        Shows original/result previews side by side.
+  // @brief        Shows original/result previews side by side.
   // @return      
   //!---------------------------------------------------------
 
@@ -1778,7 +1778,7 @@ echo '</body></html>';
 
   //!---------------------------------------------------------
   // @function    Fileserver::genPreview
-  // @desc        Calls hucore to open an image and generate a jpeg preview.
+  // @brief        Calls hucore to open an image and generate a jpeg preview.
   // @return      
   //!---------------------------------------------------------
 
@@ -1932,7 +1932,7 @@ echo '</body></html>';
 
   //!---------------------------------------------------------
   // @function    Fileserver::getThumbnail
-  // @desc        Serve a certain file from the dest directory. Intended to
+  // @brief        Serve a certain file from the dest directory. Intended to
   //              serve jpg thumbails in combination with imgThumbnail.
   // @return      The binary file.
   //!---------------------------------------------------------    
@@ -1957,7 +1957,7 @@ echo '</body></html>';
 
   //!---------------------------------------------------------
   // @function    Fileserver::getMovie
-  // @desc        Serves an existing AVI movie.
+  // @brief        Serves an existing AVI movie.
   // @param       file and diretory label ('src' or 'dest').
   // @return      Void
   //!---------------------------------------------------------  
@@ -1996,7 +1996,7 @@ echo '</body></html>';
 
   //!---------------------------------------------------------
   // @function    Fileserver::getDestFiles
-  // @desc        Create the list of restored image files of the user.
+  // @brief        Create the list of restored image files of the user.
   //              Time series are represented by their first
   //              image file.
   // @return      Void
@@ -2015,7 +2015,7 @@ echo '</body></html>';
  
   //!---------------------------------------------------------
   // @function    Fileserver::basename
-  // @desc        Answer the filename of the image without the
+  // @brief        Answer the filename of the image without the
   //              numbers marking its position in a time 
   //              series. These numbers are expected to be 
   //              directly before the . of the file extension.
@@ -2028,7 +2028,7 @@ echo '</body></html>';
   }
   //!---------------------------------------------------------
   // @function    Fileserver::condenseTimeSeries
-  // @desc        Remove all but the first file from each time
+  // @brief        Remove all but the first file from each time
   //              series in the files attribute.
   // @return      Void
   //!---------------------------------------------------------      
@@ -2097,7 +2097,7 @@ echo '</body></html>';
   // condense TIFF series to the first file in the sequence
   //!---------------------------------------------------------
   // @function    Fileserver::leicaStyleNumberingBasename
-  // @desc        Answer the filename of the image without the
+  // @brief        Answer the filename of the image without the
   //              numbers marking its position in a TIFF 
   //              series. These numbers are expected to be 
   //              directly before the . of the file extension.
@@ -2111,7 +2111,7 @@ echo '</body></html>';
   // stack TIFF series to the first file in the sequence
   //!---------------------------------------------------------
   // @function    Fileserver::condenseTiffSeries
-  // @desc        Remove all but the first file from each TIFF
+  // @brief        Remove all but the first file from each TIFF
   //              series in the files attribute.
   // @return      Void
   //!---------------------------------------------------------      
@@ -2130,7 +2130,7 @@ echo '</body></html>';
   // stack STK series to the first file in the sequence
   //!---------------------------------------------------------
   // @function    Fileserver::stkSeriesBasename
-  // @desc        Answer the filename of the image without the
+  // @brief        Answer the filename of the image without the
   //              numbers marking its time point in an STK 
   //              series. These numbers are expected to be 
   //              directly before the . of the file extension.
@@ -2144,7 +2144,7 @@ echo '</body></html>';
   // stack STK series to the first file in the sequence
   //!---------------------------------------------------------
   // @function    Fileserver::condenseStkSeries
-  // @desc        Remove all but the first file from each STK
+  // @brief        Remove all but the first file from each STK
   //              series in the files attribute.
   // @return      Void
   //!---------------------------------------------------------      
@@ -2162,7 +2162,7 @@ echo '</body></html>';
   }
   //!---------------------------------------------------------
   // @function    Fileserver::relocateOldPreview
-  // @desc        Since HRM 1.2, thumbnails and previews
+  // @brief        Since HRM 1.2, thumbnails and previews
   //              are located in a subdirectory hrm_previews.
   //              When and old preview is found in the way, we
   //              can use this function to move it to the new location. This
@@ -2198,7 +2198,7 @@ echo '</body></html>';
 
   //!---------------------------------------------------------
   // @function    Fileserver::getFilesFrom
-  // @desc        The recursive function that collects the 
+  // @brief        The recursive function that collects the 
   //              image files from the user's image folder and
   //              its subfolders.
   // @param       startDir  String  The folder to start with  
@@ -2238,7 +2238,7 @@ echo '</body></html>';
   }
   //!---------------------------------------------------------
   // @function    Fileserver::getDestFilesFrom
-  // @desc        The recursive function that collects the 
+  // @brief        The recursive function that collects the 
   //              image files from the user's destination image folder and
   //              its subfolders.
   // @param       startDir  String  The folder to start with  
@@ -2277,7 +2277,7 @@ echo '</body></html>';
 
   //!---------------------------------------------------------
   // @function    Fileserver::cleanNonImages
-  // @desc        The recursive function that deletes all files in a directory
+  // @brief        The recursive function that deletes all files in a directory
   //              that are not valid images.
   // @param       startDir  String  The folder to start with  
   // @param       prefix    String  The actual path prefix 
@@ -2325,7 +2325,7 @@ echo '</body></html>';
   // TODO refactor
   //!---------------------------------------------------------
   // @function    Fileserver::pointSpreadFunctionFilesFrom
-  // @desc        The recursive function that collects the 
+  // @brief        The recursive function that collects the 
   //              ICS format files from the user's image folder and
   //              its subfolders.
   // @param       startDir  String  The folder to start with  
@@ -2367,7 +2367,7 @@ echo '</body></html>';
   
   //!---------------------------------------------------------
   // @function    Fileserver::hasSelection
-  // @desc        Answer true if at least one file is selected.
+  // @brief        Answer true if at least one file is selected.
   // @return      Bool
   //!---------------------------------------------------------      
   function hasSelection() {

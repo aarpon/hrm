@@ -6,7 +6,7 @@ require_once( "User.inc" );
 require_once( "Database.inc" );
 require_once( "Util.inc" );
 
-Class Type {
+class Type {
   public $m_Name;
   public $m_Variable;
   public $m_DescriptiveName;
@@ -26,7 +26,7 @@ Class Type {
   
   //!---------------------------------------------------------------------------
   // @function    string Type::isGraph( $variable )
-  // @desc        returns true is the requested statistics generates a graph,
+  // @brief        returns true is the requested statistics generates a graph,
   //              and false if it returns a text/table
   // @param       string $variable name of the column from the statistics page
   // @return      bool True for graphs, False for text/table
@@ -40,7 +40,7 @@ Class Type {
   
   //!---------------------------------------------------------------------------
   // @function    string Type::getStatisticsScript( $db, $admin, $fromDate, $toDate, $group, $username )
-  // @desc        Get the JS/PHP script to display the statistics.
+  // @brief        Get the JS/PHP script to display the statistics.
   // $param       $admin     true if the user is the admin
   // $param       $fromDate  start date for filtering in the form "YYYY-mm-dd hh:mm:ss"
   // $param       $toDate    end   date for filtering in the form "YYYY-mm-dd hh:mm:ss"
@@ -76,7 +76,7 @@ Class Type {
 
   //!---------------------------------------------------------------------------
   // @function    string Stats::getPieChart( $variable )
-  // @desc        Get the JS script to create a pie chart of the requested
+  // @brief        Get the JS script to create a pie chart of the requested
   //              column from the statistics table.
   // @param       string $variable name of the column from the statistics page
   //              for which a pie chart is requested.
@@ -151,7 +151,7 @@ Class Type {
 
   //!---------------------------------------------------------------------------
   // @function    string Stats::getTable( $db, $statsType, $group, $dateFilter, $groupFilter, $userNameFilter )
-  // @desc        Get the HTML code to create a table for the total run time per
+  // @brief        Get the HTML code to create a table for the total run time per
   //              user or total run time per group statistics
   // @return      html code for the total run time per user/group table
   //!---------------------------------------------------------------------------
@@ -173,7 +173,7 @@ Class Type {
   
   //!---------------------------------------------------------------------------
   // @function    string Stats::getTotalRunTimePerUserTable( $db, $statsType, $group, $dateFilter, $groupFilter, $userNameFilter )
-  // @desc        Get the HTML code to create a table for the total run time per
+  // @brief        Get the HTML code to create a table for the total run time per
   //              user statistics
   // @return      html code for the total run time per user table
   //!---------------------------------------------------------------------------
@@ -247,7 +247,7 @@ Class Type {
 
   //!---------------------------------------------------------------------------
   // @function    string Stats::getTotalRunTimePerUserTable( $db, $statsType, $group, $dateFilter, $groupFilter, $userNameFilter )
-  // @desc        Get the HTML code to create a table for the total run time per
+  // @brief        Get the HTML code to create a table for the total run time per
   //              user statistics
   // @return      html code for the total run time per user table
   //!---------------------------------------------------------------------------
@@ -306,7 +306,7 @@ Class Type {
   
   //!---------------------------------------------------------------------------
   // @function    string Stats::getDateFilter( $fromDate, $toDate )
-  // @desc        Get the SQL sub-query to filter by date
+  // @brief        Get the SQL sub-query to filter by date
   // @param       $fromDate: date to filter from
   // @param       $fromDate: date to filter to
   // @return      SQL sub-query for filtering by date
@@ -318,7 +318,7 @@ Class Type {
 
   //!---------------------------------------------------------------------------
   // @function    string Stats::getGroupFilter( $admin, $group )
-  // @desc        Get the SQL sub-query to filter by group
+  // @brief        Get the SQL sub-query to filter by group
   // @param       $admin: true if the user is the admin
   // @param       $group: group name
   // @return      SQL sub-query for filtering by group
@@ -338,7 +338,7 @@ Class Type {
 
   //!---------------------------------------------------------------------------
   // @function    string Stats::getUsernameFilter( $admin, $username )
-  // @desc        Get the SQL sub-query to filter by username
+  // @brief        Get the SQL sub-query to filter by username
   // @param       $admin: true if the user is the admin
   // @param       $username: username
   // @return      SQL sub-query for filtering by username
@@ -360,7 +360,7 @@ Class Type {
 // =============================================================================
 
 
-Class Stats {
+class Stats {
   
   /* ===========================================================================
    *
@@ -384,7 +384,7 @@ Class Stats {
    
   //!---------------------------------------------------------
   // @function    Stats::__construct( $username ): constructor.
-  // @desc        Constructs the Stats object.
+  // @brief        Constructs the Stats object.
   // @param       string $username name of the user for which statistics are
   //              returned; if the user is the admin user, global statistics
   //              are returned.
@@ -405,7 +405,7 @@ Class Stats {
   
   //!---------------------------------------------------------------------------
   // @function    string Stats::isGraph( $variable )
-  // @desc        returns true is the requested statistics generates a graph,
+  // @brief        returns true is the requested statistics generates a graph,
   //              and false if it returns a text/table
   // @param       string $variable name of the column from the statistics page
   // @return      bool True for graphs, False for text/table
@@ -416,7 +416,7 @@ Class Stats {
 
   //!---------------------------------------------------------------------------
   // @function    string Stats::getAllDescriptiveNames( )
-  // @desc        returns an array with the descriptive names of all supported
+  // @brief        returns an array with the descriptive names of all supported
   //              statistics (e.g. to be used in a <select> element)
   // @return      array of strings Descriptive names of supported statistics
   //!---------------------------------------------------------------------------
@@ -433,7 +433,7 @@ Class Stats {
 
   //!---------------------------------------------------------------------------
   // @function    string Stats::getSelectedStatistics( )
-  // @desc        returns the descriptive name of the selected statistics
+  // @brief        returns the descriptive name of the selected statistics
   //!---------------------------------------------------------------------------
   public function getSelectedStatistics( ) {
     return ( $this->m_Stats_Array[ $this->m_Selected_Statistics ]->m_DescriptiveName );
@@ -441,7 +441,7 @@ Class Stats {
 
   //!---------------------------------------------------------------------------
   // @function    void Stats::setSelectedStatistics( $descriptiveName )
-  // @desc        sets the selected statistics
+  // @brief        sets the selected statistics
   // $param       $descriptiveName Descriptive name of the selected statistics
   //!---------------------------------------------------------------------------
   public function setSelectedStatistics( $descriptiveName ) {
@@ -457,7 +457,7 @@ Class Stats {
   
   //!---------------------------------------------------------------------------
   // @function    string Stats::getStatisticsScript( )
-  // @desc        Get the JS/PHP script to display the statistics. This function
+  // @brief        Get the JS/PHP script to display the statistics. This function
   //              call should be combined with a isGraph() call, to decide
   //              whether the generated (JS) script should be passed on to the
   //              HighCharts library or not.
@@ -488,7 +488,7 @@ Class Stats {
    
   //!---------------------------------------------------------------------------
   // @function    array Stats::getFromDates( )
-  // @desc        Gets all beginning of the months from February 2010 until now
+  // @brief        Gets all beginning of the months from February 2010 until now
   // @return      array All beginning of monthts
   //!---------------------------------------------------------------------------
   public function getFromDates( ) {
@@ -514,7 +514,7 @@ Class Stats {
 
   //!---------------------------------------------------------------------------
   // @function    array Stats::getToDates( )
-  // @desc        Gets all end of the months from February 2010 until now
+  // @brief        Gets all end of the months from February 2010 until now
   // @return      array All ends of monthts
   //!---------------------------------------------------------------------------
   public function getToDates( ) {
@@ -552,7 +552,7 @@ Class Stats {
 
   //!---------------------------------------------------------------------------
   // @function    array Stats::getGroupNames( )
-  // @desc        Gets an array of unique group names from the statistics table
+  // @brief        Gets an array of unique group names from the statistics table
   // @return      array of all unique group names
   //!---------------------------------------------------------------------------
   public function getGroupNames( ) {
@@ -575,7 +575,7 @@ Class Stats {
 
   //!---------------------------------------------------------------------------
   // @function    void Stats::setFromDateFilter( )
-  // @desc        Set the from date filter
+  // @brief        Set the from date filter
   //!---------------------------------------------------------------------------
   public function setFromDateFilter( $fromDate ) {
       $this->m_Filter_FromDate = $fromDate;
@@ -583,7 +583,7 @@ Class Stats {
 
   //!---------------------------------------------------------------------------
   // @function    void Stats::setToDateFilter( )
-  // @desc        Set the to date filter
+  // @brief        Set the to date filter
   //!---------------------------------------------------------------------------
   public function setToDateFilter( $toDate ) {
       $this->m_Filter_ToDate = $toDate;
@@ -591,7 +591,7 @@ Class Stats {
 
   //!---------------------------------------------------------------------------
   // @function    void Stats::setGroupFilter( )
-  // @desc        Set the group filter
+  // @brief        Set the group filter
   //!---------------------------------------------------------------------------
   public function setGroupFilter( $group ) {
       $this->m_Filter_Group = $group;
@@ -605,7 +605,7 @@ Class Stats {
 
   //!---------------------------------------------------------------------------
   // @function    void Stats::setDefaultStats( )
-  // @desc        Sets the default statistics
+  // @brief        Sets the default statistics
   //!---------------------------------------------------------------------------
   private function setDefaultStats(  ) {
     if ( $this->isAdmin( ) ) {
@@ -623,7 +623,7 @@ Class Stats {
 
   //!---------------------------------------------------------------------------
   // @function    bool Stats::fill( )
-  // @desc        Creates the array of statistics types.
+  // @brief        Creates the array of statistics types.
   //!---------------------------------------------------------------------------
   private function fillStatsArray(  ) {
     // Make sure to clear
@@ -657,7 +657,7 @@ Class Stats {
   
   //!---------------------------------------------------------------------------
   // @function    bool Stats::isAdmin( )
-  // @desc        Compares the passed username to the admin user name and
+  // @brief        Compares the passed username to the admin user name and
   //              returns true if the user is the admin.
   // @return      bool True if the user is the admin user.
   //!---------------------------------------------------------------------------
@@ -669,7 +669,7 @@ Class Stats {
     //!---------------------------------------------------------
   // @function    Type::dumpStatsTableToFile( $db )
   // $param       $db Database object
-  // @desc        Dumps the statistics table to file and "downloads" it
+  // @brief        Dumps the statistics table to file and "downloads" it
   //!---------------------------------------------------------  
   private function dumpStatsTableToFile( ) { 
       // Make sure that the script doesn't timeout.

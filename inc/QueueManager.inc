@@ -15,11 +15,11 @@ require_once ("System.inc");
 
 //!---------------------------------------------------------
 // @class    QueueManager
-// @desc     Translate job description to huygens script
+// @brief     Translate job description to huygens script
 //           and run it on a free server
 //!---------------------------------------------------------
 
-Class QueueManager {
+class QueueManager {
 	public $queue;
 	public $freeServer;
 	public $job;

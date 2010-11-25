@@ -4,7 +4,7 @@
 
 //!---------------------------------------------------------
 // @function    
-// @desc
+// @brief
 // @param       
 // @return      
 //!---------------------------------------------------------
@@ -125,7 +125,7 @@ function assign_rand_value($num) {
 
 //!---------------------------------------------------------
 // @function    
-// @desc
+// @brief
 // @param       
 // @return      
 //!---------------------------------------------------------
@@ -143,7 +143,7 @@ function get_rand_id($length) {
 
 //!---------------------------------------------------------
 // @function    escapeJavaScript
-// @desc        Escapes html strings generated in PHP so that can be used as
+// @brief        Escapes html strings generated in PHP so that can be used as
 //              arguments in JavaScript functions.
 //              parameters. This local hucore doesn't need to have a license!
 // @param       A html string.
@@ -159,7 +159,7 @@ function escapeJavaScript ($str) {
 
 //!---------------------------------------------------------
 // @function    huCoreTools  
-// @desc        Calls a local hucore (that must be in the $PATH) to
+// @brief        Calls a local hucore (that must be in the $PATH) to
 //              execute some freeware image processing tools, or report
 //              parameters. This local hucore doesn't need to have a license!
 // @param       $tool is the procedure in scripts/hucore.tcl to be executed.
@@ -216,7 +216,7 @@ function huCoreTools ($tool, $options) {
 
 //!---------------------------------------------------------
 // @function    askHuCore  
-// @desc        A wrapper around huCoreTools to retrieve an array,
+// @brief        A wrapper around huCoreTools to retrieve an array,
 //              which is 'calculated' by hucore in the background.
 // @param       $tool is the procedure in scripts/hucore.tcl to be executed.
 //              $options are extra command line options to send to that script
@@ -280,7 +280,7 @@ function askHuCore ($tool, $options = "") {
 
 //!---------------------------------------------------------
 // @function    report
-// @desc        Write text to the logfile if level is not
+// @brief        Write text to the logfile if level is not
 //              bigger than log_verbosity. If logfile becomes
 //              to big it is renamed and started over.
 // @param       text  String  The text to be logged
@@ -319,7 +319,7 @@ function report($text, $level) {
 
 //!---------------------------------------------------------
 // @function    notifyRuntimeError
-// @desc        Sends an email to the admin to notify any message.
+// @brief        Sends an email to the admin to notify any message.
 //              It helps in debugging strange events, and in being
 //              aware of abnormal scheduler stops.
 // @param       subject  String  A string to be appended to the email subject.
@@ -375,7 +375,7 @@ if ( ! function_exists('printDebug') ) {
 
 //!---------------------------------------------------------
 // @function    getThisPageName
-// @desc        Returns the name of current page
+// @brief        Returns the name of current page
 // @return      string containing the name of current page
 //!---------------------------------------------------------
 
@@ -450,7 +450,7 @@ function getMaxFileSize() {
 
 //!---------------------------------------------------------
 // @function    Util::readfile_chunked
-// @desc        To be used instead of PHP's own readfile function to read
+// @brief        To be used instead of PHP's own readfile function to read
 //              very large files. This should prevent memory errors.
 // 
 // @param       filename  String name of the file to read

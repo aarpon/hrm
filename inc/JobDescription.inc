@@ -12,14 +12,13 @@ require_once("JobQueue.inc");
 
 //!---------------------------------------------------------
 // @class    JobDescription
-// @desc     Description of the job to be processed by
+// @brief     Description of the job to be processed by
 //           Huygens. Consisting of a parameter setting,
 //           a task setting and a list of image files.
 //           From the JobDescription a huygens parameter
 //           set is created.
 //!---------------------------------------------------------
-
-Class JobDescription {
+class JobDescription {
   public $id;                  // @public id               String            a unique id identifying the job    
   public $parameterSetting;    // @public parameterSetting ParameterSetting  the jobs parameter setting
   public $taskSetting;         // @public taskSetting      TaskSetting       the jobs task setting

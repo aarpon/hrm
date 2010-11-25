@@ -11,7 +11,7 @@
 
 //!---------------------------------------------------------
 // @function fileButton
-// @desc     Generates some basic buttons to be used with the file browser,
+// @brief     Generates some basic buttons to be used with the file browser,
 //           dependending on the tool needs.
 //!---------------------------------------------------------
 

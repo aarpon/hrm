@@ -8,16 +8,16 @@ require_once("User.inc");
 
 //!---------------------------------------------------------
 // @class    SettingEditor
-// @desc     Editor for parameter settings
+// @brief     Editor for parameter settings
 //!---------------------------------------------------------
-Class SettingEditor {
+class SettingEditor {
   public $user;            // @public user          User    The current user    
   public $message;         // @public message       String  A message reporting errors that occured in the last operation
   public $selected;        // @public selected      String  The name of the setting that is currently selected
 
   //!---------------------------------------------------------
   // @function    SettingEditor::SettingEditor
-  // @desc        Konstruktor. Creates a new SettingEditor and
+  // @brief        Konstruktor. Creates a new SettingEditor and
   //              selects the default setting if a default 
   //              setting exists.
   // @param       user    User    The current user
@@ -35,7 +35,7 @@ Class SettingEditor {
 
   //!---------------------------------------------------------
   // @function    SettingEditor::selected
-  // @desc        Answers the name of the currently selected
+  // @brief        Answers the name of the currently selected
   //              setting or NULL. 
   // @return      String
   //!---------------------------------------------------------
@@ -45,7 +45,7 @@ Class SettingEditor {
 
   //!---------------------------------------------------------
   // @function    SettingEditor::setSelected
-  // @desc        Set the name of the selected setting
+  // @brief        Set the name of the selected setting
   // @param       name    String    the name of the setting
   //                                the user selected.
   // @return      void
@@ -56,7 +56,7 @@ Class SettingEditor {
 
   //!---------------------------------------------------------
   // @function    SettingEditor::user
-  // @desc        Answer the current user
+  // @brief        Answer the current user
   // @return      User
   //!---------------------------------------------------------
   function user() { 
@@ -65,7 +65,7 @@ Class SettingEditor {
 
   //!---------------------------------------------------------
   // @function    SettingEditor::createNewSetting
-  // @desc        Check if the name already exists. If not
+  // @brief        Check if the name already exists. If not
   //              create a new setting named name. Select
   //              the new setting
   // @param       name    String    the name of the new setting
@@ -84,7 +84,7 @@ Class SettingEditor {
 
   //!---------------------------------------------------------
   // @function    SettingEditor::newSettingObject
-  // @desc        Answer a new setting object of the type 
+  // @brief        Answer a new setting object of the type 
   //              that the receiver is editing  
   // @return      Setting
   //!---------------------------------------------------------
@@ -94,7 +94,7 @@ Class SettingEditor {
 
   //!---------------------------------------------------------
   // @function    SettingEditor::copySelectedSetting
-  // @desc        create a new setting newName in the database 
+  // @brief        create a new setting newName in the database 
   //              and copy the parameter values of the existing 
   //              setting oldName to it.
   // @param       oldName    String  the name of an existing setting
@@ -122,7 +122,7 @@ Class SettingEditor {
   // add public setting support
   //!---------------------------------------------------------
   // @function    SettingEditor::copySelectedSetting
-  // @desc        create a new setting in the database
+  // @brief        create a new setting in the database
   //              and copy the parameter values of the public
   //              setting to it.
   // @param       setting    Setting  the existing setting
@@ -146,7 +146,7 @@ Class SettingEditor {
 
   //!---------------------------------------------------------
   // @function    SettingEditor::loadSetting
-  // @desc        Load the values of the setting name from the
+  // @brief        Load the values of the setting name from the
   //              database and answer the setting. Select the
   //              loaded setting.
   // @param       name     the name of the setting to be loaded
@@ -166,7 +166,7 @@ Class SettingEditor {
 
   //!---------------------------------------------------------
   // @function    SettingEditor::makeDefault
-  // @desc        make the setting name the default setting.
+  // @brief        make the setting name the default setting.
   //              The default setting will be preselected the
   //              next time the user enters the page
   // @param       name     the name of the setting 
@@ -193,7 +193,7 @@ Class SettingEditor {
 
   //!---------------------------------------------------------
   // @function    SettingEditor::delete
-  // @desc        delete the setting named name if it exists
+  // @brief        delete the setting named name if it exists
   // @param       name     the name of the setting 
   // @return      bool
   //!---------------------------------------------------------
@@ -216,7 +216,7 @@ Class SettingEditor {
 
   //!---------------------------------------------------------
   // @function    SettingEditor::message
-  // @desc        Answer the error message that has been
+  // @brief        Answer the error message that has been
   //              set by the last operation
   // @return      string
   //!---------------------------------------------------------
@@ -226,7 +226,7 @@ Class SettingEditor {
 
   //!---------------------------------------------------------
   // @function    SettingEditor::checkNewSettingName
-  // @desc        Check that the name is not empty and that
+  // @brief        Check that the name is not empty and that
   //              there doesn't exist a setting with the same
   //              name
   // @param       name    String    the name of the new setting
@@ -251,7 +251,7 @@ Class SettingEditor {
 
   //!---------------------------------------------------------
   // @function    SettingEditor::settings
-  // @desc        Answer a collection of all settings of the 
+  // @brief        Answer a collection of all settings of the 
   //              user.
   // @return      Array of Setting
   //!---------------------------------------------------------
@@ -275,7 +275,7 @@ Class SettingEditor {
   // add public setting support
   //!---------------------------------------------------------
   // @function    SettingEditor::setting
-  // @desc        Answer the settings with the specified name.
+  // @brief        Answer the settings with the specified name.
   // @param       name    String    the name of the setting
   // @return      Setting
   //!---------------------------------------------------------
@@ -297,7 +297,7 @@ Class SettingEditor {
 
   //!---------------------------------------------------------
   // @function    SettingEditor::defaultSettingName
-  // @desc        Answer the name of the default setting if it
+  // @brief        Answer the name of the default setting if it
   //              exists and NULL otherwise.
   // @return      string
   //!---------------------------------------------------------  
@@ -312,7 +312,7 @@ Class SettingEditor {
 
   //!---------------------------------------------------------
   // @function    SettingEditor::table
-  // @desc        Answer the name of the database table in
+  // @brief        Answer the name of the database table in
   //              which settings that the receiver edits are
   //              stored
   // @return      string
@@ -323,7 +323,7 @@ Class SettingEditor {
 
   //!---------------------------------------------------------
   // @function    SettingEditor::checkSelectedSetting
-  // @desc        Answer true if a existing setting is selected.
+  // @brief        Answer true if a existing setting is selected.
   // @return      boolean
   //!---------------------------------------------------------  
   function checkSelectedSetting() {
@@ -346,13 +346,13 @@ Class SettingEditor {
 
 //!---------------------------------------------------------
 // @class    TaskSettingEditor
-// @desc     Editor for task settings
+// @brief     Editor for task settings
 //!---------------------------------------------------------
-Class TaskSettingEditor extends SettingEditor {
+class TaskSettingEditor extends SettingEditor {
 
   //!---------------------------------------------------------
   // @function    SettingEditor::table
-  // @desc        Answer the name of the database table in
+  // @brief        Answer the name of the database table in
   //              which task settings are stored
   // @return      string
   //!---------------------------------------------------------  
@@ -362,7 +362,7 @@ Class TaskSettingEditor extends SettingEditor {
 
   //!---------------------------------------------------------
   // @function    SettingEditor::newSettingObject
-  // @desc        Answer a new setting object of the type 
+  // @brief        Answer a new setting object of the type 
   //              that the receiver is editing  
   // @return      TaskSetting
   //!---------------------------------------------------------

@@ -19,15 +19,15 @@ global $use_ldaps;
 
 //!---------------------------------------------------------
 // @class    Owner
-// @desc     Represents an owner of a setting. Superclass of
+// @brief     Represents an owner of a setting. Superclass of
 //           class user.
 //!---------------------------------------------------------
-Class Owner {
+class Owner {
   public $name;          // @public name          String    The owners name might be a job id or a user's login name
  
   //!---------------------------------------------------------
   // @function    Owner::Owner
-  // @desc        Constructor. Creates a new owner.
+  // @brief        Constructor. Creates a new owner.
   // @return      void
   //!---------------------------------------------------------
   function Owner() {
@@ -36,7 +36,7 @@ Class Owner {
 
   //!---------------------------------------------------------
   // @function    Owner::name
-  // @desc        Answer the name of the owner
+  // @brief        Answer the name of the owner
   // @return      String
   //!---------------------------------------------------------
   function name() {
@@ -45,7 +45,7 @@ Class Owner {
 
   //!---------------------------------------------------------
   // @function    Owner::setName
-  // @desc        Set the name of the owner. Might be the name
+  // @brief        Set the name of the owner. Might be the name
   //              of a person or the id of a job.
   // @param       name    String    The name of the owner
   // @return      void
@@ -58,10 +58,10 @@ Class Owner {
 
 //!---------------------------------------------------------
 // @class    User
-// @desc     Represents a user. Keeps track of the user's  
+// @brief     Represents a user. Keeps track of the user's  
 //           state (is the user logged in, etc).
 //!---------------------------------------------------------
-Class User extends Owner{ 
+class User extends Owner{ 
   public $isLoggedIn;   // @public isLoggedIn    Boolean   True if the user is logged in.
   public $lastActivity; // @public lastActivity  Timestamp Time of the last activity of the user
   public $ip;           // @public ip            String    The user's current ip address
@@ -69,7 +69,7 @@ Class User extends Owner{
   
   //!---------------------------------------------------------
   // @function    User::User
-  // @desc        Constructor. Creates a new empty user.
+  // @brief        Constructor. Creates a new empty user.
   // @return      void
   //!---------------------------------------------------------
   function User() {
@@ -92,7 +92,7 @@ Class User extends Owner{
 
   //!---------------------------------------------------------
   // @function    User::isLoggedIn
-  // @desc        Answer true if the user is logged in.
+  // @brief        Answer true if the user is logged in.
   // @return      Boolean
   //!---------------------------------------------------------
   function isLoggedIn() {
@@ -101,7 +101,7 @@ Class User extends Owner{
 
   //!---------------------------------------------------------
   // @function    User::encrypt
-  // @desc        Answer an encrypted version of string
+  // @brief        Answer an encrypted version of string
   // @param       string     String    The string to be encrypted
   // @return      String
   //!---------------------------------------------------------  
@@ -116,7 +116,7 @@ Class User extends Owner{
   }
   //!---------------------------------------------------------
   // @function    User::ldap_encrypt
-  // @desc        Answer an encrypted version of string
+  // @brief        Answer an encrypted version of string
   // @param       string     String    The string to be encrypted; form {type}passwd
   // @return      String
   //!---------------------------------------------------------  
@@ -138,7 +138,7 @@ Class User extends Owner{
 
   //!---------------------------------------------------------
   // @function    User::logIn
-  // @desc        Try to log the user in. 
+  // @brief        Try to log the user in. 
   //              If log in is successful, name, ip and last 
   //              activity are registered. The result is true in
   //              this case.
@@ -162,7 +162,7 @@ Class User extends Owner{
 
   //!---------------------------------------------------------
   // @function    User::logOut
-  // @desc        Log the user out. isLoggedIn will be false
+  // @brief        Log the user out. isLoggedIn will be false
   //              afterwards.
   // @return      void
   //!---------------------------------------------------------  
@@ -172,7 +172,7 @@ Class User extends Owner{
 
   //!---------------------------------------------------------
   // @function    User::password
-  // @desc        Answer the users encrypted password.
+  // @brief        Answer the users encrypted password.
   // @param       name     String    The login name of the user
   // @return      String
   //!---------------------------------------------------------  
@@ -222,7 +222,7 @@ Class User extends Owner{
 
   //!---------------------------------------------------------
   // @function    User::isStatusAccepted
-  // @desc        Answer true if the subscription of the user 
+  // @brief        Answer true if the subscription of the user 
   //              has been accepted by the administrtator.
   // @param       name     String    The login name of the user 
   // @return      Boolean
@@ -237,7 +237,7 @@ Class User extends Owner{
   
   //!---------------------------------------------------------
   // @function    User::isLoginRestrictedToAdmin
-  // @desc        Answer true if the login has been restricted to the
+  // @brief        Answer true if the login has been restricted to the
   //              the administrtator.
   // @return      Boolean
   //!---------------------------------------------------------
@@ -248,7 +248,7 @@ Class User extends Owner{
  
   //!---------------------------------------------------------
   // @function    User::isSuspended
-  // @desc        Answer true if the user's account has been
+  // @brief        Answer true if the user's account has been
   //              suspended by the administrtator.
   // @param       name     String    The login name of the user 
   // @return      Boolean
@@ -263,7 +263,7 @@ Class User extends Owner{
   
   //!---------------------------------------------------------
   // @function    User::exists
-  // @desc        Answer true if the user's account exists.
+  // @brief        Answer true if the user's account exists.
   // @param       name     String    The login name of the user 
   // @return      Boolean
   //!---------------------------------------------------------
@@ -275,7 +275,7 @@ Class User extends Owner{
   
   //!---------------------------------------------------------
   // @function    User::checkLogin
-  // @desc        Answer true if the login is granted.
+  // @brief        Answer true if the login is granted.
   // @param       name     String    The login name of the user
   // @param       password String    The password of the user 
   // @return      Boolean
@@ -322,7 +322,7 @@ Class User extends Owner{
 
   //!---------------------------------------------------------
   // @function    User::checkLoginAgainstHRMDatabase
-  // @desc        Answer true if the login is granted.
+  // @brief        Answer true if the login is granted.
   // @param       name     String    The login name of the user
   // @param       password String    The password of the user 
   // @return      Boolean
@@ -338,7 +338,7 @@ Class User extends Owner{
   	
   //!---------------------------------------------------------
   // @function    User::checkLoginAgainstLDAP
-  // @desc        Answer true if the login is granted.
+  // @brief        Answer true if the login is granted.
   // @param       name     String    The login name of the user
   // @param       password String    The password of the user 
   // @return      Boolean
@@ -351,7 +351,7 @@ Class User extends Owner{
 
   //!---------------------------------------------------------
   // @function    User::checkLoginAgainstACTIVEDIR
-  // @desc        Answer true if the login is granted.
+  // @brief        Answer true if the login is granted.
   // @param       name     String    The login name of the user
   // @param       password String    The password of the user 
   // @return      Boolean
@@ -364,7 +364,7 @@ Class User extends Owner{
   
   //!---------------------------------------------------------
   // @function    User::emailAddress
-  // @desc        Answer the user's email address.
+  // @brief        Answer the user's email address.
   // @return      String
   //!---------------------------------------------------------    
   function emailAddress() {
@@ -403,7 +403,7 @@ Class User extends Owner{
 
   //!---------------------------------------------------------
   // @function    User::getAcceptedStatus
-  // @desc        Answer the status that signifies that the user
+  // @brief        Answer the status that signifies that the user
   // 			  is accepted in the hrm-database
   // @return      String
   //!---------------------------------------------------------    
@@ -413,7 +413,7 @@ Class User extends Owner{
   
   //!---------------------------------------------------------
   // @function    User::getSuspendedStatus
-  // @desc        Answer the status that signifies that the
+  // @brief        Answer the status that signifies that the
   //              user's account is suspended
   // @return      String
   //!---------------------------------------------------------    
@@ -423,7 +423,7 @@ Class User extends Owner{
 
   //!---------------------------------------------------------
   // @function    User::getAdminName
-  // @desc        The name of the system administrator account
+  // @brief        The name of the system administrator account
   // @return      String
   //!---------------------------------------------------------  
   function getAdminName() {
@@ -432,7 +432,7 @@ Class User extends Owner{
   
   //!---------------------------------------------------------
   // @function    User::isAdmin
-  // @desc        Answer wether the receiver is the system 
+  // @brief        Answer wether the receiver is the system 
   // 			  administrator.
   // @return      String
   //!---------------------------------------------------------  
@@ -442,7 +442,7 @@ Class User extends Owner{
   
   //!---------------------------------------------------------
   // @function    User::group
-  // @desc        Answer the group name from the database or
+  // @brief        Answer the group name from the database or
   //			  the default group name if ldap is used.
   // @return      String
   //!--------------------------------------------------------- 
@@ -479,7 +479,7 @@ Class User extends Owner{
   
   //!---------------------------------------------------------
   // @function    User::updateLastAccessDate
-  // @desc        update the last accesss date in the database
+  // @brief        update the last accesss date in the database
   // @return      
   //!--------------------------------------------------------- 
   function updateLastAccessDate() {

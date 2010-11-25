@@ -5,12 +5,12 @@
 
 //!--------------------------------------------------------------------
 // @class    Ldap
-// @desc     Manage ldap connections
+// @brief     Manage ldap connections
 //!--------------------------------------------------------------------
 
 include( dirname( __FILE__ ) . "/../config/ldap_config.inc" );
 
-Class Ldap {
+class Ldap {
   
   private $connection; 
 

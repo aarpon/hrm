@@ -10,7 +10,7 @@ global $hucore, $hutask, $logdir;
 $hucore = "hucore";
 $hutask = "-noExecLog -checkUpdates disable -task";
 
-Class ExternalProcess {
+class ExternalProcess {
     public $pid;                         // os pid of the process
     public $host;                        // host on which the process will be started
     // TODO better manage multiple hosts
@@ -204,7 +204,7 @@ Class ExternalProcess {
   }
 }
 
-Class LocalExternalProcess extends ExternalProcess {
+class LocalExternalProcess extends ExternalProcess {
 
   function LocalExternalProcess($host, $huscript_path, $logfileName, $errfileName) {
     $this->ExternalProcess($host, $huscript_path, $logfileName, $errfileName);
