@@ -10,6 +10,10 @@ require_once ("Fileserver.inc");
 require_once ("Shell.inc");
 require_once ("Mail.inc");
 
+/*!
+ \todo	Move this function either in Shell.inc or in JobQueue.inc (as a class method)
+*/
+
 // TODO better manage multiple hosts
 function newExternalProcessFor($host, $logfilename, $errfilename) {
 	global $imageProcessingIsOnQueueManager;
@@ -22,27 +26,50 @@ function newExternalProcessFor($host, $logfilename, $errfilename) {
 	return $shell;
 }
 
+/*!
+ * \class Job
+ * \brief	Stores all information for a deconvolution job
+ */
 class Job {
-	public $script;
-	public $jobDescription;
-	public $server;
-	public $pid;
-    public $id;
-	public $status;
+	private $script;
+	private $jobDescription;
+	private $server;
+	private $pid;
+    private $id;
+	private $status;
 
-	function Job($jobDescription) {
+	/*!
+ 	* \brief	Constructor
+ 	* \param	$jobDescription	JobDescrition object
+ 	*/
+	public function __construct($jobDescription) {
 		$this->jobDescription = $jobDescription;
 		$this->script = '';
 	}
-	function description() {
+	
+	/*!
+ 	* \brief	Returns the JobDescription associated with the Job
+ 	* \return	JobDescription object
+ 	*/
+	public function description() {
 		return $this->jobDescription;
 	}
 
-	function setServer($server) {
+	/*!
+ 	* \brief	Sets the server which will run the Job
+ 	* \param	$server	Server name
+ 	*/
+	public function setServer($server) {
 		$this->server = $server;
 	}
 
-	function createSubJobsOrScript() {
+	/*!
+ 	* \brief	Creates a script for elementary jobs or splits compound jobs
+ 	* \return	for elementary jobs, returns true if the script was generated 
+ 	* 			successfully, or false otherwise; for compound jobs, it always
+ 	* 			returns false
+ 	*/
+	public function createSubJobsOrScript() {
 		$result = True;
 		$desc = $this->jobDescription;
                 # print "<pre>"; print_r($desc); print "</pre>"; print ($desc->isCompound());
@@ -73,68 +100,106 @@ class Job {
 		return $result;
 	}
 
-	function server() {
+	/*!
+ 	* \brief	Returns the name of the server associated with the Job
+ 	* \return	server name
+ 	*/
+	public function server() {
 		return $this->server;
 	}
 
-	function script() {
+	/*!
+ 	* \brief	Returns the script generated for the Job
+ 	* \return	script
+ 	*/
+	public function script() {
 		return $this->script;
 	}
 
-	function pid() {
+	/*!
+ 	* \brief	Returns the process identifier associated with the Job
+ 	* \return	process identifier
+ 	*/
+	public function pid() {
 		return $this->pid;
 	}
 
-	function id() {
-                $desc = $this->description();
+	/*!
+ 	* \brief	Returns the Job id
+ 	* \return	Job id
+ 	*/
+	public function id() {
+	    $desc = $this->description();
 		return $desc->id;
 	}
 
-	function setPid($pid) {
+	/*!
+ 	* \brief	Sets the process identifier associated with the Job
+ 	* \param	$pid	Process identifier
+ 	*/
+	public function setPid($pid) {
 		$this->pid = $pid;
 	}
-
-	function status() {
+	
+	/*!
+ 	* \brief	Returns the Job status
+ 	* \return	Job status
+ 	*/
+	public function status() {
 		return $this->status;
 	}
 
+	/*!
+ 	* \brief	Sets the status of the Job
+ 	* \param	$status	Status of the Job
+ 	*/
 	function setStatus($status) {
 		$this->status = $status;
 	}
 
-        function createScript() {
-            global $useHuScriptVersion;
+	/*!
+ 	* \brief	Creates a script
+ 	*/
+	public function createScript() {
+	    global $useHuScriptVersion;
 
-            switch ($useHuScriptVersion) {
-                case 0: $this->createScriptVersionZero(); break;
-                case 1: $this->createScriptVersionOne(); break;
-            }
-
-            return;
-
+        switch ($useHuScriptVersion) {
+            case 0: $this->createScriptVersionZero(); break;
+            case 1: $this->createScriptVersionOne(); break;
         }
 
-        // A clearer version of the deconvolution script with fixed procedures
-        // and a bunch of input parameters.
-        function createScriptVersionOne() {
+        return;
 
-            # The fixed part of the script:
-            $this->script = file_get_contents("../scripts/hrm_job.tcl");
+    }
 
-            $desc = $this->description();
-            $this->script .= $desc->appendScriptParameters();
+    /*!
+ 	* \brief	A clearer version of the deconvolution script with
+ 	* 			fixed procedures and a bunch of input parameters
+ 	*/
+    private function createScriptVersionOne() {
 
-        }
+        # The fixed part of the script:
+        $this->script = file_get_contents("../scripts/hrm_job.tcl");
 
-        // The original version of the deconvolution script, a linear one, with
-        // lines that were written or not depending on the task parameters.
+        $desc = $this->description();
+        $this->script .= $desc->appendScriptParameters();
 
-        // This function should be deleted after the new one proves to be
-        // stable enough, to make this code clearer. The same applies to all
-        // the old script generating subroutines, like putMultiChannelScriptOn,
-        // putScriptOn and the like.
+    }
 
-	function createScriptVersionZero() {
+    /*!
+ 	* \brief	The original version of the deconvolution script
+ 	* 
+ 	* The original version of the deconvolution script, a linear one, with
+ 	* lines that were written or not depending on the task parameters.
+ 	* 
+ 	* This function should be deleted after the new one proves to be
+    * stable enough, to make this code clearer. The same applies to all
+    * the old script generating subroutines, like putMultiChannelScriptOn,
+    * putScriptOn and the like.
+    * 
+    * \deprecated
+ 	*/
+	private function createScriptVersionZero() {
 		global $huscript_call;
 
 		$desc = $this->description();
@@ -160,13 +225,24 @@ class Job {
 		$this->script = $this->script . "exit\n";
 	}
 
-	function scriptName() {
+	/*!
+	 * \brief	Returns the script name
+	 * 
+	 * The script name contains the id to make it univocal
+	 *
+	 * \return	the sript name
+	 */
+	public function scriptName() {
 		$desc = $this->description();
 		$result = ".hrm_" . $desc->id() . ".tcl";
 		return $result;
 	}
 
-	function writeScript() {
+	/*!
+	 * \brief	Writes the script to the user's source folder
+	 * \return	true if the script could be written, false otherwise
+	 */
+	public function writeScript() {
 		$result = True;
 		$desc = $this->description();
 		$scriptName = $this->scriptName();
@@ -191,8 +267,12 @@ class Job {
 		return $result;
 	}
 	
-	// TODO refactor
-	function checkResultImage() {
+	/*!
+	 * \brief	Checks whether the result image is present in the destination directory
+	 * \return	true if the result image could be found, false otherwise
+	 * \todo Refactor
+	 */
+	public function checkResultImage() {
 		global $imageProcessingIsOnQueueManager;
 		global $copy_images_to_huygens_server;
 		global $huygens_user;
@@ -216,49 +296,54 @@ class Job {
 		$path = $fileserver->destinationFolderFor($desc);
 		
 		// TODO refactor JobDescription
-                $destFileName = $desc->destinationImageNameWithoutPath();
-                //$resultImage = $desc->sourceImageShortName() . "*" . "_" .
-                    //$desc->id() . "*";
+        $destFileName = $desc->destinationImageNameWithoutPath();
+        //$resultImage = $desc->sourceImageShortName() . "*" . "_" .
+        //$desc->id() . "*";
 		
 		// If fileshare is not on the same host as Huygens
 		if (!$imageProcessingIsOnQueueManager && $copy_images_to_huygens_server) {
-                        $image = $huygens_server_image_folder . $user->name() .
-                            "/" . $image_destination . "/" .
-                            $desc->relativeSourcePath() . $destFileName .  "*";
-                        $previews = $huygens_server_image_folder .
-                            $user->name() . "/" . $image_destination . "/" .
-                            $desc->relativeSourcePath() . "hrm_previews/".
-                            $destFileName. "*";
+            $image = $huygens_server_image_folder . $user->name() .
+            	"/" . $image_destination . "/" .
+                $desc->relativeSourcePath() . $destFileName .  "*";
+            $previews = $huygens_server_image_folder .
+                $user->name() . "/" . $image_destination . "/" .
+                $desc->relativeSourcePath() . "hrm_previews/".
+                $destFileName. "*";
 			// escape special characters in image path
 			$image = eregi_replace(" ", "\\ ", $image);
-                        $image = str_replace(".ics",".i*s", $image);
+            $image = str_replace(".ics",".i*s", $image);
 			$previews = eregi_replace(" ", "\\ ", $previews);
 			//error_log("Retrieving result image...");
 			//error_log("sudo mkdir -p " . escapeshellarg($path));
 			$result = exec("sudo mkdir -p " . escapeshellarg($path));
 			$result = exec("sudo mkdir -p " . escapeshellarg($path)
-                        . "/hrm_previews");
+                . "/hrm_previews");
 			//error_log($result);
 			//error_log("(cd " . escapeshellarg($path) . " && scp " . $huygens_user . "@" . $server_hostname . ":" . escapeshellarg($image) . " .)");
 			$result = exec("(cd " . escapeshellarg($path) . " && sudo scp " . $huygens_user . "@" . $server_hostname . ":" . escapeshellarg($image) . " .)");
 			$result = exec("(cd " . escapeshellarg($path) . 
-                        "/hrm_previews && sudo scp " . $huygens_user . "@" . $server_hostname . ":" . escapeshellarg($previews) . " .)");
+                "/hrm_previews && sudo scp " . $huygens_user . "@" . $server_hostname . ":" . escapeshellarg($previews) . " .)");
 			//error_log($result);
 		}
 		
 		// TODO is checking for job id only a good idea?
-		$fileNameExists = $fileserver->folderContains($path, 
-                        $destFileName);
+		$fileNameExists = $fileserver->folderContains($path, $destFileName);
+		
 		// TODO is checking for new files a relevant criterion?
 		//$newFileWritten = $fileserver->folderContainsNewerFile($path, $queue->startTime($this));
 		$result = $fileNameExists/* || $newFileWritten*/;
-                if (!$result) { 
-                    report("Problem: no result file $destFileName in destination directory $path", 0);
-                    } else { report("File $destFileName available", 2); }
+        if (!$result) { 
+            report("Problem: no result file $destFileName in destination directory $path", 0);
+        } else { report("File $destFileName available", 2); }
 		return $result;
 	}
 
-        function checkProcessFinished() {
+	/*!
+	 * \brief	Checks if the process is finished
+	 * \return	true if the process is finished, false otherwise
+	 * \todo Refactor
+	 */
+	public function checkProcessFinished() {
             global $imageProcessingIsOnQueueManager;
             global $huygens_user;
             global $huygens_server_image_folder;
@@ -278,12 +363,10 @@ class Job {
             $path = $fileserver->sourceFolder();
             $dpath = $fileserver->destinationFolderFor($desc);
 
-
             $finishedMarker = ".finished_" . $desc->id();
             $endTimeMarker = ".EstimatedEndTime_" . $desc->id();
             $remarksFile = $desc->sourceImageShortName() . "*" . "_" .
                 $desc->id() . "*.remarks.txt";
-
 
             // If fileshare is not on the same host as Huygens.
             if (!$imageProcessingIsOnQueueManager) {
@@ -296,74 +379,69 @@ class Job {
                 //ls " . $marker);
                 //error_log($result);
                 // TODO: is the queue manager a sudoer?
-
                 if ($remoteFile == $marker) {
                     exec("(cd " . $path . " && sudo scp " . $huygens_user . "@"
                             . $server_hostname . ":" . $marker . " .)");
 
-                    // If finished, copy also the remarks file.
-                    // Shouldn't this happen only if
-                    // $copy_images_to_huygens_server == true ?
-                    $marker = $huygens_server_image_folder . $user->name() .
-                        "/" . $image_destination . "/" .
-                        $desc->relativeSourcePath() . $remarksFile;
-                    $marker = $huygens_server_image_folder . 
-                        $user->name() . "/" .
-                        $image_destination . "/" . $remarksFile;
+                // If finished, copy also the remarks file.
+                // Shouldn't this happen only if
+                // $copy_images_to_huygens_server == true ?
+                $marker = $huygens_server_image_folder . $user->name() .
+                    "/" . $image_destination . "/" .
+                    $desc->relativeSourcePath() . $remarksFile;
+                $marker = $huygens_server_image_folder . 
+                    $user->name() . "/" .
+                    $image_destination . "/" . $remarksFile;
                     $remoteFile = exec("ssh " . $huygens_user . "@" .
-                            $server_hostname . " ls " . $marker);
-                    if ($remoteFile == $marker) {
-                        exec("(cd " . $dpath . " && sudo scp " . 
-                            $huygens_user . "@" . $server_hostname . ":" .
-                            $marker . " .)");
-                    }
-                } else {
-
-                    // Copy the estimated end time little file.
-                    $marker = $huygens_server_image_folder . $user->name() 
-                        . "/" .  $image_source . "/" . $endTimeMarker;
-                    $remoteFile = exec("ssh " . $huygens_user . "@" .
-                            $server_hostname . " ls " . $marker);
-                    if ($remoteFile == $marker) {
-                        exec("(cd " . $path . " && sudo scp " . $huygens_user 
-                            . "@" . $server_hostname . ":" . $marker . " .)");
-                        // Delete in the remote place, not to transfer again
-                        // until it is updated.
-                        exec("ssh " . $huygens_user . "@" .
-                            $server_hostname . " rm -f " . $marker);
-                    }
+                    $server_hostname . " ls " . $marker);
+                if ($remoteFile == $marker) {
+                    exec("(cd " . $dpath . " && sudo scp " . 
+                        $huygens_user . "@" . $server_hostname . ":" .
+                        $marker . " .)");
                 }
+            } else {
 
-            }
-            $result = file_exists($path . '/' . $finishedMarker);
-
-
-            if ($imageProcessingIsOnQueueManager) {
-                $proc = newExternalProcessFor($this->server(), $this->server().
-                        "_" .$this->id() . "_out.txt", $this->server() .  "_"
-                        .$this->id(). "_error.txt");
-                $result = !$proc->existsHuygensProcess($this->pid());
-                if (!$result && $proc->isHuygensProcessSleeping($this->pid())) {
-                    $proc->rewakeHuygensProcess($this->pid());
+                // Copy the estimated end time little file.
+                $marker = $huygens_server_image_folder . $user->name() 
+                    . "/" .  $image_source . "/" . $endTimeMarker;
+                $remoteFile = exec("ssh " . $huygens_user . "@" .
+                    $server_hostname . " ls " . $marker);
+                if ($remoteFile == $marker) {
+                    exec("(cd " . $path . " && sudo scp " . $huygens_user 
+                        . "@" . $server_hostname . ":" . $marker . " .)");
+                    // Delete in the remote place, not to transfer again
+                    // until it is updated.
+                    exec("ssh " . $huygens_user . "@" .
+                        $server_hostname . " rm -f " . $marker);
                 }
             }
+        }
+        $result = file_exists($path . '/' . $finishedMarker);
 
-            if ( !$result && file_exists($path . '/' . $endTimeMarker) ) {
-                // Tasks may report an estimated end time, whenever they can.
-                $estEndTime = file_get_contents($path . '/' . $endTimeMarker);
-                report("Estimated end time for ". $desc->id(). ": $estEndTime", 1);
-                $queue = new JobQueue();
-                $queue->updateEstimatedEndTime($desc->id(), $estEndTime );
-                // Delete the end time file, to only look at it when the
-                // estimation is updated.
-                @unlink($path . '/' . $endTimeMarker);
-                # $this->UpdateEstimatedEndTime($estEndTime);
+        if ($imageProcessingIsOnQueueManager) {
+            $proc = newExternalProcessFor($this->server(), $this->server().
+                "_" .$this->id() . "_out.txt", $this->server() .  "_"
+                .$this->id(). "_error.txt");
+            $result = !$proc->existsHuygensProcess($this->pid());
+            if (!$result && $proc->isHuygensProcessSleeping($this->pid())) {
+                $proc->rewakeHuygensProcess($this->pid());
             }
-
-
-            return $result;
+        }
+            
+        if ( !$result && file_exists($path . '/' . $endTimeMarker) ) {
+            // Tasks may report an estimated end time, whenever they can.
+            $estEndTime = file_get_contents($path . '/' . $endTimeMarker);
+            report("Estimated end time for ". $desc->id(). ": $estEndTime", 1);
+            $queue = new JobQueue();
+            $queue->updateEstimatedEndTime($desc->id(), $estEndTime );
+            // Delete the end time file, to only look at it when the
+            // estimation is updated.
+            @unlink($path . '/' . $endTimeMarker);
+            # $this->UpdateEstimatedEndTime($estEndTime);
         }
 
+        return $result;
+    }
 }
 
 ?>
