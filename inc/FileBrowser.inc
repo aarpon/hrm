@@ -9,13 +9,11 @@
 // this can not be so easily used. This is an interface to Fileserver.inc.
 
 
-//!---------------------------------------------------------
-// @function fileButton
-// @brief     Generates some basic buttons to be used with the file browser,
-//           dependending on the tool needs.
-//!---------------------------------------------------------
-
-function fileButton ($type) {
+/*
+  Generates some basic buttons to be used with the file browser, depending
+  on the tool needs. $type is one of 'download', 'upload', 'delete', 'update'
+*/
+function fileButton ($type) {   
     global $decompressBin;
 
     $error = false;

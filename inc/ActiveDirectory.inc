@@ -4,11 +4,16 @@
 
 require_once( dirname( __FILE__ ) . "/extern/adLDAP/adLDAP.php" ); 
 
-//!--------------------------------------------------------------------
-// @class    ActiveDirectory
-// @brief     Manage active directory connections through adLDAP
-//!--------------------------------------------------------------------
-
+/*!
+  \class	ActiveDirectory
+  \brief	Manages active directory connections through the adLDAP library
+  
+  The configuration file for the ActiveDirectory class is
+  config/active_directory_config.inc. A sample configuration file is
+  config/samples/active_directory_config.inc.sample.
+  A user with read-access to Active Directory must be set up in the
+  configuration file for queries to be possible.
+*/
 class ActiveDirectory {
   private $m_AdLDAP;      // the adLDAP object
   private $m_GroupIndex;  // users usually belong to several groups, m_GroupIndex 
@@ -23,7 +28,11 @@ class ActiveDirectory {
 						  // group in the intersection will be returned (ideally,
 						  // the intersection should contain only one group).
 
-  function __construct ( ) {
+  /*!
+	\brief	Constructor: instantiates an ActiveDirectory object with the settings
+			specified in the configuration file.
+  */
+  public function __construct ( ) {
 
 		include( dirname( __FILE__ ) . "/../config/active_directory_config.inc" );
 		
@@ -49,11 +58,22 @@ class ActiveDirectory {
 		}
 	}
  
-  function authenticate( $username, $password ) {
+  /*!
+	\brief	Tries to authenticate a user against Active Directory.
+	\param	$username	User name
+	\param	$password	Password
+	\return	true if the user could be authenticated; false otherwise
+  */
+  public function authenticate( $username, $password ) {
 	return $this->m_AdLDAP->authenticate( $username , $password );
   }
 
-  function emailAddress( $username ) {
+  /*!
+	\brief	Returns the e-mail address for an existing user
+	\param	$username	User name
+	\return	The e-mail address
+  */
+  public function emailAddress( $username ) {
 	$userEmailAddress = $this->m_AdLDAP->user_info( $username, array( "mail" ) );
 	if (!$userEmailAddress) {
 	  return "";
@@ -61,7 +81,12 @@ class ActiveDirectory {
 	return $userEmailAddress[ 0 ][ "mail" ][ 0 ];
   }
 
-  function getGroup( $username ) {
+  /*!
+	\brief	Returns the group(s) to which a user belongs.
+	\param	$username	User name
+	\return	One or more groups
+  */
+  public function getGroup( $username ) {
 	$userGroups = $this->m_AdLDAP->user_groups( $username );
 	if ( count( $userGroups ) == 0 ) {
 	  return $userGroups;

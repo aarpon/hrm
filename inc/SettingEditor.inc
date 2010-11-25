@@ -7,8 +7,8 @@ require_once("Database.inc");
 require_once("User.inc");
 
 //!---------------------------------------------------------
-// @class    SettingEditor
-// @brief     Editor for parameter settings
+// \class    SettingEditor
+// \brief     Editor for parameter settings
 //!---------------------------------------------------------
 class SettingEditor {
   public $user;            // @public user          User    The current user    
@@ -17,11 +17,11 @@ class SettingEditor {
 
   //!---------------------------------------------------------
   // @function    SettingEditor::SettingEditor
-  // @brief        Konstruktor. Creates a new SettingEditor and
+  // \brief        Konstruktor. Creates a new SettingEditor and
   //              selects the default setting if a default 
   //              setting exists.
-  // @param       user    User    The current user
-  // @return      void
+  // \param       user    User    The current user
+  // \return      void
   //!---------------------------------------------------------
   function SettingEditor($user) { 
     $this->user = $user;
@@ -35,9 +35,9 @@ class SettingEditor {
 
   //!---------------------------------------------------------
   // @function    SettingEditor::selected
-  // @brief        Answers the name of the currently selected
+  // \brief        Answers the name of the currently selected
   //              setting or NULL. 
-  // @return      String
+  // \return      String
   //!---------------------------------------------------------
   function selected() {
     return $this->selected;
@@ -45,10 +45,10 @@ class SettingEditor {
 
   //!---------------------------------------------------------
   // @function    SettingEditor::setSelected
-  // @brief        Set the name of the selected setting
-  // @param       name    String    the name of the setting
+  // \brief        Set the name of the selected setting
+  // \param       name    String    the name of the setting
   //                                the user selected.
-  // @return      void
+  // \return      void
   //!---------------------------------------------------------
   function setSelected($name) {
     $this->selected = $name;
@@ -56,8 +56,8 @@ class SettingEditor {
 
   //!---------------------------------------------------------
   // @function    SettingEditor::user
-  // @brief        Answer the current user
-  // @return      User
+  // \brief        Answer the current user
+  // \return      User
   //!---------------------------------------------------------
   function user() { 
     return $this->user;
@@ -65,11 +65,11 @@ class SettingEditor {
 
   //!---------------------------------------------------------
   // @function    SettingEditor::createNewSetting
-  // @brief        Check if the name already exists. If not
+  // \brief        Check if the name already exists. If not
   //              create a new setting named name. Select
   //              the new setting
-  // @param       name    String    the name of the new setting
-  // @return      Setting
+  // \param       name    String    the name of the new setting
+  // \return      Setting
   //!---------------------------------------------------------
   function createNewSetting($name) {
     if (!$this->checkNewSettingName($name)) { 
@@ -84,9 +84,9 @@ class SettingEditor {
 
   //!---------------------------------------------------------
   // @function    SettingEditor::newSettingObject
-  // @brief        Answer a new setting object of the type 
+  // \brief        Answer a new setting object of the type 
   //              that the receiver is editing  
-  // @return      Setting
+  // \return      Setting
   //!---------------------------------------------------------
   function newSettingObject() {
     return (new ParameterSetting());
@@ -94,12 +94,12 @@ class SettingEditor {
 
   //!---------------------------------------------------------
   // @function    SettingEditor::copySelectedSetting
-  // @brief        create a new setting newName in the database 
+  // \brief        create a new setting newName in the database 
   //              and copy the parameter values of the existing 
   //              setting oldName to it.
-  // @param       oldName    String  the name of an existing setting
-  // @param       newname    String  the name of the new setting
-  // @return      bool
+  // \param       oldName    String  the name of an existing setting
+  // \param       newname    String  the name of the new setting
+  // \return      bool
   //!---------------------------------------------------------
   function copySelectedSetting($newName) {
     if (!$this->checkSelectedSetting()) {
@@ -122,11 +122,11 @@ class SettingEditor {
   // add public setting support
   //!---------------------------------------------------------
   // @function    SettingEditor::copySelectedSetting
-  // @brief        create a new setting in the database
+  // \brief        create a new setting in the database
   //              and copy the parameter values of the public
   //              setting to it.
-  // @param       setting    Setting  the existing setting
-  // @return      bool
+  // \param       setting    Setting  the existing setting
+  // \return      bool
   //!---------------------------------------------------------
   function copyPublicSetting($setting) {
     /*$settings = $this->settings();
@@ -146,11 +146,11 @@ class SettingEditor {
 
   //!---------------------------------------------------------
   // @function    SettingEditor::loadSetting
-  // @brief        Load the values of the setting name from the
+  // \brief        Load the values of the setting name from the
   //              database and answer the setting. Select the
   //              loaded setting.
-  // @param       name     the name of the setting to be loaded
-  // @return      Setting
+  // \param       name     the name of the setting to be loaded
+  // \return      Setting
   //!---------------------------------------------------------
   function loadSelectedSetting() {
     if (!$this->checkSelectedSetting()) {
@@ -166,11 +166,11 @@ class SettingEditor {
 
   //!---------------------------------------------------------
   // @function    SettingEditor::makeDefault
-  // @brief        make the setting name the default setting.
+  // \brief        make the setting name the default setting.
   //              The default setting will be preselected the
   //              next time the user enters the page
-  // @param       name     the name of the setting 
-  // @return      void
+  // \param       name     the name of the setting 
+  // \return      void
   //!---------------------------------------------------------
   function makeSelectedSettingDefault() { 
     if (!$this->checkSelectedSetting()) {
@@ -193,9 +193,9 @@ class SettingEditor {
 
   //!---------------------------------------------------------
   // @function    SettingEditor::delete
-  // @brief        delete the setting named name if it exists
-  // @param       name     the name of the setting 
-  // @return      bool
+  // \brief        delete the setting named name if it exists
+  // \param       name     the name of the setting 
+  // \return      bool
   //!---------------------------------------------------------
   function deleteSelectedSetting() {
     if (!$this->checkSelectedSetting()) {
@@ -216,9 +216,9 @@ class SettingEditor {
 
   //!---------------------------------------------------------
   // @function    SettingEditor::message
-  // @brief        Answer the error message that has been
+  // \brief        Answer the error message that has been
   //              set by the last operation
-  // @return      string
+  // \return      string
   //!---------------------------------------------------------
   function message() { 
     return $this->message;
@@ -226,11 +226,11 @@ class SettingEditor {
 
   //!---------------------------------------------------------
   // @function    SettingEditor::checkNewSettingName
-  // @brief        Check that the name is not empty and that
+  // \brief        Check that the name is not empty and that
   //              there doesn't exist a setting with the same
   //              name
-  // @param       name    String    the name of the new setting
-  // @return      bool
+  // \param       name    String    the name of the new setting
+  // \return      bool
   //!---------------------------------------------------------
   function checkNewSettingName($name) { 
     $this->message = '';
@@ -251,9 +251,9 @@ class SettingEditor {
 
   //!---------------------------------------------------------
   // @function    SettingEditor::settings
-  // @brief        Answer a collection of all settings of the 
+  // \brief        Answer a collection of all settings of the 
   //              user.
-  // @return      Array of Setting
+  // \return      Array of Setting
   //!---------------------------------------------------------
   function settings() {
     $settings = array();
@@ -275,9 +275,9 @@ class SettingEditor {
   // add public setting support
   //!---------------------------------------------------------
   // @function    SettingEditor::setting
-  // @brief        Answer the settings with the specified name.
-  // @param       name    String    the name of the setting
-  // @return      Setting
+  // \brief        Answer the settings with the specified name.
+  // \param       name    String    the name of the setting
+  // \return      Setting
   //!---------------------------------------------------------
   function setting($name) {
     $user = $this->user;
@@ -297,9 +297,9 @@ class SettingEditor {
 
   //!---------------------------------------------------------
   // @function    SettingEditor::defaultSettingName
-  // @brief        Answer the name of the default setting if it
+  // \brief        Answer the name of the default setting if it
   //              exists and NULL otherwise.
-  // @return      string
+  // \return      string
   //!---------------------------------------------------------  
   function defaultSettingName() {
     foreach ($this->settings() as $setting) {
@@ -312,10 +312,10 @@ class SettingEditor {
 
   //!---------------------------------------------------------
   // @function    SettingEditor::table
-  // @brief        Answer the name of the database table in
+  // \brief        Answer the name of the database table in
   //              which settings that the receiver edits are
   //              stored
-  // @return      string
+  // \return      string
   //!---------------------------------------------------------  
   function table() { 
     return "parameter_setting";
@@ -323,8 +323,8 @@ class SettingEditor {
 
   //!---------------------------------------------------------
   // @function    SettingEditor::checkSelectedSetting
-  // @brief        Answer true if a existing setting is selected.
-  // @return      boolean
+  // \brief        Answer true if a existing setting is selected.
+  // \return      boolean
   //!---------------------------------------------------------  
   function checkSelectedSetting() {
     $this->message = '';
@@ -345,16 +345,16 @@ class SettingEditor {
 }
 
 //!---------------------------------------------------------
-// @class    TaskSettingEditor
-// @brief     Editor for task settings
+// \class    TaskSettingEditor
+// \brief     Editor for task settings
 //!---------------------------------------------------------
 class TaskSettingEditor extends SettingEditor {
 
   //!---------------------------------------------------------
   // @function    SettingEditor::table
-  // @brief        Answer the name of the database table in
+  // \brief        Answer the name of the database table in
   //              which task settings are stored
-  // @return      string
+  // \return      string
   //!---------------------------------------------------------  
   function table() { 
     return "task_setting";
@@ -362,9 +362,9 @@ class TaskSettingEditor extends SettingEditor {
 
   //!---------------------------------------------------------
   // @function    SettingEditor::newSettingObject
-  // @brief        Answer a new setting object of the type 
+  // \brief        Answer a new setting object of the type 
   //              that the receiver is editing  
-  // @return      TaskSetting
+  // \return      TaskSetting
   //!---------------------------------------------------------
   function newSettingObject() {
     return (new TaskSetting());

@@ -7,33 +7,59 @@ require_once("Database.inc");
 require_once("Util.inc");
 
 //!---------------------------------------------------------
-// @class    FileSelection
-// @brief     Allows the user to select image files and stores
-//           the selection.
+// \class FileServer
+// \brief Allows the user to select image files and stores the selection.
 //!---------------------------------------------------------
 class Fileserver {
   
-  public $username;              // @public username         String     The name of the user is his home directory in the same time
-  public $files;                 // @public files            Array      The image files under the users home directory    
-  public $imageExtensions;       // @public imageExtensions  Array      File extensions indicating an image file  
-  public $selectedFiles;         // @public selectedFiles    Array      Files actually selected to be processed
+  /*!
+    \var    $username
+    \brief  Name of the user and of his home directory
+  */
+  private $username;
 
-  public $validImageExtensions =  array("tif", "tiff", "stk", "lsm", "ims", "pic", "ome", "lif", "ics", "dv", "h5", "zvi" );
+  /*!
+    \var    $files
+    \brief  Array of image file names in the user's source directory
+  */
+  private $files;
 
-  public $validImageExtensionsExtras =  array("ids", "ids.gz");
-
-  public $multiImageExtensions =  array("lif");
-  public $validArchiveExtensions =  array();
-  public $expandSubImages = true;
-
-
+  /*!
+    \var    $destFiles
+    \brief  Array of image file names in the user's destination directory
+  */
+  private $destFiles;
   
-  //!---------------------------------------------------------
-  // @function    Fileserver::Fileserver
-  // @brief        Konstruktor. Creates a new Fileserver.
-  // @return      void
-  //!---------------------------------------------------------
-  function Fileserver($name) { 
+  /*!
+    \var    $imageExtensions
+    \brief  Array of image file extensions
+  */
+  private $imageExtensions;
+  
+  /*!
+    \var    $selectedFiles
+    \brief  Files currently selected for processing
+  */
+  private $selectedFiles;
+
+  /*!
+    \var    $expandSubImages (boolean)
+    \brief  Toggles whether sub-images should be expanded
+  */
+  private $expandSubImages = true;
+
+  /*!
+   \todo Information on what file extensions there are and their characteristics MUST be in the database!
+  */
+  private $validImageExtensions =  array("tif", "tiff", "stk", "lsm", "ims", "pic", "ome", "lif", "ics", "dv", "h5", "zvi" );
+  private $validImageExtensionsExtras =  array("ids", "ids.gz");
+  private $multiImageExtensions =  array("lif");
+  private $validArchiveExtensions =  array();
+
+  /*!
+    \brief  Constructor: creates a new Fileserver
+  */
+  function __construct($name) { 
     global $image_folder;
     global $image_source;
     global $decompressBin;
@@ -48,92 +74,100 @@ class Fileserver {
     $this->validArchiveExtensions = array_keys($decompressBin);
   }
   
-  function isReachable() {
+  /*!
+    \brief  Checks whether the file area is reachable
+    \return true if the file area is reachable
+  */
+  public function isReachable() {
     $result = file_exists($this->sourceFolder());
     $result = $result && file_exists($this->destinationFolder());
     return $result;
   } 
 
-  //!---------------------------------------------------------
-  // @function    Fileserver::username
-  // @brief        Answer the name of the user 
-  // @return      String
-  //!---------------------------------------------------------
-  function username() {
+  /*!
+    \brief  Returns the name of the user
+    \return name of the user
+  */
+  public function username() {
     return $this->username;
   } 
-  //!---------------------------------------------------------
-  // @function    Fileserver::sourceFolder
-  // @brief        Answer the users home folder under which
-  //              his image files are stored. This is the 
-  //              absolute path to the folder. The folder may
-  //              be on the local network.
-  // @return      String
-  //!---------------------------------------------------------
-  function sourceFolder() { 
+
+  /*!
+    \brief  Returns the absolute path to the user's source image folder. The
+            folder may be on the local network
+    \return absolute path to the source image folder
+  */
+  public function sourceFolder() { 
     global $image_folder;
     global $image_source;
     $folder = $image_folder . "/" . $this->username . "/" . $image_source;
     return $folder;
   }
-  //!---------------------------------------------------------
-  // @function    Fileserver::destinationFolder
-  // @brief        Answer the users destination folder under which
-  //              his image results are stored. This is the 
-  //              absolute path to the folder. The folder may
-  //              be on the local network.
-  // @return      String
-  //!---------------------------------------------------------
-  function destinationFolder() { 
+
+  /*!
+    \brief  Returns the absolute path to the user's destination image folder.
+            The folder may be on the local network
+    \return absolute path to the destination image folder
+  */
+  public function destinationFolder() { 
     global $image_folder;
     global $image_destination;
     $folder = $image_folder . "/" . $this->username . "/" . $image_destination;
     return $folder;
   }
 
-  function destinationFolderFor($desc) {
+  /*!
+    \brief  Returns the destination image folder from a JobDescription object
+    \param  $desc JobDescription object
+    \return destination image folder
+  */
+  public function destinationFolderFor($desc) {
     $folder = $this->destinationFolder() . "/" . $desc->relativeSourcePath();
     return $folder;
   }
 
-  // Answer all files in the specified format under the users image
-  // folder. Searches subdirectories recursively. 
-  //!---------------------------------------------------------
-  // @function    Fileserver::files
-  // @brief        Answer all image files under the users image
-  //              folder. Searches subdirectories recursively.  
-  // @return      Array
-  //!---------------------------------------------------------  
-  function files() {
-    switch(func_num_args()) {
-      case 0:
+  /*!
+    \brief  Searches the source folder recursively and returns all found files
+    \param  $extension  Extension to be considered to scan the folder. Omit to
+                        get all files
+    \return sorted array of file names
+  */
+  public function files( $extension = null ) {
+    if ( is_null( $extension ) ) {
         if ($this->files == NULL) $this->getFiles();
         return $this->files;
-      case 1:
+    } else {
         if (!file_exists($this->sourceFolder())) return False;
-        list($extension) = func_get_args();
         $files = $this->listFilesFrom($this->sourceFolder(), "", $extension);
         sort($files);
         return $files;
     }
   }
 
-  function destFiles() {
-    switch(func_num_args()) {
-      case 0:
+  /*!
+    \brief  Searches the destination folder recursively and returns all found files
+    \param  $extension  Extension to be considered to scan the folder. Omit to
+                        get all files
+    \return sorted array of file names
+  */
+  public function destFiles( $extension = null ) {
+    if ( is_null( $extension ) ) {
         if ($this->destFiles == NULL) $this->getDestFiles();
         return $this->destFiles;
-      case 1:
+    } else {
         if (!file_exists($this->destinationFolder())) return False;
-        list($extension) = func_get_args();
         $files = $this->listFilesFrom($this->destinationFolder(), "", $extension);
         sort($files);
         return $files;
     }
   }
 
-  // A wrapper around the different functions to list files or certain type.
-  function filesOfType( $format ) {
+  /*!
+    \brief  A wrapper function to list files of a certain type
+    \param  $format  Extension to be considered to scan the folder.
+    \return array of file names
+  */
+  public function filesOfType( $format ) {
 
         if ($format == "ics") {
             $files = $_SESSION['fileserver']->files("ics");
@@ -169,30 +203,32 @@ class Fileserver {
 
   }
   
-  // Answer all files under the users image folder. Searches
-  // subdirectories recursively. 
-  //!---------------------------------------------------------
-  // @function    Fileserver::allFiles
-  // @brief        Answer all image files under the users image
-  //              folder. Searches subdirectories recursively.  
-  // @return      Array
-  //!---------------------------------------------------------  
-  function allFiles() {
+  /*!
+    \brief  Scans the image source folder recursively and returns all files
+    \return sorted array of file names
+  */
+  public function allFiles() {
     if (!file_exists($this->sourceFolder())) return False;
     $files = $this->listFilesFrom($this->sourceFolder(), "", "");
     sort($files);
     return $files;
   }
 
-  // convenient method to get TIFF files
-  function tiffFiles() {
+  /*!
+    \brief  Convenience method to get TIFF files
+    \return array of TIFF file names
+  */
+  public function tiffFiles() {
     $this->getFiles();
     $this->trimTiff();
     return $this->files;
   }
   
-  // convenient method to get numbered TIFF series
-  function tiffSeriesFiles() {
+  /*!
+    \brief  Convenience method to get numbered TIFF series
+    \return array of numbered TIFF file names
+  */
+  public function tiffSeriesFiles() {
     $this->getFiles();
     // TODO refactor
     $this->trimTiffSeries();
@@ -200,8 +236,11 @@ class Fileserver {
     return $this->files;
   }
   
-  // convenient method to get TIFF series with Leica style numbering
-  function tiffLeicaFiles() {
+  /*!
+    \brief  Convenience method to get TIFF series with Leica style numbering
+    \return array of Leica TIFF file names
+  */
+  public function tiffLeicaFiles() {
     $this->getFiles();
     // TODO refactor
     $this->trimTiffLeica();
@@ -209,16 +248,22 @@ class Fileserver {
     return $this->files;
   }
   
-  // convenient method to get STK files without series
-  function stkFiles() {
+  /*!
+    \brief  Convenience method to get STK files without time series (*_t#.stk)
+    \return array of STK files without time series
+  */
+  public function stkFiles() {
     $this->getFiles();
     // TODO refactor
     $this->trimStkSeries();
     return $this->files;
   }
   
-  // convenient method to get STK series
-  function stkSeriesFiles() {
+  /*!
+    \brief  Convenience method to get STK time series files (*_t#.stk)
+    \return array of STK time series files
+  */
+  public function stkSeriesFiles() {
     $this->getFiles();
     // TODO refactor
     $this->trimStk();
@@ -226,50 +271,45 @@ class Fileserver {
     return $this->files;
   }
 
-  //!---------------------------------------------------------
-  // @function    Fileserver::updateAvailableFiles
-  // @brief        Reset the list of available files. When the
-  //              list is accessed the next time it is newley
-  //              computed.
-  // @return      void
-  //!---------------------------------------------------------  
-  function updateAvailableFiles() {
+  /*!
+    \brief  Resets the list of source files. Next time the list is accessed 
+            it will be recreated automatically
+  */
+  public function updateAvailableFiles() {
     $this->files = NULL;
   } 
-  //!---------------------------------------------------------
-  // @function    Fileserver::updateAvailableDestFiles
-  // @brief        Reset the list of available result files. When the
-  //              list is accessed the next time it is newley
-  //              computed.
-  // @return      void
-  //!---------------------------------------------------------  
-  function updateAvailableDestFiles() {
+
+  /*!
+    \brief  Resets the list of destination files. Next time the list is accessed 
+            it will be recreated automatically
+  */
+  public function updateAvailableDestFiles() {
     $this->destFiles = NULL;
   } 
 
-  function expandSubImages($value) {
-      $this->expandSubImages = $value;
+  /*!
+    \brief  Sets a flag to indicate whether multi-experiment image files should
+            be expanded in file lists or not
+    \param  $bool True if multi-image files should be expanded; false otherwise
+  */
+  public function expandSubImages($bool) {
+      $this->expandSubImages = $bool;
   }
 
-  //!---------------------------------------------------------
-  // @function    Fileserver::selectedFiles
-  // @brief        Answer the actual selection of files for
-  //              which the user is going to create a job.
-  // @return      Array
-  //!---------------------------------------------------------  
-  function selectedFiles() { 
+  /*!
+    \brief  Returns the list of selected files that will be added to a job
+    \return Array of file names
+  */
+  public function selectedFiles() { 
     if ($this->selectedFiles == NULL) $this->selectedFiles = array();
     return $this->selectedFiles;
   }
 
-  //!---------------------------------------------------------
-  // @function    Fileserver::addFilesToSelection
-  // @brief        Add files to the actual selection if they 
-  //              are not already contained. 
-  // @param       files  Array  List of files to be added.
-  // @return      Void
-  //!---------------------------------------------------------  
-  function addFilesToSelection($files) { 
+  /*!
+    \brief  Add files to current selection if they are not already contained
+    \param  $files  Array of file names to be added
+  */
+  public function addFilesToSelection($files) { 
       foreach ($files as $key => $file) {
           $files[$key] = stripslashes($file);
       }
@@ -279,28 +319,22 @@ class Fileserver {
     sort($this->selectedFiles);
   }
 
-  //!---------------------------------------------------------
-  // @function    Fileserver::removeFilesFromSelection
-  // @brief        Remove files from the selection if they are
-  //              contained.
-  // @param       files  Array  List of files to be removed
-  //              from the selection
-  // @return      Void
-  //!---------------------------------------------------------  
-  function removeFilesFromSelection($files) { 
+  /*!
+    \brief  Remove files from current selection (if they are in)
+    \param  $files  Array of file names to be removed
+  */
+  public function removeFilesFromSelection($files) { 
       foreach ($files as $key => $file) {
           $files[$key] = stripslashes($file);
       }
     $this->selectedFiles = array_diff($this->selectedFiles, $files);
   }  
 
-  //!---------------------------------------------------------
-  // @function    Fileserver::downloadResults
-  // @brief        Packs a series of files to download.
-  // @param       files  Array  List of files to be added.
-  // @return      Void
-  //!---------------------------------------------------------  
-  function downloadResults($files) { 
+  /*!
+    \brief Packs a series of files to download.
+    \param $files  Array  List of files to be added.
+  */
+  public function downloadResults($files) { 
       global $compressBin, $compressExt, $dlMimeType, $packExcludePath;
 
       // Make sure that the script doesn't timeout before zipping and
@@ -349,15 +383,13 @@ class Fileserver {
           " $error_msg</p>";
   }
 
-  //!---------------------------------------------------------
-  // @function    Fileserver::deleteFiles
-  // @brief        Deletes a list of files and all dependent sub-files (like
-  //              thumbnails and so) from a user directory.
-  // @param       files  Array  List of files to be added.
-  // @param       dir  'src' or 'dest'
-  // @return      Void
-  //!---------------------------------------------------------  
-  function deleteFiles($files, $dir = "dest" ) { 
+  /*!
+    \brief  Deletes a list of files and all dependent sub-files (e.g. thumbnails
+            and so) from a user directory
+    \param $files  Array of image file names
+    \param $dir   Folder to consider, one of 'src' or 'dest'
+  */
+  public function deleteFiles($files, $dir = "dest" ) { 
 
       if ( $dir == "src" ) {
           $pdir =  $this->sourceFolder();
@@ -393,22 +425,19 @@ class Fileserver {
 
   }
 
-  //!---------------------------------------------------------
-  // @function    Fileserver::decompressArchive
-  // @brief        Extracts files in compressed archives.
-  // @param       file  String  archive name
-  // @param       type  String  archive type (zip, tar, tgz...)
-  // @param       dest  String  destination path
-  // @param       okMsg String pointer A string to accumulate OK messages
-  // @param       errMsg String pointer A string to accumulate error messages
-  // @param       subdir String pointer An optional subdirectory under $dest to
-  //              expand the files to.
-  // @param       imagesOnly Boolean Apply a filter to delete non-image files
-  //              after extraction.
-  // @return      Void
-  //!---------------------------------------------------------  
- 
-  function decompressArchive( $file, $type, $dest, &$okMsg, &$errMsg, 
+  /*!
+    \brief  Extracts files from compressed archives
+    \param  $file       Archive name
+    \param  $type       Archive type (zip, tar, tgz...)
+    \param  $dest       Destination path
+    \param  $okMsg      A string to accumulate OK messages
+    \param  $errMsg     A string to accumulate error messages
+    \param  $subdir     An optional subdirectory under $dest to expand the
+                        files to
+    \param  $imagesOnly Boolean Apply a filter to delete non-image files after
+                        extraction
+  */
+  public function decompressArchive( $file, $type, $dest, &$okMsg, &$errMsg, 
           $subdir = "", $imagesOnly = true ) {
 
       global $decompressBin;
@@ -453,18 +482,16 @@ class Fileserver {
 
   }
 
-  //!---------------------------------------------------------
-  // @function    Fileserver::uploadFiles
-  // @brief        Processes the $_FILES array posted when uploading files, 
-  //              moving valid one to the specified directory. Compressed files
-  //              are decompressed.  
-  // @param       files  Array  List of files to be added. See PHP
-  //              documentation: POST method uploads
-  // @param       dir  'src' or 'dest'
-  // @return      Message with details.
-  //!---------------------------------------------------------  
- 
-  function uploadFiles($files, $dir) {
+  /*!
+    \brief  Processes the $_FILES array posted when uploading files,  moving
+            valid one to the specified directory. Compressed files are
+            decompressed
+    \param  $files  Array of files to be uploaded. 
+    \param  $dir    Destination path, one of 'src' or 'dest'
+    \return message with details.
+    \see See PHP documentation: POST method uploads
+  */
+  public function uploadFiles($files, $dir) {
 
       if ( $dir == "src" ) {
           $uploaddir =  $this->sourceFolder();
@@ -631,58 +658,48 @@ class Fileserver {
 
   }
 
-
-
-  //!---------------------------------------------------------
-  // @function    Fileserver::imageExtensions
-  // @brief        Answer a list of file extensions of known
-  //              images.
-  // @return      Array
-  //!---------------------------------------------------------  
-  function imageExtensions() { 
+  /*!
+    \brief  Returns a list of file extensions for supported images
+    \return array of file extensions
+    \todo   This must be obtained from the database!
+  */
+  public function imageExtensions() { 
     if ($this->imageExtensions == NULL) $this->setDefaultImageExtensions();
     return $this->imageExtensions;
   } 
 
-  //!---------------------------------------------------------
-  // @function    Fileserver::setImageExtensions
-  // @brief        Set the list of image extensions. Files
-  //              with these extensions under the user's source
-  //              folder will be shown under available images.
-  //              Whenever the image extensions are changed, the
-  //              files and the selected files will be reset.
-  //              Only exception is when the list of image extensions
-  //              is replaced by itself. 
-  // @param       extensions  Array  List of file extensions (strings),
-  //              see setDefaultImageExtensions for an example.
-  // @return      Void
-  //!---------------------------------------------------------  
-  function setImageExtensions($extensions) {
+  /*!
+    \brief  Sets the list of image extensions. Files with these extensions
+            under the user's source folder will be shown under available
+            images. Whenever the image extensions are changed, the files and
+            the selected files will be reset. Only exception is when the list
+            of image extensions is replaced by itself
+    \param  $extensions  Array of file extensions (strings)
+  */
+  public function setImageExtensions($extensions) {
     if (implode('', $extensions) !=  implode('', $this->imageExtensions())) { 
       $this->selectedFiles = NULL;
       $this->files = NULL;
     } 
     $this->imageExtensions = $extensions;
   } 
-  //!---------------------------------------------------------
-  // @function    Fileserver::setDefaultImageExtensions
-  // @brief        Creates the list of file extensions of known
-  //              image formats.
-  // @return      Void
-  //!---------------------------------------------------------  
-  function setDefaultImageExtensions() {
+
+  /*!
+    \brief Sets the image extensions from the list of valid image extensions
+    \todo Check the meaning of having this method!
+  */
+  public function setDefaultImageExtensions() {
     // new file formats support
     $this->imageExtensions = $this->validImageExtensions;
-  } 
-  //!---------------------------------------------------------
-  // @function    Fileserver::isImage
-  // @brief        Answers True if filename has an extension
-  //              which is among the extensions of the currently 
-  //              relected file format, or any if not specified.
-  // @param       filename  String  The filename to be checked
-  // @return      Boolean
-  //!---------------------------------------------------------  
-  function isImage($filename) {
+  }
+  
+  /*!
+    \brief  Checks whether the filename extension matches the currently
+            selected file format
+    \param  $filename  Filename to be checked
+    \return true if the file extension matches the file format, false otherwise
+  */
+  public function isImage($filename) {
     $ext = substr(strrchr($filename, "."),1);
     $ext = strtolower($ext);
     $result = False;
@@ -691,16 +708,14 @@ class Fileserver {
     }
     return $result;
   }
-  //!---------------------------------------------------------
-  // @function    Fileserver::isValidImage
-  // @brief        Answers True if filename has an extension
-  //              which is among the extensions of known image
-  //              formats. 
-  // @param       filename  String  The filename to be checked
-  //              boolean   alsoExtras: consider also extensions as ids
-  // @return      Boolean
-  //!---------------------------------------------------------  
-  function isValidImage($filename, $alsoExtras = false) {
+  
+  /*!
+    \brief  Checks whether the file name is of a valid type
+    \param  $filename  The filename to be checked
+    \param  $alsoExtras: if true, consider also extensions as ids or ids.gz
+    \return true if the filename is of a valid type, false otherwise
+  */
+  public function isValidImage($filename, $alsoExtras = false) {
       $filename = strtolower($filename);
       $ext = substr(strrchr($filename, "."),1);
       if ( $ext == "gz" ) {
@@ -718,14 +733,13 @@ class Fileserver {
       return $result;
   }
 
-  //!---------------------------------------------------------
-  // @function    Fileserver::getCompressedArchiveType
-  // @brief        Returns the archive type of a filename, if it is a valid
-  //              known compressed archive.
-  // @param       filename  String  The filename to be checked
-  // @return      Type of archive, or "" if it is not an archive.
-  //!---------------------------------------------------------  
-  function getCompressedArchiveType($filename ) {
+  /*!
+    \brief  Returns the archive type of a filename, if it is a valid known
+            compressed archive.
+    \param  $filename  The filename to be checked
+    \return the archive type if the filename is valid archive, "" otherwise
+  */
+  public function getCompressedArchiveType($filename ) {
 
       if (stristr($filename, ".tar.gz")) {
           // This double extension is a special case.
@@ -740,7 +754,11 @@ class Fileserver {
       return $result;
   }
 
-  function getValidArchiveTypesAsString() {
+  /*!
+    \brief  Returns all archive types as string
+    \return string containing all archive types
+  */
+  public function getValidArchiveTypesAsString() {
       $ret = ""; $sep = "";
       foreach ($this->validArchiveExtensions as $ext) {
           $ret .= $sep.".$ext";
@@ -749,16 +767,14 @@ class Fileserver {
       return $ret;
   }
 
-
-  //!---------------------------------------------------------
-  // @function    Fileserver::getSubImages
-  // @brief        When the selected file type is one that can contain subimages
-  //              (like LIF), the already built list of $this->files is 
-  //              extended to show all the available subimages. 
-  //              This is done by querying Huygens.
-  // @return      Void
-  //!---------------------------------------------------------    
-  function getSubImages($files) {
+  /*!
+    \brief  When the selected file type is one that can contain subimages
+            (like LIF), the already built list of $this->files is extended to
+            show all the available subimages. This is done by querying HuCore.
+    \param  $files  Array of file names that have to be inspected for sub-files
+    \return updated array of file names with sub-files
+  */
+  public function getSubImages($files) {
 
       $i = 0;
       $imgList = "";
@@ -829,15 +845,18 @@ class Fileserver {
 
   }
 
-  //!---------------------------------------------------------
-  // @function    Fileserver::getMetaData
-  // @brief        some files like ICS can report their metadata without having
-  //              to open the whole image, which is good e.g. to see the
-  //              compatibility of the selected PSF with the current Parameter
-  //              Setting.  This is done by querying Huygens.
-  // @return      Void
-  //!---------------------------------------------------------    
-  function getMetaData( $type = "ics", $file = "all" ) {
+  /*!
+    \brief  Some files like ICS can report their metadata without having to
+            open the whole image, which is good e.g. to see the compatibility
+            of the selected PSF with the current Parameter Setting.
+            This is done by querying HuCore.
+    \param  $type File type, default is "ics"
+    \param  $file This can be a file name for the file to be inspected, or
+            "all" to inspect all the files of type $type that are in the source
+            folder
+    \return N-dimensional array of metadata per file
+  */
+  public function getMetaData( $type = "ics", $file = "all" ) {
 
       $i = 0;
       $imgList = "";
@@ -921,16 +940,18 @@ class Fileserver {
 
   }
 
-
-
-  //!---------------------------------------------------------
-  // @function    Fileserver::getImageOptionLine
-  // @brief        Generates a html line for a form listing images in the
-  //              server.
-  // @return      The html code for the form.
-  //!---------------------------------------------------------    
- 
-  function getImageOptionLine ($file, $index, $dir, $type, $ref = 0, $data = 1) {
+  /*!
+    \brief  Generates a html line for a form listing images in the server
+    \param  $file Image file name
+    \param  $index  <b>(Unused)</b> Index in the file name array
+    \param  $dir    <b>(Unused)</b> Destination directory, one of 'src', or 'dst'
+    \param  $type   <b>(Unused)</b> Type of the image, e.g. 'preview'
+    \param  $ref    <b>(Unused)</b> Default is 0
+    \param  $data   <b>(Unused)</b> Default = 1
+    \return the html code for the form
+    \todo   Check why this function taks 6 parameters and uses only one.
+  */
+  public function getImageOptionLine ($file, $index, $dir, $type, $ref = 0, $data = 1) {
       $path = explode("/", $file);
       if (count($path) > 2)
           $filename = $path[0] . "/.../" . $path[count($path) - 1];
@@ -941,13 +962,18 @@ class Fileserver {
       "                        <option value=\"$file\">$filename</option>\n";
   }
 
-  //!---------------------------------------------------------
-  // @function    Fileserver::getImageAction
-  // @brief        Generates a javascript command to show an image preview.
-  // @return      The javascript code.
-  //!---------------------------------------------------------    
- 
-  function getImageAction ($file, $index, $dir, $type, $ref = 0, $data = 1) {
+  /*!
+    \brief  Generates a javascript command to show an image preview.
+    \param  $file Image file name
+    \param  $index  <b>(Unused)</b> Index in the file name array
+    \param  $dir    <b>(Unused)</b> Destination directory, one of 'src', or 'dst'
+    \param  $type   <b>(Unused)</b> Type of the image, e.g. 'preview'
+    \param  $ref    <b>(Unused)</b> Default is 0
+    \param  $data   <b>(Unused)</b> Default = 1
+    \return the javascript code.
+    \todo   Check why this function taks 6 parameters and uses only one.
+  */
+  public function getImageAction ($file, $index, $dir, $type, $ref = 0, $data = 1) {
       global $useThumbnails;
       global $genThumbnails;
 
@@ -974,69 +1000,17 @@ class Fileserver {
           "'$referer', $data)";
   }
 
-
-
- 
-  //!---------------------------------------------------------
-  // @function    Fileserver::getFiles
-  // @brief        Create the list of image files of the user.
-  //              Time series are represented by their first
-  //              image file.
-  // @return      Void
-  //!---------------------------------------------------------    
-  function getFiles() {
-    $this->files = array();
-    if (!file_exists($this->sourceFolder())) return False;
-    $this->getFilesFrom($this->sourceFolder(), "");
-    if (count($this->files) == 0) return False;
-    $extArr = $this->imageExtensions();
-
-    // When only one file type is listed, expand subimages if they exists.
-
-    if ( count ( $extArr ) == 1 ) {
-        $ext = $extArr[0];
-        if ( in_array( $ext, $this->multiImageExtensions)) {
-            $this->files = $this->getSubImages($this->files);
-        }
-    }
-
-    // Later adition: if multiple explicitly given types are listed, expand
-    // subimages. Therefore, subimages are only NOT listed when no explicit
-    // extension is given (useful to handle FILES, not IMAGES, like in the file
-    // manager).
-    if ( $this->expandSubImages && count ( $extArr ) > 1 ) {
-        $expandfiles = array();
-        foreach ($extArr as $mfext) {
-            if ( !in_array( $mfext, $this->multiImageExtensions)) { continue; }
-            foreach ($this->files as $key => $file) {
-                $ext = substr(strrchr($file, "."),1);
-                $ext = strtolower($ext);
-                if ($ext != $mfext) continue;
-                $expandfiles[] = $file;
-                unset ( $this->files[$key] );
-            }
-        }
-        if ( count($expandfiles) > 0 ) {
-          $this->files = array_merge($this->files,
-                  $this->getSubImages($expandfiles));
-        }
-    }
-    sort($this->files);
-    // TODO refactor
-    //$this->condenseTimeSeries();
-    // trim TIFF series to the first file in the sequence
-    //$this->condenseTiffSeries();
-    return True;
-  } 
-
-
-  //!---------------------------------------------------------
-  // @function    Fileserver::imgPreview
-  // @brief        Generates a link to retreive an image thumbnail,
-  //              which is a jpg file saved near the file itself.
-  // @return      A <img src> link to securely get the thumbnail.
-  //!---------------------------------------------------------    
-  function imgPreview ($image, $dir, $type = "preview_xy", $escape = true ) {
+  /*!
+    \brief  Generates a link to retreive an image thumbnail, which is a jpg
+            file saved near the file itself.
+    \param  $image  Image file name
+    \param  $dir    Destination directory, one of 'src' or 'dst'
+    \param  $type   Type of thumbnail, one of 'preview_xy', 'preview_xz',
+                    'preview_yz'; default is 'preview_xy'
+    \param  $escape if true, the code is escaped to be used in Javascript code
+    \return an <img src="..."> link to securely get the thumbnail.
+  */
+  public function imgPreview ($image, $dir, $type = "preview_xy", $escape = true ) {
       global $genThumbnails;
 
       if ( $dir == "src" ) {
@@ -1068,77 +1042,19 @@ class Fileserver {
       }
   }
 
-  //!---------------------------------------------------------
-  // @function    Fileserver::imgPreviewMode
-  // @brief        Checks whether an image preview is available
-  // @return      Numeric code: 0 not available, 2 2D, 3 3D
-  //!---------------------------------------------------------
-  function imgPreviewMode ($image, $dir, $type) {
-      global $genThumbnails;
-
-      if ( $dir == "src" ) {
-          $pdir =  $this->sourceFolder();
-      } else {
-          $pdir =  $this->destinationFolder();
-      }
-
-      $dir = dirname($pdir."/".$image);
-      $base = basename($pdir."/".$image);
-      // The thumbnail is saved in a subdirectory along with the image, and it
-      // has a suffix indicating the thumbnail type plus the jpg extension.
-      $path = stripslashes($dir."/hrm_previews/".$base.".".$type."_xy.jpg");
-
-      # $path2 = $dir."/hrm_previews/".$base.".".$type."_xz.jpg";
-      # unlink($path);
-      # unlink($path2);
-      # echo "Deleting $path2";
-      # rmdir($dir."/hrm_previews/");
-      # echo "Deleting dir";
-
-
-      $ret = 0;
-      if (file_exists($path)) {
-          // 2D preview
-          $ret = 2;
-          $path2 = stripslashes($dir."/hrm_previews/".$base.".".$type."_xz.jpg");
-          if (file_exists($path2)) {
-          // 3D preview
-              $ret = 3;
-          }
-      } else {
-          // No preview available
-          $ret = 0;
-      }
-
-      return $ret;
-
-  }
-
-  function findStrip ( $file, $type, $dir ) {
-      if ( $dir == "src" ) {
-          $pdir =  $this->sourceFolder();
-      } else {
-          $pdir =  $this->destinationFolder();
-      }
-      $dir = dirname($pdir."/".$file);
-      $base = basename($pdir."/".$file.".".$type);
-      $path = $dir."/hrm_previews/".$base;
-      $path = stripslashes($path);
-
-      $files = glob($path.".strip_*");
-      return $files;
-
-  }
-
-  //!---------------------------------------------------------
-  // @function    Fileserver::viewStrip
-  // @brief        Shows stacks and time series saved as jpeg strips in a css
-  //              container. Inspired by the paperbird code by Román Cortés:
-  //              http://www.romancortes.com/blog/css-paper-bird/
-  // @return      
-  //!---------------------------------------------------------
-
-  function viewStrip( $file, $type = "stack.comparison", $dir = "dest", $frame = false, $margin = 25 ) {
+  /*!
+    \brief  Shows stacks and time series saved as jpeg strips in a css container.
+            Inspired by the paperbird code by Román Cortés:
+    \param  $file   Image file name
+    \param  $type   Type of the strip, one of 'stack.compare', 'tSeries.compare',
+                    'preview_yz'; default is 'stack.compare'
+    \param  $dir    Destination directory, one of 'src' or 'dest', default is 'dest'
+    \param  $frame  True to draw a frame, false otherwise
+    \param  $margin Thickness of the margin around th strip, default is 25
+    \return html code to be output to the page
+    \see    http://www.romancortes.com/blog/css-paper-bird/
+  */
+  public function viewStrip( $file, $type = "stack.compare", $dir = "dest", $frame = false, $margin = 25 ) {
       global $allowHttpTransfer;
 
       $files = $this->findStrip($file, $type, $dir);
@@ -1288,57 +1204,16 @@ echo '</body></html>';
 
   }
 
-
-
-  //!---------------------------------------------------------
-  // @function    Fileserver::imgCompareMode
-  // @brief        Checks whether a restored image preview is available for
-  //              comparison with the original one.
-  // @return      Numeric code: 0 not available, 2 2D, 3 3D
-  //!---------------------------------------------------------
-  function imgCompareMode ($image, $dir, $type) {
-      global $genThumbnails;
-
-
-      if ( $dir == "src" ) {
-          // Only images in the destination directory, after deconvolution, can
-          // be compared with the originals.
-          return 0;
-
-      }
-
-      $pdest =  $this->destinationFolder();
-
-      $pdir = dirname($pdest."/".$image);
-      $basename = basename($pdest."/".$image);
-
-      // The thumbnail is saved along with the image, and it has a suffix
-      // indicating the thumbnail type plus the jpg extension.
-      $path = $pdir."/hrm_previews/".$basename.".".$type."_xy.jpg";
-      $path = stripslashes($path);
-      $opath = $pdir."/hrm_previews/".$basename.".original.".$type."_xy.jpg";
-      $opath = stripslashes($opath);
-      $ret = 0;
-      if (file_exists($path) && file_exists($opath) ) {
-          // 2D preview
-          $ret = 2;
-          $path2 = $pdir."/hrm_previews/".$basename.".".$type."_xz.jpg";
-          $path2 = stripslashes($path2);
-          $opath2 = $pdir."/hrm_previews/".$basename.".original.".$type."_xz.jpg";
-          $opath2 = stripslashes($opath2);
-          if (file_exists($path2) && file_exists($opath2) ) {
-          // 3D preview
-              $ret = 3;
-          }
-      } else {
-          // No preview available for comparison
-          $ret = 0;
-      }
-      return $ret;
-
-  }
-
-  function previewPage ($file , $op = "close", $mode = "MIP", $size = 400) {
+  /*!
+    \brief  Creates the preview page for the file browser
+    \param  $file Image file name
+    \param  $op   Operation, one of 'close' or 'home'. Default is "close"
+    \param  $mode Display mode. One of "MIP", "SFP", "stack", "tSeries", "log",
+                  "history", "remarks". Default is "MIP"
+    \param  $size Size of the thumbnail. Default is 400
+    \return HTML code (whole page)
+  */
+  public function previewPage ($file , $op = "close", $mode = "MIP", $size = 400) {
       global $allowHttpTransfer;
 
       $file = stripslashes($file);
@@ -1443,8 +1318,6 @@ echo '</body></html>';
       }
       }
 
-
-
       $desc['MIP'] = "MIP";
       $desc['SFP'] = "SFP";
       $desc['stack'] = "slicer";
@@ -1471,13 +1344,11 @@ echo '</body></html>';
       $tip['remarks'] = "See the image restoration warnings.";
       $tip['log'] = "See the image restoration log file";
 
-
       $link = "file_management.php?compareResult=".rawurlencode($file).
           "&amp;op=$op&amp;mode=";
       $mlink = "file_management.php?getMovie=";
 
       echo "<div id=\"prevMenu\">\n";
-
 
       foreach ($path as $key => $val) {
           $class = 'menuEntry';
@@ -1591,7 +1462,6 @@ echo '</body></html>';
 
       echo "\n</tr>";
 
-
       $othumb_1 = rawurlencode($file.".original.".$size."_xz.jpg");
       $rthumb_1 = $file.".".$size."_xz.jpg";
       $path = $pdest."/hrm_previews/".$rthumb_1;
@@ -1610,7 +1480,6 @@ echo '</body></html>';
       
       echo "\n</table>\n\n";
 
-
       }
       echo "</div>\n";
       echo "<div id=\"report\"></div>";
@@ -1619,15 +1488,16 @@ echo '</body></html>';
  
   }
 
-
-
-  //!---------------------------------------------------------
-  // @function    Fileserver::compareResult
-  // @brief        Shows original/result previews side by side.
-  // @return      
-  //!---------------------------------------------------------
-
-  function compareResult( $file, $size = "400", $op = "close", $mode="MIP" ) {
+  /*!
+    \brief Shows original/result previews side by side.
+    \param  $file Image file name
+    \param  $size Size of the thumbnail. Default is 400
+    \param  $op   Operation, one of 'close' or 'home'. Default is "close"
+    \param  $mode Display mode. One of "MIP, "SFP", "stack", "tSeries", "log", 
+                  "history", "remarks". Default is "MIP"
+    \return HTML code (whole page)
+  */
+  public function compareResult( $file, $size = "400", $op = "close", $mode="MIP" ) {
       global $allowHttpTransfer;
 
       $file = stripslashes($file);
@@ -1773,16 +1643,17 @@ echo '</body></html>';
       flush();
   }
 
-
-
-
-  //!---------------------------------------------------------
-  // @function    Fileserver::genPreview
-  // @brief        Calls hucore to open an image and generate a jpeg preview.
-  // @return      
-  //!---------------------------------------------------------
-
-  function genPreview( $file, $src, $dest, $index, $sizes = "preview", $data = 0 ) {
+  /*!
+    \brief  Calls hucore to open an image and generate a jpeg preview.
+    \param  $file   Image file name
+    \param  $src    Directory, one of 'src' or 'dest'
+    \param  $dest   Directory, one of 'src' or 'dest'
+    \param  $index  Index
+    \param  $sizes  Either an integer, or "preview". Default = "preview"
+    \param  $data   Either some data (unclear) of 0. Default =  0
+    \return  HTML page (complete)
+  */
+  public function genPreview( $file, $src, $dest, $index, $sizes = "preview", $data = 0 ) {
 
       $excludeTitle = true;
       include("header.inc.php");
@@ -1930,14 +1801,14 @@ echo '</body></html>';
       flush();
   }
 
-  //!---------------------------------------------------------
-  // @function    Fileserver::getThumbnail
-  // @brief        Serve a certain file from the dest directory. Intended to
-  //              serve jpg thumbails in combination with imgThumbnail.
-  // @return      The binary file.
-  //!---------------------------------------------------------    
- 
-  function getThumbnail($file, $dir) {
+  /*!
+    \brief  Serves a certain file from the dest directory. Intended to serve
+            jpg thumbails in combination with imgThumbnail.
+    \param  $file Image file name
+    \param  $dir  Directory, either 'src' or 'dest'
+    \return the binary file.
+  */
+  public function getThumbnail($file, $dir) {
       // rawurldecode
       if ( $dir == "src" ) {
           $pdir =  $this->sourceFolder();
@@ -1955,13 +1826,13 @@ echo '</body></html>';
       readfile ($path);
   }
 
-  //!---------------------------------------------------------
-  // @function    Fileserver::getMovie
-  // @brief        Serves an existing AVI movie.
-  // @param       file and diretory label ('src' or 'dest').
-  // @return      Void
-  //!---------------------------------------------------------  
-  function getMovie($file, $dir = "dest" ) { 
+  /*!
+    \brief  Serves an existing AVI movie
+    \param  $file Image file name
+    \param  $dir  Directory, either 'src' or 'dest'. Default is 'dest'
+    \return the binary file.
+  */
+  public function getMovie($file, $dir = "dest" ) { 
 
       if ( $dir == "src" ) {
           $pdir =  $this->sourceFolder();
@@ -1993,15 +1864,240 @@ echo '</body></html>';
       }
   }
 
+  /*!
+    \brief  Returns true if at least one file is selected
+    \return true if at least one file is selected
+  */
+  public function hasSelection() {
+    $selection = $this->selectedFiles();
+    return (count($selection)>0);
+  } 
+  
+  /*!
+    \brief  Checks if a folder contains a given file name
+    \return true if the folder contains the file name
+  */
+  public function folderContains($folder, $string) {
+    if (!file_exists($folder)) {
+      return False;
+    } 
+    $dir = opendir($folder);
+    $result = False;
+    while ($name = readdir($dir)) {
+      if (strstr($name, $string)) { 
+	$result = True;
+      } 
+    }
+    closedir($dir);
+    return $result;
+  } 
 
-  //!---------------------------------------------------------
-  // @function    Fileserver::getDestFiles
-  // @brief        Create the list of restored image files of the user.
-  //              Time series are represented by their first
-  //              image file.
-  // @return      Void
-  //!---------------------------------------------------------    
-  function getDestFiles() {
+  /*!
+    \brief  Checks if a folder contains newer files than a given date
+    \param  $folder Directory to be checked
+    \param  $date   Date string
+    \return true if at least one file is more recent than date
+  */
+  public function folderContainsNewerFile($folder, $date) {
+    if (!file_exists($folder)) {
+      return False;
+    } 
+    $dir = opendir($folder);
+    $result = False;
+    $db = new DatabaseConnection();  
+    while ($name = readdir($dir)) {
+      $filename = $folder . '/' . $name;
+      if (is_dir($filename)) continue;
+      $filedate = filemtime($filename);
+      $filedate = $db->fromUnixTime($filedate);
+      if ($filedate > $date) $result = True;
+    }
+    closedir($dir);
+    return $result;    
+  } 
+
+/*
+                              PRIVATE FUNCTIONS
+*/
+
+  /*!
+    \brief  Checks whether an image preview is available
+    \param  $image  Image file name
+    \param  $dir    Destination directory, one of 'src' or 'dst'
+    \param  $type   Type of thumbnail, one of 'preview_xy', 'preview_xz',
+                    'preview_yz'; default is 'preview_xy'
+    \return  a numeric code: 0 -> not available, 2 -> 2D, 3 -> 3D
+  */
+  private function imgPreviewMode ($image, $dir, $type) {
+      global $genThumbnails;
+
+      if ( $dir == "src" ) {
+          $pdir =  $this->sourceFolder();
+      } else {
+          $pdir =  $this->destinationFolder();
+      }
+
+      $dir = dirname($pdir."/".$image);
+      $base = basename($pdir."/".$image);
+      // The thumbnail is saved in a subdirectory along with the image, and it
+      // has a suffix indicating the thumbnail type plus the jpg extension.
+      $path = stripslashes($dir."/hrm_previews/".$base.".".$type."_xy.jpg");
+
+      # $path2 = $dir."/hrm_previews/".$base.".".$type."_xz.jpg";
+      # unlink($path);
+      # unlink($path2);
+      # echo "Deleting $path2";
+      # rmdir($dir."/hrm_previews/");
+      # echo "Deleting dir";
+
+
+      $ret = 0;
+      if (file_exists($path)) {
+          // 2D preview
+          $ret = 2;
+          $path2 = stripslashes($dir."/hrm_previews/".$base.".".$type."_xz.jpg");
+          if (file_exists($path2)) {
+          // 3D preview
+              $ret = 3;
+          }
+      } else {
+          // No preview available
+          $ret = 0;
+      }
+
+      return $ret;
+
+  }
+
+  /*!
+    \brief  Creates the list of source image files for the user. Time series are
+            represented by their first image file.
+            The list is stored in this->files
+  */
+  private function getFiles() {
+    $this->files = array();
+    if (!file_exists($this->sourceFolder())) return False;
+    $this->getFilesFrom($this->sourceFolder(), "");
+    if (count($this->files) == 0) return False;
+    $extArr = $this->imageExtensions();
+
+    // When only one file type is listed, expand subimages if they exists.
+
+    if ( count ( $extArr ) == 1 ) {
+        $ext = $extArr[0];
+        if ( in_array( $ext, $this->multiImageExtensions)) {
+            $this->files = $this->getSubImages($this->files);
+        }
+    }
+
+    // Later adition: if multiple explicitly given types are listed, expand
+    // subimages. Therefore, subimages are only NOT listed when no explicit
+    // extension is given (useful to handle FILES, not IMAGES, like in the file
+    // manager).
+    if ( $this->expandSubImages && count ( $extArr ) > 1 ) {
+        $expandfiles = array();
+        foreach ($extArr as $mfext) {
+            if ( !in_array( $mfext, $this->multiImageExtensions)) { continue; }
+            foreach ($this->files as $key => $file) {
+                $ext = substr(strrchr($file, "."),1);
+                $ext = strtolower($ext);
+                if ($ext != $mfext) continue;
+                $expandfiles[] = $file;
+                unset ( $this->files[$key] );
+            }
+        }
+        if ( count($expandfiles) > 0 ) {
+          $this->files = array_merge($this->files,
+                  $this->getSubImages($expandfiles));
+        }
+    }
+    sort($this->files);
+    // TODO refactor
+    //$this->condenseTimeSeries();
+    // trim TIFF series to the first file in the sequence
+    //$this->condenseTiffSeries();
+    return True;
+  } 
+
+  /*!
+    \brief  Returns the file name of a strip, a file that simulates browsing 
+            through the planes of a 3D dataset or the time points of a time
+            series directly in in the browser in a before-after view
+    \param  $file   Image file name
+    \param  $type   Type of thumbnail, one of 'preview_xy', 'preview_xz',
+                    'preview_yz'; default is 'preview_xy'
+    \param  $dir    Destination directory, one of 'src' or 'dst'
+    \return file name of the strip file
+  */
+  private function findStrip ( $file, $type, $dir ) {
+      if ( $dir == "src" ) {
+          $pdir =  $this->sourceFolder();
+      } else {
+          $pdir =  $this->destinationFolder();
+      }
+      $dir = dirname($pdir."/".$file);
+      $base = basename($pdir."/".$file.".".$type);
+      $path = $dir."/hrm_previews/".$base;
+      $path = stripslashes($path);
+
+      $files = glob($path.".strip_*");
+      return $files;
+
+  }
+
+  /*!
+    \brief  Checks whether a restored image preview is available for comparison
+            with the original one.
+    \param  $image  Image file name
+    \param  $dir    Destination directory, <b>must be 'dest'</b>
+    \param  $type   Type of the thumbnail
+    \return numeric code: 0 -> not available, 2 -> 2D, 3 -> 3D
+  */
+  private function imgCompareMode ($image, $dir, $type) {
+      global $genThumbnails;
+
+      if ( $dir == "src" ) {
+          // Only images in the destination directory, after deconvolution, can
+          // be compared with the originals.
+          return 0;
+      }
+
+      $pdest =  $this->destinationFolder();
+
+      $pdir = dirname($pdest."/".$image);
+      $basename = basename($pdest."/".$image);
+
+      // The thumbnail is saved along with the image, and it has a suffix
+      // indicating the thumbnail type plus the jpg extension.
+      $path = $pdir."/hrm_previews/".$basename.".".$type."_xy.jpg";
+      $path = stripslashes($path);
+      $opath = $pdir."/hrm_previews/".$basename.".original.".$type."_xy.jpg";
+      $opath = stripslashes($opath);
+      $ret = 0;
+      if (file_exists($path) && file_exists($opath) ) {
+          // 2D preview
+          $ret = 2;
+          $path2 = $pdir."/hrm_previews/".$basename.".".$type."_xz.jpg";
+          $path2 = stripslashes($path2);
+          $opath2 = $pdir."/hrm_previews/".$basename.".original.".$type."_xz.jpg";
+          $opath2 = stripslashes($opath2);
+          if (file_exists($path2) && file_exists($opath2) ) {
+          // 3D preview
+              $ret = 3;
+          }
+      } else {
+          // No preview available for comparison
+          $ret = 0;
+      }
+      return $ret;
+
+  }
+
+  /*!
+    \brief  Creates the list of restored (result) image files of the user.
+            Time series are represented by their first image file
+  */
+  private function getDestFiles() {
     $this->destFiles = array();
     if (!file_exists($this->destinationFolder())) return False;
     $this->getDestFilesFrom($this->destinationFolder(), "");
@@ -2013,26 +2109,25 @@ echo '</body></html>';
     //$this->condenseTiffSeries();
   } 
  
-  //!---------------------------------------------------------
-  // @function    Fileserver::basename
-  // @brief        Answer the filename of the image without the
-  //              numbers marking its position in a time 
-  //              series. These numbers are expected to be 
-  //              directly before the . of the file extension.
-  // @param       filename  String  
-  // @return      String
-  //!---------------------------------------------------------  
-  function basename($filename) {
+  /*!
+    \brief  Returns the basename of the file, without numeric extension. This
+            is the part of the file name that is common to file series. The
+            numberic extension is expected to be directly before the . of the
+            file extension. Please mind that the behavior of the built-in
+            PHP function basename() is different!
+    \param  $filename File name
+    \return basename without numeric extension
+  */
+  private function basename($filename) {
     $basename = preg_replace("/(\w+|\/)([^0-9])([0-9]+)(\.)(\w+)/", "$1$2$4$5", $filename); 
     return $basename;
   }
-  //!---------------------------------------------------------
-  // @function    Fileserver::condenseTimeSeries
-  // @brief        Remove all but the first file from each time
-  //              series in the files attribute.
-  // @return      Void
-  //!---------------------------------------------------------      
-  function condenseTimeSeries() {
+  
+  /*!
+    \brief  Removes all but the first file from each time series in the files
+            attribute.
+  */
+  private function condenseTimeSeries() {
     if (count($this->files)==0) return False;
     $time_series =  preg_grep("/\w+[0-9]+\.\w+/", $this->files);
     $lastValue = "";
@@ -2044,9 +2139,13 @@ echo '</body></html>';
       $lastValue = $value;
     } 
   }
-  // TODO refactor
-  // remove single TIFF and TIFF series with Leica style numbering from the file list
-  function trimTiffSeries() {
+
+  /*!
+    \brief  Removes single TIFF and TIFF series with Leica style numbering from
+            the file list
+    \todo Refactor
+  */
+  private function trimTiffSeries() {
     if (count($this->files)==0) return False;
     $tiff_series = preg_grep("/[^_]+_(T|t|Z|z|CH|ch)[0-9]+\w+\.\w+/", $this->files);
     foreach ($tiff_series as $key => $value) {
@@ -2057,18 +2156,25 @@ echo '</body></html>';
 	unset($this->files[$key]);
     }
   }
-  // TODO refactor
-  // remove single TIFF and numbered TIFF series from the file list
-  function trimTiffLeica() {
+
+  /*!
+    \brief  Removes single TIFF and numbered TIFF series from the file list
+    \todo Refactor
+  */
+  private function trimTiffLeica() {
     if (count($this->files)==0) return False;
     $tiff = preg_grep("/[^_]+_(T|t|Z|z|CH|ch)[0-9]+\w+\.\w+/", $this->files, PREG_GREP_INVERT);
     foreach ($tiff as $key => $value) {
 	unset($this->files[$key]);
     }
   }
-  // TODO refactor
-  // remove numbered TIFF series and TIFF series with Leica style numbering from the file list
-  function trimTiff() {
+
+  /*!
+    \brief  Removes numbered TIFF series and TIFF series with Leica style
+            numbering from the file list
+    \todo Refactor
+  */
+  private function trimTiff() {
     if (count($this->files)==0) return False;
     $tiff_series = preg_grep("/[^_]+_(T|t|Z|z|CH|ch)[0-9]+\w+\.\w+/", $this->files);
     foreach ($tiff_series as $key => $value) {
@@ -2080,42 +2186,43 @@ echo '</body></html>';
 	unset($this->files[$key]);
     }*/
   }
-  function trimStk() {
+
+  /*!
+    \brief  Trims STK files
+  */
+  private function trimStk() {
     if (count($this->files)==0) return False;
     $stk = preg_grep("/[^_]+_(T|t)[0-9]+\.\w+/", $this->files, PREG_GREP_INVERT);
     foreach ($stk as $key => $value) {
 	unset($this->files[$key]);
     }
   }
-  function trimStkSeries() {
+
+  /*!
+    \brief  Trims STK time series
+  */
+  private function trimStkSeries() {
     if (count($this->files)==0) return False;
     $stk = preg_grep("/[^_]+_(T|t)[0-9]+\.\w+/", $this->files);
     foreach ($stk as $key => $value) {
 	unset($this->files[$key]);
     }
   }
-  // condense TIFF series to the first file in the sequence
-  //!---------------------------------------------------------
-  // @function    Fileserver::leicaStyleNumberingBasename
-  // @brief        Answer the filename of the image without the
-  //              numbers marking its position in a TIFF 
-  //              series. These numbers are expected to be 
-  //              directly before the . of the file extension.
-  // @param       filename  String  
-  // @return      String
-  //!---------------------------------------------------------  
-  function leicaStyleNumberingBasename($filename) {
+  
+  /*!
+    \brief  Gets the basename of Leica TIFF series
+    \param  $filename  File name
+    \return basename of Leica TIFF series
+  */
+  private function leicaStyleNumberingBasename($filename) {
     $basename = preg_replace("/([^_]+|\/)(_)(T|t|Z|z|CH|ch)([0-9]+)(\w+)(\.)(\w+)/", "$1$6$7", $filename);
     return $basename;
   }
-  // stack TIFF series to the first file in the sequence
-  //!---------------------------------------------------------
-  // @function    Fileserver::condenseTiffSeries
-  // @brief        Remove all but the first file from each TIFF
-  //              series in the files attribute.
-  // @return      Void
-  //!---------------------------------------------------------      
-  function condenseTiffLeica() {
+
+  /*!
+    \brief Condensed Leica TIFF series to the first file in the series
+  */
+  private function condenseTiffLeica() {
     if (count($this->files)==0) return False;
     $tiff_series =  preg_grep("/[^_]+_(T|t|Z|z|CH|ch)[0-9]+\w+\.\w+/", $this->files);
     $lastValue = "";
@@ -2127,28 +2234,21 @@ echo '</body></html>';
       $lastValue = $value;
     } 
   }
-  // stack STK series to the first file in the sequence
-  //!---------------------------------------------------------
-  // @function    Fileserver::stkSeriesBasename
-  // @brief        Answer the filename of the image without the
-  //              numbers marking its time point in an STK 
-  //              series. These numbers are expected to be 
-  //              directly before the . of the file extension.
-  // @param       filename  String  
-  // @return      String
-  //!---------------------------------------------------------  
-  function stkSeriesBasename($filename) {
+  
+  /*!
+    \brief  Gets the basename of STK time series
+    \param  $filename File name
+    \return basename of STK time series
+  */
+  private function stkSeriesBasename($filename) {
     $basename = preg_replace("/([^_]+|\/)(_)(T|t)([0-9]+)(\.)(\w+)/", "$1$5$6", $filename);
     return $basename;
   }
-  // stack STK series to the first file in the sequence
-  //!---------------------------------------------------------
-  // @function    Fileserver::condenseStkSeries
-  // @brief        Remove all but the first file from each STK
-  //              series in the files attribute.
-  // @return      Void
-  //!---------------------------------------------------------      
-  function condenseStkSeries() {
+  
+  /*!
+    \brief  Condensed STK time series series to the first file in the series
+  */
+  private function condenseStkSeries() {
     if (count($this->files)==0) return False;
     $stk_series =  preg_grep("/[^_]+_(T|t)[0-9]+\.\w+/", $this->files);
     $lastValue = "";
@@ -2160,20 +2260,17 @@ echo '</body></html>';
       $lastValue = $value;
     } 
   }
-  //!---------------------------------------------------------
-  // @function    Fileserver::relocateOldPreview
-  // @brief        Since HRM 1.2, thumbnails and previews
-  //              are located in a subdirectory hrm_previews.
-  //              When and old preview is found in the way, we
-  //              can use this function to move it to the new location. This
-  //              code is mostly harmless, but we can remove it after a
-  //              couple of releases.
-  // @param       dir  Path to the old preview file's directory;
-  // @param       entry File name;
-  // @return      Void
-  //!---------------------------------------------------------  
- 
-  function relocateOldPreview($dir, $entry) {
+  
+  /*!
+    \brief  Since HRM 1.2, thumbnails and previews  are located in a
+            subdirectory hrm_previews. When and old preview is found in
+            the way, we can use this function to move it to the new location.
+            This code is mostly harmless, but we can remove it after a couple
+            of releases.
+    \param  $dir    Path to the old preview file's directory;
+    \param  $entry  File name;
+  */
+  private function relocateOldPreview($dir, $entry) {
       if (strstr($entry, ".jpg") || strstr($entry, ".avi")) {
           // Relocate old HRM previews to the new subdirectory.
           // Since HRM 1.2, previews are all stored in a subdirectory
@@ -2196,17 +2293,13 @@ echo '</body></html>';
       }
   }
 
-  //!---------------------------------------------------------
-  // @function    Fileserver::getFilesFrom
-  // @brief        The recursive function that collects the 
-  //              image files from the user's image folder and
-  //              its subfolders.
-  // @param       startDir  String  The folder to start with  
-  // @param       prefix    String  The actual path prefix 
-  //              relative to the user's image folder. 
-  // @return      Void
-  //!---------------------------------------------------------  
-  function getFilesFrom($startDir, $prefix) {
+  /*!
+    \brief  The recursive function that collects the  image files from the
+            user's source folder and its subfolders
+    \param  $startDir  The folder to start from
+    \param  $prefix    The actual path prefix relative to the user's image folder
+  */
+  private function getFilesFrom($startDir, $prefix) {
     $dir = dir($startDir);
     while ($entry = $dir->read()) { 
       if ($entry != "." && $entry != ".." && $entry != "hrm_previews") { 
@@ -2236,17 +2329,14 @@ echo '</body></html>';
     }
     $dir->close();
   }
-  //!---------------------------------------------------------
-  // @function    Fileserver::getDestFilesFrom
-  // @brief        The recursive function that collects the 
-  //              image files from the user's destination image folder and
-  //              its subfolders.
-  // @param       startDir  String  The folder to start with  
-  // @param       prefix    String  The actual path prefix 
-  //              relative to the user's image folder. 
-  // @return      Void
-  //!---------------------------------------------------------  
-  function getDestFilesFrom($startDir, $prefix) {
+  
+  /*!
+    \brief  The recursive function that collects the  image files from the
+            user's destination folder and its subfolders
+    \param  $startDir  The folder to start from
+    \param  $prefix    The actual path prefix relative to the user's destination folder
+  */
+  private function getDestFilesFrom($startDir, $prefix) {
       $dir = dir($startDir);
       while ($entry = $dir->read()) { 
           if ($entry != "." && $entry != ".." && $entry != "hrm_previews") { 
@@ -2275,19 +2365,15 @@ echo '</body></html>';
       $dir->close();
   }
 
-  //!---------------------------------------------------------
-  // @function    Fileserver::cleanNonImages
-  // @brief        The recursive function that deletes all files in a directory
-  //              that are not valid images.
-  // @param       startDir  String  The folder to start with  
-  // @param       prefix    String  The actual path prefix 
-  //              relative to the user's image folder. 
-  // @param       valid     String pointer, to accumulate extracted files.
-  // @param       msg       String pointer, to accumulate messages.
-  // @return      Void
-  //!---------------------------------------------------------  
- 
-  function cleanNonImages($startDir, $prefix, &$valid, &$msg) {
+  /*!
+    \brief  The recursive function that deletes all files in a directory
+            that are not valid images.
+    \param  $startDir The folder to start from
+    \param  $prefix   The actual path prefix relative to the user's image folder
+    \param  $valid    String pointer, to accumulate extracted files
+    \param  $msg      String pointer, to accumulate messages
+  */
+  private function cleanNonImages($startDir, $prefix, &$valid, &$msg) {
     $dir = dir($startDir);
     while ($entry = $dir->read()) { 
         if ($entry != "." && $entry != ".." && $entry != "hrm_previews") { 
@@ -2321,19 +2407,16 @@ echo '</body></html>';
     }
   }
  
- 
-  // TODO refactor
-  //!---------------------------------------------------------
-  // @function    Fileserver::pointSpreadFunctionFilesFrom
-  // @brief        The recursive function that collects the 
-  //              ICS format files from the user's image folder and
-  //              its subfolders.
-  // @param       startDir  String  The folder to start with  
-  // @param       prefix    String  The actual path prefix 
-  //              relative to the user's image folder. 
-  // @return      Array
-  //!---------------------------------------------------------  
-  function listFilesFrom($startDir, $prefix, $extension) {
+  /*!
+    \brief  The recursive function that collects the files with given extension
+            from the user's image folder and its subfolders
+    \param  $startDir The folder to start from
+    \param  $prefix   The actual path prefix relative to the user's image folder
+    \param  $valid    String pointer, to accumulate extracted files
+    \param  $extension  File extension
+    \return Array of file names with given extension
+  */
+  private function listFilesFrom($startDir, $prefix, $extension) {
     $files = array();
     $dir = dir($startDir);
     while ($entry = $dir->read()) { 
@@ -2364,47 +2447,5 @@ echo '</body></html>';
     $dir->close();
     return $files;
   }
-  
-  //!---------------------------------------------------------
-  // @function    Fileserver::hasSelection
-  // @brief        Answer true if at least one file is selected.
-  // @return      Bool
-  //!---------------------------------------------------------      
-  function hasSelection() {
-    $selection = $this->selectedFiles();
-    return (count($selection)>0);
-  } 
-  
-  function folderContains($folder, $string) {
-    if (!file_exists($folder)) {
-      return False;
-    } 
-    $dir = opendir($folder);
-    $result = False;
-    while ($name = readdir($dir)) {
-      if (strstr($name, $string)) { 
-	$result = True;
-      } 
-    }
-    closedir($dir);
-    return $result;
-  } 
 
-  function folderContainsNewerFile($folder, $date) {
-    if (!file_exists($folder)) {
-      return False;
-    } 
-    $dir = opendir($folder);
-    $result = False;
-    $db = new DatabaseConnection();  
-    while ($name = readdir($dir)) {
-      $filename = $folder . '/' . $name;
-      if (is_dir($filename)) continue;
-      $filedate = filemtime($filename);
-      $filedate = $db->fromUnixTime($filedate);
-      if ($filedate > $date) $result = True;
-    }
-    closedir($dir);
-    return $result;    
-  } 
- }
+} // End of FileServer class

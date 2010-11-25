@@ -5,8 +5,8 @@
 require_once ("Database.inc");
 
 //!---------------------------------------------------------
-// @class    Parameter
-// @brief     A single parameter of a parameter setting
+// \class    Parameter
+// \brief     A single parameter of a parameter setting
 //           Superclass of specific parameter classes
 //!---------------------------------------------------------
 class Parameter {
@@ -14,11 +14,10 @@ class Parameter {
 	public $name; // @public name  String  The name of the parameter
 
 	//!---------------------------------------------------------
-	// @function    Parameter::Parameter
-	// @brief        Set a parameter. The parameter is stored
+	// \brief        Set a parameter. The parameter is stored
 	//              in the setting under its name.
-	// @param       name  String  The name of the new parameter
-	// @return      Void
+	// \param       name  String  The name of the new parameter
+	// \return      Void
 	//!---------------------------------------------------------  
 	function Parameter($name) {
 		$this->name = $name;
@@ -26,11 +25,10 @@ class Parameter {
 	}
 
 	//!---------------------------------------------------------
-	// @function    Parameter::numberOfValues
-	// @brief        Values may be single values or arrays of 
+	// \brief        Values may be single values or arrays of 
 	//              values. Answers the number of values for
 	//              the receiver.
-	// @return      Integer
+	// \return      Integer
 	//!---------------------------------------------------------  
 	function numberOfValues() {
 		if (!is_array($this->value()))
@@ -39,22 +37,20 @@ class Parameter {
 	}
 
 	//!---------------------------------------------------------
-	// @function    Parameter::check
-	// @brief        Answer true if the parameter is set to a valid
+	// \brief        Answer true if the parameter is set to a valid
 	//              value and false otherwise. 
-	// @return      Boolean
+	// \return      Boolean
 	//!---------------------------------------------------------  
 	function check() {
 		return $this->checkValue($this->value());
 	}
 
 	//!---------------------------------------------------------
-	// @function    Parameter::checkValue
-	// @brief        Answer true if value is a valid value for the
+	// \brief        Answer true if value is a valid value for the
 	//              receiver and false otherwise. Subclasses may
 	//              override the method to do something appropriate.
-	// @param       value  String   The value to be checked  
-	// @return      Boolean
+	// \param       value  String   The value to be checked  
+	// \return      Boolean
 	//!---------------------------------------------------------  
 	function checkValue($value) {
 		return $value != '';
@@ -85,61 +81,56 @@ class Parameter {
 	}
 
 	//!---------------------------------------------------------
-	// @function    Parameter::value
-	// @brief        Answers the value of the parameter.
-	// @return      Object
+	// \brief        Answers the value of the parameter.
+	// \return      Object
 	//!---------------------------------------------------------  
 	function value() {
 		return $this->value;
 	}
 
 	//!---------------------------------------------------------
-	// @function    Parameter::internalValue
-	// @brief        Answers the internal representation of the
+	// \brief        Answers the internal representation of the
 	//              parameters value. 
-	// @return      Object
+	// \return      Object
 	//!---------------------------------------------------------  
 	function internalValue() {
 		return $this->value();
 	}
 
 	//!---------------------------------------------------------
-	// @function    Parameter::internalPossibleValues
-	// @brief        Answer the possible values for the parameter
+	// \brief        Answer the possible values for the parameter
 	//              in their internal representation. This method
 	//              will be overriden when the internal 
 	//              representation differs from the external
 	//              representation.
-	// @return      array
+	// \return      array
 	//!---------------------------------------------------------  
 	function internalPossibleValues() {
 		return $this->possibleValues();
 	}
 
 	//!---------------------------------------------------------
-	// @function    Parameter::setValue
-	// @brief        Set the value of the parameter to value.
+	// \brief        Set the value of the parameter to value.
 	//              value is usually a string but it might be
 	//              an array in some cases
-	// @param       value  String  The new value of the parameter
-	// @return      Void
+	// \param       value  String  The new value of the parameter
+	// \return      Void
 	//!---------------------------------------------------------  
 	function setValue($value) {
 		$this->value = $value;
 	}
 
 	//!---------------------------------------------------------
-	// @function    Parameter::printRadioButtonForValue
-	// @brief        print one radio button for this parameter 
+	// \brief        print one radio button for this parameter 
 	//              for the value value. The button will be
 	//              checked if value is the internal value of
 	//              the parameter.
-	// @param       value       Object  the value for the radio
+	// \param       value       Object  the value for the radio
 	//                                  button
-	// @param       customHTML  String  further html options to 
+	// \param       customHTML  String  further html options to 
 	//                                  be used for the radio 
 	//                                  button
-	// @return      Void
+	// \return      Void
 	//!--------------------------------------------------------- 
 	function printRadioButtonForValue($value, $customHTML) {
 		$result = '<input type="radio" name="' . $this->name() . '" value="' . $value . '" ';
@@ -331,13 +322,12 @@ class Parameter {
 	}
 
 	//!---------------------------------------------------------
-	// @function    Parameter::translatedValue
-	// @brief        Answer the value of the parameter in a 
+	// \brief        Answer the value of the parameter in a 
 	//              translated form that is in the form that
 	//              is used in the script. Per default it is
 	//              just the value but this will be changed
 	//              in subclasses when neccessary.
-	// @return      string
+	// \return      string
 	//!---------------------------------------------------------    
 	function translatedValue() {
 		return $this->value();
@@ -362,31 +352,28 @@ class ChoiceParameter extends Parameter {
 	}
 
 	//!---------------------------------------------------------
-	// @function    ChoiceParameter::setPossibleValues
-	// @brief        Set the possible values of this parameter
+	// \brief        Set the possible values of this parameter
 	//              to values.
-	// @param       values  array  the possible values to be set
-	// @return      void
+	// \param       values  array  the possible values to be set
+	// \return      void
 	//!---------------------------------------------------------    
 	function setPossibleValues($values) {
 		$this->possibleValues = $values;
 	}
 
 	//!---------------------------------------------------------
-	// @function    ChoiceParameter::possibleValues
-	// @brief        Answer all values that are possible for this
+	// \brief        Answer all values that are possible for this
 	//              choice parameter.
-	// @return      array
+	// \return      array
 	//!---------------------------------------------------------  
 	function possibleValues() {
 		return $this->possibleValues;
 	}
 
 	//!---------------------------------------------------------
-	// @function    ChoiceParameter::possibleValuesString
-	// @brief        Answer a text containing the possible values
+	// \brief        Answer a text containing the possible values
 	//              for this parameter seperated by ',' 
-	// @return      string
+	// \return      string
 	//!---------------------------------------------------------  
 	function possibleValuesString() {
 		$string = '';
@@ -414,12 +401,11 @@ class ChoiceParameter extends Parameter {
 	}
 
 	//!---------------------------------------------------------
-	// @function    ChoiceParameter::printRadioButtons
-	// @brief        Print radio buttons for the possible values
+	// \brief        Print radio buttons for the possible values
 	//              of the parameter, one in a line. The button
 	//              for the current value of the parameter will
 	//              be checked.
-	// @return      void
+	// \return      void
 	//!---------------------------------------------------------  
 	function printRadioButtons() {
 		$possibleValues = $this->possibleValues();
@@ -433,12 +419,11 @@ class ChoiceParameter extends Parameter {
 	}
 
 	//!---------------------------------------------------------
-	// @function    ChoiceParameter::printSingleLineRadioButtons
-	// @brief        Print radio buttons for the possible values
+	// \brief        Print radio buttons for the possible values
 	//              of the parameter, all in the same line. The 
 	//              button for the current value of the parameter 
 	//              will be checked.
-	// @return      void
+	// \return      void
 	//!---------------------------------------------------------  
 	function printSingleLineRadioButtons() {
 		foreach ($this->internalPossibleValues() as $possibleValue) {
@@ -457,13 +442,12 @@ class ChoiceParameter extends Parameter {
 	}
 
 	//!---------------------------------------------------------
-	// @function    ChoiceParameter::checkValue
-	// @brief        Answer true if value is a valid value for the
+	// \brief        Answer true if value is a valid value for the
 	//              receiver and false otherwise. The value of a
 	//              choice parameter must be one of its possible
 	//              values.
-	// @param       value  String   The value to be checked  
-	// @return      Boolean
+	// \param       value  String   The value to be checked  
+	// \return      Boolean
 	//!---------------------------------------------------------  
 	function checkValue($value) {
 		$result = parent :: checkValue($value);
@@ -565,11 +549,10 @@ class NumericalParameter extends Parameter {
 	}
 
 	//!---------------------------------------------------------
-	// @function    NumericalParameter::setMin
-	// @brief        Set the minimal allowed value for the 
+	// \brief        Set the minimal allowed value for the 
 	//              parameter (the value itself may be allowed
 	//              or not).
-	// @return      void
+	// \return      void
 	//!---------------------------------------------------------  
 	function setMin($value) {
 		$this->min = $value;
@@ -577,11 +560,10 @@ class NumericalParameter extends Parameter {
 	}
 
 	//!---------------------------------------------------------
-	// @function    NumericalParameter::setMax
-	// @brief        Set the maximal allowed value for the 
+	// \brief        Set the maximal allowed value for the 
 	//              parameter (the value itself may be allowed
 	//              or not).
-	// @return      void
+	// \return      void
 	//!---------------------------------------------------------  
 	function setMax($value) {
 		$this->max = $value;
@@ -589,56 +571,51 @@ class NumericalParameter extends Parameter {
 	}
 
 	//!---------------------------------------------------------
-	// @function    NumericalParameter::checkMin
-	// @brief        Answer whether the parameter should be 
+	// \brief        Answer whether the parameter should be 
 	//              checked against a minimum value.
-	// @return      Bool
+	// \return      Bool
 	//!---------------------------------------------------------  
 	function checkMin() {
 		return $this->checkMin;
 	}
 
 	//!---------------------------------------------------------
-	// @function    NumericalParameter::checkMax
-	// @brief        Answer whether the parameter should be 
+	// \brief        Answer whether the parameter should be 
 	//              checked against a maximum value.
-	// @return      Bool
+	// \return      Bool
 	//!---------------------------------------------------------  
 	function checkMax() {
 		return $this->checkMax;
 	}
 
 	//!---------------------------------------------------------
-	// @function    NumericalParameter::min
-	// @brief        Answer the minimal allowed value for the 
+	// \brief        Answer the minimal allowed value for the 
 	//              parameter (the value itself may be allowed
 	//              or not).
-	// @return      Number
+	// \return      Number
 	//!---------------------------------------------------------  
 	function min() {
 		return $this->min;
 	}
 
 	//!---------------------------------------------------------
-	// @function    NumericalParameter::max
-	// @brief        Answer the maximal allowed value for the 
+	// \brief        Answer the maximal allowed value for the 
 	//              parameter (the value itself may be allowed
 	//              or not).
-	// @return      Number
+	// \return      Number
 	//!---------------------------------------------------------  
 	function max() {
 		return $this->max;
 	}
 
 	//!---------------------------------------------------------
-	// @function    NumericalParameter::checkValue
-	// @brief        Answer true if value is a valid value for the
+	// \brief        Answer true if value is a valid value for the
 	//              receiver and false otherwise. The value of a
 	//              numerical parameter must be a number. It must
 	//              possibly be larger than a minimum or smaller
 	//              than a maximum.
-	// @param       value  String   The value to be checked  
-	// @return      Boolean
+	// \param       value  String   The value to be checked  
+	// \return      Boolean
 	//!---------------------------------------------------------  
 	function checkValue($value) {
 		if (preg_match('/^[+|-]?\d+(\.\d+)?$/', $value) == 0) {
@@ -692,13 +669,12 @@ class VariableChannelsParameter extends NumericalParameter {
 	}
 
 	//!---------------------------------------------------------
-	// @function    VariableChannelsParameter::setValue
-	// @brief        Set the value of the parameter to value.
+	// \brief        Set the value of the parameter to value.
 	//              If value is not an array the value of the 
 	//              parameter is set to an array with the value
 	//              at index 0. 
-	// @param       value  Object  The new value of the parameter
-	// @return      Void
+	// \param       value  Object  The new value of the parameter
+	// \return      Void
 	//!---------------------------------------------------------  
 	function setValue($value) {
 		$theValue = $value;
@@ -736,12 +712,11 @@ class VariableChannelsParameter extends NumericalParameter {
 	}
 
 	//!---------------------------------------------------------
-	// @function    VariableChannelsParameter::value
-	// @brief        Answers an array of the values for the different 
+	// \brief        Answers an array of the values for the different 
 	//              channels of the parameter. If a value
 	//              for a channel is not valid set it to the value
 	//              of the preceding channel.
-	// @return      array
+	// \return      array
 	//!---------------------------------------------------------  
 	function value() {
 		$value = $this->value;
@@ -766,11 +741,10 @@ class VariableChannelsParameter extends NumericalParameter {
 	}
 
 	//!---------------------------------------------------------
-	// @function    VariableChannelsParameter::check
-	// @brief        Answer true if the parameter is set to a valid
+	// \brief        Answer true if the parameter is set to a valid
 	//              value and false otherwise. The values are checked
 	//              for each channel.
-	// @return      Boolean
+	// \return      Boolean
 	//!---------------------------------------------------------  
 	function check() {
 		$result = True;
@@ -838,52 +812,47 @@ class SingleOrMultiChannelParameter extends ChoiceParameter {
 	public $isMultiChannel; // @public isMultiChannel  Boolean  tells whether this is a single or multi channel parameter
 
 	//!---------------------------------------------------------
-	// @function    SingleOrMultiChannelParameter::isMultiChannel
-	// @brief        Answer true if the receiver is a multi channel
+	// \brief        Answer true if the receiver is a multi channel
 	//              parameter
-	// @return      bool
+	// \return      bool
 	//!---------------------------------------------------------  
 	function isMultiChannel() {
 		return $this->isMultiChannel;
 	}
 
 	//!---------------------------------------------------------
-	// @function    SingleOrMultiChannelParameter::isSingleChannel
-	// @brief        Answer true if the receiver is a single channel
+	// \brief        Answer true if the receiver is a single channel
 	//              parameter
-	// @return      bool
+	// \return      bool
 	//!---------------------------------------------------------  
 	function isSingleChannel() {
 		return !$this->isMultiChannel();
 	}
 
 	//!---------------------------------------------------------
-	// @function    SingleOrMultiChannelParameter::beMultiChannel
-	// @brief        Make the receiver a multi channel parameter.
-	// @return      void
+	// \brief        Make the receiver a multi channel parameter.
+	// \return      void
 	//!---------------------------------------------------------  
 	function beMultiChannel() {
 		$this->isMultiChannel = True;
 	}
 
 	//!---------------------------------------------------------
-	// @function    SingleOrMultiChannelParameter::beSingleChannel
-	// @brief        Make the receiver a single channel parameter.
-	// @return      void
+	// \brief        Make the receiver a single channel parameter.
+	// \return      void
 	//!---------------------------------------------------------    
 	function beSingleChannel() {
 		$this->isMultiChannel = False;
 	}
 
 	//!---------------------------------------------------------
-	// @function    SingleOrMultiChannelParameter::setValue
-	// @brief        Set the value of the parameter to value.
+	// \brief        Set the value of the parameter to value.
 	//              If value contains the prefix single_ or multi_
 	//              the parameter is set to single or multi and 
 	//              the postfix of value is set as value of the 
 	//              parameter.
-	// @param       value  string  The new value of the parameter
-	// @return      Void
+	// \param       value  string  The new value of the parameter
+	// \return      Void
 	//!---------------------------------------------------------  
 	function setValue($value) {
 		if (!strstr($value, "_")) {
@@ -972,13 +941,12 @@ class MicroscopeType extends ChoiceParameter {
 	}
 
 	//!---------------------------------------------------------
-	// @function    MicroscopeType::translatedValue
-	// @brief        Answer the value of the parameter in a 
+	// \brief        Answer the value of the parameter in a 
 	//              translated form that is in the form that
 	//              is used in the script. The translation of
 	//              the microscope type is read from the 
 	//              database
-	// @return      string
+	// \return      string
 	//!---------------------------------------------------------    
 	function translatedValue() {
 		$value = $this->value;
@@ -1018,13 +986,12 @@ class ObjectiveType extends ChoiceParameter {
 	}
 
 	//!---------------------------------------------------------
-	// @function    ObjectiveType::translatedValue
-	// @brief        Answer the value of the parameter in a 
+	// \brief        Answer the value of the parameter in a 
 	//              translated form that is in the form that
 	//              is used in the script. The translation of
 	//              the objective type is read from the 
 	//              database
-	// @return      string
+	// \return      string
 	//!---------------------------------------------------------    
 	function translatedValue() {
 		$value = $this->value;
@@ -1044,13 +1011,12 @@ class SampleMedium extends ChoiceParameter {
 	}
 
 	//!---------------------------------------------------------
-	// @function    SampleMedium::translatedValue
-	// @brief        Answer the value of the parameter in a 
+	// \brief        Answer the value of the parameter in a 
 	//              translated form that is in the form that
 	//              is used in the script. The translation of
 	//              the sample medium is read from the 
 	//              database
-	// @return      string
+	// \return      string
 	//!---------------------------------------------------------    
 	function translatedValue() {
 		$value = $this->value;
@@ -1692,13 +1658,12 @@ class OutputFileFormat extends ChoiceParameter {
 	}
 
 	//!---------------------------------------------------------
-	// @function    OutputFileFormat::translatedValue
-	// @brief        Answer the value of the parameter in a 
+	// \brief        Answer the value of the parameter in a 
 	//              translated form that is in the form that
 	//              is used in the script. The translation of
 	//              the output file format is read from the 
 	//              database
-	// @return      string
+	// \return      string
 	//!---------------------------------------------------------    
 	function translatedValue() {
 		$db = new DatabaseConnection();
@@ -1707,11 +1672,10 @@ class OutputFileFormat extends ChoiceParameter {
 	}
 	
 	//!---------------------------------------------------------
-	// @function    OutputFileFormat::extension
-	// @brief        Returns the extension associated with a given
+	// \brief        Returns the extension associated with a given
 	//              output format
 	//
-	// @return      string
+	// \return      string
 	//!---------------------------------------------------------    
 	function extension( ) {
 		$result = $this->translatedValue( );

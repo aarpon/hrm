@@ -4,8 +4,8 @@
 
 
 //!--------------------------------------------------------------------
-// @class    Ldap
-// @brief     Manage ldap connections
+// \class    Ldap
+// \brief     Manage ldap connections
 //!--------------------------------------------------------------------
 
 include( dirname( __FILE__ ) . "/../config/ldap_config.inc" );

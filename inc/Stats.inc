@@ -26,10 +26,10 @@ class Type {
   
   //!---------------------------------------------------------------------------
   // @function    string Type::isGraph( $variable )
-  // @brief        returns true is the requested statistics generates a graph,
+  // \brief        returns true is the requested statistics generates a graph,
   //              and false if it returns a text/table
-  // @param       string $variable name of the column from the statistics page
-  // @return      bool True for graphs, False for text/table
+  // \param       string $variable name of the column from the statistics page
+  // \return      bool True for graphs, False for text/table
   //!---------------------------------------------------------------------------
   public function isGraph( ) {
     if ( ( $this->m_Type == "piechart" ) || ( $this->m_Type == "linechart" ) ) {
@@ -40,13 +40,13 @@ class Type {
   
   //!---------------------------------------------------------------------------
   // @function    string Type::getStatisticsScript( $db, $admin, $fromDate, $toDate, $group, $username )
-  // @brief        Get the JS/PHP script to display the statistics.
+  // \brief        Get the JS/PHP script to display the statistics.
   // $param       $admin     true if the user is the admin
   // $param       $fromDate  start date for filtering in the form "YYYY-mm-dd hh:mm:ss"
   // $param       $toDate    end   date for filtering in the form "YYYY-mm-dd hh:mm:ss"
   // $param       $group     group name
   // $param       $username  user name
-  // @return      string JS/PHP script to display the statistics. 
+  // \return      string JS/PHP script to display the statistics. 
   //!---------------------------------------------------------------------------
   public function getStatisticsScript( $db, $admin, $fromDate, $toDate, $group, $username ) {
     
@@ -76,11 +76,11 @@ class Type {
 
   //!---------------------------------------------------------------------------
   // @function    string Stats::getPieChart( $variable )
-  // @brief        Get the JS script to create a pie chart of the requested
+  // \brief        Get the JS script to create a pie chart of the requested
   //              column from the statistics table.
-  // @param       string $variable name of the column from the statistics page
+  // \param       string $variable name of the column from the statistics page
   //              for which a pie chart is requested.
-  // @return      string JS script to generate the pie chart.
+  // \return      string JS script to generate the pie chart.
   //!---------------------------------------------------------------------------
   private function getPieChart( $db, $variable, $group, $dateFilter, $groupFilter, $userNameFilter ) {
 
@@ -151,9 +151,9 @@ class Type {
 
   //!---------------------------------------------------------------------------
   // @function    string Stats::getTable( $db, $statsType, $group, $dateFilter, $groupFilter, $userNameFilter )
-  // @brief        Get the HTML code to create a table for the total run time per
+  // \brief        Get the HTML code to create a table for the total run time per
   //              user or total run time per group statistics
-  // @return      html code for the total run time per user/group table
+  // \return      html code for the total run time per user/group table
   //!---------------------------------------------------------------------------
   private function getTable( $db, $statsType, $group, $dateFilter, $groupFilter, $userNameFilter ) {
     
@@ -173,9 +173,9 @@ class Type {
   
   //!---------------------------------------------------------------------------
   // @function    string Stats::getTotalRunTimePerUserTable( $db, $statsType, $group, $dateFilter, $groupFilter, $userNameFilter )
-  // @brief        Get the HTML code to create a table for the total run time per
+  // \brief        Get the HTML code to create a table for the total run time per
   //              user statistics
-  // @return      html code for the total run time per user table
+  // \return      html code for the total run time per user table
   //!---------------------------------------------------------------------------
   private function getTotalRunTimePerUserTable( $db, $statsType, $group, $dateFilter, $groupFilter, $userNameFilter ) {
 
@@ -247,9 +247,9 @@ class Type {
 
   //!---------------------------------------------------------------------------
   // @function    string Stats::getTotalRunTimePerUserTable( $db, $statsType, $group, $dateFilter, $groupFilter, $userNameFilter )
-  // @brief        Get the HTML code to create a table for the total run time per
+  // \brief        Get the HTML code to create a table for the total run time per
   //              user statistics
-  // @return      html code for the total run time per user table
+  // \return      html code for the total run time per user table
   //!---------------------------------------------------------------------------
   private function getTotalRunTimePerGroupTable( $db, $statsType, $group, $dateFilter, $groupFilter, $userNameFilter ) {
 
@@ -306,10 +306,10 @@ class Type {
   
   //!---------------------------------------------------------------------------
   // @function    string Stats::getDateFilter( $fromDate, $toDate )
-  // @brief        Get the SQL sub-query to filter by date
-  // @param       $fromDate: date to filter from
-  // @param       $fromDate: date to filter to
-  // @return      SQL sub-query for filtering by date
+  // \brief        Get the SQL sub-query to filter by date
+  // \param       $fromDate: date to filter from
+  // \param       $fromDate: date to filter to
+  // \return      SQL sub-query for filtering by date
   //!---------------------------------------------------------------------------
   private function getDateFilter( $fromDate, $toDate ) {
     $dateFilter = "start >= '" . $fromDate ."' AND stop <= '" . $toDate . "'";
@@ -318,10 +318,10 @@ class Type {
 
   //!---------------------------------------------------------------------------
   // @function    string Stats::getGroupFilter( $admin, $group )
-  // @brief        Get the SQL sub-query to filter by group
-  // @param       $admin: true if the user is the admin
-  // @param       $group: group name
-  // @return      SQL sub-query for filtering by group
+  // \brief        Get the SQL sub-query to filter by group
+  // \param       $admin: true if the user is the admin
+  // \param       $group: group name
+  // \return      SQL sub-query for filtering by group
   //!---------------------------------------------------------------------------
   private function getGroupFilter( $admin, $group ) {
     if ( $admin ) {
@@ -338,10 +338,10 @@ class Type {
 
   //!---------------------------------------------------------------------------
   // @function    string Stats::getUsernameFilter( $admin, $username )
-  // @brief        Get the SQL sub-query to filter by username
-  // @param       $admin: true if the user is the admin
-  // @param       $username: username
-  // @return      SQL sub-query for filtering by username
+  // \brief        Get the SQL sub-query to filter by username
+  // \param       $admin: true if the user is the admin
+  // \param       $username: username
+  // \return      SQL sub-query for filtering by username
   //!---------------------------------------------------------------------------
   private function getUsernameFilter( $admin, $username ) {
     if ( $admin ) {
@@ -384,8 +384,8 @@ class Stats {
    
   //!---------------------------------------------------------
   // @function    Stats::__construct( $username ): constructor.
-  // @brief        Constructs the Stats object.
-  // @param       string $username name of the user for which statistics are
+  // \brief        Constructs the Stats object.
+  // \param       string $username name of the user for which statistics are
   //              returned; if the user is the admin user, global statistics
   //              are returned.
   //!---------------------------------------------------------
@@ -405,10 +405,10 @@ class Stats {
   
   //!---------------------------------------------------------------------------
   // @function    string Stats::isGraph( $variable )
-  // @brief        returns true is the requested statistics generates a graph,
+  // \brief        returns true is the requested statistics generates a graph,
   //              and false if it returns a text/table
-  // @param       string $variable name of the column from the statistics page
-  // @return      bool True for graphs, False for text/table
+  // \param       string $variable name of the column from the statistics page
+  // \return      bool True for graphs, False for text/table
   //!---------------------------------------------------------------------------
   public function isGraph( ) {
     return ( $this->m_Stats_Array[ $this->m_Selected_Statistics ]->isGraph( ) );
@@ -416,9 +416,9 @@ class Stats {
 
   //!---------------------------------------------------------------------------
   // @function    string Stats::getAllDescriptiveNames( )
-  // @brief        returns an array with the descriptive names of all supported
+  // \brief        returns an array with the descriptive names of all supported
   //              statistics (e.g. to be used in a <select> element)
-  // @return      array of strings Descriptive names of supported statistics
+  // \return      array of strings Descriptive names of supported statistics
   //!---------------------------------------------------------------------------
   public function getAllDescriptiveNames( ) {
     $names = array( );
@@ -433,7 +433,7 @@ class Stats {
 
   //!---------------------------------------------------------------------------
   // @function    string Stats::getSelectedStatistics( )
-  // @brief        returns the descriptive name of the selected statistics
+  // \brief        returns the descriptive name of the selected statistics
   //!---------------------------------------------------------------------------
   public function getSelectedStatistics( ) {
     return ( $this->m_Stats_Array[ $this->m_Selected_Statistics ]->m_DescriptiveName );
@@ -441,7 +441,7 @@ class Stats {
 
   //!---------------------------------------------------------------------------
   // @function    void Stats::setSelectedStatistics( $descriptiveName )
-  // @brief        sets the selected statistics
+  // \brief        sets the selected statistics
   // $param       $descriptiveName Descriptive name of the selected statistics
   //!---------------------------------------------------------------------------
   public function setSelectedStatistics( $descriptiveName ) {
@@ -457,11 +457,11 @@ class Stats {
   
   //!---------------------------------------------------------------------------
   // @function    string Stats::getStatisticsScript( )
-  // @brief        Get the JS/PHP script to display the statistics. This function
+  // \brief        Get the JS/PHP script to display the statistics. This function
   //              call should be combined with a isGraph() call, to decide
   //              whether the generated (JS) script should be passed on to the
   //              HighCharts library or not.
-  // @return      string JS/PHP script to display the statistics.
+  // \return      string JS/PHP script to display the statistics.
   //!---------------------------------------------------------------------------
   public function getStatistics( ) {
     
@@ -488,8 +488,8 @@ class Stats {
    
   //!---------------------------------------------------------------------------
   // @function    array Stats::getFromDates( )
-  // @brief        Gets all beginning of the months from February 2010 until now
-  // @return      array All beginning of monthts
+  // \brief        Gets all beginning of the months from February 2010 until now
+  // \return      array All beginning of monthts
   //!---------------------------------------------------------------------------
   public function getFromDates( ) {
       
@@ -514,8 +514,8 @@ class Stats {
 
   //!---------------------------------------------------------------------------
   // @function    array Stats::getToDates( )
-  // @brief        Gets all end of the months from February 2010 until now
-  // @return      array All ends of monthts
+  // \brief        Gets all end of the months from February 2010 until now
+  // \return      array All ends of monthts
   //!---------------------------------------------------------------------------
   public function getToDates( ) {
       
@@ -552,8 +552,8 @@ class Stats {
 
   //!---------------------------------------------------------------------------
   // @function    array Stats::getGroupNames( )
-  // @brief        Gets an array of unique group names from the statistics table
-  // @return      array of all unique group names
+  // \brief        Gets an array of unique group names from the statistics table
+  // \return      array of all unique group names
   //!---------------------------------------------------------------------------
   public function getGroupNames( ) {
       
@@ -575,7 +575,7 @@ class Stats {
 
   //!---------------------------------------------------------------------------
   // @function    void Stats::setFromDateFilter( )
-  // @brief        Set the from date filter
+  // \brief        Set the from date filter
   //!---------------------------------------------------------------------------
   public function setFromDateFilter( $fromDate ) {
       $this->m_Filter_FromDate = $fromDate;
@@ -583,7 +583,7 @@ class Stats {
 
   //!---------------------------------------------------------------------------
   // @function    void Stats::setToDateFilter( )
-  // @brief        Set the to date filter
+  // \brief        Set the to date filter
   //!---------------------------------------------------------------------------
   public function setToDateFilter( $toDate ) {
       $this->m_Filter_ToDate = $toDate;
@@ -591,7 +591,7 @@ class Stats {
 
   //!---------------------------------------------------------------------------
   // @function    void Stats::setGroupFilter( )
-  // @brief        Set the group filter
+  // \brief        Set the group filter
   //!---------------------------------------------------------------------------
   public function setGroupFilter( $group ) {
       $this->m_Filter_Group = $group;
@@ -605,7 +605,7 @@ class Stats {
 
   //!---------------------------------------------------------------------------
   // @function    void Stats::setDefaultStats( )
-  // @brief        Sets the default statistics
+  // \brief        Sets the default statistics
   //!---------------------------------------------------------------------------
   private function setDefaultStats(  ) {
     if ( $this->isAdmin( ) ) {
@@ -623,7 +623,7 @@ class Stats {
 
   //!---------------------------------------------------------------------------
   // @function    bool Stats::fill( )
-  // @brief        Creates the array of statistics types.
+  // \brief        Creates the array of statistics types.
   //!---------------------------------------------------------------------------
   private function fillStatsArray(  ) {
     // Make sure to clear
@@ -657,9 +657,9 @@ class Stats {
   
   //!---------------------------------------------------------------------------
   // @function    bool Stats::isAdmin( )
-  // @brief        Compares the passed username to the admin user name and
+  // \brief        Compares the passed username to the admin user name and
   //              returns true if the user is the admin.
-  // @return      bool True if the user is the admin user.
+  // \return      bool True if the user is the admin user.
   //!---------------------------------------------------------------------------
   private function isAdmin(  ) {
     $user = new User();
@@ -669,7 +669,7 @@ class Stats {
     //!---------------------------------------------------------
   // @function    Type::dumpStatsTableToFile( $db )
   // $param       $db Database object
-  // @brief        Dumps the statistics table to file and "downloads" it
+  // \brief        Dumps the statistics table to file and "downloads" it
   //!---------------------------------------------------------  
   private function dumpStatsTableToFile( ) { 
       // Make sure that the script doesn't timeout.

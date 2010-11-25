@@ -18,8 +18,8 @@ global $authenticateAgainst;
 global $use_ldaps;
 
 //!---------------------------------------------------------
-// @class    Owner
-// @brief     Represents an owner of a setting. Superclass of
+// \class    Owner
+// \brief     Represents an owner of a setting. Superclass of
 //           class user.
 //!---------------------------------------------------------
 class Owner {
@@ -27,8 +27,8 @@ class Owner {
  
   //!---------------------------------------------------------
   // @function    Owner::Owner
-  // @brief        Constructor. Creates a new owner.
-  // @return      void
+  // \brief        Constructor. Creates a new owner.
+  // \return      void
   //!---------------------------------------------------------
   function Owner() {
     $this->name = '';
@@ -36,8 +36,8 @@ class Owner {
 
   //!---------------------------------------------------------
   // @function    Owner::name
-  // @brief        Answer the name of the owner
-  // @return      String
+  // \brief        Answer the name of the owner
+  // \return      String
   //!---------------------------------------------------------
   function name() {
     return $this->name;
@@ -45,10 +45,10 @@ class Owner {
 
   //!---------------------------------------------------------
   // @function    Owner::setName
-  // @brief        Set the name of the owner. Might be the name
+  // \brief        Set the name of the owner. Might be the name
   //              of a person or the id of a job.
-  // @param       name    String    The name of the owner
-  // @return      void
+  // \param       name    String    The name of the owner
+  // \return      void
   //!---------------------------------------------------------
   function setName($name) {
     $this->name = $name;
@@ -57,8 +57,8 @@ class Owner {
 } // end of class Owner
 
 //!---------------------------------------------------------
-// @class    User
-// @brief     Represents a user. Keeps track of the user's  
+// \class    User
+// \brief     Represents a user. Keeps track of the user's  
 //           state (is the user logged in, etc).
 //!---------------------------------------------------------
 class User extends Owner{ 
@@ -69,8 +69,8 @@ class User extends Owner{
   
   //!---------------------------------------------------------
   // @function    User::User
-  // @brief        Constructor. Creates a new empty user.
-  // @return      void
+  // \brief        Constructor. Creates a new empty user.
+  // \return      void
   //!---------------------------------------------------------
   function User() {
     global $authenticateAgainst;
@@ -92,8 +92,8 @@ class User extends Owner{
 
   //!---------------------------------------------------------
   // @function    User::isLoggedIn
-  // @brief        Answer true if the user is logged in.
-  // @return      Boolean
+  // \brief        Answer true if the user is logged in.
+  // \return      Boolean
   //!---------------------------------------------------------
   function isLoggedIn() {
     return $this->isLoggedIn;
@@ -101,9 +101,9 @@ class User extends Owner{
 
   //!---------------------------------------------------------
   // @function    User::encrypt
-  // @brief        Answer an encrypted version of string
-  // @param       string     String    The string to be encrypted
-  // @return      String
+  // \brief        Answer an encrypted version of string
+  // \param       string     String    The string to be encrypted
+  // \return      String
   //!---------------------------------------------------------  
   function encrypt($string, $seed) {
     global $useDESEncryption;
@@ -116,9 +116,9 @@ class User extends Owner{
   }
   //!---------------------------------------------------------
   // @function    User::ldap_encrypt
-  // @brief        Answer an encrypted version of string
-  // @param       string     String    The string to be encrypted; form {type}passwd
-  // @return      String
+  // \brief        Answer an encrypted version of string
+  // \param       string     String    The string to be encrypted; form {type}passwd
+  // \return      String
   //!---------------------------------------------------------  
   function parse_ldap_password($dbPassword) {
       preg_match("/^\{(.*)\}(.*)$/", $dbPassword, $dbp);
@@ -138,14 +138,14 @@ class User extends Owner{
 
   //!---------------------------------------------------------
   // @function    User::logIn
-  // @brief        Try to log the user in. 
+  // \brief        Try to log the user in. 
   //              If log in is successful, name, ip and last 
   //              activity are registered. The result is true in
   //              this case.
-  // @param       name     String    The login name of the user
-  // @param       password String    The password of the user
-  // @param       ip       String    The ip address of the user
-  // @return      boolean
+  // \param       name     String    The login name of the user
+  // \param       password String    The password of the user
+  // \param       ip       String    The ip address of the user
+  // \return      boolean
   //!---------------------------------------------------------  
   function logIn($name, $password, $ip) { 
     $this->setName($name);
@@ -162,9 +162,9 @@ class User extends Owner{
 
   //!---------------------------------------------------------
   // @function    User::logOut
-  // @brief        Log the user out. isLoggedIn will be false
+  // \brief        Log the user out. isLoggedIn will be false
   //              afterwards.
-  // @return      void
+  // \return      void
   //!---------------------------------------------------------  
   function logOut() { 
     $this->isLoggedIn = False;
@@ -172,9 +172,9 @@ class User extends Owner{
 
   //!---------------------------------------------------------
   // @function    User::password
-  // @brief        Answer the users encrypted password.
-  // @param       name     String    The login name of the user
-  // @return      String
+  // \brief        Answer the users encrypted password.
+  // \param       name     String    The login name of the user
+  // \return      String
   //!---------------------------------------------------------  
   function password($name, $password) {
 
@@ -222,10 +222,10 @@ class User extends Owner{
 
   //!---------------------------------------------------------
   // @function    User::isStatusAccepted
-  // @brief        Answer true if the subscription of the user 
+  // \brief        Answer true if the subscription of the user 
   //              has been accepted by the administrtator.
-  // @param       name     String    The login name of the user 
-  // @return      Boolean
+  // \param       name     String    The login name of the user 
+  // \return      Boolean
   //!---------------------------------------------------------
   function isStatusAccepted() {
   	$result = false;
@@ -237,9 +237,9 @@ class User extends Owner{
   
   //!---------------------------------------------------------
   // @function    User::isLoginRestrictedToAdmin
-  // @brief        Answer true if the login has been restricted to the
+  // \brief        Answer true if the login has been restricted to the
   //              the administrtator.
-  // @return      Boolean
+  // \return      Boolean
   //!---------------------------------------------------------
   function isLoginRestrictedToAdmin() {
   	$result = !( System::isDBUpToDate( ) );
@@ -248,10 +248,10 @@ class User extends Owner{
  
   //!---------------------------------------------------------
   // @function    User::isSuspended
-  // @brief        Answer true if the user's account has been
+  // \brief        Answer true if the user's account has been
   //              suspended by the administrtator.
-  // @param       name     String    The login name of the user 
-  // @return      Boolean
+  // \param       name     String    The login name of the user 
+  // \return      Boolean
   //!---------------------------------------------------------
   function isSuspended() {
   	$result = false;
@@ -263,9 +263,9 @@ class User extends Owner{
   
   //!---------------------------------------------------------
   // @function    User::exists
-  // @brief        Answer true if the user's account exists.
-  // @param       name     String    The login name of the user 
-  // @return      Boolean
+  // \brief        Answer true if the user's account exists.
+  // \param       name     String    The login name of the user 
+  // \return      Boolean
   //!---------------------------------------------------------
   function exists() {
   	$result = false;
@@ -275,10 +275,10 @@ class User extends Owner{
   
   //!---------------------------------------------------------
   // @function    User::checkLogin
-  // @brief        Answer true if the login is granted.
-  // @param       name     String    The login name of the user
-  // @param       password String    The password of the user 
-  // @return      Boolean
+  // \brief        Answer true if the login is granted.
+  // \param       name     String    The login name of the user
+  // \param       password String    The password of the user 
+  // \return      Boolean
   //!---------------------------------------------------------    
   function checkLogin($name, $password) {
     $result = false;
@@ -322,10 +322,10 @@ class User extends Owner{
 
   //!---------------------------------------------------------
   // @function    User::checkLoginAgainstHRMDatabase
-  // @brief        Answer true if the login is granted.
-  // @param       name     String    The login name of the user
-  // @param       password String    The password of the user 
-  // @return      Boolean
+  // \brief        Answer true if the login is granted.
+  // \param       name     String    The login name of the user
+  // \param       password String    The password of the user 
+  // \return      Boolean
   //!---------------------------------------------------------    
   function checkLoginAgainstHRMDatabase($name, $password) {
   	// add user management
@@ -338,10 +338,10 @@ class User extends Owner{
   	
   //!---------------------------------------------------------
   // @function    User::checkLoginAgainstLDAP
-  // @brief        Answer true if the login is granted.
-  // @param       name     String    The login name of the user
-  // @param       password String    The password of the user 
-  // @return      Boolean
+  // \brief        Answer true if the login is granted.
+  // \param       name     String    The login name of the user
+  // \param       password String    The password of the user 
+  // \return      Boolean
   //!---------------------------------------------------------    
   function checkLoginAgainstLDAP($name, $password) {
 		$ldap = new Ldap();
@@ -351,10 +351,10 @@ class User extends Owner{
 
   //!---------------------------------------------------------
   // @function    User::checkLoginAgainstACTIVEDIR
-  // @brief        Answer true if the login is granted.
-  // @param       name     String    The login name of the user
-  // @param       password String    The password of the user 
-  // @return      Boolean
+  // \brief        Answer true if the login is granted.
+  // \param       name     String    The login name of the user
+  // \param       password String    The password of the user 
+  // \return      Boolean
   //!---------------------------------------------------------    
   function checkLoginAgainstACTIVEDIR($name, $password) {
     $activeDir = new ActiveDirectory( );
@@ -364,8 +364,8 @@ class User extends Owner{
   
   //!---------------------------------------------------------
   // @function    User::emailAddress
-  // @brief        Answer the user's email address.
-  // @return      String
+  // \brief        Answer the user's email address.
+  // \return      String
   //!---------------------------------------------------------    
   function emailAddress() {
 
@@ -403,9 +403,9 @@ class User extends Owner{
 
   //!---------------------------------------------------------
   // @function    User::getAcceptedStatus
-  // @brief        Answer the status that signifies that the user
+  // \brief        Answer the status that signifies that the user
   // 			  is accepted in the hrm-database
-  // @return      String
+  // \return      String
   //!---------------------------------------------------------    
   function getAcceptedStatus() {
   	return 'a';
@@ -413,9 +413,9 @@ class User extends Owner{
   
   //!---------------------------------------------------------
   // @function    User::getSuspendedStatus
-  // @brief        Answer the status that signifies that the
+  // \brief        Answer the status that signifies that the
   //              user's account is suspended
-  // @return      String
+  // \return      String
   //!---------------------------------------------------------    
   function getSuspendedStatus() {
   	return 'd';
@@ -423,8 +423,8 @@ class User extends Owner{
 
   //!---------------------------------------------------------
   // @function    User::getAdminName
-  // @brief        The name of the system administrator account
-  // @return      String
+  // \brief        The name of the system administrator account
+  // \return      String
   //!---------------------------------------------------------  
   function getAdminName() {
   	return 'admin';
@@ -432,9 +432,9 @@ class User extends Owner{
   
   //!---------------------------------------------------------
   // @function    User::isAdmin
-  // @brief        Answer wether the receiver is the system 
+  // \brief        Answer wether the receiver is the system 
   // 			  administrator.
-  // @return      String
+  // \return      String
   //!---------------------------------------------------------  
   function isAdmin() {
   	return $this->name()==$this->getAdminName();
@@ -442,9 +442,9 @@ class User extends Owner{
   
   //!---------------------------------------------------------
   // @function    User::group
-  // @brief        Answer the group name from the database or
+  // \brief        Answer the group name from the database or
   //			  the default group name if ldap is used.
-  // @return      String
+  // \return      String
   //!--------------------------------------------------------- 
   function userGroup() {
     switch ( $this->authMode ) {
@@ -479,8 +479,8 @@ class User extends Owner{
   
   //!---------------------------------------------------------
   // @function    User::updateLastAccessDate
-  // @brief        update the last accesss date in the database
-  // @return      
+  // \brief        update the last accesss date in the database
+  // \return      
   //!--------------------------------------------------------- 
   function updateLastAccessDate() {
   	// TODO: user will not exist in db when ldap is used

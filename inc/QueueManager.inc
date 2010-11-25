@@ -14,8 +14,8 @@ require_once ("JobQueue.inc");
 require_once ("System.inc");
 
 //!---------------------------------------------------------
-// @class    QueueManager
-// @brief     Translate job description to huygens script
+// \class    QueueManager
+// \brief     Translate job description to huygens script
 //           and run it on a free server
 //!---------------------------------------------------------
 

@@ -2,7 +2,10 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
-// Location of /adodb/adodb.inc.php
+/*!
+  \var 		$adodb
+  \brief	Location of /adodb/adodb.inc.php
+*/
 $adodb = dirname(__FILE__) . "/extern/adodb5/adodb.inc.php";
 
 include "hrm_config.inc";
@@ -10,7 +13,7 @@ include $adodb;
 
 /*!
 	\class	DatabaseConnection
- 	\brief	Manages the database connection
+ 	\brief	Manages the database connection through the ADOdb library
  	
  	This class abstracts the database back-end and should be used to handle all
  	communication to and from it. Since there are some differences between the
@@ -134,7 +137,7 @@ class DatabaseConnection {
 
   /*!	
 	\brief	Executes an SQL query and returns the results
-	\param	$query	SQL query
+	\param	$queryString	SQL query
 	\return result of the query (array)
   */
   public function query($queryString) {
@@ -149,7 +152,7 @@ class DatabaseConnection {
 
   /*!	
 	\brief	Executes an SQL query and returns the last row of the results
-	\param	$query	SQL query
+	\param	$queryString	SQL query
 	\return last row of the result of the query (array)
   */
   public function queryLastRow($queryString) { 
@@ -162,7 +165,7 @@ class DatabaseConnection {
   /*!	
 	\brief	Executes an SQL query and returns the value in the last column of
 			the last row of the results
-	\param	$query	SQL query
+	\param	$queryString	SQL query
 	\return value of the last column of the last row of the result of the query
   */
   public function queryLastValue($queryString) { 
@@ -281,7 +284,7 @@ class DatabaseConnection {
   
   /*!
 	\brief	Returns the password of a given user name
-	\param	$username	Name of the user
+	\param	$name	Name of the user
   	\return	password for the requested user
   */
   public function passwordQueryString($name) {
@@ -1314,7 +1317,7 @@ class DatabaseConnection {
   
   /*!
     \brief	Returns the group to which the user belongs
-    \param	$username	Name of the user
+    \param	$userName	Name of the user
     \return group name
   */
   public function getGroup($userName) {
@@ -1325,7 +1328,7 @@ class DatabaseConnection {
   
   /*!
     \brief	Updates the e-mail address of a user
-	\param	$username	Name of the user
+	\param	$userName	Name of the user
 	\param	$email		E-mail address
 	\return	query result
   */
@@ -1337,7 +1340,7 @@ class DatabaseConnection {
   
   /*!
     \brief	Updates the last access date of a user
-    \param	$username	Name of the user
+    \param	$userName	Name of the user
     \return	query result
   */
   public function updateLastAccessDate($userName) {

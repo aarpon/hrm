@@ -7,8 +7,8 @@ require_once ("Database.inc");
 require_once ("hrm_config.inc");
 
 //!---------------------------------------------------------
-// @class    Setting
-// @brief     Abstract superclass of specific setting classes
+// \class    Setting
+// \brief     Abstract superclass of specific setting classes
 //!---------------------------------------------------------
 class Setting {
 	public $parameter; // @public parameter    Array    The set of parameter
@@ -19,8 +19,8 @@ class Setting {
 
 	//!---------------------------------------------------------
 	// @function    Setting::Setting
-	// @brief        Constructor. Creates an empty setting
-	// @return      void
+	// \brief        Constructor. Creates an empty setting
+	// \return      void
 	//!---------------------------------------------------------
 	function Setting() {
 		$this->parameter = array ();
@@ -29,9 +29,9 @@ class Setting {
 
 	//!---------------------------------------------------------
 	// @function    Setting::parameter
-	// @brief        Answer the parameter named name
-	// @param       name  String  The name of the parameter
-	// @return      Parameter
+	// \brief        Answer the parameter named name
+	// \param       name  String  The name of the parameter
+	// \return      Parameter
 	//!---------------------------------------------------------
 	function parameter($name) {
 		return $this->parameter[$name];
@@ -39,10 +39,10 @@ class Setting {
 
 	//!---------------------------------------------------------
 	// @function    Setting::set
-	// @brief        Set a parameter. The parameter is stored
+	// \brief        Set a parameter. The parameter is stored
 	//              in the setting under its name.
-	// @param       parameter  Parameter  The parameter to be set
-	// @return      Void
+	// \param       parameter  Parameter  The parameter to be set
+	// \return      Void
 	//!---------------------------------------------------------  
 	function set($parameter) {
 		$this->parameter[$parameter->name()] = $parameter;
@@ -51,9 +51,9 @@ class Setting {
 	// TODO refactor
 	//!---------------------------------------------------------
 	// @function    Setting::values
-	// @brief        Answer the parameter values
-	// @param       name  String  The name of the parameter
-	// @return      Array
+	// \brief        Answer the parameter values
+	// \param       name  String  The name of the parameter
+	// \return      Array
 	//!---------------------------------------------------------
 	function values($name) {
 		$db = new DatabaseConnection();
@@ -64,9 +64,9 @@ class Setting {
 	// TODO refactor
 	//!---------------------------------------------------------
 	// @function    Setting::translatedValues
-	// @brief        Answer the translated parameter values
-	// @param       name  String  The name of the parameter
-	// @return      Array
+	// \brief        Answer the translated parameter values
+	// \param       name  String  The name of the parameter
+	// \return      Array
 	//!---------------------------------------------------------
 	function translation($name, $value) {
 		$db = new DatabaseConnection();
@@ -77,9 +77,9 @@ class Setting {
 
 	//!---------------------------------------------------------
 	// @function    Setting::message
-	// @brief        Answer the message set by the last check
+	// \brief        Answer the message set by the last check
 	//              performed on this setting
-	// @return      String
+	// \return      String
 	//!---------------------------------------------------------    
 	function message() {
 		return $this->message;
@@ -87,10 +87,10 @@ class Setting {
 
 	//!---------------------------------------------------------
 	// @function    Setting::checkChoiceValue
-	// @brief        Check if a choice parameter has a valid value
-	// @param       name  String  The name of the parameter
-	// @param       label String  The name of the parameter as it is displayed on the screen
-	// @return      Void
+	// \brief        Check if a choice parameter has a valid value
+	// \param       name  String  The name of the parameter
+	// \param       label String  The name of the parameter as it is displayed on the screen
+	// \return      Void
 	//!---------------------------------------------------------  
 	function checkChoiceValue($name, $label) {
 		$parameter = $this->parameter($name);
@@ -104,8 +104,8 @@ class Setting {
 
 	//!---------------------------------------------------------
 	// @function    Setting::checkSampleMedium
-	// @brief        Check if the sample medium is defined
-	// @return      Bool
+	// \brief        Check if the sample medium is defined
+	// \return      Bool
 	//!---------------------------------------------------------  
 	function checkSampleMedium() {
 		$parameter = $this->parameter('SampleMedium');
@@ -119,10 +119,10 @@ class Setting {
 
 	//!---------------------------------------------------------
 	// @function    Setting::checkNumericalValue
-	// @brief        Check if a numerical parameter has a valid value
-	// @param       name  String  The name of the parameter
-	// @param       label String  The name of the parameter as it is displayed on the screen
-	// @return      Void
+	// \brief        Check if a numerical parameter has a valid value
+	// \param       name  String  The name of the parameter
+	// \param       label String  The name of the parameter as it is displayed on the screen
+	// \return      Void
 	//!---------------------------------------------------------  
 	function checkNumericalValue($name, $label) {
 		$parameter = $this->parameter($name);
@@ -148,12 +148,12 @@ class Setting {
 
 	//!---------------------------------------------------------
 	// @function    Setting::checkNumericalValues
-	// @brief        Check if each of the numerical values (one 
+	// \brief        Check if each of the numerical values (one 
 	//              for each channel) is valid.
-	// @param       name             String  The name of the parameter
-	// @param       label            String  The name of the parameter as it is displayed on the screen
-	// @param       numberOfChannels Integer The actual number of channels
-	// @return      Boolean
+	// \param       name             String  The name of the parameter
+	// \param       label            String  The name of the parameter as it is displayed on the screen
+	// \param       numberOfChannels Integer The actual number of channels
+	// \return      Boolean
 	//!---------------------------------------------------------  
 	function checkNumericalValues($name, $label, $numberOfChannels) {
 		$parameter = $this->parameter($name);
@@ -180,8 +180,8 @@ class Setting {
 
 	//!---------------------------------------------------------
 	// @function    Setting::parameterNames()
-	// @brief        Answer the names of all parameters
-	// @return      Array
+	// \brief        Answer the names of all parameters
+	// \return      Array
 	//!---------------------------------------------------------    
 	function parameterNames() {
 		$names = array ();
@@ -193,9 +193,9 @@ class Setting {
 
 	//!---------------------------------------------------------
 	// @function    Setting::rangeParameter()
-	// @brief        Answer all range parameter (parameter for 
+	// \brief        Answer all range parameter (parameter for 
 	//              which between 2 and 4 values can be entered)
-	// @return      Array
+	// \return      Array
 	//!---------------------------------------------------------    
 	function rangeParameter() {
 		$result = array ();
@@ -209,8 +209,8 @@ class Setting {
 
 	//!---------------------------------------------------------
 	// @function    Setting::owner
-	// @brief        Answer the owner of the setting
-	// @return      Owner
+	// \brief        Answer the owner of the setting
+	// \return      Owner
 	//!---------------------------------------------------------
 	function owner() {
 		return $this->owner;
@@ -218,9 +218,9 @@ class Setting {
 
 	//!---------------------------------------------------------
 	// @function    Setting::setOwner
-	// @brief        Set the owner of the setting
-	// @param       owner    Owner    set the owner of the setting
-	// @return      void
+	// \brief        Set the owner of the setting
+	// \param       owner    Owner    set the owner of the setting
+	// \return      void
 	//!---------------------------------------------------------
 	function setOwner($owner) {
 		$this->owner = $owner;
@@ -228,8 +228,8 @@ class Setting {
 
 	//!---------------------------------------------------------
 	// @function    Setting::name
-	// @brief        Answer the name of the setting
-	// @return      string
+	// \brief        Answer the name of the setting
+	// \return      string
 	//!---------------------------------------------------------
 	function name() {
 		return $this->name;
@@ -237,9 +237,9 @@ class Setting {
 
 	//!---------------------------------------------------------
 	// @function    Setting::setName
-	// @brief        Set the name of the setting
-	// @param       name    String    set the name of the setting
-	// @return      void
+	// \brief        Set the name of the setting
+	// \param       name    String    set the name of the setting
+	// \return      void
 	//!---------------------------------------------------------
 	function setName($name) {
 		$this->name = $name;
@@ -247,9 +247,9 @@ class Setting {
 
 	//!---------------------------------------------------------
 	// @function    Setting::isDefault
-	// @brief        Answer whether the setting is the user's 
+	// \brief        Answer whether the setting is the user's 
 	//              default setting
-	// @return      boolean
+	// \return      boolean
 	//!---------------------------------------------------------
 	function isDefault() {
 		return $this->isDefault;
@@ -257,8 +257,8 @@ class Setting {
 
 	//!---------------------------------------------------------
 	// @function    Setting::beDefault
-	// @brief        Make the setting the user's default setting
-	// @return      void
+	// \brief        Make the setting the user's default setting
+	// \return      void
 	//!---------------------------------------------------------
 	function beDefault() {
 		$this->isDefault = True;
@@ -266,9 +266,9 @@ class Setting {
 
 	//!---------------------------------------------------------
 	// @function    Setting::resetDefault
-	// @brief        The setting won't be the default setting 
+	// \brief        The setting won't be the default setting 
 	//              anymore
-	// @return      void
+	// \return      void
 	//!---------------------------------------------------------
 	function resetDefault() {
 		$this->isDefault = False;
@@ -276,12 +276,12 @@ class Setting {
 
 	//!---------------------------------------------------------
 	// @function    Setting::copyParamterFrom
-	// @brief        Copy the parameter values from setting to
+	// \brief        Copy the parameter values from setting to
 	//              the receiver.
-	// @param       setting  Setting  The setting from which the
+	// \param       setting  Setting  The setting from which the
 	//                                values are copied to the 
 	//                                receiver
-	// @return      void
+	// \return      void
 	//!---------------------------------------------------------
 	function copyParameterFrom($setting) {
 		foreach ($setting->parameterNames() as $name) {
@@ -295,10 +295,10 @@ class Setting {
 
 	//!---------------------------------------------------------
 	// @function    Setting::load
-	// @brief        Load the parameter values for this setting
+	// \brief        Load the parameter values for this setting
 	//              from the database and answer a modified 
 	//              version of the receiver.
-	// @return      bool
+	// \return      bool
 	//!---------------------------------------------------------  
 	function load() {
 		$db = new DatabaseConnection();
@@ -311,9 +311,9 @@ class Setting {
 
 	//!---------------------------------------------------------
 	// @function    Setting::save
-	// @brief        Save the parameter setting with the parameter
+	// \brief        Save the parameter setting with the parameter
 	//              values under its name in the database.
-	// @return      bool
+	// \return      bool
 	//!---------------------------------------------------------    
 	function save() {
 		$db = new DatabaseConnection();
@@ -326,9 +326,9 @@ class Setting {
 
 	//!---------------------------------------------------------
 	// @function    Setting::display
-	// @brief        Display the setting as a text containing
+	// \brief        Display the setting as a text containing
 	//              the parameters and their values.
-	// @return      Void
+	// \return      Void
 	//!---------------------------------------------------------      
 	function display() {
 		print $this->displayString();
@@ -336,10 +336,10 @@ class Setting {
 
 	//!---------------------------------------------------------
 	// @function    Setting::displayString
-	// @brief        Answer the display string of the setting.
+	// \brief        Answer the display string of the setting.
 	//              It contains the names and values of the 
 	//              settings parameters.
-	// @return      Void
+	// \return      Void
 	//!---------------------------------------------------------        
 	function displayString() {
 		$result = '';
@@ -392,15 +392,15 @@ class Setting {
 }
 
 //!---------------------------------------------------------
-// @class    ParameterSetting
-// @brief     A parameter setting is a complete set of 
+// \class    ParameterSetting
+// \brief     A parameter setting is a complete set of 
 //           microscope, image and capture parameters.
 //!---------------------------------------------------------
 class ParameterSetting extends Setting {
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::ParameterSetting
-	// @brief        Constructor. Creates a new ParameterSetting
-	// @return      void
+	// \brief        Constructor. Creates a new ParameterSetting
+	// \return      void
 	//!---------------------------------------------------------
 	function ParameterSetting() {
 		$this->Setting();
@@ -448,8 +448,8 @@ class ParameterSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::getAberractionCorrectionParameters()
-	// @brief        Returns the parameters needed for the aberration correction.
-	// @return      Array
+	// \brief        Returns the parameters needed for the aberration correction.
+	// \return      Array
 	//!---------------------------------------------------------    
 	function getAberractionCorrectionParameters() {
 		$parameters = array(
@@ -464,8 +464,8 @@ class ParameterSetting extends Setting {
 	
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::imageParameterNames()
-	// @brief        Answer the names of parameters concerning the image.
-	// @return      Array
+	// \brief        Answer the names of parameters concerning the image.
+	// \return      Array
 	//!---------------------------------------------------------    
 	function imageParameterNames() {
 		$names = array ();
@@ -479,8 +479,8 @@ class ParameterSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::microscopeParameterNames()
-	// @brief        Answer the names of parameters concerning the microscope
-	// @return      Array
+	// \brief        Answer the names of parameters concerning the microscope
+	// \return      Array
 	//!---------------------------------------------------------    
 	function microscopeParameterNames() {
 		$names = array ();
@@ -493,8 +493,8 @@ class ParameterSetting extends Setting {
 	}
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::capturingParameterNames()
-	// @brief        Answer the names of parameters concerning the captor
-	// @return      Array
+	// \brief        Answer the names of parameters concerning the captor
+	// \return      Array
 	//!---------------------------------------------------------    
 	function capturingParameterNames() {
 		$names = array ();
@@ -507,10 +507,10 @@ class ParameterSetting extends Setting {
 	}
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::checkImageParameter()
-	// @brief        Check the image parameter. Answer true if they
+	// \brief        Check the image parameter. Answer true if they
 	//              are valid. Answer false and set the message
 	//              otherwise.
-	// @return      Boolean
+	// \return      Boolean
 	//!---------------------------------------------------------    
 	function checkImageParameter() {
 		$result = True;
@@ -524,10 +524,10 @@ class ParameterSetting extends Setting {
 	}
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::checkMicroscopeParameter()
-	// @brief        Check the microscope parameter. Answer true if they
+	// \brief        Check the microscope parameter. Answer true if they
 	//              are valid. Answer false and set the message
 	//              otherwise.
-	// @return      Boolean
+	// \return      Boolean
 	//!---------------------------------------------------------    
 	function checkMicroscopeParameter() {
 		$this->message = '';
@@ -558,10 +558,10 @@ class ParameterSetting extends Setting {
 	}
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::checkCapturingParameter()
-	// @brief        Check the capturing  parameter. Answer true if they
+	// \brief        Check the capturing  parameter. Answer true if they
 	//              are valid. Answer false and set the message
 	//              otherwise.
-	// @return      Boolean
+	// \return      Boolean
 	//!---------------------------------------------------------    
 	function checkCapturingParameter() {
 		$this->message = '';
@@ -601,11 +601,11 @@ class ParameterSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::checkCalculateParameter()
-	// @brief        Check the parameters needed the compute the pixel size
+	// \brief        Check the parameters needed the compute the pixel size
 	//		from the microscope and camera parameters. Answer true
 	//              if they are valid. Answer false and set the message
 	//              otherwise.
-	// @return      Boolean
+	// \return      Boolean
 	//!---------------------------------------------------------    
 	function checkCalculateParameter() {
 		$this->message = '';
@@ -643,10 +643,10 @@ class ParameterSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::checkPointSpreadFunction()
-	// @brief        Answer true if a PSF file is selected for every
+	// \brief        Answer true if a PSF file is selected for every
 	//              channel. Answer false and set the message
 	//              otherwise.
-	// @return      Boolean
+	// \return      Boolean
 	//!---------------------------------------------------------    
 	function checkPointSpreadFunction() {
 		$this->message = '';
@@ -664,8 +664,8 @@ class ParameterSetting extends Setting {
 	// Support for Nipkow spinning disk
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::checkPinholeSpacing
-	// @brief        TODO
-	// @return      Boolean
+	// \brief        TODO
+	// \return      Boolean
 	//!---------------------------------------------------------
 	function checkPinholeSpacing() {
 		$result = True;
@@ -683,8 +683,8 @@ class ParameterSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::checkPinholeSize
-	// @brief        TODO
-	// @return      Boolean
+	// \brief        TODO
+	// \return      Boolean
 	//!---------------------------------------------------------    
 	function checkPinholeSize() {
 		$parameter = $this->parameter('PinholeSize');
@@ -699,11 +699,11 @@ class ParameterSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::checkNumericalAperture
-	// @brief        The numerical aperture must not be bigger 
+	// \brief        The numerical aperture must not be bigger 
 	//              than the lens refractive index or the medium
 	//              refractive index. It must not be smaller than
 	//              0.2
-	// @return      Boolean
+	// \return      Boolean
 	//!---------------------------------------------------------    
 	function checkNumericalAperture() {
 		$result = True;
@@ -745,13 +745,13 @@ class ParameterSetting extends Setting {
 	// TODO refactor
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::adaptedLateralSampleSize
-	// @brief        Test if the sampling size lies around the ideal
+	// \brief        Test if the sampling size lies around the ideal
 	//              sampling size according to the nyquist criterium.
 	//              If this is not the case adapt the sample size 
 	//              to the ideal value according to the nyquist
 	//              criterium.
-	// @param       size  float  The sample size entered by the user
-	// @return      float
+	// \param       size  float  The sample size entered by the user
+	// \return      float
 	//!---------------------------------------------------------    
 	function adaptedLateralSampleSize() {
 		$result = False;
@@ -789,13 +789,13 @@ class ParameterSetting extends Setting {
 	// TODO refactor
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::adaptedLateralSampleSize
-	// @brief        Test if the sampling size lies around the ideal
+	// \brief        Test if the sampling size lies around the ideal
 	//              sampling size according to the nyquist criterium.
 	//              If this is not the case adapt the sample size 
 	//              to the ideal value according to the nyquist
 	//              criterium.
-	// @param       size  float  The sample size entered by the user
-	// @return      float
+	// \param       size  float  The sample size entered by the user
+	// \return      float
 	//!---------------------------------------------------------    
 	function adaptedLateralSampleSizeFor($size) {
 		$result = False;
@@ -819,13 +819,13 @@ class ParameterSetting extends Setting {
 	/* TODO refactor
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::adaptedLateralSampleSizeFor
-	// @brief        Test if the sampling size lies around the ideal
+	// \brief        Test if the sampling size lies around the ideal
 	//              sampling size according to the nyquist criterium.
 	//              If this is not the case adapt the sample size 
 	//              to the ideal value according to the nyquist
 	//              criterium.
-	// @param       channel  int  The number of the channel (1-4)
-	// @return      float
+	// \param       channel  int  The number of the channel (1-4)
+	// \return      float
 	//!---------------------------------------------------------   
 	function adaptedLateralSampleSizeFor($channel) {
 	    $result = False;
@@ -850,14 +850,14 @@ class ParameterSetting extends Setting {
 	/* TODO refactor
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::adaptedNumericalAperture
-	// @brief        Test if the sampling size lies around the ideal
+	// \brief        Test if the sampling size lies around the ideal
 	//              sampling size according to the nyquist criterium.
 	//              If this is not the case lower the numerical 
 	//              aperture until the condition is met. Answer the
 	//              adapted numerical aperture if one was found. Uses
 	//              the most restrictive wavelength.
 	//              Otherwise answer Null.
-	// @return      Boolean
+	// \return      Boolean
 	//!---------------------------------------------------------    
 	function adaptedNumericalAperture() {
 	    $result = Null;
@@ -892,14 +892,14 @@ class ParameterSetting extends Setting {
 	
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::adaptedNumericalApertureFor
-	// @brief        Test if the sampling size lies around the ideal
+	// \brief        Test if the sampling size lies around the ideal
 	//              sampling size according to the nyquist criterium.
 	//              If this is not the case lower the numerical 
 	//              aperture until the condition is met. Answer the
 	//              adapted numerical aperture if one was found. 
 	//              Otherwise answer Null.
-	// @param       channel  int  The number of the channel (1-4)
-	// @return      Boolean
+	// \param       channel  int  The number of the channel (1-4)
+	// \return      Boolean
 	//!---------------------------------------------------------    
 	function adaptedNumericalApertureFor($channel) {
 	    $result = Null;
@@ -925,9 +925,9 @@ class ParameterSetting extends Setting {
 
         //!---------------------------------------------------------
         // @function    ParameterSetting::calculateNyquistRate
-        // @brief        Ask hucore for the ideal (Nyquist) sampling rate
+        // \brief        Ask hucore for the ideal (Nyquist) sampling rate
         //              for the current conditions. 
-        // @return      An array with the XY and Z ideal sampling.
+        // \return      An array with the XY and Z ideal sampling.
         //!---------------------------------------------------------    
         function calculateNyquistRate() {
             // Use the most restrictive wavelength to compute the adaption
@@ -979,8 +979,8 @@ class ParameterSetting extends Setting {
 	// TODO refactor
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::isNyquistRateOK
-	// @brief        TODO
-	// @return      Boolean
+	// \brief        TODO
+	// \return      Boolean
 	//!---------------------------------------------------------    
 	function isNyquistRateOK() {
 		$result = True;
@@ -1069,12 +1069,12 @@ class ParameterSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::checkNyquistRate
-	// @brief        For widefield microscope check the nyquist
+	// \brief        For widefield microscope check the nyquist
 	//              rate. Adapt the numerical aperture for each
 	//              channel if necessary. Answer true if under
 	//              sampling and over sampling are limited to
 	//              a reasonable amount.
-	// @return      Boolean
+	// \return      Boolean
 	//!---------------------------------------------------------    
 	function checkNyquistRate() {
 		// Check Nyquist Rate for every microscope
@@ -1084,11 +1084,11 @@ class ParameterSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::checkWavelength()
-	// @brief        Check the emission or excitation wavelengths.
+	// \brief        Check the emission or excitation wavelengths.
 	//              This case is treated seperately because there
 	//              is one wavelength value per channel.
-	// @param       name  String  Emission or Excitation
-	// @return      Boolean
+	// \param       name  String  Emission or Excitation
+	// \return      Boolean
 	//!---------------------------------------------------------    
 	function checkWavelength($name) {
 		$parameterName = $name . 'Wavelength';
@@ -1104,9 +1104,9 @@ class ParameterSetting extends Setting {
 	}
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::checkSingleChannelImageParameter()
-	// @brief        Check the parameter if single channel had been
+	// \brief        Check the parameter if single channel had been
 	//              chosen.
-	// @return      Boolean
+	// \return      Boolean
 	//!---------------------------------------------------------    
 	function checkSingleChannelImageParameter() {
 
@@ -1130,9 +1130,9 @@ class ParameterSetting extends Setting {
 	}
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::checkMultiChannelImageParameter()
-	// @brief        Check the parameter if multichannel had been
+	// \brief        Check the parameter if multichannel had been
 	//              chosen.
-	// @return      Boolean
+	// \return      Boolean
 	//!---------------------------------------------------------    
 	function checkMultiChannelImageParameter() {
 		$result = True;
@@ -1152,11 +1152,11 @@ class ParameterSetting extends Setting {
 	}
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::checkGeometry
-	// @brief        Check the image geometry parameter (two or
+	// \brief        Check the image geometry parameter (two or
 	//              three dimensional, time series or single image).
-	// @param       prefix  String  single or multi (for single 
+	// \param       prefix  String  single or multi (for single 
 	//              channel or multi channel geometries.
-	// @return      Boolean
+	// \return      Boolean
 	//!---------------------------------------------------------    
 	function checkGeometry($prefix) {
 		$result = True;
@@ -1179,9 +1179,9 @@ class ParameterSetting extends Setting {
 	}
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::checkNumberOfChannels()
-	// @brief        Check the number of channels. Must be between 
+	// \brief        Check the number of channels. Must be between 
 	//              1 to 5.
-	// @return      Boolean
+	// \return      Boolean
 	//!---------------------------------------------------------    
 	function checkNumberOfChannels() {
 		$result = True;
@@ -1214,9 +1214,9 @@ class ParameterSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::fixedGeometryFileFormats
-	// @brief        Answer an array of file formats that have a
+	// \brief        Answer an array of file formats that have a
 	//              fixed geometry (2d images).
-	// @return      array
+	// \return      array
 	//!---------------------------------------------------------    
 	function fixedGeometryFileFormats() {
 		static $fixedGeometryFileFormats;
@@ -1235,9 +1235,9 @@ class ParameterSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::singleChannelFileFormats
-	// @brief        Answer an array of file formats that support
+	// \brief        Answer an array of file formats that support
 	//              single channel images.
-	// @return      array
+	// \return      array
 	//!---------------------------------------------------------    
 	function singleChannelFileFormats() {
 		static $singleChannelFileFormats;
@@ -1250,9 +1250,9 @@ class ParameterSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::multiChannelFileFormats
-	// @brief        Answer an array of file formats that support
+	// \brief        Answer an array of file formats that support
 	//              multi channel images.
-	// @return      array
+	// \return      array
 	//!---------------------------------------------------------    
 	function multiChannelFileFormats() {
 		static $multiChannelFileFormats;
@@ -1265,9 +1265,9 @@ class ParameterSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::variableChannelFileFormats
-	// @brief        Answer an array of file formats that support
+	// \brief        Answer an array of file formats that support
 	//              a variable number of channels in one file
-	// @return      array
+	// \return      array
 	//!---------------------------------------------------------    
 	function variableChannelFileFormats() {
 		static $variableChannelFileFormats;
@@ -1280,9 +1280,9 @@ class ParameterSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::isMultiChannel
-	// @brief        Answer true if the setting is for a multi
+	// \brief        Answer true if the setting is for a multi
 	//              channel image.
-	// @return      boolean
+	// \return      boolean
 	//!---------------------------------------------------------    
 	function isMultiChannel() {
 		$parameter = $this->parameter('NumberOfChannels');
@@ -1314,8 +1314,8 @@ class ParameterSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::numberOfChannels
-	// @brief        Answer the number of channels of the setting.
-	// @return      Integer
+	// \brief        Answer the number of channels of the setting.
+	// \return      Integer
 	//!---------------------------------------------------------    
 	function numberOfChannels() {
 		$result = 3;
@@ -1332,9 +1332,9 @@ class ParameterSetting extends Setting {
 	// Support for Nipkow spinning disk
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::isNipkowDisk
-	// @brief        Answer true if the setting is for a Nipkow
+	// \brief        Answer true if the setting is for a Nipkow
 	//              spinning disk microscope.
-	// @return      bool
+	// \return      bool
 	//!---------------------------------------------------------    
 	function isNipkowDisk() {
 		return $this->isMultiPointConfocal();
@@ -1342,9 +1342,9 @@ class ParameterSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::isTwoPhoton
-	// @brief        Answer true if the setting is for a two
+	// \brief        Answer true if the setting is for a two
 	//              photon microscope.
-	// @return      bool
+	// \return      bool
 	//!---------------------------------------------------------    
 	function isTwoPhoton() {
 		$parameter = $this->parameter('MicroscopeType');
@@ -1354,9 +1354,9 @@ class ParameterSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::isSinglePointConfocal
-	// @brief        Answer true if the setting is for a single
+	// \brief        Answer true if the setting is for a single
 	//              point confocal microscope.
-	// @return      bool
+	// \return      bool
 	//!---------------------------------------------------------      
 	function isSinglePointConfocal() {
 		$parameter = $this->parameter('MicroscopeType');
@@ -1366,9 +1366,9 @@ class ParameterSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::isMultiPointConfocal
-	// @brief        Answer true if the setting is for a multi
+	// \brief        Answer true if the setting is for a multi
 	//              point confocal microscope.
-	// @return      bool
+	// \return      bool
 	//!---------------------------------------------------------      
 	function isMultiPointConfocal() {
 		$parameter = $this->parameter('MicroscopeType');
@@ -1378,9 +1378,9 @@ class ParameterSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::isWidefield
-	// @brief        Answer true if the setting is for a widefield
+	// \brief        Answer true if the setting is for a widefield
 	//              microscope.
-	// @return      bool
+	// \return      bool
 	//!---------------------------------------------------------      
 	function isWidefield() {
 		$parameter = $this->parameter('MicroscopeType');
@@ -1390,9 +1390,9 @@ class ParameterSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::isWidefieldOrMultiPoint
-	// @brief        Answer true if the setting is for a widefield
+	// \brief        Answer true if the setting is for a widefield
 	//              or multi point confocal microscope.
-	// @return      bool
+	// \return      bool
 	//!---------------------------------------------------------    
 	function isWidefieldOrMultiPoint() {
 		return ($this->isWidefield() || $this->isMultiPointConfocal());
@@ -1400,9 +1400,9 @@ class ParameterSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::isTwoPhotonOrSinglePoint
-	// @brief        Answer true if the setting is for a two photon
+	// \brief        Answer true if the setting is for a two photon
 	//              or single point confocal microscope.
-	// @return      bool
+	// \return      bool
 	//!---------------------------------------------------------      
 	function isTwoPhotonOrSinglePoint() {
 		return ($this->isSinglePointConfocal() || $this->isTwoPhoton());
@@ -1410,9 +1410,9 @@ class ParameterSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::isMultiPointOrSinglePointConfocal
-	// @brief        Answer true if the setting is for a single
+	// \brief        Answer true if the setting is for a single
 	//              point or multi point confocal microscope.
-	// @return      bool
+	// \return      bool
 	//!---------------------------------------------------------      
 	function isMultiPointOrSinglePointConfocal() {
 		return ($this->isSinglePointConfocal() || $this->isMultiPointConfocal());
@@ -1420,9 +1420,9 @@ class ParameterSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::isThreeDimensional
-	// @brief        Answer true if the setting is for a three
+	// \brief        Answer true if the setting is for a three
 	//              dimensional image geometry.
-	// @return      bool
+	// \return      bool
 	//!---------------------------------------------------------      
 	function isThreeDimensional() {
 		$parameter = $this->parameter('ImageGeometry');
@@ -1434,9 +1434,9 @@ class ParameterSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::isTimeSeries
-	// @brief        Answer true if the setting is for a time
+	// \brief        Answer true if the setting is for a time
 	//              series of images.
-	// @return      bool
+	// \return      bool
 	//!---------------------------------------------------------      
 	function isTimeSeries() {
 		if ($this->isFixedGeometryFormat())
@@ -1450,8 +1450,8 @@ class ParameterSetting extends Setting {
 	// TODO rename CCDCaptorSizeX to SampleSizeX
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::pixelSize
-	// @brief        Answer the lateral sample size in nanometer
-	// @return      number
+	// \brief        Answer the lateral sample size in nanometer
+	// \return      number
 	//!---------------------------------------------------------        
 	function pixelSize() {
 		$param = $this->parameter('CCDCaptorSizeX');
@@ -1463,8 +1463,8 @@ class ParameterSetting extends Setting {
 	// TODO refactor
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::sampleSizeX
-	// @brief        Answer the lateral sample size in micron
-	// @return      number
+	// \brief        Answer the lateral sample size in micron
+	// \return      number
 	//!---------------------------------------------------------        
 	function sampleSizeX() {
 		$size = $this->pixelSize();
@@ -1474,8 +1474,8 @@ class ParameterSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::sampleSizeY
-	// @brief        Answer the lateral sample size in micron
-	// @return      number
+	// \brief        Answer the lateral sample size in micron
+	// \return      number
 	//!---------------------------------------------------------        
 	function sampleSizeY() {
 		return $this->sampleSizeX();
@@ -1483,8 +1483,8 @@ class ParameterSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::sampleSizeZ
-	// @brief        Answer the sample size in z direction in micron
-	// @return      number
+	// \brief        Answer the sample size in z direction in micron
+	// \return      number
 	//!---------------------------------------------------------        
 	function sampleSizeZ() {
 		$param = $this->parameter('ZStepSize');
@@ -1495,9 +1495,9 @@ class ParameterSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::sampleSizeT
-	// @brief        Answer the time between to images of the 
+	// \brief        Answer the time between to images of the 
 	//              time series in seconds. 
-	// @return      number
+	// \return      number
 	//!---------------------------------------------------------        
 	function sampleSizeT() {
 		$param = $this->parameter('TimeInterval');
@@ -1508,13 +1508,13 @@ class ParameterSetting extends Setting {
 	// sample size adaption for all microscopes
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::sampleSize
-	// @brief        Answer the lateral sample size in nanometer.
+	// \brief        Answer the lateral sample size in nanometer.
 	//              For confocal microscopes the sample size
 	//              may be adapted to fit the nyquist criterium.
-	// @param       size  float  The ccd captor or sampling size
+	// \param       size  float  The ccd captor or sampling size
 	//              in nanometer. This Bloquer les numéros 0900?is the value the user 
 	//              entered. 
-	// @return      number
+	// \return      number
 	//!---------------------------------------------------------          
 
     // WARNING: the sampling sizes is a property of the image, not something
@@ -1545,12 +1545,12 @@ class ParameterSetting extends Setting {
 	/* TODO refactor
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::sampleSizeForCCDCaptorElementSize
-	// @brief        Compute and answer the sample size (pixel size) 
+	// \brief        Compute and answer the sample size (pixel size) 
 	//              from the single ccd captor size and the microscope 
 	//              parameters
-	// @param       size  float  The ccd captor size in nanometer. 
+	// \param       size  float  The ccd captor size in nanometer. 
 	//              This is the value the user entered. 
-	// @return      number
+	// \return      number
 	//!---------------------------------------------------------
 	function sampleSizeForCCDCaptorElementSize($size) {
 	    $param = $this->parameter('Binning');
@@ -1568,10 +1568,10 @@ class ParameterSetting extends Setting {
 	/* TODO refactor
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::sampleSizeForConfocal
-	// @brief        If necessary adapt the sample size to fit
+	// \brief        If necessary adapt the sample size to fit
 	//              the nyquist criterium.
-	// @param       size  float  The pixel size the user entered. 
-	// @return      number
+	// \param       size  float  The pixel size the user entered. 
+	// \return      number
 	//!---------------------------------------------------------
 	function sampleSizeForConfocal($size) {
 	    $result = $this->adaptedLateralSampleSize(1);
@@ -1580,11 +1580,11 @@ class ParameterSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::table()
-	// @brief        Answer the name of the database table in 
+	// \brief        Answer the name of the database table in 
 	//              which the parameter settings are stored. The 
 	//              table contains the setting's name the owner 
 	//              and the standard (default) flag.
-	// @return      String
+	// \return      String
 	//!---------------------------------------------------------    
 	function table() {
 		return "parameter_setting";
@@ -1592,10 +1592,10 @@ class ParameterSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::parameterTable()
-	// @brief        Answer the name of the database table in
+	// \brief        Answer the name of the database table in
 	//              which the parameters for settings of the 
 	//              receiver's kind are stored. 
-	// @return      String
+	// \return      String
 	//!---------------------------------------------------------    
 	function parameterTable() {
 		return "parameter";
@@ -1685,16 +1685,16 @@ class ParameterSetting extends Setting {
 }
 
 //!---------------------------------------------------------
-// @class    TaskSetting
-// @brief     A task setting is a complete set of 
+// \class    TaskSetting
+// \brief     A task setting is a complete set of 
 //           image processing parameters.
 //!---------------------------------------------------------
 class TaskSetting extends Setting {
 	public $numberOfChannels;
 	//!---------------------------------------------------------
 	// @function    TaskSetting::TaskSetting
-	// @brief        Konstruktor. Creates a new TaskSetting
-	// @return      void
+	// \brief        Konstruktor. Creates a new TaskSetting
+	// \return      void
 	//!---------------------------------------------------------
 	function TaskSetting() {
 		$this->Setting();
@@ -1732,9 +1732,9 @@ class TaskSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    TaskSetting::isOutputIms
-	// @brief        Answer true if the output file format ims
+	// \brief        Answer true if the output file format ims
 	//              (imaris) has been choosen
-	// @return      Boolean
+	// \return      Boolean
 	//!---------------------------------------------------------    
 	function isOutputIms() {
 		$result = False;
@@ -1746,10 +1746,10 @@ class TaskSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    TaskSetting::isStepProcessing
-	// @brief        Answer true if step processing will be performed
+	// \brief        Answer true if step processing will be performed
 	//              because either step processing or step combined
 	//              processing had been choosen as style of processingy
-	// @return      Boolean
+	// \return      Boolean
 	//!---------------------------------------------------------
 	function isStepProcessing() {
 		$parameter = $this->parameter('StyleOfProcessing');
@@ -1758,12 +1758,12 @@ class TaskSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    TaskSetting::isStepCombinedProcessing
-	// @brief        Answer true if step combined processing has
+	// \brief        Answer true if step combined processing has
 	//              been choosen. The images will first be processed
 	//              using step processing. Afterwards a standard
 	//              full restoration with the same psf and fixed
 	//              parameters is applied to the results.
-	// @return      Boolean
+	// \return      Boolean
 	//!---------------------------------------------------------
 	function isStepCombinedProcessing() {
 		return false;
@@ -1775,12 +1775,12 @@ class TaskSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    TaskSetting::setNumberOfChannels
-	// @brief        Set the number of channels. The number has to be
+	// \brief        Set the number of channels. The number has to be
 	//              known for the parameters that have to be 
 	//              supplied per channel like background offset
 	//              and remove background.
-	// @param       channels  int  The number of channels
-	// @return      Void
+	// \param       channels  int  The number of channels
+	// \return      Void
 	//!---------------------------------------------------------    
 	function setNumberOfChannels($channels) {
 		$this->numberOfChannels = $channels;
@@ -1794,11 +1794,11 @@ class TaskSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    TaskSetting::numberOfChannels
-	// @brief        Answer the number of channels. The number has to be
+	// \brief        Answer the number of channels. The number has to be
 	//              known for the parameters that have to be 
 	//              supplied per channel like background offset
 	//              and remove background.
-	// @return      int
+	// \return      int
 	//!---------------------------------------------------------    
 	function numberOfChannels() {
 		return $this->numberOfChannels;
@@ -1806,8 +1806,8 @@ class TaskSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    TaskSetting::checkSignalNoiseRatio
-	// @brief        TODO
-	// @return      Boolean
+	// \brief        TODO
+	// \return      Boolean
 	//!---------------------------------------------------------    
 	function checkSignalNoiseRatio() {
 		$parameter = $this->parameter('SignalNoiseRatioUseRange');
@@ -1854,10 +1854,10 @@ class TaskSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    TaskSetting::checkParameter
-	// @brief        Check the entered parameter. Answer true if
+	// \brief        Check the entered parameter. Answer true if
 	//              they are ok and false if some illegal values
 	//              have been supplied.
-	// @return      Boolean
+	// \return      Boolean
 	//!---------------------------------------------------------    
 	function checkParameter() {
 		$result = True;
@@ -1928,11 +1928,11 @@ class TaskSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    TaskSetting::checkRange
-	// @brief        Check the entered values for the range parameter. 
+	// \brief        Check the entered values for the range parameter. 
 	//              For a range parameter at least two values must
 	//              be entered. Each value must be a valid value
 	//              for the parameter.
-	// @return      Boolean
+	// \return      Boolean
 	//!---------------------------------------------------------    
 	function checkRange($parameterName, $originalLabel) {
 		$param = $this->parameter($parameterName);
@@ -1966,11 +1966,11 @@ class TaskSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    TaskSetting::table()
-	// @brief        Answer the name of the database table in 
+	// \brief        Answer the name of the database table in 
 	//              which the task settings are stored. The 
 	//              table contains the setting's name the owner 
 	//              and the standard (default) flag.
-	// @return      String
+	// \return      String
 	//!---------------------------------------------------------    
 	function table() {
 		return "task_setting";
@@ -1978,10 +1978,10 @@ class TaskSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    TaskSetting::parameterTable()
-	// @brief        Answer the name of the database table in
+	// \brief        Answer the name of the database table in
 	//              which the parameters for settings of the 
 	//              receiver's kind are stored. 
-	// @return      String
+	// \return      String
 	//!---------------------------------------------------------    
 	function parameterTable() {
 		return "task_parameter";
@@ -1989,9 +1989,9 @@ class TaskSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    TaskSetting::display
-	// @brief        Display the setting as a text containing
+	// \brief        Display the setting as a text containing
 	//              the parameters and their values.
-	// @return      Void
+	// \return      Void
 	//!---------------------------------------------------------      
 	function display() {
 		print $this->displayString();
@@ -2000,10 +2000,10 @@ class TaskSetting extends Setting {
 	// TODO refactor!
 	//!---------------------------------------------------------
 	// @function    TaskSetting::displayString
-	// @brief        Answer the display string of the setting.
+	// \brief        Answer the display string of the setting.
 	//              It contains the names and values of the 
 	//              task settings parameters.
-	// @return      Void
+	// \return      Void
 	//!---------------------------------------------------------        
 	function displayString( $numberOfChannels = 0 ) {	// return the string that will be attach to the success notification message 
 		$result = '';
@@ -2080,12 +2080,12 @@ class TaskSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    TaskSetting::displayWithoutOutputFileFormat
-	// @brief        Display the setting as a text containing
+	// \brief        Display the setting as a text containing
 	//              the parameters and their values. Only
 	//              the parameter OutputFileFormat is left out.
 	//              This is used for the web display where the
 	//              output file format has not been choosen yet.
-	// @return      Void
+	// \return      Void
 	//!---------------------------------------------------------        
 	function displayWithoutOutputFileFormat( $numberOfChannels = 0 ) {
 		print $this->displayStringWithoutOutputFileFormat( $numberOfChannels );
@@ -2093,13 +2093,13 @@ class TaskSetting extends Setting {
 
 	//!---------------------------------------------------------
 	// @function    TaskSetting::displayStringWithoutOutputFileFormat
-	// @brief        Answer the display string of the setting.
+	// \brief        Answer the display string of the setting.
 	//              It contains the names and values of the 
 	//              task settings parameters. Only
 	//              the parameter OutputFileFormat is left out.
 	//              This is used for the web display where the
 	//              output file format has not been choosen yet.
-	// @return      Void
+	// \return      Void
 	//!---------------------------------------------------------
 	function displayStringWithoutOutputFileFormat( $numberOfChannels = 0 ) {
 		$parameter = $this->parameter('OutputFileFormat');
@@ -2114,8 +2114,8 @@ class TaskSetting extends Setting {
 }
 
 //!---------------------------------------------------------
-// @class    JobParameterSetting
-// @brief     A parameter setting is a complete set of 
+// \class    JobParameterSetting
+// \brief     A parameter setting is a complete set of 
 //           microscope, image and capture parameters. A job
 //           parameter setting is a parameter setting that 
 //           is used when a job is executed by the queue
@@ -2126,21 +2126,21 @@ class TaskSetting extends Setting {
 class JobParameterSetting extends ParameterSetting {
 	//!---------------------------------------------------------
 	// @function    JobParameterSetting::table()
-	// @brief        Answer the name of the database table in 
+	// \brief        Answer the name of the database table in 
 	//              which the job parameter settings are stored. The 
 	//              table contains the setting's name the owner 
 	//              and the standard (default) flag.
-	// @return      String
+	// \return      String
 	//!---------------------------------------------------------    
 	function table() {
 		return "job_parameter_setting";
 	}
 	//!---------------------------------------------------------
 	// @function    JobParameterSetting::parameterTable()
-	// @brief        Answer the name of the database table in
+	// \brief        Answer the name of the database table in
 	//              which the parameters for settings of the 
 	//              receiver's kind are stored. 
-	// @return      String
+	// \return      String
 	//!---------------------------------------------------------    
 	function parameterTable() {
 		return "job_parameter";
@@ -2295,19 +2295,19 @@ class JobParameterSetting extends ParameterSetting {
 }
 
 //!---------------------------------------------------------
-// @class    JobTaskSetting
-// @brief     A job task setting is a complete set of 
+// \class    JobTaskSetting
+// \brief     A job task setting is a complete set of 
 //           image processing parameters that is used when
 //           a job is processed by the queue manager.
 //!---------------------------------------------------------
 class JobTaskSetting extends TaskSetting {
 	//!---------------------------------------------------------
 	// @function    JobTaskSetting::table()
-	// @brief        Answer the name of the database table in 
+	// \brief        Answer the name of the database table in 
 	//              which the job task settings are stored. The 
 	//              table contains the setting's name the owner 
 	//              and the standard (default) flag.
-	// @return      String
+	// \return      String
 	//!---------------------------------------------------------    
 	function table() {
 		return "job_task_setting";
@@ -2315,10 +2315,10 @@ class JobTaskSetting extends TaskSetting {
 
 	//!---------------------------------------------------------
 	// @function    JobTaskParameterSetting::parameterTable()
-	// @brief        Answer the name of the database table in
+	// \brief        Answer the name of the database table in
 	//              which the parameters for settings of the 
 	//              receiver's kind are stored. 
-	// @return      String
+	// \return      String
 	//!---------------------------------------------------------    
 	function parameterTable() {
 		return "job_task_parameter";

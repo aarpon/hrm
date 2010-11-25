@@ -2,12 +2,12 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
-//!---------------------------------------------------------
-// @function    
-// @brief
-// @param       
-// @return      
-//!---------------------------------------------------------
+/*!
+  \brief  Takes a number between 1 and 36 as input and returns the corresponding
+          code in the range 'a' .. 'z' '1' .. '9'
+  \param  $num  An integer in the range 1 to 36.
+  \return the corresponding character in the range 'a' .. 'z' '1' .. '9'
+*/
 function assign_rand_value($num) {
   // accepts 1 - 36
   switch($num) {
@@ -123,12 +123,11 @@ function assign_rand_value($num) {
   return $rand_value;
 }
 
-//!---------------------------------------------------------
-// @function    
-// @brief
-// @param       
-// @return      
-//!---------------------------------------------------------
+/*!
+  \brief  Returns a random string to be used as id
+  \param  $length Length of the string
+  \return a random string
+*/
 function get_rand_id($length) {
   if($length>0) { 
     $rand_id="";
@@ -141,14 +140,12 @@ function get_rand_id($length) {
   return $rand_id;
 }
 
-//!---------------------------------------------------------
-// @function    escapeJavaScript
-// @brief        Escapes html strings generated in PHP so that can be used as
-//              arguments in JavaScript functions.
-//              parameters. This local hucore doesn't need to have a license!
-// @param       A html string.
-// @return      Conveniently formated string.
-//!---------------------------------------------------------
+/*!
+  \brief  Escapes html strings generated in PHP so that they can be used as
+          arguments in JavaScript functions.
+  \param  $str  An html string.
+  \return conveniently formatted string.
+*/
 function escapeJavaScript ($str) {
       $str = str_replace("'", "\'", $str);
       $str = str_replace("\n", "\\n", $str);
@@ -157,15 +154,14 @@ function escapeJavaScript ($str) {
 }
 
 
-//!---------------------------------------------------------
-// @function    huCoreTools  
-// @brief        Calls a local hucore (that must be in the $PATH) to
-//              execute some freeware image processing tools, or report
-//              parameters. This local hucore doesn't need to have a license!
-// @param       $tool is the procedure in scripts/hucore.tcl to be executed.
-//              $options are extra command line options to send to that script
-// @return      An array with all stdout lines
-//!---------------------------------------------------------
+/*!
+  \brief  Calls a local hucore (that must be in the $PATH) to
+          execute some freeware image processing tools, or report
+          parameters. This local hucore doesn't need to have a license!
+  \param  $tool is the procedure in scripts/hucore.tcl to be executed.
+  \param  $options are extra command line options to send to that script
+  \return an array with all stdout lines
+*/
 function huCoreTools ($tool, $options) {
     global $hrm_path, $local_huygens_core;
 
@@ -214,15 +210,14 @@ function huCoreTools ($tool, $options) {
 
 }
 
-//!---------------------------------------------------------
-// @function    askHuCore  
-// @brief        A wrapper around huCoreTools to retrieve an array,
-//              which is 'calculated' by hucore in the background.
-// @param       $tool is the procedure in scripts/hucore.tcl to be executed.
-//              $options are extra command line options to send to that script
-//              hucore output. By default, it uses the same tool name.
-// @return      The requested array.
-//!---------------------------------------------------------
+/*!
+  \brief  A wrapper around huCoreTools to retrieve an array, which is
+          'calculated' by hucore in the background.
+  \param  $tool It is the procedure in scripts/hucore.tcl to be executed.
+  \param  $options These are extra command line options to send to that script
+          hucore output. By default, it uses the same tool name.
+  \return the requested array.
+*/
 function askHuCore ($tool, $options = "") {
 
       $answer = huCoreTools( $tool, $options );
@@ -276,17 +271,13 @@ function askHuCore ($tool, $options = "") {
       return $retArr;
 }
 
-
-
-//!---------------------------------------------------------
-// @function    report
-// @brief        Write text to the logfile if level is not
-//              bigger than log_verbosity. If logfile becomes
-//              to big it is renamed and started over.
-// @param       text  String  The text to be logged
-// @param       level  Int    The log level of the text
-// @return      Void
-//!---------------------------------------------------------
+/*!
+  \brief  Writes text to the logfile if level is not bigger than $log_verbosity
+          (defined in the HRM configuration files). If logfile becomes to big
+          it is renamed and a new one is started.
+  \param  $text The text to be logged
+  \param  $level  The log level of the text (0, 1, or 2)
+*/
 function report($text, $level) {
 	global $log_verbosity;
     global $hrm_path;
@@ -316,16 +307,13 @@ function report($text, $level) {
 	fclose($file);
 }
 
-
-//!---------------------------------------------------------
-// @function    notifyRuntimeError
-// @brief        Sends an email to the admin to notify any message.
-//              It helps in debugging strange events, and in being
-//              aware of abnormal scheduler stops.
-// @param       subject  String  A string to be appended to the email subject.
-// @param       message  String  The body of the email.
-// @return      Void
-//!---------------------------------------------------------
+/*!
+  \brief  Sends an email to the admin to notify any message. It helps in
+          debugging strange events, and in being aware of abnormal scheduler
+          stops. The message is also automatically reported to log.
+  \param  $subject  A string to be appended to the email subject.
+  \param  $message  The body of the email.
+*/
 function notifyRuntimeError($subject, $message) {
     global $email_sender;
     global $email_admin;
@@ -339,12 +327,137 @@ function notifyRuntimeError($subject, $message) {
     # No need to report to log, send() already did.
 }
 
-/* A global debugging function, that will print all its arguments whether they
- * are strings, arrays or objects. This works if a global variable $debug =
- * true, that can be defined in hrm_client_config.inc. Otherwise it does
- * nothing. */
+/*!
+  \brief  Returns the name of current page
+  \return string containing the name of current page
+*/
+function getThisPageName() {
+  return substr($_SERVER["SCRIPT_NAME"],strrpos($_SERVER["SCRIPT_NAME"],"/")+1);
+}
+
+/*!
+  \brief  This function transforms the php.ini notation for memory amount (e.g.
+          '2M') to an integer (2*1024*1024 in this case) number of bytes
+  \param  @v  memory amount in php.ini notation
+  \return integer version in bytes
+*/
+function let_to_num($v){
+    $l = substr($v, -1);
+    $ret = substr($v, 0, -1);
+    switch(strtoupper($l)){
+    case 'P':
+        $ret *= 1024;
+    case 'T':
+        $ret *= 1024;
+    case 'G':
+        $ret *= 1024;
+    case 'M':
+        $ret *= 1024;
+    case 'K':
+        $ret *= 1024;
+        break;
+    }
+    return $ret;
+}
+
+/*!
+  \brief  Report maximum upload size, in bytes.
+  \return maximum upload size in bytes.
+*/
+function getMaxSingleUploadSize() {
+
+    $max_upload_size = min(let_to_num(ini_get('post_max_size')), let_to_num(ini_get('upload_max_filesize')));
+
+    return $max_upload_size;
+}
+
+/*!
+  \brief  Report maximum post size, in bytes
+  \return maximum upload post in bytes
+*/
+function getMaxPostSize() {
+  
+  global $max_post_limit;
+  $ini_value = let_to_num(ini_get('post_max_size'));
+  if ( !isset( $max_post_limit ) ) {
+    $max_post_limit == 0;
+  }
+  if ( $max_post_limit == 0) {
+    return $ini_value;
+  }
+  $max_post_limit = 1024 * 1024 * $max_post_limit;
+  if ( $max_post_limit < $ini_value ) {
+    return $max_post_limit;
+  } else {
+    return $ini_value;
+  }
+}
+
+/*!
+  \brief  Report maximum file size that can be uploaded, in bytes
+  \return maximum file size that can be uploaded in bites
+*/
+function getMaxFileSize() {
+
+  global $max_upload_limit;
+  $ini_value = let_to_num(ini_get('upload_max_filesize'));
+  if ( !isset( $max_upload_limit ) ) {
+    $max_upload_limit == 0;
+  }
+  if ( $max_upload_limit == 0) {
+    return $ini_value;
+  }
+  $max_upload_limit = 1024 * 1024 * $max_upload_limit;
+  if ( $max_upload_limit < $ini_value ) {
+    return $max_upload_limit;
+  } else {
+    return $ini_value;
+  }
+}
+
+/*!
+  \brief  To be used instead of PHP's own readfile function to read
+          very large files. This should prevent memory errors.
+  \param  $filename  Name of the file to read
+  \param  $retbytes  Defines whether the number of bytes read should be returned
+                    (default: true)
+  \return if reading was not successful, the function returns false. If reading
+          was successful, the function returns the number of read bytes if
+          $retbytes is true, and false otherwise
+  \see    http://nl.php.net/manual/en/function.readfile.php#54295
+*/
+function readfile_chunked($filename,$retbytes=true) {
+  $chunksize = 1*(1024*1024); // how many bytes per chunk
+  $buffer = '';
+  $cnt =0;
+  $handle = fopen($filename, 'rb');
+  if ($handle === false) {
+    return false;
+  }
+  while (!feof($handle)) {
+    $buffer = fread($handle, $chunksize);
+    echo $buffer;
+    ob_flush();
+    flush();
+    if ($retbytes) {
+      $cnt += strlen($buffer);
+    }
+  }
+  $status = fclose($handle);
+  if ($retbytes && $status) {
+    return $cnt; // return num. bytes delivered like readfile() does.
+  }
+  return $status;
+} 
 
 if ( ! function_exists('printDebug') ) {
+
+    /*!
+      \brief  A global debugging function, that will print all its arguments whether 
+              are strings, arrays or objects. This works if a global variable
+              $debug = true, that can be defined in hrm_client_config.inc. Otherwise
+              it does nothing.
+    */
     function printDebug ( ) {
         global $debug;
 
@@ -372,115 +485,5 @@ if ( ! function_exists('printDebug') ) {
         }
     }
 }
-
-//!---------------------------------------------------------
-// @function    getThisPageName
-// @brief        Returns the name of current page
-// @return      string containing the name of current page
-//!---------------------------------------------------------
-
-function getThisPageName() {
-  return substr($_SERVER["SCRIPT_NAME"],strrpos($_SERVER["SCRIPT_NAME"],"/")+1);
-}
-
-// This function transforms the php.ini notation for numbers (like '2M') to an
-// integer (2*1024*1024 in this case)
-function let_to_num($v){
-    $l = substr($v, -1);
-    $ret = substr($v, 0, -1);
-    switch(strtoupper($l)){
-    case 'P':
-        $ret *= 1024;
-    case 'T':
-        $ret *= 1024;
-    case 'G':
-        $ret *= 1024;
-    case 'M':
-        $ret *= 1024;
-    case 'K':
-        $ret *= 1024;
-        break;
-    }
-    return $ret;
-}
-
-// Report maximum upload size, in bytes.
-function getMaxSingleUploadSize() {
-
-    $max_upload_size = min(let_to_num(ini_get('post_max_size')), let_to_num(ini_get('upload_max_filesize')));
-
-    return $max_upload_size;
-}
-
-function getMaxPostSize() {
-  
-  global $max_post_limit;
-  $ini_value = let_to_num(ini_get('post_max_size'));
-  if ( !isset( $max_post_limit ) ) {
-    $max_post_limit == 0;
-  }
-  if ( $max_post_limit == 0) {
-    return $ini_value;
-  }
-  $max_post_limit = 1024 * 1024 * $max_post_limit;
-  if ( $max_post_limit < $ini_value ) {
-    return $max_post_limit;
-  } else {
-    return $ini_value;
-  }
-}
-
-function getMaxFileSize() {
-
-  global $max_upload_limit;
-  $ini_value = let_to_num(ini_get('upload_max_filesize'));
-  if ( !isset( $max_upload_limit ) ) {
-    $max_upload_limit == 0;
-  }
-  if ( $max_upload_limit == 0) {
-    return $ini_value;
-  }
-  $max_upload_limit = 1024 * 1024 * $max_upload_limit;
-  if ( $max_upload_limit < $ini_value ) {
-    return $max_upload_limit;
-  } else {
-    return $ini_value;
-  }
-}
-
-//!---------------------------------------------------------
-// @function    Util::readfile_chunked
-// @brief        To be used instead of PHP's own readfile function to read
-//              very large files. This should prevent memory errors.
-// 
-// @param       filename  String name of the file to read
-// @param       retbytes  boolean
-//
-// @see         http://nl.php.net/manual/en/function.readfile.php#54295
-//!---------------------------------------------------------  
-
-function readfile_chunked($filename,$retbytes=true) {
-  $chunksize = 1*(1024*1024); // how many bytes per chunk
-  $buffer = '';
-  $cnt =0;
-  $handle = fopen($filename, 'rb');
-  if ($handle === false) {
-    return false;
-  }
-  while (!feof($handle)) {
-    $buffer = fread($handle, $chunksize);
-    echo $buffer;
-    ob_flush();
-    flush();
-    if ($retbytes) {
-      $cnt += strlen($buffer);
-    }
-  }
-  $status = fclose($handle);
-  if ($retbytes && $status) {
-    return $cnt; // return num. bytes delivered like readfile() does.
-  }
-  return $status;
-} 
 
 ?>

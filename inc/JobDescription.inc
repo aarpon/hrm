@@ -11,8 +11,8 @@ require_once("Job.inc");
 require_once("JobQueue.inc");
 
 //!---------------------------------------------------------
-// @class    JobDescription
-// @brief     Description of the job to be processed by
+// \class    JobDescription
+// \brief     Description of the job to be processed by
 //           Huygens. Consisting of a parameter setting,
 //           a task setting and a list of image files.
 //           From the JobDescription a huygens parameter
