@@ -2,16 +2,22 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
+/*!
+    \brief Image file browser
+ 
+    This file is used to generate an image file browser in certain HRM tools,
+    like in estimate_snr_from_image.php or file_management.php. When a file
+    browser must be combined in a more complex page, like in select_image.php,
+    this can not be so easily used. This is an interface to the Fileserver.
+*/
 
-// This file is used to generate an image file browser in certain HRM tools,
-// like in estimate_snr_from_image.php or file_management.php. When a file
-// browser must be combined in a more complex page, like in select_image.php,
-// this can not be so easily used. This is an interface to Fileserver.inc.
-
-
-/*
-  Generates some basic buttons to be used with the file browser, depending
-  on the tool needs. $type is one of 'download', 'upload', 'delete', 'update'
+/*!
+    \brief  Generates basic buttons for the image file browser
+    
+    This function generates basic buttons depending on what the file browser
+    needs. This is specified with the input parameter $type.
+    
+    \param  $type   One of 'download', 'upload', 'delete', or 'update'.
 */
 function fileButton ($type) {   
     global $decompressBin;
@@ -87,10 +93,19 @@ function fileButton ($type) {
 
 }
 
+// Doxygen gets very confused by this page. We force it to skip the whole code
+/*!
+ \cond
+*/
 
 
 // This tool requires setting some configuration parameters, that are defined
 // in the code that includes this script.
+
+// Doxygen makes a mess parsing this code block
+/*!
+ \cond
+*/
 
 // FileServer related code:
 if (!isset($_SESSION['fileserver'])) {
@@ -107,13 +122,16 @@ if (isset($_POST['update'])) {
     }
 }
 
-
 // JavaScript
 $script = "settings.js";
 
 if (!isset($operationResult)) {
     $operationResult = "";
 }
+
+/*!
+ \endcond
+*/
 
 // There are two possible main folders for the user to inspect: one for the
 // source (src) images, another for the result images (dest).
@@ -253,7 +271,6 @@ function imageAction (list) {
             ";
     }
 
-
     $generatedScript .= "
     }
 }
@@ -349,4 +366,9 @@ include("header.inc.php");
 
     </div> <!-- rightpanel -->
 
-
+<?php
+// Doxygen gets very confused by this page. We force it to skip the whole code
+/*!
+ \endcond
+*/
+?>

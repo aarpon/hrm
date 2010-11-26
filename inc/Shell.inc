@@ -10,6 +10,18 @@ global $hucore, $hutask, $logdir;
 $hucore = "hucore";
 $hutask = "-noExecLog -checkUpdates disable -task";
 
+// TODO better manage multiple hosts
+function newExternalProcessFor($host, $logfilename, $errfilename) {
+	global $imageProcessingIsOnQueueManager;
+	$db = new DatabaseConnection();
+	$huscript_path = $db->huscriptPathOn($host);
+	if ($imageProcessingIsOnQueueManager)
+		$shell = new LocalExternalProcess($host, $huscript_path, $logfilename, $errfilename);
+	else
+		$shell = new ExternalProcess($host, $huscript_path, $logfilename, $errfilename);
+	return $shell;
+}
+	
 class ExternalProcess {
     public $pid;                         // os pid of the process
     public $host;                        // host on which the process will be started

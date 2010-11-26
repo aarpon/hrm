@@ -10,71 +10,185 @@ require_once("hrm_config.inc");
 require_once("Job.inc");
 require_once("JobQueue.inc");
 
-//!---------------------------------------------------------
-// \class    JobDescription
-// \brief     Description of the job to be processed by
-//           Huygens. Consisting of a parameter setting,
-//           a task setting and a list of image files.
-//           From the JobDescription a huygens parameter
-//           set is created.
-//!---------------------------------------------------------
+/*!
+  \class  JobDescription
+  \brief  Collects all information for a deconvolution Job to be created
+  
+  Description of the job to be processed by HuCore Consisting of owner 
+  information, a parameter setting, a task setting and a list of image files.
+*/
 class JobDescription {
-  public $id;                  // @public id               String            a unique id identifying the job    
-  public $parameterSetting;    // @public parameterSetting ParameterSetting  the jobs parameter setting
-  public $taskSetting;         // @public taskSetting      TaskSetting       the jobs task setting
-  public $files;               // @public files            Array             the list of files to be processed by the job
-  public $owner;               // @public owner            User              the user who created the job 
-  public $message;             // @public message          String            error message.
-  public $pass;                // @public pass             Integer           pass 1 or 2 of step combined processing
-  public $group;               // @public group            String            name of the group to be used
+  
+  /*!
+    \var    $id
+    \brief  A unique id identifying the job
+  */
+  private $id;
+  
+  /*!
+    \var    $parameterSetting
+    \brief  The Job's ParameterSetting
+  */
+  private $parameterSetting;
+
+  /*!
+    \var    $taskSetting
+    \brief  The Job's TaskSetting
+  */
+  private $taskSetting;
+  
+  /*!
+    \var    $files
+    \brief  The list of files to be processed by the Job
+  */
+  private $files;
+
+  /*!
+    \var    $owner
+    \brief  The user who created the Job 
+  */
+  private $owner;               // owner            User              
+
+  /*!
+    \var    $message
+    \brief  The last error message
+  */
+  private $message;
+  
+  /*!
+    \var    $pass (integer)
+    \brief  Pass 1 or 2 of step combined processing
+    \todo   Check: this is not used any more!
+  */
+  private $pass;
+  
+  /*!
+    \var    $group
+    \brief  Name of the group to be used
+  */
+  private $group;
+  
   //public $rangeParameters;     // why not use a global variable from the beginning?!
 
-  function JobDescription() {
+  /*!
+    \brief Constructor
+  */
+  public function __construct() {
     $this->id = (string)(uniqid(''));
     $this->message = "";
     $this->pass = 1;
   } 
-  function message() {
+
+  /*!
+    \brief Returns last error message
+    \return last error message
+  */
+  public function message() {
     return $this->message;
   } 
-  function id() {
+
+  /*!
+    \brief Returns the unique id that identifies the Job
+    \return unique id
+  */
+  public function id() {
     return $this->id;
   }
-  function setId($anId) {
-    $this->id = $anId;
+
+  /*!
+    \brief Sets the (unique) id of the Job
+    \param  $id Unique id
+  */
+  public function setId($id) {
+    $this->id = $id;
   } 
-  function owner() {
+
+  /*!
+    \brief Returns the name of owner of the job
+    \return name of the owner
+  */
+  public function owner() {
     return $this->owner;
   }
-  function setOwner($owner) {
+
+  /*!
+    \brief Sets the owner of the Job
+    \param  $owner Name of the owner of the Job
+  */
+  public function setOwner($owner) {
     $this->owner = $owner;
   } 
-  function parameterSetting() {
+
+  /*!
+    \brief Returns the ParameterSetting associated with the job
+    \return a ParameterSetting object
+  */
+  public function parameterSetting() {
     return $this->parameterSetting;
   }  
-  function taskSetting() {
+
+  /*!
+    \brief Returns the TaskSetting associated with the job
+    \return a TaskSetting object
+  */
+  public function taskSetting() {
     return $this->taskSetting;
-  } 
-  function files() {
+  }
+  
+  /*!
+    \brief Returns the files associated with the job
+    \return array of file names
+  */
+  public function files() {
     return $this->files;
   } 
-  function setParameterSetting($setting) {
+
+  /*!
+    \brief Sets the ParameterSetting for the job
+    \param $setting A ParameterSetting object
+  */
+  public function setParameterSetting( ParameterSetting $setting) {
     $this->parameterSetting = $setting;
     $this->owner = $setting->owner();
   } 
-  function setTaskSetting($setting) {
+
+  /*!
+    \brief Sets the TaskSetting for the job
+    \param $setting A TaskSetting object
+  */
+  public function setTaskSetting( TaskSetting $setting) {
     $this->taskSetting = $setting;
-  } 
-  function setFiles($files) {
+  }
+  
+  /*!
+    \brief Sets the list of files for the job
+    \param $files Array of file names
+  */
+  public function setFiles($files) {
     $this->files = $files;
   } 
-  function group() {
+
+  /*!
+    \brief Returns the group of the user associated with the job
+    \return group of the user
+  */
+  public function group() {
     return $this->group;
-  } 
-  function setGroup($group) {
+  }
+  
+  /*!
+    \brief Sets the group of the user associated with the job
+    \param  $group  Group of the user
+  */
+  public function setGroup($group) {
     $this->group = $group;
   }
-  function addJob() {
+
+  /*!
+    \brief Add a Job to the queue
+    \return true if the Job could be added to the queue, false otherwise
+  */
+  public function addJob() {
     // =========================================================================
     //
     // In previous versions of the HRM, the web interface would create compound
@@ -109,7 +223,11 @@ class JobDescription {
     return $result;
   }
      
-  function createJob() {
+  /*!
+    \brief Create a Job from this JobDescription
+    \return true if the Job could be created, false otherwise
+  */
+  public function createJob() {
     $result = True;
     $jobParameterSetting = new JobParameterSetting();
     $jobParameterSetting->setOwner($this->owner);
@@ -131,7 +249,12 @@ class JobDescription {
     return $result;
   }
   
-  function processCompoundJobs() {
+  /*!
+    \brief Processes compound Jobs to deliver elementary Jobs
+    
+    A compound job contains multiple files or range parameters.
+  */
+  public function processCompoundJobs() {
     $queue = new JobQueue();
     $compoundJobs = $queue->getCompoundJobs();
     foreach ($compoundJobs as $jobDescription) {
@@ -140,7 +263,11 @@ class JobDescription {
     }
   }
   
-  function load() {
+  /*!
+    \brief Loads a JobDescription from the database for the user set in
+          this JobDescription
+  */
+  public function load() {
     $db = new DatabaseConnection();
     $parameterSetting = new JobParameterSetting;
     $owner = new User;
@@ -159,14 +286,23 @@ class JobDescription {
     $this->setFiles($db->getJobFilesFor($this->id()));    
   }
 
-  function copyFrom($aJobDescription) {
+  /*!
+    \brief Copies from another JobDescription into this JobDescription
+    \param  $aJobDescription  Another JobDescription
+  */
+  public function copyFrom( JobDescription $aJobDescription ) {
     $this->setParameterSetting($aJobDescription->parameterSetting());
     $this->setTaskSetting($aJobDescription->taskSetting());
     $this->setOwner($aJobDescription->owner());
     $this->setGroup($aJobDescription->group());
   } 
 
-  function isCompound() { 
+  /*!
+    \brief Checks whether the JobDescription describes a compound Job
+    \return true if the Job is compound (i.e. contains more than one file or
+            has range parameters), false otherwise
+  */
+  public function isCompound() { 
     if (count($this->files)>1) {
       return True;
     } 
@@ -176,7 +312,11 @@ class JobDescription {
     return False;
   } 
 
-  function rangeParameter() {
+  /*!
+    \brief Returns all range parameters in this JobDescription
+    \return array of range parameters
+  */
+  public function rangeParameter() {
     //global $rangeParameters;
     $result = array();
     $setting = $this->taskSetting;
@@ -192,19 +332,11 @@ class JobDescription {
     return $result;
   } 
 
-  function createSubJobsforFiles() {
-    $result = True;
-    foreach ($this->files as $file) {
-      // error_log("file=".$file);
-      $newJobDescription = new JobDescription();
-      $newJobDescription->copyFrom($this);
-      $newJobDescription->setFiles(array($file));	
-      $result = $result && $newJobDescription->createJob();
-    }
-    return $result;
-  } 
-
-  function createSubJobs() {
+  /*!
+    \brief Create elementare Jobs from compound Jobs
+    \return true if elementary Jobs could be created, false otherwise
+  */
+  public function createSubJobs() {
 
     //global $rangeParameters;
     
@@ -260,172 +392,17 @@ class JobDescription {
     return $result;
   } 
 
-  function combine($firstArray, $secondArray) {  
-    $result = array();
-    $i=0;
-    if (count($firstArray)==0) {
-      return $secondArray;
-    } 
-    foreach ($firstArray as $firstElem) {
-      foreach ($secondArray as $secondElem) {
-	$newFirst = $firstElem;
-	if(is_array($newFirst)) {
-	  $newFirst[] = $secondElem;
-	  $row = $newFirst;
-	} else { 
-	  $row = array($firstElem, $secondElem);
-	}
-	$result[] = $row; 
-      } 
-      $i++;
-    } 
-    return $result;
-  } 
-
-  function combineAll($anArray) {
-    $result = array();
-    foreach ($anArray as $row) {
-      $result = $this->combine($result, $row);
-    } 
-    return $result;
-  }
-  
-  function rangeParameterCombinations($rangeParameter) {
-    $parameterSetting = $this->parameterSetting;
-    $numberOfChannels = $parameterSetting->numberOfChannels();
-    
-    $jobDescriptions = array();
-    //$rangeParameter = $this->rangeParameter();
-    $matrix = array();
-    //if (count($rangeParameter)==1) {
-      $range = array_pop($rangeParameter);
-      if ($range == null) {
-          return;
-      }
-      $value = array_filter($range->value());
-      $snrValue = null;
-      $iterationValue = null;
-      // process SignalNoiseRatioRange, if applicable
-      if ($range->name() == "SignalNoiseRatioRange") {
-        // // error_log("SignalNoiseRatio range");
-        $snrRange = $range;
-        $snrValue = $value;
-      }
-      else if ($range->name() == "NumberOfIterationsRange") {
-        // error_log("NumberOfIterations range");
-        $iterationRange = $range;
-        $iterationValue = $value;
-      }
-      // process NumberOfIterationsRange, if applicable
-      if (count($rangeParameter) > 0) {
-        $range = array_pop($rangeParameter);
-        $value = array_filter($range->value());
-        if ($range->name() == "SignalNoiseRatioRange") {
-          // error_log("SignalNoiseRatio range");
-          $snrRange = $range;
-          $snrValue = $value;
-        }
-        else if ($range->name() == "NumberOfIterationsRange") {
-          // error_log("NumberOfIterations range");
-          $iterationRange = $range;
-          $iterationValue = $value;
-        }
-      }
-      // COMBINATORIAL combinations
-      // what is the form of matrix?
-      // compute matrix dimensions
-      /*$dim = 1;
-      if ($snrValue != null) {
-        for ($i = 0; $i < $numberOfChannels; $i++) {
-          $dim *= count($snrValue[$i]);
-        }
-      }
-      if ($iterationValue != null) {
-        $dim *= count($iterationValue);
-      }
-      error_log("dimension = " . $dim);
-      for ($i = 0; $i < $dim; $i++) {
-        $row = array();
-        $size = 1;
-        if ($snrValue != null) {
-          for ($j = 0; $j < $numberOfChannels; $j++) {
-            $val = $snrValue[$j];
-            if (is_array($val)) {
-              $val = array_filter($val);
-              $row[] = $val[($i/$size) % count($val)];
-              $size *= count($val);
-            }
-            else {
-              $row[] = $val;
-            }
-          }
-        }
-        if ($iterationValue != null) {
-          $val = $iterationValue;
-          $val = array_filter($val);
-          $row[] = $val[($i/$size) % count($val)];
-          error_log("index = " . ($i/$size) % count($val));
-          error_log("value = " . $val[($i/$size) % count($val)]);
-          $size *= count($val);
-        }
-        $matrix[$i] = $row;
-        $s = "";
-        for ($k = 0; $k < count($row); $k++) {
-          $s .= $row[$k] . " ";
-        }
-        error_log($s);
-      }*/
-      // SIMPLE combinations
-      if ($snrValue != null) {
-          $val = array_filter($snrValue);
-          $range = count($val[0]);
-          for ($i = 0; $i < $range; $i++) {
-              $matrix[$i] = array();
-              for ($j = 0; $j < $numberOfChannels; $j++) {
-                  $matrix[$i][] = $val[$j][$i];
-              }
-          }
-      }
-      if ($iterationValue != null) {
-          $val = array_filter($iterationValue);
-          if (count($matrix) != 0) {
-              for ($j = 0; $j < count($iterationValue); $j++) {
-                  for ($i = 0; $i < $range; $i++) {
-                      if ($j == 0) {
-                          $matrix[$i][] = $iterationValue[$j];
-                      }
-                      else {
-                          $matrix[] = $matrix[$i];
-                          $matrix[count($matrix) - 1][count($matrix[0]) - 1] = $iterationValue[$j];
-                      }
-                  }
-              }
-          }
-          else {
-              for ($j = 0; $j < count($iterationValue); $j++)
-                $matrix[] = array($iterationValue[$j]);
-          }
-      }
-      return $matrix;
-    /*} else { 
-      foreach ($rangeParameter as $range) {
-	$value = array_filter($range->value());
-	$matrix[] = $value;
-      }
-      $combinations = $this->combineAll($matrix);
-      return $combinations;
-    }*/
-  } 
-
-  function rangeParameterNames() {
-    $names = array();
-    foreach ($this->rangeParameters as $parameter) {
-      $names[] = $parameter->name(); 
-    } 
-    return $names;
-  } 
-
-  function putMultiChannelScriptOn($script, $isOriginal = false) {
+  /*!
+    \brief Add script for multi-channel images
+    \param  $script Current script
+    \param  $isOriginal This is a flag to make sure that the function loadImage()
+            knows whether it is called from createScript() -- and in this case
+            $isOriginal is true, or other functions -- in which case $isOriginal
+            is false
+    \return updated script
+    \todo This function is obsolete and will be replace by the new Tcl templates
+  */
+  public function putMultiChannelScriptOn($script, $isOriginal = false) {
     global $useThumbnails;
     global $movieMaxSize, $saveSfpPreviews, $maxComparisonSize;
     $parameterSetting = $this->parameterSetting;
@@ -595,251 +572,11 @@ class JobDescription {
     return $newScript;
   }
 
-  function putScriptOnForChannel($script, $channel) {
-    $parameterSetting = $this->parameterSetting;
-    $psfParam = $parameterSetting->parameter('PointSpreadFunction');
-    // save original excitation and emission wavelengths
-    $excitationWavelength = $parameterSetting->parameter('ExcitationWavelength');
-    $emissionWavelength = $parameterSetting->parameter('EmissionWavelength');
-    // DEBUG
-    $val = $excitationWavelength->value();
-    $originalExcitationWavelengthValue = array();
-    for ($i = 0; $i < $parameterSetting->numberOfChannels(); $i++) {
-      $originalExcitationWavelengthValue[$i] = $val[$i];
-      //error_log("GENERATING SCRIPT (JobDescription): excitation wavelength -> ".$originalExcitationWavelengthValue[$i]." [".$i."]");
-    }
-    $val = $emissionWavelength->value();
-    $originalEmissionWavelengthValue = array();
-    for ($i = 0; $i < $parameterSetting->numberOfChannels(); $i++) {
-      $originalEmissionWavelengthValue[$i] = $val[$i];
-      //error_log("GENERATING SCRIPT (JobDescription): emission wavelength -> ".$originalEmissionWavelengthValue[$i]." [".$i."]");
-    }
-    //error_log("GENERATING SCRIPT (JobDescription): channel -> ".$channel);
-    // save original pinhole radii
-    $pinholeSize = $parameterSetting->parameter('PinholeSize');
-    $val = $pinholeSize->value();
-    $originalPinholeSizeValue = array();
-    for ($i = 0; $i < $parameterSetting->numberOfChannels(); $i++) {
-      $originalPinholeSizeValue[$i] = $val[$i];
-    }
-    // save original measured PSF (file names)
-    if ($psfParam->value() == "measured") {
-      $psf = $parameterSetting->parameter('PSF');
-      $val = $psf->value();
-      $originalPSFValue = array();
-      for ($i = 0; $i < $parameterSetting->numberOfChannels(); $i++) {
-        $originalPSFValue[$i] = $val[$i];
-      }
-    }
-    // make single channel setting for current channel
-    $isMultiChannel = $parameterSetting->parameter('IsMultiChannel');
-    $isMultiChannel->setValue('False');
-    $parameterSetting->set($isMultiChannel);
-    $newExcitationWavelength = $parameterSetting->parameter('ExcitationWavelength');
-    $value = $newExcitationWavelength->value();
-    //error_log("GENERATING SCRIPT (JobDescription): excitation wavelength (before trimming) -> ".$value[$channel]);
-    $newExcitationWavelength->setValue($value[$channel]);
-    $val = $newExcitationWavelength->value();
-    //error_log("GENERATING SCRIPT (JobDescription): excitation wavelength (after trimming) -> ".$val[0]);
-    $parameterSetting->set($newExcitationWavelength);
-    $newEmissionWavelength = $parameterSetting->parameter('EmissionWavelength');    
-    $value = $newEmissionWavelength->value();
-    //error_log("GENERATING SCRIPT (JobDescription): emission wavelength (before trimming) -> ".$value[$channel]);
-    $newEmissionWavelength->setValue($value[$channel]);
-    $val = $newEmissionWavelength->value();
-    //error_log("GENERATING SCRIPT (JobDescription): emission wavelength (after trimming) -> ".$val[0]);
-    $parameterSetting->set($newEmissionWavelength);
-    $newPinholeSize = $parameterSetting->parameter('PinholeSize');
-    $value = $newPinholeSize->value();
-    $newPinholeSize->setValue($value[$channel]);
-    $parameterSetting->set($newPinholeSize);
-    if ($psfParam->value() == "measured") {
-      $newPSF = $parameterSetting->parameter('PSF');
-      $value = $newPSF->value();
-      $newPSF->setValue($value[$channel]);
-      $parameterSetting->set($newPSF);
-    }
-    // ... and for task setting
-    // save original RemoveBackgroundPercent and BackgroundOffsetPercent
-    //WARNING do not confuse REMOVEBackgroundPercent and BackgroundOffsetPercent
-    $taskSetting = $this->taskSetting;
-    $numberOfChannels = $taskSetting->numberOfChannels();
-    $removeBackgroundPercent = $taskSetting->parameter('RemoveBackgroundPercent');
-    $val = $removeBackgroundPercent->internalValue();
-    $originalRemoveBackgroundPercentValue = array();
-    //TODO remove RemoveBackgroundPercent
-    for ($i = 0; $i < $numberOfChannels; $i++) {
-      $originalRemoveBackgroundPercentValue[$i] = $val[$i];
-    }
-    //error_log("GENERATING SCRIPT (JobDescription): remove background percent -> ".$originalRemoveBackgroundPercentValue[$i]." [".$i."]");
-    $backgroundOffsetPercent = $taskSetting->parameter('BackgroundOffsetPercent');
-    //$val = $backgroundOffsetPercent->internalValue();
-    //$originalBackgroundOffsetPercentValue = array();
-    $originalBackgroundOffsetPercentValue = $backgroundOffsetPercent->internalValue();
-    //for ($i = 0; $i < $numberOfChannels; $i++) {
-    //  $originalBackgroundOffsetPercentValue[] = $val[$i];
-    //}
-    // make single channel setting for current channel
-    $newRemoveBackgroundPercent = $taskSetting->parameter('RemoveBackgroundPercent');
-    // DEBUG
-    //$value = $newRemoveBackgroundPercent->value();
-    $newRemoveBackgroundPercent->setValue($originalRemoveBackgroundPercentValue[$channel]);
-    $taskSetting->set($newRemoveBackgroundPercent);
-    // Backgriund Offset Percent
-    $newBackgroundOffsetPercent = $taskSetting->parameter('BackgroundOffsetPercent');
-    // DEBUG
-    //$value = $newBackgroundOffsetPercent->value();
-    if ($originalBackgroundOffsetPercentValue[0] == "auto" || $originalBackgroundOffsetPercentValue[0] == "object") {
-      $newBackgroundOffsetPercent->setValue($originalBackgroundOffsetPercentValue[0]);
-      $test = $newBackgroundOffsetPercent->internalValue();
-      //error_log("auto/object ".$test[0]);
-    }
-    else {
-      $newBackgroundOffsetPercent->setValue($originalBackgroundOffsetPercentValue[$channel]);
-    }
-    $taskSetting->set($newBackgroundOffsetPercent);
-    // Signal to noise ratio
-    $newSignalNoiseRatio = $taskSetting->parameter('SignalNoiseRatio');
-    $originalSignalNoiseRatioValue = $newSignalNoiseRatio->value();
-    $newSignalNoiseRatio->setValue($originalSignalNoiseRatioValue[$channel]);
-    $taskSetting->set($newSignalNoiseRatio);
-    //
-    $taskSetting->setNumberOfChannels(1);
-    // Create script
-    $this->setParameterSetting($parameterSetting);
-    $this->setTaskSetting($taskSetting);
-    $result = $this->putScriptOn($script);
-    // restore multi channel setting with original excitation and emission wavelengths
-    $parameterSetting = $this->parameterSetting;
-    $isMultiChannel->setValue('True');
-    $parameterSetting->set($isMultiChannel);
-    // DEBUG
-    $excitationWavelength->setValue($originalExcitationWavelengthValue);
-    $parameterSetting->set($excitationWavelength);
-    $emissionWavelength->setValue($originalEmissionWavelengthValue);
-    $parameterSetting->set($emissionWavelength);
-    // restore multi channel setting with original pinhole radii
-    $pinholeSize->setValue($originalPinholeSizeValue);
-    $parameterSetting->set($pinholeSize);
-    if ($psfParam->value() == "measured") {
-      // restore multi channel setting with original measured PSF
-      $psf->setValue( $originalPSFValue );
-      $parameterSetting->set($psf);
-    }
-    $this->setParameterSetting($parameterSetting);
-    // ... and for task setting
-    $taskSetting = $this->taskSetting;
-    $newSignalNoiseRatio->setValue( $originalSignalNoiseRatioValue );
-    $taskSetting->set($newSignalNoiseRatio);
-    $taskSetting->setNumberOfChannels($numberOfChannels);
-    // DEBUG
-    $removeBackgroundPercent->setValue($originalRemoveBackgroundPercentValue);
-    $taskSetting->set($removeBackgroundPercent);
-    $backgroundOffsetPercent->setValue($originalBackgroundOffsetPercentValue);
-    $taskSetting->set($backgroundOffsetPercent);
-    $this->setTaskSetting($taskSetting);
-    // return result
-    return $result;
-  } 
-
-  function endsWithNumber($string) {
-    $last = $string[strlen($string)-1];
-    return is_numeric($last);
-  } 
-
-  function mustReplaceSourceName() {
-    $parameterSetting = $this->parameterSetting;
-    if (!$parameterSetting->isThreeDimensional() && !$parameterSetting->isTimeSeries() && $parameterSetting->isTif()) {
-      if ($this->endsWithNumber($this->sourceImageShortName())) {
-	return True;
-      } 	
-    }
-    return False;
-  } 
-
-  function newNameForSingleTif() {
-    $files = $this->files();
-    $name = end($files);
-    $path = explode("/", $name);
-    $shortName = array_pop($path);
-    $path = implode("/", $path);
-    $anArray = explode(".", $shortName);
-    $baseName = $anArray[0];
-    $extension = end($anArray);
-    $result = $this->sourceFolder() . "." . $baseName . $this->id() . "s." . $extension;
-    return $result;
-  } 
-
-  // Return a single value parameters as a Tcl list for all channels. Since
-  // verssion 3.5 of Huygens, many parameters that where global before, can be
-  // now defined per channel, like the NA.
-  function getParamAsChannelTclList ( $setting, $param, $translate = false, 
-          $withQuotes = false ) {
-      if ( $translate ) {
-          $values = $setting->parameter($param)->translatedValue();
-      } else {
-          $values = $setting->parameter($param)->value();
-      }
-      $chanCnt = $setting->numberOfChannels();
-      $retList = "";
-      $quote == "";
-      if ( $withQuotes ) { 
-          $quote = "\"";
-      }
-      if ( is_array($values) ) {
-          $sep = "";    
-          foreach  ($values as $item) {
-              $retList .= $sep.$quote.$item.$quote;
-              $sep = " ";
-          }
-      } else {
-          for ($i = 0; $i < $chanCnt; $i ++ ) {
-              $retList .= $sep.$quote.$values.$quote;
-              $sep = " ";
-          }
-      }
-      $retList = trim($retList);
-      return "{ $retList }";
-  }
-
-
-
-  // Return an array of parameters from a setting as a Tcl list. Elements are
-  // optionally enclosed in quotes.
-  function getParamAsTclList ( $setting, $param, $withQuotes = false ) {
-      $values = $setting->parameter($param)->value();
-      $retList = "";
-      $quote == "";
-      if ( $withQuotes ) { 
-          $quote = "\"";
-      }
-      if ( is_array($values) ) {
-          $sep = "";    
-          foreach  ($values as $item) {
-              $retList .= $sep.$quote.$item.$quote;
-              $sep = " ";
-          }
-      } else {
-          $retList = $values;
-      }
-      $retList = trim($retList);
-      return "{ $retList }";
-  }
-
-  function getEmptyParameterList ($parameterSetting) {
-
-      $chanCnt = $parameterSetting->numberOfChannels();
-      $retList = "";
-      $sep = "";    
-      for ($i = 0; $i < $chanCnt; $i++ ) {
-          $retList .= $sep."(ignore)";
-          $sep = " ";
-      }
-      return "{ $retList } ";
-
-  }
-
-  function appendScriptParameters() {
+  /*!
+    \brief  Pass parameters to and return the specialized Tcl template
+    \return Tcl template
+  */
+  public function appendScriptParameters() {
       global $resultImagesOwnedByUser, $huygens_group ;
       global $useThumbnails;
       global $movieMaxSize, $saveSfpPreviews, $maxComparisonSize;
@@ -1222,7 +959,16 @@ HRMrun deconvolution
 
     }
 
-  function putScriptOn($script, $isOriginal = false ) {
+  /*!
+    \brief  Add script for one channel (to current script)
+    \param  $script Current script
+    \param  $isOriginal This is a flag to make sure that the function loadImage()
+            knows whether it is called from createScript() -- and in this case
+            $isOriginal is true, or other functions -- in which case $isOriginal
+            is false
+    \return updated script
+  */
+  public function putScriptOn($script, $isOriginal = false ) {
     global $resultImagesOwnedByUser;
     global $huygens_group;
     
@@ -1328,27 +1074,590 @@ HRMrun deconvolution
     return $newScript;
   }
 
-  /* OBSOLETE
-  function passTwoScript() {
-    $this->pass = 2;
-    $script = '';
-    $script = $script . 'if {[img exists $imageName]} {$imageName del}' . "\n";
-    $script = $script . 'c genpsf -> psf -dims auto -z -reflCorr' . "\n";
-    $script = $script . 'c cmle psf -> c -sn {80} -it 7 -bgMode object -bg {-100} -blMode auto -q 0 -mode fast -pad auto' . "\n";
-    $script = $script . $this->saveImageString();
-    $this->pass = 1;
-    return $script;
-  } 
+  /*!
+    \brief Returns the full file name without redundant slashes
+    \return full file name without redundant slashes
+    \todo Isn't this redundant? One could use the FileServer class
   */
+  public function sourceImageName() {
+    $files = $this->files();
+    // avoid redundant slashes in path
+    $result = $this->sourceFolder() . ereg_replace("^/", "", end($files));
+    return $result;
+  }
+
+  /*!
+    \brief Returns the file name without path
+    \return file name without path
+    \todo What about redundant slashes?
+  */
+  public function sourceImageNameWithoutPath() {
+    $name = $this->sourceImageName();
+    $pos = strrpos( $name, '/' );
+    if ( $pos ) {
+      return ( substr( $name, ( $pos + 1 ) ) );
+    } else {
+      return $name;
+    }
+  }
+
+  /*!
+    \brief Returns relative source path (under the image source path)
+    \return relative source path
+  */
+  public function relativeSourcePath() {
+    $files = $this->files();
+    $inputFile = end($files);
+    $inputFile = explode("/", $inputFile); 
+    array_pop($inputFile);
+    $path = implode("/", $inputFile);
+    // avoid redundant slashes in path
+    if (strlen($path) > 0) $path = ereg_replace("([^/])$", "\\1/", $path);
+    return $path;
+  } 
+
+  /*!
+    \brief Returns the file base name with some special handling for Lif files
+    \return file base name
+  */
+  public function sourceImageShortName() {
+    $files = $this->files();
+    $inputFile = end($files);
+    $inputFile = explode("/", $inputFile);
+    // remove file extension
+    //$inputFile = explode(".", end($inputFile));
+    //$inputFile = $inputFile[0];
+    $parameterSetting = $this->parameterSetting;
+    $parameter = $parameterSetting->parameter('ImageFileFormat');
+	$fileFormat = $parameter->value();
+    if ( strcasecmp( $fileFormat, 'lif' ) == 0 ) {
+      if ( preg_match("/^(.*)\.lif\s\((.*)\)/i", $inputFile[0], $match) ) {
+        $inputFile = $match[ 1 ] . '_' . $match[ 2 ];
+      } else {
+        $inputFile = substr(end($inputFile), 0, strrpos(end($inputFile), ".")); }
+    } else {
+      $inputFile = substr(end($inputFile), 0, strrpos(end($inputFile), "."));
+    }
+    return $inputFile;
+  } 
+
+  /*!
+    \brief Returns the source folder name
+    \return source folder name
+  */
+  public function sourceFolder() {
+    global $huygens_server_image_folder;
+    global $image_source;
+    $user = $this->owner();
+    $result = $huygens_server_image_folder . $user->name() . "/" . $image_source . "/";
+    return $result;
+  } 
+
+
+  /*!
+    \brief Returns the destination image name without extension and without path
+    \return destination image name without extenstion and without path
+  */
+  public function destinationImageName() {
+    $taskSetting = $this->taskSetting();
+    $files = $this->files();
+    $outputFile = $this->sourceImageShortName();
+    $outputFile = end(explode($taskSetting->name(), $this->sourceImageShortName()));
+    $result = $outputFile . "_" . $taskSetting->name() . "_hrm";
+        # Add a non-numeric string at the end: if the task name ends with a
+        # number, that will be removed when saving using some file formats that
+        # use numbers to identify Z planes. Therefore the result file won't
+        # be found later and an error will be generated.
+
+    if ($taskSetting->isStepCombinedProcessing()) {
+      if ($this->pass == 1) {
+          $extension = 'A';
+      } else {
+          $extension = 'B';
+      } 
+      $result = $result . "_step" . $extension;
+    } 
+    return $result; 
+  } 
+
+  /*!
+    \brief Returns the destination image name without path and with output file format extension
+    \return destination image name without path and with output file format extension
+  */
+  public function destinationImageNameWithoutPath() {
+    $name = $this->destinationImageName();
+    $pos = strrpos( $name, '/' );
+    if ( $pos ) {
+      $name = substr( $name, ( $pos + 1 ) );
+    }
+    // Append extension
+    $taskSetting = $this->taskSetting();
+    $param = $taskSetting->parameter('OutputFileFormat');
+    $fileFormat = $param->extension( );
+    return ( $name . "." . $fileFormat );
+  }
+
+  /*!
+    \brief Returns the destination image name with selected output extension and relative path
+    \return destination image name with selected output extension and relative path
+  */
+  public function destinationImageNameAndExtension() {
+    $name = $this->destinationImageName();
+    // Append extension
+    $taskSetting = $this->taskSetting();
+    $param = $taskSetting->parameter('OutputFileFormat');
+    $fileFormat = $param->extension( );
+    return ( $this->relativeSourcePath(). $name . "." . $fileFormat );
+  }
   
-  function loadImageString( $isOriginal = false ) {
+  /*!
+    \brief Returns the destination image file name with full path
+    \return destination image file name with full path
+  */
+  public function destinationImageFullName() {
+    global $resultImagesRenamed;
+    // use source filename as destination filename
+    if (!$resultImagesRenamed) {
+      $files = $this->files();
+      $result = $this->destinationFolder() . ereg_replace("^/", "", end($files));
+      $result = substr($result, 0, strrpos($result, "."));
+      if ( $this->endsWithNumber($result) ) {
+          // Avoid output files ending in a number.
+          $result .= "_hrm";
+      }
+    }
+    else {
+      $result = $this->destinationFolder() . $this->destinationImageName();
+    }
+    return $result;
+  }
+
+  /*!
+    \brief  Returns the final destination folder name (also considering
+            sub-folders created by the user in the image destination)
+    \return destination folder name
+  */
+  public function destinationFolder() {
+    global $huygens_server_image_folder;
+    global $image_destination;
+
+    $user = $this->owner();
+    // avoid redundant slashes in path
+    $result = $huygens_server_image_folder . $user->name() . "/" . $image_destination . "/" . $this->relativeSourcePath();
+    
+    return $result;
+  } 
+
+  /*!
+    \brief  Returns the path to the first-level destination subfolder 
+    \return path to the first-level destination subfolder 
+  */
+  public function destinationFolderTop() {
+    global $huygens_server_image_folder;
+    global $image_destination;
+
+    $user = $this->owner();
+    $path = $this->relativeSourcePath();
+    $pathComponents = explode("/", $path);
+    $top = $pathComponents[0]; 
+    $result = $huygens_server_image_folder . $user->name() . "/" . $image_destination . "/" . $top . "/"; 
+    
+    return $result;    
+  } 
+
+/*
+                              PRIVATE FUNCTIONS
+*/
+
+  /*!
+    \brief Create elementare Jobs from multi-file compound Jobs
+    \return true if elementary Jobs could be created, false otherwise
+  */
+  private function createSubJobsforFiles() {
+    $result = True;
+    foreach ($this->files as $file) {
+      // error_log("file=".$file);
+      $newJobDescription = new JobDescription();
+      $newJobDescription->copyFrom($this);
+      $newJobDescription->setFiles(array($file));	
+      $result = $result && $newJobDescription->createJob();
+    }
+    return $result;
+  } 
+
+  /*!
+    \brief Create all combinations of the elements of two arrays
+    \return the combined arrays
+  */
+  private function combine($firstArray, $secondArray) {  
+    $result = array();
+    $i=0;
+    if (count($firstArray)==0) {
+      return $secondArray;
+    } 
+    foreach ($firstArray as $firstElem) {
+      foreach ($secondArray as $secondElem) {
+	$newFirst = $firstElem;
+	if(is_array($newFirst)) {
+	  $newFirst[] = $secondElem;
+	  $row = $newFirst;
+	} else { 
+	  $row = array($firstElem, $secondElem);
+	}
+	$result[] = $row; 
+      } 
+      $i++;
+    } 
+    return $result;
+  } 
+  
+  /*!
+    \brief Create all combinations of the elements of an array
+    \return all combinations
+  */
+  private function combineAll($anArray) {
+    $result = array();
+    foreach ($anArray as $row) {
+      $result = $this->combine($result, $row);
+    } 
+    return $result;
+  }
+
+  /*!
+    \brief  Return all combinations of range parameters
+    \return matrix of all combinations of range parameters
+  */
+  private function rangeParameterCombinations($rangeParameter) {
+    $parameterSetting = $this->parameterSetting;
+    $numberOfChannels = $parameterSetting->numberOfChannels();
+    
+    $jobDescriptions = array();
+    //$rangeParameter = $this->rangeParameter();
+    $matrix = array();
+    //if (count($rangeParameter)==1) {
+      $range = array_pop($rangeParameter);
+      if ($range == null) {
+          return;
+      }
+      $value = array_filter($range->value());
+      $snrValue = null;
+      $iterationValue = null;
+      // process SignalNoiseRatioRange, if applicable
+      if ($range->name() == "SignalNoiseRatioRange") {
+        // // error_log("SignalNoiseRatio range");
+        $snrRange = $range;
+        $snrValue = $value;
+      }
+      else if ($range->name() == "NumberOfIterationsRange") {
+        // error_log("NumberOfIterations range");
+        $iterationRange = $range;
+        $iterationValue = $value;
+      }
+      // process NumberOfIterationsRange, if applicable
+      if (count($rangeParameter) > 0) {
+        $range = array_pop($rangeParameter);
+        $value = array_filter($range->value());
+        if ($range->name() == "SignalNoiseRatioRange") {
+          // error_log("SignalNoiseRatio range");
+          $snrRange = $range;
+          $snrValue = $value;
+        }
+        else if ($range->name() == "NumberOfIterationsRange") {
+          // error_log("NumberOfIterations range");
+          $iterationRange = $range;
+          $iterationValue = $value;
+        }
+      }
+      // COMBINATORIAL combinations
+      // what is the form of matrix?
+      // compute matrix dimensions
+      /*$dim = 1;
+      if ($snrValue != null) {
+        for ($i = 0; $i < $numberOfChannels; $i++) {
+          $dim *= count($snrValue[$i]);
+        }
+      }
+      if ($iterationValue != null) {
+        $dim *= count($iterationValue);
+      }
+      error_log("dimension = " . $dim);
+      for ($i = 0; $i < $dim; $i++) {
+        $row = array();
+        $size = 1;
+        if ($snrValue != null) {
+          for ($j = 0; $j < $numberOfChannels; $j++) {
+            $val = $snrValue[$j];
+            if (is_array($val)) {
+              $val = array_filter($val);
+              $row[] = $val[($i/$size) % count($val)];
+              $size *= count($val);
+            }
+            else {
+              $row[] = $val;
+            }
+          }
+        }
+        if ($iterationValue != null) {
+          $val = $iterationValue;
+          $val = array_filter($val);
+          $row[] = $val[($i/$size) % count($val)];
+          error_log("index = " . ($i/$size) % count($val));
+          error_log("value = " . $val[($i/$size) % count($val)]);
+          $size *= count($val);
+        }
+        $matrix[$i] = $row;
+        $s = "";
+        for ($k = 0; $k < count($row); $k++) {
+          $s .= $row[$k] . " ";
+        }
+        error_log($s);
+      }*/
+      // SIMPLE combinations
+      if ($snrValue != null) {
+          $val = array_filter($snrValue);
+          $range = count($val[0]);
+          for ($i = 0; $i < $range; $i++) {
+              $matrix[$i] = array();
+              for ($j = 0; $j < $numberOfChannels; $j++) {
+                  $matrix[$i][] = $val[$j][$i];
+              }
+          }
+      }
+      if ($iterationValue != null) {
+          $val = array_filter($iterationValue);
+          if (count($matrix) != 0) {
+              for ($j = 0; $j < count($iterationValue); $j++) {
+                  for ($i = 0; $i < $range; $i++) {
+                      if ($j == 0) {
+                          $matrix[$i][] = $iterationValue[$j];
+                      }
+                      else {
+                          $matrix[] = $matrix[$i];
+                          $matrix[count($matrix) - 1][count($matrix[0]) - 1] = $iterationValue[$j];
+                      }
+                  }
+              }
+          }
+          else {
+              for ($j = 0; $j < count($iterationValue); $j++)
+                $matrix[] = array($iterationValue[$j]);
+          }
+      }
+      return $matrix;
+    /*} else { 
+      foreach ($rangeParameter as $range) {
+	$value = array_filter($range->value());
+	$matrix[] = $value;
+      }
+      $combinations = $this->combineAll($matrix);
+      return $combinations;
+    }*/
+  } 
+
+  /*!
+    \brief  Returns the names of all range parameters
+    \return array with the name of all range parameters
+  */
+  private function rangeParameterNames() {
+    $names = array();
+    foreach ($this->rangeParameters as $parameter) {
+      $names[] = $parameter->name(); 
+    } 
+    return $names;
+  }
+  
+  /*!
+    \brief Add script for single-channel images
+    \param  $script Current script
+    \param  $channel Number of the channel
+    \return updated script
+    \todo This function is obsolete and will be replace by the new Tcl templates
+  */
+  private function putScriptOnForChannel($script, $channel) {
+    $parameterSetting = $this->parameterSetting;
+    $psfParam = $parameterSetting->parameter('PointSpreadFunction');
+    // save original excitation and emission wavelengths
+    $excitationWavelength = $parameterSetting->parameter('ExcitationWavelength');
+    $emissionWavelength = $parameterSetting->parameter('EmissionWavelength');
+    // DEBUG
+    $val = $excitationWavelength->value();
+    $originalExcitationWavelengthValue = array();
+    for ($i = 0; $i < $parameterSetting->numberOfChannels(); $i++) {
+      $originalExcitationWavelengthValue[$i] = $val[$i];
+      //error_log("GENERATING SCRIPT (JobDescription): excitation wavelength -> ".$originalExcitationWavelengthValue[$i]." [".$i."]");
+    }
+    $val = $emissionWavelength->value();
+    $originalEmissionWavelengthValue = array();
+    for ($i = 0; $i < $parameterSetting->numberOfChannels(); $i++) {
+      $originalEmissionWavelengthValue[$i] = $val[$i];
+      //error_log("GENERATING SCRIPT (JobDescription): emission wavelength -> ".$originalEmissionWavelengthValue[$i]." [".$i."]");
+    }
+    //error_log("GENERATING SCRIPT (JobDescription): channel -> ".$channel);
+    // save original pinhole radii
+    $pinholeSize = $parameterSetting->parameter('PinholeSize');
+    $val = $pinholeSize->value();
+    $originalPinholeSizeValue = array();
+    for ($i = 0; $i < $parameterSetting->numberOfChannels(); $i++) {
+      $originalPinholeSizeValue[$i] = $val[$i];
+    }
+    // save original measured PSF (file names)
+    if ($psfParam->value() == "measured") {
+      $psf = $parameterSetting->parameter('PSF');
+      $val = $psf->value();
+      $originalPSFValue = array();
+      for ($i = 0; $i < $parameterSetting->numberOfChannels(); $i++) {
+        $originalPSFValue[$i] = $val[$i];
+      }
+    }
+    // make single channel setting for current channel
+    $isMultiChannel = $parameterSetting->parameter('IsMultiChannel');
+    $isMultiChannel->setValue('False');
+    $parameterSetting->set($isMultiChannel);
+    $newExcitationWavelength = $parameterSetting->parameter('ExcitationWavelength');
+    $value = $newExcitationWavelength->value();
+    //error_log("GENERATING SCRIPT (JobDescription): excitation wavelength (before trimming) -> ".$value[$channel]);
+    $newExcitationWavelength->setValue($value[$channel]);
+    $val = $newExcitationWavelength->value();
+    //error_log("GENERATING SCRIPT (JobDescription): excitation wavelength (after trimming) -> ".$val[0]);
+    $parameterSetting->set($newExcitationWavelength);
+    $newEmissionWavelength = $parameterSetting->parameter('EmissionWavelength');    
+    $value = $newEmissionWavelength->value();
+    //error_log("GENERATING SCRIPT (JobDescription): emission wavelength (before trimming) -> ".$value[$channel]);
+    $newEmissionWavelength->setValue($value[$channel]);
+    $val = $newEmissionWavelength->value();
+    //error_log("GENERATING SCRIPT (JobDescription): emission wavelength (after trimming) -> ".$val[0]);
+    $parameterSetting->set($newEmissionWavelength);
+    $newPinholeSize = $parameterSetting->parameter('PinholeSize');
+    $value = $newPinholeSize->value();
+    $newPinholeSize->setValue($value[$channel]);
+    $parameterSetting->set($newPinholeSize);
+    if ($psfParam->value() == "measured") {
+      $newPSF = $parameterSetting->parameter('PSF');
+      $value = $newPSF->value();
+      $newPSF->setValue($value[$channel]);
+      $parameterSetting->set($newPSF);
+    }
+    // ... and for task setting
+    // save original RemoveBackgroundPercent and BackgroundOffsetPercent
+    //WARNING do not confuse REMOVEBackgroundPercent and BackgroundOffsetPercent
+    $taskSetting = $this->taskSetting;
+    $numberOfChannels = $taskSetting->numberOfChannels();
+    $removeBackgroundPercent = $taskSetting->parameter('RemoveBackgroundPercent');
+    $val = $removeBackgroundPercent->internalValue();
+    $originalRemoveBackgroundPercentValue = array();
+    //TODO remove RemoveBackgroundPercent
+    for ($i = 0; $i < $numberOfChannels; $i++) {
+      $originalRemoveBackgroundPercentValue[$i] = $val[$i];
+    }
+    //error_log("GENERATING SCRIPT (JobDescription): remove background percent -> ".$originalRemoveBackgroundPercentValue[$i]." [".$i."]");
+    $backgroundOffsetPercent = $taskSetting->parameter('BackgroundOffsetPercent');
+    //$val = $backgroundOffsetPercent->internalValue();
+    //$originalBackgroundOffsetPercentValue = array();
+    $originalBackgroundOffsetPercentValue = $backgroundOffsetPercent->internalValue();
+    //for ($i = 0; $i < $numberOfChannels; $i++) {
+    //  $originalBackgroundOffsetPercentValue[] = $val[$i];
+    //}
+    // make single channel setting for current channel
+    $newRemoveBackgroundPercent = $taskSetting->parameter('RemoveBackgroundPercent');
+    // DEBUG
+    //$value = $newRemoveBackgroundPercent->value();
+    $newRemoveBackgroundPercent->setValue($originalRemoveBackgroundPercentValue[$channel]);
+    $taskSetting->set($newRemoveBackgroundPercent);
+    // Backgriund Offset Percent
+    $newBackgroundOffsetPercent = $taskSetting->parameter('BackgroundOffsetPercent');
+    // DEBUG
+    //$value = $newBackgroundOffsetPercent->value();
+    if ($originalBackgroundOffsetPercentValue[0] == "auto" || $originalBackgroundOffsetPercentValue[0] == "object") {
+      $newBackgroundOffsetPercent->setValue($originalBackgroundOffsetPercentValue[0]);
+      $test = $newBackgroundOffsetPercent->internalValue();
+      //error_log("auto/object ".$test[0]);
+    }
+    else {
+      $newBackgroundOffsetPercent->setValue($originalBackgroundOffsetPercentValue[$channel]);
+    }
+    $taskSetting->set($newBackgroundOffsetPercent);
+    // Signal to noise ratio
+    $newSignalNoiseRatio = $taskSetting->parameter('SignalNoiseRatio');
+    $originalSignalNoiseRatioValue = $newSignalNoiseRatio->value();
+    $newSignalNoiseRatio->setValue($originalSignalNoiseRatioValue[$channel]);
+    $taskSetting->set($newSignalNoiseRatio);
+    //
+    $taskSetting->setNumberOfChannels(1);
+    // Create script
+    $this->setParameterSetting($parameterSetting);
+    $this->setTaskSetting($taskSetting);
+    $result = $this->putScriptOn($script);
+    // restore multi channel setting with original excitation and emission wavelengths
+    $parameterSetting = $this->parameterSetting;
+    $isMultiChannel->setValue('True');
+    $parameterSetting->set($isMultiChannel);
+    // DEBUG
+    $excitationWavelength->setValue($originalExcitationWavelengthValue);
+    $parameterSetting->set($excitationWavelength);
+    $emissionWavelength->setValue($originalEmissionWavelengthValue);
+    $parameterSetting->set($emissionWavelength);
+    // restore multi channel setting with original pinhole radii
+    $pinholeSize->setValue($originalPinholeSizeValue);
+    $parameterSetting->set($pinholeSize);
+    if ($psfParam->value() == "measured") {
+      // restore multi channel setting with original measured PSF
+      $psf->setValue( $originalPSFValue );
+      $parameterSetting->set($psf);
+    }
+    $this->setParameterSetting($parameterSetting);
+    // ... and for task setting
+    $taskSetting = $this->taskSetting;
+    $newSignalNoiseRatio->setValue( $originalSignalNoiseRatioValue );
+    $taskSetting->set($newSignalNoiseRatio);
+    $taskSetting->setNumberOfChannels($numberOfChannels);
+    // DEBUG
+    $removeBackgroundPercent->setValue($originalRemoveBackgroundPercentValue);
+    $taskSetting->set($removeBackgroundPercent);
+    $backgroundOffsetPercent->setValue($originalBackgroundOffsetPercentValue);
+    $taskSetting->set($backgroundOffsetPercent);
+    $this->setTaskSetting($taskSetting);
+    // return result
+    return $result;
+  } 
+
+  /*!
+    \brief  Checks whether a string ends with a number
+    \return true if the string ends with a number, false otherwise
+  */
+  private function endsWithNumber($string) {
+    $last = $string[strlen($string)-1];
+    return is_numeric($last);
+  } 
+
+  /*!
+    \brief  Returns a new name for a single TIFF that must be renamed
+    \return the new name
+  */
+  private function newNameForSingleTif() {
+    $files = $this->files();
+    $name = end($files);
+    $path = explode("/", $name);
+    $shortName = array_pop($path);
+    $path = implode("/", $path);
+    $anArray = explode(".", $shortName);
+    $baseName = $anArray[0];
+    $extension = end($anArray);
+    $result = $this->sourceFolder() . "." . $baseName . $this->id() . "s." . $extension;
+    return $result;
+  } 
+
+  /*!
+    \brief  Prepares the part of the script that opens a file with options
+    \return the script part for opening a file with options
+  */
+  private function loadImageString( $isOriginal = false ) {
     global $useThumbnails;
     if ($this->mustReplaceSourceName()) { 
       $imageFileName = $this->newNameForSingleTif();
     } else { 
       $imageFileName = $this->sourceImageName();
     }
-    // TODO we should provide more convenience methods in ParameterSettings
+    // TODO we should provide more convenience methods in ParameterSetting
     $options = "";
     if (stristr($imageFileName, ".stk")) {
       // Metamorph: if not time series
@@ -1399,8 +1708,105 @@ HRMrun deconvolution
     return 'set imageName [img open "' . $huygensFileName . '"' . $options . ']' . "\n" . '$imageName lundo -off' . "\n" . $mirror. $thumbn;
   }
 
+  /*!
+    \brief  Returns a single value parameters as a Tcl list for all channels.
+    
+      Since version 3.5 of Huygens, many parameters that where global before, 
+      can be now defined per channel, like the NA.
+    
+    \return empty parameter Tcl list
+  */
+  private function getParamAsChannelTclList ( $setting, $param, $translate = false, 
+          $withQuotes = false ) {
+      if ( $translate ) {
+          $values = $setting->parameter($param)->translatedValue();
+      } else {
+          $values = $setting->parameter($param)->value();
+      }
+      $chanCnt = $setting->numberOfChannels();
+      $retList = "";
+      $quote == "";
+      if ( $withQuotes ) { 
+          $quote = "\"";
+      }
+      if ( is_array($values) ) {
+          $sep = "";    
+          foreach  ($values as $item) {
+              $retList .= $sep.$quote.$item.$quote;
+              $sep = " ";
+          }
+      } else {
+          for ($i = 0; $i < $chanCnt; $i ++ ) {
+              $retList .= $sep.$quote.$values.$quote;
+              $sep = " ";
+          }
+      }
+      $retList = trim($retList);
+      return "{ $retList }";
+  }
+
+  /*!
+    \brief  Returns an empty parameter Tcl list from current ParameterSetting
+    \return empty parameter Tcl list
+  */
+  private function getEmptyParameterList ($parameterSetting) {
+
+      $chanCnt = $parameterSetting->numberOfChannels();
+      $retList = "";
+      $sep = "";    
+      for ($i = 0; $i < $chanCnt; $i++ ) {
+          $retList .= $sep."(ignore)";
+          $sep = " ";
+      }
+      return "{ $retList } ";
+
+  }
+  
+  /*!
+    \brief  Returns an array of parameters from a setting as a Tcl list. Elements are
+            optionally enclosed in quotes.
+    \return parameter Tcl list
+  */
+  private function getParamAsTclList ( $setting, $param, $withQuotes = false ) {
+      $values = $setting->parameter($param)->value();
+      $retList = "";
+      $quote == "";
+      if ( $withQuotes ) { 
+          $quote = "\"";
+      }
+      if ( is_array($values) ) {
+          $sep = "";    
+          foreach  ($values as $item) {
+              $retList .= $sep.$quote.$item.$quote;
+              $sep = " ";
+          }
+      } else {
+          $retList = $values;
+      }
+      $retList = trim($retList);
+      return "{ $retList }";
+  }
+
+  /* OBSOLETE
+  private function passTwoScript() {
+    $this->pass = 2;
+    $script = '';
+    $script = $script . 'if {[img exists $imageName]} {$imageName del}' . "\n";
+    $script = $script . 'c genpsf -> psf -dims auto -z -reflCorr' . "\n";
+    $script = $script . 'c cmle psf -> c -sn {80} -it 7 -bgMode object -bg {-100} -blMode auto -q 0 -mode fast -pad auto' . "\n";
+    $script = $script . $this->saveImageString();
+    $this->pass = 1;
+    return $script;
+  } 
+  */
+  
+  /*!
+    \brief  Prepares the part of the script that writes the result file with
+            all accessories (thumbnails, previews, reports, history)
+    \return the script part for writing a result file with accessory files
+  */
   // TODO refactor this part
-  function saveImageString( $isResult = false ) {
+  private function saveImageString( $isResult = false ) {
     global $resultImagesOwnedByUser;
     global $useThumbnails;
     global $movieMaxSize, $saveSfpPreviews, $maxComparisonSize;
@@ -1523,149 +1929,19 @@ HRMrun deconvolution
     }
     return $result;
   } 
-
-  function sourceImageName() {
-    $files = $this->files();
-    // avoid redundant slashes in path
-    $result = $this->sourceFolder() . ereg_replace("^/", "", end($files));
-    return $result;
-  }
-
-  function sourceImageNameWithoutPath() {
-    $name = $this->sourceImageName();
-    $pos = strrpos( $name, '/' );
-    if ( $pos ) {
-      return ( substr( $name, ( $pos + 1 ) ) );
-    } else {
-      return $name;
-    }
-  }
-
-  function relativeSourcePath() {
-    $files = $this->files();
-    $inputFile = end($files);
-    $inputFile = explode("/", $inputFile); 
-    array_pop($inputFile);
-    $path = implode("/", $inputFile);
-    // avoid redundant slashes in path
-    if (strlen($path) > 0) $path = ereg_replace("([^/])$", "\\1/", $path);
-    return $path;
-  } 
-
-  function sourceImageShortName() {
-    $files = $this->files();
-    $inputFile = end($files);
-    $inputFile = explode("/", $inputFile);
-    // remove file extension
-    //$inputFile = explode(".", end($inputFile));
-    //$inputFile = $inputFile[0];
+  
+  /*!
+    \brief  Checks whether the source name must be replaced (for single TIFFs)
+    \return true if the source name must be replaced, false otherwise
+  */
+  private function mustReplaceSourceName() {
     $parameterSetting = $this->parameterSetting;
-    $parameter = $parameterSetting->parameter('ImageFileFormat');
-	$fileFormat = $parameter->value();
-    if ( strcasecmp( $fileFormat, 'lif' ) == 0 ) {
-      if ( preg_match("/^(.*)\.lif\s\((.*)\)/i", $inputFile[0], $match) ) {
-        $inputFile = $match[ 1 ] . '_' . $match[ 2 ];
-      } else {
-        $inputFile = substr(end($inputFile), 0, strrpos(end($inputFile), ".")); }
-    } else {
-      $inputFile = substr(end($inputFile), 0, strrpos(end($inputFile), "."));
+    if (!$parameterSetting->isThreeDimensional() && !$parameterSetting->isTimeSeries() && $parameterSetting->isTif()) {
+      if ($this->endsWithNumber($this->sourceImageShortName())) {
+	return True;
+      } 	
     }
-    return $inputFile;
-  } 
-
-  function sourceFolder() {
-    global $huygens_server_image_folder;
-    global $image_source;
-    $user = $this->owner();
-    $result = $huygens_server_image_folder . $user->name() . "/" . $image_source . "/";
-    return $result;
-  } 
-
-  function destinationImageName() {
-    $taskSetting = $this->taskSetting();
-    $files = $this->files();
-    $outputFile = $this->sourceImageShortName();
-    $outputFile = end(explode($taskSetting->name(), $this->sourceImageShortName()));
-    $result = $outputFile . "_" . $taskSetting->name() . "_hrm";
-        # Add a non-numeric string at the end: if the task name ends with a
-        # number, that will be removed when saving using some file formats that
-        # use numbers to identify Z planes. Therefore the result file won't
-        # be found later and an error will be generated.
-
-    if ($taskSetting->isStepCombinedProcessing()) {
-      if ($this->pass == 1) {
-          $extension = 'A';
-      } else {
-          $extension = 'B';
-      } 
-      $result = $result . "_step" . $extension;
-    } 
-    return $result; 
-  } 
-
-  function destinationImageNameWithoutPath() {
-    $name = $this->destinationImageName();
-    $pos = strrpos( $name, '/' );
-    if ( $pos ) {
-      $name = substr( $name, ( $pos + 1 ) );
-    }
-    // Append extension
-    $taskSetting = $this->taskSetting();
-    $param = $taskSetting->parameter('OutputFileFormat');
-    $fileFormat = $param->extension( );
-    return ( $name . "." . $fileFormat );
+    return False;
   }
 
-  function destinationImageNameAndExtension() {
-    $name = $this->destinationImageName();
-    // Append extension
-    $taskSetting = $this->taskSetting();
-    $param = $taskSetting->parameter('OutputFileFormat');
-    $fileFormat = $param->extension( );
-    return ( $this->relativeSourcePath(). $name . "." . $fileFormat );
-  }
-
-
-
-  function destinationImageFullName() {
-    global $resultImagesRenamed;
-    // use source filename as destination filename
-    if (!$resultImagesRenamed) {
-      $files = $this->files();
-      $result = $this->destinationFolder() . ereg_replace("^/", "", end($files));
-      $result = substr($result, 0, strrpos($result, "."));
-      if ( $this->endsWithNumber($result) ) {
-          // Avoid output files ending in a number.
-          $result .= "_hrm";
-      }
-    }
-    else {
-      $result = $this->destinationFolder() . $this->destinationImageName();
-    }
-    return $result;
-  }
-
-  function destinationFolder() {
-    global $huygens_server_image_folder;
-    global $image_destination;
-
-    $user = $this->owner();
-    // avoid redundant slashes in path
-    $result = $huygens_server_image_folder . $user->name() . "/" . $image_destination . "/" . $this->relativeSourcePath();
-    
-    return $result;
-  } 
-
-  function destinationFolderTop() {
-    global $huygens_server_image_folder;
-    global $image_destination;
-
-    $user = $this->owner();
-    $path = $this->relativeSourcePath();
-    $pathComponents = explode("/", $path);
-    $top = $pathComponents[0]; 
-    $result = $huygens_server_image_folder . $user->name() . "/" . $image_destination . "/" . $top . "/"; 
-    
-    return $result;    
-  } 
 } 

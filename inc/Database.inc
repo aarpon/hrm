@@ -938,6 +938,7 @@ class DatabaseConnection {
 
   /*!
 	\brief  Returns all file names associated to a job with given id
+	\param	$id	Job id
 	\return array of file names
   */
   public function getJobFilesFor($id) {
@@ -950,8 +951,8 @@ class DatabaseConnection {
   /*!
 	\brief	Returns the number of jobs currently in the queue for a
 			given username
-  \param	$username	Name of the user
-  \return	number of jobs in queue
+    \param	$username	Name of the user
+    \return	number of jobs in queue
   */
   public function getNumberOfQueuedJobsForUser($username) {
 	$query = "SELECT COUNT(id) FROM job_queue WHERE username = '" . $_SESSION['user']->name( ) . "';";
@@ -1030,7 +1031,7 @@ class DatabaseConnection {
   /*!
 	\brief 	Checks whether server is busy
     \param 	$name     Name of the server
-    \return	true if the server is busy
+    \return	true if the server is busy, false otherwise
   */
   public function isServerBusy($name) {  
     $status = $this->statusOfServer($name);
@@ -1172,9 +1173,9 @@ class DatabaseConnection {
   /*/!
 	\brief	Get the starting time of given job object
 	\param	$job	Job object
-	\return	Time (String)
+	\return	Start time (String)
   */
-  public function startTimeOf($job) {
+  public function startTimeOf( Job $job ) {
     $desc = $job->description();
     $id = $desc->id();
     $query = "select start from job_queue where id = '" .$id . "'";

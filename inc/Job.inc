@@ -14,21 +14,9 @@ require_once ("Mail.inc");
  \todo	Move this function either in Shell.inc or in JobQueue.inc (as a class method)
 */
 
-// TODO better manage multiple hosts
-function newExternalProcessFor($host, $logfilename, $errfilename) {
-	global $imageProcessingIsOnQueueManager;
-	$db = new DatabaseConnection();
-	$huscript_path = $db->huscriptPathOn($host);
-	if ($imageProcessingIsOnQueueManager)
-		$shell = new LocalExternalProcess($host, $huscript_path, $logfilename, $errfilename);
-	else
-		$shell = new ExternalProcess($host, $huscript_path, $logfilename, $errfilename);
-	return $shell;
-}
-
 /*!
- * \class Job
- * \brief	Stores all information for a deconvolution job
+   \class Job
+   \brief	Stores all information for a deconvolution Job
  */
 class Job {
 	private $script;
@@ -39,8 +27,8 @@ class Job {
 	private $status;
 
 	/*!
- 	* \brief	Constructor
- 	* \param	$jobDescription	JobDescrition object
+ 	  \brief	Constructor
+ 	  \param	$jobDescription	JobDescrition object
  	*/
 	public function __construct($jobDescription) {
 		$this->jobDescription = $jobDescription;
@@ -48,26 +36,26 @@ class Job {
 	}
 	
 	/*!
- 	* \brief	Returns the JobDescription associated with the Job
- 	* \return	JobDescription object
+ 	  \brief	Returns the JobDescription associated with the Job
+ 	  \return	JobDescription object
  	*/
 	public function description() {
 		return $this->jobDescription;
 	}
 
 	/*!
- 	* \brief	Sets the server which will run the Job
- 	* \param	$server	Server name
+ 	  \brief	Sets the server which will run the Job
+ 	  \param	$server	Server name
  	*/
 	public function setServer($server) {
 		$this->server = $server;
 	}
 
 	/*!
- 	* \brief	Creates a script for elementary jobs or splits compound jobs
- 	* \return	for elementary jobs, returns true if the script was generated 
- 	* 			successfully, or false otherwise; for compound jobs, it always
- 	* 			returns false
+ 	  \brief	Creates a script for elementary jobs or splits compound jobs
+ 	  \return	for elementary jobs, returns true if the script was generated 
+ 	 			successfully, or false otherwise; for compound jobs, it always
+ 	 			returns false
  	*/
 	public function createSubJobsOrScript() {
 		$result = True;
@@ -101,64 +89,64 @@ class Job {
 	}
 
 	/*!
- 	* \brief	Returns the name of the server associated with the Job
- 	* \return	server name
+ 	  \brief	Returns the name of the server associated with the Job
+ 	  \return	server name
  	*/
 	public function server() {
 		return $this->server;
 	}
 
 	/*!
- 	* \brief	Returns the script generated for the Job
- 	* \return	script
+ 	  \brief	Returns the script generated for the Job
+ 	  \return	script
  	*/
 	public function script() {
 		return $this->script;
 	}
 
 	/*!
- 	* \brief	Returns the process identifier associated with the Job
- 	* \return	process identifier
+ 	  \brief	Returns the process identifier associated with the Job
+ 	  \return	process identifier
  	*/
 	public function pid() {
 		return $this->pid;
 	}
 
 	/*!
- 	* \brief	Returns the Job id
- 	* \return	Job id
+ 	  \brief	Returns the Job id
+ 	  \return	Job id
  	*/
 	public function id() {
 	    $desc = $this->description();
-		return $desc->id;
+		return $desc->id();
 	}
 
 	/*!
- 	* \brief	Sets the process identifier associated with the Job
- 	* \param	$pid	Process identifier
+ 	  \brief	Sets the process identifier associated with the Job
+ 	  \param	$pid	Process identifier
  	*/
 	public function setPid($pid) {
 		$this->pid = $pid;
 	}
 	
 	/*!
- 	* \brief	Returns the Job status
- 	* \return	Job status
+ 	  \brief	Returns the Job status
+ 	  \return	Job status
  	*/
 	public function status() {
 		return $this->status;
 	}
 
 	/*!
- 	* \brief	Sets the status of the Job
- 	* \param	$status	Status of the Job
+ 	  \brief	Sets the status of the Job
+ 	  \param	$status	Status of the Job
  	*/
 	function setStatus($status) {
 		$this->status = $status;
 	}
 
 	/*!
- 	* \brief	Creates a script
+ 	  \brief	Creates a script
  	*/
 	public function createScript() {
 	    global $useHuScriptVersion;
@@ -173,8 +161,8 @@ class Job {
     }
 
     /*!
- 	* \brief	A clearer version of the deconvolution script with
- 	* 			fixed procedures and a bunch of input parameters
+ 	  \brief	A clearer version of the deconvolution script with
+ 	 			fixed procedures and a bunch of input parameters
  	*/
     private function createScriptVersionOne() {
 
@@ -187,17 +175,17 @@ class Job {
     }
 
     /*!
- 	* \brief	The original version of the deconvolution script
- 	* 
- 	* The original version of the deconvolution script, a linear one, with
- 	* lines that were written or not depending on the task parameters.
- 	* 
- 	* This function should be deleted after the new one proves to be
-    * stable enough, to make this code clearer. The same applies to all
-    * the old script generating subroutines, like putMultiChannelScriptOn,
-    * putScriptOn and the like.
-    * 
-    * \deprecated
+ 	  \brief	The original version of the deconvolution script
+ 	 
+		The original version of the deconvolution script, a linear one, with
+		lines that were written or not depending on the task parameters.
+ 	 
+		This function should be deleted after the new one proves to be
+		stable enough, to make this code clearer. The same applies to all
+		the old script generating subroutines, like putMultiChannelScriptOn,
+		putScriptOn and the like.
+     
+      \todo This function is deprecated and will be removed 
  	*/
 	private function createScriptVersionZero() {
 		global $huscript_call;
@@ -226,12 +214,12 @@ class Job {
 	}
 
 	/*!
-	 * \brief	Returns the script name
-	 * 
-	 * The script name contains the id to make it univocal
-	 *
-	 * \return	the sript name
-	 */
+	   \brief	Returns the script name
+	  
+		The script name contains the id to make it univocal
+	 
+	   \return	the sript name
+	*/
 	public function scriptName() {
 		$desc = $this->description();
 		$result = ".hrm_" . $desc->id() . ".tcl";
@@ -239,8 +227,8 @@ class Job {
 	}
 
 	/*!
-	 * \brief	Writes the script to the user's source folder
-	 * \return	true if the script could be written, false otherwise
+	   \brief	Writes the script to the user's source folder
+	   \return	true if the script could be written, false otherwise
 	 */
 	public function writeScript() {
 		$result = True;
@@ -268,9 +256,9 @@ class Job {
 	}
 	
 	/*!
-	 * \brief	Checks whether the result image is present in the destination directory
-	 * \return	true if the result image could be found, false otherwise
-	 * \todo Refactor
+	   \brief	Checks whether the result image is present in the destination directory
+	   \return	true if the result image could be found, false otherwise
+	   \todo Refactor
 	 */
 	public function checkResultImage() {
 		global $imageProcessingIsOnQueueManager;
@@ -339,9 +327,9 @@ class Job {
 	}
 
 	/*!
-	 * \brief	Checks if the process is finished
-	 * \return	true if the process is finished, false otherwise
-	 * \todo Refactor
+	   \brief	Checks if the process is finished
+	   \return	true if the process is finished, false otherwise
+	   \todo Refactor
 	 */
 	public function checkProcessFinished() {
             global $imageProcessingIsOnQueueManager;

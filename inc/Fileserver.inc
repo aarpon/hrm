@@ -6,10 +6,11 @@ include ("hrm_config.inc");
 require_once("Database.inc");
 require_once("Util.inc");
 
-//!---------------------------------------------------------
-// \class FileServer
-// \brief Allows the user to select image files and stores the selection.
-//!---------------------------------------------------------
+/*!
+  \class Fileserver
+  \brief Takes care of all file handling to and from the image area and provides
+        commodity functions for creating and displaying previews
+*/
 class Fileserver {
   
   /*!
@@ -119,7 +120,7 @@ class Fileserver {
   /*!
     \brief  Returns the destination image folder from a JobDescription object
     \param  $desc JobDescription object
-    \return destination image folder
+    \return destination image folder with user-generated subfolder
   */
   public function destinationFolderFor($desc) {
     $folder = $this->destinationFolder() . "/" . $desc->relativeSourcePath();

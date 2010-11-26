@@ -2,11 +2,16 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
-
-//!--------------------------------------------------------------------
-// \class    Ldap
-// \brief     Manage ldap connections
-//!--------------------------------------------------------------------
+/*!
+  \class	Ldap	
+  \brief	Manages LDAP connections through built-in PHP LDAP support
+  
+  The configuration file for the Ldap class is
+  config/ldap_config.inc. A sample configuration file is
+  config/samples/ldap_config.inc.sample.
+  A user with read-access to the LDAP server must be set up in the
+  configuration file for queries to be possible.
+*/
 
 include( dirname( __FILE__ ) . "/../config/ldap_config.inc" );
 
@@ -14,6 +19,10 @@ class Ldap {
   
   private $connection; 
 
+  /*!
+	\brief	Constructor: instantiates an Ldap object with the settings
+			specified in the configuration file.
+  */
   public function __construct ( ) {
 
     global $ldap_host;
@@ -44,13 +53,21 @@ class Ldap {
 	}
   
   }
-  
+
+  /*!
+	\brief	Destructor: closes the connection.
+  */
   public function __destruct() {
 	if ( $this->isConnected() ) {
 	  @ldap_close( $this->connection );
 	}
   }
 
+  /*!
+	\brief	Returns the e-mail address of a user with given id
+	\param	$uid	User name
+	\return	e-mail address
+  */
   public function emailAddress( $uid ) {
 	
 	global $ldap_user_search_DN;
@@ -76,6 +93,13 @@ class Ldap {
 	return $email;
   }
   
+ 
+  /*!
+	\brief	Tries to authenticate a user against LDAP
+	\param	$uid			User name
+	\param	$userPassword	Password
+	\return	true if the user could be authenticated; false otherwise
+  */
   public function authenticate( $uid, $userPassword ) {
 
 	global $ldap_user_search_DN;
@@ -115,18 +139,32 @@ class Ldap {
 	}
   }
 
+  /*!
+	\brief	Returns the group for a given user name (remark: The group for an LDAP user is always hrm!)
+	\param	$uid			User name
+	\return	user name
+	\todo	Get real group from LDAP!
+  */
   public function getGroup( $uid ) {
-	// TODO Get group from Ldap server!
+	// TODO Get group from LDAP server!
 	if ( ! $this->isConnected() ) {
 	  return "";
 	}
     return "hrm";
   }
     
+  /*!
+	\brief	Check whether there is a connection to LDAP
+	\return	true if the connection is up, false otherwise
+  */
   public function isConnected() {
 	return ( $this->connection != null );
   }
 
+  /*!
+	\brief	Returns the last occurred error
+	\return	last ldap error
+  */
   public function lastError() {
 	if ( $this->isConnected() ) {
 	  return @ldap_error( $this->connection );
@@ -135,6 +173,10 @@ class Ldap {
 	}
   }
    
+  /*!
+	\brief	Binds LDAP with the configured manager for queries to be possible
+	\return	true if the manager could bind, false otherwise
+  */
   private function bindManager( ) {
 	
 	global $ldap_manager;
