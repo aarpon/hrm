@@ -363,7 +363,7 @@ if ($_SESSION['index'] != "") {
                                     <input type="submit" name="edit" value="edit" class="submit" />
 <?php
 
-        if ($name != "admin") {
+        if ($name != $_SESSION[ 'user' ]->getAdminName() ) {
           if ($status == "d") {
 
 ?>

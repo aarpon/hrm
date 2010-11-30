@@ -30,7 +30,7 @@ if (isset($_SESSION['setting'])) {
 }
 
 // add public setting support
-if ($_SESSION['user']->name() != "admin") {
+if (!$_SESSION['user']->isAdmin()) {
   $admin = new User();
   $admin->setName("admin");
   $admin_editor = new SettingEditor($admin);
@@ -145,7 +145,7 @@ include("header.inc.php");
       specified name.</span>
     <span id="ttSpanDelete">Delete the selected setting.</span>
     <?php
-      if ($_SESSION['user']->name() != "admin") {
+      if (!$_SESSION['user']->isAdmin()) {
         ?>
         <span id="ttSpanDefault">Sets the selected setting as the default one.</span>
         <span id="ttSpanCopyTemplate">Copy a template.</span>
@@ -166,7 +166,7 @@ include("header.inc.php");
  
 <?php
 
-if ($_SESSION['user']->name() == "admin") {
+if ($_SESSION['user']->isAdmin()) {
 
 ?>
         <h3>Image parameters</h3>
@@ -182,7 +182,7 @@ else {
 }
 
 // display public settings
-if ($_SESSION['user']->name() != "admin") {
+if (!$_SESSION['user']->isAdmin()) {
 
 ?>
         <form method="post" action="">
@@ -234,7 +234,7 @@ if ($_SESSION['user']->name() != "admin") {
             <fieldset>
             
             <?php
-            if ($_SESSION['user']->name() == "admin") {
+            if ($_SESSION['user']->isAdmin()) {
               echo "<legend>Template image parameters</legend>";
             } else {
               echo "<legend>Your image parameters</legend>";
@@ -246,7 +246,7 @@ if ($_SESSION['user']->name() != "admin") {
 
 $settings = $_SESSION['editor']->settings();
 $size = "8";
-if ($_SESSION['user']->name() == "admin") $size = "12";
+if ($_SESSION['user']->isAdmin()) $size = "12";
 $flag = "";
 if (sizeof($settings) == 0) $flag = " disabled=\"disabled\"";
 
@@ -288,7 +288,7 @@ else {
                        onmouseout="UnTip()" />
 <?php
 
-if ($_SESSION['user']->name() != "admin") {
+if (!$_SESSION['user']->isAdmin()) {
 
 ?>
                 <input name="make_default" type="submit" value=""
@@ -308,7 +308,7 @@ if ($_SESSION['user']->name() != "admin") {
         </div>                
 <?php
 
-if ($_SESSION['user']->name() != "admin") {
+if (!$_SESSION['user']->isAdmin()) {
 
 ?>
                 <div id="controls">      
@@ -345,7 +345,7 @@ if ($_SESSION['user']->name() != "admin") {
 <?php
 
 // add user management
-if ($_SESSION['user']->name() != "admin") {
+if (!$_SESSION['user']->isAdmin()) {
 
 ?>
 
@@ -353,7 +353,7 @@ if ($_SESSION['user']->name() != "admin") {
 
 }
 
-	if ($_SESSION['user']->name() != "admin") {
+	if (!$_SESSION['user']->isAdmin()) {
       echo "<p>In the first step, you are asked to specify all parameters relative
         to the images you want to restore.</p>";
 	} else {
@@ -368,7 +368,7 @@ if ($_SESSION['user']->name() != "admin") {
       on the PSF should be applied.</p>
 
     <?php        
-	if ($_SESSION['user']->name() != "admin") {
+	if (!$_SESSION['user']->isAdmin()) {
       echo "<p>'Template image parameters' created by your facility manager can
         be copied to the list of 'Your image parameters' and adapted to fit your
         specific experimental setup.</p>";

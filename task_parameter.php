@@ -25,7 +25,7 @@ if (!isset($_SESSION['task_setting'])) {
   # session_register("task_setting"); 
   $_SESSION['task_setting'] = new TaskSetting();
 }
-if ($_SESSION['user']->name() == "admin") $_SESSION['task_setting']->setNumberOfChannels(5);
+if ($_SESSION['user']->isAdmin()) $_SESSION['task_setting']->setNumberOfChannels(5);
 else $_SESSION['task_setting']->setNumberOfChannels($_SESSION['setting']->numberOfChannels());
 
 $message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";

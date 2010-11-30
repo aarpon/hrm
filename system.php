@@ -11,7 +11,7 @@ if (isset($_GET['home'])) {
   header("Location: " . "home.php"); exit();
 }
 
-if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn() || $_SESSION['user']->name() != "admin") {
+if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn() || !$_SESSION['user']->isAdmin()) {
   header("Location: " . "login.php"); exit();
 }
 

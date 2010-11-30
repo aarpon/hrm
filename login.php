@@ -69,15 +69,16 @@ session_destroy();
 
 session_start();
 
-$_SESSION['user'] = new User();
-
 if ( isset( $_POST['password'] ) && isset( $_POST['username'] ) ) {
   if ( $clean['password'] != "" && $clean['username'] != "" ) {
-    $_SESSION['user']->setName($clean['username']);
-    $_SESSION['user']->logOut(); // TODO
+    
+    // Create a user
+    $tentativeUser = new User();
+    $tentativeUser ->setName($clean['username']);
+    $tentativeUser ->logOut(); // TODO
   
-    if ($_SESSION['user']->logIn($clean['username'], $clean['password'], $_SERVER['REMOTE_ADDR'])) {
-      if ($_SESSION['user']->isLoggedIn()) {
+    if ($tentativeUser->logIn($clean['username'], $clean['password'], $_SERVER['REMOTE_ADDR'])) {
+      if ($tentativeUser ->isLoggedIn()) {
         // Make sure that the user source and destination folders exist
     		{
           $fileServer = new FileServer( $clean['username'] );
@@ -89,6 +90,9 @@ if ( isset( $_POST['password'] ) && isset( $_POST['username'] ) ) {
           // TODO unregister also "setting" and "task_setting"
           unset($_SESSION['editor']);
         
+          // Register the user in the session
+          $_SESSION['user'] = $tentativeUser;
+          
           if ( $authenticateAgainst == "MYSQL" ) {
             if ( $req != "" ) {
               header("Location: " . $req);
@@ -104,14 +108,14 @@ if ( isset( $_POST['password'] ) && isset( $_POST['username'] ) ) {
             exit();
           }
         }
-      } else if ($_SESSION['user']->isLoginRestrictedToAdmin()) {
-        if ( ( strcmp($_SESSION['user']->name( ), 'admin' ) == 0 ) && ($_SESSION['user']->exists()) ) {
+      } else if ( $tentativeUser->isLoginRestrictedToAdmin() ) {
+        if ( ( $tentativeUser->isAdmin() ) && ( $tentativeUser->exists() ) ) {
           $message = "            <p class=\"warning\">Wrong password.</p>\n";
         } else {
           $message = "            <p class=\"warning\">Only the administrator is allowed to login in order to perform maintenance.</p>\n";
         }
       } else {
-        if ($_SESSION['user']->isSuspended()) {
+        if ( $tentativeUser->isSuspended()) {
           $message = "            <p class=\"warning\">Your account has been suspended, please contact the administrator.</p>\n";
         } else {
           $message = "            <p class=\"warning\">Sorry, wrong user name or password.</p>\n";
@@ -121,7 +125,7 @@ if ( isset( $_POST['password'] ) && isset( $_POST['username'] ) ) {
       $message = "            <p class=\"warning\">Sorry, invalid user name or password.</p>\n";
     }
   }
-
+  
 include("header.inc.php");
 
 ?>

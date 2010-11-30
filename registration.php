@@ -107,7 +107,7 @@ if (isset($_POST["OK"])) {
                 $text .= "\t E-mail address: " . $clean["email"] ."\n";
                 $text .= "\t          Group: " . $clean["group"] . "\n";
                 $text .= "\tRequest message: " . $clean["note"] ."\n\n";
-                $text .= "Accept or reject this user here\n";
+                $text .= "Accept or reject this user here (login required)\n";
                 $text .= $hrm_url."/user_management.php?seed=" . $id;
                 $mail = new Mail($email_sender);
                 $mail->setReceiver($email_admin);

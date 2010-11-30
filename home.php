@@ -47,7 +47,7 @@ include("header.inc.php");
 
         <?php
 
-        if ($_SESSION['user']->name() == $_SESSION['user']->getAdminName() ) {
+        if ($_SESSION['user']->isAdmin()) {
         ?>
 		
 		  <table>

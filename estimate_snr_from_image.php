@@ -30,7 +30,7 @@ function showFileBrowser() {
     $size = 15;
     $type = "";
     $useTemplateData = 0;
-    if ( $_SESSION['user']->name() == "admin") {
+    if ($_SESSION['user']->isAdmin()) {
         // The administrator can edit templates without adding a task, so no
         // image type is predefined in this case...
         $restrictFileType = false;
@@ -133,7 +133,7 @@ function estimateSnrFromFile($file) {
     $series = "auto";
     $extra = "";
 
-    if ($_SESSION['user']->name() != "admin") {
+    if ( !$_SESSION['user']->isAdmin() ) {
 
         // This is only for when template parameters are available, in a
         // 'add task' workflow. Admin can't see specific colors, just whatever

@@ -91,7 +91,7 @@ if (isset($_POST['modify'])) {
     $message = "            <p class=\"warning\">Please fill in the email field with a valid address<br />&nbsp;</p>";
   }
   if ( $clean['group'] == "" ) {
-    if ( $_SESSION['user']->name() == "admin" ) {
+    if ( $_SESSION['user']->isAdmin() ) {
       $result = False;
       $message = "            <p class=\"warning\">Please fill in the group field<br />&nbsp;</p>";
     } else {
@@ -153,7 +153,7 @@ include("header.inc.php");
             <div id="adduser">
 <?php
 
-if (isset($_SESSION['account_user']) || $_SESSION['user']->name() != "admin") {
+if (isset($_SESSION['account_user']) || !$_SESSION['user']->isAdmin() ) {
 
 ?>
                 <label for="email">E-mail address: </label>
@@ -176,7 +176,7 @@ if (isset($_SESSION['account_user']) || $_SESSION['user']->name() != "admin") {
 
 // add user management
 // TODO refactor
-if (isset($_SESSION['account_user'])/* && $_SESSION['user']->name() == "admin"*/) {
+if (isset($_SESSION['account_user'])/* && $_SESSION['user']->isAdmin()*/) {
 
 ?>
                 <label for="group">Research group: </label>

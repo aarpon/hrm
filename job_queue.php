@@ -95,7 +95,7 @@ include("header.inc.php");
           }
           echo "<li>There " . $str . " in the queue.</li>";
 
-          if ($_SESSION['user']->name() != "admin")  {
+          if ( !$_SESSION['user']->isAdmin() )  {
               $db = new DatabaseConnection();
               $jobsInQueue = $db->getNumberOfQueuedJobsForUser( $_SESSION['user']->name( ) );
 
@@ -122,7 +122,7 @@ include("header.inc.php");
         onmouseover="TagToTip('ttGoBack' )"
         onmouseout="UnTip()" />
         <?php
-          if ($_SESSION['user']->name() != "admin")  {
+          if ( !$_SESSION['user']->isAdmin() )  {
             echo "<p>You can delete queued jobs owned by yourself.</p>";
           } else {
             echo "<p>You can delete any queued jobs.</p>";
@@ -174,7 +174,7 @@ else {
                     <tr style="background: <?php echo $color ?>">
 <?php
 
-    if ($row['username'] == $_SESSION['user']->name() || $_SESSION['user']->name() == "admin") {
+    if ($row['username'] == $_SESSION['user']->name() || $_SESSION['user']->isAdmin()) {
       //if ($row['status'] != "started" && $row['status'] != "broken") {
       if($row['status'] != "broken") {
 
