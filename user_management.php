@@ -84,8 +84,7 @@ if ( !isset( $_SESSION[ 'user' ] ) ) {
 }
 
 // Make sure that the user is the admin
-$user = $_SESSION[ 'user' ];
-if ( !$user->isAdmin( ) ) {
+if ( !$_SESSION[ 'user' ]->isAdmin( ) ) {
   header("Location: " . "login.php"); exit();  
 }
 
@@ -93,10 +92,9 @@ if ( !$user->isAdmin( ) ) {
 $db = new DatabaseConnection();
 
 if (isset($_GET['seed'])) {
-  $query = "SELECT status FROM username WHERE status = '".$_GET['seed']."'";
-  if ($db->queryLastValue($query) != $_GET['seed']) {
+  if ( !$_SESSION[ 'user' ]->existsUserRequestWithSeed($_GET['seed']) ) {
     header("Location: " . "login.php"); exit();
-    }
+  }
 }
 
 if (isset($_SERVER['HTTP_REFERER']) && !strstr($_SERVER['HTTP_REFERER'], 'admin')  && !strstr($_SERVER['HTTP_REFERER'], 'account')) {

@@ -361,6 +361,40 @@ class User extends Owner{
     return $result; 
   }
   
+  /*!
+    \brief  Returns the number of jobs currently in the queue for current User
+    \return number of jobs in queue
+  */
+  public function numberOfJobsInQueue() {
+    if ( $this->name = "" ) {
+      return 0;
+    }
+    $db = new DatabaseConnection();
+	$query = "SELECT COUNT(id) FROM job_queue WHERE username = '" .
+      $_SESSION['user']->name( ) . "';";
+	$row = $db->execute( $query )->FetchRow( );
+	return $row[ 0 ]; 
+  }
+  
+  /*!
+    \brief  Checks whether a user with a given seed exists in the database
+    
+    If a user requests an account, his username is added to the database with
+    a random seed as status.
+    
+    \return true if a user with given seed exists, false othrwise
+  */
+  public function existsUserRequestWithSeed( $seed ) {
+    $query = "SELECT status FROM username WHERE status = '" . $seed . "'";
+    $db = new DatabaseConnection();
+    $value = $db->queryLastValue($query);
+    if ( $value == false ) {
+      return false;
+    } else {
+      return ( $value == $seed );
+    }
+  }
+  
 /*
                               PRIVATE FUNCTIONS
 */

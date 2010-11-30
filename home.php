@@ -236,11 +236,7 @@ include("header.inc.php");
 			  </td>
 			  
 			  <?php
-				$db = new DatabaseConnection();
-				$query = "SELECT COUNT(id) FROM job_queue WHERE username = '" . $_SESSION['user']->name( ) . "';";
-				$row = $db->execute( $query )->FetchRow( );
-				$jobsInQueue = $row[ 0 ];
-				
+				$jobsInQueue = $_SESSION['user']->numberOfJobsInQueue();
 				if ( $jobsInQueue == 0 ) {
 				  $str = '<strong>no jobs</strong>';
 				} elseif ( $jobsInQueue == 1 ) {
