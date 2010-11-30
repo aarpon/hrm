@@ -17,62 +17,78 @@ if ( $authenticateAgainst == "LDAP" ) {
 global $authenticateAgainst;
 global $use_ldaps;
 
-//!---------------------------------------------------------
-// \class    Owner
-// \brief     Represents an owner of a setting. Superclass of
-//           class user.
-//!---------------------------------------------------------
+/*!
+   \class   Owner
+   \brief	Represents the owner of a setting.
+*/
 class Owner {
-  public $name;          // @public name          String    The owners name might be a job id or a user's login name
+
+  /*!
+    \var    $name
+    \brief  Name of the owner: could be a job id or a user's login name
+  */
+  private $name;
  
-  //!---------------------------------------------------------
-  // @function    Owner::Owner
-  // \brief        Constructor. Creates a new owner.
-  // \return      void
-  //!---------------------------------------------------------
-  function Owner() {
+  /*!
+    \brief  Constructor. Creates a new Owner.
+  */
+  public function __construct() {
     $this->name = '';
   }
 
-  //!---------------------------------------------------------
-  // @function    Owner::name
-  // \brief        Answer the name of the owner
-  // \return      String
-  //!---------------------------------------------------------
-  function name() {
+  /*!
+    \brief  Returns the name of the Owner
+    \return the name of the Owner
+  */
+  public function name() {
     return $this->name;
   }
 
-  //!---------------------------------------------------------
-  // @function    Owner::setName
-  // \brief        Set the name of the owner. Might be the name
-  //              of a person or the id of a job.
-  // \param       name    String    The name of the owner
-  // \return      void
-  //!---------------------------------------------------------
+  /*!
+    \brief  Sets the name of the Owner
+    \param  $name The name of the Owner
+  */
   function setName($name) {
     $this->name = $name;
   }
   
 } // end of class Owner
 
-//!---------------------------------------------------------
-// \class    User
-// \brief     Represents a user. Keeps track of the user's  
-//           state (is the user logged in, etc).
-//!---------------------------------------------------------
-class User extends Owner{ 
-  public $isLoggedIn;   // @public isLoggedIn    Boolean   True if the user is logged in.
-  public $lastActivity; // @public lastActivity  Timestamp Time of the last activity of the user
-  public $ip;           // @public ip            String    The user's current ip address
-  public $authMode;     // @public authMode      String    One of "MYSQL", "LDAP", or "ACTIVE_DIR"
+/*!
+   \class   User
+   \brief   Manages a user and its state
+*/
+class User extends Owner{
   
-  //!---------------------------------------------------------
-  // @function    User::User
-  // \brief        Constructor. Creates a new empty user.
-  // \return      void
-  //!---------------------------------------------------------
-  function User() {
+  /*!
+    \var    $isLoggedIn
+    \brief  True if the user is logged in
+  */
+  private $isLoggedIn;
+  
+  /*!
+    \var    $lastActivity 
+    \brief  Timestamp of the last activity of the user
+  */
+  private $lastActivity;
+  
+  /*!
+    \var    $ip
+    \brief  The user's current ip address
+  */
+  private $ip;
+  
+  /*!
+    \var    $authMode
+    \brief  Authentication mode, one of "MYSQL", "LDAP", or "ACTIVE_DIR"
+  */
+  private $authMode;     
+  
+  /*!
+    \brief  Constructor. Creates a new User.
+  */
+  function __construct() {
+    
     global $authenticateAgainst;
     $this->isLoggedIn = False;
     $this->lastActivity = time();
@@ -90,22 +106,41 @@ class User extends Owner{
     parent::__construct();
   } 
 
-  //!---------------------------------------------------------
-  // @function    User::isLoggedIn
-  // \brief        Answer true if the user is logged in.
-  // \return      Boolean
-  //!---------------------------------------------------------
-  function isLoggedIn() {
+  /*!
+    \brief  Sets the user current IP address
+    \param  $ip User's IP address
+  */
+  public function setIp( $ip ) {
+      $this->ip = $ip;
+  }
+
+  /*!
+    \brief  Returns the user current IP address
+    \return the user's IP address
+  */
+  public function ip( $ip ) {
+      return $this->ip;
+  }
+
+  /*!
+    \brief  Checks whether the user is logged in
+    \return true if the user is logged in
+  */
+  public function isLoggedIn() {
     return $this->isLoggedIn;
   } 
 
-  //!---------------------------------------------------------
-  // @function    User::encrypt
-  // \brief        Answer an encrypted version of string
-  // \param       string     String    The string to be encrypted
-  // \return      String
-  //!---------------------------------------------------------  
-  function encrypt($string, $seed) {
+  /*!
+    \brief  encrypts a string either with md5 or DES
+    
+      The encryption algorithm used is defined by the $useDESEncryption
+      variable in the HRM configuration files,
+    
+    \param  $string The string to be encrypted
+    \param  $seed The seed (this is used only by the DES algorithm)
+    \return the encrypted string
+  */
+  public function encrypt($string, $seed) {
     global $useDESEncryption;
     if ($useDESEncryption) {
       $result = crypt($string, $seed);
@@ -114,18 +149,29 @@ class User extends Owner{
     } 
     return $result;
   }
-  //!---------------------------------------------------------
-  // @function    User::ldap_encrypt
-  // \brief        Answer an encrypted version of string
-  // \param       string     String    The string to be encrypted; form {type}passwd
-  // \return      String
-  //!---------------------------------------------------------  
-  function parse_ldap_password($dbPassword) {
+  
+  /*!
+    \brief  Returns the encrypted version of the password (LDAP)
+    \param  $dbPassword Password string
+    \return encrypted password
+    \todo   This function seems to be unused
+    \deprecated
+  */
+  public function parse_ldap_password($dbPassword) {
       preg_match("/^\{(.*)\}(.*)$/", $dbPassword, $dbp);
       return array($dbp[2], $dbp[1]);
   }
   
-  function ldap_encrypt($string, $dbPasswordType, $dbPassword) {
+  /*!
+    \brief  Returns the encrypted version of the password (LDAP)
+    \param  $string String to be encrypted
+    \param  $dbPasswordType Encryption algorithm, one of crypt (DES), md5
+    \param  $dbPassword Seed for the crypt (DES) algorithm
+    \return encrypted password
+    \todo   This function seems to be unused
+    \deprecated
+    */
+  public function ldap_encrypt($string, $dbPasswordType, $dbPassword) {
       if ($dbPasswordType == "crypt") {
           $result = crypt($string, $dbPassword);
       } else if ($dbPasswordType == "md5") {
@@ -136,18 +182,23 @@ class User extends Owner{
       return $result;
   }
 
-  //!---------------------------------------------------------
-  // @function    User::logIn
-  // \brief        Try to log the user in. 
-  //              If log in is successful, name, ip and last 
-  //              activity are registered. The result is true in
-  //              this case.
-  // \param       name     String    The login name of the user
-  // \param       password String    The password of the user
-  // \param       ip       String    The ip address of the user
-  // \return      boolean
-  //!---------------------------------------------------------  
-  function logIn($name, $password, $ip) { 
+  /*!
+    \brief  Logs in the user with given user name and password
+    
+    This function will use different authentication modes depending on the value
+    of the global configuration variable $authenticateAgainst.
+    
+    If $authenticateAgainst is:
+      'MYSQL', the user will be authenticated against the HRM user management
+      'LDAP', the user will be authenticated against an LDAP server
+      'ACTIVE_DIR', the user will be authenticated against ACTIVE DIRECTORY
+    
+    \param  $name     User name
+    \param  $password Password (plain)
+    \param  $ip       IP address
+    \return true if the user could be logged in, false otherwise
+  */
+  public function logIn($name, $password, $ip) { 
     $this->setName($name);
     $this->isLoggedIn = False;
     $result = $this->checkLogin($name, $password);
@@ -160,23 +211,170 @@ class User extends Owner{
     return $result;
   }
 
-  //!---------------------------------------------------------
-  // @function    User::logOut
-  // \brief        Log the user out. isLoggedIn will be false
-  //              afterwards.
-  // \return      void
-  //!---------------------------------------------------------  
+  /*!
+    \brief  Logs out the user
+  */
   function logOut() { 
     $this->isLoggedIn = False;
   }
 
-  //!---------------------------------------------------------
-  // @function    User::password
-  // \brief        Answer the users encrypted password.
-  // \param       name     String    The login name of the user
-  // \return      String
-  //!---------------------------------------------------------  
-  function password($name, $password) {
+  /*!
+    \brief  Check whether a new user request has been accepted by the
+            administrator
+            
+    This can only be used if authentication is against the HRM user management.
+    \return true if the user has been accepted
+  */
+  public function isStatusAccepted() {
+  	$result = false;
+  	$db = new DatabaseConnection();
+  	$status = $db->getUserStatus($this->name());
+  	$result = ($status==$this->getAcceptedStatus());
+  	return $result;
+  }
+  
+  /*!
+    \brief  Checks if user login is restricted to the administrator for
+            maintenance (in case the database has to be updated)
+    \return true if the user login is restricted to the administrator
+  */
+  public function isLoginRestrictedToAdmin() {
+  	$result = !( System::isDBUpToDate( ) );
+  	return $result;
+  }
+ 
+  /*!
+    \brief  Checks whether the user has been suspended by the administrator
+    
+    This can only be used if authentication is against the HRM user management.
+    \return true if the user was suspened by the administrator
+  */
+  public function isSuspended() {
+  	$result = false;
+  	$db = new DatabaseConnection();
+  	$status = $db->getUserStatus($this->name());
+  	$result = ($status==$this->getSuspendedStatus());
+  	return $result;
+  }
+  
+  /*!
+    \brief  Checks whether the user account exists in the database
+    
+    This can only be used if authentication is against the HRM user management.
+    \return true if the user exists in the database
+  */
+  public function exists() {
+  	$result = false;
+  	$db = new DatabaseConnection();
+  	return $db->checkUser($this->name());
+  }
+  
+  /*!
+    \brief  Returns the User e-mail address
+    \return the User e-mail address
+  */
+  public function emailAddress() {
+
+	$result = "";
+    
+    switch ( $this->authMode ) {
+
+      case "LDAP":
+
+        $ldap = new Ldap();
+        $result = $ldap->emailAddress($this->name());
+        return $result;
+        break;
+
+      case "ACTIVE_DIR":
+
+        $activeDir = new ActiveDirectory( );
+        $result = $activeDir->emailAddress($this->name());
+        return $result;
+        break;
+        
+      case "MYSQL":
+
+        $db = new DatabaseConnection(); 
+        $result = $db->emailAddress($this->name());
+        break;
+
+      default:
+
+        throw new Exception("Bad value for $authMode in User::emailAddress().");
+    }
+    
+    return $result;
+  } 
+
+  /*!
+    \brief  Returns the administrator name
+    \return the administrator name
+    \todo   This must be cleaned! This is hard-coded in many places in the code.
+            It should be obtained from the database.
+  */
+  public function getAdminName() {
+  	return 'admin';
+  }
+  
+  /*!
+    \brief  Checks whether the user is the administrator
+    \return true if the user is the administrator
+  */
+  public function isAdmin() {
+  	return $this->name()==$this->getAdminName();
+  }
+  
+  /*!
+    \brief  Returns the user to which the User belongs
+    \return group name
+    \todo Currently, the group is always hrm if LDAP authentication is used!
+  */
+  public function userGroup() {
+    switch ( $this->authMode ) {
+
+      case "LDAP":
+
+        $ldap = new Ldap();
+        $result = $ldap->getGroup($this->name());
+        return $result;
+        break;
+
+      case "ACTIVE_DIR":
+
+        $activeDir = new ActiveDirectory( );
+        $result = $activeDir->getGroup( $this->name() );
+        return $result;
+        break;
+      
+      case "MYSQL":
+
+  		$db = new DatabaseConnection();
+  		$result = $db->getGroup($this->name());
+        break;
+
+      default:
+
+        throw new Exception("Bad value for $authMode in User::userGroup().");
+    }
+
+    return $result; 
+  }
+  
+/*
+                              PRIVATE FUNCTIONS
+*/
+
+  /*!
+    \brief   Returns the user (encrypted) password
+    
+    The password is obtained from either the HRM user management, LDAP, or
+    ACTIVE DIRECTORY, depending on the value of the global configuration
+    variable $authenticateAgainst.
+    
+    \return  the encrypted password
+  */
+  private function password($name, $password) {
 
     // If the user is the admin, we check against the MYSQL DB
     if ( $name == $this->getAdminName() ) {
@@ -220,67 +418,15 @@ class User extends Owner{
     
   }
 
-  //!---------------------------------------------------------
-  // @function    User::isStatusAccepted
-  // \brief        Answer true if the subscription of the user 
-  //              has been accepted by the administrtator.
-  // \param       name     String    The login name of the user 
-  // \return      Boolean
-  //!---------------------------------------------------------
-  function isStatusAccepted() {
-  	$result = false;
-  	$db = new DatabaseConnection();
-  	$status = $db->getUserStatus($this->name());
-  	$result = ($status==$this->getAcceptedStatus());
-  	return $result;
-  }
-  
-  //!---------------------------------------------------------
-  // @function    User::isLoginRestrictedToAdmin
-  // \brief        Answer true if the login has been restricted to the
-  //              the administrtator.
-  // \return      Boolean
-  //!---------------------------------------------------------
-  function isLoginRestrictedToAdmin() {
-  	$result = !( System::isDBUpToDate( ) );
-  	return $result;
-  }
- 
-  //!---------------------------------------------------------
-  // @function    User::isSuspended
-  // \brief        Answer true if the user's account has been
-  //              suspended by the administrtator.
-  // \param       name     String    The login name of the user 
-  // \return      Boolean
-  //!---------------------------------------------------------
-  function isSuspended() {
-  	$result = false;
-  	$db = new DatabaseConnection();
-  	$status = $db->getUserStatus($this->name());
-  	$result = ($status==$this->getSuspendedStatus());
-  	return $result;
-  }
-  
-  //!---------------------------------------------------------
-  // @function    User::exists
-  // \brief        Answer true if the user's account exists.
-  // \param       name     String    The login name of the user 
-  // \return      Boolean
-  //!---------------------------------------------------------
-  function exists() {
-  	$result = false;
-  	$db = new DatabaseConnection();
-  	return $db->checkUser($this->name());
-  }
-  
-  //!---------------------------------------------------------
-  // @function    User::checkLogin
-  // \brief        Answer true if the login is granted.
-  // \param       name     String    The login name of the user
-  // \param       password String    The password of the user 
-  // \return      Boolean
-  //!---------------------------------------------------------    
-  function checkLogin($name, $password) {
+  /*!
+    \brief  Checks the login credentials against the selected mechanism
+
+    This can only be used if authentication is against the HRM user management.
+    \param  $name       User name
+    \param  $password   User password
+    \return true if authentication succeeded, false otherwise
+  */
+  private function checkLogin($name, $password) {
     $result = false;
     
     // If the db is outdated and the user is not the admin, we do not allow
@@ -320,14 +466,14 @@ class User extends Owner{
     return $result;
   }
 
-  //!---------------------------------------------------------
-  // @function    User::checkLoginAgainstHRMDatabase
-  // \brief        Answer true if the login is granted.
-  // \param       name     String    The login name of the user
-  // \param       password String    The password of the user 
-  // \return      Boolean
-  //!---------------------------------------------------------    
-  function checkLoginAgainstHRMDatabase($name, $password) {
+  /*!
+    \brief  Checks the login credentials against the HRM user management
+
+    \param  $name       User name
+    \param  $password   User password
+    \return true if authentication succeeded, false otherwise
+  */
+  private function checkLoginAgainstHRMDatabase($name, $password) {
   	// add user management
     if (!$this->isStatusAccepted()) return false;
     $dbPassword = $this->password($name, $password);
@@ -336,153 +482,55 @@ class User extends Owner{
     return $result;
   }
   	
-  //!---------------------------------------------------------
-  // @function    User::checkLoginAgainstLDAP
-  // \brief        Answer true if the login is granted.
-  // \param       name     String    The login name of the user
-  // \param       password String    The password of the user 
-  // \return      Boolean
-  //!---------------------------------------------------------    
-  function checkLoginAgainstLDAP($name, $password) {
+  /*!
+    \brief  Checks the login credentials against LDAP
+
+    \param  $name       User name
+    \param  $password   User password
+    \return true if authentication succeeded, false otherwise
+  */
+  private function checkLoginAgainstLDAP($name, $password) {
 		$ldap = new Ldap();
 		$result = $ldap->authenticate(strtolower($name), $password);
 		return $result;
   }
 
-  //!---------------------------------------------------------
-  // @function    User::checkLoginAgainstACTIVEDIR
-  // \brief        Answer true if the login is granted.
-  // \param       name     String    The login name of the user
-  // \param       password String    The password of the user 
-  // \return      Boolean
-  //!---------------------------------------------------------    
-  function checkLoginAgainstACTIVEDIR($name, $password) {
+  /*!
+    \brief  Checks the login credentials against Active Directory
+
+    \param  $name       User name
+    \param  $password   User password
+    \return true if authentication succeeded, false otherwise
+  */
+  private function checkLoginAgainstACTIVEDIR($name, $password) {
     $activeDir = new ActiveDirectory( );
     $result = $activeDir->authenticate( strtolower($name), $password );
 	return $result;
   }
-  
-  //!---------------------------------------------------------
-  // @function    User::emailAddress
-  // \brief        Answer the user's email address.
-  // \return      String
-  //!---------------------------------------------------------    
-  function emailAddress() {
 
-	$result = "";
-    
-    switch ( $this->authMode ) {
-
-      case "LDAP":
-
-        $ldap = new Ldap();
-        $result = $ldap->emailAddress($this->name());
-        return $result;
-        break;
-
-      case "ACTIVE_DIR":
-
-        $activeDir = new ActiveDirectory( );
-        $result = $activeDir->emailAddress($this->name());
-        return $result;
-        break;
-        
-      case "MYSQL":
-
-        $db = new DatabaseConnection(); 
-        $result = $db->emailAddress($this->name);
-        break;
-
-      default:
-
-        throw new Exception("Bad value for $authMode in User::emailAddress().");
-    }
-    
-    return $result;
-  } 
-
-  //!---------------------------------------------------------
-  // @function    User::getAcceptedStatus
-  // \brief        Answer the status that signifies that the user
-  // 			  is accepted in the hrm-database
-  // \return      String
-  //!---------------------------------------------------------    
-  function getAcceptedStatus() {
+  /*!
+    \brief  Returns the User accepted status 'code'
+    \return the User accepted status
+  */
+  private function getAcceptedStatus() {
   	return 'a';
   }
   
-  //!---------------------------------------------------------
-  // @function    User::getSuspendedStatus
-  // \brief        Answer the status that signifies that the
-  //              user's account is suspended
-  // \return      String
-  //!---------------------------------------------------------    
-  function getSuspendedStatus() {
+  /*!
+    \brief  Returns the User suspended status 'code'
+    \return the User suspended status
+  */
+  private function getSuspendedStatus() {
   	return 'd';
   }
 
-  //!---------------------------------------------------------
-  // @function    User::getAdminName
-  // \brief        The name of the system administrator account
-  // \return      String
-  //!---------------------------------------------------------  
-  function getAdminName() {
-  	return 'admin';
-  }
-  
-  //!---------------------------------------------------------
-  // @function    User::isAdmin
-  // \brief        Answer wether the receiver is the system 
-  // 			  administrator.
-  // \return      String
-  //!---------------------------------------------------------  
-  function isAdmin() {
-  	return $this->name()==$this->getAdminName();
-  }
-  
-  //!---------------------------------------------------------
-  // @function    User::group
-  // \brief        Answer the group name from the database or
-  //			  the default group name if ldap is used.
-  // \return      String
-  //!--------------------------------------------------------- 
-  function userGroup() {
-    switch ( $this->authMode ) {
-
-      case "LDAP":
-
-        $ldap = new Ldap();
-        $result = $ldap->getGroup($this->name());
-        return $result;
-        break;
-
-      case "ACTIVE_DIR":
-
-        $activeDir = new ActiveDirectory( );
-        $result = $activeDir->getGroup( $this->name() );
-        return $result;
-        break;
-      
-      case "MYSQL":
-
-  		$db = new DatabaseConnection();
-  		$result = $db->getGroup($this->name());
-        break;
-
-      default:
-
-        throw new Exception("Bad value for $authMode in User::userGroup().");
-    }
-
-    return $result; 
-  }
-  
-  //!---------------------------------------------------------
-  // @function    User::updateLastAccessDate
-  // \brief        update the last accesss date in the database
-  // \return      
-  //!--------------------------------------------------------- 
-  function updateLastAccessDate() {
+  /*!
+    \brief  Updates the User last access in the database
+    
+    This can only be used if authentication against the HRM user managerment
+    is used.
+  */
+  private function updateLastAccessDate() {
   	// TODO: user will not exist in db when ldap is used
   	$db = new DatabaseConnection();
   	$db->updateLastAccessDate($this->name());

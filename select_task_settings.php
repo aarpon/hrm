@@ -32,7 +32,7 @@ if (isset($_SESSION['task_setting'])) {
 // add public setting support
 if ($_SESSION['user']->name() != "admin") {
   $admin = new User();
-  $admin->name = "admin";
+  $admin->setName( "admin" );
   $admin_editor = new TaskSettingEditor($admin);
 }
 

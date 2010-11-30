@@ -11,10 +11,6 @@ require_once ("Shell.inc");
 require_once ("Mail.inc");
 
 /*!
- \todo	Move this function either in Shell.inc or in JobQueue.inc (as a class method)
-*/
-
-/*!
    \class Job
    \brief	Stores all information for a deconvolution Job
  */

@@ -73,27 +73,30 @@ if (isset($_GET['home'])) {
   header("Location: " . "home.php"); exit();
 }
 
+// Check if a user is logged on. If not, go to the login page and store the seed
+// if there is one.
+if ( !isset( $_SESSION[ 'user' ] ) ) {
+  if ( isset( $_GET[ 'seed' ] ) ) {
+    $req = $_SERVER['REQUEST_URI'];
+    $_SESSION['request'] = $req;
+  }
+  header("Location: " . "login.php"); exit();  
+}
+
+// Make sure that the user is the admin
+$user = $_SESSION[ 'user' ];
+if ( !$user->isAdmin( ) ) {
+  header("Location: " . "login.php"); exit();  
+}
+
+// Now we have a valid admin user logon, we can continue
 $db = new DatabaseConnection();
 
 if (isset($_GET['seed'])) {
   $query = "SELECT status FROM username WHERE status = '".$_GET['seed']."'";
   if ($db->queryLastValue($query) != $_GET['seed']) {
     header("Location: " . "login.php"); exit();
-  }
-  else {
-    $admin = new User();
-    $admin->isLoggedIn = True;
-    $admin->lastActivity = time();
-    $admin->name = "admin";
-    if (isset($_SERVER['REMOTE_ADDR'])) $admin->ip = $_SERVER["REMOTE_ADDR"];
-    else $admin->ip = $HTTP_SERVER_VARS["REMOTE_ADDR"];
-    # session_register("user");
-    $_SESSION['user'] = $admin;
-  }
-}
-
-else if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn() || $_SESSION['user']->name() != "admin") {
-  header("Location: " . "login.php"); exit();
+    }
 }
 
 if (isset($_SERVER['HTTP_REFERER']) && !strstr($_SERVER['HTTP_REFERER'], 'admin')  && !strstr($_SERVER['HTTP_REFERER'], 'account')) {

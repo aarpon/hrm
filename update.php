@@ -14,25 +14,9 @@ if (isset($_GET['home'])) {
   header("Location: " . "home.php"); exit();
 }
 
-if (isset($_GET['seed'])) {
-  $query = "SELECT status FROM username WHERE status = '".$_GET['seed']."'";
-  if ($db->queryLastValue($query) != $_GET['seed']) {
-    header("Location: " . "login.php"); exit();
-  }
-  else {
-    $admin = new User();
-    $admin->isLoggedIn = True;
-    $admin->lastActivity = time();
-    $admin->name = "admin";
-    if (isset($_SERVER['REMOTE_ADDR'])) $admin->ip = $_SERVER["REMOTE_ADDR"];
-    else $admin->ip = $HTTP_SERVER_VARS["REMOTE_ADDR"];
-    # session_register("user");
-    $_SESSION['user'] = $admin;
-  }
-}
-
-else if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn() || $_SESSION['user']->name() != "admin") {
-  header("Location: " . "login.php"); exit();
+// The admin must be logged on
+if ( ( !isset( $_SESSION[ 'user' ] ) ) || ( !$_SESSION[ 'user' ]->isAdmin() ) ) {
+  header("Location: " . "login.php"); exit();  
 }
 
 $message = "";
