@@ -17,11 +17,7 @@ $message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
 
 if (count($_POST) > 0) {
     // Store the selected parameters
-    $names = array( 'PerformAberrationCorrection',
-                   'CoverslipRelativePosition',
-                   'AberrationCorrectionMode',
-                   'AdvancedCorrectionOptions',
-                   'PSFGenerationDepth' );
+    $names = $_SESSION['setting']->correctionParameterNames();
     foreach ( $names as $name ) {
         if (isset($_POST[$name])) {
             $parameter = $_SESSION['setting']->parameter($name);

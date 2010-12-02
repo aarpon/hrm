@@ -35,8 +35,8 @@
 //    it is simply updated to the last revision.
 
 // Include hrm_config.inc
-include( dirname( __FILE__ ) . "/../inc/hrm_config.inc" );
-include( dirname( __FILE__ ) . "/../inc/System.inc" );
+require_once( dirname( __FILE__ ) . "/../inc/hrm_config.inc" );
+require_once( dirname( __FILE__ ) . "/../inc/System.inc" );
 
 // Database last revision
 $LAST_REVISION = System::getDBLastRevision( );

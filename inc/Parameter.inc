@@ -4,135 +4,192 @@
 
 require_once ("Database.inc");
 
-//!---------------------------------------------------------
-// \class    Parameter
-// \brief     A single parameter of a parameter setting
-//           Superclass of specific parameter classes
-//!---------------------------------------------------------
+/*!
+ \class    Parameter
+ \brief    Base class for all Parameter types in the HRM
+*/
 class Parameter {
-	public $value; // @public value Object  The current value of the parameter
-	public $name; // @public name  String  The name of the parameter
+	
+	
+	/*!
+		\var	$name
+		\brief	Name of the parameter
+	*/
+	protected $name;
 
-	//!---------------------------------------------------------
-	// \brief        Set a parameter. The parameter is stored
-	//              in the setting under its name.
-	// \param       name  String  The name of the new parameter
-	// \return      Void
-	//!---------------------------------------------------------  
-	function Parameter($name) {
+	/*!
+		\var	$value
+		\brief	Value of the parameter (object)
+	*/
+	protected $value;
+
+	/*!
+		\brief	 Sets an empty Parameter with given name.
+		
+		The parameter is stored in the Setting with its name.
+		\param	$name	Name of the new Parameter
+	*/
+	public function Parameter($name) {
 		$this->name = $name;
 		$this->value = '';
 	}
 
-	//!---------------------------------------------------------
-	// \brief        Values may be single values or arrays of 
-	//              values. Answers the number of values for
-	//              the receiver.
-	// \return      Integer
-	//!---------------------------------------------------------  
-	function numberOfValues() {
+	/*!
+		\brief	Returns the number of values. Values may be scalars or arrays
+		\return	number of values stored in the parameter
+	*/
+	public function numberOfValues() {
 		if (!is_array($this->value()))
 			return 1;
 		return count(array_filter($this->values()));
 	}
 
-	//!---------------------------------------------------------
-	// \brief        Answer true if the parameter is set to a valid
-	//              value and false otherwise. 
-	// \return      Boolean
-	//!---------------------------------------------------------  
-	function check() {
+	/*!
+		\brief	Checks whether the parameter is valid
+		\return	true if the parameter is valid, false otherwise
+	*/
+	public function check() {
 		return $this->checkValue($this->value());
 	}
 
-	//!---------------------------------------------------------
-	// \brief        Answer true if value is a valid value for the
-	//              receiver and false otherwise. Subclasses may
-	//              override the method to do something appropriate.
-	// \param       value  String   The value to be checked  
-	// \return      Boolean
-	//!---------------------------------------------------------  
-	function checkValue($value) {
+	/*!
+		\brief	Checks whether the value is valid
+		
+		This function should be <b>overloaded</b> by the subclasses
+		
+		\param	$value	Value to be checked
+		\return	true if the value is valid, false otherwise
+	*/
+	public function checkValue( $value ) {
 		return $value != '';
 	}
 
-	function isForImage() {
+	/*!
+		\brief	Checks whether the Parameter is an Image Parameter
+		
+		This function should be <b>overloaded</b> by the subclasses
+		
+		\return	true if the Parameter is an Image Parameter, false otherwise
+	*/
+	public function isForImage() {
 		return False;
 	}
 
-	function isForMicroscope() {
+	/*!
+		\brief	Checks whether the Parameter is a Microscope Parameter
+		
+		This function should be <b>overloaded</b> by the subclasses
+		
+		\return	true if the Parameter is a Microscope Parameter, false otherwise
+	*/
+	public function isForMicroscope() {
 		return False;
 	}
 
-	function isForCapture() {
+	/*!
+		\brief	Checks whether the Parameter is a Capture Parameter
+		
+		This function should be <b>overloaded</b> by the subclasses
+		
+		\return	true if the Parameter is a Capture Parameter, false otherwise
+	*/
+	public function isForCapture() {
 		return False;
 	}
 
-	function isRangeParameter() {
+	/*!
+		\brief	Checks whether the Parameter is a Range Parameter
+		
+		This function should be <b>overloaded</b> by the subclasses
+		
+		\return	true if the Parameter is a Range Parameter, false otherwise
+	*/
+	public function isRangeParameter() {
 		return False;
 	}
 
-	function isVariableChannel() {
+	/*!
+		\brief	Checks whether the Parameter is a Variable Channel Parameter
+		
+		This function should be <b>overloaded</b> by the subclasses
+		
+		\return	true if the Parameter is a Variable Channel, false otherwise
+	*/
+	public function isVariableChannel() {
 		return False;
 	}
 
-	function name() {
+	/*!
+		\brief	Checks whether the Parameter is a Correction Parameter
+		
+		This function should be <b>overloaded</b> by the subclasses
+		
+		\return	true if the Parameter is a Correction Parameter, false otherwise
+	*/
+	public function isForCorrection() {
+		return False;
+	}
+	
+	/*!
+		\brief	Returns the name of the Parameter
+		\return	the name of the Parameter
+	*/
+	public function name() {
 		return $this->name;
 	}
 
-	//!---------------------------------------------------------
-	// \brief        Answers the value of the parameter.
-	// \return      Object
-	//!---------------------------------------------------------  
-	function value() {
+	/*!
+		\brief	Returns the value of the Parameter
+		\return	the value of the Parameter
+	*/
+	public function value() {
 		return $this->value;
 	}
 
-	//!---------------------------------------------------------
-	// \brief        Answers the internal representation of the
-	//              parameters value. 
-	// \return      Object
-	//!---------------------------------------------------------  
-	function internalValue() {
+	/*!
+		\brief	Returns the internal value of the Parameter
+		
+		This function should be <b>overloaded</b> by the subclasses if the
+		internal and external representations differ.
+		
+		\return	the internal value of the Parameter
+	*/
+	public function internalValue() {
 		return $this->value();
 	}
 
-	//!---------------------------------------------------------
-	// \brief        Answer the possible values for the parameter
-	//              in their internal representation. This method
-	//              will be overriden when the internal 
-	//              representation differs from the external
-	//              representation.
-	// \return      array
-	//!---------------------------------------------------------  
-	function internalPossibleValues() {
+	/*!
+		\brief	Returns the possible values for the parameter in their
+				internal representation. 
+		
+		This function should be <b>overloaded</b> by the subclasses if the
+		internal and external representations differ.
+		
+		\return	the possibles values of the Parameter in their internal
+				representation
+	*/
+	public function internalPossibleValues() {
 		return $this->possibleValues();
 	}
 
-	//!---------------------------------------------------------
-	// \brief        Set the value of the parameter to value.
-	//              value is usually a string but it might be
-	//              an array in some cases
-	// \param       value  String  The new value of the parameter
-	// \return      Void
-	//!---------------------------------------------------------  
-	function setValue($value) {
+	/*!
+		\brief	Sets the value of the parameter
+		\param	$value	Value for the parameter		
+	*/
+	public function setValue($value) {
 		$this->value = $value;
 	}
 
-	//!---------------------------------------------------------
-	// \brief        print one radio button for this parameter 
-	//              for the value value. The button will be
-	//              checked if value is the internal value of
-	//              the parameter.
-	// \param       value       Object  the value for the radio
-	//                                  button
-	// \param       customHTML  String  further html options to 
-	//                                  be used for the radio 
-	//                                  button
-	// \return      Void
-	//!--------------------------------------------------------- 
-	function printRadioButtonForValue($value, $customHTML) {
+	/*!
+		\brief	Prints a radio button for current Parameter and the given value
+				
+				If the value matches the internal value, the radio button will
+				be checked. Additional options can be added.
+		
+		\param	$value		Value for the Parameter
+		\param	$customHTML	HTML code for additional options for the radio button
+	*/
+	public function printRadioButtonForValue($value, $customHTML) {
 		$result = '<input type="radio" name="' . $this->name() . '" value="' . $value . '" ';
 		if ($value == $this->internalValue()) {
 			$result = $result . 'checked="checked" ';
@@ -141,11 +198,25 @@ class Parameter {
 		print $result;
 	}
 
+	/*!
+		\brief	Returns true if boolean
+		
+		This function should be <b>overloaded</b> by the subclasses
+		
+		\return	always false for a base Parameter
+	*/
 	function isBoolean() {
 		return False;
 	}
 
-	function displayString( $numberOfChannels = 0 ) {
+	/*!
+		\brief	Returns the string representation of the Parameter
+		\param	$numberOfChannels Number of channels (default 0)
+		\return	string representation of the Parameter
+		\todo	It should be responsibility of the various Parameters to
+				overload this function!
+	*/
+	public function displayString( $numberOfChannels = 0 ) {
 		$result = '';
 		$value = $this->value();
 		if ($value == NULL) {
@@ -321,28 +392,55 @@ class Parameter {
 		return $result;
 	}
 
-	//!---------------------------------------------------------
-	// \brief        Answer the value of the parameter in a 
-	//              translated form that is in the form that
-	//              is used in the script. Per default it is
-	//              just the value but this will be changed
-	//              in subclasses when neccessary.
-	// \return      string
-	//!---------------------------------------------------------    
-	function translatedValue() {
+	/*!
+		\brief	Returns the value of the parameter in a translated form that
+				is in the form that is used in the Tcl script.
+				
+		By default the translated value is just the value, but this can be
+		changed in subclasses when neccessary.
+		
+		\return the translated value
+	*/
+	public function translatedValue() {
 		return $this->value();
 	}
-}
+} // End of Parameter class
 
+/*
+	============================================================================
+*/
+
+/*!
+ \class    ChoiceParameter
+ \brief    Base class for all ChoiceParameter types
+ 
+ The ChoiceParameter can assume a limited number of possible values.
+*/
 class ChoiceParameter extends Parameter {
-	public $possibleValues; // @public possibleValues array  the possible values for the choice parameter
+	
+	/*!
+		\var	$possibleValues
+		\brief	Possible values for the ChoiceParameter
+	*/	
+	protected $possibleValues;
 
-	function ChoiceParameter($name) {
+	/*!
+		\brief	 Sets an empty ChoiceParameter with given name.
+		
+		The parameter is stored in the Setting with its name.
+		\param	$name	Name of the new ChoiceParameter
+	*/	
+	public function ChoiceParameter($name) {
 		$this->Parameter($name);
 		$possibleValues = array ();
 	}
 
-	function setupAllowedValues($db) {
+	/*!
+		\brief	Gets the Parameter's possible values and default value
+				from the database and sets them
+	*/
+	public function setupAllowedValues() {
+		$db = new DatabaseConnection;		
 		$values = $db->readPossibleValues($this);
 		$this->setPossibleValues($values);
 		$defaultValue = $db->defaultValue($this->name());
@@ -351,31 +449,28 @@ class ChoiceParameter extends Parameter {
 		}
 	}
 
-	//!---------------------------------------------------------
-	// \brief        Set the possible values of this parameter
-	//              to values.
-	// \param       values  array  the possible values to be set
-	// \return      void
-	//!---------------------------------------------------------    
-	function setPossibleValues($values) {
+	/*!
+		\brief	Overrides the Parameter possible values
+		\param	$values	New possible values
+	*/
+	public function setPossibleValues($values) {
 		$this->possibleValues = $values;
 	}
 
-	//!---------------------------------------------------------
-	// \brief        Answer all values that are possible for this
-	//              choice parameter.
-	// \return      array
-	//!---------------------------------------------------------  
-	function possibleValues() {
+	/*!
+		\brief	Returns the possible values for the Parameter
+		\return	the possible values
+	*/
+	public function possibleValues() {
 		return $this->possibleValues;
 	}
 
-	//!---------------------------------------------------------
-	// \brief        Answer a text containing the possible values
-	//              for this parameter seperated by ',' 
-	// \return      string
-	//!---------------------------------------------------------  
-	function possibleValuesString() {
+	/*!
+		\brief	Returns the possible values for the Parameter as a
+				comma-separated string
+		\return	the possible values as a comma-separated string
+	*/
+	public function possibleValuesString() {
 		$string = '';
 		$values = $this->possibleValues();
 		foreach ($values as $each) {
@@ -387,7 +482,12 @@ class ChoiceParameter extends Parameter {
 		return $string;
 	}
 
-	function printRadioButtonsEmbeddedIn($htmlPrefix, $htmlPostfix) {
+	/*!
+		\brief	Prints radio buttons for each value enbedded in HTML code
+		\param	$htmlPrefix		HTML code to prepend to the radio buttons
+		\param	$htmlPostfix	HTML code to append to the radio buttons
+	*/
+	public function printRadioButtonsEmbeddedIn($htmlPrefix, $htmlPostfix) {
 		$possibleValues = $this->possibleValues();
 		foreach ($this->internalPossibleValues() as $internalPossibleValue) {
 			$possibleValue = current($possibleValues);
@@ -400,14 +500,12 @@ class ChoiceParameter extends Parameter {
 		}
 	}
 
-	//!---------------------------------------------------------
-	// \brief        Print radio buttons for the possible values
-	//              of the parameter, one in a line. The button
-	//              for the current value of the parameter will
-	//              be checked.
-	// \return      void
-	//!---------------------------------------------------------  
-	function printRadioButtons() {
+	/*!
+		\brief	Prints radio buttons for the possible values, one per line
+
+		The button for the current value will be checked.
+	*/
+	public function printRadioButtons() {
 		$possibleValues = $this->possibleValues();
 		foreach ($this->internalPossibleValues() as $internalPossibleValue) {
 			$possibleValue = current($possibleValues);
@@ -418,21 +516,28 @@ class ChoiceParameter extends Parameter {
 		}
 	}
 
-	//!---------------------------------------------------------
-	// \brief        Print radio buttons for the possible values
-	//              of the parameter, all in the same line. The 
-	//              button for the current value of the parameter 
-	//              will be checked.
-	// \return      void
-	//!---------------------------------------------------------  
-	function printSingleLineRadioButtons() {
+	/*!
+		\brief	Prints radio buttons for the possible values, all on one line
+
+		The button for the current value will be checked.
+	*/
+	public function printSingleLineRadioButtons() {
 		foreach ($this->internalPossibleValues() as $possibleValue) {
 			$this->printRadioButtonForValue($possibleValue, '');
 			print $possibleValue;
 		}
 	}
 
-	function printCheckBox($valueChecked, $customHTML) {
+	/*!
+		\brief	Prints a checkBox for current Parameter and the given value
+				
+				If the value matches the internal value, the checkBox will
+				be checked. Additional options can be added.
+		
+		\param	$valueChecked	Value for the Parameter
+		\param	$customHTML		HTML code for additional options for the checkBox
+	*/
+	public function printCheckBox($valueChecked, $customHTML) {
 		$result = '<input type="checkbox" name="' . $this->name() . '" value="' . $valueChecked . '" ';
 		if ($valueChecked == $this->value()) {
 			$result = $result . 'checked="checked" ';
@@ -441,50 +546,90 @@ class ChoiceParameter extends Parameter {
 		print $result;
 	}
 
-	//!---------------------------------------------------------
-	// \brief        Answer true if value is a valid value for the
-	//              receiver and false otherwise. The value of a
-	//              choice parameter must be one of its possible
-	//              values.
-	// \param       value  String   The value to be checked  
-	// \return      Boolean
-	//!---------------------------------------------------------  
-	function checkValue($value) {
+	/*!
+		\brief	Checks whether the value is valid
+		
+		The value of a ChoiceParameter must be one of its possible values
+		
+		\param	$value	Value to be checked
+		\return true of the value is valid, false otherwise
+	*/	
+	public function checkValue($value) {
 		$result = parent :: checkValue($value);
 		$result = $result && (in_array($value, $this->possibleValues()));
 		return $result;
 	}
 }
 
+/*
+	============================================================================
+*/
+
+/*!
+ \class    BooleanParameter
+ \brief    Class for a Parameter that has only true and false as possible value
+*/
 class BooleanParameter extends ChoiceParameter {
 
-	function BooleanParameter($name) {
+	/*!
+		\brief	 Sets an empty BooleanParameter with given name.
+		
+		The parameter is stored in the Setting with its name.
+		\param	$name	Name of the new Parameter
+	*/
+	public function BooleanParameter($name) {
 		$this->ChoiceParameter($name);
-		$this->possibleValues[] = 'True';
-		$this->possibleValues[] = 'False';
+		$this->possibleValues = array( 'True', 'False' );
 	}
 
-	function isTrue() {
+	/*!
+		\brief	Checks whether the value is true
+		\return	true if the value of the BooleanParameter is "True", false otherwise		
+	*/
+	public function isTrue() {
 		return ($this->value == "True");
 	}
 
-	function isBoolean() {
+	/*!
+		\brief	Checks whether the Parameter is a BooleanParameter
+		\return	true if the Parameter is a BooleanParameter, false otherwise		
+	*/
+	public function isBoolean() {
 		return True;
 	}
 
-	function setupAllowedValues($db) {
+	/*!
+		\brief	Sets the BooleanParameter's possible values and default value
+		
+		In reality, the possible values are set by the constructor. This function
+		only sets the value to 'False'.
+
+	*/
+	public function setupAllowedValues() {
 		$this->setValue('False');
 	}
 
-	function displayString() {
+	/*!
+		\brief	Returns the string representation of the BooleanParameter
+		\return	string representation of the Parameter
+	*/
+	public function displayString() {
 		$result = '';
 		if ($this->value() == 'True') {
 			$result = $result . parent :: displayString();
 		}
 		return $result;
 	}
-	
-	function printCheckBox($customHTML) {
+
+	/*!
+		\brief	Prints a checkBox for current BooleanParameter and the given value
+				
+				If the value matches the internal value, the checkBox will
+				be checked. Additional options can be added.
+		
+		\param	$customHTML		HTML code for additional options for the checkBox
+	*/	
+	public function printCheckBox($customHTML) {
 		$result = '<input type="checkbox" name="' . $this->name() . '" value="True" ';
 		if ($this->value == "True") {
 			$result = $result . 'checked="checked" ';
@@ -493,34 +638,97 @@ class BooleanParameter extends ChoiceParameter {
 		return $result;
 	}
 
-	function set() {
+	/*!
+		\brief	Sets the value of current BooleanParameter to 'True'
+	*/	
+	public function set() {
 		$this->value = 'True';
 	}
 
-	function reset() {
+	/*!
+		\brief	Sets the value of current BooleanParameter to 'False'
+	*/	
+	public function reset() {
 		$this->value = 'False';
 	}
 }
 
-class NumericalParameter extends Parameter {
-	public $min;
-	public $max;
-	public $checkMin;
-	public $checkMax;
-	public $isMinIncluded;
-	public $isMaxIncluded;
+/*
+	============================================================================
+*/
 
-	function NumericalParameter($name) {
+/*!
+	\class	NumericalParameter
+	\brief	Class for a Parameter that has a scalar number as possible value
+	\todo	Add a new class NumericalArrayParameter that extends
+			NumericalParameter and stores array of values (one per channel)
+			instead of individual scalars and make parameters like
+			EmissionWavelength inherit from it. This new class should
+			reimplement setValue(). The same could be done for the range
+			parameters and the VariableChannelsParameter class.
+*/
+class NumericalParameter extends Parameter {
+
+	/*!
+		\var	$min
+		\brief	Minimum possible value for the NumericalParameter
+	*/
+	protected $min;
+
+	/*!
+		\var	$max
+		\brief	maximum possible value for the NumericalParameter
+	*/
+	protected $max;
+	
+	/*!
+		\var	$checkMin
+		\brief	If true, the value must be checked against the minimum
+	*/	
+	protected $checkMin;
+
+	/*!
+		\var	$checkMax
+		\brief	If true, the value must be checked against the maximum
+	*/	
+	protected $checkMax;
+	
+	/*!
+		\var	$isMinIncluded
+		\brief	If true, the value must be >= than the minimum value, otherwise
+				it must be > the minimum value
+	*/	
+	protected $isMinIncluded;
+
+	/*!
+		\var	$isMaxIncluded
+		\brief	If true, the value must be <= than the maximum value, otherwise
+				it must be < the maximum value
+	*/	
+	protected $isMaxIncluded;
+
+	/*!
+		\brief	 Sets an empty NumericalParameter with given name.
+		
+		The parameter is stored in the Setting with its name.
+		\param	$name	Name of the new Parameter
+	*/
+	public function NumericalParameter($name) {
 		$this->Parameter($name);
-		$min = NULL;
-		$max = NULL;
-		$checkMin = False;
-		$checkMax = False;
-		$isMinIncluded = True;
-		$isMaxIncluded = True;
+		$this->min = NULL;
+		$this->max = NULL;
+		$this->checkMin = False;
+		$this->checkMax = False;
+		$this->isMinIncluded = True;
+		$this->isMaxIncluded = True;
 	}
 
-	function setupAllowedValues($db) {
+	/*!
+		\brief	Gets the Parameter's possible values, default value and all
+				boundary values from the database and sets them
+	*/
+	public function setupAllowedValues() {
+		$db = new DatabaseConnection;		
 		$values = $db->readNumericalValueRestrictions($this);
 		$min = $values[0];
 		$max = $values[1];
@@ -548,77 +756,73 @@ class NumericalParameter extends Parameter {
 		}
 	}
 
-	//!---------------------------------------------------------
-	// \brief        Set the minimal allowed value for the 
-	//              parameter (the value itself may be allowed
-	//              or not).
-	// \return      void
-	//!---------------------------------------------------------  
-	function setMin($value) {
+	/*!
+		\brief	Set the minimum allowed value for the NumericalParameter
+		
+		The value itself may be allowed or not.
+	*/
+	public function setMin($value) {
 		$this->min = $value;
 		$this->checkMin = True;
 	}
 
-	//!---------------------------------------------------------
-	// \brief        Set the maximal allowed value for the 
-	//              parameter (the value itself may be allowed
-	//              or not).
-	// \return      void
-	//!---------------------------------------------------------  
-	function setMax($value) {
+	/*!
+		\brief	Set the maximum allowed value for the NumericalParameter
+		
+		The value itself may be allowed or not.
+	*/
+	public function setMax($value) {
 		$this->max = $value;
 		$this->checkMax = True;
 	}
 
-	//!---------------------------------------------------------
-	// \brief        Answer whether the parameter should be 
-	//              checked against a minimum value.
-	// \return      Bool
-	//!---------------------------------------------------------  
-	function checkMin() {
+	/*!
+		\brief	Checks whether the NumericalParameter value should be checked
+				against its minimum value
+		\return	true if the value has to be checked against its minimum value,
+				false otherwise
+	*/
+	public function checkMin() {
 		return $this->checkMin;
 	}
 
-	//!---------------------------------------------------------
-	// \brief        Answer whether the parameter should be 
-	//              checked against a maximum value.
-	// \return      Bool
-	//!---------------------------------------------------------  
-	function checkMax() {
+	/*!
+		\brief	Checks whether the NumericalParameter value should be checked
+				against its maximum value
+		\return	true if the value has to be checked against its maximum value,
+				false otherwise
+	*/
+	public function checkMax() {
 		return $this->checkMax;
 	}
 
-	//!---------------------------------------------------------
-	// \brief        Answer the minimal allowed value for the 
-	//              parameter (the value itself may be allowed
-	//              or not).
-	// \return      Number
-	//!---------------------------------------------------------  
-	function min() {
+	/*!
+		\brief	Returns the minimum allowed value for the NumericalParameter
+		\return	the minimum allowed value
+	*/
+	public function min() {
 		return $this->min;
 	}
 
-	//!---------------------------------------------------------
-	// \brief        Answer the maximal allowed value for the 
-	//              parameter (the value itself may be allowed
-	//              or not).
-	// \return      Number
-	//!---------------------------------------------------------  
-	function max() {
+	/*!
+		\brief	Returns the maximum allowed value for the NumericalParameter
+		\return	the maximum allowed value
+	*/
+	public function max() {
 		return $this->max;
 	}
 
-	//!---------------------------------------------------------
-	// \brief        Answer true if value is a valid value for the
-	//              receiver and false otherwise. The value of a
-	//              numerical parameter must be a number. It must
-	//              possibly be larger than a minimum or smaller
-	//              than a maximum.
-	// \param       value  String   The value to be checked  
-	// \return      Boolean
-	//!---------------------------------------------------------  
+	/*!
+		\brief 	Checks whether the value is valid
+		
+		The value of a NumericalParameter must be a number and might optionally
+		have to be larger than or equal to a given minum value and smaller than
+		or equal to a given maximum.
+		\param	$value	Value to be checked
+		\return true of the value is valid, false otherwise
+	*/	
 	function checkValue($value) {
-		if (preg_match('/^[+|-]?\d+(\.\d+)?$/', $value) == 0) {
+		if ( is_numeric( $value ) == 0 ) {
 			return False;
 		}
 		if ($this->isMinIncluded) {
@@ -645,10 +849,33 @@ class NumericalParameter extends Parameter {
 	}
 }
 
-class VariableChannelsParameter extends NumericalParameter {
-	public $numberOfChannels;
+/*
+	============================================================================
+*/
 
-	function VariableChannelsParameter($name) {
+/*!
+	\class    VariableChannelsParameter
+	\brief    Class for a Parameter that has an array of numbers as possible value
+ 
+Each value in the array corresponds to one of the channels on the dataset.
+
+	\todo	How exactly is this Parameter used?
+*/
+class VariableChannelsParameter extends NumericalParameter {
+
+	/*!
+		\var	$numberOfChannels
+		\brief	Number of channels for which to provide Parameter values
+	*/	
+	protected $numberOfChannels;
+
+	/*!
+		\brief	 Sets an empty VariableChannelsParameter with given name.
+		
+		The parameter is stored in the Setting with its name.
+		\param	$name	Name of the new Parameter
+	*/
+	public function VariableChannelsParameter($name) {
 		$this->NumericalParameter($name);
 		$this->value = array (
 			0 => NULL,
@@ -660,23 +887,35 @@ class VariableChannelsParameter extends NumericalParameter {
 		$numberOfChannels = 1;
 	}
 
-	function setNumberOfChannels($number) {
+	/*!
+		\brief	 Sets the number of channels
+		\param	$number	Number of channels
+	*/
+	public function setNumberOfChannels($number) {
 		$this->numberOfChannels = $number;
 	}
 
-	function numberOfChannels() {
+	/*!
+		\brief	 Returns the number of channels
+		\return the umber of channels
+	*/
+	public function numberOfChannels() {
 		return $this->numberOfChannels;
 	}
 
-	//!---------------------------------------------------------
-	// \brief        Set the value of the parameter to value.
-	//              If value is not an array the value of the 
-	//              parameter is set to an array with the value
-	//              at index 0. 
-	// \param       value  Object  The new value of the parameter
-	// \return      Void
-	//!---------------------------------------------------------  
-	function setValue($value) {
+	/*!
+		\brief	Sets the value of the VariableChannelsParameter.
+		
+		The value can be either a scalar, and then it will be assigned to
+		channel 0, or an array, and then it will replace the existing array
+		of values in the VariableChannelsParameter. The number of passed values
+		does not need to match the current number of channels, but then it is
+		responibility of the user to correct the mismatch!
+		
+		\param	$value A scalar or an array of numbers to be set as value
+		\todo	This function should be more robust and more versatile!
+	*/
+	public function setValue($value) {
 		$theValue = $value;
 		if (!is_array($value)) {
 			$theValue = array (
@@ -707,18 +946,30 @@ class VariableChannelsParameter extends NumericalParameter {
 		$this->value = $theValue;
 	}
 
-	function isVariableChannel() {
+	/*!
+		\brief	Confirms that this is a VariableChannelsParameter.
+		
+		This overloads the base function.
+		
+		\return true		
+	*/
+	public function isVariableChannel() {
 		return True;
 	}
 
-	//!---------------------------------------------------------
-	// \brief        Answers an array of the values for the different 
-	//              channels of the parameter. If a value
-	//              for a channel is not valid set it to the value
-	//              of the preceding channel.
-	// \return      array
-	//!---------------------------------------------------------  
-	function value() {
+	/*!
+		\brief	Returns the checked array of values for all channels
+		
+		The values are checked against their boundaries before they are returned.
+		Please be careful: if a value is not valid it will be skipped, and the
+		array will miss that entry!
+		(Originally, a non-valid value was replaced by the value of the previous
+		channel, but the code would fail if channel 0 were also invalid.)
+		
+		\return	checked array of values
+		\todo	The behavior of this function is rather questionable!
+	*/
+	public function value() {
 		$value = $this->value;
 		$newValue = array (
 			NULL
@@ -736,17 +987,23 @@ class VariableChannelsParameter extends NumericalParameter {
 		return $newValue;
 	}
 
-	function internalValue() {
+	/*!
+		\brief	Returns the internal value of the VariableChannelsParameter
+		
+		This function should be <b>overloaded</b> by the subclasses if the
+		internal and external representations differ.
+		
+		\return	the internal value of the Parameter
+	*/
+	public function internalValue() {
 		return $this->value;
 	}
 
-	//!---------------------------------------------------------
-	// \brief        Answer true if the parameter is set to a valid
-	//              value and false otherwise. The values are checked
-	//              for each channel.
-	// \return      Boolean
-	//!---------------------------------------------------------  
-	function check() {
+	/*!
+		\brief	Checks whether all values for all channels are valid
+		\return	true if all values are valid, false otherwise
+	*/
+	public function check() {
 		$result = True;
 		for ($i = 0; $i < $this->numberOfChannels; $i++) {
 			$value = $this->internalValue();
@@ -756,23 +1013,67 @@ class VariableChannelsParameter extends NumericalParameter {
 	}
 }
 
-// manage parameter adaption
+/*
+	============================================================================
+*/
+
+/*!
+ \class	HasAdaptedValues
+ \brief	Class that manages parameter adaption - all use of this class has
+		been disabled in the code.
+ \todo	Remove this from the code
+ \deprecated
+*/
 class HasAdaptedValues extends ChoiceParameter {
-	function HasAdaptedValues() {
+
+	/*!
+		\brief	 Sets an empty HasAdaptedValues Parameter.
+		
+		The parameter is stored in the Setting.
+	*/
+	public function HasAdaptedValues() {
 		$this->ChoiceParameter("HasAdaptedValues");
 	}
 }
 
-// manage measured PSF
+/*
+	============================================================================
+*/
+
+/*!
+ \class	PointSpreadFunction
+ \brief	Class that handles the type of PointSpreadFunction to be used,
+		theoretical or measured.
+*/
 class PointSpreadFunction extends ChoiceParameter {
-	function PointSpreadFunction() {
+
+	/*!
+		\brief	 Sets an empty PointSpreadFunction Parameter.
+		
+		The parameter is stored in the Setting.
+	*/
+	public function PointSpreadFunction() {
 		$this->ChoiceParameter("PointSpreadFunction");
 	}
 }
 
-// TODO refactor
+/*
+	============================================================================
+*/
+
+/*!
+ \class	PSF
+ \brief	Class that handles the file names of the PSF files per channel.
+ \todo	This should be called PSFFiles or something similar
+*/
 class PSF extends Parameter {
-	function PSF() {
+
+	/*!
+		\brief	 Sets an empty PSF Parameter.
+		
+		The parameter is stored in the Setting.
+	*/
+	public function PSF() {
 		$this->Parameter('PSF');
 		$this->value = array (
 			NULL,
@@ -783,78 +1084,117 @@ class PSF extends Parameter {
 		);
 	}
 
-	function setupAllowedValues($db) {
-		// TODO
+	/*!
+		\brief	Gets the Parameter's possible values and default value
+				from the database and sets them
+	*/
+	public function setupAllowedValues()  {
+		/*!
+			\todo	Implement this!
+		*/
 	}
 }
 
+/*
+	============================================================================
+*/
+
+/*!
+ \class	IsMultiChannel
+ \brief	A ChoiceParameter that distinguishes between single- and multi-channel
+		images
+*/
 class IsMultiChannel extends ChoiceParameter {
-	function IsMultiChannel() {
+	
+	/*!
+		\brief	 Sets an empty IsMultiChannel Parameter.
+		The parameter is stored in the Setting.
+	*/
+	public function IsMultiChannel() {
 		$this->ChoiceParameter("IsMultiChannel");
 	}
 
-	function isForImage() {
+	/*!
+		\brief	Confirms that this is an Image Parameter.
+		\return true
+	*/
+	public function isForImage() {
 		return True;
 	}
-
-	function displayString() {
-		$result = '';
+	
+	/*!
+		\brief	Returns the string representation of the isMultiChannel Parameter
+		\return	string representation of the Parameter
+	*/
+	public function displayString() {
 		if ($this->value() == 'True') {
-			$result = $result . " multichannel image\n";
+			$result = " multichannel image\n";
 		} else {
-			$result = $result . " single channel image\n";
+			$result = " single channel image\n";
 		}
 		return $result;
 	}
 }
 
-class SingleOrMultiChannelParameter extends ChoiceParameter {
-	public $isMultiChannel; // @public isMultiChannel  Boolean  tells whether this is a single or multi channel parameter
+/*
+	============================================================================
+*/
 
-	//!---------------------------------------------------------
-	// \brief        Answer true if the receiver is a multi channel
-	//              parameter
-	// \return      bool
-	//!---------------------------------------------------------  
-	function isMultiChannel() {
+/*!
+ \class	SingleOrMultiChannelParameter
+ \brief	A ChoiceParameter that handles single- and multi-channel Parameters
+		with prefixing.
+\todo	Check why this class does not have a constructor
+*/
+class SingleOrMultiChannelParameter extends ChoiceParameter {
+	
+	/*!
+		\var	$isMultiChannel
+		\brief	Defines whether this is a single or multi channel parameter
+	*/
+	protected $isMultiChannel;
+
+	/*!
+		\brief	Checks whether the Parameter is multi-channel
+		\return true if the Parameter is multi-channel
+	*/
+	public function isMultiChannel() {
 		return $this->isMultiChannel;
 	}
 
-	//!---------------------------------------------------------
-	// \brief        Answer true if the receiver is a single channel
-	//              parameter
-	// \return      bool
-	//!---------------------------------------------------------  
-	function isSingleChannel() {
+	/*!
+		\brief	Checks whether the Parameter is single-channel
+		\return true if the Parameter is single-channel
+	*/
+	public function isSingleChannel() {
 		return !$this->isMultiChannel();
 	}
 
-	//!---------------------------------------------------------
-	// \brief        Make the receiver a multi channel parameter.
-	// \return      void
-	//!---------------------------------------------------------  
-	function beMultiChannel() {
+	/*!
+		\brief	Makes the Parameter multi-channel
+	*/
+	public function beMultiChannel() {
 		$this->isMultiChannel = True;
 	}
 
-	//!---------------------------------------------------------
-	// \brief        Make the receiver a single channel parameter.
-	// \return      void
-	//!---------------------------------------------------------    
-	function beSingleChannel() {
+	/*!
+		\brief	Makes the Parameter single-channel
+	*/
+	public function beSingleChannel() {
 		$this->isMultiChannel = False;
 	}
 
-	//!---------------------------------------------------------
-	// \brief        Set the value of the parameter to value.
-	//              If value contains the prefix single_ or multi_
-	//              the parameter is set to single or multi and 
-	//              the postfix of value is set as value of the 
-	//              parameter.
-	// \param       value  string  The new value of the parameter
-	// \return      Void
-	//!---------------------------------------------------------  
-	function setValue($value) {
+	/*!
+		\brief	Sets the value of the Parameter
+		\param	$value	New value for the Parameter
+	
+	If $value contains the prefix single_ or multi_,  the parameter is set to
+	be single-channel or multi-channel, respectively, and the postfix of the
+	value is set as final value of the Parameter.
+	
+		\see postfix
+	*/
+	public function setValue($value) {
 		if (!strstr($value, "_")) {
 			$prefix = $this->prefix();
 			$value = $prefix . "_" . $value;
@@ -871,7 +1211,11 @@ class SingleOrMultiChannelParameter extends ChoiceParameter {
 		}
 	}
 
-	function prefix() {
+	/*!
+		\brief	Returns the prefix for the Parameter, either 'single' or 'multi'
+		\return either 'single' or 'multi'
+	*/
+	public function prefix() {
 		if ($this->isSingleChannel()) {
 			$prefix = "single";
 		} else {
@@ -880,12 +1224,26 @@ class SingleOrMultiChannelParameter extends ChoiceParameter {
 		return $prefix;
 	}
 
-	function internalValue() {
+	/*!
+		\brief	Returns the internal value of the SingleOrMultiChannelParameter
+		
+		This function should be <b>overloaded</b> by the subclasses if the
+		internal and external representations differ.
+		
+		\return	the internal value of the Parameter, which is the value with the
+				prefix prepended.
+	*/
+	public function internalValue() {
 		$result = $this->prefix() . "_" . $this->value();
 		return $result;
 	}
 
-	function internalPossibleValues() {
+	/*!
+		\brief	Returns the internal possible values of the SingleOrMultiChannelParameter
+		\return	the internal possible values of the Parameter, which are the
+				<b>checked</b> values with the prefix prepended.
+	*/
+	public function internalPossibleValues() {
 		$result = array ();
 		foreach ($this->possibleValues() as $possibleValue) {
 			$result[] = $this->prefix() . "_" . $possibleValue;
@@ -894,16 +1252,37 @@ class SingleOrMultiChannelParameter extends ChoiceParameter {
 	}
 }
 
+/*
+	============================================================================
+*/
+
+/*!
+ \class	ImageFileFormat
+ \brief	A SingleOrMultiChannelParameter to represent the image file format
+*/
 class ImageFileFormat extends SingleOrMultiChannelParameter {
 
+	/*!
+		\brief	 Sets an empty ImageFileFormat Parameter.
+		
+		The parameter is stored in the Setting.
+	*/
 	function ImageFileFormat() {
 		$this->ChoiceParameter("ImageFileFormat");
 	}
 
+	/*!
+		\brief	Confirms that this is an Image Parameter.
+		\return true
+	*/
 	function isForImage() {
 		return True;
 	}
 
+	/*!
+		\brief	Returns all image file extensions
+		\return array of file extensions
+	*/
 	function fileExtensions() {
 		$db = new DatabaseConnection();
 		$result = $db->fileExtensions($this->value());
@@ -911,44 +1290,99 @@ class ImageFileFormat extends SingleOrMultiChannelParameter {
 	}
 }
 
+/*
+	============================================================================
+*/
+
+/*!
+ \class	NumberOfChannels
+ \brief	A ChoiceParameter to represent the number of channels
+*/
 class NumberOfChannels extends ChoiceParameter {
+	
+	/*!
+		\brief	 Sets an empty NumberOfChannels Parameter.
+		
+		The parameter is stored in the Setting.
+	*/
 	function NumberOfChannels() {
 		$this->ChoiceParameter("NumberOfChannels");
 	}
 
+	/*!
+		\brief	Confirms that this is an Image Parameter.
+		\return true
+	*/
 	function isForImage() {
 		return True;
 	}
 }
 
+/*
+	============================================================================
+*/
+
+/*!
+ \class	ImageGeometry
+ \brief	A SingleOrMultiChannelParameter to represent the image geometry
+*/
 class ImageGeometry extends SingleOrMultiChannelParameter {
+
+	/*!
+		\brief	 Sets an empty ImageGeometry Parameter.
+		
+		The parameter is stored in the Setting.
+	*/
 	function ImageGeometry() {
 		$this->ChoiceParameter("ImageGeometry");
 	}
 
+	/*!
+		\brief	Confirms that this is an Image Parameter.
+		\return true
+	*/
 	function isForImage() {
 		return True;
 	}
 }
 
+/*
+	============================================================================
+*/
+
+/*!
+ \class	MicroscopeType
+ \brief	A ChoiceParameter to represent the microscope type
+*/
 class MicroscopeType extends ChoiceParameter {
-	function MicroscopeType() {
+
+	/*!
+		\brief	 Sets an empty MicroscopeType Parameter.
+		
+		The parameter is stored in the Setting.
+	*/
+	public function MicroscopeType() {
 		$this->ChoiceParameter("MicroscopeType");
 	}
 
-	function isForMicroscope() {
+	/*!
+		\brief	Confirms that this is a Microscope Parameter.
+		\return true
+	*/
+	public function isForMicroscope() {
 		return True;
 	}
 
-	//!---------------------------------------------------------
-	// \brief        Answer the value of the parameter in a 
-	//              translated form that is in the form that
-	//              is used in the script. The translation of
-	//              the microscope type is read from the 
-	//              database
-	// \return      string
-	//!---------------------------------------------------------    
-	function translatedValue() {
+	/*!
+		\brief	Returns the Parameter translated value
+		
+		The translated form of the Parameter value is then one used in
+		the Tcl script. The translation of the microscope yype is read from
+		the database.
+		
+		\return translated value
+	*/
+	public function translatedValue() {
 		$value = $this->value;
 		$db = new DatabaseConnection();
 		$result = $db->translationFor($this);
@@ -956,44 +1390,99 @@ class MicroscopeType extends ChoiceParameter {
 	}
 }
 
+/*
+	============================================================================
+*/
+
+/*!
+ \class	NumericalAperture
+ \brief	A NumericalParameter to represent the numerical aperture of the objective
+*/
 class NumericalAperture extends NumericalParameter {
-	function NumericalAperture() {
+
+	/*!
+		\brief	 Sets an empty NumericalAperture Parameter.
+		
+		The parameter is stored in the Setting.
+	*/
+	public function NumericalAperture() {
 		$this->NumericalParameter("NumericalAperture");
 	}
 
-	function isForMicroscope() {
+	/*!
+		\brief	Confirms that this is a Microscope Parameter.
+		\return true
+	*/
+	public function isForMicroscope() {
 		return True;
 	}
 }
 
+/*
+	============================================================================
+*/
+
+/*!
+ \class	ObjectiveMagnification
+ \brief	A ChoiceParameter to represent the objective magnification
+*/
 class ObjectiveMagnification extends ChoiceParameter {
-	function ObjectiveMagnification() {
+
+	/*!
+		\brief	 Sets an empty ObjectiveMagnification Parameter.
+		
+		The parameter is stored in the Setting.
+	*/
+	public function ObjectiveMagnification() {
 		$this->ChoiceParameter("ObjectiveMagnification");
 	}
 
-	function isForMicroscope() {
+	/*!
+		\brief	Confirms that this is a Microscope Parameter.
+		\return true
+	*/
+	public function isForMicroscope() {
 		return True;
 	}
 }
 
+/*
+	============================================================================
+*/
+
+/*!
+ \class	ObjectiveType
+ \brief	A ChoiceParameter to represent the objective type
+*/
 class ObjectiveType extends ChoiceParameter {
-	function ObjectiveType() {
+
+	/*!
+		\brief	 Sets an empty ObjectiveType Parameter.
+		
+		The parameter is stored in the Setting.
+	*/
+	public function ObjectiveType() {
 		$this->ChoiceParameter("ObjectiveType");
 	}
 
-	function isForMicroscope() {
+	/*!
+		\brief	Confirms that this is a Microscope Parameter.
+		\return true
+	*/
+	public function isForMicroscope() {
 		return True;
 	}
 
-	//!---------------------------------------------------------
-	// \brief        Answer the value of the parameter in a 
-	//              translated form that is in the form that
-	//              is used in the script. The translation of
-	//              the objective type is read from the 
-	//              database
-	// \return      string
-	//!---------------------------------------------------------    
-	function translatedValue() {
+	/*!
+		\brief	Returns the Parameter translated value
+		
+		The translated form of the Parameter value is then one used in
+		the Tcl script. The translation of the objective type is read from
+		the database.
+		
+		\return translated value
+	*/
+	public function translatedValue() {
 		$value = $this->value;
 		$db = new DatabaseConnection();
 		$result = $db->translationFor($this);
@@ -1001,24 +1490,43 @@ class ObjectiveType extends ChoiceParameter {
 	}
 }
 
+/*
+	============================================================================
+*/
+
+/*!
+ \class	SampleMedium
+ \brief	A ChoiceParameter to represent the sample medium
+*/
 class SampleMedium extends ChoiceParameter {
-	function SampleMedium() {
+	
+	/*!
+		\brief	 Sets an empty SampleMedium Parameter.
+		
+		The parameter is stored in the Setting.
+	*/
+	public function SampleMedium() {
 		$this->ChoiceParameter("SampleMedium");
 	}
 
-	function isForMicroscope() {
+	/*!
+		\brief	Confirms that this is a Microscope Parameter.
+		\return true
+	*/
+	public function isForMicroscope() {
 		return True;
 	}
 
-	//!---------------------------------------------------------
-	// \brief        Answer the value of the parameter in a 
-	//              translated form that is in the form that
-	//              is used in the script. The translation of
-	//              the sample medium is read from the 
-	//              database
-	// \return      string
-	//!---------------------------------------------------------    
-	function translatedValue() {
+	/*!
+		\brief	Returns the Parameter translated value
+		
+		The translated form of the Parameter value is then one used in
+		the Tcl script. The translation of the sample medium is read from
+		the database.
+		
+		\return translated value
+	*/
+	public function translatedValue() {
 		$value = $this->value;
 		$db = new DatabaseConnection();
 		$result = $db->translationFor($this);
@@ -1028,18 +1536,52 @@ class SampleMedium extends ChoiceParameter {
 	}
 }
 
+/*
+	============================================================================
+*/
+
+/*!
+ \class	Binning
+ \brief	A ChoiceParameter to represent the binning
+*/
 class Binning extends ChoiceParameter {
-	function Binning() {
+	
+	/*!
+		\brief	 Sets an empty Binning Parameter.
+		
+		The parameter is stored in the Setting.
+	*/
+	public function Binning() {
 		$this->ChoiceParameter("Binning");
 	}
 
-	function isForCapture() {
+	/*!
+		\brief	Confirms that this is a Capture Parameter.
+		\return true
+	*/
+	public function isForCapture() {
 		return True;
 	}
 }
 
+/*
+	============================================================================
+*/
+
+/*!
+ \class	ExcitationWavelength
+ \brief	A NumericalParameter to represent the excitation wavelength
+ 
+ The ExcitationWavelength class can store an array of numbers as value.
+*/
 class ExcitationWavelength extends NumericalParameter {
-	function ExcitationWavelength() {
+
+	/*!
+		\brief	 Sets an empty ExcitationWavelength Parameter.
+		
+		The parameter is stored in the Setting.
+	*/
+	public function ExcitationWavelength() {
 		$this->NumericalParameter("ExcitationWavelength");
 		$this->value = array (
 			0 => NULL,
@@ -1050,7 +1592,17 @@ class ExcitationWavelength extends NumericalParameter {
 		);
 	}
 	
-	function setValue($value) {
+	/*!
+		\brief	 Sets the value for the Parameter
+		
+		The value can either be a scalar, and then it will be stored for channel
+		0, or an array, and then will replace the previous array. It is
+		responsibility of the user to make sure that the number of values
+		matches the number of channels in the image.
+		
+		\param	$value	Single wavelength or array of wavelengths
+	*/
+	public function setValue($value) {
 		if (is_array($value)) {
 			for ($i = 0; $i < count($value) && $i <= count( $this->value ); $i++)
 				$this->value[$i] = $value[$i];
@@ -1060,13 +1612,33 @@ class ExcitationWavelength extends NumericalParameter {
 		}
 	}
 
-	function isForMicroscope() {
+	/*!
+		\brief	Confirms that this is a Microscope Parameter.
+		\return true
+	*/
+	public function isForMicroscope() {
 		return True;
 	}
 }
 
+/*
+	============================================================================
+*/
+
+/*!
+ \class	EmissionWavelength
+ \brief	A NumericalParameter to represent the emission wavelength
+ 
+ The EmissionWavelength class can store an array of numbers as value.
+*/
 class EmissionWavelength extends NumericalParameter {
-	function EmissionWavelength() {
+
+	/*!
+		\brief	 Sets an empty EmissionWavelength Parameter.
+		
+		The parameter is stored in the Setting.
+	*/
+	public function EmissionWavelength() {
 		$this->NumericalParameter("EmissionWavelength");
 		$this->value = array (
 			0 => NULL,
@@ -1077,7 +1649,17 @@ class EmissionWavelength extends NumericalParameter {
 		);
 	}
 	
-	function setValue($value) {
+	/*!
+		\brief	 Sets the value for the Parameter
+		
+		The value can either be a scalar, and then it will be stored for channel
+		0, or an array, and then will replace the previous array. It is
+		responsibility of the user to make sure that the number of values
+		matches the number of channels in the image.
+		
+		\param	$value	Single wavelength or array of wavelengths
+	*/
+	public function setValue($value) {
 		if (is_array($value)) {
 			for ($i = 0; $i < count($value) && $i <= count( $this->value ); $i++)
 				$this->value[$i] = $value[$i];
@@ -1087,41 +1669,103 @@ class EmissionWavelength extends NumericalParameter {
 		}
 	}
 
-	function isForMicroscope() {
+	/*!
+		\brief	Confirms that this is a Microscope Parameter.
+		\return true
+	*/
+	public function isForMicroscope() {
 		return True;
 	}
 }
 
+/*
+	============================================================================
+*/
+
+/*!
+ \class	CMount
+ \brief	A NumericalParameter to represent the c-mount
+*/
 class CMount extends NumericalParameter {
-	function CMount() {
+
+	/*!
+		\brief	 Sets an empty CMount Parameter.
+		
+		The parameter is stored in the Setting.
+	*/
+	public function CMount() {
 		$this->NumericalParameter("CMount");
 	}
 
-	function isForMicroscope() {
+	/*!
+		\brief	Confirms that this is a Microscope Parameter.
+		\return true
+	*/
+	public function isForMicroscope() {
 		return True;
 	}
 }
 
+/*
+	============================================================================
+*/
+
+/*!
+ \class	TubeFactor
+ \brief	A NumericalParameter to represent the tube factor
+*/
 class TubeFactor extends NumericalParameter {
-	function TubeFactor() {
+
+	/*!
+		\brief	 Sets an empty TubeFactor Parameter.
+		
+		The parameter is stored in the Setting.
+	*/
+	public function TubeFactor() {
 		$this->NumericalParameter("TubeFactor");
 	}
 
-	function isForMicroscope() {
+	/*!
+		\brief	Confirms that this is a Microscope Parameter.
+		\return true
+	*/
+	public function isForMicroscope() {
 		return True;
 	}
 }
 
+/*
+	============================================================================
+*/
+
+/*!
+ \class	CCDCaptorSizeX
+ \brief	A NumericalParameter to represent the x-size of the CCD pixel
+*/
 class CCDCaptorSizeX extends NumericalParameter {
-	function CCDCaptorSizeX() {
+
+	/*!
+		\brief	 Sets an empty CCDCaptorSizeX Parameter.
+		
+		The parameter is stored in the Setting.
+	*/
+	public function CCDCaptorSizeX() {
 		$this->NumericalParameter("CCDCaptorSizeX");
 	}
 
-	function isForCapture() {
+	/*!
+		\brief	Confirms that this is a Capture Parameter.
+		\return true
+	*/
+	public function isForCapture() {
 		return True;
 	}
 
-	function displayString() {
+	/*!
+		\brief	Returns the string representation of the CCDCaptorSizeX Parameter
+		\return	string representation of the Parameter
+	*/
+	public function displayString() {
 		$value = $this->value();
 		$result = '';
 		$name = ' pixel size:';
@@ -1132,28 +1776,78 @@ class CCDCaptorSizeX extends NumericalParameter {
 	}
 }
 
+/*
+	============================================================================
+*/
+
+/*!
+ \class	ZStepSize
+ \brief	A NumericalParameter to represent the z step (distance between planes)
+*/
 class ZStepSize extends NumericalParameter {
-	function ZStepSize() {
+
+	/*!
+		\brief	 Sets an empty CCDCaptorSizeX Parameter.
+		
+		The parameter is stored in the Setting.
+	*/
+	public function ZStepSize() {
 		$this->NumericalParameter("ZStepSize");
 	}
 
-	function isForCapture() {
+	/*!
+		\brief	Confirms that this is a Capture Parameter.
+		\return true
+	*/
+	public function isForCapture() {
 		return True;
 	}
 }
 
+/*
+	============================================================================
+*/
+
+/*!
+ \class	TimeInterval
+ \brief	A NumericalParameter to represent the time interval in time series
+*/
 class TimeInterval extends NumericalParameter {
-	function TimeInterval() {
+
+	/*!
+		\brief	 Sets an empty TimeInterval Parameter.
+		
+		The parameter is stored in the Setting.
+	*/
+	public function TimeInterval() {
 		$this->NumericalParameter("TimeInterval");
 	}
 
-	function isForCapture() {
+	/*!
+		\brief	Confirms that this is a Capture Parameter.
+		\return true
+	*/
+	public function isForCapture() {
 		return True;
 	}
 }
 
+/*
+	============================================================================
+*/
+
+/*!
+ \class	PinholeSize
+ \brief	A NumericalParameter to represent the pinhole size (per channel)
+*/
 class PinholeSize extends NumericalParameter {
-	function PinholeSize() {
+
+	/*!
+		\brief	 Sets an empty PinholeSize Parameter.
+		
+		The parameter is stored in the Setting.
+	*/
+	public function PinholeSize() {
 		$this->NumericalParameter("PinholeSize");
 		// manage one pinhole radius per channel
 		$this->value = array (
@@ -1164,8 +1858,18 @@ class PinholeSize extends NumericalParameter {
 			NULL
 		);
 	}
-	
-	function setValue($value) {
+
+	/*!
+		\brief	 Sets the value for the Parameter
+		
+		The value can either be a scalar, and then it will be stored for channel
+		0, or an array, and then will replace the previous array. It is
+		responsibility of the user to make sure that the number of values
+		matches the number of channels in the image.
+		
+		\param	$value	Single pinhole size or array of pinhole sizes
+	*/
+	public function setValue($value) {
                 if (is_array($value)) {
                         for ($i = 0; $i < count($value); $i++)
 				$this->value[$i] = $value[$i];
@@ -1175,40 +1879,112 @@ class PinholeSize extends NumericalParameter {
                 }
         }
 	
-	function isForCapture() {
+	/*!
+		\brief	Confirms that this is a Capture Parameter.
+		\return true
+	*/
+	public function isForCapture() {
 		return True;
 	}
 }
 
-// Support for Nipkow spinning disk
+/*
+	============================================================================
+*/
+
+/*!
+ \class	PinholeSpacing
+ \brief	A NumericalParameter to represent the pinhole spacing per Nipkow spinning disks
+*/
 class PinholeSpacing extends NumericalParameter {
-	function PinholeSpacing() {
+
+	/*!
+		\brief	 Sets an empty PinholeSpacing Parameter.
+		
+		The parameter is stored in the Setting.
+	*/
+	public function PinholeSpacing() {
 		$this->NumericalParameter("PinholeSpacing");
 	}
 
-	function isForCapture() {
+	/*!
+		\brief	Confirms that this is a Capture Parameter.
+		\return true
+	*/
+	public function isForCapture() {
 		return True;
 	}
 }
 
+/*
+	============================================================================
+*/
+
+/*!
+ \class	MultiChannelOutput
+ \brief	A BooleanParameter to indicate whether the output is multi-channel
+*/
 class MultiChannelOutput extends BooleanParameter {
-	function MultiChannelOutput() {
+
+	/*!
+		\brief	 Sets an empty MultiChannelOutput Parameter.
+		
+		The parameter is stored in the Setting.
+	*/
+	public function MultiChannelOutput() {
 		$this->BooleanParameter("MultiChannelOutput");
 	}
 }
 
+/*
+	============================================================================
+*/
+
+/*!
+ \class	RemoveNoise
+ \brief	A BooleanParameter to indicate whether a noise suppression pre-processing
+		step should be performed
+ \deprecated
+ \todo Remove this parameter and all the code that makes use of it
+*/
 class RemoveNoise extends BooleanParameter {
-	function RemoveNoise() {
+
+	/*!
+		\brief	 Sets an empty RemoveNoise Parameter.
+		
+		The parameter is stored in the Setting.
+	*/
+	public function RemoveNoise() {
 		$this->BooleanParameter("RemoveNoise");
 	}
 }
 
+/*
+	============================================================================
+*/
+
+/*!
+ \class	StyleOfProcessing
+ \brief	A ChoiceParameter to indicate the style of processing
+ \deprecated
+ \todo Remove this parameter and all the code that makes use of it
+*/
 class StyleOfProcessing extends ChoiceParameter {
-	function StyleOfProcessing() {
+
+	/*!
+		\brief	 Sets an empty StyleOfProcessing Parameter.
+		
+		The parameter is stored in the Setting.
+	*/
+	public function StyleOfProcessing() {
 		$this->ChoiceParameter("StyleOfProcessing");
 	}
 
-	function displayString() {
+	/*!
+		\brief	Returns the string representation of the StyleOfProcessing Parameter
+		\return	string representation of the Parameter
+	*/
+	public function displayString() {
 		$name = $this->name() . ":";
 		$uppercase = array (
 			'A',
@@ -1276,32 +2052,106 @@ class StyleOfProcessing extends ChoiceParameter {
 	}
 }
 
+/*
+	============================================================================
+*/
+
+/*!
+ \class	RemoveBackground
+ \brief	A BooleanParameter to indicate whether a background removal should be run
+*/
 class RemoveBackground extends BooleanParameter {
-	function RemoveBackground() {
+	
+	/*!
+		\brief	 Sets an empty RemoveBackground Parameter.
+		
+		The parameter is stored in the Setting.
+	*/
+	public function RemoveBackground() {
 		$this->BooleanParameter("RemoveBackground");
 	}
 }
 
+/*
+	============================================================================
+*/
+
+/*!
+ \class	FullRestoration
+ \brief	A BooleanParameter to indicate whether a full restoration should be run
+ \deprecated
+ \todo Remove this parameter and all the code that makes use of it
+*/
 class FullRestoration extends BooleanParameter {
-	function FullRestoration() {
+		
+	/*!
+		\brief	 Sets an empty FullRestoration Parameter.
+		
+		The parameter is stored in the Setting.
+	*/
+	public function FullRestoration() {
 		$this->BooleanParameter("FullRestoration");
 	}
 }
 
+/*
+	============================================================================
+*/
+
+/*!
+ \class	RemoveNoiseEffectiveness
+ \brief	A ChoiceParameter to indicate the effectiveness of noise removal
+ \deprecated
+ \todo Remove this parameter and all the code that makes use of it
+*/
 class RemoveNoiseEffectiveness extends ChoiceParameter {
-	function RemoveNoiseEffectiveness() {
+
+	/*!
+		\brief	 Sets an empty RemoveNoiseEffectiveness Parameter.
+		
+		The parameter is stored in the Setting.
+	*/	
+	public function RemoveNoiseEffectiveness() {
 		$this->ChoiceParameter("RemoveNoiseEffectiveness");
 	}
 }
 
+/*
+	============================================================================
+*/
+
+/*!
+ \class	RemoveBackgroundPercent
+ \brief	A VariableChannelsParameter to indicate the percent of background removal
+*/
 class RemoveBackgroundPercent extends VariableChannelsParameter {
-	function RemoveBackgroundPercent() {
+
+	/*!
+		\brief	 Sets an empty RemoveBackgroundPercent Parameter.
+		
+		The parameter is stored in the Setting.
+	*/	
+	public function RemoveBackgroundPercent() {
 		$this->VariableChannelsParameter("RemoveBackgroundPercent");
 	}
 }
 
+/*
+	============================================================================
+*/
+
+/*!
+ \class	SignalNoiseRatio
+ \brief	A NumericalParameter to represent the SNR per channel
+*/
 class SignalNoiseRatio extends NumericalParameter {
-	function SignalNoiseRatio() {
+
+	/*!
+		\brief	 Sets an empty SignalNoiseRatio Parameter.
+		
+		The parameter is stored in the Setting.
+	*/
+	public function SignalNoiseRatio() {
 		$this->NumericalParameter("SignalNoiseRatio");
 		// manage one S/N per channel
 		$this->value = array (
@@ -1313,7 +2163,17 @@ class SignalNoiseRatio extends NumericalParameter {
 		);
 	}
 	
-	function setValue($value) {
+	/*!
+		\brief	 Sets the value for the Parameter
+		
+		The value can either be a scalar, and then it will be stored for channel
+		0, or an array, and then will replace the previous array. It is
+		responsibility of the user to make sure that the number of values
+		matches the number of channels in the image.
+		
+		\param	$value	Single SNR or array of SNRs
+	*/
+	public function setValue($value) {
 		if (is_array($value)) {
 			for ($i = 0; $i < count($value); $i++)
 				$this->value[$i] = $value[$i];
@@ -1323,7 +2183,14 @@ class SignalNoiseRatio extends NumericalParameter {
 		}
 	}
 
-    function displayCMLEString($numberOfChannels = 0) {
+	/*!
+		\brief	Returns the string representation of the Parameter for the cmle algorithm
+		\param	$numberOfChannels Number of channels (default 0)
+		\return	string representation of the Parameter for the cmle algorithm
+		\todo	It should be responsibility of the various Parameters to
+				overload this function!
+	*/
+    public function displayCMLEString($numberOfChannels = 0) {
         $result = '';
 
 		$value = $this->value();
@@ -1409,7 +2276,14 @@ class SignalNoiseRatio extends NumericalParameter {
 		return $result . $value . "\n";
     }
 
-    function displayQMLEString($numberOfChannels = 0) {
+	/*!
+		\brief	Returns the string representation of the Parameter for the qmle algorithm
+		\param	$numberOfChannels Number of channels (default 0)
+		\return	string representation of the Parameter for the qmle algorithm
+		\todo	It should be responsibility of the various Parameters to
+				overload this function!
+	*/
+    public function displayQMLEString($numberOfChannels = 0) {
         $snr = array("1" => "low", "2" => "fair", "3" => "good", "4" => "inf");
         
         $result = '';
@@ -1489,18 +2363,46 @@ class SignalNoiseRatio extends NumericalParameter {
     }
 }
 
+/*
+	============================================================================
+*/
+
+/*!
+ \class	SignalNoiseRatioUseRange
+ \brief	A BooleanParameter to indicate whether the SNR Parameter uses ranges
+*/
 class SignalNoiseRatioUseRange extends BooleanParameter {
-	function SignalNoiseRatioUseRange() {
+
+	/*!
+		\brief	Constructor: creates an empty Parameter
+	*/
+	public function SignalNoiseRatioUseRange() {
 		$this->BooleanParameter("SignalNoiseRatioUseRange");
 	}
 }
 
+/*
+	============================================================================
+*/
+
+/*!
+ \class	BackgroundOffsetPercent
+ \brief	A VariableChannelsParameter to represent the background offset in percent
+*/
 class BackgroundOffsetPercent extends VariableChannelsParameter {
-	function BackgroundOffsetPercent() {
+
+	/*!
+		\brief	Constructor: creates an empty Parameter
+	*/
+	public function BackgroundOffsetPercent() {
 		$this->VariableChannelsParameter("BackgroundOffsetPercent");
 	}
 
-	function check() {
+	/*!
+		\brief	Checks the value for the Parameter
+		\return true if the value is valid, false otherwise
+	*/
+	public function check() {
 		$value = $this->internalValue();
 		$result = True;
 		if ($value[0] == "auto" || $value[0] == "object")
@@ -1512,38 +2414,110 @@ class BackgroundOffsetPercent extends VariableChannelsParameter {
 	}
 }
 
+/*
+	============================================================================
+*/
+
+/*!
+ \class	BackgroundOffsetUseRange
+ \brief	A BooleanParameter to indicate whether the background offset Parameter uses ranges
+*/
 class BackgroundOffsetUseRange extends BooleanParameter {
-	function BackgroundOffsetUseRange() {
+	
+	/*!
+		\brief	Constructor: creates an empty Parameter
+	*/
+	public function BackgroundOffsetUseRange() {
 		$this->BooleanParameter("BackgroundOffsetUseRange");
 	}
 }
 
+/*
+	============================================================================
+*/
+
+/*!
+ \class	NumberOfIterations
+ \brief	A NumericalParameter to represent the number of iterations
+*/
 class NumberOfIterations extends NumericalParameter {
-	function NumberOfIterations() {
+
+	/*!
+		\brief	Constructor: creates an empty Parameter
+	*/
+	public function NumberOfIterations() {
 		$this->NumericalParameter("NumberOfIterations");
 	}
 }
 
+/*
+	============================================================================
+*/
+
+/*!
+ \class	PSFGenerationDepth
+ \brief	A NumericalParameter to represent the depth of the PSF generation
+*/
 class PSFGenerationDepth extends NumericalParameter {
-	function PSFGenerationDepth() {
+
+	/*!
+		\brief	Constructor: creates an empty Parameter
+	*/
+	public function PSFGenerationDepth() {
 		$this->NumericalParameter("PSFGenerationDepth");
 	}
 }
 
+/*
+	============================================================================
+*/
+
+/*!
+ \class	QualityChangeStoppingCriterion
+ \brief	A NumericalParameter to represent the quality change stopping criterion
+*/
 class QualityChangeStoppingCriterion extends NumericalParameter {
-	function QualityChangeStoppingCriterion() {
+
+	/*!
+		\brief	Constructor: creates an empty Parameter
+	*/
+	public function QualityChangeStoppingCriterion() {
 		$this->NumericalParameter("QualityChangeStoppingCriterion");
 	}
 }
 
+/*
+	============================================================================
+*/
+
+/*!
+ \class	NumberOfIterationsUseRange
+ \brief	A BooleanParameter to indicate whether the number of iterations uses ranges
+*/
 class NumberOfIterationsUseRange extends BooleanParameter {
-	function NumberOfIterationsUseRange() {
+	
+	/*!
+		\brief	Constructor: creates an empty Parameter
+	*/
+	public function NumberOfIterationsUseRange() {
 		$this->BooleanParameter("NumberOfIterationsUseRange");
 	}
 }
 
+/*
+	============================================================================
+*/
+
+/*!
+ \class	SignalNoiseRatioRange
+ \brief	A NumericalParameter to represent the range of SNRs
+*/
 class SignalNoiseRatioRange extends NumericalParameter {
-	function SignalNoiseRatioRange() {
+	
+	/*!
+		\brief	Constructor: creates an empty Parameter
+	*/
+	public function SignalNoiseRatioRange() {
 		$this->NumericalParameter("SignalNoiseRatioRange");
 		$this->value = array (
 			NULL,
@@ -1554,30 +2528,61 @@ class SignalNoiseRatioRange extends NumericalParameter {
 		);
 	}
 
-	function setupAllowedValues($db) {
+	/*!
+		\brief	Gets the Parameter's possible values and default value
+				from the database and sets them
+	*/
+	public function setupAllowedValues() {
 		$this->name = 'SignalNoiseRatio';
-		NumericalParameter :: setupAllowedValues($db);
+		NumericalParameter :: setupAllowedValues();
 		$this->name = 'SignalNoiseRatioRange';
 	}
 
-	function isRangeParameter() {
+	/*!
+		\brief	Confirm that this is a Range Parameter
+		\return true
+	*/
+	public function isRangeParameter() {
 		return True;
 	}
 
-	function realParameterName() {
+	/*!
+		\brief	Return the name of the Parameter to which the range version points
+		\return name of the corresponding non-range Parameter
+	*/
+	public function realParameterName() {
 		return 'SignalNoiseRatio';
 	}
-	function useParameterName() {
+
+	/*!
+		\brief	Return the name of the (range) Parameter
+		\return name of the Parameter
+	*/
+	public function useParameterName() {
 		return 'SignalNoiseRatioUseRange';
 	}
-	
-	function setValue($value) {
+
+	/*!
+		\brief	 Sets the value for the Parameter
+		
+		The value can either be a scalar or an array.
+		
+		\param	$value	Single SNR or array of SNRs
+	*/	
+	public function setValue($value) {
 		for ($i = 0; $i < count($value); $i++) {
 			$this->value[$i] = $value[$i];
 		}
-        }
-	
-	function checkValue($value) {
+    }
+
+	/*!
+		\brief 	Checks whether the value is valid
+		
+		Check the passed SNR value(s) against their boundaries for validity.
+		\param	$value	Value to be checked
+		\return true of the value is valid, false otherwise
+	*/	
+	public function checkValue($value) {
 		$valid = True;
 		for ($i = 0; $i < 5; $i++) {
 			if ($value[$i] != NULL) {
@@ -1593,8 +2598,20 @@ class SignalNoiseRatioRange extends NumericalParameter {
 	}
 }
 
+/*
+	============================================================================
+*/
+
+/*!
+ \class	BackgroundOffsetRange
+ \brief	A NumericalParameter to represent the range of background offsets
+*/
 class BackgroundOffsetRange extends NumericalParameter {
-	function BackgroundOffsetRange() {
+	
+	/*!
+		\brief	Constructor: creates an empty Parameter
+	*/
+	public function BackgroundOffsetRange() {
 		$this->NumericalParameter("BackgroundOffsetRange");
 		$this->value = array (
 			NULL,
@@ -1605,26 +2622,55 @@ class BackgroundOffsetRange extends NumericalParameter {
 		);
 	}
 
-	function setupAllowedValues($db) {
+	/*!
+		\brief	Gets the Parameter's possible values and default value
+				from the database and sets them
+	*/
+	public function setupAllowedValues() {
 		$this->name = 'BackgroundOffsetPercent';
-		NumericalParameter :: setupAllowedValues($db);
+		NumericalParameter :: setupAllowedValues();
 		$this->name = 'BackgroundOffsetRange';
 	}
 
-	function isRangeParameter() {
+	/*!
+		\brief	Confirm that this is a Range Parameter
+		\return true
+	*/
+	public function isRangeParameter() {
 		return True;
 	}
 
-	function realParameterName() {
+	/*!
+		\brief	Return the name of the Parameter to which the range version points
+		\return name of the corresponding non-range Parameter
+	*/
+	public function realParameterName() {
 		return 'BackgroundOffsetPercent';
 	}
-	function useParameterName() {
+
+	/*!
+		\brief	Return the name of the (range) Parameter
+		\return name of the Parameter
+	*/
+	public function useParameterName() {
 		return 'BackgroundOffsetUseRange';
 	}
 }
 
+/*
+	============================================================================
+*/
+
+/*!
+ \class	NumberOfIterationsRange
+ \brief	A NumericalParameter to represent the range of iteration numbers
+*/
 class NumberOfIterationsRange extends NumericalParameter {
-	function NumberOfIterationsRange() {
+	
+	/*!
+		\brief	Constructor: creates an empty Parameter
+	*/
+	public function NumberOfIterationsRange() {
 		$this->NumericalParameter("NumberOfIterationsRange");
 		$this->value = array (
 			NULL,
@@ -1634,50 +2680,80 @@ class NumberOfIterationsRange extends NumericalParameter {
 		);
 	}
 
-	function setupAllowedValues($db) {
+	/*!
+		\brief	Gets the Parameter's possible values and default value
+				from the database and sets them
+	*/
+	public function setupAllowedValues() {
 		$this->name = 'NumberOfIterations';
-		NumericalParameter :: setupAllowedValues($db);
+		NumericalParameter :: setupAllowedValues();
 		$this->name = 'NumberOfIterationsRange';
 	}
 
-	function isRangeParameter() {
+	/*!
+		\brief	Confirm that this is a Range Parameter
+		\return true
+	*/
+	public function isRangeParameter() {
 		return True;
 	}
 
-	function realParameterName() {
+	/*!
+		\brief	Return the name of the Parameter to which the range version points
+		\return name of the corresponding non-range Parameter
+	*/
+	public function realParameterName() {
 		return 'NumberOfIterations';
 	}
-	function useParameterName() {
+	
+	/*!
+		\brief	Return the name of the (range) Parameter
+		\return name of the Parameter
+	*/
+	public function useParameterName() {
 		return 'NumberOfIterationsUseRange';
 	}
 }
 
+/*
+	============================================================================
+*/
+
+/*!
+ \class	OutputFileFormat
+ \brief	A ChoiceParameter to represent the output file format
+*/
 class OutputFileFormat extends ChoiceParameter {
-	function OutputFileFormat() {
+	
+	/*!
+		\brief	Constructor: creates an empty Parameter
+	*/
+	public function OutputFileFormat() {
 		$this->ChoiceParameter('OutputFileFormat');
 	}
 
-	//!---------------------------------------------------------
-	// \brief        Answer the value of the parameter in a 
-	//              translated form that is in the form that
-	//              is used in the script. The translation of
-	//              the output file format is read from the 
-	//              database
-	// \return      string
-	//!---------------------------------------------------------    
-	function translatedValue() {
+	/*!
+		\brief	Returns the Parameter translated value
+		
+		The translated form of the Parameter value is then one used in
+		the Tcl script. The translation of the output file format is read from
+		the database.
+		
+		\return translated value
+	*/
+	public function translatedValue() {
 		$db = new DatabaseConnection();
 		$result = $db->translationFor($this);
 		return $result;
 	}
 	
-	//!---------------------------------------------------------
-	// \brief        Returns the extension associated with a given
-	//              output format
-	//
-	// \return      string
-	//!---------------------------------------------------------    
-	function extension( ) {
+	/*!
+		\brief	Returns the file extension associated with a given output
+				format translated value
+		\return the file extension
+		\todo	This information is in the database!!!
+	*/
+	public function extension( ) {
 		$result = $this->translatedValue( );
 		switch ( $result ) {
 			case "tiff":
@@ -1697,59 +2773,157 @@ class OutputFileFormat extends ChoiceParameter {
 		}
 	}
 }
-	
+
+/*
+	============================================================================
+*/
+
+/*!
+ \class	DeconvolutionAlgorithm
+ \brief	A ChoiceParameter to represent the deconvolution algorithm
+*/	
 class DeconvolutionAlgorithm extends ChoiceParameter {
-	function DeconvolutionAlgorithm() {
+	
+	/*!
+		\brief	Constructor: creates an empty Parameter
+	*/
+	public function DeconvolutionAlgorithm() {
 		$this->ChoiceParameter('DeconvolutionAlgorithm');
-		}
+	}
 }
 	
+/*
+	============================================================================
+*/
+
+/*!
+ \class	CoverslipRelativePosition
+ \brief	A ChoiceParameter to represent the relative position of plane 0 with
+		respect to the coverslip
+*/	
 class CoverslipRelativePosition extends ChoiceParameter {
-	function CoverslipRelativePosition( ) {
+	
+	/*!
+		\brief	Constructor: creates an empty Parameter
+	*/
+	public function CoverslipRelativePosition( ) {
 		$this->ChoiceParameter('CoverslipRelativePosition');
 	}
 	
-	function isForImage() {
+	/*!
+		\brief	Confirms that this is a Correction Parameter
+		\return true
+	*/
+	public function isForCorrection() {
 		return True;
 	}
+
 }
 
+/*
+	============================================================================
+*/
+
+/*!
+ \class	PerformAberrationCorrection
+ \brief	A ChoiceParameter to indicate whether aberration correction should be
+		performed
+*/	
 class PerformAberrationCorrection extends ChoiceParameter {
-	function PerformAberrationCorrection( ) {
+	
+	/*!
+		\brief	Constructor: creates an empty Parameter
+	*/
+	public function PerformAberrationCorrection( ) {
 		$this->ChoiceParameter('PerformAberrationCorrection');
 	}
 	
-	function isForImage() {
+	/*!
+		\brief	Confirms that this is a Correction Parameter
+		\return true
+	*/
+	public function isForCorrection() {
 		return True;
 	}
 }
 
+/*
+	============================================================================
+*/
+
+/*!
+ \class	AberrationCorrectionMode
+ \brief	A ChoiceParameter to indicate the mode of aberration correction
+*/
 class AberrationCorrectionMode extends ChoiceParameter {
-	function AberrationCorrectionMode( ) {
+		
+	/*!
+		\brief	Constructor: creates an empty Parameter
+	*/
+	public function AberrationCorrectionMode( ) {
 		$this->ChoiceParameter('AberrationCorrectionMode');
 	}
 	
-	function isForImage() {
+	/*!
+		\brief	Confirms that this is a Correction Parameter
+		\return true
+	*/
+	public function isForCorrection() {
 		return True;
 	}
+
 }
 
+/*
+	============================================================================
+*/
+
+/*!
+ \class	AdvancedCorrectionOptions
+ \brief	A ChoiceParameter to indicate the options of aberration correction
+*/
 class AdvancedCorrectionOptions extends ChoiceParameter {
-	function AdvancedCorrectionOptions( ) {
+			
+	/*!
+		\brief	Constructor: creates an empty Parameter
+	*/
+	public function AdvancedCorrectionOptions( ) {
 		$this->ChoiceParameter('AdvancedCorrectionOptions');
 	}
 	
-	function isForImage() {
+	/*!
+		\brief	Confirms that this is a Correction Parameter
+		\return true
+	*/
+	public function isForCorrection() {
 		return True;
 	}
+
 }
 
+/*
+	============================================================================
+*/
+
+/*!
+ \class	AberrationCorrectionNecessary
+ \brief	A ChoiceParameter to indicate whether aberration correction is necessary
+*/
 class AberrationCorrectionNecessary extends ChoiceParameter {
-	function AberrationCorrectionNecessary( ) {
+				
+	/*!
+		\brief	Constructor: creates an empty Parameter
+	*/
+	public function AberrationCorrectionNecessary( ) {
 		$this->ChoiceParameter('AberrationCorrectionNecessary');
 	}
-	
-	function isForImage() {
+
+	/*!
+		\brief	Confirms that this is a Correction Parameter
+		\return true
+	*/
+	public function isForCorrection() {
 		return True;
 	}
+
 }

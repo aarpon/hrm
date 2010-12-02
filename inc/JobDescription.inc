@@ -488,6 +488,8 @@ class JobDescription {
             $newScript = $newScript . "c save \"$dstfilename.$fileFormat\" -type $type\n";
         }
 
+        $newScript = $newScript . "\ncatch { exec chmod 777 \"$dstfilename.$fileFormat\"}";
+        
         if ( $useThumbnails ) {
             $newScript = $newScript . 
 'catch { 
@@ -1829,6 +1831,8 @@ HRMrun deconvolution
     if ($type == 'tiff' || $type == 'tiff16') {
         $result = $result . " -tiffMultiDir -cmode scale";
     }
+    
+    $result = $result . "\ncatch { exec chmod 777 \"$imageFileName.$extension\"}";
     
     if ( $isResult ) {
         // Save preview.

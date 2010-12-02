@@ -437,11 +437,10 @@ class ParameterSetting extends Setting {
 			'AdvancedCorrectionOptions',
 			'PSFGenerationDepth'
 		);
-		$db = new DatabaseConnection();
 		foreach ($parameterClasses as $class) {
 			$param = new $class;
 			$name = $param->name();
-			$param->setupAllowedValues($db);
+			$param->setupAllowedValues();
 			$this->parameter[$name] = $param;
 		}
 	}
@@ -505,6 +504,23 @@ class ParameterSetting extends Setting {
 		}
 		return $names;
 	}
+
+	//!---------------------------------------------------------
+	// @function    ParameterSetting::correctionParameterNames()
+	// \brief        Answer the names of parameters concerning the aberration
+	//				correction.
+	// \return      Array
+	//!---------------------------------------------------------    
+	function correctionParameterNames() {
+		$names = array ();
+		foreach ($this->parameter as $parameter) {
+			if ($parameter->isForCorrection()) {
+				$names[] = $parameter->name();
+			}
+		}
+		return $names;
+	}
+	
 	//!---------------------------------------------------------
 	// @function    ParameterSetting::checkImageParameter()
 	// \brief        Check the image parameter. Answer true if they
@@ -688,8 +704,9 @@ class ParameterSetting extends Setting {
 	//!---------------------------------------------------------    
 	function checkPinholeSize() {
 		$parameter = $this->parameter('PinholeSize');
+		$value = $parameter->value();
 		for ($i = 0; $i < $this->numberOfChannels(); $i++) {
-			if (!$parameter->checkValue($parameter->value[$i])) {
+			if (!$parameter->checkValue($value[$i])) {
 				$this->message = "Please enter a valid pinhole size for channel $i!";
 				return False;
 			}
@@ -1094,8 +1111,9 @@ class ParameterSetting extends Setting {
 		$parameterName = $name . 'Wavelength';
 		$label = strtolower($name);
 		$parameter = $this->parameter($parameterName);
+		$value = $parameter->value();
 		for ($i = 0; $i < $this->numberOfChannels(); $i++) {
-			if (!$parameter->checkValue($parameter->value[$i])) {
+			if (!$parameter->checkValue($value[$i])) {
 				$this->message = "Please enter a valid $label wavelength for channel $i!";
 				return False;
 			}
@@ -1719,11 +1737,10 @@ class TaskSetting extends Setting {
 			'QualityChangeStoppingCriterion',
 			'DeconvolutionAlgorithm'
 		);
-		$db = new DatabaseConnection();
 		foreach ($parameterClasses as $class) {
 			$param = new $class;
 			$name = $param->name();
-			$param->setupAllowedValues($db);
+			$param->setupAllowedValues();
 			// definition of the associative array that contains all the pairs task parametr name / task parameter value
 			$this->parameter[$name] = $param;	// parameter is a member of the class 'Setting'
 			$this->numberOfChannels = NULL;
@@ -1813,9 +1830,10 @@ class TaskSetting extends Setting {
 		$parameter = $this->parameter('SignalNoiseRatioUseRange');
 		if ($parameter->value() == 'True') {
 			$parameter = $this->parameter('SignalNoiseRatioRange');
-            $range = count(array_filter($parameter->value[0]));
+			$value = $parameter->value();
+            $range = count(array_filter($value[0]));
 			for ($i = 0; $i < $this->numberOfChannels(); $i++) {
-				$val = $parameter->value[$i];
+				$val = $value[$i];
                 if ($range != count(array_filter($val))) {
                     $this->message = "Please enter the same number of values for all channels!";
                     return False;
@@ -1841,8 +1859,9 @@ class TaskSetting extends Setting {
 		}
 		else {
 			$parameter = $this->parameter('SignalNoiseRatio');
+			$value = $parameter->value();
 			for ($i = 0; $i < $this->numberOfChannels(); $i++) {
-				if (!$parameter->checkValue($parameter->value[$i])) {
+				if (!$parameter->checkValue($value[$i])) {
 					$this->message = "Please enter a valid signal/noise ratio for channel " . $i . "! The value must be larger than 0.";
 					return False;
 				}

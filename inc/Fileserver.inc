@@ -2,7 +2,7 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
-include ("hrm_config.inc");
+require_once("hrm_config.inc");
 require_once("Database.inc");
 require_once("Util.inc");
 

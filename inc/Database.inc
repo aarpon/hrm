@@ -8,8 +8,8 @@
 */
 $adodb = dirname(__FILE__) . "/extern/adodb5/adodb.inc.php";
 
-include "hrm_config.inc";
-include $adodb;
+require_once( "hrm_config.inc" );
+require_once( $adodb );
 
 /*!
 	\class	DatabaseConnection

@@ -3,12 +3,9 @@
 // Copyright and license notice: see license.txt
 
 require_once("./inc/User.inc");
-require_once("./inc/Database.inc");
 require_once("./inc/Util.inc");
 
 session_start();
-
-$db = new DatabaseConnection();
 
 if (isset($_GET['home'])) {
   header("Location: " . "home.php"); exit();
