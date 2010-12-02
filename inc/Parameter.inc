@@ -9,8 +9,7 @@ require_once ("Database.inc");
  \brief    Base class for all Parameter types in the HRM
 */
 class Parameter {
-	
-	
+
 	/*!
 		\var	$name
 		\brief	Name of the parameter
@@ -24,12 +23,10 @@ class Parameter {
 	protected $value;
 
 	/*!
-		\brief	 Sets an empty Parameter with given name.
-		
-		The parameter is stored in the Setting with its name.
+		\brief	Constructor: creates an empty Parameter
 		\param	$name	Name of the new Parameter
 	*/
-	public function Parameter($name) {
+	public function __construct($name) {
 		$this->name = $name;
 		$this->value = '';
 	}
@@ -205,7 +202,7 @@ class Parameter {
 		
 		\return	always false for a base Parameter
 	*/
-	function isBoolean() {
+	public function isBoolean() {
 		return False;
 	}
 
@@ -425,13 +422,11 @@ class ChoiceParameter extends Parameter {
 	protected $possibleValues;
 
 	/*!
-		\brief	 Sets an empty ChoiceParameter with given name.
-		
-		The parameter is stored in the Setting with its name.
-		\param	$name	Name of the new ChoiceParameter
-	*/	
-	public function ChoiceParameter($name) {
-		$this->Parameter($name);
+		\brief	Constructor: creates an empty Parameter
+		\param	$name	Name of the new Parameter
+	*/
+	public function __construct($name) {
+		parent::__construct($name);
 		$possibleValues = array ();
 	}
 
@@ -572,13 +567,11 @@ class ChoiceParameter extends Parameter {
 class BooleanParameter extends ChoiceParameter {
 
 	/*!
-		\brief	 Sets an empty BooleanParameter with given name.
-		
-		The parameter is stored in the Setting with its name.
+		\brief	Constructor: creates an empty Parameter
 		\param	$name	Name of the new Parameter
 	*/
-	public function BooleanParameter($name) {
-		$this->ChoiceParameter($name);
+	public function __construct($name) {
+		parent::__construct($name);
 		$this->possibleValues = array( 'True', 'False' );
 	}
 
@@ -708,13 +701,11 @@ class NumericalParameter extends Parameter {
 	protected $isMaxIncluded;
 
 	/*!
-		\brief	 Sets an empty NumericalParameter with given name.
-		
-		The parameter is stored in the Setting with its name.
+		\brief	Constructor: creates an empty Parameter
 		\param	$name	Name of the new Parameter
 	*/
-	public function NumericalParameter($name) {
-		$this->Parameter($name);
+	public function __construct($name) {
+		parent::__construct($name);
 		$this->min = NULL;
 		$this->max = NULL;
 		$this->checkMin = False;
@@ -821,7 +812,7 @@ class NumericalParameter extends Parameter {
 		\param	$value	Value to be checked
 		\return true of the value is valid, false otherwise
 	*/	
-	function checkValue($value) {
+	public function checkValue($value) {
 		if ( is_numeric( $value ) == 0 ) {
 			return False;
 		}
@@ -870,13 +861,11 @@ class VariableChannelsParameter extends NumericalParameter {
 	protected $numberOfChannels;
 
 	/*!
-		\brief	 Sets an empty VariableChannelsParameter with given name.
-		
-		The parameter is stored in the Setting with its name.
+		\brief	Constructor: creates an empty Parameter
 		\param	$name	Name of the new Parameter
 	*/
-	public function VariableChannelsParameter($name) {
-		$this->NumericalParameter($name);
+	public function __construct($name) {
+		parent::__construct($name);
 		$this->value = array (
 			0 => NULL,
 			1 => NULL,
@@ -1027,12 +1016,10 @@ class VariableChannelsParameter extends NumericalParameter {
 class HasAdaptedValues extends ChoiceParameter {
 
 	/*!
-		\brief	 Sets an empty HasAdaptedValues Parameter.
-		
-		The parameter is stored in the Setting.
+		\brief	Constructor: creates an empty Parameter
 	*/
-	public function HasAdaptedValues() {
-		$this->ChoiceParameter("HasAdaptedValues");
+	public function __construct() {
+		parent::__construct("HasAdaptedValues");
 	}
 }
 
@@ -1048,12 +1035,10 @@ class HasAdaptedValues extends ChoiceParameter {
 class PointSpreadFunction extends ChoiceParameter {
 
 	/*!
-		\brief	 Sets an empty PointSpreadFunction Parameter.
-		
-		The parameter is stored in the Setting.
+		\brief	Constructor: creates an empty Parameter
 	*/
-	public function PointSpreadFunction() {
-		$this->ChoiceParameter("PointSpreadFunction");
+	public function __construct() {
+		parent::__construct("PointSpreadFunction");
 	}
 }
 
@@ -1069,12 +1054,10 @@ class PointSpreadFunction extends ChoiceParameter {
 class PSF extends Parameter {
 
 	/*!
-		\brief	 Sets an empty PSF Parameter.
-		
-		The parameter is stored in the Setting.
+		\brief	Constructor: creates an empty Parameter
 	*/
-	public function PSF() {
-		$this->Parameter('PSF');
+	public function __construct() {
+		parent::__construct('PSF');
 		$this->value = array (
 			NULL,
 			NULL,
@@ -1107,11 +1090,10 @@ class PSF extends Parameter {
 class IsMultiChannel extends ChoiceParameter {
 	
 	/*!
-		\brief	 Sets an empty IsMultiChannel Parameter.
-		The parameter is stored in the Setting.
+		\brief	Constructor: creates an empty Parameter
 	*/
-	public function IsMultiChannel() {
-		$this->ChoiceParameter("IsMultiChannel");
+	public function __construct() {
+		parent::__construct("IsMultiChannel");
 	}
 
 	/*!
@@ -1263,19 +1245,17 @@ class SingleOrMultiChannelParameter extends ChoiceParameter {
 class ImageFileFormat extends SingleOrMultiChannelParameter {
 
 	/*!
-		\brief	 Sets an empty ImageFileFormat Parameter.
-		
-		The parameter is stored in the Setting.
+		\brief	Constructor: creates an empty Parameter
 	*/
-	function ImageFileFormat() {
-		$this->ChoiceParameter("ImageFileFormat");
+	public function __construct() {
+		parent::__construct("ImageFileFormat");
 	}
 
 	/*!
 		\brief	Confirms that this is an Image Parameter.
 		\return true
 	*/
-	function isForImage() {
+	public function isForImage() {
 		return True;
 	}
 
@@ -1283,7 +1263,7 @@ class ImageFileFormat extends SingleOrMultiChannelParameter {
 		\brief	Returns all image file extensions
 		\return array of file extensions
 	*/
-	function fileExtensions() {
+	public function fileExtensions() {
 		$db = new DatabaseConnection();
 		$result = $db->fileExtensions($this->value());
 		return $result;
@@ -1301,19 +1281,17 @@ class ImageFileFormat extends SingleOrMultiChannelParameter {
 class NumberOfChannels extends ChoiceParameter {
 	
 	/*!
-		\brief	 Sets an empty NumberOfChannels Parameter.
-		
-		The parameter is stored in the Setting.
+		\brief	Constructor: creates an empty Parameter
 	*/
-	function NumberOfChannels() {
-		$this->ChoiceParameter("NumberOfChannels");
+	public function __construct() {
+			parent::__construct("NumberOfChannels");
 	}
 
 	/*!
 		\brief	Confirms that this is an Image Parameter.
 		\return true
 	*/
-	function isForImage() {
+	public function isForImage() {
 		return True;
 	}
 }
@@ -1329,19 +1307,17 @@ class NumberOfChannels extends ChoiceParameter {
 class ImageGeometry extends SingleOrMultiChannelParameter {
 
 	/*!
-		\brief	 Sets an empty ImageGeometry Parameter.
-		
-		The parameter is stored in the Setting.
+		\brief	Constructor: creates an empty Parameter
 	*/
-	function ImageGeometry() {
-		$this->ChoiceParameter("ImageGeometry");
+	public function __construct() {
+		parent::__construct("ImageGeometry");
 	}
 
 	/*!
 		\brief	Confirms that this is an Image Parameter.
 		\return true
 	*/
-	function isForImage() {
+	public function isForImage() {
 		return True;
 	}
 }
@@ -1357,12 +1333,10 @@ class ImageGeometry extends SingleOrMultiChannelParameter {
 class MicroscopeType extends ChoiceParameter {
 
 	/*!
-		\brief	 Sets an empty MicroscopeType Parameter.
-		
-		The parameter is stored in the Setting.
+		\brief	Constructor: creates an empty Parameter
 	*/
-	public function MicroscopeType() {
-		$this->ChoiceParameter("MicroscopeType");
+	public function __construct() {
+		parent::__construct("MicroscopeType");
 	}
 
 	/*!
@@ -1401,12 +1375,10 @@ class MicroscopeType extends ChoiceParameter {
 class NumericalAperture extends NumericalParameter {
 
 	/*!
-		\brief	 Sets an empty NumericalAperture Parameter.
-		
-		The parameter is stored in the Setting.
+		\brief	Constructor: creates an empty Parameter
 	*/
-	public function NumericalAperture() {
-		$this->NumericalParameter("NumericalAperture");
+	public function __construct() {
+		parent::__construct("NumericalAperture");
 	}
 
 	/*!
@@ -1429,12 +1401,10 @@ class NumericalAperture extends NumericalParameter {
 class ObjectiveMagnification extends ChoiceParameter {
 
 	/*!
-		\brief	 Sets an empty ObjectiveMagnification Parameter.
-		
-		The parameter is stored in the Setting.
+		\brief	Constructor: creates an empty Parameter
 	*/
-	public function ObjectiveMagnification() {
-		$this->ChoiceParameter("ObjectiveMagnification");
+	public function __construct() {
+		parent::__construct("ObjectiveMagnification");
 	}
 
 	/*!
@@ -1457,12 +1427,10 @@ class ObjectiveMagnification extends ChoiceParameter {
 class ObjectiveType extends ChoiceParameter {
 
 	/*!
-		\brief	 Sets an empty ObjectiveType Parameter.
-		
-		The parameter is stored in the Setting.
+		\brief	Constructor: creates an empty Parameter
 	*/
-	public function ObjectiveType() {
-		$this->ChoiceParameter("ObjectiveType");
+	public function __construct() {
+		parent::__construct("ObjectiveType");
 	}
 
 	/*!
@@ -1499,14 +1467,12 @@ class ObjectiveType extends ChoiceParameter {
  \brief	A ChoiceParameter to represent the sample medium
 */
 class SampleMedium extends ChoiceParameter {
-	
+
 	/*!
-		\brief	 Sets an empty SampleMedium Parameter.
-		
-		The parameter is stored in the Setting.
+		\brief	Constructor: creates an empty Parameter
 	*/
-	public function SampleMedium() {
-		$this->ChoiceParameter("SampleMedium");
+	public function __construct() {
+		parent::__construct("SampleMedium");
 	}
 
 	/*!
@@ -1545,14 +1511,12 @@ class SampleMedium extends ChoiceParameter {
  \brief	A ChoiceParameter to represent the binning
 */
 class Binning extends ChoiceParameter {
-	
+
 	/*!
-		\brief	 Sets an empty Binning Parameter.
-		
-		The parameter is stored in the Setting.
+		\brief	Constructor: creates an empty Parameter
 	*/
-	public function Binning() {
-		$this->ChoiceParameter("Binning");
+	public function __construct() {
+		parent::__construct("Binning");
 	}
 
 	/*!
@@ -1577,18 +1541,16 @@ class Binning extends ChoiceParameter {
 class ExcitationWavelength extends NumericalParameter {
 
 	/*!
-		\brief	 Sets an empty ExcitationWavelength Parameter.
-		
-		The parameter is stored in the Setting.
+		\brief	Constructor: creates an empty Parameter
 	*/
-	public function ExcitationWavelength() {
-		$this->NumericalParameter("ExcitationWavelength");
+	public function __construct() {
+		parent::__construct("ExcitationWavelength");
 		$this->value = array (
 			0 => NULL,
 			1 => NULL,
 			2 => NULL,
 			3 => NULL,
-			4 => NULL
+			4 => NULL 
 		);
 	}
 	
@@ -1634,18 +1596,16 @@ class ExcitationWavelength extends NumericalParameter {
 class EmissionWavelength extends NumericalParameter {
 
 	/*!
-		\brief	 Sets an empty EmissionWavelength Parameter.
-		
-		The parameter is stored in the Setting.
+		\brief	Constructor: creates an empty Parameter
 	*/
-	public function EmissionWavelength() {
-		$this->NumericalParameter("EmissionWavelength");
+	public function __construct() {
+		parent::__construct("EmissionWavelength");
 		$this->value = array (
 			0 => NULL,
 			1 => NULL,
 			2 => NULL,
 			3 => NULL,
-			4 => NULL
+			4 => NULL 
 		);
 	}
 	
@@ -1689,12 +1649,10 @@ class EmissionWavelength extends NumericalParameter {
 class CMount extends NumericalParameter {
 
 	/*!
-		\brief	 Sets an empty CMount Parameter.
-		
-		The parameter is stored in the Setting.
+		\brief	Constructor: creates an empty Parameter
 	*/
-	public function CMount() {
-		$this->NumericalParameter("CMount");
+	public function __construct() {
+		parent::__construct("CMount");
 	}
 
 	/*!
@@ -1717,14 +1675,12 @@ class CMount extends NumericalParameter {
 class TubeFactor extends NumericalParameter {
 
 	/*!
-		\brief	 Sets an empty TubeFactor Parameter.
-		
-		The parameter is stored in the Setting.
+		\brief	Constructor: creates an empty Parameter
 	*/
-	public function TubeFactor() {
-		$this->NumericalParameter("TubeFactor");
+	public function __construct() {
+		parent::__construct("TubeFactor");
 	}
-
+	
 	/*!
 		\brief	Confirms that this is a Microscope Parameter.
 		\return true
@@ -1745,12 +1701,10 @@ class TubeFactor extends NumericalParameter {
 class CCDCaptorSizeX extends NumericalParameter {
 
 	/*!
-		\brief	 Sets an empty CCDCaptorSizeX Parameter.
-		
-		The parameter is stored in the Setting.
+		\brief	Constructor: creates an empty Parameter
 	*/
-	public function CCDCaptorSizeX() {
-		$this->NumericalParameter("CCDCaptorSizeX");
+	public function __construct() {
+		parent::__construct("CCDCaptorSizeX");
 	}
 
 	/*!
@@ -1787,12 +1741,10 @@ class CCDCaptorSizeX extends NumericalParameter {
 class ZStepSize extends NumericalParameter {
 
 	/*!
-		\brief	 Sets an empty CCDCaptorSizeX Parameter.
-		
-		The parameter is stored in the Setting.
+		\brief	Constructor: creates an empty Parameter
 	*/
-	public function ZStepSize() {
-		$this->NumericalParameter("ZStepSize");
+	public function __construct() {
+		parent::__construct("ZStepSize");
 	}
 
 	/*!
@@ -1815,12 +1767,10 @@ class ZStepSize extends NumericalParameter {
 class TimeInterval extends NumericalParameter {
 
 	/*!
-		\brief	 Sets an empty TimeInterval Parameter.
-		
-		The parameter is stored in the Setting.
+		\brief	Constructor: creates an empty Parameter
 	*/
-	public function TimeInterval() {
-		$this->NumericalParameter("TimeInterval");
+	public function __construct() {
+		parent::__construct("TimeInterval");
 	}
 
 	/*!
@@ -1843,13 +1793,11 @@ class TimeInterval extends NumericalParameter {
 class PinholeSize extends NumericalParameter {
 
 	/*!
-		\brief	 Sets an empty PinholeSize Parameter.
-		
-		The parameter is stored in the Setting.
+		\brief	Constructor: creates an empty Parameter
 	*/
-	public function PinholeSize() {
-		$this->NumericalParameter("PinholeSize");
-		// manage one pinhole radius per channel
+	public function __construct() {
+		parent::__construct("PinholeSize");
+		// Manage one pinhole radius per channel
 		$this->value = array (
 			NULL,
 			NULL,
@@ -1899,14 +1847,12 @@ class PinholeSize extends NumericalParameter {
 class PinholeSpacing extends NumericalParameter {
 
 	/*!
-		\brief	 Sets an empty PinholeSpacing Parameter.
-		
-		The parameter is stored in the Setting.
+		\brief	Constructor: creates an empty Parameter
 	*/
-	public function PinholeSpacing() {
-		$this->NumericalParameter("PinholeSpacing");
+	public function __construct() {
+		parent::__construct("PinholeSpacing");
 	}
-
+	
 	/*!
 		\brief	Confirms that this is a Capture Parameter.
 		\return true
@@ -1927,12 +1873,10 @@ class PinholeSpacing extends NumericalParameter {
 class MultiChannelOutput extends BooleanParameter {
 
 	/*!
-		\brief	 Sets an empty MultiChannelOutput Parameter.
-		
-		The parameter is stored in the Setting.
+		\brief	Constructor: creates an empty Parameter
 	*/
-	public function MultiChannelOutput() {
-		$this->BooleanParameter("MultiChannelOutput");
+	public function __construct() {
+		parent::__construct("MultiChannelOutput");
 	}
 }
 
@@ -1950,12 +1894,10 @@ class MultiChannelOutput extends BooleanParameter {
 class RemoveNoise extends BooleanParameter {
 
 	/*!
-		\brief	 Sets an empty RemoveNoise Parameter.
-		
-		The parameter is stored in the Setting.
+		\brief	Constructor: creates an empty Parameter
 	*/
-	public function RemoveNoise() {
-		$this->BooleanParameter("RemoveNoise");
+	public function __construct() {
+		parent::__construct("RemoveNoise");
 	}
 }
 
@@ -1972,12 +1914,10 @@ class RemoveNoise extends BooleanParameter {
 class StyleOfProcessing extends ChoiceParameter {
 
 	/*!
-		\brief	 Sets an empty StyleOfProcessing Parameter.
-		
-		The parameter is stored in the Setting.
+		\brief	Constructor: creates an empty Parameter
 	*/
-	public function StyleOfProcessing() {
-		$this->ChoiceParameter("StyleOfProcessing");
+	public function __construct() {
+		parent::__construct("StyleOfProcessing");
 	}
 
 	/*!
@@ -2061,14 +2001,12 @@ class StyleOfProcessing extends ChoiceParameter {
  \brief	A BooleanParameter to indicate whether a background removal should be run
 */
 class RemoveBackground extends BooleanParameter {
-	
+
 	/*!
-		\brief	 Sets an empty RemoveBackground Parameter.
-		
-		The parameter is stored in the Setting.
+		\brief	Constructor: creates an empty Parameter
 	*/
-	public function RemoveBackground() {
-		$this->BooleanParameter("RemoveBackground");
+	public function __construct() {
+		parent::__construct("RemoveBackground");
 	}
 }
 
@@ -2085,12 +2023,10 @@ class RemoveBackground extends BooleanParameter {
 class FullRestoration extends BooleanParameter {
 		
 	/*!
-		\brief	 Sets an empty FullRestoration Parameter.
-		
-		The parameter is stored in the Setting.
+		\brief	Constructor: creates an empty Parameter
 	*/
-	public function FullRestoration() {
-		$this->BooleanParameter("FullRestoration");
+	public function __construct() {
+		parent::__construct("FullRestoration");
 	}
 }
 
@@ -2107,12 +2043,10 @@ class FullRestoration extends BooleanParameter {
 class RemoveNoiseEffectiveness extends ChoiceParameter {
 
 	/*!
-		\brief	 Sets an empty RemoveNoiseEffectiveness Parameter.
-		
-		The parameter is stored in the Setting.
-	*/	
-	public function RemoveNoiseEffectiveness() {
-		$this->ChoiceParameter("RemoveNoiseEffectiveness");
+		\brief	Constructor: creates an empty Parameter
+	*/
+	public function __construct() {
+		parent::__construct("RemoveNoiseEffectiveness");
 	}
 }
 
@@ -2127,12 +2061,10 @@ class RemoveNoiseEffectiveness extends ChoiceParameter {
 class RemoveBackgroundPercent extends VariableChannelsParameter {
 
 	/*!
-		\brief	 Sets an empty RemoveBackgroundPercent Parameter.
-		
-		The parameter is stored in the Setting.
-	*/	
-	public function RemoveBackgroundPercent() {
-		$this->VariableChannelsParameter("RemoveBackgroundPercent");
+		\brief	Constructor: creates an empty Parameter
+	*/
+	public function __construct() {
+		parent::__construct("RemoveBackgroundPercent");
 	}
 }
 
@@ -2146,14 +2078,13 @@ class RemoveBackgroundPercent extends VariableChannelsParameter {
 */
 class SignalNoiseRatio extends NumericalParameter {
 
+
 	/*!
-		\brief	 Sets an empty SignalNoiseRatio Parameter.
-		
-		The parameter is stored in the Setting.
+		\brief	Constructor: creates an empty Parameter
 	*/
-	public function SignalNoiseRatio() {
-		$this->NumericalParameter("SignalNoiseRatio");
-		// manage one S/N per channel
+	public function __construct() {
+		parent::__construct("SignalNoiseRatio");
+		// Manage one S/N per channel
 		$this->value = array (
 			0 => NULL,
 			1 => NULL,
@@ -2376,8 +2307,8 @@ class SignalNoiseRatioUseRange extends BooleanParameter {
 	/*!
 		\brief	Constructor: creates an empty Parameter
 	*/
-	public function SignalNoiseRatioUseRange() {
-		$this->BooleanParameter("SignalNoiseRatioUseRange");
+	public function __construct() {
+		parent::__construct("SignalNoiseRatioUseRange");
 	}
 }
 
@@ -2394,8 +2325,8 @@ class BackgroundOffsetPercent extends VariableChannelsParameter {
 	/*!
 		\brief	Constructor: creates an empty Parameter
 	*/
-	public function BackgroundOffsetPercent() {
-		$this->VariableChannelsParameter("BackgroundOffsetPercent");
+	public function __construct() {
+		parent::__construct("BackgroundOffsetPercent");
 	}
 
 	/*!
@@ -2423,12 +2354,12 @@ class BackgroundOffsetPercent extends VariableChannelsParameter {
  \brief	A BooleanParameter to indicate whether the background offset Parameter uses ranges
 */
 class BackgroundOffsetUseRange extends BooleanParameter {
-	
+
 	/*!
 		\brief	Constructor: creates an empty Parameter
 	*/
-	public function BackgroundOffsetUseRange() {
-		$this->BooleanParameter("BackgroundOffsetUseRange");
+	public function __construct() {
+		parent::__construct("BackgroundOffsetUseRange");
 	}
 }
 
@@ -2445,8 +2376,8 @@ class NumberOfIterations extends NumericalParameter {
 	/*!
 		\brief	Constructor: creates an empty Parameter
 	*/
-	public function NumberOfIterations() {
-		$this->NumericalParameter("NumberOfIterations");
+	public function __construct() {
+		parent::__construct("NumberOfIterations");
 	}
 }
 
@@ -2463,8 +2394,8 @@ class PSFGenerationDepth extends NumericalParameter {
 	/*!
 		\brief	Constructor: creates an empty Parameter
 	*/
-	public function PSFGenerationDepth() {
-		$this->NumericalParameter("PSFGenerationDepth");
+	public function __construct() {
+		parent::__construct("PSFGenerationDepth");
 	}
 }
 
@@ -2481,8 +2412,8 @@ class QualityChangeStoppingCriterion extends NumericalParameter {
 	/*!
 		\brief	Constructor: creates an empty Parameter
 	*/
-	public function QualityChangeStoppingCriterion() {
-		$this->NumericalParameter("QualityChangeStoppingCriterion");
+	public function __construct() {
+		parent::__construct("QualityChangeStoppingCriterion");
 	}
 }
 
@@ -2499,8 +2430,8 @@ class NumberOfIterationsUseRange extends BooleanParameter {
 	/*!
 		\brief	Constructor: creates an empty Parameter
 	*/
-	public function NumberOfIterationsUseRange() {
-		$this->BooleanParameter("NumberOfIterationsUseRange");
+	public function __construct() {
+		parent::__construct("NumberOfIterationsUseRange");
 	}
 }
 
@@ -2517,8 +2448,8 @@ class SignalNoiseRatioRange extends NumericalParameter {
 	/*!
 		\brief	Constructor: creates an empty Parameter
 	*/
-	public function SignalNoiseRatioRange() {
-		$this->NumericalParameter("SignalNoiseRatioRange");
+	public function __construct() {
+		parent::__construct("SignalNoiseRatioRange");
 		$this->value = array (
 			NULL,
 			NULL,
@@ -2607,12 +2538,12 @@ class SignalNoiseRatioRange extends NumericalParameter {
  \brief	A NumericalParameter to represent the range of background offsets
 */
 class BackgroundOffsetRange extends NumericalParameter {
-	
+
 	/*!
 		\brief	Constructor: creates an empty Parameter
 	*/
-	public function BackgroundOffsetRange() {
-		$this->NumericalParameter("BackgroundOffsetRange");
+	public function __construct() {
+		parent::__construct("BackgroundOffsetRange");
 		$this->value = array (
 			NULL,
 			NULL,
@@ -2670,8 +2601,8 @@ class NumberOfIterationsRange extends NumericalParameter {
 	/*!
 		\brief	Constructor: creates an empty Parameter
 	*/
-	public function NumberOfIterationsRange() {
-		$this->NumericalParameter("NumberOfIterationsRange");
+	public function __construct() {
+		parent::__construct("NumberOfIterationsRange");
 		$this->value = array (
 			NULL,
 			NULL,
@@ -2728,9 +2659,9 @@ class OutputFileFormat extends ChoiceParameter {
 	/*!
 		\brief	Constructor: creates an empty Parameter
 	*/
-	public function OutputFileFormat() {
-		$this->ChoiceParameter('OutputFileFormat');
-	}
+	public function __construct() {
+		parent::__construct("OutputFileFormat");
+	}	
 
 	/*!
 		\brief	Returns the Parameter translated value
@@ -2783,13 +2714,13 @@ class OutputFileFormat extends ChoiceParameter {
  \brief	A ChoiceParameter to represent the deconvolution algorithm
 */	
 class DeconvolutionAlgorithm extends ChoiceParameter {
-	
+
 	/*!
 		\brief	Constructor: creates an empty Parameter
 	*/
-	public function DeconvolutionAlgorithm() {
-		$this->ChoiceParameter('DeconvolutionAlgorithm');
-	}
+	public function __construct() {
+		parent::__construct("DeconvolutionAlgorithm");
+	}	
 }
 	
 /*
@@ -2802,13 +2733,13 @@ class DeconvolutionAlgorithm extends ChoiceParameter {
 		respect to the coverslip
 */	
 class CoverslipRelativePosition extends ChoiceParameter {
-	
+
 	/*!
 		\brief	Constructor: creates an empty Parameter
 	*/
-	public function CoverslipRelativePosition( ) {
-		$this->ChoiceParameter('CoverslipRelativePosition');
-	}
+	public function __construct() {
+		parent::__construct("CoverslipRelativePosition");
+	}	
 	
 	/*!
 		\brief	Confirms that this is a Correction Parameter
@@ -2834,9 +2765,9 @@ class PerformAberrationCorrection extends ChoiceParameter {
 	/*!
 		\brief	Constructor: creates an empty Parameter
 	*/
-	public function PerformAberrationCorrection( ) {
-		$this->ChoiceParameter('PerformAberrationCorrection');
-	}
+	public function __construct() {
+		parent::__construct("PerformAberrationCorrection");
+	}	
 	
 	/*!
 		\brief	Confirms that this is a Correction Parameter
@@ -2856,13 +2787,13 @@ class PerformAberrationCorrection extends ChoiceParameter {
  \brief	A ChoiceParameter to indicate the mode of aberration correction
 */
 class AberrationCorrectionMode extends ChoiceParameter {
-		
+
 	/*!
 		\brief	Constructor: creates an empty Parameter
 	*/
-	public function AberrationCorrectionMode( ) {
-		$this->ChoiceParameter('AberrationCorrectionMode');
-	}
+	public function __construct() {
+		parent::__construct("AberrationCorrectionMode");
+	}	
 	
 	/*!
 		\brief	Confirms that this is a Correction Parameter
@@ -2887,9 +2818,9 @@ class AdvancedCorrectionOptions extends ChoiceParameter {
 	/*!
 		\brief	Constructor: creates an empty Parameter
 	*/
-	public function AdvancedCorrectionOptions( ) {
-		$this->ChoiceParameter('AdvancedCorrectionOptions');
-	}
+	public function __construct() {
+		parent::__construct("AdvancedCorrectionOptions");
+	}	
 	
 	/*!
 		\brief	Confirms that this is a Correction Parameter
@@ -2914,9 +2845,9 @@ class AberrationCorrectionNecessary extends ChoiceParameter {
 	/*!
 		\brief	Constructor: creates an empty Parameter
 	*/
-	public function AberrationCorrectionNecessary( ) {
-		$this->ChoiceParameter('AberrationCorrectionNecessary');
-	}
+	public function __construct() {
+		parent::__construct("AberrationCorrectionNecessary");
+	}	
 
 	/*!
 		\brief	Confirms that this is a Correction Parameter
