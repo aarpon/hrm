@@ -486,10 +486,15 @@ for ($i=0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
 
 }
 
-$visibility = " style=\"display: none\"";
-if ($selectedMode == "cmle") {
+/*!
+	\todo	The visibility toggle should be restored but but only the quality change
+			should be hidden for qmle, not the whole stopping criteria div!
+			Also restore the changeVisibility("cmle-it") call in scripts/settings.js.
+ */
+//$visibility = " style=\"display: none\"";
+//if ($selectedMode == "cmle") {
   $visibility = " style=\"display: block\"";
-}
+//}
 
 ?>
                     </div>

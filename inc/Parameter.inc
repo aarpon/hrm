@@ -185,6 +185,7 @@ class Parameter {
 		
 		\param	$value		Value for the Parameter
 		\param	$customHTML	HTML code for additional options for the radio button
+		\todo	Tis function should NOT be in the base class!
 	*/
 	public function printRadioButtonForValue($value, $customHTML) {
 		$result = '<input type="radio" name="' . $this->name() . '" value="' . $value . '" ';
@@ -547,10 +548,10 @@ class ChoiceParameter extends Parameter {
 		The value of a ChoiceParameter must be one of its possible values
 		
 		\param	$value	Value to be checked
-		\return true of the value is valid, false otherwise
+		\return true if the value is valid, false otherwise
 	*/	
 	public function checkValue($value) {
-		$result = parent :: checkValue($value);
+		$result = parent::checkValue($value);
 		$result = $result && (in_array($value, $this->possibleValues()));
 		return $result;
 	}
@@ -810,9 +811,14 @@ class NumericalParameter extends Parameter {
 		have to be larger than or equal to a given minum value and smaller than
 		or equal to a given maximum.
 		\param	$value	Value to be checked
-		\return true of the value is valid, false otherwise
+		\return true if the value is valid, false otherwise
 	*/	
 	public function checkValue($value) {
+	    if ( is_array( $value ) )
+	    {
+	        echo "Error: NumericalParamater - Scalar expected.\n";
+	        return false;
+	    }
 		if ( is_numeric( $value ) == 0 ) {
 			return False;
 		}
@@ -837,6 +843,131 @@ class NumericalParameter extends Parameter {
 			}
 		}
 		return True;
+	}
+	
+	/*!
+		\brief	Sets the value of the parameter
+		
+		The value must be a scalar.
+		
+		\param	$value	Value for the parameter		
+	*/
+	public function setValue($value) {
+	    if ( is_array( $value ) ) {
+	        echo "Error: Numerical Parameter - Scalar expected.\n";
+	        $value = $value[ 0 ];
+	    }
+	    if ( !is_numeric( $value ) ) {
+	        echo "Error: Numerical Parameter - Scalar expected.\n";
+	        $value = $this->value();
+	    }
+		$this->value = $value;
+	}
+	
+}
+
+/*
+	============================================================================
+*/
+
+/*!
+	\class	NumericalArrayParameter
+	\brief	Class for a Parameter that has an array of numbers as possible value, 
+			where each entry represents a channel.
+*/
+
+class NumericalArrayParameter extends NumericalParameter {
+
+    /*!
+		\var	$numberOfChannels
+		\brief	Number of channels for which to provide Parameter values
+	*/	
+	protected $numberOfChannels;
+	
+	/*!
+		\brief	Constructor: creates an empty Parameter
+		\param	$name	Name of the new Parameter
+	*/
+	public function __construct($name) {
+		parent::__construct($name);
+		$this->value = array ( 
+		    0 => NULL,
+		    1 => NULL,
+		    2 => NULL,
+		    3 => NULL,
+		    4 => NULL );
+		$this->numberOfChannels = 1;
+	}
+
+	
+	/*!
+		\brief	 Sets the number of channels
+		\param	$number	Number of channels
+	*/
+	public function setNumberOfChannels($number) {
+	    if ( $number == $this->numberOfChannels ) {
+	        return;
+	    }
+	    if ( $number < 1 ) { 
+	        $number = 1;
+	    }
+	    if ( $number > 5 ) { 
+	        $number = 5; 
+	    }
+	    for ( $i = $number; $i < 5; $i++ ) {
+	        $this->value[ $i ] = NULL;
+	    }
+		$this->numberOfChannels = $number;
+	}
+
+	/*!
+		\brief	 Returns the number of channels
+		\return the umber of channels
+	*/
+	public function numberOfChannels() {
+		return $this->numberOfChannels;
+	}
+	
+	/*!
+		\brief 	Checks whether all values in the array are valid
+		
+		Each value in the array must be a number and might optionally
+		have to be larger than or equal to a given minum value and smaller than
+		or equal to a given maximum.
+		\return true if all values are valid, false otherwise
+	*/	
+	public function check() {
+	    $result = true;
+	    foreach ( $this->value as $currentValue ) {
+	        $result = $result && parent::checkValue( $currentValue );
+	    }
+	}
+
+	/*!
+		\brief	Sets the value of the parameter
+		
+		The value must be an array with maximum 5 values.
+		
+		\param	$value	Array of values for the parameter		
+	*/
+	public function setValue($value) {
+	    $n = count( $value );
+	    if ( $n > 5 ) {
+	        $value = array_slice( $value, 0, 5 );
+	        $n = 5;
+	    }
+	    $newNumberOfChannels = array_search( NULL, $value );
+	    if ( $newNumberOfChannels == NULL ) {
+	        $newNumberOfChannels = 5;
+	    }
+	    $this->numberOfChannels = $newNumberOfChannels;
+	    for ( $i = 0; $i < 5; $i++ ) {
+	        if ( i < $this->numberOfChannels ) {
+	            $this->value[ $i ] = $value[ $i ];
+	        } else {
+	            $this->value[ $i ] = NULL;
+	        }
+	    }
 	}
 }
 
@@ -1538,42 +1669,15 @@ class Binning extends ChoiceParameter {
  
  The ExcitationWavelength class can store an array of numbers as value.
 */
-class ExcitationWavelength extends NumericalParameter {
+class ExcitationWavelength extends NumericalArrayParameter {
 
 	/*!
 		\brief	Constructor: creates an empty Parameter
 	*/
 	public function __construct() {
 		parent::__construct("ExcitationWavelength");
-		$this->value = array (
-			0 => NULL,
-			1 => NULL,
-			2 => NULL,
-			3 => NULL,
-			4 => NULL 
-		);
 	}
 	
-	/*!
-		\brief	 Sets the value for the Parameter
-		
-		The value can either be a scalar, and then it will be stored for channel
-		0, or an array, and then will replace the previous array. It is
-		responsibility of the user to make sure that the number of values
-		matches the number of channels in the image.
-		
-		\param	$value	Single wavelength or array of wavelengths
-	*/
-	public function setValue($value) {
-		if (is_array($value)) {
-			for ($i = 0; $i < count($value) && $i <= count( $this->value ); $i++)
-				$this->value[$i] = $value[$i];
-		}
-		else {
-			$this->value[0] = $value;
-		}
-	}
-
 	/*!
 		\brief	Confirms that this is a Microscope Parameter.
 		\return true
@@ -1593,40 +1697,13 @@ class ExcitationWavelength extends NumericalParameter {
  
  The EmissionWavelength class can store an array of numbers as value.
 */
-class EmissionWavelength extends NumericalParameter {
+class EmissionWavelength extends NumericalArrayParameter {
 
 	/*!
 		\brief	Constructor: creates an empty Parameter
 	*/
 	public function __construct() {
 		parent::__construct("EmissionWavelength");
-		$this->value = array (
-			0 => NULL,
-			1 => NULL,
-			2 => NULL,
-			3 => NULL,
-			4 => NULL 
-		);
-	}
-	
-	/*!
-		\brief	 Sets the value for the Parameter
-		
-		The value can either be a scalar, and then it will be stored for channel
-		0, or an array, and then will replace the previous array. It is
-		responsibility of the user to make sure that the number of values
-		matches the number of channels in the image.
-		
-		\param	$value	Single wavelength or array of wavelengths
-	*/
-	public function setValue($value) {
-		if (is_array($value)) {
-			for ($i = 0; $i < count($value) && $i <= count( $this->value ); $i++)
-				$this->value[$i] = $value[$i];
-		}
-		else {
-			$this->value[0] = $value;
-		}
 	}
 
 	/*!
@@ -1790,43 +1867,15 @@ class TimeInterval extends NumericalParameter {
  \class	PinholeSize
  \brief	A NumericalParameter to represent the pinhole size (per channel)
 */
-class PinholeSize extends NumericalParameter {
+class PinholeSize extends NumericalArrayParameter {
 
 	/*!
 		\brief	Constructor: creates an empty Parameter
 	*/
 	public function __construct() {
 		parent::__construct("PinholeSize");
-		// Manage one pinhole radius per channel
-		$this->value = array (
-			NULL,
-			NULL,
-			NULL,
-			NULL,
-			NULL
-		);
 	}
 
-	/*!
-		\brief	 Sets the value for the Parameter
-		
-		The value can either be a scalar, and then it will be stored for channel
-		0, or an array, and then will replace the previous array. It is
-		responsibility of the user to make sure that the number of values
-		matches the number of channels in the image.
-		
-		\param	$value	Single pinhole size or array of pinhole sizes
-	*/
-	public function setValue($value) {
-                if (is_array($value)) {
-                        for ($i = 0; $i < count($value); $i++)
-				$this->value[$i] = $value[$i];
-                }
-                else {
-			$this->value[0] = $value;
-                }
-        }
-	
 	/*!
 		\brief	Confirms that this is a Capture Parameter.
 		\return true
@@ -2076,7 +2125,7 @@ class RemoveBackgroundPercent extends VariableChannelsParameter {
  \class	SignalNoiseRatio
  \brief	A NumericalParameter to represent the SNR per channel
 */
-class SignalNoiseRatio extends NumericalParameter {
+class SignalNoiseRatio extends NumericalArrayParameter {
 
 
 	/*!
@@ -2084,36 +2133,8 @@ class SignalNoiseRatio extends NumericalParameter {
 	*/
 	public function __construct() {
 		parent::__construct("SignalNoiseRatio");
-		// Manage one S/N per channel
-		$this->value = array (
-			0 => NULL,
-			1 => NULL,
-			2 => NULL,
-			3 => NULL,
-			4 => NULL
-		);
 	}
 	
-	/*!
-		\brief	 Sets the value for the Parameter
-		
-		The value can either be a scalar, and then it will be stored for channel
-		0, or an array, and then will replace the previous array. It is
-		responsibility of the user to make sure that the number of values
-		matches the number of channels in the image.
-		
-		\param	$value	Single SNR or array of SNRs
-	*/
-	public function setValue($value) {
-		if (is_array($value)) {
-			for ($i = 0; $i < count($value); $i++)
-				$this->value[$i] = $value[$i];
-		}
-		else {
-			$this->value[0] = $value;
-		}
-	}
-
 	/*!
 		\brief	Returns the string representation of the Parameter for the cmle algorithm
 		\param	$numberOfChannels Number of channels (default 0)
@@ -2443,20 +2464,13 @@ class NumberOfIterationsUseRange extends BooleanParameter {
  \class	SignalNoiseRatioRange
  \brief	A NumericalParameter to represent the range of SNRs
 */
-class SignalNoiseRatioRange extends NumericalParameter {
+class SignalNoiseRatioRange extends NumericalArrayParameter {
 	
 	/*!
 		\brief	Constructor: creates an empty Parameter
 	*/
 	public function __construct() {
 		parent::__construct("SignalNoiseRatioRange");
-		$this->value = array (
-			NULL,
-			NULL,
-			NULL,
-			NULL,
-			NULL,
-		);
 	}
 
 	/*!
@@ -2511,7 +2525,7 @@ class SignalNoiseRatioRange extends NumericalParameter {
 		
 		Check the passed SNR value(s) against their boundaries for validity.
 		\param	$value	Value to be checked
-		\return true of the value is valid, false otherwise
+		\return true if the value is valid, false otherwise
 	*/	
 	public function checkValue($value) {
 		$valid = True;
@@ -2537,20 +2551,13 @@ class SignalNoiseRatioRange extends NumericalParameter {
  \class	BackgroundOffsetRange
  \brief	A NumericalParameter to represent the range of background offsets
 */
-class BackgroundOffsetRange extends NumericalParameter {
+class BackgroundOffsetRange extends NumericalArrayParameter {
 
 	/*!
 		\brief	Constructor: creates an empty Parameter
 	*/
 	public function __construct() {
 		parent::__construct("BackgroundOffsetRange");
-		$this->value = array (
-			NULL,
-			NULL,
-			NULL,
-			NULL,
-			NULL
-		);
 	}
 
 	/*!
@@ -2596,19 +2603,13 @@ class BackgroundOffsetRange extends NumericalParameter {
  \class	NumberOfIterationsRange
  \brief	A NumericalParameter to represent the range of iteration numbers
 */
-class NumberOfIterationsRange extends NumericalParameter {
+class NumberOfIterationsRange extends NumericalArrayParameter {
 	
 	/*!
 		\brief	Constructor: creates an empty Parameter
 	*/
 	public function __construct() {
 		parent::__construct("NumberOfIterationsRange");
-		$this->value = array (
-			NULL,
-			NULL,
-			NULL,
-			NULL,
-		);
 	}
 
 	/*!
