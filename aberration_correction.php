@@ -88,7 +88,7 @@ $onChange = "onchange=\"javascript:switchCorrection()\"";
                 sort($possibleValues);
 
                 foreach($possibleValues as $possibleValue) {
-                    $translation = $_SESSION['setting']->translation("PerformAberrationCorrection", $possibleValue);
+                    $translation = $parameter->translatedValueFor( $possibleValue );
                     if ($possibleValue == "0" && $selectedValue == "") {
                         $option = "selected=\"selected\"";
                     }
@@ -142,12 +142,12 @@ if ($_SESSION['setting']->parameter("PerformAberrationCorrection")->value( ) == 
                 $selectedValue  = $parameter->value();
 
                 foreach($possibleValues as $possibleValue) {
-                    $translation = $_SESSION['setting']->translation("CoverslipRelativePosition", $possibleValue);
-                    if ( $possibleValue == $selectedValue ) {
-                        $option = "selected=\"selected\"";
-                    } else {
-                        $option = "";
-                    }
+                  $translation = $parameter->translatedValueFor( $possibleValue );
+                  if ( $possibleValue == $selectedValue ) {
+                    $option = "selected=\"selected\"";
+                  } else {
+                    $option = "";
+                  }
 
             ?>
 
@@ -200,12 +200,12 @@ $onChange = "onchange=\"javascript:switchAdvancedCorrection()\"";
                 $selectedValue  = $parameter->value();
 
                 foreach($possibleValues as $possibleValue) {
-                    $translation = $_SESSION['setting']->translation("AberrationCorrectionMode", $possibleValue);
-                    if ( $possibleValue == $selectedValue ) {
-                        $option = "selected=\"selected\"";
-                    } else {
-                        $option = "";
-                }
+                  $translation = $parameter->translatedValueFor( $possibleValue );
+                  if ( $possibleValue == $selectedValue ) {
+                    $option = "selected=\"selected\"";
+                  } else {
+                    $option = "";
+                  }
 
             ?>
 
@@ -268,12 +268,12 @@ $onChange = "onchange=\"javascript:switchAdvancedCorrectionScheme()\"";
                 }
 
                 foreach($possibleValues as $possibleValue) {
-                    $translation = $_SESSION['setting']->translation("AdvancedCorrectionOptions", $possibleValue);
-                    if ( $possibleValue == $selectedValue ) {
-                        $option = "selected=\"selected\"";
-                    } else {
-                        $option = "";
-                    }
+                  $translation = $parameter->translatedValueFor( $possibleValue );
+                  if ( $possibleValue == $selectedValue ) {
+                    $option = "selected=\"selected\"";
+                  } else {
+                    $option = "";
+                  }
 
             ?>
 

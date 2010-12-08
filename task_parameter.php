@@ -265,7 +265,7 @@ if ( empty( $possibleValues ) == true )
 }
   
 foreach($possibleValues as $possibleValue) {
-  $translation = $_SESSION['task_setting']->translation("DeconvolutionAlgorithm", $possibleValue);
+  $translation = $parameter->translatedValueFor( $possibleValue );
   // This restores the default behavior in case the entry "DeconvolutionAlgorithm"
   // is not in the database
   if ( $translation == false )

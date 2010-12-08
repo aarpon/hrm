@@ -6,233 +6,292 @@ require_once("Setting.inc");
 require_once("Database.inc");
 require_once("User.inc");
 
-//!---------------------------------------------------------
-// \class    SettingEditor
-// \brief     Editor for parameter settings
-//!---------------------------------------------------------
-class SettingEditor {
-  public $user;            // @public user          User    The current user    
-  public $message;         // @public message       String  A message reporting errors that occured in the last operation
-  public $selected;        // @public selected      String  The name of the setting that is currently selected
+/*!
+	\class    BaseSettingEditor
+	\brief    Abstract class for a SettingEditor
+*/
+abstract class BaseSettingEditor {
+	
+	/*!
+		\var	$user
+		\brief	Current User
+	*/
+    protected $user;
 
-  //!---------------------------------------------------------
-  // @function    SettingEditor::SettingEditor
-  // \brief        Konstruktor. Creates a new SettingEditor and
-  //              selects the default setting if a default 
-  //              setting exists.
-  // \param       user    User    The current user
-  // \return      void
-  //!---------------------------------------------------------
-  function SettingEditor($user) { 
-    $this->user = $user;
-    $this->message = '';
-    foreach ($this->settings() as $setting) {
-      if ($setting->isDefault()) { 
-	$this->selected = $setting->name();
-      }
-    } 
-  }
+	/*!
+		\var	$message
+		\brief	Error message from last operation
+	*/
+    protected $message;
 
-  //!---------------------------------------------------------
-  // @function    SettingEditor::selected
-  // \brief        Answers the name of the currently selected
-  //              setting or NULL. 
-  // \return      String
-  //!---------------------------------------------------------
-  function selected() {
-    return $this->selected;
-  } 
+	/*!
+		\var	$selected
+		\brief	Name of the currently selected Setting
+	*/
+    protected $selected;
 
-  //!---------------------------------------------------------
-  // @function    SettingEditor::setSelected
-  // \brief        Set the name of the selected setting
-  // \param       name    String    the name of the setting
-  //                                the user selected.
-  // \return      void
-  //!---------------------------------------------------------
-  function setSelected($name) {
-    $this->selected = $name;
-  } 
-
-  //!---------------------------------------------------------
-  // @function    SettingEditor::user
-  // \brief        Answer the current user
-  // \return      User
-  //!---------------------------------------------------------
-  function user() { 
-    return $this->user;
-  } 
-
-  //!---------------------------------------------------------
-  // @function    SettingEditor::createNewSetting
-  // \brief        Check if the name already exists. If not
-  //              create a new setting named name. Select
-  //              the new setting
-  // \param       name    String    the name of the new setting
-  // \return      Setting
-  //!---------------------------------------------------------
-  function createNewSetting($name) {
-    if (!$this->checkNewSettingName($name)) { 
-      return NULL;
+    /*!
+		\brief	Constructor: creates a new SettingEditor and
+				selects the default Setting if a default 
+				Setting exists.
+		\todo	Check: how can a SettingEditor have a list of Setting even before creation?
+		\param	$user	Current User
+	*/
+    protected function __construct( User $user) { 
+        $this->user = $user;
+        $this->message = '';
+        $this->selected = NULL;
+        foreach ($this->settings() as $setting) {
+            if ($setting->isDefault()) { 
+                $this->selected = $setting->name();
+              }
+        } 
     }
-    $setting = $this->newSettingObject(); 
-    $setting->setName($name);
-    $setting->setOwner($this->user);
-    $this->setSelected($name);
-    return $setting;
-  }
 
-  //!---------------------------------------------------------
-  // @function    SettingEditor::newSettingObject
-  // \brief        Answer a new setting object of the type 
-  //              that the receiver is editing  
-  // \return      Setting
-  //!---------------------------------------------------------
-  function newSettingObject() {
-    return (new ParameterSetting());
-  } 
+    /*!
+		\brief	Abstract function: creates and returns a new Setting
+		
+		This must be reimplemented.
+		
+		\return	a new Setting
+	*/
+    abstract public function newSettingObject();
 
-  //!---------------------------------------------------------
-  // @function    SettingEditor::copySelectedSetting
-  // \brief        create a new setting newName in the database 
-  //              and copy the parameter values of the existing 
-  //              setting oldName to it.
-  // \param       oldName    String  the name of an existing setting
-  // \param       newname    String  the name of the new setting
-  // \return      bool
-  //!---------------------------------------------------------
-  function copySelectedSetting($newName) {
-    if (!$this->checkSelectedSetting()) {
-      return False;
-    };
-    $settings = $this->settings();
-    $oldSettingName = $this->selected();
-    $oldSetting = $settings[$oldSettingName];
-    $oldSetting = $oldSetting->load();
-    $newSetting = $this->createNewSetting($newName);
-    if ($newSetting==NULL) {
-      return False;
+  /*!
+	\brief	Returns the name of the database table in which the
+			ParameterSetting's are stored
+			
+	This must be reimplemented.
+	
+	\todo	Check if this is used!
+	\return	table name
+  */
+  abstract function table();
+	
+    /*!
+		\brief	Loads and returns all the Setting's for current user (does not
+				load the Parameter values)
+		\return	the array of Setting's
+	*/
+	public function settings() {
+	  $settings = array();
+	  $user = $this->user;
+	  $db = new DatabaseConnection();
+	  $results = $db->getSettingList( $user->name(), $this->table() );
+	  foreach ($results as $row) {
+		$setting = $this->newSettingObject();
+		$setting->setName($row['name']);
+		$setting->setOwner($user);
+		if($row['standard'] == 't') {
+		  $setting->beDefault();
+		}
+		$settings[$row['name']] = $setting;
+	  }
+	  return $settings;
+	}
+	
+	/*!
+	  \brief	Returns the Setting with given name
+	  \param	$name	name of the ParameterSetting
+	  \return	the ParameterSetting
+	*/
+	public function setting($name) {
+	  $user = $this->user;
+	  $db = new DatabaseConnection();
+	  $results = $db->getSettingList( $user->name(), $this->table() );
+	  foreach ($results as $row) {
+	    if ($row['name'] == $name) {
+	      $setting = $this->newSettingObject();
+	      $setting->setName($row['name']);
+	      $setting->setOwner($user);
+	      $setting = $setting->load();
+	      return $setting;
+	    }
+	  }
+	  return null;
+	}
+
+  /*!
+		\brief	Returns the name of the currently selected Setting
+				or NULL if none is selected
+		\return	the name of the selected Setting or NULL
+	*/
+    public function selected() {
+        return $this->selected;
     } 
-    $newSetting->copyParameterFrom($oldSetting);
-    $result = $newSetting->save();
-    $this->message = $newSetting->message();
-    return $result;
-  }
 
-  // add public setting support
-  //!---------------------------------------------------------
-  // @function    SettingEditor::copySelectedSetting
-  // \brief        create a new setting in the database
-  //              and copy the parameter values of the public
-  //              setting to it.
-  // \param       setting    Setting  the existing setting
-  // \return      bool
-  //!---------------------------------------------------------
-  function copyPublicSetting($setting) {
-    /*$settings = $this->settings();
-    $oldSettingName = $this->selected();
-    $oldSetting = $settings[$oldSettingName];
-    $oldSetting = $oldSetting->load();*/
-    
-    $newSetting = $this->createNewSetting($setting->name);
-    if ($newSetting == null) {
-      return False;
+    /*!
+		\brief	Sets the Setting with given name as selected
+		\todo	Check that the parameter exists!
+		\param	$name	Name of the Setting to be selected
+	*/
+    public function setSelected($name) {
+        $this->selected = $name;
     } 
-    $newSetting->copyParameterFrom($setting);
-    $result = $newSetting->save();
-    $this->message = $newSetting->message();
-    return $result;
-  } 
 
-  //!---------------------------------------------------------
-  // @function    SettingEditor::loadSetting
-  // \brief        Load the values of the setting name from the
-  //              database and answer the setting. Select the
-  //              loaded setting.
-  // \param       name     the name of the setting to be loaded
-  // \return      Setting
-  //!---------------------------------------------------------
-  function loadSelectedSetting() {
-    if (!$this->checkSelectedSetting()) {
-      return False;
-    };
-    $name = $this->selected();
-    $settings = $this->settings();
-    $setting = $settings[$name];
-    $setting = $setting->load();
-    $this->setSelected($name);
-    return $setting;
-  } 
+    /*!
+		\brief	Returns the name of the User
+		\return	the name of the User
+	*/
+    public function user() {
+        return $this->user;
+    } 
 
-  //!---------------------------------------------------------
-  // @function    SettingEditor::makeDefault
-  // \brief        make the setting name the default setting.
-  //              The default setting will be preselected the
-  //              next time the user enters the page
-  // \param       name     the name of the setting 
-  // \return      void
-  //!---------------------------------------------------------
-  function makeSelectedSettingDefault() { 
-    if (!$this->checkSelectedSetting()) {
-      return False;
-    };
-    $name = $this->selected();
-    foreach ($this->settings() as $setting) {
-      if ($setting->isDefault()) {
-	$setting->resetDefault();
-	$db = new DatabaseConnection();
-	$db->updateDefault($setting);
-      }
-      if ($setting->name() == $name) {
-	$setting->beDefault();
-	$db = new DatabaseConnection();
-	$db->updateDefault($setting);
-      }
+    /*!
+		\brief	Create and set a new Setting with given name. 
+		
+		If a Setting with the same name already exists, return NULL. Otherwise,
+		the new Setting is set into the Editor and also returned.
+		
+		\param	$name	Name of the Setting to be created
+		\return	the created Setting object, or NULL if a Setting 
+				with the same name already exists
+	*/
+    public function createNewSetting($name) {
+        if (!$this->checkNewSettingName($name)) {
+            return NULL;
+        }
+        $setting = $this->newSettingObject(); 
+        $setting->setName($name);
+        $setting->setOwner($this->user);
+        $this->setSelected($name);
+        return $setting;
     }
-  }
 
-  //!---------------------------------------------------------
-  // @function    SettingEditor::delete
-  // \brief        delete the setting named name if it exists
-  // \param       name     the name of the setting 
-  // \return      bool
-  //!---------------------------------------------------------
-  function deleteSelectedSetting() {
-    if (!$this->checkSelectedSetting()) {
-      return False;
-    };
-    $name = $this->selected();
-    $settings = $this->settings();
-    if (!isset($settings[$name])) {
-      return False;
+    /*!
+		\brief	Creates a new Setting with the given new name in the 
+				database and copies the Parameter values of the 
+				existing Parameter to it.
+		\param  $newName    The name of the new Setting
+		\return	true if the copy was successful, false otherwise
+	*/
+    public function copySelectedSetting($newName) {
+        if (!$this->checkSelectedSetting()) {
+            return False;
+        }
+        $settings = $this->settings();
+        $oldSettingName = $this->selected();
+        $oldSetting = $settings[$oldSettingName];
+        $oldSetting = $oldSetting->load();
+        $newSetting = $this->createNewSetting($newName);
+        if ($newSetting==NULL) {
+            return False;
+        } 
+        $newSetting->copyParameterFrom($oldSetting);
+        $result = $newSetting->save();
+        $this->message = $newSetting->message();
+        return $result;
     }
-    $db = new DatabaseConnection();
-    if (!$db->deleteSetting($settings[$name])) {
-      $this->message = "delete setting - database error";
-      return False;
+
+    /*!
+		\brief	Creates a new Setting in the database and copies
+				the values from a public Setting
+		
+		The new Setting will have the same name as the old Setting.
+		This is because this function is used to copy a preset (public
+		Setting) created by the admin into the user list of Setting's.
+		
+		\param	$setting	An existing Setting
+		\return	true if the copy was successful, false otherwise
+	*/
+    public function copyPublicSetting( Setting $setting ) {
+        $newSetting = $this->createNewSetting($setting->name());
+        if ($newSetting == null) {
+            return False;
+        } 
+        $newSetting->copyParameterFrom($setting);
+        $result = $newSetting->save();
+        $this->message = $newSetting->message();
+        return $result;
+      } 
+
+    /*!
+		\brief	Loads the values for the selected Setting and returns
+				the Setting object
+		\return	the loaded, selected Setting if successful, false otherwise
+	*/
+      public function loadSelectedSetting() {
+        if (!$this->checkSelectedSetting()) {
+          return False;
+        }
+        $name = $this->selected();
+        $settings = $this->settings();
+        $setting = $settings[$name];
+        $setting = $setting->load();
+        $this->setSelected($name);
+        return $setting;
+      }
+
+    /*!
+		\brief	Make the selected Setting the default one
+		
+		The selection will be stored in the database.
+		
+		\return	true if it worked, false otherwise
+	*/
+    public function makeSelectedSettingDefault() {
+      if (!$this->checkSelectedSetting()) {
+		$this->message = "Please select a setting in the list before pressing the button!";
+		return False;
+      }
+      $name = $this->selected();
+      foreach ($this->settings() as $setting) {
+        if ($setting->isDefault()) {
+          $setting->resetDefault();
+          $db = new DatabaseConnection();
+          $db->updateDefault($setting);
+        }
+        if ($setting->name() == $name) {
+          $setting->beDefault();
+          $db = new DatabaseConnection();
+          $db->updateDefault($setting);
+        }
+      }
+      return true;
+    }
+
+    /*!
+		\brief	Delete the Setting the selected Setting the default one
+		
+		The selection will be stored in the database.
+		
+		\return	true if it worked, false otherwise
+	*/
+    public function deleteSelectedSetting() {
+      if (!$this->checkSelectedSetting()) {
+        return False;
+      }
+      $name = $this->selected();
+      $settings = $this->settings();
+      if (!isset($settings[$name])) {
+        return False;
+      }
+      $db = new DatabaseConnection();
+      if (!$db->deleteSetting($settings[$name])) {
+        $this->message = "delete setting - database error";
+        return False;
+      }
+      return True;
     } 
-    return True;
-  } 
 
-  //!---------------------------------------------------------
-  // @function    SettingEditor::message
-  // \brief        Answer the error message that has been
-  //              set by the last operation
-  // \return      string
-  //!---------------------------------------------------------
-  function message() { 
-    return $this->message;
-  } 
+	/*!
+	  \brief	Returns the error message that was set by last operation
+		
+	  The message string will be empty if the last operation was successful.
+		
+	  \return	error message
+	*/
+	public function message() {
+	  return $this->message;
+	} 
 
-  //!---------------------------------------------------------
-  // @function    SettingEditor::checkNewSettingName
-  // \brief        Check that the name is not empty and that
-  //              there doesn't exist a setting with the same
-  //              name
-  // \param       name    String    the name of the new setting
-  // \return      bool
-  //!---------------------------------------------------------
-  function checkNewSettingName($name) { 
+	/*!
+	  \brief	Checks that the given name for the new Setting is not empty and
+				that and there does not exist already a Setting with that name
+	  \param	$name	Name for the new Setting		
+	  \return	true if the name is valid, false otherwise
+	*/
+  public function checkNewSettingName($name) { 
     $this->message = '';
     $names = array();
     foreach ($this->settings() as $setting) {
@@ -248,59 +307,12 @@ class SettingEditor {
     } 
     return True;
   }
-
-  //!---------------------------------------------------------
-  // @function    SettingEditor::settings
-  // \brief        Answer a collection of all settings of the 
-  //              user.
-  // \return      Array of Setting
-  //!---------------------------------------------------------
-  function settings() {
-    $settings = array();
-    $user = $this->user;
-    $db = new DatabaseConnection();
-    $results = $db->query($db->settingsQueryString($user->name(), $this->table()));    
-    foreach ($results as $row) { 
-      $setting = $this->newSettingObject();
-      $setting->setName($row['name']);
-      $setting->setOwner($user);  
-      if($row['standard'] == 't') { 
-	$setting->beDefault();
-      }
-      $settings[$row['name']] = $setting;
-    } 
-    return $settings;
-  }
-  // TODO refactor
-  // add public setting support
-  //!---------------------------------------------------------
-  // @function    SettingEditor::setting
-  // \brief        Answer the settings with the specified name.
-  // \param       name    String    the name of the setting
-  // \return      Setting
-  //!---------------------------------------------------------
-  function setting($name) {
-    $user = $this->user;
-    $db = new DatabaseConnection();
-    $results = $db->query($db->settingsQueryString($user->name(), $this->table()));
-    foreach ($results as $row) {
-      if ($row['name'] == $name) {
-	$setting = $this->newSettingObject();
-	$setting->setName($row['name']);
-	$setting->setOwner($user);
-	$setting = $setting->load();
-	return $setting;
-      }
-    }
-    return null;
-  }
-
-  //!---------------------------------------------------------
-  // @function    SettingEditor::defaultSettingName
-  // \brief        Answer the name of the default setting if it
-  //              exists and NULL otherwise.
-  // \return      string
-  //!---------------------------------------------------------  
+  
+  /*!
+	\brief	Returns the name of the default Setting
+	\todo	This function does not seem to be used anymore
+	\return	name of the default Setting
+  */
   function defaultSettingName() {
     foreach ($this->settings() as $setting) {
       if ($setting->isDefault()) {
@@ -310,63 +322,103 @@ class SettingEditor {
     return NULL;
   }
 
-  //!---------------------------------------------------------
-  // @function    SettingEditor::table
-  // \brief        Answer the name of the database table in
-  //              which settings that the receiver edits are
-  //              stored
-  // \return      string
-  //!---------------------------------------------------------  
+	/*!
+		\brief	Checks whether a Setting is selected and whether the selection
+				points to an actually existing Setting
+		\return	true if an existing Setting is selected, false otherwise
+	*/
+    public function checkSelectedSetting() {
+      $this->message = '';
+      $nameOfSelectedSetting = $this->selected();
+      if ($nameOfSelectedSetting=='') {
+        return False;
+      }
+      $settings = $this->settings();
+      if (!isset($settings[$nameOfSelectedSetting])) {
+        return False;
+      }
+      return True;
+    } 
+} // End of SettingEditor class
+
+/*
+	============================================================================
+*/
+
+/*!
+	\class	SettingEditor
+	\brief	Implements an Editor for ParameterSetting
+*/
+class SettingEditor extends BaseSettingEditor {
+
+  /*!
+	\brief	Constructor: creates a new SettingEditor and
+			selects the default Setting if a default 
+			Setting exists.
+	\todo	Check: how can a SettingEditor have a list of Setting even before creation?
+	\param	$user	Current User
+  */
+  public function __construct( User $user) {
+	parent::__construct( $user );
+  }
+
+  /*!
+	\brief	Returns the name of the database table in which the
+			ParameterSetting's are stored
+	\todo	Check if this is used!
+	\return	table name
+  */
   function table() { 
     return "parameter_setting";
   }
+  
+  /*!
+	\brief	Creates and returns a new ParameterSetting
+	\return	a new PatameterSetting
+  */
+  public function newSettingObject() {
+        return (new ParameterSetting());
+  }
 
-  //!---------------------------------------------------------
-  // @function    SettingEditor::checkSelectedSetting
-  // \brief        Answer true if a existing setting is selected.
-  // \return      boolean
-  //!---------------------------------------------------------  
-  function checkSelectedSetting() {
-    $this->message = '';
-    $result = True;
-    $nameOfSelectedSetting = $this->selected();
-    if ($nameOfSelectedSetting=='') {
-      $result = False;
-    } 
-    $settings = $this->settings();
-    if (!isset($settings[$nameOfSelectedSetting])) {
-      $result = False;
-    }
-    if (!$result) {
-      $this->message = "Please select a setting in the list before pressing the button!";
-    } 
-    return $result;
-  } 
 }
 
-//!---------------------------------------------------------
-// \class    TaskSettingEditor
-// \brief     Editor for task settings
-//!---------------------------------------------------------
-class TaskSettingEditor extends SettingEditor {
+/*
+	============================================================================
+*/
 
-  //!---------------------------------------------------------
-  // @function    SettingEditor::table
-  // \brief        Answer the name of the database table in
-  //              which task settings are stored
-  // \return      string
-  //!---------------------------------------------------------  
+/*!
+	\class	TaskSettingEditor
+	\brief	Implements an Editor for TaskSetting
+*/
+class TaskSettingEditor extends BaseSettingEditor {
+
+  /*!
+	\brief	Constructor: creates a new SettingEditor and
+			selects the default Setting if a default 
+			Setting exists.
+	\todo	Check: how can a SettingEditor have a list of Setting even before creation?
+	\param	$user	Current User
+  */
+  public function __construct( User $user) {
+	parent::__construct( $user );
+  }
+  
+  /*!
+	\brief	Returns the name of the database table in which the
+			TaskSetting's are stored
+	\todo	Check if this is used!
+	\return	table name
+  */
   function table() { 
     return "task_setting";
   } 
 
-  //!---------------------------------------------------------
-  // @function    SettingEditor::newSettingObject
-  // \brief        Answer a new setting object of the type 
-  //              that the receiver is editing  
-  // \return      TaskSetting
-  //!---------------------------------------------------------
+  /*!
+	\brief	Creates and returns a new TaskSetting
+	\return	a new TaskSetting
+  */
   function newSettingObject() {
     return (new TaskSetting());
   }
+
 }

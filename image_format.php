@@ -138,7 +138,7 @@ include("header.inc.php");
 
 // new file formats support
 $parameter = $_SESSION['setting']->parameter("ImageFileFormat");
-$values = $_SESSION['setting']->values("ImageFileFormat");
+$values = $parameter->possibleValues();
 $geometryFlag = "";
 $channelsFlag = "";
 sort($values);
@@ -150,7 +150,7 @@ foreach($values as $value) {
               continue;
        }
   }
-  $translation = $_SESSION['setting']->translation("ImageFileFormat", $value);
+  $translation = $parameter->translatedValueFor( $value );
   if (stristr($value, "tiff")) {
     $translation .= " (*.tiff)";
   }

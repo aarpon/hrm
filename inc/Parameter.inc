@@ -402,6 +402,17 @@ class Parameter {
 	public function translatedValue() {
 		return $this->value();
 	}
+	
+    /*!
+		\brief  Returns the translated value for a given possible value
+		\param	$possibleValue	The possible value for which a translation is needed 
+		\return	Translated possible value
+	*/
+	public function translatedValueFor( $possibleValue ) {
+		$db = new DatabaseConnection();
+		return $db->translationFor( $this->name, $possibleValue );
+	}
+	
 } // End of Parameter class
 
 /*
@@ -429,28 +440,17 @@ class ChoiceParameter extends Parameter {
 	public function __construct($name) {
 		parent::__construct($name);
 		$possibleValues = array ();
-	}
-
-	/*!
-		\brief	Gets the Parameter's possible values and default value
-				from the database and sets them
-	*/
-	public function setupAllowedValues() {
+		
+		// Get and set the Parameter possible values
 		$db = new DatabaseConnection;		
 		$values = $db->readPossibleValues($this);
-		$this->setPossibleValues($values);
+		$this->possibleValues = $values;
+		
+		// Get and set the Parameter default value
 		$defaultValue = $db->defaultValue($this->name());
 		if ($defaultValue != NULL) {
-			$this->setValue($defaultValue);
-		}
-	}
-
-	/*!
-		\brief	Overrides the Parameter possible values
-		\param	$values	New possible values
-	*/
-	public function setPossibleValues($values) {
-		$this->possibleValues = $values;
+			$this->value = $defaultValue;
+		}		
 	}
 
 	/*!
@@ -555,6 +555,7 @@ class ChoiceParameter extends Parameter {
 		$result = $result && (in_array($value, $this->possibleValues()));
 		return $result;
 	}
+	
 }
 
 /*
@@ -574,6 +575,7 @@ class BooleanParameter extends ChoiceParameter {
 	public function __construct($name) {
 		parent::__construct($name);
 		$this->possibleValues = array( 'True', 'False' );
+		$this->value = 'False';
 	}
 
 	/*!
@@ -590,17 +592,6 @@ class BooleanParameter extends ChoiceParameter {
 	*/
 	public function isBoolean() {
 		return True;
-	}
-
-	/*!
-		\brief	Sets the BooleanParameter's possible values and default value
-		
-		In reality, the possible values are set by the constructor. This function
-		only sets the value to 'False'.
-
-	*/
-	public function setupAllowedValues() {
-		$this->setValue('False');
 	}
 
 	/*!
@@ -645,6 +636,7 @@ class BooleanParameter extends ChoiceParameter {
 	public function reset() {
 		$this->value = 'False';
 	}
+
 }
 
 /*
@@ -713,13 +705,9 @@ class NumericalParameter extends Parameter {
 		$this->checkMax = False;
 		$this->isMinIncluded = True;
 		$this->isMaxIncluded = True;
-	}
-
-	/*!
-		\brief	Gets the Parameter's possible values, default value and all
-				boundary values from the database and sets them
-	*/
-	public function setupAllowedValues() {
+		
+		// Gets the Parameter's possible values, default value and all
+		// boundary values from the database and sets them
 		$db = new DatabaseConnection;		
 		$values = $db->readNumericalValueRestrictions($this);
 		$min = $values[0];
@@ -863,7 +851,7 @@ class NumericalParameter extends Parameter {
 	    }
 		$this->value = $value;
 	}
-	
+
 }
 
 /*
@@ -969,6 +957,7 @@ class NumericalArrayParameter extends NumericalParameter {
 	        }
 	    }
 	}
+	
 }
 
 /*
@@ -1131,6 +1120,7 @@ class VariableChannelsParameter extends NumericalParameter {
 		}
 		return $result;
 	}
+
 }
 
 /*
@@ -1196,16 +1186,6 @@ class PSF extends Parameter {
 			NULL,
 			NULL
 		);
-	}
-
-	/*!
-		\brief	Gets the Parameter's possible values and default value
-				from the database and sets them
-	*/
-	public function setupAllowedValues()  {
-		/*!
-			\todo	Implement this!
-		*/
 	}
 }
 
@@ -1488,9 +1468,8 @@ class MicroscopeType extends ChoiceParameter {
 		\return translated value
 	*/
 	public function translatedValue() {
-		$value = $this->value;
 		$db = new DatabaseConnection();
-		$result = $db->translationFor($this);
+		$result = $db->translationFor($this->name, $this->value);
 		return $result;
 	}
 }
@@ -1582,9 +1561,8 @@ class ObjectiveType extends ChoiceParameter {
 		\return translated value
 	*/
 	public function translatedValue() {
-		$value = $this->value;
 		$db = new DatabaseConnection();
-		$result = $db->translationFor($this);
+		$result = $db->translationFor($this->name, $this->value);
 		return $result;
 	}
 }
@@ -1624,9 +1602,8 @@ class SampleMedium extends ChoiceParameter {
 		\return translated value
 	*/
 	public function translatedValue() {
-		$value = $this->value;
 		$db = new DatabaseConnection();
-		$result = $db->translationFor($this);
+		$result = $db->translationFor($this->name, $this->value);
 		if ($result == 0)
 			return $value;
 		return $result;
@@ -2034,7 +2011,7 @@ class StyleOfProcessing extends ChoiceParameter {
 		$name = str_replace($uppercase, $lowercase, $name);
 		$result = str_pad($name, 35, ' ', STR_PAD_RIGHT);
 		$db = new DatabaseConnection();
-		$translatedValue = $db->translationFor($this);
+		$translatedValue = $db->translationFor($this->name, $this->value);
 		$result = $result . $translatedValue;
 		$result = $result . "\n";
 		return $result;
@@ -2474,16 +2451,6 @@ class SignalNoiseRatioRange extends NumericalArrayParameter {
 	}
 
 	/*!
-		\brief	Gets the Parameter's possible values and default value
-				from the database and sets them
-	*/
-	public function setupAllowedValues() {
-		$this->name = 'SignalNoiseRatio';
-		NumericalParameter :: setupAllowedValues();
-		$this->name = 'SignalNoiseRatioRange';
-	}
-
-	/*!
 		\brief	Confirm that this is a Range Parameter
 		\return true
 	*/
@@ -2561,16 +2528,6 @@ class BackgroundOffsetRange extends NumericalArrayParameter {
 	}
 
 	/*!
-		\brief	Gets the Parameter's possible values and default value
-				from the database and sets them
-	*/
-	public function setupAllowedValues() {
-		$this->name = 'BackgroundOffsetPercent';
-		NumericalParameter :: setupAllowedValues();
-		$this->name = 'BackgroundOffsetRange';
-	}
-
-	/*!
 		\brief	Confirm that this is a Range Parameter
 		\return true
 	*/
@@ -2610,16 +2567,6 @@ class NumberOfIterationsRange extends NumericalArrayParameter {
 	*/
 	public function __construct() {
 		parent::__construct("NumberOfIterationsRange");
-	}
-
-	/*!
-		\brief	Gets the Parameter's possible values and default value
-				from the database and sets them
-	*/
-	public function setupAllowedValues() {
-		$this->name = 'NumberOfIterations';
-		NumericalParameter :: setupAllowedValues();
-		$this->name = 'NumberOfIterationsRange';
 	}
 
 	/*!
@@ -2675,7 +2622,7 @@ class OutputFileFormat extends ChoiceParameter {
 	*/
 	public function translatedValue() {
 		$db = new DatabaseConnection();
-		$result = $db->translationFor($this);
+		$result = $db->translationFor($this->name, $this->value);
 		return $result;
 	}
 	

@@ -215,10 +215,10 @@ foreach ($parameter->possibleValues() as $possibleValue) {
     $flag = " checked=\"checked\"";
     $default = True;
   }
-  $tvalue = $_SESSION['setting']->translation("SampleMedium", $possibleValue);
+  $translation = $parameter->translatedValueFor( $possibleValue );
 
 ?>
-                <input name="SampleMedium" type="radio" value="<?php echo $possibleValue ?>"<?php echo $flag ?> /><?php echo $possibleValue ?> <span class="title">[<?php echo $tvalue ?>]</span>
+                <input name="SampleMedium" type="radio" value="<?php echo $possibleValue ?>"<?php echo $flag ?> /><?php echo $possibleValue ?> <span class="title">[<?php echo $translation ?>]</span>
                 
                 <br />
 <?php

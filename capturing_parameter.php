@@ -226,17 +226,6 @@ $textForCaptorSize = "pixel size (nm)";
             <?php
                   }
             ?>
-<?php
-
-// display adaption info
-if ($_SESSION['setting']->hasAdaptedParameters()) {
-  $adapted_value = $_SESSION['setting']->adaptedLateralSampleSize();
-  if ($adapted_value != $value) {
-    echo "                        <span class=\"info\">(adapted to ".floor($adapted_value).")</span>";
-  }
-}
-
-?>
                     </li>
 <?php
 

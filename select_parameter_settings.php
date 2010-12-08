@@ -21,12 +21,7 @@ if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
 }
 
 if (!isset($_SESSION['editor'])) {
-  # session_register("editor");
   $_SESSION['editor'] = new SettingEditor($_SESSION['user']);
-}
-
-if (isset($_SESSION['setting'])) {
-  # session_register("setting");
 }
 
 // add public setting support

@@ -304,18 +304,6 @@ class DatabaseConnection {
   }
 
   /*!
-	\brief	Returns a string to query the DB for a list of setting names and
-			standard flags for a given user and table names
-	\param	$name	Name of the user
-	\param	$table	Name of the table
-  	\return	SQL query
-  */
-  public function settingsQueryString($name, $table) {
-    $string = "select name, standard from $table where owner ='" . $name . "' order by name";
-    return $string;
-  }
-
-  /*!
 	\brief	Saves the parameter values of the setting object into the database.
 			If the setting already exists, the old values are overwritten,
 			otherwise a new setting is created
@@ -328,7 +316,7 @@ class DatabaseConnection {
     $name = $settings->name();
     $settingTable = $settings->table();
     $table = $settings->parameterTable();
-    if ($settings->isDefault) 
+    if ($settings->isDefault()) 
       $standard = "t";
     else   
       $standard = "f";
@@ -379,7 +367,7 @@ class DatabaseConnection {
 			the setting with the loaded parameter values. If a value starts
 			with # it is considered to be an array with the first value at
 			the index 0
-	\param	$settings	Settings object to be loaded
+	\param	$settings	Setting object to be loaded
 	\return	$settings object with loaded values
   */
   public function loadParameterSettings($settings) {
@@ -447,7 +435,7 @@ class DatabaseConnection {
     $owner = $settings->owner();
     $user = $owner->name();
     $name = $settings->name();
-    if ($settings->isDefault) 
+    if ($settings->isDefault()) 
       $standard = "t";
     else 
       $standard = "f";
@@ -737,13 +725,12 @@ class DatabaseConnection {
 
   /*!
 	\brief	Returns the translation of current value for a given parameter
-	\param	$parameter	Parameter object
+	\param	$parameterName	Name of the Parameter object
+	\param	$value			Value for which a thanslation should be returned
 	\return	Translated value
   */
-  public function translationFor($parameter) {
-    $name = $parameter->name();
-    $value = $parameter->value();    
-    $query = "select translation from possible_values where parameter = '" .$name . "' and value = '" . $value . "'";
+  public function translationFor($parameterName, $value) {
+    $query = "select translation from possible_values where parameter = '" .$parameterName . "' and value = '" . $value . "'";
     $result = $this->queryLastValue($query);
     return $result;
   } 
@@ -1349,7 +1336,19 @@ class DatabaseConnection {
   	$result = $this->execute($query);
   	return $result;
   }
- 
+
+  /*!
+    \brief	Get the list of Setting's for the User
+    
+    The Parameter values are not loaded.
+    
+    \return	array of Setting's
+  */
+  public function getSettingList( $username, $table ) {
+	$query = "select name, standard from $table where owner ='" . $username . "' order by name";
+	return ( $this->query( $query ) );
+  }
+  
   /*!
     \brief	Ugly hack to check for old table structure
     \return true if global variables exist

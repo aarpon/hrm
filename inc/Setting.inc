@@ -4,410 +4,395 @@
 
 require_once ("Parameter.inc");
 require_once ("Database.inc");
+require_once ("User.inc");
 require_once ("hrm_config.inc");
 
-//!---------------------------------------------------------
-// \class    Setting
-// \brief     Abstract superclass of specific setting classes
-//!---------------------------------------------------------
-class Setting {
-	public $parameter; // @public parameter    Array    The set of parameter
-	public $message; // @public message      String   The user message for the last inconsistent set of papubliceters  
-	public $owner; // @public owner        Owner    The user or owner of the setting         
-	public $name; // @public name         String   The name of the setting 
-	public $isDefault; // @public isDefault    Boolean  Tells whether the setting is the default setting
+/*!
+ \class    Setting
+ \brief    (Abstract) base class for all specific Setting classes
+ */
+abstract class Setting {
 
-	//!---------------------------------------------------------
-	// @function    Setting::Setting
-	// \brief        Constructor. Creates an empty setting
-	// \return      void
-	//!---------------------------------------------------------
-	function Setting() {
-		$this->parameter = array ();
-		$this->isDefault = False;
-	}
+  /*!
+   \var	$parametrs
+   \brief	Array of Parameter object
+   */
+  protected $parameter;
 
-	//!---------------------------------------------------------
-	// @function    Setting::parameter
-	// \brief        Answer the parameter named name
-	// \param       name  String  The name of the parameter
-	// \return      Parameter
-	//!---------------------------------------------------------
-	function parameter($name) {
-		return $this->parameter[$name];
-	}
+  /*!
+   \var	$message
+   \brief	Message for last invalid Parameter check
+   */
+  protected $message;
 
-	//!---------------------------------------------------------
-	// @function    Setting::set
-	// \brief        Set a parameter. The parameter is stored
-	//              in the setting under its name.
-	// \param       parameter  Parameter  The parameter to be set
-	// \return      Void
-	//!---------------------------------------------------------  
-	function set($parameter) {
-		$this->parameter[$parameter->name()] = $parameter;
-	}
+  /*!
+   \var	$owner
+   \brief	The User or Owner of the Setting
+   */
+  protected $owner;
 
-	// TODO refactor
-	//!---------------------------------------------------------
-	// @function    Setting::values
-	// \brief        Answer the parameter values
-	// \param       name  String  The name of the parameter
-	// \return      Array
-	//!---------------------------------------------------------
-	function values($name) {
-		$db = new DatabaseConnection();
-		$parameter = $this->parameter($name);
-		return $db->readPossibleValues($parameter);
-	}
+  /*!
+   \var	$name
+   \brief	The name of the Setting
+   */
+  protected $name;
 
-	// TODO refactor
-	//!---------------------------------------------------------
-	// @function    Setting::translatedValues
-	// \brief        Answer the translated parameter values
-	// \param       name  String  The name of the parameter
-	// \return      Array
-	//!---------------------------------------------------------
-	function translation($name, $value) {
-		$db = new DatabaseConnection();
-		$parameter = new Parameter($name);
-		$parameter->setValue($value);
-		return $db->translationFor($parameter);
-	}
+  /*!
+   \var	$isDefault
+   \brief	If true, the Setting is the default
+   */
+  protected $isDefault;
 
-	//!---------------------------------------------------------
-	// @function    Setting::message
-	// \brief        Answer the message set by the last check
-	//              performed on this setting
-	// \return      String
-	//!---------------------------------------------------------    
-	function message() {
-		return $this->message;
-	}
+  /*!
+   \brief	Protected constructor: creates an empty Setting
+   */
+  protected function __construct() {
+    $this->parameter = array ();
+    $this->isDefault = False;
+  }
 
-	//!---------------------------------------------------------
-	// @function    Setting::checkChoiceValue
-	// \brief        Check if a choice parameter has a valid value
-	// \param       name  String  The name of the parameter
-	// \param       label String  The name of the parameter as it is displayed on the screen
-	// \return      Void
-	//!---------------------------------------------------------  
-	function checkChoiceValue($name, $label) {
-		$parameter = $this->parameter($name);
-		if (!$parameter->check()) {
-			$options = $parameter->possibleValuesString();
-			$this->message = "Please select the $label (" . $options . ')!';
-			return False;
-		}
-		return True;
-	}
+  /*!
+   \brief	Returns the Parameter of given name
+   \param	$name	Name of the Parameter to return
+   \return	a Parameter object or NULL if the Parameter does not exist
+   */
+  public function parameter($name) {
+    if ( isset( $this->parameter[$name] ) ) {
+      return $this->parameter[$name];
+    } else {
+      return NULL;
+    }
+  }
 
-	//!---------------------------------------------------------
-	// @function    Setting::checkSampleMedium
-	// \brief        Check if the sample medium is defined
-	// \return      Bool
-	//!---------------------------------------------------------  
-	function checkSampleMedium() {
-		$parameter = $this->parameter('SampleMedium');
-		$value = $parameter->value( );
-		if ( empty( $value ) == true ) {
-			$this->message = "Please choose one of the preset sample media or specify a refractive index yourself!";
-			return False;
-		}
-		return True;
-	}
+  /*!
+   \brief	Sets a Parameter. The Parameter is stored in the Setting under its name.
+   \param	$parameter	A Parameter.
+   */
+  public function set($parameter) {
+    $this->parameter[$parameter->name()] = $parameter;
+  }
 
-	//!---------------------------------------------------------
-	// @function    Setting::checkNumericalValue
-	// \brief        Check if a numerical parameter has a valid value
-	// \param       name  String  The name of the parameter
-	// \param       label String  The name of the parameter as it is displayed on the screen
-	// \return      Void
-	//!---------------------------------------------------------  
-	function checkNumericalValue($name, $label) {
-		$parameter = $this->parameter($name);
-		$min = $parameter->min();
-		$max = $parameter->max();
-		$notice = '';
-		if ($parameter->checkMin() && $parameter->checkMax()) {
-			$notice = "The value must be between $min and $max.";
-		} else {
-			if ($parameter->checkMin()) {
-				$notice = "The value must be bigger than $min.";
-			}
-			if ($parameter->checkMax()) {
-				$notice = "The value must be smaller than $max.";
-			}
-		}
-		if (!$parameter->check()) {
-			$this->message = "Please enter a valid $label! $notice";
-			return False;
-		}
-		return True;
-	}
+  /*!
+   \brief  Returns the (error) message generated by last Parameter check
+   \return	(error) message
+   */
+  public function message() {
+    return $this->message;
+  }
 
-	//!---------------------------------------------------------
-	// @function    Setting::checkNumericalValues
-	// \brief        Check if each of the numerical values (one 
-	//              for each channel) is valid.
-	// \param       name             String  The name of the parameter
-	// \param       label            String  The name of the parameter as it is displayed on the screen
-	// \param       numberOfChannels Integer The actual number of channels
-	// \return      Boolean
-	//!---------------------------------------------------------  
-	function checkNumericalValues($name, $label, $numberOfChannels) {
-		$parameter = $this->parameter($name);
-		$values = $parameter->internalValue();
-		if ($name == "BackgroundOffsetPercent" && ($values[0] == "auto" || $values[0] == "object"))
-			return True;
-		// TODO: check if this should be the normal behavior
-		if ($numberOfChannels < 2) {
-			$result = $this->checkNumericalValue($name, $label);
-			return $result;
-		}
-		$result = True;
-		$theLabel = $label;
-		for ($i = 0; $i < $numberOfChannels; $i++) {
-			$ok = $parameter->checkValue($values[$i]);
-			if (!$ok) {
-				$theLabel = $label . " for channel $i";
-				$result = $result && $this->checkNumericalValue($name, $theLabel);
-				break;
-			}
-		}
-		return $result;
-	}
+  /*!
+   \brief	Checks if a ChoiceParameter has a valid value
+   \param	$name  The name of the Parameter
+   \param  $label The name of the Parameter as it is displayed on the screen
+   \todo  	This must be done by the parameter!
+   \return	true if the value is valid, false otherwise
+   */
+  public function checkChoiceValue($name, $label) {
+    $parameter = $this->parameter($name);
+    if (!$parameter->check()) {
+      $options = $parameter->possibleValuesString();
+      $this->message = "Please select the $label (" . $options . ')!';
+      return False;
+    }
+    return True;
+  }
 
-	//!---------------------------------------------------------
-	// @function    Setting::parameterNames()
-	// \brief        Answer the names of all parameters
-	// \return      Array
-	//!---------------------------------------------------------    
-	function parameterNames() {
-		$names = array ();
-		foreach ($this->parameter as $parameter) {
-			$names[] = $parameter->name();
-		}
-		return $names;
-	}
+  /*!
+   \brief	Check if the sample medium is defined
+   \todo  This must be done by the parameter! Remove this function.
+   \return	true if the value is valid, false otherwise
+   */
+  public function checkSampleMedium() {
+    $parameter = $this->parameter('SampleMedium');
+    $value = $parameter->value( );
+    if ( empty( $value ) == true ) {
+      $this->message = "Please choose one of the preset sample media or specify a refractive index yourself!";
+      return False;
+    }
+    return True;
+  }
 
-	//!---------------------------------------------------------
-	// @function    Setting::rangeParameter()
-	// \brief        Answer all range parameter (parameter for 
-	//              which between 2 and 4 values can be entered)
-	// \return      Array
-	//!---------------------------------------------------------    
-	function rangeParameter() {
-		$result = array ();
-		foreach ($this->parameter as $parameter) {
-			if ($parameter->isRangeParameter()) {
-				$result[] = $parameter;
-			}
-		}
-		return $result;
-	}
+  /*!
+   \brief	Checks if a NumericalParameter has a valid value
+   \param	$name  The name of the Parameter
+   \param  $label The name of the Parameter as it is displayed on the screen
+   \todo  This must be done by the parameter! Remove this function.
+   \return	true if the value is valid, false otherwise
+   */
+  public function checkNumericalValue($name, $label) {
+    $parameter = $this->parameter($name);
+    $min = $parameter->min();
+    $max = $parameter->max();
+    $notice = '';
+    if ($parameter->checkMin() && $parameter->checkMax()) {
+      $notice = "The value must be between $min and $max.";
+    } else {
+      if ($parameter->checkMin()) {
+        $notice = "The value must be bigger than $min.";
+      }
+      if ($parameter->checkMax()) {
+        $notice = "The value must be smaller than $max.";
+      }
+    }
+    if (!$parameter->check()) {
+      $this->message = "Please enter a valid $label! $notice";
+      return False;
+    }
+    return True;
+  }
 
-	//!---------------------------------------------------------
-	// @function    Setting::owner
-	// \brief        Answer the owner of the setting
-	// \return      Owner
-	//!---------------------------------------------------------
-	function owner() {
-		return $this->owner;
-	}
+  /*!
+   \brief	Checks if all values in a NumericalArrayParameter are valid
+   \param	$name  The name of the Parameter
+   \param  $label The name of the Parameter as it is displayed on the screen
+   \param	$numberOfChannels	The numberof channels
+   \todo  This must be done by the parameter! Remove this function.
+   \return	true if the values are valid, false otherwise
+   */
+  public function checkNumericalValues($name, $label, $numberOfChannels) {
+    $parameter = $this->parameter($name);
+    $values = $parameter->internalValue();
+    if ($name == "BackgroundOffsetPercent" && ($values[0] == "auto" || $values[0] == "object"))
+    return True;
+    // TODO: check if this should be the normal behavior
+    if ($numberOfChannels < 2) {
+      $result = $this->checkNumericalValue($name, $label);
+      return $result;
+    }
+    $result = True;
+    $theLabel = $label;
+    for ($i = 0; $i < $numberOfChannels; $i++) {
+      $ok = $parameter->checkValue($values[$i]);
+      if (!$ok) {
+        $theLabel = $label . " for channel $i";
+        $result = $result && $this->checkNumericalValue($name, $theLabel);
+        break;
+      }
+    }
+    return $result;
+  }
 
-	//!---------------------------------------------------------
-	// @function    Setting::setOwner
-	// \brief        Set the owner of the setting
-	// \param       owner    Owner    set the owner of the setting
-	// \return      void
-	//!---------------------------------------------------------
-	function setOwner($owner) {
-		$this->owner = $owner;
-	}
+  /*!
+   \brief	Return all Parameter names
+   \return	array of parameter names
+   */
+  public function parameterNames() {
+    $names = array ();
+    foreach ($this->parameter as $parameter) {
+      $names[] = $parameter->name();
+    }
+    return $names;
+  }
 
-	//!---------------------------------------------------------
-	// @function    Setting::name
-	// \brief        Answer the name of the setting
-	// \return      string
-	//!---------------------------------------------------------
-	function name() {
-		return $this->name;
-	}
+  /*!
+   \brief	Returns all RangeParameter objects
 
-	//!---------------------------------------------------------
-	// @function    Setting::setName
-	// \brief        Set the name of the setting
-	// \param       name    String    set the name of the setting
-	// \return      void
-	//!---------------------------------------------------------
-	function setName($name) {
-		$this->name = $name;
-	}
+   A RangeParameter is a Parameter that accepts between 2 and 4 values
+   \todo	The range parameters will be removed. Remove this function
+   \return	array of parameter names
+   */
+  public function rangeParameter() {
+    $result = array ();
+    foreach ($this->parameter as $parameter) {
+      if ($parameter->isRangeParameter()) {
+        $result[] = $parameter;
+      }
+    }
+    return $result;
+  }
 
-	//!---------------------------------------------------------
-	// @function    Setting::isDefault
-	// \brief        Answer whether the setting is the user's 
-	//              default setting
-	// \return      boolean
-	//!---------------------------------------------------------
-	function isDefault() {
-		return $this->isDefault;
-	}
+  /*!
+   \brief	Returns the Owner of the Setting
+   \return	Owner of the Setting
+   */
+  public function owner() {
+    return $this->owner;
+  }
 
-	//!---------------------------------------------------------
-	// @function    Setting::beDefault
-	// \brief        Make the setting the user's default setting
-	// \return      void
-	//!---------------------------------------------------------
-	function beDefault() {
-		$this->isDefault = True;
-	}
+  /*!
+   \brief  Sets the Owner of the Setting
+   \param  $owner	The owner of the Setting
+   */
+  public function setOwner( Owner $owner) {
+    $this->owner = $owner;
+  }
 
-	//!---------------------------------------------------------
-	// @function    Setting::resetDefault
-	// \brief        The setting won't be the default setting 
-	//              anymore
-	// \return      void
-	//!---------------------------------------------------------
-	function resetDefault() {
-		$this->isDefault = False;
-	}
+  /*!
+   \brief	Returns the name of the Setting
+   \return	name of the Setting
+   */
+  public function name() {
+    return $this->name;
+  }
 
-	//!---------------------------------------------------------
-	// @function    Setting::copyParamterFrom
-	// \brief        Copy the parameter values from setting to
-	//              the receiver.
-	// \param       setting  Setting  The setting from which the
-	//                                values are copied to the 
-	//                                receiver
-	// \return      void
-	//!---------------------------------------------------------
-	function copyParameterFrom($setting) {
-		foreach ($setting->parameterNames() as $name) {
-			$parameter = $this->parameter[$name];
-			$otherParameter = $setting->parameter($name);
-			$newValue = $otherParameter->internalValue();
-			$parameter->setValue($newValue);
-			$this->parameter[$name] = $parameter;
-		}
-	}
+  /*!
+   \brief  Sets the name of the Setting
+   \param  $name	Name of the Setting
+   */
+  public function setName($name) {
+    $this->name = $name;
+  }
 
-	//!---------------------------------------------------------
-	// @function    Setting::load
-	// \brief        Load the parameter values for this setting
-	//              from the database and answer a modified 
-	//              version of the receiver.
-	// \return      bool
-	//!---------------------------------------------------------  
-	function load() {
-		$db = new DatabaseConnection();
-		$result = $db->loadParameterSettings($this);
-		if (!$result) {
-			$this->message = "load setting - database access failed!";
-		}
-		return $result;
-	}
+  /*!
+   \brief  Checks whether the Setting is the user's default setting
+   \return	true if the Setting is the default Setting, false otherwise
+   */
+  public function isDefault() {
+    return $this->isDefault;
+  }
 
-	//!---------------------------------------------------------
-	// @function    Setting::save
-	// \brief        Save the parameter setting with the parameter
-	//              values under its name in the database.
-	// \return      bool
-	//!---------------------------------------------------------    
-	function save() {
-		$db = new DatabaseConnection();
-		$result = $db->saveParameterSettings($this);
-		if (!$result) {
-			$this->message = "save setting - database access failed!";
-		}
-		return $result;
-	}
+  /*!
+   \brief  Sets current Setting as the default Setting for the user
+   */
+  public function beDefault() {
+    $this->isDefault = True;
+  }
 
-	//!---------------------------------------------------------
-	// @function    Setting::display
-	// \brief        Display the setting as a text containing
-	//              the parameters and their values.
-	// \return      Void
-	//!---------------------------------------------------------      
-	function display() {
-		print $this->displayString();
-	}
+  /*!
+   \brief  Resets current Setting as no longer the default Setting for the user
+   */
+  public function resetDefault() {
+    $this->isDefault = False;
+  }
 
-	//!---------------------------------------------------------
-	// @function    Setting::displayString
-	// \brief        Answer the display string of the setting.
-	//              It contains the names and values of the 
-	//              settings parameters.
-	// \return      Void
-	//!---------------------------------------------------------        
-	function displayString() {
-		$result = '';
-		
-		// These parameters are important to properly display all the others
-		$numberOfChannels = $this->parameter( "NumberOfChannels" )->value( );
-		$PSF = $this->parameter( "PointSpreadFunction" )->value( );
-		$performAberrationCorrection = $this->parameter( "PerformAberrationCorrection" )->value( );
-		$aberrationCorrectionMode = $this->parameter( "AberrationCorrectionMode" )->value( );
-		$advancedCorrectionOptions = $this->parameter( "AdvancedCorrectionOptions" )->value( );
-		
-		// The relevant parameters for theoretical vs. measured PSF are
-		// displayed, making sure that the number of entries (e.g. for the
-		// wavelengths) reflect the user-defined number of channels
-		foreach ($this->parameter as $parameter) {
-			if ($this->isFixedGeometryFormat() && $parameter->name() == 'ImageGeometry')
-				continue;
-			if (!$this->isMultiPointOrSinglePointConfocal() && $parameter->name() == 'PinholeSize')
-				continue;
-			if (!$this->isMultiChannel() && $parameter->name() == 'NumberOfChannels')
-				continue;
-			if (!$this->isThreeDimensional() && $parameter->name() == 'ZStepSize')
-				continue;
-			if ($parameter->name() == 'IsMultiChannel' || $parameter->name() == 'HasAdaptedValues' || $parameter->name() == 'PSF')
-				continue;
-			if ( ( $parameter->name() == 'ExcitationWavelength' || $parameter->name() == 'EmissionWavelength' ) && $PSF == 'measured' )
-				continue;
-			if ($parameter->name() == 'SampleMedium' && $PSF == 'measured' )
-				continue;		
-			if ($parameter->name() == 'CMount' ) // This is obsolete
-				continue;		
-			if ($parameter->name() == 'TubeFactor' ) // This is obsolete
-				continue;		
-			if ($parameter->name() == 'CCDCaptorSizeX' && $PSF == 'measured' )
-				continue;		
-			if ($parameter->name() == 'CoverslipRelativePosition' && $PSF == 'measured' )
-				continue;
-			if ($parameter->name() == 'CoverslipRelativePosition' && $performAberrationCorrection == 0 )
-				continue;
-			if ($parameter->name() == 'AberrationCorrectionMode' && $performAberrationCorrection == 0 )
-				continue;
-			if ($parameter->name() == 'AdvancedCorrectionOptions' && !( $performAberrationCorrection == 1 && $aberrationCorrectionMode == 'advanced' ) )
-				continue;
-			if ($parameter->name() == 'PSFGenerationDepth' && !( $performAberrationCorrection == 1 && $aberrationCorrectionMode == 'advanced' && $advancedCorrectionOptions == 'user' ) )
-				continue;
-            $result = $result . $parameter->displayString( $numberOfChannels );
-		}
-		return $result;
-	}
-}
+  /*!
+   \brief  Copies the Parameter values from another Setting
+   \param  $setting  The other Setting object from which the values are copied
+   */
+  public function copyParameterFrom($setting) {
+    foreach ($setting->parameterNames() as $name) {
+      $parameter = $this->parameter[$name];
+      $otherParameter = $setting->parameter($name);
+      $newValue = $otherParameter->internalValue();
+      $parameter->setValue($newValue);
+      $this->parameter[$name] = $parameter;
+    }
+  }
 
-//!---------------------------------------------------------
-// \class    ParameterSetting
-// \brief     A parameter setting is a complete set of 
-//           microscope, image and capture parameters.
-//!---------------------------------------------------------
+  /*!
+   \brief	Returns the name of the database table in which the list of
+   Setting names are stored.
+
+   Besides the name, the table contains the Setting's name, owner and
+   the standard (default) flag. This is an abstract function and must
+   be reimplemented.
+   */
+  abstract function table();
+
+  /*!
+   \brief	Returns the name of the database table in which all the Parameters
+   for the Settings stored in the table specified in table()
+    
+   This is an abstract function and must be reimplemented.
+   \see table()
+   */
+  abstract function parameterTable();
+
+  /*!
+   \brief  Displays the setting as a text containing Parameter names and their values
+   \todo	This just call displayString(): refactor this!
+   */
+  public function display() {
+    print $this->displayString();
+  }
+
+  /*!
+   \brief  Displays the setting as a text containing Parameter names and their values
+   \todo	Refactor this!
+   */
+  public function displayString() {
+    $result = '';
+
+    // These parameters are important to properly display all the others
+    $numberOfChannels = $this->parameter( "NumberOfChannels" )->value( );
+    $PSF = $this->parameter( "PointSpreadFunction" )->value( );
+    $performAberrationCorrection = $this->parameter( "PerformAberrationCorrection" )->value( );
+    $aberrationCorrectionMode = $this->parameter( "AberrationCorrectionMode" )->value( );
+    $advancedCorrectionOptions = $this->parameter( "AdvancedCorrectionOptions" )->value( );
+
+    // The relevant parameters for theoretical vs. measured PSF are
+    // displayed, making sure that the number of entries (e.g. for the
+    // wavelengths) reflect the user-defined number of channels
+    foreach ($this->parameter as $parameter) {
+      if ($this->isFixedGeometryFormat() && $parameter->name() == 'ImageGeometry')
+      continue;
+      if (!$this->isMultiPointOrSinglePointConfocal() && $parameter->name() == 'PinholeSize')
+      continue;
+      if (!$this->isMultiChannel() && $parameter->name() == 'NumberOfChannels')
+      continue;
+      if (!$this->isThreeDimensional() && $parameter->name() == 'ZStepSize')
+      continue;
+      if ($parameter->name() == 'IsMultiChannel' || $parameter->name() == 'HasAdaptedValues' || $parameter->name() == 'PSF')
+      continue;
+      if ( ( $parameter->name() == 'ExcitationWavelength' || $parameter->name() == 'EmissionWavelength' ) && $PSF == 'measured' )
+      continue;
+      if ($parameter->name() == 'SampleMedium' && $PSF == 'measured' )
+      continue;
+      if ($parameter->name() == 'CMount' ) // This is obsolete
+      continue;
+      if ($parameter->name() == 'TubeFactor' ) // This is obsolete
+      continue;
+      if ($parameter->name() == 'CCDCaptorSizeX' && $PSF == 'measured' )
+      continue;
+      if ($parameter->name() == 'CoverslipRelativePosition' && $PSF == 'measured' )
+      continue;
+      if ($parameter->name() == 'CoverslipRelativePosition' && $performAberrationCorrection == 0 )
+      continue;
+      if ($parameter->name() == 'AberrationCorrectionMode' && $performAberrationCorrection == 0 )
+      continue;
+      if ($parameter->name() == 'AdvancedCorrectionOptions' && !( $performAberrationCorrection == 1 && $aberrationCorrectionMode == 'advanced' ) )
+      continue;
+      if ($parameter->name() == 'PSFGenerationDepth' && !( $performAberrationCorrection == 1 && $aberrationCorrectionMode == 'advanced' && $advancedCorrectionOptions == 'user' ) )
+      continue;
+      $result = $result . $parameter->displayString( $numberOfChannels );
+    }
+    return $result;
+  }
+
+  /*!
+   \brief  Loads the Parameter values into current Setting
+   \return	the loaded Setting
+   */
+  public function load() {
+    $db = new DatabaseConnection();
+    $result = $db->loadParameterSettings($this);
+    if (!$result) {
+      $this->message = "load setting - database access failed!";
+    }
+    return $result;
+  }
+
+  /*!
+   \brief  Saves all Parameter values from current Setting to the database
+   \return	true if saving was successul, false otherwise
+   */
+  public function save() {
+    $db = new DatabaseConnection();
+    $result = $db->saveParameterSettings($this);
+    if (!$result) {
+      $this->message = "save setting - database access failed!";
+    }
+    return $result;
+  }
+
+} // End of Setting class
+
+/*
+ ============================================================================
+ */
+
+/*!
+ \class	ParameterSetting
+ \brief	A ParameterSetting is a complete set of microscope, image and capture parameters
+ */
 class ParameterSetting extends Setting {
-	//!---------------------------------------------------------
-	// @function    ParameterSetting::ParameterSetting
-	// \brief        Constructor. Creates a new ParameterSetting
-	// \return      void
-	//!---------------------------------------------------------
-	function ParameterSetting() {
-		$this->Setting();
-		// manage parameter adaption
-		// manage measured PSF
-		// support for Nipkow spinning disk
-		$parameterClasses = array (
+
+  /*!
+   \brief	Constructor: constructs and initializes a ParameterSetting
+   */
+  public function __construct() {
+    parent::__construct();
+    $parameterClasses = array (
 			'HasAdaptedValues',
 			'IsMultiChannel',
 			'ImageFileFormat',
@@ -436,1287 +421,1095 @@ class ParameterSetting extends Setting {
 			'AberrationCorrectionMode',
 			'AdvancedCorrectionOptions',
 			'PSFGenerationDepth'
-		);
-		foreach ($parameterClasses as $class) {
-			$param = new $class;
-			$name = $param->name();
-			$param->setupAllowedValues();
-			$this->parameter[$name] = $param;
-		}
-	}
+			);
+			foreach ($parameterClasses as $class) {
+			  $param = new $class;
+			  $name = $param->name();
+			  $this->parameter[$name] = $param;
+			}
+  }
 
-	//!---------------------------------------------------------
-	// @function    ParameterSetting::getAberractionCorrectionParameters()
-	// \brief        Returns the parameters needed for the aberration correction.
-	// \return      Array
-	//!---------------------------------------------------------    
-	function getAberractionCorrectionParameters() {
-		$parameters = array(
+  /*!
+   \brief	Returns the name of the database table in which the list of
+   Setting names are stored.
+
+   Besides the name, the table contains the Setting's name, owner and
+   the standard (default) flag. This is an abstract function and must
+   be reimplemented.
+   */
+  function table() {
+    return "parameter_setting";
+  }
+
+  /*!
+   \brief	Returns the name of the database table in which all the Parameters
+   for the Settings stored in the table specified in table()
+    
+   This is an abstract function and must be reimplemented.
+   \see table()
+   */
+  function parameterTable() {
+    return "parameter";
+  }
+
+  /*!
+   \brief	Returns the Parameter values needed for the aberration correction
+   \return array with all Parameter values for the aberration correction. The keys are the Parameter names
+   */
+  public function getAberractionCorrectionParameters() {
+    $parameters = array(
 			'AberrationCorrectionNecessary' => $this->parameter('AberrationCorrectionNecessary')->value(),
 			'PerformAberrationCorrection' => $this->parameter('PerformAberrationCorrection')->value(),
 			'CoverslipRelativePosition' => $this->parameter('CoverslipRelativePosition')->value(),
 			'AberrationCorrectionMode' => $this->parameter('AberrationCorrectionMode')->value(),
 			'AdvancedCorrectionOptions'=>$this->parameter('AdvancedCorrectionOptions')->value(),
 			'PSFGenerationDepth'=> $this->parameter('PSFGenerationDepth')->value() );
-		return $parameters;
-	}
-	
-	//!---------------------------------------------------------
-	// @function    ParameterSetting::imageParameterNames()
-	// \brief        Answer the names of parameters concerning the image.
-	// \return      Array
-	//!---------------------------------------------------------    
-	function imageParameterNames() {
-		$names = array ();
-		foreach ($this->parameter as $parameter) {
-			if ($parameter->isForImage()) {
-				$names[] = $parameter->name();
-			}
-		}
-		return $names;
-	}
-
-	//!---------------------------------------------------------
-	// @function    ParameterSetting::microscopeParameterNames()
-	// \brief        Answer the names of parameters concerning the microscope
-	// \return      Array
-	//!---------------------------------------------------------    
-	function microscopeParameterNames() {
-		$names = array ();
-		foreach ($this->parameter as $parameter) {
-			if ($parameter->isForMicroscope()) {
-				$names[] = $parameter->name();
-			}
-		}
-		return $names;
-	}
-	//!---------------------------------------------------------
-	// @function    ParameterSetting::capturingParameterNames()
-	// \brief        Answer the names of parameters concerning the captor
-	// \return      Array
-	//!---------------------------------------------------------    
-	function capturingParameterNames() {
-		$names = array ();
-		foreach ($this->parameter as $parameter) {
-			if ($parameter->isForCapture()) {
-				$names[] = $parameter->name();
-			}
-		}
-		return $names;
-	}
-
-	//!---------------------------------------------------------
-	// @function    ParameterSetting::correctionParameterNames()
-	// \brief        Answer the names of parameters concerning the aberration
-	//				correction.
-	// \return      Array
-	//!---------------------------------------------------------    
-	function correctionParameterNames() {
-		$names = array ();
-		foreach ($this->parameter as $parameter) {
-			if ($parameter->isForCorrection()) {
-				$names[] = $parameter->name();
-			}
-		}
-		return $names;
-	}
-	
-	//!---------------------------------------------------------
-	// @function    ParameterSetting::checkImageParameter()
-	// \brief        Check the image parameter. Answer true if they
-	//              are valid. Answer false and set the message
-	//              otherwise.
-	// \return      Boolean
-	//!---------------------------------------------------------    
-	function checkImageParameter() {
-		$result = True;
-		$this->message = '';
-		if ($this->isMultiChannel()) {
-			$result = $this->checkMultiChannelImageParameter();
-		} else {
-			$result = $this->checkSingleChannelImageParameter();
-		}
-		return $result;
-	}
-	//!---------------------------------------------------------
-	// @function    ParameterSetting::checkMicroscopeParameter()
-	// \brief        Check the microscope parameter. Answer true if they
-	//              are valid. Answer false and set the message
-	//              otherwise.
-	// \return      Boolean
-	//!---------------------------------------------------------    
-	function checkMicroscopeParameter() {
-		$this->message = '';
-		if (!$this->checkChoiceValue('MicroscopeType', 'microscope type')) {
-			return False;
-		}
-		if (!$this->checkNumericalAperture()) {
-			return False;
-		}
-		if (!$this->checkWavelength('Excitation')) {
-			return False;
-		}
-		if (!$this->checkWavelength('Emission')) {
-			return False;
-		}
-		if (!$this->checkChoiceValue('ObjectiveType', 'objective type')) {
-			return False;
-		}
-		if (!$this->checkSampleMedium()) {
-			return False;
-		}		//if (!$this->checkNumericalValue('CMount', 'cmount')) {
-		//	return False;
-		//}
-		//if (!$this->checkNumericalValue('TubeFactor', 'tube factor')) {
-		//	return False;
-		//}
-		return True;
-	}
-	//!---------------------------------------------------------
-	// @function    ParameterSetting::checkCapturingParameter()
-	// \brief        Check the capturing  parameter. Answer true if they
-	//              are valid. Answer false and set the message
-	//              otherwise.
-	// \return      Boolean
-	//!---------------------------------------------------------    
-	function checkCapturingParameter() {
-		$this->message = '';
-
-		$text = $this->captorSizeText();
-		if (!$this->checkNumericalValue('CCDCaptorSizeX', $text)) {
-			return False;
-		}
-		if ($this->isThreeDimensional()) {
-			if (!$this->checkNumericalValue('ZStepSize', 'size of the z-step')) {
-				return False;
-			}
-		}
-		if ($this->isTimeSeries()) {
-			if (!$this->checkNumericalValue('TimeInterval', 'time interval')) {
-				return False;
-			}
-		}
-		if ($this->isMultiPointOrSinglePointConfocal()) {
-			// Check pinhole radius for every channel
-			if (!$this->checkPinholeSize()) {
-				return False;
-			}
-		}
-		// Support for Nipkow spinning disk
-		if ($this->isNipkowDisk()) {
-			if (!$this->checkPinholeSpacing()) {
-				return False;
-			}
-		}
-		// Check Nyquist rate only if parameters are not already adapted
-		if (!$this->hasAdaptedParameters() && !$this->checkNyquistRate()) {
-			return False;
-		}
-		return True;
-	}
-
-	//!---------------------------------------------------------
-	// @function    ParameterSetting::checkCalculateParameter()
-	// \brief        Check the parameters needed the compute the pixel size
-	//		from the microscope and camera parameters. Answer true
-	//              if they are valid. Answer false and set the message
-	//              otherwise.
-	// \return      Boolean
-	//!---------------------------------------------------------    
-	function checkCalculateParameter() {
-		$this->message = '';
-		if (!$this->checkNumericalValue('CCDCaptorSizeX', 'CCD element size')) {
-			$this->message = "Please enter a valid CCD element size!";
-			return False;
-		}
-		if (!$this->checkNumericalValue('CMount', 'cmount')) {
-			return False;
-		}
-		if (!$this->checkNumericalValue('TubeFactor', 'tube factor')) {
-			return False;
-		}
-		return True;
-	}
-
-	// manage parameter adaption
-	function hasAdaptedParameters() {
-		$parameter = $this->parameter('HasAdaptedValues');
-		if ($parameter->value() == "True")
-			return True;
-		else
-			return False;
-	}
-
-	// manage parameter adaption
-	function setAdaptedParameters($value) {
-		$parameter = $this->parameter('HasAdaptedValues');
-		if ($value)
-			$parameter->setValue("True");
-		else
-			$parameter->setValue("False");
-		$this->parameter['HasAdaptedValues'] = $parameter;
-	}
-
-	//!---------------------------------------------------------
-	// @function    ParameterSetting::checkPointSpreadFunction()
-	// \brief        Answer true if a PSF file is selected for every
-	//              channel. Answer false and set the message
-	//              otherwise.
-	// \return      Boolean
-	//!---------------------------------------------------------    
-	function checkPointSpreadFunction() {
-		$this->message = '';
-		$parameter = $this->parameter('PSF');
-		$value = $parameter->value();
-		for ($i = 0; $i < $this->numberOfChannels(); $i++) {
-			if ($value[$i] == NULL) {
-				$this->message = "Please select a PSF file for channel $i!";
-				return False;
-			}
-		}
-		return True;
-	}
-
-	// Support for Nipkow spinning disk
-	//!---------------------------------------------------------
-	// @function    ParameterSetting::checkPinholeSpacing
-	// \brief        TODO
-	// \return      Boolean
-	//!---------------------------------------------------------
-	function checkPinholeSpacing() {
-		$result = True;
-		$parameter = $this->parameter('PinholeSpacing');
-		$pinholeSpacingInputString = $parameter->value();
-		if (!is_numeric($pinholeSpacingInputString)) {
-			$this->message = "The pinhole spacing must be a number!";
-			if (strstr($pinholeSpacingInputString, ',')) {
-				$this->message = $this->message . " Please use a point (.) instead of a comma (,)!";
-			}
-			$result = False;
-		}
-		return $result;
-	}
-
-	//!---------------------------------------------------------
-	// @function    ParameterSetting::checkPinholeSize
-	// \brief        TODO
-	// \return      Boolean
-	//!---------------------------------------------------------    
-	function checkPinholeSize() {
-		$parameter = $this->parameter('PinholeSize');
-		$value = $parameter->value();
-		for ($i = 0; $i < $this->numberOfChannels(); $i++) {
-			if (!$parameter->checkValue($value[$i])) {
-				$this->message = "Please enter a valid pinhole size for channel $i!";
-				return False;
-			}
-		}
-		return True;
-	}
-
-	//!---------------------------------------------------------
-	// @function    ParameterSetting::checkNumericalAperture
-	// \brief        The numerical aperture must not be bigger 
-	//              than the lens refractive index or the medium
-	//              refractive index. It must not be smaller than
-	//              0.2
-	// \return      Boolean
-	//!---------------------------------------------------------    
-	function checkNumericalAperture() {
-		$result = True;
-		
-		$parameter = $this->parameter('NumericalAperture');
-		$numericalApertureInputString = $parameter->value();
-		$numericalAperture = (float) $parameter->value();
-		
-		$parameter = $this->parameter('ObjectiveType');
-		$lensRefractiveIndex = (float) $parameter->translatedValue();
-		
-		if ($numericalAperture > $lensRefractiveIndex) {
-			$this->message = "The numerical aperture cannot be larger than the lens refractive index which is $lensRefractiveIndex for the selected objective type. Please lower the numerical aperture!";
-			$result = False;
-		}
-		// The following check (numericalAperture>mediumRefractiveIndex) was
-		// removed in HuygensPro, and we therefore de-activate it in the HRM
-		// as well
-		//$parameter = $this->parameter('SampleMedium');
-		//$mediumRefractiveIndex = (float) $parameter->translatedValue();
-		//if ($numericalAperture > $mediumRefractiveIndex) {
-		//	$this->message = "The numerical aperture cannot be larger than the medium refractive index which is $mediumRefractiveIndex for the selected medium. Please lower the numerical aperture!";
-		//	$result = False;
-		//}
-		if ($numericalAperture < 0.1) {
-			$this->message = "The numerical aperture must not be smaller than 0.1!";
-			$result = False;
-		}
-		if (!is_numeric($numericalApertureInputString)) {
-			$this->message = "The numerical aperture must be a number!";
-			if (strstr($numericalApertureInputString, ',')) {
-				$this->message = $this->message . " Please use a point (.) instead of a comma (,)!";
-			}
-			$result = False;
-		}
-		return $result;
-	}
-
-	// TODO refactor
-	//!---------------------------------------------------------
-	// @function    ParameterSetting::adaptedLateralSampleSize
-	// \brief        Test if the sampling size lies around the ideal
-	//              sampling size according to the nyquist criterium.
-	//              If this is not the case adapt the sample size 
-	//              to the ideal value according to the nyquist
-	//              criterium.
-	// \param       size  float  The sample size entered by the user
-	// \return      float
-	//!---------------------------------------------------------    
-	function adaptedLateralSampleSize() {
-		$result = False;
-		// Use the most restrictive wavelength to compute the adaption
-		$parameter = $this->parameter('EmissionWavelength');
-		if ($this->isTwoPhoton() || $this->isMultiPointOrSinglePointConfocal()) {
-			$parameter = $this->parameter('ExcitationWavelength');
-		}
-		$value = $parameter->value();
-		$mostRestrictiveWavelengthChannel = 0;
-		$mostRestrictiveWavelength = $value[0];
-		for ($i = 1; $i < $this->numberOfChannels(); $i++) {
-			if ($value[$i] < $mostRestrictiveWavelength) {
-				$mostRestrictiveWavelengthChannel = $i;
-				$mostRestrictiveWavelength = $value[$i];
-			}
-		}
-		// Check for undersampling and oversampling using the Nyquist criterium
-		$parameter = $this->parameter('CCDCaptorSizeX');
-		$deltaX = (float) $parameter->value();
-		$parameter = $this->parameter('NumericalAperture');
-		$na = (float) $parameter->value();
-		$lambda = $mostRestrictiveWavelength;
-		$idealDeltaX = $lambda / (4 * $na);
-		if ($this->isMultiPointOrSinglePointConfocal())
-			$idealDeltaX = $idealDeltaX / 2;
-		if ((0.5 * $idealDeltaX <= $deltaX) && ($deltaX <= 1.2 * $idealDeltaX)) {
-			$result = $deltaX;
-		} else {
-			$result = $idealDeltaX;
-		}
-		return $result;
-	}
-
-	// TODO refactor
-	//!---------------------------------------------------------
-	// @function    ParameterSetting::adaptedLateralSampleSize
-	// \brief        Test if the sampling size lies around the ideal
-	//              sampling size according to the nyquist criterium.
-	//              If this is not the case adapt the sample size 
-	//              to the ideal value according to the nyquist
-	//              criterium.
-	// \param       size  float  The sample size entered by the user
-	// \return      float
-	//!---------------------------------------------------------    
-	function adaptedLateralSampleSizeFor($size) {
-		$result = False;
-		// Check for undersampling and oversampling using the Nyquist criterium
-		$deltaX = $size;
-		$parameter = $this->parameter('NumericalAperture');
-		$na = (float) $parameter->value();
-		$parameter = $this->parameter('ExcitationWavelength');
-		$value = $parameter->value();
-		$lambda = $value[0];
-		$idealDeltaX = $lambda / (4 * $na);
-		$idealDeltaX = $idealDeltaX / 2;
-		if ((0.5 * $idealDeltaX <= $deltaX) && ($deltaX <= 1.2 * $idealDeltaX)) {
-			$result = $deltaX;
-		} else {
-			$result = $idealDeltaX;
-		}
-		return $result;
-	}
-
-	/* TODO refactor
-	//!---------------------------------------------------------
-	// @function    ParameterSetting::adaptedLateralSampleSizeFor
-	// \brief        Test if the sampling size lies around the ideal
-	//              sampling size according to the nyquist criterium.
-	//              If this is not the case adapt the sample size 
-	//              to the ideal value according to the nyquist
-	//              criterium.
-	// \param       channel  int  The number of the channel (1-4)
-	// \return      float
-	//!---------------------------------------------------------   
-	function adaptedLateralSampleSizeFor($channel) {
-	    $result = False;
-	    // Check for undersampling and oversampling using the Nyquist criterium
-	    $parameter = $this->parameter('CCDCaptorSizeX');    
-	    $deltaX = (float)$parameter->value();
-	    $parameter = $this->parameter('NumericalAperture');    
-	    $na = (float)$parameter->value();
-	    $parameter = $this->parameter('ExcitationWavelength');
-	    $value = $parameter->value();
-	    $lambda = $value[$channel];
-	    $idealDeltaX = $lambda / (4 * $na); 	
-	    $idealDeltaX = $idealDeltaX / 2;
-	    if ((0.5 * $idealDeltaX <= $deltaX) && ($deltaX <= 1.2 * $idealDeltaX)) {
-	        $result = $deltaX;
-	    } else {
-	        $result = $idealDeltaX;
-	    } 
-	    return $result; 
-	}*/
-
-	/* TODO refactor
-	//!---------------------------------------------------------
-	// @function    ParameterSetting::adaptedNumericalAperture
-	// \brief        Test if the sampling size lies around the ideal
-	//              sampling size according to the nyquist criterium.
-	//              If this is not the case lower the numerical 
-	//              aperture until the condition is met. Answer the
-	//              adapted numerical aperture if one was found. Uses
-	//              the most restrictive wavelength.
-	//              Otherwise answer Null.
-	// \return      Boolean
-	//!---------------------------------------------------------    
-	function adaptedNumericalAperture() {
-	    $result = Null;
-	    // use most restrictive wavelength
-	    $parameter = $this->parameter('EmissionWavelength');
-	    if ($this->isTwoPhoton()) {
-	        $parameter = $this->parameter('ExcitationWavelength');
-	    } 
-	    $value = $parameter->value();
-	    $mostRestrictiveWavelengthChannel = 0;
-	    $mostRestrictiveWavelength = $value[0];
-	    for ($i=1; $i< $this->numberOfChannels(); $i++) {
-	        if ($value[$i] < $mostRestrictiveWavelength) {
-	            $mostRestrictiveWavelengthChannel = $i;
-	            $mostRestrictiveWavelength = $value[$i];
-	        }
-	    }
-	    $parameter = $this->parameter('CCDCaptorSizeX');    
-	    $deltaX = (float)$parameter->value();
-	    $parameter = $this->parameter('NumericalAperture');    
-	    $na = (float)$parameter->value();
-	    $lambda = $mostRestrictiveWavelength;
-	    for ($adapted_na = $na; $adapted_na >= 0.2; $adapted_na = $adapted_na - 0.0025) {
-	        $idealDeltaX = $lambda / (4 * $adapted_na);
-	        if ((0.5 * $idealDeltaX <= $deltaX) && ($deltaX <= 1.2 * $idealDeltaX)) {
-	            $result = $adapted_na;
-	            break;
-	        } 
-	    }
-	    return $result;     
-	}
-	
-	//!---------------------------------------------------------
-	// @function    ParameterSetting::adaptedNumericalApertureFor
-	// \brief        Test if the sampling size lies around the ideal
-	//              sampling size according to the nyquist criterium.
-	//              If this is not the case lower the numerical 
-	//              aperture until the condition is met. Answer the
-	//              adapted numerical aperture if one was found. 
-	//              Otherwise answer Null.
-	// \param       channel  int  The number of the channel (1-4)
-	// \return      Boolean
-	//!---------------------------------------------------------    
-	function adaptedNumericalApertureFor($channel) {
-	    $result = Null;
-	    $parameter = $this->parameter('CCDCaptorSizeX');    
-	    $deltaX = (float)$parameter->value();
-	    $parameter = $this->parameter('NumericalAperture');    
-	    $na = (float)$parameter->value();
-	    $parameter = $this->parameter('EmissionWavelength');
-	    if ($this->isTwoPhoton()) { 
-	        $parameter = $this->parameter('ExcitationWavelength');
-	    } 
-	    $value = $parameter->value();
-	    $lambda = $value[$channel];
-	    for ($adapted_na = $na; $adapted_na >= 0.2; $adapted_na = $adapted_na - 0.0025) {
-	        $idealDeltaX = $lambda / (4 * $adapted_na);
-	        if ((0.5 * $idealDeltaX <= $deltaX) && ($deltaX <= 1.2 * $idealDeltaX)) {
-	            $result = $adapted_na;
-	            break;
-	        } 
-	    }
-	    return $result;     
-	}*/
-
-        //!---------------------------------------------------------
-        // @function    ParameterSetting::calculateNyquistRate
-        // \brief        Ask hucore for the ideal (Nyquist) sampling rate
-        //              for the current conditions. 
-        // \return      An array with the XY and Z ideal sampling.
-        //!---------------------------------------------------------    
-        function calculateNyquistRate() {
-            // Use the most restrictive wavelength to compute the adaption
-            $parameter = $this->parameter('EmissionWavelength');
-            if ( $this->isTwoPhoton()
-                || $this->isMultiPointOrSinglePointConfocal()) {
-                $parameter = $this->parameter('ExcitationWavelength');
-            }
-            $value = $parameter->value();
-            $mostRestrictiveChannel = 0;
-            $mostRestrictiveWavelength = $value[0];
-            for ($i = 1; $i < $this->numberOfChannels(); $i++) {
-                if ($value[$i] < $mostRestrictiveWavelength) {
-                    $mostRestrictiveChannel = $i;
-                    $mostRestrictiveWavelength = $value[$i];
-                }
-            }
-            $parameter = $this->parameter('EmissionWavelength');
-            $value = $parameter->value();
-            $em = $value[$mostRestrictiveChannel];
-            $parameter = $this->parameter('ExcitationWavelength');
-            $value = $parameter->value();
-            $ex = $value[$mostRestrictiveChannel];
-
-            $parameter = $this->parameter('NumericalAperture');
-            $na = (float) $parameter->value();
-
-            $parameter = $this->parameter('MicroscopeType');
-            $micr = $parameter->translatedValue();
-
-            $parameter = $this->parameter('ObjectiveType');
-            $ril = $parameter->translatedValue();
-
-            if ($this->isTwoPhoton()) {
-                $pcnt = 2;
-            } else {
-                $pcnt = 1;
-            }
-            // Only micr, na, em, ex and pcnt are necessary to calculate it.
-
-            $opt = "-micr $micr -na $na -em $em -ex $ex -pcnt $pcnt -ril $ril";
-            $ideal = askHuCore ("calculateNyquistRate", $opt);
-            // print_r($ideal);
-            return array( $ideal['xy'], $ideal['z'] );
-        }
-
-	// sample size adaption for all microscopes
-	// TODO don't answer false if data is over sampled
-	// TODO refactor
-	//!---------------------------------------------------------
-	// @function    ParameterSetting::isNyquistRateOK
-	// \brief        TODO
-	// \return      Boolean
-	//!---------------------------------------------------------    
-	function isNyquistRateOK() {
-		$result = True;
-		$adaption = False;
-		// Use the most restrictive wavelength to compute the adaption
-		$parameter = $this->parameter('EmissionWavelength');
-		if ($this->isTwoPhoton() || $this->isMultiPointOrSinglePointConfocal()) {
-			$parameter = $this->parameter('ExcitationWavelength');
-		}
-		$value = $parameter->value();
-		$mostRestrictiveWavelengthChannel = 0;
-		$mostRestrictiveWavelength = $value[0];
-		for ($i = 1; $i < $this->numberOfChannels(); $i++) {
-			if ($value[$i] < $mostRestrictiveWavelength) {
-				$mostRestrictiveWavelengthChannel = $i;
-				$mostRestrictiveWavelength = $value[$i];
-			}
-		}
-		// Check if data is under sampled and if parameter values can be adapted
-		// In the case of confocal microscopes, the sample size is adapted
-
-		// 1) check if undersampled or oversampled
-		// sample size
-		$parameter = $this->parameter('CCDCaptorSizeX');
-		$deltaX = (float) $parameter->value();
-		// ideal sample size
-		$lambda = $mostRestrictiveWavelength;
-		$parameter = $this->parameter('NumericalAperture');
-		$na = (float) $parameter->value();
-		$idealDeltaX = $lambda / (4 * $na);
-		if ($this->isMultiPointOrSinglePointConfocal())
-			$idealDeltaX /= 2;
-		// sampling factor
-		$factor = $idealDeltaX / $deltaX;
-
-		// if 3-D, check if sample size in z direction also has to be adapted
-		if ($this->isThreeDimensional()) {
-			$parameter = $this->parameter('ZStepSize');
-			$sampleSizeZ = (float) $parameter->value();
-			$idealSampleSizeZ = $this->idealSampleSizeZ(); // EDIT
-			$z_factor = $idealSampleSizeZ / $sampleSizeZ;
-		}
-
-		// 2) if undersampled, compute adapted sample size, warn and ask for confirmation
-		if ($factor < 1 || !((0.5 * $idealSampleSizeZ <= $sampleSizeZ) && ($sampleSizeZ <= 1.2 * $idealSampleSizeZ))) { // EDIT
-			// TODO refactor here
-			$this->message = "<p>WARNING: sample size will be adapted to ideal</p>\n";
-			$this->message = $this->message . "<p>Sampling rate w.r.t. Nyquist criterion:<br />";
-			$this->message = $this->message . "X-dir: " . number_format(round($idealDeltaX / $deltaX, 2), 2, ',', '') . "<br />Y-dir: " . number_format(round($idealDeltaX / $deltaX, 2), 2, ',', '');
-			if ($this->isThreeDimensional()) {
-				$param = $this->parameter('ZStepSize');
-				$size = (float) $param->value();
-				$this->message = $this->message . "<br />Z-dir: " . number_format(round($idealSampleSizeZ / $sampleSizeZ, 2), 2, ',', ''); // EDIT
-			}
-			$this->message = $this->message . "<br />(values > 1 represent supersampling)</p>\n";
-			$this->message = $this->message . "<p>Sampling precisely according to the Nyquist criterion would involve sampling distances (nm):<br />";
-			$this->message = $this->message . "X-dir: " . floor($idealDeltaX) . "<br />Y-dir: " . floor($idealDeltaX);
-			if ($this->isThreeDimensional()) {
-				$this->message = $this->message . "<br />Z-dir: " . floor($idealSampleSizeZ) . "<br />"; // EDIT
-			}
-			$this->message = $this->message . "</p>\n<p>If you still want to use these parameter settings, press the OK button again.</p>\n";
-			$this->setAdaptedParameters(True);
-			$result = False;
-		}
-
-		// 3) else if oversampled by factor > 1.5, warn and ask for confirmation
-		else if ($factor >= 1.5 || $z_factor > 1.5) {
-			$this->message = "";
-			if ($factor >= 1.5) {
-				$this->message .= "The image is oversampled by a factor of " . number_format(round($factor, 2), 2, ',', '') . " in lateral direction";
-			}
-			if ($z_factor > 1.5) {
-				$this->message .= "\nThe image is oversampled by a factor of " . number_format(round($z_factor, 2), 2, ',', '') . " in axial direction";
-			}
-			$this->message .= "\nIf you still want to use these parameter settings, press the OK button again.\n";
-			$result = False;
-		}
-
-		// 4) else accept happily
-		else {
-			$result = True;
-		}
-		//}
-		return $result;
-	}
-
-	//!---------------------------------------------------------
-	// @function    ParameterSetting::checkNyquistRate
-	// \brief        For widefield microscope check the nyquist
-	//              rate. Adapt the numerical aperture for each
-	//              channel if necessary. Answer true if under
-	//              sampling and over sampling are limited to
-	//              a reasonable amount.
-	// \return      Boolean
-	//!---------------------------------------------------------    
-	function checkNyquistRate() {
-		// Check Nyquist Rate for every microscope
-		//return $this->isNyquistRateOK();
-		return True;
-	}
-
-	//!---------------------------------------------------------
-	// @function    ParameterSetting::checkWavelength()
-	// \brief        Check the emission or excitation wavelengths.
-	//              This case is treated seperately because there
-	//              is one wavelength value per channel.
-	// \param       name  String  Emission or Excitation
-	// \return      Boolean
-	//!---------------------------------------------------------    
-	function checkWavelength($name) {
-		$parameterName = $name . 'Wavelength';
-		$label = strtolower($name);
-		$parameter = $this->parameter($parameterName);
-		$value = $parameter->value();
-		for ($i = 0; $i < $this->numberOfChannels(); $i++) {
-			if (!$parameter->checkValue($value[$i])) {
-				$this->message = "Please enter a valid $label wavelength for channel $i!";
-				return False;
-			}
-		}
-		return True;
-	}
-	//!---------------------------------------------------------
-	// @function    ParameterSetting::checkSingleChannelImageParameter()
-	// \brief        Check the parameter if single channel had been
-	//              chosen.
-	// \return      Boolean
-	//!---------------------------------------------------------    
-	function checkSingleChannelImageParameter() {
-
-		// Modification by Aaron Ponti, 2005/12/13
-
-		return True;
-
-		// End of modification by Aaron Ponti, 2005/12/13
-
-		$result = True;
-		$parameter = $this->parameter('ImageFileFormat');
-		$fileFormat = $parameter->value();
-		if ((!in_array($fileFormat, $this->singleChannelFileFormats()))) {
-			$this->message = "Please select a single channel file format (" . implode(", ", $this->singleChannelFileFormats()) . ")!";
-			return False;
-		}
-		if ($fileFormat != 'tiff-single') {
-			$result = $this->checkGeometry('single');
-		}
-		return $result;
-	}
-	//!---------------------------------------------------------
-	// @function    ParameterSetting::checkMultiChannelImageParameter()
-	// \brief        Check the parameter if multichannel had been
-	//              chosen.
-	// \return      Boolean
-	//!---------------------------------------------------------    
-	function checkMultiChannelImageParameter() {
-		$result = True;
-		$parameter = $this->parameter('ImageFileFormat');
-		$fileFormat = $parameter->value();
-		if ((!in_array($fileFormat, $this->multiChannelFileFormats()))) {
-			$this->message = "Please select a multichannel file format (" . implode(", ", $this->multiChannelFileFormats()) . ")!";
-			return False;
-		}
-		if (!in_array($fileFormat, $this->fixedGeometryFileFormats())) {
-			$result = $this->checkGeometry('multi');
-		}
-		if (in_array($fileFormat, $this->variableChannelFileFormats())) {
-			$result = $this->checkNumberOfChannels() && $result;
-		}
-		return $result;
-	}
-	//!---------------------------------------------------------
-	// @function    ParameterSetting::checkGeometry
-	// \brief        Check the image geometry parameter (two or
-	//              three dimensional, time series or single image).
-	// \param       prefix  String  single or multi (for single 
-	//              channel or multi channel geometries.
-	// \return      Boolean
-	//!---------------------------------------------------------    
-	function checkGeometry($prefix) {
-		$result = True;
-		$parameter = $this->parameter('ImageGeometry');
-		$geometry = $parameter->internalValue();
-		if ($geometry == '') {
-			$geometry = '_';
-		}
-		$parts = explode('_', $geometry);
-		$geometry = $parts[1];
-		$prefix_ok = True;
-		if ($prefix != $parts[0]) {
-			$prefix_ok = False;
-		}
-		if (!$parameter->check() || !$prefix_ok) {
-			$this->message = "Please select the image kind (" . implode(", ", $parameter->possibleValues()) . ")!";
-			return False;
-		}
-		return $result;
-	}
-	//!---------------------------------------------------------
-	// @function    ParameterSetting::checkNumberOfChannels()
-	// \brief        Check the number of channels. Must be between 
-	//              1 to 5.
-	// \return      Boolean
-	//!---------------------------------------------------------    
-	function checkNumberOfChannels() {
-		$result = True;
-		$parameter = $this->parameter('NumberOfChannels');
-		$numberOfChannels = (int) $parameter->value();
-		if ($numberOfChannels < 1 || $numberOfChannels > 5 ) {
-			$result = False;
-			$this->message = "Please select the number of channels (1-5)!";
-		}
-		return $result;
-	}
-
-	function threeDimensionalGeometries() {
-		static $threeDimensionalGeometries;
-		if ($threeDimensionalGeometries == NULL) {
-			$db = new DatabaseConnection();
-			$threeDimensionalGeometries = $db->geometriesWith(True, NULL);
-		}
-		return $threeDimensionalGeometries;
-	}
-
-	function timeSeriesGeometries() {
-		static $timeSeriesGeometries;
-		if ($timeSeriesGeometries == NULL) {
-			$db = new DatabaseConnection();
-			$timeSeriesGeometries = $db->geometriesWith(NULL, True);
-		}
-		return $timeSeriesGeometries;
-	}
-
-	//!---------------------------------------------------------
-	// @function    ParameterSetting::fixedGeometryFileFormats
-	// \brief        Answer an array of file formats that have a
-	//              fixed geometry (2d images).
-	// \return      array
-	//!---------------------------------------------------------    
-	function fixedGeometryFileFormats() {
-		static $fixedGeometryFileFormats;
-		if ($fixedGeometryFileFormats == NULL) {
-			$db = new DatabaseConnection();
-			$fixedGeometryFileFormats = $db->fileFormatsWith(NULL, NULL, True);
-		}
-		return $fixedGeometryFileFormats;
-	}
-
-	function isFixedGeometryFormat() {
-		$param = $this->parameter('ImageFileFormat');
-		$result = in_array($param->value(), $this->fixedGeometryFileFormats());
-		return $result;
-	}
-
-	//!---------------------------------------------------------
-	// @function    ParameterSetting::singleChannelFileFormats
-	// \brief        Answer an array of file formats that support
-	//              single channel images.
-	// \return      array
-	//!---------------------------------------------------------    
-	function singleChannelFileFormats() {
-		static $singleChannelFileFormats;
-		if ($singleChannelFileFormats == NULL) {
-			$db = new DatabaseConnection();
-			$singleChannelFileFormats = $db->fileFormatsWith(True, NULL, NULL);
-		}
-		return $singleChannelFileFormats;
-	}
-
-	//!---------------------------------------------------------
-	// @function    ParameterSetting::multiChannelFileFormats
-	// \brief        Answer an array of file formats that support
-	//              multi channel images.
-	// \return      array
-	//!---------------------------------------------------------    
-	function multiChannelFileFormats() {
-		static $multiChannelFileFormats;
-		if ($multiChannelFileFormats == NULL) {
-			$db = new DatabaseConnection();
-			$multiChannelFileFormats = $db->fileFormatsWith(False, NULL, NULL);
-		}
-		return $multiChannelFileFormats;
-	}
-
-	//!---------------------------------------------------------
-	// @function    ParameterSetting::variableChannelFileFormats
-	// \brief        Answer an array of file formats that support
-	//              a variable number of channels in one file
-	// \return      array
-	//!---------------------------------------------------------    
-	function variableChannelFileFormats() {
-		static $variableChannelFileFormats;
-		if ($variableChannelFileFormats == NULL) {
-			$db = new DatabaseConnection();
-			$variableChannelFileFormats = $db->fileFormatsWith(NULL, True, NULL);
-		}
-		return $variableChannelFileFormats;
-	}
-
-	//!---------------------------------------------------------
-	// @function    ParameterSetting::isMultiChannel
-	// \brief        Answer true if the setting is for a multi
-	//              channel image.
-	// \return      boolean
-	//!---------------------------------------------------------    
-	function isMultiChannel() {
-		$parameter = $this->parameter('NumberOfChannels');
-		$num_channels = (int) $parameter->value();
-		if ($num_channels > 1) {
-			$result = True;
-		} else {
-			$result = False;
-		}
-		return $result;
-	}
-
-	function isVariableChannelFormat() {
-		$result = False;
-		$parameter = $this->parameter('ImageFileFormat');
-		if (in_array($parameter->value(), $this->variableChannelFileFormats())) {
-			$result = True;
-		}
-		return $result;
-	}
-
-	function isTif() {
-		$result = False;
-		$parameter = $this->parameter('ImageFileFormat');
-		if (strstr($parameter->value(), 'tif'))
-			$result = True;
-		return $result;
-	}
-
-	//!---------------------------------------------------------
-	// @function    ParameterSetting::numberOfChannels
-	// \brief        Answer the number of channels of the setting.
-	// \return      Integer
-	//!---------------------------------------------------------    
-	function numberOfChannels() {
-		$result = 3;
-		if (!$this->isMultiChannel()) {
-			return 1;
-		}
-		if ($this->isVariableChannelFormat()) {
-			$parameter = $this->parameter('NumberOfChannels');
-			return (int) $parameter->value();
-		}
-		return $result;
-	}
-
-	// Support for Nipkow spinning disk
-	//!---------------------------------------------------------
-	// @function    ParameterSetting::isNipkowDisk
-	// \brief        Answer true if the setting is for a Nipkow
-	//              spinning disk microscope.
-	// \return      bool
-	//!---------------------------------------------------------    
-	function isNipkowDisk() {
-		return $this->isMultiPointConfocal();
-	}
-
-	//!---------------------------------------------------------
-	// @function    ParameterSetting::isTwoPhoton
-	// \brief        Answer true if the setting is for a two
-	//              photon microscope.
-	// \return      bool
-	//!---------------------------------------------------------    
-	function isTwoPhoton() {
-		$parameter = $this->parameter('MicroscopeType');
-		$value = $parameter->value();
-		return ($value == 'two photon');
-	}
-
-	//!---------------------------------------------------------
-	// @function    ParameterSetting::isSinglePointConfocal
-	// \brief        Answer true if the setting is for a single
-	//              point confocal microscope.
-	// \return      bool
-	//!---------------------------------------------------------      
-	function isSinglePointConfocal() {
-		$parameter = $this->parameter('MicroscopeType');
-		$value = $parameter->value();
-		return ($value == 'single point confocal');
-	}
-
-	//!---------------------------------------------------------
-	// @function    ParameterSetting::isMultiPointConfocal
-	// \brief        Answer true if the setting is for a multi
-	//              point confocal microscope.
-	// \return      bool
-	//!---------------------------------------------------------      
-	function isMultiPointConfocal() {
-		$parameter = $this->parameter('MicroscopeType');
-		$value = $parameter->value();
-		return ($value == 'multipoint confocal (spinning disk)');
-	}
-
-	//!---------------------------------------------------------
-	// @function    ParameterSetting::isWidefield
-	// \brief        Answer true if the setting is for a widefield
-	//              microscope.
-	// \return      bool
-	//!---------------------------------------------------------      
-	function isWidefield() {
-		$parameter = $this->parameter('MicroscopeType');
-		$value = $parameter->value();
-		return ($value == 'widefield');
-	}
-
-	//!---------------------------------------------------------
-	// @function    ParameterSetting::isWidefieldOrMultiPoint
-	// \brief        Answer true if the setting is for a widefield
-	//              or multi point confocal microscope.
-	// \return      bool
-	//!---------------------------------------------------------    
-	function isWidefieldOrMultiPoint() {
-		return ($this->isWidefield() || $this->isMultiPointConfocal());
-	}
-
-	//!---------------------------------------------------------
-	// @function    ParameterSetting::isTwoPhotonOrSinglePoint
-	// \brief        Answer true if the setting is for a two photon
-	//              or single point confocal microscope.
-	// \return      bool
-	//!---------------------------------------------------------      
-	function isTwoPhotonOrSinglePoint() {
-		return ($this->isSinglePointConfocal() || $this->isTwoPhoton());
-	}
-
-	//!---------------------------------------------------------
-	// @function    ParameterSetting::isMultiPointOrSinglePointConfocal
-	// \brief        Answer true if the setting is for a single
-	//              point or multi point confocal microscope.
-	// \return      bool
-	//!---------------------------------------------------------      
-	function isMultiPointOrSinglePointConfocal() {
-		return ($this->isSinglePointConfocal() || $this->isMultiPointConfocal());
-	}
-
-	//!---------------------------------------------------------
-	// @function    ParameterSetting::isThreeDimensional
-	// \brief        Answer true if the setting is for a three
-	//              dimensional image geometry.
-	// \return      bool
-	//!---------------------------------------------------------      
-	function isThreeDimensional() {
-		$parameter = $this->parameter('ImageGeometry');
-		$value = $parameter->value();
-		$format = $this->parameter('ImageFileFormat');
-		$formatValue = $format->value();
-		return (in_array($value, $this->threeDimensionalGeometries()) && !in_array($formatValue, $this->fixedGeometryFileFormats()));
-	}
-
-	//!---------------------------------------------------------
-	// @function    ParameterSetting::isTimeSeries
-	// \brief        Answer true if the setting is for a time
-	//              series of images.
-	// \return      bool
-	//!---------------------------------------------------------      
-	function isTimeSeries() {
-		if ($this->isFixedGeometryFormat())
-			return False;
-		$parameter = $this->parameter('ImageGeometry');
-		$value = $parameter->value();
-		return (in_array($value, $this->timeSeriesGeometries()));
-	}
-
-	// pixel size = lateral sample size (nm)
-	// TODO rename CCDCaptorSizeX to SampleSizeX
-	//!---------------------------------------------------------
-	// @function    ParameterSetting::pixelSize
-	// \brief        Answer the lateral sample size in nanometer
-	// \return      number
-	//!---------------------------------------------------------        
-	function pixelSize() {
-		$param = $this->parameter('CCDCaptorSizeX');
-		$size = (float) $param->value();
-		//return $this->sampleSize($size);
-		return $size;
-	}
-
-	// TODO refactor
-	//!---------------------------------------------------------
-	// @function    ParameterSetting::sampleSizeX
-	// \brief        Answer the lateral sample size in micron
-	// \return      number
-	//!---------------------------------------------------------        
-	function sampleSizeX() {
-		$size = $this->pixelSize();
-		//return $this->sampleSize($size) / 1000;
-		return $size / 1000;
-	}
-
-	//!---------------------------------------------------------
-	// @function    ParameterSetting::sampleSizeY
-	// \brief        Answer the lateral sample size in micron
-	// \return      number
-	//!---------------------------------------------------------        
-	function sampleSizeY() {
-		return $this->sampleSizeX();
-	}
-
-	//!---------------------------------------------------------
-	// @function    ParameterSetting::sampleSizeZ
-	// \brief        Answer the sample size in z direction in micron
-	// \return      number
-	//!---------------------------------------------------------        
-	function sampleSizeZ() {
-		$param = $this->parameter('ZStepSize');
-		$size = (float) $param->value();
-		//if ($this->hasAdaptedParameters()) $size = $size * $this->sampleSizeAdaptionFactor();
-		return $size / 1000;
-	}
-
-	//!---------------------------------------------------------
-	// @function    ParameterSetting::sampleSizeT
-	// \brief        Answer the time between to images of the 
-	//              time series in seconds. 
-	// \return      number
-	//!---------------------------------------------------------        
-	function sampleSizeT() {
-		$param = $this->parameter('TimeInterval');
-		$size = (float) $param->value();
-		return $size / 1;
-	}
-
-	// sample size adaption for all microscopes
-	//!---------------------------------------------------------
-	// @function    ParameterSetting::sampleSize
-	// \brief        Answer the lateral sample size in nanometer.
-	//              For confocal microscopes the sample size
-	//              may be adapted to fit the nyquist criterium.
-	// \param       size  float  The ccd captor or sampling size
-	//              in nanometer. This Bloquer les numéros 0900?is the value the user 
-	//              entered. 
-	// \return      number
-	//!---------------------------------------------------------          
-
-    // WARNING: the sampling sizes is a property of the image, not something
-    // taht can be adapted after the acquisition!!! It makes no sense to adapt
-    // the samplign to the Nyquist rate. What must be done is to ACQUIRE the
-    // image with the Nyquist rate, but never describe it with fake parameters!
-	function sampleSize($size) {
-		$result = $size;
-		//if ($this->isMultiPointOrSinglePointConfocal()) {
-		// Adapt sample size if necessary according to the nyquist criterium
-		//    $result = $this->sampleSizeForConfocal($size);
-		//}
-		// if ($this->hasAdaptedParameters() && 1 == 0 )
-		//	$result = $this->adaptedLateralSampleSizeFor($size);
-		return $result;
-	}
-
-	// sample size adaption for all micrsocopes
-	function sampleSizeAdaptionFactor() {
-		$result = 1; // for widefield and two photon since NA is adapted and sample size is not changed
-		/*if ($this->isMultiPointOrSinglePointConfocal()) {
-		    $size = $this->pixelSize();
-		    $result = $this->sampleSize($size) / $size;
-		}*/
-		return $result;
-	}
-
-	/* TODO refactor
-	//!---------------------------------------------------------
-	// @function    ParameterSetting::sampleSizeForCCDCaptorElementSize
-	// \brief        Compute and answer the sample size (pixel size) 
-	//              from the single ccd captor size and the microscope 
-	//              parameters
-	// \param       size  float  The ccd captor size in nanometer. 
-	//              This is the value the user entered. 
-	// \return      number
-	//!---------------------------------------------------------
-	function sampleSizeForCCDCaptorElementSize($size) {
-	    $param = $this->parameter('Binning');
-	    $binning = (float)$param->value();
-	    $param = $this->parameter('ObjectiveMagnification');
-	    $magnification = (float)$param->value();
-	    $param = $this->parameter('CMount');
-	    $cmount = (float)$param->value();
-	    $param = $this->parameter('TubeFactor');
-	    $tube = (float)$param->value();
-	    $result = ($size * $binning) / ($magnification * $cmount * $tube);
-	    return $result;
-	}*/
-
-	/* TODO refactor
-	//!---------------------------------------------------------
-	// @function    ParameterSetting::sampleSizeForConfocal
-	// \brief        If necessary adapt the sample size to fit
-	//              the nyquist criterium.
-	// \param       size  float  The pixel size the user entered. 
-	// \return      number
-	//!---------------------------------------------------------
-	function sampleSizeForConfocal($size) {
-	    $result = $this->adaptedLateralSampleSize(1);
-	    return $result;
-	}*/
-
-	//!---------------------------------------------------------
-	// @function    ParameterSetting::table()
-	// \brief        Answer the name of the database table in 
-	//              which the parameter settings are stored. The 
-	//              table contains the setting's name the owner 
-	//              and the standard (default) flag.
-	// \return      String
-	//!---------------------------------------------------------    
-	function table() {
-		return "parameter_setting";
-	}
-
-	//!---------------------------------------------------------
-	// @function    ParameterSetting::parameterTable()
-	// \brief        Answer the name of the database table in
-	//              which the parameters for settings of the 
-	//              receiver's kind are stored. 
-	// \return      String
-	//!---------------------------------------------------------    
-	function parameterTable() {
-		return "parameter";
-	}
-
-	// TODO refactor and remove if not needed
-	function usesPhotomultiplier() {
-		if ($this->isSinglePointConfocal() || $this->isTwoPhoton()) {
-			$result = True;
-		} else {
-			$result = False;
-		}
-		return $result;
-	}
-
-	// TODO refactor and remove if not needed
-	function usesCCDCamera() {
-		if ($this->isMultiPointConfocal() || $this->isWidefield()) {
-			$result = True;
-		} else {
-			$result = False;
-		}
-		return $result;
-	}
-
-	// TODO refactor and remove if not needed
-	function captorSizeText() {
-		$result = 'x size of the ccd captor';
-		if ($this->usesPhotomultiplier()) {
-			$result = 'pixel size';
-		}
-		return $result;
-	}
-
-	// TODO refactor if needed
-	function idealSampleSizeZ() {
-		// use most restrictive wavelength
-		if ($this->isWidefield()) {
-			$parameter = $this->parameter('EmissionWavelength');
-		} else {
-			$parameter = $this->parameter('ExcitationWavelength');
-		}
-		$value = $parameter->value();
-		$mostRestrictiveWavelengthChannel = 0;
-		$mostRestrictiveWavelength = $value[0];
-		for ($i = 1; $i < $this->numberOfChannels(); $i++) {
-			if ($value[$i] < $mostRestrictiveWavelength) {
-				$mostRestrictiveWavelengthChannel = $i;
-				$mostRestrictiveWavelength = $value[$i];
-			}
-		}
-		$lambda = $mostRestrictiveWavelength;
-		if ($this->isWidefield()) {
-			$factor = 2;
-		} else {
-			$factor = 4;
-		}
-		$parameter = $this->parameter('ObjectiveType');
-		$rim = (float) $parameter->translatedValue();
-		// TODO check if NA should be adapted in case of widefield and two-photon
-		$parameter = $this->parameter('NumericalAperture');
-		$na = (float) $parameter->value();
-		$deltaZ = $lambda / ($factor * $rim * (1 - cos(asin($na / $rim))));
-		return $deltaZ;
-	}
-
-	function idealSampleSizeZFor($channel) {
-		if ($this->isWidefield()) {
-			$parameter = $this->parameter('EmissionWavelength');
-			$value = $parameter->value();
-			$lambda = $value[$channel];
-			$factor = 2;
-		} else {
-			$parameter = $this->parameter('ExcitationWavelength');
-			$value = $parameter->value();
-			$lambda = $value[$channel];
-			$factor = 4;
-		}
-		$parameter = $this->parameter('ObjectiveType');
-		$rim = (float) $parameter->translatedValue();
-		// TODO check if NA should be adapted in case of widefield and two-photon
-		$parameter = $this->parameter('NumericalAperture');
-		$na = (float) $parameter->value();
-		$deltaZ = $lambda / ($factor * $rim * (1 - cos(asin($na / $rim))));
-		return $deltaZ;
-	}
+    return $parameters;
+  }
+
+  /*!
+   \brief	Returns all Image Parameter names
+   \return array of Image Parameter names
+   */
+  public function imageParameterNames() {
+    $names = array ();
+    foreach ($this->parameter as $parameter) {
+      if ($parameter->isForImage()) {
+        $names[] = $parameter->name();
+      }
+    }
+    return $names;
+  }
+
+  /*!
+   \brief	Returns all Microscope Parameter names
+   \return array of Microscope Parameter names
+   */
+  public function microscopeParameterNames() {
+    $names = array ();
+    foreach ($this->parameter as $parameter) {
+      if ($parameter->isForMicroscope()) {
+        $names[] = $parameter->name();
+      }
+    }
+    return $names;
+  }
+
+  /*!
+   \brief	Returns all Capture Parameter names
+   \return array of Capture Parameter names
+   */
+  public function capturingParameterNames() {
+    $names = array ();
+    foreach ($this->parameter as $parameter) {
+      if ($parameter->isForCapture()) {
+        $names[] = $parameter->name();
+      }
+    }
+    return $names;
+  }
+
+  /*!
+   \brief	Returns all Correction Parameter names
+   \return array of Correction Parameter names
+   */
+  public	function correctionParameterNames() {
+    $names = array ();
+    foreach ($this->parameter as $parameter) {
+      if ($parameter->isForCorrection()) {
+        $names[] = $parameter->name();
+      }
+    }
+    return $names;
+  }
+
+  /*!
+   \brief	Checks the Image Parameter values
+   \todo	The Parameters should do their own checks!
+   Moreover, this is using deprecated functions! Check!
+   \return true if they are all valid, false otherwise
+   */
+  public function checkImageParameter() {
+    $result = True;
+    $this->message = '';
+    if ($this->isMultiChannel()) {
+      $result = $this->checkMultiChannelImageParameter();
+    } else {
+      $result = $this->checkSingleChannelImageParameter();
+    }
+    return $result;
+  }
+
+  /*!
+   \brief	Checks the Microscope Parameter values
+   \todo	The Parameters should do their own checks!
+   \return true if they are all valid, false otherwise
+   */
+  public function checkMicroscopeParameter() {
+    $this->message = '';
+    if (!$this->checkChoiceValue('MicroscopeType', 'microscope type')) {
+      return False;
+    }
+    if (!$this->checkNumericalAperture()) {
+      return False;
+    }
+    if (!$this->checkWavelength('Excitation')) {
+      return False;
+    }
+    if (!$this->checkWavelength('Emission')) {
+      return False;
+    }
+    if (!$this->checkChoiceValue('ObjectiveType', 'objective type')) {
+      return False;
+    }
+    if (!$this->checkSampleMedium()) {
+      return False;
+    }		//if (!$this->checkNumericalValue('CMount', 'cmount')) {
+    //	return False;
+    //}
+    //if (!$this->checkNumericalValue('TubeFactor', 'tube factor')) {
+    //	return False;
+    //}
+    return True;
+}
+
+/*!
+ \brief	Checks the CpatureCapture Parameter values
+ \todo	The Parameters should do their own checks!
+ \return true if they are all valid, false otherwise
+ */
+public function checkCapturingParameter() {
+  $this->message = '';
+
+  $text = $this->captorSizeText();
+  if (!$this->checkNumericalValue('CCDCaptorSizeX', $text)) {
+    return False;
+  }
+  if ($this->isThreeDimensional()) {
+    if (!$this->checkNumericalValue('ZStepSize', 'size of the z-step')) {
+      return False;
+    }
+  }
+  if ($this->isTimeSeries()) {
+    if (!$this->checkNumericalValue('TimeInterval', 'time interval')) {
+      return False;
+    }
+  }
+  if ($this->isMultiPointOrSinglePointConfocal()) {
+    // Check pinhole radius for every channel
+    if (!$this->checkPinholeSize()) {
+      return False;
+    }
+  }
+  // Support for Nipkow spinning disk
+  if ($this->isNipkowDisk()) {
+    if (!$this->checkPinholeSpacing()) {
+      return False;
+    }
+  }
+  // Check Nyquist rate only if parameters are not already adapted
+  if (!$this->hasAdaptedParameters() && !$this->checkNyquistRate()) {
+    return False;
+  }
+  return True;
+}
+
+/*!
+ \brief	Checks the Parameter values needed to compute the pixel size
+ from microscope and camera parameters
+ \todo	The Parameters should do their own checks!
+ \return true if they are all valid, false otherwise
+ */
+public function checkCalculateParameter() {
+  $this->message = '';
+  if (!$this->checkNumericalValue('CCDCaptorSizeX', 'CCD element size')) {
+    $this->message = "Please enter a valid CCD element size!";
+    return False;
+  }
+  if (!$this->checkNumericalValue('CMount', 'cmount')) {
+    return False;
+  }
+  if (!$this->checkNumericalValue('TubeFactor', 'tube factor')) {
+    return False;
+  }
+  return True;
+}
+
+/*!
+ \brief	Checks whether there are adapted Parameter values
+ \todo	The whole adaptation infrastructure is not in use anymore: remove it from the code!
+ \return true if there are adapted values, false otherwise
+ */
+public function hasAdaptedParameters() {
+  $parameter = $this->parameter('HasAdaptedValues');
+  if ($parameter->value() == "True")
+  return True;
+  else
+  return False;
+}
+
+/*!
+ \brief	Sets the Adapted Value state
+ \todo	The whole adaptation infrastructure is not in use anymore: remove it from the code!
+ \return true if there are adapted values, false otherwise
+ */
+public function setAdaptedParameters($value) {
+  $parameter = $this->parameter('HasAdaptedValues');
+  if ($value)
+  $parameter->setValue("True");
+  else
+  $parameter->setValue("False");
+  $this->parameter['HasAdaptedValues'] = $parameter;
+}
+
+/*!
+ \brief	Checks whether a PSF file name is set for each channel
+ \return true if there each channel has a PSF name, false otherwise
+ */
+public function checkPointSpreadFunction() {
+  $this->message = '';
+  $parameter = $this->parameter('PSF');
+  $value = $parameter->value();
+  for ($i = 0; $i < $this->numberOfChannels(); $i++) {
+    if ($value[$i] == NULL) {
+      $this->message = "Please select a PSF file for channel $i!";
+      return False;
+    }
+  }
+  return True;
+}
+
+/*!
+ \brief	Checks the Pinhole Spacing
+ \todo	The Parameters should check their own values!
+ \return true if the Pinhole Spacing is valid, false otherwise
+ */
+public function checkPinholeSpacing() {
+  $result = True;
+  $parameter = $this->parameter('PinholeSpacing');
+  $pinholeSpacingInputString = $parameter->value();
+  if (!is_numeric($pinholeSpacingInputString)) {
+    $this->message = "The pinhole spacing must be a number!";
+    if (strstr($pinholeSpacingInputString, ',')) {
+      $this->message = $this->message . " Please use a point (.) instead of a comma (,)!";
+    }
+    $result = False;
+  }
+  return $result;
+}
+
+/*!
+ \brief	Checks the Pinhole Size
+ \todo	The Parameters should check their own values!
+ \return true if the Pinhole Size is valid, false otherwise
+ */
+public function checkPinholeSize() {
+  $parameter = $this->parameter('PinholeSize');
+  $value = $parameter->value();
+  for ($i = 0; $i < $this->numberOfChannels(); $i++) {
+    if (!$parameter->checkValue($value[$i])) {
+      $this->message = "Please enter a valid pinhole size for channel $i!";
+      return False;
+    }
+  }
+  return True;
+}
+
+/*!
+ \brief	Checks the Numerical Aperture
+
+ The numerical aperture must not be larger than the lens refractive
+ index or the medium refractive index. It must not be smaller than
+ the min set in the database (0.2).
+
+ \todo	The Parameters should check their own values!
+ \return true if the Numerical Aperture is valid, false otherwise
+ */
+public function checkNumericalAperture() {
+  $result = True;
+
+  $parameter = $this->parameter('NumericalAperture');
+  $numericalApertureInputString = $parameter->value();
+  $numericalAperture = (float) $parameter->value();
+
+  $parameter = $this->parameter('ObjectiveType');
+  $lensRefractiveIndex = (float) $parameter->translatedValue();
+
+  if ($numericalAperture > $lensRefractiveIndex) {
+    $this->message = "The numerical aperture cannot be larger than the lens refractive index which is $lensRefractiveIndex for the selected objective type. Please lower the numerical aperture!";
+    $result = False;
+  }
+  /*!
+   \todo	This check must be replaced by a proper check against the boundaries stored in the database!
+   */
+  if ($numericalAperture < 0.1) {
+    $this->message = "The numerical aperture must not be smaller than 0.1!";
+    $result = False;
+  }
+  if (!is_numeric($numericalApertureInputString)) {
+    $this->message = "The numerical aperture must be a number!";
+    if (strstr($numericalApertureInputString, ',')) {
+      $this->message = $this->message . " Please use a point (.) instead of a comma (,)!";
+    }
+    $result = False;
+  }
+  return $result;
+}
+
+/*!
+ \brief	Asks HuCore to calculate the ideal (Nyquist) sampling rate
+ for the current conditions.
+ \return	an array with the ideal XY and Z sampling
+ */
+public function calculateNyquistRate() {
+  // Use the most restrictive wavelength to compute the adaption
+  $parameter = $this->parameter('EmissionWavelength');
+  if ( $this->isTwoPhoton()
+  || $this->isMultiPointOrSinglePointConfocal()) {
+    $parameter = $this->parameter('ExcitationWavelength');
+  }
+  $value = $parameter->value();
+  $mostRestrictiveChannel = 0;
+  $mostRestrictiveWavelength = $value[0];
+  for ($i = 1; $i < $this->numberOfChannels(); $i++) {
+    if ($value[$i] < $mostRestrictiveWavelength) {
+      $mostRestrictiveChannel = $i;
+      $mostRestrictiveWavelength = $value[$i];
+    }
+  }
+  $parameter = $this->parameter('EmissionWavelength');
+  $value = $parameter->value();
+  $em = $value[$mostRestrictiveChannel];
+  $parameter = $this->parameter('ExcitationWavelength');
+  $value = $parameter->value();
+  $ex = $value[$mostRestrictiveChannel];
+
+  $parameter = $this->parameter('NumericalAperture');
+  $na = (float) $parameter->value();
+
+  $parameter = $this->parameter('MicroscopeType');
+  $micr = $parameter->translatedValue();
+
+  $parameter = $this->parameter('ObjectiveType');
+  $ril = $parameter->translatedValue();
+
+  if ($this->isTwoPhoton()) {
+    $pcnt = 2;
+  } else {
+    $pcnt = 1;
+  }
+  // Only micr, na, em, ex and pcnt are necessary to calculate it.
+
+  $opt = "-micr $micr -na $na -em $em -ex $ex -pcnt $pcnt -ril $ril";
+  $ideal = askHuCore ("calculateNyquistRate", $opt);
+  // print_r($ideal);
+  return array( $ideal['xy'], $ideal['z'] );
+}
+
+/*!
+ \brief	Checks whether the sampling satisfies the Nyquist criterion
+ \todo	This is not used anymore, remove!
+ \deprecated
+ \return	true if Nyquist is satisfied, false otherwise
+ */
+public function isNyquistRateOK() {
+  $result = True;
+  $adaption = False;
+  // Use the most restrictive wavelength to compute the adaption
+  $parameter = $this->parameter('EmissionWavelength');
+  if ($this->isTwoPhoton() || $this->isMultiPointOrSinglePointConfocal()) {
+    $parameter = $this->parameter('ExcitationWavelength');
+  }
+  $value = $parameter->value();
+  $mostRestrictiveWavelengthChannel = 0;
+  $mostRestrictiveWavelength = $value[0];
+  for ($i = 1; $i < $this->numberOfChannels(); $i++) {
+    if ($value[$i] < $mostRestrictiveWavelength) {
+      $mostRestrictiveWavelengthChannel = $i;
+      $mostRestrictiveWavelength = $value[$i];
+    }
+  }
+  // Check if data is under sampled and if parameter values can be adapted
+  // In the case of confocal microscopes, the sample size is adapted
+
+  // 1) check if undersampled or oversampled
+  // sample size
+  $parameter = $this->parameter('CCDCaptorSizeX');
+  $deltaX = (float) $parameter->value();
+  // ideal sample size
+  $lambda = $mostRestrictiveWavelength;
+  $parameter = $this->parameter('NumericalAperture');
+  $na = (float) $parameter->value();
+  $idealDeltaX = $lambda / (4 * $na);
+  if ($this->isMultiPointOrSinglePointConfocal())
+  $idealDeltaX /= 2;
+  // sampling factor
+  $factor = $idealDeltaX / $deltaX;
+
+  // if 3-D, check if sample size in z direction also has to be adapted
+  if ($this->isThreeDimensional()) {
+    $parameter = $this->parameter('ZStepSize');
+    $sampleSizeZ = (float) $parameter->value();
+    $idealSampleSizeZ = $this->idealSampleSizeZ(); // EDIT
+    $z_factor = $idealSampleSizeZ / $sampleSizeZ;
+  }
+
+  // 2) if undersampled, compute adapted sample size, warn and ask for confirmation
+  if ($factor < 1 || !((0.5 * $idealSampleSizeZ <= $sampleSizeZ) && ($sampleSizeZ <= 1.2 * $idealSampleSizeZ))) { // EDIT
+    // TODO refactor here
+    $this->message = "<p>WARNING: sample size will be adapted to ideal</p>\n";
+    $this->message = $this->message . "<p>Sampling rate w.r.t. Nyquist criterion:<br />";
+    $this->message = $this->message . "X-dir: " . number_format(round($idealDeltaX / $deltaX, 2), 2, ',', '') . "<br />Y-dir: " . number_format(round($idealDeltaX / $deltaX, 2), 2, ',', '');
+    if ($this->isThreeDimensional()) {
+      $param = $this->parameter('ZStepSize');
+      $size = (float) $param->value();
+      $this->message = $this->message . "<br />Z-dir: " . number_format(round($idealSampleSizeZ / $sampleSizeZ, 2), 2, ',', ''); // EDIT
+    }
+    $this->message = $this->message . "<br />(values > 1 represent supersampling)</p>\n";
+    $this->message = $this->message . "<p>Sampling precisely according to the Nyquist criterion would involve sampling distances (nm):<br />";
+    $this->message = $this->message . "X-dir: " . floor($idealDeltaX) . "<br />Y-dir: " . floor($idealDeltaX);
+    if ($this->isThreeDimensional()) {
+      $this->message = $this->message . "<br />Z-dir: " . floor($idealSampleSizeZ) . "<br />"; // EDIT
+    }
+    $this->message = $this->message . "</p>\n<p>If you still want to use these parameter settings, press the OK button again.</p>\n";
+    $this->setAdaptedParameters(True);
+    $result = False;
+  }
+
+  // 3) else if oversampled by factor > 1.5, warn and ask for confirmation
+  else if ($factor >= 1.5 || $z_factor > 1.5) {
+    $this->message = "";
+    if ($factor >= 1.5) {
+      $this->message .= "The image is oversampled by a factor of " . number_format(round($factor, 2), 2, ',', '') . " in lateral direction";
+    }
+    if ($z_factor > 1.5) {
+      $this->message .= "\nThe image is oversampled by a factor of " . number_format(round($z_factor, 2), 2, ',', '') . " in axial direction";
+    }
+    $this->message .= "\nIf you still want to use these parameter settings, press the OK button again.\n";
+    $result = False;
+  }
+
+  // 4) else accept happily
+  else {
+    $result = True;
+  }
+  //}
+  return $result;
+}
+
+/*!
+ \brief	Checks whether the sampling satisfies the Nyquist criterion
+ \todo	This is not used anymore, remove!
+ \deprecated
+ \return	always returns true!
+ */
+public function checkNyquistRate() {
+  // Check Nyquist Rate for every microscope
+  //return $this->isNyquistRateOK();
+  return True;
+}
+
+/*!
+ \brief	Checks the emission or excitation wavelength
+
+ This case is treated seperately because there is one wavelength
+ value per channel.
+
+ \param	$name	One of 'Excitation' or 'Emission'
+ \todo	The Parameters should check their own values!
+ \return	true if the wavelengths are valid, false otherwise
+ */
+public function checkWavelength($name) {
+  $parameterName = $name . 'Wavelength';
+  $label = strtolower($name);
+  $parameter = $this->parameter($parameterName);
+  $value = $parameter->value();
+  for ($i = 0; $i < $this->numberOfChannels(); $i++) {
+    if (!$parameter->checkValue($value[$i])) {
+      $this->message = "Please enter a valid $label wavelength for channel $i!";
+      return False;
+    }
+  }
+  return True;
+}
+
+/*!
+ \brief	Checks whether the chosen file format is single channel
+ \todo	This is no longer used. Remove!
+ \deprecated
+ \return	always true!
+ */
+public function checkSingleChannelImageParameter() {
+
+  // Modification by Aaron Ponti, 2005/12/13
+
+  return True;
+
+  // End of modification by Aaron Ponti, 2005/12/13
+
+  $result = True;
+  $parameter = $this->parameter('ImageFileFormat');
+  $fileFormat = $parameter->value();
+  if ((!in_array($fileFormat, $this->singleChannelFileFormats()))) {
+    $this->message = "Please select a single channel file format (" . implode(", ", $this->singleChannelFileFormats()) . ")!";
+    return False;
+  }
+  if ($fileFormat != 'tiff-single') {
+    $result = $this->checkGeometry('single');
+  }
+  return $result;
+}
+
+/*!
+ \brief	Checks whether the chosen file format is multi channel
+ \return	true if multi channel, false otherwise
+ */
+public function checkMultiChannelImageParameter() {
+  $result = True;
+  $parameter = $this->parameter('ImageFileFormat');
+  $fileFormat = $parameter->value();
+  if ((!in_array($fileFormat, $this->multiChannelFileFormats()))) {
+    $this->message = "Please select a multichannel file format (" . implode(", ", $this->multiChannelFileFormats()) . ")!";
+    return False;
+  }
+  if (!in_array($fileFormat, $this->fixedGeometryFileFormats())) {
+    $result = $this->checkGeometry('multi');
+  }
+  if (in_array($fileFormat, $this->variableChannelFileFormats())) {
+    $result = $this->checkNumberOfChannels() && $result;
+  }
+  return $result;
+}
+
+/*!
+ \brief	Checks the Image Geometry (two or three dimensional,
+ time series or single image).
+ \param	$prefix	Either 'single' (for single-channel geometries)
+ or 'multi' (for multi-channel geometries)
+ \todo	Parameters should check their own values!
+ \return	true if the geometry is valid, false otherwise
+ */
+public function checkGeometry($prefix) {
+  $result = True;
+  $parameter = $this->parameter('ImageGeometry');
+  $geometry = $parameter->internalValue();
+  if ($geometry == '') {
+    $geometry = '_';
+  }
+  $parts = explode('_', $geometry);
+  $geometry = $parts[1];
+  $prefix_ok = True;
+  if ($prefix != $parts[0]) {
+    $prefix_ok = False;
+  }
+  if (!$parameter->check() || !$prefix_ok) {
+    $this->message = "Please select the image kind (" . implode(", ", $parameter->possibleValues()) . ")!";
+    return False;
+  }
+  return $result;
+}
+
+/*!
+ \brief	Checks the number of channels
+ \todo	Parameters should check their own values!
+ \return	true if the number of channels is between boundaries, false otherwise
+ */
+public function checkNumberOfChannels() {
+  $result = True;
+  $parameter = $this->parameter('NumberOfChannels');
+  $numberOfChannels = (int) $parameter->value();
+  /*!
+   \todo	This check must be performed against the boundaries in the database!
+   */
+  if ($numberOfChannels < 1 || $numberOfChannels > 5 ) {
+    $result = False;
+    $this->message = "Please select the number of channels (1-5)!";
+  }
+  return $result;
+}
+
+function threeDimensionalGeometries() {
+  static $threeDimensionalGeometries;
+  if ($threeDimensionalGeometries == NULL) {
+    $db = new DatabaseConnection();
+    $threeDimensionalGeometries = $db->geometriesWith(True, NULL);
+  }
+  return $threeDimensionalGeometries;
+}
+
+function timeSeriesGeometries() {
+  static $timeSeriesGeometries;
+  if ($timeSeriesGeometries == NULL) {
+    $db = new DatabaseConnection();
+    $timeSeriesGeometries = $db->geometriesWith(NULL, True);
+  }
+  return $timeSeriesGeometries;
+}
+
+//!---------------------------------------------------------
+// @function    ParameterSetting::fixedGeometryFileFormats
+// \brief        Answer an array of file formats that have a
+//              fixed geometry (2d images).
+// \return      array
+//!---------------------------------------------------------
+function fixedGeometryFileFormats() {
+  static $fixedGeometryFileFormats;
+  if ($fixedGeometryFileFormats == NULL) {
+    $db = new DatabaseConnection();
+    $fixedGeometryFileFormats = $db->fileFormatsWith(NULL, NULL, True);
+  }
+  return $fixedGeometryFileFormats;
+}
+
+function isFixedGeometryFormat() {
+  $param = $this->parameter('ImageFileFormat');
+  $result = in_array($param->value(), $this->fixedGeometryFileFormats());
+  return $result;
+}
+
+//!---------------------------------------------------------
+// @function    ParameterSetting::singleChannelFileFormats
+// \brief        Answer an array of file formats that support
+//              single channel images.
+// \return      array
+//!---------------------------------------------------------
+function singleChannelFileFormats() {
+  static $singleChannelFileFormats;
+  if ($singleChannelFileFormats == NULL) {
+    $db = new DatabaseConnection();
+    $singleChannelFileFormats = $db->fileFormatsWith(True, NULL, NULL);
+  }
+  return $singleChannelFileFormats;
+}
+
+//!---------------------------------------------------------
+// @function    ParameterSetting::multiChannelFileFormats
+// \brief        Answer an array of file formats that support
+//              multi channel images.
+// \return      array
+//!---------------------------------------------------------
+function multiChannelFileFormats() {
+  static $multiChannelFileFormats;
+  if ($multiChannelFileFormats == NULL) {
+    $db = new DatabaseConnection();
+    $multiChannelFileFormats = $db->fileFormatsWith(False, NULL, NULL);
+  }
+  return $multiChannelFileFormats;
+}
+
+//!---------------------------------------------------------
+// @function    ParameterSetting::variableChannelFileFormats
+// \brief        Answer an array of file formats that support
+//              a variable number of channels in one file
+// \return      array
+//!---------------------------------------------------------
+function variableChannelFileFormats() {
+  static $variableChannelFileFormats;
+  if ($variableChannelFileFormats == NULL) {
+    $db = new DatabaseConnection();
+    $variableChannelFileFormats = $db->fileFormatsWith(NULL, True, NULL);
+  }
+  return $variableChannelFileFormats;
+}
+
+//!---------------------------------------------------------
+// @function    ParameterSetting::isMultiChannel
+// \brief        Answer true if the setting is for a multi
+//              channel image.
+// \return      boolean
+//!---------------------------------------------------------
+function isMultiChannel() {
+  $parameter = $this->parameter('NumberOfChannels');
+  $num_channels = (int) $parameter->value();
+  if ($num_channels > 1) {
+    $result = True;
+  } else {
+    $result = False;
+  }
+  return $result;
+}
+
+function isVariableChannelFormat() {
+  $result = False;
+  $parameter = $this->parameter('ImageFileFormat');
+  if (in_array($parameter->value(), $this->variableChannelFileFormats())) {
+    $result = True;
+  }
+  return $result;
+}
+
+function isTif() {
+  $result = False;
+  $parameter = $this->parameter('ImageFileFormat');
+  if (strstr($parameter->value(), 'tif'))
+  $result = True;
+  return $result;
+}
+
+//!---------------------------------------------------------
+// @function    ParameterSetting::numberOfChannels
+// \brief        Answer the number of channels of the setting.
+// \return      Integer
+//!---------------------------------------------------------
+function numberOfChannels() {
+  $result = 3;
+  if (!$this->isMultiChannel()) {
+    return 1;
+  }
+  if ($this->isVariableChannelFormat()) {
+    $parameter = $this->parameter('NumberOfChannels');
+    return (int) $parameter->value();
+  }
+  return $result;
+}
+
+// Support for Nipkow spinning disk
+//!---------------------------------------------------------
+// @function    ParameterSetting::isNipkowDisk
+// \brief        Answer true if the setting is for a Nipkow
+//              spinning disk microscope.
+// \return      bool
+//!---------------------------------------------------------
+function isNipkowDisk() {
+  return $this->isMultiPointConfocal();
+}
+
+//!---------------------------------------------------------
+// @function    ParameterSetting::isTwoPhoton
+// \brief        Answer true if the setting is for a two
+//              photon microscope.
+// \return      bool
+//!---------------------------------------------------------
+function isTwoPhoton() {
+  $parameter = $this->parameter('MicroscopeType');
+  $value = $parameter->value();
+  return ($value == 'two photon');
+}
+
+//!---------------------------------------------------------
+// @function    ParameterSetting::isSinglePointConfocal
+// \brief        Answer true if the setting is for a single
+//              point confocal microscope.
+// \return      bool
+//!---------------------------------------------------------
+function isSinglePointConfocal() {
+  $parameter = $this->parameter('MicroscopeType');
+  $value = $parameter->value();
+  return ($value == 'single point confocal');
+}
+
+//!---------------------------------------------------------
+// @function    ParameterSetting::isMultiPointConfocal
+// \brief        Answer true if the setting is for a multi
+//              point confocal microscope.
+// \return      bool
+//!---------------------------------------------------------
+function isMultiPointConfocal() {
+  $parameter = $this->parameter('MicroscopeType');
+  $value = $parameter->value();
+  return ($value == 'multipoint confocal (spinning disk)');
+}
+
+//!---------------------------------------------------------
+// @function    ParameterSetting::isWidefield
+// \brief        Answer true if the setting is for a widefield
+//              microscope.
+// \return      bool
+//!---------------------------------------------------------
+function isWidefield() {
+  $parameter = $this->parameter('MicroscopeType');
+  $value = $parameter->value();
+  return ($value == 'widefield');
+}
+
+//!---------------------------------------------------------
+// @function    ParameterSetting::isWidefieldOrMultiPoint
+// \brief        Answer true if the setting is for a widefield
+//              or multi point confocal microscope.
+// \return      bool
+//!---------------------------------------------------------
+function isWidefieldOrMultiPoint() {
+  return ($this->isWidefield() || $this->isMultiPointConfocal());
+}
+
+//!---------------------------------------------------------
+// @function    ParameterSetting::isTwoPhotonOrSinglePoint
+// \brief        Answer true if the setting is for a two photon
+//              or single point confocal microscope.
+// \return      bool
+//!---------------------------------------------------------
+function isTwoPhotonOrSinglePoint() {
+  return ($this->isSinglePointConfocal() || $this->isTwoPhoton());
+}
+
+//!---------------------------------------------------------
+// @function    ParameterSetting::isMultiPointOrSinglePointConfocal
+// \brief        Answer true if the setting is for a single
+//              point or multi point confocal microscope.
+// \return      bool
+//!---------------------------------------------------------
+function isMultiPointOrSinglePointConfocal() {
+  return ($this->isSinglePointConfocal() || $this->isMultiPointConfocal());
+}
+
+//!---------------------------------------------------------
+// @function    ParameterSetting::isThreeDimensional
+// \brief        Answer true if the setting is for a three
+//              dimensional image geometry.
+// \return      bool
+//!---------------------------------------------------------
+function isThreeDimensional() {
+  $parameter = $this->parameter('ImageGeometry');
+  $value = $parameter->value();
+  $format = $this->parameter('ImageFileFormat');
+  $formatValue = $format->value();
+  return (in_array($value, $this->threeDimensionalGeometries()) && !in_array($formatValue, $this->fixedGeometryFileFormats()));
+}
+
+//!---------------------------------------------------------
+// @function    ParameterSetting::isTimeSeries
+// \brief        Answer true if the setting is for a time
+//              series of images.
+// \return      bool
+//!---------------------------------------------------------
+function isTimeSeries() {
+  if ($this->isFixedGeometryFormat())
+  return False;
+  $parameter = $this->parameter('ImageGeometry');
+  $value = $parameter->value();
+  return (in_array($value, $this->timeSeriesGeometries()));
+}
+
+// pixel size = lateral sample size (nm)
+// TODO rename CCDCaptorSizeX to SampleSizeX
+//!---------------------------------------------------------
+// @function    ParameterSetting::pixelSize
+// \brief        Answer the lateral sample size in nanometer
+// \return      number
+//!---------------------------------------------------------
+function pixelSize() {
+  $param = $this->parameter('CCDCaptorSizeX');
+  $size = (float) $param->value();
+  //return $this->sampleSize($size);
+  return $size;
+}
+
+// TODO refactor
+//!---------------------------------------------------------
+// @function    ParameterSetting::sampleSizeX
+// \brief        Answer the lateral sample size in micron
+// \return      number
+//!---------------------------------------------------------
+function sampleSizeX() {
+  $size = $this->pixelSize();
+  //return $this->sampleSize($size) / 1000;
+  return $size / 1000;
+}
+
+//!---------------------------------------------------------
+// @function    ParameterSetting::sampleSizeY
+// \brief        Answer the lateral sample size in micron
+// \return      number
+//!---------------------------------------------------------
+function sampleSizeY() {
+  return $this->sampleSizeX();
+}
+
+//!---------------------------------------------------------
+// @function    ParameterSetting::sampleSizeZ
+// \brief        Answer the sample size in z direction in micron
+// \return      number
+//!---------------------------------------------------------
+function sampleSizeZ() {
+  $param = $this->parameter('ZStepSize');
+  $size = (float) $param->value();
+  //if ($this->hasAdaptedParameters()) $size = $size * $this->sampleSizeAdaptionFactor();
+  return $size / 1000;
+}
+
+//!---------------------------------------------------------
+// @function    ParameterSetting::sampleSizeT
+// \brief        Answer the time between to images of the
+//              time series in seconds.
+// \return      number
+//!---------------------------------------------------------
+function sampleSizeT() {
+  $param = $this->parameter('TimeInterval');
+  $size = (float) $param->value();
+  return $size / 1;
+}
+
+// sample size adaption for all microscopes
+//!---------------------------------------------------------
+// @function    ParameterSetting::sampleSize
+// \brief        Answer the lateral sample size in nanometer.
+//              For confocal microscopes the sample size
+//              may be adapted to fit the nyquist criterium.
+// \param       size  float  The ccd captor or sampling size
+//              in nanometer. This Bloquer les numéros 0900?is the value the user
+//              entered.
+// \return      number
+//!---------------------------------------------------------
+
+// WARNING: the sampling sizes is a property of the image, not something
+// taht can be adapted after the acquisition!!! It makes no sense to adapt
+// the samplign to the Nyquist rate. What must be done is to ACQUIRE the
+// image with the Nyquist rate, but never describe it with fake parameters!
+function sampleSize($size) {
+  $result = $size;
+  //if ($this->isMultiPointOrSinglePointConfocal()) {
+  // Adapt sample size if necessary according to the nyquist criterium
+  //    $result = $this->sampleSizeForConfocal($size);
+  //}
+  // if ($this->hasAdaptedParameters() && 1 == 0 )
+  //	$result = $this->adaptedLateralSampleSizeFor($size);
+  return $result;
+}
+
+// sample size adaption for all micrsocopes
+function sampleSizeAdaptionFactor() {
+  $result = 1; // for widefield and two photon since NA is adapted and sample size is not changed
+  /*if ($this->isMultiPointOrSinglePointConfocal()) {
+  $size = $this->pixelSize();
+  $result = $this->sampleSize($size) / $size;
+  }*/
+  return $result;
+}
+
+/* TODO refactor
+ //!---------------------------------------------------------
+ // @function    ParameterSetting::sampleSizeForCCDCaptorElementSize
+ // \brief        Compute and answer the sample size (pixel size)
+ //              from the single ccd captor size and the microscope
+ //              parameters
+ // \param       size  float  The ccd captor size in nanometer.
+ //              This is the value the user entered.
+ // \return      number
+ //!---------------------------------------------------------
+ function sampleSizeForCCDCaptorElementSize($size) {
+ $param = $this->parameter('Binning');
+ $binning = (float)$param->value();
+ $param = $this->parameter('ObjectiveMagnification');
+ $magnification = (float)$param->value();
+ $param = $this->parameter('CMount');
+ $cmount = (float)$param->value();
+ $param = $this->parameter('TubeFactor');
+ $tube = (float)$param->value();
+ $result = ($size * $binning) / ($magnification * $cmount * $tube);
+ return $result;
+ }*/
+
+/* TODO refactor
+ //!---------------------------------------------------------
+ // @function    ParameterSetting::sampleSizeForConfocal
+ // \brief        If necessary adapt the sample size to fit
+ //              the nyquist criterium.
+ // \param       size  float  The pixel size the user entered.
+ // \return      number
+ //!---------------------------------------------------------
+ function sampleSizeForConfocal($size) {
+ $result = $this->adaptedLateralSampleSize(1);
+ return $result;
+ }*/
+
+// TODO refactor and remove if not needed
+function usesPhotomultiplier() {
+  if ($this->isSinglePointConfocal() || $this->isTwoPhoton()) {
+    $result = True;
+  } else {
+    $result = False;
+  }
+  return $result;
+}
+
+// TODO refactor and remove if not needed
+function usesCCDCamera() {
+  if ($this->isMultiPointConfocal() || $this->isWidefield()) {
+    $result = True;
+  } else {
+    $result = False;
+  }
+  return $result;
+}
+
+// TODO refactor and remove if not needed
+function captorSizeText() {
+  $result = 'x size of the ccd captor';
+  if ($this->usesPhotomultiplier()) {
+    $result = 'pixel size';
+  }
+  return $result;
+}
+
+// TODO refactor if needed
+function idealSampleSizeZ() {
+  // use most restrictive wavelength
+  if ($this->isWidefield()) {
+    $parameter = $this->parameter('EmissionWavelength');
+  } else {
+    $parameter = $this->parameter('ExcitationWavelength');
+  }
+  $value = $parameter->value();
+  $mostRestrictiveWavelengthChannel = 0;
+  $mostRestrictiveWavelength = $value[0];
+  for ($i = 1; $i < $this->numberOfChannels(); $i++) {
+    if ($value[$i] < $mostRestrictiveWavelength) {
+      $mostRestrictiveWavelengthChannel = $i;
+      $mostRestrictiveWavelength = $value[$i];
+    }
+  }
+  $lambda = $mostRestrictiveWavelength;
+  if ($this->isWidefield()) {
+    $factor = 2;
+  } else {
+    $factor = 4;
+  }
+  $parameter = $this->parameter('ObjectiveType');
+  $rim = (float) $parameter->translatedValue();
+  // TODO check if NA should be adapted in case of widefield and two-photon
+  $parameter = $this->parameter('NumericalAperture');
+  $na = (float) $parameter->value();
+  $deltaZ = $lambda / ($factor * $rim * (1 - cos(asin($na / $rim))));
+  return $deltaZ;
+}
+
+function idealSampleSizeZFor($channel) {
+  if ($this->isWidefield()) {
+    $parameter = $this->parameter('EmissionWavelength');
+    $value = $parameter->value();
+    $lambda = $value[$channel];
+    $factor = 2;
+  } else {
+    $parameter = $this->parameter('ExcitationWavelength');
+    $value = $parameter->value();
+    $lambda = $value[$channel];
+    $factor = 4;
+  }
+  $parameter = $this->parameter('ObjectiveType');
+  $rim = (float) $parameter->translatedValue();
+  // TODO check if NA should be adapted in case of widefield and two-photon
+  $parameter = $this->parameter('NumericalAperture');
+  $na = (float) $parameter->value();
+  $deltaZ = $lambda / ($factor * $rim * (1 - cos(asin($na / $rim))));
+  return $deltaZ;
+}
 }
 
 //!---------------------------------------------------------
 // \class    TaskSetting
-// \brief     A task setting is a complete set of 
+// \brief     A task setting is a complete set of
 //           image processing parameters.
 //!---------------------------------------------------------
 class TaskSetting extends Setting {
-	public $numberOfChannels;
-	//!---------------------------------------------------------
-	// @function    TaskSetting::TaskSetting
-	// \brief        Konstruktor. Creates a new TaskSetting
-	// \return      void
-	//!---------------------------------------------------------
-	function TaskSetting() {
-		$this->Setting();
-		$parameterClasses = array (
+  public $numberOfChannels;
+  //!---------------------------------------------------------
+  // @function    TaskSetting::TaskSetting
+  // \brief        Konstruktor. Creates a new TaskSetting
+  // \return      void
+  //!---------------------------------------------------------
+  function TaskSetting() {
+    parent::__construct();
+    $parameterClasses = array (
 			'StyleOfProcessing',	// step processing or not
 			'RemoveNoise',
 			'RemoveNoiseEffectiveness',
@@ -1736,1022 +1529,1022 @@ class TaskSetting extends Setting {
 			'MultiChannelOutput',
 			'QualityChangeStoppingCriterion',
 			'DeconvolutionAlgorithm'
-		);
-		foreach ($parameterClasses as $class) {
-			$param = new $class;
-			$name = $param->name();
-			$param->setupAllowedValues();
-			// definition of the associative array that contains all the pairs task parametr name / task parameter value
-			$this->parameter[$name] = $param;	// parameter is a member of the class 'Setting'
-			$this->numberOfChannels = NULL;
-		}
-	}
+			);
+			foreach ($parameterClasses as $class) {
+			  $param = new $class;
+			  $name = $param->name();
+			  // definition of the associative array that contains all the pairs task parametr name / task parameter value
+			  $this->parameter[$name] = $param;	// parameter is a member of the class 'Setting'
+			  $this->numberOfChannels = NULL;
+			}
+  }
 
-	//!---------------------------------------------------------
-	// @function    TaskSetting::isOutputIms
-	// \brief        Answer true if the output file format ims
-	//              (imaris) has been choosen
-	// \return      Boolean
-	//!---------------------------------------------------------    
-	function isOutputIms() {
-		$result = False;
-		$parameter = $this->parameter('OutputFileFormat');
-		if (strstr($parameter->value(), 'ims'))
-			$result = True;
-		return $result;
-	}
+  /*!
+   \brief	Returns the name of the database table in which the list of
+   Setting names are stored.
 
-	//!---------------------------------------------------------
-	// @function    TaskSetting::isStepProcessing
-	// \brief        Answer true if step processing will be performed
-	//              because either step processing or step combined
-	//              processing had been choosen as style of processingy
-	// \return      Boolean
-	//!---------------------------------------------------------
-	function isStepProcessing() {
-		$parameter = $this->parameter('StyleOfProcessing');
-		return ($parameter->value() == 'step' || $parameter->value() == 'step combined');
-	}
+   Besides the name, the table contains the Setting's name, owner and
+   the standard (default) flag. This is an abstract function and must
+   be reimplemented.
+   */
+  function table() {
+    return "task_setting";
+  }
 
-	//!---------------------------------------------------------
-	// @function    TaskSetting::isStepCombinedProcessing
-	// \brief        Answer true if step combined processing has
-	//              been choosen. The images will first be processed
-	//              using step processing. Afterwards a standard
-	//              full restoration with the same psf and fixed
-	//              parameters is applied to the results.
-	// \return      Boolean
-	//!---------------------------------------------------------
-	function isStepCombinedProcessing() {
-		return false;
-		// TODO This is obsolete code that should be removed!!
-		
-		//$parameter = $this->parameter('StyleOfProcessing');
-		//return $parameter->value() == 'step combined';
-	}
+  /*!
+   \brief	Returns the name of the database table in which all the Parameters
+   for the Settings stored in the table specified in table()
+    
+   This is an abstract function and must be reimplemented.
+   \see table()
+   */
+  function parameterTable() {
+    return "task_parameter";
+  }
 
-	//!---------------------------------------------------------
-	// @function    TaskSetting::setNumberOfChannels
-	// \brief        Set the number of channels. The number has to be
-	//              known for the parameters that have to be 
-	//              supplied per channel like background offset
-	//              and remove background.
-	// \param       channels  int  The number of channels
-	// \return      Void
-	//!---------------------------------------------------------    
-	function setNumberOfChannels($channels) {
-		$this->numberOfChannels = $channels;
-		foreach ($this->parameter as $parameter) {
-			if ($parameter->isVariableChannel()) {
-				$parameter->setNumberOfChannels($this->numberOfChannels);
-				$this->set($parameter);
-			}
-		}
-	}
+  //!---------------------------------------------------------
+  // @function    TaskSetting::isOutputIms
+  // \brief        Answer true if the output file format ims
+  //              (imaris) has been choosen
+  // \return      Boolean
+  //!---------------------------------------------------------
+  function isOutputIms() {
+    $result = False;
+    $parameter = $this->parameter('OutputFileFormat');
+    if (strstr($parameter->value(), 'ims'))
+    $result = True;
+    return $result;
+  }
 
-	//!---------------------------------------------------------
-	// @function    TaskSetting::numberOfChannels
-	// \brief        Answer the number of channels. The number has to be
-	//              known for the parameters that have to be 
-	//              supplied per channel like background offset
-	//              and remove background.
-	// \return      int
-	//!---------------------------------------------------------    
-	function numberOfChannels() {
-		return $this->numberOfChannels;
-	}
+  //!---------------------------------------------------------
+  // @function    TaskSetting::isStepProcessing
+  // \brief        Answer true if step processing will be performed
+  //              because either step processing or step combined
+  //              processing had been choosen as style of processingy
+  // \return      Boolean
+  //!---------------------------------------------------------
+  function isStepProcessing() {
+    $parameter = $this->parameter('StyleOfProcessing');
+    return ($parameter->value() == 'step' || $parameter->value() == 'step combined');
+  }
 
-	//!---------------------------------------------------------
-	// @function    TaskSetting::checkSignalNoiseRatio
-	// \brief        TODO
-	// \return      Boolean
-	//!---------------------------------------------------------    
-	function checkSignalNoiseRatio() {
-		$parameter = $this->parameter('SignalNoiseRatioUseRange');
-		if ($parameter->value() == 'True') {
-			$parameter = $this->parameter('SignalNoiseRatioRange');
-			$value = $parameter->value();
-            $range = count(array_filter($value[0]));
-			for ($i = 0; $i < $this->numberOfChannels(); $i++) {
-				$val = $value[$i];
-                if ($range != count(array_filter($val))) {
-                    $this->message = "Please enter the same number of values for all channels!";
-                    return False;
-                }
+  //!---------------------------------------------------------
+  // @function    TaskSetting::isStepCombinedProcessing
+  // \brief        Answer true if step combined processing has
+  //              been choosen. The images will first be processed
+  //              using step processing. Afterwards a standard
+  //              full restoration with the same psf and fixed
+  //              parameters is applied to the results.
+  // \return      Boolean
+  //!---------------------------------------------------------
+  function isStepCombinedProcessing() {
+    return false;
+    // TODO This is obsolete code that should be removed!!
 
-				if ($val[0] == NULL) {
-					$this->message = "Please enter a valid signal/noise ratio for channel " . $i . "! The value must be larger than 0.";
-					return False;
-				}
-				
-				/*for ($j = 0; $j < count($val); $j++) {
-					if (!$parameter->checkValue($val[$j])) {
-						$this->message = "Please enter a valid signal/noise ratio for channel " . $i . "! The value must be larger than 0.";
-						return False;
-					}
-					else {
-						$this->message .= " channel " . $i . " value " . $j . " OK";
-					}
-				}*/
-				
-			}
-			
-		}
-		else {
-			$parameter = $this->parameter('SignalNoiseRatio');
-			$value = $parameter->value();
-			for ($i = 0; $i < $this->numberOfChannels(); $i++) {
-				if (!$parameter->checkValue($value[$i])) {
-					$this->message = "Please enter a valid signal/noise ratio for channel " . $i . "! The value must be larger than 0.";
-					return False;
-				}
-			}
-		}
-		
-		return True;
-	}
+    //$parameter = $this->parameter('StyleOfProcessing');
+    //return $parameter->value() == 'step combined';
+  }
 
-	//!---------------------------------------------------------
-	// @function    TaskSetting::checkParameter
-	// \brief        Check the entered parameter. Answer true if
-	//              they are ok and false if some illegal values
-	//              have been supplied.
-	// \return      Boolean
-	//!---------------------------------------------------------    
-	function checkParameter() {
-		$result = True;
-		$numberOfOperations = 0;
-		$this->message = '';
-		$parameter = $this->parameter('RemoveNoise');
-		if ($parameter->value() == 'True') {
-			$numberOfOperations++;
-			if (!$this->checkChoiceValue('RemoveNoiseEffectiveness', 'effectiveness of the remove noise task')) {
-				return False;
-			}
-		}
-		$parameter = $this->parameter('RemoveBackground');
-		if ($parameter->value() == 'True') {
-			$numberOfOperations++;
-			if (!$this->checkNumericalValues('RemoveBackgroundPercent', 'value for the remove background task', $this->numberOfChannels())) {
-				return False;
-			}
-		}
-		$parameter = $this->parameter('FullRestoration');
-		if ($parameter->value() == 'True') {
-			$numberOfOperations++;
-			/*$parameter = $this->parameter('SignalNoiseRatioUseRange');
-			if ($parameter->value() == 'True') {
-				if (!$this->checkRange('SignalNoiseRatioRange', 'signal/noise ratio range')) {
-					return False;
-				}
-			} else {*/
-				if (!$this->checkSignalNoiseRatio() /*!$this->checkNumericalValue('SignalNoiseRatio', 'signal/noise ratio')*/
-					) {
-					return False;
-				}
-			//}
-			$parameter = $this->parameter('BackgroundOffsetUseRange');
-			if ($parameter->value() == 'True') {
-				if (!$this->checkRange('BackgroundOffsetRange', 'background offset range')) {
-					return False;
-				}
-			} else {
-				if (!$this->checkNumericalValues('BackgroundOffsetPercent', 'background offset', $this->numberOfChannels())) {
-					return False;
-				}
-			}
-			$parameter = $this->parameter('NumberOfIterationsUseRange');
-			if ($parameter->value() == 'True') {
-				if (!$this->checkRange('NumberOfIterationsRange', 'number of iterations range')) {
-					return False;
-				}
-			} else {
-				if (!$this->checkNumericalValue('NumberOfIterations', 'number of iterations')) {
-					return False;
-				}
-			}
-			if (!$this->checkNumericalValue('QualityChangeStoppingCriterion', 'quality change stopping criterion')) {
-				return False;
-			}
-		}
-		$parameter = $this->parameter('MultiChannelOutput');
-		if ($parameter->value() == 'True') {
-			$numberOfOperations++;
-		}
-		if ($numberOfOperations < 1) {
-			$this->message = "Please choose at least one operation!";
-			return False;
-		}
-		return $result;
-	}
+  //!---------------------------------------------------------
+  // @function    TaskSetting::setNumberOfChannels
+  // \brief        Set the number of channels. The number has to be
+  //              known for the parameters that have to be
+  //              supplied per channel like background offset
+  //              and remove background.
+  // \param       channels  int  The number of channels
+  // \return      Void
+  //!---------------------------------------------------------
+  function setNumberOfChannels($channels) {
+    $this->numberOfChannels = $channels;
+    foreach ($this->parameter as $parameter) {
+      if ($parameter->isVariableChannel()) {
+        $parameter->setNumberOfChannels($this->numberOfChannels);
+        $this->set($parameter);
+      }
+    }
+  }
 
-	//!---------------------------------------------------------
-	// @function    TaskSetting::checkRange
-	// \brief        Check the entered values for the range parameter. 
-	//              For a range parameter at least two values must
-	//              be entered. Each value must be a valid value
-	//              for the parameter.
-	// \return      Boolean
-	//!---------------------------------------------------------    
-	function checkRange($parameterName, $originalLabel) {
-		$param = $this->parameter($parameterName);
-		$originalValues = $param->value();
-		$values = $param->value();
-		$result = True;
-		/* normally useless
-		if ($values[0] == NULL || $values[1] == NULL || $values[0] == '' || $values[1] = '') {
-			$this->message = "Please enter at least two values for the $originalLabel, or don't use range.";
-			return False;
-		}*/
-		$index = 0;
-		foreach ($originalValues as $value) {
-			$label = $originalLabel . " value $index";
-			if ($value != NULL && $value != '') {
-				$param->setValue($value);
-				$this->set($param);
-				if (!$this->checkNumericalValue("$parameterName", $label)) {
-					$param->setValue($originalValues);
-					$this->set($param);
-					return False;
-				}
-			}
-			$index++;
-		}
-		$param->setValue($originalValues);
-		$this->set($param);
+  //!---------------------------------------------------------
+  // @function    TaskSetting::numberOfChannels
+  // \brief        Answer the number of channels. The number has to be
+  //              known for the parameters that have to be
+  //              supplied per channel like background offset
+  //              and remove background.
+  // \return      int
+  //!---------------------------------------------------------
+  function numberOfChannels() {
+    return $this->numberOfChannels;
+  }
 
-		return $result;
-	}
+  //!---------------------------------------------------------
+  // @function    TaskSetting::checkSignalNoiseRatio
+  // \brief        TODO
+  // \return      Boolean
+  //!---------------------------------------------------------
+  function checkSignalNoiseRatio() {
+    $parameter = $this->parameter('SignalNoiseRatioUseRange');
+    if ($parameter->value() == 'True') {
+      $parameter = $this->parameter('SignalNoiseRatioRange');
+      $value = $parameter->value();
+      $range = count(array_filter($value[0]));
+      for ($i = 0; $i < $this->numberOfChannels(); $i++) {
+        $val = $value[$i];
+        if ($range != count(array_filter($val))) {
+          $this->message = "Please enter the same number of values for all channels!";
+          return False;
+        }
 
-	//!---------------------------------------------------------
-	// @function    TaskSetting::table()
-	// \brief        Answer the name of the database table in 
-	//              which the task settings are stored. The 
-	//              table contains the setting's name the owner 
-	//              and the standard (default) flag.
-	// \return      String
-	//!---------------------------------------------------------    
-	function table() {
-		return "task_setting";
-	}
+        if ($val[0] == NULL) {
+          $this->message = "Please enter a valid signal/noise ratio for channel " . $i . "! The value must be larger than 0.";
+          return False;
+        }
 
-	//!---------------------------------------------------------
-	// @function    TaskSetting::parameterTable()
-	// \brief        Answer the name of the database table in
-	//              which the parameters for settings of the 
-	//              receiver's kind are stored. 
-	// \return      String
-	//!---------------------------------------------------------    
-	function parameterTable() {
-		return "task_parameter";
-	}
+        /*for ($j = 0; $j < count($val); $j++) {
+         if (!$parameter->checkValue($val[$j])) {
+         $this->message = "Please enter a valid signal/noise ratio for channel " . $i . "! The value must be larger than 0.";
+         return False;
+         }
+         else {
+         $this->message .= " channel " . $i . " value " . $j . " OK";
+         }
+         }*/
 
-	//!---------------------------------------------------------
-	// @function    TaskSetting::display
-	// \brief        Display the setting as a text containing
-	//              the parameters and their values.
-	// \return      Void
-	//!---------------------------------------------------------      
-	function display() {
-		print $this->displayString();
-	}
+      }
+       
+    }
+    else {
+      $parameter = $this->parameter('SignalNoiseRatio');
+      $value = $parameter->value();
+      for ($i = 0; $i < $this->numberOfChannels(); $i++) {
+        if (!$parameter->checkValue($value[$i])) {
+          $this->message = "Please enter a valid signal/noise ratio for channel " . $i . "! The value must be larger than 0.";
+          return False;
+        }
+      }
+    }
 
-	// TODO refactor!
-	//!---------------------------------------------------------
-	// @function    TaskSetting::displayString
-	// \brief        Answer the display string of the setting.
-	//              It contains the names and values of the 
-	//              task settings parameters.
-	// \return      Void
-	//!---------------------------------------------------------        
-	function displayString( $numberOfChannels = 0 ) {	// return the string that will be attach to the success notification message 
-		$result = '';
-        $algorithm = $this->parameter('DeconvolutionAlgorithm')->value();
-		$parameter = $this->parameter('SignalNoiseRatioUseRange');
-		$rangeUsedForSignalNoiseRatio = ($parameter->value() == 'True');
-		$parameter = $this->parameter('BackgroundOffsetUseRange');
-		$rangeUsedForBackgroundOffset = ($parameter->value() == 'True');
-		$parameter = $this->parameter('NumberOfIterationsUseRange');
-		$rangeUsedForNumberOfIterations = ($parameter->value() == 'True');
-		$parameter = $this->parameter('RemoveNoise');
-		$removeNoise = ($parameter->value() == 'True');
-		$parameter = $this->parameter('RemoveBackground');
-		$removeBackground = ($parameter->value() == 'True');
-		$parameter = $this->parameter('FullRestoration');
-		$fullRestoration = ($parameter->value() == 'True');
-		foreach ($this->parameter as $parameter) {
-			if ($parameter->name() == 'StyleOfProcessing' ) {
-				// There is only one style of processing
-				continue;
-			}
-			if ($parameter->name() == 'SignalNoiseRatio' && $rangeUsedForSignalNoiseRatio) {	
-				continue;
-			}
-			if ($parameter->name() == 'SignalNoiseRatioRange' && !$rangeUsedForSignalNoiseRatio) {
-				continue;
-			}
-			if ($parameter->name() == 'SignalNoiseRatioUseRange' ) {
-				continue;
-			}
-			if ($parameter->name() == 'NumberOfIterationsUseRange' ) {
-				continue;
-			}
-			if ($parameter->name() == 'BackgroundOffsetPercent' && $rangeUsedForBackgroundOffset) {
-				continue;
-			}
-			if ($parameter->name() == 'BackgroundOffsetRange' && !$rangeUsedForBackgroundOffset) {
-				continue;
-			}
-			if ($parameter->name() == 'NumberOfIterations' && $rangeUsedForNumberOfIterations) {
-				continue;
-			}
-			if ($parameter->name() == 'NumberOfIterationsRange' && !$rangeUsedForNumberOfIterations) {
-				continue;
-			}
-			if ($parameter->name() == 'RemoveNoiseEffectiveness' && !$removeNoise) {
-				continue;
-			}
-			if ($parameter->name() == 'RemoveBackgroundPercent' && !$removeBackground) {
-				continue;
-			}
-			if (in_array($parameter->name(), array (
+    return True;
+  }
+
+  //!---------------------------------------------------------
+  // @function    TaskSetting::checkParameter
+  // \brief        Check the entered parameter. Answer true if
+  //              they are ok and false if some illegal values
+  //              have been supplied.
+  // \return      Boolean
+  //!---------------------------------------------------------
+  function checkParameter() {
+    $result = True;
+    $numberOfOperations = 0;
+    $this->message = '';
+    $parameter = $this->parameter('RemoveNoise');
+    if ($parameter->value() == 'True') {
+      $numberOfOperations++;
+      if (!$this->checkChoiceValue('RemoveNoiseEffectiveness', 'effectiveness of the remove noise task')) {
+        return False;
+      }
+    }
+    $parameter = $this->parameter('RemoveBackground');
+    if ($parameter->value() == 'True') {
+      $numberOfOperations++;
+      if (!$this->checkNumericalValues('RemoveBackgroundPercent', 'value for the remove background task', $this->numberOfChannels())) {
+        return False;
+      }
+    }
+    $parameter = $this->parameter('FullRestoration');
+    if ($parameter->value() == 'True') {
+      $numberOfOperations++;
+      /*$parameter = $this->parameter('SignalNoiseRatioUseRange');
+       if ($parameter->value() == 'True') {
+       if (!$this->checkRange('SignalNoiseRatioRange', 'signal/noise ratio range')) {
+       return False;
+       }
+       } else {*/
+      if (!$this->checkSignalNoiseRatio() /*!$this->checkNumericalValue('SignalNoiseRatio', 'signal/noise ratio')*/
+      ) {
+        return False;
+      }
+      //}
+      $parameter = $this->parameter('BackgroundOffsetUseRange');
+      if ($parameter->value() == 'True') {
+        if (!$this->checkRange('BackgroundOffsetRange', 'background offset range')) {
+          return False;
+        }
+      } else {
+        if (!$this->checkNumericalValues('BackgroundOffsetPercent', 'background offset', $this->numberOfChannels())) {
+          return False;
+        }
+      }
+      $parameter = $this->parameter('NumberOfIterationsUseRange');
+      if ($parameter->value() == 'True') {
+        if (!$this->checkRange('NumberOfIterationsRange', 'number of iterations range')) {
+          return False;
+        }
+      } else {
+        if (!$this->checkNumericalValue('NumberOfIterations', 'number of iterations')) {
+          return False;
+        }
+      }
+      if (!$this->checkNumericalValue('QualityChangeStoppingCriterion', 'quality change stopping criterion')) {
+        return False;
+      }
+    }
+    $parameter = $this->parameter('MultiChannelOutput');
+    if ($parameter->value() == 'True') {
+      $numberOfOperations++;
+    }
+    if ($numberOfOperations < 1) {
+      $this->message = "Please choose at least one operation!";
+      return False;
+    }
+    return $result;
+  }
+
+  //!---------------------------------------------------------
+  // @function    TaskSetting::checkRange
+  // \brief        Check the entered values for the range parameter.
+  //              For a range parameter at least two values must
+  //              be entered. Each value must be a valid value
+  //              for the parameter.
+  // \return      Boolean
+  //!---------------------------------------------------------
+  function checkRange($parameterName, $originalLabel) {
+    $param = $this->parameter($parameterName);
+    $originalValues = $param->value();
+    $values = $param->value();
+    $result = True;
+    /* normally useless
+     if ($values[0] == NULL || $values[1] == NULL || $values[0] == '' || $values[1] = '') {
+     $this->message = "Please enter at least two values for the $originalLabel, or don't use range.";
+     return False;
+     }*/
+    $index = 0;
+    foreach ($originalValues as $value) {
+      $label = $originalLabel . " value $index";
+      if ($value != NULL && $value != '') {
+        $param->setValue($value);
+        $this->set($param);
+        if (!$this->checkNumericalValue("$parameterName", $label)) {
+          $param->setValue($originalValues);
+          $this->set($param);
+          return False;
+        }
+      }
+      $index++;
+    }
+    $param->setValue($originalValues);
+    $this->set($param);
+
+    return $result;
+  }
+
+  //!---------------------------------------------------------
+  // @function    TaskSetting::display
+  // \brief        Display the setting as a text containing
+  //              the parameters and their values.
+  // \return      Void
+  //!---------------------------------------------------------
+  function display() {
+    print $this->displayString();
+  }
+
+  // TODO refactor!
+  //!---------------------------------------------------------
+  // @function    TaskSetting::displayString
+  // \brief        Answer the display string of the setting.
+  //              It contains the names and values of the
+  //              task settings parameters.
+  // \return      Void
+  //!---------------------------------------------------------
+  function displayString( $numberOfChannels = 0 ) {	// return the string that will be attach to the success notification message
+    $result = '';
+    $algorithm = $this->parameter('DeconvolutionAlgorithm')->value();
+    $parameter = $this->parameter('SignalNoiseRatioUseRange');
+    $rangeUsedForSignalNoiseRatio = ($parameter->value() == 'True');
+    $parameter = $this->parameter('BackgroundOffsetUseRange');
+    $rangeUsedForBackgroundOffset = ($parameter->value() == 'True');
+    $parameter = $this->parameter('NumberOfIterationsUseRange');
+    $rangeUsedForNumberOfIterations = ($parameter->value() == 'True');
+    $parameter = $this->parameter('RemoveNoise');
+    $removeNoise = ($parameter->value() == 'True');
+    $parameter = $this->parameter('RemoveBackground');
+    $removeBackground = ($parameter->value() == 'True');
+    $parameter = $this->parameter('FullRestoration');
+    $fullRestoration = ($parameter->value() == 'True');
+    foreach ($this->parameter as $parameter) {
+      if ($parameter->name() == 'StyleOfProcessing' ) {
+        // There is only one style of processing
+        continue;
+      }
+      if ($parameter->name() == 'SignalNoiseRatio' && $rangeUsedForSignalNoiseRatio) {
+        continue;
+      }
+      if ($parameter->name() == 'SignalNoiseRatioRange' && !$rangeUsedForSignalNoiseRatio) {
+        continue;
+      }
+      if ($parameter->name() == 'SignalNoiseRatioUseRange' ) {
+        continue;
+      }
+      if ($parameter->name() == 'NumberOfIterationsUseRange' ) {
+        continue;
+      }
+      if ($parameter->name() == 'BackgroundOffsetPercent' && $rangeUsedForBackgroundOffset) {
+        continue;
+      }
+      if ($parameter->name() == 'BackgroundOffsetRange' && !$rangeUsedForBackgroundOffset) {
+        continue;
+      }
+      if ($parameter->name() == 'NumberOfIterations' && $rangeUsedForNumberOfIterations) {
+        continue;
+      }
+      if ($parameter->name() == 'NumberOfIterationsRange' && !$rangeUsedForNumberOfIterations) {
+        continue;
+      }
+      if ($parameter->name() == 'RemoveNoiseEffectiveness' && !$removeNoise) {
+        continue;
+      }
+      if ($parameter->name() == 'RemoveBackgroundPercent' && !$removeBackground) {
+        continue;
+      }
+      if (in_array($parameter->name(), array (
 					'BackgroundOffsetPercent',
 					'NumberOfIterations'
-				)) && !$fullRestoration) {
-				continue;
-			}
-			if ($parameter->name() == 'FullRestoration' || $parameter->name() == 'RemoveNoise' || $parameter->name() == 'RemoveBackground')
-				continue;
-            if ($parameter->name() == 'SignalNoiseRatio') {
-                $snr = $parameter->value();
-				$parameter->setValue(array_slice($snr, 0, $this->numberOfChannels() ));
-                if ($algorithm == 'cmle')
-                    $result = $result . $parameter->displayCMLEString($this->numberOfChannels());
-                else if ($algorithm == 'qmle')
-                    $result = $result . $parameter->displayQMLEString($this->numberOfChannels());
-            }
-            else {
-                $result = $result . $parameter->displayString($this->numberOfChannels());
-            }
-		}
-		return $result;
-	}
+					)) && !$fullRestoration) {
+					  continue;
+					}
+					if ($parameter->name() == 'FullRestoration' || $parameter->name() == 'RemoveNoise' || $parameter->name() == 'RemoveBackground')
+					continue;
+					if ($parameter->name() == 'SignalNoiseRatio') {
+					  $snr = $parameter->value();
+					  $parameter->setValue(array_slice($snr, 0, $this->numberOfChannels() ));
+					  if ($algorithm == 'cmle')
+					  $result = $result . $parameter->displayCMLEString($this->numberOfChannels());
+					  else if ($algorithm == 'qmle')
+					  $result = $result . $parameter->displayQMLEString($this->numberOfChannels());
+					}
+					else {
+					  $result = $result . $parameter->displayString($this->numberOfChannels());
+					}
+    }
+    return $result;
+  }
 
-	//!---------------------------------------------------------
-	// @function    TaskSetting::displayWithoutOutputFileFormat
-	// \brief        Display the setting as a text containing
-	//              the parameters and their values. Only
-	//              the parameter OutputFileFormat is left out.
-	//              This is used for the web display where the
-	//              output file format has not been choosen yet.
-	// \return      Void
-	//!---------------------------------------------------------        
-	function displayWithoutOutputFileFormat( $numberOfChannels = 0 ) {
-		print $this->displayStringWithoutOutputFileFormat( $numberOfChannels );
-	}
+  //!---------------------------------------------------------
+  // @function    TaskSetting::displayWithoutOutputFileFormat
+  // \brief        Display the setting as a text containing
+  //              the parameters and their values. Only
+  //              the parameter OutputFileFormat is left out.
+  //              This is used for the web display where the
+  //              output file format has not been choosen yet.
+  // \return      Void
+  //!---------------------------------------------------------
+  function displayWithoutOutputFileFormat( $numberOfChannels = 0 ) {
+    print $this->displayStringWithoutOutputFileFormat( $numberOfChannels );
+  }
 
-	//!---------------------------------------------------------
-	// @function    TaskSetting::displayStringWithoutOutputFileFormat
-	// \brief        Answer the display string of the setting.
-	//              It contains the names and values of the 
-	//              task settings parameters. Only
-	//              the parameter OutputFileFormat is left out.
-	//              This is used for the web display where the
-	//              output file format has not been choosen yet.
-	// \return      Void
-	//!---------------------------------------------------------
-	function displayStringWithoutOutputFileFormat( $numberOfChannels = 0 ) {
-		$parameter = $this->parameter('OutputFileFormat');
-		$parameterList = $this->parameter;
-		unset ($parameterList['OutputFileFormat']);
-		$this->parameter = $parameterList;
-		$result = $this->displayString( $numberOfChannels );
-		$parameterList['OutputFileFormat'] = $parameter;
-		$this->parameter = $parameterList;
-		return $result;
-	}
+  //!---------------------------------------------------------
+  // @function    TaskSetting::displayStringWithoutOutputFileFormat
+  // \brief        Answer the display string of the setting.
+  //              It contains the names and values of the
+  //              task settings parameters. Only
+  //              the parameter OutputFileFormat is left out.
+  //              This is used for the web display where the
+  //              output file format has not been choosen yet.
+  // \return      Void
+  //!---------------------------------------------------------
+  function displayStringWithoutOutputFileFormat( $numberOfChannels = 0 ) {
+    $parameter = $this->parameter('OutputFileFormat');
+    $parameterList = $this->parameter;
+    unset ($parameterList['OutputFileFormat']);
+    $this->parameter = $parameterList;
+    $result = $this->displayString( $numberOfChannels );
+    $parameterList['OutputFileFormat'] = $parameter;
+    $this->parameter = $parameterList;
+    return $result;
+  }
 }
 
 //!---------------------------------------------------------
 // \class    JobParameterSetting
-// \brief     A parameter setting is a complete set of 
+// \brief     A parameter setting is a complete set of
 //           microscope, image and capture parameters. A job
-//           parameter setting is a parameter setting that 
+//           parameter setting is a parameter setting that
 //           is used when a job is executed by the queue
 //           manager. It uses different database tables and
-//           knows how to put its parameter settings onto a 
+//           knows how to put its parameter settings onto a
 //           script.
 //!---------------------------------------------------------
 class JobParameterSetting extends ParameterSetting {
-	//!---------------------------------------------------------
-	// @function    JobParameterSetting::table()
-	// \brief        Answer the name of the database table in 
-	//              which the job parameter settings are stored. The 
-	//              table contains the setting's name the owner 
-	//              and the standard (default) flag.
-	// \return      String
-	//!---------------------------------------------------------    
-	function table() {
-		return "job_parameter_setting";
-	}
-	//!---------------------------------------------------------
-	// @function    JobParameterSetting::parameterTable()
-	// \brief        Answer the name of the database table in
-	//              which the parameters for settings of the 
-	//              receiver's kind are stored. 
-	// \return      String
-	//!---------------------------------------------------------    
-	function parameterTable() {
-		return "job_parameter";
-	}
+  //!---------------------------------------------------------
+  // @function    JobParameterSetting::table()
+  // \brief        Answer the name of the database table in
+  //              which the job parameter settings are stored. The
+  //              table contains the setting's name the owner
+  //              and the standard (default) flag.
+  // \return      String
+  //!---------------------------------------------------------
+  function table() {
+    return "job_parameter_setting";
+  }
+  //!---------------------------------------------------------
+  // @function    JobParameterSetting::parameterTable()
+  // \brief        Answer the name of the database table in
+  //              which the parameters for settings of the
+  //              receiver's kind are stored.
+  // \return      String
+  //!---------------------------------------------------------
+  function parameterTable() {
+    return "job_parameter";
+  }
 
-	function putScriptOn($script) { 
-		$newScript = $script;
-		$newScript = $newScript . '$imageName setp ';
-		$newScript = $newScript . $this->microscopeParameterString();
-		$newScript = $newScript . $this->microscopeTypeString();
-		$newScript = $newScript . $this->numericalApertureString();
-		$newScript = $newScript . $this->lensRefractiveIndexString();
-		$newScript = $newScript . $this->mediumRefractiveIndexString();
-		// Support for Nipkow spinning disk
-		if ($this->isNipkowDisk()) {
-			$newScript = $newScript . $this->pinholeSpacingString();
-		}
-		$newScript = $newScript . $this->photonCountString();
-		$newScript = $newScript . "\n";
-		$newScript = $newScript . $this->excitationWavelengthsString();
-		$newScript = $newScript . $this->emissionWavelengthsString();
-		if ($this->isMultiPointOrSinglePointConfocal()) {
-			$newScript = $newScript . $this->pinholeRadiusString();
-		}
-		return $newScript;
-	}
+  function putScriptOn($script) {
+    $newScript = $script;
+    $newScript = $newScript . '$imageName setp ';
+    $newScript = $newScript . $this->microscopeParameterString();
+    $newScript = $newScript . $this->microscopeTypeString();
+    $newScript = $newScript . $this->numericalApertureString();
+    $newScript = $newScript . $this->lensRefractiveIndexString();
+    $newScript = $newScript . $this->mediumRefractiveIndexString();
+    // Support for Nipkow spinning disk
+    if ($this->isNipkowDisk()) {
+      $newScript = $newScript . $this->pinholeSpacingString();
+    }
+    $newScript = $newScript . $this->photonCountString();
+    $newScript = $newScript . "\n";
+    $newScript = $newScript . $this->excitationWavelengthsString();
+    $newScript = $newScript . $this->emissionWavelengthsString();
+    if ($this->isMultiPointOrSinglePointConfocal()) {
+      $newScript = $newScript . $this->pinholeRadiusString();
+    }
+    return $newScript;
+  }
 
-	function excitationWavelengthsString() {
-		$result = $this->multiChannelParameterString('ExcitationWavelength', 'ex');
-		return $result;
-	}
+  function excitationWavelengthsString() {
+    $result = $this->multiChannelParameterString('ExcitationWavelength', 'ex');
+    return $result;
+  }
 
-	function emissionWavelengthsString() {
-		$result = $this->multiChannelParameterString('EmissionWavelength', 'em');
-		return $result;
-	}
+  function emissionWavelengthsString() {
+    $result = $this->multiChannelParameterString('EmissionWavelength', 'em');
+    return $result;
+  }
 
-	function multiChannelParameterString($name, $command) {
-		$parameter = $this->parameter($name);
-		$values = $parameter->value();
-		$result = "";
-		$currentChannel = 0;
-			for ($i = 0; $i < 1 /*$this->numberOfChannels()*/; $i++) {
-			//error_log("GENERATING SCRIPT (Setting): ".$name." -> ".$values[$i]);
-			if (!empty ($values[$i])) {
-				$result = $result . '$imageName setp -chan ';
-				$chan = (int) $currentChannel;
-				$result = $result . $chan;
-				$result = $result . ' -' . "$command ";
-				$result = $result . $values[$i];
-				$result = $result . "\n";
-				// Update $currentChannel
-				$currentChannel++;
-			}
-		}
-		return $result;
-	}
+  function multiChannelParameterString($name, $command) {
+    $parameter = $this->parameter($name);
+    $values = $parameter->value();
+    $result = "";
+    $currentChannel = 0;
+    for ($i = 0; $i < 1 /*$this->numberOfChannels()*/; $i++) {
+      //error_log("GENERATING SCRIPT (Setting): ".$name." -> ".$values[$i]);
+      if (!empty ($values[$i])) {
+        $result = $result . '$imageName setp -chan ';
+        $chan = (int) $currentChannel;
+        $result = $result . $chan;
+        $result = $result . ' -' . "$command ";
+        $result = $result . $values[$i];
+        $result = $result . "\n";
+        // Update $currentChannel
+        $currentChannel++;
+      }
+    }
+    return $result;
+  }
 
-	function microscopeParameterString() {
-		$sampleSizesString = $this->sampleSizesString();
-		$string = '-s {' . $sampleSizesString . '} ';
-		return $string;
-	}
+  function microscopeParameterString() {
+    $sampleSizesString = $this->sampleSizesString();
+    $string = '-s {' . $sampleSizesString . '} ';
+    return $string;
+  }
 
-	function microscopeTypeString() {
-		$param = $this->parameter('MicroscopeType');
-		$value = $param->translatedValue();
-		$result = "-micr $value ";
-		return $result;
-	}
+  function microscopeTypeString() {
+    $param = $this->parameter('MicroscopeType');
+    $value = $param->translatedValue();
+    $result = "-micr $value ";
+    return $result;
+  }
 
-	// sample size adaption for all microscopes
-	function numericalApertureString() {
-		//if ($this->isMultiPointOrSinglePointConfocal()) {
-		$param = $this->parameter('NumericalAperture');
-		$value = $param->translatedValue();
-		//} else {
-		//    $value = $this->adaptedNumericalApertureFor(1);
-		//} 
-		$result = "-na $value ";
-		return $result;
-	}
+  // sample size adaption for all microscopes
+  function numericalApertureString() {
+    //if ($this->isMultiPointOrSinglePointConfocal()) {
+    $param = $this->parameter('NumericalAperture');
+    $value = $param->translatedValue();
+    //} else {
+    //    $value = $this->adaptedNumericalApertureFor(1);
+    //}
+    $result = "-na $value ";
+    return $result;
+  }
 
-	function pinholeRadiusString() {
-		$result = $this->multiChannelParameterString('PinholeSize', 'pr');
-		return $result;
-	}
+  function pinholeRadiusString() {
+    $result = $this->multiChannelParameterString('PinholeSize', 'pr');
+    return $result;
+  }
 
-	// Support for Nipkow spinning disk
-	function pinholeSpacingString() {
-		$param = $this->parameter('PinholeSpacing');
-		$value = $param->translatedValue();
-		$result = "-ps $value ";
-		return $result;
-	}
+  // Support for Nipkow spinning disk
+  function pinholeSpacingString() {
+    $param = $this->parameter('PinholeSpacing');
+    $value = $param->translatedValue();
+    $result = "-ps $value ";
+    return $result;
+  }
 
-	function sampleSizesString() {
-		$result = '';
-		$result = $result . (string) $this->sampleSizeX() . ' ';
-		$result = $result . (string) $this->sampleSizeY();
-		if ($this->isThreeDimensional()) {
-			$result = $result . ' ' . (string) $this->sampleSizeZ();
-		} else {
-			// Use current channel
-			//$result = $result . ' ' . (string) ($this->idealSampleSizeZFor(1));
-		}
-		if ($this->isTimeSeries()) {
-			$result = $result . ' ' . (string) $this->sampleSizeT();
-		}
-		return $result;
-	}
+  function sampleSizesString() {
+    $result = '';
+    $result = $result . (string) $this->sampleSizeX() . ' ';
+    $result = $result . (string) $this->sampleSizeY();
+    if ($this->isThreeDimensional()) {
+      $result = $result . ' ' . (string) $this->sampleSizeZ();
+    } else {
+      // Use current channel
+      //$result = $result . ' ' . (string) ($this->idealSampleSizeZFor(1));
+    }
+    if ($this->isTimeSeries()) {
+      $result = $result . ' ' . (string) $this->sampleSizeT();
+    }
+    return $result;
+  }
 
-	function originalSampleSizesString() {
-		$result = '';
-		$result = $result . (string) ($this->sampleSizeX() / $this->sampleSizeAdaptionFactor()) . ' ';
-		$result = $result . (string) ($this->sampleSizeY() / $this->sampleSizeAdaptionFactor());
-		if ($this->isThreeDimensional()) {
-			$result = $result . ' ' . (string) ($this->sampleSizeZ() / $this->sampleSizeAdaptionFactor());
-		} else {
-			// Use current channel
-			$result = $result . ' ' . (string) ($this->idealSampleSizeZFor(1));
-		}
-		if ($this->isTimeSeries()) {
-			$result = $result . ' ' . (string) $this->sampleSizeT();
-		}
-		return $result;
-	}
+  function originalSampleSizesString() {
+    $result = '';
+    $result = $result . (string) ($this->sampleSizeX() / $this->sampleSizeAdaptionFactor()) . ' ';
+    $result = $result . (string) ($this->sampleSizeY() / $this->sampleSizeAdaptionFactor());
+    if ($this->isThreeDimensional()) {
+      $result = $result . ' ' . (string) ($this->sampleSizeZ() / $this->sampleSizeAdaptionFactor());
+    } else {
+      // Use current channel
+      $result = $result . ' ' . (string) ($this->idealSampleSizeZFor(1));
+    }
+    if ($this->isTimeSeries()) {
+      $result = $result . ' ' . (string) $this->sampleSizeT();
+    }
+    return $result;
+  }
 
-	function lensRefractiveIndexString() {
-		$param = $this->parameter('ObjectiveType');
-		$value = $param->translatedValue();
-		$result = "-ril $value ";
-		return $result;
-	}
+  function lensRefractiveIndexString() {
+    $param = $this->parameter('ObjectiveType');
+    $value = $param->translatedValue();
+    $result = "-ril $value ";
+    return $result;
+  }
 
-	function mediumRefractiveIndexString() {
-		$param = $this->parameter('SampleMedium');
-		$value = $param->translatedValue();
-		$result = "-ri $value ";
-		return $result;
-	}
+  function mediumRefractiveIndexString() {
+    $param = $this->parameter('SampleMedium');
+    $value = $param->translatedValue();
+    $result = "-ri $value ";
+    return $result;
+  }
 
-	function photonCountString() {
-		$result = "-pcnt ";
-		if ($this->isTwoPhoton()) {
-			$result = $result . "2";
-		} else {
-			$result = $result . "1";
-		}
-		return $result;
-	}
+  function photonCountString() {
+    $result = "-pcnt ";
+    if ($this->isTwoPhoton()) {
+      $result = $result . "2";
+    } else {
+      $result = $result . "1";
+    }
+    return $result;
+  }
 }
 
 //!---------------------------------------------------------
 // \class    JobTaskSetting
-// \brief     A job task setting is a complete set of 
+// \brief     A job task setting is a complete set of
 //           image processing parameters that is used when
 //           a job is processed by the queue manager.
 //!---------------------------------------------------------
 class JobTaskSetting extends TaskSetting {
-	//!---------------------------------------------------------
-	// @function    JobTaskSetting::table()
-	// \brief        Answer the name of the database table in 
-	//              which the job task settings are stored. The 
-	//              table contains the setting's name the owner 
-	//              and the standard (default) flag.
-	// \return      String
-	//!---------------------------------------------------------    
-	function table() {
-		return "job_task_setting";
-	}
+  //!---------------------------------------------------------
+  // @function    JobTaskSetting::table()
+  // \brief        Answer the name of the database table in
+  //              which the job task settings are stored. The
+  //              table contains the setting's name the owner
+  //              and the standard (default) flag.
+  // \return      String
+  //!---------------------------------------------------------
+  function table() {
+    return "job_task_setting";
+  }
 
-	//!---------------------------------------------------------
-	// @function    JobTaskParameterSetting::parameterTable()
-	// \brief        Answer the name of the database table in
-	//              which the parameters for settings of the 
-	//              receiver's kind are stored. 
-	// \return      String
-	//!---------------------------------------------------------    
-	function parameterTable() {
-		return "job_task_parameter";
-	}
+  //!---------------------------------------------------------
+  // @function    JobTaskParameterSetting::parameterTable()
+  // \brief        Answer the name of the database table in
+  //              which the parameters for settings of the
+  //              receiver's kind are stored.
+  // \return      String
+  //!---------------------------------------------------------
+  function parameterTable() {
+    return "job_task_parameter";
+  }
 
-  	function putScriptOn($script, $corrParams) {
-		$step = 1;
-		$newScript = $script;
-		
-		// Obsolete
-		/*
-		 $parameter = $this->parameter('RemoveNoise');
-		if ($parameter->isTrue()) {
-			$source = $this->sourceForStep($step);
-			$dest = $this->destinationForStep($step);
-			$newScript = $newScript . $this->removeNoiseString($source, $dest);
-			$newScript = $newScript . $this->destroyImageString($source);
-			$step++;
+  function putScriptOn($script, $corrParams) {
+    $step = 1;
+    $newScript = $script;
 
-		$parameter = $this->parameter('RemoveBackground');
-		if ($parameter->isTrue()) {
-			$source = $this->sourceForStep($step);
-			$dest = $this->destinationForStep($step);
-			$newScript = $newScript . $this->psfComputationString($source, $constant, $depth);
-			$newScript = $newScript . $this->removeBackgroundString($source, $dest);
-			$newScript = $newScript . $this->destroyImageString($source);
-			$step++;
-		}
-		}
-		*/
-		
-		// Depending on the PSF selection and the settings for the spherical
-		// aberration corrections, we have to call the psfComputationString( )
-		// function below specifying either a constant or an adaptive PSF.
-		// A constant PSF is used when there is a need for correction (i.e.
-		// the PSF is theoretical with refractive index mismatch) but (i) the 
-		// user chose not to let Huygens correct for aberrations; or (ii) when
-		// the user performs an advanced correction with static FSF generated
-		// at a given depth (this is combined with next check).
-		$constant = 0;
-		if ( ( $corrParams[ 'AberrationCorrectionNecessary' ] == 1 ) &&
-			( $corrParams[ 'PerformAberrationCorrection' ] == 0 ) ) {
-			$constant = 1;
-		}
+    // Obsolete
+    /*
+    $parameter = $this->parameter('RemoveNoise');
+    if ($parameter->isTrue()) {
+    $source = $this->sourceForStep($step);
+    $dest = $this->destinationForStep($step);
+    $newScript = $newScript . $this->removeNoiseString($source, $dest);
+    $newScript = $newScript . $this->destroyImageString($source);
+    $step++;
 
-		// If the user chose the advanced correction mode 'partial correction
-		// at user defined PSF depth', we also need to pass the depth to the
-		// psfComputationString( ) function.
-		$depth = 0;
-		if ( ( $corrParams[ 'AberrationCorrectionNecessary' ] == 1 ) &&
-			( $corrParams[ 'PerformAberrationCorrection' ] == 1 ) &&
-			( $corrParams[ 'AberrationCorrectionMode' ] == 'advanced' ) &&
-			( $corrParams[ 'AdvancedCorrectionOptions' ] == 'user' ) ) {
-			$depth = $corrParams[ 'PSFGenerationDepth' ];
-			$constant = 1; // See comment above
-		}
+    $parameter = $this->parameter('RemoveBackground');
+    if ($parameter->isTrue()) {
+    $source = $this->sourceForStep($step);
+    $dest = $this->destinationForStep($step);
+    $newScript = $newScript . $this->psfComputationString($source, $constant, $depth);
+    $newScript = $newScript . $this->removeBackgroundString($source, $dest);
+    $newScript = $newScript . $this->destroyImageString($source);
+    $step++;
+    }
+    }
+    */
 
-		// The various options result in a different value for the -brMode
-		// deconvolution flag. This value is to be passed to the
-		// fullRestorationString( ) function below.
-		if ( $corrParams[ 'AberrationCorrectionNecessary' ] == 0 ) {
-			$brMode = 'auto';
-		} else {
-			if ( $corrParams[ 'PerformAberrationCorrection' ] == 0 ) {
-				$brMode = 'one';
-			} else {
-				if ( $corrParams[ 'AberrationCorrectionMode' ] == 'automatic' ) {
-					$brMode = 'auto';
-				} else {
-					if ( $corrParams[ 'AdvancedCorrectionOptions' ] == 'user' ) {
-						$brMode = 'one';
-					}
-					if ( $corrParams[ 'AdvancedCorrectionOptions' ] == 'slice' ) {
-						$brMode = 'sliceBySlice';
-					}
-					if ( $corrParams[ 'AdvancedCorrectionOptions' ] == 'few' ) {
-						$brMode = 'few';
-					}
-				}
-			}
-		}
-		
-		// effective deconvolution script; step = 3 -> $source = b; $dest = c;
-		$parameter = $this->parameter('FullRestoration');
-		if ($parameter->isTrue()) {
-			$source = $this->sourceForStep($step);
-			$dest = $this->destinationForStep($step);
-			$newScript = $newScript . $this->psfComputationString($source, $constant, $depth);
-			$newScript = $newScript . $this->fullRestorationString($source, $dest, $brMode);
-			$newScript = $newScript . $this->destroyImageString($source);
-			$step++;
-		}
-		return $newScript;
-	}
+    // Depending on the PSF selection and the settings for the spherical
+    // aberration corrections, we have to call the psfComputationString( )
+    // function below specifying either a constant or an adaptive PSF.
+    // A constant PSF is used when there is a need for correction (i.e.
+    // the PSF is theoretical with refractive index mismatch) but (i) the
+    // user chose not to let Huygens correct for aberrations; or (ii) when
+    // the user performs an advanced correction with static FSF generated
+    // at a given depth (this is combined with next check).
+    $constant = 0;
+    if ( ( $corrParams[ 'AberrationCorrectionNecessary' ] == 1 ) &&
+    ( $corrParams[ 'PerformAberrationCorrection' ] == 0 ) ) {
+      $constant = 1;
+    }
 
-	// manage measured PSF
-	function putScriptForMeasuredPointSpreadFunctionOn($script) {
-		$step = 1;
-		$newScript = $script;
-		// Obsolete
-		/*
-		 $parameter = $this->parameter('RemoveNoise');
-		if ($parameter->isTrue()) {
-			$source = $this->sourceForStep($step);
-			$dest = $this->destinationForStep($step);
-			$newScript = $newScript . $this->removeNoiseString($source, $dest);
-			$newScript = $newScript . $this->destroyImageString($source);
-			$step++;
-		}
-		$parameter = $this->parameter('RemoveBackground');
-		if ($parameter->isTrue()) {
-			$source = $this->sourceForStep($step);
-			$dest = $this->destinationForStep($step);
-			$newScript = $newScript . $this->removeBackgroundForMeasuredPointSpreadFunctionString($source, $dest);
-			$newScript = $newScript . $this->destroyImageString($source);
-			$step++;
-		}
-		*/
-		$parameter = $this->parameter('FullRestoration');
-		if ($parameter->isTrue()) {
-			$source = $this->sourceForStep($step);
-			$dest = $this->destinationForStep($step);
-			$newScript = $newScript . $this->fullRestorationForMeasuredPointSpreadFunctionString($source, $dest);
-			$newScript = $newScript . $this->destroyImageString($source);
-			$step++;
-		}
-		return $newScript;
-	}
+    // If the user chose the advanced correction mode 'partial correction
+    // at user defined PSF depth', we also need to pass the depth to the
+    // psfComputationString( ) function.
+    $depth = 0;
+    if ( ( $corrParams[ 'AberrationCorrectionNecessary' ] == 1 ) &&
+    ( $corrParams[ 'PerformAberrationCorrection' ] == 1 ) &&
+    ( $corrParams[ 'AberrationCorrectionMode' ] == 'advanced' ) &&
+    ( $corrParams[ 'AdvancedCorrectionOptions' ] == 'user' ) ) {
+      $depth = $corrParams[ 'PSFGenerationDepth' ];
+      $constant = 1; // See comment above
+    }
 
-	function destroyImageString($imageName) {
-		$result = '';
-		$result = $result . $imageName . ' del';
-		$result = $result . "\n";
-		return $result;
-	}
+    // The various options result in a different value for the -brMode
+    // deconvolution flag. This value is to be passed to the
+    // fullRestorationString( ) function below.
+    if ( $corrParams[ 'AberrationCorrectionNecessary' ] == 0 ) {
+      $brMode = 'auto';
+    } else {
+      if ( $corrParams[ 'PerformAberrationCorrection' ] == 0 ) {
+        $brMode = 'one';
+      } else {
+        if ( $corrParams[ 'AberrationCorrectionMode' ] == 'automatic' ) {
+          $brMode = 'auto';
+        } else {
+          if ( $corrParams[ 'AdvancedCorrectionOptions' ] == 'user' ) {
+            $brMode = 'one';
+          }
+          if ( $corrParams[ 'AdvancedCorrectionOptions' ] == 'slice' ) {
+            $brMode = 'sliceBySlice';
+          }
+          if ( $corrParams[ 'AdvancedCorrectionOptions' ] == 'few' ) {
+            $brMode = 'few';
+          }
+        }
+      }
+    }
 
-	function getNumberOfOperations() {
-		$result = 0;
-		$parameter = $this->parameter('RemoveNoise');
-		if ($parameter->isTrue()) {
-			$result++;
-		}
-		$parameter = $this->parameter('RemoveBackground');
-		if ($parameter->isTrue()) {
-			$result++;
-		}
-		$parameter = $this->parameter('FullRestoration');
-		if ($parameter->isTrue()) {
-			$result++;
-		}
-		return $result;
-	}
+    // effective deconvolution script; step = 3 -> $source = b; $dest = c;
+    $parameter = $this->parameter('FullRestoration');
+    if ($parameter->isTrue()) {
+      $source = $this->sourceForStep($step);
+      $dest = $this->destinationForStep($step);
+      $newScript = $newScript . $this->psfComputationString($source, $constant, $depth);
+      $newScript = $newScript . $this->fullRestorationString($source, $dest, $brMode);
+      $newScript = $newScript . $this->destroyImageString($source);
+      $step++;
+    }
+    return $newScript;
+  }
 
-	function sourceForStep($stepNumber) {
-		$stepSources = array (
+  // manage measured PSF
+  function putScriptForMeasuredPointSpreadFunctionOn($script) {
+    $step = 1;
+    $newScript = $script;
+    // Obsolete
+    /*
+    $parameter = $this->parameter('RemoveNoise');
+    if ($parameter->isTrue()) {
+    $source = $this->sourceForStep($step);
+    $dest = $this->destinationForStep($step);
+    $newScript = $newScript . $this->removeNoiseString($source, $dest);
+    $newScript = $newScript . $this->destroyImageString($source);
+    $step++;
+    }
+    $parameter = $this->parameter('RemoveBackground');
+    if ($parameter->isTrue()) {
+    $source = $this->sourceForStep($step);
+    $dest = $this->destinationForStep($step);
+    $newScript = $newScript . $this->removeBackgroundForMeasuredPointSpreadFunctionString($source, $dest);
+    $newScript = $newScript . $this->destroyImageString($source);
+    $step++;
+    }
+    */
+    $parameter = $this->parameter('FullRestoration');
+    if ($parameter->isTrue()) {
+      $source = $this->sourceForStep($step);
+      $dest = $this->destinationForStep($step);
+      $newScript = $newScript . $this->fullRestorationForMeasuredPointSpreadFunctionString($source, $dest);
+      $newScript = $newScript . $this->destroyImageString($source);
+      $step++;
+    }
+    return $newScript;
+  }
+
+  function destroyImageString($imageName) {
+    $result = '';
+    $result = $result . $imageName . ' del';
+    $result = $result . "\n";
+    return $result;
+  }
+
+  function getNumberOfOperations() {
+    $result = 0;
+    $parameter = $this->parameter('RemoveNoise');
+    if ($parameter->isTrue()) {
+      $result++;
+    }
+    $parameter = $this->parameter('RemoveBackground');
+    if ($parameter->isTrue()) {
+      $result++;
+    }
+    $parameter = $this->parameter('FullRestoration');
+    if ($parameter->isTrue()) {
+      $result++;
+    }
+    return $result;
+  }
+
+  function sourceForStep($stepNumber) {
+    $stepSources = array (
 			'$imageName',
 			'a',
 			'b'
-		);
-		$index = $stepNumber -1;
-		return $stepSources[$index];
-	}
+			);
+			$index = $stepNumber -1;
+			return $stepSources[$index];
+  }
 
-	function destinationForStep($stepNumber) {
-		$maxSteps = $this->getNumberOfOperations();
-		$stepDestinations = array (
-			array (
+  function destinationForStep($stepNumber) {
+    $maxSteps = $this->getNumberOfOperations();
+    $stepDestinations = array (
+    array (
 				'c',
 				'a',
 				'a'
-			),
-			array (
+				),
+				array (
 				'x',
 				'c',
 				'b'
-			),
-			array (
+				),
+				array (
 				'x',
 				'x',
 				'c'
-			)
-		);
-		$index = $stepNumber -1;
-		$row = $stepDestinations[$index];
-		$index = $maxSteps -1;
-		return $row[$index];
-	}
+				)
+				);
+				$index = $stepNumber -1;
+				$row = $stepDestinations[$index];
+				$index = $maxSteps -1;
+				return $row[$index];
+  }
 
-	function psfComputationString($source, $constant = 0, $position = 0) {
-		// To calculate a theoretical PSF, the best thing is to provide an empty
-        // one. Huygens will take the necessary decisions, see
-        // http://support.svi.nl/wiki/TheoreticalPsf
-        if (!$constant ) {
-            return "catch { psf clear }\n";
-        }
-        // Alternatively, this calculates a constant PSF for the provided
-        // parameters, and will be adapted to the sample depth if spherical
-        // aberration is present.
-		return 'catch { ' . $source . ' genpsf -> psf -dims auto -zPos '.
-			$position .' }' . "\n";
-	}
+  function psfComputationString($source, $constant = 0, $position = 0) {
+    // To calculate a theoretical PSF, the best thing is to provide an empty
+    // one. Huygens will take the necessary decisions, see
+    // http://support.svi.nl/wiki/TheoreticalPsf
+    if (!$constant ) {
+      return "catch { psf clear }\n";
+    }
+    // Alternatively, this calculates a constant PSF for the provided
+    // parameters, and will be adapted to the sample depth if spherical
+    // aberration is present.
+    return 'catch { ' . $source . ' genpsf -> psf -dims auto -zPos '.
+    $position .' }' . "\n";
+  }
 
-	/* TODO This is obsolete code and should be removed!
-	function removeNoiseString($source, $dest) {
-		$result = '';
-		$result = $result . $source . ' gauss -> ' . $dest . ' -sigma ';
-		$result = $result . $this->noiseLevelString();
-		$result = $result . ' -units s';
-		$result = $result . "\n";
-		return $result;
-	}
+  /* TODO This is obsolete code and should be removed!
+   function removeNoiseString($source, $dest) {
+   $result = '';
+   $result = $result . $source . ' gauss -> ' . $dest . ' -sigma ';
+   $result = $result . $this->noiseLevelString();
+   $result = $result . ' -units s';
+   $result = $result . "\n";
+   return $result;
+   }
 
-	// never called: to remove
-	function removeBackgroundString($source, $dest) {
-		$result = '';
-		$result = $result . $source . ' cmle psf -> ' . $dest . ' ';
-		$result = $result . "-it 3 ";
-		$result = $result . '-bgMode object ';
-		$result = $result . '-blMode auto ';
-		$result = $result . '-q 0 ';
-		$result = $result . '-mode fast ';
-		$result = $result . '-pad auto';
-		$result = $result . "\n";
-		return $result;
-	}
+   // never called: to remove
+   function removeBackgroundString($source, $dest) {
+   $result = '';
+   $result = $result . $source . ' cmle psf -> ' . $dest . ' ';
+   $result = $result . "-it 3 ";
+   $result = $result . '-bgMode object ';
+   $result = $result . '-blMode auto ';
+   $result = $result . '-q 0 ';
+   $result = $result . '-mode fast ';
+   $result = $result . '-pad auto';
+   $result = $result . "\n";
+   return $result;
+   }
 
-	// manage measured PSF
-	// never called: to remove
-	function removeBackgroundForMeasuredPointSpreadFunctionString($source, $dest) {
-		$result = '';
-		$result = $result . $source . ' cmle $psf -> ' . $dest . ' ';
-		$result = $result . "-it 3 ";		// !!
-		$result = $result . '-bgMode object ';
-		$result = $result . $this->removeBackgroundPercentString();
-		$result = $result . '-blMode auto ';
-		$result = $result . '-q 0 ';
-		//$result = $result . '-mode fast ';
-		$result = $result . '-pad auto';
-		$result = $result . "\n";
-		return $result;
-	}
-	*/
-	
-	function fullRestorationString($source, $dest, $brMode) {
-		$result = '';
+   // manage measured PSF
+   // never called: to remove
+   function removeBackgroundForMeasuredPointSpreadFunctionString($source, $dest) {
+   $result = '';
+   $result = $result . $source . ' cmle $psf -> ' . $dest . ' ';
+   $result = $result . "-it 3 ";		// !!
+   $result = $result . '-bgMode object ';
+   $result = $result . $this->removeBackgroundPercentString();
+   $result = $result . '-blMode auto ';
+   $result = $result . '-q 0 ';
+   //$result = $result . '-mode fast ';
+   $result = $result . '-pad auto';
+   $result = $result . "\n";
+   return $result;
+   }
+   */
 
-		$parameter = $this->parameter('DeconvolutionAlgorithm');
-		$string = $parameter->name();
-		$value = $parameter->value();
+  function fullRestorationString($source, $dest, $brMode) {
+    $result = '';
 
-		// (Obsolete) This restores the default behavior in case the entry "DeconvolutionAlgorithm"
-		// is not in the database
-		if ( empty( $value ) == true )
-		  $value = "cmle";
+    $parameter = $this->parameter('DeconvolutionAlgorithm');
+    $string = $parameter->name();
+    $value = $parameter->value();
 
-		$result = $result . $source . ' ' . $value . ' psf -> ' . $dest . ' ';	
-		//$result = $result . $source . ' cmle psf -> ' . $dest . ' ';
-		$result = $result . $this->signalNoiseRatioString();
-		$result = $result . $this->maxIterationsString();
-		// background estimation manual/auto
-		$parameter = $this->parameter("BackgroundOffsetPercent");
-        #printDebug("fullRestorationString", $parameter);
-        #printDebug(debug_backtrace()); exit;
-		$value = $parameter->value();
-		$internalValue = $parameter->internalValue();
-		//$result = $result . '-bgMode object ';
-		//error_log("GENERATING SCRIPT (Setting): background offset percent -> ".$value[0].", ".$value[1]." | ".$internalValue[0].", ".$internalValue[1]." |");
-		if ($value[0] == "auto" || $internalValue[0] == "auto") {
-			$result = $result . '-bgMode auto ';
-		} else if ($value[0] == "object" || $internalValue[0] == "object") {
-			$result = $result . '-bgMode object ';
-		} else {
-			$result = $result . '-bgMode manual ';
-			$result = $result . $this->backgroundPerChannelString();
-		}
-		$result = $result . '-blMode auto ';
-		$result = $result . '-q ';
-		$parameter = $this->parameter("QualityChangeStoppingCriterion");
-		$result = $result . $parameter->value() . " ";
-		$result = $result . '-brMode ' . $brMode . " ";
-		$result = $result . '-pad auto';
-		$result = $result . "\n";
-		return $result;
-	}
+    // (Obsolete) This restores the default behavior in case the entry "DeconvolutionAlgorithm"
+    // is not in the database
+    if ( empty( $value ) == true )
+    $value = "cmle";
 
-	// manage measured PSF
-	function fullRestorationForMeasuredPointSpreadFunctionString($source, $dest) {
-		$result = '';
-		
-		// (Obsolete) This restores the default behavior in case the entry "DeconvolutionAlgorithm"
-		// is not in the database
-		$value = $this->decAlgorithmString();
-		if ( empty( $value ) == true )
-			$value = "cmle";
-		$result = $result . $source . ' ' .$value . ' psf -> ' . $dest . ' ';
+    $result = $result . $source . ' ' . $value . ' psf -> ' . $dest . ' ';
+    //$result = $result . $source . ' cmle psf -> ' . $dest . ' ';
+    $result = $result . $this->signalNoiseRatioString();
+    $result = $result . $this->maxIterationsString();
+    // background estimation manual/auto
+    $parameter = $this->parameter("BackgroundOffsetPercent");
+    #printDebug("fullRestorationString", $parameter);
+    #printDebug(debug_backtrace()); exit;
+    $value = $parameter->value();
+    $internalValue = $parameter->internalValue();
+    //$result = $result . '-bgMode object ';
+    //error_log("GENERATING SCRIPT (Setting): background offset percent -> ".$value[0].", ".$value[1]." | ".$internalValue[0].", ".$internalValue[1]." |");
+    if ($value[0] == "auto" || $internalValue[0] == "auto") {
+      $result = $result . '-bgMode auto ';
+    } else if ($value[0] == "object" || $internalValue[0] == "object") {
+      $result = $result . '-bgMode object ';
+    } else {
+      $result = $result . '-bgMode manual ';
+      $result = $result . $this->backgroundPerChannelString();
+    }
+    $result = $result . '-blMode auto ';
+    $result = $result . '-q ';
+    $parameter = $this->parameter("QualityChangeStoppingCriterion");
+    $result = $result . $parameter->value() . " ";
+    $result = $result . '-brMode ' . $brMode . " ";
+    $result = $result . '-pad auto';
+    $result = $result . "\n";
+    return $result;
+  }
 
-		//$result = $result . $source . $this->decAlgorithmString() . ' psf -> ' . $dest . ' ';
-		//$result = $result . $source . ' cmle $psf -> ' . $dest . ' ';
-		$result = $result . $this->signalNoiseRatioString();
-		$result = $result . $this->maxIterationsString();
-		// background estimation manual/auto
-		$parameter = $this->parameter("BackgroundOffsetPercent");
-		$value = $parameter->value();
-		$internalValue = $parameter->internalValue();
-		//$result = $result . '-bgMode object ';
-		if ($value[0] == "auto" || $internalValue[0] == "auto") {
-			$result = $result . '-bgMode auto ';
-		} else if ($value[0] == "object" || $internalValue[0] == "object") {
-			$result = $result . '-bgMode object ';
-		} else {
-			$result = $result . '-bgMode manual ';
-			$result = $result . $this->backgroundPerChannelString();
-		}
-		$result = $result . '-blMode auto ';
-		$result = $result . '-q ';
-		$parameter = $this->parameter("QualityChangeStoppingCriterion");
-		$result = $result . $parameter->value() . " ";
-		$result = $result . '-brMode auto ';
-		$result = $result . '-pad auto';
-		$result = $result . "\n";
-		return $result;
-	}
+  // manage measured PSF
+  function fullRestorationForMeasuredPointSpreadFunctionString($source, $dest) {
+    $result = '';
 
-	function noiseLevelString() {
-		$parameter = $this->parameter('RemoveNoiseEffectiveness');
-		$value = $parameter->value();
-		$result = '{';
-		$result = $result . "$value $value 0 0 }";
-		return $result;
-	}
+    // (Obsolete) This restores the default behavior in case the entry "DeconvolutionAlgorithm"
+    // is not in the database
+    $value = $this->decAlgorithmString();
+    if ( empty( $value ) == true )
+    $value = "cmle";
+    $result = $result . $source . ' ' .$value . ' psf -> ' . $dest . ' ';
 
-	function backgroundPerChannelString() {
-		$parameter = $this->parameter('BackgroundOffsetPercent');
-		$values = $parameter->value();
-		/*if (!is_array($values)) {
-			$channels = $this->numberOfChannels();
-			$values = array_fill(1, $channels, $values);
-		}
-		$result = '-bg {';
-		for ($i = 0; $i < $this->numberOfChannels(); $i++) {
-			$newValue = -1 * (100 - $values[$i]);
-			$result = $result . $newValue;
-			if ($i < $this->numberOfChannels()) {
-				$result = $result . " ";
-			}
-		}
-		$result = $result . '} ';*/
+    //$result = $result . $source . $this->decAlgorithmString() . ' psf -> ' . $dest . ' ';
+    //$result = $result . $source . ' cmle $psf -> ' . $dest . ' ';
+    $result = $result . $this->signalNoiseRatioString();
+    $result = $result . $this->maxIterationsString();
+    // background estimation manual/auto
+    $parameter = $this->parameter("BackgroundOffsetPercent");
+    $value = $parameter->value();
+    $internalValue = $parameter->internalValue();
+    //$result = $result . '-bgMode object ';
+    if ($value[0] == "auto" || $internalValue[0] == "auto") {
+      $result = $result . '-bgMode auto ';
+    } else if ($value[0] == "object" || $internalValue[0] == "object") {
+      $result = $result . '-bgMode object ';
+    } else {
+      $result = $result . '-bgMode manual ';
+      $result = $result . $this->backgroundPerChannelString();
+    }
+    $result = $result . '-blMode auto ';
+    $result = $result . '-q ';
+    $parameter = $this->parameter("QualityChangeStoppingCriterion");
+    $result = $result . $parameter->value() . " ";
+    $result = $result . '-brMode auto ';
+    $result = $result . '-pad auto';
+    $result = $result . "\n";
+    return $result;
+  }
 
-        /* TODO: why does this return channel zero's? */
-		$result = '-bg ' . $values[0] . " ";
-		return $result;
-	}
+  function noiseLevelString() {
+    $parameter = $this->parameter('RemoveNoiseEffectiveness');
+    $value = $parameter->value();
+    $result = '{';
+    $result = $result . "$value $value 0 0 }";
+    return $result;
+  }
 
-	function removeBackgroundPercentString() {
-		$parameter = $this->parameter('RemoveBackgroundPercent');
-		$values = $parameter->value();
-		if (!is_array($values)) {
-			$channels = $this->numberOfChannels();
-			$values = array_fill(1, $channels, $values);
-		}
-		$result = '-bg {';
-		for ($i = 0; $i < $this->numberOfChannels(); $i++) {
-			$newValue = -1 * (100 - $values[$i]);
-			$result = $result . $newValue;
-			if ($i < $this->numberOfChannels()) {
-				$result = $result . " ";
-			}
-		}
-		$result = $result . '} ';
-		return $result;
-	}
+  function backgroundPerChannelString() {
+    $parameter = $this->parameter('BackgroundOffsetPercent');
+    $values = $parameter->value();
+    /*if (!is_array($values)) {
+     $channels = $this->numberOfChannels();
+     $values = array_fill(1, $channels, $values);
+     }
+     $result = '-bg {';
+     for ($i = 0; $i < $this->numberOfChannels(); $i++) {
+     $newValue = -1 * (100 - $values[$i]);
+     $result = $result . $newValue;
+     if ($i < $this->numberOfChannels()) {
+     $result = $result . " ";
+     }
+     }
+     $result = $result . '} ';*/
 
-	function signalNoiseRatioString() {
-		$parameter = $this->parameter('SignalNoiseRatio');
-		$values = $parameter->value();
-		//if (!is_array($values)) {
-		//	$values = array_fill(1, $this->numberOfChannels(), $values);
-		//}
-		//$result = '-sn {';
-		//for ($i = 1; $i <= $this->numberOfChannels(); $i++) {
-		//	$result = $result . $values[$i];
-		//	if ($i < $this->numberOfChannels()) {
-		//		$result = $result . " ";
-		//	}
-		//}
-		//$result = $result . '} ';
-		
-		$parameter = $this->parameter('DeconvolutionAlgorithm');
-		$deconvolutionAlgorithm = $parameter->value();
-		
-		$value = $values[0];
-		if ($deconvolutionAlgorithm == "qmle") {
-			if ($value == "1")	$value = "low";
-			else if ($value == "2")	$value = "fair";
-			else if ($value == "3")	$value = "good";
-                        else if ($value == "4")	$value = "inf";
-			else			$value = "fair";
-		}
-		
-		$result = '-sn ' . $value . " ";
-		return $result;
-	}
+    /* TODO: why does this return channel zero's? */
+    $result = '-bg ' . $values[0] . " ";
+    return $result;
+  }
 
-	function maxIterationsString() {
-		$parameter = $this->parameter('NumberOfIterations');
-		$value = $parameter->value();
-		$result = "-it $value ";
-		return $result;
-	}
-	
-	function decAlgorithmString() {
-		$parameter = $this->parameter('DeconvolutionAlgorithm');
-		$value = $parameter->value();
-		$result = " $value";
-		return $result;
-	}
+  function removeBackgroundPercentString() {
+    $parameter = $this->parameter('RemoveBackgroundPercent');
+    $values = $parameter->value();
+    if (!is_array($values)) {
+      $channels = $this->numberOfChannels();
+      $values = array_fill(1, $channels, $values);
+    }
+    $result = '-bg {';
+    for ($i = 0; $i < $this->numberOfChannels(); $i++) {
+      $newValue = -1 * (100 - $values[$i]);
+      $result = $result . $newValue;
+      if ($i < $this->numberOfChannels()) {
+        $result = $result . " ";
+      }
+    }
+    $result = $result . '} ';
+    return $result;
+  }
+
+  function signalNoiseRatioString() {
+    $parameter = $this->parameter('SignalNoiseRatio');
+    $values = $parameter->value();
+    //if (!is_array($values)) {
+    //	$values = array_fill(1, $this->numberOfChannels(), $values);
+    //}
+    //$result = '-sn {';
+    //for ($i = 1; $i <= $this->numberOfChannels(); $i++) {
+    //	$result = $result . $values[$i];
+    //	if ($i < $this->numberOfChannels()) {
+    //		$result = $result . " ";
+    //	}
+    //}
+    //$result = $result . '} ';
+
+    $parameter = $this->parameter('DeconvolutionAlgorithm');
+    $deconvolutionAlgorithm = $parameter->value();
+
+    $value = $values[0];
+    if ($deconvolutionAlgorithm == "qmle") {
+      if ($value == "1")	$value = "low";
+      else if ($value == "2")	$value = "fair";
+      else if ($value == "3")	$value = "good";
+      else if ($value == "4")	$value = "inf";
+      else			$value = "fair";
+    }
+
+    $result = '-sn ' . $value . " ";
+    return $result;
+  }
+
+  function maxIterationsString() {
+    $parameter = $this->parameter('NumberOfIterations');
+    $value = $parameter->value();
+    $result = "-it $value ";
+    return $result;
+  }
+
+  function decAlgorithmString() {
+    $parameter = $this->parameter('DeconvolutionAlgorithm');
+    $value = $parameter->value();
+    $result = " $value";
+    return $result;
+  }
+
 }
