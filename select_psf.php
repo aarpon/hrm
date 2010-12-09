@@ -5,6 +5,12 @@
 require_once("./inc/User.inc");
 require_once("./inc/Fileserver.inc");
 
+/* *****************************************************************************
+ *
+ * START SESSION, CHECK LOGIN STATE, INITIALIZE WHAT NEEDED
+ *
+ **************************************************************************** */
+
 session_start();
 
 if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
@@ -13,14 +19,20 @@ if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
 
 // fileserver related code
 if (!isset($_SESSION['fileserver'])) {
-  # session_register('fileserver');
   $name = $_SESSION['user']->name();
   $_SESSION['fileserver'] = new Fileserver($name);
 }
 
 $message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
 
+/* *****************************************************************************
+ *
+ * MANAGE THE MULTI-CHANNEL PSF FILE NAMES
+ *
+ **************************************************************************** */
+
 $psfParam = $_SESSION['setting']->parameter("PSF");
+$psfParam->setNumberOfChannels( $_SESSION['setting']->numberOfChannels() );
 $psf = $psfParam->value();
 for ($i = 0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
   $psfKey = "psf{$i}";
@@ -29,22 +41,31 @@ for ($i = 0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
   } 
 }
 // get rid of extra values in case the number of channels is changed
-$psf = array_slice($psf, 0, $_SESSION['setting']->numberOfChannels() );
+//$psf = array_slice($psf, 0, $_SESSION['setting']->numberOfChannels() );
 $psfParam->setValue($psf);
 $_SESSION['setting']->set($psfParam);
 
+/* *****************************************************************************
+ *
+ * PROCESS THE POSTED PARAMETERS
+ *
+ **************************************************************************** */
+
 if (count($_POST) > 0) {
-  $ok = $_SESSION['setting']->checkPointSpreadFunction();
-  $message = "            <p class=\"warning\">".$_SESSION['setting']->message()."<br />&nbsp;</p>";
+  $ok = $psfParam->check();
   if ($ok) {
     // Make sure to turn off the aberration correction since we use a measured PSF
     $_SESSION['setting']->parameter( 'AberrationCorrectionNecessary' )->setValue( '0' );
     $_SESSION['setting']->parameter( 'PerformAberrationCorrection' )->setValue( '0' );
+
+    // Since this is the last page of the Parameter Settings, we save!
     $saved = $_SESSION['setting']->save();			
     $message = "            <p class=\"warning\">".$_SESSION['setting']->message()."<br />&nbsp;</p>";
     if ($saved) {
       header("Location: " . "select_parameter_settings.php"); exit();
     }
+  } else {
+    $message = "            <p class=\"warning\">".$psfParam->message()."<br />&nbsp;</p>";
   }
 }
 

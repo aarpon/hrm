@@ -671,12 +671,6 @@ class BooleanParameter extends ChoiceParameter {
 /*!
 	\class	NumericalParameter
 	\brief	Class for a Parameter that has a scalar number as possible value
-	\todo	Add a new class NumericalArrayParameter that extends
-			NumericalParameter and stores array of values (one per channel)
-			instead of individual scalars and make parameters like
-			EmissionWavelength inherit from it. This new class should
-			reimplement setValue(). The same could be done for the range
-			parameters and the VariableChannelsParameter class.
 */
 class NumericalParameter extends Parameter {
 
@@ -978,12 +972,15 @@ class NumericalArrayParameter extends NumericalParameter {
 		\param	$value	Array of values for the parameter		
 	*/
 	public function setValue($value) {
-	    if ( count( $value ) != 5 ) {
-			return False;
+		$n = count( $value );
+		for ( $i = 0; $i < 5; $i++ ) {
+			if ( $i < $n ) {
+				$this->value[ $i ] = $value[ $i ];
+			} else {
+				$this->value[ $i ] = null;
+			}
 		}
-		$this->value = $value;
-	}
-	
+	}	
 }
 
 /*
@@ -992,19 +989,10 @@ class NumericalArrayParameter extends NumericalParameter {
 
 /*!
 	\class    VariableChannelsParameter
-	\brief    Class for a Parameter that has an array of numbers as possible value
- 
-Each value in the array corresponds to one of the channels on the dataset.
-
-	\todo	How exactly is this Parameter used?
+	\brief    Class for a Parameter that has an array of variable of any type
+				as possible value
 */
-class VariableChannelsParameter extends NumericalParameter {
-
-	/*!
-		\var	$numberOfChannels
-		\brief	Number of channels for which to provide Parameter values
-	*/	
-	protected $numberOfChannels;
+class VariableChannelsParameter extends NumericalArrayParameter {
 
 	/*!
 		\brief	Constructor: creates an empty Parameter
@@ -1012,73 +1000,6 @@ class VariableChannelsParameter extends NumericalParameter {
 	*/
 	public function __construct($name) {
 		parent::__construct($name);
-		$this->value = array (
-			0 => NULL,
-			1 => NULL,
-			2 => NULL,
-			3 => NULL,
-			4 => NULL
-		);
-		$numberOfChannels = 1;
-	}
-
-	/*!
-		\brief	 Sets the number of channels
-		\param	$number	Number of channels
-	*/
-	public function setNumberOfChannels($number) {
-		$this->numberOfChannels = $number;
-	}
-
-	/*!
-		\brief	 Returns the number of channels
-		\return the umber of channels
-	*/
-	public function numberOfChannels() {
-		return $this->numberOfChannels;
-	}
-
-	/*!
-		\brief	Sets the value of the VariableChannelsParameter.
-		
-		The value can be either a scalar, and then it will be assigned to
-		channel 0, or an array, and then it will replace the existing array
-		of values in the VariableChannelsParameter. The number of passed values
-		does not need to match the current number of channels, but then it is
-		responibility of the user to correct the mismatch!
-		
-		\param	$value A scalar or an array of numbers to be set as value
-		\todo	This function should be more robust and more versatile!
-	*/
-	public function setValue($value) {
-		$theValue = $value;
-		if (!is_array($value)) {
-			$theValue = array (
-				0 => $value,
-				1 => NULL,
-				2 => NULL,
-				3 => NULL,
-				4 => NULL
-			);
-			
-		}
-		//TODO: check if useful
-		else if (is_array($value) && count($value) < 5) {
-			$theValue = array(5);
-			for ($i = 0; $i < count($value); $i++) {
-				$theValue[] = $value[$i];
-			}
-		}
-		/*else if (is_array($value) && count($value) == 1) {
-			$theValue = array (
-				0 => $value[0],
-				1 => NULL,
-				2 => NULL,
-				3 => NULL,
-				4 => NULL
-			);
-		}*/
-		$this->value = $theValue;
 	}
 
 	/*!
@@ -1091,35 +1012,6 @@ class VariableChannelsParameter extends NumericalParameter {
 	public function isVariableChannel() {
 		return True;
 	}
-
-	/*!
-		\brief	Returns the checked array of values for all channels
-		
-		The values are checked against their boundaries before they are returned.
-		Please be careful: if a value is not valid it will be skipped, and the
-		array will miss that entry!
-		(Originally, a non-valid value was replaced by the value of the previous
-		channel, but the code would fail if channel 0 were also invalid.)
-		
-		\return	checked array of values
-		\todo	The behavior of this function is rather questionable!
-	*/
-/*	public function value() {
-		$value = $this->value;
-		$newValue = array ( NULL, NULL, NULL, NULL, NULL );
-        # printDebug($this);
-        # printDebug(debug_backtrace());
-		for ($i = 0; $i < count( $value ); $i++) {
-			if ( $i !=NULL && $this->checkValue($value[$i])) {
-				$newValue[$i] = $value[$i];
-			}
-			/*else {
-				$newValue[$i] = $newValue[$i -1];
-			}*/
-	/*	}
-		return $newValue;
-	}
-	*/
 	
 	/*!
 		\brief	Returns the internal value of the VariableChannelsParameter
@@ -1131,22 +1023,6 @@ class VariableChannelsParameter extends NumericalParameter {
 	*/
 	public function internalValue() {
 		return $this->value;
-	}
-
-	/*!
-		\brief	Checks whether all values for all channels are valid
-		\return	true if all values are valid, false otherwise
-	*/
-	public function check() {
-		$this->message = '';
-		$result = True;
-		for ($i = 0; $i < $this->numberOfChannels; $i++) {
-			$value = $this->internalValue();
-			$result = $result && parent::checkValue($value[$i]);
-		}
-		if ( $result == False ) {
-			$this->message = 'Bad value ' . $this->value() . ' for ' . $this->name();
-		}
 	}
 
 }
@@ -1210,25 +1086,18 @@ class PointSpreadFunction extends ChoiceParameter {
  \brief	Class that handles the file names of the PSF files per channel.
  \todo	This should be called PSFFiles or something similar
 */
-class PSF extends Parameter {
+class PSF extends VariableChannelsParameter {
 
 	/*!
 		\brief	Constructor: creates an empty Parameter
 	*/
 	public function __construct() {
 		parent::__construct('PSF');
-		$this->value = array (
-			NULL,
-			NULL,
-			NULL,
-			NULL,
-			NULL
-		);
 	}
 
 	public function check( ) {
 	  for ( $i = 0; $i < $this->numberOfChannels(); $i++) {
-		  if ( $value[ $i ] == NULL ) {
+		  if ( $this->value[ $i ] == NULL ) {
 		    $this->message = "Please select a PSF file for channel $i!";
 		    return False;
           }
