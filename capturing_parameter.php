@@ -7,6 +7,12 @@ require_once("./inc/Parameter.inc");
 require_once("./inc/Setting.inc");
 require_once("./inc/Util.inc");
 
+/* *****************************************************************************
+ *
+ * START SESSION, CHECK LOGIN STATE, INITIALIZE WHAT NEEDED
+ *
+ **************************************************************************** */
+
 session_start();
 
 if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
@@ -14,23 +20,12 @@ if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
 }
 $message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
 
-$parameter = $_SESSION['setting']->parameter("NumericalAperture");
-$na = $parameter->value();
-$names = $_SESSION['setting']->capturingParameterNames();
-foreach ($names as $name) {
-  if (isset($_POST[$name])) {
-    $parameter = $_SESSION['setting']->parameter($name);
-    // adaption check has to be reset if user changes pixel size values
-    if ($name == "CCDCaptorSizeX" || $name == "ZStepSize") {
-      if ($parameter->value() != $_POST[$name]) {
-        $_SESSION['setting']->setAdaptedParameters(False);
-      }
-    }
-    $parameter->setValue($_POST[$name]);
-    $_SESSION['setting']->set($parameter);
-  }
-}
-// manage one pinhole radius per channel
+/* *****************************************************************************
+ *
+ * MANAGE THE MULTI-CHANNEL PINHOLE RADII
+ *
+ **************************************************************************** */
+
 $pinholeParam = $_SESSION['setting']->parameter("PinholeSize");
 $pinhole = $pinholeParam->value();
 for ($i=0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
@@ -40,19 +35,18 @@ for ($i=0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
   } 
 }
 // get rid of extra values in case the number of channels is changed
-if (is_array($pinhole)) {
-	$pinhole = array_slice($pinhole, 0, $_SESSION['setting']->numberOfChannels() );
-}
-$pinholeParam->setValue($pinhole);
-$_SESSION['setting']->set($pinholeParam);
-// TODO refactor
-$_SESSION['setting']->setAdaptedParameters(False);
-
-// deal with the computation of theoretical pixel size from microscope parameters
-//if (isset($_POST["calculate"])) {
-//  	header("Location: " . "calculate_pixel_size.php");	// send a raw HTTP header
-//  	exit();
+//if (is_array($pinhole)) {
+//	$pinhole = array_slice($pinhole, 0, $_SESSION['setting']->numberOfChannels() );
 //}
+$pinholeParam->setValue($pinhole);
+$pinholeParam->setNumberOfChannels( $_SESSION['setting']->numberOfChannels( ) );
+$_SESSION['setting']->set($pinholeParam);
+
+/* *****************************************************************************
+ *
+ * WHICH IS THE NEXT PAGE?
+ *
+ **************************************************************************** */
 
 // Here we try to figure out whether we have to continue after this page or not.
 // If the user chose to use a measured PSF or if there is a refractive index
@@ -73,8 +67,8 @@ if ($PSF == 'measured' ) {
   $_SESSION['setting']->parameter( 'PerformAberrationCorrection' )->setValue( '0' );
 } else {
   // Get the refractive indices
-  $sampleRI    = $_SESSION['setting']->parameter( 'SampleMedium' )->translatedValue( );
-  $objectiveRI = $_SESSION['setting']->parameter( 'ObjectiveType' )->translatedValue( );              
+  $sampleRI    = floatval( $_SESSION['setting']->parameter( 'SampleMedium' )->translatedValue( ) );
+  $objectiveRI = floatval( $_SESSION['setting']->parameter( 'ObjectiveType' )->translatedValue( ) );              
 
   // Calculate the deviation
   $deviation = abs( $sampleRI - $objectiveRI ) / $objectiveRI;
@@ -97,37 +91,32 @@ if ($PSF == 'measured' ) {
   }
 }
 
+/* *****************************************************************************
+ *
+ * PROCESS THE POSTED PARAMETERS
+ *
+ **************************************************************************** */
 
-// Process the posted parameters
-if (count($_POST) > 0) {
-  foreach ($names as $name) {
-    // get rid of non relevant values
-    if (!isset($_POST[$name]) && $name != "PinholeSize") {
-      $parameter = $_SESSION['setting']->parameter($name);
-      $parameter->setValue("");
-      $_SESSION['setting']->set($parameter);
-    }
+$ok = $_SESSION[ 'setting' ]->checkCapturingParameters( $_POST );
+if ($ok) {
+  if ( $saveParametersToDB == true ) {
+	$saved = $_SESSION['setting']->save();
+	$message = "            <p class=\"warning\">".$_SESSION['setting']->message()."</p>";
+	if ($saved) {
+	  header("Location: " . $pageToGo ); exit();
+	}
+  } else {
+	header("Location: " . $pageToGo ); exit();
   }
-  $parameter = $_SESSION['setting']->parameter("MicroscopeType");
-  if ($parameter->value() == "widefield") {
-    $param = $_SESSION['setting']->parameter("PinholeSize");
-    $param->setValue("");
-    $_SESSION['setting']->set($param);
-  }
-  $ok = $_SESSION['setting']->checkCapturingParameter();
-  $message = "            <p class=\"warning\">".$_SESSION['setting']->message()."<p>";
-  if ($ok) {
-    if ( $saveParametersToDB == true ) {
-      $saved = $_SESSION['setting']->save();			
-      $message = "            <p class=\"warning\">".$_SESSION['setting']->message()."</p>";
-      if ($saved) {
-        header("Location: " . $pageToGo ); exit();
-      }
-    } else {
-        header("Location: " . $pageToGo ); exit();
-    }
-  }
+} else {
+  $message = "            <p class=\"warning\">".$_SESSION['setting']->message()."</p>";
 }
+
+/* *****************************************************************************
+ *
+ * CREATE THE PAGE
+ *
+ **************************************************************************** */
 
 // Javascript includes
 $script = array( "settings.js", "quickhelp/help.js",
@@ -242,19 +231,6 @@ if ($_SESSION['setting']->isThreeDimensional()) {
 
 ?>
                         <input name="ZStepSize" type="text" size="5" value="<?php echo $parameter->value() ?>" />
-<?php
-            
-  // display adaption info
-  // TODO refactor
-  if ($_SESSION['setting']->hasAdaptedParameters()) {
-    $sampleSizeZ = $parameter->value();
-    $idealSampleSizeZ = $_SESSION['setting']->idealSampleSizeZ();
-    if ((0.5 * $idealSampleSizeZ <= $sampleSizeZ) && ($sampleSizeZ <= 1.2 * $idealSampleSizeZ)) {
-      echo "                        <span class=\"info\">(adapted to ".floor($idealSampleSizeZ).")</span>";
-    }
-  }
-
-?>
                     </li>
                     
 <?php
@@ -274,35 +250,7 @@ if ($_SESSION['setting']->isThreeDimensional()) {
                 </a>
                 
             </fieldset>
-            
-<!--	    
-            <fieldset class="setting">
-            
-                <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=PixelBinning')"><img src="images/help.png" alt="?" /></a>
-                binning:
-                
-                <select name="Binning" size="1">
-<?php
-
-//$parameter = $_SESSION['setting']->parameter("Binning");
-//foreach ($parameter->possibleValues() as $possibleValue) {
-//  $flag = "";
-//  if ($possibleValue == $parameter->value()) {
-//    $flag = " selected=\"selected\"";
-//  }
-?>
-                    <option<?php //echo $flag ?>><?php //echo $possibleValue ?></option>
-<?php
-
-//}   
-
-?>
-
-                </select>
-                
-            </fieldset>
--->
-            
+           
 <?php
 
 if ($_SESSION['setting']->isTimeSeries()) {
@@ -368,6 +316,10 @@ if ($_SESSION['setting']->isMultiPointOrSinglePointConfocal()) {
 ?></div>
                 <p />
                 
+				<?php
+				  $parameter = $_SESSION['setting']->parameter("NumericalAperture");
+				  $na = $parameter->value();
+				?>
                 <a href="calculate_bp_pinhole.php?na=<?php echo $na;?>"
                   target="_blank"
                   onmouseover="TagToTip('ttSpanPinholeRadius' )"
