@@ -8,6 +8,12 @@ require_once("./inc/Setting.inc");
 require_once("./inc/Util.inc");
 require_once ("./inc/System.inc");
 
+/* *****************************************************************************
+ *
+ * START SESSION, CHECK LOGIN STATE, INITIALIZE WHAT NEEDED
+ *
+ **************************************************************************** */
+
 session_start();
 
 if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
@@ -15,22 +21,29 @@ if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
 }
 $message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
 
-if (count($_POST) > 0) {
-    // Store the selected parameters
-    $names = $_SESSION['setting']->correctionParameterNames();
-    foreach ( $names as $name ) {
-        if (isset($_POST[$name])) {
-            $parameter = $_SESSION['setting']->parameter($name);
-            $parameter->setValue($_POST[$name]);
-            $_SESSION['setting']->set($parameter);
-        }
-    }
+/* *****************************************************************************
+ *
+ * PROCESS THE POSTED PARAMETERS
+ *
+ **************************************************************************** */
+
+$ok = $_SESSION['setting']->checkAberrationCorrectionParameters( $_POST );
+if ( $ok ) {
     $saved = $_SESSION['setting']->save();			
     $message = "            <p class=\"warning\">".$_SESSION['setting']->message()."</p>";
-    if ($saved && isset( $_POST['OK'])) {
+    if ( $saved ) {
       header("Location: " . "select_parameter_settings.php" ); exit();
     }
+} else {
+  $message = "            <p class=\"warning\">" .
+    $_SESSION['setting']->message() . "</p>\n";  
 }
+
+/* *****************************************************************************
+ *
+ * CREATE THE PAGE
+ *
+ **************************************************************************** */
 
 // Javascript includes
 $script = array( "settings.js", "quickhelp/help.js",

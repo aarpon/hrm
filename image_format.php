@@ -7,92 +7,42 @@ require_once("./inc/Parameter.inc");
 require_once("./inc/Setting.inc");
 require_once ("./inc/System.inc");
 
+/* *****************************************************************************
+ *
+ * START SESSION, CHECK LOGIN STATE, INITIALIZE WHAT NEEDED
+ *
+ **************************************************************************** */
+
 session_start();
 
-if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
-       header("Location: " . "login.php"); exit();
+if ( !isset( $_SESSION[ 'user' ] ) || !$_SESSION[ 'user' ]->isLoggedIn() ) {
+  header("Location: " . "login.php"); exit();
 }
 
-if (!isset($_SESSION['setting'])) {
-       # session_register('setting'); 		   
-       $_SESSION['setting'] = new ParameterSetting();
+if ( !isset( $_SESSION[ 'setting' ] ) ) {
+  $_SESSION['setting'] = new ParameterSetting();
 }	
 
 $message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
 
-// TODO refactor from here
-$names = $_SESSION['setting']->imageParameterNames();
-foreach ($names as $name) {
-        if (isset($_POST[$name])) {
-               $parameter = $_SESSION['setting']->parameter($name);
-               // adaption check has to be reset if user changes pixel size values
-               if ($name == "ImageFileFormat") {
-                   if ($parameter->value() != $_POST[$name]) {
-                          $_SESSION['setting']->setAdaptedParameters(False);
-                   }
-               }
-               $parameter->setValue($_POST[$name]);
-               $_SESSION['setting']->set($parameter);
-               // set IsMultiChannel parameter value
-               if ($name == "NumberOfChannels") {
-                   $parameter = $_SESSION['setting']->parameter("IsMultiChannel");
-                   if ($_POST[$name] > 1) {
-                          $parameter->setValue("True");
-                   }
-                   else {
-                          $parameter->setValue("False");
-                   }
-                   $_SESSION['setting']->set($parameter);
-               }
-        }
+/* *****************************************************************************
+ *
+ * PROCESS THE POSTED PARAMETERS
+ *
+ **************************************************************************** */
+
+if ( $_SESSION[ 'setting' ]->checkImageParameters( $_POST ) ) {
+  header("Location: " . "microscope_parameter.php"); exit();
+} else {
+  $message = "            <p class=\"warning\">" .
+    $_SESSION['setting']->message() . "</p>\n";  
 }
 
-// set PointSpreadFunction parameter value
-if (isset($_POST["PointSpreadFunction"])) {
-  $parameter = $_SESSION['setting']->parameter("PointSpreadFunction");
-  $parameter->setValue($_POST["PointSpreadFunction"]);
-  $_SESSION['setting']->set($parameter);
-  if ($_POST["PointSpreadFunction"] == "theoretical") {
-     // reset PSF parameter value
-     $parameter = $_SESSION['setting']->parameter("PSF");
-     $parameter->setValue(array(NULL, NULL, NULL, NULL, NULL));
-     $_SESSION['setting']->set($parameter);
-  }
-}
-
-if (count($_POST)>0) {
-  if (!isset($_POST["ImageGeometry"]) || $_POST["ImageGeometry"] == "") {
-    $parameter = $_SESSION['setting']->parameter("ImageGeometry");
-    $parameter->setValue("multi_XYZ");
-    $_SESSION['setting']->set($parameter);
-  }
-  if (!isset($_POST["NumberOfChannels"]) && ($_POST["ImageFileFormat"] == "tiff-series")) {
-      $parameter = $_SESSION['setting']->parameter("NumberOfChannels");
-      $parameter->setValue("1");
-      $_SESSION['setting']->set($parameter);
-      $_POST["NumberOfChannels"] == "1";
-  }
-  if (!isset($_POST["ImageFileFormat"])) {
-    $ok = False;
-    $message = "<p class=\"warning\">Please choose a file format!</p>";
-  }
-  elseif (!isset($_POST["NumberOfChannels"]) && ($_POST["ImageFileFormat"] != "tiff-series")) {
-    $ok = False;
-    $message = "<p class=\"warning\">Please specify the number of channels!</p>";
-  }
-  elseif (!isset($_POST["PointSpreadFunction"])) {
-    $ok = False;
-    $message = "<p class=\"warning\">Please indicate whether you would like to calculate a theoretical PSF or use an existing measured one</p>";
-  } else {
-    $ok = $_SESSION['setting']->checkImageParameter();
-    $message = $_SESSION['setting']->message();
-  }
-
-  if ($ok) {
-    header("Location: " . "microscope_parameter.php"); exit();
-  }
-}
-// TODO refactor until here
+/* *****************************************************************************
+ *
+ * CREATE THE PAGE
+ *
+ **************************************************************************** */
 
 // Javascript includes
 $script = array( "settings.js", "quickhelp/help.js",

@@ -31,7 +31,7 @@ abstract class BaseSettingEditor {
     protected $selected;
 
     /*!
-		\brief	Constructor: creates a new SettingEditor and
+		\brief	Protected constructor: creates a new SettingEditor and
 				selects the default Setting if a default 
 				Setting exists.
 		\todo	Check: how can a SettingEditor have a list of Setting even before creation?

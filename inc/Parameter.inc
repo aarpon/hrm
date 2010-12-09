@@ -8,7 +8,7 @@ require_once ("Database.inc");
  \class    Parameter
  \brief    Base class for all Parameter types in the HRM
 */
-class Parameter {
+abstract class Parameter {
 
 	/*!
 		\var	$name
@@ -23,12 +23,33 @@ class Parameter {
 	protected $value;
 
 	/*!
-		\brief	Constructor: creates an empty Parameter
+		\var	$message
+		\brief	Error message in case the check on the Parameter values fails
+	*/
+	protected $message;
+
+	/*!
+		\brief	Protected constructor: creates an empty Parameter
 		\param	$name	Name of the new Parameter
 	*/
-	public function __construct($name) {
-		$this->name = $name;
-		$this->value = '';
+	protected function __construct($name) {
+		$this->name    = $name;
+		$this->value   = null;
+		$this->message = '';
+	}
+
+	/*!
+		\brief	Checks whether the parameter is valid
+		\return	true if the parameter is valid, false otherwise
+	*/
+	abstract public function check();
+
+	/*!
+		\brief	Returns the error message that was set by check()
+		\return	error message
+	*/
+	public function message() {
+		return $this->message;
 	}
 
 	/*!
@@ -39,26 +60,6 @@ class Parameter {
 		if (!is_array($this->value()))
 			return 1;
 		return count(array_filter($this->values()));
-	}
-
-	/*!
-		\brief	Checks whether the parameter is valid
-		\return	true if the parameter is valid, false otherwise
-	*/
-	public function check() {
-		return $this->checkValue($this->value());
-	}
-
-	/*!
-		\brief	Checks whether the value is valid
-		
-		This function should be <b>overloaded</b> by the subclasses
-		
-		\param	$value	Value to be checked
-		\return	true if the value is valid, false otherwise
-	*/
-	public function checkValue( $value ) {
-		return $value != '';
 	}
 
 	/*!
@@ -124,6 +125,18 @@ class Parameter {
 		\return	true if the Parameter is a Correction Parameter, false otherwise
 	*/
 	public function isForCorrection() {
+		return False;
+	}
+
+	/*!
+		\brief	Checks whether the Parameter is used for calculating the Pixel
+				Size from the CCD pixel size and the toal microscope magnification
+		
+		This function should be <b>overloaded</b> by the subclasses
+		
+		\return	true if the Parameter is a Calculation Parameter, false otherwise
+	*/
+	public function isForPixelSizeCalculation() {
 		return False;
 	}
 	
@@ -425,7 +438,7 @@ class Parameter {
  
  The ChoiceParameter can assume a limited number of possible values.
 */
-class ChoiceParameter extends Parameter {
+abstract class ChoiceParameter extends Parameter {
 	
 	/*!
 		\var	$possibleValues
@@ -434,10 +447,10 @@ class ChoiceParameter extends Parameter {
 	protected $possibleValues;
 
 	/*!
-		\brief	Constructor: creates an empty Parameter
+		\brief	Protected constructor: creates an empty Parameter
 		\param	$name	Name of the new Parameter
 	*/
-	public function __construct($name) {
+	protected function __construct($name) {
 		parent::__construct($name);
 		$possibleValues = array ();
 		
@@ -452,7 +465,7 @@ class ChoiceParameter extends Parameter {
 			$this->value = $defaultValue;
 		}		
 	}
-
+	
 	/*!
 		\brief	Returns the possible values for the Parameter
 		\return	the possible values
@@ -543,16 +556,15 @@ class ChoiceParameter extends Parameter {
 	}
 
 	/*!
-		\brief	Checks whether the value is valid
-		
-		The value of a ChoiceParameter must be one of its possible values
-		
-		\param	$value	Value to be checked
-		\return true if the value is valid, false otherwise
-	*/	
-	public function checkValue($value) {
-		$result = parent::checkValue($value);
-		$result = $result && (in_array($value, $this->possibleValues()));
+		\brief	Checks whether the parameter is valid
+		\return	true if the parameter is valid, false otherwise
+	*/
+	public function check( ) {
+		$this->message = '';
+		$result = in_array( $this->value, $this->possibleValues() );
+		if ( $result == False ) {
+			$this->message = 'Bad value ' . $this->value() . ' for ' . $this->name();
+		}
 		return $result;
 	}
 	
@@ -635,6 +647,19 @@ class BooleanParameter extends ChoiceParameter {
 	*/	
 	public function reset() {
 		$this->value = 'False';
+	}
+	
+	/*!
+		\brief	Checks whether the parameter is valid
+		\return	true if the parameter is valid, false otherwise
+	*/
+	public function check( ) {
+		$this->message = '';
+		$result = in_array( $this->value, array( 'True', 'False' ) );
+		if ( $result == False ) {
+			$this->message = 'Bad value ' . $this->value() . ' for ' . $this->name();
+		}
+		return $result;
 	}
 
 }
@@ -793,6 +818,15 @@ class NumericalParameter extends Parameter {
 	}
 
 	/*!
+		\brief	Checks whether the parameter is valid
+		\return	true if the parameter is valid, false otherwise
+	*/
+	public function check( ) {
+		$this->message = '';
+		return ( $this->checkValue( $this->value ) );
+	}
+	
+	/*!
 		\brief 	Checks whether the value is valid
 		
 		The value of a NumericalParameter must be a number and might optionally
@@ -801,32 +835,36 @@ class NumericalParameter extends Parameter {
 		\param	$value	Value to be checked
 		\return true if the value is valid, false otherwise
 	*/	
-	public function checkValue($value) {
+	protected function checkValue($value) {
 	    if ( is_array( $value ) )
 	    {
-	        echo "Error: NumericalParamater - Scalar expected.\n";
-	        return false;
+	        $this->message = "Error: NumericalParamater - Scalar expected.\n";
+	        return False;
 	    }
 		if ( is_numeric( $value ) == 0 ) {
 			return False;
 		}
 		if ($this->isMinIncluded) {
 			if ($this->checkMin && !((float) $value >= $this->min)) {
+				$this->message = "The value must be >= $this->min.";
 				return False;
 			}
 		}
 		if (!$this->isMinIncluded) {
 			if ($this->checkMin && !((float) $value > $this->min)) {
+				$this->message = "The value must be > $this->min.";
 				return False;
 			}
 		}
 		if ($this->isMaxIncluded) {
 			if ($this->checkMax && !((float) $value <= $this->max)) {
+				$this->message = "The value must be <= $this->max.";
 				return False;
 			}
 		}
 		if (!$this->isMaxIncluded) {
 			if ($this->checkMax && !((float) $value < $this->max)) {
+				$this->message = "The value must be < $this->max.";
 				return False;
 			}
 		}
@@ -842,14 +880,9 @@ class NumericalParameter extends Parameter {
 	*/
 	public function setValue($value) {
 	    if ( is_array( $value ) ) {
-	        echo "Error: Numerical Parameter - Scalar expected.\n";
 	        $value = $value[ 0 ];
 	    }
-	    if ( !is_numeric( $value ) ) {
-	        echo "Error: Numerical Parameter - Scalar expected.\n";
-	        $value = $this->value();
-	    }
-		$this->value = $value;
+	    $this->value = $value;
 	}
 
 }
@@ -925,37 +958,30 @@ class NumericalArrayParameter extends NumericalParameter {
 		\return true if all values are valid, false otherwise
 	*/	
 	public function check() {
-	    $result = true;
-	    foreach ( $this->value as $currentValue ) {
-	        $result = $result && parent::checkValue( $currentValue );
+	    $this->message = '';
+		$result = True;
+		for ( $i = 0; $i < $this->numberOfChannels; $i++ ) {
+	        $result = $result && parent::checkValue( $this->value[ $i ] );
 	    }
+		if ( $result == False ) {
+			$this->message = 'Bad value ' . $this->value[ $i ] . ' for ' . $this->name();
+		}
+		return $result;
 	}
 
 	/*!
 		\brief	Sets the value of the parameter
 		
-		The value must be an array with maximum 5 values.
+		The value must be an array with 5 values (those who refer to
+		non-existing channels should be null).
 		
 		\param	$value	Array of values for the parameter		
 	*/
 	public function setValue($value) {
-	    $n = count( $value );
-	    if ( $n > 5 ) {
-	        $value = array_slice( $value, 0, 5 );
-	        $n = 5;
-	    }
-	    $newNumberOfChannels = array_search( NULL, $value );
-	    if ( $newNumberOfChannels == NULL ) {
-	        $newNumberOfChannels = 5;
-	    }
-	    $this->numberOfChannels = $newNumberOfChannels;
-	    for ( $i = 0; $i < 5; $i++ ) {
-	        if ( i < $this->numberOfChannels ) {
-	            $this->value[ $i ] = $value[ $i ];
-	        } else {
-	            $this->value[ $i ] = NULL;
-	        }
-	    }
+	    if ( count( $value ) != 5 ) {
+			return False;
+		}
+		$this->value = $value;
 	}
 	
 }
@@ -1078,24 +1104,23 @@ class VariableChannelsParameter extends NumericalParameter {
 		\return	checked array of values
 		\todo	The behavior of this function is rather questionable!
 	*/
-	public function value() {
+/*	public function value() {
 		$value = $this->value;
-		$newValue = array (
-			NULL
-		);
+		$newValue = array ( NULL, NULL, NULL, NULL, NULL );
         # printDebug($this);
         # printDebug(debug_backtrace());
-		for ($i = 0; $i < $this->numberOfChannels(); $i++) {
-			if ($i < sizeof($value) && $this->checkValue($value[$i])) {
+		for ($i = 0; $i < count( $value ); $i++) {
+			if ( $i !=NULL && $this->checkValue($value[$i])) {
 				$newValue[$i] = $value[$i];
 			}
 			/*else {
 				$newValue[$i] = $newValue[$i -1];
 			}*/
-		}
+	/*	}
 		return $newValue;
 	}
-
+	*/
+	
 	/*!
 		\brief	Returns the internal value of the VariableChannelsParameter
 		
@@ -1113,12 +1138,15 @@ class VariableChannelsParameter extends NumericalParameter {
 		\return	true if all values are valid, false otherwise
 	*/
 	public function check() {
+		$this->message = '';
 		$result = True;
 		for ($i = 0; $i < $this->numberOfChannels; $i++) {
 			$value = $this->internalValue();
-			$result = $result && $this->checkValue($value[$i]);
+			$result = $result && parent::checkValue($value[$i]);
 		}
-		return $result;
+		if ( $result == False ) {
+			$this->message = 'Bad value ' . $this->value() . ' for ' . $this->name();
+		}
 	}
 
 }
@@ -1142,6 +1170,7 @@ class HasAdaptedValues extends ChoiceParameter {
 	public function __construct() {
 		parent::__construct("HasAdaptedValues");
 	}
+
 }
 
 /*
@@ -1161,6 +1190,15 @@ class PointSpreadFunction extends ChoiceParameter {
 	public function __construct() {
 		parent::__construct("PointSpreadFunction");
 	}
+	
+	/*!
+		\brief	Confirms that this is an Image Parameter.
+		\return true
+	*/
+	public function isForImage() {
+		return True;
+	}
+
 }
 
 /*
@@ -1187,6 +1225,17 @@ class PSF extends Parameter {
 			NULL
 		);
 	}
+
+	public function check( ) {
+	  for ( $i = 0; $i < $this->numberOfChannels(); $i++) {
+		  if ( $value[ $i ] == NULL ) {
+		    $this->message = "Please select a PSF file for channel $i!";
+		    return False;
+          }
+	  }
+	  return True;
+	}
+
 }
 
 /*
@@ -1198,7 +1247,7 @@ class PSF extends Parameter {
  \brief	A ChoiceParameter that distinguishes between single- and multi-channel
 		images
 */
-class IsMultiChannel extends ChoiceParameter {
+class IsMultiChannel extends BooleanParameter {
 	
 	/*!
 		\brief	Constructor: creates an empty Parameter
@@ -1211,9 +1260,9 @@ class IsMultiChannel extends ChoiceParameter {
 		\brief	Confirms that this is an Image Parameter.
 		\return true
 	*/
-	public function isForImage() {
-		return True;
-	}
+//	public function isForImage() {
+//		return True;
+//	}
 	
 	/*!
 		\brief	Returns the string representation of the isMultiChannel Parameter
@@ -1498,6 +1547,18 @@ class NumericalAperture extends NumericalParameter {
 	public function isForMicroscope() {
 		return True;
 	}
+	
+	/*!
+		\brief	Checks the value for the Parameter
+		\return true if the value is valid, false otherwise
+	*/
+	public function check( ) {
+		$result = parent::check( );
+		if ( $result == false ) {
+			$this->message = "Numerical Aperture: " . $this->message;
+		}
+		return $result;
+	}
 }
 
 /*
@@ -1518,10 +1579,10 @@ class ObjectiveMagnification extends ChoiceParameter {
 	}
 
 	/*!
-		\brief	Confirms that this is a Microscope Parameter.
+		\brief	Confirms that this is a Calculation Parameter.
 		\return true
 	*/
-	public function isForMicroscope() {
+	public function isForPixelSizeCalculation() {
 		return True;
 	}
 }
@@ -1565,6 +1626,7 @@ class ObjectiveType extends ChoiceParameter {
 		$result = $db->translationFor($this->name, $this->value);
 		return $result;
 	}
+	
 }
 
 /*
@@ -1602,12 +1664,34 @@ class SampleMedium extends ChoiceParameter {
 		\return translated value
 	*/
 	public function translatedValue() {
-		$db = new DatabaseConnection();
-		$result = $db->translationFor($this->name, $this->value);
-		if ($result == 0)
-			return $value;
+		if ( in_array( $this->value, $this->possibleValues ) ) {
+			$db = new DatabaseConnection();
+			$result = $db->translationFor($this->name, $this->value);
+			return $result;
+		} else {
+			return $this->value;
+		}
+	}
+	
+	/*!
+		\brief	Checks whether the parameter is valid
+		\return	true if the parameter is valid, false otherwise
+	*/
+	public function check( ) {
+		$this->message = '';
+		$result = in_array( $this->value, $this->possibleValues() );
+		if ( $result == False ) {
+			// No preset selected: the value must then be numeric
+			if ( !is_numeric( $this->value ) ) {
+				$this->message = "The refractive index of the sample medium ".
+					"must be a number!";
+			} else {
+				$result = True;
+			}
+		}
 		return $result;
 	}
+	
 }
 
 /*
@@ -1626,14 +1710,15 @@ class Binning extends ChoiceParameter {
 	public function __construct() {
 		parent::__construct("Binning");
 	}
-
+	
 	/*!
-		\brief	Confirms that this is a Capture Parameter.
+		\brief	Confirms that this is a Calculation Parameter.
 		\return true
 	*/
-	public function isForCapture() {
+	public function isForPixelSizeCalculation() {
 		return True;
 	}
+
 }
 
 /*
@@ -1661,6 +1746,18 @@ class ExcitationWavelength extends NumericalArrayParameter {
 	*/
 	public function isForMicroscope() {
 		return True;
+	}
+	
+	/*!
+		\brief	Checks the value for the Parameter
+		\return true if the value is valid, false otherwise
+	*/
+	public function check( ) {
+		$result = parent::check( );
+		if ( $result == false ) {
+			$this->message = "Excitation Wavelength: " . $this->message;
+		}
+		return $result;
 	}
 }
 
@@ -1690,6 +1787,19 @@ class EmissionWavelength extends NumericalArrayParameter {
 	public function isForMicroscope() {
 		return True;
 	}
+	
+	/*!
+		\brief	Checks the value for the Parameter
+		\return true if the value is valid, false otherwise
+	*/
+	public function check( ) {
+		$result = parent::check( );
+		if ( $result == false ) {
+			$this->message = "Emission Wavelength: " . $this->message;
+		}
+		return $result;
+	}
+	
 }
 
 /*
@@ -1710,12 +1820,25 @@ class CMount extends NumericalParameter {
 	}
 
 	/*!
-		\brief	Confirms that this is a Microscope Parameter.
+		\brief	Confirms that this is a Calculation Parameter.
 		\return true
 	*/
-	public function isForMicroscope() {
+	public function isForPixelSizeCalculation() {
 		return True;
 	}
+	
+	/*!
+		\brief	Checks the value for the Parameter
+		\return true if the value is valid, false otherwise
+	*/
+	public function check( ) {
+		$result = parent::check( );
+		if ( $result == false ) {
+			$this->message = "C-mount: " . $this->message;
+		}
+		return $result;
+	}
+
 }
 
 /*
@@ -1734,14 +1857,27 @@ class TubeFactor extends NumericalParameter {
 	public function __construct() {
 		parent::__construct("TubeFactor");
 	}
-	
+
 	/*!
-		\brief	Confirms that this is a Microscope Parameter.
+		\brief	Confirms that this is a Calculation Parameter.
 		\return true
 	*/
-	public function isForMicroscope() {
+	public function isForPixelSizeCalculation() {
 		return True;
 	}
+	
+	/*!
+		\brief	Checks the value for the Parameter
+		\return true if the value is valid, false otherwise
+	*/
+	public function check( ) {
+		$result = parent::check( );
+		if ( $result == false ) {
+			$this->message = "Tube Factor: " . $this->message;
+		}
+		return $result;
+	}
+
 }
 
 /*
@@ -1780,6 +1916,47 @@ class CCDCaptorSizeX extends NumericalParameter {
 		$result = $result . str_pad($name, 35, ' ', STR_PAD_RIGHT);
 		$result = $result . $value;
 		$result = $result . "\n";
+		return $result;
+	}
+}
+
+/*
+	============================================================================
+*/
+
+/*!
+ \class	CCDCaptorSize
+ \brief	A NumericalParameter to represent the x-size of the CCD pixel
+*/
+class CCDCaptorSize extends NumericalParameter {
+
+	/*!
+		\brief	Constructor: creates an empty Parameter
+		
+		This is use to calculate the pixel size (i.e. CCDCaptorSizeX) from the
+		camera and magnification of the microscope)
+	*/
+	public function __construct() {
+		parent::__construct("CCDCaptorSize");
+	}
+
+	/*!
+		\brief	Confirms that this is a Calculation Parameter.
+		\return true
+	*/
+	public function isForPixelSizeCalculation() {
+		return True;
+	}
+	
+	/*!
+		\brief	Checks the value for the Parameter
+		\return true if the value is valid, false otherwise
+	*/
+	public function check( ) {
+		$result = parent::check( );
+		if ( $result == false ) {
+			$this->message = "CCD element size: " . $this->message;
+		}
 		return $result;
 	}
 }
@@ -1860,6 +2037,18 @@ class PinholeSize extends NumericalArrayParameter {
 	public function isForCapture() {
 		return True;
 	}
+	
+	/*!
+		\brief	Checks the value for the Parameter
+		\return true if the value is valid, false otherwise
+	*/
+	public function check( ) {
+		$result = parent::check( );
+		if ( $result == false ) {
+			$this->message = "Pinhole size: " . $this->message;
+		}
+		return $result;
+	}
 }
 
 /*
@@ -1885,6 +2074,19 @@ class PinholeSpacing extends NumericalParameter {
 	*/
 	public function isForCapture() {
 		return True;
+	}
+	
+		
+	/*!
+		\brief	Checks the value for the Parameter
+		\return true if the value is valid, false otherwise
+	*/
+	public function check( ) {
+		$result = parent::check( );
+		if ( $result == false ) {
+			$this->message = "Pinhole Spacing: " . $this->message;
+		}
+		return $result;
 	}
 }
 
@@ -2332,12 +2534,16 @@ class BackgroundOffsetPercent extends VariableChannelsParameter {
 		\return true if the value is valid, false otherwise
 	*/
 	public function check() {
+		$this->message = '';
 		$value = $this->internalValue();
 		$result = True;
 		if ($value[0] == "auto" || $value[0] == "object")
 			return True;
 		for ($i = 0; $i < $this->numberOfChannels; $i++) {
 			$result = $result && $this->checkValue($value[$i]);
+		}
+		if ( $result == False ) {
+			$this->message = 'Bad value ' . $this->value() . ' for ' . $this->name();
 		}
 		return $result;
 	}
@@ -2394,6 +2600,18 @@ class PSFGenerationDepth extends NumericalParameter {
 	*/
 	public function __construct() {
 		parent::__construct("PSFGenerationDepth");
+	}
+	
+	/*!
+		\brief	Checks the value for the Parameter
+		\return true if the value is valid, false otherwise
+	*/
+	public function check( ) {
+		$result = parent::check( );
+		if ( $result == false ) {
+			$this->message = "PSF generation depth: " . $this->message;
+		}
+		return $result;
 	}
 }
 
@@ -2786,9 +3004,9 @@ class AdvancedCorrectionOptions extends ChoiceParameter {
 
 /*!
  \class	AberrationCorrectionNecessary
- \brief	A ChoiceParameter to indicate whether aberration correction is necessary
+ \brief	A BooleanParameter to indicate whether aberration correction is necessary
 */
-class AberrationCorrectionNecessary extends ChoiceParameter {
+class AberrationCorrectionNecessary extends BooleanParameter {
 				
 	/*!
 		\brief	Constructor: creates an empty Parameter
@@ -2796,13 +3014,5 @@ class AberrationCorrectionNecessary extends ChoiceParameter {
 	public function __construct() {
 		parent::__construct("AberrationCorrectionNecessary");
 	}	
-
-	/*!
-		\brief	Confirms that this is a Correction Parameter
-		\return true
-	*/
-	public function isForCorrection() {
-		return True;
-	}
 
 }

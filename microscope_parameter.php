@@ -6,6 +6,12 @@ require_once("./inc/User.inc");
 require_once("./inc/Parameter.inc");
 require_once("./inc/Setting.inc");
 
+/* *****************************************************************************
+ *
+ * START SESSION, CHECK LOGIN STATE, INITIALIZE WHAT NEEDED
+ *
+ **************************************************************************** */
+
 session_start();
 
 if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
@@ -14,21 +20,16 @@ if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
 
 $message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
 
-$names = $_SESSION['setting']->microscopeParameterNames();
-foreach ($names as $name) {
-  if (isset($_POST[$name])) {
-    $parameter = $_SESSION['setting']->parameter($name);
-    if ($name == "SampleMedium" && $_POST[$name] == "custom") {
-      if (isset($_POST['SampleMediumCustomValue'])) {
-        $parameter->setValue($_POST['SampleMediumCustomValue']);
-      }
-    }
-    else $parameter->setValue($_POST[$name]);
-    $_SESSION['setting']->set($parameter);
-  }	 
-}
+/* *****************************************************************************
+ *
+ * MANAGE THE MULTI-CHANNEL WAVELENGTHS
+ *
+ **************************************************************************** */
+
 $excitationParam = $_SESSION['setting']->parameter("ExcitationWavelength");
+$excitationParam->setNumberOfChannels( $_SESSION['setting']->numberOfChannels() );
 $emissionParam =  $_SESSION['setting']->parameter("EmissionWavelength");
+$emissionParam->setNumberOfChannels( $_SESSION['setting']->numberOfChannels( ) );
 $excitation = $excitationParam->value();
 $emission = $emissionParam->value();
 for ($i=0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
@@ -42,15 +43,30 @@ for ($i=0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
   } 
 }
 $excitationParam->setValue($excitation);
+$excitationParam->setNumberOfChannels( $_SESSION['setting']->numberOfChannels( ) );
 $emissionParam->setValue($emission);
+$emissionParam->setNumberOfChannels( $_SESSION['setting']->numberOfChannels( ) );
 $_SESSION['setting']->set($excitationParam);
 $_SESSION['setting']->set($emissionParam); 
 
-if (count($_POST) > 0) {
-  $ok = $_SESSION['setting']->checkMicroscopeParameter();
-  $message = "            <p class=\"warning\">".$_SESSION['setting']->message()."</p>\n";
-  if ($ok) {header("Location: " . "capturing_parameter.php"); exit();}
+/* *****************************************************************************
+ *
+ * PROCESS THE POSTED PARAMETERS
+ *
+ **************************************************************************** */
+
+if ( $_SESSION[ 'setting' ]->checkMicroscopyParameters( $_POST ) ) {
+  header("Location: " . "capturing_parameter.php"); exit();
+} else {
+  $message = "            <p class=\"warning\">" .
+    $_SESSION['setting']->message() . "</p>\n";  
 }
+
+/* *****************************************************************************
+ *
+ * CREATE THE PAGE
+ *
+ **************************************************************************** */
 
 // Javascript includes
 $script = array( "settings.js", "quickhelp/help.js",

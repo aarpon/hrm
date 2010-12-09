@@ -756,6 +756,9 @@ class DatabaseConnection {
     $name = $parameter->name();
     $query = "select min, max, min_included, max_included, standard from boundary_values where parameter = '" .$name . "'";
     $result = $this->queryLastRow($query);
+	if ( !$result ) {
+	  $result = array( null, null, null, null, null );  
+	}
     return $result;
   } 
 
