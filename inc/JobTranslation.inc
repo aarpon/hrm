@@ -15,6 +15,8 @@ Class JobTranslation {
 
     public $taskList;
     public $envList;
+    public $srcImage;
+    public $destImage;
     public $jobDescription;
     public $microSetting;
     public $deconSetting;
@@ -26,8 +28,8 @@ Class JobTranslation {
     // Constructor
     function __construct($description) {
         $this->setJobParameters($description);
-        $this->writeJobEnvironmentList();
-        $this->writeJobTaskList();
+        $this->setJobEnvironmentList();
+        $this->setJobTaskList();
     }
 
     // Initialize variables
@@ -37,6 +39,8 @@ Class JobTranslation {
         $this->deconSetting = $description->taskSetting;
         $this->setEnvironmentArray();
         $this->setTasksArray();
+        $this->setSrcImage();
+        $this->setDestImage();
     }
 
     // Initialize environment options array
@@ -54,35 +58,27 @@ Class JobTranslation {
         $this->tasksArray = array ( 'open'=>'imgOpen',
                                     'setParameters'=>'setp',
                                     'adjustBaseline'=>'adjbl',
-                                    'algorithm'=>'',
+                                    'algorithms'=>'',
                                     'zdrift'=>'zdrift',
                                     'save'=>'imgSave');
     }
 
     // ------------------------ Main lists handlers -----------------------------
 
-    // Write environemt list to a file
-    function writeJobEnvironmentList( ) {
-        $envListFile = $this->getSourceDir()."/EnvList.txt";
-        $fh = fopen($envListFile, 'w') or die("can't open file");
-        fwrite($fh, $this->getEnvironmentList());
-        fclose($fh);
+    function setJobEnvironmentList( ) {
+        $this->envList = $this->buildEnvironmentList();
     }
     
-    // Write the deconvolution task list to a file
-    function writeJobTaskList( ) {
-        $taskListFile = $this->getSourceDir()."/TaskList.txt";
-        $fh = fopen($taskListFile, 'w') or die("can't open file");
-        fwrite($fh, $this->getTaskList());
-        fclose($fh);
+    function setJobTaskList( ) {
+        $this->taskList = $this->buildTaskList();
     }
 
     // Build environment list
-    function getEnvironmentList( ) {
+    function buildEnvironmentList( ) {
         $environmentList = "";
         foreach ($this->envArray as $envOption => $envValue) {
             if ($envOption == "resultDir") {
-                $envValue = $this->getDestinationDir();
+                $envValue = $this->getDestDir();
             }
             if ($envOption == "exportFormat") {
                 $envValue = "type ". $this->getOutputFileType().
@@ -95,8 +91,8 @@ Class JobTranslation {
         return $environmentList;
     }
 
-    // List of tasks and their options
-    function getTaskList( ) {
+    // Build task list and their options
+    function buildTaskList( ) {
         $taskList = $this->getDeconTasks();
         $taskList .= $this->getTasksDetails();
         return $taskList;
@@ -119,8 +115,8 @@ Class JobTranslation {
             case "adjustBaseline":
                 $taskList .= $this->getTaskAdjbl();
                 break;
-            case "algorithm":
-                $taskList .= $this->getTaskAlgorithm();
+            case "algorithms":
+                $taskList .= $this->getTaskAlgorithms();
                 break;
             case "zdrift":
                 $taskList .= $this->getTaskZDrift();
@@ -149,8 +145,14 @@ Class JobTranslation {
 
     // Get a specific task
     function parseTask($key) {
-        if ($key == "algorithm") {
-            return $this->getAlgorithm();
+        if ($key == "algorithms") {
+            $numberOfChannels = $this->getNumberOfChannels();
+            $algorithms = "";
+            for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
+                $algorithms .= $this->getAlgorithm().":$chanCnt ";
+            }
+            $algorithms = trim($algorithms);
+            return $algorithms;
         } else {
             error_log("Missing task handler.");
             return;
@@ -258,8 +260,8 @@ Class JobTranslation {
         return $adjbl;
     }
 
-    // Deconvolution task: deconvolution algorithm
-    function getTaskAlgorithm( ) {
+    // Deconvolution task: deconvolution algorithm of one channel
+    function getTaskAlgorithm($channel) {
         $options = "q ";
         $options .= $this->getQualityFactor();
         $options .= " brMode ";
@@ -281,14 +283,24 @@ Class JobTranslation {
         $options .= " psfMode ";
         $options .= $this->getPsfMode();
         $options .= " psfPath ";
-        $options .= $this->getPsfPaths();
+        $options .= $this->getPsfPath($channel);
         $options .= " timeOut ";
         $options .= $this->getTimeOut();
         $options = $this->string2tcllist($options);
-        $algorithm = $this->getAlgorithm();
-        $algorithm = " $algorithm $options";
+        return $options;
+    }
 
-        return $algorithm;
+    // Deconvolution task: deconvolution algorithm of all channels
+    function getTaskAlgorithms( ) {
+        $numberOfChannels = $this->getNumberOfChannels();
+        $algorithms = "";
+        for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
+            $algorithm = $this->getAlgorithm($chanCnt);
+            $algOptions = $this->getTaskAlgorithm($chanCnt);
+            $algorithms .= " ${algorithm}:$chanCnt $algOptions";
+        }
+
+        return $algorithms;
     }
 
     // Deconvolution task: z drift
@@ -325,7 +337,7 @@ Class JobTranslation {
         return $iFaceScnd;
     }
 
-    // Verification of the prep glass positions: to be implemented in the GUI
+    // Verification of the prep glass position: to be implemented in the GUI
     function getiFaceScndVerification( ) {
         $iFaceScnd = $this->getiFaceScnd();
         if ($this->isFieldVerified($iFaceScnd) == 1) {
@@ -1046,21 +1058,18 @@ Class JobTranslation {
     function getPsfPathForChannel($channel) {
         $microSetting = $this->microSetting;
         $psfFiles = $microSetting->parameter("PSF")->value();
-        $psf = $this->getSourceDir() ."/". $psfFiles[$channel];
+        $psf = $this->getSrcDir() ."/". $psfFiles[$channel];
         return $psf;
     }
 
     // File paths of the measured PSFs
-    function getPsfPaths( ) {
+    function getPsfPath($channel) {
         $psfPaths = "";
         if ($this->getPsfMode() == "file") {
             $PSFs = $this->microSetting->parameter('PSF')->value();
-            $numberOfChannels = $this->getNumberOfChannels();
-            for ($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-                $psf = $this->getPsfPathForChannel($chanCnt);
-                $psfPaths .= " $psf ";
-                $psfPaths = trim($psfPaths);
-            }
+            $psf = $this->getPsfPathForChannel($channel);
+            $psfPaths .= " $psf ";
+            $psfPaths = trim($psfPaths);
         }
         if ($this->getPsfMode() == "auto") {
             $psfPaths = $this->string2tcllist($psfPaths);
@@ -1114,9 +1123,37 @@ Class JobTranslation {
         return $tcllist;
     }
 
+    // Set name of the source image
+    function setSrcImage( ) {
+        $this->srcImage = $this->jobDescription->sourceImageName();
+    }
+
+    // Name of the source image, also path and file extension
+    function getSrcImage( ) {
+        return $this->srcImage;
+    }
+
+    // Image source directory. Destination for scripts
+    function getSrcDir( ) {
+        $srcFileName = $this->getSrcImage();
+        return dirname($srcFileName);
+    }
+
+    // Set name of the destination image
+    function setDestImage ( ) {
+        $this->destImage = $this->jobDescription->destinationImageFullName();
+        $fileType = $this->getOutputFileType();
+        $this->destImage = $this->destImage.".".$fileType;
+    }
+
+    // Name of the destination image, also path and file extension
+    function getDestImage( ) {
+        return $this->destImage;
+    }
+
     // Image destination directory
-    function getDestinationDir( ) {
-        $dstFileName = $this->jobDescription->destinationImageFullName();
+    function getDestDir( ) {
+        $dstFileName = $this->getDestImage();
         return dirname($dstFileName);
     }
 
@@ -1124,12 +1161,6 @@ Class JobTranslation {
     function getOutputFileType( ) {
         $outFileFormat = $this->deconSetting->parameter('OutputFileFormat');
         return $outFileFormat->translatedValue();
-    }
-
-    // Image source directory. Destination for scripts
-    function getSourceDir( ) {
-        $srcFileName = $this->jobDescription->sourceImageName();
-        return dirname($srcFileName);
     }
 
     //---------------------------------------------------------------------------

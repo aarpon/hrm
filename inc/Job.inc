@@ -9,6 +9,7 @@ require_once ("hrm_config.inc");
 require_once ("Fileserver.inc");
 require_once ("Shell.inc");
 require_once ("Mail.inc");
+require_once ("JobTranslation.inc");
 
 /*!
    \class Job
@@ -154,21 +155,51 @@ class Job {
 
         return;
 
-    }
+        }
 
-    /*!
- 	  \brief	A clearer version of the deconvolution script with
- 	 			fixed procedures and a bunch of input parameters
+        /*!
+ 	  \brief	A deconvolution script based on HuCore templates
  	*/
-    private function createScriptVersionOne() {
+        private function createScriptVersionOne() {
 
-        # The fixed part of the script:
-        $this->script = file_get_contents("../scripts/hrm_job.tcl");
+            $this->setStandardJobScript();
 
-        $desc = $this->description();
-        $this->script .= $desc->appendScriptParameters();
+            // Find job-specific information.
+            $thisJobTemplate = $this->buildHuCoreTemplate();
+            
+            // Insert template information and image names in the standard script
+            $this->parseScriptWithTemplate($thisJobTemplate);
+        }
 
-    }
+        /*!
+         \brief        Returns the standard deconvolution job script
+        */
+        private function setStandardJobScript( ) {
+            $this->script = file_get_contents("../scripts/hrmJob2huCore.tcl");
+        }
+
+        /*!
+         \brief        Builds a HuCore deconvolution template for this job
+        */
+        private function buildHuCoreTemplate( ) {
+            $jobDescription = $this->description();
+            $jobTranslation = new JobTranslation($jobDescription);
+            return $jobTranslation;
+        }
+
+        /*!
+         \brief        Adapts the standard deconvolution job script to this job
+         \param        $jpbTemplate jobDescription translated into a job template   
+        */
+        private function parseScriptWithTemplate($jobTemplate) {
+            $varsToParse = array('envList','taskList','srcImage','destImage');
+            foreach ($varsToParse as $toParse) {
+                $templateInf = $jobTemplate->{$toParse};
+                $toParse = "PHPparser_$toParse";
+                $this->script = str_replace($toParse,$templateInf,$this->script);
+            }
+        }
+
 
     /*!
  	  \brief	The original version of the deconvolution script

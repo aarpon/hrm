@@ -29,13 +29,13 @@ class JobDescription {
     \var    $parameterSetting
     \brief  The Job's ParameterSetting
   */
-  private $parameterSetting;
+  public $parameterSetting;
 
   /*!
     \var    $taskSetting
     \brief  The Job's TaskSetting
   */
-  private $taskSetting;
+  public $taskSetting;
   
   /*!
     \var    $files
