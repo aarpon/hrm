@@ -252,7 +252,7 @@ class JobDescription {
   /*!
     \brief Processes compound Jobs to deliver elementary Jobs
     
-    A compound job contains multiple files or range parameters.
+    A compound job contains multiple files.
   */
   public function processCompoundJobs() {
     $queue = new JobQueue();
@@ -299,37 +299,14 @@ class JobDescription {
 
   /*!
     \brief Checks whether the JobDescription describes a compound Job
-    \return true if the Job is compound (i.e. contains more than one file or
-            has range parameters), false otherwise
+    \return true if the Job is compound (i.e. contains more than one file),
+    false otherwise
   */
   public function isCompound() { 
     if (count($this->files)>1) {
       return True;
     } 
-    if (count($this->rangeParameter())>0) {
-      return True;
-    } 
     return False;
-  } 
-
-  /*!
-    \brief Returns all range parameters in this JobDescription
-    \return array of range parameters
-  */
-  public function rangeParameter() {
-    //global $rangeParameters;
-    $result = array();
-    $setting = $this->taskSetting;
-    $rangeParameter = $setting->rangeParameter();
-    foreach ($rangeParameter as $parameter) {
-      $useParameterName = $parameter->useParameterName();
-      $useParameter = $setting->parameter($useParameterName);
-      if ($useParameter->isTrue()) {
-	$result[$parameter->name()] = $parameter;
-        //$this->rangeParameters[] = $parameter;
-      } 
-    } 
-    return $result;
   } 
 
   /*!
@@ -337,59 +314,9 @@ class JobDescription {
     \return true if elementary Jobs could be created, false otherwise
   */
   public function createSubJobs() {
-
-    //global $rangeParameters;
-    
     $parameterSetting = $this->parameterSetting;
     $numberOfChannels = $parameterSetting->numberOfChannels();
-    
-    $rangeParameters = $this->rangeParameter();
-    $rangeParameterCombinations = $this->rangeParameterCombinations($rangeParameters);
-    $result = True;
-    if (count($rangeParameterCombinations)==0) {
-      return $this->createSubJobsforFiles();
-    }  
-    foreach ($this->files as $file) {
-      // error_log("range combinations = " . count($rangeParameterCombinations));
-      foreach ($rangeParameterCombinations as $combination) {
-        // error_log("combination [" . implode(" ", $combination) . "]");
-	$newJobDescription = new JobDescription();
-	$newJobDescription->copyFrom($this);
-	$newJobDescription->setFiles(array($file));	
-	$index = 0;
-	$setting = $newJobDescription->taskSetting();
-	//foreach ($this->rangeParameterNames() as $rangeParameterName) {
-        foreach ($rangeParameters as $rangeParameter) {
-          $rangeParameterName = $rangeParameter->name();
-	  //$rangeParameter = $setting->parameter($rangeParameterName);
-	  $realParameterName = $rangeParameter->realParameterName();
-	  $realParameter = $setting->parameter($realParameterName);
-	  $useParameterName = $rangeParameter->useParameterName();
-	  $useParameter = $setting->parameter($useParameterName);
-	  $useParameter->reset();
-          //error_log("range parameter " . $realParameterName . " = " . $combination[$index]);
-          if ($realParameterName == "SignalNoiseRatio") {
-            $newVal = array(null, null, null, null, null);
-            for ($i = 0; $i < $numberOfChannels; $i++) {
-              $newVal[$i] = $combination[$i];
-            }
-          }
-          else if ($realParameterName == "NumberOfIterations") {
-            if (count($combination) > 1)
-              $newVal = $combination[$numberOfChannels];
-            else
-              $newVal = $combination[0];
-          }
-	  $realParameter->setValue($newVal);
-	  $setting->set($realParameter);
-	  $setting->set($useParameter);
-	  //$index++;
-	}
-	$newJobDescription->setTaskSetting($setting);
-	$result = $result && $newJobDescription->createJob();
-      } 
-    } 
-    return $result;
+    return $this->createSubJobsforFiles();
   } 
 
   /*!
@@ -1329,7 +1256,7 @@ HRMrun deconvolution
     \brief  Return all combinations of range parameters
     \return matrix of all combinations of range parameters
   */
-  private function rangeParameterCombinations($rangeParameter) {
+/*  private function rangeParameterCombinations($rangeParameter) {
     $parameterSetting = $this->parameterSetting;
     $numberOfChannels = $parameterSetting->numberOfChannels();
     
@@ -1415,7 +1342,7 @@ HRMrun deconvolution
         error_log($s);
       }*/
       // SIMPLE combinations
-      if ($snrValue != null) {
+/*      if ($snrValue != null) {
           $val = array_filter($snrValue);
           $range = count($val[0]);
           for ($i = 0; $i < $range; $i++) {
@@ -1453,21 +1380,22 @@ HRMrun deconvolution
       }
       $combinations = $this->combineAll($matrix);
       return $combinations;
-    }*/
-  } 
+    } */
+//  } 
 
   /*!
     \brief  Returns the names of all range parameters
     \return array with the name of all range parameters
   */
-  private function rangeParameterNames() {
+/*  private function rangeParameterNames() {
     $names = array();
     foreach ($this->rangeParameters as $parameter) {
       $names[] = $parameter->name(); 
     } 
     return $names;
   }
-  
+*/
+
   /*!
     \brief Add script for single-channel images
     \param  $script Current script
@@ -1544,14 +1472,15 @@ HRMrun deconvolution
     //WARNING do not confuse REMOVEBackgroundPercent and BackgroundOffsetPercent
     $taskSetting = $this->taskSetting;
     $numberOfChannels = $taskSetting->numberOfChannels();
-    $removeBackgroundPercent = $taskSetting->parameter('RemoveBackgroundPercent');
-    $val = $removeBackgroundPercent->internalValue();
-    $originalRemoveBackgroundPercentValue = array();
-    //TODO remove RemoveBackgroundPercent
-    for ($i = 0; $i < $numberOfChannels; $i++) {
-      $originalRemoveBackgroundPercentValue[$i] = $val[$i];
-    }
-    //error_log("GENERATING SCRIPT (JobDescription): remove background percent -> ".$originalRemoveBackgroundPercentValue[$i]." [".$i."]");
+////////    $removeBackgroundPercent = $taskSetting->parameter('RemoveBackgroundPercent');
+////////    $val = $removeBackgroundPercent->internalValue();
+////////    $originalRemoveBackgroundPercentValue = array();
+////////    //TODO remove RemoveBackgroundPercent
+////////    for ($i = 0; $i < $numberOfChannels; $i++) {
+////////      $originalRemoveBackgroundPercentValue[$i] = $val[$i];
+////////    }
+////////////////    //error_log("GENERATING SCRIPT (JobDescription): remove background percent -> ".$originalRemoveBackgroundPercentValue[$i]." [".$i."]");
+
     $backgroundOffsetPercent = $taskSetting->parameter('BackgroundOffsetPercent');
     //$val = $backgroundOffsetPercent->internalValue();
     //$originalBackgroundOffsetPercentValue = array();
@@ -1559,12 +1488,14 @@ HRMrun deconvolution
     //for ($i = 0; $i < $numberOfChannels; $i++) {
     //  $originalBackgroundOffsetPercentValue[] = $val[$i];
     //}
-    // make single channel setting for current channel
-    $newRemoveBackgroundPercent = $taskSetting->parameter('RemoveBackgroundPercent');
-    // DEBUG
-    //$value = $newRemoveBackgroundPercent->value();
-    $newRemoveBackgroundPercent->setValue($originalRemoveBackgroundPercentValue[$channel]);
-    $taskSetting->set($newRemoveBackgroundPercent);
+    
+////////    // make single channel setting for current channel
+////////    $newRemoveBackgroundPercent = $taskSetting->parameter('RemoveBackgroundPercent');
+////////    // DEBUG
+////////    //$value = $newRemoveBackgroundPercent->value();
+////////    $newRemoveBackgroundPercent->setValue($originalRemoveBackgroundPercentValue[$channel]);
+////////    $taskSetting->set($newRemoveBackgroundPercent);
+
     // Backgriund Offset Percent
     $newBackgroundOffsetPercent = $taskSetting->parameter('BackgroundOffsetPercent');
     // DEBUG
@@ -1612,9 +1543,10 @@ HRMrun deconvolution
     $newSignalNoiseRatio->setValue( $originalSignalNoiseRatioValue );
     $taskSetting->set($newSignalNoiseRatio);
     $taskSetting->setNumberOfChannels($numberOfChannels);
-    // DEBUG
-    $removeBackgroundPercent->setValue($originalRemoveBackgroundPercentValue);
-    $taskSetting->set($removeBackgroundPercent);
+
+////////    // DEBUG
+////////    $removeBackgroundPercent->setValue($originalRemoveBackgroundPercentValue);
+////////    $taskSetting->set($removeBackgroundPercent);
     $backgroundOffsetPercent->setValue($originalBackgroundOffsetPercentValue);
     $taskSetting->set($backgroundOffsetPercent);
     $this->setTaskSetting($taskSetting);

@@ -25,7 +25,7 @@ $message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
  * PROCESS THE POSTED PARAMETERS
  *
  **************************************************************************** */
-if ( $_SESSION[ 'setting' ]->checkCalculatePixelSizeParameters( $_POST ) ) {
+if ( $_SESSION[ 'setting' ]->checkPostedCalculatePixelSizeParameters( $_POST ) ) {
 	
 	// Calculate and set the pixel size
 	$ccd = floatval( $_SESSION[ 'setting' ]->parameter( "CCDCaptorSize" )->value() );

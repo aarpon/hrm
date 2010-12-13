@@ -10,6 +10,12 @@ require_once("./inc/Util.inc");
 
 global $enableUserAdmin;
 
+/* *****************************************************************************
+ *
+ * START SESSION, CHECK LOGIN STATE, INITIALIZE WHAT NEEDED
+ *
+ **************************************************************************** */
+
 session_start();
 
 if (isset($_GET['home'])) {
@@ -21,12 +27,7 @@ if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
 }
 
 if (!isset($_SESSION['taskeditor'])) {
-  # session_register('taskeditor');
   $_SESSION['taskeditor'] = new TaskSettingEditor($_SESSION['user']);
-}
-
-if (isset($_SESSION['task_setting'])) {
-  # session_register("task_setting");
 }
 
 // add public setting support
@@ -37,6 +38,12 @@ if (!$_SESSION['user']->isAdmin()) {
 }
 
 $message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
+
+/* *****************************************************************************
+ *
+ * PROCESS THE POSTED PARAMETERS
+ *
+ **************************************************************************** */
 
 if (isset($_POST['task_setting'])) {
   $_SESSION['taskeditor']->setSelected($_POST['task_setting']);
@@ -85,12 +92,22 @@ else if (isset($_POST['OK'])) {
   else {
     $_SESSION['task_setting'] = $_SESSION['taskeditor']->loadSelectedSetting();
     $_SESSION['task_setting']->setNumberOfChannels($_SESSION['setting']->numberOfChannels());
-    $ok = $_SESSION['task_setting']->checkParameter();
+    
+    /*
+      Here we just check that the Parameters that have a variable of values per
+      channel have all their values set properly.
+    */
+    $ok = True;
+    $ok = $ok && $_SESSION['task_setting']->parameter( 'SignalNoiseRatio' )->check();
+    $ok = $ok && $_SESSION['task_setting']->parameter( 'BackgroundOffsetPercent' )->check();
+    
     if ($ok) {
       header("Location: " . "select_images.php"); exit();
     }
-    //$message = "            <p class=\"warning\">Values for some channels are missing, please edit the selected task setting</p>\n";
-    $message = "            <p class=\"warning\">".$_SESSION['task_setting']->message()."</p>\n";
+    $message = "            <p class=\"warning\">" .
+      "The number of channels in the selected restoration parameters does " .
+      "not match the number of channels in the image parameters. " .
+      "Please fix this!</p>\n";
   }
 }
 

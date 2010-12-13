@@ -31,7 +31,7 @@ $message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
  *
  **************************************************************************** */
 
-if ( $_SESSION[ 'setting' ]->checkImageParameters( $_POST ) ) {
+if ( $_SESSION[ 'setting' ]->checkPostedImageParameters( $_POST ) ) {
   header("Location: " . "microscope_parameter.php"); exit();
 } else {
   $message = "            <p class=\"warning\">" .

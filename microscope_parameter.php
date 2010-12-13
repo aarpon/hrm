@@ -55,7 +55,7 @@ $_SESSION['setting']->set($emissionParam);
  *
  **************************************************************************** */
 
-if ( $_SESSION[ 'setting' ]->checkMicroscopyParameters( $_POST ) ) {
+if ( $_SESSION[ 'setting' ]->checkPostedMicroscopyParameters(  $_POST ) ) {
   header("Location: " . "capturing_parameter.php"); exit();
 } else {
   $message = "            <p class=\"warning\">" .

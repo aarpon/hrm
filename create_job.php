@@ -155,10 +155,10 @@ foreach ($possibleValues as $possibleValue) {
                 <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpCreateJob')"><img src="images/help.png" alt="?" /></a>
                 <a href="select_parameter_settings.php">Image parameters</a>: <?php print $_SESSION['setting']->name() ?>
             </legend>
-            <textarea name="parameter_settings_report" cols="50" rows="10" readonly="readonly">
+            <textarea name="parameter_settings_report" cols="50" rows="15" readonly="readonly">
 <?php
 
-echo $_SESSION['setting']->display();
+echo $_SESSION['setting']->displayString();
 
 ?>
             </textarea>

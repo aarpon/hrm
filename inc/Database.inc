@@ -336,11 +336,15 @@ class DatabaseConnection {
           // # now as a channel marker, and even the first channel has a # in
           // front of its value.
           // "/" separator is used to mark range values for signal to noise ratio
-          if (is_array($parameterValue[0])) {
+          
+		  /*!
+		   \todo	This can be removed: there are no longer range parameters
+		  */
+		  if (is_array($parameterValue[0])) {
             for ($i = 0; $i < 5; $i++) {
-	      if ($parameterValue[$i] != null) {
-		$parameterValue[$i] = implode("/", array_filter($parameterValue[$i]));
-	      }
+			  if ($parameterValue[$i] != null) {
+				$parameterValue[$i] = implode("/", array_filter($parameterValue[$i]));
+			  }
             }
           }
           $parameterValue = "#".implode("#", $parameterValue);
@@ -399,6 +403,10 @@ class DatabaseConnection {
             //  $range[$j] = $val[$j];
             //}
             //$newValue[] = $range;
+			/*!
+			  \This can be cleaned: there are no longer range values (with
+			  values separated by /).
+			*/
             if (strpos($newValues[$i], "/")) {
               $newValue[] = explode("/", $newValues[$i]);
             }

@@ -27,7 +27,7 @@ $message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
  *
  **************************************************************************** */
 
-$ok = $_SESSION['setting']->checkAberrationCorrectionParameters( $_POST );
+$ok = $_SESSION['setting']->checkPostedAberrationCorrectionParameters( $_POST );
 if ( $ok ) {
     $saved = $_SESSION['setting']->save();			
     $message = "            <p class=\"warning\">".$_SESSION['setting']->message()."</p>";

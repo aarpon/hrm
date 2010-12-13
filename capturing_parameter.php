@@ -97,7 +97,7 @@ if ($PSF == 'measured' ) {
  *
  **************************************************************************** */
 
-$ok = $_SESSION[ 'setting' ]->checkCapturingParameters( $_POST );
+$ok = $_SESSION[ 'setting' ]->checkPostedCapturingParameters( $_POST );
 if ($ok) {
   if ( $saveParametersToDB == true ) {
 	$saved = $_SESSION['setting']->save();

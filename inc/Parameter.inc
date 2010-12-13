@@ -5,11 +5,18 @@
 require_once ("Database.inc");
 
 /*!
- \class    Parameter
- \brief    Base class for all Parameter types in the HRM
+ \class	Parameter
+ \brief	Base class for all Parameter types in the HRM
+ \todo	Implement the displayStr() method in each Parameter subclass
 */
 abstract class Parameter {
 
+	/*!
+		\var 	PADSIZE
+		\brief	The pad size for the Parameter names
+	*/
+    const PADSIZE      = 35;
+	
 	/*!
 		\var	$name
 		\brief	Name of the parameter
@@ -55,6 +62,9 @@ abstract class Parameter {
 	/*!
 		\brief	Returns the number of values. Values may be scalars or arrays
 		\return	number of values stored in the parameter
+		\todo 	This should always be either 1 or 5. If one wants to know how
+				many values contain useful parameters, then one should use
+				numberOfChannels().
 	*/
 	public function numberOfValues() {
 		if (!is_array($this->value()))
@@ -96,17 +106,6 @@ abstract class Parameter {
 	}
 
 	/*!
-		\brief	Checks whether the Parameter is a Range Parameter
-		
-		This function should be <b>overloaded</b> by the subclasses
-		
-		\return	true if the Parameter is a Range Parameter, false otherwise
-	*/
-	public function isRangeParameter() {
-		return False;
-	}
-
-	/*!
 		\brief	Checks whether the Parameter is a Variable Channel Parameter
 		
 		This function should be <b>overloaded</b> by the subclasses
@@ -137,6 +136,17 @@ abstract class Parameter {
 		\return	true if the Parameter is a Calculation Parameter, false otherwise
 	*/
 	public function isForPixelSizeCalculation() {
+		return False;
+	}
+
+	/*!
+		\brief	Checks whether the Parameter is a Task Parameter
+		
+		This function should be <b>overloaded</b> by the subclasses
+		
+		\return	true if the Parameter is a Task Parameter, false otherwise
+	*/
+	public function isTaskParameter() {
 		return False;
 	}
 	
@@ -198,7 +208,7 @@ abstract class Parameter {
 		
 		\param	$value		Value for the Parameter
 		\param	$customHTML	HTML code for additional options for the radio button
-		\todo	Tis function should NOT be in the base class!
+		\todo	This function should NOT be in the base class!
 	*/
 	public function printRadioButtonForValue($value, $customHTML) {
 		$result = '<input type="radio" name="' . $this->name() . '" value="' . $value . '" ';
@@ -283,25 +293,6 @@ abstract class Parameter {
 				$value = "few bricks";
 				break;
 			}
-		} elseif ( $this->name() == "SignalNoiseRatioRange" ) {
-			$val = "";
-			for ( $i = 0; $i < $numberOfChannels; $i++ ) {
-				for ( $j = 0; $j < count( $value[ $i ] ); $j++ ) {
-					$val .= $value[ $i ][ $j ];
-					if ( $j < ( count( $value[ $i ] ) - 1 ) ) {
-						$val .= "/";
-					}
-				}
-				if ( $i < ( $numberOfChannels - 1 ) ) {
-					$val .= ", ";
-				}
-			}
-			$value = $val;
-		} else if ( $this->name() == "NumberOfIterationsRange" ) {
-			$val = "";
-			$value = array_diff( $value, array( null ) );
-			$strVal = implode( "/", $value );
-			$value = $strVal;
 		} else {
 			if (is_array($value)) {
 				# array_shift($value);
@@ -330,71 +321,9 @@ abstract class Parameter {
 			$name = $name . ":";
 		}
 		$name = str_replace('CMount', 'Cmount', $name);
-		$uppercase = array (
-			'A',
-			'B',
-			'C',
-			'D',
-			'E',
-			'F',
-			'G',
-			'H',
-			'I',
-			'J',
-			'K',
-			'L',
-			'M',
-			'N',
-			'O',
-			'P',
-			'Q',
-			'R',
-			'S',
-			'T',
-			'U',
-			'V',
-			'W',
-			'X',
-			'Y',
-			'Z'
-		);
-		$lowercase = array (
-			' a',
-			' b',
-			' c',
-			' d',
-			' e',
-			' f',
-			' g',
-			' h',
-			' i',
-			' j',
-			' k',
-			' l',
-			' m',
-			' n',
-			' o',
-			' p',
-			' q',
-			' r',
-			' s',
-			' t',
-			' u',
-			' v',
-			' w',
-			' x',
-			' y',
-			' z'
-		);
-		$name = str_replace($uppercase, $lowercase, $name);
+		$name = $this->decomposeCamelCaseString( $name );
 		
-		if (strcmp($this->name(),"BackgroundOffsetPercent") == 0) {
-			$tempstring = " background absolute offset:";
-			$result = $result . str_pad($tempstring, 35, ' ', STR_PAD_RIGHT);
-		}
-		else {
-			$result = $result . str_pad($name, 35, ' ', STR_PAD_RIGHT);
-		}
+		$result = $result . str_pad($name, self::PADSIZE, ' ', STR_PAD_RIGHT);
 		
 		if (!$this->isBoolean()) {
 			$result = $result . $value;
@@ -425,6 +354,30 @@ abstract class Parameter {
 		$db = new DatabaseConnection();
 		return $db->translationFor( $this->name, $possibleValue );
 	}
+	
+	
+	/*!
+		\brief  Separates composed in using camel-case notation into individual words
+  
+		This function takes an input such a 'PointSpreadFunction' and returns ' point spread function'
+		(notice the initial blank space!)
+  
+		\param  $string  String to be converted
+		\return $output Converted string
+	*/
+	protected final function decomposeCamelCaseString( $string ) {
+		
+		$uppercase = array ( 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
+		'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X',
+		'Y', 'Z' );
+  
+		$lowercase = array ( ' a', ' b', ' c', ' d', ' e', ' f', ' g', ' h',
+		' i', ' j', ' k', ' l', ' m', ' n', ' o', ' p', ' q', ' r', ' s',
+		' t', ' u', ' v', ' w', ' x', ' y', ' z' );
+  
+		return ( str_replace( $uppercase, $lowercase, $string ) );
+	}
+
 	
 } // End of Parameter class
 
@@ -832,10 +785,11 @@ class NumericalParameter extends Parameter {
 	protected function checkValue($value) {
 	    if ( is_array( $value ) )
 	    {
-	        $this->message = "Error: NumericalParamater - Scalar expected.\n";
+	        $this->message = "Scalar expected.\n";
 	        return False;
 	    }
 		if ( is_numeric( $value ) == 0 ) {
+			$this->message = "The value must be numeric.\n";
 			return False;
 		}
 		if ($this->isMinIncluded) {
@@ -914,6 +868,14 @@ class NumericalArrayParameter extends NumericalParameter {
 		$this->numberOfChannels = 1;
 	}
 
+	/*!
+		\brief	Confirms that the Parameter can have a variable number of channels
+		This overloads the base function.
+		\return true		
+	*/
+	public function isVariableChannel() {
+		return True;
+	}
 	
 	/*!
 		\brief	 Sets the number of channels
@@ -957,9 +919,6 @@ class NumericalArrayParameter extends NumericalParameter {
 		for ( $i = 0; $i < $this->numberOfChannels; $i++ ) {
 	        $result = $result && parent::checkValue( $this->value[ $i ] );
 	    }
-		if ( $result == False ) {
-			$this->message = 'Bad value ' . $this->value[ $i ] . ' for ' . $this->name();
-		}
 		return $result;
 	}
 
@@ -988,11 +947,12 @@ class NumericalArrayParameter extends NumericalParameter {
 */
 
 /*!
-	\class    VariableChannelsParameter
+	\class    AnyTypeArrayParameter
 	\brief    Class for a Parameter that has an array of variable of any type
-				as possible value
+				as possible value. It inherits from NumericalArrayParameter and
+				relaxes the condition that the values must be integers.
 */
-class VariableChannelsParameter extends NumericalArrayParameter {
+class AnyTypeArrayParameter extends NumericalArrayParameter {
 
 	/*!
 		\brief	Constructor: creates an empty Parameter
@@ -1003,18 +963,7 @@ class VariableChannelsParameter extends NumericalArrayParameter {
 	}
 
 	/*!
-		\brief	Confirms that this is a VariableChannelsParameter.
-		
-		This overloads the base function.
-		
-		\return true		
-	*/
-	public function isVariableChannel() {
-		return True;
-	}
-	
-	/*!
-		\brief	Returns the internal value of the VariableChannelsParameter
+		\brief	Returns the internal value of the AnyTypeArrayParameter
 		
 		This function should be <b>overloaded</b> by the subclasses if the
 		internal and external representations differ.
@@ -1023,28 +972,6 @@ class VariableChannelsParameter extends NumericalArrayParameter {
 	*/
 	public function internalValue() {
 		return $this->value;
-	}
-
-}
-
-/*
-	============================================================================
-*/
-
-/*!
- \class	HasAdaptedValues
- \brief	Class that manages parameter adaption - all use of this class has
-		been disabled in the code.
- \todo	Remove this from the code
- \deprecated
-*/
-class HasAdaptedValues extends ChoiceParameter {
-
-	/*!
-		\brief	Constructor: creates an empty Parameter
-	*/
-	public function __construct() {
-		parent::__construct("HasAdaptedValues");
 	}
 
 }
@@ -1083,10 +1010,10 @@ class PointSpreadFunction extends ChoiceParameter {
 
 /*!
  \class	PSF
- \brief	Class that handles the file names of the PSF files per channel.
+ \brief	An AnyTypeArrayParameter that handles the file names of the PSF files per channel.
  \todo	This should be called PSFFiles or something similar
 */
-class PSF extends VariableChannelsParameter {
+class PSF extends AnyTypeArrayParameter {
 
 	/*!
 		\brief	Constructor: creates an empty Parameter
@@ -1782,7 +1709,7 @@ class CCDCaptorSizeX extends NumericalParameter {
 		$value = $this->value();
 		$result = '';
 		$name = ' pixel size:';
-		$result = $result . str_pad($name, 35, ' ', STR_PAD_RIGHT);
+		$result = $result . str_pad($name, self::PADSIZE, ' ', STR_PAD_RIGHT);
 		$result = $result . $value;
 		$result = $result . "\n";
 		return $result;
@@ -1975,6 +1902,15 @@ class MultiChannelOutput extends BooleanParameter {
 	public function __construct() {
 		parent::__construct("MultiChannelOutput");
 	}
+
+	/*!
+		\brief	Checks whether the Parameter is a Task Parameter
+		\return	true if the Parameter is a Task Parameter, false otherwise
+	*/
+	public function isTaskParameter() {
+		return True;
+	}
+
 }
 
 /*
@@ -2023,64 +1959,8 @@ class StyleOfProcessing extends ChoiceParameter {
 	*/
 	public function displayString() {
 		$name = $this->name() . ":";
-		$uppercase = array (
-			'A',
-			'B',
-			'C',
-			'D',
-			'E',
-			'F',
-			'G',
-			'H',
-			'I',
-			'J',
-			'K',
-			'L',
-			'M',
-			'N',
-			'O',
-			'P',
-			'Q',
-			'R',
-			'S',
-			'T',
-			'U',
-			'V',
-			'W',
-			'X',
-			'Y',
-			'Z'
-		);
-		$lowercase = array (
-			' a',
-			' b',
-			' c',
-			' d',
-			' e',
-			' f',
-			' g',
-			' h',
-			' i',
-			' j',
-			' k',
-			' l',
-			' m',
-			' n',
-			' o',
-			' p',
-			' q',
-			' r',
-			' s',
-			' t',
-			' u',
-			' v',
-			' w',
-			' x',
-			' y',
-			' z'
-		);
-		$name = str_replace($uppercase, $lowercase, $name);
-		$result = str_pad($name, 35, ' ', STR_PAD_RIGHT);
+		$name = $this->decomposeCamelCaseString( $name );
+		$result = str_pad($name, self::PADSIZE, ' ', STR_PAD_RIGHT);
 		$db = new DatabaseConnection();
 		$translatedValue = $db->translationFor($this->name, $this->value);
 		$result = $result . $translatedValue;
@@ -2094,291 +1974,114 @@ class StyleOfProcessing extends ChoiceParameter {
 */
 
 /*!
- \class	RemoveBackground
- \brief	A BooleanParameter to indicate whether a background removal should be run
-*/
-class RemoveBackground extends BooleanParameter {
-
-	/*!
-		\brief	Constructor: creates an empty Parameter
-	*/
-	public function __construct() {
-		parent::__construct("RemoveBackground");
-	}
-}
-
-/*
-	============================================================================
-*/
-
-/*!
- \class	FullRestoration
- \brief	A BooleanParameter to indicate whether a full restoration should be run
- \deprecated
- \todo Remove this parameter and all the code that makes use of it
-*/
-class FullRestoration extends BooleanParameter {
-		
-	/*!
-		\brief	Constructor: creates an empty Parameter
-	*/
-	public function __construct() {
-		parent::__construct("FullRestoration");
-	}
-}
-
-/*
-	============================================================================
-*/
-
-/*!
- \class	RemoveNoiseEffectiveness
- \brief	A ChoiceParameter to indicate the effectiveness of noise removal
- \deprecated
- \todo Remove this parameter and all the code that makes use of it
-*/
-class RemoveNoiseEffectiveness extends ChoiceParameter {
-
-	/*!
-		\brief	Constructor: creates an empty Parameter
-	*/
-	public function __construct() {
-		parent::__construct("RemoveNoiseEffectiveness");
-	}
-}
-
-/*
-	============================================================================
-*/
-
-/*!
- \class	RemoveBackgroundPercent
- \brief	A VariableChannelsParameter to indicate the percent of background removal
-*/
-class RemoveBackgroundPercent extends VariableChannelsParameter {
-
-	/*!
-		\brief	Constructor: creates an empty Parameter
-	*/
-	public function __construct() {
-		parent::__construct("RemoveBackgroundPercent");
-	}
-}
-
-/*
-	============================================================================
-*/
-
-/*!
  \class	SignalNoiseRatio
  \brief	A NumericalParameter to represent the SNR per channel
 */
 class SignalNoiseRatio extends NumericalArrayParameter {
 
-
+	/*!
+		\var	$algorithm
+		\brief	The deconvolution algorithm chosen
+	*/
+	private $algorithm;
+	
 	/*!
 		\brief	Constructor: creates an empty Parameter
 	*/
 	public function __construct() {
 		parent::__construct("SignalNoiseRatio");
+		$this->algorithm = 'cmle';
+	}
+
+	/*!
+		\brief	Checks whether the Parameter is a Task Parameter
+		\return	true if the Parameter is a Task Parameter, false otherwise
+	*/
+	public function isTaskParameter() {
+		return True;
+	}
+
+	/*!
+		\brief	Checks the value for the Parameter
+		\return true if the value is valid, false otherwise
+	*/
+	public function check( ) {
+		$result = parent::check( );
+		if ( $result == false ) {
+			$this->message = "SNR: " . $this->message;
+		}
+		return $result;
+	}
+
+	/*!
+		\brief	Sets the deconvolution algorithm
+		\param	$algorithm	Sets the algorithm, either 'cmle' or 'qmle'
+	*/
+	public function setAlgorithm( $algorithm ) {
+		$this->algorithm = $algorithm;
 	}
 	
 	/*!
-		\brief	Returns the string representation of the Parameter for the cmle algorithm
+		\brief	Returns the string representation of the Parameter for the cmle or qmle algorithm
+		
+		The algorithm is stored internally in the Parameter and is either 'cmle'
+		(default, set when the Parameter is instantiated),or 'qmle'.
 		\param	$numberOfChannels Number of channels (default 0)
-		\return	string representation of the Parameter for the cmle algorithm
-		\todo	It should be responsibility of the various Parameters to
-				overload this function!
+		\return	string representation of the Parameter for the cmle or qmle algorithm
 	*/
-    public function displayCMLEString($numberOfChannels = 0) {
-        $result = '';
-
+	public function displayString($numberOfChannels = 0) {
+		$result = '';
 		$value = $this->value();
         if ( $numberOfChannels > count( $value ) ) {
             $numberOfChannels = count( $value );
         }
         $value = array_slice( $value, 0, $numberOfChannels );
-        if (count($value) > 0 && is_array($value[0])) {
-            $val = "";
-            for ($i = 0; $i < count($value); $i++) {
-                $value[$i] = array_filter($value[$i]);
-                if ($i > 0 && $value[$i] != null)
-                    $val .= ", ";
-                $val .= implode("/", $value[$i]);
-            }
-            $value = $val;
-        }
-        else {
-            $value = array_filter($value);
-            $value = implode(", ", $value);
-        }
 
-        $name = $this->name() . ":";
-		$uppercase = array (
-			'A',
-			'B',
-			'C',
-			'D',
-			'E',
-			'F',
-			'G',
-			'H',
-			'I',
-			'J',
-			'K',
-			'L',
-			'M',
-			'N',
-			'O',
-			'P',
-			'Q',
-			'R',
-			'S',
-			'T',
-			'U',
-			'V',
-			'W',
-			'X',
-			'Y',
-			'Z'
-		);
-		$lowercase = array (
-			' a',
-			' b',
-			' c',
-			' d',
-			' e',
-			' f',
-			' g',
-			' h',
-			' i',
-			' j',
-			' k',
-			' l',
-			' m',
-			' n',
-			' o',
-			' p',
-			' q',
-			' r',
-			' s',
-			' t',
-			' u',
-			' v',
-			' w',
-			' x',
-			' y',
-			' z'
-		);
-		$name = str_replace($uppercase, $lowercase, $name);
-		$result .= str_pad($name, 35, ' ', STR_PAD_RIGHT);
+		switch ( $this->algorithm ) {
+			case "cmle" :
+			
+				if ( $numberOfChannels > count( $value ) ) {
+					$numberOfChannels = count( $value );
+				}
+				$value = array_slice( $value, 0, $numberOfChannels );
+				if (count($value) > 0 && is_array($value[0])) {
+					$val = "";
+					for ($i = 0; $i < count($value); $i++) {
+						$value[$i] = array_filter($value[$i]);
+						if ($i > 0 && $value[$i] != null)
+						$val .= ", ";
+						$val .= implode("/", $value[$i]);
+					}
+					$value = $val;
+				} else {
+					$value = array_filter($value);
+					$value = implode(", ", $value);
+				}
+				break;
+
+			case 'qmle':
+				
+				$snr = array("1" => "low", "2" => "fair", "3" => "good", "4" => "inf");
+				if ( $numberOfChannels > count( $value ) ) {
+					$numberOfChannels = count( $value );
+				}
+				$value = array_slice( $value, 0, $numberOfChannels );
+				$value = array_filter($value);
+				for ($i = 0; $i < count($value); $i++) {
+					$val[$i] = $snr[$value[$i]];
+				}
+				$value = implode(", ", $val);
+				break;
+		}
+
+		$name = $this->name() . ":";
+		$name = $this->decomposeCamelCaseString( $name );
+		$result .= str_pad($name, self::PADSIZE, ' ', STR_PAD_RIGHT);
 
 		return $result . $value . "\n";
-    }
 
-	/*!
-		\brief	Returns the string representation of the Parameter for the qmle algorithm
-		\param	$numberOfChannels Number of channels (default 0)
-		\return	string representation of the Parameter for the qmle algorithm
-		\todo	It should be responsibility of the various Parameters to
-				overload this function!
-	*/
-    public function displayQMLEString($numberOfChannels = 0) {
-        $snr = array("1" => "low", "2" => "fair", "3" => "good", "4" => "inf");
-        
-        $result = '';
-
-		$value = $this->value();
-        if ( $numberOfChannels > count( $value ) ) {
-            $numberOfChannels = count( $value );
-        }
-        $value = array_slice( $value, 0, $numberOfChannels );
-        $value = array_filter($value);
-        for ($i = 0; $i < count($value); $i++) {
-            $val[$i] = $snr[$value[$i]];
-        }
-        $value = implode(", ", $val);
-
-        $name = $this->name() . ":";
-		$uppercase = array (
-			'A',
-			'B',
-			'C',
-			'D',
-			'E',
-			'F',
-			'G',
-			'H',
-			'I',
-			'J',
-			'K',
-			'L',
-			'M',
-			'N',
-			'O',
-			'P',
-			'Q',
-			'R',
-			'S',
-			'T',
-			'U',
-			'V',
-			'W',
-			'X',
-			'Y',
-			'Z'
-		);
-		$lowercase = array (
-			' a',
-			' b',
-			' c',
-			' d',
-			' e',
-			' f',
-			' g',
-			' h',
-			' i',
-			' j',
-			' k',
-			' l',
-			' m',
-			' n',
-			' o',
-			' p',
-			' q',
-			' r',
-			' s',
-			' t',
-			' u',
-			' v',
-			' w',
-			' x',
-			' y',
-			' z'
-		);
-		$name = str_replace($uppercase, $lowercase, $name);
-		$result .= str_pad($name, 35, ' ', STR_PAD_RIGHT);
-
-		return $result . $value . "\n";
-    }
-}
-
-/*
-	============================================================================
-*/
-
-/*!
- \class	SignalNoiseRatioUseRange
- \brief	A BooleanParameter to indicate whether the SNR Parameter uses ranges
-*/
-class SignalNoiseRatioUseRange extends BooleanParameter {
-
-	/*!
-		\brief	Constructor: creates an empty Parameter
-	*/
-	public function __construct() {
-		parent::__construct("SignalNoiseRatioUseRange");
 	}
+		
 }
 
 /*
@@ -2387,15 +2090,23 @@ class SignalNoiseRatioUseRange extends BooleanParameter {
 
 /*!
  \class	BackgroundOffsetPercent
- \brief	A VariableChannelsParameter to represent the background offset in percent
+ \brief	An AnyTypeArrayParameter to represent the background offset in percent
 */
-class BackgroundOffsetPercent extends VariableChannelsParameter {
+class BackgroundOffsetPercent extends AnyTypeArrayParameter {
 
 	/*!
 		\brief	Constructor: creates an empty Parameter
 	*/
 	public function __construct() {
 		parent::__construct("BackgroundOffsetPercent");
+	}
+
+	/*!
+		\brief	Checks whether the Parameter is a Task Parameter
+		\return	true if the Parameter is a Task Parameter, false otherwise
+	*/
+	public function isTaskParameter() {
+		return True;
 	}
 
 	/*!
@@ -2412,27 +2123,32 @@ class BackgroundOffsetPercent extends VariableChannelsParameter {
 			$result = $result && $this->checkValue($value[$i]);
 		}
 		if ( $result == False ) {
-			$this->message = 'Bad value ' . $this->value() . ' for ' . $this->name();
+			$this->message = 'Background offset: ' . $this->message;
 		}
 		return $result;
 	}
-}
-
-/*
-	============================================================================
-*/
-
-/*!
- \class	BackgroundOffsetUseRange
- \brief	A BooleanParameter to indicate whether the background offset Parameter uses ranges
-*/
-class BackgroundOffsetUseRange extends BooleanParameter {
-
-	/*!
-		\brief	Constructor: creates an empty Parameter
-	*/
-	public function __construct() {
-		parent::__construct("BackgroundOffsetUseRange");
+	
+	public function displayString( ) {
+		if ( $this->value[ 0 ] == 'auto' ) {
+			$name = ' background estimation';
+			$value = 'auto';
+		} elseif ( $this->value[ 0 ] == 'object' ) {
+			$name = ' background estimation';
+			$value = 'in/near object';
+		} else {
+			if ( $this->numberOfChannels == 1 ) {
+				$name = 'background absolute value: ';
+				$value = $this->value[ 0 ];
+			} else {
+				$name = ' background absolute values: ';
+				$value = array_slice( $this->value, 0, $this->numberOfChannels);
+				$value = implode( $value, ", " );
+			}
+		}
+		$result  = str_pad($name, self::PADSIZE, ' ', STR_PAD_RIGHT);
+		$result .= $value;
+		$result .= "\n";
+		return $result;
 	}
 }
 
@@ -2452,6 +2168,27 @@ class NumberOfIterations extends NumericalParameter {
 	public function __construct() {
 		parent::__construct("NumberOfIterations");
 	}
+
+	/*!
+		\brief	Checks whether the Parameter is a Task Parameter
+		\return	true if the Parameter is a Task Parameter, false otherwise
+	*/
+	public function isTaskParameter() {
+		return True;
+	}
+
+	/*!
+		\brief	Checks the value for the Parameter
+		\return true if the value is valid, false otherwise
+	*/
+	public function check( ) {
+		$result = parent::check( );
+		if ( $result == false ) {
+			$this->message = "Number of iterations: " . $this->message;
+		}
+		return $result;
+	}
+
 }
 
 /*
@@ -2500,185 +2237,27 @@ class QualityChangeStoppingCriterion extends NumericalParameter {
 	public function __construct() {
 		parent::__construct("QualityChangeStoppingCriterion");
 	}
-}
-
-/*
-	============================================================================
-*/
-
-/*!
- \class	NumberOfIterationsUseRange
- \brief	A BooleanParameter to indicate whether the number of iterations uses ranges
-*/
-class NumberOfIterationsUseRange extends BooleanParameter {
-	
-	/*!
-		\brief	Constructor: creates an empty Parameter
-	*/
-	public function __construct() {
-		parent::__construct("NumberOfIterationsUseRange");
-	}
-}
-
-/*
-	============================================================================
-*/
-
-/*!
- \class	SignalNoiseRatioRange
- \brief	A NumericalParameter to represent the range of SNRs
-*/
-class SignalNoiseRatioRange extends NumericalArrayParameter {
-	
-	/*!
-		\brief	Constructor: creates an empty Parameter
-	*/
-	public function __construct() {
-		parent::__construct("SignalNoiseRatioRange");
-	}
 
 	/*!
-		\brief	Confirm that this is a Range Parameter
-		\return true
+		\brief	Checks whether the Parameter is a Task Parameter
+		\return	true if the Parameter is a Task Parameter, false otherwise
 	*/
-	public function isRangeParameter() {
+	public function isTaskParameter() {
 		return True;
 	}
 
 	/*!
-		\brief	Return the name of the Parameter to which the range version points
-		\return name of the corresponding non-range Parameter
-	*/
-	public function realParameterName() {
-		return 'SignalNoiseRatio';
-	}
-
-	/*!
-		\brief	Return the name of the (range) Parameter
-		\return name of the Parameter
-	*/
-	public function useParameterName() {
-		return 'SignalNoiseRatioUseRange';
-	}
-
-	/*!
-		\brief	 Sets the value for the Parameter
-		
-		The value can either be a scalar or an array.
-		
-		\param	$value	Single SNR or array of SNRs
-	*/	
-	public function setValue($value) {
-		for ($i = 0; $i < count($value); $i++) {
-			$this->value[$i] = $value[$i];
-		}
-    }
-
-	/*!
-		\brief 	Checks whether the value is valid
-		
-		Check the passed SNR value(s) against their boundaries for validity.
-		\param	$value	Value to be checked
+		\brief	Checks the value for the Parameter
 		\return true if the value is valid, false otherwise
-	*/	
-	public function checkValue($value) {
-		$valid = True;
-		for ($i = 0; $i < 5; $i++) {
-			if ($value[$i] != NULL) {
-				$range = $value[$i];
-				for ($j = 0; $j < 4; $j++) {
-					if (!empty($range[$j])) {
-						$valid &= NumericalParameter :: checkValue($range[$j]);
-					}
-				}
-			}
+	*/
+	public function check( ) {
+		$result = parent::check( );
+		if ( $result == false ) {
+			$this->message = "Quality change: " . $this->message;
 		}
-		return $valid;
-	}
-}
-
-/*
-	============================================================================
-*/
-
-/*!
- \class	BackgroundOffsetRange
- \brief	A NumericalParameter to represent the range of background offsets
-*/
-class BackgroundOffsetRange extends NumericalArrayParameter {
-
-	/*!
-		\brief	Constructor: creates an empty Parameter
-	*/
-	public function __construct() {
-		parent::__construct("BackgroundOffsetRange");
+		return $result;
 	}
 
-	/*!
-		\brief	Confirm that this is a Range Parameter
-		\return true
-	*/
-	public function isRangeParameter() {
-		return True;
-	}
-
-	/*!
-		\brief	Return the name of the Parameter to which the range version points
-		\return name of the corresponding non-range Parameter
-	*/
-	public function realParameterName() {
-		return 'BackgroundOffsetPercent';
-	}
-
-	/*!
-		\brief	Return the name of the (range) Parameter
-		\return name of the Parameter
-	*/
-	public function useParameterName() {
-		return 'BackgroundOffsetUseRange';
-	}
-}
-
-/*
-	============================================================================
-*/
-
-/*!
- \class	NumberOfIterationsRange
- \brief	A NumericalParameter to represent the range of iteration numbers
-*/
-class NumberOfIterationsRange extends NumericalArrayParameter {
-	
-	/*!
-		\brief	Constructor: creates an empty Parameter
-	*/
-	public function __construct() {
-		parent::__construct("NumberOfIterationsRange");
-	}
-
-	/*!
-		\brief	Confirm that this is a Range Parameter
-		\return true
-	*/
-	public function isRangeParameter() {
-		return True;
-	}
-
-	/*!
-		\brief	Return the name of the Parameter to which the range version points
-		\return name of the corresponding non-range Parameter
-	*/
-	public function realParameterName() {
-		return 'NumberOfIterations';
-	}
-	
-	/*!
-		\brief	Return the name of the (range) Parameter
-		\return name of the Parameter
-	*/
-	public function useParameterName() {
-		return 'NumberOfIterationsUseRange';
-	}
 }
 
 /*
@@ -2697,6 +2276,14 @@ class OutputFileFormat extends ChoiceParameter {
 	public function __construct() {
 		parent::__construct("OutputFileFormat");
 	}	
+
+	/*!
+		\brief	Checks whether the Parameter is a Task Parameter
+		\return	true if the Parameter is a Task Parameter, false otherwise
+	*/
+	public function isTaskParameter() {
+		return True;
+	}
 
 	/*!
 		\brief	Returns the Parameter translated value
@@ -2755,7 +2342,16 @@ class DeconvolutionAlgorithm extends ChoiceParameter {
 	*/
 	public function __construct() {
 		parent::__construct("DeconvolutionAlgorithm");
-	}	
+	}
+
+	/*!
+		\brief	Checks whether the Parameter is a Task Parameter
+		\return	true if the Parameter is a Task Parameter, false otherwise
+	*/
+	public function isTaskParameter() {
+		return True;
+	}
+
 }
 	
 /*

@@ -33,7 +33,6 @@ if (!$_SESSION['user']->isAdmin()) {
 
 // fileserver related code (for measured PSF files check)
 if (!isset($_SESSION['fileserver'])) {
-  # session_register("fileserver");
   $name = $_SESSION['user']->name();
   $_SESSION['fileserver'] = new Fileserver($name);
 }
@@ -89,6 +88,7 @@ else if (isset($_POST['OK'])) {
     // if measured PSF, check files availability
     $ok = True;
     $psfParam = $_SESSION['setting']->parameter("PointSpreadFunction");
+    
     if ($psfParam->value() == "measured") {
       $psf = $_SESSION['setting']->parameter("PSF");
       $value = $psf->value();
