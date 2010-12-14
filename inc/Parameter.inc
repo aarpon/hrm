@@ -15,7 +15,7 @@ abstract class Parameter {
 		\var 	PADSIZE
 		\brief	The pad size for the Parameter names
 	*/
-    const PADSIZE      = 35;
+    const PADSIZE      = 38;
 	
 	/*!
 		\var	$name
@@ -232,104 +232,16 @@ abstract class Parameter {
 
 	/*!
 		\brief	Returns the string representation of the Parameter
+		
+		Each Parameter that inherits from this function should reimplement it.
+		The function is not abstract since some children will need the
+		$numberOfChannels input parameter, while others won't.
+		
 		\param	$numberOfChannels Number of channels (default 0)
 		\return	string representation of the Parameter
-		\todo	It should be responsibility of the various Parameters to
-				overload this function!
 	*/
-	public function displayString( $numberOfChannels = 0 ) {
-		$result = '';
-		$value = $this->value();
-		if ($value == NULL) {
-			return '';
-		}
-		if ($value == '') {
-			return '';
-		}
-		if ($value == 'False' && $this->isBoolean()) {
-			return '';
-		}
-		$internalValue = $this->internalValue();	// answers the internal representation of the parameters value.
-		
-		if ($this->name() == "ExcitationWavelength" ||
-			$this->name() == "EmissionWavelength" ||
-			$this->name() == "SignalNoiseRatio" ||
-			$this->name() == "PinholeSize" ) {
-			if ( $numberOfChannels > count( $value ) ) {
-				$numberOfChannels = count( $value );
-			}
-			$value = array_slice( $value, 0, $numberOfChannels );
-		}
-		
-		if ($this->name() == "BackgroundOffsetPercent" && $internalValue[0] == "auto") {
-			$value = "auto";
-		}
-		else if ($this->name() == "BackgroundOffsetPercent" && $internalValue[0] == "object") {
-			$value = "in/near object";
-		}
-		else if ($this->name() == "PerformAberrationCorrection") {
-			if ($this->value( ) == 0 ) {
-				$value = "no";
-			} else {
-				$value = "yes";
-			}
-		}
-		else if ($this->name() == "AberrationCorrectionNecessary") {
-			if ($this->value( ) == 0 ) {
-				$value = "no";
-			} else {
-				$value = "yes";
-			}
-		}
-		else if ($this->name() == "AdvancedCorrectionOptions") {
-			switch ( $this->value( ) ) {
-			case 'user':
-				$value = "user-defined depth";
-				break;
-			case 'slice':
-				$value = "slice by slice";
-				break;
-			case 'few':
-				$value = "few bricks";
-				break;
-			}
-		} else {
-			if (is_array($value)) {
-				# array_shift($value);
-				if (count($value) > 0 && is_array($value[0])) {
-					$val = "";
-					for ($i = 0; $i < count($value); $i++) {
-						$value[$i] = array_filter($value[$i]);
-						if ($i > 0 && $value[$i] != null)
-							$val .= ", ";
-						$val .= implode("/", $value[$i]);
-					}
-					$value = $val;
-				}
-				else {
-					$value = array_filter($value);
-					$value = implode(", ", $value);
-				}
-			}
-			$split = explode("_", $value);
-			if (count($split) > 1) {
-				$value = $split[0];
-			}
-		}
-		$name = $this->name();
-		if (!$this->isBoolean()) {
-			$name = $name . ":";
-		}
-		$name = str_replace('CMount', 'Cmount', $name);
-		$name = $this->decomposeCamelCaseString( $name );
-		
-		$result = $result . str_pad($name, self::PADSIZE, ' ', STR_PAD_RIGHT);
-		
-		if (!$this->isBoolean()) {
-			$result = $result . $value;
-		}
-		$result = $result . "\n";
-		return $result;
+	protected function displayString( $numberOfChannels = 0 ) {
+		// Reimplement this!
 	}
 
 	/*!
@@ -521,6 +433,21 @@ abstract class ChoiceParameter extends Parameter {
 		return $result;
 	}
 	
+	/*!
+		\brief	Returns the string representation of the Parameter
+		\param	$numberOfChannels Number of channels (default 0)
+		\return	string representation of the Parameter
+		\todo	It should be responsibility of the various Parameters to
+				overload this function!
+	*/
+	public function displayString( $numberOfChannels = 0 ) {
+		$name = $this->decomposeCamelCaseString( $this->name );
+		$name = $name . ':';
+		$result = str_pad($name, self::PADSIZE, ' ', STR_PAD_RIGHT);
+		$result = $result . $this->value . "\n";
+		return $result;
+	}
+	
 }
 
 /*
@@ -564,11 +491,16 @@ class BooleanParameter extends ChoiceParameter {
 		\return	string representation of the Parameter
 	*/
 	public function displayString() {
-		$result = '';
-		if ($this->value() == 'True') {
-			$result = $result . parent :: displayString();
+		if ($this->value() == True ) {
+			$value = 'yes';
+		} else {
+			$value = 'no';
 		}
-		return $result;
+		$name = $this->decomposeCamelCaseString( $this->name );
+		$name = $name . ':';
+		$result = str_pad($name, self::PADSIZE, ' ', STR_PAD_RIGHT);
+		$result = $result . $value . "\n";
+		return $result;		
 	}
 
 	/*!
@@ -832,6 +764,18 @@ class NumericalParameter extends Parameter {
 	    }
 	    $this->value = $value;
 	}
+	
+	/*!
+		\brief	Returns the string representation of the Parameter
+		\return	string representation of the Parameter
+	*/
+	public function displayString( $numberOfChannels = 0 ) {
+		$name = $this->decomposeCamelCaseString( $this->name );
+		$name = $name . ':';
+		$result = str_pad($name, self::PADSIZE, ' ', STR_PAD_RIGHT);
+		$result = $result . $this->value . "\n";
+		return $result;
+	}
 
 }
 
@@ -939,7 +883,22 @@ class NumericalArrayParameter extends NumericalParameter {
 				$this->value[ $i ] = null;
 			}
 		}
-	}	
+	}
+
+	/*!
+		\brief	Returns the string representation of the Parameter
+		\return	string representation of the Parameter
+	*/
+	public function displayString( $numberOfChannels = 0 ) {
+		$value = array_slice( $this->value, 0, $numberOfChannels );
+		$value = implode( $value, ', ' );
+		$name = $this->decomposeCamelCaseString( $this->name );
+		$name = $name . ':';
+		$result = str_pad($name, self::PADSIZE, ' ', STR_PAD_RIGHT);
+		$result = $result . $value . "\n";
+		return $result;
+	}
+
 }
 
 /*
@@ -1052,14 +1011,6 @@ class IsMultiChannel extends BooleanParameter {
 		parent::__construct("IsMultiChannel");
 	}
 
-	/*!
-		\brief	Confirms that this is an Image Parameter.
-		\return true
-	*/
-//	public function isForImage() {
-//		return True;
-//	}
-	
 	/*!
 		\brief	Returns the string representation of the isMultiChannel Parameter
 		\return	string representation of the Parameter
@@ -1224,6 +1175,23 @@ class ImageFileFormat extends SingleOrMultiChannelParameter {
 		$result = $db->fileExtensions($this->value());
 		return $result;
 	}
+	
+	/*!
+		\brief	Returns the string representation of the Parameter
+		\param	$numberOfChannels Number of channels (default 0)
+		\return	string representation of the Parameter
+		\todo	It should be responsibility of the various Parameters to
+				overload this function!
+	*/
+	public function displayString( $numberOfChannels = 0 ) {
+		$value = $this->translatedValueFor( $this->value( ) );
+		$name = $this->decomposeCamelCaseString( $this->name );
+		$name = $name . ':';
+		$result = str_pad($name, self::PADSIZE, ' ', STR_PAD_RIGHT);
+		$result = $result . $value . "\n";
+		return $result;
+	}
+	
 }
 
 /*
@@ -1233,6 +1201,8 @@ class ImageFileFormat extends SingleOrMultiChannelParameter {
 /*!
  \class	NumberOfChannels
  \brief	A ChoiceParameter to represent the number of channels
+ \todo	This might become a NumericalParameter since the possibleValues in the
+		database might be removed.
 */
 class NumberOfChannels extends ChoiceParameter {
 	
@@ -1250,6 +1220,7 @@ class NumberOfChannels extends ChoiceParameter {
 	public function isForImage() {
 		return True;
 	}
+	
 }
 
 /*
@@ -1275,6 +1246,18 @@ class ImageGeometry extends SingleOrMultiChannelParameter {
 	*/
 	public function isForImage() {
 		return True;
+	}
+	
+	/*!
+		\brief	Returns the string representation of the Parameter
+		\return	string representation of the Parameter
+	*/
+	public function displayString( $numberOfChannels = 0 ) {
+		$name = $this->decomposeCamelCaseString( $this->name );
+		$name = $name . ':';
+		$result = str_pad($name, self::PADSIZE, ' ', STR_PAD_RIGHT);
+		$result = $result . $this->value . "\n";
+		return $result;
 	}
 }
 
@@ -1355,6 +1338,7 @@ class NumericalAperture extends NumericalParameter {
 		}
 		return $result;
 	}
+
 }
 
 /*
@@ -1381,6 +1365,7 @@ class ObjectiveMagnification extends ChoiceParameter {
 	public function isForPixelSizeCalculation() {
 		return True;
 	}
+	
 }
 
 /*
@@ -1755,6 +1740,16 @@ class CCDCaptorSize extends NumericalParameter {
 		}
 		return $result;
 	}
+
+	
+	/*!
+		\brief	This Parameter should not display anything
+		\return	empty string
+	*/	
+	public function displayString( ) {
+		$result = '';
+		return $result;
+	}
 }
 
 /*
@@ -1909,6 +1904,15 @@ class MultiChannelOutput extends BooleanParameter {
 	*/
 	public function isTaskParameter() {
 		return True;
+	}
+	
+	/*!
+		\brief	This Parameter should not display anything
+		\return	empty string
+	*/
+	public function displayString() {
+		$result = '';
+		return $result;
 	}
 
 }
@@ -2351,6 +2355,25 @@ class PerformAberrationCorrection extends ChoiceParameter {
 	public function isForCorrection() {
 		return True;
 	}
+
+	/*!
+		\brief	Returns the string representation of the Parameter
+		\param	$numberOfChannels	This is ignored
+		\return	string representation of the Parameter
+	*/
+	public function displayString( $numberOfChannels = 0 ) {
+		if ($this->value( ) == 0 ) {
+			$value = "no";
+		} else {
+			$value = "yes";
+		}
+		$name = $this->decomposeCamelCaseString( $this->name );
+		$name = $name . ':';
+		$result = str_pad($name, self::PADSIZE, ' ', STR_PAD_RIGHT);
+		$result = $result . $value . "\n";
+		return $result;
+	}
+	
 }
 
 /*
@@ -2404,6 +2427,30 @@ class AdvancedCorrectionOptions extends ChoiceParameter {
 	public function isForCorrection() {
 		return True;
 	}
+	
+	/*!
+		\brief	Returns the string representation of the Parameter
+		\param	$numberOfChannels	This is ignored
+		\return	string representation of the Parameter
+	*/
+	public function displayString( $numberOfChannels = 0 ) {
+		switch ( $this->value( ) ) {
+			case 'user':
+				$value = "user-defined depth";
+				break;
+			case 'slice':
+				$value = "slice by slice";
+				break;
+			case 'few':
+				$value = "few bricks";
+				break;
+		}
+		$name = $this->decomposeCamelCaseString( $this->name );
+		$name = $name . ':';
+		$result = str_pad($name, self::PADSIZE, ' ', STR_PAD_RIGHT);
+		$result = $result . $value . "\n";
+		return $result;
+	}
 
 }
 
@@ -2422,6 +2469,6 @@ class AberrationCorrectionNecessary extends BooleanParameter {
 	*/
 	public function __construct() {
 		parent::__construct("AberrationCorrectionNecessary");
-	}	
+	}
 
 }

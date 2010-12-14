@@ -44,6 +44,12 @@ abstract class Setting {
   protected $isDefault;
 
   /*!
+   \var		$numberOfChannels
+   \brief	Number of channels associated with the Setting
+   */
+  protected $numberOfChannels;
+
+  /*!
    \brief	Protected constructor: creates an empty Setting
    */
   protected function __construct() {
@@ -205,6 +211,23 @@ abstract class Setting {
     return $result;
   }
 
+  /*!
+   \brief	Sets the number of channels for the Setting
+
+   All variable channels Parameter objects in the Setting will updated.
+
+   \param	$channels	Number of channels (between 1 and 5)
+   */
+  public function setNumberOfChannels($channels) {
+    $this->numberOfChannels = $channels;
+    foreach ($this->parameter as $parameter) {
+      if ($parameter->isVariableChannel()) {
+        $parameter->setNumberOfChannels($this->numberOfChannels);
+        $this->set($parameter);
+      }
+    }
+  }
+  
 } // End of Setting class
 
 /*
@@ -811,6 +834,10 @@ class ParameterSetting extends Setting {
       continue;
       if (!$this->isThreeDimensional() && $parameter->name() == 'ZStepSize')
       continue;
+	  if (!$this->isTimeSeries() && $parameter->name() == 'TimeInterval')
+      continue;
+	  if (!$this->isNipkowDisk() && $parameter->name() == 'PinholeSpacing')
+      continue;
       if ($parameter->name() == 'IsMultiChannel' || $parameter->name() == 'PSF')
       continue;
       if ( ( $parameter->name() == 'ExcitationWavelength' || $parameter->name() == 'EmissionWavelength' ) && $PSF == 'measured' )
@@ -821,7 +848,11 @@ class ParameterSetting extends Setting {
       continue;
       if ($parameter->name() == 'TubeFactor' ) // This is obsolete
       continue;
-      if ($parameter->name() == 'CCDCaptorSizeX' && $PSF == 'measured' )
+	  if ($parameter->name() == 'ObjectiveMagnification' ) // This is obsolete
+      continue;
+	  if ($parameter->name() == 'Binning' ) // This is obsolete
+      continue;
+	  if ($parameter->name() == 'CCDCaptorSizeX' && $PSF == 'measured' )
       continue;
       if ($parameter->name() == 'CoverslipRelativePosition' && $PSF == 'measured' )
       continue;
@@ -1292,7 +1323,7 @@ class TaskSetting extends Setting {
    \var	$numberOfChannels
    \brief	Number of channels for the parameters of the TaskSetting
    */
-  protected $numberOfChannels;
+  //protected $numberOfChannels;
 
   /*!
    \brief	Constructor: constructs and initializes a TaskSetting
@@ -1510,25 +1541,6 @@ class TaskSetting extends Setting {
 
     //$parameter = $this->parameter('StyleOfProcessing');
     //return $parameter->value() == 'step combined';
-  }
-
-  /*!
-   \brief	Sets the number of channels for the Setting
-
-   The number of channels of a TaskSetting must match the number
-   of channels of the ParameterSetting it couples with. All variable
-   channels Parameter onjects in the TaskSetting will updated.
-
-   \param	$channels	Number of channels (between 1 and 5)
-   */
-  public function setNumberOfChannels($channels) {
-    $this->numberOfChannels = $channels;
-    foreach ($this->parameter as $parameter) {
-      if ($parameter->isVariableChannel()) {
-        $parameter->setNumberOfChannels($this->numberOfChannels);
-        $this->set($parameter);
-      }
-    }
   }
 
   /*!

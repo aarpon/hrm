@@ -32,6 +32,12 @@ $message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
  **************************************************************************** */
 
 if ( $_SESSION[ 'setting' ]->checkPostedImageParameters( $_POST ) ) {
+  
+  // Now we force all variable channel parameters to have the correct number
+  // of channels
+  $_SESSION[ 'setting' ]->setNumberOfChannels( $_SESSION[ 'setting']->numberOfChannels( ) );
+  
+  // Continue to the next page
   header("Location: " . "microscope_parameter.php"); exit();
 } else {
   $message = "            <p class=\"warning\">" .
