@@ -404,7 +404,7 @@ class DatabaseConnection {
             //}
             //$newValue[] = $range;
 			/*!
-			  \This can be cleaned: there are no longer range values (with
+			  \todo This can be cleaned: there are no longer range values (with
 			  values separated by /).
 			*/
             if (strpos($newValues[$i], "/")) {

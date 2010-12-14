@@ -1939,41 +1939,6 @@ class RemoveNoise extends BooleanParameter {
 */
 
 /*!
- \class	StyleOfProcessing
- \brief	A ChoiceParameter to indicate the style of processing
- \deprecated
- \todo Remove this parameter and all the code that makes use of it
-*/
-class StyleOfProcessing extends ChoiceParameter {
-
-	/*!
-		\brief	Constructor: creates an empty Parameter
-	*/
-	public function __construct() {
-		parent::__construct("StyleOfProcessing");
-	}
-
-	/*!
-		\brief	Returns the string representation of the StyleOfProcessing Parameter
-		\return	string representation of the Parameter
-	*/
-	public function displayString() {
-		$name = $this->name() . ":";
-		$name = $this->decomposeCamelCaseString( $name );
-		$result = str_pad($name, self::PADSIZE, ' ', STR_PAD_RIGHT);
-		$db = new DatabaseConnection();
-		$translatedValue = $db->translationFor($this->name, $this->value);
-		$result = $result . $translatedValue;
-		$result = $result . "\n";
-		return $result;
-	}
-}
-
-/*
-	============================================================================
-*/
-
-/*!
  \class	SignalNoiseRatio
  \brief	A NumericalParameter to represent the SNR per channel
 */

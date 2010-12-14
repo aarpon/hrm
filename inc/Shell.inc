@@ -10,174 +10,291 @@ global $hucore, $hutask, $logdir;
 $hucore = "hucore";
 $hutask = "-noExecLog -checkUpdates disable -task";
 
-// TODO better manage multiple hosts
+/*
+ ============================================================================
+ */
+
+/*!
+ \class	newExternalProcessFor
+ \brief Runs a new shell either with or without secure connection between the
+ 		queue manager and the Image area (depending on the value of the
+ 		configuration value $imageProcessingIsOnQueueManager)
+ \todo	Implement better management of multiple hosts
+ */
 function newExternalProcessFor($host, $logfilename, $errfilename) {
-	global $imageProcessingIsOnQueueManager;
-	$db = new DatabaseConnection();
-	$huscript_path = $db->huscriptPathOn($host);
-	if ($imageProcessingIsOnQueueManager)
-		$shell = new LocalExternalProcess($host, $huscript_path, $logfilename, $errfilename);
-	else
-		$shell = new ExternalProcess($host, $huscript_path, $logfilename, $errfilename);
-	return $shell;
+  global $imageProcessingIsOnQueueManager;
+  $db = new DatabaseConnection();
+  $huscript_path = $db->huscriptPathOn($host);
+  if ($imageProcessingIsOnQueueManager)
+  $shell = new LocalExternalProcess($host, $huscript_path, $logfilename, $errfilename);
+  else
+  $shell = new ExternalProcess($host, $huscript_path, $logfilename, $errfilename);
+  return $shell;
 }
-	
+
+/*
+ ============================================================================
+ */
+
+/*!
+ \class  ExternalProcess
+ \brief  Launches tasks on a shell on another host (via secure connection)
+ */
 class ExternalProcess {
-    public $pid;                         // os pid of the process
-    public $host;                        // host on which the process will be started
-    // TODO better manage multiple hosts
-    public $huscript_path;               // HuScript executable path on host
-    public $pipes;                       // pipes for commiunication with the process
-    public $shell;                       // The shell process resource
-    public $logfileName;                 // Name of the process error log
-    public $descriptorSpec;
-    // TODO better manage file handles
-    public $out_file;                    // handle for the output file
 
+  /*!
+   \var 	$pid
+   \brief	OS Identifier for the Process
+   */
+  public $pid;
 
-    // This is temporary, remove before the final release and use the
-    // first case only.
-        
-    
-    function ExternalProcess($host, $huscript_path, $logfileName, $errfileName) {
-        global $logdir;
-        // Make sure to save into the log dir
-        $logfileName = $logdir . "/" . $logfileName;
-        $errfileName = $logdir . "/" . $errfileName;
-        $this->descriptorSpec = array(
-                                      0 => array("pipe", "r"),
-                                      1 => array("file", $logfileName, "a"),
-                                      2 => array("file", $errfileName, "a")
-                                      );
-        $this->host = $host;
-        $this->huscript_path = $huscript_path;
-        if (strpos($host, " ")) { 
-            $components = explode(" ", $host);
-            array_pop($components);
-            $realHost = implode("", $components);
-            $this->host = $realHost;
-        } 
-        $this->pid = NULL;
-    } 
-    
-    // TODO refactor
-    function existsHuygensProcess($pid) {
-        global $logdir, $hucore;
-        global $huygens_user;
-        $answer = system("ssh $huygens_user" . '@' . $this->host . " " . "ps -p $pid | grep -e $hucore > " . $logdir . "/hrm_tmp" , $result); // -p
-        if ($result==0) {return True;} 
-        return False;
-    } 
-    
-    function isHuygensProcessSleeping($pid) {
-        global $logdir, $hucore;
-        global $huygens_user;
-        $answer = system("ssh $huygens_user" . '@' . $this->host . " " . "ps -lf -p " . "$pid | grep -e $hucore | grep -e S > " . $logdir . "/hrm_tmp",  $result);
-        if ($result==0) {return True;} 
-        return False;    
-    } 
-    
-    function rewakeHuygensProcess($pid) {
-        global $huygens_user;
-        $answer = "none";
-        ob_start();
-        while ($answer != "") { 
-            $answer = system("ssh $huygens_user" . '@' . $this->host . " '" . "ps -Alfd | sort | grep sshd | grep $huygens_user" . "'", $result);    
-            $array = split('[ ]+', $answer);
-            $pid = $array[3];
-            $answer = system("ssh $huygens_user" . '@' . $this->host . " '" . "kill $pid" . "'", $result);          
-            if (!$this->existsHuygensProcess($pid)) { break; }
-        } 
-        ob_end_clean();
-    } 
-    
-    function ping() {
-        global $logdir;
-    	global $ping_command;
-    	global $ping_parameter;
-    	
-    	$result = "";
-    	$command = $ping_command . " " . $this->host . " " . $ping_parameter . " > ". $logdir . "/hrm_tmp";
-        $answer = system($command, $result);
-        if ($result == 0)
-            return True;
-        return False;   
-    } 
+  /*!
+   \var 	$host
+   \brief	Host on which the process will be started
+   \todo	Implement better management of multiple hosts
+   */
+  public $host;
 
-    function pid() {
-        return $this->pid;
-    } 
-    
-    function runShell() {
-        global $huygens_user;
-        
-        $this->shell = proc_open("bash", $this->descriptorSpec, $this->pipes);
-        if (!is_resource($this->shell)) {
-            return False;
-        } 
-        return True;
-    } 
+  /*!
+   \var 	$huscript_path
+   \brief	HuCore full executable path on host
+   \todo	For historical reason, HuCore is still referred to as huscript
+   */
+  public $huscript_path;
 
-    function execute($command) {
-        global $huygens_user;
+  /*!
+   \var 	$pipes
+   \brief	Pipes for communication with the process
+   */
+  public $pipes;
 
-        $cmd = 'ssh -f ' . $huygens_user . "@" . $this->host . " '" . $command . " ' \n";
+  /*!
+   \var 	$shell
+   \brief	The shell process resource
+   */
+  public $shell;
 
-        $ret = fwrite($this->pipes[0], $cmd );
-        fflush($this->pipes[0]);
-        report ("$cmd: $ret", 2);
-        if ( $ret ) {
-            // Why exiting here? This is commented out by now.
-            # $ret = fwrite($this->pipes[0], "exit\n");
-        }
+  /*!
+   \var 	$logfileName
+   \brief	Name of the process log (relative to the gloabl $logdir)
+   */
+  public $logfileName;
 
-        if ( $ret === False ) {
-            return False;
-        } else {
-            // Asume execution success!!
-            return True;
-        }
-    } 
-    
-    function pidFromString($input) {
-        $result = -1;
-        $numberOfHits = preg_match('/pid=([0-9]+)/', $input, $hits);
-        if ($numberOfHits>0) {
-            $result = $hits[1]; 
-        }
-        return $result;
-    } 
+  /*!
+   \var 	$errfileName
+   \brief	Name of the process error log (relative to the gloabl $logdir)
+   */
+  public $errfileName;
 
-  function read() {
-    return fgets($this->pipes[1], 2048);      
-  } 
+  /*!
+   \var 	$out_file
+   \brief	Handle for the output file
+   */
+  public $out_file;
 
-  function runHuygensScript($scriptName) {
-      global $hutask;
-      $command = $this->huscript_path." $hutask \"".$scriptName."\"";
-      // TODO better management of file handles
-      //$out_file = fopen($this->descriptorSpec[1][1], "r");
-      $this->out_file = fopen($this->descriptorSpec[1][1], "r");
-      fseek($this->out_file, 0, SEEK_END);
-      
-      $this->execute($command);
-      sleep(1);
-      $found = False;
-      while(!$found) {
-          // TODO refactor
-          if (feof($this->out_file)) return False;
-          $input = fgets($this->out_file, 1024);
-          $pid = $this->pidFromString($input);
-          if ($pid != -1) { 
-            $found = True;
-            $this->pid = $pid;
-          }
-      }
-      return $pid;
+  /*!
+   \var 	$descriptorSpec
+   \brief	File descriptors to open in the shell
+   */
+  public $descriptorSpec;
+
+  /*!
+   \brief	Constructor: sets all shell pipes and file descriptors for given host
+   \param	$host	Host on which the process will be started. All communication
+   					to the host will happen via secure connection
+   \param	$huscript_path	HuCore full executable path on host
+   \param	$logfileName	Name of the process log (relative to the gloabl $logdir)
+   \param	$errfileName	Name of the process error log (relative to the gloabl $logdir)
+   */
+  public function __construct($host, $huscript_path, $logfileName, $errfileName) {
+    global $logdir;
+    // Make sure to save into the log dir
+    $this->logfileName = $logdir . "/" . $logfileName;
+    $this->errfileName = $logdir . "/" . $errfileName;
+    $this->descriptorSpec = array(
+    0 => array("pipe", "r"),                      		// STDIN
+    1 => array("file", $this->logfileName, "a"),      	// STDOUT
+    2 => array("file", $this->errfileName, "a") );		// STDERR
+    $this->host = $host;
+    $this->huscript_path = $huscript_path;
+    if (strpos($host, " ")) {
+      $components = explode(" ", $host);
+      array_pop($components);
+      $realHost = implode("", $components);
+      $this->host = $realHost;
+    }
+    $this->pid = NULL;
   }
 
-  // TODO refactor
-  function isJobWithPidRunning($pid) {
+  /*!
+   \brief	Checks whether an Huygens Process with given Process IDentifier exists
+   \param	$pid	Process identifier as returned by the OS
+   \return 	true if the process exists, false otherwise
+   \todo	Refactor
+   */
+  public function existsHuygensProcess($pid) {
+    global $logdir, $hucore;
+    global $huygens_user;
+    $answer = system("ssh $huygens_user" . '@' . $this->host . " " . "ps -p $pid | grep -e $hucore > " . $logdir . "/hrm_tmp" , $result); // -p
+    if ($result==0) {return True;}
+    return False;
+  }
+
+  /*!
+   \brief	Checks whether the Huygens Process with given Process IDentifier is sleeping
+   \param	$pid	Process identifier as returned by the OS
+   \return 	true if the process is sleeping, false otherwise
+   \todo	Refactor: why is this saving to hrm_tmp?
+   */
+  public function isHuygensProcessSleeping($pid) {
+    global $logdir, $hucore;
+    global $huygens_user;
+    $answer = system("ssh $huygens_user" . '@' . $this->host . " " . "ps -lf -p " . "$pid | grep -e $hucore | grep -e S > " . $logdir . "/hrm_tmp",  $result);
+    if ($result==0) {return True;}
+    return False;
+  }
+
+  /*!
+   \brief	Wakes up the Huygens Process with given Process IDentifier
+   \param	$pid	Process identifier as returned by the OS
+   */
+  public function rewakeHuygensProcess($pid) {
+    global $huygens_user;
+    $answer = "none";
+    ob_start();
+    while ($answer != "") {
+      $answer = system("ssh $huygens_user" . '@' . $this->host . " '" . "ps -Alfd | sort | grep sshd | grep $huygens_user" . "'", $result);
+      $array = split('[ ]+', $answer);
+      $pid = $array[3];
+      $answer = system("ssh $huygens_user" . '@' . $this->host . " '" . "kill $pid" . "'", $result);
+      if (!$this->existsHuygensProcess($pid)) { break; }
+    }
+    ob_end_clean();
+  }
+
+  /*!
+   \brief	Pings the host
+   \return 	true if pinging the host was successful, false otherwise
+   \todo	Refactor: why is this saving to hrm_tmp?
+   */
+  public function ping() {
+    global $logdir;
+    global $ping_command;
+    global $ping_parameter;
+     
+    $result = "";
+    $command = $ping_command . " " . $this->host . " " . $ping_parameter . " > ". $logdir . "/hrm_tmp";
+    $answer = system($command, $result);
+    if ($result == 0)
+    return True;
+    return False;
+  }
+
+  /*!
+   \brief	Returns the Process IDentifier of the Huygens process
+   \return 	the pid of the process
+   */
+  public function pid() {
+    return $this->pid;
+  }
+
+  /*!
+   \brief	Starts the shell
+   \return 		true if the shell started successfully, false otherwise
+   */
+  public function runShell() {
+    global $huygens_user;
+
+    $this->shell = proc_open("bash", $this->descriptorSpec, $this->pipes);
+    if (!is_resource($this->shell)) {
+      return False;
+    }
+    return True;
+  }
+
+  /*!
+   \brief	Executes a command
+   \param	$command	Command to be executed on the host
+   \return 	true if the command was executed, false otherwise
+   */
+  public function execute($command) {
+    global $huygens_user;
+
+    $cmd = 'ssh -f ' . $huygens_user . "@" . $this->host . " '" . $command . " ' \n";
+
+    $ret = fwrite($this->pipes[0], $cmd );
+    fflush($this->pipes[0]);
+    report ("$cmd: $ret", 2);
+    if ( $ret ) {
+      // Why exiting here? This is commented out by now.
+      // $ret = fwrite($this->pipes[0], "exit\n");
+    }
+
+    if ( $ret === False ) {
+      return False;
+    } else {
+      // Asume execution success!!
+      return True;
+    }
+  }
+
+  /*!
+   \brief	Returns the Process IDentifier from a string of the type pid=32344
+   \param	$input	String to be parsed
+   \return 	the Process IDentifier
+   */
+  public function pidFromString($input) {
+    $result = -1;
+    $numberOfHits = preg_match('/pid=([0-9]+)/', $input, $hits);
+    if ($numberOfHits>0) {
+      $result = $hits[1];
+    }
+    return $result;
+  }
+
+  /*!
+   \brief	Reads from STDOUT (the log file)
+   \return 	the read buffer
+   */
+  public function read() {
+    return fgets($this->pipes[1], 2048);
+  }
+
+  /*!
+   \brief	Runs the Huygens script with given name in the shell
+   \param	$scriptName	File name of the script
+   \return 	the Process Identifier of the running task
+   */
+  public function runHuygensScript($scriptName) {
+    global $hutask;
+    $command = $this->huscript_path." $hutask \"".$scriptName."\"";
+    // TODO better management of file handles
+    //$out_file = fopen($this->descriptorSpec[1][1], "r");
+    $this->out_file = fopen($this->descriptorSpec[1][1], "r");
+    fseek($this->out_file, 0, SEEK_END);
+
+    $this->execute($command);
+    sleep(1);
+    $found = False;
+    while(!$found) {
+      // TODO refactor
+      if (feof($this->out_file)) return False;
+      $input = fgets($this->out_file, 1024);
+      $pid = $this->pidFromString($input);
+      if ($pid != -1) {
+        $found = True;
+        $this->pid = $pid;
+      }
+    }
+    return $pid;
+  }
+
+  /*!
+   \brief	Check whether a Job with given Process IDentifier is running
+   \param	$pid	Process IDentifier of the Job
+   \return 	the PID if the Job is running, null otherwise
+   */
+  public function isJobWithPidRunning($pid) {
     $command = "ps -p $pid; ps -p $pid \n"; // -p
     $this->execute($command);
     $answer = '';
@@ -188,12 +305,15 @@ class ExternalProcess {
     if (!feof($pipe)) {
       $line = fgets($pipe, 1024);
       $answer = $answer . $line;
-    } 
+    }
     $result = (strstr($answer, "\n" . $pid . " "));
     return $result;
-  } 
+  }
 
-  function release() {
+  /*!
+   \brief	Releases all files and pipes and closes the shell
+   */
+  public function release() {
     // close pipes
     fclose($this->pipes[0]);
     // TODO check why stdout and stderr are not closed
@@ -204,95 +324,160 @@ class ExternalProcess {
     $result = proc_close($this->shell);
     report("released external process", 2);
   }
-  
-  function killHucoreProcess($pid) {    
+
+  /*!
+   \brief	Kill the Huygens process with given Process IDentifier
+   \param	$pid	Process IDentifier of the Job
+   \return	true if the Job was killed, false otherwise
+   */
+  public function killHucoreProcess($pid) {
     $command = "kill " . $pid;
     $result = True;
     $result = $result && $this->runShell();
     if ($result) {
-        $result = $result && $this->execute($command);
+      $result = $result && $this->execute($command);
     }
     return $result;
   }
-}
+} // End of ExternalProcess class
 
+/*
+ ============================================================================
+ */
+
+/*!
+ \class  LocalExternalProcess
+ \brief  Launches tasks on a shell on this machine
+
+ All command are local to the (queue manager) machine.
+ */
 class LocalExternalProcess extends ExternalProcess {
 
-  function LocalExternalProcess($host, $huscript_path, $logfileName, $errfileName) {
-    $this->ExternalProcess($host, $huscript_path, $logfileName, $errfileName);
+  /*!
+   \brief	Constructor: sets all shell pipes and file descriptors
+   \param	$host	This is not used (is only passed on to the parent constructor)
+   \param	$huscript_path	HuCore full executable
+   \param	$logfileName	Name of the process log (relative to the gloabl $logdir)
+   \param	$errfileName	Name of the process error log (relative to the gloabl $logdir)
+   */
+  public function __construct($host, $huscript_path, $logfileName, $errfileName) {
+    parent::__construct($host, $huscript_path, $logfileName, $errfileName);
   }
- 
-  function existsHuygensProcess($pid) {
+
+   
+  /*!
+   \brief	Checks whether an Huygens Process with given Process IDentifier exists
+   \param	$pid	Process identifier as returned by the OS
+   \return true if the process exists, false otherwise
+   \todo	Refactor
+   */
+
+  public function existsHuygensProcess($pid) {
     global $huygens_user, $hucore;
     global $logdir;
     $answer = system("ps -p $pid | grep -e $hucore > ".$logdir."/hrm_tmp" , $result);
-    if ($result==0) {return True;} 
+    if ($result==0) {
+      return True;
+    }
     return False;
-  } 
-
-  function isHuygensProcessSleeping($pid) {
-    //    global $huygens_user, $hucore;
-    //    $answer = system("ps -lf -p " ."$pid | grep -e $hucore | grep -e S > hrm_tmp",  $result);
-    //    if ($result==0) {return True;} 
-    return False;    
-  }  
-
-  function rewakeHuygensProcess($pid) {
-    // global $huygens_user;
-    // hang up shouldn't happen with local external process
-    // therefore nothin to do
-   
   }
 
-  function execute($command) {
+  /*!
+   \brief	Checks whether the Huygens Process with given Process IDentifier is sleeping
+   \param	$pid	Process identifier as returned by the OS
+   \return true if the process is sleeping, false otherwise
+   \todo	Refactor: why is this saving to hrm_tmp?
+   */
+  public function isHuygensProcessSleeping($pid) {
+    //    global $huygens_user, $hucore;
+    //    $answer = system("ps -lf -p " ."$pid | grep -e $hucore | grep -e S > hrm_tmp",  $result);
+    //    if ($result==0) {return True;}
+    return False;
+  }
+
+  /*!
+   \brief	Wakes up the Huygens Process with given Process IDentifier
+   \param	$pid	Process identifier as returned by the OS
+   \todo	This function is currenly doing nothing.
+   */
+  public function rewakeHuygensProcess($pid) {
+    // global $huygens_user;
+    // hang up shouldn't happen with local external process
+    // therefore nothing to do
+  }
+
+  /*!
+   \brief	Executes a command
+   \param	$command	Command to be executed on the host
+   \return 	true if the command was executed, false otherwise
+   */
+  public function execute($command) {
     global $huygens_user;
     $ret = fwrite($this->pipes[0], $command . " & \n" );
     fflush($this->pipes[0]);
     if ($ret === false) {
-        // Can't write to pipe.
-        return False;
+      // Can't write to pipe.
+      return False;
     } else {
-        sleep(5);
-        // Asume execution success!!
-        return True;
+      sleep(5);
+      // Asume execution success!!
+      return True;
     }
 
   }
 
-  function ping() {
-      // machine can always reach itself.
-      return True;
-  }  
-
-  function runShell() {
-      global $huygens_user;
-      $this->shell = proc_open("sh", $this->descriptorSpec, $this->pipes);
-      if (!is_resource($this->shell)) {
-          return False;
-      } 
-      return True;
+  /*!
+   \brief	Pings the host
+   \return 	true always, since a machine should always be able to reach itself
+   */
+  public function ping() {
+    // machine can always reach itself.
+    return True;
   }
 
-  function isJobWithPidRunning($pid) {
-      $command = "ps -p $pid; ps -p $pid \n";
-      $this->execute($command);
-      $answer = '';
-      $pipe = $this->pipes[1];
+  /*!
+   \brief	Starts the shell
+   \return 	true if the shell started successfully, false otherwise
+   */
+  public function runShell() {
+    global $huygens_user;
+    $this->shell = proc_open("sh", $this->descriptorSpec, $this->pipes);
+    if (!is_resource($this->shell)) {
+      return False;
+    }
+    return True;
+  }
+
+  /*!
+   \brief	Check whether a Job with given Process IDentifier is running
+   \param	$pid	Process IDentifier of the Job
+   \return 	the PID if the Job is running, null otherwise
+   */
+  public function isJobWithPidRunning($pid) {
+    $command = "ps -p $pid; ps -p $pid \n";
+    $this->execute($command);
+    $answer = '';
+    $pipe = $this->pipes[1];
+    $line = fgets($pipe, 1024);
+    $answer = $answer . $line;
+    if (!feof($pipe)) {
       $line = fgets($pipe, 1024);
       $answer = $answer . $line;
-      if (!feof($pipe)) {
-          $line = fgets($pipe, 1024);
-          $answer = $answer . $line;
-      } 
-      $result = (strstr($answer, "\n" . $pid . " "));
-      return $result;
+    }
+    $result = (strstr($answer, "\n" . $pid . " "));
+    return $result;
   }
 
-  function killHucoreProcess($pid) {    
-      $dead = posix_kill($pid,15);
-      return $dead;
+  /*!
+   \brief	Kill the Huygens process with given Process IDentifier
+   \param	$pid	Process IDentifier of the Job
+   \return	true if the Job was killed, false otherwise
+   */
+  public function killHucoreProcess($pid) {
+    $dead = posix_kill($pid,15);
+    return $dead;
   }
 
-}  
+}  // End of LocalExternalProcess class
 
 ?>

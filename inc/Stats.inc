@@ -6,59 +6,93 @@ require_once( "User.inc" );
 require_once( "Database.inc" );
 require_once( "Util.inc" );
 
+/*!
+ \class	Type
+ \brief	Type of display to be generated from the statistics
+ 
+ This class is used by the Stats class.
+ */
 class Type {
+
+  /*!
+   \var	$m_Name
+   \brief	Name of the report
+   */
   public $m_Name;
+
+  /*!
+   \var	$m_Variable
+   \brief	Name of the column to target in the statistics table
+   */
   public $m_Variable;
+
+  /*!
+   \var	$m_DescriptiveName
+   \brief	Descriptive name for the report
+   */
   public $m_DescriptiveName;
-  public $m_Type;        // One of 'text', 'piechart', 'linechart', 'dumptable'
+
+  /*!
+   \var	$m_Type
+   \brief	Type of report: one of 'text', 'piechart', 'linechart', 'dumptable'
+   */
+  public $m_Type;
+
+  /*!
+   \var	$m_AdminOnly
+   \brief	Makes a particular report accessible only to the admin
+   */
   public $m_AdminOnly;
-  
-  //!---------------------------------------------------------------------------
-  // @function    __construct( $name, $variable, $descriptiveName, $type, $adminOnly )
-  //!---------------------------------------------------------------------------
-  function __construct( $name, $variable, $descriptiveName, $type, $adminOnly ) {
+
+  /*!
+  \brief	Constructor: sets the relevant information for the report
+  \param	$name				Name of the report
+  \param	$variable			Name of the column to target in the statistics table
+  \param	$descriptiveName	Descriptive name for the report
+  \param	$type				Type of report: one of 'text', 'piechart', 'linechart', 'dumptable'
+  \param	$adminOnly			Specifies whether the report is accessible only to the admin user
+  */
+  public function __construct( $name, $variable, $descriptiveName, $type, $adminOnly ) {
     $this->m_Name            = $name;
     $this->m_Variable        = $variable;
     $this->m_DescriptiveName = $descriptiveName;
     $this->m_Type            = $type;
     $this->m_AdminOnly       = $adminOnly;
   }
-  
-  //!---------------------------------------------------------------------------
-  // @function    string Type::isGraph( $variable )
-  // \brief        returns true is the requested statistics generates a graph,
-  //              and false if it returns a text/table
-  // \param       string $variable name of the column from the statistics page
-  // \return      bool True for graphs, False for text/table
-  //!---------------------------------------------------------------------------
+
+  /*!
+  \brief	returns true is the requested statistics generates a graph,
+			and false if it returns a text/table
+  \return   true for graphs, false for text/table
+  */
   public function isGraph( ) {
     if ( ( $this->m_Type == "piechart" ) || ( $this->m_Type == "linechart" ) ) {
       return true;
     }
     return false;
   }
-  
-  //!---------------------------------------------------------------------------
-  // @function    string Type::getStatisticsScript( $db, $admin, $fromDate, $toDate, $group, $username )
-  // \brief        Get the JS/PHP script to display the statistics.
-  // $param       $admin     true if the user is the admin
-  // $param       $fromDate  start date for filtering in the form "YYYY-mm-dd hh:mm:ss"
-  // $param       $toDate    end   date for filtering in the form "YYYY-mm-dd hh:mm:ss"
-  // $param       $group     group name
-  // $param       $username  user name
-  // \return      string JS/PHP script to display the statistics. 
-  //!---------------------------------------------------------------------------
-  public function getStatisticsScript( $db, $admin, $fromDate, $toDate, $group, $username ) {
-    
+
+  /*!
+	\brief	Get the JS/PHP script to display the statistics.
+	\param	$db			DatabaseConnection object
+	\param	$admin		True if the user is the admin
+	\param	$fromDate	Start date for filtering in the form "YYYY-mm-dd" (or generally "YYYY-mm-dd hh:mm:ss")
+  	\param	$toDate    	End date for filtering in the form "YYYY-mm-dd" (or generally "YYYY-mm-dd hh:mm:ss")
+  	\param  $group		Group name
+  	\param	$username	User name
+  	\return      string JS/PHP script to display the statistics.
+  	*/
+  public function getStatisticsScript( DatabaseConnection $db, $admin, $fromDate, $toDate, $group, $username ) {
+
     // Date filters
     $dateFilter = $this->getDateFilter( $fromDate, $toDate );
 
     // Group filters (admin only)
     $groupFilter = $this->getGroupFilter( $admin, $group );
-    
+
     // Non-admin users can only access their stats
     $userNameFilter = $this->getUsernameFilter( $admin, $username );
-    
+
     switch ( $this->m_Type ) {
       case "text":
         $script = $this->getTable( $db, $this->m_Name, $group, $dateFilter, $groupFilter, $userNameFilter );
@@ -74,15 +108,25 @@ class Type {
     return $script;
   }
 
-  //!---------------------------------------------------------------------------
-  // @function    string Stats::getPieChart( $variable )
-  // \brief        Get the JS script to create a pie chart of the requested
-  //              column from the statistics table.
-  // \param       string $variable name of the column from the statistics page
-  //              for which a pie chart is requested.
-  // \return      string JS script to generate the pie chart.
-  //!---------------------------------------------------------------------------
-  private function getPieChart( $db, $variable, $group, $dateFilter, $groupFilter, $userNameFilter ) {
+  /* ===========================================================================
+   *
+   * PRIVATE METHODS
+   *
+   ========================================================================== */
+
+  
+  /*!
+	\brief	Get the JS script to create a pie chart of the requested column 
+			(variable) from the statistics table.
+	\param  $db				DatabaseConnection object
+	\param	$variable		Name of the column to target in the statistics table
+  	\param  $group			Group name
+	\param	$dateFilter		Filter on date, \see getDateFilter()
+	\param	$groupFilter	Filter on group, \see getGroupFilter()
+  	\param	$userNameFilter	Filter on username, \see getUsernameFilter()
+	\return the JS script to generate the pie chart.
+	*/
+  private function getPieChart( DatabaseConnection $db, $variable, $group, $dateFilter, $groupFilter, $userNameFilter ) {
 
     // Get data
     // -------------------------------------------------------------------------
@@ -95,12 +139,12 @@ class Type {
       $subTitle = "";
 
     } else {
-      
+
       $entities    = $db->execute( "SELECT DISTINCT( " . $variable . ") FROM statistics WHERE " . $dateFilter . $groupFilter . $userNameFilter . ";" );
       $row      = $db->execute( "SELECT COUNT( DISTINCT( " . $variable . " ) ) FROM statistics WHERE " . $dateFilter . $groupFilter . $userNameFilter . ";" )->FetchRow( );
       $numEntities = $row[ 0 ];
       $data = "[";
-    
+
       for ( $i = 0; $i < $numEntities; $i++ ) {
         // Get current username
         $row = $entities->FetchRow( );
@@ -115,10 +159,10 @@ class Type {
           $data .= "['" . $variableName . "', " . $percent . " ] ]";
         }
       }
-    
+
       // Title
       $title = $this->m_DescriptiveName;
-      
+
       // Assemble also subtitle
       if ( $group != "All groups" ) {
         $groupStr = " Group: " . $group . "." ;
@@ -126,9 +170,9 @@ class Type {
         $groupStr = "";
       }
       $subtitle = "Total: " . $numJobs . " entries." . $groupStr;
-    
+
     }
-    
+
     // Create script
     // -------------------------------------------------------------------------
     $script = "$(document).ready(function() {
@@ -149,38 +193,49 @@ class Type {
     return $script;
   }
 
-  //!---------------------------------------------------------------------------
-  // @function    string Stats::getTable( $db, $statsType, $group, $dateFilter, $groupFilter, $userNameFilter )
-  // \brief        Get the HTML code to create a table for the total run time per
-  //              user or total run time per group statistics
-  // \return      html code for the total run time per user/group table
-  //!---------------------------------------------------------------------------
-  private function getTable( $db, $statsType, $group, $dateFilter, $groupFilter, $userNameFilter ) {
-    
+  /*!
+	\brief	Get the HTML script to create a table for the total run time per
+            user or total run time per group statistics
+	\param  $db				DatabaseConnection object
+	\param	$statsType		Name of report to generate, one of 'TotalRunTimePerUser' or 'TotalRunTimePerGroup'
+  	\param  $group			Group name
+	\param	$dateFilter		Filter on date, \see getDateFilter()
+	\param	$groupFilter	Filter on group, \see getGroupFilter()
+  	\param	$userNameFilter	Filter on username, \see getUsernameFilter()
+	\return the html code for the total run time per user/group table
+	\todo	remove $statsType
+	*/
+  private function getTable( DatabaseConnection $db, $statsType, $group, $dateFilter, $groupFilter, $userNameFilter ) {
+
     switch ( $statsType ) {
       case "TotalRunTimePerUser":
         return ( $this->getTotalRunTimePerUserTable(
-          $db, $statsType, $group, $dateFilter, $groupFilter, $userNameFilter ) );
+        $db, $statsType, $group, $dateFilter, $groupFilter, $userNameFilter ) );
 
       case "TotalRunTimePerGroup":
         return ( $this->getTotalRunTimePerGroupTable(
-          $db, $statsType, $group, $dateFilter, $groupFilter, $userNameFilter ) );
+        $db, $statsType, $group, $dateFilter, $groupFilter, $userNameFilter ) );
 
       default:
         return "";
     }
   }
-  
-  //!---------------------------------------------------------------------------
-  // @function    string Stats::getTotalRunTimePerUserTable( $db, $statsType, $group, $dateFilter, $groupFilter, $userNameFilter )
-  // \brief        Get the HTML code to create a table for the total run time per
-  //              user statistics
-  // \return      html code for the total run time per user table
-  //!---------------------------------------------------------------------------
-  private function getTotalRunTimePerUserTable( $db, $statsType, $group, $dateFilter, $groupFilter, $userNameFilter ) {
+
+  /*!
+	\brief	Get the HTML script to create a table for the total run time per user statistics
+	\param  $db				DatabaseConnection object
+	\param	$statsType		This is not used, and is assumed to be 'TotalRunTimePerUser'
+  	\param  $group			Group name
+	\param	$dateFilter		Filter on date, \see getDateFilter()
+	\param	$groupFilter	Filter on group, \see getGroupFilter()
+  	\param	$userNameFilter	Filter on username, \see getUsernameFilter()
+	\return the html code for the total run time per user table
+	\todo	remove $statsType	
+	*/
+    private function getTotalRunTimePerUserTable( DatabaseConnection $db, $statsType, $group, $dateFilter, $groupFilter, $userNameFilter ) {
 
     $script="<table>";
-    
+
     // Get data
     // -------------------------------------------------------------------------
     $row      = $db->execute( "SELECT COUNT( id ) FROM statistics WHERE " . $dateFilter . $groupFilter . $userNameFilter . ";" )->FetchRow( );
@@ -190,7 +245,7 @@ class Type {
       $script = "<h3>Nothing to display!</h3>";
 
     } else {
-  
+
       $script .= "<tr>
         <th>Group</th>
         <th>User</th>
@@ -198,63 +253,68 @@ class Type {
         <th>Total runtime (s)</th>
         <th>Time per job (s)</th>
         </tr>";
-        
+
       // Get all groups
       $queryGroup = "SELECT DISTINCT( research_group ) FROM statistics WHERE " . $dateFilter . $groupFilter . $userNameFilter . ";";
       $resGroup = $db->execute( $queryGroup );
-      
+
       while ( $rowGroup = $resGroup->FetchRow( ) ) {
-        
+
         // Gel all user names for current group
         $queryUser = "SELECT DISTINCT( owner ) FROM statistics WHERE " . $dateFilter . " AND research_group = '" . $rowGroup[ 0 ] . "' " . $userNameFilter . ";";
         $resUser = $db->execute( $queryUser );
 
         $userNum = 0;
         while ( $rowUser = $resUser->FetchRow( ) ) {
-          
-            // Query all jobs for current user
-            $queryJobsUser = "SELECT start, stop FROM statistics WHERE owner = '" . $rowUser[ 0 ] . "'; ";
-            $resJobsUser = $db->execute( $queryJobsUser );
-    
-            $nJobs = 0; $time = 0;
-            while ( $rowJobsUser = $resJobsUser->FetchRow( ) ) {
-              $time += strtotime( $rowJobsUser["stop"] ) - strtotime( $rowJobsUser["start"] );
-              $nJobs++;
-            }
-            
-            $userNum++;
-            if ( $userNum == 1 ) {
-              $groupEntry = $rowGroup[ 0 ];
-            } else {
-              $groupEntry = $nbsp;
-            }
-            $script .= "<tr>
+
+          // Query all jobs for current user
+          $queryJobsUser = "SELECT start, stop FROM statistics WHERE owner = '" . $rowUser[ 0 ] . "'; ";
+          $resJobsUser = $db->execute( $queryJobsUser );
+
+          $nJobs = 0; $time = 0;
+          while ( $rowJobsUser = $resJobsUser->FetchRow( ) ) {
+            $time += strtotime( $rowJobsUser["stop"] ) - strtotime( $rowJobsUser["start"] );
+            $nJobs++;
+          }
+
+          $userNum++;
+          if ( $userNum == 1 ) {
+            $groupEntry = $rowGroup[ 0 ];
+          } else {
+            $groupEntry = $nbsp;
+          }
+          $script .= "<tr>
               <td>" . $groupEntry . "</td>
               <td>" . $rowUser[ 0 ] . "</td>
               <td>" . $nJobs . "</td>
               <td>" . $time . "</td>
               <td>" . number_format( $time/$nJobs, 2 ) . "</td></tr>";
-        
+
         }
-      
+
       }
 
     }
-    $script .= "</table>";    
-    
+    $script .= "</table>";
+
     return $script;
   }
 
-  //!---------------------------------------------------------------------------
-  // @function    string Stats::getTotalRunTimePerUserTable( $db, $statsType, $group, $dateFilter, $groupFilter, $userNameFilter )
-  // \brief        Get the HTML code to create a table for the total run time per
-  //              user statistics
-  // \return      html code for the total run time per user table
-  //!---------------------------------------------------------------------------
-  private function getTotalRunTimePerGroupTable( $db, $statsType, $group, $dateFilter, $groupFilter, $userNameFilter ) {
+	/*!
+	\brief	Get the HTML script to create a table for the total run time per group statistics
+	\param  $db				DatabaseConnection object
+	\param	$statsType		This is not used, and is assumed to be 'TotalRunTimePerUser'
+  	\param  $group			Group name
+	\param	$dateFilter		Filter on date, \see getDateFilter()
+	\param	$groupFilter	Filter on group, \see getGroupFilter()
+  	\param	$userNameFilter	Filter on username, \see getUsernameFilter()
+	\return the html code for the total run time per group table
+	\todo	remove $statsType	
+	*/
+  private function getTotalRunTimePerGroupTable( DatabaseConnection $db, $statsType, $group, $dateFilter, $groupFilter, $userNameFilter ) {
 
     $script="<table>";
-    
+
     // Get data
     // -------------------------------------------------------------------------
     $row      = $db->execute( "SELECT COUNT( id ) FROM statistics WHERE " . $dateFilter . $groupFilter . $userNameFilter . ";" )->FetchRow( );
@@ -264,65 +324,63 @@ class Type {
       $script = "<h3>Nothing to display!</h3>";
 
     } else {
-  
+
       $script .= "<tr>
         <th>Group</th>
         <th>Number of jobs</th>
         <th>Total runtime (s)</th>
         <th>Time per job (s)</th>
         </tr>";
-        
+
       // Get all groups
       $queryGroup = "SELECT DISTINCT( research_group ) FROM statistics WHERE " . $dateFilter . $groupFilter . $userNameFilter . ";";
       $resGroup = $db->execute( $queryGroup );
-      
+
       while ( $rowGroup = $resGroup->FetchRow( ) ) {
-        
+
         // Gel all user names for current group
         $queryTime = "SELECT start, stop FROM statistics WHERE " . $dateFilter . " AND research_group = '" . $rowGroup[ 0 ] . "' " . $userNameFilter . ";";
         $resTime = $db->execute( $queryTime );
 
         $nJobs = 0; $time = 0;
         while ( $rowTime = $resTime->FetchRow( ) ) {
-          
+
           $time += strtotime( $rowTime["stop"] ) - strtotime( $rowTime["start"] );
           $nJobs++;
 
         }
-            
+
         $script .= "<tr>
           <td>" . $rowGroup[ 0 ] . "</td>
           <td>" . $nJobs . "</td>
           <td>" . $time . "</td>
           <td>" . number_format( $time/$nJobs, 2 ) . "</td></tr>";
-        
+
       }
 
     }
-    $script .= "</table>";    
-    
+    $script .= "</table>";
+
     return $script;
   }
-  
-  //!---------------------------------------------------------------------------
-  // @function    string Stats::getDateFilter( $fromDate, $toDate )
-  // \brief        Get the SQL sub-query to filter by date
-  // \param       $fromDate: date to filter from
-  // \param       $fromDate: date to filter to
-  // \return      SQL sub-query for filtering by date
-  //!---------------------------------------------------------------------------
+
+  /*!
+	\brief  Get the SQL sub-query to filter by date
+  	\param  $fromDate	Ddate to filter from
+  	\param  $toDate		Date to filter to
+  	\return	SQL sub-query for filtering by date
+  */
   private function getDateFilter( $fromDate, $toDate ) {
     $dateFilter = "start >= '" . $fromDate ."' AND stop <= '" . $toDate . "'";
     return $dateFilter;
   }
 
-  //!---------------------------------------------------------------------------
-  // @function    string Stats::getGroupFilter( $admin, $group )
-  // \brief        Get the SQL sub-query to filter by group
-  // \param       $admin: true if the user is the admin
-  // \param       $group: group name
-  // \return      SQL sub-query for filtering by group
-  //!---------------------------------------------------------------------------
+  /*!
+	\brief  Get the SQL sub-query to filter by group
+  	\param  $admin	True if the user is the admin
+  	\param  $group	Group name
+  	\return	SQL sub-query for filtering by group
+  */
   private function getGroupFilter( $admin, $group ) {
     if ( $admin ) {
       if ( $group == "All groups" ) {
@@ -336,13 +394,12 @@ class Type {
     return $groupFilter;
   }
 
-  //!---------------------------------------------------------------------------
-  // @function    string Stats::getUsernameFilter( $admin, $username )
-  // \brief        Get the SQL sub-query to filter by username
-  // \param       $admin: true if the user is the admin
-  // \param       $username: username
-  // \return      SQL sub-query for filtering by username
-  //!---------------------------------------------------------------------------
+  /*!
+	\brief  Get the SQL sub-query to filter by username
+  	\param  $admin		True if the user is the admin
+  	\param  $username	Username
+  	\return	SQL sub-query for filtering by username
+  */
   private function getUsernameFilter( $admin, $username ) {
     if ( $admin ) {
       $userNameFilter = "";
@@ -351,30 +408,68 @@ class Type {
     }
     return $userNameFilter;
   }
-  
-}
 
+}   // End of Type class
 
-// =============================================================================
-// =============================================================================
-// =============================================================================
+/*
+	============================================================================
+*/
 
-
+/*!
+ \class    Stats
+ \brief    Commodity class to generate statistics of HRM usage
+*/
 class Stats {
-  
+
   /* ===========================================================================
    *
    * MEMBER VARIABLES
    *
    ========================================================================== */
 
+  /*!
+   \var		$m_Username
+   \brief	Name of the user for whom statistics are returned; if the user is
+   			the admin user, global statistics are returned
+   */  
   private $m_Username;
+
+  /*!
+   \var		$m_DB
+   \brief	DatabaseConnection object
+   */  
   private $m_DB;
+  
+  /*!
+   \var		$m_Stats_Array
+   \brief	Array of Type objects containing all currently supported statistics
+   */  
   private $m_Stats_Array;
+  
+  /*!
+   \var		$m_Filter_FromDate
+   \brief	Date to filter from
+   */    
   private $m_Filter_FromDate;
+  
+    /*!
+   \var		$m_Filter_ToDate
+   \brief	Date to filter to
+   */  
   private $m_Filter_ToDate;
+  
+    /*!
+   \var		$m_Filter_Group
+   \brief	Group to whom the user belongs 
+   */  
   private $m_Filter_Group;
+  
+    /*!
+   \var		$m_Selected_Statistics
+   \brief	The currently selected statistics
+   */  
   private $m_Selected_Statistics;
+  
 
   /* ===========================================================================
    *
@@ -382,13 +477,12 @@ class Stats {
    *
    ========================================================================== */
    
-  //!---------------------------------------------------------
-  // @function    Stats::__construct( $username ): constructor.
-  // \brief        Constructs the Stats object.
-  // \param       string $username name of the user for which statistics are
-  //              returned; if the user is the admin user, global statistics
-  //              are returned.
-  //!---------------------------------------------------------
+  /*!
+	\brief	Constructs the Stats object.
+	\param  $username Name of the user for whom statistics are returned; 
+						if the user is the admin user, global statistics
+						are returned.
+  */
   public function __construct( $username ) {
     $this->m_Username = $username;
     $this->m_DB = new DatabaseConnection();
@@ -402,24 +496,21 @@ class Stats {
     // Set default (accessible) statistics
     $this->setDefaultStats();
   }
-  
-  //!---------------------------------------------------------------------------
-  // @function    string Stats::isGraph( $variable )
-  // \brief        returns true is the requested statistics generates a graph,
-  //              and false if it returns a text/table
-  // \param       string $variable name of the column from the statistics page
-  // \return      bool True for graphs, False for text/table
-  //!---------------------------------------------------------------------------
+
+  /*!
+	\brief	returns true is the requested statistics generates a graph,
+			and false if it returns a text/table
+	\return true for graphs, false for text/table
+	*/
   public function isGraph( ) {
     return ( $this->m_Stats_Array[ $this->m_Selected_Statistics ]->isGraph( ) );
   }
 
-  //!---------------------------------------------------------------------------
-  // @function    string Stats::getAllDescriptiveNames( )
-  // \brief        returns an array with the descriptive names of all supported
-  //              statistics (e.g. to be used in a <select> element)
-  // \return      array of strings Descriptive names of supported statistics
-  //!---------------------------------------------------------------------------
+  /*!
+	\brief	returns an array with the descriptive names of all supported 
+			statistics (e.g. to be used in a < select > element)
+	\return array of descriptive names of supported statistics
+	*/  
   public function getAllDescriptiveNames( ) {
     $names = array( );
     for ( $i = 0; $i < count( $this->m_Stats_Array ); $i++ ) {
@@ -431,20 +522,21 @@ class Stats {
     return $names;
   }
 
-  //!---------------------------------------------------------------------------
-  // @function    string Stats::getSelectedStatistics( )
-  // \brief        returns the descriptive name of the selected statistics
-  //!---------------------------------------------------------------------------
+	/*!
+	\brief	returns the descriptive name of the selected statistics
+	\return	the descriptive name of the selected statistics
+	*/  
   public function getSelectedStatistics( ) {
     return ( $this->m_Stats_Array[ $this->m_Selected_Statistics ]->m_DescriptiveName );
   }
 
-  //!---------------------------------------------------------------------------
-  // @function    void Stats::setSelectedStatistics( $descriptiveName )
-  // \brief        sets the selected statistics
-  // $param       $descriptiveName Descriptive name of the selected statistics
-  //!---------------------------------------------------------------------------
-  public function setSelectedStatistics( $descriptiveName ) {
+	/*!
+	\brief	sets the selected statistics
+	\param	$descriptiveName	Descriptive name of the selected statistics
+	\return the index in $m_Stats_Array of the selected statistics, or 
+			0 if the statistics does not exist
+	*/  
+    public function setSelectedStatistics( $descriptiveName ) {
     for ( $i = 0; $i < count( $this->m_Stats_Array ); $i++ ) {
       if ( $this->m_Stats_Array[ $i ]->m_DescriptiveName == $descriptiveName ) {
         $this->m_Selected_Statistics = $i;
@@ -454,163 +546,159 @@ class Stats {
     // If no match with the descriptive name, set selected statistics to 0.
     $this->m_Selected_Statistics = 0;
   }
-  
-  //!---------------------------------------------------------------------------
-  // @function    string Stats::getStatisticsScript( )
-  // \brief        Get the JS/PHP script to display the statistics. This function
-  //              call should be combined with a isGraph() call, to decide
-  //              whether the generated (JS) script should be passed on to the
-  //              HighCharts library or not.
-  // \return      string JS/PHP script to display the statistics.
-  //!---------------------------------------------------------------------------
-  public function getStatistics( ) {
-    
+
+	/*!
+	\brief	Get the JS/PHP script to display the statistics. This function
+			call should be combined with a isGraph() call, to decide
+			whether the generated (JS) script should be passed on to the
+			HighCharts library or not.
+	\return	string JS/PHP script to display the statistics.
+	*/  
+    public function getStatistics( ) {
+
     switch ( $this->m_Stats_Array[$this->m_Selected_Statistics]->m_Type ) {
 
       case "dumptable":
 
         // Download the whole statistics table
         return ( $this->dumpStatsTableToFile() );
-        
+
       case "piechart":
       case "text":
-        
+
         // Create JS script (HighCharts) or HTML Table
         return ( $this->m_Stats_Array[$this->m_Selected_Statistics]->getStatisticsScript(
-         $this->m_DB, $this->isAdmin(), $this->m_Filter_FromDate,
-         $this->m_Filter_ToDate, $this->m_Filter_Group, $this->m_Username ) );
-        
+        $this->m_DB, $this->isAdmin(), $this->m_Filter_FromDate,
+        $this->m_Filter_ToDate, $this->m_Filter_Group, $this->m_Username ) );
+
       default:
         return "Error: bad value from Statistics type. Please report!\n";
     }
-  
+
   }
    
-  //!---------------------------------------------------------------------------
-  // @function    array Stats::getFromDates( )
-  // \brief        Gets all beginning of the months from February 2010 until now
-  // \return      array All beginning of monthts
-  //!---------------------------------------------------------------------------
-  public function getFromDates( ) {
-      
-      $fromDates = array( );
-      
-      // Today
-      $today = date( "Y-m-d" );
-      
-      // Start date
-      $fromDates[ 0 ] = "2010-02-01";
-      
-      $nextMonth = date( "Y-m-d", strtotime( $fromDates[ 0 ] . " + 1 month" ) );
-      
-      $counter = 1;
-      while ( strtotime( $nextMonth ) <= strtotime( $today ) ) {
-        $fromDates[ $counter ] = $nextMonth;
-        $nextMonth = date( "Y-m-d", strtotime( $fromDates[ $counter++ ] . " + 1 month" ) );
-      }
-      
-      return $fromDates;
+	/*!
+	\brief	Gets all beginnings of the months from February 2010 until now
+	\return	array of dates of all beginnings of the months
+	*/ 
+    public function getFromDates( ) {
+
+    $fromDates = array( );
+
+    // Today
+    $today = date( "Y-m-d" );
+
+    // Start date
+    $fromDates[ 0 ] = "2010-02-01";
+
+    $nextMonth = date( "Y-m-d", strtotime( $fromDates[ 0 ] . " + 1 month" ) );
+
+    $counter = 1;
+    while ( strtotime( $nextMonth ) <= strtotime( $today ) ) {
+      $fromDates[ $counter ] = $nextMonth;
+      $nextMonth = date( "Y-m-d", strtotime( $fromDates[ $counter++ ] . " + 1 month" ) );
+    }
+
+    return $fromDates;
   }
 
-  //!---------------------------------------------------------------------------
-  // @function    array Stats::getToDates( )
-  // \brief        Gets all end of the months from February 2010 until now
-  // \return      array All ends of monthts
-  //!---------------------------------------------------------------------------
+	/*!
+	\brief	Gets all ends of the months from February 2010 until now
+	\return	array of dates of all ends of the months
+	*/ 
   public function getToDates( ) {
-      
-      $toDates = array( );
-      
-      // Today
-      $today =  date( "Y-m-d", strtotime( " + 1 month" ) );
+
+    $toDates = array( );
+
+    // Today
+    $today =  date( "Y-m-d", strtotime( " + 1 month" ) );
 
 
-      // Start date
-      $toDates[ 0 ] = "2010-02-28";
+    // Start date
+    $toDates[ 0 ] = "2010-02-28";
 
-      // Make sure to get the end of the month
-      $year  = date( "Y", strtotime( $toDates[ 0 ] ) );
-      $month = date( "m", strtotime( $toDates[ 0 ] ) );
-      $nextMonth = date( "Y-m-d", strtotime( $year . "-" . ( $month + 2 ) . "-01 - 1 day" ) );
-      
-      $counter = 1;
-      while ( strtotime( $nextMonth ) <= strtotime( $today ) ) {
-        $toDates[ $counter ] = $nextMonth;
-        $year  = date( "Y", strtotime( $toDates[ $counter] ) );
-        $month = date( "m", strtotime( $toDates[ $counter ] ) ) + 2;
-        if ( $month > 12 ) {
-          $month -= 12;
-          $year++;
-        }
-        
-        $nextMonth = date( "Y-m-d", strtotime( $year . "-" . $month . "-01 - 1 day" ) );
-        $counter++;
+    // Make sure to get the end of the month
+    $year  = date( "Y", strtotime( $toDates[ 0 ] ) );
+    $month = date( "m", strtotime( $toDates[ 0 ] ) );
+    $nextMonth = date( "Y-m-d", strtotime( $year . "-" . ( $month + 2 ) . "-01 - 1 day" ) );
+
+    $counter = 1;
+    while ( strtotime( $nextMonth ) <= strtotime( $today ) ) {
+      $toDates[ $counter ] = $nextMonth;
+      $year  = date( "Y", strtotime( $toDates[ $counter] ) );
+      $month = date( "m", strtotime( $toDates[ $counter ] ) ) + 2;
+      if ( $month > 12 ) {
+        $month -= 12;
+        $year++;
       }
-      
-      return $toDates;
+
+      $nextMonth = date( "Y-m-d", strtotime( $year . "-" . $month . "-01 - 1 day" ) );
+      $counter++;
+    }
+
+    return $toDates;
   }
 
-  //!---------------------------------------------------------------------------
-  // @function    array Stats::getGroupNames( )
-  // \brief        Gets an array of unique group names from the statistics table
-  // \return      array of all unique group names
-  //!---------------------------------------------------------------------------
+	/*!
+	\brief	Gets an array of unique group names from the statistics table
+	\return	array of all unique group names
+	*/ 
   public function getGroupNames( ) {
-      
-      $groupNames = array( "All groups" );
-      $row        = $this->m_DB->execute( "SELECT COUNT( DISTINCT( research_group ) ) FROM statistics;" )->FetchRow( );
-      $numGroups  = $row[ 0 ];
-      if ( $numGroups == 0 ) {
-        return $groupNames;
-      }
-      // List the group names
-      $res = $this->m_DB->execute( "SELECT DISTINCT( research_group ) FROM statistics;" );
-      $counter = 1;
-      for ( $i = 0; $i < $numGroups; $i++ ) {
-        $row = $res->FetchRow( );
-        $groupNames[ $counter++ ] = $row[ 0 ];
-      }
+
+    $groupNames = array( "All groups" );
+    $row        = $this->m_DB->execute( "SELECT COUNT( DISTINCT( research_group ) ) FROM statistics;" )->FetchRow( );
+    $numGroups  = $row[ 0 ];
+    if ( $numGroups == 0 ) {
       return $groupNames;
+    }
+    // List the group names
+    $res = $this->m_DB->execute( "SELECT DISTINCT( research_group ) FROM statistics;" );
+    $counter = 1;
+    for ( $i = 0; $i < $numGroups; $i++ ) {
+      $row = $res->FetchRow( );
+      $groupNames[ $counter++ ] = $row[ 0 ];
+    }
+    return $groupNames;
   }
 
-  //!---------------------------------------------------------------------------
-  // @function    void Stats::setFromDateFilter( )
-  // \brief        Set the from date filter
-  //!---------------------------------------------------------------------------
+  /*!
+ 	\brief	Sets the 'from date' for the date filter
+ 	\param	$fromDate	'From' date for the date filter
+ 	*/
   public function setFromDateFilter( $fromDate ) {
-      $this->m_Filter_FromDate = $fromDate;
+    $this->m_Filter_FromDate = $fromDate;
   }
 
-  //!---------------------------------------------------------------------------
-  // @function    void Stats::setToDateFilter( )
-  // \brief        Set the to date filter
-  //!---------------------------------------------------------------------------
-  public function setToDateFilter( $toDate ) {
-      $this->m_Filter_ToDate = $toDate;
+  /*!
+ 	\brief	Sets the 'to date' for the date filter
+ 	\param	$toDate	'To' date for the date filter
+ 	*/
+    public function setToDateFilter( $toDate ) {
+    $this->m_Filter_ToDate = $toDate;
   }
 
-  //!---------------------------------------------------------------------------
-  // @function    void Stats::setGroupFilter( )
-  // \brief        Set the group filter
-  //!---------------------------------------------------------------------------
+  /*!
+ 	\brief	Sets the group name for the group filter
+ 	\param	$group	Group name for the group filter
+ 	*/
   public function setGroupFilter( $group ) {
-      $this->m_Filter_Group = $group;
+    $this->m_Filter_Group = $group;
   }
-  
+
   /* ===========================================================================
    *
    * PRIVATE METHODS
    *
    ========================================================================== */
 
-  //!---------------------------------------------------------------------------
-  // @function    void Stats::setDefaultStats( )
-  // \brief        Sets the default statistics
-  //!---------------------------------------------------------------------------
+  /*!
+ 	\brief	Sets the index of the first acceptable statistics for the user 
+ 			(the very first for the admin since there are no limitations for the admin)
+ */
   private function setDefaultStats(  ) {
     if ( $this->isAdmin( ) ) {
-        $this->m_Selected_Statistics = 0;
-        return;
+      $this->m_Selected_Statistics = 0;
+      return;
     }
 
     for ( $i = 0; $i < count( $this->m_Stats_Array ); $i++ ) {
@@ -621,18 +709,17 @@ class Stats {
     }
   }
 
-  //!---------------------------------------------------------------------------
-  // @function    bool Stats::fill( )
-  // \brief        Creates the array of statistics types.
-  //!---------------------------------------------------------------------------
+  /*!
+ 	\brief	Creates the array of all supported statistics types.
+ */
   private function fillStatsArray(  ) {
     // Make sure to clear
     $this->m_Stats_Array = array();
-    
+
     // Some alias...
     $admin = true;
     $user  = false;
-    
+
     $this->m_Stats_Array[] = new Type(
       "JobsPerUser",  "owner", "Number of jobs per user (%)", "piechart", $admin );
     $this->m_Stats_Array[] = new Type(
@@ -654,92 +741,90 @@ class Stats {
     $this->m_Stats_Array[] = new Type(
       "DumpTable", "", "Export all statistics to file", "dumptable", $admin );
   }
-  
-  //!---------------------------------------------------------------------------
-  // @function    bool Stats::isAdmin( )
-  // \brief        Compares the passed username to the admin user name and
-  //              returns true if the user is the admin.
-  // \return      bool True if the user is the admin user.
-  //!---------------------------------------------------------------------------
+
+  /*!
+	\brief	Compares the passed username to the admin user name and returns true
+			 if the user is the admin.
+	\return	True if the user is the admin user, false otherwise.
+  */
   private function isAdmin(  ) {
     $user = new User();
     return ( $this->m_Username == $user->getAdminName() );
   }
 
-    //!---------------------------------------------------------
-  // @function    Type::dumpStatsTableToFile( $db )
-  // $param       $db Database object
-  // \brief        Dumps the statistics table to file and "downloads" it
-  //!---------------------------------------------------------  
-  private function dumpStatsTableToFile( ) { 
-      // Make sure that the script doesn't timeout.
-      set_time_limit(0);
-      
-      // Is there something to dump?
-      $row  = $this->m_DB->execute( "SELECT COUNT( id ) FROM statistics;" )->FetchRow( );
-      $numJobs  = $row[ 0 ];
-      if ( $numJobs == 0 ) {
-        return "<h3>Nothing to export!</h3>";
-      }
-      
-      // Get the data from the statistics table
-      $res = $this->m_DB->execute( "SELECT * FROM statistics;" );
-      if ( $res ) {
-        
-        // Open a temporary file
-        $fileName = "stats_dump_" . date( "Y-m-d_H-i-s" ) . ".txt";
-        $fullFileName = "/tmp/" .$fileName;
-        $fileHandle = fopen( $fullFileName, 'w+' );
-        if ( $fileHandle == 0 ) {
-          return "<h3>Error: could not open file.</h3>";
-        }
-        
-        // Now export the data
-        while ( $row = $res->FetchRow( ) ) {
-          
-          $currentRow =
-            $row[ "id" ] . "\t" .
-            $row[ "owner" ] . "\t" .
-            $row[ "research_group" ] . "\t" .
-            $row[ "start" ] . "\t" .
-            $row[ "stop" ] . "\t" .
-            $row[ "ImageFileFormat" ] . "\t" .
-            $row[ "OutputFileFormat" ] . "\t" .
-            $row[ "PointSpreadFunction" ] . "\t" .
-            $row[ "ImageGeometry" ] . "\t" .
-            $row[ "MicroscopeType" ] . "\n";
+  /*!
+	\brief	 Dumps the statistics table to file and "downloads" it
+	\todo	Check: it could be that more than just the table is dumped!
+  */
+  private function dumpStatsTableToFile( ) {
+    // Make sure that the script doesn't timeout.
+    set_time_limit(0);
 
-          fwrite( $fileHandle, $currentRow );
-            
-        }
-      
-        // Close the file
-        fclose( $fileHandle );
-      }
-        
-      // Now serve the file
-      $size = filesize( $fullFileName );
-      $type = "Content-Type: text/plain";
-      $dlname = $fileName;
+    // Is there something to dump?
+    $row  = $this->m_DB->execute( "SELECT COUNT( id ) FROM statistics;" )->FetchRow( );
+    $numJobs  = $row[ 0 ];
+    if ( $numJobs == 0 ) {
+      return "<h3>Nothing to export!</h3>";
+    }
 
-      if ($size) {
-          header ("Accept-Ranges: bytes");
-          header ("Connection: close");
-          header ("Content-Disposition-type: attachment");
-          header ("Content-Disposition: attachment; filename=\"$dlname\"");
-          header ("Content-Length: $size"); 
-          header ("Content-Type: $type; name=\"$dlname\"");
-          ob_clean();
-          flush();
-          readfile_chunked($fullFileName);
-          unlink($fullFileName);
-          return ""; 
-      } else {
-          return ( "<h3>Error serving the file " . $fileName . ".</h3>" );
+    // Get the data from the statistics table
+    $res = $this->m_DB->execute( "SELECT * FROM statistics;" );
+    if ( $res ) {
+
+      // Open a temporary file
+      $fileName = "stats_dump_" . date( "Y-m-d_H-i-s" ) . ".txt";
+      $fullFileName = "/tmp/" .$fileName;
+      $fileHandle = fopen( $fullFileName, 'w+' );
+      if ( $fileHandle == 0 ) {
+        return "<h3>Error: could not open file.</h3>";
       }
-      return ( "<h3>Nothing to download!</h3>" );;
+
+      // Now export the data
+      while ( $row = $res->FetchRow( ) ) {
+
+        $currentRow =
+        $row[ "id" ] . "\t" .
+        $row[ "owner" ] . "\t" .
+        $row[ "research_group" ] . "\t" .
+        $row[ "start" ] . "\t" .
+        $row[ "stop" ] . "\t" .
+        $row[ "ImageFileFormat" ] . "\t" .
+        $row[ "OutputFileFormat" ] . "\t" .
+        $row[ "PointSpreadFunction" ] . "\t" .
+        $row[ "ImageGeometry" ] . "\t" .
+        $row[ "MicroscopeType" ] . "\n";
+
+        fwrite( $fileHandle, $currentRow );
+
+      }
+
+      // Close the file
+      fclose( $fileHandle );
+    }
+
+    // Now serve the file
+    $size = filesize( $fullFileName );
+    $type = "Content-Type: text/plain";
+    $dlname = $fileName;
+
+    if ($size) {
+      header ("Accept-Ranges: bytes");
+      header ("Connection: close");
+      header ("Content-Disposition-type: attachment");
+      header ("Content-Disposition: attachment; filename=\"$dlname\"");
+      header ("Content-Length: $size");
+      header ("Content-Type: $type; name=\"$dlname\"");
+      ob_clean();
+      flush();
+      readfile_chunked($fullFileName);
+      unlink($fullFileName);
+      return "";
+    } else {
+      return ( "<h3>Error serving the file " . $fileName . ".</h3>" );
+    }
+    return ( "<h3>Nothing to download!</h3>" );;
   }
-  
-}
+
+}  // End of Stats class
 
 ?>

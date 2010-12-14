@@ -7,7 +7,7 @@ require_once("Database.inc");
 
 /*!
 	\class	System
- 	\brief	Commodity class for inspecting the system.
+ 	\brief	Commodity class for inspecting the System.
 
 	This <b>static</b> class provides several commodity functions to inspect 
 	system and configuration parameters and to format their input in various
@@ -21,7 +21,7 @@ class System {
 		
 		This value has to be set by the developers!
 	*/
-    const HRM_VERSION      = "1.3.0";
+    const HRM_VERSION = "1.3.0";
 
 	/*!
 		\var 	DB_LAST_REVISION

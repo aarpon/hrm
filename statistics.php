@@ -75,18 +75,9 @@ if ( $stats->isGraph( ) == true ) {
 }
 
 // HighChart JavaScript library inclusions
-  $agent = $_SERVER['HTTP_USER_AGENT'];
-  // If IE we need to include the canvas
-  if( stripos($agent,'msie') !== false && stripos($agent,'opera') === false ) {
-    $script = array(
+$script = array(
       "highcharts/jquery.min.js",
-      "highcharts/highcharts.js",
-      "highcharts/excanvas.compiled.js" );
-  } else {
-    $script = array(
-      "highcharts/jquery.min.js",
-      "highcharts/highcharts.js" );    
-  }
+      "highcharts/highcharts.js" );
 
 include("header.inc.php");
 
@@ -95,7 +86,7 @@ include("header.inc.php");
         <ul>
             <li><?php echo $_SESSION['user']->name(); ?></li>
             <li><a href="<?php echo getThisPageName();?>?home=home"><img src="images/home.png" alt="home" />&nbsp;Home</a></li>
-            <li><a href="javascript:openWindow('')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
+            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpStatistics')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
         </ul>
     </div>
 
