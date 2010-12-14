@@ -1918,27 +1918,6 @@ class MultiChannelOutput extends BooleanParameter {
 */
 
 /*!
- \class	RemoveNoise
- \brief	A BooleanParameter to indicate whether a noise suppression pre-processing
-		step should be performed
- \deprecated
- \todo Remove this parameter and all the code that makes use of it
-*/
-class RemoveNoise extends BooleanParameter {
-
-	/*!
-		\brief	Constructor: creates an empty Parameter
-	*/
-	public function __construct() {
-		parent::__construct("RemoveNoise");
-	}
-}
-
-/*
-	============================================================================
-*/
-
-/*!
  \class	SignalNoiseRatio
  \brief	A NumericalParameter to represent the SNR per channel
 */

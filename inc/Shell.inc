@@ -17,8 +17,11 @@ $hutask = "-noExecLog -checkUpdates disable -task";
 /*!
  \class	newExternalProcessFor
  \brief Runs a new shell either with or without secure connection between the
- 		queue manager and the Image area (depending on the value of the
- 		configuration value $imageProcessingIsOnQueueManager)
+ 		queue manager and the Image area
+ 		
+ Which of the two modes is chosen depends on the value of the configuration 
+ variable $imageProcessingIsOnQueueManager.
+ 
  \todo	Implement better management of multiple hosts
  */
 function newExternalProcessFor($host, $logfilename, $errfilename) {

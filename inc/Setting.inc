@@ -1194,9 +1194,9 @@ class ParameterSetting extends Setting {
 
   /*!
    \brief	Returns the sample size in X direction in um
-    
+
    This is simply pixelSize() / 1000.
-    
+
    \return	sample size in um
    */
   public function sampleSizeX() {
@@ -1206,7 +1206,7 @@ class ParameterSetting extends Setting {
 
   /*!
    \brief	Returns the sample size in Y direction in um
-    
+
    This just returns the value in X direction.
    \return	sample size in um
    */
@@ -1216,7 +1216,7 @@ class ParameterSetting extends Setting {
 
   /*!
    \brief	Returns the sample size in um in Z direction
-    
+
    This is the value of the z-step size / 1000.
 
    \return	sample size in um
@@ -1239,7 +1239,7 @@ class ParameterSetting extends Setting {
 
   /*!
    \brief	This always returns 1!
-    
+
    \todo Adaptation no longer exists in the HRM. But this functionality could be used to address the
    different scaling factors between channels intoduced by histogram stretching for non SVI file formats
    \return	1.
@@ -1276,6 +1276,11 @@ class ParameterSetting extends Setting {
     return $deltaZ;
   }
 }
+
+
+/*
+ ============================================================================
+ */
 
 /*!
  \class	TaskSetting
@@ -1509,13 +1514,13 @@ class TaskSetting extends Setting {
 
   /*!
    \brief	Sets the number of channels for the Setting
-   
-   The number of channels of a TaskSetting must match the number 
+
+   The number of channels of a TaskSetting must match the number
    of channels of the ParameterSetting it couples with. All variable
    channels Parameter onjects in the TaskSetting will updated.
-   
+
    \param	$channels	Number of channels (between 1 and 5)
-   */  
+   */
   public function setNumberOfChannels($channels) {
     $this->numberOfChannels = $channels;
     foreach ($this->parameter as $parameter) {
@@ -1528,8 +1533,8 @@ class TaskSetting extends Setting {
 
   /*!
    \brief	Returns the number of channels of the Setting
-   \return	the number of channels for the Setting 
-   */  
+   \return	the number of channels for the Setting
+   */
   public function numberOfChannels() {
     return $this->numberOfChannels;
   }
@@ -1543,19 +1548,19 @@ class TaskSetting extends Setting {
     $result = '';
     $algorithm = $this->parameter('DeconvolutionAlgorithm')->value();
     foreach ($this->parameter as $parameter) {
-		if ($parameter->name() == 'SignalNoiseRatio') {
-			$parameter->setAlgorithm( $algorithm );
-		}
-	  $result = $result . $parameter->displayString( $this->numberOfChannels() );
+      if ($parameter->name() == 'SignalNoiseRatio') {
+        $parameter->setAlgorithm( $algorithm );
+      }
+      $result = $result . $parameter->displayString( $this->numberOfChannels() );
     }
     return $result;
   }
 
   /*!
    \brief	Prints (!) the TaskSetting as a text containing all parameters
-			and their values. Only the parameter OutputFileFormat is left out.
-			This is used for the web display where the output file format has
-			not been choosen yet.
+   and their values. Only the parameter OutputFileFormat is left out.
+   This is used for the web display where the output file format has
+   not been choosen yet.
    \param	$numberOfChannels Number of channels (optional, default value is 0)
    \todo	Refactor!
    */
@@ -1565,9 +1570,9 @@ class TaskSetting extends Setting {
 
   /*!
    \brief	Returns the TaskSetting as a text containing all parameters
-			and their values. Only the parameter OutputFileFormat is left out.
-			This is used for the web display where the output file format has
-			not been choosen yet.
+   and their values. Only the parameter OutputFileFormat is left out.
+   This is used for the web display where the output file format has
+   not been choosen yet.
    \param	$numberOfChannels Number of channels (optional, default value is 0)
    \todo	Refactor!
    */
@@ -1584,40 +1589,47 @@ class TaskSetting extends Setting {
 
 } // End of class taskSetting
 
-//!---------------------------------------------------------
-// \class    JobParameterSetting
-// \brief     A parameter setting is a complete set of
-//           microscope, image and capture parameters. A job
-//           parameter setting is a parameter setting that
-//           is used when a job is executed by the queue
-//           manager. It uses different database tables and
-//           knows how to put its parameter settings onto a
-//           script.
-//!---------------------------------------------------------
+/*
+ ============================================================================
+ */
+
+/*!
+ \class	JobParameterSetting
+ \brief	A parameter setting is a complete set of microscope,
+ image and capture parameters.
+
+ A JobParameterSetting is a parameter setting that
+ is used when a job is executed by the queue manager.
+ It uses different database tables and knows how to put
+ its parameter settings onto a script.
+ */
 class JobParameterSetting extends ParameterSetting {
-  //!---------------------------------------------------------
-  // @function    JobParameterSetting::table()
-  // \brief        Answer the name of the database table in
-  //              which the job parameter settings are stored. The
-  //              table contains the setting's name the owner
-  //              and the standard (default) flag.
-  // \return      String
-  //!---------------------------------------------------------
-  function table() {
+
+  /*!
+   \brief	Returns the name of the database table in which the list of
+   Setting names are stored.
+
+   Besides the name, the table contains the Setting's name, owner and
+   the standard (default) flag.
+   */
+  public function table() {
     return "job_parameter_setting";
   }
-  //!---------------------------------------------------------
-  // @function    JobParameterSetting::parameterTable()
-  // \brief        Answer the name of the database table in
-  //              which the parameters for settings of the
-  //              receiver's kind are stored.
-  // \return      String
-  //!---------------------------------------------------------
-  function parameterTable() {
+
+  /*!
+   \brief	Returns the name of the database table in which all the Parameters
+   for the Settings stored in the table specified in table()
+   \see table()
+   */
+  public function parameterTable() {
     return "job_parameter";
   }
 
-  function putScriptOn($script) {
+  /*!
+   \brief	Creates the part of the Tcl script that handles the ParameterSetting values
+   \return	part of the Tcl script
+   */
+  public function putScriptOn($script) {
     $newScript = $script;
     $newScript = $newScript . '$imageName setp ';
     $newScript = $newScript . $this->microscopeParameterString();
@@ -1639,17 +1651,169 @@ class JobParameterSetting extends ParameterSetting {
     return $newScript;
   }
 
-  function excitationWavelengthsString() {
+  /*!
+   \brief	Creates the part of the Tcl script that handles the excitation wavelength
+   \return	part of the Tcl script
+   */
+  public function excitationWavelengthsString() {
     $result = $this->multiChannelParameterString('ExcitationWavelength', 'ex');
     return $result;
   }
 
-  function emissionWavelengthsString() {
+  /*!
+   \brief	Creates the part of the Tcl script that handles the emission wavelength
+   \return	part of the Tcl script
+   */
+  public function emissionWavelengthsString() {
     $result = $this->multiChannelParameterString('EmissionWavelength', 'em');
     return $result;
   }
 
-  function multiChannelParameterString($name, $command) {
+  /*!
+   \brief	Creates the part of the Tcl script that handles sample sizes
+   \return	part of the Tcl script
+   */
+  public function microscopeParameterString() {
+    $sampleSizesString = $this->sampleSizesString();
+    $string = '-s {' . $sampleSizesString . '} ';
+    return $string;
+  }
+
+  /*!
+   \brief	Creates the part of the Tcl script that handles the microscope type
+   \return	part of the Tcl script
+   */
+  public function microscopeTypeString() {
+    $param = $this->parameter('MicroscopeType');
+    $value = $param->translatedValue();
+    $result = "-micr $value ";
+    return $result;
+  }
+
+  /*!
+   \brief	Creates the part of the Tcl script that handles the numerical aperture
+   \return	part of the Tcl script
+   */
+  public function numericalApertureString() {
+    //if ($this->isMultiPointOrSinglePointConfocal()) {
+    $param = $this->parameter('NumericalAperture');
+    $value = $param->translatedValue();
+    //} else {
+    //    $value = $this->adaptedNumericalApertureFor(1);
+    //}
+    $result = "-na $value ";
+    return $result;
+  }
+
+  /*!
+   \brief	Creates the part of the Tcl script that handles the pinhole radius
+   \return	part of the Tcl script
+   */
+  public function pinholeRadiusString() {
+    $result = $this->multiChannelParameterString('PinholeSize', 'pr');
+    return $result;
+  }
+
+  /*!
+   \brief	Creates the part of the Tcl script that handles the pinhole spacing
+   \return	part of the Tcl script
+   */
+  public function pinholeSpacingString() {
+    $param = $this->parameter('PinholeSpacing');
+    $value = $param->translatedValue();
+    $result = "-ps $value ";
+    return $result;
+  }
+
+  /*!
+   \brief	Creates the part of the Tcl script that handles the sample sizes
+   \return	part of the Tcl script
+   */
+  function sampleSizesString() {
+    $result = '';
+    $result = $result . (string) $this->sampleSizeX() . ' ';
+    $result = $result . (string) $this->sampleSizeY();
+    if ($this->isThreeDimensional()) {
+      $result = $result . ' ' . (string) $this->sampleSizeZ();
+    } else {
+      // Use current channel
+      //$result = $result . ' ' . (string) ($this->idealSampleSizeZFor(1));
+    }
+    if ($this->isTimeSeries()) {
+      $result = $result . ' ' . (string) $this->sampleSizeT();
+    }
+    return $result;
+  }
+
+  /*!
+   \brief	Creates the part of the Tcl script that handles the original sample sizes
+   \return	part of the Tcl script
+   */
+  public function originalSampleSizesString() {
+    $result = '';
+    $result = $result . (string) ($this->sampleSizeX() / $this->sampleSizeAdaptionFactor()) . ' ';
+    $result = $result . (string) ($this->sampleSizeY() / $this->sampleSizeAdaptionFactor());
+    if ($this->isThreeDimensional()) {
+      $result = $result . ' ' . (string) ($this->sampleSizeZ() / $this->sampleSizeAdaptionFactor());
+    } else {
+      // Use current channel
+      $result = $result . ' ' . (string) ($this->idealSampleSizeZFor(1));
+    }
+    if ($this->isTimeSeries()) {
+      $result = $result . ' ' . (string) $this->sampleSizeT();
+    }
+    return $result;
+  }
+
+  /*!
+   \brief	Creates the part of the Tcl script that handles the lens refractive index
+   \return	part of the Tcl script
+   */
+  public function lensRefractiveIndexString() {
+    $param = $this->parameter('ObjectiveType');
+    $value = $param->translatedValue();
+    $result = "-ril $value ";
+    return $result;
+  }
+
+  /*!
+   \brief	Creates the part of the Tcl script that handles the medium refractive index
+   \return	part of the Tcl script
+   */
+  public function mediumRefractiveIndexString() {
+    $param = $this->parameter('SampleMedium');
+    $value = $param->translatedValue();
+    $result = "-ri $value ";
+    return $result;
+  }
+
+  /*!
+   \brief	Creates the part of the Tcl script that handles the photon count
+   \return	part of the Tcl script
+   */
+  public function photonCountString() {
+    $result = "-pcnt ";
+    if ($this->isTwoPhoton()) {
+      $result = $result . "2";
+    } else {
+      $result = $result . "1";
+    }
+    return $result;
+  }
+
+  /*
+
+  PRIVATE FUNCTIONS
+
+  */
+
+
+  /*!
+   \brief	Commodity function to create Tcl scripts that handles multi-channel parameters
+   such as excitation and emission wavelengths and pinhole radii
+   \return	part of the Tcl script
+   */
+  private function multiChannelParameterString($name, $command) {
     $parameter = $this->parameter($name);
     $values = $parameter->value();
     $result = "";
@@ -1669,133 +1833,47 @@ class JobParameterSetting extends ParameterSetting {
     }
     return $result;
   }
+} // End of class JobParameterSetting
 
-  function microscopeParameterString() {
-    $sampleSizesString = $this->sampleSizesString();
-    $string = '-s {' . $sampleSizesString . '} ';
-    return $string;
-  }
+/*
+ ============================================================================
+ */
 
-  function microscopeTypeString() {
-    $param = $this->parameter('MicroscopeType');
-    $value = $param->translatedValue();
-    $result = "-micr $value ";
-    return $result;
-  }
-
-  // sample size adaption for all microscopes
-  function numericalApertureString() {
-    //if ($this->isMultiPointOrSinglePointConfocal()) {
-    $param = $this->parameter('NumericalAperture');
-    $value = $param->translatedValue();
-    //} else {
-    //    $value = $this->adaptedNumericalApertureFor(1);
-    //}
-    $result = "-na $value ";
-    return $result;
-  }
-
-  function pinholeRadiusString() {
-    $result = $this->multiChannelParameterString('PinholeSize', 'pr');
-    return $result;
-  }
-
-  // Support for Nipkow spinning disk
-  function pinholeSpacingString() {
-    $param = $this->parameter('PinholeSpacing');
-    $value = $param->translatedValue();
-    $result = "-ps $value ";
-    return $result;
-  }
-
-  function sampleSizesString() {
-    $result = '';
-    $result = $result . (string) $this->sampleSizeX() . ' ';
-    $result = $result . (string) $this->sampleSizeY();
-    if ($this->isThreeDimensional()) {
-      $result = $result . ' ' . (string) $this->sampleSizeZ();
-    } else {
-      // Use current channel
-      //$result = $result . ' ' . (string) ($this->idealSampleSizeZFor(1));
-    }
-    if ($this->isTimeSeries()) {
-      $result = $result . ' ' . (string) $this->sampleSizeT();
-    }
-    return $result;
-  }
-
-  function originalSampleSizesString() {
-    $result = '';
-    $result = $result . (string) ($this->sampleSizeX() / $this->sampleSizeAdaptionFactor()) . ' ';
-    $result = $result . (string) ($this->sampleSizeY() / $this->sampleSizeAdaptionFactor());
-    if ($this->isThreeDimensional()) {
-      $result = $result . ' ' . (string) ($this->sampleSizeZ() / $this->sampleSizeAdaptionFactor());
-    } else {
-      // Use current channel
-      $result = $result . ' ' . (string) ($this->idealSampleSizeZFor(1));
-    }
-    if ($this->isTimeSeries()) {
-      $result = $result . ' ' . (string) $this->sampleSizeT();
-    }
-    return $result;
-  }
-
-  function lensRefractiveIndexString() {
-    $param = $this->parameter('ObjectiveType');
-    $value = $param->translatedValue();
-    $result = "-ril $value ";
-    return $result;
-  }
-
-  function mediumRefractiveIndexString() {
-    $param = $this->parameter('SampleMedium');
-    $value = $param->translatedValue();
-    $result = "-ri $value ";
-    return $result;
-  }
-
-  function photonCountString() {
-    $result = "-pcnt ";
-    if ($this->isTwoPhoton()) {
-      $result = $result . "2";
-    } else {
-      $result = $result . "1";
-    }
-    return $result;
-  }
-}
-
-//!---------------------------------------------------------
-// \class    JobTaskSetting
-// \brief     A job task setting is a complete set of
-//           image processing parameters that is used when
-//           a job is processed by the queue manager.
-//!---------------------------------------------------------
+/*!
+ \class	JobTaskSetting
+ \brief	A job task setting is a complete set of restoration parameters that
+ is used when a job is processed by the queue manager.
+ */
 class JobTaskSetting extends TaskSetting {
-  //!---------------------------------------------------------
-  // @function    JobTaskSetting::table()
-  // \brief        Answer the name of the database table in
-  //              which the job task settings are stored. The
-  //              table contains the setting's name the owner
-  //              and the standard (default) flag.
-  // \return      String
-  //!---------------------------------------------------------
-  function table() {
+
+  /*!
+   \brief	Returns the name of the database table in which the list of
+   Setting names are stored.
+
+   Besides the name, the table contains the Setting's name, owner and
+   the standard (default) flag.
+   */
+  public function table() {
     return "job_task_setting";
   }
 
-  //!---------------------------------------------------------
-  // @function    JobTaskParameterSetting::parameterTable()
-  // \brief        Answer the name of the database table in
-  //              which the parameters for settings of the
-  //              receiver's kind are stored.
-  // \return      String
-  //!---------------------------------------------------------
-  function parameterTable() {
+  /*!
+   \brief	Returns the name of the database table in which all the Parameters
+   for the Settings stored in the table specified in table()
+   \see table()
+   */
+  public function parameterTable() {
     return "job_task_parameter";
   }
 
-  function putScriptOn($script, $corrParams) {
+  /*!
+   \brief	Creates the part of the Tcl script that handles the taskSetting values
+   \param	$script		Partial Tcl script (string) created by the JobParameterSetting
+   \param	$corrParams	Array of aberration correction parameters, \see TaskSetting::getAberractionCorrectionParameters()
+   \todo	Why are the parameters for aberration correction being taken care of in the JobTaskSetting class?
+   \return	part of the Tcl script
+   */
+  public function putScriptOn($script, $corrParams) {
     $step = 1;
     $newScript = $script;
 
@@ -1863,8 +1941,12 @@ class JobTaskSetting extends TaskSetting {
     return $newScript;
   }
 
-  // manage measured PSF
-  function putScriptForMeasuredPointSpreadFunctionOn($script) {
+  /*!
+   \brief	Creates the part of the Tcl script that handles measured PSFs
+   \param	$script	Partial Tcl script (string) created so far
+   \return	part of the Tcl script
+   */
+  public function putScriptForMeasuredPointSpreadFunctionOn($script) {
     $step = 1;
     $newScript = $script;
 
@@ -1879,16 +1961,27 @@ class JobTaskSetting extends TaskSetting {
     return $newScript;
   }
 
-  function destroyImageString($imageName) {
+  /*!
+   \brief	Creates the part of the Tcl script that takes care of deleting specific images from HuCore memory (not from disk!)
+   \param	$imageName	Name of the image to be delete from HuCore memory
+   \return	part of the Tcl script
+   */
+  public function destroyImageString($imageName) {
     $result = '';
     $result = $result . $imageName . ' del';
     $result = $result . "\n";
     return $result;
   }
 
-  function getNumberOfOperations() {
+  /*!
+   \brief	This always returns 1. In the past it was possible to run different restoration schemes. Now only one (a full restoration) is possible.
+   \return	1
+   */
+  public function getNumberOfOperations() {
     return 1;
 
+    // All these Parameters no longer exist.
+    
     /*    $result = 0;
      $parameter = $this->parameter('RemoveNoise');
      if ($parameter->isTrue()) {
@@ -1906,7 +1999,12 @@ class JobTaskSetting extends TaskSetting {
      */
   }
 
-  function sourceForStep($stepNumber) {
+  /*!
+   \brief	Return the HuCore source buffer for a given processing step
+   \param	$stepNumber	This is always 1, since there is currently only one step possible (i.e. Full Restoration)
+   \return	always '$imageName'
+   */
+  public function sourceForStep($stepNumber) {
     $stepSources = array (
 			'$imageName',
 			'a',
@@ -1916,7 +2014,12 @@ class JobTaskSetting extends TaskSetting {
 			return $stepSources[$index];
   }
 
-  function destinationForStep($stepNumber) {
+  /*!
+   \brief	Return the HuCore destination buffer for a given processing step
+   \param	$stepNumber	This is always 1, since there is currently only one step possible (i.e. Full Restoration)
+   \return	always 'c'
+   */
+  public function destinationForStep($stepNumber) {
     $maxSteps = $this->getNumberOfOperations();
     $stepDestinations = array (
     array (
@@ -1941,7 +2044,20 @@ class JobTaskSetting extends TaskSetting {
 				return $row[$index];
   }
 
-  function psfComputationString($source, $constant = 0, $position = 0) {
+
+  /*!
+   \brief	Creates the part of the Tcl script that handles the theoretical PSF
+   \param	$source		HuCore buffer to use
+   \param	$constant	default = 0;	if 1, a constant PSF generated at a given distance
+   from the coverslip is used;
+   if 0, then the script makes sure to provide HuCore
+   with an empty PSF (HuCore will then create on at runtime)
+   \param	$position	default = 0; 	this is ignored if $constant is 0. It is the distance
+   from the coverslip at which a constant PSF is generated
+   (useful for spherical aberration corrections)
+   \return	part of the Tcl script
+   */
+  public function psfComputationString($source, $constant = 0, $position = 0) {
     // To calculate a theoretical PSF, the best thing is to provide an empty
     // one. Huygens will take the necessary decisions, see
     // http://support.svi.nl/wiki/TheoreticalPsf
@@ -1955,23 +2071,14 @@ class JobTaskSetting extends TaskSetting {
     $position .' }' . "\n";
   }
 
-  // manage measured PSF
-  // never called: to remove
-  function removeBackgroundForMeasuredPointSpreadFunctionString($source, $dest) {
-    $result = '';
-    $result = $result . $source . ' cmle $psf -> ' . $dest . ' ';
-    $result = $result . "-it 3 ";		// !!
-    $result = $result . '-bgMode object ';
-    $result = $result . $this->removeBackgroundPercentString();
-    $result = $result . '-blMode auto ';
-    $result = $result . '-q 0 ';
-    //$result = $result . '-mode fast ';
-    $result = $result . '-pad auto';
-    $result = $result . "\n";
-    return $result;
-  }
-
-  function fullRestorationString($source, $dest, $brMode) {
+  /*!
+   \brief	Creates the part of the Tcl script for a full restoration with synthetic PSFs
+   \param	$source	HuCore source buffer
+   \param	$dest	HuCore destination buffer
+   \param	$brMode	Brick mode
+   \return	part of the Tcl script
+   */
+  public function fullRestorationString($source, $dest, $brMode) {
     $result = '';
 
     $parameter = $this->parameter('DeconvolutionAlgorithm');
@@ -2013,8 +2120,13 @@ class JobTaskSetting extends TaskSetting {
     return $result;
   }
 
-  // manage measured PSF
-  function fullRestorationForMeasuredPointSpreadFunctionString($source, $dest) {
+  /*!
+   \brief	Creates the part of the Tcl script for a full restoration with measured PSFs
+   \param	$source	HuCore source buffer
+   \param	$dest	HuCore destination buffer
+   \return	part of the Tcl script
+   */
+  public function fullRestorationForMeasuredPointSpreadFunctionString($source, $dest) {
     $result = '';
 
     // (Obsolete) This restores the default behavior in case the entry "DeconvolutionAlgorithm"
@@ -2051,15 +2163,11 @@ class JobTaskSetting extends TaskSetting {
     return $result;
   }
 
-  function noiseLevelString() {
-    $parameter = $this->parameter('RemoveNoiseEffectiveness');
-    $value = $parameter->value();
-    $result = '{';
-    $result = $result . "$value $value 0 0 }";
-    return $result;
-  }
-
-  function backgroundPerChannelString() {
+  /*!
+   \brief	Creates the part of the Tcl script that handles the background level per channel
+   \return	part of the Tcl script
+   */
+  public function backgroundPerChannelString() {
     $parameter = $this->parameter('BackgroundOffsetPercent');
     $values = $parameter->value();
     /*if (!is_array($values)) {
@@ -2081,26 +2189,11 @@ class JobTaskSetting extends TaskSetting {
     return $result;
   }
 
-  function removeBackgroundPercentString() {
-    $parameter = $this->parameter('RemoveBackgroundPercent');
-    $values = $parameter->value();
-    if (!is_array($values)) {
-      $channels = $this->numberOfChannels();
-      $values = array_fill(1, $channels, $values);
-    }
-    $result = '-bg {';
-    for ($i = 0; $i < $this->numberOfChannels(); $i++) {
-      $newValue = -1 * (100 - $values[$i]);
-      $result = $result . $newValue;
-      if ($i < $this->numberOfChannels()) {
-        $result = $result . " ";
-      }
-    }
-    $result = $result . '} ';
-    return $result;
-  }
-
-  function signalNoiseRatioString() {
+  /*!
+   \brief	Creates the part of the Tcl script that handles the SNR per channel
+   \return	part of the Tcl script
+   */
+  public function signalNoiseRatioString() {
     $parameter = $this->parameter('SignalNoiseRatio');
     $values = $parameter->value();
     //if (!is_array($values)) {
@@ -2129,20 +2222,28 @@ class JobTaskSetting extends TaskSetting {
 
     $result = '-sn ' . $value . " ";
     return $result;
-}
+  }
 
-function maxIterationsString() {
-  $parameter = $this->parameter('NumberOfIterations');
-  $value = $parameter->value();
-  $result = "-it $value ";
-  return $result;
-}
+  /*!
+   \brief	Creates the part of the Tcl script that handles the number of iterations
+   \return	part of the Tcl script
+   */
+  public function maxIterationsString() {
+    $parameter = $this->parameter('NumberOfIterations');
+    $value = $parameter->value();
+    $result = "-it $value ";
+    return $result;
+  }
 
-function decAlgorithmString() {
-  $parameter = $this->parameter('DeconvolutionAlgorithm');
-  $value = $parameter->value();
-  $result = " $value";
-  return $result;
-}
+  /*!
+   \brief	Creates the part of the Tcl script that handles the deconvolution algorithm
+   \return	part of the Tcl script
+   */
+  public function decAlgorithmString() {
+    $parameter = $this->parameter('DeconvolutionAlgorithm');
+    $value = $parameter->value();
+    $result = " $value";
+    return $result;
+  }
 
-}
+} // End of class JobTaskSetting
