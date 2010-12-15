@@ -37,9 +37,13 @@ if (!isset ($userManager) ) {
 $resultImagesRenamed = true;
 $resultImagesOwnedByUser = false;
 
-// What HuCore script version to use:
+// The following flag defines which HuCore script version to use:
 // 0: pre-1.3, custom made for every image.
-// 1: new script, with general procedures (requires Huygens 3.5.2).
-$useHuScriptVersion = 0;
+// 1: new script, with general procedures (requires HuCore >= 3.7.0).
+// This flag is ignored if the installed HuCore is older than 3.7.0
+// and by default tells the HRM to use the new script for new HuCores.
+// In case of problems, one can still force the old scripts by setting
+// $useHuScriptVersion to 0.
+$useHuScriptVersion = 1;
 
 ?>
