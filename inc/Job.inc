@@ -154,7 +154,7 @@ class Job {
     // possible. Still, it is still possibile to force the use of
     // the old Jobs even with newer HuCore versions by setting
     // $useHuScriptVersion to 0 in inc/hrm_config.inc (default is 1).
-    if ( System::huCoreVersion() >= 3700000 ) {
+    if ( System::huCoreVersion() >= 3070000 ) {
       if ( $useHuScriptVersion == 1 ) {
         $this->createScriptVersionOne();
       } else {
