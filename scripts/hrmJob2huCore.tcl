@@ -14,8 +14,11 @@ proc runDeconvolutionJob { } {
 
     # Get HuCore tool for template management.
     set huCorePath [huOpt getHuPath]
-    set scriptPath "$huCorePath/TclUtils"
+    set scriptPath "${huCorePath}TclUtils"
     set script "$scriptPath/huTclTaskBackendMain.tcl"
+
+    # Get path and name of the HuCore executable.
+    set hucore [getHucoreExecutable $huCorePath]
 
     # Get environment variables of the deconvolution job.
     set envVariables [getEnvVariables]
@@ -27,7 +30,7 @@ proc runDeconvolutionJob { } {
 
     # Run the job by creating a pipe with a new HuCore instance.
     if { [catch {
-        open "|/usr/local/bin/hucore \
+        open "|$hucore \
          -checkUpdates disable -sessionTime $sessionID \
          -batchProcessor 1 -dryRun 0 -taskToken 1 \ 
          -timeStamp $timeID -ppid $id \
@@ -53,6 +56,24 @@ proc runDeconvolutionJob { } {
             break
         }
     }
+}
+
+
+proc getHucoreExecutable { huCorePath } {
+
+    if {[Hu_isLinux]} {
+        set hucore $huCorePath
+        regsub -all {\msvi\M} $hucore bin hucore
+        set hucore "${hucore}hucore"
+    } else {
+        set hucore "${huCorePath}bin/"
+        if {[Hu_isMac64bit]} {
+            set hucore "${hucore}hucore_64"
+        } else {
+            set hucore "${hucore}hucore_32"
+        }
+    }
+    return $hucore
 }
 
 

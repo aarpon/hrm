@@ -46,7 +46,7 @@ Class JobTranslation {
     // Initialize environment options array
     function setEnvironmentArray( ) {
         $this->envArray = array ( 'resultDir'=>'',
-                                  'perJobThreadCnt'=>'1',
+                                  'perJobThreadCnt'=>'auto',
                                   'concurrentJobCnt'=>'1',
                                   'OMP_DYNAMIC'=>'1',
                                   'timeOut'=>'10000',
