@@ -472,13 +472,50 @@ class LocalExternalProcess extends ExternalProcess {
   }
 
   /*!
-   \brief	Kill the Huygens process with given Process IDentifier
+   \brief	Kill the Huygens process with the given Process IDentifier and 
+                its child, if it exists
    \param	$pid	Process IDentifier of the Job
    \return	true if the Job was killed, false otherwise
    */
   public function killHucoreProcess($pid) {
-    $dead = posix_kill($pid,15);
-    return $dead;
+
+      // Kill the child, if it exists.
+      $noChild = $this->killHucoreChild($pid);
+      
+      // Kill the parent.
+      $noParent = posix_kill($pid,15);
+
+      return ($noParent && $noChild);
+  }
+
+  /*!
+   \brief       Kill the child of the Huygens process if it exists
+   \param       $ppid Process Identifier of the parent
+   \return      true if a child was killed or didn't exist, false otherwise
+   */
+  public function killHucoreChild($ppid) {
+
+      // Get the pid of the child
+      exec("ps -ef| awk '\$3 == '$ppid' { print  \$2 }'", $child, $error);
+
+      if (!$error) {
+
+          // Kill the child if it exists. Return true if it does not exist.
+          if (array_key_exists(0,$child)) {
+              $childPid = $child[0];
+              if ($childPid > 0) {
+                  $dead = posix_kill($childPid,15);  
+              } else {
+                  $dead = true;
+              }
+          } else {
+              $dead = true;
+          }
+      } else {
+          $dead = false;
+      }
+
+      return $dead;
   }
 
 }  // End of LocalExternalProcess class
