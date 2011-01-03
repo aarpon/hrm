@@ -97,8 +97,12 @@ include("header.inc.php");
           </tr>
           <tr>
             <td class="key">File downloads</td>
+            <td class="value">&nbsp;</td>
+          </tr>
+          <tr>
+            <td class="subkey">HRM configuration</td>
             <td class="value"><?php echo System::downloadEnabledFromConfig(); ?></td>
-          </tr>          
+          </tr>
           <tr>
             <td class="key">Maximum post size</td>
             <td class="value">&nbsp;</td>

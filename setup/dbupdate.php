@@ -417,6 +417,9 @@ if (!in_array("global_variables", $tables)) {
         value C(30) NOTNULL
     ";
     if (!create_table("global_variables", $flds)) {
+        $msg = "Could not create the table \"global_variables\".";
+        write_message($msg);
+        write_to_error($msg);
         return;
     }
 }
@@ -1771,6 +1774,53 @@ if ($current_revision < $n) {
     write_to_log($msg);
 }
 
+// -----------------------------------------------------------------------------
+// Update to revision 8
+// Description: add NumberOfChannels = 5
+// -----------------------------------------------------------------------------
+$n = 8;
+if ($current_revision < $n) {
+
+    // Add NumberOfChannels = 5 into possible_values
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "NumberOfChannels";
+    $record["value"] = "5";
+    $record["translation"] = "";
+    $record["isDefault"] = "f";
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "'");
+    if ($rs->EOF) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+    
+    // Update (and fix) PSFGenerationDepth in boundary_values
+    $tabname = "boundary_values";
+    $record = array();
+    $record["parameter"] = "PSFGenerationDepth";
+    $record["min"] = "0";
+    $record["max"] = NULL;
+    $record["min_included"] = "t";
+    $record["max_included"] = "t";
+    $record["standard"] = "0";
+    if ( !$db->AutoExecute($tabname,$record, 'UPDATE', "parameter like '" . $record["parameter"] ."'") ) {
+        $msg = "An error occurred while updating the database to revision " . $n . ", update PSFGenerationDepth boundary values.";
+        write_message($msg);
+        write_to_error($msg);
+        return false;
+    }
+    if(!update_dbrevision($n)) 
+        return;
+    $current_revision = $n;
+    $msg = "Database successfully updated to revision " . $current_revision . ".";
+    write_message($msg);
+    write_to_log($msg);
+}
 
 //$msg = "\nThe current revision of your HRM database is " . $current_revision . ".";
 //write_message($msg);

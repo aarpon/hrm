@@ -29,7 +29,7 @@ class System {
 		
 		This value has to be set by the developers!
 	*/
-    const DB_LAST_REVISION = 7;
+    const DB_LAST_REVISION = 8;
     
 	/*!	
 		\brief	Returns the HRM version

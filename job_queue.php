@@ -78,6 +78,9 @@ include("header.inc.php");
         // Get the total number of jobs
         $rows = $queue->getContents();
         $allJobsInQueue = count($rows);
+        /*!
+          \todo Activate showStopTime when in place.
+        */
         $showStopTime = false;
         
         if ( $allJobsInQueue == 0 ) {
