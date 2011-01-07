@@ -126,6 +126,25 @@ proc saveTopViewSfp { fullImgName image path } {
 }
 
 
+proc saveCombinedZStrips { srcImage destImage destFile destDir } {
+    if { [ catch { 
+        ::WebTools::combineStrips [list $srcImage $destImage] stack \
+            $destDir/hrm_previews ${destFile} 300 auto
+    } result ] } {
+        huOpt report $result
+    }
+}
+
+proc saveCombinedTimeStrips { srcImage destImage destFile destDir } {
+    if { [ catch { 
+        ::WebTools::combineStrips [list $srcImage $destImage] tSeries \
+            $destDir/hrm_previews ${destFile} 300 auto
+    } result ] } {
+        huOpt report $result
+    }
+}
+
+
 proc saveAllPreviews { fullImgName image path } {
     savePreview $fullImgName $image $path
     saveStackMovie $fullImgName $image $path
@@ -172,6 +191,11 @@ proc generateImagePreviews { } {
     set srcImage [openImage $srcImageFullName]
     $destImage adopt -> $srcImage
     saveAllPreviews $srcImage $destFile $destDir
+
+    # Save combined strips for the slicer.
+    set destFile [file tail $destImageFullName]
+    saveCombinedZStrips $srcImage $destImage $destFile $destDir
+    saveCombinedTimeStrips $srcImage $destImage $destFile $destDir
     
     deleteImage $srcImage
     deleteImage $destImage
