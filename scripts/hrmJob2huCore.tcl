@@ -30,7 +30,7 @@ proc runDeconvolutionJob { } {
 
     # Run the job by creating a pipe with a new HuCore instance.
     if { [catch {
-        open "|$hucore \
+        open "|$hucore -noExecLog \
          -checkUpdates disable -sessionTime $sessionID \
          -batchProcessor 1 -dryRun 0 -taskToken 1 \ 
          -timeStamp $timeID -ppid $id \
@@ -161,16 +161,17 @@ proc generateImagePreviews { } {
     set srcImageFullName [getSrcImageFullName]
     set destImageFullName [getDestImageFullName]
 
+    # Save deconvolved previews
     set destDir [file dirname $destImageFullName]
     set destFile [file tail $destImageFullName]
     set destImage [openImage $destImageFullName]
     saveAllPreviews $destImage $destFile $destDir
     
-    set srcDir [file dirname $srcImageFullName]
-    set srcFile [file tail $srcImageFullName]
+    # Save raw previews
+    set destFile $destFile.original
     set srcImage [openImage $srcImageFullName]
     $destImage adopt -> $srcImage
-    saveAllPreviews $srcImage $srcFile $srcDir
+    saveAllPreviews $srcImage $destFile $destDir
     
     deleteImage $srcImage
     deleteImage $destImage
