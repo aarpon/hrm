@@ -1275,10 +1275,10 @@ class ParameterSetting extends Setting {
    different scaling factors between channels intoduced by histogram stretching for non SVI file formats
    \return	1.
    */
-  public function sampleSizeAdaptionFactor() {
-    $result = ( floatval(1) );
-    return $result;
-  }
+//  public function sampleSizeAdaptionFactor() {
+//    $result = ( floatval(1) );
+//    return $result;
+//  }
 
   /*!
    \brief	Returns the ideal axial sample size for chosen channel
@@ -1286,26 +1286,26 @@ class ParameterSetting extends Setting {
    \param	$channel	Channel number
    \return	the ideal axial sample size for the chosen channel
    */
-  public function idealSampleSizeZFor($channel) {
-    if ($this->isWidefield()) {
-      $parameter = $this->parameter('EmissionWavelength');
-      $value = $parameter->value();
-      $lambda = $value[$channel];
-      $factor = 2;
-    } else {
-      $parameter = $this->parameter('ExcitationWavelength');
-      $value = $parameter->value();
-      $lambda = $value[$channel];
-      $factor = 4;
-    }
-    $parameter = $this->parameter('ObjectiveType');
-    $rim = (float) $parameter->translatedValue();
-    // TODO check if NA should be adapted in case of widefield and two-photon
-    $parameter = $this->parameter('NumericalAperture');
-    $na = (float) $parameter->value();
-    $deltaZ = $lambda / ($factor * $rim * (1 - cos(asin($na / $rim))));
-    return $deltaZ;
-  }
+//  public function idealSampleSizeZFor($channel) {
+//    if ($this->isWidefield()) {
+//      $parameter = $this->parameter('EmissionWavelength');
+//      $value = $parameter->value();
+//      $lambda = $value[$channel];
+//      $factor = 2;
+//    } else {
+//      $parameter = $this->parameter('ExcitationWavelength');
+//      $value = $parameter->value();
+//      $lambda = $value[$channel];
+//      $factor = 4;
+//    }
+//    $parameter = $this->parameter('ObjectiveType');
+//    $rim = (float) $parameter->translatedValue();
+//    // TODO check if NA should be adapted in case of widefield and two-photon
+//    $parameter = $this->parameter('NumericalAperture');
+//    $na = (float) $parameter->value();
+//    $deltaZ = $lambda / ($factor * $rim * (1 - cos(asin($na / $rim))));
+//    return $deltaZ;
+//  }
 }
 
 
@@ -1511,24 +1511,24 @@ class TaskSetting extends Setting {
    \brief	Checks whether the chosen file format is Imaris classic
    \return	true if the selectedoutput file format is Imaris classic, false otherwise
    */
-  public function isOutputIms() {
-    $result = False;
-    $parameter = $this->parameter('OutputFileFormat');
-    if (strstr($parameter->value(), 'ims'))
-    $result = True;
-    return $result;
-  }
+//  public function isOutputIms() {
+//    $result = False;
+//    $parameter = $this->parameter('OutputFileFormat');
+//    if (strstr($parameter->value(), 'ims'))
+//    $result = True;
+//    return $result;
+//  }
 
   /*!
    \brief	Always returns false
    \todo	Get rid of this function as soon as the new template-based jobs are implemented!
    \return	false
    */
-  public function isStepProcessing() {
-    return false;
-    //    $parameter = $this->parameter('StyleOfProcessing');
-    //    return ($parameter->value() == 'step' || $parameter->value() == 'step combined');
-  }
+//  public function isStepProcessing() {
+//    return false;
+//    //    $parameter = $this->parameter('StyleOfProcessing');
+//    //    return ($parameter->value() == 'step' || $parameter->value() == 'step combined');
+//  }
 
   /*!
    \brief	Always returns false
@@ -1588,7 +1588,7 @@ class TaskSetting extends Setting {
    \param	$numberOfChannels Number of channels (optional, default value is 0)
    \todo	Refactor!
    */
-  public function displayStringWithoutOutputFileFormat( $numberOfChannels = 0 ) {
+  private function displayStringWithoutOutputFileFormat( $numberOfChannels = 0 ) {
     $parameter = $this->parameter('OutputFileFormat');
     $parameterList = $this->parameter;
     unset ($parameterList['OutputFileFormat']);
@@ -1641,177 +1641,177 @@ class JobParameterSetting extends ParameterSetting {
    \brief	Creates the part of the Tcl script that handles the ParameterSetting values
    \return	part of the Tcl script
    */
-  public function putScriptOn($script) {
-    $newScript = $script;
-    $newScript = $newScript . '$imageName setp ';
-    $newScript = $newScript . $this->microscopeParameterString();
-    $newScript = $newScript . $this->microscopeTypeString();
-    $newScript = $newScript . $this->numericalApertureString();
-    $newScript = $newScript . $this->lensRefractiveIndexString();
-    $newScript = $newScript . $this->mediumRefractiveIndexString();
-    // Support for Nipkow spinning disk
-    if ($this->isNipkowDisk()) {
-      $newScript = $newScript . $this->pinholeSpacingString();
-    }
-    $newScript = $newScript . $this->photonCountString();
-    $newScript = $newScript . "\n";
-    $newScript = $newScript . $this->excitationWavelengthsString();
-    $newScript = $newScript . $this->emissionWavelengthsString();
-    if ($this->isMultiPointOrSinglePointConfocal()) {
-      $newScript = $newScript . $this->pinholeRadiusString();
-    }
-    return $newScript;
-  }
+//  public function putScriptOn($script) {
+//    $newScript = $script;
+//    $newScript = $newScript . '$imageName setp ';
+//    $newScript = $newScript . $this->microscopeParameterString();
+//    $newScript = $newScript . $this->microscopeTypeString();
+//    $newScript = $newScript . $this->numericalApertureString();
+//    $newScript = $newScript . $this->lensRefractiveIndexString();
+//    $newScript = $newScript . $this->mediumRefractiveIndexString();
+//    // Support for Nipkow spinning disk
+//    if ($this->isNipkowDisk()) {
+//      $newScript = $newScript . $this->pinholeSpacingString();
+//    }
+//    $newScript = $newScript . $this->photonCountString();
+//    $newScript = $newScript . "\n";
+//    $newScript = $newScript . $this->excitationWavelengthsString();
+//    $newScript = $newScript . $this->emissionWavelengthsString();
+//    if ($this->isMultiPointOrSinglePointConfocal()) {
+//      $newScript = $newScript . $this->pinholeRadiusString();
+//    }
+//    return $newScript;
+//  }
 
   /*!
    \brief	Creates the part of the Tcl script that handles the excitation wavelength
    \return	part of the Tcl script
    */
-  public function excitationWavelengthsString() {
-    $result = $this->multiChannelParameterString('ExcitationWavelength', 'ex');
-    return $result;
-  }
+//  public function excitationWavelengthsString() {
+//    $result = $this->multiChannelParameterString('ExcitationWavelength', 'ex');
+//    return $result;
+//  }
 
   /*!
    \brief	Creates the part of the Tcl script that handles the emission wavelength
    \return	part of the Tcl script
    */
-  public function emissionWavelengthsString() {
-    $result = $this->multiChannelParameterString('EmissionWavelength', 'em');
-    return $result;
-  }
+//  public function emissionWavelengthsString() {
+//    $result = $this->multiChannelParameterString('EmissionWavelength', 'em');
+//    return $result;
+//  }
 
   /*!
    \brief	Creates the part of the Tcl script that handles sample sizes
    \return	part of the Tcl script
    */
-  public function microscopeParameterString() {
-    $sampleSizesString = $this->sampleSizesString();
-    $string = '-s {' . $sampleSizesString . '} ';
-    return $string;
-  }
+//  public function microscopeParameterString() {
+//    $sampleSizesString = $this->sampleSizesString();
+//    $string = '-s {' . $sampleSizesString . '} ';
+//    return $string;
+//  }
 
   /*!
    \brief	Creates the part of the Tcl script that handles the microscope type
    \return	part of the Tcl script
    */
-  public function microscopeTypeString() {
-    $param = $this->parameter('MicroscopeType');
-    $value = $param->translatedValue();
-    $result = "-micr $value ";
-    return $result;
-  }
+//  public function microscopeTypeString() {
+//    $param = $this->parameter('MicroscopeType');
+//    $value = $param->translatedValue();
+//    $result = "-micr $value ";
+//    return $result;
+//  }
 
   /*!
    \brief	Creates the part of the Tcl script that handles the numerical aperture
    \return	part of the Tcl script
    */
-  public function numericalApertureString() {
-    //if ($this->isMultiPointOrSinglePointConfocal()) {
-    $param = $this->parameter('NumericalAperture');
-    $value = $param->translatedValue();
-    //} else {
-    //    $value = $this->adaptedNumericalApertureFor(1);
-    //}
-    $result = "-na $value ";
-    return $result;
-  }
+//  public function numericalApertureString() {
+//    //if ($this->isMultiPointOrSinglePointConfocal()) {
+//    $param = $this->parameter('NumericalAperture');
+//    $value = $param->translatedValue();
+//    //} else {
+//    //    $value = $this->adaptedNumericalApertureFor(1);
+//    //}
+//    $result = "-na $value ";
+//    return $result;
+//  }
 
   /*!
    \brief	Creates the part of the Tcl script that handles the pinhole radius
    \return	part of the Tcl script
    */
-  public function pinholeRadiusString() {
-    $result = $this->multiChannelParameterString('PinholeSize', 'pr');
-    return $result;
-  }
+//  public function pinholeRadiusString() {
+//    $result = $this->multiChannelParameterString('PinholeSize', 'pr');
+//    return $result;
+//  }
 
   /*!
    \brief	Creates the part of the Tcl script that handles the pinhole spacing
    \return	part of the Tcl script
    */
-  public function pinholeSpacingString() {
-    $param = $this->parameter('PinholeSpacing');
-    $value = $param->translatedValue();
-    $result = "-ps $value ";
-    return $result;
-  }
+//  public function pinholeSpacingString() {
+//    $param = $this->parameter('PinholeSpacing');
+//    $value = $param->translatedValue();
+//    $result = "-ps $value ";
+//    return $result;
+//  }
 
   /*!
    \brief	Creates the part of the Tcl script that handles the sample sizes
    \return	part of the Tcl script
    */
-  function sampleSizesString() {
-    $result = '';
-    $result = $result . (string) $this->sampleSizeX() . ' ';
-    $result = $result . (string) $this->sampleSizeY();
-    if ($this->isThreeDimensional()) {
-      $result = $result . ' ' . (string) $this->sampleSizeZ();
-    } else {
-      // Use current channel
-      //$result = $result . ' ' . (string) ($this->idealSampleSizeZFor(1));
-    }
-    if ($this->isTimeSeries()) {
-      $result = $result . ' ' . (string) $this->sampleSizeT();
-    }
-    return $result;
-  }
+//  function sampleSizesString() {
+//    $result = '';
+//    $result = $result . (string) $this->sampleSizeX() . ' ';
+//    $result = $result . (string) $this->sampleSizeY();
+//    if ($this->isThreeDimensional()) {
+//      $result = $result . ' ' . (string) $this->sampleSizeZ();
+//    } else {
+//      // Use current channel
+//      //$result = $result . ' ' . (string) ($this->idealSampleSizeZFor(1));
+//    }
+//    if ($this->isTimeSeries()) {
+//      $result = $result . ' ' . (string) $this->sampleSizeT();
+//    }
+//    return $result;
+//  }
 
   /*!
    \brief	Creates the part of the Tcl script that handles the original sample sizes
    \return	part of the Tcl script
    */
-  public function originalSampleSizesString() {
-    $result = '';
-    $result = $result . (string) ($this->sampleSizeX() / $this->sampleSizeAdaptionFactor()) . ' ';
-    $result = $result . (string) ($this->sampleSizeY() / $this->sampleSizeAdaptionFactor());
-    if ($this->isThreeDimensional()) {
-      $result = $result . ' ' . (string) ($this->sampleSizeZ() / $this->sampleSizeAdaptionFactor());
-    } else {
-      // Use current channel
-      $result = $result . ' ' . (string) ($this->idealSampleSizeZFor(1));
-    }
-    if ($this->isTimeSeries()) {
-      $result = $result . ' ' . (string) $this->sampleSizeT();
-    }
-    return $result;
-  }
+//  public function originalSampleSizesString() {
+//    $result = '';
+//    $result = $result . (string) ($this->sampleSizeX() / $this->sampleSizeAdaptionFactor()) . ' ';
+//    $result = $result . (string) ($this->sampleSizeY() / $this->sampleSizeAdaptionFactor());
+//    if ($this->isThreeDimensional()) {
+//      $result = $result . ' ' . (string) ($this->sampleSizeZ() / $this->sampleSizeAdaptionFactor());
+//    } else {
+//      // Use current channel
+//      $result = $result . ' ' . (string) ($this->idealSampleSizeZFor(1));
+//    }
+//    if ($this->isTimeSeries()) {
+//      $result = $result . ' ' . (string) $this->sampleSizeT();
+//    }
+//    return $result;
+//  }
 
   /*!
    \brief	Creates the part of the Tcl script that handles the lens refractive index
    \return	part of the Tcl script
    */
-  public function lensRefractiveIndexString() {
-    $param = $this->parameter('ObjectiveType');
-    $value = $param->translatedValue();
-    $result = "-ril $value ";
-    return $result;
-  }
+//  public function lensRefractiveIndexString() {
+//    $param = $this->parameter('ObjectiveType');
+//    $value = $param->translatedValue();
+//    $result = "-ril $value ";
+//    return $result;
+//  }
 
   /*!
    \brief	Creates the part of the Tcl script that handles the medium refractive index
    \return	part of the Tcl script
    */
-  public function mediumRefractiveIndexString() {
-    $param = $this->parameter('SampleMedium');
-    $value = $param->translatedValue();
-    $result = "-ri $value ";
-    return $result;
-  }
+//  public function mediumRefractiveIndexString() {
+//    $param = $this->parameter('SampleMedium');
+//    $value = $param->translatedValue();
+//    $result = "-ri $value ";
+//    return $result;
+//  }
 
   /*!
    \brief	Creates the part of the Tcl script that handles the photon count
    \return	part of the Tcl script
    */
-  public function photonCountString() {
-    $result = "-pcnt ";
-    if ($this->isTwoPhoton()) {
-      $result = $result . "2";
-    } else {
-      $result = $result . "1";
-    }
-    return $result;
-  }
+//  public function photonCountString() {
+//    $result = "-pcnt ";
+//    if ($this->isTwoPhoton()) {
+//      $result = $result . "2";
+//    } else {
+//      $result = $result . "1";
+//    }
+//    return $result;
+//  }
 
   /*
 
@@ -1825,26 +1825,26 @@ class JobParameterSetting extends ParameterSetting {
    such as excitation and emission wavelengths and pinhole radii
    \return	part of the Tcl script
    */
-  private function multiChannelParameterString($name, $command) {
-    $parameter = $this->parameter($name);
-    $values = $parameter->value();
-    $result = "";
-    $currentChannel = 0;
-    for ($i = 0; $i < 1 /*$this->numberOfChannels()*/; $i++) {
-      //error_log("GENERATING SCRIPT (Setting): ".$name." -> ".$values[$i]);
-      if (!empty ($values[$i])) {
-        $result = $result . '$imageName setp -chan ';
-        $chan = (int) $currentChannel;
-        $result = $result . $chan;
-        $result = $result . ' -' . "$command ";
-        $result = $result . $values[$i];
-        $result = $result . "\n";
-        // Update $currentChannel
-        $currentChannel++;
-      }
-    }
-    return $result;
-  }
+//  private function multiChannelParameterString($name, $command) {
+//    $parameter = $this->parameter($name);
+//    $values = $parameter->value();
+//    $result = "";
+//    $currentChannel = 0;
+//    for ($i = 0; $i < 1 /*$this->numberOfChannels()*/; $i++) {
+//      //error_log("GENERATING SCRIPT (Setting): ".$name." -> ".$values[$i]);
+//      if (!empty ($values[$i])) {
+//        $result = $result . '$imageName setp -chan ';
+//        $chan = (int) $currentChannel;
+//        $result = $result . $chan;
+//        $result = $result . ' -' . "$command ";
+//        $result = $result . $values[$i];
+//        $result = $result . "\n";
+//        // Update $currentChannel
+//        $currentChannel++;
+//      }
+//    }
+//    return $result;
+//  }
 } // End of class JobParameterSetting
 
 /*
@@ -1885,176 +1885,176 @@ class JobTaskSetting extends TaskSetting {
    \todo	Why are the parameters for aberration correction being taken care of in the JobTaskSetting class?
    \return	part of the Tcl script
    */
-  public function putScriptOn($script, $corrParams) {
-    $step = 1;
-    $newScript = $script;
-
-    // Depending on the PSF selection and the settings for the spherical
-    // aberration corrections, we have to call the psfComputationString( )
-    // function below specifying either a constant or an adaptive PSF.
-    // A constant PSF is used when there is a need for correction (i.e.
-    // the PSF is theoretical with refractive index mismatch) but (i) the
-    // user chose not to let Huygens correct for aberrations; or (ii) when
-    // the user performs an advanced correction with static FSF generated
-    // at a given depth (this is combined with next check).
-    $constant = 0;
-    if ( ( $corrParams[ 'AberrationCorrectionNecessary' ] == 1 ) &&
-    ( $corrParams[ 'PerformAberrationCorrection' ] == 0 ) ) {
-      $constant = 1;
-    }
-
-    // If the user chose the advanced correction mode 'partial correction
-    // at user defined PSF depth', we also need to pass the depth to the
-    // psfComputationString( ) function.
-    $depth = 0;
-    if ( ( $corrParams[ 'AberrationCorrectionNecessary' ] == 1 ) &&
-    ( $corrParams[ 'PerformAberrationCorrection' ] == 1 ) &&
-    ( $corrParams[ 'AberrationCorrectionMode' ] == 'advanced' ) &&
-    ( $corrParams[ 'AdvancedCorrectionOptions' ] == 'user' ) ) {
-      $depth = $corrParams[ 'PSFGenerationDepth' ];
-      $constant = 1; // See comment above
-    }
-
-    // The various options result in a different value for the -brMode
-    // deconvolution flag. This value is to be passed to the
-    // fullRestorationString( ) function below.
-    if ( $corrParams[ 'AberrationCorrectionNecessary' ] == 0 ) {
-      $brMode = 'auto';
-    } else {
-      if ( $corrParams[ 'PerformAberrationCorrection' ] == 0 ) {
-        $brMode = 'one';
-      } else {
-        if ( $corrParams[ 'AberrationCorrectionMode' ] == 'automatic' ) {
-          $brMode = 'auto';
-        } else {
-          if ( $corrParams[ 'AdvancedCorrectionOptions' ] == 'user' ) {
-            $brMode = 'one';
-          }
-          if ( $corrParams[ 'AdvancedCorrectionOptions' ] == 'slice' ) {
-            $brMode = 'sliceBySlice';
-          }
-          if ( $corrParams[ 'AdvancedCorrectionOptions' ] == 'few' ) {
-            $brMode = 'few';
-          }
-        }
-      }
-    }
-
-    // effective deconvolution script; step = 3 -> $source = b; $dest = c;
-    //$parameter = $this->parameter('FullRestoration');
-    //if ($parameter->isTrue()) {
-    $source = $this->sourceForStep($step);
-    $dest = $this->destinationForStep($step);
-    $newScript = $newScript . $this->psfComputationString($source, $constant, $depth);
-    $newScript = $newScript . $this->fullRestorationString($source, $dest, $brMode);
-    $newScript = $newScript . $this->destroyImageString($source);
-    $step++;
-    //}
-    return $newScript;
-  }
+//  public function putScriptOn($script, $corrParams) {
+//    $step = 1;
+//    $newScript = $script;
+//
+//    // Depending on the PSF selection and the settings for the spherical
+//    // aberration corrections, we have to call the psfComputationString( )
+//    // function below specifying either a constant or an adaptive PSF.
+//    // A constant PSF is used when there is a need for correction (i.e.
+//    // the PSF is theoretical with refractive index mismatch) but (i) the
+//    // user chose not to let Huygens correct for aberrations; or (ii) when
+//    // the user performs an advanced correction with static FSF generated
+//    // at a given depth (this is combined with next check).
+//    $constant = 0;
+//    if ( ( $corrParams[ 'AberrationCorrectionNecessary' ] == 1 ) &&
+//    ( $corrParams[ 'PerformAberrationCorrection' ] == 0 ) ) {
+//      $constant = 1;
+//    }
+//
+//    // If the user chose the advanced correction mode 'partial correction
+//    // at user defined PSF depth', we also need to pass the depth to the
+//    // psfComputationString( ) function.
+//    $depth = 0;
+//    if ( ( $corrParams[ 'AberrationCorrectionNecessary' ] == 1 ) &&
+//    ( $corrParams[ 'PerformAberrationCorrection' ] == 1 ) &&
+//    ( $corrParams[ 'AberrationCorrectionMode' ] == 'advanced' ) &&
+//    ( $corrParams[ 'AdvancedCorrectionOptions' ] == 'user' ) ) {
+//      $depth = $corrParams[ 'PSFGenerationDepth' ];
+//      $constant = 1; // See comment above
+//    }
+//
+//    // The various options result in a different value for the -brMode
+//    // deconvolution flag. This value is to be passed to the
+//    // fullRestorationString( ) function below.
+//    if ( $corrParams[ 'AberrationCorrectionNecessary' ] == 0 ) {
+//      $brMode = 'auto';
+//    } else {
+//      if ( $corrParams[ 'PerformAberrationCorrection' ] == 0 ) {
+//        $brMode = 'one';
+//      } else {
+//        if ( $corrParams[ 'AberrationCorrectionMode' ] == 'automatic' ) {
+//          $brMode = 'auto';
+//        } else {
+//          if ( $corrParams[ 'AdvancedCorrectionOptions' ] == 'user' ) {
+//            $brMode = 'one';
+//          }
+//          if ( $corrParams[ 'AdvancedCorrectionOptions' ] == 'slice' ) {
+//            $brMode = 'sliceBySlice';
+//          }
+//          if ( $corrParams[ 'AdvancedCorrectionOptions' ] == 'few' ) {
+//            $brMode = 'few';
+//          }
+//        }
+//      }
+//    }
+//
+//    // effective deconvolution script; step = 3 -> $source = b; $dest = c;
+//    //$parameter = $this->parameter('FullRestoration');
+//    //if ($parameter->isTrue()) {
+//    $source = $this->sourceForStep($step);
+//    $dest = $this->destinationForStep($step);
+//    $newScript = $newScript . $this->psfComputationString($source, $constant, $depth);
+//    $newScript = $newScript . $this->fullRestorationString($source, $dest, $brMode);
+//    $newScript = $newScript . $this->destroyImageString($source);
+//    $step++;
+//    //}
+//    return $newScript;
+//  }
 
   /*!
    \brief	Creates the part of the Tcl script that handles measured PSFs
    \param	$script	Partial Tcl script (string) created so far
    \return	part of the Tcl script
    */
-  public function putScriptForMeasuredPointSpreadFunctionOn($script) {
-    $step = 1;
-    $newScript = $script;
-
-    //    $parameter = $this->parameter('FullRestoration');
-    //    if ($parameter->isTrue()) {
-    $source = $this->sourceForStep($step);
-    $dest = $this->destinationForStep($step);
-    $newScript = $newScript . $this->fullRestorationForMeasuredPointSpreadFunctionString($source, $dest);
-    $newScript = $newScript . $this->destroyImageString($source);
-    $step++;
-    //    }
-    return $newScript;
-  }
+//  public function putScriptForMeasuredPointSpreadFunctionOn($script) {
+//    $step = 1;
+//    $newScript = $script;
+//
+//    //    $parameter = $this->parameter('FullRestoration');
+//    //    if ($parameter->isTrue()) {
+//    $source = $this->sourceForStep($step);
+//    $dest = $this->destinationForStep($step);
+//    $newScript = $newScript . $this->fullRestorationForMeasuredPointSpreadFunctionString($source, $dest);
+//    $newScript = $newScript . $this->destroyImageString($source);
+//    $step++;
+//    //    }
+//    return $newScript;
+//  }
 
   /*!
    \brief	Creates the part of the Tcl script that takes care of deleting specific images from HuCore memory (not from disk!)
    \param	$imageName	Name of the image to be delete from HuCore memory
    \return	part of the Tcl script
    */
-  public function destroyImageString($imageName) {
-    $result = '';
-    $result = $result . $imageName . ' del';
-    $result = $result . "\n";
-    return $result;
-  }
+//  public function destroyImageString($imageName) {
+//    $result = '';
+//    $result = $result . $imageName . ' del';
+//    $result = $result . "\n";
+//    return $result;
+//  }
 
   /*!
    \brief	This always returns 1. In the past it was possible to run different restoration schemes. Now only one (a full restoration) is possible.
    \return	1
    */
-  public function getNumberOfOperations() {
-    return 1;
-
-    // All these Parameters no longer exist.
-    
-    /*    $result = 0;
-     $parameter = $this->parameter('RemoveNoise');
-     if ($parameter->isTrue()) {
-     $result++;
-     }
-     $parameter = $this->parameter('RemoveBackground');
-     if ($parameter->isTrue()) {
-     $result++;
-     }
-     $parameter = $this->parameter('FullRestoration');
-     if ($parameter->isTrue()) {
-     $result++;
-     }
-     return $result;
-     */
-  }
+//  public function getNumberOfOperations() {
+//    return 1;
+//
+//    // All these Parameters no longer exist.
+//    
+//    /*    $result = 0;
+//     $parameter = $this->parameter('RemoveNoise');
+//     if ($parameter->isTrue()) {
+//     $result++;
+//     }
+//     $parameter = $this->parameter('RemoveBackground');
+//     if ($parameter->isTrue()) {
+//     $result++;
+//     }
+//     $parameter = $this->parameter('FullRestoration');
+//     if ($parameter->isTrue()) {
+//     $result++;
+//     }
+//     return $result;
+//     */
+//  }
 
   /*!
    \brief	Return the HuCore source buffer for a given processing step
    \param	$stepNumber	This is always 1, since there is currently only one step possible (i.e. Full Restoration)
    \return	always '$imageName'
    */
-  public function sourceForStep($stepNumber) {
-    $stepSources = array (
-			'$imageName',
-			'a',
-			'b'
-			);
-			$index = $stepNumber -1;
-			return $stepSources[$index];
-  }
+//  public function sourceForStep($stepNumber) {
+//    $stepSources = array (
+//			'$imageName',
+//			'a',
+//			'b'
+//			);
+//			$index = $stepNumber -1;
+//			return $stepSources[$index];
+//  }
 
   /*!
    \brief	Return the HuCore destination buffer for a given processing step
    \param	$stepNumber	This is always 1, since there is currently only one step possible (i.e. Full Restoration)
    \return	always 'c'
    */
-  public function destinationForStep($stepNumber) {
-    $maxSteps = $this->getNumberOfOperations();
-    $stepDestinations = array (
-    array (
-				'c',
-				'a',
-				'a'
-				),
-				array (
-				'x',
-				'c',
-				'b'
-				),
-				array (
-				'x',
-				'x',
-				'c'
-				)
-				);
-				$index = $stepNumber -1;
-				$row = $stepDestinations[$index];
-				$index = $maxSteps -1;
-				return $row[$index];
-  }
+//  public function destinationForStep($stepNumber) {
+//    $maxSteps = $this->getNumberOfOperations();
+//    $stepDestinations = array (
+//    array (
+//				'c',
+//				'a',
+//				'a'
+//				),
+//				array (
+//				'x',
+//				'c',
+//				'b'
+//				),
+//				array (
+//				'x',
+//				'x',
+//				'c'
+//				)
+//				);
+//				$index = $stepNumber -1;
+//				$row = $stepDestinations[$index];
+//				$index = $maxSteps -1;
+//				return $row[$index];
+//  }
 
 
   /*!
@@ -2069,19 +2069,19 @@ class JobTaskSetting extends TaskSetting {
    (useful for spherical aberration corrections)
    \return	part of the Tcl script
    */
-  public function psfComputationString($source, $constant = 0, $position = 0) {
-    // To calculate a theoretical PSF, the best thing is to provide an empty
-    // one. Huygens will take the necessary decisions, see
-    // http://support.svi.nl/wiki/TheoreticalPsf
-    if (!$constant ) {
-      return "catch { psf clear }\n";
-    }
-    // Alternatively, this calculates a constant PSF for the provided
-    // parameters, and will be adapted to the sample depth if spherical
-    // aberration is present.
-    return 'catch { ' . $source . ' genpsf -> psf -dims auto -zPos '.
-    $position .' }' . "\n";
-  }
+//  public function psfComputationString($source, $constant = 0, $position = 0) {
+//    // To calculate a theoretical PSF, the best thing is to provide an empty
+//    // one. Huygens will take the necessary decisions, see
+//    // http://support.svi.nl/wiki/TheoreticalPsf
+//    if (!$constant ) {
+//      return "catch { psf clear }\n";
+//    }
+//    // Alternatively, this calculates a constant PSF for the provided
+//    // parameters, and will be adapted to the sample depth if spherical
+//    // aberration is present.
+//    return 'catch { ' . $source . ' genpsf -> psf -dims auto -zPos '.
+//    $position .' }' . "\n";
+//  }
 
   /*!
    \brief	Creates the part of the Tcl script for a full restoration with synthetic PSFs
@@ -2090,47 +2090,47 @@ class JobTaskSetting extends TaskSetting {
    \param	$brMode	Brick mode
    \return	part of the Tcl script
    */
-  public function fullRestorationString($source, $dest, $brMode) {
-    $result = '';
-
-    $parameter = $this->parameter('DeconvolutionAlgorithm');
-    $string = $parameter->name();
-    $value = $parameter->value();
-
-    // (Obsolete) This restores the default behavior in case the entry "DeconvolutionAlgorithm"
-    // is not in the database
-    if ( empty( $value ) == true )
-    $value = "cmle";
-
-    $result = $result . $source . ' ' . $value . ' psf -> ' . $dest . ' ';
-    //$result = $result . $source . ' cmle psf -> ' . $dest . ' ';
-    $result = $result . $this->signalNoiseRatioString();
-    $result = $result . $this->maxIterationsString();
-    // background estimation manual/auto
-    $parameter = $this->parameter("BackgroundOffsetPercent");
-    #printDebug("fullRestorationString", $parameter);
-    #printDebug(debug_backtrace()); exit;
-    $value = $parameter->value();
-    $internalValue = $parameter->internalValue();
-    //$result = $result . '-bgMode object ';
-    //error_log("GENERATING SCRIPT (Setting): background offset percent -> ".$value[0].", ".$value[1]." | ".$internalValue[0].", ".$internalValue[1]." |");
-    if ($value[0] == "auto" || $internalValue[0] == "auto") {
-      $result = $result . '-bgMode auto ';
-    } else if ($value[0] == "object" || $internalValue[0] == "object") {
-      $result = $result . '-bgMode object ';
-    } else {
-      $result = $result . '-bgMode manual ';
-      $result = $result . $this->backgroundPerChannelString();
-    }
-    $result = $result . '-blMode auto ';
-    $result = $result . '-q ';
-    $parameter = $this->parameter("QualityChangeStoppingCriterion");
-    $result = $result . $parameter->value() . " ";
-    $result = $result . '-brMode ' . $brMode . " ";
-    $result = $result . '-pad auto';
-    $result = $result . "\n";
-    return $result;
-  }
+//  public function fullRestorationString($source, $dest, $brMode) {
+//    $result = '';
+//
+//    $parameter = $this->parameter('DeconvolutionAlgorithm');
+//    $string = $parameter->name();
+//    $value = $parameter->value();
+//
+//    // (Obsolete) This restores the default behavior in case the entry "DeconvolutionAlgorithm"
+//    // is not in the database
+//    if ( empty( $value ) == true )
+//    $value = "cmle";
+//
+//    $result = $result . $source . ' ' . $value . ' psf -> ' . $dest . ' ';
+//    //$result = $result . $source . ' cmle psf -> ' . $dest . ' ';
+//    $result = $result . $this->signalNoiseRatioString();
+//    $result = $result . $this->maxIterationsString();
+//    // background estimation manual/auto
+//    $parameter = $this->parameter("BackgroundOffsetPercent");
+//    #printDebug("fullRestorationString", $parameter);
+//    #printDebug(debug_backtrace()); exit;
+//    $value = $parameter->value();
+//    $internalValue = $parameter->internalValue();
+//    //$result = $result . '-bgMode object ';
+//    //error_log("GENERATING SCRIPT (Setting): background offset percent -> ".$value[0].", ".$value[1]." | ".$internalValue[0].", ".$internalValue[1]." |");
+//    if ($value[0] == "auto" || $internalValue[0] == "auto") {
+//      $result = $result . '-bgMode auto ';
+//    } else if ($value[0] == "object" || $internalValue[0] == "object") {
+//      $result = $result . '-bgMode object ';
+//    } else {
+//      $result = $result . '-bgMode manual ';
+//      $result = $result . $this->backgroundPerChannelString();
+//    }
+//    $result = $result . '-blMode auto ';
+//    $result = $result . '-q ';
+//    $parameter = $this->parameter("QualityChangeStoppingCriterion");
+//    $result = $result . $parameter->value() . " ";
+//    $result = $result . '-brMode ' . $brMode . " ";
+//    $result = $result . '-pad auto';
+//    $result = $result . "\n";
+//    return $result;
+//  }
 
   /*!
    \brief	Creates the part of the Tcl script for a full restoration with measured PSFs
@@ -2138,124 +2138,124 @@ class JobTaskSetting extends TaskSetting {
    \param	$dest	HuCore destination buffer
    \return	part of the Tcl script
    */
-  public function fullRestorationForMeasuredPointSpreadFunctionString($source, $dest) {
-    $result = '';
-
-    // (Obsolete) This restores the default behavior in case the entry "DeconvolutionAlgorithm"
-    // is not in the database
-    $value = $this->decAlgorithmString();
-    if ( empty( $value ) == true )
-    $value = "cmle";
-    $result = $result . $source . ' ' .$value . ' psf -> ' . $dest . ' ';
-
-    //$result = $result . $source . $this->decAlgorithmString() . ' psf -> ' . $dest . ' ';
-    //$result = $result . $source . ' cmle $psf -> ' . $dest . ' ';
-    $result = $result . $this->signalNoiseRatioString();
-    $result = $result . $this->maxIterationsString();
-    // background estimation manual/auto
-    $parameter = $this->parameter("BackgroundOffsetPercent");
-    $value = $parameter->value();
-    $internalValue = $parameter->internalValue();
-    //$result = $result . '-bgMode object ';
-    if ($value[0] == "auto" || $internalValue[0] == "auto") {
-      $result = $result . '-bgMode auto ';
-    } else if ($value[0] == "object" || $internalValue[0] == "object") {
-      $result = $result . '-bgMode object ';
-    } else {
-      $result = $result . '-bgMode manual ';
-      $result = $result . $this->backgroundPerChannelString();
-    }
-    $result = $result . '-blMode auto ';
-    $result = $result . '-q ';
-    $parameter = $this->parameter("QualityChangeStoppingCriterion");
-    $result = $result . $parameter->value() . " ";
-    $result = $result . '-brMode auto ';
-    $result = $result . '-pad auto';
-    $result = $result . "\n";
-    return $result;
-  }
+//  public function fullRestorationForMeasuredPointSpreadFunctionString($source, $dest) {
+//    $result = '';
+//
+//    // (Obsolete) This restores the default behavior in case the entry "DeconvolutionAlgorithm"
+//    // is not in the database
+//    $value = $this->decAlgorithmString();
+//    if ( empty( $value ) == true )
+//    $value = "cmle";
+//    $result = $result . $source . ' ' .$value . ' psf -> ' . $dest . ' ';
+//
+//    //$result = $result . $source . $this->decAlgorithmString() . ' psf -> ' . $dest . ' ';
+//    //$result = $result . $source . ' cmle $psf -> ' . $dest . ' ';
+//    $result = $result . $this->signalNoiseRatioString();
+//    $result = $result . $this->maxIterationsString();
+//    // background estimation manual/auto
+//    $parameter = $this->parameter("BackgroundOffsetPercent");
+//    $value = $parameter->value();
+//    $internalValue = $parameter->internalValue();
+//    //$result = $result . '-bgMode object ';
+//    if ($value[0] == "auto" || $internalValue[0] == "auto") {
+//      $result = $result . '-bgMode auto ';
+//    } else if ($value[0] == "object" || $internalValue[0] == "object") {
+//      $result = $result . '-bgMode object ';
+//    } else {
+//      $result = $result . '-bgMode manual ';
+//      $result = $result . $this->backgroundPerChannelString();
+//    }
+//    $result = $result . '-blMode auto ';
+//    $result = $result . '-q ';
+//    $parameter = $this->parameter("QualityChangeStoppingCriterion");
+//    $result = $result . $parameter->value() . " ";
+//    $result = $result . '-brMode auto ';
+//    $result = $result . '-pad auto';
+//    $result = $result . "\n";
+//    return $result;
+//  }
 
   /*!
    \brief	Creates the part of the Tcl script that handles the background level per channel
    \return	part of the Tcl script
    */
-  public function backgroundPerChannelString() {
-    $parameter = $this->parameter('BackgroundOffsetPercent');
-    $values = $parameter->value();
-    /*if (!is_array($values)) {
-     $channels = $this->numberOfChannels();
-     $values = array_fill(1, $channels, $values);
-     }
-     $result = '-bg {';
-     for ($i = 0; $i < $this->numberOfChannels(); $i++) {
-     $newValue = -1 * (100 - $values[$i]);
-     $result = $result . $newValue;
-     if ($i < $this->numberOfChannels()) {
-     $result = $result . " ";
-     }
-     }
-     $result = $result . '} ';*/
-
-    /* TODO: why does this return channel zero's? */
-    $result = '-bg ' . $values[0] . " ";
-    return $result;
-  }
+//  public function backgroundPerChannelString() {
+//    $parameter = $this->parameter('BackgroundOffsetPercent');
+//    $values = $parameter->value();
+//    /*if (!is_array($values)) {
+//     $channels = $this->numberOfChannels();
+//     $values = array_fill(1, $channels, $values);
+//     }
+//     $result = '-bg {';
+//     for ($i = 0; $i < $this->numberOfChannels(); $i++) {
+//     $newValue = -1 * (100 - $values[$i]);
+//     $result = $result . $newValue;
+//     if ($i < $this->numberOfChannels()) {
+//     $result = $result . " ";
+//     }
+//     }
+//     $result = $result . '} ';*/
+//
+//    /* TODO: why does this return channel zero's? */
+//    $result = '-bg ' . $values[0] . " ";
+//    return $result;
+//  }
 
   /*!
    \brief	Creates the part of the Tcl script that handles the SNR per channel
    \return	part of the Tcl script
    */
-  public function signalNoiseRatioString() {
-    $parameter = $this->parameter('SignalNoiseRatio');
-    $values = $parameter->value();
-    //if (!is_array($values)) {
-    //	$values = array_fill(1, $this->numberOfChannels(), $values);
-    //}
-    //$result = '-sn {';
-    //for ($i = 1; $i <= $this->numberOfChannels(); $i++) {
-    //	$result = $result . $values[$i];
-    //	if ($i < $this->numberOfChannels()) {
-    //		$result = $result . " ";
-    //	}
-    //}
-    //$result = $result . '} ';
-
-    $parameter = $this->parameter('DeconvolutionAlgorithm');
-    $deconvolutionAlgorithm = $parameter->value();
-
-    $value = $values[0];
-    if ($deconvolutionAlgorithm == "qmle") {
-      if ($value == "1")	$value = "low";
-      else if ($value == "2")	$value = "fair";
-      else if ($value == "3")	$value = "good";
-      else if ($value == "4")	$value = "inf";
-      else			$value = "fair";
-    }
-
-    $result = '-sn ' . $value . " ";
-    return $result;
-  }
+//  public function signalNoiseRatioString() {
+//    $parameter = $this->parameter('SignalNoiseRatio');
+//    $values = $parameter->value();
+//    //if (!is_array($values)) {
+//    //	$values = array_fill(1, $this->numberOfChannels(), $values);
+//    //}
+//    //$result = '-sn {';
+//    //for ($i = 1; $i <= $this->numberOfChannels(); $i++) {
+//    //	$result = $result . $values[$i];
+//    //	if ($i < $this->numberOfChannels()) {
+//    //		$result = $result . " ";
+//    //	}
+//    //}
+//    //$result = $result . '} ';
+//
+//    $parameter = $this->parameter('DeconvolutionAlgorithm');
+//    $deconvolutionAlgorithm = $parameter->value();
+//
+//    $value = $values[0];
+//    if ($deconvolutionAlgorithm == "qmle") {
+//      if ($value == "1")	$value = "low";
+//      else if ($value == "2")	$value = "fair";
+//      else if ($value == "3")	$value = "good";
+//      else if ($value == "4")	$value = "inf";
+//      else			$value = "fair";
+//    }
+//
+//    $result = '-sn ' . $value . " ";
+//    return $result;
+//  }
 
   /*!
    \brief	Creates the part of the Tcl script that handles the number of iterations
    \return	part of the Tcl script
    */
-  public function maxIterationsString() {
-    $parameter = $this->parameter('NumberOfIterations');
-    $value = $parameter->value();
-    $result = "-it $value ";
-    return $result;
-  }
+//  public function maxIterationsString() {
+//    $parameter = $this->parameter('NumberOfIterations');
+//    $value = $parameter->value();
+//    $result = "-it $value ";
+//    return $result;
+//  }
 
   /*!
    \brief	Creates the part of the Tcl script that handles the deconvolution algorithm
    \return	part of the Tcl script
    */
-  public function decAlgorithmString() {
-    $parameter = $this->parameter('DeconvolutionAlgorithm');
-    $value = $parameter->value();
-    $result = " $value";
-    return $result;
-  }
+//  public function decAlgorithmString() {
+//    $parameter = $this->parameter('DeconvolutionAlgorithm');
+//    $value = $parameter->value();
+//    $result = " $value";
+//    return $result;
+//  }
 
 } // End of class JobTaskSetting

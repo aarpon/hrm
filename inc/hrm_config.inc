@@ -31,19 +31,12 @@ if (!isset ($userManager) ) {
  * 
  */
 
-// The following two parameters should be removed from the config files soon. 
-// For the time being we fix them here to the only acceptable values.
-// TODO Remove them in a next HRM release. 
+/*!
+\todo	The following two parameters should be removed from the config files soon.
+		For the time being we fix them here to the only acceptable values.
+		Remove them for the HRM 1.3.0 release.
+*/ 
 $resultImagesRenamed = true;
 $resultImagesOwnedByUser = false;
-
-// The following flag defines which HuCore script version to use:
-// 0: pre-1.3, custom made for every image.
-// 1: new script, with general procedures (requires HuCore >= 3.7.0).
-// This flag is ignored if the installed HuCore is older than 3.7.0
-// and by default tells the HRM to use the new script for new HuCores.
-// In case of problems, one can still force the old scripts by setting
-// $useHuScriptVersion to 0.
-$useHuScriptVersion = 1;
 
 ?>

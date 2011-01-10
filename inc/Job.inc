@@ -21,7 +21,6 @@ class Job {
   private $jobDescription;
   private $server;
   private $pid;
-  private $id;
   private $status;
 
   /*!
@@ -147,27 +146,19 @@ class Job {
    \brief	Creates a script
    */
   public function createScript() {
-    global $useHuScriptVersion;
 
-    // For HuCore version 3.7.0 and above, the new template-based
-    // Jobs can be run. For older versions, only the old Jobs are
-    // possible. Still, it is still possibile to force the use of
-    // the old Jobs even with newer HuCore versions by setting
-    // $useHuScriptVersion to 0 in inc/hrm_config.inc (default is 1).
+    // HuCore version 3.7.0 and above is required for HRM 1.3.0
     if ( System::huCoreVersion() >= 3070000 ) {
-      if ( $useHuScriptVersion == 1 ) {
-        $this->createScriptVersionOne();
-      } else {
-        $this->createScriptVersionZero();
-      }
-    } else {
-      $this->createScriptVersionZero();
+      $this->createScriptVersionOne();
     }
-     
+
   }
 
   /*!
    \brief	A deconvolution script based on HuCore templates
+   \todo	Rename this method to createScript() (and make it 
+   			public) when the old script-generating functions
+   			are gone
    */
   private function createScriptVersionOne() {
 
@@ -223,31 +214,31 @@ class Job {
     
    \todo This function is deprecated and will be removed
    */
-  private function createScriptVersionZero() {
-    global $huscript_call;
-
-    $desc = $this->description();
-    $setting = $desc->parameterSetting();
-    $this->script = "set id [pid]" . "\n" . 'puts "\npid=$id"' . "\n";
-    $this->script = $this->script . "huOpt verb -mode noQs\n";
-    $this->script = $this->script .
-                    "if { [ catch {\n# A global catch to report important errors.\n";
-    $this->script = $this->script . "huOpt gundo off\n";
-    if ($setting->isMultiChannel() && ($setting->numberOfChannels() > 1)) {
-      $this->script = $this->script . $desc->putMultiChannelScriptOn('', true);
-    } else {
-      $this->script = $this->script . $desc->putScriptOn('', true);
-    }
-    $this->script = $this->script . "} err ] } { \n".
-                "huOpt printError \$err }\n";
-    $id = $desc->id();
-    $finishedMarker = $desc->sourceFolder() . '.finished_' . "$id";
-    $this->script = $this->script . "exec touch " . '"' .
-    $finishedMarker . '"' . "\n".
-            "file attributes \"$finishedMarker\" -permissions 0666\n".
-            "puts \"- DONE --------------------------------\\n\\n\"\n";
-    $this->script = $this->script . "exit\n";
-  }
+//  private function createScriptVersionZero() {
+//    global $huscript_call;
+//
+//    $desc = $this->description();
+//    $setting = $desc->parameterSetting();
+//    $this->script = "set id [pid]" . "\n" . 'puts "\npid=$id"' . "\n";
+//    $this->script = $this->script . "huOpt verb -mode noQs\n";
+//    $this->script = $this->script .
+//                    "if { [ catch {\n# A global catch to report important errors.\n";
+//    $this->script = $this->script . "huOpt gundo off\n";
+//    if ($setting->isMultiChannel() && ($setting->numberOfChannels() > 1)) {
+//      $this->script = $this->script . $desc->putMultiChannelScriptOn('', true);
+//    } else {
+//      $this->script = $this->script . $desc->putScriptOn('', true);
+//    }
+//    $this->script = $this->script . "} err ] } { \n".
+//                "huOpt printError \$err }\n";
+//    $id = $desc->id();
+//    $finishedMarker = $desc->sourceFolder() . '.finished_' . "$id";
+//    $this->script = $this->script . "exec touch " . '"' .
+//    $finishedMarker . '"' . "\n".
+//            "file attributes \"$finishedMarker\" -permissions 0666\n".
+//            "puts \"- DONE --------------------------------\\n\\n\"\n";
+//    $this->script = $this->script . "exit\n";
+//  }
 
   /*!
    \brief	Returns the script name
