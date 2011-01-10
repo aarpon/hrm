@@ -108,13 +108,13 @@ Class JobTranslation {
 
     /*!
      \brief       Sets array with microscopic and restoration data
+     \todo        Add a field zdrift when it is implemented in the GUI.
     */
     private function setTasksArray( ) {
         $this->tasksArray = array ( 'open'=>'imgOpen',
                                     'setParameters'=>'setp',
                                     'adjustBaseline'=>'adjbl',
                                     'algorithms'=>'',
-                                    'zdrift'=>'zdrift',
                                     'save'=>'imgSave');
     }
 
@@ -403,10 +403,11 @@ Class JobTranslation {
     /*!
      \brief        Gets options for the 'zdrift' task.
      \return       Tcl list with the 'zdrift' task and its options
+     \todo         To be implemented in the GUI
     */
     private function getTaskZDrift( ) {
         $zdrift = "enabled 1 survey single chan 0 ".
-            "filter median filerSize 3";
+            "filter median filterSize 3";
         $zdrift = $this->string2tcllist($zdrift);
         $zdrift = " zdrift $zdrift";
         return $zdrift;

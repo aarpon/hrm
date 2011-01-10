@@ -126,9 +126,9 @@ proc saveTopViewSfp { fullImgName image path } {
 }
 
 
-proc saveCombinedZStrips { srcImage destImage destFile destDir } {
+proc saveCombinedZStrips { srcImage deconImage destFile destDir } {
     if { [ catch { 
-        ::WebTools::combineStrips [list $srcImage $destImage] stack \
+        ::WebTools::combineStrips [list $srcImage $deconImage] stack \
             $destDir/hrm_previews ${destFile} 300 auto
     } result ] } {
         reportError "Failed to save Z combined strips: $result"
@@ -136,9 +136,9 @@ proc saveCombinedZStrips { srcImage destImage destFile destDir } {
 }
 
 
-proc saveCombinedTimeStrips { srcImage destImage destFile destDir } {
+proc saveCombinedTimeStrips { srcImage deconImage destFile destDir } {
     if { [ catch { 
-        ::WebTools::combineStrips [list $srcImage $destImage] tSeries \
+        ::WebTools::combineStrips [list $srcImage $deconImage] tSeries \
             $destDir/hrm_previews ${destFile} 300 auto
     } result ] } {
         reportError "Failed to save T combined strips: $result"
@@ -179,27 +179,27 @@ proc openImage { image } {
 # Previews: Huygens Core 3.3.1 or higher required.
 proc generateImagePreviews { } {
     set srcImageFullName [getSrcImageFullName]
-    set destImageFullName [getDestImageFullName]
+    set deconImageFullName [getDeconImageFullName]
 
     # Save deconvolved previews
-    set destDir [file dirname $destImageFullName]
-    set destFile [file tail $destImageFullName]
-    set destImage [openImage $destImageFullName]
-    saveAllPreviews $destImage $destFile $destDir
+    set deconImage [openImage $deconImageFullName]
+    set destDir [file dirname $deconImageFullName]
+    set destFile [file tail $deconImageFullName]
+    saveAllPreviews $deconImage $destFile $destDir
     
     # Save raw previews
-    set destFile $destFile.original
     set srcImage [openImage $srcImageFullName]
-    $destImage adopt -> $srcImage
+    $deconImage adopt -> $srcImage
+    set destFile $destFile.original
     saveAllPreviews $srcImage $destFile $destDir
 
     # Save combined strips for the slicer: Z and time.
-    set destFile [file tail $destImageFullName]
-    saveCombinedZStrips $srcImage $destImage $destFile $destDir
-    saveCombinedTimeStrips $srcImage $destImage $destFile $destDir
+    set destFile [file tail $deconImageFullName]
+    saveCombinedZStrips $srcImage $deconImage $destFile $destDir
+    saveCombinedTimeStrips $srcImage $deconImage $destFile $destDir
     
     deleteImage $srcImage
-    deleteImage $destImage
+    deleteImage $deconImage
 }
 
 
@@ -221,9 +221,9 @@ proc getSrcImageFullName { } {
 }
 
 
-proc getDestImageFullName { } {
-    set destImage "PHPparser_destImage"
-    return $destImage
+proc getDeconImageFullName { } {
+    set deconImage "PHPparser_destImage"
+    return $deconImage
 }
 
 
