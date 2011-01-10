@@ -78,6 +78,7 @@ proc getHucoreExecutable { huCorePath } {
 
 
 proc savePreview { fullImgName image path } {
+
     if { [ catch { 
         ::WebTools::savePreview $fullImgName \
             $path/hrm_previews $image {preview 400} 
@@ -88,60 +89,79 @@ proc savePreview { fullImgName image path } {
 
 
 proc saveStackMovie { fullImgName image path } {
-    if { [ catch { 
-        ::WebTools::saveStackMovie $fullImgName \
-            $path/hrm_previews ${image}.stack 300
-    } result ] } {
-        reportError "\nFailed to save stack movie: $result"
+
+    set movieMaxSize [getMovieMaxSize]
+    if {$movieMaxSize > 0} {
+        if { [ catch { 
+            ::WebTools::saveStackMovie $fullImgName \
+                $path/hrm_previews ${image}.stack $movieMaxSize
+        } result ] } {
+            reportError "\nFailed to save stack movie: $result"
+        }
     }
 }
 
 
 proc saveTimeSeriesMovie { fullImgName image path {sfp 0} } {
-    if {$sfp eq "SFP"} {
-        if { [ catch { 
-            ::WebTools::saveTimeSeriesMovie $fullImgName \
-                $path/hrm_previews ${image}.tSeries.sfp - SFP 
-        } result ] } {
-            reportError "\nFailed to save time series movie: $result"
-        }
-    } else {
-        if { [ catch { 
-            ::WebTools::saveTimeSeriesMovie $fullImgName \
-                $path/hrm_previews ${image}.tSeries 300
-        } result ] } {
-            reportError "\nFailed to save time series movie: $result"
+
+    set movieMaxSize [getMovieMaxSize]
+    if {$movieMaxSize > 0} {
+        if {$sfp eq "SFP"} {
+            if { [ catch { 
+                ::WebTools::saveTimeSeriesMovie $fullImgName \
+                    $path/hrm_previews ${image}.tSeries.sfp - SFP 
+            } result ] } {
+                reportError "\nFailed to save time series movie: $result"
+            }
+        } else {
+            if { [ catch { 
+                ::WebTools::saveTimeSeriesMovie $fullImgName \
+                    $path/hrm_previews ${image}.tSeries $movieMaxSize
+            } result ] } {
+                reportError "\nFailed to save time series movie: $result"
+            }
         }
     }
 }
 
 
 proc saveTopViewSfp { fullImgName image path } {
-    if { [ catch { 
-        ::WebTools::saveTopViewSfp $fullImgName \
-            $path/hrm_previews ${image}.sfp
-    } result ] } {
-        reportError "Failed to save SFP view: $result"
+
+    if {[getSaveSfpPreviews]} {
+        if { [ catch { 
+            ::WebTools::saveTopViewSfp $fullImgName \
+                $path/hrm_previews ${image}.sfp
+        } result ] } {
+            reportError "Failed to save SFP view: $result"
+        }
     }
 }
 
 
 proc saveCombinedZStrips { srcImage deconImage destFile destDir } {
-    if { [ catch { 
-        ::WebTools::combineStrips [list $srcImage $deconImage] stack \
-            $destDir/hrm_previews ${destFile} 300 auto
-    } result ] } {
-        reportError "Failed to save Z combined strips: $result"
+
+    set maxComparisonSize [getMaxComparisonSize]
+    if {$maxComparisonSize > 0} {
+        if { [ catch { 
+            ::WebTools::combineStrips [list $srcImage $deconImage] stack \
+                $destDir/hrm_previews ${destFile} $maxComparisonSize auto
+        } result ] } {
+            reportError "Failed to save Z combined strips: $result"
+        }
     }
 }
 
 
 proc saveCombinedTimeStrips { srcImage deconImage destFile destDir } {
-    if { [ catch { 
-        ::WebTools::combineStrips [list $srcImage $deconImage] tSeries \
-            $destDir/hrm_previews ${destFile} 300 auto
-    } result ] } {
-        reportError "Failed to save T combined strips: $result"
+
+    set maxComparisonSize [getMaxComparisonSize]
+    if {$maxComparionSize > 0} {
+        if { [ catch { 
+            ::WebTools::combineStrips [list $srcImage $deconImage] tSeries \
+                $destDir/hrm_previews ${destFile} $maxComparisonSize auto
+        } result ] } {
+            reportError "Failed to save T combined strips: $result"
+        }
     }
 }
 
@@ -178,6 +198,10 @@ proc openImage { image } {
 
 # Previews: Huygens Core 3.3.1 or higher required.
 proc generateImagePreviews { } {
+
+    if {![getUseThumbnails]} {
+        return
+    }
     set srcImageFullName [getSrcImageFullName]
     set deconImageFullName [getDeconImageFullName]
 
@@ -227,11 +251,34 @@ proc getDeconImageFullName { } {
 }
 
 
+proc getUseThumbnails { } {
+    set useThumbnails "PHPparser_useThumbnails"
+    return $useThumbnails
+}
+
+
+proc getMovieMaxSize { } {
+    set movieMaxSize "PHPparser_movieMaxSize"
+    return $movieMaxSize
+}
+
+
+proc getSaveSfpPreviews { } {
+    set saveSfpPreviews "PHPparser_saveSfpPreviews"
+    return $saveSfpPreviews
+}
+
+
+proc getMaxComparisonSize { } {
+    set maxComparisonSize "PHPparser_maxComparisonSize"
+    return $maxComparisonSize
+}
+
+
 proc reportError { errorMsg } {
     printError $errorMsg
     puts $errorMsg
 }
-
 
 # ------------------------------------------------------------------------------
 

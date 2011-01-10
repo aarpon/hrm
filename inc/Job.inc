@@ -169,6 +169,9 @@ class Job {
 
     // Insert template information and image names in the standard script
     $this->parseScriptWithTemplate($thisJobTemplate);
+
+    // Insert relevant HRM configuration variables.
+    $this->parseScriptWithHRMConfig();
   }
 
   /*!
@@ -197,6 +200,26 @@ class Job {
       $templateInf = $jobTemplate->{$toParse};
       $toParse = "PHPparser_$toParse";
       $this->script = str_replace($toParse,$templateInf,$this->script);
+    }
+  }
+
+  /*!
+   \brief        Inserts HRM variables in the customized deconvolution job script
+   */
+  private function parseScriptWithHRMConfig( ) {
+    global $useThumbnails;
+    global $movieMaxSize;
+    global $saveSfpPreviews;
+    global $maxComparisonSize;
+
+    $hrmConfig = array('useThumbnails',
+                       'movieMaxSize',
+                       'saveSfpPreviews',
+                       'maxComparisonSize');
+
+    foreach ($hrmConfig as $hrmVar) {
+      $stringToParse = "PHPparser_$hrmVar";
+      $this->script = str_replace($stringToParse,${$hrmVar},$this->script);
     }
   }
 
