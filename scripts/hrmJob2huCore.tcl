@@ -35,7 +35,7 @@ proc runDeconvolutionJob { } {
          -batchProcessor 1 -dryRun 0 -taskToken 1 \ 
          -timeStamp $timeID -ppid $id \
          -task $script" r+} varChannel] } {
-        huOpt report "Failed: $varChannel\n"
+        reportError "Failed to create pipe: $varChannel\n"
     }
 
     # Send environment variables and tasks of the decon job to the HuCore pipe.
@@ -51,7 +51,7 @@ proc runDeconvolutionJob { } {
         puts $line
         if {[eof $varChannel]} {
             if { [catch {close $varChannel} err] } {
-                huOpt report "\n$err"
+                reportError "\nFailed to close pipe: $err"
             } 
             break
         }
@@ -82,7 +82,7 @@ proc savePreview { fullImgName image path } {
         ::WebTools::savePreview $fullImgName \
             $path/hrm_previews $image {preview 400} 
     } result ] } {
-        huOpt report $result
+        reportError "\nFailed to save preview: $result"
     }
 }
 
@@ -92,7 +92,7 @@ proc saveStackMovie { fullImgName image path } {
         ::WebTools::saveStackMovie $fullImgName \
             $path/hrm_previews ${image}.stack 300
     } result ] } {
-        huOpt report $result
+        reportError "\nFailed to save stack movie: $result"
     }
 }
 
@@ -103,14 +103,14 @@ proc saveTimeSeriesMovie { fullImgName image path {sfp 0} } {
             ::WebTools::saveTimeSeriesMovie $fullImgName \
                 $path/hrm_previews ${image}.tSeries.sfp - SFP 
         } result ] } {
-            huOpt report
+            reportError "\nFailed to save time series movie: $result"
         }
     } else {
         if { [ catch { 
             ::WebTools::saveTimeSeriesMovie $fullImgName \
                 $path/hrm_previews ${image}.tSeries 300
         } result ] } {
-            huOpt report $result
+            reportError "\nFailed to save time series movie: $result"
         }
     }
 }
@@ -121,7 +121,7 @@ proc saveTopViewSfp { fullImgName image path } {
         ::WebTools::saveTopViewSfp $fullImgName \
             $path/hrm_previews ${image}.sfp
     } result ] } {
-        huOpt report $result
+        reportError "Failed to save SFP view: $result"
     }
 }
 
@@ -131,16 +131,17 @@ proc saveCombinedZStrips { srcImage destImage destFile destDir } {
         ::WebTools::combineStrips [list $srcImage $destImage] stack \
             $destDir/hrm_previews ${destFile} 300 auto
     } result ] } {
-        huOpt report $result
+        reportError "Failed to save Z combined strips: $result"
     }
 }
+
 
 proc saveCombinedTimeStrips { srcImage destImage destFile destDir } {
     if { [ catch { 
         ::WebTools::combineStrips [list $srcImage $destImage] tSeries \
             $destDir/hrm_previews ${destFile} 300 auto
     } result ] } {
-        huOpt report $result
+        reportError "Failed to save T combined strips: $result"
     }
 }
 
@@ -158,7 +159,7 @@ proc deleteImage { image } {
     if { [ catch {
         $image del
     } result ] } {
-        huOpt report $result
+        reportError "Failed to delete image: $result"
     }
 }
 
@@ -167,7 +168,7 @@ proc openImage { image } {
     if { [ catch {
         set openedImage [img open $image]
     } result ] } {
-        huOpt report $result
+        reportError "Failed to open image: $result"
         return -1
     } else {
         return $openedImage
@@ -192,7 +193,7 @@ proc generateImagePreviews { } {
     $destImage adopt -> $srcImage
     saveAllPreviews $srcImage $destFile $destDir
 
-    # Save combined strips for the slicer.
+    # Save combined strips for the slicer: Z and time.
     set destFile [file tail $destImageFullName]
     saveCombinedZStrips $srcImage $destImage $destFile $destDir
     saveCombinedTimeStrips $srcImage $destImage $destFile $destDir
@@ -223,6 +224,12 @@ proc getSrcImageFullName { } {
 proc getDestImageFullName { } {
     set destImage "PHPparser_destImage"
     return $destImage
+}
+
+
+proc reportError { errorMsg } {
+    printError $errorMsg
+    puts $errorMsg
 }
 
 
