@@ -77,24 +77,35 @@ proc getHucoreExecutable { huCorePath } {
 }
 
 
-proc savePreview { fullImgName image path } {
+proc savePreview { image destFile destDir {previews "all"} } {
 
-    if { [ catch { 
-        ::WebTools::savePreview $fullImgName \
-            $path/hrm_previews $image {preview 400} 
-    } result ] } {
-        reportError "\nFailed to save preview: $result"
+    if {$previews eq "all"} {
+        if { [ catch { 
+            ::WebTools::savePreview $image \
+                $destDir/hrm_previews $destFile {preview 400} 
+        } result ] } {
+            reportError "\nFailed to save preview: $result"
+        }
+    } elseif {$previews eq "xyxz" } {
+        if { [ catch { 
+            ::WebTools::savePreview $image \
+                $destDir/hrm_previews $destFile {preview} 
+        } result ] } {
+            reportError "\nFailed to save preview: $result"
+        }
+    } else {
+        reportError "\nUnknown set of previews"
     }
 }
 
 
-proc saveStackMovie { fullImgName image path } {
+proc saveStackMovie { image destFile destDir } {
 
     set movieMaxSize [getMovieMaxSize]
     if {$movieMaxSize > 0} {
         if { [ catch { 
-            ::WebTools::saveStackMovie $fullImgName \
-                $path/hrm_previews ${image}.stack $movieMaxSize
+            ::WebTools::saveStackMovie $image \
+                $destDir/hrm_previews ${destFile}.stack $movieMaxSize
         } result ] } {
             reportError "\nFailed to save stack movie: $result"
         }
@@ -102,21 +113,21 @@ proc saveStackMovie { fullImgName image path } {
 }
 
 
-proc saveTimeSeriesMovie { fullImgName image path {sfp 0} } {
+proc saveTimeSeriesMovie { image destFile destDir {sfp 0} } {
 
     set movieMaxSize [getMovieMaxSize]
     if {$movieMaxSize > 0} {
         if {$sfp eq "SFP"} {
             if { [ catch { 
-                ::WebTools::saveTimeSeriesMovie $fullImgName \
-                    $path/hrm_previews ${image}.tSeries.sfp - SFP 
+                ::WebTools::saveTimeSeriesMovie $image \
+                    $destDir/hrm_previews ${destFile}.tSeries.sfp - SFP 
             } result ] } {
                 reportError "\nFailed to save time series movie: $result"
             }
         } else {
             if { [ catch { 
-                ::WebTools::saveTimeSeriesMovie $fullImgName \
-                    $path/hrm_previews ${image}.tSeries $movieMaxSize
+                ::WebTools::saveTimeSeriesMovie $image \
+                    $destDir/hrm_previews ${destFile}.tSeries $movieMaxSize
             } result ] } {
                 reportError "\nFailed to save time series movie: $result"
             }
@@ -125,12 +136,12 @@ proc saveTimeSeriesMovie { fullImgName image path {sfp 0} } {
 }
 
 
-proc saveTopViewSfp { fullImgName image path } {
+proc saveTopViewSfp { image destFile destDir } {
 
     if {[getSaveSfpPreviews]} {
         if { [ catch { 
-            ::WebTools::saveTopViewSfp $fullImgName \
-                $path/hrm_previews ${image}.sfp
+            ::WebTools::saveTopViewSfp $image \
+                $destDir/hrm_previews ${destFile}.sfp
         } result ] } {
             reportError "Failed to save SFP view: $result"
         }
@@ -155,7 +166,7 @@ proc saveCombinedZStrips { srcImage deconImage destFile destDir } {
 proc saveCombinedTimeStrips { srcImage deconImage destFile destDir } {
 
     set maxComparisonSize [getMaxComparisonSize]
-    if {$maxComparionSize > 0} {
+    if {$maxComparisonSize > 0} {
         if { [ catch { 
             ::WebTools::combineStrips [list $srcImage $deconImage] tSeries \
                 $destDir/hrm_previews ${destFile} $maxComparisonSize auto
@@ -166,12 +177,12 @@ proc saveCombinedTimeStrips { srcImage deconImage destFile destDir } {
 }
 
 
-proc saveAllPreviews { fullImgName image path } {
-    savePreview $fullImgName $image $path
-    saveStackMovie $fullImgName $image $path
-    saveTimeSeriesMovie $fullImgName $image $path
-    saveTopViewSfp $fullImgName $image $path
-    saveTimeSeriesMovie $fullImgName $image $path "SFP"
+proc saveAllPreviews { image destFile destDir } {
+    savePreview $image $destFile $destDir
+    saveStackMovie $image $destFile $destDir
+    saveTimeSeriesMovie $image $destFile $destDir
+    saveTopViewSfp $image $destFile $destDir
+    saveTimeSeriesMovie $image $destFile $destDir "SFP"
 }
 
 
@@ -205,22 +216,27 @@ proc generateImagePreviews { } {
     set srcImageFullName [getSrcImageFullName]
     set deconImageFullName [getDeconImageFullName]
 
-    # Save deconvolved previews
+    # Save deconvolved previews in the deconvolved folder
     set deconImage [openImage $deconImageFullName]
     set destDir [file dirname $deconImageFullName]
     set destFile [file tail $deconImageFullName]
     saveAllPreviews $deconImage $destFile $destDir
-    
-    # Save raw previews
+
+    # Save all raw previews in the deconvolved folder.
     set srcImage [openImage $srcImageFullName]
     $deconImage adopt -> $srcImage
     set destFile $destFile.original
     saveAllPreviews $srcImage $destFile $destDir
-
-    # Save combined strips for the slicer: Z and time.
+    
+    # Save combined strips for the slicer: Z and time, in the deconvolved folder.
     set destFile [file tail $deconImageFullName]
     saveCombinedZStrips $srcImage $deconImage $destFile $destDir
     saveCombinedTimeStrips $srcImage $deconImage $destFile $destDir
+
+    # Save a few raw previews in the source folder.
+    set destDir [file dirname $srcImageFullName]
+    set destFile [file tail $srcImageFullName]
+    savePreview $srcImage $destFile $destDir "xyxz"
     
     deleteImage $srcImage
     deleteImage $deconImage
