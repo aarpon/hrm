@@ -82,14 +82,14 @@ proc savePreview { image destFile destDir {previews "all"} } {
     if {$previews eq "all"} {
         if { [ catch { 
             ::WebTools::savePreview $image \
-                $destDir/hrm_previews $destFile {preview 400} 
+                $destDir $destFile {preview 400} 
         } result ] } {
             reportError "\nFailed to save preview: $result"
         }
     } elseif {$previews eq "xyxz" } {
         if { [ catch { 
             ::WebTools::savePreview $image \
-                $destDir/hrm_previews $destFile {preview} 
+                $destDir $destFile {preview} 
         } result ] } {
             reportError "\nFailed to save preview: $result"
         }
@@ -105,7 +105,7 @@ proc saveStackMovie { image destFile destDir } {
     if {$movieMaxSize > 0} {
         if { [ catch { 
             ::WebTools::saveStackMovie $image \
-                $destDir/hrm_previews ${destFile}.stack $movieMaxSize
+                $destDir ${destFile}.stack $movieMaxSize
         } result ] } {
             reportError "\nFailed to save stack movie: $result"
         }
@@ -120,14 +120,14 @@ proc saveTimeSeriesMovie { image destFile destDir {sfp 0} } {
         if {$sfp eq "SFP"} {
             if { [ catch { 
                 ::WebTools::saveTimeSeriesMovie $image \
-                    $destDir/hrm_previews ${destFile}.tSeries.sfp - SFP 
+                    $destDir ${destFile}.tSeries.sfp - SFP 
             } result ] } {
                 reportError "\nFailed to save time series movie: $result"
             }
         } else {
             if { [ catch { 
                 ::WebTools::saveTimeSeriesMovie $image \
-                    $destDir/hrm_previews ${destFile}.tSeries $movieMaxSize
+                    $destDir ${destFile}.tSeries $movieMaxSize
             } result ] } {
                 reportError "\nFailed to save time series movie: $result"
             }
@@ -141,7 +141,7 @@ proc saveTopViewSfp { image destFile destDir } {
     if {[getSaveSfpPreviews]} {
         if { [ catch { 
             ::WebTools::saveTopViewSfp $image \
-                $destDir/hrm_previews ${destFile}.sfp
+                $destDir ${destFile}.sfp
         } result ] } {
             reportError "Failed to save SFP view: $result"
         }
@@ -155,7 +155,7 @@ proc saveCombinedZStrips { srcImage deconImage destFile destDir } {
     if {$maxComparisonSize > 0} {
         if { [ catch { 
             ::WebTools::combineStrips [list $srcImage $deconImage] stack \
-                $destDir/hrm_previews ${destFile} $maxComparisonSize auto
+                $destDir ${destFile} $maxComparisonSize auto
         } result ] } {
             reportError "Failed to save Z combined strips: $result"
         }
@@ -169,7 +169,7 @@ proc saveCombinedTimeStrips { srcImage deconImage destFile destDir } {
     if {$maxComparisonSize > 0} {
         if { [ catch { 
             ::WebTools::combineStrips [list $srcImage $deconImage] tSeries \
-                $destDir/hrm_previews ${destFile} $maxComparisonSize auto
+                $destDir ${destFile} $maxComparisonSize auto
         } result ] } {
             reportError "Failed to save T combined strips: $result"
         }
@@ -207,18 +207,29 @@ proc openImage { image } {
 }
 
 
+proc grantWritePermissions { directory } {
+    if { [ catch { 
+        exec chmod -R a+w $directory 
+    } result ] } {
+        reportError "Failed to grant writing permissions: $result"
+    }
+}
+
+
 # Previews: Huygens Core 3.3.1 or higher required.
 proc generateImagePreviews { } {
 
     if {![getUseThumbnails]} {
         return
     }
+    set hrmPreviews [getPreviewsFolder]
     set srcImageFullName [getSrcImageFullName]
     set deconImageFullName [getDeconImageFullName]
 
     # Save deconvolved previews in the deconvolved folder
     set deconImage [openImage $deconImageFullName]
     set destDir [file dirname $deconImageFullName]
+    set destDir "$destDir/$hrmPreviews"
     set destFile [file tail $deconImageFullName]
     saveAllPreviews $deconImage $destFile $destDir
 
@@ -235,11 +246,18 @@ proc generateImagePreviews { } {
 
     # Save a few raw previews in the source folder.
     set destDir [file dirname $srcImageFullName]
+    set destDir "$destDir/$hrmPreviews"
     set destFile [file tail $srcImageFullName]
     savePreview $srcImage $destFile $destDir "xyxz"
+    grantWritePermissions $destDir
     
     deleteImage $srcImage
     deleteImage $deconImage
+}
+
+
+proc getPreviewsFolder { } {
+    return "hrm_previews"
 }
 
 
