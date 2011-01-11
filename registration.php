@@ -98,7 +98,7 @@ if (isset($_POST["OK"])) {
             if ( $db->emailAddress( $clean["username"] ) == "" ) {
               $id = get_rand_id(10);
               $result = $db->addNewUser( $clean["username"],
-                md5($clean["pass1"]), $clean["email"], $clean["group"], $id );
+                  $clean["pass1"], $clean["email"], $clean["group"], $id );
               
               // TODO refactor
               if ($result) {
