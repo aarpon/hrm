@@ -1319,42 +1319,39 @@ echo '</body></html>';
       }
       }
 
-      $desc['MIP'] = "MIP";
-      $desc['SFP'] = "SFP";
-      $desc['stack'] = "slicer";
-      $desc['tSeries'] = "series";
+      // Define some arrays
+      $desc = array(  'MIP'             => "MIP",
+                      'SFP'             => "SFP",
+                      'stack'           => "slicer",
+                      'tSeries'         => "series", 
+                      'stackMovie'      => "stack movie",
+                      'tSeriesMovie'    => "series movie",
+                      'tSeriesSfpMovie' => "series SFP movie",
+                      'history'         => "history",
+                      'remarks'         => "remarks",
+                      'log'             => "log" );
 
-      $desc['stackMovie'] = "stack movie";
-      $desc['tSeriesMovie'] = "series movie";
-      $desc['tSeriesSfpMovie'] = "series SFP movie";
+      $tip = array(   'MIP'             => "Compare Maximum Intensity Projections",
+                      'SFP'             => "Compare Simulated Fluorescence renderings",
+                      'stack'           => "Browse along the Z-planes",
+                      'tSeries'         => "Browse along the time series",
+                      'stackMovie'      => "Download Z-stack movie",
+                      'tSeriesMovie'    => "Download time series MIP movie",
+                      'tSeriesSfpMovie' => "Download time series SFP movie" ,
+                      'history'         => "See the image restoration history, the executed Huygens - Tcl commands.",
+                      'remarks'         => "See the image restoration warnings.",
+                      'log'             => "See the image restoration log file" );
 
-      $desc['history'] = "history";
-      $desc['remarks'] = "remarks";
-      $desc['log'] = "log";
-
-      $tip['MIP'] = "Compare Maximum Intensity Projections";
-      $tip['SFP'] = "Compare Simulated Fluorescence renderings";
-      $tip['stack'] = "Browse along the Z-planes";
-      $tip['tSeries'] = "Browse along the time series";
-
+      // Refine some $tips
       if ( isset( $msize['stackMovie'] ) ) {
         $tip['stackMovie'] = "Download Z-stack movie<br>(".$msize['stackMovie']." kB)";
-      } else {
-        $tip['stackMovie'] = "";
       }
       if ( isset( $msize['tSeriesMovie'] ) ) {
         $tip['tSeriesMovie'] = "Download time series MIP movie<br>(".$msize['tSeriesMovie']." kB)";
-      } else {
-        $tip['tSeriesMovie'] = "";
       }
       if ( isset( $msize['tSeriesSfpMovie'] ) ) {
         $tip['tSeriesSfpMovie'] = "Download time series SFP movie<br>(".$msize['tSeriesSfpMovie']." kB)";
-      } else {
-        $tip['tSeriesSfpMovie'] = "";
       }
-      $tip['history'] = "See the image restoration history, the executed Huygens - Tcl commands.";
-      $tip['remarks'] = "See the image restoration warnings.";
-      $tip['log'] = "See the image restoration log file";
 
       $link = "file_management.php?compareResult=".rawurlencode($file).
           "&amp;op=$op&amp;mode=";
