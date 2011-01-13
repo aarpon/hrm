@@ -1045,7 +1045,7 @@ class Fileserver {
 
   /*!
     \brief  Shows stacks and time series saved as jpeg strips in a css container.
-            Inspired by the paperbird code by Román Cortés:
+            Inspired by the paperbird code by Romï¿½n Cortï¿½s:
     \param  $file   Image file name
     \param  $type   Type of the strip, one of 'stack.compare', 'tSeries.compare',
                     'preview_yz'; default is 'stack.compare'
@@ -1337,10 +1337,21 @@ echo '</body></html>';
       $tip['stack'] = "Browse along the Z-planes";
       $tip['tSeries'] = "Browse along the time series";
 
-      $tip['stackMovie'] = "Download Z-stack movie<br>(".$msize['stackMovie']." kB)";
-      $tip['tSeriesMovie'] = "Download time series MIP movie<br>(".$msize['tSeriesMovie']." kB)";
-      $tip['tSeriesSfpMovie'] = "Download time series SFP movie<br>(".$msize['tSeriesSfpMovie']." kB)";
-
+      if ( isset( $msize['stackMovie'] ) ) {
+        $tip['stackMovie'] = "Download Z-stack movie<br>(".$msize['stackMovie']." kB)";
+      } else {
+        $tip['stackMovie'] = "";
+      }
+      if ( isset( $msize['tSeriesMovie'] ) ) {
+        $tip['tSeriesMovie'] = "Download time series MIP movie<br>(".$msize['tSeriesMovie']." kB)";
+      } else {
+        $tip['tSeriesMovie'] = "";
+      }
+      if ( isset( $msize['tSeriesSfpMovie'] ) ) {
+        $tip['tSeriesSfpMovie'] = "Download time series SFP movie<br>(".$msize['tSeriesSfpMovie']." kB)";
+      } else {
+        $tip['tSeriesSfpMovie'] = "";
+      }
       $tip['history'] = "See the image restoration history, the executed Huygens - Tcl commands.";
       $tip['remarks'] = "See the image restoration warnings.";
       $tip['log'] = "See the image restoration log file";
