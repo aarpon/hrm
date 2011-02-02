@@ -26,6 +26,18 @@ Class JobTranslation {
     public $envList;
 
     /*!
+     \var     $template
+     \brief   Batch template summarizing the deconvolution job.
+    */
+    public $template;
+
+    /*!
+     \var     $jobInfo
+     \brief   A Tcl list with job information for the template header.
+     */
+    private $jobInfo;
+
+    /*!
       \var    $srcImage
       \brief  Path and name of the source image.
     */
@@ -72,11 +84,39 @@ Class JobTranslation {
     /*!
      \brief       Constructor
      \param       $jobDescription JobDescription object
+     \todo        Improve, add more tasks.
     */
     public function __construct($jobDescription) {
+        $this->setJobInfo();
         $this->setJobParameters($jobDescription);
         $this->setJobEnvironmentList();
         $this->setJobTaskList();
+        $tasks = "setEnv taskID:0";
+        $tasks = $this->string2tcllist($tasks);
+        $tasks = "taskList " . $tasks;
+        $stringData = $this->jobInfo . "\n" . $tasks . "\n";
+        $stringData .= "setEnv " . $this->envList . "\ntaskID:0 " . $this->taskList;
+        $this->template = $stringData;
+    }
+
+    /*!
+     \brief       Builds the info header of the batch template.
+     \todo        Improve
+    */
+    public function setJobInfo( ) {
+        $jobTitle = "Batch processing template";
+        $jobTitle = $this->string2tcllist($jobTitle);
+        $this->jobInfo = "title $jobTitle";
+        $templVersion = "version 2.2";
+        $this->jobInfo .= " $templVersion ";
+        $templName = "templateName batch_2011-01-28_10-17-13";
+        $this->jobInfo .= " $templName ";
+        $templDate = "Fri Jan 28 10:17:15 CET 2011";
+        $templDate = $this->string2tcllist($templDate);
+        $this->jobInfo .= " date $templDate";
+        $this->jobInfo = $this->string2tcllist($this->jobInfo);
+        $jobInfo = $this->jobInfo;
+        $this->jobInfo = "info $jobInfo";
     }
 
 
@@ -151,7 +191,8 @@ Class JobTranslation {
             }
             $environmentList .= "$envOption $envValue ";
         }
-        
+        $environmentList = $this->string2tcllist($environmentList);
+
         return $environmentList;
     }
 
@@ -160,9 +201,34 @@ Class JobTranslation {
      \return       The Tcl-compliant nested list
     */
     private function buildTaskList( ) {
-        $taskList = $this->getDeconTasks();
+        $taskList = $this->getTaskInfo();
+        $taskList .= $this->getDeconTasks();
         $taskList .= $this->getTasksDetails();
+        $taskList = $this->string2tcllist($taskList);
+        
         return $taskList;
+    }
+
+    /*!
+     \brief       Gets the information of the tasks.
+     \return      The Tcl-compliant nested list with task information
+     \todo        Improve
+    */
+    private function getTaskInfo( ) {
+
+        $taskState = "state ReaduyToRun";
+        $templNames = "setp myNewTemplate decon myNewTemplate";
+        $templNames = $this->string2tcllist($templNames);
+        $taskTag = "tag $templNames";
+        $timerAbs = time();
+        $timerAbs = "timeStartAbs " . $timerAbs;
+        $timeOut = "timeOut 36000";
+        $taskInfo = $taskState . " " . $taskTag . " ";
+        $taskInfo .= $timerAbs . " " . $timeOut; 
+        $taskInfo = $this->string2tcllist($taskInfo);
+        $info = "info " . $taskInfo;
+            
+        return $info;
     }
 
     /*!

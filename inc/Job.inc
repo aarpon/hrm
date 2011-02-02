@@ -162,67 +162,10 @@ class Job {
    */
   private function createScriptVersionOne() {
 
-    $this->setStandardJobScript();
-
-    // Find job-specific information.
-    $thisJobTemplate = $this->buildHuCoreTemplate();
-
-    // Insert template information and image names in the standard script
-    $this->parseScriptWithTemplate($thisJobTemplate);
-
-    // Insert relevant HRM configuration variables.
-    $this->parseScriptWithHRMConfig();
+      $jobDescription = $this->description();
+      $jobTranslation = new JobTranslation($jobDescription);
+      $this->script = $jobTranslation->template;
   }
-
-  /*!
-   \brief        Returns the standard deconvolution job script
-   */
-  private function setStandardJobScript( ) {
-    $this->script = file_get_contents("../scripts/hrmJob2huCore.tcl");
-  }
-
-  /*!
-   \brief        Builds a HuCore deconvolution template for this job
-   */
-  private function buildHuCoreTemplate( ) {
-    $jobDescription = $this->description();
-    $jobTranslation = new JobTranslation($jobDescription);
-    return $jobTranslation;
-  }
-
-  /*!
-   \brief        Adapts the standard deconvolution job script to this job
-   \param        $jpbTemplate jobDescription translated into a job template
-   */
-  private function parseScriptWithTemplate($jobTemplate) {
-    $varsToParse = array('envList','taskList','srcImage','destImage');
-    foreach ($varsToParse as $toParse) {
-      $templateInf = $jobTemplate->{$toParse};
-      $toParse = "PHPparser_$toParse";
-      $this->script = str_replace($toParse,$templateInf,$this->script);
-    }
-  }
-
-  /*!
-   \brief        Inserts HRM variables in the customized deconvolution job script
-   */
-  private function parseScriptWithHRMConfig( ) {
-    global $useThumbnails;
-    global $movieMaxSize;
-    global $saveSfpPreviews;
-    global $maxComparisonSize;
-
-    $hrmConfig = array('useThumbnails',
-                       'movieMaxSize',
-                       'saveSfpPreviews',
-                       'maxComparisonSize');
-
-    foreach ($hrmConfig as $hrmVar) {
-      $stringToParse = "PHPparser_$hrmVar";
-      $this->script = str_replace($stringToParse,${$hrmVar},$this->script);
-    }
-  }
-
 
   /*!
    \brief	The original version of the deconvolution script

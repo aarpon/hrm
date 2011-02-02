@@ -8,7 +8,7 @@ require_once("Fileserver.inc");
 global $hucore, $hutask, $logdir;
 
 $hucore = "hucore";
-$hutask = "-noExecLog -checkUpdates disable -task";
+$hutask = "-noExecLog -checkUpdates disable -template";
 
 /*
  ============================================================================
@@ -242,20 +242,6 @@ class ExternalProcess {
   }
 
   /*!
-   \brief	Returns the Process IDentifier from a string of the type pid=32344
-   \param	$input	String to be parsed
-   \return 	the Process IDentifier
-   */
-  public function pidFromString($input) {
-    $result = -1;
-    $numberOfHits = preg_match('/pid=([0-9]+)/', $input, $hits);
-    if ($numberOfHits>0) {
-      $result = $hits[1];
-    }
-    return $result;
-  }
-
-  /*!
    \brief	Reads from STDOUT (the log file)
    \return 	the read buffer
    */
@@ -264,32 +250,37 @@ class ExternalProcess {
   }
 
   /*!
-   \brief	Runs the Huygens script with given name in the shell
-   \param	$scriptName	File name of the script
+   \brief	Runs the Huygens template with a given name in the shell
+   \param	$templateName	File name of the Huygens template
    \return 	the Process Identifier of the running task
+   \todo        Improve the pid acquisition process
    */
-  public function runHuygensScript($scriptName) {
+  public function runHuygensTemplate($templateName) {
     global $hutask;
-    $command = $this->huscript_path." $hutask \"".$scriptName."\"";
-    // TODO better management of file handles
-    //$out_file = fopen($this->descriptorSpec[1][1], "r");
-    $this->out_file = fopen($this->descriptorSpec[1][1], "r");
-    fseek($this->out_file, 0, SEEK_END);
+  
+      $command = $this->huscript_path." $hutask \"".$templateName."\"";
+      $command .= ' > /dev/null 2>&1 & echo $!'; 
 
-    $this->execute($command);
-    sleep(1);
-    $found = False;
-    while(!$found) {
-      // TODO refactor
-      if (feof($this->out_file)) return False;
-      $input = fgets($this->out_file, 1024);
-      $pid = $this->pidFromString($input);
-      if ($pid != -1) {
-        $found = True;
-        $this->pid = $pid;
+      // TODO better management of file handles
+      //$out_file = fopen($this->descriptorSpec[1][1], "r");
+      $this->out_file = fopen($this->descriptorSpec[1][1], "r");
+      fseek($this->out_file, 0, SEEK_END);
+      
+      $this->execute($command);
+      sleep(1);
+      $found = False;
+      while(!$found) {
+          // TODO refactor
+          if (feof($this->out_file)) return False;
+          $pid = fgets($this->out_file, 1024);
+          $pid = intval($pid);
+          if ($pid != -1 && $pid != 0) { 
+            $found = True;
+            $this->pid = $pid;
+          }
       }
-    }
-    return $pid;
+
+      return $pid;
   }
 
   /*!
@@ -416,6 +407,7 @@ class LocalExternalProcess extends ExternalProcess {
    */
   public function execute($command) {
     global $huygens_user;
+
     $ret = fwrite($this->pipes[0], $command . " & \n" );
     fflush($this->pipes[0]);
     if ($ret === false) {

@@ -67,6 +67,7 @@ class QueueManager {
 
   /*!
    \brief	Executes given Job
+   \todo        Update scriptName variable with templateName
    */
   public function executeScript( Job $job) {
     global $imageProcessingIsOnQueueManager;
@@ -89,7 +90,7 @@ class QueueManager {
     report("shell process created", 1);
     $ssh = $proc->runShell();
     report("running shell: $clientScriptPath$scriptName", 1);
-    $pid = $proc->runHuygensScript($clientScriptPath . $scriptName);
+    $pid = $proc->runHuygensTemplate($clientScriptPath . $scriptName);
     // TODO refactor this <<
     // check if Huygens outputs any interactive dialog
     # sleep(5);
