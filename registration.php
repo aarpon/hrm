@@ -111,7 +111,7 @@ if (isset($_POST["OK"])) {
                 $text .= $hrm_url."/user_management.php?seed=" . $id;
                 $mail = new Mail($email_sender);
                 $mail->setReceiver($email_admin);
-                $mail->setSubject("New user registration");
+                $mail->setSubject("New HRM user registration");
                 $mail->setMessage($text);
                 if ( $mail->send() ) {
                   $notice = "            <p class=\"info\">Application successfully sent!</p>\n";

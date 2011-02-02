@@ -135,7 +135,7 @@ if (isset($_POST['accept'])) {
     $text .= "Source and destination folders for your images are located on server ".$image_host." under ".$folder.".";
     $mail = new Mail($email_sender);
     $mail->setReceiver($email);
-    $mail->setSubject("Account activated");
+    $mail->setSubject("HRM account activated");
     $mail->setMessage($text);
     $mail->send();
     shell_exec("$userManager create \"" . $clean['username']. "\"");
@@ -147,10 +147,10 @@ else if (isset($_POST['reject'])) {
   $result = $db->deleteUser( $clean['username'] );
   // TODO refactor
   if (!$result) $message = "            <p class=\"warning\">Database error, please inform the person in charge</p>";
-  $text = "Your request has been rejected. Please contact ".$email_admin." for any enquiries.\n";
+  $text = "Your request for an HRM account has been rejected. Please contact ".$email_admin." for any enquiries.\n";
   $mail = new Mail($email_sender);
   $mail->setReceiver($email);
-  $mail->setSubject("Request rejected");
+  $mail->setSubject("Request for an HRM account rejected");
   $mail->setMessage($text);
   $mail->send();
 }

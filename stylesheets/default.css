@@ -1050,3 +1050,23 @@ option.default {
     text-align: left;
     width: 30%
 }
+
+.paramTrusted {
+	background: url(../images/paramTrusted.png) repeat-y right;
+	border-color: green;
+}
+
+.paramUntrusted {
+	background: url(../images/paramUntrusted.png) repeat-y right;
+	border-color: orange;
+}
+
+.paramMissing {
+	background: url(../images/paramMissing.png) repeat-y right;
+	border-color: red;
+}
+
+.paramProvide {
+    background: url(../images/paramProvide.png) repeat-y right;
+    border-color: gray;
+}

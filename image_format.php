@@ -78,7 +78,7 @@ include("header.inc.php");
         
             <h4>What image format will be processed with these settings?</h4>
             
-            <fieldset class="setting"
+            <fieldset class="setting paramProvide"
               onmouseover="javascript:changeQuickHelp( 'format' );" >
             
                 <legend>
@@ -134,7 +134,7 @@ foreach($values as $value) {
                 
             </fieldset>
             
-            <fieldset id="geometry" class="setting"<?php if ($geometryFlag != "")
+            <fieldset id="geometry" class="setting paramProvide"<?php if ($geometryFlag != "")
               echo " style=\"color: grey\"" ?>
               onmouseover="javascript:changeQuickHelp( 'geometry' );" >
             
@@ -164,7 +164,7 @@ foreach($possibleValues as $possibleValue) {
 
             </fieldset>
             
-            <fieldset id="channels" class="setting"<?php if ($channelsFlag != "")
+            <fieldset id="channels" class="setting paramProvide"<?php if ($channelsFlag != "")
               echo " style=\"color: grey\"" ?>
               onmouseover="javascript:changeQuickHelp( 'channels' );" >
             
@@ -203,7 +203,7 @@ $parameter = $_SESSION['setting']->parameter("PointSpreadFunction");
             
             <h4>Would you like to use an existing measured PSF obtained from bead images or a theoretical PSF generated from explicitly specified parameters?</h4>
             
-            <fieldset class="setting" onmouseover="javascript:changeQuickHelp( 'PSF' );" >
+            <fieldset class="setting paramProvide" onmouseover="javascript:changeQuickHelp( 'PSF' );" >
             
                 <legend>
                     <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=PointSpreadFunction')"><img src="images/help.png" alt="?" /></a>

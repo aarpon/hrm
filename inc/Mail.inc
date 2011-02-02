@@ -78,8 +78,9 @@ class Mail {
     $header  = 'From: ' . $this->sender . "\r\n";
     $header .= 'Reply-To: ' . $this->sender . "\r\n";
     $header .= 'Return-Path: ' . $this->sender . "\r\n";
-      
-    if ( mail( $this->receiver, $this->subject, $this->message, $header ) ) {
+    $params  = '-f' . $this->sender;
+    
+    if ( mail( $this->receiver, $this->subject, $this->message, $header, $params ) ) {
       report( "Mail '" . $this->subject. "' sent to " . $this->receiver, 2 );
       return true;
     } else {
