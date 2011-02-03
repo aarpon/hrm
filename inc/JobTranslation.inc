@@ -56,14 +56,14 @@ Class JobTranslation {
       \var    $envDetails
       \brief  A Tcl list with extra data: number of cores, timeout, etc. 
     */
-    public $envDetails;
+    private $envDetails;
 
 
     /*!
       \var    $taskIDDetails
       \brief  A Tcl list with microscopic and restoration data
     */
-    public $taskIDDetails;
+    private $taskIDDetails;
 
     /*!
       \var    $envArray
@@ -87,13 +87,13 @@ Class JobTranslation {
       \var    $srcImage
       \brief  Path and name of the source image.
     */
-    public $srcImage;
+    private $srcImage;
 
     /*!
       \var    $destImage
       \brief  Path and name of the deconvolved image.
     */
-    public $destImage;
+    private $destImage;
 
     /*!
       \var    $jobDescription
@@ -192,7 +192,7 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Sets a Tcl list with extra data: number of cores, timeout, etc. 
+     \brief       Sets a Tcl list with extra data: number of cores, timeout, etc. 
     */
     private function setEnvironmentDetails( ) {
         $this->envDetails = "setEnv "; 
@@ -200,7 +200,7 @@ Class JobTranslation {
     }
     
     /*!
-     \brief        Sets a Tcl list with microscopic and restoration data. 
+     \brief       Sets a Tcl list with microscopic and restoration data. 
     */
     private function setTaskIDDetails( ) {
         $this->taskIDDetails = $this->getTaskID();
@@ -220,8 +220,8 @@ Class JobTranslation {
 
 
     /*!
-     \brief        Builds a Tcl list with extra data: number of cores, etc. 
-     \return       The Tcl-compliant nested list
+     \brief       Builds a Tcl list with extra data: number of cores, etc. 
+     \return      The Tcl-compliant nested list
     */
     private function buildEnvironmentList( ) {
         $environmentList = "";
@@ -238,8 +238,8 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Get the job export format as a list of options
-     \return       Tcl-complaint neste list with the export format options
+     \brief       Get the job export format as a list of options
+     \return      Tcl-complaint neste list with the export format options
     */
     private function getExportFormat( ) {
         $exportFormat = "type ";
@@ -249,8 +249,8 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Builds a Tcl list with microscopic and restoration data. 
-     \return       The Tcl-compliant nested list
+     \brief       Builds a Tcl list with microscopic and restoration data. 
+     \return      The Tcl-compliant nested list
     */
     private function buildTaskList( ) {
         $taskList = $this->getTaskIDInfo();
@@ -291,8 +291,8 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Gets the taskID timeout
-     \return       The timeout in seconds
+     \brief       Gets the taskID timeout
+     \return      The timeout in seconds
     */
     private function getTaskIDTimeOut( ) {
         $timeOut = 10000;
@@ -300,8 +300,8 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Gets the task state.
-     \return       The task state
+     \brief       Gets the task state.
+     \return      The task state
     */
     private function getTaskState( ) {
         /* As long as the Huygens Scheduler receives only one job at a time
@@ -321,8 +321,8 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Gets the task tag information
-     \return       The Tcl-compliant neste list with the tag information
+     \brief       Gets the task tag information
+     \return      The Tcl-compliant neste list with the tag information
     */
     private function getTaskTag( ) {
         /* There are no specific names for the deconvolution and microscopic
@@ -333,8 +333,8 @@ Class JobTranslation {
 
 
     /*!
-     \brief        Gets the tasks to perform a deconvolution. 
-     \return       The Tcl-compliant nested list with task names
+     \brief       Gets the tasks to perform a deconvolution. 
+     \return      The Tcl-compliant nested list with task names
     */
     private function getTaskIDDeconTasks( ) {
         $taskList = "";
@@ -350,8 +350,8 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Gets specific details of each deconvolution task. 
-     \return       The Tcl-compliant nested list with task details
+     \brief       Gets specific details of each deconvolution task. 
+     \return      The Tcl-compliant nested list with task details
     */
     private function getTaskIDDetails( ) {
         $taskList = "";
@@ -384,9 +384,9 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        When a task is not well defined in the task array, get it here.
-     \param        $key A task array key
-     \return       The action for $key
+     \brief       When a task is not well defined in the task array, get it here.
+     \param       $key A task array key
+     \return      The action for $key
     */
     private function parseTask($key) {
         if ($key == "algorithms") {
@@ -406,8 +406,8 @@ Class JobTranslation {
     /* ------------------------------- Tasks ----------------------------------- */
     
     /*!
-     \brief        Gets options for the 'image open' task
-     \return       Tcl list with the'Image open' task and its options
+     \brief       Gets options for the 'image open' task
+     \return      Tcl list with the'Image open' task and its options
     */
     private function getTaskIDImgOpen( ) {
         $imgOpen =  "path ";
@@ -419,8 +419,8 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Gets options for the 'set parameters' task
-     \return       Tcl list with the 'Set parameters' task and its options
+     \brief       Gets options for the 'set parameters' task
+     \return      Tcl list with the 'Set parameters' task and its options
     */
     private function getTaskIDSetp( ) {
         $options = "completeChanCnt ";
@@ -493,8 +493,8 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Gets options for the 'image save' task
-     \return       Tcl list with the 'Image save' task and its options
+     \brief       Gets options for the 'image save' task
+     \return      Tcl list with the 'Image save' task and its options
     */
     private function getTaskIDImgSave( ) {
         $imgSave = "rootName ";
@@ -505,8 +505,8 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Gets options for the 'adjust baseline' task
-     \return       Tcl list with the 'Adjust baseline' task and its options
+     \brief       Gets options for the 'adjust baseline' task
+     \return      Tcl list with the 'Adjust baseline' task and its options
     */
     private function getTaskIDAdjbl( ) {
         $adjbl = "enabled 0 ni 0";
@@ -516,8 +516,8 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Gets options for the 'algorithm' task. All channels.
-     \return       Deconvolution 'algorithm' task string and its options.
+     \brief       Gets options for the 'algorithm' task. All channels.
+     \return      Deconvolution 'algorithm' task string and its options.
     */
     private function getTaskIDAlgorithms( ) {
         $numberOfChannels = $this->getNumberOfChannels();
@@ -532,9 +532,9 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Gets options for the 'algorithm' task. One channel.
-     \param        $channel A channel
-     \return       Tcl list with the deconvolution 'algorithm' task and its options
+     \brief       Gets options for the 'algorithm' task. One channel.
+     \param       $channel A channel
+     \return      Tcl list with the deconvolution 'algorithm' task and its options
     */
     private function getTaskAlgorithm($channel) {
         $options = "q ";
@@ -574,9 +574,9 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Gets options for the 'zdrift' task.
-     \return       Tcl list with the 'zdrift' task and its options
-     \todo         To be implemented in the GUI
+     \brief       Gets options for the 'zdrift' task.
+     \return      Tcl list with the 'zdrift' task and its options
+     \todo        To be implemented in the GUI
     */
     private function getTaskIDZDrift( ) {
         $zdrift = "enabled 1 survey single chan 0 ".
@@ -589,9 +589,9 @@ Class JobTranslation {
     /* -------------------------- Setp tasks ----------------------------------- */
     
     /*!
-     \brief        Gets the position of the coverslip.
-     \return       Position of the coverslip
-     \todo         To be implemented in the GUI
+     \brief       Gets the position of the coverslip.
+     \return      Position of the coverslip
+     \todo        To be implemented in the GUI
     */
     private function getiFacePrim( ) {
         $iFacePrim = 0.0;
@@ -599,9 +599,9 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Gets whether the position of the coverslip is verified
-     \return       True if the position of the coverslip is verified
-     \todo         To be implemented in the GUI
+     \brief       Gets whether the position of the coverslip is verified
+     \return      True if the position of the coverslip is verified
+     \todo        To be implemented in the GUI
     */
     private function getiFacePrimVerification( ) {
         $iFacePrim = $this->getiFacePrim();
@@ -614,9 +614,9 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Gets the position of the preparation glass.
-     \return       Position of the preparation glass
-     \todo         To be implemented in the GUI
+     \brief       Gets the position of the preparation glass.
+     \return      Position of the preparation glass
+     \todo        To be implemented in the GUI
     */
     private function getiFaceScnd( ) {
         $iFaceScnd = 1000000.0;
@@ -624,9 +624,9 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Gets whether the position of the prep glas is verified
-     \return       True if the position of the preparation glass is verified
-     \todo         To be implemented in the GUI
+     \brief       Gets whether the position of the prep glas is verified
+     \return      True if the position of the preparation glass is verified
+     \todo        To be implemented in the GUI
     */
     private function getiFaceScndVerification( ) {
         $iFaceScnd = $this->getiFaceScnd();
@@ -639,8 +639,8 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Gets the pinhole radii. All channels.
-     \return       Tcl list with the Pinhole radii.
+     \brief       Gets the pinhole radii. All channels.
+     \return      Tcl list with the Pinhole radii.
     */
     private function getPinholeRadius( ) {
         $numberOfChannels = $this->getNumberOfChannels();
@@ -653,9 +653,9 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Gets the pinhole radius. One channel.
-     \param        $channel A channel
-     \return       The pinhole radius.
+     \brief       Gets the pinhole radius. One channel.
+     \param       $channel A channel
+     \return      The pinhole radius.
     */
     private function getPinRadiusForChannel($channel) {
         $microSetting = $this->microSetting;
@@ -665,9 +665,9 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Verification of the pinhole radii. All channels.
-     \return       Tcl-list: Trues/Falses if the pinhole radii are verified.
-     \todo         To be implemented in the GUI
+     \brief       Verification of the pinhole radii. All channels.
+     \return      Tcl-list: Trues/Falses if the pinhole radii are verified.
+     \todo        To be implemented in the GUI
     */
     private function getPRVerifyList( ) {
         $numberOfChannels = $this->getNumberOfChannels();
@@ -680,10 +680,10 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Verification of the pinhole radius. One channel.
-     \param        $channel A channel
-     \return       True if the pinhole radius is verified.
-     \todo         To be implemented in the GUI
+     \brief       Verification of the pinhole radius. One channel.
+     \param       $channel A channel
+     \return      True if the pinhole radius is verified.
+     \todo        To be implemented in the GUI
     */
     private function getPRVerificationForChannel($channel) {
         $pinholeRadius = $this->getPinRadiusForChannel($channel);
@@ -697,8 +697,8 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Gets the microscope type of each channel. All channels.
-     \return       The microscope type list
+     \brief       Gets the microscope type of each channel. All channels.
+     \return      The microscope type list
     */
     private function getMicroscopeType( ) {
         $numberOfChannels = $this->getNumberOfChannels();
@@ -711,10 +711,10 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Gets the microscope type of all channels.
-     \param        $channel A channel
-     \return       Tcl-list with the microscope types of all channels.
-     \todo         To be implemented in the GUI
+     \brief       Gets the microscope type of all channels.
+     \param       $channel A channel
+     \return      Tcl-list with the microscope types of all channels.
+     \todo        To be implemented in the GUI
     */
     private function getMicroTypeForChannel($channel) {
         $microSetting = $this->microSetting;
@@ -723,9 +723,9 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Verification of the microscope type. All channels.
-     \return       Tcl-list: Trues/Falses if the microscope types are verified.
-     \todo         To be implemented in the GUI
+     \brief       Verification of the microscope type. All channels.
+     \return      Tcl-list: Trues/Falses if the microscope types are verified.
+     \todo        To be implemented in the GUI
     */
     private function getMicroTypeVerification( ) {
         $numberOfChannels = $this->getNumberOfChannels();
@@ -738,10 +738,10 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Verification of the microscope type. One channel.
-     \param        $channel A channel
-     \return       True if the microscope type is verified.
-     \todo         To be implemented in the GUI
+     \brief       Verification of the microscope type. One channel.
+     \param       $channel A channel
+     \return      True if the microscope type is verified.
+     \todo        To be implemented in the GUI
     */
     private function getMTVerificationForChannel($channel) {
         if ($this->isFieldVerified($channel) == 1) {
@@ -753,17 +753,17 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Verification of all the template parameters.
-     \return       True if all fields are verified by the user.
-     \todo         To be implemented, both here and in the GUI. 
+     \brief       Verification of all the template parameters.
+     \return      True if all fields are verified by the user.
+     \todo        To be implemented, both here and in the GUI. 
     */
     private function getAllVerified( ) {
         return 1;
     }
 
     /*!
-     \brief        Gets the refractive indexes of all channels.
-     \return       Tcl-list with the refractive indexes.
+     \brief       Gets the refractive indexes of all channels.
+     \return      Tcl-list with the refractive indexes.
     */
     private function getLensRefractiveIndex( ) {
         $numberOfChannels = $this->getNumberOfChannels();
@@ -776,9 +776,9 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Gets the refractive index of one channel.
-     \param        $channel A channel
-     \return       The refractive index.
+     \brief       Gets the refractive index of one channel.
+     \param       $channel A channel
+     \return      The refractive index.
     */
     private function getLensRIForChannel($channel) {
         $microSetting = $this->microSetting;
@@ -787,9 +787,9 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Verification of the refractive index. All channels.
-     \return       Tcl-list: Trues/Falses if the refractive indexes are verified.
-     \todo         To be implemented in the GUI
+     \brief       Verification of the refractive index. All channels.
+     \return      Tcl-list: Trues/Falses if the refractive indexes are verified.
+     \todo        To be implemented in the GUI
     */
     private function getLensRIndexVerification( ) {
         $numberOfChannels = $this->getNumberOfChannels();
@@ -802,10 +802,10 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Verification of the refractive index. One channel.
-     \param        $channel A channel
-     \return       True if the refractive index is verified.
-     \todo         To be implemented in the GUI
+     \brief       Verification of the refractive index. One channel.
+     \param       $channel A channel
+     \return      True if the refractive index is verified.
+     \todo        To be implemented in the GUI
     */
     private function getLRIVerificationForChannel($channel) {
         if ($this->isFieldVerified($channel) == 1) {
@@ -817,8 +817,8 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Gets the numerical apertures. All channels.
-     \return       Tcl-list with the numerical apertures.
+     \brief       Gets the numerical apertures. All channels.
+     \return      Tcl-list with the numerical apertures.
     */
     private function getNumericalAperture( ) {
         $numberOfChannels = $this->getNumberOfChannels();
@@ -831,9 +831,9 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Gets the numerical aperture. One channel.
-     \param        $channel A channel
-     \return       The numerical aperture.
+     \brief       Gets the numerical aperture. One channel.
+     \param       $channel A channel
+     \return      The numerical aperture.
     */
     private function getNumApertureForChannel($channel) {
         $microSetting = $this->microSetting;
@@ -842,9 +842,9 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Verification of the numerical apertures. All channels.
-     \return       Tcl-list: Trues/Falses if the numerical apertures are verified.
-     \todo         To be implemented in the GUI
+     \brief       Verification of the numerical apertures. All channels.
+     \return      Tcl-list: Trues/Falses if the numerical apertures are verified.
+     \todo        To be implemented in the GUI
     */
     private function getNumericalAVerification( ) {
         $numberOfChannels = $this->getNumberOfChannels();
@@ -857,10 +857,10 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Verification of the numerical aperture. One channel.
-     \param        $channel A channel
-     \return       True if the numerical aperture is verified.
-     \todo         To be implemented in the GUI
+     \brief       Verification of the numerical aperture. One channel.
+     \param       $channel A channel
+     \return      True if the numerical aperture is verified.
+     \todo        To be implemented in the GUI
     */
     private function getNAVerificationForChannel($channel) {
         if ($this->isFieldVerified($channel) == 1) {
@@ -872,8 +872,8 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Gets the pinhole spacing. All channels.
-     \return       Tcl-list with pinhole spacing.
+     \brief       Gets the pinhole spacing. All channels.
+     \return      Tcl-list with pinhole spacing.
     */
     private function getPinholeSpacing( ) {
         $numberOfChannels = $this->getNumberOfChannels();
@@ -886,9 +886,9 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Gets the pinhole spacing. One channel.
-     \param        $channel A channel
-     \return       The pinhole spacing.
+     \brief       Gets the pinhole spacing. One channel.
+     \param       $channel A channel
+     \return      The pinhole spacing.
     */
     private function getPinSpacingForChannel($channel) {
         $microSetting = $this->microSetting;
@@ -900,9 +900,9 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Verification of the pinhole spacing. All channels.
-     \return       Tcl-list: Trues/Falses if the pinhole spacing is verified.
-     \todo         To be implemented in the GUI
+     \brief       Verification of the pinhole spacing. All channels.
+     \return      Tcl-list: Trues/Falses if the pinhole spacing is verified.
+     \todo        To be implemented in the GUI
     */
     private function getPinSpacingVerification( ) {
         $numberOfChannels = $this->getNumberOfChannels();
@@ -916,10 +916,10 @@ Class JobTranslation {
 
 
     /*!
-     \brief        Verification of the pinhole spacing. One channel.
-     \param        $channel A channel
-     \return       True if the pinhole spacing is verified.
-     \todo         To be implemented in the GUI
+     \brief       Verification of the pinhole spacing. One channel.
+     \param       $channel A channel
+     \return      True if the pinhole spacing is verified.
+     \todo        To be implemented in the GUI
     */
     private function getPSVerificationForChannel($channel) {
         if ($this->isFieldVerified($channel) == 1) {
@@ -931,8 +931,8 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Gets the sampling sizes. All channels.
-     \return       Tcl-list with the sampling sizes.
+     \brief       Gets the sampling sizes. All channels.
+     \return      Tcl-list with the sampling sizes.
     */
     private function getSamplingSizes( ) {
         $sampling = $this->microSetting->sampleSizeX();
@@ -943,9 +943,9 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Verification of the sampling sizes. All channels.
-     \return       Tcl-list: Trues/Falses if the sampling sizes are verified.
-     \todo         To be implemented in the GUI
+     \brief       Verification of the sampling sizes. All channels.
+     \return      Tcl-list: Trues/Falses if the sampling sizes are verified.
+     \todo        To be implemented in the GUI
     */
     private function getSamplingVerification( ) {
         if ($this->isFieldVerified(0) == 1) {
@@ -957,8 +957,8 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Gets the objective qualities. All channels.
-     \return       Tcl-list with the objective qualities.
+     \brief       Gets the objective qualities. All channels.
+     \return      Tcl-list with the objective qualities.
     */
     private function getObjQuality( ) {
         $numberOfChannels = $this->getNumberOfChannels();
@@ -971,10 +971,10 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Gets the Objective Quality. One channel.
-     \param        $channel A channel
-     \return       The objective quality.
-     \todo         To be implemented in the GUI
+     \brief       Gets the Objective Quality. One channel.
+     \param       $channel A channel
+     \return      The objective quality.
+     \todo        To be implemented in the GUI
     */
     private function getObjQualityForChannel($channel) {
         $objQuality = "perfect";
@@ -982,9 +982,9 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Verification of the objective qualities. All channels.
-     \return       Tcl-list: Trues/Falses if the objective qualities are verified.
-     \todo         To be implemented in the GUI
+     \brief       Verification of the objective qualities. All channels.
+     \return      Tcl-list: Trues/Falses if the objective qualities are verified.
+     \todo        To be implemented in the GUI
     */
     private function getObjQualityVerification( ) {
         $numberOfChannels = $this->getNumberOfChannels();
@@ -997,10 +997,10 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Verification of the Objective Quality. One channel.
-     \param        $channel A channel
-     \return       True if the Objective Quality is verified.
-     \todo         To be implemented in the GUI
+     \brief       Verification of the Objective Quality. One channel.
+     \param       $channel A channel
+     \return      True if the Objective Quality is verified.
+     \todo        To be implemented in the GUI
     */
     private function getOQVerificationForChannel($channel) {
         if ($this->isFieldVerified($channel) == 1) {
@@ -1012,8 +1012,8 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Gets the excitation photon counts. All channels.
-     \return       Tcl-list with the excitation photon  counts.
+     \brief       Gets the excitation photon counts. All channels.
+     \return      Tcl-list with the excitation photon  counts.
     */
     private function getExcitationPcnt( ) {
         $numberOfChannels = $this->getNumberOfChannels();
@@ -1026,9 +1026,9 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Gets the excitation photon count. One channel.
-     \param        $channel A channel
-     \return       Tcl-list with the excitation photon count.
+     \brief       Gets the excitation photon count. One channel.
+     \param       $channel A channel
+     \return      Tcl-list with the excitation photon count.
     */
     private function getExcitationPcntForChannel($channel) {
         if ($this->microSetting->isTwoPhoton()) {
@@ -1040,9 +1040,9 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Verification of the excitation photon count. All channels.
-     \return       Tcl-list: Trues/Falses if the EP counts are verified.
-     \todo         To be implemented in the GUI
+     \brief       Verification of the excitation photon count. All channels.
+     \return      Tcl-list: Trues/Falses if the EP counts are verified.
+     \todo        To be implemented in the GUI
     */
     private function getExcitationPcntVerification( ) {
         $numberOfChannels = $this->getNumberOfChannels();
@@ -1055,10 +1055,10 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Verification of the excitation photon count. One channel.
-     \param        $channel A channel
-     \return       True if the Excitation Photon count is verified.
-     \todo         To be implemented in the GUI
+     \brief       Verification of the excitation photon count. One channel.
+     \param       $channel A channel
+     \return      True if the Excitation Photon count is verified.
+     \todo        To be implemented in the GUI
     */
     private function getECntVerificationForChannel($channel) {
         if ($this->isFieldVerified($channel) == 1) {
@@ -1070,8 +1070,8 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Gets the excitation wavelengths. All channels.
-     \return       Tcl-list with the excitation wavelengths.
+     \brief       Gets the excitation wavelengths. All channels.
+     \return      Tcl-list with the excitation wavelengths.
     */
     private function getExcitationLambda( ) {
         $numberOfChannels = $this->getNumberOfChannels();
@@ -1084,9 +1084,9 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Gets the excitation wavelength. One channel.
-     \param        $channel A channel
-     \return       Tcl-list with the excitation wavelength.
+     \brief       Gets the excitation wavelength. One channel.
+     \param       $channel A channel
+     \return      Tcl-list with the excitation wavelength.
     */
     private function getExLambdaForChannel($channel) {
         $microSetting = $this->microSetting;
@@ -1096,9 +1096,9 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Verification of the excitation wavelength. All channels.
-     \return       Tcl-list: Trues/Falses if the EWs are verified.
-     \todo         To be implemented in the GUI
+     \brief       Verification of the excitation wavelength. All channels.
+     \return      Tcl-list: Trues/Falses if the EWs are verified.
+     \todo        To be implemented in the GUI
     */
     private function getExcitationLVerification( ) {
         $numberOfChannels = $this->getNumberOfChannels();
@@ -1111,10 +1111,10 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Verification of the excitation wavelength . One channel.
-     \param        $channel A channel
-     \return       True if the Excitation wavelength is verified.
-     \todo         To be implemented in the GUI
+     \brief       Verification of the excitation wavelength . One channel.
+     \param       $channel A channel
+     \return      True if the Excitation wavelength is verified.
+     \todo        To be implemented in the GUI
     */
     private function getELVerificationForChannel($channel) {
         if ($this->isFieldVerified($channel) == 1) {
@@ -1126,8 +1126,8 @@ Class JobTranslation {
     }
     
     /*!
-     \brief        Gets the excitation beam overfill factor. All channels.
-     \return       Tcl-list with the excitation beam overfill factors.
+     \brief       Gets the excitation beam overfill factor. All channels.
+     \return      Tcl-list with the excitation beam overfill factors.
     */
     private function getExBeamFill( ) {
         $numberOfChannels = $this->getNumberOfChannels();
@@ -1140,18 +1140,18 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Gets the excitation beam overfill factor. One channel.
-     \param        $channel A channel
-     \return       Tcl-list with the excitation beam factor.
+     \brief       Gets the excitation beam overfill factor. One channel.
+     \param       $channel A channel
+     \return      Tcl-list with the excitation beam factor.
     */
     private function getExBeamForChannel($channel) {
         return 2.0;
     }
 
     /*!
-     \brief        Gets the excitation beam factor verification. All channels.
-     \return       Tcl-list: Trues/Falses if the EB factors are verified.
-     \todo         To be implemented in the GUI
+     \brief       Gets the excitation beam factor verification. All channels.
+     \return      Tcl-list: Trues/Falses if the EB factors are verified.
+     \todo        To be implemented in the GUI
     */
     private function getExBeamVerification( ) {
         $numberOfChannels = $this->getNumberOfChannels();
@@ -1164,10 +1164,10 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Verification of the EB factor. One channel.
-     \param        $channel A channel
-     \return       True if the Excitation beam factor is verified.
-     \todo         To be implemented in the GUI
+     \brief       Verification of the EB factor. One channel.
+     \param       $channel A channel
+     \return      True if the Excitation beam factor is verified.
+     \todo        To be implemented in the GUI
     */
     private function getEBVerificationForChannel($channel) {
         if ($this->isFieldVerified($channel) == 1) {
@@ -1179,8 +1179,8 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Gets the emission wavelengths. All channels.
-     \return       Tcl-list with the emission wavelengths.
+     \brief       Gets the emission wavelengths. All channels.
+     \return      Tcl-list with the emission wavelengths.
     */
     private function getEmissionLambda( ) {
         $numberOfChannels = $this->getNumberOfChannels();
@@ -1193,9 +1193,9 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Gets the emission wavelength. One channel.
-     \param        $channel A channel
-     \return       The emission wavelength.
+     \brief       Gets the emission wavelength. One channel.
+     \param       $channel A channel
+     \return      The emission wavelength.
     */
     private function getEmLambdaForChannel($channel) {
         $microSetting = $this->microSetting;
@@ -1205,9 +1205,9 @@ Class JobTranslation {
     }
     
     /*!
-     \brief        Gets the emission lambda verification. All channels.
-     \return       Tcl-list: Trues/Falses if the Emission lambdas are verified.
-     \todo         To be implemented in the GUI
+     \brief       Gets the emission lambda verification. All channels.
+     \return      Tcl-list: Trues/Falses if the Emission lambdas are verified.
+     \todo        To be implemented in the GUI
     */
     private function getEmissionLVerification( ) {
         $numberOfChannels = $this->getNumberOfChannels();
@@ -1220,10 +1220,10 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Verification of the emission lambda. One channel.
-     \param        $channel A channel
-     \return       True if the emission lambda is verified.
-     \todo         To be implemented in the GUI
+     \brief       Verification of the emission lambda. One channel.
+     \param       $channel A channel
+     \return      True if the emission lambda is verified.
+     \todo        To be implemented in the GUI
     */
     private function getEMVerificationForChannel($channel) {
         if ($this->isFieldVerified($channel) == 1) {
@@ -1235,8 +1235,8 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Gets the imaging direction. All channels.
-     \return       Tcl list with the 'imaging direction'.
+     \brief       Gets the imaging direction. All channels.
+     \return      Tcl list with the 'imaging direction'.
     */
     private function getImagingDirection( ) {
         $numberOfChannels = $this->getNumberOfChannels();
@@ -1249,9 +1249,9 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Gets the imaging direction. One channel.
-     \param        $channel A channel
-     \return       Whether the imaging is 'downward' or 'upward'
+     \brief       Gets the imaging direction. One channel.
+     \param       $channel A channel
+     \return      Whether the imaging is 'downward' or 'upward'
     */
     private function getImagingDirForChannel($channel) {
         $microSetting = $this->microSetting;
@@ -1266,9 +1266,9 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Gets the imaging direction verifications. All channels.
-     \return       Tcl-list: Trues/Falses if the imaging directions are verified.
-     \todo         To be implemented in the GUI
+     \brief       Gets the imaging direction verifications. All channels.
+     \return      Tcl-list: Trues/Falses if the imaging directions are verified.
+     \todo        To be implemented in the GUI
     */
     private function getImagingDirVerification( ) {
         $numberOfChannels = $this->getNumberOfChannels();
@@ -1281,10 +1281,10 @@ Class JobTranslation {
     }
     
     /*!
-     \brief        Gets the verification of the imaging direction. One channel.
-     \param        $channel A channel
-     \return       True if the imaging direction is verified.
-     \todo         To be implemented in the GUI
+     \brief       Gets the verification of the imaging direction. One channel.
+     \param       $channel A channel
+     \return      True if the imaging direction is verified.
+     \todo        To be implemented in the GUI
     */
     private function getIDVerificationForChannel($channel) {
         if ($this->isFieldVerified($channel) == 1) {
@@ -1296,8 +1296,8 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Gets the medium refractive index. All channels.
-     \return       Tcl list with the 'medium refractive indexes'.
+     \brief       Gets the medium refractive index. All channels.
+     \return      Tcl list with the 'medium refractive indexes'.
     */
     private function getMediumRefractiveIndex() {
         $numberOfChannels = $this->getNumberOfChannels();
@@ -1310,9 +1310,9 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Gets the medium refractive index. One channel.
-     \param        $channel A channel
-     \return       The medium refractive index
+     \brief       Gets the medium refractive index. One channel.
+     \param       $channel A channel
+     \return      The medium refractive index
     */
     private function getMRIndexForChannel($channel) {
         $microSetting = $this->microSetting;
@@ -1322,9 +1322,9 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Gets the medium refractive index verifications. All channels.
-     \return       Tcl-list: Trues/Falses if the medium RIs are verified.
-     \todo         To be implemented in the GUI
+     \brief       Gets the medium refractive index verifications. All channels.
+     \return      Tcl-list: Trues/Falses if the medium RIs are verified.
+     \todo        To be implemented in the GUI
     */
     private function getMediumRIndexVerification( ) {
         $numberOfChannels = $this->getNumberOfChannels();
@@ -1337,10 +1337,10 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Gets the medium refractive index verification. One channel.
-     \param        $channel A channel
-     \return       True if the medium refractive index is verified.
-     \todo         To be implemented in the GUI
+     \brief       Gets the medium refractive index verification. One channel.
+     \param       $channel A channel
+     \return      True if the medium refractive index is verified.
+     \todo        To be implemented in the GUI
     */
     private function getMRIVerificationForChannel($channel) {
         if ($this->isFieldVerified($channel) == 1) {
@@ -1354,8 +1354,8 @@ Class JobTranslation {
     /* -------------------------- Algorithm tasks ------------------------------ */
     
     /*!
-     \brief        Gets the brick mode.
-     \return       Brick mode.
+     \brief       Gets the brick mode.
+     \return      Brick mode.
     */
     private function getBrMode( ) {
         $SAcorr = $this->getSAcorr();
@@ -1393,8 +1393,8 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Gets the background mode.
-     \return       Background mode.
+     \brief       Gets the background mode.
+     \return      Background mode.
     */
     private function getBgMode( ) {
         $bgParam = $this->deconSetting->parameter("BackgroundOffsetPercent");
@@ -1411,8 +1411,8 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Gets the background values. All channels.
-     \return       Tcl-list with the background values.
+     \brief       Gets the background values. All channels.
+     \return      Tcl-list with the background values.
     */
     private function getBgValues( ) {
         $numberOfChannels = $this->getNumberOfChannels();
@@ -1424,9 +1424,9 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Gets the background value. One channel.
-     \param        $channel A channel
-     \return       The background value.
+     \brief       Gets the background value. One channel.
+     \param       $channel A channel
+     \return      The background value.
     */
     private function getBgValueForChannel($channel) {
         $bgMode = $this->getBgMode();
@@ -1445,8 +1445,8 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Gets the SNR values. All channels.
-     \return       Tcl-list with the SNR values.
+     \brief       Gets the SNR values. All channels.
+     \return      Tcl-list with the SNR values.
     */
     private function getSnrValues( ) {
         $numberOfChannels = $this->getNumberOfChannels();
@@ -1458,9 +1458,9 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Gets the SNR value. One channel.
-     \param        $channel A channel
-     \return       The SNR value.
+     \brief       Gets the SNR value. One channel.
+     \param       $channel A channel
+     \return      The SNR value.
     */
     private function getSnrValueForChannel($channel) {
         $deconSetting = $this->deconSetting;
@@ -1477,9 +1477,9 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Gets the bleaching mode.
-     \return       Bleaching mode
-     \todo         To be implemented in the GUI
+     \brief       Gets the bleaching mode.
+     \return      Bleaching mode
+     \todo        To be implemented in the GUI
     */
     private function getBleachingMode( ) {
         $blMode = "auto";
@@ -1487,9 +1487,9 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Gets the padding mode.
-     \return       Padding mode
-     \todo         To be implemented in the GUI
+     \brief       Gets the padding mode.
+     \return      Padding mode
+     \todo        To be implemented in the GUI
     */
     private function getPaddingMode( ) {
         $padding = "auto";
@@ -1497,9 +1497,9 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Gets the iteration mode.
-     \return       Iteration mode
-     \todo         To be implemented in the GUI
+     \brief       Gets the iteration mode.
+     \return      Iteration mode
+     \todo        To be implemented in the GUI
     */
     private function getIterationMode( ) {
         $iMode = "fast";
@@ -1507,8 +1507,8 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Gets the PSF mode.
-     \return       PSF mode
+     \brief       Gets the PSF mode.
+     \return      PSF mode
     */
     private function getPsfMode( ) {
         $microSetting = $this->microSetting;
@@ -1522,9 +1522,9 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Gets the PSF path.
-     \param        $channel A channel
-     \return       Psf path
+     \brief       Gets the PSF path.
+     \param       $channel A channel
+     \return      Psf path
     */
     private function getPsfPath($channel) {
         $psfPath = "";
@@ -1542,8 +1542,8 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Gets the deconvolution quality factor.
-     \return       The quality factor
+     \brief       Gets the deconvolution quality factor.
+     \return      The quality factor
     */
     private function getQualityFactor( ) {
         $deconSetting = $this->deconSetting;
@@ -1551,24 +1551,24 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Gets the maximum number of iterations for the deconvolution.
-     \return       The maximum number of iterations.
+     \brief       Gets the maximum number of iterations for the deconvolution.
+     \return      The maximum number of iterations.
     */
     private function getIterations( ) {
         return $this->deconSetting->parameter('NumberOfIterations')->value();
     }
 
     /*!
-     \brief        Gets the deconvolution algorithm.
-     \return       Deconvolution algorithm.
+     \brief       Gets the deconvolution algorithm.
+     \return      Deconvolution algorithm.
     */
     private function getAlgorithm( ) {
         return $this->deconSetting->parameter('DeconvolutionAlgorithm')->value();
     }
 
     /*!
-     \brief        Gets the spherical aberration correction.
-     \return       Sperical aberration correction.
+     \brief       Gets the spherical aberration correction.
+     \return      Sperical aberration correction.
     */
     private function getSAcorr( ) {
         return $this->microSetting->getAberractionCorrectionParameters();
@@ -1615,27 +1615,27 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Gets the number of channels of the template.
-     \return       Number of channels.
+     \brief       Gets the number of channels of the template.
+     \return      Number of channels.
     */
     private function getNumberOfChannels( ) {
         return $this->microSetting->numberOfChannels();
     }
 
     /*!
-     \brief        Checks whether a field is verified.
-     \param        $field A field to check
-     \return       True if the field is verified.
-     \todo         Implement the body of this function.
+     \brief       Checks whether a field is verified.
+     \param       $field A field to check
+     \return      True if the field is verified.
+     \todo        Implement the body of this function.
     */
     private function isFieldVerified($field) {
         return 1;
     }
 
     /*!
-     \brief        Wraps a string between curly braces to turn it into a Tcl list.
-     \param        $string A string
-     \return       A Tcl list.
+     \brief       Wraps a string between curly braces to turn it into a Tcl list.
+     \param       $string A string
+     \return      A Tcl list.
     */
     private function string2tcllist($string) {
         $tcllist = trim($string);
@@ -1644,23 +1644,23 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Sets the name of the source image.
+     \brief       Sets the name of the source image.
     */
     private function setSrcImage( ) {
         $this->srcImage = $this->jobDescription->sourceImageName();
     }
 
     /*!
-     \brief        Gets the name of the source image.
-     \return       The name of the source image.
+     \brief       Gets the name of the source image.
+     \return      The name of the source image.
     */
     private function getSrcImage( ) {
         return $this->srcImage;
     }
 
     /*!
-     \brief        Gets the directory of the source image.
-     \return       A file path.
+     \brief       Gets the directory of the source image.
+     \return      A file path.
     */
     private function getSrcDir( ) {
         $srcFileName = $this->getSrcImage();
@@ -1668,7 +1668,7 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Sets the name of the destination image.
+     \brief       Sets the name of the destination image.
     */
     private function setDestImage ( ) {
         $this->destImage = $this->jobDescription->destinationImageFullName();
@@ -1677,16 +1677,16 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Gets the name of the destination image.
-     \return       Name of the destination image, with path and extension.
+     \brief       Gets the name of the destination image.
+     \return      Name of the destination image, with path and extension.
     */
     private function getDestImage( ) {
         return $this->destImage;
     }
 
     /*!
-     \brief        Gets the directory of the destination image.
-     \return       A file path.
+     \brief       Gets the directory of the destination image.
+     \return      A file path.
     */
     private function getDestDir( ) {
         $dstFileName = $this->getDestImage();
@@ -1694,8 +1694,8 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Gets the extension of the destination image.
-     \return       A file extension.
+     \brief       Gets the extension of the destination image.
+     \return      A file extension.
     */
     private function getOutputFileType( ) {
         $outFileFormat = $this->deconSetting->parameter('OutputFileFormat');
