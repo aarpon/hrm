@@ -327,10 +327,9 @@ Class JobTranslation {
     private function getTaskTag( ) {
         /* There are no specific names for the deconvolution and microscopic
          templates in the Tcl-lists, they will be set to general names. */
-        $taskTag = "setp myNewTemplate decon myNewTemplate";
+        $taskTag = "setp microscopicTemplate decon deconvolutionTemplate";
         return  $this->string2tcllist($taskTag);
     }
-
 
     /*!
      \brief       Gets the tasks to perform a deconvolution. 
