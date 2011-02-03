@@ -3,33 +3,42 @@
   // Copyright and license notice: see license.txt
 
   /*!
-      \class  JobTranslation
-      \brief  Converts deconvolution parameters into Tcl lists.
+   \class  JobTranslation
+   \brief  Converts deconvolution parameters into a Huygens batch template.
 
-      This class builds Tcl-compliant nested lists (templates) which summarize the
-      tasks and properties of the deconvolution job. The resulting lists
-      are interpreted by HuCore and executed accordingly to perform a 
-      deconvolution.
-    */
+   This class builds Tcl-compliant nested lists which summarize the tasks and 
+   properties of the deconvolution job. The resulting structure is a Huygens 
+   batch template formed by nested lists. 
+
+   Template structure:
+
+   - 1 Job:
+       - Job info.
+       - Job main tasks list:
+           - Set environment
+           - Set task ID
+       - Set environment details: 
+           - resultDir
+           - perJobThreadCnt
+           - concurrentJobCnt
+           - exportFormat
+           - timeOut
+       - Set taskID details:
+           - Set taskID info:
+               - state
+               - tag
+               - timeStartAbs
+               - timeOut
+           - Set taskList per taskID:
+               - imgOpen
+               - setp
+               - Deconvolution algorithm: once per channel
+               - zDrift (optionally)
+               - imgSave
+           - Set details per task (imgOpen, setp,..)           
+  */
+
 Class JobTranslation {
-
-    /*!
-      \var    $taskList
-      \brief  A Tcl list with microscopic and restoration data
-    */
-    public $taskList;
-
-    /*!
-      \var    $envList
-      \brief  A Tcl list with extra data: number of cores, timeout, etc. 
-    */
-    public $envList;
-
-    /*!
-     \var     $template
-     \brief   Batch template summarizing the deconvolution job.
-    */
-    public $template;
 
     /*!
      \var     $jobInfo
@@ -38,34 +47,23 @@ Class JobTranslation {
     private $jobInfo;
 
     /*!
-      \var    $srcImage
-      \brief  Path and name of the source image.
+     \var     $jobMainTasks
+     \brief   A Tcl list with the names of the main job tasks
     */
-    public $srcImage;
+    private $jobMainTasks;
 
     /*!
-      \var    $taskList
-      \brief  Path and name of the deconvolved image.
+      \var    $envDetails
+      \brief  A Tcl list with extra data: number of cores, timeout, etc. 
     */
-    public $destImage;
+    public $envDetails;
+
 
     /*!
-      \var    $jobDescription
-      \brief  A JobDescription object: microscopic and restoration data
+      \var    $taskIDDetails
+      \brief  A Tcl list with microscopic and restoration data
     */
-    private $jobDescription;
-
-    /*!
-      \var    $microSetting
-      \brief  A ParametersSetting object: microscopic parameters.
-    */
-    private $microSetting;
-
-    /*!
-      \var    $deconSetting
-      \brief  A TaskSetting object: restoration parameters.
-    */
-    private $deconSetting;
+    public $taskIDDetails;
 
     /*!
       \var    $envArray
@@ -74,64 +72,147 @@ Class JobTranslation {
     private $envArray;
 
     /*!
-      \var    $taskArray
-      \brief  Array with microscopic and restoration data.
+      \var    $taskIDArray
+      \brief  Array with restoration operations.
     */
-    private $tasksArray;
+    private $taskIDArray;
 
-    /* ---------------------------- Initialize --------------------------------- */
+    /*!
+     \var     $template
+     \brief   Batch template summarizing the deconvolution job.
+    */
+    public $template;
+
+    /*!
+      \var    $srcImage
+      \brief  Path and name of the source image.
+    */
+    public $srcImage;
+
+    /*!
+      \var    $destImage
+      \brief  Path and name of the deconvolved image.
+    */
+    public $destImage;
+
+    /*!
+      \var    $jobDescription
+      \brief  JobDescription object: unformatted microscopic & restoration data
+    */
+    private $jobDescription;
+
+    /*!
+      \var    $microSetting
+      \brief  A ParametersSetting object: unformatted microscopic parameters.
+    */
+    private $microSetting;
+
+    /*!
+      \var    $deconSetting
+      \brief  A TaskSetting object: unformatted restoration parameters.
+    */
+    private $deconSetting;
+
+    /* ----------------------------------------------------------------------- */
 
     /*!
      \brief       Constructor
      \param       $jobDescription JobDescription object
-     \todo        Improve, add more tasks.
     */
     public function __construct($jobDescription) {
+        $this->initialize($jobDescription);
         $this->setJobInfo();
-        $this->setJobParameters($jobDescription);
-        $this->setJobEnvironmentList();
-        $this->setJobTaskList();
-        $tasks = "setEnv taskID:0";
-        $tasks = $this->string2tcllist($tasks);
-        $tasks = "taskList " . $tasks;
-        $stringData = $this->jobInfo . "\n" . $tasks . "\n";
-        $stringData .= "setEnv " . $this->envList . "\ntaskID:0 " . $this->taskList;
-        $this->template = $stringData;
+        $this->setJobMainTasks();
+        $this->setEnvironmentDetails();
+        $this->setTaskIDDetails();
+        $this->assembleTemplate();
     }
 
     /*!
-     \brief       Builds the info header of the batch template.
-     \todo        Improve
+     \brief       Sets class general atributes
     */
-    public function setJobInfo( ) {
-        $jobTitle = "Batch processing template";
-        $jobTitle = $this->string2tcllist($jobTitle);
-        $this->jobInfo = "title $jobTitle";
-        $templVersion = "version 2.2";
-        $this->jobInfo .= " $templVersion ";
-        $templName = "templateName batch_2011-01-28_10-17-13";
-        $this->jobInfo .= " $templName ";
-        $templDate = "Fri Jan 28 10:17:15 CET 2011";
-        $templDate = $this->string2tcllist($templDate);
-        $this->jobInfo .= " date $templDate";
-        $this->jobInfo = $this->string2tcllist($this->jobInfo);
-        $jobInfo = $this->jobInfo;
-        $this->jobInfo = "info $jobInfo";
-    }
-
-
-    /*!
-     \brief       Sorts and sets job parameters
-     \param       $jobDescription JobDescription object
-    */
-    private function setJobParameters($jobDescription) {
+    private function initialize($jobDescription) {
         $this->jobDescription = $jobDescription;
         $this->microSetting = $jobDescription->parameterSetting;
         $this->deconSetting = $jobDescription->taskSetting;
         $this->setEnvironmentArray();
-        $this->setTasksArray();
+        $this->setTaskIDArray();
         $this->setSrcImage();
         $this->setDestImage();
+    }
+
+    /*!
+     \brief       Puts the Huygens Batch template together
+    */
+    private function assembleTemplate( ) {
+        $this->template = $this->jobInfo . "\n" . $this->jobMainTasks . "\n";
+        $this->template .= $this->envDetails . "\n " . $this->taskIDDetails;
+    }
+
+    /*!
+     \brief       Sets the info header of the batch template.
+    */
+    private function setJobInfo( ) {
+        $this->jobInfo = "title ";
+        $this->jobInfo .= $this->getTemplateTitle();
+        $this->jobInfo .= " version ";
+        $this->jobInfo .= $this->getTemplateVersion();
+        $this->jobInfo .= " templateName ";
+        $this->jobInfo .= $this->getTemplateName();
+        $this->jobInfo .= " date ";
+        $this->jobInfo .= $this->getTemplateDate();
+        $this->jobInfo = $this->string2tcllist($this->jobInfo);
+        $this->jobInfo = "info " . $this->jobInfo;
+    }
+
+    /*!
+     \brief       Gets the current date in format: Wed Feb 02 16:02:11 CET 2011
+     \return      The date
+    */
+    private function getTemplateDate( ) {
+        $today = date("D M j G:i:s T Y");  
+        $today = $this->string2tcllist($today);
+        return $today;
+    }
+
+    /*!
+     \brief       Gets the template name as batch_2011-02-02_16-02-08
+     \return      The template name
+    */
+    private function getTemplateName( ) {
+        $time = date('h-i-s');  
+        $today = date('j-m-y');  
+        $templateName = "batch_" . $today . "_" . $time;
+        return $templateName;
+    }
+
+    /*!
+     \brief       Gets the Huygens template version built in this class
+     \return      The template version
+    */
+    private function getTemplateVersion( ) {
+        return $templateVersion = 2.2;
+    }
+
+    /*!
+     \brief       Gets a template title
+     \return      The template title
+    */
+    private function getTemplateTitle( ) {
+        $templateTitle = "Batch processing template";
+        $templateTitle = $this->string2tcllist($templateTitle);
+        return $templateTitle;
+    }
+
+
+    /*!
+     \brief       Sorts and sets the main job tasks: setEnv and taskIDs.
+    */
+    private function setJobMainTasks() {
+        $this->jobMainTasks = "setEnv ";
+        $this->jobMainTasks .= $this->getTaskID();
+        $this->jobMainTasks = $this->string2tcllist($this->jobMainTasks);
+        $this->jobMainTasks = "taskList " . $this->jobMainTasks;
     }
 
     /*!
@@ -150,8 +231,8 @@ Class JobTranslation {
      \brief       Sets array with microscopic and restoration data
      \todo        Add a field zdrift when it is implemented in the GUI.
     */
-    private function setTasksArray( ) {
-        $this->tasksArray = array ( 'open'=>'imgOpen',
+    private function setTaskIDArray( ) {
+        $this->taskIDArray = array ( 'open'=>'imgOpen',
                                     'setParameters'=>'setp',
                                     'adjustBaseline'=>'adjbl',
                                     'algorithms'=>'',
@@ -163,15 +244,17 @@ Class JobTranslation {
     /*!
      \brief        Sets a Tcl list with extra data: number of cores, timeout, etc. 
     */
-    private function setJobEnvironmentList( ) {
-        $this->envList = $this->buildEnvironmentList();
+    private function setEnvironmentDetails( ) {
+        $this->envDetails = "setEnv "; 
+        $this->envDetails .= $this->buildEnvironmentList();
     }
     
     /*!
      \brief        Sets a Tcl list with microscopic and restoration data. 
     */
-    private function setJobTaskList( ) {
-        $this->taskList = $this->buildTaskList();
+    private function setTaskIDDetails( ) {
+        $this->taskIDDetails = $this->getTaskID();
+        $this->taskIDDetails .= " " . $this->buildTaskList();
     }
 
     /*!
@@ -185,15 +268,28 @@ Class JobTranslation {
                 $envValue = $this->getDestDir();
             }
             if ($envOption == "exportFormat") {
-                $envValue = "type ". $this->getOutputFileType().
-                    " multidir 0 cmode scale";
-                $envValue = $this->string2tcllist($envValue);
+                $envValue = $this->getExportFormat();
             }
-            $environmentList .= "$envOption $envValue ";
+            $environmentList .= $envOption;
+            $environmentList .= " ";
+            $environmentList .= $envValue;
+            $environmentList .= " ";
         }
         $environmentList = $this->string2tcllist($environmentList);
 
         return $environmentList;
+    }
+
+    /*!
+     \brief        Get the job export format as a list of options
+     \return       Tcl-complaint neste list with the export format options
+    */
+    private function getExportFormat( ) {
+        $exportFormat = "type ";
+        $exportFormat .= $this->getOutputFileType();
+        $exportFormat .= " multidir 0 cmode scale";
+        $exportFormat = $this->string2tcllist($exportFormat);
+        return $exportFormat;
     }
 
     /*!
@@ -210,26 +306,78 @@ Class JobTranslation {
     }
 
     /*!
+     \brief       Gets a unique taskID for the Huygens Scheduler
+     \return      The taskID
+    */
+    private function getTaskID( ) {
+        /* As long as the Huygens Scheduler receives only one job at a time
+         the taskID will be unique and 0. */
+        $taskID = "taskID:0";
+        return $taskID;
+    }
+
+    /*!
      \brief       Gets the information of the tasks.
      \return      The Tcl-compliant nested list with task information
-     \todo        Improve
     */
     private function getTaskInfo( ) {
 
-        $taskState = "state ReaduyToRun";
-        $templNames = "setp myNewTemplate decon myNewTemplate";
-        $templNames = $this->string2tcllist($templNames);
-        $taskTag = "tag $templNames";
-        $timerAbs = time();
-        $timerAbs = "timeStartAbs " . $timerAbs;
-        $timeOut = "timeOut 36000";
-        $taskInfo = $taskState . " " . $taskTag . " ";
-        $taskInfo .= $timerAbs . " " . $timeOut; 
+        $taskInfo = "state ";
+        $taskInfo .= $this->getTaskState();
+        $taskInfo .= " tag " ;
+        $taskInfo .= $this->getTaskTag();
+        $taskInfo .= " timeStartAbs ";
+        $taskInfo .= $this->getAbsTime();
+        $taskInfo .= " timeOut ";
+        $taskInfo .= $this->getTaskIDTimeOut();
         $taskInfo = $this->string2tcllist($taskInfo);
-        $info = "info " . $taskInfo;
+        $taskInfo = "info " . $taskInfo;
             
-        return $info;
+        return $taskInfo;
     }
+
+    /*!
+     \brief        Gets the taskID timeout
+     \return       The timeout in seconds
+    */
+    private function getTaskIDTimeOut( ) {
+        $timeOut = 10000;
+        return $timeOut;
+    }
+
+    /*!
+     \brief        Gets the task state.
+     \return       The task state
+    */
+    private function getTaskState( ) {
+        /* As long as the Huygens Scheduler receives only one job at a time
+         the task will not be queued when it arrives at the Scheduler but
+         executed immediatly, thus its state will be 'readyToRun', invariably */
+        $taskState = "readyToRun";
+        return $taskState;
+    }
+
+    /*!
+     \brief       Gets the time lapse since 1st January 1970, in seconds.
+     \return      The seconds since Epoch time.
+    */
+    private function getAbsTime( ) {
+        $absTime = time();
+        return $absTime;
+    }
+
+    /*!
+     \brief        Gets the task tag information
+     \return       The Tcl-compliant neste list with the tag information
+    */
+    private function getTaskTag( ) {
+        /* There are no specific names for the deconvolution and microscopic
+         templates in the Tcl-lists, they will be set to general names. */
+        $taskTag = "setp myNewTemplate decon myNewTemplate";
+        $taskTag = $this->string2tcllist($taskTag);
+        return $taskTag;
+    }
+
 
     /*!
      \brief        Gets the tasks to perform a deconvolution. 
@@ -237,17 +385,16 @@ Class JobTranslation {
     */
     private function getDeconTasks( ) {
         $taskList = "";
-        foreach ($this->tasksArray as $key => $task) {
+        foreach ($this->taskIDArray as $key => $task) {
             if ($task == '') {
                 $task = $this->parseTask($key);
             }
-            $taskList .= "$task ";
+            $taskList .= $task ." ";
         }
         $taskList = $this->string2tcllist($taskList);
-        $taskList = " taskList $taskList";
+        $taskList = " taskList " . $taskList;
         return $taskList;
     }
-
 
     /*!
      \brief        Gets specific details of each deconvolution task. 
@@ -255,7 +402,7 @@ Class JobTranslation {
     */
     private function getTasksDetails( ) {
         $taskList = "";
-        foreach ($this->tasksArray as $key => $task) { 
+        foreach ($this->taskIDArray as $key => $task) { 
             switch ( $key ) {
             case "open":
                 $taskList .= $this->getTaskImgOpen();
@@ -284,9 +431,9 @@ Class JobTranslation {
     }
 
     /*!
-     \brief        Gets the name of the chosen deconvolution method per channel
-     \param        $key A deconvolution task
-     \return       One deconvolution method per channel
+     \brief        When a task is not well defined in the task array, get it here.
+     \param        $key A task array key
+     \return       The action for $key
     */
     private function parseTask($key) {
         if ($key == "algorithms") {
@@ -310,10 +457,11 @@ Class JobTranslation {
      \return       Tcl list with the'Image open' task and its options
     */
     private function getTaskImgOpen( ) {
-        $srcFileName = $this->jobDescription->sourceImageName();
-        $imgOpen =  "path $srcFileName series auto index 0";
+        $imgOpen =  "path ";
+        $imgOpen .= $this->srcImage;
+        $imgOpen .= " series auto index 0";
         $imgOpen = $this->string2tcllist($imgOpen);
-        $imgOpen = " imgOpen $imgOpen";
+        $imgOpen = " imgOpen " . $imgOpen;
         return $imgOpen;
     }
 
@@ -332,8 +480,6 @@ Class JobTranslation {
         $options .= $this->getiFaceScnd();
         $options .= " prState,iFaceScnd ";
         $options .= $this->getiFaceScndVerification();
-        $options .= " missingOptList ";
-        $options .= $this->getMissingOptList();
         $options .= " pr ";
         $options .= $this->getPinholeRadius();
         $options .= " parState,pr ";
@@ -389,7 +535,7 @@ Class JobTranslation {
         $options .= " na ";
         $options .= $this->getNumericalAperture();
         $options = $this->string2tcllist($options);
-        $setp = " setp $options";
+        $setp = " setp " . $options;
         return $setp;
     }
 
@@ -398,10 +544,10 @@ Class JobTranslation {
      \return       Tcl list with the 'Image save' task and its options
     */
     private function getTaskImgSave( ) {
-        $dstFileName = $this->jobDescription->destinationImageFullName();
-        $imgSave = "rootName $dstFileName";
+        $imgSave = "rootName ";
+        $imgSave .= $this->destImage;
         $imgSave = $this->string2tcllist($imgSave);
-        $imgSave = " imgSave $imgSave";
+        $imgSave = " imgSave " . $imgSave;
         return $imgSave;
     }
 
@@ -412,7 +558,7 @@ Class JobTranslation {
     private function getTaskAdjbl( ) {
         $adjbl = "enabled 0 ni 0";
         $adjbl = $this->string2tcllist($adjbl);
-        $adjbl = " adjbl $adjbl";
+        $adjbl = " adjbl " . $adjbl;
         return $adjbl;
     }
 
@@ -461,9 +607,18 @@ Class JobTranslation {
         $options .= " psfPath ";
         $options .= $this->getPsfPath($channel);
         $options .= " timeOut ";
-        $options .= $this->getTimeOut();
+        $options .= $this->getAlgTimeOut();
         $options = $this->string2tcllist($options);
         return $options;
+    }
+
+    /*!
+     \brief       Gets the deconvolution timeout
+     \return      The timeout
+    */
+    private function getAlgTimeOut( ) {
+        $algTimeOut = 36000;
+        return $algTimeOut;
     }
 
     /*!
@@ -529,16 +684,6 @@ Class JobTranslation {
             $verification = "estimated";
         }
         return $verification;
-    }
-
-    /*!
-     \brief        No purpose yet
-     \todo         To be removed if the template works without it.
-    */
-    private function getMissingOptList( ) {
-        $missingOptList = "";
-        $missingOptList = $this->string2tcllist($missingOptList);
-        return $missingOptList;
     }
 
     /*!
@@ -1497,16 +1642,6 @@ Class JobTranslation {
             $psfPath = $this->string2tcllist($psfPath);
         }
         return $psfPath;
-    }
-
-    /*!
-     \brief        Gets the timeout value.
-     \return       Timeout
-     \todo         To be implemented in the GUI
-    */
-    private function getTimeOut( ) {
-        $timeOut = 10000;
-        return $timeOut;
     }
 
     /*!
