@@ -142,11 +142,27 @@ Class JobTranslation {
     }
 
     /*!
-     \brief       Puts the Huygens Batch template together
+     \brief       Sets env array with extra data: number of cores, timeout, etc.
     */
-    private function assembleTemplate( ) {
-        $this->template = $this->jobInfo . "\n" . $this->jobMainTasks . "\n";
-        $this->template .= $this->envDetails . "\n " . $this->taskIDDetails;
+    private function setEnvironmentArray( ) {
+        $this->envArray = array ( 'resultDir'=>'',
+                                  'perJobThreadCnt'=>'auto',
+                                  'concurrentJobCnt'=>'1',
+                                  'OMP_DYNAMIC'=>'1',
+                                  'timeOut'=>'10000',
+                                  'exportFormat'=>'' );
+    }
+
+    /*!
+     \brief       Sets tasks array with microscopic and restoration data
+     \todo        Add a field zdrift when it is implemented in the GUI.
+    */
+    private function setTaskIDArray( ) {
+        $this->taskIDArray = array ( 'open'=>'imgOpen',
+                                    'setParameters'=>'setp',
+                                    'adjustBaseline'=>'adjbl',
+                                    'algorithms'=>'',
+                                    'save'=>'imgSave');
     }
 
     /*!
@@ -166,46 +182,6 @@ Class JobTranslation {
     }
 
     /*!
-     \brief       Gets the current date in format: Wed Feb 02 16:02:11 CET 2011
-     \return      The date
-    */
-    private function getTemplateDate( ) {
-        $today = date("D M j G:i:s T Y");  
-        $today = $this->string2tcllist($today);
-        return $today;
-    }
-
-    /*!
-     \brief       Gets the template name as batch_2011-02-02_16-02-08
-     \return      The template name
-    */
-    private function getTemplateName( ) {
-        $time = date('h-i-s');  
-        $today = date('j-m-y');  
-        $templateName = "batch_" . $today . "_" . $time;
-        return $templateName;
-    }
-
-    /*!
-     \brief       Gets the Huygens template version built in this class
-     \return      The template version
-    */
-    private function getTemplateVersion( ) {
-        return $templateVersion = 2.2;
-    }
-
-    /*!
-     \brief       Gets a template title
-     \return      The template title
-    */
-    private function getTemplateTitle( ) {
-        $templateTitle = "Batch processing template";
-        $templateTitle = $this->string2tcllist($templateTitle);
-        return $templateTitle;
-    }
-
-
-    /*!
      \brief       Sorts and sets the main job tasks: setEnv and taskIDs.
     */
     private function setJobMainTasks() {
@@ -214,32 +190,6 @@ Class JobTranslation {
         $this->jobMainTasks = $this->string2tcllist($this->jobMainTasks);
         $this->jobMainTasks = "taskList " . $this->jobMainTasks;
     }
-
-    /*!
-     \brief       Sets array with extra data: number of cores, timeout, etc.
-    */
-    private function setEnvironmentArray( ) {
-        $this->envArray = array ( 'resultDir'=>'',
-                                  'perJobThreadCnt'=>'auto',
-                                  'concurrentJobCnt'=>'1',
-                                  'OMP_DYNAMIC'=>'1',
-                                  'timeOut'=>'10000',
-                                  'exportFormat'=>'' );
-    }
-
-    /*!
-     \brief       Sets array with microscopic and restoration data
-     \todo        Add a field zdrift when it is implemented in the GUI.
-    */
-    private function setTaskIDArray( ) {
-        $this->taskIDArray = array ( 'open'=>'imgOpen',
-                                    'setParameters'=>'setp',
-                                    'adjustBaseline'=>'adjbl',
-                                    'algorithms'=>'',
-                                    'save'=>'imgSave');
-    }
-
-    /* ------------------------ Main lists handlers ---------------------------- */
 
     /*!
      \brief        Sets a Tcl list with extra data: number of cores, timeout, etc. 
@@ -258,6 +208,18 @@ Class JobTranslation {
     }
 
     /*!
+     \brief       Puts the Huygens Batch template together
+    */
+    private function assembleTemplate( ) {
+        $this->template = $this->jobInfo . "\n" . $this->jobMainTasks . "\n";
+        $this->template .= $this->envDetails . "\n " . $this->taskIDDetails;
+    }
+
+
+    /* ------------------------ Main lists handlers ---------------------------- */
+
+
+    /*!
      \brief        Builds a Tcl list with extra data: number of cores, etc. 
      \return       The Tcl-compliant nested list
     */
@@ -266,18 +228,13 @@ Class JobTranslation {
         foreach ($this->envArray as $envOption => $envValue) {
             if ($envOption == "resultDir") {
                 $envValue = $this->getDestDir();
-            }
-            if ($envOption == "exportFormat") {
+            } elseif ($envOption == "exportFormat") {
                 $envValue = $this->getExportFormat();
             }
-            $environmentList .= $envOption;
-            $environmentList .= " ";
-            $environmentList .= $envValue;
-            $environmentList .= " ";
+            $environmentList .= " " . $envOption;
+            $environmentList .= " " . $envValue;
         }
-        $environmentList = $this->string2tcllist($environmentList);
-
-        return $environmentList;
+        return $this->string2tcllist($environmentList);
     }
 
     /*!
@@ -288,8 +245,7 @@ Class JobTranslation {
         $exportFormat = "type ";
         $exportFormat .= $this->getOutputFileType();
         $exportFormat .= " multidir 0 cmode scale";
-        $exportFormat = $this->string2tcllist($exportFormat);
-        return $exportFormat;
+        return $this->string2tcllist($exportFormat);
     }
 
     /*!
@@ -297,12 +253,10 @@ Class JobTranslation {
      \return       The Tcl-compliant nested list
     */
     private function buildTaskList( ) {
-        $taskList = $this->getTaskInfo();
-        $taskList .= $this->getDeconTasks();
-        $taskList .= $this->getTasksDetails();
-        $taskList = $this->string2tcllist($taskList);
-        
-        return $taskList;
+        $taskList = $this->getTaskIDInfo();
+        $taskList .= $this->getTaskIDDeconTasks();
+        $taskList .= $this->getTaskIDDetails();
+        return $this->string2tcllist($taskList);
     }
 
     /*!
@@ -320,7 +274,7 @@ Class JobTranslation {
      \brief       Gets the information of the tasks.
      \return      The Tcl-compliant nested list with task information
     */
-    private function getTaskInfo( ) {
+    private function getTaskIDInfo( ) {
 
         $taskInfo = "state ";
         $taskInfo .= $this->getTaskState();
@@ -374,8 +328,7 @@ Class JobTranslation {
         /* There are no specific names for the deconvolution and microscopic
          templates in the Tcl-lists, they will be set to general names. */
         $taskTag = "setp myNewTemplate decon myNewTemplate";
-        $taskTag = $this->string2tcllist($taskTag);
-        return $taskTag;
+        return  $this->string2tcllist($taskTag);
     }
 
 
@@ -383,7 +336,7 @@ Class JobTranslation {
      \brief        Gets the tasks to perform a deconvolution. 
      \return       The Tcl-compliant nested list with task names
     */
-    private function getDeconTasks( ) {
+    private function getTaskIDDeconTasks( ) {
         $taskList = "";
         foreach ($this->taskIDArray as $key => $task) {
             if ($task == '') {
@@ -400,27 +353,27 @@ Class JobTranslation {
      \brief        Gets specific details of each deconvolution task. 
      \return       The Tcl-compliant nested list with task details
     */
-    private function getTasksDetails( ) {
+    private function getTaskIDDetails( ) {
         $taskList = "";
         foreach ($this->taskIDArray as $key => $task) { 
             switch ( $key ) {
             case "open":
-                $taskList .= $this->getTaskImgOpen();
+                $taskList .= $this->getTaskIDImgOpen();
                 break;
             case "save":
-                $taskList .= $this->getTaskImgSave();
+                $taskList .= $this->getTaskIDImgSave();
                 break;
             case "setParameters":
-                $taskList .= $this->getTaskSetp();
+                $taskList .= $this->getTaskIDSetp();
                 break;
             case "adjustBaseline":
-                $taskList .= $this->getTaskAdjbl();
+                $taskList .= $this->getTaskIDAdjbl();
                 break;
             case "algorithms":
-                $taskList .= $this->getTaskAlgorithms();
+                $taskList .= $this->getTaskIDAlgorithms();
                 break;
             case "zdrift":
-                $taskList .= $this->getTaskZDrift();
+                $taskList .= $this->getTaskIDZDrift();
                 break;
             default:
                 $taskList = "";
@@ -456,7 +409,7 @@ Class JobTranslation {
      \brief        Gets options for the 'image open' task
      \return       Tcl list with the'Image open' task and its options
     */
-    private function getTaskImgOpen( ) {
+    private function getTaskIDImgOpen( ) {
         $imgOpen =  "path ";
         $imgOpen .= $this->srcImage;
         $imgOpen .= " series auto index 0";
@@ -469,7 +422,7 @@ Class JobTranslation {
      \brief        Gets options for the 'set parameters' task
      \return       Tcl list with the 'Set parameters' task and its options
     */
-    private function getTaskSetp( ) {
+    private function getTaskIDSetp( ) {
         $options = "completeChanCnt ";
         $options .= $this->getNumberOfChannels();
         $options .= " iFacePrim ";
@@ -543,7 +496,7 @@ Class JobTranslation {
      \brief        Gets options for the 'image save' task
      \return       Tcl list with the 'Image save' task and its options
     */
-    private function getTaskImgSave( ) {
+    private function getTaskIDImgSave( ) {
         $imgSave = "rootName ";
         $imgSave .= $this->destImage;
         $imgSave = $this->string2tcllist($imgSave);
@@ -555,7 +508,7 @@ Class JobTranslation {
      \brief        Gets options for the 'adjust baseline' task
      \return       Tcl list with the 'Adjust baseline' task and its options
     */
-    private function getTaskAdjbl( ) {
+    private function getTaskIDAdjbl( ) {
         $adjbl = "enabled 0 ni 0";
         $adjbl = $this->string2tcllist($adjbl);
         $adjbl = " adjbl " . $adjbl;
@@ -566,7 +519,7 @@ Class JobTranslation {
      \brief        Gets options for the 'algorithm' task. All channels.
      \return       Deconvolution 'algorithm' task string and its options.
     */
-    private function getTaskAlgorithms( ) {
+    private function getTaskIDAlgorithms( ) {
         $numberOfChannels = $this->getNumberOfChannels();
         $algorithms = "";
         for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
@@ -608,8 +561,7 @@ Class JobTranslation {
         $options .= $this->getPsfPath($channel);
         $options .= " timeOut ";
         $options .= $this->getAlgTimeOut();
-        $options = $this->string2tcllist($options);
-        return $options;
+        return $this->string2tcllist($options);
     }
 
     /*!
@@ -626,7 +578,7 @@ Class JobTranslation {
      \return       Tcl list with the 'zdrift' task and its options
      \todo         To be implemented in the GUI
     */
-    private function getTaskZDrift( ) {
+    private function getTaskIDZDrift( ) {
         $zdrift = "enabled 1 survey single chan 0 ".
             "filter median filterSize 3";
         $zdrift = $this->string2tcllist($zdrift);
@@ -695,11 +647,9 @@ Class JobTranslation {
         $prList = "";
         for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
             $pinRadius = $this->getPinRadiusForChannel($chanCnt);
-            $prList .= " $pinRadius ";
-            $prList = trim($prList);
+            $prList .= " " . $pinRadius;
         }
-        $prList = $this->string2tcllist($prList);
-        return $prList;
+        return  $this->string2tcllist($prList);
     }
 
     /*!
@@ -710,7 +660,7 @@ Class JobTranslation {
     private function getPinRadiusForChannel($channel) {
         $microSetting = $this->microSetting;
         $pinholeSize = $microSetting->parameter("PinholeSize")->value();       
-        $pinholeRadius = "$pinholeSize[$channel]";
+        $pinholeRadius = $pinholeSize[$channel];
         return $pinholeRadius;
     }
 
@@ -724,11 +674,9 @@ Class JobTranslation {
         $prList = "";
         for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
             $verification = $this->getPRVerificationForChannel($chanCnt);
-            $prList .= " $verification ";
-            $prList = trim($prList);
+            $prList .= "  " . $verification;
         }
-        $prList = $this->string2tcllist($prList);
-        return $prList;
+        return $this->string2tcllist($prList);
     }
 
     /*!
@@ -738,9 +686,7 @@ Class JobTranslation {
      \todo         To be implemented in the GUI
     */
     private function getPRVerificationForChannel($channel) {
-        $microSetting = $this->microSetting;
-        $pinholeSize = $microSetting->parameter("PinholeSize")->value();       
-        $pinholeRadius = " $pinholeSize[$channel]";
+        $pinholeRadius = $this->getPinRadiusForChannel($channel);
 
         if($this->isFieldVerified($pinholeRadius)) {
             $verification = "verified";
@@ -759,11 +705,9 @@ Class JobTranslation {
         $microList = "";
         for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
             $microType = $this->getMicroTypeForChannel($chanCnt);
-            $microList .= " $microType ";
-            $microList = trim($microList);
+            $microList .= " " . $microType;
         }
-        $microList = $this->string2tcllist($microList);
-        return $microList;
+        return $this->string2tcllist($microList);
     }
 
     /*!
@@ -788,11 +732,9 @@ Class JobTranslation {
         $verificationList = "";
         for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
             $verification = $this->getMTVerificationForChannel($chanCnt);
-            $verificationList .= " $verification ";
-            $verificationList = trim($verificationList);
+            $verificationList .= " " . $verification;
         }
-        $verificationList = $this->string2tcllist($verificationList);
-        return $verificationList;
+        return $this->string2tcllist($verificationList);
     }
 
     /*!
@@ -828,11 +770,9 @@ Class JobTranslation {
         $lensRIList = "";
         for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
             $lensRI = $this->getLensRIForChannel($chanCnt);
-            $lensRIList .= " $lensRI ";
-            $lensRIList = trim($lensRIList);
+            $lensRIList .= " " . $lensRI;
         }
-        $lensRIList = $this->string2tcllist($lensRIList);
-        return $lensRIList; 
+        return $this->string2tcllist($lensRIList);
     }
 
     /*!
@@ -856,11 +796,9 @@ Class JobTranslation {
         $verificationList = "";
         for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
             $verification = $this->getLRIVerificationForChannel($chanCnt);
-            $verificationList .= " $verification ";
-            $verificationList = trim($verificationList);
+            $verificationList .= " " . $verification;
         }
-        $verificationList = $this->string2tcllist($verificationList);
-        return $verificationList;
+        return $this->string2tcllist($verificationList);
     }
 
     /*!
@@ -887,11 +825,9 @@ Class JobTranslation {
         $numAperList = "";
         for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
             $numAper = $this->getNumApertureForChannel($chanCnt);
-            $numAperList .= " $numAper ";
-            $numAperList = trim($numAperList);
+            $numAperList .= " " . $numAper;
         }
-        $numAperList = $this->string2tcllist($numAperList);
-        return $numAperList;
+        return $this->string2tcllist($numAperList);
     }
 
     /*!
@@ -915,11 +851,9 @@ Class JobTranslation {
         $verificationList = "";
         for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
             $verification = $this->getNAVerificationForChannel($chanCnt);
-            $verificationList .= " $verification ";
-            $verificationList = trim($verificationList);
+            $verificationList .= " " . $verification;
         }
-        $verificationList = $this->string2tcllist($verificationList);
-        return $verificationList;
+        return $this->string2tcllist($verificationList);
     }
 
     /*!
@@ -946,11 +880,9 @@ Class JobTranslation {
         $pinsList = "";
         for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
             $pinSpacing = $this->getPinSpacingForChannel($chanCnt);
-            $pinsList .= " $pinSpacing ";
-            $pinsList = trim($pinsList);
+            $pinsList .= " " . $pinSpacing;
         }
-        $pinsList = $this->string2tcllist($pinsList);
-        return $pinsList; 
+        return $this->string2tcllist($pinsList);
     }
 
     /*!
@@ -977,11 +909,9 @@ Class JobTranslation {
         $verificationList = "";
         for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
             $verification = $this->getPSVerificationForChannel($chanCnt);
-            $verificationList .= " $verification ";
-            $verificationList = trim($verificationList);
+            $verificationList .= " " . $verification;
         }
-        $verificationList = $this->string2tcllist($verificationList);
-        return $verificationList;
+        return $this->string2tcllist($verificationList);
     }
 
 
@@ -1005,13 +935,11 @@ Class JobTranslation {
      \return       Tcl-list with the sampling sizes.
     */
     private function getSamplingSizes( ) {
-        $sampleSizeX = $this->microSetting->sampleSizeX();
-        $sampleSizeY = $this->microSetting->sampleSizeY();
-        $sampleSizeZ = $this->microSetting->sampleSizeZ();
-        $sampleSizeT = $this->microSetting->sampleSizeT();
-        $sampling = " $sampleSizeX $sampleSizeY $sampleSizeZ $sampleSizeT ";
-        $sampling = $this->string2tcllist($sampling);
-        return $sampling;
+        $sampling = $this->microSetting->sampleSizeX();
+        $sampling .= " " . $this->microSetting->sampleSizeY();
+        $sampling .= " " . $this->microSetting->sampleSizeZ();
+        $sampling .= " " . $this->microSetting->sampleSizeT();
+        return $this->string2tcllist($sampling);
     }
 
     /*!
@@ -1037,11 +965,9 @@ Class JobTranslation {
         $objQList = "";
         for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
             $objQuality = $this->getObjQualityForChannel($chanCnt);
-            $objQList .= " $objQuality ";
-            $objQList = trim($objQList);
+            $objQList .= " " . $objQuality;
         }
-        $objQList = $this->string2tcllist($objQList);
-        return $objQList; 
+        return $this->string2tcllist($objQList);
     }
 
     /*!
@@ -1065,11 +991,9 @@ Class JobTranslation {
         $verificationList = "";
         for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
             $verification = $this->getOQVerificationForChannel($chanCnt);
-            $verificationList .= " $verification ";
-            $verificationList = trim($verificationList);
+            $verificationList .= " " . $verification;
         }
-        $verificationList = $this->string2tcllist($verificationList);
-        return $verificationList;
+        return $this->string2tcllist($verificationList);
     }
 
     /*!
@@ -1096,11 +1020,9 @@ Class JobTranslation {
         $excPcntList = "";
         for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
             $excPcnt = $this->getExcitationPcntForChannel($chanCnt);
-            $excPcntList .= " $excPcnt ";
-            $excPcntList = trim($excPcnt);
+            $excPcntList .= " " . $excPcnt;
         }
-        $excPcntList = $this->string2tcllist($excPcntList);
-        return $excPcntList; 
+        return $this->string2tcllist($excPcntList);
     }
 
     /*!
@@ -1127,11 +1049,9 @@ Class JobTranslation {
         $verificationList = "";
         for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
             $verification = $this->getECntVerificationForChannel($chanCnt);
-            $verificationList .= " $verification ";
-            $verificationList = trim($verificationList);
+            $verificationList .= " " . $verification;
         }
-        $verificationList = $this->string2tcllist($verificationList);
-        return $verificationList;
+        return $this->string2tcllist($verificationList);
     }
 
     /*!
@@ -1158,11 +1078,9 @@ Class JobTranslation {
         $exLambdaList = "";
         for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
             $exLambda = $this->getExLambdaForChannel($chanCnt);
-            $exLambdaList .= " $exLambda ";
-            $exLambdaList = trim($exLambdaList);
+            $exLambdaList .= " " . $exLambda;
         }
-        $exLambdaList = $this->string2tcllist($exLambdaList);
-        return $exLambdaList; 
+        return $this->string2tcllist($exLambdaList);
     }
 
     /*!
@@ -1187,11 +1105,9 @@ Class JobTranslation {
         $verificationList = "";
         for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
             $verification = $this->getELVerificationForChannel($chanCnt);
-            $verificationList .= " $verification ";
-            $verificationList = trim($verificationList);
+            $verificationList .= " " . $verification;
         }
-        $verificationList = $this->string2tcllist($verificationList);
-        return $verificationList;
+        return $this->string2tcllist($verificationList);
     }
 
     /*!
@@ -1218,11 +1134,9 @@ Class JobTranslation {
         $exBeamList = "";
         for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
             $exBeam = $this->getExBeamForChannel($chanCnt);
-            $exBeamList .= " $exBeam ";
-            $exBeamList = trim($exBeamList);
+            $exBeamList .= " " . $exBeam;
         }
-        $exBeamList = $this->string2tcllist($exBeamList);
-        return $exBeamList; 
+        return $this->string2tcllist($exBeamList);
     }
 
     /*!
@@ -1244,11 +1158,9 @@ Class JobTranslation {
         $verificationList = "";
         for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
             $verification = $this->getEBVerificationForChannel($chanCnt);
-            $verificationList .= " $verification ";
-            $verificationList = trim($verificationList);
+            $verificationList .= " " . $verification;
         }
-        $verificationList = $this->string2tcllist($verificationList);
-        return $verificationList;
+        return $this->string2tcllist($verificationList);
     }
 
     /*!
@@ -1275,11 +1187,9 @@ Class JobTranslation {
         $emLambdaList = "";
         for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
             $emLambda = $this->getEmLambdaForChannel($chanCnt);
-            $emLambdaList .= " $emLambda ";
-            $emLambdaList = trim($emLambdaList);
+            $emLambdaList .= " " . $emLambda;
         }
-        $emLambdaList = $this->string2tcllist($emLambdaList);
-        return $emLambdaList; 
+        return $this->string2tcllist($emLambdaList);
     }
 
     /*!
@@ -1304,11 +1214,9 @@ Class JobTranslation {
         $verificationList = "";
         for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
             $verification = $this->getEMVerificationForChannel($chanCnt);
-            $verificationList .= " $verification ";
-            $verificationList = trim($verificationList);
+            $verificationList .= " " . $verification;
         }
-        $verificationList = $this->string2tcllist($verificationList);
-        return $verificationList;
+        return $this->string2tcllist($verificationList);
     }
 
     /*!
@@ -1335,11 +1243,9 @@ Class JobTranslation {
         $dirList = "";
         for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
             $imagingDir = $this->getImagingDirForChannel($chanCnt);
-            $dirList .= " $imagingDir ";
-            $dirList = trim($dirList);
+            $dirList .= " " . $imagingDir;
         }
-        $dirList = $this->string2tcllist($dirList);
-        return $dirList;
+        return $this->string2tcllist($dirList);
     }
 
     /*!
@@ -1369,11 +1275,9 @@ Class JobTranslation {
         $verificationList = "";
         for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
             $verification = $this->getIDVerificationForChannel($chanCnt);
-            $verificationList .= " $verification ";
-            $verificationList = trim($verificationList);
+            $verificationList .= " " . $verification;
         }
-        $verificationList = $this->string2tcllist($verificationList);
-        return $verificationList;
+        return $this->string2tcllist($verificationList);
     }
     
     /*!
@@ -1400,11 +1304,9 @@ Class JobTranslation {
         $MRIndexList = "";
         for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
             $MRIndex = $this->getMRIndexForChannel($chanCnt);
-            $MRIndexList .= " $MRIndex ";
-            $MRIndexList = trim($MRIndexList);
+            $MRIndexList .= " " . $MRIndex;
         }
-        $MRIndexList = $this->string2tcllist($MRIndexList);
-        return $MRIndexList; 
+        return $this->string2tcllist($MRIndexList);
     }
 
     /*!
@@ -1429,11 +1331,9 @@ Class JobTranslation {
         $verificationList = "";
         for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
             $verification = $this->getMRIVerificationForChannel($chanCnt);
-            $verificationList .= " $verification ";
-            $verificationList = trim($verificationList);
+            $verificationList .= " " . $verification;
         }
-        $verificationList = $this->string2tcllist($verificationList);
-        return $verificationList;
+        return $this->string2tcllist($verificationList);
     }
 
     /*!
@@ -1520,8 +1420,7 @@ Class JobTranslation {
         for ($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
             $bgValues .= $this->getBgValueForChannel($chanCnt);
         }
-        $bgValues = $this->string2tcllist($bgValues);
-        return $bgValues;
+        return $this->string2tcllist($bgValues);
     }
 
     /*!
@@ -1555,9 +1454,7 @@ Class JobTranslation {
         for ($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
             $snrValues .= $this->getSnrValueForChannel($chanCnt);
         }
-        $snrValues = $this->string2tcllist($snrValues);
-
-        return $snrValues;
+        return $this->string2tcllist($snrValues);
     }
 
     /*!
@@ -1568,7 +1465,7 @@ Class JobTranslation {
     private function getSnrValueForChannel($channel) {
         $deconSetting = $this->deconSetting;
         $snrRate = $deconSetting->parameter("SignalNoiseRatio")->value();       
-        $snrValue = " $snrRate[$channel]";
+        $snrValue = $snrRate[$channel];
          
         if ($this->getAlgorithm() == "qmle") {
             $indexValues = array  (1, 2, 3, 4, 5);
@@ -1635,7 +1532,7 @@ Class JobTranslation {
             $microSetting = $this->microSetting;
             $psfFiles = $microSetting->parameter("PSF")->value();
             $psf = $this->getSrcDir() ."/". $psfFiles[$channel];
-            $psfPath .= " $psf ";
+            $psfPath .= " " . $psf;
             $psfPath = trim($psfPath);
         }
         if ($this->getPsfMode() == "auto") {
@@ -1678,6 +1575,44 @@ Class JobTranslation {
     }
 
     /* ------------------------------ Utilities -------------------------------- */
+
+    /*!
+     \brief       Gets the current date in format: Wed Feb 02 16:02:11 CET 2011
+     \return      The date
+    */
+    private function getTemplateDate( ) {
+        $today = date("D M j G:i:s T Y");  
+        $today = $this->string2tcllist($today);
+        return $today;
+    }
+
+    /*!
+     \brief       Gets the template name as batch_2011-02-02_16-02-08
+     \return      The template name
+    */
+    private function getTemplateName( ) {
+        $time = date('h-i-s');  
+        $today = date('j-m-y');  
+        $templateName = "batch_" . $today . "_" . $time;
+        return $templateName;
+    }
+
+    /*!
+     \brief       Gets the Huygens template version built in this class
+     \return      The template version
+    */
+    private function getTemplateVersion( ) {
+        return $templateVersion = 2.2;
+    }
+
+    /*!
+     \brief       Gets a general template title
+     \return      The template title
+    */
+    private function getTemplateTitle( ) {
+        $templateTitle = "Batch processing template";
+        return $this->string2tcllist($templateTitle);
+    }
 
     /*!
      \brief        Gets the number of channels of the template.
