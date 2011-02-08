@@ -1359,6 +1359,27 @@ class DatabaseConnection {
 	$query = "select name, standard from $table where owner ='" . $username . "' order by name";
 	return ( $this->query( $query ) );
   }
+
+  /*!
+    \brief	Get the parameter confidence level for given file format
+	\param	$fileFormat		File format for which the Parameter confidence level is queried
+	\param	$parameterName	Name of the Paramater the confidence level should be returned   
+    \return	parameter confidence level
+    \todo	This function is a STUB. Expand it as soon as the table structure is known
+  */
+  public function getParameterConfidenceLevel( $fileFormat, $parameterName ) {
+	$levels = array();
+	$levels[ 0 ] = "Provide";
+	$levels[ 1 ] = "Trusted";
+	$levels[ 2 ] = "Untrusted";
+	$levels[ 3 ] = "Missing";
+    $a = rand( 0, 3 );
+    return ( $levels[ $a ] );
+  }
+
+  /*
+                              PRIVATE FUNCTIONS
+  */
   
   /*!
     \brief	Ugly hack to check for old table structure
