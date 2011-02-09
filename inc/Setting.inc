@@ -316,7 +316,7 @@ class ParameterSetting extends Setting {
 
     $this->message = '';
     $noErrorsFound = True;
-
+    
     // Get the names of the relevant parameters
     $names = $this->imageParameterNames();
 
@@ -330,7 +330,18 @@ class ParameterSetting extends Setting {
             $this->message = "Please choose a file format!";
             break;
           case "ImageGeometry" :
-            $this->message = "Please set the image geometry!";
+            // This is a special case: for fixed geometry file formats,
+            // we will have to enforce the XY geometry
+            $singleParameters = $this->fixedGeometryFileFormats();
+            if ( isset( $postedParameters[ "ImageFileFormat" ] ) ) {
+              if ( array_search( $postedParameters[ "ImageFileFormat" ], $singleParameters ) === false ) {
+                $this->message = "Please set the image geometry!";
+              } else {
+                $postedParameters[ "ImageFileFormat" ] = "multi_XY - time";
+              }
+            } else {
+              $this->message = "Please set the image geometry!";
+            }
             break;
           case "NumberOfChannels" :
             $this->message = "Please set the number of channels!";
