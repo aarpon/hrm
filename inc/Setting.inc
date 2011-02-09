@@ -336,23 +336,35 @@ class ParameterSetting extends Setting {
             if ( isset( $postedParameters[ "ImageFileFormat" ] ) ) {
               if ( array_search( $postedParameters[ "ImageFileFormat" ], $singleParameters ) === false ) {
                 $this->message = "Please set the image geometry!";
+				$noErrorsFound = False;
               } else {
-                $postedParameters[ "ImageFileFormat" ] = "multi_XY - time";
+				// To single plane file formats, the XY - time geometry
+				// is associated
+				$parameter = $this->parameter( $name );
+				$parameter->setValue( "XY - time" );
+				$this->set( $parameter );
+				if( !$parameter->check() ) {
+					$this->message = $parameter->message();
+					$noErrorsFound = False;
+				}
               }
+			  // No errors
             } else {
               $this->message = "Please set the image geometry!";
+			  $noErrorsFound = False;
             }
             break;
           case "NumberOfChannels" :
             $this->message = "Please set the number of channels!";
+			$noErrorsFound = False;
             break;
           case "PointSpreadFunction" :
             $this->message = "Please indicate whether you " .
 							"would like to calculate a theoretical PSF " .
 							"or use an existing measured one!";
+			$noErrorsFound = False;
             break;
         }
-        $noErrorsFound = False;
       } else {
         // The Parameter is set, now check the value
         $parameter = $this->parameter( $name );
