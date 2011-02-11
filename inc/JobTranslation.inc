@@ -7,8 +7,9 @@
    \brief  Converts deconvolution parameters into a Huygens batch template.
 
    This class builds Tcl-compliant nested lists which summarize the tasks and 
-   properties of the deconvolution job. The resulting structure is a Huygens 
-   batch template formed by nested lists. 
+   properties of the deconvolution job. Tasks describing the thumbnail products
+   of an HRM deconvolution job are also included. The resulting structure is 
+   a Huygens batch template formed by nested lists.
 
    Template structure:
 
@@ -42,6 +43,12 @@
 Class JobTranslation {
 
     /*!
+     \var     $template
+     \brief   Batch template summarizing the deconvolution job and thumbnail tasks.
+    */
+    public $template;
+
+    /*!
      \var     $jobInfo
      \brief   A Tcl list with job information for the template header.
      */
@@ -62,7 +69,7 @@ Class JobTranslation {
 
     /*!
       \var    $taskIDDetails
-      \brief  A Tcl list with microscopic and restoration data
+      \brief  A Tcl list with microscopic, restoration and thumbnail data
     */
     private $taskIDDetails;
 
@@ -74,15 +81,9 @@ Class JobTranslation {
 
     /*!
       \var    $taskIDArray
-      \brief  Array with restoration operations.
+      \brief  Array with restoration and thumbnail operations.
     */
     private $taskIDArray;
-
-    /*!
-     \var     $template
-     \brief   Batch template summarizing the deconvolution job.
-    */
-    public $template;
 
     /*!
       \var    $srcImage
@@ -136,7 +137,7 @@ Class JobTranslation {
     }
 
     /*!
-     \brief       Sets class general atributes
+     \brief       Sets class general properties to initial values
     */
     private function initialize($jobDescription) {
         $this->jobDescription = $jobDescription;
@@ -167,23 +168,23 @@ Class JobTranslation {
     */
     private function setTaskIDArray( ) {
 
-        $this->taskIDArray = array ( 'open'                  =>  'imgOpen',
-                                     'setParameters'         =>  'setp',
-                                     'adjustBaseline'        =>  'adjbl',
-                                     'algorithms'            =>  '',
-                                     'XYXZSrcAtSrc'          =>  'previewGen',
-                                     'XYXZSrcAtDst'          =>  'previewGen',
-                                     'XYXZDstAtDst'          =>  'previewGen',
-                                     'orthoDstAtDst'         =>  'previewGen',
-                                     'orthoSrcAtDst'         =>  'previewGen',
-                                     'ZMovieDstAtDst'        =>  'previewGen',
-                                     'TimeMovieDstAtDst'     =>  'previewGen',
-                                     'TimeSFPMovieDstAtDst'  =>  'previewGen',
-                                     'SFPSrcAtDst'           =>  'previewGen',
-                                     'SFPDstAtDst'           =>  'previewGen',
-                                     'ZComparisonAtDst'      =>  'previewGen',
-                                     'TComparisonAtDst'      =>  'previewGen',
-                                     'save'                  =>  'imgSave');
+        $this->taskIDArray = array ( 'open'                     =>  'imgOpen',
+                                     'setParameters'            =>  'setp',
+                                     'adjustBaseline'           =>  'adjbl',
+                                     'algorithms'               =>  '',
+                                     'XYXZRawAtSrcDir'          =>  'previewGen',
+                                     'XYXZRawAtDstDir'          =>  'previewGen',
+                                     'XYXZDecAtDstDir'          =>  'previewGen',
+                                     'orthoRawAtDstDir'         =>  'previewGen',
+                                     'orthoDecAtDstDir'         =>  'previewGen',
+                                     'ZMovieDecAtDstDir'        =>  'previewGen',
+                                     'TimeMovieDecAtDstDir'     =>  'previewGen',
+                                     'TimeSFPMovieDecAtDstDir'  =>  'previewGen',
+                                     'SFPRawAtDstDir'           =>  'previewGen',
+                                     'SFPDecAtDstDir'           =>  'previewGen',
+                                     'ZComparisonAtDstDir'      =>  'previewGen',
+                                     'TComparisonAtDstDir'      =>  'previewGen',
+                                     'save'                     =>  'imgSave');
     }
 
     /*!
@@ -259,8 +260,8 @@ Class JobTranslation {
     }
 
     /*!
-     \brief       Get the job export format as a list of options
-     \return      Tcl-complaint neste list with the export format options
+     \brief       Get the job export format feature as a list of options
+     \return      Tcl-complaint nested list with the export format options
     */
     private function getExportFormat( ) {
         $exportFormat = "type ";
@@ -270,7 +271,7 @@ Class JobTranslation {
     }
 
     /*!
-     \brief       Builds a Tcl list with microscopic and restoration data. 
+     \brief       Builds a Tcl list with microscopic, restoration and preview data. 
      \return      The Tcl-compliant nested list
     */
     private function buildTaskList( ) {
@@ -292,11 +293,13 @@ Class JobTranslation {
     }
 
     /*!
-     \brief       Gets the information of the tasks.
+     \brief       Gets scheduling information oo the tasks.
      \return      The Tcl-compliant nested list with task information
     */
     private function getTaskIDInfo( ) {
 
+        /* The job is sent to the Huygens Scheduler to start right away.
+         Therefore the state is ready and the timeStartAbs is just now. */
         $taskInfo = "state ";
         $taskInfo .= $this->getTaskState();
         $taskInfo .= " tag " ;
@@ -334,7 +337,7 @@ Class JobTranslation {
 
     /*!
      \brief       Gets the time lapse since 1st January 1970, in seconds.
-     \return      The seconds since Epoch time.
+     \return      The seconds since Epoch time until now.
     */
     private function getAbsTime( ) {
         $absTime = time();
@@ -343,7 +346,7 @@ Class JobTranslation {
 
     /*!
      \brief       Gets the task tag information
-     \return      The Tcl-compliant neste list with the tag information
+     \return      The Tcl-compliant nested list with the tag information
     */
     private function getTaskTag( ) {
         /* There are no specific names for the deconvolution and microscopic
@@ -353,8 +356,8 @@ Class JobTranslation {
     }
 
     /*!
-     \brief       Gets the tasks to perform a deconvolution. 
-     \return      The Tcl-compliant nested list with task names
+     \brief       Gets the Huygens subtask names of a deconvolution. 
+     \return      The Tcl-compliant nested list with subtask names
     */
     private function getTaskIDDeconTasks( ) {
         $taskList = "";
@@ -364,7 +367,6 @@ Class JobTranslation {
                 $taskList .= $task ." ";
             }
         }
-        $this->initializePreviewCounter();
         $taskList = $this->string2tcllist($taskList);
         $taskList = " taskList " . $taskList;
         return $taskList;
@@ -375,6 +377,9 @@ Class JobTranslation {
      \return      The Tcl-compliant nested list with task details
     */
     private function getTaskIDDetails( ) {
+
+        $this->initializePreviewCounter();
+
         $taskList = "";
         foreach ($this->taskIDArray as $key => $task) { 
             switch ( $key ) {
@@ -396,43 +401,43 @@ Class JobTranslation {
             case 'zdrift':
                 $taskList .= $this->getTaskIDZDrift($task);
                 break;
-            case 'XYXZSrcAtSrc':
-                $taskList .= $this->getTaskIDXYXZ($key,$task,"src","src");
+            case 'XYXZRawAtSrcDir':
+                $taskList .= $this->getTaskIDXYXZ($key,$task,"raw","src");
                 break;
-            case 'XYXZSrcAtDst':
-                $taskList .= $this->getTaskIDXYXZ($key,$task,"src","dest");
+            case 'XYXZRawAtDstDir':
+                $taskList .= $this->getTaskIDXYXZ($key,$task,"raw","dest");
                 break;
-            case 'XYXZDstAtDst':
-                $taskList .= $this->getTaskIDXYXZ($key,$task,"dest","dest");
+            case 'XYXZDecAtDstDir':
+                $taskList .= $this->getTaskIDXYXZ($key,$task,"dec","dest");
                 break;
-            case 'orthoSrcAtDst':
-                $taskList .= $this->getTaskIDOrtho($key,$task,"src","dest");
+            case 'orthoRawAtDstDir':
+                $taskList .= $this->getTaskIDOrtho($key,$task,"raw","dest");
                 break;
-            case 'orthoDstAtDst':
-                $taskList .= $this->getTaskIDOrtho($key,$task,"dest","dest");
+            case 'orthoDecAtDstDir':
+                $taskList .= $this->getTaskIDOrtho($key,$task,"dec","dest");
                 break;
-            case 'SFPSrcAtDst':
-                $taskList .= $this->getTaskIDSFP($key,$task,"src","dest");
+            case 'SFPRawAtDstDir':
+                $taskList .= $this->getTaskIDSFP($key,$task,"raw","dest");
                 break;
-            case 'SFPDstAtDst':
-                $taskList .= $this->getTaskIDSFP($key,$task,"dest","dest");
+            case 'SFPDecAtDstDir':
+                $taskList .= $this->getTaskIDSFP($key,$task,"dec","dest");
                 break;
-            case 'ZMovieDstAtDst':
+            case 'ZMovieDecAtDstDir':
                 $taskList .= 
-                    $this->getTaskIDMovie($key,$task,"dest","dest","ZMovie");
+                    $this->getTaskIDMovie($key,$task,"dec","dest","ZMovie");
                 break;
-            case 'TimeSFPMovieDstAtDst':
+            case 'TimeSFPMovieDecAtDstDir':
                 $taskList .= 
-                    $this->getTaskIDMovie($key,$task,"dest","dest","timeSFPMovie");
+                    $this->getTaskIDMovie($key,$task,"dec","dest","timeSFPMovie");
                 break;
-            case 'TimeMovieDstAtDst':
+            case 'TimeMovieDecAtDstDir':
                 $taskList .= 
-                    $this->getTaskIDMovie($key,$task,"dest","dest","timeMovie");
+                    $this->getTaskIDMovie($key,$task,"dec","dest","timeMovie");
                 break;
-            case 'ZComparisonAtDst':
+            case 'ZComparisonAtDstDir':
                 $taskList .= $this->getTaskIDZComparison($key,$task,"dest");
                 break;
-            case 'TComparisonAtDst':
+            case 'TComparisonAtDstDir':
                 $taskList .= $this->getTaskIDTComparison($key,$task,"dest");
                 break;
             default:
@@ -443,10 +448,10 @@ Class JobTranslation {
     }
 
     /*!
-     \brief       When a task is not well defined in the task array, get it here.
+     \brief       Get the Huygens task name of a task.
      \param       $key A task array key
      \param       $task A task compliant with the Huygens template task names
-     \return      The action for $key
+     \return      The Huygens task name
     */
     private function parseTask($key,$task) {
 
@@ -461,7 +466,10 @@ Class JobTranslation {
     }
 
     /*!
-     \brief
+     \brief       Gets the Huygens task name of a preview task
+     \param       $key A task array key
+     \param       $task A task compliant with the Huygens template task names
+     \return      The Huygens preview task name
     */
     private function parsePreviewGen($key,$task) {
         global $useThumbnails;
@@ -486,7 +494,8 @@ Class JobTranslation {
     }
 
     /*!
-     \brief
+     \brief       Gets the Huygens deconvolution task names of every channel
+     \return      The Huygens deconvolution task names
     */
     private function parseAlgorithm ( ) {
         $numberOfChannels = $this->getNumberOfChannels();
@@ -501,7 +510,7 @@ Class JobTranslation {
     
     /*!
      \brief       Gets options for the 'image open' task
-     \param       A task from the taskID array
+     \param       $task A task from the taskID array that should be 'imgOpen'.
      \return      Tcl list with the'Image open' task and its options
     */
     private function getTaskIDImgOpen($task) {
@@ -515,10 +524,11 @@ Class JobTranslation {
 
     /*!
      \brief       Gets options for the 'set parameters' task
-     \param       A task from the taskID array
+     \param       $task A task from the taskID array that should be 'setp'.
      \return      Tcl list with the 'Set parameters' task and its options
     */
     private function getTaskIDSetp($task) {
+
         $options = "completeChanCnt ";
         $options .= $this->getNumberOfChannels();
         $options .= " iFacePrim ";
@@ -585,12 +595,13 @@ Class JobTranslation {
         $options .= $this->getNumericalAperture();
         $options = $this->string2tcllist($options);
         $setp = " setp " . $options;
+
         return $setp;
     }
 
     /*!
      \brief       Gets options for the 'image save' task
-     \param       A task from the taskID array
+     \param       $task A task from the taskID array that should be 'imgSave'.
      \return      Tcl list with the 'Image save' task and its options
     */
     private function getTaskIDImgSave($task) {
@@ -603,7 +614,7 @@ Class JobTranslation {
 
     /*!
      \brief       Gets options for the 'adjust baseline' task
-     \param       A task from the taskID array
+     \param       $task A task from the taskID array that should be 'adjbl'.
      \return      Tcl list with the 'Adjust baseline' task and its options
     */
     private function getTaskIDAdjbl($task) {
@@ -664,7 +675,7 @@ Class JobTranslation {
 
     /*!
      \brief       Gets the deconvolution timeout
-     \return      The timeout
+     \return      The timeout in seconds
     */
     private function getAlgTimeOut( ) {
         $algTimeOut = 36000;
@@ -673,9 +684,9 @@ Class JobTranslation {
 
     /*!
      \brief       Gets options for the 'zdrift' task.
-     \params      A task from the taskID array
+     \params      A task from the taskID array that should be 'zdrift'.
      \return      Tcl list with the 'zdrift' task and its options
-     \todo        To be implemented in the GUI
+     \todo        zDrift option to be implemented in the GUI
     */
     private function getTaskIDZDrift($task) {
         $zdrift = "enabled 1 survey single chan 0 ".
@@ -1676,44 +1687,27 @@ Class JobTranslation {
     /* ------------------------------ Thumbnails -------------------------------- */
 
     /*!
-     \brief       Creates the previews of the source image at the source folder
-     \param       $key    A task key from the taskID array
-     \param       $task   A task from the taskID array
-     \param       $src    Whether the raw image or the deconvolved
-     \param       $dest   Whether to be saved in the source or the destination
+     \brief       Gets task information for XY and XZ previews
+     \param       $key     A task key from the taskID array
+     \param       $task    A task from the taskID array
+     \param       $srcImg  Whether the raw image or the deconvolved
+     \param       $destDir Whether to be saved in the source or the destination
      \return      The preview generation list
     */
     private function getTaskIDXYXZ($key,$task,$srcImg,$destDir) {
 
+        /* Get the Huygens task name of the $task */
         $task = $this->parseTask($key,$task);
         if ($task == "") {
             return;
         }
 
-        if ($srcImg == "src") {
-            $destFile = basename($this->srcImage);
-            $image = "raw ";
-        } elseif ($srcImg == "dest") {
-            $destFile = basename($this->destImage);
-            $image = "deconvolved ";
-        } else {
-            error_log("Unknown image source: $srcImg");
-        }
-
-        if ($destDir == "dest") {
-            $destDir = $this->getDestDir() . "/hrm_previews";
-        } elseif ($destDir == "src") {
-            $destDir = $this->getSrcDir() . "/hrm_previews";
-        } else {
-            error_log("Unknown image path: $destDir");
-        }
-
         $previewGen = "image ";
-        $previewGen .= $image;
+        $previewGen .= $this->getImageType($srcImg);
         $previewGen .= " destDir ";
-        $previewGen .= $destDir;
+        $previewGen .= $this->getThumbnailDestDir($destDir);
         $previewGen .= " destFile ";
-        $previewGen .= $destFile;
+        $previewGen .= $this->getThumbnailDestFile($srcImg,"XYXZ");
         $previewGen .= " type ";
         $previewGen .= $this->getPreviewType("XYXZ");
         $previewGen = $this->string2tcllist($previewGen);
@@ -1722,42 +1716,27 @@ Class JobTranslation {
     }
 
     /*!
-     \brief       Creates the previews of the source image at the dest folder
-     \param       $key    A task key from the taskID array
-     \param       $task   A task from the taskID array
+     \brief       Gets task information for ortho previews
+     \param       $key     A task key from the taskID array
+     \param       $task    A task from the taskID array
+     \param       $srcImg  Whether the raw image or the deconvolved
+     \param       $destDir Whether to be saved in the source or the destination
      \return      The preview generation list
     */
-    private function getTaskIDOrtho($key,$task,$srcImg,$dest) {
+    private function getTaskIDOrtho($key,$task,$srcImg,$destDir) {
 
+        /* Get the Huygens task name of the $task */
         $task = $this->parseTask($key,$task);
         if ($task == "") {
             return;
         }
 
-        if ($dest == "dest") {
-            $destDir = $this->getDestDir() . "/hrm_previews";
-        } elseif ($dest == "src") {
-            $destDir = $this->getSrcDir() . "/hrm_previews";
-        } else {
-            error_log("Unknown image path: $dest");
-        }
-
-        if ($srcImg == "src") {
-            $destFile = basename($this->destImage) . ".original";
-            $image = "raw ";
-        } elseif ($srcImg == "dest") {
-            $destFile = basename($this->destImage);
-            $image = "deconvolved ";
-        } else {
-            error_log("Unknown image source: $srcImg");
-        }
-
         $previewGen = "image ";
-        $previewGen .= $image;
+        $previewGen .= $this->getImageType($srcImg);
         $previewGen .= " destDir ";
-        $previewGen .= $destDir;
+        $previewGen .= $this->getThumbnailDestDir($destDir);
         $previewGen .= " destFile ";
-        $previewGen .= $destFile;
+        $previewGen .= $this->getThumbnailDestFile($srcImg,"Ortho");
         $previewGen .= " type ";
         $previewGen .= $this->getPreviewType("orthoSlice");
         $previewGen .= " size ";
@@ -1768,42 +1747,27 @@ Class JobTranslation {
     }
     
     /*!
-     \brief       Creates the SFP preview of the source image at the dest folder
-     \param       $key    A task key from the taskID array
-     \param       $task   A task from the taskID array
-     \return      The SFP preview generation list
+     \brief       Gets task information for SFP previews
+     \param       $key     A task key from the taskID array
+     \param       $task    A task from the taskID array
+     \param       $srcImg  Whether the raw image or the deconvolved
+     \param       $destDir Whether to be saved in the source or the destination
+     \return      The preview generation list
     */
     private function getTaskIDSFP($key,$task,$srcImg,$destDir) {
 
+        /* Get the Huygens task name of the $task */
         $task = $this->parseTask($key,$task);
         if ($task == "") {
             return;
         }
 
-        if ($srcImg == "src") {
-            $image = "raw ";
-            $destFile = basename($this->destImage) . ".original.sfp";
-        } elseif ($srcImg == "dest") {
-            $image = "deconvolved ";
-            $destFile = basename($this->destImage) . ".sfp";
-        } else {
-            error_log("Unknown image source: $srcImg");
-        }
-
-        if ($destDir == "src") {
-            $destDir = $this->getDestDir() . "/hrm_previews";
-        } elseif ($destDir == "dest") {
-            $destDir = $this->getDestDir() . "/hrm_previews";
-        } else {
-            error_log("Unknown image path: $destDir");
-        }
-
         $previewGen = "image ";
-        $previewGen .= $image;
+        $previewGen .= $this->getImageType($srcImg);
         $previewGen .= " destDir ";
-        $previewGen .= $destDir;
+        $previewGen .= $this->getThumbnailDestDir($destDir);
         $previewGen .= " destFile ";
-        $previewGen .= $destFile;
+        $previewGen .= $this->getThumbnailDestFile($srcImg,"SFP");
         $previewGen .= " type ";
         $previewGen .= $this->getPreviewType("SFP");
         $previewGen = $this->string2tcllist($previewGen);
@@ -1812,27 +1776,54 @@ Class JobTranslation {
     }
 
     /*!
-     \brief       Creates the SFP of the source in the destination directory.
-     \param       $key    A task key from the taskID array
+     \brief       Gets task information for movie tasks
+     \param       $key       A task key from the taskID array
+     \param       $task      A task from the taskID array
+     \param       $srcImg    Whether the raw image or the deconvolved
+     \param       $destDir   Whether to be saved in the source or the destination
+     \param       $movieType Whether the movie is a stack, a time frame or SFP
+     \return      The preview generation list
+    */
+    private function getTaskIDMovie($key,$task,$srcImg,$destDir,$movieType) {
+
+        /* Get the Huygens task name of the $task */
+        $task = $this->parseTask($key,$task);
+        if ($task == "") {
+            return;
+        }
+        
+        $previewGen = "image ";
+        $previewGen .= $this->getImageType($srcImg);
+        $previewGen .= " destDir ";
+        $previewGen .= $this->getThumbnailDestDir($destDir);
+        $previewGen .= " destFile ";
+        $previewGen .= $this->getThumbnailDestFile($srcImg,"Movie",$movieType);
+        $previewGen .= " type ";
+        $previewGen .= $this->getPreviewType($movieType);
+        $previewGen .= " size ";
+        $previewGen .= $this->getMovieSize();
+        $previewGen = $this->string2tcllist($previewGen);
+        $previewGen = " " . $task . " " . $previewGen;
+        return $previewGen;
+    }
+
+    /*!
+     \brief       Gets task information for stack comparison previews
+     \param       $key     A task key from the taskID array
      \param       $task    A task from the taskID array
+     \param       $destDir Whether to be saved in the source or the destination
+     \return      The preview generation list
     */
     private function getTaskIDZComparison($key,$task,$destDir) {
 
+        /* Get the Huygens task name of the $task */
         $task = $this->parseTask($key,$task);
         if ($task == "") {
             return;
         }
 
-        if ($destDir == "dest") {
-            $destDir = $this->getDestDir() . "/hrm_previews";
-        } elseif ($destDir == "src") {
-            $destDir = $this->getSrcDir() . "/hrm_previews";
-        } else {
-            error_log("Unknown image path: $destDir");
-        }
-
         $previewGen = " destDir ";
-        $previewGen .= $destDir;
+        $previewGen .= $this->getThumbnailDestDir($destDir);
         $previewGen .= " destFile ";
         $previewGen .= basename($this->destImage);
         $previewGen .= " type ";
@@ -1845,27 +1836,22 @@ Class JobTranslation {
     }
 
     /*!
-     \brief       Creates the SFP of the source in the destination directory.
+     \brief       Gets task information for time frame comparison previews
      \param       $key     A task key from the taskID array
      \param       $task    A task from the taskID array
+     \param       $destDir Whether to be saved in the source or the destination
+     \return      The preview generation list
     */
     private function getTaskIDTComparison($key,$task,$destDir) {
 
+        /* Get the Huygens task name of the $task */
         $task = $this->parseTask($key,$task);
         if ($task == "") {
             return;
         }
 
-        if ($destDir == "dest") {
-            $destDir = $this->getDestDir() . "/hrm_previews";
-        } elseif ($destDir == "src") {
-            $destDir = $this->getSrcDir() . "/hrm_previews";
-        } else {
-            error_log("Unknown image path: $destDir");
-        }
-
         $previewGen = " destDir ";
-        $previewGen .= $destDir;
+        $previewGen .= $this->getThumbnailDestDir($destDir);
         $previewGen .= " destFile ";
         $previewGen .= basename($this->destImage);
         $previewGen .= " type ";
@@ -1878,37 +1864,55 @@ Class JobTranslation {
     }
 
     /*!
-     \brief       Creates a comparison movie in the destination directory.
-     \param       $key     A task key from the taskID array
-     \param       $task    A task from the taskID array
+     \brief       Gets the preview type
+     \return      The preview type
     */
-    private function getTaskIDMovie($key,$task,$srcImg,$destDir,$movieType) {
-
-        $task = $this->parseTask($key,$task);
-        if ($task == "") {
-            return;
+    private function getPreviewType($type) {
+        switch ( $type ) {
+        case 'XYXZ':
+        case 'orthoSlice':
+        case 'compareZStrips':
+        case 'ZMovie':
+        case 'SFP':
+        case 'compareTStrips':
+        case 'timeSFPMovie':
+        case 'timeMovie':
+            break;
+        default:
+            error_log("Unknown preview type");
         }
 
-        if ($movieType == "ZMovie") {
-            $fileExtension = ".stack";
-        } elseif ($movieType == "timeSFPMovie") {
-            $fileExtension = ".tSeries.sfp";
-        } elseif ($movieType == "timeMovie") {
-            $fileExtension = ".tSeries";
-        } else {
+        return $type;
+    }
+
+    /*!
+     \brief       Gets the file suffix dependin on the movie type
+     \param       $movieType  The movie type
+     \return      The file suffix
+    */
+    private function getMovieFileSuffix($movieType) {
+        switch ( $movieType ) {
+        case 'ZMovie':
+            $fileSuffix = ".stack";
+            break;
+        case 'timeSFPMovie':
+            $fileSuffix = ".tSeries.sfp";
+            break;
+        case 'timeMovie':
+            $fileSuffix = ".tSeries";
+            break;
+        default:
             error_log("Unknown movie type: $movieType");
         }
- 
-        if ($srcImg == "src") {
-            $destFile = basename($this->srcImage);
-            $image = "raw ";
-        } elseif ($srcImg == "dest") {
-            $destFile = basename($this->destImage) . $fileExtension;
-            $image = "deconvolved ";
-        } else {
-            error_log("Unknown image source: $srcImg");
-        }
+        return $fileSuffix;
+    }
 
+    /*!
+     \brief       Gets the destination directory of a thumbnail
+     \param       $destDir Source data or deconvolved data folder.
+     \return      The thumbnail destination folder
+    */
+    private function getThumbnailDestDir($destDir) {
         if ($destDir == "dest") {
             $destDir = $this->getDestDir() . "/hrm_previews";
         } elseif ($destDir == "src") {
@@ -1916,60 +1920,91 @@ Class JobTranslation {
         } else {
             error_log("Unknown image path: $destDir");
         }
-        
-        $previewGen = "image ";
-        $previewGen .= $image;
-        $previewGen .= " destDir ";
-        $previewGen .= $this->getDestDir() . "/hrm_previews";
-        $previewGen .= " destFile ";
-        $previewGen .= $destFile;
-        $previewGen .= " type ";
-        $previewGen .= $this->getPreviewType($movieType);
-        $previewGen .= " size ";
-        $previewGen .= $this->getMovieSize();
-        $previewGen = $this->string2tcllist($previewGen);
-        $previewGen = " " . $task . " " . $previewGen;
-        return $previewGen;
+        return $destDir;
     }
 
     /*!
-     \brief       Gets the preview type
-     \return      The preview type
+     \brief      Gets the destination file name of the thumbnail
+     \param      $srcImg The image from which to make a thumbnail: raw or dec
+     \param      $caller Which kind of thumbnail is to be made
+     \param      $movieType Whether stack, timeMovie, timeSFPMovie or nothing.
+     \return     A name for the thumbnail file
     */
-    private function getPreviewType($type) {
-        if ($type == "XYXZ") {
-            return $type;
-        } elseif ($type == "orthoSlice") {
-            return $type;
-        } elseif ($type == "compareZStrips") {
-            return $type;
-        } elseif ($type == "ZMovie") {
-            return $type;
-        } elseif ($type == "SFP") {
-            return $type;
-        } elseif ($type == "compareTStrips") {
-            return $type;
-        } elseif ($type == "timeSFPMovie") {
-            return $type;
-        } elseif ($type == "timeMovie") {
-            return $type;
-        } else {
-            error_log("Unknown preview type");
+    private function getThumbnailDestFile($srcImg,$caller,$movieType = null) {
+
+        switch ( $caller ) {
+        case 'XYXZ':
+            if ($srcImg == "raw") {
+                $destFile = basename($this->srcImage);
+            } elseif ($srcImg == "dec") {
+                $destFile = basename($this->destImage);
+            } else {
+                error_log("Unknown image source: $srcImg");
+            }
+            break;
+        case 'Ortho':
+            if ($srcImg == "raw") {
+                $destFile = basename($this->destImage) . ".original";
+            } elseif ($srcImg == "dec") {
+                $destFile = basename($this->destImage);
+            } else {
+                error_log("Unknown image source: $srcImg");
+            }
+            break;
+        case 'SFP':
+            if ($srcImg == "raw") {
+                $destFile = basename($this->destImage) . ".original.sfp";
+            } elseif ($srcImg == "dec") {
+                $destFile = basename($this->destImage) . ".sfp";
+            } else {
+                error_log("Unknown image source: $srcImg");
+            }
+            break;
+        case 'Movie':
+            if ($srcImg == "raw") {
+                $destFile = basename($this->srcImage);
+            } elseif ($srcImg == "dec") {
+                $destFile = basename($this->destImage);
+                $destFile .= $this->getMovieFileSuffix($movieType);
+            } else {
+                error_log("Unknown image source: $srcImg");
+            }
+            break;
+        default:
+            error_log("Unknown thumbnail caller: $caller");
         }
+        return $destFile;
     }
 
+    /*!
+     \brief      Gets whether the image is deconvolved or raw data
+     \param      $image    Whether the image is 'raw' or 'dec'.
+     \return     The Huygens template word for 'raw', 'dec'.
+    */
+    private function getImageType($image) {
+        if ($image == "raw") {
+            return $image;
+        } elseif ($image == "dec") {
+            $image = "deconvolved";
+        } else {
+            error_log("Unknown image type: $image");
+        }
+        return $image;
+    }
+
+    /* ------------------------------ Utilities -------------------------------- */
+    
     /*!
      \brief       Gets size of the thumbnails.
-     \return      An integer as preview size.
+     \return      Number: The thumbnail size.
     */
     private function getPreviewSize( ) {
         return 400;
     }
 
-
     /*!
      \brief       Gets size of the movie.
-     \return      An integer as movie size.
+     \return      Number: The movie size.
     */
     private function getMovieSize( ) {
         global $movieMaxSize;
@@ -1977,14 +2012,13 @@ Class JobTranslation {
     }
 
     /*!
-     \brief
+     \brief       Gets comparison size.
+     \return      Number: The comparison size.
     */
     private function getComparisonSize( ) {
         global $maxComparisonSize;
         return $maxComparisonSize;
     }
-
-    /* ------------------------------ Utilities -------------------------------- */
 
     /*!
      \brief       Resets the counter of preview tasks
