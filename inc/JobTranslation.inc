@@ -173,6 +173,7 @@ Class JobTranslation {
                                      'adjustBaseline'           =>  'adjbl',
                                      'algorithms'               =>  '',
                                      'XYXZRawAtSrcDir'          =>  'previewGen',
+                                     'XYXZRawLifAtSrcDir'       =>  'previewGen',
                                      'XYXZRawAtDstDir'          =>  'previewGen',
                                      'XYXZDecAtDstDir'          =>  'previewGen',
                                      'orthoRawAtDstDir'         =>  'previewGen',
@@ -403,6 +404,9 @@ Class JobTranslation {
                 break;
             case 'XYXZRawAtSrcDir':
                 $taskList .= $this->getTaskIDXYXZ($key,$task,"raw","src");
+                break;
+            case 'XYXZRawLifAtSrcDir':
+                $taskList .= $this->getTaskIDXYXZ($key,$task,"raw","src","lif");
                 break;
             case 'XYXZRawAtDstDir':
                 $taskList .= $this->getTaskIDXYXZ($key,$task,"raw","dest");
@@ -1699,7 +1703,7 @@ Class JobTranslation {
      \param       $destDir Whether to be saved in the source or the destination
      \return      The preview generation list
     */
-    private function getTaskIDXYXZ($key,$task,$srcImg,$destDir) {
+    private function getTaskIDXYXZ($key,$task,$srcImg,$destDir,$lif = null) {
 
         /* Get the Huygens task name of the $task */
         $task = $this->parseTask($key,$task);
@@ -1712,14 +1716,14 @@ Class JobTranslation {
         $previewGen .= " destDir ";
         $previewGen .= $this->getThumbnailDestDir($destDir);
         $previewGen .= " destFile ";
-        $previewGen .= $this->getThumbnailDestFile($srcImg,"XYXZ");
+        $previewGen .= $this->getThumbnailDestFile($srcImg,"XYXZ",null,$lif);
         $previewGen .= " type ";
         $previewGen .= $this->getPreviewType("XYXZ");
         $previewGen = $this->string2tcllist($previewGen);
         $previewGen = " " . $task . " " . $previewGen;
         return $previewGen;
     }
-
+    
     /*!
      \brief       Gets task information for ortho previews
      \param       $key     A task key from the taskID array
@@ -1935,12 +1939,22 @@ Class JobTranslation {
      \param      $movieType Whether stack, timeMovie, timeSFPMovie or nothing.
      \return     A name for the thumbnail file
     */
-    private function getThumbnailDestFile($srcImg,$caller,$movieType = null) {
+    private function getThumbnailDestFile($srcImg,$caller,
+                                          $movieType = null,
+                                          $lif = null) {
 
         switch ( $caller ) {
         case 'XYXZ':
             if ($srcImg == "raw") {
                 $destFile = basename($this->srcImage);
+
+                /* Special case: lif images */
+                if (isset($this->subImage) && $lif != null) {
+                    $destFile .= " (";
+                    $destFile .= $this->tcllist2string($this->subImage);
+                    $destFile .= ")";                    
+                    $destFile = $this->string2tcllist($destFile);
+                }
             } elseif ($srcImg == "dec") {
                 $destFile = basename($this->destImage);
             } else {
@@ -2097,6 +2111,17 @@ Class JobTranslation {
         $tcllist = trim($string);
         $tcllist = "{{$tcllist}}";
         return $tcllist;
+    }
+
+    /*!
+     \brief       Removes the wrapping of a Tcl list to leave just a string.
+     \param       $tcllist A string acting as Tcl list
+     \return      A string.
+    */
+    private function tcllist2string($tcllist) {
+        $string = str_replace("{","",$tcllist);
+        $string = str_replace("}","",$string);
+        return $string;
     }
 
     /*!
