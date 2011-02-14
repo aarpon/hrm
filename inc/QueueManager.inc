@@ -755,8 +755,8 @@ class QueueManager {
  	  $text = $text . "\n\n- SUMMARY ---------------------------\n\n";
  	  $text = $text . $this->parameterText($job);
 
- 	  $text = $text . "\n\n- SCRIPT ----------------------------\n\n";
- 	  $text = $text . "What follows is the Huygens Core script executed when the error occured:\n\n";
+ 	  $text = $text . "\n\n- TEMPLATE ----------------------------\n\n";
+ 	  $text = $text . "What follows is the Huygens Core template executed when the error occured:\n\n";
  	  $text = $text . $job->script();
  	  $text = $text . "\n\n-------------------------------------\n\n";
  	  $mail = new Mail($email_sender);
