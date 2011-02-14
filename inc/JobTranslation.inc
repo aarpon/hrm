@@ -514,8 +514,13 @@ Class JobTranslation {
      \return      Tcl list with the'Image open' task and its options
     */
     private function getTaskIDImgOpen($task) {
+
         $imgOpen =  "path ";
         $imgOpen .= $this->srcImage;
+        if (isset($this->subImage)) {
+            $imgOpen .= " subImg ";
+            $imgOpen .= $this->subImage;
+        }
         $imgOpen .= " series auto index 0";
         $imgOpen = $this->string2tcllist($imgOpen);
         $imgOpen = " " . $task . " " . $imgOpen;
@@ -2095,10 +2100,17 @@ Class JobTranslation {
     }
 
     /*!
-     \brief       Sets the name of the source image.
+     \brief       Sets the name of the source image with subimages if any.
     */
     private function setSrcImage( ) {
         $this->srcImage = $this->jobDescription->sourceImageName();
+
+        /*If a (string) comes after the file name, the string is interpreted
+         as a subimage. Currently this is for LIF files only. */
+        if ( preg_match("/^(.*\.lif)\s\((.*)\)/i", $this->srcImage, $match) ) {
+            $this->srcImage = $match[1];
+            $this->subImage = $this->string2tcllist($match[2]);
+        }
     }
 
     /*!
@@ -2125,6 +2137,7 @@ Class JobTranslation {
         $this->destImage = $this->jobDescription->destinationImageFullName();
         $fileType = $this->getOutputFileType();
         $this->destImage = $this->destImage.".".$fileType;
+        $this->destImage = str_replace(" ","_",$this->destImage);
     }
 
     /*!
