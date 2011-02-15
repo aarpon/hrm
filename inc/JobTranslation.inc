@@ -489,6 +489,13 @@ Class JobTranslation {
                 } else {
                     $task = "";
                 }
+            } elseif (strstr($key, 'Lif')) {
+                if ($this->isImageLif()) {
+                    $task = $task . ":" . $this->previewCnt;
+                    $this->previewCnt++;
+                } else {
+                    $task = "";
+                }
             } else {
                 $task = $task . ":" . $this->previewCnt;
                 $this->previewCnt++;
@@ -1947,14 +1954,8 @@ Class JobTranslation {
         case 'XYXZ':
             if ($srcImg == "raw") {
                 $destFile = basename($this->srcImage);
-
-                /* Special case: lif images */
-                if (isset($this->subImage) && $lif != null) {
-                    $destFile .= " (";
-                    $destFile .= $this->tcllist2string($this->subImage);
-                    $destFile .= ")";                    
-                    $destFile = $this->string2tcllist($destFile);
-                }
+                $destFile .= $this->getLifImageSuffix($lif);
+                $destFile = $this->string2tcllist($destFile);
             } elseif ($srcImg == "dec") {
                 $destFile = basename($this->destImage);
             } else {
@@ -2011,7 +2012,37 @@ Class JobTranslation {
         return $image;
     }
 
+    /*!
+     \brief       Gets the lif subimage name between parenthesis as suffix
+     \param       $lif Whether or not a lif image is being dealt with
+     \return      The image suffix
+    */
+    private function getLifImageSuffix($lif) {
+        if (isset($this->subImage) && $lif != null) {
+            $suffix = " (";
+            $suffix .= $this->tcllist2string($this->subImage);
+            $suffix .= ")";                    
+        } else {
+            $suffix = "";
+        }
+        return $suffix;
+    } 
+
     /* ------------------------------ Utilities -------------------------------- */
+
+    /*!
+     \brief       Whether or not an image has lif extension. 
+     \brief       Not very elegant, but it is here convenient to check whether
+     \brief       image is lif through the presence of subimages.
+     \return      Boolean 
+    */
+    private function isImageLif( ) {
+        if (isset($this->subImage)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
     
     /*!
      \brief       Gets size of the thumbnails.
