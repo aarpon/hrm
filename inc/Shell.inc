@@ -259,7 +259,7 @@ class ExternalProcess {
     global $hutask;
   
       $command = $this->huscript_path." $hutask \"".$templateName."\"";
-      $command .= ' > /dev/null 2>&1 & echo $!'; 
+      $command .= ' & echo $!'; 
 
       // TODO better management of file handles
       //$out_file = fopen($this->descriptorSpec[1][1], "r");
