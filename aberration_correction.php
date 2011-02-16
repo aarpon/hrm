@@ -6,7 +6,7 @@ require_once("./inc/User.inc");
 require_once("./inc/Parameter.inc");
 require_once("./inc/Setting.inc");
 require_once("./inc/Util.inc");
-require_once ("./inc/System.inc");
+require_once("./inc/System.inc");
 
 /* *****************************************************************************
  *
@@ -76,7 +76,7 @@ include("header.inc.php");
             
         <h4>Do you want to enable depth-specific PSF correction? This will try to compensate for spherical aberrations introduced by refractive index mismatches.</h4>
             
-        <fieldset class="setting"
+        <fieldset class="setting Provide"
               onmouseover="javascript:changeQuickHelp( 'enable' );" >
             
             <legend>
@@ -138,7 +138,7 @@ if ($_SESSION['setting']->parameter("PerformAberrationCorrection")->value( ) == 
         
     <h4>For depth-dependent correction to work properly, you have to specify the relative position of the coverslip with respect to the first acquired plane of the dataset.</h4>
             
-        <fieldset class="setting"
+        <fieldset class="setting Provide"
               onmouseover="javascript:changeQuickHelp( 'orientation' );" >
             
             <legend>
@@ -190,7 +190,7 @@ if ($_SESSION['setting']->parameter("PerformAberrationCorrection")->value( ) == 
         
     <h4>At this point the HRM has enough information to perform depth-dependent aberration correction. Please notice that in certain circumstances, the automatic correction scheme might generate artifacts in the result. If this is the case, please choose the advanced correction mode.</h4>
             
-        <fieldset class="setting"
+        <fieldset class="setting Provide"
               onmouseover="javascript:changeQuickHelp( 'mode' );" >
             
             <legend>
@@ -249,7 +249,7 @@ if ( ($_SESSION['setting']->parameter("PerformAberrationCorrection")->value( ) =
         
     <h4>Here you can choose an advanced correction scheme.</h4>
             
-        <fieldset class="setting"
+        <fieldset class="setting Provide"
               onmouseover="javascript:changeQuickHelp( 'advanced' );" >
             
             <legend>

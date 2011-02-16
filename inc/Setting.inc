@@ -328,10 +328,11 @@ class ParameterSetting extends Setting {
         switch ( $name ) {
           case "ImageFileFormat" :
             $this->message = "Please choose a file format!";
+            $noErrorsFound = False;
             break;
           case "ImageGeometry" :
             // This is a special case: for fixed geometry file formats,
-            // we will have to enforce the XY geometry
+            // we will have to enforce the XY - time geometry
             $singleParameters = $this->fixedGeometryFileFormats();
             if ( isset( $postedParameters[ "ImageFileFormat" ] ) ) {
               if ( array_search( $postedParameters[ "ImageFileFormat" ], $singleParameters ) === false ) {

@@ -6,6 +6,7 @@ require_once("./inc/User.inc");
 require_once("./inc/Parameter.inc");
 require_once("./inc/Setting.inc");
 require_once("./inc/Util.inc");
+require_once("./inc/Database.inc");
 
 /* *****************************************************************************
  *
@@ -19,6 +20,20 @@ if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
   header("Location: " . "login.php"); exit();
 }
 $message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
+
+/* *****************************************************************************
+ *
+ * GET THE CONFIDENCES FOR THE RELEVANT PARAMETERS
+ *
+ **************************************************************************** */
+
+$fileFormat = $_SESSION['setting']->parameter( "ImageFileFormat" );
+$confidenceLevels = array();
+$parameterNames = $_SESSION['setting']->capturingParameterNames();
+$db = new DatabaseConnection();
+foreach ( $parameterNames as $name ) {
+  $confidenceLevels[ $name ] = $db->getParameterConfidenceLevel( $fileFormat, $name );
+}
 
 /* *****************************************************************************
  *
@@ -169,7 +184,7 @@ $nyquist = $_SESSION['setting']->calculateNyquistRate();
         
             <h4>How were these images captured?</h4>
             
-            <fieldset class="setting"
+            <fieldset class="setting <?php echo $confidenceLevels[ 'CCDCaptorSizeX' ]; ?>"
               onmouseover="javascript:changeQuickHelp( 'voxel' );" >
             
                 <legend>
@@ -178,7 +193,7 @@ $nyquist = $_SESSION['setting']->calculateNyquistRate();
                 </legend>
 
 				<p class="message_small">Calculated from current optical parameters, the (Nyquist) ideal pixel size is
-				  <span style="background-color:yellow"><?php echo $nyquist[0];?>nm</span>
+				  <span style="background-color:yellow"><?php echo $nyquist[0];?> nm</span>
 				  <?php
 					if ($_SESSION['setting']->isThreeDimensional() ) {
 					  echo " and the ideal z-step is <span style=\"background-color:yellow\">".
@@ -256,7 +271,7 @@ if ($_SESSION['setting']->isThreeDimensional()) {
 if ($_SESSION['setting']->isTimeSeries()) {
 
 ?>
-            <fieldset class="setting"
+            <fieldset class="setting <?php echo $confidenceLevels[ 'TimeInterval' ]; ?>"
               onmouseover="javascript:changeQuickHelp( 'time' );" >
            	<legend> 
                 <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=TimeSeries')"><img src="images/help.png" alt="?" /></a>
@@ -285,7 +300,7 @@ if ($_SESSION['setting']->isTimeSeries()) {
 if ($_SESSION['setting']->isMultiPointOrSinglePointConfocal()) {
 
 ?>
-            <fieldset class="setting"
+            <fieldset class="setting <?php echo $confidenceLevels[ 'PinholeSize' ]; ?>"
               onmouseover="javascript:changeQuickHelp( 'pinhole_radius' );" >
             
               <legend>
@@ -340,7 +355,7 @@ if ($_SESSION['setting']->isMultiPointOrSinglePointConfocal()) {
 if ($_SESSION['setting']->isNipkowDisk()) {
       
 ?>
-            <fieldset class="setting"
+            <fieldset class="setting <?php echo $confidenceLevels[ 'PinholeSpacing' ]; ?>"
               onmouseover="javascript:changeQuickHelp( 'pinhole_spacing' );" >
               <legend>            
                 <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=PinholeSpacing')"><img src="images/help.png" alt="?" /></a>

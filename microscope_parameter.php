@@ -5,6 +5,7 @@
 require_once("./inc/User.inc");
 require_once("./inc/Parameter.inc");
 require_once("./inc/Setting.inc");
+require_once("./inc/Database.inc");
 
 /* *****************************************************************************
  *
@@ -19,6 +20,20 @@ if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
 }
 
 $message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
+
+/* *****************************************************************************
+ *
+ * GET THE CONFIDENCES FOR THE RELEVANT PARAMETERS
+ *
+ **************************************************************************** */
+
+$fileFormat = $_SESSION['setting']->parameter( "ImageFileFormat" );
+$confidenceLevels = array();
+$parameterNames = $_SESSION['setting']->microscopeParameterNames();
+$db = new DatabaseConnection();
+foreach ( $parameterNames as $name ) {
+  $confidenceLevels[ $name ] = $db->getParameterConfidenceLevel( $fileFormat, $name );
+}
 
 /* *****************************************************************************
  *
@@ -97,7 +112,7 @@ include("header.inc.php");
         
             <h4>How did you set up your microscope?</h4>
             
-            <fieldset class="setting"
+            <fieldset class="setting <?php echo $confidenceLevels[ 'MicroscopeType' ]; ?>"
               onmouseover="javascript:changeQuickHelp( 'type' );" >
             
                 <legend>
@@ -123,7 +138,7 @@ foreach($possibleValues as $possibleValue) {
 ?>
             </fieldset>
             
-            <fieldset class="setting"
+            <fieldset class="setting <?php echo $confidenceLevels[ 'NumericalAperture' ]; ?>"
               onmouseover="javascript:changeQuickHelp( 'NA' );" >
               
               <legend> 
@@ -143,7 +158,7 @@ $parameter = $_SESSION['setting']->parameter("NumericalAperture");
               </ul>
             </fieldset>
             
-            <fieldset class="setting"
+            <fieldset class="setting <?php echo $confidenceLevels[ 'ExcitationWavelength' ]; ?>"
               onmouseover="javascript:changeQuickHelp( 'wavelengths' );" >
             
                 <legend>
@@ -185,7 +200,7 @@ for ($i=0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
                 
         </fieldset>
 
-            <fieldset class="setting"
+            <fieldset class="setting <?php echo $confidenceLevels[ 'ObjectiveType' ]; ?>"
               onmouseover="javascript:changeQuickHelp( 'objective' );" >
             
                 <legend>
@@ -213,7 +228,7 @@ foreach ($possibleValues as $possibleValue) {
                 
             </fieldset>
            
-            <fieldset class="setting"            
+            <fieldset class="setting <?php echo $confidenceLevels[ 'SampleMedium' ]; ?>"
               onmouseover="javascript:changeQuickHelp( 'sample' );" >
             
                 <legend>

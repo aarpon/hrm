@@ -703,7 +703,7 @@ span.spacer {
 fieldset {
     margin: 5px;
     margin-top: 15px;
-    padding: 10px 5px 10px 5px;
+    padding: 10px 5px 10px 10px;
 }
 
 fieldset legend {
@@ -1051,22 +1051,19 @@ option.default {
     width: 30%
 }
 
-.paramTrusted {
-	background: url(../images/paramTrusted.png) repeat-y right;
-	border-color: green;
+/* Confidence levels for parameters: Trusted, Untrusted, Missing, Provide */
+.Trusted {
+	background: url(../images/paramTrusted.png) repeat-y left;
 }
 
-.paramUntrusted {
-	background: url(../images/paramUntrusted.png) repeat-y right;
-	border-color: orange;
+.Untrusted {
+	background: url(../images/paramUntrusted.png) repeat-y left;
 }
 
-.paramMissing {
-	background: url(../images/paramMissing.png) repeat-y right;
-	border-color: red;
+.Missing {
+	background: url(../images/paramMissing.png) repeat-y left;
 }
 
-.paramProvide {
-    background: url(../images/paramProvide.png) repeat-y right;
-    border-color: gray;
+.Provide {
+    background: url(../images/paramProvide.png) repeat-y left;
 }

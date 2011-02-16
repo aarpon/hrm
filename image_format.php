@@ -78,12 +78,12 @@ include("header.inc.php");
         
             <h4>What image format will be processed with these settings?</h4>
             
-            <fieldset class="setting paramProvide"
+            <fieldset class="setting Provide"
               onmouseover="javascript:changeQuickHelp( 'format' );" >
             
                 <legend>
                     <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=FileFormats')"><img src="images/help.png" alt="?" /></a>
-                    image format
+                    image file format
                 </legend>
                 
                 <select name="ImageFileFormat" id="ImageFileFormat" size="1"
@@ -93,32 +93,33 @@ include("header.inc.php");
 <?php
 
 // new file formats support
+$msgValue       = '';
+$msgTranslation = 'Please choose a file format...';
+$values = array();
+$values[ 0 ] = $msgValue;
 $parameter = $_SESSION['setting']->parameter("ImageFileFormat");
-$values = $parameter->possibleValues();
+$values = array_merge( $values, $parameter->possibleValues() );
 $geometryFlag = "";
 $channelsFlag = "";
 sort($values);
 foreach($values as $value) {
-  if (stristr($value, "hdf5")) {
-       $version = System::huCoreVersion();
-       // HDF5 is supported only from Huygens 3.5.0
-       if ( $version < 3050000 ) {
-              continue;
-       }
-  }
-  $translation = $parameter->translatedValueFor( $value );
-  if (stristr($value, "tiff")) {
-    $translation .= " (*.tiff)";
-  }
-  $selected = "";
-  if ($value == $parameter->value()) {
-    $selected = " selected=\"selected\"";
-    if ($value == "lsm-single" || $value == "tiff-single") {
-      $geometryFlag = "disabled=\"disabled\" ";
+  if ( $value == $msgValue ) {
+    $translation = $msgTranslation;
+  } else {
+    $translation = $parameter->translatedValueFor( $value );
+    if (stristr($value, "tiff")) {
+      $translation .= " (*.tiff)";
     }
-    else if ($value == "tiff-series") {
-      $geometryFlag = "disabled=\"disabled\" ";
-      $channelsFlag = "disabled=\"disabled\" ";
+    $selected = "";
+    if ($value == $parameter->value()) {
+      $selected = " selected=\"selected\"";
+      if ($value == "lsm-single" || $value == "tiff-single") {
+        $geometryFlag = "disabled=\"disabled\" ";
+      }
+      else if ($value == "tiff-series") {
+        $geometryFlag = "disabled=\"disabled\" ";
+        $channelsFlag = "disabled=\"disabled\" ";
+      }
     }
   }
   
@@ -134,7 +135,7 @@ foreach($values as $value) {
                 
             </fieldset>
             
-            <fieldset id="geometry" class="setting paramProvide"<?php if ($geometryFlag != "")
+            <fieldset id="geometry" class="setting Provide"<?php if ($geometryFlag != "")
               echo " style=\"color: grey\"" ?>
               onmouseover="javascript:changeQuickHelp( 'geometry' );" >
             
@@ -164,7 +165,7 @@ foreach($possibleValues as $possibleValue) {
 
             </fieldset>
             
-            <fieldset id="channels" class="setting paramProvide"<?php if ($channelsFlag != "")
+            <fieldset id="channels" class="setting Provide"<?php if ($channelsFlag != "")
               echo " style=\"color: grey\"" ?>
               onmouseover="javascript:changeQuickHelp( 'channels' );" >
             
@@ -203,7 +204,7 @@ $parameter = $_SESSION['setting']->parameter("PointSpreadFunction");
             
             <h4>Would you like to use an existing measured PSF obtained from bead images or a theoretical PSF generated from explicitly specified parameters?</h4>
             
-            <fieldset class="setting paramProvide" onmouseover="javascript:changeQuickHelp( 'PSF' );" >
+            <fieldset class="setting Provide" onmouseover="javascript:changeQuickHelp( 'PSF' );" >
             
                 <legend>
                     <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=PointSpreadFunction')"><img src="images/help.png" alt="?" /></a>
