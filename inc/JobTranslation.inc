@@ -551,7 +551,7 @@ Class JobTranslation {
         $options .= $this->getiFacePrim();
         $options .= " prState,iFacePrim ";
         $options .= $this->getiFacePrimVerification();
-        $options .= " iFaceSnd ";
+        $options .= " iFaceScnd ";
         $options .= $this->getiFaceScnd();
         $options .= " prState,iFaceScnd ";
         $options .= $this->getiFaceScndVerification();
