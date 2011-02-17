@@ -1019,7 +1019,8 @@ Class JobTranslation {
     private function getPinSpacingForChannel($channel) {
         $microSetting = $this->microSetting;
         $pinSpacing = $microSetting->parameter("PinholeSpacing")->value();
-        if ($this->getMicroTypeForChannel($channel) == "nipkow") {
+
+        if ($this->getMicroTypeForChannel($channel) != "nipkow") {
             $pinSpacing = "";
         }
         return $pinSpacing;
