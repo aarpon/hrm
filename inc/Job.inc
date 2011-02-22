@@ -168,45 +168,6 @@ class Job {
   }
 
   /*!
-   \brief	The original version of the deconvolution script
-   	
-   The original version of the deconvolution script, a linear one, with
-   lines that were written or not depending on the task parameters.
-   	
-   This function should be deleted after the new one proves to be
-   stable enough, to make this code clearer. The same applies to all
-   the old script generating subroutines, like putMultiChannelScriptOn,
-   putScriptOn and the like.
-    
-   \todo This function is deprecated and will be removed
-   */
-//  private function createScriptVersionZero() {
-//    global $huscript_call;
-//
-//    $desc = $this->description();
-//    $setting = $desc->parameterSetting();
-//    $this->script = "set id [pid]" . "\n" . 'puts "\npid=$id"' . "\n";
-//    $this->script = $this->script . "huOpt verb -mode noQs\n";
-//    $this->script = $this->script .
-//                    "if { [ catch {\n# A global catch to report important errors.\n";
-//    $this->script = $this->script . "huOpt gundo off\n";
-//    if ($setting->isMultiChannel() && ($setting->numberOfChannels() > 1)) {
-//      $this->script = $this->script . $desc->putMultiChannelScriptOn('', true);
-//    } else {
-//      $this->script = $this->script . $desc->putScriptOn('', true);
-//    }
-//    $this->script = $this->script . "} err ] } { \n".
-//                "huOpt printError \$err }\n";
-//    $id = $desc->id();
-//    $finishedMarker = $desc->sourceFolder() . '.finished_' . "$id";
-//    $this->script = $this->script . "exec touch " . '"' .
-//    $finishedMarker . '"' . "\n".
-//            "file attributes \"$finishedMarker\" -permissions 0666\n".
-//            "puts \"- DONE --------------------------------\\n\\n\"\n";
-//    $this->script = $this->script . "exit\n";
-//  }
-
-  /*!
    \brief	Returns the script name
     
    The script name contains the id to make it univocal

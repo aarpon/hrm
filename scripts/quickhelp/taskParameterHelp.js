@@ -24,16 +24,8 @@ window.helpText[ "snr" ] =
   '<p>The different deconvolution algorithms have different requirements on ' +
   'the SNR parameter.</p>' +
   '<p>For the <strong>CMLE algorithm</strong>, you are asked to give a numerical ' +
-  'estimation of the SNR of your images. ' +
-  'With Hucore version 3.5.1 and newer, you can use the <strong>SNR estimator ' +
-  '</strong> to automatically calculate the SNR for your images. With Hucore ' +
-  '3.6.1, an even better algorithm is in place.</p>' +
-  '<p>For the CMLE algorithm, the field SNR ' +
-  'can accept multiple values per channel. This is a commodity tool to ' +
-  'optimize restoration parameters. By setting the SNR value to "10 20 40" ' +
-  'in a single channel image, for instance, three jobs will be run: the ' +
-  'first with SNR value 10, the second with SNR value 20, and the third ' +
-  'with SNR value 40.</p>' +
+  'estimation of the SNR of your images. The SNR estimator can help you calculate ' +
+  'the SNR for your images.</p>' +
   '<p>For the <strong>QMLE algorithm</strong>, only a coarser classification ' +
   'of the SNR is required.</p>';
  
@@ -48,13 +40,7 @@ window.helpText[ "stopcrit" ] =
   '<p>The first stopping criterium reached will stop the restoration. ' +
   'The quality change criterium may apply first and stop the iterations ' +
   'before the maximum number is reached: set the quality change to a low ' +
-  'value or zero if you want to make sure all the set iterations are run.</p>' +
-  '<p>The field <strong>number of iterations</strong> can accept multiple ' +
-  'values. This is a commodity tool to optimize restoration parameters. By ' +
-  'setting this field value to "20 50 70", for instance, three jobs will be ' +
-  'run: the first with a maximum of 20 iterations, the second with a maximum ' +
-  'of 50, and the third with a maximum of 70. Notice that the quality change ' +
-  'criterium may apply first and stop the iterations earlier in all cases.</p>';
+  'value or zero if you want to make sure all the set iterations are run.</p>';
 
 window.helpText[ "default" ] =
   '<p>On this page you specify the parameters for restoration.</p>' +
