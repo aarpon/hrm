@@ -23,17 +23,20 @@ $message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
 
 /* *****************************************************************************
  *
- * GET THE CONFIDENCES FOR THE RELEVANT PARAMETERS
+ * SET THE CONFIDENCES FOR THE RELEVANT PARAMETERS
  *
  **************************************************************************** */
 
 $fileFormat = $_SESSION['setting']->parameter( "ImageFileFormat" );
-$confidenceLevels = array();
 $parameterNames = $_SESSION['setting']->capturingParameterNames();
 $db = new DatabaseConnection();
 foreach ( $parameterNames as $name ) {
-  $confidenceLevels[ $name ] = $db->getParameterConfidenceLevel( $fileFormat, $name );
+  $parameter = $_SESSION['setting']->parameter( $name );
+  $confidenceLevel = $db->getParameterConfidenceLevel( $fileFormat, $name );
+  $parameter->setConfidenceLevel( $confidenceLevel );
+  $_SESSION['setting']->set( $parameter );
 }
+
 
 /* *****************************************************************************
  *
@@ -183,8 +186,19 @@ $nyquist = $_SESSION['setting']->calculateNyquistRate();
         <form method="post" action="capturing_parameter.php" id="select">
         
             <h4>How were these images captured?</h4>
-            
-            <fieldset class="setting <?php echo $confidenceLevels[ 'CCDCaptorSizeX' ]; ?>"
+
+    <?php
+
+    /***************************************************************************
+    
+      CCDCaptorSizeX
+    
+    ***************************************************************************/
+
+      $parameterCCDCaptorSizeX = $_SESSION['setting']->parameter("CCDCaptorSizeX");
+
+    ?>            
+            <fieldset class="setting <?php echo $parameterCCDCaptorSizeX->confidenceLevel(); ?>"
               onmouseover="javascript:changeQuickHelp( 'voxel' );" >
             
                 <legend>
@@ -202,9 +216,7 @@ $nyquist = $_SESSION['setting']->calculateNyquistRate();
 				  ?>.</p>
 <?php
 
-$parameter = $_SESSION['setting']->parameter("CCDCaptorSizeX");
-$value = $parameter->value();
-// always ask for pixel size
+$value = $parameterCCDCaptorSizeX->value();
 $textForCaptorSize = "pixel size (nm)";
 
 ?>
@@ -217,8 +229,6 @@ $textForCaptorSize = "pixel size (nm)";
                   // The calculation of pixel size from CCD chip makes sense only for widefield microscopes
                   if ( $_SESSION['setting']->isWidefield() || $_SESSION['setting']->isMultiPointConfocal() ) {
             ?>
-            
-            
             
             <a href="calculate_pixel_size.php"
               onmouseover="TagToTip('ttSpanPixelSizeFromCCD' )"
@@ -239,13 +249,19 @@ if ($_SESSION['setting']->isThreeDimensional()) {
 
                     <li>
                         z-step (nm):
-                
-<?php
 
-  $parameter = $_SESSION['setting']->parameter("ZStepSize");
+    <?php
 
-?>
-                        <input name="ZStepSize" type="text" size="5" value="<?php echo $parameter->value() ?>" />
+    /***************************************************************************
+    
+      ZStepSize
+    
+    ***************************************************************************/
+
+      $parameterZStepSize = $_SESSION['setting']->parameter("ZStepSize");
+
+    ?>                
+                        <input name="ZStepSize" type="text" size="5" value="<?php echo $parameterZStepSize->value() ?>" />
                     </li>
                     
 <?php
@@ -271,7 +287,19 @@ if ($_SESSION['setting']->isThreeDimensional()) {
 if ($_SESSION['setting']->isTimeSeries()) {
 
 ?>
-            <fieldset class="setting <?php echo $confidenceLevels[ 'TimeInterval' ]; ?>"
+
+    <?php
+
+    /***************************************************************************
+    
+      TimeInterval
+    
+    ***************************************************************************/
+
+      $parameterTimeInterval = $_SESSION['setting']->parameter("TimeInterval");
+
+    ?>
+            <fieldset class="setting <?php echo $parameterTimeInterval->confidenceLevel(); ?>"
               onmouseover="javascript:changeQuickHelp( 'time' );" >
            	<legend> 
                 <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=TimeSeries')"><img src="images/help.png" alt="?" /></a>
@@ -279,12 +307,7 @@ if ($_SESSION['setting']->isTimeSeries()) {
                 </legend>
             <ul>
               <li>Time interval (s):
-<?php
-
-  $parameter = $_SESSION['setting']->parameter("TimeInterval");
-
-?>
-                <input name="TimeInterval" type="text" size="5" value="<?php echo $parameter->value() ?>" />
+                <input name="TimeInterval" type="text" size="5" value="<?php echo $parameterTimeInterval->value() ?>" />
               </li>
             </ul>
                 
@@ -299,8 +322,16 @@ if ($_SESSION['setting']->isTimeSeries()) {
 
 if ($_SESSION['setting']->isMultiPointOrSinglePointConfocal()) {
 
-?>
-            <fieldset class="setting <?php echo $confidenceLevels[ 'PinholeSize' ]; ?>"
+    /***************************************************************************
+    
+      PinholeSize
+    
+    ***************************************************************************/
+
+      $parameterPinholeSize = $_SESSION['setting']->parameter("PinholeSize");
+
+    ?>
+            <fieldset class="setting <?php echo $parameterPinholeSize->confidenceLevel(); ?>"
               onmouseover="javascript:changeQuickHelp( 'pinhole_radius' );" >
             
               <legend>
@@ -332,8 +363,8 @@ if ($_SESSION['setting']->isMultiPointOrSinglePointConfocal()) {
                 <p />
                 
 				<?php
-				  $parameter = $_SESSION['setting']->parameter("NumericalAperture");
-				  $na = $parameter->value();
+				  $parameterNA = $_SESSION['setting']->parameter("NumericalAperture");
+				  $na = $parameterNA->value();
 				?>
                 <a href="calculate_bp_pinhole.php?na=<?php echo $na;?>"
                   target="_blank"
@@ -353,9 +384,17 @@ if ($_SESSION['setting']->isMultiPointOrSinglePointConfocal()) {
 <?php
 
 if ($_SESSION['setting']->isNipkowDisk()) {
+
+    /***************************************************************************
+    
+      PinholeSpacing
+    
+    ***************************************************************************/
+	
+	$parameterPinholeSpacing = $_SESSION['setting']->parameter('PinholeSpacing');
       
 ?>
-            <fieldset class="setting <?php echo $confidenceLevels[ 'PinholeSpacing' ]; ?>"
+            <fieldset class="setting <?php echo $parameterPinholeSpacing->confidenceLevel(); ?>"
               onmouseover="javascript:changeQuickHelp( 'pinhole_spacing' );" >
               <legend>            
                 <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=PinholeSpacing')"><img src="images/help.png" alt="?" /></a>
@@ -363,13 +402,7 @@ if ($_SESSION['setting']->isNipkowDisk()) {
 	      </legend>
           <ul>
                 <li>pinhole spacing (micron):
-<?php
-
-  $parameter = $_SESSION['setting']->parameter('PinholeSpacing');
-
-?>
-
-                <input name="PinholeSpacing" type="text" size="5" value="<?php echo $parameter->value() ?>" />
+                <input name="PinholeSpacing" type="text" size="5" value="<?php echo $parameterPinholeSpacing->value() ?>" />
                 </li>
           </ul>
           <p />

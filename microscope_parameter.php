@@ -23,16 +23,18 @@ $message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
 
 /* *****************************************************************************
  *
- * GET THE CONFIDENCES FOR THE RELEVANT PARAMETERS
+ * SET THE CONFIDENCES FOR THE RELEVANT PARAMETERS
  *
  **************************************************************************** */
 
 $fileFormat = $_SESSION['setting']->parameter( "ImageFileFormat" );
-$confidenceLevels = array();
 $parameterNames = $_SESSION['setting']->microscopeParameterNames();
 $db = new DatabaseConnection();
 foreach ( $parameterNames as $name ) {
-  $confidenceLevels[ $name ] = $db->getParameterConfidenceLevel( $fileFormat, $name );
+  $parameter = $_SESSION['setting']->parameter( $name );
+  $confidenceLevel = $db->getParameterConfidenceLevel( $fileFormat, $name );
+  $parameter->setConfidenceLevel( $confidenceLevel );
+  $_SESSION['setting']->set( $parameter );
 }
 
 /* *****************************************************************************
@@ -111,8 +113,19 @@ include("header.inc.php");
         <form method="post" action="" id="select">
         
             <h4>How did you set up your microscope?</h4>
-            
-            <fieldset class="setting <?php echo $confidenceLevels[ 'MicroscopeType' ]; ?>"
+
+    <?php
+
+    /***************************************************************************
+    
+      MicroscopeType
+    
+    ***************************************************************************/
+
+      $parameterMicroscopeType = $_SESSION['setting']->parameter("MicroscopeType");
+
+    ?>    
+            <fieldset class="setting <?php echo $parameterMicroscopeType->confidenceLevel(); ?>"
               onmouseover="javascript:changeQuickHelp( 'type' );" >
             
                 <legend>
@@ -121,11 +134,10 @@ include("header.inc.php");
                 </legend>
 <?php
 
-$parameter = $_SESSION['setting']->parameter("MicroscopeType");
-$possibleValues = $parameter->possibleValues();
+$possibleValues = $parameterMicroscopeType->possibleValues();
 foreach($possibleValues as $possibleValue) {
   $flag = "";
-  if ($possibleValue == $parameter->value()) $flag = "checked=\"checked\" ";
+  if ($possibleValue == $parameterMicroscopeType->value()) $flag = "checked=\"checked\" ";
 
 ?>
                 <input type="radio" name="MicroscopeType" value="<?php echo $possibleValue ?>" <?php echo $flag ?>/><?php echo $possibleValue ?>
@@ -137,8 +149,19 @@ foreach($possibleValues as $possibleValue) {
 
 ?>
             </fieldset>
-            
-            <fieldset class="setting <?php echo $confidenceLevels[ 'NumericalAperture' ]; ?>"
+
+    <?php
+
+    /***************************************************************************
+    
+      NumericalAperture
+    
+    ***************************************************************************/
+
+      $parameterNumericalAperture = $_SESSION['setting']->parameter("NumericalAperture");
+
+    ?>    
+            <fieldset class="setting <?php echo $parameterNumericalAperture->confidenceLevel(); ?>"
               onmouseover="javascript:changeQuickHelp( 'NA' );" >
               
               <legend> 
@@ -147,18 +170,25 @@ foreach($possibleValues as $possibleValue) {
               </legend>
               <ul>
                 <li>NA:
-<?php
-
-$parameter = $_SESSION['setting']->parameter("NumericalAperture");
-
-?>
-                <input name="NumericalAperture" type="text" size="5" value="<?php echo $parameter->value() ?>" />
+                <input name="NumericalAperture" type="text" size="5" value="<?php echo $parameterNumericalAperture->value() ?>" />
               
                 </li>
               </ul>
             </fieldset>
-            
-            <fieldset class="setting <?php echo $confidenceLevels[ 'ExcitationWavelength' ]; ?>"
+
+    <?php
+
+    /***************************************************************************
+    
+      (Emission|Excitation)Wavelength
+    
+    ***************************************************************************/
+
+      $parameterEmissionWavelength = $_SESSION['setting']->parameter("EmissionWavelength");
+      
+    ?>    
+           
+            <fieldset class="setting <?php echo $parameterEmissionWavelength->confidenceLevel(); ?>"
               onmouseover="javascript:changeQuickHelp( 'wavelengths' );" >
             
                 <legend>
@@ -200,7 +230,19 @@ for ($i=0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
                 
         </fieldset>
 
-            <fieldset class="setting <?php echo $confidenceLevels[ 'ObjectiveType' ]; ?>"
+  <?php
+
+    /***************************************************************************
+    
+      ObjectiveType
+    
+    ***************************************************************************/
+
+    $parameterObjectiveType = $_SESSION['setting']->parameter("ObjectiveType");
+
+  ?>
+
+            <fieldset class="setting <?php echo $parameterObjectiveType->confidenceLevel(); ?>"
               onmouseover="javascript:changeQuickHelp( 'objective' );" >
             
                 <legend>
@@ -210,12 +252,11 @@ for ($i=0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
                 
 <?php
 
-$parameter = $_SESSION['setting']->parameter("ObjectiveType");
-$possibleValues = $parameter->possibleValues();
+$possibleValues = $parameterObjectiveType->possibleValues();
 sort($possibleValues);
 foreach ($possibleValues as $possibleValue) {
   $flag = "";
-  if ($possibleValue == $parameter->value()) $flag = " checked=\"checked\"";
+  if ($possibleValue == $parameterObjectiveType->value()) $flag = " checked=\"checked\"";
 
 ?>
                 <input name="ObjectiveType" type="radio" value="<?php echo $possibleValue ?>" <?php echo $flag ?>/><?php echo $possibleValue ?>
@@ -227,8 +268,20 @@ foreach ($possibleValues as $possibleValue) {
 ?>
                 
             </fieldset>
-           
-            <fieldset class="setting <?php echo $confidenceLevels[ 'SampleMedium' ]; ?>"
+
+  <?php
+
+    /***************************************************************************
+    
+      SampleMedium
+    
+    ***************************************************************************/
+
+    $parameterSampleMedium = $_SESSION['setting']->parameter("SampleMedium");
+
+  ?>
+
+            <fieldset class="setting <?php echo $parameterSampleMedium->confidenceLevel(); ?>"
               onmouseover="javascript:changeQuickHelp( 'sample' );" >
             
                 <legend>
@@ -238,15 +291,14 @@ foreach ($possibleValues as $possibleValue) {
                 
 <?php
 
-$parameter = $_SESSION['setting']->parameter("SampleMedium");
 $default = False;
-foreach ($parameter->possibleValues() as $possibleValue) {
+foreach ($parameterSampleMedium->possibleValues() as $possibleValue) {
   $flag = "";
-  if ($possibleValue == $parameter->value()) {
+  if ($possibleValue == $parameterSampleMedium->value()) {
     $flag = " checked=\"checked\"";
     $default = True;
   }
-  $translation = $parameter->translatedValueFor( $possibleValue );
+  $translation = $parameterSampleMedium->translatedValueFor( $possibleValue );
 
 ?>
                 <input name="SampleMedium" type="radio" value="<?php echo $possibleValue ?>"<?php echo $flag ?> /><?php echo $possibleValue ?> <span class="title">[<?php echo $translation ?>]</span>
@@ -259,7 +311,7 @@ foreach ($parameter->possibleValues() as $possibleValue) {
 $value = "";
 $flag = "";
 if (!$default) {
-  $value = $parameter->value();
+  $value = $parameterSampleMedium->value();
   if ( $value != "" ) {
     $flag = " checked=\"checked\"";
   }

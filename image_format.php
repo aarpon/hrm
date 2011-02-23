@@ -27,6 +27,20 @@ $message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
 
 /* *****************************************************************************
  *
+ * SET THE CONFIDENCES FOR THE RELEVANT PARAMETERS
+ *
+ **************************************************************************** */
+
+/* In this page, all parameters are required! */
+$parameterNames = $_SESSION['setting']->imageParameterNames();
+foreach ( $parameterNames as $name ) {
+  $parameter = $_SESSION['setting']->parameter( $name );
+  $parameter->setConfidenceLevel( "Provide" );
+  $_SESSION['setting']->set( $parameter );
+}
+
+/* *****************************************************************************
+ *
  * PROCESS THE POSTED PARAMETERS
  *
  **************************************************************************** */
@@ -77,8 +91,20 @@ include("header.inc.php");
         <form method="post" action="" id="select">
         
             <h4>What image format will be processed with these settings?</h4>
+
+    <?php
+
+    /***************************************************************************
+    
+      ImageFileFormat
+    
+    ***************************************************************************/
+
+      $parameterImageFileFormat = $_SESSION['setting']->parameter("ImageFileFormat");
+
+    ?>  
             
-            <fieldset class="setting Provide"
+            <fieldset class="setting <?php echo $parameterImageFileFormat->confidenceLevel(); ?>"
               onmouseover="javascript:changeQuickHelp( 'format' );" >
             
                 <legend>
@@ -97,8 +123,7 @@ $msgValue       = '';
 $msgTranslation = 'Please choose a file format...';
 $values = array();
 $values[ 0 ] = $msgValue;
-$parameter = $_SESSION['setting']->parameter("ImageFileFormat");
-$values = array_merge( $values, $parameter->possibleValues() );
+$values = array_merge( $values, $parameterImageFileFormat->possibleValues() );
 $geometryFlag = "";
 $channelsFlag = "";
 sort($values);
@@ -106,12 +131,12 @@ foreach($values as $value) {
   if ( $value == $msgValue ) {
     $translation = $msgTranslation;
   } else {
-    $translation = $parameter->translatedValueFor( $value );
+    $translation = $parameterImageFileFormat->translatedValueFor( $value );
     if (stristr($value, "tiff")) {
       $translation .= " (*.tiff)";
     }
     $selected = "";
-    if ($value == $parameter->value()) {
+    if ($value == $parameterImageFileFormat->value()) {
       $selected = " selected=\"selected\"";
       if ($value == "lsm-single" || $value == "tiff-single") {
         $geometryFlag = "disabled=\"disabled\" ";
@@ -134,8 +159,20 @@ foreach($values as $value) {
                 </select>
                 
             </fieldset>
-            
-            <fieldset id="geometry" class="setting Provide"<?php if ($geometryFlag != "")
+
+    <?php
+
+    /***************************************************************************
+    
+      ImageGeometry
+    
+    ***************************************************************************/
+
+      $parameterImageGeometry = $_SESSION['setting']->parameter("ImageGeometry");
+
+    ?>
+    
+            <fieldset id="geometry" class="setting <?php echo $parameterImageGeometry->confidenceLevel(); ?>"<?php if ($geometryFlag != "")
               echo " style=\"color: grey\"" ?>
               onmouseover="javascript:changeQuickHelp( 'geometry' );" >
             
@@ -146,12 +183,11 @@ foreach($values as $value) {
                 
 <?php
 
-$aParameter = $_SESSION['setting']->parameter('ImageGeometry');
-$possibleValues = $aParameter->possibleValues();
+$possibleValues = $parameterImageGeometry->possibleValues();
 foreach($possibleValues as $possibleValue) {
   $value = "multi_" . $possibleValue;
   $flag = "";
-  if (!($parameter->value() == "lsm-single" || $parameter->value() == "tiff-single") && $possibleValue == $aParameter->value())
+  if (!($parameterImageFileFormat->value() == "lsm-single" || $parameterImageFileFormat->value() == "tiff-single") && $possibleValue == $parameterImageGeometry->value())
     $flag = "checked=\"checked\" ";
 
 ?>
@@ -164,8 +200,20 @@ foreach($possibleValues as $possibleValue) {
 ?>
 
             </fieldset>
+
+    <?php
+
+    /***************************************************************************
+    
+      NumberOfChannels
+    
+    ***************************************************************************/
+
+      $parameterNumberOfChannels = $_SESSION['setting']->parameter("NumberOfChannels");
+
+    ?>
             
-            <fieldset id="channels" class="setting Provide"<?php if ($channelsFlag != "")
+            <fieldset id="channels" class="setting <?php echo $parameterNumberOfChannels->confidenceLevel(); ?>"<?php if ($channelsFlag != "")
               echo " style=\"color: grey\"" ?>
               onmouseover="javascript:changeQuickHelp( 'channels' );" >
             
@@ -176,44 +224,47 @@ foreach($possibleValues as $possibleValue) {
                 
 <?php
 
-function check($value) {
-  $parameter = $_SESSION['setting']->parameter("NumberOfChannels");
+function check($parameter, $value) {
   if ($value == $parameter->value()) echo "checked=\"checked\" ";
   return "";
 }
 
 ?>
-                <input name="NumberOfChannels" type="radio" value="1" <?php echo $channelsFlag ?><?php check(1) ?>/>1
-                <input name="NumberOfChannels" type="radio" value="2" <?php echo $channelsFlag ?><?php check(2) ?>/>2
-                <input name="NumberOfChannels" type="radio" value="3" <?php echo $channelsFlag ?><?php check(3) ?>/>3
-                <input name="NumberOfChannels" type="radio" value="4" <?php echo $channelsFlag ?><?php check(4) ?>/>4
-                <input name="NumberOfChannels" type="radio" value="5" <?php echo $channelsFlag ?><?php check(5) ?>/>5
+                <input name="NumberOfChannels" type="radio" value="1" <?php echo $channelsFlag ?><?php check($parameterNumberOfChannels, 1) ?>/>1
+                <input name="NumberOfChannels" type="radio" value="2" <?php echo $channelsFlag ?><?php check($parameterNumberOfChannels, 2) ?>/>2
+                <input name="NumberOfChannels" type="radio" value="3" <?php echo $channelsFlag ?><?php check($parameterNumberOfChannels, 3) ?>/>3
+                <input name="NumberOfChannels" type="radio" value="4" <?php echo $channelsFlag ?><?php check($parameterNumberOfChannels, 4) ?>/>4
+                <input name="NumberOfChannels" type="radio" value="5" <?php echo $channelsFlag ?><?php check($parameterNumberOfChannels, 5) ?>/>5
                 
             </fieldset>
-            
-<?php
 
-// manage measured PSF
-$parameter = $_SESSION['setting']->parameter("PointSpreadFunction");
+    <?php
 
-?>
-            <?php
-            $turnOnPSFAdaptationOnClick  = " onclick=\"javascript:fixCoverslip( false )\"";
-            $turnOffPSFAdaptationOnClick = " onclick=\"javascript:fixCoverslip( true )\"";
-            ?>
+    /***************************************************************************
+    
+      PointSpreadFunction
+    
+    ***************************************************************************/
+
+      $parameterPointSpreadFunction = $_SESSION['setting']->parameter("PointSpreadFunction");
+
+      $turnOnPSFAdaptationOnClick  = " onclick=\"javascript:fixCoverslip( false )\"";
+      $turnOffPSFAdaptationOnClick = " onclick=\"javascript:fixCoverslip( true )\"";
+
+    ?>
             
             <h4>Would you like to use an existing measured PSF obtained from bead images or a theoretical PSF generated from explicitly specified parameters?</h4>
             
-            <fieldset class="setting Provide" onmouseover="javascript:changeQuickHelp( 'PSF' );" >
+            <fieldset class="setting <?php echo $parameterPointSpreadFunction->confidenceLevel(); ?>" onmouseover="javascript:changeQuickHelp( 'PSF' );" >
             
                 <legend>
                     <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=PointSpreadFunction')"><img src="images/help.png" alt="?" /></a>
                     PSF
                 </legend>
                 
-                <input type="radio" name="PointSpreadFunction" value="theoretical" <?php if ($parameter->value() == "theoretical") echo "checked=\"checked\""?> <?php echo $turnOnPSFAdaptationOnClick ?>/><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=TheoreticalPsf')"><img src="images/help.png" alt="?" /></a>Theoretical
+                <input type="radio" name="PointSpreadFunction" value="theoretical" <?php if ($parameterPointSpreadFunction->value() == "theoretical") echo "checked=\"checked\""?> <?php echo $turnOnPSFAdaptationOnClick ?>/><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=TheoreticalPsf')"><img src="images/help.png" alt="?" /></a>Theoretical
                 
-                <input type="radio" name="PointSpreadFunction" value="measured" <?php if ($parameter->value() == "measured") echo "checked=\"checked\"" ?> <?php echo $turnOffPSFAdaptationOnClick ?>/><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=ExperimentalPsf')"><img src="images/help.png" alt="?" /></a>Measured
+                <input type="radio" name="PointSpreadFunction" value="measured" <?php if ($parameterPointSpreadFunction->value() == "measured") echo "checked=\"checked\"" ?> <?php echo $turnOffPSFAdaptationOnClick ?>/><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=ExperimentalPsf')"><img src="images/help.png" alt="?" /></a>Measured
                 
             </fieldset>
 

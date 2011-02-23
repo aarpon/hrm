@@ -23,6 +23,20 @@ $message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
 
 /* *****************************************************************************
  *
+ * SET THE CONFIDENCES FOR THE RELEVANT PARAMETERS
+ *
+ **************************************************************************** */
+
+/* In this page, all parameters are required! */
+$parameterNames = $_SESSION['setting']->correctionParameterNames();
+foreach ( $parameterNames as $name ) {
+  $parameter = $_SESSION['setting']->parameter( $name );
+  $parameter->setConfidenceLevel( "Provide" );
+  $_SESSION['setting']->set( $parameter );
+}
+
+/* *****************************************************************************
+ *
  * PROCESS THE POSTED PARAMETERS
  *
  **************************************************************************** */
@@ -75,8 +89,21 @@ include("header.inc.php");
             <!-- (1) PERFORM SPHERICAL ABERRATION CORRECTION? -->
             
         <h4>Do you want to enable depth-specific PSF correction? This will try to compensate for spherical aberrations introduced by refractive index mismatches.</h4>
-            
-        <fieldset class="setting Provide"
+ 
+
+    <?php
+
+    /***************************************************************************
+    
+      PerformAberrationCorrection
+    
+    ***************************************************************************/
+
+      $parameterPerformAberrationCorrection = $_SESSION['setting']->parameter("PerformAberrationCorrection");
+
+    ?>
+    
+        <fieldset class="setting <?php echo $parameterPerformAberrationCorrection->confidenceLevel(); ?>"
               onmouseover="javascript:changeQuickHelp( 'enable' );" >
             
             <legend>
@@ -94,14 +121,13 @@ $onChange = "onchange=\"javascript:switchCorrection()\"";
                 
             <?php
 
-                $parameter = $_SESSION['setting']->parameter("PerformAberrationCorrection");
-                $possibleValues = $parameter->possibleValues();
-                $selectedValue  = $parameter->value();
+                $possibleValues = $parameterPerformAberrationCorrection->possibleValues();
+                $selectedValue  = $parameterPerformAberrationCorrection->value();
                 // The javascript expects option values to match their indexes:
                 sort($possibleValues);
 
                 foreach($possibleValues as $possibleValue) {
-                    $translation = $parameter->translatedValueFor( $possibleValue );
+                    $translation = $parameterPerformAberrationCorrection->translatedValueFor( $possibleValue );
                     if ($possibleValue == "0" && $selectedValue == "") {
                         $option = "selected=\"selected\"";
                     }
@@ -129,7 +155,7 @@ $onChange = "onchange=\"javascript:switchCorrection()\"";
 <?php
 
 $visibility = " style=\"display: none\"";
-if ($_SESSION['setting']->parameter("PerformAberrationCorrection")->value( ) == 1)
+if ($parameterPerformAberrationCorrection->value( ) == 1)
   $visibility = " style=\"display: block\"";
 
 ?>
@@ -137,8 +163,20 @@ if ($_SESSION['setting']->parameter("PerformAberrationCorrection")->value( ) == 
     <div id="CoverslipRelativePositionDiv"<?php echo $visibility?>>
         
     <h4>For depth-dependent correction to work properly, you have to specify the relative position of the coverslip with respect to the first acquired plane of the dataset.</h4>
+
+    <?php
+
+    /***************************************************************************
+    
+      CoverslipRelativePosition
+    
+    ***************************************************************************/
+
+      $parameterCoverslipRelativePosition = $_SESSION['setting']->parameter("CoverslipRelativePosition");
+
+    ?>
             
-        <fieldset class="setting Provide"
+        <fieldset class="setting <?php echo $parameterCoverslipRelativePosition->confidenceLevel(); ?>"
               onmouseover="javascript:changeQuickHelp( 'orientation' );" >
             
             <legend>
@@ -150,12 +188,11 @@ if ($_SESSION['setting']->parameter("PerformAberrationCorrection")->value( ) == 
 
             <?php
 
-                $parameter = $_SESSION['setting']->parameter("CoverslipRelativePosition");
-                $possibleValues = $parameter->possibleValues();
-                $selectedValue  = $parameter->value();
+                $possibleValues = $parameterCoverslipRelativePosition->possibleValues();
+                $selectedValue  = $parameterCoverslipRelativePosition->value();
 
                 foreach($possibleValues as $possibleValue) {
-                  $translation = $parameter->translatedValueFor( $possibleValue );
+                  $translation = $parameterCoverslipRelativePosition->translatedValueFor( $possibleValue );
                   if ( $possibleValue == $selectedValue ) {
                     $option = "selected=\"selected\"";
                   } else {
@@ -181,16 +218,28 @@ if ($_SESSION['setting']->parameter("PerformAberrationCorrection")->value( ) == 
 <?php
 
 $visibility = " style=\"display: none\"";
-if ($_SESSION['setting']->parameter("PerformAberrationCorrection")->value( ) == 1)
+if ($parameterPerformAberrationCorrection->value( ) == 1)
   $visibility = " style=\"display: block\"";
 
 ?>
 
     <div id="AberrationCorrectionModeDiv"<?php echo $visibility?>>
+
+    <?php
+
+    /***************************************************************************
+    
+      AberrationCorrectionMode
+    
+    ***************************************************************************/
+
+      $parameterAberrationCorrectionMode = $_SESSION['setting']->parameter("AberrationCorrectionMode");
+
+    ?>        
         
     <h4>At this point the HRM has enough information to perform depth-dependent aberration correction. Please notice that in certain circumstances, the automatic correction scheme might generate artifacts in the result. If this is the case, please choose the advanced correction mode.</h4>
             
-        <fieldset class="setting Provide"
+        <fieldset class="setting <?php echo $parameterAberrationCorrectionMode->confidenceLevel(); ?>"
               onmouseover="javascript:changeQuickHelp( 'mode' );" >
             
             <legend>
@@ -208,12 +257,11 @@ $onChange = "onchange=\"javascript:switchAdvancedCorrection()\"";
 
             <?php
 
-                $parameter = $_SESSION['setting']->parameter("AberrationCorrectionMode");
-                $possibleValues = $parameter->possibleValues();
-                $selectedValue  = $parameter->value();
+                $possibleValues = $parameterAberrationCorrectionMode->possibleValues();
+                $selectedValue  = $parameterAberrationCorrectionMode->value();
 
                 foreach($possibleValues as $possibleValue) {
-                  $translation = $parameter->translatedValueFor( $possibleValue );
+                  $translation = $parameterAberrationCorrectionMode->translatedValueFor( $possibleValue );
                   if ( $possibleValue == $selectedValue ) {
                     $option = "selected=\"selected\"";
                   } else {
@@ -239,17 +287,29 @@ $onChange = "onchange=\"javascript:switchAdvancedCorrection()\"";
 <?php
 
 $visibility = " style=\"display: none\"";
-if ( ($_SESSION['setting']->parameter("PerformAberrationCorrection")->value( ) == 1) &&
-     ($_SESSION['setting']->parameter("AberrationCorrectionMode")->value( ) == "advanced") )
+if ( ($parameterPerformAberrationCorrection->value( ) == 1) &&
+     ($parameterAberrationCorrectionMode->value( ) == "advanced") )
   $visibility = " style=\"display: block\"";
 
 ?>
 
     <div id="AdvancedCorrectionOptionsDiv"<?php echo $visibility?>>
+
+    <?php
+
+    /***************************************************************************
+    
+      AdvancedCorrectionOptions
+    
+    ***************************************************************************/
+
+      $parameterAdvancedCorrectionOptions = $_SESSION['setting']->parameter("AdvancedCorrectionOptions");
+
+    ?>
         
     <h4>Here you can choose an advanced correction scheme.</h4>
             
-        <fieldset class="setting Provide"
+        <fieldset class="setting <?php echo $parameterAdvancedCorrectionOptions->confidenceLevel(); ?>"
               onmouseover="javascript:changeQuickHelp( 'advanced' );" >
             
             <legend>
@@ -269,9 +329,8 @@ $onChange = "onchange=\"javascript:switchAdvancedCorrectionScheme()\"";
 
                 $version = System::huCoreVersion();
                 
-                $parameter = $_SESSION['setting']->parameter("AdvancedCorrectionOptions");
-                $possibleValues = $parameter->possibleValues();
-                $selectedValue  = $parameter->value();
+                $possibleValues = $parameterAdvancedCorrectionOptions->possibleValues();
+                $selectedValue  = $parameterAdvancedCorrectionOptions->value();
                 if ( $version < 3030200 ) {
                     $possibleValues = array_diff($possibleValues, array( 'slice' ) );
                     $possibleValues = array_values( $possibleValues );
@@ -281,7 +340,7 @@ $onChange = "onchange=\"javascript:switchAdvancedCorrectionScheme()\"";
                 }
 
                 foreach($possibleValues as $possibleValue) {
-                  $translation = $parameter->translatedValueFor( $possibleValue );
+                  $translation = $parameterAdvancedCorrectionOptions->translatedValueFor( $possibleValue );
                   if ( $possibleValue == $selectedValue ) {
                     $option = "selected=\"selected\"";
                   } else {
@@ -301,13 +360,19 @@ $onChange = "onchange=\"javascript:switchAdvancedCorrectionScheme()\"";
 <?php
 
 $visibility = " style=\"display: none\"";
-if ( ($_SESSION['setting']->parameter("PerformAberrationCorrection")->value( ) == 1) &&
-     ($_SESSION['setting']->parameter("AberrationCorrectionMode")->value( ) == "advanced") &&
-     ($_SESSION['setting']->parameter("AdvancedCorrectionOptions")->value( ) == "user") )
+if ( ($parameterPerformAberrationCorrection->value( ) == 1) &&
+     ($parameterAberrationCorrectionMode->value( ) == "advanced") &&
+     ($parameterAdvancedCorrectionOptions->value( ) == "user") )
   $visibility = " style=\"display: block\"";
 
-$parameter = $_SESSION['setting']->parameter("PSFGenerationDepth");
-$selectedValue  = $parameter->value();
+    /***************************************************************************
+    
+      PSFGenerationDepth
+    
+    ***************************************************************************/
+
+      $parameterPSFGenerationDepth = $_SESSION['setting']->parameter("PSFGenerationDepth");
+      $selectedValue  = $parameterPSFGenerationDepth->value();
 
 ?>
             

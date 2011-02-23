@@ -36,13 +36,20 @@ abstract class Parameter {
 	protected $message;
 
 	/*!
+		\brief	$confidenceLevel
+		\param	Confidence level for the Parameter
+	*/
+	protected $confidenceLevel;
+
+	/*!
 		\brief	Protected constructor: creates an empty Parameter
 		\param	$name	Name of the new Parameter
 	*/
 	protected function __construct($name) {
-		$this->name    = $name;
-		$this->value   = null;
-		$this->message = '';
+		$this->name            = $name;
+		$this->value           = null;
+		$this->message         = '';
+		$this->confidenceLevel = '';
 	}
 
 	/*!
@@ -57,6 +64,22 @@ abstract class Parameter {
 	*/
 	public function message() {
 		return $this->message;
+	}
+
+	/*!
+		\brief	Returns the confidence level for the Parameter
+		\return	Confidence level for the Parameter
+	*/
+	public function confidenceLevel( ) {
+		return $this->confidenceLevel;
+	}
+	
+	/*!
+		\brief	$confidenceLevel
+		\param	Confidence level for the Parameter
+	*/
+	public function setConfidenceLevel( $confidenceLevel ) {
+		$this->confidenceLevel = $confidenceLevel;
 	}
 
 	/*!

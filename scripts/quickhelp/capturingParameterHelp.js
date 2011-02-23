@@ -11,10 +11,9 @@ window.helpText = new Array();
 
 window.helpText[ "voxel" ] =
   '<p>Each voxel (or 3D pixel) in a 3D digital image has a given volume given ' +
-  'by its x, y, and z dimensions (with x and y usually being equal and ' +
-  'corresponding to the pixel size). The x and y dimensions of the ' +
+  'by its x and y (usually equal) and z dimensions. The x and y dimensions of the ' +
   'voxel are actually the distances between the centers of two adjacent ' +
-  'pixels in those two directions, and the z dimension is given by the ' +
+  'pixels in those two directions (pixel size), and the z dimension is given by the ' +
   'distance of adjacent planes in z directions (z step). In this ' +
   'context, the voxel size relates to the sampling distance and ' +
   'is inversely proportional to the sampling frequency. The ' +
