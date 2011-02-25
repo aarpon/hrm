@@ -53,8 +53,8 @@ abstract class Parameter {
 	}
 
 	/*!
-		\brief	Checks whether the parameter is valid
-		\return	true if the parameter is valid, false otherwise
+		\brief	Checks whether the Parameter is valid
+		\return	true if the Parameter is valid, false otherwise
 	*/
 	abstract public function check();
 
@@ -75,7 +75,7 @@ abstract class Parameter {
 	}
 	
 	/*!
-		\brief	$confidenceLevel
+		\brief	Sets the confidence level for the Parameter
 		\param	Confidence level for the Parameter
 	*/
 	public function setConfidenceLevel( $confidenceLevel ) {
@@ -83,16 +83,25 @@ abstract class Parameter {
 	}
 
 	/*!
-		\brief	Returns the number of values. Values may be scalars or arrays
-		\return	number of values stored in the parameter
-		\todo 	This should always be either 1 or 5. If one wants to know how
-				many values contain useful parameters, then one should use
-				numberOfChannels().
+		\brief	Checks whether the Parameter must have a (valid) value
+		
+		Parameters are optionally allowed to be left unset if their confidence
+		level allows for it. The function will return true if the confidence
+		level is Missing or Provide, and false if it is Trusted or Untrusted.
+		
+		\return true if the Parameter can be empty, false otherwise
 	*/
-	public function numberOfValues() {
-		if (!is_array($this->value()))
-			return 1;
-		return count(array_filter($this->values()));
+	public function mustProvide( ) {
+		return ( $this->confidenceLevel == "Provide" |
+			$this->confidenceLevel == "Missing" );
+	}
+
+
+	/*!
+		\brief	Sets the Parameter value(s) to empty
+	*/
+	public function reset( ) {
+		$this->value = null;
 	}
 
 	/*!
@@ -444,8 +453,8 @@ abstract class ChoiceParameter extends Parameter {
 	}
 
 	/*!
-		\brief	Checks whether the parameter is valid
-		\return	true if the parameter is valid, false otherwise
+		\brief	Checks whether the Parameter is valid
+		\return	true if the Parameter is valid, false otherwise
 	*/
 	public function check( ) {
 		$this->message = '';
@@ -544,22 +553,8 @@ class BooleanParameter extends ChoiceParameter {
 	}
 
 	/*!
-		\brief	Sets the value of current BooleanParameter to 'True'
-	*/	
-	public function set() {
-		$this->value = 'True';
-	}
-
-	/*!
-		\brief	Sets the value of current BooleanParameter to 'False'
-	*/	
-	public function reset() {
-		$this->value = 'False';
-	}
-	
-	/*!
-		\brief	Checks whether the parameter is valid
-		\return	true if the parameter is valid, false otherwise
+		\brief	Checks whether the Parameter is valid
+		\return	true if the Parameter is valid, false otherwise
 	*/
 	public function check( ) {
 		$this->message = '';
@@ -720,8 +715,8 @@ class NumericalParameter extends Parameter {
 	}
 
 	/*!
-		\brief	Checks whether the parameter is valid
-		\return	true if the parameter is valid, false otherwise
+		\brief	Checks whether the Parameter is valid
+		\return	true if the Parameter is valid, false otherwise
 	*/
 	public function check( ) {
 		$this->message = '';
@@ -826,13 +821,7 @@ class NumericalArrayParameter extends NumericalParameter {
 	*/
 	public function __construct($name) {
 		parent::__construct($name);
-		$this->value = array ( 
-		    0 => NULL,
-		    1 => NULL,
-		    2 => NULL,
-		    3 => NULL,
-		    4 => NULL );
-		$this->numberOfChannels = 1;
+		$this->reset( );
 	}
 
 	/*!
@@ -842,6 +831,19 @@ class NumericalArrayParameter extends NumericalParameter {
 	*/
 	public function isVariableChannel() {
 		return True;
+	}
+
+	/*!
+		\brief	Sets the Parameter value(s) to empty
+	*/
+	public function reset( ) {
+		$this->value = array ( 
+		    0 => NULL,
+		    1 => NULL,
+		    2 => NULL,
+		    3 => NULL,
+		    4 => NULL );
+		$this->numberOfChannels = 1;
 	}
 	
 	/*!
@@ -1004,6 +1006,10 @@ class PSF extends AnyTypeArrayParameter {
 		parent::__construct('PSF');
 	}
 
+	/*!
+		\brief	Checks whether the Parameter is valid
+		\return	true if the Parameter is valid, false otherwise
+	*/
 	public function check( ) {
 	  for ( $i = 0; $i < $this->numberOfChannels(); $i++) {
 		  if ( $this->value[ $i ] == NULL ) {
@@ -1351,8 +1357,8 @@ class NumericalAperture extends NumericalParameter {
 	}
 	
 	/*!
-		\brief	Checks the value for the Parameter
-		\return true if the value is valid, false otherwise
+		\brief	Checks whether the Parameter is valid
+		\return	true if the Parameter is valid, false otherwise
 	*/
 	public function check( ) {
 		$result = parent::check( );
@@ -1478,8 +1484,8 @@ class SampleMedium extends ChoiceParameter {
 	}
 	
 	/*!
-		\brief	Checks whether the parameter is valid
-		\return	true if the parameter is valid, false otherwise
+		\brief	Checks whether the Parameter is valid
+		\return	true if the Parameter is valid, false otherwise
 	*/
 	public function check( ) {
 		$this->message = '';
@@ -1553,8 +1559,8 @@ class ExcitationWavelength extends NumericalArrayParameter {
 	}
 	
 	/*!
-		\brief	Checks the value for the Parameter
-		\return true if the value is valid, false otherwise
+		\brief	Checks whether the Parameter is valid
+		\return	true if the Parameter is valid, false otherwise
 	*/
 	public function check( ) {
 		$result = parent::check( );
@@ -1593,8 +1599,8 @@ class EmissionWavelength extends NumericalArrayParameter {
 	}
 	
 	/*!
-		\brief	Checks the value for the Parameter
-		\return true if the value is valid, false otherwise
+		\brief	Checks whether the Parameter is valid
+		\return	true if the Parameter is valid, false otherwise
 	*/
 	public function check( ) {
 		$result = parent::check( );
@@ -1632,8 +1638,8 @@ class CMount extends NumericalParameter {
 	}
 	
 	/*!
-		\brief	Checks the value for the Parameter
-		\return true if the value is valid, false otherwise
+		\brief	Checks whether the Parameter is valid
+		\return	true if the Parameter is valid, false otherwise
 	*/
 	public function check( ) {
 		$result = parent::check( );
@@ -1671,8 +1677,8 @@ class TubeFactor extends NumericalParameter {
 	}
 	
 	/*!
-		\brief	Checks the value for the Parameter
-		\return true if the value is valid, false otherwise
+		\brief	Checks whether the Parameter is valid
+		\return	true if the Parameter is valid, false otherwise
 	*/
 	public function check( ) {
 		$result = parent::check( );
@@ -1753,8 +1759,8 @@ class CCDCaptorSize extends NumericalParameter {
 	}
 	
 	/*!
-		\brief	Checks the value for the Parameter
-		\return true if the value is valid, false otherwise
+		\brief	Checks whether the Parameter is valid
+		\return	true if the Parameter is valid, false otherwise
 	*/
 	public function check( ) {
 		$result = parent::check( );
@@ -1853,8 +1859,8 @@ class PinholeSize extends NumericalArrayParameter {
 	}
 	
 	/*!
-		\brief	Checks the value for the Parameter
-		\return true if the value is valid, false otherwise
+		\brief	Checks whether the Parameter is valid
+		\return	true if the Parameter is valid, false otherwise
 	*/
 	public function check( ) {
 		$result = parent::check( );
@@ -1892,8 +1898,8 @@ class PinholeSpacing extends NumericalParameter {
 	
 		
 	/*!
-		\brief	Checks the value for the Parameter
-		\return true if the value is valid, false otherwise
+		\brief	Checks whether the Parameter is valid
+		\return	true if the Parameter is valid, false otherwise
 	*/
 	public function check( ) {
 		$result = parent::check( );
@@ -1973,8 +1979,8 @@ class SignalNoiseRatio extends NumericalArrayParameter {
 	}
 
 	/*!
-		\brief	Checks the value for the Parameter
-		\return true if the value is valid, false otherwise
+		\brief	Checks whether the Parameter is valid
+		\return	true if the Parameter is valid, false otherwise
 	*/
 	public function check( ) {
 		$result = parent::check( );
@@ -2081,8 +2087,8 @@ class BackgroundOffsetPercent extends AnyTypeArrayParameter {
 	}
 
 	/*!
-		\brief	Checks the value for the Parameter
-		\return true if the value is valid, false otherwise
+		\brief	Checks whether the Parameter is valid
+		\return	true if the Parameter is valid, false otherwise
 	*/
 	public function check() {
 		$this->message = '';
@@ -2149,8 +2155,8 @@ class NumberOfIterations extends NumericalParameter {
 	}
 
 	/*!
-		\brief	Checks the value for the Parameter
-		\return true if the value is valid, false otherwise
+		\brief	Checks whether the Parameter is valid
+		\return	true if the Parameter is valid, false otherwise
 	*/
 	public function check( ) {
 		$result = parent::check( );
@@ -2180,8 +2186,8 @@ class PSFGenerationDepth extends NumericalParameter {
 	}
 	
 	/*!
-		\brief	Checks the value for the Parameter
-		\return true if the value is valid, false otherwise
+		\brief	Checks whether the Parameter is valid
+		\return	true if the Parameter is valid, false otherwise
 	*/
 	public function check( ) {
 		$result = parent::check( );
@@ -2218,8 +2224,8 @@ class QualityChangeStoppingCriterion extends NumericalParameter {
 	}
 
 	/*!
-		\brief	Checks the value for the Parameter
-		\return true if the value is valid, false otherwise
+		\brief	Checks whether the Parameter is valid
+		\return	true if the Parameter is valid, false otherwise
 	*/
 	public function check( ) {
 		$result = parent::check( );

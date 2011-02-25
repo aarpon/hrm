@@ -41,6 +41,6 @@ window.helpText[ "default" ] =
   '<p>On this page you specify the parameters for the optical setup ' +
   'of your experiment.</p>' +
   '<p>These parameters comprise the microscope type, ' +
-  'the numerical aperture of the objective, the wavelenght of the used ' +
+  'the numerical aperture of the objective, the wavelength of the used ' +
   'fluorophores, and the refractive indices of the sample medium and of ' +
   'the objective-embedding medium.</p>';

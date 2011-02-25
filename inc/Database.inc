@@ -1363,18 +1363,38 @@ class DatabaseConnection {
   /*!
     \brief	Get the parameter confidence level for given file format
 	\param	$fileFormat		File format for which the Parameter confidence level is queried
+							(not strictly necessary for the Parameters with confidence level 'Provide',
+							could be set to '' for those)
 	\param	$parameterName	Name of the Paramater the confidence level should be returned   
     \return	parameter confidence level
     \todo	This function is a STUB. Expand it as soon as the table structure is known
   */
   public function getParameterConfidenceLevel( $fileFormat, $parameterName ) {
-	$levels = array();
-	$levels[ 0 ] = "Provide";
-	$levels[ 1 ] = "Trusted";
-	$levels[ 2 ] = "Untrusted";
-	$levels[ 3 ] = "Missing";
-    $a = rand( 0, 3 );
-    return ( $levels[ $a ] );
+	// Some Parameters MUST be provided, no matter what file format is chosen
+	switch ( $parameterName ) {
+	  case 'ImageFileFormat' :
+	  case 'NumberOfChannels' :
+	  case 'ImageGeometry':
+	  case 'PointSpreadFunction':
+	  case 'MicroscopeType' :
+	  case 'CoverslipRelativePosition':
+	  case 'PerformAberrationCorrection':
+	  case 'AberrationCorrectionMode':
+	  case 'AdvancedCorrectionOptions':
+	  case 'PSF' :
+		return "Provide";
+	  default:
+		// For the other Parameters, the $fileFormat must be specified
+		if ( ( $fileFormat == '' ) && ( $fileFormat == null ) ) {
+		  exit( "Error: please specify a file format!" . "\n" );
+		}
+		$levels = array();
+		$levels[ 0 ] = "Trusted";
+		$levels[ 1 ] = "Untrusted";
+		$levels[ 2 ] = "Missing";
+		$a = rand( 0, 2 );
+		return ( $levels[ $a ] );
+	}
   }
 
   /*

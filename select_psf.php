@@ -41,7 +41,6 @@ for ($i = 0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
   } 
 }
 // get rid of extra values in case the number of channels is changed
-//$psf = array_slice($psf, 0, $_SESSION['setting']->numberOfChannels() );
 $psfParam->setValue($psf);
 $_SESSION['setting']->set($psfParam);
 
@@ -49,6 +48,10 @@ $_SESSION['setting']->set($psfParam);
  *
  * PROCESS THE POSTED PARAMETERS
  *
+ * In this case, we do not need to check the confidence level of the PSF
+ * Parameter (although it is set to Provide), since there is no other
+ * meaningful alternative to having to provide the file names.
+ * 
  **************************************************************************** */
 
 if (count($_POST) > 0) {

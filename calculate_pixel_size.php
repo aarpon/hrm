@@ -45,7 +45,7 @@ if ( $_SESSION[ 'setting' ]->checkPostedCalculatePixelSizeParameters( $_POST ) )
 		header("Location: " . "capturing_parameter.php"); exit();
 	} else {
 		$message = "            <p class=\"warning\">" .
-			"Something is wrong with your parameters!</p>\n";
+			"Please check your parameters!</p>\n";
 	}
 } else {
   
@@ -191,6 +191,8 @@ foreach ( $sortedPossibleValues as $possibleValue) {
             <p>Here you can calculate the image pixel size from the physical
             attributes of your CCD chip element and some of the relevant
             microscope parameters.</p>
+			<p>Notice that the size of the CCD element must be in
+			<strong>nm</strong> (e.g. 6450).</p>
             
         </div>
         

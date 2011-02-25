@@ -31,11 +31,16 @@ $message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
  *
  **************************************************************************** */
 
-/* In this page, all parameters are required! */
+/*
+   In this page, all parameters are required and independent of the
+   file format chosen!
+*/
 $parameterNames = $_SESSION['setting']->imageParameterNames();
+$db = new DatabaseConnection();
 foreach ( $parameterNames as $name ) {
   $parameter = $_SESSION['setting']->parameter( $name );
-  $parameter->setConfidenceLevel( "Provide" );
+  $confidenceLevel = $db->getParameterConfidenceLevel( '', $name );  
+  $parameter->setConfidenceLevel( $confidenceLevel );
   $_SESSION['setting']->set( $parameter );
 }
 

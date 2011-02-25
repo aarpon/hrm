@@ -29,9 +29,11 @@ $message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
 
 /* In this page, all parameters are required! */
 $parameterNames = $_SESSION['setting']->correctionParameterNames();
+$db = new DatabaseConnection();
 foreach ( $parameterNames as $name ) {
   $parameter = $_SESSION['setting']->parameter( $name );
-  $parameter->setConfidenceLevel( "Provide" );
+  $confidenceLevel = $db->getParameterConfidenceLevel( $fileFormat, $name );  
+  $parameter->setConfidenceLevel( $confidenceLevel );
   $_SESSION['setting']->set( $parameter );
 }
 

@@ -142,7 +142,24 @@ $script = array( "settings.js", "quickhelp/help.js",
 
 include("header.inc.php");
 
+// If all necessaty Parameters were set, the Nyquist rate can be calculated
+// displayed. If not, we inform the user
 $nyquist = $_SESSION['setting']->calculateNyquistRate();
+if ( $nyquist === false ) {
+    $NyquistMessage = "The optimal Nyquist sampling rate could not be " .
+	"calculated because not all necessary parameters were set in the " .
+	"previous pages. You can use the online Nyquist calculator instead.";
+} else {
+  $NyquistMessage = "Calculated from current optical parameters, the " .
+	"(Nyquist) ideal pixel size is <span style=\"background-color:yellow\">" .
+	$nyquist[0] . " nm</span>";
+  if ($_SESSION['setting']->isThreeDimensional() ) {
+	$NyquistMessage .=
+	  " and the ideal z-step is <span style=\"background-color:yellow\">" .
+	  $nyquist[1] . " nm</span>";
+  }
+  $NyquistMessage .= ".";
+}
 
 ?>
     <!--
@@ -206,14 +223,7 @@ $nyquist = $_SESSION['setting']->calculateNyquistRate();
                     voxel size
                 </legend>
 
-				<p class="message_small">Calculated from current optical parameters, the (Nyquist) ideal pixel size is
-				  <span style="background-color:yellow"><?php echo $nyquist[0];?> nm</span>
-				  <?php
-					if ($_SESSION['setting']->isThreeDimensional() ) {
-					  echo " and the ideal z-step is <span style=\"background-color:yellow\">".
-					  $nyquist[1]." nm</span>";
-					}
-				  ?>.</p>
+				<p class="message_small"><?php echo $NyquistMessage;?></p>
 <?php
 
 $value = $parameterCCDCaptorSizeX->value();

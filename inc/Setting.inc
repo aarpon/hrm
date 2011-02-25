@@ -227,7 +227,7 @@ abstract class Setting {
       }
     }
   }
-  
+
 } // End of Setting class
 
 /*
@@ -305,6 +305,9 @@ class ParameterSetting extends Setting {
   /*!
    \brief	Checks that the posted Image Parameters are all defined
    and valid
+
+   These Parameters must all be defined.
+
    \param	$postedParameters	The $_POST array
    */
   public function checkPostedImageParameters( $postedParameters ) {
@@ -316,78 +319,98 @@ class ParameterSetting extends Setting {
 
     $this->message = '';
     $noErrorsFound = True;
-    
+
     // Get the names of the relevant parameters
     $names = $this->imageParameterNames();
 
     // Check that the Parameters are set and contain valid values
     foreach ( $names as $name ) {
-      if ( !isset( $postedParameters[ $name ] ) ||
-      $postedParameters[ $name ] == '' ) {
-        // The Parameter is not set or empty, return an informative error message
-        switch ( $name ) {
-          case "ImageFileFormat" :
-            $this->message = "Please choose a file format!";
-            $noErrorsFound = False;
-            break;
-          case "ImageGeometry" :
-            // This is a special case: for fixed geometry file formats,
-            // we will have to enforce the XY - time geometry
-            $singleParameters = $this->fixedGeometryFileFormats();
-            if ( isset( $postedParameters[ "ImageFileFormat" ] ) ) {
-              if ( array_search( $postedParameters[ "ImageFileFormat" ], $singleParameters ) === false ) {
-                $this->message = "Please set the image geometry!";
-				$noErrorsFound = False;
-              } else {
-				// To single plane file formats, the XY - time geometry
-				// is associated
-				$parameter = $this->parameter( $name );
-				$parameter->setValue( "XY - time" );
-				$this->set( $parameter );
-				if( !$parameter->check() ) {
-					$this->message = $parameter->message();
-					$noErrorsFound = False;
-				}
-              }
-			  // No errors
-            } else {
-              $this->message = "Please set the image geometry!";
-			  $noErrorsFound = False;
-            }
-            break;
-          case "NumberOfChannels" :
-            $this->message = "Please set the number of channels!";
-			$noErrorsFound = False;
-            break;
-          case "PointSpreadFunction" :
-            $this->message = "Please indicate whether you " .
-							"would like to calculate a theoretical PSF " .
-							"or use an existing measured one!";
-			$noErrorsFound = False;
-            break;
-        }
-      } else {
-        // The Parameter is set, now check the value
+
+      // State of the Parameter and the submitted value(s)
+      $valueSet = isset( $postedParameters[ $name ] ) &&
+      $postedParameters[ $name ] != '';
+
+      if ( $valueSet ) {
+
+        // No Parameter requires special treatment
+        $value = $postedParameters[ $name ];
         $parameter = $this->parameter( $name );
-        $parameter->setValue( $postedParameters[ $name ] );
+        $parameter->setValue( $value );
         $this->set( $parameter );
         if( !$parameter->check() ) {
           $this->message = $parameter->message();
           $noErrorsFound = False;
         }
+
+      } else {
+         
+        $parameter = $this->parameter( $name );
+        $mustProvide = $parameter->mustProvide();
+
+        // Reset the Parameter
+        $parameter->reset();
+        $this->set( $parameter );
+         
+        // If the Parameter value must be provided, we return an error
+        if ( $mustProvide ) {
+
+          switch ( $name ) {
+            case "ImageFileFormat" :
+              $this->message = "Please choose a file format!";
+              $noErrorsFound = False;
+              break;
+            case "ImageGeometry" :
+              // This is a special case: for fixed geometry file formats,
+              // we will have to enforce the XY - time geometry
+              $singleParameters = $this->fixedGeometryFileFormats();
+              if ( isset( $postedParameters[ "ImageFileFormat" ] ) ) {
+                if ( array_search( $postedParameters[ "ImageFileFormat" ], $singleParameters ) === false ) {
+                  $this->message = "Please set the image geometry!";
+                  $noErrorsFound = False;
+                } else {
+                  // To single plane file formats, the XY - time geometry
+                  // is associated
+                  $parameter = $this->parameter( $name );
+                  $parameter->setValue( "XY - time" );
+                  $this->set( $parameter );
+                  if( !$parameter->check() ) {
+                    $this->message = $parameter->message();
+                    $noErrorsFound = False;
+                  }
+                }
+                // No errors
+              } else {
+                $this->message = "Please set the image geometry!";
+                $noErrorsFound = False;
+              }
+              break;
+            case "NumberOfChannels" :
+              $this->message = "Please set the number of channels!";
+              $noErrorsFound = False;
+              break;
+            case "PointSpreadFunction" :
+              $this->message = "Please indicate whether you " .
+						"would like to calculate a theoretical PSF " .
+						"or use an existing measured one!";
+              $noErrorsFound = False;
+              break;
+          }
+          $noErrorsFound = False;
+        }
       }
     }
-
     return $noErrorsFound;
   }
-
 
   /*!
    \brief	Checks that the posted Microscopy Parameters are all
    defined and valid
+
+   These Parameter might have different confidence levels
+
    \param	$postedParameters	The $_POST array
    */
-  public function checkPostedMicroscopyParameters(  $postedParameters ) {
+  public function checkPostedMicroscopyParameters( $postedParameters ) {
 
     if ( count( $postedParameters ) == 0 ) {
       $this->message = '';
@@ -406,33 +429,14 @@ class ParameterSetting extends Setting {
 
     // Check that the Parameters are set and contain valid values
     foreach ( $names as $name ) {
-      if ( !isset( $postedParameters[ $name ] ) ||
-      $postedParameters[ $name ] == '' ) {
-        // The Parameter is not set or empty, return an informative error message
-        switch ( $name ) {
-          case "MicroscopeType" :
-            $this->message = "Please set the microscope type!";
-            break;
-          case "NumericalAperture" :
-            $this->message = "Please set the numerical aperture!";
-            break;
-          case "ObjectiveType" :
-            $this->message = "Please set the objective type!";
-            break;
-          case "SampleMedium" :
-            $this->message = "Please set the refractive index " .
-						"of the sampling medium!";
-            break;
-          case "ExcitationWavelength0" :
-            $this->message = "Please set the excitation wavelength!";
-            break;
-          case "EmissionWavelength0" :
-            $this->message = "Please set the excitation wavelength!";
-            break;
-        }
-        $noErrorsFound = False;
-      } else {
 
+      // State of the Parameter and the submitted value(s)
+      $valueSet = isset( $postedParameters[ $name ] ) &&
+      $postedParameters[ $name ] != '';
+
+      // If the value is set, we check it no matter if it must be provided or not
+      if ( $valueSet ) {
+         
         // Handle particular parameters
         if ( $name == 'ExcitationWavelength0' ) {
           $value = array( null, null, null, null, null );
@@ -461,7 +465,8 @@ class ParameterSetting extends Setting {
           $value = $postedParameters[ $name ];
         }
 
-        // Set the Parameter and check the value
+        // If the value is set we must check it (independent of the
+        // $mustProvide flag)
         $parameter = $this->parameter( $name );
         $parameter->setValue( $value );
         $this->set( $parameter );
@@ -469,9 +474,51 @@ class ParameterSetting extends Setting {
           $this->message = $parameter->message();
           $noErrorsFound = False;
         }
+         
+      } else {
+
+        // In this case it is important to know whether the Parameter must
+        // have a value or not
+        if ( $name == "ExcitationWavelength0" ) {
+          $name = "ExcitationWavelength";
+        } elseif( $name == "EmissionWavelength0" ) {
+          $name = "EmissionWavelength";
+        }
+        $parameter = $this->parameter( $name );
+        $mustProvide = $parameter->mustProvide();
+
+        // Reset the Parameter
+        $parameter->reset();
+        $this->set( $parameter );
+         
+        // If the Parameter value must be provided, we return an error
+        if ( $mustProvide ) {
+
+          switch ( $name ) {
+            case "MicroscopeType" :
+              $this->message = "Please set the microscope type!";
+              break;
+            case "NumericalAperture" :
+              $this->message = "Please set the numerical aperture!";
+              break;
+            case "ObjectiveType" :
+              $this->message = "Please set the objective type!";
+              break;
+            case "SampleMedium" :
+              $this->message = "Please set the refractive index " .
+							"of the sampling medium!";
+              break;
+            case "ExcitationWavelength" :
+              $this->message = "Please set the excitation wavelength!";
+              break;
+            case "EmissionWavelength" :
+              $this->message = "Please set the excitation wavelength!";
+              break;
+          }
+          $noErrorsFound = False;
+        }
       }
     }
-
     return $noErrorsFound;
   }
 
@@ -490,65 +537,119 @@ class ParameterSetting extends Setting {
     $this->message = '';
     $noErrorsFound = True;
 
-    // CCDCaptorSizeX must always be defined
-    if ( !isset( $postedParameters[ "CCDCaptorSizeX" ] ) ||
-    ( $postedParameters[ "CCDCaptorSizeX" ] == '' ) ) {
-      $this->message = "Please set the pixel size!";
-      $noErrorsFound = False;
-    } else {
+    // Here we test the Parameters explicitly
+
+    // CCDCaptorSizeX
+    $valueSet = isset( $postedParameters[ "CCDCaptorSizeX" ] ) &&
+    $postedParameters[ "CCDCaptorSizeX" ] != '';
+
+    $parameter = $this->parameter( "CCDCaptorSizeX" );
+
+    if ( $valueSet ) {
+
       // Set the Parameter and check the value
-      $parameter = $this->parameter( "CCDCaptorSizeX" );
       $parameter->setValue( $postedParameters[ "CCDCaptorSizeX" ] );
       $this->set( $parameter );
       if( !$parameter->check() ) {
         $this->message = $parameter->message();
         $noErrorsFound = False;
       }
+
+    } else {
+
+      $mustProvide = $parameter->mustProvide();
+
+      // Reset the Parameter
+      $parameter->reset();
+      $this->set( $parameter );
+
+      // If the Parameter value must be provided, we return an error
+      if ( $mustProvide ) {
+        $this->message = "Please set the pixel size!";
+        $noErrorsFound = False;
+      }
     }
 
     // ZStepSize must be defined for all 3D geometries
     if ( $this->isThreeDimensional( ) ) {
-      if ( ( !isset( $postedParameters[ "ZStepSize" ] ) ) ||
-      ( $postedParameters[ "ZStepSize" ] == '' ) ) {
-        $this->message = "Please set the z-step!";
-        $noErrorsFound = False;
-      } else {
+
+      $valueSet = isset( $postedParameters[ "ZStepSize" ] ) &&
+      $postedParameters[ "ZStepSize" ] != '';
+
+      $parameter = $this->parameter( "ZStepSize" );
+
+      if ( $valueSet ) {
+
         // Set the Parameter and check the value
-        $parameter = $this->parameter( "ZStepSize" );
         $parameter->setValue( $postedParameters[ "ZStepSize" ] );
         $this->set( $parameter );
         if( !$parameter->check() ) {
           $this->message = $parameter->message();
           $noErrorsFound = False;
         }
+
+      } else {
+
+        $mustProvide = $parameter->mustProvide();
+
+        // Reset the Parameter
+        $parameter->reset();
+        $this->set( $parameter );
+
+        // If the Parameter value must be provided, we return an error
+        if ( $mustProvide ) {
+          $this->message = "Please set the z-step!";
+          $noErrorsFound = False;
+        }
       }
+
     }
 
     // TimeInterval must be defined for the XY-time and XYZ-time geometry
     if ( $this->isTimeSeries( ) ) {
-      if ( !isset( $postedParameters[ "TimeInterval" ] ) ||
-      ( $postedParameters[ "TimeInterval" ] == '' ) ) {
-        $this->message = "Please set the time interval!";
-        $noErrorsFound = False;
-      } else {
+
+      $valueSet = isset( $postedParameters[ "TimeInterval" ] ) &&
+      $postedParameters[ "TimeInterval" ] != '';
+
+      $parameter = $this->parameter( "TimeInterval" );
+
+      if ( $valueSet ) {
+
         // Set the Parameter and check the value
-        $parameter = $this->parameter( "TimeInterval" );
         $parameter->setValue( $postedParameters[ "TimeInterval" ] );
         $this->set( $parameter );
         if( !$parameter->check() ) {
           $this->message = $parameter->message();
           $noErrorsFound = False;
         }
+
+      } else {
+
+        $mustProvide = $parameter->mustProvide();
+
+        // Reset the Parameter
+        $parameter->reset();
+        $this->set( $parameter );
+
+        // If the Parameter value must be provided, we return an error
+        if ( $mustProvide ) {
+          $this->message = "Please set the time interval!";
+          $noErrorsFound = False;
+        }
       }
+
     }
 
     // PinholeSize must be defined for all confocal microscopes
     if ( $this->isMultiPointOrSinglePointConfocal( ) ) {
-      if ( ( !isset( $postedParameters[ "PinholeSize0" ] ) ) ||
-      ( $postedParameters[ "PinholeSize0" ] == '' ) ) {
-        $this->message = "Please set the pinhole size!";
-        $noErrorsFound = False;
-      } else {
+
+      $valueSet = isset( $postedParameters[ "PinholeSize0" ] ) &&
+      $postedParameters[ "PinholeSize0" ] != '';
+
+      $parameter = $this->parameter( "PinholeSize" );
+
+      if ( $valueSet ) {
+
         // Set the Parameter and check the value
         $value = array( null, null, null, null, null );
         $value[ 0 ] = $postedParameters[ "PinholeSize0" ];
@@ -557,32 +658,63 @@ class ParameterSetting extends Setting {
             $value[ $i ] = $postedParameters[ "PinholeSize$i" ];
           }
         }
-        $parameter = $this->parameter( "PinholeSize" );
         $parameter->setValue( $value );
         $this->set( $parameter );
         if( !$parameter->check() ) {
           $this->message = $parameter->message();
           $noErrorsFound = False;
         }
+
+      } else {
+
+        $mustProvide = $parameter->mustProvide();
+
+        // Reset the Parameter
+        $parameter->reset();
+        $this->set( $parameter );
+
+        // If the Parameter value must be provided, we return an error
+        if ( $mustProvide ) {
+          $this->message = "Please set the pinhole size!";
+          $noErrorsFound = False;
+        }
       }
+
     }
 
-    // PinholeSpacing must be defined for spinning disk
-    if ( $this->isNipkowDisk() ) {
-      if ( ( !isset( $postedParameters[ "PinholeSpacing" ] ) ) ||
-      ( $postedParameters[ "PinholeSpacing" ] == '' ) ) {
-        $this->message = "Please set the pinhole spacing!";
-        $noErrorsFound = False;
-      } else {
+    // PinholeSpacing must be defined for spinning disk confocals
+    if ( $this->isNipkowDisk( ) ) {
+
+      $valueSet = isset( $postedParameters[ "PinholeSpacing" ] ) &&
+      $postedParameters[ "PinholeSpacing" ] != '';
+
+      $parameter = $this->parameter( "PinholeSpacing" );
+
+      if ( $valueSet ) {
+
         // Set the Parameter and check the value
-        $parameter = $this->parameter( "PinholeSpacing" );
         $parameter->setValue( $postedParameters[ "PinholeSpacing" ] );
         $this->set( $parameter );
         if( !$parameter->check() ) {
           $this->message = $parameter->message();
           $noErrorsFound = False;
         }
+
+      } else {
+
+        $mustProvide = $parameter->mustProvide();
+
+        // Reset the Parameter
+        $parameter->reset();
+        $this->set( $parameter );
+
+        // If the Parameter value must be provided, we return an error
+        if ( $mustProvide ) {
+          $this->message = "Please set the pinhole spacing!";
+          $noErrorsFound = False;
+        }
       }
+
     }
 
     return $noErrorsFound;
@@ -604,60 +736,126 @@ class ParameterSetting extends Setting {
     $this->message = '';
     $noErrorsFound = True;
 
-    // The following parameters are always defined
+    // PerformAberrationCorrection
+    $valueSet = isset( $postedParameters[ "PerformAberrationCorrection" ] ) &&
+    $postedParameters[ "PerformAberrationCorrection" ] != '';
 
-    if ( !isset( $postedParameters[ "PerformAberrationCorrection" ] ) ) {
-      $this->message = "Please choose whether to perform the correction!";
-      $noErrorsFound = False;
-    } else {
+    $parameter = $this->parameter( "PerformAberrationCorrection" );
+
+    if ( $valueSet ) {
+
       // Set the Parameter and check the value
-      $parameter = $this->parameter( "PerformAberrationCorrection" );
       $parameter->setValue( $postedParameters[ "PerformAberrationCorrection" ] );
       $this->set( $parameter );
       if( !$parameter->check() ) {
         $this->message = $parameter->message();
         $noErrorsFound = False;
       }
+
+    } else {
+
+      $mustProvide = $parameter->mustProvide();
+
+      // Reset the Parameter
+      $parameter->reset();
+      $this->set( $parameter );
+
+      // If the Parameter value must be provided, we return an error
+      if ( $mustProvide ) {
+        $this->message = "Please choose whether to perform the correction!";
+        $noErrorsFound = False;
+      }
     }
 
-    if ( !isset( $postedParameters[ "CoverslipRelativePosition" ] ) ) {
-      $this->message = "Please choose the relative coverslip position!";
-      $noErrorsFound = False;
-    } else {
+    // CoverslipRelativePosition
+    $valueSet = isset( $postedParameters[ "CoverslipRelativePosition" ] ) &&
+    $postedParameters[ "CoverslipRelativePosition" ] != '';
+
+    $parameter = $this->parameter( "CoverslipRelativePosition" );
+
+    if ( $valueSet ) {
+
       // Set the Parameter and check the value
-      $parameter = $this->parameter( "CoverslipRelativePosition" );
       $parameter->setValue( $postedParameters[ "CoverslipRelativePosition" ] );
       $this->set( $parameter );
       if( !$parameter->check() ) {
         $this->message = $parameter->message();
         $noErrorsFound = False;
       }
+
+    } else {
+
+      $mustProvide = $parameter->mustProvide();
+
+      // Reset the Parameter
+      $parameter->reset();
+      $this->set( $parameter );
+
+      // If the Parameter value must be provided, we return an error
+      if ( $mustProvide ) {
+        $this->message = "Please choose the relative coverslip position!";
+        $noErrorsFound = False;
+      }
     }
 
-    if ( !isset( $postedParameters[ "AberrationCorrectionMode" ] ) ) {
-      $this->message = "Please set the aberration correction mode!";
-      $noErrorsFound = False;
-    } else {
+    // AberrationCorrectionMode
+    $valueSet = isset( $postedParameters[ "AberrationCorrectionMode" ] ) &&
+    $postedParameters[ "AberrationCorrectionMode" ] != '';
+
+    $parameter = $this->parameter( "AberrationCorrectionMode" );
+
+    if ( $valueSet ) {
+
       // Set the Parameter and check the value
-      $parameter = $this->parameter( "AberrationCorrectionMode" );
       $parameter->setValue( $postedParameters[ "AberrationCorrectionMode" ] );
       $this->set( $parameter );
       if( !$parameter->check() ) {
         $this->message = $parameter->message();
         $noErrorsFound = False;
       }
+
+    } else {
+
+      $mustProvide = $parameter->mustProvide();
+
+      // Reset the Parameter
+      $parameter->reset();
+      $this->set( $parameter );
+
+      // If the Parameter value must be provided, we return an error
+      if ( $mustProvide ) {
+        $this->message = "Please set the aberration correction mode!";
+        $noErrorsFound = False;
+      }
     }
 
-    if ( !isset( $postedParameters[ "AdvancedCorrectionOptions" ] ) ) {
-      $this->message = "Please indicate the options for the advanced correction!";
-      $noErrorsFound = False;
-    } else {
+    // AdvancedCorrectionOptions
+    $valueSet = isset( $postedParameters[ "AdvancedCorrectionOptions" ] ) &&
+    $postedParameters[ "AdvancedCorrectionOptions" ] != '';
+
+    $parameter = $this->parameter( "AdvancedCorrectionOptions" );
+
+    if ( $valueSet ) {
+
       // Set the Parameter and check the value
-      $parameter = $this->parameter( "AdvancedCorrectionOptions" );
       $parameter->setValue( $postedParameters[ "AdvancedCorrectionOptions" ] );
       $this->set( $parameter );
       if( !$parameter->check() ) {
         $this->message = $parameter->message();
+        $noErrorsFound = False;
+      }
+
+    } else {
+
+      $mustProvide = $parameter->mustProvide();
+
+      // Reset the Parameter
+      $parameter->reset();
+      $this->set( $parameter );
+
+      // If the Parameter value must be provided, we return an error
+      if ( $mustProvide ) {
+        $this->message = "Please indicate the options for the advanced correction!";
         $noErrorsFound = False;
       }
     }
@@ -673,22 +871,44 @@ class ParameterSetting extends Setting {
     $perform   = $parameter->value();
     $parameter = $this->parameter( "AberrationCorrectionMode" );
     $mode      = $parameter->value();
+
     if ( $perform == 1 && $mode == "advanced" ) {
-      if ( !isset( $postedParameters[ "PSFGenerationDepth" ] ) ) {
-        $this->message = "Please indicate the depth for PSF generation!";
-        $noErrorsFound = False;
-      } else {
+
+      // PSFGenerationDepth
+      $valueSet = isset( $postedParameters[ "PSFGenerationDepth" ] ) &&
+      $postedParameters[ "PSFGenerationDepth" ] != '';
+
+      $parameter = $this->parameter( "PSFGenerationDepth" );
+
+      if ( $valueSet ) {
+
         // Set the Parameter and check the value
-        $parameter = $this->parameter( "PSFGenerationDepth" );
         $parameter->setValue( $postedParameters[ "PSFGenerationDepth" ] );
         $this->set( $parameter );
         if( !$parameter->check() ) {
           $this->message = $parameter->message();
           $noErrorsFound = False;
         }
+
+      } else {
+
+        $mustProvide = $parameter->mustProvide();
+         
+        // Reset the Parameter
+        $parameter->reset();
+        $this->set( $parameter );
+
+        // If the Parameter value must be provided, we return an error
+        if ( $mustProvide ) {
+          $this->message = "Please indicate the depth for PSF generation!";
+          $noErrorsFound = False;
+        }
       }
+
     }
+
     return $noErrorsFound;
+
   }
 
   /*!
@@ -858,9 +1078,9 @@ class ParameterSetting extends Setting {
       continue;
       if (!$this->isThreeDimensional() && $parameter->name() == 'ZStepSize')
       continue;
-	  if (!$this->isTimeSeries() && $parameter->name() == 'TimeInterval')
+      if (!$this->isTimeSeries() && $parameter->name() == 'TimeInterval')
       continue;
-	  if (!$this->isNipkowDisk() && $parameter->name() == 'PinholeSpacing')
+      if (!$this->isNipkowDisk() && $parameter->name() == 'PinholeSpacing')
       continue;
       if ($parameter->name() == 'IsMultiChannel' || $parameter->name() == 'PSF')
       continue;
@@ -872,11 +1092,11 @@ class ParameterSetting extends Setting {
       continue;
       if ($parameter->name() == 'TubeFactor' ) // This is obsolete
       continue;
-	  if ($parameter->name() == 'ObjectiveMagnification' ) // This is obsolete
+      if ($parameter->name() == 'ObjectiveMagnification' ) // This is obsolete
       continue;
-	  if ($parameter->name() == 'Binning' ) // This is obsolete
+      if ($parameter->name() == 'Binning' ) // This is obsolete
       continue;
-	  if ($parameter->name() == 'CCDCaptorSizeX' && $PSF == 'measured' )
+      if ($parameter->name() == 'CCDCaptorSizeX' && $PSF == 'measured' )
       continue;
       if ($parameter->name() == 'CoverslipRelativePosition' && $PSF == 'measured' )
       continue;
@@ -896,7 +1116,8 @@ class ParameterSetting extends Setting {
   /*!
    \brief	Asks HuCore to calculate the ideal (Nyquist) sampling rate
    for the current conditions.
-   \return	an array with the ideal XY and Z sampling
+   \return	an array with the ideal XY and Z sampling, or false if the sampling
+   could not be calculated due to missing values
    */
   public function calculateNyquistRate() {
     // Use the most restrictive wavelength to compute the adaption
@@ -936,7 +1157,10 @@ class ParameterSetting extends Setting {
       $pcnt = 1;
     }
     // Only micr, na, em, ex and pcnt are necessary to calculate it.
-
+    if ( $micr == null || $na == null || $em == null ||
+    $ex == null || $ril == null ) {
+      return false;
+    }
     $opt = "-micr $micr -na $na -em $em -ex $ex -pcnt $pcnt -ril $ril";
     $ideal = askHuCore ("calculateNyquistRate", $opt);
     // print_r($ideal);
