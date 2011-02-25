@@ -310,8 +310,7 @@ class User extends Owner{
   /*!
     \brief  Returns the administrator name
     \return the administrator name
-    \todo   This must be cleaned! This is hard-coded in many places in the code.
-            It should be obtained from the database.
+    \todo   This should be obtained from the database.
   */
   public function getAdminName() {
   	return 'admin';

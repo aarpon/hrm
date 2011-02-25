@@ -995,7 +995,6 @@ class PointSpreadFunction extends ChoiceParameter {
 /*!
  \class	PSF
  \brief	An AnyTypeArrayParameter that handles the file names of the PSF files per channel.
- \todo	This should be called PSFFiles or something similar
 */
 class PSF extends AnyTypeArrayParameter {
 

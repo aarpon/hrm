@@ -34,7 +34,6 @@ abstract class BaseSettingEditor {
 		\brief	Protected constructor: creates a new SettingEditor and
 				selects the default Setting if a default 
 				Setting exists.
-		\todo	Check: how can a SettingEditor have a list of Setting even before creation?
 		\param	$user	Current User
 	*/
     protected function __construct( User $user) { 
