@@ -1388,12 +1388,7 @@ class DatabaseConnection {
 		if ( ( $fileFormat == '' ) && ( $fileFormat == null ) ) {
 		  exit( "Error: please specify a file format!" . "\n" );
 		}
-		$levels = array();
-		$levels[ 0 ] = "Trusted";
-		$levels[ 1 ] = "Untrusted";
-		$levels[ 2 ] = "Missing";
-		$a = rand( 0, 2 );
-		return ( $levels[ $a ] );
+		return "Missing";
 	}
   }
 
