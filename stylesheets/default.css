@@ -128,7 +128,7 @@ table {
 
 #title {
     height: 86px;
-    background: url(../images/logo.png) no-repeat top left;
+    background: url(../images/title_bkg.png) no-repeat top left;
     background-color: #ffffee;
     padding-left: 180px;
     margin: 0px;
@@ -445,6 +445,7 @@ input.save {
 }
 
 #validation {
+    background: url(../images/validation_bkg.png) no-repeat top left;
     text-align: center;
     padding-top: 10px;
     padding-bottom: 10px;
