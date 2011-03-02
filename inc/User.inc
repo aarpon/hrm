@@ -203,6 +203,9 @@ class User extends Owner{
     $this->isLoggedIn = False;
     $result = $this->checkLogin($name, $password);
     if ($result) {
+      // Update the last access in the database
+      $this->updateLastAccessDate( );
+      // Update the User
       $this->isLoggedIn = True;
       $this->lastActivity = time();
       $this->name = $name;
@@ -561,12 +564,13 @@ class User extends Owner{
     \brief  Updates the User last access in the database
     
     This can only be used if authentication against the HRM user managerment
-    is used.
+    is used (with other authentication modes it will have no effect).
   */
   private function updateLastAccessDate() {
-  	// TODO: user will not exist in db when ldap is used
-  	$db = new DatabaseConnection();
-  	$db->updateLastAccessDate($this->name());
+    if ( $this->authMode == "MYSQL" ) {
+      $db = new DatabaseConnection();
+      $db->updateLastAccessDate($this->name());
+    }
   }
 
 } 
