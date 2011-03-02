@@ -454,7 +454,7 @@ class Fileserver {
           @mkdir($dest, 0777);
       }
 
-      $command = str_replace("%DEST%", $dest, $decompressBin[$type]).
+      $command = str_replace("%DEST%", "\"" . $dest . "\"", $decompressBin[$type]).
           " \"$file\"";
 
       $answer = exec($command , $output, $result);
