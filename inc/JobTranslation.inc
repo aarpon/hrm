@@ -527,10 +527,10 @@ Class JobTranslation {
     private function getTaskIDImgOpen($task) {
 
         $imgOpen =  "path ";
-        $imgOpen .= $this->srcImage;
+        $imgOpen .= $this->string2tcllist($this->srcImage);
         if (isset($this->subImage)) {
             $imgOpen .= " subImg ";
-            $imgOpen .= $this->subImage;
+            $imgOpen .= $this->string2tcllist($this->subImage);
         }
         $imgOpen .= " series auto index 0";
         $imgOpen = $this->string2tcllist($imgOpen);
@@ -622,7 +622,7 @@ Class JobTranslation {
     */
     private function getTaskIDImgSave($task) {
         $imgSave = "rootName ";
-        $imgSave .= $this->destImage;
+        $imgSave .= $this->string2tcllist($this->destImage);
         $imgSave = $this->string2tcllist($imgSave);
         $imgSave = " " . $task . " " . $imgSave;
         return $imgSave;
