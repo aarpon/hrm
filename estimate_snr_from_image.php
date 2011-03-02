@@ -56,7 +56,7 @@ function showFileBrowser() {
         onclick=\"document.location.href='task_parameter.php'\" />";
 
     $control_buttons .= "
-        <input type=\"submit\" value=\"\" class=\"icon calc\"
+        <input name=\"estimate\" type=\"submit\" value=\"\" class=\"icon calc\"
         onmouseover=\"Tip('Estimate SNR from a selected image.' )\"
         onmouseout=\"UnTip()\"
         onclick=\"process()\" />";
@@ -416,21 +416,20 @@ if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
   header("Location: " . "login.php"); exit();
 }
 
-// Two tasks are possible: selecting an image from the ones in the source
-// directory, and processing it to estimate its Signal-to-Noise ratio:
+// Depending on the user actions (or lack thereof) we either display or refresh
+// the file browser, or we estimate the SNR from the selected image
+if ( isset($_POST[ 'estimate'] ) && isset($_POST['userfiles'] ) ) {
 
-$task = "select";
+  // Estimate the SNR from the selected file
+  $task = "calculate";
+  $file = $_POST['userfiles'][0];
+  estimateSnrFromFile($file);
 
-if (count($_POST) == 1 && isset($_POST['userfiles'] )) {
-   $task = "calculate";
-   $file = $_POST['userfiles'][0];
-}
-
-
-if ( $task == "select") {
-  showFileBrowser();
 } else {
-   estimateSnrFromFile($file);
+
+  // Just show (or refresh) the file browser with the file list
+  showFileBrowser();
+
 }
 
 include("footer.inc.php");
