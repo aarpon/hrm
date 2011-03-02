@@ -285,12 +285,12 @@ function report($text, $level) {
 	global $logfile;
 	global $logfile_max_size;
 
-    $text = date("Y-m-d H:i:s"). " ".$text;
-
-    $logpath = $logdir."/".$logfile;
-
 	if ($log_verbosity == 0)
 		return True;
+      
+    $text = date("Y-m-d H:i:s"). " ".$text;
+    $logpath = $logdir."/".$logfile;
+
 	if (file_exists($logpath) 
             && (filesize($logpath) > $logfile_max_size * 1000 * 1000)) {
 		if (file_exists($logpath . ".old")) {

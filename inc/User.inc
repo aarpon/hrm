@@ -16,6 +16,7 @@ if ( $authenticateAgainst == "LDAP" ) {
 
 global $authenticateAgainst;
 global $use_ldaps;
+global $email_admin;
 
 /*!
    \class   Owner
@@ -203,8 +204,13 @@ class User extends Owner{
     $this->isLoggedIn = False;
     $result = $this->checkLogin($name, $password);
     if ($result) {
+      
       // Update the last access in the database
       $this->updateLastAccessDate( );
+      
+      // Store the entry in the log
+      report( "User " . $name . " logged on.", 1 );
+      
       // Update the User
       $this->isLoggedIn = True;
       $this->lastActivity = time();
@@ -271,15 +277,21 @@ class User extends Owner{
   	$db = new DatabaseConnection();
   	return $db->checkUser($this->name());
   }
-  
+
   /*!
     \brief  Returns the User e-mail address
     \return the User e-mail address
   */
   public function emailAddress() {
 
+  global $email_admin;
+  
 	$result = "";
     
+    if ( $this->isAdmin() ) {
+      return $email_admin;
+    }
+
     switch ( $this->authMode ) {
 
       case "LDAP":

@@ -724,7 +724,7 @@ class QueueManager {
  	  $text = $text . $this->parameterText($job);
  	  $mail = new Mail($email_sender);
  	  $mail->setReceiver($emailAddress);
- 	  $mail->setSubject('Your huygens job finished successfully');
+ 	  $mail->setSubject('Your HRM job finished successfully');
  	  $mail->setMessage($text);
  	  $mail->send();
  	}
@@ -736,7 +736,8 @@ class QueueManager {
  	 \param	$startTime	Start time of the Job
  	 */
  	public function notifyError($job, $message, $startTime) {
- 	  global $email_sender;
+	  global $email_sender;
+ 	  global $email_admin;
  	  $job->createScript();
  	  $desc = $job->description();
  	  $user = $desc->owner();
@@ -761,12 +762,12 @@ class QueueManager {
  	  $text = $text . "\n\n-------------------------------------\n\n";
  	  $mail = new Mail($email_sender);
  	  $mail->setReceiver($emailAddress);
- 	  $mail->setSubject('Your huygens job finished with an error');
+ 	  $mail->setSubject('Your HRM job finished with an error');
  	  $mail->setMessage($text);
  	  $mail->send();
  	  // also notify error to admin
- 	  $db = new DatabaseConnection();
- 	  $mail->setReceiver($db->emailAddress('admin'));
+ 	  $mail->setReceiver( $email_admin );
+	  $mail->setSubject( 'A job from user "' . $user->name() . '" finished with an error.' );
  	  $mail->send();
  	}
 
@@ -796,13 +797,9 @@ class QueueManager {
  	  $text = $text . $this->parameterText($job);
  	  $mail = new Mail($email_sender);
  	  $mail->setReceiver($emailAddress);
- 	  $mail->setSubject('Your huygens job finished with a warning');
+ 	  $mail->setSubject('Your HRM job finished with a warning');
  	  $mail->setMessage($text);
  	  $mail->send();
- 	  // also notify error to admin
- 	  /*$db = new DatabaseConnection();
- 	  $mail->setReceiver($db->emailAddress('admin'));
- 	  $mail->send();*/
  	}
 
  	/*!
@@ -810,9 +807,9 @@ class QueueManager {
  	 \param	$name	Name of the server that was (not) pinged
  	 */
  	public function notifyPingError($name) {
- 	  report("A ping error notification was sent on " . date("r", time()), 2);
  	  global $email_sender;
  	  global $email_admin;
+ 	  report( "Ping error notification sent" );
  	  $text = "Huygens Remote Manager warning:\n"
  	  . $name . " could not be pinged on " . date("r", time());
  	  $mail = new Mail($email_sender);
