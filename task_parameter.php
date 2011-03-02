@@ -85,7 +85,7 @@ include("header.inc.php");
     <div id="nav">
         <ul>
             <li><?php echo $_SESSION['user']->name(); ?></li>
-            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpRestorationParameters')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
+            <li><a href="javascript:openWindow('http://www.svi.nl/HuygensRemoteManagerHelpRestorationParameters')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
         </ul>
     </div>
     
@@ -137,7 +137,7 @@ foreach($possibleValues as $possibleValue) {
               onmouseover="javascript:changeQuickHelp( 'snr' );" >  <!-- signal/noise ratio -->
             
                 <legend>
-                    <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=SignalToNoiseRatio')"><img src="images/help.png" alt="?" /></a>
+                    <a href="javascript:openWindow('http://www.svi.nl/SignalToNoiseRatio')"><img src="images/help.png" alt="?" /></a>
                     signal/noise ratio
                 </legend>
 
@@ -265,7 +265,7 @@ for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
               onmouseover="javascript:changeQuickHelp( 'background' );" >  <!-- background mode -->
             
                 <legend>
-                    <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=BackgroundMode')"><img src="images/help.png" alt="?" /></a>
+                    <a href="javascript:openWindow('http://www.svi.nl/BackgroundMode')"><img src="images/help.png" alt="?" /></a>
                     background mode
                 </legend>
                 
@@ -348,7 +348,7 @@ for ($i=0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
                 <div id="criteria">
                 <p>
                 
-                    <p><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=MaxNumOfIterations')"><img src="images/help.png" alt="?" /></a>
+                    <p><a href="javascript:openWindow('http://www.svi.nl/MaxNumOfIterations')"><img src="images/help.png" alt="?" /></a>
                     number of iterations:
                     
 <?php
@@ -364,7 +364,7 @@ $value = $parameter->value();
                     
                     </p><p>
                     
-                    <p><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=QualityCriterion')"><img src="images/help.png" alt="?" /></a>
+                    <p><a href="javascript:openWindow('http://www.svi.nl/QualityCriterion')"><img src="images/help.png" alt="?" /></a>
                     quality change:
                     
 <?php

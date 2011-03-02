@@ -137,10 +137,10 @@ include("header.inc.php");
 		src="images/whatsnew.png" alt="website" />&nbsp;What's new?</a></li>
 	<li><a href="javascript:openWindow('http://www.huygens-rm.org')"><img
 		src="images/logo_small.png" alt="website" />&nbsp;Website</a></li>
-	<li><a href="javascript:openWindow('http://support.svi.nl/wiki')"><img
+	<li><a href="javascript:openWindow('http://www.svi.nl/FrontPage')"><img
 		src="images/wiki.png" alt="website" />&nbsp;SVI wiki</a></li>
 	<li><a
-		href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpLogin')"><img
+		href="javascript:openWindow('http://www.svi.nl/HuygensRemoteManagerHelpLogin')"><img
 		src="images/help.png" alt="help" />&nbsp;Help</a></li>
 </ul>
 </div>
@@ -223,7 +223,7 @@ Optics platform</a></p>
 <div id="login">
 <form method="post" action="">
 <fieldset><legend> <a
-	href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpLogin')"><img
+	href="javascript:openWindow('http://www.svi.nl/HuygensRemoteManagerHelpLogin')"><img
 	src="images/help.png" alt="?" /></a> Login </legend> <?php
 	if ( $authenticateAgainst == "MYSQL" ) {
 		$login_message = "<p class=\"expl\">If you do not have an account, please register <a href=\"registration.php\">here</a>.</p>";

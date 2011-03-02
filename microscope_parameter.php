@@ -102,7 +102,7 @@ include("header.inc.php");
     <div id="nav">
         <ul>
             <li><?php echo $_SESSION['user']->name(); ?></li>
-            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpOptics')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
+            <li><a href="javascript:openWindow('http://www.svi.nl/HuygensRemoteManagerHelpOptics')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
         </ul>
     </div>
     
@@ -129,7 +129,7 @@ include("header.inc.php");
               onmouseover="javascript:changeQuickHelp( 'type' );" >
             
                 <legend>
-                    <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=MicroscopeType')"><img src="images/help.png" alt="?" /></a>
+                    <a href="javascript:openWindow('http://www.svi.nl/MicroscopeType')"><img src="images/help.png" alt="?" /></a>
                     microscope type
                 </legend>
 <?php
@@ -165,7 +165,7 @@ foreach($possibleValues as $possibleValue) {
               onmouseover="javascript:changeQuickHelp( 'NA' );" >
               
               <legend> 
-		<a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=NumericalAperture')"><img src="images/help.png" alt="?" /></a>
+		<a href="javascript:openWindow('http://www.svi.nl/NumericalAperture')"><img src="images/help.png" alt="?" /></a>
 		numerical aperture
               </legend>
               <ul>
@@ -192,7 +192,7 @@ foreach($possibleValues as $possibleValue) {
               onmouseover="javascript:changeQuickHelp( 'wavelengths' );" >
             
                 <legend>
-                    <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=WaveLength')"><img src="images/help.png" alt="?" /></a>
+                    <a href="javascript:openWindow('http://www.svi.nl/WaveLength')"><img src="images/help.png" alt="?" /></a>
                     wavelengths
 		</legend>
 		<ul>
@@ -246,7 +246,7 @@ for ($i=0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
               onmouseover="javascript:changeQuickHelp( 'objective' );" >
             
                 <legend>
-                    <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=LensImmersionMedium')"><img src="images/help.png" alt="?" /></a>
+                    <a href="javascript:openWindow('http://www.svi.nl/LensImmersionMedium')"><img src="images/help.png" alt="?" /></a>
                     objective type
                 </legend>
                 
@@ -285,7 +285,7 @@ foreach ($possibleValues as $possibleValue) {
               onmouseover="javascript:changeQuickHelp( 'sample' );" >
             
                 <legend>
-                    <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=SpecimenEmbeddingMedium')"><img src="images/help.png" alt="?" /></a>
+                    <a href="javascript:openWindow('http://www.svi.nl/SpecimenEmbeddingMedium')"><img src="images/help.png" alt="?" /></a>
                     sample medium
                 </legend>
                 

@@ -86,7 +86,7 @@ include("header.inc.php");
         <ul>
             <li><?php echo $_SESSION['user']->name(); ?></li>
             <li><a href="<?php echo getThisPageName();?>?home=home"><img src="images/home.png" alt="home" />&nbsp;Home</a></li>
-            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpStatistics')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
+            <li><a href="javascript:openWindow('http://www.svi.nl/HuygensRemoteManagerHelpStatistics')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
         </ul>
     </div>
 
@@ -98,7 +98,7 @@ include("header.inc.php");
         <fieldset>
           
           <legend>
-            <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpStatistics')"><img src="images/help.png" alt="?" /></a>
+            <a href="javascript:openWindow('http://www.svi.nl/HuygensRemoteManagerHelpStatistics')"><img src="images/help.png" alt="?" /></a>
             Statistics
           </legend>  
             

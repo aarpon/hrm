@@ -66,7 +66,7 @@ include("header.inc.php");
             <li><?php echo $_SESSION['user']->name(); ?></li>
             <li><a href="job_queue.php"><img src="images/queue_small.png" alt="queue" />&nbsp;Queue</a></li>
             <li><a href="<?php echo getThisPageName();?>?home=home"><img src="images/home.png" alt="home" />&nbsp;Home</a></li>
-            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpCreateJob')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
+            <li><a href="javascript:openWindow('http://www.svi.nl/HuygensRemoteManagerHelpCreateJob')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
         </ul>
     </div>
    
@@ -79,7 +79,7 @@ include("header.inc.php");
           <fieldset class="setting">
             
           <legend>
-            <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=FileFormats')"><img src="images/help.png" alt="?" /></a>
+            <a href="javascript:openWindow('http://www.svi.nl/FileFormats')"><img src="images/help.png" alt="?" /></a>
               Output file format
             </legend>
         
@@ -152,7 +152,7 @@ foreach ($possibleValues as $possibleValue) {
         
         <fieldset class="report">
             <legend>
-                <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpCreateJob')"><img src="images/help.png" alt="?" /></a>
+                <a href="javascript:openWindow('http://www.svi.nl/HuygensRemoteManagerHelpCreateJob')"><img src="images/help.png" alt="?" /></a>
                 <a href="select_parameter_settings.php">Image parameters</a>: <?php print $_SESSION['setting']->name() ?>
             </legend>
             <textarea name="parameter_settings_report" cols="50" rows="15" readonly="readonly">
@@ -166,7 +166,7 @@ echo $_SESSION['setting']->displayString();
         
         <fieldset class="report">
             <legend>
-                <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpCreateJob')"><img src="images/help.png" alt="?" /></a>
+                <a href="javascript:openWindow('http://www.svi.nl/HuygensRemoteManagerHelpCreateJob')"><img src="images/help.png" alt="?" /></a>
                 <a href="select_task_settings.php">Restoration parameters</a>: <?php echo $_SESSION['task_setting']->name() ?>
             </legend>
             <textarea name="task_settings_report" cols="50" rows="6" readonly="readonly">
@@ -181,7 +181,7 @@ echo $_SESSION['task_setting']->displayWithoutOutputFileFormat( $numberOfChannel
         
         <fieldset class="report">
             <legend>
-                <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpCreateJob')"><img src="images/help.png" alt="?" /></a>
+                <a href="javascript:openWindow('http://www.svi.nl/HuygensRemoteManagerHelpCreateJob')"><img src="images/help.png" alt="?" /></a>
                 <a href="select_images.php">Selected images</a>
             </legend>
             <textarea name="task_settings_report" cols="50" rows="5" readonly="readonly">

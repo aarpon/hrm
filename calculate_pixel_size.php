@@ -92,14 +92,14 @@ $parameter = $_SESSION['setting']->parameter("CCDCaptorSize");
 $value = $parameter->value();
         
 ?>
-    <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpCCD')"><img src="images/help.png" alt="?" /></a>
+    <a href="javascript:openWindow('http://www.svi.nl/HuygensRemoteManagerHelpCCD')"><img src="images/help.png" alt="?" /></a>
     		 <?php echo $textForCaptorSize ?>:
     		 
            <input name="CCDCaptorSize" type="text" size="5" value="<?php echo $value ?>" />
             
          <br />
             
-                <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=PixelBinning')"><img src="images/help.png" alt="?" /></a>
+                <a href="javascript:openWindow('http://www.svi.nl/PixelBinning')"><img src="images/help.png" alt="?" /></a>
                 binning:
                 
                 <select style="width:20%;" name="Binning" size="1">
@@ -122,7 +122,7 @@ foreach ($parameter->possibleValues() as $possibleValue) {
 
                 </select>
                 <br />
- <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpCMount')"><img src="images/help.png" alt="?" /></a>
+ <a href="javascript:openWindow('http://www.svi.nl/HuygensRemoteManagerHelpCMount')"><img src="images/help.png" alt="?" /></a>
 <?php
 
 
@@ -132,7 +132,7 @@ $value = $parameter->value();
 <?php echo "C-mount" ?>:
                         <input name="CMount" type="text" size="5" value="<?php echo $value ?>" /> <br />
                         
- <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpTubeFactor')"><img src="images/help.png" alt="?" /></a>
+ <a href="javascript:openWindow('http://www.svi.nl/HuygensRemoteManagerHelpTubeFactor')"><img src="images/help.png" alt="?" /></a>
 <?php
 
 
@@ -142,7 +142,7 @@ $value = $parameter->value();
 <?php echo "tube factor" ?>:
                         <input name="TubeFactor" type="text" size="5" value="<?php echo $value ?>" /> <br />
                         
-<a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=ObjectiveMagnification')"><img src="images/help.png" alt="?" /></a>
+<a href="javascript:openWindow('http://www.svi.nl/ObjectiveMagnification')"><img src="images/help.png" alt="?" /></a>
                 objective magnification:
                 
                 <select style="width:20%;" name="ObjectiveMagnification" size="1">

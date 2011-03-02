@@ -85,7 +85,7 @@ include("header.inc.php");
     <div id="nav">
         <ul>
             <li><?php echo $_SESSION['user']->name(); ?></li>
-            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpImageFormat')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
+            <li><a href="javascript:openWindow('http://www.svi.nl/HuygensRemoteManagerHelpImageFormat')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
         </ul>
     </div>
     
@@ -113,7 +113,7 @@ include("header.inc.php");
               onmouseover="javascript:changeQuickHelp( 'format' );" >
             
                 <legend>
-                    <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=FileFormats')"><img src="images/help.png" alt="?" /></a>
+                    <a href="javascript:openWindow('http://www.svi.nl/FileFormats')"><img src="images/help.png" alt="?" /></a>
                     image file format
                 </legend>
                 
@@ -182,7 +182,7 @@ foreach($values as $value) {
               onmouseover="javascript:changeQuickHelp( 'geometry' );" >
             
                 <legend>
-                    <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=ImageGeometry')"><img src="images/help.png" alt="?" /></a>
+                    <a href="javascript:openWindow('http://www.svi.nl/ImageGeometry')"><img src="images/help.png" alt="?" /></a>
                     image geometry
                 </legend>
                 
@@ -223,7 +223,7 @@ foreach($possibleValues as $possibleValue) {
               onmouseover="javascript:changeQuickHelp( 'channels' );" >
             
                 <legend>
-                    <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=NumberOfChannels')"><img src="images/help.png" alt="?" /></a>
+                    <a href="javascript:openWindow('http://www.svi.nl/NumberOfChannels')"><img src="images/help.png" alt="?" /></a>
                     number of channels
                 </legend>
                 
@@ -263,13 +263,13 @@ function check($parameter, $value) {
             <fieldset class="setting <?php echo $parameterPointSpreadFunction->confidenceLevel(); ?>" onmouseover="javascript:changeQuickHelp( 'PSF' );" >
             
                 <legend>
-                    <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=PointSpreadFunction')"><img src="images/help.png" alt="?" /></a>
+                    <a href="javascript:openWindow('http://www.svi.nl/PointSpreadFunction')"><img src="images/help.png" alt="?" /></a>
                     PSF
                 </legend>
                 
-                <input type="radio" name="PointSpreadFunction" value="theoretical" <?php if ($parameterPointSpreadFunction->value() == "theoretical") echo "checked=\"checked\""?> <?php echo $turnOnPSFAdaptationOnClick ?>/><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=TheoreticalPsf')"><img src="images/help.png" alt="?" /></a>Theoretical
+                <input type="radio" name="PointSpreadFunction" value="theoretical" <?php if ($parameterPointSpreadFunction->value() == "theoretical") echo "checked=\"checked\""?> <?php echo $turnOnPSFAdaptationOnClick ?>/><a href="javascript:openWindow('http://www.svi.nl/TheoreticalPsf')"><img src="images/help.png" alt="?" /></a>Theoretical
                 
-                <input type="radio" name="PointSpreadFunction" value="measured" <?php if ($parameterPointSpreadFunction->value() == "measured") echo "checked=\"checked\"" ?> <?php echo $turnOffPSFAdaptationOnClick ?>/><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=ExperimentalPsf')"><img src="images/help.png" alt="?" /></a>Measured
+                <input type="radio" name="PointSpreadFunction" value="measured" <?php if ($parameterPointSpreadFunction->value() == "measured") echo "checked=\"checked\"" ?> <?php echo $turnOffPSFAdaptationOnClick ?>/><a href="javascript:openWindow('http://www.svi.nl/ExperimentalPsf')"><img src="images/help.png" alt="?" /></a>Measured
                 
             </fieldset>
 

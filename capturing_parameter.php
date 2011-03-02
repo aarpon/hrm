@@ -192,7 +192,7 @@ if ( $nyquist === false ) {
     <div id="nav">
         <ul>
             <li><?php echo $_SESSION['user']->name(); ?></li>
-            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpCaptor')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
+            <li><a href="javascript:openWindow('http://www.svi.nl/HuygensRemoteManagerHelpCaptor')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
         </ul>
     </div>
     
@@ -219,7 +219,7 @@ if ( $nyquist === false ) {
               onmouseover="javascript:changeQuickHelp( 'voxel' );" >
             
                 <legend>
-                    <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=SampleSize')"><img src="images/help.png" alt="?" /></a>
+                    <a href="javascript:openWindow('http://www.svi.nl/SampleSize')"><img src="images/help.png" alt="?" /></a>
                     voxel size
                 </legend>
 
@@ -312,7 +312,7 @@ if ($_SESSION['setting']->isTimeSeries()) {
             <fieldset class="setting <?php echo $parameterTimeInterval->confidenceLevel(); ?>"
               onmouseover="javascript:changeQuickHelp( 'time' );" >
            	<legend> 
-                <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=TimeSeries')"><img src="images/help.png" alt="?" /></a>
+                <a href="javascript:openWindow('http://www.svi.nl/TimeSeries')"><img src="images/help.png" alt="?" /></a>
                 time interval
                 </legend>
             <ul>
@@ -345,7 +345,7 @@ if ($_SESSION['setting']->isMultiPointOrSinglePointConfocal()) {
               onmouseover="javascript:changeQuickHelp( 'pinhole_radius' );" >
             
               <legend>
-                <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=PinholeRadius')"><img src="images/help.png" alt="?" /></a>
+                <a href="javascript:openWindow('http://www.svi.nl/PinholeRadius')"><img src="images/help.png" alt="?" /></a>
                 backprojected pinhole radius
 	      </legend>
             <ul>
@@ -407,7 +407,7 @@ if ($_SESSION['setting']->isNipkowDisk()) {
             <fieldset class="setting <?php echo $parameterPinholeSpacing->confidenceLevel(); ?>"
               onmouseover="javascript:changeQuickHelp( 'pinhole_spacing' );" >
               <legend>            
-                <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=PinholeSpacing')"><img src="images/help.png" alt="?" /></a>
+                <a href="javascript:openWindow('http://www.svi.nl/PinholeSpacing')"><img src="images/help.png" alt="?" /></a>
                 backprojected pinhole spacing
 	      </legend>
           <ul>

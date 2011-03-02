@@ -38,7 +38,7 @@ include("header.inc.php");
         <ul>
 			<li><?php echo $_SESSION['user']->name(); ?></li>
 			<li><a href="<?php echo getThisPageName();?>?exited=exited"><img src="images/exit.png" alt="exit" />&nbsp;Logout</a></li>
-            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpHome')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li> 
+            <li><a href="javascript:openWindow('http://www.svi.nl/HuygensRemoteManagerHelpHome')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li> 
         </ul>
     </div>
     

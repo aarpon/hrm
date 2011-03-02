@@ -78,7 +78,7 @@ include("header.inc.php");
     <div id="nav">
         <ul>
             <li><?php echo $_SESSION['user']->name(); ?></li>
-            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpEnableSACorrection')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
+            <li><a href="javascript:openWindow('http://www.svi.nl/HuygensRemoteManagerHelpEnableSACorrection')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
         </ul>
     </div>
     
@@ -109,7 +109,7 @@ include("header.inc.php");
               onmouseover="javascript:changeQuickHelp( 'enable' );" >
             
             <legend>
-                <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpDepthDependentPsf')"><img src="images/help.png" alt="?" /></a>
+                <a href="javascript:openWindow('http://www.svi.nl/HuygensRemoteManagerHelpDepthDependentPsf')"><img src="images/help.png" alt="?" /></a>
                     enable depth-dependent PSF correction?
             </legend>
 
@@ -182,7 +182,7 @@ if ($parameterPerformAberrationCorrection->value( ) == 1)
               onmouseover="javascript:changeQuickHelp( 'orientation' );" >
             
             <legend>
-                <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpSpecifySampleOrientation')"><img src="images/help.png" alt="?" /></a>
+                <a href="javascript:openWindow('http://www.svi.nl/HuygensRemoteManagerHelpSpecifySampleOrientation')"><img src="images/help.png" alt="?" /></a>
                     specify sample orientation
             </legend>
                     
@@ -245,7 +245,7 @@ if ($parameterPerformAberrationCorrection->value( ) == 1)
               onmouseover="javascript:changeQuickHelp( 'mode' );" >
             
             <legend>
-                <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpSaCorrectionMode')"><img src="images/help.png" alt="?" /></a>
+                <a href="javascript:openWindow('http://www.svi.nl/HuygensRemoteManagerHelpSaCorrectionMode')"><img src="images/help.png" alt="?" /></a>
                     correction mode
             </legend>
 
@@ -315,7 +315,7 @@ if ( ($parameterPerformAberrationCorrection->value( ) == 1) &&
               onmouseover="javascript:changeQuickHelp( 'advanced' );" >
             
             <legend>
-                <a href="javascript:openWindow('http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpAdvancedSaCorrection')"><img src="images/help.png" alt="?" /></a>
+                <a href="javascript:openWindow('http://www.svi.nl/HuygensRemoteManagerHelpAdvancedSaCorrection')"><img src="images/help.png" alt="?" /></a>
                     advanced correction scheme
             </legend>
 

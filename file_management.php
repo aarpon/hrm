@@ -271,7 +271,7 @@ $top_navigation = '
             <li>'.$_SESSION['user']->name().'</li>
             '.$fileBrowserLinks.'
             <li><a href="'.getThisPageName().'?home=home"><img src="images/home.png" alt="home" />&nbsp;Home</a></li>
-            <li><a href="javascript:openWindow(\'http://support.svi.nl/wiki/style=hrm&amp;help=HuygensRemoteManagerHelpFileManagement\')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
+            <li><a href="javascript:openWindow(\'http://www.svi.nl/HuygensRemoteManagerHelpFileManagement\')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
         </ul>
  ';
 
