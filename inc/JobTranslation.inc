@@ -1662,9 +1662,8 @@ Class JobTranslation {
             $psfPath .= " " . $psf;
             $psfPath = trim($psfPath);
         }
-        if ($this->getPsfMode() == "auto") {
-            $psfPath = $this->string2tcllist($psfPath);
-        }
+        $psfPath = $this->string2tcllist($psfPath);
+
         return $psfPath;
     }
 
