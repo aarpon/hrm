@@ -23,7 +23,7 @@ global $email_sender;
 
   // Here we store the cleaned variables
   $clean = array(
-    "email"    => '',
+    "email"    => "",
     "group"    => "",
     "pass1"    => "",
     "pass2"    => "" );
@@ -84,22 +84,37 @@ else {
 $message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
 
 if (isset($_POST['modify'])) {
+  
+  // Set the result to True and then...
   $result = True;
-  // Check that all required entries are set
-  if ( $clean['email'] == "" ) {
-    $result = False;
-    $message = "            <p class=\"warning\">Please fill in the email field with a valid address<br />&nbsp;</p>";
+
+  // ... check that all required entries are indeed set
+  
+  // Email
+  if ( $edit_user->isAdmin() ) {
+    $emailToUse = '';
+  } else {
+    if ( $clean['email'] == "" ) {
+      $result = False;
+      $message = "            <p class=\"warning\">Please fill in the email field with a valid address<br />&nbsp;</p>";
+    } else {
+      $emailToUse = $clean['email'];
+    }
   }
-  if ( $clean['group'] == "" ) {
-    if ( $_SESSION['user']->isAdmin() ) {
+  
+  // Group
+  if ( $edit_user->isAdmin() ) {
+    $groupToUse = '';
+  } else {
+    if ( $clean['group'] == "" ) {
       $result = False;
       $message = "            <p class=\"warning\">Please fill in the group field<br />&nbsp;</p>";
     } else {
-      $groupToUse = $edit_user->userGroup( ); 
+      $groupToUse = $clean['group'];
     }
-  } else {
-    $groupToUse = $clean['group'];
   }
+
+  // Passwords
   if ( $clean['pass1'] == "" || $clean['pass2'] == "" ) {
       $result = False;
       $message = "\n            <p class=\"warning\">Please fill in both password fields</p>";
@@ -107,12 +122,16 @@ if (isset($_POST['modify'])) {
     if ( $clean['pass1'] != $clean['pass2'] ) {
       $result = False;
       $message = "\n            <p class=\"warning\">Passwords do not match</p>";
+    } else {
+      $passToUse = $clean['pass1'];
     }
   }
+
+  // Update the information in the database
   if ( $result == True ) {
     $db = new DatabaseConnection();
-    $success = $db->updateExistingUser( $edit_user->name(),
-      $clean['pass1'], $clean['email'], $groupToUse );
+    $success = $db->updateExistingUser( $edit_user->isAdmin(),
+      $edit_user->name(), $passToUse, $emailToUse, $groupToUse );
     if ( $success == True ) {
       if (isset($_SESSION['account_user'])) {
         $_SESSION['account_user'] = "Account details successfully modified";
@@ -174,10 +193,7 @@ if (isset($_SESSION['account_user']) || !$_SESSION['user']->isAdmin() ) {
 
 }
 
-// add user management
-// TODO refactor
-if (isset($_SESSION['account_user'])/* && $_SESSION['user']->isAdmin()*/) {
-
+if (isset($_SESSION['account_user']) || !$_SESSION['user']->isAdmin() ) {
 ?>
                 <label for="group">Research group: </label>
                 <?php
@@ -235,8 +251,7 @@ if (isset($_SESSION['account_user'])/* && $_SESSION['user']->isAdmin()*/) {
 
           <h3>Quick help</h3>
           
-          <p>Leave the password fields blank if you do not wish to change
-          your password.</p>
+          <p>Please update the account information.</p>
           
        </div>
         

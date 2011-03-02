@@ -202,18 +202,30 @@ class DatabaseConnection {
 
   /*!
 	\brief	Updates an existing user in the database (all parameters are 
-			expected to be already validated!
+			expected to be already validated!)
+			
+	Only the password can be changed for the admin user. For a normal user,
+	e-mail address, group and password can be updated.
+	
+	\param	$isadmin	True if the user is the HRM admin
 	\param	$username  	The name of the user
 	\param	$password  	Password (plain)
   	\param	$email  	E-mail address
   	\param	$group  	Research group
   	\return	$success	True if success; false otherwise
   */
-  public function updateExistingUser($username, $password, $email, $group) {
-	$query = "UPDATE username SET email ='".$email."', " .
-	  "research_group ='".$group."', ".
-	  "password = '".md5($password)."' " .
-	  "WHERE name = '".$username."';";
+  public function updateExistingUser( $isadmin, $username, $password, $email = "", $group = "" ) {
+	// The admin user does not have a group and stores his password in the
+	// configuration files. The only variable is the password.
+	if ( $isadmin === True ) {
+	  $query = "UPDATE username SET password = '".md5($password)."' " .
+	    "WHERE name = '".$username."';";
+	} else {
+	  $query = "UPDATE username SET email ='".$email."', " .
+	    "research_group ='".$group."', ".
+	    "password = '".md5($password)."' " .
+	    "WHERE name = '".$username."';";
+	}
 	$result = $this->execute($query);
 	if ( $result ) {
 	  return true;
