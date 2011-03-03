@@ -1507,14 +1507,7 @@ Class JobTranslation {
                 }
             }
         } else {
-            $brMode = "";
-            if ($this->getPsfMode() == "auto") {
-                error_log("Undefined brMode.");
-            }
-
-            if ($this->getPsfMode() == "file") {
-                $brMode = "auto";
-            }
+            $brMode = "one";
         }
         return $brMode;
     }
