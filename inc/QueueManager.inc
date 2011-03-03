@@ -767,7 +767,7 @@ class QueueManager {
  	  $mail->send();
  	  // also notify error to admin
  	  $mail->setReceiver( $email_admin );
-	  $mail->setSubject( 'A job from user "' . $user->name() . '" finished with an error.' );
+	  $mail->setSubject( 'An HRM job from user "' . $user->name() . '" finished with an error.' );
  	  $mail->send();
  	}
 
