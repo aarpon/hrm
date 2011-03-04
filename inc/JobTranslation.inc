@@ -621,8 +621,11 @@ Class JobTranslation {
      \return      Tcl list with the 'Image save' task and its options
     */
     private function getTaskIDImgSave($task) {
+        $destInfo = pathinfo($this->destImage);
+        $destImage =  basename($this->destImage,'.'.$destInfo['extension']);
+
         $imgSave = "rootName ";
-        $imgSave .= $this->string2tcllist($this->destImage);
+        $imgSave .= $this->string2tcllist($destImage);
         $imgSave = $this->string2tcllist($imgSave);
         $imgSave = " " . $task . " " . $imgSave;
         return $imgSave;
