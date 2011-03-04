@@ -522,6 +522,7 @@ class Fileserver {
               continue;
           }
           $basename = basename($name);
+          $basename = str_replace(" ","_",$basename);
           $uploadfile = $uploaddir . "/" . $basename;
           $info = pathinfo($uploadfile);
           $file_name =  basename($uploadfile,'.'.$info['extension']);
