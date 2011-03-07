@@ -128,9 +128,17 @@ table {
 
 #title {
     height: 86px;
-    background: url(../images/title_bkg.png) no-repeat top left;
-    background-color: #ffffee;
+    /* Use CSS3 multiple background support */
+    background: url(../images/logo.png) top left no-repeat, url(../images/title_bkg.png) repeat-x top left;
+    background-color: #6ea9e6;
     padding-left: 180px;
+    margin: 0px;
+    border: #fff 2px solid;
+}
+
+#title_fileCompare {
+    height: 86px;
+    background-color: #6ea9e6;
     margin: 0px;
     border: #fff 2px solid;
 }
@@ -445,7 +453,7 @@ input.save {
 }
 
 #validation {
-    background: url(../images/validation_bkg.png) no-repeat top left;
+    background: url(../images/validation_bkg.png) repeat-x top left;
     text-align: center;
     padding-top: 10px;
     padding-bottom: 10px;
@@ -928,10 +936,6 @@ option.default {
     color: white;
     font-size: 120%;
     padding: 5px;
-}
-
-.title {
-    font-weight: bold;
 }
 
 .menu {
