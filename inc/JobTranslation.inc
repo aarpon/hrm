@@ -271,12 +271,12 @@ Class JobTranslation {
         } else {
             $multidir = 0;
         }
-        
         $exportFormat = "type ";
         $exportFormat .= $outputType;
         $exportFormat .= " multidir ";
         $exportFormat .= $multidir;
         $exportFormat .= " cmode scale";
+
         return $this->string2tcllist($exportFormat);
     }
 
@@ -2196,7 +2196,7 @@ Class JobTranslation {
     */
     private function setDestImage ( ) {
         $this->destImage = $this->jobDescription->destinationImageFullName();
-        $fileType = $this->getOutputFileType();
+        $fileType = $this->getOutFileExtension();
         $this->destImage = $this->destImage.".".$fileType;
         $this->destImage = str_replace(" ","_",$this->destImage);
     }
@@ -2210,13 +2210,23 @@ Class JobTranslation {
     }
 
     /*!
-     \brief       Gets the extension of the destination image.
-     \return      A file extension.
+     \brief       Gets the file type of the destination image.
+     \return      A file type: whether imaris, ome, etc.
     */
     private function getOutputFileType( ) {
         $outFileFormat = $this->deconSetting->parameter('OutputFileFormat');
         return $outFileFormat->translatedValue();
     }
+
+    /*!
+     \brief       Gets the file extension of the destination image.
+     \return      A file extension: whether ims, tif, etc.
+    */
+    private function getOutFileExtension( ) {
+        $outFileFormat = $this->deconSetting->parameter('OutputFileFormat');
+        return $outFileFormat->extension();
+    }
+
 
     /* ------------------------------------------------------------------------- */
 }
