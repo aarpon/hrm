@@ -14,7 +14,7 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 
 <head>
-    <title>Huygens Remote Manager</title>
+	<title>Huygens Remote Manager</title>
     <link rel="SHORTCUT ICON" href="images/hrm.ico"/>
 <?php
 
@@ -74,9 +74,9 @@ if (isset($generatedScript)) {
 <div id="basket">
 
 <?php if (!isset($excludeTitle)) { ?>
-    <div id="title">
-    
-	<h1>Huygens Remote Manager <span id="about">v<?php echo System::getHRMVersion( ); ?></span></h1>
-    </div>
+	  <div id="title">
+	  <h1>Huygens Remote Manager <span id="about">v<?php echo System::getHRMVersion( ); ?></span></h1>
+  	  <div id="logo"></div>
+	  </div>
 <?php } ?>
     

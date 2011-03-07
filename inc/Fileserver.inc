@@ -1242,6 +1242,7 @@ echo '</body></html>';
       <div id="prevBasket"> <!--basket-->
       <div id="title">
       <h1>HRM image preview</h1>
+      <div id="logo"></div>
       </div>';
 
 

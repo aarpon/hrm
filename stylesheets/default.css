@@ -127,20 +127,20 @@ table {
 }
 
 #title {
+    position: relative;
     height: 86px;
-    /* Use CSS3 multiple background support */
-    background: url(../images/logo.png) top left no-repeat, url(../images/title_bkg.png) repeat-x top left;
-    background-color: #6ea9e6;
+    background: url(../images/title_bkg.png) repeat-x top left;
     padding-left: 180px;
-    margin: 0px;
     border: #fff 2px solid;
 }
 
-#title_fileCompare {
+#logo {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 186px;
     height: 86px;
-    background-color: #6ea9e6;
-    margin: 0px;
-    border: #fff 2px solid;
+    background: url(../images/logo.png) no-repeat top left;
 }
 
 #stats {
