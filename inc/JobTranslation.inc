@@ -265,9 +265,18 @@ Class JobTranslation {
      \return      Tcl-complaint nested list with the export format options
     */
     private function getExportFormat( ) {
+        $outputType = $this->getOutputFileType();
+        if (preg_match("/tif/",$outputType)) {
+            $multidir = 1;
+        } else {
+            $multidir = 0;
+        }
+        
         $exportFormat = "type ";
-        $exportFormat .= $this->getOutputFileType();
-        $exportFormat .= " multidir 0 cmode scale";
+        $exportFormat .= $outputType;
+        $exportFormat .= " multidir ";
+        $exportFormat .= $multidir;
+        $exportFormat .= " cmode scale";
         return $this->string2tcllist($exportFormat);
     }
 
