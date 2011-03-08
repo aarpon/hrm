@@ -408,6 +408,7 @@ class JobDescription {
     $files = $this->files();
     $outputFile = $this->sourceImageShortName();
     $outputFile = end(explode($taskSetting->name(), $this->sourceImageShortName()));
+    $outputFile = str_replace(" ","_",$outputFile);
     $result = $outputFile . "_" . $taskSetting->name() . "_hrm";
         # Add a non-numeric string at the end: if the task name ends with a
         # number, that will be removed when saving using some file formats that
