@@ -132,6 +132,7 @@ table {
     background: url(../images/title_bkg.png) repeat-x top left;
     padding-left: 180px;
     border: #fff 2px solid;
+    color: white;
 }
 
 #logo {
