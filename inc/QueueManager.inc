@@ -905,6 +905,11 @@ class QueueManager {
  	    error_log("An error occurred while reading HuCore version");
  	    return;
  	  }
+	  
+	  if(!$this->storeConfidenceLevelsIntoDB()) {
+ 	    error_log("An error occurred while storing the confidence levels in the database");
+ 	    return;		
+	  }
 
  	  while (!$this->shallStop()) {
  	    set_time_limit(0);
@@ -1002,11 +1007,304 @@ class QueueManager {
  	  $huversion = askHuCore("reportVersionNumberAsInteger");
  	  $huversion = $huversion["version"];
  	  report("HuCore version = " . $huversion . "\n", 2);
- 	  if(!System::setHuCoreVersion($huversion))
- 	  return false;
+ 	  if(!System::setHuCoreVersion($huversion)) {
+ 	    return false;
+ 	  }
  	  return true;
  	}
 
+ 	/*!
+ 	 \brief	Store the confidence levels returned by huCore into the database for faster retrieval
+ 	 \return true if asking the version and storing it in the database was successful, false otherwise
+ 	 */
+	private function storeConfidenceLevelsIntoDB() {
+	  
+	  // Get the confidence levels string from HuCore
+	  $result = askHuCore( "reportFormatInfo" );
+	  $confidenceLevelString = $result["formatInfo"]; 
+	  
+	  // Parse the confidence levels string
+	  $confidenceLevels = $this->parseConfidenceLevelString( $confidenceLevelString );
+
+	  // Store the confidence levels in the database
+	  $db = new DatabaseConnection();
+ 	  if( !$db->storeConfidenceLevels( $confidenceLevels ) ) {
+        report("Could not store confidence levels to the database!\n", 1);
+ 	    return false;
+ 	  }
+ 	  return true;		
+	}
+	
+	private function parseConfidenceLevelString( $confidenceLevelString ) {
+	
+		// Break down the string into per-file substrings
+		$confidenceLevelString = str_replace( '}}', '}}<CUT_HERE>', $confidenceLevelString );
+		$groups = explode( '<CUT_HERE> ', $confidenceLevelString );
+		
+		// Prepare the output array
+		$confidenceLevels = array( );
+		
+		// Confidence level regexp
+		$levelRegExp = '(reported|estimated|default|verified)';
+		
+		// Process the substrings
+		foreach( $groups as $group ) {
+			
+			$match = array();
+			preg_match("/(\A\w{3,8})(\s{1,2})(\{sampleSizes\s\{.+)/", $group, $match );
+
+			// Get the parts
+			if ( ( !isset( $match[ 1 ] ) ) || ( !isset( $match[ 3 ] ) ) ) {
+				report( "Could not parse confidence levels!", 1 );
+				exit( "Could not parse confidence levels!" );
+			}
+			$fileFormat = $match[ 1 ];
+			$parameters = $match[ 3 ];
+
+			// Prepare the parameter array
+			$params = array(
+				"sampleSizesX"   => "default",
+				"sampleSizesY"   => "default",
+				"sampleSizesZ"   => "default",
+				"sampleSizesT"   => "default",
+				"iFacePrim"      => "default",
+				"iFaceScnd"      => "default",
+				"pinhole"        => "default",
+				"chanCnt"        => "default",
+				"imagingDir"     => "default",
+				"pinholeSpacing" => "default",
+				"objQuality"     => "default",
+				"lambdaEx"       => "default",
+				"lambdaEm"       => "default",
+				"mType"          => "default",
+				"NA"             => "default",
+				"RIMedia"        => "default",
+				"RILens"         => "default",
+				"photonCnt"      => "default",
+				"exBeamFill"     => "default" );
+		
+			// Parse the parameters
+			
+			// Sample sizes
+			$exp = "/\{sampleSizes\s\{" . $levelRegExp . "\s" . $levelRegExp .
+				"\s" . $levelRegExp . "\s" . $levelRegExp . "\}/";
+			$match = array();
+			preg_match( $exp, $parameters, $match );
+			if ( isset( $match[ 1 ] ) ) {
+				$params[ 'sampleSizesX' ] = $match[ 1 ];
+			} else {
+				$msg = "Could not find confidence level for file format " . $fileFormat . " and parameter sampleSizesX!";
+				report( $msg, 1 );
+				exit( $msg );
+			}
+			if ( isset( $match[ 2 ] ) ) {
+				$params[ 'sampleSizesY' ] = $match[ 2 ];
+			} else {
+				$msg = "Could not find confidence level for file format " . $fileFormat . " and parameter sampleSizesY!";
+				report( $msg, 1 );
+				exit( $msg );
+			}
+			if ( isset( $match[ 3 ] ) ) {
+				$params[ 'sampleSizesZ' ] = $match[ 3 ];
+			} else {
+				$msg = "Could not find confidence level for file format " . $fileFormat . " and parameter sampleSizesZ!";
+				report( $msg, 1 );
+				exit( $msg );
+			}
+			if ( isset( $match[ 4 ] ) ) {
+				$params[ 'sampleSizesT' ] = $match[ 4 ];
+			} else {
+				$msg = "Could not find confidence level for file format " . $fileFormat . " and parameter sampleSizesT!";
+				report( $msg, 1 );
+				exit( $msg );
+			}
+			
+			// iFacePrim
+			$exp = "/iFacePrim\s\{" . $levelRegExp . "\}/";
+			$match = array();
+			preg_match( $exp, $parameters, $match );
+			if ( isset( $match[ 1 ] ) ) {
+				$params[ 'iFacePrim' ] = $match[ 1 ];
+			} else {
+				$msg = "Could not find confidence level for file format " . $fileFormat . " and parameter iFacePrim!";
+				report( $msg, 1 );
+				exit( $msg );
+			}
+
+			// iFaceScnd
+			$exp = "/iFaceScnd\s\{" . $levelRegExp . "\}/";
+			$match = array();
+			preg_match( $exp, $parameters, $match );
+			if ( isset( $match[ 1 ] ) ) {
+				$params[ 'iFaceScnd' ] = $match[ 1 ];
+			} else {
+				$msg = "Could not find confidence level for file format " . $fileFormat . " and parameter iFaceScnd!";
+				report( $msg, 1 );
+				exit( $msg );
+			}
+		
+			// pinhole
+			$exp = "/pinhole\s\{" . $levelRegExp . "\}/";
+			$match = array();
+			preg_match( $exp, $parameters, $match );
+			if ( isset( $match[ 1 ] ) ) {
+				$params[ 'pinhole' ] = $match[ 1 ];
+			} else {
+				$msg = "Could not find confidence level for file format " . $fileFormat . " and parameter pinhole!";
+				report( $msg, 1 );
+				exit( $msg );
+			}
+
+			// chanCnt
+			$exp = "/chanCnt\s\{" . $levelRegExp . "\}/";
+			$match = array();
+			preg_match( $exp, $parameters, $match );
+			if ( isset( $match[ 1 ] ) ) {
+				$params[ 'chanCnt' ] = $match[ 1 ];
+			} else {
+				$msg = "Could not find confidence level for file format " . $fileFormat . " and parameter chanCnt!";
+				report( $msg, 1 );
+				exit( $msg );
+			}
+
+			// imagingDir
+			$exp = "/imagingDir\s\{" . $levelRegExp . "\}/";
+			$match = array();
+			preg_match( $exp, $parameters, $match );
+			if ( isset( $match[ 1 ] ) ) {
+				$params[ 'imagingDir' ] = $match[ 1 ];
+			} else {
+				$msg = "Could not find confidence level for file format " . $fileFormat . " and parameter imagingDir!";
+				report( $msg, 1 );
+				exit( $msg );
+			}
+			
+			// pinholeSpacing
+			$exp = "/pinholeSpacing\s\{" . $levelRegExp . "\}/";
+			$match = array();
+			preg_match( $exp, $parameters, $match );
+			if ( isset( $match[ 1 ] ) ) {
+				$params[ 'pinholeSpacing' ] = $match[ 1 ];
+			} else {
+				$msg = "Could not find confidence level for file format " . $fileFormat . " and parameter pinholeSpacing!";
+				report( $msg, 1 );
+				exit( $msg );
+			}
+			
+			// objQuality
+			$exp = "/objQuality\s\{" . $levelRegExp . "\}/";
+			$match = array();
+			preg_match( $exp, $parameters, $match );
+			if ( isset( $match[ 1 ] ) ) {
+				$params[ 'objQuality' ] = $match[ 1 ];
+			} else {
+				$msg = "Could not find confidence level for file format " . $fileFormat . " and parameter objQuality!";
+				report( $msg, 1 );
+				exit( $msg );
+			}
+
+			// lambdaEx
+			$exp = "/lambdaEx\s\{" . $levelRegExp . "\}/";
+			$match = array();
+			preg_match( $exp, $parameters, $match );
+			if ( isset( $match[ 1 ] ) ) {
+				$params[ 'lambdaEx' ] = $match[ 1 ];
+			} else {
+				$msg = "Could not find confidence level for file format " . $fileFormat . " and parameter lambdaEx\!";
+				report( $msg, 1 );
+				exit( $msg );
+			}
+
+			// lambdaEm
+			$exp = "/lambdaEm\s\{" . $levelRegExp . "\}/";
+			$match = array();
+			preg_match( $exp, $parameters, $match );
+			if ( isset( $match[ 1 ] ) ) {
+				$params[ 'lambdaEm' ] = $match[ 1 ];
+			} else {
+				$msg = "Could not find confidence level for file format " . $fileFormat . " and parameter lambdaEm\!";
+				report( $msg, 1 );
+				exit( $msg );
+			}
+			
+			// mType
+			$exp = "/mType\s\{" . $levelRegExp . "\}/";
+			$match = array();
+			preg_match( $exp, $parameters, $match );
+			if ( isset( $match[ 1 ] ) ) {
+				$params[ 'mType' ] = $match[ 1 ];
+			} else {
+				$msg = "Could not find confidence level for file format " . $fileFormat . " and parameter mType\!";
+				report( $msg, 1 );
+				exit( $msg );
+			}
+
+			// NA
+			$exp = "/NA\s\{" . $levelRegExp . "\}/";
+			$match = array();
+			preg_match( $exp, $parameters, $match );
+			if ( isset( $match[ 1 ] ) ) {
+				$params[ 'NA' ] = $match[ 1 ];
+			} else {
+				$msg = "Could not find confidence level for file format " . $fileFormat . " and parameter NA\!";
+				report( $msg, 1 );
+				exit( $msg );
+			}
+
+			// RIMedia
+			$exp = "/RIMedia\s\{" . $levelRegExp . "\}/";
+			$match = array();
+			preg_match( $exp, $parameters, $match );
+			if ( isset( $match[ 1 ] ) ) {
+				$params[ 'RIMedia' ] = $match[ 1 ];
+			} else {
+				$msg = "Could not find confidence level for file format " . $fileFormat . " and parameter RIMedia\!";
+				report( $msg, 1 );
+				exit( $msg );
+			}
+
+			// RILens
+			$exp = "/RILens\s\{" . $levelRegExp . "\}/";
+			$match = array();
+			preg_match( $exp, $parameters, $match );
+			if ( isset( $match[ 1 ] ) ) {
+				$params[ 'RILens' ] = $match[ 1 ];
+			} else {
+				$msg = "Could not find confidence level for file format " . $fileFormat . " and parameter RILens\!";
+				report( $msg, 1 );
+				exit( $msg );
+			}
+
+			// photonCnt
+			$exp = "/photonCnt\s\{" . $levelRegExp . "\}/";
+			$match = array();
+			preg_match( $exp, $parameters, $match );
+			if ( isset( $match[ 1 ] ) ) {
+				$params[ 'photonCnt' ] = $match[ 1 ];
+			} else {
+				$msg = "Could not find confidence level for file format " . $fileFormat . " and parameter photonCnt\!";
+				report( $msg, 1 );
+				exit( $msg );
+			}
+
+			// exBeamFill
+			$exp = "/exBeamFill\s\{" . $levelRegExp . "\}/";
+			$match = array();
+			preg_match( $exp, $parameters, $match );
+			if ( isset( $match[ 1 ] ) ) {
+				$params[ 'exBeamFill' ] = $match[ 1 ];
+			} else {
+				$msg = "Could not find confidence level for file format " . $fileFormat . " and parameter exBeamFill\!";
+				report( $msg, 1 );
+				exit( $msg );
+			}
+
+			// Store the parameters for current file format
+			$confidenceLevels[ $fileFormat ] = $params;
+		}
+	
+		return $confidenceLevels;
+	}	
 
 }
 ?>

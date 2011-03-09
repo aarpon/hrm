@@ -26,7 +26,13 @@ class DatabaseConnection {
 	\var	$connection
 	\brief	Private ADOConnection object
   */
-  private $connection; // @private connection db_id  The database connection  
+  private $connection;
+
+  /*!
+	\var	$parameterNameDictionary
+	\brief	Private Maps the Parameter names between HRM and Huygens
+  */
+  private $parameterNameDictionary;
   
   /*!	
 	\brief	Constructor: creates a database connection
@@ -40,6 +46,28 @@ class DatabaseConnection {
     
     $this->connection = ADONewConnection($db_type);
     $this->connection->Connect($db_host, $db_user, $db_password, $db_name);
+	
+	// Set the parameter name dictionary
+	$this->	parameterNameDictionary = array(
+	  "sampleSizesX"   => "CCDCaptorSize",
+	  "sampleSizesY"   => "CCDCaptorSize",
+	  "sampleSizesZ"   => "ZStepSize",
+	  "sampleSizesT"   => "TimeInterval",
+	  "iFacePrim"      => NULL,                       // PSFGenerationDepth?
+	  "iFaceScnd"      => NULL,
+	  "pinhole"        => "PinholeSize",
+	  "chanCnt"        => "NumberOfChannels",
+	  "imagingDir"     => NULL,
+	  "pinholeSpacing" => "PinholeSpacing",
+	  "objQuality"     => NULL,
+	  "lambdaEx"       => "ExcitationWavelength",
+	  "lambdaEm"       => "EmissionWavelength",
+	  "mType"          => "MicroscopeType",
+	  "NA"             => "NumericalAperture",
+	  "RIMedia"        => "ObjectiveType",
+	  "RILens"         => "SampleMedium",
+	  "photonCnt"      => NULL,
+	  "exBeamFill"     => NULL );
   } 
 
   /*!	
@@ -1402,6 +1430,28 @@ class DatabaseConnection {
 		}
 		return "Missing";
 	}
+  }
+  
+  
+  /*!
+    \brief	Store the confidence levels returned by huCore into the database for faster retrieval
+    
+	This is a rather low-level function that creates the table if needed.
+	
+	\param	$confidenceLevels		Array of confidence levels with file formats as keys
+    \return	true if storing (or updating) the database was successful, false otherwise
+  */  
+  public function storeConfidenceLevels( $confidenceLevels ) {
+
+	// Get the file formats
+	$fileFormats = array_keys( $confidenceLevels );
+	
+	// Go over all $confidenceLevels and set the values
+	foreach ( $fileFormats as $format ) {
+	  // TODO: Perform INSERT or UPDATE queries
+	}
+
+	  return true;
   }
 
   /*

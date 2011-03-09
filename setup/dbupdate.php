@@ -1814,12 +1814,56 @@ if ($current_revision < $n) {
         write_to_error($msg);
         return false;
     }
+    
+    // Create the confidence_levels table
+    // Update tables array
+    $tables = $db->MetaTables("TABLES");
+    
+	// Does the confidence_levels table exist?
+	if ( !in_array( "confidence_levels", $tables ) ) {
+
+	  // Define the fields for the confidence_levels table
+      $fields = "
+        file_format C(30) NOTNULL UNIQUE PRIMARY,
+        sampleSizesX C(16) NOTNULL,
+		sampleSizesY C(16) NOTNULL,
+		sampleSizesZ C(16) NOTNULL,
+		sampleSizesT C(16) NOTNULL,
+		iFacePrim C(16) NOTNULL,
+		iFaceScnd C(16) NOTNULL,
+		pinhole C(16) NOTNULL,
+		chanCnt C(16) NOTNULL,
+		imagingDir C(16) NOTNULL,
+		pinholeSpacing C(16) NOTNULL,
+		objQuality C(16) NOTNULL,
+		lambdaEx C(16) NOTNULL,
+		lambdaEm C(16) NOTNULL,
+		mType C(16) NOTNULL,
+		NA C(16) NOTNULL,
+		RIMedia C(16) NOTNULL,
+		RILens C(16) NOTNULL,
+		photonCnt C(16) NOTNULL,
+		exBeamFill C(16) NOTNULL
+      ";
+
+      if ( !create_table( "confidence_levels", $fields ) ) {
+        $msg = "An error occurred while updating the database to revision " . $n . ", confidence_levels table creation.";
+        write_message($msg);
+        write_to_log($msg);
+        write_to_error($msg);
+        return;
+      }
+    
+    }    
+
+    // Update revision
     if(!update_dbrevision($n)) 
         return;
     $current_revision = $n;
     $msg = "Database successfully updated to revision " . $current_revision . ".";
     write_message($msg);
     write_to_log($msg);
+    
 }
 
 //$msg = "\nThe current revision of your HRM database is " . $current_revision . ".";
