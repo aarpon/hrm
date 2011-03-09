@@ -1443,15 +1443,52 @@ class DatabaseConnection {
   */  
   public function storeConfidenceLevels( $confidenceLevels ) {
 
-	// Get the file formats
+    // Make sure that the confidence_levels table exists
+    $tables = $this->connection->MetaTables("TABLES");
+	if (!in_array("confidence_levels", $tables) ) {
+	    report("Table confidence_levels does not exist!", 1 );
+	    exit("Table confidence_levels does not exist!" );
+	}
+	
+    // Get the file formats
 	$fileFormats = array_keys( $confidenceLevels );
+	
+	// Get the keys of the parameter arrays from the first array (the others are the same)
+	$parameters = array_keys( $confidenceLevels[ $fileFormats[ 0 ] ] );
 	
 	// Go over all $confidenceLevels and set the values
 	foreach ( $fileFormats as $format ) {
-	  // TODO: Perform INSERT or UPDATE queries
+	  
+	    // If the row for current $fileFormat does not exist, INSERT a new
+	    // row with all parameters, otherwise UPDATE the existing one.
+	    $query = "SELECT file_format FROM confidence_levels WHERE " .
+	        "file_format = $format LIMIT 1;";
+	    
+	    if ( $this->queryLastValue($query) === FALSE ) {
+	        
+	        // INSERT
+	        if ( !$this->connection->AutoExecute( "confidence_levels",
+	            $confidenceLevels[ $format ], "INSERT" ) ) {
+	          report("Could not insert confidence levels for file format $format!", 1 );
+	          exit("Could not insert confidence levels for file format $format!");
+	        }
+	        
+	    } else {
+
+	        // UPDATE
+	        if ( !$this->connection->AutoExecute( "confidence_levels",
+	        	$confidenceLevels[ $format ], 'UPDATE',
+	        	"file_format = '$format'" ) ) {
+	          report("Could not update confidence levels for file format $format!", 1 );
+	          exit("Could not update confidence levels for file format $format!");
+	        }
+	    
+	    }
+	    
 	}
 
-	  return true;
+	return true;
+  
   }
 
   /*

@@ -1093,28 +1093,32 @@ class QueueManager {
 			if ( isset( $match[ 1 ] ) ) {
 				$params[ 'sampleSizesX' ] = $match[ 1 ];
 			} else {
-				$msg = "Could not find confidence level for file format " . $fileFormat . " and parameter sampleSizesX!";
+				$msg = "Could not find confidence level for file format " .
+				    $fileFormat . " and parameter sampleSizesX!";
 				report( $msg, 1 );
 				exit( $msg );
 			}
 			if ( isset( $match[ 2 ] ) ) {
 				$params[ 'sampleSizesY' ] = $match[ 2 ];
 			} else {
-				$msg = "Could not find confidence level for file format " . $fileFormat . " and parameter sampleSizesY!";
+				$msg = "Could not find confidence level for file format " .
+				    $fileFormat . " and parameter sampleSizesY!";
 				report( $msg, 1 );
 				exit( $msg );
 			}
 			if ( isset( $match[ 3 ] ) ) {
 				$params[ 'sampleSizesZ' ] = $match[ 3 ];
 			} else {
-				$msg = "Could not find confidence level for file format " . $fileFormat . " and parameter sampleSizesZ!";
+				$msg = "Could not find confidence level for file format " .
+				    $fileFormat . " and parameter sampleSizesZ!";
 				report( $msg, 1 );
 				exit( $msg );
 			}
 			if ( isset( $match[ 4 ] ) ) {
 				$params[ 'sampleSizesT' ] = $match[ 4 ];
 			} else {
-				$msg = "Could not find confidence level for file format " . $fileFormat . " and parameter sampleSizesT!";
+				$msg = "Could not find confidence level for file format " .
+				    $fileFormat . " and parameter sampleSizesT!";
 				report( $msg, 1 );
 				exit( $msg );
 			}
@@ -1126,7 +1130,8 @@ class QueueManager {
 			if ( isset( $match[ 1 ] ) ) {
 				$params[ 'iFacePrim' ] = $match[ 1 ];
 			} else {
-				$msg = "Could not find confidence level for file format " . $fileFormat . " and parameter iFacePrim!";
+				$msg = "Could not find confidence level for file format " . 
+				    $fileFormat . " and parameter iFacePrim!";
 				report( $msg, 1 );
 				exit( $msg );
 			}
@@ -1138,7 +1143,8 @@ class QueueManager {
 			if ( isset( $match[ 1 ] ) ) {
 				$params[ 'iFaceScnd' ] = $match[ 1 ];
 			} else {
-				$msg = "Could not find confidence level for file format " . $fileFormat . " and parameter iFaceScnd!";
+				$msg = "Could not find confidence level for file format " . 
+				    $fileFormat . " and parameter iFaceScnd!";
 				report( $msg, 1 );
 				exit( $msg );
 			}
@@ -1150,7 +1156,8 @@ class QueueManager {
 			if ( isset( $match[ 1 ] ) ) {
 				$params[ 'pinhole' ] = $match[ 1 ];
 			} else {
-				$msg = "Could not find confidence level for file format " . $fileFormat . " and parameter pinhole!";
+				$msg = "Could not find confidence level for file format " . 
+				    $fileFormat . " and parameter pinhole!";
 				report( $msg, 1 );
 				exit( $msg );
 			}
@@ -1162,7 +1169,8 @@ class QueueManager {
 			if ( isset( $match[ 1 ] ) ) {
 				$params[ 'chanCnt' ] = $match[ 1 ];
 			} else {
-				$msg = "Could not find confidence level for file format " . $fileFormat . " and parameter chanCnt!";
+				$msg = "Could not find confidence level for file format " . 
+				    $fileFormat . " and parameter chanCnt!";
 				report( $msg, 1 );
 				exit( $msg );
 			}
@@ -1174,7 +1182,8 @@ class QueueManager {
 			if ( isset( $match[ 1 ] ) ) {
 				$params[ 'imagingDir' ] = $match[ 1 ];
 			} else {
-				$msg = "Could not find confidence level for file format " . $fileFormat . " and parameter imagingDir!";
+				$msg = "Could not find confidence level for file format " . 
+				    $fileFormat . " and parameter imagingDir!";
 				report( $msg, 1 );
 				exit( $msg );
 			}
@@ -1186,7 +1195,8 @@ class QueueManager {
 			if ( isset( $match[ 1 ] ) ) {
 				$params[ 'pinholeSpacing' ] = $match[ 1 ];
 			} else {
-				$msg = "Could not find confidence level for file format " . $fileFormat . " and parameter pinholeSpacing!";
+				$msg = "Could not find confidence level for file format " . 
+				    $fileFormat . " and parameter pinholeSpacing!";
 				report( $msg, 1 );
 				exit( $msg );
 			}
@@ -1198,7 +1208,8 @@ class QueueManager {
 			if ( isset( $match[ 1 ] ) ) {
 				$params[ 'objQuality' ] = $match[ 1 ];
 			} else {
-				$msg = "Could not find confidence level for file format " . $fileFormat . " and parameter objQuality!";
+				$msg = "Could not find confidence level for file format " . 
+				    $fileFormat . " and parameter objQuality!";
 				report( $msg, 1 );
 				exit( $msg );
 			}
@@ -1210,7 +1221,8 @@ class QueueManager {
 			if ( isset( $match[ 1 ] ) ) {
 				$params[ 'lambdaEx' ] = $match[ 1 ];
 			} else {
-				$msg = "Could not find confidence level for file format " . $fileFormat . " and parameter lambdaEx\!";
+				$msg = "Could not find confidence level for file format " . 
+				    $fileFormat . " and parameter lambdaEx\!";
 				report( $msg, 1 );
 				exit( $msg );
 			}
@@ -1222,7 +1234,8 @@ class QueueManager {
 			if ( isset( $match[ 1 ] ) ) {
 				$params[ 'lambdaEm' ] = $match[ 1 ];
 			} else {
-				$msg = "Could not find confidence level for file format " . $fileFormat . " and parameter lambdaEm\!";
+				$msg = "Could not find confidence level for file format " . 
+				    $fileFormat . " and parameter lambdaEm\!";
 				report( $msg, 1 );
 				exit( $msg );
 			}
@@ -1234,7 +1247,8 @@ class QueueManager {
 			if ( isset( $match[ 1 ] ) ) {
 				$params[ 'mType' ] = $match[ 1 ];
 			} else {
-				$msg = "Could not find confidence level for file format " . $fileFormat . " and parameter mType\!";
+				$msg = "Could not find confidence level for file format " . 
+				    $fileFormat . " and parameter mType\!";
 				report( $msg, 1 );
 				exit( $msg );
 			}
@@ -1246,7 +1260,8 @@ class QueueManager {
 			if ( isset( $match[ 1 ] ) ) {
 				$params[ 'NA' ] = $match[ 1 ];
 			} else {
-				$msg = "Could not find confidence level for file format " . $fileFormat . " and parameter NA\!";
+				$msg = "Could not find confidence level for file format " . 
+				    $fileFormat . " and parameter NA\!";
 				report( $msg, 1 );
 				exit( $msg );
 			}
@@ -1258,7 +1273,8 @@ class QueueManager {
 			if ( isset( $match[ 1 ] ) ) {
 				$params[ 'RIMedia' ] = $match[ 1 ];
 			} else {
-				$msg = "Could not find confidence level for file format " . $fileFormat . " and parameter RIMedia\!";
+				$msg = "Could not find confidence level for file format " . 
+				    $fileFormat . " and parameter RIMedia\!";
 				report( $msg, 1 );
 				exit( $msg );
 			}
@@ -1270,7 +1286,8 @@ class QueueManager {
 			if ( isset( $match[ 1 ] ) ) {
 				$params[ 'RILens' ] = $match[ 1 ];
 			} else {
-				$msg = "Could not find confidence level for file format " . $fileFormat . " and parameter RILens\!";
+				$msg = "Could not find confidence level for file format " . 
+				    $fileFormat . " and parameter RILens\!";
 				report( $msg, 1 );
 				exit( $msg );
 			}
@@ -1282,7 +1299,8 @@ class QueueManager {
 			if ( isset( $match[ 1 ] ) ) {
 				$params[ 'photonCnt' ] = $match[ 1 ];
 			} else {
-				$msg = "Could not find confidence level for file format " . $fileFormat . " and parameter photonCnt\!";
+				$msg = "Could not find confidence level for file format " .
+				    $fileFormat . " and parameter photonCnt\!";
 				report( $msg, 1 );
 				exit( $msg );
 			}
@@ -1294,7 +1312,8 @@ class QueueManager {
 			if ( isset( $match[ 1 ] ) ) {
 				$params[ 'exBeamFill' ] = $match[ 1 ];
 			} else {
-				$msg = "Could not find confidence level for file format " . $fileFormat . " and parameter exBeamFill\!";
+				$msg = "Could not find confidence level for file format " .
+				    $fileFormat . " and parameter exBeamFill\!";
 				report( $msg, 1 );
 				exit( $msg );
 			}
