@@ -286,6 +286,16 @@ proc versionAsInteger { } {
 }
 
 
+proc reportFormatInfo { } {
+    set formatInfo [huOpt getFormatInfo]
+
+    puts "KEY"
+    puts "formatInfo"
+    puts "VALUE"
+    puts "$formatInfo"
+}
+
+
 proc reportVersionNumberAsInteger { } {
 
     set verInteger [ versionAsInteger ]
@@ -403,7 +413,7 @@ proc estimateSnrFromImage {} {
             return
         }
     }
-    
+
     # Since HuCore 3.6.1, there is a new SNR estimator available.
     set verHuCo [versionAsInteger]
     if { $verHuCo >= 3060100 } {
@@ -412,7 +422,6 @@ proc estimateSnrFromImage {} {
 	set result [ ::WebTools::estimateSnrFromImage $srcImg $dest \
 			 "snr_estimation_" jpeg 2 auto \
 			 returnImages $returnImages bg auto estimationSize 100 ]
-
     }
 
     # Report image name
