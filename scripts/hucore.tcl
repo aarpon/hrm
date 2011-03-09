@@ -286,6 +286,12 @@ proc versionAsInteger { } {
 }
 
 
+proc getFormatInfo { } {
+    set formatInfo [huOpt getFormatInfo]
+    puts "$formatInfo"
+}
+
+
 proc reportVersionNumberAsInteger { } {
 
     set verInteger [ versionAsInteger ]
