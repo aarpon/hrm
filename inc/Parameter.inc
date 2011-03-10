@@ -73,6 +73,47 @@ abstract class Parameter {
 	public function confidenceLevel( ) {
 		return $this->confidenceLevel;
 	}
+
+	/*!
+		\brief	Returns the interpreted HuCore confidence level for the Parameter
+		
+		This is to be used to create the template. The returned confidence
+		level is a function of the original confidence level and the actions
+		taken by the user. To get the raw confidence level associated to a
+		Parameter as returned by hucore (to be used for instance to color
+		code the Parameters in the user interface), please use the corresponding
+		Database methods.
+		
+		\return	Interpreted confidence level for the Parameter (in HuCore notation)
+	*/
+	public function interpretedHuCoreConfidenceLevel( ) {
+		
+		// If the user specified a value, we consider it 'verified' no matter
+		// what the original confidence level was
+		if ( $this->value() != NULL ) {
+			return 'verified';
+		}
+		
+		// If the user did not enter a value, we have a couple of cases
+		
+		// If the Parameter is 'Trusted' we return 'reported' 
+		if ( $this->confidenceLevel == "Trusted" ) {
+			return 'reported';
+		}
+		
+		// If the Parameter is 'Untrusted' we return 'estimated' 
+		if ( $this->confidenceLevel == "Untrusted" ) {
+			return 'estimated';
+		}
+		
+		// If the Parameter is Missing we return 'default'.
+		// In reality, the HRM will block the user from skipping a
+		// "Missing" Parameter.
+		if ( $this->confidenceLevel == "Missing" ) {
+			return 'default';
+		}
+		
+	}
 	
 	/*!
 		\brief	Sets the confidence level for the Parameter
