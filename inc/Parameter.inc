@@ -146,6 +146,17 @@ abstract class Parameter {
 	}
 
 	/*!
+		\brief	Checks whether the value is not set
+		\return	true if the value is not set (i.e. null)
+	*/
+	public function notSet( ) {
+		if ( is_array( $this->value ) ) {
+			return( $this->value[ 0 ] == null );
+		}
+		return( $this->value == null );
+	}
+
+	/*!
 		\brief	Checks whether the Parameter is an Image Parameter
 		
 		This function should be <b>overloaded</b> by the subclasses
@@ -517,7 +528,11 @@ abstract class ChoiceParameter extends Parameter {
 		$name = $this->decomposeCamelCaseString( $this->name );
 		$name = $name . ':';
 		$result = str_pad($name, self::PADSIZE, ' ', STR_PAD_RIGHT);
-		$result = $result . $this->value . "\n";
+		if ( $this->notSet() ) {
+			$result = $result . "not set" . "\n";
+		} else {
+			$result = $result . $this->value . "\n";
+		}
 		return $result;
 	}
 	
@@ -832,7 +847,11 @@ class NumericalParameter extends Parameter {
 		$name = $this->decomposeCamelCaseString( $this->name );
 		$name = $name . ':';
 		$result = str_pad($name, self::PADSIZE, ' ', STR_PAD_RIGHT);
-		$result = $result . $this->value . "\n";
+		if ( $this->notSet() ) {
+			$result = $result . "not set" . "\n";
+		} else {
+			$result = $result . $this->value . "\n";
+		}
 		return $result;
 	}
 
@@ -961,7 +980,11 @@ class NumericalArrayParameter extends NumericalParameter {
 		$name = $this->decomposeCamelCaseString( $this->name );
 		$name = $name . ':';
 		$result = str_pad($name, self::PADSIZE, ' ', STR_PAD_RIGHT);
-		$result = $result . $value . "\n";
+		if ( $this->notSet() ) {
+			$result = $result . "not set" . "\n";
+		} else {
+			$result = $result . $value . "\n";
+		}
 		return $result;
 	}
 
@@ -1257,7 +1280,11 @@ class ImageFileFormat extends SingleOrMultiChannelParameter {
 		$name = $this->decomposeCamelCaseString( $this->name );
 		$name = $name . ':';
 		$result = str_pad($name, self::PADSIZE, ' ', STR_PAD_RIGHT);
-		$result = $result . $value . "\n";
+		if ( $this->notSet() ) {
+			$result = $result . "not set" . "\n";
+		} else {
+			$result = $result . $value . "\n";
+		}
 		return $result;
 	}
 	
@@ -1325,7 +1352,11 @@ class ImageGeometry extends SingleOrMultiChannelParameter {
 		$name = $this->decomposeCamelCaseString( $this->name );
 		$name = $name . ':';
 		$result = str_pad($name, self::PADSIZE, ' ', STR_PAD_RIGHT);
-		$result = $result . $this->value . "\n";
+		if ( $this->notSet() ) {
+			$result = $result . "not set" . "\n";
+		} else {
+			$result = $result . $this->value . "\n";
+		}
 		return $result;
 	}
 }
@@ -1760,12 +1791,14 @@ class CCDCaptorSizeX extends NumericalParameter {
 		\return	string representation of the Parameter
 	*/
 	public function displayString() {
-		$value = $this->value();
 		$result = '';
 		$name = ' pixel size:';
 		$result = $result . str_pad($name, self::PADSIZE, ' ', STR_PAD_RIGHT);
-		$result = $result . $value;
-		$result = $result . "\n";
+		if ( $this->notSet() ) {
+			$result = $result . "not set" . "\n";
+		} else {
+			$result = $result . $this->value . "\n";
+		}
 		return $result;
 	}
 }
