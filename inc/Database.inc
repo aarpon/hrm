@@ -59,8 +59,8 @@ class DatabaseConnection {
 	  "EmissionWavelength"   => "lambdaEm",
 	  "MicroscopeType"       => "mType", 
 	  "NumericalAperture"    => "NA",
-	  "ObjectiveType"        => "RIMedia",
-	  "SampleMedium"         => "RILens",
+	  "ObjectiveType"        => "RILens",
+	  "SampleMedium"         => "RIMedia",
 	  "unused1"              => "iFacePrim",          // PSFGenerationDepth?
 	  "unused2"              => "iFaceScnd",
 	  "unused3"              => "imagingDir",
@@ -1442,12 +1442,12 @@ class DatabaseConnection {
 			$confidenceLevelEx, $confidenceLevelEm );
 		  
 		} elseif ( ( $parameterName == "CCDCaptorSizeX" ) ||
-			 ( $parameterName == "zStepSize" ) ) {
+			 ( $parameterName == "ZStepSize" ) ) {
 		  
   		  $confidenceLevelX = $this->huCoreConfidenceLevel(
 			$fileFormat, "CCDCaptorSizeX" );
 		  $confidenceLevelZ = $this->huCoreConfidenceLevel(
-			$fileFormat, "zStepSize" );
+			$fileFormat, "ZStepSize" );
 		  $confidenceLevel  = $this->minConfidenceLevel(
 			$confidenceLevelX, $confidenceLevelZ );
 
