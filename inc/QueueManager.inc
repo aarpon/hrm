@@ -1051,18 +1051,19 @@ class QueueManager {
 		foreach( $groups as $group ) {
 			
 			$match = array();
-			preg_match("/(\A\w{3,8})(\s{1,2})(\{sampleSizes\s\{.+)/", $group, $match );
+			preg_match("/(\A\w{2,16})(\s{1,2})(\{sampleSizes\s\{.+)/", $group, $match );
 
 			// Get the parts
 			if ( ( !isset( $match[ 1 ] ) ) || ( !isset( $match[ 3 ] ) ) ) {
-				report( "Could not parse confidence levels!", 1 );
-				exit( "Could not parse confidence levels!" );
+				$msg = "Could not parse confidence levels!";
+				report( $msg, 1 ); exit( $msg );
 			}
 			$fileFormat = $match[ 1 ];
 			$parameters = $match[ 3 ];
 
 			// Prepare the parameter array
 			$params = array(
+				"fileFormat"    => "none",
 				"sampleSizesX"   => "default",
 				"sampleSizesY"   => "default",
 				"sampleSizesZ"   => "default",
@@ -1083,6 +1084,9 @@ class QueueManager {
 				"photonCnt"      => "default",
 				"exBeamFill"     => "default" );
 		
+			// Store the file format
+			$params[ 'fileFormat' ] = $fileFormat;
+			
 			// Parse the parameters
 			
 			// Sample sizes
@@ -1095,32 +1099,28 @@ class QueueManager {
 			} else {
 				$msg = "Could not find confidence level for file format " .
 				    $fileFormat . " and parameter sampleSizesX!";
-				report( $msg, 1 );
-				exit( $msg );
+				report( $msg, 1 ); exit( $msg );
 			}
 			if ( isset( $match[ 2 ] ) ) {
 				$params[ 'sampleSizesY' ] = $match[ 2 ];
 			} else {
 				$msg = "Could not find confidence level for file format " .
 				    $fileFormat . " and parameter sampleSizesY!";
-				report( $msg, 1 );
-				exit( $msg );
+				report( $msg, 1 ); exit( $msg );
 			}
 			if ( isset( $match[ 3 ] ) ) {
 				$params[ 'sampleSizesZ' ] = $match[ 3 ];
 			} else {
 				$msg = "Could not find confidence level for file format " .
 				    $fileFormat . " and parameter sampleSizesZ!";
-				report( $msg, 1 );
-				exit( $msg );
+				report( $msg, 1 ); exit( $msg );
 			}
 			if ( isset( $match[ 4 ] ) ) {
 				$params[ 'sampleSizesT' ] = $match[ 4 ];
 			} else {
 				$msg = "Could not find confidence level for file format " .
 				    $fileFormat . " and parameter sampleSizesT!";
-				report( $msg, 1 );
-				exit( $msg );
+				report( $msg, 1 ); exit( $msg );
 			}
 			
 			// iFacePrim
@@ -1132,8 +1132,7 @@ class QueueManager {
 			} else {
 				$msg = "Could not find confidence level for file format " . 
 				    $fileFormat . " and parameter iFacePrim!";
-				report( $msg, 1 );
-				exit( $msg );
+				report( $msg, 1 ); exit( $msg );
 			}
 
 			// iFaceScnd
@@ -1145,8 +1144,7 @@ class QueueManager {
 			} else {
 				$msg = "Could not find confidence level for file format " . 
 				    $fileFormat . " and parameter iFaceScnd!";
-				report( $msg, 1 );
-				exit( $msg );
+				report( $msg, 1 ); exit( $msg );
 			}
 		
 			// pinhole
@@ -1158,8 +1156,7 @@ class QueueManager {
 			} else {
 				$msg = "Could not find confidence level for file format " . 
 				    $fileFormat . " and parameter pinhole!";
-				report( $msg, 1 );
-				exit( $msg );
+				report( $msg, 1 ); exit( $msg );
 			}
 
 			// chanCnt
@@ -1171,8 +1168,7 @@ class QueueManager {
 			} else {
 				$msg = "Could not find confidence level for file format " . 
 				    $fileFormat . " and parameter chanCnt!";
-				report( $msg, 1 );
-				exit( $msg );
+				report( $msg, 1 ); exit( $msg );
 			}
 
 			// imagingDir
@@ -1184,8 +1180,7 @@ class QueueManager {
 			} else {
 				$msg = "Could not find confidence level for file format " . 
 				    $fileFormat . " and parameter imagingDir!";
-				report( $msg, 1 );
-				exit( $msg );
+				report( $msg, 1 ); exit( $msg );
 			}
 			
 			// pinholeSpacing
@@ -1197,8 +1192,7 @@ class QueueManager {
 			} else {
 				$msg = "Could not find confidence level for file format " . 
 				    $fileFormat . " and parameter pinholeSpacing!";
-				report( $msg, 1 );
-				exit( $msg );
+				report( $msg, 1 ); exit( $msg );
 			}
 			
 			// objQuality
@@ -1210,8 +1204,7 @@ class QueueManager {
 			} else {
 				$msg = "Could not find confidence level for file format " . 
 				    $fileFormat . " and parameter objQuality!";
-				report( $msg, 1 );
-				exit( $msg );
+				report( $msg, 1 ); exit( $msg );
 			}
 
 			// lambdaEx
@@ -1223,8 +1216,7 @@ class QueueManager {
 			} else {
 				$msg = "Could not find confidence level for file format " . 
 				    $fileFormat . " and parameter lambdaEx\!";
-				report( $msg, 1 );
-				exit( $msg );
+				report( $msg, 1 ); exit( $msg );
 			}
 
 			// lambdaEm
@@ -1236,8 +1228,7 @@ class QueueManager {
 			} else {
 				$msg = "Could not find confidence level for file format " . 
 				    $fileFormat . " and parameter lambdaEm\!";
-				report( $msg, 1 );
-				exit( $msg );
+				report( $msg, 1 ); exit( $msg );
 			}
 			
 			// mType
@@ -1249,8 +1240,7 @@ class QueueManager {
 			} else {
 				$msg = "Could not find confidence level for file format " . 
 				    $fileFormat . " and parameter mType\!";
-				report( $msg, 1 );
-				exit( $msg );
+				report( $msg, 1 ); exit( $msg );
 			}
 
 			// NA
@@ -1262,8 +1252,7 @@ class QueueManager {
 			} else {
 				$msg = "Could not find confidence level for file format " . 
 				    $fileFormat . " and parameter NA\!";
-				report( $msg, 1 );
-				exit( $msg );
+				report( $msg, 1 ); exit( $msg );
 			}
 
 			// RIMedia
@@ -1275,8 +1264,7 @@ class QueueManager {
 			} else {
 				$msg = "Could not find confidence level for file format " . 
 				    $fileFormat . " and parameter RIMedia\!";
-				report( $msg, 1 );
-				exit( $msg );
+				report( $msg, 1 ); exit( $msg );
 			}
 
 			// RILens
@@ -1288,8 +1276,7 @@ class QueueManager {
 			} else {
 				$msg = "Could not find confidence level for file format " . 
 				    $fileFormat . " and parameter RILens\!";
-				report( $msg, 1 );
-				exit( $msg );
+				report( $msg, 1 ); exit( $msg );
 			}
 
 			// photonCnt
@@ -1301,8 +1288,7 @@ class QueueManager {
 			} else {
 				$msg = "Could not find confidence level for file format " .
 				    $fileFormat . " and parameter photonCnt\!";
-				report( $msg, 1 );
-				exit( $msg );
+				report( $msg, 1 ); exit( $msg );
 			}
 
 			// exBeamFill
@@ -1314,8 +1300,7 @@ class QueueManager {
 			} else {
 				$msg = "Could not find confidence level for file format " .
 				    $fileFormat . " and parameter exBeamFill\!";
-				report( $msg, 1 );
-				exit( $msg );
+				report( $msg, 1 ); exit( $msg );
 			}
 
 			// Store the parameters for current file format

@@ -1446,8 +1446,9 @@ class DatabaseConnection {
     // Make sure that the confidence_levels table exists
     $tables = $this->connection->MetaTables("TABLES");
 	if (!in_array("confidence_levels", $tables) ) {
-	    report("Table confidence_levels does not exist!", 1 );
-	    exit("Table confidence_levels does not exist!" );
+	    $msg = "Table confidence_levels does not exist! " .
+		  "Please update the database!";
+	    report( $msg, 1 ); exit( $msg );
 	}
 	
     // Get the file formats
@@ -1461,16 +1462,16 @@ class DatabaseConnection {
 	  
 	    // If the row for current $fileFormat does not exist, INSERT a new
 	    // row with all parameters, otherwise UPDATE the existing one.
-	    $query = "SELECT file_format FROM confidence_levels WHERE " .
-	        "file_format = $format LIMIT 1;";
+	    $query = "SELECT fileFormat FROM confidence_levels WHERE " .
+	        "fileFormat = '" . $format . "' LIMIT 1;";
 	    
 	    if ( $this->queryLastValue($query) === FALSE ) {
 	        
 	        // INSERT
 	        if ( !$this->connection->AutoExecute( "confidence_levels",
 	            $confidenceLevels[ $format ], "INSERT" ) ) {
-	          report("Could not insert confidence levels for file format $format!", 1 );
-	          exit("Could not insert confidence levels for file format $format!");
+			  $msg = "Could not insert confidence levels for file format $format!";
+	          report( $msg, 1 ); exit( $msg );
 	        }
 	        
 	    } else {
@@ -1478,9 +1479,9 @@ class DatabaseConnection {
 	        // UPDATE
 	        if ( !$this->connection->AutoExecute( "confidence_levels",
 	        	$confidenceLevels[ $format ], 'UPDATE',
-	        	"file_format = '$format'" ) ) {
-	          report("Could not update confidence levels for file format $format!", 1 );
-	          exit("Could not update confidence levels for file format $format!");
+	        	"fileFormat = '$format'" ) ) {
+	          $msg = "Could not update confidence levels for file format $format!";
+			  report( $msg, 1 ); exit( $msg);
 	        }
 	    
 	    }

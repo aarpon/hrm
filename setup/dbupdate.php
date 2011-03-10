@@ -1824,7 +1824,7 @@ if ($current_revision < $n) {
 
 	  // Define the fields for the confidence_levels table
       $fields = "
-        file_format C(30) NOTNULL UNIQUE PRIMARY,
+        fileFormat C(16) NOTNULL UNIQUE PRIMARY,
         sampleSizesX C(16) NOTNULL,
 		sampleSizesY C(16) NOTNULL,
 		sampleSizesZ C(16) NOTNULL,
