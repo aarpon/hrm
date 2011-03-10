@@ -341,6 +341,7 @@ class Job {
           $huygens_user . "@" . $server_hostname . ":" .
           $marker . " .)");
         }
+        $this->renameOutputFiles();
       } else {
 
         // Copy the estimated end time little file.
@@ -393,6 +394,8 @@ class Job {
    \brief       Renames Huygens default output file as an id job output file.
   */
   private function renameOutputFiles( ) {
+      global $imageProcessingIsOnQueueManager;
+      global $huygens_user;
 
       // Get the names of the Huygens default file and the id job output file.
       $huygensOut   = "scheduler_client0.log";
@@ -403,9 +406,18 @@ class Job {
       $huygensOut   = $jobDescription->destinationFolder() . $huygensOut;
       $idJobOutFile = $jobDescription->destinationFolder() . $idJobOutFile;
 
-      // Proceed to rename the Huygens default output file.
+      // Build rename command.
       $cmd = "mv " . $huygensOut . " " . $idJobOutFile;
-      $result = exec($cmd);
+
+      // Proceed to rename the Huygens default output file.
+      if ($imageProcessingIsOnQueueManager) {
+          $result = exec($cmd);
+      } else {
+          $server = split(" ", $this->server);
+          $server_hostname = $server[0];
+          $result = exec("ssh ".$huygens_user."@".$server_hostname." ".$cmd);
+      }
+
   }
 }
 
