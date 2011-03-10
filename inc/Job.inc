@@ -365,8 +365,12 @@ class Job {
                 "_" .$this->id() . "_out.txt", $this->server() .  "_"
                 .$this->id(). "_error.txt");
                 $result = !$proc->existsHuygensProcess($this->pid());
+
+                // Notice that the job is finished if $result = true.
                 if (!$result && $proc->isHuygensProcessSleeping($this->pid())) {
                   $proc->rewakeHuygensProcess($this->pid());
+                } elseif ($result) {
+                    $this->renameOutputFiles();
                 }
     }
 
@@ -383,6 +387,25 @@ class Job {
     }
 
     return $result;
+  }
+
+  /*
+   \brief       Renames Huygens default output file as an id job output file.
+  */
+  private function renameOutputFiles( ) {
+
+      // Get the names of the Huygens default file and the id job output file.
+      $huygensOut   = "scheduler_client0.log";
+      $jobDescription = $this->description();
+      $idJobOutFile = $jobDescription->destinationImageName() . ".inf.txt";
+
+      // Get also the file paths.
+      $huygensOut   = $jobDescription->destinationFolder() . $huygensOut;
+      $idJobOutFile = $jobDescription->destinationFolder() . $idJobOutFile;
+
+      // Proceed to rename the Huygens default output file.
+      $cmd = "mv " . $huygensOut . " " . $idJobOutFile;
+      $result = exec($cmd);
   }
 }
 
