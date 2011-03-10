@@ -539,7 +539,7 @@ Class JobTranslation {
         $imgOpen .= $this->string2tcllist($this->srcImage);
         if (isset($this->subImage)) {
             $imgOpen .= " subImg ";
-            $imgOpen .= $this->string2tcllist($this->subImage);
+            $imgOpen .= $this->subImage;
         }
         $imgOpen .= " series auto index 0";
         $imgOpen = $this->string2tcllist($imgOpen);
