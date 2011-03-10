@@ -177,7 +177,7 @@ function insert_record($tabname, $array, $colnames) {
 
 
 // Insert a column into the table $tabname
-function insert_column($tabname,$flds) {
+function insert_column($tabname,$fields) {
     global $datadict;
     
     $sqlarray = $datadict->AddColumnSQL($tabname, $fields); // NOTE: ADOdb AddColumnSQL, not guaranteed to work under all situations.
@@ -1776,7 +1776,10 @@ if ($current_revision < $n) {
 
 // -----------------------------------------------------------------------------
 // Update to revision 8
-// Description: add NumberOfChannels = 5
+// Description: Add NumberOfChannels = 5 into possible_values
+//              Update (and fix) PSFGenerationDepth in boundary_values
+//              Create the confidence_levels table
+//              Add a translation for the file formats to match hucore's
 // -----------------------------------------------------------------------------
 $n = 8;
 if ($current_revision < $n) {
@@ -1853,8 +1856,57 @@ if ($current_revision < $n) {
         write_to_error($msg);
         return;
       }
+
+    }      
     
-    }    
+    // Add a translation for the file formats to match them to the file formats
+    // returned by hucore
+    
+    // Does the column exist already?
+    $rs = $db->Execute( "SELECT column_name FROM information_schema.columns WHERE table_name = 'file_format'" );
+    $columns = $rs->GetRows();
+    $notFound = True;
+    foreach ( $columns as $column ) {
+        if ( $column[ 'column_name' ] == "translated" ) {
+            $notFound = False;
+        }
+    }
+    if ( $notFound == True ) {
+    
+        $fields = "translated C(30) NOTNULL";
+        if ( !insert_column( "file_format", $fields ) ) {
+          $msg = "An error occurred while updating the database to revision " . $n . ", file_format table update.";
+          write_message($msg);
+          write_to_log($msg);
+          write_to_error($msg);
+          return;
+        }
+    }
+    $ok  = $db->AutoExecute( "file_format", array( "translated" => "dv"),    "UPDATE", "name = 'dv'" );
+    $ok &= $db->AutoExecute( "file_format", array( "translated" => "ics"),   "UPDATE", "name = 'ics'" );
+    $ok &= $db->AutoExecute( "file_format", array( "translated" => "ics"),   "UPDATE", "name = 'ics2'" );
+    $ok &= $db->AutoExecute( "file_format", array( "translated" => "ims"),   "UPDATE", "name = 'ims'" );
+    $ok &= $db->AutoExecute( "file_format", array( "translated" => "lif"),   "UPDATE", "name = 'lif'" );
+    $ok &= $db->AutoExecute( "file_format", array( "translated" => "lsm"),   "UPDATE", "name = 'lsm'" );
+    $ok &= $db->AutoExecute( "file_format", array( "translated" => "lsm"),   "UPDATE", "name = 'lsm-single'" );
+    $ok &= $db->AutoExecute( "file_format", array( "translated" => "ome"),   "UPDATE", "name = 'ome-xml'" );
+    $ok &= $db->AutoExecute( "file_format", array( "translated" => "pic"),   "UPDATE", "name = 'pic'" );
+    $ok &= $db->AutoExecute( "file_format", array( "translated" => "stk"),   "UPDATE", "name = 'stk'" );
+    $ok &= $db->AutoExecute( "file_format", array( "translated" => "tiff"),  "UPDATE", "name = 'tiff'" );
+    $ok &= $db->AutoExecute( "file_format", array( "translated" => "tiff"),  "UPDATE", "name = 'tiff-series'" );
+    $ok &= $db->AutoExecute( "file_format", array( "translated" => "tiff"),  "UPDATE", "name = 'tiff-single'" );
+    $ok &= $db->AutoExecute( "file_format", array( "translated" => "leica"), "UPDATE", "name = 'tiff-leica'" );
+    $ok &= $db->AutoExecute( "file_format", array( "translated" => "zvi"),   "UPDATE", "name = 'zvi'" );
+    $ok &= $db->AutoExecute( "file_format", array( "translated" => "hdf5"),  "UPDATE", "name = 'hdf5'" );
+    
+    if ( !$ok ) {   
+          $msg = "An error occurred while updating the database to revision " . $n . ", file_format table update.";
+          write_message($msg);
+          write_to_log($msg);
+          write_to_error($msg);
+          return;           
+        }
+        
 
     // Update revision
     if(!update_dbrevision($n)) 
