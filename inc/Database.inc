@@ -1429,25 +1429,43 @@ class DatabaseConnection {
 		  exit( "Error: please specify a file format!" . "\n" );
 		}
 		
-		// Get the mapped hucore format
-		$query = "SELECT hucoreName FROM file_format WHERE name = '" .
-		  $fileFormat . "' LIMIT 1";
-		$mappedFormat = $this->queryLastValue( $query );
-		
-		// Get the confidence level
-		$query = "SELECT " . $this->parameterNameDictionary[ $parameterName ] .
-		  " FROM confidence_levels WHERE fileFormat = '" . $fileFormat .
-		  "' LIMIT 1;";
-		$confidenceLevel = $this->queryLastValue( $query );
+		// The wavelength and voxel size parameters have a common confidence in
+		// the HRM but two independent confidences in hucore
+		if ( ( $parameterName == "ExcitationWavelength" ) ||
+			 ( $parameterName == "EmissionWavelength" ) ) {
+		  
+		  $confidenceLevelEx = $this->huCoreConfidenceLevel(
+			$fileFormat, "ExcitationWavelength" );
+		  $confidenceLevelEm = $this->huCoreConfidenceLevel(
+			$fileFormat, "EmissionWavelength" );
+		  $confidenceLevel   = $this->minConfidenceLevel(
+			$confidenceLevelEx, $confidenceLevelEm );
+		  
+		} elseif ( ( $parameterName == "CCDCaptorSizeX" ) ||
+			 ( $parameterName == "zStepSize" ) ) {
+		  
+  		  $confidenceLevelX = $this->huCoreConfidenceLevel(
+			$fileFormat, "CCDCaptorSizeX" );
+		  $confidenceLevelZ = $this->huCoreConfidenceLevel(
+			$fileFormat, "zStepSize" );
+		  $confidenceLevel  = $this->minConfidenceLevel(
+			$confidenceLevelX, $confidenceLevelZ );
+
+		} else {
+		  
+		  $confidenceLevel = $this->huCoreConfidenceLevel(
+			$fileFormat, $parameterName );
+		  
+		}
 		
 		// Return the confidenceLevel mapped to the HRM usage
 		switch ( $confidenceLevel ) {
 		  case 'reported':
 			return 'Trusted';
-		  case 'default':
-			return 'Missing';
 		  case 'estimated':
 			return 'Untrusted';
+		  case 'default':
+			return 'Missing';
 		  default:
 			return 'Missing';
 		}
@@ -1519,7 +1537,57 @@ class DatabaseConnection {
   /*
                               PRIVATE FUNCTIONS
   */
-  
+
+  /*!
+    \brief	Return the mapped HuCore file format corresponding to HRM's
+    \param	$fileFormat	HRM's file format
+    \return mapped HuCore file format
+  */  
+  private function minConfidenceLevel( $level1, $level2 ) {
+	$levels = array( );
+	$levels[ 'default' ]   = 0;
+	$levels[ 'estimated' ] = 1;
+	$levels[ 'reported' ]  = 2;
+	
+	if ( $levels[ $level1 ] <= $levels[ $level2 ] ) {
+	  return $level1;
+	} else {
+	  return $level2;
+	}
+	
+  }
+
+  /*!
+    \brief	Return the raw HuCore confidence level
+    \param	$fileFormat	HRM's file format
+    \param	$parameterName	Name of the HRM Paramater
+    \return HuCore's raw confidence level
+  */  
+  private function huCoreConfidenceLevel( $fileFormat, $parameterName ) {
+	
+	// Get the mapped file format
+	$query = "SELECT hucoreName FROM file_format WHERE name = '" .
+	  $fileFormat . "' LIMIT 1";
+	$hucoreFileFormat = $this->queryLastValue( $query );
+	if ( !$hucoreFileFormat ) {
+	  report( "Could not get the mapped file name for " . $fileFormat ."!", 1 );
+	  return "default";
+	}
+	
+	// Use the mapped file format to retrieve the 
+	$query = "SELECT " . $this->parameterNameDictionary[ $parameterName ] .
+	  " FROM confidence_levels WHERE fileFormat = '" . $hucoreFileFormat .
+	  "' LIMIT 1;";
+	$confidenceLevel = $this->queryLastValue( $query );
+	if ( !confidenceLevel ) {
+	  report( "Could not get the confidence level for " . $fileFormat ."!", 1 );
+	  return "default";
+	}
+	
+	// return the confidence level
+	return $confidenceLevel;
+  }	
+		
   /*!
     \brief	Ugly hack to check for old table structure
     \return true if global variables exist
