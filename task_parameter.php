@@ -97,7 +97,7 @@ include("header.inc.php");
           
            <h4>How should your images be restored?</h4>
            
-             <fieldset class="setting" 
+             <fieldset class="setting Provide" 
               onmouseover="javascript:changeQuickHelp( 'method' );" >  <!-- deconvolution algorithm -->
             
                 <legend>
@@ -133,7 +133,7 @@ foreach($possibleValues as $possibleValue) {
                 
             </fieldset>
         
-            <fieldset class="setting"
+            <fieldset class="setting Provide"
               onmouseover="javascript:changeQuickHelp( 'snr' );" >  <!-- signal/noise ratio -->
             
                 <legend>
@@ -261,7 +261,7 @@ for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
                 
             </fieldset>
             
-            <fieldset class="setting"
+            <fieldset class="setting Provide"
               onmouseover="javascript:changeQuickHelp( 'background' );" >  <!-- background mode -->
             
                 <legend>
@@ -338,7 +338,7 @@ for ($i=0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
 
             <div id="cmle-it" <?php echo $visibility ?>>
 
-            <fieldset class="setting" 
+            <fieldset class="setting Provide" 
               onmouseover="javascript:changeQuickHelp( 'stopcrit' );" >  <!-- stopping criteria -->
             
                 <legend>
