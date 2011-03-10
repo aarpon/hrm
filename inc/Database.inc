@@ -49,25 +49,24 @@ class DatabaseConnection {
 	
 	// Set the parameter name dictionary
 	$this->	parameterNameDictionary = array(
-	  "sampleSizesX"   => "CCDCaptorSize",
-	  "sampleSizesY"   => "CCDCaptorSize",
-	  "sampleSizesZ"   => "ZStepSize",
-	  "sampleSizesT"   => "TimeInterval",
-	  "iFacePrim"      => NULL,                       // PSFGenerationDepth?
-	  "iFaceScnd"      => NULL,
-	  "pinhole"        => "PinholeSize",
-	  "chanCnt"        => "NumberOfChannels",
-	  "imagingDir"     => NULL,
-	  "pinholeSpacing" => "PinholeSpacing",
-	  "objQuality"     => NULL,
-	  "lambdaEx"       => "ExcitationWavelength",
-	  "lambdaEm"       => "EmissionWavelength",
-	  "mType"          => "MicroscopeType",
-	  "NA"             => "NumericalAperture",
-	  "RIMedia"        => "ObjectiveType",
-	  "RILens"         => "SampleMedium",
-	  "photonCnt"      => NULL,
-	  "exBeamFill"     => NULL );
+	  "CCDCaptorSizeX"       => "sampleSizesX",       // In HRM there is no distinction between x and y pixel size
+	  "ZStepSize"            => "sampleSizesZ",
+	  "TimeInterval"         => "sampleSizesT",
+	  "PinholeSize"          => "pinhole",
+	  "NumberOfChannels"     => "chanCnt",
+	  "PinholeSpacing"       => "pinholeSpacing",
+	  "ExcitationWavelength" => "lambdaEx",
+	  "EmissionWavelength"   => "lambdaEm",
+	  "MicroscopeType"       => "mType", 
+	  "NumericalAperture"    => "NA",
+	  "ObjectiveType"        => "RIMedia",
+	  "SampleMedium"         => "RILens",
+	  "unused1"              => "iFacePrim",          // PSFGenerationDepth?
+	  "unused2"              => "iFaceScnd",
+	  "unused3"              => "imagingDir",
+	  "unused4"              => "objQuality",
+	  "unused5"              => "photonCnt",
+	  "unused6"              => "exBeamFill" );
   } 
 
   /*!	
@@ -1424,12 +1423,37 @@ class DatabaseConnection {
 	  case 'PSF' :
 		return "Provide";
 	  default:
+		
 		// For the other Parameters, the $fileFormat must be specified
 		if ( ( $fileFormat == '' ) && ( $fileFormat == null ) ) {
 		  exit( "Error: please specify a file format!" . "\n" );
 		}
-		return "Missing";
+		
+		// Get the mapped hucore format
+		$query = "SELECT hucoreName FROM file_format WHERE name = '" .
+		  $fileFormat . "' LIMIT 1";
+		$mappedFormat = $this->queryLastValue( $query );
+		
+		// Get the confidence level
+		$query = "SELECT " . $this->parameterNameDictionary[ $parameterName ] .
+		  " FROM confidence_levels WHERE fileFormat = '" . $fileFormat .
+		  "' LIMIT 1;";
+		$confidenceLevel = $this->queryLastValue( $query );
+		
+		// Return the confidenceLevel mapped to the HRM usage
+		switch ( $confidenceLevel ) {
+		  case 'reported':
+			return 'Trusted';
+		  case 'default':
+			return 'Missing';
+		  case 'estimated':
+			return 'Untrusted';
+		  default:
+			return 'Missing';
+		}
+
 	}
+  
   }
   
   

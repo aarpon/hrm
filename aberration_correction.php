@@ -32,7 +32,7 @@ $parameterNames = $_SESSION['setting']->correctionParameterNames();
 $db = new DatabaseConnection();
 foreach ( $parameterNames as $name ) {
   $parameter = $_SESSION['setting']->parameter( $name );
-  $confidenceLevel = $db->getParameterConfidenceLevel( $fileFormat, $name );  
+  $confidenceLevel = $db->getParameterConfidenceLevel( '', $name );  
   $parameter->setConfidenceLevel( $confidenceLevel );
   $_SESSION['setting']->set( $parameter );
 }

@@ -1867,13 +1867,13 @@ if ($current_revision < $n) {
     $columns = $rs->GetRows();
     $notFound = True;
     foreach ( $columns as $column ) {
-        if ( $column[ 'column_name' ] == "translated" ) {
+        if ( $column[ 'column_name' ] == "hucoreName" ) {
             $notFound = False;
         }
     }
     if ( $notFound == True ) {
     
-        $fields = "translated C(30) NOTNULL";
+        $fields = "hucoreName C(30) NOTNULL";
         if ( !insert_column( "file_format", $fields ) ) {
           $msg = "An error occurred while updating the database to revision " . $n . ", file_format table update.";
           write_message($msg);
@@ -1882,22 +1882,22 @@ if ($current_revision < $n) {
           return;
         }
     }
-    $ok  = $db->AutoExecute( "file_format", array( "translated" => "dv"),    "UPDATE", "name = 'dv'" );
-    $ok &= $db->AutoExecute( "file_format", array( "translated" => "ics"),   "UPDATE", "name = 'ics'" );
-    $ok &= $db->AutoExecute( "file_format", array( "translated" => "ics"),   "UPDATE", "name = 'ics2'" );
-    $ok &= $db->AutoExecute( "file_format", array( "translated" => "ims"),   "UPDATE", "name = 'ims'" );
-    $ok &= $db->AutoExecute( "file_format", array( "translated" => "lif"),   "UPDATE", "name = 'lif'" );
-    $ok &= $db->AutoExecute( "file_format", array( "translated" => "lsm"),   "UPDATE", "name = 'lsm'" );
-    $ok &= $db->AutoExecute( "file_format", array( "translated" => "lsm"),   "UPDATE", "name = 'lsm-single'" );
-    $ok &= $db->AutoExecute( "file_format", array( "translated" => "ome"),   "UPDATE", "name = 'ome-xml'" );
-    $ok &= $db->AutoExecute( "file_format", array( "translated" => "pic"),   "UPDATE", "name = 'pic'" );
-    $ok &= $db->AutoExecute( "file_format", array( "translated" => "stk"),   "UPDATE", "name = 'stk'" );
-    $ok &= $db->AutoExecute( "file_format", array( "translated" => "tiff"),  "UPDATE", "name = 'tiff'" );
-    $ok &= $db->AutoExecute( "file_format", array( "translated" => "tiff"),  "UPDATE", "name = 'tiff-series'" );
-    $ok &= $db->AutoExecute( "file_format", array( "translated" => "tiff"),  "UPDATE", "name = 'tiff-single'" );
-    $ok &= $db->AutoExecute( "file_format", array( "translated" => "leica"), "UPDATE", "name = 'tiff-leica'" );
-    $ok &= $db->AutoExecute( "file_format", array( "translated" => "zvi"),   "UPDATE", "name = 'zvi'" );
-    $ok &= $db->AutoExecute( "file_format", array( "translated" => "hdf5"),  "UPDATE", "name = 'hdf5'" );
+    $ok  = $db->AutoExecute( "file_format", array( "hucoreName" => "dv"),    "UPDATE", "name = 'dv'" );
+    $ok &= $db->AutoExecute( "file_format", array( "hucoreName" => "ics"),   "UPDATE", "name = 'ics'" );
+    $ok &= $db->AutoExecute( "file_format", array( "hucoreName" => "ics"),   "UPDATE", "name = 'ics2'" );
+    $ok &= $db->AutoExecute( "file_format", array( "hucoreName" => "ims"),   "UPDATE", "name = 'ims'" );
+    $ok &= $db->AutoExecute( "file_format", array( "hucoreName" => "lif"),   "UPDATE", "name = 'lif'" );
+    $ok &= $db->AutoExecute( "file_format", array( "hucoreName" => "lsm"),   "UPDATE", "name = 'lsm'" );
+    $ok &= $db->AutoExecute( "file_format", array( "hucoreName" => "lsm"),   "UPDATE", "name = 'lsm-single'" );
+    $ok &= $db->AutoExecute( "file_format", array( "hucoreName" => "ome"),   "UPDATE", "name = 'ome-xml'" );
+    $ok &= $db->AutoExecute( "file_format", array( "hucoreName" => "pic"),   "UPDATE", "name = 'pic'" );
+    $ok &= $db->AutoExecute( "file_format", array( "hucoreName" => "stk"),   "UPDATE", "name = 'stk'" );
+    $ok &= $db->AutoExecute( "file_format", array( "hucoreName" => "tiff"),  "UPDATE", "name = 'tiff'" );
+    $ok &= $db->AutoExecute( "file_format", array( "hucoreName" => "tiff"),  "UPDATE", "name = 'tiff-series'" );
+    $ok &= $db->AutoExecute( "file_format", array( "hucoreName" => "tiff"),  "UPDATE", "name = 'tiff-single'" );
+    $ok &= $db->AutoExecute( "file_format", array( "hucoreName" => "leica"), "UPDATE", "name = 'tiff-leica'" );
+    $ok &= $db->AutoExecute( "file_format", array( "hucoreName" => "zvi"),   "UPDATE", "name = 'zvi'" );
+    $ok &= $db->AutoExecute( "file_format", array( "hucoreName" => "hdf5"),  "UPDATE", "name = 'hdf5'" );
     
     if ( !$ok ) {   
           $msg = "An error occurred while updating the database to revision " . $n . ", file_format table update.";
