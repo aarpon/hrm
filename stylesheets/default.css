@@ -919,6 +919,34 @@ option.default {
     padding: 0px;
 }
 
+.message_confidence_Provide {
+    border: none;
+    margin-top: 5px;
+    margin-bottom: -5px;
+    background: url(../images/textProvide.png) no-repeat bottom;
+}
+
+.message_confidence_Trusted {
+    border: none;
+    margin-top: 5px;
+    margin-bottom: -5px;
+    background: url(../images/textTrusted.png) no-repeat bottom;
+}
+
+.message_confidence_Untrusted {
+    border: none;
+    margin-top: 5px;
+    margin-bottom: -5px;
+    background: url(../images/textUntrusted.png) no-repeat bottom;
+}
+
+.message_confidence_Missing {
+    border: none;
+    margin-top: 5px;
+    margin-bottom: -5px;
+    background: url(../images/textMissing.png) no-repeat bottom;
+}
+
 .warning {
     font-weight: bold;
     color: red;

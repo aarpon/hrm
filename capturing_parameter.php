@@ -295,7 +295,8 @@ if ($_SESSION['setting']->isThreeDimensional()) {
                     <img src="images/web.png" alt="external link" />
                 </a>
                 
-            </fieldset>
+            <p class="message_confidence_<?php echo $parameterCCDCaptorSizeX->confidenceLevel(); ?>">&nbsp;</p>
+			</fieldset>
            
 <?php
 
@@ -326,7 +327,8 @@ if ($_SESSION['setting']->isTimeSeries()) {
               </li>
             </ul>
                 
-            </fieldset>
+            <p class="message_confidence_<?php echo $parameterTimeInterval->confidenceLevel(); ?>">&nbsp;</p>
+			</fieldset>
 <?php
 
 }
@@ -389,7 +391,8 @@ if ($_SESSION['setting']->isMultiPointOrSinglePointConfocal()) {
                   Backprojected pinhole calculator
                 </a>
                 
-            </fieldset>
+            <p class="message_confidence_<?php echo $parameterPinholeSize->confidenceLevel(); ?>">&nbsp;</p>
+			</fieldset>
 <?php
 
 }
@@ -429,7 +432,8 @@ if ($_SESSION['setting']->isNipkowDisk()) {
                   Backprojected pinhole calculator
                 </a>
                 
-            </fieldset>
+            <p class="message_confidence_<?php echo $parameterPinholeSpacing->confidenceLevel(); ?>">&nbsp;</p>
+			</fieldset>
 <?php
 
 }

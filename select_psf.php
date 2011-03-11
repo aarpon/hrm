@@ -142,6 +142,7 @@ for ($i = 0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
             </div>
             
             <div><input name="OK" type="hidden" /></div>
+            <p class="message_confidence_Provide">&nbsp;</p>
             
             <div id="controls">
               <input type="button" value="" class="icon previous"

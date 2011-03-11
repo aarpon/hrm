@@ -148,6 +148,7 @@ foreach($possibleValues as $possibleValue) {
 }
 
 ?>
+            <p class="message_confidence_<?php echo $parameterMicroscopeType->confidenceLevel(); ?>">&nbsp;</p>
             </fieldset>
 
     <?php
@@ -174,6 +175,7 @@ foreach($possibleValues as $possibleValue) {
               
                 </li>
               </ul>
+              <p class="message_confidence_<?php echo $parameterNumericalAperture->confidenceLevel(); ?>">&nbsp;</p>
             </fieldset>
 
     <?php
@@ -228,6 +230,7 @@ for ($i=0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
         </div></li>
         </ul>
                 
+        <p class="message_confidence_<?php echo $parameterEmissionWavelength->confidenceLevel(); ?>">&nbsp;</p>
         </fieldset>
 
   <?php
@@ -267,6 +270,7 @@ foreach ($possibleValues as $possibleValue) {
 
 ?>
                 
+            <p class="message_confidence_<?php echo $parameterObjectiveType->confidenceLevel(); ?>">&nbsp;</p>
             </fieldset>
 
   <?php
@@ -320,6 +324,7 @@ if (!$default) {
 ?>
                 <input name="SampleMedium" type="radio" value="custom"<?php echo $flag ?> /><input name="SampleMediumCustomValue" type="text" size="5" value="<?php echo $value ?>" onclick="this.form.SampleMedium[2].checked=true" />
                 
+            <p class="message_confidence_<?php echo $parameterSampleMedium->confidenceLevel(); ?>">&nbsp;</p>
             </fieldset>
             
             <div><input name="OK" type="hidden" /></div>

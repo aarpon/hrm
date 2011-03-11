@@ -76,6 +76,7 @@ $script = array( "settings.js", "quickhelp/help.js",
 include("header.inc.php");
 
 ?>
+
     <!--
       Tooltips
     -->
@@ -162,7 +163,7 @@ foreach($values as $value) {
 ?>
 
                 </select>
-                
+                <p class="message_confidence_<?php echo $parameterImageFileFormat->confidenceLevel(); ?>">&nbsp;</p>
             </fieldset>
 
     <?php
@@ -203,7 +204,7 @@ foreach($possibleValues as $possibleValue) {
 }
 
 ?>
-
+            <p class="message_confidence_<?php echo $parameterImageGeometry->confidenceLevel(); ?>">&nbsp;</p>
             </fieldset>
 
     <?php
@@ -241,6 +242,8 @@ function check($parameter, $value) {
                 <input name="NumberOfChannels" type="radio" value="4" <?php echo $channelsFlag ?><?php check($parameterNumberOfChannels, 4) ?>/>4
                 <input name="NumberOfChannels" type="radio" value="5" <?php echo $channelsFlag ?><?php check($parameterNumberOfChannels, 5) ?>/>5
                 
+            <p class="message_confidence_<?php echo $parameterNumberOfChannels->confidenceLevel(); ?>">&nbsp;</p>
+            
             </fieldset>
 
     <?php
@@ -271,6 +274,7 @@ function check($parameter, $value) {
                 
                 <input type="radio" name="PointSpreadFunction" value="measured" <?php if ($parameterPointSpreadFunction->value() == "measured") echo "checked=\"checked\"" ?> <?php echo $turnOffPSFAdaptationOnClick ?>/><a href="javascript:openWindow('http://www.svi.nl/ExperimentalPsf')"><img src="images/help.png" alt="?" /></a>Measured
                 
+            <p class="message_confidence_<?php echo $parameterPointSpreadFunction->confidenceLevel(); ?>">&nbsp;</p>
             </fieldset>
 
             <div id="controls" onmouseover="javascript:changeQuickHelp( 'default' )">

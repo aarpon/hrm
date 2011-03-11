@@ -150,6 +150,7 @@ $onChange = "onchange=\"javascript:switchCorrection()\"";
 
             </select>    
                 
+        <p class="message_confidence_<?php echo $parameterPerformAberrationCorrection->confidenceLevel(); ?>">&nbsp;</p>
         </fieldset>
 
     <!-- (2) SPECIFY SAMPLE ORIENTATION -->
@@ -211,6 +212,7 @@ if ($parameterPerformAberrationCorrection->value( ) == 1)
                 
             </select>
                 
+        <p class="message_confidence_<?php echo $parameterCoverslipRelativePosition->confidenceLevel(); ?>">&nbsp;</p>
         </fieldset>
 
     </div> <!-- CoverslipRelativePositionDiv -->
@@ -279,7 +281,8 @@ $onChange = "onchange=\"javascript:switchAdvancedCorrection()\"";
             ?>
                 
             </select>
-                
+        
+        <p class="message_confidence_<?php echo $parameterAberrationCorrectionMode->confidenceLevel(); ?>">&nbsp;</p>        
         </fieldset>
 
     </div> <!-- AberrationCorrectionModeDiv -->
@@ -382,6 +385,7 @@ if ( ($parameterPerformAberrationCorrection->value( ) == 1) &&
                 <p>Depth for PSF generation (&micro;m): <input name="PSFGenerationDepth" type="text" style="width:100px;" value="<?php echo $selectedValue; ?>" /></p>
             </div>
             
+        <p class="message_confidence_<?php echo $parameterAdvancedCorrectionOptions->confidenceLevel(); ?>">&nbsp;</p>
         </fieldset>
 
       </div> <!-- AdvancedCorrectionOptionsDiv -->

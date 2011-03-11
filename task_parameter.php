@@ -131,6 +131,7 @@ foreach($possibleValues as $possibleValue) {
 ?>
                 </select>
                 
+            <p class="message_confidence_Provide">&nbsp;</p>
             </fieldset>
         
             <fieldset class="setting Provide"
@@ -259,6 +260,7 @@ for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
                     
                 </div>
                 
+            <p class="message_confidence_Provide">&nbsp;</p>
             </fieldset>
             
             <fieldset class="setting Provide"
@@ -334,6 +336,7 @@ for ($i=0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
                     
                 </div>
                 
+            <p class="message_confidence_Provide">&nbsp;</p>
             </fieldset>
 
             <div id="cmle-it" <?php echo $visibility ?>>
@@ -383,6 +386,7 @@ $value = $parameter->value();
                     
                 </div>
                 
+            <p class="message_confidence_Provide">&nbsp;</p>
             </fieldset>
             </div>
             
