@@ -12,8 +12,8 @@ function clean() {
     if (popup != null) popup.close();
 }
 
-function warn(form) {
-    if (confirm("Do you really want to delete this user?")) {
+function warn(form, msg) {
+    if (confirm(msg)) {
         form.elements["annihilate"].value = "yes";
         form.submit();
     }

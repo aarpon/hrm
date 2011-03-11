@@ -76,8 +76,10 @@ else if (isset($_POST['make_default'])) {
   $message = "            <p class=\"warning\">".$_SESSION['editor']->message()."</p>\n";
 }
 else if (isset($_POST['delete'])) {
-  $_SESSION['editor']->deleteSelectedSetting();
-  $message = "            <p class=\"warning\">".$_SESSION['editor']->message()."</p>\n";
+  if (isset($_POST['annihilate']) && $_POST['annihilate'] == "yes") {
+    $_SESSION['editor']->deleteSelectedSetting();
+    $message = "            <p class=\"warning\">".$_SESSION['editor']->message()."</p>\n";
+  }
 }
 else if (isset($_POST['OK'])) {
   if (!isset($_POST['setting'])) {
@@ -295,7 +297,9 @@ if (!$_SESSION['user']->isAdmin()) {
 }
 
 ?>
+                <input type="hidden" name="annihilate" />
                 <input name="delete" type="submit" value="" class="icon delete"
+                      onclick="warn(this.form, 'Do you really want to delete this parameter set?')"
                       onmouseover="TagToTip('ttSpanDelete' )"
                       onmouseout="UnTip()" />
                 <label>New/clone setting name: <input name="new_setting" type="text" class="textfield" /></label>

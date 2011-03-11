@@ -380,7 +380,7 @@ if ($_SESSION['index'] != "") {
 ?>
 
                                     <input type="hidden" name="annihilate" />
-                                    <input type="button" name="delete" value="delete" onclick="warn(this.form)" class="submit" />
+                                    <input type="button" name="delete" value="delete" onclick="warn(this.form, 'Do you really want to delete this user?')" class="submit" />
 <?php
 
         }
