@@ -1,6 +1,16 @@
 #!/bin/bash
 #
-# HRM server daemon
+# hrmd         Huygens Remote Manager daemon
+#
+# chkconfig: - 85 15
+# description: Huygens Remote Manager daemon
+# processname: hrmd
+#
+### BEGIN INIT INFO
+# Provides: hrmd
+# Required-Start:
+# Description: The HRM Queue Manager daemon
+### END INIT INFO
 #
 # This file is part of the Huygens Remote Manager
 # Copyright and license notice: see license.txt
@@ -11,12 +21,21 @@
 start() {
     cd  "$HRM_HOME"/run
         echo Reporting to "$HRM_LOG"/log.txt "$HRM_LOG"/error_log.txt
-	php -q "$HRM_HOME"/run/runHuygensRemoteManager.php 1> "$HRM_LOG"/log.txt 2> "$HRM_LOG"/error_log.txt &
-	
+	if [[ "$SUSER" == "" ]]
+	then
+		php -q "$HRM_HOME"/run/runHuygensRemoteManager.php 1> "$HRM_LOG"/log.txt 2> "$HRM_LOG"/error_log.txt &
+	else
+		sudo -u "$SUSER" php -q "$HRM_HOME"/run/runHuygensRemoteManager.php 1> "$HRM_LOG"/log.txt 2> "$HRM_LOG"/error_log.txt &
+	fi
 	if [ "$?" = 0 ]
 	then
 		sleep 3
-		ps -o pid,command | grep "$HRM_HOME" | grep "php" | sed -e "s/^ * //" | cut -d" " -f1 > "$HRM_LOG"/hrmd.pid
+		if [[ "$SUSER" == "" ]]
+		then
+			ps -o pid,command | grep "$HRM_HOME" | grep "php" | sed -e "s/^ * //" | cut -d" " -f1 > "$HRM_LOG"/hrmd.pid
+		else
+			sudo -u "$SUSER" ps -o pid,command | grep "$HRM_HOME" | grep "php" | sed -e "s/^ * //" | cut -d" " -f1 > "$HRM_LOG"/hrmd.pid
+		fi
 		echo "Starting HRM daemon...................ok"
 	fi
         # This will show if anything went wrong during the start up.
@@ -27,11 +46,21 @@ start() {
 stop() {
 	if [ -f "$HRM_LOG"/hrmd.pid ]
 	then
-		kill -9 $(more "$HRM_LOG"/hrmd.pid)
+		if [[ "$SUSER" == "" ]]
+		then
+			kill -9 $(more "$HRM_LOG"/hrmd.pid)
+		else
+			sudo -u "$SUSER" kill -9 $(more "$HRM_LOG"/hrmd.pid)
+		fi
 		
 		if [ "$?" = 0 ]
 		then
-			rm -f "$HRM_LOG"/hrmd.pid
+			if [[ "$SUSER" == "" ]]
+			then
+				rm -f "$HRM_LOG"/hrmd.pid
+			else
+				sudo -u "$SUSER" rm -f "$HRM_LOG"/hrmd.pid
+			fi
 			echo "Shutting down HRM daemon..............ok"
 		fi
 	fi
