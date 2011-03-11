@@ -604,7 +604,7 @@ Class JobTranslation {
         $options .= " ex ";
         $options .= $this->getExcitationLambda();
         $options .= " parState,ex ";
-        $options .= $this->getExcitationLVerification();
+        $options .= $this->getExcitationLConfidenceList();
         $options .= " em ";
         $options .= $this->getEmissionLambda();
         $options .= " parState,em ";
@@ -1174,33 +1174,30 @@ Class JobTranslation {
     }
 
     /*!
-     \brief       Verification of the excitation wavelength. All channels.
-     \return      Tcl-list: Trues/Falses if the EWs are verified.
-     \todo        To be implemented in the GUI
+     \brief       Confidence levels of the excitacion wavelength. All channels.
+     \return      Tcl-list: whether verified, reported, estimated or default.
     */
-    private function getExcitationLVerification( ) {
+    private function getExcitationLConfidenceList( ) {
         $numberOfChannels = $this->getNumberOfChannels();
         $verificationList = "";
         for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $verification = $this->getELVerificationForChannel($chanCnt);
+            $verification = $this->getConfidenceOfExLambdaForChannel($chanCnt);
             $verificationList .= " " . $verification;
         }
         return $this->string2tcllist($verificationList);
     }
 
     /*!
-     \brief       Verification of the excitation wavelength . One channel.
+     \brief       Confidence level of the excitation wavelength. One channel.
      \param       $channel A channel
-     \return      True if the Excitation wavelength is verified.
-     \todo        To be implemented in the GUI
+     \return      Whether verified, reported, estimated or default.
     */
-    private function getELVerificationForChannel($channel) {
-        if ($this->isFieldVerified($channel) == 1) {
-            $verification = "verified";
-        } else {
-            $verification = "estimated";
-        }
-        return $verification;
+    private function getConfidenceOfExLambdaForChannel($channel) {
+        $microSetting = $this->microSetting;
+        $pinholeSize = $microSetting->parameter("ExcitationWavelength");
+        $format = $this->HuImageFormat;
+        
+        return $pinholeSize->interpretedHuCoreConfidenceLevel($format,$channel);
     }
     
     /*!
