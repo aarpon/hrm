@@ -1579,7 +1579,7 @@ class DatabaseConnection {
 	  " FROM confidence_levels WHERE fileFormat = '" . $hucoreFileFormat .
 	  "' LIMIT 1;";
 	$confidenceLevel = $this->queryLastValue( $query );
-	if ( !confidenceLevel ) {
+	if ( !$confidenceLevel ) {
 	  report( "Could not get the confidence level for " . $fileFormat ."!", 1 );
 	  return "default";
 	}
