@@ -153,6 +153,17 @@ abstract class Parameter {
 	}
 
 	/*!
+		\brief	Checks whether the value is not set
+		\return	true if the value is *not set* (i.e. null)
+	*/
+	public function notSet( ) {
+		if ( is_array( $this->value ) ) {
+			return( $this->value[ 0 ] == null );
+		}
+		return( $this->value == null );
+	}
+
+	/*!
 		\brief	Checks whether the Parameter is an Image Parameter
 		
 		This function should be <b>overloaded</b> by the subclasses
@@ -308,6 +319,17 @@ abstract class Parameter {
 	*/
 	public function isBoolean() {
 		return False;
+	}
+
+	/*!
+		\brief	Returns the formatted Parameter name to be used with displayString()
+		\return	formatted Parameter name
+	*/
+	protected function formattedName( ) {
+		$name = $this->decomposeCamelCaseString( $this->name );
+		$name = $name . ':';
+		$result = str_pad($name, self::PADSIZE, ' ', STR_PAD_RIGHT);
+		return $result;
 	}
 
 	/*!
@@ -521,10 +543,12 @@ abstract class ChoiceParameter extends Parameter {
 				overload this function!
 	*/
 	public function displayString( $numberOfChannels = 0 ) {
-		$name = $this->decomposeCamelCaseString( $this->name );
-		$name = $name . ':';
-		$result = str_pad($name, self::PADSIZE, ' ', STR_PAD_RIGHT);
-		$result = $result . $this->value . "\n";
+		$result = $this->formattedName( $this->name );
+		if ( $this->notSet() ) {
+			$result = $result . "*not set*" . "\n";
+		} else {
+			$result = $result . $this->value . "\n";
+		}
 		return $result;
 	}
 	
@@ -576,9 +600,7 @@ class BooleanParameter extends ChoiceParameter {
 		} else {
 			$value = 'no';
 		}
-		$name = $this->decomposeCamelCaseString( $this->name );
-		$name = $name . ':';
-		$result = str_pad($name, self::PADSIZE, ' ', STR_PAD_RIGHT);
+		$result = $this->formattedName( $this->name );
 		$result = $result . $value . "\n";
 		return $result;		
 	}
@@ -836,10 +858,12 @@ class NumericalParameter extends Parameter {
 		\return	string representation of the Parameter
 	*/
 	public function displayString( $numberOfChannels = 0 ) {
-		$name = $this->decomposeCamelCaseString( $this->name );
-		$name = $name . ':';
-		$result = str_pad($name, self::PADSIZE, ' ', STR_PAD_RIGHT);
-		$result = $result . $this->value . "\n";
+		$result = $this->formattedName( $this->name );
+		if ( $this->notSet() ) {
+			$result = $result . "*not set*" . "\n";
+		} else {
+			$result = $result . $this->value . "\n";
+		}
 		return $result;
 	}
 
@@ -965,10 +989,12 @@ class NumericalArrayParameter extends NumericalParameter {
 	public function displayString( $numberOfChannels = 0 ) {
 		$value = array_slice( $this->value, 0, $numberOfChannels );
 		$value = implode( $value, ', ' );
-		$name = $this->decomposeCamelCaseString( $this->name );
-		$name = $name . ':';
-		$result = str_pad($name, self::PADSIZE, ' ', STR_PAD_RIGHT);
-		$result = $result . $value . "\n";
+		$result = $this->formattedName( $this->name );
+		if ( $this->notSet() ) {
+			$result = $result . "*not set*" . "\n";
+		} else {
+			$result = $result . $value . "\n";
+		}
 		return $result;
 	}
 
@@ -1261,10 +1287,12 @@ class ImageFileFormat extends SingleOrMultiChannelParameter {
 	*/
 	public function displayString( $numberOfChannels = 0 ) {
 		$value = $this->translatedValueFor( $this->value( ) );
-		$name = $this->decomposeCamelCaseString( $this->name );
-		$name = $name . ':';
-		$result = str_pad($name, self::PADSIZE, ' ', STR_PAD_RIGHT);
-		$result = $result . $value . "\n";
+		$result = $this->formattedName( $this->name );
+		if ( $this->notSet() ) {
+			$result = $result . "*not set*" . "\n";
+		} else {
+			$result = $result . $value . "\n";
+		}
 		return $result;
 	}
 	
@@ -1329,10 +1357,12 @@ class ImageGeometry extends SingleOrMultiChannelParameter {
 		\return	string representation of the Parameter
 	*/
 	public function displayString( $numberOfChannels = 0 ) {
-		$name = $this->decomposeCamelCaseString( $this->name );
-		$name = $name . ':';
-		$result = str_pad($name, self::PADSIZE, ' ', STR_PAD_RIGHT);
-		$result = $result . $this->value . "\n";
+		$result = $this->formattedName( $this->name );
+		if ( $this->notSet() ) {
+			$result = $result . "*not set*" . "\n";
+		} else {
+			$result = $result . $this->value . "\n";
+		}
 		return $result;
 	}
 }
@@ -1767,12 +1797,12 @@ class CCDCaptorSizeX extends NumericalParameter {
 		\return	string representation of the Parameter
 	*/
 	public function displayString() {
-		$value = $this->value();
-		$result = '';
-		$name = ' pixel size:';
-		$result = $result . str_pad($name, self::PADSIZE, ' ', STR_PAD_RIGHT);
-		$result = $result . $value;
-		$result = $result . "\n";
+		$result = $this->formattedName( ' pixel size:' );
+		if ( $this->notSet() ) {
+			$result = $result . "*not set*" . "\n";
+		} else {
+			$result = $result . $this->value . "\n";
+		}
 		return $result;
 	}
 }
@@ -2054,56 +2084,23 @@ class SignalNoiseRatio extends NumericalArrayParameter {
 		\return	string representation of the Parameter for the cmle or qmle algorithm
 	*/
 	public function displayString($numberOfChannels = 0) {
-		$result = '';
-		$value = $this->value();
-        if ( $numberOfChannels > count( $value ) ) {
-            $numberOfChannels = count( $value );
-        }
-        $value = array_slice( $value, 0, $numberOfChannels );
-
 		switch ( $this->algorithm ) {
-			case "cmle" :
-			
-				if ( $numberOfChannels > count( $value ) ) {
-					$numberOfChannels = count( $value );
-				}
-				$value = array_slice( $value, 0, $numberOfChannels );
-				if (count($value) > 0 && is_array($value[0])) {
-					$val = "";
-					for ($i = 0; $i < count($value); $i++) {
-						$value[$i] = array_filter($value[$i]);
-						if ($i > 0 && $value[$i] != null)
-						$val .= ", ";
-						$val .= implode("/", $value[$i]);
-					}
-					$value = $val;
-				} else {
-					$value = array_filter($value);
-					$value = implode(", ", $value);
-				}
-				break;
-
-			case 'qmle':
-				
+			case "qmle":
 				$snr = array("1" => "low", "2" => "fair", "3" => "good", "4" => "inf");
-				if ( $numberOfChannels > count( $value ) ) {
-					$numberOfChannels = count( $value );
-				}
-				$value = array_slice( $value, 0, $numberOfChannels );
-				$value = array_filter($value);
-				for ($i = 0; $i < count($value); $i++) {
+				$value = array_slice( $this->value, 0, $numberOfChannels );
+				$val = array();
+				for ($i = 0; $i < $numberOfChannels; $i++) {
 					$val[$i] = $snr[$value[$i]];
 				}
 				$value = implode(", ", $val);
+				$result = $this->formattedName( $this->name );
+				return $result . $value . "\n";
+				break;
+			case "cmle" :
+			default:
+				return ( parent::displayString( $numberOfChannels ) );
 				break;
 		}
-
-		$name = $this->name() . ":";
-		$name = $this->decomposeCamelCaseString( $name );
-		$result .= str_pad($name, self::PADSIZE, ' ', STR_PAD_RIGHT);
-
-		return $result . $value . "\n";
-
 	}
 		
 }
@@ -2169,9 +2166,7 @@ class BackgroundOffsetPercent extends AnyTypeArrayParameter {
 				$value = implode( $value, ", " );
 			}
 		}
-		$result  = str_pad($name, self::PADSIZE, ' ', STR_PAD_RIGHT);
-		$result .= $value;
-		$result .= "\n";
+		$result  = $this->formattedName( $name ) . $value . "\n";
 		return $result;
 	}
 }
@@ -2443,9 +2438,7 @@ class PerformAberrationCorrection extends ChoiceParameter {
 		} else {
 			$value = "yes";
 		}
-		$name = $this->decomposeCamelCaseString( $this->name );
-		$name = $name . ':';
-		$result = str_pad($name, self::PADSIZE, ' ', STR_PAD_RIGHT);
+		$result = $this->formattedName( $this->name );
 		$result = $result . $value . "\n";
 		return $result;
 	}
@@ -2521,9 +2514,7 @@ class AdvancedCorrectionOptions extends ChoiceParameter {
 				$value = "few bricks";
 				break;
 		}
-		$name = $this->decomposeCamelCaseString( $this->name );
-		$name = $name . ':';
-		$result = str_pad($name, self::PADSIZE, ' ', STR_PAD_RIGHT);
+		$name = $this->formattedName( $this->name );
 		$result = $result . $value . "\n";
 		return $result;
 	}
