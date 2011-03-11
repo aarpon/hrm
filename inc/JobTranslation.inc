@@ -608,7 +608,7 @@ Class JobTranslation {
         $options .= " em ";
         $options .= $this->getEmissionLambda();
         $options .= " parState,em ";
-        $options .= $this->getEmissionLVerification();
+        $options .= $this->getEmissionLConfidenceList();
         $options .= " exBeamFill ";
         $options .= $this->getExBeamFill();
         $options .= " parState,exBeamFill ";
@@ -1227,7 +1227,7 @@ Class JobTranslation {
      \brief       Confidence levels of the excitacion beam factor. All channels.
      \return      Tcl-list: whether verified, reported, estimated or default.
     */
-    private function getExBeamConfidencelist( ) {
+    private function getExBeamConfidenceList( ) {
         $numberOfChannels = $this->getNumberOfChannels();
         $verificationList = "";
         for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
@@ -1273,33 +1273,30 @@ Class JobTranslation {
     }
     
     /*!
-     \brief       Gets the emission lambda verification. All channels.
-     \return      Tcl-list: Trues/Falses if the Emission lambdas are verified.
-     \todo        To be implemented in the GUI
+     \brief       Confidence levels of the emission wavelength. All channels.
+     \return      Tcl-list: whether verified, reported, estimated or default.
     */
-    private function getEmissionLVerification( ) {
+    private function getEmissionLConfidenceList( ) {
         $numberOfChannels = $this->getNumberOfChannels();
         $verificationList = "";
         for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $verification = $this->getEMVerificationForChannel($chanCnt);
+            $verification = $this->getConfidenceLambdaEmForChannel($chanCnt);
             $verificationList .= " " . $verification;
         }
         return $this->string2tcllist($verificationList);
     }
 
     /*!
-     \brief       Verification of the emission lambda. One channel.
+     \brief       Confidence level of the emission wavelength. One channel.
      \param       $channel A channel
-     \return      True if the emission lambda is verified.
-     \todo        To be implemented in the GUI
+     \return      Whether verified, reported, estimated or default.
     */
-    private function getEMVerificationForChannel($channel) {
-        if ($this->isFieldVerified($channel) == 1) {
-            $verification = "verified";
-        } else {
-            $verification = "estimated";
-        }
-        return $verification;
+    private function getConfidenceLambdaEmForChannel($channel) {
+        $microSetting = $this->microSetting;
+        $pinholeSize = $microSetting->parameter("EmissionWavelength");
+        $format = $this->HuImageFormat;
+        
+        return $pinholeSize->interpretedHuCoreConfidenceLevel($format,$channel);
     }
 
     /*!
