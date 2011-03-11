@@ -617,10 +617,8 @@ Class JobTranslation {
         $options .= $this->getMicroscopeType();
         $options .= " parState,micr ";
         $options .= $this->getMicroTypeConfidenceList();
-        $options .= " allVerified ";
-        $options .= $this->getAllVerified();
         $options .= " parState,ril ";
-        $options .= $this->getLensRIndexVerification();
+        $options .= $this->getLensRIndexConfidenceList();
         $options .= " ril ";
         $options .= $this->getLensRefractiveIndex();
         $options .= " parState,na ";
@@ -692,9 +690,9 @@ Class JobTranslation {
         $options .= " bgMode ";
         $options .= $this->getBgMode();
         $options .= " bg ";
-        $options .= $this->getBgValues();
+        $options .= $this->getBgValue($channel);
         $options .= " sn ";
-        $options .= $this->getSnrValues();
+        $options .= $this->getSnrValue($channel);
         $options .= " blMode ";
         $options .= $this->getBleachingMode();
         $options .= " pad ";
@@ -878,15 +876,6 @@ Class JobTranslation {
     }
 
     /*!
-     \brief       Verification of all the template parameters.
-     \return      True if all fields are verified by the user.
-     \todo        To be implemented, both here and in the GUI. 
-    */
-    private function getAllVerified( ) {
-        return 1;
-    }
-
-    /*!
      \brief       Gets the refractive indexes of all channels.
      \return      Tcl-list with the refractive indexes.
     */
@@ -912,33 +901,30 @@ Class JobTranslation {
     }
 
     /*!
-     \brief       Verification of the refractive index. All channels.
-     \return      Tcl-list: Trues/Falses if the refractive indexes are verified.
-     \todo        To be implemented in the GUI
+     \brief       Confidence levels of the lens refractive index. All channels.
+     \return      Tcl-list: whether verified, reported, estimated or default.
     */
-    private function getLensRIndexVerification( ) {
+    private function getLensRIndexConfidenceList( ) {
         $numberOfChannels = $this->getNumberOfChannels();
         $verificationList = "";
         for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $verification = $this->getLRIVerificationForChannel($chanCnt);
+            $verification = $this->getConfidenceOfLensRIndexForChannel($chanCnt);
             $verificationList .= " " . $verification;
         }
         return $this->string2tcllist($verificationList);
     }
 
     /*!
-     \brief       Verification of the refractive index. One channel.
+     \brief       Confidence level of the lens refractive index One channel.
      \param       $channel A channel
-     \return      True if the refractive index is verified.
-     \todo        To be implemented in the GUI
+     \return      Whether verified, reported, estimated or default.
     */
-    private function getLRIVerificationForChannel($channel) {
-        if ($this->isFieldVerified($channel) == 1) {
-            $verification = "verified";
-        } else {
-            $verification = "estimated";
-        }
-        return $verification;  
+    private function getConfidenceOfLensRIndexForChannel($channel) {
+        $microSetting = $this->microSetting;
+        $pinholeSize = $microSetting->parameter("ObjectiveType");
+        $format = $this->HuImageFormat;
+        
+        return $pinholeSize->interpretedHuCoreConfidenceLevel($format,$channel);
     }
 
     /*!
@@ -1530,33 +1516,20 @@ Class JobTranslation {
     }
 
     /*!
-     \brief       Gets the background values. All channels.
-     \return      Tcl-list with the background values.
-    */
-    private function getBgValues( ) {
-        $numberOfChannels = $this->getNumberOfChannels();
-        $bgValues = "";
-        for ($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $bgValues .= $this->getBgValueForChannel($chanCnt);
-        }
-        return $this->string2tcllist($bgValues);
-    }
-
-    /*!
      \brief       Gets the background value. One channel.
      \param       $channel A channel
      \return      The background value.
     */
-    private function getBgValueForChannel($channel) {
+    private function getBgValue($channel) {
         $bgMode = $this->getBgMode();
         if ($bgMode == "auto") {
-            $bgValue = " 0.0";
+            $bgValue = 0.0;
         } elseif ($bgMode == "object") {
-            $bgValue = " 0.0";
+            $bgValue = 0.0;
         } elseif ($bgMode == "manual") {
             $deconSetting = $this->deconSetting;
             $bgRate = $deconSetting->parameter("BackgroundOffsetPercent")->value();
-            $bgValue = " $bgRate[$channel]";
+            $bgValue = $bgRate[$channel];
         } else {
             error_log("Unknown background mode for channel $channel.");
         }
@@ -1564,24 +1537,11 @@ Class JobTranslation {
     }
 
     /*!
-     \brief       Gets the SNR values. All channels.
-     \return      Tcl-list with the SNR values.
-    */
-    private function getSnrValues( ) {
-        $numberOfChannels = $this->getNumberOfChannels();
-        $snrValues = "";
-        for ($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $snrValues .= $this->getSnrValueForChannel($chanCnt);
-        }
-        return $this->string2tcllist($snrValues);
-    }
-
-    /*!
      \brief       Gets the SNR value. One channel.
      \param       $channel A channel
      \return      The SNR value.
     */
-    private function getSnrValueForChannel($channel) {
+    private function getSnrValue($channel) {
         $deconSetting = $this->deconSetting;
         $snrRate = $deconSetting->parameter("SignalNoiseRatio")->value();       
         $snrValue = $snrRate[$channel];
