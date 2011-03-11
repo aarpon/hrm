@@ -622,7 +622,7 @@ Class JobTranslation {
         $options .= " ril ";
         $options .= $this->getLensRefractiveIndex();
         $options .= " parState,na ";
-        $options .= $this->getNumericalAVerification();
+        $options .= $this->getNumericalApertureConfidenceList( );
         $options .= " na ";
         $options .= $this->getNumericalAperture();
         $options = $this->string2tcllist($options);
@@ -697,14 +697,21 @@ Class JobTranslation {
         $options .= $this->getBleachingMode();
         $options .= " pad ";
         $options .= $this->getPaddingMode();
-        $options .= " mode ";
-        $options .= $this->getIterationMode();
         $options .= " psfMode ";
         $options .= $this->getPsfMode();
         $options .= " psfPath ";
         $options .= $this->getPsfPath($channel);
         $options .= " timeOut ";
         $options .= $this->getAlgTimeOut();
+
+        if ($this->getAlgorithm() == "cmle") {
+            $options .= " mode ";
+            $options .= $this->getIterationMode();
+        } else {
+            $options .= " itMode ";
+            $options .= "auto";
+        }
+
         return $this->string2tcllist($options);
     }
 
@@ -915,7 +922,7 @@ Class JobTranslation {
     }
 
     /*!
-     \brief       Confidence level of the lens refractive index One channel.
+     \brief       Confidence level of the lens refractive index. One channel.
      \param       $channel A channel
      \return      Whether verified, reported, estimated or default.
     */
@@ -949,37 +956,40 @@ Class JobTranslation {
     private function getNumApertureForChannel($channel) {
         $microSetting = $this->microSetting;
         $numAper = $microSetting->parameter('NumericalAperture')->value();
+
+        if ($numAper == "") {
+            $numAper = $this->string2tcllist("not available");
+        }
+
         return $numAper;
     }
 
     /*!
-     \brief       Verification of the numerical apertures. All channels.
-     \return      Tcl-list: Trues/Falses if the numerical apertures are verified.
-     \todo        To be implemented in the GUI
+     \brief       Confidence levels of the numerical aperture index. All channels.
+     \return      Tcl-list: whether verified, reported, estimated or default.
     */
-    private function getNumericalAVerification( ) {
+    private function getNumericalApertureConfidenceList( ) {
+
         $numberOfChannels = $this->getNumberOfChannels();
         $verificationList = "";
         for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $verification = $this->getNAVerificationForChannel($chanCnt);
+            $verification = $this->getConfidenceOfNumAperForChannel($chanCnt);
             $verificationList .= " " . $verification;
         }
         return $this->string2tcllist($verificationList);
     }
 
     /*!
-     \brief       Verification of the numerical aperture. One channel.
+     \brief       Confidence level of the numerical aperture. One channel.
      \param       $channel A channel
-     \return      True if the numerical aperture is verified.
-     \todo        To be implemented in the GUI
+     \return      Whether verified, reported, estimated or default.
     */
-    private function getNAVerificationForChannel($channel) {
-        if ($this->isFieldVerified($channel) == 1) {
-            $verification = "verified";
-        } else {
-            $verification = "estimated";
-        }
-        return $verification;
+    private function getConfidenceOfNumAperForChannel($channel) {
+        $microSetting = $this->microSetting;
+        $pinholeSize = $microSetting->parameter("NumericalAperture");
+        $format = $this->HuImageFormat;
+        
+        return $pinholeSize->interpretedHuCoreConfidenceLevel($format,$channel);
     }
 
     /*!
