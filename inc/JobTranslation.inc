@@ -98,6 +98,14 @@ Class JobTranslation {
     private $destImage;
 
     /*!
+      \var    $HuImageFormat
+      \brief  The source image format, as coded in the HuCore confidence
+      \brief  level table, whether leica, r3d, etc. Don't mistake for the file
+      \brief  extension they are some times different, as in the leica case.
+    */
+    private $HuImageFormat;
+
+    /*!
       \var    $jobDescription
       \brief  JobDescription object: unformatted microscopic & restoration data
     */
@@ -148,6 +156,7 @@ Class JobTranslation {
         $this->setTaskIDArray();
         $this->setSrcImage();
         $this->setDestImage();
+        $this->setHuImageFormat();
     }
 
     /*!
@@ -567,7 +576,7 @@ Class JobTranslation {
         $options .= " pr ";
         $options .= $this->getPinholeRadius();
         $options .= " parState,pr ";
-        $options .= $this->getPRVerifyList();
+        $options .= $this->getPinholeRadiusConfidenceList();
         $options .= " parState,imagingDir ";
         $options .= $this->getImagingDirVerification();
         $options .= " imagingDir ";
@@ -803,35 +812,30 @@ Class JobTranslation {
     }
 
     /*!
-     \brief       Verification of the pinhole radii. All channels.
-     \return      Tcl-list: Trues/Falses if the pinhole radii are verified.
-     \todo        To be implemented in the GUI
+     \brief       Confidence levels of the pinhole radii. All channels.
+     \return      Tcl-list: wheter verified, reported, estimated or default.
     */
-    private function getPRVerifyList( ) {
+    private function getPinholeRadiusConfidenceList( ) {
         $numberOfChannels = $this->getNumberOfChannels();
         $prList = "";
         for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $verification = $this->getPRVerificationForChannel($chanCnt);
-            $prList .= "  " . $verification;
+            $confidence = $this->getConfidenceOfPinholeRadiusForChannel($chanCnt);
+            $prList .= "  " . $confidence;
         }
         return $this->string2tcllist($prList);
     }
 
     /*!
-     \brief       Verification of the pinhole radius. One channel.
+     \brief       Confidence level of the pinhole radius. One channel.
      \param       $channel A channel
-     \return      True if the pinhole radius is verified.
-     \todo        To be implemented in the GUI
+     \return      Whether verified, reported, estimated or default.
     */
-    private function getPRVerificationForChannel($channel) {
-        $pinholeRadius = $this->getPinRadiusForChannel($channel);
-
-        if($this->isFieldVerified($pinholeRadius)) {
-            $verification = "verified";
-        } else {
-            $verification = "estimated";
-        }
-        return $verification;
+    private function getConfidenceOfPinholeRadiusForChannel($channel) {
+        $microSetting = $this->microSetting;
+        $pinholeSize = $microSetting->parameter("PinholeSize");
+        $format = $this->HuImageFormat;
+        
+        return $pinholeSize->interpretedHuCoreConfidenceLevel($format,$channel);
     }
 
     /*!
@@ -2035,6 +2039,67 @@ Class JobTranslation {
 
     /* ------------------------------ Utilities -------------------------------- */
 
+    /*
+     \brief       Gets the source image format as coded in the HuCore confidence
+     \brief       table. The file types of the source image are coded differently
+     \brief       in HRM and the HuCore confidence level table. For example,
+     \brief       HRM codes tiff-leica for what the HuCore confidence table codes
+     \brief       leica. This function does the mapping.
+     \return      The src image format as coded in the confidence table of HuCore.
+    */
+    private function getHuImageFormat( ) {
+        $microSetting = $this->microSetting;
+        $format = $microSetting->parameter("ImageFileFormat")->value();
+
+        switch ( $format ) {
+        case 'ics':
+            break;
+        case 'ics2':
+            $format = "ics";
+            break;
+        case 'hdf5':
+            break;
+        case 'dv':
+            $format = "r3d";
+            break;
+        case 'ims':
+            break;
+        case 'lif':
+            break;
+        case 'lsm':
+            break;
+        case 'lsm-single':
+            $format = "lsm";
+            break;
+        case 'ome-xml':
+            $format = "ome";
+            break;
+        case 'pic':
+            break;
+        case 'stk':
+            break;
+        case 'tiff':
+            break;
+        case 'tiff-leica':
+            $format = "leica";
+            break;
+        case 'tiff-series':
+            $format = "leica";
+            break;
+        case 'tiff-single':
+            $format = "tiff";
+            break;
+        case 'zvi':
+            break;
+        default:
+            error_log("Unknown image format: $format");
+            $format = "";
+            break;
+        }
+
+        return $format;
+    }
+
     /*!
      \brief       Whether or not an image has lif extension. 
      \brief       Not very elegant, but it is here convenient to check whether
@@ -2199,6 +2264,15 @@ Class JobTranslation {
         $fileType = $this->getOutFileExtension();
         $this->destImage = $this->destImage.".".$fileType;
         $this->destImage = str_replace(" ","_",$this->destImage);
+    }
+
+    /*!
+     \brief       Sets the image format as coded in the HuCore confidence level
+     \brief       table, whether leica, r3d, etc.
+     \return      An image format.
+    */
+    private function setHuImageFormat( ) {
+        $this->HuImageFormat = $this->getHuImageFormat();
     }
 
     /*!
