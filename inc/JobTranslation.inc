@@ -957,10 +957,6 @@ Class JobTranslation {
         $microSetting = $this->microSetting;
         $numAper = $microSetting->parameter('NumericalAperture')->value();
 
-        if ($numAper == "") {
-            $numAper = $this->string2tcllist("not available");
-        }
-
         return $numAper;
     }
 
