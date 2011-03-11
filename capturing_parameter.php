@@ -84,12 +84,17 @@ if ($PSF == 'measured' ) {
   $_SESSION['setting']->parameter( 'AberrationCorrectionNecessary' )->setValue( '0' );
   $_SESSION['setting']->parameter( 'PerformAberrationCorrection' )->setValue( '0' );
 } else {
-  // Get the refractive indices
+  // Get the refractive indices: if they are not set, the floatval conversion will
+  // change them into 0s
   $sampleRI    = floatval( $_SESSION['setting']->parameter( 'SampleMedium' )->translatedValue( ) );
   $objectiveRI = floatval( $_SESSION['setting']->parameter( 'ObjectiveType' )->translatedValue( ) );              
 
   // Calculate the deviation
-  $deviation = abs( $sampleRI - $objectiveRI ) / $objectiveRI;
+  if ( ( $sampleRI == 0 ) ||  ( $objectiveRI == 0 ) ) {
+	$deviation = 0;
+  } else {
+	$deviation = abs( $sampleRI - $objectiveRI ) / $objectiveRI;
+  }
               
   // Do we need to go to the aberration correction page? We 
   if ( $deviation < 0.01 ) {
