@@ -612,7 +612,7 @@ Class JobTranslation {
         $options .= " exBeamFill ";
         $options .= $this->getExBeamFill();
         $options .= " parState,exBeamFill ";
-        $options .= $this->getExBeamVerification();
+        $options .= $this->getExBeamConfidenceList();
         $options .= " ri ";
         $options .= $this->getMediumRefractiveIndex();
         $options .= " parState,ri ";
@@ -1224,33 +1224,26 @@ Class JobTranslation {
     }
 
     /*!
-     \brief       Gets the excitation beam factor verification. All channels.
-     \return      Tcl-list: Trues/Falses if the EB factors are verified.
-     \todo        To be implemented in the GUI
+     \brief       Confidence levels of the excitacion beam factor. All channels.
+     \return      Tcl-list: whether verified, reported, estimated or default.
     */
-    private function getExBeamVerification( ) {
+    private function getExBeamConfidencelist( ) {
         $numberOfChannels = $this->getNumberOfChannels();
         $verificationList = "";
         for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $verification = $this->getEBVerificationForChannel($chanCnt);
+            $verification = $this->getConfidenceOfExBeamFactorForChannel($chanCnt);
             $verificationList .= " " . $verification;
         }
         return $this->string2tcllist($verificationList);
     }
 
     /*!
-     \brief       Verification of the EB factor. One channel.
+     \brief       Confidence level of the excitation beam factor. One channel.
      \param       $channel A channel
-     \return      True if the Excitation beam factor is verified.
-     \todo        To be implemented in the GUI
+     \return      Whether verified, reported, estimated or default.
     */
-    private function getEBVerificationForChannel($channel) {
-        if ($this->isFieldVerified($channel) == 1) {
-            $verification = "verified";
-        } else {
-            $verification = "estimated";
-        }
-        return $verification;
+    private function getConfidenceOfExBeamFactorForChannel($channel) {
+        return "default";
     }
 
     /*!
