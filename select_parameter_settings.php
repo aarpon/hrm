@@ -186,6 +186,7 @@ if (!$_SESSION['user']->isAdmin()) {
         
             <fieldset>
                 <legend>Template image parameters</legend>
+                <p class="message_small">These are the parameter sets prepared by your administrator.</p>
                 <div id="templates">
 <?php
 
@@ -233,8 +234,10 @@ if (!$_SESSION['user']->isAdmin()) {
             <?php
             if ($_SESSION['user']->isAdmin()) {
               echo "<legend>Template image parameters</legend>";
+              echo "<p class=\"message_small\">Create template parameter sets visible to all users.</p>";
             } else {
               echo "<legend>Your image parameters</legend>";
+              echo "<p class=\"message_small\">These are your (private) parameter sets.</p>";
             }
             ?>
         
@@ -299,7 +302,7 @@ if (!$_SESSION['user']->isAdmin()) {
 ?>
                 <input type="hidden" name="annihilate" />
                 <input name="delete" type="submit" value="" class="icon delete"
-                      onclick="warn(this.form, 'Do you really want to delete this parameter set?')"
+                      onclick="warn(this.form, 'Do you really want to delete this parameter set?', this.form['setting'].selectedIndex )"
                       onmouseover="TagToTip('ttSpanDelete' )"
                       onmouseout="UnTip()" />
                 <label>New/clone setting name: <input name="new_setting" type="text" class="textfield" /></label>

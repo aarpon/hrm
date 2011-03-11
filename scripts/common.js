@@ -12,7 +12,18 @@ function clean() {
     if (popup != null) popup.close();
 }
 
-function warn(form, msg) {
+function warn(form, msg, value) {
+    // Value is an optional parameter. It is the index of a selected item in
+    // the form element related to the 'delete' icon. If it is not defined,
+    // the confirm dialog will show no matter what. If it is, it can be either
+    // -1 (and then the function won't do anything) or anything else, and then
+    // the confirm dialog will show up.
+    if (value === undefined) {
+      value = 0;
+    }
+    if (value == -1) {
+      return;
+    }
     if (confirm(msg)) {
         form.elements["annihilate"].value = "yes";
         form.submit();
