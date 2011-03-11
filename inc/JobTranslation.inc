@@ -568,11 +568,11 @@ Class JobTranslation {
         $options .= " iFacePrim ";
         $options .= $this->getiFacePrim();
         $options .= " prState,iFacePrim ";
-        $options .= $this->getiFacePrimVerification();
+        $options .= $this->getiFacePrimConfidence();
         $options .= " iFaceScnd ";
         $options .= $this->getiFaceScnd();
         $options .= " prState,iFaceScnd ";
-        $options .= $this->getiFaceScndVerification();
+        $options .= $this->getiFaceScndConfidence();
         $options .= " pr ";
         $options .= $this->getPinholeRadius();
         $options .= " parState,pr ";
@@ -616,7 +616,7 @@ Class JobTranslation {
         $options .= " micr ";
         $options .= $this->getMicroscopeType();
         $options .= " parState,micr ";
-        $options .= $this->getMicroTypeVerification();
+        $options .= $this->getMicroTypeConfidenceList();
         $options .= " allVerified ";
         $options .= $this->getAllVerified();
         $options .= " parState,ril ";
@@ -741,23 +741,16 @@ Class JobTranslation {
      \todo        To be implemented in the GUI
     */
     private function getiFacePrim( ) {
-        $iFacePrim = 0.0;
-        return $iFacePrim;
+        return $this->string2tcllist("not available");
     }
 
     /*!
-     \brief       Gets whether the position of the coverslip is verified
-     \return      True if the position of the coverslip is verified
+     \brief       Confidence level of iFacePrim.
+     \return      Default
      \todo        To be implemented in the GUI
     */
-    private function getiFacePrimVerification( ) {
-        $iFacePrim = $this->getiFacePrim();
-        if ($this->isFieldVerified($iFacePrim) == 1) {
-            $verification = "verified";
-        } else {
-            $verification = "estimated";
-        }
-        return $verification;
+    private function getiFacePrimConfidence( ) {
+        return "default";
     }
 
     /*!
@@ -766,23 +759,16 @@ Class JobTranslation {
      \todo        To be implemented in the GUI
     */
     private function getiFaceScnd( ) {
-        $iFaceScnd = 1000000.0;
-        return $iFaceScnd;
+        return $this->string2tcllist("not available");
     }
 
     /*!
-     \brief       Gets whether the position of the prep glas is verified
-     \return      True if the position of the preparation glass is verified
+     \brief       Confidence level of iFaceScnd.
+     \return      Default
      \todo        To be implemented in the GUI
     */
-    private function getiFaceScndVerification( ) {
-        $iFaceScnd = $this->getiFaceScnd();
-        if ($this->isFieldVerified($iFaceScnd) == 1) {
-            $verification = "verified";
-        } else {
-            $verification = "estimated";
-        }
-        return $verification;
+    private function getiFaceScndConfidence( ) {
+        return "default";
     }
 
     /*!
@@ -813,7 +799,7 @@ Class JobTranslation {
 
     /*!
      \brief       Confidence levels of the pinhole radii. All channels.
-     \return      Tcl-list: wheter verified, reported, estimated or default.
+     \return      Tcl-list: whether verified, reported, estimated or default.
     */
     private function getPinholeRadiusConfidenceList( ) {
         $numberOfChannels = $this->getNumberOfChannels();
@@ -865,33 +851,30 @@ Class JobTranslation {
     }
 
     /*!
-     \brief       Verification of the microscope type. All channels.
-     \return      Tcl-list: Trues/Falses if the microscope types are verified.
-     \todo        To be implemented in the GUI
+     \brief       Confidence levels of the microscope type. All channels.
+     \return      Tcl-list: whether verified, reported, estimated or default.
     */
-    private function getMicroTypeVerification( ) {
+    private function getMicroTypeConfidenceList( ) {
         $numberOfChannels = $this->getNumberOfChannels();
         $verificationList = "";
         for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $verification = $this->getMTVerificationForChannel($chanCnt);
+            $verification = $this->getConfidenceOfMicroTypeForChannel($chanCnt);
             $verificationList .= " " . $verification;
         }
         return $this->string2tcllist($verificationList);
     }
 
     /*!
-     \brief       Verification of the microscope type. One channel.
+     \brief       Confidence level of the microscope type. One channel.
      \param       $channel A channel
-     \return      True if the microscope type is verified.
-     \todo        To be implemented in the GUI
+     \return       Whether verified, reported, estimated or default.
     */
-    private function getMTVerificationForChannel($channel) {
-        if ($this->isFieldVerified($channel) == 1) {
-            $verification = "verified";
-        } else {
-            $verification = "estimated";
-        }
-        return $verification;
+    private function getConfidenceOfMicroTypeForChannel($channel) {
+        $microSetting = $this->microSetting;
+        $pinholeSize = $microSetting->parameter("MicroscopeType");
+        $format = $this->HuImageFormat;
+        
+        return $pinholeSize->interpretedHuCoreConfidenceLevel($format,$channel);
     }
 
     /*!
