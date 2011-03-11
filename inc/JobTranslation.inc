@@ -600,7 +600,7 @@ Class JobTranslation {
         $options .= " pcnt ";
         $options .= $this->getExcitationPcnt();
         $options .= " parState,pcnt ";
-        $options .= $this->getExcitationPcntVerification();
+        $options .= $this->getExcitationPcntConfidenceList();
         $options .= " ex ";
         $options .= $this->getExcitationLambda();
         $options .= " parState,ex ";
@@ -1125,33 +1125,26 @@ Class JobTranslation {
     }
 
     /*!
-     \brief       Verification of the excitation photon count. All channels.
-     \return      Tcl-list: Trues/Falses if the EP counts are verified.
-     \todo        To be implemented in the GUI
+     \brief       Confidence levels of the excitacion photon cnt. All channels.
+     \return      Tcl-list: whether verified, reported, estimated or default.
     */
-    private function getExcitationPcntVerification( ) {
+    private function getExcitationPcntConfidenceList( ) {
         $numberOfChannels = $this->getNumberOfChannels();
         $verificationList = "";
         for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $verification = $this->getECntVerificationForChannel($chanCnt);
+            $verification = $this->getConfidenceOfExcPhotonCntForChannel($chanCnt);
             $verificationList .= " " . $verification;
         }
         return $this->string2tcllist($verificationList);
     }
 
     /*!
-     \brief       Verification of the excitation photon count. One channel.
+     \brief       Confidence level of the excitation photon count. One channel.
      \param       $channel A channel
-     \return      True if the Excitation Photon count is verified.
-     \todo        To be implemented in the GUI
+     \return      Whether verified, reported, estimated or default.
     */
-    private function getECntVerificationForChannel($channel) {
-        if ($this->isFieldVerified($channel) == 1) {
-            $verification = "verified";
-        } else {
-            $verification = "estimated";
-        }
-        return $verification;
+    private function getConfidenceOfExcPhotonCntForChannel($channel) {
+        return "default";
     }
 
     /*!
