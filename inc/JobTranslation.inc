@@ -596,7 +596,7 @@ Class JobTranslation {
         $options .= " objQuality ";
         $options .= $this->getObjQuality();
         $options .= " parState,objQuality ";
-        $options .= $this->getObjQualityVerification();
+        $options .= $this->getObjQualityConfidenceList();
         $options .= " pcnt ";
         $options .= $this->getExcitationPcnt();
         $options .= " parState,pcnt ";
@@ -1049,32 +1049,6 @@ Class JobTranslation {
     }
 
     /*!
-     \brief       Gets the sampling sizes. All channels.
-     \return      Tcl-list with the sampling sizes.
-    */
-    private function getSamplingSizes( ) {
-        $sampling = $this->microSetting->sampleSizeX();
-        $sampling .= " " . $this->microSetting->sampleSizeY();
-        $sampling .= " " . $this->microSetting->sampleSizeZ();
-        $sampling .= " " . $this->microSetting->sampleSizeT();
-        return $this->string2tcllist($sampling);
-    }
-
-    /*!
-     \brief       Verification of the sampling sizes. All channels.
-     \return      Tcl-list: Trues/Falses if the sampling sizes are verified.
-     \todo        To be implemented in the GUI
-    */
-    private function getSamplingVerification( ) {
-        if ($this->isFieldVerified(0) == 1) {
-            $verification = "verified";
-        } else {
-            $verification = "estimated";
-        }
-        return $verification;
-    }
-
-    /*!
      \brief       Gets the objective qualities. All channels.
      \return      Tcl-list with the objective qualities.
     */
@@ -1100,33 +1074,26 @@ Class JobTranslation {
     }
 
     /*!
-     \brief       Verification of the objective qualities. All channels.
-     \return      Tcl-list: Trues/Falses if the objective qualities are verified.
-     \todo        To be implemented in the GUI
+     \brief       Confidence levels of the object quality. All channels.
+     \return      Tcl-list: whether verified, reported, estimated or default.
     */
-    private function getObjQualityVerification( ) {
+    private function getObjQualityConfidenceList( ) {
         $numberOfChannels = $this->getNumberOfChannels();
         $verificationList = "";
         for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $verification = $this->getOQVerificationForChannel($chanCnt);
+            $verification = $this->getConfidenceOfObjQualityForChannel($chanCnt);
             $verificationList .= " " . $verification;
         }
         return $this->string2tcllist($verificationList);
     }
 
     /*!
-     \brief       Verification of the Objective Quality. One channel.
+     \brief       Confidence level of the object quality. One channel.
      \param       $channel A channel
-     \return      True if the Objective Quality is verified.
-     \todo        To be implemented in the GUI
+     \return      Whether verified, reported, estimated or default.
     */
-    private function getOQVerificationForChannel($channel) {
-        if ($this->isFieldVerified($channel) == 1) {
-            $verification = "verified";
-        } else {
-            $verification = "estimated";
-        }
-        return $verification;
+    private function getConfidenceOfObjQualityForChannel($channel) {
+        return "default";
     }
 
     /*!
@@ -1462,6 +1429,32 @@ Class JobTranslation {
     */
     private function getMRIVerificationForChannel($channel) {
         if ($this->isFieldVerified($channel) == 1) {
+            $verification = "verified";
+        } else {
+            $verification = "estimated";
+        }
+        return $verification;
+    }
+
+    /*!
+     \brief       Gets the sampling sizes. All channels.
+     \return      Tcl-list with the sampling sizes.
+    */
+    private function getSamplingSizes( ) {
+        $sampling = $this->microSetting->sampleSizeX();
+        $sampling .= " " . $this->microSetting->sampleSizeY();
+        $sampling .= " " . $this->microSetting->sampleSizeZ();
+        $sampling .= " " . $this->microSetting->sampleSizeT();
+        return $this->string2tcllist($sampling);
+    }
+
+    /*!
+     \brief       Verification of the sampling sizes. All channels.
+     \return      Tcl-list: Trues/Falses if the sampling sizes are verified.
+     \todo        To be implemented in the GUI
+    */
+    private function getSamplingVerification( ) {
+        if ($this->isFieldVerified(0) == 1) {
             $verification = "verified";
         } else {
             $verification = "estimated";
