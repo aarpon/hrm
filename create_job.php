@@ -88,9 +88,9 @@ include("header.inc.php");
 $parameter = $_SESSION['task_setting']->parameter("OutputFileFormat");
 $value = $parameter->value();
 
-// Make sure that if we had TIFF-16 bit as output file format and a multichannel
-// dataset, we reset the value to ics
-if ( $value == 'TIFF 16-bit' ) {
+// Make sure that if we had TIFF (8 or 16 bit) as output file format and a
+// multichannel dataset, we reset the value to ics
+if ( ( $value == 'TIFF 18-bit' ) || ( $value == 'TIFF 16-bit' ) ) {
   $nChannelsParameter = $_SESSION['setting']->parameter("NumberOfChannels");
   $numberOfChannels = $nChannelsParameter->value( );
   if ( $numberOfChannels > 1 ) {
@@ -105,18 +105,12 @@ if ( $value == 'TIFF 16-bit' ) {
 
 $possibleValues = $parameter->possibleValues(); // extract possible values for OutputFileFormat
 
-// If the dataset is multi-channel, we remove the TIFF-16 bit option from the list
+// If the dataset is multi-channel, we remove the TIFF-8 and TIFF-16 bit options from the list
 $nChannelsParameter = $_SESSION['setting']->parameter("NumberOfChannels");
 $numberOfChannels = $nChannelsParameter->value( );
 if ( $numberOfChannels > 1 ) {
   $possibleValues = array_diff($possibleValues, array( 'TIFF 16-bit' ) );
-  $possibleValues = array_values( $possibleValues );
-}
-
-// If the version if hucore is < 3.5.0, we remove SVI HDF5
-$version = System::huCoreVersion();
-if ( $version < 3050000 ) {
-  $possibleValues = array_diff($possibleValues, array( 'SVI HDF5' ) );
+  $possibleValues = array_diff($possibleValues, array( 'TIFF 8-bit' ) );
   $possibleValues = array_values( $possibleValues );
 }
 
