@@ -565,6 +565,14 @@ Class JobTranslation {
 
         $options = "completeChanCnt ";
         $options .= $this->getNumberOfChannels();
+        $options .= " micr ";
+        $options .= $this->getMicroscopeType();
+        $options .= " parState,micr ";
+        $options .= $this->getMicroTypeConfidenceList();
+        $options .= " s ";
+        $options .= $this->getSamplingSizes();
+        $options .= " parState,s ";
+        $options .= $this->getSamplingVerification();
         $options .= " iFacePrim ";
         $options .= $this->getiFacePrim();
         $options .= " prState,iFacePrim ";
@@ -577,54 +585,46 @@ Class JobTranslation {
         $options .= $this->getPinholeRadius();
         $options .= " parState,pr ";
         $options .= $this->getPinholeRadiusConfidenceList();
-        $options .= " parState,imagingDir ";
-        $options .= $this->getImagingDirVerification();
         $options .= " imagingDir ";
         $options .= $this->getImagingDirection();
-        $options .= " parState,ps ";
-        $options .= $this->getPinSpacingVerification();
+        $options .= " parState,imagingDir ";
+        $options .= $this->getImagingDirVerification();
         $options .= " ps ";
         $options .= $this->getPinholeSpacing();
-        $options .= " s ";
-        $options .= $this->getSamplingSizes();
-        $options .= " parState,s ";
-        $options .= $this->getSamplingVerification();
-        $options .= " parState,objQuality ";
-        $options .= $this->getObjQualityVerification();
+        $options .= " parState,ps ";
+        $options .= $this->getPinSpacingConfidenceList();
         $options .= " objQuality ";
         $options .= $this->getObjQuality();
-        $options .= " parState,pcnt ";
-        $options .= $this->getExcitationPcntVerification();
+        $options .= " parState,objQuality ";
+        $options .= $this->getObjQualityVerification();
         $options .= " pcnt ";
         $options .= $this->getExcitationPcnt();
+        $options .= " parState,pcnt ";
+        $options .= $this->getExcitationPcntVerification();
         $options .= " ex ";
         $options .= $this->getExcitationLambda();
         $options .= " parState,ex ";
         $options .= $this->getExcitationLVerification();
-        $options .= " parState,exBeamFill ";
-        $options .= $this->getExBeamVerification();
-        $options .= " exBeamFill ";
-        $options .= $this->getExBeamFill();
-        $options .= " parState,em ";
-        $options .= $this->getEmissionLVerification();
         $options .= " em ";
         $options .= $this->getEmissionLambda();
-        $options .= " parState,ri ";
-        $options .= $this->getMediumRIndexVerification();
+        $options .= " parState,em ";
+        $options .= $this->getEmissionLVerification();
+        $options .= " exBeamFill ";
+        $options .= $this->getExBeamFill();
+        $options .= " parState,exBeamFill ";
+        $options .= $this->getExBeamVerification();
         $options .= " ri ";
         $options .= $this->getMediumRefractiveIndex();
-        $options .= " micr ";
-        $options .= $this->getMicroscopeType();
-        $options .= " parState,micr ";
-        $options .= $this->getMicroTypeConfidenceList();
-        $options .= " parState,ril ";
-        $options .= $this->getLensRIndexConfidenceList();
+        $options .= " parState,ri ";
+        $options .= $this->getMediumRIndexVerification();
         $options .= " ril ";
         $options .= $this->getLensRefractiveIndex();
-        $options .= " parState,na ";
-        $options .= $this->getNumericalApertureConfidenceList( );
+        $options .= " parState,ril ";
+        $options .= $this->getLensRIndexConfidenceList();
         $options .= " na ";
         $options .= $this->getNumericalAperture();
+        $options .= " parState,na ";
+        $options .= $this->getNumericalApertureConfidenceList();
         $options = $this->string2tcllist($options);
         $setp = " setp " . $options;
 
@@ -1022,34 +1022,34 @@ Class JobTranslation {
     }
 
     /*!
-     \brief       Verification of the pinhole spacing. All channels.
-     \return      Tcl-list: Trues/Falses if the pinhole spacing is verified.
-     \todo        To be implemented in the GUI
+     \brief       Confidence levels of the pinhole spacing. All channels.
+     \return      Tcl-list: whether verified, reported, estimated or default.
     */
-    private function getPinSpacingVerification( ) {
+    private function getPinSpacingConfidenceList( ) {
         $numberOfChannels = $this->getNumberOfChannels();
         $verificationList = "";
         for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $verification = $this->getPSVerificationForChannel($chanCnt);
+            $verification = $this->getConfidenceOfPinSpacingForChannel($chanCnt);
             $verificationList .= " " . $verification;
         }
         return $this->string2tcllist($verificationList);
     }
 
-
     /*!
-     \brief       Verification of the pinhole spacing. One channel.
+     \brief       Confidence level of the pinhole spacing. One channel.
      \param       $channel A channel
-     \return      True if the pinhole spacing is verified.
-     \todo        To be implemented in the GUI
+     \return      Whether verified, reported, estimated or default.
     */
-    private function getPSVerificationForChannel($channel) {
-        if ($this->isFieldVerified($channel) == 1) {
-            $verification = "verified";
-        } else {
-            $verification = "estimated";
+    private function getConfidenceOfPinSpacingForChannel($channel) {
+
+        if ($this->getMicroTypeForChannel($channel) != "nipkow") {
+            return "default";
         }
-        return $verification;
+        $microSetting = $this->microSetting;
+        $pinholeSize = $microSetting->parameter("PinholeSpacing");
+        $format = $this->HuImageFormat;
+        
+        return $pinholeSize->interpretedHuCoreConfidenceLevel($format,$channel);
     }
 
     /*!
