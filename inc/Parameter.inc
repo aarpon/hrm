@@ -76,6 +76,8 @@ abstract class Parameter {
 
 	/*!
 		\brief	Returns the interpreted HuCore confidence level for the Parameter
+                \param  $fileFormat The file extension of the raw image
+                \param  $channel    A channel
 		
 		This is to be used to create the template. The returned confidence
 		level is a function of the original confidence level and the actions
@@ -86,16 +88,21 @@ abstract class Parameter {
 		
 		\return	Interpreted confidence level for the Parameter (in HuCore notation)
 	*/
-	public function interpretedHuCoreConfidenceLevel( ) {
-		
+	public function interpretedHuCoreConfidenceLevel( $fileFormat,$channel ) {
+
 		// If the user specified a value, we consider it 'verified' no matter
 		// what the original confidence level was
-		if ( $this->value() != NULL ) {
+                $value = $this->value();
+		if ( $value[$channel] != NULL ) {
 			return 'verified';
 		}
-		
+
+                $db = new DatabaseConnection();
+                $cl = $db->getParameterConfidenceLevel($fileFormat, $this->name);
+                $this->setConfidenceLevel($cl);
+
 		// If the user did not enter a value, we have a couple of cases
-		
+
 		// If the Parameter is 'Trusted' we return 'reported' 
 		if ( $this->confidenceLevel == "Trusted" ) {
 			return 'reported';
@@ -143,17 +150,6 @@ abstract class Parameter {
 	*/
 	public function reset( ) {
 		$this->value = null;
-	}
-
-	/*!
-		\brief	Checks whether the value is not set
-		\return	true if the value is not set (i.e. null)
-	*/
-	public function notSet( ) {
-		if ( is_array( $this->value ) ) {
-			return( $this->value[ 0 ] == null );
-		}
-		return( $this->value == null );
 	}
 
 	/*!
@@ -528,11 +524,7 @@ abstract class ChoiceParameter extends Parameter {
 		$name = $this->decomposeCamelCaseString( $this->name );
 		$name = $name . ':';
 		$result = str_pad($name, self::PADSIZE, ' ', STR_PAD_RIGHT);
-		if ( $this->notSet() ) {
-			$result = $result . "not set" . "\n";
-		} else {
-			$result = $result . $this->value . "\n";
-		}
+		$result = $result . $this->value . "\n";
 		return $result;
 	}
 	
@@ -847,11 +839,7 @@ class NumericalParameter extends Parameter {
 		$name = $this->decomposeCamelCaseString( $this->name );
 		$name = $name . ':';
 		$result = str_pad($name, self::PADSIZE, ' ', STR_PAD_RIGHT);
-		if ( $this->notSet() ) {
-			$result = $result . "not set" . "\n";
-		} else {
-			$result = $result . $this->value . "\n";
-		}
+		$result = $result . $this->value . "\n";
 		return $result;
 	}
 
@@ -980,11 +968,7 @@ class NumericalArrayParameter extends NumericalParameter {
 		$name = $this->decomposeCamelCaseString( $this->name );
 		$name = $name . ':';
 		$result = str_pad($name, self::PADSIZE, ' ', STR_PAD_RIGHT);
-		if ( $this->notSet() ) {
-			$result = $result . "not set" . "\n";
-		} else {
-			$result = $result . $value . "\n";
-		}
+		$result = $result . $value . "\n";
 		return $result;
 	}
 
@@ -1280,11 +1264,7 @@ class ImageFileFormat extends SingleOrMultiChannelParameter {
 		$name = $this->decomposeCamelCaseString( $this->name );
 		$name = $name . ':';
 		$result = str_pad($name, self::PADSIZE, ' ', STR_PAD_RIGHT);
-		if ( $this->notSet() ) {
-			$result = $result . "not set" . "\n";
-		} else {
-			$result = $result . $value . "\n";
-		}
+		$result = $result . $value . "\n";
 		return $result;
 	}
 	
@@ -1352,11 +1332,7 @@ class ImageGeometry extends SingleOrMultiChannelParameter {
 		$name = $this->decomposeCamelCaseString( $this->name );
 		$name = $name . ':';
 		$result = str_pad($name, self::PADSIZE, ' ', STR_PAD_RIGHT);
-		if ( $this->notSet() ) {
-			$result = $result . "not set" . "\n";
-		} else {
-			$result = $result . $this->value . "\n";
-		}
+		$result = $result . $this->value . "\n";
 		return $result;
 	}
 }
@@ -1791,14 +1767,12 @@ class CCDCaptorSizeX extends NumericalParameter {
 		\return	string representation of the Parameter
 	*/
 	public function displayString() {
+		$value = $this->value();
 		$result = '';
 		$name = ' pixel size:';
 		$result = $result . str_pad($name, self::PADSIZE, ' ', STR_PAD_RIGHT);
-		if ( $this->notSet() ) {
-			$result = $result . "not set" . "\n";
-		} else {
-			$result = $result . $this->value . "\n";
-		}
+		$result = $result . $value;
+		$result = $result . "\n";
 		return $result;
 	}
 }
