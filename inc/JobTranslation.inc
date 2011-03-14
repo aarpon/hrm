@@ -746,7 +746,7 @@ Class JobTranslation {
      \todo        To be implemented in the GUI
     */
     private function getiFacePrim( ) {
-        return $this->string2tcllist("not available");
+        return $this->string2tcllist("");
     }
 
     /*!
@@ -764,7 +764,7 @@ Class JobTranslation {
      \todo        To be implemented in the GUI
     */
     private function getiFaceScnd( ) {
-        return $this->string2tcllist("not available");
+        return $this->string2tcllist("");
     }
 
     /*!
@@ -1275,15 +1275,25 @@ Class JobTranslation {
         $sampling .= " " . $this->microSetting->sampleSizeY();
         $sampling .= " " . $this->microSetting->sampleSizeZ();
         $sampling .= " " . $this->microSetting->sampleSizeT();
+
+        // Make sure the sampling sizes are not zeros.
+        if ($this->microSetting->sampleSizeX() == 0
+            || $this->microSetting->sampleSizeX() == 0) {
+            $sampling = "";
+        }        
         return $this->string2tcllist($sampling);
     }
 
     /*!
-     \brief       Confidence levels of the sampling sizes. All channels.
+     \brief       Confidence levels of the sampling sizes.
      \return      Tcl-list: whether verified, reported, estimated or default.
     */
     private function getSamplingConfidenceList( ) {
-        return "{reported reported reported reported}";
+        $cList = $this->getParameterConfidence("CCDCaptorSizeX",0);
+        $cList .= " " . $this->getParameterConfidence("CCDCaptorSizeX",0);
+        $cList .= " " . $this->getParameterConfidence("ZStepSize",0);
+        $cList .= " " . $this->getParameterConfidence("TimeInterval",0);
+        return $this->string2tcllist($cList);
     }
 
     /* -------------------------- Algorithm tasks ------------------------------ */
