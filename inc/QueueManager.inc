@@ -623,7 +623,30 @@ class QueueManager {
                     "successfully treated by Huygens.\n\n";
  	  $text = $text . "You will find the resulting image ".
                     "($destFileName) in your destination folder.\n";
+					
+	  // Job id, pid, server
+ 	  $id = $desc->id();
+ 	  $pid = $job->pid();
+ 	  $server = $job->server();
+ 	  $text = $text . "\nJob id: $id (pid $pid on $server)\n";
+
+	  $user = $desc->owner();
+ 	  $fileserver = new Fileserver($user->name());
+	  $destFolder = $fileserver->destinationFolder();
+	  $imageName = $desc->destinationImageNameAndExtension();
+ 	  $templateParametersFile = $destFolder. "/". $imageName.".parameters.txt";
+ 	  if (file_exists($templateParametersFile)) {
+		$text = $text . "\n\n- TEMPLATE PARAMETERS ----------------------------\n\n";
+		$text = $text . "The following are the parameters used during deconvolution.\n" .
+		                "This is useful in case you omitted some parameters in the\n" .
+						"HRM settings: please check if they could be read properly\n" .
+						"from the files at runtime.\n\n";
+		$text = $text . file_get_contents($templateParametersFile)."\n";
+ 	  }
+	  $text = $text . "\n\n- USER PARAMETERS ---------------------------------------------\n\n";
+	  $text = $text . "These are the parameters you set in the HRM.\nYou might have omitted some of the image parameters:\n\n";
  	  $text = $text . $this->parameterText($job);
+	  
  	  $imageName = $desc->destinationImageName();
  	  $user = $desc->owner();
  	  $username = $user->name();
@@ -713,14 +736,33 @@ class QueueManager {
  	    $text .= "\nYou can find a preview of the result at ".$link.
                              " (login required).\n\n";
  	  }
- 	  $remarksFile =
- 	  $fileserver->destinationFolder(). "/".
- 	  $imageName.".remarks.txt";
+ 	  $text = $text . "Best regards,\n";
+ 	  $text = $text . "Huygens Remote Manager\n\n";
+
+	  // Job id, pid, server
+ 	  $id = $desc->id();
+ 	  $pid = $job->pid();
+ 	  $server = $job->server();
+ 	  $text = $text . "\nJob id: $id (pid $pid on $server)\n";
+
+      // Remarks
+	  $destFolder = $fileserver->destinationFolder();
+ 	  $remarksFile = $destFolder. "/". $imageName.".remarks.txt";
  	  if (file_exists($remarksFile)) {
  	    $text = $text . file_get_contents($remarksFile)."\n\n";
  	  }
- 	  $text = $text . "Best regards,\n";
- 	  $text = $text . "Huygens Remote Manager\n";
+
+ 	  $templateParametersFile = $destFolder. "/". $imageName.".parameters.txt";
+ 	  if (file_exists($templateParametersFile)) {
+		$text = $text . "\n\n- TEMPLATE PARAMETERS ----------------------------\n\n";
+		$text = $text . "The following are the parameters used during deconvolution.\n" .
+	                    "This is useful in case you omitted some parameters in the\n" .
+		                "HRM settings: please check if they could be read properly\n" .
+					    "from the files at runtime.\n\n";
+		$text = $text . file_get_contents($templateParametersFile)."\n";
+ 	  }
+	  $text = $text . "\n\n- USER PARAMETERS ---------------------------------------------\n\n";
+	  $text = $text . "These are the parameters you set in the HRM.\nYou might have omitted some of the image parameters:\n\n";
  	  $text = $text . $this->parameterText($job);
  	  $mail = new Mail($email_sender);
  	  $mail->setReceiver($emailAddress);
@@ -750,10 +792,30 @@ class QueueManager {
  	  $text = $text . "\n\n";
  	  $text = $text . "Best regards,\n";
  	  $text = $text . "Huygens Remote Manager\n";
- 	  $text = $text . "-------------------------------------";
+
+	  $text = $text . "Best regards,\n";
+ 	  $text = $text . "Huygens Remote Manager\n\n";
+
+	  // Job id, pid, server
+ 	  $id = $desc->id();
+ 	  $pid = $job->pid();
+ 	  $server = $job->server();
+ 	  $text = $text . "\nJob id: $id (pid $pid on $server)\n";
+
  	  $text = $text . "\n\n";
  	  $text = $text . $message;
- 	  $text = $text . "\n\n- SUMMARY ---------------------------\n\n";
+	  $imageName = $desc->destinationImageNameAndExtension();
+ 	  $templateParametersFile = $destFolder. "/". $imageName.".parameters.txt";
+ 	  if (file_exists($templateParametersFile)) {
+		$text = $text . "\n\n- TEMPLATE PARAMETERS ----------------------------\n\n";
+		$text = $text . "The following are the parameters used during deconvolution.\n" .
+		                "This is useful in case you omitted some parameters in the\n" .
+			            "HRM settings: please check if they could be read properly\n" .
+						"from the files at runtime.\n\n";
+	    $text = $text . file_get_contents($templateParametersFile)."\n";
+ 	  }
+	  $text = $text . "\n\n- USER PARAMETERS ---------------------------------------------\n\n";
+	  $text = $text . "These are the parameters you set in the HRM.\nYou might have omitted some of the image parameters:\n\n";
  	  $text = $text . $this->parameterText($job);
 
  	  $text = $text . "\n\n- TEMPLATE ----------------------------\n\n";
@@ -794,7 +856,28 @@ class QueueManager {
  	  $text = $text . "\n";
  	  $text = $text . "Best regards,\n";
  	  $text = $text . "Huygens Remote Manager\n";
- 	  $text = $text . $this->parameterText($job);
+	  
+	  $text = $text . "Best regards,\n";
+ 	  $text = $text . "Huygens Remote Manager\n\n";
+
+	  // Job id, pid, server
+ 	  $id = $desc->id();
+ 	  $pid = $job->pid();
+ 	  $server = $job->server();
+ 	  $text = $text . "\nJob id: $id (pid $pid on $server)\n";
+	  
+ 	  $imageName = $desc->destinationImageNameAndExtension();
+	  $templateParametersFile = $destFolder. "/". $imageName.".parameters.txt";
+ 	  if (file_exists($templateParametersFile)) {
+		$text = $text . "\n\n- TEMPLATE PARAMETERS ----------------------------\n\n";
+		$text = $text . "The following are the parameters used during deconvolution.\n" .
+		                "This is useful in case you omitted some parameters in the\n" .
+					    "HRM settings: please check if they could be read properly\n" .
+						"from the files at runtime.\n\n";
+ 	    $text = $text . file_get_contents($templateParametersFile)."\n";
+ 	  }
+	  $text = $text . "\n\n- USER PARAMETERS ---------------------------------------------\n\n";
+	  $text = $text . "These are the parameters you set in the HRM.\nYou might have omitted some of the image parameters:\n\n";
  	  $mail = new Mail($email_sender);
  	  $mail->setReceiver($emailAddress);
  	  $mail->setSubject('Your HRM job finished with a warning');
@@ -975,11 +1058,7 @@ class QueueManager {
  	 */
  	private function parameterText( Job $job) {
  	  $desc = $job->description();
- 	  $id = $desc->id();
- 	  $pid = $job->pid();
- 	  $server = $job->server();
  	  $result = '';
- 	  $result = $result . "\nJob id: $id (pid $pid on $server)\n";
  	  $result = $result . "\nImage parameters:\n\n";
  	  $parameterSetting = $desc->parameterSetting();
  	  $parameterSettingString = $parameterSetting->displayString();
