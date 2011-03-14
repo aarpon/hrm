@@ -296,6 +296,7 @@ include("header.inc.php");
 
     <div id="content" >
         <h3><?php echo $page_title; ?></h3>
+        <p class="message_small"><?php echo $explanation_text; ?></p>
   <form method="post" action="?folder=<?php echo $browse_folder;?>" id="file_browser" onSubmit="return confirmSubmit()" >
 
     

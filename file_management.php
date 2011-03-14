@@ -212,19 +212,22 @@ if ( $browse_folder == "dest" ) {
     // Number of displayed files.
     $size = 15;
     $multiple_files = true;
-    $page_title = "Result files";
-    $form_title = "restored images";
+    $page_title = "File manager";
+    $explanation_text = "The following field lists all the deconvolved " .
+    "image files currently in the file area.";
+    $form_title = "Deconvolved image files";
     $fileBrowserLinks = '<li><a href="'.getThisPageName().'?folder=src">'.
         '<img src="images/upload_s.png" alt="originals" />&nbsp;Originals</a>'.
-        '</li><li><img src="images/download_s.png" alt="results" />&nbsp;'.
-        '<u>Results</u></li>';
+        '</li><li><img src="images/download_s.png" alt="deconvolved" />&nbsp;'.
+        '<u>Deconvolved</u></li>';
 
-    if ($allowHttpTransfer) {
     $info = "<h3>Quick help</h3>
-            <p>This is a list of the images in your <strong>destination
-            directory</strong> (i.e. where your results are).</p>
-            <p>Click on a file to see (or create) a preview.</p>
-            <p>Select the files you want to download (you can <b>SHIFT-</b> and
+            <p>Click on a file name to see a preview.</p>
+            <p><strong>Click on Detailed View <img src = \"images/eye.png\" />
+            over the file preview to get additional information.</strong></p>";
+              
+    if ($allowHttpTransfer) {
+    $info .= "<p>Select the files you want to download (you can <b>SHIFT-</b> and
             <b>CTRL-click</b> for multiple selection) and press the
             <b>download</b> icon to compress the files into an archive and start
             the download process. (Please mind that large files may take a
@@ -233,37 +236,40 @@ if ( $browse_folder == "dest" ) {
             instead.</p>";
     $file_buttons[] = "download";
     }
-
+    $info .= "<p><strong>Move your mouse pointer over the action buttons at the " .
+      "bottom to redisplay this help.</strong></p>";
 
 } else {
     $browse_folder = "src";
     $size = 15;
     $multiple_files = true;
-    $page_title = "Original files";
-    $form_title = "raw images";
+    $page_title = "File manager";
+    $explanation_text = "These are the original image files currently " .
+      "in your file area.";
+    $form_title = "Original image files";
     $fileBrowserLinks = '<li><img src="images/upload_s.png" alt="originals" />'.
         '&nbsp;<u>Originals</u></li>'.
         '<li><a href="'.getThisPageName().'?folder=dest">'.
-        '<img src="images/download_s.png" alt="results" />&nbsp;Results</a>'.
+        '<img src="images/download_s.png" alt="deconvolved" />&nbsp;Deconvolved</a>'.
         '</li>';
 
     $info = "<h3>Quick help</h3>
-            <p>This is a list of the images in your <strong>source
-            directory</strong> (i.e. where your files to be deconvolved are).</p>
-            <p>Click on a file to see (or create) a preview.</p>
+            <p>Click on a file name to see (or create) a preview.</p>
             <p>Select the files you want to delete (you can <b>SHIFT-</b> and
             <b>CTRL-click</b> for multiple selection) and press the
             <b>delete</b> icon to delete them.
             </p>";
     if ($allowHttpUpload) {
 
-        $validExtensions = 
-            $_SESSION['fileserver']->getValidArchiveTypesAsString();
+        $validExtensions = str_replace( " ", ", ",
+          $_SESSION['fileserver']->getValidArchiveTypesAsString() );
         $info .= "<p>You can also upload files. To upload multiple files, it
         may be convenient to pack them first in a single <b>
         archive ($validExtensions)</b>, that will be unpacked after upload.";
         $file_buttons[] = "upload";
     }
+    $info .= "<p><strong>Move your mouse pointer over the action buttons at the " .
+      "bottom to redisplay this help.</strong></p>";
 }
 
 $top_navigation = '
