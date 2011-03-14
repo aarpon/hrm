@@ -572,7 +572,7 @@ Class JobTranslation {
         $options .= " s ";
         $options .= $this->getSamplingSizes();
         $options .= " parState,s ";
-        $options .= $this->getSamplingVerification();
+        $options .= $this->getSamplingConfidenceList();
         $options .= " iFacePrim ";
         $options .= $this->getiFacePrim();
         $options .= " prState,iFacePrim ";
@@ -588,7 +588,7 @@ Class JobTranslation {
         $options .= " imagingDir ";
         $options .= $this->getImagingDirection();
         $options .= " parState,imagingDir ";
-        $options .= $this->getImagingDirVerification();
+        $options .= $this->getImagingDirConfidenceList();
         $options .= " ps ";
         $options .= $this->getPinholeSpacing();
         $options .= " parState,ps ";
@@ -616,7 +616,7 @@ Class JobTranslation {
         $options .= " ri ";
         $options .= $this->getMediumRefractiveIndex();
         $options .= " parState,ri ";
-        $options .= $this->getMediumRIndexVerification();
+        $options .= $this->getMediumRIndexConfidenceList();
         $options .= " ril ";
         $options .= $this->getLensRefractiveIndex();
         $options .= " parState,ril ";
@@ -808,25 +808,12 @@ Class JobTranslation {
     */
     private function getPinholeRadiusConfidenceList( ) {
         $numberOfChannels = $this->getNumberOfChannels();
-        $prList = "";
+        $cList = "";
         for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $confidence = $this->getConfidenceOfPinholeRadiusForChannel($chanCnt);
-            $prList .= "  " . $confidence;
+            $cLevel = $this->getParameterConfidence("PinholeSize",$chanCnt);
+            $cList .= "  " . $cLevel;
         }
-        return $this->string2tcllist($prList);
-    }
-
-    /*!
-     \brief       Confidence level of the pinhole radius. One channel.
-     \param       $channel A channel
-     \return      Whether verified, reported, estimated or default.
-    */
-    private function getConfidenceOfPinholeRadiusForChannel($channel) {
-        $microSetting = $this->microSetting;
-        $pinholeSize = $microSetting->parameter("PinholeSize");
-        $format = $this->HuImageFormat;
-        
-        return $pinholeSize->interpretedHuCoreConfidenceLevel($format,$channel);
+        return $this->string2tcllist($cList);
     }
 
     /*!
@@ -841,7 +828,8 @@ Class JobTranslation {
             $microList .= " " . $microType;
         }
         return $this->string2tcllist($microList);
-    }
+    }            
+           
 
     /*!
      \brief       Gets the microscope type of all channels.
@@ -861,25 +849,12 @@ Class JobTranslation {
     */
     private function getMicroTypeConfidenceList( ) {
         $numberOfChannels = $this->getNumberOfChannels();
-        $verificationList = "";
+        $cList = "";
         for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $verification = $this->getConfidenceOfMicroTypeForChannel($chanCnt);
-            $verificationList .= " " . $verification;
+            $cLevel = $this->getParameterConfidence("MicroscopeType",$chanCnt);
+            $cList .= " " . $cLevel;
         }
-        return $this->string2tcllist($verificationList);
-    }
-
-    /*!
-     \brief       Confidence level of the microscope type. One channel.
-     \param       $channel A channel
-     \return       Whether verified, reported, estimated or default.
-    */
-    private function getConfidenceOfMicroTypeForChannel($channel) {
-        $microSetting = $this->microSetting;
-        $pinholeSize = $microSetting->parameter("MicroscopeType");
-        $format = $this->HuImageFormat;
-        
-        return $pinholeSize->interpretedHuCoreConfidenceLevel($format,$channel);
+        return $this->string2tcllist($cList);
     }
 
     /*!
@@ -913,25 +888,12 @@ Class JobTranslation {
     */
     private function getLensRIndexConfidenceList( ) {
         $numberOfChannels = $this->getNumberOfChannels();
-        $verificationList = "";
+        $cList = "";
         for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $verification = $this->getConfidenceOfLensRIndexForChannel($chanCnt);
-            $verificationList .= " " . $verification;
+            $cLevel = $this->getParameterConfidence("ObjectiveType",$chanCnt);
+            $cList .= " " . $cLevel;
         }
-        return $this->string2tcllist($verificationList);
-    }
-
-    /*!
-     \brief       Confidence level of the lens refractive index. One channel.
-     \param       $channel A channel
-     \return      Whether verified, reported, estimated or default.
-    */
-    private function getConfidenceOfLensRIndexForChannel($channel) {
-        $microSetting = $this->microSetting;
-        $pinholeSize = $microSetting->parameter("ObjectiveType");
-        $format = $this->HuImageFormat;
-        
-        return $pinholeSize->interpretedHuCoreConfidenceLevel($format,$channel);
+        return $this->string2tcllist($cList);
     }
 
     /*!
@@ -967,25 +929,12 @@ Class JobTranslation {
     private function getNumericalApertureConfidenceList( ) {
 
         $numberOfChannels = $this->getNumberOfChannels();
-        $verificationList = "";
+        $cList = "";
         for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $verification = $this->getConfidenceOfNumAperForChannel($chanCnt);
-            $verificationList .= " " . $verification;
+            $cLevel = $this->getParameterConfidence("NumericalAperture",$chanCnt);
+            $cList .= " " . $cLevel;
         }
-        return $this->string2tcllist($verificationList);
-    }
-
-    /*!
-     \brief       Confidence level of the numerical aperture. One channel.
-     \param       $channel A channel
-     \return      Whether verified, reported, estimated or default.
-    */
-    private function getConfidenceOfNumAperForChannel($channel) {
-        $microSetting = $this->microSetting;
-        $pinholeSize = $microSetting->parameter("NumericalAperture");
-        $format = $this->HuImageFormat;
-        
-        return $pinholeSize->interpretedHuCoreConfidenceLevel($format,$channel);
+        return $this->string2tcllist($cList);
     }
 
     /*!
@@ -1023,29 +972,12 @@ Class JobTranslation {
     */
     private function getPinSpacingConfidenceList( ) {
         $numberOfChannels = $this->getNumberOfChannels();
-        $verificationList = "";
+        $cList = "";
         for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $verification = $this->getConfidenceOfPinSpacingForChannel($chanCnt);
-            $verificationList .= " " . $verification;
+            $cLevel = $this->getParameterConfidence("PinholeSpacing",$chanCnt);
+            $cList .= " " . $cLevel;
         }
-        return $this->string2tcllist($verificationList);
-    }
-
-    /*!
-     \brief       Confidence level of the pinhole spacing. One channel.
-     \param       $channel A channel
-     \return      Whether verified, reported, estimated or default.
-    */
-    private function getConfidenceOfPinSpacingForChannel($channel) {
-
-        if ($this->getMicroTypeForChannel($channel) != "nipkow") {
-            return "default";
-        }
-        $microSetting = $this->microSetting;
-        $pinholeSize = $microSetting->parameter("PinholeSpacing");
-        $format = $this->HuImageFormat;
-        
-        return $pinholeSize->interpretedHuCoreConfidenceLevel($format,$channel);
+        return $this->string2tcllist($cList);
     }
 
     /*!
@@ -1079,21 +1011,12 @@ Class JobTranslation {
     */
     private function getObjQualityConfidenceList( ) {
         $numberOfChannels = $this->getNumberOfChannels();
-        $verificationList = "";
+        $cList = "";
         for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $verification = $this->getConfidenceOfObjQualityForChannel($chanCnt);
-            $verificationList .= " " . $verification;
+            $cLevel = "default";
+            $cList .= " " . $cLevel;
         }
-        return $this->string2tcllist($verificationList);
-    }
-
-    /*!
-     \brief       Confidence level of the object quality. One channel.
-     \param       $channel A channel
-     \return      Whether verified, reported, estimated or default.
-    */
-    private function getConfidenceOfObjQualityForChannel($channel) {
-        return "default";
+        return $this->string2tcllist($cList);
     }
 
     /*!
@@ -1130,21 +1053,12 @@ Class JobTranslation {
     */
     private function getExcitationPcntConfidenceList( ) {
         $numberOfChannels = $this->getNumberOfChannels();
-        $verificationList = "";
+        $cList = "";
         for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $verification = $this->getConfidenceOfExcPhotonCntForChannel($chanCnt);
-            $verificationList .= " " . $verification;
+            $cLevel = "default";
+            $cList .= " " . $cLevel;
         }
-        return $this->string2tcllist($verificationList);
-    }
-
-    /*!
-     \brief       Confidence level of the excitation photon count. One channel.
-     \param       $channel A channel
-     \return      Whether verified, reported, estimated or default.
-    */
-    private function getConfidenceOfExcPhotonCntForChannel($channel) {
-        return "default";
+        return $this->string2tcllist($cList);
     }
 
     /*!
@@ -1179,25 +1093,13 @@ Class JobTranslation {
     */
     private function getExcitationLConfidenceList( ) {
         $numberOfChannels = $this->getNumberOfChannels();
-        $verificationList = "";
+        $cList = "";
         for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $verification = $this->getConfidenceOfExLambdaForChannel($chanCnt);
-            $verificationList .= " " . $verification;
+            $cLevel = $this->getParameterConfidence("ExcitationWavelength",
+                                                    $chanCnt);
+            $cList .= " " . $cLevel;
         }
-        return $this->string2tcllist($verificationList);
-    }
-
-    /*!
-     \brief       Confidence level of the excitation wavelength. One channel.
-     \param       $channel A channel
-     \return      Whether verified, reported, estimated or default.
-    */
-    private function getConfidenceOfExLambdaForChannel($channel) {
-        $microSetting = $this->microSetting;
-        $pinholeSize = $microSetting->parameter("ExcitationWavelength");
-        $format = $this->HuImageFormat;
-        
-        return $pinholeSize->interpretedHuCoreConfidenceLevel($format,$channel);
+        return $this->string2tcllist($cList);
     }
     
     /*!
@@ -1229,21 +1131,12 @@ Class JobTranslation {
     */
     private function getExBeamConfidenceList( ) {
         $numberOfChannels = $this->getNumberOfChannels();
-        $verificationList = "";
+        $cList = "";
         for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $verification = $this->getConfidenceOfExBeamFactorForChannel($chanCnt);
-            $verificationList .= " " . $verification;
+            $cLevel = "default";
+            $cList .= " " . $cLevel;
         }
-        return $this->string2tcllist($verificationList);
-    }
-
-    /*!
-     \brief       Confidence level of the excitation beam factor. One channel.
-     \param       $channel A channel
-     \return      Whether verified, reported, estimated or default.
-    */
-    private function getConfidenceOfExBeamFactorForChannel($channel) {
-        return "default";
+        return $this->string2tcllist($cList);
     }
 
     /*!
@@ -1278,25 +1171,13 @@ Class JobTranslation {
     */
     private function getEmissionLConfidenceList( ) {
         $numberOfChannels = $this->getNumberOfChannels();
-        $verificationList = "";
+        $cList = "";
         for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $verification = $this->getConfidenceLambdaEmForChannel($chanCnt);
-            $verificationList .= " " . $verification;
+            $cLevel = $this->getParameterConfidence("EmissionWavelength",
+                                                    $chanCnt);
+            $cList .= " " . $cLevel;
         }
-        return $this->string2tcllist($verificationList);
-    }
-
-    /*!
-     \brief       Confidence level of the emission wavelength. One channel.
-     \param       $channel A channel
-     \return      Whether verified, reported, estimated or default.
-    */
-    private function getConfidenceLambdaEmForChannel($channel) {
-        $microSetting = $this->microSetting;
-        $pinholeSize = $microSetting->parameter("EmissionWavelength");
-        $format = $this->HuImageFormat;
-        
-        return $pinholeSize->interpretedHuCoreConfidenceLevel($format,$channel);
+        return $this->string2tcllist($cList);
     }
 
     /*!
@@ -1331,33 +1212,18 @@ Class JobTranslation {
     }
 
     /*!
-     \brief       Gets the imaging direction verifications. All channels.
-     \return      Tcl-list: Trues/Falses if the imaging directions are verified.
-     \todo        To be implemented in the GUI
+     \brief       Confidence levels of the imaging direction. All channels.
+     \return      Tcl-list: whether verified, reported, estimated or default.
     */
-    private function getImagingDirVerification( ) {
+    private function getImagingDirConfidenceList( ) {
         $numberOfChannels = $this->getNumberOfChannels();
-        $verificationList = "";
+        $cList = "";
         for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $verification = $this->getIDVerificationForChannel($chanCnt);
-            $verificationList .= " " . $verification;
+            $cLevel = $this->getParameterConfidence("CoverslipRelativePosition",
+                                                    $chanCnt);
+            $cList .= " " . $cLevel;
         }
-        return $this->string2tcllist($verificationList);
-    }
-    
-    /*!
-     \brief       Gets the verification of the imaging direction. One channel.
-     \param       $channel A channel
-     \return      True if the imaging direction is verified.
-     \todo        To be implemented in the GUI
-    */
-    private function getIDVerificationForChannel($channel) {
-        if ($this->isFieldVerified($channel) == 1) {
-            $verification = "verified";
-        } else {
-            $verification = "estimated";
-        }
-        return $verification;
+        return $this->string2tcllist($cList);
     }
 
     /*!
@@ -1387,33 +1253,17 @@ Class JobTranslation {
     }
 
     /*!
-     \brief       Gets the medium refractive index verifications. All channels.
-     \return      Tcl-list: Trues/Falses if the medium RIs are verified.
-     \todo        To be implemented in the GUI
+     \brief       Confidence levels of the medium refractive index. All channels.
+     \return      Tcl-list: whether verified, reported, estimated or default.
     */
-    private function getMediumRIndexVerification( ) {
+    private function getMediumRIndexConfidenceList( ) {
         $numberOfChannels = $this->getNumberOfChannels();
-        $verificationList = "";
+        $cList = "";
         for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $verification = $this->getMRIVerificationForChannel($chanCnt);
-            $verificationList .= " " . $verification;
+            $cLevel = $this->getParameterConfidence("SampleMedium",$chanCnt);
+            $cList .= " " . $cLevel;
         }
-        return $this->string2tcllist($verificationList);
-    }
-
-    /*!
-     \brief       Gets the medium refractive index verification. One channel.
-     \param       $channel A channel
-     \return      True if the medium refractive index is verified.
-     \todo        To be implemented in the GUI
-    */
-    private function getMRIVerificationForChannel($channel) {
-        if ($this->isFieldVerified($channel) == 1) {
-            $verification = "verified";
-        } else {
-            $verification = "estimated";
-        }
-        return $verification;
+        return $this->string2tcllist($cList);
     }
 
     /*!
@@ -1429,17 +1279,11 @@ Class JobTranslation {
     }
 
     /*!
-     \brief       Verification of the sampling sizes. All channels.
-     \return      Tcl-list: Trues/Falses if the sampling sizes are verified.
-     \todo        To be implemented in the GUI
+     \brief       Confidence levels of the sampling sizes. All channels.
+     \return      Tcl-list: whether verified, reported, estimated or default.
     */
-    private function getSamplingVerification( ) {
-        if ($this->isFieldVerified(0) == 1) {
-            $verification = "verified";
-        } else {
-            $verification = "estimated";
-        }
-        return $verification;
+    private function getSamplingConfidenceList( ) {
+        return "{reported reported reported reported}";
     }
 
     /* -------------------------- Algorithm tasks ------------------------------ */
@@ -2020,6 +1864,20 @@ Class JobTranslation {
         }
 
         return $format;
+    }
+
+    /*!
+     \brief       Gets the parameter confidence level
+     \param       $paramName The parameter name.
+     \param       $channel The channel number.
+     \return      The confidence level. 
+    */
+    private function getParameterConfidence($paramName,$channel) {
+        $microSetting = $this->microSetting;
+        $parameter = $microSetting->parameter($paramName);
+        $format = $this->HuImageFormat;
+        
+        return $parameter->interpretedHuCoreConfidenceLevel($format,$channel);
     }
 
     /*!
