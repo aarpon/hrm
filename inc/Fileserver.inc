@@ -1210,7 +1210,7 @@ echo '</body></html>';
     \brief  Creates the preview page for the file browser
     \param  $file Image file name
     \param  $op   Operation, one of 'close' or 'home'. Default is "close"
-    \param  $mode Display mode. One of "MIP", "SFP", "stack", "tSeries", "log",
+    \param  $mode Display mode. One of "MIP", "parameters", "log", "SFP", "stack", "tSeries",
                   "history", "remarks". Default is "MIP"
     \param  $size Size of the thumbnail. Default is 400
     \return HTML code (whole page)
@@ -1261,16 +1261,38 @@ echo '</body></html>';
       $path_info = pathinfo($fileBase);
       $fileBase = $dir."/".$path_info['filename'];
 
-      // Available views
+      // (Sorted) available views
+      //
+      // If the file(s) corresponding to a view is missing, no entry will be
+      // added to the navigation menu
+
+      // MIP comparison
       $path = array();
       $test = $prevBase.".".$size."_xy.jpg";
       if (file_exists($test)) {
           $path['MIP'] = $test;
       }
+
+      // This is the text file with the parameter summary (useful to check the
+      // runtime parameters that were used if the template was incomplete)
+      $test = $pdest."/".$file.".parameters.txt";
+      if (file_exists($test)) {
+          $path['parameters'] = $test;
+      }
+
+      // Log file (this is the same as the email that is sent to the user)
+      $test = $fileBase.".log.txt";
+      if (file_exists($test)) {
+          $path['log'] = $test;
+      }
+
+      // SFP comparison
       $test = $prevBase.".sfp.jpg";
       if (file_exists($test)) {
           $path['SFP'] = $test;
       }
+      
+      // Slicer comparison
       $test = $this->findStrip($file, "stack.compare", $pdest);
       if (count($test) == 1) {
           $path['stack'] = $test[0];
@@ -1280,6 +1302,7 @@ echo '</body></html>';
           $path['tSeries'] = $test[0];
       }
 
+      // Download movie
       $test =  $prevBase.".stack.avi";
       if (file_exists($test)) {
           $path['stackMovie'] = $test;
@@ -1299,15 +1322,12 @@ echo '</body></html>';
           $msize['tSeriesSfpMovie'] = round(filesize($test) / 1024.0);
       }
 
+      // Remarks file
       $test = $pdest."/".$file.".remarks.txt";
       if (file_exists($test)) {
           $path['remarks'] = $test;
-
-      $test = $fileBase.".log.txt";
-      if (file_exists($test)) {
-          $path['log'] = $test;
       }
-
+      
       // Old history filename didn't contain image type extension.
       $test = $fileBase.".history.txt";
       if (file_exists($test)) {
@@ -1319,10 +1339,11 @@ echo '</body></html>';
       if (file_exists($test)) {
           $path['history'] = $test;
       }
-      }
 
       // Define some arrays
       $desc = array(  'MIP'             => "MIP",
+                      'parameters'      => "parameters",
+                      'log'             => "log",
                       'SFP'             => "SFP",
                       'stack'           => "slicer",
                       'tSeries'         => "series", 
@@ -1330,10 +1351,11 @@ echo '</body></html>';
                       'tSeriesMovie'    => "series movie",
                       'tSeriesSfpMovie' => "series SFP movie",
                       'history'         => "history",
-                      'remarks'         => "remarks",
-                      'log'             => "log" );
+                      'remarks'         => "remarks" );
 
       $tip = array(   'MIP'             => "Compare Maximum Intensity Projections",
+                      'parameters'      => "List the image parameters used (useful to check the runtime parameters that were used if the template was incomplete)",
+                      'log'             => "See the image restoration log file",
                       'SFP'             => "Compare Simulated Fluorescence renderings",
                       'stack'           => "Browse along the Z-planes",
                       'tSeries'         => "Browse along the time series",
@@ -1341,8 +1363,7 @@ echo '</body></html>';
                       'tSeriesMovie'    => "Download time series MIP movie",
                       'tSeriesSfpMovie' => "Download time series SFP movie" ,
                       'history'         => "See the image restoration history, the executed Huygens - Tcl commands.",
-                      'remarks'         => "See the image restoration warnings.",
-                      'log'             => "See the image restoration log file" );
+                      'remarks'         => "See the image restoration warnings." );
 
       // Refine some $tips
       if ( isset( $msize['stackMovie'] ) ) {
@@ -1433,7 +1454,7 @@ echo '</body></html>';
           $this->viewStrip( $file, "$mode.compare", "dest", true );
           echo "<div id=\"previewImg\">\n";
           echo "<center>Original - Restored<br>(drag scrollbar for browsing)</center>";
-      } else if ( $mode == "log" || $mode == "history" || $mode == "remarks" ) {
+      } else if ( $mode == "log" || $mode == "history" || $mode == "remarks" || $mode == "parameters" ) {
           echo "<div id=\"logFile\">\n";
           print "<pre>";
           readfile ($path[$mode]);

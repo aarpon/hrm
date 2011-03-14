@@ -217,7 +217,7 @@ if ( $browse_folder == "dest" ) {
     $fileBrowserLinks = '<li><a href="'.getThisPageName().'?folder=src">'.
         '<img src="images/upload_s.png" alt="originals" />&nbsp;Originals</a>'.
         '</li><li><img src="images/download_s.png" alt="results" />&nbsp;'.
-        'Results</li>';
+        '<u>Results</u></li>';
 
     if ($allowHttpTransfer) {
     $info = "<h3>Quick help</h3>
@@ -242,7 +242,7 @@ if ( $browse_folder == "dest" ) {
     $page_title = "Original files";
     $form_title = "raw images";
     $fileBrowserLinks = '<li><img src="images/upload_s.png" alt="originals" />'.
-        '&nbsp;Originals</li>'.
+        '&nbsp;<u>Originals</u></li>'.
         '<li><a href="'.getThisPageName().'?folder=dest">'.
         '<img src="images/download_s.png" alt="results" />&nbsp;Results</a>'.
         '</li>';

@@ -12,15 +12,15 @@ HRM_HOME="/path/to/hrm/home"
 HRM_DATA="/path/to/hrm/data"
 
 # Source and destination folder names
-HRM_SOURCE="huygens_src";
-HRM_DEST="huygens_dst";
+HRM_SOURCE="huygens_src"
+HRM_DEST="huygens_dst"
 
 # User with rights to run /bin/mkdir, /bin/chown,
 # /bin/chmod and /bin/rm on the file manager for
 # user management - leave empty if apache has
 # read/write access to the fileserver and thus
 # does not need to sudo these commands
-SUSER="apache";
+SUSER="apache"
 
 # HRM log directory
 HRM_LOG="/var/log/hrm"
