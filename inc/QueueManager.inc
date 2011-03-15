@@ -780,9 +780,12 @@ class QueueManager {
  	public function notifyError($job, $message, $startTime) {
 	  global $email_sender;
  	  global $email_admin;
+
  	  $job->createScript();
  	  $desc = $job->description();
  	  $user = $desc->owner();
+ 	  $fileserver = new Fileserver($user->name());
+	  $destFolder = $fileserver->destinationFolder();
  	  $emailAddress = $user->emailAddress();
  	  $sourceFileName = $desc->sourceImageNameWithoutPath();
  	  //$destFileName = $desc->destinationImageName();
