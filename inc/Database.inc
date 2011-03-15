@@ -1459,11 +1459,14 @@ class DatabaseConnection {
 		}
 		
 		// Return the confidenceLevel mapped to the HRM usage
+		// Currently, all confidence levels higher and equal than 'estimated'
+		// are Trusted, meaning that the user is allowed not to type any value
+		// (but it is his responsibility then to check for correctness)
 		switch ( $confidenceLevel ) {
+		  case 'verified':
 		  case 'reported':
-			return 'Trusted';
 		  case 'estimated':
-			return 'Untrusted';
+			return 'Trusted';
 		  case 'default':
 			return 'Missing';
 		  default:

@@ -875,6 +875,7 @@ option.default {
 
 .message_confidence_Provide {
     border: none;
+    height: 15px;
     margin-top: 5px;
     margin-bottom: -5px;
     background: url(../images/textProvide.png) no-repeat bottom;
@@ -882,6 +883,7 @@ option.default {
 
 .message_confidence_Trusted {
     border: none;
+    height: 35px;
     margin-top: 5px;
     margin-bottom: -5px;
     background: url(../images/textTrusted.png) no-repeat bottom;
@@ -889,6 +891,7 @@ option.default {
 
 .message_confidence_Untrusted {
     border: none;
+    height: 15px;
     margin-top: 5px;
     margin-bottom: -5px;
     background: url(../images/textUntrusted.png) no-repeat bottom;
@@ -896,6 +899,7 @@ option.default {
 
 .message_confidence_Missing {
     border: none;
+    height: 35px;
     margin-top: 5px;
     margin-bottom: -5px;
     background: url(../images/textMissing.png) no-repeat bottom;
