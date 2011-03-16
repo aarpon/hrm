@@ -13,8 +13,13 @@ body {
     background: #fff;
     color: #000;
     font-family: "verdana", "bitsream vera sans", sans-serif;
+    font-size: 14px;
     text-align: center;
     margin: 0px;
+}
+
+pre {
+    font-size: 12px;
 }
 
 a:link {
