@@ -133,7 +133,7 @@ include("header.inc.php");
 <div id="nav">
 <ul>
 	<li><a
-		href="javascript:openWindow('http://huygens-rm.org/wiki/index.php?title=Changelog')"><img
+		href="javascript:openWindow('http://huygens-rm.org/home/?q=node/27')"><img
 		src="images/whatsnew.png" alt="website" />&nbsp;What's new?</a></li>
 	<li><a href="javascript:openWindow('http://www.huygens-rm.org')"><img
 		src="images/logo_small.png" alt="website" />&nbsp;Website</a></li>

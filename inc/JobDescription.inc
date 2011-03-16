@@ -461,20 +461,7 @@ class JobDescription {
     \return destination image file name with full path
   */
   public function destinationImageFullName() {
-    global $resultImagesRenamed;
-    // use source filename as destination filename
-    if (!$resultImagesRenamed) {
-      $files = $this->files();
-      $result = $this->destinationFolder() . ereg_replace("^/", "", end($files));
-      $result = substr($result, 0, strrpos($result, "."));
-      if ( $this->endsWithNumber($result) ) {
-          // Avoid output files ending in a number.
-          $result .= "_hrm";
-      }
-    }
-    else {
-      $result = $this->destinationFolder() . $this->destinationImageName();
-    }
+    $result = $this->destinationFolder() . $this->destinationImageName();
     return $result;
   }
 

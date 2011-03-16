@@ -2,7 +2,7 @@
 // This script checks the configuration files for completeness
 
 // First version: Aaron Ponti, 2010/04/12
-// Checks against HRM version 1.3.x
+// Checks against HRM version 2.0.x
 
 // This file is part of huygens remote manager.
 
@@ -87,7 +87,7 @@
             return;
          }
          
-         echo "Check against HRM v1.3.x." . PHP_EOL;
+         echo "Check against HRM v2.0.x." . PHP_EOL;
          
          require_once $configFile;
          

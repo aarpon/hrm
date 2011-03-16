@@ -24,19 +24,12 @@ if (!isset ($userManager) ) {
     $userManager = "bin/hrm";
 }
 
-/*
- * The following parameters are obsolete and will be removed in one of the 
- * next versions of the HRM.
- * For the time being, their values are set and MUST NOT BE CHANGED.
+/*!
+ *\todo	The following parameter is obsolete and is to be removed in one of the 
+ * 		next versions of the HRM.
+ * 		For the time being, its value is set and MUST NOT BE CHANGED.
  * 
  */
-
-/*!
-\todo	The following two parameters should be removed from the config files soon.
-		For the time being we fix them here to the only acceptable values.
-		Remove them for the HRM 1.3.0 release.
-*/ 
-$resultImagesRenamed = true;
 $resultImagesOwnedByUser = false;
 
 ?>

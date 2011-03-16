@@ -41,7 +41,7 @@ class System {
 
 	/*!
 		\brief	Returns the HRM version
-		\return	the HRM version number (e.g. 1.3.0)
+		\return	the HRM version number (e.g. 2.0.0)
 		*/
 	public static function getHRMVersion( ) {
 		return self::HRM_VERSION;

@@ -453,12 +453,13 @@ class QueueManager {
  	    $resultSaved = $job->checkResultImage();
  	    report("checked result image", 2);
  	    	
- 	    // If fileshare is not on the same host as Huygens
- 	    /*!
- 	    \todo	Restoring ownership should be subjected to the $resultImagesOwnedByUser config variable!
- 	    */
- 	    if (!$imageProcessingIsOnQueueManager)
- 	    $this->restoreOwnership($user->name());
+ 	    // If fileshare is not on the same host as Huygens and ownership is
+		// to be transferred to the user
+ 	    if (!$imageProcessingIsOnQueueManager) {
+			if ( $resultImagesOwnedByUser) {
+				$this->restoreOwnership($user->name());
+			}
+		}
  	    	
  	    // Check if error occured
  	    $errorOccured = $this->errorOccured($job);
