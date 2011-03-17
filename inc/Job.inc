@@ -342,6 +342,7 @@ class Job {
           $marker . " .)");
         }
         $this->renameOutputFiles();
+        $this->makeParameterFile();
       } else {
 
         // Copy the estimated end time little file.
@@ -372,6 +373,7 @@ class Job {
                   $proc->rewakeHuygensProcess($this->pid());
                 } elseif ($result) {
                     $this->renameOutputFiles();
+                    $this->makeParameterFile();
                 }
     }
 
@@ -417,7 +419,94 @@ class Job {
           $server_hostname = $server[0];
           $result = exec("ssh ".$huygens_user."@".$server_hostname." ".$cmd);
       }
+  }
+  
+  /*
+   \brief       Parses the Huygens output to summarize the deconvolution
+   \brief       job and saves the summary to a file.
+  */
+  private function makeParameterFile( ) {
+      global $imageProcessingIsOnQueueManager;
+      global $huygens_user;
 
+      // Get the names of the job report file to be able to read it.
+      $jobDescription = $this->description();
+      $jobReportFile = $jobDescription->destinationImageName() . ".inf.txt";
+      $jobReportFile = $jobDescription->destinationFolder() . $jobReportFile;
+
+     // Proceed to read the job report file.
+      $cmd = "cat " . $jobReportFile;
+      if (!$imageProcessingIsOnQueueManager) {
+          $server = split(" ", $this->server);
+          $server_hostname = $server[0];
+          $cmd = "ssh ".$huygens_user."@".$server_hostname." ".$cmd;
+      }
+      $result = exec($cmd,$reportFile);
+
+      // Build a parameter file name.
+      $paramFileName = $jobDescription->destinationImageName();
+      $paramFileName .= ".parameters.txt";
+      $paramFileName = $jobDescription->destinationFolder() . $paramFileName;
+
+      // Proceed to parse and save the parameter file.
+      $paramFile = fopen($paramFileName, 'w');
+      $tableColums = "PARAMETER \t CHANNEL \t SOURCE \t VALUE\n\n";
+      fwrite($paramFile,$tableColums);
+
+      $pattern = "/{Parameter ([a-z]+?) set in template to value (.*) will";
+      $pattern .= " remain as in metadata (.*)}}/";
+      foreach ($reportFile as $fileLine) {
+          unset($matches);
+          preg_match($pattern,$fileLine,$matches);
+          if (!empty($matches)) {
+              $data = $matches[1] . "\t All \t Metadata \t";
+              $data .= $matches[3] . "\n"; 
+              fwrite($paramFile,$data);
+          }
+      }
+      $pattern = "/{Parameter ([a-z]+?) will be taken from template: (.*).}}/";
+      foreach ($reportFile as $fileLine) {
+          unset($matches);
+          preg_match($pattern,$fileLine,$matches);
+          if (!empty($matches)) {
+              $data = $matches[1] . "\t All \t User defined \t";
+              $data .= $matches[2] . "\n"; 
+              fwrite($paramFile,$data);
+          }
+      }
+      $pattern = "/{Parameter (.*) of channel (.*) will be taken from ";
+      $pattern .= "template: (.*).}}/";
+      foreach ($reportFile as $fileLine) {
+          unset($matches);
+          preg_match($pattern,$fileLine,$matches);
+          if (!empty($matches)) {
+              $data = $matches[1] . "\t" . $matches[2];
+              $data .= "\t User defined \t" . $matches[3] . "\n"; 
+              fwrite($paramFile,$data);
+          }
+      }
+      $pattern = "/{Parameter (.*) of channel (.*) set in template ";
+      $pattern .= "to value (.*) will remain as in metadata (.*).}}/";
+      foreach ($reportFile as $fileLine) {
+          unset($matches);
+          preg_match($pattern,$fileLine,$matches);
+          if (!empty($matches)) {
+              $data = $matches[1] . "\t" . $matches[2] . "\t";
+              $data .= "Metadata \t" . $matches[4] . "\n";
+              fwrite($paramFile,$data);
+          }
+      }
+      fclose($paramFile);
+
+      // If working with remote servers, copy the new file to its destination.
+      if (!$imageProcessingIsOnQueueManager) {
+          $server = split(" ", $this->server);
+          $server_hostname = $server[0];
+          $cmd = "scp " . $paramFileName . " " .$huygens_user."@";
+          $cmd .= $server_hostname.":".$paramFileName;
+
+          $result = exec($cmd);
+      } 
   }
 }
 
