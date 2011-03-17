@@ -392,6 +392,9 @@ class Job {
     return $result;
   }
 
+
+  /* -------- Utilities for renaming and formatting job specific files ------ */
+
   /*
    \brief       Renames the Huygens deconvolution default file 
    \brief       with a name that contains the job id.
@@ -416,14 +419,21 @@ class Job {
       }
   }
 
-  // Get the name and path of a new file that includes the job id.
+  /*
+   \brief       Get the name and path of a file that includes the job id
+   \brief       with an "inf" suffix.
+   \return      The file path and name.
+  */
   private function getJobIdOutputFile( ) {
       $jobDescription = $this->description();
       $idJobOutFile = $jobDescription->destinationImageName() . ".inf.txt";
       return $jobDescription->destinationFolder() . $idJobOutFile;
   }
   
-  // Get the name and path of the Huygens default file.
+  /*
+  \brief        Get the name and path of the Huygens default file.
+  \return       The path and name of the Huygens default file.
+  */
   private function getHuygensDefaultFileName( ) {
       $jobDescription = $this->description();
       $huygensOut   = "scheduler_client0.log";
@@ -431,16 +441,32 @@ class Job {
   }
 
   /*
-   \brief       Parses the Huygens deconvolution output file to a summary table
-   \brief       containing the deconvolution parameters.
+   \brief       Filters the Huygens deconvolution output file to leave
+   \brief       a second file containing only the deconvolution parameters.
   */
   private function makeJobParametersFile( ) {
-      $reportFile = $this->readJobInformationFile();
+      $jobInformation = $this->readJobInformationFile();
+      $htmlTable = $this->parseInf2htmlTable($jobInformation);
       $paramFileName = $this->getParamFileName();
-      $this->parseFile2htmlTable($paramFileName,$reportFile);
-      $this->copyParamFile2Host($paramFileName);
+      $this->copyString2File($htmlTable,$paramFileName);
+      $this->copyFile2Host($paramFileName);
   }
 
+  /*
+   \brief       Copies a string to a file.
+   \param       $string A variable containing a string.
+   \param       $file The path and file where to copy the string.
+  */
+  private function copyString2File($string,$file) {
+      $copy2File = fopen($file, 'w');
+      fwrite($copy2File,$string);
+      fclose($copy2File);
+  }
+
+  /*
+   \brief       Gets a name for a file that will contain only the job parameters.
+   \return      The file path and name
+  */
   private function getParamFileName( ) {
       $jobDescription = $this->description();
       $paramFileName = $jobDescription->destinationImageName();
@@ -449,21 +475,28 @@ class Job {
       return $paramFileName;
   }
 
-  private function copyParamFile2Host($paramFileName) {
+  /*
+   \brief       Copies a file from the current server to the processing server.
+   \param       $fileName Path and name of the file on the local machine.
+  */
+  private function copyFile2Host($fileName) {
       global $imageProcessingIsOnQueueManager;
       global $huygens_user;
 
-      // If working with remote servers, copy the new file to its destination.
+      // If working with remote servers, copy the file to the user destination.
       if (!$imageProcessingIsOnQueueManager) {
           $server = split(" ", $this->server);
           $server_hostname = $server[0];
-          $cmd = "scp " . $paramFileName . " " .$huygens_user."@";
-          $cmd .= $server_hostname.":".$paramFileName;
-
+          $cmd = "scp " . $fileName . " " .$huygens_user."@";
+          $cmd .= $server_hostname.":".$fileName;
           $result = exec($cmd);
       } 
   }
 
+  /*
+   \brief       Read the Huygens deconvolution output file of this job id.
+   \return      An array containing one array element per file line.
+  */
   private function readJobInformationFile() {
       global $imageProcessingIsOnQueueManager;
       global $huygens_user;
@@ -480,15 +513,18 @@ class Job {
           $server_hostname = $server[0];
           $cmd = "ssh ".$huygens_user."@".$server_hostname." ".$cmd;
       }
-      $result = exec($cmd,$reportFile);
+      $result = exec($cmd,$HuJobInfFile);
 
-      return $reportFile;
+      return $HuJobInfFile;
   }
 
   /*
-   \brief
+   \brief       Parses the contents of the Huygens deconvolution output file
+   \brief       to leave only the deconvolution parameters in an html table.
+   \param       $informationFile An array with the contents of the file.
+   \return      A string with the formatted html table.
   */
-  private function parseFile2htmlTable($paramFileName,$reportFile) {
+  private function parseInf2htmlTable($informationFile) {
 
       $paramArray = array ( 'dx'            =>  'Sampling size X',
                             'dy'            =>  'Sampling size Y',
@@ -500,86 +536,83 @@ class Job {
                             'exBeamFill'    =>  '',
                             'imagingDir'    =>  '',
                             'na'            =>  'Numerical aperture',
-                            'ri'            =>  'Refractive index (media)',
+                            'ri'            =>  'Refractive index (medium)',
                             'ril'           =>  'Refractive index (lens)',
                             'pr'            =>  'Pinhole radius (backprojected)',
                             'ex'            =>  'Excitation wavelength',
                             'em'            =>  'Emission wavelength');
 
-      // Proceed to parse and save the parameter file.
-      $paramFile = fopen($paramFileName, 'w');
-      $tableColums = "<table border = 1>";
-      $tableColums .= "<tr><td><b>PARAMETER</b></td>";
-      $tableColums .= "<td><b>VALUE</b></td>";
-      $tableColums .= "<td><b>CHANNEL</b></td>";
-      $tableColums .= "<td><b>SOURCE</b></td></tr>";
-      fwrite($paramFile,$tableColums);
+      $htmlTable = "<table border = 1>";
+      $htmlTable .= "<tr><td><b>PARAMETER</b></td>";
+      $htmlTable .= "<td><b>VALUE</b></td>";
+      $htmlTable .= "<td><b>CHANNEL</b></td>";
+      $htmlTable .= "<td><b>SOURCE</b></td></tr>";
 
       $pattern = "/{Parameter ([a-z]+?) set in template to value (.*) will";
       $pattern .= " remain as in metadata (.*).}}/";
-      foreach ($reportFile as $fileLine) {
-          unset($matches);
+
+      foreach ($informationFile as $fileLine) {
           preg_match($pattern,$fileLine,$matches);
           if (!empty($matches)) {
-              if ($paramArray[$matches[1]] != "") {
-                  $data = "<tr><td>" . $paramArray[$matches[1]] . "</td>";
-                  $data .= "<td>" . $matches[3] . "</td>";
-                  $data .= "<td>All</td>";
-                  $data .= "<td>File metadata</td></tr>";
-                  fwrite($paramFile,$data);
+              $parameter = $matches[1];
+              if ($paramArray[$parameter] != "") {
+                  $htmlTable .= "<tr><td>" . $paramArray[$parameter] . "</td>";
+                  $htmlTable .= "<td>" . $matches[3] . "</td>";
+                  $htmlTable .= "<td>All</td>";
+                  $htmlTable .= "<td>File metadata</td></tr>";
               }
           }
       }
 
       $pattern = "/{Parameter ([a-z]+?) will be taken from template: (.*).}}/";
-      foreach ($reportFile as $fileLine) {
-          unset($matches);
+
+      foreach ($informationFile as $fileLine) {
           preg_match($pattern,$fileLine,$matches);
           if (!empty($matches)) {
-              if ($paramArray[$matches[1]] != "") {
-                  $data = "<tr><td>" . $paramArray[$matches[1]] . "</td>";
-                  $data .= "<td>" . $matches[2] . "</td>";
-                  $data .= "<td>All</td>";
-                  $data .= "<td>User defined</td></tr>";
-                  fwrite($paramFile,$data);
+              $parameter = $matches[1];
+              if ($paramArray[$parameter] != "") {
+                  $htmlTable .= "<tr><td>" . $paramArray[$parameter] . "</td>";
+                  $htmlTable .= "<td>" . $matches[2] . "</td>";
+                  $htmlTable .= "<td>All</td>";
+                  $htmlTable .= "<td>User defined</td></tr>";
               }
           }
       }
 
       $pattern = "/{Parameter (.*) of channel (.*) will be taken from ";
       $pattern .= "template: (.*).}}/";
-      foreach ($reportFile as $fileLine) {
-          unset($matches);
+
+      foreach ($informationFile as $fileLine) {
           preg_match($pattern,$fileLine,$matches);
           if (!empty($matches)) {
-              if ($paramArray[$matches[1]] != "") {
-                  $data = "<tr><td>" . $paramArray[$matches[1]] . "</td>";
-                  $data .= "<td>" . $matches[3] . "</td>";
-                  $data .= "<td>" . $matches[2] . "</td>";
-                  $data .= "<td>User defined</td></tr>"; 
-                  fwrite($paramFile,$data);
+              $parameter = $matches[1];
+              if ($paramArray[$parameter] != "") {
+                  $htmlTable .= "<tr><td>" . $paramArray[$parameter] . "</td>";
+                  $htmlTable .= "<td>" . $matches[3] . "</td>";
+                  $htmlTable .= "<td>" . $matches[2] . "</td>";
+                  $htmlTable .= "<td>User defined</td></tr>"; 
               }
           }
       }
 
       $pattern = "/{Parameter (.*) of channel (.*) set in template ";
       $pattern .= "to value (.*) will remain as in metadata (.*).}}/";
-      foreach ($reportFile as $fileLine) {
-          unset($matches);
+
+      foreach ($informationFile as $fileLine) {
           preg_match($pattern,$fileLine,$matches);
           if (!empty($matches)) {
-              if ($paramArray[$matches[1]] != "") {
-                  $data = "<tr><td>" . $paramArray[$matches[1]] . "</td>";
-                  $data .= "<td>" . $matches[4] . "</td>";
-                  $data .= "<td>" . $matches[2] . "</td>";
-                  $data .= "<td>File metadata</td>";
-                  fwrite($paramFile,$data);
+              $parameter = $matches[1];
+              if ($paramArray[$parameter] != "") {
+                  $htmlTable .= "<tr><td>" . $paramArray[$parameter] . "</td>";
+                  $htmlTable .= "<td>" . $matches[4] . "</td>";
+                  $htmlTable .= "<td>" . $matches[2] . "</td>";
+                  $htmlTable .= "<td>File metadata</td>";
               }
           }
       }
-      $data = "</table>";
-      fwrite($paramFile,$data);
-      fclose($paramFile);
+      $htmlTable .= "</table>";
+
+      return $htmlTable;
   }
 }
 
