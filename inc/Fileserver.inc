@@ -1275,7 +1275,8 @@ echo '</body></html>';
 
       // This is the text file with the parameter summary (useful to check the
       // runtime parameters that were used if the template was incomplete)
-      $test = $pdest."/".$file.".parameters.txt";
+      $test = $fileBase . ".parameters.txt";
+
       if (file_exists($test)) {
           $path['parameters'] = $test;
       }
