@@ -134,7 +134,9 @@ $geometryFlag = "";
 $channelsFlag = "";
 sort($values);
 foreach($values as $value) {
-  if ( $value == $msgValue ) {
+  if( $value == "" ) {
+    continue;
+  } elseif ( $value == $msgValue ) {
     $translation = $msgTranslation;
   } else {
     $translation = $parameterImageFileFormat->translatedValueFor( $value );
