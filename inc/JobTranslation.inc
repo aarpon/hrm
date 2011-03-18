@@ -751,11 +751,11 @@ Class JobTranslation {
 
     /*!
      \brief       Confidence level of iFacePrim.
-     \return      Default
+     \return      The parameter confidence
      \todo        To be implemented in the GUI
     */
     private function getiFacePrimConfidence( ) {
-        return "default";
+        return $this->getParameterConfidence("iFacePrim");
     }
 
     /*!
@@ -769,11 +769,11 @@ Class JobTranslation {
 
     /*!
      \brief       Confidence level of iFaceScnd.
-     \return      Default
+     \return      The parameter confidence
      \todo        To be implemented in the GUI
     */
     private function getiFaceScndConfidence( ) {
-        return "default";
+        return $this->getParameterConfidence("iFaceScnd");
     }
 
     /*!
@@ -1013,7 +1013,7 @@ Class JobTranslation {
         $numberOfChannels = $this->getNumberOfChannels();
         $cList = "";
         for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $cLevel = "default";
+            $cLevel = $this->getParameterConfidence();
             $cList .= " " . $cLevel;
         }
         return $this->string2tcllist($cList);
@@ -1055,7 +1055,7 @@ Class JobTranslation {
         $numberOfChannels = $this->getNumberOfChannels();
         $cList = "";
         for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $cLevel = "default";
+            $cLevel = $this->getParameterConfidence();
             $cList .= " " . $cLevel;
         }
         return $this->string2tcllist($cList);
@@ -1133,7 +1133,7 @@ Class JobTranslation {
         $numberOfChannels = $this->getNumberOfChannels();
         $cList = "";
         for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $cLevel = "default";
+            $cLevel = $this->getParameterConfidence();
             $cList .= " " . $cLevel;
         }
         return $this->string2tcllist($cList);
@@ -1883,11 +1883,7 @@ Class JobTranslation {
      \return      The confidence level. 
     */
     private function getParameterConfidence($paramName,$channel) {
-        $microSetting = $this->microSetting;
-        $parameter = $microSetting->parameter($paramName);
-        $format = $this->HuImageFormat;
-        
-        return $parameter->interpretedHuCoreConfidenceLevel($format,$channel);
+        return "verified";
     }
 
     /*!
