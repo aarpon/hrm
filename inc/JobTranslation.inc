@@ -327,6 +327,8 @@ Class JobTranslation {
         $taskInfo .= $this->getAbsTime();
         $taskInfo .= " timeOut ";
         $taskInfo .= $this->getTaskIDTimeOut();
+        $taskInfo .= " userDefConfidence ";
+        $taskInfo .= "verified";
         $taskInfo = $this->string2tcllist($taskInfo);
         $taskInfo = "info " . $taskInfo;
             
@@ -746,7 +748,7 @@ Class JobTranslation {
      \todo        To be implemented in the GUI
     */
     private function getiFacePrim( ) {
-        return $this->string2tcllist("");
+        return 0.0;
     }
 
     /*!
@@ -755,7 +757,7 @@ Class JobTranslation {
      \todo        To be implemented in the GUI
     */
     private function getiFacePrimConfidence( ) {
-        return $this->getParameterConfidence("iFacePrim");
+        return $this->getParameterConfidence("iFacePrim",0);
     }
 
     /*!
@@ -764,7 +766,7 @@ Class JobTranslation {
      \todo        To be implemented in the GUI
     */
     private function getiFaceScnd( ) {
-        return $this->string2tcllist("");
+        return 0.0;
     }
 
     /*!
@@ -773,7 +775,7 @@ Class JobTranslation {
      \todo        To be implemented in the GUI
     */
     private function getiFaceScndConfidence( ) {
-        return $this->getParameterConfidence("iFaceScnd");
+        return $this->getParameterConfidence("iFaceScnd",0);
     }
 
     /*!
@@ -1001,7 +1003,7 @@ Class JobTranslation {
      \todo        To be implemented in the GUI
     */
     private function getObjQualityForChannel($channel) {
-        $objQuality = "perfect";
+        $objQuality = "good";
         return $objQuality;
     }
 
@@ -1013,7 +1015,7 @@ Class JobTranslation {
         $numberOfChannels = $this->getNumberOfChannels();
         $cList = "";
         for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $cLevel = $this->getParameterConfidence();
+            $cLevel = $this->getParameterConfidence("ObjQuality",$chanCnt);
             $cList .= " " . $cLevel;
         }
         return $this->string2tcllist($cList);
@@ -1055,7 +1057,7 @@ Class JobTranslation {
         $numberOfChannels = $this->getNumberOfChannels();
         $cList = "";
         for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $cLevel = $this->getParameterConfidence();
+            $cLevel = $this->getParameterConfidence("ExcitationPhotonCnt",0);
             $cList .= " " . $cLevel;
         }
         return $this->string2tcllist($cList);
@@ -1133,7 +1135,7 @@ Class JobTranslation {
         $numberOfChannels = $this->getNumberOfChannels();
         $cList = "";
         for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $cLevel = $this->getParameterConfidence();
+            $cLevel = $this->getParameterConfidence("ExBeamFactor",0);
             $cList .= " " . $cLevel;
         }
         return $this->string2tcllist($cList);

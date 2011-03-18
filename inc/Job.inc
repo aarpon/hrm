@@ -540,7 +540,9 @@ class Job {
                             'ril'           =>  'Refractive index (lens)',
                             'pr'            =>  'Pinhole radius (backprojected)',
                             'ex'            =>  'Excitation wavelength',
-                            'em'            =>  'Emission wavelength');
+                            'em'            =>  'Emission wavelength',
+                            'micr'          =>  'Microscope type',
+                            'pcnt'          =>  'Photon count');
 
       $htmlTable = "<table border = 1>";
       $htmlTable .= "<tr><td><b>PARAMETER</b></td>";
