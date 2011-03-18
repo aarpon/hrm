@@ -1409,7 +1409,8 @@ class DatabaseConnection {
     \todo	This function is a STUB. Expand it as soon as the table structure is known
   */
   public function getParameterConfidenceLevel( $fileFormat, $parameterName ) {
-	// Some Parameters MUST be provided, no matter what file format is chosen
+	// Some Parameters MUST be provided by the user and cannot be overridden 
+	// by the file metadata
 	switch ( $parameterName ) {
 	  case 'ImageFileFormat' :
 	  case 'NumberOfChannels' :
@@ -1421,7 +1422,7 @@ class DatabaseConnection {
 	  case 'AberrationCorrectionMode':
 	  case 'AdvancedCorrectionOptions':
 	  case 'PSF' :
-		return "Provide";
+		return "provided";
 	  default:
 		
 		// For the other Parameters, the $fileFormat must be specified
@@ -1458,20 +1459,8 @@ class DatabaseConnection {
 		  
 		}
 		
-		// Return the confidenceLevel mapped to the HRM usage
-		// Currently, all confidence levels higher and equal than 'estimated'
-		// are Trusted, meaning that the user is allowed not to type any value
-		// (but it is his responsibility then to check for correctness)
-		switch ( $confidenceLevel ) {
-		  case 'verified':
-		  case 'reported':
-		  case 'estimated':
-			return 'Trusted';
-		  case 'default':
-			return 'Missing';
-		  default:
-			return 'Missing';
-		}
+		// Return the confidence level
+		return $confidenceLevel;
 
 	}
   
@@ -1551,7 +1540,8 @@ class DatabaseConnection {
 	$levels[ 'default' ]   = 0;
 	$levels[ 'estimated' ] = 1;
 	$levels[ 'reported' ]  = 2;
-	
+	$levels[ 'verified' ]  = 3;
+
 	if ( $levels[ $level1 ] <= $levels[ $level2 ] ) {
 	  return $level1;
 	} else {

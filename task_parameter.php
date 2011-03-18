@@ -97,7 +97,7 @@ include("header.inc.php");
           
            <h4>How should your images be restored?</h4>
            
-             <fieldset class="setting Provide" 
+             <fieldset class="setting provided" 
               onmouseover="javascript:changeQuickHelp( 'method' );" >  <!-- deconvolution algorithm -->
             
                 <legend>
@@ -131,10 +131,9 @@ foreach($possibleValues as $possibleValue) {
 ?>
                 </select>
                 
-            <p class="message_confidence_Provide">&nbsp;</p>
             </fieldset>
         
-            <fieldset class="setting Provide"
+            <fieldset class="setting provided"
               onmouseover="javascript:changeQuickHelp( 'snr' );" >  <!-- signal/noise ratio -->
             
                 <legend>
@@ -260,10 +259,10 @@ for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
                     
                 </div>
                 
-            <p class="message_confidence_Provide">&nbsp;</p>
+            
             </fieldset>
             
-            <fieldset class="setting Provide"
+            <fieldset class="setting provided"
               onmouseover="javascript:changeQuickHelp( 'background' );" >  <!-- background mode -->
             
                 <legend>
@@ -336,12 +335,12 @@ for ($i=0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
                     
                 </div>
                 
-            <p class="message_confidence_Provide">&nbsp;</p>
+            
             </fieldset>
 
             <div id="cmle-it" <?php echo $visibility ?>>
 
-            <fieldset class="setting Provide" 
+            <fieldset class="setting provided" 
               onmouseover="javascript:changeQuickHelp( 'stopcrit' );" >  <!-- stopping criteria -->
             
                 <legend>
@@ -386,7 +385,7 @@ $value = $parameter->value();
                     
                 </div>
                 
-            <p class="message_confidence_Provide">&nbsp;</p>
+            
             </fieldset>
             </div>
             

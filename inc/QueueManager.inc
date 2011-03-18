@@ -639,13 +639,13 @@ class QueueManager {
  	  if (file_exists($templateParametersFile)) {
 		$text = $text . "\n\n- TEMPLATE PARAMETERS ----------------------------\n\n";
 		$text = $text . "The following are the parameters used during deconvolution.\n" .
-		                "This is useful in case you omitted some parameters in the\n" .
-						"HRM settings: please check if they could be read properly\n" .
-						"from the files at runtime.\n\n";
+		                "This is useful in case you chose to let hucore replace\n" .
+						"some of your parameters with those read from the files:\n" .
+						"please check if they are correct.\n\n";
 		$text = $text . file_get_contents($templateParametersFile)."\n";
  	  }
 	  $text = $text . "\n\n- USER PARAMETERS ---------------------------------------------\n\n";
-	  $text = $text . "These are the parameters you set in the HRM.\nYou might have omitted some of the image parameters:\n\n";
+	  $text = $text . "These are the parameters you set in the HRM:\n\n";
  	  $text = $text . $this->parameterText($job);
 	  
  	  $imageName = $desc->destinationImageName();
@@ -757,13 +757,13 @@ class QueueManager {
  	  if (file_exists($templateParametersFile)) {
 		$text = $text . "\n\n- TEMPLATE PARAMETERS ----------------------------\n\n";
 		$text = $text . "The following are the parameters used during deconvolution.\n" .
-	                    "This is useful in case you omitted some parameters in the\n" .
-		                "HRM settings: please check if they could be read properly\n" .
-					    "from the files at runtime.\n\n";
+		                "This is useful in case you chose to let hucore replace\n" .
+						"some of your parameters with those read from the files:\n" .
+						"please check if they are correct.\n\n";
 		$text = $text . file_get_contents($templateParametersFile)."\n";
  	  }
 	  $text = $text . "\n\n- USER PARAMETERS ---------------------------------------------\n\n";
-	  $text = $text . "These are the parameters you set in the HRM.\nYou might have omitted some of the image parameters:\n\n";
+	  $text = $text . "These are the parameters you set in the HRM:\n\n";
  	  $text = $text . $this->parameterText($job);
  	  $mail = new Mail($email_sender);
  	  $mail->setReceiver($emailAddress);
@@ -813,13 +813,13 @@ class QueueManager {
  	  if (file_exists($templateParametersFile)) {
 		$text = $text . "\n\n- TEMPLATE PARAMETERS ----------------------------\n\n";
 		$text = $text . "The following are the parameters used during deconvolution.\n" .
-		                "This is useful in case you omitted some parameters in the\n" .
-			            "HRM settings: please check if they could be read properly\n" .
-						"from the files at runtime.\n\n";
+		                "This is useful in case you chose to let hucore replace\n" .
+						"some of your parameters with those read from the files:\n" .
+						"please check if they are correct.\n\n";
 	    $text = $text . file_get_contents($templateParametersFile)."\n";
  	  }
 	  $text = $text . "\n\n- USER PARAMETERS ---------------------------------------------\n\n";
-	  $text = $text . "These are the parameters you set in the HRM.\nYou might have omitted some of the image parameters:\n\n";
+	  $text = $text . "These are the parameters you set in the HRM:\n\n";
  	  $text = $text . $this->parameterText($job);
 
  	  $text = $text . "\n\n- TEMPLATE ----------------------------\n\n";
@@ -875,13 +875,13 @@ class QueueManager {
  	  if (file_exists($templateParametersFile)) {
 		$text = $text . "\n\n- TEMPLATE PARAMETERS ----------------------------\n\n";
 		$text = $text . "The following are the parameters used during deconvolution.\n" .
-		                "This is useful in case you omitted some parameters in the\n" .
-					    "HRM settings: please check if they could be read properly\n" .
-						"from the files at runtime.\n\n";
+		                "This is useful in case you chose to let hucore replace\n" .
+						"some of your parameters with those read from the files:\n" .
+						"please check if they are correct.\n\n";
  	    $text = $text . file_get_contents($templateParametersFile)."\n";
  	  }
 	  $text = $text . "\n\n- USER PARAMETERS ---------------------------------------------\n\n";
-	  $text = $text . "These are the parameters you set in the HRM.\nYou might have omitted some of the image parameters:\n\n";
+	  $text = $text . "These are the parameters you set in the HRM:\n\n";
  	  $mail = new Mail($email_sender);
  	  $mail->setReceiver($emailAddress);
  	  $mail->setSubject('Your HRM job finished with a warning');

@@ -878,38 +878,6 @@ option.default {
     padding: 0px;
 }
 
-.message_confidence_Provide {
-    border: none;
-    height: 15px;
-    margin-top: 5px;
-    margin-bottom: -5px;
-    background: url(../images/textProvide.png) no-repeat bottom;
-}
-
-.message_confidence_Trusted {
-    border: none;
-    height: 35px;
-    margin-top: 5px;
-    margin-bottom: -5px;
-    background: url(../images/textTrusted.png) no-repeat bottom;
-}
-
-.message_confidence_Untrusted {
-    border: none;
-    height: 15px;
-    margin-top: 5px;
-    margin-bottom: -5px;
-    background: url(../images/textUntrusted.png) no-repeat bottom;
-}
-
-.message_confidence_Missing {
-    border: none;
-    height: 35px;
-    margin-top: 5px;
-    margin-bottom: -5px;
-    background: url(../images/textMissing.png) no-repeat bottom;
-}
-
 .warning {
     font-weight: bold;
     color: red;
@@ -1048,19 +1016,63 @@ option.default {
     width: 30%
 }
 
-/* Confidence levels for parameters: Trusted, Untrusted, Missing, Provide */
-.Trusted {
-	background: url(../images/paramTrusted.png) repeat-y left;
+/* Confidence levels for parameters: provided, verified, reported, estimated, default */
+.verified {
+	background: url(../images/param_verified.png) repeat-y left;
 }
 
-.Untrusted {
-	background: url(../images/paramUntrusted.png) repeat-y left;
+.reported {
+	background: url(../images/param_reported.png) repeat-y left;
 }
 
-.Missing {
-	background: url(../images/paramMissing.png) repeat-y left;
+.estimated {
+	background: url(../images/param_estimated.png) repeat-y left;
 }
 
-.Provide {
-    background: url(../images/paramProvide.png) repeat-y left;
+.default {
+	background: url(../images/param_default.png) repeat-y left;
+}
+
+.provided {
+    background: url(../images/param_provided.png) repeat-y left;
+}
+
+.message_confidence_verified {
+    border: none;
+    height: 15px;
+    margin-top: 5px;
+    margin-bottom: -5px;
+    background: url(../images/text_verified.png) no-repeat bottom;
+}
+
+.message_confidence_reported {
+    border: none;
+    height: 15px;
+    margin-top: 5px;
+    margin-bottom: -5px;
+    background: url(../images/text_reported.png) no-repeat bottom;
+}
+
+.message_confidence_estimated {
+    border: none;
+    height: 15px;
+    margin-top: 5px;
+    margin-bottom: -5px;
+    background: url(../images/text_estimated.png) no-repeat bottom;
+}
+
+.message_confidence_default {
+    border: none;
+    height: 15px;
+    margin-top: 5px;
+    margin-bottom: -5px;
+    background: url(../images/text_default.png) no-repeat bottom;
+}
+
+.message_confidence_provided {
+    border: none;
+    height: 15px;
+    margin-top: 5px;
+    margin-bottom: -5px;
+    background: url(../images/text_provided.png) no-repeat bottom;
 }

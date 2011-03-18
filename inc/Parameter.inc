@@ -77,7 +77,7 @@ abstract class Parameter {
 	/*!
 		\brief	Returns the interpreted HuCore confidence level for the Parameter
                 \param  $fileFormat The file extension of the raw image
-                \param  $channel    A channel
+                \param  $channel    A channel (currently unused)
 		
 		This is to be used to create the template. The returned confidence
 		level is a function of the original confidence level and the actions
@@ -89,37 +89,10 @@ abstract class Parameter {
 		\return	Interpreted confidence level for the Parameter (in HuCore notation)
 	*/
 	public function interpretedHuCoreConfidenceLevel( $fileFormat,$channel ) {
-
-		// If the user specified a value, we consider it 'verified' no matter
-		// what the original confidence level was
-                $value = $this->value();
-		if ( $value[$channel] != NULL ) {
-			return 'verified';
-		}
-
-                $db = new DatabaseConnection();
-                $cl = $db->getParameterConfidenceLevel($fileFormat, $this->name);
-                $this->setConfidenceLevel($cl);
-
-		// If the user did not enter a value, we have a couple of cases
-
-		// If the Parameter is 'Trusted' we return 'reported' 
-		if ( $this->confidenceLevel == "Trusted" ) {
-			return 'reported';
-		}
-		
-		// If the Parameter is 'Untrusted' we return 'estimated' 
-		if ( $this->confidenceLevel == "Untrusted" ) {
-			return 'estimated';
-		}
-		
-		// If the Parameter is Missing we return 'default'.
-		// In reality, the HRM will block the user from skipping a
-		// "Missing" Parameter.
-		if ( $this->confidenceLevel == "Missing" ) {
-			return 'default';
-		}
-		
+        $db = new DatabaseConnection();
+        $cl = $db->getParameterConfidenceLevel($fileFormat, $this->name);
+        $this->setConfidenceLevel($cl);
+		return $cl;	
 	}
 	
 	/*!
@@ -132,16 +105,15 @@ abstract class Parameter {
 
 	/*!
 		\brief	Checks whether the Parameter must have a (valid) value
-		
-		Parameters are optionally allowed to be left unset if their confidence
-		level allows for it. The function will return true if the confidence
-		level is Missing or Provide, and false if it is Trusted or Untrusted.
-		
-		\return true if the Parameter can be empty, false otherwise
+		\todo 	A complete framework is in place for having Parameters allowed
+				to be left unset if their confidence level allows for it.
+				In current implementation, mustProvide() always returns true.
+				Later, the function might return false for some confidence
+				levels such as 'verified' or 'reported'.		
+		\return true always
 	*/
 	public function mustProvide( ) {
-		return ( $this->confidenceLevel == "Provide" |
-			$this->confidenceLevel == "Missing" );
+		return true;
 	}
 
 
@@ -2515,7 +2487,7 @@ class AdvancedCorrectionOptions extends ChoiceParameter {
 				break;
 		}
 		$name = $this->formattedName( $this->name );
-		$result = $result . $value . "\n";
+		$result = $name . $value . "\n";
 		return $result;
 	}
 
