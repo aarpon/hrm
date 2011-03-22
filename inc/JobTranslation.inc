@@ -317,6 +317,9 @@ Class JobTranslation {
     */
     private function getTaskIDInfo( ) {
 
+        $microSetting = $this->microSetting;
+        $userDefConfidence = $microSetting->parameter("OverrideConfidence");
+
         /* The job is sent to the Huygens Scheduler to start right away.
          Therefore the state is ready and the timeStartAbs is just now. */
         $taskInfo = "state ";
@@ -328,7 +331,7 @@ Class JobTranslation {
         $taskInfo .= " timeOut ";
         $taskInfo .= $this->getTaskIDTimeOut();
         $taskInfo .= " userDefConfidence ";
-        $taskInfo .= "verified";
+        $taskInfo .= $userDefConfidence->getHuCoreCounterpart();
         $taskInfo = $this->string2tcllist($taskInfo);
         $taskInfo = "info " . $taskInfo;
             

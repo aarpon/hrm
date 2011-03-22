@@ -2602,5 +2602,30 @@ class OverrideConfidence extends ChoiceParameter {
 		return $result;
 	}
 
+	/*!
+		\brief	Returns the parameter representation in HuCore
+		\return	HuCore representation of the Parameter
+	*/
+	public function getHuCoreCounterPart( ) {
+            switch ( $this->value( ) ) {
+            case 1:
+                $value = "nometadata";
+                break;
+            case 2:
+                $value = "default";
+                break;
+            case 3:
+                $value = "estimated";
+                break;
+            case 4:
+                $value = "reported";
+                break;
+            case 5:
+                $value = "verified";
+                break;
+            }
+            return $value;
+	}
+
 }
 
