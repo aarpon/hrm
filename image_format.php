@@ -134,16 +134,14 @@ $geometryFlag = "";
 $channelsFlag = "";
 sort($values);
 foreach($values as $value) {
-  if( $value == "" ) {
-    continue;
-  } elseif ( $value == $msgValue ) {
+  $selected = "";
+  if ( $value == $msgValue ) {
     $translation = $msgTranslation;
   } else {
     $translation = $parameterImageFileFormat->translatedValueFor( $value );
     if (stristr($value, "tiff")) {
       $translation .= " (*.tiff)";
     }
-    $selected = "";
     if ($value == $parameterImageFileFormat->value()) {
       $selected = " selected=\"selected\"";
       if ($value == "lsm-single" || $value == "tiff-single") {
