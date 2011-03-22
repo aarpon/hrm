@@ -136,6 +136,18 @@ abstract class Parameter {
 	}
 
 	/*!
+		\brief	Returns the default value for the Parameters that have a default
+		        value ot NULL for those that don't
+		
+		This function should be <b>overloaded</b> by the subclasses
+		
+		\return	tyhe default value or NULL
+	*/
+	public function defaultValue() {
+		return NULL;
+	}
+
+	/*!
 		\brief	Checks whether the Parameter is an Image Parameter
 		
 		This function should be <b>overloaded</b> by the subclasses
@@ -399,7 +411,7 @@ abstract class ChoiceParameter extends Parameter {
 		$this->possibleValues = $values;
 		
 		// Get and set the Parameter default value
-		$defaultValue = $db->defaultValue($this->name());
+		$defaultValue = $this->defaultValue();
 		if ($defaultValue != NULL) {
 			$this->value = $defaultValue;
 		}		
@@ -522,6 +534,21 @@ abstract class ChoiceParameter extends Parameter {
 			$result = $result . $this->value . "\n";
 		}
 		return $result;
+	}
+	
+	/*!
+		\brief	Returns the default value for the Parameters that have a default
+		        value ot NULL for those that don't
+		
+		This function should be <b>overloaded</b> by the subclasses
+		
+		\return	tyhe default value or NULL
+	*/
+	public function defaultValue() {
+		$db = new DatabaseConnection;	
+		$name = $this->name( );
+		$default = $db->defaultValue( $name );
+		return ( $default );
 	}
 	
 }
@@ -2511,3 +2538,41 @@ class AberrationCorrectionNecessary extends BooleanParameter {
 	}
 
 }
+
+/*
+	============================================================================
+*/
+
+/*!
+ \class	OverrideConfidence
+ \brief	A ChoiceParameter to represent the minimum confidence level for overriding template parameters
+*/
+class OverrideConfidence extends ChoiceParameter {
+
+	/*!
+		\brief	Constructor: creates an empty Parameter
+	*/
+	public function __construct() {
+		parent::__construct("OverrideConfidence");
+		
+		// We initialize the value to the default value
+		$this->value = $this->defaultValue();
+	}
+
+	/*!
+		\brief	Returns the Parameter translated value
+		
+		The translated form of the Parameter value is then one used in
+		the Tcl script. The translation of the microscope yype is read from
+		the database.
+		
+		\return translated value
+	*/
+	public function translatedValue() {
+		$db = new DatabaseConnection();
+		$result = $db->translationFor($this->name, $this->value);
+		return $result;
+	}
+
+}
+

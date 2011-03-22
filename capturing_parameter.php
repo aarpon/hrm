@@ -77,9 +77,6 @@ $_SESSION['setting']->set($pinholeParam);
 $PSF = $_SESSION['setting']->parameter( 'PointSpreadFunction' )->value( );
 if ($PSF == 'measured' ) {
   $pageToGo = 'select_psf.php';
-  $controlIconToShow = "icon next";
-  $controlTextToShow = "Continue to next page.";
-  $saveParametersToDB = false;
   // Make sure to turn off the correction
   $_SESSION['setting']->parameter( 'AberrationCorrectionNecessary' )->setValue( '0' );
   $_SESSION['setting']->parameter( 'PerformAberrationCorrection' )->setValue( '0' );
@@ -95,10 +92,7 @@ if ($PSF == 'measured' ) {
 	// calculate whether an aberration correction is necessary and we leave
 	// the decision to the user in the aberration_correction.php page.
 	$pageToGo = 'aberration_correction.php';
-    $controlIconToShow = "icon next";
-    $controlTextToShow = "Continue to next page.";
     $_SESSION['setting']->parameter( 'AberrationCorrectionNecessary' )->setValue( '1' );
-    $saveParametersToDB = false;
   } else {
 	// If we know both the refractive indices we can calculate the deviation
 	// and skip the aberration correction page in case the deviation is smaller
@@ -107,19 +101,13 @@ if ($PSF == 'measured' ) {
           
 	// Do we need to go to the aberration correction page?
 	if ( $deviation < 0.01 ) {
-	  $pageToGo = 'select_parameter_settings.php';
-	  $controlIconToShow = "icon save";
-	  $controlTextToShow = "Save and return to the image parameters selection page.";
-	  $saveParametersToDB = true;
+	  $pageToGo = 'override_parameter.php';
 	  // Make sure to turn off the correction
 	  $_SESSION['setting']->parameter( 'AberrationCorrectionNecessary' )->setValue( '0' );
 	  $_SESSION['setting']->parameter( 'PerformAberrationCorrection' )->setValue( '0' );
 	} else {
 	  $pageToGo = 'aberration_correction.php';
-	  $controlIconToShow = "icon next";
-	  $controlTextToShow = "Continue to next page.";
 	  $_SESSION['setting']->parameter( 'AberrationCorrectionNecessary' )->setValue( '1' );
-	  $saveParametersToDB = false;
 	}
   }
 }
@@ -132,15 +120,7 @@ if ($PSF == 'measured' ) {
 
 $ok = $_SESSION[ 'setting' ]->checkPostedCapturingParameters( $_POST );
 if ($ok) {
-  if ( $saveParametersToDB == true ) {
-	$saved = $_SESSION['setting']->save();
-	$message = "            <p class=\"warning\">".$_SESSION['setting']->message()."</p>";
-	if ($saved) {
-	  header("Location: " . $pageToGo ); exit();
-	}
-  } else {
-	header("Location: " . $pageToGo ); exit();
-  }
+  header("Location: " . $pageToGo ); exit();
 } else {
   $message = "            <p class=\"warning\">".$_SESSION['setting']->message()."</p>";
 }
@@ -202,7 +182,7 @@ if ( $nyquist === false ) {
     <span id="ttSpanNyquist">Check your sampling with the online Nyquist calculator.</span>
     <span id="ttSpanBack">Go back to previous page.</span>  
     <span id="ttSpanCancel">Abort editing and go back to the image parameters selection page. All changes will be lost!</span>  
-    <span id="ttSpanForward"><?php echo $controlTextToShow; ?></span>
+    <span id="ttSpanForward">Continue to next page.</span>
 
     <div id="nav">
         <ul>
@@ -461,7 +441,7 @@ if ($_SESSION['setting']->isNipkowDisk()) {
                   onmouseover="TagToTip('ttSpanCancel' )"
                   onmouseout="UnTip()"
                   onclick="document.location.href='select_parameter_settings.php'" />
-              <input type="submit" value="" class="<?php echo $controlIconToShow; ?>" 
+              <input type="submit" value="" class="icon next" 
                   onmouseover="TagToTip('ttSpanForward' )"
                   onmouseout="UnTip()"
                   onclick="process()" />

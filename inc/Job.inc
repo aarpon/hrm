@@ -442,7 +442,7 @@ class Job {
 
   /*
    \brief       Filters the Huygens deconvolution output file to leave
-   \brief       a second file containing only the deconvolution parameters.
+				a second file containing only the deconvolution parameters.
   */
   private function makeJobParametersFile( ) {
       $jobInformation = $this->readJobInformationFile();

@@ -1076,3 +1076,10 @@ option.default {
     margin-bottom: -5px;
     background: url(../images/text_provided.png) no-repeat bottom;
 }
+
+.message_confidence_override {
+    border: none;
+    height: 15px;
+    margin-top: 5px;
+    margin-bottom: -5px;
+}

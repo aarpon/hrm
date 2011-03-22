@@ -273,7 +273,8 @@ class ParameterSetting extends Setting {
 			'PerformAberrationCorrection',
 			'AberrationCorrectionMode',
 			'AdvancedCorrectionOptions',
-			'PSFGenerationDepth'
+			'PSFGenerationDepth',
+			'OverrideConfidence'
 			);
 			foreach ($parameterClasses as $class) {
 			  $param = new $class;
@@ -309,6 +310,7 @@ class ParameterSetting extends Setting {
    These Parameters must all be defined.
 
    \param	$postedParameters	The $_POST array
+   \return	true if all Paraneters are defined and valid, false otherwise   
    */
   public function checkPostedImageParameters( $postedParameters ) {
 
@@ -409,6 +411,7 @@ class ParameterSetting extends Setting {
    These Parameter might have different confidence levels
 
    \param	$postedParameters	The $_POST array
+   \return	true if all Paraneters are defined and valid, false otherwise   
    */
   public function checkPostedMicroscopyParameters( $postedParameters ) {
 
@@ -526,6 +529,7 @@ class ParameterSetting extends Setting {
    \brief	Checks that the posted Capturing Parameters are all defined
    and valid
    \param	$postedParameters	The $_POST array
+   \return	true if all Paraneters are defined and valid, false otherwise
    */
   public function checkPostedCapturingParameters( $postedParameters ) {
 
@@ -725,6 +729,7 @@ class ParameterSetting extends Setting {
    \brief	Checks that the posted Aberration Correction Parameters are all defined
    and valid
    \param	$postedParameters	The $_POST array
+   \return	true if all Paraneters are defined and valid, false otherwise
    */
   public function checkPostedAberrationCorrectionParameters( $postedParameters ) {
 
@@ -915,6 +920,7 @@ class ParameterSetting extends Setting {
    \brief	Checks that the posted Calculate Pixel Size Parameters are all defined
    and valid
    \param	$postedParameters	The $_POST array
+   \return	true if all Paraneters are defined and valid, false otherwise
    */
   public function checkPostedCalculatePixelSizeParameters( $postedParameters ) {
 
@@ -965,6 +971,39 @@ class ParameterSetting extends Setting {
 
     return $noErrorsFound;
 
+  }
+
+  /*!
+   \brief	Checks that the posted OverrideParameter is defined and valid
+   \param	$postedParameters	The $_POST array
+   \return	true if all Paraneters are defined and valid, false otherwise   
+   */
+  public function checkPostedOverrideParameter( $postedParameters ) {
+	
+    if ( count( $postedParameters ) == 0 ) {
+      $this->message = '';
+      return False;
+    }
+
+    $this->message = '';
+    $noErrorsFound = True;
+
+    if ( !isset( $postedParameters[ 'OverrideConfidence' ] ) ||
+      $postedParameters[ 'OverrideConfidence' ] == '' ) {
+		$this->message = "Please choose the override option!";
+		$noErrorsFound = false;
+	} else {
+        // The Parameter is set, now check the value
+        $parameter = $this->parameter( 'OverrideConfidence' );
+        $parameter->setValue( $postedParameters[ 'OverrideConfidence' ] );
+        $this->set( $parameter );
+        if( !$parameter->check() ) {
+          $this->message = $parameter->message();
+          $noErrorsFound = False;
+        }		
+	}
+
+	return $noErrorsFound;
   }
 
   /*!

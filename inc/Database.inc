@@ -423,7 +423,11 @@ class DatabaseConnection {
       $query = "select value from $table where owner='" . $user . "' and setting='" . $name . "' and name='" . $parameterName . "'";
       $newValue = $this->queryLastValue($query);
       if ($newValue == NULL) { 
-          continue;
+          // See if the Parameter has a usable default
+		  $newValue = $parameter->defaultValue( );
+		  if ($newValue == NULL) {
+			continue;
+		  }
       }
       if ($newValue{0}=='#') {
         if ( strcmp( $parameterName, "ExcitationWavelength" ) != 0 ||
@@ -1422,6 +1426,7 @@ class DatabaseConnection {
 	  case 'AberrationCorrectionMode':
 	  case 'AdvancedCorrectionOptions':
 	  case 'PSF' :
+	  case 'OverrideConfidence':
 		return "provided";
 	  default:
 		

@@ -1906,7 +1906,22 @@ if ($current_revision < $n) {
           write_to_error($msg);
           return;           
         }
-        
+
+    // Add new parameter OverrideConfidence possible values
+    $records = array(
+        "parameter"=>array( "OverrideConfidence", "OverrideConfidence", "OverrideConfidence", "OverrideConfidence", "OverrideConfidence" ),
+        "value"=>array( "1", "2", "3", "4", "5" ),
+        "translation"=>array(   "Do not import any metadata from file",
+                                "Import parameters with confidence default and above",
+                                "Import parameters with confidence estimated and above",
+                                "Import parameters with confidence reported and above",
+                                "Import parameters with confidence verified" ),
+        "isDefault"=>array( "t","f", "f", "f", "f" ),
+        "parameter_key"=>array("OverrideConfidence1","OverrideConfidence2","OverrideConfidence3", "OverrideConfidence4", "OverrideConfidence5" ) );
+    if(!insert_records($records,"possible_values")) {
+        return;
+    }
+
 
     // Update revision
     if(!update_dbrevision($n)) 
