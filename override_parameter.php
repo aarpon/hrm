@@ -84,7 +84,7 @@ include("header.inc.php");
     <div id="nav">
         <ul>
             <li><?php echo $_SESSION['user']->name(); ?></li>
-            <li><a href="javascript:openWindow('http://www.svi.nl/HuygensRemoteManagerHelpOptics')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
+            <li><a href="javascript:openWindow('http://www.svi.nl/ConfidenceLevels')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
         </ul>
     </div>
     
@@ -110,7 +110,7 @@ include("header.inc.php");
             <fieldset class="setting <?php echo $overrideConfidence->confidenceLevel(); ?>">
             
                 <legend>
-                    <a href="javascript:openWindow('http://www.svi.nl/MicroscopeType')"><img src="images/help.png" alt="?" /></a>
+                    <a href="javascript:openWindow('http://www.svi.nl/ConfidenceLevels')"><img src="images/help.png" alt="?" /></a>
                     Override option
                 </legend>
 <?php
