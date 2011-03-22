@@ -544,24 +544,26 @@ class Job {
                             'micr'          =>  'Microscope type',
                             'pcnt'          =>  'Photon count');
 
-      $htmlTable = "<table border = 1>";
-      $htmlTable .= "<tr><td><b>PARAMETER</b></td>";
-      $htmlTable .= "<td><b>VALUE</b></td>";
-      $htmlTable .= "<td><b>CHANNEL</b></td>";
-      $htmlTable .= "<td><b>SOURCE</b></td></tr>";
+      $table  = str_pad("PARAMETER",30,' ',STR_PAD_BOTH);
+      $table .= str_pad("VALUE",30,' ',STR_PAD_BOTH);
+      $table .= str_pad("CHANNEL",30,' ',STR_PAD_BOTH);
+      $table .= str_pad("SOURCE",30,' ',STR_PAD_BOTH);
+      $table .= "\n\n";
 
       $pattern = "/{Parameter ([a-z]+?) set in template to value (.*) will";
       $pattern .= " remain as in metadata (.*).}}/";
 
+      $htmlTable = "";
       foreach ($informationFile as $fileLine) {
           preg_match($pattern,$fileLine,$matches);
           if (!empty($matches)) {
               $parameter = $matches[1];
               if ($paramArray[$parameter] != "") {
-                  $htmlTable .= "<tr><td>" . $paramArray[$parameter] . "</td>";
-                  $htmlTable .= "<td>" . $matches[3] . "</td>";
-                  $htmlTable .= "<td>All</td>";
-                  $htmlTable .= "<td>File metadata</td></tr>";
+                  $table .= str_pad($paramArray[$parameter],30,' ',STR_PAD_BOTH);
+                  $table .= str_pad($matches[3],30,' ',STR_PAD_BOTH);
+                  $table .= str_pad("All",30,' ',STR_PAD_BOTH);
+                  $table .= str_pad("File metadata",30,' ',STR_PAD_BOTH);
+                  $table .= "\n";
               }
           }
       }
@@ -573,10 +575,11 @@ class Job {
           if (!empty($matches)) {
               $parameter = $matches[1];
               if ($paramArray[$parameter] != "") {
-                  $htmlTable .= "<tr><td>" . $paramArray[$parameter] . "</td>";
-                  $htmlTable .= "<td>" . $matches[2] . "</td>";
-                  $htmlTable .= "<td>All</td>";
-                  $htmlTable .= "<td>User defined</td></tr>";
+                  $table .= str_pad($paramArray[$parameter],30,' ',STR_PAD_BOTH);
+                  $table .= str_pad($matches[2],30,' ',STR_PAD_BOTH);
+                  $table .= str_pad("All",30,' ',STR_PAD_BOTH);
+                  $table .= str_pad("User defined",30,' ',STR_PAD_BOTH);
+                  $table .= "\n";
               }
           }
       }
@@ -589,10 +592,11 @@ class Job {
           if (!empty($matches)) {
               $parameter = $matches[1];
               if ($paramArray[$parameter] != "") {
-                  $htmlTable .= "<tr><td>" . $paramArray[$parameter] . "</td>";
-                  $htmlTable .= "<td>" . $matches[3] . "</td>";
-                  $htmlTable .= "<td>" . $matches[2] . "</td>";
-                  $htmlTable .= "<td>User defined</td></tr>"; 
+                  $table .= str_pad($paramArray[$parameter],30,' ',STR_PAD_BOTH);
+                  $table .= str_pad($matches[3],30,' ',STR_PAD_BOTH);
+                  $table .= str_pad($matches[2],30,' ',STR_PAD_BOTH);
+                  $table .= str_pad("User defined",30,' ',STR_PAD_BOTH);
+                  $table .= "\n";
               }
           }
       }
@@ -605,16 +609,15 @@ class Job {
           if (!empty($matches)) {
               $parameter = $matches[1];
               if ($paramArray[$parameter] != "") {
-                  $htmlTable .= "<tr><td>" . $paramArray[$parameter] . "</td>";
-                  $htmlTable .= "<td>" . $matches[4] . "</td>";
-                  $htmlTable .= "<td>" . $matches[2] . "</td>";
-                  $htmlTable .= "<td>File metadata</td>";
+                  $table .= str_pad($paramArray[$parameter],30,' ',STR_PAD_BOTH);
+                  $table .= str_pad($matches[4],30,' ',STR_PAD_BOTH);
+                  $table .= str_pad($matches[2],30,' ',STR_PAD_BOTH);
+                  $table .= str_pad("File metadata",30,' ',STR_PAD_BOTH);
               }
           }
       }
-      $htmlTable .= "</table>";
 
-      return $htmlTable;
+      return $table;
   }
 }
 
