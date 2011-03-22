@@ -1385,7 +1385,7 @@ class QueueManager {
 	  $destFolder = $desc->destinationFolder();
  	  $templateParametersFile = $destFolder. "/". $imageName.".parameters.txt";
  	  if (file_exists($templateParametersFile)) {
-		$text = $text . "\n\n- TEMPLATE PARAMETERS ----------------------------\n\n";
+		$text = $text . "\n\n- DECONVOLUTION PARAMETERS -----------------------\n\n";
 		$text = $text . "The following are the parameters used during deconvolution.\n" .
 		                "This is useful in case you chose to let hucore replace\n" .
 						"some of your parameters with those read from the files:\n" .
