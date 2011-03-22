@@ -2573,6 +2573,34 @@ class OverrideConfidence extends ChoiceParameter {
 		$result = $db->translationFor($this->name, $this->value);
 		return $result;
 	}
+	
+	/*!
+		\brief	Returns the string representation of the Parameter
+		\param	$numberOfChannels	This is ignored
+		\return	string representation of the Parameter
+	*/
+	public function displayString( $numberOfChannels = 0 ) {
+		switch ( $this->value( ) ) {
+			case 1:
+				$value = "do not override";
+				break;
+			case 2:
+				$value = "default and above";
+				break;
+			case 3:
+				$value = "estimated and above";
+				break;
+			case 4:
+				$value = "reported and above";
+				break;
+			case 5:
+				$value = "verified";
+				break;
+		}
+		$name = $this->formattedName( $this->name );
+		$result = $name . $value . "\n";
+		return $result;
+	}
 
 }
 
