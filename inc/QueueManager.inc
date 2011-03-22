@@ -839,9 +839,6 @@ class QueueManager {
  	  $text = $text . "Best regards,\n";
  	  $text = $text . "Huygens Remote Manager\n";
 	  
-	  $text = $text . "Best regards,\n";
- 	  $text = $text . "Huygens Remote Manager\n\n";
-
 	  // Job id, pid, server
  	  $id = $desc->id();
  	  $pid = $job->pid();
