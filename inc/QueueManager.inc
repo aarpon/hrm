@@ -633,20 +633,9 @@ class QueueManager {
 
 	  $user = $desc->owner();
  	  $fileserver = new Fileserver($user->name());
-	  $destFolder = $fileserver->destinationFolder();
-	  $imageName = $desc->destinationImageNameAndExtension();
- 	  $templateParametersFile = $destFolder. "/". $imageName.".parameters.txt";
- 	  if (file_exists($templateParametersFile)) {
-		$text = $text . "\n\n- TEMPLATE PARAMETERS ----------------------------\n\n";
-		$text = $text . "The following are the parameters used during deconvolution.\n" .
-		                "This is useful in case you chose to let hucore replace\n" .
-						"some of your parameters with those read from the files:\n" .
-						"please check if they are correct.\n\n";
-		$text = $text . file_get_contents($templateParametersFile)."\n";
- 	  }
-	  $text = $text . "\n\n- USER PARAMETERS ---------------------------------------------\n\n";
-	  $text = $text . "These are the parameters you set in the HRM:\n\n";
- 	  $text = $text . $this->parameterText($job);
+	  	  
+      // Combine all parameters into one file	  
+	  $text = $text . $this->gatherParameters( $job );
 	  
  	  $imageName = $desc->destinationImageName();
  	  $user = $desc->owner();
@@ -753,18 +742,12 @@ class QueueManager {
  	    $text = $text . file_get_contents($remarksFile)."\n\n";
  	  }
 
- 	  $templateParametersFile = $destFolder. "/". $imageName.".parameters.txt";
+	  // Add the parameter file
+ 	  $templateParametersFile = $desc->destinationFolder(). "/". $desc->destinationImageName().".parameters.txt";
  	  if (file_exists($templateParametersFile)) {
-		$text = $text . "\n\n- TEMPLATE PARAMETERS ----------------------------\n\n";
-		$text = $text . "The following are the parameters used during deconvolution.\n" .
-		                "This is useful in case you chose to let hucore replace\n" .
-						"some of your parameters with those read from the files:\n" .
-						"please check if they are correct.\n\n";
 		$text = $text . file_get_contents($templateParametersFile)."\n";
  	  }
-	  $text = $text . "\n\n- USER PARAMETERS ---------------------------------------------\n\n";
-	  $text = $text . "These are the parameters you set in the HRM:\n\n";
- 	  $text = $text . $this->parameterText($job);
+
  	  $mail = new Mail($email_sender);
  	  $mail->setReceiver($emailAddress);
  	  $mail->setSubject('Your HRM job finished successfully');
@@ -797,9 +780,6 @@ class QueueManager {
  	  $text = $text . "Best regards,\n";
  	  $text = $text . "Huygens Remote Manager\n";
 
-	  $text = $text . "Best regards,\n";
- 	  $text = $text . "Huygens Remote Manager\n\n";
-
 	  // Job id, pid, server
  	  $id = $desc->id();
  	  $pid = $job->pid();
@@ -808,20 +788,18 @@ class QueueManager {
 
  	  $text = $text . "\n\n";
  	  $text = $text . $message;
-	  $imageName = $desc->destinationImageNameAndExtension();
- 	  $templateParametersFile = $destFolder. "/". $imageName.".parameters.txt";
- 	  if (file_exists($templateParametersFile)) {
-		$text = $text . "\n\n- TEMPLATE PARAMETERS ----------------------------\n\n";
-		$text = $text . "The following are the parameters used during deconvolution.\n" .
-		                "This is useful in case you chose to let hucore replace\n" .
-						"some of your parameters with those read from the files:\n" .
-						"please check if they are correct.\n\n";
-	    $text = $text . file_get_contents($templateParametersFile)."\n";
- 	  }
-	  $text = $text . "\n\n- USER PARAMETERS ---------------------------------------------\n\n";
-	  $text = $text . "These are the parameters you set in the HRM:\n\n";
- 	  $text = $text . $this->parameterText($job);
 
+	  // Add the parameter file if it could be created
+ 	  $templateParametersFile = $desc->destinationFolder(). "/". $desc->destinationImageName().".parameters.txt";
+ 	  if (file_exists($templateParametersFile)) {
+		$text = $text . "\n\n" . file_get_contents($templateParametersFile)."\n";
+ 	  } else {
+		// Store the user parameters
+		$text = $text . "\n\n- USER PARAMETERS ---------------------------------------------\n\n";
+		$text = $text . "These are the parameters you set in the HRM:\n\n";
+		$text = $text . $this->parameterText($job);
+	  }
+	  
  	  $text = $text . "\n\n- TEMPLATE ----------------------------\n\n";
  	  $text = $text . "What follows is the Huygens Core template executed when the error occured:\n\n";
  	  $text = $text . $job->script();
@@ -870,16 +848,17 @@ class QueueManager {
  	  $server = $job->server();
  	  $text = $text . "\nJob id: $id (pid $pid on $server)\n";
 	  
- 	  $imageName = $desc->destinationImageNameAndExtension();
-	  $templateParametersFile = $destFolder. "/". $imageName.".parameters.txt";
+	  // Add the parameter file if it could be created
+ 	  $templateParametersFile = $desc->destinationFolder(). "/". $desc->destinationImageName().".parameters.txt";
  	  if (file_exists($templateParametersFile)) {
-		$text = $text . "\n\n- TEMPLATE PARAMETERS ----------------------------\n\n";
-		$text = $text . "The following are the parameters used during deconvolution.\n" .
-		                "This is useful in case you chose to let hucore replace\n" .
-						"some of your parameters with those read from the files:\n" .
-						"please check if they are correct.\n\n";
- 	    $text = $text . file_get_contents($templateParametersFile)."\n";
- 	  }
+		$text = $text . "\n\n" . file_get_contents($templateParametersFile)."\n";
+ 	  } else {
+		// Store the user parameters
+		$text = $text . "\n\n- USER PARAMETERS ---------------------------------------------\n\n";
+		$text = $text . "These are the parameters you set in the HRM:\n\n";
+		$text = $text . $this->parameterText($job);
+	  }
+	  
 	  $text = $text . "\n\n- USER PARAMETERS ---------------------------------------------\n\n";
 	  $text = $text . "These are the parameters you set in the HRM:\n\n";
  	  $mail = new Mail($email_sender);
@@ -1392,6 +1371,42 @@ class QueueManager {
 	
 		return $confidenceLevels;
 	}	
+
+ 	/*!
+ 	 \brief	Saves all Parameters to file and also returns the content
+ 	        to be pasted in the email to the user
+ 	 */
+	private function gatherParameters( $job ) {
+	  
+      // Get some objects
+	  $desc = $job->description();
+ 	  $user = $desc->owner();
+	  
+	  // Create a long string with the all parmaters nicely laid out
+	  $text = "";
+	  $imageName = $desc->destinationImageName();
+	  $destFolder = $desc->destinationFolder();
+ 	  $templateParametersFile = $destFolder. "/". $imageName.".parameters.txt";
+ 	  if (file_exists($templateParametersFile)) {
+		$text = $text . "\n\n- TEMPLATE PARAMETERS ----------------------------\n\n";
+		$text = $text . "The following are the parameters used during deconvolution.\n" .
+		                "This is useful in case you chose to let hucore replace\n" .
+						"some of your parameters with those read from the files:\n" .
+						"please check if they are correct.\n\n";
+	    $text = $text . file_get_contents($templateParametersFile)."\n";
+ 	  }
+	  $text = $text . "\n\n- USER PARAMETERS ---------------------------------------------\n\n";
+	  $text = $text . "These are the parameters you set in the HRM:\n\n";
+ 	  $text = $text . $this->parameterText($job);
+	  
+	  // Now overwrite the original .parameters.txt file with this content
+	  $outFile = fopen($templateParametersFile, 'w');
+      fwrite($outFile,$text);
+      fclose($outFile);
+	  
+	  // Return the text
+	  return $text;
+	}
 
 }
 ?>
