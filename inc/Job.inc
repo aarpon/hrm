@@ -422,7 +422,10 @@ class Job {
       global $huygens_user;
 
       // Build a rename command involving the old and new names.
-      $cmd = "mv " . $oldName . " " . $newName;
+      $cmd  = "if [ -f " . $oldName . " ]\n";
+      $cmd .= "then\n";
+      $cmd .= "mv " . $oldName . " " . $newName . "\n";
+      $cmd .= "fi";
 
       // Proceed to execute the command:  rename the Huygens default output file.
       if ($imageProcessingIsOnQueueManager) {
@@ -557,23 +560,23 @@ class Job {
   */
   private function parseInfo2Table($informationFile) {
 
-      $paramArray = array ( 'dx'            =>  'Sampling size X',
-                            'dy'            =>  'Sampling size Y',
-                            'dz'            =>  'Sampling size Z',
-                            'dt'            =>  'Sampling size T',
+      $paramArray = array ( 'dx'            =>  'ccd captor size x',
+                            'dy'            =>  'ccd captor size y',
+                            'dz'            =>  'z step size',
+                            'dt'            =>  'time interval',
                             'iFacePrim'     =>  '',
                             'iFaceScnd'     =>  '',
                             'objQuality'    =>  '',
                             'exBeamFill'    =>  '',
                             'imagingDir'    =>  '',
-                            'na'            =>  'Numerical aperture',
-                            'ri'            =>  'Refractive index (medium)',
-                            'ril'           =>  'Refractive index (lens)',
-                            'pr'            =>  'Pinhole radius (backprojected)',
-                            'ex'            =>  'Excitation wavelength',
-                            'em'            =>  'Emission wavelength',
-                            'micr'          =>  'Microscope type',
-                            'pcnt'          =>  'Photon count');
+                            'pcnt'          =>  '',
+                            'na'            =>  'numerical aperture',
+                            'ri'            =>  'sample medium',
+                            'ril'           =>  'objective type',
+                            'pr'            =>  'pinhole size',
+                            'ex'            =>  'excitation wavelength',
+                            'em'            =>  'emission wavelength',
+                            'micr'          =>  'microscope type');
 
       $table  = str_pad("PARAMETER",30,' ',STR_PAD_BOTH);
       $table .= str_pad("VALUE",30,' ',STR_PAD_BOTH);
