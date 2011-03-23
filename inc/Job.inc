@@ -341,7 +341,7 @@ class Job {
           $huygens_user . "@" . $server_hostname . ":" .
           $marker . " .)");
         }
-        $this->renameHuygensOutputFile();
+        $this->renameHuygensOutputFiles();
         $this->makeJobParametersFile();
       } else {
 
@@ -372,7 +372,7 @@ class Job {
                 if (!$result && $proc->isHuygensProcessSleeping($this->pid())) {
                   $proc->rewakeHuygensProcess($this->pid());
                 } elseif ($result) {
-                    $this->renameHuygensOutputFile();
+                    $this->renameHuygensOutputFiles();
                     $this->makeJobParametersFile();
                 }
     }
@@ -396,18 +396,33 @@ class Job {
   /* -------- Utilities for renaming and formatting job specific files ------ */
 
   /*
-   \brief       Renames the Huygens deconvolution default file 
-   \brief       with a name that contains the job id.
+   \brief       Renames the Huygens deconvolution default files 
+   \brief       with a name that contains the job id and is HRM-compliant.
   */
-  private function renameHuygensOutputFile( ) {
+  private function renameHuygensOutputFiles( ) {
+
+      // Rename the huygens job main file.
+      $huygensOut = $this->getHuygensDefaultFileName("main");
+      $idJobOutFile = $this->getJobIdOutputFile();
+      $this->renameFile($huygensOut,$idJobOutFile);
+
+      // Rename the Huygens history file.
+      $historyOld = $this->getHuygensDefaultFileName("history");
+      $historyNew = str_replace("_history",".history",$historyOld);
+      $this->renameFile($historyOld,$historyNew);
+  }
+
+  /*
+   \brief       Renames a file with name $oldName with a new name $newName.
+   \param       $oldName The old file name
+   \param       $newName The new file name
+  */
+  private function renameFile($oldName,$newName) {
       global $imageProcessingIsOnQueueManager;
       global $huygens_user;
 
-      $huygensOut = $this->getHuygensDefaultFileName();
-      $idJobOutFile = $this->getJobIdOutputFile();
-
-      // Build a rename command involving the above two names.
-      $cmd = "mv " . $huygensOut . " " . $idJobOutFile;
+      // Build a rename command involving the old and new names.
+      $cmd = "mv " . $oldName . " " . $newName;
 
       // Proceed to execute the command:  rename the Huygens default output file.
       if ($imageProcessingIsOnQueueManager) {
@@ -432,21 +447,37 @@ class Job {
   
   /*
   \brief        Get the name and path of the Huygens default file.
+  \param        $fileType Which Huygens file.
   \return       The path and name of the Huygens default file.
   */
-  private function getHuygensDefaultFileName( ) {
+  private function getHuygensDefaultFileName($fileType) {
       $jobDescription = $this->description();
-      $huygensOut   = "scheduler_client0.log";
-      return $jobDescription->destinationFolder() . $huygensOut;
+      $destFolder = $jobDescription->destinationFolder();
+
+      switch ( $fileType ) {
+      case "main":
+          $huygensOut   = "scheduler_client0.log";
+          $fileName = $destFolder . $huygensOut;
+          break;
+      case "history":
+          $fileName = $jobDescription->destinationImageName();
+          $fileName .= "_history.txt";
+          $fileName = $destFolder . $fileName;
+          break;
+      default:
+          error_log("Unknown file type.");
+      }
+
+      return $fileName;
   }
 
   /*
    \brief       Filters the Huygens deconvolution output file to leave
-				a second file containing only the deconvolution parameters.
+   \brief       a second file containing only the deconvolution parameters.
   */
   private function makeJobParametersFile( ) {
       $jobInformation = $this->readJobInformationFile();
-      $htmlTable = $this->parseInf2htmlTable($jobInformation);
+      $htmlTable = $this->parseInfo2Table($jobInformation);
       $paramFileName = $this->getParamFileName();
       $this->copyString2File($htmlTable,$paramFileName);
       $this->copyFile2Host($paramFileName);
@@ -520,11 +551,11 @@ class Job {
 
   /*
    \brief       Parses the contents of the Huygens deconvolution output file
-   \brief       to leave only the deconvolution parameters in an html table.
+   \brief       to leave only the deconvolution parameters in a table.
    \param       $informationFile An array with the contents of the file.
-   \return      A string with the formatted html table.
+   \return      A string with the formatted table.
   */
-  private function parseInf2htmlTable($informationFile) {
+  private function parseInfo2Table($informationFile) {
 
       $paramArray = array ( 'dx'            =>  'Sampling size X',
                             'dy'            =>  'Sampling size Y',
@@ -613,6 +644,7 @@ class Job {
                   $table .= str_pad($matches[4],30,' ',STR_PAD_BOTH);
                   $table .= str_pad($matches[2],30,' ',STR_PAD_BOTH);
                   $table .= str_pad("File metadata",30,' ',STR_PAD_BOTH);
+                  $table .= "\n";
               }
           }
       }
