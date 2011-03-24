@@ -480,10 +480,35 @@ class Job {
   */
   private function makeJobParametersFile( ) {
       $jobInformation = $this->readJobInformationFile();
-      $htmlTable = $this->parseInfo2Table($jobInformation);
+      $parsedInfoFile = $this->parseInfoFile($jobInformation);
       $paramFileName = $this->getParamFileName();
-      $this->copyString2File($htmlTable,$paramFileName);
+      $this->copyString2File($parsedInfoFile,$paramFileName);
       $this->copyFile2Host($paramFileName);
+  }
+
+  /*
+   \brief       Extracts important parameter data from the Huygens report file. 
+   \param       $jobInformation The contents of the report file in an array.
+   \return      The parameters in a formatted way.
+  */
+  private function parseInfoFile ($jobInformation) {
+
+      $numberOfChannels = $this->getNumberOfChannels();
+      $parsedInfoFile = $this->parseInfo2Table($jobInformation,"All");
+      for ($chanCnt = 0; $chanCnt < $numberOfChannels;$chanCnt++) {
+          $parsedInfoFile .= $this->parseInfo2Table($jobInformation,$chanCnt);
+      }
+      return $parsedInfoFile;
+  }
+
+  /*
+   \brief       Gets the number of channels of he current job.
+   \return      The number of channels.
+  */
+  private function getNumberOfChannels( ) {
+      $jobDescription = $this->description();
+      $microSetting = $jobDescription->parameterSetting;
+      return $microSetting->numberOfChannels();
   }
 
   /*
@@ -556,9 +581,10 @@ class Job {
    \brief       Parses the contents of the Huygens deconvolution output file
    \brief       to leave only the deconvolution parameters in a table.
    \param       $informationFile An array with the contents of the file.
+   \param       $channel Which channel or All for channel indepenent parameters.
    \return      A string with the formatted table.
   */
-  private function parseInfo2Table($informationFile) {
+  private function parseInfo2Table($informationFile,$channel) {
 
       $paramArray = array ( 'dx'            =>  'ccd captor size x',
                             'dy'            =>  'ccd captor size y',
@@ -579,92 +605,111 @@ class Job {
                             'micr'          =>  'microscope type');
 
 
-      $pattern = "/{ImDispStretch: the image will be multiplied by (.*).}}/";
-      $table = "";
-       foreach ($informationFile as $fileLine) {    
-          preg_match($pattern,$fileLine,$matches);
-          if (!empty($matches)) {
-              $table .= str_pad("Scaling factor: ",15,' ',STR_PAD_BOTH);
-              $table .= str_pad($matches[1],15,' ',STR_PAD_BOTH);
-              $table .= "\n\n\n";
+      if ( $channel === "All" ) {
+
+          if ($this->getNumberOfChannels() > 1) {
+              $channel = "All";
+          } else {
+              $channel = "0";
           }
-      }
 
-      $table .= str_pad("PARAMETER",30,' ',STR_PAD_BOTH);
-      $table .= str_pad("VALUE",30,' ',STR_PAD_BOTH);
-      $table .= str_pad("CHANNEL",30,' ',STR_PAD_BOTH);
-      $table .= str_pad("SOURCE",30,' ',STR_PAD_BOTH);
-      $table .= "\n\n";
-
-      $pattern = "/{Parameter ([a-z]+?) set in template to value (.*) will";
-      $pattern .= " remain as in metadata (.*).}}/";
-
-      $htmlTable = "";
-      foreach ($informationFile as $fileLine) {
-          preg_match($pattern,$fileLine,$matches);
-          if (!empty($matches)) {
-              $parameter = $matches[1];
-              if ($paramArray[$parameter] != "") {
-                  $table .= str_pad($paramArray[$parameter],30,' ',STR_PAD_BOTH);
-                  $table .= str_pad($matches[3],30,' ',STR_PAD_BOTH);
-                  $table .= str_pad("All",30,' ',STR_PAD_BOTH);
-                  $table .= str_pad("File metadata",30,' ',STR_PAD_BOTH);
-                  $table .= "\n";
+          $pattern = "/{ImDispStretch: the image will be multiplied by (.*).}}/";
+          $table = "";
+          foreach ($informationFile as $fileLine) {    
+              preg_match($pattern,$fileLine,$matches);
+              if (!empty($matches)) {
+                  $table .= $this->formatString("Scaling factor: ",15);
+                  $table .= $this->formatString($matches[1],15);
+                  $table .= "\n\n\n";
               }
           }
-      }
 
-      $pattern = "/{Parameter ([a-z]+?) will be taken from template: (.*).}}/";
+          $table .= $this->formatString("PARAMETER",30);
+          $table .= $this->formatString("VALUE",30);
+          $table .= $this->formatString("CHANNEL",30);
+          $table .= $this->formatString("SOURCE",30);
+          $table .= "\n\n";
 
-      foreach ($informationFile as $fileLine) {
-          preg_match($pattern,$fileLine,$matches);
-          if (!empty($matches)) {
-              $parameter = $matches[1];
-              if ($paramArray[$parameter] != "") {
-                  $table .= str_pad($paramArray[$parameter],30,' ',STR_PAD_BOTH);
-                  $table .= str_pad($matches[2],30,' ',STR_PAD_BOTH);
-                  $table .= str_pad("All",30,' ',STR_PAD_BOTH);
-                  $table .= str_pad("User defined",30,' ',STR_PAD_BOTH);
-                  $table .= "\n";
+          $pattern = "/{Parameter ([a-z]+?) set in template to value (.*) will";
+          $pattern .= " remain as in metadata (.*).}}/";
+
+          foreach ($informationFile as $fileLine) {
+              preg_match($pattern,$fileLine,$matches);
+              if (!empty($matches)) {
+                  $parameter = $matches[1];
+                  if ($paramArray[$parameter] != "") {
+                      $table .= $this->formatString($paramArray[$parameter],30);
+                      $table .= $this->formatString($matches[3],30);
+                      $table .= $this->formatString($channel,30);
+                      $table .= $this->formatString("File metadata",30);
+                      $table .= "\n";
+                  }
               }
           }
-      }
 
-      $pattern = "/{Parameter (.*) of channel (.*) will be taken from ";
-      $pattern .= "template: (.*).}}/";
+          $pattern = "/{Parameter ([a-z]+?) will be taken from template: (.*).}}/";
 
-      foreach ($informationFile as $fileLine) {
-          preg_match($pattern,$fileLine,$matches);
-          if (!empty($matches)) {
-              $parameter = $matches[1];
-              if ($paramArray[$parameter] != "") {
-                  $table .= str_pad($paramArray[$parameter],30,' ',STR_PAD_BOTH);
-                  $table .= str_pad($matches[3],30,' ',STR_PAD_BOTH);
-                  $table .= str_pad($matches[2],30,' ',STR_PAD_BOTH);
-                  $table .= str_pad("User defined",30,' ',STR_PAD_BOTH);
-                  $table .= "\n";
+          foreach ($informationFile as $fileLine) {
+              preg_match($pattern,$fileLine,$matches);
+              if (!empty($matches)) {
+                  $parameter = $matches[1];
+                  if ($paramArray[$parameter] != "") {
+                      $table .= $this->formatString($paramArray[$parameter],30);
+                      $table .= $this->formatString($matches[2],30);
+                      $table .= $this->formatString($channel,30);
+                      $table .= $this->formatString("User defined",30);
+                      $table .= "\n";
+                  }
               }
           }
-      }
+      } else {
 
-      $pattern = "/{Parameter (.*) of channel (.*) set in template ";
-      $pattern .= "to value (.*) will remain as in metadata (.*).}}/";
+          $pattern = "/{Parameter (.*) of channel $channel will be taken from ";
+          $pattern .= "template: (.*).}}/";
+          $table = "";
+          foreach ($informationFile as $fileLine) {
+              preg_match($pattern,$fileLine,$matches);
+              if (!empty($matches)) {
+                  $parameter = $matches[1];
+                  if ($paramArray[$parameter] != "") {
+                      $table .= $this->formatString($paramArray[$parameter],30);
+                      $table .= $this->formatString($matches[2],30);
+                      $table .= $this->formatString($channel,30);
+                      $table .= $this->formatString("User defined",30);
+                      $table .= "\n";
+                  }
+              }
+          }
 
-      foreach ($informationFile as $fileLine) {
-          preg_match($pattern,$fileLine,$matches);
-          if (!empty($matches)) {
-              $parameter = $matches[1];
-              if ($paramArray[$parameter] != "") {
-                  $table .= str_pad($paramArray[$parameter],30,' ',STR_PAD_BOTH);
-                  $table .= str_pad($matches[4],30,' ',STR_PAD_BOTH);
-                  $table .= str_pad($matches[2],30,' ',STR_PAD_BOTH);
-                  $table .= str_pad("File metadata",30,' ',STR_PAD_BOTH);
-                  $table .= "\n";
+          $pattern = "/{Parameter (.*) of channel $channel set in template ";
+          $pattern .= "to value (.*) will remain as in metadata (.*).}}/";
+
+          foreach ($informationFile as $fileLine) {
+              preg_match($pattern,$fileLine,$matches);
+              if (!empty($matches)) {
+                  $parameter = $matches[1];
+                  if ($paramArray[$parameter] != "") {
+                      $table .= $this->formatString($paramArray[$parameter],30);
+                      $table .= $this->formatString($matches[3],30);
+                      $table .= $this->formatString($channel,30);
+                      $table .= $this->formatString("File metadata",30);
+                      $table .= "\n";
+                  }
               }
           }
       }
 
       return $table;
+  }
+
+  /*  
+   \brief       Formats a string with blanks on both sides.
+   \param       $string The string to format
+   \param       $pad The number of spaces to set on left and right
+   \return      The formatted string
+  */
+  private function formatString($string,$pad) {
+      return str_pad($string,$pad," ",STR_PAD_BOTH);
   }
 }
 
