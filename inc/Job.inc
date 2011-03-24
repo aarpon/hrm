@@ -578,7 +578,19 @@ class Job {
                             'em'            =>  'emission wavelength',
                             'micr'          =>  'microscope type');
 
-      $table  = str_pad("PARAMETER",30,' ',STR_PAD_BOTH);
+
+      $pattern = "/{ImDispStretch: the image will be multiplied by (.*).}}/";
+      $table = "";
+       foreach ($informationFile as $fileLine) {    
+          preg_match($pattern,$fileLine,$matches);
+          if (!empty($matches)) {
+              $table .= str_pad("Scaling factor: ",15,' ',STR_PAD_BOTH);
+              $table .= str_pad($matches[1],15,' ',STR_PAD_BOTH);
+              $table .= "\n\n\n";
+          }
+      }
+
+      $table .= str_pad("PARAMETER",30,' ',STR_PAD_BOTH);
       $table .= str_pad("VALUE",30,' ',STR_PAD_BOTH);
       $table .= str_pad("CHANNEL",30,' ',STR_PAD_BOTH);
       $table .= str_pad("SOURCE",30,' ',STR_PAD_BOTH);
