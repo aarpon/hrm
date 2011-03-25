@@ -194,7 +194,7 @@ Class JobTranslation {
                                      'SFPDecAtDstDir'           =>  'previewGen',
                                      'ZComparisonAtDstDir'      =>  'previewGen',
                                      'TComparisonAtDstDir'      =>  'previewGen',
-                                     'save'                     =>  'imgSave');
+                                     'save'                     =>  'imgSave' );
     }
 
     /*!
@@ -548,14 +548,16 @@ Class JobTranslation {
      \return      Tcl list with the'Image open' task and its options
     */
     private function getTaskIDImgOpen($task) {
-
+ 
         $imgOpen =  "path ";
         $imgOpen .= $this->string2tcllist($this->srcImage);
         if (isset($this->subImage)) {
             $imgOpen .= " subImg ";
             $imgOpen .= $this->subImage;
         }
-        $imgOpen .= " series auto index 0";
+        $imgOpen .= " series ";
+        $imgOpen .= $this->getSeriesMode();
+        $imgOpen .= " index 0";
         $imgOpen = $this->string2tcllist($imgOpen);
         $imgOpen = " " . $task . " " . $imgOpen;
         return $imgOpen;
@@ -1889,6 +1891,24 @@ Class JobTranslation {
     */
     private function getParameterConfidence($paramName,$channel) {
         return "verified";
+    }
+
+    /*
+     \brief       Gets the open image series mode fo time series.
+     \return      The series mode: whether auto or off.
+    */
+    private function getSeriesMode( ) {
+        $microSetting = $this->microSetting;
+        $imageGeometry = $microSetting->parameter("ImageGeometry")->value();
+ 
+        $srcInfo = pathinfo($this->srcImage);        
+        if (($srcInfo['extension'] == "stk" || $srcInfo['extension'] == "tif")
+             && preg_match("/time/",$imageGeometry)) {
+            $seriesMode = "auto";
+        } else {
+            $seriesMode = "off";
+        }
+        return $seriesMode;
     }
 
     /*!
