@@ -633,7 +633,6 @@ class Job {
 
           $pattern = "/{Parameter ([a-z]+?) will be taken from template: (.*).}}/";
           foreach ($informationFile as $fileLine) {
-              $fileLine = "";
               preg_match($pattern,$fileLine,$matches);
               if (!empty($matches)) {
                   $parameter = $matches[1];
@@ -645,7 +644,7 @@ class Job {
                       $table .= "\n";
                   }
               }
-          }
+           }
 
           $pattern = "/{Parameter ([a-z]+?) will be taken from metadata: (.*).}}/";
           foreach ($informationFile as $fileLine) {
