@@ -602,6 +602,7 @@ class Job {
                             'ri'            =>  'sample medium',
                             'ril'           =>  'objective type',
                             'pr'            =>  'pinhole size',
+                            'ps'            =>  'pinhole spacing',
                             'ex'            =>  'excitation wavelength',
                             'em'            =>  'emission wavelength',
                             'micr'          =>  'microscope type');
