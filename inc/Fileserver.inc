@@ -250,13 +250,13 @@ class Fileserver {
   }
   
   /*!
-    \brief  Convenience method to get STK files without time series (*_t#.stk)
-    \return array of STK files without time series
+    \brief  Convenience method to get all STK files (also unprocessed time series)
+    \return array of STK files with unprocessed time series
   */
   public function stkFiles() {
     $this->getFiles();
     // TODO refactor
-    $this->trimStkSeries();
+    //$this->trimStkSeries();
     return $this->files;
   }
   
@@ -2234,13 +2234,13 @@ echo '</body></html>';
   /*!
     \brief  Trims STK time series
   */
-  private function trimStkSeries() {
-    if (count($this->files)==0) return False;
-    $stk = preg_grep("/[^_]+_(T|t)[0-9]+\.\w+/", $this->files);
-    foreach ($stk as $key => $value) {
-	unset($this->files[$key]);
-    }
-  }
+//  private function trimStkSeries() {
+//    if (count($this->files)==0) return False;
+//    $stk = preg_grep("/[^_]+_(T|t)[0-9]+\.\w+/", $this->files);
+//    foreach ($stk as $key => $value) {
+//	unset($this->files[$key]);
+//    }
+//  }
   
   /*!
     \brief  Gets the basename of Leica TIFF series
