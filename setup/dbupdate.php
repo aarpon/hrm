@@ -1857,8 +1857,8 @@ if ($current_revision < $n) {
         return;
       }
 
-    }      
-    
+    }
+
     // Add a translation for the file formats to match them to the file formats
     // returned by hucore
     
@@ -1908,20 +1908,78 @@ if ($current_revision < $n) {
         }
 
     // Add new parameter OverrideConfidence possible values
-    $records = array(
-        "parameter"=>array( "OverrideConfidence", "OverrideConfidence", "OverrideConfidence", "OverrideConfidence", "OverrideConfidence" ),
-        "value"=>array( "1", "2", "3", "4", "5" ),
-        "translation"=>array(   "Do not import any metadata from file",
-                                "Import parameters with confidence default and above",
-                                "Import parameters with confidence estimated and above",
-                                "Import parameters with confidence reported and above",
-                                "Import parameters with confidence verified" ),
-        "isDefault"=>array( "t","f", "f", "f", "f" ),
-        "parameter_key"=>array("OverrideConfidence1","OverrideConfidence2","OverrideConfidence3", "OverrideConfidence4", "OverrideConfidence5" ) );
-    if(!insert_records($records,"possible_values")) {
-        return;
+    $tabname = "possible_values";
+    $parameter = "OverrideConfidence";
+    $value = "1";
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $parameter . "' AND value='" . $value . "'");
+    if ($rs->EOF) {
+        $records = array(
+            "parameter"=>array( "OverrideConfidence", "OverrideConfidence", "OverrideConfidence", "OverrideConfidence", "OverrideConfidence" ),
+            "value"=>array( "1", "2", "3", "4", "5" ),
+            "translation"=>array(   "Do not import any metadata from file",
+                                    "Import parameters with confidence default and above",
+                                    "Import parameters with confidence estimated and above",
+                                    "Import parameters with confidence reported and above",
+                                    "Import parameters with confidence verified" ),
+            "isDefault"=>array( "t","f", "f", "f", "f" ),
+            "parameter_key"=>array("OverrideConfidence1","OverrideConfidence2","OverrideConfidence3", "OverrideConfidence4", "OverrideConfidence5" ) );
+        if(!insert_records($records,"possible_values")) {
+            return;
+        }
+    }
+    
+    // Add support for Delta Vision r3d format in table possible_values
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "ImageFileFormat";
+    $record["value"] = "r3d";
+    $record["translation"] = "Delta Vision (*.r3d)";
+    $record["isDefault"] = "f";
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "'");
+    if ($rs->EOF) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
     }
 
+    // Add support for Delta Vision r3d format in table file_extension
+    $tabname = "file_extension";
+    $record = array();
+    $record["file_format"] = "r3d";
+    $record["extension"] = "r3d";
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE file_format='" . $record["file_format"] . "' AND extension='" . $record["extension"] . "'");
+    if ($rs->EOF) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    // Add support for Delta Vision r3d format in table file_format
+    $tabname = "file_format";
+    $record = array();
+    $record["name"] = "r3d";
+    $record["isFixedGeometry"] = "f";
+    $record["isSingleChannel"] = "f";
+    $record["isVariableChannel"] = "t";
+    $record["hucoreName"] = "r3d";
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE name='" . $record["name"] . "' AND hucoreName='" . $record["hucoreName"] . "'");
+    if ($rs->EOF) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
 
     // Update revision
     if(!update_dbrevision($n)) 
