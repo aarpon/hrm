@@ -1792,6 +1792,22 @@ class CCDCaptorSizeX extends NumericalParameter {
 	}
 
 	/*!
+		\brief	Returns the formatted Parameter name to be used with displayString()
+		
+		This method overrides the base formattedName() method to return a better
+		understandable name (i.e. 'pixel size' instead of 'c c d captor size x')
+		for the user.
+		
+		\return	formatted Parameter name
+	*/
+	protected function formattedName( ) {
+		$name = " pixel size";
+		$name = $name . ':';
+		$result = str_pad($name, self::PADSIZE, ' ', STR_PAD_RIGHT);
+		return $result;
+	}
+	
+	/*!
 		\brief	Returns the string representation of the CCDCaptorSizeX Parameter
 		\return	string representation of the Parameter
 	*/
