@@ -397,7 +397,6 @@ class ParameterSetting extends Setting {
               $noErrorsFound = False;
               break;
           }
-          $noErrorsFound = False;
         }
       }
     }

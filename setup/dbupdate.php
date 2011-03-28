@@ -1882,7 +1882,7 @@ if ($current_revision < $n) {
           return;
         }
     }
-    $ok  = $db->AutoExecute( "file_format", array( "hucoreName" => "dv"),    "UPDATE", "name = 'dv'" );
+    $ok  = $db->AutoExecute( "file_format", array( "hucoreName" => "r3d"),   "UPDATE", "name = 'dv'" );
     $ok &= $db->AutoExecute( "file_format", array( "hucoreName" => "ics"),   "UPDATE", "name = 'ics'" );
     $ok &= $db->AutoExecute( "file_format", array( "hucoreName" => "ics"),   "UPDATE", "name = 'ics2'" );
     $ok &= $db->AutoExecute( "file_format", array( "hucoreName" => "ims"),   "UPDATE", "name = 'ims'" );
