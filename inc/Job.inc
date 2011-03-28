@@ -588,8 +588,8 @@ class Job {
   */
   private function parseInfo2Table($informationFile,$channel) {
 
-      $paramArray = array ( 'dx'            =>  'ccd captor size x',
-                            'dy'            =>  'ccd captor size y',
+      $paramArray = array ( 'dx'            =>  'x pixel size',
+                            'dy'            =>  'y pixel size',
                             'dz'            =>  'z step size',
                             'dt'            =>  'time interval',
                             'iFacePrim'     =>  '',
