@@ -878,6 +878,21 @@ option.default {
     padding: 0px;
 }
 
+.message_small_SNR_beta {
+    width: 100%;
+    text-align: center;
+    font-size: 10px;
+    margin-bottom: 0px;
+    margin-top: 20px;
+    background-color: #eee;
+}
+
+.message_large_SNR_beta {
+    width: 100%;
+    font-size: 12px;
+    margin-bottom: 0px;
+}
+
 .warning {
     font-weight: bold;
     color: red;

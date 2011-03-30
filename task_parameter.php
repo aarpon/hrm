@@ -80,6 +80,8 @@ include("header.inc.php");
     <span id="ttSpanForward">Save your settings.</span>
     <?php if ($estimateSNR) { ?>
     <span id="ttEstimateSnr">Use a sample raw image to find a SNR estimate for each channel.</span>
+    <span id="ttEstimateSnrBeta">Give the new SNR estimator (beta) a try!</span>
+    <span id="ttEstimateSnrBetaFeedback">Please help us improve the new SNR estimator by providing your observations and remarks!</span>
     <?php } ?>
     
     <div id="nav">
@@ -185,11 +187,23 @@ for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
 
                     <?php
                     if ($estimateSNR) {
-                        echo "<a href=\"estimate_snr_from_image.php\"
+                        echo "<p><a href=\"estimate_snr_from_image.php\"
                           onmouseover=\"TagToTip('ttEstimateSnr' )\"
-                          onmouseout=\"UnTip()\"
-                        ><img src=\"images/calc_small.png\" alt=\"\" />";
-                        echo " Estimate SNR from image</a>";
+                          onmouseout=\"UnTip()\">
+                          <img src=\"images/calc_small.png\" alt=\"\" />";
+                        echo " Estimate SNR from image (classic)</a></p>";
+                        echo "<div class=\"message_small_SNR_beta\">
+                        <img src=\"images/newSNR.png\" alt=\"\" />&nbsp;&nbsp;
+                          Try the
+                          <a href=\"estimate_snr_from_image_beta.php\"
+                            onmouseover=\"TagToTip('ttEstimateSnrBeta' )\"
+                            onmouseout=\"UnTip()\">
+                          new SNR estimator (beta)</a> and
+                          <a href=\"javascript:openWindow('http://www.svi.nl/BetaSNRFeedback')\"
+                          onmouseover=\"TagToTip('ttEstimateSnrBetaFeedback' )\"
+                          onmouseout=\"UnTip()\">
+                          report your feedback!</a>&nbsp;&nbsp;
+                          <img src=\"images/newSNR.png\" alt=\"\" /></div>";
                     }
 
                     ?>

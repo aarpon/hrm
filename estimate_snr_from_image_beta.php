@@ -16,6 +16,11 @@ function showFileBrowser() {
     //$browse_folder can be 'src' or 'dest'.
     $browse_folder = "src";
     $page_title = "Estimate SNR from a raw image (beta)";
+    $explanation_text = "<span class=\"message_large_SNR_beta\">
+        <img src=\"images/newSNR.png\" alt=\"\" />&nbsp;&nbsp;
+        We appreciate
+        <a href=\"javascript:openWindow('http://www.svi.nl/BetaSNRFeedback')\">
+        your feedback</a> to improve the new SNR estimator!</span>";
     $form_title = "Available images";
     $top_navigation = "
             <li>".$_SESSION['user']->name()."</li>
@@ -63,7 +68,7 @@ function showFileBrowser() {
 
     $info = '
             <h3>Quick help</h3>
-
+           
             <p>Select a raw image to estimate the Signal-to-Noise Ratio (SNR).
                You can then use the estimated SNR values in the Restoration
                Settings to deconvolve similar images, acquired under similar
