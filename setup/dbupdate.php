@@ -1916,11 +1916,11 @@ if ($current_revision < $n) {
         $records = array(
             "parameter"=>array( "OverrideConfidence", "OverrideConfidence", "OverrideConfidence", "OverrideConfidence", "OverrideConfidence" ),
             "value"=>array( "1", "2", "3", "4", "5" ),
-            "translation"=>array(   "Do not import any metadata from file",
-                                    "Import parameters with confidence default and above",
-                                    "Import parameters with confidence estimated and above",
-                                    "Import parameters with confidence reported and above",
-                                    "Import parameters with confidence verified" ),
+            "translation"=>array(   "Do not override any of my parameters",
+                                    "Override parameters with confidence default and better",
+                                    "Override parameters with confidence estimated and better",
+                                    "Override parameters with confidence reported and better",
+                                    "Override parameters with confidence verified" ),
             "isDefault"=>array( "t","f", "f", "f", "f" ),
             "parameter_key"=>array("OverrideConfidence1","OverrideConfidence2","OverrideConfidence3", "OverrideConfidence4", "OverrideConfidence5" ) );
         if(!insert_records($records,"possible_values")) {
