@@ -406,10 +406,33 @@ class Job {
       $idJobOutFile = $this->getJobIdOutputFile();
       $this->renameFile($huygensOut,$idJobOutFile);
 
-      // Rename the Huygens history file.
-      $historyOld = $this->getHuygensDefaultFileName("history");
-      $historyNew = str_replace("_history",".history",$historyOld);
-      $this->renameFile($historyOld,$historyNew);
+      // The Huygens history file will be removed rather than renamed.
+      $historyFile = $this->getHuygensDefaultFileName("history");
+      $this->removeFile($historyFile);
+  }
+
+  /*
+   \brief       Removes a file with name $fileName.
+   \param       $fileName The file name
+  */
+  private function removeFile($fileName) {
+      global $imageProcessingIsOnQueueManager;
+      global $huygens_user;
+
+      // Build a rename command involving the old and new names.
+      $cmd  = "if [ -f " . $fileName . " ]\n";
+      $cmd .= "then\n";
+      $cmd .= "rm " . $fileName . "\n";
+      $cmd .= "fi";
+
+      // Proceed to execute the command:  remove the file.
+      if ($imageProcessingIsOnQueueManager) {
+          $result = exec($cmd);
+      } else {
+          $server = split(" ", $this->server);
+          $server_hostname = $server[0];
+          $result = exec("ssh ".$huygens_user."@".$server_hostname." ".$cmd);
+      }
   }
 
   /*
