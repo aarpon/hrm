@@ -177,7 +177,8 @@ function estimateSnrFromFile($file) {
     // For 3.5.1p1, use '-returnImages sample' instead.
 
     $opt = "-basename \"$basename\" -src \"$psrc\" -dest \"$pdest\" ".
-        "-returnImages \"0.5 0.71 1 1.71 \" -series $series $extra";
+        "-returnImages \"0.5 0.71 1 1.71 \" -snrVersion \"old\" ".
+        "-series $series $extra";
 
     // Navigations buttons are shown after the image is processed. No
     // line-breaks in this declarations, as this is going to be escaped for

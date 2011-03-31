@@ -379,7 +379,9 @@ proc estimateSnrFromImage {} {
 
     # Mandatory arguments:
 
-    set error [ getInputVariables {basename src series dest returnImages} ]
+    set error [ getInputVariables {
+        basename src series dest snrVersion returnImages
+    } ]
     if { $error } { exit 1 }
 
     # Optional arguments:
@@ -416,7 +418,7 @@ proc estimateSnrFromImage {} {
 
     # Since HuCore 3.6.1, there is a new SNR estimator available.
     set verHuCo [versionAsInteger]
-    if { $verHuCo >= 3060100 } {
+    if { $verHuCo >= 3060100 && $snrVersion eq "new"} {
 	set result [ ::WebTools::computeSnr $srcImg $dest]
     } else {
 	set result [ ::WebTools::estimateSnrFromImage $srcImg $dest \

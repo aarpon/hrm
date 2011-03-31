@@ -182,7 +182,8 @@ function estimateSnrFromFile($file) {
     // For 3.5.1p1, use '-returnImages sample' instead.
 
     $opt = "-basename \"$basename\" -src \"$psrc\" -dest \"$pdest\" ".
-        "-returnImages \"0.5 0.71 1 1.71 \" -series $series $extra";
+        "-returnImages \"0.5 0.71 1 1.71 \" -snrVersion \"new\" ".
+        "-series $series $extra";
 
     // Navigations buttons are shown after the image is processed. No
     // line-breaks in this declarations, as this is going to be escaped for
@@ -191,7 +192,8 @@ function estimateSnrFromFile($file) {
     $buttons = "<input type=\"button\" value=\"\" class=\"icon previous\" ".
                "onmouseover=\"Tip('Select another image.' )\" ".
                "onmouseout=\"UnTip()\" ".
-          "onclick=\"document.location.href='estimate_snr_from_image.php'\" />";
+               "onclick=\"document.location.href=".
+               "'estimate_snr_from_image_beta.php'\" />";
 
     $buttons .= "<input type=\"button\" value=\"\" class=\"icon next\" ".
              "onmouseover=\"Tip('Proceed to the restoration parameters.' )\" ".
