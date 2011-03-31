@@ -275,7 +275,7 @@ Class JobTranslation {
     */
     private function getExportFormat( ) {
         $outputType = $this->getOutputFileType();
-        if (preg_match("/tif/",$outputType)) {
+        if (preg_match("/tif/i",$outputType)) {
             $multidir = 1;
         } else {
             $multidir = 0;
@@ -1902,8 +1902,9 @@ Class JobTranslation {
         $imageGeometry = $microSetting->parameter("ImageGeometry")->value();
  
         $srcInfo = pathinfo($this->srcImage);        
-        if (($srcInfo['extension'] == "stk" || $srcInfo['extension'] == "tif")
-             && preg_match("/time/",$imageGeometry)) {
+        if ((preg_match("/stk/i",$srcInfo['extension'])
+             || preg_match("/tif/i",$srcInfo['extension']))
+            && preg_match("/time/",$imageGeometry)) {
             $seriesMode = "auto";
         } else {
             $seriesMode = "off";
@@ -2002,16 +2003,6 @@ Class JobTranslation {
     */
     private function getNumberOfChannels( ) {
         return $this->microSetting->numberOfChannels();
-    }
-
-    /*!
-     \brief       Checks whether a field is verified.
-     \param       $field A field to check
-     \return      True if the field is verified.
-     \todo        Implement the body of this function.
-    */
-    private function isFieldVerified($field) {
-        return 1;
     }
 
     /*!
