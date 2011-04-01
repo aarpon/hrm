@@ -646,7 +646,8 @@ class Job {
               preg_match($pattern,$fileLine,$matches);
               if (!empty($matches)) {
                   $parameter = $matches[1];
-                  $warning = "MICROSCOPE CONFLICT FOR CHANNEL $matches[1]:";
+                  $warning = "WARNING:  MICROSCOPE CONFLICT FOR CHANNEL ";
+                  $warning .= $matches[1] . ":";
                   $table .= $this->formatString("",20);
                   $table .= $this->formatString($warning,30);
                   $table .= $this->formatString($matches[2],30);
