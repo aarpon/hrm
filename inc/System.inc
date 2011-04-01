@@ -177,11 +177,19 @@ class System {
 		\return	a string with OS and architecture (e.g. GNU/Linux x86-64)
 		*/
 	public static function operatingSystem( ) {
-		try {
-			return ( exec( 'uname -s' ) . " " . exec( 'uname -p' ) );
-		} catch ( Exception $e ) {
-			return "Unknown.";
+		// Get and interpret some information
+		$s = php_uname( 's' );
+		$m = php_uname( 'm' );
+
+		if ( stristr( $s, "Linux" ) ) {
+			$os = "Linux " . $m;
+		} elseif ( $s = "Darwin" ) {
+			$os = "Mac OS X " . $m;
+		} else {
+			$os = $s;
 		}
+		
+		return $os;
 	}
 
 	/*!
@@ -189,10 +197,28 @@ class System {
 		\return	the kernel release number (e.g. 2.6.35)
 		*/
 	public static function kernelRelease( ) {
-		try {
-			return ( exec( 'uname -r' ) );
-		} catch ( Exception $e ) {
-			return "Unknown.";
+		// Get and interpret some information
+		$s = php_uname( 's' );
+		$r = php_uname( 'r' );
+
+		if ( stristr( $s, "Linux" ) ) {
+			return $r;
+		} elseif ( $s = "Darwin" ) {
+			$match = array();
+			preg_match ("/^(\d+)\.\d+/", $r, $match );
+			if ( isset( $match[ 1 ] ) ) {
+				switch ( $match[ 1 ] ) {
+					case '8':  return ( $r . " (Tiger)" );
+					case '9':  return ( $r . " (Leopard)" );
+					case '10': return ( $r . " (Snow Leopard)" );
+					case '11': return ( $r . " (Lion)" );
+					default:   return ( $r );
+				}
+			} else {
+				return ( $r );
+			}
+		} else {
+			return $r;
 		}
 	}
 
