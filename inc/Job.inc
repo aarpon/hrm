@@ -608,6 +608,7 @@ class Job {
    \param       $informationFile An array with the contents of the file.
    \param       $channel Which channel or All for channel indepenent parameters.
    \return      A string with the formatted table.
+   \TODO        Report the scaling factors.
   */
   private function parseInfo2Table($informationFile,$channel) {
 
@@ -638,16 +639,23 @@ class Job {
               $channel = "0";
           }
 
-          $pattern = "/{ImDispStretch: the image will be multiplied by (.*).}}/";
           $table = "";
-          foreach ($informationFile as $fileLine) {    
+
+          $pattern = "/{Microscope conflict for channel (.*):(.*)}}/";
+          foreach ($informationFile as $fileLine) {
               preg_match($pattern,$fileLine,$matches);
               if (!empty($matches)) {
-                  $table .= $this->formatString("Scaling factor: ",15);
-                  $table .= $this->formatString($matches[1],15);
-                  $table .= "\n\n\n";
+                  $parameter = $matches[1];
+                  $warning = "MICROSCOPE CONFLICT FOR CHANNEL $matches[1]:";
+                  $table .= $this->formatString("",20);
+                  $table .= $this->formatString($warning,30);
+                  $table .= $this->formatString($matches[2],30);
+                  $table .= "\n";
+   
               }
           }
+          $table .= "\n\n";
+
 
           $table .= $this->formatString("PARAMETER",30);
           $table .= $this->formatString("VALUE",30);
@@ -668,7 +676,7 @@ class Job {
                       $table .= "\n";
                   }
               }
-           }
+          }
 
           $pattern = "/{Parameter ([a-z]+?) will be taken from metadata: (.*).}}/";
           foreach ($informationFile as $fileLine) {
