@@ -1059,14 +1059,16 @@ class Fileserver {
   public function viewStrip( $file, $type = "stack.compare", $dir = "dest", $frame = false, $margin = 25 ) {
       global $allowHttpTransfer;
 
+      $fileinfo = pathinfo($file);
       $files = $this->findStrip($file, $type, $dir);
+
       if (count($files) != 1 ) {
           echo "<img src=\"images/no_preview.jpg\">";
           return;
       }
       preg_match ("/strip_(.+)x(.+)x(.+)_fr/", $files[0], $match);
 
-      $thumb = strstr($files[0],$file);
+      $thumb = $fileinfo['dirname']."/" .strstr($files[0],$fileinfo['filename']);
 
       $sx = $match[1];
       $sy = $match[2];
@@ -2068,6 +2070,7 @@ echo '</body></html>';
       } else {
           $pdir =  $this->destinationFolder();
       }
+
       $dir = dirname($pdir."/".$file);
       $base = basename($pdir."/".$file.".".$type);
       $path = $dir."/hrm_previews/".$base;
