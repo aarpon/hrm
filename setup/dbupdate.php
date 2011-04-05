@@ -1867,13 +1867,13 @@ if ($current_revision < $n) {
     $columns = $rs->GetRows();
     $notFound = True;
     foreach ( $columns as $column ) {
-        if ( $column[ 'column_name' ] == "hucoreName" ) {
+        if ( strcasecmp( $column[ 'column_name' ], "hucoreName" ) == 0 ) {
             $notFound = False;
         }
     }
     if ( $notFound == True ) {
     
-        $fields = "hucoreName C(30) NOTNULL";
+        $fields = "hucoreName C(30)";
         if ( !insert_column( "file_format", $fields ) ) {
           $msg = "An error occurred while updating the database to revision " . $n . ", file_format table update.";
           write_message($msg);
