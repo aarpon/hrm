@@ -9,6 +9,7 @@
 $adodb = dirname(__FILE__) . "/extern/adodb5/adodb.inc.php";
 
 require_once( "hrm_config.inc" );
+require_once( "Util.inc" );
 require_once( $adodb );
 
 /*!
