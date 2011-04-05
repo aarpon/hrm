@@ -6,19 +6,17 @@ Original concept and implementation
 
 Current developers
 
-		* Patrick Schwarb (initiatior) and Aaron Ponti (developer and current
-			project coordinator), Friedrich Miescher Institute for Biomedical
-			Research, Basel (FMI);
-		* Alessandra Griffa, Ecole Polytechnique Federale de Lausanne (EPFL);
-		* Jose Vina, Scientific Volume Imaging, Hilversum (SVI).
+		* Aaron Ponti (developer and current project coordinator), Friedrich Miescher Institute, Basel (FMI);
+		* Daniel Sevilla, Scientific Volume Imaging, Hilversum (SVI).
 
 Former developers
 
-		* Asheesh Gulati, Ecole Polytechnique Federale de Lausanne (EPFL);
+		* Asheesh Gulati, École Polytechnique Fédérale de Lausanne (EPFL);
+		* Alessandra Griffa, École Polytechnique Fédérale de Lausanne (EPFL);
+		* José Viña, Scientific Volume Imaging, Hilversum (SVI).
 
 Email
 
-		* pierre.travo@mri.cnrs.fr
 		* volker.baecker@mri.cnrs.fr
 		* help@huygens-rm.org
 
