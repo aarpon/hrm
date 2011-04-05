@@ -322,85 +322,79 @@ class ParameterSetting extends Setting {
     $this->message = '';
     $noErrorsFound = True;
 
-    // Get the names of the relevant parameters
-    $names = $this->imageParameterNames();
-
-    // Check that the Parameters are set and contain valid values
-    foreach ( $names as $name ) {
-
-      // State of the Parameter and the submitted value(s)
-      $valueSet = isset( $postedParameters[ $name ] ) &&
-      $postedParameters[ $name ] != '';
-
-      if ( $valueSet ) {
-
-        // No Parameter requires special treatment
-        $value = $postedParameters[ $name ];
-        $parameter = $this->parameter( $name );
-        $parameter->setValue( $value );
-        $this->set( $parameter );
-        if( !$parameter->check() ) {
-          $this->message = $parameter->message();
-          $noErrorsFound = False;
-        }
-
-      } else {
-         
-        $parameter = $this->parameter( $name );
-        $mustProvide = $parameter->mustProvide();
-
-        // Reset the Parameter
-        $parameter->reset();
-        $this->set( $parameter );
-         
-        // If the Parameter value must be provided, we return an error
-        if ( $mustProvide ) {
-
-          switch ( $name ) {
-            case "ImageFileFormat" :
-              $this->message = "Please choose a file format!";
-              $noErrorsFound = False;
-              break;
-            case "ImageGeometry" :
-              // This is a special case: for fixed geometry file formats,
-              // we will have to enforce the XY - time geometry
-              $singleParameters = $this->fixedGeometryFileFormats();
-              if ( isset( $postedParameters[ "ImageFileFormat" ] ) ) {
-                if ( array_search( $postedParameters[ "ImageFileFormat" ], $singleParameters ) === false ) {
-                  $this->message = "Please set the image geometry!";
-                  $noErrorsFound = False;
-                } else {
-                  // To single plane file formats, the XY - time geometry
-                  // is associated
-                  $parameter = $this->parameter( $name );
-                  $parameter->setValue( "XY - time" );
-                  $this->set( $parameter );
-                  if( !$parameter->check() ) {
-                    $this->message = $parameter->message();
-                    $noErrorsFound = False;
-                  }
-                }
-                // No errors
-              } else {
-                $this->message = "Please set the image geometry!";
-                $noErrorsFound = False;
-              }
-              break;
-            case "NumberOfChannels" :
-              $this->message = "Please set the number of channels!";
-              $noErrorsFound = False;
-              break;
-            case "PointSpreadFunction" :
-              $this->message = "Please indicate whether you " .
-						"would like to calculate a theoretical PSF " .
-						"or use an existing measured one!";
-              $noErrorsFound = False;
-              break;
-          }
-        }
-      }
+	// The file format must be defined
+	if ( !isset( $postedParameters[ "ImageFileFormat" ] ) ) {
+	  $this->message = "Please choose a file format!";
+      return False;
+	} else {
+		$parameter = $this->parameter( "ImageFileFormat" );
+		$parameter->setValue( $postedParameters[ "ImageFileFormat" ] );
+		$this->set( $parameter );
+	    if( !$parameter->check() ) {
+			$this->message = $parameter->message();
+			return False;
+	    }	
+	}
+	
+	// The PSF type must be defined
+	if ( !isset( $postedParameters[ "PointSpreadFunction" ] ) ) {
+	  $this->message = "Please indicate whether you " .
+	    "would like to calculate a theoretical PSF " .
+		"or use an existing measured one!";
+      return False;
+	} else {
+		$parameter = $this->parameter( "PointSpreadFunction" );
+		$parameter->setValue( $postedParameters[ "PointSpreadFunction" ] );
+		$this->set( $parameter );
+	    if( !$parameter->check() ) {
+			$this->message = $parameter->message();
+			return False;
+	    }	
+	}
+	
+	// The geometry must be defined for most file formats
+    $singleParameters = $this->fixedGeometryFileFormats();
+	if ( !( array_search( $postedParameters[ "ImageFileFormat" ], $singleParameters ) === false ) ) {
+		$postedParameters[ "ImageGeometry" ] = "XY - time";
+	} elseif ( $postedParameters[ "ImageFileFormat" ] == 'tiff-series' ) {
+		$postedParameters[ "ImageGeometry" ] = "XYZ";
+	} else {
+		// We check that the value was posted
+		if ( !isset( $postedParameters[ "ImageGeometry" ] ) ) {
+			$this->message = "Please set the image geometry!";
+            return False;
+		}
+	}
+    $parameter = $this->parameter( "ImageGeometry" );
+    $parameter->setValue( $postedParameters[ "ImageGeometry" ] );
+    $this->set( $parameter );
+    if( !$parameter->check() ) {
+		$this->message = $parameter->message();
+		return False;
     }
-    return $noErrorsFound;
+	
+	// The number of channels must be defined for most file formats
+    if ( $postedParameters[ "ImageFileFormat" ] == 'tiff-series' ) {
+		$postedParameters[ "NumberOfChannels" ] = "1";
+	} else {
+		// We check that the value was posted
+		if ( !isset( $postedParameters[ "NumberOfChannels" ] ) ) {
+			$this->message = "Please set the number of channels!";
+            return False;
+		}
+	}
+    $parameter = $this->parameter( "NumberOfChannels" );
+    $parameter->setValue( $postedParameters[ "NumberOfChannels" ] );
+    $this->set( $parameter );
+    if( !$parameter->check() ) {
+        $this->message = $parameter->message();
+        return False;
+    }	
+
+	// All checked correctly, we can return success
+	$this->message = "";
+	return True;
+
   }
 
   /*!
