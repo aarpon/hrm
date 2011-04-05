@@ -90,7 +90,7 @@ include("header.inc.php");
     
     <div id="content">
     
-        <h3>Override parameters / 1</h3>
+        <h3>Override parameters</h3>
         
         <form method="post" action="" id="select">
         
