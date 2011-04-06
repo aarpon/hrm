@@ -256,7 +256,7 @@ class Fileserver {
   public function stkFiles() {
     $this->getFiles();
     // TODO refactor
-    //$this->trimStkSeries();
+    $this->trimStkSeries();
     return $this->files;
   }
   
