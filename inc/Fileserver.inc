@@ -2237,13 +2237,13 @@ echo '</body></html>';
   /*!
     \brief  Trims STK time series
   */
-//  private function trimStkSeries() {
-//    if (count($this->files)==0) return False;
-//    $stk = preg_grep("/[^_]+_(T|t)[0-9]+\.\w+/", $this->files);
-//    foreach ($stk as $key => $value) {
-//	unset($this->files[$key]);
-//    }
-//  }
+  private function trimStkSeries() {
+    if (count($this->files)==0) return False;
+    $stk = preg_grep("/[^_]+_(T|t)[0-9]+\.\w+/", $this->files);
+    foreach ($stk as $key => $value) {
+	unset($this->files[$key]);
+    }
+  }
   
   /*!
     \brief  Gets the basename of Leica TIFF series
