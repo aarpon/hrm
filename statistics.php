@@ -77,6 +77,7 @@ if ( $stats->isGraph( ) == true ) {
 // HighChart JavaScript library inclusions
 $script = array(
       "highcharts/jquery.min.js",
+      "highcharts/excanvas.compiled.js",
       "highcharts/highcharts.js" );
 
 include("header.inc.php");

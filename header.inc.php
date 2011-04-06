@@ -31,15 +31,33 @@ if (isset($meta)) {
 if (isset($script)) {
 	if ( is_array( $script ) ) {
 		foreach ( $script as $current ) {
-?>
-	<script type="text/javascript" src="scripts/<?php echo $current ?>"></script>
-<?php
+			
+			// Workaround for the lack of canvas in IE
+			if ( $current == "highcharts/excanvas.compiled.js" ) {
+				?>
+				<!--[if IE]>
+				<script type="text/javascript" src="scripts/<?php echo $current ?>"></script>
+				<![endif]-->
+				<?php				
+			} else {
+				?>
+				<script type="text/javascript" src="scripts/<?php echo $current ?>"></script>
+				<?php
+			}
 		}
 	} else {
-?>
-    <script type="text/javascript" src="scripts/<?php echo $script ?>"></script>
-<?php
-
+			// Workaround for the lack of canvas in IE
+			if ( $script == "highcharts/excanvas.compiled.js" ) {
+				?>
+				<!--[if IE]>
+				<script type="text/javascript" src="scripts/<?php echo $script ?>"></script>
+				<![endif]-->
+				<?php				
+			} else {
+				?>
+				<script type="text/javascript" src="scripts/<?php echo $script ?>"></script>
+				<?php
+			}
 	}
 }
 
