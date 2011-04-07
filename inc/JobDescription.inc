@@ -475,8 +475,13 @@ class JobDescription {
     global $image_destination;
 
     $user = $this->owner();
+    
+    // Make sure to get rid of blank spaces in the folder name!
+    $relSrcPath = $this->relativeSourcePath();
+    $relSrcPath = str_replace( " ", "_", $relSrcPath );
+    
     // avoid redundant slashes in path
-    $result = $huygens_server_image_folder . $user->name() . "/" . $image_destination . "/" . $this->relativeSourcePath();
+    $result = $huygens_server_image_folder . $user->name() . "/" . $image_destination . "/" . $relSrcPath;
     
     return $result;
   } 
