@@ -420,9 +420,9 @@ class Job {
       global $huygens_user;
 
       // Build a rename command involving the old and new names.
-      $cmd  = "if [ -f " . $fileName . " ]\n";
+      $cmd  = "if [ -f \"" . $fileName . "\" ]\n";
       $cmd .= "then\n";
-      $cmd .= "rm " . $fileName . "\n";
+      $cmd .= "rm \"" . $fileName . "\"\n";
       $cmd .= "fi";
 
       // Proceed to execute the command:  remove the file.
@@ -445,9 +445,9 @@ class Job {
       global $huygens_user;
 
       // Build a rename command involving the old and new names.
-      $cmd  = "if [ -f " . $oldName . " ]\n";
+      $cmd  = "if [ -f \"" . $oldName . "\" ]\n";
       $cmd .= "then\n";
-      $cmd .= "mv " . $oldName . " " . $newName . "\n";
+      $cmd .= "mv \"" . $oldName . "\" \"" . $newName . "\"\n";
       $cmd .= "fi";
 
       // Proceed to execute the command:  rename the Huygens default output file.
@@ -591,7 +591,7 @@ class Job {
       $jobReportFile = $jobDescription->destinationFolder() . $jobReportFile;
 
      // Proceed to read the job report file.
-      $cmd = "cat " . $jobReportFile;
+      $cmd = "cat \"" . $jobReportFile ."\"";
       if (!$imageProcessingIsOnQueueManager) {
           $server = split(" ", $this->server);
           $server_hostname = $server[0];
