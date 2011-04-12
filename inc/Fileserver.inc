@@ -426,9 +426,16 @@ class Fileserver {
           // Delete all files name like this one, with all different extensions.
           $dirname = dirname($pdir."/".$file);
           $basename = basename($pdir."/".$file);
-          $filePattern = $this->getFilePattern($basename);
-          $path = $dirname . "/" . $filePattern;
-          $path_preview = $dirname . "/hrm_previews/" . $filePattern;
+
+          if ( $dir == "src") {
+              $path = preg_replace("/(.*)\.(.{3,4})/","\\1.*",
+                                   $dirname."/".$basename);
+              $path_preview = dirname($path) . "/hrm_previews/" . $basename;
+          } else {
+              $filePattern = $this->getFilePattern($basename);
+              $path = $dirname . "/" . $filePattern;
+              $path_preview = $dirname . "/hrm_previews/" . $filePattern;
+          }
 
           $allFiles = glob($path);
           foreach ($allFiles as $f) {
