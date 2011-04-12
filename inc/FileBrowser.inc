@@ -262,10 +262,29 @@ function imageAction (list) {
     # correspondent thumbnail and information is shown when the user clicks on
     # an image.
 
+    if ( $browse_folder == "src" ) {
+        $pdir =  $_SESSION['fileserver']->sourceFolder();
+    } else {
+        $pdir =  $_SESSION['fileserver']->destinationFolder();
+    }
+
+    // Sometimes the file variable stores part of the path as well.
+    $pattern = "/(.*)\/(.*)_(.*)_(.*)\.(.*)$/";
+
     foreach ($files as $key => $file) {
+        $pathAndFile = $pdir . "/" . $file;
+        preg_match($pattern,$pathAndFile,$matches);
+        $filePreview = $matches[1] . "/hrm_previews/" . $file . ".preview_xy.jpg"; 
+
+        if (!file_exists($filePreview)) {
+            $fileForAction = $matches[3] . "_" . $matches[4] . "." . $matches[5];
+        } else {
+            $fileForAction = $file;
+        }
+
         $generatedScript .= "
         case \"$file\" :
-            ". $_SESSION['fileserver']->getImageAction($file,
+            ". $_SESSION['fileserver']->getImageAction($fileForAction,
                 $key, $browse_folder, "preview", 1, $useTemplateData). "
             break;
             ";

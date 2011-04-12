@@ -718,11 +718,16 @@ class QueueManager {
  	  $text = $text . "Your job started at $startTime and finished at " . date("Y-m-d H:i:s") . ".\n";
  	  $text = $text . "The image $sourceFileName was successfully processed by Huygens.\n";
  	  $text = $text . "You will find the resulting image ($destFileName) in your destination folder.\n";
+
  	  $imageName = $desc->destinationImageNameAndExtension();
+          $namePattern = "/(.*)_(.*)_(.*)\.(.*)$/";
+          preg_match($namePattern,$imageName,$matches);
+          $linkName = str_replace($matches[1] . "_","",$imageName);
+
  	  if ( $useThumbnails ) {
  	    $link = $hrm_url.
                            "/file_management.php?compareResult=".
- 	    urlencode($imageName);
+ 	    urlencode($linkName);
  	    $text .= "\nYou can find a preview of the result at ".$link.
                              " (login required).\n\n";
  	  }

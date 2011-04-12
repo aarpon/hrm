@@ -1633,7 +1633,7 @@ Class JobTranslation {
         $previewGen = " destDir ";
         $previewGen .= $this->getThumbnailDestDir($destDir);
         $previewGen .= " destFile ";
-        $previewGen .= basename($this->destImage);
+        $previewGen .= $this->getThumbnailDestFile("","compareZStrips");
         $previewGen .= " type ";
         $previewGen .= $this->getPreviewType("compareZStrips");
         $previewGen .= " size ";
@@ -1661,7 +1661,7 @@ Class JobTranslation {
         $previewGen = " destDir ";
         $previewGen .= $this->getThumbnailDestDir($destDir);
         $previewGen .= " destFile ";
-        $previewGen .= basename($this->destImage);
+        $previewGen .= $this->getThumbnailDestFile("","compareTStrips");
         $previewGen .= " type ";
         $previewGen .= $this->getPreviewType("compareTStrips");
         $previewGen .= " size ";
@@ -1742,49 +1742,56 @@ Class JobTranslation {
                                           $movieType = null,
                                           $lif = null) {
 
+        $thumbnail = $this->getThumbName();
         switch ( $caller ) {
         case 'XYXZ':
             if ($srcImg == "raw") {
                 $destFile = basename($this->srcImage);
                 $destFile .= $this->getLifImageSuffix($lif);
-                $destFile = $this->string2tcllist($destFile);
             } elseif ($srcImg == "dec") {
-                $destFile = basename($this->destImage);
+                $destFile = $thumbnail;
             } else {
                 error_log("Unknown image source: $srcImg");
             }
             break;
         case 'Ortho':
             if ($srcImg == "raw") {
-                $destFile = basename($this->destImage) . ".original";
-            } elseif ($srcImg == "dec") {
-                $destFile = basename($this->destImage);
+                $destFile = $thumbnail . ".original";
+            } elseif ($srcImg == "dec") {;
+                $destFile = $thumbnail;
             } else {
                 error_log("Unknown image source: $srcImg");
             }
             break;
         case 'SFP':
             if ($srcImg == "raw") {
-                $destFile = basename($this->destImage) . ".original.sfp";
+                $destFile = $thumbnail . ".original.sfp";
             } elseif ($srcImg == "dec") {
-                $destFile = basename($this->destImage) . ".sfp";
+                $destFile = $thumbnail . ".sfp";
             } else {
                 error_log("Unknown image source: $srcImg");
             }
             break;
         case 'Movie':
             if ($srcImg == "raw") {
-                $destFile = basename($this->srcImage);
+                $destFile = $thumbnail;
             } elseif ($srcImg == "dec") {
-                $destFile = basename($this->destImage);
+                $destFile = $thumbnail;
                 $destFile .= $this->getMovieFileSuffix($movieType);
             } else {
                 error_log("Unknown image source: $srcImg");
             }
             break;
+        case 'compareZStrips':
+            $destFile = $thumbnail;
+            break;
+        case 'compareTStrips':
+            $destFile = $thumbnail;
+            break;
         default:
             error_log("Unknown thumbnail caller: $caller");
         }
+        $destFile = $this->string2tcllist($destFile);
         return $destFile;
     }
 
@@ -1881,6 +1888,18 @@ Class JobTranslation {
         }
 
         return $format;
+    }
+
+    /*!
+     \brief       Constructs a shorter basic name for the thumbnails based on
+     \brief       the job id.
+     \return      The thumbnail name.
+     */
+    private function getThumbName( ) {
+        $basename = basename($this->destImage);
+        $filePattern = "/(.*)_(.*)_(.*)\.(.*)$/";
+        preg_match($filePattern,$basename,$matches);
+        return $matches[2] . "_" . $matches[3] . "." . $matches[4];
     }
 
     /*!

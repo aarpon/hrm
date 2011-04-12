@@ -332,6 +332,29 @@ class Fileserver {
   }  
 
   /*!
+   \brief      Builds a regular expression to be able to look for files
+   \brief      based on ther job id.
+   \return     The regular expression.
+  */
+  public function getFilePattern($fileName) {
+      $filePattern = "/(.*)_(.*)_(.*)\.(.*)$/";
+      preg_match($filePattern,$fileName,$matches);
+
+      if (isset($matches) && !empty($matches)) {
+          $filePattern = str_replace($matches[1] . "_","*",$fileName);
+          return preg_replace("/(.*)\.(.{3,4})/","\\1.*",$filePattern);
+      }
+
+      $filePattern = "/(^[a-z0-9]{6,15})_hrm\.(.*)$/";
+      preg_match($filePattern,$fileName,$matches);
+
+      if (isset($matches) && !empty($matches)) {
+          $fileName = preg_replace("/(.*)\.(.{3,4})/","\\1*",$fileName);
+          return "*" . $fileName;
+      }
+  }
+
+  /*!
     \brief Packs a series of files to download.
     \param $files  Array  List of files to be added.
   */
@@ -341,7 +364,7 @@ class Fileserver {
       // Make sure that the script doesn't timeout before zipping and
       // reading the file to serve is completed.
       set_time_limit(0);
-      
+
       $date = date("Y-m-d_His");
       $zipfile = "/tmp/download_".session_id().$date.$compressExt;
       $command = str_replace("%DEST%",
@@ -349,16 +372,17 @@ class Fileserver {
       $command .= " ".$zipfile;
 
       foreach ($files as $file) {
-          $path = preg_replace("/(.*)\.(.{3,4})/","\"\\1\".*",$file);
-          $preview_path = dirname($file)."/hrm_previews/".
-                  preg_replace("/(.*)\.(.{3,4})/","\"\\1\".*",$file);
+          $filePattern = $this->getFilePattern($file);
+          $path = dirname($file) . "/" . $filePattern;
+          $preview_path = dirname($file)."/hrm_previews/". $filePattern;
+
           if (! $packExcludePath ) {
               $path = $this->destinationFolder()."/".$path;
               $preview_path = $this->destinationFolder()."/".$preview_path;
           }
           $command .= " ".$path." ".$preview_path;
       }
-      
+
       $answer = exec($command , $output, $result);
 
       $size = filesize($zipfile);
@@ -402,16 +426,17 @@ class Fileserver {
           // Delete all files name like this one, with all different extensions.
           $dirname = dirname($pdir."/".$file);
           $basename = basename($pdir."/".$file);
-          $path = preg_replace("/(.*)\.(.{3,4})/","\\1.*",
-                  $dirname."/".$basename);
+          $filePattern = $this->getFilePattern($basename);
+          $path = $dirname . "/" . $filePattern;
+          $path_preview = $dirname . "/hrm_previews/" . $filePattern;
+
           $allFiles = glob($path);
           foreach ($allFiles as $f) {
               unlink($f);
           }
+
           // Clean also the subdirectory hrm_previews
-          $path = preg_replace("/(.*)\.(.{3,4})/","\\1.*",
-                  $dirname."/hrm_previews/".$basename);
-          $allFiles = glob($path);
+          $allFiles = glob($path_preview);
           foreach ($allFiles as $f) {
               unlink($f);
           }
@@ -996,6 +1021,7 @@ class Fileserver {
       // The first comparison mode is the 400x400 pixels preview.
       $compare = $this->imgCompareMode($file, $dir, "400") ;
       if ($compare > 0) { $compare = 400; }
+
       return 
           "imgPrev('".rawurlencode($file)."', $mode, ".
           "$genThumbnails, $compare, $index, '$dir', ".
@@ -1247,9 +1273,9 @@ echo '</body></html>';
       <div id="logo"></div>
       </div>';
 
-
       $pdest =  $this->destinationFolder();
-      if (!file_exists($pdest."/".$file)) {
+      $filePattern = $this->getFilePattern($file);
+      if (!glob($pdest . "/" . $filePattern)) {
           echo "File '$file' does not exist in the server.";
           echo "</body></html>";
           exit;
@@ -1277,16 +1303,19 @@ echo '</body></html>';
 
       // This is the text file with the parameter summary (useful to check the
       // runtime parameters that were used if the template was incomplete)
-      $test = $fileBase . ".parameters.txt";
-
-      if (file_exists($test)) {
-          $path['parameters'] = $test;
+      $paramFile = $fileBase . ".parameters.txt";
+      $filePattern = $this->getFilePattern(basename($paramFile));
+      $paramFile = glob($dir . "/" . $filePattern);
+      if (isset($paramFile) && !empty($paramFile)) {
+          $path['parameters'] = $paramFile[0];
       }
 
       // Log file (this is the same as the email that is sent to the user)
-      $test = $fileBase.".log.txt";
-      if (file_exists($test)) {
-          $path['log'] = $test;
+      $logFile = $fileBase . ".log.txt";
+      $filePattern = $this->getFilePattern(basename($logFile));
+      $logFile = glob($dir . "/" . $filePattern);
+      if (isset($logFile) && !empty($logFile)) {
+          $path['log'] = $logFile[0];
       }
 
       // SFP comparison
@@ -1416,10 +1445,18 @@ echo '</body></html>';
       }
 
       if ( $allowHttpTransfer ) {
+          if (!file_exists($file)) {
+              $dirDest =  $this->destinationFolder();
+              $allFiles = glob($dirDest . "/*" . $file . "*");
+              $downloadFile = basename($allFiles[0]);
+          } else {
+              $downloadFile = $file;
+          }
+
           echo "\n<div class=\"menuEntry\"
           onmouseover=\"Tip('Pack and download the restored image with all accessory files')\"
           onmouseout=\"UnTip()\"
-          onclick=\"changeDiv('report','Packaging files, please wait'); setTimeout(smoothChangeDiv,5000,'report','',5000); document.location.href='file_management.php?download=".rawurlencode($file)."'\" ><a href='#'>download files</a></div>\n";
+          onclick=\"changeDiv('report','Packaging files, please wait'); setTimeout(smoothChangeDiv,5000,'report','',5000); document.location.href='file_management.php?download=".rawurlencode($downloadFile)."'\" ><a href='#'>download files</a></div>\n";
       }
 
       echo "\n<div class=\"menuEntry\" onclick=\"javascript:openWindow(".
@@ -1551,8 +1588,8 @@ echo '</body></html>';
       echo "\n\n<h3>Image comparison ($mode)</h3>\n";
 
       $pdest =  $this->destinationFolder();
-
-      if (!file_exists($pdest."/".$file)) {
+      $filePattern = $this->getFilePattern($file);
+      if (!glob($pdest . "/" . $filePattern)) {
           echo "File '$file' does not exist in the server.";
           echo "</body></html>";
           exit;
@@ -2237,13 +2274,13 @@ echo '</body></html>';
   /*!
     \brief  Trims STK time series
   */
-  private function trimStkSeries() {
-    if (count($this->files)==0) return False;
-    $stk = preg_grep("/[^_]+_(T|t)[0-9]+\.\w+/", $this->files);
-    foreach ($stk as $key => $value) {
-	unset($this->files[$key]);
-    }
-  }
+ private function trimStkSeries() {
+   if (count($this->files)==0) return False;
+   $stk = preg_grep("/[^_]+_(T|t)[0-9]+\.\w+/", $this->files);
+   foreach ($stk as $key => $value) {
+       unset($this->files[$key]);
+   }
+ }
   
   /*!
     \brief  Gets the basename of Leica TIFF series
