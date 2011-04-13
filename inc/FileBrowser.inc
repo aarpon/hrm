@@ -277,8 +277,8 @@ function imageAction (list) {
         $filePreview = $matches[1] . "/hrm_previews/" . $file . ".preview_xy.jpg"; 
 
         if (!file_exists($filePreview)) {
-            $subdir = str_replace($pdir . "/","",$matches[1]);
-            if ($subdir) {
+            $subdir = str_replace($pdir . "/","",$matches[1],$count);
+            if ($subdir && $count) {
                 $fileForAction = $subdir . "/";
             } else {
                 $fileForAction = "";
