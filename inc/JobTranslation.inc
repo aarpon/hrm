@@ -40,7 +40,11 @@
            - Set details per task (imgOpen, setp,..)           
   */
 
-Class JobTranslation {
+require_once( "User.inc" );
+require_once( "JobDescription.inc" );
+require_once( "Fileserver.inc" );
+
+class JobTranslation {
 
     /*!
      \var     $template
@@ -1450,7 +1454,10 @@ Class JobTranslation {
         if ($this->getPsfMode() == "file") {
             $microSetting = $this->microSetting;
             $psfFiles = $microSetting->parameter("PSF")->value();
-            $psf = $this->getSrcDir() ."/". $psfFiles[$channel];
+            $owner = $this->jobDescription->owner( );
+            $fileserver = new Fileserver( $owner->name() );
+            $path = $fileserver->sourceFolder();
+            $psf = $path ."/". $psfFiles[$channel];
             $psfPath .= " " . $psf;
             $psfPath = trim($psfPath);
         }
