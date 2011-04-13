@@ -277,7 +277,13 @@ function imageAction (list) {
         $filePreview = $matches[1] . "/hrm_previews/" . $file . ".preview_xy.jpg"; 
 
         if (!file_exists($filePreview)) {
-            $fileForAction = $matches[3] . "_" . $matches[4] . "." . $matches[5];
+            $subdir = str_replace($pdir . "/","",$matches[1]);
+            if ($subdir) {
+                $fileForAction = $subdir . "/";
+            } else {
+                $fileForAction = "";
+            }
+            $fileForAction .= $matches[3] . "_" . $matches[4] . "." . $matches[5];
         } else {
             $fileForAction = $file;
         }
