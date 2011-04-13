@@ -307,10 +307,17 @@ abstract class Parameter {
 
 	/*!
 		\brief	Returns the formatted Parameter name to be used with displayString()
+		\param  $name (Optional) If specified, overrides the Parameter name;
+		                         if not, the actual Parameter name is used
 		\return	formatted Parameter name
 	*/
-	protected function formattedName( ) {
-		$name = $this->decomposeCamelCaseString( $this->name );
+	protected function formattedName(  $name = NULL ) {
+		if ( $name === NULL ) {
+			$name = $this->decomposeCamelCaseString( $this->name );
+		}
+		if ( $name[ 0 ] != " " ) {
+			$name = " " . $name;
+		}
 		$name = $name . ':';
 		$result = str_pad($name, self::PADSIZE, ' ', STR_PAD_RIGHT);
 		return $result;
@@ -527,7 +534,7 @@ abstract class ChoiceParameter extends Parameter {
 				overload this function!
 	*/
 	public function displayString( $numberOfChannels = 0 ) {
-		$result = $this->formattedName( $this->name );
+		$result = $this->formattedName( );
 		if ( $this->notSet() ) {
 			$result = $result . "*not set*" . "\n";
 		} else {
@@ -599,7 +606,7 @@ class BooleanParameter extends ChoiceParameter {
 		} else {
 			$value = 'no';
 		}
-		$result = $this->formattedName( $this->name );
+		$result = $this->formattedName( );
 		$result = $result . $value . "\n";
 		return $result;		
 	}
@@ -857,7 +864,7 @@ class NumericalParameter extends Parameter {
 		\return	string representation of the Parameter
 	*/
 	public function displayString( $numberOfChannels = 0 ) {
-		$result = $this->formattedName( $this->name );
+		$result = $this->formattedName( );
 		if ( $this->notSet() ) {
 			$result = $result . "*not set*" . "\n";
 		} else {
@@ -988,7 +995,7 @@ class NumericalArrayParameter extends NumericalParameter {
 	public function displayString( $numberOfChannels = 0 ) {
 		$value = array_slice( $this->value, 0, $numberOfChannels );
 		$value = implode( $value, ', ' );
-		$result = $this->formattedName( $this->name );
+		$result = $this->formattedName( );
 		if ( $this->notSet() ) {
 			$result = $result . "*not set*" . "\n";
 		} else {
@@ -1090,6 +1097,29 @@ class PSF extends AnyTypeArrayParameter {
           }
 	  }
 	  return True;
+	}
+	
+	/*!
+		\brief	Returns the string representation of the Parameter
+		\return	string representation of the Parameter
+	*/
+	public function displayString( $numberOfChannels = 0 ) {
+		if ( $numberOfChannels == 1 ) {
+			$result = $this->formattedName( "PSF file name" );
+		} else {
+			$result = $this->formattedName( "PSF file names" );
+		}
+		if ( $this->notSet() ) {
+			$result = $result . "*not set*" . "\n";
+		} else {
+			if ( $numberOfChannels == 1 ) {
+				$result = $result . $this->value[ 0 ] . "\n";	
+			} else {
+				$values = implode( ", ", array_slice( $this->value, 0, $numberOfChannels ) );
+				$result = $result . $values . "\n";	
+			}
+		}
+		return $result;
 	}
 
 }
@@ -1286,7 +1316,7 @@ class ImageFileFormat extends SingleOrMultiChannelParameter {
 	*/
 	public function displayString( $numberOfChannels = 0 ) {
 		$value = $this->translatedValueFor( $this->value( ) );
-		$result = $this->formattedName( $this->name );
+		$result = $this->formattedName( );
 		if ( $this->notSet() ) {
 			$result = $result . "*not set*" . "\n";
 		} else {
@@ -1356,7 +1386,7 @@ class ImageGeometry extends SingleOrMultiChannelParameter {
 		\return	string representation of the Parameter
 	*/
 	public function displayString( $numberOfChannels = 0 ) {
-		$result = $this->formattedName( $this->name );
+		$result = $this->formattedName( );
 		if ( $this->notSet() ) {
 			$result = $result . "*not set*" . "\n";
 		} else {
@@ -1792,27 +1822,11 @@ class CCDCaptorSizeX extends NumericalParameter {
 	}
 
 	/*!
-		\brief	Returns the formatted Parameter name to be used with displayString()
-		
-		This method overrides the base formattedName() method to return a better
-		understandable name (i.e. 'pixel size' instead of 'c c d captor size x')
-		for the user.
-		
-		\return	formatted Parameter name
-	*/
-	protected function formattedName( ) {
-		$name = " pixel size";
-		$name = $name . ':';
-		$result = str_pad($name, self::PADSIZE, ' ', STR_PAD_RIGHT);
-		return $result;
-	}
-	
-	/*!
 		\brief	Returns the string representation of the CCDCaptorSizeX Parameter
 		\return	string representation of the Parameter
 	*/
 	public function displayString() {
-		$result = $this->formattedName( ' pixel size:' );
+		$result = $this->formattedName( 'pixel size' );
 		if ( $this->notSet() ) {
 			$result = $result . "*not set*" . "\n";
 		} else {
@@ -2108,7 +2122,7 @@ class SignalNoiseRatio extends NumericalArrayParameter {
 					$val[$i] = $snr[$value[$i]];
 				}
 				$value = implode(", ", $val);
-				$result = $this->formattedName( $this->name );
+				$result = $this->formattedName( );
 				return $result . $value . "\n";
 				break;
 			case "cmle" :
@@ -2453,7 +2467,7 @@ class PerformAberrationCorrection extends ChoiceParameter {
 		} else {
 			$value = "yes";
 		}
-		$result = $this->formattedName( $this->name );
+		$result = $this->formattedName( );
 		$result = $result . $value . "\n";
 		return $result;
 	}
@@ -2529,7 +2543,7 @@ class AdvancedCorrectionOptions extends ChoiceParameter {
 				$value = "few bricks";
 				break;
 		}
-		$name = $this->formattedName( $this->name );
+		$name = $this->formattedName( );
 		$result = $name . $value . "\n";
 		return $result;
 	}
@@ -2613,7 +2627,7 @@ class OverrideConfidence extends ChoiceParameter {
 				$value = "verified";
 				break;
 		}
-		$name = $this->formattedName( $this->name );
+		$name = $this->formattedName( );
 		$result = $name . $value . "\n";
 		return $result;
 	}

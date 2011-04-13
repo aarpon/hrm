@@ -1098,48 +1098,41 @@ class ParameterSetting extends Setting {
     $aberrationCorrectionMode = $this->parameter( "AberrationCorrectionMode" )->value( );
     $advancedCorrectionOptions = $this->parameter( "AdvancedCorrectionOptions" )->value( );
 
-    // The relevant parameters for theoretical vs. measured PSF are
-    // displayed, making sure that the number of entries (e.g. for the
-    // wavelengths) reflect the user-defined number of channels
+    // Not everything needs to be displayed, either because the Parameter might
+    // be only internally used, or because it does not make sense for the current
+    // Setting (e.g. it does not make sense to display the pinhole size if the
+    // microscope type is 'widefield'.
     foreach ($this->parameter as $parameter) {
-      if ($this->isFixedGeometryFormat() && $parameter->name() == 'ImageGeometry')
-      continue;
       if (!$this->isMultiPointOrSinglePointConfocal() && $parameter->name() == 'PinholeSize')
-      continue;
-      if (!$this->isMultiChannel() && $parameter->name() == 'NumberOfChannels')
-      continue;
-      if (!$this->isThreeDimensional() && $parameter->name() == 'ZStepSize')
-      continue;
-      if (!$this->isTimeSeries() && $parameter->name() == 'TimeInterval')
-      continue;
-      if (!$this->isNipkowDisk() && $parameter->name() == 'PinholeSpacing')
-      continue;
-      if ($parameter->name() == 'IsMultiChannel' || $parameter->name() == 'PSF')
-      continue;
-      if ( ( $parameter->name() == 'ExcitationWavelength' || $parameter->name() == 'EmissionWavelength' ) && $PSF == 'measured' )
-      continue;
-      if ($parameter->name() == 'SampleMedium' && $PSF == 'measured' )
-      continue;
-      if ($parameter->name() == 'CMount' ) // This is obsolete
-      continue;
-      if ($parameter->name() == 'TubeFactor' ) // This is obsolete
-      continue;
-      if ($parameter->name() == 'ObjectiveMagnification' ) // This is obsolete
-      continue;
-      if ($parameter->name() == 'Binning' ) // This is obsolete
-      continue;
-      if ($parameter->name() == 'CCDCaptorSizeX' && $PSF == 'measured' )
-      continue;
-      if ($parameter->name() == 'CoverslipRelativePosition' && $PSF == 'measured' )
-      continue;
-      if ($parameter->name() == 'CoverslipRelativePosition' && $performAberrationCorrection == 0 )
-      continue;
-      if ($parameter->name() == 'AberrationCorrectionMode' && $performAberrationCorrection == 0 )
-      continue;
-      if ($parameter->name() == 'AdvancedCorrectionOptions' && !( $performAberrationCorrection == 1 && $aberrationCorrectionMode == 'advanced' ) )
-      continue;
-      if ($parameter->name() == 'PSFGenerationDepth' && !( $performAberrationCorrection == 1 && $aberrationCorrectionMode == 'advanced' && $advancedCorrectionOptions == 'user' ) )
-      continue;
+        continue;
+      if ( $parameter->name() == 'IsMultiChannel' )
+        continue;
+      if ( !$this->isThreeDimensional() && $parameter->name() == 'ZStepSize' )
+        continue;
+      if ( !$this->isTimeSeries() && $parameter->name() == 'TimeInterval' )
+        continue;
+      if ( !$this->isNipkowDisk() && $parameter->name() == 'PinholeSpacing' )
+        continue;
+      if ( $parameter->name() == 'CMount' ) // This is obsolete
+        continue;
+      if ( $parameter->name() == 'TubeFactor' ) // This is obsolete
+        continue;
+      if ( $parameter->name() == 'ObjectiveMagnification' ) // This is obsolete
+        continue;
+      if ( $parameter->name() == 'Binning' ) // This is obsolete
+        continue;
+      if ( $parameter->name() == "AberrationCorrectionNecessary" && $PSF == 'measured' )
+        continue;
+      if ( $parameter->name() == 'CoverslipRelativePosition' && $PSF == 'measured' )
+        continue;
+      if ( $parameter->name() == 'CoverslipRelativePosition' && $performAberrationCorrection == 0 )
+        continue;
+      if ( $parameter->name() == 'AberrationCorrectionMode' && $performAberrationCorrection == 0 )
+        continue;
+      if ( $parameter->name() == 'AdvancedCorrectionOptions' && !( $performAberrationCorrection == 1 && $aberrationCorrectionMode == 'advanced' ) )
+        continue;
+      if ( $parameter->name() == 'PSFGenerationDepth' && !( $performAberrationCorrection == 1 && $aberrationCorrectionMode == 'advanced' && $advancedCorrectionOptions == 'user' ) )
+        continue;
       $result = $result . $parameter->displayString( $numberOfChannels );
     }
     return $result;
