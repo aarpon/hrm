@@ -91,7 +91,7 @@ include("header.inc.php");
         
         <form method="post" action="select_psf.php" id="select">
         
-            <div id="psfselection">
+            <div id="psfselection" class="provided">
 <?php
 
 for ($i = 0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {

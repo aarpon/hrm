@@ -1031,6 +1031,10 @@ option.default {
     width: 30%
 }
 
+#psfselection {
+    padding-left: 10px;    
+}
+
 /* Confidence levels for parameters: provided, verified, reported, estimated, default */
 .verified {
 	background: url(../images/param_verified.png) repeat-y left;

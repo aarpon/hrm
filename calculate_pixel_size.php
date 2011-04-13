@@ -86,7 +86,7 @@ include ("header.inc.php");
 
     <?php
 
-$textForCaptorSize = "size of the CCD element (nm)";
+$textForCaptorSize = "physical pixel size on CCD chip (nm)";
 $value = '';
 $parameter = $_SESSION['setting']->parameter("CCDCaptorSize");
 $value = $parameter->value();
