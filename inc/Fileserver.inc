@@ -1454,8 +1454,14 @@ echo '</body></html>';
       if ( $allowHttpTransfer ) {
           if (!file_exists($file)) {
               $dirDest =  $this->destinationFolder();
-              $allFiles = glob($dirDest . "/*" . $file . "*");
-              $downloadFile = basename($allFiles[0]);
+              $dirName = dirname($dirDest . "/" . $file);
+              $fileName = basename($dirDest . "/" . $file);
+              $allFiles = glob($dirName . "/*" . $fileName . "*");
+              $dirAndFile = str_replace($dirDest . "/","",$allFiles[0],$count);
+
+              if ($dirAndFile && $count) {
+                  $downloadFile = $dirAndFile;
+              }
           } else {
               $downloadFile = $file;
           }
@@ -2028,7 +2034,6 @@ echo '</body></html>';
       # echo "Deleting $path2";
       # rmdir($dir."/hrm_previews/");
       # echo "Deleting dir";
-
 
       $ret = 0;
       if (file_exists($path)) {
