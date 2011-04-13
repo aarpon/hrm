@@ -23,15 +23,17 @@ pre {
 }
 
 a:link {
+    color: #4988de;
     text-decoration: none;
 }
 
 a:visited {
+    color: #4988de;
     text-decoration: none;
 }
 
 a:hover, a:active {
-    color: rgb(196, 0, 9);
+    color: #2733ff;
 }
 
 h1 {
@@ -1062,6 +1064,7 @@ option.default {
     margin-top: 5px;
     margin-bottom: -5px;
     background: url(../images/text_verified.png) no-repeat bottom;
+    color: #000000;
 }
 
 .message_confidence_reported {
@@ -1070,6 +1073,7 @@ option.default {
     margin-top: 5px;
     margin-bottom: -5px;
     background: url(../images/text_reported.png) no-repeat bottom;
+    color: #555A43;
 }
 
 .message_confidence_estimated {
@@ -1078,6 +1082,7 @@ option.default {
     margin-top: 5px;
     margin-bottom: -5px;
     background: url(../images/text_estimated.png) no-repeat bottom;
+    color: #1F467F;
 }
 
 .message_confidence_default {
@@ -1086,6 +1091,7 @@ option.default {
     margin-top: 5px;
     margin-bottom: -5px;
     background: url(../images/text_default.png) no-repeat bottom;
+    color: #009C89;
 }
 
 .message_confidence_provided {
@@ -1094,6 +1100,7 @@ option.default {
     margin-top: 5px;
     margin-bottom: -5px;
     background: url(../images/text_provided.png) no-repeat bottom;
+    color: #b09065;
 }
 
 .message_confidence_override {

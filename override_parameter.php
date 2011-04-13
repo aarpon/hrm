@@ -91,13 +91,11 @@ include("header.inc.php");
     <div id="content">
     
         <h3>Override parameters</h3>
+
+        <h4>Your image files may contain valid metadata.
+        Would you like to use it to override your parameters?</h4>
         
         <form method="post" action="" id="select">
-        
-            <p class="message_small">Ideally, all parameters needed for deconvolution would
-                be read from file metadata during deconvolution. Unfortunately, the extent and
-                quality of file metadata varies strongly between file formats. Hence, the HRM assigns
-                a <strong>confidence level</strong> to each parameter as a function of the chosen file format.</p>
 
     <?php
 
@@ -116,8 +114,6 @@ include("header.inc.php");
                     <a href="javascript:openWindow('http://www.svi.nl/ConfidenceLevels')"><img src="images/help.png" alt="?" /></a>
                     Override option
                 </legend>
-                
-                <p class="message_small">Should any of the parameters you set be replaced with file metadata?</p>
 
 <?php
 
@@ -175,7 +171,7 @@ foreach($possibleValues as $possibleValue) {
               to override is dictated by their confidence level.</p>
               
               <p>This mechanism can be used to run batch jobs with files having
-              differences in some of their parameters. By setting a minumum
+              differences in some of their parameters. By setting a minimum
               level of confidence, the template will adapt to all files by
               selectively replacing the parameters in the template with those
               read from file.</p>
