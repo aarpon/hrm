@@ -719,10 +719,13 @@ class QueueManager {
  	  $text = $text . "The image $sourceFileName was successfully processed by Huygens.\n";
  	  $text = $text . "You will find the resulting image ($destFileName) in your destination folder.\n";
 
+          // Create link based on the job id.
  	  $imageName = $desc->destinationImageNameAndExtension();
           $namePattern = "/(.*)_(.*)_(.*)\.(.*)$/";
           preg_match($namePattern,$imageName,$matches);
-          $linkName = str_replace($matches[1] . "_","",$imageName);
+          $jobName = str_replace($matches[1] . "_","",$imageName);
+          $dirname = dirname($imageName);
+          $linkName = $dirname . "/" . $jobName;
 
  	  if ( $useThumbnails ) {
  	    $link = $hrm_url.
