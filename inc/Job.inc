@@ -269,6 +269,8 @@ class Job {
     }
 
     // TODO is checking for job id only a good idea?
+    // HuCore replaces blanks with underscores.
+    $path = str_replace(" ","_",$path);
     $fileNameExists = $fileserver->folderContains($path, $destFileName);
 
     // TODO is checking for new files a relevant criterion?
