@@ -263,7 +263,7 @@ class JobTranslation {
         $environmentList = "";
         foreach ($this->envArray as $envOption => $envValue) {
             if ($envOption == "resultDir") {
-                $envValue = $this->getDestDir();
+                $envValue = $this->string2tcllist($this->getDestDir());
             } elseif ($envOption == "exportFormat") {
                 $envValue = $this->getExportFormat();
             }
@@ -1516,7 +1516,6 @@ class JobTranslation {
         if ($task == "") {
             return;
         }
-
         $previewGen = "image ";
         $previewGen .= $this->getImageType($srcImg);
         $previewGen .= " destDir ";
@@ -1735,7 +1734,7 @@ class JobTranslation {
         } else {
             error_log("Unknown image path: $destDir");
         }
-        return $destDir;
+        return $this->string2tcllist($destDir);
     }
 
     /*!
