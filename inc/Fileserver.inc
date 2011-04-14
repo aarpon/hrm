@@ -349,7 +349,7 @@ class Fileserver {
               return "*" . $fileName;
           }
       } else {
-          $pattern = "/(.*)\/([a-z0-9]{6,15})_hrm\.(.*)$/";
+          $pattern = "/(.*)\/([a-z0-9]{13,13})_hrm\.(.*)$/";
           preg_match($pattern,$fileName,$matches);
 
           if (isset($matches) && !empty($matches)) {
@@ -371,8 +371,7 @@ class Fileserver {
           preg_match($pattern,$fileName,$matches);
 
           if (isset($matches) && !empty($matches)) {
-              return $matches[1] . "/*" . $matches[2] . 
-                  "_". $matches[3] . "_hrm.*";
+              return $matches[1] . "/*" . $matches[3] . "_hrm.*";
           }       
       }
   }
@@ -398,7 +397,6 @@ class Fileserver {
           $filePattern = $this->getFilePattern($file);
           $path = $filePattern;
           $preview_path = dirname($file). "/hrm_previews/". basename($filePattern);
-
           if (!$packExcludePath) {
               $path = $this->destinationFolder()."/".$path;
               $preview_path = $this->destinationFolder()."/".$preview_path;
