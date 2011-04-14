@@ -335,34 +335,45 @@ class Fileserver {
    \brief      Builds a regular expression to be able to look for files.
    \brief      based on ther job id.
    \return     The regular expression.
+   \TODO       A new design and implementation of the file server is necessary.
   */
   public function getFilePattern($fileName) {
 
       // New naming convention: hrmJobid_hrm.extension
       if (!strstr($fileName, '/')) {
-          $filePattern = "/([a-z0-9]{6,15})_hrm\.(.*)$/";
-          preg_match($filePattern,$fileName,$matches);
+          $pattern = "/^([a-z0-9]{13,13})_hrm\.(.*)$/";
+          preg_match($pattern,$fileName,$matches);
 
           if (isset($matches) && !empty($matches)) {
               $fileName = preg_replace("/(.*)\.(.{3,4})/","\\1*",$fileName);
               return "*" . $fileName;
           }
       } else {
-          $filePattern = "/(.*)\/([a-z0-9]{6,15})_hrm\.(.*)$/";
-          preg_match($filePattern,$fileName,$matches);
+          $pattern = "/(.*)\/([a-z0-9]{6,15})_hrm\.(.*)$/";
+          preg_match($pattern,$fileName,$matches);
 
           if (isset($matches) && !empty($matches)) {
               return $matches[1] . "/*" . $matches[2] . "_hrm.*";
           }
       }
 
-      // Old naming convention: Subfolder/fileName_hrmJobid_hrm.extension
-      $filePattern = "/(.*)_(.*)_hrm\.(.*)$/";
-      preg_match($filePattern,$fileName,$matches);
+      // Old naming convention: fileName_hrmJobid_hrm.extension
+      if (!strstr($fileName, '/')) {
+          $pattern = "/(.*)_(.*)_hrm\.(.*)$/";
+          preg_match($pattern,$fileName,$matches);
+          
+          if (isset($matches) && !empty($matches)) {
+              $pattern = str_replace($matches[1] . "_","*",$fileName);
+              return preg_replace("/(.*)\.(.{3,4})/","\\1.*",$pattern);
+          }
+      } else {
+          $pattern = "/(.*)\/(.*)_(.*)_hrm\.(.*)$/";
+          preg_match($pattern,$fileName,$matches);
 
-      if (isset($matches) && !empty($matches)) {
-          $filePattern = str_replace($matches[1] . "_","*",$fileName);
-          return preg_replace("/(.*)\.(.{3,4})/","\\1.*",$filePattern);
+          if (isset($matches) && !empty($matches)) {
+              return $matches[1] . "/*" . $matches[2] . 
+                  "_". $matches[3] . "_hrm.*";
+          }       
       }
   }
 
@@ -385,10 +396,10 @@ class Fileserver {
 
       foreach ($files as $file) {
           $filePattern = $this->getFilePattern($file);
-          $path = dirname($file) . "/" . $filePattern;
-          $preview_path = dirname($file)."/hrm_previews/". $filePattern;
+          $path = $filePattern;
+          $preview_path = dirname($file). "/hrm_previews/". basename($filePattern);
 
-          if (! $packExcludePath ) {
+          if (!$packExcludePath) {
               $path = $this->destinationFolder()."/".$path;
               $preview_path = $this->destinationFolder()."/".$preview_path;
           }
@@ -1294,6 +1305,7 @@ echo '</body></html>';
 
       $pdest =  $this->destinationFolder();
       $filePattern = $this->getFilePattern($file);
+
       if (!glob($pdest . "/" . $filePattern)) {
           echo "File '$file' does not exist in the server.";
           echo "</body></html>";
@@ -1614,6 +1626,7 @@ echo '</body></html>';
 
       $pdest =  $this->destinationFolder();
       $filePattern = $this->getFilePattern($file);
+
       if (!glob($pdest . "/" . $filePattern)) {
           echo "File '$file' does not exist in the server.";
           echo "</body></html>";

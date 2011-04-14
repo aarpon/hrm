@@ -274,8 +274,10 @@ function imageAction (list) {
     foreach ($files as $key => $file) {
         $pathAndFile = $pdir . "/" . $file;
         preg_match($pattern,$pathAndFile,$matches);
-        $filePreview = $matches[1] . "/hrm_previews/" . $file . ".preview_xy.jpg"; 
+        $filePreview = $matches[1] . "/hrm_previews/";
+        $filePreview .= basename($file) . ".preview_xy.jpg"; 
 
+        // Build a file name compliant with the new naming convention.
         if (!file_exists($filePreview)) {
             $subdir = str_replace($pdir . "/","",$matches[1],$count);
             if ($subdir && $count) {
@@ -285,6 +287,7 @@ function imageAction (list) {
             }
             $fileForAction .= $matches[3] . "_" . $matches[4] . "." . $matches[5];
         } else {
+            // Build a file name compliant with the old naming convention.
             $fileForAction = $file;
         }
 
