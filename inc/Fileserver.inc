@@ -345,8 +345,7 @@ class Fileserver {
           preg_match($pattern,$fileName,$matches);
 
           if (isset($matches) && !empty($matches)) {
-              $fileName = preg_replace("/(.*)\.(.{3,4})/","\\1*",$fileName);
-              return "*" . $fileName;
+              return "*" . $matches[1] . "_hrm.*";
           }
       } else {
           $pattern = "/(.*)\/([a-z0-9]{13,13})_hrm\.(.*)$/";
@@ -363,8 +362,7 @@ class Fileserver {
           preg_match($pattern,$fileName,$matches);
           
           if (isset($matches) && !empty($matches)) {
-              $pattern = str_replace($matches[1] . "_","*",$fileName);
-              return preg_replace("/(.*)\.(.{3,4})/","\\1.*",$pattern);
+              return "*" . $matches[2] . "_hrm.*";
           }
       } else {
           $pattern = "/(.*)\/(.*)_(.*)_hrm\.(.*)$/";
