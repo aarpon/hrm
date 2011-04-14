@@ -643,6 +643,9 @@ class QueueManager {
  	  $fileserver = new Fileserver($username);
  	  $path = $fileserver->destinationFolderFor($desc);
 
+          // Stick to the HuCore path naming standard.
+          $path = str_replace(" ","_",$path);
+
  	  if (file_exists($errorFile))
  	  $text .= "\n\n- HUYGENS ERROR REPORT (stderr) --------------\n\n". file_get_contents($errorFile);
  	  if (file_exists($logFile))
@@ -724,7 +727,9 @@ class QueueManager {
           $namePattern = "/(.*)_(.*)_(.*)\.(.*)$/";
           preg_match($namePattern,$imageName,$matches);
           $jobName = str_replace($matches[1] . "_","",$imageName);
-          $dirname = dirname($imageName);
+
+          // Stick to the HuCore path naming standard.
+          $dirname = str_replace(" ","_",dirname($imageName));
           $linkName = $dirname . "/" . $jobName;
 
  	  if ( $useThumbnails ) {
