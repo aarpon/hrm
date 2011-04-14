@@ -332,25 +332,37 @@ class Fileserver {
   }  
 
   /*!
-   \brief      Builds a regular expression to be able to look for files
+   \brief      Builds a regular expression to be able to look for files.
    \brief      based on ther job id.
    \return     The regular expression.
   */
   public function getFilePattern($fileName) {
-      $filePattern = "/(.*)_(.*)_(.*)\.(.*)$/";
+
+      // New naming convention: hrmJobid_hrm.extension
+      if (!strstr($fileName, '/')) {
+          $filePattern = "/([a-z0-9]{6,15})_hrm\.(.*)$/";
+          preg_match($filePattern,$fileName,$matches);
+
+          if (isset($matches) && !empty($matches)) {
+              $fileName = preg_replace("/(.*)\.(.{3,4})/","\\1*",$fileName);
+              return "*" . $fileName;
+          }
+      } else {
+          $filePattern = "/(.*)\/([a-z0-9]{6,15})_hrm\.(.*)$/";
+          preg_match($filePattern,$fileName,$matches);
+
+          if (isset($matches) && !empty($matches)) {
+              return $matches[1] . "/*" . $matches[2] . "_hrm.*";
+          }
+      }
+
+      // Old naming convention: Subfolder/fileName_hrmJobid_hrm.extension
+      $filePattern = "/(.*)_(.*)_hrm\.(.*)$/";
       preg_match($filePattern,$fileName,$matches);
 
       if (isset($matches) && !empty($matches)) {
           $filePattern = str_replace($matches[1] . "_","*",$fileName);
           return preg_replace("/(.*)\.(.{3,4})/","\\1.*",$filePattern);
-      }
-
-      $filePattern = "/(^[a-z0-9]{6,15})_hrm\.(.*)$/";
-      preg_match($filePattern,$fileName,$matches);
-
-      if (isset($matches) && !empty($matches)) {
-          $fileName = preg_replace("/(.*)\.(.{3,4})/","\\1*",$fileName);
-          return "*" . $fileName;
       }
   }
 
