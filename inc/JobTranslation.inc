@@ -557,7 +557,7 @@ class JobTranslation {
         $imgOpen .= $this->string2tcllist($this->srcImage);
         if (isset($this->subImage)) {
             $imgOpen .= " subImg ";
-            $imgOpen .= $this->subImage;
+            $imgOpen .= $this->string2tcllist($this->subImage);
         }
         $imgOpen .= " series ";
         $imgOpen .= $this->getSeriesMode();
@@ -2090,7 +2090,6 @@ class JobTranslation {
         $this->destImage = $this->jobDescription->destinationImageFullName();
         $fileType = $this->getOutFileExtension();
         $this->destImage = $this->destImage.".".$fileType;
-        $this->destImage = str_replace(" ","_",$this->destImage);
     }
 
     /*!
