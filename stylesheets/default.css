@@ -1060,7 +1060,7 @@ option.default {
 
 .message_confidence_verified {
     border: none;
-    height: 15px;
+    height: 20px;
     margin-top: 5px;
     margin-bottom: -5px;
     background: url(../images/text_verified.png) no-repeat bottom;
@@ -1069,7 +1069,7 @@ option.default {
 
 .message_confidence_reported {
     border: none;
-    height: 15px;
+    height: 20px;
     margin-top: 5px;
     margin-bottom: -5px;
     background: url(../images/text_reported.png) no-repeat bottom;
@@ -1078,7 +1078,7 @@ option.default {
 
 .message_confidence_estimated {
     border: none;
-    height: 15px;
+    height: 20px;
     margin-top: 5px;
     margin-bottom: -5px;
     background: url(../images/text_estimated.png) no-repeat bottom;
@@ -1087,7 +1087,7 @@ option.default {
 
 .message_confidence_default {
     border: none;
-    height: 15px;
+    height: 20px;
     margin-top: 5px;
     margin-bottom: -5px;
     background: url(../images/text_default.png) no-repeat bottom;
@@ -1096,7 +1096,7 @@ option.default {
 
 .message_confidence_provided {
     border: none;
-    height: 15px;
+    height: 20px;
     margin-top: 5px;
     margin-bottom: -5px;
     background: url(../images/text_provided.png) no-repeat bottom;
