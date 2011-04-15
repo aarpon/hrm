@@ -75,11 +75,9 @@ else if (isset($_POST['make_default'])) {
   $_SESSION['editor']->makeSelectedSettingDefault();
   $message = "            <p class=\"warning\">".$_SESSION['editor']->message()."</p>\n";
 }
-else if (isset($_POST['delete'])) {
-  if (isset($_POST['annihilate']) && $_POST['annihilate'] == "yes") {
+else if ( (isset($_POST['delete']) || isset($_POST['annihilate']) && $_POST['annihilate'] == "yes") ) {
     $_SESSION['editor']->deleteSelectedSetting();
     $message = "            <p class=\"warning\">".$_SESSION['editor']->message()."</p>\n";
-  }
 }
 else if (isset($_POST['OK'])) {
   if (!isset($_POST['setting'])) {

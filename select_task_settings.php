@@ -81,11 +81,9 @@ else if (isset($_POST['make_default'])) {
   $_SESSION['taskeditor']->makeSelectedSettingDefault();
   $message = "            <p class=\"warning\">".$_SESSION['taskeditor']->message()."</p>\n";
 }
-else if (isset($_POST['delete'])) {
-  if (isset($_POST['annihilate']) && $_POST['annihilate'] == "yes") {
+else if ( (isset($_POST['delete']) || isset($_POST['annihilate']) && $_POST['annihilate'] == "yes") ) {
     $_SESSION['taskeditor']->deleteSelectedSetting();
     $message = "            <p class=\"warning\">".$_SESSION['taskeditor']->message()."</p>\n";
-  }
 }
 else if (isset($_POST['OK'])) {
   if (!isset($_POST['task_setting'])) {
