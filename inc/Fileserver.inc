@@ -393,8 +393,8 @@ class Fileserver {
 
       foreach ($files as $file) {
           $filePattern = $this->getFilePattern($file);
-          $path = $filePattern;
-          $preview_path = dirname($file). "/hrm_previews/". basename($filePattern);
+          $path = str_replace(" ","\ ",$filePattern);
+          $preview_path = dirname($path). "/hrm_previews/". basename($filePattern);
           if (!$packExcludePath) {
               $path = $this->destinationFolder()."/".$path;
               $preview_path = $this->destinationFolder()."/".$preview_path;
