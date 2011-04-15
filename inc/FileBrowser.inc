@@ -272,23 +272,32 @@ function imageAction (list) {
     $pattern = "/(.*)\/(.*)_(.*)_(.*)\.(.*)$/";
 
     foreach ($files as $key => $file) {
-        $pathAndFile = $pdir . "/" . $file;
-        preg_match($pattern,$pathAndFile,$matches);
-        $filePreview = $matches[1] . "/hrm_previews/";
-        $filePreview .= basename($file) . ".preview_xy.jpg"; 
-
-        // Build a file name compliant with the new naming convention.
-        if (!file_exists($filePreview)) {
-            $subdir = str_replace($pdir . "/","",$matches[1],$count);
-            if ($subdir && $count) {
-                $fileForAction = $subdir . "/";
-            } else {
-                $fileForAction = "";
-            }
-            $fileForAction .= $matches[3] . "_" . $matches[4] . "." . $matches[5];
-        } else {
-            // Build a file name compliant with the old naming convention.
+        
+        // The source folder contains no hrm job ids.
+        if ($browse_folder == "src") {
             $fileForAction = $file;
+        } else {
+
+            // The destination folder needs parsing to locate the previews.
+            $pathAndFile = $pdir . "/" . $file;
+            preg_match($pattern,$pathAndFile,$matches);
+            $filePreview = $matches[1] . "/hrm_previews/";
+            $filePreview .= basename($file) . ".preview_xy.jpg"; 
+            
+            // Build a file name compliant with the new naming convention.
+            if (!file_exists($filePreview)) {
+                $subdir = str_replace($pdir . "/","",$matches[1],$count);
+                if ($subdir && $count) {
+                    $fileForAction = $subdir . "/";
+                } else {
+                    $fileForAction = "";
+                }
+                $fileForAction .= $matches[3] . "_" . $matches[4];
+                $fileForAction .= "." . $matches[5];
+            } else {
+                // Build a file name compliant with the old naming convention.
+                $fileForAction = $file;
+            }
         }
 
         $generatedScript .= "
