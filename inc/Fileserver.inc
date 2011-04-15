@@ -1330,16 +1330,18 @@ echo '</body></html>';
 
       // This is the text file with the parameter summary (useful to check the
       // runtime parameters that were used if the template was incomplete)
-      $paramFile = $fileBase . ".parameters.txt";
-      $filePattern = $this->getFilePattern(basename($paramFile));
+      $filePattern = $this->getFilePattern(basename($file));
+      $filePattern = str_replace(".*",".parameters.*",$filePattern);
+
       $paramFile = glob($dir . "/" . $filePattern);
       if (isset($paramFile) && !empty($paramFile)) {
           $path['parameters'] = $paramFile[0];
       }
 
       // Log file (this is the same as the email that is sent to the user)
-      $logFile = $fileBase . ".log.txt";
-      $filePattern = $this->getFilePattern(basename($logFile));
+      $filePattern = $this->getFilePattern(basename($file));
+      $filePattern = str_replace(".*",".log.*",$filePattern);
+
       $logFile = glob($dir . "/" . $filePattern);
       if (isset($logFile) && !empty($logFile)) {
           $path['log'] = $logFile[0];
