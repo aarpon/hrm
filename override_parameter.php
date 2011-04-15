@@ -90,10 +90,10 @@ include("header.inc.php");
     
     <div id="content">
     
-        <h3>Override parameters</h3>
+        <h3>Import metadata from file</h3>
 
         <h4>Your image files may contain valid metadata.
-        Would you like to use it to override your parameters?</h4>
+        Would you like to use it to override current template parameters?</h4>
         
         <form method="post" action="" id="select">
 
