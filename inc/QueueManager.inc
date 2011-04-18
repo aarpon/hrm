@@ -135,6 +135,40 @@ class QueueManager {
   }
 
   /*!
+   \brief       Grants read write permissions to job independent previews
+   \brief       to avoid conflicts between the previews generated from
+   \brief       the website and the ones generated from the queue manager.
+   \param       $desc A JobDescription object
+   \param       $fileserver A Fileserver object.
+  */                                                                   
+  private function chmodPreviews(JobDescription $desc, Fileserver $fileserver ) {
+      $jobFile = $desc->files();
+
+      if (dirname($jobFile[0]) == ".") {
+          $preview = "/hrm_previews/";
+      } else {
+          $preview = "/" . dirname($jobFile[0]) . "/hrm_previews/";
+      }
+      $preview .= basename($jobFile[0]) . "*";
+      
+      // Grant read/write permissions to the source previews.
+      $srcFolder = $fileserver->sourceFolder();
+      $srcPreview = $srcFolder . $preview;
+      $allFiles = glob($srcPreview);
+      foreach ($allFiles as $f) {
+          chmod($f,0666);
+      }
+
+      // Grant read/write permissions to the destination previews.
+      $destFolder = $fileserver->destinationFolder();
+      $destPreview = $destFolder . str_replace(" ","_",$preview);
+      $allFiles = glob($destPreview);
+      foreach ($allFiles as $f) {
+          chmod($f,0666);
+      }
+  }
+
+  /*!
    \brief	Copies the images needed by a given Job to the Image Processing server
    \param	$job	A Job object
    \param	$server_hostname	Name of the server to which to copy the files
@@ -501,6 +535,8 @@ class QueueManager {
  	      unlink($logFile);
  	    }
  	    else {
+                $this->chmodPreviews($desc,$fileserver);
+
  	      report("job " . $desc->id() .
                                         " completed on " . $job->server(), 1);
  	      // Report information to statistics table
