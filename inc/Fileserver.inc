@@ -2406,6 +2406,9 @@ echo '</body></html>';
             user's source folder and its subfolders
     \param  $startDir  The folder to start from
     \param  $prefix    The actual path prefix relative to the user's image folder
+    \TODO   This function fails producing an ugly bug that does not show the 
+    \TODO   file manager, when the same zipped folder is uploaded a number of 
+    \TODO   times.
   */
   private function getFilesFrom($startDir, $prefix) {
     $dir = dir($startDir);
