@@ -234,11 +234,14 @@ proc generateImagePreview {} {
     if { [ catch {
         reportMsg "Processing image: generating MIP and scaling."
         ::WebTools::savePreview $src $dest $filename $sizes $scheme
+        
         # Make the preview directory writable/readable to all users.
-        if { [ catch { exec chmod 777 $dest } res ] } {
-            reportError "$res"
+        if { [ file owned $dest ] } {
+            if { [ catch { exec chmod 777 $dest } res ] } {
+                reportError "$res"
+            }
+            catch { exec chmod -R a+w $dest }
         }
-        catch { exec chmod -R a+w $dest }
     }  res ] } {
         reportError "$res"
     } else {

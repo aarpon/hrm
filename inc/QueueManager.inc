@@ -166,6 +166,12 @@ class QueueManager {
       foreach ($allFiles as $f) {
           chmod($f,0666);
       }
+
+      // Grant read/write/access permissions to the containing folders.
+      $srcDir  = dirname($srcPreview);
+      $destDir = dirname($destPreview);
+      chmod($srcDir,0777);
+      chmod($destDir,0777);
   }
 
   /*!
