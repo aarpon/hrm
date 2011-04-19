@@ -223,11 +223,13 @@ class ExternalProcess {
   public function execute($command) {
     global $huygens_user;
 
-    $cmd = 'ssh -f ' . $huygens_user . "@" . $this->host . " '" . $command . " ' \n";
+    $cmd = 'ssh -f ' . $huygens_user . "@" . $this->host . " '" . $command . " '";
+    $cmd .= " & echo $! \n"; 
 
     $ret = fwrite($this->pipes[0], $cmd );
     fflush($this->pipes[0]);
     report ("$cmd: $ret", 2);
+
     if ( $ret ) {
       // Why exiting here? This is commented out by now.
       // $ret = fwrite($this->pipes[0], "exit\n");
@@ -259,7 +261,6 @@ class ExternalProcess {
     global $hutask;
   
       $command = $this->huscript_path." $hutask \"".$templateName."\"";
-      $command .= ' & echo $!'; 
 
       // TODO better management of file handles
       //$out_file = fopen($this->descriptorSpec[1][1], "r");
@@ -408,7 +409,7 @@ class LocalExternalProcess extends ExternalProcess {
   public function execute($command) {
     global $huygens_user;
 
-    $ret = fwrite($this->pipes[0], $command . " & \n" );
+    $ret = fwrite($this->pipes[0], $command . " & echo $! \n");
     fflush($this->pipes[0]);
     if ($ret === false) {
       // Can't write to pipe.
