@@ -307,18 +307,20 @@ class Job {
     $path = $fileserver->sourceFolder();
     $dpath = $fileserver->destinationFolderFor($desc);
 
-    $finishedMarker = ".finished_" . $desc->id();
+    $finishedMarker = $desc->destinationImageName() . ".hgsb"; 
     $endTimeMarker = ".EstimatedEndTime_" . $desc->id();
     $remarksFile = $desc->sourceImageShortName() . "*" . "_" .
     $desc->id() . "*.remarks.txt";
 
     // If fileshare is not on the same host as Huygens.
     if (!$imageProcessingIsOnQueueManager) {
+
       // Copy the finished marker
       $marker = $huygens_server_image_folder . $user->name() .
-                    "/" . $image_source . "/" . $finishedMarker;
+                    "/" . $image_destination . "/" . $finishedMarker;
       $remoteFile = exec("ssh " . $huygens_user . "@" .
       $server_hostname . " ls " . $marker);
+
       //error_log("ssh " . $huygens_user . "@" . $server_hostname . "
       //ls " . $marker);
       //error_log($result);
