@@ -135,43 +135,73 @@ class QueueManager {
   }
 
   /*!
-   \brief       Grants read write permissions to job independent previews
+   \brief       Grants permissions to deconvolved images and image previews
    \brief       to avoid conflicts between the previews generated from
-   \brief       the website and the ones generated from the queue manager.
+   \brief       the website and the ones generated from the queue manager, as
+   \brief       well as to guarantee that the files can always be deleted.
    \param       $desc A JobDescription object
    \param       $fileserver A Fileserver object.
   */                                                                   
-  private function chmodPreviews(JobDescription $desc, Fileserver $fileserver ) {
-      $jobFile = $desc->files();
+  private function chmodJob(JobDescription $desc, Fileserver $fileserver ) {
 
-      if (dirname($jobFile[0]) == ".") {
-          $preview = "/hrm_previews/";
+      // Build a subdirectory pattern to look for the source previews.
+      $resultFiles = $desc->files();
+      if (dirname($resultFiles[0]) == ".") {
+          $previewSubdir = "/hrm_previews/";
       } else {
-          $preview = "/" . dirname($jobFile[0]) . "/hrm_previews/";
+          $previewSubdir = "/" . dirname($resultFiles[0]) . "/hrm_previews/";
       }
-      $preview .= basename($jobFile[0]) . "*";
+      $subdirPreviewPattern = $previewSubdir. basename($resultFiles[0]) . "*";
       
-      // Grant read/write permissions to the source previews.
+      // Grant all permissions to the source preview in the source folder.
       $srcFolder = $fileserver->sourceFolder();
-      $srcPreview = $srcFolder . $preview;
-      $allFiles = glob($srcPreview);
-      foreach ($allFiles as $f) {
-          chmod($f,0666);
-      }
+      $srcPreviews = $srcFolder . $subdirPreviewPattern;
+      $this->chmodFiles(glob($srcPreviews),0777);
+      $this->chmodFiles(dirname($srcPreviews),0777);
 
-      // Grant read/write permissions to the destination previews.
+      // Grant all permissions to the source preview in the destination folder.
       $destFolder = $fileserver->destinationFolder();
-      $destPreview = $destFolder . str_replace(" ","_",$preview);
-      $allFiles = glob($destPreview);
-      foreach ($allFiles as $f) {
-          chmod($f,0666);
+      $srcPreviews = $destFolder . str_replace(" ","_",$subdirPreviewPattern);
+      $this->chmodFiles(glob($srcPreviews),0777);
+      $this->chmodFiles(dirname($srcPreviews),0777);
+
+      // Find the results directory. Grant all permissions to it, if necessary.
+      if (dirname($resultFiles[0]) == "." ) {
+          $jobFileDir = $destFolder;
+      } else {
+          $subdir = dirname($resultFiles[0]);
+          $jobFileDir = $destFolder . "/" . $subdir;
+          $this->chmodFiles($jobFileDir,0777);
       }
 
-      // Grant read/write/access permissions to the containing folders.
-      $srcDir  = dirname($srcPreview);
-      $destDir = dirname($destPreview);
-      chmod($srcDir,0777);
-      chmod($destDir,0777);
+      // Build a file pattern to look for the deconvolved images.
+      $jobFilePattern = $jobFileDir . "/" . $desc->destinationImageName() . "*";
+
+      // Grant all permissions to the deconvolved images.
+      $this->chmodFiles(glob($jobFilePattern),0777);
+
+      // Build a file pattern to look for the preview results.
+      $taskSetting = $desc->taskSetting();
+      $jobFilePattern = dirname($jobFilePattern) . "/hrm_previews/";
+      $jobFilePattern .= "*" . $taskSetting->name() . "_hrm*";
+
+      // Grant all permissions the job previews.
+      $this->chmodFiles(glob($jobFilePattern),0777);
+  }
+
+  /*!
+   \brief       Change file modes.
+   \param       $files An array of files or single file.
+   \param       $permission The requested file permission.
+  */
+  private function chmodFiles($files,$permission) {
+      if (is_array($files)) {
+          foreach ($files as $f) {
+              chmod($f,$permission);
+          }
+      } else {
+          chmod($files,$permission);
+      }
   }
 
   /*!
@@ -541,7 +571,7 @@ class QueueManager {
  	      unlink($logFile);
  	    }
  	    else {
-                $this->chmodPreviews($desc,$fileserver);
+                $this->chmodJob($desc,$fileserver);
 
  	      report("job " . $desc->id() .
                                         " completed on " . $job->server(), 1);
