@@ -477,6 +477,7 @@ class QueueManager {
  	 */
  	public function updateJobAndServerStatus() {
  	  global $imageProcessingIsOnQueueManager;
+          global $resultImagesOwnedByUser;
  	  global $send_mail;
  	  global $logdir;
 

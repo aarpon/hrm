@@ -309,8 +309,8 @@ class Job {
 
     $finishedMarker = $desc->destinationImageName() . ".hgsb"; 
     $endTimeMarker = ".EstimatedEndTime_" . $desc->id();
-    $remarksFile = $desc->sourceImageShortName() . "*" . "_" .
-    $desc->id() . "*.remarks.txt";
+//     $remarksFile = $desc->sourceImageShortName() . "*" . "_" .
+//     $desc->id() . "*.remarks.txt";
 
     // If fileshare is not on the same host as Huygens.
     if (!$imageProcessingIsOnQueueManager) {
@@ -332,19 +332,19 @@ class Job {
         // If finished, copy also the remarks file.
         // Shouldn't this happen only if
         // $copy_images_to_huygens_server == true ?
-        $marker = $huygens_server_image_folder . $user->name() .
-                    "/" . $image_destination . "/" .
-        $desc->relativeSourcePath() . $remarksFile;
-        $marker = $huygens_server_image_folder .
-        $user->name() . "/" .
-        $image_destination . "/" . $remarksFile;
-        $remoteFile = exec("ssh " . $huygens_user . "@" .
-        $server_hostname . " ls " . $marker);
-        if ($remoteFile == $marker) {
-          exec("(cd " . $dpath . " && sudo scp " .
-          $huygens_user . "@" . $server_hostname . ":" .
-          $marker . " .)");
-        }
+//         $marker = $huygens_server_image_folder . $user->name() .
+//                     "/" . $image_destination . "/" .
+//         $desc->relativeSourcePath() . $remarksFile;
+//         $marker = $huygens_server_image_folder .
+//         $user->name() . "/" .
+//         $image_destination . "/" . $remarksFile;
+//         $remoteFile = exec("ssh " . $huygens_user . "@" .
+//         $server_hostname . " ls " . $marker);
+//         if ($remoteFile == $marker) {
+//           exec("(cd " . $dpath . " && sudo scp " .
+//           $huygens_user . "@" . $server_hostname . ":" .
+//           $marker . " .)");
+//         }
         $this->renameHuygensOutputFiles();
         $this->makeJobParametersFile();
       } else {
