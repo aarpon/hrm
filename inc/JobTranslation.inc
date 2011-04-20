@@ -2062,7 +2062,7 @@ class JobTranslation {
          as a subimage. Currently this is for LIF files only. */
         if ( preg_match("/^(.*\.lif)\s\((.*)\)/i", $this->srcImage, $match) ) {
             $this->srcImage = $match[1];
-            $this->subImage = $this->string2tcllist($match[2]);
+            $this->subImage = $match[2];
         }
     }
 
