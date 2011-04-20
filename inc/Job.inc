@@ -341,7 +341,7 @@ class Job {
             }
             exec("(cd " . $dpath . " && sudo scp " . $huygens_user . "@"
                  . $server_hostname . ":" . $marker . " .)");
-
+            
             // Old code: to be removed.
             // If finished, copy also the remarks file.
             // Shouldn't this happen only if
@@ -359,25 +359,26 @@ class Job {
             //           $huygens_user . "@" . $server_hostname . ":" .
             //           $marker . " .)");
             //         }
-        $this->renameHuygensOutputFiles();
-        $this->makeJobParametersFile();
-      } else {
-
-        // Copy the estimated end time little file.
-        $marker = $huygens_server_image_folder . $user->name()
-        . "/" .  $image_source . "/" . $endTimeMarker;
-        $remoteFile = exec("ssh " . $huygens_user . "@" .
-        $server_hostname . " ls " . $marker);
-        if ($remoteFile == $marker) {
-          exec("(cd " . $path . " && sudo scp " . $huygens_user
-          . "@" . $server_hostname . ":" . $marker . " .)");
-
-          // Delete in the remote place, not to transfer again
-          // until it is updated.
-          exec("ssh " . $huygens_user . "@" .
-          $server_hostname . " rm -f " . $marker);
+            $this->renameHuygensOutputFiles();
+            $this->makeJobParametersFile();
+        } else {
+            
+            // Old code: to be removed.
+            // Copy the estimated end time little file.
+            // $marker = $huygens_server_image_folder . $user->name()
+            // . "/" .  $image_source . "/" . $endTimeMarker;
+            // $remoteFile = exec("ssh " . $huygens_user . "@" .
+            // $server_hostname . " ls " . $marker);
+            // if ($remoteFile == $marker) {
+            // exec("(cd " . $path . " && sudo scp " . $huygens_user
+            // . "@" . $server_hostname . ":" . $marker . " .)");
+            
+            // // Delete in the remote place, not to transfer again
+            // // until it is updated.
+            // exec("ssh " . $huygens_user . "@" .
+            // $server_hostname . " rm -f " . $marker);
+            //  }
         }
-      }
     }
 
     $result = file_exists($dpath . $finishedMarker);

@@ -301,14 +301,14 @@ class QueueManager {
  	      // TODO: if ImageFileFormat = single TIFF file, do not send corresponding series
  	      $basename = preg_replace("/([^_]+|\/)(_)(T|t|Z|z|CH|ch)([0-9]+)(\w+)(\.)(\w+)/", "$1$6$7", $filename);
  	      $name = preg_replace("/(.*)\.tiff?$/", "$1", $basename);
- 	      $batch .= "put \"" . $name . "*\"\n";
+ 	      $batch .= "put \"" . $name . "\"*\n";
  	    }
  	    else if (stristr($filename, ".stk")) {
  	      // if ImageFileFormat = STK time series, send all timepoints
  	      if (stripos($filename, "_t")) {
  	        $basename = preg_replace("/([^_]+|\/)(_)(T|t)([0-9]+)(\.)(\w+)/", "$1", $filename);
  	        //$name = preg_replace("/(.*)\.[STK|stk]$/", "$1", $basename);
- 	        $batch .= "put \"" . $basename . "*\"\n";
+ 	        $batch .= "put \"" . $basename . "\"*\n";
  	      }
  	      else {
  	        $batch .= "put \"" . $filename . "\"\n";
@@ -338,7 +338,7 @@ class QueueManager {
 
  	  // TODO refactor this << move to Shell
  	  exec("sftp -b " . $batch_filename . " " . $huygens_user . "@" . $server_hostname);
- 	  exec("rm -f " . $batch_filename);
+  	  exec("rm -f " . $batch_filename);
  	  // >>
 
  	  return $huygens_server_image_folder . $user->name() . "/" . $image_source . "/";
