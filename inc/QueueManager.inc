@@ -225,9 +225,9 @@ class QueueManager {
  	  // TODO substitute spaces by underscores in image name to avoid processing problems with Huygens
 
  	  $batch = "cd \"" . $huygens_server_image_folder . "\"\n";
- 	  $batch .= "-mkdir -p \"" . $user->name() . "\"\n";
+ 	  $batch .= "-mkdir \"" . $user->name() . "\"\n";
  	  $batch .= "cd \"" . $user->name() . "\"\n";
- 	  $batch .= "-mkdir -p \"" . $image_source . "\"\n";
+ 	  $batch .= "-mkdir \"" . $image_source . "\"\n";
  	  $batch .= "cd \"" . $image_source . "\"\n";
  	  $batch .= "put \"" . $image_folder . "/" . $user->name() . "/" . $image_source . "/" . $job->scriptName() . "\"\n";
 
@@ -241,7 +241,7 @@ class QueueManager {
  	      $path = split("/", $value);
  	      if (sizeof($path) > 0) {
  	        for ($i = 0; $i < sizeof($path) - 1; $i++) {
- 	          $batch .= "-mkdir -p \"" . $path[$i] . "\"\n";
+ 	          $batch .= "-mkdir \"" . $path[$i] . "\"\n";
  	          $batch .= "cd \"" . $path[$i] . "\"\n";
  	        }
  	      }
@@ -287,7 +287,7 @@ class QueueManager {
  	    $path = split("/", $file);
  	    if (sizeof($path) > 0) {
  	      for ($i = 0; $i < sizeof($path) - 1; $i++) {
- 	        $batch .= "-mkdir -p \"" . $path[$i] . "\"\n";
+ 	        $batch .= "-mkdir \"" . $path[$i] . "\"\n";
  	        $batch .= "cd \"" . $path[$i] . "\"\n";
  	      }
  	    }
@@ -325,7 +325,7 @@ class QueueManager {
  	  }
 
  	  $batch .= "cd ..\n";
- 	  $batch .= "-mkdir -p \"" . $image_destination . "\"\n";
+ 	  $batch .= "-mkdir \"" . $image_destination . "\"\n";
  	  $batch .= "quit\n";
 
  	  // report("\nBATCH \n$batch", 2);
