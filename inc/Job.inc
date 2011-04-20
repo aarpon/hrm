@@ -247,10 +247,10 @@ class Job {
       $image = $huygens_server_image_folder . $user->name() .
             	"/" . $image_destination . "/" .
       $desc->relativeSourcePath() . $destFileName .  "*";
-      $previews = $huygens_server_image_folder .
-      $user->name() . "/" . $image_destination . "/" .
-      $desc->relativeSourcePath() . "hrm_previews/".
-      $destFileName. "*";
+      $previews = $huygens_server_image_folder;
+      $previews .= $user->name() . "/" . $image_destination . "/";
+      $previews .= $desc->relativeSourcePath() . "hrm_previews/";
+      $previews .= "*" . $desc->id() . "_hrm*";
       // escape special characters in image path
       $image = eregi_replace(" ", "\\ ", $image);
       $image = str_replace(".ics",".i*s", $image);
