@@ -262,9 +262,11 @@ class Job {
       . "/hrm_previews");
       //error_log($result);
       //error_log("(cd " . escapeshellarg($path) . " && scp " . $huygens_user . "@" . $server_hostname . ":" . escapeshellarg($image) . " .)");
+
       $result = exec("(cd " . escapeshellarg($path) . " && sudo scp " . $huygens_user . "@" . $server_hostname . ":" . escapeshellarg($image) . " .)");
       $result = exec("(cd " . escapeshellarg($path) .
                 "/hrm_previews && sudo scp " . $huygens_user . "@" . $server_hostname . ":" . escapeshellarg($previews) . " .)");
+
       //error_log($result);
     }
 
@@ -308,48 +310,55 @@ class Job {
     $dpath = $fileserver->destinationFolderFor($desc);
 
     $finishedMarker = $desc->destinationImageName() . ".hgsb"; 
-    $resultFiles = $desc->files();
-    if (dirname($resultFiles[0]) != ".") {
-        $finishedMarker = dirname($resultFiles[0]) . "/" . $finishedMarker;
-    }
-
     $endTimeMarker = ".EstimatedEndTime_" . $desc->id();
-//     $remarksFile = $desc->sourceImageShortName() . "*" . "_" .
-//     $desc->id() . "*.remarks.txt";
+
+    // Old code: to be removed.
+    // $remarksFile = $desc->sourceImageShortName() . "*" . "_" .
+    // $desc->id() . "*.remarks.txt";
 
     // If fileshare is not on the same host as Huygens.
     if (!$imageProcessingIsOnQueueManager) {
 
-      // Copy the finished marker
-      $marker = $huygens_server_image_folder . $user->name() .
-                    "/" . $image_destination . "/" . $finishedMarker;
-      $remoteFile = exec("ssh " . $huygens_user . "@" .
-      $server_hostname . " ls " . $marker);
 
-      //error_log("ssh " . $huygens_user . "@" . $server_hostname . "
-      //ls " . $marker);
-      //error_log($result);
-      // TODO: is the queue manager a sudoer?
-      if ($remoteFile == $marker) {
-        exec("(cd " . $path . " && sudo scp " . $huygens_user . "@"
-        . $server_hostname . ":" . $marker . " .)");
+        // Old code: to be removed.
+        // $marker = $huygens_server_image_folder . $user->name() .
+        // "/" . $image_destination . "/" . $finishedMarker;
 
-        // If finished, copy also the remarks file.
-        // Shouldn't this happen only if
-        // $copy_images_to_huygens_server == true ?
-//         $marker = $huygens_server_image_folder . $user->name() .
-//                     "/" . $image_destination . "/" .
-//         $desc->relativeSourcePath() . $remarksFile;
-//         $marker = $huygens_server_image_folder .
-//         $user->name() . "/" .
-//         $image_destination . "/" . $remarksFile;
-//         $remoteFile = exec("ssh " . $huygens_user . "@" .
-//         $server_hostname . " ls " . $marker);
-//         if ($remoteFile == $marker) {
-//           exec("(cd " . $dpath . " && sudo scp " .
-//           $huygens_user . "@" . $server_hostname . ":" .
-//           $marker . " .)");
-//         }
+        // Copy the finished marker
+        $marker = $dpath . $finishedMarker;
+        $remoteFile = exec("ssh " . $huygens_user . "@" .
+                           $server_hostname . " ls " . $marker);
+
+        // Old code: to be removed.
+        //error_log("ssh " . $huygens_user . "@" . $server_hostname . "
+        //ls " . $marker);
+        //error_log($result);
+
+        // TODO: is the queue manager a sudoer?
+        if ($remoteFile == $marker) {
+            if (!file_exists($dpath)) {
+                $result = exec("sudo mkdir -p " . escapeshellarg($dpath));
+            }
+            exec("(cd " . $dpath . " && sudo scp " . $huygens_user . "@"
+                 . $server_hostname . ":" . $marker . " .)");
+
+            // Old code: to be removed.
+            // If finished, copy also the remarks file.
+            // Shouldn't this happen only if
+            // $copy_images_to_huygens_server == true ?
+            //         $marker = $huygens_server_image_folder . $user->name() .
+            //                     "/" . $image_destination . "/" .
+            //         $desc->relativeSourcePath() . $remarksFile;
+            //         $marker = $huygens_server_image_folder .
+            //         $user->name() . "/" .
+            //         $image_destination . "/" . $remarksFile;
+            //         $remoteFile = exec("ssh " . $huygens_user . "@" .
+            //         $server_hostname . " ls " . $marker);
+            //         if ($remoteFile == $marker) {
+            //           exec("(cd " . $dpath . " && sudo scp " .
+            //           $huygens_user . "@" . $server_hostname . ":" .
+            //           $marker . " .)");
+            //         }
         $this->renameHuygensOutputFiles();
         $this->makeJobParametersFile();
       } else {
@@ -362,6 +371,7 @@ class Job {
         if ($remoteFile == $marker) {
           exec("(cd " . $path . " && sudo scp " . $huygens_user
           . "@" . $server_hostname . ":" . $marker . " .)");
+
           // Delete in the remote place, not to transfer again
           // until it is updated.
           exec("ssh " . $huygens_user . "@" .
@@ -369,7 +379,8 @@ class Job {
         }
       }
     }
-    $result = file_exists($path . '/' . $finishedMarker);
+
+    $result = file_exists($dpath . $finishedMarker);
 
     if ($imageProcessingIsOnQueueManager) {
       $proc = newExternalProcessFor($this->server(), $this->server().
@@ -387,11 +398,13 @@ class Job {
     }
 
     if ( !$result && file_exists($path . '/' . $endTimeMarker) ) {
+
       // Tasks may report an estimated end time, whenever they can.
       $estEndTime = file_get_contents($path . '/' . $endTimeMarker);
       report("Estimated end time for ". $desc->id(). ": $estEndTime", 1);
       $queue = new JobQueue();
       $queue->updateEstimatedEndTime($desc->id(), $estEndTime );
+
       // Delete the end time file, to only look at it when the
       // estimation is updated.
       @unlink($path . '/' . $endTimeMarker);

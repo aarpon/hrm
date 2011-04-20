@@ -225,9 +225,9 @@ class QueueManager {
  	  // TODO substitute spaces by underscores in image name to avoid processing problems with Huygens
 
  	  $batch = "cd \"" . $huygens_server_image_folder . "\"\n";
- 	  $batch .= "-mkdir \"" . $user->name() . "\"\n";
+ 	  $batch .= "-mkdir -p \"" . $user->name() . "\"\n";
  	  $batch .= "cd \"" . $user->name() . "\"\n";
- 	  $batch .= "-mkdir \"" . $image_source . "\"\n";
+ 	  $batch .= "-mkdir -p \"" . $image_source . "\"\n";
  	  $batch .= "cd \"" . $image_source . "\"\n";
  	  $batch .= "put \"" . $image_folder . "/" . $user->name() . "/" . $image_source . "/" . $job->scriptName() . "\"\n";
 
@@ -241,7 +241,7 @@ class QueueManager {
  	      $path = split("/", $value);
  	      if (sizeof($path) > 0) {
  	        for ($i = 0; $i < sizeof($path) - 1; $i++) {
- 	          $batch .= "-mkdir \"" . $path[$i] . "\"\n";
+ 	          $batch .= "-mkdir -p \"" . $path[$i] . "\"\n";
  	          $batch .= "cd \"" . $path[$i] . "\"\n";
  	        }
  	      }
@@ -287,7 +287,7 @@ class QueueManager {
  	    $path = split("/", $file);
  	    if (sizeof($path) > 0) {
  	      for ($i = 0; $i < sizeof($path) - 1; $i++) {
- 	        $batch .= "-mkdir \"" . $path[$i] . "\"\n";
+ 	        $batch .= "-mkdir -p \"" . $path[$i] . "\"\n";
  	        $batch .= "cd \"" . $path[$i] . "\"\n";
  	      }
  	    }
@@ -325,7 +325,7 @@ class QueueManager {
  	  }
 
  	  $batch .= "cd ..\n";
- 	  $batch .= "-mkdir \"" . $image_destination . "\"\n";
+ 	  $batch .= "-mkdir -p \"" . $image_destination . "\"\n";
  	  $batch .= "quit\n";
 
  	  // report("\nBATCH \n$batch", 2);
@@ -519,18 +519,19 @@ class QueueManager {
  	      continue;
  	    }
  	    report("checked finished process", 2);
- 	    	
+ 
  	    // Check result image
- 	    $resultSaved = $job->checkResultImage();
+  	    $resultSaved = $job->checkResultImage();
+
  	    report("checked result image", 2);
  	    	
  	    // If fileshare is not on the same host as Huygens and ownership is
 		// to be transferred to the user
  	    if (!$imageProcessingIsOnQueueManager) {
-			if ( $resultImagesOwnedByUser) {
-				$this->restoreOwnership($user->name());
-			}
-		}
+                if ( $resultImagesOwnedByUser) {
+                    $this->restoreOwnership($user->name());
+                }
+            }
  	    	
  	    // Check if error occured
  	    $errorOccured = $this->errorOccured($job);
