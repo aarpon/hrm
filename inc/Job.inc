@@ -449,10 +449,10 @@ class Job {
       global $huygens_user;
 
       // Build a rename command involving the old and new names.
-      $cmd  = "if [ -f \"" . $oldName . "\" ]\n";
-      $cmd .= "then\n";
-      $cmd .= "mv \"" . $oldName . "\" \"" . $newName . "\"\n";
-      $cmd .= "fi";
+      $cmd  = "'if [ -f \"" . $oldName . "\" ]; ";
+      $cmd .= "then ";
+      $cmd .= "mv \"" . $oldName . "\" \"" . $newName . "\"; ";
+      $cmd .= "fi'";
 
       // Proceed to execute the command:  rename the Huygens default output file.
       if ($imageProcessingIsOnQueueManager) {
