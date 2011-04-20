@@ -308,6 +308,11 @@ class Job {
     $dpath = $fileserver->destinationFolderFor($desc);
 
     $finishedMarker = $desc->destinationImageName() . ".hgsb"; 
+    $resultFiles = $desc->files();
+    if (dirname($resultFiles[0]) != ".") {
+        $finishedMarker = dirname($resultFiles[0]) . "/" . $finishedMarker;
+    }
+
     $endTimeMarker = ".EstimatedEndTime_" . $desc->id();
 //     $remarksFile = $desc->sourceImageShortName() . "*" . "_" .
 //     $desc->id() . "*.remarks.txt";
