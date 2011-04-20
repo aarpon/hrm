@@ -443,15 +443,16 @@ class Job {
       global $huygens_user;
 
       // Build a rename command involving the old and new names.
-      $cmd  = "'if [ -f \"" . $fileName . "\" ]; ";
+      $cmd  = "if [ -f \"" . $fileName . "\" ]; ";
       $cmd .= "then ";
       $cmd .= "rm \"" . $fileName . "\"; ";
-      $cmd .= "fi'";
+      $cmd .= "fi";
 
       // Proceed to execute the command:  remove the file.
       if ($imageProcessingIsOnQueueManager) {
           $result = exec($cmd);
       } else {
+          $cmd = "'$cmd'";
           $server = split(" ", $this->server);
           $server_hostname = $server[0];
           $result = exec("ssh ".$huygens_user."@".$server_hostname." ".$cmd);
@@ -468,15 +469,16 @@ class Job {
       global $huygens_user;
 
       // Build a rename command involving the old and new names.
-      $cmd  = "'if [ -f \"" . $oldName . "\" ]; ";
+      $cmd  = "if [ -f \"" . $oldName . "\" ]; ";
       $cmd .= "then ";
       $cmd .= "mv \"" . $oldName . "\" \"" . $newName . "\"; ";
-      $cmd .= "fi'";
+      $cmd .= "fi";
 
       // Proceed to execute the command:  rename the Huygens default output file.
       if ($imageProcessingIsOnQueueManager) {
           $result = exec($cmd);
       } else {
+          $cmd = "'$cmd'";
           $server = split(" ", $this->server);
           $server_hostname = $server[0];
           $result = exec("ssh ".$huygens_user."@".$server_hostname." ".$cmd);
