@@ -442,7 +442,7 @@ class Job {
       global $imageProcessingIsOnQueueManager;
       global $huygens_user;
 
-      // Build a rename command involving the old and new names.
+      // Build a remove command involving the file.
       $cmd  = "if [ -f \"" . $fileName . "\" ]; ";
       $cmd .= "then ";
       $cmd .= "rm \"" . $fileName . "\"; ";

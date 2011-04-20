@@ -66,6 +66,36 @@ class QueueManager {
   }
 
   /*!
+   \brief      If existing, delete debris from previously run jobs.
+   \param      $desc A JobDescription object.
+   \param      $server_hostname The server where the job will be run.
+   \TODO       Move to Shell.inc.
+  */
+  public function removeHuygensOutputFiles($desc, $server_hostname ) {
+      global $imageProcessingIsOnQueueManager;
+      global $huygens_user;
+      
+      // Get the Huygens default output file.
+      $user = $desc->owner();
+      $fileserver = new Fileserver($user->name());
+      $destPath = $fileserver->destinationFolderFor($desc);
+      $huyOutFile = $destPath . "scheduler_client0.log";
+      
+      // Build a remove command involving the file.
+      $cmd  = "if [ -f \"" . $huyOutFile . "\" ]; ";
+      $cmd .= "then ";
+      $cmd .= "rm \"" . $huyOutFile . "\"; ";
+      $cmd .= "fi";
+
+      if ($imageProcessingIsOnQueueManager) {
+          $result = exec($cmd);
+      } else {
+          $cmd = "'$cmd'";
+          $result = exec("ssh ".$huygens_user."@".$server_hostname." ".$cmd);
+      }
+  }
+
+  /*!
    \brief	Executes given Job
    \todo        Update scriptName variable with templateName
    */
@@ -81,6 +111,10 @@ class QueueManager {
     $desc = $job->description();
     $clientScriptPath = $desc->sourceFolder();
     $scriptName = $job->scriptName();
+
+    // The new job must not get merged with debris from previously failed jobs.
+    $this->removeHuygensOutputFiles($desc, $server_hostname);
+
     report(">>>>> Executing script: $imageProcessingIsOnQueueManager $copy_images_to_huygens_server", 2);
     if (!$imageProcessingIsOnQueueManager && $copy_images_to_huygens_server) {
       $clientScriptPath = $this->copyImagesToServer($job, $server_hostname);
