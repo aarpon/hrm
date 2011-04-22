@@ -184,7 +184,7 @@ $info = " <h3>Quick help</h3> <p>In this step, you will select the files from th
     
     <div id="nav">
         <ul>
-            <li><?php echo $_SESSION['user']->name(); ?></li>
+            <li><img src="images/user.png" alt="user" />&nbsp;<?php echo $_SESSION['user']->name(); ?></li>
             <li><a href="<?php echo getThisPageName();?>?home=home"><img src="images/home.png" alt="home" />&nbsp;Home</a></li>
             <li><a href="javascript:openWindow('http://www.svi.nl/HuygensRemoteManagerHelpSelectImages')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
         </ul>

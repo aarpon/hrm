@@ -80,7 +80,7 @@ include("header.inc.php");
 
     <div id="nav">
         <ul>
-            <li><?php echo $_SESSION['user']->name(); ?></li>
+            <li><img src="images/user.png" alt="user" />&nbsp;<?php echo $_SESSION['user']->name(); ?></li>
             <li><a href="javascript:openWindow('http://www.svi.nl/HuygensRemoteManagerHelpSelectPSFFiles')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
         </ul>
     </div>

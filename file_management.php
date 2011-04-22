@@ -274,7 +274,7 @@ if ( $browse_folder == "dest" ) {
 
 $top_navigation = '
             <ul>
-            <li>'.$_SESSION['user']->name().'</li>
+            <li><img src="images/user.png" alt="user" />&nbsp;'.$_SESSION['user']->name().'</li>
             '.$fileBrowserLinks.'
             <li><a href="'.getThisPageName().'?home=home"><img src="images/home.png" alt="home" />&nbsp;Home</a></li>
             <li><a href="javascript:openWindow(\'http://www.svi.nl/HuygensRemoteManagerHelpFileManagement\')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>

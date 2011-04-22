@@ -36,7 +36,8 @@ include("header.inc.php");
 
     <div id="nav">
         <ul>
-			<li><?php echo $_SESSION['user']->name(); ?></li>
+			<li><img src="images/user.png" alt="user" />&nbsp;<?php echo $_SESSION['user']->name(); ?></li>
+	                <li><a href="javascript:openWindow('http://huygens-rm.org/home/?q=node/7')"><img src="images/manual.png" alt="manual" />&nbsp;Manual</a></li> 
 			<li><a href="<?php echo getThisPageName();?>?exited=exited"><img src="images/exit.png" alt="exit" />&nbsp;Logout</a></li>
             <li><a href="javascript:openWindow('http://www.svi.nl/HuygensRemoteManagerHelpHome')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li> 
         </ul>
