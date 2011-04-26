@@ -37,7 +37,7 @@ class System {
 
 		This value has to be set by the developers!
 		*/
-	const MIN_HUCORE_VERSION = 3070101;
+	const MIN_HUCORE_VERSION = 3070102;
 
 	/*!
 		\brief	Returns the HRM version
