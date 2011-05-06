@@ -268,7 +268,7 @@ class Type {
         while ( $rowUser = $resUser->FetchRow( ) ) {
 
           // Query all jobs for current user
-          $queryJobsUser = "SELECT start, stop FROM statistics WHERE owner = '" . $rowUser[ 0 ] . "'; ";
+          $queryJobsUser = "SELECT start, stop FROM statistics WHERE owner = '" . $rowUser[ 0 ] . "' AND " . $dateFilter . $groupFilter . $userNameFilter ." ; ";
           $resJobsUser = $db->execute( $queryJobsUser );
 
           $nJobs = 0; $time = 0;
