@@ -133,6 +133,37 @@ class JobTranslation {
     */
     private $previewCnt;
 
+    /*!
+     \var     $sizeX
+     \brief   An integer to keep the X dimension of the image.
+    */
+    private $sizeX;
+
+    /*!
+     \var     $sizeY
+     \brief   An integer to keep the Y dimension of the image.
+    */
+    private $sizeY;
+
+    /*!
+     \var     $sizeZ
+     \brief   An integer to keep the Z dimension of the image.
+    */
+    private $sizeZ;
+
+    /*!
+     \var     $sizeT
+     \brief   An integer to keep the T dimension of the image.
+    */
+    private $sizeT;
+
+    /*!
+     \var     $sizeC
+     \brief   An integer to keep the channel dimension of the image.
+    */
+    private $sizeC;
+   
+
     /* ----------------------------------------------------------------------- */
 
     /*!
@@ -161,6 +192,7 @@ class JobTranslation {
         $this->setSrcImage();
         $this->setDestImage();
         $this->setHuImageFormat();
+        $this->setImageDimensions();
     }
 
     /*!
@@ -505,6 +537,9 @@ class JobTranslation {
     private function parsePreviewGen($key,$task) {
         global $useThumbnails;
         global $saveSfpPreviews;
+        global $maxComparisonSize;
+
+        $maxPreviewPixelsPerDim = 65000;
 
         if (!$useThumbnails) {
             return;
@@ -518,6 +553,50 @@ class JobTranslation {
                 }
             } elseif (strstr($key, 'Lif')) {
                 if ($this->isImageLif()) {
+                    $task = $task . ":" . $this->previewCnt;
+                    $this->previewCnt++;
+                } else {
+                    $task = "";
+                }
+            } elseif (strstr($key, 'ZComparison')) {
+
+                if ($this->sizeX < $maxComparisonSize) {
+                    $previewPixelsX = 2 * $this->sizeX;
+                } else {
+                    $previewPixelsX = 2 * $maxComparisonSize;
+                }
+
+                if ($this->sizeY < $maxComparisonSize) {
+                    $previewPixelsY = $this->sizeY * $this->sizeZ;
+                } else {
+                    $previewPixelsY = $maxComparisonSize * $this->sizeZ;
+                }
+
+                # Check if the comparison strip might get dangerously big.
+                if ($previewPixelsX < $maxPreviewPixelsPerDim 
+                    && $previewPixelsY < $maxPreviewPixelsPerDim) {
+                    $task = $task . ":" . $this->previewCnt;
+                    $this->previewCnt++;
+                } else {
+                    $task = "";
+                }
+            } elseif (strstr($key, 'TComparison')) {
+
+                if ($this->sizeX < $maxComparisonSize) {
+                    $previewPixelsX = 2 * $this->sizeX;
+                } else {
+                    $previewPixelsX = 2 * $maxComparisonSize;
+                }
+
+                if ($this->sizeY < $maxComparisonSize) {
+                    $previewPixelsY = $this->sizeY * $this->sizeT;
+                } else {
+                    $previewPixelsY = $maxComparisonSize * $this->sizeT;
+                }
+
+                # Check if the comparison strip might get dangerously big.
+                if ($previewPixelsX < $maxPreviewPixelsPerDim 
+                    && $previewPixelsY < $maxPreviewPixelsPerDim) {
                     $task = $task . ":" . $this->previewCnt;
                     $this->previewCnt++;
                 } else {
@@ -2095,10 +2174,31 @@ class JobTranslation {
     /*!
      \brief       Sets the image format as coded in the HuCore confidence level
      \brief       table, whether leica, r3d, etc.
-     \return      An image format.
     */
     private function setHuImageFormat( ) {
         $this->HuImageFormat = $this->getHuImageFormat();
+    }
+
+    /*!
+     \brief      Sets x, y, z, t and channel dimensions.
+    */
+    private function setImageDimensions( ) {
+
+        /* Get file path, name and time series option */
+        $pathInfo = pathinfo($this->srcImage);
+        $path = $pathInfo['dirname'];
+        $filename = $pathInfo['filename'];
+        $series = $this->getSeriesMode();
+        $opt = "-path $path -filename $filename -series $series";
+
+        /* Retrieve the image dimensions */
+        $result = askHuCore( "reportImageDimensions", $opt );
+
+        $this->sizeX = $result['sizeX'];
+        $this->sizeY = $result['sizeY'];
+        $this->sizeZ = $result['sizeZ'];
+        $this->sizeT = $result['sizeT'];
+        $this->sizeC = $result['sizeC'];
     }
 
     /*!

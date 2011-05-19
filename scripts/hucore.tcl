@@ -35,10 +35,12 @@ proc reportKeyValue {key value} {
     puts "$value"
 }
 
+
 proc reportError {msg} {
     puts "ERROR"
     puts $msg
 }
+
 
 proc reportMsg {msg} {
     puts "REPORT"
@@ -46,11 +48,25 @@ proc reportMsg {msg} {
 }
 
 
+proc reportImageDimensions { } {
+    set error [ getInputVariables {path filename series} ]
+    if { $error } { exit 1 }
+
+    set src [hrmImgOpen $path $filename -series $series]
+
+    reportKeyValue "sizeX" [$src getdims -mode x]
+    reportKeyValue "sizeY" [$src getdims -mode y]
+    reportKeyValue "sizeZ" [$src getdims -mode z]
+    reportKeyValue "sizeT" [$src getdims -mode t]
+    reportKeyValue "sizeC" [$src getdims -mode ch]
+    
+    catch { del $src }
+}
+
 
 # Auxiliary procedure isMultiImgFile.
 # Return 1 if the image is of a type that supports sub-images. Currently, only
 # LIF.
-
 proc isMultiImgFile { filename } {
     set multiImgExtensions { ".lif" }
 
@@ -67,7 +83,6 @@ proc isMultiImgFile { filename } {
 
 # Script for Huygens Core to explore multi-image files and return their
 # subimages. Currently valid for Leica LIF files.
-
 proc reportSubImages {} {
 
     set imgCount [Hu_getOpt -count]
@@ -178,6 +193,7 @@ proc hrmImgOpen { dir file args } {
 
 }
 
+
 proc generateImagePreview {} {
 
     if { [info proc ::WebTools::savePreview] == "" } {
@@ -251,6 +267,7 @@ proc generateImagePreview {} {
 
 }
 
+
 proc calculateNyquistRate {} {
 
     set error [ getInputVariables {micr na ex em pcnt ril} ]
@@ -267,6 +284,7 @@ proc calculateNyquistRate {} {
     reportKeyValue "xy" $sampxy
     reportKeyValue "z" $sampz
 }
+
 
 proc versionAsInteger { } {
 
@@ -309,6 +327,7 @@ proc reportVersionNumberAsInteger { } {
     puts "$verInteger"
 
 }
+
 
 proc getMetaData { } {
 
@@ -373,6 +392,7 @@ proc getMetaData { } {
     }
 }
 
+
 proc estimateSnrFromImage {} {
 
     if { [info proc ::WebTools::estimateSnrFromImage] == "" } {
@@ -381,19 +401,16 @@ proc estimateSnrFromImage {} {
     }
 
     # Mandatory arguments:
-
     set error [ getInputVariables {
         basename src series dest snrVersion returnImages
     } ]
     if { $error } { exit 1 }
 
     # Optional arguments:
-
     set emm [ Hu_getOpt -emission ]
     set s [ Hu_getOpt -sampling ]
 
     # Opening images
-
     set srcImg [ hrmImgOpen $src $basename -series $series ]
 
     if { $s != -1 } {
