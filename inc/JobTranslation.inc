@@ -53,6 +53,20 @@ class JobTranslation {
     public $template;
 
     /*!
+     \var     $compareZviews
+     \brief   A boolean to know whether an image is small enough as to
+     \brief   be able to create its largest JPEGs.
+    */
+    public $compareZviews;
+
+    /*!
+     \var     $compareTviews
+     \brief   A boolean to know whether an image is small enough as to
+     \brief   be able to create its largest JPEGs.
+    */
+    public $compareTviews;
+
+    /*!
      \var     $jobInfo
      \brief   A Tcl list with job information for the template header.
      */
@@ -161,8 +175,7 @@ class JobTranslation {
      \var     $sizeC
      \brief   An integer to keep the channel dimension of the image.
     */
-    private $sizeC;
-   
+    private $sizeC;     
 
     /* ----------------------------------------------------------------------- */
 
@@ -577,8 +590,10 @@ class JobTranslation {
                     && $previewPixelsY < $maxPreviewPixelsPerDim) {
                     $task = $task . ":" . $this->previewCnt;
                     $this->previewCnt++;
+                    $this->compareZviews = TRUE;
                 } else {
                     $task = "";
+                    $this->compareZviews = FALSE;
                 }
             } elseif (strstr($key, 'TComparison')) {
 
@@ -599,8 +614,10 @@ class JobTranslation {
                     && $previewPixelsY < $maxPreviewPixelsPerDim) {
                     $task = $task . ":" . $this->previewCnt;
                     $this->previewCnt++;
+                    $this->compareTviews = TRUE;
                 } else {
                     $task = "";
+                    $this->compareTviews = FALSE;
                 }
             } else {
                 $task = $task . ":" . $this->previewCnt;
@@ -2189,7 +2206,7 @@ class JobTranslation {
         $path = $pathInfo['dirname'];
         $filename = $pathInfo['filename'];
         $series = $this->getSeriesMode();
-        $opt = "-path $path -filename $filename -series $series";
+        $opt = "-path $path -filename \"$filename\" -series $series";
 
         /* Retrieve the image dimensions */
         $result = askHuCore( "reportImageDimensions", $opt );

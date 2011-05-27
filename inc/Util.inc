@@ -177,7 +177,6 @@ function huCoreTools ($tool, $options) {
            "-huCoreTcl \"$hrm_path/scripts/hucore.tcl\" ".
            "-tool $tool $options 2>&1";
 
-
     $answer = exec($cmd, $output, $result);
 
     # printDebug ($cmd, $output, "res: $result ans: $answer");
@@ -247,7 +246,7 @@ function askHuCore ($tool, $options = "") {
                   $i ++;
                   $retArr['report'][] = $answer[$i];
                   echo $answer[$i]."\n";
-                  ob_flush();
+                  @ob_flush();
                   flush();
                   break;
               case "KEY":

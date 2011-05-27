@@ -52,7 +52,7 @@ proc reportImageDimensions { } {
     set error [ getInputVariables {path filename series} ]
     if { $error } { exit 1 }
 
-    set src [hrmImgOpen $path $filename -series $series]
+    set src [hrmImgOpen $path "$filename" -series $series]
 
     reportKeyValue "sizeX" [$src getdims -mode x]
     reportKeyValue "sizeY" [$src getdims -mode y]
@@ -61,7 +61,7 @@ proc reportImageDimensions { } {
     reportKeyValue "sizeC" [$src getdims -mode ch]
     
     catch { del $src }
-}
+} 
 
 
 # Auxiliary procedure isMultiImgFile.
@@ -190,7 +190,6 @@ proc hrmImgOpen { dir file args } {
     }
 
     return $img
-
 }
 
 
