@@ -147,21 +147,6 @@ class Job {
    */
   public function createScript() {
 
-    // HuCore version 3.7.0 and above is required for HRM 1.3.0
-    if ( System::huCoreVersion() >= 3070000 ) {
-      $this->createScriptVersionOne();
-    }
-
-  }
-
-  /*!
-   \brief	A deconvolution script based on HuCore templates
-   \todo	Rename this method to createScript() (and make it 
-   			public) when the old script-generating functions
-   			are gone
-   */
-  private function createScriptVersionOne() {
-
       $jobDescription = $this->description();
       $jobTranslation = new JobTranslation($jobDescription);
       $this->script = $jobTranslation->template;
