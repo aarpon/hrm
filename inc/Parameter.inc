@@ -7,7 +7,6 @@ require_once ("Database.inc");
 /*!
  \class	Parameter
  \brief	Base class for all Parameter types in the HRM
- \todo	Implement the displayStr() method in each Parameter subclass
 */
 abstract class Parameter {
 
@@ -530,8 +529,6 @@ abstract class ChoiceParameter extends Parameter {
 		\brief	Returns the string representation of the Parameter
 		\param	$numberOfChannels Number of channels (default 0)
 		\return	string representation of the Parameter
-		\todo	It should be responsibility of the various Parameters to
-				overload this function!
 	*/
 	public function displayString( $numberOfChannels = 0 ) {
 		$result = $this->formattedName( );
@@ -1311,8 +1308,6 @@ class ImageFileFormat extends SingleOrMultiChannelParameter {
 		\brief	Returns the string representation of the Parameter
 		\param	$numberOfChannels Number of channels (default 0)
 		\return	string representation of the Parameter
-		\todo	It should be responsibility of the various Parameters to
-				overload this function!
 	*/
 	public function displayString( $numberOfChannels = 0 ) {
 		$value = $this->translatedValueFor( $this->value( ) );
@@ -1334,8 +1329,6 @@ class ImageFileFormat extends SingleOrMultiChannelParameter {
 /*!
  \class	NumberOfChannels
  \brief	A ChoiceParameter to represent the number of channels
- \todo	This might become a NumericalParameter since the possibleValues in the
-		database might be removed.
 */
 class NumberOfChannels extends ChoiceParameter {
 	

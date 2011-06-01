@@ -62,7 +62,6 @@ abstract class BaseSettingEditor {
 			
 	This must be reimplemented.
 	
-	\todo	Check if this is used!
 	\return	table name
   */
   abstract function table();
@@ -354,7 +353,6 @@ class SettingEditor extends BaseSettingEditor {
 	\brief	Constructor: creates a new SettingEditor and
 			selects the default Setting if a default 
 			Setting exists.
-	\todo	Check: how can a SettingEditor have a list of Setting even before creation?
 	\param	$user	Current User
   */
   public function __construct( User $user) {
@@ -364,7 +362,6 @@ class SettingEditor extends BaseSettingEditor {
   /*!
 	\brief	Returns the name of the database table in which the
 			ParameterSetting's are stored
-	\todo	Check if this is used!
 	\return	table name
   */
   function table() { 
@@ -395,7 +392,6 @@ class TaskSettingEditor extends BaseSettingEditor {
 	\brief	Constructor: creates a new SettingEditor and
 			selects the default Setting if a default 
 			Setting exists.
-	\todo	Check: how can a SettingEditor have a list of Setting even before creation?
 	\param	$user	Current User
   */
   public function __construct( User $user) {
@@ -405,7 +401,6 @@ class TaskSettingEditor extends BaseSettingEditor {
   /*!
 	\brief	Returns the name of the database table in which the
 			TaskSetting's are stored
-	\todo	Check if this is used!
 	\return	table name
   */
   function table() { 

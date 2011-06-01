@@ -414,15 +414,6 @@ class JobDescription {
         # number, that will be removed when saving using some file formats that
         # use numbers to identify Z planes. Therefore the result file won't
         # be found later and an error will be generated.
-
-    if ($taskSetting->isStepCombinedProcessing()) {
-      if ($this->pass == 1) {
-          $extension = 'A';
-      } else {
-          $extension = 'B';
-      } 
-      $result = $result . "_step" . $extension;
-    } 
     return $result; 
   } 
 

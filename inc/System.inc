@@ -21,7 +21,7 @@ class System {
 
 		This value has to be set by the developers!
 		*/
-	const HRM_VERSION = "2.0";
+	const HRM_VERSION = "2.0.1";
 
 	/*!
 		\var 	DB_LAST_REVISION
@@ -37,11 +37,11 @@ class System {
 
 		This value has to be set by the developers!
 		*/
-	const MIN_HUCORE_VERSION = 3070102;
+	const MIN_HUCORE_VERSION = 3070106;
 
 	/*!
 		\brief	Returns the HRM version
-		\return	the HRM version number (e.g. 2.0.0)
+		\return	the HRM version number (e.g. 2.0.1)
 		*/
 	public static function getHRMVersion( ) {
 		return self::HRM_VERSION;
@@ -56,7 +56,7 @@ class System {
 
 	/*!
 		\brief	Returns the DB revision expected by this version of the HRM
-		\return expected DB revision (e.g. 7)
+		\return expected DB revision (e.g. 8)
 		*/
 	public static function getDBLastRevision( ) {
 		return self::DB_LAST_REVISION;
@@ -64,7 +64,7 @@ class System {
 
 	/*!
 		\brief	Returns current DB revision from the database
-		\return	DB revision from the database (e.g. 6)
+		\return	DB revision from the database (e.g. 7)
 		*/
 	public static function getDBCurrentRevision( ) {
 		$db   = new DatabaseConnection();
@@ -87,7 +87,7 @@ class System {
 
 	/*!
 		\brief	Returns the HuCore version in integer notation
-		\return	HuCore version as an integer (e.g. 3060103)
+		\return	HuCore version as an integer (e.g. 3070106)
 		*/
 	public static function huCoreVersion ( ) {
 		$db = new DatabaseConnection();

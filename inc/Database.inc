@@ -1411,7 +1411,6 @@ class DatabaseConnection {
 							could be set to '' for those)
 	\param	$parameterName	Name of the Paramater the confidence level should be returned   
     \return	parameter confidence level
-    \todo	This function is a STUB. Expand it as soon as the table structure is known
   */
   public function getParameterConfidenceLevel( $fileFormat, $parameterName ) {
 	// Some Parameters MUST be provided by the user and cannot be overridden 

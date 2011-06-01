@@ -1086,7 +1086,6 @@ class ParameterSetting extends Setting {
 
   /*!
    \brief  Displays the setting as a text containing Parameter names and their values
-   \todo	Refactor this!
    */
   public function displayString() {
     $result = '';
@@ -1446,7 +1445,6 @@ class ParameterSetting extends Setting {
 
   /*!
    \brief	Checks whether the currently selected microscope type is either 2-Photon or single-point confocal
-   \todo 	This function is currently not in use!
    \return	true if the currently selected microscope type is either 2-Photon or single-point confocal, false otherwise
    */
   public function isTwoPhotonOrSinglePoint() {
@@ -1743,19 +1741,6 @@ class TaskSetting extends Setting {
   }
 
   /*!
-   \brief	Always returns false
-   \todo	Get rid of this function as soon as the new template-based jobs are implemented!
-   \return	false
-   */
-  public function isStepCombinedProcessing() {
-    return false;
-    // TODO This is obsolete code that should be removed!!
-
-    //$parameter = $this->parameter('StyleOfProcessing');
-    //return $parameter->value() == 'step combined';
-  }
-
-  /*!
    \brief	Returns the number of channels of the Setting
    \return	the number of channels for the Setting
    */
@@ -1766,7 +1751,6 @@ class TaskSetting extends Setting {
   /*!
    \brief  Displays the setting as a text containing Parameter names and their values
    \param	$numberOfChannels Number of channels (optional, default value is 0)
-   \todo	Remove the $numberOfChannels requirement
    */
   public function displayString( $numberOfChannels = 0 ) {	// return the string that will be attach to the success notification message
     $result = '';

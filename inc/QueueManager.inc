@@ -567,9 +567,6 @@ class QueueManager {
                 }
             }
  	    	
- 	    // Check if error occured
- 	    $errorOccured = $this->errorOccured($job);
- 	    	
  	    // Notify user
  	    $startTime = $queue->startTime($job);
  	    $errorFile = $logdir . "/" . $job->server() .
@@ -627,81 +624,8 @@ class QueueManager {
  	      }
  	      if (file_exists($logFile))
  	      unlink($logFile);
- 	      # $proc = $this->activeProcs[$id];
- 	      # $debug = var_export($this->activeProcs, true);
- 	      # report ("Releasing shell, ".
- 	      #       "unsetting activeProc $id", 2);
- 	      # $proc->release();
- 	      # unset($this->activeProcs[$id]);
  	    }
- 	    	
- 	    /*$result = False;
- 	     if ($imageProcessingIsOnQueueManager || (!$imageProcessingIsOnQueueManager && $finished)) {
- 	     $result = $job->checkResultImage();
- 	     report("checked result image", 2);
- 	     }*/
- 	    	
- 	    // TODO check for redundant file retrieval
- 	    /*if (!$imageProcessingIsOnQueueManager && $result) {
- 	    $this->retrieveImagesFromServer($server_hostname, $username);
- 	    }*/
- 	    	
- 	    // Notify user
- 	    /*$startTime = $queue->startTime($job);
- 	    $errorOccured = $this->errorOccured($job);
- 	    // TODO
- 	    $warningOccured = file_exists($job->server() . '_warning.txt');
- 	    // manage warning messages when processing a job
- 	    // TODO refactor
- 	    if ($finished && $warningOccured) {
- 	    $warnings = file_get_contents($job->server() . '_warning.txt');
- 	    $input = $warnings;
- 	    if ($warnings)
- 	    $input = ereg_replace("^.*\[$id] ([a-zA-Z ]*)\n.*$", "\\1", $warnings);
- 	    if ($input != $warnings) {
- 	    report("finishing job $id with warning on " . $job->server(), 1);
- 	    // warning
- 	    $this->cleanUpFileServer($job);
- 	    // remove job
- 	    $this->stopTime = $queue->stopJob($job);
- 	    // write email
- 	    $message = $input;
- 	    if ($send_mail) $this->notifyWarning($job, $message, $startTime);
- 	    //if (file_exists($errorFile)) {
- 	    //    unlink($errorFile);
- 	    //}
- 	    }
- 	    } else
- 	    if (($finished && !$result) || $errorOccured) {
- 	    report("finishing job $id with error on " . $job->server(), 1);
- 	    // error
- 	    $this->cleanUpFileServer($job);
- 	    // remove job
- 	    $this->stopTime = $queue->stopJob($job);
- 	    // write email
- 	    $message = '';
- 	    if (file_exists($errorFile)) {
- 	    $message = file_get_contents($errorFile);
- 	    }
- 	    if ($send_mail) $this->notifyError($job, $message, $startTime);
- 	    //if (file_exists($errorFile)) {
- 	    //    unlink($errorFile);
- 	    //}
- 	    }
- 	    else if ($finished && $result) {
- 	    report("job $id completed on " . $job->server(), 1);
- 	    // finsihed. remove job, write email, clean up huygens server
- 	    // clean up server
- 	    $this->cleanUpFileServer($job);
- 	    // remove job
- 	    $this->stopTime = $queue->stopJob($job);
- 	    // write email
- 	    $this->writeParameterFile($job, $startTime, $logFile, $errorFile);
- 	    if ($send_mail) $this->notifySuccess($job, $startTime);
- 	    //if (file_exists($errorFile)) {
- 	    //    unlink($errorFile);
- 	    //}
- 	    }*/
+
  	  }
  	}
 
@@ -777,36 +701,6 @@ class QueueManager {
  	    }
  	  }
  	  return $result;
- 	}
-
- 	/*!
- 	 \brief	Checks whether an error occurred (this currently always retruns false!)
- 	 \param	$job		A Job object
- 	 \return	always false|
- 	 \todo	Refactor or delete!
- 	 */
- 	public function errorOccured($job) {
- 	  global $imageProcessingIsOnQueueManager;
- 	  //if ($imageProcessingIsOnQueueManager) {
- 	  return False;
- 	  //}
- 	  // The following is never run, but for completeness we add the logdir
- 	  global $logdir;
- 	  $errorFile = $logdir . "/" . $job->server() .  "_" .$job->id(). '_error.txt';
- 	  $message = '';
- 	  if (file_exists($errorFile)) {
- 	    $message = file_get_contents($errorFile);
- 	  }
- 	  if (strstr($message, 'SignalError')) {
- 	    return True;
- 	  }
- 	  if (strstr($message, 'failed to allocate')) {
- 	    return True;
- 	  }
- 	  if (strstr($message, 'Error encountered')) {
- 	    return True;
- 	  }
- 	  return False;
  	}
 
  	/*!
