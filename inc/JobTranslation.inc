@@ -2204,7 +2204,7 @@ class JobTranslation {
         /* Get file path, name and time series option */
         $pathInfo = pathinfo($this->srcImage);
         $path = $pathInfo['dirname'];
-        $filename = $pathInfo['filename'];
+        $filename = $pathInfo['basename'];
         $series = $this->getSeriesMode();
         $opt = "-path $path -filename \"$filename\" -series $series";
 
