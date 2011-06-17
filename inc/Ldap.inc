@@ -28,8 +28,10 @@ class Ldap {
     global $ldap_host;
     global $ldap_port;
     global $ldap_root;
+    global $ldap_use_ssl;
+    global $ldap_use_tls;
 	
-	// Set to connection to null
+	// Set the connection to null
 	$this->connection = null;
 
 	// Connect
