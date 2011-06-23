@@ -1092,7 +1092,7 @@ class ParameterSetting extends Setting {
 
     // These parameters are important to properly display all the others
     $numberOfChannels = $this->parameter( "NumberOfChannels" )->value( );
-    $PSF = $this->parameter( "PointSpreadFunction" )->value( );
+    $PSFmode = $this->parameter( "PointSpreadFunction" )->value( );
     $performAberrationCorrection = $this->parameter( "PerformAberrationCorrection" )->value( );
     $aberrationCorrectionMode = $this->parameter( "AberrationCorrectionMode" )->value( );
     $advancedCorrectionOptions = $this->parameter( "AdvancedCorrectionOptions" )->value( );
@@ -1120,9 +1120,11 @@ class ParameterSetting extends Setting {
         continue;
       if ( $parameter->name() == 'Binning' ) // This is obsolete
         continue;
-      if ( $parameter->name() == "AberrationCorrectionNecessary" && $PSF == 'measured' )
+      if ( $parameter->name() == "AberrationCorrectionNecessary" && $PSFmode == 'measured' )
         continue;
-      if ( $parameter->name() == 'CoverslipRelativePosition' && $PSF == 'measured' )
+      if ( $parameter->name() == 'CoverslipRelativePosition' && $PSFmode == 'measured' )
+        continue;
+      if ( $parameter->name() == 'PSF' && $PSFmode == 'theoretical' )
         continue;
       if ( $parameter->name() == 'CoverslipRelativePosition' && $performAberrationCorrection == 0 )
         continue;
