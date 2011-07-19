@@ -538,6 +538,7 @@ class JobTranslation {
         } else {
             return $task;
         }
+
         return $task;
     }
 
@@ -1728,6 +1729,7 @@ class JobTranslation {
 
         /* Get the Huygens task name of the $task */
         $task = $this->parseTask($key,$task);
+
         if ($task == "") {
             return;
         }
@@ -2096,7 +2098,7 @@ class JobTranslation {
     */
     private function getTemplateName( ) {
         $time = date('h-i-s');  
-        $today = date('j-m-y');  
+        $today = date('Y-m-d');  
         $templateName = "batch_" . $today . "_" . $time;
         return $templateName;
     }
