@@ -183,7 +183,7 @@ class System {
 
 		if ( stristr( $s, "Linux" ) ) {
 			$os = "Linux " . $m;
-		} elseif ( $s = "Darwin" ) {
+		} elseif ( stristr( $s, "Darwin" ) ) {
 			$os = "Mac OS X " . $m;
 		} else {
 			$os = $s;
@@ -203,7 +203,7 @@ class System {
 
 		if ( stristr( $s, "Linux" ) ) {
 			return $r;
-		} elseif ( $s = "Darwin" ) {
+		} elseif ( stristr( $s, "Darwin" ) ) {
 			$match = array();
 			preg_match ("/^(\d+)\.\d+/", $r, $match );
 			if ( isset( $match[ 1 ] ) ) {
