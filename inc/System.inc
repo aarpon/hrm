@@ -37,7 +37,7 @@ class System {
 
 		This value has to be set by the developers!
 		*/
-	const MIN_HUCORE_VERSION = 4000009;
+	const MIN_HUCORE_VERSION = 4000100;
 
 	/*!
 		\brief	Returns the HRM version
@@ -87,7 +87,7 @@ class System {
 
 	/*!
 		\brief	Returns the HuCore version in integer notation
-		\return	HuCore version as an integer (e.g. 4000009)
+		\return	HuCore version as an integer (e.g. 4000100)
 		*/
 	public static function huCoreVersion ( ) {
 		$db = new DatabaseConnection();
@@ -102,7 +102,7 @@ class System {
 
 	/*!
 		\brief	Returns the minimum acceptable HuCore version in string notation
-		\return	Minimum HuCore version as a string (e.g. 3.7.1)
+		\return	Minimum HuCore version as a string (e.g. 4.0.1-p1)
 		*/
 	public static function minHuCoreVersion ( ) {
 		$a = self::hucoreVersionAsString( self::MIN_HUCORE_VERSION );
@@ -126,7 +126,7 @@ class System {
 
 	/*!
 		\brief	Stores the HuCore version in integer notation into the DB
-		\param 	$value	hucore version in integer notation (e.g. 3060103)
+		\param 	$value	hucore version in integer notation (e.g. 4000100)
 		\return	true if success, false otherwise
 		*/
 	public static function setHuCoreVersion( $value ) {
@@ -147,7 +147,7 @@ class System {
 
 	/*!
 		\brief	Returns the hucore version as its string representation
-		\return	the version number as string (e.g. 3.6.0-p3)
+		\return	the version number as string (e.g. 4.0.1-p1)
 		*/
 	public static function hucoreVersionAsString( $version = -1 ) {
 		if ( $version == -1 ) {
@@ -188,7 +188,7 @@ class System {
 		} else {
 			$os = $s;
 		}
-		
+
 		return $os;
 	}
 
@@ -282,7 +282,7 @@ class System {
     	return System::formatMemoryStringByUnit(
     	let_to_num( ini_get( 'memory_limit' ) ), $unit );
     }
-     
+
     /*!
      \brief	Max allowed size for an HTTP post as set in php.ini
      \param	$unit	One of 'B' for bytes, 'M' for Megabytes, or 'G' for
