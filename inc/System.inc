@@ -21,7 +21,7 @@ class System {
 
 		This value has to be set by the developers!
 		*/
-	const HRM_VERSION = "2.0.1";
+	const HRM_VERSION = "2.0.2";
 
 	/*!
 		\var 	DB_LAST_REVISION
@@ -37,7 +37,7 @@ class System {
 
 		This value has to be set by the developers!
 		*/
-	const MIN_HUCORE_VERSION = 3070106;
+	const MIN_HUCORE_VERSION = 4000009;
 
 	/*!
 		\brief	Returns the HRM version
@@ -87,7 +87,7 @@ class System {
 
 	/*!
 		\brief	Returns the HuCore version in integer notation
-		\return	HuCore version as an integer (e.g. 3070106)
+		\return	HuCore version as an integer (e.g. 4000009)
 		*/
 	public static function huCoreVersion ( ) {
 		$db = new DatabaseConnection();
