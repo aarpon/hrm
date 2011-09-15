@@ -43,12 +43,14 @@ foreach ( $parameterNames as $name ) {
  *
  **************************************************************************** */
 
-$ok = $_SESSION['setting']->checkPostedAberrationCorrectionParameters( $_POST );
-if ( $ok ) {
-  header("Location: " . "override_parameter.php" ); exit();
+if ( $_SESSION['setting']->checkPostedAberrationCorrectionParameters( $_POST ) ) {
+  $saved = $_SESSION['setting']->save();
+  $message = "            <p class=\"warning\">".$_SESSION['setting']->message()."</p>";
+  if ($saved) {
+    header("Location: select_parameter_settings.php" ); exit();
+  }
 } else {
-  $message = "            <p class=\"warning\">" .
-    $_SESSION['setting']->message() . "</p>\n";  
+  $message = "            <p class=\"warning\">".$_SESSION['setting']->message()."</p>";
 }
 
 /* *****************************************************************************
@@ -69,7 +71,7 @@ include("header.inc.php");
     -->
     <span id="ttSpanBack">Go back to previous page.</span>  
     <span id="ttSpanCancel">Abort editing and go back to the image parameters selection page. All changes will be lost!</span>  
-    <span id="ttSpanForward">Continue to next page.</span>
+    <span id="ttSpanSave">Save and return to the image parameters selection page.</span>
 
     <div id="nav">
         <ul>
@@ -397,8 +399,8 @@ if ( ($parameterPerformAberrationCorrection->value( ) == 1) &&
                   onmouseover="TagToTip('ttSpanCancel' )"
                   onmouseout="UnTip()"
                   onclick="document.location.href='select_parameter_settings.php'" />
-        <input type="submit" value="" class="icon next"
-                  onmouseover="TagToTip('ttSpanForward' )"
+        <input type="submit" value="" class="icon save"
+                  onmouseover="TagToTip('ttSpanSave' )"
                   onmouseout="UnTip()"
                   onclick="process()" />
       </div>            

@@ -28,8 +28,8 @@ $stats = new Stats( $_SESSION['user']->name() );
 $possibleStats = $stats->getAllDescriptiveNames( );
 
 // Filters
-$fromDates  = $stats->getFromDates();
-$toDates    = $stats->getToDates();
+$fromDate  = $stats->getFromDate();
+$toDate    = $stats->getToDate();
 $groupNames = $stats->getGroupNames();
 
 // Was some statistics chosen?
@@ -37,18 +37,18 @@ if (isset($_POST["Statistics"] ) ) {
   $stats->setSelectedStatistics( $_POST["Statistics"] );
 }
 
-// Was some fromDate chosen?
+// Was some FromDate chosen?
 if (isset($_POST["FromDate"] ) ) {
   $chosenFromDate = $_POST["FromDate"];
 } else {
-  $chosenFromDate = $fromDates[ 0 ];
+  $chosenFromDate = $fromDate;
 }
 
-// Was some toDate chosen?
+// Was some ToDate chosen?
 if (isset($_POST["ToDate"] ) ) {
   $chosenToDate = $_POST["ToDate"];
 } else {
-  $chosenToDate = $toDates[ count( $toDates ) - 1 ];
+  $chosenToDate = $toDate;
 }
 
 // Was some Group chosen?
@@ -78,7 +78,10 @@ if ( $stats->isGraph( ) == true ) {
 $script = array(
       "highcharts/jquery.min.js",
       "highcharts/excanvas.compiled.js",
-      "highcharts/highcharts.js" );
+      "highcharts/highcharts.js",
+      'calendar/calendar.js');
+
+require_once("./inc/extern/calendar/classes/tc_calendar.php");
 
 include("header.inc.php");
 
@@ -123,53 +126,46 @@ include("header.inc.php");
           ?>
         
           </select>
-    
-          <div class="nowrap_noborder">
-            
-          <!-- Filter: from date -->
-          <select name="FromDate" id="FromDate" size="1" style="width:49%">
-        
-          <?php
-          foreach ($fromDates as $fromDate) {
 
-            if ( $fromDate == $chosenFromDate ) {
-              $selected = "selected=\"selected\"";
-            } else {
-              $selected = "";
-            }
-            
-          ?>
-            <option <?php echo $selected ?>><?php echo $fromDate ?></option>
-        
+          [From] Filter by date [To]
+          <div id="cal_from">
           <?php
-          }
+            // Filter: from date
+            $cal = new tc_calendar( "FromDate", true, false );
+            $cal->setIcon( "./inc/extern/calendar/images/iconCalendar.gif" );
+            $cal->setDate(
+                    date( 'd', strtotime( $chosenFromDate ) ),
+                    date( 'm', strtotime( $chosenFromDate ) ),
+                    date( 'Y', strtotime( $chosenFromDate ) ) );
+            $cal->setPath( "./inc/extern/calendar/" );
+            $cal->setYearInterval( 
+                    date( 'Y', strtotime( $chosenFromDate ) ),
+                    date( 'Y', strtotime( $chosenToDate ) ));
+            $cal->setAlignment(  'left', 'bottom'    );
+            $cal->setDatePair( 'FromDate', 'ToDate', $chosenToDate );
+            $cal->writeScript();
           ?>
-        
-          </select>
-
-          <!-- Filter: to date -->
-          <select name="ToDate" id="ToDate" size="1" style="width:49%">
-        
-          <?php
-          foreach ($toDates as $toDate ) {
-
-            if ( $toDate == $chosenToDate ) {
-              $selected = "selected=\"selected\"";
-            } else {
-              $selected = "";
-            }
-            
-          ?>
-            <option <?php echo $selected ?>><?php echo $toDate ?></option>
-        
-          <?php
-          }
-          ?>
-        
-          </select>
-            
           </div>
-    
+          
+          <div id="cal_to">
+          <?php
+            // Filter: to date
+            $cal = new tc_calendar( "ToDate", true, false );
+            $cal->setIcon( "./inc/extern/calendar/images/iconCalendar.gif" );
+            $cal->setDate(
+                    date( 'd', strtotime( $chosenToDate ) ),
+                    date( 'm', strtotime( $chosenToDate ) ),
+                    date( 'Y', strtotime( $chosenToDate ) ) );
+            $cal->setPath( "./inc/extern/calendar/" );
+            $cal->setYearInterval( 
+                    date( 'Y', strtotime( $chosenFromDate ) ),
+                    date( 'Y', strtotime( $chosenToDate ) ));
+            $cal->setAlignment(  'right', 'bottom'    );
+            $cal->setDatePair( 'FromDate', 'ToDate', $chosenFromDate );
+            $cal->writeScript();
+          ?>
+          </p>
+            </div>
           <!-- Filter: Group This is visible only for the admin user-->
           <?php
           if ( $_SESSION['user']->isAdmin() ) {

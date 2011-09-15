@@ -1,0 +1,71 @@
+body {
+  font-family: tahoma;
+  font-size: 11px;
+}
+
+input, select, textarea {
+	font-family: tahoma;
+	font-size: 11px;
+}
+
+a, a:hover, a:active, a:visited {
+	text-decoration: none;
+	font-family: tahoma;
+	cursor:pointer;
+}
+
+#calendar-page { float: left; background-color: #6699CC; font-family: tahoma; font-size: 11px; min-width: 150px; }
+#calendar-page select { font-family: tahoma; font-size: 11px; }
+
+#calendar-header { padding-top: 2px; }
+#calendar-header .closeme { padding: 0px 3px 2px 0px; }
+
+#calendar-body { padding: 2px 3px 3px 3px; }
+#calendar-body .general { background-color: #FFFFFF; }
+#calendar-body .othermonth { background-color: #EEEEEE; color: #AAAAAA; }
+#calendar-body .header { background-color: #6699CC; color: #FFFFFF; }
+#calendar-body .othermonth a:link { text-decoration : none; color: #CCFFCC; }
+#calendar-body .othermonth a:visited { text-decoration : none; color: #CCFFCC; }
+#calendar-body .othermonth a:hover { text-decoration : none; color: #FFFFFF; }
+#calendar-body table { font-family: tahoma; font-size: 11px; }
+#calendar-body td div { padding: 3px; width: 15px; }
+#calendar-body a { display: block; }
+#calendar-body a:link { text-decoration : none; color: #000000; }
+#calendar-body a:visited { text-decoration : none; color: #000000; }
+#calendar-body a:hover { text-decoration : none; color: #FF0000; background-color: #FFFFCC; }
+#calendar-body .disabledate { color: #AAAAAA; background: url(images/disable_date_bg.png) no-repeat center center #EEEEEE; }
+#calendar-body .today { background-color: #CCFFCC; border: 1px solid #006600; }
+#calendar-body .select { background-color: #FFCC99; }
+
+#calendar-body .refresh { color: #FFFFFF; padding: 10px 3px 3px; }
+#calendar-body .refresh .txt-container { padding: 25px 10px 10px; height: 50px; }
+
+#calendar-body .mon {}
+#calendar-body .tue {}
+#calendar-body .wed {}
+#calendar-body .thu {}
+#calendar-body .fri {}
+#calendar-body .sat { color: #6666CC; }
+#calendar-body .sat a:link { color: #6666CC; }
+#calendar-body .sun { color: #993300; }
+#calendar-body .sun a:link { color: #993300; }
+ 
+#calendar-footer { background-color: #CCCCCC; width: 100%; margin: auto; }
+#calendar-footer .btn { line-height: 21px; }
+#calendar-footer .btn a:link { text-decoration : none; color: #000000; display: block; }
+#calendar-footer .btn a:visited { text-decoration : none; color: #000000; }
+#calendar-footer .btn a:hover { text-decoration : none; color: #FF0000; }
+
+#calendar-header, #calendar-body, #calendar-footer { padding-left: 1px; padding-right: 1px; }
+#calendar-container { }
+
+.tcday, .tcmonth, .tcyear { font-size: 11px; z-index: 10; }
+
+.date-tccontainer { border: 1px solid #CCCCCC; background-color: #EFEFEF; padding: 2px; float: left; margin-right: 2px; text-align: center; text-decoration: none; }
+
+#calendarform { margin: 0px; padding: 0px; }
+#calendarform ul { margin: 0px; padding: 0px; list-style: none; }
+#calendarform ul li { display: inline; }
+
+.calendar-border { border: 1px solid #000000; }
+.div_calendar { width: 10px; height: 10px; }

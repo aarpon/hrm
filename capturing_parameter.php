@@ -73,6 +73,8 @@ $_SESSION['setting']->set($pinholeParam);
 // Besides the destination page, also the control buttons will need to be
 // adapted.
 
+$saveToDB = false;
+
 // First check the selection of the PSF
 $PSF = $_SESSION['setting']->parameter( 'PointSpreadFunction' )->value( );
 if ($PSF == 'measured' ) {
@@ -101,7 +103,9 @@ if ($PSF == 'measured' ) {
           
 	// Do we need to go to the aberration correction page?
 	if ( $deviation < 0.01 ) {
-	  $pageToGo = 'override_parameter.php';
+      // We can save the parameters
+      $saveToDB = true;
+      $pageToGo = 'select_parameter_settings.php';
 	  // Make sure to turn off the correction
 	  $_SESSION['setting']->parameter( 'AberrationCorrectionNecessary' )->setValue( '0' );
 	  $_SESSION['setting']->parameter( 'PerformAberrationCorrection' )->setValue( '0' );
@@ -118,8 +122,14 @@ if ($PSF == 'measured' ) {
  *
  **************************************************************************** */
 
-$ok = $_SESSION[ 'setting' ]->checkPostedCapturingParameters( $_POST );
-if ($ok) {
+if ($_SESSION[ 'setting' ]->checkPostedCapturingParameters( $_POST ) ) {
+  if ( $saveToDB ) {
+    $saved = $_SESSION['setting']->save();
+    $message = "            <p class=\"warning\">".$_SESSION['setting']->message()."</p>";
+    if ($saved) {
+      header("Location: " . $pageToGo ); exit();
+    }    
+  }
   header("Location: " . $pageToGo ); exit();
 } else {
   $message = "            <p class=\"warning\">".$_SESSION['setting']->message()."</p>";
@@ -182,7 +192,19 @@ if ( $nyquist === false ) {
     <span id="ttSpanNyquist">Check your sampling with the online Nyquist calculator.</span>
     <span id="ttSpanBack">Go back to previous page.</span>  
     <span id="ttSpanCancel">Abort editing and go back to the image parameters selection page. All changes will be lost!</span>  
-    <span id="ttSpanForward">Continue to next page.</span>
+    <?php
+        if ( $saveToDB == true ) {
+            $iconClass = "icon save";
+    ?>
+        <span id="ttSpanForward">Save and return to the image parameters selection page.</span>
+    <?php
+        } else {
+            $iconClass = "icon next";
+    ?>
+        <span id="ttSpanForward">Continue to next page.</span>
+    <?php
+    }
+    ?>
 
     <div id="nav">
         <ul>
@@ -441,7 +463,7 @@ if ($_SESSION['setting']->isNipkowDisk()) {
                   onmouseover="TagToTip('ttSpanCancel' )"
                   onmouseout="UnTip()"
                   onclick="document.location.href='select_parameter_settings.php'" />
-              <input type="submit" value="" class="icon next" 
+              <input type="submit" value="" class="<?php echo $iconClass; ?>" 
                   onmouseover="TagToTip('ttSpanForward' )"
                   onmouseout="UnTip()"
                   onclick="process()" />

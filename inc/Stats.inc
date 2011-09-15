@@ -486,10 +486,8 @@ class Stats {
   public function __construct( $username ) {
     $this->m_Username = $username;
     $this->m_DB = new DatabaseConnection();
-    $fromDates = $this->getFromDates( );
-    $this->m_Filter_FromDate = $fromDates[ 0 ];
-    $toDates = $this->getToDates( );
-    $this->m_Filter_ToDate = $toDates[ count( $toDates ) - 1 ];
+    $this->m_Filter_FromDate = $this->getFromDate( );
+    $this->m_Filter_ToDate = $this->getToDate( );
     $this->m_Filter_Group = "All groups";
     // Now create the statistics array
     $this->fillStatsArray( );
@@ -578,65 +576,32 @@ class Stats {
   }
    
 	/*!
-	\brief	Gets all beginnings of the months from February 2010 until now
-	\return	array of dates of all beginnings of the months
+	\brief	Returns the date of the first implementation of statistics in HRM
+	\return	date (2010-02-01)
 	*/ 
-    public function getFromDates( ) {
+  public function getFromDate( ) {
 
-    $fromDates = array( );
-
-    // Today
-    $today = date( "Y-m-d" );
-
-    // Start date
-    $fromDates[ 0 ] = "2010-02-01";
-
-    $nextMonth = date( "Y-m-d", strtotime( $fromDates[ 0 ] . " + 1 month" ) );
-
-    $counter = 1;
-    while ( strtotime( $nextMonth ) <= strtotime( $today ) ) {
-      $fromDates[ $counter ] = $nextMonth;
-      $nextMonth = date( "Y-m-d", strtotime( $fromDates[ $counter++ ] . " + 1 month" ) );
-    }
-
-    return $fromDates;
+    return "2010-02-01";
+    
   }
 
 	/*!
-	\brief	Gets all ends of the months from February 2010 until now
-	\return	array of dates of all ends of the months
+	\brief	Gets the end of current month
+	\return	date (YYYY-MM-DD)
 	*/ 
-  public function getToDates( ) {
+  public function getToDate( ) {
 
-    $toDates = array( );
+    $year  = date( "Y" );
+    $month = date( "m" ) + 1;
 
-    // Today
-    $today =  date( "Y-m-d", strtotime( " + 1 month" ) );
-
-
-    // Start date
-    $toDates[ 0 ] = "2010-02-28";
-
-    // Make sure to get the end of the month
-    $year  = date( "Y", strtotime( $toDates[ 0 ] ) );
-    $month = date( "m", strtotime( $toDates[ 0 ] ) );
-    $nextMonth = date( "Y-m-d", strtotime( $year . "-" . ( $month + 2 ) . "-01 - 1 day" ) );
-
-    $counter = 1;
-    while ( strtotime( $nextMonth ) <= strtotime( $today ) ) {
-      $toDates[ $counter ] = $nextMonth;
-      $year  = date( "Y", strtotime( $toDates[ $counter] ) );
-      $month = date( "m", strtotime( $toDates[ $counter ] ) ) + 2;
-      if ( $month > 12 ) {
-        $month -= 12;
-        $year++;
-      }
-
-      $nextMonth = date( "Y-m-d", strtotime( $year . "-" . $month . "-01 - 1 day" ) );
-      $counter++;
+    if ( $month > 12 ) {
+      $month -= 12;
+      $year++;
     }
+    
+    // End of month
+    return date( "Y-m-d", strtotime( $year . "-" . $month . "-01 - 1 day" ) );
 
-    return $toDates;
   }
 
 	/*!

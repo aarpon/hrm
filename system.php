@@ -31,7 +31,7 @@ include("header.inc.php");
             <li><a href="javascript:openWindow('#')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
         </ul>
     </div>
-    
+
     <div id="content">
 
       <h3>System summary</h3>
@@ -143,21 +143,30 @@ include("header.inc.php");
             <td class="subkey">in use</td>
             <td class="value"><?php echo System::uploadMaxFileSize(); ?></td>
           </tr>
+          <tr>
+            <td class="section">Extended PHP configuration</td>
+            <td class="value">&nbsp;</td>
+          </tr>
+          <tr>
+            <td class="subkey"><a href="./phpinfo.php">Display php info</a></td>
+            <td class="value">&nbsp;</td>
+          </tr>
         </table>
+
       </div> <!-- system -->
-      
+
     </div> <!-- content -->
-    
+
     <div id="rightpanel">
-    
+
         <div id="info">
 
           <h3>Quick help</h3>
-          
+
           <p>This page displays information about your installation and server.</p>
-          
+
        </div>
-        
+
         <div id="message">
 <?php
 
@@ -165,9 +174,9 @@ echo $message;
 
 ?>
         </div>
-        
+
     </div> <!-- rightpanel -->
-    
+
 <?php
 
 include("footer.inc.php");

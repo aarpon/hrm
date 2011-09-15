@@ -7,12 +7,38 @@ Copyright and license notice: see license.txt
 
 */
 
+/* *** Font faces *********************************************************** */
+
+/* Ubuntu font bold */
+@font-face {
+    font-family: ubuntu_font;
+    src: url('Ubuntu-B.ttf');
+    font-weight: bold;
+    font-style: normal;
+}
+
+/* Ubuntu font italic */
+@font-face {
+    font-family: ubuntu_font;
+    src: url('Ubuntu-I.ttf');
+    font-style: italic, oblique;
+    font-weight: normal;
+}
+
+/* Ubuntu font regular */
+@font-face {
+    font-family: ubuntu_font;
+    src: url('Ubuntu-R.ttf');
+    font-style: normal;
+    font-weight: normal;
+}
+
 /* basic elements */
 
 body {
     background: #fff;
     color: #000;
-    font-family: "verdana", "bitsream vera sans", sans-serif;
+    font-family: ubuntu_font;
     font-size: 14px;
     text-align: center;
     margin: 0px;
@@ -130,7 +156,7 @@ table {
 
 #statstable h3 {
     color: rgb(62,87,111);
-    font-family: "Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;
+    font-family: ubuntu-font;
     font-weight: normal;
     font-size: 16px;
 }
@@ -349,7 +375,7 @@ input.save {
 }
 
 #login {
-    font-size: 14px;    
+    font-size: 14px;
 }
 
 #login legend {
@@ -688,7 +714,7 @@ fieldset.report {
 }
 
 fieldset.p {
-    
+
 }
 
 
@@ -697,7 +723,7 @@ ol li {
 }
 
 input {
-    text-align: center;    
+    text-align: center;
 }
 
 input.icon {
@@ -822,7 +848,7 @@ div.multichannel {
     padding: 0px;
     margin-left: auto;
     margin-right: auto;
-    white-space: nowrap;   
+    white-space: nowrap;
 }
 
 .multichannelinput {
@@ -968,7 +994,7 @@ option.default {
 }
 
 #previewContents {
-    
+
     overflow: auto;
     max-width: 98%;
     padding: 1em;
@@ -1034,7 +1060,7 @@ option.default {
 }
 
 #psfselection {
-    padding-left: 10px;    
+    padding-left: 10px;
 }
 
 /* Confidence levels for parameters: provided, verified, reported, estimated, default */
@@ -1060,7 +1086,7 @@ option.default {
 
 .message_confidence_verified {
     border: none;
-    height: 20px;
+    height: 30px;
     margin-top: 5px;
     margin-bottom: -5px;
     background: url(../images/text_verified.png) no-repeat bottom;
@@ -1069,7 +1095,7 @@ option.default {
 
 .message_confidence_reported {
     border: none;
-    height: 20px;
+    height: 30px;
     margin-top: 5px;
     margin-bottom: -5px;
     background: url(../images/text_reported.png) no-repeat bottom;
@@ -1078,7 +1104,7 @@ option.default {
 
 .message_confidence_estimated {
     border: none;
-    height: 20px;
+    height: 30px;
     margin-top: 5px;
     margin-bottom: -5px;
     background: url(../images/text_estimated.png) no-repeat bottom;
@@ -1087,7 +1113,7 @@ option.default {
 
 .message_confidence_default {
     border: none;
-    height: 20px;
+    height: 30px;
     margin-top: 5px;
     margin-bottom: -5px;
     background: url(../images/text_default.png) no-repeat bottom;
@@ -1096,7 +1122,7 @@ option.default {
 
 .message_confidence_provided {
     border: none;
-    height: 20px;
+    height: 30px;
     margin-top: 5px;
     margin-bottom: -5px;
     background: url(../images/text_provided.png) no-repeat bottom;
@@ -1108,4 +1134,53 @@ option.default {
     height: 15px;
     margin-top: 5px;
     margin-bottom: -5px;
+}
+
+#login_user {
+    margin: 0px;
+    border-bottom-style: dotted;
+    border-bottom-width: 1px;
+}
+
+#cal_from {
+    float: left;
+}
+
+#cal_to {
+    float: right;
+}
+
+#phpinfo {
+    text-align: left;
+    font-size: 10px;
+}
+
+#phpinfo tr {
+    border-bottom-style: solid;
+    border-bottom-color: #ccc;
+    border-bottom-width: 0.5px;
+}
+
+#phpinfo td {
+    text-align: left;
+    font-size: 10px;
+}
+
+#phpinfo h1 {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+#phpinfo h2 {
+    font-size: 14px;
+    font-weight: bold;
+}
+
+#phpinfo td.e {
+    font-weight: bold;
+    vertical-align: top;
+}
+
+#phpinfo td.v {
+    vertical-align: top;
 }

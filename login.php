@@ -3,7 +3,7 @@
 // Copyright and license notice: see license.txt
 
 require_once("./inc/User.inc");
-require_once("./inc/Database.inc"); // for account management (email & last_access fields)
+require_once("./inc/Database.inc");
 require_once("./inc/hrm_config.inc");
 require_once("./inc/Fileserver.inc");
 require_once("./inc/System.inc");
@@ -51,7 +51,7 @@ if ( isset( $_POST["password"] ) ) {
  *
  */
 
-$message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
+$message = "<p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
 
 session_start();
 if (isset($_SESSION['request'])) {
@@ -77,7 +77,8 @@ if ( isset( $_POST['password'] ) && isset( $_POST['username'] ) ) {
 		$tentativeUser ->setName($clean['username']);
 		$tentativeUser ->logOut(); // TODO
 
-		if ($tentativeUser->logIn($clean['username'], $clean['password'], $_SERVER['REMOTE_ADDR'])) {
+		if ($tentativeUser->logIn($clean['username'], $clean['password'],
+                $_SERVER['REMOTE_ADDR'])) {
 			if ($tentativeUser ->isLoggedIn()) {
 				// Make sure that the user source and destination folders exist
 				{
@@ -110,19 +111,23 @@ if ( isset( $_POST['password'] ) && isset( $_POST['username'] ) ) {
 			}
 		} else if ( $tentativeUser->isLoginRestrictedToAdmin() ) {
 			if ( ( $tentativeUser->isAdmin() ) && ( $tentativeUser->exists() ) ) {
-				$message = "            <p class=\"warning\">Wrong password.</p>\n";
+				$message = "<p class=\"warning\">Wrong password.</p>\n";
 			} else {
-				$message = "            <p class=\"warning\">Only the administrator is allowed to login in order to perform maintenance.</p>\n";
+				$message = "<p class=\"warning\">Only the administrator is " .
+                    "allowed to login in order to perform maintenance.</p>\n";
 			}
 		} else {
 			if ( $tentativeUser->isSuspended()) {
-				$message = "            <p class=\"warning\">Your account has been suspended, please contact the administrator.</p>\n";
+				$message = "<p class=\"warning\">Your account has been " .
+                    "suspended, please contact the administrator.</p>\n";
 			} else {
-				$message = "            <p class=\"warning\">Sorry, wrong user name or password.</p>\n";
+				$message = "<p class=\"warning\">Sorry, wrong user name " .
+                    "or password.</p>\n";
 			}
 		}
 	} else {
-		$message = "            <p class=\"warning\">Sorry, invalid user name or password.</p>\n";
+		$message = "<p class=\"warning\">Sorry, invalid user name or " .
+            "password.</p>\n";
 	}
 }
 
@@ -161,7 +166,8 @@ if ( !$db->isReachable( ) ) {
 if ( System::huCoreVersion( ) == 0 ) {
 	echo "<div class=\"dbOutDated\">Warning: unknown HuCore version!\n";
 	echo "<p>Please ask the administrator to start the queue manager.</p>" .
-  				"<p>You are now allowed to login until this issue has been fixed.</p></div>";
+         "<p>You are now allowed to login until this issue has been " .
+         "fixed.</p></div>";
 	echo "</div>\n";
 	include("footer.inc.php");
 	return;
@@ -193,6 +199,18 @@ by <a href="javascript:openWindow('http://www.svi.nl')">Scientific
 Volume Imaging B.V.</a> that allows for multi-user, large-scale
 deconvolution.</p>
 
+<?php
+    /*
+     * Include user/login_user.inc if it exists. This allows installations
+     * to be customized without having to change anything in the HRM code.
+     */
+    if ( file_exists( "user/login_user.inc" ) == true ) {
+        echo "<div id=\"login_user\">\n";
+        include "user/login_user.inc";
+        echo "</div>";
+    }
+?>
+
 <div id="logos">
 <div class="logo-fmi"><a
 	href="javascript:openWindow('http://www.fmi.ch')"><img
@@ -221,22 +239,32 @@ Optics platform</a></p>
 <div id="rightpanel">
 <p />
 <div id="login">
-<form method="post" action="">
-<fieldset><legend> <a
-	href="javascript:openWindow('http://www.svi.nl/HuygensRemoteManagerHelpLogin')"><img
-	src="images/help.png" alt="?" /></a> Login </legend> <?php
-	if ( $authenticateAgainst == "MYSQL" ) {
-		$login_message = "<p class=\"expl\">If you do not have an account, please register <a href=\"registration.php\">here</a>.</p>";
-	} else {
-		$login_message = "<p class=\"expl\">Please enter your credentials.</p>";
-	}
-	echo $login_message;
-	?> <label for="username">Username:</label> <input id="username"
-	name="username" type="text" class="textfield" tabindex="1" /> <br />
-<label for="password">Password:</label> <input id="password"
-	name="password" type="password" class="textfield" tabindex="2" /> <br />
-<input type="hidden" name="request" value="<?php echo $req?>" /> <input
-	type="submit" class="button" value="login" /></fieldset>
+<form method="post" action="" autocomplete="off">
+    <fieldset>
+        <legend>
+            <a href="javascript:openWindow('http://www.svi.nl/HuygensRemoteManagerHelpLogin')">
+                <img src="images/help.png" alt="?" /></a> Login
+        </legend>
+    <?php
+        if ($authenticateAgainst == "MYSQL") {
+            $login_message = "<p class=\"expl\">" .
+                    "If you do not have an account, please register " .
+                    "<a href=\"registration.php\">here</a>.</p>";
+        } else {
+            $login_message = "<p class=\"expl\">Please enter your ".
+                    "credentials.</p>";
+        }
+        echo $login_message;
+    ?>
+        <label for="username">Username:</label>
+        <input id="username" name="username" type="text" class="textfield"
+               tabindex="1" /> <br />
+        <label for="password">Password:</label>
+        <input id="password" name="password" type="password" class="textfield"
+               tabindex="2" /> <br />
+        <input type="hidden" name="request" value="<?php echo $req ?>" />
+        <input type="submit" class="button" value="login" />
+    </fieldset>
 </form>
 </div>
 

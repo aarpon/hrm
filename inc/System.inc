@@ -21,7 +21,7 @@ class System {
 
 		This value has to be set by the developers!
 		*/
-	const HRM_VERSION = "2.0.2";
+	const HRM_VERSION = "2.1";
 
 	/*!
 		\var 	DB_LAST_REVISION
@@ -37,11 +37,11 @@ class System {
 
 		This value has to be set by the developers!
 		*/
-	const MIN_HUCORE_VERSION = 4000100;
+	const MIN_HUCORE_VERSION = 4000009;
 
 	/*!
 		\brief	Returns the HRM version
-		\return	the HRM version number (e.g. 2.0.1)
+		\return	the HRM version number (e.g. 2.1)
 		*/
 	public static function getHRMVersion( ) {
 		return self::HRM_VERSION;
@@ -64,7 +64,7 @@ class System {
 
 	/*!
 		\brief	Returns current DB revision from the database
-		\return	DB revision from the database (e.g. 7)
+		\return	DB revision from the database (e.g. 8)
 		*/
 	public static function getDBCurrentRevision( ) {
 		$db   = new DatabaseConnection();
@@ -87,7 +87,7 @@ class System {
 
 	/*!
 		\brief	Returns the HuCore version in integer notation
-		\return	HuCore version as an integer (e.g. 4000100)
+		\return	HuCore version as an integer (e.g. 4000009)
 		*/
 	public static function huCoreVersion ( ) {
 		$db = new DatabaseConnection();
@@ -102,7 +102,7 @@ class System {
 
 	/*!
 		\brief	Returns the minimum acceptable HuCore version in string notation
-		\return	Minimum HuCore version as a string (e.g. 4.0.1-p1)
+		\return	Minimum HuCore version as a string (e.g. 3.7.1)
 		*/
 	public static function minHuCoreVersion ( ) {
 		$a = self::hucoreVersionAsString( self::MIN_HUCORE_VERSION );
@@ -126,7 +126,7 @@ class System {
 
 	/*!
 		\brief	Stores the HuCore version in integer notation into the DB
-		\param 	$value	hucore version in integer notation (e.g. 4000100)
+		\param 	$value	hucore version in integer notation (e.g. 3060103)
 		\return	true if success, false otherwise
 		*/
 	public static function setHuCoreVersion( $value ) {
@@ -147,7 +147,7 @@ class System {
 
 	/*!
 		\brief	Returns the hucore version as its string representation
-		\return	the version number as string (e.g. 4.0.1-p1)
+		\return	the version number as string (e.g. 3.6.0-p3)
 		*/
 	public static function hucoreVersionAsString( $version = -1 ) {
 		if ( $version == -1 ) {

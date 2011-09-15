@@ -112,7 +112,8 @@ abstract class Parameter {
 		\return true always
 	*/
 	public function mustProvide( ) {
-		return true;
+        return !( $this->confidenceLevel == "reported" ||
+			$this->confidenceLevel == "verified" );
 	}
 
 

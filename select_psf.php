@@ -55,12 +55,15 @@ $_SESSION['setting']->set($psfParam);
  **************************************************************************** */
 
 if (count($_POST) > 0) {
-  $ok = $psfParam->check();
-  if ($ok) {
+  if ($psfParam->check()) {
     // Make sure to turn off the aberration correction since we use a measured PSF
     $_SESSION['setting']->parameter( 'AberrationCorrectionNecessary' )->setValue( '0' );
     $_SESSION['setting']->parameter( 'PerformAberrationCorrection' )->setValue( '0' );
-    header("Location: " . "override_parameter.php"); exit();
+    $saved = $_SESSION['setting']->save();
+    $message = "            <p class=\"warning\">".$_SESSION['setting']->message()."</p>";
+    if ($saved) {
+      header("Location: select_parameter_settings.php" ); exit();
+    }
   } else {
     $message = "            <p class=\"warning\">".$psfParam->message()."<br />&nbsp;</p>";
   }
@@ -76,7 +79,7 @@ include("header.inc.php");
     -->
     <span id="ttSpanBack">Go back to previous page.</span>  
     <span id="ttSpanCancel">Abort editing and go back to the image parameters selection page. All changes will be lost!</span>  
-    <span id="ttSpanForward">Continue to next page.</span>
+    <span id="ttSpanSave">Save and return to the image parameters selection page.</span>  
 
     <div id="nav">
         <ul>
@@ -147,8 +150,8 @@ for ($i = 0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
                   onmouseover="TagToTip('ttSpanCancel' )"
                   onmouseout="UnTip()"
                   onclick="document.location.href='select_parameter_settings.php'" />
-              <input type="submit" value="" class="icon next"
-                  onmouseover="TagToTip('ttSpanForward' )"
+              <input type="submit" value="" class="icon save"
+                  onmouseover="TagToTip('ttSpanSave' )"
                   onmouseout="UnTip()" onclick="process()" />
             </div>
                         
