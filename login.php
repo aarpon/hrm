@@ -185,7 +185,7 @@ if ( System::isMinHuCoreVersion( ) == false ) {
 if ( System::isDBUpToDate( ) == false ) {
 	echo "<div class=\"dbOutDated\">Warning: the database is not up-to-date!\n";
 	echo "<p>This happens if HRM was recently updated but the " .
-  				  "database was not. You are now allowed to login " .
+  				  "database was not. You are not allowed to login " .
   				  "until this issue has been fixed.</p>";
 	echo "<p>Only the administrator can login.</p></div>";
 }
