@@ -64,14 +64,14 @@ function timestampADODB() {
 // Write a message into the log file
 function write_to_log($msg) {
     global $fh;
-    fwrite($fh, $msg . "\n"); 
+    fwrite($fh, $msg . "\n");
 }
 
 
 // Write a message into the error log file
 function write_to_error($msg) {
     global $efh;
-    fwrite($efh, $msg . "\n"); 
+    fwrite($efh, $msg . "\n");
 }
 
 
@@ -98,11 +98,11 @@ function error_message($table) {
 // Query functions
 // =============================================================================
 
-// Create a table with the specified name and fields        
+// Create a table with the specified name and fields
 function create_table($name, $fields) {
     global $datadict;
     $sqlarray = $datadict->CreateTableSQL($name, $fields);
-    $rs = $datadict->ExecuteSQLArray($sqlarray);    // return 0 if failed, 1 if executed all but with errors, 2 if executed successfully 
+    $rs = $datadict->ExecuteSQLArray($sqlarray);    // return 0 if failed, 1 if executed all but with errors, 2 if executed successfully
     if($rs != 2) {
        $msg = error_message($name);
        write_message($msg);
@@ -115,10 +115,10 @@ function create_table($name, $fields) {
 }
 
 
-// Drop the table with the specified name      
+// Drop the table with the specified name
 function drop_table($tabname) {
    global $datadict, $db;
-   
+
    $sqlarray = $datadict->DropTableSQL($tabname);
    $rs = $datadict->ExecuteSQLArray($sqlarray);
    if($rs != 2) {
@@ -133,10 +133,10 @@ function drop_table($tabname) {
 }
 
 
-// Insert a set of records ($records is a multidimensional associative array) into the table $tabname 
+// Insert a set of records ($records is a multidimensional associative array) into the table $tabname
 function insert_records($records,$tabname) {
     global $db;
-    
+
     $keys = array_keys($records);
     for($i=0; $i<count($records[$keys[0]]); $i++) {
         $record = array();
@@ -161,10 +161,10 @@ function insert_records($records,$tabname) {
 // $array anb $colnames are simple 1D arrays.
 function insert_record($tabname, $array, $colnames) {
     global $db;
-    
-    for($i=0; $i<count($colnames); $i++) 
+
+    for($i=0; $i<count($colnames); $i++)
         $record[$colnames[$i]] = $array[$i];
-        
+
     $insertSQL = $db->GetInsertSQL($tabname, $record);
     if(!$db->Execute($insertSQL)) {
         $msg = error_message($tabname);
@@ -179,9 +179,9 @@ function insert_record($tabname, $array, $colnames) {
 // Insert a column into the table $tabname
 function insert_column($tabname,$fields) {
     global $datadict;
-    
+
     $sqlarray = $datadict->AddColumnSQL($tabname, $fields); // NOTE: ADOdb AddColumnSQL, not guaranteed to work under all situations.
-    $rs = $datadict->ExecuteSQLArray($sqlarray);    // return 0 if failed, 1 if executed all but with errors, 2 if executed successfully 
+    $rs = $datadict->ExecuteSQLArray($sqlarray);    // return 0 if failed, 1 if executed all but with errors, 2 if executed successfully
     if($rs != 2) {
         $msg = error_message($tabname);
         write_message($msg);
@@ -196,10 +196,10 @@ function insert_column($tabname,$fields) {
 // Check the existence and the structure of a table.
 // If the table does not exist, it is created;
 // if a field is not correct, it is altered;
-// if a field does not exist, it is added and the default value for that field is put in the record. 
+// if a field does not exist, it is added and the default value for that field is put in the record.
 function check_table_existence_and_structure($tabname,$flds) {
     global $datadict;
-    
+
     $sqlarray = $datadict->ChangeTableSQL($tabname, $flds);
     $rs = $datadict->ExecuteSQLArray($sqlarray);    // return 0 if failed, 1 if executed all but with errors, 2 if executed successfully
     if($rs != 2) {
@@ -209,12 +209,12 @@ function check_table_existence_and_structure($tabname,$flds) {
         return False;
     }
     $msg = $tabname . ": existence and the structure have been checked.\n";
-    write_to_log($msg);    
+    write_to_log($msg);
     return True;
 }
 
 
-// Update field dbrevision in table global_variables to $n)        
+// Update field dbrevision in table global_variables to $n)
 function update_dbrevision($n) {
     global $db, $current_revision;
     $tabname = "global_variables";
@@ -235,9 +235,9 @@ function update_dbrevision($n) {
 // This function has been thought to check the content of tables parameter and task_parameter.
 function check_number_gates($tabname, $value, $fields_set, $primary_key) {
     global $db;
-    
+
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE name = '" . $value . "'");
-    if($rs) {           
+    if($rs) {
         while ($row = $rs->FetchRow()) {
             $test = substr_count($row[3], '#');
             if($test < 5) {
@@ -260,12 +260,12 @@ function check_number_gates($tabname, $value, $fields_set, $primary_key) {
                 if(!$ret = $db->Replace($tabname,$temp,$primary_key,$autoquote=true)) {
                     $msg = error_message($tabname);
                     write_message($msg);
-                    write_to_error($msg);    
+                    write_to_error($msg);
                     return False;
                 }
             $msg .= "' has be changed in '" . $row[3] . "'\n";
             write_to_log($msg);
-            } 
+            }
         }
     }
     return True;
@@ -344,7 +344,7 @@ foreach ( array( $log_file, $error_file ) as $currentFile ) {
         // Set the mode to 0666
         chmod($currentFile, 0666);
     }
-}    
+}
 
 // Now open the files for use
 if (!($fh = @fopen($log_file, 'a'))) {
@@ -369,7 +369,7 @@ if(!$db) {
     write_to_error($msg);
     return;
 }
-$datadict = NewDataDictionary($db);   // Build a data dictionary   
+$datadict = NewDataDictionary($db);   // Build a data dictionary
 $databases = $db->MetaDatabases();
 if (!in_array($db_name, $databases)) {
     $createDb = $datadict->CreateDatabase($db_name);
@@ -449,27 +449,27 @@ else {
 
 
 // -----------------------------------------------------------------------------
-// If the current database revision is 0 (new user or user whose database is not 
+// If the current database revision is 0 (new user or user whose database is not
 // identified by a recision number), create or check all the tables
 // -----------------------------------------------------------------------------
 
-if ($current_revision == 0) { 
+if ($current_revision == 0) {
 
     // Drop and create fixed tables (structure and content)
     // -------------------------------------------------------------------------
     // -------------------------------------------------------------------------
-    
+
     // NOTE: ENUM is not available as a portable type code, which forces us to
     //       hardcode the type string in the following descriptions, which in turn
     //       forces us to use uppercase 'T' and 'F' enum values (because of some
     //       stupid rule in adodb data dictionary class).
-    
+
     // boundary_values
     // -------------------------------------------------------------------------
     // Drop table if it exists
     $tabname = "boundary_values";
     if (in_array($tabname, $tables)) {
-        if (!drop_table($tabname))   
+        if (!drop_table($tabname))
             return;
     }
     // Create table
@@ -483,7 +483,7 @@ if ($current_revision == 0) {
     ");
     if (!create_table($tabname, $flds))
         return;
-    
+
     // Insert records in table
     $records = array("parameter"=>array("PinholeSize","RemoveBackgroundPercent","BackgroundOffsetPercent","ExcitationWavelength",
                         "EmissionWavelength","CMount","TubeFactor","CCDCaptorSizeX","CCDCaptorSizeY","ZStepSize","TimeInterval",
@@ -493,16 +493,16 @@ if ($current_revision == 0) {
                      "min_included"=>array("f","f","t","f","f","t","t","t","t","t","f","f","t","t"),
                      "max_included"=>array("t","t","f","t","t","t","t","t","t","t","t","t","t","t"),
                      "standard"=>array(NULL,NULL,NULL,NULL,NULL,"1","1",NULL,NULL,NULL,NULL,NULL,NULL,NULL));
-    if(!insert_records($records,$tabname))     
+    if(!insert_records($records,$tabname))
         return;
 
-    
+
     // possible_values
     // -------------------------------------------------------------------------
     // Drop table if it exists
     $tabname = "possible_values";
     if (in_array($tabname, $tables)) {
-        if (!drop_table($tabname))    
+        if (!drop_table($tabname))
             return;
     }
     // Create table
@@ -512,9 +512,9 @@ if ($current_revision == 0) {
         translation C(50) DEFAULT NULL,
         isDefault C(1) DEFAULT f
     ";
-    if (!create_table($tabname, $flds)) 
+    if (!create_table($tabname, $flds))
         return;
-    
+
     // Insert records in table
     $records = array("parameter"=>array("IsMultiChannel","IsMultiChannel",
                                 "ImageFileFormat","ImageFileFormat","ImageFileFormat","ImageFileFormat","ImageFileFormat","ImageFileFormat","ImageFileFormat","ImageFileFormat",
@@ -606,16 +606,16 @@ if ($current_revision == 0) {
                                 "HasAdaptedValues1","HasAdaptedValues2",
                                 "ImageFileFormat1","ImageFileFormat2","ImageFileFormat3","ImageFileFormat4","ImageFileFormat5",
                                 "ObjectiveType"));
-    if(!insert_records($records,$tabname))     
+    if(!insert_records($records,$tabname))
         return;
-    
-    
+
+
     // geometry
     // -------------------------------------------------------------------------
     // Drop table if it exists
     $tabname = "geometry";
     if (in_array($tabname, $tables)) {
-        if (!drop_table($tabname))     
+        if (!drop_table($tabname))
             return;
     }
     // Create table
@@ -624,23 +624,23 @@ if ($current_revision == 0) {
         isThreeDimensional C(1) DEFAULT NULL,
         isTimeSeries C(1) DEFAULT NULL
     ";
-    if (!create_table($tabname, $flds))     
+    if (!create_table($tabname, $flds))
         return;
-    
+
     // Insert records in table
-    $records = array("name"=>array("XYZ","XYZ - time","XY - time"), 
+    $records = array("name"=>array("XYZ","XYZ - time","XY - time"),
                     "isThreeDimensional"=>array("t","t","f"),
                     "isTimeSeries"=>array("f","t","t"));
-    if(!insert_records($records,$tabname))    
+    if(!insert_records($records,$tabname))
         return;
-    
-    
+
+
     // file_format
     // -------------------------------------------------------------------------
     // Drop table if it exists
     $tabname = "file_format";
     if (in_array($tabname, $tables)) {
-        if (!drop_table($tabname))    
+        if (!drop_table($tabname))
             return;
     }
     // Create table
@@ -650,24 +650,24 @@ if ($current_revision == 0) {
         isSingleChannel C(1) NOTNULL DEFAULT t PRIMARY,
         isVariableChannel C(1) NOTNULL DEFAULT t PRIMARY
     ";
-    if (!create_table($tabname, $flds))     
+    if (!create_table($tabname, $flds))
         return;
-    
+
     // Insert records in table
     $records = array("name"=>array("dv","ics","ics2","ims","lif","lsm","lsm-single","ome-xml","pic","stk","tiff","tiff-leica","tiff-series","tiff-single"),
                     "isFixedGeometry"=>array("f","f","f","f","f","f","t","f","f","f","f","f","f","t"),
                     "isSingleChannel"=>array("f","f","f","f","f","f","f","f","f","f","f","f","f","f"),
                     "isVariableChannel"=>array("t","t","t","t","t","t","t","t","t","t","t","t","t","t"));
-    if(!insert_records($records,$tabname))     
+    if(!insert_records($records,$tabname))
         return;
-    
-    
+
+
     // file_extension
     // -------------------------------------------------------------------------
     // Drop table if it exists
     $tabname = "file_extension";
     if (in_array($tabname, $tables)) {
-        if (!drop_table($tabname))    
+        if (!drop_table($tabname))
             return;
     }
     // Create table
@@ -675,24 +675,24 @@ if ($current_revision == 0) {
         file_format C(30) NOTNULL DEFAULT 0 PRIMARY,
         extension C(4) NOTNULL PRIMARY
     ";
-    if (!create_table($tabname, $flds))   
+    if (!create_table($tabname, $flds))
         return;
-    
+
     // Insert records in table
     $records = array("file_format"=>array("dv","ics","ics2","ims","lif","lsm","lsm-single","ome-xml","pic","stk","tiff","tiff-leica","tiff-series","tiff-single",
                                             "tiff","tiff-leica","tiff-series","tiff-single"),
                     "extension"=>array("dv","ics","ics2","ims","lif","lsm","lsm","ome","pic","stk","tif","tif","tif","tif",
                                             "tiff","tiff","tiff","tiff"));
-    if(!insert_records($records,$tabname)) 
+    if(!insert_records($records,$tabname))
         return;
-    
-    
+
+
     // queuemanager
     // -------------------------------------------------------------------------
     // Drop table if it exists
     $tabname = "queuemanager";
     if (in_array($tabname, $tables)) {
-        if (!drop_table($tabname))    
+        if (!drop_table($tabname))
             return;
     }
     // Create table
@@ -700,27 +700,27 @@ if ($current_revision == 0) {
         field C(30) NOTNULL DEFAULT 0 PRIMARY,
         value  C(3) NOTNULL DEFAULT on
     ";
-    if (!create_table($tabname, $flds))   
+    if (!create_table($tabname, $flds))
         return;
 
     // Insert records in table
     $records = array("field"=>array("switch"),
                     "value"=>array("on"));
-    if(!insert_records($records,$tabname)) 
+    if(!insert_records($records,$tabname))
         return;
-    
-    
+
+
     // Drop and create fixed tables (create structure only)
     // The content is deleted
     // -------------------------------------------------------------------------
     // -------------------------------------------------------------------------
-    
+
     // job_queue
     // -------------------------------------------------------------------------
     // Drop table if it exists
     $tabname = "job_queue";
     if (in_array($tabname, $tables)) {
-        if (!drop_table($tabname))     
+        if (!drop_table($tabname))
             return;
     }
     // Create table
@@ -732,18 +732,18 @@ if ($current_revision == 0) {
         stop T DEFAULT NULL,
         server C(30) DEFAULT NULL,
         process_info C(30) DEFAULT NULL,
-        status C(8) NOTNULL DEFAULT queued  
+        status C(8) NOTNULL DEFAULT queued
     ";
-    if (!create_table($tabname, $flds))    
+    if (!create_table($tabname, $flds))
         return;
-    
-    
+
+
     // job_files
     // -------------------------------------------------------------------------
     // Drop table if it exists
     $tabname = "job_files";
     if (in_array($tabname, $tables)) {
-        if (!drop_table($tabname))     
+        if (!drop_table($tabname))
             return;
     }
     // Create table
@@ -752,16 +752,16 @@ if ($current_revision == 0) {
         owner C(30) DEFAULT 0,
         file C(255) DEFAULT 0 PRIMARY
     ";
-    if (!create_table($tabname, $flds))     
+    if (!create_table($tabname, $flds))
         return;
-        
-        
+
+
     // job_parameter
     // -------------------------------------------------------------------------
     // Drop table if it exists
     $tabname = "job_parameter";
     if (in_array($tabname, $tables)) {
-        if (!drop_table($tabname))    
+        if (!drop_table($tabname))
             return;
     }
     // Create table
@@ -771,17 +771,17 @@ if ($current_revision == 0) {
         name C(30) NOTNULL DEFAULT 0 PRIMARY,
         value C(255) DEFAULT NULL
     ";
-    if (!create_table($tabname, $flds))    
+    if (!create_table($tabname, $flds))
         return;
-    
-    
+
+
     // job_parameter_setting
     // -----------------------------------------------------------------------------
     // Drop table if it exists
     $tabname = "job_parameter_setting";
     if (in_array($tabname, $tables)) {
-        if (!drop_table($tabname))     
-            return; 
+        if (!drop_table($tabname))
+            return;
     }
     // Create table
     $flds = "
@@ -789,16 +789,16 @@ if ($current_revision == 0) {
         name C(30) NOTNULL PRIMARY,
         standard C(1) DEFAULT t
     ";
-    if (!create_table($tabname, $flds))    
+    if (!create_table($tabname, $flds))
         return;
-    
-                     
+
+
     // job_task_parameter
     // -----------------------------------------------------------------------------
     // Drop table if it exists
     $tabname = "job_task_parameter";
     if (in_array($tabname, $tables)) {
-        if (!drop_table($tabname)) 
+        if (!drop_table($tabname))
             return;
     }
     // Create table
@@ -808,16 +808,16 @@ if ($current_revision == 0) {
         name C(30) NOTNULL PRIMARY,
         value C(255) DEFAULT NULL
     ";
-    if (!create_table($tabname, $flds))    
+    if (!create_table($tabname, $flds))
         return;
-        
-        
+
+
     // job_task_setting
     // -----------------------------------------------------------------------------
     // Drop table if it exists
     $tabname = "job_task_setting";
     if (in_array($tabname, $tables)) {
-        if (!drop_table($tabname))    
+        if (!drop_table($tabname))
             return;
     }
     // Create table
@@ -826,15 +826,15 @@ if ($current_revision == 0) {
         name C(30) NOTNULL PRIMARY,
         standard C(1) DEFAULT f
     ";
-    if (!create_table($tabname, $flds))     
+    if (!create_table($tabname, $flds))
         return;
-    
-    
+
+
     // Check the existence and the structure of the tables with variable contents
     // Keep the content
     // -------------------------------------------------------------------------
     // -------------------------------------------------------------------------
-    
+
     // parameter_setting
     // -------------------------------------------------------------------------
     $tabname = "parameter_setting";
@@ -844,11 +844,11 @@ if ($current_revision == 0) {
         standard C(1) DEFAULT f
     ";
     if (!in_array($tabname, $tables)) {
-        if (!create_table($tabname, $flds))     
+        if (!create_table($tabname, $flds))
             return;
     }
-    
-    
+
+
     // task_setting
     // -------------------------------------------------------------------------
     $tabname = "task_setting";
@@ -863,18 +863,18 @@ if ($current_revision == 0) {
         standard C(1) DEFAULT f
     ";
     if (!in_array($tabname, $tables)) {
-        if (!create_table($tabname, $flds))     
+        if (!create_table($tabname, $flds))
             return;
     }
-    //if(!check_table_existence_and_structure($tabname,$flds))     
+    //if(!check_table_existence_and_structure($tabname,$flds))
     //    return;
-    
+
     // Manage enum problem
     //$values_string = "'t', 'f'";
     //if (!manage_enum($tabname, 'standard', $values_string, 'f'))
     //    return;
-    
-    
+
+
     // server
     // -------------------------------------------------------------------------
     $tabname = "server";
@@ -885,18 +885,18 @@ if ($current_revision == 0) {
         job C(30) DEFAULT NULL
     ";
     if (!in_array($tabname, $tables)) {
-        if (!create_table($tabname, $flds))     
+        if (!create_table($tabname, $flds))
             return;
         // Insert records in table
-        $records = array("name"=>array("localhost"), 
+        $records = array("name"=>array("localhost"),
                     "huscript_path"=>array("/usr/local/bin/hucore"),
                     "status"=>array("free"),
                     "job"=>array(""));
-        if(!insert_records($records,$tabname))    
+        if(!insert_records($records,$tabname))
             return;
     }
-    
-    
+
+
     // username
     // -------------------------------------------------------------------------
     $tabname = "username";
@@ -911,7 +911,7 @@ if ($current_revision == 0) {
         status C(10) NOTNULL
     ";
     if (!in_array($tabname, $tables)) {
-        if (!create_table($tabname, $flds))     
+        if (!create_table($tabname, $flds))
             return;
     }
 
@@ -925,17 +925,17 @@ if ($current_revision == 0) {
                     "last_access"=>array($defaultTimestamp),
                     "status"=>array("a")
                     );
-        if(!insert_records($records,$tabname)) 
+        if(!insert_records($records,$tabname))
             return;
     }
-    
+
 
     // Check the existence and the structure of the tables with variable contents;
     // check the format of the records content (number of #).
     // Keep the content
     // -------------------------------------------------------------------------
     // -------------------------------------------------------------------------
-    
+
     // task_parameter
     // -------------------------------------------------------------------------
     $tabname = "task_parameter";
@@ -946,31 +946,31 @@ if ($current_revision == 0) {
         value C(255) DEFAULT NULL
     ";
     if (!in_array($tabname, $tables)) {
-        if (!create_table($tabname, $flds))     
+        if (!create_table($tabname, $flds))
             return;
     }
     $fields_set = array('owner','setting','name','value');
     $primary_key = array('owner','setting','name');
     // Verify fields (number of #) where value = 'NumberOfIterationsRange'
-    if(!check_number_gates($tabname,'NumberOfIterationsRange',$fields_set,$primary_key)) 
+    if(!check_number_gates($tabname,'NumberOfIterationsRange',$fields_set,$primary_key))
         return;
     // Verify fields (number of #) where value = 'RemoveBackgroundPercent'
-    if(!check_number_gates($tabname,'RemoveBackgroundPercent',$fields_set,$primary_key)) 
+    if(!check_number_gates($tabname,'RemoveBackgroundPercent',$fields_set,$primary_key))
         return;
     // Verify fields (number of #) where value = 'SignalNoiseRatio'
-    if(!check_number_gates($tabname,'SignalNoiseRatio',$fields_set,$primary_key)) 
+    if(!check_number_gates($tabname,'SignalNoiseRatio',$fields_set,$primary_key))
         return;
     // Verify fields (number of #) where value = 'SignalNoiseRatioRange'
-    if(!check_number_gates($tabname,'SignalNoiseRatioRange',$fields_set,$primary_key)) 
+    if(!check_number_gates($tabname,'SignalNoiseRatioRange',$fields_set,$primary_key))
         return;
     // Verify fields (number of #) where value = 'BackgroundOffsetPercent'
-    if(!check_number_gates($tabname,'BackgroundOffsetPercent',$fields_set,$primary_key)) 
+    if(!check_number_gates($tabname,'BackgroundOffsetPercent',$fields_set,$primary_key))
         return;
     // Verify fields (number of #) where value = 'BackgroundOffsetRange'
-    if(!check_number_gates($tabname,'BackgroundOffsetRange',$fields_set,$primary_key)) 
+    if(!check_number_gates($tabname,'BackgroundOffsetRange',$fields_set,$primary_key))
         return;
 
-    
+
     // parameter
     // -------------------------------------------------------------------------
     $tabname = "parameter";
@@ -981,22 +981,22 @@ if ($current_revision == 0) {
         value C(255) DEFAULT NULL
     ";
     if (!in_array($tabname, $tables)) {
-        if (!create_table($tabname, $flds))     
+        if (!create_table($tabname, $flds))
             return;
     }
     $fields_set = array('owner','setting','name','value');
     $primary_key = array('owner','setting','name');
     // Verify fields (number of #) where value = 'PSF'
-    if(!check_number_gates($tabname,'PSF',$fields_set,$primary_key)) 
+    if(!check_number_gates($tabname,'PSF',$fields_set,$primary_key))
         return;
     // Verify fields (number of #) where value = 'PinholeSize'
-    if(!check_number_gates($tabname,'PinholeSize',$fields_set,$primary_key)) 
+    if(!check_number_gates($tabname,'PinholeSize',$fields_set,$primary_key))
         return;
     // Verify fields (number of #) where value = 'EmissionWavelength'
-    if(!check_number_gates($tabname,'EmissionWavelength',$fields_set,$primary_key)) 
+    if(!check_number_gates($tabname,'EmissionWavelength',$fields_set,$primary_key))
         return;
     // Verify fields (number of #) where value = 'ExcitationWavelength'
-    if(!check_number_gates($tabname,'ExcitationWavelength',$fields_set,$primary_key)) 
+    if(!check_number_gates($tabname,'ExcitationWavelength',$fields_set,$primary_key))
         return;
 }
 
@@ -1017,11 +1017,11 @@ write_message($msg);
 write_to_log($msg);
 
 
-      
+
 // -----------------------------------------------------------------------------
 // Update to revision 1
 // Description: add qmle algorithm as option
-// -----------------------------------------------------------------------------   
+// -----------------------------------------------------------------------------
 $n = 1;
 if ($current_revision < $n) {
     $tabname = "possible_values";
@@ -1037,7 +1037,7 @@ if ($current_revision < $n) {
         write_to_error($msg);
         return;
     }
-    
+
     $record["value"] = "qmle";
     $record["translation"] = "Quick Maximum Likelihood Estimation";
     $record["isDefault"] = "f";
@@ -1048,16 +1048,16 @@ if ($current_revision < $n) {
         write_to_error($msg);
         return;
     }
-    
-    if(!update_dbrevision($n)) 
+
+    if(!update_dbrevision($n))
         return;
-    
+
     $current_revision = $n;
     $msg = "Database successfully updated to revision " . $current_revision . ".";
     write_message($msg);
     write_to_log($msg);
 }
-   
+
 
 
 // -----------------------------------------------------------------------------
@@ -1079,10 +1079,10 @@ if ($current_revision < $n) {
         write_to_error($msg);
         return;
     }
-    
-    if(!update_dbrevision($n)) 
+
+    if(!update_dbrevision($n))
         return;
-    
+
     $current_revision = $n;
     $msg = "Database successfully updated to revision " . $current_revision . ".";
     write_message($msg);
@@ -1103,9 +1103,9 @@ if ($current_revision < $n) {
         $msg = "An error occurred while updating the database to revision " . $n . ".";
         write_message($msg);
         write_to_error($msg);
-        return; 
+        return;
     }
-    
+
     $record = array();
     $record["parameter"] = "CoverslipRelativePosition";
     $record["value"] = "closest";
@@ -1118,7 +1118,7 @@ if ($current_revision < $n) {
         write_to_error($msg);
         return;
     }
-    
+
     $record["value"] = "farthest";
     $record["translation"] = "Plane 0 is farthest from the coverslip";
     $record["isDefault"] = "F";
@@ -1129,7 +1129,7 @@ if ($current_revision < $n) {
         write_to_error($msg);
         return;
     }
-    
+
     $record["value"] = "ignore";
     $record["translation"] = "Do not perform depth-dependent correction";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
@@ -1139,7 +1139,7 @@ if ($current_revision < $n) {
         write_to_error($msg);
         return;
     }
-    
+
     // Check if the value are correct in parameter (correction respect to the previous version top/bottom/ignore)
     $rs = $db->Execute("SELECT * FROM parameter WHERE name = 'CoverslipRelativePosition'");
     if($rs) {
@@ -1149,7 +1149,7 @@ if ($current_revision < $n) {
                     $row[3] = 'closest';
                 elseif(strcmp($row[3],'bottom') == 0)
                     $row[3] = 'farthest';
-                    
+
                 $fields_set = array('owner','setting','name','value');
                 for($i = 0; $i < count($fields_set); $i++) {
                     $temp[$fields_set[$i]] = $row[$i];
@@ -1158,16 +1158,16 @@ if ($current_revision < $n) {
                 if(!$ret = $db->Replace('parameter',$temp,$primary_key,$autoquote=true)) {
                     $msg = error_message('parameter');
                     write_message($msg);
-                    write_to_error($msg);    
+                    write_to_error($msg);
                     return False;
                 }
             }
         }
     }
-                
-    if(!update_dbrevision($n)) 
+
+    if(!update_dbrevision($n))
         return;
-    
+
     $current_revision = $n;
     $msg = "Database successfully updated to revision " . $current_revision . ".";
     write_message($msg);
@@ -1192,7 +1192,7 @@ if ($current_revision < $n) {
         write_to_error($msg);
         return;
     }
-    
+
     $tabname = "file_format";
     $record = array();
     $record["name"] = "zvi";
@@ -1206,7 +1206,7 @@ if ($current_revision < $n) {
         write_to_error($msg);
         return;
     }
-    
+
     $tabname = "possible_values";
     $record = array();
     $record["parameter"] = "ImageFileFormat";
@@ -1220,25 +1220,25 @@ if ($current_revision < $n) {
         write_to_error($msg);
         return;
     }
-    
-    if(!update_dbrevision($n)) 
+
+    if(!update_dbrevision($n))
         return;
-    
+
     $current_revision = $n;
     $msg = "Database successfully updated to revision " . $current_revision . ".";
     write_message($msg);
-    write_to_log($msg);  
+    write_to_log($msg);
 }
 
 
 // -----------------------------------------------------------------------------
 // Update to revision 5
-// Description: modification for Spherical Aberration correction 
+// Description: modification for Spherical Aberration correction
 // -----------------------------------------------------------------------------
 $n = 5;
 if ($current_revision < $n) {
     $tabname = "possible_values";
-    
+
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter = 'CoverslipRelativePosition' AND value = 'ignore'");
     if (!($rs->EOF)) {
         $rss = $db->Execute("DELETE FROM " . $tabname . " WHERE parameter = 'CoverslipRelativePosition' AND value = 'ignore'");
@@ -1246,10 +1246,10 @@ if ($current_revision < $n) {
             $msg = "An error occurred while updating the database to revision " . $n . ".\n";
             write_message($msg);
             write_to_error($msg);
-            return; 
+            return;
         }
     }
-    
+
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter = 'PerformAberrationCorrection' AND translation = 'Do not perform depth-dependent correction'");
     if (!($rs->EOF)) {
         $rss = $db->Execute("DELETE FROM " . $tabname . " WHERE parameter = 'PerformAberrationCorrection' AND translation = 'Do not perform depth-dependent correction'");
@@ -1257,10 +1257,10 @@ if ($current_revision < $n) {
             $msg = "An error occurred while updating the database to revision " . $n . ".";
             write_message($msg);
             write_to_error($msg);
-            return; 
+            return;
         }
     }
-    
+
     $record = array();
     $record["parameter"] = "AberrationCorrectionNecessary";
     $record["value"] = "0";
@@ -1276,7 +1276,7 @@ if ($current_revision < $n) {
             return;
         }
     }
-    
+
     $record["value"] = "1";
     $record["translation"] = "yes";
     $record["isDefault"] = "F";
@@ -1290,7 +1290,7 @@ if ($current_revision < $n) {
             return;
         }
     }
-    
+
     $record["parameter"] = "PerformAberrationCorrection";
     $record["value"] = "1";
     $record["translation"] = "Yes, perform depth-dependent correction";
@@ -1305,7 +1305,7 @@ if ($current_revision < $n) {
             return;
         }
     }
-    
+
     $record["parameter"] = "AberrationCorrectionMode";
     $record["value"] = "automatic";
     $record["translation"] = "Perform automatic correction";
@@ -1320,7 +1320,7 @@ if ($current_revision < $n) {
             return;
         }
     }
-    
+
     $record["value"] = "advanced";
     $record["translation"] = "Perform advanced correction";
     $record["isDefault"] = "F";
@@ -1334,7 +1334,7 @@ if ($current_revision < $n) {
             return;
         }
     }
-    
+
     $record["parameter"] = "PSFGenerationDepth";
     $record["value"] = "0";
     $record["translation"] = "0";
@@ -1349,9 +1349,9 @@ if ($current_revision < $n) {
             return;
         }
     }
-    
+
     $tabname = "boundary_values";
-    
+
     $record = array();
     $record["parameter"] = "PSFGenerationDepth";
     $record["min"] = "0";
@@ -1369,14 +1369,14 @@ if ($current_revision < $n) {
             return;
         }
     }
-    
-    if(!update_dbrevision($n)) 
+
+    if(!update_dbrevision($n))
         return;
-    
+
     $current_revision = $n;
     $msg = "Database successfully updated to revision " . $current_revision . ".";
     write_message($msg);
-    write_to_log($msg);  
+    write_to_log($msg);
 }
 
 
@@ -1388,7 +1388,7 @@ if ($current_revision < $n) {
 // -----------------------------------------------------------------------------
 $n = 6;
 if ($current_revision < $n) {
-    
+
     $tabname = "parameter";
     $flds = "
         owner C(30) NOTNULL DEFAULT 0 PRIMARY,
@@ -1402,11 +1402,11 @@ if ($current_revision < $n) {
         return;
     if(!create_table($tabname, $flds))
         return;
-    foreach($multiarray as $array) { 
+    foreach($multiarray as $array) {
         if(!insert_record($tabname, $array, $colnames))
             return;
     }
-    
+
     $tabname = "parameter_setting";
     $flds = "
         owner C(30) NOTNULL DEFAULT 0 PRIMARY,
@@ -1419,11 +1419,11 @@ if ($current_revision < $n) {
         return;
     if(!create_table($tabname, $flds))
         return;
-    foreach($multiarray as $array) { 
+    foreach($multiarray as $array) {
         if(!insert_record($tabname, $array, $colnames))
             return;
     }
-    
+
     $tabname = "task_parameter";
     $flds = "
         owner C(30) NOTNULL DEFAULT 0 PRIMARY,
@@ -1437,11 +1437,11 @@ if ($current_revision < $n) {
         return;
     if(!create_table($tabname, $flds))
         return;
-    foreach($multiarray as $array) { 
+    foreach($multiarray as $array) {
         if(!insert_record($tabname, $array, $colnames))
             return;
     }
-    
+
     $tabname = "task_setting";
     $flds = "
         owner C(30) NOTNULL DEFAULT 0 PRIMARY,
@@ -1454,11 +1454,11 @@ if ($current_revision < $n) {
         return;
     if(!create_table($tabname, $flds))
         return;
-    foreach($multiarray as $array) { 
+    foreach($multiarray as $array) {
         if(!insert_record($tabname, $array, $colnames))
             return;
     }
-    
+
     $tabname = "possible_values";
     $flds = "
         parameter C(30) NOTNULL DEFAULT 0 PRIMARY,
@@ -1472,11 +1472,11 @@ if ($current_revision < $n) {
         return;
     if(!create_table($tabname, $flds))
         return;
-    foreach($multiarray as $array) { 
+    foreach($multiarray as $array) {
         if(!insert_record($tabname, $array, $colnames))
             return;
     }
-    
+
     $record[$colnames[0]] = "PerformAberrationCorrection";
     $record[$colnames[1]] = "0";
     $record[$colnames[2]] = "No, do not perform depth-dependent correction";
@@ -1493,11 +1493,11 @@ if ($current_revision < $n) {
         }
     }
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "'");
-    if ($rs->EOF) { 
+    if ($rs->EOF) {
         if(!insert_record($tabname, $array, $colnames))
             return;
     }
-    
+
     $record[$colnames[0]] = "AdvancedCorrectionOptions";
     $record[$colnames[1]] = "user";
     $record[$colnames[2]] = "Deconvolution with PSF generated at user-defined depth";
@@ -1534,11 +1534,11 @@ if ($current_revision < $n) {
         }
     }
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "'");
-    if ($rs->EOF) { 
+    if ($rs->EOF) {
         if(!insert_record($tabname, $array, $colnames))
             return;
     }
-    
+
     $record[$colnames[1]] = "few";
     $record[$colnames[2]] = "Depth-dependent correction performed on few bricks";
     $record[$colnames[3]] = "F";
@@ -1554,14 +1554,14 @@ if ($current_revision < $n) {
         }
     }
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "'");
-    if ($rs->EOF) { 
+    if ($rs->EOF) {
         if(!insert_record($tabname, $array, $colnames))
             return;
     }
-    
-    if(!update_dbrevision($n)) 
+
+    if(!update_dbrevision($n))
         return;
-    
+
     $current_revision = $n;
     $msg = "Database successfully updated to revision " . $current_revision . ".";
     write_message($msg);
@@ -1604,7 +1604,7 @@ if ($current_revision < $n) {
             return;
         }
     }
-    
+
     // Add 'priority' column in table 'job_queue'
     $tabname = "job_queue";
     if (in_array($tabname, $tables)) {
@@ -1628,11 +1628,11 @@ if ($current_revision < $n) {
         status C(8) NOTNULL DEFAULT queued,
         priority I NOTNULL DEFAULT 0
     ";
-    if (!create_table($tabname, $flds)) {   
+    if (!create_table($tabname, $flds)) {
         $msg = "An error occurred while updating the database to revision " . $n . ", job_queue 2.";
         write_message($msg);
         write_to_log($msg);
-        write_to_error($msg);       
+        write_to_error($msg);
         return;
     }
 
@@ -1677,7 +1677,7 @@ if ($current_revision < $n) {
             write_message($msg);
             write_to_error($msg);
             return;
-        }   
+        }
     }
 
     $tabname = "possible_values";
@@ -1712,7 +1712,7 @@ if ($current_revision < $n) {
             return;
         }
     }
-    
+
     $record = array();
     $record["parameter"] = "OutputFileFormat";
     $record["value"] = "hdf5";
@@ -1744,7 +1744,7 @@ if ($current_revision < $n) {
             return;
         }
     }
-    
+
     // Check the existence of the server table and the presence of one entry at least
     // If there is no entry, insert default values (localhost, /usr/local/bin/hucore, free, NULL)
     $tabname = "server";
@@ -1753,7 +1753,7 @@ if ($current_revision < $n) {
         $temp = $rs->RecordCount();
         //write_message("Record count = " . $temp);
         if($temp == 0) {
-            $records = array("name"=>array("localhost"), 
+            $records = array("name"=>array("localhost"),
                     "huscript_path"=>array("/usr/local/bin/hucore"),
                     "status"=>array("free"),
                     "job"=>array(""));
@@ -1765,8 +1765,8 @@ if ($current_revision < $n) {
             }
         }
     }
-    
-    if(!update_dbrevision($n)) 
+
+    if(!update_dbrevision($n))
         return;
     $current_revision = $n;
     $msg = "Database successfully updated to revision " . $current_revision . ".";
@@ -1801,7 +1801,7 @@ if ($current_revision < $n) {
             return;
         }
     }
-    
+
     // Update (and fix) PSFGenerationDepth in boundary_values
     $tabname = "boundary_values";
     $record = array();
@@ -1817,11 +1817,11 @@ if ($current_revision < $n) {
         write_to_error($msg);
         return false;
     }
-    
+
     // Create the confidence_levels table
     // Update tables array
     $tables = $db->MetaTables("TABLES");
-    
+
 	// Does the confidence_levels table exist?
 	if ( !in_array( "confidence_levels", $tables ) ) {
 
@@ -1861,7 +1861,7 @@ if ($current_revision < $n) {
 
     // Add a translation for the file formats to match them to the file formats
     // returned by hucore
-    
+
     // Does the column exist already?
     $rs = $db->Execute( "SELECT column_name FROM information_schema.columns WHERE table_name = 'file_format'" );
     $columns = $rs->GetRows();
@@ -1872,7 +1872,7 @@ if ($current_revision < $n) {
         }
     }
     if ( $notFound == True ) {
-    
+
         $fields = "hucoreName C(30)";
         if ( !insert_column( "file_format", $fields ) ) {
           $msg = "An error occurred while updating the database to revision " . $n . ", file_format table update.";
@@ -1898,13 +1898,13 @@ if ($current_revision < $n) {
     $ok &= $db->AutoExecute( "file_format", array( "hucoreName" => "leica"), "UPDATE", "name = 'tiff-leica'" );
     $ok &= $db->AutoExecute( "file_format", array( "hucoreName" => "zvi"),   "UPDATE", "name = 'zvi'" );
     $ok &= $db->AutoExecute( "file_format", array( "hucoreName" => "hdf5"),  "UPDATE", "name = 'hdf5'" );
-    
-    if ( !$ok ) {   
+
+    if ( !$ok ) {
           $msg = "An error occurred while updating the database to revision " . $n . ", file_format table update.";
           write_message($msg);
           write_to_log($msg);
           write_to_error($msg);
-          return;           
+          return;
         }
 
     // Add new parameter OverrideConfidence possible values
@@ -1927,7 +1927,7 @@ if ($current_revision < $n) {
             return;
         }
     }
-    
+
     // Add support for Delta Vision r3d format in table possible_values
     $tabname = "possible_values";
     $record = array();
@@ -1982,13 +1982,61 @@ if ($current_revision < $n) {
     }
 
     // Update revision
-    if(!update_dbrevision($n)) 
+    if(!update_dbrevision($n))
         return;
     $current_revision = $n;
     $msg = "Database successfully updated to revision " . $current_revision . ".";
     write_message($msg);
     write_to_log($msg);
-    
+
+}
+
+// -----------------------------------------------------------------------------
+// Update to revision 9
+// Description: Add 'ismultifile' column into file_format
+// -----------------------------------------------------------------------------
+$n = 9;
+if ($current_revision < $n) {
+    // Does the column exist already?
+    $rs = $db->Execute( "SELECT column_name FROM information_schema.columns WHERE table_name = 'file_format'" );
+    $columns = $rs->GetRows();
+    $notFound = True;
+    foreach ( $columns as $column ) {
+        if ( strcasecmp( $column[ 'column_name' ], "ismultifile" ) == 0 ) {
+            $notFound = False;
+        }
+    }
+    if ( $notFound == True ) {
+
+        $fields = "ismultifile C(1) NOTNULL DEFAULT 'f'";
+        if ( !insert_column( "file_format", $fields ) ) {
+          $msg = "An error occurred while updating the database to revision " . $n . ", file_format table update.";
+          write_message($msg);
+          write_to_log($msg);
+          write_to_error($msg);
+          return;
+        }
+        // Set lif to multi file
+        $tabname = "global_variables";
+        $record = array();
+        $record["ismultifile"] = 't';
+        if (!$db->AutoExecute('file_format', $record, 'UPDATE', "name like 'lif'")) {
+            $msg = error_message($tabname);
+            write_message($msg);
+            write_to_error($msg);
+            return false;
+        }
+
+    }
+
+        // Update revision
+    if(!update_dbrevision($n))
+        return;
+    $current_revision = $n;
+    $msg = "Database successfully updated to revision " . $current_revision . ".";
+    write_message($msg);
+    write_to_log($msg);
+
 }
 
 //$msg = "\nThe current revision of your HRM database is " . $current_revision . ".";

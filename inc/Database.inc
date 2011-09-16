@@ -15,7 +15,7 @@ require_once( $adodb );
 /*!
 	\class	DatabaseConnection
  	\brief	Manages the database connection through the ADOdb library
- 	
+
  	This class abstracts the database back-end and should be used to handle all
  	communication to and from it. Since there are some differences between the
  	databases that still require specialized code, this class officially
@@ -34,8 +34,8 @@ class DatabaseConnection {
 	\brief	Private Maps the Parameter names between HRM and Huygens
   */
   private $parameterNameDictionary;
-  
-  /*!	
+
+  /*!
 	\brief	Constructor: creates a database connection
   */
   public function __construct() {
@@ -44,10 +44,10 @@ class DatabaseConnection {
     global $db_name;
     global $db_user;
     global $db_password;
-    
+
     $this->connection = ADONewConnection($db_type);
     $this->connection->Connect($db_host, $db_user, $db_password, $db_name);
-	
+
 	// Set the parameter name dictionary
 	$this->	parameterNameDictionary = array(
 	  "CCDCaptorSizeX"       => "sampleSizesX",       // In HRM there is no distinction between x and y pixel size
@@ -58,7 +58,7 @@ class DatabaseConnection {
 	  "PinholeSpacing"       => "pinholeSpacing",
 	  "ExcitationWavelength" => "lambdaEx",
 	  "EmissionWavelength"   => "lambdaEm",
-	  "MicroscopeType"       => "mType", 
+	  "MicroscopeType"       => "mType",
 	  "NumericalAperture"    => "NA",
 	  "ObjectiveType"        => "RILens",
 	  "SampleMedium"         => "RIMedia",
@@ -68,9 +68,9 @@ class DatabaseConnection {
 	  "unused4"              => "objQuality",
 	  "unused5"              => "photonCnt",
 	  "unused6"              => "exBeamFill" );
-  } 
+  }
 
-  /*!	
+  /*!
 	\brief	Checks whether a connection to the DB is possible
 	\return true if the connection is possible, false otherwise
   */
@@ -81,20 +81,20 @@ class DatabaseConnection {
     global $db_user;
     global $db_password;
     $connection = ADONewConnection($db_type);
-    $result = $connection->Connect($db_host, $db_user, $db_password, $db_name);    
+    $result = $connection->Connect($db_host, $db_user, $db_password, $db_name);
     return $result;
-  } 
-  
-  /*!	
+  }
+
+  /*!
 	\brief	Returns the type of the database (mysql, ...)
 	\return type of the database (e.g. postgresql)
   */
   public function type() {
   	global $db_type;
     return $db_type;
-  }  
+  }
 
-  /*!	
+  /*!
 	\brief	Attempts to get the version of the underlying database
 	\return version of the database (e.g. 2.2.14)
   */
@@ -106,9 +106,9 @@ class DatabaseConnection {
       $version = "Could not get version information.";
     }
     return $version;
-  }  
+  }
 
-  /*!	
+  /*!
 	\brief	Returns the database host name
 	\return name of the database host
   */
@@ -117,7 +117,7 @@ class DatabaseConnection {
     return $db_host;
   }
 
-  /*!	
+  /*!
 	\brief	Returns the database name
 	\return name of the database
   */
@@ -126,7 +126,7 @@ class DatabaseConnection {
     return $db_name;
   }
 
-  /*!	
+  /*!
 	\brief	Returns the name of the database user
 	\return name of the database user
   */
@@ -135,7 +135,7 @@ class DatabaseConnection {
     return $db_user;
   }
 
-  /*!	
+  /*!
 	\brief	Returns the password of the database user
 	\return password of the database user
   */
@@ -144,26 +144,26 @@ class DatabaseConnection {
     return $db_password;
   }
 
-  /*!	
+  /*!
 	\brief	Returns the ADOConnection object
 	\return the connection object
   */
   public function connection() {
     return $this->connection;
-  }  
+  }
 
-  /*!	
+  /*!
 	\brief	Executes an SQL query
 	\param	$query	SQL query
 	\return query object
   */
   public function execute($query) {
     $connection = $this->connection();
-    $result = $connection->Execute($query); 
+    $result = $connection->Execute($query);
     return $result;
-  } 
+  }
 
-  /*!	
+  /*!
 	\brief	Executes an SQL query and returns the results
 	\param	$queryString	SQL query
 	\return result of the query (array)
@@ -173,30 +173,30 @@ class DatabaseConnection {
     $resultSet = $connection->Execute($queryString);
     if (!$resultSet) {
       return False;
-    } 
+    }
     $rows = $resultSet->GetRows();
     return $rows;
   }
 
-  /*!	
+  /*!
 	\brief	Executes an SQL query and returns the last row of the results
 	\param	$queryString	SQL query
 	\return last row of the result of the query (array)
   */
-  public function queryLastRow($queryString) { 
+  public function queryLastRow($queryString) {
     $rows = $this->query($queryString);
     if (!$rows) return False;
     $result = end($rows);
     return $result;
-  } 
+  }
 
-  /*!	
+  /*!
 	\brief	Executes an SQL query and returns the value in the last column of
 			the last row of the results
 	\param	$queryString	SQL query
 	\return value of the last column of the last row of the result of the query
   */
-  public function queryLastValue($queryString) { 
+  public function queryLastValue($queryString) {
     $rows = $this->queryLastRow($queryString);
     if (!$rows) return False;
     $result = end($rows);
@@ -229,12 +229,12 @@ class DatabaseConnection {
   }
 
   /*!
-	\brief	Updates an existing user in the database (all parameters are 
+	\brief	Updates an existing user in the database (all parameters are
 			expected to be already validated!)
-			
+
 	Only the password can be changed for the admin user. For a normal user,
 	e-mail address, group and password can be updated.
-	
+
 	\param	$isadmin	True if the user is the HRM admin
 	\param	$username  	The name of the user
 	\param	$password  	Password (plain)
@@ -321,7 +321,7 @@ class DatabaseConnection {
 	    return false;
     }
   }
-  
+
   /*!
 	\brief	Returns the password of a given user name
 	\param	$name	Name of the user
@@ -350,33 +350,33 @@ class DatabaseConnection {
 	\param	$settings	Settings object to be saved
 	\return	true if saving was successful, false otherwise
   */
-  public function saveParameterSettings($settings) { 
+  public function saveParameterSettings($settings) {
     $owner = $settings->owner();
     $user = $owner->name();
     $name = $settings->name();
     $settingTable = $settings->table();
     $table = $settings->parameterTable();
-    if ($settings->isDefault()) 
+    if ($settings->isDefault())
       $standard = "t";
-    else   
+    else
       $standard = "f";
     $result = True;
-    if (!$this->existsSetting($settings)) { 
+    if (!$this->existsSetting($settings)) {
       $query = "insert into $settingTable values ('" . $user."', '" . $name . "', '" .$standard . "')";
       $result = $result && $this->execute($query);
-    } 
+    }
     $existsAlready = $this->existsParametersFor($settings);
     foreach ($settings->parameterNames() as $parameterName) {
       $parameter = $settings->parameter($parameterName);
       $parameterValue = $parameter->internalValue();
-      if (is_array($parameterValue)) { 
+      if (is_array($parameterValue)) {
           // Before, # was used as a separator, but the first element with
           // index zero was always NULL because channels started their indexing
           // at one. To keep backwards compatibility with the database, we use
           // # now as a channel marker, and even the first channel has a # in
           // front of its value.
           // "/" separator is used to mark range values for signal to noise ratio
-          
+
 		  /*!
 		   \todo	This can be removed: there are no longer range parameters
 		  */
@@ -396,15 +396,15 @@ class DatabaseConnection {
         $query = "select name from $table where owner='" . $user . "' and setting='" . $name . "' and name='" . $parameterName . "' limit 1";
         $newValue = $this->queryLastValue($query);
         if ( $newValue != NULL ) {
-          $query = "update $table set value = '" . $parameterValue . "' where owner='" . $user . "' and setting='" . $name . "' and name='" . $parameterName . "'"; 
+          $query = "update $table set value = '" . $parameterValue . "' where owner='" . $user . "' and setting='" . $name . "' and name='" . $parameterName . "'";
         } else {
           $query = "insert into $table values ('" . $user . "', '" . $name . "', '" . $parameterName . "', '" . $parameterValue . "')";
         }
-      } 
+      }
       $result = $result && $this->execute($query);
-    } 
+    }
     return $result;
-  } 
+  }
 
   /*!
 	\brief	Loads the parameter values for a setting and returns a copy of
@@ -423,7 +423,7 @@ class DatabaseConnection {
       $parameter = $settings->parameter($parameterName);
       $query = "select value from $table where owner='" . $user . "' and setting='" . $name . "' and name='" . $parameterName . "'";
       $newValue = $this->queryLastValue($query);
-      if ($newValue == NULL) { 
+      if ($newValue == NULL) {
           // See if the Parameter has a usable default
 		  $newValue = $parameter->defaultValue( );
 		  if ($newValue == NULL) {
@@ -476,20 +476,20 @@ class DatabaseConnection {
     }
     return $settings;
   }
-  
+
   /*!
 	\brief	Updates the default entry in the database according to the default
 			value in the setting
 	\param	$settings	Settings object to be used to update the default
 	\return	query result
   */
-  public function updateDefault($settings) { 
+  public function updateDefault($settings) {
     $owner = $settings->owner();
     $user = $owner->name();
     $name = $settings->name();
-    if ($settings->isDefault()) 
+    if ($settings->isDefault())
       $standard = "t";
-    else 
+    else
       $standard = "f";
     $table = $settings->table();
     $query = "update $table set standard = '" . $standard . "' where owner='" . $user . "' and name='" . $name . "'";
@@ -507,7 +507,7 @@ class DatabaseConnection {
   public function deleteSetting($settings) {
     $owner = $settings->owner();
     $user = $owner->name();
-    $name = $settings->name();    
+    $name = $settings->name();
     $result = True;
     $table = $settings->parameterTable();
     $query = "delete from $table where owner='" . $user . "' and setting='" . $name ."'";
@@ -519,7 +519,7 @@ class DatabaseConnection {
     $query = "delete from $table where owner='" . $user . "' and name='" . $name ."'";
     $result = $result && $this->execute($query);
     return $result;
-  } 
+  }
 
   /*!
 	\brief	Checks whether parameters are already stored for a given setting
@@ -534,11 +534,11 @@ class DatabaseConnection {
     $table = $settings->parameterTable();
     $query = "select name from $table where owner='" . $user . "' and setting='" . $name ."' LIMIT 1";
     $result = True;
-    if (!$this->queryLastValue($query)) { 
+    if (!$this->queryLastValue($query)) {
       $result = False;
     }
     return $result;
-  } 
+  }
 
   /*!
 	\brief	Checks whether settings exist in the database for a given owner
@@ -554,7 +554,7 @@ class DatabaseConnection {
     $table = $settings->table();
     $query = "select standard from $table where owner='" . $user . "' and name='" . $name ."' LIMIT 1";
     $result = True;
-    if (!$this->queryLastValue($query)) { 
+    if (!$this->queryLastValue($query)) {
       $result = False;
     }
     return $result;
@@ -573,17 +573,17 @@ class DatabaseConnection {
     foreach ($files as $file) {
       $query = "insert into job_files values ('" . $id ."', '" . $username ."', '" . addslashes($file) . "')";
       $result = $result && $this->execute($query);
-    } 
+    }
     return $result;
-  } 
-  
+  }
+
   /*!
 	\brief	Adds a job for a given job id and user to the database
 	\param	$id			Job id
 	\param	$username	Name of the user that owns the job
 	\return	query result
   */
-  public function queueJob($id, $username) {   
+  public function queueJob($id, $username) {
     $query = "insert into job_queue (id, username, queued, status) values ('" .$id . "', '" . $username . "', NOW(), 'queued')";
     return $this->execute($query);
   }
@@ -615,30 +615,30 @@ class DatabaseConnection {
     $rs = $this->execute( "SELECT id FROM job_queue WHERE status = 'broken' OR status = 'paused';" );
     if ( $rs ) {
       while ( $row = $rs->FetchRow( ) ) {
-        
+
         // Update the priority for current job id
         $query = "UPDATE job_queue SET priority = " . $currentPriority++ .
         " WHERE id = '" . $row[ 0 ] . "';";
-        
+
         $rs = $this->execute( $query );
         if ( !$rs ) {
           error_log( "Could not update priority for key " . $row[ 0 ] );
           $result = False;
           return $result;
         }
-        
+
       }
     }
-    
+
     // Then, we go through to running jobs
     $rs = $this->execute( "SELECT id FROM job_queue WHERE status = 'started';" );
     if ( $rs ) {
       while ( $row = $rs->FetchRow( ) ) {
-        
+
         // Update the priority for current job id
         $query = "UPDATE job_queue SET priority = " . $currentPriority++ .
         " WHERE id = '" . $row[ 0 ] . "';";
-      
+
         $rs = $this->execute( $query );
         if ( !$rs ) {
           error_log( "Could not update priority for key " . $row[ 0 ] );
@@ -647,7 +647,7 @@ class DatabaseConnection {
         }
       }
     }
-    
+
     // Then we organize the queued jobs in a way that lets us then assign
     // priorities easily in a second pass
     $numJobsPerUser = array( );
@@ -673,7 +673,7 @@ class DatabaseConnection {
         $numJobsPerUser[ $i ] = $counter;
       }
     }
- 
+
     // Now we can assign priorities to the queued jobs -- minimum priority is 1
     // above the priorities assigned to all other types of jobs
     $maxNumJobs = max( $numJobsPerUser );
@@ -684,7 +684,7 @@ class DatabaseConnection {
           $query = "UPDATE job_queue SET priority = " .
           $currentPriority ." WHERE id = '" .
           $userJobs[ $i ][ $j ] . "';";
-          
+
           $rs = $this->execute( $query );
           if ( !$rs ) {
             error_log( "Could not update priority for key " . $userJobs[ $i ][ $j ] );
@@ -695,24 +695,24 @@ class DatabaseConnection {
     	}
       }
     }
-    
+
     // We can now return true
     return $result;
   }
-  
+
   /*!
 	\brief	Logs job information in the statistics table
 	\param	$job		Job object whose information is to be logged in the
 						database
-	\param	$startTime	Job start time	
+	\param	$startTime	Job start time
 	\return	void
   */
   public function updateStatistics($job, $startTime) {
-      
+
     $desc = $job->description();
     $parameterSetting = $desc->parameterSetting();
     $taskSetting = $desc->taskSetting();
-    
+
     $stopTime = date("Y-m-d H:i:s");
     $id = $desc->id();
     $user = $desc->owner();
@@ -728,12 +728,12 @@ class DatabaseConnection {
     $microscope = $parameter->value();
     $parameter = $taskSetting->parameter('OutputFileFormat');
     $outFormat = $parameter->value();
-    
+
     $query = "insert into statistics values ('" . $id ."', '" . $owner ."', '" . $group . "','"
               . $startTime . "', '" . $stopTime . "', '" . $inFormat . "', '" . $outFormat . "', '"
               . $PSF . "', '" . $geometry . "', '" . $microscope . "')";
     $this->execute($query);
-    
+
   }
 
   /*!
@@ -745,10 +745,10 @@ class DatabaseConnection {
     $result = array();
     foreach ($anArray as $row) {
       $result[] = end($row);
-    } 
-    return $result;    
-  } 
-  
+    }
+    return $result;
+  }
+
   /*!
 	\brief	Returns the possible values for a given parameter
 	\param	$parameter	Parameter object
@@ -761,7 +761,7 @@ class DatabaseConnection {
     $result = $this->flatten($answer);
     return $result;
   }
-  
+
   /*!
 	\brief	Returns the translated possible values for a given parameter
 	\param	$parameter	Parameter object
@@ -785,7 +785,31 @@ class DatabaseConnection {
     $query = "select translation from possible_values where parameter = '" .$parameterName . "' and value = '" . $value . "'";
     $result = $this->queryLastValue($query);
     return $result;
-  } 
+  }
+
+  /*!
+	\brief	Returns an array of all file extensions
+	\return	Array of file extensions
+  */
+  public function allFileExtensions( ) {
+    $query = "select distinct extension from file_extension";
+    $answer = $this->query($query);
+    $result = $this->flatten($answer);
+    return $result;
+  }
+
+  /*!
+	\brief	Returns an array of all extensions for multi-dataset files
+	\return	Array of file extensions for multi-dataset files
+  */
+  public function allMultiFileExtensions( ) {
+    $query = "SELECT name FROM file_format, file_extension
+        WHERE file_format.name = file_extension.file_format
+        AND file_format.ismultifile LIKE 't'";
+    $answer = $this->query($query);
+    $result = $this->flatten($answer);
+    return $result;
+  }
 
   /*!
 	\brief	Returns an array of file extensions associated to a given file format
@@ -796,23 +820,23 @@ class DatabaseConnection {
     $query = "select distinct extension from file_extension where file_format = '" . $imageFormat . "'";
     $answer = $this->query($query);
     $result = $this->flatten($answer);
-    return $result;    
-  } 
+    return $result;
+  }
 
   /*!
 	\brief	Returns all restrictions for a given numerical parameter
 	\param	$parameter	Parameter (object)
 	\return	Array of restrictions
   */
-  public function readNumericalValueRestrictions($parameter) { 
+  public function readNumericalValueRestrictions($parameter) {
     $name = $parameter->name();
     $query = "select min, max, min_included, max_included, standard from boundary_values where parameter = '" .$name . "'";
     $result = $this->queryLastRow($query);
 	if ( !$result ) {
-	  $result = array( null, null, null, null, null );  
+	  $result = array( null, null, null, null, null );
 	}
     return $result;
-  } 
+  }
 
   /*!
     \brief	Returns the file formats that fit the conditions expressed by the
@@ -828,31 +852,31 @@ class DatabaseConnection {
 								matter (NULL).
 	\return array of file formats
   */
-  public function fileFormatsWith($isSingleChannel, $isVariableChannel, $isFixedGeometry) {  
+  public function fileFormatsWith($isSingleChannel, $isVariableChannel, $isFixedGeometry) {
     $isSingleChannelValue = 'f';
     $isVariableChannelValue = 'f';
     $isFixedGeometryValue ='f';
-    if ($isSingleChannel) { 
+    if ($isSingleChannel) {
       $isSingleChannelValue = 't';
     }
-    if ($isVariableChannel) { 
+    if ($isVariableChannel) {
       $isVariableChannelValue = 't';
     }
-    if ($isFixedGeometry) { 
+    if ($isFixedGeometry) {
       $isFixedGeometryValue = 't';
     }
     $conditions = array();
     if ($isSingleChannel!=NULL) {
-      $conditions['isSingleChannel'] = $isSingleChannelValue; 
-    } 
+      $conditions['isSingleChannel'] = $isSingleChannelValue;
+    }
     if ($isVariableChannel!=NULL) {
-      $conditions['isVariableChannel'] = $isVariableChannelValue; 
-    } 
+      $conditions['isVariableChannel'] = $isVariableChannelValue;
+    }
     if ($isFixedGeometry!=NULL) {
-      $conditions['isFixedGeometry'] = $isFixedGeometryValue; 
-    } 
+      $conditions['isFixedGeometry'] = $isFixedGeometryValue;
+    }
     return $this->retrieveColumnFromTableWhere('name', 'file_format', $conditions);
-  } 
+  }
 
   /*!
 	\brief  Returns the geometries (XY, XY-time, XYZ, XYZ-time) fit the
@@ -861,27 +885,27 @@ class DatabaseConnection {
 	\param  $isTimeSeries 		True if time-series
 	\return	array of geometries
   */
-  public function geometriesWith($isThreeDimensional, $isTimeSeries) { 
+  public function geometriesWith($isThreeDimensional, $isTimeSeries) {
     $isThreeDimensionalValue = 'f';
     $isTimeSeriesValue = 'f';
-    if ($isThreeDimensional) { 
+    if ($isThreeDimensional) {
       $isThreeDimensionalValue = 't';
     }
-    if ($isTimeSeries) { 
+    if ($isTimeSeries) {
       $isTimeSeriesValue = 't';
     }
     $conditions = array();
     if ($isThreeDimensional!=NULL) {
-      $conditions['isThreeDimensional'] = $isThreeDimensionalValue; 
-    } 
+      $conditions['isThreeDimensional'] = $isThreeDimensionalValue;
+    }
     if ($isTimeSeries!=NULL) {
-      $conditions['isTimeSeries'] = $isTimeSeriesValue; 
-    } 
+      $conditions['isTimeSeries'] = $isTimeSeriesValue;
+    }
     return $this->retrieveColumnFromTableWhere("name", "geometry", $conditions);
   }
-  
+
   /*!
-	\brief	Return all values from the column from the table where the condition 
+	\brief	Return all values from the column from the table where the condition
 			evaluates to true
 	\param    $column   	Name of the column from which the values are taken
 	\param    $table    	Name of the table from which the values are taken
@@ -894,13 +918,13 @@ class DatabaseConnection {
     $query = "select distinct $column from $table where ";
     foreach ($conditions as $eachName => $eachValue) {
       $query = $query . $eachName . " = '" . $eachValue . "' and ";
-    } 
+    }
     $query = $query . "1 = 1";
     $answer = $this->query($query);
     $result = array();
     foreach ($answer as $row) {
       $result[] = end($row);
-    } 
+    }
     return $result;
   }
 
@@ -914,7 +938,7 @@ class DatabaseConnection {
     $result = $this->queryLastValue($query);
     if (!$result) {
       return NULL;
-    } 
+    }
     return $result;
   }
 
@@ -932,7 +956,7 @@ class DatabaseConnection {
     $result = $this->queryLastValue($query);
     if (!$result) {
       return NULL;
-    } 
+    }
     return $result;
   }
 
@@ -965,14 +989,14 @@ class DatabaseConnection {
     $result = $this->query($query);
     return $result;
   }
-  
+
   /*!
 	\brief	Returns all jobs from the queue for a given id (that must be
 			univocal!)
 	\param	$id	String	Id of the job
 	\return	all jobs for the id
   */
-  public function getQueueContentsForId($id) {   
+  public function getQueueContentsForId($id) {
     $query = "select id, username, queued, start, server, process_info, status from job_queue where id='" . $id . "'";
     $result = $this->queryLastRow($query);  // it is supposed that just one job exists with a given id
     return $result;
@@ -988,7 +1012,7 @@ class DatabaseConnection {
     $result = $this->query($query);
     $result = $this->flatten($result);
     return $result;
-  } 
+  }
 
   /*!
 	\brief	Returns the number of jobs currently in the queue for a
@@ -1000,7 +1024,7 @@ class DatabaseConnection {
 	$query = "SELECT COUNT(id) FROM job_queue WHERE username = '" . $_SESSION['user']->name( ) . "';";
     $row = $this->Execute( $query )->FetchRow( );
     return $row[ 0 ];
-  } 
+  }
 
   /*!
 	\brief	Returns the name of the user who created the job with given id
@@ -1012,9 +1036,9 @@ class DatabaseConnection {
     $result = $this->queryLastValue($query);
     if (!$result) {
       return NULL;
-    } 
-    return $result;    
-  } 
+    }
+    return $result;
+  }
 
   /*!
     \brief	Deletes entries from specified tables and columns for given id
@@ -1030,10 +1054,10 @@ class DatabaseConnection {
       $query = "delete from $table where $columns[$index] = '" . $id . "'";
       $result = $result && $this->execute($query);
       $index++;
-    } 
+    }
     return $result;
   }
-  
+
   /*!
     \brief	Returns the path to hucore on given host
     \param	$host	String	Host name
@@ -1045,41 +1069,41 @@ class DatabaseConnection {
     $result = $this->queryLastValue($query);
     if (!$result) {
       return NULL;
-    } 
-    return $result; 
+    }
+    return $result;
   }
 
   /*!
 	\brief 	Get the name of a free server
 	\return name of the server
   */
-  public function freeServer() { 
+  public function freeServer() {
     $query = "select name from server where status='free'";
     $result = $this->queryLastValue($query);
     return $result;
-  } 
+  }
 
   /*!
 	\brief	Get the status (i.e. free, busy, paused) of server $name
 	\param	$name	Name of the server
 	\return status
   */
-  public function statusOfServer($name) {  
+  public function statusOfServer($name) {
     $query = "select status from server where name='$name'";
-    $result = $this->queryLastValue($query);  
+    $result = $this->queryLastValue($query);
     return $result;
-  } 
+  }
 
   /*!
 	\brief 	Checks whether server is busy
     \param 	$name     Name of the server
     \return	true if the server is busy, false otherwise
   */
-  public function isServerBusy($name) {  
+  public function isServerBusy($name) {
     $status = $this->statusOfServer($name);
     $result = ($status == 'busy');
     return $result;
-  } 
+  }
 
   /*!
     \brief	Checks whether the switch in the queue manager is 'on'
@@ -1094,7 +1118,7 @@ class DatabaseConnection {
       if ($answer == 'off') {
           $result = False;
           report("$query; returned '$answer'", 1);
-          notifyRuntimeError("hrmd stopped", 
+          notifyRuntimeError("hrmd stopped",
            "$query; returned '$answer'\n\nThe HRM queue manage will stop.");
       }
     }
@@ -1105,11 +1129,11 @@ class DatabaseConnection {
       if ($answer == 'off') {
           $result = False;
           report("$query; returned '$answer'", 1);
-          notifyRuntimeError("hrmd stopped", 
+          notifyRuntimeError("hrmd stopped",
            "$query; returned '$answer'\n\nThe HRM queue manage will stop.");
       }
     }
-  
+
     return $result;
   }
 
@@ -1117,7 +1141,7 @@ class DatabaseConnection {
     \brief	Gets the status of the queue manager's switch
     \return	'on' or 'off'
   */
-  public function getSwitchStatus() { 
+  public function getSwitchStatus() {
     if ($this->doGlobalVariablesExist()) {
       $query = "SELECT value FROM queuemanager WHERE field = 'switch'";
       $answer = $this->queryLastValue($query);
@@ -1145,11 +1169,11 @@ class DatabaseConnection {
     \param	$pid	String	Process identifier associated with a running job
     \return	query result
   */
-  public function reserveServer($name, $pid) { 
+  public function reserveServer($name, $pid) {
     $query = "update server set status='busy', job='$pid' where name='$name'";
     $result = $this->execute($query);
     return $result;
-  } 
+  }
 
   /*!
     \brief	Sets the state of the server to 'free' and deletes the the pid
@@ -1157,37 +1181,37 @@ class DatabaseConnection {
 	\param	$pid	Process identifier associated with a running job (UNUSED!)
 	\return	query result
   */
-  public function resetServer($name, $pid) { 
+  public function resetServer($name, $pid) {
     $query = "update server set status='free', job=NULL where name='$name'";
     $result = $this->execute($query);
     return $result;
-  } 
+  }
 
   /*!
     \brief	Starts a job
     \param	$job	Job object
     \return	query result
   */
-  public function startJob($job) { 
+  public function startJob($job) {
     $desc = $job->description();
     $id = $desc->id();
     $server = $job->server();
     $process_info = $job->pid();
-    $query = "update job_queue set start=NOW(), server='$server', process_info='$process_info', status='started' where id='" .$id . "'";  
+    $query = "update job_queue set start=NOW(), server='$server', process_info='$process_info', status='started' where id='" .$id . "'";
     $result = $this->execute($query);
     return $result;
-  } 
+  }
 
   /*!
 	\brief	Get all running jobs
 	\return	array of Job objects
   */
-  public function getRunningJobs() { 
+  public function getRunningJobs() {
     $result = array();
     $query = "select id, process_info, server from job_queue where status = 'started'";
     $rows = $this->query($query);
     if (!$rows) return $result;
-    
+
     foreach ($rows as $row) {
       $desc = new JobDescription();
       $desc->setId($row['id']);
@@ -1196,10 +1220,10 @@ class DatabaseConnection {
       $job->setServer($row['server']);
       $job->setPid($row['process_info']);
       $job->setStatus('started');
-      $result[] = $job; 
-    } 
+      $result[] = $job;
+    }
     return $result;
-  } 
+  }
 
   /*!
 	\brief	Get names of all processing servers (independent of their status)
@@ -1234,18 +1258,18 @@ class DatabaseConnection {
     $query = "select FROM_UNIXTIME($timestamp)";
     $result = $this->queryLastValue($query);
     return $result;
-  } 
-  
+  }
+
   /*!
 	\brief	Pauses a job of given id
 	\param	$id	Job id
 	\return	query result
   */
-  public function pauseJob($id) {   
+  public function pauseJob($id) {
     $query = "update job_queue set status='paused' where id='" . $id . "'";
     $result = $this->execute($query);
     return $result;
-  } 
+  }
 
   /*!
     \brief	Sets the end time of a job
@@ -1253,20 +1277,20 @@ class DatabaseConnection {
     \param	$date	Formatted date: YYYY-MM-DD hh:mm:ss
     \return	query result
   */
-  public function setJobEndTime($id, $date) {   
+  public function setJobEndTime($id, $date) {
     $query = "update job_queue set stop='".$date."' where id='" . $id . "'";
     $result = $this->execute($query);
     return $result;
-  } 
+  }
 
   /*!
     \brief	Changes status of 'paused' jobs to 'queued'
     \return	query result
   */
-  public function restartPausedJobs() {  
+  public function restartPausedJobs() {
     $query = "update job_queue set status='queued' where status='paused'";
     $result = $this->execute($query);
-    return $result;    
+    return $result;
   }
 
   /*!
@@ -1274,21 +1298,21 @@ class DatabaseConnection {
     \param	$id	Job id
     \return	query result
   */
-  public function markJobAsRemoved($id) {  
+  public function markJobAsRemoved($id) {
     $query = "update job_queue set status='broken' where (status='queued' or status='paused') and id='" . $id . "'";
-    // $query = "update job_queue set status='broken' where id='" . $id . "'"; 
+    // $query = "update job_queue set status='broken' where id='" . $id . "'";
     $result = $this->execute($query);
     $query = "update job_queue set status='kill' where status='started' and id='" . $id . "'";
     $result = $this->execute($query);
-    return $result;    
+    return $result;
   }
-  
+
   /*!
     \brief	Set the server status to free
     \param	$server	Server name
     \return	query result
   */
-  public function markServerAsFree($server) {  
+  public function markServerAsFree($server) {
     $query = "update server set status='free' where name='" . $server . "'";
     $result = $this->execute($query);
     return $result;
@@ -1298,7 +1322,7 @@ class DatabaseConnection {
     \brief	Get all jobs with status 'broken'
     \return	array of ids
   */
-  public function getMarkedJobIds() { 
+  public function getMarkedJobIds() {
     $conditions['status'] = 'broken';
     $ids = $this->retrieveColumnFromTableWhere('id', 'job_queue', $conditions);
     return $ids;
@@ -1308,12 +1332,12 @@ class DatabaseConnection {
     \brief	Get all jobs with status 'kill' to be killed by the Queue Manager
 	\return	array of ids
   */
-  public function getJobIdsToKill() { 
+  public function getJobIdsToKill() {
     $conditions['status'] = 'kill';
     $ids = $this->retrieveColumnFromTableWhere('id', 'job_queue', $conditions);
     return $ids;
   }
- 
+
   /*!
 	\brief	Check whether a user exists
 	\param	$name	Name of the user
@@ -1325,7 +1349,7 @@ class DatabaseConnection {
     if ($result) $result = true;
     return $result;
   }
-  
+
   /*!
     \brief	Get the status of a user
     \param	$name	Name of the user
@@ -1347,7 +1371,7 @@ class DatabaseConnection {
   	$result = $this->queryLastValue($query);
   	return $result;
   }
- 
+
   /*!
     \brief	Returns current date and time
     \return	formatted date (YYYY-MM-DD hh:mm:ss)
@@ -1355,9 +1379,9 @@ class DatabaseConnection {
   public function now() {
     $query = "select now()";
     $result = $this->queryLastValue($query);
-    return $result;	
+    return $result;
   }
-  
+
   /*!
     \brief	Returns the group to which the user belongs
     \param	$userName	Name of the user
@@ -1368,7 +1392,7 @@ class DatabaseConnection {
   	$result = $this->queryLastValue($query);
   	return $result;
   }
-  
+
   /*!
     \brief	Updates the e-mail address of a user
 	\param	$userName	Name of the user
@@ -1380,7 +1404,7 @@ class DatabaseConnection {
   	$result = $this->execute($cmd);
   	return $result;
   }
-  
+
   /*!
     \brief	Updates the last access date of a user
     \param	$userName	Name of the user
@@ -1394,9 +1418,9 @@ class DatabaseConnection {
 
   /*!
     \brief	Get the list of Setting's for the User
-    
+
     The Parameter values are not loaded.
-    
+
     \return	array of Setting's
   */
   public function getSettingList( $username, $table ) {
@@ -1409,11 +1433,11 @@ class DatabaseConnection {
 	\param	$fileFormat		File format for which the Parameter confidence level is queried
 							(not strictly necessary for the Parameters with confidence level 'Provide',
 							could be set to '' for those)
-	\param	$parameterName	Name of the Paramater the confidence level should be returned   
+	\param	$parameterName	Name of the Paramater the confidence level should be returned
     \return	parameter confidence level
   */
   public function getParameterConfidenceLevel( $fileFormat, $parameterName ) {
-	// Some Parameters MUST be provided by the user and cannot be overridden 
+	// Some Parameters MUST be provided by the user and cannot be overridden
 	// by the file metadata
 	switch ( $parameterName ) {
 	  case 'ImageFileFormat' :
@@ -1429,27 +1453,27 @@ class DatabaseConnection {
 	  case 'OverrideConfidence':
 		return "provided";
 	  default:
-		
+
 		// For the other Parameters, the $fileFormat must be specified
 		if ( ( $fileFormat == '' ) && ( $fileFormat == null ) ) {
 		  exit( "Error: please specify a file format!" . "\n" );
 		}
-		
+
 		// The wavelength and voxel size parameters have a common confidence in
 		// the HRM but two independent confidences in hucore
 		if ( ( $parameterName == "ExcitationWavelength" ) ||
 			 ( $parameterName == "EmissionWavelength" ) ) {
-		  
+
 		  $confidenceLevelEx = $this->huCoreConfidenceLevel(
 			$fileFormat, "ExcitationWavelength" );
 		  $confidenceLevelEm = $this->huCoreConfidenceLevel(
 			$fileFormat, "EmissionWavelength" );
 		  $confidenceLevel   = $this->minConfidenceLevel(
 			$confidenceLevelEx, $confidenceLevelEm );
-		  
+
 		} elseif ( ( $parameterName == "CCDCaptorSizeX" ) ||
 			 ( $parameterName == "ZStepSize" ) ) {
-		  
+
   		  $confidenceLevelX = $this->huCoreConfidenceLevel(
 			$fileFormat, "CCDCaptorSizeX" );
 		  $confidenceLevelZ = $this->huCoreConfidenceLevel(
@@ -1458,28 +1482,28 @@ class DatabaseConnection {
 			$confidenceLevelX, $confidenceLevelZ );
 
 		} else {
-		  
+
 		  $confidenceLevel = $this->huCoreConfidenceLevel(
 			$fileFormat, $parameterName );
-		  
+
 		}
-		
+
 		// Return the confidence level
 		return $confidenceLevel;
 
 	}
-  
+
   }
-  
-  
+
+
   /*!
     \brief	Store the confidence levels returned by huCore into the database for faster retrieval
-    
+
 	This is a rather low-level function that creates the table if needed.
-	
+
 	\param	$confidenceLevels		Array of confidence levels with file formats as keys
     \return	true if storing (or updating) the database was successful, false otherwise
-  */  
+  */
   public function storeConfidenceLevels( $confidenceLevels ) {
 
     // Make sure that the confidence_levels table exists
@@ -1489,30 +1513,30 @@ class DatabaseConnection {
 		  "Please update the database!";
 	    report( $msg, 1 ); exit( $msg );
 	}
-	
+
     // Get the file formats
 	$fileFormats = array_keys( $confidenceLevels );
-	
+
 	// Get the keys of the parameter arrays from the first array (the others are the same)
 	$parameters = array_keys( $confidenceLevels[ $fileFormats[ 0 ] ] );
-	
+
 	// Go over all $confidenceLevels and set the values
 	foreach ( $fileFormats as $format ) {
-	  
+
 	    // If the row for current $fileFormat does not exist, INSERT a new
 	    // row with all parameters, otherwise UPDATE the existing one.
 	    $query = "SELECT fileFormat FROM confidence_levels WHERE " .
 	        "fileFormat = '" . $format . "' LIMIT 1;";
-	    
+
 	    if ( $this->queryLastValue($query) === FALSE ) {
-	        
+
 	        // INSERT
 	        if ( !$this->connection->AutoExecute( "confidence_levels",
 	            $confidenceLevels[ $format ], "INSERT" ) ) {
 			  $msg = "Could not insert confidence levels for file format $format!";
 	          report( $msg, 1 ); exit( $msg );
 	        }
-	        
+
 	    } else {
 
 	        // UPDATE
@@ -1522,13 +1546,13 @@ class DatabaseConnection {
 	          $msg = "Could not update confidence levels for file format $format!";
 			  report( $msg, 1 ); exit( $msg);
 	        }
-	    
+
 	    }
-	    
+
 	}
 
 	return true;
-  
+
   }
 
   /*
@@ -1539,7 +1563,7 @@ class DatabaseConnection {
     \brief	Return the mapped HuCore file format corresponding to HRM's
     \param	$fileFormat	HRM's file format
     \return mapped HuCore file format
-  */  
+  */
   private function minConfidenceLevel( $level1, $level2 ) {
 	$levels = array( );
 	$levels[ 'default' ]   = 0;
@@ -1552,7 +1576,7 @@ class DatabaseConnection {
 	} else {
 	  return $level2;
 	}
-	
+
   }
 
   /*!
@@ -1560,9 +1584,9 @@ class DatabaseConnection {
     \param	$fileFormat	HRM's file format
     \param	$parameterName	Name of the HRM Paramater
     \return HuCore's raw confidence level
-  */  
+  */
   private function huCoreConfidenceLevel( $fileFormat, $parameterName ) {
-	
+
 	// Get the mapped file format
 	$query = "SELECT hucoreName FROM file_format WHERE name = '" .
 	  $fileFormat . "' LIMIT 1";
@@ -1571,8 +1595,8 @@ class DatabaseConnection {
 	  report( "Could not get the mapped file name for " . $fileFormat ."!", 1 );
 	  return "default";
 	}
-	
-	// Use the mapped file format to retrieve the 
+
+	// Use the mapped file format to retrieve the
 	$query = "SELECT " . $this->parameterNameDictionary[ $parameterName ] .
 	  " FROM confidence_levels WHERE fileFormat = '" . $hucoreFileFormat .
 	  "' LIMIT 1;";
@@ -1581,11 +1605,11 @@ class DatabaseConnection {
 	  report( "Could not get the confidence level for " . $fileFormat ."!", 1 );
 	  return "default";
 	}
-	
+
 	// return the confidence level
 	return $confidenceLevel;
-  }	
-		
+  }
+
   /*!
     \brief	Ugly hack to check for old table structure
     \return true if global variables exist
@@ -1596,12 +1620,12 @@ class DatabaseConnection {
     global $db_name;
     global $db_user;
     global $db_password;
-    
+
     $test = False;
-    
+
     $dsn = $db_type."://".$db_user.":".$db_password."@".$db_host."/".$db_name;
-    $db = ADONewConnection($dsn); 
-    if(!$db) 
+    $db = ADONewConnection($dsn);
+    if(!$db)
       return;
     $tables = $db->MetaTables("TABLES");
     if (in_array("global_variables", $tables))
@@ -1609,6 +1633,6 @@ class DatabaseConnection {
 
     return $test;
   }
-  
-} 
+
+}
 ?>
