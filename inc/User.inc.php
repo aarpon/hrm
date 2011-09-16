@@ -2,16 +2,16 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
-require_once "Database.inc";
-require_once "Setting.inc";
-require_once "hrm_config.inc";
+require_once "Database.inc.php";
+require_once "Setting.inc.php";
+require_once "hrm_config.inc.php";
 
 if ( $authenticateAgainst == "ACTIVE_DIR" ) {
-  require_once "ActiveDirectory.inc";
+  require_once "ActiveDirectory.inc.php";
 }
 
 if ( $authenticateAgainst == "LDAP" ) {
-  require_once "Ldap.inc";
+  require_once "Ldap.inc.php";
 }
 
 global $authenticateAgainst;
@@ -29,7 +29,7 @@ class Owner {
     \brief  Name of the owner: could be a job id or a user's login name
   */
   private $name;
- 
+
   /*!
     \brief  Constructor. Creates a new Owner.
   */
@@ -52,7 +52,7 @@ class Owner {
   function setName($name) {
     $this->name = $name;
   }
-  
+
 } // end of class Owner
 
 /*!
@@ -60,36 +60,36 @@ class Owner {
    \brief   Manages a user and its state
 */
 class User extends Owner{
-  
+
   /*!
     \var    $isLoggedIn
     \brief  True if the user is logged in
   */
   private $isLoggedIn;
-  
+
   /*!
-    \var    $lastActivity 
+    \var    $lastActivity
     \brief  Timestamp of the last activity of the user
   */
   private $lastActivity;
-  
+
   /*!
     \var    $ip
     \brief  The user's current ip address
   */
   private $ip;
-  
+
   /*!
     \var    $authMode
     \brief  Authentication mode, one of "MYSQL", "LDAP", or "ACTIVE_DIR"
   */
-  private $authMode;     
-  
+  private $authMode;
+
   /*!
     \brief  Constructor. Creates a new User.
   */
   function __construct() {
-    
+
     global $authenticateAgainst;
     $this->isLoggedIn = False;
     $this->lastActivity = time();
@@ -100,12 +100,12 @@ class User extends Owner{
            ( $authenticateAgainst == "ACTIVE_DIR" ) )) {
       throw new Exception( "Bad value $authenticateAgainst." );
     }
-    
+
     $this->authMode  = $authenticateAgainst;
-      
+
     // Call the parent constructor too.
     parent::__construct();
-  } 
+  }
 
   /*!
     \brief  Sets the user current IP address
@@ -129,14 +129,14 @@ class User extends Owner{
   */
   public function isLoggedIn() {
     return $this->isLoggedIn;
-  } 
+  }
 
   /*!
     \brief  encrypts a string either with md5 or DES
-    
+
       The encryption algorithm used is defined by the $useDESEncryption
       variable in the HRM configuration files,
-    
+
     \param  $string The string to be encrypted
     \param  $seed The seed (this is used only by the DES algorithm)
     \return the encrypted string
@@ -145,12 +145,12 @@ class User extends Owner{
     global $useDESEncryption;
     if ($useDESEncryption) {
       $result = crypt($string, $seed);
-    } else { 
+    } else {
       $result = md5($string);
-    } 
+    }
     return $result;
   }
-  
+
   /*!
     \brief  Returns the encrypted version of the password (LDAP)
     \param  $dbPassword Password string
@@ -162,7 +162,7 @@ class User extends Owner{
       preg_match("/^\{(.*)\}(.*)$/", $dbPassword, $dbp);
       return array($dbp[2], $dbp[1]);
   }
-  
+
   /*!
     \brief  Returns the encrypted version of the password (LDAP)
     \param  $string String to be encrypted
@@ -185,32 +185,32 @@ class User extends Owner{
 
   /*!
     \brief  Logs in the user with given user name and password
-    
+
     This function will use different authentication modes depending on the value
     of the global configuration variable $authenticateAgainst.
-    
+
     If $authenticateAgainst is:
       'MYSQL', the user will be authenticated against the HRM user management
       'LDAP', the user will be authenticated against an LDAP server
       'ACTIVE_DIR', the user will be authenticated against ACTIVE DIRECTORY
-    
+
     \param  $name     User name
     \param  $password Password (plain)
     \param  $ip       IP address
     \return true if the user could be logged in, false otherwise
   */
-  public function logIn($name, $password, $ip) { 
+  public function logIn($name, $password, $ip) {
     $this->setName($name);
     $this->isLoggedIn = False;
     $result = $this->checkLogin($name, $password);
     if ($result) {
-      
+
       // Update the last access in the database
       $this->updateLastAccessDate( );
-      
+
       // Store the entry in the log
       report( "User " . $name . " logged on.", 1 );
-      
+
       // Update the User
       $this->isLoggedIn = True;
       $this->lastActivity = time();
@@ -223,14 +223,14 @@ class User extends Owner{
   /*!
     \brief  Logs out the user
   */
-  function logOut() { 
+  function logOut() {
     $this->isLoggedIn = False;
   }
 
   /*!
     \brief  Check whether a new user request has been accepted by the
             administrator
-            
+
     This can only be used if authentication is against the HRM user management.
     \return true if the user has been accepted
   */
@@ -241,7 +241,7 @@ class User extends Owner{
   	$result = ($status==$this->getAcceptedStatus());
   	return $result;
   }
-  
+
   /*!
     \brief  Checks if user login is restricted to the administrator for
             maintenance (in case the database has to be updated)
@@ -251,10 +251,10 @@ class User extends Owner{
   	$result = !( System::isDBUpToDate( ) );
   	return $result;
   }
- 
+
   /*!
     \brief  Checks whether the user has been suspended by the administrator
-    
+
     This can only be used if authentication is against the HRM user management.
     \return true if the user was suspened by the administrator
   */
@@ -265,10 +265,10 @@ class User extends Owner{
   	$result = ($status==$this->getSuspendedStatus());
   	return $result;
   }
-  
+
   /*!
     \brief  Checks whether the user account exists in the database
-    
+
     This can only be used if authentication is against the HRM user management.
     \return true if the user exists in the database
   */
@@ -285,9 +285,9 @@ class User extends Owner{
   public function emailAddress() {
 
   global $email_admin;
-  
+
 	$result = "";
-    
+
     if ( $this->isAdmin() ) {
       return $email_admin;
     }
@@ -307,10 +307,10 @@ class User extends Owner{
         $result = $activeDir->emailAddress($this->name());
         return $result;
         break;
-        
+
       case "MYSQL":
 
-        $db = new DatabaseConnection(); 
+        $db = new DatabaseConnection();
         $result = $db->emailAddress($this->name());
         break;
 
@@ -318,9 +318,9 @@ class User extends Owner{
 
         throw new Exception("Bad value for $authMode in User::emailAddress().");
     }
-    
+
     return $result;
-  } 
+  }
 
   /*!
     \brief  Returns the administrator name
@@ -329,7 +329,7 @@ class User extends Owner{
   public function getAdminName() {
   	return 'admin';
   }
-  
+
   /*!
     \brief  Checks whether the user is the administrator
     \return true if the user is the administrator
@@ -337,7 +337,7 @@ class User extends Owner{
   public function isAdmin() {
   	return $this->name()==$this->getAdminName();
   }
-  
+
   /*!
     \brief  Returns the user to which the User belongs
     \return group name
@@ -359,7 +359,7 @@ class User extends Owner{
         $result = $activeDir->getGroup( $this->name() );
         return $result;
         break;
-      
+
       case "MYSQL":
 
   		$db = new DatabaseConnection();
@@ -371,9 +371,9 @@ class User extends Owner{
         throw new Exception("Bad value for $authMode in User::userGroup().");
     }
 
-    return $result; 
+    return $result;
   }
-  
+
   /*!
     \brief  Returns the number of jobs currently in the queue for current User
     \return number of jobs in queue
@@ -386,15 +386,15 @@ class User extends Owner{
 	$query = "SELECT COUNT(id) FROM job_queue WHERE username = '" .
       $_SESSION['user']->name( ) . "';";
 	$row = $db->execute( $query )->FetchRow( );
-	return $row[ 0 ]; 
+	return $row[ 0 ];
   }
-  
+
   /*!
     \brief  Checks whether a user with a given seed exists in the database
-    
+
     If a user requests an account, his username is added to the database with
     a random seed as status.
-    
+
     \return true if a user with given seed exists, false othrwise
   */
   public function existsUserRequestWithSeed( $seed ) {
@@ -407,18 +407,18 @@ class User extends Owner{
       return ( $value == $seed );
     }
   }
-  
+
 /*
                               PRIVATE FUNCTIONS
 */
 
   /*!
     \brief   Returns the user (encrypted) password
-    
+
     The password is obtained from either the HRM user management, LDAP, or
     ACTIVE DIRECTORY, depending on the value of the global configuration
     variable $authenticateAgainst.
-    
+
     \return  the encrypted password
   */
   private function password($name, $password) {
@@ -428,13 +428,13 @@ class User extends Owner{
         // db code
         $db = new DatabaseConnection();
         $password = $db->queryLastValue($db->passwordQueryString($name));
-        return $password; 
+        return $password;
     }
 
     switch ( $this->authMode ) {
 
       case "LDAP":
-          
+
         // ldap code
         $my_ldap = new Ldap();
         $my_ldap->connectForReading();
@@ -443,26 +443,26 @@ class User extends Owner{
         break;
 
     case "ACTIVE_DIR":
-      
+
       // This function must not be called for ACTIVE_DIR.
       echo "User::password() cannot be called for ACTIVE_DIR!\n";
       exit( 1 );
-    
+
     case "MYSQL":
-      
+
           // db code
           $db = new DatabaseConnection();
           $password = $db->queryLastValue($db->passwordQueryString($name));
-          return $password; 
-    
+          return $password;
+
       break;
-    
+
     default:
 
       throw new Exception("Bad value for $authMode in User::password().");
 
     }
-    
+
   }
 
   /*!
@@ -475,7 +475,7 @@ class User extends Owner{
   */
   private function checkLogin($name, $password) {
     $result = false;
-    
+
     // If the db is outdated and the user is not the admin, we do not allow
     // the login
     if ( ($this->isLoginRestrictedToAdmin() == true) && (strcmp($name, 'admin') != 0)  )
@@ -486,30 +486,30 @@ class User extends Owner{
       $result = $this->checkLoginAgainstHRMDatabase($name, $password);
       return $result;
     }
-    
+
     // Check other login names against the chosen authentication mechanism
     switch ( $this->authMode ) {
 
       case "LDAP":
- 
+
         $result = $this->checkLoginAgainstLDAP($name, $password);
         break;
-      
+
       case "ACTIVE_DIR":
-        
+
         $result = $this->checkLoginAgainstACTIVEDIR($name, $password);
         break;
-        
+
       case "MYSQL":
 
         $result = $this->checkLoginAgainstHRMDatabase($name, $password);
         break;
 
       default:
-      
+
         throw new Exception("Bad value for $authMode in User::checkLogin().");
     }
-    
+
     return $result;
   }
 
@@ -528,7 +528,7 @@ class User extends Owner{
     $result = ($dbPassword == ($this->encrypt($password, substr($dbPassword, 0, 2))));
     return $result;
   }
-  	
+
   /*!
     \brief  Checks the login credentials against LDAP
 
@@ -562,7 +562,7 @@ class User extends Owner{
   private function getAcceptedStatus() {
   	return 'a';
   }
-  
+
   /*!
     \brief  Returns the User suspended status 'code'
     \return the User suspended status
@@ -573,7 +573,7 @@ class User extends Owner{
 
   /*!
     \brief  Updates the User last access in the database
-    
+
     This can only be used if authentication against the HRM user managerment
     is used (with other authentication modes it will have no effect).
   */
@@ -584,7 +584,7 @@ class User extends Owner{
     }
   }
 
-} 
+}
 
 
 

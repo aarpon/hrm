@@ -2,11 +2,11 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
-require_once("./inc/User.inc");
-require_once("./inc/Database.inc");
-require_once("./inc/hrm_config.inc");
-require_once("./inc/Util.inc");
-require_once("./inc/Validator.inc");
+require_once("./inc/User.inc.php");
+require_once("./inc/Database.inc.php");
+require_once("./inc/hrm_config.inc.php");
+require_once("./inc/Util.inc.php");
+require_once("./inc/Validator.inc.php");
 
 global $email_sender;
 
@@ -27,33 +27,33 @@ global $email_sender;
     "group"    => "",
     "pass1"    => "",
     "pass2"    => "" );
-  
+
   // Email
   if ( isset( $_POST["email"] ) ) {
     if ( Validator::isEmailValid( $_POST["email"] ) ) {
-      $clean["email"] = $_POST["email"];       
+      $clean["email"] = $_POST["email"];
     }
   }
-  
+
   // Group name
   if ( isset( $_POST["group"] ) ) {
     if ( Validator::isGroupNameValid( $_POST["group"] ) ) {
-      $clean["group"] = $_POST["group"];       
+      $clean["group"] = $_POST["group"];
     }
   }
-  
+
   // Passwords
   if ( isset( $_POST["pass1"] ) ) {
     if ( Validator::isPasswordValid( $_POST["pass1"] ) ) {
-      $clean["pass1"] = $_POST["pass1"];       
+      $clean["pass1"] = $_POST["pass1"];
     }
-  }  
+  }
   if ( isset( $_POST["pass2"] ) ) {
     if ( Validator::isPasswordValid( $_POST["pass2"] ) ) {
-      $clean["pass2"] = $_POST["pass2"];       
+      $clean["pass2"] = $_POST["pass2"];
     }
-  }  
-  
+  }
+
 /*
  *
  * END OF SANITIZE INPUT
@@ -84,12 +84,12 @@ else {
 $message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
 
 if (isset($_POST['modify'])) {
-  
+
   // Set the result to True and then...
   $result = True;
 
   // ... check that all required entries are indeed set
-  
+
   // Email
   if ( $edit_user->isAdmin() ) {
     $emailToUse = '';
@@ -101,7 +101,7 @@ if (isset($_POST['modify'])) {
       $emailToUse = $clean['email'];
     }
   }
-  
+
   // Group
   if ( $edit_user->isAdmin() ) {
     $groupToUse = '';
@@ -141,7 +141,7 @@ if (isset($_POST['modify'])) {
         header("Location: " . $_SESSION['referer']); exit();
       }
     } else {
-      $message = "            <p class=\"warning\">Database error, please inform the person in charge</p>\n";  
+      $message = "            <p class=\"warning\">Database error, please inform the person in charge</p>\n";
     }
   }
 }
@@ -152,7 +152,7 @@ include("header.inc.php");
     <!--
       Tooltips
     -->
-    <span id="ttSpanCancel">Discard changes and go back to your home page.</span>  
+    <span id="ttSpanCancel">Discard changes and go back to your home page.</span>
     <span id="ttSpanSave">Save the changes.</span>
 
     <div id="nav">
@@ -162,13 +162,13 @@ include("header.inc.php");
             <li><a href="javascript:openWindow('http://www.svi.nl/HuygensRemoteManagerHelpAccount')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
         </ul>
     </div>
-    
+
     <div id="content">
 
         <h3>Your account</h3>
-        
+
         <form method="post" action="" id="useraccount">
-        
+
             <div id="adduser">
 <?php
 
@@ -180,14 +180,14 @@ if (isset($_SESSION['account_user']) || !$_SESSION['user']->isAdmin() ) {
                   if ( $clean['email'] != "" ) {
                     ?>
                     <input name="email" id="email" type="text" value="<?php echo $clean['email'] ?>" />
-                    <?php                    
+                    <?php
                   } else {
                     ?>
                     <input name="email" id="email" type="text" value="<?php echo $edit_user->emailAddress() ?>" />
                     <?php
                   }
                 ?>
-                
+
                 <br />
 <?php
 
@@ -200,13 +200,13 @@ if (isset($_SESSION['account_user']) || !$_SESSION['user']->isAdmin() ) {
                   if ( $clean['group'] != "" ) {
                     ?>
                     <input name="group" id="group" type="text" value="<?php echo $clean['group'] ?>" />
-                    <?php                    
+                    <?php
                   } else {
                     ?>
                     <input name="group" id="group" type="text" value="<?php echo $edit_user->userGroup() ?>" />
                     <?php
                   }
-                ?>                
+                ?>
                 <br />
 <?php
 
@@ -225,7 +225,7 @@ if (isset($_SESSION['account_user']) || !$_SESSION['user']->isAdmin() ) {
 
                 <?php
                   $referer = $_SESSION['referer'];
-                ?>                
+                ?>
 
                 <div id="controls">
                   <input type="button" name="cancel" value=""
@@ -233,28 +233,28 @@ if (isset($_SESSION['account_user']) || !$_SESSION['user']->isAdmin() ) {
                     onmouseover="TagToTip('ttSpanCancel' )"
                     onmouseout="UnTip()"
                     onclick="document.location.href='<?php echo $referer ?>'" />
-                  <input type="button" name="save" value="" 
+                  <input type="button" name="save" value=""
                     class="icon save"
                     onmouseover="TagToTip('ttSpanSave' )"
                     onmouseout="UnTip()"
                     onclick="document.forms['useraccount'].submit()" />
                 </div>
-            
+
             </div>
         </form>
-        
+
     </div> <!-- content -->
-    
+
     <div id="rightpanel">
-    
+
         <div id="info">
 
           <h3>Quick help</h3>
-          
+
           <p>Please update the account information.</p>
-          
+
        </div>
-        
+
         <div id="message">
 <?php
 
@@ -262,9 +262,9 @@ echo $message;
 
 ?>
         </div>
-        
+
     </div> <!-- rightpanel -->
-    
+
 <?php
 
 include("footer.inc.php");

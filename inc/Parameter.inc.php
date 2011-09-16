@@ -2,7 +2,7 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
-require_once ("Database.inc");
+require_once ("Database.inc.php");
 
 /*!
  \class	Parameter
@@ -15,7 +15,7 @@ abstract class Parameter {
 		\brief	The pad size for the Parameter names
 	*/
     const PADSIZE      = 38;
-	
+
 	/*!
 		\var	$name
 		\brief	Name of the parameter
@@ -77,23 +77,23 @@ abstract class Parameter {
 		\brief	Returns the interpreted HuCore confidence level for the Parameter
                 \param  $fileFormat The file extension of the raw image
                 \param  $channel    A channel (currently unused)
-		
+
 		This is to be used to create the template. The returned confidence
 		level is a function of the original confidence level and the actions
 		taken by the user. To get the raw confidence level associated to a
 		Parameter as returned by hucore (to be used for instance to color
 		code the Parameters in the user interface), please use the corresponding
 		Database methods.
-		
+
 		\return	Interpreted confidence level for the Parameter (in HuCore notation)
 	*/
 	public function interpretedHuCoreConfidenceLevel( $fileFormat,$channel ) {
         $db = new DatabaseConnection();
         $cl = $db->getParameterConfidenceLevel($fileFormat, $this->name);
         $this->setConfidenceLevel($cl);
-		return $cl;	
+		return $cl;
 	}
-	
+
 	/*!
 		\brief	Sets the confidence level for the Parameter
 		\param	Confidence level for the Parameter
@@ -108,7 +108,7 @@ abstract class Parameter {
 				to be left unset if their confidence level allows for it.
 				In current implementation, mustProvide() always returns true.
 				Later, the function might return false for some confidence
-				levels such as 'verified' or 'reported'.		
+				levels such as 'verified' or 'reported'.
 		\return true always
 	*/
 	public function mustProvide( ) {
@@ -138,9 +138,9 @@ abstract class Parameter {
 	/*!
 		\brief	Returns the default value for the Parameters that have a default
 		        value ot NULL for those that don't
-		
+
 		This function should be <b>overloaded</b> by the subclasses
-		
+
 		\return	tyhe default value or NULL
 	*/
 	public function defaultValue() {
@@ -149,9 +149,9 @@ abstract class Parameter {
 
 	/*!
 		\brief	Checks whether the Parameter is an Image Parameter
-		
+
 		This function should be <b>overloaded</b> by the subclasses
-		
+
 		\return	true if the Parameter is an Image Parameter, false otherwise
 	*/
 	public function isForImage() {
@@ -160,9 +160,9 @@ abstract class Parameter {
 
 	/*!
 		\brief	Checks whether the Parameter is a Microscope Parameter
-		
+
 		This function should be <b>overloaded</b> by the subclasses
-		
+
 		\return	true if the Parameter is a Microscope Parameter, false otherwise
 	*/
 	public function isForMicroscope() {
@@ -171,9 +171,9 @@ abstract class Parameter {
 
 	/*!
 		\brief	Checks whether the Parameter is a Capture Parameter
-		
+
 		This function should be <b>overloaded</b> by the subclasses
-		
+
 		\return	true if the Parameter is a Capture Parameter, false otherwise
 	*/
 	public function isForCapture() {
@@ -182,9 +182,9 @@ abstract class Parameter {
 
 	/*!
 		\brief	Checks whether the Parameter is a Variable Channel Parameter
-		
+
 		This function should be <b>overloaded</b> by the subclasses
-		
+
 		\return	true if the Parameter is a Variable Channel, false otherwise
 	*/
 	public function isVariableChannel() {
@@ -193,9 +193,9 @@ abstract class Parameter {
 
 	/*!
 		\brief	Checks whether the Parameter is a Correction Parameter
-		
+
 		This function should be <b>overloaded</b> by the subclasses
-		
+
 		\return	true if the Parameter is a Correction Parameter, false otherwise
 	*/
 	public function isForCorrection() {
@@ -205,9 +205,9 @@ abstract class Parameter {
 	/*!
 		\brief	Checks whether the Parameter is used for calculating the Pixel
 				Size from the CCD pixel size and the toal microscope magnification
-		
+
 		This function should be <b>overloaded</b> by the subclasses
-		
+
 		\return	true if the Parameter is a Calculation Parameter, false otherwise
 	*/
 	public function isForPixelSizeCalculation() {
@@ -216,15 +216,15 @@ abstract class Parameter {
 
 	/*!
 		\brief	Checks whether the Parameter is a Task Parameter
-		
+
 		This function should be <b>overloaded</b> by the subclasses
-		
+
 		\return	true if the Parameter is a Task Parameter, false otherwise
 	*/
 	public function isTaskParameter() {
 		return False;
 	}
-	
+
 	/*!
 		\brief	Returns the name of the Parameter
 		\return	the name of the Parameter
@@ -243,10 +243,10 @@ abstract class Parameter {
 
 	/*!
 		\brief	Returns the internal value of the Parameter
-		
+
 		This function should be <b>overloaded</b> by the subclasses if the
 		internal and external representations differ.
-		
+
 		\return	the internal value of the Parameter
 	*/
 	public function internalValue() {
@@ -255,11 +255,11 @@ abstract class Parameter {
 
 	/*!
 		\brief	Returns the possible values for the parameter in their
-				internal representation. 
-		
+				internal representation.
+
 		This function should be <b>overloaded</b> by the subclasses if the
 		internal and external representations differ.
-		
+
 		\return	the possibles values of the Parameter in their internal
 				representation
 	*/
@@ -269,7 +269,7 @@ abstract class Parameter {
 
 	/*!
 		\brief	Sets the value of the parameter
-		\param	$value	Value for the parameter		
+		\param	$value	Value for the parameter
 	*/
 	public function setValue($value) {
 		$this->value = $value;
@@ -277,10 +277,10 @@ abstract class Parameter {
 
 	/*!
 		\brief	Prints a radio button for current Parameter and the given value
-				
+
 				If the value matches the internal value, the radio button will
 				be checked. Additional options can be added.
-		
+
 		\param	$value		Value for the Parameter
 		\param	$customHTML	HTML code for additional options for the radio button
 		\todo	This function should NOT be in the base class!
@@ -296,9 +296,9 @@ abstract class Parameter {
 
 	/*!
 		\brief	Returns true if boolean
-		
+
 		This function should be <b>overloaded</b> by the subclasses
-		
+
 		\return	always false for a base Parameter
 	*/
 	public function isBoolean() {
@@ -325,11 +325,11 @@ abstract class Parameter {
 
 	/*!
 		\brief	Returns the string representation of the Parameter
-		
+
 		Each Parameter that inherits from this function should reimplement it.
 		The function is not abstract since some children will need the
 		$numberOfChannels input parameter, while others won't.
-		
+
 		\param	$numberOfChannels Number of channels (default 0)
 		\return	string representation of the Parameter
 	*/
@@ -340,50 +340,50 @@ abstract class Parameter {
 	/*!
 		\brief	Returns the value of the parameter in a translated form that
 				is in the form that is used in the Tcl script.
-				
+
 		By default the translated value is just the value, but this can be
 		changed in subclasses when neccessary.
-		
+
 		\return the translated value
 	*/
 	public function translatedValue() {
 		return $this->value();
 	}
-	
+
     /*!
 		\brief  Returns the translated value for a given possible value
-		\param	$possibleValue	The possible value for which a translation is needed 
+		\param	$possibleValue	The possible value for which a translation is needed
 		\return	Translated possible value
 	*/
 	public function translatedValueFor( $possibleValue ) {
 		$db = new DatabaseConnection();
 		return $db->translationFor( $this->name, $possibleValue );
 	}
-	
-	
+
+
 	/*!
 		\brief  Separates composed in using camel-case notation into individual words
-  
+
 		This function takes an input such a 'PointSpreadFunction' and returns ' point spread function'
 		(notice the initial blank space!)
-  
+
 		\param  $string  String to be converted
 		\return $output Converted string
 	*/
 	protected final function decomposeCamelCaseString( $string ) {
-		
+
 		$uppercase = array ( 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
 		'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X',
 		'Y', 'Z' );
-  
+
 		$lowercase = array ( ' a', ' b', ' c', ' d', ' e', ' f', ' g', ' h',
 		' i', ' j', ' k', ' l', ' m', ' n', ' o', ' p', ' q', ' r', ' s',
 		' t', ' u', ' v', ' w', ' x', ' y', ' z' );
-  
+
 		return ( str_replace( $uppercase, $lowercase, $string ) );
 	}
 
-	
+
 } // End of Parameter class
 
 /*
@@ -393,15 +393,15 @@ abstract class Parameter {
 /*!
  \class    ChoiceParameter
  \brief    Base class for all ChoiceParameter types
- 
+
  The ChoiceParameter can assume a limited number of possible values.
 */
 abstract class ChoiceParameter extends Parameter {
-	
+
 	/*!
 		\var	$possibleValues
 		\brief	Possible values for the ChoiceParameter
-	*/	
+	*/
 	protected $possibleValues;
 
 	/*!
@@ -411,19 +411,19 @@ abstract class ChoiceParameter extends Parameter {
 	protected function __construct($name) {
 		parent::__construct($name);
 		$possibleValues = array ();
-		
+
 		// Get and set the Parameter possible values
-		$db = new DatabaseConnection;		
+		$db = new DatabaseConnection;
 		$values = $db->readPossibleValues($this);
 		$this->possibleValues = $values;
-		
+
 		// Get and set the Parameter default value
 		$defaultValue = $this->defaultValue();
 		if ($defaultValue != NULL) {
 			$this->value = $defaultValue;
-		}		
+		}
 	}
-	
+
 	/*!
 		\brief	Returns the possible values for the Parameter
 		\return	the possible values
@@ -497,10 +497,10 @@ abstract class ChoiceParameter extends Parameter {
 
 	/*!
 		\brief	Prints a checkBox for current Parameter and the given value
-				
+
 				If the value matches the internal value, the checkBox will
 				be checked. Additional options can be added.
-		
+
 		\param	$valueChecked	Value for the Parameter
 		\param	$customHTML		HTML code for additional options for the checkBox
 	*/
@@ -525,7 +525,7 @@ abstract class ChoiceParameter extends Parameter {
 		}
 		return $result;
 	}
-	
+
 	/*!
 		\brief	Returns the string representation of the Parameter
 		\param	$numberOfChannels Number of channels (default 0)
@@ -540,22 +540,22 @@ abstract class ChoiceParameter extends Parameter {
 		}
 		return $result;
 	}
-	
+
 	/*!
 		\brief	Returns the default value for the Parameters that have a default
 		        value ot NULL for those that don't
-		
+
 		This function should be <b>overloaded</b> by the subclasses
-		
+
 		\return	tyhe default value or NULL
 	*/
 	public function defaultValue() {
-		$db = new DatabaseConnection;	
+		$db = new DatabaseConnection;
 		$name = $this->name( );
 		$default = $db->defaultValue( $name );
 		return ( $default );
 	}
-	
+
 }
 
 /*
@@ -580,7 +580,7 @@ class BooleanParameter extends ChoiceParameter {
 
 	/*!
 		\brief	Checks whether the value is true
-		\return	true if the value of the BooleanParameter is "True", false otherwise		
+		\return	true if the value of the BooleanParameter is "True", false otherwise
 	*/
 	public function isTrue() {
 		return ($this->value == "True");
@@ -588,7 +588,7 @@ class BooleanParameter extends ChoiceParameter {
 
 	/*!
 		\brief	Checks whether the Parameter is a BooleanParameter
-		\return	true if the Parameter is a BooleanParameter, false otherwise		
+		\return	true if the Parameter is a BooleanParameter, false otherwise
 	*/
 	public function isBoolean() {
 		return True;
@@ -606,17 +606,17 @@ class BooleanParameter extends ChoiceParameter {
 		}
 		$result = $this->formattedName( );
 		$result = $result . $value . "\n";
-		return $result;		
+		return $result;
 	}
 
 	/*!
 		\brief	Prints a checkBox for current BooleanParameter and the given value
-				
+
 				If the value matches the internal value, the checkBox will
 				be checked. Additional options can be added.
-		
+
 		\param	$customHTML		HTML code for additional options for the checkBox
-	*/	
+	*/
 	public function printCheckBox($customHTML) {
 		$result = '<input type="checkbox" name="' . $this->name() . '" value="True" ';
 		if ($this->value == "True") {
@@ -662,31 +662,31 @@ class NumericalParameter extends Parameter {
 		\brief	maximum possible value for the NumericalParameter
 	*/
 	protected $max;
-	
+
 	/*!
 		\var	$checkMin
 		\brief	If true, the value must be checked against the minimum
-	*/	
+	*/
 	protected $checkMin;
 
 	/*!
 		\var	$checkMax
 		\brief	If true, the value must be checked against the maximum
-	*/	
+	*/
 	protected $checkMax;
-	
+
 	/*!
 		\var	$isMinIncluded
 		\brief	If true, the value must be >= than the minimum value, otherwise
 				it must be > the minimum value
-	*/	
+	*/
 	protected $isMinIncluded;
 
 	/*!
 		\var	$isMaxIncluded
 		\brief	If true, the value must be <= than the maximum value, otherwise
 				it must be < the maximum value
-	*/	
+	*/
 	protected $isMaxIncluded;
 
 	/*!
@@ -701,10 +701,10 @@ class NumericalParameter extends Parameter {
 		$this->checkMax = False;
 		$this->isMinIncluded = True;
 		$this->isMaxIncluded = True;
-		
+
 		// Gets the Parameter's possible values, default value and all
 		// boundary values from the database and sets them
-		$db = new DatabaseConnection;		
+		$db = new DatabaseConnection;
 		$values = $db->readNumericalValueRestrictions($this);
 		$min = $values[0];
 		$max = $values[1];
@@ -734,7 +734,7 @@ class NumericalParameter extends Parameter {
 
 	/*!
 		\brief	Set the minimum allowed value for the NumericalParameter
-		
+
 		The value itself may be allowed or not.
 	*/
 	public function setMin($value) {
@@ -744,7 +744,7 @@ class NumericalParameter extends Parameter {
 
 	/*!
 		\brief	Set the maximum allowed value for the NumericalParameter
-		
+
 		The value itself may be allowed or not.
 	*/
 	public function setMax($value) {
@@ -796,16 +796,16 @@ class NumericalParameter extends Parameter {
 		$this->message = '';
 		return ( $this->checkValue( $this->value ) );
 	}
-	
+
 	/*!
 		\brief 	Checks whether the value is valid
-		
+
 		The value of a NumericalParameter must be a number and might optionally
 		have to be larger than or equal to a given minum value and smaller than
 		or equal to a given maximum.
 		\param	$value	Value to be checked
 		\return true if the value is valid, false otherwise
-	*/	
+	*/
 	protected function checkValue($value) {
 	    if ( is_array( $value ) )
 	    {
@@ -842,13 +842,13 @@ class NumericalParameter extends Parameter {
 		}
 		return True;
 	}
-	
+
 	/*!
 		\brief	Sets the value of the parameter
-		
+
 		The value must be a scalar.
-		
-		\param	$value	Value for the parameter		
+
+		\param	$value	Value for the parameter
 	*/
 	public function setValue($value) {
 	    if ( is_array( $value ) ) {
@@ -856,7 +856,7 @@ class NumericalParameter extends Parameter {
 	    }
 	    $this->value = $value;
 	}
-	
+
 	/*!
 		\brief	Returns the string representation of the Parameter
 		\return	string representation of the Parameter
@@ -879,7 +879,7 @@ class NumericalParameter extends Parameter {
 
 /*!
 	\class	NumericalArrayParameter
-	\brief	Class for a Parameter that has an array of numbers as possible value, 
+	\brief	Class for a Parameter that has an array of numbers as possible value,
 			where each entry represents a channel.
 */
 
@@ -888,9 +888,9 @@ class NumericalArrayParameter extends NumericalParameter {
     /*!
 		\var	$numberOfChannels
 		\brief	Number of channels for which to provide Parameter values
-	*/	
+	*/
 	protected $numberOfChannels;
-	
+
 	/*!
 		\brief	Constructor: creates an empty Parameter
 		\param	$name	Name of the new Parameter
@@ -903,7 +903,7 @@ class NumericalArrayParameter extends NumericalParameter {
 	/*!
 		\brief	Confirms that the Parameter can have a variable number of channels
 		This overloads the base function.
-		\return true		
+		\return true
 	*/
 	public function isVariableChannel() {
 		return True;
@@ -913,7 +913,7 @@ class NumericalArrayParameter extends NumericalParameter {
 		\brief	Sets the Parameter value(s) to empty
 	*/
 	public function reset( ) {
-		$this->value = array ( 
+		$this->value = array (
 		    0 => NULL,
 		    1 => NULL,
 		    2 => NULL,
@@ -921,7 +921,7 @@ class NumericalArrayParameter extends NumericalParameter {
 		    4 => NULL );
 		$this->numberOfChannels = 1;
 	}
-	
+
 	/*!
 		\brief	 Sets the number of channels
 		\param	$number	Number of channels
@@ -930,11 +930,11 @@ class NumericalArrayParameter extends NumericalParameter {
 	    if ( $number == $this->numberOfChannels ) {
 	        return;
 	    }
-	    if ( $number < 1 ) { 
+	    if ( $number < 1 ) {
 	        $number = 1;
 	    }
-	    if ( $number > 5 ) { 
-	        $number = 5; 
+	    if ( $number > 5 ) {
+	        $number = 5;
 	    }
 	    for ( $i = $number; $i < 5; $i++ ) {
 	        $this->value[ $i ] = NULL;
@@ -949,15 +949,15 @@ class NumericalArrayParameter extends NumericalParameter {
 	public function numberOfChannels() {
 		return $this->numberOfChannels;
 	}
-	
+
 	/*!
 		\brief 	Checks whether all values in the array are valid
-		
+
 		Each value in the array must be a number and might optionally
 		have to be larger than or equal to a given minum value and smaller than
 		or equal to a given maximum.
 		\return true if all values are valid, false otherwise
-	*/	
+	*/
 	public function check() {
 	    $this->message = '';
 		$result = True;
@@ -969,11 +969,11 @@ class NumericalArrayParameter extends NumericalParameter {
 
 	/*!
 		\brief	Sets the value of the parameter
-		
+
 		The value must be an array with 5 values (those who refer to
 		non-existing channels should be null).
-		
-		\param	$value	Array of values for the parameter		
+
+		\param	$value	Array of values for the parameter
 	*/
 	public function setValue($value) {
 		$n = count( $value );
@@ -1026,10 +1026,10 @@ class AnyTypeArrayParameter extends NumericalArrayParameter {
 
 	/*!
 		\brief	Returns the internal value of the AnyTypeArrayParameter
-		
+
 		This function should be <b>overloaded</b> by the subclasses if the
 		internal and external representations differ.
-		
+
 		\return	the internal value of the Parameter
 	*/
 	public function internalValue() {
@@ -1055,7 +1055,7 @@ class PointSpreadFunction extends ChoiceParameter {
 	public function __construct() {
 		parent::__construct("PointSpreadFunction");
 	}
-	
+
 	/*!
 		\brief	Confirms that this is an Image Parameter.
 		\return true
@@ -1096,7 +1096,7 @@ class PSF extends AnyTypeArrayParameter {
 	  }
 	  return True;
 	}
-	
+
 	/*!
 		\brief	Returns the string representation of the Parameter
 		\return	string representation of the Parameter
@@ -1111,10 +1111,10 @@ class PSF extends AnyTypeArrayParameter {
 			$result = $result . "*not set*" . "\n";
 		} else {
 			if ( $numberOfChannels == 1 ) {
-				$result = $result . $this->value[ 0 ] . "\n";	
+				$result = $result . $this->value[ 0 ] . "\n";
 			} else {
 				$values = implode( ", ", array_slice( $this->value, 0, $numberOfChannels ) );
-				$result = $result . $values . "\n";	
+				$result = $result . $values . "\n";
 			}
 		}
 		return $result;
@@ -1132,7 +1132,7 @@ class PSF extends AnyTypeArrayParameter {
 		images
 */
 class IsMultiChannel extends BooleanParameter {
-	
+
 	/*!
 		\brief	Constructor: creates an empty Parameter
 	*/
@@ -1165,7 +1165,7 @@ class IsMultiChannel extends BooleanParameter {
 \todo	Check why this class does not have a constructor
 */
 class SingleOrMultiChannelParameter extends ChoiceParameter {
-	
+
 	/*!
 		\var	$isMultiChannel
 		\brief	Defines whether this is a single or multi channel parameter
@@ -1205,11 +1205,11 @@ class SingleOrMultiChannelParameter extends ChoiceParameter {
 	/*!
 		\brief	Sets the value of the Parameter
 		\param	$value	New value for the Parameter
-	
+
 	If $value contains the prefix single_ or multi_,  the parameter is set to
 	be single-channel or multi-channel, respectively, and the postfix of the
 	value is set as final value of the Parameter.
-	
+
 		\see postfix
 	*/
 	public function setValue($value) {
@@ -1244,10 +1244,10 @@ class SingleOrMultiChannelParameter extends ChoiceParameter {
 
 	/*!
 		\brief	Returns the internal value of the SingleOrMultiChannelParameter
-		
+
 		This function should be <b>overloaded</b> by the subclasses if the
 		internal and external representations differ.
-		
+
 		\return	the internal value of the Parameter, which is the value with the
 				prefix prepended.
 	*/
@@ -1304,7 +1304,7 @@ class ImageFileFormat extends SingleOrMultiChannelParameter {
 		$result = $db->fileExtensions($this->value());
 		return $result;
 	}
-	
+
 	/*!
 		\brief	Returns the string representation of the Parameter
 		\param	$numberOfChannels Number of channels (default 0)
@@ -1320,7 +1320,7 @@ class ImageFileFormat extends SingleOrMultiChannelParameter {
 		}
 		return $result;
 	}
-	
+
 }
 
 /*
@@ -1332,7 +1332,7 @@ class ImageFileFormat extends SingleOrMultiChannelParameter {
  \brief	A ChoiceParameter to represent the number of channels
 */
 class NumberOfChannels extends ChoiceParameter {
-	
+
 	/*!
 		\brief	Constructor: creates an empty Parameter
 	*/
@@ -1347,7 +1347,7 @@ class NumberOfChannels extends ChoiceParameter {
 	public function isForImage() {
 		return True;
 	}
-	
+
 }
 
 /*
@@ -1374,7 +1374,7 @@ class ImageGeometry extends SingleOrMultiChannelParameter {
 	public function isForImage() {
 		return True;
 	}
-	
+
 	/*!
 		\brief	Returns the string representation of the Parameter
 		\return	string representation of the Parameter
@@ -1417,11 +1417,11 @@ class MicroscopeType extends ChoiceParameter {
 
 	/*!
 		\brief	Returns the Parameter translated value
-		
+
 		The translated form of the Parameter value is then one used in
 		the Tcl script. The translation of the microscope yype is read from
 		the database.
-		
+
 		\return translated value
 	*/
 	public function translatedValue() {
@@ -1455,7 +1455,7 @@ class NumericalAperture extends NumericalParameter {
 	public function isForMicroscope() {
 		return True;
 	}
-	
+
 	/*!
 		\brief	Checks whether the Parameter is valid
 		\return	true if the Parameter is valid, false otherwise
@@ -1494,7 +1494,7 @@ class ObjectiveMagnification extends ChoiceParameter {
 	public function isForPixelSizeCalculation() {
 		return True;
 	}
-	
+
 }
 
 /*
@@ -1524,11 +1524,11 @@ class ObjectiveType extends ChoiceParameter {
 
 	/*!
 		\brief	Returns the Parameter translated value
-		
+
 		The translated form of the Parameter value is then one used in
 		the Tcl script. The translation of the objective type is read from
 		the database.
-		
+
 		\return translated value
 	*/
 	public function translatedValue() {
@@ -1536,7 +1536,7 @@ class ObjectiveType extends ChoiceParameter {
 		$result = $db->translationFor($this->name, $this->value);
 		return $result;
 	}
-	
+
 }
 
 /*
@@ -1566,11 +1566,11 @@ class SampleMedium extends ChoiceParameter {
 
 	/*!
 		\brief	Returns the Parameter translated value
-		
+
 		The translated form of the Parameter value is then one used in
 		the Tcl script. The translation of the sample medium is read from
 		the database.
-		
+
 		\return translated value
 	*/
 	public function translatedValue() {
@@ -1582,7 +1582,7 @@ class SampleMedium extends ChoiceParameter {
 			return $this->value;
 		}
 	}
-	
+
 	/*!
 		\brief	Checks whether the Parameter is valid
 		\return	true if the Parameter is valid, false otherwise
@@ -1601,7 +1601,7 @@ class SampleMedium extends ChoiceParameter {
 		}
 		return $result;
 	}
-	
+
 }
 
 /*
@@ -1620,7 +1620,7 @@ class Binning extends ChoiceParameter {
 	public function __construct() {
 		parent::__construct("Binning");
 	}
-	
+
 	/*!
 		\brief	Confirms that this is a Calculation Parameter.
 		\return true
@@ -1638,7 +1638,7 @@ class Binning extends ChoiceParameter {
 /*!
  \class	ExcitationWavelength
  \brief	A NumericalParameter to represent the excitation wavelength
- 
+
  The ExcitationWavelength class can store an array of numbers as value.
 */
 class ExcitationWavelength extends NumericalArrayParameter {
@@ -1649,7 +1649,7 @@ class ExcitationWavelength extends NumericalArrayParameter {
 	public function __construct() {
 		parent::__construct("ExcitationWavelength");
 	}
-	
+
 	/*!
 		\brief	Confirms that this is a Microscope Parameter.
 		\return true
@@ -1657,7 +1657,7 @@ class ExcitationWavelength extends NumericalArrayParameter {
 	public function isForMicroscope() {
 		return True;
 	}
-	
+
 	/*!
 		\brief	Checks whether the Parameter is valid
 		\return	true if the Parameter is valid, false otherwise
@@ -1678,7 +1678,7 @@ class ExcitationWavelength extends NumericalArrayParameter {
 /*!
  \class	EmissionWavelength
  \brief	A NumericalParameter to represent the emission wavelength
- 
+
  The EmissionWavelength class can store an array of numbers as value.
 */
 class EmissionWavelength extends NumericalArrayParameter {
@@ -1697,7 +1697,7 @@ class EmissionWavelength extends NumericalArrayParameter {
 	public function isForMicroscope() {
 		return True;
 	}
-	
+
 	/*!
 		\brief	Checks whether the Parameter is valid
 		\return	true if the Parameter is valid, false otherwise
@@ -1709,7 +1709,7 @@ class EmissionWavelength extends NumericalArrayParameter {
 		}
 		return $result;
 	}
-	
+
 }
 
 /*
@@ -1736,7 +1736,7 @@ class CMount extends NumericalParameter {
 	public function isForPixelSizeCalculation() {
 		return True;
 	}
-	
+
 	/*!
 		\brief	Checks whether the Parameter is valid
 		\return	true if the Parameter is valid, false otherwise
@@ -1775,7 +1775,7 @@ class TubeFactor extends NumericalParameter {
 	public function isForPixelSizeCalculation() {
 		return True;
 	}
-	
+
 	/*!
 		\brief	Checks whether the Parameter is valid
 		\return	true if the Parameter is valid, false otherwise
@@ -1842,7 +1842,7 @@ class CCDCaptorSize extends NumericalParameter {
 
 	/*!
 		\brief	Constructor: creates an empty Parameter
-		
+
 		This is use to calculate the pixel size (i.e. CCDCaptorSizeX) from the
 		camera and magnification of the microscope)
 	*/
@@ -1857,7 +1857,7 @@ class CCDCaptorSize extends NumericalParameter {
 	public function isForPixelSizeCalculation() {
 		return True;
 	}
-	
+
 	/*!
 		\brief	Checks whether the Parameter is valid
 		\return	true if the Parameter is valid, false otherwise
@@ -1870,11 +1870,11 @@ class CCDCaptorSize extends NumericalParameter {
 		return $result;
 	}
 
-	
+
 	/*!
 		\brief	This Parameter should not display anything
 		\return	empty string
-	*/	
+	*/
 	public function displayString( ) {
 		$result = '';
 		return $result;
@@ -1957,7 +1957,7 @@ class PinholeSize extends NumericalArrayParameter {
 	public function isForCapture() {
 		return True;
 	}
-	
+
 	/*!
 		\brief	Checks whether the Parameter is valid
 		\return	true if the Parameter is valid, false otherwise
@@ -1987,7 +1987,7 @@ class PinholeSpacing extends NumericalParameter {
 	public function __construct() {
 		parent::__construct("PinholeSpacing");
 	}
-	
+
 	/*!
 		\brief	Confirms that this is a Capture Parameter.
 		\return true
@@ -1995,8 +1995,8 @@ class PinholeSpacing extends NumericalParameter {
 	public function isForCapture() {
 		return True;
 	}
-	
-		
+
+
 	/*!
 		\brief	Checks whether the Parameter is valid
 		\return	true if the Parameter is valid, false otherwise
@@ -2034,7 +2034,7 @@ class MultiChannelOutput extends BooleanParameter {
 	public function isTaskParameter() {
 		return True;
 	}
-	
+
 	/*!
 		\brief	This Parameter should not display anything
 		\return	empty string
@@ -2061,7 +2061,7 @@ class SignalNoiseRatio extends NumericalArrayParameter {
 		\brief	The deconvolution algorithm chosen
 	*/
 	private $algorithm;
-	
+
 	/*!
 		\brief	Constructor: creates an empty Parameter
 	*/
@@ -2097,10 +2097,10 @@ class SignalNoiseRatio extends NumericalArrayParameter {
 	public function setAlgorithm( $algorithm ) {
 		$this->algorithm = $algorithm;
 	}
-	
+
 	/*!
 		\brief	Returns the string representation of the Parameter for the cmle or qmle algorithm
-		
+
 		The algorithm is stored internally in the Parameter and is either 'cmle'
 		(default, set when the Parameter is instantiated),or 'qmle'.
 		\param	$numberOfChannels Number of channels (default 0)
@@ -2125,7 +2125,7 @@ class SignalNoiseRatio extends NumericalArrayParameter {
 				break;
 		}
 	}
-		
+
 }
 
 /*
@@ -2171,7 +2171,7 @@ class BackgroundOffsetPercent extends AnyTypeArrayParameter {
 		}
 		return $result;
 	}
-	
+
 	public function displayString( ) {
 		if ( $this->value[ 0 ] == 'auto' ) {
 			$name = ' background estimation';
@@ -2249,7 +2249,7 @@ class PSFGenerationDepth extends NumericalParameter {
 	public function __construct() {
 		parent::__construct("PSFGenerationDepth");
 	}
-	
+
 	/*!
 		\brief	Checks whether the Parameter is valid
 		\return	true if the Parameter is valid, false otherwise
@@ -2311,13 +2311,13 @@ class QualityChangeStoppingCriterion extends NumericalParameter {
  \brief	A ChoiceParameter to represent the output file format
 */
 class OutputFileFormat extends ChoiceParameter {
-	
+
 	/*!
 		\brief	Constructor: creates an empty Parameter
 	*/
 	public function __construct() {
 		parent::__construct("OutputFileFormat");
-	}	
+	}
 
 	/*!
 		\brief	Checks whether the Parameter is a Task Parameter
@@ -2329,11 +2329,11 @@ class OutputFileFormat extends ChoiceParameter {
 
 	/*!
 		\brief	Returns the Parameter translated value
-		
+
 		The translated form of the Parameter value is then one used in
 		the Tcl script. The translation of the output file format is read from
 		the database.
-		
+
 		\return translated value
 	*/
 	public function translatedValue() {
@@ -2341,7 +2341,7 @@ class OutputFileFormat extends ChoiceParameter {
 		$result = $db->translationFor($this->name, $this->value);
 		return $result;
 	}
-	
+
 	/*!
 		\brief	Returns the file extension associated with a given output
 				format translated value
@@ -2376,7 +2376,7 @@ class OutputFileFormat extends ChoiceParameter {
 /*!
  \class	DeconvolutionAlgorithm
  \brief	A ChoiceParameter to represent the deconvolution algorithm
-*/	
+*/
 class DeconvolutionAlgorithm extends ChoiceParameter {
 
 	/*!
@@ -2395,7 +2395,7 @@ class DeconvolutionAlgorithm extends ChoiceParameter {
 	}
 
 }
-	
+
 /*
 	============================================================================
 */
@@ -2404,7 +2404,7 @@ class DeconvolutionAlgorithm extends ChoiceParameter {
  \class	CoverslipRelativePosition
  \brief	A ChoiceParameter to represent the relative position of plane 0 with
 		respect to the coverslip
-*/	
+*/
 class CoverslipRelativePosition extends ChoiceParameter {
 
 	/*!
@@ -2412,8 +2412,8 @@ class CoverslipRelativePosition extends ChoiceParameter {
 	*/
 	public function __construct() {
 		parent::__construct("CoverslipRelativePosition");
-	}	
-	
+	}
+
 	/*!
 		\brief	Confirms that this is a Correction Parameter
 		\return true
@@ -2432,16 +2432,16 @@ class CoverslipRelativePosition extends ChoiceParameter {
  \class	PerformAberrationCorrection
  \brief	A ChoiceParameter to indicate whether aberration correction should be
 		performed
-*/	
+*/
 class PerformAberrationCorrection extends ChoiceParameter {
-	
+
 	/*!
 		\brief	Constructor: creates an empty Parameter
 	*/
 	public function __construct() {
 		parent::__construct("PerformAberrationCorrection");
-	}	
-	
+	}
+
 	/*!
 		\brief	Confirms that this is a Correction Parameter
 		\return true
@@ -2465,7 +2465,7 @@ class PerformAberrationCorrection extends ChoiceParameter {
 		$result = $result . $value . "\n";
 		return $result;
 	}
-	
+
 }
 
 /*
@@ -2483,8 +2483,8 @@ class AberrationCorrectionMode extends ChoiceParameter {
 	*/
 	public function __construct() {
 		parent::__construct("AberrationCorrectionMode");
-	}	
-	
+	}
+
 	/*!
 		\brief	Confirms that this is a Correction Parameter
 		\return true
@@ -2504,14 +2504,14 @@ class AberrationCorrectionMode extends ChoiceParameter {
  \brief	A ChoiceParameter to indicate the options of aberration correction
 */
 class AdvancedCorrectionOptions extends ChoiceParameter {
-			
+
 	/*!
 		\brief	Constructor: creates an empty Parameter
 	*/
 	public function __construct() {
 		parent::__construct("AdvancedCorrectionOptions");
-	}	
-	
+	}
+
 	/*!
 		\brief	Confirms that this is a Correction Parameter
 		\return true
@@ -2519,7 +2519,7 @@ class AdvancedCorrectionOptions extends ChoiceParameter {
 	public function isForCorrection() {
 		return True;
 	}
-	
+
 	/*!
 		\brief	Returns the string representation of the Parameter
 		\param	$numberOfChannels	This is ignored
@@ -2553,7 +2553,7 @@ class AdvancedCorrectionOptions extends ChoiceParameter {
  \brief	A BooleanParameter to indicate whether aberration correction is necessary
 */
 class AberrationCorrectionNecessary extends BooleanParameter {
-				
+
 	/*!
 		\brief	Constructor: creates an empty Parameter
 	*/
@@ -2578,18 +2578,18 @@ class OverrideConfidence extends ChoiceParameter {
 	*/
 	public function __construct() {
 		parent::__construct("OverrideConfidence");
-		
+
 		// We initialize the value to the default value
 		$this->value = $this->defaultValue();
 	}
 
 	/*!
 		\brief	Returns the Parameter translated value
-		
+
 		The translated form of the Parameter value is then one used in
 		the Tcl script. The translation of the microscope yype is read from
 		the database.
-		
+
 		\return translated value
 	*/
 	public function translatedValue() {
@@ -2597,7 +2597,7 @@ class OverrideConfidence extends ChoiceParameter {
 		$result = $db->translationFor($this->name, $this->value);
 		return $result;
 	}
-	
+
 	/*!
 		\brief	Returns the string representation of the Parameter
 		\param	$numberOfChannels	This is ignored

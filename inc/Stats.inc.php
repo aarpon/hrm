@@ -2,14 +2,14 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
-require_once( "User.inc" );
-require_once( "Database.inc" );
-require_once( "Util.inc" );
+require_once( "User.inc.php" );
+require_once( "Database.inc.php" );
+require_once( "Util.inc.php" );
 
 /*!
  \class	Type
  \brief	Type of display to be generated from the statistics
- 
+
  This class is used by the Stats class.
  */
 class Type {
@@ -114,9 +114,9 @@ class Type {
    *
    ========================================================================== */
 
-  
+
   /*!
-	\brief	Get the JS script to create a pie chart of the requested column 
+	\brief	Get the JS script to create a pie chart of the requested column
 			(variable) from the statistics table.
 	\param  $db				DatabaseConnection object
 	\param	$variable		Name of the column to target in the statistics table
@@ -230,7 +230,7 @@ class Type {
 	\param	$groupFilter	Filter on group, \see getGroupFilter()
   	\param	$userNameFilter	Filter on username, \see getUsernameFilter()
 	\return the html code for the total run time per user table
-	\todo	remove $statsType	
+	\todo	remove $statsType
 	*/
     private function getTotalRunTimePerUserTable( DatabaseConnection $db, $statsType, $group, $dateFilter, $groupFilter, $userNameFilter ) {
 
@@ -309,7 +309,7 @@ class Type {
 	\param	$groupFilter	Filter on group, \see getGroupFilter()
   	\param	$userNameFilter	Filter on username, \see getUsernameFilter()
 	\return the html code for the total run time per group table
-	\todo	remove $statsType	
+	\todo	remove $statsType
 	*/
   private function getTotalRunTimePerGroupTable( DatabaseConnection $db, $statsType, $group, $dateFilter, $groupFilter, $userNameFilter ) {
 
@@ -431,55 +431,55 @@ class Stats {
    \var		$m_Username
    \brief	Name of the user for whom statistics are returned; if the user is
    			the admin user, global statistics are returned
-   */  
+   */
   private $m_Username;
 
   /*!
    \var		$m_DB
    \brief	DatabaseConnection object
-   */  
+   */
   private $m_DB;
-  
+
   /*!
    \var		$m_Stats_Array
    \brief	Array of Type objects containing all currently supported statistics
-   */  
+   */
   private $m_Stats_Array;
-  
+
   /*!
    \var		$m_Filter_FromDate
    \brief	Date to filter from
-   */    
+   */
   private $m_Filter_FromDate;
-  
+
     /*!
    \var		$m_Filter_ToDate
    \brief	Date to filter to
-   */  
+   */
   private $m_Filter_ToDate;
-  
+
     /*!
    \var		$m_Filter_Group
-   \brief	Group to whom the user belongs 
-   */  
+   \brief	Group to whom the user belongs
+   */
   private $m_Filter_Group;
-  
+
     /*!
    \var		$m_Selected_Statistics
    \brief	The currently selected statistics
-   */  
+   */
   private $m_Selected_Statistics;
-  
+
 
   /* ===========================================================================
    *
    * PUBLIC METHODS
    *
    ========================================================================== */
-   
+
   /*!
 	\brief	Constructs the Stats object.
-	\param  $username Name of the user for whom statistics are returned; 
+	\param  $username Name of the user for whom statistics are returned;
 						if the user is the admin user, global statistics
 						are returned.
   */
@@ -505,10 +505,10 @@ class Stats {
   }
 
   /*!
-	\brief	returns an array with the descriptive names of all supported 
+	\brief	returns an array with the descriptive names of all supported
 			statistics (e.g. to be used in a < select > element)
 	\return array of descriptive names of supported statistics
-	*/  
+	*/
   public function getAllDescriptiveNames( ) {
     $names = array( );
     for ( $i = 0; $i < count( $this->m_Stats_Array ); $i++ ) {
@@ -523,7 +523,7 @@ class Stats {
 	/*!
 	\brief	returns the descriptive name of the selected statistics
 	\return	the descriptive name of the selected statistics
-	*/  
+	*/
   public function getSelectedStatistics( ) {
     return ( $this->m_Stats_Array[ $this->m_Selected_Statistics ]->m_DescriptiveName );
   }
@@ -531,9 +531,9 @@ class Stats {
 	/*!
 	\brief	sets the selected statistics
 	\param	$descriptiveName	Descriptive name of the selected statistics
-	\return the index in $m_Stats_Array of the selected statistics, or 
+	\return the index in $m_Stats_Array of the selected statistics, or
 			0 if the statistics does not exist
-	*/  
+	*/
     public function setSelectedStatistics( $descriptiveName ) {
     for ( $i = 0; $i < count( $this->m_Stats_Array ); $i++ ) {
       if ( $this->m_Stats_Array[ $i ]->m_DescriptiveName == $descriptiveName ) {
@@ -551,7 +551,7 @@ class Stats {
 			whether the generated (JS) script should be passed on to the
 			HighCharts library or not.
 	\return	string JS/PHP script to display the statistics.
-	*/  
+	*/
     public function getStatistics( ) {
 
     switch ( $this->m_Stats_Array[$this->m_Selected_Statistics]->m_Type ) {
@@ -574,21 +574,21 @@ class Stats {
     }
 
   }
-   
+
 	/*!
 	\brief	Returns the date of the first implementation of statistics in HRM
 	\return	date (2010-02-01)
-	*/ 
+	*/
   public function getFromDate( ) {
 
     return "2010-02-01";
-    
+
   }
 
 	/*!
 	\brief	Gets the end of current month
 	\return	date (YYYY-MM-DD)
-	*/ 
+	*/
   public function getToDate( ) {
 
     $year  = date( "Y" );
@@ -598,7 +598,7 @@ class Stats {
       $month -= 12;
       $year++;
     }
-    
+
     // End of month
     return date( "Y-m-d", strtotime( $year . "-" . $month . "-01 - 1 day" ) );
 
@@ -607,7 +607,7 @@ class Stats {
 	/*!
 	\brief	Gets an array of unique group names from the statistics table
 	\return	array of all unique group names
-	*/ 
+	*/
   public function getGroupNames( ) {
 
     $groupNames = array( "All groups" );
@@ -657,7 +657,7 @@ class Stats {
    ========================================================================== */
 
   /*!
- 	\brief	Sets the index of the first acceptable statistics for the user 
+ 	\brief	Sets the index of the first acceptable statistics for the user
  			(the very first for the admin since there are no limitations for the admin)
  */
   private function setDefaultStats(  ) {

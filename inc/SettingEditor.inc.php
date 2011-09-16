@@ -2,16 +2,16 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
-require_once("Setting.inc");
-require_once("Database.inc");
-require_once("User.inc");
+require_once("Setting.inc.php");
+require_once("Database.inc.php");
+require_once("User.inc.php");
 
 /*!
 	\class    BaseSettingEditor
 	\brief    Abstract class for a SettingEditor
 */
 abstract class BaseSettingEditor {
-	
+
 	/*!
 		\var	$user
 		\brief	Current User
@@ -32,26 +32,26 @@ abstract class BaseSettingEditor {
 
     /*!
 		\brief	Protected constructor: creates a new SettingEditor and
-				selects the default Setting if a default 
+				selects the default Setting if a default
 				Setting exists.
 		\param	$user	Current User
 	*/
-    protected function __construct( User $user) { 
+    protected function __construct( User $user) {
         $this->user = $user;
         $this->message = '';
         $this->selected = NULL;
         foreach ($this->settings() as $setting) {
-            if ($setting->isDefault()) { 
+            if ($setting->isDefault()) {
                 $this->selected = $setting->name();
               }
-        } 
+        }
     }
 
     /*!
 		\brief	Abstract function: creates and returns a new Setting
-		
+
 		This must be reimplemented.
-		
+
 		\return	a new Setting
 	*/
     abstract public function newSettingObject();
@@ -59,13 +59,13 @@ abstract class BaseSettingEditor {
   /*!
 	\brief	Returns the name of the database table in which the
 			ParameterSetting's are stored
-			
+
 	This must be reimplemented.
-	
+
 	\return	table name
   */
   abstract function table();
-	
+
     /*!
 		\brief	Loads and returns all the Setting's for current user (does not
 				load the Parameter values)
@@ -87,7 +87,7 @@ abstract class BaseSettingEditor {
 	  }
 	  return $settings;
 	}
-	
+
 	/*!
 	  \brief	Returns the Setting with given name
 	  \param	$name	name of the ParameterSetting
@@ -116,7 +116,7 @@ abstract class BaseSettingEditor {
 	*/
     public function selected() {
         return $this->selected;
-    } 
+    }
 
     /*!
 		\brief	Sets the Setting with given name as selected
@@ -125,7 +125,7 @@ abstract class BaseSettingEditor {
 	*/
     public function setSelected($name) {
         $this->selected = $name;
-    } 
+    }
 
     /*!
 		\brief	Returns the name of the User
@@ -133,23 +133,23 @@ abstract class BaseSettingEditor {
 	*/
     public function user() {
         return $this->user;
-    } 
+    }
 
     /*!
-		\brief	Create and set a new Setting with given name. 
-		
+		\brief	Create and set a new Setting with given name.
+
 		If a Setting with the same name already exists, return NULL. Otherwise,
 		the new Setting is set into the Editor and also returned.
-		
+
 		\param	$name	Name of the Setting to be created
-		\return	the created Setting object, or NULL if a Setting 
+		\return	the created Setting object, or NULL if a Setting
 				with the same name already exists
 	*/
     public function createNewSetting($name) {
         if (!$this->checkNewSettingName($name)) {
             return NULL;
         }
-        $setting = $this->newSettingObject(); 
+        $setting = $this->newSettingObject();
         $setting->setName($name);
         $setting->setOwner($this->user);
         $this->setSelected($name);
@@ -157,8 +157,8 @@ abstract class BaseSettingEditor {
     }
 
     /*!
-		\brief	Creates a new Setting with the given new name in the 
-				database and copies the Parameter values of the 
+		\brief	Creates a new Setting with the given new name in the
+				database and copies the Parameter values of the
 				existing Parameter to it.
 		\param  $newName    The name of the new Setting
 		\return	true if the copy was successful, false otherwise
@@ -174,7 +174,7 @@ abstract class BaseSettingEditor {
         $newSetting = $this->createNewSetting($newName);
         if ($newSetting==NULL) {
             return False;
-        } 
+        }
         $newSetting->copyParameterFrom($oldSetting);
         $result = $newSetting->save();
         $this->message = $newSetting->message();
@@ -184,11 +184,11 @@ abstract class BaseSettingEditor {
     /*!
 		\brief	Creates a new Setting in the database and copies
 				the values from a public Setting
-		
+
 		The new Setting will have the same name as the old Setting.
 		This is because this function is used to copy a preset (public
 		Setting) created by the admin into the user list of Setting's.
-		
+
 		\param	$setting	An existing Setting
 		\return	true if the copy was successful, false otherwise
 	*/
@@ -196,12 +196,12 @@ abstract class BaseSettingEditor {
         $newSetting = $this->createNewSetting($setting->name());
         if ($newSetting == null) {
             return False;
-        } 
+        }
         $newSetting->copyParameterFrom($setting);
         $result = $newSetting->save();
         $this->message = $newSetting->message();
         return $result;
-      } 
+      }
 
     /*!
 		\brief	Loads the values for the selected Setting and returns
@@ -222,9 +222,9 @@ abstract class BaseSettingEditor {
 
     /*!
 		\brief	Make the selected Setting the default one
-		
+
 		The selection will be stored in the database.
-		
+
 		\return	true if it worked, false otherwise
 	*/
     public function makeSelectedSettingDefault() {
@@ -250,9 +250,9 @@ abstract class BaseSettingEditor {
 
     /*!
 		\brief	Delete the Setting the selected Setting the default one
-		
+
 		The selection will be stored in the database.
-		
+
 		\return	true if it worked, false otherwise
 	*/
     public function deleteSelectedSetting() {
@@ -270,42 +270,42 @@ abstract class BaseSettingEditor {
         return False;
       }
       return True;
-    } 
+    }
 
 	/*!
 	  \brief	Returns the error message that was set by last operation
-		
+
 	  The message string will be empty if the last operation was successful.
-		
+
 	  \return	error message
 	*/
 	public function message() {
 	  return $this->message;
-	} 
+	}
 
 	/*!
 	  \brief	Checks that the given name for the new Setting is not empty and
 				that and there does not exist already a Setting with that name
-	  \param	$name	Name for the new Setting		
+	  \param	$name	Name for the new Setting
 	  \return	true if the name is valid, false otherwise
 	*/
-  public function checkNewSettingName($name) { 
+  public function checkNewSettingName($name) {
     $this->message = '';
     $names = array();
     foreach ($this->settings() as $setting) {
-      $names[] = $setting->name(); 
-    } 
+      $names[] = $setting->name();
+    }
     if (trim($name)=='') {
-      $this->message = "Please enter a name for the setting and try again!";      
+      $this->message = "Please enter a name for the setting and try again!";
       return False;
-    } 
-    if (in_array($name, $names)) { 
+    }
+    if (in_array($name, $names)) {
       $this->message = "A setting with the name $name already exists. Please enter another name!";
       return False;
-    } 
+    }
     return True;
   }
-  
+
   /*!
 	\brief	Returns the name of the default Setting
 	\todo	This function does not seem to be used anymore
@@ -336,7 +336,7 @@ abstract class BaseSettingEditor {
         return False;
       }
       return True;
-    } 
+    }
 } // End of SettingEditor class
 
 /*
@@ -351,7 +351,7 @@ class SettingEditor extends BaseSettingEditor {
 
   /*!
 	\brief	Constructor: creates a new SettingEditor and
-			selects the default Setting if a default 
+			selects the default Setting if a default
 			Setting exists.
 	\param	$user	Current User
   */
@@ -364,10 +364,10 @@ class SettingEditor extends BaseSettingEditor {
 			ParameterSetting's are stored
 	\return	table name
   */
-  function table() { 
+  function table() {
     return "parameter_setting";
   }
-  
+
   /*!
 	\brief	Creates and returns a new ParameterSetting
 	\return	a new PatameterSetting
@@ -390,22 +390,22 @@ class TaskSettingEditor extends BaseSettingEditor {
 
   /*!
 	\brief	Constructor: creates a new SettingEditor and
-			selects the default Setting if a default 
+			selects the default Setting if a default
 			Setting exists.
 	\param	$user	Current User
   */
   public function __construct( User $user) {
 	parent::__construct( $user );
   }
-  
+
   /*!
 	\brief	Returns the name of the database table in which the
 			TaskSetting's are stored
 	\return	table name
   */
-  function table() { 
+  function table() {
     return "task_setting";
-  } 
+  }
 
   /*!
 	\brief	Creates and returns a new TaskSetting

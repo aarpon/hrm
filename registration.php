@@ -2,12 +2,12 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
-require_once("./inc/User.inc");
-require_once("./inc/Database.inc");
-require_once("./inc/hrm_config.inc");
-require_once("./inc/Mail.inc");
-require_once("./inc/Util.inc");
-require_once("./inc/Validator.inc");
+require_once("./inc/User.inc.php");
+require_once("./inc/Database.inc.php");
+require_once("./inc/hrm_config.inc.php");
+require_once("./inc/Mail.inc.php");
+require_once("./inc/Util.inc.php");
+require_once("./inc/Validator.inc.php");
 
 global $hrm_url;
 global $email_sender;
@@ -36,53 +36,53 @@ $message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
     "pass1"    => "",
     "pass2"    => "",
     "note"     => "" );
-  
+
   // Username
   if ( isset( $_POST["username"] ) ) {
     if ( Validator::isUsernameValid( $_POST["username"] ) ) {
-      $clean["username"] = $_POST["username"];       
+      $clean["username"] = $_POST["username"];
     }
   }
 
   // Email
   if ( isset( $_POST["email"] ) ) {
     if ( Validator::isEmailValid( $_POST["email"] ) ) {
-      $clean["email"] = $_POST["email"];       
+      $clean["email"] = $_POST["email"];
     }
   }
-  
+
   // Group name
   if ( isset( $_POST["group"] ) ) {
     if ( Validator::isGroupNameValid( $_POST["group"] ) ) {
-      $clean["group"] = $_POST["group"];       
+      $clean["group"] = $_POST["group"];
     }
   }
-  
+
   // Passwords
   if ( isset( $_POST["pass1"] ) ) {
     if ( Validator::isPasswordValid( $_POST["pass1"] ) ) {
-      $clean["pass1"] = $_POST["pass1"];       
+      $clean["pass1"] = $_POST["pass1"];
     }
-  }  
+  }
   if ( isset( $_POST["pass2"] ) ) {
     if ( Validator::isPasswordValid( $_POST["pass2"] ) ) {
-      $clean["pass2"] = $_POST["pass2"];       
+      $clean["pass2"] = $_POST["pass2"];
     }
-  }  
-  
+  }
+
   // Note
   if ( isset( $_POST["note"] ) ) {
     if ( Validator::isNoteValid( $_POST["note"] ) ) {
-      $clean["note"] = $_POST["note"];       
+      $clean["note"] = $_POST["note"];
     }
   }
-  
+
 /*
  *
  * END OF SANITIZE INPUT
  *
  */
-  
+
 if (isset($_POST["OK"])) {
 
   // Check whether all fields have been correctly filled and whether the user
@@ -92,14 +92,14 @@ if (isset($_POST["OK"])) {
       if ( $clean["group"] != "") {
         if ($clean["pass1"] != "" && $clean["pass2"] != "" ) {
           if ( $clean["pass1"] == $clean["pass2"] ) {
-            
+
             // Store the new user into the database
             $db = new DatabaseConnection();
             if ( $db->emailAddress( $clean["username"] ) == "" ) {
               $id = get_rand_id(10);
               $result = $db->addNewUser( $clean["username"],
                   $clean["pass1"], $clean["email"], $clean["group"], $id );
-              
+
               // TODO refactor
               if ($result) {
                 $text = "New user registration:\n\n";
@@ -147,52 +147,52 @@ include("header.inc.php");
             <li><a href="javascript:openWindow('http://www.svi.nl/HuygensRemoteManagerHelpRegistrationPage')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
         </ul>
     </div>
-    
+
     <div id="content">
-    
+
         <h3>Registration</h3>
-        
+
 <?php
 
 if (!$processed) {
 
 ?>
         <form method="post" action="">
-        
+
             <div id="adduser">
-            
+
                 <label for="username">*Username: </label>
                 <input type="text" name="username" id="username" maxlength="30" value="<?php echo $clean["username"] ?>" />
-                
+
                 <br />
-                
+
                 <label for="email">*E-mail address: </label>
                 <input type="text" name="email" id="email"  maxlength="80" value="<?php echo $clean["email"] ?>" />
-                
+
                 <br />
-                
+
                 <label for="group">*Research group: </label>
                 <input type="text" name="group" id="group" maxlength="30" value="<?php echo $clean["group"] ?>" />
-                
+
                 <br />
-                
+
                 <label for="pass1">*Password: </label>
                 <input type="password" name="pass1" id="pass1" />
-                
+
                 <br />
-                
+
                 <label for="pass2">*(verify) Password: </label>
                 <input type="password" name="pass2" id="pass2" />
-                
+
                 <br />
-                
+
                 <label for="note">Request message:</label>
                 <textarea name="note" id="note" rows="3" cols="30"><?php echo $clean["note"] ?></textarea>
 
                 <div>
                     <input name="OK" type="submit" value="register" class="button" />
                 </div>
-                
+
             </div>
         </form>
 <?php
@@ -208,20 +208,20 @@ else {
 
 ?>
     </div> <!-- content -->
-    
+
     <div id="rightpanel">
-    
+
 <?php
 
 if (!$processed) {
 
 ?>
         <div id="info">
-        
+
             <h3>Quick help</h3>
-            
+
             <p>* Required fields.</p>
-            
+
         </div>
 <?php
 
@@ -236,9 +236,9 @@ if (!$processed) {
 
 ?>
         </div>
-        
+
     </div>  <!-- rightpanel -->
-    
+
 <?php
 
 include("footer.inc.php");

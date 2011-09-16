@@ -2,8 +2,8 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
-require_once("./inc/User.inc");
-require_once("./inc/Fileserver.inc");
+require_once("./inc/User.inc.php");
+require_once("./inc/Fileserver.inc.php");
 
 session_start();
 
@@ -24,7 +24,7 @@ if (isset($_SERVER['HTTP_REFERER']) && !strstr($_SERVER['HTTP_REFERER'], 'job_qu
 if (isset($_GET['ref'])) {
     $_SESSION['referer'] = $_GET['ref'];
 } else if (isset($_POST['ref'])) {
-    $_SESSION['referer'] = $_POST['ref']; 
+    $_SESSION['referer'] = $_POST['ref'];
 } else {
     $_SESSION['referer'] = $_SERVER['HTTP_REFERER'];
 }
@@ -74,7 +74,7 @@ if (isset($_GET['viewStrip'])) {
     } else {
         $embed = false;
     }
- 
+
     $_SESSION['fileserver']->viewStrip( $_GET['viewStrip'], $type, $src, $embed );
     exit;
 
@@ -165,7 +165,7 @@ if ($allowHttpUpload) {
      # echo "<pre>"; print_r($_FILES); print_r($_POST); print_r($_GET);echo "</pre>"; exit;
 
     if (isset($_POST['uploadForm']) && isset($_FILES) ) {
-        $operationResult = 
+        $operationResult =
             $_SESSION['fileserver']->uploadFiles($_FILES['upfile'], $browse_folder);
 
     } else if (isset($_GET['upload'])) {
@@ -180,11 +180,11 @@ if ($allowHttpUpload) {
 if (isset($_POST['delete'])) {
     if (isset($_POST['userfiles']) && is_array($_POST['userfiles'])) {
         if ( $browse_folder == "dest" ) {
-            $message = 
+            $message =
                 $_SESSION['fileserver']->deleteFiles($_POST['userfiles'],
                         "dest");
         } else {
-            $message = 
+            $message =
                 $_SESSION['fileserver']->deleteFiles($_POST['userfiles'],
                         "src");
         }
@@ -225,7 +225,7 @@ if ( $browse_folder == "dest" ) {
             <p>Click on a file name to see a preview.</p>
             <p><strong>Click on Detailed View <img src = \"images/eye.png\" />
             over the file preview to get additional information.</strong></p>";
-              
+
     if ($allowHttpTransfer) {
     $info .= "<p>Select the files you want to download (you can <b>SHIFT-</b> and
             <b>CTRL-click</b> for multiple selection) and press the
@@ -286,12 +286,12 @@ $file_buttons[] = "update";
 
 $control_buttons = '
 <input name="ref" type="hidden" value="'.$_SESSION['referer'].'" />
-<input name="OK" type="hidden" /> 
+<input name="OK" type="hidden" />
 ';
 
 
 
-include("./inc/FileBrowser.inc");
+include("./inc/FileBrowser.inc.php");
 
 include("footer.inc.php");
 

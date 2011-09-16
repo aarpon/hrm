@@ -2,11 +2,11 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
-require_once("./inc/User.inc");
-require_once("./inc/Parameter.inc");
-require_once("./inc/Setting.inc");
-require_once("./inc/Util.inc");
-require_once("./inc/Database.inc");
+require_once("./inc/User.inc.php");
+require_once("./inc/Parameter.inc.php");
+require_once("./inc/Setting.inc.php");
+require_once("./inc/Util.inc.php");
+require_once("./inc/Database.inc.php");
 
 /* *****************************************************************************
  *
@@ -50,7 +50,7 @@ for ($i=0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
   $pinholeKey = "PinholeSize{$i}";
   if (isset($_POST[$pinholeKey])) {
     $pinhole[$i] = $_POST[$pinholeKey];
-  } 
+  }
 }
 // get rid of extra values in case the number of channels is changed
 //if (is_array($pinhole)) {
@@ -86,7 +86,7 @@ if ($PSF == 'measured' ) {
   // Get the refractive indices: if they are not set, the floatval conversion will
   // change them into 0s
   $sampleRI    = floatval( $_SESSION['setting']->parameter( 'SampleMedium' )->translatedValue( ) );
-  $objectiveRI = floatval( $_SESSION['setting']->parameter( 'ObjectiveType' )->translatedValue( ) );              
+  $objectiveRI = floatval( $_SESSION['setting']->parameter( 'ObjectiveType' )->translatedValue( ) );
 
   // Calculate the deviation
   if ( ( $sampleRI == 0 ) ||  ( $objectiveRI == 0 ) ) {
@@ -100,7 +100,7 @@ if ($PSF == 'measured' ) {
 	// and skip the aberration correction page in case the deviation is smaller
 	// than 1%.
 	$deviation = abs( $sampleRI - $objectiveRI ) / $objectiveRI;
-          
+
 	// Do we need to go to the aberration correction page?
 	if ( $deviation < 0.01 ) {
       // We can save the parameters
@@ -128,7 +128,7 @@ if ($_SESSION[ 'setting' ]->checkPostedCapturingParameters( $_POST ) ) {
     $message = "            <p class=\"warning\">".$_SESSION['setting']->message()."</p>";
     if ($saved) {
       header("Location: " . $pageToGo ); exit();
-    }    
+    }
   }
   header("Location: " . $pageToGo ); exit();
 } else {
@@ -190,8 +190,8 @@ if ( $nyquist === false ) {
     }
     ?>
     <span id="ttSpanNyquist">Check your sampling with the online Nyquist calculator.</span>
-    <span id="ttSpanBack">Go back to previous page.</span>  
-    <span id="ttSpanCancel">Abort editing and go back to the image parameters selection page. All changes will be lost!</span>  
+    <span id="ttSpanBack">Go back to previous page.</span>
+    <span id="ttSpanCancel">Abort editing and go back to the image parameters selection page. All changes will be lost!</span>
     <?php
         if ( $saveToDB == true ) {
             $iconClass = "icon save";
@@ -212,29 +212,29 @@ if ( $nyquist === false ) {
             <li><a href="javascript:openWindow('http://www.svi.nl/HuygensRemoteManagerHelpCaptor')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
         </ul>
     </div>
-    
+
     <div id="content">
-    
+
         <h3>Optical parameters / 2</h3>
-        
+
         <form method="post" action="capturing_parameter.php" id="select">
-        
+
             <h4>How were these images captured?</h4>
 
     <?php
 
     /***************************************************************************
-    
+
       CCDCaptorSizeX
-    
+
     ***************************************************************************/
 
       $parameterCCDCaptorSizeX = $_SESSION['setting']->parameter("CCDCaptorSizeX");
 
-    ?>            
+    ?>
             <fieldset class="setting <?php echo $parameterCCDCaptorSizeX->confidenceLevel(); ?>"
               onmouseover="javascript:changeQuickHelp( 'voxel' );" >
-            
+
                 <legend>
                     <a href="javascript:openWindow('http://www.svi.nl/SampleSize')"><img src="images/help.png" alt="?" /></a>
                     voxel size
@@ -248,7 +248,7 @@ $textForCaptorSize = "pixel size (nm)";
 
 ?>
                 <ul>
-                
+
                     <li>
                         <?php echo $textForCaptorSize ?>:
                         <input name="CCDCaptorSizeX" type="text" size="5" value="<?php echo $value ?>" /> <br/>
@@ -256,7 +256,7 @@ $textForCaptorSize = "pixel size (nm)";
                   // The calculation of pixel size from CCD chip makes sense only for widefield microscopes
                   if ( $_SESSION['setting']->isWidefield() || $_SESSION['setting']->isMultiPointConfocal() ) {
             ?>
-            
+
             <a href="calculate_pixel_size.php"
               onmouseover="TagToTip('ttSpanPixelSizeFromCCD' )"
               onmouseout="UnTip()" >
@@ -271,7 +271,7 @@ $textForCaptorSize = "pixel size (nm)";
 <?php
 
 if ($_SESSION['setting']->isThreeDimensional()) {
-      
+
 ?>
 
                     <li>
@@ -280,17 +280,17 @@ if ($_SESSION['setting']->isThreeDimensional()) {
     <?php
 
     /***************************************************************************
-    
+
       ZStepSize
-    
+
     ***************************************************************************/
 
       $parameterZStepSize = $_SESSION['setting']->parameter("ZStepSize");
 
-    ?>                
+    ?>
                         <input name="ZStepSize" type="text" size="5" value="<?php echo $parameterZStepSize->value() ?>" />
                     </li>
-                    
+
 <?php
 
 }
@@ -298,7 +298,7 @@ if ($_SESSION['setting']->isThreeDimensional()) {
 ?>
 
                 </ul>
-                
+
                 <a href="javascript:openWindow('http://support.svi.nl/wiki/NyquistCalculator')"
                     onmouseover="TagToTip('ttSpanNyquist' )"
                     onmouseout="UnTip()" >
@@ -306,10 +306,10 @@ if ($_SESSION['setting']->isThreeDimensional()) {
                     On-line Nyquist rate and PSF calculator
                     <img src="images/web.png" alt="external link" />
                 </a>
-                
+
             <p class="message_confidence_<?php echo $parameterCCDCaptorSizeX->confidenceLevel(); ?>">&nbsp;</p>
 			</fieldset>
-           
+
 <?php
 
 if ($_SESSION['setting']->isTimeSeries()) {
@@ -319,9 +319,9 @@ if ($_SESSION['setting']->isTimeSeries()) {
     <?php
 
     /***************************************************************************
-    
+
       TimeInterval
-    
+
     ***************************************************************************/
 
       $parameterTimeInterval = $_SESSION['setting']->parameter("TimeInterval");
@@ -329,7 +329,7 @@ if ($_SESSION['setting']->isTimeSeries()) {
     ?>
             <fieldset class="setting <?php echo $parameterTimeInterval->confidenceLevel(); ?>"
               onmouseover="javascript:changeQuickHelp( 'time' );" >
-           	<legend> 
+           	<legend>
                 <a href="javascript:openWindow('http://www.svi.nl/TimeSeries')"><img src="images/help.png" alt="?" /></a>
                 time interval
                 </legend>
@@ -338,7 +338,7 @@ if ($_SESSION['setting']->isTimeSeries()) {
                 <input name="TimeInterval" type="text" size="5" value="<?php echo $parameterTimeInterval->value() ?>" />
               </li>
             </ul>
-                
+
             <p class="message_confidence_<?php echo $parameterTimeInterval->confidenceLevel(); ?>">&nbsp;</p>
 			</fieldset>
 <?php
@@ -352,9 +352,9 @@ if ($_SESSION['setting']->isTimeSeries()) {
 if ($_SESSION['setting']->isMultiPointOrSinglePointConfocal()) {
 
     /***************************************************************************
-    
+
       PinholeSize
-    
+
     ***************************************************************************/
 
       $parameterPinholeSize = $_SESSION['setting']->parameter("PinholeSize");
@@ -362,7 +362,7 @@ if ($_SESSION['setting']->isMultiPointOrSinglePointConfocal()) {
     ?>
             <fieldset class="setting <?php echo $parameterPinholeSize->confidenceLevel(); ?>"
               onmouseover="javascript:changeQuickHelp( 'pinhole_radius' );" >
-            
+
               <legend>
                 <a href="javascript:openWindow('http://www.svi.nl/PinholeRadius')"><img src="images/help.png" alt="?" /></a>
                 backprojected pinhole radius
@@ -370,7 +370,7 @@ if ($_SESSION['setting']->isMultiPointOrSinglePointConfocal()) {
             <ul>
                 <li>pinhole radius (nm):</li>
             </ul>
-                
+
             <?php
               if ( $_SESSION['setting']->numberOfChannels() > 1 ) {
               ?>  <p /> <?php
@@ -390,7 +390,7 @@ if ($_SESSION['setting']->isMultiPointOrSinglePointConfocal()) {
 
 ?></div>
                 <p />
-                
+
 				<?php
 				  $parameterNA = $_SESSION['setting']->parameter("NumericalAperture");
 				  $na = $parameterNA->value();
@@ -402,7 +402,7 @@ if ($_SESSION['setting']->isMultiPointOrSinglePointConfocal()) {
                   <img src="images/calc_small.png" alt="" />
                   Backprojected pinhole calculator
                 </a>
-                
+
             <p class="message_confidence_<?php echo $parameterPinholeSize->confidenceLevel(); ?>">&nbsp;</p>
 			</fieldset>
 <?php
@@ -416,17 +416,17 @@ if ($_SESSION['setting']->isMultiPointOrSinglePointConfocal()) {
 if ($_SESSION['setting']->isNipkowDisk()) {
 
     /***************************************************************************
-    
+
       PinholeSpacing
-    
+
     ***************************************************************************/
-	
+
 	$parameterPinholeSpacing = $_SESSION['setting']->parameter('PinholeSpacing');
-      
+
 ?>
             <fieldset class="setting <?php echo $parameterPinholeSpacing->confidenceLevel(); ?>"
               onmouseover="javascript:changeQuickHelp( 'pinhole_spacing' );" >
-              <legend>            
+              <legend>
                 <a href="javascript:openWindow('http://www.svi.nl/PinholeSpacing')"><img src="images/help.png" alt="?" /></a>
                 backprojected pinhole spacing
 	      </legend>
@@ -436,14 +436,14 @@ if ($_SESSION['setting']->isNipkowDisk()) {
                 </li>
           </ul>
           <p />
-                
+
                 <a href="calculate_bp_pinhole.php?na=<?php echo $na;?>"
                   onmouseover="TagToTip('ttSpanPinholeSpacing' )"
                   onmouseout="UnTip()" >
                   <img src="images/calc_small.png" alt="" />
                   Backprojected pinhole calculator
                 </a>
-                
+
             <p class="message_confidence_<?php echo $parameterPinholeSpacing->confidenceLevel(); ?>">&nbsp;</p>
 			</fieldset>
 <?php
@@ -463,22 +463,22 @@ if ($_SESSION['setting']->isNipkowDisk()) {
                   onmouseover="TagToTip('ttSpanCancel' )"
                   onmouseout="UnTip()"
                   onclick="document.location.href='select_parameter_settings.php'" />
-              <input type="submit" value="" class="<?php echo $iconClass; ?>" 
+              <input type="submit" value="" class="<?php echo $iconClass; ?>"
                   onmouseover="TagToTip('ttSpanForward' )"
                   onmouseout="UnTip()"
                   onclick="process()" />
             </div>
-            
+
         </form>
-        
+
     </div> <!-- content -->
-    
+
     <div id="rightpanel" onmouseover="javascript:changeQuickHelp( 'default' )">
-    
+
         <div id="info">
 
           <h3>Quick help</h3>
-          
+
 		  <div id="contextHelp">
 			<p>Here you have to enter the voxel size as it was set during the
 			image acquisition. Depending on the microscope type and the dataset
@@ -490,9 +490,9 @@ if ($_SESSION['setting']->isNipkowDisk()) {
 			</p>
 
 		  </div>
-		  
+
         </div>
-        
+
         <div id="message">
 <?php
 
@@ -500,9 +500,9 @@ echo $message;
 
 ?>
         </div>
-        
+
     </div> <!-- rightpanel -->
-    
+
 <?php
 
 include("footer.inc.php");

@@ -2,12 +2,12 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
-require_once("./inc/User.inc");
-require_once("./inc/Database.inc");
-require_once("./inc/hrm_config.inc");
-require_once("./inc/Mail.inc");
-require_once("./inc/Util.inc");
-require_once("./inc/Validator.inc");
+require_once("./inc/User.inc.php");
+require_once("./inc/Database.inc.php");
+require_once("./inc/hrm_config.inc.php");
+require_once("./inc/Mail.inc.php");
+require_once("./inc/Util.inc.php");
+require_once("./inc/Validator.inc.php");
 
 session_start();
 
@@ -38,28 +38,28 @@ $added = False;
     "pass1"    => "",
     "pass2"    => "",
     "note"     => "" );
-  
+
   // Username
   if ( isset( $_POST["username"] ) ) {
     if ( Validator::isUsernameValid( $_POST["username"] ) ) {
-      $clean["username"] = $_POST["username"];       
+      $clean["username"] = $_POST["username"];
     }
   }
 
   // Email
   if ( isset( $_POST["email"] ) ) {
     if ( Validator::isEmailValid( $_POST["email"] ) ) {
-      $clean["email"] = $_POST["email"];       
+      $clean["email"] = $_POST["email"];
     }
   }
-  
+
   // Group name
   if ( isset( $_POST["group"] ) ) {
     if ( Validator::isGroupNameValid( $_POST["group"] ) ) {
-      $clean["group"] = $_POST["group"];       
+      $clean["group"] = $_POST["group"];
     }
   }
-  
+
 /*
  *
  * END OF SANITIZE INPUT
@@ -80,7 +80,7 @@ if (isset($_POST['add'])) {
           $password = get_rand_id(8);
           $result = $db->addNewUser( $clean["username"],
                 md5($password), $clean["email"], $clean["group"], 'a' );
-          
+
           // TODO refactor
           if ($result) {
             $text = "Your account has been activated:\n\n";
@@ -115,8 +115,8 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 
 ?>
 
-<!DOCTYPE html 
-    PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" 
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 
@@ -144,40 +144,40 @@ else echo "        var added = false;\n";
   <form method="post" action="">
 
     <div id="box">
-    
+
       <fieldset>
-      
+
         <legend>account details</legend>
-        
+
         <div id="adduser">
-          
+
           <label for="username">Username: </label>
           <input type="text" name="username" id="username" value="" class="texfield" />
-          
+
           <br />
-          
+
           <label for="email">E-mail address: </label>
           <input type="text" name="email" id="email" value="" class="texfield" />
-          
+
           <br />
-          
+
           <label for="group">Research group: </label>
           <input type="text" name="group" id="group" value="" class="texfield" />
-          
+
           <br />
-          
+
           <input name="add" type="submit" value="add" class="button" />
-          
+
         </div>
-        
+
       </fieldset>
-      
+
       <div>
         <input type="button" value="close" onclick="window.close()" />
       </div>
-      
+
     </div> <!-- box -->
-    
+
     <div id="notice">
 <?php
 
@@ -185,11 +185,11 @@ else echo "        var added = false;\n";
 
 ?>
     </div>
-    
+
   </form>
-    
+
 </div>
-  
+
 </body>
 
 </html>

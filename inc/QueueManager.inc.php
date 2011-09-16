@@ -2,16 +2,16 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
-require_once ("Setting.inc");
-require_once ("Database.inc");
-require_once ("JobDescription.inc");
-require_once ("hrm_config.inc");
-require_once ("Fileserver.inc");
-require_once ("Shell.inc");
-require_once ("Mail.inc");
-require_once ("Job.inc");
-require_once ("JobQueue.inc");
-require_once ("System.inc");
+require_once ("Setting.inc.php");
+require_once ("Database.inc.php");
+require_once ("JobDescription.inc.php");
+require_once ("hrm_config.inc.php");
+require_once ("Fileserver.inc.php");
+require_once ("Shell.inc.php");
+require_once ("Mail.inc.php");
+require_once ("Job.inc.php");
+require_once ("JobQueue.inc.php");
+require_once ("System.inc.php");
 
 /*!
  \class  QueueManager
@@ -69,18 +69,18 @@ class QueueManager {
    \brief      If existing, delete debris from previously run jobs.
    \param      $desc A JobDescription object.
    \param      $server_hostname The server where the job will be run.
-   \TODO       Move to Shell.inc.
+   \TODO       Move to Shell.inc.php.
   */
   public function removeHuygensOutputFiles($desc, $server_hostname ) {
       global $imageProcessingIsOnQueueManager;
       global $huygens_user;
-      
+
       // Get the Huygens default output file.
       $user = $desc->owner();
       $fileserver = new Fileserver($user->name());
       $destPath = $fileserver->destinationFolderFor($desc);
       $huyOutFile = $destPath . "scheduler_client0.log";
-      
+
       // Build a remove command involving the file.
       $cmd  = "if [ -f \"" . $huyOutFile . "\" ]; ";
       $cmd .= "then ";
@@ -175,7 +175,7 @@ class QueueManager {
    \brief       well as to guarantee that the files can always be deleted.
    \param       $desc A JobDescription object
    \param       $fileserver A Fileserver object.
-  */                                                                   
+  */
   private function chmodJob(JobDescription $desc, Fileserver $fileserver ) {
 
       // Build a subdirectory pattern to look for the source previews.
@@ -186,7 +186,7 @@ class QueueManager {
           $previewSubdir = "/" . dirname($resultFiles[0]) . "/hrm_previews/";
       }
       $subdirPreviewPattern = $previewSubdir. basename($resultFiles[0]) . "*";
-      
+
       // Grant all permissions to the source preview in the source folder.
       $srcFolder = $fileserver->sourceFolder();
       $srcPreviews = $srcFolder . $subdirPreviewPattern;
@@ -478,7 +478,7 @@ class QueueManager {
  	exec("chown -R " . $huygens_user . ":" . $huygens_group . " " . $lpath);
  	}
  	}*/
- 	 
+
  	/*!
  	 \brief	Sets ownership of the files in the user area to the user
  	 \param	$username	Name of the user (must be a valid linux user on the file server)
@@ -534,31 +534,31 @@ class QueueManager {
  	    $desc = $job->description();
  	    $user = $desc->owner();
  	    $id = $job->id();
- 	    	
+
  	    // Check if fileserver is reachable
  	    $fileserver = new Fileserver($user->name());
  	    if (!$fileserver->isReachable())
  	    continue;
- 	    	
+
  	    // Check if Huygens host is reachable
  	    $proc = newExternalProcessFor($job->server(),
  	    $job->server() . "_" .$job->id() . "_out.txt",
  	    $job->server() . "_" .$job->id(). "_error.txt");
  	    if (!$proc->ping())
  	    continue;
- 	    	
+
  	    // Check finished marker
  	    $finished = $job->checkProcessFinished();
  	    if (!$finished) {
  	      continue;
  	    }
  	    report("checked finished process", 2);
- 
+
  	    // Check result image
   	    $resultSaved = $job->checkResultImage();
 
  	    report("checked result image", 2);
- 	    	
+
  	    // If fileshare is not on the same host as Huygens and ownership is
 		// to be transferred to the user
  	    if (!$imageProcessingIsOnQueueManager) {
@@ -566,7 +566,7 @@ class QueueManager {
                     $this->restoreOwnership($user->name());
                 }
             }
- 	    	
+
  	    // Notify user
  	    $startTime = $queue->startTime($job);
  	    $errorFile = $logdir . "/" . $job->server() .
@@ -656,7 +656,7 @@ class QueueManager {
                     "successfully treated by Huygens.\n\n";
  	  $text = $text . "You will find the resulting image ".
                     "($destFileName) in your destination folder.\n";
-					
+
 	  // Job id, pid, server
  	  $id = $desc->id();
  	  $pid = $job->pid();
@@ -665,10 +665,10 @@ class QueueManager {
 
 	  $user = $desc->owner();
  	  $fileserver = new Fileserver($user->name());
-	  	  
-      // Combine all parameters into one file	  
+
+      // Combine all parameters into one file
 	  $text = $text . $this->gatherParameters( $job );
-	  
+
  	  $imageName = $desc->destinationImageName();
  	  $user = $desc->owner();
  	  $username = $user->name();
@@ -814,7 +814,7 @@ class QueueManager {
 		$text = $text . "These are the parameters you set in the HRM:\n\n";
 		$text = $text . $this->parameterText($job);
 	  }
-	  
+
  	  $text = $text . "\n\n- TEMPLATE ----------------------------\n\n";
  	  $text = $text . "What follows is the Huygens Core template executed when the error occured:\n\n";
  	  $text = $text . $job->script();
@@ -853,13 +853,13 @@ class QueueManager {
  	  $text = $text . "\n";
  	  $text = $text . "Best regards,\n";
  	  $text = $text . "Huygens Remote Manager\n";
-	  
+
 	  // Job id, pid, server
  	  $id = $desc->id();
  	  $pid = $job->pid();
  	  $server = $job->server();
  	  $text = $text . "\nJob id: $id (pid $pid on $server)\n";
-	  
+
 	  // Add the parameter file if it could be created
  	  $templateParametersFile = $desc->destinationFolder(). "/". $desc->destinationImageName().".parameters.txt";
  	  if (file_exists($templateParametersFile)) {
@@ -870,7 +870,7 @@ class QueueManager {
 		$text = $text . "These are the parameters you set in the HRM:\n\n";
 		$text = $text . $this->parameterText($job);
 	  }
-	  
+
 	  $text = $text . "\n\n- USER PARAMETERS ---------------------------------------------\n\n";
 	  $text = $text . "These are the parameters you set in the HRM:\n\n";
  	  $mail = new Mail($email_sender);
@@ -978,15 +978,15 @@ class QueueManager {
 
  	  report("Huygens Remote Manager started on "
  	  . date("Y-m-d H:i:s") . "\n", 1);
- 	   
+
  	  if(!$this->askHuCoreVersionAndStoreIntoDB()) {
  	    error_log("An error occurred while reading HuCore version");
  	    return;
  	  }
-	  
+
 	  if(!$this->storeConfidenceLevelsIntoDB()) {
  	    error_log("An error occurred while storing the confidence levels in the database");
- 	    return;		
+ 	    return;
 	  }
 
  	  while (!$this->shallStop()) {
@@ -1092,11 +1092,11 @@ class QueueManager {
  	 \return true if asking the version and storing it in the database was successful, false otherwise
  	 */
 	private function storeConfidenceLevelsIntoDB() {
-	  
+
 	  // Get the confidence levels string from HuCore
 	  $result = askHuCore( "reportFormatInfo" );
-	  $confidenceLevelString = $result["formatInfo"]; 
-	  
+	  $confidenceLevelString = $result["formatInfo"];
+
 	  // Parse the confidence levels string
 	  $confidenceLevels = $this->parseConfidenceLevelString( $confidenceLevelString );
 
@@ -1106,24 +1106,24 @@ class QueueManager {
         report("Could not store confidence levels to the database!\n", 1);
  	    return false;
  	  }
- 	  return true;		
+ 	  return true;
 	}
-	
+
 	private function parseConfidenceLevelString( $confidenceLevelString ) {
-	
+
 		// Break down the string into per-file substrings
 		$confidenceLevelString = str_replace( '}}', '}}<CUT_HERE>', $confidenceLevelString );
 		$groups = explode( '<CUT_HERE> ', $confidenceLevelString );
-		
+
 		// Prepare the output array
 		$confidenceLevels = array( );
-		
+
 		// Confidence level regexp
 		$levelRegExp = '(reported|estimated|default|verified)';
-		
+
 		// Process the substrings
 		foreach( $groups as $group ) {
-			
+
 			$match = array();
 			preg_match("/(\A\w{2,16})(\s{1,2})(\{sampleSizes\s\{.+)/", $group, $match );
 
@@ -1157,12 +1157,12 @@ class QueueManager {
 				"RILens"         => "default",
 				"photonCnt"      => "default",
 				"exBeamFill"     => "default" );
-		
+
 			// Store the file format
 			$params[ 'fileFormat' ] = $fileFormat;
-			
+
 			// Parse the parameters
-			
+
 			// Sample sizes
 			$exp = "/\{sampleSizes\s\{" . $levelRegExp . "\s" . $levelRegExp .
 				"\s" . $levelRegExp . "\s" . $levelRegExp . "\}/";
@@ -1196,7 +1196,7 @@ class QueueManager {
 				    $fileFormat . " and parameter sampleSizesT!";
 				report( $msg, 1 ); exit( $msg );
 			}
-			
+
 			// iFacePrim
 			$exp = "/iFacePrim\s\{" . $levelRegExp . "\}/";
 			$match = array();
@@ -1204,7 +1204,7 @@ class QueueManager {
 			if ( isset( $match[ 1 ] ) ) {
 				$params[ 'iFacePrim' ] = $match[ 1 ];
 			} else {
-				$msg = "Could not find confidence level for file format " . 
+				$msg = "Could not find confidence level for file format " .
 				    $fileFormat . " and parameter iFacePrim!";
 				report( $msg, 1 ); exit( $msg );
 			}
@@ -1216,11 +1216,11 @@ class QueueManager {
 			if ( isset( $match[ 1 ] ) ) {
 				$params[ 'iFaceScnd' ] = $match[ 1 ];
 			} else {
-				$msg = "Could not find confidence level for file format " . 
+				$msg = "Could not find confidence level for file format " .
 				    $fileFormat . " and parameter iFaceScnd!";
 				report( $msg, 1 ); exit( $msg );
 			}
-		
+
 			// pinhole
 			$exp = "/pinhole\s\{" . $levelRegExp . "\}/";
 			$match = array();
@@ -1228,7 +1228,7 @@ class QueueManager {
 			if ( isset( $match[ 1 ] ) ) {
 				$params[ 'pinhole' ] = $match[ 1 ];
 			} else {
-				$msg = "Could not find confidence level for file format " . 
+				$msg = "Could not find confidence level for file format " .
 				    $fileFormat . " and parameter pinhole!";
 				report( $msg, 1 ); exit( $msg );
 			}
@@ -1240,7 +1240,7 @@ class QueueManager {
 			if ( isset( $match[ 1 ] ) ) {
 				$params[ 'chanCnt' ] = $match[ 1 ];
 			} else {
-				$msg = "Could not find confidence level for file format " . 
+				$msg = "Could not find confidence level for file format " .
 				    $fileFormat . " and parameter chanCnt!";
 				report( $msg, 1 ); exit( $msg );
 			}
@@ -1252,11 +1252,11 @@ class QueueManager {
 			if ( isset( $match[ 1 ] ) ) {
 				$params[ 'imagingDir' ] = $match[ 1 ];
 			} else {
-				$msg = "Could not find confidence level for file format " . 
+				$msg = "Could not find confidence level for file format " .
 				    $fileFormat . " and parameter imagingDir!";
 				report( $msg, 1 ); exit( $msg );
 			}
-			
+
 			// pinholeSpacing
 			$exp = "/pinholeSpacing\s\{" . $levelRegExp . "\}/";
 			$match = array();
@@ -1264,11 +1264,11 @@ class QueueManager {
 			if ( isset( $match[ 1 ] ) ) {
 				$params[ 'pinholeSpacing' ] = $match[ 1 ];
 			} else {
-				$msg = "Could not find confidence level for file format " . 
+				$msg = "Could not find confidence level for file format " .
 				    $fileFormat . " and parameter pinholeSpacing!";
 				report( $msg, 1 ); exit( $msg );
 			}
-			
+
 			// objQuality
 			$exp = "/objQuality\s\{" . $levelRegExp . "\}/";
 			$match = array();
@@ -1276,7 +1276,7 @@ class QueueManager {
 			if ( isset( $match[ 1 ] ) ) {
 				$params[ 'objQuality' ] = $match[ 1 ];
 			} else {
-				$msg = "Could not find confidence level for file format " . 
+				$msg = "Could not find confidence level for file format " .
 				    $fileFormat . " and parameter objQuality!";
 				report( $msg, 1 ); exit( $msg );
 			}
@@ -1288,7 +1288,7 @@ class QueueManager {
 			if ( isset( $match[ 1 ] ) ) {
 				$params[ 'lambdaEx' ] = $match[ 1 ];
 			} else {
-				$msg = "Could not find confidence level for file format " . 
+				$msg = "Could not find confidence level for file format " .
 				    $fileFormat . " and parameter lambdaEx\!";
 				report( $msg, 1 ); exit( $msg );
 			}
@@ -1300,11 +1300,11 @@ class QueueManager {
 			if ( isset( $match[ 1 ] ) ) {
 				$params[ 'lambdaEm' ] = $match[ 1 ];
 			} else {
-				$msg = "Could not find confidence level for file format " . 
+				$msg = "Could not find confidence level for file format " .
 				    $fileFormat . " and parameter lambdaEm\!";
 				report( $msg, 1 ); exit( $msg );
 			}
-			
+
 			// mType
 			$exp = "/mType\s\{" . $levelRegExp . "\}/";
 			$match = array();
@@ -1312,7 +1312,7 @@ class QueueManager {
 			if ( isset( $match[ 1 ] ) ) {
 				$params[ 'mType' ] = $match[ 1 ];
 			} else {
-				$msg = "Could not find confidence level for file format " . 
+				$msg = "Could not find confidence level for file format " .
 				    $fileFormat . " and parameter mType\!";
 				report( $msg, 1 ); exit( $msg );
 			}
@@ -1324,7 +1324,7 @@ class QueueManager {
 			if ( isset( $match[ 1 ] ) ) {
 				$params[ 'NA' ] = $match[ 1 ];
 			} else {
-				$msg = "Could not find confidence level for file format " . 
+				$msg = "Could not find confidence level for file format " .
 				    $fileFormat . " and parameter NA\!";
 				report( $msg, 1 ); exit( $msg );
 			}
@@ -1336,7 +1336,7 @@ class QueueManager {
 			if ( isset( $match[ 1 ] ) ) {
 				$params[ 'RIMedia' ] = $match[ 1 ];
 			} else {
-				$msg = "Could not find confidence level for file format " . 
+				$msg = "Could not find confidence level for file format " .
 				    $fileFormat . " and parameter RIMedia\!";
 				report( $msg, 1 ); exit( $msg );
 			}
@@ -1348,7 +1348,7 @@ class QueueManager {
 			if ( isset( $match[ 1 ] ) ) {
 				$params[ 'RILens' ] = $match[ 1 ];
 			} else {
-				$msg = "Could not find confidence level for file format " . 
+				$msg = "Could not find confidence level for file format " .
 				    $fileFormat . " and parameter RILens\!";
 				report( $msg, 1 ); exit( $msg );
 			}
@@ -1380,20 +1380,20 @@ class QueueManager {
 			// Store the parameters for current file format
 			$confidenceLevels[ $fileFormat ] = $params;
 		}
-	
+
 		return $confidenceLevels;
-	}	
+	}
 
  	/*!
  	 \brief	Saves all Parameters to file and also returns the content
  	        to be pasted in the email to the user
  	 */
 	private function gatherParameters( $job ) {
-	  
+
       // Get some objects
 	  $desc = $job->description();
  	  $user = $desc->owner();
-	  
+
 	  // Create a long string with the all parmaters nicely laid out
 	  $text = "";
 	  $imageName = $desc->destinationImageName();
@@ -1410,12 +1410,12 @@ class QueueManager {
 	  $text = $text . "\n\n- USER PARAMETERS ---------------------------------------------\n\n";
 	  $text = $text . "These are the parameters you set in the HRM:\n\n";
  	  $text = $text . $this->parameterText($job);
-	  
+
 	  // Now overwrite the original .parameters.txt file with this content
 	  $outFile = fopen($templateParametersFile, 'w');
       fwrite($outFile,$text);
       fclose($outFile);
-	  
+
 	  // Return the text
 	  return $text;
 	}

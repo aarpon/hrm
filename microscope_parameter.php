@@ -2,10 +2,10 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
-require_once("./inc/User.inc");
-require_once("./inc/Parameter.inc");
-require_once("./inc/Setting.inc");
-require_once("./inc/Database.inc");
+require_once("./inc/User.inc.php");
+require_once("./inc/Parameter.inc.php");
+require_once("./inc/Setting.inc.php");
+require_once("./inc/Database.inc.php");
 
 /* *****************************************************************************
  *
@@ -32,7 +32,7 @@ $parameterNames = $_SESSION['setting']->microscopeParameterNames();
 $db = new DatabaseConnection();
 foreach ( $parameterNames as $name ) {
   $parameter = $_SESSION['setting']->parameter( $name );
-  $confidenceLevel = $db->getParameterConfidenceLevel( $fileFormat->value(), $name );  
+  $confidenceLevel = $db->getParameterConfidenceLevel( $fileFormat->value(), $name );
   $parameter->setConfidenceLevel( $confidenceLevel );
   $_SESSION['setting']->set( $parameter );
 }
@@ -54,17 +54,17 @@ for ($i=0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
   $emissionKey = "EmissionWavelength{$i}";
   if (isset($_POST[$excitationKey])) {
     $excitation[$i] = $_POST[$excitationKey];
-  } 
+  }
   if (isset($_POST[$emissionKey])) {
     $emission[$i] = $_POST[$emissionKey];
-  } 
+  }
 }
 $excitationParam->setValue($excitation);
 $excitationParam->setNumberOfChannels( $_SESSION['setting']->numberOfChannels( ) );
 $emissionParam->setValue($emission);
 $emissionParam->setNumberOfChannels( $_SESSION['setting']->numberOfChannels( ) );
 $_SESSION['setting']->set($excitationParam);
-$_SESSION['setting']->set($emissionParam); 
+$_SESSION['setting']->set($emissionParam);
 
 /* *****************************************************************************
  *
@@ -76,7 +76,7 @@ if ( $_SESSION[ 'setting' ]->checkPostedMicroscopyParameters(  $_POST ) ) {
   header("Location: " . "capturing_parameter.php"); exit();
 } else {
   $message = "            <p class=\"warning\">" .
-    $_SESSION['setting']->message() . "</p>\n";  
+    $_SESSION['setting']->message() . "</p>\n";
 }
 
 /* *****************************************************************************
@@ -95,39 +95,39 @@ include("header.inc.php");
     <!--
       Tooltips
     -->
-    <span id="ttSpanBack">Go back to previous page.</span>  
-    <span id="ttSpanCancel">Abort editing and go back to the image parameters selection page. All changes will be lost!</span>  
-    <span id="ttSpanForward">Continue to next page.</span>  
-    
+    <span id="ttSpanBack">Go back to previous page.</span>
+    <span id="ttSpanCancel">Abort editing and go back to the image parameters selection page. All changes will be lost!</span>
+    <span id="ttSpanForward">Continue to next page.</span>
+
     <div id="nav">
         <ul>
             <li><img src="images/user.png" alt="user" />&nbsp;<?php echo $_SESSION['user']->name(); ?></li>
             <li><a href="javascript:openWindow('http://www.svi.nl/HuygensRemoteManagerHelpOptics')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
         </ul>
     </div>
-    
+
     <div id="content">
-    
+
         <h3>Optical parameters / 1</h3>
-        
+
         <form method="post" action="" id="select">
-        
+
             <h4>How did you set up your microscope?</h4>
 
     <?php
 
     /***************************************************************************
-    
+
       MicroscopeType
-    
+
     ***************************************************************************/
 
       $parameterMicroscopeType = $_SESSION['setting']->parameter("MicroscopeType");
 
-    ?>    
+    ?>
             <fieldset class="setting <?php echo $parameterMicroscopeType->confidenceLevel(); ?>"
               onmouseover="javascript:changeQuickHelp( 'type' );" >
-            
+
                 <legend>
                     <a href="javascript:openWindow('http://www.svi.nl/MicroscopeType')"><img src="images/help.png" alt="?" /></a>
                     microscope type
@@ -141,7 +141,7 @@ foreach($possibleValues as $possibleValue) {
 
 ?>
                 <input type="radio" name="MicroscopeType" value="<?php echo $possibleValue ?>" <?php echo $flag ?>/><?php echo $possibleValue ?>
-                
+
                 <br />
 <?php
 
@@ -154,25 +154,25 @@ foreach($possibleValues as $possibleValue) {
     <?php
 
     /***************************************************************************
-    
+
       NumericalAperture
-    
+
     ***************************************************************************/
 
       $parameterNumericalAperture = $_SESSION['setting']->parameter("NumericalAperture");
 
-    ?>    
+    ?>
             <fieldset class="setting <?php echo $parameterNumericalAperture->confidenceLevel(); ?>"
               onmouseover="javascript:changeQuickHelp( 'NA' );" >
-              
-              <legend> 
+
+              <legend>
 		<a href="javascript:openWindow('http://www.svi.nl/NumericalAperture')"><img src="images/help.png" alt="?" /></a>
 		numerical aperture
               </legend>
               <ul>
                 <li>NA:
                 <input name="NumericalAperture" type="text" size="5" value="<?php echo $parameterNumericalAperture->value() ?>" />
-              
+
                 </li>
               </ul>
               <p class="message_confidence_<?php echo $parameterNumericalAperture->confidenceLevel(); ?>">&nbsp;</p>
@@ -181,18 +181,18 @@ foreach($possibleValues as $possibleValue) {
     <?php
 
     /***************************************************************************
-    
+
       (Emission|Excitation)Wavelength
-    
+
     ***************************************************************************/
 
       $parameterEmissionWavelength = $_SESSION['setting']->parameter("EmissionWavelength");
-      
-    ?>    
-           
+
+    ?>
+
             <fieldset class="setting <?php echo $parameterEmissionWavelength->confidenceLevel(); ?>"
               onmouseover="javascript:changeQuickHelp( 'wavelengths' );" >
-            
+
                 <legend>
                     <a href="javascript:openWindow('http://www.svi.nl/WaveLength')"><img src="images/help.png" alt="?" /></a>
                     wavelengths
@@ -214,7 +214,7 @@ for ($i = 0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
 ?>
 </div></li>
 	<li>emission (nm):
-	
+
 	<div class="multichannel">
 <?php
 
@@ -229,16 +229,16 @@ for ($i=0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
 ?>
         </div></li>
         </ul>
-                
+
         <p class="message_confidence_<?php echo $parameterEmissionWavelength->confidenceLevel(); ?>">&nbsp;</p>
         </fieldset>
 
   <?php
 
     /***************************************************************************
-    
+
       ObjectiveType
-    
+
     ***************************************************************************/
 
     $parameterObjectiveType = $_SESSION['setting']->parameter("ObjectiveType");
@@ -247,12 +247,12 @@ for ($i=0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
 
             <fieldset class="setting <?php echo $parameterObjectiveType->confidenceLevel(); ?>"
               onmouseover="javascript:changeQuickHelp( 'objective' );" >
-            
+
                 <legend>
                     <a href="javascript:openWindow('http://www.svi.nl/LensImmersionMedium')"><img src="images/help.png" alt="?" /></a>
                     objective type
                 </legend>
-                
+
 <?php
 
 $possibleValues = $parameterObjectiveType->possibleValues();
@@ -263,22 +263,22 @@ foreach ($possibleValues as $possibleValue) {
 
 ?>
                 <input name="ObjectiveType" type="radio" value="<?php echo $possibleValue ?>" <?php echo $flag ?>/><?php echo $possibleValue ?>
-                
+
 <?php
 
 }
 
 ?>
-                
+
             <p class="message_confidence_<?php echo $parameterObjectiveType->confidenceLevel(); ?>">&nbsp;</p>
             </fieldset>
 
   <?php
 
     /***************************************************************************
-    
+
       SampleMedium
-    
+
     ***************************************************************************/
 
     $parameterSampleMedium = $_SESSION['setting']->parameter("SampleMedium");
@@ -287,12 +287,12 @@ foreach ($possibleValues as $possibleValue) {
 
             <fieldset class="setting <?php echo $parameterSampleMedium->confidenceLevel(); ?>"
               onmouseover="javascript:changeQuickHelp( 'sample' );" >
-            
+
                 <legend>
                     <a href="javascript:openWindow('http://www.svi.nl/SpecimenEmbeddingMedium')"><img src="images/help.png" alt="?" /></a>
                     sample medium
                 </legend>
-                
+
 <?php
 
 $default = False;
@@ -306,7 +306,7 @@ foreach ($parameterSampleMedium->possibleValues() as $possibleValue) {
 
 ?>
                 <input name="SampleMedium" type="radio" value="<?php echo $possibleValue ?>"<?php echo $flag ?> /><?php echo $possibleValue ?> <span class="title">[<?php echo $translation ?>]</span>
-                
+
                 <br />
 <?php
 
@@ -323,12 +323,12 @@ if (!$default) {
 
 ?>
                 <input name="SampleMedium" type="radio" value="custom"<?php echo $flag ?> /><input name="SampleMediumCustomValue" type="text" size="5" value="<?php echo $value ?>" onclick="this.form.SampleMedium[2].checked=true" />
-                
+
             <p class="message_confidence_<?php echo $parameterSampleMedium->confidenceLevel(); ?>">&nbsp;</p>
             </fieldset>
-            
+
             <div><input name="OK" type="hidden" /></div>
-            
+
             <div id="controls" onmouseover="javascript:changeQuickHelp( 'default' )">
               <input type="button" value="" class="icon previous"
                   onmouseover="TagToTip('ttSpanBack' )"
@@ -345,15 +345,15 @@ if (!$default) {
             </div>
 
         </form>
-        
+
     </div> <!-- content -->
-    
+
     <div id="rightpanel" onmouseover="javascript:changeQuickHelp( 'default' );" >
-    
+
         <div id="info">
-          
+
           <h3>Quick help</h3>
-            
+
             <div id="contextHelp">
               <p>On this page you specify the parameters for the optical setup
               of your experiment.</p>
@@ -363,9 +363,9 @@ if (!$default) {
               fluorophores, and the refractive indices of the sample medium and of
               the objective-embedding medium.</p>
             </div>
-            
+
         </div>
-        
+
         <div id="message">
 <?php
 
@@ -373,9 +373,9 @@ echo $message;
 
 ?>
         </div>
-        
+
     </div> <!-- rightpanel -->
-    
+
 <?php
 
 include("footer.inc.php");

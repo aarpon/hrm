@@ -2,15 +2,15 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
-require_once ("Setting.inc");
-require_once ("Database.inc");
-require_once ("JobDescription.inc");
-require_once ("hrm_config.inc");
-require_once ("Fileserver.inc");
-require_once ("Shell.inc");
-require_once ("Mail.inc");
-require_once ("JobTranslation.inc");
-require_once ("System.inc");
+require_once ("Setting.inc.php");
+require_once ("Database.inc.php");
+require_once ("JobDescription.inc.php");
+require_once ("hrm_config.inc.php");
+require_once ("Fileserver.inc.php");
+require_once ("Shell.inc.php");
+require_once ("Mail.inc.php");
+require_once ("JobTranslation.inc.php");
+require_once ("System.inc.php");
 
 /*!
  \class Job
@@ -154,7 +154,7 @@ class Job {
 
   /*!
    \brief	Returns the script name
-    
+
    The script name contains the id to make it univocal
 
    \return	the sript name
@@ -294,7 +294,7 @@ class Job {
     $path = $fileserver->sourceFolder();
     $dpath = $fileserver->destinationFolderFor($desc);
 
-    $finishedMarker = $desc->destinationImageName() . ".hgsb"; 
+    $finishedMarker = $desc->destinationImageName() . ".hgsb";
     $endTimeMarker = ".EstimatedEndTime_" . $desc->id();
 
     // Old code: to be removed.
@@ -326,7 +326,7 @@ class Job {
             }
             exec("(cd " . $dpath . " && sudo scp " . $huygens_user . "@"
                  . $server_hostname . ":" . $marker . " .)");
-            
+
             // Old code: to be removed.
             // If finished, copy also the remarks file.
             // Shouldn't this happen only if
@@ -347,7 +347,7 @@ class Job {
             $this->renameHuygensOutputFiles();
             $this->makeJobParametersFile();
         } else {
-            
+
             // Old code: to be removed.
             // Copy the estimated end time little file.
             // $marker = $huygens_server_image_folder . $user->name()
@@ -357,7 +357,7 @@ class Job {
             // if ($remoteFile == $marker) {
             // exec("(cd " . $path . " && sudo scp " . $huygens_user
             // . "@" . $server_hostname . ":" . $marker . " .)");
-            
+
             // // Delete in the remote place, not to transfer again
             // // until it is updated.
             // exec("ssh " . $huygens_user . "@" .
@@ -404,7 +404,7 @@ class Job {
   /* -------- Utilities for renaming and formatting job specific files ------ */
 
   /*
-   \brief       Renames the Huygens deconvolution default files 
+   \brief       Renames the Huygens deconvolution default files
    \brief       with a name that contains the job id and is HRM-compliant.
   */
   private function renameHuygensOutputFiles( ) {
@@ -480,7 +480,7 @@ class Job {
       $idJobOutFile = $jobDescription->destinationImageName() . ".inf.txt";
       return $jobDescription->destinationFolder() . $idJobOutFile;
   }
-  
+
   /*
   \brief        Get the name and path of the Huygens default file.
   \param        $fileType Which Huygens file.
@@ -522,7 +522,7 @@ class Job {
   }
 
   /*
-   \brief       Extracts important parameter data from the Huygens report file. 
+   \brief       Extracts important parameter data from the Huygens report file.
    \param       $jobInformation The contents of the report file in an array.
    \return      The parameters in a formatted way.
   */
@@ -584,7 +584,7 @@ class Job {
           $cmd = "scp " . $fileName . " " .$huygens_user."@";
           $cmd .= $server_hostname.":".$fileName;
           $result = exec($cmd);
-      } 
+      }
   }
 
   /*
@@ -662,7 +662,7 @@ class Job {
                   $table .= $this->formatString($warning,30);
                   $table .= $this->formatString($matches[2],30);
                   $table .= "\n";
-   
+
               }
           }
           $table .= "\n\n";
@@ -742,7 +742,7 @@ class Job {
       return $table;
   }
 
-  /*  
+  /*
    \brief       Formats a string with blanks on both sides.
    \param       $string The string to format
    \param       $pad The number of spaces to set on left and right

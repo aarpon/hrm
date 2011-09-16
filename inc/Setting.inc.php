@@ -2,10 +2,10 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
-require_once ("Parameter.inc");
-require_once ("Database.inc");
-require_once ("User.inc");
-require_once ("hrm_config.inc");
+require_once ("Parameter.inc.php");
+require_once ("Database.inc.php");
+require_once ("User.inc.php");
+require_once ("hrm_config.inc.php");
 
 /*!
  \class    Setting
@@ -310,7 +310,7 @@ class ParameterSetting extends Setting {
    These Parameters must all be defined.
 
    \param	$postedParameters	The $_POST array
-   \return	true if all Paraneters are defined and valid, false otherwise   
+   \return	true if all Paraneters are defined and valid, false otherwise
    */
   public function checkPostedImageParameters( $postedParameters ) {
 
@@ -333,9 +333,9 @@ class ParameterSetting extends Setting {
 	    if( !$parameter->check() ) {
 			$this->message = $parameter->message();
 			return False;
-	    }	
+	    }
 	}
-	
+
 	// The PSF type must be defined
 	if ( !isset( $postedParameters[ "PointSpreadFunction" ] ) ) {
 	  $this->message = "Please indicate whether you " .
@@ -349,9 +349,9 @@ class ParameterSetting extends Setting {
 	    if( !$parameter->check() ) {
 			$this->message = $parameter->message();
 			return False;
-	    }	
+	    }
 	}
-	
+
 	// The geometry must be defined for most file formats
     $singleParameters = $this->fixedGeometryFileFormats();
 	if ( !( array_search( $postedParameters[ "ImageFileFormat" ], $singleParameters ) === false ) ) {
@@ -372,7 +372,7 @@ class ParameterSetting extends Setting {
 		$this->message = $parameter->message();
 		return False;
     }
-	
+
 	// The number of channels must be defined for most file formats
     if ( $postedParameters[ "ImageFileFormat" ] == 'tiff-series' ) {
 		$postedParameters[ "NumberOfChannels" ] = "1";
@@ -389,7 +389,7 @@ class ParameterSetting extends Setting {
     if( !$parameter->check() ) {
         $this->message = $parameter->message();
         return False;
-    }	
+    }
 
 	// All checked correctly, we can return success
 	$this->message = "";
@@ -404,7 +404,7 @@ class ParameterSetting extends Setting {
    These Parameter might have different confidence levels
 
    \param	$postedParameters	The $_POST array
-   \return	true if all Paraneters are defined and valid, false otherwise   
+   \return	true if all Paraneters are defined and valid, false otherwise
    */
   public function checkPostedMicroscopyParameters( $postedParameters ) {
 
@@ -432,7 +432,7 @@ class ParameterSetting extends Setting {
 
       // If the value is set, we check it no matter if it must be provided or not
       if ( $valueSet ) {
-         
+
         // Handle particular parameters
         if ( $name == 'ExcitationWavelength0' ) {
           $value = array( null, null, null, null, null );
@@ -470,7 +470,7 @@ class ParameterSetting extends Setting {
           $this->message = $parameter->message();
           $noErrorsFound = False;
         }
-         
+
       } else {
 
         // In this case it is important to know whether the Parameter must
@@ -486,7 +486,7 @@ class ParameterSetting extends Setting {
         // Reset the Parameter
         $parameter->reset();
         $this->set( $parameter );
-         
+
         // If the Parameter value must be provided, we return an error
         if ( $mustProvide ) {
 
@@ -891,7 +891,7 @@ class ParameterSetting extends Setting {
       } else {
 
         $mustProvide = $parameter->mustProvide();
-         
+
         // Reset the Parameter
         $parameter->reset();
         $this->set( $parameter );
@@ -969,10 +969,10 @@ class ParameterSetting extends Setting {
   /*!
    \brief	Checks that the posted OverrideParameter is defined and valid
    \param	$postedParameters	The $_POST array
-   \return	true if all Paraneters are defined and valid, false otherwise   
+   \return	true if all Paraneters are defined and valid, false otherwise
    */
   public function checkPostedOverrideParameter( $postedParameters ) {
-	
+
     if ( count( $postedParameters ) == 0 ) {
       $this->message = '';
       return False;
@@ -993,7 +993,7 @@ class ParameterSetting extends Setting {
         if( !$parameter->check() ) {
           $this->message = $parameter->message();
           $noErrorsFound = False;
-        }		
+        }
 	}
 
 	return $noErrorsFound;
@@ -1567,7 +1567,7 @@ class TaskSetting extends Setting {
     parent::__construct();
     $parameterClasses = array (
 			'SignalNoiseRatio',
-			'BackgroundOffsetPercent', 
+			'BackgroundOffsetPercent',
 			'NumberOfIterations',
 			'OutputFileFormat',
 			'MultiChannelOutput',
@@ -1678,7 +1678,7 @@ class TaskSetting extends Setting {
           break;
 
         case 'manual' :
-           
+
           for ( $i = 0; $i < 5; $i++ ) {
             $name = "BackgroundOffsetPercent$i";
             if ( isset( $postedParameters[ $name ] ) ) {

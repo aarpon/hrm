@@ -2,12 +2,12 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
-require_once("./inc/User.inc");
-require_once("./inc/Database.inc");
-require_once("./inc/hrm_config.inc");
-require_once("./inc/Mail.inc");
-require_once("./inc/Util.inc");
-require_once("./inc/Validator.inc");
+require_once("./inc/User.inc.php");
+require_once("./inc/Database.inc.php");
+require_once("./inc/hrm_config.inc.php");
+require_once("./inc/Mail.inc.php");
+require_once("./inc/Util.inc.php");
+require_once("./inc/Validator.inc.php");
 
 global $hrm_url;
 global $email_sender;
@@ -45,24 +45,24 @@ if ( $authenticateAgainst != "MYSQL" ) {
   // Email
   if ( isset( $_POST["username"] ) ) {
     if ( Validator::isUserNameValid( $_POST["username"] ) ) {
-      $clean["username"] = $_POST["username"];       
+      $clean["username"] = $_POST["username"];
     }
   }
-  
+
   // Email
   if ( isset( $_POST["email"] ) ) {
     if ( Validator::isEmailValid( $_POST["email"] ) ) {
-      $clean["email"] = $_POST["email"];       
+      $clean["email"] = $_POST["email"];
     }
   }
-  
+
   // Group name
   if ( isset( $_POST["group"] ) ) {
     if ( Validator::isGroupNameValid( $_POST["group"] ) ) {
-      $clean["group"] = $_POST["group"];       
+      $clean["group"] = $_POST["group"];
     }
   }
-  
+
 /*
  *
  * END OF SANITIZE INPUT
@@ -80,12 +80,12 @@ if ( !isset( $_SESSION[ 'user' ] ) ) {
     $req = $_SERVER['REQUEST_URI'];
     $_SESSION['request'] = $req;
   }
-  header("Location: " . "login.php"); exit();  
+  header("Location: " . "login.php"); exit();
 }
 
 // Make sure that the user is the admin
 if ( !$_SESSION[ 'user' ]->isAdmin( ) ) {
-  header("Location: " . "login.php"); exit();  
+  header("Location: " . "login.php"); exit();
 }
 
 // Now we have a valid admin user logon, we can continue
@@ -207,11 +207,11 @@ include("header.inc.php");
             <li><a href="javascript:openWindow('http://www.svi.nl/HuygensRemoteManagerHelpUserManagement')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
         </ul>
     </div>
-    
+
     <div id="content">
-    
+
         <h3>Manage users</h3>
-        
+
 <?php
 
 $rows = $db->query("SELECT * FROM username");
@@ -224,7 +224,7 @@ foreach ($rows as $row) {
   $creation_date = date("j M Y, G:i", strtotime($row["creation_date"]));
   $status = $row["status"];
   if ($status != "a" && $status != "d") {
-    
+
 ?>
         <form method="post" action="">
             <div >
@@ -409,13 +409,13 @@ if ($_SESSION['index'] != "") {
                 </table>
             </fieldset>
         </div>
-        
+
     </div> <!-- content -->
-    
+
     <div id="rightpanel">
         <div id="info">
           <h3>Quick help</h3>
-            <p>You can add new users, accept or reject pending registration 
+            <p>You can add new users, accept or reject pending registration
                 requests, and manage existing users.</p>
         </div>
         <div id="message">
@@ -426,7 +426,7 @@ print $message;
 ?>
         </div>
     </div>  <!-- rightpanel -->
-    
+
 <?php
 
 include("footer.inc.php");

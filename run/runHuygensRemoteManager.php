@@ -4,8 +4,8 @@
 
 global $isServer;
 $isServer = true;
-require_once('../inc/hrm_config.inc');
-require_once('../inc/QueueManager.inc');
+require_once('../inc/hrm_config.inc.php');
+require_once('../inc/QueueManager.inc.php');
 $manager = new QueueManager();
 $manager->run();
 ?>

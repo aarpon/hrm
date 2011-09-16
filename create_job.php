@@ -2,11 +2,11 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
-require_once("./inc/User.inc");
-require_once("./inc/Fileserver.inc");
-require_once("./inc/Setting.inc");
-require_once("./inc/JobDescription.inc");
-require_once ("./inc/System.inc");
+require_once("./inc/User.inc.php");
+require_once("./inc/Fileserver.inc.php");
+require_once("./inc/Setting.inc.php");
+require_once("./inc/JobDescription.inc.php");
+require_once ("./inc/System.inc.php");
 
 session_start();
 
@@ -20,7 +20,7 @@ if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
 
 if (!isset($_SESSION['fileserver'])) {
   # session_register('fileserver');
-  $name = $_SESSION['user']->name(); 		   
+  $name = $_SESSION['user']->name();
   $_SESSION['fileserver'] = new Fileserver($name);
 }
 
@@ -31,12 +31,12 @@ if (isset($_POST['create'])) {
   $parameter->setValue($_POST['OutputFileFormat']);
   $_SESSION['task_setting']->set($parameter);
   // save preferred output file format
-  if ($_SESSION['task_setting']->save()) {       
+  if ($_SESSION['task_setting']->save()) {
     // TODO source/destination folder names should be given to JobDescription
     $job = new JobDescription();
     $job->setParameterSetting($_SESSION['setting']);
     $job->setTaskSetting($_SESSION['task_setting']);
-    $job->setFiles($_SESSION['fileserver']->selectedFiles()); 
+    $job->setFiles($_SESSION['fileserver']->selectedFiles());
     if ($job->addJob()) {
       $_SESSION['jobcreated'] = True;
       header("Location: " . "home.php");
@@ -49,7 +49,7 @@ if (isset($_POST['create'])) {
   else $message = "            <p class=\"warning\">An unknown error has occured. Please inform the person in charge.</p>";
 }
 else if (isset($_POST['OK'])) {
-  header("Location: " . "select_parameter_settings.php"); exit();  
+  header("Location: " . "select_parameter_settings.php"); exit();
 }
 
 include("header.inc.php");
@@ -59,8 +59,8 @@ include("header.inc.php");
       Tooltips
     -->
     <span id="ttSpanBack">Go back to step 3/4 - Select images.</span>
-    <span id="ttSpanCreateJob">Create job, add it to the queue, and go back to your home page.</span>  
- 
+    <span id="ttSpanCreateJob">Create job, add it to the queue, and go back to your home page.</span>
+
      <div id="nav">
         <ul>
             <li><img src="images/user.png" alt="user" />&nbsp;<?php echo $_SESSION['user']->name(); ?></li>
@@ -69,20 +69,20 @@ include("header.inc.php");
             <li><a href="javascript:openWindow('http://www.svi.nl/HuygensRemoteManagerHelpCreateJob')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
         </ul>
     </div>
-   
+
     <div id="content">
-   
+
         <h3>Step 4/4 - Create job</h3>
-        
+
         <form method="post" action="" id="createjob">
-        
+
           <fieldset class="setting">
-            
+
           <legend>
             <a href="javascript:openWindow('http://www.svi.nl/FileFormats')"><img src="images/help.png" alt="?" /></a>
               Output file format
             </legend>
-        
+
 <?php
 
 $parameter = $_SESSION['task_setting']->parameter("OutputFileFormat");
@@ -151,13 +151,13 @@ foreach ($possibleValues as $possibleValue) {
 
 ?>
                 </select>
-                
+
                 <input name="create" type="hidden" value="create" />
-            
+
           </fieldset>
-          
+
         </form>
-        
+
         <fieldset class="report">
             <legend>
                 <a href="javascript:openWindow('http://www.svi.nl/HuygensRemoteManagerHelpCreateJob')"><img src="images/help.png" alt="?" /></a>
@@ -171,7 +171,7 @@ echo $_SESSION['setting']->displayString();
 ?>
             </textarea>
         </fieldset>
-        
+
         <fieldset class="report">
             <legend>
                 <a href="javascript:openWindow('http://www.svi.nl/HuygensRemoteManagerHelpCreateJob')"><img src="images/help.png" alt="?" /></a>
@@ -186,7 +186,7 @@ echo $_SESSION['task_setting']->displayWithoutOutputFileFormat( $numberOfChannel
 ?>
             </textarea>
         </fieldset>
-        
+
         <fieldset class="report">
             <legend>
                 <a href="javascript:openWindow('http://www.svi.nl/HuygensRemoteManagerHelpCreateJob')"><img src="images/help.png" alt="?" /></a>
@@ -202,13 +202,13 @@ foreach ($files as $file) {
 
 ?>
             </textarea>
-            
+
         </fieldset>
 
         <form method="post" action="">
-            
+
           <div id="controls">
-                
+
 <?php
 
 if (!isset($_SESSION['jobcreated'])) {
@@ -222,7 +222,7 @@ if (!isset($_SESSION['jobcreated'])) {
               onclick="document.forms['createjob'].submit()"
               onmouseover="TagToTip('ttSpanCreateJob' )"
               onmouseout="UnTip()" />
-            
+
 <?php
 
 }
@@ -236,36 +236,36 @@ else {
 
 ?>
                 </div>
-                
+
             </form>
 
     </div> <!-- content -->
-    
+
     <div id="rightpanel">
-    
+
         <div id="info">
-          
+
           <h3>Quick help</h3>
-        
+
             <p>As a last step, please choose the output file format for your
             restored images.</p>
-            
+
             <p>Also, use this is summary to check your parameters. If you spot
             a mistake, use the links on the left to go back and fix it.</p>
-            
+
             <p>Once you are okay with the parameters, press the
             <img src="images/ok_help.png" alt="Create job" width="22" height="22" />
 		    <b>create job</b> button to add the job to the queue and go back to
             the home page.</p>
-            
+
             <?php
               if ( $numberOfChannels > 1 ) {
                 echo "<p>Please notice that is not possible to save multichannel datasets in TIFF-16 bit format.</p>";
               }
             ?>
-         
+
         </div>
-        
+
         <div id="message">
 <?php
 
@@ -273,9 +273,9 @@ echo $message;
 
 ?>
         </div>
-        
+
     </div> <!-- rightpanel -->
-    
+
 <?php
 
 include("footer.inc.php");

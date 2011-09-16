@@ -2,7 +2,7 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
-require_once( "./inc/System.inc" );
+require_once( "./inc/System.inc.php" );
 
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 

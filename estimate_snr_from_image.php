@@ -2,13 +2,13 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
-require_once("./inc/User.inc");
-require_once("./inc/Fileserver.inc");
+require_once("./inc/User.inc.php");
+require_once("./inc/Fileserver.inc.php");
 
 
 // Two private functions, for the two tasks of this script:
 
-// This configures and shows the file browser module inc/FileBrowser.inc.
+// This configures and shows the file browser module inc/FileBrowser.inc.php.
 // The Signal-to-noise estimator works only on raw images, so the listed
 // directory is the source ('src') one.
 function showFileBrowser() {
@@ -71,7 +71,7 @@ function showFileBrowser() {
 
     if ($type != "") {
         $info .= "<p>Only images of type <b>$type</b>, as set in the image
-        parameters, are shown.</p>"; 
+        parameters, are shown.</p>";
     }
 
     $info .= '<p>Please notice that undersampled or clipped images will provide
@@ -87,7 +87,7 @@ function showFileBrowser() {
             <p>Click <b>Help</b> on the top menu for more details.</p>
                ';
 
-    include("./inc/FileBrowser.inc");
+    include("./inc/FileBrowser.inc.php");
 }
 
 
@@ -124,7 +124,7 @@ function estimateSnrFromFile($file) {
     $psrc = dirname($psrc."/".$file);
     $subDir = dirname($file);
     if ( $subDir != "." ) {
-        $subDir .= "/"; 
+        $subDir .= "/";
     } else {
         $subDir = "";
     }
@@ -245,7 +245,7 @@ function estimateSnrFromFile($file) {
 
     $estimation = askHuCore("estimateSnrFromImage", $opt);
     // No line-breaks in the output, it is going to be escaped for JavaScript.
-    $output = 
+    $output =
         "<h3>SNR estimation</h3>".
         "<fieldset>".
         "<table>";
@@ -386,7 +386,7 @@ function estimateSnrFromFile($file) {
     <script type="text/javascript">
     <!--
          window.divCondition = 'general';
-         <?php 
+         <?php
          // Preloading code doesn't seem to help (at least if it doesn't go in
          // the head of the document;
          // echo $preload;

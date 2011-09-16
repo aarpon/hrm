@@ -2,7 +2,7 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
-require_once( "Shell.inc" );
+require_once( "Shell.inc.php" );
 
 /*!
    \class	JobQueue

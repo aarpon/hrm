@@ -40,9 +40,9 @@
            - Set details per task (imgOpen, setp,..)           
   */
 
-require_once( "User.inc" );
-require_once( "JobDescription.inc" );
-require_once( "Fileserver.inc" );
+require_once( "User.inc.php" );
+require_once( "JobDescription.inc.php" );
+require_once( "Fileserver.inc.php" );
 
 class JobTranslation {
 

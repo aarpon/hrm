@@ -2,8 +2,8 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
-require_once("hrm_config.inc");
-require_once("Fileserver.inc");
+require_once("hrm_config.inc.php");
+require_once("Fileserver.inc.php");
 
 global $hucore, $hutask, $logdir;
 

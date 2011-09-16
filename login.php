@@ -2,12 +2,12 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
-require_once("./inc/User.inc");
-require_once("./inc/Database.inc");
-require_once("./inc/hrm_config.inc");
-require_once("./inc/Fileserver.inc");
-require_once("./inc/System.inc");
-require_once("./inc/Validator.inc");
+require_once("./inc/User.inc.php");
+require_once("./inc/Database.inc.php");
+require_once("./inc/hrm_config.inc.php");
+require_once("./inc/Fileserver.inc.php");
+require_once("./inc/System.inc.php");
+require_once("./inc/Validator.inc.php");
 
 global $email_admin;
 global $enableUserAdmin;
