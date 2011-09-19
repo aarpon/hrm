@@ -158,7 +158,7 @@ function insert_records($records,$tabname) {
 
 // Insert a single record in the table $tabname.
 // $array id the record to be insert, $colnames contains the names of the columns of the table.
-// $array anb $colnames are simple 1D arrays.
+// $array and $colnames are simple 1D arrays.
 function insert_record($tabname, $array, $colnames) {
     global $db;
 
@@ -1994,6 +1994,9 @@ if ($current_revision < $n) {
 // -----------------------------------------------------------------------------
 // Update to revision 9
 // Description: Add 'ismultifile' column into file_format
+//              Correct description of ics2 file format
+//              Add Olympus OIF as input format
+//              Add Delta Vision (3rd) as output
 // -----------------------------------------------------------------------------
 $n = 9;
 if ($current_revision < $n) {
@@ -2029,7 +2032,105 @@ if ($current_revision < $n) {
 
     }
 
-        // Update revision
+    // Correct ics2 description
+    $tabname = 'possible_values';
+    $record = array();
+    $record["parameter"]   = 'ImageFileFormat';
+    $record["translation"] = 'Image Cytometry Standard 2 (*.ics)';
+    if (!$db->AutoExecute($tabname, $record, 'UPDATE', "value like 'ics2'")) {
+        $msg = error_message($tabname);
+        write_message($msg);
+        write_to_error($msg);
+        return false;
+    }
+
+    // Add Olympus OIF file to possible_values
+    $tabname = 'possible_values';
+    $record = array();
+    $record["parameter"]   = 'ImageFileFormat';
+    $record["value"]   = 'oif';
+    $record["translation"] = 'Olympus OIF file (*.oif)';
+    $record["isDefault"] = 'f';
+    // This is just a hack for developers; it the row is already there, skip
+    $query = "SELECT * FROM " . $tabname . " WHERE parameter='" . 
+        $record['parameter'] . "' AND value='" . $record['value'] . "' " .
+        " AND translation='" . $record["translation"] . "' AND isDefault='" .
+        $record["isDefault"] . "'";
+    if (!$db->Execute( $query ) ) {
+        if (!$db->AutoExecute($tabname, $record, 'INSERT')) {
+            $msg = error_message($tabname);
+            write_message($msg);
+            write_to_error($msg);
+            return false;
+        }
+    }
+    // Add Olympus OIF file to file_format
+    $tabname = 'file_format';
+    $record = array();
+    $record["name"]                = 'oif';
+    $record["isFixedGeometry"]     = 'f';
+    $record["isSingleChannel"]     = 'f';
+    $record["isVariableChannel"]   = 't';
+    $record["hucoreName"]          = 'oif';
+    $record["ismultifile"]         = 'f';
+    // This is just a hack for developers; it the row is already there, skip
+    $query = "SELECT * FROM " . $tabname . " WHERE name='" . 
+        $record['name'] . "' AND isFixedGeometry='" . 
+        $record['isFixedGeometry'] . "' AND isSingleChannel='" . 
+        $record["isSingleChannel"] . "' AND isVariableChannel='" .
+        $record["isVariableChannel"] . "' AND hucoreName='" .
+        $record["hucoreName"] . "' AND ismultifile='" .
+        $record["ismultifile"] . "'";
+    if (!$db->Execute( $query ) ) {
+        if (!$db->AutoExecute($tabname, $record, 'INSERT')) {
+            $msg = error_message($tabname);
+            write_message($msg);
+            write_to_error($msg);
+            return false;
+        }
+    }
+
+    // Add Olympus OIF file to file_extension
+    $tabname = 'file_extension';
+    $record = array();
+    $record["file_format"] = 'oif';
+    $record["extension"]   = 'oif';
+    // This is just a hack for developers; it the row is already there, skip
+    $query = "SELECT * FROM " . $tabname . " WHERE file_format='" .
+        $record['file_format'] . "' AND extension='" .
+        $record['extension'] . "'";
+    if (!$db->Execute( $query ) ) {
+        if (!$db->AutoExecute($tabname, $record, 'INSERT')) {
+            $msg = error_message($tabname);
+            write_message($msg);
+            write_to_error($msg);
+            return false;
+        }
+    }
+
+    // Add Delta Vision (*dv) as output to possible_values
+    $tabname = 'possible_values';
+    $record = array();
+    $record["parameter"]   = 'OutputFileFormat';
+    $record["value"]       = 'Delta Vision (*.r3d)';
+    $record["translation"] = 'r3d';
+    $record["isDefault"]   = 'f';
+    // This is just a hack for developers; it the row is already there, skip
+    $query = "SELECT * FROM " . $tabname . " WHERE parameter='" .
+        $record['parameter'] . "' AND value='" .
+        $record['value'] . "' AND translation='" .
+        $record['translation'] . "' AND isDefault='" .
+        $record['isDefault'] . "'";
+    if (!$db->Execute( $query ) ) {
+        if (!$db->AutoExecute($tabname, $record, 'INSERT')) {
+            $msg = error_message($tabname);
+            write_message($msg);
+            write_to_error($msg);
+            return false;
+        }
+    }
+
+    // Update revision
     if(!update_dbrevision($n))
         return;
     $current_revision = $n;
