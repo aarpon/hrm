@@ -2056,7 +2056,7 @@ if ($current_revision < $n) {
         $record['parameter'] . "' AND value='" . $record['value'] . "' " .
         " AND translation='" . $record["translation"] . "' AND isDefault='" .
         $record["isDefault"] . "'";
-    if (!$db->Execute( $query ) ) {
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
         if (!$db->AutoExecute($tabname, $record, 'INSERT')) {
             $msg = error_message($tabname);
             write_message($msg);
@@ -2081,7 +2081,7 @@ if ($current_revision < $n) {
         $record["isVariableChannel"] . "' AND hucoreName='" .
         $record["hucoreName"] . "' AND ismultifile='" .
         $record["ismultifile"] . "'";
-    if (!$db->Execute( $query ) ) {
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
         if (!$db->AutoExecute($tabname, $record, 'INSERT')) {
             $msg = error_message($tabname);
             write_message($msg);
@@ -2099,7 +2099,7 @@ if ($current_revision < $n) {
     $query = "SELECT * FROM " . $tabname . " WHERE file_format='" .
         $record['file_format'] . "' AND extension='" .
         $record['extension'] . "'";
-    if (!$db->Execute( $query ) ) {
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
         if (!$db->AutoExecute($tabname, $record, 'INSERT')) {
             $msg = error_message($tabname);
             write_message($msg);
@@ -2121,7 +2121,7 @@ if ($current_revision < $n) {
         $record['value'] . "' AND translation='" .
         $record['translation'] . "' AND isDefault='" .
         $record['isDefault'] . "'";
-    if (!$db->Execute( $query ) ) {
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
         if (!$db->AutoExecute($tabname, $record, 'INSERT')) {
             $msg = error_message($tabname);
             write_message($msg);
