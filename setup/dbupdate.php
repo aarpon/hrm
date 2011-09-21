@@ -2037,7 +2037,21 @@ if ($current_revision < $n) {
     $record = array();
     $record["parameter"]   = 'ImageFileFormat';
     $record["translation"] = 'Image Cytometry Standard 2 (*.ics)';
+    $record["isDefault"]   = 'f';
     if (!$db->AutoExecute($tabname, $record, 'UPDATE', "value like 'ics2'")) {
+        $msg = error_message($tabname);
+        write_message($msg);
+        write_to_error($msg);
+        return false;
+    }
+
+    // Make ics the default output file format
+    $tabname = 'possible_values';
+    $record = array();
+    $record["parameter"]   = 'OutputFileFormat';
+    $record["translation"] = 'ics';
+    $record["isDefault"]   = 't';
+    if (!$db->AutoExecute($tabname, $record, 'UPDATE', "value like 'ICS (Image Cytometry Standard)'")) {
         $msg = error_message($tabname);
         write_message($msg);
         write_to_error($msg);
@@ -2130,15 +2144,15 @@ if ($current_revision < $n) {
         }
     }
 
-    // Update revision
-    if(!update_dbrevision($n))
-        return;
-    $current_revision = $n;
-    $msg = "Database successfully updated to revision " . $current_revision . ".";
-    write_message($msg);
-    write_to_log($msg);
-
 }
+
+// Update revision
+if(!update_dbrevision($n))
+    return;
+$current_revision = $n;
+$msg = "Database successfully updated to revision " . $current_revision . ".";
+write_message($msg);
+write_to_log($msg);
 
 //$msg = "\nThe current revision of your HRM database is " . $current_revision . ".";
 //write_message($msg);

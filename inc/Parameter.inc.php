@@ -2346,7 +2346,7 @@ class OutputFileFormat extends ChoiceParameter {
 		\brief	Returns the file extension associated with a given output
 				format translated value
 		\return the file extension
-		\todo	This information is in the database!!!
+		\todo	This information is _partially_ in the database.
 	*/
 	public function extension( ) {
 		$result = $this->translatedValue( );
@@ -2363,6 +2363,8 @@ class OutputFileFormat extends ChoiceParameter {
 				return "ics";
 			case "hdf5":
 				return "h5";
+            case "r3d":
+                return "r3d";
 			default:
 				return "";
 		}

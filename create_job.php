@@ -112,6 +112,7 @@ if ( $value == 'IMS (Imaris Classic)' ) {
 <?php
 
 $possibleValues = $parameter->possibleValues(); // extract possible values for OutputFileFormat
+sort( $possibleValues );
 
 // If the dataset is multi-channel, we remove the TIFF-8 and TIFF-16 bit options from the list
 $nChannelsParameter = $_SESSION['setting']->parameter("NumberOfChannels");
