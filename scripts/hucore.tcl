@@ -170,7 +170,7 @@ proc hrmImgOpen { dir file args } {
     puts "REPORT"
 
     if { $matched } {
-        puts "Opening image: '$path' -subImage $subimage"
+        # puts "Opening image: '$path' -subImage $subimage"
         set cmd "img open \"$path\" -subImage \"$subimage\" $args"
         if { [ catch {
             set img [eval $cmd]
@@ -180,7 +180,7 @@ proc hrmImgOpen { dir file args } {
             set img -1
         }
     } else {
-        puts "Opening image: '$path'"
+        # puts "Opening image: '$path'"
         if { [ catch {
             set img [eval img open \"$path\" $args] } res ]
           } {
