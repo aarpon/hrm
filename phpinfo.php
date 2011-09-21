@@ -45,7 +45,7 @@ $info = preg_replace('%<img border="0" src=%s', "<img src=", $info );
         <ul>
             <li><img src="images/user.png" alt="user" />&nbsp;<?php echo $_SESSION['user']->name(); ?></li>
             <li><a href="<?php echo getThisPageName();?>?home=home"><img src="images/home.png" alt="home" />&nbsp;Home</a></li>
-            <li><a href="javascript:openWindow('#')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
+            <li><a href="javascript:openWindow('http://www.svi.nl/HuygensRemoteManagerHelpSystemSummary')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
         </ul>
     </div>
 
