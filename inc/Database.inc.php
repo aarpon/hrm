@@ -222,10 +222,14 @@ class DatabaseConnection {
                                 "'".$status."')";
 	$result = $this->execute($query);
 	if ( $result ) {
-	  return true;
-	} else {
-	  return false;
-	}
+        $query = "UPDATE username SET creation_date = CURRENT_TIMESTAMP WHERE name = '". $username . "'";
+        $result = $result & $this->execute($query);
+    }
+    if ( $result ) {
+        return true;
+    } else {
+        return false;
+    }
   }
 
   /*!
