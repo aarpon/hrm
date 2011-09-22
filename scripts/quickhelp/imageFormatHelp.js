@@ -15,9 +15,9 @@ window.helpText[ "format" ] =
   'formats.</p>';
 
 window.helpText[ "geometry" ] =
-  '<p>Image geometry describes how the data is organized in the file(s). ' +
-  'This can be useful, for instance, to tell Huygens whether a series of ' +
-  'TIFF files should be read as a time series or a 3D stack.</p>'
+  '<p>The image geometry defines the subset of parameters required to ' +
+  'describe the dataset. For instance, the time interval is only relevant ' +
+  'if a time series is chosen.';
 
 window.helpText[ "channels" ] =
   '<p>The number of channels represent the number of colors or wavelengths ' +
