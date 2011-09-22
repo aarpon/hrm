@@ -9,28 +9,15 @@ Copyright and license notice: see license.txt
 
 /* *** Font faces *********************************************************** */
 
-/* Ubuntu font bold */
 @font-face {
-    font-family: ubuntu_font;
-    src: url('Ubuntu-B.ttf');
-    font-weight: bold;
-    font-style: normal;
-}
-
-/* Ubuntu font italic */
-@font-face {
-    font-family: ubuntu_font;
-    src: url('Ubuntu-I.ttf');
-    font-style: italic, oblique;
+    font-family: 'ubuntu_font';
+    src: url('Ubuntu-Regular-webfont.eot');
+    src: url('Ubuntu-Regular-webfont.eot?#iefix') format('embedded-opentype'),
+         url('Ubuntu-Regular-webfont.woff') format('woff'),
+         url('Ubuntu-Regular-webfont.ttf') format('truetype'),
+         url('Ubuntu-Regular-webfont.svg#UbuntuRegular') format('svg');
     font-weight: normal;
-}
-
-/* Ubuntu font regular */
-@font-face {
-    font-family: ubuntu_font;
-    src: url('Ubuntu-R.ttf');
     font-style: normal;
-    font-weight: normal;
 }
 
 /* basic elements */
