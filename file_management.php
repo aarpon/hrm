@@ -212,14 +212,13 @@ if ( $browse_folder == "dest" ) {
     // Number of displayed files.
     $size = 15;
     $multiple_files = true;
-    $page_title = "File manager";
+    $page_title = "Deconvolved images";
     $explanation_text = "The following field lists all the deconvolved " .
     "image files currently in the file area.";
-    $form_title = "Deconvolved image files";
-    $fileBrowserLinks = '<li><a href="'.getThisPageName().'?folder=src">'.
-        '<img src="images/upload_s.png" alt="originals" />&nbsp;Originals</a>'.
-        '</li><li><img src="images/download_s.png" alt="deconvolved" />&nbsp;'.
-        '<u>Deconvolved</u></li>';
+    $form_title = "Your files";
+    $fileBrowserLinks = '<li><a href="file_manager.php">'.
+        '<img src="images/filemanager_small.png" alt="file manager" />'.
+        '&nbsp;File manager</a></li>';
 
     $info = "<h3>Quick help</h3>
             <p>Click on a file name to see a preview.</p>
@@ -243,15 +242,13 @@ if ( $browse_folder == "dest" ) {
     $browse_folder = "src";
     $size = 15;
     $multiple_files = true;
-    $page_title = "File manager";
+    $page_title = "Raw images";
     $explanation_text = "These are the original image files currently " .
       "in your file area.";
-    $form_title = "Original image files";
-    $fileBrowserLinks = '<li><img src="images/upload_s.png" alt="originals" />'.
-        '&nbsp;<u>Originals</u></li>'.
-        '<li><a href="'.getThisPageName().'?folder=dest">'.
-        '<img src="images/download_s.png" alt="deconvolved" />&nbsp;Deconvolved</a>'.
-        '</li>';
+    $form_title = "Your files";
+    $fileBrowserLinks = '<li><a href="file_manager.php">'.
+        '<img src="images/filemanager_small.png" alt="file manager" />'.
+        '&nbsp;File manager</a></li>';
 
     $info = "<h3>Quick help</h3>
             <p>Click on a file name to see (or create) a preview.</p>

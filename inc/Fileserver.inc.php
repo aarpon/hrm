@@ -1327,7 +1327,10 @@ echo '</body></html>';
       $filePattern = $this->getFilePattern($file);
 
       if (!glob($pdest . "/" . $filePattern)) {
-          echo "File '$file' does not exist in the server.";
+          echo "<br />";
+          echo "Sorry, file $file does not exist any more on the server.<br />";
+          echo "<br />";
+          echo "<a href=\"home.php\"><img src=\"images/home.png\" alt=\"Home\" /></a>";
           echo "</body></html>";
           exit;
       }
@@ -1650,7 +1653,10 @@ echo '</body></html>';
       $filePattern = $this->getFilePattern($file);
 
       if (!glob($pdest . "/" . $filePattern)) {
-          echo "File '$file' does not exist in the server.";
+          echo "<br />";
+          echo "Sorry, file $file does not exist any more on the server.<br />";
+          echo "<br />";
+          echo "<a href=\"home.php\"><img src=\"images/home.png\" alt=\"Home\" /></a>";
           echo "</body></html>";
           exit;
       }

@@ -17,7 +17,7 @@ window.helpText[ "format" ] =
 window.helpText[ "geometry" ] =
   '<p>The image geometry defines the subset of parameters required to ' +
   'describe the dataset. For instance, the time interval is only relevant ' +
-  'if a time series is chosen.';
+  'if a time series is chosen.</p>';
 
 window.helpText[ "channels" ] =
   '<p>The number of channels represent the number of colors or wavelengths ' +
