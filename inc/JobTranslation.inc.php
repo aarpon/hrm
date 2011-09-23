@@ -104,6 +104,24 @@ class JobTranslation {
     private $taskIDArray;
 
     /*!
+      \var    $jobMainTasksArray
+      \brief  Array with the main components of task list.
+    */
+    private $jobMainTasksArray;
+
+    /*!
+      \var    $jobInfoArray
+      \brief  Array with the components of the job info.
+    */
+    private $jobInfoArray;
+
+    /*!
+      \var    $setpArray
+      \brief  Array with the components of the setp task.
+    */
+    private $setpArray;
+
+    /*!
       \var    $srcImage
       \brief  Path and name of the source image.
     */
@@ -202,6 +220,9 @@ class JobTranslation {
         $this->initializePreviewCounter();
         $this->setEnvironmentArray();
         $this->setTaskIDArray();
+        $this->setMainTasksArray();
+        $this->setJobInfoArray();
+        $this->setSetpArray();
         $this->setSrcImage();
         $this->setDestImage();
         $this->setHuImageFormat();
@@ -246,18 +267,74 @@ class JobTranslation {
                                      'save'                     =>  'imgSave' );
     }
 
+
+    /*!
+     \brief       Sets the components of the setp task.
+    */
+    private function setSetpArray( ) {
+
+        $this->setpArray = array ( 'completeChanCnt'  => '',
+                                   'micr'             => 'parState,micr',
+                                   's'                => 'parState,s',
+                                   'iFacePrim'        => 'parState,iFacePrim',
+                                   'iFaceScnd'        => 'parState,iFaceScnd',
+                                   'pr'               => 'parState,pr',
+                                   'imagingDir'       => 'parState,imagingDir',
+                                   'ps'               => 'parState,ps',
+                                   'objQuality'       => 'parState,objQuality',
+                                   'pcnt'             => 'parState,pcnt',
+                                   'ex'               => 'parState,ex',
+                                   'em'               => 'parState,em',
+                                   'exBeamFill'       => 'parState,exBeamFill',
+                                   'ri'               => 'parState,ri',
+                                   'ril'              => 'parState,ril',
+                                   'na'               => 'parState,na' );
+    }
+
+    private function setJobInfoArray() {
+
+        $this->jobInfoArray = array ( 'title',
+                                      'version',
+                                      'templateName',
+                                      'date' );
+
+    }
+
+    private function setMainTasksArray() {
+        
+        $this->jobMainTasksArray = array ( 'setEnv',
+                                           'taskID:0');
+
+    }
+
     /*!
      \brief       Sets the info header of the batch template.
     */
     private function setJobInfo( ) {
-        $this->jobInfo = "title ";
-        $this->jobInfo .= $this->getTemplateTitle();
-        $this->jobInfo .= " version ";
-        $this->jobInfo .= $this->getTemplateVersion();
-        $this->jobInfo .= " templateName ";
-        $this->jobInfo .= $this->getTemplateName();
-        $this->jobInfo .= " date ";
-        $this->jobInfo .= $this->getTemplateDate();
+        
+        $this->jobInfo = "";
+
+        foreach ($this->jobInfoArray as $jobField) {
+            $this->jobInfo .= " " . $jobField . " ";
+            
+            switch ($jobField) {
+            case 'title':
+                $this->jobInfo .= $this->getTemplateTitle();
+                break;
+            case 'version':
+                $this->jobInfo .= $this->getTemplateVersion();
+                break;
+            case 'templateName':
+                $this->jobInfo .= $this->getTemplateName();
+                break;
+            case 'date':
+                $this->jobInfo .= $this->getTemplateDate();
+                break;
+            default:
+                error_log("Job info field $jobField not yet implemented.");       
+            }
+        }
+
         $this->jobInfo = $this->string2tcllist($this->jobInfo);
         $this->jobInfo = "info " . $this->jobInfo;
     }
@@ -266,8 +343,21 @@ class JobTranslation {
      \brief       Sorts and sets the main job tasks: setEnv and taskIDs.
     */
     private function setJobMainTasks() {
-        $this->jobMainTasks = "setEnv ";
-        $this->jobMainTasks .= $this->getTaskID();
+
+        $this->jobMainTasks = "";
+
+        foreach ($this->jobMainTasksArray as $mainTask) {
+            $this->jobMainTasks .= " " . $mainTask . " ";
+
+            switch ($mainTask) {
+            case 'setEnv':
+            case 'taskID:0':
+                break;
+            default:
+                error_log("Main task $mainTask not yet implemented.");
+            }
+        }
+
         $this->jobMainTasks = $this->string2tcllist($this->jobMainTasks);
         $this->jobMainTasks = "taskList " . $this->jobMainTasks;
     }
@@ -276,8 +366,32 @@ class JobTranslation {
      \brief       Sets a Tcl list with extra data: number of cores, timeout, etc. 
     */
     private function setEnvironmentDetails( ) {
-        $this->envDetails = "setEnv "; 
-        $this->envDetails .= $this->buildEnvironmentList();
+
+        $this->envDetails = "";
+
+        foreach ($this->envArray as $envField => $envValue) {
+            $this->envDetails .= " " . $envField . " ";
+
+            switch ($envField) {
+            case 'resultDir':
+                $this->envDetails .= $this->string2tcllist($this->getDestDir());
+                break;
+            case 'exportFormat':
+                $this->envDetails .= $this->getExportFormat();
+                break;
+            case 'perJobThreadCnt':
+            case 'concurrentJobCnt':
+            case 'OMP_DYNAMIC':
+            case 'timeOut':
+                $this->envDetails .= $envValue;
+                break;
+            default:
+                error_log("The environment field $envField is not yet implemented");
+            }
+        }
+
+        $this->envDetails = $this->string2tcllist($this->envDetails);
+        $this->envDetails = "setEnv " . $this->envDetails;
     }
     
     /*!
@@ -298,25 +412,6 @@ class JobTranslation {
 
 
     /* ------------------------ Main lists handlers ---------------------------- */
-
-
-    /*!
-     \brief       Builds a Tcl list with extra data: number of cores, etc. 
-     \return      The Tcl-compliant nested list
-    */
-    private function buildEnvironmentList( ) {
-        $environmentList = "";
-        foreach ($this->envArray as $envOption => $envValue) {
-            if ($envOption == "resultDir") {
-                $envValue = $this->string2tcllist($this->getDestDir());
-            } elseif ($envOption == "exportFormat") {
-                $envValue = $this->getExportFormat();
-            }
-            $environmentList .= " " . $envOption;
-            $environmentList .= " " . $envValue;
-        }
-        return $this->string2tcllist($environmentList);
-    }
 
     /*!
      \brief       Get the job export format feature as a list of options
@@ -367,7 +462,6 @@ class JobTranslation {
     private function getTaskIDInfo( ) {
 
         $microSetting = $this->microSetting;
-        $userDefConfidence = $microSetting->parameter("OverrideConfidence");
 
         /* The job is sent to the Huygens Scheduler to start right away.
          Therefore the state is ready and the timeStartAbs is just now. */
@@ -380,7 +474,11 @@ class JobTranslation {
         $taskInfo .= " timeOut ";
         $taskInfo .= $this->getTaskIDTimeOut();
         $taskInfo .= " userDefConfidence ";
-        $taskInfo .= $userDefConfidence->getHuCoreCounterpart();
+
+        /* All metadata will be accepted as long as their template counterparts
+         don't exist. The accepted confidence level is therefore: "default". */
+        $taskInfo .= "default";
+
         $taskInfo = $this->string2tcllist($taskInfo);
         $taskInfo = "info " . $taskInfo;
             
@@ -518,6 +616,7 @@ class JobTranslation {
                 break;
             default:
                 $taskList = "";
+                error_log("Implementation of task $key is missing.");
             }
         }
         return $taskList;
@@ -586,7 +685,7 @@ class JobTranslation {
                     $previewPixelsY = $maxComparisonSize * $this->sizeZ;
                 }
 
-                # Check if the comparison strip might get dangerously big.
+                # Check whether the comparison strip might get dangerously big.
                 if ($previewPixelsX < $maxPreviewPixelsPerDim 
                     && $previewPixelsY < $maxPreviewPixelsPerDim) {
                     $task = $task . ":" . $this->previewCnt;
@@ -610,7 +709,7 @@ class JobTranslation {
                     $previewPixelsY = $maxComparisonSize * $this->sizeT;
                 }
 
-                # Check if the comparison strip might get dangerously big.
+                # Check whether the comparison strip might get dangerously big.
                 if ($previewPixelsX < $maxPreviewPixelsPerDim 
                     && $previewPixelsY < $maxPreviewPixelsPerDim) {
                     $task = $task . ":" . $this->previewCnt;
@@ -669,7 +768,7 @@ class JobTranslation {
      \param       $task A task from the taskID array that should be 'setp'.
      \return      Tcl list with the 'Set parameters' task and its options
     */
-    private function getTaskIDSetp($task) {
+    private function getTaskIDSetp( ) {
 
         $options = "completeChanCnt ";
         $options .= $this->getNumberOfChannels();
@@ -2013,7 +2112,72 @@ class JobTranslation {
      \return      The confidence level. 
     */
     private function getParameterConfidence($paramName,$channel) {
-        return "verified";
+
+        /* If the parameter has a value it means that the parameter was 
+         introduced by the user. That makes the parameter automatically 
+         verified.*/
+        $parameterValue = $this->getParameterValue($paramName,$channel);
+        if ($parameterValue != "" && $parameterValue != "{}") {
+            return "verified";
+        } else {
+            return "default";
+        }
+    }
+
+    private function getParameterValue($paramName,$channel) {
+
+        switch ( $paramName ) {
+        case 'iFacePrim':
+            $parameterValue = $this->getiFacePrim();
+            break;
+        case 'iFaceScnd':
+            $parameterValue = $this->getiFaceScnd();
+            break;
+        case 'MicroscopeType':
+            $parameterValue = $this->getMicroTypeForChannel($channel);
+            break;
+        case 'PinholeSize':
+            $parameterValue = $this->getPinRadiusForChannel($channel);
+            break;
+        case 'CoverslipRelativePosition':
+            $parameterValue = $this->getImagingDirForChannel($channel);
+            break;
+        case 'PinholeSpacing':
+            $parameterValue = $this->getPinSpacingForChannel($channel);
+            break;
+        case 'ObjQuality':
+            $parameterValue = $this->getObjQualityForChannel($channel);
+            break;
+        case 'ExcitationPhoton':
+            $parameterValue = $this->getExcitationPcntForChannel($channel);
+            break;
+        case 'ExcitationWavelength':
+            $parameterValue = $this->getExLambdaForChannel($channel);
+            break;
+        case 'EmissionWavelength':
+            $parameterValue = $this->getEmLambdaForChannel($channel);
+            break;
+        case 'ExBeamFactor':
+            $parameterValue = $this->getExBeamForChannel($channel);
+            break;
+        case 'SampleMedium':
+            $parameterValue = $this->getMRIndexForChannel($channel);
+            break;
+        case 'ObjectiveType':
+            $parameterValue = $this->getLensRIForChannel($channel);
+            break;
+        case 'NumericalAperture':
+            $parameterValue = $this->getNumApertureForChannel($channel);
+            break;
+        case 'TimeInterval':
+        case 'ZStepSize':
+        case 'CCDCaptorSizeX':
+            $parameterValue = $this->getSamplingSizes();
+            break;
+        default:
+            $parameterValue = "";
+        }
+        return $parameterValue;
     }
 
     /*
@@ -2212,7 +2376,6 @@ class JobTranslation {
 
         /* Retrieve the image dimensions */
         $result = askHuCore( "reportImageDimensions", $opt );
-
         $this->sizeX = $result['sizeX'];
         $this->sizeY = $result['sizeY'];
         $this->sizeZ = $result['sizeZ'];
