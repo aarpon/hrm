@@ -574,7 +574,7 @@ class QueueManager {
  	    $logFile = $logdir . "/" . $job->server() .
                             "_" .$job->id(). "_out.txt";
  	    // TODO add warning messages notification
- 	    if (!$resultSaved || $errorOccured) {
+ 	    if (!$resultSaved) {
  	      report("finishing job " . $desc->id() . " with error on " . $job->server(), 1);
  	      // Clean up server
  	      $this->cleanUpFileServer($job);
