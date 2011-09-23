@@ -28,7 +28,6 @@ proc getInputVariables { varList } {
 
 # Return a key - value pair to the HRM code, to construct an array up there.
 proc reportKeyValue {key value} {
-
     puts "KEY"
     puts "$key"
     puts "VALUE"
@@ -166,8 +165,6 @@ proc hrmImgOpen { dir file args } {
 
     set exp {^(.*) \((.*)\)$}
     set matched [regexp $exp $path match path subimage]
-
-    puts "REPORT"
 
     if { $matched } {
         # puts "Opening image: '$path' -subImage $subimage"
