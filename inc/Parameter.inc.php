@@ -276,25 +276,6 @@ abstract class Parameter {
 	}
 
 	/*!
-		\brief	Prints a radio button for current Parameter and the given value
-
-				If the value matches the internal value, the radio button will
-				be checked. Additional options can be added.
-
-		\param	$value		Value for the Parameter
-		\param	$customHTML	HTML code for additional options for the radio button
-		\todo	This function should NOT be in the base class!
-	*/
-	public function printRadioButtonForValue($value, $customHTML) {
-		$result = '<input type="radio" name="' . $this->name() . '" value="' . $value . '" ';
-		if ($value == $this->internalValue()) {
-			$result = $result . 'checked="checked" ';
-		}
-		$result = $result . $customHTML . ' />';
-		print $result;
-	}
-
-	/*!
 		\brief	Returns true if boolean
 
 		This function should be <b>overloaded</b> by the subclasses
@@ -450,70 +431,6 @@ abstract class ChoiceParameter extends Parameter {
 	}
 
 	/*!
-		\brief	Prints radio buttons for each value enbedded in HTML code
-		\param	$htmlPrefix		HTML code to prepend to the radio buttons
-		\param	$htmlPostfix	HTML code to append to the radio buttons
-	*/
-	public function printRadioButtonsEmbeddedIn($htmlPrefix, $htmlPostfix) {
-		$possibleValues = $this->possibleValues();
-		foreach ($this->internalPossibleValues() as $internalPossibleValue) {
-			$possibleValue = current($possibleValues);
-			print $htmlPrefix;
-			$this->printRadioButtonForValue($internalPossibleValue, '');
-			print $possibleValue;
-			print $htmlPostfix;
-			print "\n";
-			next($possibleValues);
-		}
-	}
-
-	/*!
-		\brief	Prints radio buttons for the possible values, one per line
-
-		The button for the current value will be checked.
-	*/
-	public function printRadioButtons() {
-		$possibleValues = $this->possibleValues();
-		foreach ($this->internalPossibleValues() as $internalPossibleValue) {
-			$possibleValue = current($possibleValues);
-			$this->printRadioButtonForValue($internalPossibleValue, '');
-			print $possibleValue;
-			print "<br>\n";
-			next($possibleValues);
-		}
-	}
-
-	/*!
-		\brief	Prints radio buttons for the possible values, all on one line
-
-		The button for the current value will be checked.
-	*/
-	public function printSingleLineRadioButtons() {
-		foreach ($this->internalPossibleValues() as $possibleValue) {
-			$this->printRadioButtonForValue($possibleValue, '');
-			print $possibleValue;
-		}
-	}
-
-	/*!
-		\brief	Prints a checkBox for current Parameter and the given value
-
-				If the value matches the internal value, the checkBox will
-				be checked. Additional options can be added.
-
-		\param	$valueChecked	Value for the Parameter
-		\param	$customHTML		HTML code for additional options for the checkBox
-	*/
-	public function printCheckBox($valueChecked, $customHTML) {
-		$result = '<input type="checkbox" name="' . $this->name() . '" value="' . $valueChecked . '" ';
-		if ($valueChecked == $this->value()) {
-			$result = $result . 'checked="checked" ';
-		}
-		$result = $result . $customHTML . ' />';
-		print $result;
-	}
-
-	/*!
 		\brief	Checks whether the Parameter is valid
 		\return	true if the Parameter is valid, false otherwise
 	*/
@@ -606,23 +523,6 @@ class BooleanParameter extends ChoiceParameter {
 		}
 		$result = $this->formattedName( );
 		$result = $result . $value . "\n";
-		return $result;
-	}
-
-	/*!
-		\brief	Prints a checkBox for current BooleanParameter and the given value
-
-				If the value matches the internal value, the checkBox will
-				be checked. Additional options can be added.
-
-		\param	$customHTML		HTML code for additional options for the checkBox
-	*/
-	public function printCheckBox($customHTML) {
-		$result = '<input type="checkbox" name="' . $this->name() . '" value="True" ';
-		if ($this->value == "True") {
-			$result = $result . 'checked="checked" ';
-		}
-		$result = $result . $customHTML . ' />';
 		return $result;
 	}
 
