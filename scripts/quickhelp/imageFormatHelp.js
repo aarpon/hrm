@@ -20,8 +20,8 @@ window.helpText[ "geometry" ] =
   'if a time series is chosen.</p>';
 
 window.helpText[ "channels" ] =
-  '<p>The number of channels represent the number of colors or wavelengths ' +
-  'in your dataset.</p>';
+  '<p>The number of channels represent the number of colors (i.e. ' +
+  'wavelengths) in your dataset.</p>';
 
 window.helpText[ "PSF" ] =
   '<p>Deconvolution can be performed with either a theoretical PSF ' +

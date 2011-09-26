@@ -81,7 +81,8 @@ include("header.inc.php");
       Tooltips
     -->
     <span id="ttSpanCancel">Abort editing and go back to the image parameters selection page. All changes will be lost!</span>  
-    <span id="ttSpanForward">Continue to next page.</span>  
+    <span id="ttSpanForward">Continue to next page.</span>
+    <span id="ttSpanReset">Click to unselect all options.</span>
 
     <div id="nav">
         <ul>
@@ -186,7 +187,17 @@ foreach($values as $value) {
                     <a href="javascript:openWindow('http://www.svi.nl/ImageGeometry')"><img src="images/help.png" alt="?" /></a>
                     image geometry
                 </legend>
+
+                <div id="values">
+                    <div id="reset"
+                         onmouseover="TagToTip('ttSpanReset' )"
+                         onmouseout="UnTip()"
+                         onclick="document.forms[0].ImageGeometry[0].checked = true;" >
+                    </div>
+
+                    <input name="ImageGeometry" type="radio" value="" style="display:none;" />
                 
+
 <?php
 
 $possibleValues = $parameterImageGeometry->possibleValues();
@@ -204,7 +215,11 @@ foreach($possibleValues as $possibleValue) {
 }
 
 ?>
-            <p class="message_confidence_<?php echo $parameterImageGeometry->confidenceLevel(); ?>">&nbsp;</p>
+                    </div> <!-- values -->
+                    <div id="bottom">
+                        <p class="message_confidence_<?php echo $parameterImageGeometry->confidenceLevel(); ?>">&nbsp;</p>
+                    </div>
+                
             </fieldset>
 
     <?php
@@ -236,14 +251,25 @@ function check($parameter, $value) {
 }
 
 ?>
-                <input name="NumberOfChannels" type="radio" value="1" <?php echo $channelsFlag ?><?php check($parameterNumberOfChannels, 1) ?>/>1
-                <input name="NumberOfChannels" type="radio" value="2" <?php echo $channelsFlag ?><?php check($parameterNumberOfChannels, 2) ?>/>2
-                <input name="NumberOfChannels" type="radio" value="3" <?php echo $channelsFlag ?><?php check($parameterNumberOfChannels, 3) ?>/>3
-                <input name="NumberOfChannels" type="radio" value="4" <?php echo $channelsFlag ?><?php check($parameterNumberOfChannels, 4) ?>/>4
-                <input name="NumberOfChannels" type="radio" value="5" <?php echo $channelsFlag ?><?php check($parameterNumberOfChannels, 5) ?>/>5
-                
-            <p class="message_confidence_<?php echo $parameterNumberOfChannels->confidenceLevel(); ?>">&nbsp;</p>
-            
+                <div id="values">
+                    <div id="reset"
+                         onmouseover="TagToTip('ttSpanReset' )"
+                         onmouseout="UnTip()"
+                         onclick="document.forms[0].NumberOfChannels[0].checked = true;" >
+                    </div>
+
+                    <input name="NumberOfChannels" type="radio" value="" style="display:none;" />
+                    <input name="NumberOfChannels" type="radio" value="1" <?php echo $channelsFlag ?><?php check($parameterNumberOfChannels, 1) ?>/>1
+                    <input name="NumberOfChannels" type="radio" value="2" <?php echo $channelsFlag ?><?php check($parameterNumberOfChannels, 2) ?>/>2
+                    <input name="NumberOfChannels" type="radio" value="3" <?php echo $channelsFlag ?><?php check($parameterNumberOfChannels, 3) ?>/>3
+                    <input name="NumberOfChannels" type="radio" value="4" <?php echo $channelsFlag ?><?php check($parameterNumberOfChannels, 4) ?>/>4
+                    <input name="NumberOfChannels" type="radio" value="5" <?php echo $channelsFlag ?><?php check($parameterNumberOfChannels, 5) ?>/>5
+                </div> <!-- values -->
+
+                <div id="bottom">
+                    <p class="message_confidence_<?php echo $parameterNumberOfChannels->confidenceLevel(); ?>">&nbsp;</p>
+                </div>
+
             </fieldset>
 
     <?php
@@ -269,12 +295,23 @@ function check($parameter, $value) {
                     <a href="javascript:openWindow('http://www.svi.nl/PointSpreadFunction')"><img src="images/help.png" alt="?" /></a>
                     PSF
                 </legend>
+
+                <div id="values">
+                    <div id="reset"
+                         onmouseover="TagToTip('ttSpanReset' )"
+                         onmouseout="UnTip()"
+                         onclick="document.forms[0].PointSpreadFunction[0].checked = true;" >
+                    </div>
+
+                    <input name="PointSpreadFunction" type="radio" value="" style="display:none;" />
+                    <input type="radio" name="PointSpreadFunction" value="theoretical" <?php if ($parameterPointSpreadFunction->value() == "theoretical") echo "checked=\"checked\""?> <?php echo $turnOnPSFAdaptationOnClick ?>/><a href="javascript:openWindow('http://www.svi.nl/TheoreticalPsf')"><img src="images/help.png" alt="?" /></a>Theoretical
+                    <input type="radio" name="PointSpreadFunction" value="measured" <?php if ($parameterPointSpreadFunction->value() == "measured") echo "checked=\"checked\"" ?> <?php echo $turnOffPSFAdaptationOnClick ?>/><a href="javascript:openWindow('http://www.svi.nl/ExperimentalPsf')"><img src="images/help.png" alt="?" /></a>Measured
+                </div> <!-- values -->
+
+                <div id="bottom">
+                    <p class="message_confidence_<?php echo $parameterPointSpreadFunction->confidenceLevel(); ?>">&nbsp;</p>
+                </div>
                 
-                <input type="radio" name="PointSpreadFunction" value="theoretical" <?php if ($parameterPointSpreadFunction->value() == "theoretical") echo "checked=\"checked\""?> <?php echo $turnOnPSFAdaptationOnClick ?>/><a href="javascript:openWindow('http://www.svi.nl/TheoreticalPsf')"><img src="images/help.png" alt="?" /></a>Theoretical
-                
-                <input type="radio" name="PointSpreadFunction" value="measured" <?php if ($parameterPointSpreadFunction->value() == "measured") echo "checked=\"checked\"" ?> <?php echo $turnOffPSFAdaptationOnClick ?>/><a href="javascript:openWindow('http://www.svi.nl/ExperimentalPsf')"><img src="images/help.png" alt="?" /></a>Measured
-                
-            <p class="message_confidence_<?php echo $parameterPointSpreadFunction->confidenceLevel(); ?>">&nbsp;</p>
             </fieldset>
 
             <div id="controls" onmouseover="javascript:changeQuickHelp( 'default' )">

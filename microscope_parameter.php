@@ -98,6 +98,7 @@ include("header.inc.php");
     <span id="ttSpanBack">Go back to previous page.</span>
     <span id="ttSpanCancel">Abort editing and go back to the image parameters selection page. All changes will be lost!</span>
     <span id="ttSpanForward">Continue to next page.</span>
+    <span id="ttSpanReset">Click to unselect all options.</span>
 
     <div id="nav">
         <ul>
@@ -132,6 +133,14 @@ include("header.inc.php");
                     <a href="javascript:openWindow('http://www.svi.nl/MicroscopeType')"><img src="images/help.png" alt="?" /></a>
                     microscope type
                 </legend>
+
+                <div id="values">
+                    <div id="reset"
+                         onmouseover="TagToTip('ttSpanReset' )"
+                         onmouseout="UnTip()"
+                         onclick="document.forms[0].MicroscopeType[0].checked = true;">
+                    </div>
+                    <input name="MicroscopeType" type="radio" value="" style="display:none;" />
 <?php
 
 $possibleValues = $parameterMicroscopeType->possibleValues();
@@ -148,7 +157,10 @@ foreach($possibleValues as $possibleValue) {
 }
 
 ?>
-            <p class="message_confidence_<?php echo $parameterMicroscopeType->confidenceLevel(); ?>">&nbsp;</p>
+            </div> <!-- values -->
+            <div id="bottom">
+                <p class="message_confidence_<?php echo $parameterMicroscopeType->confidenceLevel(); ?>">&nbsp;</p>
+            </div>
             </fieldset>
 
     <?php
@@ -253,6 +265,14 @@ for ($i=0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
                     objective type
                 </legend>
 
+                <div id="values">
+                    <div id="reset"
+                         onmouseover="TagToTip('ttSpanReset' )"
+                         onmouseout="UnTip()"
+                         onclick="document.forms[0].ObjectiveType[0].checked = true;" >
+                    </div>
+                    <input name="ObjectiveType" type="radio" value="" style="display:none;" />
+
 <?php
 
 $possibleValues = $parameterObjectiveType->possibleValues();
@@ -262,15 +282,18 @@ foreach ($possibleValues as $possibleValue) {
   if ($possibleValue == $parameterObjectiveType->value()) $flag = " checked=\"checked\"";
 
 ?>
-                <input name="ObjectiveType" type="radio" value="<?php echo $possibleValue ?>" <?php echo $flag ?>/><?php echo $possibleValue ?>
+                    <input name="ObjectiveType" type="radio" value="<?php echo $possibleValue ?>" <?php echo $flag ?>/><?php echo $possibleValue ?>
 
 <?php
 
 }
 
 ?>
+                </div> <!-- values -->
 
-            <p class="message_confidence_<?php echo $parameterObjectiveType->confidenceLevel(); ?>">&nbsp;</p>
+                <div id="bottom">
+                    <p class="message_confidence_<?php echo $parameterObjectiveType->confidenceLevel(); ?>">&nbsp;</p>
+                </div>
             </fieldset>
 
   <?php
@@ -293,6 +316,15 @@ foreach ($possibleValues as $possibleValue) {
                     sample medium
                 </legend>
 
+                <div id="values">
+                    <div id="reset"
+                         onmouseover="TagToTip('ttSpanReset' )"
+                         onmouseout="UnTip()"
+                         onclick="document.forms[0].SampleMedium[0].checked = true;" >
+                    </div>
+
+                    <input name="SampleMedium" type="radio" value="" style="display:none;" />
+
 <?php
 
 $default = False;
@@ -305,9 +337,9 @@ foreach ($parameterSampleMedium->possibleValues() as $possibleValue) {
   $translation = $parameterSampleMedium->translatedValueFor( $possibleValue );
 
 ?>
-                <input name="SampleMedium" type="radio" value="<?php echo $possibleValue ?>"<?php echo $flag ?> /><?php echo $possibleValue ?> <span class="title">[<?php echo $translation ?>]</span>
+                    <input name="SampleMedium" type="radio" value="<?php echo $possibleValue ?>"<?php echo $flag ?> /><?php echo $possibleValue ?> <span class="title">[<?php echo $translation ?>]</span>
 
-                <br />
+                    <br />
 <?php
 
 }
@@ -324,7 +356,10 @@ if (!$default) {
 ?>
                 <input name="SampleMedium" type="radio" value="custom"<?php echo $flag ?> /><input name="SampleMediumCustomValue" type="text" size="5" value="<?php echo $value ?>" onclick="this.form.SampleMedium[2].checked=true" />
 
-            <p class="message_confidence_<?php echo $parameterSampleMedium->confidenceLevel(); ?>">&nbsp;</p>
+                </div> <!-- values -->
+                <div id="bottom">
+                    <p class="message_confidence_<?php echo $parameterSampleMedium->confidenceLevel(); ?>">&nbsp;</p>
+                </div>
             </fieldset>
 
             <div><input name="OK" type="hidden" /></div>

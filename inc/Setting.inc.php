@@ -323,7 +323,8 @@ class ParameterSetting extends Setting {
     $noErrorsFound = True;
 
 	// The file format must be defined
-	if ( !isset( $postedParameters[ "ImageFileFormat" ] ) ) {
+	if ( !isset( $postedParameters[ "ImageFileFormat" ] ) ||
+            $postedParameters[ "ImageFileFormat" ] == "" ) {
 	  $this->message = "Please choose a file format!";
       return False;
 	} else {
@@ -337,7 +338,8 @@ class ParameterSetting extends Setting {
 	}
 
 	// The PSF type must be defined
-	if ( !isset( $postedParameters[ "PointSpreadFunction" ] ) ) {
+	if ( !isset( $postedParameters[ "PointSpreadFunction" ] ) ||
+            $postedParameters[ "PointSpreadFunction" ] == "" ) {
 	  $this->message = "Please indicate whether you " .
 	    "would like to calculate a theoretical PSF " .
 		"or use an existing measured one!";
@@ -360,7 +362,8 @@ class ParameterSetting extends Setting {
 		$postedParameters[ "ImageGeometry" ] = "XYZ";
 	} else {
 		// We check that the value was posted
-		if ( !isset( $postedParameters[ "ImageGeometry" ] ) ) {
+		if ( !isset( $postedParameters[ "ImageGeometry" ] ) ||
+                $postedParameters[ "ImageGeometry" ] == "" ) {
 			$this->message = "Please set the image geometry!";
             return False;
 		}
@@ -378,7 +381,8 @@ class ParameterSetting extends Setting {
 		$postedParameters[ "NumberOfChannels" ] = "1";
 	} else {
 		// We check that the value was posted
-		if ( !isset( $postedParameters[ "NumberOfChannels" ] ) ) {
+		if ( !isset( $postedParameters[ "NumberOfChannels" ] ) ||
+                $postedParameters[ "NumberOfChannels" ] == "" ) {
 			$this->message = "Please set the number of channels!";
             return False;
 		}
@@ -502,7 +506,7 @@ class ParameterSetting extends Setting {
               break;
             case "SampleMedium" :
               $this->message = "Please set the refractive index " .
-							"of the sampling medium!";
+							"of the sample medium!";
               break;
             case "ExcitationWavelength" :
               $this->message = "Please set the excitation wavelength!";
