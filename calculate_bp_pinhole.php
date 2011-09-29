@@ -474,13 +474,17 @@ if ($error) {
 else
 {
     $result = round($phr / $M,2);    
-    $out .= "<h4>Result</h4>";
-    $out .=  "\nBackprojected $rtag $runits: <b>$result</b><br><br>";
+    $out .= "<h4>";
+    $out .=  "Backprojected $rtag $runits: <b>$result</b>";
+    $out .= "</h4>";
 
-    $out .= "\nThis is the parameter list used in this calculation:<br>";
+    $out .= "<p>&nbsp;</p>";
+    
+    $out .= "<p>This is the parameter list used in this calculation:</p>";
     $out .= $warning;
- 
-    $out .= "\n<br>".field("micro").": ".$micro." ";
+
+    $out .= "<p>";
+    $out .= "".field("micro").": ".$micro." ";
     foreach ( $reportparams as $entry ) {
         if ($$entry !=0 && isset($$entry)) {
             $out .= "\n<br>".field($entry).": ".$$entry." ";
@@ -490,7 +494,7 @@ else
             }
         }
     }
-    $out .= "<br>\n";
+    $out .= "</p>\n";
 }
 
 $out .= "<div id=\"controls\">";
@@ -518,9 +522,9 @@ if ($error) {
                 proceed to the optical parameter pages.</p>";
 } else {
     $out .= "<p>On the left you can see the result of the calculation and the
-                parameters used for it. Please annotate the calculated value
+                parameters used for it. <u>Please annotate the calculated value
                 and enter it in the image parameter pages. The value <strong>
-                will not</strong> be transferred automatically.</p>
+                will not</strong> be transferred automatically</u>.</p>
              <p>You can repeat the calculation with different input values
                 (e.g. for other channels) or proceed to the image parameter
                 pages.</p>";

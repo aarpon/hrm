@@ -142,7 +142,7 @@ if ($_SESSION[ 'setting' ]->checkPostedCapturingParameters( $_POST ) ) {
  **************************************************************************** */
 
 // Javascript includes
-$script = array( "settings.js", "quickhelp/help.js",
+$script = array( "jquery-1.6.4.min.js", "settings.js", "quickhelp/help.js",
                 "quickhelp/capturingParameterHelp.js" );
 
 include("header.inc.php");
@@ -251,15 +251,16 @@ $textForCaptorSize = "pixel size (nm)";
 
                     <li>
                         <?php echo $textForCaptorSize ?>:
-                        <input name="CCDCaptorSizeX" type="text" size="5" value="<?php echo $value ?>" /> <br/>
+                        <input id="CCDCaptorSizeX" name="CCDCaptorSizeX" type="text" size="5" value="<?php echo $value ?>" /> <br/>
 			<?php
                   // The calculation of pixel size from CCD chip makes sense only for widefield microscopes
                   if ( $_SESSION['setting']->isWidefield() || $_SESSION['setting']->isMultiPointConfocal() ) {
             ?>
 
-            <a href="calculate_pixel_size.php"
+            <a href="#"
               onmouseover="TagToTip('ttSpanPixelSizeFromCCD' )"
-              onmouseout="UnTip()" >
+              onmouseout="UnTip()"
+              onclick="storeValuesAndRedirect( 'calculate_pixel_size.php');" >
               <img src="images/calc_small.png" alt="" />
               Calculate from CCD pixel size
             </a>
@@ -288,7 +289,7 @@ if ($_SESSION['setting']->isThreeDimensional()) {
       $parameterZStepSize = $_SESSION['setting']->parameter("ZStepSize");
 
     ?>
-                        <input name="ZStepSize" type="text" size="5" value="<?php echo $parameterZStepSize->value() ?>" />
+                        <input id="ZStepSize" name="ZStepSize" type="text" size="5" value="<?php echo $parameterZStepSize->value() ?>" />
                     </li>
 
 <?php
@@ -299,9 +300,10 @@ if ($_SESSION['setting']->isThreeDimensional()) {
 
                 </ul>
 
-                <a href="javascript:openWindow('http://support.svi.nl/wiki/NyquistCalculator')"
+                <a href="#"
                     onmouseover="TagToTip('ttSpanNyquist' )"
-                    onmouseout="UnTip()" >
+                    onmouseout="UnTip()"
+                    onclick="storeValuesAndRedirect( 'http://support.svi.nl/wiki/NyquistCalculator');">
                     <img src="images/calc_small.png" alt="" />
                     On-line Nyquist rate and PSF calculator
                     <img src="images/web.png" alt="external link" />
@@ -335,7 +337,7 @@ if ($_SESSION['setting']->isTimeSeries()) {
                 </legend>
             <ul>
               <li>Time interval (s):
-                <input name="TimeInterval" type="text" size="5" value="<?php echo $parameterTimeInterval->value() ?>" />
+                <input id="TimeInterval" name="TimeInterval" type="text" size="5" value="<?php echo $parameterTimeInterval->value() ?>" />
               </li>
             </ul>
 
@@ -383,7 +385,17 @@ if ($_SESSION['setting']->isMultiPointOrSinglePointConfocal()) {
   for ($i = 0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
 
 ?>
-	<span class="nowrap">Ch<?php echo $i ?>:&nbsp;&nbsp;&nbsp;<span class="multichannel"><input name="PinholeSize<?php echo $i ?>" type="text" size="8" value="<?php if ($i < sizeof($pinhole)) echo $pinhole[$i] ?>" class="multichannelinput" /></span>&nbsp;</span>
+	<span class="nowrap">
+        Ch<?php echo $i ?>:&nbsp;&nbsp;&nbsp;
+        <span class="multichannel">
+            <input id="PinholeSize<?php echo $i ?>"
+                   name="PinholeSize<?php echo $i ?>"
+                   type="text"
+                   size="8"
+                   value="<?php if ($i < sizeof($pinhole)) echo $pinhole[$i] ?>"
+                   class="multichannelinput" />
+        </span>&nbsp;
+    </span>
 <?php
 
   }
@@ -395,10 +407,10 @@ if ($_SESSION['setting']->isMultiPointOrSinglePointConfocal()) {
 				  $parameterNA = $_SESSION['setting']->parameter("NumericalAperture");
 				  $na = $parameterNA->value();
 				?>
-                <a href="calculate_bp_pinhole.php?na=<?php echo $na;?>"
-                  target="_blank"
+                <a href="#"
                   onmouseover="TagToTip('ttSpanPinholeRadius' )"
-                  onmouseout="UnTip()" >
+                  onmouseout="UnTip()" 
+                  onclick="storeValuesAndRedirect( 'calculate_bp_pinhole.php?na=<?php echo $na;?>');" >
                   <img src="images/calc_small.png" alt="" />
                   Backprojected pinhole calculator
                 </a>
@@ -432,16 +444,17 @@ if ($_SESSION['setting']->isNipkowDisk()) {
 	      </legend>
           <ul>
                 <li>pinhole spacing (micron):
-                <input name="PinholeSpacing" type="text" size="5" value="<?php echo $parameterPinholeSpacing->value() ?>" />
+                <input id="PinholeSpacing" name="PinholeSpacing" type="text" size="5" value="<?php echo $parameterPinholeSpacing->value() ?>" />
                 </li>
           </ul>
           <p />
 
-                <a href="calculate_bp_pinhole.php?na=<?php echo $na;?>"
-                  onmouseover="TagToTip('ttSpanPinholeSpacing' )"
-                  onmouseout="UnTip()" >
-                  <img src="images/calc_small.png" alt="" />
-                  Backprojected pinhole calculator
+                <a href="#"
+                   onmouseover="TagToTip('ttSpanPinholeSpacing' )"
+                   onmouseout="UnTip()"
+                   onclick="storeValuesAndRedirect( 'calculate_bp_pinhole.php?na=<?php echo $na;?>');">
+                    <img src="images/calc_small.png" alt="" />
+                    Backprojected pinhole calculator
                 </a>
 
             <p class="message_confidence_<?php echo $parameterPinholeSpacing->confidenceLevel(); ?>">&nbsp;</p>
@@ -458,15 +471,15 @@ if ($_SESSION['setting']->isNipkowDisk()) {
               <input type="button" value="" class="icon previous"
                   onmouseover="TagToTip('ttSpanBack' )"
                   onmouseout="UnTip()"
-                  onclick="document.location.href='microscope_parameter.php'" />
+                  onclick="javascript:deleteValuesAndRedirect( 'microscope_parameter.php' );" />
               <input type="button" value="" class="icon up"
                   onmouseover="TagToTip('ttSpanCancel' )"
                   onmouseout="UnTip()"
-                  onclick="document.location.href='select_parameter_settings.php'" />
+                  onclick="javascript:deleteValuesAndRedirect( 'select_parameter_settings.php' );" />
               <input type="submit" value="" class="<?php echo $iconClass; ?>"
                   onmouseover="TagToTip('ttSpanForward' )"
                   onmouseout="UnTip()"
-                  onclick="process()" />
+                  onclick="javascript:deleteValuesAndProcess();" />
             </div>
 
         </form>
@@ -506,5 +519,21 @@ echo $message;
 <?php
 
 include("footer.inc.php");
+
+if ( !( strpos( $_SERVER[ 'HTTP_REFERER' ], 'calculate_pixel_size.php') === false ) ) {
+?>
+    <script type="text/javascript">
+        $(document).ready( retrieveValues( 'CCDCaptorSizeX') );
+    </script>
+<?php
+}
+
+if ( !( strpos( $_SERVER[ 'HTTP_REFERER' ], 'calculate_bp_pinhole.php') === false ) ) {
+?>
+    <script type="text/javascript">
+        $(document).ready( retrieveValues( ) );
+    </script>
+<?php
+}
 
 ?>

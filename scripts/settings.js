@@ -177,3 +177,55 @@ function switchAdvancedCorrectionScheme() {
         hide('PSFGenerationDepthDiv');
     }
 }
+
+// Requires jQuery
+function storeValues() {
+    if (!window.sessionStorage) {
+      return;
+    }
+    $('input[type=text]').each( function() {
+        window.sessionStorage.setItem( $(this).attr("name"), $(this).attr("value") );
+    } );
+}
+
+// Requires jQuery
+function retrieveValues( ignore ) {
+    if (!window.sessionStorage) {
+      return;
+    }
+    $('input[type=text]').each( function() {
+        if ( $(this).attr("name") == ignore ) {
+            window.sessionStorage.removeItem( $(this).attr("name") );
+        } else {
+            var c = window.sessionStorage.getItem( $(this).attr("name") );
+            if ( c != null ) {
+                $(this).val( c );
+            }
+        }
+    } );
+}
+
+// Requires jQuery
+function deleteValues( idArray ) {
+    if (!window.sessionStorage) {
+      return;
+    }
+    $('input[type=text]').each( function() {
+        window.sessionStorage.removeItem( $(this).attr("name") );
+    } );
+}
+
+function storeValuesAndRedirect(page) {
+    storeValues( );
+    window.location = page;
+}
+
+function deleteValuesAndProcess() {
+    deleteValues();
+    process();
+}
+
+function deleteValuesAndRedirect(page) {
+    deleteValues();
+    window.location = page;
+}
