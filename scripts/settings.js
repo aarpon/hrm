@@ -183,8 +183,18 @@ function storeValues() {
     if (!window.sessionStorage) {
       return;
     }
-    $('input[type=text]').each( function() {
-        window.sessionStorage.setItem( $(this).attr("name"), $(this).attr("value") );
+    // Text input
+    $("input[type=text]").each( function() {
+        window.sessionStorage.setItem( $(this).attr("id"),
+            $(this).attr("value") );
+    } );
+    // Radio  buttons
+    $("input[type=radio]").each( function() {
+        if ( $(this).prop("checked") == true ) {
+            window.sessionStorage.setItem( $(this).attr("id"), '1' );
+        } else {
+            window.sessionStorage.setItem( $(this).attr("id"), '0' );
+        }
     } );
 }
 
@@ -193,13 +203,27 @@ function retrieveValues( ignore ) {
     if (!window.sessionStorage) {
       return;
     }
-    $('input[type=text]').each( function() {
+    // Text input
+    $("input[type=text]").each( function() {
         if ( $(this).attr("name") == ignore ) {
-            window.sessionStorage.removeItem( $(this).attr("name") );
+            window.sessionStorage.removeItem( $(this).attr("id") );
         } else {
-            var c = window.sessionStorage.getItem( $(this).attr("name") );
+            var c = window.sessionStorage.getItem( $(this).attr("id") );
             if ( c != null ) {
                 $(this).val( c );
+            }
+        }
+    } );
+    // Radio buttons
+    $("input[type=radio]").each( function() {
+        if ( $(this).attr("name") == ignore ) {
+            window.sessionStorage.removeItem( $(this).attr("id") );
+        } else {
+            var c = window.sessionStorage.getItem( $(this).attr("id") );
+            if ( c == '1' ) {
+                $(this).prop('checked', true);
+            } else {
+                $(this).prop('checked', false);
             }
         }
     } );
@@ -210,9 +234,10 @@ function deleteValues( idArray ) {
     if (!window.sessionStorage) {
       return;
     }
-    $('input[type=text]').each( function() {
-        window.sessionStorage.removeItem( $(this).attr("name") );
-    } );
+    $( $.merge( $("input[type=text]"), $("input[type=radio]") ) ).each(
+        function() {
+            window.sessionStorage.removeItem( $(this).attr("id") );
+        } );
 }
 
 function storeValuesAndRedirect(page) {
