@@ -19,7 +19,7 @@ if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
   header("Location: " . "login.php"); exit();
 }
 
-$message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
+$message = "";
 
 /* *****************************************************************************
  *
@@ -75,8 +75,7 @@ $_SESSION['setting']->set($emissionParam);
 if ( $_SESSION[ 'setting' ]->checkPostedMicroscopyParameters(  $_POST ) ) {
   header("Location: " . "capturing_parameter.php"); exit();
 } else {
-  $message = "            <p class=\"warning\">" .
-    $_SESSION['setting']->message() . "</p>\n";
+  $message = $_SESSION['setting']->message();
 }
 
 /* *****************************************************************************
@@ -404,7 +403,7 @@ if (!$default) {
         <div id="message">
 <?php
 
-echo $message;
+echo "<p>$message</p>";
 
 ?>
         </div>

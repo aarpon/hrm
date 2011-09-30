@@ -47,7 +47,7 @@ include("header.inc.php");
             <textarea rows="15" readonly="readonly">
 <?php
 
-echo $message;
+echo "<p>$message</p>";
 
 ?>
             </textarea>

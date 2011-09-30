@@ -359,10 +359,9 @@ global $cmsys, $table, $extra1, $txt1, $extra2, $txt2, $checked1, $checked2;
                Press the back button to go back to the list of microscopes.
             </p>
             <p>
-               <?php
-               print "Read more about the ".
-               "<a href=\"javascript:openWindow('$help')\">$micro</a> model.";
-               ?>
+                Read more about the
+               <a href=\"javascript:openWindow('<?php echo $help; ?>')">
+                   <?php echo $micro; ?></a> model.
             </p>
 
        </div>
@@ -371,13 +370,16 @@ global $cmsys, $table, $extra1, $txt1, $extra2, $txt2, $checked1, $checked2;
 
 <?php
 
-echo $message."\n\n       </div>\n\n    </div> <!-- rightpanel -->";
+            echo "<p>$message</p>";
+ ?>
+
+       </div>
+
+    </div> <!-- rightpanel -->";
 
 
-
+<?php
 } # END form
-
-
 
 # --
 

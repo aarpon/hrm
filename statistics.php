@@ -16,7 +16,7 @@ if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
   header("Location: " . "login.php"); exit();
 }
 
-$message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
+$message = "";
 
 // Create a Stats object
 $stats = new Stats( $_SESSION['user']->name() );

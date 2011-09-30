@@ -15,7 +15,7 @@ if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
   header("Location: " . "login.php"); exit();
 }
 
-$message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
+$message = "";
 
 $added = False;
 
@@ -97,19 +97,19 @@ if (isset($_POST['add'])) {
             $mail->setMessage($text);
             $mail->send();
             //$user->setName( '' );
-            $message = "            <p class=\"warning\">New user successfully added to the system</p>";
+            $message = "New user successfully added to the system";
             shell_exec("$userManager create \"" . $clean["username"] . "\"" );
             $added = True;
           }
-          else $message = "            <p class=\"warning\">Database error, please inform the person in charge</p>";
+          else $message = "Database error, please inform the person in charge";
         }
-        else $message = "            <p class=\"warning\">This user name is already in use</p>";
+        else $message = "This user name is already in use";
       }
-      else $message = "            <p class=\"warning\">Please fill in group field</p>";
+      else $message = "Please fill in group field";
     }
-    else $message = "            <p class=\"warning\">Please fill in email field with a valid address</p>";
+    else $message = "Please fill in email field with a valid address";
   }
-  else $message = "            <p class=\"warning\">Please fill in name field</p>";
+  else $message = "Please fill in name field";
 }
 
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
@@ -182,7 +182,7 @@ else echo "        var added = false;\n";
     <div id="notice">
 <?php
 
-  print $message;
+  echo "<p>$message</p>";
 
 ?>
     </div>

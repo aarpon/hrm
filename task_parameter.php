@@ -31,7 +31,7 @@ else {
           $_SESSION['setting']->numberOfChannels());
 }
 
-$message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
+$message = "";
 
 /* *****************************************************************************
  *
@@ -44,12 +44,10 @@ if ( $_SESSION[ 'task_setting' ]->checkPostedTaskParameters( $_POST ) ) {
   if ($saved) {
     header("Location: " . "select_task_settings.php"); exit();
   } else {
-    $message = "            <p class=\"warning\">" .
-      $_SESSION['task_setting']->message() . "</p>\n";  
+    $message = $_SESSION['task_setting']->message();  
   }
 } else {
-  $message = "            <p class=\"warning\">" .
-    $_SESSION['task_setting']->message() . "</p>\n";  
+  $message = $_SESSION['task_setting']->message();
 }
 
 /* *****************************************************************************
@@ -516,7 +514,7 @@ $value = $parameter->value();
       <div id="message">
 <?php
 
-echo $message;
+echo "<p>$message</p>";
 
 ?>
         </div>

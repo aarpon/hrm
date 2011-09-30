@@ -512,7 +512,7 @@ class ParameterSetting extends Setting {
               $this->message = "Please set the excitation wavelength!";
               break;
             case "EmissionWavelength" :
-              $this->message = "Please set the excitation wavelength!";
+              $this->message = "Please set the emission wavelength!";
               break;
           }
           $noErrorsFound = False;

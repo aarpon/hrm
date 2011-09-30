@@ -133,10 +133,10 @@ foreach ($files as $file) {
     <div id="message">
 <?php
 
-  # print $message;
+  # echo "<p>$message</p>";
 
   if ( $showWarning ) {
-        print "<p class=\"message\">&nbsp;<br />".
+        print "<p>&nbsp;<br />".
         "Files with parameters very different than those ".
         "in the current setting ".
         "($mTypeSetting, NA=$NAsetting, emission = $emSetting nm) ".

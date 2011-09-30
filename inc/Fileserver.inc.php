@@ -447,8 +447,7 @@ class Fileserver {
       } else {
           $error_msg = "No output from command $command.";
       }
-      return "<p class=\"warning\">Problems with the packaging of the files:".
-          " $error_msg</p>";
+      return "Problems with the packaging of the files:" . " $error_msg";
   }
 
   /*!

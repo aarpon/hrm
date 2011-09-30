@@ -51,7 +51,7 @@ if ( isset( $_POST["password"] ) ) {
  *
  */
 
-$message = "<p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
+$message = "";
 
 session_start();
 if (isset($_SESSION['request'])) {
@@ -111,23 +111,21 @@ if ( isset( $_POST['password'] ) && isset( $_POST['username'] ) ) {
 			}
 		} else if ( $tentativeUser->isLoginRestrictedToAdmin() ) {
 			if ( ( $tentativeUser->isAdmin() ) && ( $tentativeUser->exists() ) ) {
-				$message = "<p class=\"warning\">Wrong password.</p>\n";
+				$message = "Wrong password";
 			} else {
-				$message = "<p class=\"warning\">Only the administrator is " .
-                    "allowed to login in order to perform maintenance.</p>\n";
+				$message = "Only the administrator is allowed to login " .
+                    "in order to perform maintenance";
 			}
 		} else {
 			if ( $tentativeUser->isSuspended()) {
-				$message = "<p class=\"warning\">Your account has been " .
-                    "suspended, please contact the administrator.</p>\n";
+				$message = "Your account has been suspended, please " .
+                "contact the administrator";
 			} else {
-				$message = "<p class=\"warning\">Sorry, wrong user name " .
-                    "or password.</p>\n";
+				$message = "Sorry, wrong user name or password";
 			}
 		}
 	} else {
-		$message = "<p class=\"warning\">Sorry, invalid user name or " .
-            "password.</p>\n";
+		$message = "Sorry, invalid user name or password";
 	}
 }
 
@@ -270,7 +268,7 @@ Optics platform</a></p>
 
 <div id="message"><?php
 
-echo $message;
+echo "<p>$message</p>";
 
 ?></div>
 

@@ -397,7 +397,7 @@ include("header.inc.php");
 <?php
      // Display any message coming from lower instances.
 
-     echo $message;
+     echo "<p>$message</p>";
 
 ?>
     </div> <!-- message -->

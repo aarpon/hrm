@@ -37,7 +37,7 @@ if (!isset($_SESSION['fileserver'])) {
   $_SESSION['fileserver'] = new Fileserver($name);
 }
 
-$message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
+$message = "";
 
 if (isset($_POST['setting'])) {
   $_SESSION['editor']->setSelected($_POST['setting']);
@@ -46,10 +46,10 @@ if (isset($_POST['setting'])) {
 if (isset($_POST['copy_public'])) {
   if (isset($_POST['public_setting'])) {
     if (!$_SESSION['editor']->copyPublicSetting($admin_editor->setting($_POST['public_setting']))) {
-      $message = "            <p class=\"warning\">".$_SESSION['editor']->message()."</p>\n";
+      $message = $_SESSION['editor']->message();
     }
   }
-  else $message = "            <p class=\"warning\">Please select a setting to copy</p>\n";
+  else $message = "Please select a setting to copy";
 }
 else if (isset($_POST['create'])) {
   $setting = $_SESSION['editor']->createNewSetting($_POST['new_setting']);
@@ -57,11 +57,11 @@ else if (isset($_POST['create'])) {
     $_SESSION['setting'] = $setting;
     header("Location: " . "image_format.php"); exit();
   }
-  $message = "            <p class=\"warning\">".$_SESSION['editor']->message()."</p>\n";
+  $message = $_SESSION['editor']->message();
 }
 else if (isset($_POST['copy'])) {
   $_SESSION['editor']->copySelectedSetting($_POST['new_setting']);
-  $message = "            <p class=\"warning\">".$_SESSION['editor']->message()."</p>\n";
+  $message = $_SESSION['editor']->message();
 }
 else if (isset($_POST['edit'])) {
   $setting = $_SESSION['editor']->loadSelectedSetting();
@@ -69,19 +69,19 @@ else if (isset($_POST['edit'])) {
     $_SESSION['setting'] = $setting;
     header("Location: " . "image_format.php"); exit();
   }
-  $message = "            <p class=\"warning\">".$_SESSION['editor']->message()."</p>\n";
+  $message = $_SESSION['editor']->message();
 }
 else if (isset($_POST['make_default'])) {
   $_SESSION['editor']->makeSelectedSettingDefault();
-  $message = "            <p class=\"warning\">".$_SESSION['editor']->message()."</p>\n";
+  $message = $_SESSION['editor']->message();
 }
 else if ( (isset($_POST['delete']) || isset($_POST['annihilate']) && $_POST['annihilate'] == "yes") ) {
     $_SESSION['editor']->deleteSelectedSetting();
-    $message = "            <p class=\"warning\">".$_SESSION['editor']->message()."</p>\n";
+    $message = $_SESSION['editor']->message();
 }
 else if (isset($_POST['OK'])) {
   if (!isset($_POST['setting'])) {
-    $message = "            <p class=\"warning\">Please select some image parameters.</p>\n";
+    $message = "Please select some image parameters";
   }
   else {
     $_SESSION['setting'] = $_SESSION['editor']->loadSelectedSetting();
@@ -96,7 +96,7 @@ else if (isset($_POST['OK'])) {
       if ($files != null) {
         for ($i=0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
           if (!in_array($value[$i], $files)) {
-            $message = "            <p class=\"warning\">Please verify selected setting, as some PSF files appear to be missing</p>\n";
+            $message = "Please verify selected setting, as some PSF files appear to be missing";
             $ok = False;
             break;
           }
@@ -114,11 +114,11 @@ else if (isset($_POST['OK'])) {
         if ( empty( $microscopeType ) ||
              empty( $numericalAperture ) ||
              empty( $ccdCaptorSize ) ) {
-                $message = "            <p class=\"warning\">Please check this setting for completeness! Current version of HRM requires that all parameters are set even if a measured PSF is chosen.</p>\n";
+                $message = "Please check this setting for completeness! Current version of HRM requires that all parameters are set even if a measured PSF is chosen";
                 $ok = False;
         }          
       } else {
-        $message = "            <p class=\"warning\">Source image folder not found! Make sure path ".$_SESSION['fileserver']->sourceFolder()." exists.</p>\n";
+        $message = "Source image folder not found! Make sure path ".$_SESSION['fileserver']->sourceFolder()." exists";
         $ok = False;
       }
     }
@@ -384,7 +384,7 @@ if (!$_SESSION['user']->isAdmin()) {
   <div id="message">
 <?php
 
-echo $message;
+echo "<p>$message</p>";
 
 
 ?>

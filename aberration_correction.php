@@ -19,7 +19,7 @@ session_start();
 if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
   header("Location: " . "login.php"); exit();
 }
-$message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
+$message = "";
 
 /* *****************************************************************************
  *
@@ -45,12 +45,12 @@ foreach ( $parameterNames as $name ) {
 
 if ( $_SESSION['setting']->checkPostedAberrationCorrectionParameters( $_POST ) ) {
   $saved = $_SESSION['setting']->save();
-  $message = "            <p class=\"warning\">".$_SESSION['setting']->message()."</p>";
+  $message = $_SESSION['setting']->message();
   if ($saved) {
     header("Location: select_parameter_settings.php" ); exit();
   }
 } else {
-  $message = "            <p class=\"warning\">".$_SESSION['setting']->message()."</p>";
+  $message = $_SESSION['setting']->message();
 }
 
 /* *****************************************************************************
@@ -429,7 +429,7 @@ if ( ($parameterPerformAberrationCorrection->value( ) == 1) &&
         <div id="message">
 <?php
 
-echo $message;
+echo "<p>$message</p>";
 
 ?>
         </div>

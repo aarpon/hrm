@@ -19,7 +19,7 @@ if (isset($_SERVER['HTTP_REFERER'])) {
   $_SESSION['referer'] = $_SERVER['HTTP_REFERER'];
 }
 
-$message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
+$message = "";
 
 include("header.inc.php");
 
@@ -170,7 +170,7 @@ include("header.inc.php");
         <div id="message">
 <?php
 
-echo $message;
+echo "<p>$message</p>";
 
 ?>
         </div>

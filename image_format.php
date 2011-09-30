@@ -23,7 +23,7 @@ if ( !isset( $_SESSION[ 'setting' ] ) ) {
   $_SESSION['setting'] = new ParameterSetting();
 }	
 
-$message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
+$message = "";
 
 /* *****************************************************************************
  *
@@ -59,8 +59,7 @@ if ( $_SESSION[ 'setting' ]->checkPostedImageParameters( $_POST ) ) {
   // Continue to the next page
   header("Location: " . "microscope_parameter.php"); exit();
 } else {
-  $message = "            <p class=\"warning\">" .
-    $_SESSION['setting']->message() . "</p>\n";  
+  $message = $_SESSION['setting']->message();  
 }
 
 /* *****************************************************************************
@@ -351,7 +350,7 @@ function check($parameter, $value) {
         <div id="message">
 <?php
 
-echo $message;
+echo "<p>$message</p>";
 
 ?>
         </div>

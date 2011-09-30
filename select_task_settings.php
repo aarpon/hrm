@@ -37,7 +37,7 @@ if (!$_SESSION['user']->isAdmin()) {
   $admin_editor = new TaskSettingEditor($admin);
 }
 
-$message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
+$message = "";
 
 /* *****************************************************************************
  *
@@ -52,10 +52,10 @@ if (isset($_POST['task_setting'])) {
 if (isset($_POST['copy_public'])) {
   if (isset($_POST["public_setting"])) {
     if (!$_SESSION['taskeditor']->copyPublicSetting($admin_editor->setting($_POST['public_setting']))) {
-      $message = "            <p class=\"warning\">".$_SESSION['editor']->message()."</p>\n";
+      $message = $_SESSION['editor']->message();
     }
   }
-  else $message = "            <p class=\"warning\">Please select a setting to copy</p>\n";
+  else $message = "Please select a setting to copy";
 }
 else if (isset($_POST['create'])) {
   $task_setting = $_SESSION['taskeditor']->createNewSetting($_POST['new_setting']);
@@ -63,11 +63,11 @@ else if (isset($_POST['create'])) {
     $_SESSION['task_setting'] = $task_setting;
     header("Location: " . "task_parameter.php"); exit();
   }
-  $message = "            <p class=\"warning\">".$_SESSION['taskeditor']->message()."</p>\n";
+  $message = $_SESSION['taskeditor']->message();
 }
 else if (isset($_POST['copy'])) {
   $_SESSION['taskeditor']->copySelectedSetting($_POST['new_setting']);
-  $message = "            <p class=\"warning\">".$_SESSION['taskeditor']->message()."</p>\n";
+  $message = $_SESSION['taskeditor']->message();
 }
 else if (isset($_POST['edit'])) {
   $task_setting = $_SESSION['taskeditor']->loadSelectedSetting();
@@ -75,19 +75,19 @@ else if (isset($_POST['edit'])) {
     $_SESSION['task_setting'] = $task_setting;
     header("Location: " . "task_parameter.php"); exit();
   }
-  $message = "            <p class=\"warning\">".$_SESSION['taskeditor']->message()."</p>\n";
+  $message = $_SESSION['taskeditor']->message();
 }
 else if (isset($_POST['make_default'])) {
   $_SESSION['taskeditor']->makeSelectedSettingDefault();
-  $message = "            <p class=\"warning\">".$_SESSION['taskeditor']->message()."</p>\n";
+  $message = $_SESSION['taskeditor']->message();
 }
 else if ( (isset($_POST['delete']) || isset($_POST['annihilate']) && $_POST['annihilate'] == "yes") ) {
     $_SESSION['taskeditor']->deleteSelectedSetting();
-    $message = "            <p class=\"warning\">".$_SESSION['taskeditor']->message()."</p>\n";
+    $message = $_SESSION['taskeditor']->message();
 }
 else if (isset($_POST['OK'])) {
   if (!isset($_POST['task_setting'])) {
-    $message = "            <p class=\"warning\">Please select some restoration parameters.</p>\n";
+    $message = "Please select some restoration parameters";
   }
   else {
     $_SESSION['task_setting'] = $_SESSION['taskeditor']->loadSelectedSetting();
@@ -104,10 +104,9 @@ else if (isset($_POST['OK'])) {
     if ($ok) {
       header("Location: " . "select_images.php"); exit();
     }
-    $message = "            <p class=\"warning\">" .
-      "The number of channels in the selected restoration parameters does " .
-      "not match the number of channels in the image parameters. " .
-      "Please fix this!</p>\n";
+    $message = "The number of channels in the selected restoration " .
+      "parameters does not match the number of channels in the image " .
+      "parameters. Please fix this!";
   }
 }
 
@@ -353,7 +352,7 @@ if (!$_SESSION['user']->isAdmin()) {
     <div id="message">
 <?php
 
-echo $message;
+echo "<p>$message</p>";
 
 ?>
         </div>

@@ -18,7 +18,7 @@ if (!isset ($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
 	exit ();
 }
 
-$message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
+$message = "";
 
 /* *****************************************************************************
  *
@@ -44,13 +44,11 @@ if ( $_SESSION[ 'setting' ]->checkPostedCalculatePixelSizeParameters( $_POST ) )
 		$_SESSION['setting']->set($parameter);
 		header("Location: " . "capturing_parameter.php"); exit();
 	} else {
-		$message = "            <p class=\"warning\">" .
-			"Please check your parameters!</p>\n";
+		$message = "Please check your parameters!";
 	}
 } else {
   
-  $message = "            <p class=\"warning\">" .
-    $_SESSION['setting']->message() . "</p>\n";
+  $message = $_SESSION['setting']->message();
 	
 }
 
@@ -200,7 +198,7 @@ foreach ( $sortedPossibleValues as $possibleValue) {
                 
 <?php
 
-echo $message;
+echo "<p>$message</p>";
 
 ?>
         </div>

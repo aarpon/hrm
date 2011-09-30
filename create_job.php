@@ -24,7 +24,7 @@ if (!isset($_SESSION['fileserver'])) {
   $_SESSION['fileserver'] = new Fileserver($name);
 }
 
-$message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
+$message = "";
 
 if (isset($_POST['create'])) {
   $parameter = $_SESSION['task_setting']->parameter("OutputFileFormat");
@@ -43,10 +43,10 @@ if (isset($_POST['create'])) {
       exit();
     }
     else {
-      $message = "            <p class=\"warning\">".$job->message()."</p>";
+      $message = $job->message();
     }
   }
-  else $message = "            <p class=\"warning\">An unknown error has occured. Please inform the person in charge.</p>";
+  else $message = "An unknown error has occured. Please inform the administrator";
 }
 else if (isset($_POST['OK'])) {
   header("Location: " . "select_parameter_settings.php"); exit();
@@ -270,7 +270,7 @@ else {
         <div id="message">
 <?php
 
-echo $message;
+echo "<p>$message</p>";
 
 ?>
         </div>

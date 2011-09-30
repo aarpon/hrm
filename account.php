@@ -81,7 +81,7 @@ else {
   $edit_user = $_SESSION['user'];
 }
 
-$message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
+$message = "";
 
 if (isset($_POST['modify'])) {
 
@@ -96,7 +96,7 @@ if (isset($_POST['modify'])) {
   } else {
     if ( $clean['email'] == "" ) {
       $result = False;
-      $message = "            <p class=\"warning\">Please fill in the email field with a valid address<br />&nbsp;</p>";
+      $message = "Please fill in the email field with a valid address";
     } else {
       $emailToUse = $clean['email'];
     }
@@ -108,7 +108,7 @@ if (isset($_POST['modify'])) {
   } else {
     if ( $clean['group'] == "" ) {
       $result = False;
-      $message = "            <p class=\"warning\">Please fill in the group field<br />&nbsp;</p>";
+      $message = "Please fill in the group field";
     } else {
       $groupToUse = $clean['group'];
     }
@@ -117,11 +117,11 @@ if (isset($_POST['modify'])) {
   // Passwords
   if ( $clean['pass1'] == "" || $clean['pass2'] == "" ) {
       $result = False;
-      $message = "\n            <p class=\"warning\">Please fill in both password fields</p>";
+      $message = "Please fill in both password fields";
   } else {
     if ( $clean['pass1'] != $clean['pass2'] ) {
       $result = False;
-      $message = "\n            <p class=\"warning\">Passwords do not match</p>";
+      $message = "Passwords do not match";
     } else {
       $passToUse = $clean['pass1'];
     }
@@ -137,11 +137,11 @@ if (isset($_POST['modify'])) {
         $_SESSION['account_user'] = "Account details successfully modified";
         header("Location: " . "user_management.php"); exit();
       } else {
-        $message = "            <p class=\"warning\">Account details successfully modified</p>";
+        $message = "Account details successfully modified";
         header("Location: " . $_SESSION['referer']); exit();
       }
     } else {
-      $message = "            <p class=\"warning\">Database error, please inform the person in charge</p>\n";
+      $message = "Database error, please inform the administrator";
     }
   }
 }
@@ -258,7 +258,7 @@ if (isset($_SESSION['account_user']) || !$_SESSION['user']->isAdmin() ) {
         <div id="message">
 <?php
 
-echo $message;
+echo "<p>$message</p>";
 
 ?>
         </div>

@@ -11,8 +11,6 @@ global $email_admin;
 global $enableUserAdmin;
 global $authenticateAgainst;
 
-$message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
-
 session_start();
 
 if (isset($_GET['home'])) {
@@ -23,7 +21,7 @@ if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
   header("Location: " . "login.php"); exit();
 }
 
-$message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
+$message = "";
 
 // Javascript includes
 $script = array( "settings.js", "quickhelp/help.js",

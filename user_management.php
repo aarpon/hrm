@@ -119,7 +119,7 @@ else if (isset($_GET['index'])) {
   $_SESSION['index'] = $_GET['index'];
 }
 
-$message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
+$message = "";
 
 if (isset($_POST['accept'])) {
   $result = $db->updateUserStatus($clean['username'], 'a');
@@ -140,13 +140,13 @@ if (isset($_POST['accept'])) {
     $mail->send();
     shell_exec("$userManager create \"" . $clean['username']. "\"");
   }
-  else $message = "            <p class=\"warning\">Database error, please inform the person in charge</p>";
+  else $message = "Database error, please inform the administrator";
 }
 else if (isset($_POST['reject'])) {
   $email = $db->emailAddress($clean['username']);
   $result = $db->deleteUser( $clean['username'] );
   // TODO refactor
-  if (!$result) $message = "            <p class=\"warning\">Database error, please inform the person in charge</p>";
+  if (!$result) $message = "Database error, please inform the administrator";
   $text = "Your request for an HRM account has been rejected. Please contact ".$email_admin." for any enquiries.\n";
   $mail = new Mail($email_sender);
   $mail->setReceiver($email);
@@ -162,11 +162,11 @@ else if (isset($_POST['annihilate']) && $_POST['annihilate'] == "yes") {
         shell_exec("$userManager delete \"" . $_POST['username'] . "\"");
       }
       else {
-        $message = "            <p class=\"warning\">Database error, please inform the person in charge</p>";
+        $message = "Database error, please inform the administrator";
       }
     }
     else {
-      $message = "            <p class=\"warning\">Database error, please inform the person in charge</p>";
+      $message = "Database error, please inform the administrator";
     }
   }
 else if (isset($_POST['edit'])) {
@@ -421,7 +421,7 @@ if ($_SESSION['index'] != "") {
         <div id="message">
 <?php
 
-print $message;
+echo "<p>$message</p>";
 
 ?>
         </div>

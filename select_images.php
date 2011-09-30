@@ -31,7 +31,7 @@ $_SESSION['fileserver']->setImageExtensions($extensions);
 
 $geometry = $_SESSION['setting']->parameter("ImageGeometry");
 
-$message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
+$message = "";
 
 if (isset($_POST['down'])) {
   if (isset($_POST['userfiles']) && is_array($_POST['userfiles'])) {
@@ -48,7 +48,7 @@ else if (isset($_POST['update'])) {
 }
 else if (isset($_POST['OK'])) {
   if (!$_SESSION['fileserver']->hasSelection()) {
-    $message = "            <p class=\"warning\">Please add at least one image to your selection!</p>";
+    $message = "Please add at least one image to your selection";
   }
   else {
     header("Location: " . "create_job.php"); exit();
@@ -204,8 +204,7 @@ $info = " <h3>Quick help</h3> <p>In this step, you will select the files from th
 $flag = "";
 if ($files == null) {
     $flag = " disabled=\"disabled\"";
-    $message .= "<p class=\"warning\">No images of type '".
-                 $fileFormat->value()."'.</p>";
+    $message .= "No images of type '" .$fileFormat->value();
 }
 
 ?>
@@ -303,7 +302,7 @@ else echo "                        <option>&nbsp;</option>\n";
         <div id="message">
 <?php
 
-echo $message;
+echo "<p>$message</p>";
 
 ?>
         </div>

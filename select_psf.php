@@ -23,7 +23,7 @@ if (!isset($_SESSION['fileserver'])) {
   $_SESSION['fileserver'] = new Fileserver($name);
 }
 
-$message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
+$message = "";
 
 /* *****************************************************************************
  *
@@ -60,12 +60,12 @@ if (count($_POST) > 0) {
     $_SESSION['setting']->parameter( 'AberrationCorrectionNecessary' )->setValue( '0' );
     $_SESSION['setting']->parameter( 'PerformAberrationCorrection' )->setValue( '0' );
     $saved = $_SESSION['setting']->save();
-    $message = "            <p class=\"warning\">".$_SESSION['setting']->message()."</p>";
+    $message = $_SESSION['setting']->message();
     if ($saved) {
       header("Location: select_parameter_settings.php" ); exit();
     }
   } else {
-    $message = "            <p class=\"warning\">".$psfParam->message()."<br />&nbsp;</p>";
+    $message = $psfParam->message();
   }
 }
 
@@ -172,7 +172,7 @@ for ($i = 0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
         <div id="message">
 <?php
 
-echo $message;
+echo "<p>$message</p>";
 
 ?>
         </div>

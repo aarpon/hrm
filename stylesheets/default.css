@@ -896,11 +896,14 @@ option.default {
     width: 30%;
 }
 
-.message {
-    font-size: 10px;
+#message {
+    font-size: 12px;
     font-weight: bold;
     margin: 0px;
     padding: 0px;
+}
+#message p {
+    color: red;
 }
 
 .message_small {
@@ -926,11 +929,6 @@ option.default {
     width: 100%;
     font-size: 12px;
     margin-bottom: 0px;
-}
-
-.warning {
-    font-weight: bold;
-    color: red;
 }
 
 .notice {

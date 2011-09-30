@@ -15,7 +15,7 @@ global $email_admin;
 
 $processed = False;
 
-$message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
+$message = "";
 
 /*
  *
@@ -122,19 +122,19 @@ if (isset($_POST["OK"])) {
                 }
                 $processed = True;
               }
-                else $message = "            <p class=\"warning\">Database error, please inform the person in charge</p>\n";
+                else $message = "Database error, please inform the person in charge";
               }
-              else $message = "            <p class=\"warning\">This user name is already in use. Please enter another one.</p>\n";
+              else $message = "This user name is already in use. Please enter another one";
             }
-            else $message = "            <p class=\"warning\">Passwords do not match</p>\n";
+            else $message = "Passwords do not match";
           }
-          else $message = "            <p class=\"warning\">Please fill in both password fields</p>\n";
+          else $message = "Please fill in both password fields";
         }
-        else $message = "            <p class=\"warning\">Please fill in the group field</p>\n";
+        else $message = "Please fill in the group field";
       }
-      else $message = "            <p class=\"warning\">Please fill in the email field with a valid address</p>\n";
+      else $message = "Please fill in the email field with a valid address";
     }
-    else $message = "            <p class=\"warning\">Please fill in the name field</p>\n";
+    else $message = "Please fill in the name field";
 }
 
 include("header.inc.php");
@@ -232,7 +232,7 @@ if (!$processed) {
         <div id="message">
 <?php
 
-  print $message;
+  echo "<p>$message</p>";
 
 ?>
         </div>

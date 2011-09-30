@@ -11,8 +11,6 @@ global $email_admin;
 global $enableUserAdmin;
 global $authenticateAgainst;
 
-$message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
-
 session_start();
 
 if (isset($_GET['exited'])) {
@@ -26,7 +24,7 @@ if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
   header("Location: " . "login.php"); exit();
 }
 
-$message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
+$message = "";
 
 // Refresh the page every 10 seconds
 $meta = "<meta http-equiv=\"refresh\" content=\"10\" />";

@@ -146,7 +146,7 @@ if (isset($_GET['folder']) ) {
 
 
 if ($allowHttpTransfer) {
-    $message = "            <p class=\"warning\">&nbsp;<br />&nbsp;</p>\n";
+    $message = "";
     if (isset($_POST['download'])) {
         if (isset($_POST['userfiles']) && is_array($_POST['userfiles'])) {
            $message = $_SESSION['fileserver']->downloadResults($_POST['userfiles']);
@@ -213,8 +213,8 @@ if ( $browse_folder == "dest" ) {
     $size = 15;
     $multiple_files = true;
     $page_title = "Deconvolved images";
-    $explanation_text = "The following field lists all the deconvolved " .
-    "image files currently in the file area.";
+    $explanation_text = "These are the <b>deconvolved image files</b> " .
+    "currently in your file area.";
     $form_title = "Your files";
     $fileBrowserLinks = '<li><a href="file_manager.php">'.
         '<img src="images/filemanager_small.png" alt="file manager" />'.
@@ -243,7 +243,7 @@ if ( $browse_folder == "dest" ) {
     $size = 15;
     $multiple_files = true;
     $page_title = "Raw images";
-    $explanation_text = "These are the original image files currently " .
+    $explanation_text = "These are the <b>original image files</b> currently " .
       "in your file area.";
     $form_title = "Your files";
     $fileBrowserLinks = '<li><a href="file_manager.php">'.
