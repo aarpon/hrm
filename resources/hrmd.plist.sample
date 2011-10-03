@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>EnvironmentVariables</key>
+	<dict>
+		<key>HRM_HOME</key>
+		<string>/Users/aaron/Sites/hrm</string>
+		<key>HRM_DATA</key>
+		<string>/work/hrm_data</string>
+		<key>HRM_SOURCE</key>
+		<string>src</string>
+		<key>HRM_DEST</key>
+		<string>dst</string>
+	</dict>
+	<key>KeepAlive</key>
+	<true/>
+	<key>Label</key>
+	<string>hrmd</string>
+	<key>OnDemand</key>
+	<false/>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/usr/bin/php</string>
+		<string>-q</string>
+		<string>/Users/aaron/Sites/hrm/run/runHuygensRemoteManager.php</string>
+	</array>
+	<key>RunAtLoad</key>
+	<true/>
+	<key>StandardErrorPath</key>
+	<string>/var/log/hrm/log_error_d.txt</string>
+	<key>StandardOutPath</key>
+	<string>/var/log/hrm/log_d.txt</string>
+	<key>UserName</key>
+	<string>_www</string>
+	<key>WorkingDirectory</key>
+	<string>/Users/aaron/Sites/hrm/run</string>
+</dict>
+</plist>
