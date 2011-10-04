@@ -117,6 +117,12 @@ class Ldap {
 	  return false;
 	}
 
+	// Bind the manager -- or we won't be allowed to search for the user
+	// to authenticate
+	if ( ! $this->bindManager( ) ) {
+	  return "";
+	}
+
 	// Searching for user $uid
     $filter = "(uid=" . $uid . ")";
 	$searchbase = $ldap_user_search_DN . "," . $ldap_root;
@@ -148,11 +154,53 @@ class Ldap {
 	\todo	Get real group from LDAP!
   */
   public function getGroup( $uid ) {
-	// TODO Get group from LDAP server!
-	if ( ! $this->isConnected() ) {
+	
+	global $ldap_user_search_DN;
+	global $ldap_root;
+	global $ldap_valid_groups;
+
+	// Bind the manager
+	if ( ! $this->bindManager( ) ) {
 	  return "";
 	}
-    return "hrm";
+	
+	// Searching for user $uid
+    $filter = "(uid=" . $uid . ")";
+    $searchbase = $ldap_user_search_DN . "," . $ldap_root;
+	$sr = @ldap_search( $this->connection, $searchbase, $filter, array('uid','memberof') );
+    if ( !$sr ) {
+      return "";
+	}
+    $info = @ldap_get_entries( $this->connection, $sr );
+	$groups = $info[ 0 ][ "memberof" ];
+	// Filter by valid groups?
+	if ( count( $ldap_valid_groups ) == 0 ) {
+	  $groups = array_diff(
+		explode( ',', strtolower( $groups[ 0 ] ) ),
+		explode( ',', strtolower( $searchbase ) ) );
+	  if ( count( $groups ) == 0 ) {
+		return 'hrm';
+	  }
+	  $groups = $groups[ 0 ];
+	  // Remove ou= or cn= entries
+	  $matches = array();
+	  if ( !preg_match( '/^(OU=|CN=)(.+)/i', $groups, &$matches ) ) {
+		return "hrm";
+	  } else {
+		if ( $matches[ 2 ] == null ) {
+		  return "hrm";
+		}
+		return $matches[ 2 ];
+	  }
+	} else {
+	  for ( $i = 0; $i < count( $groups ); $i++ ) {
+		for ( $j = 0; $j < count( $ldap_valid_groups ); $j++ ) {
+		  if ( strpos( $groups[ $i ], $ldap_valid_groups[ $j ] ) ) {
+			return ( $ldap_valid_groups[ $j ] );
+		  }
+		}
+	  }
+	}
   }
     
   /*!
@@ -182,18 +230,21 @@ class Ldap {
   private function bindManager( ) {
 	
 	global $ldap_manager;
+	global $ldap_manager_ou;
 	global $ldap_root;
 	global $ldap_password;
+	global $ldap_user_search_DN;
 	
 	if ( ! $this->isConnected( ) ) {
 		return false;
 	}
 	
-	$dn = "cn=$ldap_manager" . "," . $ldap_root;
+	$dn = "cn=$ldap_manager" . "," . $ldap_manager_ou . "," . $ldap_user_search_DN . "," . $ldap_root;
+
 	$r = @ldap_bind( $this->connection, $dn, $ldap_password );
     if ( $r ) {
       return true;
-    }
+	}
 
   }
   

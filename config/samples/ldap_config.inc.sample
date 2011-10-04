@@ -24,7 +24,19 @@ $ldap_manager="manager";
 // the ldap manager password
 $ldap_password = "secret";
 
+// ldap manager OU: use this in case the ldap_manager is in some special OU
+// that distinguishes it from the other users. $ldap_manager_ou will be
+// prepended to $ldap_user_search_DN.
+// Set it to "" if $ldap_user_search_DN can be used for binding
+$ldap_manager_ou="ou=special_user";
+
 // User search DN (without ldap root)
 $ldap_user_search_DN="cn=users";
 
+// Users often belong to more than one group. To filter for the desired one,
+// fill the $ldap_valid_groups array with the ones to be filtered against.
+// If more than one group fits, the first will be taken.
+// Fill the array as follows: $ldap_valid_groups = array( "group1", "group2" )
+// with as many groups as you need.
+$ldap_valid_groups = array( );
 ?>
