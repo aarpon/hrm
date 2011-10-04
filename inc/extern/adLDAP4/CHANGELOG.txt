@@ -8,6 +8,35 @@ http://adldap.sourceforge.net/
 CHANGELOG
 -------------------------------------------------------------------------------------------
 
+Version 4.0.3
+-------------
+[+] New feature: Added support for homephone attribute to the adLDAP schema
+[+] New feature: Added getLastLogon($username) to the user model to return a Unix timestamp for the last logon of a user
+[-] Bug fix: Change strGuidToHex to public function to prevent errors when used with $isGUID = true
+[-] Bug fix: user()->find() function would cause an undefined array error if full error reporting was enabled
+[-] Bug fix: #11 If the array "$this->info[0][strtolower($attribute)]" contains a key with 0 (zero), it does not add to the array
+[-] Bug fix: #22 Typo in adLDAPFolders for listings
+
+Version 4.0.2
+-------------
+[-] Bug fix: #16 Typo Error in adLDAPGroups.php could cause an error when PHP strict mode error reporting enabled
+[-] Bug fix: #18 Typo in adLDAPContacts.php affecting info and infoCollection functions failing
+
+Version 4.0.1
+-------------
+[+] New feature: #13 allow binding over SASL where supported
+[+] New feature: #12 new $adldap->user()->find() function to find users by searching specific fields
+[+] New feature: exchange_altrecipient and exchange_deliverandredirect added to adldap_schema
+[-] Bug fix: $adldap->user()->usernameToGuid() function had invalid parameter in ldap_search function
+[-] Bug fix: #9 When a password change is attempted but fails due to the configured Active Directory Password Policy. Instead of the error an Exception is thrown.
+[-] Bug fix: #10 PHP Warning issued for missing array element. Assumes that element ["count"] exists which does not when the login only has one AD group.
+[-] Bug fix: #8 The ou_create function was giving naming violation errors
+[-] Bug fix: adldap_schema errors from the version 4.0 changes
+
+Version 4.0.0
+-------------
+[+] New feature: Version 4 is a complete re-write of the class and is backwards incompatible with version 3 and below.  Groups, users, contacts, etc have been seperated into seperate classes and can be called like this $adldap->user()->modify(); or $adldap->group()->create();
+
 Version 3.3.2
 -------------
 [+] New feature: Move the user to a new OU using user_move() function
