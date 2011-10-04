@@ -379,7 +379,7 @@ class User extends Owner{
     \return number of jobs in queue
   */
   public function numberOfJobsInQueue() {
-    if ( $this->name = "" ) {
+    if ( $this->name == "" ) {
       return 0;
     }
     $db = new DatabaseConnection();
