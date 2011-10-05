@@ -199,7 +199,8 @@ for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
                           <span class="nowrap">Ch<?php echo $i ?>:
                               &nbsp;&nbsp;&nbsp;
                               <span class="multichannel">
-                                  <input id="SignalNoiseRatioCMLE<?php echo $i ?>"
+                                  <input
+                                    id="SignalNoiseRatioCMLE<?php echo $i ?>"
                                     name="SignalNoiseRatioCMLE<?php echo $i ?>"
                                     type="text"
                                     size="8"
@@ -268,7 +269,8 @@ for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
   for ($j = 1; $j <= 4; $j++) {
       $option = "                                <option ";
       if (isset($signalNoiseRatioValue)) {
-          if ($signalNoiseRatioValue[$i] >= 1 && $signalNoiseRatioValue[$i] <= 4) {
+          if ($signalNoiseRatioValue[$i] >= 1 &&
+                  $signalNoiseRatioValue[$i] <= 4) {
             if ($j == $signalNoiseRatioValue[$i])
                 $option .= "selected=\"selected\" ";
           }
@@ -392,12 +394,13 @@ for ($i=0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
                         <span class="nowrap">
                             Ch<?php echo $i ?>:&nbsp;&nbsp;&nbsp;
                             <span class="multichannel">
-                                <input id="BackgroundOffsetPercent<?php echo $i ?>"
-                                       name="BackgroundOffsetPercent<?php echo $i ?>"
-                                       type="text"
-                                       size="8"
-                                       value="<?php echo $val ?>"
-                                       class="multichannelinput" />
+                                <input
+                                   id="BackgroundOffsetPercent<?php echo $i ?>"
+                                   name="BackgroundOffsetPercent<?php echo $i ?>"
+                                   type="text"
+                                   size="8"
+                                   value="<?php echo $val ?>"
+                                   class="multichannelinput" />
                             </span>&nbsp;
                         </span>
                         
@@ -488,7 +491,8 @@ $value = $parameter->value();
               <input type="button" value="" class="icon up"
                   onmouseover="TagToTip('ttSpanCancel' )"
                   onmouseout="UnTip()"
-                  onclick="javascript:deleteValuesAndRedirect( 'select_task_settings.php' );" />
+                  onclick="javascript:deleteValuesAndRedirect('select_task_settings.php' );"
+                  />
               <input type="submit" value="" class="icon save"
                   onmouseover="TagToTip('ttSpanForward' )"
                   onmouseout="UnTip()"

@@ -64,7 +64,8 @@ if ($fileFormat->value() == "ics" || $fileFormat->value() == "ics2" ) {
 else if ($fileFormat->value() == "hdf5" ) {
   $files = $_SESSION['fileserver']->files("h5");
 }
-else if ($fileFormat->value() == "tiff" || $fileFormat->value() == "tiff-single") {
+else if ($fileFormat->value() == "tiff" ||
+    $fileFormat->value() == "tiff-single") {
   $files = $_SESSION['fileserver']->tiffFiles();
 }
 else if ($fileFormat->value() == "tiff-series") {
@@ -169,24 +170,52 @@ function imageAction (list) {
 
 include("header.inc.php");
 
-$info = " <h3>Quick help</h3> <p>In this step, you will select the files from the list of available images that will be restored using the image and restoration parameters chosen in the previous two steps.</p> <p>Only files of type <b>". $fileFormat->value()."</b>, as selected in the image paremeters, are shown.</p><p>You can use SHIFT- and CTRL-click to select multiple files.</p> <p>Click on a file name in any of the fields to get a preview.</p>";
+$info = " <h3>Quick help</h3> <p>In this step, you will select the files " .
+    "from the list of available images that will be restored using the " .
+    "image and restoration parameters chosen in the previous two steps.</p> " .
+    "<p>Only files of type <b>". $fileFormat->value()."</b>, as selected in " .
+    "the image paremeters, are shown.</p><p>You can use SHIFT- and " .
+    "CTRL-click to select multiple files.</p> <p>Click on a file name in " .
+    "any of the fields to get a preview.</p>";
  
 
 ?>
     <!--
       Tooltips
     -->
-    <span id="ttSpanDown">Add files to the list of selected images.</span>
-    <span id="ttSpanUp">Remove files from the list of selected images.</span>
-    <span id="ttSpanRefresh">Refresh the list of available images on the server.</span>
-    <span id="ttSpanBack">Go back to step 2/4 - Restoration parameters.</span>
-    <span id="ttSpanForward">Continue to step 4/4 - Create job</span>
+    <span id="ttSpanDown">
+        Add files to the list of selected images.
+    </span>
+    <span id="ttSpanUp">
+        Remove files from the list of selected images.
+    </span>
+    <span id="ttSpanRefresh">
+        Refresh the list of available images on the server.
+    </span>
+    <span id="ttSpanBack">
+        Go back to step 2/4 - Restoration parameters.
+    </span>
+    <span id="ttSpanForward">
+        Continue to step 4/4 - Create job
+    </span>
     
     <div id="nav">
         <ul>
-            <li><img src="images/user.png" alt="user" />&nbsp;<?php echo $_SESSION['user']->name(); ?></li>
-            <li><a href="<?php echo getThisPageName();?>?home=home"><img src="images/home.png" alt="home" />&nbsp;Home</a></li>
-            <li><a href="javascript:openWindow('http://www.svi.nl/HuygensRemoteManagerHelpSelectImages')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
+            <li>
+                <img src="images/user.png" alt="user" />
+                &nbsp;<?php echo $_SESSION['user']->name(); ?>
+            </li>
+            <li>
+                <a href="<?php echo getThisPageName();?>?home=home">
+                    <img src="images/home.png" alt="home" />&nbsp;Home
+                </a>
+            </li>
+            <li>
+                <a href="javascript:openWindow(
+                   'http://www.svi.nl/HuygensRemoteManagerHelpSelectImages')">
+                    <img src="images/help.png" alt="help" />&nbsp;Help
+                </a>
+            </li>
         </ul>
     </div>
     
@@ -208,13 +237,16 @@ if ($files == null) {
 }
 
 ?>
-                    <select onchange="javascript:imageAction(this)" name="userfiles[]" size="10" multiple="multiple"<?php echo $flag ?>>
+                    <select onchange="javascript:imageAction(this)"
+                            name="userfiles[]"
+                            size="10"
+                            multiple="multiple"<?php echo $flag ?>>
 <?php
 $keyArr = array();
 if ($files != null) {
   foreach ($files as $key => $filename) {
           echo $_SESSION['fileserver']->getImageOptionLine($filename, $key, 
-                                                      "src","preview", 0, 1) ;
+            "src","preview", 0, 1) ;
           $keyArr[$filename] = $key;
 
   }
@@ -242,17 +274,23 @@ else echo "                        <option>&nbsp;</option>\n";
 
 $files = $_SESSION['fileserver']->selectedFiles();
 $flag = "";
-if ($files == null) $flag = " disabled=\"disabled\"";
+if ($files == null) {
+    $flag = " disabled=\"disabled\"";
+}
 
 ?>
-                    <select onclick="javascript:imageAction(this)" onchange="javascript:imageAction(this)" name="selectedfiles[]" size="5" multiple="multiple"<?php echo $flag ?>>
+                    <select onclick="javascript:imageAction(this)" 
+                            onchange="javascript:imageAction(this)"
+                            name="selectedfiles[]"
+                            size="5"
+                            multiple="multiple"<?php echo $flag ?>>
 <?php
 
 if ($files != null) {
   foreach ($files as $filename) {
           $key = $keyArr[$filename];
           echo $_SESSION['fileserver']->getImageOptionLine($filename,
-                                             $key, "src", "preview", 0, 1) ;
+              $key, "src", "preview", 0, 1) ;
   }
 }
 else echo "                        <option>&nbsp;</option>\n";
@@ -262,22 +300,31 @@ else echo "                        <option>&nbsp;</option>\n";
                 </div>
             </fieldset>
             
-            <div id="actions" class="imageselection"  onmouseover="showInstructions()">
-                <input name="update" type="submit" value="" class="icon update"
-                    onmouseover="TagToTip('ttSpanRefresh' )"
-                    onmouseout="UnTip()" />
+            <div id="actions" class="imageselection"
+                 onmouseover="showInstructions()">
+                <input name="update"
+                       type="submit"
+                       value=""
+                       class="icon update"
+                        onmouseover="TagToTip('ttSpanRefresh' )"
+                        onmouseout="UnTip()" />
                 <input name="OK" type="hidden" />
             </div>
             
-            <div id="controls"  onmouseover="showInstructions()">      
-              <input type="button" value="" class="icon previous"
-                onclick="document.location.href='select_task_settings.php'"
-                onmouseover="TagToTip('ttSpanBack' )"
-                onmouseout="UnTip()" />
-              <input type="submit" value="" class="icon next"
-                onclick="process()"
-                onmouseover="TagToTip('ttSpanForward' )"
-                onmouseout="UnTip()" />
+            <div id="controls"
+                 onmouseover="showInstructions()">
+              <input type="button"
+                     value=""
+                     class="icon previous"
+                     onclick="document.location.href='select_task_settings.php'"
+                     onmouseover="TagToTip('ttSpanBack' )"
+                     onmouseout="UnTip()" />
+              <input type="submit"
+                     value=""
+                     class="icon next"
+                     onclick="process()"
+                     onmouseover="TagToTip('ttSpanForward' )"
+                     onmouseout="UnTip()" />
             </div>
 
         </form>

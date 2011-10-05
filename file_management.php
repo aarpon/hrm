@@ -17,7 +17,8 @@ if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
   header("Location: " . "login.php"); exit();
 }
 
-if (isset($_SERVER['HTTP_REFERER']) && !strstr($_SERVER['HTTP_REFERER'], 'job_queue')) {
+if (isset($_SERVER['HTTP_REFERER']) &&
+        !strstr($_SERVER['HTTP_REFERER'], 'job_queue')) {
   $_SESSION['referer'] = $_SERVER['HTTP_REFERER'];
 }
 
@@ -75,7 +76,8 @@ if (isset($_GET['viewStrip'])) {
         $embed = false;
     }
 
-    $_SESSION['fileserver']->viewStrip( $_GET['viewStrip'], $type, $src, $embed );
+    $_SESSION['fileserver']->viewStrip( $_GET['viewStrip'],
+        $type, $src, $embed );
     exit;
 
 }
@@ -109,7 +111,7 @@ if (isset($_GET['genPreview'])) {
 
 
     $_SESSION['fileserver']->genPreview( $_GET['genPreview'],
-                                         $src, $dest, $index, $size, $data );
+        $src, $dest, $index, $size, $data );
     exit;
 }
 
@@ -131,7 +133,8 @@ if (isset($_GET['compareResult'])) {
     }
 
 
-    $_SESSION['fileserver']->previewPage(rawurldecode($_GET['compareResult']), $op, $mode, $size);
+    $_SESSION['fileserver']->previewPage(
+        rawurldecode($_GET['compareResult']), $op, $mode, $size);
     exit;
 
 }
@@ -149,7 +152,8 @@ if ($allowHttpTransfer) {
     $message = "";
     if (isset($_POST['download'])) {
         if (isset($_POST['userfiles']) && is_array($_POST['userfiles'])) {
-           $message = $_SESSION['fileserver']->downloadResults($_POST['userfiles']);
+           $message =
+            $_SESSION['fileserver']->downloadResults($_POST['userfiles']);
            exit;
         }
     } else if (isset($_GET['download']) ) {
@@ -162,17 +166,17 @@ if ($allowHttpTransfer) {
 $operationResult = "";
 
 if ($allowHttpUpload) {
-     # echo "<pre>"; print_r($_FILES); print_r($_POST); print_r($_GET);echo "</pre>"; exit;
 
     if (isset($_POST['uploadForm']) && isset($_FILES) ) {
         $operationResult =
-            $_SESSION['fileserver']->uploadFiles($_FILES['upfile'], $browse_folder);
+            $_SESSION['fileserver']->uploadFiles($_FILES['upfile'],
+                $browse_folder);
 
     } else if (isset($_GET['upload'])) {
         $max = getMaxPostSize() / 1024 / 1024;
         $maxPost = "$max MB";
-        $operationResult = "<b>Nothing uploaded!</b> Probably total post exceeds ".
-            "maximum allowed size of $maxPost.<br>\n";
+        $operationResult = "<b>Nothing uploaded!</b> Probably total post ".
+            "exceeds maximum allowed size of $maxPost.<br>\n";
     }
 }
 
@@ -226,17 +230,17 @@ if ( $browse_folder == "dest" ) {
             over the file preview to get additional information.</strong></p>";
 
     if ($allowHttpTransfer) {
-    $info .= "<p>Select the files you want to download (you can <b>SHIFT-</b> and
-            <b>CTRL-click</b> for multiple selection) and press the
-            <b>download</b> icon to compress the files into an archive and start
-            the download process. (Please mind that large files may take a
-            <b>long time </b>to be packaged before downloading.)</p>
+    $info .= "<p>Select the files you want to download (you can <b>SHIFT-</b> 
+            and <b>CTRL-click</b> for multiple selection) and press the
+            <b>download</b> icon to compress the files into an archive and 
+            start the download process. (Please mind that large files may take
+            a <b>long time </b>to be packaged before downloading.)</p>
             <p> Use the <b>delete</b> icon to delete the selected files
             instead.</p>";
     $file_buttons[] = "download";
     }
-    $info .= "<p><strong>Move your mouse pointer over the action buttons at the " .
-      "bottom to redisplay this help.</strong></p>";
+    $info .= "<p><strong>Move your mouse pointer over the action buttons at " .
+      "the bottom to redisplay this help.</strong></p>";
 
 } else {
     $browse_folder = "src";
@@ -265,16 +269,30 @@ if ( $browse_folder == "dest" ) {
         archive ($validExtensions)</b>, that will be unpacked after upload.";
         $file_buttons[] = "upload";
     }
-    $info .= "<p><strong>Move your mouse pointer over the action buttons at the " .
-      "bottom to redisplay this help.</strong></p>";
+    $info .= "<p><strong>Move your mouse pointer over the action buttons at " .
+      "the bottom to redisplay this help.</strong></p>";
 }
 
 $top_navigation = '
             <ul>
-            <li><img src="images/user.png" alt="user" />&nbsp;'.$_SESSION['user']->name().'</li>
+            <li>
+                <img src="images/user.png" alt="user" />
+                &nbsp;'.$_SESSION['user']->name().'
+            </li>
             '.$fileBrowserLinks.'
-            <li><a href="'.getThisPageName().'?home=home"><img src="images/home.png" alt="home" />&nbsp;Home</a></li>
-            <li><a href="javascript:openWindow(\'http://www.svi.nl/HuygensRemoteManagerHelpFileManagement\')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
+            <li>
+                <a href="'.getThisPageName().'?home=home">
+                    <img src="images/home.png" alt="home" />
+                    &nbsp;Home
+                </a>
+            </li>
+            <li>
+                <a href="javascript:openWindow(
+                \'http://www.svi.nl/HuygensRemoteManagerHelpFileManagement\')">
+                <img src="images/help.png" alt="help" />
+                &nbsp;Help
+                </a>
+                </li>
         </ul>
  ';
 

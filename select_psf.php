@@ -57,8 +57,10 @@ $_SESSION['setting']->set($psfParam);
 if (count($_POST) > 0) {
   if ($psfParam->check()) {
     // Make sure to turn off the aberration correction since we use a measured PSF
-    $_SESSION['setting']->parameter( 'AberrationCorrectionNecessary' )->setValue( '0' );
-    $_SESSION['setting']->parameter( 'PerformAberrationCorrection' )->setValue( '0' );
+    $_SESSION['setting']->parameter(
+        'AberrationCorrectionNecessary' )->setValue( '0' );
+    $_SESSION['setting']->parameter(
+        'PerformAberrationCorrection' )->setValue( '0' );
     $saved = $_SESSION['setting']->save();
     $message = $_SESSION['setting']->message();
     if ($saved) {
@@ -77,14 +79,30 @@ include("header.inc.php");
     <!--
       Tooltips
     -->
-    <span id="ttSpanBack">Go back to previous page.</span>  
-    <span id="ttSpanCancel">Abort editing and go back to the image parameters selection page. All changes will be lost!</span>  
-    <span id="ttSpanSave">Save and return to the image parameters selection page.</span>  
+    <span id="ttSpanBack">
+        Go back to previous page.
+    </span>
+    <span id="ttSpanCancel">
+        Abort editing and go back to the image parameters selection page.
+        All changes will be lost!
+    </span>
+    <span id="ttSpanSave">
+        Save and return to the image parameters selection page.
+    </span>
 
     <div id="nav">
         <ul>
-            <li><img src="images/user.png" alt="user" />&nbsp;<?php echo $_SESSION['user']->name(); ?></li>
-            <li><a href="javascript:openWindow('http://www.svi.nl/HuygensRemoteManagerHelpSelectPSFFiles')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
+            <li>
+                <img src="images/user.png" alt="user" />
+                &nbsp;<?php echo $_SESSION['user']->name(); ?>
+            </li>
+            <li>
+                <a href="javascript:openWindow(
+                   'http://www.svi.nl/HuygensRemoteManagerHelpSelectPSFFiles')">
+                    <img src="images/help.png" alt="help" />
+                    &nbsp;Help
+                </a>
+            </li>
         </ul>
     </div>
     
@@ -110,8 +128,20 @@ for ($i = 0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
 ?>
                 <p>
                     <span class="title">Ch<?php echo $i ?>:</span>
-                    <input name="psf<?php echo $i ?>" type="text" value="<?php echo $value[$i] ?>" class="<?php if ($missing) {echo "psfmissing";} else {echo "psffile";} ?>" readonly="readonly" />
-                    <input type="button" onclick="seek('<?php echo $i ?>')" value="browse" />
+                    <input name="psf<?php echo $i ?>" 
+                           type="text"
+                           value="<?php echo $value[$i] ?>"
+                           class="
+                           <?php
+                            if ($missing) {
+                                echo "psfmissing";
+                            } else {
+                                echo "psffile";
+                            } ?>"
+                           readonly="readonly" />
+                    <input type="button" 
+                           onclick="seek('<?php echo $i ?>')"
+                           value="browse" />
                 </p>
 <?php
 
@@ -120,7 +150,9 @@ for ($i = 0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
     if (!file_exists($_SESSION['fileserver']->sourceFolder())) {
 
 ?>
-                <p class="info">Source image folder not found! Make sure the folder <?php echo $_SESSION['fileserver']->sourceFolder() ?> exists.</p>
+                <p class="info">Source image folder not found! Make sure the
+                    folder <?php echo $_SESSION['fileserver']->sourceFolder() ?>
+                    exists.</p>
 <?php
 
     }
@@ -165,7 +197,8 @@ for ($i = 0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
           
           <h3>Quick help</h3>
           
-          <p>Select a PSF file for each of the channels. Only <strong>single-channel PSF files</strong> are supported.</p>
+          <p>Select a PSF file for each of the channels. Only
+              <strong>single-channel PSF files</strong> are supported.</p>
             
         </div>
         

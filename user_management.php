@@ -97,7 +97,9 @@ if (isset($_GET['seed'])) {
   }
 }
 
-if (isset($_SERVER['HTTP_REFERER']) && !strstr($_SERVER['HTTP_REFERER'], 'admin')  && !strstr($_SERVER['HTTP_REFERER'], 'account')) {
+if (isset($_SERVER['HTTP_REFERER']) && 
+        !strstr($_SERVER['HTTP_REFERER'], 'admin')  &&
+        !strstr($_SERVER['HTTP_REFERER'], 'account')) {
   $_SESSION['referer'] = $_SERVER['HTTP_REFERER'];
 }
 
@@ -107,7 +109,8 @@ if (isset($_SESSION['admin_referer'])) {
   unset($_SESSION['admin_referer']);
 }
 
-if (isset($_SESSION['account_user']) && gettype($_SESSION['account_user']) != "object") {
+if (isset($_SESSION['account_user']) &&
+        gettype($_SESSION['account_user']) != "object") {
   $message = $_SESSION['account_user'];
   unset($_SESSION['account_user']);
 }
@@ -132,7 +135,8 @@ if (isset($_POST['accept'])) {
     $text .= "Login here\n";
     $text .= $hrm_url."\n\n";
     $folder = $image_folder . "/" . $clean['username'];
-    $text .= "Source and destination folders for your images are located on server ".$image_host." under ".$folder.".";
+    $text .= "Source and destination folders for your images are located " .
+        "on server ".$image_host." under ".$folder.".";
     $mail = new Mail($email_sender);
     $mail->setReceiver($email);
     $mail->setSubject("HRM account activated");
@@ -147,7 +151,8 @@ else if (isset($_POST['reject'])) {
   $result = $db->deleteUser( $clean['username'] );
   // TODO refactor
   if (!$result) $message = "Database error, please inform the administrator";
-  $text = "Your request for an HRM account has been rejected. Please contact ".$email_admin." for any enquiries.\n";
+  $text = "Your request for an HRM account has been rejected. Please " .
+    "contact ".$email_admin." for any enquiries.\n";
   $mail = new Mail($email_sender);
   $mail->setReceiver($email);
   $mail->setSubject("Request for an HRM account rejected");
@@ -202,9 +207,24 @@ include("header.inc.php");
 
     <div id="nav">
         <ul>
-            <li><img src="images/user.png" alt="user" />&nbsp;<?php echo $_SESSION['user']->name(); ?></li>
-            <li><a href="<?php echo getThisPageName();?>?home=home" onclick="clean()"><img src="images/home.png" alt="home" />&nbsp;Home</a></li>
-            <li><a href="javascript:openWindow('http://www.svi.nl/HuygensRemoteManagerHelpUserManagement')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
+            <li>
+                <img src="images/user.png" alt="user" />
+                &nbsp;<?php echo $_SESSION['user']->name(); ?>
+            </li>
+            <li>
+                <a href="<?php echo getThisPageName();?>?home=home"
+                   onclick="clean()">
+                   <img src="images/home.png" alt="home" />
+                   &nbsp;Home
+                </a>
+            </li>
+            <li>
+                <a href="javascript:openWindow(
+                   'http://www.svi.nl/HuygensRemoteManagerHelpUserManagement')">
+                    <img src="images/help.png" alt="help" />
+                    &nbsp;Help
+                </a>
+            </li>
         </ul>
     </div>
 
@@ -232,9 +252,20 @@ foreach ($rows as $row) {
                     <legend>pending request</legend>
                     <table>
                         <tr class="upline">
-                            <td class="name"><span class="title"><?php echo $name ?></span></td>
-                            <td class="group"><?php echo $group ?></td>
-                            <td class="email"><a href="mailto:<?php echo $email ?>" class="normal"><?php echo $email ?></a></td>
+                            <td class="name">
+                                <span class="title">
+                                    <?php echo $name ?>
+                                </span>
+                            </td>
+                            <td class="group">
+                                <?php echo $group ?>
+                            </td>
+                            <td class="email">
+                                <a href="mailto:<?php echo $email ?>"
+                                   class="normal">
+                                   <?php echo $email ?>
+                                </a>
+                            </td>
                         </tr>
                         <tr class="bottomline">
                             <td colspan="2" class="date">
@@ -242,9 +273,15 @@ foreach ($rows as $row) {
                             </td>
                             <td class="operations">
                                 <div>
-                                    <input type="hidden" name="username" value="<?php echo $name ?>" />
-                                    <input type="submit" name="accept" value="accept" />
-                                    <input type="submit" name="reject" value="reject" />
+                                    <input type="hidden" 
+                                           name="username"
+                                           value="<?php echo $name ?>" />
+                                    <input type="submit" 
+                                           name="accept"
+                                           value="accept" />
+                                    <input type="submit" 
+                                           name="reject"
+                                           value="reject" />
                                 </div>
                             </td>
                         </tr>
@@ -273,7 +310,8 @@ if (!$i) {
             <fieldset>
 <?php
 
-$count = $db->queryLastValue("SELECT count(*) FROM username WHERE status = 'a' OR status = 'd'");
+$count = $db->queryLastValue(
+    "SELECT count(*) FROM username WHERE status = 'a' OR status = 'd'");
 $rows = $db->query("SELECT email FROM username WHERE status = 'a'");
 $emails = array();
 foreach ($rows as $row) {
@@ -283,11 +321,26 @@ $emails = array_unique($emails);
 sort($emails);
 
 ?>
-                <legend>Existing users (<?php echo $count - 1 ?>)</legend>
+                <legend>
+                    Existing users (<?php echo $count - 1 ?>)
+                </legend>
                 <p class="menu">
-                    <a href="javascript:openPopup('add_user')">add new user</a> | <a href="mailto:<?php echo implode( $email_list_separator, $emails) ?>">distribution list</a>
+                    <a href="javascript:openPopup('add_user')">
+                        add new user
+                    </a> |
+                    <a href="mailto:
+                    <?php
+                        echo implode( $email_list_separator, $emails)
+                    ?>">
+                    distribution list
+                    </a>
                     <br />
-                    <a href="javascript:disableUsers()">disable</a>/<a href="javascript:enableUsers()">enable</a> all users
+                    <a href="javascript:disableUsers()">
+                        disable
+                    </a>/
+                    <a href="javascript:enableUsers()">
+                        enable
+                    </a> all users
                 </p>
                 <form method="post" action="" id="user_management">
                     <div><input type="hidden" name="action" /></div>
@@ -305,11 +358,13 @@ echo "[<a href=\"?index=all\"".$style.">&nbsp;all&nbsp;</a>]&nbsp;[";
 while (True) {
   $c = chr(97 + $i);
   $style = "";
-  $result = $db->queryLastValue("SELECT * FROM username WHERE name LIKE '".$c."%' AND name NOT LIKE 'admin' AND (status = 'a' OR status = 'd')");
+  $result = $db->queryLastValue("SELECT * FROM username WHERE name LIKE '"
+    .$c."%' AND name NOT LIKE 'admin' AND (status = 'a' OR status = 'd')");
   if ($_SESSION['index'] == $c) $style = " class=\"selected\"";
   else if (!$result) $style = " class=\"empty\"";
   else $style = " class=\"filled\"";
-  echo "<a href=\"?index=".chr(97 + $i)."\"".$style.">&nbsp;".strtoupper($c)."&nbsp;</a>";
+  echo "<a href=\"?index=".chr(97 + $i)."\"".$style.">&nbsp;".
+    strtoupper($c)."&nbsp;</a>";
   if ($i == 25) {
     echo "]</div>\n";
     break;
@@ -325,7 +380,9 @@ while (True) {
 
 if ($_SESSION['index'] != "") {
   $condition = "";
-  if ($_SESSION['index'] != "all") $condition = " WHERE name LIKE '".$_SESSION['index']."%'";
+  if ($_SESSION['index'] != "all") {
+      $condition = " WHERE name LIKE '".$_SESSION['index']."%'";
+  }
   $rows = $db->query("SELECT * FROM username".$condition);
   sort($rows);
   $i = 0;
@@ -334,53 +391,96 @@ if ($_SESSION['index'] != "") {
       $name = $row['name'];
       $email = $row['email'];
       $group = $row['research_group'];
-      $last_access_date = date("j M Y, G:i", strtotime($row['last_access_date']));
+      $last_access_date = date("j M Y, G:i",
+        strtotime($row['last_access_date']));
       if ($last_access_date == "30 Nov 1999, 0:00") {
         $last_access_date = "never";
       }
       $status = $row['status'];
       if ($status == "a" || $status == "d") {
-        if ($i > 0) echo "                    <tr><td colspan=\"3\" class=\"hr\">&nbsp;</td></tr>\n";
+        if ($i > 0) {
+            echo "                    " .
+            "<tr><td colspan=\"3\" class=\"hr\">&nbsp;</td></tr>\n";
+        }
 
 ?>
-                    <tr  class="upline<?php if ($status == "d") echo " disabled" ?>">
-                        <td class="name"><span class="title"><?php echo $name ?></span></td>
-                        <td class="group"><?php echo $group ?></td>
-                        <td class="email"><a href="mailto:<?php echo $email ?>" class="normal"><?php echo $email ?></a></td>
+                    <tr  class="upline<?php 
+                        if ($status == "d") {
+                            echo " disabled";
+                        }
+                        ?>">
+                        <td class="name">
+                            <span class="title">
+                                <?php echo $name ?>
+                            </span>
+                        </td>
+                        <td class="group">
+                                <?php echo $group ?>
+                        </td>
+                        <td class="email">
+                            <a href="mailto:<?php echo $email ?>"
+                               class="normal"><?php echo $email ?>
+                            </a>
+                        </td>
                     </tr>
-                    <tr class="bottomline<?php if ($status == "d") echo " disabled" ?>">
+                    <tr class="bottomline<?php
+                    if ($status == "d") {
+                        echo " disabled";
+                    }
+                    ?>">
                         <td colspan="2" class="date">
                             last access: <?php echo $last_access_date."\n" ?>
                         </td>
                         <td class="operations">
                             <form method="post" action="">
                                 <div>
-                                    <input type="hidden" name="username" value="<?php echo $name ?>" />
-                                    <input type="hidden" name="email" value="<?php echo $email ?>" />
-                                    <input type="hidden" name="group" value="<?php echo $group ?>" />
-                                    <input type="submit" name="edit" value="edit" class="submit" />
+                                    <input type="hidden" 
+                                           name="username"
+                                           value="<?php echo $name ?>" />
+                                    <input type="hidden" 
+                                           name="email"
+                                           value="<?php echo $email ?>" />
+                                    <input type="hidden" 
+                                           name="group"
+                                           value="<?php echo $group ?>" />
+                                    <input type="submit"
+                                           name="edit"
+                                           value="edit"
+                                           class="submit" />
 <?php
 
         if ($name != $_SESSION[ 'user' ]->getAdminName() ) {
           if ($status == "d") {
 
 ?>
-                                    <input type="submit" name="enable" value="enable" class="submit" />
+                                    <input type="submit"
+                                           name="enable"
+                                           value="enable"
+                                           class="submit" />
 <?php
 
           }
           else {
 
 ?>
-                                    <input type="submit" name="disable" value="disable" class="submit" />
+                                    <input type="submit"
+                                           name="disable"
+                                           value="disable"
+                                           class="submit" />
 <?php
 
           }
 
 ?>
 
-                                    <input type="hidden" name="annihilate" />
-                                    <input type="button" name="delete" value="delete" onclick="warn(this.form, 'Do you really want to delete this user?')" class="submit" />
+                                    <input type="hidden"
+                                           name="annihilate" />
+                                    <input type="button"
+                                           name="delete"
+                                           value="delete"
+                                           onclick="warn(this.form,
+                                           'Do you really want to delete this user?')"
+                                           class="submit" />
 <?php
 
         }
@@ -399,7 +499,11 @@ if ($_SESSION['index'] != "") {
   if (!$i) {
 
 ?>
-                    <tr><td colspan="3" class="notice">n/a</td></tr>
+                    <tr>
+                        <td colspan="3" class="notice">
+                            n/a
+                        </td>
+                    </tr>
 <?php
 
   }

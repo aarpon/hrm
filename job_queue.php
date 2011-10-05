@@ -17,22 +17,20 @@ if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
   header("Location: " . "login.php"); exit();
 }
 
-if (isset($_SERVER['HTTP_REFERER']) && !strstr($_SERVER['HTTP_REFERER'], 'job_queue')) {
-  $_SESSION['referer'] = $_SERVER['HTTP_REFERER'];
+if (isset($_SERVER['HTTP_REFERER']) &&
+    !strstr($_SERVER['HTTP_REFERER'], 'job_queue')) {
+        $_SESSION['referer'] = $_SERVER['HTTP_REFERER'];
 }
 
 if (isset($_POST['delete'])) {
   if (isset($_POST['jobs_to_kill'])) {
-    $queue->markJobsAsRemoved($_POST['jobs_to_kill'], $_SESSION['user']->name());
+    $queue->markJobsAsRemoved($_POST['jobs_to_kill'],
+        $_SESSION['user']->name());
   }
 }
 else if (isset($_POST['update']) && $_POST['update']=='update') {
   // nothing to do
 }
-// TODO remove
-/*else if (isset($_POST['OK']) && $_POST['OK'] == 'OK' && isset($_SESSION['referer'])) {
-  header("Location: " . $_SESSION['referer']); exit();
-}*/
 
 $meta = "<meta http-equiv=\"refresh\" content=\"10\" />";
 
@@ -56,9 +54,20 @@ include("header.inc.php");
     ?>
     <div id="nav">
         <ul>
-            <li><img src="images/user.png" alt="user" />&nbsp;<?php echo $_SESSION['user']->name(); ?></li>
-            <li><a href="<?php echo getThisPageName();?>?home=home"><img src="images/home.png" alt="home" />&nbsp;Home</a></li>
-            <li><a href="javascript:openWindow('http://www.svi.nl/HuygensRemoteManagerHelpQueue')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
+            <li>
+                <img src="images/user.png" alt="user" />
+                &nbsp;<?php echo $_SESSION['user']->name(); ?>
+            </li>
+            <li>
+                <a href="<?php echo getThisPageName();?>?home=home">
+                    <img src="images/home.png" alt="home" />&nbsp;Home</a>
+            </li>
+            <li>
+                <a href="javascript:openWindow('
+                   http://www.svi.nl/HuygensRemoteManagerHelpQueue')">
+                    <img src="images/help.png" alt="help" />&nbsp;Help
+                </a>
+            </li>
         </ul>
     </div>
    
@@ -100,7 +109,8 @@ include("header.inc.php");
 
           if ( !$_SESSION['user']->isAdmin() )  {
               $db = new DatabaseConnection();
-              $jobsInQueue = $db->getNumberOfQueuedJobsForUser( $_SESSION['user']->name( ) );
+              $jobsInQueue = $db->getNumberOfQueuedJobsForUser(
+                  $_SESSION['user']->name( ) );
 
             if ( $jobsInQueue == 0 ) {
               $str = '<strong>no jobs</strong>';
@@ -146,14 +156,18 @@ include("header.inc.php");
           <td class="created">created</td>
           <td class="status">status</td>
           <td class="started">started</td>
-          <?php if ($showStopTime) echo "<td class=\"stop\">estimated end</td>"; ?>
+          <?php if ($showStopTime) {
+              echo "<td class=\"stop\">estimated end</td>";
+          }
+          ?>
           <td class="pid">pid</td>
           <td class="server">server</td>
         </tr>
 <?php
 
 if (count($rows) == 0) {
-  echo "                    <tr style=\"background: #ffffcc\"><td colspan=\"9\">The job queue is empty</td></tr>";
+  echo "                    <tr style=\"background: #ffffcc\">" .
+    "<td colspan=\"9\">The job queue is empty</td></tr>";
 }
 else {
   $index = 1;
@@ -177,12 +191,16 @@ else {
                     <tr style="background: <?php echo $color ?>">
 <?php
 
-    if ($row['username'] == $_SESSION['user']->name() || $_SESSION['user']->isAdmin()) {
-      //if ($row['status'] != "started" && $row['status'] != "broken") {
+    if ($row['username'] == $_SESSION['user']->name() ||
+            $_SESSION['user']->isAdmin()) {
       if($row['status'] != "broken") {
 
 ?>
-                            <td><input name="jobs_to_kill[]" type="checkbox" value="<?php echo $row['id'] ?>" /></td>
+                            <td>
+                                <input name="jobs_to_kill[]"
+                                       type="checkbox"
+                                       value="<?php echo $row['id'] ?>" />
+                            </td>
 <?php
 
       }
@@ -205,11 +223,18 @@ else {
 ?>
                         <td><?php echo $index ?></td>
                         <td><?php echo $row['username'] ?></td>
-                        <td><?php echo implode(';', $queue->getJobFilesFor($row['id'])) ?></td>
+                        <td><?php 
+                                echo implode(';',
+                                    $queue->getJobFilesFor($row['id']))
+                             ?>
+                        </td>
                         <td><?php echo $row['queued'] ?></td>
                         <td><?php echo $row['status'] ?></td>
                         <td><?php echo $row['start'] ?></td>
-                        <?php if ($showStopTime) echo "<td>".$row['stop']." </td>"; ?>
+                        <?php if ($showStopTime) {
+                            echo "<td>".$row['stop']." </td>";
+                        }
+                        ?>
                         <td><?php echo $row['process_info'] ?></td> 
                         <td><?php echo $row['server'] ?></td> 		
                     </tr>
@@ -230,7 +255,8 @@ if (count($rows) != 0) {
 ?>
                 <label style="padding-left: 3px">
                     <img src="images/arrow.png" alt="arrow" />
-                    <a href="javascript:mark()">Check All</a> / <a href="javascript:unmark()">Uncheck All</a>
+                    <a href="javascript:mark()">Check All</a> /
+                    <a href="javascript:unmark()">Uncheck All</a>
                 </label>
                 
                 &nbsp;

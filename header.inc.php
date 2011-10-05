@@ -36,12 +36,14 @@ if (isset($script)) {
 			if ( $current == "highcharts/excanvas.compiled.js" ) {
 				?>
 				<!--[if IE]>
-				<script type="text/javascript" src="scripts/<?php echo $current ?>"></script>
+				<script type="text/javascript"
+                    src="scripts/<?php echo $current ?>"></script>
 				<![endif]-->
 				<?php				
 			} else {
 				?>
-				<script type="text/javascript" src="scripts/<?php echo $current ?>"></script>
+				<script type="text/javascript"
+                    src="scripts/<?php echo $current ?>"></script>
 				<?php
 			}
 		}
@@ -50,12 +52,14 @@ if (isset($script)) {
 			if ( $script == "highcharts/excanvas.compiled.js" ) {
 				?>
 				<!--[if IE]>
-				<script type="text/javascript" src="scripts/<?php echo $script ?>"></script>
+				<script type="text/javascript"
+                    src="scripts/<?php echo $script ?>"></script>
 				<![endif]-->
 				<?php				
 			} else {
 				?>
-				<script type="text/javascript" src="scripts/<?php echo $script ?>"></script>
+				<script type="text/javascript"
+                    src="scripts/<?php echo $script ?>"></script>
 				<?php
 			}
 	}
@@ -87,13 +91,18 @@ if (isset($generatedScript)) {
 <!--
     // Use the great Tooltip JavaScript Library by Walter Zorn
 -->
-<script type="text/javascript" src="./scripts/wz_tooltip/wz_tooltip.js"></script>
+<script type="text/javascript" 
+    src="./scripts/wz_tooltip/wz_tooltip.js">
+</script>
 
 <div id="basket">
 
 <?php if (!isset($excludeTitle)) { ?>
 	  <div id="title">
-	  <h1>Huygens Remote Manager <span id="about">v<?php echo System::getHRMVersion( ); ?></span></h1>
+	  <h1>
+          Huygens Remote Manager
+            <span id="about">v<?php echo System::getHRMVersion( ); ?></span>
+      </h1>
   	  <div id="logo"></div>
 	  </div>
 <?php } ?>

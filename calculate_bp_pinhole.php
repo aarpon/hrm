@@ -233,7 +233,8 @@ function start() {
     echo "<div id=\"controls\">
     
             <input type=\"button\" value=\"\" class=\"icon up\"
-                  onmouseover=\"Tip('Go back without calculating the backprojected pinhole radius for your microscope.')\"
+                  onmouseover=\"Tip('Go back without calculating the ' +
+                  'backprojected pinhole radius for your microscope.')\"
                   onmouseout=\"UnTip()\"
                   onclick=\"document.location.href='capturing_parameter.php'\" /></div>";
 
@@ -253,7 +254,8 @@ function start() {
             echo "pinhole distances in spinning disks.</p>";
     echo "<p>Click <b>Help</b> on the top menu for more details.</p>";    
 
-    echo "<p>Start by selecting your microscope model from the list on the left, or click on cancel at the bottom to go back.</p>";
+    echo "<p>Start by selecting your microscope model from the list on the
+        left, or click on cancel at the bottom to go back.</p>";
     echo "</div>";
     echo "</div>";
 
@@ -326,8 +328,6 @@ global $cmsys, $table, $extra1, $txt1, $extra2, $txt2, $checked1, $checked2;
  
      print "\n$afterTable";
 
-        # print "\n<input type=\"submit\" Value=\"Calculate\">";
-        # print "<input type=\"submit\" value=\"\" class=\"icon apply\" onclick=\"process()\" />";
 ?>
 
           </fieldset>
@@ -338,7 +338,8 @@ global $cmsys, $table, $extra1, $txt1, $extra2, $txt2, $checked1, $checked2;
                   onmouseout="UnTip()"
                   onclick="document.location.href='<?php echo $_SERVER['PHP_SELF']; ?>'" />
             <input type="submit" value="" class="icon calc"
-                  onmouseover="Tip('Calculate the backprojected pinhole radius or distance from the entered parameters.' )"
+                  onmouseover="Tip('Calculate the backprojected pinhole ' +
+                    'radius or distance from the entered parameters.' )"
                   onmouseout="UnTip()"
                   onclick="process()" />
           </div>
@@ -353,8 +354,12 @@ global $cmsys, $table, $extra1, $txt1, $extra2, $txt2, $checked1, $checked2;
         <h3>Quick help</h3>
         
             <p>
-               Enter or confirm the requested values and press the calculator button to calculate the
-               <a href=\"javascript:openWindow('http://support.svi.nl/wiki/BackProjected')\">back projected</a> 
+               Enter or confirm the requested values and press the calculator
+               button to calculate the
+               <a href=\"javascript:openWindow('
+                  http://support.svi.nl/wiki/BackProjected')\">
+                  back projected
+               </a>
                pinhole radius.
                Press the back button to go back to the list of microscopes.
             </p>
@@ -395,7 +400,8 @@ foreach ( $params as $entry) {
 #    $out .= $entry. " ". $$entry."<br>\n";
     if (!isset($$entry) || $$entry == ""   || $$entry < 0) {
                     $$entry = $Default[$entry];
-                    $warning .= "\n<br>Using default value ".$$entry." for ".$Label[$entry]." ".$entry;
+                    $warning .= "\n<br>Using default value ".$$entry.
+                        " for ".$Label[$entry]." ".$entry;
     }
 }
 
@@ -412,7 +418,8 @@ if ($c == 0)
     $error .= "Wrong shape factor value.<br>\n";
 
 if ($d == 0 || !isset($d)) 
-    $error .= "Wrong pinhole value. Please enter a value as reported by your microscope.<br>\n";
+    $error .= "Wrong pinhole value. Please enter a value as reported " .
+        "by your microscope.<br>\n";
 
 if ($table == 1) {
 
@@ -551,8 +558,17 @@ include("header.inc.php");
 ?>
 <div id="nav">
         <ul>
-            <li><img src="images/user.png" alt="user" />&nbsp;<?php echo $_SESSION['user']->name(); ?></li>
-            <li><a href="javascript:openWindow('http://support.svi.nl/wiki/BackprojectedPinholeCalculator')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
+            <li>
+                <img src="images/user.png" alt="user" />
+                &nbsp;<?php echo $_SESSION['user']->name(); ?>
+            </li>
+            <li>
+                <a href="javascript:openWindow(
+                   'http://support.svi.nl/wiki/BackprojectedPinholeCalculator')">
+                    <img src="images/help.png" alt="help" />
+                    &nbsp;Help
+                </a>
+            </li>
         </ul>
 </div>
 <?php

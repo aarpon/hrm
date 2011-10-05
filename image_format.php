@@ -54,7 +54,8 @@ if ( $_SESSION[ 'setting' ]->checkPostedImageParameters( $_POST ) ) {
   
   // Now we force all variable channel parameters to have the correct number
   // of channels
-  $_SESSION[ 'setting' ]->setNumberOfChannels( $_SESSION[ 'setting']->numberOfChannels( ) );
+  $_SESSION[ 'setting' ]->setNumberOfChannels(
+    $_SESSION[ 'setting']->numberOfChannels( ) );
   
   // Continue to the next page
   header("Location: " . "microscope_parameter.php"); exit();
@@ -79,14 +80,30 @@ include("header.inc.php");
     <!--
       Tooltips
     -->
-    <span id="ttSpanCancel">Abort editing and go back to the image parameters selection page. All changes will be lost!</span>  
-    <span id="ttSpanForward">Continue to next page.</span>
-    <span id="ttSpanReset">Click to unselect all options.</span>
+    <span id="ttSpanCancel">
+        Abort editing and go back to the image parameters selection page.
+        All changes will be lost!
+    </span>
+    <span id="ttSpanForward">
+        Continue to next page.
+    </span>
+    <span id="ttSpanReset">
+        Click to unselect all options.
+    </span>
 
     <div id="nav">
         <ul>
-            <li><img src="images/user.png" alt="user" />&nbsp;<?php echo $_SESSION['user']->name(); ?></li>
-            <li><a href="javascript:openWindow('http://www.svi.nl/HuygensRemoteManagerHelpImageFormat')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
+            <li
+                ><img src="images/user.png" alt="user" />
+                &nbsp;<?php echo $_SESSION['user']->name(); ?>
+            </li>
+            <li>
+                <a href="javascript:openWindow(
+                   'http://www.svi.nl/HuygensRemoteManagerHelpImageFormat')">
+                    <img src="images/help.png" alt="help" />
+                    &nbsp;Help
+                </a>
+            </li>
         </ul>
     </div>
     
@@ -106,20 +123,26 @@ include("header.inc.php");
     
     ***************************************************************************/
 
-      $parameterImageFileFormat = $_SESSION['setting']->parameter("ImageFileFormat");
+    $parameterImageFileFormat =
+        $_SESSION['setting']->parameter("ImageFileFormat");
 
     ?>  
             
-            <fieldset class="setting <?php echo $parameterImageFileFormat->confidenceLevel(); ?>"
-              onmouseover="javascript:changeQuickHelp( 'format' );" >
+            <fieldset class="setting <?php
+                echo $parameterImageFileFormat->confidenceLevel(); ?>"
+                onmouseover="javascript:changeQuickHelp( 'format' );" >
             
                 <legend>
-                    <a href="javascript:openWindow('http://www.svi.nl/FileFormats')"><img src="images/help.png" alt="?" /></a>
+                    <a href="javascript:openWindow(
+                       'http://www.svi.nl/FileFormats')">
+                        <img src="images/help.png" alt="?" />
+                    </a>
                     image file format
                 </legend>
                 
                 <select name="ImageFileFormat" id="ImageFileFormat" size="1"
-                  onchange="javascript:imageFormatProcess( this.name, this.options[this.selectedIndex].value )"
+                  onchange="javascript:imageFormatProcess( 
+                    this.name, this.options[this.selectedIndex].value )"
                   onkeyup="this.blur();this.focus();" >
                 
 <?php
@@ -155,7 +178,9 @@ foreach($values as $value) {
   }
   
 ?>
-                <option <?php echo "value = \"" .$value . "\"" . $selected ?>><?php echo $translation ?></option>
+                <option <?php echo "value = \"" .$value . "\"" . $selected ?>>
+                    <?php echo $translation ?>
+                </option>
 <?php
 
 }
@@ -163,7 +188,10 @@ foreach($values as $value) {
 ?>
 
                 </select>
-                <p class="message_confidence_<?php echo $parameterImageFileFormat->confidenceLevel(); ?>">&nbsp;</p>
+                <p class="message_confidence_<?php
+                    echo $parameterImageFileFormat->confidenceLevel(); ?>">
+                    &nbsp;
+                </p>
             </fieldset>
 
     <?php
@@ -174,27 +202,37 @@ foreach($values as $value) {
     
     ***************************************************************************/
 
-      $parameterImageGeometry = $_SESSION['setting']->parameter("ImageGeometry");
+    $parameterImageGeometry =
+        $_SESSION['setting']->parameter("ImageGeometry");
 
     ?>
     
-            <fieldset id="geometry" class="setting <?php echo $parameterImageGeometry->confidenceLevel(); ?>"<?php if ($geometryFlag != "")
+            <fieldset id="geometry"
+                      class="setting <?php
+                      echo $parameterImageGeometry->confidenceLevel(); ?>"
+                      <?php if ($geometryFlag != "")
               echo " style=\"color: grey\"" ?>
               onmouseover="javascript:changeQuickHelp( 'geometry' );" >
             
                 <legend>
-                    <a href="javascript:openWindow('http://www.svi.nl/ImageGeometry')"><img src="images/help.png" alt="?" /></a>
+                    <a href="javascript:openWindow(
+                       'http://www.svi.nl/ImageGeometry')">
+                        <img src="images/help.png" alt="?" />
+                    </a>
                     image geometry
                 </legend>
 
-                <div id="values">
-                    <div id="reset"
+                <div class="values">
+                    <div class="reset"
                          onmouseover="TagToTip('ttSpanReset' )"
                          onmouseout="UnTip()"
                          onclick="document.forms[0].ImageGeometry[0].checked = true;" >
                     </div>
 
-                    <input name="ImageGeometry" type="radio" value="" style="display:none;" />
+                    <input name="ImageGeometry"
+                           type="radio"
+                           value=""
+                           style="display:none;" />
                 
 
 <?php
@@ -203,11 +241,18 @@ $possibleValues = $parameterImageGeometry->possibleValues();
 foreach($possibleValues as $possibleValue) {
   $value = "multi_" . $possibleValue;
   $flag = "";
-  if (!($parameterImageFileFormat->value() == "lsm-single" || $parameterImageFileFormat->value() == "tiff-single") && $possibleValue == $parameterImageGeometry->value())
+  if (!($parameterImageFileFormat->value() == "lsm-single" || 
+          $parameterImageFileFormat->value() == "tiff-single") &&
+          $possibleValue == $parameterImageGeometry->value())
     $flag = "checked=\"checked\" ";
 
 ?>
-                <input name="ImageGeometry" type="radio" value="<?php echo $value ?>" <?php echo $geometryFlag ?><?php echo $flag ?>/><?php echo $possibleValue ?>
+                <input name="ImageGeometry"
+                       type="radio"
+                       value="<?php echo $value ?>"
+                       <?php echo $geometryFlag ?>
+                       <?php echo $flag ?>/>
+                       <?php echo $possibleValue ?>
                 
 <?php
 
@@ -215,8 +260,11 @@ foreach($possibleValues as $possibleValue) {
 
 ?>
                     </div> <!-- values -->
-                    <div id="bottom">
-                        <p class="message_confidence_<?php echo $parameterImageGeometry->confidenceLevel(); ?>">&nbsp;</p>
+                    <div class="bottom">
+                        <p class="message_confidence_<?php
+                        echo $parameterImageGeometry->confidenceLevel(); ?>">
+                            &nbsp;
+                        </p>
                     </div>
                 
             </fieldset>
@@ -229,16 +277,22 @@ foreach($possibleValues as $possibleValue) {
     
     ***************************************************************************/
 
-      $parameterNumberOfChannels = $_SESSION['setting']->parameter("NumberOfChannels");
+    $parameterNumberOfChannels =
+        $_SESSION['setting']->parameter("NumberOfChannels");
 
     ?>
             
-            <fieldset id="channels" class="setting <?php echo $parameterNumberOfChannels->confidenceLevel(); ?>"<?php if ($channelsFlag != "")
+            <fieldset id="channels" class="setting <?php 
+                echo $parameterNumberOfChannels->confidenceLevel(); ?>"
+                <?php if ($channelsFlag != "")
               echo " style=\"color: grey\"" ?>
               onmouseover="javascript:changeQuickHelp( 'channels' );" >
             
                 <legend>
-                    <a href="javascript:openWindow('http://www.svi.nl/NumberOfChannels')"><img src="images/help.png" alt="?" /></a>
+                    <a href="javascript:openWindow(
+                       'http://www.svi.nl/NumberOfChannels')">
+                        <img src="images/help.png" alt="?" />
+                    </a>
                     number of channels
                 </legend>
                 
@@ -250,23 +304,49 @@ function check($parameter, $value) {
 }
 
 ?>
-                <div id="values">
-                    <div id="reset"
+                <div class="values">
+                    <div class="reset"
                          onmouseover="TagToTip('ttSpanReset' )"
                          onmouseout="UnTip()"
                          onclick="document.forms[0].NumberOfChannels[0].checked = true;" >
                     </div>
 
-                    <input name="NumberOfChannels" type="radio" value="" style="display:none;" />
-                    <input name="NumberOfChannels" type="radio" value="1" <?php echo $channelsFlag ?><?php check($parameterNumberOfChannels, 1) ?>/>1
-                    <input name="NumberOfChannels" type="radio" value="2" <?php echo $channelsFlag ?><?php check($parameterNumberOfChannels, 2) ?>/>2
-                    <input name="NumberOfChannels" type="radio" value="3" <?php echo $channelsFlag ?><?php check($parameterNumberOfChannels, 3) ?>/>3
-                    <input name="NumberOfChannels" type="radio" value="4" <?php echo $channelsFlag ?><?php check($parameterNumberOfChannels, 4) ?>/>4
-                    <input name="NumberOfChannels" type="radio" value="5" <?php echo $channelsFlag ?><?php check($parameterNumberOfChannels, 5) ?>/>5
+                    <input name="NumberOfChannels"
+                           type="radio"
+                           value=""
+                           style="display:none;" />
+                    <input name="NumberOfChannels" 
+                           type="radio"
+                           value="1"
+                           <?php echo $channelsFlag ?>
+                           <?php check($parameterNumberOfChannels, 1) ?>/>1
+                    <input name="NumberOfChannels" 
+                           type="radio"
+                           value="2"
+                           <?php echo $channelsFlag ?>
+                           <?php check($parameterNumberOfChannels, 2) ?>/>2
+                    <input name="NumberOfChannels" 
+                           type="radio"
+                           value="3"
+                           <?php echo $channelsFlag ?>
+                           <?php check($parameterNumberOfChannels, 3) ?>/>3
+                    <input name="NumberOfChannels" 
+                           type="radio"
+                           value="4"
+                            <?php echo $channelsFlag ?>
+                            <?php check($parameterNumberOfChannels, 4) ?>/>4
+                    <input name="NumberOfChannels" 
+                           type="radio"
+                           value="5"
+                           <?php echo $channelsFlag ?>
+                           <?php check($parameterNumberOfChannels, 5) ?>/>5
                 </div> <!-- values -->
 
-                <div id="bottom">
-                    <p class="message_confidence_<?php echo $parameterNumberOfChannels->confidenceLevel(); ?>">&nbsp;</p>
+                <div class="bottom">
+                    <p class="message_confidence_<?php
+                        echo $parameterNumberOfChannels->confidenceLevel(); ?>">
+                        &nbsp;
+                    </p>
                 </div>
 
             </fieldset>
@@ -279,41 +359,76 @@ function check($parameter, $value) {
     
     ***************************************************************************/
 
-      $parameterPointSpreadFunction = $_SESSION['setting']->parameter("PointSpreadFunction");
-
-      $turnOnPSFAdaptationOnClick  = " onclick=\"javascript:fixCoverslip( false )\"";
-      $turnOffPSFAdaptationOnClick = " onclick=\"javascript:fixCoverslip( true )\"";
+    $parameterPointSpreadFunction =
+        $_SESSION['setting']->parameter("PointSpreadFunction");
 
     ?>
             
-            <h4>Would you like to use an existing measured PSF obtained from bead images or a theoretical PSF generated from explicitly specified parameters?</h4>
+            <h4>Would you like to use an existing measured PSF obtained from
+                bead images or a theoretical PSF generated from explicitly
+                specified parameters?</h4>
             
-            <fieldset class="setting <?php echo $parameterPointSpreadFunction->confidenceLevel(); ?>" onmouseover="javascript:changeQuickHelp( 'PSF' );" >
+            <fieldset class="setting <?php 
+                echo $parameterPointSpreadFunction->confidenceLevel(); ?>"
+                onmouseover="javascript:changeQuickHelp( 'PSF' );" >
             
                 <legend>
-                    <a href="javascript:openWindow('http://www.svi.nl/PointSpreadFunction')"><img src="images/help.png" alt="?" /></a>
+                    <a href="javascript:openWindow(
+                       'http://www.svi.nl/PointSpreadFunction')">
+                        <img src="images/help.png" alt="?" />
+                    </a>
                     PSF
                 </legend>
 
-                <div id="values">
-                    <div id="reset"
+                <div class="values">
+                    <div class="reset"
                          onmouseover="TagToTip('ttSpanReset' )"
                          onmouseout="UnTip()"
                          onclick="document.forms[0].PointSpreadFunction[0].checked = true;" >
                     </div>
 
-                    <input name="PointSpreadFunction" type="radio" value="" style="display:none;" />
-                    <input type="radio" name="PointSpreadFunction" value="theoretical" <?php if ($parameterPointSpreadFunction->value() == "theoretical") echo "checked=\"checked\""?> <?php echo $turnOnPSFAdaptationOnClick ?>/><a href="javascript:openWindow('http://www.svi.nl/TheoreticalPsf')"><img src="images/help.png" alt="?" /></a>Theoretical
-                    <input type="radio" name="PointSpreadFunction" value="measured" <?php if ($parameterPointSpreadFunction->value() == "measured") echo "checked=\"checked\"" ?> <?php echo $turnOffPSFAdaptationOnClick ?>/><a href="javascript:openWindow('http://www.svi.nl/ExperimentalPsf')"><img src="images/help.png" alt="?" /></a>Measured
+                    <input name="PointSpreadFunction"
+                           type="radio"
+                           value=""
+                           style="display:none;" />
+                    <input type="radio"
+                           name="PointSpreadFunction"
+                           value="theoretical"
+                           <?php
+                           if ($parameterPointSpreadFunction->value() ==
+                                "theoretical")
+                                    echo "checked=\"checked\""?> />
+                    <a href="javascript:openWindow(
+                       'http://www.svi.nl/TheoreticalPsf')">
+                        <img src="images/help.png" alt="?" />
+                    </a>
+                    Theoretical
+                    <input type="radio" 
+                           name="PointSpreadFunction"
+                           value="measured"
+                           <?php
+                           if ($parameterPointSpreadFunction->value() ==
+                            "measured")
+                                   echo "checked=\"checked\"" ?>
+                           />
+                    <a href="javascript:openWindow(
+                       'http://www.svi.nl/ExperimentalPsf')">
+                        <img src="images/help.png" alt="?" />
+                    </a>
+                    Measured
                 </div> <!-- values -->
 
-                <div id="bottom">
-                    <p class="message_confidence_<?php echo $parameterPointSpreadFunction->confidenceLevel(); ?>">&nbsp;</p>
+                <div class="bottom">
+                    <p class="message_confidence_<?php
+                    echo $parameterPointSpreadFunction->confidenceLevel(); ?>">
+                        &nbsp;
+                    </p>
                 </div>
                 
             </fieldset>
 
-            <div id="controls" onmouseover="javascript:changeQuickHelp( 'default' )">
+            <div id="controls"
+                 onmouseover="javascript:changeQuickHelp( 'default' )">
               <input type="button" value="" class="icon up"
                   onmouseover="TagToTip('ttSpanCancel' )"
                   onmouseout="UnTip()"

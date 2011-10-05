@@ -69,14 +69,29 @@ include("header.inc.php");
     <!--
       Tooltips
     -->
-    <span id="ttSpanBack">Go back to previous page.</span>  
-    <span id="ttSpanCancel">Abort editing and go back to the image parameters selection page. All changes will be lost!</span>  
-    <span id="ttSpanSave">Save and return to the image parameters selection page.</span>
+    <span id="ttSpanBack">
+        Go back to previous page.
+    </span>
+    <span id="ttSpanCancel">
+        Abort editing and go back to the image parameters selection page.
+        All changes will be lost!
+    </span>
+    <span id="ttSpanSave">
+        Save and return to the image parameters selection page.
+    </span>
 
     <div id="nav">
         <ul>
-            <li><img src="images/user.png" alt="user" />&nbsp;<?php echo $_SESSION['user']->name(); ?></li>
-            <li><a href="javascript:openWindow('http://www.svi.nl/HuygensRemoteManagerHelpEnableSACorrection')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
+            <li>
+                <img src="images/user.png" alt="user" />
+                &nbsp;<?php echo $_SESSION['user']->name(); ?>
+            </li>
+            <li>
+                <a href="javascript:openWindow(
+                   'http://www.svi.nl/HuygensRemoteManagerHelpEnableSACorrection')">
+                    <img src="images/help.png" alt="help" />&nbsp;Help
+                </a>
+            </li>
         </ul>
     </div>
     
@@ -88,7 +103,10 @@ include("header.inc.php");
             
             <!-- (1) PERFORM SPHERICAL ABERRATION CORRECTION? -->
             
-        <h4>Do you want to enable depth-specific PSF correction? This will try to compensate for spherical aberrations introduced by refractive index mismatches.</h4>
+        <h4>Do you want to enable depth-specific PSF correction? 
+            This will try to compensate for spherical aberrations introduced
+            by refractive index mismatches.
+        </h4>
  
 
     <?php
@@ -99,35 +117,41 @@ include("header.inc.php");
     
     ***************************************************************************/
 
-      $parameterPerformAberrationCorrection = $_SESSION['setting']->parameter("PerformAberrationCorrection");
+      $parameterPerformAberrationCorrection =
+        $_SESSION['setting']->parameter("PerformAberrationCorrection");
 
     ?>
-    
-        <fieldset class="setting <?php echo $parameterPerformAberrationCorrection->confidenceLevel(); ?>"
-              onmouseover="javascript:changeQuickHelp( 'enable' );" >
+
+        <fieldset class="setting <?php
+            echo $parameterPerformAberrationCorrection->confidenceLevel();
+            ?>"
+            onmouseover="javascript:changeQuickHelp( 'enable' );" >
             
             <legend>
-                <a href="javascript:openWindow('http://www.svi.nl/HuygensRemoteManagerHelpDepthDependentPsf')"><img src="images/help.png" alt="?" /></a>
-                    enable depth-dependent PSF correction?
+                <a href="javascript:openWindow(
+                   'http://www.svi.nl/HuygensRemoteManagerHelpDepthDependentPsf')">
+                    <img src="images/help.png" alt="?" />
+                </a>
+                enable depth-dependent PSF correction?
             </legend>
 
-<?php
-
-$onChange = "onchange=\"javascript:switchCorrection()\"";
-
-?>
-
-            <select id="PerformAberrationCorrection" name="PerformAberrationCorrection"  <?php echo $onChange ?>>
+            <select id="PerformAberrationCorrection" 
+                    name="PerformAberrationCorrection"
+                    onchange="javascript:switchCorrection();" >
                 
             <?php
 
-                $possibleValues = $parameterPerformAberrationCorrection->possibleValues();
-                $selectedValue  = $parameterPerformAberrationCorrection->value();
+                $possibleValues =
+                    $parameterPerformAberrationCorrection->possibleValues();
+                $selectedValue  =
+                    $parameterPerformAberrationCorrection->value();
                 // The javascript expects option values to match their indexes:
                 sort($possibleValues);
 
                 foreach($possibleValues as $possibleValue) {
-                    $translation = $parameterPerformAberrationCorrection->translatedValueFor( $possibleValue );
+                    $translation =
+                        $parameterPerformAberrationCorrection->
+                            translatedValueFor( $possibleValue );
                     if ($possibleValue == "0" && $selectedValue == "") {
                         $option = "selected=\"selected\"";
                     }
@@ -140,7 +164,10 @@ $onChange = "onchange=\"javascript:switchCorrection()\"";
 
             ?>
 
-            <option <?php echo $option?> value="<?php echo $possibleValue?>"><?php echo $translation?></option>                  
+            <option <?php echo $option?>
+                value="<?php echo $possibleValue?>">
+                <?php echo $translation?>
+            </option>
 
             <?php
                 }
@@ -148,7 +175,11 @@ $onChange = "onchange=\"javascript:switchCorrection()\"";
 
             </select>    
                 
-        <p class="message_confidence_<?php echo $parameterPerformAberrationCorrection->confidenceLevel(); ?>">&nbsp;</p>
+        <p class="message_confidence_<?php 
+            echo $parameterPerformAberrationCorrection->confidenceLevel(); ?>">
+            &nbsp;
+        </p>
+        
         </fieldset>
 
     <!-- (2) SPECIFY SAMPLE ORIENTATION -->
@@ -163,7 +194,10 @@ if ($parameterPerformAberrationCorrection->value( ) == 1)
 
     <div id="CoverslipRelativePositionDiv"<?php echo $visibility?>>
         
-    <h4>For depth-dependent correction to work properly, you have to specify the relative position of the coverslip with respect to the first acquired plane of the dataset.</h4>
+    <h4>For depth-dependent correction to work properly, you have to specify 
+        the relative position of the coverslip with respect to the first
+        acquired plane of the dataset.
+    </h4>
 
     <?php
 
@@ -173,27 +207,35 @@ if ($parameterPerformAberrationCorrection->value( ) == 1)
     
     ***************************************************************************/
 
-      $parameterCoverslipRelativePosition = $_SESSION['setting']->parameter("CoverslipRelativePosition");
+    $parameterCoverslipRelativePosition =
+        $_SESSION['setting']->parameter("CoverslipRelativePosition");
 
     ?>
             
-        <fieldset class="setting <?php echo $parameterCoverslipRelativePosition->confidenceLevel(); ?>"
-              onmouseover="javascript:changeQuickHelp( 'orientation' );" >
+        <fieldset class="setting <?php
+            echo $parameterCoverslipRelativePosition->confidenceLevel(); ?>"
+            onmouseover="javascript:changeQuickHelp( 'orientation' );" >
             
             <legend>
-                <a href="javascript:openWindow('http://www.svi.nl/HuygensRemoteManagerHelpSpecifySampleOrientation')"><img src="images/help.png" alt="?" /></a>
-                    specify sample orientation
+                <a href="javascript:openWindow(
+                   'http://www.svi.nl/HuygensRemoteManagerHelpSpecifySampleOrientation')">
+                    <img src="images/help.png" alt="?" />
+                </a>
+                specify sample orientation
             </legend>
                     
             <select name="CoverslipRelativePosition" >
 
             <?php
 
-                $possibleValues = $parameterCoverslipRelativePosition->possibleValues();
-                $selectedValue  = $parameterCoverslipRelativePosition->value();
+                $possibleValues =
+                    $parameterCoverslipRelativePosition->possibleValues();
+                $selectedValue  =
+                    $parameterCoverslipRelativePosition->value();
 
                 foreach($possibleValues as $possibleValue) {
-                  $translation = $parameterCoverslipRelativePosition->translatedValueFor( $possibleValue );
+                    $translation = $parameterCoverslipRelativePosition->
+                        translatedValueFor( $possibleValue );
                   if ( $possibleValue == $selectedValue ) {
                     $option = "selected=\"selected\"";
                   } else {
@@ -202,7 +244,10 @@ if ($parameterPerformAberrationCorrection->value( ) == 1)
 
             ?>
 
-            <option <?php echo $option?> value="<?php echo $possibleValue?>"><?php echo $translation?></option>                  
+            <option <?php echo $option?>
+                value="<?php echo $possibleValue?>">
+                <?php echo $translation?>
+            </option>
 
             <?php
                 }
@@ -210,7 +255,11 @@ if ($parameterPerformAberrationCorrection->value( ) == 1)
                 
             </select>
                 
-        <p class="message_confidence_<?php echo $parameterCoverslipRelativePosition->confidenceLevel(); ?>">&nbsp;</p>
+        <p class="message_confidence_<?php
+            echo $parameterCoverslipRelativePosition->confidenceLevel(); ?>">
+            &nbsp;
+        </p>
+
         </fieldset>
 
     </div> <!-- CoverslipRelativePositionDiv -->
@@ -235,52 +284,67 @@ if ($parameterPerformAberrationCorrection->value( ) == 1)
     
     ***************************************************************************/
 
-      $parameterAberrationCorrectionMode = $_SESSION['setting']->parameter("AberrationCorrectionMode");
+    $parameterAberrationCorrectionMode =
+        $_SESSION['setting']->parameter("AberrationCorrectionMode");
 
     ?>        
         
-    <h4>At this point the HRM has enough information to perform depth-dependent aberration correction. Please notice that in certain circumstances, the automatic correction scheme might generate artifacts in the result. If this is the case, please choose the advanced correction mode.</h4>
+    <h4>At this point the HRM has enough information to perform depth-dependent
+        aberration correction. Please notice that in certain circumstances,
+        the automatic correction scheme might generate artifacts in the result.
+        If this is the case, please choose the advanced correction mode.
+    </h4>
             
-        <fieldset class="setting <?php echo $parameterAberrationCorrectionMode->confidenceLevel(); ?>"
-              onmouseover="javascript:changeQuickHelp( 'mode' );" >
+    <fieldset class="setting <?php 
+        echo $parameterAberrationCorrectionMode->confidenceLevel(); ?>"
+        onmouseover="javascript:changeQuickHelp( 'mode' );" >
             
-            <legend>
-                <a href="javascript:openWindow('http://www.svi.nl/HuygensRemoteManagerHelpSaCorrectionMode')"><img src="images/help.png" alt="?" /></a>
-                    correction mode
-            </legend>
+        <legend>
+            <a href="javascript:openWindow(
+               'http://www.svi.nl/HuygensRemoteManagerHelpSaCorrectionMode')">
+                <img src="images/help.png" alt="?" />
+            </a>
+            correction mode
+        </legend>
 
-<?php
-
-$onChange = "onchange=\"javascript:switchAdvancedCorrection()\"";
-
-?>
-
-            <select id="AberrationCorrectionMode" name="AberrationCorrectionMode"  <?php echo $onChange ?>>
+        <select id="AberrationCorrectionMode" 
+            name="AberrationCorrectionMode"
+            onchange="javascript:switchAdvancedCorrection();" >
 
             <?php
 
-                $possibleValues = $parameterAberrationCorrectionMode->possibleValues();
-                $selectedValue  = $parameterAberrationCorrectionMode->value();
+            $possibleValues =
+                $parameterAberrationCorrectionMode->possibleValues();
+            $selectedValue  =
+                $parameterAberrationCorrectionMode->value();
 
-                foreach($possibleValues as $possibleValue) {
-                  $translation = $parameterAberrationCorrectionMode->translatedValueFor( $possibleValue );
-                  if ( $possibleValue == $selectedValue ) {
+            foreach($possibleValues as $possibleValue) {
+                $translation = $parameterAberrationCorrectionMode->
+                        translatedValueFor( $possibleValue );
+                if ( $possibleValue == $selectedValue ) {
                     $option = "selected=\"selected\"";
-                  } else {
+                } else {
                     $option = "";
-                  }
+                }
 
             ?>
 
-            <option <?php echo $option?> value="<?php echo $possibleValue?>"><?php echo $translation?></option>                  
+            <option <?php echo $option?>
+                value="<?php echo $possibleValue?>">
+                <?php echo $translation?>
+            </option>
 
             <?php
-                }
+            }
             ?>
                 
-            </select>
+        </select>
         
-        <p class="message_confidence_<?php echo $parameterAberrationCorrectionMode->confidenceLevel(); ?>">&nbsp;</p>        
+        <p class="message_confidence_<?php 
+            echo $parameterAberrationCorrectionMode->confidenceLevel(); ?>">
+            &nbsp;
+        </p>
+
         </fieldset>
 
     </div> <!-- AberrationCorrectionModeDiv -->
@@ -306,59 +370,55 @@ if ( ($parameterPerformAberrationCorrection->value( ) == 1) &&
     
     ***************************************************************************/
 
-      $parameterAdvancedCorrectionOptions = $_SESSION['setting']->parameter("AdvancedCorrectionOptions");
+    $parameterAdvancedCorrectionOptions =
+        $_SESSION['setting']->parameter("AdvancedCorrectionOptions");
 
     ?>
         
     <h4>Here you can choose an advanced correction scheme.</h4>
             
-        <fieldset class="setting <?php echo $parameterAdvancedCorrectionOptions->confidenceLevel(); ?>"
-              onmouseover="javascript:changeQuickHelp( 'advanced' );" >
+    <fieldset class="setting <?php echo
+        $parameterAdvancedCorrectionOptions->confidenceLevel(); ?>"
+        onmouseover="javascript:changeQuickHelp( 'advanced' );" >
             
-            <legend>
-                <a href="javascript:openWindow('http://www.svi.nl/HuygensRemoteManagerHelpAdvancedSaCorrection')"><img src="images/help.png" alt="?" /></a>
-                    advanced correction scheme
-            </legend>
+    <legend>
+        <a href="javascript:openWindow(
+           'http://www.svi.nl/HuygensRemoteManagerHelpAdvancedSaCorrection')">
+            <img src="images/help.png" alt="?" />
+        </a>
+        advanced correction scheme
+    </legend>
 
-<?php
-
-$onChange = "onchange=\"javascript:switchAdvancedCorrectionScheme()\"";
-
-?>
-
-            <select id="AdvancedCorrectionOptions" name="AdvancedCorrectionOptions"  <?php echo $onChange ?>>
+        <select id="AdvancedCorrectionOptions"
+            name="AdvancedCorrectionOptions"
+            onchange="javascript:switchAdvancedCorrectionScheme();" >;
 
             <?php
 
-                $version = System::huCoreVersion();
-                
-                $possibleValues = $parameterAdvancedCorrectionOptions->possibleValues();
-                $selectedValue  = $parameterAdvancedCorrectionOptions->value();
-                if ( $version < 3030200 ) {
-                    $possibleValues = array_diff($possibleValues, array( 'slice' ) );
-                    $possibleValues = array_values( $possibleValues );
-                    if ( $selectedValue == 'slice' ) {
-                        $selectedValue == 'user';
-                    }
-                }
+            $possibleValues = $parameterAdvancedCorrectionOptions->possibleValues();
+            $selectedValue  = $parameterAdvancedCorrectionOptions->value();
 
-                foreach($possibleValues as $possibleValue) {
-                  $translation = $parameterAdvancedCorrectionOptions->translatedValueFor( $possibleValue );
-                  if ( $possibleValue == $selectedValue ) {
+            foreach($possibleValues as $possibleValue) {
+                $translation = $parameterAdvancedCorrectionOptions->
+                    translatedValueFor( $possibleValue );
+                if ( $possibleValue == $selectedValue ) {
                     $option = "selected=\"selected\"";
-                  } else {
+                } else {
                     $option = "";
-                  }
+                }
 
             ?>
 
-            <option <?php echo $option?> value="<?php echo $possibleValue?>"><?php echo $translation?></option>                  
+            <option <?php echo $option?>
+                value="<?php echo $possibleValue?>">
+                <?php echo $translation?>
+            </option>
 
             <?php
                 }
             ?>
                 
-            </select>
+        </select>
 
 <?php
 
@@ -374,35 +434,45 @@ if ( ($parameterPerformAberrationCorrection->value( ) == 1) &&
     
     ***************************************************************************/
 
-      $parameterPSFGenerationDepth = $_SESSION['setting']->parameter("PSFGenerationDepth");
-      $selectedValue  = $parameterPSFGenerationDepth->value();
+    $parameterPSFGenerationDepth =
+        $_SESSION['setting']->parameter("PSFGenerationDepth");
+    $selectedValue  = $parameterPSFGenerationDepth->value();
 
 ?>
             
-            <div id="PSFGenerationDepthDiv"<?php echo $visibility?>>
-                <p>Depth for PSF generation (&micro;m): <input name="PSFGenerationDepth" type="text" style="width:100px;" value="<?php echo $selectedValue; ?>" /></p>
-            </div>
+    <div id="PSFGenerationDepthDiv"<?php echo $visibility?> >
+        <p>Depth for PSF generation (&micro;m):
+            <input name="PSFGenerationDepth"
+               type="text"
+               style="width:100px;"
+               value="<?php echo $selectedValue; ?>" />
+        </p>
+    </div>
             
-        <p class="message_confidence_<?php echo $parameterAdvancedCorrectionOptions->confidenceLevel(); ?>">&nbsp;</p>
-        </fieldset>
+    <p class="message_confidence_<?php
+        echo $parameterAdvancedCorrectionOptions->confidenceLevel(); ?>">
+        &nbsp;
+    </p>
 
-      </div> <!-- AdvancedCorrectionOptionsDiv -->
+    </fieldset>
+
+    </div> <!-- AdvancedCorrectionOptionsDiv -->
             
-      <div><input name="OK" type="hidden" /></div>
+    <div><input name="OK" type="hidden" /></div>
 
-      <div id="controls" onmouseover="javascript:changeQuickHelp( 'default' )">      
+    <div id="controls" onmouseover="javascript:changeQuickHelp( 'default' )">      
         <input type="button" value="" class="icon previous"
-                  onmouseover="TagToTip('ttSpanBack' )"
-                  onmouseout="UnTip()"
-                  onclick="document.location.href='capturing_parameter.php'" />
+            onmouseover="TagToTip('ttSpanBack' )"
+            onmouseout="UnTip()"
+            onclick="document.location.href='capturing_parameter.php'" />
         <input type="button" value="" class="icon up"
-                  onmouseover="TagToTip('ttSpanCancel' )"
-                  onmouseout="UnTip()"
-                  onclick="document.location.href='select_parameter_settings.php'" />
+            onmouseover="TagToTip('ttSpanCancel' )"
+            onmouseout="UnTip()"
+            onclick="document.location.href='select_parameter_settings.php'" />
         <input type="submit" value="" class="icon save"
-                  onmouseover="TagToTip('ttSpanSave' )"
-                  onmouseout="UnTip()"
-                  onclick="process()" />
+            onmouseover="TagToTip('ttSpanSave' )"
+            onmouseout="UnTip()"
+            onclick="process()" />
       </div>            
     </form>
         
@@ -415,13 +485,14 @@ if ( ($parameterPerformAberrationCorrection->value( ) == 1) &&
           <h3>Quick help</h3>
           
           <div id="contextHelp">  
-            <p>The main cause of spherical aberration is a mismatch between the
-            refractive index of the lens immersion medium and specimen embedding
-            medium and causes the PSF to become asymmetric at depths of already
-            a few &micro;m. SA is especially harmful for widefield microscope
-            deconvolution. The HRM can correct for SA automatically, but in case of
-            very large refractive index mismatches some artifacts can be generated.
-            Advanced parameters allow for fine-tuning of the correction.</p>
+            <p>The main cause of spherical aberration is a mismatch between
+                the refractive index of the lens immersion medium and specimen
+                embedding medium and causes the PSF to become asymmetric at
+                depths of already a few &micro;m. SA is especially harmful for
+                widefield microscope deconvolution. The HRM can correct for SA
+                automatically, but in case of very large refractive index
+                mismatches some artifacts can be  generated. Advanced parameters
+                allow for fine-tuning of the correction.</p>
           </div>
             
         </div>

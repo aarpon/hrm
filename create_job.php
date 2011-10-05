@@ -46,7 +46,8 @@ if (isset($_POST['create'])) {
       $message = $job->message();
     }
   }
-  else $message = "An unknown error has occured. Please inform the administrator";
+  else $message = "An unknown error has occured. " .
+      "Please inform the administrator";
 }
 else if (isset($_POST['OK'])) {
   header("Location: " . "select_parameter_settings.php"); exit();
@@ -58,15 +59,38 @@ include("header.inc.php");
     <!--
       Tooltips
     -->
-    <span id="ttSpanBack">Go back to step 3/4 - Select images.</span>
-    <span id="ttSpanCreateJob">Create job, add it to the queue, and go back to your home page.</span>
+    <span id="ttSpanBack">
+        Go back to step 3/4 - Select images.
+    </span>
+    <span id="ttSpanCreateJob">
+        Create job, add it to the queue, and go back to your home page.
+    </span>
 
      <div id="nav">
         <ul>
-            <li><img src="images/user.png" alt="user" />&nbsp;<?php echo $_SESSION['user']->name(); ?></li>
-            <li><a href="job_queue.php"><img src="images/queue_small.png" alt="queue" />&nbsp;Queue</a></li>
-            <li><a href="<?php echo getThisPageName();?>?home=home"><img src="images/home.png" alt="home" />&nbsp;Home</a></li>
-            <li><a href="javascript:openWindow('http://www.svi.nl/HuygensRemoteManagerHelpCreateJob')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
+            <li>
+                <img src="images/user.png" alt="user" />
+                &nbsp;<?php echo $_SESSION['user']->name(); ?>
+            </li>
+            <li>
+                <a href="job_queue.php">
+                <img src="images/queue_small.png" alt="queue" />
+                &nbsp;Queue
+                </a>
+            </li>
+            <li>
+                <a href="<?php echo getThisPageName();?>?home=home">
+                <img src="images/home.png" alt="home" />
+                &nbsp;Home
+                </a>
+            </li>
+            <li>
+                <a href="javascript:openWindow(
+                   'http://www.svi.nl/HuygensRemoteManagerHelpCreateJob')">
+                    <img src="images/help.png" alt="help" />
+                    &nbsp;Help
+                </a>
+            </li>
         </ul>
     </div>
 
@@ -79,7 +103,10 @@ include("header.inc.php");
           <fieldset class="setting">
 
           <legend>
-            <a href="javascript:openWindow('http://www.svi.nl/FileFormats')"><img src="images/help.png" alt="?" /></a>
+            <a href="javascript:openWindow(
+               'http://www.svi.nl/FileFormats')">
+                <img src="images/help.png" alt="?" />
+            </a>
               Output file format
             </legend>
 
@@ -111,10 +138,12 @@ if ( $value == 'IMS (Imaris Classic)' ) {
                 <select name="OutputFileFormat" id="OutputFileFormat" size="1">
 <?php
 
-$possibleValues = $parameter->possibleValues(); // extract possible values for OutputFileFormat
+// Extract possible values for OutputFileFormat
+$possibleValues = $parameter->possibleValues();
 sort( $possibleValues );
 
-// If the dataset is multi-channel, we remove the TIFF-8 and TIFF-16 bit options from the list
+// If the dataset is multi-channel, we remove the TIFF-8 and TIFF-16 bit
+// options from the list
 $nChannelsParameter = $_SESSION['setting']->parameter("NumberOfChannels");
 $numberOfChannels = $nChannelsParameter->value( );
 if ( $numberOfChannels > 1 ) {
@@ -125,16 +154,19 @@ if ( $numberOfChannels > 1 ) {
 
 // If the dataset is a time series, we remove Imaris classic from the list
 if ( $_SESSION['setting']->isTimeSeries() ) {
-    $possibleValues = array_diff($possibleValues, array( 'IMS (Imaris Classic)' ) );
+    $possibleValues =
+        array_diff($possibleValues, array( 'IMS (Imaris Classic)' ) );
     $possibleValues = array_values( $possibleValues );
 }
 
-if (!isset($_SESSION['first_visit'])) { // if 'first visit' is not set, set the OutputFileFormat as ICS
+if (!isset($_SESSION['first_visit'])) { // if 'first visit' is not set, set
+// the OutputFileFormat as ICS
   $parameter->setValue("ICS (Image Cytometry Standard)");
   $_SESSION['first_visit'] = False;
 }
 
-$_SESSION['task_setting']->set($parameter); // set the OutputFileFormat in the TaskSetting object
+// Set the OutputFileFormat in the TaskSetting object
+$_SESSION['task_setting']->set($parameter);
 
 foreach ($possibleValues as $possibleValue) {
   if ($possibleValue == $parameter->value()) {
@@ -145,7 +177,9 @@ foreach ($possibleValues as $possibleValue) {
   }
 
 ?>
-                    <option <?php echo $selected ?>><?php echo $possibleValue ?></option>
+                    <option <?php echo $selected ?>>
+                        <?php echo $possibleValue ?>
+                    </option>
 <?php
 
 }
@@ -161,10 +195,18 @@ foreach ($possibleValues as $possibleValue) {
 
         <fieldset class="report">
             <legend>
-                <a href="javascript:openWindow('http://www.svi.nl/HuygensRemoteManagerHelpCreateJob')"><img src="images/help.png" alt="?" /></a>
-                <a href="select_parameter_settings.php">Image parameters</a>: <?php print $_SESSION['setting']->name() ?>
+                <a href="javascript:openWindow('
+                   http://www.svi.nl/HuygensRemoteManagerHelpCreateJob')">
+                    <img src="images/help.png" alt="?" />
+                </a>
+                <a href="select_parameter_settings.php">
+                    Image parameters
+                </a>: <?php print $_SESSION['setting']->name() ?>
             </legend>
-            <textarea name="parameter_settings_report" cols="50" rows="15" readonly="readonly">
+            <textarea name="parameter_settings_report"
+                      cols="50"
+                      rows="15"
+                      readonly="readonly">
 <?php
 
 echo $_SESSION['setting']->displayString();
@@ -175,14 +217,24 @@ echo $_SESSION['setting']->displayString();
 
         <fieldset class="report">
             <legend>
-                <a href="javascript:openWindow('http://www.svi.nl/HuygensRemoteManagerHelpCreateJob')"><img src="images/help.png" alt="?" /></a>
-                <a href="select_task_settings.php">Restoration parameters</a>: <?php echo $_SESSION['task_setting']->name() ?>
+                <a href="javascript:openWindow('
+                   http://www.svi.nl/HuygensRemoteManagerHelpCreateJob')">
+                    <img src="images/help.png" alt="?" />
+                </a>
+                <a href="select_task_settings.php">
+                    Restoration parameters
+                </a>: <?php echo $_SESSION['task_setting']->name() ?>
             </legend>
-            <textarea name="task_settings_report" cols="50" rows="6" readonly="readonly">
+            <textarea name="task_settings_report"
+                      cols="50"
+                      rows="6"
+                      readonly="readonly">
 <?php
 
-$numberOfChannels = $_SESSION['setting']->parameter( "NumberOfChannels" )->value( );
-echo $_SESSION['task_setting']->displayWithoutOutputFileFormat( $numberOfChannels );
+$numberOfChannels =
+    $_SESSION['setting']->parameter( "NumberOfChannels" )->value( );
+echo $_SESSION['task_setting']->
+    displayWithoutOutputFileFormat( $numberOfChannels );
 
 ?>
             </textarea>
@@ -190,10 +242,18 @@ echo $_SESSION['task_setting']->displayWithoutOutputFileFormat( $numberOfChannel
 
         <fieldset class="report">
             <legend>
-                <a href="javascript:openWindow('http://www.svi.nl/HuygensRemoteManagerHelpCreateJob')"><img src="images/help.png" alt="?" /></a>
-                <a href="select_images.php">Selected images</a>
+                <a href="javascript:openWindow(
+                   'http://www.svi.nl/HuygensRemoteManagerHelpCreateJob')">
+                    <img src="images/help.png" alt="?" />
+                </a>
+                <a href="select_images.php">
+                    Selected images
+                </a>
             </legend>
-            <textarea name="task_settings_report" cols="50" rows="5" readonly="readonly">
+            <textarea name="task_settings_report"
+                      cols="50"
+                      rows="5"
+                      readonly="readonly">
 <?php
 
 $files = $_SESSION['fileserver']->selectedFiles();
@@ -215,7 +275,7 @@ foreach ($files as $file) {
 if (!isset($_SESSION['jobcreated'])) {
 
 ?>
-            <input type="button" name="previous"   value="" class="icon previous"
+            <input type="button" name="previous" value="" class="icon previous"
               onclick="document.location.href='select_images.php'"
               onmouseover="TagToTip('ttSpanBack' )"
               onmouseout="UnTip()" />
@@ -230,7 +290,10 @@ if (!isset($_SESSION['jobcreated'])) {
 else {
 
 ?>
-            <input type="button" value="restart" onclick="document.location.href='home.php'" class="icon restart" />
+            <input type="button"
+                   value="restart"
+                   onclick="document.location.href='home.php'"
+                   class="icon restart" />
 <?php
 
 }
@@ -255,13 +318,15 @@ else {
             a mistake, use the links on the left to go back and fix it.</p>
 
             <p>Once you are okay with the parameters, press the
-            <img src="images/ok_help.png" alt="Create job" width="22" height="22" />
-		    <b>create job</b> button to add the job to the queue and go back to
+            <img src="images/ok_help.png" alt="Create job" width="22"
+                 height="22" /><b>create job</b> button to add the job to the
+            queue and go back to
             the home page.</p>
 
             <?php
               if ( $numberOfChannels > 1 ) {
-                echo "<p>Please notice that is not possible to save multichannel datasets in TIFF-16 bit format.</p>";
+                echo "<p>Please notice that is not possible to save " .
+                  "multichannel datasets in TIFF-16 bit format.</p>";
               }
             ?>
 
@@ -282,6 +347,3 @@ echo "<p>$message</p>";
 include("footer.inc.php");
 
 ?>
-
-
-

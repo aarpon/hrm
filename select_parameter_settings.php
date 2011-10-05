@@ -45,7 +45,8 @@ if (isset($_POST['setting'])) {
 
 if (isset($_POST['copy_public'])) {
   if (isset($_POST['public_setting'])) {
-    if (!$_SESSION['editor']->copyPublicSetting($admin_editor->setting($_POST['public_setting']))) {
+    if (!$_SESSION['editor']->copyPublicSetting(
+        $admin_editor->setting($_POST['public_setting']))) {
       $message = $_SESSION['editor']->message();
     }
   }
@@ -75,11 +76,12 @@ else if (isset($_POST['make_default'])) {
   $_SESSION['editor']->makeSelectedSettingDefault();
   $message = $_SESSION['editor']->message();
 }
-else if ( (isset($_POST['delete']) || isset($_POST['annihilate']) && $_POST['annihilate'] == "yes") ) {
-    $_SESSION['editor']->deleteSelectedSetting();
-    $message = $_SESSION['editor']->message();
+else if ( isset($_POST['annihilate']) &&
+    strcmp( $_POST['annihilate'], "yes") == 0 ) {
+        $_SESSION['editor']->deleteSelectedSetting();
+        $message = $_SESSION['editor']->message();
 }
-else if (isset($_POST['OK'])) {
+else if (isset($_POST['OK']) && $_POST['OK']=="OK" ) {
   if (!isset($_POST['setting'])) {
     $message = "Please select some image parameters";
   }
@@ -96,7 +98,8 @@ else if (isset($_POST['OK'])) {
       if ($files != null) {
         for ($i=0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
           if (!in_array($value[$i], $files)) {
-            $message = "Please verify selected setting, as some PSF files appear to be missing";
+            $message = "Please verify selected setting, as some PSF " .
+              "files appear to be missing";
             $ok = False;
             break;
           }
@@ -108,17 +111,23 @@ else if (isset($_POST['OK'])) {
         // We will check just a couple of parameters -- we do not neet to check
         // them all, since in case of measured PSF even existing parameters were
         // purged.
-        $microscopeType    = $_SESSION['setting']->parameter("MicroscopeType")->value( );
-        $numericalAperture = $_SESSION['setting']->parameter("NumericalAperture")->value( );
-        $ccdCaptorSize     = $_SESSION['setting']->parameter("CCDCaptorSizeX")->value( );
+        $microscopeType    =
+            $_SESSION['setting']->parameter("MicroscopeType")->value( );
+        $numericalAperture =
+            $_SESSION['setting']->parameter("NumericalAperture")->value( );
+        $ccdCaptorSize     =
+            $_SESSION['setting']->parameter("CCDCaptorSizeX")->value( );
         if ( empty( $microscopeType ) ||
              empty( $numericalAperture ) ||
              empty( $ccdCaptorSize ) ) {
-                $message = "Please check this setting for completeness! Current version of HRM requires that all parameters are set even if a measured PSF is chosen";
+                $message = "Please check this setting for completeness! " .
+                "Current version of HRM requires that all parameters " .
+                "are set even if a measured PSF is chosen";
                 $ok = False;
         }          
       } else {
-        $message = "Source image folder not found! Make sure path ".$_SESSION['fileserver']->sourceFolder()." exists";
+        $message = "Source image folder not found! Make sure path " .
+          $_SESSION['fileserver']->sourceFolder()." exists";
         $ok = False;
       }
     }
@@ -134,26 +143,52 @@ include("header.inc.php");
     <!--
       Tooltips
     -->
-    <span id="ttSpanCreate">Create a new setting with the specified name.</span>  
-    <span id="ttSpanEdit">Edit the selected setting.</span>
-    <span id="ttSpanClone">Copy the selected setting to a new one with the
+    <span id="ttSpanCreate">
+        Create a new setting with the specified name.
+    </span>
+    <span id="ttSpanEdit">
+        Edit the selected setting.
+    </span>
+    <span id="ttSpanClone">
+        Copy the selected setting to a new one with the
       specified name.</span>
-    <span id="ttSpanDelete">Delete the selected setting.</span>
+    <span id="ttSpanDelete">
+        Delete the selected setting.
+    </span>
     <?php
       if (!$_SESSION['user']->isAdmin()) {
         ?>
-        <span id="ttSpanDefault">Sets the selected setting as the default one.</span>
-        <span id="ttSpanCopyTemplate">Copy a template.</span>
-        <span id="ttSpanForward">Continue to step 2/4 - Restoration parameters.</span>
+        <span id="ttSpanDefault">
+            Sets the selected setting as the default one
+            .</span>
+        <span id="ttSpanCopyTemplate">Copy a template.
+        </span>
+        <span id="ttSpanForward">
+            Continue to step 2/4 - Restoration parameters.
+        </span>
     <?php
       }
     ?>
 
     <div id="nav">
         <ul>
-            <li><img src="images/user.png" alt="user" />&nbsp;<?php echo $_SESSION['user']->name(); ?></li>
-            <li><a href="<?php echo getThisPageName();?>?home=home"><img src="images/home.png" alt="home" />&nbsp;Home</a></li>
-            <li><a href="javascript:openWindow('http://www.svi.nl/HuygensRemoteManagerHelpSelectParameterSettings')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
+            <li>
+                <img src="images/user.png" alt="user" />
+                &nbsp;<?php echo $_SESSION['user']->name(); ?>
+            </li>
+            <li>
+                <a href="<?php echo getThisPageName();?>?home=home">
+                    <img src="images/home.png" alt="home" />
+                    &nbsp;Home
+                </a>
+            </li>
+            <li>
+                <a href="javascript:openWindow(
+                   'http://www.svi.nl/HuygensRemoteManagerHelpSelectParameterSettings')">
+                    <img src="images/help.png" alt="help" />
+                    &nbsp;Help
+                </a>
+            </li>
         </ul>
     </div>
     
@@ -184,16 +219,21 @@ if (!$_SESSION['user']->isAdmin()) {
         
             <fieldset>
                 <legend>Template image parameters</legend>
-                <p class="message_small">These are the parameter sets prepared by your administrator.</p>
+                <p class="message_small">
+                    These are the parameter sets prepared by your administrator.
+                </p>
                 <div id="templates">
 <?php
 
   $settings = $admin_editor->settings();
   $flag = "";
-  if (sizeof($settings) == 0) $flag = " disabled=\"disabled\"";
+  if (sizeof($settings) == 0) {
+      $flag = " disabled=\"disabled\"";
+  }
 
 ?>
-                    <select name="public_setting" size="5"<?php echo $flag ?>>
+                    <select name="public_setting"
+                            size="5"<?php echo $flag ?>>
 <?php
 
   if (sizeof($settings) == 0) {
@@ -211,10 +251,12 @@ if (!$_SESSION['user']->isAdmin()) {
             </fieldset>
             
             <div id="selection">
-                <input name="copy_public" type="submit" value=""
-                    class="icon copy"
-                    onmouseover="TagToTip('ttSpanCopyTemplate' )"
-                    onmouseout="UnTip()" />
+                <input name="copy_public" 
+                       type="submit"
+                       value=""
+                       class="icon copy"
+                       onmouseover="TagToTip('ttSpanCopyTemplate' )"
+                       onmouseout="UnTip()" />
             </div>
             
         </form>
@@ -232,10 +274,12 @@ if (!$_SESSION['user']->isAdmin()) {
             <?php
             if ($_SESSION['user']->isAdmin()) {
               echo "<legend>Template image parameters</legend>";
-              echo "<p class=\"message_small\">Create template parameter sets visible to all users.</p>";
+              echo "<p class=\"message_small\">Create template parameter " .
+                "sets visible to all users.</p>";
             } else {
               echo "<legend>Your image parameters</legend>";
-              echo "<p class=\"message_small\">These are your (private) parameter sets.</p>";
+              echo "<p class=\"message_small\">These are your (private) " .
+                "parameter sets.</p>";
             }
             ?>
         
@@ -249,7 +293,8 @@ $flag = "";
 if (sizeof($settings) == 0) $flag = " disabled=\"disabled\"";
 
 ?>
-                    <select name="setting" size="<?php echo $size ?>"<?php echo $flag ?>>
+                    <select name="setting"
+                            size="<?php echo $size ?>"<?php echo $flag ?>>
 <?php
 
 if (sizeof($settings) == 0) {
@@ -275,13 +320,21 @@ else {
             </fieldset>
             
             <div id="actions" class="parameterselection">
-                <input name="create" type="submit" value="" class="icon create"
+                <input name="create"
+                       type="submit"
+                       value=""
+                       class="icon create"
                        onmouseover="TagToTip('ttSpanCreate' )"
                        onmouseout="UnTip()" />
-                <input name="edit" type="submit" value="" class="icon edit"
-                      onmouseover="TagToTip('ttSpanEdit' )"
-                      onmouseout="UnTip()" />
-                <input name="copy" type="submit" value="" class="icon clone"
+                <input name="edit"
+                       type="submit"
+                       value=""
+                       class="icon edit"
+                       onmouseover="TagToTip('ttSpanEdit' )"
+                       onmouseout="UnTip()" />
+                <input name="copy" type="submit" 
+                       value=""
+                       class="icon clone"
                        onmouseover="TagToTip('ttSpanClone' )"
                        onmouseout="UnTip()" />
 <?php
@@ -299,11 +352,20 @@ if (!$_SESSION['user']->isAdmin()) {
 
 ?>
                 <input type="hidden" name="annihilate" />
-                <input name="delete" type="submit" value="" class="icon delete"
-                      onclick="warn(this.form, 'Do you really want to delete this parameter set?', this.form['setting'].selectedIndex )"
-                      onmouseover="TagToTip('ttSpanDelete' )"
-                      onmouseout="UnTip()" />
-                <label>New/clone setting name: <input name="new_setting" type="text" class="textfield" /></label>
+                <input name="delete"
+                       type="submit"
+                       value=""
+                       class="icon delete"
+                       onclick="warn(this.form,
+                        'Do you really want to delete this parameter set?',
+                        this.form['setting'].selectedIndex )"
+                       onmouseover="TagToTip('ttSpanDelete' )"
+                       onmouseout="UnTip()" />
+                <label>New/clone setting name: 
+                    <input name="new_setting"
+                           type="text"
+                           class="textfield" />
+                </label>
                 <input name="OK" type="hidden" />
         </div>                
 <?php
@@ -312,11 +374,16 @@ if (!$_SESSION['user']->isAdmin()) {
 
 ?>
                 <div id="controls">      
-                  <input type="submit" value="" class="icon empty" disabled="disabled" />
-                  <input type="submit" value="" class="icon next"
-                    onclick="process()"
-                    onmouseover="TagToTip('ttSpanForward' )"
-                    onmouseout="UnTip()" />
+                  <input type="submit"
+                         value=""
+                         class="icon empty"
+                         disabled="disabled" />
+                  <input type="submit"
+                         value=""
+                         class="icon next"
+                         onclick="process()"
+                         onmouseover="TagToTip('ttSpanForward' )"
+                         onmouseout="UnTip()" />
                 </div>
 <?php
 
@@ -334,12 +401,13 @@ if (!$_SESSION['user']->isAdmin()) {
           
           <h3>Quick help</h3>
 
-          <p><strong>Placing the mouse pointer over the various icons will display a
-          tooltip with explanations.</strong></p>
+          <p><strong>Placing the mouse pointer over the various icons will 
+          display a tooltip with explanations.</strong></p>
     
-          <p><strong>For a more detailed explanation on the possible actions, please follow the
-          <img src="images/help.png" alt="Help" width="22" height="22" /> <b>Help</b> 
-          link in the navigation bar.</strong></p>
+          <p><strong>For a more detailed explanation on the possible actions, 
+            please follow the
+            <img src="images/help.png" alt="Help" width="22" height="22" />
+            <b>Help</b> link in the navigation bar.</strong></p>
 
           <p />
 <?php
@@ -354,8 +422,8 @@ if (!$_SESSION['user']->isAdmin()) {
 }
 
 	if (!$_SESSION['user']->isAdmin()) {
-      echo "<p>In the first step, you are asked to specify all parameters relative
-        to the images you want to restore.</p>";
+      echo "<p>In the first step, you are asked to specify all parameters
+          relative to the images you want to restore.</p>";
 	} else {
 	  echo "<p>Here, you can create template parameters relative to the images
       to restore.</p>";

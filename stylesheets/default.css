@@ -704,13 +704,13 @@ fieldset.p {
 
 }
 
-fieldset #values {
+fieldset .values {
     position: relative;
     padding-left: 20px;
     width: 100%;
 }
 
-fieldset #reset
+fieldset .reset
 {
     background: url(../images/reset.png) no-repeat left center;
     position: absolute;
@@ -720,7 +720,7 @@ fieldset #reset
     width: 20px;
 }
 
-fieldset #bottom {
+fieldset .bottom {
     clear: both;
     width: 100%;
 }

@@ -51,14 +51,16 @@ if (isset($_POST['task_setting'])) {
 
 if (isset($_POST['copy_public'])) {
   if (isset($_POST["public_setting"])) {
-    if (!$_SESSION['taskeditor']->copyPublicSetting($admin_editor->setting($_POST['public_setting']))) {
+    if (!$_SESSION['taskeditor']->copyPublicSetting(
+        $admin_editor->setting($_POST['public_setting']))) {
       $message = $_SESSION['editor']->message();
     }
   }
   else $message = "Please select a setting to copy";
 }
 else if (isset($_POST['create'])) {
-  $task_setting = $_SESSION['taskeditor']->createNewSetting($_POST['new_setting']);
+  $task_setting = $_SESSION['taskeditor']->createNewSetting(
+    $_POST['new_setting']);
   if ($task_setting != NULL) {
     $_SESSION['task_setting'] = $task_setting;
     header("Location: " . "task_parameter.php"); exit();
@@ -81,25 +83,30 @@ else if (isset($_POST['make_default'])) {
   $_SESSION['taskeditor']->makeSelectedSettingDefault();
   $message = $_SESSION['taskeditor']->message();
 }
-else if ( (isset($_POST['delete']) || isset($_POST['annihilate']) && $_POST['annihilate'] == "yes") ) {
-    $_SESSION['taskeditor']->deleteSelectedSetting();
-    $message = $_SESSION['taskeditor']->message();
+else if ( isset($_POST['annihilate']) &&
+    strcmp( $_POST['annihilate'], "yes") == 0 ) {
+        $_SESSION['taskeditor']->deleteSelectedSetting();
+        $message = $_SESSION['taskeditor']->message();
 }
-else if (isset($_POST['OK'])) {
+else if (isset($_POST['OK']) && $_POST['OK']=="OK" ) {
   if (!isset($_POST['task_setting'])) {
     $message = "Please select some restoration parameters";
   }
   else {
-    $_SESSION['task_setting'] = $_SESSION['taskeditor']->loadSelectedSetting();
-    $_SESSION['task_setting']->setNumberOfChannels($_SESSION['setting']->numberOfChannels());
+    $_SESSION['task_setting'] =
+        $_SESSION['taskeditor']->loadSelectedSetting();
+    $_SESSION['task_setting']->setNumberOfChannels(
+        $_SESSION['setting']->numberOfChannels());
     
     /*
       Here we just check that the Parameters that have a variable of values per
       channel have all their values set properly.
     */
     $ok = True;
-    $ok = $ok && $_SESSION['task_setting']->parameter( 'SignalNoiseRatio' )->check();
-    $ok = $ok && $_SESSION['task_setting']->parameter( 'BackgroundOffsetPercent' )->check();
+    $ok = $ok && $_SESSION['task_setting']->parameter(
+        'SignalNoiseRatio' )->check();
+    $ok = $ok && $_SESSION['task_setting']->parameter(
+        'BackgroundOffsetPercent' )->check();
     
     if ($ok) {
       header("Location: " . "select_images.php"); exit();
@@ -118,27 +125,57 @@ include("header.inc.php");
     <!--
       Tooltips
     -->
-    <span id="ttSpanCreate">Create a new setting with the specified name.</span>  
-    <span id="ttSpanEdit">Edit the selected setting.</span>
-    <span id="ttSpanClone">Copy the selected setting to a new one with the
-      specified name.</span>
-    <span id="ttSpanDelete">Delete the selected setting.</span>
+    <span id="ttSpanCreate">
+        Create a new setting with the specified name.
+    </span>
+    <span id="ttSpanEdit">
+        Edit the selected setting.
+    </span>
+    <span id="ttSpanClone">
+        Copy the selected setting to a new one with the
+      specified name.
+    </span>
+    <span id="ttSpanDelete">
+        Delete the selected setting.
+    </span>
     <?php
       if (!$_SESSION['user']->isAdmin()) {
         ?>
-        <span id="ttSpanDefault">Sets the selected setting as the default one.</span>
-        <span id="ttSpanCopyTemplate">Copy a template.</span>
-        <span id="ttSpanBack">Go back to step 1/4 - Image parameters.</span>
-        <span id="ttSpanForward">Continue to step 3/4 - Select images.</span>  
+        <span id="ttSpanDefault">
+            Sets the selected setting as the default one.
+        </span>
+        <span id="ttSpanCopyTemplate">
+            Copy a template.
+        </span>
+        <span id="ttSpanBack">
+            Go back to step 1/4 - Image parameters.
+        </span>
+        <span id="ttSpanForward">
+            Continue to step 3/4 - Select images.
+        </span>
     <?php
       }
     ?>
 
     <div id="nav">
         <ul>
-            <li><img src="images/user.png" alt="user" />&nbsp;<?php echo $_SESSION['user']->name(); ?></li>
-            <li><a href="<?php echo getThisPageName();?>?home=home"><img src="images/home.png" alt="home" />&nbsp;Home</a></li>
-            <li><a href="javascript:openWindow('http://www.svi.nl/HuygensRemoteManagerHelpSelectTaskSettings')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
+            <li>
+                <img src="images/user.png" alt="user" />
+                &nbsp;<?php echo $_SESSION['user']->name(); ?>
+            </li>
+            <li>
+                <a href="<?php echo getThisPageName();?>?home=home">
+                    <img src="images/home.png" alt="home" />
+                    &nbsp;Home
+                </a>
+            </li>
+            <li>
+                <a href="javascript:openWindow(
+                   'http://www.svi.nl/HuygensRemoteManagerHelpSelectTaskSettings')">
+                    <img src="images/help.png" alt="help" />
+                    &nbsp;Help
+                </a>
+            </li>
         </ul>
     </div>
     
@@ -169,7 +206,9 @@ if (!$_SESSION['user']->isAdmin()) {
         
             <fieldset>
               <legend>Template restoration parameters</legend>
-              <p class="message_small">These are the parameter sets prepared by your administrator.</p>
+              <p class="message_small">
+                  These are the parameter sets prepared by your administrator.
+              </p>
               <div id="templates">
 <?php
 
@@ -178,7 +217,8 @@ if (!$_SESSION['user']->isAdmin()) {
   if (sizeof($settings) == 0) $flag = " disabled=\"disabled\"";
 
 ?>
-                    <select name="public_setting" size="5"<?php echo $flag ?>>
+                    <select name="public_setting"
+                            size="5"<?php echo $flag ?>>
 <?php
 
   if (sizeof($settings) == 0) {
@@ -197,10 +237,12 @@ if (!$_SESSION['user']->isAdmin()) {
 
             
             <div id="selection">
-                <input name="copy_public" type="submit" value=""
-                    class="icon down"
-                    onmouseover="TagToTip('ttSpanCopyTemplate' )"
-                    onmouseout="UnTip()" />
+                <input name="copy_public"
+                       type="submit"
+                       value=""
+                       class="icon down"
+                       onmouseover="TagToTip('ttSpanCopyTemplate' )"
+                       onmouseout="UnTip()" />
             </div>
             
         </form>
@@ -218,10 +260,12 @@ if (!$_SESSION['user']->isAdmin()) {
               <?php
                 if ($_SESSION['user']->isAdmin()) {
                   echo "<legend>Template restoration parameters</legend>";
-                  echo "<p class=\"message_small\">Create template parameter sets visible to all users.</p>";
+                  echo "<p class=\"message_small\">Create template parameter " .
+                    "sets visible to all users.</p>";
                 } else {
                   echo "<legend>Your restoration parameters</legend>";
-                  echo "<p class=\"message_small\">These are your (private) parameter sets.</p>";
+                  echo "<p class=\"message_small\">These are your (private) " .
+                    "parameter sets.</p>";
                 }
               ?>
               <div id="settings">
@@ -234,7 +278,9 @@ $flag = "";
 if (sizeof($settings) == 0) $flag = " disabled=\"disabled\"";
 
 ?>
-                    <select name="task_setting" size="<?php echo $size ?>"<?php echo $flag ?>>
+                    <select name="task_setting" 
+                            size="<?php echo $size ?>"
+                            <?php echo $flag ?>>
 <?php
 
 if (sizeof($settings) == 0) {
@@ -259,14 +305,24 @@ else {
                 
             </fieldset>
             
-            <div id="actions" class="taskselection">
-                <input name="create" type="submit" value="" class="icon create"
+            <div id="actions"
+                 class="taskselection">
+                <input name="create"
+                       type="submit"
+                       value=""
+                       class="icon create"
                        onmouseover="TagToTip('ttSpanCreate' )"
                        onmouseout="UnTip()" />
-                <input name="edit" type="submit" value="" class="icon edit"
-                      onmouseover="TagToTip('ttSpanEdit' )"
-                      onmouseout="UnTip()" />
-                <input name="copy" type="submit" value="" class="icon clone"
+                <input name="edit"
+                       type="submit"
+                       value=""
+                       class="icon edit"
+                       onmouseover="TagToTip('ttSpanEdit' )"
+                       onmouseout="UnTip()" />
+                <input name="copy"
+                       type="submit"
+                       value=""
+                       class="icon clone"
                        onmouseover="TagToTip('ttSpanClone' )"
                        onmouseout="UnTip()" />
 <?php
@@ -274,21 +330,32 @@ else {
 if (!$_SESSION['user']->isAdmin()) {
 
 ?>
-                <input name="make_default" type="submit" value=""
-                      class="icon mark"
-                      onmouseover="TagToTip('ttSpanDefault' )"
-                      onmouseout="UnTip()" />
+                <input name="make_default" 
+                       type="submit"
+                       value=""
+                       class="icon mark"
+                       onmouseover="TagToTip('ttSpanDefault' )"
+                       onmouseout="UnTip()" />
 <?php
 
 }
 
 ?>
                 <input type="hidden" name="annihilate" />
-                <input name="delete" type="submit" value="" class="icon delete"
-                      onclick="warn(this.form, 'Do you really want to delete this parameter set?', this.form['task_setting'].selectedIndex )"
-                      onmouseover="TagToTip('ttSpanDelete' )"
-                      onmouseout="UnTip()" />
-                <label>New/clone setting name: <input name="new_setting" type="text" class="textfield" /></label>
+                <input name="delete"
+                       type="submit"
+                       value=""
+                       class="icon delete"
+                       onclick="warn(this.form,
+                         'Do you really want to delete this parameter set?',
+                         this.form['task_setting'].selectedIndex )"
+                       onmouseover="TagToTip('ttSpanDelete' )"
+                       onmouseout="UnTip()" />
+                <label>New/clone setting name: 
+                    <input name="new_setting"
+                           type="text"
+                           class="textfield" />
+                </label>
                 <input name="OK" type="hidden" />
                 
             </div>
@@ -298,14 +365,18 @@ if (!$_SESSION['user']->isAdmin()) {
 
 ?>
                 <div id="controls">      
-                  <input type="button" value="" class="icon previous"
-                    onclick="document.location.href='select_parameter_settings.php'"
-                    onmouseover="TagToTip('ttSpanBack' )"
-                    onmouseout="UnTip()" />
-                  <input type="submit" value="" class="icon next"
-                    onclick="process()"
-                    onmouseover="TagToTip('ttSpanForward' )"
-                    onmouseout="UnTip()" />
+                  <input type="button"
+                         value=""
+                         class="icon previous"
+                         onclick="document.location.href='select_parameter_settings.php'"
+                        onmouseover="TagToTip('ttSpanBack' )"
+                        onmouseout="UnTip()" />
+                  <input type="submit" 
+                         value=""
+                         class="icon next"
+                        onclick="process()"
+                        onmouseover="TagToTip('ttSpanForward' )"
+                        onmouseout="UnTip()" />
                 </div>
 <?php
 
@@ -332,8 +403,9 @@ if (!$_SESSION['user']->isAdmin()) {
       restoration procedure.</p>";
 	}
 	?>
-      <p>These are the choice of the deconvolution algorithm, the signal-to-noise
-      ratio, the background estimation mode and the stopping criteria.</p>
+      <p>These are the choice of the deconvolution algorithm, the 
+      signal-to-noise ratio, the background estimation mode and the
+      stopping criteria.</p>
 
     <?php        
 	if (!$_SESSION['user']->isAdmin()) {

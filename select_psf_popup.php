@@ -18,13 +18,16 @@ if (!isset($_SESSION['fileserver'])) {
 }
 
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
-$mTypeSetting = $_SESSION['setting']->parameter("MicroscopeType")->translatedValue();
+$mTypeSetting = $_SESSION['setting']->parameter(
+    "MicroscopeType")->translatedValue();
 $twoPhoton = $_SESSION['setting']->isTwoPhoton();
 if ( $twoPhoton ) {
     $mTypeSetting = "multiphoton";
 }
-$NAsetting = $_SESSION['setting']->parameter("NumericalAperture")->value();
-$emSettingArr = $_SESSION['setting']->parameter("EmissionWavelength")->value();
+$NAsetting = $_SESSION['setting']->parameter(
+    "NumericalAperture")->value();
+$emSettingArr = $_SESSION['setting']->parameter(
+    "EmissionWavelength")->value();
 $chan = $_GET["channel"];
 $emSetting = $emSettingArr[$chan];
 
@@ -120,8 +123,13 @@ foreach ($files as $file) {
       </fieldset>
         
       <div>
-        <input name="channel" type="hidden" value="<?php echo $_GET["channel"] ?>" />
-        <input name="update" type="submit" value="" class="icon update" />
+        <input name="channel" 
+               type="hidden"
+               value="<?php echo $_GET["channel"] ?>" />
+        <input name="update"
+               type="submit"
+               value=""
+               class="icon update" />
       </div>
       
       <div>

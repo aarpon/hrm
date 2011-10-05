@@ -88,13 +88,28 @@ include("header.inc.php");
 ?>
     <div id="nav">
         <ul>
-            <li><img src="images/user.png" alt="user" />&nbsp;<?php echo $_SESSION['user']->name(); ?></li>
-            <li><a href="<?php echo getThisPageName();?>?home=home"><img src="images/home.png" alt="home" />&nbsp;Home</a></li>
-            <li><a href="javascript:openWindow('http://www.svi.nl/HuygensRemoteManagerHelpStatistics')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
+            <li>
+                <img src="images/user.png" alt="user" />
+                &nbsp;<?php echo $_SESSION['user']->name(); ?>
+            </li>
+            <li>
+                <a href="<?php echo getThisPageName();?>?home=home">
+                    <img src="images/home.png" alt="home" />
+                    &nbsp;Home
+                </a>
+            </li>
+            <li>
+                <a href="javascript:openWindow(
+                   'http://www.svi.nl/HuygensRemoteManagerHelpStatistics')">
+                    <img src="images/help.png" alt="help" />
+                    &nbsp;Help
+                </a>
+            </li>
         </ul>
     </div>
 
-    <!-- Here we put a select element for the user to choose which stats he wants to display -->
+    <!-- Here we put a select element for the user to choose which stats he
+         wants to display -->
     <div id="stats">
       
       <form method="post" action="" id="displayStats">
@@ -102,7 +117,10 @@ include("header.inc.php");
         <fieldset>
           
           <legend>
-            <a href="javascript:openWindow('http://www.svi.nl/HuygensRemoteManagerHelpStatistics')"><img src="images/help.png" alt="?" /></a>
+            <a href="javascript:openWindow('
+               http://www.svi.nl/HuygensRemoteManagerHelpStatistics')">
+                <img src="images/help.png" alt="?" />
+            </a>
             Statistics
           </legend>  
             
@@ -119,7 +137,9 @@ include("header.inc.php");
             }
             
           ?>
-            <option <?php echo $selected ?>><?php echo $currentStats ?></option>
+            <option <?php echo $selected ?>>
+                <?php echo $currentStats ?>
+            </option>
         
           <?php
           }
@@ -164,8 +184,7 @@ include("header.inc.php");
             $cal->setDatePair( 'FromDate', 'ToDate', $chosenFromDate );
             $cal->writeScript();
           ?>
-          </p>
-            </div>
+          </div>
           <!-- Filter: Group This is visible only for the admin user-->
           <?php
           if ( $_SESSION['user']->isAdmin() ) {

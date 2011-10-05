@@ -90,7 +90,8 @@ if (isset($_POST['add'])) {
             $text .= "Login here\n";
             $text .= $hrm_url."\n\n";
             $folder = $image_folder . "/" . $clean["username"];
-            $text .= "Source and destination folders for your images are located on server ".$image_host." under ".$folder.".";
+            $text .= "Source and destination folders for your images are " .
+                "located on server ".$image_host." under ".$folder.".";
             $mail = new Mail($email_sender);
             $mail->setReceiver($clean['email']);
             $mail->setSubject('Account activated');
@@ -153,28 +154,45 @@ else echo "        var added = false;\n";
         <div id="adduser">
 
           <label for="username">Username: </label>
-          <input type="text" name="username" id="username" value="" class="texfield" />
+          <input type="text" 
+                 name="username"
+                 id="username"
+                 value=""
+                 class="texfield" />
 
           <br />
 
           <label for="email">E-mail address: </label>
-          <input type="text" name="email" id="email" value="" class="texfield" />
+          <input type="text" 
+                 name="email"
+                 id="email"
+                 value=""
+                 class="texfield" />
 
           <br />
 
           <label for="group">Research group: </label>
-          <input type="text" name="group" id="group" value="" class="texfield" />
+          <input type="text" 
+                 name="group"
+                 id="group"
+                 value=""
+                 class="texfield" />
 
           <br />
 
-          <input name="add" type="submit" value="add" class="button" />
+          <input name="add"
+                 type="submit"
+                 value="add"
+                 class="button" />
 
         </div>
 
       </fieldset>
 
       <div>
-        <input type="button" value="close" onclick="window.close()" />
+        <input type="button" 
+               value="close"
+               onclick="window.close()" />
       </div>
 
     </div> <!-- box -->

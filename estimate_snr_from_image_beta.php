@@ -23,7 +23,8 @@ function showFileBrowser() {
         your feedback</a> to improve the new SNR estimator!</span>";
     $form_title = "Available images";
     $top_navigation = "
-            <li><img src=\"images/user.png\" alt=\"user\" />&nbsp;".$_SESSION['user']->name()."</li>
+            <li><img src=\"images/user.png\" alt=\"user\" />&nbsp;".
+                $_SESSION['user']->name()."</li>
             <li><a href=\"javascript:openWindow('".
                 "http://support.svi.nl/wiki/style=hrm&amp;".
                 "help=HuygensRemoteManagerHelpSnrEstimator".
@@ -110,7 +111,8 @@ function estimateSnrFromFile($file) {
     include("header.inc.php");
 
     $top_navigation = "
-            <li><img src=\"images/user.png\" alt=\"user\" />&nbsp;".$_SESSION['user']->name()."</li>
+            <li><img src=\"images/user.png\" alt=\"user\" />&nbsp;".
+                $_SESSION['user']->name()."</li>
             <li><a href=\"javascript:openWindow('".
                  "http://support.svi.nl/wiki/style=hrm&amp;".
                  "help=HuygensRemoteManagerHelpSnrEstimator".
@@ -224,11 +226,16 @@ function estimateSnrFromFile($file) {
         </center>
         </fieldset>
       </div>
-      <div id="controls" class="" onmouseover="smoothChangeDivCond('general','thumb','<?php echo escapeJavaScript($defaultView);?>', 200);">
+      <div id="controls"
+           class=""
+           onmouseover="smoothChangeDivCond('general','thumb',
+               '<?php echo escapeJavaScript($defaultView);?>', 200);">
       </div>
       </div> <!-- content -->
 
-      <div id="rightpanel" onmouseover="smoothChangeDivCond('general','thumb','<?php echo escapeJavaScript($defaultView);?>', 200);">
+      <div id="rightpanel" 
+           onmouseover="smoothChangeDivCond('general','thumb',
+           '<?php echo escapeJavaScript($defaultView);?>', 200);">
       <div id="info">
       <?php // echo $defaultView;  ?>
       </div>
@@ -255,9 +262,6 @@ function estimateSnrFromFile($file) {
         "<h3>SNR estimation</h3>".
         "<fieldset>".
         "<table>";
-
-    // debug: dump returned array.
-    // $output .= "<pre>". str_replace("\n", "<br />", var_export($estimation, true)). "</pre>";
 
     $chanCnt = $estimation['channelCnt'];
 

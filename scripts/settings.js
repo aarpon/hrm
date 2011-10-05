@@ -121,15 +121,6 @@ function seek(channel) {
 
 window.onunload = function() {if (snitch != null) snitch.close()};
 
-function fixCoverslip( state ) {
-    for (var i = 0; i < document.forms["select"].elements.length; i++) {
-        var e = document.forms["select"].elements[i];
-        if (e.name == 'CoverslipRelativePosition') {
-            e.disabled = state;
-        }
-    }
-}
-
 function switchSnrMode() {
     if ( changeVisibility('cmle-snr') != "none" ) {
         window.restorationMode = 'cmle';

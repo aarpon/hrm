@@ -114,17 +114,22 @@ if (isset($_POST["OK"])) {
                 $mail->setSubject("New HRM user registration");
                 $mail->setMessage($text);
                 if ( $mail->send() ) {
-                  $notice = "            <p class=\"info\">Application successfully sent!</p>\n";
-                  $notice .= "            <p>Your application will be processed by the administrator. You will receive a confirmation by e-mail.</p>\n";
+                  $notice = "Application successfully sent!\n" .
+                    "Your application will be processed by the " .
+                    "administrator and you will receive a confirmation " .
+                    "by e-mail.";
                 } else {
-                  $notice = "            <p class=\"info\">Your application was successfully stored, but there was an error e-mailing the administrator!</p>\n";
-                  $notice .= "            <p>Please contact the reponsible person.</p>\n";
+                  $notice = "Your application was successfully stored, " .
+                    "but there was an error e-mailing the administrator! " .
+                    "Please contact the administrator yourself!";
                 }
                 $processed = True;
               }
-                else $message = "Database error, please inform the person in charge";
+                else $message = "Database error, please inform the person " .
+                    "in charge";
               }
-              else $message = "This user name is already in use. Please enter another one";
+              else $message = "This user name is already in use. Please " .
+                  "enter another one";
             }
             else $message = "Passwords do not match";
           }
@@ -143,8 +148,18 @@ include("header.inc.php");
 
     <div id="nav">
         <ul>
-            <li><a href="login.php"><img src="images/exit.png" alt="exit" />&nbsp;Exit</a></li>
-            <li><a href="javascript:openWindow('http://www.svi.nl/HuygensRemoteManagerHelpRegistrationPage')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
+            <li>
+                <a href="login.php">
+                    <img src="images/exit.png" alt="exit" />&nbsp;Exit
+                </a>
+            </li>
+            <li>
+                <a href="javascript:openWindow(
+                   'http://www.svi.nl/HuygensRemoteManagerHelpRegistrationPage')">
+                    <img src="images/help.png" alt="help" />
+                    &nbsp;Help
+                </a>
+            </li>
         </ul>
     </div>
 
@@ -162,35 +177,58 @@ if (!$processed) {
             <div id="adduser">
 
                 <label for="username">*Username: </label>
-                <input type="text" name="username" id="username" maxlength="30" value="<?php echo $clean["username"] ?>" />
+                <input type="text" 
+                       name="username"
+                       id="username"
+                       maxlength="30"
+                       value="<?php echo $clean["username"] ?>" />
 
                 <br />
 
                 <label for="email">*E-mail address: </label>
-                <input type="text" name="email" id="email"  maxlength="80" value="<?php echo $clean["email"] ?>" />
+                <input type="text" 
+                       name="email"
+                       id="email"
+                       maxlength="80"
+                       value="<?php echo $clean["email"] ?>" />
 
                 <br />
 
                 <label for="group">*Research group: </label>
-                <input type="text" name="group" id="group" maxlength="30" value="<?php echo $clean["group"] ?>" />
+                <input type="text" 
+                       name="group"
+                       id="group"
+                       maxlength="30"
+                       value="<?php echo $clean["group"] ?>" />
 
                 <br />
 
                 <label for="pass1">*Password: </label>
-                <input type="password" name="pass1" id="pass1" />
+                <input type="password" 
+                       name="pass1"
+                       id="pass1" />
 
                 <br />
 
                 <label for="pass2">*(verify) Password: </label>
-                <input type="password" name="pass2" id="pass2" />
+                <input type="password" 
+                       name="pass2"
+                       id="pass2" />
 
                 <br />
 
                 <label for="note">Request message:</label>
-                <textarea name="note" id="note" rows="3" cols="30"><?php echo $clean["note"] ?></textarea>
+                <textarea name="note" 
+                          id="note"
+                          rows="3"
+                          cols="30"><?php echo $clean["note"] ?>
+                </textarea>
 
                 <div>
-                    <input name="OK" type="submit" value="register" class="button" />
+                    <input name="OK"
+                           type="submit"
+                           value="register"
+                           class="button" />
                 </div>
 
             </div>
@@ -201,7 +239,7 @@ if (!$processed) {
 else {
 
 ?>
-        <div id="notice"><?php echo $notice ?></div>
+        <div id="notice"><?php echo "<p>$notice</p>"; ?></div>
 <?php
 
 }

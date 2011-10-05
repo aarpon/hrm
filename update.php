@@ -12,8 +12,9 @@ if (isset($_GET['home'])) {
 }
 
 // The admin must be logged on
-if ( ( !isset( $_SESSION[ 'user' ] ) ) || ( !$_SESSION[ 'user' ]->isAdmin() ) ) {
-  header("Location: " . "login.php"); exit();  
+if ( ( !isset( $_SESSION[ 'user' ] ) ) ||
+    ( !$_SESSION[ 'user' ]->isAdmin() ) ) {
+        header("Location: " . "login.php"); exit();
 }
 
 $message = "";
@@ -32,9 +33,24 @@ include("header.inc.php");
 
     <div id="nav">
         <ul>
-            <li><img src="images/user.png" alt="user" />&nbsp;<?php echo $_SESSION['user']->name(); ?></li>
-            <li><a href="<?php echo getThisPageName();?>?home=home" onclick="clean()"><img src="images/home.png" alt="home" />&nbsp;Home</a></li>
-            <li><a href="javascript:openWindow('http://www.svi.nl/HuygensRemoteManagerHelpUpdate')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
+            <li>
+                <img src="images/user.png" alt="user" />
+                &nbsp;<?php echo $_SESSION['user']->name(); ?>
+            </li>
+            <li>
+                <a href="<?php echo getThisPageName();?>?home=home"
+                   onclick="clean()">
+                    <img src="images/home.png" alt="home" />
+                    &nbsp;Home
+                </a>
+            </li>
+            <li>
+                <a href="javascript:openWindow(
+                   'http://www.svi.nl/HuygensRemoteManagerHelpUpdate')">
+                    <img src="images/help.png" alt="help" />
+                    &nbsp;Help
+                </a>
+            </li>
         </ul>
     </div>
     
@@ -47,7 +63,7 @@ include("header.inc.php");
             <textarea rows="15" readonly="readonly">
 <?php
 
-echo "<p>$message</p>";
+echo $message;
 
 ?>
             </textarea>
@@ -68,7 +84,9 @@ echo "<p>$message</p>";
             </p>
             
             <p>
-                New HRM releases are available from the project <a href="javascript:openWindow('http://sourceforge.net/projects/hrm')">website</a>.
+                New HRM releases are available from the project 
+                <a href="javascript:openWindow(
+                   'http://sourceforge.net/projects/hrm')">website</a>.
             </p>
             
             <br>
@@ -77,7 +95,8 @@ echo "<p>$message</p>";
                 <input type="hidden" name="action" value="dbupdate">
             </form>
             
-            <input type="button" name="" value="database update" onclick="document.forms['dbupdate'].submit()" />
+            <input type="button" name="" value="database update"
+                   onclick="document.forms['dbupdate'].submit()" />
             
         </div>
         

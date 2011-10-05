@@ -110,7 +110,7 @@ if ( isset( $_POST['password'] ) && isset( $_POST['username'] ) ) {
 				}
 			}
 		} else if ( $tentativeUser->isLoginRestrictedToAdmin() ) {
-			if ( ( $tentativeUser->isAdmin() ) && ( $tentativeUser->exists() ) ) {
+			if ( $tentativeUser->isAdmin() && $tentativeUser->exists() ) {
 				$message = "Wrong password";
 			} else {
 				$message = "Only the administrator is allowed to login " .
@@ -135,16 +135,30 @@ include("header.inc.php");
 
 <div id="nav">
 <ul>
-	<li><a
-		href="javascript:openWindow('http://huygens-rm.org/home/?q=node/27')"><img
-		src="images/whatsnew.png" alt="website" />&nbsp;What's new?</a></li>
-	<li><a href="javascript:openWindow('http://www.huygens-rm.org')"><img
-		src="images/logo_small.png" alt="website" />&nbsp;Website</a></li>
-	<li><a href="javascript:openWindow('http://www.svi.nl/FrontPage')"><img
-		src="images/wiki.png" alt="website" />&nbsp;SVI wiki</a></li>
-	<li><a
-		href="javascript:openWindow('http://www.svi.nl/HuygensRemoteManagerHelpLogin')"><img
-		src="images/help.png" alt="help" />&nbsp;Help</a></li>
+	<li>
+        <a href="javascript:openWindow(
+           'http://huygens-rm.org/home/?q=node/27')">
+            <img src="images/whatsnew.png" alt="website" />
+            &nbsp;What's new?
+        </a>
+    </li>
+	<li><a href="javascript:openWindow('http://www.huygens-rm.org')">
+            <img src="images/logo_small.png" alt="website" />
+            &nbsp;Website
+        </a>
+    </li>
+	<li>
+        <a href="javascript:openWindow('http://www.svi.nl/FrontPage')">
+            <img Src="images/wiki.png" alt="website" />
+            &nbsp;SVI wiki
+        </a>
+    </li>
+	<li><a href="javascript:openWindow(
+           'http://www.svi.nl/HuygensRemoteManagerHelpLogin')">
+            <img src="images/help.png" alt="help" />
+            &nbsp;Help
+        </a>
+    </li>
 </ul>
 </div>
 
@@ -172,8 +186,9 @@ if ( System::huCoreVersion( ) == 0 ) {
 }
 // Check that hucore is recent enough to run this version of the HRM
 if ( System::isMinHuCoreVersion( ) == false ) {
-	echo "<div class=\"dbOutDated\">Warning: you need at least HuCore version " .
-	System::minHuCoreVersion() . " for HRM " . System::getHRMVersion() . "!\n";
+	echo "<div class=\"dbOutDated\">Warning: you need at least HuCore " .
+	"version " . System::minHuCoreVersion() . " for HRM " .
+    System::getHRMVersion() . "!\n";
 	echo "<p>Please contact the administrator.</p></div>";
 	echo "</div>\n";
 	include("footer.inc.php");
@@ -240,7 +255,8 @@ Optics platform</a></p>
 <form method="post" action="" autocomplete="off">
     <fieldset>
         <legend>
-            <a href="javascript:openWindow('http://www.svi.nl/HuygensRemoteManagerHelpLogin')">
+            <a href="javascript:openWindow(
+               'http://www.svi.nl/HuygensRemoteManagerHelpLogin')">
                 <img src="images/help.png" alt="?" /></a> Login
         </legend>
     <?php

@@ -28,11 +28,16 @@ $message = "";
 if ( $_SESSION[ 'setting' ]->checkPostedCalculatePixelSizeParameters( $_POST ) ) {
 	
 	// Calculate and set the pixel size
-	$ccd = floatval( $_SESSION[ 'setting' ]->parameter( "CCDCaptorSize" )->value() );
-	$bin = floatval( $_SESSION[ 'setting' ]->parameter( "Binning" )->value() );
-	$obm = floatval( $_SESSION[ 'setting' ]->parameter( "ObjectiveMagnification" )->value() );
-	$cmf = floatval( $_SESSION[ 'setting' ]->parameter( "CMount" )->value() );
-	$tbf = floatval( $_SESSION[ 'setting' ]->parameter( "TubeFactor" )->value() );
+	$ccd = floatval( $_SESSION[ 'setting' ]->parameter(
+        "CCDCaptorSize" )->value() );
+	$bin = floatval( $_SESSION[ 'setting' ]->parameter(
+        "Binning" )->value() );
+	$obm = floatval( $_SESSION[ 'setting' ]->parameter(
+        "ObjectiveMagnification" )->value() );
+	$cmf = floatval( $_SESSION[ 'setting' ]->parameter(
+        "CMount" )->value() );
+	$tbf = floatval( $_SESSION[ 'setting' ]->parameter(
+        "TubeFactor" )->value() );
 	$pixelSize = ( $ccd * $bin ) / ( $obm * $cmf * $tbf );
 	
 	// Try
@@ -64,14 +69,26 @@ include ("header.inc.php");
 <!--
   Tooltips
 -->
-<span id="ttSpanCancel">Go back to previous page without calculating the pixel size.</span>  
-<span id="ttSpanForward">Update the pixel size field on previous page with the calculated value.</span>  
+<span id="ttSpanCancel">
+    Go back to previous page without calculating the pixel size.
+</span>  
+<span id="ttSpanForward">
+    Update the pixel size field on previous page with the calculated value.
+</span>  
 
 <div id="nav">  
-        <ul>
-            <li><img src="images/user.png" alt="user" />&nbsp;<?php echo $_SESSION['user']->name(); ?></li>
-            <li><a href="javascript:openWindow('')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
-        </ul>
+    <ul>
+        <li>
+            <img src="images/user.png" alt="user" />
+            &nbsp;<?php echo $_SESSION['user']->name(); ?>
+        </li>
+        <li>
+            <a href="javascript:openWindow('')">
+                <img src="images/help.png" alt="help" />
+                &nbsp;Help
+            </a>
+        </li>
+    </ul>
 </div>
     
 <div id="content">
@@ -90,17 +107,26 @@ $parameter = $_SESSION['setting']->parameter("CCDCaptorSize");
 $value = $parameter->value();
         
 ?>
-    <a href="javascript:openWindow('http://www.svi.nl/HuygensRemoteManagerHelpCCD')"><img src="images/help.png" alt="?" /></a>
-    		 <?php echo $textForCaptorSize ?>:
+    <a href="javascript:openWindow(
+       'http://www.svi.nl/HuygensRemoteManagerHelpCCD')">
+        <img src="images/help.png" alt="?" />
+    </a>
+
+    <?php echo $textForCaptorSize ?>:
     		 
-           <input name="CCDCaptorSize" type="text" size="5" value="<?php echo $value ?>" />
+    <input name="CCDCaptorSize"
+           type="text"
+           size="5"
+           value="<?php echo $value ?>" />
             
-         <br />
+    <br />
             
-                <a href="javascript:openWindow('http://www.svi.nl/PixelBinning')"><img src="images/help.png" alt="?" /></a>
-                binning:
+    <a href="javascript:openWindow('http://www.svi.nl/PixelBinning')">
+        <img src="images/help.png" alt="?" />
+    </a>
+    binning:
                 
-                <select style="width:20%;" name="Binning" size="1">
+    <select style="width:20%;" name="Binning" size="1">
 <?php
 
 
@@ -111,16 +137,19 @@ foreach ($parameter->possibleValues() as $possibleValue) {
 		$flag = " selected=\"selected\"";
 	}
 ?>
-                    <option <?php echo $flag ?>><?php echo $possibleValue ?></option>
+        <option <?php echo $flag ?>><?php echo $possibleValue ?></option>
 <?php
 
 
 }
 ?>
 
-                </select>
-                <br />
- <a href="javascript:openWindow('http://www.svi.nl/HuygensRemoteManagerHelpCMount')"><img src="images/help.png" alt="?" /></a>
+    </select>
+    <br />
+    <a href="javascript:openWindow('
+       http://www.svi.nl/HuygensRemoteManagerHelpCMount')">
+        <img src="images/help.png" alt="?" />
+    </a>
 <?php
 
 
@@ -128,22 +157,35 @@ $parameter = $_SESSION['setting']->parameter("CMount");
 $value = $parameter->value();
 ?>                
 <?php echo "C-mount" ?>:
-                        <input name="CMount" type="text" size="5" value="<?php echo $value ?>" /> <br />
+    <input name="CMount"
+           type="text"
+           size="5"
+           value="<?php echo $value ?>" />
+    <br />
                         
- <a href="javascript:openWindow('http://www.svi.nl/HuygensRemoteManagerHelpTubeFactor')"><img src="images/help.png" alt="?" /></a>
+    <a href="javascript:openWindow(
+       'http://www.svi.nl/HuygensRemoteManagerHelpTubeFactor')">
+        <img src="images/help.png" alt="?" />
+    </a>
 <?php
-
 
 $parameter = $_SESSION['setting']->parameter("TubeFactor");
 $value = $parameter->value();
 ?>                
 <?php echo "tube factor" ?>:
-                        <input name="TubeFactor" type="text" size="5" value="<?php echo $value ?>" /> <br />
+    <input name="TubeFactor"
+           type="text"
+           size="5"
+           value="<?php echo $value ?>" />
+    <br />
                         
-<a href="javascript:openWindow('http://www.svi.nl/ObjectiveMagnification')"><img src="images/help.png" alt="?" /></a>
-                objective magnification:
+    <a href="javascript:openWindow(
+       'http://www.svi.nl/ObjectiveMagnification')">
+        <img src="images/help.png" alt="?" />
+    </a>
+    objective magnification:
                 
-                <select style="width:20%;" name="ObjectiveMagnification" size="1">
+    <select style="width:20%;" name="ObjectiveMagnification" size="1">
 <?php
 
 $parameter = $_SESSION['setting']->parameter("ObjectiveMagnification");
@@ -154,27 +196,27 @@ foreach ( $sortedPossibleValues as $possibleValue) {
   if ($possibleValue == $parameter->value()) $flag = " selected=\"selected\"";
 
 ?>
-                    <option<?php echo $flag ?>><?php echo $possibleValue ?></option>
+        <option<?php echo $flag ?>><?php echo $possibleValue ?></option>
 <?php
 
 }
 
 ?>
-                </select>
-                X
+    </select>
+    X
                         
-            </fieldset>
+    </fieldset>
        
-                <div id="controls">      
-                  <input type="button" value="" class="icon up"
-                    onmouseover="TagToTip('ttSpanCancel' )"
-                    onmouseout="UnTip()"
-                    onclick="document.location.href='capturing_parameter.php'" />
-                  <input type="submit" value="" class="icon next"
-                    onmouseover="TagToTip('ttSpanForward' )"
-                    onmouseout="UnTip()"
-                    onclick="process()" />
-                </div>
+    <div id="controls">      
+        <input type="button" value="" class="icon up"
+            onmouseover="TagToTip('ttSpanCancel' )"
+            onmouseout="UnTip()"
+            onclick="document.location.href='capturing_parameter.php'" />
+         <input type="submit" value="" class="icon next"
+            onmouseover="TagToTip('ttSpanForward' )"
+            onmouseout="UnTip()"
+            onclick="process()" />
+    </div>
 
     </form>
     

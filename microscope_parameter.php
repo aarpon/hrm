@@ -32,7 +32,8 @@ $parameterNames = $_SESSION['setting']->microscopeParameterNames();
 $db = new DatabaseConnection();
 foreach ( $parameterNames as $name ) {
   $parameter = $_SESSION['setting']->parameter( $name );
-  $confidenceLevel = $db->getParameterConfidenceLevel( $fileFormat->value(), $name );
+  $confidenceLevel =
+    $db->getParameterConfidenceLevel( $fileFormat->value(), $name );
   $parameter->setConfidenceLevel( $confidenceLevel );
   $_SESSION['setting']->set( $parameter );
 }
@@ -44,9 +45,11 @@ foreach ( $parameterNames as $name ) {
  **************************************************************************** */
 
 $excitationParam = $_SESSION['setting']->parameter("ExcitationWavelength");
-$excitationParam->setNumberOfChannels( $_SESSION['setting']->numberOfChannels() );
+$excitationParam->setNumberOfChannels(
+    $_SESSION['setting']->numberOfChannels() );
 $emissionParam =  $_SESSION['setting']->parameter("EmissionWavelength");
-$emissionParam->setNumberOfChannels( $_SESSION['setting']->numberOfChannels( ) );
+$emissionParam->setNumberOfChannels(
+    $_SESSION['setting']->numberOfChannels( ) );
 $excitation = $excitationParam->value();
 $emission = $emissionParam->value();
 for ($i=0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
@@ -60,9 +63,11 @@ for ($i=0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
   }
 }
 $excitationParam->setValue($excitation);
-$excitationParam->setNumberOfChannels( $_SESSION['setting']->numberOfChannels( ) );
+$excitationParam->setNumberOfChannels(
+    $_SESSION['setting']->numberOfChannels( ) );
 $emissionParam->setValue($emission);
-$emissionParam->setNumberOfChannels( $_SESSION['setting']->numberOfChannels( ) );
+$emissionParam->setNumberOfChannels(
+    $_SESSION['setting']->numberOfChannels( ) );
 $_SESSION['setting']->set($excitationParam);
 $_SESSION['setting']->set($emissionParam);
 
@@ -94,15 +99,33 @@ include("header.inc.php");
     <!--
       Tooltips
     -->
-    <span id="ttSpanBack">Go back to previous page.</span>
-    <span id="ttSpanCancel">Abort editing and go back to the image parameters selection page. All changes will be lost!</span>
-    <span id="ttSpanForward">Continue to next page.</span>
-    <span id="ttSpanReset">Click to unselect all options.</span>
+    <span id="ttSpanBack">
+        Go back to previous page.
+    </span>
+    <span id="ttSpanCancel">
+        Abort editing and go back to the image parameters selection page.
+        All changes will be lost!
+    </span>
+    <span id="ttSpanForward">
+        Continue to next page.
+    </span>
+    <span id="ttSpanReset">
+        Click to unselect all options.
+    </span>
 
     <div id="nav">
         <ul>
-            <li><img src="images/user.png" alt="user" />&nbsp;<?php echo $_SESSION['user']->name(); ?></li>
-            <li><a href="javascript:openWindow('http://www.svi.nl/HuygensRemoteManagerHelpOptics')"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>
+            <li>
+                <img src="images/user.png" alt="user" />
+                &nbsp;<?php echo $_SESSION['user']->name(); ?>
+            </li>
+            <li>
+                <a href="javascript:openWindow(
+                   'http://www.svi.nl/HuygensRemoteManagerHelpOptics')">
+                    <img src="images/help.png" alt="help" />
+                    &nbsp;Help
+                </a>
+            </li>
         </ul>
     </div>
 
@@ -122,33 +145,47 @@ include("header.inc.php");
 
     ***************************************************************************/
 
-      $parameterMicroscopeType = $_SESSION['setting']->parameter("MicroscopeType");
+    $parameterMicroscopeType =
+        $_SESSION['setting']->parameter("MicroscopeType");
 
     ?>
-            <fieldset class="setting <?php echo $parameterMicroscopeType->confidenceLevel(); ?>"
-              onmouseover="javascript:changeQuickHelp( 'type' );" >
+            <fieldset class="setting <?php
+            echo $parameterMicroscopeType->confidenceLevel(); ?>"
+            onmouseover="javascript:changeQuickHelp( 'type' );" >
 
                 <legend>
-                    <a href="javascript:openWindow('http://www.svi.nl/MicroscopeType')"><img src="images/help.png" alt="?" /></a>
+                    <a href="javascript:openWindow(
+                       'http://www.svi.nl/MicroscopeType')">
+                        <img src="images/help.png" alt="?" />
+                    </a>
                     microscope type
                 </legend>
 
-                <div id="values">
-                    <div id="reset"
+                <div class="values">
+                    <div class="reset"
                          onmouseover="TagToTip('ttSpanReset' )"
                          onmouseout="UnTip()"
                          onclick="document.forms[0].MicroscopeType[0].checked = true;">
                     </div>
-                    <input name="MicroscopeType" type="radio" value="" style="display:none;" />
+                    <input name="MicroscopeType"
+                           type="radio"
+                           value=""
+                           style="display:none;" />
 <?php
 
 $possibleValues = $parameterMicroscopeType->possibleValues();
 foreach($possibleValues as $possibleValue) {
   $flag = "";
-  if ($possibleValue == $parameterMicroscopeType->value()) $flag = "checked=\"checked\" ";
+  if ($possibleValue == $parameterMicroscopeType->value()) {
+      $flag = "checked=\"checked\" ";
+  }
 
 ?>
-                <input type="radio" name="MicroscopeType" value="<?php echo $possibleValue ?>" <?php echo $flag ?>/><?php echo $possibleValue ?>
+                <input type="radio" 
+                       name="MicroscopeType"
+                       value="<?php echo $possibleValue ?>"
+                       <?php echo $flag ?>/>
+                       <?php echo $possibleValue ?>
 
                 <br />
 <?php
@@ -157,8 +194,10 @@ foreach($possibleValues as $possibleValue) {
 
 ?>
             </div> <!-- values -->
-            <div id="bottom">
-                <p class="message_confidence_<?php echo $parameterMicroscopeType->confidenceLevel(); ?>">&nbsp;</p>
+            <div class="bottom">
+                <p class="message_confidence_<?php 
+                echo $parameterMicroscopeType->confidenceLevel(); ?>">&nbsp;
+                </p>
             </div>
             </fieldset>
 
@@ -170,23 +209,35 @@ foreach($possibleValues as $possibleValue) {
 
     ***************************************************************************/
 
-      $parameterNumericalAperture = $_SESSION['setting']->parameter("NumericalAperture");
+    $parameterNumericalAperture =
+        $_SESSION['setting']->parameter("NumericalAperture");
 
     ?>
-            <fieldset class="setting <?php echo $parameterNumericalAperture->confidenceLevel(); ?>"
-              onmouseover="javascript:changeQuickHelp( 'NA' );" >
+            <fieldset class="setting <?php
+            echo $parameterNumericalAperture->confidenceLevel(); ?>"
+            onmouseover="javascript:changeQuickHelp( 'NA' );" >
 
               <legend>
-		<a href="javascript:openWindow('http://www.svi.nl/NumericalAperture')"><img src="images/help.png" alt="?" /></a>
-		numerical aperture
+                <a href="javascript:openWindow(
+                    'http://www.svi.nl/NumericalAperture')">
+                    <img src="images/help.png" alt="?" />
+                </a>
+                numerical aperture
               </legend>
               <ul>
                 <li>NA:
-                <input name="NumericalAperture" type="text" size="5" value="<?php echo $parameterNumericalAperture->value() ?>" />
+                <input name="NumericalAperture" 
+                       type="text"
+                       size="5"
+                       value="<?php
+                        echo $parameterNumericalAperture->value() ?>" />
 
                 </li>
               </ul>
-              <p class="message_confidence_<?php echo $parameterNumericalAperture->confidenceLevel(); ?>">&nbsp;</p>
+              <p class="message_confidence_<?php
+                echo $parameterNumericalAperture->confidenceLevel(); ?>">
+                  &nbsp;
+              </p>
             </fieldset>
 
     <?php
@@ -197,27 +248,45 @@ foreach($possibleValues as $possibleValue) {
 
     ***************************************************************************/
 
-      $parameterEmissionWavelength = $_SESSION['setting']->parameter("EmissionWavelength");
+    $parameterEmissionWavelength =
+        $_SESSION['setting']->parameter("EmissionWavelength");
 
     ?>
 
-            <fieldset class="setting <?php echo $parameterEmissionWavelength->confidenceLevel(); ?>"
-              onmouseover="javascript:changeQuickHelp( 'wavelengths' );" >
+            <fieldset class="setting <?php
+            echo $parameterEmissionWavelength->confidenceLevel(); ?>"
+            onmouseover="javascript:changeQuickHelp( 'wavelengths' );" >
 
                 <legend>
-                    <a href="javascript:openWindow('http://www.svi.nl/WaveLength')"><img src="images/help.png" alt="?" /></a>
+                    <a href="javascript:openWindow(
+                       'http://www.svi.nl/WaveLength')">
+                        <img src="images/help.png" alt="?" />
+                    </a>
                     wavelengths
-		</legend>
-		<ul>
-		<li>excitation (nm):
+                </legend>
+                <ul>
+                <li>excitation (nm):
 
-		<div class="multichannel">
+                <div class="multichannel">
 <?php
 
 for ($i = 0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
 
 ?>
-	<span class="nowrap">Ch<?php echo $i ?>:&nbsp;&nbsp;&nbsp;<span class="multichannel"><input name="ExcitationWavelength<?php echo $i ?>" type="text" size="8" value="<?php if ($i <= sizeof($excitation)) echo $excitation[$i] ?>" class="multichannelinput" /></span>&nbsp;</span>
+	<span class="nowrap">
+        Ch<?php echo $i ?>:&nbsp;&nbsp;&nbsp;
+        <span class="multichannel">
+            <input name="ExcitationWavelength<?php echo $i ?>"
+                   type="text"
+                   size="8"
+                   value="<?php
+                    if ($i <= sizeof($excitation)) {
+                        echo $excitation[$i];
+                    } ?>"
+                   class="multichannelinput" />
+        </span>&nbsp;
+    </span>
+
 <?php
 
 }
@@ -232,7 +301,20 @@ for ($i = 0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
 for ($i=0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
 
 ?>
-	<span class="nowrap">Ch<?php echo $i ?>:&nbsp;&nbsp;&nbsp;<span class="multichannel"><input name="EmissionWavelength<?php echo $i ?>" type="text" size="8" value="<?php if ($i <= sizeof($emission)) echo $emission[$i] ?>" class="multichannelinput" /></span>&nbsp;</span>
+	<span class="nowrap">
+        Ch<?php echo $i ?>:&nbsp;&nbsp;&nbsp;
+        <span class="multichannel">
+            <input name="EmissionWavelength<?php echo $i ?>"
+                   type="text"
+                   size="8"
+                   value="<?php
+                   if ($i <= sizeof($emission)) {
+                       echo $emission[$i];
+                   } ?>"
+                   class="multichannelinput" />
+        </span>&nbsp;
+    </span>
+
 <?php
 
 }
@@ -241,7 +323,10 @@ for ($i=0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
         </div></li>
         </ul>
 
-        <p class="message_confidence_<?php echo $parameterEmissionWavelength->confidenceLevel(); ?>">&nbsp;</p>
+        <p class="message_confidence_<?php
+            echo $parameterEmissionWavelength->confidenceLevel(); ?>">
+            &nbsp;
+        </p>
         </fieldset>
 
   <?php
@@ -256,21 +341,28 @@ for ($i=0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
 
   ?>
 
-            <fieldset class="setting <?php echo $parameterObjectiveType->confidenceLevel(); ?>"
+            <fieldset class="setting <?php
+            echo $parameterObjectiveType->confidenceLevel(); ?>"
               onmouseover="javascript:changeQuickHelp( 'objective' );" >
 
                 <legend>
-                    <a href="javascript:openWindow('http://www.svi.nl/LensImmersionMedium')"><img src="images/help.png" alt="?" /></a>
+                    <a href="javascript:openWindow(
+                       'http://www.svi.nl/LensImmersionMedium')">
+                        <img src="images/help.png" alt="?" />
+                    </a>
                     objective type
                 </legend>
 
-                <div id="values">
-                    <div id="reset"
+                <div class="values">
+                    <div class="reset"
                          onmouseover="TagToTip('ttSpanReset' )"
                          onmouseout="UnTip()"
                          onclick="document.forms[0].ObjectiveType[0].checked = true;" >
                     </div>
-                    <input name="ObjectiveType" type="radio" value="" style="display:none;" />
+                    <input name="ObjectiveType"
+                           type="radio"
+                           value=""
+                           style="display:none;" />
 
 <?php
 
@@ -278,10 +370,16 @@ $possibleValues = $parameterObjectiveType->possibleValues();
 sort($possibleValues);
 foreach ($possibleValues as $possibleValue) {
   $flag = "";
-  if ($possibleValue == $parameterObjectiveType->value()) $flag = " checked=\"checked\"";
+  if ($possibleValue == $parameterObjectiveType->value()) {
+      $flag = " checked=\"checked\"";
+  }
 
 ?>
-                    <input name="ObjectiveType" type="radio" value="<?php echo $possibleValue ?>" <?php echo $flag ?>/><?php echo $possibleValue ?>
+                    <input name="ObjectiveType" 
+                           type="radio"
+                           value="<?php echo $possibleValue ?>"
+                           <?php echo $flag ?> />
+                    <?php echo $possibleValue ?>
 
 <?php
 
@@ -290,8 +388,11 @@ foreach ($possibleValues as $possibleValue) {
 ?>
                 </div> <!-- values -->
 
-                <div id="bottom">
-                    <p class="message_confidence_<?php echo $parameterObjectiveType->confidenceLevel(); ?>">&nbsp;</p>
+                <div class="bottom">
+                    <p class="message_confidence_<?php
+                        echo $parameterObjectiveType->confidenceLevel(); ?>">
+                        &nbsp;
+                    </p>
                 </div>
             </fieldset>
 
@@ -307,22 +408,29 @@ foreach ($possibleValues as $possibleValue) {
 
   ?>
 
-            <fieldset class="setting <?php echo $parameterSampleMedium->confidenceLevel(); ?>"
-              onmouseover="javascript:changeQuickHelp( 'sample' );" >
+            <fieldset class="setting <?php
+                echo $parameterSampleMedium->confidenceLevel(); ?>"
+                onmouseover="javascript:changeQuickHelp( 'sample' );" >
 
                 <legend>
-                    <a href="javascript:openWindow('http://www.svi.nl/SpecimenEmbeddingMedium')"><img src="images/help.png" alt="?" /></a>
+                    <a href="javascript:openWindow(
+                       'http://www.svi.nl/SpecimenEmbeddingMedium')">
+                        <img src="images/help.png" alt="?" />
+                    </a>
                     sample medium
                 </legend>
 
-                <div id="values">
-                    <div id="reset"
+                <div class="values">
+                    <div class="reset"
                          onmouseover="TagToTip('ttSpanReset' )"
                          onmouseout="UnTip()"
                          onclick="document.forms[0].SampleMedium[0].checked = true;" >
                     </div>
 
-                    <input name="SampleMedium" type="radio" value="" style="display:none;" />
+                    <input name="SampleMedium"
+                           type="radio"
+                           value=""
+                           style="display:none;" />
 
 <?php
 
@@ -336,7 +444,12 @@ foreach ($parameterSampleMedium->possibleValues() as $possibleValue) {
   $translation = $parameterSampleMedium->translatedValueFor( $possibleValue );
 
 ?>
-                    <input name="SampleMedium" type="radio" value="<?php echo $possibleValue ?>"<?php echo $flag ?> /><?php echo $possibleValue ?> <span class="title">[<?php echo $translation ?>]</span>
+                    <input name="SampleMedium"
+                           type="radio"
+                           value="<?php echo $possibleValue ?>"
+                           <?php echo $flag ?> />
+                    <?php echo $possibleValue ?>
+                    <span class="title">[<?php echo $translation ?>]</span>
 
                     <br />
 <?php
@@ -353,17 +466,29 @@ if (!$default) {
 }
 
 ?>
-                <input name="SampleMedium" type="radio" value="custom"<?php echo $flag ?> /><input name="SampleMediumCustomValue" type="text" size="5" value="<?php echo $value ?>" onclick="this.form.SampleMedium[2].checked=true" />
+                <input name="SampleMedium"
+                       type="radio"
+                       value="custom"<?php echo $flag ?> />
+
+                <input name="SampleMediumCustomValue"
+                       type="text"
+                       size="5"
+                       value="<?php echo $value ?>"
+                       onclick="this.form.SampleMedium[2].checked=true" />
 
                 </div> <!-- values -->
-                <div id="bottom">
-                    <p class="message_confidence_<?php echo $parameterSampleMedium->confidenceLevel(); ?>">&nbsp;</p>
+                <div class="bottom">
+                    <p class="message_confidence_<?php
+                    echo $parameterSampleMedium->confidenceLevel(); ?>">
+                        &nbsp;
+                    </p>
                 </div>
             </fieldset>
 
             <div><input name="OK" type="hidden" /></div>
 
-            <div id="controls" onmouseover="javascript:changeQuickHelp( 'default' )">
+            <div id="controls"
+                 onmouseover="javascript:changeQuickHelp( 'default' )">
               <input type="button" value="" class="icon previous"
                   onmouseover="TagToTip('ttSpanBack' )"
                   onmouseout="UnTip()"
@@ -382,7 +507,8 @@ if (!$default) {
 
     </div> <!-- content -->
 
-    <div id="rightpanel" onmouseover="javascript:changeQuickHelp( 'default' );" >
+    <div id="rightpanel"
+         onmouseover="javascript:changeQuickHelp( 'default' );" >
 
         <div id="info">
 
@@ -392,10 +518,10 @@ if (!$default) {
               <p>On this page you specify the parameters for the optical setup
               of your experiment.</p>
 
-              <p>These parameters comprise the microscope type,
-              the numerical aperture of the objective, the wavelenght of the used
-              fluorophores, and the refractive indices of the sample medium and of
-              the objective-embedding medium.</p>
+              <p>These parameters comprise the microscope type, the numerical
+                  aperture of the objective, the wavelenght of the used
+                  fluorophores, and the refractive indices of the sample medium
+                  and of the objective-embedding medium.</p>
             </div>
 
         </div>

@@ -621,7 +621,9 @@ class Stats {
     $counter = 1;
     for ( $i = 0; $i < $numGroups; $i++ ) {
       $row = $res->FetchRow( );
-      $groupNames[ $counter++ ] = $row[ 0 ];
+      if ( $row[0] != "" ) {
+        $groupNames[ $counter++ ] = $row[ 0 ];
+      }
     }
     return $groupNames;
   }
