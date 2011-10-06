@@ -19,6 +19,16 @@
 . /etc/hrm.conf
 
 start() {
+    # Is an instance of the Queue Manager already running?
+    inst=`ps aux | grep runHuygensRemoteManager.php`;
+    if [[ $inst == *"php -q"* ]]
+    then
+	echo""
+	echo "The Queue Manager is already running: I won't start another instance."
+        echo "Usage: hrmd {start|stop|restart}" 
+        exit
+    fi
+    
     cd  "$HRM_HOME"/run
         echo Reporting to "$HRM_LOG"/log.txt "$HRM_LOG"/error_log.txt
 	if [[ "$SUSER" == "" ]]
