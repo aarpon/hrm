@@ -535,11 +535,27 @@ if ( !( strpos( $_SERVER[ 'HTTP_REFERER' ],
     'estimate_snr_from_image.php') === false ) ||
     !( strpos( $_SERVER[ 'HTTP_REFERER' ],
     'estimate_snr_from_image_beta.php') === false ) ) {
+
+    if ( isset( $_SESSION['SNR_Calculated']) &&
+            $_SESSION['SNR_Calculated'] == 'true') {
 ?>
-    <script type="text/javascript">
-        $(document).ready( retrieveValues( ) );
-    </script>"
+        <script type="text/javascript">
+            $(document).ready( retrieveValues( 
+            new Array( 'SignalNoiseRatioCMLE0',
+            'SignalNoiseRatioCMLE1', 'SignalNoiseRatioCMLE2',
+            'SignalNoiseRatioCMLE3', 'SignalNoiseRatioCMLE4' ) ) );
+        </script>"
     
 <?php
+        // Now remove the SNR_Calculated flag
+        unset($_SESSION['SNR_Calculated'] );
+        
+    } else {
+?>
+        <script type="text/javascript">
+            $(document).ready( retrieveValues( ) );;
+        </script>"
+<?php
+    }
 }
 ?>

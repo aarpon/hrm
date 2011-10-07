@@ -348,7 +348,7 @@ if ($_SESSION['setting']->isThreeDimensional()) {
                 <a href="#"
                     onmouseover="TagToTip('ttSpanNyquist' )"
                     onmouseout="UnTip()"
-                    onclick="storeValuesAndRedirect(
+                    onclick="storeValuesAndRedirectExtern(
                       'http://support.svi.nl/wiki/NyquistCalculator');">
                     <img src="images/calc_small.png" alt="" />
                     On-line Nyquist rate and PSF calculator
@@ -624,20 +624,33 @@ include("footer.inc.php");
 
 if ( !( strpos( $_SERVER[ 'HTTP_REFERER' ],
     'calculate_pixel_size.php') === false ) ) {
+
+    if ( isset( $_SESSION['CCDCaptorSizeX_Calculated']) &&
+        $_SESSION['CCDCaptorSizeX_Calculated'] == 'true') {
 ?>
-    <script type="text/javascript">
-        $(document).ready( retrieveValues( 'CCDCaptorSizeX') );
-    </script>
+        <script type="text/javascript">
+            $(document).ready( retrieveValues( new Array( 'CCDCaptorSizeX' ) ) );
+        </script>
+
 <?php
+        // Now remove the SNR_Calculated flag
+        unset($_SESSION['CCDCaptorSizeX_Calculated'] );
+
+    } else {
+?>
+        <script type="text/javascript">
+            $(document).ready( retrieveValues( ) );
+        </script>
+<?php
+    }
 }
 
 if ( !( strpos( $_SERVER[ 'HTTP_REFERER' ],
   'calculate_bp_pinhole.php') === false ) ) {
 ?>
-    <script type="text/javascript">
-        $(document).ready( retrieveValues( ) );
-    </script>
+        <script type="text/javascript">
+            $(document).ready( retrieveValues( ) );
+        </script>
 <?php
 }
-
 ?>

@@ -20,6 +20,13 @@ if (!isset ($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
 
 $message = "";
 
+// If the $_SESSION['CCDCaptorSizeX_Calculated'] flag is set we unset it, to
+// make sure that it is there only when 'storing' and going back to
+// 'parameter_'capturing_parameter.php'
+if ( isset( $_SESSION['CCDCaptorSizeX_Calculated'] ) ) {
+    unset( $_SESSION['CCDCaptorSizeX_Calculated'] );
+}
+
 /* *****************************************************************************
  *
  * PROCESS THE POSTED PARAMETERS
@@ -47,6 +54,11 @@ if ( $_SESSION[ 'setting' ]->checkPostedCalculatePixelSizeParameters( $_POST ) )
 		$parameter = $_SESSION['setting']->parameter('CCDCaptorSizeX');
 		$parameter->setValue($pixelSize);
 		$_SESSION['setting']->set($parameter);
+
+        // Inform capturing_parameter.php that we do not want the values to be
+        // recovered from SessionStorage
+        $_SESSION['CCDCaptorSizeX_Calculated'] = 'true';
+
 		header("Location: " . "capturing_parameter.php"); exit();
 	} else {
 		$message = "Please check your parameters!";

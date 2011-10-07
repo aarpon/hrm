@@ -269,7 +269,6 @@ global $params, $reportparams, $ref, $help, $rtag, $ru;
 global $a, $b, $c, $d, $u, $param, $wl, $na, $mo, $msys, $micro, $units ;
 global $cmsys, $table, $extra1, $txt1, $extra2, $txt2, $checked1, $checked2;
 
-
         if ($error) print $error . "<br><br>";
         print "\n<h2>".str_replace("_"," ",$micro)."</h2>";
         print "\n<form action=\"calculate_bp_pinhole.php\" method=\"post\"".
@@ -380,7 +379,7 @@ global $cmsys, $table, $extra1, $txt1, $extra2, $txt2, $checked1, $checked2;
 
        </div>
 
-    </div> <!-- rightpanel -->";
+    </div> <!-- rightpanel -->
 
 
 <?php
@@ -511,12 +510,12 @@ $out .= "<div id=\"controls\">";
 $toScript = $_SERVER['HTTP_REFERER'];
         
 $out .= "<input type=\"button\" value=\"\" class=\"icon previous\"
-    onmouseover=\"Tip('Try again.' )\"
+    onmouseover=\"Tip('Try again with other parameters.' )\"
     onmouseout=\"UnTip()\"
     onclick=\"document.location.href='" . $toScript ."'\" />";        
 
 $out .= "<input type=\"button\" value=\"\" class=\"icon next\"
-    onmouseover=\"Tip('Proceed to the optical parameters.' )\"
+    onmouseover=\"Tip('Proceed to the optical parameters back.' )\"
     onmouseout=\"UnTip()\"
     onclick=\"document.location.href='" . $ref ."'\" /></div>";
 
@@ -573,6 +572,8 @@ include("header.inc.php");
 </div>
 <?php
 echo "<div id=\"content\"> <h3>Backprojected pinhole calculator</h3>";
+
+$message = "";
 
 switch($task) {
     case 'calc':

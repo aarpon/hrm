@@ -16,6 +16,8 @@ function showFileBrowser() {
     //$browse_folder can be 'src' or 'dest'.
     $browse_folder = "src";
     $page_title = "Estimate SNR from a raw image";
+    $explanation_text = "Please choose an image and click on the calculator " .
+    "button to estimate the SNR.";
     $form_title = "Available images";
     $top_navigation = "
             <li><img src=\"images/user.png\" alt=\"user\" />&nbsp;".
@@ -181,21 +183,7 @@ function estimateSnrFromFile($file) {
     $opt = "-basename \"$basename\" -src \"$psrc\" -dest \"$pdest\" ".
         "-returnImages \"0.5 0.71 1 1.71 \" -snrVersion \"old\" ".
         "-series $series $extra";
-
-    // Navigations buttons are shown after the image is processed. No
-    // line-breaks in this declarations, as this is going to be escaped for
-    // JavaScript.
-
-    $buttons = "<input type=\"button\" value=\"\" class=\"icon previous\" ".
-               "onmouseover=\"Tip('Select another image.' )\" ".
-               "onmouseout=\"UnTip()\" ".
-          "onclick=\"document.location.href='estimate_snr_from_image.php'\" />";
-
-    $buttons .= "<input type=\"button\" value=\"\" class=\"icon next\" ".
-             "onmouseover=\"Tip('Proceed to the restoration parameters.' )\" ".
-             "onmouseout=\"UnTip()\" ".
-             "onclick=\"document.location.href='task_parameter.php'\" /></div>";
-
+             
     // When no particular SNR estimation image is shown (in a small portion of
     // the image), the image preview goes back to the whole image.
     $defaultView = $_SESSION['fileserver']->imgPreview($file, "src",
@@ -264,6 +252,9 @@ function estimateSnrFromFile($file) {
     $msgBG = "<p>Estimated background per channel:</p><p>";
     $msgClip = "";
 
+    // Keep the results in an easy place to access them later
+    $calculatedSNRValues = array();
+
     for ($ch = 0; $ch < $chanCnt; $ch++ ) {
         $output .= "<tr><td>".
             "<table>".
@@ -272,6 +263,7 @@ function estimateSnrFromFile($file) {
 
         $chKey = "Ch_$ch,";
         $estSNR = $estimation[$chKey.'estSNR'];
+        $calculatedSNRValues[$ch] = $estSNR;
         $msgSNR .= "Ch $ch: <strong>$estSNR</strong><br />";
         $estBG = $estimation[$chKey.'estBG'];
         $msgBG .= "Ch $ch: $estBG<br />";
@@ -370,10 +362,7 @@ function estimateSnrFromFile($file) {
 
     # Do not report the $msgBG, not to confuse the users.
 
-    $message = "<h3>Estimation results</h3>".
-               "<p>Please <b>write down</b> these values to use them ".
-               "in the settings editor.</p>".
-               $msgClip.$msgSNR;
+    $message = "<h3>Estimation results</h3>" . $msgClip.$msgSNR;
 
     if ( isset($estimation['error']) ) {
         foreach ($estimation['error'] as $line) {
@@ -386,6 +375,49 @@ function estimateSnrFromFile($file) {
 
 
     ?>
+
+    <?php
+        // Now create the buttons
+
+        // Navigations buttons are shown after the image is processed. No
+        // line-breaks in this declarations, as this is going to be escaped for
+        // JavaScript.
+
+        // We put the buttons in a form since we want to submit
+        $buttons = "<form method=\"post\" action=\"\" id=\"store\">";
+
+        // We put the 'controls' div around the buttons
+        $buttons .= "<div>";
+
+        // We store the calculated values in hidden controls
+        $buttons .= "<input type=\"hidden\" name=\"store\" value=\"store\" />";
+        for ( $i = 0; $i < count( $calculatedSNRValues ); $i++ ) {
+            $buttons .= "<input type=\"hidden\" ".
+            "name=\"Channel$i\" value=\"$calculatedSNRValues[$i]\" />";
+        }
+        
+        $buttons .= "<input type=\"button\" value=\"\" class=\"icon previous\" ".
+                    "onmouseover=\"Tip('Try again on another image.' )\" ".
+                    "onmouseout=\"UnTip()\" ".
+                    "onclick=\"document.location.href='estimate_snr_from_image.php'\" />";
+
+        $buttons .= "<input type=\"button\" value=\"\" class=\"icon up\" ".
+                    "onmouseover=\"Tip('Discard the calculated values and " .
+                    "return to the restoration parameters page.' )\" ".
+                    "onmouseout=\"UnTip()\" ".
+                    "onclick=\"document.location.href='task_parameter.php'\" />";
+
+        $buttons .= "<input type=\"submit\" value=\"store\" class=\"icon next\" ".
+                    "onmouseover=\"Tip('Accept the calculated values and " .
+                    "return to the restoration parameters page.' )\" ".
+                    "onmouseout=\"UnTip()\" /></div>";
+
+        $buttons .= "</div>";
+        
+        $buttons .= "</form>";
+
+    ?>
+
     </div>
     <script type="text/javascript">
     <!--
@@ -421,15 +453,53 @@ if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
   header("Location: " . "login.php"); exit();
 }
 
+// If the $_SESSION['SNR_Calculated'] flag is set we unset it, to make sure
+// that it is there only when 'storing' and going back to
+// 'parameter_'task_parameter.php'
+if ( isset( $_SESSION['SNR_Calculated'] ) ) {
+    unset( $_SESSION['SNR_Calculated'] );
+}
+
 // Depending on the user actions (or lack thereof) we either display or refresh
 // the file browser, or we estimate the SNR from the selected image
-if ( isset($_POST[ 'estimate'] ) && isset($_POST['userfiles'] ) ) {
+if ( isset($_POST['estimate'] ) && isset($_POST['userfiles'] ) ) {
 
   // Estimate the SNR from the selected file
   $task = "calculate";
   $file = $_POST['userfiles'][0];
   estimateSnrFromFile($file);
 
+} elseif ( isset( $_POST['store'] ) && $_POST['store'] == 'store' )  {
+    
+    // Collect the calculated SNR values
+    $found = true;
+    $ch = 0;
+    $estSNR = array();
+    if ( isset( $_POST['Channel0'] ) ) {
+        $estSNR[ 0 ] = $_POST['Channel0'];
+        while ( 1 ) { 
+            $ch++;
+            $chName = "Channel$ch";
+            if ( isset( $_POST[$chName]) ) {
+                $estSNR[ $ch ] = $_POST[$chName];
+            } else {
+                break;
+            }
+        }
+    }
+
+    // Now store the calculated values in the Parameter and back into the session
+    $snrParam = $_SESSION['task_setting']->parameter('SignalNoiseRatio');
+    $snrParam->setValue( $estSNR );
+    $_SESSION['task_setting']->set( $snrParam );
+
+    // Inform task_parameter.php that we do not want the values to be
+    // recovered from SessionStorage
+    $_SESSION['SNR_Calculated'] = 'true';
+    
+    // And now go back to task_parameter.php
+    header("Location: " . "task_parameter.php"); exit();
+    
 } else {
 
   // Just show (or refresh) the file browser with the file list

@@ -194,9 +194,15 @@ function retrieveValues( ignore ) {
     if (!window.sessionStorage) {
       return;
     }
+    // Make sure 'ignore' is an array if not undefined
+    if ( !( ignore === undefined ) ) {
+        if ( !( ignore instanceof Array ) ) {
+            var ignore = new Array( ignore );
+        }
+    }
     // Text input
     $("input[type=text]").each( function() {
-        if ( $(this).attr("name") == ignore ) {
+        if ( jQuery.inArray( $(this).attr("name"), ignore ) != -1 ) {
             window.sessionStorage.removeItem( $(this).attr("id") );
         } else {
             var c = window.sessionStorage.getItem( $(this).attr("id") );
@@ -207,7 +213,7 @@ function retrieveValues( ignore ) {
     } );
     // Radio buttons
     $("input[type=radio]").each( function() {
-        if ( $(this).attr("name") == ignore ) {
+        if ( jQuery.inArray( $(this).attr("name"), ignore ) != -1 ) {
             window.sessionStorage.removeItem( $(this).attr("id") );
         } else {
             var c = window.sessionStorage.getItem( $(this).attr("id") );
@@ -234,6 +240,12 @@ function deleteValues( idArray ) {
 function storeValuesAndRedirect(page) {
     storeValues( );
     window.location = page;
+}
+
+function storeValuesAndRedirectExtern(page) {
+    storeValues( );
+    var win = window.open(page, "", "");
+    win.focus();
 }
 
 function deleteValuesAndProcess() {
