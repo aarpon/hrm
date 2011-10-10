@@ -20,7 +20,9 @@ function showFileBrowser() {
         <img src=\"images/newSNR.png\" alt=\"\" />&nbsp;&nbsp;
         We appreciate
         <a href=\"javascript:openWindow('http://www.svi.nl/BetaSNRFeedback')\">
-        your feedback</a> to improve the new SNR estimator!</span>";
+        your feedback</a> to improve the new SNR estimator!</span><br /><br />
+        Please choose an image and click on the calculator button to 
+        estimate the SNR.";
     $form_title = "Available images";
     $top_navigation = "
             <li><img src=\"images/user.png\" alt=\"user\" />&nbsp;".
@@ -410,10 +412,10 @@ function estimateSnrFromFile($file) {
                     "onmouseout=\"UnTip()\" ".
                     "onclick=\"document.location.href='task_parameter.php'\" />";
 
-        $buttons .= "<input type=\"submit\" value=\"store\" class=\"icon next\" ".
+        $buttons .= "<input type=\"submit\" name=\"store\" class=\"icon next\" ".
                     "onmouseover=\"Tip('Accept the calculated values and " .
                     "return to the restoration parameters page.' )\" ".
-                    "onmouseout=\"UnTip()\" /></div>";
+                    "onmouseout=\"UnTip()\" value=\"\" /></div>";
 
         $buttons .= "</div>";
         
@@ -472,7 +474,7 @@ if ( isset($_POST['estimate'] ) && isset($_POST['userfiles'] ) ) {
   $file = $_POST['userfiles'][0];
   estimateSnrFromFile($file);
 
-} elseif ( isset( $_POST['store'] ) && $_POST['store'] == 'store' )  {
+} elseif ( isset( $_POST['store'] ) )  {
     
     // Collect the calculated SNR values
     $found = true;

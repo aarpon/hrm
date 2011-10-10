@@ -183,7 +183,7 @@ function estimateSnrFromFile($file) {
     $opt = "-basename \"$basename\" -src \"$psrc\" -dest \"$pdest\" ".
         "-returnImages \"0.5 0.71 1 1.71 \" -snrVersion \"old\" ".
         "-series $series $extra";
-             
+
     // When no particular SNR estimation image is shown (in a small portion of
     // the image), the image preview goes back to the whole image.
     $defaultView = $_SESSION['fileserver']->imgPreview($file, "src",
@@ -407,10 +407,10 @@ function estimateSnrFromFile($file) {
                     "onmouseout=\"UnTip()\" ".
                     "onclick=\"document.location.href='task_parameter.php'\" />";
 
-        $buttons .= "<input type=\"submit\" value=\"store\" class=\"icon next\" ".
+        $buttons .= "<input type=\"submit\" name=\"store\" class=\"icon next\" ".
                     "onmouseover=\"Tip('Accept the calculated values and " .
                     "return to the restoration parameters page.' )\" ".
-                    "onmouseout=\"UnTip()\" /></div>";
+                    "onmouseout=\"UnTip()\" value=\"\" /></div>";
 
         $buttons .= "</div>";
         
@@ -469,7 +469,7 @@ if ( isset($_POST['estimate'] ) && isset($_POST['userfiles'] ) ) {
   $file = $_POST['userfiles'][0];
   estimateSnrFromFile($file);
 
-} elseif ( isset( $_POST['store'] ) && $_POST['store'] == 'store' )  {
+} elseif ( isset( $_POST['store'] ) )  {
     
     // Collect the calculated SNR values
     $found = true;
