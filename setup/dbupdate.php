@@ -2144,6 +2144,29 @@ if ($current_revision < $n) {
         }
     }
 
+    // Delete the OverrideParameter entries from possible_values
+    $tabname = 'possible_values';
+    $record = array();
+    $record["parameter"]   = 'OverrideConfidence';
+    for ( $i = 0; $i < 6; $i++ ) {
+        // This is just a hack for developers; it the row was already deleted,
+        // skip
+        $record["value"]       = $i;
+        $baseQuery = " FROM " . $tabname . " WHERE parameter='" .
+            $record["parameter"] . "' AND value='" .
+            $record["value"] ."'";
+
+        $query = "SELECT *" . $baseQuery;
+        if ( $db->Execute( $query )->RecordCount( ) == 1 ) {
+            $query = "DELETE" . $baseQuery;
+            if ( !$db->Execute( $query ) ) {
+                $msg = error_message($tabname);
+                write_message($msg);
+                write_to_error($msg);
+                return false;
+            }
+        }
+    }
 }
 
 // Update revision

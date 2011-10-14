@@ -1454,7 +1454,6 @@ class DatabaseConnection {
 	  case 'AberrationCorrectionMode':
 	  case 'AdvancedCorrectionOptions':
 	  case 'PSF' :
-	  case 'OverrideConfidence':
 		return "provided";
 	  default:
 

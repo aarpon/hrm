@@ -274,7 +274,6 @@ class ParameterSetting extends Setting {
 			'AberrationCorrectionMode',
 			'AdvancedCorrectionOptions',
 			'PSFGenerationDepth',
-			'OverrideConfidence'
 			);
 			foreach ($parameterClasses as $class) {
 			  $param = new $class;
@@ -968,39 +967,6 @@ class ParameterSetting extends Setting {
 
     return $noErrorsFound;
 
-  }
-
-  /*!
-   \brief	Checks that the posted OverrideParameter is defined and valid
-   \param	$postedParameters	The $_POST array
-   \return	true if all Paraneters are defined and valid, false otherwise
-   */
-  public function checkPostedOverrideParameter( $postedParameters ) {
-
-    if ( count( $postedParameters ) == 0 ) {
-      $this->message = '';
-      return False;
-    }
-
-    $this->message = '';
-    $noErrorsFound = True;
-
-    if ( !isset( $postedParameters[ 'OverrideConfidence' ] ) ||
-      $postedParameters[ 'OverrideConfidence' ] == '' ) {
-		$this->message = "Please choose the override option!";
-		$noErrorsFound = false;
-	} else {
-        // The Parameter is set, now check the value
-        $parameter = $this->parameter( 'OverrideConfidence' );
-        $parameter->setValue( $postedParameters[ 'OverrideConfidence' ] );
-        $this->set( $parameter );
-        if( !$parameter->check() ) {
-          $this->message = $parameter->message();
-          $noErrorsFound = False;
-        }
-	}
-
-	return $noErrorsFound;
   }
 
   /*!
