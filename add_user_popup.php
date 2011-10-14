@@ -135,7 +135,7 @@ else echo "        var added = false;\n";
     -->
     </script>
     <style type="text/css">
-        @import "stylesheets/default.css";
+        @import "css/default.css";
     </style>
 </head>
 

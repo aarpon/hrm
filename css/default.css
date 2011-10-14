@@ -208,6 +208,7 @@ table {
 #content h3 {
     background-color: #eee;
     font-size: 16px;
+    height: 18px;
     font-weight: bold;
     text-align: center;
 }
@@ -408,7 +409,8 @@ input.save {
 
 #info h3 {
     background-color: #eee;
-    font-size: 1.0em;
+    font-size: 16px;
+    line-height: 1.0;
     font-weight: bold;
     text-align: center;
 }
@@ -551,6 +553,7 @@ input.save {
     width: 750px;
     text-align: left;
     margin: 15px;
+    line-height: 1.5;
 }
 
 #homepage table {
@@ -811,21 +814,27 @@ input.noPreview {
 }
 
 .expandedView {
-    font-size: 70%;
+    font-size: 80%;
+    font-weight: bold;
+    color: #4988de;
+    cursor: pointer;
 }
 
 #ithumb {
     padding-top: 3px;
     padding-bottom: 0;
+    cursor: pointer;
 }
 #ithumba {
     padding-top: 3px;
     padding-bottom: 0;
+    cursor: pointer;
 }
 #ithumbb {
     padding-bottom: 0;
     background: #444;
     padding-top: 1px;
+    cursor: pointer;
 }
 
 select {

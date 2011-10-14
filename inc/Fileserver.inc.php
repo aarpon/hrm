@@ -1308,7 +1308,7 @@ echo '</body></html>';
           <link rel="SHORTCUT ICON" href="images/hrm.ico"/>
           <script type="text/javascript" src="scripts/common.js"></script>
           <style type="text/css">
-          @import "stylesheets/default.css";
+          @import "css/default.css";
       </style>
           </head>
           <body>

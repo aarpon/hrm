@@ -477,14 +477,16 @@ function imgPrev(infile, mode, gen, compare, index, dir, referer, data) {
                 + '<small>Generating preview in another window.<br />'
                 + 'Please wait...</small></center>';
 
-           html = html +  '<br /><a '
+           html = '<br /><a '
                   +    'onclick="'
                   +        'changeDiv(\'info\',\'' + onClick + '\'); '
                   +        'openTool(\'' + link + '\'); '
                   +    '"'
                   + '>'
-                  + '<div class="expandedView">Re-create preview</div>'
-                  + '</a>';
+                  + '<div class="expandedView">'
+                  + '<img src="images/eye.png"> Re-create preview'
+                  + '</div>'
+                  + html + '</a>';
     }
     if ( compare > 0 ) {
            link = "file_management.php?compareResult=" + infile
@@ -495,7 +497,7 @@ function imgPrev(infile, mode, gen, compare, index, dir, referer, data) {
                   +        'openWindow(\'' + link + '\'); '
                   +    '"'
                   + '><div class="expandedView">'
-                  + 'Click for detailed view <img src="images/eye.png">'
+                  + '<img src="images/eye.png"> Click for detailed view'
                   + '</div>'
                   + html + '</a>' ;
     }

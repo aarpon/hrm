@@ -82,7 +82,7 @@ if (isset($generatedScript)) {
 
 ?>
     <style type="text/css">
-        @import "stylesheets/default.css";
+        @import "css/default.css";
     </style>
 </head>
 

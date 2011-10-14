@@ -264,9 +264,10 @@ if ( $browse_folder == "dest" ) {
 
         $validExtensions = str_replace( " ", ", ",
           $_SESSION['fileserver']->getValidArchiveTypesAsString() );
-        $info .= "<p>You can also upload files. To upload multiple files, it
-        may be convenient to pack them first in a single <b>
-        archive ($validExtensions)</b>, that will be unpacked after upload.";
+        $info .= "<p>You can also upload files to deconvolve. To upload
+        multiple files, it may be convenient to pack them first in a single
+        <b>archive ($validExtensions)</b>, that will be unpacked
+        automatically after upload.";
         $file_buttons[] = "upload";
     }
     $info .= "<p><strong>Move your mouse pointer over the action buttons at " .
