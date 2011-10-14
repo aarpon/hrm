@@ -419,14 +419,12 @@ function imgPrev(infile, mode, gen, compare, index, dir, referer, data) {
            link = "file_management.php?genPreview=" + infile + "&src=" + dir 
                   + "&data=" + data + '&index=' + index;
 
-           // html = "<a href=\"" + referer + "\" onclick=\"changeDiv('info','<center><img src=\"images/spin.gif\" alt=\"busy\"><p>Generating preview in another window.</p><p><small>Please wait...</small></p></center>'); openTool('" + link + "');\"><img src=\"images/no_preview.jpg\" alt=\"No preview\"><br />Generate preview now</a>";
-
            onClick =  '<center><img src=\\\'images/spin.gif\\\' '
                 +                           'alt=\\\'busy\\\'><br />'
                 + '<small>Generating preview in another window.<br />'
                 + 'Please wait...</small></center>';
 
-           html =   '<input type="button" name="genPreview" value="" '
+           html = '<input type="button" name="genPreview" value="" '
                   +    'class="icon noPreview" '
                   +    'onclick="'
                   +        'changeDiv(\'info\',\'' + onClick + '\'); '
@@ -434,7 +432,15 @@ function imgPrev(infile, mode, gen, compare, index, dir, referer, data) {
                   +    '"'
                   + '>'
                   + '<br />'
-                  + '<div class="expandedView">Click to generate preview</div>';
+                  + '<div class="expandedView" '
+                  +    'onclick="'
+                  +        'changeDiv(\'info\',\'' + onClick + '\'); '
+                  +        'openTool(\'' + link + '\'); '
+                  +    '"'
+                  + '>'
+                  + '<img src="images/eye.png"> '
+                  + 'Click to generate preview'
+                  + '</div>';
            }
 
            break;
@@ -502,6 +508,7 @@ function imgPrev(infile, mode, gen, compare, index, dir, referer, data) {
                   + html + '</a>' ;
     }
 
+    html = '<h3>Preview</h3>' + html;
 
     // changeDiv('info', html);
     // smoothChangeDiv2('info','ithumb', 'ithumb2', html, 200);
