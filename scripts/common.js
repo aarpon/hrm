@@ -310,8 +310,10 @@ function uploadImages(maxFile, maxPost, archiveExt) {
     changeDiv('message', '');
     changeDiv('upMsg', 'Select a file to upload. Multiple files in a series '
             + 'can also be uploaded in a single archive ('+archiveExt+'). '
-            + 'Maximum single file size is ' + maxFile
-            +', maximum total transfer size is ' + maxPost + '.');
+            + 'Maximum single file size is <b>' + maxFile
+            +'</b>, maximum total transfer size is <b>' + maxPost + '</b>. '
+            +'<br /><br /><img alt =\"Warning!\" src=\"./images/note.png\" /> '
+            +'<b>If you upload .ics files, do not forget the matching .ids</b>!' );
     changeDiv('up_form', 
         '<form id="uploadForm" enctype="multipart/form-data" action="?folder=src&upload=1" method="POST" onsubmit="return confirmUpload()" >'
        + '<input type="hidden" name="uploadForm" value="1"> '
@@ -342,7 +344,7 @@ function uploadImages(maxFile, maxPost, archiveExt) {
        +  '<input name="upload" type="submit" value="" '
        + 'class="icon upload" '
        +   'onmouseover="Tip(\'Upload selected files\')" onmouseout="UnTip()"/>'
-       + '<img src="images/cancel.png" onclick="cancelSelection()" '
+       + '<img src="images/cancel_small.png" onclick="cancelSelection()" '
        +           'alt="cancel" '
        +        'onmouseover="Tip(\'Cancel\')" onmouseout="UnTip()"/></div>'
        + ' </form>' );
@@ -370,7 +372,7 @@ function downloadImages() {
        + '<br /><input name="download" type="submit" value="" '
        + 'class="icon download" '
        +     'onmouseover="Tip(\'Confirm download\')" onmouseout="UnTip()"/>'
-       + ' <img src="images/cancel.png" onclick="cancelSelection()" '
+       + ' <img src="images/cancel_small.png" onclick="cancelSelection()" '
        +           'alt="cancel" '
        +        'onmouseover="Tip(\'Cancel\')" onmouseout="UnTip()"/>');
 
