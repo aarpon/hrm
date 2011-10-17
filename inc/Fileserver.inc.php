@@ -1911,12 +1911,14 @@ echo '</body></html>';
 
       if ($ok) {
           $nMode = $this->imgPreviewMode($file, $dest, "preview");
-          $img = $this->imgPreview($file, $dest, "preview_xy", false) ;
+          $img = "<h3>Preview</h3><br /><br />";
+          $img .= $this->imgPreview($file, $dest, "preview_xy", false) ;
           if ($nMode == 3) {
               $img .= "<br />".
                       $this->imgPreview($file, $dest, "preview_xz", false) ;
           }
           # $img .= "<p><center><kbd>$file</kbd></center></p>";
+          $img .= "<br />";
           echo $img;
       }
 
