@@ -42,7 +42,6 @@ include("header.inc.php");
     <!--
       Tooltips
     -->
-    <span id="ttGoBack">Go back to the previous page.</span>  
     <span id="ttRefresh">Refresh the queue.</span>
     <?php
       $rows = $queue->getContents();
@@ -58,6 +57,11 @@ include("header.inc.php");
                 <img src="images/user.png" alt="user" />
                 &nbsp;<?php echo $_SESSION['user']->name(); ?>
             </li>
+            <?php $referer = $_SESSION['referer']; ?>
+            <li>
+                <a href="<?php echo $referer;?>">
+                    <img src="images/back_small.png" alt="back" />&nbsp;Back</a>
+            </li>
             <li>
                 <a href="<?php echo getThisPageName();?>?home=home">
                     <img src="images/home.png" alt="home" />&nbsp;Home</a>
@@ -71,19 +75,18 @@ include("header.inc.php");
         </ul>
     </div>
    
-   <div id="content">
+   <div id="joblist">
     <h3>Job queue</h3>
-
-    <form method="post" action="" id="jobqueue">
-    <p><input name="update" type="submit" value="" class="icon update"
-        onmouseover="TagToTip('ttRefresh' )"
-        onmouseout="UnTip()" />
-    <?php echo "                    ".date("l d. F Y, H:i:s")."\n"; ?></p>
-
-    <ul>
-      
-    <?php
     
+    <form method="post" action="" id="jobqueue">
+    <p>
+        <input name="update" type="submit" value="" class="icon update"
+            onmouseover="TagToTip('ttRefresh' )"
+            onmouseout="UnTip()" /><?php echo date("l d. F Y, H:i:s"); ?>
+   </p>
+
+    <?php
+
         // Get the total number of jobs
         $rows = $queue->getContents();
         $allJobsInQueue = count($rows);
@@ -91,9 +94,10 @@ include("header.inc.php");
           \todo Activate showStopTime when in place.
         */
         $showStopTime = false;
-        
+        $summary = "";
+
         if ( $allJobsInQueue == 0 ) {
-          echo "<li>There are no jobs in the queue.</li>";
+          $summary .= "There are no jobs in the queue.";
         } else {
             foreach ($rows as $r) {
                 if ($r['stop'] != "" ) {
@@ -105,7 +109,7 @@ include("header.inc.php");
           } else {
             $str = 'are <strong>' .$allJobsInQueue . ' jobs</strong>';
           }
-          echo "<li>There " . $str . " in the queue.</li>";
+          $summary .= "There " . $str . " in the queue.";
 
           if ( !$_SESSION['user']->isAdmin() )  {
               $db = new DatabaseConnection();
@@ -119,32 +123,14 @@ include("header.inc.php");
             } else {
               $str = '<strong>' .$jobsInQueue . ' jobs</strong>';
             }
-            echo "<li>You own " . $str . ".</li>";
+            $summary .= " You own " . $str . ".";
           }
         }
+        echo "<p id=\"summary\"><img src=\"./images/note.png\" " .
+            "alt=\"Summary\" />&nbsp;"
+            . $summary . "</p>";
     ?>
-    </ul>
-   </div>
-   
-   <div id="rightpanel">
-    <div id="info">
-      <h3>Quick help</h3>
-      <?php $referer = $_SESSION['referer']; ?>
-      <input type="button" name="back" value="" class="icon back"
-        onclick="document.location.href='<?php echo $referer ?>'"
-        onmouseover="TagToTip('ttGoBack' )"
-        onmouseout="UnTip()" />
-        <?php
-          if ( !$_SESSION['user']->isAdmin() )  {
-            echo "<p>You can delete queued jobs owned by yourself.</p>";
-          } else {
-            echo "<p>You can delete any queued jobs.</p>";
-          }
-        ?>
-    </div>
-   </div>
-   
-  <div id="joblist">
+
     <div id="queue">
             
       <table>
@@ -163,6 +149,25 @@ include("header.inc.php");
           <td class="pid">pid</td>
           <td class="server">server</td>
         </tr>
+
+        <?php
+            if (count($rows) > 0) {
+        ?>
+        <tr style="background: #eeeeee">
+          <td colspan="9">
+             <?php
+                if ( !$_SESSION['user']->isAdmin() )  {
+                    echo "You can delete jobs owned by yourself.";
+                } else {
+                    echo "You can delete any jobs.";
+                }
+                ?>
+          </td>
+        </tr>
+        <?php
+            }
+        ?>
+
 <?php
 
 if (count($rows) == 0) {
@@ -274,12 +279,12 @@ if (count($rows) != 0) {
 
 ?>
 
-            </div> <!-- queue -->
-            
+        </div> <!-- queue -->
+
         </form>
-        
+  
     </div> <!-- joblist -->
-    
+
 <?php
 
 include("footer.inc.php");

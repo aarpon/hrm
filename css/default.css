@@ -366,9 +366,16 @@ input.save {
     font-size: 14px;
 }
 
+#login fieldset {
+    -moz-border-radius: 7px;
+    -webkit-border-radius: 7px;
+    border-radius: 7px;
+}
+
 #login legend {
     font-size: 16px;
     font-weight: bold;
+    text-align: left;
 }
 
 #login p.expl {
@@ -442,7 +449,20 @@ input.save {
     margin-left: 10px;
     margin-right: 10px;
     width: 98%;
-    margin-top: 20px;
+    margin-top: 0px;
+}
+
+#joblist h3 {
+    background-color: #eee;
+    margin-top: 15px;
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    line-height: 1.0;
+}
+
+#joblist summary {
+    text-align: center;
 }
 
 #input input {
@@ -465,42 +485,52 @@ input.save {
 
 #queue td.del {
     width: 3%;
+    font-weight: bold;
 }
 
 #queue td.nr {
     width: 3%;
+    font-weight: bold;
 }
 
 #queue td.owner {
     width: 10%;
+    font-weight: bold;
 }
 
 #queue td.files {
     width: 24%;
+    font-weight: bold;
 }
 
 #queue td.created {
     width: 15%;
+    font-weight: bold;
 }
 
 #queue td.status {
     width: 8%;
+    font-weight: bold;
 }
 
 #queue td.started {
     width: 15%;
+    font-weight: bold;
 }
 
 #queue td.stop {
     width: 15%;
+    font-weight: bold;
 }
 
 #queue td.pid {
     width: 8%;
+    font-weight: bold;
 }
 
 #queue td.server {
     width: 14%;
+    font-weight: bold;
 }
 
 #queue input {
@@ -550,10 +580,19 @@ input.save {
 }
 
 #homepage {
-    width: 750px;
+    width: 770px;
     text-align: left;
     margin: 15px;
     line-height: 1.5;
+}
+
+#homepage h3 {
+    background-color: #eee;
+    margin-top: 15px;
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    line-height: 1.0;
 }
 
 #homepage table {
@@ -691,11 +730,15 @@ fieldset {
     margin: 5px;
     margin-top: 15px;
     padding: 10px 5px 10px 10px;
+    -moz-border-radius: 7px;
+    -webkit-border-radius: 7px;
+    border-radius: 7px;
 }
 
 fieldset legend {
     font-size: 1.0em;
     font-weight: bold;
+    text-align: left;
 }
 
 fieldset.report {

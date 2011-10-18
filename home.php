@@ -63,6 +63,8 @@ include("header.inc.php");
     
     <div id="homepage">
 
+        <h3>Welcome!</h3>
+        
         <?php
 
         if ($_SESSION['user']->isAdmin()) {
