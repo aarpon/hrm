@@ -352,7 +352,7 @@ if ($_SESSION['setting']->isThreeDimensional()) {
                       'http://support.svi.nl/wiki/NyquistCalculator');">
                     <img src="images/calc_small.png" alt="" />
                     On-line Nyquist rate and PSF calculator
-                    <img src="images/web.png" alt="external link" />
+                    &nbsp;<img src="images/web.png" alt="external link" />
                 </a>
 
             <?php
