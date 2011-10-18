@@ -4,6 +4,7 @@
 
 require_once("./inc/User.inc.php");
 require_once("./inc/Fileserver.inc.php");
+require_once("./inc/System.inc.php");
 
 session_start();
 
@@ -165,7 +166,7 @@ if ($allowHttpTransfer) {
 
 $operationResult = "";
 
-if ($allowHttpUpload) {
+if ( System::uploadEnabled() == "enabled" ) {
 
     if (isset($_POST['uploadForm']) && isset($_FILES) ) {
         $operationResult =
@@ -260,7 +261,7 @@ if ( $browse_folder == "dest" ) {
             <b>CTRL-click</b> for multiple selection) and press the
             <b>delete</b> icon to delete them.
             </p>";
-    if ($allowHttpUpload) {
+    if (System::uploadEnabled() == "enabled") {
 
         $validExtensions = str_replace( " ", ", ",
           $_SESSION['fileserver']->getValidArchiveTypesAsString() );

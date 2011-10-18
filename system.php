@@ -223,10 +223,25 @@ include("header.inc.php");
           </tr>
           <tr>
             <td class="subkey">
+                php.ini
+            </td>
+            <td class="value">
+                <?php echo System::uploadEnabledFromIni(); ?>
+            </td>
+          </tr>
+          <tr>
+            <td class="subkey">
                 HRM configuration
             </td>
             <td class="value">
                 <?php echo System::uploadEnabledFromConfig(); ?>
+            </td>
+          </tr>
+          <tr>
+            <td class="subkey">in use
+            </td>
+            <td class="value">
+                <?php echo System::uploadEnabled(); ?>
             </td>
           </tr>
           <tr>

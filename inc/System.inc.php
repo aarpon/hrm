@@ -354,6 +354,33 @@ class System {
     }
 
     /*!
+     \brief	Returns the status of file uploads through HTTP as set in php.ini
+     \return	'enabled' if the upload is enabled; 'disabled' otherwise
+     */
+    public static function uploadEnabledFromIni( ) {
+        $upload = ini_get( 'file_uploads' );
+    	if ( $upload == "1" ) {
+            return "enabled";
+        } else {
+            return "disabled";
+        }
+    }
+
+    /*!
+     \brief	Returns the status of file uploads through HTTP as set in php.ini
+            and the HRM configuration
+     \return	'enabled' if the upload is enabled; 'disabled' otherwise
+     */
+    public static function uploadEnabled( ) {
+        if ( System::uploadEnabledFromConfig() == "enabled" &&
+                System::uploadEnabledFromIni() == "enabled" ) {
+            return "enabled";
+        } else {
+            return "disabled";
+        }
+    }
+
+    /*!
      \brief	Max allowed size for a file upload as set in php.ini
      \param	$unit	One of 'B' for bytes, 'M' for Megabytes, or 'G' for
      Gigabytes. Default is 'M'. Omit the parameter to use the default

@@ -4,6 +4,7 @@
 
 require_once("./inc/User.inc.php");
 require_once("./inc/Util.inc.php");
+require_once("./inc/System.inc.php");
 
 session_start();
 
@@ -57,7 +58,15 @@ include("header.inc.php");
     <div id="content">
     
         <h3>Update</h3>
-        
+
+    <?php
+    if ( System::isDBUpToDate( ) == true ) {
+    	echo "<h4>The database is up-to-date.</h4>";
+    } else {
+        echo "<h4>The database must be updated.</h4>";
+    }
+    ?>
+
         <fieldset>
             <legend>log</legend>
             <textarea rows="15" readonly="readonly">
