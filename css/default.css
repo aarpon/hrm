@@ -807,6 +807,18 @@ input.restart {
     background: url(../images/restart.png) no-repeat center;
 }
 
+input.upload {
+    width: 60px;
+    height: 60px;
+    background: url(../images/upload.png) no-repeat center;
+}
+
+input.abort {
+    width: 60px;
+    height: 60px;
+    background: url(../images/cancel_small.png) no-repeat center;
+}
+
 input.noPreview {
     width: 200px;
     height: 200px;

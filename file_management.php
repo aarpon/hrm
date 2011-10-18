@@ -227,7 +227,7 @@ if ( $browse_folder == "dest" ) {
 
     $info = "<h3>Quick help</h3>
             <p>Click on a file name to see a preview.</p>
-            <p><strong>Click on Detailed View <img src = \"images/eye.png\" />
+            <p><strong>Click on <img src = \"images/eye.png\" /> Detailed View
             over the file preview to get additional information.</strong></p>";
 
     if ($allowHttpTransfer) {

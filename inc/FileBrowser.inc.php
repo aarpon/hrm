@@ -30,9 +30,8 @@ function fileButton ($type) {
 
     switch ($type) {
         case "download":
-            $img = "images/download.png";
             $onClick = "downloadImages()";
-            $alt = "Download";
+            $name = "download";
             $tip = 'Pack selected images and related files, and download';
             break;
 
@@ -41,22 +40,18 @@ function fileButton ($type) {
             $maxFile = "$max MB";
             $max = getMaxPostSize() / 1024 / 1024;
             $maxPost = "$max MB";
-            $img = "images/upload.png";
             $validExtensions = 
                 $_SESSION['fileserver']->getValidArchiveTypesAsString();
             $onClick = "uploadImages('$maxFile', '$maxPost', ".
                 "'$validExtensions')";
-            $alt = "Upload";
             $tip = 'Upload a file (or a compressed archive of files) to the '.
                 'server';
+            $name = "upload";
             break;
 
-
-
         case "delete":
-            $img = "images/delete.png";
             $onClick = "deleteImages()";
-            $alt = "Delete";
+            $name = "delete";
             $tip = 'Delete selected images and related files';
             break;
 
@@ -84,7 +79,7 @@ function fileButton ($type) {
                  value=\"$value\" class=\"$class\" 
                  onmouseover=\"Tip('$tip')\" onmouseout=\"UnTip()\" />";
     } else {
-        $ret = "\n\n<img src=\"$img\" alt=\"$alt\"
+        $ret = "\n\n<input class=\"icon $name\" type=\"button\"
             onclick=\"UnTip(); $onClick\"
             onmouseover=\"Tip('$tip')\" onmouseout=\"UnTip()\" />";
     }

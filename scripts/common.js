@@ -167,9 +167,9 @@ function deleteImages() {
        + '<br />'
        + '<input name="delete" type="submit" value="" class="icon delete" '
        +     'onmouseover="Tip(\'Confirm deletion\')" onmouseout="UnTip()"/>'
-       + ' <img src="images/cancel_small.png" onclick="UnTip(); cancelSelection()" '
-       +        'alt="cancel" '
-       +        'onmouseover="Tip(\'Do not delete the file!\')" onmouseout="UnTip()"/>');
+       + '<input type="button" class="icon abort" '
+       +     'onclick="UnTip(); cancelSelection()" '
+       +     'onmouseover="Tip(\'Do not delete the file!\')" onmouseout="UnTip()"/>');
 
 }
 
@@ -344,8 +344,7 @@ function uploadImages(maxFile, maxPost, archiveExt) {
        +  '<input name="upload" type="submit" value="" '
        + 'class="icon upload" '
        +   'onmouseover="Tip(\'Upload selected files\')" onmouseout="UnTip()"/>'
-       + '<img src="images/cancel_small.png" onclick="cancelSelection()" '
-       +           'alt="cancel" '
+       + '<input type="button" class="icon abort" onclick="cancelSelection()" '
        +        'onmouseover="Tip(\'Cancel\')" onmouseout="UnTip()"/></div>'
        + ' </form>' );
 
@@ -368,12 +367,11 @@ function downloadImages() {
     control = document.getElementById('selection').innerHTML;
     action = 'download';
     changeDiv('selection', 'Selected files will be packed for downloading '
-       +  '(that may take a while). Please confirm and wait:' 
+       +  '(that may take a while).<br /><br />Please confirm and wait:'
        + '<br /><input name="download" type="submit" value="" '
        + 'class="icon download" '
        +     'onmouseover="Tip(\'Confirm download\')" onmouseout="UnTip()"/>'
-       + ' <img src="images/cancel_small.png" onclick="cancelSelection()" '
-       +           'alt="cancel" '
+       + '<input type="button" class="icon abort" onclick="cancelSelection()" '
        +        'onmouseover="Tip(\'Cancel\')" onmouseout="UnTip()"/>');
 
 }
