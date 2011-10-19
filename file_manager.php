@@ -52,7 +52,8 @@ include("header.inc.php");
     </div>
 
     <div id="filemanager">
-        <h3>File manager</h3>
+        <h3><img src="images/filemanager_small.png" alt="File manager" />
+            &nbsp;File manager</h3>
         <div id="left"><a href="./file_management.php?folder=src">
             <img src="images/raw.png" alt="raw"
                 onmouseover="javascript:changeQuickHelp( 'raw' );"

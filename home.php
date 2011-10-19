@@ -63,7 +63,7 @@ include("header.inc.php");
     
     <div id="homepage">
 
-        <h3>Welcome!</h3>
+        <h3><img src="images/home.png" alt="Home" />&nbsp;Welcome!</h3>
         
         <?php
 
