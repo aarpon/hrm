@@ -727,15 +727,19 @@ span.spacer {
 }
 
 fieldset {
+    position: relative;
     margin: 5px;
-    margin-top: 15px;
-    padding: 10px 5px 10px 10px;
+    margin-top: 30px;
+    padding: 20px 5px 10px 10px;
     -moz-border-radius: 7px;
     -webkit-border-radius: 7px;
     border-radius: 7px;
 }
 
 fieldset legend {
+    position:absolute;
+    top: -0.8em;
+    left: 0px;
     font-size: 1.0em;
     font-weight: bold;
     text-align: left;

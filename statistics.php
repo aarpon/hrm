@@ -147,6 +147,7 @@ include("header.inc.php");
         
           </select>
 
+          <div id="cal_filter">
           [From] Filter by date [To]
           <div id="cal_from">
           <?php
@@ -212,9 +213,12 @@ include("header.inc.php");
           <?php
           }
           ?>
-          
-          <input type="submit" name="Submit" value="Go!" />
 
+          </div> <!-- cal_filter -->
+          <div style="clear:both;">
+          <input type="submit" name="Submit" value="Go!" />
+          </div>
+          
           </fieldset>
           
       </form>

@@ -3,6 +3,7 @@
 // Copyright and license notice: see license.txt
 
 require_once( "./inc/System.inc.php" );
+require_once( "./inc/Util.inc.php" );
 
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 
@@ -82,7 +83,15 @@ if (isset($generatedScript)) {
 
 ?>
     <style type="text/css">
-        @import "css/default.css";
+
+<?php
+    if (using_IE () ) {
+        echo '@import url("css/default_ie.css");';
+    } else {
+        echo '@import url("css/default.css");';
+    }
+?>
+
     </style>
 </head>
 

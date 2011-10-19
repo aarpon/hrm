@@ -485,4 +485,15 @@ if ( ! function_exists('printDebug') ) {
     }
 }
 
+/*!
+  \brief  Check whether the browser is Internet Explorer
+  \return true if the browser is IE, false otherwise
+*/
+function using_IE( ) {
+    if ( preg_match( '/MSIE/i', $_SERVER['HTTP_USER_AGENT'] ) ) {
+        return True;
+    }
+    return False;
+}
+
 ?>
