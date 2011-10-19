@@ -76,7 +76,7 @@ include("header.inc.php");
     </div>
    
    <div id="joblist">
-    <h3>Job queue</h3>
+   <h3><img src="images/queue_small.png" alt="Queue" />&nbsp;Queue status</h3>
     
     <form method="post" action="" id="jobqueue">
     <p>
