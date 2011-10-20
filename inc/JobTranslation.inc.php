@@ -782,11 +782,11 @@ class JobTranslation {
         $options .= $this->getSamplingConfidenceList();
         $options .= " iFacePrim ";
         $options .= $this->getiFacePrim();
-        $options .= " prState,iFacePrim ";
+        $options .= " parState,iFacePrim ";
         $options .= $this->getiFacePrimConfidence();
         $options .= " iFaceScnd ";
         $options .= $this->getiFaceScnd();
-        $options .= " prState,iFaceScnd ";
+        $options .= " parState,iFaceScnd ";
         $options .= $this->getiFaceScndConfidence();
         $options .= " pr ";
         $options .= $this->getPinholeRadius();
@@ -991,7 +991,7 @@ class JobTranslation {
         $numberOfChannels = $this->getNumberOfChannels();
         $prList = "";
         for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $pinRadius = $this->getPinRadiusForChannel($chanCnt);
+            $pinRadius = $this->getParameterValue("PinholeSize",$chanCnt);
             $prList .= " " . $pinRadius;
         }
         return  $this->string2tcllist($prList);
@@ -1031,7 +1031,7 @@ class JobTranslation {
         $numberOfChannels = $this->getNumberOfChannels();
         $microList = "";
         for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $microType = $this->getMicroTypeForChannel($chanCnt);
+            $microType = $this->getParameterValue("MicroscopeType",$chanCnt);
             $microList .= " " . $microType;
         }
         return $this->string2tcllist($microList);
@@ -1072,7 +1072,7 @@ class JobTranslation {
         $numberOfChannels = $this->getNumberOfChannels();
         $lensRIList = "";
         for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $lensRI = $this->getLensRIForChannel($chanCnt);
+            $lensRI = $this->getParameterValue("ObjectiveType",$chanCnt);
             $lensRIList .= " " . $lensRI;
         }
         return $this->string2tcllist($lensRIList);
@@ -1111,7 +1111,7 @@ class JobTranslation {
         $numberOfChannels = $this->getNumberOfChannels();
         $numAperList = "";
         for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $numAper = $this->getNumApertureForChannel($chanCnt);
+            $numAper = $this->getParameterValue("NumericalAperture",$chanCnt);
             $numAperList .= " " . $numAper;
         }
         return $this->string2tcllist($numAperList);
@@ -1152,7 +1152,7 @@ class JobTranslation {
         $numberOfChannels = $this->getNumberOfChannels();
         $pinsList = "";
         for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $pinSpacing = $this->getPinSpacingForChannel($chanCnt);
+            $pinSpacing = $this->getParameterValue("PinholeSpacing",$chanCnt);
             $pinsList .= " " . $pinSpacing;
         }
         return $this->string2tcllist($pinsList);
@@ -1167,7 +1167,7 @@ class JobTranslation {
         $microSetting = $this->microSetting;
         $pinSpacing = $microSetting->parameter("PinholeSpacing")->value();
 
-        if ($this->getMicroTypeForChannel($channel) != "nipkow") {
+        if ($this->getParameterValue("MicroscopeType",$channel) != "nipkow") {
             $pinSpacing = "";
         }
         return $pinSpacing;
@@ -1195,7 +1195,7 @@ class JobTranslation {
         $numberOfChannels = $this->getNumberOfChannels();
         $objQList = "";
         for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $objQuality = $this->getObjQualityForChannel($chanCnt);
+            $objQuality = $this->getParameterValue("ObjQuality",$chanCnt);
             $objQList .= " " . $objQuality;
         }
         return $this->string2tcllist($objQList);
@@ -1276,7 +1276,7 @@ class JobTranslation {
         $numberOfChannels = $this->getNumberOfChannels();
         $exLambdaList = "";
         for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $exLambda = $this->getExLambdaForChannel($chanCnt);
+            $exLambda = $this->getParameterValue("ExcitationWavelength",$chanCnt);
             $exLambdaList .= " " . $exLambda;
         }
         return $this->string2tcllist($exLambdaList);
@@ -1317,7 +1317,7 @@ class JobTranslation {
         $numberOfChannels = $this->getNumberOfChannels();
         $exBeamList = "";
         for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $exBeam = $this->getExBeamForChannel($chanCnt);
+            $exBeam = $this->getParameterValue("ExBeamFactor",$chanCnt);
             $exBeamList .= " " . $exBeam;
         }
         return $this->string2tcllist($exBeamList);
@@ -1354,7 +1354,7 @@ class JobTranslation {
         $numberOfChannels = $this->getNumberOfChannels();
         $emLambdaList = "";
         for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $emLambda = $this->getEmLambdaForChannel($chanCnt);
+            $emLambda = $this->getParameterValue("EmissionWavelength",$chanCnt);
             $emLambdaList .= " " . $emLambda;
         }
         return $this->string2tcllist($emLambdaList);
@@ -1395,7 +1395,8 @@ class JobTranslation {
         $numberOfChannels = $this->getNumberOfChannels();
         $dirList = "";
         for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $imagingDir = $this->getImagingDirForChannel($chanCnt);
+            $imagingDir = $this->getParameterValue("CoverslipRelativePosition",
+                                                   $chanCnt);
             $dirList .= " " . $imagingDir;
         }
         return $this->string2tcllist($dirList);
@@ -1441,7 +1442,7 @@ class JobTranslation {
         $numberOfChannels = $this->getNumberOfChannels();
         $MRIndexList = "";
         for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $MRIndex = $this->getMRIndexForChannel($chanCnt);
+            $MRIndex = $this->getParameterValue("SampleMedium",$chanCnt);
             $MRIndexList .= " " . $MRIndex;
         }
         return $this->string2tcllist($MRIndexList);
@@ -1473,21 +1474,48 @@ class JobTranslation {
         return $this->string2tcllist($cList);
     }
 
+    public function getSamplingSizeX( ) {
+        if ($this->microSetting->sampleSizeX() != 0) {
+            return $this->microSetting->sampleSizeX();
+        } else {
+            return "*";
+        }
+    }
+
+    public function getSamplingSizeY( ) {
+        if ($this->microSetting->sampleSizeY() != 0) {
+            return $this->microSetting->sampleSizeY();
+        } else {
+            return "*";
+        }
+    }
+
+    public function getSamplingSizeZ( ) {
+        if ($this->microSetting->sampleSizeZ() != 0) {
+            return $this->microSetting->sampleSizeZ();
+        } else {
+            return "*";
+        }
+    }
+
+    public function getSamplingSizeT( ) {
+        if ($this->microSetting->sampleSizeT() != 0) {
+            return $this->microSetting->sampleSizeT();
+        } else {
+            return "*";
+        }
+    }
+
     /*!
      \brief       Gets the sampling sizes. All channels.
      \return      Tcl-list with the sampling sizes.
     */
     private function getSamplingSizes( ) {
-        $sampling = $this->microSetting->sampleSizeX();
-        $sampling .= " " . $this->microSetting->sampleSizeY();
-        $sampling .= " " . $this->microSetting->sampleSizeZ();
-        $sampling .= " " . $this->microSetting->sampleSizeT();
+        $sampling = $this->getSamplingSizeX();
+        $sampling .= " " . $this->getSamplingSizeY();
+        $sampling .= " " . $this->getSamplingSizeZ();
+        $sampling .= " " . $this->getSamplingSizeT();
 
-        // Make sure the sampling sizes are not zeros.
-        if ($this->microSetting->sampleSizeX() == 0
-            || $this->microSetting->sampleSizeX() == 0) {
-            $sampling = "";
-        }        
         return $this->string2tcllist($sampling);
     }
 
@@ -2117,8 +2145,8 @@ class JobTranslation {
          introduced by the user. That makes the parameter automatically 
          verified.*/
         $parameterValue = $this->getParameterValue($paramName,$channel);
-        if ($parameterValue != "" && $parameterValue != "{}") {
-            return "verified";
+        if ($parameterValue != "*") {
+            return "noMetaData";
         } else {
             return "default";
         }
@@ -2170,13 +2198,22 @@ class JobTranslation {
             $parameterValue = $this->getNumApertureForChannel($channel);
             break;
         case 'TimeInterval':
+            $parameterValue = $this->getSamplingSizeT();
+            break;
         case 'ZStepSize':
+            $parameterValue = $this->getSamplingSizeZ();
+            break;
         case 'CCDCaptorSizeX':
-            $parameterValue = $this->getSamplingSizes();
+            $parameterValue = $this->getSamplingSizeX();
             break;
         default:
             $parameterValue = "";
         }
+
+        if ($parameterValue == "" || $parameterValue == "{}") {
+            $parameterValue = "*";
+        }
+
         return $parameterValue;
     }
 
