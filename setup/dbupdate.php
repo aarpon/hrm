@@ -1010,6 +1010,11 @@ $msg = "Needed database revision for HRM v" .System::getHRMVersion( ) .
 $msg .= "Current database revision is number " . $current_revision . ".\n";
 if( $LAST_REVISION == $current_revision ) {
     $msg .= "Nothing to do.\n";
+    write_message($msg);
+    write_to_log($msg);
+    fclose($fh);
+    fclose($efh);
+    return;
 } else {
     $msg .= "Updating...\n";
 }
