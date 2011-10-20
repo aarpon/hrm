@@ -21,6 +21,11 @@ if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
   header("Location: " . "login.php"); exit();
 }
 
+// The admin user should be redirected to the source folder
+if ( $_SESSION['user']->isAdmin() ) {
+    header("Location: " . "file_management.php?folder=src"); exit();
+}
+
 $message = "";
 
 // Javascript includes

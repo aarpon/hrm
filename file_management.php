@@ -221,9 +221,13 @@ if ( $browse_folder == "dest" ) {
     $explanation_text = "These are the <b>deconvolved image files</b> " .
     "currently in your file area.";
     $form_title = "Your files";
-    $fileBrowserLinks = '<li><a href="file_manager.php">'.
-        '<img src="images/filemanager_small.png" alt="file manager" />'.
-        '&nbsp;File manager</a></li>';
+    if ( !$_SESSION['user']->isAdmin()) {
+        $fileBrowserLinks = '<li><a href="file_manager.php">'.
+            '<img src="images/filemanager_small.png" alt="file manager" />'.
+            '&nbsp;File manager</a></li>';
+    } else {
+        $fileBrowserLinks = '';
+    }
 
     $info = "<h3>Quick help</h3>
             <p>Click on a file name to see a preview.</p>
@@ -251,9 +255,13 @@ if ( $browse_folder == "dest" ) {
     $explanation_text = "These are the <b>original image files</b> currently " .
       "in your file area.";
     $form_title = "Your files";
-    $fileBrowserLinks = '<li><a href="file_manager.php">'.
-        '<img src="images/filemanager_small.png" alt="file manager" />'.
-        '&nbsp;File manager</a></li>';
+    if ( !$_SESSION['user']->isAdmin()) {
+        $fileBrowserLinks = '<li><a href="file_manager.php">'.
+            '<img src="images/filemanager_small.png" alt="file manager" />'.
+            '&nbsp;File manager</a></li>';
+    } else {
+        $fileBrowserLinks = '';
+    }
 
     $info = "<h3>Quick help</h3>
             <p>Click on a file name to see (or create) a preview.</p>
