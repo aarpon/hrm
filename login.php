@@ -242,8 +242,8 @@ for Advanced Imaging and Microscopy</a></p>
 </div>
 <div class="logo-mri"><a
 	href="javascript:openWindow('http://www.mri.cnrs.fr')"><img
-	src="images/logo_mri.png" alt="MRI" /></a>
-<p>Montpellier RIO Imaging</p>
+	src="images/logo_mri.png" alt="MRI" />
+<p>Montpellier RIO Imaging</p></a>
 </div>
 <div class="logo-epfl"><a
 	href="javascript:openWindow('http://www.epfl.ch')"><img
