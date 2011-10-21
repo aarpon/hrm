@@ -109,9 +109,12 @@ include("header.inc.php");
     <span id="ttSpanForward">
         Continue to next page.
     </span>
-    <span id="ttSpanReset">
-        Click to unselect all options.
-    </span>
+    <?php
+        // Another tooltip is used only if there are parameters that
+        // might require resetting (and is therefore defined later). Here
+        // we initialize a counter.
+        $nParamRequiringReset = 0;
+    ?>
 
     <div id="nav">
         <ul>
@@ -162,11 +165,19 @@ include("header.inc.php");
                 </legend>
 
                 <div class="values">
+                    <?php
+                    if ( ! $parameterMicroscopeType->mustProvide() ) {
+                        $nParamRequiringReset++;
+                    ?>
                     <div class="reset"
-                         onmouseover="TagToTip('ttSpanReset' )"
-                         onmouseout="UnTip()"
-                         onclick="document.forms[0].MicroscopeType[0].checked = true;">
+                        onmouseover="TagToTip('ttSpanReset' )"
+                        onmouseout="UnTip()"
+                        onclick="document.forms[0].MicroscopeType[0].checked = true;" >
                     </div>
+                    <?php
+                    }
+                    ?>
+
                     <input name="MicroscopeType"
                            type="radio"
                            value=""
@@ -354,11 +365,19 @@ for ($i=0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
                 </legend>
 
                 <div class="values">
+                    <?php
+                    if ( ! $parameterObjectiveType->mustProvide() ) {
+                        $nParamRequiringReset++;
+                    ?>
                     <div class="reset"
-                         onmouseover="TagToTip('ttSpanReset' )"
-                         onmouseout="UnTip()"
-                         onclick="document.forms[0].ObjectiveType[0].checked = true;" >
+                        onmouseover="TagToTip('ttSpanReset' )"
+                        onmouseout="UnTip()"
+                        onclick="document.forms[0].ObjectiveType[0].checked = true;" >
                     </div>
+                    <?php
+                    }
+                    ?>
+
                     <input name="ObjectiveType"
                            type="radio"
                            value=""
@@ -421,11 +440,18 @@ foreach ($possibleValues as $possibleValue) {
                 </legend>
 
                 <div class="values">
+                    <?php
+                    if ( ! $parameterSampleMedium->mustProvide() ) {
+                        $nParamRequiringReset++;
+                    ?>
                     <div class="reset"
-                         onmouseover="TagToTip('ttSpanReset' )"
-                         onmouseout="UnTip()"
-                         onclick="document.forms[0].SampleMedium[0].checked = true;" >
+                        onmouseover="TagToTip('ttSpanReset' )"
+                        onmouseout="UnTip()"
+                        onclick="document.forms[0].SampleMedium[0].checked = true;" >
                     </div>
+                    <?php
+                    }
+                    ?>
 
                     <input name="SampleMedium"
                            type="radio"
@@ -504,6 +530,16 @@ if (!$default) {
             </div>
 
         </form>
+
+        <?php
+            if ( $nParamRequiringReset > 0 ) {
+        ?>
+            <span id="ttSpanReset">
+                Click to unselect all options.
+            </span>
+        <?php
+        }
+        ?>
 
     </div> <!-- content -->
 

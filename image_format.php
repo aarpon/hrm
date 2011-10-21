@@ -87,9 +87,12 @@ include("header.inc.php");
     <span id="ttSpanForward">
         Continue to next page.
     </span>
-    <span id="ttSpanReset">
-        Click to unselect all options.
-    </span>
+    <?php
+        // Another tooltip is used only if there are parameters that
+        // might require resetting (and is therefore defined later). Here
+        // we initialize a counter.
+        $nParamRequiringReset = 0;
+    ?>
 
     <div id="nav">
         <ul>
@@ -223,11 +226,18 @@ foreach($values as $value) {
                 </legend>
 
                 <div class="values">
+                    <?php
+                    if ( ! $parameterImageGeometry->mustProvide() ) {
+                        $nParamRequiringReset++;
+                    ?>
                     <div class="reset"
-                         onmouseover="TagToTip('ttSpanReset' )"
-                         onmouseout="UnTip()"
-                         onclick="document.forms[0].ImageGeometry[0].checked = true;" >
+                        onmouseover="TagToTip('ttSpanReset' )"
+                        onmouseout="UnTip()"
+                        onclick="document.forms[0].ImageGeometry[0].checked = true;" >
                     </div>
+                    <?php
+                    }
+                    ?>
 
                     <input name="ImageGeometry"
                            type="radio"
@@ -305,11 +315,18 @@ function check($parameter, $value) {
 
 ?>
                 <div class="values">
+                    <?php
+                    if ( ! $parameterNumberOfChannels->mustProvide() ) {
+                        $nParamRequiringReset++;
+                    ?>
                     <div class="reset"
-                         onmouseover="TagToTip('ttSpanReset' )"
-                         onmouseout="UnTip()"
-                         onclick="document.forms[0].NumberOfChannels[0].checked = true;" >
+                        onmouseover="TagToTip('ttSpanReset' )"
+                        onmouseout="UnTip()"
+                        onclick="document.forms[0].NumberOfChannels[0].checked = true;" >
                     </div>
+                    <?php
+                    }
+                    ?>
 
                     <input name="NumberOfChannels"
                            type="radio"
@@ -381,11 +398,18 @@ function check($parameter, $value) {
                 </legend>
 
                 <div class="values">
+                    <?php
+                    if ( ! $parameterPointSpreadFunction->mustProvide() ) {
+                        $nParamRequiringReset++;
+                    ?>
                     <div class="reset"
-                         onmouseover="TagToTip('ttSpanReset' )"
-                         onmouseout="UnTip()"
-                         onclick="document.forms[0].PointSpreadFunction[0].checked = true;" >
+                        onmouseover="TagToTip('ttSpanReset' )"
+                        onmouseout="UnTip()"
+                        onclick="document.forms[0].PointSpreadFunction[0].checked = true;" >
                     </div>
+                    <?php
+                    }
+                    ?>
 
                     <input name="PointSpreadFunction"
                            type="radio"
@@ -442,7 +466,17 @@ function check($parameter, $value) {
             <div><input name="OK" type="hidden" /></div>
             
         </form>
-        
+
+        <?php
+            if ( $nParamRequiringReset > 0 ) {
+        ?>
+            <span id="ttSpanReset">
+                Click to unselect all options.
+            </span>
+        <?php
+        }
+        ?>
+
     </div> <!-- content -->
     
     <div id="rightpanel" onmouseover="javascript:changeQuickHelp( 'default' )">
