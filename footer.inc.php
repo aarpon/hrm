@@ -15,8 +15,8 @@ $loggedIn = ( isset($_SESSION['user'] ) && $_SESSION['user']->isLoggedIn( ) );
 				echo '<a href="mailto:volker.baecker@mri.cnrs.fr">' .
                     'Volker Baecker</a>';
 			} else
-				echo "<span onmouseover=\"" .
-                    "Tip('Login to see contact information.' )\"" .
+				echo "<span onmouseover=" .
+                    "\"Tip('Login to see contact information.' )\" " .
 					"onmouseout=\"UnTip()\">Volker Baecker</span>";
 		?>
 		<br />extended 2006-2011 by
@@ -24,40 +24,40 @@ $loggedIn = ( isset($_SESSION['user'] ) && $_SESSION['user']->isLoggedIn( ) );
 			if ( $loggedIn == true ) {
 				echo 'Asheesh Gulati';  // Former developer - no email info
 			} else
-				echo "<span onmouseover=\"" .
-                    "Tip('Login to see contact information.' )\"" .
+				echo "<span onmouseover=" .
+                    "\"Tip('Login to see contact information.' )\" " .
 					"onmouseout=\"UnTip()\">Asheesh Gulati</span>";
 		?>, 
 		<?php
 			if ( $loggedIn == true ) {
 				echo 'Alessandra Griffa';  // Former developer - no email info
 			} else
-				echo "<span onmouseover=\"".
-                    "Tip('Login to see contact information.' )\"" .
+				echo "<span onmouseover=".
+                    "\"Tip('Login to see contact information.' )\" " .
 					"onmouseout=\"UnTip()\">Alessandra Griffa</span>";
 		?>, 
 		<?php
 			if ( $loggedIn == true ) {
 				echo 'Jos&eacute; Vi&ntilde;a';  // Former developer - no email info
 			} else
-				echo "<span onmouseover=\"".
-                    "Tip('Login to see contact information.' )\"" .
+				echo "<span onmouseover=".
+                    "\"Tip('Login to see contact information.' )\" " .
 					"onmouseout=\"UnTip()\">Jos&eacute; Vi&ntilde;a</span>";
 		?>,
 		<?php
 			if ( $loggedIn == true ) {
 				echo '<a href="mailto:daniel@svi.nl">Daniel Sevilla</a>';
 			} else
-				echo "<span onmouseover=\"" .
-                    "Tip('Login to see contact information.' )\"" .
+				echo "<span onmouseover=" .
+                    "\"Tip('Login to see contact information.' )\" " .
 					"onmouseout=\"UnTip()\">Daniel Sevilla</span>";
 		?> &amp;
 		<?php
 			if ( $loggedIn == true ) {
 				echo '<a href="mailto:aaron.ponti@fmi.ch">Aaron Ponti</a>';
 			} else
-				echo "<span onmouseover=\"" .
-                    "Tip('Login to see contact information.' )\"" .
+				echo "<span onmouseover=" .
+                    "\"Tip('Login to see contact information.' )\" " .
 					"onmouseout=\"UnTip()\">Aaron Ponti</span>";
 		?>
 	</div>

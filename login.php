@@ -149,7 +149,7 @@ include("header.inc.php");
     </li>
 	<li>
         <a href="javascript:openWindow('http://www.svi.nl/FrontPage')">
-            <img Src="images/wiki.png" alt="website" />
+            <img src="images/wiki.png" alt="website" />
             &nbsp;SVI wiki
         </a>
     </li>
@@ -252,7 +252,7 @@ Optics platform</a></p>
 <div id="rightpanel">
 <p />
 <div id="login">
-<form method="post" action="" autocomplete="off">
+<form method="post" action="">
     <fieldset>
         <legend>
             <a href="javascript:openWindow(
