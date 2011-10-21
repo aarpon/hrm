@@ -26,6 +26,18 @@ if ( $_SESSION['user']->isAdmin() ) {
     header("Location: " . "file_management.php?folder=src"); exit();
 }
 
+// Keep track of who the referer is: the file_manager will allow returning
+// to some selected pages
+if ( isset( $_SERVER['HTTP_REFERER'] ) ) {
+    if ( strpos( $_SERVER['HTTP_REFERER'], 'home.php' ) ||
+         strpos( $_SERVER['HTTP_REFERER'], 'select_parameter_settings.php' ) ||
+         strpos( $_SERVER['HTTP_REFERER'], 'select_task_settings.php' ) ||
+         strpos( $_SERVER['HTTP_REFERER'], 'select_images.php' ) ||
+         strpos( $_SERVER['HTTP_REFERER'], 'create_job.php' ) ) {
+        $_SESSION['filemanager_referer'] = $_SERVER['HTTP_REFERER'];
+    }
+}
+
 $message = "";
 
 // Javascript includes
@@ -41,6 +53,19 @@ include("header.inc.php");
                 <img src="images/user.png" alt="user" />
                 &nbsp;<?php echo $_SESSION['user']->name(); ?>
             </li>
+            <?php
+            if ( isset( $_SESSION['filemanager_referer'] ) ) {
+                $referer = $_SESSION['filemanager_referer'];
+                if ( strpos( $referer, 'home.php' ) === False ) {
+            ?>
+            <li>
+                <a href="<?php echo $referer;?>">
+                    <img src="images/back_small.png" alt="back" />&nbsp;Back</a>
+            </li>
+            <?php
+                }
+            }
+            ?>
             <li>
                 <a href="<?php echo getThisPageName();?>?home=home">
                     <img src="images/home.png" alt="home" />

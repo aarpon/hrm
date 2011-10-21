@@ -163,6 +163,17 @@ include("header.inc.php");
                 <img src="images/user.png" alt="user" />
                 &nbsp;<?php echo $_SESSION['user']->name(); ?>
             </li>
+            <?php
+            if ( !$_SESSION['user']->isAdmin()) {
+            ?>
+            <li><a href="file_manager.php">
+                    <img src="images/filemanager_small.png" alt="file manager" />
+                    &nbsp;File manager
+                </a>
+            </li>
+            <?php
+            }
+            ?>
             <li>
                 <a href="<?php echo getThisPageName();?>?home=home">
                     <img src="images/home.png" alt="home" />
