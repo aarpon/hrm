@@ -92,6 +92,7 @@ table {
     padding-bottom: 15px;
     border-bottom-style: dotted;
     border-bottom-width: 1px;
+    line-height: 1.5;
 }
 
 #basket {
