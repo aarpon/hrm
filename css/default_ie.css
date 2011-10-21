@@ -202,7 +202,7 @@ table {
     border-right-style: dotted;
     border-right-width: 1px;
     margin: 0px 0px 0px 0px;
-    padding: 3px 15px 5px 15px;
+    padding: 15px 15px 5px 15px;
 }
 
 #content h3 {
@@ -390,7 +390,7 @@ input.save {
     width: 250px;
     text-align: right;
     margin: 0px 0px 0px 0px;
-    padding: 3px 15px 5px 15px;
+    padding: 15px 20px 5px 15px;
 }
 
 #info {

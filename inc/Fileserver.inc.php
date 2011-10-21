@@ -1517,7 +1517,7 @@ echo '</body></html>';
           echo "\n<div class=\"menuEntry\"
           onmouseover=\"Tip('Pack and download the restored image with all accessory files')\"
           onmouseout=\"UnTip()\"
-          onclick=\"changeDiv('report','Packaging files, please wait'); setTimeout(smoothChangeDiv,5000,'report','',5000); document.location.href='file_management.php?download=".rawurlencode($downloadFile)."'\" ><a href='#'>download files</a></div>\n";
+          onclick=\"changeDiv('report','Packaging files, please wait until the download dialog appears...'); setTimeout(smoothChangeDiv,60000,'report','',5000); document.location.href='file_management.php?download=".rawurlencode($downloadFile)."'\" ><a href='#'>download files</a></div>\n";
       }
 
       echo "\n<div class=\"menuEntry\" onclick=\"javascript:openWindow(".

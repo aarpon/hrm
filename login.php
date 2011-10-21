@@ -94,6 +94,14 @@ if ( isset( $_POST['password'] ) && isset( $_POST['username'] ) ) {
 				// Register the user in the session
 				$_SESSION['user'] = $tentativeUser;
 
+                // If the database is not up-to-date go straigth to the
+                // database update page
+                if ( System::isDBUpToDate() == false &&
+                        $_SESSION['user']->isAdmin() ) {
+                    header("Location: update.php");
+					exit();
+                }
+
 				if ( $authenticateAgainst == "MYSQL" ) {
 					if ( $req != "" ) {
 						header("Location: " . $req);
@@ -114,7 +122,7 @@ if ( isset( $_POST['password'] ) && isset( $_POST['username'] ) ) {
 				$message = "Wrong password";
 			} else {
 				$message = "Only the administrator is allowed to login " .
-                    "in order to perform maintenance";
+                    "to perform maintenance";
 			}
 		} else {
 			if ( $tentativeUser->isSuspended()) {

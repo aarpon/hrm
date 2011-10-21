@@ -57,7 +57,7 @@ include("header.inc.php");
     
     <div id="content">
     
-        <h3>Update</h3>
+        <h3>Database update</h3>
 
     <?php
     if ( System::isDBUpToDate( ) == true ) {
@@ -104,7 +104,7 @@ echo $message;
                 <input type="hidden" name="action" value="dbupdate">
             </form>
             
-            <input type="button" name="" value="database update"
+            <input type="button" name="" value="update"
                    onclick="document.forms['dbupdate'].submit()" />
             
         </div>

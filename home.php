@@ -63,7 +63,16 @@ include("header.inc.php");
     
     <div id="homepage">
 
-        <h3><img src="images/home.png" alt="Home" />&nbsp;Welcome!</h3>
+        <?php
+            $textHome = "Home";
+            if ( isset( $_SERVER['HTTP_REFERER'] ) ) {
+                if ( strpos( $_SERVER['HTTP_REFERER'], 'login.php' ) ) {
+                    $textHome = "Welcome!";
+                }
+            }
+        ?>
+        <h3><img src="images/home.png" alt="Home" />&nbsp;
+            <?php echo $textHome; ?></h3>
         
         <?php
 
