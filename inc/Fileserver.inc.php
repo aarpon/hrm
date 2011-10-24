@@ -455,6 +455,7 @@ class Fileserver {
             and so) from a user directory
     \param $files  Array of image file names
     \param $dir   Folder to consider, one of 'src' or 'dest'
+    \return error message in case files could not be deleted.
   */
   public function deleteFiles($files, $dir = "dest" ) {
 
@@ -464,7 +465,12 @@ class Fileserver {
           $pdir =  $this->destinationFolder();
       }
 
+      $success = true;
+      $nTotFiles = 0;
       foreach ($files as $file) {
+          // Update the file counter
+          $nTotFiles++;
+
           // Delete all files name like this one, with all different extensions.
           $dirname = dirname($pdir."/".$file);
           $basename = basename($pdir."/".$file);
@@ -481,13 +487,13 @@ class Fileserver {
 
           $allFiles = glob($path);
           foreach ($allFiles as $f) {
-              unlink($f);
+              $success &= unlink($f);
           }
 
           // Clean also the subdirectory hrm_previews
           $allFiles = glob($path_preview);
           foreach ($allFiles as $f) {
-              unlink($f);
+              $success &= unlink($f);
           }
       }
 
@@ -497,7 +503,15 @@ class Fileserver {
           $this->updateAvailableDestFiles();
       }
 
-
+      if ( $success == true ) {
+          return "";
+      } else {
+          if ( $nTotFiles > 1 ) {
+            return "One or more files could not be deleted!";
+          } else {
+              return "Could not delete selected file!";
+          }
+      }
   }
 
   /*!
