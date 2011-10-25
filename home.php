@@ -65,10 +65,9 @@ include("header.inc.php");
 
         <?php
             $textHome = "Home";
-            if ( isset( $_SERVER['HTTP_REFERER'] ) ) {
-                if ( strpos( $_SERVER['HTTP_REFERER'], 'login.php' ) ) {
-                    $textHome = "Welcome!";
-                }
+            if ( !isset( $_SESSION['BEEN_HOME'] ) ) {
+                $textHome = "Welcome!";
+                $_SESSION['BEEN_HOME'] = 1;
             }
         ?>
         <h3><img src="images/home.png" alt="Home" />&nbsp;
