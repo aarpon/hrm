@@ -368,12 +368,17 @@ input.save {
 }
 
 #login fieldset {
-    -moz-border-radius: 7px;
-    -webkit-border-radius: 7px;
+    position: relative;
+    margin: 5px;
+    margin-top: 30px;
+    padding-top: 30px;
     border-radius: 7px;
 }
 
 #login legend {
+    position:absolute;
+    top: -0.5em;
+    left: 0px;
     font-size: 16px;
     font-weight: bold;
     text-align: left;
@@ -732,8 +737,6 @@ fieldset {
     margin: 5px;
     margin-top: 30px;
     padding: 20px 5px 10px 10px;
-    -moz-border-radius: 7px;
-    -webkit-border-radius: 7px;
     border-radius: 7px;
 }
 
