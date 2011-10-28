@@ -3,7 +3,7 @@
   // Copyright and license notice: see license.txt
 
   /*!
-   \class  JobTranslation
+   \class  HuygensTemplate
    \brief  Converts deconvolution parameters into a Huygens batch template.
 
    This class builds Tcl-compliant nested lists which summarize the tasks and 
@@ -15,111 +15,150 @@
 
    - 1 Job:
        - Job info.
-       - Job main tasks list:
+       - Job tasks list:
            - Set environment
            - Set task ID
-       - Set environment details: 
+       - Set environment: 
            - resultDir
            - perJobThreadCnt
            - concurrentJobCnt
            - exportFormat
            - timeOut
-       - Set taskID details:
-           - Set taskID info:
+       - Set image processing list:
+           - Set image processing info:
                - state
                - tag
                - timeStartAbs
                - timeOut
-           - Set taskList per taskID:
+           - Set image processing subtasks:
                - imgOpen
                - setp
-               - Deconvolution algorithm: one per channel
-               - zDrift (optionally)
+               - deconvolution algorithm: one per channel
                - previewGen (one per thumbnail type)
                - imgSave
-           - Set details per task (imgOpen, setp,..)           
+           - Set subtasks details (imgOpen, setp,..)           
   */
 
 require_once( "User.inc.php" );
 require_once( "JobDescription.inc.php" );
 require_once( "Fileserver.inc.php" );
 
-class JobTranslation {
-
-    /*!
-     \var     $template
-     \brief   Batch template summarizing the deconvolution job and thumbnail tasks.
-    */
-    public $template;
-
-    /*!
-     \var     $compareZviews
-     \brief   A boolean to know whether an image is small enough as to
-     \brief   be able to create its largest JPEGs.
-    */
-    public $compareZviews;
-
-    /*!
-     \var     $compareTviews
-     \brief   A boolean to know whether an image is small enough as to
-     \brief   be able to create its largest JPEGs.
-    */
-    public $compareTviews;
-
-    /*!
-     \var     $jobInfo
-     \brief   A Tcl list with job information for the template header.
-     */
-    private $jobInfo;
-
-    /*!
-     \var     $jobMainTasks
-     \brief   A Tcl list with the names of the main job tasks
-    */
-    private $jobMainTasks;
-
-    /*!
-      \var    $envDetails
-      \brief  A Tcl list with extra data: number of cores, timeout, etc. 
-    */
-    private $envDetails;
-
-
-    /*!
-      \var    $taskIDDetails
-      \brief  A Tcl list with microscopic, restoration and thumbnail data
-    */
-    private $taskIDDetails;
-
-    /*!
-      \var    $envArray
-      \brief  Array with extra data: number of cores, timeout, etc.
-    */
-    private $envArray;
-
-    /*!
-      \var    $taskIDArray
-      \brief  Array with restoration and thumbnail operations.
-    */
-    private $taskIDArray;
-
-    /*!
-      \var    $jobMainTasksArray
-      \brief  Array with the main components of task list.
-    */
-    private $jobMainTasksArray;
+class HuygensTemplate {
 
     /*!
       \var    $jobInfoArray
-      \brief  Array with the components of the job info.
+      \brief  Array with components of job info.
     */
     private $jobInfoArray;
 
     /*!
+     \var     $jobInfoList
+     \brief   A Tcl list with job information for the template header.
+     */
+    private $jobInfoList;
+    
+    /*!
+      \var    $jobTasksArray
+      \brief  Array with the main job tasks.
+    */
+    private $jobTasksArray;
+
+    /*!
+     \var     $jobTasksList
+     \brief   A Tcl list with the names of the main job tasks.
+    */
+    private $jobTasksList;
+    
+    /*!
+      \var    $envArray
+      \brief  Array with data for the setEnv task.
+    */
+    private $envArray;
+
+    /*!
+      \var    $envList
+      \brief  A Tcl list with environment data: number of cores, timeout, etc. 
+    */
+    private $envList;
+
+    /*!
+     \var     $imgProcessArray
+     \brief   Array with restoration and thumbnail-related operations.
+    */
+    private $imgProcessArray;
+
+    /*!
+     \var     $imgProcessInfoArray
+     \brief   Array with data for the info field of the img process task.
+    */
+    private $imgProcessInfoArray;
+
+    /*!
+     \var     $imgProcessTasksArray
+     \brief   Array with data for the tasklist field of the img process task.
+    */
+    private $imgProcessTasksArray;
+
+    /*!
+     \var     $imgProcessList
+     \brief   A Tcl list with restoration and thumbnail operations.
+    */
+    private $imgProcessList;
+
+    /*!
+     \var     $expFormatArray
+     \brief   Array with data for the environment export format field.
+    */
+    private $expFormatArray;
+
+    /*!
+     \var    $imgOpenArray
+     \brief  Array with information for the image open subtask.
+    */
+    private $imgOpenArray;
+
+    /*!
+     \var    $imgSaveArray
+     \brief  Array with information for the image save subtask.
+    */
+    private $imgSaveArray;
+
+    /*!
+     \var    $adjblArray;
+     \brief  Array with information for the image adjbl subtask.
+    */
+    private $adjblArray;
+
+    /*!
+     \var    $algArray;
+     \brief  Array with information for the image cmle/qmle subtask.
+    */
+    private $algArray;
+
+    /*!
       \var    $setpArray
-      \brief  Array with the components of the setp task.
+      \brief  Array with data for the setp subtask.
     */
     private $setpArray;
+
+    /*!
+      \var    $setpConfArray
+      \brief  Array with parameter confidence levels for the setp subtask.
+    */
+    private $setpConfArray;
+
+
+    /*!
+      \var    $setpList
+      \brief  A Tcl list with data for the 'set parameter' subtask.
+    */
+    private $setpList;
+
+    /*!
+     \var     $template
+     \brief   Batch template containing the deconvolution job and thumbnail tasks.
+    */
+    public $template;
 
     /*!
       \var    $srcImage
@@ -159,11 +198,25 @@ class JobTranslation {
     */
     private $deconSetting;
 
-    /*! 
-     \var     $previewCnt
-     \brief   An integer that keeps track of the number of preview tasks
+    /*!
+     \var     $compareZviews
+     \brief   A boolean to know whether an image is small enough as to
+     \brief   be able to create its largest JPEGs.
     */
-    private $previewCnt;
+    public $compareZviews;
+
+    /*!
+     \var     $compareTviews
+     \brief   A boolean to know whether an image is small enough as to
+     \brief   be able to create its largest JPEGs.
+    */
+    public $compareTviews;
+
+    /*! 
+     \var     $thumbCnt
+     \brief   An integer that keeps track of the number of preview tasks.
+    */
+    private $thumbCnt;
 
     /*!
      \var     $sizeX
@@ -195,7 +248,7 @@ class JobTranslation {
     */
     private $sizeC;     
 
-    /* ----------------------------------------------------------------------- */
+    /* ---------------------------- Constructor ------------------------------- */
 
     /*!
      \brief       Constructor
@@ -203,26 +256,32 @@ class JobTranslation {
     */
     public function __construct($jobDescription) {
         $this->initialize($jobDescription);
-        $this->setJobInfo();
-        $this->setJobMainTasks();
-        $this->setEnvironmentDetails();
-        $this->setTaskIDDetails();
+        $this->setJobInfoList();
+        $this->setJobTasksList();
+        $this->setEnvList();
+        $this->setImgProcessList();
         $this->assembleTemplate();
     }
 
+    /* ------------------------- Initialization ------------------------------ */
+
     /*!
-     \brief       Sets class general properties to initial values
+     \brief       Sets general class properties to initial values
     */
     private function initialize($jobDescription) {
         $this->jobDescription = $jobDescription;
-        $this->microSetting = $jobDescription->parameterSetting;
-        $this->deconSetting = $jobDescription->taskSetting;
-        $this->initializePreviewCounter();
-        $this->setEnvironmentArray();
-        $this->setTaskIDArray();
-        $this->setMainTasksArray();
-        $this->setJobInfoArray();
-        $this->setSetpArray();
+        $this->microSetting   = $jobDescription->parameterSetting;
+        $this->deconSetting   = $jobDescription->taskSetting;
+
+        $this->initializeImg();
+        $this->initializeThumbCounter();
+        $this->initializeJobInfo();
+        $this->initializeJobTasks();
+        $this->initializeEnvironment();
+        $this->initializeImgProcessing();
+    }
+
+    private function initializeImg( ) {
         $this->setSrcImage();
         $this->setDestImage();
         $this->setHuImageFormat();
@@ -230,316 +289,420 @@ class JobTranslation {
     }
 
     /*!
-     \brief       Sets env array with extra data: number of cores, timeout, etc.
+     \brief       Resets the counter of thumbnail tasks
     */
-    private function setEnvironmentArray( ) {
-        $this->envArray = array ( 'resultDir'         =>  '',
-                                  'perJobThreadCnt'   =>  'auto',
-                                  'concurrentJobCnt'  =>  '1',
-                                  'OMP_DYNAMIC'       =>  '1',
-                                  'timeOut'           =>  '10000',
-                                  'exportFormat'      =>  '' );
+    private function initializeThumbCounter( ) {
+        $this->thumbCnt = 0;
+    }
+
+    private function initializeJobInfo() {
+
+        $this->jobInfoArray = 
+            array ('title'                      => 'Batch Processing template',
+                   'version'                    => '2.2',
+                   'templateName'               => '',
+                   'date'                       => '',
+                   'listID'                     => 'info');
+    }
+
+    private function initializeJobTasks() {
+        
+        $this->jobTasksArray = 
+            array ( 'setEnv'                    => '',
+                    'taskID:0'                  => '',
+                    'listID'                    => 'taskList' );
     }
 
     /*!
-     \brief       Sets tasks array with microscopic, restoration and preview data
+     \brief       Sets env array with data: number of cores, timeout, etc.
+    */
+    private function initializeEnvironment( ) {
+        $this->envArray = 
+            array ( 'resultDir'                 => '',
+                    'perJobThreadCnt'           => 'auto',
+                    'concurrentJobCnt'          => '1',
+                    'OMP_DYNAMIC'               => '1',
+                    'timeOut'                   => '10000',
+                    'exportFormat'              => '',
+                    'listID'                    => 'setEnv' );
+
+        $this->expFormatArray = 
+            array ( 'type'                      =>  '',
+                    'multidir'                  =>  '',
+                    'cmode'                     =>  'scale' );
+    }
+
+    /*!
+     \brief       Sets array with microscopic, restoration and preview operations
      \todo        Add a field 'zdrift' when it is implemented in the GUI.
     */
-    private function setTaskIDArray( ) {
+    private function initializeImgProcessing( ) {
 
-        $this->taskIDArray = array ( 'open'                     =>  'imgOpen',
-                                     'setParameters'            =>  'setp',
-                                     'adjustBaseline'           =>  'adjbl',
-                                     'algorithms'               =>  '',
-                                     'XYXZRawAtSrcDir'          =>  'previewGen',
-                                     'XYXZRawLifAtSrcDir'       =>  'previewGen',
-                                     'XYXZRawAtDstDir'          =>  'previewGen',
-                                     'XYXZDecAtDstDir'          =>  'previewGen',
-                                     'orthoRawAtDstDir'         =>  'previewGen',
-                                     'orthoDecAtDstDir'         =>  'previewGen',
-                                     'ZMovieDecAtDstDir'        =>  'previewGen',
-                                     'TimeMovieDecAtDstDir'     =>  'previewGen',
-                                     'TimeSFPMovieDecAtDstDir'  =>  'previewGen',
-                                     'SFPRawAtDstDir'           =>  'previewGen',
-                                     'SFPDecAtDstDir'           =>  'previewGen',
-                                     'ZComparisonAtDstDir'      =>  'previewGen',
-                                     'TComparisonAtDstDir'      =>  'previewGen',
-                                     'save'                     =>  'imgSave' );
+        $this->imgProcessArray = 
+            array ( 'info'                      => '',
+                    'taskList'                  => '',
+                    'listID'                    => 'taskID:0' );
+
+
+        /* As long as the Huygens Scheduler receives only one job at a time
+         the task will not be queued when it arrives at the Scheduler but
+         executed immediatly, thus its state will be 'readyToRun', invariably. */
+
+        /* All metadata will be accepted as long as the template counterparts
+         don't exist. The accepted confidence level is therefore: "default". */
+        $this->imgProcessInfoArray = 
+            array ( 'state'                     => 'readyToRun',
+                    'tag'                       => '',
+                    'timeStartAbs'              => '',
+                    'timeOut'                   => '10000',
+                    'userDefConfidence'         => 'default',
+                    'listID'                    => 'info' );
+
+        $this->imgProcessTasksArray = 
+            array ('open'                       =>  'imgOpen',
+                   'setParameters'              =>  'setp',
+                   'adjustBaseline'             =>  'adjbl',
+                   'algorithms'                 =>  '',
+                   'XYXZRawAtSrcDir'            =>  'previewGen',
+                   'XYXZRawLifAtSrcDir'         =>  'previewGen',
+                   'XYXZRawAtDstDir'            =>  'previewGen',
+                   'XYXZDecAtDstDir'            =>  'previewGen',
+                   'orthoRawAtDstDir'           =>  'previewGen',
+                   'orthoDecAtDstDir'           =>  'previewGen',
+                   'ZMovieDecAtDstDir'          =>  'previewGen',
+                   'TimeMovieDecAtDstDir'       =>  'previewGen',
+                   'TimeSFPMovieDecAtDstDir'    =>  'previewGen',
+                   'SFPRawAtDstDir'             =>  'previewGen',
+                   'SFPDecAtDstDir'             =>  'previewGen',
+                   'ZComparisonAtDstDir'        =>  'previewGen',
+                   'TComparisonAtDstDir'        =>  'previewGen',
+                   'save'                       =>  'imgSave',
+                   'listID'                     =>  'taskList');
+
+        $this->imgOpenArray = 
+            array ( 'path'                      =>  '',
+                    'subImage'                  =>  '',
+                    'series'                    =>  '',
+                    'index'                     =>  '0',
+                    'listID'                    =>  'imgOpen' );
+
+        $this->setpArray  = 
+            array ( 'completeChanCnt'           => '',
+                    'micr'                      => '',
+                    's'                         => '',
+                    'iFacePrim'                 => '0.0',
+                    'iFaceScnd'                 => '0.0',
+                    'pr'                        => '',
+                    'imagingDir'                => '',
+                    'ps'                        => '',
+                    'objQuality'                => 'good',
+                    'pcnt'                      => '',
+                    'ex'                        => '',
+                    'em'                        => '',
+                    'exBeamFill'                => '2.0',
+                    'ri'                        => '',
+                    'ril'                       => '',
+                    'na'                        => '',
+                    'listID'                    => 'setp' );
+
+        $this->setpConfArray  =
+            array ( 'completeChanCnt'           =>  '',
+                    'micr'                      =>  'parState,micr',
+                    's'                         =>  'parState,s',
+                    'iFacePrim'                 =>  'parState,iFacePrim',
+                    'iFaceScnd'                 =>  'parState,iFaceScnd',
+                    'pr'                        =>  'parState,pr',
+                    'imagingDir'                =>  'parState,imagingDir',
+                    'ps'                        =>  'parState,ps',
+                    'objQuality'                =>  'parState,objQuality',
+                    'pcnt'                      =>  'parState,pcnt',
+                    'ex'                        =>  'parState,ex',
+                    'em'                        =>  'parState,em',
+                    'exBeamFill'                =>  'parState,exBeamFill',
+                    'ri'                        =>  'parState,ri',
+                    'ril'                       =>  'parState,ril',
+                    'na'                        =>  'parState,na',
+                    'listID'                    =>  'setp' );
+
+        $this->adjblArray = 
+            array ( 'enabled'                   =>  '0',
+                    'ni'                        =>  '0',
+                    'listID'                    =>  'adjbl' );
+
+        $this->algArray   = 
+            array ( 'q'                         =>  '',
+                    'brMode'                    =>  '',
+                    'it'                        =>  '',
+                    'bgMode'                    =>  '',
+                    'bg'                        =>  '',
+                    'sn'                        =>  '',
+                    'blMode'                    =>  'auto',
+                    'pad'                       =>  'auto',
+                    'psfMode'                   =>  '',
+                    'psfPath'                   =>  '',
+                    'timeOut'                   =>  '36000',
+                    'mode'                      =>  'fast',
+                    'itMode'                    =>  'auto',
+                    'listID'                    =>  '' );
+
+        $this->imgSaveArray = 
+            array ( 'rootName'                  =>  '',
+                    'listID'                    =>  'imgSave' );
     }
 
-
-    /*!
-     \brief       Sets the components of the setp task.
-    */
-    private function setSetpArray( ) {
-
-        $this->setpArray = array ( 'completeChanCnt'  => '',
-                                   'micr'             => 'parState,micr',
-                                   's'                => 'parState,s',
-                                   'iFacePrim'        => 'parState,iFacePrim',
-                                   'iFaceScnd'        => 'parState,iFaceScnd',
-                                   'pr'               => 'parState,pr',
-                                   'imagingDir'       => 'parState,imagingDir',
-                                   'ps'               => 'parState,ps',
-                                   'objQuality'       => 'parState,objQuality',
-                                   'pcnt'             => 'parState,pcnt',
-                                   'ex'               => 'parState,ex',
-                                   'em'               => 'parState,em',
-                                   'exBeamFill'       => 'parState,exBeamFill',
-                                   'ri'               => 'parState,ri',
-                                   'ril'              => 'parState,ril',
-                                   'na'               => 'parState,na' );
-    }
-
-    private function setJobInfoArray() {
-
-        $this->jobInfoArray = array ( 'title',
-                                      'version',
-                                      'templateName',
-                                      'date' );
-
-    }
-
-    private function setMainTasksArray() {
-        
-        $this->jobMainTasksArray = array ( 'setEnv',
-                                           'taskID:0');
-
-    }
+    /* --------------------------- Task list builders -------------------------- */
 
     /*!
      \brief       Sets the info header of the batch template.
     */
-    private function setJobInfo( ) {
+    private function setJobInfoList( ) {
         
-        $this->jobInfo = "";
+        $jobInfo = "";
 
-        foreach ($this->jobInfoArray as $jobField) {
-            $this->jobInfo .= " " . $jobField . " ";
+        foreach ($this->jobInfoArray as $key => $value) {
+
+            if ($key != "listID") {
+                $jobInfo .= " " . $key . " ";
+            }
             
-            switch ($jobField) {
-            case 'title':
-                $this->jobInfo .= $this->getTemplateTitle();
-                break;
+            switch ( $key ) {
             case 'version':
-                $this->jobInfo .= $this->getTemplateVersion();
+                $jobInfo .= $value;
+                break;
+            case 'title':
+                $jobInfo .= $this->string2tcllist($value);
                 break;
             case 'templateName':
-                $this->jobInfo .= $this->getTemplateName();
+                $jobInfo .= $this->getTemplateName();
                 break;
             case 'date':
-                $this->jobInfo .= $this->getTemplateDate();
+                $jobInfo .= $this->getTemplateDate();
+                break;
+            case 'listID':
+                $jobInfo = $this->string2tcllist($jobInfo);
+                $this->jobInfoList = $value . " " . $jobInfo;
                 break;
             default:
-                error_log("Job info field $jobField not yet implemented.");       
+                error_log("Job info field $key not yet implemented.");       
             }
         }
-
-        $this->jobInfo = $this->string2tcllist($this->jobInfo);
-        $this->jobInfo = "info " . $this->jobInfo;
     }
 
     /*!
-     \brief       Sorts and sets the main job tasks: setEnv and taskIDs.
+     \brief       Sets the main job tasks: setEnv and taskIDs.
     */
-    private function setJobMainTasks() {
+    private function setJobTasksList() {
 
-        $this->jobMainTasks = "";
+        $jobTasks = "";
 
-        foreach ($this->jobMainTasksArray as $mainTask) {
-            $this->jobMainTasks .= " " . $mainTask . " ";
+        foreach ($this->jobTasksArray as $key => $value) {
 
-            switch ($mainTask) {
+            if ($key != "listID") {
+                $jobTasks .= " " . $key . " ";
+            }
+            
+            switch ( $key ) {
             case 'setEnv':
             case 'taskID:0':
                 break;
+            case 'listID':
+                $jobTasks = $this->string2tcllist($jobTasks);
+                $this->jobTasksList = $value . " " . $jobTasks;       
+                break;
             default:
-                error_log("Main task $mainTask not yet implemented.");
+                error_log("Job task $key not yet implemented.");
             }
         }
-
-        $this->jobMainTasks = $this->string2tcllist($this->jobMainTasks);
-        $this->jobMainTasks = "taskList " . $this->jobMainTasks;
     }
 
     /*!
-     \brief       Sets a Tcl list with extra data: number of cores, timeout, etc. 
+     \brief       Sets a Tcl list with env data: number of cores, timeout, etc. 
     */
-    private function setEnvironmentDetails( ) {
+    private function setEnvList( ) {
 
-        $this->envDetails = "";
+        $env = "";
 
-        foreach ($this->envArray as $envField => $envValue) {
-            $this->envDetails .= " " . $envField . " ";
+        foreach ($this->envArray as $key => $value) {
 
-            switch ($envField) {
+            if ($key != "listID") {
+                $env .= " " . $key . " ";
+            }
+
+            switch ( $key ) {
             case 'resultDir':
-                $this->envDetails .= $this->string2tcllist($this->getDestDir());
+                $env .= $this->string2tcllist($this->getDestDir());
                 break;
             case 'exportFormat':
-                $this->envDetails .= $this->getExportFormat();
+                $env .= $this->getExportFormat();
+                break;
+            case 'listID':
+                $env = $this->string2tcllist($env);
+                $this->envList = $value . " " . $env;
                 break;
             case 'perJobThreadCnt':
             case 'concurrentJobCnt':
             case 'OMP_DYNAMIC':
             case 'timeOut':
-                $this->envDetails .= $envValue;
+                $env .= $value;
                 break;
             default:
-                error_log("The environment field $envField is not yet implemented");
+                error_log("Environment field $key not yet implemented");
             }
         }
-
-        $this->envDetails = $this->string2tcllist($this->envDetails);
-        $this->envDetails = "setEnv " . $this->envDetails;
     }
     
     /*!
-     \brief       Sets a Tcl list with microscopic and restoration data. 
+     \brief       Sets a Tcl list with restoration and thumbnail operations
     */
-    private function setTaskIDDetails( ) {
-        $this->taskIDDetails = $this->getTaskID();
-        $this->taskIDDetails .= " " . $this->buildTaskList();
+    private function setImgProcessList( ) {
+        
+        $imgProcess = "";
+        
+        foreach ($this->imgProcessArray as $key => $value) {
+            
+            if ($key != "listID") {
+                $imgProcess .= " ";
+            }
+          
+            switch ( $key ) {
+            case 'info':
+                $imgProcess .= $this->getImgProcessInfo();
+                break;
+            case 'taskList':
+                $imgProcess .= $this->getImgProcessTasks();
+                $imgProcess .= $this->getImgProcessSubTasks();
+                break;
+            case 'listID':
+                $imgProcess = $this->string2tcllist($imgProcess);
+                $this->imgProcessList = $value . " " .$imgProcess;
+                break;
+            default:
+                error_log("Image processing task $key not yet implemented");
+            }
+        }
     }
 
     /*!
      \brief       Puts the Huygens Batch template together
     */
     private function assembleTemplate( ) {
-        $this->template = $this->jobInfo . "\n" . $this->jobMainTasks . "\n";
-        $this->template .= $this->envDetails . "\n " . $this->taskIDDetails;
+        $this->template =  $this->jobInfoList . "\n";
+        $this->template .= $this->jobTasksList . "\n";
+        $this->template .= $this->envList . "\n ";
+        $this->template .= $this->imgProcessList;
     }
 
-
-    /* ------------------------ Main lists handlers ---------------------------- */
-
     /*!
-     \brief       Get the job export format feature as a list of options
+     \brief       Get the env export format feature as a list of options
      \return      Tcl-complaint nested list with the export format options
     */
     private function getExportFormat( ) {
-        $outputType = $this->getOutputFileType();
-        if (preg_match("/tif/i",$outputType)) {
-            $multidir = 1;
-        } else {
-            $multidir = 0;
+
+        $exportFormat = "";
+        foreach ($this->expFormatArray as $key => $value) {
+            $exportFormat .= " " . $key . " ";
+
+            switch( $key ) {
+            case 'type':
+                $exportFormat .= $this->getOutputFileType();
+                break;
+            case 'multidir':
+                $exportFormat .= $this->getMultiDirOpt();
+                break;
+            case 'cmode':
+                $exportFormat .= $value;
+                break;
+            default:
+                error_log("Export format option $key not yet implemented");
+            }
         }
-        $exportFormat = "type ";
-        $exportFormat .= $outputType;
-        $exportFormat .= " multidir ";
-        $exportFormat .= $multidir;
-        $exportFormat .= " cmode scale";
 
         return $this->string2tcllist($exportFormat);
-    }
-
-    /*!
-     \brief       Builds a Tcl list with microscopic, restoration and preview data. 
-     \return      The Tcl-compliant nested list
-    */
-    private function buildTaskList( ) {
-        $taskList = $this->getTaskIDInfo();
-        $taskList .= $this->getTaskIDDeconTasks();
-        $taskList .= $this->getTaskIDDetails();
-        return $this->string2tcllist($taskList);
-    }
-
-    /*!
-     \brief       Gets a unique taskID for the Huygens Scheduler
-     \return      The taskID
-    */
-    private function getTaskID( ) {
-        /* As long as the Huygens Scheduler receives only one job at a time
-         the taskID will be unique and 0. */
-        $taskID = "taskID:0";
-        return $taskID;
     }
 
     /*!
      \brief       Gets scheduling information oo the tasks.
      \return      The Tcl-compliant nested list with task information
     */
-    private function getTaskIDInfo( ) {
+    private function getImgProcessInfo( ) {
 
-        $microSetting = $this->microSetting;
+        $taskInfo = "";
+        foreach ($this->imgProcessInfoArray as $key => $value) {
 
-        /* The job is sent to the Huygens Scheduler to start right away.
-         Therefore the state is ready and the timeStartAbs is just now. */
-        $taskInfo = "state ";
-        $taskInfo .= $this->getTaskState();
-        $taskInfo .= " tag " ;
-        $taskInfo .= $this->getTaskTag();
-        $taskInfo .= " timeStartAbs ";
-        $taskInfo .= $this->getAbsTime();
-        $taskInfo .= " timeOut ";
-        $taskInfo .= $this->getTaskIDTimeOut();
-        $taskInfo .= " userDefConfidence ";
+            if ($key != "listID") {
+                $taskInfo .= " " . $key . " ";
+            }
 
-        /* All metadata will be accepted as long as their template counterparts
-         don't exist. The accepted confidence level is therefore: "default". */
-        $taskInfo .= "default";
-
-        $taskInfo = $this->string2tcllist($taskInfo);
-        $taskInfo = "info " . $taskInfo;
-            
+            switch( $key ) {
+            case 'state':
+                $taskInfo .= $value;
+                break;
+            case 'tag':
+                $taskInfo .= $this->getTaskTag();
+                break;
+            case 'timeStartAbs':
+                $taskInfo .= time();
+                break;
+            case 'timeOut':
+                $taskInfo .= $value;
+                break;
+            case 'userDefConfidence':
+                $taskInfo .= $value;
+                break;
+            case 'listID':
+                $taskInfo = $this->string2tcllist($taskInfo);
+                $taskInfo = $value . " " . $taskInfo;
+                break;
+            default:
+                error_log("Info option $key not yet implemented");
+            }
+        }
+        
         return $taskInfo;
-    }
-
-    /*!
-     \brief       Gets the taskID timeout
-     \return      The timeout in seconds
-    */
-    private function getTaskIDTimeOut( ) {
-        $timeOut = 10000;
-        return $timeOut;
-    }
-
-    /*!
-     \brief       Gets the task state.
-     \return      The task state
-    */
-    private function getTaskState( ) {
-        /* As long as the Huygens Scheduler receives only one job at a time
-         the task will not be queued when it arrives at the Scheduler but
-         executed immediatly, thus its state will be 'readyToRun', invariably */
-        $taskState = "readyToRun";
-        return $taskState;
-    }
-
-    /*!
-     \brief       Gets the time lapse since 1st January 1970, in seconds.
-     \return      The seconds since Epoch time until now.
-    */
-    private function getAbsTime( ) {
-        $absTime = time();
-        return $absTime;
-    }
-
-    /*!
-     \brief       Gets the task tag information
-     \return      The Tcl-compliant nested list with the tag information
-    */
-    private function getTaskTag( ) {
-        /* There are no specific names for the deconvolution and microscopic
-         templates in the Tcl-lists, they will be set to general names. */
-        $taskTag = "setp microscopicTemplate decon deconvolutionTemplate";
-        return  $this->string2tcllist($taskTag);
     }
 
     /*!
      \brief       Gets the Huygens subtask names of a deconvolution. 
      \return      The Tcl-compliant nested list with subtask names
     */
-    private function getTaskIDDeconTasks( ) {
+    private function getImgProcessTasks( ) {
+
         $taskList = "";
-        foreach ($this->taskIDArray as $key => $task) {
-            $task = $this->parseTask($key,$task);
-            if ($task != "") {
-                $taskList .= $task ." ";
+
+        foreach ($this->imgProcessTasksArray as $key => $value) {
+            switch ( $key ) {
+            case 'open':
+            case 'save':
+            case 'setParameters':
+            case 'adjustBaseline':
+            case 'algorithms':
+            case 'XYXZRawAtSrcDir':
+            case 'XYXZRawLifAtSrcDir':
+            case 'XYXZRawAtDstDir':
+            case 'XYXZDecAtDstDir':
+            case 'orthoRawAtDstDir':
+            case 'orthoDecAtDstDir':
+            case 'SFPRawAtDstDir':
+            case 'SFPDecAtDstDir':
+            case 'ZMovieDecAtDstDir':
+            case 'TimeSFPMovieDecAtDstDir':
+            case 'TimeMovieDecAtDstDir':
+            case 'ZComparisonAtDstDir':
+            case 'TComparisonAtDstDir':
+                $task = $this->parseTask($key,$value);
+                if ($task != "") {
+                    $taskList .= $task ." ";
+                }
+                break;
+            case 'listID':
+                $taskList = $this->string2tcllist($taskList);
+                $taskList = $value . " " . $taskList;
+                break;
+            default:
+                error_log("Image process task $key not yet implemented");
             }
         }
-        $taskList = $this->string2tcllist($taskList);
-        $taskList = " taskList " . $taskList;
+        
         return $taskList;
     }
 
@@ -547,219 +710,122 @@ class JobTranslation {
      \brief       Gets specific details of each deconvolution task. 
      \return      The Tcl-compliant nested list with task details
     */
-    private function getTaskIDDetails( ) {
+    private function getImgProcessSubTasks( ) {
 
-        $this->initializePreviewCounter();
+        $this->initializeThumbCounter();
 
         $taskList = "";
-        foreach ($this->taskIDArray as $key => $task) { 
+        foreach ($this->imgProcessTasksArray as $key => $value) { 
+            $taskList .= " ";
             switch ( $key ) {
             case 'open':
-                $taskList .= $this->getTaskIDImgOpen($task);
+                $taskList .= $this->getImgProcessOpen($value);
                 break;
             case 'save':
-                $taskList .= $this->getTaskIDImgSave($task);
+                $taskList .= $this->getImgProcessSave($value);
                 break;
             case 'setParameters':
-                $taskList .= $this->getTaskIDSetp($task);
+                $taskList .= $this->getImgProcessSetp($value);
                 break;
             case 'adjustBaseline':
-                $taskList .= $this->getTaskIDAdjbl($task);
+                $taskList .= $this->getImgProcessAdjbl($value);
                 break;
             case 'algorithms':
-                $taskList .= $this->getTaskIDAlgorithms();
-                break;
-            case 'zdrift':
-                $taskList .= $this->getTaskIDZDrift($task);
+                $taskList .= $this->getImgProcessAlgorithms();
                 break;
             case 'XYXZRawAtSrcDir':
-                $taskList .= $this->getTaskIDXYXZ($key,$task,"raw","src");
+                $taskList .= $this->getImgProcessXYXZ($key,$value,"raw","src");
                 break;
             case 'XYXZRawLifAtSrcDir':
-                $taskList .= $this->getTaskIDXYXZ($key,$task,"raw","src","lif");
+                $taskList .= $this->getImgProcessXYXZ($key,$value,"raw","src",
+                                                      "lif");
                 break;
             case 'XYXZRawAtDstDir':
-                $taskList .= $this->getTaskIDXYXZ($key,$task,"raw","dest");
+                $taskList .= $this->getImgProcessXYXZ($key,$value,"raw","dest");
                 break;
             case 'XYXZDecAtDstDir':
-                $taskList .= $this->getTaskIDXYXZ($key,$task,"dec","dest");
+                $taskList .= $this->getImgProcessXYXZ($key,$value,"dec","dest");
                 break;
             case 'orthoRawAtDstDir':
-                $taskList .= $this->getTaskIDOrtho($key,$task,"raw","dest");
+                $taskList .= $this->getImgProcessOrtho($key,$value,"raw","dest");
                 break;
             case 'orthoDecAtDstDir':
-                $taskList .= $this->getTaskIDOrtho($key,$task,"dec","dest");
+                $taskList .= $this->getImgProcessOrtho($key,$value,"dec","dest");
                 break;
             case 'SFPRawAtDstDir':
-                $taskList .= $this->getTaskIDSFP($key,$task,"raw","dest");
+                $taskList .= $this->getImgProcessSFP($key,$value,"raw","dest");
                 break;
             case 'SFPDecAtDstDir':
-                $taskList .= $this->getTaskIDSFP($key,$task,"dec","dest");
+                $taskList .= $this->getImgProcessSFP($key,$value,"dec","dest");
                 break;
             case 'ZMovieDecAtDstDir':
-                $taskList .= 
-                    $this->getTaskIDMovie($key,$task,"dec","dest","ZMovie");
+                $taskList .= $this->getImgProcessMovie($key,$value,"dec","dest",
+                                                       "ZMovie");
                 break;
             case 'TimeSFPMovieDecAtDstDir':
-                $taskList .= 
-                    $this->getTaskIDMovie($key,$task,"dec","dest","timeSFPMovie");
+                $taskList .= $this->getImgProcessMovie($key,$value,"dec","dest",
+                                              "timeSFPMovie");
                 break;
             case 'TimeMovieDecAtDstDir':
-                $taskList .= 
-                    $this->getTaskIDMovie($key,$task,"dec","dest","timeMovie");
+                $taskList .= $this->getImgProcessMovie($key,$value,"dec","dest",
+                                                       "timeMovie");
                 break;
             case 'ZComparisonAtDstDir':
-                $taskList .= $this->getTaskIDZComparison($key,$task,"dest");
+                $taskList .= $this->getImgProcessZComparison($key,$value,"dest");
                 break;
             case 'TComparisonAtDstDir':
-                $taskList .= $this->getTaskIDTComparison($key,$task,"dest");
+                $taskList .= $this->getImgProcessTComparison($key,$value,"dest");
+                break;
+            case 'listID':
                 break;
             default:
                 $taskList = "";
-                error_log("Implementation of task $key is missing.");
+                error_log("Image processing task $key not yet implemented.");
             }
         }
+
         return $taskList;
     }
-
-    /*!
-     \brief       Get the Huygens task name of a task.
-     \param       $key A task array key
-     \param       $task A task compliant with the Huygens template task names
-     \return      The Huygens task name
-    */
-    private function parseTask($key,$task) {
-
-        if ($task == "" && $key == "algorithms") {
-            $task = $this->parseAlgorithm();
-        } elseif ($task == "previewGen") {
-            $task = $this->parsePreviewGen($key,$task);
-        } else {
-            return $task;
-        }
-
-        return $task;
-    }
-
-    /*!
-     \brief       Gets the Huygens task name of a preview task
-     \param       $key A task array key
-     \param       $task A task compliant with the Huygens template task names
-     \return      The Huygens preview task name
-    */
-    private function parsePreviewGen($key,$task) {
-        global $useThumbnails;
-        global $saveSfpPreviews;
-        global $maxComparisonSize;
-
-        $maxPreviewPixelsPerDim = 65000;
-
-        if (!$useThumbnails) {
-            return;
-        } else {
-            if (strstr($key, 'SFP')) {
-                if ($saveSfpPreviews) {
-                    $task = $task . ":" . $this->previewCnt;
-                    $this->previewCnt++;
-                } else {
-                    $task = "";
-                }
-            } elseif (strstr($key, 'Lif')) {
-                if ($this->isImageLif()) {
-                    $task = $task . ":" . $this->previewCnt;
-                    $this->previewCnt++;
-                } else {
-                    $task = "";
-                }
-            } elseif (strstr($key, 'ZComparison')) {
-
-                if ($this->sizeX < $maxComparisonSize) {
-                    $previewPixelsX = 2 * $this->sizeX;
-                } else {
-                    $previewPixelsX = 2 * $maxComparisonSize;
-                }
-
-                if ($this->sizeY < $maxComparisonSize) {
-                    $previewPixelsY = $this->sizeY * $this->sizeZ;
-                } else {
-                    $previewPixelsY = $maxComparisonSize * $this->sizeZ;
-                }
-
-                # Check whether the comparison strip might get dangerously big.
-                if ($previewPixelsX < $maxPreviewPixelsPerDim 
-                    && $previewPixelsY < $maxPreviewPixelsPerDim) {
-                    $task = $task . ":" . $this->previewCnt;
-                    $this->previewCnt++;
-                    $this->compareZviews = TRUE;
-                } else {
-                    $task = "";
-                    $this->compareZviews = FALSE;
-                }
-            } elseif (strstr($key, 'TComparison')) {
-
-                if ($this->sizeX < $maxComparisonSize) {
-                    $previewPixelsX = 2 * $this->sizeX;
-                } else {
-                    $previewPixelsX = 2 * $maxComparisonSize;
-                }
-
-                if ($this->sizeY < $maxComparisonSize) {
-                    $previewPixelsY = $this->sizeY * $this->sizeT;
-                } else {
-                    $previewPixelsY = $maxComparisonSize * $this->sizeT;
-                }
-
-                # Check whether the comparison strip might get dangerously big.
-                if ($previewPixelsX < $maxPreviewPixelsPerDim 
-                    && $previewPixelsY < $maxPreviewPixelsPerDim) {
-                    $task = $task . ":" . $this->previewCnt;
-                    $this->previewCnt++;
-                    $this->compareTviews = TRUE;
-                } else {
-                    $task = "";
-                    $this->compareTviews = FALSE;
-                }
-            } else {
-                $task = $task . ":" . $this->previewCnt;
-                $this->previewCnt++;
-            }
-        } 
-        return $task;
-    }
-
-    /*!
-     \brief       Gets the Huygens deconvolution task names of every channel
-     \return      The Huygens deconvolution task names
-    */
-    private function parseAlgorithm ( ) {
-        $numberOfChannels = $this->getNumberOfChannels();
-        $algorithms = "";
-        for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $algorithms .= $this->getAlgorithm().":$chanCnt ";
-        }
-        return trim($algorithms);
-    }
-
-    /* ------------------------------- Tasks ----------------------------------- */
     
     /*!
      \brief       Gets options for the 'image open' task
      \param       $task A task from the taskID array that should be 'imgOpen'.
      \return      Tcl list with the'Image open' task and its options
     */
-    private function getTaskIDImgOpen($task) {
- 
-        $imgOpen =  "path ";
-        $imgOpen .= $this->string2tcllist($this->srcImage);
-        if (isset($this->subImage)) {
-            $imgOpen .= " subImg ";
-            $imgOpen .= $this->string2tcllist($this->subImage);
+    private function getImgProcessOpen($task) {
+
+        $imgOpen = "";
+        foreach ($this->imgOpenArray as $key => $value) {
+
+           if ($key != "subImage" && $key != 'listID') {
+                $imgOpen .= " " . $key . " ";
+            }
+
+            switch( $key ) {
+            case 'path':
+                $imgOpen .= $this->string2tcllist($this->srcImage);
+                break;
+            case 'series':
+                $imgOpen .= $this->getSeriesMode();
+                break;
+            case 'index':
+                $imgOpen .= " " . $value . " ";
+                break;
+            case 'subImage':
+                if (isset($this->subImage)) {
+                    $imgOpen .= " " . $key . " ";
+                    $imgOpen .= $this->string2tcllist($this->subImage);
+                }
+                break;
+            case 'listID':
+                $imgOpen = $this->string2tcllist($imgOpen);
+                $imgOpen = $value  . " " . $imgOpen;
+                break;
+            default:
+                error_log("Image open option $key not yet implemented.");
+            }
         }
-        $imgOpen .= " series ";
-        $imgOpen .= $this->getSeriesMode();
-        $imgOpen .= " index 0";
-        $imgOpen = $this->string2tcllist($imgOpen);
-        $imgOpen = " " . $task . " " . $imgOpen;
+
         return $imgOpen;
     }
 
@@ -768,74 +834,104 @@ class JobTranslation {
      \param       $task A task from the taskID array that should be 'setp'.
      \return      Tcl list with the 'Set parameters' task and its options
     */
-    private function getTaskIDSetp( ) {
+    private function getImgProcessSetp( ) {
 
-        $options = "completeChanCnt ";
-        $options .= $this->getNumberOfChannels();
-        $options .= " micr ";
-        $options .= $this->getMicroscopeType();
-        $options .= " parState,micr ";
-        $options .= $this->getMicroTypeConfidenceList();
-        $options .= " s ";
-        $options .= $this->getSamplingSizes();
-        $options .= " parState,s ";
-        $options .= $this->getSamplingConfidenceList();
-        $options .= " iFacePrim ";
-        $options .= $this->getiFacePrim();
-        $options .= " parState,iFacePrim ";
-        $options .= $this->getiFacePrimConfidence();
-        $options .= " iFaceScnd ";
-        $options .= $this->getiFaceScnd();
-        $options .= " parState,iFaceScnd ";
-        $options .= $this->getiFaceScndConfidence();
-        $options .= " pr ";
-        $options .= $this->getPinholeRadius();
-        $options .= " parState,pr ";
-        $options .= $this->getPinholeRadiusConfidenceList();
-        $options .= " imagingDir ";
-        $options .= $this->getImagingDirection();
-        $options .= " parState,imagingDir ";
-        $options .= $this->getImagingDirConfidenceList();
-        $options .= " ps ";
-        $options .= $this->getPinholeSpacing();
-        $options .= " parState,ps ";
-        $options .= $this->getPinSpacingConfidenceList();
-        $options .= " objQuality ";
-        $options .= $this->getObjQuality();
-        $options .= " parState,objQuality ";
-        $options .= $this->getObjQualityConfidenceList();
-        $options .= " pcnt ";
-        $options .= $this->getExcitationPcnt();
-        $options .= " parState,pcnt ";
-        $options .= $this->getExcitationPcntConfidenceList();
-        $options .= " ex ";
-        $options .= $this->getExcitationLambda();
-        $options .= " parState,ex ";
-        $options .= $this->getExcitationLConfidenceList();
-        $options .= " em ";
-        $options .= $this->getEmissionLambda();
-        $options .= " parState,em ";
-        $options .= $this->getEmissionLConfidenceList();
-        $options .= " exBeamFill ";
-        $options .= $this->getExBeamFill();
-        $options .= " parState,exBeamFill ";
-        $options .= $this->getExBeamConfidenceList();
-        $options .= " ri ";
-        $options .= $this->getMediumRefractiveIndex();
-        $options .= " parState,ri ";
-        $options .= $this->getMediumRIndexConfidenceList();
-        $options .= " ril ";
-        $options .= $this->getLensRefractiveIndex();
-        $options .= " parState,ril ";
-        $options .= $this->getLensRIndexConfidenceList();
-        $options .= " na ";
-        $options .= $this->getNumericalAperture();
-        $options .= " parState,na ";
-        $options .= $this->getNumericalApertureConfidenceList();
-        $options = $this->string2tcllist($options);
-        $setp = " setp " . $options;
+        $setp = "";
+        foreach ($this->setpArray as $key => $value) { 
 
-        return $setp;
+            if ($key != "listID") {
+                $setp .= " " . $key . " ";
+            }
+
+            switch ( $key ) {
+            case 'completeChanCnt':
+                $setp .= $this->getNumberOfChannels();
+                break;
+            case 'micr':
+                $setp .= $this->getMicroscopeType();
+                $setp .= " " . $this->setpConfArray[$key] . " ";
+                $setp .= $this->getMicroTypeConfidenceList();
+                break;
+            case 's':
+                $setp .= $this->getSamplingSizes();
+                $setp .= " " . $this->setpConfArray[$key] . " ";
+                $setp .= $this->getSamplingConfidenceList();
+                break;
+            case 'iFacePrim':
+                $setp .= $value;
+                $setp .= " " . $this->setpConfArray[$key] . " ";
+                $setp .= $this->getiFacePrimConfidence();
+                break;                
+            case 'iFaceScnd':
+                $setp .= $value;
+                $setp .= " " . $this->setpConfArray[$key] . " ";
+                $setp .= $this->getiFaceScndConfidence();
+                break;
+            case 'pr':
+                $setp .= $this->getPinholeRadius();
+                $setp .= " " . $this->setpConfArray[$key] . " ";
+                $setp .= $this->getPinholeRadiusConfidenceList();
+                break;
+            case 'imagingDir':
+                $setp .= $this->getImagingDirection();
+                $setp .= " " . $this->setpConfArray[$key] . " ";
+                $setp .= $this->getImagingDirConfidenceList();
+                break;
+            case 'ps':
+                $setp .= $this->getPinholeSpacing();
+                $setp .= " " . $this->setpConfArray[$key] . " ";
+                $setp .= $this->getPinSpacingConfidenceList();
+                break;
+            case 'objQuality':
+                $setp .= $this->getObjQuality();
+                $setp .= " " . $this->setpConfArray[$key] . " ";
+                $setp .= $this->getObjQualityConfidenceList();
+                break;                
+            case 'pcnt':
+                $setp .= $this->getExcitationPcnt();
+                $setp .= " " . $this->setpConfArray[$key] . " ";
+                $setp .= $this->getExcitationPcntConfidenceList();
+                break;
+            case 'ex':
+                $setp .= $this->getExcitationLambda();
+                $setp .= " " . $this->setpConfArray[$key] . " ";
+                $setp .= $this->getExcitationLConfidenceList();
+                break;
+            case 'em':
+                $setp .= $this->getEmissionLambda();
+                $setp .= " " . $this->setpConfArray[$key] . " ";
+                $setp .= $this->getEmissionLConfidenceList();
+                break;
+            case 'exBeamFill':
+                $setp .= $this->getExBeamFill();
+                $setp .= " " . $this->setpConfArray[$key] . " ";
+                $setp .= $this->getExBeamConfidenceList();
+                break;
+            case 'ri':
+                $setp .= $this->getMediumRefractiveIndex();
+                $setp .= " " . $this->setpConfArray[$key] . " ";
+                $setp .= $this->getMediumRIndexConfidenceList();
+                break;
+            case 'ril':
+                $setp .= $this->getLensRefractiveIndex();
+                $setp .= " " . $this->setpConfArray[$key] . " ";
+                $setp .= $this->getLensRIndexConfidenceList();
+                break;
+            case 'na':
+                $setp .= $this->getNumericalAperture();
+                $setp .= " " . $this->setpConfArray[$key] . " ";
+                $setp .= $this->getNumericalApertureConfidenceList();
+                break;
+            case 'listID':
+                $setp = $this->string2tcllist($setp);
+                $this->setpList = $value . " " . $setp;
+                break;
+            default:
+                error_log("Setp field $key not yet implemented.");       
+            }
+        }
+
+        return $this->setpList;
     }
 
     /*!
@@ -843,14 +939,29 @@ class JobTranslation {
      \param       $task A task from the taskID array that should be 'imgSave'.
      \return      Tcl list with the 'Image save' task and its options
     */
-    private function getTaskIDImgSave($task) {
-        $destInfo = pathinfo($this->destImage);
-        $destImage =  basename($this->destImage,'.'.$destInfo['extension']);
+    private function getImgProcessSave($task) {
 
-        $imgSave = "rootName ";
-        $imgSave .= $this->string2tcllist($destImage);
-        $imgSave = $this->string2tcllist($imgSave);
-        $imgSave = " " . $task . " " . $imgSave;
+        $imgSave = "";
+        foreach ($this->imgSaveArray as $key => $value) {
+
+            if ($key != "listID") {
+                $imgSave .= " " . $key . " ";
+            }
+
+            switch( $key ) {
+            case 'rootName':
+                $outName  = $this->getDestImageBaseName();
+                $imgSave .= $this->string2tcllist($outName);
+                break;
+            case 'listID':
+                $imgSave = $this->string2tcllist($imgSave);
+                $imgSave = " " . $value . " " . $imgSave;
+                break;
+            default:
+                error_log("Image save option $key not yet implemented.");
+            }
+        }
+
         return $imgSave;
     }
 
@@ -859,27 +970,32 @@ class JobTranslation {
      \param       $task A task from the taskID array that should be 'adjbl'.
      \return      Tcl list with the 'Adjust baseline' task and its options
     */
-    private function getTaskIDAdjbl($task) {
-        $adjbl = "enabled 0 ni 0";
-        $adjbl = $this->string2tcllist($adjbl);
-        $adjbl = " " . $task . " " . $adjbl;
-        return $adjbl;
-    }
+    private function getImgProcessAdjbl($task) {
 
-    /*!
-     \brief       Gets options for the 'algorithm' task. All channels.
-     \return      Deconvolution 'algorithm' task string and its options.
-    */
-    private function getTaskIDAlgorithms( ) {
-        $numberOfChannels = $this->getNumberOfChannels();
-        $algorithms = "";
-        for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $algorithm = $this->getAlgorithm($chanCnt);
-            $algOptions = $this->getTaskAlgorithm($chanCnt);
-            $algorithms .= " ${algorithm}:$chanCnt $algOptions";
+        $imgAdjbl = "";
+        foreach ($this->adjblArray as $key => $value) {
+
+            if ($key != "listID") {
+                $imgAdjbl .= " " . $key . " ";
+            }
+
+            switch( $key ) {
+            case 'enabled':
+                $imgAdjbl .= $value;
+                break;
+            case 'ni':
+                $imgAdjbl .= $value;
+                break;
+            case 'listID':
+                $imgAdjbl = $this->string2tcllist($imgAdjbl);
+                $imgAdjbl = $value . " " . $imgAdjbl;
+                break;
+            default:
+                error_log("Image adjbl option $key not yet implemented.");
+            }
         }
 
-        return $algorithms;
+        return $imgAdjbl;
     }
 
     /*!
@@ -888,73 +1004,71 @@ class JobTranslation {
      \return      Tcl list with the deconvolution 'algorithm' task and its options
     */
     private function getTaskAlgorithm($channel) {
-        $options = "q ";
-        $options .= $this->getQualityFactor();
-        $options .= " brMode ";
-        $options .= $this->getBrMode();
-        $options .= " it ";
-        $options .= $this->getIterations();
-        $options .= " bgMode ";
-        $options .= $this->getBgMode();
-        $options .= " bg ";
-        $options .= $this->getBgValue($channel);
-        $options .= " sn ";
-        $options .= $this->getSnrValue($channel);
-        $options .= " blMode ";
-        $options .= $this->getBleachingMode();
-        $options .= " pad ";
-        $options .= $this->getPaddingMode();
-        $options .= " psfMode ";
-        $options .= $this->getPsfMode();
-        $options .= " psfPath ";
-        $options .= $this->getPsfPath($channel);
-        $options .= " timeOut ";
-        $options .= $this->getAlgTimeOut();
 
-        if ($this->getAlgorithm() == "cmle") {
-            $options .= " mode ";
-            $options .= $this->getIterationMode();
-        } else {
-            $options .= " itMode ";
-            $options .= "auto";
+        $imgAlg = "";
+        foreach ($this->algArray as $key => $value) {
+
+            if ($key != "mode" && $key != "itMode" && $key != 'listID') {
+                $imgAlg .= " " . $key . " ";
+            }
+
+            switch ( $key ) {
+            case 'q':
+                $imgAlg .= $this->getQualityFactor();
+                break;
+            case 'brMode':
+                $imgAlg .= $this->getBrMode();
+                break;
+            case 'it':
+                $imgAlg .= $this->getIterations();
+                break;
+            case 'bgMode':
+                $imgAlg .= $this->getBgMode();
+                break;
+            case 'bg':
+                $imgAlg .= $this->getBgValue($channel);
+                break;
+            case 'sn':
+                $imgAlg .= $this->getSnrValue($channel);
+                break;
+            case 'psfMode':
+                $imgAlg .= $this->getPsfMode();
+                break;
+            case 'psfPath':
+                $imgAlg .= $this->getPsfPath($channel);
+                break;
+            case 'blMode':
+                $imgAlg .= $value;
+                break;
+            case 'pad':
+                $imgAlg .= $value;
+                break;
+            case 'timeOut':
+                $imgAlg .= $value;
+                break;
+            case 'mode':
+                if ($this->getAlgorithm() == "cmle") {
+                    $imgAlg .= " " . $key . " ";
+                    $imgAlg .= $value;
+                }
+                break;
+            case 'itMode':
+                if ($this->getAlgorithm() == "qmle") {
+                    $imgAlg .= " " . $key . " ";
+                    $imgAlg .= $value;
+                }
+                break;
+            case 'listID':
+                break;
+            default:
+                error_log("Deconvolution option $key not yet implemented");
+            }
         }
 
-        return $this->string2tcllist($options);
+        return $this->string2tcllist($imgAlg);
     }
 
-    /*!
-     \brief       Gets the deconvolution timeout
-     \return      The timeout in seconds
-    */
-    private function getAlgTimeOut( ) {
-        $algTimeOut = 36000;
-        return $algTimeOut;
-    }
-
-    /*!
-     \brief       Gets options for the 'zdrift' task.
-     \params      A task from the taskID array that should be 'zdrift'.
-     \return      Tcl list with the 'zdrift' task and its options
-     \todo        zDrift option to be implemented in the GUI
-    */
-    private function getTaskIDZDrift($task) {
-        $zdrift = "enabled 1 survey single chan 0 ".
-            "filter median filterSize 3";
-        $zdrift = $this->string2tcllist($zdrift);
-        $zdrift = " " . $task . " " . $zdrift;
-        return $zdrift;
-    }
-
-    /* -------------------------- Setp tasks ----------------------------------- */
-    
-    /*!
-     \brief       Gets the position of the coverslip.
-     \return      Position of the coverslip
-     \todo        To be implemented in the GUI
-    */
-    private function getiFacePrim( ) {
-        return 0.0;
-    }
+    /* -------------------------- Setp task ----------------------------------- */
 
     /*!
      \brief       Confidence level of iFacePrim.
@@ -963,15 +1077,6 @@ class JobTranslation {
     */
     private function getiFacePrimConfidence( ) {
         return $this->getParameterConfidence("iFacePrim",0);
-    }
-
-    /*!
-     \brief       Gets the position of the preparation glass.
-     \return      Position of the preparation glass
-     \todo        To be implemented in the GUI
-    */
-    private function getiFaceScnd( ) {
-        return 0.0;
     }
 
     /*!
@@ -1531,7 +1636,7 @@ class JobTranslation {
         return $this->string2tcllist($cList);
     }
 
-    /* -------------------------- Algorithm tasks ------------------------------ */
+    /* -------------------------- Algorithm task ------------------------------ */
     
     /*!
      \brief       Gets the brick mode.
@@ -1624,36 +1729,6 @@ class JobTranslation {
     }
 
     /*!
-     \brief       Gets the bleaching mode.
-     \return      Bleaching mode
-     \todo        To be implemented in the GUI
-    */
-    private function getBleachingMode( ) {
-        $blMode = "auto";
-        return $blMode;
-    }
-
-    /*!
-     \brief       Gets the padding mode.
-     \return      Padding mode
-     \todo        To be implemented in the GUI
-    */
-    private function getPaddingMode( ) {
-        $padding = "auto";
-        return $padding;
-    }
-
-    /*!
-     \brief       Gets the iteration mode.
-     \return      Iteration mode
-     \todo        To be implemented in the GUI
-    */
-    private function getIterationMode( ) {
-        $iMode = "fast";
-        return $iMode;
-    }
-
-    /*!
      \brief       Gets the PSF mode.
      \return      PSF mode
     */
@@ -1723,7 +1798,7 @@ class JobTranslation {
         return $this->microSetting->getAberractionCorrectionParameters();
     }
 
-    /* ------------------------------ Thumbnails -------------------------------- */
+    /* ------------------------- Thumbnail tasks------------------------------- */
 
     /*!
      \brief       Gets task information for XY and XZ previews
@@ -1733,7 +1808,7 @@ class JobTranslation {
      \param       $destDir Whether to be saved in the source or the destination
      \return      The preview generation list
     */
-    private function getTaskIDXYXZ($key,$task,$srcImg,$destDir,$lif = null) {
+    private function getImgProcessXYXZ($key,$task,$srcImg,$destDir,$lif = null) {
 
         /* Get the Huygens task name of the $task */
         $task = $this->parseTask($key,$task);
@@ -1761,7 +1836,7 @@ class JobTranslation {
      \param       $destDir Whether to be saved in the source or the destination
      \return      The preview generation list
     */
-    private function getTaskIDOrtho($key,$task,$srcImg,$destDir) {
+    private function getImgProcessOrtho($key,$task,$srcImg,$destDir) {
 
         /* Get the Huygens task name of the $task */
         $task = $this->parseTask($key,$task);
@@ -1792,7 +1867,7 @@ class JobTranslation {
      \param       $destDir Whether to be saved in the source or the destination
      \return      The preview generation list
     */
-    private function getTaskIDSFP($key,$task,$srcImg,$destDir) {
+    private function getImgProcessSFP($key,$task,$srcImg,$destDir) {
 
         /* Get the Huygens task name of the $task */
         $task = $this->parseTask($key,$task);
@@ -1822,7 +1897,7 @@ class JobTranslation {
      \param       $movieType Whether the movie is a stack, a time frame or SFP
      \return      The preview generation list
     */
-    private function getTaskIDMovie($key,$task,$srcImg,$destDir,$movieType) {
+    private function getImgProcessMovie($key,$task,$srcImg,$destDir,$movieType) {
 
         /* Get the Huygens task name of the $task */
         $task = $this->parseTask($key,$task);
@@ -1852,7 +1927,7 @@ class JobTranslation {
      \param       $destDir Whether to be saved in the source or the destination
      \return      The preview generation list
     */
-    private function getTaskIDZComparison($key,$task,$destDir) {
+    private function getImgProcessZComparison($key,$task,$destDir) {
 
         /* Get the Huygens task name of the $task */
         $task = $this->parseTask($key,$task);
@@ -1881,7 +1956,7 @@ class JobTranslation {
      \param       $destDir Whether to be saved in the source or the destination
      \return      The preview generation list
     */
-    private function getTaskIDTComparison($key,$task,$destDir) {
+    private function getImgProcessTComparison($key,$task,$destDir) {
 
         /* Get the Huygens task name of the $task */
         $task = $this->parseTask($key,$task);
@@ -2155,12 +2230,6 @@ class JobTranslation {
     private function getParameterValue($paramName,$channel) {
 
         switch ( $paramName ) {
-        case 'iFacePrim':
-            $parameterValue = $this->getiFacePrim();
-            break;
-        case 'iFaceScnd':
-            $parameterValue = $this->getiFaceScnd();
-            break;
         case 'MicroscopeType':
             $parameterValue = $this->getMicroTypeForChannel($channel);
             break;
@@ -2215,6 +2284,153 @@ class JobTranslation {
         }
 
         return $parameterValue;
+    }
+
+
+    /*!
+     \brief       Gets options for the 'algorithm' task. All channels.
+     \return      Deconvolution 'algorithm' task string and its options.
+    */
+    private function getImgProcessAlgorithms( ) {
+        $numberOfChannels = $this->getNumberOfChannels();
+        $algorithms = "";
+        for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
+            $algorithm = $this->getAlgorithm($chanCnt);
+            $algOptions = $this->getTaskAlgorithm($chanCnt);
+            $algorithms .= " ${algorithm}:$chanCnt $algOptions";
+        }
+
+        return $algorithms;
+    }
+
+
+    /*!
+     \brief       Get the Huygens task name of a task.
+     \param       $key A task array key
+     \param       $task A task compliant with the Huygens template task names
+     \return      The task name (includes channel number, preview number, etc.)
+    */
+    private function parseTask($key,$task) {
+
+        if ($task == "" && $key == "algorithms") {
+            $task = $this->parseAlgorithm();
+        } elseif ($task == "previewGen") {
+            $task = $this->parsePreviewGen($key,$task);
+        } else {
+            return $task;
+        }
+
+        return $task;
+    }
+
+    /*!
+     \brief       Gets the Huygens task name of a preview task
+     \param       $key A task array key
+     \param       $task A task compliant with the Huygens template task names
+     \return      The Huygens preview task name
+    */
+    private function parsePreviewGen($key,$task) {
+        global $useThumbnails;
+        global $saveSfpPreviews;
+        global $maxComparisonSize;
+
+        $maxPreviewPixelsPerDim = 65000;
+
+        if (!$useThumbnails) {
+            return;
+        } else {
+            if (strstr($key, 'SFP')) {
+                if ($saveSfpPreviews) {
+                    $task = $task . ":" . $this->thumbCnt;
+                    $this->thumbCnt++;
+                } else {
+                    $task = "";
+                }
+            } elseif (strstr($key, 'Lif')) {
+                if ($this->isImageLif()) {
+                    $task = $task . ":" . $this->thumbCnt;
+                    $this->thumbCnt++;
+                } else {
+                    $task = "";
+                }
+            } elseif (strstr($key, 'ZComparison')) {
+
+                if ($this->sizeX < $maxComparisonSize) {
+                    $previewPixelsX = 2 * $this->sizeX;
+                } else {
+                    $previewPixelsX = 2 * $maxComparisonSize;
+                }
+
+                if ($this->sizeY < $maxComparisonSize) {
+                    $previewPixelsY = $this->sizeY * $this->sizeZ;
+                } else {
+                    $previewPixelsY = $maxComparisonSize * $this->sizeZ;
+                }
+
+                # Check whether the comparison strip might get dangerously big.
+                if ($previewPixelsX < $maxPreviewPixelsPerDim 
+                    && $previewPixelsY < $maxPreviewPixelsPerDim) {
+                    $task = $task . ":" . $this->thumbCnt;
+                    $this->thumbCnt++;
+                    $this->compareZviews = TRUE;
+                } else {
+                    $task = "";
+                    $this->compareZviews = FALSE;
+                }
+            } elseif (strstr($key, 'TComparison')) {
+
+                if ($this->sizeX < $maxComparisonSize) {
+                    $previewPixelsX = 2 * $this->sizeX;
+                } else {
+                    $previewPixelsX = 2 * $maxComparisonSize;
+                }
+
+                if ($this->sizeY < $maxComparisonSize) {
+                    $previewPixelsY = $this->sizeY * $this->sizeT;
+                } else {
+                    $previewPixelsY = $maxComparisonSize * $this->sizeT;
+                }
+
+                # Check whether the comparison strip might get dangerously big.
+                if ($previewPixelsX < $maxPreviewPixelsPerDim 
+                    && $previewPixelsY < $maxPreviewPixelsPerDim) {
+                    $task = $task . ":" . $this->thumbCnt;
+                    $this->thumbCnt++;
+                    $this->compareTviews = TRUE;
+                } else {
+                    $task = "";
+                    $this->compareTviews = FALSE;
+                }
+            } else {
+                $task = $task . ":" . $this->thumbCnt;
+                $this->thumbCnt++;
+            }
+        } 
+        return $task;
+    }
+
+    /*!
+     \brief       Gets the Huygens deconvolution task names of every channel
+     \return      The Huygens deconvolution task names
+    */
+    private function parseAlgorithm ( ) {
+        $numberOfChannels = $this->getNumberOfChannels();
+        $algorithms = "";
+        for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
+            $algorithms .= $this->getAlgorithm().":$chanCnt ";
+        }
+        return trim($algorithms);
+    }
+
+    /*!
+     \brief       Gets the task tag information
+     \return      The Tcl-compliant nested list with the tag information
+    */
+    private function getTaskTag( ) {
+        /* There are no specific names for the deconvolution and microscopic
+         templates in the Tcl-lists, they will be set to general names. */
+        $taskTag = "setp microscopicTemplate decon deconvolutionTemplate";
+        return  $this->string2tcllist($taskTag);
     }
 
     /*
@@ -2277,13 +2493,6 @@ class JobTranslation {
     }
 
     /*!
-     \brief       Resets the counter of preview tasks
-    */
-    private function initializePreviewCounter( ) {
-        $this->previewCnt = 0;
-    }
-
-    /*!
      \brief       Gets the current date in format: Wed Feb 02 16:02:11 CET 2011
      \return      The date
     */
@@ -2305,20 +2514,17 @@ class JobTranslation {
     }
 
     /*!
-     \brief       Gets the Huygens template version built in this class
-     \return      The template version
+     \brief       Gets value for the multidir export format option.
+     \return      A boolean with the multidir option value.
     */
-    private function getTemplateVersion( ) {
-        return $templateVersion = 2.2;
-    }
+    private function getMultiDirOpt( ) {
+        $outputType = $this->getOutputFileType();
 
-    /*!
-     \brief       Gets a general template title
-     \return      The template title
-    */
-    private function getTemplateTitle( ) {
-        $templateTitle = "Batch processing template";
-        return $this->string2tcllist($templateTitle);
+        if (preg_match("/tif/i",$outputType)) {
+            return 1;
+        } else {
+            return 0;
+        }
     }
 
     /*!
@@ -2389,6 +2595,11 @@ class JobTranslation {
         $this->destImage = $this->jobDescription->destinationImageFullName();
         $fileType = $this->getOutFileExtension();
         $this->destImage = $this->destImage.".".$fileType;
+    }
+
+    private function getDestImageBaseName( ) {
+        $destInfo = pathinfo($this->destImage);
+        return basename($this->destImage,'.'.$destInfo['extension']);
     }
 
     /*!

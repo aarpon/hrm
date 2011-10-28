@@ -9,7 +9,7 @@ require_once ("hrm_config.inc.php");
 require_once ("Fileserver.inc.php");
 require_once ("Shell.inc.php");
 require_once ("Mail.inc.php");
-require_once ("JobTranslation.inc.php");
+require_once ("HuygensTemplate.inc.php");
 require_once ("System.inc.php");
 
 /*!
@@ -148,7 +148,7 @@ class Job {
   public function createScript() {
 
       $jobDescription = $this->description();
-      $jobTranslation = new JobTranslation($jobDescription);
+      $jobTranslation = new HuygensTemplate($jobDescription);
       $this->script = $jobTranslation->template;
   }
 
