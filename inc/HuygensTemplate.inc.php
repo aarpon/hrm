@@ -147,6 +147,35 @@ class HuygensTemplate {
     */
     private $setpConfArray;
 
+    /*!
+      \var    $thumbXYXZArray
+      \brief  Array with information for XYXZ thumbnail projections.
+    */
+    private $thumbXYXZArray;
+
+    /*!
+      \var    $thumbOrthoArray
+      \brief  Array with information for Ortho thumbnail projections.
+    */
+    private $thumbOrthoArray;
+
+    /*!
+      \var    $thumbSFPArray
+      \brief  Array with information for SFP thumbnail generation.
+    */
+    private $thumbSFPArray;
+
+    /*!
+      \var    $thumbMovieArray
+      \brief  Array with information for the generation of movies.
+    */
+    private $thumbMovieArray;
+
+    /*!
+      \var    $thumbComparisonArray
+      \brief  Array with information for the generation of comparison strips.
+    */
+    private $thumbComparisonArray;
 
     /*!
       \var    $setpList
@@ -337,6 +366,8 @@ class HuygensTemplate {
      \todo        Add a field 'zdrift' when it is implemented in the GUI.
     */
     private function initializeImgProcessing( ) {
+        global $maxComparisonSize;
+        global $movieMaxSize;
 
         $this->imgProcessArray = 
             array ( 'info'                      => '',
@@ -444,6 +475,47 @@ class HuygensTemplate {
                     'mode'                      =>  'fast',
                     'itMode'                    =>  'auto',
                     'listID'                    =>  '' );
+
+        $this->thumbXYXZArray  =
+            array( 'image'                      =>  '',
+                   'destDir'                    =>  '',
+                   'destFile'                   =>  '',
+                   'type'                       =>  'XYXZ' );
+
+        $this->thumbOrthoArray =
+            array( 'image'                      =>  '',
+                   'destDir'                    =>  '',
+                   'destFile'                   =>  '',
+                   'type'                       =>  'orthoSlice',
+                   'size'                       =>  '400' );
+
+        $this->thumbSFPArray  =
+            array( 'image'                      =>  '',
+                   'destDir'                    =>  '',
+                   'destFile'                   =>  '',
+                   'type'                       =>  'SFP' );
+
+        $this->thumbMovieArray  =
+            array( 'image'                      =>  '',
+                   'destDir'                    =>  '',
+                   'destFile'                   =>  '',
+                   'size'                       =>  $movieMaxSize,
+                   'type'                       =>  array(
+                                                          'ZMovie',
+                                                          'timeSFPMovie',
+                                                          'timeMovie'
+                                                          ),
+                   );
+        
+        $this->thumbComparisonArray  =
+            array( 'destDir'                    =>  '',
+                   'destFile'                   =>  '',
+                   'size'                       =>  $maxComparisonSize,
+                   'type'                       =>  array(
+                                                          'compareZStrips',
+                                                          'compareTStrips'
+                                                          )
+                   );
 
         $this->imgSaveArray = 
             array ( 'rootName'                  =>  '',
@@ -771,10 +843,12 @@ class HuygensTemplate {
                                                        "timeMovie");
                 break;
             case 'ZComparisonAtDstDir':
-                $taskList .= $this->getImgProcessZComparison($key,$value,"dest");
+                $taskList .= $this->getImgProcessComparison($key,$value,"dest",
+                                                            "compareZStrips");
                 break;
             case 'TComparisonAtDstDir':
-                $taskList .= $this->getImgProcessTComparison($key,$value,"dest");
+                $taskList .= $this->getImgProcessComparison($key,$value,"dest",
+                                                            "compareTStrips");
                 break;
             case 'listID':
                 break;
@@ -848,79 +922,47 @@ class HuygensTemplate {
                 $setp .= $this->getNumberOfChannels();
                 break;
             case 'micr':
-                $setp .= $this->getMicroscopeType();
-                $setp .= " " . $this->setpConfArray[$key] . " ";
-                $setp .= $this->getMicroTypeConfidenceList();
+                $parameter = "MicroscopeType";
                 break;
             case 's':
-                $setp .= $this->getSamplingSizes();
-                $setp .= " " . $this->setpConfArray[$key] . " ";
-                $setp .= $this->getSamplingConfidenceList();
-                break;
-            case 'iFacePrim':
-                $setp .= $value;
-                $setp .= " " . $this->setpConfArray[$key] . " ";
-                $setp .= $this->getiFacePrimConfidence();
-                break;                
-            case 'iFaceScnd':
-                $setp .= $value;
-                $setp .= " " . $this->setpConfArray[$key] . " ";
-                $setp .= $this->getiFaceScndConfidence();
+                $parameter = "Sampling";
                 break;
             case 'pr':
-                $setp .= $this->getPinholeRadius();
-                $setp .= " " . $this->setpConfArray[$key] . " ";
-                $setp .= $this->getPinholeRadiusConfidenceList();
+                $parameter = "PinholeSize";
                 break;
             case 'imagingDir':
-                $setp .= $this->getImagingDirection();
-                $setp .= " " . $this->setpConfArray[$key] . " ";
-                $setp .= $this->getImagingDirConfidenceList();
+                $parameter = "ImagingDir";
                 break;
             case 'ps':
-                $setp .= $this->getPinholeSpacing();
-                $setp .= " " . $this->setpConfArray[$key] . " ";
-                $setp .= $this->getPinSpacingConfidenceList();
+                $parameter = "PinholeSpacing";
                 break;
             case 'objQuality':
-                $setp .= $this->getObjQuality();
-                $setp .= " " . $this->setpConfArray[$key] . " ";
-                $setp .= $this->getObjQualityConfidenceList();
+                $parameter = "ObjectiveQuality";
                 break;                
             case 'pcnt':
-                $setp .= $this->getExcitationPcnt();
-                $setp .= " " . $this->setpConfArray[$key] . " ";
-                $setp .= $this->getExcitationPcntConfidenceList();
+                $parameter = "ExcitationPhoton";
                 break;
             case 'ex':
-                $setp .= $this->getExcitationLambda();
-                $setp .= " " . $this->setpConfArray[$key] . " ";
-                $setp .= $this->getExcitationLConfidenceList();
+                $parameter = "ExcitationWavelength";
                 break;
             case 'em':
-                $setp .= $this->getEmissionLambda();
-                $setp .= " " . $this->setpConfArray[$key] . " ";
-                $setp .= $this->getEmissionLConfidenceList();
+                $parameter = "EmissionWavelength";
                 break;
             case 'exBeamFill':
-                $setp .= $this->getExBeamFill();
-                $setp .= " " . $this->setpConfArray[$key] . " ";
-                $setp .= $this->getExBeamConfidenceList();
+                $parameter = "ExBeamFactor";
                 break;
             case 'ri':
-                $setp .= $this->getMediumRefractiveIndex();
-                $setp .= " " . $this->setpConfArray[$key] . " ";
-                $setp .= $this->getMediumRIndexConfidenceList();
+                $parameter = "SampleMedium";
                 break;
             case 'ril':
-                $setp .= $this->getLensRefractiveIndex();
-                $setp .= " " . $this->setpConfArray[$key] . " ";
-                $setp .= $this->getLensRIndexConfidenceList();
+                $parameter = "ObjectiveType";
                 break;
             case 'na':
-                $setp .= $this->getNumericalAperture();
-                $setp .= " " . $this->setpConfArray[$key] . " ";
-                $setp .= $this->getNumericalApertureConfidenceList();
+                $parameter = "NumericalAperture";
+                break;
+            case 'iFacePrim':
+            case 'iFaceScnd':
+                $parameter = $key;
                 break;
             case 'listID':
                 $setp = $this->string2tcllist($setp);
@@ -929,6 +971,9 @@ class HuygensTemplate {
             default:
                 error_log("Setp field $key not yet implemented.");       
             }
+            $setp .= $this->getParameter($parameter,$value);
+            $setp .= " " . $this->setpConfArray[$key] . " ";
+            $setp .= $this->getParameterConfidence($parameter,0);
         }
 
         return $this->setpList;
@@ -1071,77 +1116,16 @@ class HuygensTemplate {
     /* -------------------------- Setp task ----------------------------------- */
 
     /*!
-     \brief       Confidence level of iFacePrim.
-     \return      The parameter confidence
-     \todo        To be implemented in the GUI
-    */
-    private function getiFacePrimConfidence( ) {
-        return $this->getParameterConfidence("iFacePrim",0);
-    }
-
-    /*!
-     \brief       Confidence level of iFaceScnd.
-     \return      The parameter confidence
-     \todo        To be implemented in the GUI
-    */
-    private function getiFaceScndConfidence( ) {
-        return $this->getParameterConfidence("iFaceScnd",0);
-    }
-
-    /*!
-     \brief       Gets the pinhole radii. All channels.
-     \return      Tcl list with the Pinhole radii.
-    */
-    private function getPinholeRadius( ) {
-        $numberOfChannels = $this->getNumberOfChannels();
-        $prList = "";
-        for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $pinRadius = $this->getParameterValue("PinholeSize",$chanCnt);
-            $prList .= " " . $pinRadius;
-        }
-        return  $this->string2tcllist($prList);
-    }
-
-    /*!
      \brief       Gets the pinhole radius. One channel.
      \param       $channel A channel
      \return      The pinhole radius.
     */
-    private function getPinRadiusForChannel($channel) {
+    private function getPinholeRadius($channel) {
         $microSetting = $this->microSetting;
         $pinholeSize = $microSetting->parameter("PinholeSize")->value();       
         $pinholeRadius = $pinholeSize[$channel];
         return $pinholeRadius;
-    }
-
-    /*!
-     \brief       Confidence levels of the pinhole radii. All channels.
-     \return      Tcl-list: whether verified, reported, estimated or default.
-    */
-    private function getPinholeRadiusConfidenceList( ) {
-        $numberOfChannels = $this->getNumberOfChannels();
-        $cList = "";
-        for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $cLevel = $this->getParameterConfidence("PinholeSize",$chanCnt);
-            $cList .= "  " . $cLevel;
-        }
-        return $this->string2tcllist($cList);
-    }
-
-    /*!
-     \brief       Gets the microscope type of each channel. All channels.
-     \return      The microscope type list
-    */
-    private function getMicroscopeType( ) {
-        $numberOfChannels = $this->getNumberOfChannels();
-        $microList = "";
-        for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $microType = $this->getParameterValue("MicroscopeType",$chanCnt);
-            $microList .= " " . $microType;
-        }
-        return $this->string2tcllist($microList);
-    }            
-           
+    }      
 
     /*!
      \brief       Gets the microscope type of all channels.
@@ -1149,38 +1133,10 @@ class HuygensTemplate {
      \return      Tcl-list with the microscope types of all channels.
      \todo        To be implemented in the GUI
     */
-    private function getMicroTypeForChannel($channel) {
+    private function getMicroscopeType($channel) {
         $microSetting = $this->microSetting;
         $microType = $microSetting->parameter('MicroscopeType')->translatedValue();
         return $microType;
-    }
-
-    /*!
-     \brief       Confidence levels of the microscope type. All channels.
-     \return      Tcl-list: whether verified, reported, estimated or default.
-    */
-    private function getMicroTypeConfidenceList( ) {
-        $numberOfChannels = $this->getNumberOfChannels();
-        $cList = "";
-        for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $cLevel = $this->getParameterConfidence("MicroscopeType",$chanCnt);
-            $cList .= " " . $cLevel;
-        }
-        return $this->string2tcllist($cList);
-    }
-
-    /*!
-     \brief       Gets the refractive indexes of all channels.
-     \return      Tcl-list with the refractive indexes.
-    */
-    private function getLensRefractiveIndex( ) {
-        $numberOfChannels = $this->getNumberOfChannels();
-        $lensRIList = "";
-        for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $lensRI = $this->getParameterValue("ObjectiveType",$chanCnt);
-            $lensRIList .= " " . $lensRI;
-        }
-        return $this->string2tcllist($lensRIList);
     }
 
     /*!
@@ -1188,38 +1144,10 @@ class HuygensTemplate {
      \param       $channel A channel
      \return      The refractive index.
     */
-    private function getLensRIForChannel($channel) {
+    private function getLensRefractiveIndex($channel) {
         $microSetting = $this->microSetting;
         $lensRI = $microSetting->parameter('ObjectiveType')->translatedValue();
         return $lensRI;
-    }
-
-    /*!
-     \brief       Confidence levels of the lens refractive index. All channels.
-     \return      Tcl-list: whether verified, reported, estimated or default.
-    */
-    private function getLensRIndexConfidenceList( ) {
-        $numberOfChannels = $this->getNumberOfChannels();
-        $cList = "";
-        for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $cLevel = $this->getParameterConfidence("ObjectiveType",$chanCnt);
-            $cList .= " " . $cLevel;
-        }
-        return $this->string2tcllist($cList);
-    }
-
-    /*!
-     \brief       Gets the numerical apertures. All channels.
-     \return      Tcl-list with the numerical apertures.
-    */
-    private function getNumericalAperture( ) {
-        $numberOfChannels = $this->getNumberOfChannels();
-        $numAperList = "";
-        for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $numAper = $this->getParameterValue("NumericalAperture",$chanCnt);
-            $numAperList .= " " . $numAper;
-        }
-        return $this->string2tcllist($numAperList);
     }
 
     /*!
@@ -1227,7 +1155,7 @@ class HuygensTemplate {
      \param       $channel A channel
      \return      The numerical aperture.
     */
-    private function getNumApertureForChannel($channel) {
+    private function getNumericalAperture($channel) {
         $microSetting = $this->microSetting;
         $numAper = $microSetting->parameter('NumericalAperture')->value();
 
@@ -1235,40 +1163,11 @@ class HuygensTemplate {
     }
 
     /*!
-     \brief       Confidence levels of the numerical aperture index. All channels.
-     \return      Tcl-list: whether verified, reported, estimated or default.
-    */
-    private function getNumericalApertureConfidenceList( ) {
-
-        $numberOfChannels = $this->getNumberOfChannels();
-        $cList = "";
-        for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $cLevel = $this->getParameterConfidence("NumericalAperture",$chanCnt);
-            $cList .= " " . $cLevel;
-        }
-        return $this->string2tcllist($cList);
-    }
-
-    /*!
-     \brief       Gets the pinhole spacing. All channels.
-     \return      Tcl-list with pinhole spacing.
-    */
-    private function getPinholeSpacing( ) {
-        $numberOfChannels = $this->getNumberOfChannels();
-        $pinsList = "";
-        for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $pinSpacing = $this->getParameterValue("PinholeSpacing",$chanCnt);
-            $pinsList .= " " . $pinSpacing;
-        }
-        return $this->string2tcllist($pinsList);
-    }
-
-    /*!
      \brief       Gets the pinhole spacing. One channel.
      \param       $channel A channel
      \return      The pinhole spacing.
     */
-    private function getPinSpacingForChannel($channel) {
+    private function getPinholeSpacing($channel) {
         $microSetting = $this->microSetting;
         $pinSpacing = $microSetting->parameter("PinholeSpacing")->value();
 
@@ -1279,70 +1178,13 @@ class HuygensTemplate {
     }
 
     /*!
-     \brief       Confidence levels of the pinhole spacing. All channels.
-     \return      Tcl-list: whether verified, reported, estimated or default.
-    */
-    private function getPinSpacingConfidenceList( ) {
-        $numberOfChannels = $this->getNumberOfChannels();
-        $cList = "";
-        for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $cLevel = $this->getParameterConfidence("PinholeSpacing",$chanCnt);
-            $cList .= " " . $cLevel;
-        }
-        return $this->string2tcllist($cList);
-    }
-
-    /*!
-     \brief       Gets the objective qualities. All channels.
-     \return      Tcl-list with the objective qualities.
-    */
-    private function getObjQuality( ) {
-        $numberOfChannels = $this->getNumberOfChannels();
-        $objQList = "";
-        for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $objQuality = $this->getParameterValue("ObjQuality",$chanCnt);
-            $objQList .= " " . $objQuality;
-        }
-        return $this->string2tcllist($objQList);
-    }
-
-    /*!
      \brief       Gets the Objective Quality. One channel.
      \param       $channel A channel
      \return      The objective quality.
      \todo        To be implemented in the GUI
     */
-    private function getObjQualityForChannel($channel) {
-        $objQuality = "good";
-        return $objQuality;
-    }
-
-    /*!
-     \brief       Confidence levels of the object quality. All channels.
-     \return      Tcl-list: whether verified, reported, estimated or default.
-    */
-    private function getObjQualityConfidenceList( ) {
-        $numberOfChannels = $this->getNumberOfChannels();
-        $cList = "";
-        for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $cLevel = $this->getParameterConfidence("ObjQuality",$chanCnt);
-            $cList .= " " . $cLevel;
-        }
-        return $this->string2tcllist($cList);
-    }
-
-    /*!
-     \brief       Gets the excitation photon counts. All channels.
-     \return      Tcl-list with the excitation photon  counts.
-    */
-    private function getExcitationPcnt( ) {
-        $numberOfChannels = $this->getNumberOfChannels();
-        $excPcntList = "";
-        for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $excPcnt = $this->getExcitationPcntForChannel($chanCnt);
-            $excPcntList .= " " . $excPcnt;
-        }
-        return $this->string2tcllist($excPcntList);
+    private function getObjectiveQuality($channel) {
+        return $this->setpArray['objQuality'];
     }
 
     /*!
@@ -1350,7 +1192,7 @@ class HuygensTemplate {
      \param       $channel A channel
      \return      Tcl-list with the excitation photon count.
     */
-    private function getExcitationPcntForChannel($channel) {
+    private function getExcitationPhotonCount($channel) {
         if ($this->microSetting->isTwoPhoton()) {
             $pcnt = 2;
         } else {
@@ -1360,39 +1202,11 @@ class HuygensTemplate {
     }
 
     /*!
-     \brief       Confidence levels of the excitacion photon cnt. All channels.
-     \return      Tcl-list: whether verified, reported, estimated or default.
-    */
-    private function getExcitationPcntConfidenceList( ) {
-        $numberOfChannels = $this->getNumberOfChannels();
-        $cList = "";
-        for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $cLevel = $this->getParameterConfidence("ExcitationPhotonCnt",0);
-            $cList .= " " . $cLevel;
-        }
-        return $this->string2tcllist($cList);
-    }
-
-    /*!
-     \brief       Gets the excitation wavelengths. All channels.
-     \return      Tcl-list with the excitation wavelengths.
-    */
-    private function getExcitationLambda( ) {
-        $numberOfChannels = $this->getNumberOfChannels();
-        $exLambdaList = "";
-        for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $exLambda = $this->getParameterValue("ExcitationWavelength",$chanCnt);
-            $exLambdaList .= " " . $exLambda;
-        }
-        return $this->string2tcllist($exLambdaList);
-    }
-
-    /*!
      \brief       Gets the excitation wavelength. One channel.
      \param       $channel A channel
      \return      Tcl-list with the excitation wavelength.
     */
-    private function getExLambdaForChannel($channel) {
+    private function getExcitationWavelength($channel) {
         $microSetting = $this->microSetting;
         $excitationLambdas = $microSetting->parameter("ExcitationWavelength");
         $excitationLambda = $excitationLambdas->value();
@@ -1400,69 +1214,12 @@ class HuygensTemplate {
     }
 
     /*!
-     \brief       Confidence levels of the excitacion wavelength. All channels.
-     \return      Tcl-list: whether verified, reported, estimated or default.
-    */
-    private function getExcitationLConfidenceList( ) {
-        $numberOfChannels = $this->getNumberOfChannels();
-        $cList = "";
-        for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $cLevel = $this->getParameterConfidence("ExcitationWavelength",
-                                                    $chanCnt);
-            $cList .= " " . $cLevel;
-        }
-        return $this->string2tcllist($cList);
-    }
-    
-    /*!
-     \brief       Gets the excitation beam overfill factor. All channels.
-     \return      Tcl-list with the excitation beam overfill factors.
-    */
-    private function getExBeamFill( ) {
-        $numberOfChannels = $this->getNumberOfChannels();
-        $exBeamList = "";
-        for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $exBeam = $this->getParameterValue("ExBeamFactor",$chanCnt);
-            $exBeamList .= " " . $exBeam;
-        }
-        return $this->string2tcllist($exBeamList);
-    }
-
-    /*!
      \brief       Gets the excitation beam overfill factor. One channel.
      \param       $channel A channel
      \return      Tcl-list with the excitation beam factor.
     */
-    private function getExBeamForChannel($channel) {
-        return 2.0;
-    }
-
-    /*!
-     \brief       Confidence levels of the excitacion beam factor. All channels.
-     \return      Tcl-list: whether verified, reported, estimated or default.
-    */
-    private function getExBeamConfidenceList( ) {
-        $numberOfChannels = $this->getNumberOfChannels();
-        $cList = "";
-        for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $cLevel = $this->getParameterConfidence("ExBeamFactor",0);
-            $cList .= " " . $cLevel;
-        }
-        return $this->string2tcllist($cList);
-    }
-
-    /*!
-     \brief       Gets the emission wavelengths. All channels.
-     \return      Tcl-list with the emission wavelengths.
-    */
-    private function getEmissionLambda( ) {
-        $numberOfChannels = $this->getNumberOfChannels();
-        $emLambdaList = "";
-        for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $emLambda = $this->getParameterValue("EmissionWavelength",$chanCnt);
-            $emLambdaList .= " " . $emLambda;
-        }
-        return $this->string2tcllist($emLambdaList);
+    private function getExcitationBeamFactor($channel) {
+        return $this->setpArray['exBeamFill'];
     }
 
     /*!
@@ -1470,41 +1227,11 @@ class HuygensTemplate {
      \param       $channel A channel
      \return      The emission wavelength.
     */
-    private function getEmLambdaForChannel($channel) {
+    private function getEmissionWavelength($channel) {
         $microSetting = $this->microSetting;
         $emissionLambdas = $microSetting->parameter("EmissionWavelength");
         $emissionLambda = $emissionLambdas->value();
         return $emissionLambda[$channel];
-    }
-    
-    /*!
-     \brief       Confidence levels of the emission wavelength. All channels.
-     \return      Tcl-list: whether verified, reported, estimated or default.
-    */
-    private function getEmissionLConfidenceList( ) {
-        $numberOfChannels = $this->getNumberOfChannels();
-        $cList = "";
-        for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $cLevel = $this->getParameterConfidence("EmissionWavelength",
-                                                    $chanCnt);
-            $cList .= " " . $cLevel;
-        }
-        return $this->string2tcllist($cList);
-    }
-
-    /*!
-     \brief       Gets the imaging direction. All channels.
-     \return      Tcl list with the 'imaging direction'.
-    */
-    private function getImagingDirection( ) {
-        $numberOfChannels = $this->getNumberOfChannels();
-        $dirList = "";
-        for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $imagingDir = $this->getParameterValue("CoverslipRelativePosition",
-                                                   $chanCnt);
-            $dirList .= " " . $imagingDir;
-        }
-        return $this->string2tcllist($dirList);
     }
 
     /*!
@@ -1512,7 +1239,7 @@ class HuygensTemplate {
      \param       $channel A channel
      \return      Whether the imaging is 'downward' or 'upward'
     */
-    private function getImagingDirForChannel($channel) {
+    private function getImagingDirection($channel) {
         $microSetting = $this->microSetting;
         $coverslip = $microSetting->parameter('CoverslipRelativePosition');
         $coverslipPos = $coverslip->value();
@@ -1525,58 +1252,15 @@ class HuygensTemplate {
     }
 
     /*!
-     \brief       Confidence levels of the imaging direction. All channels.
-     \return      Tcl-list: whether verified, reported, estimated or default.
-    */
-    private function getImagingDirConfidenceList( ) {
-        $numberOfChannels = $this->getNumberOfChannels();
-        $cList = "";
-        for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $cLevel = $this->getParameterConfidence("CoverslipRelativePosition",
-                                                    $chanCnt);
-            $cList .= " " . $cLevel;
-        }
-        return $this->string2tcllist($cList);
-    }
-
-    /*!
-     \brief       Gets the medium refractive index. All channels.
-     \return      Tcl list with the 'medium refractive indexes'.
-    */
-    private function getMediumRefractiveIndex() {
-        $numberOfChannels = $this->getNumberOfChannels();
-        $MRIndexList = "";
-        for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $MRIndex = $this->getParameterValue("SampleMedium",$chanCnt);
-            $MRIndexList .= " " . $MRIndex;
-        }
-        return $this->string2tcllist($MRIndexList);
-    }
-
-    /*!
      \brief       Gets the medium refractive index. One channel.
      \param       $channel A channel
      \return      The medium refractive index
     */
-    private function getMRIndexForChannel($channel) {
+    private function getMediumRefractiveIndex($channel) {
         $microSetting = $this->microSetting;
         $sampleMedium = $microSetting->parameter("SampleMedium");
         $refractiveIndx = $sampleMedium->translatedValue();
         return $refractiveIndx;
-    }
-
-    /*!
-     \brief       Confidence levels of the medium refractive index. All channels.
-     \return      Tcl-list: whether verified, reported, estimated or default.
-    */
-    private function getMediumRIndexConfidenceList( ) {
-        $numberOfChannels = $this->getNumberOfChannels();
-        $cList = "";
-        for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $cLevel = $this->getParameterConfidence("SampleMedium",$chanCnt);
-            $cList .= " " . $cLevel;
-        }
-        return $this->string2tcllist($cList);
     }
 
     public function getSamplingSizeX( ) {
@@ -1622,18 +1306,6 @@ class HuygensTemplate {
         $sampling .= " " . $this->getSamplingSizeT();
 
         return $this->string2tcllist($sampling);
-    }
-
-    /*!
-     \brief       Confidence levels of the sampling sizes.
-     \return      Tcl-list: whether verified, reported, estimated or default.
-    */
-    private function getSamplingConfidenceList( ) {
-        $cList = $this->getParameterConfidence("CCDCaptorSizeX",0);
-        $cList .= " " . $this->getParameterConfidence("CCDCaptorSizeX",0);
-        $cList .= " " . $this->getParameterConfidence("ZStepSize",0);
-        $cList .= " " . $this->getParameterConfidence("TimeInterval",0);
-        return $this->string2tcllist($cList);
     }
 
     /* -------------------------- Algorithm task ------------------------------ */
@@ -1809,22 +1481,41 @@ class HuygensTemplate {
      \return      The preview generation list
     */
     private function getImgProcessXYXZ($key,$task,$srcImg,$destDir,$lif = null) {
-
+        
         /* Get the Huygens task name of the $task */
         $task = $this->parseTask($key,$task);
         if ($task == "") {
             return;
         }
-        $previewGen = "image ";
-        $previewGen .= $this->getImageType($srcImg);
-        $previewGen .= " destDir ";
-        $previewGen .= $this->getThumbnailDestDir($destDir);
-        $previewGen .= " destFile ";
-        $previewGen .= $this->getThumbnailDestFile($srcImg,"XYXZ",null,$lif);
-        $previewGen .= " type ";
-        $previewGen .= $this->getPreviewType("XYXZ");
+        
+        $previewGen = "";
+
+        foreach ($this->thumbXYXZArray as $key => $value) {
+
+            $previewGen .= " " . $key . " ";
+
+            switch( $key ) {
+            case 'image':
+                $previewGen .= $this->getImageType($srcImg);
+                break;
+            case 'destDir':
+                $previewGen .= $this->getThumbnailDestDir($destDir);
+                break;
+            case 'destFile':
+                $previewGen .= $this->getThumbnailDestFile($srcImg,"XYXZ",
+                                                           null,$lif);
+                break;
+            case 'type':
+                $previewGen .= $value;
+                break;
+            default:
+                error_log("XYXZ preview option $key not yet implemented");
+            }
+        }
+
         $previewGen = $this->string2tcllist($previewGen);
         $previewGen = " " . $task . " " . $previewGen;
+
         return $previewGen;
     }
     
@@ -1844,18 +1535,36 @@ class HuygensTemplate {
             return;
         }
 
-        $previewGen = "image ";
-        $previewGen .= $this->getImageType($srcImg);
-        $previewGen .= " destDir ";
-        $previewGen .= $this->getThumbnailDestDir($destDir);
-        $previewGen .= " destFile ";
-        $previewGen .= $this->getThumbnailDestFile($srcImg,"Ortho");
-        $previewGen .= " type ";
-        $previewGen .= $this->getPreviewType("orthoSlice");
-        $previewGen .= " size ";
-        $previewGen .= $this->getPreviewSize();
+        $previewGen = "";
+
+        foreach ($this->thumbOrthoArray as $key => $value) {
+
+            $previewGen .= " " . $key . " ";
+
+            switch( $key ) {
+            case 'image':
+                $previewGen .= $this->getImageType($srcImg);
+                break;
+            case 'destDir':
+                $previewGen .= $this->getThumbnailDestDir($destDir);
+                break;
+            case 'destFile':
+                $previewGen .= $this->getThumbnailDestFile($srcImg,"Ortho");
+                break;
+            case 'type':
+                $previewGen .= $value;
+                break;
+            case 'size':
+                $previewGen .= $value;
+                break;
+            default:
+                error_log("Ortho preview option $key not yet implemented");
+            }
+        }
+
         $previewGen = $this->string2tcllist($previewGen);
         $previewGen = " " . $task . " " . $previewGen;
+
         return $previewGen;
     }
     
@@ -1875,16 +1584,33 @@ class HuygensTemplate {
             return;
         }
 
-        $previewGen = "image ";
-        $previewGen .= $this->getImageType($srcImg);
-        $previewGen .= " destDir ";
-        $previewGen .= $this->getThumbnailDestDir($destDir);
-        $previewGen .= " destFile ";
-        $previewGen .= $this->getThumbnailDestFile($srcImg,"SFP");
-        $previewGen .= " type ";
-        $previewGen .= $this->getPreviewType("SFP");
+        $previewGen = "";
+
+        foreach ($this->thumbSFPArray as $key => $value) {
+
+            $previewGen .= " " . $key . " ";
+
+            switch( $key ) {
+            case 'image':
+                $previewGen .= $this->getImageType($srcImg);
+                break;
+            case 'destDir':
+                $previewGen .= $this->getThumbnailDestDir($destDir);
+                break;
+            case 'destFile':
+                $previewGen .= $this->getThumbnailDestFile($srcImg,"SFP");
+                break;
+            case 'type':
+                $previewGen .= $value;
+                break;
+            default:
+                error_log("SFP preview option $key not yet implemented");
+            }
+        }
+
         $previewGen = $this->string2tcllist($previewGen);
         $previewGen = " " . $task . " " . $previewGen;
+
         return $previewGen;
     }
 
@@ -1904,19 +1630,40 @@ class HuygensTemplate {
         if ($task == "") {
             return;
         }
-        
-        $previewGen = "image ";
-        $previewGen .= $this->getImageType($srcImg);
-        $previewGen .= " destDir ";
-        $previewGen .= $this->getThumbnailDestDir($destDir);
-        $previewGen .= " destFile ";
-        $previewGen .= $this->getThumbnailDestFile($srcImg,"Movie",$movieType);
-        $previewGen .= " type ";
-        $previewGen .= $this->getPreviewType($movieType);
-        $previewGen .= " size ";
-        $previewGen .= $this->getMovieSize();
+
+        $previewGen = "";
+
+        foreach ($this->thumbMovieArray as $key => $value) {
+
+            $previewGen .= " " . $key . " ";
+
+            switch( $key ) {
+            case 'image':
+                $previewGen .= $this->getImageType($srcImg);
+                break;
+            case 'destDir':
+                $previewGen .= $this->getThumbnailDestDir($destDir);
+                break;
+            case 'destFile':
+                $previewGen .= $this->getThumbnailDestFile($srcImg,"Movie",
+                                                           $movieType);
+                break;
+            case 'type':
+                if (in_array($movieType,$value)) {
+                    $previewGen .= $movieType;
+                }
+                break;
+            case 'size':
+                $previewGen .= $value;
+                break;
+            default:
+                error_log("Movie option $key not yet implemented");
+            }
+        }
+
         $previewGen = $this->string2tcllist($previewGen);
         $previewGen = " " . $task . " " . $previewGen;
+
         return $previewGen;
     }
 
@@ -1927,76 +1674,45 @@ class HuygensTemplate {
      \param       $destDir Whether to be saved in the source or the destination
      \return      The preview generation list
     */
-    private function getImgProcessZComparison($key,$task,$destDir) {
-
+    private function getImgProcessComparison($key,$task,$destDir,$compType) {
+        
         /* Get the Huygens task name of the $task */
         $task = $this->parseTask($key,$task);
-
+        
         if ($task == "") {
             return;
         }
 
-        $previewGen = " destDir ";
-        $previewGen .= $this->getThumbnailDestDir($destDir);
-        $previewGen .= " destFile ";
-        $previewGen .= $this->getThumbnailDestFile("","compareZStrips");
-        $previewGen .= " type ";
-        $previewGen .= $this->getPreviewType("compareZStrips");
-        $previewGen .= " size ";
-        $previewGen .= $this->getComparisonSize();
-        $previewGen = $this->string2tcllist($previewGen);
-        $previewGen = " " . $task . " " . $previewGen;
-        return $previewGen;
-    }
+        $previewGen = "";
 
-    /*!
-     \brief       Gets task information for time frame comparison previews
-     \param       $key     A task key from the taskID array
-     \param       $task    A task from the taskID array
-     \param       $destDir Whether to be saved in the source or the destination
-     \return      The preview generation list
-    */
-    private function getImgProcessTComparison($key,$task,$destDir) {
+        foreach ($this->thumbComparisonArray as $key => $value) {
 
-        /* Get the Huygens task name of the $task */
-        $task = $this->parseTask($key,$task);
-        if ($task == "") {
-            return;
+            $previewGen .= " " . $key . " ";
+
+            switch( $key ) {
+            case 'destDir':
+                $previewGen .= $this->getThumbnailDestDir($destDir);
+                break;
+            case 'destFile':
+                $previewGen .= $this->getThumbnailDestFile("",$compType);
+                break;
+            case 'type':
+                if (in_array($compType,$value)) {
+                    $previewGen .= $compType;
+                }
+                break;
+            case 'size':
+                $previewGen .= $value;
+                break;
+            default:
+                error_log("Comparison option $key not yet implemented");
+            }
         }
 
-        $previewGen = " destDir ";
-        $previewGen .= $this->getThumbnailDestDir($destDir);
-        $previewGen .= " destFile ";
-        $previewGen .= $this->getThumbnailDestFile("","compareTStrips");
-        $previewGen .= " type ";
-        $previewGen .= $this->getPreviewType("compareTStrips");
-        $previewGen .= " size ";
-        $previewGen .= $this->getComparisonSize();
         $previewGen = $this->string2tcllist($previewGen);
         $previewGen = " " . $task . " " . $previewGen;
+
         return $previewGen;
-    }
-
-    /*!
-     \brief       Gets the preview type
-     \return      The preview type
-    */
-    private function getPreviewType($type) {
-        switch ( $type ) {
-        case 'XYXZ':
-        case 'orthoSlice':
-        case 'compareZStrips':
-        case 'ZMovie':
-        case 'SFP':
-        case 'compareTStrips':
-        case 'timeSFPMovie':
-        case 'timeMovie':
-            break;
-        default:
-            error_log("Unknown preview type");
-        }
-
-        return $type;
     }
 
     /*!
@@ -2216,10 +1932,52 @@ class HuygensTemplate {
     */
     private function getParameterConfidence($paramName,$channel) {
 
+        switch ( $paramName ) {
+        case 'PinholeSize':
+        case 'MicroscopeType':
+        case 'ImagingDir':
+        case 'PinholeSpacing':
+        case 'ObjectiveQuality':
+        case 'ExcitationPhoton':
+        case 'ExcitationWavelength':
+        case 'EmissionWavelength':
+        case 'ExBeamFactor':
+        case 'SampleMedium':
+        case 'ObjectiveType':
+        case 'NumericalAperture':
+            $numberOfChannels = $this->getNumberOfChannels();
+            $cList = "";
+
+            for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
+                $cLevel = $this->getConfidenceLevel($paramName,$chanCnt);
+                $cList .= "  " . $cLevel;
+            }
+            $paramConf = $this->string2tcllist($cList);
+            break;
+        case 'Sampling':
+            $cList  = $this->getConfidenceLevel("CCDCaptorSizeX",0) . " ";
+            $cList .= $this->getConfidenceLevel("CCDCaptorSizeX",0) . " ";
+            $cList .= $this->getConfidenceLevel("ZStepSize",0) . " ";
+            $cList .= $this->getConfidenceLevel("TimeInterval",0);
+            $paramConf = $this->string2tcllist($cList);
+            break;
+        case 'iFacePrim':
+        case 'iFaceScnd':
+            $paramConf = $this->getConfidenceLevel($paramName,0);
+            break;
+        default:
+            error_log("Parameter $paramName not yet implemented");
+        }
+
+        return $paramConf;
+    }
+
+    private function getConfidenceLevel($parameter,$channel) {
+
         /* If the parameter has a value it means that the parameter was 
          introduced by the user. That makes the parameter automatically 
-         verified.*/
-        $parameterValue = $this->getParameterValue($paramName,$channel);
+         verified. */
+        $parameterValue = $this->getParameterValue($parameter,$channel);
         if ($parameterValue != "*") {
             return "noMetaData";
         } else {
@@ -2227,44 +1985,83 @@ class HuygensTemplate {
         }
     }
 
-    private function getParameterValue($paramName,$channel) {
+    private function getParameter($paramName,$default=null) {
 
         switch ( $paramName ) {
         case 'MicroscopeType':
-            $parameterValue = $this->getMicroTypeForChannel($channel);
+        case 'PinholeSize':
+        case 'ImagingDir':
+        case 'PinholeSpacing':
+        case 'ObjectiveQuality':
+        case 'ExcitationPhoton':
+        case 'ExcitationWavelength':
+        case 'EmissionWavelength':
+        case 'ExBeamFactor':
+        case 'SampleMedium':
+        case 'ObjectiveType':
+        case 'NumericalAperture':
+            $numberOfChannels = $this->getNumberOfChannels();
+            $param = "";
+            for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
+                if (!$default) {
+                    $param .= $this->getParameterValue($paramName,$chanCnt) . " ";
+                } else {
+                    $param .= $default . " ";
+                }
+            }
+            $paramList = $this->string2tcllist($param);
+            break;
+        case 'Sampling':
+            $paramList = $this->getSamplingSizes();
+            break;
+        case 'iFacePrim':
+        case 'iFaceScnd':
+            $paramList = $default;
+            break;
+        default:
+            error_log("Multichannel parameter $paramName not yet implemented");
+        }
+        
+        return $paramList;
+    }
+
+    private function getParameterValue($paramName,$channel) {
+        switch ( $paramName ) {
+        case 'MicroscopeType':
+            $parameterValue = $this->getMicroscopeType($channel);
             break;
         case 'PinholeSize':
-            $parameterValue = $this->getPinRadiusForChannel($channel);
+            $parameterValue = $this->getPinholeRadius($channel);
             break;
-        case 'CoverslipRelativePosition':
-            $parameterValue = $this->getImagingDirForChannel($channel);
+        case 'ImagingDir':
+            $parameterValue = $this->getImagingDirection($channel);
             break;
         case 'PinholeSpacing':
-            $parameterValue = $this->getPinSpacingForChannel($channel);
+            $parameterValue = $this->getPinholeSpacing($channel);
             break;
         case 'ObjQuality':
-            $parameterValue = $this->getObjQualityForChannel($channel);
+            $parameterValue = $this->getObjectiveQuality($channel);
             break;
         case 'ExcitationPhoton':
-            $parameterValue = $this->getExcitationPcntForChannel($channel);
+            $parameterValue = $this->getExcitationPhotonCount($channel);
             break;
         case 'ExcitationWavelength':
-            $parameterValue = $this->getExLambdaForChannel($channel);
+            $parameterValue = $this->getExcitationWavelength($channel);
             break;
         case 'EmissionWavelength':
-            $parameterValue = $this->getEmLambdaForChannel($channel);
+            $parameterValue = $this->getEmissionWavelength($channel);
             break;
         case 'ExBeamFactor':
-            $parameterValue = $this->getExBeamForChannel($channel);
+            $parameterValue = $this->getExcitationBeamFactor($channel);
             break;
         case 'SampleMedium':
-            $parameterValue = $this->getMRIndexForChannel($channel);
+            $parameterValue = $this->getMediumRefractiveIndex($channel);
             break;
         case 'ObjectiveType':
-            $parameterValue = $this->getLensRIForChannel($channel);
+            $parameterValue = $this->getLensRefractiveIndex($channel);
             break;
         case 'NumericalAperture':
-            $parameterValue = $this->getNumApertureForChannel($channel);
+            $parameterValue = $this->getNumericalAperture($channel);
             break;
         case 'TimeInterval':
             $parameterValue = $this->getSamplingSizeT();
@@ -2465,32 +2262,6 @@ class HuygensTemplate {
             return false;
         }
     }
-    
-    /*!
-     \brief       Gets size of the thumbnails.
-     \return      Number: The thumbnail size.
-    */
-    private function getPreviewSize( ) {
-        return 400;
-    }
-
-    /*!
-     \brief       Gets size of the movie.
-     \return      Number: The movie size.
-    */
-    private function getMovieSize( ) {
-        global $movieMaxSize;
-        return $movieMaxSize;
-    }
-
-    /*!
-     \brief       Gets comparison size.
-     \return      Number: The comparison size.
-    */
-    private function getComparisonSize( ) {
-        global $maxComparisonSize;
-        return $maxComparisonSize;
-    }
 
     /*!
      \brief       Gets the current date in format: Wed Feb 02 16:02:11 CET 2011
@@ -2593,7 +2364,7 @@ class HuygensTemplate {
     */
     private function setDestImage ( ) {
         $this->destImage = $this->jobDescription->destinationImageFullName();
-        $fileType = $this->getOutFileExtension();
+        $fileType = $this->getOutputFileExtension();
         $this->destImage = $this->destImage.".".$fileType;
     }
 
@@ -2652,11 +2423,10 @@ class HuygensTemplate {
      \brief       Gets the file extension of the destination image.
      \return      A file extension: whether ims, tif, etc.
     */
-    private function getOutFileExtension( ) {
+    private function getOutputFileExtension( ) {
         $outFileFormat = $this->deconSetting->parameter('OutputFileFormat');
         return $outFileFormat->extension();
     }
-
 
     /* ------------------------------------------------------------------------- */
 }
