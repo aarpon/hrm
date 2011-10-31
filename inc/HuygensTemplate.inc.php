@@ -971,9 +971,12 @@ class HuygensTemplate {
             default:
                 error_log("Setp field $key not yet implemented.");       
             }
-            $setp .= $this->getParameter($parameter,$value);
-            $setp .= " " . $this->setpConfArray[$key] . " ";
-            $setp .= $this->getParameterConfidence($parameter,0);
+
+            if ($key != "listID" && $key != "completeChanCnt") {
+                $setp .= $this->getParameter($parameter,$value);
+                $setp .= " " . $this->setpConfArray[$key] . " ";
+                $setp .= $this->getParameterConfidence($parameter,0);
+            }
         }
 
         return $this->setpList;
