@@ -148,34 +148,10 @@ class HuygensTemplate {
     private $setpConfArray;
 
     /*!
-      \var    $thumbXYXZArray
-      \brief  Array with information for XYXZ thumbnail projections.
+      \var    $thumbArray
+      \brief  Array with information on thumbnail projections.
     */
-    private $thumbXYXZArray;
-
-    /*!
-      \var    $thumbOrthoArray
-      \brief  Array with information for Ortho thumbnail projections.
-    */
-    private $thumbOrthoArray;
-
-    /*!
-      \var    $thumbSFPArray
-      \brief  Array with information for SFP thumbnail generation.
-    */
-    private $thumbSFPArray;
-
-    /*!
-      \var    $thumbMovieArray
-      \brief  Array with information for the generation of movies.
-    */
-    private $thumbMovieArray;
-
-    /*!
-      \var    $thumbComparisonArray
-      \brief  Array with information for the generation of comparison strips.
-    */
-    private $thumbComparisonArray;
+    private $thumbArray;
 
     /*!
       \var    $setpList
@@ -247,6 +223,30 @@ class HuygensTemplate {
     */
     private $thumbCnt;
 
+    /*! 
+     \var     $thumbFrom
+     \brief   Whether a thumbnail of the raw or decon image.
+    */
+    private $thumbFrom;
+    
+    /*! 
+     \var     $thumbToDir
+     \brief   Whether the thumbnail is to be saved in the src or dest folder
+    */
+    private $thumbToDir;
+
+    /*! 
+     \var     $thumbType
+     \brief   Whether the thumbnail is XYXZ, Ortho, SFP, Movie, etc.
+    */
+    private $thumbType;
+
+    /*! 
+     \var     $thumbLif
+     \brief   Whether the thumbnail involves a Lif image.
+    */
+    private $thumbLif;
+
     /*!
      \var     $sizeX
      \brief   An integer to keep the X dimension of the image.
@@ -275,7 +275,7 @@ class HuygensTemplate {
      \var     $sizeC
      \brief   An integer to keep the channel dimension of the image.
     */
-    private $sizeC;     
+    private $sizeC;           
 
     /* ---------------------------- Constructor ------------------------------- */
 
@@ -381,14 +381,23 @@ class HuygensTemplate {
 
         /* All metadata will be accepted as long as the template counterparts
          don't exist. The accepted confidence level is therefore: "default". */
+
+        /* There are no specific names for the deconvolution and microscopic
+         templates in the Tcl-lists, they will be set to general names. */
         $this->imgProcessInfoArray = 
             array ( 'state'                     => 'readyToRun',
-                    'tag'                       => '',
+                    'tag'                       => '{setp Micr decon Decon}',
                     'timeStartAbs'              => '',
                     'timeOut'                   => '10000',
                     'userDefConfidence'         => 'default',
                     'listID'                    => 'info' );
 
+        /* These are the operations carried out in a deconvolution job in 
+         HRM. Operations for thumbnail generation are included. Notice that 
+         the names of the thumbnail operations contain the destination
+         directory as well as the thumbnail type and the image type. The
+         thumbnail operation names code the type of action executed on the 
+         image.*/
         $this->imgProcessTasksArray = 
             array ('open'                       =>  'imgOpen',
                    'setParameters'              =>  'setp',
@@ -410,6 +419,7 @@ class HuygensTemplate {
                    'save'                       =>  'imgSave',
                    'listID'                     =>  'taskList');
 
+        /* Options for the 'open image' action */
         $this->imgOpenArray = 
             array ( 'path'                      =>  '',
                     'subImage'                  =>  '',
@@ -417,6 +427,7 @@ class HuygensTemplate {
                     'index'                     =>  '0',
                     'listID'                    =>  'imgOpen' );
 
+        /* Options for the 'set image parameter' action */
         $this->setpArray  = 
             array ( 'completeChanCnt'           => '',
                     'micr'                      => '',
@@ -436,6 +447,7 @@ class HuygensTemplate {
                     'na'                        => '',
                     'listID'                    => 'setp' );
 
+        /* Options for the 'set image pararmeter' action */
         $this->setpConfArray  =
             array ( 'completeChanCnt'           =>  '',
                     'micr'                      =>  'parState,micr',
@@ -455,11 +467,13 @@ class HuygensTemplate {
                     'na'                        =>  'parState,na',
                     'listID'                    =>  'setp' );
 
+        /* Options for the 'adjust baseline' action */
         $this->adjblArray = 
             array ( 'enabled'                   =>  '0',
                     'ni'                        =>  '0',
                     'listID'                    =>  'adjbl' );
 
+        /* Options for the 'execute deconvolution' action */
         $this->algArray   = 
             array ( 'q'                         =>  '',
                     'brMode'                    =>  '',
@@ -476,47 +490,15 @@ class HuygensTemplate {
                     'itMode'                    =>  'auto',
                     'listID'                    =>  '' );
 
-        $this->thumbXYXZArray  =
+        /* Options for the 'create thumbnail from image' action */
+        $this->thumbArray =
             array( 'image'                      =>  '',
                    'destDir'                    =>  '',
                    'destFile'                   =>  '',
-                   'type'                       =>  'XYXZ' );
-
-        $this->thumbOrthoArray =
-            array( 'image'                      =>  '',
-                   'destDir'                    =>  '',
-                   'destFile'                   =>  '',
-                   'type'                       =>  'orthoSlice',
+                   'type'                       =>  '',
                    'size'                       =>  '400' );
-
-        $this->thumbSFPArray  =
-            array( 'image'                      =>  '',
-                   'destDir'                    =>  '',
-                   'destFile'                   =>  '',
-                   'type'                       =>  'SFP' );
-
-        $this->thumbMovieArray  =
-            array( 'image'                      =>  '',
-                   'destDir'                    =>  '',
-                   'destFile'                   =>  '',
-                   'size'                       =>  $movieMaxSize,
-                   'type'                       =>  array(
-                                                          'ZMovie',
-                                                          'timeSFPMovie',
-                                                          'timeMovie'
-                                                          ),
-                   );
         
-        $this->thumbComparisonArray  =
-            array( 'destDir'                    =>  '',
-                   'destFile'                   =>  '',
-                   'size'                       =>  $maxComparisonSize,
-                   'type'                       =>  array(
-                                                          'compareZStrips',
-                                                          'compareTStrips'
-                                                          )
-                   );
-
+        /* Options for the 'save image' action */
         $this->imgSaveArray = 
             array ( 'rootName'                  =>  '',
                     'listID'                    =>  'imgSave' );
@@ -710,7 +692,7 @@ class HuygensTemplate {
                 $taskInfo .= $value;
                 break;
             case 'tag':
-                $taskInfo .= $this->getTaskTag();
+                $taskInfo .= $value;
                 break;
             case 'timeStartAbs':
                 $taskInfo .= time();
@@ -806,49 +788,19 @@ class HuygensTemplate {
                 $taskList .= $this->getImgProcessAlgorithms();
                 break;
             case 'XYXZRawAtSrcDir':
-                $taskList .= $this->getImgProcessXYXZ($key,$value,"raw","src");
-                break;
             case 'XYXZRawLifAtSrcDir':
-                $taskList .= $this->getImgProcessXYXZ($key,$value,"raw","src",
-                                                      "lif");
-                break;
             case 'XYXZRawAtDstDir':
-                $taskList .= $this->getImgProcessXYXZ($key,$value,"raw","dest");
-                break;
             case 'XYXZDecAtDstDir':
-                $taskList .= $this->getImgProcessXYXZ($key,$value,"dec","dest");
-                break;
             case 'orthoRawAtDstDir':
-                $taskList .= $this->getImgProcessOrtho($key,$value,"raw","dest");
-                break;
             case 'orthoDecAtDstDir':
-                $taskList .= $this->getImgProcessOrtho($key,$value,"dec","dest");
-                break;
             case 'SFPRawAtDstDir':
-                $taskList .= $this->getImgProcessSFP($key,$value,"raw","dest");
-                break;
             case 'SFPDecAtDstDir':
-                $taskList .= $this->getImgProcessSFP($key,$value,"dec","dest");
-                break;
             case 'ZMovieDecAtDstDir':
-                $taskList .= $this->getImgProcessMovie($key,$value,"dec","dest",
-                                                       "ZMovie");
-                break;
             case 'TimeSFPMovieDecAtDstDir':
-                $taskList .= $this->getImgProcessMovie($key,$value,"dec","dest",
-                                              "timeSFPMovie");
-                break;
             case 'TimeMovieDecAtDstDir':
-                $taskList .= $this->getImgProcessMovie($key,$value,"dec","dest",
-                                                       "timeMovie");
-                break;
             case 'ZComparisonAtDstDir':
-                $taskList .= $this->getImgProcessComparison($key,$value,"dest",
-                                                            "compareZStrips");
-                break;
             case 'TComparisonAtDstDir':
-                $taskList .= $this->getImgProcessComparison($key,$value,"dest",
-                                                            "compareTStrips");
+                $taskList .= $this->getImgProcessThumbnail($key,$value);
                 break;
             case 'listID':
                 break;
@@ -913,56 +865,25 @@ class HuygensTemplate {
         $setp = "";
         foreach ($this->setpArray as $key => $value) { 
 
-            if ($key != "listID") {
-                $setp .= " " . $key . " ";
-            }
-
             switch ( $key ) {
             case 'completeChanCnt':
-                $setp .= $this->getNumberOfChannels();
+                $setp .= $key . " " . $this->getNumberOfChannels();
                 break;
             case 'micr':
-                $parameter = "MicroscopeType";
-                break;
             case 's':
-                $parameter = "Sampling";
-                break;
             case 'pr':
-                $parameter = "PinholeSize";
-                break;
             case 'imagingDir':
-                $parameter = "ImagingDir";
-                break;
             case 'ps':
-                $parameter = "PinholeSpacing";
-                break;
             case 'objQuality':
-                $parameter = "ObjectiveQuality";
-                break;                
             case 'pcnt':
-                $parameter = "ExcitationPhoton";
-                break;
             case 'ex':
-                $parameter = "ExcitationWavelength";
-                break;
             case 'em':
-                $parameter = "EmissionWavelength";
-                break;
             case 'exBeamFill':
-                $parameter = "ExBeamFactor";
-                break;
             case 'ri':
-                $parameter = "SampleMedium";
-                break;
             case 'ril':
-                $parameter = "ObjectiveType";
-                break;
             case 'na':
-                $parameter = "NumericalAperture";
-                break;
             case 'iFacePrim':
             case 'iFaceScnd':
-                $parameter = $key;
                 break;
             case 'listID':
                 $setp = $this->string2tcllist($setp);
@@ -973,44 +894,11 @@ class HuygensTemplate {
             }
 
             if ($key != "listID" && $key != "completeChanCnt") {
-                $setp .= $this->getParameter($parameter,$value);
-                $setp .= " " . $this->setpConfArray[$key] . " ";
-                $setp .= $this->getParameterConfidence($parameter,0);
+                $setp .= $this->getParameter($key,$value);
             }
         }
 
         return $this->setpList;
-    }
-
-    /*!
-     \brief       Gets options for the 'image save' task
-     \param       $task A task from the taskID array that should be 'imgSave'.
-     \return      Tcl list with the 'Image save' task and its options
-    */
-    private function getImgProcessSave($task) {
-
-        $imgSave = "";
-        foreach ($this->imgSaveArray as $key => $value) {
-
-            if ($key != "listID") {
-                $imgSave .= " " . $key . " ";
-            }
-
-            switch( $key ) {
-            case 'rootName':
-                $outName  = $this->getDestImageBaseName();
-                $imgSave .= $this->string2tcllist($outName);
-                break;
-            case 'listID':
-                $imgSave = $this->string2tcllist($imgSave);
-                $imgSave = " " . $value . " " . $imgSave;
-                break;
-            default:
-                error_log("Image save option $key not yet implemented.");
-            }
-        }
-
-        return $imgSave;
     }
 
     /*!
@@ -1116,6 +1004,37 @@ class HuygensTemplate {
         return $this->string2tcllist($imgAlg);
     }
 
+    /*!
+     \brief       Gets options for the 'image save' task
+     \param       $task A task from the taskID array that should be 'imgSave'.
+     \return      Tcl list with the 'Image save' task and its options
+    */
+    private function getImgProcessSave($task) {
+
+        $imgSave = "";
+        foreach ($this->imgSaveArray as $key => $value) {
+
+            if ($key != "listID") {
+                $imgSave .= " " . $key . " ";
+            }
+
+            switch( $key ) {
+            case 'rootName':
+                $outName  = $this->getDestImageBaseName();
+                $imgSave .= $this->string2tcllist($outName);
+                break;
+            case 'listID':
+                $imgSave = $this->string2tcllist($imgSave);
+                $imgSave = " " . $value . " " . $imgSave;
+                break;
+            default:
+                error_log("Image save option $key not yet implemented.");
+            }
+        }
+
+        return $imgSave;
+    }
+
     /* -------------------------- Setp task ----------------------------------- */
 
     /*!
@@ -1126,8 +1045,7 @@ class HuygensTemplate {
     private function getPinholeRadius($channel) {
         $microSetting = $this->microSetting;
         $pinholeSize = $microSetting->parameter("PinholeSize")->value();       
-        $pinholeRadius = $pinholeSize[$channel];
-        return $pinholeRadius;
+        return $pinholeSize[$channel];
     }      
 
     /*!
@@ -1138,8 +1056,7 @@ class HuygensTemplate {
     */
     private function getMicroscopeType($channel) {
         $microSetting = $this->microSetting;
-        $microType = $microSetting->parameter('MicroscopeType')->translatedValue();
-        return $microType;
+        return $microSetting->parameter('MicroscopeType')->translatedValue();
     }
 
     /*!
@@ -1149,8 +1066,7 @@ class HuygensTemplate {
     */
     private function getLensRefractiveIndex($channel) {
         $microSetting = $this->microSetting;
-        $lensRI = $microSetting->parameter('ObjectiveType')->translatedValue();
-        return $lensRI;
+        return $microSetting->parameter('ObjectiveType')->translatedValue();
     }
 
     /*!
@@ -1160,9 +1076,7 @@ class HuygensTemplate {
     */
     private function getNumericalAperture($channel) {
         $microSetting = $this->microSetting;
-        $numAper = $microSetting->parameter('NumericalAperture')->value();
-
-        return $numAper;
+        return $microSetting->parameter('NumericalAperture')->value();
     }
 
     /*!
@@ -1171,13 +1085,12 @@ class HuygensTemplate {
      \return      The pinhole spacing.
     */
     private function getPinholeSpacing($channel) {
-        $microSetting = $this->microSetting;
-        $pinSpacing = $microSetting->parameter("PinholeSpacing")->value();
-
-        if ($this->getParameterValue("MicroscopeType",$channel) != "nipkow") {
-            $pinSpacing = "";
+        if ($this->getParameterValue("micr",$channel) != "nipkow") {
+            return "";
         }
-        return $pinSpacing;
+
+        $microSetting = $this->microSetting;
+        return $microSetting->parameter("PinholeSpacing")->value();
     }
 
     /*!
@@ -1197,11 +1110,10 @@ class HuygensTemplate {
     */
     private function getExcitationPhotonCount($channel) {
         if ($this->microSetting->isTwoPhoton()) {
-            $pcnt = 2;
+            return 2;
         } else {
-            $pcnt = 1;
+            return 1;
         }
-        return $pcnt;
     }
 
     /*!
@@ -1247,11 +1159,10 @@ class HuygensTemplate {
         $coverslip = $microSetting->parameter('CoverslipRelativePosition');
         $coverslipPos = $coverslip->value();
         if ($coverslipPos == 'farthest' ) {
-            $imagingDir = "downward";
+            return "downward";
         } else {
-            $imagingDir = "upward";
+            return "upward";
         }
-        return $imagingDir;
     }
 
     /*!
@@ -1262,8 +1173,7 @@ class HuygensTemplate {
     private function getMediumRefractiveIndex($channel) {
         $microSetting = $this->microSetting;
         $sampleMedium = $microSetting->parameter("SampleMedium");
-        $refractiveIndx = $sampleMedium->translatedValue();
-        return $refractiveIndx;
+        return $sampleMedium->translatedValue();
     }
 
     public function getSamplingSizeX( ) {
@@ -1322,27 +1232,26 @@ class HuygensTemplate {
 
         if ( $SAcorr[ 'AberrationCorrectionNecessary' ] == 1 ) {
             if ( $SAcorr[ 'PerformAberrationCorrection' ] == 0 ) {
-                $brMode = 'one';
+                return 'one';
             } else {
                 if ( $SAcorr[ 'AberrationCorrectionMode' ] == 'automatic' ) {
-                    $brMode = 'auto';
+                    return 'auto';
                 } else {
                     if ( $SAcorr[ 'AdvancedCorrectionOptions' ] == 'user' ) {
-                        $brMode = 'one';
+                        return 'one';
                     } elseif ( $SAcorr[ 'AdvancedCorrectionOptions' ] == 'slice' ) {
-                        $brMode = 'sliceBySlice';
+                        return 'sliceBySlice';
                     } elseif ( $SAcorr[ 'AdvancedCorrectionOptions' ] == 'few' ) {
-                        $brMode = 'few';
+                        return 'few';
                     } else {
                         error_log("Undefined brMode.");
-                        $brMode = "";
+                        return "";
                     }
                 }
             }
         } else {
-            $brMode = "one";
+            return "one";
         }
-        return $brMode;
     }
 
     /*!
@@ -1353,14 +1262,14 @@ class HuygensTemplate {
         $bgParam = $this->deconSetting->parameter("BackgroundOffsetPercent");
         $bgValue = $bgParam->value();
         $internalValue = $bgParam->internalValue();
+
         if ($bgValue[0] == "auto" || $internalValue[0] == "auto") {
-            $bgMode = "auto";
+            return "auto";
         } else if ($bgValue[0] == "object" || $internalValue[0] == "object") {
-            $bgMode = "object";
+            return "object";
         } else {
-            $bgMode = "manual";
+            return "manual";
         }
-        return $bgMode;
     }
 
     /*!
@@ -1369,19 +1278,18 @@ class HuygensTemplate {
      \return      The background value.
     */
     private function getBgValue($channel) {
-        $bgMode = $this->getBgMode();
-        if ($bgMode == "auto") {
-            $bgValue = 0.0;
-        } elseif ($bgMode == "object") {
-            $bgValue = 0.0;
-        } elseif ($bgMode == "manual") {
+        if ($this->getBgMode() == "auto") {
+            return 0.0;
+        } elseif ($this->getBgMode() == "object") {
+            return 0.0;
+        } elseif ($this->getBgMode() == "manual") {
             $deconSetting = $this->deconSetting;
             $bgRate = $deconSetting->parameter("BackgroundOffsetPercent")->value();
-            $bgValue = $bgRate[$channel];
+            return $bgRate[$channel];
         } else {
             error_log("Unknown background mode for channel $channel.");
+            return;
         }
-        return $bgValue;
     }
 
     /*!
@@ -1411,11 +1319,10 @@ class HuygensTemplate {
         $microSetting = $this->microSetting;
         $psfMode = $microSetting->parameter("PointSpreadFunction")->value();
         if ($psfMode == "theoretical") {
-            $psfMode = "auto";
+            return "auto";
         } else {
-            $psfMode = "file";
+            return "file";
         }
-        return $psfMode;
     }
 
     /*!
@@ -1424,20 +1331,15 @@ class HuygensTemplate {
      \return      Psf path
     */
     private function getPsfPath($channel) {
-        $psfPath = "";
         if ($this->getPsfMode() == "file") {
             $microSetting = $this->microSetting;
             $psfFiles = $microSetting->parameter("PSF")->value();
-            $owner = $this->jobDescription->owner( );
-            $fileserver = new Fileserver( $owner->name() );
-            $path = $fileserver->sourceFolder();
-            $psf = $path ."/". $psfFiles[$channel];
-            $psfPath .= " " . $psf;
-            $psfPath = trim($psfPath);
+            $psfPath = trim($this->getSrcDir() ."/". $psfFiles[$channel]);
+        } else {
+            $psfPath = "";
         }
-        $psfPath = $this->string2tcllist($psfPath);
 
-        return $psfPath;
+        return $this->string2tcllist($psfPath);
     }
 
     /*!
@@ -1475,240 +1377,90 @@ class HuygensTemplate {
 
     /* ------------------------- Thumbnail tasks------------------------------- */
 
-    /*!
-     \brief       Gets task information for XY and XZ previews
-     \param       $key     A task key from the taskID array
-     \param       $task    A task from the taskID array
-     \param       $srcImg  Whether the raw image or the deconvolved
-     \param       $destDir Whether to be saved in the source or the destination
-     \return      The preview generation list
-    */
-    private function getImgProcessXYXZ($key,$task,$srcImg,$destDir,$lif = null) {
-        
-        /* Get the Huygens task name of the $task */
-        $task = $this->parseTask($key,$task);
-        if ($task == "") {
-            return;
-        }
-        
-        $previewGen = "";
+    private function getImgProcessThumbnail($thumbType,$id) {
 
-        foreach ($this->thumbXYXZArray as $key => $value) {
-
-            $previewGen .= " " . $key . " ";
-
-            switch( $key ) {
-            case 'image':
-                $previewGen .= $this->getImageType($srcImg);
-                break;
-            case 'destDir':
-                $previewGen .= $this->getThumbnailDestDir($destDir);
-                break;
-            case 'destFile':
-                $previewGen .= $this->getThumbnailDestFile($srcImg,"XYXZ",
-                                                           null,$lif);
-                break;
-            case 'type':
-                $previewGen .= $value;
-                break;
-            default:
-                error_log("XYXZ preview option $key not yet implemented");
-            }
+        if (preg_match("/Raw/i",$thumbType)) {
+            $this->thumbFrom = "raw";
+        } elseif (preg_match("/Dec/i",$thumbType)) {
+            $this->thumbFrom = "deconvolved";
+        } else {
+            $this->thumbFrom = null;
         }
 
-        $previewGen = $this->string2tcllist($previewGen);
-        $previewGen = " " . $task . " " . $previewGen;
+        if (preg_match("/Lif/i",$thumbType)) {
+            $this->thumbLif = "lif";
+        } else {
+            $this->thumbLif = null;
+        }
 
-        return $previewGen;
+        if (preg_match("/SrcDir/i",$thumbType)) {
+            $this->thumbToDir = $this->getSrcDir() . "/hrm_previews";
+        } elseif (preg_match("/DstDir/",$thumbType)) {
+            $this->thumbToDir = $this->getDestDir() . "/hrm_previews";
+        }
+        $this->thumbToDir = $this->string2tcllist($this->thumbToDir);
+
+        if (preg_match("/XYXZ/i",$thumbType)) {
+            $this->thumbType = "XYXZ";
+        } elseif (preg_match("/ortho/i",$thumbType)) {
+            $this->thumbType = "orthoSlice";
+        } elseif (preg_match("/SFP/i",$thumbType)) {
+            $this->thumbType = "SFP";
+        } elseif (preg_match("/ZMovie/i",$thumbType)) {
+            $this->thumbType = "ZMovie";
+        } elseif (preg_match("/timeMovie/i",$thumbType)) {
+            $this->thumbType = "timeMovie";
+        } elseif (preg_match("/timeSFPMovie/i",$thumbType)) {
+            $this->thumbType = "timeSFPMovie";
+        } elseif (preg_match("/ZComparison/i",$thumbType)) {
+            $this->thumbType = "compareZStrips";
+        } elseif (preg_match("/TComparison/i",$thumbType)) {
+            $this->thumbType = "compareTStrips";
+        } else {
+            $this->thumbType = null;
+        }
+
+        $taskList = $this->getThumbnailTask($thumbType,$id);
+
+        return $taskList;
     }
-    
-    /*!
-     \brief       Gets task information for ortho previews
-     \param       $key     A task key from the taskID array
-     \param       $task    A task from the taskID array
-     \param       $srcImg  Whether the raw image or the deconvolved
-     \param       $destDir Whether to be saved in the source or the destination
-     \return      The preview generation list
-    */
-    private function getImgProcessOrtho($key,$task,$srcImg,$destDir) {
 
-        /* Get the Huygens task name of the $task */
-        $task = $this->parseTask($key,$task);
+    private function getThumbnailTask($taskKey,$id) {
+
+        /* Get the Huygens task name of the thumbnail task */
+        $task = $this->parseTask($taskKey,$id);
         if ($task == "") {
             return;
-        }
-
+        }        
+        
         $previewGen = "";
 
-        foreach ($this->thumbOrthoArray as $key => $value) {
+        foreach ($this->thumbArray as $key => $value) {
 
-            $previewGen .= " " . $key . " ";
+            if ($key == "image" && !isset($this->thumbFrom)) {
+                $previewGen .= " ";
+            } else {
+                $previewGen .= " " . $key . " ";
+            }
 
             switch( $key ) {
             case 'image':
-                $previewGen .= $this->getImageType($srcImg);
+                $previewGen .= $this->thumbFrom;
                 break;
             case 'destDir':
-                $previewGen .= $this->getThumbnailDestDir($destDir);
+                $previewGen .= $this->thumbToDir;
                 break;
             case 'destFile':
-                $previewGen .= $this->getThumbnailDestFile($srcImg,"Ortho");
+                $previewGen .= $this->getThumbnailDestFile();
                 break;
             case 'type':
-                $previewGen .= $value;
+                $previewGen .= $this->thumbType;
                 break;
             case 'size':
                 $previewGen .= $value;
                 break;
             default:
-                error_log("Ortho preview option $key not yet implemented");
-            }
-        }
-
-        $previewGen = $this->string2tcllist($previewGen);
-        $previewGen = " " . $task . " " . $previewGen;
-
-        return $previewGen;
-    }
-    
-    /*!
-     \brief       Gets task information for SFP previews
-     \param       $key     A task key from the taskID array
-     \param       $task    A task from the taskID array
-     \param       $srcImg  Whether the raw image or the deconvolved
-     \param       $destDir Whether to be saved in the source or the destination
-     \return      The preview generation list
-    */
-    private function getImgProcessSFP($key,$task,$srcImg,$destDir) {
-
-        /* Get the Huygens task name of the $task */
-        $task = $this->parseTask($key,$task);
-        if ($task == "") {
-            return;
-        }
-
-        $previewGen = "";
-
-        foreach ($this->thumbSFPArray as $key => $value) {
-
-            $previewGen .= " " . $key . " ";
-
-            switch( $key ) {
-            case 'image':
-                $previewGen .= $this->getImageType($srcImg);
-                break;
-            case 'destDir':
-                $previewGen .= $this->getThumbnailDestDir($destDir);
-                break;
-            case 'destFile':
-                $previewGen .= $this->getThumbnailDestFile($srcImg,"SFP");
-                break;
-            case 'type':
-                $previewGen .= $value;
-                break;
-            default:
-                error_log("SFP preview option $key not yet implemented");
-            }
-        }
-
-        $previewGen = $this->string2tcllist($previewGen);
-        $previewGen = " " . $task . " " . $previewGen;
-
-        return $previewGen;
-    }
-
-    /*!
-     \brief       Gets task information for movie tasks
-     \param       $key       A task key from the taskID array
-     \param       $task      A task from the taskID array
-     \param       $srcImg    Whether the raw image or the deconvolved
-     \param       $destDir   Whether to be saved in the source or the destination
-     \param       $movieType Whether the movie is a stack, a time frame or SFP
-     \return      The preview generation list
-    */
-    private function getImgProcessMovie($key,$task,$srcImg,$destDir,$movieType) {
-
-        /* Get the Huygens task name of the $task */
-        $task = $this->parseTask($key,$task);
-        if ($task == "") {
-            return;
-        }
-
-        $previewGen = "";
-
-        foreach ($this->thumbMovieArray as $key => $value) {
-
-            $previewGen .= " " . $key . " ";
-
-            switch( $key ) {
-            case 'image':
-                $previewGen .= $this->getImageType($srcImg);
-                break;
-            case 'destDir':
-                $previewGen .= $this->getThumbnailDestDir($destDir);
-                break;
-            case 'destFile':
-                $previewGen .= $this->getThumbnailDestFile($srcImg,"Movie",
-                                                           $movieType);
-                break;
-            case 'type':
-                if (in_array($movieType,$value)) {
-                    $previewGen .= $movieType;
-                }
-                break;
-            case 'size':
-                $previewGen .= $value;
-                break;
-            default:
-                error_log("Movie option $key not yet implemented");
-            }
-        }
-
-        $previewGen = $this->string2tcllist($previewGen);
-        $previewGen = " " . $task . " " . $previewGen;
-
-        return $previewGen;
-    }
-
-    /*!
-     \brief       Gets task information for stack comparison previews
-     \param       $key     A task key from the taskID array
-     \param       $task    A task from the taskID array
-     \param       $destDir Whether to be saved in the source or the destination
-     \return      The preview generation list
-    */
-    private function getImgProcessComparison($key,$task,$destDir,$compType) {
-        
-        /* Get the Huygens task name of the $task */
-        $task = $this->parseTask($key,$task);
-        
-        if ($task == "") {
-            return;
-        }
-
-        $previewGen = "";
-
-        foreach ($this->thumbComparisonArray as $key => $value) {
-
-            $previewGen .= " " . $key . " ";
-
-            switch( $key ) {
-            case 'destDir':
-                $previewGen .= $this->getThumbnailDestDir($destDir);
-                break;
-            case 'destFile':
-                $previewGen .= $this->getThumbnailDestFile("",$compType);
-                break;
-            case 'type':
-                if (in_array($compType,$value)) {
-                    $previewGen .= $compType;
-                }
-                break;
-            case 'size':
-                $previewGen .= $value;
-                break;
-            default:
-                error_log("Comparison option $key not yet implemented");
+                error_log("Thumb preview option $key not yet implemented");
             }
         }
 
@@ -1741,99 +1493,52 @@ class HuygensTemplate {
     }
 
     /*!
-     \brief       Gets the destination directory of a thumbnail
-     \param       $destDir Source data or deconvolved data folder.
-     \return      The thumbnail destination folder
-    */
-    private function getThumbnailDestDir($destDir) {
-        if ($destDir == "dest") {
-            $destDir = $this->getDestDir() . "/hrm_previews";
-        } elseif ($destDir == "src") {
-            $destDir = $this->getSrcDir() . "/hrm_previews";
-        } else {
-            error_log("Unknown image path: $destDir");
-        }
-        return $this->string2tcllist($destDir);
-    }
-
-    /*!
      \brief      Gets the destination file name of the thumbnail
-     \param      $srcImg The image from which to make a thumbnail: raw or dec
-     \param      $caller Which kind of thumbnail is to be made
-     \param      $movieType Whether stack, timeMovie, timeSFPMovie or nothing.
      \return     A name for the thumbnail file
     */
-    private function getThumbnailDestFile($srcImg,$caller,
-                                          $movieType = null,
-                                          $lif = null) {
+    private function getThumbnailDestFile( ) {
 
-        $thumbnail = $this->getThumbName();
-        switch ( $caller ) {
+        $destFile = $this->getThumbName();
+
+        switch ( $this->thumbType ) {
         case 'XYXZ':
-            if ($srcImg == "raw") {
+            if ($this->thumbFrom == "raw") {
                 $destFile = basename($this->srcImage);
-                $destFile .= $this->getLifImageSuffix($lif);
-            } elseif ($srcImg == "dec") {
-                $destFile = $thumbnail;
-            } else {
-                error_log("Unknown image source: $srcImg");
-            }
+                $destFile .= $this->getLifImageSuffix($this->thumbLif);
+            } 
             break;
-        case 'Ortho':
-            if ($srcImg == "raw") {
-                $destFile = $thumbnail . ".original";
-            } elseif ($srcImg == "dec") {;
-                $destFile = $thumbnail;
-            } else {
-                error_log("Unknown image source: $srcImg");
-            }
+        case 'orthoSlice':
+            if ($this->thumbFrom == "raw") {
+                $suffix = ".original";
+            } 
             break;
         case 'SFP':
-            if ($srcImg == "raw") {
-                $destFile = $thumbnail . ".original.sfp";
-            } elseif ($srcImg == "dec") {
-                $destFile = $thumbnail . ".sfp";
-            } else {
-                error_log("Unknown image source: $srcImg");
+            if ($this->thumbFrom == "raw") {
+                $suffix = ".original.sfp";
+            } elseif ($this->thumbFrom == "deconvolved") {
+                $suffix = ".sfp";
             }
             break;
-        case 'Movie':
-            if ($srcImg == "raw") {
-                $destFile = $thumbnail;
-            } elseif ($srcImg == "dec") {
-                $destFile = $thumbnail;
-                $destFile .= $this->getMovieFileSuffix($movieType);
-            } else {
-                error_log("Unknown image source: $srcImg");
+        case 'ZMovie':
+        case 'timeMovie':
+        case 'timeSFPMovie':
+            if ($this->thumbFrom == "deconvolved") {
+                $suffix = $this->getMovieFileSuffix($this->thumbType);
             }
             break;
         case 'compareZStrips':
-            $destFile = $thumbnail;
-            break;
         case 'compareTStrips':
-            $destFile = $thumbnail;
             break;
         default:
-            error_log("Unknown thumbnail caller: $caller");
+            error_log("Unknown thumbnail type");
+        }
+        
+        if (isset($suffix)) {
+            $destFile .= $suffix;
         }
         $destFile = $this->string2tcllist($destFile);
-        return $destFile;
-    }
 
-    /*!
-     \brief      Gets whether the image is deconvolved or raw data
-     \param      $image    Whether the image is 'raw' or 'dec'.
-     \return     The Huygens template word for 'raw', 'dec'.
-    */
-    private function getImageType($image) {
-        if ($image == "raw") {
-            return $image;
-        } elseif ($image == "dec") {
-            $image = "deconvolved";
-        } else {
-            error_log("Unknown image type: $image");
-        }
-        return $image;
+        return $destFile;
     }
 
     /*!
@@ -1862,7 +1567,7 @@ class HuygensTemplate {
      \brief       leica. This function does the mapping.
      \return      The src image format as coded in the confidence table of HuCore.
     */
-    private function getHuImageFormat( ) {
+    private function setHuImageFormat( ) {
         $microSetting = $this->microSetting;
         $format = $microSetting->parameter("ImageFileFormat")->value();
 
@@ -1912,7 +1617,7 @@ class HuygensTemplate {
             break;
         }
 
-        return $format;
+        $this->HuImageFormat = $format;
     }
 
     /*!
@@ -1936,18 +1641,18 @@ class HuygensTemplate {
     private function getParameterConfidence($paramName,$channel) {
 
         switch ( $paramName ) {
-        case 'PinholeSize':
-        case 'MicroscopeType':
-        case 'ImagingDir':
-        case 'PinholeSpacing':
-        case 'ObjectiveQuality':
-        case 'ExcitationPhoton':
-        case 'ExcitationWavelength':
-        case 'EmissionWavelength':
-        case 'ExBeamFactor':
-        case 'SampleMedium':
-        case 'ObjectiveType':
-        case 'NumericalAperture':
+        case 'pr':
+        case 'micr':
+        case 'imagingDir':
+        case 'ps':
+        case 'objQuality':
+        case 'pcnt':
+        case 'ex':
+        case 'em':
+        case 'exBeamFill':
+        case 'ri':
+        case 'ril':
+        case 'na':
             $numberOfChannels = $this->getNumberOfChannels();
             $cList = "";
 
@@ -1957,11 +1662,11 @@ class HuygensTemplate {
             }
             $paramConf = $this->string2tcllist($cList);
             break;
-        case 'Sampling':
-            $cList  = $this->getConfidenceLevel("CCDCaptorSizeX",0) . " ";
-            $cList .= $this->getConfidenceLevel("CCDCaptorSizeX",0) . " ";
-            $cList .= $this->getConfidenceLevel("ZStepSize",0) . " ";
-            $cList .= $this->getConfidenceLevel("TimeInterval",0);
+        case 's':
+            $cList  = $this->getConfidenceLevel("sX",0) . " ";
+            $cList .= $this->getConfidenceLevel("sX",0) . " ";
+            $cList .= $this->getConfidenceLevel("sZ",0) . " ";
+            $cList .= $this->getConfidenceLevel("sT",0);
             $paramConf = $this->string2tcllist($cList);
             break;
         case 'iFacePrim':
@@ -1990,19 +1695,30 @@ class HuygensTemplate {
 
     private function getParameter($paramName,$default=null) {
 
+        /* Start by adding the parameter name */
+        $paramList = " " . $paramName . " ";
+
+        /* Then add the parameter value */
         switch ( $paramName ) {
-        case 'MicroscopeType':
-        case 'PinholeSize':
-        case 'ImagingDir':
-        case 'PinholeSpacing':
-        case 'ObjectiveQuality':
-        case 'ExcitationPhoton':
-        case 'ExcitationWavelength':
-        case 'EmissionWavelength':
-        case 'ExBeamFactor':
-        case 'SampleMedium':
-        case 'ObjectiveType':
-        case 'NumericalAperture':
+        case 's':
+            $paramList .= $this->getSamplingSizes();
+            break;
+        case 'iFacePrim':
+        case 'iFaceScnd':
+            $paramList .= $default;
+            break;
+        case 'micr':
+        case 'pr':
+        case 'imagingDir':
+        case 'ps':
+        case 'objQuality':
+        case 'pcnt':
+        case 'ex':
+        case 'em':
+        case 'exBeamFill':
+        case 'ri':
+        case 'ril':
+        case 'na':
             $numberOfChannels = $this->getNumberOfChannels();
             $param = "";
             for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
@@ -2012,68 +1728,65 @@ class HuygensTemplate {
                     $param .= $default . " ";
                 }
             }
-            $paramList = $this->string2tcllist($param);
-            break;
-        case 'Sampling':
-            $paramList = $this->getSamplingSizes();
-            break;
-        case 'iFacePrim':
-        case 'iFaceScnd':
-            $paramList = $default;
+            $paramList .= $this->string2tcllist($param);
             break;
         default:
             error_log("Multichannel parameter $paramName not yet implemented");
         }
-        
+
+        /* Then add the parameter confidence level */
+        $paramList .= " " . $this->setpConfArray[$paramName] . " ";
+        $paramList .= $this->getParameterConfidence($paramName,0);
+
         return $paramList;
     }
 
     private function getParameterValue($paramName,$channel) {
         switch ( $paramName ) {
-        case 'MicroscopeType':
+        case 'micr':
             $parameterValue = $this->getMicroscopeType($channel);
             break;
-        case 'PinholeSize':
+        case 'pr':
             $parameterValue = $this->getPinholeRadius($channel);
             break;
-        case 'ImagingDir':
+        case 'imagingDir':
             $parameterValue = $this->getImagingDirection($channel);
             break;
-        case 'PinholeSpacing':
+        case 'ps':
             $parameterValue = $this->getPinholeSpacing($channel);
             break;
-        case 'ObjQuality':
+        case 'objQuality':
             $parameterValue = $this->getObjectiveQuality($channel);
             break;
-        case 'ExcitationPhoton':
+        case 'pcnt':
             $parameterValue = $this->getExcitationPhotonCount($channel);
             break;
-        case 'ExcitationWavelength':
+        case 'ex':
             $parameterValue = $this->getExcitationWavelength($channel);
             break;
-        case 'EmissionWavelength':
+        case 'em':
             $parameterValue = $this->getEmissionWavelength($channel);
             break;
-        case 'ExBeamFactor':
+        case 'exBeamFill':
             $parameterValue = $this->getExcitationBeamFactor($channel);
             break;
-        case 'SampleMedium':
+        case 'ri':
             $parameterValue = $this->getMediumRefractiveIndex($channel);
             break;
-        case 'ObjectiveType':
+        case 'ril':
             $parameterValue = $this->getLensRefractiveIndex($channel);
             break;
-        case 'NumericalAperture':
+        case 'na':
             $parameterValue = $this->getNumericalAperture($channel);
             break;
-        case 'TimeInterval':
-            $parameterValue = $this->getSamplingSizeT();
+        case 'sX':
+            $parameterValue = $this->getSamplingSizeX();
             break;
-        case 'ZStepSize':
+        case 'sZ':
             $parameterValue = $this->getSamplingSizeZ();
             break;
-        case 'CCDCaptorSizeX':
-            $parameterValue = $this->getSamplingSizeX();
+        case 'sT':
+            $parameterValue = $this->getSamplingSizeT();
             break;
         default:
             $parameterValue = "";
@@ -2222,17 +1935,6 @@ class HuygensTemplate {
         return trim($algorithms);
     }
 
-    /*!
-     \brief       Gets the task tag information
-     \return      The Tcl-compliant nested list with the tag information
-    */
-    private function getTaskTag( ) {
-        /* There are no specific names for the deconvolution and microscopic
-         templates in the Tcl-lists, they will be set to general names. */
-        $taskTag = "setp microscopicTemplate decon deconvolutionTemplate";
-        return  $this->string2tcllist($taskTag);
-    }
-
     /*
      \brief       Gets the open image series mode fo time series.
      \return      The series mode: whether auto or off.
@@ -2346,20 +2048,11 @@ class HuygensTemplate {
     }
 
     /*!
-     \brief       Gets the name of the source image.
-     \return      The name of the source image.
-    */
-    private function getSrcImage( ) {
-        return $this->srcImage;
-    }
-
-    /*!
      \brief       Gets the directory of the source image.
      \return      A file path.
     */
     private function getSrcDir( ) {
-        $srcFileName = $this->getSrcImage();
-        return dirname($srcFileName);
+        return dirname($this->srcImage);
     }
 
     /*!
@@ -2374,14 +2067,6 @@ class HuygensTemplate {
     private function getDestImageBaseName( ) {
         $destInfo = pathinfo($this->destImage);
         return basename($this->destImage,'.'.$destInfo['extension']);
-    }
-
-    /*!
-     \brief       Sets the image format as coded in the HuCore confidence level
-     \brief       table, whether leica, r3d, etc.
-    */
-    private function setHuImageFormat( ) {
-        $this->HuImageFormat = $this->getHuImageFormat();
     }
 
     /*!
