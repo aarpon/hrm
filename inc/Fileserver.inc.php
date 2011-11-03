@@ -100,6 +100,14 @@ class Fileserver {
   }
 
   /*!
+    \brief  Returns the valid image file extensions
+    \return array with all valid image file extensions
+  */
+  public function allFileExtensions() {
+    return $this->validImageExtensions;
+  }
+
+  /*!
     \brief  Checks whether the file area is reachable
     \return true if the file area is reachable
   */
