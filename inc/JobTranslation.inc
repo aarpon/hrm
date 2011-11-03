@@ -683,11 +683,11 @@ class JobTranslation {
         $options .= $this->getSamplingConfidenceList();
         $options .= " iFacePrim ";
         $options .= $this->getiFacePrim();
-        $options .= " prState,iFacePrim ";
+        $options .= " parState,iFacePrim ";
         $options .= $this->getiFacePrimConfidence();
         $options .= " iFaceScnd ";
         $options .= $this->getiFaceScnd();
-        $options .= " prState,iFaceScnd ";
+        $options .= " parState,iFaceScnd ";
         $options .= $this->getiFaceScndConfidence();
         $options .= " pr ";
         $options .= $this->getPinholeRadius();
