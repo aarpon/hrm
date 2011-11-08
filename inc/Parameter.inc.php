@@ -74,27 +74,6 @@ abstract class Parameter {
 	}
 
 	/*!
-		\brief	Returns the interpreted HuCore confidence level for the Parameter
-                \param  $fileFormat The file extension of the raw image
-                \param  $channel    A channel (currently unused)
-
-		This is to be used to create the template. The returned confidence
-		level is a function of the original confidence level and the actions
-		taken by the user. To get the raw confidence level associated to a
-		Parameter as returned by hucore (to be used for instance to color
-		code the Parameters in the user interface), please use the corresponding
-		Database methods.
-
-		\return	Interpreted confidence level for the Parameter (in HuCore notation)
-	*/
-	public function interpretedHuCoreConfidenceLevel( $fileFormat,$channel ) {
-        $db = new DatabaseConnection();
-        $cl = $db->getParameterConfidenceLevel($fileFormat, $this->name);
-        $this->setConfidenceLevel($cl);
-		return $cl;
-	}
-
-	/*!
 		\brief	Sets the confidence level for the Parameter
 		\param	Confidence level for the Parameter
 	*/
