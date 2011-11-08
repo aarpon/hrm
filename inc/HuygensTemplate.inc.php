@@ -178,14 +178,6 @@ class HuygensTemplate {
     private $destImage;
 
     /*!
-      \var    $HuImageFormat
-      \brief  The source image format, as coded in the HuCore confidence
-      \brief  level table, whether leica, r3d, etc. Don't mistake for the file
-      \brief  extension they are some times different, as in the leica case.
-    */
-    private $HuImageFormat;
-
-    /*!
       \var    $jobDescription
       \brief  JobDescription object: unformatted microscopic & restoration data
     */
@@ -285,7 +277,6 @@ class HuygensTemplate {
     private function initializeImg( ) {
         $this->setSrcImage();
         $this->setDestImage();
-        $this->setHuImageFormat();
     }
 
     /*!
@@ -1535,67 +1526,6 @@ class HuygensTemplate {
     } 
 
     /* ------------------------------ Utilities -------------------------------- */
-
-    /*
-     \brief       Gets the source image format as coded in the HuCore confidence
-     \brief       table. The file types of the source image are coded differently
-     \brief       in HRM and the HuCore confidence level table. For example,
-     \brief       HRM codes tiff-leica for what the HuCore confidence table codes
-     \brief       leica. This function does the mapping.
-     \return      The src image format as coded in the confidence table of HuCore.
-    */
-    private function setHuImageFormat( ) {
-        $microSetting = $this->microSetting;
-        $format = $microSetting->parameter("ImageFileFormat")->value();
-
-        switch ( $format ) {
-        case 'ics':
-            break;
-        case 'ics2':
-            $format = "ics";
-            break;
-        case 'hdf5':
-            break;
-        case 'dv':
-            $format = "r3d";
-            break;
-        case 'ims':
-            break;
-        case 'lif':
-            break;
-        case 'lsm':
-            break;
-        case 'lsm-single':
-            $format = "lsm";
-            break;
-        case 'ome-xml':
-            $format = "ome";
-            break;
-        case 'pic':
-            break;
-        case 'stk':
-            break;
-        case 'tiff':
-            break;
-        case 'tiff-leica':
-            $format = "leica";
-            break;
-        case 'tiff-series':
-            $format = "leica";
-            break;
-        case 'tiff-single':
-            $format = "tiff";
-            break;
-        case 'zvi':
-            break;
-        default:
-            error_log("Unknown image format: $format");
-            $format = "";
-            break;
-        }
-
-        $this->HuImageFormat = $format;
-    }
 
     /*!
      \brief       Gets the basic name that all thumbnails share, based on job id.
