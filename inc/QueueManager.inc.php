@@ -617,6 +617,7 @@ class QueueManager {
  	      $this->stopTime = $queue->stopJob($job);
  	      $this->writeParameterFile($job, $startTime,
  	      $logFile, $errorFile);
+
  	      // Write email
  	      if ($send_mail) $this->notifySuccess($job, $startTime);
  	      if (file_exists($errorFile)) {
@@ -666,8 +667,8 @@ class QueueManager {
 	  $user = $desc->owner();
  	  $fileserver = new Fileserver($user->name());
 
-      // Combine all parameters into one file
-	  $text = $text . $this->gatherParameters( $job );
+          // Combine all parameters into one file
+          $this->gatherParameters( $job );
 
  	  $imageName = $desc->destinationImageName();
  	  $user = $desc->owner();
@@ -1415,9 +1416,6 @@ class QueueManager {
 	  $outFile = fopen($templateParametersFile, 'w');
       fwrite($outFile,$text);
       fclose($outFile);
-
-	  // Return the text
-	  return $text;
 	}
 
 }
