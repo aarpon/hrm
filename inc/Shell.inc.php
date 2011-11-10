@@ -244,6 +244,37 @@ class ExternalProcess {
   }
 
   /*!
+   \brief      Attempts to remove a file, if existing.
+   \param      The name of the file including its path.
+  */
+  public function removeFile($fileName) {
+
+      // Build a remove command involving the file.
+      $cmd  = "if [ -f \"" . $fileName . "\" ]; ";
+      $cmd .= "then ";
+      $cmd .= "rm \"" . $fileName . "\"; ";
+      $cmd .= "fi";
+
+      $this->execute($cmd);
+  }
+
+  /*!
+   \brief      Attempts to rename a file, if existing.
+   \param      The name of the file including its path.
+   \param      The new name of the file including its path.
+  */
+  public function renameFile($oldName,$newName) {
+
+      // Build a rename command involving the old and new names.
+      $cmd  = "if [ -f \"" . $oldName . "\" ]; ";
+      $cmd .= "then ";
+      $cmd .= "mv \"" . $oldName . "\" \"" . $newName . "\"; ";
+      $cmd .= "fi";
+
+      $this->execute($cmd);
+  }
+
+  /*!
    \brief	Reads from STDOUT (the log file)
    \return 	the read buffer
    */
@@ -368,7 +399,7 @@ class LocalExternalProcess extends ExternalProcess {
    */
 
   public function existsHuygensProcess($pid) {
-    global $huygens_user, $hucore;
+    global $hucore;
     global $logdir;
     $answer = system("ps -p $pid | grep -e $hucore > ".$logdir."/hrm_tmp" , $result);
     if ($result==0) {
@@ -407,7 +438,6 @@ class LocalExternalProcess extends ExternalProcess {
    \return 	true if the command was executed, false otherwise
    */
   public function execute($command) {
-    global $huygens_user;
 
     $ret = fwrite($this->pipes[0], $command . " & echo $! \n");
     fflush($this->pipes[0]);
@@ -420,6 +450,17 @@ class LocalExternalProcess extends ExternalProcess {
       return True;
     }
 
+  }
+
+  public function removeFile($fileName) {
+
+      // Build a remove command involving the file.
+      $cmd  = "if [ -f \"" . $fileName . "\" ]; ";
+      $cmd .= "then ";
+      $cmd .= "rm \"" . $fileName . "\"; ";
+      $cmd .= "fi";
+
+      $this->execute($cmd);
   }
 
   /*!
@@ -436,7 +477,7 @@ class LocalExternalProcess extends ExternalProcess {
    \return 	true if the shell started successfully, false otherwise
    */
   public function runShell() {
-    global $huygens_user;
+
     $this->shell = proc_open("sh", $this->descriptorSpec, $this->pipes);
     if (!is_resource($this->shell)) {
       return False;
