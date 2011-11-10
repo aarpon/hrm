@@ -535,12 +535,55 @@ input.save {
 }
 
 #queue input {
-    vertical-align: middle;
+  vertical-align: middle;
+}
+
+#param table { 
+  font-size: 100%;
+  padding-bottom: 1em;
+  width: 40%;
+} 
+
+#param td {
+  text-align: center;
+  border: thin solid;
+}
+
+#param td.param {
+  width: 3%;
+  font-weight: bold;
+  background-color: #eee;
+}
+
+#param td.value {
+  width: 3%;
+  font-weight: bold;
+  background-color: #eee;
+}
+
+#param td.channel {
+  width: 1%;
+  font-weight: bold;
+  background-color: #eee;
+}
+
+#param td.source {
+  width: 5%;
+  font-weight: bold;
+  background-color: #eee;
+}
+
+#param td.metadata { 
+  background-color: #CFD7F2;
+}
+
+#param td.userdef { 
+  background-color: #CEFEC6;
 }
 
 #listusers {
-    text-align: center;
-    padding-bottom: 1em;
+  text-align: center;
+  padding-bottom: 1em;
 }
 
 #listusers table {

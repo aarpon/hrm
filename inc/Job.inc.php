@@ -20,7 +20,7 @@ class Job {
 
     /*!
      \var      $script
-     \brief    Contain a Huygens Batch template
+     \brief    Contains a Huygens Batch template
      \todo     Rename as 'template' across the HRM code.
     */
     private $script;
@@ -50,12 +50,36 @@ class Job {
     private $status;
 
     /*!
+     \brief
+     \var
+    */
+    private $pipeProducts;
+
+    /*!
+     \brief
+     \var
+    */
+    private $shell;
+
+    /* ------------------------------------------------------------------------ */
+    
+    /*!
      \brief	Constructor
      \param	$jobDescription	JobDescrition object
     */
     public function __construct($jobDescription) {
         $this->jobDescription = $jobDescription;
+        $this->setPipeProducts();
         $this->script = '';
+    }
+
+    private function setPipeProducts( ) {
+        $this->pipeProducts = array ( 'main'        => 'scheduler_client0.log',
+                                      'history'     => '_history.txt',
+                                      'tmp'         => '.tmp.txt',
+                                      'parameters'  => '.parameters.txt',
+                                      'out'         => '_out.txt',
+                                      'error'       => '_error.txt' );
     }
 
     /*!
@@ -72,40 +96,6 @@ class Job {
     */
     public function setServer($server) {
         $this->server = $server;
-    }
-    
-    /*!
-     \brief	Creates a script for elementary jobs or splits compound jobs
-     \return	for elementary jobs, returns true if the script was generated
-     successfully, or false otherwise; for compound jobs, it always
-     returns false
-    */
-    public function createSubJobsOrScript() {
-        $result = True;
-        $desc = $this->jobDescription;
-
-        if ($desc->isCompound()) {
-            $result = $result && $desc->createSubJobs();
-            if ($result) {
-                error_log("created sub jobs");
-                report("created sub jobs", 1);
-            }
-            if ($result) {
-                $queue = new JobQueue();
-                $result = $result && $queue->removeJob($desc);
-                if ($result)
-                    error_log("removed compound job");
-                report("removed compound job\n", 1);
-                // TODO: check if this does fix compound job processing
-                $result = False;
-            }
-        } else {
-            report("Job is elementary", 1);
-            $this->createScript();
-            report("Created script", 1);
-            $result = $result && $this->writeScript();
-        }
-        return $result;
     }
 
     /*!
@@ -181,6 +171,40 @@ class Job {
     public function scriptName() {
         $desc = $this->description();
         $result = ".hrm_" . $desc->id() . ".tcl";
+        return $result;
+    }
+    
+    /*!
+     \brief	Creates a script for elementary jobs or splits compound jobs
+     \return	for elementary jobs, returns true if the script was generated
+     successfully, or false otherwise; for compound jobs, it always
+     returns false
+    */
+    public function createSubJobsOrScript() {
+        $result = True;
+        $desc = $this->jobDescription;
+
+        if ($desc->isCompound()) {
+            $result = $result && $desc->createSubJobs();
+            if ($result) {
+                error_log("created sub jobs");
+                report("created sub jobs", 1);
+            }
+            if ($result) {
+                $queue = new JobQueue();
+                $result = $result && $queue->removeJob($desc);
+                if ($result)
+                    error_log("removed compound job");
+                report("removed compound job\n", 1);
+                // TODO: check if this does fix compound job processing
+                $result = False;
+            }
+        } else {
+            report("Job is elementary", 1);
+            $this->createScript();
+            report("Created script", 1);
+            $result = $result && $this->writeScript();
+        }
         return $result;
     }
 
@@ -348,12 +372,16 @@ class Job {
 
         $result = file_exists($dpath . $finishedMarker);
 
+        $proc = newExternalProcessFor($this->server(), 
+                                      $this->server() . 
+                                      "_" .$this->id() . "_out.txt", 
+                                      $this->server() .  "_"
+                                      . $this->id(). "_error.txt");
+        $proc->runShell();
+        $this->shell = $proc;
+
         if ($imageProcessingIsOnQueueManager) {
-            $proc = newExternalProcessFor($this->server(), 
-                                          $this->server() . 
-                                          "_" .$this->id() . "_out.txt", 
-                                          $this->server() .  "_"
-                                          . $this->id(). "_error.txt");
+
             $result = !$proc->existsHuygensProcess($this->pid());
             
             // Notice that the job is finished if $result = true.
@@ -384,7 +412,7 @@ class Job {
 
     /* -------- Utilities for renaming and formatting job specific files ------ */
 
-    /*
+    /*!
      \brief       Renames the Huygens deconvolution default files
      \brief       with a name that contains the job id and is HRM-compliant.
     */
@@ -393,67 +421,16 @@ class Job {
         // Rename the huygens job main file.
         $huygensOut = $this->getHuygensDefaultFileName("main");
         $idJobOutFile = $this->getJobIdOutputFile();
-        $this->renameFile($huygensOut,$idJobOutFile);
+        $this->shell->renameFile($huygensOut,$idJobOutFile);
 
         // The Huygens history file will be removed rather than renamed.
         $historyFile = $this->getHuygensDefaultFileName("history");
-        $this->removeFile($historyFile);
+        $this->shell->removeFile($historyFile);
     }
 
-    /*
-     \brief       Removes a file with name $fileName.
-     \param       $fileName The file name
-    */
-    private function removeFile($fileName) {
-        global $imageProcessingIsOnQueueManager;
-        global $huygens_user;
-
-        // Build a remove command involving the file.
-        $cmd  = "if [ -f \"" . $fileName . "\" ]; ";
-        $cmd .= "then ";
-        $cmd .= "rm \"" . $fileName . "\"; ";
-        $cmd .= "fi";
-
-        // Proceed to execute the command:  remove the file.
-        if ($imageProcessingIsOnQueueManager) {
-            $result = exec($cmd);
-        } else {
-            $cmd = "'$cmd'";
-            $server = split(" ", $this->server);
-            $server_hostname = $server[0];
-            $result = exec("ssh ".$huygens_user."@".$server_hostname." ".$cmd);
-        }
-    }
-
-    /*
-     \brief       Renames a file with name $oldName with a new name $newName.
-     \param       $oldName The old file name
-     \param       $newName The new file name
-    */
-    private function renameFile($oldName,$newName) {
-        global $imageProcessingIsOnQueueManager;
-        global $huygens_user;
-        
-        // Build a rename command involving the old and new names.
-        $cmd  = "if [ -f \"" . $oldName . "\" ]; ";
-        $cmd .= "then ";
-        $cmd .= "mv \"" . $oldName . "\" \"" . $newName . "\"; ";
-        $cmd .= "fi";
-
-        // Proceed to execute the command:  rename the Huygens default output file.
-        if ($imageProcessingIsOnQueueManager) {
-            $result = exec($cmd);
-        } else {
-            $cmd = "'$cmd'";
-            $server = split(" ", $this->server);
-            $server_hostname = $server[0];
-            $result = exec("ssh ".$huygens_user."@".$server_hostname." ".$cmd);
-        }
-    }
-
-    /*
+    /*!
      \brief       Get the name and path of a file that includes the job id
-     \brief       with an "inf" suffix.
+     \brief       with an "tmp" suffix.
      \return      The file path and name.
     */
     private function getJobIdOutputFile( ) {
@@ -462,7 +439,7 @@ class Job {
         return $jobDescription->destinationFolder() . $idJobOutFile;
     }
 
-    /*
+    /*!
      \brief        Get the name and path of the Huygens default file.
      \param        $fileType Which Huygens file.
      \return       The path and name of the Huygens default file.
@@ -470,25 +447,25 @@ class Job {
     private function getHuygensDefaultFileName($fileType) {
         $jobDescription = $this->description();
         $destFolder = $jobDescription->destinationFolder();
-        
+
         switch ( $fileType ) {
         case "main":
-            $huygensOut   = "scheduler_client0.log";
-            $fileName = $destFolder . $huygensOut;
+            $fileName = $this->pipeProducts[$fileType];
             break;
         case "history":
             $fileName = $jobDescription->destinationImageName();
-            $fileName .= "_history.txt";
-            $fileName = $destFolder . $fileName;
+            $fileName .= $this->pipeProducts[$fileType];
             break;
         default:
             error_log("Unknown file type.");
         }
-        
+
+        $fileName = $destFolder . $fileName;
+
         return $fileName;
     }
 
-    /*
+    /*!
      \brief       Filters the Huygens deconvolution output file to leave
      \brief       a second file containing only the deconvolution parameters.
     */
@@ -503,11 +480,11 @@ class Job {
             $jobDescription = $this->description();
             $jobReportFile = $jobDescription->destinationImageName() . ".tmp.txt";
             $jobReportFile = $jobDescription->destinationFolder() . $jobReportFile;
-            $this->removeFile($jobReportFile);
+            $this->shell->removeFile($jobReportFile);
         }
     }
 
-    /*
+    /*!
      \brief       Extracts important parameter data from the Huygens report file.
      \param       $jobInformation The contents of the report file in an array.
      \return      The parameters in a formatted way.
@@ -522,7 +499,7 @@ class Job {
         return $parsedInfoFile;
     }
 
-    /*
+    /*!
      \brief       Gets the number of channels of he current job.
      \return      The number of channels.
     */
@@ -532,7 +509,7 @@ class Job {
         return $microSetting->numberOfChannels();
     }
 
-    /*
+    /*!
      \brief       Copies a string to a file.
      \param       $string A variable containing a string.
      \param       $file The path and file where to copy the string.
@@ -543,7 +520,7 @@ class Job {
         fclose($copy2File);
     }
 
-    /*
+    /*!
      \brief       Gets a name for a file that will contain only the job parameters.
      \return      The file path and name
     */
@@ -555,7 +532,7 @@ class Job {
         return $paramFileName;
     }
 
-    /*
+    /*!
      \brief       Copies a file from the current server to the processing server.
      \param       $fileName Path and name of the file on the local machine.
     */
@@ -573,7 +550,7 @@ class Job {
         }
     }
     
-    /*
+    /*!
      \brief       Read the Huygens deconvolution output file of this job id.
      \return      An array containing one array element per file line.
     */
@@ -598,7 +575,7 @@ class Job {
         return $HuJobInfFile;
     }
     
-    /*
+    /*!
      \brief       Parses the contents of the Huygens deconvolution output file
      \brief       to leave only the deconvolution parameters in a table.
      \param       $informationFile An array with the contents of the file.
@@ -652,12 +629,13 @@ class Job {
                 }
             }
             $table .= "\n\n";
-            
-            
-            $table .= $this->formatString("PARAMETER",30);
-            $table .= $this->formatString("VALUE",30);
-            $table .= $this->formatString("CHANNEL",30);
-            $table .= $this->formatString("SOURCE",30);
+            $table .= "<div id=\"param\">";
+            $table .= "<table>";
+            $table .= "<tr>";
+            $table .= "<td class=\"param\">Parameter</td>";
+            $table .= "<td class=\"value\">Value</td>";
+            $table .= "<td class=\"channel\">Channel</td>";
+            $table .= "<td class=\"source\">Source</td></tr>";
             $table .= "\n\n";
 
             $pattern = "/{Parameter ([a-z]+?) will be taken from template: (.*).}}/";
@@ -666,11 +644,18 @@ class Job {
                 if (!empty($matches)) {
                     $parameter = $matches[1];
                     if ($paramArray[$parameter] != "") {
-                        $table .= $this->formatString($paramArray[$parameter],30);
-                        $table .= $this->formatString($matches[2],30);
-                        $table .= $this->formatString($channel,30);
-                        $table .= $this->formatString("User defined",30);
-                        $table .= "\n";
+                        $table .= "<tr><td class=\"userdef\">";
+                        $table .= $paramArray[$parameter];
+                        $table .= "</td>";
+                        $table .= "<td class=\"userdef\">";
+                        $table .= $matches[2];
+                        $table .= "</td>";
+                        $table .= "<td class=\"userdef\">";
+                        $table .= "All";
+                        $table .= "</td>";
+                        $table .= "<td class=\"userdef\">";
+                        $table .= "User defined";
+                        $table .= "</td></tr>";
                     }
                 }
             }
@@ -681,11 +666,18 @@ class Job {
                 if (!empty($matches)) {
                     $parameter = $matches[1];
                     if ($paramArray[$parameter] != "") {
-                        $table .= $this->formatString($paramArray[$parameter],30);
-                        $table .= $this->formatString($matches[2],30);
-                        $table .= $this->formatString($channel,30);
-                        $table .= $this->formatString("File metadata",30);
-                        $table .= "\n";
+                        $table .= "<tr><td class=\"metadata\">";
+                        $table .= $paramArray[$parameter];
+                        $table .= "</td>";
+                        $table .= "<td class=\"metadata\">";
+                        $table .= $matches[2];
+                        $table .= "</td>";
+                        $table .= "<td class=\"metadata\">";
+                        $table .= "All";
+                        $table .= "</td>";
+                        $table .= "<td class=\"metadata\">";
+                        $table .= "File metadata";
+                        $table .= "</td></tr>";
                     }
                 }
             }
@@ -699,11 +691,18 @@ class Job {
                 if (!empty($matches)) {
                     $parameter = $matches[1];
                     if ($paramArray[$parameter] != "") {
-                        $table .= $this->formatString($paramArray[$parameter],30);
-                        $table .= $this->formatString($matches[2],30);
-                        $table .= $this->formatString($channel,30);
-                        $table .= $this->formatString("User defined",30);
-                        $table .= "\n";
+                        $table .= "<tr><td class=\"userdef\">";
+                        $table .= $paramArray[$parameter];
+                        $table .= "</td>";
+                        $table .= "<td class=\"userdef\">";
+                        $table .= $matches[2];
+                        $table .= "</td>";
+                        $table .= "<td class=\"userdef\">";
+                        $table .= $channel;
+                        $table .= "</td>";
+                        $table .= "<td class=\"userdef\">";
+                        $table .= "User defined";
+                        $table .= "</td></tr>";
                     }
                 }
             }
@@ -715,20 +714,30 @@ class Job {
                 if (!empty($matches)) {
                     $parameter = $matches[1];
                     if ($paramArray[$parameter] != "") {
-                        $table .= $this->formatString($paramArray[$parameter],30);
-                        $table .= $this->formatString($matches[2],30);
-                        $table .= $this->formatString($channel,30);
-                        $table .= $this->formatString("File metadata",30);
-                        $table .= "\n";
-                    }
+                        $table .= "<tr><td class=\"metadata\">";
+                        $table .= $paramArray[$parameter];
+                        $table .= "</td>";
+                        $table .= "<td class=\"metadata\">";
+                        $table .= $matches[2];
+                        $table .= "</td>";
+                        $table .= "<td class=\"metadata\">";
+                        $table .= $channel;
+                        $table .= "</td>";
+                        $table .= "<td class=\"metadata\">";
+                        $table .= "File metadata";
+                        $table .= "</td></tr>";
+                    } 
                 }
             }
+
+            $table .= "</table>";
+            $table .= "</div> <!-- param -->";
         }
-        
+
         return $table;
     }
     
-    /*
+    /*!
      \brief       Formats a string with blanks on both sides.
      \param       $string The string to format
      \param       $pad The number of spaces to set on left and right
