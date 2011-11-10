@@ -452,17 +452,6 @@ class LocalExternalProcess extends ExternalProcess {
 
   }
 
-  public function removeFile($fileName) {
-
-      // Build a remove command involving the file.
-      $cmd  = "if [ -f \"" . $fileName . "\" ]; ";
-      $cmd .= "then ";
-      $cmd .= "rm \"" . $fileName . "\"; ";
-      $cmd .= "fi";
-
-      $this->execute($cmd);
-  }
-
   /*!
    \brief	Pings the host
    \return 	true always, since a machine should always be able to reach itself
