@@ -301,7 +301,7 @@ else {
   foreach ($settings as $set) {
     echo "                        <option";
     if ($set->isDefault()) {
-      echo " style=\"color: #078d1b\"";
+      echo " class=\"default\"";
     }
     if ($_SESSION['taskeditor']->selected() == $set->name()) {
       echo " selected=\"selected\"";
