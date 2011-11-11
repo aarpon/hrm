@@ -685,6 +685,12 @@ input.save {
     color: #000;
 }
 
+#homepage .added_jobs {
+    color: #ff0000;
+    font-weight: normal;
+    font-size: 14px;
+}
+
 #cmle-snr {
     text-align: left;
 }

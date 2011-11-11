@@ -39,6 +39,7 @@ if (isset($_POST['create'])) {
     $job->setFiles($_SESSION['fileserver']->selectedFiles());
     if ($job->addJob()) {
       $_SESSION['jobcreated'] = True;
+      $_SESSION['numberjobadded'] = count( $job->files() );
       header("Location: " . "home.php");
       exit();
     }

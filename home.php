@@ -26,8 +26,8 @@ if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
 
 $message = "";
 
-// Refresh the page every 10 seconds
-$meta = "<meta http-equiv=\"refresh\" content=\"10\" />";
+// Refresh the page every 5 seconds
+$meta = "<meta http-equiv=\"refresh\" content=\"5\" />";
 include("header.inc.php");
 
 ?>
@@ -274,22 +274,46 @@ include("header.inc.php");
 			  </td>
 			  
 			  <?php
-				$jobsInQueue = $_SESSION['user']->numberOfJobsInQueue();
-				if ( $jobsInQueue == 0 ) {
-				  $str = '<strong>no jobs</strong>';
-				} elseif ( $jobsInQueue == 1 ) {
-				  $str = '<strong>1 job</strong>';
-				} else {
-				  $str = '<strong>' .$jobsInQueue . ' jobs</strong>';
-				}
+                if ( isset( $_SESSION['jobcreated'] ) &&
+                     isset( $_SESSION['numberjobadded'] ) &&
+                     $_SESSION['numberjobadded'] > 0 ) {
+                        if ( $_SESSION['numberjobadded'] == 1 ) {
+                            $str = "1 job";
+                        } else {
+                            $str = $_SESSION['numberjobadded'] . " jobs";
+                        }
+                        unset( $_SESSION['numberjobadded'] );
+                    ?>
+                    <td class="text"><div class="cell">
+                        <a href="./job_queue.php">Queue status</a>
+                        <br />
+                        <p class="added_jobs"/>Congratulations!<br />
+                        You added <strong><?php echo $str; ?></strong> to
+                        the queue!
+                        </div>
+                    </td>
+                    <?php
+
+                } else {
+    				$jobsInQueue = $_SESSION['user']->numberOfJobsInQueue();
+        			if ( $jobsInQueue == 0 ) {
+            		  $str = '<strong>no jobs</strong>';
+                	} elseif ( $jobsInQueue == 1 ) {
+                      $str = '<strong>1 job</strong>';
+                    } else {
+    				  $str = '<strong>' .$jobsInQueue . ' jobs</strong>';
+        			}
+                    ?>
+                    <td class="text"><div class="cell">
+                        <a href="./job_queue.php">Queue status</a>
+                        <br />
+                        <p />See all jobs.<br />
+                        You have <?php echo $str; ?> in the queue.
+                        </div>
+                    </td>
+                    <?php
+                }
 			  ?>
-			  <td class="text"><div class="cell">
-                <a href="./job_queue.php">Queue status</a>
-                <br />
-				<p />See all jobs.<br />
-                You have <?php echo $str; ?> in the queue.
-                </div>
-			  </td>
 		    
 			</tr>
 			
