@@ -366,6 +366,14 @@ class Job {
         
         clearstatcache();
 
+        $proc = newExternalProcessFor($this->server(), 
+                                      $this->server() . 
+                                      "_" .$this->id() . "_out.txt", 
+                                      $this->server() .  "_"
+                                      . $this->id(). "_error.txt");
+        $proc->runShell();
+        $this->shell = $proc;
+
         // Server name without proc number
         $server = $this->server;
         $s = split(" ", $server);
@@ -381,9 +389,7 @@ class Job {
         $finishedMarker = $desc->destinationImageName() . ".hgsb";
         $endTimeMarker = ".EstimatedEndTime_" . $desc->id();
 
-        // Old code: to be removed.
-        // $remarksFile = $desc->sourceImageShortName() . "*" . "_" .
-        // $desc->id() . "*.remarks.txt";
+
 
         // If fileshare is not on the same host as Huygens.
         if (!$imageProcessingIsOnQueueManager) {
@@ -416,14 +422,6 @@ class Job {
         }
 
         $result = file_exists($dpath . $finishedMarker);
-
-        $proc = newExternalProcessFor($this->server(), 
-                                      $this->server() . 
-                                      "_" .$this->id() . "_out.txt", 
-                                      $this->server() .  "_"
-                                      . $this->id(). "_error.txt");
-        $proc->runShell();
-        $this->shell = $proc;
 
         if ($imageProcessingIsOnQueueManager) {
 
@@ -471,6 +469,11 @@ class Job {
         // The Huygens history file will be removed rather than renamed.
         $historyFile = $this->getHuygensDefaultFileName("history");
         $this->shell->removeFile($historyFile);
+
+        //TODO: remove and find workaround.
+        // When working on multiserver configurations renaming a file takes 
+        // some times longer than accessing the file for reading.
+        sleep(5);
     }
 
     /*!
@@ -516,11 +519,12 @@ class Job {
     */
     private function makeJobParametersFile( ) {
         $jobInfo = $this->readJobInformationFile();
-        if (isset($jobInfo)) {
-            $parsedInfoFile = $this->parseInfoFile($jobInfo);
+
+        if (!empty($jobInfo)) {
+            $parsedInfoFile = $this->HuReportFile2Html($jobInfo);
             $paramFileName = $this->getParamFileName();
             $this->copyString2File($parsedInfoFile,$paramFileName);
-            $this->copyFile2Host($paramFileName);
+            $this->shell->copyFile2Host($paramFileName);
             
             $jobDescription = $this->description();
             $jobReportFile = $jobDescription->destinationImageName() . ".tmp.txt";
@@ -551,84 +555,54 @@ class Job {
         $paramFileName = $jobDescription->destinationFolder() . $paramFileName;
         return $paramFileName;
     }
-
-    /*!
-     \brief       Copies a file from the current server to the processing server.
-     \param       $fileName Path and name of the file on the local machine.
-    */
-    private function copyFile2Host($fileName) {
-        global $imageProcessingIsOnQueueManager;
-        global $huygens_user;
-        
-        // If working with remote servers, copy the file to the user destination.
-        if (!$imageProcessingIsOnQueueManager) {
-            $server = split(" ", $this->server);
-            $server_hostname = $server[0];
-            $cmd = "scp " . $fileName . " " .$huygens_user."@";
-            $cmd .= $server_hostname.":".$fileName;
-            $result = exec($cmd);
-        }
-    }
     
     /*!
      \brief       Read the Huygens deconvolution output file of this job id.
      \return      An array containing one array element per file line.
     */
     private function readJobInformationFile() {
-        global $imageProcessingIsOnQueueManager;
-        global $huygens_user;
-        
+
         // Get the name of the job output file.
         $jobDescription = $this->description();
         $jobReportFile = $jobDescription->destinationImageName() . ".tmp.txt";
         $jobReportFile = $jobDescription->destinationFolder() . $jobReportFile;
 
-        // Proceed to read the job report file.
-        $cmd = "cat \"" . $jobReportFile ."\"";
-        if (!$imageProcessingIsOnQueueManager) {
-            $server = split(" ", $this->server);
-            $server_hostname = $server[0];
-            $cmd = "ssh ".$huygens_user."@".$server_hostname." ".$cmd;
-        }
-        $result = exec($cmd,$HuJobInfFile);
-        
-        return $HuJobInfFile;
+        return $this->shell->readFile($jobReportFile);
     }
 
 
     /*!
-     \brief       Extracts important parameter data from the Huygens report file.
-     \param       $jobInformation The contents of the report file in an array.
+     \brief       Formats data from the Huygens report file as html output.
+     \param       $reportFile The contents of the report file in an array.
      \return      The parameters in a formatted way.
     */
-    private function parseInfoFile ($reportFile) {
+    private function HuReportFile2Html ($reportFile) {
         
         /* Insert a title and an explanation. */
         $title = "<b><u>Parameters used during deconvolution</u></b></br></br>";
-        $text  = "Parameters that were <b>missing</b> in your ";
-        $text .= "settings are highlighted in <b>green</b>. Values ";
-        $text .= "found </br>in the metadata of the image were used ";
+        $text  = "Those parameters that were <b>missing</b> in your ";
+        $text .= "settings are highlighted in <b>green</b>. Alternative </br>";
+        $text .= "values found in the metadata of the image were used ";
         $text .= "instead, please examine their <b>validity</b>.</br>";
 
         $div   = $title;
         $div  .= $text;
-        $file  = $this->insertDiv($div);
+        $html  = $this->insertDiv($div);
 
         /* Insert the summary tables. */
-        $div   = $this->imgParamTable($reportFile);
-        $div  .= $this->restParamTable();
-        $file .= $this->insertDiv($div,"jobParameters");
+        $div   = $this->writeImageParamTable($reportFile);
+        $div  .= $this->writeRestoParamTable();
+        $html .= $this->insertDiv($div,"jobParameters");
 
-        return $file;
+        return $html;
     }
     
     /*!
-     \brief       Parses the contents of the Huygens deconvolution output file
-     \brief       to leave only the deconvolution parameters in a table.
-     \param       $informationFile An array with the contents of the file.
+     \brief       Parses the Huygens deconvolution output file into a table.
+     \param       $reportFile An array with the contents of the file.
      \return      A string with the formatted table.
     */
-    private function imgParamTable($reportFile) {
+    private function writeImageParamTable($reportFile) {
 
         /* Insert the column titles. */
         $row   = $this->insertCell("Image Parameters","header",4);
@@ -649,13 +623,14 @@ class Job {
                 continue;
             }
 
-            $parameter = $matches[1];
+            $paramName = $matches[1];
+            $paramText = $this->imgParam[$paramName];
             $channel   = $matches[3];
             $source    = $matches[5];
             $value     = $matches[6];
 
-            /* Parameter has no counterpart in the HRM GUI yet. */
-            if ($this->imgParam[$parameter] == "") {
+            /* The parameter has no counterpart in the HRM GUI yet. */
+            if ($paramText == "") {
                 continue;
             }
                 
@@ -671,22 +646,24 @@ class Job {
             }
                 
             /* Insert data into the table. */
-            $row  = $this->insertCell($this->imgParam[$parameter],$style);
+            $row  = $this->insertCell($paramText,$style);
             $row .= $this->insertCell($channel,$style);
             $row .= $this->insertCell($source,$style);
-            $row .= $this->insertCell($matches[6],$style);
+            $row .= $this->insertCell($value,$style);
             $table .= $this->insertRow($row);
         }
-        $table = $this->insertTable($table);
-        
-        return $table;
+
+        return $this->insertTable($table);
     }
 
-    private function restParamTable( ) {
+    /*!
+     \brief      Parses restoration data set by the user into a table.
+     \return     A string with the formatted table.
+    */
+    private function writeRestoParamTable( ) {
 
-        /* Retrieve data set by the user. */
-        $taskSetting = $this->jobDescription->taskSetting();
-        $taskSettingString = $taskSetting->displayString();
+        /* Retrieve restoration data set by the user. */
+        $taskSettings = $this->jobDescription->taskSetting()->displayString();
         
         /* Insert the column titles. */
         $row   = $this->insertCell("Restoration Parameters","header",4);
@@ -698,46 +675,54 @@ class Job {
         $row   .= $this->insertCell("Value","value");
         $table .= $this->insertRow($row);
 
-        /* Extract data from the file and into the table. */
-        foreach ($this->restParam as $search => $text) {
+        /* This table contains no metadata. It's all defined by the user. */
+        $source = "User defined";
+        $style  = "userdef";
 
-            $pattern  = "/(.*)$search(.*):";
+        /* Extract data from the restoration parameters and into the table. */
+        foreach ($this->restParam as $paramName => $paramText) {
+
+            $pattern  = "/(.*)$paramName(.*):";
             $pattern .= "\s+([0-9\,\s]+|[a-zA-Z0-9]+\s?[a-zA-Z0-9]*)/";
-            if (!preg_match($pattern,$taskSettingString,$matches)) {
+            if (!preg_match($pattern,$taskSettings,$matches)) {
                 continue;
             }
 
-            $parameters = $matches[3];
-            $chanParams = explode(",",$parameters);
-            $source    = "User defined";
-            $style     = "userdef";
-            
-            $chanCnt = 0;
-            foreach ($chanParams as $chanParam) {
-                if (count($chanParams) == 1) {
-                    $channel = "All";
-                } else {
-                    $channel = $chanCnt;
-                }
-                
-                /* Insert data into the table. */
-                $row  = $this->insertCell($text,$style);
-                $row .= $this->insertCell($chanCnt,$style);
-                $row .= $this->insertCell($source,$style);
-                $row .= $this->insertCell(trim($chanParam),$style);
-                $chanCnt++;
+            /* Multichannel parameters are separated by ','. */
+            $paramValues = explode(",",$matches[3]);
+
+            if (count($paramValues) == 1) {
+                $channel = "All";
+            } else {
+                $channel = 0;
             }
 
-            $table .= $this->insertRow($row);    
+            /* Insert data into the table. */
+            foreach ($paramValues as $paramValue) {
+                $row    = $this->insertCell($paramText,$style);
+                $row   .= $this->insertCell($channel,$style);
+                $row   .= $this->insertCell($source,$style);
+                $row   .= $this->insertCell(trim($paramValue),$style);
+                $table .= $this->insertRow($row);    
+
+                if (is_int($channel)) {
+                    $channel++;
+                }
+            }
         }
 
-        $table = $this->insertTable($table);
-
-        return $table;
+        return $this->insertTable($table);
     }
 
     /* ----------------------- HTML formatting utilities ----------------------- */
 
+    /*!
+     \brief       Adds a new cell to an html table.
+     \param       $content The data that will be shown in the cell.
+     \param       $style   One of the cell styles specified in the CSS files.
+     \colspan     $colspan The number of columns that will be taken up by the cell.
+     \return      A string with the formatted html code.
+    */
     private function insertCell($content,$style,$colspan=null) {
 
         if (!isset($colspan)) {
@@ -751,6 +736,11 @@ class Job {
         return $cell;
     }
 
+    /*!
+     \brief       Adds a new row to an html table.
+     \param       $content The data that will be shown in the row.
+     \return      A string with the formatted html code.
+    */
     private function insertRow($content) {
         $row  = "<tr>";
         $row .= $content;
@@ -759,6 +749,11 @@ class Job {
         return $row;
     }
 
+    /*!
+     \brief       Adds a new html table.
+     \param       $content The data that will be shown in the table.
+     \return      A string with the formatted html code.
+    */
     private function insertTable($content) {
         $table  = "</br><table>";
         $table .= $content;
@@ -767,6 +762,12 @@ class Job {
         return $table;
     }
 
+    /*!
+     \brief       Adds a new html div.
+     \param       $content The data that will be shown in the table.
+     \param       $id The id for the div.
+     \return      A string with the formatted html code.
+    */
     private function insertDiv($content,$id=null) {
 
         if (!isset($id)) {

@@ -275,6 +275,41 @@ class ExternalProcess {
   }
 
   /*!
+   \brief      Attempts to read a file, if existing.
+   \param      The name of the file including its path.
+   \return     The contents of the file in an array.
+  */
+  public function readFile($fileName) {
+    global $huygens_user;
+
+    // Build a read command involving the file.
+    $cmd  = "if [ -f \"" . $fileName . "\" ]; ";
+    $cmd .= "then ";
+    $cmd .= "cat \"" . $fileName . "\"; ";
+    $cmd .= "fi";
+    $cmd = "ssh " . $huygens_user . "@" . $this->host . " " . "'$cmd'";
+
+    $answer = exec($cmd,$result);
+
+    return $result;
+  }
+
+  /*!
+   \brief      Copies a local file to another server.
+   \return     Boolean: true if succeeded.
+  */
+  public function copyFile2Host($fileName) {
+      global $huygens_user;
+
+      // Build a copy command involving the file.
+      $cmd = "scp " . $fileName . " " .$huygens_user."@";
+      $cmd .= $this->host.":".$fileName;
+      $answer = exec($cmd);
+
+      return $answer;
+  }
+
+  /*!
    \brief	Reads from STDOUT (the log file)
    \return 	the read buffer
    */
@@ -406,6 +441,30 @@ class LocalExternalProcess extends ExternalProcess {
       return True;
     }
     return False;
+  }
+
+  /*!
+   \brief      Attempts to read a file, if existing.
+   \param      The name of the file including its path.
+  */
+  public function readFile($fileName) {
+
+    // Build a read command involving the file.
+    $cmd  = "if [ -f \"" . $fileName . "\" ]; ";
+    $cmd .= "then ";
+    $cmd .= "cat \"" . $fileName . "\"; ";
+    $cmd .= "fi";
+
+    $answer = exec($cmd, $result);
+
+    return $result;
+  }
+
+  /*!
+   \brief      In this class this funciton only needs to override the parent.
+  */
+  public function copyFile2Host($fileName) {
+      
   }
 
   /*!
