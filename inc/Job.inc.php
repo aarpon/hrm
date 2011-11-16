@@ -50,28 +50,34 @@ class Job {
     private $status;
 
     /*!
-     \brief
-     \var
+     \var      $pipeProducts
+     \brief    Array with file suffixes of HuCore and HRM.
     */
     private $pipeProducts;
 
     /*!
-     \brief
-     \var
+     \var      $shell
+     \brief    An ExternalProcessFor object.
     */
     private $shell;
 
     /*!
-     \brief
-     \var
+     \var     $imgParam
+     \brief   Array mapping microscopic parameters and descriptions. 
     */
     private $imgParam;
 
     /*!
-     \brief
-     \var
+     \var    $restParam
+     \brief  Array mapping restoration parameters and descriptions.
     */
     private $restParam;
+
+    /*!
+     \var    $destImage
+     \brief  Deconvolved image name and path (no extension).
+    */
+    private $destImage;
 
     /* ------------------------------------------------------------------------ */
     
@@ -81,11 +87,12 @@ class Job {
     */
     public function __construct($jobDescription) {
         $this->initialize($jobDescription);
+        $this->setJobDestImage();
     }
 
     /*!
-     \brief
-     \param
+     \brief       Sets general class properties to initial values
+     \param       $jobDescription A jobDescription object
     */
     private function initialize($jobDescription) {
 
@@ -99,32 +106,41 @@ class Job {
                                       'out'        => '_out.txt',
                                       'error'      => '_error.txt' );
 
-        $this->imgParam = array ( 'dx'             =>  'X pixel size',
-                                  'dy'             =>  'Y pixel size',
-                                  'dz'             =>  'Z step size',
-                                  'dt'             =>  'Time interval',
-                                  'iFacePrim'      =>  '',
-                                  'iFaceScnd'      =>  '',
-                                  'objQuality'     =>  '',
-                                  'exBeamFill'     =>  '',
-                                  'imagingDir'     =>  '',
-                                  'pcnt'           =>  '',
-                                  'na'             =>  'Numerical aperture',
-                                  'ri'             =>  'Refractive index (sample)',
-                                  'ril'            =>  'Refractive index (lens)',
-                                  'pr'             =>  'Pinhole size',
-                                  'ps'             =>  'Pinhole spacing',
-                                  'ex'             =>  'Excitation wavelength',
-                                  'em'             =>  'Emission wavelength',
-                                  'micr'           =>  'Microscope type' );
+        $this->imgParam = array ( 'dx'             => 'X pixel size (&mu;m)',
+                                  'dy'             => 'Y pixel size (&mu;m)',
+                                  'dz'             => 'Z step size  (&mu;m)',
+                                  'dt'             => 'Time interval (s)',
+                                  'iFacePrim'      => '',
+                                  'iFaceScnd'      => '',
+                                  'objQuality'     => '',
+                                  'exBeamFill'     => '',
+                                  'imagingDir'     => '',
+                                  'pcnt'           => '',
+                                  'na'             => 'Numerical aperture',
+                                  'ri'             => 'Sample refractive index',
+                                  'ril'            => 'Lens refractive index',
+                                  'pr'             => 'Pinhole size (nm)',
+                                  'ps'             => 'Pinhole spacing (nm)',
+                                  'ex'             => 'Excitation wavelength (nm)',
+                                  'em'             => 'Emission wavelength (nm)',
+                                  'micr'           => 'Microscope type' );
 
-        $this->restParam = array( 'algorithm'       => 'Deconvolution algorithm',
-                                  'iterations'      => 'Number of iterations',
-                                  'quality'         => 'Quality stop criterion',
-                                  'format'          => 'Output file format',
-                                  'absolute'        => 'Background absolute value',
-                                  'estimation'      => 'Background estimation',
-                                  'ratio'           => 'Signal/Noise ratio' );
+        $this->restParam = array( 'algorithm'      =>'Deconvolution algorithm',
+                                  'iterations'     =>'Number of iterations',
+                                  'quality'        =>'Quality stop criterion',
+                                  'format'         =>'Output file format',
+                                  'absolute'       =>'Background absolute value',
+                                  'estimation'     =>'Background estimation',
+                                  'ratio'          =>'Signal/Noise ratio' );
+    }
+
+    /*!
+     \brief       Gets the path and name of the output image (no extension).
+    */
+    private function setJobDestImage( ) {
+        $destImage = $this->jobDescription->destinationImageName();
+        $destImage = $this->jobDescription->destinationFolder() . $destImage;
+        $this->destImage = $destImage;
     }
 
     /*!
@@ -366,13 +382,13 @@ class Job {
         
         clearstatcache();
 
-        $proc = newExternalProcessFor($this->server(), 
-                                      $this->server() . 
-                                      "_" .$this->id() . "_out.txt", 
-                                      $this->server() .  "_"
-                                      . $this->id(). "_error.txt");
+        $this->shell = newExternalProcessFor($this->server(), 
+                                             $this->server() . 
+                                             "_" .$this->id() . "_out.txt", 
+                                             $this->server() .  "_"
+                                             . $this->id(). "_error.txt");
+        $proc = $this->shell;
         $proc->runShell();
-        $this->shell = $proc;
 
         // Server name without proc number
         $server = $this->server;
@@ -416,8 +432,7 @@ class Job {
                 exec("(cd " . $dpath . " && sudo scp " . $huygens_user . "@"
                      . $server_hostname . ":" . $marker . " .)");
 
-                $this->renameHuygensOutputFiles();
-                $this->makeJobParametersFile();
+                $this->filterHuygensOutput();
             }
         }
 
@@ -431,8 +446,7 @@ class Job {
             if (!$result && $proc->isHuygensProcessSleeping($this->pid())) {
                 $proc->rewakeHuygensProcess($this->pid());
             } elseif ($result) {
-                $this->renameHuygensOutputFiles();
-                $this->makeJobParametersFile();
+                $this->filterHuygensOutput();
             }
         }
         
@@ -456,120 +470,36 @@ class Job {
     /* -------- Utilities for renaming and formatting job specific files ------ */
 
     /*!
-     \brief       Renames the Huygens deconvolution default files
-     \brief       with a name that contains the job id and is HRM-compliant.
+     \brief       Filters the Huygens deconvolution output leaving
+     \brief       one file containing html parsed deconvolution parameters.
     */
-    private function renameHuygensOutputFiles( ) {
+    private function filterHuygensOutput( ) {
 
-        // Rename the huygens job main file.
-        $huygensOut = $this->getHuygensDefaultFileName("main");
-        $idJobOutFile = $this->getJobIdOutputFile();
-        $this->shell->renameFile($huygensOut,$idJobOutFile);
+        /* Set file names. */
+        $historyFile = $this->destImage . $this->pipeProducts["history"];
+        $tmpFile     = $this->destImage . $this->pipeProducts["tmp"];
+        $paramFile   = $this->destImage . $this->pipeProducts["parameters"];
+        $huygensOut  = dirname($this->destImage)."/".$this->pipeProducts["main"];
 
-        // The Huygens history file will be removed rather than renamed.
-        $historyFile = $this->getHuygensDefaultFileName("history");
+        /* The Huygens history file will be removed. */
         $this->shell->removeFile($historyFile);
 
-        //TODO: remove and find workaround.
-        // When working on multiserver configurations renaming a file takes 
-        // some times longer than accessing the file for reading.
-        sleep(5);
-    }
+        /* The Huygens job main file will be given a job id name. */
+        $this->shell->renameFile($huygensOut,$tmpFile);
 
-    /*!
-     \brief       Get the name and path of a file that includes the job id
-     \brief       with an "tmp" suffix.
-     \return      The file path and name.
-    */
-    private function getJobIdOutputFile( ) {
-        $jobDescription = $this->description();
-        $idJobOutFile = $jobDescription->destinationImageName() . ".tmp.txt";
-        return $jobDescription->destinationFolder() . $idJobOutFile;
-    }
+        /* TODO: find workaround. The multiserver configuration has latency 
+         between renaming and reading files. A sleep(5) fixes it. */
+        sleep(1);
 
-    /*!
-     \brief        Get the name and path of the Huygens default file.
-     \param        $fileType Which Huygens file.
-     \return       The path and name of the Huygens default file.
-    */
-    private function getHuygensDefaultFileName($fileType) {
-        $jobDescription = $this->description();
-        $destFolder = $jobDescription->destinationFolder();
-
-        switch ( $fileType ) {
-        case "main":
-            $fileName = $this->pipeProducts[$fileType];
-            break;
-        case "history":
-            $fileName = $jobDescription->destinationImageName();
-            $fileName .= $this->pipeProducts[$fileType];
-            break;
-        default:
-            error_log("Unknown file type.");
-        }
-
-        $fileName = $destFolder . $fileName;
-
-        return $fileName;
-    }
-
-    /*!
-     \brief       Filters the Huygens deconvolution output file to leave
-     \brief       a second file containing only the deconvolution parameters.
-    */
-    private function makeJobParametersFile( ) {
-        $jobInfo = $this->readJobInformationFile();
-
-        if (!empty($jobInfo)) {
-            $parsedInfoFile = $this->HuReportFile2Html($jobInfo);
-            $paramFileName = $this->getParamFileName();
-            $this->copyString2File($parsedInfoFile,$paramFileName);
-            $this->shell->copyFile2Host($paramFileName);
-            
-            $jobDescription = $this->description();
-            $jobReportFile = $jobDescription->destinationImageName() . ".tmp.txt";
-            $jobReportFile = $jobDescription->destinationFolder() . $jobReportFile;
-            $this->shell->removeFile($jobReportFile);
+        /* Read the Huygens output file and make an html table from it. */
+        $jobReport = $this->shell->readFile($tmpFile);
+        if (!empty($jobReport)) {
+            $parsedParam = $this->HuReportFile2Html($jobReport);
+            $this->copyString2File($parsedParam,$paramFile);
+            $this->shell->copyFile2Host($paramFile);
+            $this->shell->removeFile($tmpFile);
         }
     }
-
-    /*!
-     \brief       Copies a string to a file.
-     \param       $string A variable containing a string.
-     \param       $file The path and file where to copy the string.
-    */
-    private function copyString2File($string,$file) {
-        $copy2File = fopen($file, 'w');
-        fwrite($copy2File,$string);
-        fclose($copy2File);
-    }
-
-    /*!
-     \brief       Gets a name for a file that will contain only the job parameters.
-     \return      The file path and name
-    */
-    private function getParamFileName( ) {
-        $jobDescription = $this->description();
-        $paramFileName = $jobDescription->destinationImageName();
-        $paramFileName .= ".parameters.txt";
-        $paramFileName = $jobDescription->destinationFolder() . $paramFileName;
-        return $paramFileName;
-    }
-    
-    /*!
-     \brief       Read the Huygens deconvolution output file of this job id.
-     \return      An array containing one array element per file line.
-    */
-    private function readJobInformationFile() {
-
-        // Get the name of the job output file.
-        $jobDescription = $this->description();
-        $jobReportFile = $jobDescription->destinationImageName() . ".tmp.txt";
-        $jobReportFile = $jobDescription->destinationFolder() . $jobReportFile;
-
-        return $this->shell->readFile($jobReportFile);
-    }
-
 
     /*!
      \brief       Formats data from the Huygens report file as html output.
@@ -782,6 +712,19 @@ class Job {
         }
 
         return $div;
+    }
+
+    /* --------------------------- Small utilities --------------------------- */
+
+    /*!
+     \brief       Copies a string to a file.
+     \param       $string A variable containing a string.
+     \param       $file The path and file where to copy the string.
+    */
+    private function copyString2File($string,$file) {
+        $copy2File = fopen($file, 'w');
+        fwrite($copy2File,$string);
+        fclose($copy2File);
     }
 }
 
