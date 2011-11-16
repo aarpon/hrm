@@ -543,6 +543,53 @@ input.save {
     vertical-align: middle;
 }
 
+#jobParameters table { 
+  font-size: 100%;
+  padding-bottom: 1em;
+  width: 610px;
+} 
+
+#jobParameters td {
+  text-align: center;
+  border: thin solid;
+}
+
+#jobParameters td.header { 
+  font-weight: bold;
+}
+
+#jobParameters td.param {
+  width: 175px;
+  font-weight: bold;
+  background-color: #eee;
+}
+
+#jobParameters td.value {
+  width: 100px;
+  font-weight: bold;
+  background-color: #eee;
+}
+
+#jobParameters td.channel {
+  width: 50px;
+  font-weight: bold;
+  background-color: #eee;
+}
+
+#jobParameters td.source {
+  width: 100px;
+  font-weight: bold;
+  background-color: #eee;
+}
+
+#jobParameters td.metadata { 
+  background-color: #CEFEC6;
+}
+
+#jobParameters td.userdef { 
+  background-color: #CFD7F2;
+}
+
 #listusers {
     text-align: center;
     padding-bottom: 1em;

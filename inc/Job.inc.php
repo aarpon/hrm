@@ -61,6 +61,18 @@ class Job {
     */
     private $shell;
 
+    /*!
+     \brief
+     \var
+    */
+    private $imgParam;
+
+    /*!
+     \brief
+     \var
+    */
+    private $restParam;
+
     /* ------------------------------------------------------------------------ */
     
     /*!
@@ -68,18 +80,51 @@ class Job {
      \param	$jobDescription	JobDescrition object
     */
     public function __construct($jobDescription) {
-        $this->jobDescription = $jobDescription;
-        $this->setPipeProducts();
-        $this->script = '';
+        $this->initialize($jobDescription);
     }
 
-    private function setPipeProducts( ) {
-        $this->pipeProducts = array ( 'main'        => 'scheduler_client0.log',
-                                      'history'     => '_history.txt',
-                                      'tmp'         => '.tmp.txt',
-                                      'parameters'  => '.parameters.txt',
-                                      'out'         => '_out.txt',
-                                      'error'       => '_error.txt' );
+    /*!
+     \brief
+     \param
+    */
+    private function initialize($jobDescription) {
+
+        $this->script = '';
+        $this->jobDescription = $jobDescription;
+        
+        $this->pipeProducts = array ( 'main'       => 'scheduler_client0.log',
+                                      'history'    => '_history.txt',
+                                      'tmp'        => '.tmp.txt',
+                                      'parameters' => '.parameters.txt',
+                                      'out'        => '_out.txt',
+                                      'error'      => '_error.txt' );
+
+        $this->imgParam = array ( 'dx'             =>  'X pixel size',
+                                  'dy'             =>  'Y pixel size',
+                                  'dz'             =>  'Z step size',
+                                  'dt'             =>  'Time interval',
+                                  'iFacePrim'      =>  '',
+                                  'iFaceScnd'      =>  '',
+                                  'objQuality'     =>  '',
+                                  'exBeamFill'     =>  '',
+                                  'imagingDir'     =>  '',
+                                  'pcnt'           =>  '',
+                                  'na'             =>  'Numerical aperture',
+                                  'ri'             =>  'Refractive index (sample)',
+                                  'ril'            =>  'Refractive index (lens)',
+                                  'pr'             =>  'Pinhole size',
+                                  'ps'             =>  'Pinhole spacing',
+                                  'ex'             =>  'Excitation wavelength',
+                                  'em'             =>  'Emission wavelength',
+                                  'micr'           =>  'Microscope type' );
+
+        $this->restParam = array( 'algorithm'       => 'Deconvolution algorithm',
+                                  'iterations'      => 'Number of iterations',
+                                  'quality'         => 'Quality stop criterion',
+                                  'format'          => 'Output file format',
+                                  'absolute'        => 'Background absolute value',
+                                  'estimation'      => 'Background estimation',
+                                  'ratio'           => 'Signal/Noise ratio' );
     }
 
     /*!
@@ -470,9 +515,9 @@ class Job {
      \brief       a second file containing only the deconvolution parameters.
     */
     private function makeJobParametersFile( ) {
-        $jobInformation = $this->readJobInformationFile();
-        if (isset($jobInformation)) {
-            $parsedInfoFile = $this->parseInfoFile($jobInformation);
+        $jobInfo = $this->readJobInformationFile();
+        if (isset($jobInfo)) {
+            $parsedInfoFile = $this->parseInfoFile($jobInfo);
             $paramFileName = $this->getParamFileName();
             $this->copyString2File($parsedInfoFile,$paramFileName);
             $this->copyFile2Host($paramFileName);
@@ -482,31 +527,6 @@ class Job {
             $jobReportFile = $jobDescription->destinationFolder() . $jobReportFile;
             $this->shell->removeFile($jobReportFile);
         }
-    }
-
-    /*!
-     \brief       Extracts important parameter data from the Huygens report file.
-     \param       $jobInformation The contents of the report file in an array.
-     \return      The parameters in a formatted way.
-    */
-    private function parseInfoFile ($jobInformation) {
-        
-        $numberOfChannels = $this->getNumberOfChannels();
-        $parsedInfoFile = $this->parseInfo2Table($jobInformation,"All");
-        for ($chanCnt = 0; $chanCnt < $numberOfChannels;$chanCnt++) {
-            $parsedInfoFile .= $this->parseInfo2Table($jobInformation,$chanCnt);
-        }
-        return $parsedInfoFile;
-    }
-
-    /*!
-     \brief       Gets the number of channels of he current job.
-     \return      The number of channels.
-    */
-    private function getNumberOfChannels( ) {
-        $jobDescription = $this->description();
-        $microSetting = $jobDescription->parameterSetting;
-        return $microSetting->numberOfChannels();
     }
 
     /*!
@@ -574,177 +594,193 @@ class Job {
         
         return $HuJobInfFile;
     }
+
+
+    /*!
+     \brief       Extracts important parameter data from the Huygens report file.
+     \param       $jobInformation The contents of the report file in an array.
+     \return      The parameters in a formatted way.
+    */
+    private function parseInfoFile ($reportFile) {
+        
+        /* Insert a title and an explanation. */
+        $title = "<b><u>Parameters used during deconvolution</u></b></br></br>";
+        $text  = "Parameters that were <b>missing</b> in your ";
+        $text .= "settings are highlighted in <b>green</b>. Values ";
+        $text .= "found </br>in the metadata of the image were used ";
+        $text .= "instead, please examine their <b>validity</b>.</br>";
+
+        $div   = $title;
+        $div  .= $text;
+        $file  = $this->insertDiv($div);
+
+        /* Insert the summary tables. */
+        $div   = $this->imgParamTable($reportFile);
+        $div  .= $this->restParamTable();
+        $file .= $this->insertDiv($div,"jobParameters");
+
+        return $file;
+    }
     
     /*!
      \brief       Parses the contents of the Huygens deconvolution output file
      \brief       to leave only the deconvolution parameters in a table.
      \param       $informationFile An array with the contents of the file.
-     \param       $channel Which channel or All for channel indepenent parameters.
      \return      A string with the formatted table.
-     \TODO        Report the scaling factors.
     */
-    private function parseInfo2Table($informationFile,$channel) {
-        
-        $paramArray = array ( 'dx'            =>  'x pixel size',
-                              'dy'            =>  'y pixel size',
-                              'dz'            =>  'z step size',
-                              'dt'            =>  'time interval',
-                              'iFacePrim'     =>  '',
-                              'iFaceScnd'     =>  '',
-                              'objQuality'    =>  '',
-                              'exBeamFill'    =>  '',
-                              'imagingDir'    =>  '',
-                              'pcnt'          =>  '',
-                              'na'            =>  'numerical aperture',
-                              'ri'            =>  'sample medium',
-                              'ril'           =>  'objective type',
-                              'pr'            =>  'pinhole size',
-                              'ps'            =>  'pinhole spacing',
-                              'ex'            =>  'excitation wavelength',
-                              'em'            =>  'emission wavelength',
-                              'micr'          =>  'microscope type');
+    private function imgParamTable($reportFile) {
 
-        if ( $channel === "All" ) {
-            
-            if ($this->getNumberOfChannels() > 1) {
-                $channel = "All";
+        /* Insert the column titles. */
+        $row   = $this->insertCell("Image Parameters","header",4);
+        $table = $this->insertRow($row);
+
+        $row    = $this->insertCell("Parameter","param");
+        $row   .= $this->insertCell("Channel","channel");
+        $row   .= $this->insertCell("Source","source");
+        $row   .= $this->insertCell("Value","value");
+        $table .= $this->insertRow($row);
+     
+        /* Extract data from the file and into the table. */
+        $pattern  = "/{Parameter ([a-z]+?) (of channel ([0-9])\s|)(.*) ";
+        $pattern .= "(template|metadata): (.*).}}/";
+
+        foreach ($reportFile as $reportEntry) {
+            if (!preg_match($pattern,$reportEntry,$matches)) {
+                continue;
+            }
+
+            $parameter = $matches[1];
+            $channel   = $matches[3];
+            $source    = $matches[5];
+            $value     = $matches[6];
+
+            /* Parameter has no counterpart in the HRM GUI yet. */
+            if ($this->imgParam[$parameter] == "") {
+                continue;
+            }
+                
+            if ($source == "template") {
+                $source = "User defined";
+                $style = "userdef";
             } else {
-                $channel = "0";
+                $source = "File metadata";
+                $style = "metadata";
             }
-            
-            $table = "";
-
-            $pattern = "/{Microscope conflict for channel (.*):(.*)}}/";
-            foreach ($informationFile as $fileLine) {
-                preg_match($pattern,$fileLine,$matches);
-                if (!empty($matches)) {
-                    $parameter = $matches[1];
-                    $warning = "WARNING:  MICROSCOPE CONFLICT FOR CHANNEL ";
-                    $warning .= $matches[1] . ":";
-                    $table .= $this->formatString("",20);
-                    $table .= $this->formatString($warning,30);
-                    $table .= $this->formatString($matches[2],30);
-                    $table .= "\n";
-                    
-                }
+            if ($channel == "") {
+                $channel = "All";
             }
-            $table .= "\n\n";
-            $table .= "<div id=\"param\">";
-            $table .= "<table>";
-            $table .= "<tr>";
-            $table .= "<td class=\"param\">Parameter</td>";
-            $table .= "<td class=\"value\">Value</td>";
-            $table .= "<td class=\"channel\">Channel</td>";
-            $table .= "<td class=\"source\">Source</td></tr>";
-            $table .= "\n\n";
-
-            $pattern = "/{Parameter ([a-z]+?) will be taken from template: (.*).}}/";
-            foreach ($informationFile as $fileLine) {
-                preg_match($pattern,$fileLine,$matches);
-                if (!empty($matches)) {
-                    $parameter = $matches[1];
-                    if ($paramArray[$parameter] != "") {
-                        $table .= "<tr><td class=\"userdef\">";
-                        $table .= $paramArray[$parameter];
-                        $table .= "</td>";
-                        $table .= "<td class=\"userdef\">";
-                        $table .= $matches[2];
-                        $table .= "</td>";
-                        $table .= "<td class=\"userdef\">";
-                        $table .= "All";
-                        $table .= "</td>";
-                        $table .= "<td class=\"userdef\">";
-                        $table .= "User defined";
-                        $table .= "</td></tr>";
-                    }
-                }
-            }
-            
-            $pattern = "/{Parameter ([a-z]+?) will be taken from metadata: (.*).}}/";
-            foreach ($informationFile as $fileLine) {
-                preg_match($pattern,$fileLine,$matches);
-                if (!empty($matches)) {
-                    $parameter = $matches[1];
-                    if ($paramArray[$parameter] != "") {
-                        $table .= "<tr><td class=\"metadata\">";
-                        $table .= $paramArray[$parameter];
-                        $table .= "</td>";
-                        $table .= "<td class=\"metadata\">";
-                        $table .= $matches[2];
-                        $table .= "</td>";
-                        $table .= "<td class=\"metadata\">";
-                        $table .= "All";
-                        $table .= "</td>";
-                        $table .= "<td class=\"metadata\">";
-                        $table .= "File metadata";
-                        $table .= "</td></tr>";
-                    }
-                }
-            }
-        } else {
-            $table = "";
-            
-            $pattern = "/{Parameter (.*) of channel $channel will be taken from ";
-            $pattern .= "template: (.*).}}/";
-            foreach ($informationFile as $fileLine) {
-                preg_match($pattern,$fileLine,$matches);
-                if (!empty($matches)) {
-                    $parameter = $matches[1];
-                    if ($paramArray[$parameter] != "") {
-                        $table .= "<tr><td class=\"userdef\">";
-                        $table .= $paramArray[$parameter];
-                        $table .= "</td>";
-                        $table .= "<td class=\"userdef\">";
-                        $table .= $matches[2];
-                        $table .= "</td>";
-                        $table .= "<td class=\"userdef\">";
-                        $table .= $channel;
-                        $table .= "</td>";
-                        $table .= "<td class=\"userdef\">";
-                        $table .= "User defined";
-                        $table .= "</td></tr>";
-                    }
-                }
-            }
-
-            $pattern = "/{Parameter (.*) of channel $channel will be taken from ";
-            $pattern .= "metadata: (.*).}}/";
-            foreach ($informationFile as $fileLine) {
-                preg_match($pattern,$fileLine,$matches);
-                if (!empty($matches)) {
-                    $parameter = $matches[1];
-                    if ($paramArray[$parameter] != "") {
-                        $table .= "<tr><td class=\"metadata\">";
-                        $table .= $paramArray[$parameter];
-                        $table .= "</td>";
-                        $table .= "<td class=\"metadata\">";
-                        $table .= $matches[2];
-                        $table .= "</td>";
-                        $table .= "<td class=\"metadata\">";
-                        $table .= $channel;
-                        $table .= "</td>";
-                        $table .= "<td class=\"metadata\">";
-                        $table .= "File metadata";
-                        $table .= "</td></tr>";
-                    } 
-                }
-            }
-
-            $table .= "</table>";
-            $table .= "</div> <!-- param -->";
+                
+            /* Insert data into the table. */
+            $row  = $this->insertCell($this->imgParam[$parameter],$style);
+            $row .= $this->insertCell($channel,$style);
+            $row .= $this->insertCell($source,$style);
+            $row .= $this->insertCell($matches[6],$style);
+            $table .= $this->insertRow($row);
         }
+        $table = $this->insertTable($table);
+        
+        return $table;
+    }
+
+    private function restParamTable( ) {
+
+        /* Retrieve data set by the user. */
+        $taskSetting = $this->jobDescription->taskSetting();
+        $taskSettingString = $taskSetting->displayString();
+        
+        /* Insert the column titles. */
+        $row   = $this->insertCell("Restoration Parameters","header",4);
+        $table = $this->insertRow($row);
+
+        $row    = $this->insertCell("Parameter","param");
+        $row   .= $this->insertCell("Channel","channel");
+        $row   .= $this->insertCell("Source","source");
+        $row   .= $this->insertCell("Value","value");
+        $table .= $this->insertRow($row);
+
+        /* Extract data from the file and into the table. */
+        foreach ($this->restParam as $search => $text) {
+
+            $pattern  = "/(.*)$search(.*):";
+            $pattern .= "\s+([0-9\,\s]+|[a-zA-Z0-9]+\s?[a-zA-Z0-9]*)/";
+            if (!preg_match($pattern,$taskSettingString,$matches)) {
+                continue;
+            }
+
+            $parameters = $matches[3];
+            $chanParams = explode(",",$parameters);
+            $source    = "User defined";
+            $style     = "userdef";
+            
+            $chanCnt = 0;
+            foreach ($chanParams as $chanParam) {
+                if (count($chanParams) == 1) {
+                    $channel = "All";
+                } else {
+                    $channel = $chanCnt;
+                }
+                
+                /* Insert data into the table. */
+                $row  = $this->insertCell($text,$style);
+                $row .= $this->insertCell($chanCnt,$style);
+                $row .= $this->insertCell($source,$style);
+                $row .= $this->insertCell(trim($chanParam),$style);
+                $chanCnt++;
+            }
+
+            $table .= $this->insertRow($row);    
+        }
+
+        $table = $this->insertTable($table);
 
         return $table;
     }
-    
-    /*!
-     \brief       Formats a string with blanks on both sides.
-     \param       $string The string to format
-     \param       $pad The number of spaces to set on left and right
-     \return      The formatted string
-    */
-    private function formatString($string,$pad) {
-        return str_pad($string,$pad," ",STR_PAD_BOTH);
+
+    /* ----------------------- HTML formatting utilities ----------------------- */
+
+    private function insertCell($content,$style,$colspan=null) {
+
+        if (!isset($colspan)) {
+            $colspan = 1;
+        }
+        
+        $cell  = "<td class=\"$style\" colspan=\"$colspan\">";
+        $cell .= $content;
+        $cell .= "</td>";
+
+        return $cell;
+    }
+
+    private function insertRow($content) {
+        $row  = "<tr>";
+        $row .= $content;
+        $row .= "</tr>";
+
+        return $row;
+    }
+
+    private function insertTable($content) {
+        $table  = "</br><table>";
+        $table .= $content;
+        $table .= "</table></br>";
+
+        return $table;
+    }
+
+    private function insertDiv($content,$id=null) {
+
+        if (!isset($id)) {
+            $div  = "<div>";
+            $div .= $content;
+            $div .= "</div>";
+        } else {
+            $div  = "<div id=\"$id\">";
+            $div .= $content;
+            $div .= "</div>";
+            $div .= " <!-- $id -->";
+        }
+
+        return $div;
     }
 }
 

@@ -538,47 +538,51 @@ input.save {
   vertical-align: middle;
 }
 
-#param table { 
+#jobParameters table { 
   font-size: 100%;
   padding-bottom: 1em;
-  width: 40%;
+  width: 610px;
 } 
 
-#param td {
+#jobParameters td {
   text-align: center;
   border: thin solid;
 }
 
-#param td.param {
-  width: 3%;
+#jobParameters td.header { 
+  font-weight: bold;
+}
+
+#jobParameters td.param {
+  width: 175px;
   font-weight: bold;
   background-color: #eee;
 }
 
-#param td.value {
-  width: 3%;
+#jobParameters td.value {
+  width: 100px;
   font-weight: bold;
   background-color: #eee;
 }
 
-#param td.channel {
-  width: 1%;
+#jobParameters td.channel {
+  width: 50px;
   font-weight: bold;
   background-color: #eee;
 }
 
-#param td.source {
-  width: 5%;
+#jobParameters td.source {
+  width: 100px;
   font-weight: bold;
   background-color: #eee;
 }
 
-#param td.metadata { 
-  background-color: #CFD7F2;
-}
-
-#param td.userdef { 
+#jobParameters td.metadata { 
   background-color: #CEFEC6;
+}
+
+#jobParameters td.userdef { 
+  background-color: #CFD7F2;
 }
 
 #listusers {

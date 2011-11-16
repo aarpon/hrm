@@ -668,7 +668,7 @@ class QueueManager {
  	  $fileserver = new Fileserver($user->name());
 
           // Combine all parameters into one file
-          $this->gatherParameters( $job );
+//           $this->gatherParameters( $job );
 
  	  $imageName = $desc->destinationImageName();
  	  $user = $desc->owner();
