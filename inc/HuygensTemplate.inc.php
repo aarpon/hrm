@@ -834,11 +834,14 @@ class HuygensTemplate {
             case 'completeChanCnt':
                 $setp .= $key . " " . $this->getNumberOfChannels();
                 break;
+            case 'ps':
+                if ($this->getMicroscopeType() != "nipkow") {
+                    continue 2;
+                }
             case 'micr':
             case 's':
             case 'pr':
             case 'imagingDir':
-            case 'ps':
             case 'objQuality':
             case 'pcnt':
             case 'ex':
