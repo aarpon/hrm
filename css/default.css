@@ -690,8 +690,22 @@ input.save {
 }
 
 #homepage .added_jobs {
-    color: #4687dd;
+    color: #4988de;
     font-weight: normal;
+    font-size: 14px;
+}
+
+#homepage .added_jobs a:link {
+    color: #4988de;
+    font-weight: normal;
+    font-decoration: none;
+    font-size: 14px;
+}
+
+#homepage .added_jobs a:visited {
+    color: #4988de;
+    font-weight: normal;
+    font-decoration: none;
     font-size: 14px;
 }
 

@@ -287,9 +287,10 @@ include("header.inc.php");
                     <td class="text"><div class="cell">
                         <a href="./job_queue.php">Queue status</a>
                         <br />
-                        <p class="added_jobs"/>Congratulations!<br />
+                        <p class="added_jobs"/>
+                        <a href="./job_queue.php">Congratulations!<br />
                         You added <strong><?php echo $str; ?></strong> to
-                        the queue!
+                        the queue!</a></p>
                         </div>
                     </td>
                     <?php
