@@ -164,7 +164,8 @@ class System {
 		$version    = $version - $minorminor * 100;
 		$patch      = $version;
 		if ( $version != 0 ) {
-			$versionString = $major . '.' . $minor . '.' . $minorminor . '-p' . $patch;
+			$versionString =
+                $major . '.' . $minor . '.' . $minorminor . '-p' . $patch;
 		} else {
 			$versionString = $major . '.' . $minor . '.' . $minorminor;
 		}
@@ -417,7 +418,7 @@ class System {
      configuration files
      \return	max allowed size for a file upload in bytes
      */
-    public static function uploadMaxFileSize( ) {
+    public static function uploadMaxFileSize( $unit = 'M' ) {
     	return System::formatMemoryStringByUnit(
     	getMaxFileSize(), $unit );
     }
@@ -449,7 +450,8 @@ class System {
     			$unit_string = 'MB';
     			break;
     	}
-    	return ( number_format( $value / $factor, $digits, '.', '\'') . $unit_string );
+    	return ( number_format( $value / $factor, $digits, '.', '\'') .
+                $unit_string );
     }
 
 };
