@@ -24,12 +24,4 @@ if (!isset ($userManager) ) {
     $userManager = "bin/hrm";
 }
 
-/*!
- *\todo	The following parameter is obsolete and is to be removed in one of the 
- * 		next versions of the HRM.
- * 		For the time being, its value is set and MUST NOT BE CHANGED.
- * 
- */
-$resultImagesOwnedByUser = false;
-
 ?>
