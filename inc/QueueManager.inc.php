@@ -1328,6 +1328,9 @@ class QueueManager {
             }
         }
 
+        // Replace (&mu;m) with (um) (preserving the string length)
+        $txt = str_replace("(&mu;m)", "(um)   ", $txt);
+
         return $txt;
     }
 }
