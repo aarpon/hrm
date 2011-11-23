@@ -15,7 +15,7 @@ require_once ("System.inc.php");
 
 /*!
  \class  QueueManager
- \brief  Translates a JobDescription into a Huygens template and runs it on a free server
+ \brief  Creates Jobs from JobDescriptions and manages them in a priority queue
  */
 class QueueManager {
     
@@ -112,14 +112,17 @@ class QueueManager {
         $clientScriptPath = $desc->sourceFolder();
         $scriptName = $job->scriptName();
         
-        // The new job must not get merged with debris from previously failed jobs.
+        // The new job must not get merged with debris from previously
+        // failed jobs.
         $this->removeHuygensOutputFiles($desc, $server_hostname);
 
         report(">>>>> Executing script: " .
             $imageProcessingIsOnQueueManager . " " .
                 $copy_images_to_huygens_server, 2);
-        if (!$imageProcessingIsOnQueueManager && $copy_images_to_huygens_server) {
-            $clientScriptPath = $this->copyImagesToServer($job, $server_hostname);
+        if (!$imageProcessingIsOnQueueManager &&
+                $copy_images_to_huygens_server) {
+            $clientScriptPath =
+                $this->copyImagesToServer($job, $server_hostname);
             report("images copied to IP server", 1);
         }
 
@@ -166,13 +169,13 @@ class QueueManager {
         $this->chmodFiles(glob($srcPreviews),0777);
         $this->chmodFiles(dirname($srcPreviews),0777);
 
-        // Grant all permissions to the source preview in the destination folder.
+        // Grant all permissions to the source preview in the destination folder
         $destFolder = $fileserver->destinationFolder();
         $srcPreviews = $destFolder . str_replace(" ","_",$subdirPreviewPattern);
         $this->chmodFiles(glob($srcPreviews),0777);
         $this->chmodFiles(dirname($srcPreviews),0777);
 
-        // Find the results directory. Grant all permissions to it, if necessary.
+        // Find the results directory. Grant all permissions to it, if necessary
         if (dirname($resultFiles[0]) == "." ) {
             $jobFileDir = $destFolder;
         } else {
@@ -182,7 +185,8 @@ class QueueManager {
         }
 
         // Build a file pattern to look for the deconvolved images.
-        $jobFilePattern = $jobFileDir . "/" . $desc->destinationImageName() . "*";
+        $jobFilePattern = $jobFileDir . "/" .
+            $desc->destinationImageName() . "*";
 
         // Grant all permissions to the deconvolved images.
         $this->chmodFiles(glob($jobFilePattern),0777);
@@ -213,7 +217,7 @@ class QueueManager {
     }
 
     /*!
-    \brief	Copies the images needed by a given Job to the Image Processing server
+    \brief	Copies the images needed by a given Job to the [rocessing server
     \param	$job	A Job object
     \param	$server_hostname	Name of the server to which to copy the files
     \return	the full path to which the files were copied
@@ -309,7 +313,8 @@ class QueueManager {
                 $filename = substr($filename, 0,
                     strrpos($filename, '.ics')) . ".ids";
                 $batch .= "put \"" . $filename . "\"\n";
-            } else if (stristr($filename, ".tif") || stristr($filename, ".tiff")) {
+            } else if (stristr($filename, ".tif") ||
+                    stristr($filename, ".tiff")) {
                 // TODO: if ImageFileFormat = single TIFF file, do not send
                 // corresponding series
                 $basename = preg_replace(
@@ -323,7 +328,6 @@ class QueueManager {
                     $basename = preg_replace(
                         "/([^_]+|\/)(_)(T|t)([0-9]+)(\.)(\w+)/",
                             "$1", $filename);
-                    //$name = preg_replace("/(.*)\.[STK|stk]$/", "$1", $basename);
                     $batch .= "put \"" . $basename . "\"*\n";
                 } else {
                     $batch .= "put \"" . $filename . "\"\n";
@@ -530,13 +534,13 @@ class QueueManager {
                 }
                 if (file_exists($errorFile)) {
                     $message .=
-                        "\n\n-HUYGENS ERROR REPORT (stderr) --------------\n\n" .
-                            file_get_contents($errorFile);
+                        "\n\n-HUYGENS ERROR REPORT (stderr) --------------\n\n"
+                            . file_get_contents($errorFile);
                 }
                 if (file_exists($logFile)) {
                     $message .=
-                        "\n\n-HUYGENS REPORT (stdout) --------------------\n\n" .
-                            file_get_contents($logFile);
+                        "\n\n-HUYGENS REPORT (stdout) --------------------\n\n"
+                            . file_get_contents($logFile);
                 }
                 if ($send_mail) {
                     $this->notifyError($job, $message, $startTime);
@@ -565,9 +569,10 @@ class QueueManager {
                 $db->updateStatistics($job, $startTime);
                 // Clean up server
                 $this->cleanUpFileServer($job);
-                // Reset server and remove job from the job queue (update database)
+                // Reset server and remove job from the job queue
                 $this->stopTime = $queue->stopJob($job);
-                $this->assembleJobLogFile($job, $startTime, $logFile, $errorFile);
+                $this->assembleJobLogFile($job,
+                    $startTime, $logFile, $errorFile);
 
                 // Write email
                 if ($send_mail)
@@ -608,7 +613,7 @@ class QueueManager {
 
         // Message
         $text = '';
-        $text = $text . "Job id: $id (pid $pid on $server), started " .
+        $text .= "Job id: $id (pid $pid on $server), started " .
             "at $startTime and finished at " . date("Y-m-d H:i:s") . "\n\n";
 
         if (file_exists($errorFile))
@@ -647,11 +652,11 @@ class QueueManager {
         $destFileName = $desc->destinationImageNameWithoutPath();
         $text = "This is a mail generated automatically by " .
             "the Huygens Remote Manager.\n";
-        $text = $text . "Your job started at $startTime and finished at " .
+        $text .= "Your job started at $startTime and finished at " .
             date("Y-m-d H:i:s") . ".\n";
-        $text = $text . "The image $sourceFileName was successfully " .
+        $text .= "The image $sourceFileName was successfully " .
             "processed by Huygens.\n";
-        $text = $text . "You will find the resulting image ($destFileName) " .
+        $text .= "You will find the resulting image ($destFileName) " .
             "in your destination folder.\n";
 
         // Create link based on the job id.
@@ -670,8 +675,7 @@ class QueueManager {
             $text .= "\nYou can find a preview of the result at " . $link .
                     " (login required).\n\n";
         }
-        $text = $text . "Best regards,\n";
-        $text = $text . "Huygens Remote Manager\n\n";
+        $text .= "Best regards,\nHuygens Remote Manager\n\n";
 
         // Send an email
         $mail = new Mail($email_sender);
@@ -698,42 +702,40 @@ class QueueManager {
         $sourceFileName = $desc->sourceImageNameWithoutPath();
         $text = "\nThis is a mail generated automatically by " .
             "the Huygens Remote Manager.\n\n";
-        $text = $text . "Sorry, the processing of the image \n" . 
+        $text .= "Sorry, the processing of the image \n" .
             $sourceFileName . "\nhas been terminated with an error.\n\n";
-        $text = $text . "Your job started at $startTime and failed at " .
-            date("Y-m-d H:i:s") . ".";
-        $text = $text . "\n\n";
-        $text = $text . "Best regards,\n";
-        $text = $text . "Huygens Remote Manager\n";
+        $text .= "Your job started at $startTime and failed at " .
+            date("Y-m-d H:i:s") . ".\n\n";
+        $text .= "Best regards,\nHuygens Remote Manager\n";
 
         // Job id, pid, server
         $id = $desc->id();
         $pid = $job->pid();
         $server = $job->server();
-        $text = $text . "\nJob id: $id (pid $pid on $server)\n";
-
-        $text = $text . "\n\n";
-        $text = $text . $message;
+        $text .= "\nJob id: $id (pid $pid on $server)\n\n";
+        $text .= $message;
 
         // Add the parameter file if it could be created
         $templateParametersFile = $desc->destinationFolder() . "/" .
             $desc->destinationImageName() . ".parameters.txt";
         if (file_exists($templateParametersFile)) {
-            $text = $text . "\n\n" .
-                file_get_contents($templateParametersFile) . "\n";
+            $text .= "\n\n" . htmlTable2Txt($templateParametersFile) . "\n";
         } else {
             // Store the user parameters
-            $text = $text . 
-                "\n\n- USER PARAMETERS ---------------------------------------------\n\n";
+            $text .=
+                "\n\n- USER PARAMETERS -----------------------------------\n\n";
             $text = $text . "These are the parameters you set in the HRM:\n\n";
             $text = $text . $this->parameterText($job);
         }
 
-        $text = $text . "\n\n-TEMPLATE ----------------------------\n\n";
-        $text = $text . "What follows is the Huygens Core template executed " .
+        $text .=
+            "\n\n-TEMPLATE -------------------------------------------\n\n";
+        $text .= "What follows is the Huygens Core template executed " .
             "when the error occured:\n\n";
-        $text = $text . $job->script();
-        $text = $text . "\n\n-------------------------------------\n\n";
+        $text .= $job->script();
+        $text .= 
+            "\n\n-----------------------------------------------------\n\n";
+        
         $mail = new Mail($email_sender);
         $mail->setReceiver($emailAddress);
         $mail->setSubject('Your HRM job finished with an error');
@@ -747,7 +749,8 @@ class QueueManager {
     }
 
     /*!
- 	\brief	Sends an e-mail to the Admin notifying that a server could not be pinged
+ 	\brief	Sends an e-mail to the Admin notifying that a server could
+            not be pinged
  	\param	$name	Name of the server that was (not) pinged
     */
  	public function notifyPingError($name) {
@@ -774,7 +777,8 @@ class QueueManager {
         foreach ($serverNames as $name) {
             $status = $db->statusOfServer($name);
             if ($status == 'free') {
-                $proc = newExternalProcessFor($name, $name . "_out.txt", $name . "_error.txt");
+                $proc = newExternalProcessFor($name, $name . "_out.txt",
+                    $name . "_error.txt");
                 //report("found free server", 2);
                 if ($proc->ping()) {
                     //report("ping succeeded for $name", 2);
@@ -801,7 +805,8 @@ class QueueManager {
     }
 
     /*!
- 	\brief	Check (in the database) if the QueueManager shall stop (i.e. leave its main loop)
+ 	\brief	Check (in the database) if the QueueManager shall stop
+            (i.e. leave its main loop)
  	\return true if the QueueManager shall stop
     */
  	public function shallStop() {
@@ -836,7 +841,9 @@ class QueueManager {
 
         $queue = $this->queue;
 
+        // Make sure that we have access to the database
         $this->waitForDatabaseConnection();
+
         $server = $queue->availableServer();
         // TODO refactor this in order to manage error logs per job
         foreach ($server as $name) {
@@ -916,7 +923,8 @@ class QueueManager {
  	*/
 
     /*!
- 	\brief	Prepares the text with the summary of the Job parameters to be sent to the user
+ 	\brief	Prepares the text with the summary of the Job parameters to be sent
+            to the user
  	\param	$job		A Job object
  	\return	the text to be later sent by email
     */
@@ -970,7 +978,8 @@ class QueueManager {
         $confidenceLevelString = $result["formatInfo"];
 
         // Parse the confidence levels string
-        $confidenceLevels = $this->parseConfidenceLevelString($confidenceLevelString);
+        $confidenceLevels =
+            $this->parseConfidenceLevelString($confidenceLevelString);
 
         // Store the confidence levels in the database
         $db = new DatabaseConnection();
@@ -1283,37 +1292,43 @@ class QueueManager {
     }
 
     /*!
- 	\brief	Save all Parameters to file and also returns the content
-            to be pasted in the email to the user
-    */
-	private function gatherParameters($job) {
+    \brief	Returns a txt version of the HTML Parameter table for the email
+    \return a string
+ 	*/
+    private function htmlTable2Txt( $fileName ) {
 
-        // Get some objects
-        $desc = $job->description();
-        $user = $desc->owner();
+        // Read the file
+        $table = file_get_contents($fileName);
 
-        // Create a long string with the all parmaters nicely laid out
-        $text = "";
-        $imageName = $desc->destinationImageName();
-        $destFolder = $desc->destinationFolder();
-        $templateParametersFile = $destFolder . "/" . $imageName . ".parameters.txt";
-        if (file_exists($templateParametersFile)) {
-            $text = $text . "\n\n- DECONVOLUTION PARAMETERS -----------------------\n\n";
-            $text = $text . "The following are the parameters used during deconvolution. " .
-                    "This is useful in case you chose to let hucore replace\n" .
-                    "some of your parameters with those read from the files: " .
-                    "please check if they are correct.\n\n";
-            $text = $text . file_get_contents($templateParametersFile) . "\n";
+        // Get the rows
+        preg_match_all("/<tr(.*?)>(.*?)<\/tr>/", $table, $matches);
+        $rows = $matches[2];
+
+        // Get the entries
+        foreach($rows as $row) {
+            preg_match_all("/<td(.*?)>(.*?)<\/td>/", $row, $matches);
+            $data[] = $matches[2];
         }
-        $text = $text . "\n\n- USER PARAMETERS ---------------------------------------------\n\n";
-        $text = $text . "These are the parameters you set in the HRM:\n\n";
-        $text = $text . $this->parameterText($job);
 
-        // Now overwrite the original .parameters.txt file with this content
-        $outFile = fopen($templateParametersFile, 'w');
-        fwrite($outFile, $text);
-        fclose($outFile);
+        // Output text
+        $txt = '';
+
+        // Reformat them
+        foreach($data as $row) {
+            if ( count( $row ) == 1 ) {
+                $txt .= "\n" . strtoupper( implode( $row ) ) . "\n\n";
+            } elseif ( count( $row ) == 4 ) {
+                $formatStr = array( "%-30s", "%-10s", "%-20s", "%-20s" );
+                for ( $i = 0; $i < count( $row ); $i++ ) {
+                    $txt .= sprintf( $formatStr[ $i ], $row[ $i ] );
+                }
+                $txt .= "\n";
+            } else {
+                // This should not happen. But if it does, we ignore the line
+            }
+        }
+
+        return $txt;
     }
-
 }
 ?>
