@@ -28,7 +28,9 @@ if (isset($_GET['ref'])) {
 } else if (isset($_POST['ref'])) {
     $_SESSION['referer'] = $_POST['ref'];
 } else {
-    $_SESSION['referer'] = $_SERVER['HTTP_REFERER'];
+    if ( isset( $_SERVER['HTTP_REFERER'] ) ) {
+        $_SESSION['referer'] = $_SERVER['HTTP_REFERER'];
+    }
 }
 
 if (!isset($_SESSION['fileserver'])) {
