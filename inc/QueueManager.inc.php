@@ -719,7 +719,7 @@ class QueueManager {
         $templateParametersFile = $desc->destinationFolder() . "/" .
             $desc->destinationImageName() . ".parameters.txt";
         if (file_exists($templateParametersFile)) {
-            $text .= "\n\n" . htmlTable2Txt($templateParametersFile) . "\n";
+            $text .= "\n\n" . $this->htmlTable2Txt($templateParametersFile) . "\n";
         } else {
             // Store the user parameters
             $text .=
