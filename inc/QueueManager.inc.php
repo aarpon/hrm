@@ -713,7 +713,6 @@ class QueueManager {
         $pid = $job->pid();
         $server = $job->server();
         $text .= "\nJob id: $id (pid $pid on $server)\n\n";
-        $text .= $message;
 
         // Export the user-defined parameters
         $text .=
@@ -728,7 +727,10 @@ class QueueManager {
         $text .= $job->script();
         $text .= 
             "\n\n-----------------------------------------------------\n\n";
-        
+
+        // Append the log
+        $text .= $message;
+
         // Send the error mail to the user
         $mail = new Mail($email_sender);
         $mail->setReceiver($emailAddress);
