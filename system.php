@@ -285,7 +285,10 @@ include("header.inc.php");
           </tr>
           <tr>
             <td class="subkey">
-                <a href="./phpinfo.php">Display php info</a>
+                <a href="./phpinfo.php">
+                    <img src="images/note.png" alt="PHP info" />
+                    Display PHP info
+                </a>
             </td>
             <td class="value">
                 &nbsp;
@@ -305,6 +308,10 @@ include("header.inc.php");
 
           <p>This page displays information about your installation
               and server.</p>
+
+          <p>Click on <b>Display PHP info</b> at the bottom of the 
+              table to get more extended information on your
+              installation.</p>
 
        </div>
 

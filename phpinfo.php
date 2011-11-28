@@ -49,6 +49,11 @@ $info = preg_replace('%<img border="0" src=%s', "<img src=", $info );
                 &nbsp;<?php echo $_SESSION['user']->name(); ?>
             </li>
             <li>
+                <a href="system.php">
+                    <img src="images/back_small.png" alt="back" />&nbsp;Back
+                </a>
+            </li>
+            <li>
                 <a href="<?php echo getThisPageName();?>?home=home">
                     <img src="images/home.png" alt="home" />
                     &nbsp;Home
