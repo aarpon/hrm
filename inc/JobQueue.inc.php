@@ -150,8 +150,8 @@ class JobQueue {
             }
             $result = $result && $db->markJobAsRemoved($id);
 
-            // The front end should NOT try to kill the job, it may not work. The
-            // Queue Manager will take care of it.
+            // The front end should NOT try to kill the job, it may not work.
+            // The Queue Manager will take care of it.
         }
         return $result;
     }
@@ -231,9 +231,11 @@ class JobQueue {
     function removeJobWithId($id) {
         $result = True;
         $db = new DatabaseConnection();
-        $tables = array('job_queue', 'job_files', 'job_parameter', 'job_parameter_setting', 'job_task_parameter', 'job_task_setting');
+        $tables = array('job_queue', 'job_files', 'job_parameter', 
+            'job_parameter_setting', 'job_task_parameter', 'job_task_setting');
         $columns = array('id', 'job', 'setting', 'name', 'setting', 'name');
-        $result = $result && $db->deleteFromTablesWhereColumnEquals($tables, $columns, $id);
+        $result = $result && 
+          $db->deleteFromTablesWhereColumnEquals($tables, $columns, $id);
         return $result;
     }
 

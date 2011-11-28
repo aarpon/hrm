@@ -13,15 +13,15 @@ require_once ("HuygensTemplate.inc.php");
 require_once ("System.inc.php");
 
 /*!
- \class Job
- \brief	Stores all information for a deconvolution Job
+  \class Job
+  \brief	Stores all information for a deconvolution Job
  */
 class Job {
 
     /*!
-     \var      $script
-     \brief    Contains a Huygens Batch template
-     \todo     Rename as 'template' across the HRM code.
+      \var      $script
+      \brief    Contains a Huygens Batch template
+      \todo     Rename as 'template' across the HRM code.
     */
     private $script;
 
@@ -340,17 +340,17 @@ class Job {
             $image = eregi_replace(" ", "\\ ", $image);
             $image = str_replace(".ics",".i*s", $image);
             $previews = eregi_replace(" ", "\\ ", $previews);
-            //error_log("Retrieving result image...");
-            //error_log("sudo mkdir -p " . escapeshellarg($path));
+
             $result = exec("sudo mkdir -p " . escapeshellarg($path));
             $result = exec("sudo mkdir -p " . escapeshellarg($path)
                            . "/hrm_previews");
-            //error_log($result);
-            //error_log("(cd " . escapeshellarg($path) . " && scp " . $huygens_user . "@" . $server_hostname . ":" . escapeshellarg($image) . " .)");
             
-            $result = exec("(cd " . escapeshellarg($path) . " && sudo scp " . $huygens_user . "@" . $server_hostname . ":" . escapeshellarg($image) . " .)");
+            $result = exec("(cd " . escapeshellarg($path) . 
+                    " && sudo scp " . $huygens_user . "@" . $server_hostname . 
+                    ":" . escapeshellarg($image) . " .)");
             $result = exec("(cd " . escapeshellarg($path) .
-                           "/hrm_previews && sudo scp " . $huygens_user . "@" . $server_hostname . ":" . escapeshellarg($previews) . " .)");
+                    "/hrm_previews && sudo scp " . $huygens_user . "@" . 
+                    $server_hostname . ":" . escapeshellarg($previews) . " .)");
             
             //error_log($result);
         }
@@ -361,7 +361,6 @@ class Job {
         $fileNameExists = $fileserver->folderContains($path, $destFileName);
         
         // TODO is checking for new files a relevant criterion?
-        //$newFileWritten = $fileserver->folderContainsNewerFile($path, $queue->startTime($this));
         $result = $fileNameExists/* || $newFileWritten*/;
         if (!$result) {
             report("Problem: no result file $destFileName in destination directory $path", 0);

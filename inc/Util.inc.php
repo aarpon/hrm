@@ -7,120 +7,120 @@
           code in the range 'a' .. 'z' '1' .. '9'
   \param  $num  An integer in the range 1 to 36.
   \return the corresponding character in the range 'a' .. 'z' '1' .. '9'
-*/
+ */
 function assign_rand_value($num) {
-  // accepts 1 - 36
-  switch($num) {
-    case "1":
-      $rand_value = "a";
-      break;
-    case "2":
-      $rand_value = "b";
-      break;
-    case "3":
-      $rand_value = "c";
-      break;
-    case "4":
-      $rand_value = "d";
-      break;
-    case "5":
-      $rand_value = "e";
-      break;
-    case "6":
-      $rand_value = "f";
-      break;
-    case "7":
-      $rand_value = "g";
-      break;
-    case "8":
-      $rand_value = "h";
-      break;
-    case "9":
-      $rand_value = "i";
-      break;
-    case "10":
-      $rand_value = "j";
-      break;
-    case "11":
-      $rand_value = "k";
-      break;
-    case "12":
-      $rand_value = "l";
-      break;
-    case "13":
-      $rand_value = "m";
-      break;
-    case "14":
-      $rand_value = "n";
-      break;
-    case "15":
-      $rand_value = "o";
-      break;
-    case "16":
-      $rand_value = "p";
-      break;
-    case "17":
-      $rand_value = "q";
-      break;
-    case "18":
-      $rand_value = "r";
-      break;
-    case "19":
-      $rand_value = "s";
-      break;
-    case "20":
-      $rand_value = "t";
-      break;
-    case "21":
-      $rand_value = "u";
-      break;
-    case "22":
-      $rand_value = "v";
-      break;
-    case "23":
-      $rand_value = "w";
-      break;
-    case "24":
-      $rand_value = "x";
-      break;
-    case "25":
-      $rand_value = "y";
-      break;
-    case "26":
-      $rand_value = "z";
-      break;
-    case "27":
-      $rand_value = "0";
-      break;
-    case "28":
-      $rand_value = "1";
-      break;
-    case "29":
-      $rand_value = "2";
-      break;
-    case "30":
-      $rand_value = "3";
-      break;
-    case "31":
-      $rand_value = "4";
-      break;
-    case "32":
-      $rand_value = "5";
-      break;
-    case "33":
-      $rand_value = "6";
-      break;
-    case "34":
-      $rand_value = "7";
-      break;
-    case "35":
-      $rand_value = "8";
-      break;
-    case "36":
-      $rand_value = "9";
-      break;
-  }
-  return $rand_value;
+    // accepts 1 - 36
+    switch ($num) {
+        case "1":
+            $rand_value = "a";
+            break;
+        case "2":
+            $rand_value = "b";
+            break;
+        case "3":
+            $rand_value = "c";
+            break;
+        case "4":
+            $rand_value = "d";
+            break;
+        case "5":
+            $rand_value = "e";
+            break;
+        case "6":
+            $rand_value = "f";
+            break;
+        case "7":
+            $rand_value = "g";
+            break;
+        case "8":
+            $rand_value = "h";
+            break;
+        case "9":
+            $rand_value = "i";
+            break;
+        case "10":
+            $rand_value = "j";
+            break;
+        case "11":
+            $rand_value = "k";
+            break;
+        case "12":
+            $rand_value = "l";
+            break;
+        case "13":
+            $rand_value = "m";
+            break;
+        case "14":
+            $rand_value = "n";
+            break;
+        case "15":
+            $rand_value = "o";
+            break;
+        case "16":
+            $rand_value = "p";
+            break;
+        case "17":
+            $rand_value = "q";
+            break;
+        case "18":
+            $rand_value = "r";
+            break;
+        case "19":
+            $rand_value = "s";
+            break;
+        case "20":
+            $rand_value = "t";
+            break;
+        case "21":
+            $rand_value = "u";
+            break;
+        case "22":
+            $rand_value = "v";
+            break;
+        case "23":
+            $rand_value = "w";
+            break;
+        case "24":
+            $rand_value = "x";
+            break;
+        case "25":
+            $rand_value = "y";
+            break;
+        case "26":
+            $rand_value = "z";
+            break;
+        case "27":
+            $rand_value = "0";
+            break;
+        case "28":
+            $rand_value = "1";
+            break;
+        case "29":
+            $rand_value = "2";
+            break;
+        case "30":
+            $rand_value = "3";
+            break;
+        case "31":
+            $rand_value = "4";
+            break;
+        case "32":
+            $rand_value = "5";
+            break;
+        case "33":
+            $rand_value = "6";
+            break;
+        case "34":
+            $rand_value = "7";
+            break;
+        case "35":
+            $rand_value = "8";
+            break;
+        case "36":
+            $rand_value = "9";
+            break;
+    }
+    return $rand_value;
 }
 
 /*!
@@ -129,15 +129,15 @@ function assign_rand_value($num) {
   \return a random string
 */
 function get_rand_id($length) {
-  if($length>0) { 
-    $rand_id="";
-    for($i=1; $i<=$length; $i++) {
-      mt_srand((double)microtime() * 1000000);
-      $num = mt_rand(1,36);
-      $rand_id .= assign_rand_value($num);
+    if ($length > 0) {
+        $rand_id = "";
+        for ($i = 1; $i <= $length; $i++) {
+            mt_srand((double) microtime() * 1000000);
+            $num = mt_rand(1, 36);
+            $rand_id .= assign_rand_value($num);
+        }
     }
-  }
-  return $rand_id;
+    return $rand_id;
 }
 
 /*!
@@ -146,13 +146,12 @@ function get_rand_id($length) {
   \param  $str  An html string.
   \return conveniently formatted string.
 */
-function escapeJavaScript ($str) {
-      $str = str_replace("'", "\'", $str);
-      $str = str_replace("\n", "\\n", $str);
-      $str = str_replace('"', "'+String.fromCharCode(34)+'", $str);
-      return $str;
+function escapeJavaScript($str) {
+    $str = str_replace("'", "\'", $str);
+    $str = str_replace("\n", "\\n", $str);
+    $str = str_replace('"', "'+String.fromCharCode(34)+'", $str);
+    return $str;
 }
-
 
 /*!
   \brief  Calls a local hucore (that must be in the $PATH) to
@@ -162,20 +161,20 @@ function escapeJavaScript ($str) {
   \param  $options are extra command line options to send to that script
   \return an array with all stdout lines
 */
-function huCoreTools ($tool, $options) {
+function huCoreTools($tool, $options) {
     global $hrm_path, $local_huygens_core;
 
-    if (! isset($local_huygens_core) ) {
-        echo "Huygens tools can only work if you define a variable ".
-        "'local_huygens_core' in the configuration files pointing to a local ".
-        "hucore. Administrator: see hrm_client_config.inc.sample."; 
+    if (!isset($local_huygens_core)) {
+        echo "Huygens tools can only work if you define a variable " .
+        "'local_huygens_core' in the configuration files pointing to a local " .
+        "hucore. Administrator: see hrm_client_config.inc.sample.";
         return;
     }
 
-    $cmd = "$local_huygens_core -noExecLog -checkUpdates disable ".
-           "-task \"$hrm_path/scripts/hucore.tcl\" ".
-           "-huCoreTcl \"$hrm_path/scripts/hucore.tcl\" ".
-           "-tool $tool $options 2>&1";
+    $cmd = "$local_huygens_core -noExecLog -checkUpdates disable " .
+            "-task \"$hrm_path/scripts/hucore.tcl\" " .
+            "-huCoreTcl \"$hrm_path/scripts/hucore.tcl\" " .
+            "-tool $tool $options 2>&1";
 
     $answer = exec($cmd, $output, $result);
 
@@ -193,11 +192,12 @@ function huCoreTools ($tool, $options) {
     if ($result != 0) {
         echo "$answer\n";
     }
-    foreach ( $output as $line ) {
+    foreach ($output as $line) {
         if ($more > 0) {
             echo ("$line\n");
             $more -= 1;
-            if ( $more == 0 ) echo ("...\n");
+            if ($more == 0)
+                echo ("...\n");
         }
         if (stristr($line, "error")) {
             echo ("$line\n");
@@ -206,7 +206,6 @@ function huCoreTools ($tool, $options) {
     }
     echo "</pre>";
     return NULL;
-
 }
 
 /*!
@@ -217,57 +216,59 @@ function huCoreTools ($tool, $options) {
           hucore output. By default, it uses the same tool name.
   \return the requested array.
 */
-function askHuCore ($tool, $options = "") {
+function askHuCore($tool, $options = "") {
 
-      $answer = huCoreTools( $tool, $options );
+    $answer = huCoreTools($tool, $options);
 
-      if (! $answer ) return "(nothing)";
-      # printDebug ($answer);
+    if (!$answer)
+        return "(nothing)";
+    # printDebug ($answer);
 
-      $lines = count($answer);
-      $msg = "";
-      $ret = "";
-      $sep = "";
-      $retArr = array();
-      $array_key = NULL;
+    $lines = count($answer);
+    $msg = "";
+    $ret = "";
+    $sep = "";
+    $retArr = array();
+    $array_key = NULL;
 
-      $ok = true;
-      for ($i = 0; $i < $lines; $i++ ) {
-          $key = $answer[$i];
+    $ok = true;
+    for ($i = 0; $i < $lines; $i++) {
+        $key = $answer[$i];
 
-          switch ($key) {
-              case "ERROR":
-                  $i ++;
-                  $retArr['error'][] = $answer[$i];
-                  $msg .= $answer[$i]."<br>";
-                  $ok = false;
-                  break;
-              case "REPORT":
-                  $i ++;
-                  $retArr['report'][] = $answer[$i];
-                  echo $answer[$i]."\n";
-                  @ob_flush();
-                  flush();
-                  break;
-              case "KEY":
-                  $i ++;
-                  $array_key = $answer[$i];
-                  break;
-              case "VALUE":
-                  if ($array_key) {
-                      $i ++;
-                      $retArr[$array_key] = $answer[$i];
-                  }
-                  break;
-              default :
-                  break;
+        switch ($key) {
+            case "ERROR":
+                $i++;
+                $retArr['error'][] = $answer[$i];
+                $msg .= $answer[$i] . "<br>";
+                $ok = false;
+                break;
+            case "REPORT":
+                $i++;
+                $retArr['report'][] = $answer[$i];
+                echo $answer[$i] . "\n";
+                @ob_flush();
+                flush();
+                break;
+            case "KEY":
+                $i++;
+                $array_key = $answer[$i];
+                break;
+            case "VALUE":
+                if ($array_key) {
+                    $i++;
+                    $retArr[$array_key] = $answer[$i];
+                }
+                break;
+            default :
+                break;
+        }
+    }
 
-          }
-      }
+    if ($msg != "") {
+        echo $msg;
+    }
 
-      if ( $msg != "" ) { echo $msg; }
-
-      return $retArr;
+    return $retArr;
 }
 
 /*!
@@ -278,32 +279,32 @@ function askHuCore ($tool, $options = "") {
   \param  $level  The log level of the text (0, 1, or 2)
 */
 function report($text, $level) {
-	global $log_verbosity;
+    global $log_verbosity;
     global $hrm_path;
     global $logdir;
-	global $logfile;
-	global $logfile_max_size;
+    global $logfile;
+    global $logfile_max_size;
 
-	if ($log_verbosity == 0)
-		return True;
-      
-    $text = date("Y-m-d H:i:s"). " ".$text;
-    $logpath = $logdir."/".$logfile;
+    if ($log_verbosity == 0)
+        return True;
 
-	if (file_exists($logpath) 
+    $text = date("Y-m-d H:i:s") . " " . $text;
+    $logpath = $logdir . "/" . $logfile;
+
+    if (file_exists($logpath)
             && (filesize($logpath) > $logfile_max_size * 1000 * 1000)) {
-		if (file_exists($logpath . ".old")) {
-			unlink($logpath . ".old");
-		}
-		rename($logpath, $logpath . ".old");
-	}
-	$file = fopen($logpath, 'a');
-	if ($log_verbosity >= $level) {
-		fwrite($file, $text);
-		fwrite($file, "\n");
-		fflush($file);
-	}
-	fclose($file);
+        if (file_exists($logpath . ".old")) {
+            unlink($logpath . ".old");
+        }
+        rename($logpath, $logpath . ".old");
+    }
+    $file = fopen($logpath, 'a');
+    if ($log_verbosity >= $level) {
+        fwrite($file, $text);
+        fwrite($file, "\n");
+        fflush($file);
+    }
+    fclose($file);
 }
 
 /*!
@@ -317,12 +318,12 @@ function notifyRuntimeError($subject, $message) {
     global $email_sender;
     global $email_admin;
     $text = "Huygens Remote Manager warning:\n"
-        . $name . " could not be pinged on " . date("r", time());
+            . $name . " could not be pinged on " . date("r", time());
     $mail = new Mail($email_sender);
     $mail->setReceiver($email_admin);
-    $mail->setSubject('Huygens Remote Manager - '.$subject);
+    $mail->setSubject('Huygens Remote Manager - ' . $subject);
     $mail->setMessage($message);
-    $mail->send(); 
+    $mail->send();
     # No need to report to log, send() already did.
 }
 
@@ -331,7 +332,8 @@ function notifyRuntimeError($subject, $message) {
   \return string containing the name of current page
 */
 function getThisPageName() {
-  return substr($_SERVER["SCRIPT_NAME"],strrpos($_SERVER["SCRIPT_NAME"],"/")+1);
+    return substr($_SERVER["SCRIPT_NAME"], 
+        strrpos($_SERVER["SCRIPT_NAME"], "/") + 1);
 }
 
 /*!
@@ -340,21 +342,21 @@ function getThisPageName() {
   \param  @v  memory amount in php.ini notation
   \return integer version in bytes
 */
-function let_to_num($v){
+function let_to_num($v) {
     $l = substr($v, -1);
     $ret = substr($v, 0, -1);
-    switch(strtoupper($l)){
-    case 'P':
-        $ret *= 1024;
-    case 'T':
-        $ret *= 1024;
-    case 'G':
-        $ret *= 1024;
-    case 'M':
-        $ret *= 1024;
-    case 'K':
-        $ret *= 1024;
-        break;
+    switch (strtoupper($l)) {
+        case 'P':
+            $ret *= 1024;
+        case 'T':
+            $ret *= 1024;
+        case 'G':
+            $ret *= 1024;
+        case 'M':
+            $ret *= 1024;
+        case 'K':
+            $ret *= 1024;
+            break;
     }
     return $ret;
 }
@@ -365,7 +367,8 @@ function let_to_num($v){
 */
 function getMaxSingleUploadSize() {
 
-    $max_upload_size = min(let_to_num(ini_get('post_max_size')), let_to_num(ini_get('upload_max_filesize')));
+    $max_upload_size = min(let_to_num(ini_get('post_max_size')), 
+        let_to_num(ini_get('upload_max_filesize')));
 
     return $max_upload_size;
 }
@@ -375,21 +378,21 @@ function getMaxSingleUploadSize() {
   \return maximum upload post in bytes
 */
 function getMaxPostSize() {
-  
-  global $max_post_limit;
-  $ini_value = let_to_num(ini_get('post_max_size'));
-  if ( !isset( $max_post_limit ) ) {
-    $max_post_limit == 0;
-  }
-  if ( $max_post_limit == 0) {
-    return $ini_value;
-  }
-  $max_post_limit = 1024 * 1024 * $max_post_limit;
-  if ( $max_post_limit < $ini_value ) {
-    return $max_post_limit;
-  } else {
-    return $ini_value;
-  }
+
+    global $max_post_limit;
+    $ini_value = let_to_num(ini_get('post_max_size'));
+    if (!isset($max_post_limit)) {
+        $max_post_limit == 0;
+    }
+    if ($max_post_limit == 0) {
+        return $ini_value;
+    }
+    $max_post_limit = 1024 * 1024 * $max_post_limit;
+    if ($max_post_limit < $ini_value) {
+        return $max_post_limit;
+    } else {
+        return $ini_value;
+    }
 }
 
 /*!
@@ -398,20 +401,20 @@ function getMaxPostSize() {
 */
 function getMaxFileSize() {
 
-  global $max_upload_limit;
-  $ini_value = let_to_num(ini_get('upload_max_filesize'));
-  if ( !isset( $max_upload_limit ) ) {
-    $max_upload_limit == 0;
-  }
-  if ( $max_upload_limit == 0) {
-    return $ini_value;
-  }
-  $max_upload_limit = 1024 * 1024 * $max_upload_limit;
-  if ( $max_upload_limit < $ini_value ) {
-    return $max_upload_limit;
-  } else {
-    return $ini_value;
-  }
+    global $max_upload_limit;
+    $ini_value = let_to_num(ini_get('upload_max_filesize'));
+    if (!isset($max_upload_limit)) {
+        $max_upload_limit == 0;
+    }
+    if ($max_upload_limit == 0) {
+        return $ini_value;
+    }
+    $max_upload_limit = 1024 * 1024 * $max_upload_limit;
+    if ($max_upload_limit < $ini_value) {
+        return $max_upload_limit;
+    } else {
+        return $ini_value;
+    }
 }
 
 /*!
@@ -419,48 +422,49 @@ function getMaxFileSize() {
           very large files. This should prevent memory errors.
   \param  $filename  Name of the file to read
   \param  $retbytes  Defines whether the number of bytes read should be returned
-                    (default: true)
+                     (default: true)
   \return if reading was not successful, the function returns false. If reading
           was successful, the function returns the number of read bytes if
-          $retbytes is true, and false otherwise
+        $retbytes is true, and false otherwise
   \see    http://nl.php.net/manual/en/function.readfile.php#54295
-*/
-function readfile_chunked($filename,$retbytes=true) {
-  $chunksize = 1*(1024*1024); // how many bytes per chunk
-  $buffer = '';
-  $cnt =0;
-  $handle = fopen($filename, 'rb');
-  if ($handle === false) {
-    return false;
-  }
-  while (!feof($handle)) {
-    $buffer = fread($handle, $chunksize);
-    echo $buffer;
-    ob_flush();
-    flush();
-    if ($retbytes) {
-      $cnt += strlen($buffer);
+ */
+function readfile_chunked($filename, $retbytes=true) {
+    $chunksize = 1 * (1024 * 1024); // how many bytes per chunk
+    $buffer = '';
+    $cnt = 0;
+    $handle = fopen($filename, 'rb');
+    if ($handle === false) {
+        return false;
     }
-  }
-  $status = fclose($handle);
-  if ($retbytes && $status) {
-    return $cnt; // return num. bytes delivered like readfile() does.
-  }
-  return $status;
-} 
+    while (!feof($handle)) {
+        $buffer = fread($handle, $chunksize);
+        echo $buffer;
+        ob_flush();
+        flush();
+        if ($retbytes) {
+            $cnt += strlen($buffer);
+        }
+    }
+    $status = fclose($handle);
+    if ($retbytes && $status) {
+        return $cnt; // return num. bytes delivered like readfile() does.
+    }
+    return $status;
+}
 
-if ( ! function_exists('printDebug') ) {
+if (!function_exists('printDebug')) {
 
-    /*!
-      \brief  A global debugging function, that will print all its arguments whether 
-              are strings, arrays or objects. This works if a global variable
-              $debug = true, that can be defined in hrm_client_config.inc. Otherwise
-              it does nothing.
-    */
-    function printDebug ( ) {
+    /* !
+      \brief  A global debugging function, that will print all its arguments 
+              whether are strings, arrays or objects. This works if a global 
+              variable $debug = true, that can be defined in 
+              hrm_client_config.inc. Otherwise it does nothing.
+     */
+    function printDebug() {
         global $debug;
 
-        if ( ! $debug ) return;
+        if (!$debug)
+            return;
 
         $args = func_get_args();
 
@@ -483,14 +487,15 @@ if ( ! function_exists('printDebug') ) {
             }
         }
     }
+
 }
 
 /*!
   \brief  Check whether the browser is Internet Explorer
   \return true if the browser is IE, false otherwise
 */
-function using_IE( ) {
-    if ( preg_match( '/MSIE/i', $_SERVER['HTTP_USER_AGENT'] ) ) {
+function using_IE() {
+    if (preg_match('/MSIE/i', $_SERVER['HTTP_USER_AGENT'])) {
         return True;
     }
     return False;
