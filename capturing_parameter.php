@@ -455,6 +455,11 @@ if ($_SESSION['setting']->isMultiPointOrSinglePointConfocal()) {
   // manage one pinhole radius per channel
   for ($i = 0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
 
+  // Add a line break after 3 entries
+  if ( $i == 3 ) {
+      echo "<br />";
+  }
+
 ?>
 	<span class="nowrap">
         Ch<?php echo $i ?>:&nbsp;&nbsp;&nbsp;

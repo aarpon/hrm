@@ -986,7 +986,7 @@ div.multichannel {
 }
 
 .nowrap {
-    white-space: nowrap;
+    display: inline;
 }
 
 .nowrap_noborder {
@@ -994,7 +994,7 @@ div.multichannel {
     padding: 0px;
     margin-left: auto;
     margin-right: auto;
-    white-space: nowrap;
+    display: inline;
 }
 
 .multichannelinput {

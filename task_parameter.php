@@ -194,6 +194,10 @@ for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
     if ($selectedMode == "cmle")
         $value = $signalNoiseRatioValue[$i];
 
+        // Add a line break after 3 entries
+        if ( $i == 3 ) {
+            echo "<br />";
+        }
 
 ?>
                           <span class="nowrap">Ch<?php echo $i ?>:
@@ -389,6 +393,11 @@ for ($i=0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
   if ($backgroundOffset[0] != "auto" && $backgroundOffset[0] != "object") {
       $val = $backgroundOffset[$i];
   }
+
+    // Add a line break after 3 entries
+    if ( $i == 3 ) {
+        echo "<br />";
+    }
 
 ?>
                         <span class="nowrap">
