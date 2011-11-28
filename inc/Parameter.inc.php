@@ -83,12 +83,7 @@ abstract class Parameter {
 
 	/*!
 		\brief	Checks whether the Parameter must have a (valid) value
-		\todo 	A complete framework is in place for having Parameters allowed
-				to be left unset if their confidence level allows for it.
-				In current implementation, mustProvide() always returns true.
-				Later, the function might return false for some confidence
-				levels such as 'verified' or 'reported'.
-		\return true always
+		\return true if the confidence level is lower than 'reported'.
 	*/
 	public function mustProvide( ) {
         return !( $this->confidenceLevel == "reported" ||
@@ -1041,7 +1036,6 @@ class IsMultiChannel extends BooleanParameter {
  \class	SingleOrMultiChannelParameter
  \brief	A ChoiceParameter that handles single- and multi-channel Parameters
 		with prefixing.
-\todo	Check why this class does not have a constructor
 */
 class SingleOrMultiChannelParameter extends ChoiceParameter {
 
@@ -1051,6 +1045,14 @@ class SingleOrMultiChannelParameter extends ChoiceParameter {
 	*/
 	protected $isMultiChannel;
 
+    /*!
+        \brief	Protected constructor: creates an empty Parameter
+		\param	$name	Name of the new Parameter
+	*/
+	protected function __construct($name) {
+		parent::__construct($name);
+    }
+    
 	/*!
 		\brief	Checks whether the Parameter is multi-channel
 		\return true if the Parameter is multi-channel

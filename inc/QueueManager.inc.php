@@ -440,8 +440,6 @@ class QueueManager {
     \brief	Sets ownership of the files in the user area to the user
  	\param	$username	Name of the user (must be a valid linux user on
                         the file server)
- 	\todo	This method in linux works only if the QueueManager is run by
-            root! On Mac OS X this should work!
  	*/
  	function restoreOwnership($username) {
         global $image_user;

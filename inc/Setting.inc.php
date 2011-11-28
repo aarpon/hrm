@@ -1306,7 +1306,6 @@ class ParameterSetting extends Setting {
 
     /*!
       \brief	Returns the file formats that support multi-channel images
-      \todo	This function DOES NOT BELONG in the Setting class!
       \return	array of file formats
     */
     public function multiChannelFileFormats() {
@@ -1791,20 +1790,6 @@ class TaskSetting extends Setting {
     }
 
     /*!
-    \ brief	Prints (!) the TaskSetting as a text containing all parameters
-            and their values. Only the parameter OutputFileFormat is left out.
-            
-      This is used for the web display where the output file format has
-      not been choosen yet.
-   
-      \param	$numberOfChannels Number of channels (optional, default value is 0)
-      \todo	Refactor!
-    */
-    public function displayWithoutOutputFileFormat($numberOfChannels = 0) {
-        print $this->displayStringWithoutOutputFileFormat($numberOfChannels);
-    }
-
-    /*!
       \brief	Returns the TaskSetting as a text containing all parameters
               and their values. Only the parameter OutputFileFormat is left out.
    
@@ -1814,7 +1799,7 @@ class TaskSetting extends Setting {
       \param	$numberOfChannels Number of channels (optional, default value is 0)
       \todo	Refactor!
     */
-    private function displayStringWithoutOutputFileFormat($numberOfChannels = 0) {
+    public function displayStringWithoutOutputFileFormat($numberOfChannels = 0) {
         $parameter = $this->parameter('OutputFileFormat');
         $parameterList = $this->parameter;
         unset($parameterList['OutputFileFormat']);

@@ -152,38 +152,6 @@ class User extends Owner{
     }
 
     /*!
-      \brief  Returns the encrypted version of the password (LDAP)
-      \param  $dbPassword Password string
-      \return encrypted password
-      \todo   This function seems to be unused
-      \deprecated
-    */
-    public function parse_ldap_password($dbPassword) {
-        preg_match("/^\{(.*)\}(.*)$/", $dbPassword, $dbp);
-        return array($dbp[2], $dbp[1]);
-    }
-
-    /*!
-      \brief  Returns the encrypted version of the password (LDAP)
-      \param  $string String to be encrypted
-      \param  $dbPasswordType Encryption algorithm, one of crypt (DES), md5
-      \param  $dbPassword Seed for the crypt (DES) algorithm
-      \return encrypted password
-      \todo   This function seems to be unused
-      \deprecated
-    */
-    public function ldap_encrypt($string, $dbPasswordType, $dbPassword) {
-        if ($dbPasswordType == "crypt") {
-            $result = crypt($string, $dbPassword);
-        } else if ($dbPasswordType == "md5") {
-            $result = md5($string);
-        } else {
-            $result = "unknown type '$dbPasswordType'";
-        }
-        return $result;
-    }
-
-    /*!
       \brief  Logs in the user with given user name and password
 
       This function will use different authentication modes depending on the 
@@ -344,7 +312,6 @@ class User extends Owner{
     /*!
       \brief  Returns the user to which the User belongs
       \return group name
-      \todo Currently, the group is always hrm if LDAP authentication is used!
     */
     public function userGroup() {
         switch ($this->authMode) {

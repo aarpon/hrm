@@ -119,7 +119,6 @@ abstract class BaseSettingEditor {
 
     /*!
       \brief	Sets the Setting with given name as selected
-      \todo	Check that the parameter exists!
       \param	$name	Name of the Setting to be selected
     */
     public function setSelected($name) {
@@ -307,20 +306,6 @@ abstract class BaseSettingEditor {
             return False;
         }
         return True;
-    }
-
-    /*!
-      \brief	Returns the name of the default Setting
-      \todo	This function does not seem to be used anymore
-      \return	name of the default Setting
-    */
-    function defaultSettingName() {
-        foreach ($this->settings() as $setting) {
-            if ($setting->isDefault()) {
-                return $setting->name();
-            }
-        }
-        return NULL;
     }
 
     /*!

@@ -382,7 +382,9 @@ class DatabaseConnection {
           // "/" separator is used to mark range values for signal to noise ratio
 
 		  /*!
-		   \todo	This can be removed: there are no longer range parameters
+            \todo Currently there are not longer "range values" (values
+            separated by /). In the future they will be reintroduced.
+            We leave the code in place.
 		  */
 		  if (is_array($parameterValue[0])) {
             for ($i = 0; $i < 5; $i++) {
@@ -452,8 +454,9 @@ class DatabaseConnection {
             //}
             //$newValue[] = $range;
 			/*!
-			  \todo This can be cleaned: there are no longer range values (with
-			  values separated by /).
+			  \todo Currently there are not longer "range values" (values
+                    separated by /). In the future they will be reintroduced.
+                    We leave the code in place.
 			*/
             if (strpos($newValues[$i], "/")) {
               $newValue[] = explode("/", $newValues[$i]);
