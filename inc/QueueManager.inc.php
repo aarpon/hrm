@@ -715,18 +715,11 @@ class QueueManager {
         $text .= "\nJob id: $id (pid $pid on $server)\n\n";
         $text .= $message;
 
-        // Add the parameter file if it could be created
-        $templateParametersFile = $desc->destinationFolder() . "/" .
-            $desc->destinationImageName() . ".parameters.txt";
-        if (file_exists($templateParametersFile)) {
-            $text .= "\n\n" . $this->htmlTable2Txt($templateParametersFile) . "\n";
-        } else {
-            // Store the user parameters
-            $text .=
-                "\n\n- USER PARAMETERS -----------------------------------\n\n";
-            $text = $text . "These are the parameters you set in the HRM:\n\n";
-            $text = $text . $this->parameterText($job);
-        }
+        // Export the user-defined parameters
+        $text .=
+            "\n\n- USER PARAMETERS -----------------------------------\n\n";
+        $text = $text . "These are the parameters you set in the HRM:\n\n";
+        $text = $text . $this->parameterText($job);
 
         $text .=
             "\n\n-TEMPLATE -------------------------------------------\n\n";
@@ -736,12 +729,14 @@ class QueueManager {
         $text .= 
             "\n\n-----------------------------------------------------\n\n";
         
+        // Send the error mail to the user
         $mail = new Mail($email_sender);
         $mail->setReceiver($emailAddress);
         $mail->setSubject('Your HRM job finished with an error');
         $mail->setMessage($text);
         $mail->send();
-        // also notify error to admin
+        
+        // Also notify the error to the admin
         $mail->setReceiver($email_admin);
         $mail->setSubject('An HRM job from user "' . $user->name() .
             '" finished with an error.');
@@ -1291,47 +1286,5 @@ class QueueManager {
         return $confidenceLevels;
     }
 
-    /*!
-    \brief	Returns a txt version of the HTML Parameter table for the email
-    \return a string
- 	*/
-    private function htmlTable2Txt( $fileName ) {
-
-        // Read the file
-        $table = file_get_contents($fileName);
-
-        // Get the rows
-        preg_match_all("/<tr(.*?)>(.*?)<\/tr>/", $table, $matches);
-        $rows = $matches[2];
-
-        // Get the entries
-        foreach($rows as $row) {
-            preg_match_all("/<td(.*?)>(.*?)<\/td>/", $row, $matches);
-            $data[] = $matches[2];
-        }
-
-        // Output text
-        $txt = '';
-
-        // Reformat them
-        foreach($data as $row) {
-            if ( count( $row ) == 1 ) {
-                $txt .= "\n" . strtoupper( implode( $row ) ) . "\n\n";
-            } elseif ( count( $row ) == 4 ) {
-                $formatStr = array( "%-30s", "%-10s", "%-20s", "%-20s" );
-                for ( $i = 0; $i < count( $row ); $i++ ) {
-                    $txt .= sprintf( $formatStr[ $i ], $row[ $i ] );
-                }
-                $txt .= "\n";
-            } else {
-                // This should not happen. But if it does, we ignore the line
-            }
-        }
-
-        // Replace (&mu;m) with (um) (preserving the string length)
-        $txt = str_replace("(&mu;m)", "(um)   ", $txt);
-
-        return $txt;
-    }
 }
 ?>
