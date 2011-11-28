@@ -404,7 +404,7 @@ function estimateSnrFromFile($file) {
         $buttons .= "<input type=\"button\" value=\"\" class=\"icon previous\" ".
                     "onmouseover=\"Tip('Try again on another image.' )\" ".
                     "onmouseout=\"UnTip()\" ".
-                    "onclick=\"document.location.href='estimate_snr_from_image.php'\" />";
+                    "onclick=\"document.location.href='estimate_snr_from_image_beta.php'\" />";
 
         $buttons .= "<input type=\"button\" value=\"\" class=\"icon up\" ".
                     "onmouseover=\"Tip('Discard the calculated values and " .
