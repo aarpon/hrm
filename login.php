@@ -24,6 +24,10 @@ global $authenticateAgainst;
  *
  */
 
+if ( isset( $_SESSION ) ) {
+    print_r( $_SESSION );
+}
+
 // Here we store the cleaned variables
 $clean = array(
     "username" => "",
@@ -102,21 +106,16 @@ if ( isset( $_POST['password'] ) && isset( $_POST['username'] ) ) {
 					exit();
                 }
 
-				if ( $authenticateAgainst == "MYSQL" ) {
-					if ( $req != "" ) {
-						header("Location: " . $req);
-						exit();
-					} else {
-						// Proceed to home
-						header("Location: " . "home.php");
-						exit();
-					}
+                // Is there a requested redirection?
+    			if ( $req != "" ) {
+					header("Location: " . $req);
+					exit();
 				} else {
-					// Alternative authentication: proceed to home
+					// Proceed to home
 					header("Location: " . "home.php");
 					exit();
 				}
-			}
+            }
 		} else if ( $tentativeUser->isLoginRestrictedToAdmin() ) {
 			if ( $tentativeUser->isAdmin() && $tentativeUser->exists() ) {
 				$message = "Wrong password";
