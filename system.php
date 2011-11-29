@@ -86,6 +86,14 @@ include("header.inc.php");
           </tr>
           <tr>
             <td class="key">
+                HuCore minimum required version
+            </td>
+            <td class="value">
+                <?php echo System::minHuCoreVersion(); ?>
+            </td>
+          </tr>
+          <tr>
+            <td class="key">
                 HuCore version
             </td>
             <td class="value">
