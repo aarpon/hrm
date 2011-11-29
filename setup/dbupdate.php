@@ -1867,17 +1867,9 @@ if ($current_revision < $n) {
     // Add a translation for the file formats to match them to the file formats
     // returned by hucore
 
-    // Does the column exist already?
-    $rs = $db->Execute( "SELECT column_name FROM information_schema.columns WHERE table_name = 'file_format'" );
-    $columns = $rs->GetRows();
-    $notFound = True;
-    foreach ( $columns as $column ) {
-        if ( strcasecmp( $column[ 'column_name' ], "hucoreName" ) == 0 ) {
-            $notFound = False;
-        }
-    }
-    if ( $notFound == True ) {
-
+	// Does the column exist already?
+    $columns = $db->MetaColumnNames( 'file_format' );
+    if ( !array_key_exists( strtoupper( "hucoreName"), $columns ) ) {
         $fields = "hucoreName C(30)";
         if ( !insert_column( "file_format", $fields ) ) {
           $msg = "An error occurred while updating the database to revision " . $n . ", file_format table update.";
@@ -2006,15 +1998,8 @@ if ($current_revision < $n) {
 $n = 9;
 if ($current_revision < $n) {
     // Does the column exist already?
-    $rs = $db->Execute( "SELECT column_name FROM information_schema.columns WHERE table_name = 'file_format'" );
-    $columns = $rs->GetRows();
-    $notFound = True;
-    foreach ( $columns as $column ) {
-        if ( strcasecmp( $column[ 'column_name' ], "ismultifile" ) == 0 ) {
-            $notFound = False;
-        }
-    }
-    if ( $notFound == True ) {
+    $columns = $db->MetaColumnNames( 'file_format' );
+    if ( !array_key_exists( strtoupper( "ismultifile"), $columns ) ) {
 
         $fields = "ismultifile C(1) NOTNULL DEFAULT 'f'";
         if ( !insert_column( "file_format", $fields ) ) {
