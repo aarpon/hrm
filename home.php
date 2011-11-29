@@ -290,7 +290,7 @@ include("header.inc.php");
                         <p class="added_jobs"/>
                         <a href="./job_queue.php">Congratulations!<br />
                         You added <strong><?php echo $str; ?></strong> to
-                        the queue!</a></p>
+                        the queue!</a>
                         </div>
                     </td>
                     <?php
@@ -321,7 +321,7 @@ include("header.inc.php");
 			<tr>
 			  
 			  <td class="icon">
-				<a href="./file_management.php">
+				<a href="./file_manager.php">
 				<img alt="FileManager" src="./images/filemanager.png" />
 				</a>
 			  </td>
