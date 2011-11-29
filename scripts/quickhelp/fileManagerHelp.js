@@ -10,10 +10,10 @@ window.divCondition = "default";
 window.helpText = new Array();
 
 window.helpText[ "raw" ] =
-  '<p>View and manage your <b>raw</b> images.</p>';
+  '<p>Upload, view and manage your <b>raw</b> images.</p>';
 
 window.helpText[ "deconvolved" ] =
-  '<p>View and manage your <b>deconvolved</b> images.</p>';
+  '<p>Download, view and manage your <b>deconvolved</b> images.</p>';
 
 window.helpText[ "default" ] =
-  '<p>View and manage your images.</p>';
+  '<p>Transfer, view and manage your images.</p>';

@@ -95,7 +95,9 @@ include("header.inc.php");
                 onmouseout="javascript:changeQuickHelp( 'default' );" /></a>
         </div>
         <div id="bottom">
-            <div id="contextHelp"><p>View and manage your images.</p></div>
+            <div id="contextHelp">
+                <p>Transfer, view and manage your images.</p>
+            </div>
         </div>
     </div>
 
