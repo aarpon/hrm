@@ -1597,15 +1597,21 @@ class HuygensTemplate {
     */
     private function getConfidenceLevel($parameter,$channel) {
 
-        /* If the parameter has a value it means that the parameter was 
-         introduced by the user. That makes the parameter automatically 
-         verified. */
-        $parameterValue = $this->getParameterValue($parameter,$channel);
-        if ($parameterValue != "*") {
-            return "noMetaData";
-        } else {
+        /* Parameter not set by the user, should be read from the metadata. */
+        if ($this->getParameterValue($parameter,$channel) == "*") {
             return "default";
         }
+ 
+        /* Parameters initialized with a value in setpArray do not exist 
+         in HRM yet. We should try to read them from the metadata. */
+        if (array_key_exists($parameter, $this->setpArray)) {
+            if ($this->setpArray[$parameter] != '' ) {
+                return "default";
+            } 
+        }             
+
+        /* Parameter set by the user. */
+        return "noMetaData";
     }
 
     /*!
