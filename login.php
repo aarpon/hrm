@@ -24,10 +24,6 @@ global $authenticateAgainst;
  *
  */
 
-if ( isset( $_SESSION ) ) {
-    print_r( $_SESSION );
-}
-
 // Here we store the cleaned variables
 $clean = array(
     "username" => "",

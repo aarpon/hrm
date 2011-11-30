@@ -37,7 +37,7 @@ class System {
 
 		This value has to be set by the developers!
 		*/
-	const MIN_HUCORE_VERSION = 4000100;
+	const MIN_HUCORE_VERSION = 4010002;
 
 	/*!
 		\brief	Returns the HRM version
@@ -87,7 +87,7 @@ class System {
 
 	/*!
 		\brief	Returns the HuCore version in integer notation
-		\return	HuCore version as an integer (e.g. 4000100)
+		\return	HuCore version as an integer (e.g. 4010002)
 		*/
 	public static function huCoreVersion ( ) {
 		$db = new DatabaseConnection();
@@ -102,7 +102,7 @@ class System {
 
 	/*!
 		\brief	Returns the minimum acceptable HuCore version in string notation
-		\return	Minimum HuCore version as a string (e.g. 4.0.1-p1)
+		\return	Minimum HuCore version as a string (e.g. 4.1.0-p2)
 		*/
 	public static function minHuCoreVersion ( ) {
 		$a = self::hucoreVersionAsString( self::MIN_HUCORE_VERSION );
@@ -126,7 +126,7 @@ class System {
 
 	/*!
 		\brief	Stores the HuCore version in integer notation into the DB
-		\param 	$value	hucore version in integer notation (e.g. 4000100)
+		\param 	$value	hucore version in integer notation (e.g. 4010002)
 		\return	true if success, false otherwise
 		*/
 	public static function setHuCoreVersion( $value ) {
@@ -147,7 +147,7 @@ class System {
 
 	/*!
 		\brief	Returns the hucore version as its string representation
-		\return	the version number as string (e.g. 4.0.1-p1)
+		\return	the version number as string (e.g. 4.1.0-p2)
 		*/
 	public static function hucoreVersionAsString( $version = -1 ) {
 		if ( $version == -1 ) {
