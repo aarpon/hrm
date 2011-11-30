@@ -838,9 +838,12 @@ class HuygensTemplate {
                 if ($this->getMicroscopeType() != "nipkow") {
                     continue 2;
                 }
+            case 'pr':
+                if ($this->getMicroscopeType() == "widefield") {
+                    continue 2;
+                }
             case 'micr':
             case 's':
-            case 'pr':
             case 'imagingDir':
             case 'objQuality':
             case 'pcnt':
