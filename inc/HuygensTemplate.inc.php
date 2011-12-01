@@ -469,6 +469,9 @@ class HuygensTemplate {
         $this->imgSaveArray = 
             array ( 'rootName'                  =>  '',
                     'listID'                    =>  'imgSave' );
+
+        /* Check whether the image is manageable to create slices from it. */
+        $this->isEligibleForSlicers($this->srcImage);
     }
 
     /* --------------------------- Task list builders -------------------------- */
@@ -1780,8 +1783,6 @@ class HuygensTemplate {
         global $useThumbnails;
         global $saveSfpPreviews;
 
-        $this->isEligibleForSlicer($this->srcImage);
-
         if (!$useThumbnails) {
             return;
         }
@@ -1806,7 +1807,7 @@ class HuygensTemplate {
      \brief       Checks whether a JPEG can be made from the image.
      \param       $image The image to be checked.
     */
-    private function isEligibleForSlicer($image) {
+    private function isEligibleForSlicers($image) {
         global $maxComparisonSize;
 
         /* The maximum number of pixels per dimension that the JPEG libraries 
@@ -1815,6 +1816,7 @@ class HuygensTemplate {
         $maxPixelsPerDim = 65000;
 
         $imgDims = $this->getImageDimensions($image);
+
         $imgSizeX = $imgDims['sizeX'];
         $imgSizeY = $imgDims['sizeY'];
         $imgSizeZ = $imgDims['sizeZ'];
