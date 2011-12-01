@@ -136,7 +136,7 @@ class Type {
 
       $data     = "[]";
       $title    = "Nothing to display!";
-      $subTitle = "";
+      $subtitle = "";
 
     } else {
 

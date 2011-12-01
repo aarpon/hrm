@@ -223,7 +223,7 @@ class DatabaseConnection {
 	$result = $this->execute($query);
 	if ( $result ) {
         $query = "UPDATE username SET creation_date = CURRENT_TIMESTAMP WHERE name = '". $username . "'";
-        $result = $result & $this->execute($query);
+        $result = $this->execute($query);
     }
     if ( $result ) {
         return true;
