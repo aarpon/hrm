@@ -191,9 +191,26 @@ abstract class BaseSettingEditor {
       \return	true if the copy was successful, false otherwise
     */
     public function copyPublicSetting(Setting $setting) {
-        $newSetting = $this->createNewSetting($setting->name());
-        if ($newSetting == null) {
-            return False;
+        $success = False;
+        $newName = $setting->name();
+        $nTrials = 0;
+        while ( $success == False ) {
+            if ( $nTrials >= 10 ) {
+                $this->message = 'A setting with the name ' .
+                      $setting->name() . ' (and all variations ' .
+                        $setting->name() . '1, ...) already exists! ' .
+                        'Please delete or rename some of your settings.';
+                return False;
+            }
+            $newSetting = $this->createNewSetting($newName);
+            if ($newSetting == null) {
+                // Try with another name
+                $nTrials++;
+                $newName = $setting->name() . $nTrials;
+            } else {
+                $success = True;
+                $this->message = '';
+            }
         }
         $newSetting->copyParameterFrom($setting);
         $result = $newSetting->save();
