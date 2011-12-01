@@ -160,8 +160,8 @@ include("header.inc.php");
                     date( 'Y', strtotime( $chosenFromDate ) ) );
             $cal->setPath( "./inc/extern/calendar/" );
             $cal->setYearInterval( 
-                    date( 'Y', strtotime( $chosenFromDate ) ),
-                    date( 'Y', strtotime( $chosenToDate ) ));
+                    date( 'Y', strtotime( $stats->getFromDate() ) ),
+                    date( 'Y', strtotime( $stats->getToDate() ) ));
             $cal->setAlignment(  'left', 'bottom'    );
             $cal->setDatePair( 'FromDate', 'ToDate', $chosenToDate );
             $cal->writeScript();
@@ -179,8 +179,8 @@ include("header.inc.php");
                     date( 'Y', strtotime( $chosenToDate ) ) );
             $cal->setPath( "./inc/extern/calendar/" );
             $cal->setYearInterval( 
-                    date( 'Y', strtotime( $chosenFromDate ) ),
-                    date( 'Y', strtotime( $chosenToDate ) ));
+                    date( 'Y', strtotime( $stats->getFromDate() ) ),
+                    date( 'Y', strtotime( $stats->getToDate() ) ));
             $cal->setAlignment(  'right', 'bottom'    );
             $cal->setDatePair( 'FromDate', 'ToDate', $chosenFromDate );
             $cal->writeScript();
