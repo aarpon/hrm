@@ -126,23 +126,23 @@ include("header.inc.php");
       Tooltips
     -->
     <span id="ttSpanCreate">
-        Create a new setting with the specified name.
+        Create a new parameter set with the specified name.
     </span>
     <span id="ttSpanEdit">
-        Edit the selected setting.
+        Edit the selected parameter set.
     </span>
     <span id="ttSpanClone">
-        Copy the selected setting to a new one with the
+        Copy the selected parameter set to a new one with the
       specified name.
     </span>
     <span id="ttSpanDelete">
-        Delete the selected setting.
+        Delete the selected parameter set.
     </span>
     <?php
       if (!$_SESSION['user']->isAdmin()) {
         ?>
         <span id="ttSpanDefault">
-            Sets the selected setting as the default one.
+            Sets the selected parameter set as the default one.
         </span>
         <span id="ttSpanCopyTemplate">
             Copy a template.
@@ -362,7 +362,7 @@ if (!$_SESSION['user']->isAdmin()) {
                          this.form['task_setting'].selectedIndex )"
                        onmouseover="TagToTip('ttSpanDelete' )"
                        onmouseout="UnTip()" />
-                <label>New/clone setting name: 
+                <label>New/clone parameter set name:
                     <input name="new_setting"
                            type="text"
                            class="textfield" />
