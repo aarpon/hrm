@@ -585,6 +585,23 @@ input.save {
   background-color: #CFD7F2;
 }
 
+#warning table { 
+  font-size: 105%;
+  padding-bottom: 1em;
+  width: 610px;
+  border: none;
+  left:0px:  
+} 
+
+#warning td {
+  text-align: left;
+  border: thin solid;
+}
+
+#warning td.text {
+  color: #580869;
+}
+
 #listusers {
   text-align: center;
   padding-bottom: 1em;
