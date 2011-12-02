@@ -544,12 +544,13 @@ class Job {
             }
 
             $channel = $matches[1];
-            $warning .= "<p><b>WARNING:</b>";
-            $warning .= "The <b>microscope type</b> selected in this deconvolution";
-            $warning .= "job <b>may be</br>incorrect</br> as it does not match the";
-            $warning .= "microscope type stored in the file</br>metadata. Notice ";
-            $warning .= "that the restoration process may lead to <b>wrong results";
-            $warning .= "</b></br>if the microscope type is not selected properly.";
+            $warning .= "<p><b><u>WARNING</u>:</b>";
+            $warning .= " The <b>microscope type</b> selected in this ";
+            $warning .= "deconvolution job <b>may be</br>incorrect</b> as it ";
+            $warning .= "does not match the microscope type stored in the file";
+            $warning .= "</br>metadata. Notice that the restoration process may ";
+            $warning .= "lead to <b>wrong results</b></br>if the microscope ";
+            $warning .= "type is not selected properly.";
             $warning  = $this->insertCell($warning,"text"); 
             $warning  = $this->insertTable($warning);
             $warning  = $this->insertDiv($warning,"warning");
