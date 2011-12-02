@@ -438,10 +438,10 @@ if ($_SESSION['setting']->isMultiPointOrSinglePointConfocal()) {
                   'http://www.svi.nl/PinholeRadius')">
                     <img src="images/help.png" alt="?" />
                 </a>
-                backprojected pinhole radius
+                pinhole radius
 	      </legend>
             <ul>
-                <li>pinhole radius (nm):</li>
+                <li>backprojected pinhole radius (nm):</li>
             </ul>
 
             <?php
