@@ -333,8 +333,6 @@ class HuygensTemplate {
      \brief       Loads arrays with the job's tasks and subtasks.
     */
     private function initializeImgProcessing( ) {
-        global $maxComparisonSize;
-        global $movieMaxSize;
 
         $this->imgProcessArray = 
             array ( 'info'                      => '',
@@ -1782,6 +1780,7 @@ class HuygensTemplate {
     private function parsePreviewGen($key,$task) {
         global $useThumbnails;
         global $saveSfpPreviews;
+        global $movieMaxSize;
 
         if (!$useThumbnails) {
             return;
@@ -1794,6 +1793,8 @@ class HuygensTemplate {
         } elseif (strstr($key, 'ZComparison') && !$this->compareZviews) {
             $task = "";
         } elseif (strstr($key, 'TComparison') && !$this->compareTviews) {
+            $task = "";
+        } elseif (strstr($key, 'Movie') && $movieMaxSize == 0) {
             $task = "";
         } else {
             $task .= ":" . $this->thumbCnt;
@@ -1809,6 +1810,12 @@ class HuygensTemplate {
     */
     private function isEligibleForSlicers($image) {
         global $maxComparisonSize;
+
+        if ($maxComparisonSize == 0) {
+            $this->compareZviews = FALSE;
+            $this->compareTviews = FALSE;
+            return;
+        }
 
         /* The maximum number of pixels per dimension that the JPEG libraries 
          can handle. If the image is larger than this, we won't be able to
