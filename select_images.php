@@ -44,7 +44,7 @@ else if (isset($_POST['up'])) {
   }  
 }
 else if (isset($_POST['update'])) {
-  $_SESSION['fileserver']->updateAvailableFiles();
+  $_SESSION['fileserver']->resetFiles();
 }
 else if (isset($_POST['OK'])) {
   if (!$_SESSION['fileserver']->hasSelection()) {

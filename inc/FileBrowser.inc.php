@@ -111,9 +111,9 @@ if (!isset($_SESSION['fileserver'])) {
 // Refresh the directory listing:
 if (isset($_POST['update'])) {
   if ($browse_folder == "src") {
-    $_SESSION['fileserver']->updateAvailableFiles();
+    $_SESSION['fileserver']->resetFiles();
   } else {
-    $_SESSION['fileserver']->updateAvailableDestFiles();
+    $_SESSION['fileserver']->resetDestFiles();
   }
 }
 
@@ -149,6 +149,7 @@ if ($browse_folder == "src") {
       // subimages.
       $_SESSION['fileserver']->expandSubImages(false);
     }
+    $_SESSION['fileserver']->resetFiles();
     $files = $_SESSION['fileserver']->files();
   } else {
 

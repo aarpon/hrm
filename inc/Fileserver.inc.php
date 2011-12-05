@@ -300,7 +300,7 @@ class Fileserver {
     \brief  Resets the list of source files. Next time the list is accessed
             it will be recreated automatically
   */
-  public function updateAvailableFiles() {
+  public function resetFiles() {
     $this->files = NULL;
   }
 
@@ -308,7 +308,7 @@ class Fileserver {
     \brief  Resets the list of destination files. Next time the list is accessed
             it will be recreated automatically
   */
-  public function updateAvailableDestFiles() {
+  public function resetDestFiles() {
     $this->destFiles = NULL;
   }
 
@@ -498,9 +498,9 @@ class Fileserver {
       }
 
       if ( $dir == "src" ) {
-          $this->updateAvailableFiles();
+          $this->resetFiles();
       } else {
-          $this->updateAvailableDestFiles();
+          $this->resetDestFiles();
       }
 
       if ( $success == true ) {
@@ -739,9 +739,9 @@ class Fileserver {
       }
 
       if ( $dir == "src" ) {
-          $this->updateAvailableFiles();
+          $this->resetFiles();
       } else {
-          $this->updateAvailableDestFiles();
+          $this->resetDestFiles();
       }
 
       return $msg;

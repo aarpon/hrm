@@ -203,9 +203,9 @@ if (isset($_POST['delete'])) {
     exit;
 } else if (isset($_POST['update'])) {
         if ( $browse_folder == "dest" ) {
-            $_SESSION['fileserver']->updateAvailableDestFiles();
+            $_SESSION['fileserver']->resetDestFiles();
         } else {
-            $_SESSION['fileserver']->updateAvailableFiles();
+            $_SESSION['fileserver']->resetFiles();
         }
 }
 
