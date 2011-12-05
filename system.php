@@ -175,6 +175,14 @@ include("header.inc.php");
           </tr>
           <tr>
             <td class="key">
+                Max execution time
+            </td>
+            <td class="value">
+                <?php echo System::maxExecutionTimeFromIni(); ?>
+            </td>
+          </tr>
+          <tr>
+            <td class="key">
                 File downloads
             </td>
             <td class="value">

@@ -424,6 +424,14 @@ class System {
     }
 
     /*!
+     \brief     Max execution time in seconds for scripts as set in php.ini
+     \return	max execution time in seconds
+     */
+    public static function maxExecutionTimeFromIni( ) {
+    	return ini_get( 'max_execution_time' ) . "s";
+    }    
+
+    /*!
      \brief	Formats a number (in bytes) into a string with the desired unit.
      For example, System::formatMemoryStringByUnit( 134, $unit = 'M' )
      returns '128 MB'.
