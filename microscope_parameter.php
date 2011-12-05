@@ -509,7 +509,7 @@ if (!$default) {
                        type="text"
                        size="5"
                        value="<?php echo $value ?>"
-                       onclick="this.form.SampleMedium[2].checked=true" />
+                       onclick="this.form.SampleMedium[3].checked=true" />
 
                 </div> <!-- values -->
                 <div class="bottom">

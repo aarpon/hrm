@@ -409,7 +409,8 @@ for ($i=0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
                                    type="text"
                                    size="8"
                                    value="<?php echo $val ?>"
-                                   class="multichannelinput" />
+                                   class="multichannelinput"
+                                   onclick="document.forms[0].BackgroundEstimationModeAbsValue.checked=true" />
                             </span>&nbsp;
                         </span>
                         
