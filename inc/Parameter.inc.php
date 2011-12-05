@@ -2062,10 +2062,10 @@ class BackgroundOffsetPercent extends AnyTypeArrayParameter {
 			$value = 'in/near object';
 		} else {
 			if ( $this->numberOfChannels == 1 ) {
-				$name = 'background absolute value: ';
+				$name = 'background absolute value';
 				$value = $this->value[ 0 ];
 			} else {
-				$name = ' background absolute values: ';
+				$name = ' background absolute values';
 				$value = array_slice( $this->value, 0, $this->numberOfChannels);
 				$value = implode( $value, ", " );
 			}
