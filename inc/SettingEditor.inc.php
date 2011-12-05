@@ -250,16 +250,20 @@ abstract class BaseSettingEditor {
         }
         $name = $this->selected();
         foreach ($this->settings() as $setting) {
-            if ($setting->isDefault()) {
-                $setting->resetDefault();
-                $db = new DatabaseConnection();
-                $db->updateDefault($setting);
-            }
             if ($setting->name() == $name) {
-                $setting->beDefault();
-                $db = new DatabaseConnection();
-                $db->updateDefault($setting);
+                if ( !$setting->isDefault() ) {
+                    $setting->beDefault();
+                } else {
+                    // If it alreay was the default setting,
+                    // we reset it
+                    $setting->resetDefault();
+                }
+            } else {
+                $setting->resetDefault();
             }
+            // Update the database
+            $db = new DatabaseConnection();
+            $db->updateDefault($setting);
         }
         return true;
     }

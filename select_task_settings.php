@@ -142,7 +142,7 @@ include("header.inc.php");
       if (!$_SESSION['user']->isAdmin()) {
         ?>
         <span id="ttSpanDefault">
-            Sets the selected parameter set as the default one.
+            Sets (or resets) the selected parameter set as the default one.
         </span>
         <span id="ttSpanCopyTemplate">
             Copy a template.
