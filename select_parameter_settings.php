@@ -84,8 +84,7 @@ else if ( isset($_POST['annihilate']) &&
 else if (isset($_POST['OK']) && $_POST['OK']=="OK" ) {
   if (!isset($_POST['setting'])) {
     $message = "Please select some image parameters";
-  }
-  else {
+  } else {
     $_SESSION['setting'] = $_SESSION['editor']->loadSelectedSetting();
     // if measured PSF, check files availability
     $ok = True;
@@ -103,28 +102,7 @@ else if (isset($_POST['OK']) && $_POST['OK']=="OK" ) {
             $ok = False;
             break;
           }
-        }
-        // If a parameter setting with measured PSF was created before HRM 1.1,
-        // all microscope parameters would be empty. This behavior was changed
-        // in HRM 1.1, thus meaning that existing settings must be checked for
-        // completeness.
-        // We will check just a couple of parameters -- we do not neet to check
-        // them all, since in case of measured PSF even existing parameters were
-        // purged.
-        $microscopeType    =
-            $_SESSION['setting']->parameter("MicroscopeType")->value( );
-        $numericalAperture =
-            $_SESSION['setting']->parameter("NumericalAperture")->value( );
-        $ccdCaptorSize     =
-            $_SESSION['setting']->parameter("CCDCaptorSizeX")->value( );
-        if ( empty( $microscopeType ) ||
-             empty( $numericalAperture ) ||
-             empty( $ccdCaptorSize ) ) {
-                $message = "Please check this setting for completeness! " .
-                "Current version of HRM requires that all parameters " .
-                "are set even if a measured PSF is chosen";
-                $ok = False;
-        }          
+        }    
       } else {
         $message = "Source image folder not found! Make sure path " .
           $_SESSION['fileserver']->sourceFolder()." exists";
