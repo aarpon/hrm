@@ -152,21 +152,50 @@ class Fileserver {
   }
 
   /*!
-    \brief  Searches the source folder recursively and returns all found files
+    \brief  Searches the source folder recursively, stores and also returns the
+            list of found files
     \param  $extension  Extension to be considered to scan the folder. Omit to
                         get all files
     \return sorted array of file names
   */
   public function files( $extension = null ) {
     if ( is_null( $extension ) ) {
-        if ($this->files == NULL) $this->getFiles();
+        if ($this->files == NULL) {
+            $this->getFiles();
+        }
         return $this->files;
     } else {
-        if (!file_exists($this->sourceFolder())) return False;
+        if (!file_exists($this->sourceFolder())) {
+            return False;
+        }
         $files = $this->listFilesFrom($this->sourceFolder(), "", $extension);
         sort($files);
+        $this->files = $files;
         return $files;
     }
+  }
+
+  /*!
+    \brief  Searches the source folder recursively and returns all found files
+    \param  $expandSubInages    if true, names of subimages (as in the case of
+                                lif files) are expanded and returned in the
+                                list of file names
+    \return sorted array of file names
+  */
+  public function listFiles( $expand ) {
+      // Store current selections and extensions
+      $currentExtensions = $this->imageExtensions;
+      $currentFiles = $this->files;
+      // Process
+      $this->setDefaultImageExtensions(array());
+      $this->expandSubImages($expand);
+      $this->getFiles();
+      $files = $this->files();
+      // Restore the previous selections
+      $this->files = $currentFiles;
+      $this->imageExtensions = $currentExtensions;
+      // Return the processed list of files
+      return $files;
   }
 
   /*!
@@ -177,10 +206,14 @@ class Fileserver {
   */
   public function destFiles( $extension = null ) {
     if ( is_null( $extension ) ) {
-        if ($this->destFiles == NULL) $this->getDestFiles();
+        if ($this->destFiles == NULL) {
+            $this->getDestFiles();
+        }
         return $this->destFiles;
     } else {
-        if (!file_exists($this->destinationFolder())) return False;
+        if (!file_exists($this->destinationFolder())) {
+            return False;
+        }
         $files = $this->listFilesFrom($this->destinationFolder(), "", $extension);
         sort($files);
         return $files;
@@ -233,7 +266,9 @@ class Fileserver {
     \return sorted array of file names
   */
   public function allFiles() {
-    if (!file_exists($this->sourceFolder())) return False;
+    if (!file_exists($this->sourceFolder())) {
+        return False;
+    }
     $files = $this->listFilesFrom($this->sourceFolder(), "", "");
     sort($files);
     return $files;
@@ -326,7 +361,9 @@ class Fileserver {
     \return Array of file names
   */
   public function selectedFiles() {
-    if ($this->selectedFiles == NULL) $this->selectedFiles = array();
+    if ($this->selectedFiles == NULL) {
+        $this->selectedFiles = array();
+    }
     return $this->selectedFiles;
   }
 
@@ -754,7 +791,9 @@ class Fileserver {
     \todo   This must be obtained from the database!
   */
   public function imageExtensions() {
-    if ($this->imageExtensions == NULL) $this->setDefaultImageExtensions();
+    if ($this->imageExtensions == NULL) {
+        $this->setDefaultImageExtensions();
+    }
     return $this->imageExtensions;
   }
 
@@ -767,7 +806,7 @@ class Fileserver {
     \param  $extensions  Array of file extensions (strings)
   */
   public function setImageExtensions($extensions) {
-    if (implode('', $extensions) !=  implode('', $this->imageExtensions())) {
+    if (implode('', $extensions) != implode('', $this->imageExtensions())) {
       $this->selectedFiles = NULL;
       $this->files = NULL;
     }

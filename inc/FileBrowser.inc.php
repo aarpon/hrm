@@ -138,19 +138,16 @@ if ($browse_folder == "src") {
 
   if (!isset($restrictFileType) || $restrictFileType === false) {
     // Show all image files.
-
-    $_SESSION['fileserver']->setDefaultImageExtensions(array());
     if (isset($expandSubImages) && $expandSubImages) {
       // In certain conditions (e.g. the SNR estimator) we want to list
       // all subimages that every file may contain.
-      $_SESSION['fileserver']->expandSubImages(true);
+      $files = $_SESSION['fileserver']->listFiles( true );
     } else {
       // In the file manager we want to treat files as such, not listing
       // subimages.
-      $_SESSION['fileserver']->expandSubImages(false);
+      $files = $_SESSION['fileserver']->listFiles( false );
     }
-    $_SESSION['fileserver']->resetFiles();
-    $files = $_SESSION['fileserver']->files();
+    
   } else {
 
     // Show files of one image type only.
