@@ -649,11 +649,11 @@ class QueueManager {
         $sourceFileName = $desc->sourceImageNameWithoutPath();
         $destFileName = $desc->destinationImageNameWithoutPath();
         $text = "This is a mail generated automatically by " .
-            "the Huygens Remote Manager.\n";
-        $text .= "Your job started at $startTime and finished at " .
-            date("Y-m-d H:i:s") . ".\n";
+            "the Huygens Remote Manager.\n\n";
         $text .= "The image $sourceFileName was successfully " .
             "processed by Huygens.\n";
+        $text .= "Your job started at $startTime and finished at " .
+            date("Y-m-d H:i:s") . ".\n";
         $text .= "You will find the resulting image ($destFileName) " .
             "in your destination folder.\n";
 
@@ -670,7 +670,7 @@ class QueueManager {
         if ($useThumbnails) {
             $link = $hrm_url . "/file_management.php?compareResult=" .
                     urlencode($linkName);
-            $text .= "\nYou can find a preview of the result at " . $link .
+            $text .= "\nDirect link to your deconvolution result: " . $link .
                     " (login required).\n\n";
         }
         $text .= "Best regards,\nHuygens Remote Manager\n\n";
