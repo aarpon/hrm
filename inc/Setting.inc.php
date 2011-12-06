@@ -1292,7 +1292,6 @@ class ParameterSetting extends Setting {
 
     /*!
       \brief	Returns the file formats that support single channel images
-      \todo	This function DOES NOT BELONG in the Setting class!
       \return	array of file formats
     */
     public function singleChannelFileFormats() {
@@ -1320,7 +1319,6 @@ class ParameterSetting extends Setting {
     /*!
       \brief	Returns the file formats that support a variable number of channels
               per file
-      \todo	This function DOES NOT BELONG in the Setting class!
       \return	array of file formats
     */
     public function variableChannelFileFormats() {

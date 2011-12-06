@@ -788,7 +788,6 @@ class Fileserver {
   /*!
     \brief  Returns a list of file extensions for supported images
     \return array of file extensions
-    \todo   This must be obtained from the database!
   */
   public function imageExtensions() {
     if ($this->imageExtensions == NULL) {
@@ -815,7 +814,6 @@ class Fileserver {
 
   /*!
     \brief Sets the image extensions from the list of valid image extensions
-    \todo Check the meaning of having this method!
   */
   public function setDefaultImageExtensions() {
     // new file formats support
