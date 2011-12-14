@@ -80,15 +80,16 @@ class Validator {
     \brief  Validates the password
     \param  $inputPassword  Password input through some login form
 
-    The password cannot contain spaces.
+    The password cannot contain spaces, & and ? signs (to prevent some evil
+    database hacking).
   */
   public static function isPasswordValid( $inputPassword ) {
 
     // Clean the string
     $tmp = filter_var( $inputPassword, FILTER_SANITIZE_STRING );
 
-    // No spaces, '&', or '!'
-    if ( strstr( $tmp, " " ) || strstr( $tmp, "&" ) || strstr( $tmp, "!" ) ) {
+    // No spaces, '&', or '?'
+    if ( strstr( $tmp, " " ) || strstr( $tmp, "&" ) || strstr( $tmp, "?" ) ) {
         return false;
     }
 
