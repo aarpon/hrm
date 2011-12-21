@@ -21,7 +21,7 @@ class System {
 
 		This value has to be set by the developers!
 		*/
-	const HRM_VERSION = "2.1";
+	const HRM_VERSION = "2.1.1";
 
 	/*!
 		\var 	DB_LAST_REVISION
@@ -429,7 +429,7 @@ class System {
      */
     public static function maxExecutionTimeFromIni( ) {
     	return ini_get( 'max_execution_time' ) . "s";
-    }    
+    }
 
     /*!
      \brief	Formats a number (in bytes) into a string with the desired unit.
