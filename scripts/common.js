@@ -63,9 +63,9 @@ function SetOpacity(elem, opacityAsInt)
     var opacityAsDecimal = opacityAsInt;
 
     if (opacityAsInt > 100)
-        opacityAsInt = opacityAsDecimal = 100; 
+        opacityAsInt = opacityAsDecimal = 100;
     else if (opacityAsInt < 0)
-        opacityAsInt = opacityAsDecimal = 0; 
+        opacityAsInt = opacityAsDecimal = 0;
 
     opacityAsDecimal /= 100;
     if (opacityAsInt < 1)
@@ -83,12 +83,12 @@ function FadeOpacity(elem, fromOpacity, toOpacity, time, fps)
         var steps = Math.ceil(fps * (time / 1000));
         var delta = (toOpacity - fromOpacity) / steps;
 
-        FadeOpacityStep(elem, 0, steps, fromOpacity, 
+        FadeOpacityStep(elem, 0, steps, fromOpacity,
                 delta, (time / steps));
     } catch (err) {}
 }
 
-function FadeOpacityStep(elem, stepNum, steps, fromOpacity, 
+function FadeOpacityStep(elem, stepNum, steps, fromOpacity,
         delta, timePerStep)
 {
     e = document.getElementById(elem);
@@ -96,9 +96,9 @@ function FadeOpacityStep(elem, stepNum, steps, fromOpacity,
             Math.round(parseInt(fromOpacity) + (delta * stepNum)));
 
     if (stepNum < steps)
-        setTimeout("FadeOpacityStep('" + elem + "', " + (stepNum+1) 
+        setTimeout("FadeOpacityStep('" + elem + "', " + (stepNum+1)
                 + ", " + steps + ", " + fromOpacity + ", "
-                + delta + ", " + timePerStep + ");", 
+                + delta + ", " + timePerStep + ");",
                 timePerStep);
 }
 
@@ -184,8 +184,10 @@ function checkSelection() {
 
 }
 
-function confirmSubmit() {
-
+function confirmSubmit(action) {
+    if (typeof(action)=='undefined') {
+        action = '';
+    }
     if (action != '') {
         changeDiv('actions', 'Please wait...<input type="hidden" name="'+action+'" value="1">');
         // Make the message vanish after a reasonable time.
@@ -293,7 +295,7 @@ function handleAddMore() {
 
 
 function enableAddMore() {
-    changeDiv('addanotherfile', 
+    changeDiv('addanotherfile',
               '<a onclick="addFileEntry()">Add another file</a>');
 }
 function disableAddMore() {
@@ -314,7 +316,7 @@ function uploadImages(maxFile, maxPost, archiveExt) {
             +'</b>, maximum total transfer size is <b>' + maxPost + '</b>. '
             +'<br /><br /><img alt =\"Warning!\" src=\"./images/note.png\" /> '
             +'<b>If you upload .ics files, do not forget the matching .ids</b>!' );
-    changeDiv('up_form', 
+    changeDiv('up_form',
         '<form id="uploadForm" enctype="multipart/form-data" action="?folder=src&upload=1" method="POST" onsubmit="return confirmUpload()" >'
        + '<input type="hidden" name="uploadForm" value="1"> '
        + '<div id="upload_list">'
@@ -399,7 +401,7 @@ function imgPrev(infile, mode, gen, compare, index, dir, referer, data) {
                 mode = 3;
             }
         }
-        catch (err) 
+        catch (err)
         {
             mode = 0;
         }
@@ -416,7 +418,7 @@ function imgPrev(infile, mode, gen, compare, index, dir, referer, data) {
            } else {
 
            // Preview doesn't exist, but you can create it now.
-           link = "file_management.php?genPreview=" + infile + "&src=" + dir 
+           link = "file_management.php?genPreview=" + infile + "&src=" + dir
                   + "&data=" + data + '&index=' + index;
 
            onClick =  '<center><img src=\\\'images/spin.gif\\\' '
@@ -448,7 +450,7 @@ function imgPrev(infile, mode, gen, compare, index, dir, referer, data) {
            // 2D Preview exists
            tip = '<i>2D image preview:</i><br>'+file;
            html = '<img id="ithumb" src="file_management.php?getThumbnail='
-                  + infile + '.preview_xy.jpg&dir=' + dir 
+                  + infile + '.preview_xy.jpg&dir=' + dir
                   + '" alt="Preview" onmouseover="Tip(\''
                   + tip + '\')" '
                   + ' onmouseout="UnTip()">';
@@ -458,7 +460,7 @@ function imgPrev(infile, mode, gen, compare, index, dir, referer, data) {
            tip = '<i>3D image XY preview:</i><br>'+file;
            html = '<img id="ithumba" src="file_management.php?getThumbnail='
                   + infile + '.preview_xy.jpg&dir=' + dir
-                  + '" alt="XY preview" onmouseover="Tip(\'' 
+                  + '" alt="XY preview" onmouseover="Tip(\''
                   + tip + '\')" '
                   + ' onmouseout="UnTip()" >';
            tip = '<i>3D image XZ preview:</i><br>'+file;
@@ -475,7 +477,7 @@ function imgPrev(infile, mode, gen, compare, index, dir, referer, data) {
     if ( gen == 1 && mode > 1 && dir == "src" ) {
 
            // Preview exists, and you can re-create it now.
-           link = "file_management.php?genPreview=" + infile + "&src=" + dir 
+           link = "file_management.php?genPreview=" + infile + "&src=" + dir
                   + "&data=" + data + '&index=' + index;
 
            onClick =  '<center><img src=\\\'images/spin.gif\\\' '
@@ -537,7 +539,7 @@ function changeVisibility(id) {
         blockElement.style.display = "block";
     else if (blockElement.style.display == "block")
         blockElement.style.display = "none";
-    return blockElement.style.display;    
+    return blockElement.style.display;
 }
 
 function hide(id) {

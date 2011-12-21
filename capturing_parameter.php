@@ -147,7 +147,7 @@ if ($_SESSION[ 'setting' ]->checkPostedCapturingParameters( $_POST ) ) {
  **************************************************************************** */
 
 // Javascript includes
-$script = array( "jquery-1.6.4.min.js", "settings.js", "quickhelp/help.js",
+$script = array( "jquery-1.7.1.min.js", "settings.js", "quickhelp/help.js",
                 "quickhelp/capturingParameterHelp.js" );
 
 include("header.inc.php");

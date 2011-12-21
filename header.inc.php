@@ -9,8 +9,8 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 
 ?>
 
-<!DOCTYPE html 
-    PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" 
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 
@@ -24,7 +24,7 @@ if (isset($meta)) {
 }
 
 ?>
- 
+
     <script type="text/javascript" src="scripts/common.js"></script>
 
 <?php
@@ -32,7 +32,7 @@ if (isset($meta)) {
 if (isset($script)) {
 	if ( is_array( $script ) ) {
 		foreach ( $script as $current ) {
-			
+
 			// Workaround for the lack of canvas in IE
 			if ( $current == "highcharts/excanvas.compiled.js" ) {
 				?>
@@ -40,7 +40,7 @@ if (isset($script)) {
 				<script type="text/javascript"
                     src="scripts/<?php echo $current ?>"></script>
 				<![endif]-->
-				<?php				
+				<?php
 			} else {
 				?>
 				<script type="text/javascript"
@@ -56,7 +56,7 @@ if (isset($script)) {
 				<script type="text/javascript"
                     src="scripts/<?php echo $script ?>"></script>
 				<![endif]-->
-				<?php				
+				<?php
 			} else {
 				?>
 				<script type="text/javascript"
@@ -69,7 +69,7 @@ if (isset($script)) {
 if (isset($generatedScript)) {
 
 ?>
-    
+
     <script type="text/javascript">
     <!--
     <?php echo $generatedScript ?>
@@ -100,7 +100,7 @@ if (isset($generatedScript)) {
 <!--
     // Use the great Tooltip JavaScript Library by Walter Zorn
 -->
-<script type="text/javascript" 
+<script type="text/javascript"
     src="./scripts/wz_tooltip/wz_tooltip.js">
 </script>
 
@@ -115,4 +115,4 @@ if (isset($generatedScript)) {
   	  <div id="logo"></div>
 	  </div>
 <?php } ?>
-    
+

@@ -6,8 +6,12 @@
 var snitch;
 
 function process() {
-    document.forms["select"].elements["OK"].value = "OK";
-    document.forms["select"].submit();
+    if ( document.forms["select"] != null ) {
+        if ( document.forms["select"].elements["OK"] != null ) {
+            document.forms["select"].elements["OK"].value = "OK";
+            document.forms["select"].submit();
+        }
+    }
 }
 
 function imageFormatProcess(e, value) {
@@ -47,7 +51,7 @@ function release() {
                 }
             }
         }
-        
+
     }
 
     var element = document.getElementById('geometry');
@@ -176,8 +180,11 @@ function storeValues() {
     }
     // Text input
     $("input[type=text]").each( function() {
-        window.sessionStorage.setItem( $(this).attr("id"),
-            $(this).attr("value") );
+        // IE8 work-around
+        if ( $(this).attr("value") != "" ) {
+            window.sessionStorage.setItem( $(this).attr("id"),
+                $(this).attr("value") );
+        }
     } );
     // Radio  buttons
     $("input[type=radio]").each( function() {

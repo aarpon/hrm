@@ -44,7 +44,7 @@ if ( $_SESSION[ 'task_setting' ]->checkPostedTaskParameters( $_POST ) ) {
   if ($saved) {
     header("Location: " . "select_task_settings.php"); exit();
   } else {
-    $message = $_SESSION['task_setting']->message();  
+    $message = $_SESSION['task_setting']->message();
   }
 } else {
   $message = $_SESSION['task_setting']->message();
@@ -59,7 +59,7 @@ if ( $_SESSION[ 'task_setting' ]->checkPostedTaskParameters( $_POST ) ) {
 //$noRange = False;
 
 // Javascript includes
-$script = array( "jquery-1.6.4.min.js", "settings.js", "quickhelp/help.js",
+$script = array( "jquery-1.7.1.min.js", "settings.js", "quickhelp/help.js",
                 "quickhelp/taskParameterHelp.js" );
 
 include("header.inc.php");
@@ -85,7 +85,7 @@ include("header.inc.php");
         Please help us improve the new SNR estimator by providing your
         observations and remarks!
     </span>
-    
+
     <div id="nav">
         <ul>
             <li>
@@ -100,19 +100,19 @@ include("header.inc.php");
             </li>
         </ul>
     </div>
-    
+
     <div id="content">
-    
+
         <h3>Task Setting</h3>
-        
+
         <form method="post" action="" id="select">
-          
+
            <h4>How should your images be restored?</h4>
 
             <!-- deconvolution algorithm -->
-             <fieldset class="setting provided" 
+             <fieldset class="setting provided"
               onmouseover="javascript:changeQuickHelp( 'method' );" >
-            
+
                 <legend>
                     <a href="javascript:openWindow(
                        'http://support.svi.nl/wiki/RestorationMethod')">
@@ -122,7 +122,7 @@ include("header.inc.php");
 
                 <select name="DeconvolutionAlgorithm"
                   onchange="javascript:switchSnrMode();" >
-                
+
 <?php
 
 /*
@@ -148,13 +148,13 @@ foreach($possibleValues as $possibleValue) {
 }
 ?>
                 </select>
-                
+
             </fieldset>
 
             <!-- signal/noise ratio -->
             <fieldset class="setting provided"
               onmouseover="javascript:changeQuickHelp( 'snr' );" >
-            
+
                 <legend>
                     <a href="javascript:openWindow(
                        'http://www.svi.nl/SignalToNoiseRatio')">
@@ -164,7 +164,7 @@ foreach($possibleValues as $possibleValue) {
 
                 <div id="snr"
                      onmouseover="javascript:changeQuickHelp( 'snr' );">
-                      
+
 <?php
 
 $visibility = " style=\"display: none\"";
@@ -176,7 +176,7 @@ if ($selectedMode == "cmle") {
                     <div id="cmle-snr"
                          class="multichannel"<?php echo $visibility?>>
                     <ul>
-                      <li>SNR: 
+                      <li>SNR:
                       <div class="multichannel">
 <?php
 
@@ -189,7 +189,7 @@ if ($selectedMode == "cmle") {
   $signalNoiseRatioValue = $signalNoiseRatioParam->value();
 
 for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
-  
+
     $value = "";
     if ($selectedMode == "cmle")
         $value = $signalNoiseRatioValue[$i];
@@ -224,7 +224,7 @@ for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
                         <p><a href="#"
                           onmouseover="TagToTip('ttEstimateSnr' )"
                           onmouseout="UnTip()"
-                          onclick="storeValuesAndRedirect( 
+                          onclick="storeValuesAndRedirect(
                             'estimate_snr_from_image.php');">
                           <img src="images/calc_small.png" alt="" />
                           Estimate SNR from image (classic)</a>
@@ -254,7 +254,7 @@ if ($selectedMode == "qmle") {
 }
 
 ?>
-                    <div id="qmle-snr" 
+                    <div id="qmle-snr"
                       class="multichannel"<?php echo $visibility?>>
                       <ul>
                         <li>SNR:
@@ -311,25 +311,25 @@ for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
                         </li>
                       </ul>
                     </div>
-                    
+
                 </div>
-                
-            
+
+
             </fieldset>
 
             <!-- background mode -->
             <fieldset class="setting provided"
               onmouseover="javascript:changeQuickHelp( 'background' );" >
-            
+
                 <legend>
                     <a href="javascript:openWindow(
                        'http://www.svi.nl/BackgroundMode')">
                         <img src="images/help.png" alt="?" /></a>
                     background mode
                 </legend>
-                
+
                 <div id="background">
-                
+
 <?php
 
 /*
@@ -354,7 +354,7 @@ if ($backgroundOffset[0] == "" || $backgroundOffset[0] == "auto") {
                             value="auto"<?php echo $flag ?> />
                         automatic background estimation
                     </p>
-                    
+
 <?php
 
 $flag = "";
@@ -369,11 +369,11 @@ if ($backgroundOffset[0] == "object") $flag = " checked=\"checked\"";
                             value="object"<?php echo $flag ?> />
                         in/near object
                     </p>
-                    
+
 <?php
 
 $flag = "";
-if ($backgroundOffset[0] != "" && $backgroundOffset[0] != "auto" && 
+if ($backgroundOffset[0] != "" && $backgroundOffset[0] != "auto" &&
     $backgroundOffset[0] != "object") {
         $flag = " checked=\"checked\"";
 }
@@ -384,7 +384,7 @@ if ($backgroundOffset[0] != "" && $backgroundOffset[0] != "auto" &&
                            name="BackgroundEstimationMode"
                            value="manual"<?php echo $flag ?> />
                     remove constant absolute value:
-                    
+
                     <div class="multichannel">
 <?php
 
@@ -413,7 +413,7 @@ for ($i=0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
                                    onclick="document.forms[0].BackgroundEstimationModeAbsValue.checked=true" />
                             </span>&nbsp;
                         </span>
-                        
+
 <?php
 
 }
@@ -432,29 +432,29 @@ for ($i=0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
 
 ?>
                     </div>
-                    
+
                 </div>
-                
-            
+
+
             </fieldset>
 
             <div id="cmle-it" <?php echo $visibility ?>>
 
             <!-- stopping criteria -->
-            <fieldset class="setting provided" 
+            <fieldset class="setting provided"
               onmouseover="javascript:changeQuickHelp( 'stopcrit' );" >
-            
+
                 <legend>
                     stopping criteria
                 </legend>
-                
+
                 <div id="criteria">
-                
+
                     <p><a href="javascript:openWindow(
                           'http://www.svi.nl/MaxNumOfIterations')">
                             <img src="images/help.png" alt="?" /></a>
                     number of iterations:
-                    
+
 <?php
 
 $parameter = $_SESSION['task_setting']->parameter("NumberOfIterations");
@@ -462,40 +462,40 @@ $value = $parameter->value();
 
 
 ?>
-                    <input id="NumberOfIterations" 
+                    <input id="NumberOfIterations"
                            name="NumberOfIterations"
                            type="text"
                            size="8"
                            value="<?php echo $value ?>" />
-                    
+
                     </p>
-                    
+
                     <p><a href="javascript:openWindow(
                           'http://www.svi.nl/QualityCriterion')">
                             <img src="images/help.png" alt="?" /></a>
                     quality change:
-                    
+
 <?php
 
 $parameter = $_SESSION['task_setting']->parameter("QualityChangeStoppingCriterion");
 $value = $parameter->value();
 
 ?>
-                    <input id="QualityChangeStoppingCriterion" 
+                    <input id="QualityChangeStoppingCriterion"
                            name="QualityChangeStoppingCriterion"
                            type="text"
                            size="3"
                            value="<?php echo $value ?>" />
                     </p>
-                  
+
                 </div>
-                
-            
+
+
             </fieldset>
             </div>
-            
+
             <div><input name="OK" type="hidden" /></div>
-            
+
             <div id="controls"
                  onmouseover="javascript:changeQuickHelp( 'default' )">
               <input type="button" value="" class="icon up"
@@ -510,11 +510,11 @@ $value = $parameter->value();
             </div>
 
         </form>
-        
+
     </div> <!-- content -->
 
     <div id="rightpanel" onmouseover="javascript:changeQuickHelp( 'default' )">
-    
+
       <div id="info">
       <h3>Quick help</h3>
         <div id="contextHelp">
@@ -524,7 +524,7 @@ $value = $parameter->value();
           estimation, and the stopping criteria.</p>
         </div>
      </div>
-        
+
       <div id="message">
 <?php
 
@@ -532,16 +532,16 @@ echo "<p>$message</p>";
 
 ?>
         </div>
-        
+
     </div> <!-- rightpanel -->
-    
+
 <?php
 
 include("footer.inc.php");
 
 // Retrieve values from sessionStore if coming back from one of the
 // SNR estimators
-if ( !( strpos( $_SERVER[ 'HTTP_REFERER' ], 
+if ( !( strpos( $_SERVER[ 'HTTP_REFERER' ],
     'estimate_snr_from_image.php') === false ) ||
     !( strpos( $_SERVER[ 'HTTP_REFERER' ],
     'estimate_snr_from_image_beta.php') === false ) ) {
@@ -550,16 +550,16 @@ if ( !( strpos( $_SERVER[ 'HTTP_REFERER' ],
             $_SESSION['SNR_Calculated'] == 'true') {
 ?>
         <script type="text/javascript">
-            $(document).ready( retrieveValues( 
+            $(document).ready( retrieveValues(
             new Array( 'SignalNoiseRatioCMLE0',
             'SignalNoiseRatioCMLE1', 'SignalNoiseRatioCMLE2',
             'SignalNoiseRatioCMLE3', 'SignalNoiseRatioCMLE4' ) ) );
         </script>"
-    
+
 <?php
         // Now remove the SNR_Calculated flag
         unset($_SESSION['SNR_Calculated'] );
-        
+
     } else {
 ?>
         <script type="text/javascript">
