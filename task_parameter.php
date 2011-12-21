@@ -563,9 +563,18 @@ if ( !( strpos( $_SERVER[ 'HTTP_REFERER' ],
     } else {
 ?>
         <script type="text/javascript">
-            $(document).ready( retrieveValues( ) );;
+            $(document).ready( retrieveValues( ) );
         </script>"
 <?php
     }
+}
+
+// Workaround for IE
+if ( using_IE() && !isset( $_SERVER[ 'HTTP_REFERER' ] ) ) {
+?>
+        <script type="text/javascript">
+            $(document).ready( retrieveValues( ) );
+        </script>"
+<?php
 }
 ?>
