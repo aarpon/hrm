@@ -184,7 +184,7 @@ function checkSelection() {
 
 }
 
-function confirmSubmit(action) {
+function confirmSubmit() {
     if (typeof(action)=='undefined') {
         action = '';
     }
