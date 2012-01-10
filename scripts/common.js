@@ -185,9 +185,6 @@ function checkSelection() {
 }
 
 function confirmSubmit() {
-    if (typeof(action)=='undefined') {
-        action = '';
-    }
     if (action != '') {
         changeDiv('actions', 'Please wait...<input type="hidden" name="'+action+'" value="1">');
         // Make the message vanish after a reasonable time.
