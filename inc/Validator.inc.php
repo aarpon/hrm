@@ -88,8 +88,8 @@ class Validator {
     // Clean the string
     $tmp = filter_var( $inputPassword, FILTER_SANITIZE_STRING );
 
-    // No spaces, '&', or '?'
-    if ( strstr( $tmp, " " ) || strstr( $tmp, "&" ) || strstr( $tmp, "?" ) ) {
+    // No spaces or '&'
+    if ( strstr( $tmp, " " ) || strstr( $tmp, "&" ) ) {
         return false;
     }
 
