@@ -147,12 +147,9 @@ function setPrevGen(index, mode) {
     window.generated[index] = mode;
 }
 
-function updateListing() {
-
+function setActionToUpdate() {
     action = 'update';
-    document.file_browser.submit();
 }
-
 
 function deleteImages() {
 
@@ -192,7 +189,7 @@ function confirmSubmit() {
     } else {
         changeDiv('actions', '');
     }
-    if (action != 'upload') {
+    if (action != 'upload' && action != 'update') {
         changeDiv('selection', control);
     }
     action = '';
@@ -343,7 +340,7 @@ function uploadImages(maxFile, maxPost, archiveExt) {
        +  '<input name="upload" type="submit" value="" '
        + 'class="icon upload" '
        +   'onmouseover="Tip(\'Upload selected files\')" onmouseout="UnTip()"/>'
-       + '<input type="button" class="icon abort" onclick="cancelSelection()" '
+       + '<input type="button" class="icon abort" onclick="UnTip(); cancelSelection()" '
        +        'onmouseover="Tip(\'Cancel\')" onmouseout="UnTip()"/></div>'
        + ' </form>' );
 
@@ -370,7 +367,7 @@ function downloadImages() {
        + '<br /><input name="download" type="submit" value="" '
        + 'class="icon download" '
        +     'onmouseover="Tip(\'Confirm download\')" onmouseout="UnTip()"/>'
-       + '<input type="button" class="icon abort" onclick="cancelSelection()" '
+       + '<input type="button" class="icon abort" onclick="UnTip(); cancelSelection()" '
        +        'onmouseover="Tip(\'Cancel\')" onmouseout="UnTip()"/>');
 
 }

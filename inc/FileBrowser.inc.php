@@ -4,7 +4,7 @@
 
 /*!
   \brief Image file browser
- 
+
   This file is used to generate an image file browser in certain HRM tools,
   like in estimate_snr_from_image.php or file_management.php. When a file
   browser must be combined in a more complex page, like in select_image.php,
@@ -13,10 +13,10 @@
 
 /*!
   \brief  Generates basic buttons for the image file browser
-  
+
   This function generates basic buttons depending on what the file browser
   needs. This is specified with the input parameter $type.
-  
+
   \param  $type   One of 'download', 'upload', 'delete', or 'update'.
  */
 function fileButton($type) {
@@ -58,10 +58,10 @@ function fileButton($type) {
     case "update":
       # This button posts the form.
       # $img = "images/update.png";
-      # $onClick = "updateListing()";
+      $onClick = "setActionToUpdate();";
       # $alt = "Refresh";
       $mode = "post";
-      $value = "";
+      $value = "update";
       $name = "update";
       $class = "icon update";
       $tip = "Refresh image list";
@@ -76,8 +76,12 @@ function fileButton($type) {
   }
 
   if ($mode == "post") {
-    $ret = "\n\n<input name=\"$name\" type=\"submit\" 
-                 value=\"$value\" class=\"$class\" 
+      if ( !isset( $onClick ) ) {
+          $onClick = '';
+      }
+    $ret = "\n\n<input name=\"$name\" type=\"submit\"
+                 value=\"$value\" class=\"$class\"
+                 onclick=\"UnTip(); $onClick\"
                  onmouseover=\"Tip('$tip')\" onmouseout=\"UnTip()\" />";
   } else {
     $ret = "\n\n<input class=\"icon $name\" type=\"button\"
@@ -147,7 +151,7 @@ if ($browse_folder == "src") {
       // subimages.
       $files = $_SESSION['fileserver']->listFiles( false );
     }
-    
+
   } else {
 
     // Show files of one image type only.
@@ -180,23 +184,23 @@ function imageAction (list) {
     action = '';
     changeDiv('upMsg', '');
     changeDiv('actions', '');
-      
-      
+
+
     var n = list.selectedIndex;     // Which item is the first selected one
-      
+
     if( undefined === window.lastSelectedImgs ){
         window.lastSelectedImgs = [];
         window.lastSelectedImgsKey = [];
         window.lastShownIndex = -1;
     }
-      
+
     var selectedNew = 0;
-      
+
     count = 0;
-      
+
     // Compare last selection with the current one, to find which file has been
     // selected or deselected.
-      
+
     for (i=0; i<list.options.length; i++) {
         if (list.options[i].selected) {
             if( undefined === window.lastSelectedImgsKey[i] ){
@@ -207,7 +211,7 @@ function imageAction (list) {
             count++;
         }
     }
-      
+
     if (selectedNew == 0) {
         // If nothing was selected, it means that the click deselected an image
         for (i=0; i<window.lastSelectedImgs.length; i++) {
@@ -218,9 +222,9 @@ function imageAction (list) {
             }
         }
     }
-      
+
     // Remember the current selection for the next user interaction.
-      
+
     window.lastSelectedImgs = [];
     window.lastSelectedImgsKey = [];
     count = 0;
@@ -231,20 +235,20 @@ function imageAction (list) {
             count++;
         }
     }
-      
+
     if (count == 0 ) {
         window.previewSelected = -1;
     }
-      
+
     // Show image preview of the last clicked element in the list:
-      
+
     var val = list[n].value;
-      
+
     if ( n == window.lastShownIndex ) {
         return
     }
     window.lastShownIndex = n;
-      
+
     switch ( val )
     {
 ";
@@ -293,7 +297,7 @@ function imageAction (list) {
 
     $generatedScript .= "
         case \"$file\" :
-            " . $_SESSION['fileserver']->getImageAction($fileForAction, $key, 
+            " . $_SESSION['fileserver']->getImageAction($fileForAction, $key,
               $browse_folder, "preview", 1, $useTemplateData) . "
             break;
             ";
@@ -327,22 +331,22 @@ include("header.inc.php");
     <div id="content" >
         <h3><?php echo $page_title; ?></h3>
         <p class="message_small"><?php echo $explanation_text; ?></p>
-  <form method="post" action="?folder=<?php echo $browse_folder;?>" 
+  <form method="post" action="?folder=<?php echo $browse_folder;?>"
         id="file_browser" onsubmit="return confirmSubmit()" >
 
-    
+
       <fieldset >
-      
+
         <legend><?php echo $form_title; ?></legend>
-<?php        
+<?php
 ?>
 
 
 
 
         <div id="userfiles" onmouseover="showPreview()">
-          <select onchange="javascript:imageAction(this)" 
-                  onkeyup="this.blur();this.focus();" name="userfiles[]" 
+          <select onchange="javascript:imageAction(this)"
+                  onkeyup="this.blur();this.focus();" name="userfiles[]"
                   size="<?php echo $size;?>" <?php echo $multiple.$flag ?>>
           <?php
           // Populate the select field with the list of available images:
@@ -359,7 +363,7 @@ include("header.inc.php");
           ?>
           </select>
         </div>
-        
+
       </fieldset>
 
       <div id="selection" onmouseover="showInstructions()">
@@ -368,7 +372,7 @@ include("header.inc.php");
       <div id="actions" onmouseover="showInstructions()">
           <!-- do not remove !-->
       </div>
-      <div id="controls" class="imageselection" 
+      <div id="controls" class="imageselection"
            onmouseover="showInstructions()">
         <?php echo $control_buttons; ?>
       </div>
@@ -377,7 +381,7 @@ include("header.inc.php");
   <div id="up_form" onmouseover="showInstructions()">
       <!-- do not remove !-->
   </div>
-      
+
     </div> <!-- content -->
 
 
@@ -390,11 +394,11 @@ include("header.inc.php");
     </script>
     <div id="rightpanel">
         <div id="info">
-        <?php 
-        if ($operationResult != "") { 
-            echo $operationResult; 
-        } else { 
-            echo $info; 
+        <?php
+        if ($operationResult != "") {
+            echo $operationResult;
+        } else {
+            echo $info;
         }
         ?>
         </div>
