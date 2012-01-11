@@ -320,7 +320,7 @@ if ($files == null) {
 
 // If using IE make sure to enforce IE7 Document Mode
 if ( using_IE( ) ) {
-    $meta = "<meta http-equiv=\"X-UA-Compatible\" content=\"IE=EmulateIE7\" >";
+    $meta = "<meta http-equiv=\"X-UA-Compatible\" content=\"IE=7.5\" >";
 }
 
 include("header.inc.php");

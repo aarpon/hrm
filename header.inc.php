@@ -15,8 +15,6 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 
 <head>
-	<title>Huygens Remote Manager</title>
-    <link rel="SHORTCUT ICON" href="images/hrm.ico"/>
 <?php
 
 if (isset($meta)) {
@@ -24,6 +22,9 @@ if (isset($meta)) {
 }
 
 ?>
+
+  <title>Huygens Remote Manager</title>
+    <link rel="SHORTCUT ICON" href="images/hrm.ico"/>
 
     <script type="text/javascript" src="scripts/common.js"></script>
 
