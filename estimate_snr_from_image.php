@@ -2,6 +2,7 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
+require_once("./inc/Util.inc.php");
 require_once("./inc/User.inc.php");
 require_once("./inc/Fileserver.inc.php");
 
@@ -104,7 +105,10 @@ function showFileBrowser() {
 // validity of the estimate.
 function estimateSnrFromFile($file) {
 
-
+    // If using IE make sure to enforce IE7 Document Mode
+    if ( using_IE( ) ) {
+        $meta = "<meta http-equiv=\"X-UA-Compatible\" content=\"IE=EmulateIE7\" >";
+    }
     include("header.inc.php");
 
     $top_navigation = "
@@ -395,7 +399,7 @@ function estimateSnrFromFile($file) {
             $buttons .= "<input type=\"hidden\" ".
             "name=\"Channel$i\" value=\"$calculatedSNRValues[$i]\" />";
         }
-        
+
         $buttons .= "<input type=\"button\" value=\"\" class=\"icon previous\" ".
                     "onmouseover=\"Tip('Try again on another image.' )\" ".
                     "onmouseout=\"UnTip()\" ".
@@ -413,7 +417,7 @@ function estimateSnrFromFile($file) {
                     "onmouseout=\"UnTip()\" value=\"\" /></div>";
 
         $buttons .= "</div>";
-        
+
         $buttons .= "</form>";
 
     ?>
@@ -470,14 +474,14 @@ if ( isset($_POST['estimate'] ) && isset($_POST['userfiles'] ) ) {
   estimateSnrFromFile($file);
 
 } elseif ( isset( $_POST['store'] ) )  {
-    
+
     // Collect the calculated SNR values
     $found = true;
     $ch = 0;
     $estSNR = array();
     if ( isset( $_POST['Channel0'] ) ) {
         $estSNR[ 0 ] = $_POST['Channel0'];
-        while ( 1 ) { 
+        while ( 1 ) {
             $ch++;
             $chName = "Channel$ch";
             if ( isset( $_POST[$chName]) ) {
@@ -496,10 +500,10 @@ if ( isset($_POST['estimate'] ) && isset($_POST['userfiles'] ) ) {
     // Inform task_parameter.php that we do not want the values to be
     // recovered from SessionStorage
     $_SESSION['SNR_Calculated'] = 'true';
-    
+
     // And now go back to task_parameter.php
     header("Location: " . "task_parameter.php"); exit();
-    
+
 } else {
 
   // Just show (or refresh) the file browser with the file list

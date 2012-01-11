@@ -11,6 +11,8 @@
   this can not be so easily used. This is an interface to the Fileserver.
 */
 
+require_once( "inc/Util.inc.php" );
+
 /*!
   \brief  Generates basic buttons for the image file browser
 
@@ -314,6 +316,11 @@ function imageAction (list) {
 $flag = "";
 if ($files == null) {
   $flag = " disabled=\"disabled\"";
+}
+
+// If using IE make sure to enforce IE7 Document Mode
+if ( using_IE( ) ) {
+    $meta = "<meta http-equiv=\"X-UA-Compatible\" content=\"IE=EmulateIE7\" >";
 }
 
 include("header.inc.php");
