@@ -120,6 +120,7 @@ table {
 }
 
 #stats {
+    height: 280px;
     margin-top: 10px;
     margin-bottom: 10px;
     margin-left: auto;
@@ -543,18 +544,18 @@ input.save {
     vertical-align: middle;
 }
 
-#jobParameters table { 
+#jobParameters table {
   font-size: 100%;
   padding-bottom: 1em;
   width: 610px;
-} 
+}
 
 #jobParameters td {
   text-align: center;
   border: thin solid;
 }
 
-#jobParameters td.header { 
+#jobParameters td.header {
   font-weight: bold;
 }
 
@@ -582,21 +583,21 @@ input.save {
   background-color: #eee;
 }
 
-#jobParameters td.metadata { 
+#jobParameters td.metadata {
   background-color: #CEFEC6;
 }
 
-#jobParameters td.userdef { 
+#jobParameters td.userdef {
   background-color: #CFD7F2;
 }
 
-#warning table { 
+#warning table {
   font-size: 105%;
   padding-bottom: 1em;
   width: 610px;
   border: none;
   left:0px;
-} 
+}
 
 #warning td {
   text-align: left;
