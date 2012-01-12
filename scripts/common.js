@@ -151,6 +151,10 @@ function setActionToUpdate() {
     action = 'update';
 }
 
+function setActionToCalcSNR() {
+    action = 'calcSNR';
+}
+
 function deleteImages() {
 
     if (!checkSelection()) {
