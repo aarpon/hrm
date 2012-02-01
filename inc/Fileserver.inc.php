@@ -551,6 +551,26 @@ class Fileserver {
       }
   }
 
+  public function exportToOmero($files) {
+
+      $export = "";
+      foreach ($files as $file) {
+          $export .= $this->destinationFolder() . "/" . $file . " ";
+      }
+      
+      $cmd = "sh omero/exportToOme.sh $export";
+      $result = exec($cmd,$answer);
+  }
+
+
+  public function importFromOmero() {
+
+      $importTo = $this->sourceFolder();
+      
+      $cmd = "sh omero/importFromOme.sh $importTo";      
+      $result = exec($cmd,$answer);
+  }
+
   /*!
     \brief  Extracts files from compressed archives
     \param  $file       Archive name

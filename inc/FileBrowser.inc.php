@@ -69,6 +69,18 @@ function fileButton($type) {
       $tip = "Refresh image list";
       break;
 
+  case "omeImport":
+      $name = "omeImport";
+      $onClick = "omeImport();";
+      $tip = 'Select and import data for deconvolution from your OMERO account';
+      break;
+
+  case "omeExport":
+      $name = "omeExport";
+      $onClick = "omeExport();";
+      $tip = 'Select and export deconvolved data to your OMERO account';
+      break;
+
     default:
       $error = "No button of type $type";
   }
@@ -385,6 +397,7 @@ include("header.inc.php");
       </div>
   </form>
   <div id="upMsg"><!-- do not remove !--></div>
+  <div id="omeroSelection"><!-- do not remove !--></div>
   <div id="up_form" onmouseover="showInstructions()">
       <!-- do not remove !-->
   </div>
