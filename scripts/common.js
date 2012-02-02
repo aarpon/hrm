@@ -174,58 +174,6 @@ function deleteImages() {
 
 }
 
-function omeImport() {
-
-    control = document.getElementById('selection').innerHTML;
-    changeDiv('selection','');
-
-    action = 'importFromOmero';
-    changeDiv('selection', ''
-              + '<input name="importFromOmero" type="submit" '
-              + 'value="" class="icon remove" '
-              + 'onmouseover="Tip(\'Transfer selected files\')" '
-              + 'onmouseout="UnTip()"/> '
-              + '<input type="button" class="icon abort" '
-              + 'onclick="UnTip(); cancelSelection()" '
-              + 'onmouseover="Tip(\'Cancel data transfer!\')" '
-              + 'onmouseout="UnTip()"/>'
-              + '<br /> <br />'
-              + '<fieldset>'
-              + '<legend> Your Omero data </legend>'
-              + '<select name="selectedfiles" size="5"'
-              + '<select />'
-              + '<fieldset />');
-}
-
-function omeExport() {
-
-    if (!checkSelection()) {
-        changeDiv('upMsg', 'Select one or more images to export.');
-        return;
-    }
-
-    control = document.getElementById('omeroSelection').innerHTML;
-    changeDiv('selection','');
-
-    action = 'exportToOmero';
-    changeDiv('selection',''
-              + '<input name="exportToOmero" type="submit" '
-              + 'value="" class="icon down" '
-              + 'onmouseover="Tip(\'Export selected files to '
-              + 'your Omero account\')" '
-              + 'onmouseout="UnTip()" />'
-              + '<input type="button" class="icon abort" '
-              + 'onclick="UnTip(); cancelSelection()" '
-              + 'onmouseover="Tip(\'Cancel data transfer!\')" '
-              + 'onmouseout="UnTip()"/>'
-              + '<br /> <br />'
-              + '<fieldset>'
-              + '<legend> Your Omero data </legend>'
-              + '<select name="selectedfiles" size="5"'
-              + '<select />'
-              + '<fieldset />');
-}
-
 function checkSelection() {
 
     sel = document.getElementsByTagName('select');
@@ -432,7 +380,6 @@ function cancelSelection() {
     action = '';
     changeDiv('message', '');
     changeDiv('upMsg', '');
-    changeDiv('omeroSelection','');
     changeDiv('actions', '');
     changeDiv('up_form', '');
     changeDiv('selection', control);

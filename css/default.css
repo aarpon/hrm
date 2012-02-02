@@ -254,11 +254,6 @@ table {
     text-align: left;
 }
 
-#connecttoomero select {
-    width: 100%;
-    text-align: left;
-}
-
 #selection {
     font-size: 0.8em;
     text-align: center;
@@ -306,12 +301,6 @@ table {
     padding: 5px 0 0 0;
 }
 
-#omeroSelection {
-  text-align: center;
-  font-size: 100%;
-  padding: 5px 0 0 0;
-}
-
 input.copy {
     background: url(../images/copy.png) no-repeat center;
 }
@@ -353,21 +342,6 @@ input.download {
 }
 input.upload {
     background: url(../images/upload.png) no-repeat center;
-}
-input.import {
-    background: url(../images/import.png) no-repeat center;
-}
-input.export {
-    background: url(../images/export.png) no-repeat center;
-}
-input.omeImport {
-    background: url(../images/omeImport.png) no-repeat center;
-}
-input.omeExport {
-    background: url(../images/omeExport.png) no-repeat center;
-}
-input.connectToOmero {
-    background: url(../images/connectToOmero.png) no-repeat center;
 }
 
 input.save {

@@ -209,37 +209,6 @@ if (isset($_POST['delete'])) {
         }
 }
 
-
-/* Code for the interaction with Omero. */
-
-if (isset($_POST['importFromOmero'])) {
-    $message = $_SESSION['fileserver']->importFromOmero();
- } else if (isset($_GET['importFromOmero'])) {
-    $message = $_SESSION['fileserver']->importFromOmero();
- } else if (isset($_POST['update'])) {
-    if ( $browse_folder == "dest" ) {
-        $_SESSION['fileserver']->resetDestFiles();
-    } else {
-        $_SESSION['fileserver']->resetFiles();
-    }
- }
-
-
-if (isset($_POST['exportToOmero'])) {
-    $message = $_SESSION['fileserver']->exportToOmero($_POST['userfiles']);
- } else if (isset($_GET['exportToOmero'])) {
-    $message = $_SESSION['fileserver']->exportToOmero();
- }  else if (isset($_POST['update'])) {
-    if ( $browse_folder == "dest" ) {
-        $_SESSION['fileserver']->resetDestFiles();
-    } else {
-        $_SESSION['fileserver']->resetFiles();
-    }
- }
-
-/* End of code for the interaction with Omero. */
-
-
 // To (re)generate the thumbnails, don't use template data, as it is not present
 // here.
 
@@ -280,11 +249,6 @@ if ( $browse_folder == "dest" ) {
     $info .= "<p><strong>Move your mouse pointer over the action buttons at " .
       "the bottom to redisplay this help.</strong></p>";
 
-    /* Check wheter OMERO usage has been turned on. */
-    if ($omero_transfer) {
-        $file_buttons[] = "omeExport";
-    }
-
 } else {
     $browse_folder = "src";
     $size = 15;
@@ -319,11 +283,6 @@ if ( $browse_folder == "dest" ) {
     }
     $info .= "<p><strong>Move your mouse pointer over the action buttons at " .
       "the bottom to redisplay this help.</strong></p>";
-
-    /* Check wheter OMERO usage has been turned on. */
-    if ($omero_transfer) {
-        $file_buttons[] = "omeImport";
-    }
 }
 
 $top_navigation = '
