@@ -178,6 +178,11 @@ function storeValues() {
     if (!window.sessionStorage) {
       return;
     }
+    // Select fields
+    $("select").each( function() {
+        window.sessionStorage.setItem( $(this).attr("name"),
+                $(this).attr("value") );
+    } );
     // Text input
     $("input[type=text]").each( function() {
         // IE8 work-around
@@ -207,6 +212,17 @@ function retrieveValues( ignore ) {
             var ignore = new Array( ignore );
         }
     }
+    // Select fields
+    $("select").each( function() {
+        if ( jQuery.inArray( $(this).attr("name"), ignore ) != -1 ) {
+            window.sessionStorage.removeItem( $(this).attr("name") );
+        } else {
+            var c = window.sessionStorage.getItem( $(this).attr("name") );
+            if ( c != null ) {
+                $(this).val( c );
+            }
+        }
+    } );
     // Text input
     $("input[type=text]").each( function() {
         if ( jQuery.inArray( $(this).attr("name"), ignore ) != -1 ) {
@@ -215,6 +231,8 @@ function retrieveValues( ignore ) {
             var c = window.sessionStorage.getItem( $(this).attr("id") );
             if ( c != null ) {
                 $(this).val( c );
+            } else {
+                $(this).val( "" );
             }
         }
     } );
@@ -238,6 +256,10 @@ function deleteValues( idArray ) {
     if (!window.sessionStorage) {
       return;
     }
+    $("select").each(
+        function() {
+            window.sessionStorage.removeItem( $(this).attr("name") );
+        } );
     $( $.merge( $("input[type=text]"), $("input[type=radio]") ) ).each(
         function() {
             window.sessionStorage.removeItem( $(this).attr("id") );

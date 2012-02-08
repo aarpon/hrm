@@ -35,6 +35,23 @@ $message = "";
 
 /* *****************************************************************************
  *
+ * MAKE SURE TO HAVE THE DECONVOLUTION ALGORITHM SET TO cmle IF WE ARE COMING
+ * BACK FROM THE ESTIMATOR
+ *
+ **************************************************************************** */
+
+if ( ! ( strpos( $_SERVER[ 'HTTP_REFERER' ],
+    'estimate_snr_from_image.php') === false ) ||
+    !( strpos( $_SERVER[ 'HTTP_REFERER' ],
+    'estimate_snr_from_image_beta.php') === false ) ) {
+        $algorithmParameter = $_SESSION['task_setting']->parameter(
+                "DeconvolutionAlgorithm");
+        $algorithmParameter->setValue( 'cmle' );
+        $_SESSION['task_setting']->set($algorithmParameter);
+}
+
+/* *****************************************************************************
+ *
  * PROCESS THE POSTED PARAMETERS
  *
  **************************************************************************** */
