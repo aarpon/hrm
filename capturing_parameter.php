@@ -627,6 +627,15 @@ echo "<p>$message</p>";
 
 include("footer.inc.php");
 
+// Another horrible hack to work around an inexplicable IE8 behavior
+if (using_IE() && !isset( $_SERVER[ 'HTTP_REFERER' ] ) ) {
+    ?>
+        <script type="text/javascript">
+            $(document).ready( retrieveValues( ) );
+        </script>
+    <?php
+}
+
 if ( !( strpos( $_SERVER[ 'HTTP_REFERER' ],
     'calculate_pixel_size.php') === false ) ) {
 

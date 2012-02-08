@@ -180,15 +180,15 @@ function storeValues() {
     }
     // Select fields
     $("select").each( function() {
-        window.sessionStorage.setItem( $(this).attr("name"),
-                $(this).attr("value") );
+        window.sessionStorage.setItem( $(this).attr("name"), $(this).val());
     } );
     // Text input
     $("input[type=text]").each( function() {
         // IE8 work-around
-        if ( $(this).attr("value") != "" ) {
-            window.sessionStorage.setItem( $(this).attr("id"),
-                $(this).attr("value") );
+        if ( $(this).val() != "" ) {
+            window.sessionStorage.setItem( $(this).attr("id"),  $(this).val());
+        } else {
+            window.sessionStorage.setItem( $(this).attr("id"), "" );
         }
     } );
     // Radio  buttons
