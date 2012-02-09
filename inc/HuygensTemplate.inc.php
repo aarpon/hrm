@@ -1007,14 +1007,14 @@ class HuygensTemplate {
             $this->thumbType = "XYXZ";
         } elseif (preg_match("/ortho/i",$thumbType)) {
             $this->thumbType = "orthoSlice";
+        } elseif (preg_match("/TimeSFPMovie/i",$thumbType)) {
+            $this->thumbType = "timeSFPMovie";
         } elseif (preg_match("/SFP/i",$thumbType)) {
             $this->thumbType = "SFP";
         } elseif (preg_match("/ZMovie/i",$thumbType)) {
             $this->thumbType = "ZMovie";
         } elseif (preg_match("/timeMovie/i",$thumbType)) {
             $this->thumbType = "timeMovie";
-        } elseif (preg_match("/timeSFPMovie/i",$thumbType)) {
-            $this->thumbType = "timeSFPMovie";
         } elseif (preg_match("/ZComparison/i",$thumbType)) {
             $this->thumbType = "compareZStrips";
         } elseif (preg_match("/TComparison/i",$thumbType)) {
