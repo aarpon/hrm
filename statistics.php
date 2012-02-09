@@ -83,6 +83,9 @@ $script = array(
 
 require_once("./inc/extern/calendar/classes/tc_calendar.php");
 
+if ( using_IE() ) {
+    $meta = '<meta http-equiv="X-UA-Compatible" content="IE=Edge"/>';
+}
 include("header.inc.php");
 
 ?>
@@ -111,23 +114,23 @@ include("header.inc.php");
     <!-- Here we put a select element for the user to choose which stats he
          wants to display -->
     <div id="stats">
-      
+
       <form method="post" action="" id="displayStats">
 
         <fieldset>
-          
+
           <legend>
             <a href="javascript:openWindow('
                http://www.svi.nl/HuygensRemoteManagerHelpStatistics')">
                 <img src="images/help.png" alt="?" />
             </a>
             Statistics
-          </legend>  
-            
+          </legend>
+
           <select name="Statistics" id="Statistics" size="1">
-        
+
           <?php
-        
+
           foreach ($possibleStats as $currentStats) {
 
             if ( $currentStats == $stats->getSelectedStatistics() ) {
@@ -135,16 +138,16 @@ include("header.inc.php");
             } else {
               $selected = "";
             }
-            
+
           ?>
             <option <?php echo $selected ?>>
                 <?php echo $currentStats ?>
             </option>
-        
+
           <?php
           }
           ?>
-        
+
           </select>
 
           <div id="cal_filter">
@@ -159,7 +162,7 @@ include("header.inc.php");
                     date( 'm', strtotime( $chosenFromDate ) ),
                     date( 'Y', strtotime( $chosenFromDate ) ) );
             $cal->setPath( "./inc/extern/calendar/" );
-            $cal->setYearInterval( 
+            $cal->setYearInterval(
                     date( 'Y', strtotime( $stats->getFromDate() ) ),
                     date( 'Y', strtotime( $stats->getToDate() ) ));
             $cal->setAlignment(  'left', 'bottom'    );
@@ -167,7 +170,7 @@ include("header.inc.php");
             $cal->writeScript();
           ?>
           </div>
-          
+
           <div id="cal_to">
           <?php
             // Filter: to date
@@ -178,7 +181,7 @@ include("header.inc.php");
                     date( 'm', strtotime( $chosenToDate ) ),
                     date( 'Y', strtotime( $chosenToDate ) ) );
             $cal->setPath( "./inc/extern/calendar/" );
-            $cal->setYearInterval( 
+            $cal->setYearInterval(
                     date( 'Y', strtotime( $stats->getFromDate() ) ),
                     date( 'Y', strtotime( $stats->getToDate() ) ));
             $cal->setAlignment(  'right', 'bottom'    );
@@ -190,9 +193,9 @@ include("header.inc.php");
           <?php
           if ( $_SESSION['user']->isAdmin() ) {
           ?>
-          
+
           <select name="Group" id="Group" size="1">
-        
+
           <?php
           foreach ($groupNames as $groupName ) {
 
@@ -201,14 +204,14 @@ include("header.inc.php");
             } else {
               $selected = "";
             }
-            
+
           ?>
             <option <?php echo $selected ?>><?php echo $groupName ?></option>
-        
+
           <?php
           }
           ?>
-        
+
           </select>
           <?php
           }
@@ -218,13 +221,22 @@ include("header.inc.php");
           <div style="clear:both;">
           <input type="submit" name="Submit" value="Go!" />
           </div>
-          
+
           </fieldset>
-          
+
       </form>
-        
+
     </div>
-    
+
+    <!-- Hack for IE -->
+    <script type="text/javascript">
+        if ( $.browser.msie ) {
+            if ( $.browser.version >= 9 ) {
+                $("#stats").css( "height", "90" );
+            }
+        }
+    </script>
+
     <?php
       if ( $stats->isGraph( ) == true ) {
     ?>
@@ -232,7 +244,7 @@ include("header.inc.php");
       <div id="statschart"></div>
     <?php
       } else {
-    ?>          
+    ?>
       <div id="statstable"><?php echo $tableScript; ?></div>
     <?php
       }
