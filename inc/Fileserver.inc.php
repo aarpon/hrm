@@ -756,7 +756,9 @@ class Fileserver {
               }
               $okCnt++;
           } else {
-              $err .= "Invalid file ".$basename."<br>\n";
+              $err .= "File ".$basename." could not be written to its ".
+                      "final destination. Please make sure that " .
+                      "directory permissions are correctly set!<br>\n";
           }
       }
       } catch (Exception $e) {
@@ -766,7 +768,7 @@ class Fileserver {
       $msg = "<h3>Upload report</h3>\n";
 
       if ($okCnt == 0) {
-          $msg .= "<p>No files uploaded!<p>$err";
+          $msg .= "<p>File upload failed!<p>$err";
       } else {
           $plural = "";
           if ($okCnt > 1) {
@@ -2494,6 +2496,10 @@ echo '</body></html>';
   */
   private function getFilesFrom($startDir, $prefix) {
     $dir = dir($startDir);
+    if ($dir == false) {
+        $this->files = array();
+        return;
+    }
     while ($entry = $dir->read()) {
       if ($entry != "." && $entry != ".." && $entry != "hrm_previews") {
 	if (is_dir($startDir . "/" . $entry)) {
@@ -2531,6 +2537,10 @@ echo '</body></html>';
   */
   private function getDestFilesFrom($startDir, $prefix) {
       $dir = dir($startDir);
+      if ( $dir == false ) {
+          $this->destFiles = array();
+          return;
+      }
       while ($entry = $dir->read()) {
           if ($entry != "." && $entry != ".." && $entry != "hrm_previews") {
               if (is_dir($startDir . "/" . $entry)) {
