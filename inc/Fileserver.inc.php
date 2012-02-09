@@ -1869,8 +1869,15 @@ echo '</body></html>';
       $basename = basename($pdest."/".$file);
       $pdest = dirname($pdest."/".$file)."/hrm_previews";
 
-      // echo "$file, $src, $dest, $sizes<br />";
-      // flush;
+      // Make sure that the folder exists and that the correct
+      // permissions are set. Hucore actually creates the folder, but
+      // here we want to make sure that the permissions are set in a
+      // way to allow the web interface to delete previews created by the
+      // queue manager, no matter which user is running it.
+      if (!file_exists($pdest)) {
+          @mkdir($pdest, 0777);
+      }
+      @chmod($pdest, 0777);
 
       $extra = "";
       $series = "auto";
