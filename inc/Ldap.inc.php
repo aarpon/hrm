@@ -13,6 +13,8 @@
   configuration file for queries to be possible.
  */
 
+require_once( "Util.inc.php" );
+
 class Ldap {
 
     /*!
@@ -95,7 +97,7 @@ class Ldap {
 
         // Include the configuration file
         include( dirname(__FILE__) . "/../config/ldap_config.inc" );
-        
+
         // Assign the variables
         $this->m_LDAP_Host           = $ldap_host;
         $this->m_LDAP_Port           = $ldap_port;
@@ -157,8 +159,7 @@ class Ldap {
 
         // Searching for user $uid
         $filter = "(uid=" . $uid . ")";
-        $searchbase = $this->m_LDAP_User_Search_DN . "," .
-            $this->m_LDAP_Root;
+        $searchbase = $this->searchbaseStr();
         $sr = @ldap_search(
             $this->m_Connection, $searchbase, $filter, array('uid', 'mail'));
         if (!$sr) {
@@ -181,13 +182,15 @@ class Ldap {
     public function authenticate($uid, $userPassword) {
 
         if (!$this->isConnected()) {
+            report( "[LDAP] ERROR: Authenticate -- not connected!", 0 );
             return false;
         }
 
-        // This is a weird behavior: if the password is empty, the binding
-        // succeds!
+        // This is a weird behavior of LDAP: if the password is empty, the
+        // binding succeds!
         // Therefore we check in advance that the password is NOT empty!
         if (empty($userPassword)) {
+            report( "[LDAP] ERROR: Authenticate: empty manager password!", 0 );
             return false;
         }
 
@@ -199,10 +202,12 @@ class Ldap {
 
         // Searching for user $uid
         $filter = "(uid=" . $uid . ")";
-        $searchbase = $this->m_LDAP_User_Search_DN . "," . $this->m_LDAP_Root;
+        $searchbase = $this->searchbaseStr();
         $sr = @ldap_search(
             $this->m_Connection, $searchbase, $filter, array('uid'));
         if (!$sr) {
+            report( "[LDAP] ERROR: Authenticate -- search failed! " .
+                    "Search base: \"$searchbase\"", 0 );
             return false;
         }
         if (@ldap_count_entries($this->m_Connection, $sr) != 1) {
@@ -216,6 +221,7 @@ class Ldap {
                 $result[0]['dn'], $userPassword)) {
                 return true;
             } else {
+                // Wrong password
                 return false;
             }
         } else {
@@ -224,7 +230,7 @@ class Ldap {
     }
 
     /*!
-      \brief	Returns the group for a given user name
+      \brief	Returns the group for a given user name (filtered)
       \param	$uid    User name
       \return	user name
      */
@@ -237,10 +243,11 @@ class Ldap {
 
         // Searching for user $uid
         $filter = "(uid=" . $uid . ")";
-        $searchbase = $this->m_LDAP_User_Search_DN . "," . $this->m_LDAP_Root;
+        $searchbase = $this->searchbaseStr();
         $sr = @ldap_search($this->m_Connection, $searchbase, $filter,
             array('uid', 'memberof'));
         if (!$sr) {
+            report( "[LDAP] WARNING: Group -- no group information found!", 0 );
             return "";
         }
 
@@ -315,8 +322,7 @@ class Ldap {
         }
 
         // Search DN
-        $dn = "cn=$this->m_LDAP_Manager" . "," . $this->m_LDAP_Manager_OU .
-            "," . $this->m_LDAP_User_Search_DN . "," . $this->m_LDAP_Root;
+        $dn = $this->dnStr();
 
         // Bind
         $r = @ldap_bind($this->m_Connection, $dn, $this->m_LDAP_Password);
@@ -324,7 +330,39 @@ class Ldap {
             return true;
         }
 
+        // If binding failed, we report
+        report( "[LDAP] ERROR: Binding: binding failed! " .
+                "Search DN: \"$dn\"", 0 );
         return false;
+    }
+
+    /*!
+      \brief	Create the search base string
+      \return	Search base string
+     */
+
+    private function searchbaseStr() {
+        return ( implode( ',',
+                array(
+                    $this->m_LDAP_User_Search_DN,
+                    $this->m_LDAP_Root ) )
+                );
+    }
+
+    /*!
+      \brief	Create the DN string
+      \return	DN string
+     */
+
+    private function dnStr() {
+        return ( implode( ',',
+                array(
+                    "cn=$this->m_LDAP_Manager",
+                    $this->m_LDAP_Manager_OU,
+                    $this->m_LDAP_User_Search_DN,
+                    $this->m_LDAP_Root ) )
+                );
+
     }
 
 }
