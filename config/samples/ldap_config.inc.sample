@@ -18,6 +18,9 @@ $ldap_use_tls = false;
 // the ldap root
 $ldap_root="dc=root,dc=country";
 
+// the base for the manager DN (either cn or uid)
+$ldap_manager_base_DN="cn";
+
 // the ldap manager (username only!)
 $ldap_manager="manager";
 

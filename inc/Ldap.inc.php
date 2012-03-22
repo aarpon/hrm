@@ -57,6 +57,12 @@ class Ldap {
     private $m_LDAP_Root;
 
     /*!
+      \var    $m_LDAP_Manager_Base_DN
+      \brief  Base for the manager DN
+     */
+    private $m_LDAP_Manager_Base_DN;
+
+    /*!
       \var    $m_LDAP_Manager
       \brief  The ldap manager (user name only!)
      */
@@ -99,16 +105,17 @@ class Ldap {
         include( dirname(__FILE__) . "/../config/ldap_config.inc" );
 
         // Assign the variables
-        $this->m_LDAP_Host           = $ldap_host;
-        $this->m_LDAP_Port           = $ldap_port;
-        $this->m_LDAP_Use_SSL        = $ldap_use_ssl;
-        $this->m_LDAP_Use_TLS        = $ldap_use_tls;
-        $this->m_LDAP_Root           = $ldap_root;
-        $this->m_LDAP_Manager        = $ldap_manager;
-        $this->m_LDAP_Password       = $ldap_password;
-        $this->m_LDAP_User_Search_DN = $ldap_user_search_DN;
-        $this->m_LDAP_Manager_OU     = $ldap_manager_ou;
-        $this->m_LDAP_Valid_Groups   = $ldap_valid_groups;
+        $this->m_LDAP_Host            = $ldap_host;
+        $this->m_LDAP_Port            = $ldap_port;
+        $this->m_LDAP_Use_SSL         = $ldap_use_ssl;
+        $this->m_LDAP_Use_TLS         = $ldap_use_tls;
+        $this->m_LDAP_Root            = $ldap_root;
+        $this->m_LDAP_Manager_Base_DN = $ldap_manager_base_DN;
+        $this->m_LDAP_Manager         = $ldap_manager;
+        $this->m_LDAP_Password        = $ldap_password;
+        $this->m_LDAP_User_Search_DN  = $ldap_user_search_DN;
+        $this->m_LDAP_Manager_OU      = $ldap_manager_ou;
+        $this->m_LDAP_Valid_Groups    = $ldap_valid_groups;
 
         // Set the connection to null
         $this->m_Connection = null;
@@ -357,7 +364,7 @@ class Ldap {
     private function dnStr() {
         return ( implode( ',',
                 array(
-                    "cn=$this->m_LDAP_Manager",
+                    "$this->m_LDAP_Manager_Base_DN=$this->m_LDAP_Manager",
                     $this->m_LDAP_Manager_OU,
                     $this->m_LDAP_User_Search_DN,
                     $this->m_LDAP_Root ) )
