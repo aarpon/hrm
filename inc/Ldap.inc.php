@@ -349,11 +349,7 @@ class Ldap {
      */
 
     private function searchbaseStr() {
-        return ( implode( ',',
-                array(
-                    $this->m_LDAP_User_Search_DN,
-                    $this->m_LDAP_Root ) )
-                );
+        return ($this->m_LDAP_User_Search_DN . "," . $this->m_LDAP_Root);
     }
 
     /*!
@@ -362,14 +358,15 @@ class Ldap {
      */
 
     private function dnStr() {
-        return ( implode( ',',
-                array(
-                    "$this->m_LDAP_Manager_Base_DN=$this->m_LDAP_Manager",
-                    $this->m_LDAP_Manager_OU,
-                    $this->m_LDAP_User_Search_DN,
-                    $this->m_LDAP_Root ) )
-                );
-
+        $dn = $this->m_LDAP_Manager_Base_DN . "=" .
+              $this->m_LDAP_Manager . "," .
+              $this->m_LDAP_Manager_OU . "," .
+              $this->m_LDAP_User_Search_DN . "," .
+              $this->m_LDAP_Root;
+        // Since m_LDAP_Manager_OU can be empty, we make sure not
+        // to have double commas
+        $dn = str_replace( ',,', ',', $dn);
+        return $dn;
     }
 
 }
