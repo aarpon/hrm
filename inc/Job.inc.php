@@ -508,11 +508,11 @@ class Job {
     private function HuReportFile2Html ($reportFile) {
         
         /* Insert a title and an explanation. */
-        $title = "<b><u>Parameters used during deconvolution</u></b></br></br>";
-        $text  = "Those parameters that were <b>missing</b> in your ";
-        $text .= "settings are highlighted in <b>green</b>. Alternative </br>";
+        $title = "<b><u>Parameters used during deconvolution</u></b><br />";
+        $text  = "<br />Those parameters that were <b>missing</b> in your ";
+        $text .= "settings are highlighted in <b>green</b>. Alternative <br />";
         $text .= "values found in the metadata of the image were used ";
-        $text .= "instead, please examine their <b>validity</b>.</br>";
+        $text .= "instead, please examine their <b>validity</b>.<br />";
 
         $div   = $title;
         $div  .= $text;
@@ -546,15 +546,15 @@ class Job {
             $channel = $matches[1];
             $warning .= "<p><b><u>WARNING</u>:</b>";
             $warning .= " The <b>microscope type</b> selected in this ";
-            $warning .= "deconvolution job <b>may be</br>incorrect</b> as it ";
+            $warning .= "deconvolution job <b>may be<br />incorrect</b> as it ";
             $warning .= "does not match the microscope type stored in the file";
-            $warning .= "</br>metadata. Notice that the restoration process may ";
-            $warning .= "lead to <b>wrong results</b></br>if the microscope ";
-            $warning .= "type is not selected properly.";
+            $warning .= "<br />metadata. Notice that the restoration process";
+            $warning .= "may lead to <b>wrong results</b><br />if the ";
+            $warning .= "microscope type is not selected properly.";
             $warning  = $this->insertCell($warning,"text"); 
             $warning  = $this->insertTable($warning);
             $warning  = $this->insertDiv($warning,"warning");
-            $warning .= "</br>";
+            $warning .= "<br />";
             break;
         }   
 
@@ -719,9 +719,9 @@ class Job {
      \return      A string with the formatted html code.
     */
     private function insertTable($content) {
-        $table  = "</br><table>";
+        $table  = "<br /><table>";
         $table .= $content;
-        $table .= "</table></br>";
+        $table .= "</table><br />";
 
         return $table;
     }
