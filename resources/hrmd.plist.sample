@@ -5,13 +5,13 @@
 	<key>EnvironmentVariables</key>
 	<dict>
 		<key>HRM_HOME</key>
-		<string>/Users/aaron/Sites/hrm</string>
+		<string>/Library/WebServer/Documents/hrm</string>
 		<key>HRM_DATA</key>
 		<string>/work/hrm_data</string>
 		<key>HRM_SOURCE</key>
-		<string>src</string>
+		<string>huygens_src</string>
 		<key>HRM_DEST</key>
-		<string>dst</string>
+		<string>huygens_dst</string>
 	</dict>
 	<key>KeepAlive</key>
 	<true/>
@@ -23,7 +23,7 @@
 	<array>
 		<string>/usr/bin/php</string>
 		<string>-q</string>
-		<string>/Users/aaron/Sites/hrm/run/runHuygensRemoteManager.php</string>
+		<string>/Library/WebServer/Documents/hrm/run/runHuygensRemoteManager.php</string>
 	</array>
 	<key>RunAtLoad</key>
 	<true/>
@@ -34,6 +34,6 @@
 	<key>UserName</key>
 	<string>_www</string>
 	<key>WorkingDirectory</key>
-	<string>/Users/aaron/Sites/hrm/run</string>
+	<string>/Library/WebServer/Documents/hrm/run</string>
 </dict>
 </plist>
