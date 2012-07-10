@@ -287,7 +287,7 @@ class User extends Owner{
 
             default:
 
-                throw new Exception("Bad value for $authMode in User::emailAddress().");
+                throw new Exception("Bad value for $this->authMode in User::emailAddress().");
         }
 
         return $result;
@@ -338,7 +338,7 @@ class User extends Owner{
 
             default:
 
-                throw new Exception("Bad value for $authMode in User::userGroup().");
+                throw new Exception("Bad value for $this->authMode in User::userGroup().");
         }
 
         return $result;
@@ -429,7 +429,7 @@ class User extends Owner{
 
             default:
 
-                throw new Exception("Bad value for $authMode in User::password().");
+                throw new Exception("Bad value for $this->authMode in User::password().");
         }
     }
 
@@ -476,7 +476,7 @@ class User extends Owner{
 
             default:
 
-                throw new Exception("Bad value for $authMode in User::checkLogin().");
+                throw new Exception("Bad value for $this->authMode in User::checkLogin().");
         }
 
         return $result;
