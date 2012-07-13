@@ -387,7 +387,7 @@ class HuygensTemplate {
         /* Options for the 'open image' action */
         $this->imgOpenArray = 
             array ( 'path'                      =>  '',
-                    'subImage'                  =>  '',
+                    'subImg'                    =>  '',
                     'series'                    =>  '',
                     'index'                     =>  '0',
                     'listID'                    =>  'imgOpen' );
@@ -790,7 +790,7 @@ class HuygensTemplate {
         $imgOpen = "";
         foreach ($this->imgOpenArray as $key => $value) {
 
-           if ($key != "subImage" && $key != 'listID') {
+           if ($key != "subImg" && $key != 'listID') {
                 $imgOpen .= " " . $key . " ";
             }
 
@@ -804,7 +804,7 @@ class HuygensTemplate {
             case 'index':
                 $imgOpen .= " " . $value . " ";
                 break;
-            case 'subImage':
+            case 'subImg':
                 if (isset($this->subImage)) {
                     $imgOpen .= " " . $key . " ";
                     $imgOpen .= $this->string2tcllist($this->subImage);
