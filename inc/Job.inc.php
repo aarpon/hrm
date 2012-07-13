@@ -548,7 +548,7 @@ class Job {
             $warning .= " The <b>microscope type</b> selected in this ";
             $warning .= "deconvolution job <b>may be<br />incorrect</b> as it ";
             $warning .= "does not match the microscope type stored in the file";
-            $warning .= "<br />metadata. Notice that the restoration process";
+            $warning .= "<br />metadata. Notice that the restoration process ";
             $warning .= "may lead to <b>wrong results</b><br />if the ";
             $warning .= "microscope type is not selected properly.";
             $warning  = $this->insertCell($warning,"text"); 
