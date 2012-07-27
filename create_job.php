@@ -234,7 +234,7 @@ echo $_SESSION['setting']->displayString();
                     <img src="images/help.png" alt="?" />
                 </a>
                 <a href="select_task_settings.php">
-                    Restoration parameters
+                    Processing parameters
                 </a>: <?php echo $_SESSION['task_setting']->name() ?>
             </legend>
             <textarea name="task_settings_report"

@@ -224,6 +224,14 @@ table {
     text-align: justify;
 }
 
+#separator {
+  width: 1200px;
+  border-width: 1px;
+  border-style: solid;
+  border-color: #CCCCCC;
+  margin: 20px 0px 20px 0px;
+}
+
 #logos {
     font-size: 70%;
     text-align: center;
@@ -538,15 +546,18 @@ input.save {
   vertical-align: middle;
 }
 
+#jobParameters {
+  margin-top: 2em;
+}
+
 #jobParameters table { 
+  margin-bottom: 2em;
   font-size: 100%;
-  padding-bottom: 1em;
   width: 610px;
 } 
 
 #jobParameters td {
   text-align: center;
-  border: thin solid;
 }
 
 #jobParameters td.header { 
@@ -583,6 +594,115 @@ input.save {
 
 #jobParameters td.userdef { 
   background-color: #CFD7F2;
+}
+
+#colocPage {
+    text-align: left;
+}
+
+#colocTabs {
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    overflow: hidden;
+}
+
+#colocTab {
+    float: left;
+    width: 150px;
+    font-size: 0.7em;
+    border: #fff 1px solid;
+    padding: 10px;
+    margin-right: 1em;
+    margin-bottom: 0.6em;
+}
+
+#colocTab.normal {
+    color: #4988DE;
+    background-color: #fff;  
+    border-color: #888;
+}
+
+#colocTab.normal:hover {
+    background-color: #ffa;
+}
+
+#colocTab.selected {
+    color: black;
+    background-color: #aaa;
+    border-color: #555;
+}
+
+#colocResults { 
+  width: 1200px;
+}
+
+#colocRun { 
+  float: left;
+  width: 1200px;
+}
+
+#colocHist {
+  float: left;
+  padding-right: 18px;
+  text-align: center;
+}
+
+#ColocCoefficientSelectionDiv table { 
+  font-size: 100%;
+}
+
+#ColocCoefficientSelectionDiv td { 
+  text-align: left;
+}
+
+#colocCoefficients table { 
+  font-size: 100%;
+  width: 800px;
+  float: left;
+} 
+
+#colocCoefficients td {
+  text-align: center;
+}
+
+#colocCoefficients td.title {
+  text-align: center;
+  font-weight: bold;
+  background-color: #BFFFB3;
+}
+
+#colocCoefficients td.header {
+  width: 80px;
+  font-weight: bold;
+  background-color: #CFD7F2;
+}
+
+#colocCoefficients td.cell {
+  background-color: #DAFFDA;
+}
+
+#colocCoefficients td.marked {
+  background-color: #B6ECFF;
+}
+
+#colocMap table { 
+  font-size: 100%;
+  width: 800px;
+  float: left;
+} 
+
+#colocMap td {
+  text-align: center;
+}
+
+#colocMap td.title {
+  text-align: center;
+  font-weight: bold;
+  background-color: #CFD7F2;
+}
+
+#colocMap td.cell {
+  padding-right: 1em;
 }
 
 #warning table { 
@@ -1004,7 +1124,7 @@ div.multichannel {
     padding: 0px;
     margin-left: auto;
     margin-right: auto;
-    display: inline
+    display: inline;
 }
 
 .multichannelinput {
@@ -1138,6 +1258,7 @@ option.default {
     padding: 10px;
     margin: 1em;
 }
+
 #prevMenu .menuEntryActive {
     border-color: #555;
     background-color: #aaa;
@@ -1148,11 +1269,11 @@ option.default {
 }
 
 #previewContents {
-
     overflow: auto;
     max-width: 98%;
     padding: 1em;
 }
+
 #previewImg {
     text-align: center;
 }

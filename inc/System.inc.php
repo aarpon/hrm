@@ -29,7 +29,7 @@ class System {
 
 		This value has to be set by the developers!
 		*/
-	const DB_LAST_REVISION = 9;
+	const DB_LAST_REVISION = 10;
 
 	/*!
 		\var 	MIN_HUCORE_VERSION

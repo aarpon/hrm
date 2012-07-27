@@ -79,6 +79,12 @@ class Job {
     */
     private $destImage;
 
+    /*!
+     \var    $colocRunOk
+     \brief  Boolean to keep track of the colocalization status.
+    */
+    private $colocRunOk;
+
     /* ------------------------------------------------------------------------ */
     
     /*!
@@ -103,6 +109,7 @@ class Job {
                                       'history'    => '_history.txt',
                                       'tmp'        => '.tmp.txt',
                                       'parameters' => '.parameters.txt',
+                                      'coloc'      => '.coloc.txt',
                                       'out'        => '_out.txt',
                                       'error'      => '_error.txt' );
 
@@ -478,6 +485,7 @@ class Job {
         $historyFile = $this->destImage . $this->pipeProducts["history"];
         $tmpFile     = $this->destImage . $this->pipeProducts["tmp"];
         $paramFile   = $this->destImage . $this->pipeProducts["parameters"];
+        $colocFile   = $this->destImage . $this->pipeProducts["coloc"];
         $huygensOut  = dirname($this->destImage)."/".$this->pipeProducts["main"];
 
         /* The Huygens history file will be removed. */
@@ -492,24 +500,38 @@ class Job {
 
         /* Read the Huygens output file and make an html table from it. */
         $jobReport = $this->shell->readFile($tmpFile);
+        
         if (!empty($jobReport)) {
+
+            /* Build parameter tables from the Huygens output file. */
             $parsedParam = $this->HuReportFile2Html($jobReport);
             $this->copyString2File($parsedParam,$paramFile);
             $this->shell->copyFile2Host($paramFile);
+
+            /* Build colocalization tables from the Huygens output file. */
+            $parsedColoc = $this->HuColoc2Html($jobReport);
+            
+            if ($this->colocRunOk) {    
+                $this->copyString2File($parsedColoc,$colocFile);
+                $this->shell->copyFile2Host($colocFile);
+            }
+            
             $this->shell->removeFile($tmpFile);
         }
     }
 
+                /* -------- Image & Restoration Parameters ------ */
+    
     /*!
      \brief       Formats data from the Huygens report file as html output.
-     \param       $reportFile The contents of the report file in an array.
+     \param       $reportFile The contents of the report file as an array.
      \return      The parameters in a formatted way.
     */
     private function HuReportFile2Html ($reportFile) {
         
         /* Insert a title and an explanation. */
-        $title = "<b><u>Parameters used during deconvolution</u></b><br />";
-        $text  = "<br />Those parameters that were <b>missing</b> in your ";
+        $title = "<b><u>Parameters used during deconvolution</u></b><br /><br />";
+        $text  = "Those parameters that were <b>missing</b> in your ";
         $text .= "settings are highlighted in <b>green</b>. Alternative <br />";
         $text .= "values found in the metadata of the image were used ";
         $text .= "instead, please examine their <b>validity</b>.<br />";
@@ -520,7 +542,9 @@ class Job {
         $html .= $this->insertDiv($div);
 
         /* Insert the summary tables. */
-        $div   = $this->writeImageParamTable($reportFile);
+        $div   = $this->insertSeparator("");
+        $div  .= $this->writeImageParamTable($reportFile);
+        $div  .= $this->insertSeparator("");
         $div  .= $this->writeRestoParamTable();
         $html .= $this->insertDiv($div,"jobParameters");
 
@@ -548,15 +572,15 @@ class Job {
             $warning .= " The <b>microscope type</b> selected in this ";
             $warning .= "deconvolution job <b>may be<br />incorrect</b> as it ";
             $warning .= "does not match the microscope type stored in the file";
-            $warning .= "<br />metadata. Notice that the restoration process ";
-            $warning .= "may lead to <b>wrong results</b><br />if the ";
-            $warning .= "microscope type is not selected properly.";
+            $warning .= "<br />metadata. Notice that the restoration process may";
+            $warning .= " lead to <b>wrong results</b><br />if the microscope ";
+            $warning .= "type is not selected properly.";
             $warning  = $this->insertCell($warning,"text"); 
             $warning  = $this->insertTable($warning);
             $warning  = $this->insertDiv($warning,"warning");
             $warning .= "<br />";
             break;
-        }   
+        }
 
         return $warning;
     }
@@ -678,7 +702,181 @@ class Job {
         return $this->insertTable($table);
     }
 
-    /* ----------------------- HTML formatting utilities ----------------------- */
+                       /* -------- Colocalization ------ */
+    
+    /*!
+     \brief      Formats the Huygens colocalization output as an html table.
+     \param      $reportFile The contents of the report file as an array.
+     \return     The colocalization coefficients in a formatted way.
+    */
+    private function HuColoc2Html ($reportFile) {
+
+            /* Insert a title and an explanation. */
+        $title = "<b><u>COLOCALIZATION RESULTS</u></b><br /><br /><b>";
+        $text  = "<a href='http://www.svi.nl/ColocalizationCoefficientsInBrief'";
+        $text .= "target='_blank'>Colocalization analysis</a></b> is used ";
+        $text .= "to characterize the degree of overlap between any two ";
+        $text .= "channels of an image.";
+        $text .= "<br />By using colocalization analysis one can study the ";
+        $text .= "presence of two labeled targets in the same region of the ";
+        $text .= "imaged sample.<br /><br />";
+
+        $html  = $title;
+        $html .= $text;
+
+            /* Insert dummy 'div' which will be filled up with 'dynamic'
+             content in the 'Fileserver' class. */
+        $div   = $this->insertDiv("<br /><br />","colocTabs");
+
+            /* Insert the coloc table or tables. Notice that there's one
+             table per combination of two channels. */
+        $div  .= $this->writeColocTables($reportFile);
+        $html .= $this->insertDiv($div,"colocResults");
+                
+        return $html;
+    }
+
+    /*!
+     \brief      Creates the HTML code for the colocalization tables.
+     \param      $reportFile The contents of the Huygens report file as an array.
+     \return     A string with the HTML code.
+    */
+    private function writeColocTables($reportFile) {
+        
+        $html = "";
+
+            /* Extract data from the file and into the table. */
+        $pattern = "/{Colocalization report: (.*)}}/";
+
+            /* Every loop creates a coloc table. */
+        foreach($reportFile as $reportEntry) {
+            if(!preg_match($pattern,$reportEntry,$matches)) {
+                continue;
+            }
+
+                /* Add a horizontal separator before the table. */
+            $colocRun = $this->insertSeparator("");
+            
+                /* Add a hook for the 2D histograms and/or coloc maps.
+                 The File Server will add the corresponding images here. */
+            $histogram  = $this->writeColocImageHook($matches[0]);
+            $colocRun  .= $this->insertDiv($histogram, "colocHist");
+
+                /* Add the coefficients table of this coloc run. */
+            $table     = $this->writeColocTable($matches[0]);
+            $colocRun .= $this->insertDiv($table, "colocCoefficients");
+
+                /* Add this coloc run to the coloc page. */
+            $html .= $this->insertDiv($colocRun, "colocRun");
+        }
+
+        return $html;
+    }
+
+    /*!
+     \brief      Parses the Huygens coloc output into html tables.
+     \param      $colocReport The string containing the coloc information.
+     \return     A string with the HTML formatted colocalization tables.
+     */
+    private function writeColocTable($colocReport) 
+    {
+            /* Extract the total number of frames. */
+        $pattern = "/frameCnt ([0-9]+)/";
+        if(!preg_match($pattern,$colocReport,$matches)) {
+            error_log("Impossible to retrieve frame data from coloc report");
+        } else {
+            $frameCnt = $matches[1];
+        }
+
+            /* Extract the two channels involved in this coloc run. */
+        $pattern = "/channels {([0-9]) ([0-9])}/";
+        if(!preg_match($pattern,$colocReport,$matches)) {
+            error_log("Impossible to retrieve channel data from coloc report");
+        } else {
+            $chanR = $matches[1];
+            $chanG = $matches[2];
+        }
+
+            /* In order to make further pattern matching a bit easier get
+             rid of the coloc string parts that have already been matched. */
+        $colocReport = explode($matches[0],$colocReport);
+        $colocReport = $colocReport[1];
+        
+            /* Extract the colocalization coefficients. */
+        $pattern = "/([0-9a-zA-Z]+) {(([0-9.]+ )*)/";
+        if (!preg_match_all($pattern, $colocReport, $matches)) {
+            error_log("Impossible to retrieve coefficients from coloc report");
+        }
+        
+            /* Start inserting data into the html table. */
+
+            /* The number of colums of the table will be the number of
+             colocalization coefficients + 1 (for the frame column). */
+            $columnCnt = count($matches[1]) + 1;
+        
+            /* Insert the channel header. */
+        $title = "Channel $chanR  ~vs~  Channel $chanG";
+        $row   = $this->insertCell($title,"title", $columnCnt);
+        $table = $this->insertRow($row);
+        
+            /* Insert the frame header. */ 
+        $headerRow = $this->insertCell("Frame","header");
+        
+            /* Insert the coefficient names header. */
+        foreach ($matches[1] as $coefficient) {
+            $headerRow .= $this->insertCell($coefficient,"header");
+        }
+        $table .= $this->insertRow($headerRow);
+        
+            /* Insert the coloc values. */
+        for ($frame = 0; $frame < $frameCnt; $frame++) {
+            
+                /* There is one row per frame. */
+            $frameRow = $this->insertCell($frame,"header");
+            
+                /* There is one cell per coefficient type.
+                 Loop over the coefficient types. */
+            foreach ($matches[2] as $coefficient) {
+
+                    /* Only one frame. */
+                $coefficient = explode(" ",$coefficient);
+                $coefficient = $coefficient[$frame];
+                $coefficient = round($coefficient,4);
+                
+                $frameRow .= $this->insertCell($coefficient,"cell");
+
+                    /* If we are inserting data at this point it means that
+                     parsing the coloc data works out. The coloc run went Ok. */
+                $this->colocRunOk = TRUE;
+            }
+            $table .= $this->insertRow($frameRow);   
+        }
+        
+        return $this->insertTable($table);
+    }
+
+    /*!
+     \brief      Inserts a hook for the file server to show histograms & maps.
+     \param      $colocReport The string containing the coloc information.
+     \return     A string with the HTML code.
+    */
+    private function writeColocImageHook($colocReport) {
+                    
+            /* Extract the two channels involved in this coloc run. */
+        $pattern = "/channels {([0-9]) ([0-9])}/";
+        if(!preg_match($pattern,$colocReport,$matches)) {
+            error_log("Impossible to retrieve channel data from coloc report");
+        } else {
+            $chanR = $matches[1];
+            $chanG = $matches[2];
+        }
+
+        $hook = "Hook chan $chanR - chan $chanG";
+        
+        return $hook;
+    }
+
+    /* ---------------------- HTML formatting utilities --------------------- */
 
     /*!
      \brief       Adds a new cell to an html table.
@@ -719,13 +917,13 @@ class Job {
      \return      A string with the formatted html code.
     */
     private function insertTable($content) {
-        $table  = "<br /><table>";
+        $table  = "<table>";
         $table .= $content;
-        $table .= "</table><br />";
+        $table .= "</table>";
 
         return $table;
     }
-
+    
     /*!
      \brief       Adds a new html div.
      \param       $content The data that will be shown in the table.
@@ -742,11 +940,22 @@ class Job {
             $div  = "<div id=\"$id\">";
             $div .= $content;
             $div .= "</div>";
-            $div .= " <!-- $id -->";
+            $div .= "<!-- $id -->";
         }
 
         return $div;
     }
+
+    /*!
+     \brief
+     \return
+    */
+    private function insertSeparator($content,$id=null) 
+    {
+        $separator = $this->insertDiv($content,"separator");
+        return $separator;
+    }
+    
 
     /* --------------------------- Small utilities --------------------------- */
 

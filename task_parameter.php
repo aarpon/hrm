@@ -57,14 +57,19 @@ if ( ! ( strpos( $_SERVER[ 'HTTP_REFERER' ],
  **************************************************************************** */
 
 if ( $_SESSION[ 'task_setting' ]->checkPostedTaskParameters( $_POST ) ) {
-  $saved = $_SESSION['task_setting']->save();
-  if ($saved) {
-    header("Location: " . "select_task_settings.php"); exit();
-  } else {
-    $message = $_SESSION['task_setting']->message();
-  }
+    if ($_SESSION[ 'task_setting']->numberOfChannels() == 1) {
+        $saved = $_SESSION['task_setting']->save();
+        if ($saved) {
+            header("Location: " . "select_task_settings.php"); exit();
+        } else {
+            $message = $_SESSION['task_setting']->message();
+        }
+    } else {
+            // Continue to next page
+        header("Location: " . "post_processing.php"); exit();
+    }
 } else {
-  $message = $_SESSION['task_setting']->message();
+    $message = $_SESSION['task_setting']->message();
 }
 
 /* *****************************************************************************
@@ -89,9 +94,24 @@ include("header.inc.php");
         Abort editing and go back to the Restoration parameters
         selection page. All changes will be lost!
     </span>
-    <span id="ttSpanForward">
-        Save your settings.
+    
+    <?php
+    if ($_SESSION['task_setting']->numberOfChannels() == 1) {
+    ?>
+    <span id="ttSpanSave">
+    Save and return to the processing parameters selection page.
     </span>
+    
+    <?php
+    } else {
+    ?>
+    <span id="ttSpanForward">
+        Continue to next page.
+    </span>
+    <?php
+    }
+    ?>
+    
     <span id="ttEstimateSnr">
         Use a sample raw image to find a SNR estimate for each channel.
     </span>
@@ -120,7 +140,7 @@ include("header.inc.php");
 
     <div id="content">
 
-        <h3>Task Setting</h3>
+        <h3>Restoration - Deconvolution</h3>
 
         <form method="post" action="" id="select">
 
@@ -520,14 +540,24 @@ $value = $parameter->value();
                   onmouseout="UnTip()"
                   onclick="javascript:deleteValuesAndRedirect('select_task_settings.php' );"
                   />
-              <input type="submit" value="" class="icon save"
-                  onmouseover="TagToTip('ttSpanForward' )"
-                  onmouseout="UnTip()"
-                  onclick="javascript:deleteValuesAndProcess();" />
+    
+    <?php
+    if ($_SESSION['task_setting']->numberOfChannels() == 1) {
+        $acceptButton  = "icon save";
+        $acceptToolTip = "TagToTip('ttSpanSave')";
+    } else {
+        $acceptButton  = "icon next";
+        $acceptToolTip = "TagToTip('ttSpanForward')";
+    }
+    ?>
+
+<input type="submit" value=""
+    class=<?php echo "\"" . $acceptButton . "\" ";?>
+onmouseover=<?php echo "\"" . $acceptToolTip . "\" ";?>
+onmouseout="UnTip()"
+    onclick="process()" />
             </div>
-
         </form>
-
     </div> <!-- content -->
 
     <div id="rightpanel" onmouseover="javascript:changeQuickHelp( 'default' )">
