@@ -120,7 +120,7 @@ include("header.inc.php");
 
     <div id="content">
 
-        <h3>Task Setting</h3>
+        <h3>Restoration - Deconvolution</h3>
 
         <form method="post" action="" id="select">
 

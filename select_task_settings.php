@@ -90,7 +90,7 @@ else if ( isset($_POST['annihilate']) &&
 }
 else if (isset($_POST['OK']) && $_POST['OK']=="OK" ) {
   if (!isset($_POST['task_setting'])) {
-    $message = "Please select some restoration parameters";
+    $message = "Please select some processing parameters";
   }
   else {
     $_SESSION['task_setting'] =
@@ -109,9 +109,9 @@ else if (isset($_POST['OK']) && $_POST['OK']=="OK" ) {
         'BackgroundOffsetPercent' )->check();
     
     if ($ok) {
-      header("Location: " . "select_images.php"); exit();
+      header("Location: " . "create_job.php"); exit();
     }
-    $message = "The number of channels in the selected restoration " .
+    $message = "The number of channels in the selected processing " .
       "parameters does not match the number of channels in the image " .
       "parameters. Please fix this!";
   }
@@ -151,7 +151,7 @@ include("header.inc.php");
             Go back to step 1/4 - Image parameters.
         </span>
         <span id="ttSpanForward">
-            Continue to step 3/4 - Select images.
+            Continue to step 4/4 - Create job.
         </span>
     <?php
       }
@@ -197,14 +197,14 @@ include("header.inc.php");
 if ($_SESSION['user']->isAdmin()) {
 
 ?>
-        <h3>Restoration parameters</h3>
+        <h3>Processing parameters</h3>
 <?php
 
 }
 else {
 
 ?>
-        <h3>Step 2/4 - Restoration parameters</h3>
+        <h3>Step 3/4 - Processing parameters</h3>
 <?php
 
 }
@@ -216,7 +216,7 @@ if (!$_SESSION['user']->isAdmin()) {
         <form method="post" action="">
         
             <fieldset>
-              <legend>Template restoration parameters</legend>
+              <legend>Template processing parameters</legend>
               <p class="message_small">
                   These are the parameter sets prepared by your administrator.
               </p>
@@ -270,11 +270,11 @@ if (!$_SESSION['user']->isAdmin()) {
             
               <?php
                 if ($_SESSION['user']->isAdmin()) {
-                  echo "<legend>Template restoration parameters</legend>";
+                  echo "<legend>Template processing parameters</legend>";
                   echo "<p class=\"message_small\">Create template parameter " .
                     "sets visible to all users.</p>";
                 } else {
-                  echo "<legend>Your restoration parameters</legend>";
+                  echo "<legend>Your processing parameters</legend>";
                   echo "<p class=\"message_small\">These are your (private) " .
                     "parameter sets.</p>";
                 }
@@ -408,21 +408,19 @@ if (!$_SESSION['user']->isAdmin()) {
     <?php    
 	if (!$_SESSION['user']->isAdmin()) {
       echo "<p>In this step, you are asked to specify all parameters relative
-        to the restoration of your images.</p>";
+        to the processing of your images.</p>";
 	} else {
 	  echo "<p>Here, you can create template parameters relative to the
-      restoration procedure.</p>";
+      processing procedure.</p>";
 	}
 	?>
-      <p>These are the choice of the deconvolution algorithm, the 
-      signal-to-noise ratio, the background estimation mode and the
-      stopping criteria.</p>
+        <p>These are the choice of the deconvolution algorithm and its options (signal-to-noise ratio, background estimation mode and stopping criteria) as well as post-deconvolution tasks such as colocalization.</p>
 
     <?php        
 	if (!$_SESSION['user']->isAdmin()) {
-      echo "<p>'Template restoration parameters' created by your facility
-        manager can be copied to the list of 'Your restoration parameters' and
-        adapted to fit your restoration needs.</p>";
+      echo "<p>'Template processing parameters' created by your facility
+        manager can be copied to the list of 'Your processing parameters' and
+        adapted to fit your processing needs.</p>";
 	} else {
 	  echo "<p>The created templates will be visible for the users in an
       additional selection field from which they can be copied to the user's

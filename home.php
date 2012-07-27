@@ -255,13 +255,13 @@ include("header.inc.php");
 			<tr >
 			  
 			  <td class="icon">
-				<a href="./select_parameter_settings.php">
+				<a href="./select_images.php">
 				<img alt="Jobs" src="./images/start.png" />
 				</a>
 			  </td>
 			  
 			  <td class="text"><div class="cell">
-                <a href="./select_parameter_settings.php">Start a job</a>
+                <a href="./select_images.php">Start a job</a>
                 <br />
 				<p />Create and start deconvolution jobs.
                 </div>

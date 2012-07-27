@@ -53,12 +53,18 @@ if (isset($_POST['copy_public'])) {
   else $message = "Please select a setting to copy";
 }
 else if (isset($_POST['create'])) {
-  $setting = $_SESSION['editor']->createNewSetting($_POST['new_setting']);
-  if ($setting != NULL) {
+
+    // The file format is stored in a dummy setting created at stage 1.
+    $fileFormat = $_SESSION['setting']->parameter("ImageFileFormat")->value();
+    
+    $setting = $_SESSION['editor']->createNewSetting($_POST['new_setting']);
+    $setting->parameter("ImageFileFormat")->setValue($fileFormat);
     $_SESSION['setting'] = $setting;
-    header("Location: " . "image_format.php"); exit();
-  }
-  $message = $_SESSION['editor']->message();
+    
+    if ($setting != NULL) {
+        header("Location: " . "image_format.php"); exit();
+    }
+    $message = $_SESSION['editor']->message();
 }
 else if (isset($_POST['copy'])) {
   $_SESSION['editor']->copySelectedSetting($_POST['new_setting']);
@@ -82,6 +88,7 @@ else if ( isset($_POST['annihilate']) &&
         $message = $_SESSION['editor']->message();
 }
 else if (isset($_POST['OK']) && $_POST['OK']=="OK" ) {
+
   if (!isset($_POST['setting'])) {
     $message = "Please select some image parameters";
   } else {
@@ -141,8 +148,11 @@ include("header.inc.php");
             .</span>
         <span id="ttSpanCopyTemplate">Copy a template.
         </span>
+        <span id="ttSpanBack">
+            Go back to step 1/4 - Select images.
+        </span>
         <span id="ttSpanForward">
-            Continue to step 2/4 - Restoration parameters.
+            Continue to step 3/4 - Restoration parameters.
         </span>
     <?php
       }
@@ -195,7 +205,7 @@ if ($_SESSION['user']->isAdmin()) {
 else {
 
 ?>
-        <h3>Step 1/4 - Image parameters</h3>
+        <h3>Step 2/4 - Image parameters</h3>
 <?php
 
 }
@@ -367,6 +377,12 @@ if (!$_SESSION['user']->isAdmin()) {
                          value=""
                          class="icon empty"
                          disabled="disabled" />
+                  <input type="button"
+                         value=""
+                         class="icon previous"
+                         onclick="document.location.href='select_images.php'"
+                        onmouseover="TagToTip('ttSpanBack' )"
+                        onmouseout="UnTip()" />
                   <input type="submit"
                          value=""
                          class="icon next"
@@ -418,7 +434,7 @@ if (!$_SESSION['user']->isAdmin()) {
       to restore.</p>";
 	}
 	?>
-      <p>These include: file information (format, geometry, voxel size);
+      <p>These include: file information (geometry, voxel size);
       microscopic parameters (such as microscope type, numerical aperture of
       the objective, fluorophore wavelengths); whether a measured or a
       theoretical PSF should be used; whether depth-dependent correction

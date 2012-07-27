@@ -1004,7 +1004,7 @@ div.multichannel {
     padding: 0px;
     margin-left: auto;
     margin-right: auto;
-    display: inline
+    display: inline;
 }
 
 .multichannelinput {
@@ -1138,6 +1138,7 @@ option.default {
     padding: 10px;
     margin: 1em;
 }
+
 #prevMenu .menuEntryActive {
     border-color: #555;
     background-color: #aaa;
@@ -1148,11 +1149,11 @@ option.default {
 }
 
 #previewContents {
-
     overflow: auto;
     max-width: 98%;
     padding: 1em;
 }
+
 #previewImg {
     text-align: center;
 }

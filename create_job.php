@@ -61,7 +61,7 @@ include("header.inc.php");
       Tooltips
     -->
     <span id="ttSpanBack">
-        Go back to step 3/4 - Select images.
+        Go back to step 3/4 - Processing parameters.
     </span>
     <span id="ttSpanCreateJob">
         Create job, add it to the queue, and go back to your home page.
@@ -234,7 +234,7 @@ echo $_SESSION['setting']->displayString();
                     <img src="images/help.png" alt="?" />
                 </a>
                 <a href="select_task_settings.php">
-                    Restoration parameters
+                    Processing parameters
                 </a>: <?php echo $_SESSION['task_setting']->name() ?>
             </legend>
             <textarea name="task_settings_report"
@@ -288,7 +288,7 @@ if (!isset($_SESSION['jobcreated'])) {
 
 ?>
             <input type="button" name="previous" value="" class="icon previous"
-              onclick="document.location.href='select_images.php'"
+              onclick="document.location.href='select_task_settings.php'"
               onmouseover="TagToTip('ttSpanBack' )"
               onmouseout="UnTip()" />
             <input type="button" name="create job" value="" class="icon ok"

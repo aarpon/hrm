@@ -205,6 +205,7 @@ abstract class Setting {
     */
     public function save() {
         $db = new DatabaseConnection();
+
         $result = $db->saveParameterSettings($this);
         if (!$result) {
             $this->message = "save setting - database access failed!";
@@ -323,12 +324,9 @@ class ParameterSetting extends Setting {
         $this->message = '';
         $noErrorsFound = True;
 
-        // The file format must be defined
-        if (!isset($postedParameters["ImageFileFormat"]) ||
-                $postedParameters["ImageFileFormat"] == "") {
-            $this->message = "Please choose a file format!";
-            return False;
-        } else {
+            // The file format must be defined
+        if (isset($postedParameters["ImageFileFormat"])) {
+                
             $parameter = $this->parameter("ImageFileFormat");
             $parameter->setValue($postedParameters["ImageFileFormat"]);
             $this->set($parameter);
@@ -1002,6 +1000,7 @@ class ParameterSetting extends Setting {
                 $names[] = $parameter->name();
             }
         }
+        
         return $names;
     }
 

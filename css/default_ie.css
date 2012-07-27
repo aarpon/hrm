@@ -1146,6 +1146,7 @@ option.default {
     padding: 10px;
     margin: 1em;
 }
+
 #prevMenu .menuEntryActive {
     border-color: #555;
     background-color: #aaa;
@@ -1156,11 +1157,11 @@ option.default {
 }
 
 #previewContents {
-
     overflow: auto;
     max-width: 98%;
     padding: 1em;
 }
+
 #previewImg {
     text-align: center;
 }

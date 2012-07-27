@@ -25,18 +25,18 @@ if (!isset($_SESSION['fileserver'])) {
   $_SESSION['fileserver'] = new Fileserver($name);
 }
 
+$_SESSION['setting'] = new ParameterSetting();
 $fileFormat = $_SESSION['setting']->parameter("ImageFileFormat");
-$extensions = $fileFormat->fileExtensions();
-$_SESSION['fileserver']->setImageExtensions($extensions);
-
-$geometry = $_SESSION['setting']->parameter("ImageGeometry");
 
 $message = "";
-
 if (isset($_POST['down'])) {
-  if (isset($_POST['userfiles']) && is_array($_POST['userfiles'])) {
+    if (isset($_POST['userfiles']) && is_array($_POST['userfiles'])) {
     $_SESSION['fileserver']->addFilesToSelection($_POST['userfiles']);
   }
+    if (isset($_POST['ImageFileFormat'])) {
+        $_SESSION[ 'setting' ]->checkPostedImageParameters( $_POST );
+        $_SESSION[ 'setting' ]->parameter("ImageFileFormat")->setValue($_POST["ImageFileFormat"]);
+    }
 }
 else if (isset($_POST['up'])) {		
   if (isset($_POST['selectedfiles']) && is_array($_POST['selectedfiles'])) {
@@ -47,48 +47,66 @@ else if (isset($_POST['update'])) {
   $_SESSION['fileserver']->resetFiles();
 }
 else if (isset($_POST['OK'])) {
-  if (!$_SESSION['fileserver']->hasSelection()) {
-    $message = "Please add at least one image to your selection";
-  }
-  else {
-    header("Location: " . "create_job.php"); exit();
-  }
+    if (!$_SESSION['fileserver']->hasSelection()) {
+        $message = "Please add at least one image to your selection";
+    }
+    else {
+        if (isset($_POST['ImageFileFormat'])) {
+            $_SESSION[ 'setting' ]->checkPostedImageParameters( $_POST );
+            $_SESSION[ 'setting' ]->parameter("ImageFileFormat")->setValue($_POST["ImageFileFormat"]);
+        }
+        header("Location: " . "select_parameter_settings.php"); exit();
+    }
 }
 
 $script = "settings.js";
 
-// display only relevant files
-if ($fileFormat->value() == "ics" || $fileFormat->value() == "ics2" ) {
-    $files = $_SESSION['fileserver']->files("ics");
-}
-else if ($fileFormat->value() == "hdf5" ) {
-  $files = $_SESSION['fileserver']->files("h5");
-}
-else if ($fileFormat->value() == "tiff" ||
-    $fileFormat->value() == "tiff-single") {
-  $files = $_SESSION['fileserver']->tiffFiles();
-}
-else if ($fileFormat->value() == "tiff-series") {
-  $files = $_SESSION['fileserver']->tiffSeriesFiles();
-}
-else if ($fileFormat->value() == "tiff-leica") {
-  $files = $_SESSION['fileserver']->tiffLeicaFiles();
-}
-else if ($fileFormat->value() == "stk") {
-    if ($_SESSION['setting']->isTimeSeries()) {
-      $files = $_SESSION['fileserver']->stkSeriesFiles();
-    }
-    else {
-      $files = $_SESSION['fileserver']->stkFiles();
-    }
-}
-else {
-  $files = $_SESSION['fileserver']->files();
-}
+// All the user's files in the server.
+$files = $_SESSION['fileserver']->files();
 
+// display only relevant files.
 if ($files != null) {
 
     $generatedScript = "
+function filterImages (extension) {
+
+    var selectObject = document.getElementById(\"selectedimages\");
+    if (selectObject.length > 0) {
+        for (i = selectObject.length - 1; i>=0; i--) {
+            selectObject.remove(selectObject.length - 1);
+        }
+    }
+
+    var selectObject = document.getElementById(\"filesPerExtension\");
+    if (selectObject.length > 0) {
+        for (i = selectObject.length - 1; i>=0; i--) {
+            selectObject.remove(selectObject.length - 1);
+        }
+    }
+
+    var selectedExtension = extension.options[extension.selectedIndex].value;
+";
+
+    foreach ($files as $key => $file) {
+        $generatedScript .= "
+            if(getExtension(\"$file\") == selectedExtension) {
+                var selectItem = document.createElement('option');
+                selectItem.text = \"$file\";
+                selectObject.add(selectItem,null);
+            }
+            ";
+    }
+
+    $generatedScript .= "
+
+}
+
+function getExtension(file) {
+	var nameDivisions;
+	if ((nameDivisions = file.match(/\.([^\.]+)$/)) == null) return '';
+	return nameDivisions[1];
+}
+
 function imageAction (list) {
 
     var n = list.selectedIndex;     // Which item is the first selected one
@@ -166,14 +184,12 @@ function imageAction (list) {
 ";
 }
 
-
-
 include("header.inc.php");
 
 $info = " <h3>Quick help</h3> <p>In this step, you will select the files " .
     "from the list of available images that will be restored using the " .
     "image and restoration parameters chosen in the previous two steps.</p> " .
-    "<p>Only files of type <b>". $fileFormat->value()."</b>, as selected in " .
+    "<p>Only files of type <b>". $fileFormat->value() ."</b>, as selected in " .
     "the image paremeters, are shown.</p><p>You can use SHIFT- and " .
     "CTRL-click to select multiple files.</p> <p>Click on a file name in " .
     "any of the fields to get a preview.</p>";
@@ -192,11 +208,8 @@ $info = " <h3>Quick help</h3> <p>In this step, you will select the files " .
     <span id="ttSpanRefresh">
         Refresh the list of available images on the server.
     </span>
-    <span id="ttSpanBack">
-        Go back to step 2/4 - Restoration parameters.
-    </span>
     <span id="ttSpanForward">
-        Continue to step 4/4 - Create job
+        Continue to step 2/4 - Image parameters
     </span>
     
     <div id="nav">
@@ -232,9 +245,73 @@ $info = " <h3>Quick help</h3> <p>In this step, you will select the files " .
     
     <div id="content">
     
-        <h3>Step 3/4 - Select images</h3>
-        
-        <form method="post" action="" id="select">
+        <h3>Step 1/4 - Select images</h3>
+                    <form method="post" action="" id="fileformat">
+                    <fieldset class="setting <?php
+                echo X ?>"
+                onmouseover="javascript:changeQuickHelp( 'format' );" >
+            
+                <legend>
+                    <a href="javascript:openWindow(
+                       'http://www.svi.nl/FileFormats')">
+                        <img src="images/help.png" alt="?" />
+                    </a>
+                    Image file format
+                </legend>
+                    
+                    <select name="ImageFileFormat" id="ImageFileFormat"
+                                                                      size="1"
+                  onchange="javascript:filterImages(this)"
+                  onkeyup="this.blur();this.focus();" >
+
+<?php
+
+// new file formats support
+$msgValue       = '';
+$msgTranslation = 'Please choose a file format...';
+$values = array();
+$values[ 0 ] = $msgValue;
+$values = array_merge( $values, $fileFormat->possibleValues());
+$geometryFlag = "";
+$channelsFlag = "";
+sort($values);
+
+      
+
+foreach($values as $value) {
+  $selected = "";
+  if ( $value == $msgValue ) {
+    $translation = $msgTranslation;
+  } else {
+      $translation = $fileFormat->translatedValueFor( $value );
+    if (stristr($value, "tiff")) {
+      $translation .= " (*.tiff)";
+    }
+    if ($value == $fileFormat->value()) {
+      $selected = " selected=\"selected\"";
+      if ($value == "lsm-single" || $value == "tiff-single") {
+        $geometryFlag = "disabled=\"disabled\" ";
+      }
+      else if ($value == "tiff-series") {
+        $geometryFlag = "disabled=\"disabled\" ";
+        $channelsFlag = "disabled=\"disabled\" ";
+      }
+    }
+  }
+  
+
+?>
+      <option <?php echo "name = \"" . $value . "\"  value = \"" .$value . "\"" . $selected ?>>
+           <?php echo $translation ?>
+           </option>
+<?php
+
+}
+
+?>
+
+</select>
+</fieldset>
         
             <fieldset>
                 <legend>Images available on server</legend>
@@ -244,25 +321,19 @@ $info = " <h3>Quick help</h3> <p>In this step, you will select the files " .
 $flag = "";
 if ($files == null) {
     $flag = " disabled=\"disabled\"";
-    $message .= "No images of type '" .$fileFormat->value();
+    $message .= "No images of type X";
 }
 
 ?>
+
                     <select onchange="javascript:imageAction(this)"
+                            id = "filesPerExtension"
                             name="userfiles[]"
                             size="10"
                             multiple="multiple"<?php echo $flag ?>>
 <?php
 $keyArr = array();
-if ($files != null) {
-  foreach ($files as $key => $filename) {
-          echo $_SESSION['fileserver']->getImageOptionLine($filename, $key, 
-            "src","preview", 0, 1) ;
-          $keyArr[$filename] = $key;
-
-  }
-}
-else echo "                        <option>&nbsp;</option>\n";
+if ($files == null) echo "                        <option>&nbsp;</option>\n";
 
 ?>
                     </select>
@@ -292,11 +363,11 @@ if ($files == null) {
 ?>
                     <select onclick="javascript:imageAction(this)" 
                             onchange="javascript:imageAction(this)"
+                            id = "selectedimages"
                             name="selectedfiles[]"
                             size="5"
                             multiple="multiple"<?php echo $flag ?>>
-<?php
-
+<?php                     
 if ($files != null) {
   foreach ($files as $filename) {
           $key = $keyArr[$filename];
@@ -324,12 +395,6 @@ else echo "                        <option>&nbsp;</option>\n";
             
             <div id="controls"
                  onmouseover="showInstructions()">
-              <input type="button"
-                     value=""
-                     class="icon previous"
-                     onclick="document.location.href='select_task_settings.php'"
-                     onmouseover="TagToTip('ttSpanBack' )"
-                     onmouseout="UnTip()" />
               <input type="submit"
                      value=""
                      class="icon next"
@@ -366,9 +431,7 @@ echo "<p>$message</p>";
         </div>
         
     </div> <!-- rightpanel -->
-    
-<?php
 
+<?php                                                                      
 include("footer.inc.php");
-
 ?>

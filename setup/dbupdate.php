@@ -1389,7 +1389,7 @@ if ($current_revision < $n) {
 // -----------------------------------------------------------------------------
 // Update to revision 6
 // Description: change lenght of text fields (settings name and translation).
-//              Coorect field in possible_values
+//              Correct field in possible_values
 // -----------------------------------------------------------------------------
 $n = 6;
 if ($current_revision < $n) {
