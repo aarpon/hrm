@@ -995,13 +995,14 @@ class QueueManager {
         // Break down the string into per-file substrings
         $confidenceLevelString = str_replace('}}', '}}<CUT_HERE>',
             $confidenceLevelString);
+
         $groups = explode('<CUT_HERE> ', $confidenceLevelString);
 
         // Prepare the output array
         $confidenceLevels = array();
 
         // Confidence level regexp
-        $levelRegExp = '(reported|estimated|default|verified)';
+        $levelRegExp = '(asIs|reported|estimated|default|verified)';        
 
         // Process the substrings
         foreach ($groups as $group) {
@@ -1028,17 +1029,17 @@ class QueueManager {
                 "sampleSizesT"	 => "default",
                 "iFacePrim" 	 => "default",
                 "iFaceScnd" 	 => "default",
-                "pinhole" 		 => "default",
-                "chanCnt" 		 => "default",
+                "pinhole"        => "default",
+                "chanCnt"        => "default",
                 "imagingDir" 	 => "default",
                 "pinholeSpacing" => "default",
                 "objQuality" 	 => "default",
-                "lambdaEx" 		 => "default",
-                "lambdaEm" 		 => "default",
-                "mType" 		 => "default",
-                "NA" 			 => "default",
-                "RIMedia" 		 => "default",
-                "RILens" 		 => "default",
+                "lambdaEx" 	 => "default",
+                "lambdaEm"       => "default",
+                "mType"          => "default",
+                "NA"             => "default",
+                "RIMedia" 	 => "default",
+                "RILens"         => "default",
                 "photonCnt" 	 => "default",
                 "exBeamFill" 	 => "default");
 

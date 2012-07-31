@@ -86,8 +86,9 @@ abstract class Parameter {
 		\return true if the confidence level is lower than 'reported'.
 	*/
 	public function mustProvide( ) {
-        return !( $this->confidenceLevel == "reported" ||
-			$this->confidenceLevel == "verified" );
+        return !( $this->confidenceLevel == "reported"
+                  || $this->confidenceLevel == "verified"
+                  || $this->confidenceLevel == "asIs" );
 	}
 
 

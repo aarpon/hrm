@@ -1338,7 +1338,11 @@ option.default {
     padding-left: 10px;
 }
 
-/* Confidence levels for parameters: provided, verified, reported, estimated, default */
+/* Confidence levels for parameters: provided, asIs, verified, 
+   reported, estimated, default */
+.asIs {
+	background: url(../images/param_reported.png) repeat-y left;
+}
 .verified {
 	background: url(../images/param_verified.png) repeat-y left;
 }
@@ -1357,6 +1361,15 @@ option.default {
 
 .provided {
     background: url(../images/param_provided.png) repeat-y left;
+}
+
+.message_confidence_asIs {
+    border: none;
+    height: 30px;
+    margin-top: 5px;
+    margin-bottom: -5px;
+    background: url(../images/text_reported.png) no-repeat bottom;
+    color: #b09065;
 }
 
 .message_confidence_verified {
