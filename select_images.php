@@ -28,15 +28,18 @@ if (!isset($_SESSION['fileserver'])) {
 $_SESSION['setting'] = new ParameterSetting();
 $fileFormat = $_SESSION['setting']->parameter("ImageFileFormat");
 
+
 $message = "";
 if (isset($_POST['down'])) {
     if (isset($_POST['userfiles']) && is_array($_POST['userfiles'])) {
-    $_SESSION['fileserver']->addFilesToSelection($_POST['userfiles']);
-  }
+        $_SESSION['fileserver']->removeFilesFromSelection($_POST['selectedfiles']);
+        $_SESSION['fileserver']->addFilesToSelection($_POST['userfiles']);
+    }
     if (isset($_POST['ImageFileFormat'])) {
         $_SESSION[ 'setting' ]->checkPostedImageParameters( $_POST );
         $_SESSION[ 'setting' ]->parameter("ImageFileFormat")->setValue($_POST["ImageFileFormat"]);
     }
+    
 }
 else if (isset($_POST['up'])) {		
   if (isset($_POST['selectedfiles']) && is_array($_POST['selectedfiles'])) {
@@ -71,7 +74,7 @@ if ($files != null) {
 function filterImages (extension) {
 
     var selectObject = document.getElementById(\"selectedimages\");
-    if (selectObject.length > 0) {
+    if (selectObject.length >= 0) {
         for (i = selectObject.length - 1; i>=0; i--) {
             selectObject.remove(selectObject.length - 1);
         }
@@ -99,12 +102,6 @@ function filterImages (extension) {
 
     $generatedScript .= "
 
-}
-
-function getExtension(file) {
-	var nameDivisions;
-	if ((nameDivisions = file.match(/\.([^\.]+)$/)) == null) return '';
-	return nameDivisions[1];
 }
 
 function imageAction (list) {
@@ -276,8 +273,6 @@ $geometryFlag = "";
 $channelsFlag = "";
 sort($values);
 
-      
-
 foreach($values as $value) {
   $selected = "";
   if ( $value == $msgValue ) {
@@ -298,10 +293,12 @@ foreach($values as $value) {
       }
     }
   }
-  
 
+  $fileFormat->setValue($value);
+  $extensions = $fileFormat->fileExtensions();
+  $extension = $extensions[0];
 ?>
-      <option <?php echo "name = \"" . $value . "\"  value = \"" .$value . "\"" . $selected ?>>
+      <option <?php echo "name = \"" . $value . "\"  value = \"" . $extension  . "\"" . $selected ?>>
            <?php echo $translation ?>
            </option>
 <?php

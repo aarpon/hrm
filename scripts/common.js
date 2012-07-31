@@ -133,9 +133,12 @@ function smoothChangeDiv(div, html, time) {
     }
 }
 
+function getExtension(file) {    
 
-
-
+    var nameDivisions;
+    if ((nameDivisions = file.match(/\.([^\.]+)$/)) == null) return '';
+    return nameDivisions[1];
+}
 
 function changeOpenerDiv (div, html) {
     window.opener.document.getElementById(div).innerHTML= html;
