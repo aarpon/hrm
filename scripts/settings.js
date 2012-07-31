@@ -140,10 +140,12 @@ function switchColocMode() {
     if (element.selectedIndex == 1) {
         show('ColocChannelSelectionDiv');
         show('ColocCoefficientSelectionDiv');
+        show('ColocThresholdSelectionDiv');
         show('ColocMapSelectionDiv');
     } else {
         hide('ColocChannelSelectionDiv');
         hide('ColocCoefficientSelectionDiv');
+        hide('ColocThresholdSelectionDiv');
         hide('ColocMapSelectionDiv');
     }
 }

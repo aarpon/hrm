@@ -1595,6 +1595,7 @@ class TaskSetting extends Setting {
             'ColocAnalysis',
             'ColocChannel',
             'ColocCoefficient',
+            'ColocThreshold',
             'ColocMap',
         );
 
@@ -1797,8 +1798,11 @@ class TaskSetting extends Setting {
             $parameter->setValue($postedParameters["ColocCoefficient"]);
             $this->set($parameter);
         }
-        
 
+        $parameter = $this->parameter("ColocThreshold");
+        $parameter->setValue($postedParameters["ColocThreshold"]);
+        $this->set($parameter);
+        
         $parameter = $this->parameter("ColocMap");
         $parameter->setValue($postedParameters["ColocMap"]);
         $this->set($parameter);

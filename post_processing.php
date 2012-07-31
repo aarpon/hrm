@@ -105,7 +105,7 @@ include("header.inc.php");
 
                 <legend>
                     <a href="javascript:openWindow(
-                       'http://www.svi.nl/ColocalizationTheory')">
+                       'http://www.svi.nl/ColocalizationBasics')">
                         <img src="images/help.png" alt="?" />
                     </a>
                     Would you like to perform Colocalization Analysis?
@@ -165,7 +165,7 @@ if ($parameterPerformColocAnalysis->value( ) == 1)
 
                 <legend>
                     <a href="javascript:openWindow(
-                       'http://www.svi.nl/ColocalizationTheory')">
+                       'http://www.svi.nl/ColocalizationBasics')">
                         <img src="images/help.png" alt="?" />
                     </a>
 Channels 
@@ -209,7 +209,7 @@ $selectedValues = $parameterColocChannel->value();
 
                 <legend>
                     <a href="javascript:openWindow(
-                       'http://www.svi.nl/ColocalizationTheory')">
+                       'http://www.svi.nl/ColocalizationCoefficientsInBrief')">
                         <img src="images/help.png" alt="?" />
                     </a>
 Colocalization coefficients 
@@ -236,13 +236,13 @@ foreach ($possibleValues as $possibleValue) {
         $checked = "";
     }
     
-    if (!($cellCnt % 2)) {
+    if (($cellCnt % 3) == 0) {
         echo "<tr>";
     }
     $translation =
         $parameterColocCoefficient->translatedValueFor( $possibleValue );
     
-    echo "<td>" . $translation . " " . $selected?>:
+    echo "<td>" . $translation . " " . $selected?></td><td>
         <input type="checkbox" name="ColocCoefficient[]" value=
         <?php echo $possibleValue;
     if ($checked) {
@@ -250,7 +250,7 @@ foreach ($possibleValues as $possibleValue) {
     }?>
         /></td>
                 <?php
-                if ($cellCnt % 2) {
+                if ((($cellCnt + 1) % 3) == 0) {
                     echo "</tr>";
                 }
     $cellCnt++;
@@ -260,6 +260,26 @@ foreach ($possibleValues as $possibleValue) {
 </table>
 </fieldset>
 </div> <!-- ColocCoefficientSelectionDiv -->
+
+
+
+<?php
+/*
+      COLOCALIZATION THRESHOLD
+*/
+?>
+<div id="ColocThresholdSelectionDiv"<?php echo $visibility?>>
+<fieldset class="setting"
+    onmouseover="javascript:changeQuickHelp( 'type' );" >
+    <legend>
+<a href="javascript:openWindow(
+                       'http://www.svi.nl/ColocalizationBasics')">
+    <img src="images/help.png" alt="?" />
+    </a>
+Threshold 
+                    </legend>
+</fieldset>
+</div> <!--ColocThresholdSelectionDiv-->
 
 
 
@@ -277,16 +297,12 @@ foreach ($possibleValues as $possibleValue) {
 
                 <legend>
                     <a href="javascript:openWindow(
-                       'http://www.svi.nl/ColocalizationTheory')">
+                       'http://www.svi.nl/ColocalizationMap')">
                         <img src="images/help.png" alt="?" />
                     </a>
 Colocalization maps 
                     </legend>
 
-<input name="ColocMap"
-                           type="radio"
-                           value=""
-                           style="display:none;" />
 
     <?php
 $parameterColocMap =
@@ -310,15 +326,10 @@ foreach ($possibleValues as $possibleValue) {
              value="<?php echo $possibleValue ?>"
              <?php echo $flag ?>/>
              <?php echo $translation ?>
-             
-             <br />
 <?php                    
 }
 ?>
 
-
-
-    
 </fieldset>
 </div> <!-- ColocMapSelectionDiv -->
 
@@ -360,8 +371,8 @@ foreach ($possibleValues as $possibleValue) {
           <h3>Quick help</h3>
 
             <div id="contextHelp">
-              <p>On this page you can specify whether you would like to perform colocalization analysis on your images.</p>
-<p>You can select the channels that must be taken into account for Colocalization Analysis, as well as the colocalization coefficients and maps.</p>
+              <p>On this page you can specify whether you would like to perform colocalization analysis on the deconvolved images.</p>
+<p>You can select the channels to be taken into account for colocalization analysis, as well as the colocalization coefficients and maps.</p>
             </div>
 
         </div>
