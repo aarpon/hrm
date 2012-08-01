@@ -337,7 +337,8 @@ if ($colocThreshold[0] != "" && $colocThreshold[0] != "auto") {
         type="text"
         size="8"
         value="<?php echo $threshold ?>"
-        class="multichannelinput" />
+        class="multichannelinput"
+        onclick="document.forms[0].ColocThresholdManual.checked=true"/>
         
         </span>&nbsp;
         </span>
