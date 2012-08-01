@@ -2412,50 +2412,6 @@ if ($current_revision < $n) {
 
     $tabname = "possible_values";
     $record = array();
-    $record["parameter"] = "ColocThreshold";
-    $record["value"] = "auto";
-    $record["translation"] = "Auto";
-    $record["isDefault"] = "T";
-    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" .
-                       $record["parameter"] . "' AND value='" .
-                       $record["value"] . "' AND translation='" .
-                       $record["translation"] . "' AND isDefault='" .
-                       $record["isDefault"] . "'");
-    if ($rs->EOF) {
-        $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
-            $msg = "An error occurred while updating the database to revision ".
-                $n . ".";
-            write_message($msg);
-            write_to_error($msg);
-            return;
-        }
-    }
-
-    $tabname = "possible_values";
-    $record = array();
-    $record["parameter"] = "ColocThreshold";
-    $record["value"] = "manual";
-    $record["translation"] = "Manual";
-    $record["isDefault"] = "F";
-    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" .
-                       $record["parameter"] . "' AND value='" .
-                       $record["value"] . "' AND translation='" .
-                       $record["translation"] . "' AND isDefault='" .
-                       $record["isDefault"] . "'");
-    if ($rs->EOF) {
-        $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
-            $msg = "An error occurred while updating the database to revision ".
-                $n . ".";
-            write_message($msg);
-            write_to_error($msg);
-            return;
-        }
-    }
-
-    $tabname = "possible_values";
-    $record = array();
     $record["parameter"] = "ColocMap";
     $record["value"] = "Pearson";
     $record["translation"] = "Pearson";

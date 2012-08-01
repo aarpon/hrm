@@ -263,6 +263,8 @@ foreach ($possibleValues as $possibleValue) {
 
 
 
+
+
 <?php
 /*
       COLOCALIZATION THRESHOLD
@@ -278,6 +280,72 @@ foreach ($possibleValues as $possibleValue) {
     </a>
 Threshold 
                     </legend>
+
+    <?php
+$parameterColocThresh =
+    $_SESSION['task_setting']->parameter("ColocThreshold");
+$colocThreshold = $parameterColocThresh->internalValue();
+
+$flag = "";
+if ($colocThreshold[0] == "" || $colocThreshold[0] == "auto") {
+    $flag = " checked=\"checked\"";
+}
+?>
+        <p>
+             <input type="radio"
+             id="ColocThresholdAuto"
+             name="ColocThresholdMode"
+             value="auto"<?php echo $flag ?> />
+             Automatic estimation
+             </p>
+<?php
+
+$flag = "";
+if ($colocThreshold[0] != "" && $colocThreshold[0] != "auto") {
+    $flag = " checked=\"checked\"";
+}
+
+?>
+
+    <input type="radio"
+         id="ColocThresholdManual"
+         name="ColocThresholdMode"
+         value="manual"<?php echo $flag ?> />
+    Percentage of the intensity range (%):
+    
+    <div class="multichannel">
+<?php
+
+    for ($chan=0; $chan < $_SESSION['task_setting']->numberOfChannels(); $chan++) {
+        $threshold = "";
+        if ($colocThreshold[0] != "auto") {
+            $threshold = $colocThreshold[$chan];
+        }
+        
+            /* Add a line break after 3 entries. */
+        if ( $chan == 3 ) {
+            echo "<br />";
+        }
+?>
+        <span class="nowrap">
+        Ch<?php echo $chan ?>:&nbsp;&nbsp;&nbsp;
+        <span class="multichannel">
+        
+        <input id="ColocThreshold<?php echo $chan ?>"
+        name="ColocThreshold<?php echo $chan ?>"
+        type="text"
+        size="8"
+        value="<?php echo $threshold ?>"
+        class="multichannelinput" />
+        
+        </span>&nbsp;
+        </span>
+
+<?php
+}
+?>
+</div><!--multichannel-->
+
 </fieldset>
 </div> <!--ColocThresholdSelectionDiv-->
 
@@ -332,6 +400,7 @@ foreach ($possibleValues as $possibleValue) {
 
 </fieldset>
 </div> <!-- ColocMapSelectionDiv -->
+
 
 
 

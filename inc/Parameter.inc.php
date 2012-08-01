@@ -2430,9 +2430,9 @@ class ColocCoefficient extends AnyTypeArrayParameter {
 
 /*!
  \class	ColocThreshold
- \brief	A ChoiceParameter to represent the colocalization threshold choice.
+ \brief	An AnyTypeArrayParameter to represent the colocalization threshold
 */
-class ColocThreshold extends ChoiceParameter {
+class ColocThreshold extends AnyTypeArrayParameter {
 
 
 	/*!
@@ -2442,7 +2442,7 @@ class ColocThreshold extends ChoiceParameter {
             parent::__construct("ColocThreshold");
 	}
 
-    /*!
+        /*!
          \brief	Checks whether the Parameter is a Task Parameter
          \return    true if the Parameter is a Task Parameter, false otherwise
 	*/
