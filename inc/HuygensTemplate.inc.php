@@ -473,9 +473,9 @@ class HuygensTemplate {
         $this->colocArray  =
             array( 'chanR'                      =>  '',
                    'chanG'                      =>  '',
-                   'bgMode'                     =>  '',
-                   'bgPercR'                    =>  '',
-                   'bgPercG'                    =>  '',
+                   'threshMode'                 =>  '',
+                   'threshPercR'                =>  '',
+                   'threshPercG'                =>  '',
                    'coefficients'               =>  '',
                    'map'                        =>  '',
                    'destDir'                    =>  '',
@@ -1522,8 +1522,8 @@ class HuygensTemplate {
         foreach ($this->colocArray as $key => $value) {
 
             if ($key != "listID") {
-                if ($key == "bgPercR" || $key == "bgPercG") {
-                    if ($this->getColocBgMode() != "manual") {
+                if ($key == "threshPercR" || $key == "threshPercG") {
+                    if ($this->getColocThreshMode() != "manual") {
                         continue;
                     }
                 }
@@ -1537,14 +1537,14 @@ class HuygensTemplate {
             case 'chanG':
                 $imgColoc .= $chanG;
                 break;
-            case 'bgMode':
-                $imgColoc .= $this->getColocBgMode();
+            case 'threshMode':
+                $imgColoc .= $this->getColocThreshMode();
                 break;
-            case 'bgPercR':
-                $imgColoc .= $this->getColocBgValue($chanR);
+            case 'threshPercR':
+                $imgColoc .= $this->getColocThreshValue($chanR);
                 break;
-            case 'bgPercG':
-                $imgColoc .= $this->getColocBgValue($chanG);
+            case 'threshPercG':
+                $imgColoc .= $this->getColocThreshValue($chanG);
                 break;
             case 'coefficients':
                 $coefficients  = $this->getColocCoefficients();
@@ -1624,7 +1624,7 @@ class HuygensTemplate {
      \brief       Gets the colocalization threshold mode.
      \return      The colocalization threshold mode.
     */
-    private function getColocBgMode( ) {
+    private function getColocThreshMode( ) {
         $bgParam = $this->deconSetting->parameter("ColocThreshold");
         $bgValue = $bgParam->value();
 
@@ -1640,10 +1640,10 @@ class HuygensTemplate {
      \param       $channel A channel
      \return      The colocalization background (threshold) value.
     */
-    private function getColocBgValue($channel) {
-        if ($this->getColocBgMode() == "auto") {
+    private function getColocThreshValue($channel) {
+        if ($this->getColocThreshMode() == "auto") {
             return 0.0;
-        } elseif ($this->getColocBgMode() == "manual") {
+        } elseif ($this->getColocThreshMode() == "manual") {
             $deconSetting = $this->deconSetting;
             $bgRate = $deconSetting->parameter("ColocThreshold")->value();
             return $bgRate[$channel];
