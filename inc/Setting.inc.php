@@ -1799,9 +1799,42 @@ class TaskSetting extends Setting {
             $this->set($parameter);
         }
 
-        $parameter = $this->parameter("ColocThreshold");
-        $parameter->setValue($postedParameters["ColocThreshold"]);
-        $this->set($parameter);
+          // Colocaliztion threshold mode
+        if (!isset($postedParameters["ColocThresholdMode"]) ||
+                $postedParameters["ColocThresholdMode"] == '') {
+            $this->message = 'Please choose a colocalization threshold mode!';
+            $noErrorsFound = False;
+        } else {
+            $value = array(null, null, null, null, null);
+            switch ($postedParameters["ColocThresholdMode"]) {
+                case 'auto':
+
+                    $value[0] = 'auto';
+                    break;
+                    
+                case 'manual' :
+
+                    for ($i = 0; $i < 5; $i++) {
+                        $name = "ColocThreshold$i";
+                        if (isset($postedParameters[$name])) {
+                            $value[$i] = $postedParameters[$name];
+                        }
+                    }
+                    break;
+
+                default :
+                    $this->message = 'Unknown colocalization threshold mode!';
+                    $noErrorsFound = False;
+            }
+            
+            $parameter = $this->parameter("ColocThreshold");
+            $parameter->setValue($value);
+            $this->set($parameter);
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = False;
+            }
+        }
         
         $parameter = $this->parameter("ColocMap");
         $parameter->setValue($postedParameters["ColocMap"]);

@@ -2443,6 +2443,26 @@ class ColocThreshold extends AnyTypeArrayParameter {
 	}
 
         /*!
+		\brief	Checks whether the Parameter is valid
+		\return	true if the Parameter is valid, false otherwise
+	*/
+	public function check() {
+		$this->message = '';
+		$value = $this->internalValue();
+		$result = True;
+		if ($value[0] == "auto")
+			return True;
+		for ($i = 0; $i < $this->numberOfChannels; $i++) {
+			$result = $result && $this->checkValue($value[$i]);
+		}
+		if ( $result == False ) {
+                    $this->message = 'Colocalization threshold: ' .
+                        $this->message;
+		}
+		return $result;
+	}
+
+        /*!
          \brief	Checks whether the Parameter is a Task Parameter
          \return    true if the Parameter is a Task Parameter, false otherwise
 	*/
