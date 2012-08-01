@@ -242,7 +242,8 @@ foreach ($possibleValues as $possibleValue) {
     $translation =
         $parameterColocCoefficient->translatedValueFor( $possibleValue );
     
-    echo "<td>" . $translation . " " . $selected?></td><td>
+    echo "<td class=\"text\">" . $translation ?>
+        </td><td class="check">
         <input type="checkbox" name="ColocCoefficient[]" value=
         <?php echo $possibleValue;
     if ($checked) {

@@ -657,7 +657,11 @@ input.save {
   font-size: 100%;
 }
 
-#ColocCoefficientSelectionDiv td { 
+#ColocCoefficientSelectionDiv td.text {
+  text-align: right;
+}
+
+#ColocCoefficientSelectionDiv td.check {
   text-align: left;
 }
 
