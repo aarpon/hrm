@@ -473,6 +473,9 @@ class HuygensTemplate {
         $this->colocArray  =
             array( 'chanR'                      =>  '',
                    'chanG'                      =>  '',
+                   'bgMode'                     =>  '',
+                   'bgPercR'                    =>  '',
+                   'bgPercG'                    =>  '',
                    'coefficients'               =>  '',
                    'map'                        =>  '',
                    'destDir'                    =>  '',
@@ -1519,6 +1522,11 @@ class HuygensTemplate {
         foreach ($this->colocArray as $key => $value) {
 
             if ($key != "listID") {
+                if ($key == "bgPercR" || $key == "bgPercG") {
+                    if ($this->getColocBgMode() != "manual") {
+                        continue;
+                    }
+                }
                 $imgColoc .= " " . $key . " ";
             }
 
@@ -1528,6 +1536,15 @@ class HuygensTemplate {
                 break;
             case 'chanG':
                 $imgColoc .= $chanG;
+                break;
+            case 'bgMode':
+                $imgColoc .= $this->getColocBgMode();
+                break;
+            case 'bgPercR':
+                $imgColoc .= $this->getColocBgValue($chanR);
+                break;
+            case 'bgPercG':
+                $imgColoc .= $this->getColocBgValue($chanG);
                 break;
             case 'coefficients':
                 $coefficients  = $this->getColocCoefficients();
@@ -1601,6 +1618,39 @@ class HuygensTemplate {
     private function getColocMap( ) 
     {    
         return $this->deconSetting->parameter('ColocMap')->value();
+    }
+
+    /*!
+     \brief       Gets the colocalization threshold mode.
+     \return      The colocalization threshold mode.
+    */
+    private function getColocBgMode( ) {
+        $bgParam = $this->deconSetting->parameter("ColocThreshold");
+        $bgValue = $bgParam->value();
+
+        if ($bgValue[0] == "auto") {
+            return "auto";
+        }  else {
+            return "manual";
+        }
+    }
+
+    /*!
+     \brief       Gets the coloc background (threshold) value. One channel.
+     \param       $channel A channel
+     \return      The colocalization background (threshold) value.
+    */
+    private function getColocBgValue($channel) {
+        if ($this->getColocBgMode() == "auto") {
+            return 0.0;
+        } elseif ($this->getColocBgMode() == "manual") {
+            $deconSetting = $this->deconSetting;
+            $bgRate = $deconSetting->parameter("ColocThreshold")->value();
+            return $bgRate[$channel];
+        } else {
+            error_log("Unknown colocalization threshold mode.");
+            return;
+        }
     }
 
     
