@@ -746,23 +746,21 @@ class Job {
         $html = "";
 
             /* Extract data from the file and into the table. */
-        $pattern = "/{Colocalization report: (.*)}}/";
+        $pattern = "/{Colocalization report: (.*)}}}/";
 
             /* Every loop creates a coloc table. */
         foreach($reportFile as $reportEntry) {
             if(!preg_match($pattern,$reportEntry,$matches)) {
                 continue;
             }
-
-                /* Add a horizontal separator before the table. */
+                /* Add a horizontal separator before each table. */
             $colocRun = $this->insertSeparator("");
             
-                /* Add a hook for the 2D histograms and/or coloc maps.
-                 The File Server will add the corresponding images here. */
+                /* Add a hook for the 2D histograms and/or coloc maps. */
             $histogram  = $this->writeColocImageHook($matches[0]);
             $colocRun  .= $this->insertDiv($histogram, "colocHist");
 
-                /* Add the coefficients table of this coloc run. */
+                /* Add the coloc table of this coloc run. */
             $table     = $this->writeColocTable($matches[0]);
             $colocRun .= $this->insertDiv($table, "colocCoefficients");
 
@@ -780,76 +778,59 @@ class Job {
      */
     private function writeColocTable($colocReport) 
     {
-            /* Extract the total number of frames. */
-        $pattern = "/frameCnt ([0-9]+)/";
+            /* Extract the channels and frame count of this coloc run. */
+        $pattern = "/channels {([0-9]) ([0-9])} frameCnt {([0-9]+)}/";
         if(!preg_match($pattern,$colocReport,$matches)) {
-            error_log("Impossible to retrieve frame data from coloc report");
-        } else {
-            $frameCnt = $matches[1];
+            return;
         }
 
-            /* Extract the two channels involved in this coloc run. */
-        $pattern = "/channels {([0-9]) ([0-9])}/";
-        if(!preg_match($pattern,$colocReport,$matches)) {
-            error_log("Impossible to retrieve channel data from coloc report");
-        } else {
-            $chanR = $matches[1];
-            $chanG = $matches[2];
-        }
-
-            /* In order to make further pattern matching a bit easier get
-             rid of the coloc string parts that have already been matched. */
-        $colocReport = explode($matches[0],$colocReport);
-        $colocReport = $colocReport[1];
-        
-            /* Extract the colocalization coefficients. */
-        $pattern = "/([0-9a-zA-Z]+) {(([0-9.]+ )*)/";
-        if (!preg_match_all($pattern, $colocReport, $matches)) {
-            error_log("Impossible to retrieve coefficients from coloc report");
-        }
-        
-            /* Start inserting data into the html table. */
-
-            /* The number of colums of the table will be the number of
-             colocalization coefficients + 1 (for the frame column). */
-            $columnCnt = count($matches[1]) + 1;
-        
-            /* Insert the channel header. */
+            /* The first table row is the top title. */
+        $chanR = $matches[1];
+        $chanG = $matches[2];
         $title = "Channel $chanR  ~vs~  Channel $chanG";
-        $row   = $this->insertCell($title,"title", $columnCnt);
+        $row   = $this->insertCell($title,"title", 15);
         $table = $this->insertRow($row);
         
-            /* Insert the frame header. */ 
-        $headerRow = $this->insertCell("Frame","header");
-        
-            /* Insert the coefficient names header. */
-        foreach ($matches[1] as $coefficient) {
-            $headerRow .= $this->insertCell($coefficient,"header");
-        }
-        $table .= $this->insertRow($headerRow);
-        
-            /* Insert the coloc values. */
-        for ($frame = 0; $frame < $frameCnt; $frame++) {
-            
-                /* There is one row per frame. */
-            $frameRow = $this->insertCell($frame,"header");
-            
-                /* There is one cell per coefficient type.
-                 Loop over the coefficient types. */
-            foreach ($matches[2] as $coefficient) {
+            /* Split the coloc report into the frame results. */
+        $colocReport = explode($matches[0],$colocReport);
+        $frameResults = explode("}{",$colocReport[1]);
 
-                    /* Only one frame. */
-                $coefficient = explode(" ",$coefficient);
-                $coefficient = $coefficient[$frame];
-                $coefficient = round($coefficient,4);
-                
-                $frameRow .= $this->insertCell($coefficient,"cell");
-
-                    /* If we are inserting data at this point it means that
-                     parsing the coloc data works out. The coloc run went Ok. */
-                $this->colocRunOk = TRUE;
+            /* Extract colocalization coefficients frame by frame. */
+        foreach ($frameResults as $frameCnt => $frameResult) {
+            
+            $pattern = "/([0-9a-zA-Z]+) {([0-9.]+)}/";
+            if (!preg_match_all($pattern, $frameResult, $matches)) {
+                continue;
             }
-            $table .= $this->insertRow($frameRow);   
+            
+                /* Insert the column headers. */
+            if ($frameCnt == 0) {
+                
+                    /* If parsing reached this point the coloc run went Ok. */
+                $this->colocRunOk = TRUE;
+                
+                $headerRow = "";
+                foreach ($matches[1] as $key => $parameter) {
+                    if ($parameter == "frame")
+                        $parameter = "Frame";
+                    if ($parameter == "threshR")
+                        $parameter = "Thresh. Ch. $chanR";
+                    if ($parameter == "threshG")
+                        $parameter = "Thresh. Ch. $chanG";
+                    $headerRow .= $this->insertCell($parameter,"header");
+                }
+                $table .= $this->insertRow($headerRow);
+            }
+
+                /* Insert the table rows. */
+            $frameRow = $this->insertCell($frameCnt,"header");
+            foreach ($matches[2] as $key => $value) {
+                
+                if ($matches[1][$key] == "frame") continue;
+                $frameRow .= $this->insertCell(round($value,4),"cell");
+            }
+            
+            $table .= $this->insertRow($frameRow);
         }
         
         return $this->insertTable($table);
