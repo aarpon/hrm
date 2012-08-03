@@ -2134,7 +2134,7 @@ if ($current_revision < $n) {
         }
     }
 
-    // Delete the OverrideParameter entries from possible_values
+    // Delete the OverrideConfidence entries from possible_values
     $tabname = 'possible_values';
     $record = array();
     $record["parameter"]   = 'OverrideConfidence';

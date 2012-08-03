@@ -213,6 +213,7 @@ class System {
 					case '9':  return ( $r . " (Leopard)" );
 					case '10': return ( $r . " (Snow Leopard)" );
 					case '11': return ( $r . " (Lion)" );
+					case '12': return ( $r . " (Mountain Lion)" );
 					default:   return ( $r );
 				}
 			} else {
