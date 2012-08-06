@@ -1771,6 +1771,10 @@ class TaskSetting extends Setting {
         $parameter->setValue($postedParameters["ColocAnalysis"]);
         $this->set($parameter);
 
+        if ($parameter->value() == FALSE) {
+            return $noErrorsFound;
+        }
+
             // At least two channels must be selected.
         if (!isset($postedParameters["ColocChannel"])
             || $postedParameters["ColocChannel"] == "") {
