@@ -811,13 +811,22 @@ class Job {
                 
                 $headerRow = "";
                 foreach ($matches[1] as $key => $parameter) {
-                    if ($parameter == "frame")
-                        $parameter = "Frame";
-                    if ($parameter == "threshR")
-                        $parameter = "Thresh. Ch. $chanR";
-                    if ($parameter == "threshG")
-                        $parameter = "Thresh. Ch. $chanG";
-                    $headerRow .= $this->insertCell($parameter,"header");
+
+                    switch ( $parameter ) { 
+                        case "frame": 
+                            $headerRow .= $this->insertCell("Frame","header");
+                            break;
+                        case "threshR": 
+                            $headerRow .=
+                                $this->insertCell("Thresh. Ch. $chanR","header");
+                            break;
+                        case "threshG":
+                            $headerRow .=
+                                $this->insertCell("Thresh. Ch. $chanG","header");
+                            break;
+                        default:
+                            $headerRow .= $this->insertCell($parameter,"header");
+                    }
                 }
                 $table .= $this->insertRow($headerRow);
             }
@@ -826,8 +835,17 @@ class Job {
             $frameRow = $this->insertCell($frameCnt,"header");
             foreach ($matches[2] as $key => $value) {
                 
-                if ($matches[1][$key] == "frame") continue;
-                $frameRow .= $this->insertCell(round($value,4),"cell");
+                switch ( $matches[1][$key] ) { 
+                    case "frame":
+                        break;
+                    case "threshR":
+                    case "threshG":
+                        $frameRow .= $this->insertCell(round($value,4),"thresh");
+                        break;
+                    default:
+                        $frameRow .=
+                            $this->insertCell(round($value,4),"coefficient");
+                }
             }
             
             $table .= $this->insertRow($frameRow);

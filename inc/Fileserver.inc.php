@@ -2778,7 +2778,7 @@ echo '</body></html>';
       if ( $threshold ) {
 
               /* Loop over the table values: the colocalization coefficients. */
-          $pattern = "/class=\"cell\" colspan=\"1\">([0-9.]+)/";
+          $pattern = "/class=\"coefficient\" colspan=\"1\">([0-9.]+)/";
           preg_match_all($pattern, $colocHtml, $matches);
           
           foreach($matches[1] as $coefficient) {
@@ -2787,7 +2787,7 @@ echo '</body></html>';
               if ($coefficient > $threshold) {
 
                       /* Change the html properties of that particular cell. */
-                  $replaceThis = "cell\" colspan=\"1\">$coefficient";
+                  $replaceThis = "coefficient\" colspan=\"1\">$coefficient";
                   $replaceWith = "marked\" colspan=\"1\">$coefficient";
                   $colocHtml = str_replace($replaceThis,$replaceWith,$colocHtml);
               }
@@ -2799,7 +2799,7 @@ echo '</body></html>';
           /* Form used to ask for the threshold value. */
       $form  = "<br /><br />";
       $form .= "<form action='' method='post'>";
-      $form .= "\t\t\t\t\tHighlight values larger than:   ";
+      $form .= "\t\t\t\t\tColocalization coefficients larger than:   ";
       $form .= "<input type='text' name='threshold' value='$threshold'/>";
       $form .= "<input type='hidden' name='tab' value='$tab' />   ";
       $form .= "<button name='submit' type='submit' ";
