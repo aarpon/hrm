@@ -1771,7 +1771,7 @@ class TaskSetting extends Setting {
         $parameter->setValue($postedParameters["ColocAnalysis"]);
         $this->set($parameter);
 
-        if ($parameter->value() == FALSE) {
+        if ($parameter->value() == False) {
             return $noErrorsFound;
         }
 
