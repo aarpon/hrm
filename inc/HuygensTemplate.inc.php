@@ -983,7 +983,7 @@ class HuygensTemplate {
 
         /* There should be one 2D histogram per colocalization run. */
         if (!$this->getColocalization()) {
-            return $imgColoc;
+            return $imgHist;
         }
 
         $colocChannels = $this->getColocChannels();
