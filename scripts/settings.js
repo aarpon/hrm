@@ -135,6 +135,21 @@ function switchSnrMode() {
     //changeVisibility('cmle-it');
 }
 
+function switchColocMode() {
+    var element = document.getElementById('ColocAnalysis');
+    if (element.selectedIndex == 1) {
+        show('ColocChannelSelectionDiv');
+        show('ColocCoefficientSelectionDiv');
+        show('ColocThresholdSelectionDiv');
+        show('ColocMapSelectionDiv');
+    } else {
+        hide('ColocChannelSelectionDiv');
+        hide('ColocCoefficientSelectionDiv');
+        hide('ColocThresholdSelectionDiv');
+        hide('ColocMapSelectionDiv');
+    }
+}
+
 function switchCorrection() {
     var element = document.getElementById('PerformAberrationCorrection');
     if (element.selectedIndex == 1) {

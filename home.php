@@ -263,7 +263,7 @@ include("header.inc.php");
 			  <td class="text"><div class="cell">
                 <a href="./select_parameter_settings.php">Start a job</a>
                 <br />
-				<p />Create and start deconvolution jobs.
+				<p />Create and start restoration and analysis jobs.
                 </div>
 			  </td>
 			  

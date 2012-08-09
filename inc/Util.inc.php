@@ -2,6 +2,38 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
+
+/*!
+ \brief  Alternative to the PHP function 'array_search' to find out whether a
+         particular value exists in an array. PHP functions mistake '0' for ''.
+ \param  $array The array where to search
+ \param  $value The value to look for
+ \return A boolean: true if the value exists in the array, false otherwise.
+*/
+function isValueInArray($array, $value){
+ 
+ if(!is_array($array)){
+   return;
+ }
+
+  $found = FALSE;
+ 
+  foreach ($array as $arrKey => $arrValue) {
+
+          /* A first filter on the length to distinguish '0' and '', which
+           apparently cannot be told appart with '===' */
+      if (strlen($arrValue) == strlen($value)) {
+          if ($arrValue == $value) {
+              $found = TRUE;
+              break;
+          }
+      }
+  }
+  
+  return $found;
+}
+
+
 /*!
   \brief  Takes a number between 1 and 36 as input and returns the corresponding
           code in the range 'a' .. 'z' '1' .. '9'

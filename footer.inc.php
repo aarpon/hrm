@@ -19,7 +19,7 @@ $loggedIn = ( isset($_SESSION['user'] ) && $_SESSION['user']->isLoggedIn( ) );
                     "\"Tip('Login to see contact information.' )\" " .
 					"onmouseout=\"UnTip()\">Volker Baecker</span>";
 		?>
-		<br />extended 2006-2011 by
+		<br />extended 2006-2012 by
 		<?php
 			if ( $loggedIn == true ) {
 				echo 'Asheesh Gulati';  // Former developer - no email info

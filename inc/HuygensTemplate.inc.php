@@ -47,7 +47,7 @@ class HuygensTemplate {
 
     /*!
      \var     $template
-     \brief   Batch template containing the deconvolution job and thumbnail tasks.
+     \brief   Batch template containing the deconvolution job + thumbnail tasks.
     */
     public $template;
 
@@ -140,6 +140,18 @@ class HuygensTemplate {
      \brief  Array with information on the image cmle/qmle subtask.
     */
     private $algArray;
+
+    /*!
+     \var    $colocArray;
+     \brief  Array with information on the colocalization analysis subtask.
+    */
+    private $colocArray;
+
+    /*!
+     \var    $histoArray;
+     \brief  Array with information on the 2D histogram subtask.
+    */
+    private $histoArray;
 
     /*!
       \var    $setpArray
@@ -237,7 +249,7 @@ class HuygensTemplate {
     */
     private $thumbLif;
 
-    /* ---------------------------- Constructor ------------------------------- */
+    /* -------------------------- Constructor ------------------------------- */
 
     /*!
      \brief       Constructor
@@ -311,7 +323,7 @@ class HuygensTemplate {
     }
 
     /*!
-     \brief       Loads arrays with environment data: number of cores, timeout, ..
+     \brief       Loads arrays with environment data: number cores, timeout, ..
     */
     private function initializeEnvironment( ) {
         $this->envArray = 
@@ -368,6 +380,8 @@ class HuygensTemplate {
                    'setParameters'              =>  'setp',
                    'adjustBaseline'             =>  'adjbl',
                    'algorithms'                 =>  '',
+                   'colocalization'             =>  'coloc',
+                   '2Dhistogram'                =>  'hist',
                    'XYXZRawAtSrcDir'            =>  'previewGen',
                    'XYXZRawLifAtSrcDir'         =>  'previewGen',
                    'XYXZRawAtDstDir'            =>  'previewGen',
@@ -455,6 +469,27 @@ class HuygensTemplate {
                     'itMode'                    =>  'auto',
                     'listID'                    =>  '' );
 
+        /* Options for the 'colocalization analysis' action */
+        $this->colocArray  =
+            array( 'chanR'                      =>  '',
+                   'chanG'                      =>  '',
+                   'threshMode'                 =>  '',
+                   'threshPercR'                =>  '',
+                   'threshPercG'                =>  '',
+                   'coefficients'               =>  '',
+                   'map'                        =>  '',
+                   'destDir'                    =>  '',
+                   'destFile'                   =>  '',
+                   'listID'                     =>  'coloc' );
+
+            /* Options for the '2D histogram' action */
+        $this->histoArray  =
+            array( 'chanR'                      =>  '',
+                   'chanG'                      =>  '',
+                   'destDir'                    =>  '',
+                   'destFile'                   =>  '',
+                   'listID'                     =>  'hist' );        
+
         /* Options for the 'create thumbnail from image' action */
         $this->thumbArray =
             array( 'image'                      =>  '',
@@ -472,7 +507,17 @@ class HuygensTemplate {
         $this->isEligibleForSlicers($this->srcImage);
     }
 
-    /* --------------------------- Task list builders -------------------------- */
+    /* --------------------- Main task list builders ------------------------- */
+
+        /*!
+     \brief       Puts the Huygens Batch template together
+    */
+    private function assembleTemplate( ) {
+        $this->template =  $this->jobInfoList . "\n";
+        $this->template .= $this->jobTasksList . "\n";
+        $this->template .= $this->envList . "\n ";
+        $this->template .= $this->imgProcessList;
+    }
 
     /*!
      \brief       Sets the template info tag.
@@ -538,7 +583,7 @@ class HuygensTemplate {
     }
 
     /*!
-     \brief       Sets the job's environment task: number of cores, timeout, etc. 
+     \brief      Sets the job's environment task: number of cores, timeout, etc. 
     */
     private function setEnvList( ) {
 
@@ -605,44 +650,6 @@ class HuygensTemplate {
     }
 
     /*!
-     \brief       Puts the Huygens Batch template together
-    */
-    private function assembleTemplate( ) {
-        $this->template =  $this->jobInfoList . "\n";
-        $this->template .= $this->jobTasksList . "\n";
-        $this->template .= $this->envList . "\n ";
-        $this->template .= $this->imgProcessList;
-    }
-
-    /*!
-     \brief       Gets the environment export format option
-     \return      Tcl-complaint nested list with the export format details
-    */
-    private function getExportFormat( ) {
-
-        $exportFormat = "";
-        foreach ($this->expFormatArray as $key => $value) {
-            $exportFormat .= " " . $key . " ";
-
-            switch( $key ) {
-            case 'type':
-                $exportFormat .= $this->getOutputFileType();
-                break;
-            case 'multidir':
-                $exportFormat .= $this->getMultiDirOpt();
-                break;
-            case 'cmode':
-                $exportFormat .= $value;
-                break;
-            default:
-                error_log("Export format option $key not yet implemented");
-            }
-        }
-
-        return $this->string2tcllist($exportFormat);
-    }
-
-    /*!
      \brief       Gets information on the template's only job.
      \return      The Tcl-compliant nested list with the info details.
     */
@@ -698,6 +705,8 @@ class HuygensTemplate {
             case 'setParameters':
             case 'adjustBaseline':
             case 'algorithms':
+            case 'colocalization':
+            case '2Dhistogram':    
             case 'XYXZRawAtSrcDir':
             case 'XYXZRawLifAtSrcDir':
             case 'XYXZRawAtDstDir':
@@ -754,6 +763,12 @@ class HuygensTemplate {
                 break;
             case 'algorithms':
                 $taskList .= $this->getImgProcessAlgorithms();
+                break;
+            case 'colocalization':
+                $taskList .= $this->getImgProcessColoc();
+                break;
+            case '2Dhistogram':
+                $taskList .= $this->getImgProcessHistogram();
                 break;
             case 'XYXZRawAtSrcDir':
             case 'XYXZRawLifAtSrcDir':
@@ -906,75 +921,97 @@ class HuygensTemplate {
     }
 
     /*!
-     \brief       Gets options for the 'algorithm' task. One channel.
-     \param       $channel A channel
-     \return      Tcl list with the deconvolution 'algorithm' task and its options.
+     \brief       Gets options for the 'algorithm' task. All channels.
+     \return      Deconvolution 'algorithm' task string and its options.
     */
-    private function getTaskAlgorithm($channel) {
+    private function getImgProcessAlgorithms( ) {
+        $numberOfChannels = $this->getNumberOfChannels();
+        $algorithms = "";
+        for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
+            $algorithm = $this->getAlgorithm($chanCnt);
+            $algOptions = $this->getTaskAlgorithm($chanCnt);
+            $algorithms .= " ${algorithm}:$chanCnt $algOptions";
+        }
 
-        $imgAlg = "";
-        foreach ($this->algArray as $key => $value) {
+        return $algorithms;
+    }
 
-            if ($key != "mode" && $key != "itMode" && $key != 'listID') {
-                $imgAlg .= " " . $key . " ";
+    /*!
+     \brief       Gets options for all the 'colocalization' tasks.
+     \return      Tcl list with the 'colocalization' tasks and their options.
+    */
+    private function getImgProcessColoc( ) {
+
+        $imgColoc = "";
+        
+        if (!$this->getColocalization()) {
+            return $imgColoc;
+        }
+
+        $colocChannels = $this->getColocChannels();
+        $colocRuns = $this->getNumberColocRuns();
+
+            /* All the possible coloc runs combining the chosen channels. */
+        $runCnt = 0;
+        
+        for ($i = 0; $i < count($colocChannels) - 1; $i++) {
+            for ($j = $i + 1; $j < count($colocChannels); $j++) {
+
+                $chanR = $colocChannels[$i];
+                $chanG = $colocChannels[$j];
+                
+                $imgColoc .= $this->getTaskColoc($chanR, $chanG, $runCnt);
+                
+                if ( $runCnt < $colocRuns ) {
+                    $runCnt++;
+                } else {
+                    error_log("Wrong number of colocalization runs: $runCnt");
+                }
             }
+        }
+        
+        return $imgColoc;
+    }
 
-            switch ( $key ) {
-            case 'q':
-                $imgAlg .= $this->getQualityFactor();
-                break;
-            case 'brMode':
-                $imgAlg .= $this->getBrMode();
-                break;
-            case 'it':
-                $imgAlg .= $this->getIterations();
-                break;
-            case 'bgMode':
-                $imgAlg .= $this->getBgMode();
-                break;
-            case 'bg':
-                $imgAlg .= $this->getBgValue($channel);
-                break;
-            case 'sn':
-                $imgAlg .= $this->getSnrValue($channel);
-                break;
-            case 'psfMode':
-                $imgAlg .= $this->getPsfMode();
-                break;
-            case 'psfPath':
-                $imgAlg .= $this->getPsfPath($channel);
-                break;
-            case 'blMode':
-                $imgAlg .= $value;
-                break;
-            case 'pad':
-                $imgAlg .= $value;
-                break;
-            case 'timeOut':
-                $imgAlg .= $value;
-                break;
-            case 'mode':
-                if ($this->getAlgorithm() == "cmle") {
-                    $imgAlg .= " " . $key . " ";
-                    $imgAlg .= $value;
+    /*!
+     \brief       Gets options for the '2Dhistogram' task.
+     \return      Tcl list with the '2Dhistogram' task and its options.
+    */
+    private function getImgProcessHistogram( ) {
+        
+        $imgHist = "";
+
+        /* There should be one 2D histogram per colocalization run. */
+        if (!$this->getColocalization()) {
+            return $imgHist;
+        }
+
+        $colocChannels = $this->getColocChannels();
+        $colocRuns = $this->getNumberColocRuns();
+
+            /* All the possible coloc runs combining the chosen channels. */
+        $runCnt = 0;
+        
+        for ($i = 0; $i < count($colocChannels) - 1; $i++) {
+            for ($j = $i + 1; $j < count($colocChannels); $j++) {
+
+                $chanR = $colocChannels[$i];
+                $chanG = $colocChannels[$j];
+                
+                $imgHist .= $this->getTaskHist($chanR, $chanG, $runCnt);
+                
+                if ( $runCnt < $colocRuns ) {
+                    $runCnt++;
+                } else {
+                    error_log("Wrong number of colocalization runs: $runCnt");
                 }
-                break;
-            case 'itMode':
-                if ($this->getAlgorithm() == "qmle") {
-                    $imgAlg .= " " . $key . " ";
-                    $imgAlg .= $value;
-                }
-                break;
-            case 'listID':
-                break;
-            default:
-                error_log("Deconvolution option $key not yet implemented");
             }
         }
 
-        return $this->string2tcllist($imgAlg);
+        return $imgHist;
     }
 
+    
     /*!
      \brief      Gets options for the thumbnail generation task.
      \return     Tcl-compliant list with the thumbnail options.
@@ -1058,7 +1095,7 @@ class HuygensTemplate {
         return $imgSave;
     }
 
-    /* -------------------------- Setp task ----------------------------------- */
+    /* -------------------------- Setp task ---------------------------------- */
 
     /*!
      \brief       Gets the pinhole radius. One channel.
@@ -1146,8 +1183,8 @@ class HuygensTemplate {
     }
 
     /*!
-     \brief       Gets the excitation beam overfill factor. Same for all channels.
-     \return      The excitation beam factor.
+     \brief      Gets the excitation beam overfill factor. Same for all channels.
+     \return     The excitation beam factor.
     */
     private function getExcitationBeamFactor( ) {
         return $this->setpArray['exBeamFill'];
@@ -1191,7 +1228,7 @@ class HuygensTemplate {
     }
 
     /*!
-     \brief       Gets the sampling distance in the X direction.                   
+     \brief       Gets the sampling distance in the X direction.                 
      \return      The sampling in the X direction, if specified by the user. 
     */
     public function getSamplingSizeX( ) {
@@ -1203,7 +1240,7 @@ class HuygensTemplate {
     }
 
     /*!
-     \brief       Gets the sampling distance in the Y direction.                   
+     \brief       Gets the sampling distance in the Y direction.                 
      \return      The sampling in the Y direction, if specified by the user.
     */
     public function getSamplingSizeY( ) {
@@ -1215,7 +1252,7 @@ class HuygensTemplate {
     }
 
     /*!
-     \brief       Gets the sampling distance in the Z direction.                   
+     \brief       Gets the sampling distance in the Z direction.                 
      \return      The sampling in the Z direction, if specified by the user.
     */
     public function getSamplingSizeZ( ) {
@@ -1251,7 +1288,77 @@ class HuygensTemplate {
         return $this->string2tcllist($sampling);
     }
 
-    /* -------------------------- Algorithm task ------------------------------ */
+    /* -------------------------- Algorithm task ----------------------------- */
+
+   /*!
+     \brief       Gets options for the 'algorithm' task. One channel.
+     \param       $channel A channel
+     \return      Tcl list with the deconvolution 'algorithm' task + its options.
+    */
+    private function getTaskAlgorithm($channel) {
+
+        $imgAlg = "";
+        foreach ($this->algArray as $key => $value) {
+
+            if ($key != "mode" && $key != "itMode" && $key != 'listID') {
+                $imgAlg .= " " . $key . " ";
+            }
+
+            switch ( $key ) {
+            case 'q':
+                $imgAlg .= $this->getQualityFactor();
+                break;
+            case 'brMode':
+                $imgAlg .= $this->getBrMode();
+                break;
+            case 'it':
+                $imgAlg .= $this->getIterations();
+                break;
+            case 'bgMode':
+                $imgAlg .= $this->getBgMode();
+                break;
+            case 'bg':
+                $imgAlg .= $this->getBgValue($channel);
+                break;
+            case 'sn':
+                $imgAlg .= $this->getSnrValue($channel);
+                break;
+            case 'psfMode':
+                $imgAlg .= $this->getPsfMode();
+                break;
+            case 'psfPath':
+                $imgAlg .= $this->getPsfPath($channel);
+                break;
+            case 'blMode':
+                $imgAlg .= $value;
+                break;
+            case 'pad':
+                $imgAlg .= $value;
+                break;
+            case 'timeOut':
+                $imgAlg .= $value;
+                break;
+            case 'mode':
+                if ($this->getAlgorithm() == "cmle") {
+                    $imgAlg .= " " . $key . " ";
+                    $imgAlg .= $value;
+                }
+                break;
+            case 'itMode':
+                if ($this->getAlgorithm() == "qmle") {
+                    $imgAlg .= " " . $key . " ";
+                    $imgAlg .= $value;
+                }
+                break;
+            case 'listID':
+                break;
+            default:
+                error_log("Deconvolution option $key not yet implemented");
+            }
+        }
+
+        return $this->string2tcllist($imgAlg);
+    }
     
     /*!
      \brief       Gets the brick mode.
@@ -1307,7 +1414,8 @@ class HuygensTemplate {
             return 0.0;
         } elseif ($this->getBgMode() == "manual") {
             $deconSetting = $this->deconSetting;
-            $bgRate = $deconSetting->parameter("BackgroundOffsetPercent")->value();
+            $bgRate =
+                $deconSetting->parameter("BackgroundOffsetPercent")->value();
             return $bgRate[$channel];
         } else {
             error_log("Unknown background mode for channel $channel.");
@@ -1371,7 +1479,8 @@ class HuygensTemplate {
     */
     private function getQualityFactor( ) {
         $deconSetting = $this->deconSetting;
-        return $deconSetting->parameter('QualityChangeStoppingCriterion')->value();
+        $parameter = $deconSetting->parameter('QualityChangeStoppingCriterion');
+        return $parameter->value();
     }
 
     /*!
@@ -1398,7 +1507,200 @@ class HuygensTemplate {
         return $this->microSetting->getAberractionCorrectionParameters();
     }
 
-    /* ------------------------- Thumbnail tasks------------------------------- */
+    /* --------------------- Colocalization tasks ---------------------------- */
+
+    /*!
+     \brief       Gets options for the 'colocalization' task.
+     \param       $chanR A channel number acting as red channel.
+     \param       $chanG A channel number acting as green channel.
+     \param       $runCnt The number of colocalization tasks
+     \return      Tcl list with the 'colocalization' task and its options.
+    */
+    private function getTaskColoc($chanR, $chanG, $runCnt) {
+        
+        $imgColoc = "";
+        foreach ($this->colocArray as $key => $value) {
+
+            if ($key != "listID") {
+                if ($key == "threshPercR" || $key == "threshPercG") {
+                    if ($this->getColocThreshMode() != "manual") {
+                        continue;
+                    }
+                }
+                $imgColoc .= " " . $key . " ";
+            }
+
+            switch( $key ) {
+            case 'chanR':
+                $imgColoc .= $chanR;
+                break;
+            case 'chanG':
+                $imgColoc .= $chanG;
+                break;
+            case 'threshMode':
+                $imgColoc .= $this->getColocThreshMode();
+                break;
+            case 'threshPercR':
+                $imgColoc .= $this->getColocThreshValue($chanR);
+                break;
+            case 'threshPercG':
+                $imgColoc .= $this->getColocThreshValue($chanG);
+                break;
+            case 'coefficients':
+                $coefficients  = $this->getColocCoefficients();
+                $imgColoc .= $this->string2tcllist($coefficients);
+                break;
+            case 'map':
+                $imgColoc .= $this->getColocMap();
+                break;
+            case 'destDir':
+                $destDir   = $this->getDestDir() . "/hrm_previews";
+                $imgColoc .= $this->string2tcllist($destDir);
+                break;
+            case 'destFile':
+                $destFile  = $this->getThumbBaseName() . ".";
+                $destFile .= $this->getColocMap() . ".map_chan";
+                $destFile .= $chanR . "_" . "chan" . $chanG;
+                $imgColoc .= $destFile;
+                break;
+            case 'listID':
+                $imgColoc  = $this->string2tcllist($imgColoc);
+                $imgColoc  = $value . ":" . $runCnt . " " . $imgColoc . " ";
+                break;
+            default:
+                error_log("Colocalization option '$key' not yet implemented.");
+            }
+        }
+
+        return $imgColoc;
+    }
+
+    /*!
+     \brief       Gets the value of the boolean choice 'Colocalization Analysis'.
+     \return      Whether or not colocalization analysis should be performed.
+    */
+    private function getColocalization( ) 
+    {    
+        return $this->deconSetting->parameter('ColocAnalysis')->value();
+    }
+
+    /*!
+     \brief       Gets the channel choice for the colocalization analysis.
+     \return      Which channels to use in the colocalization analysis.
+    */
+    private function getColocChannels( ) {
+        $colocChannels = $this->deconSetting->parameter('ColocChannel')->value();
+        
+            /* Do not count empty elements. Do count channel '0'. */
+        return array_filter($colocChannels, 'strlen');
+}
+
+    /*!
+     \brief       Gets the value of the choice 'Colocalization Coefficients'.
+     \return      Which colocalization coefficients should be calculated.
+    */
+    private function getColocCoefficients( ) 
+    {
+        $colocCoefficients = "";
+        $coefArr = $this->deconSetting->parameter('ColocCoefficient')->value();
+
+        foreach ($coefArr as $key => $coefficient) {
+            $colocCoefficients .= $coefficient . " ";
+        }
+
+        return $colocCoefficients;
+    }
+    
+    /*!
+     \brief       Gets the value of the choice 'Colocalization Map'.
+     \return      Which colocalization map should be created.
+    */
+    private function getColocMap( ) 
+    {    
+        return $this->deconSetting->parameter('ColocMap')->value();
+    }
+
+    /*!
+     \brief       Gets the colocalization threshold mode.
+     \return      The colocalization threshold mode.
+    */
+    private function getColocThreshMode( ) {
+        $bgParam = $this->deconSetting->parameter("ColocThreshold");
+        $bgValue = $bgParam->value();
+
+        if ($bgValue[0] == "auto") {
+            return "auto";
+        }  else {
+            return "manual";
+        }
+    }
+
+    /*!
+     \brief       Gets the coloc background (threshold) value. One channel.
+     \param       $channel A channel
+     \return      The colocalization background (threshold) value.
+    */
+    private function getColocThreshValue($channel) {
+        if ($this->getColocThreshMode() == "auto") {
+            return 0.0;
+        } elseif ($this->getColocThreshMode() == "manual") {
+            $deconSetting = $this->deconSetting;
+            $bgRate = $deconSetting->parameter("ColocThreshold")->value();
+            return $bgRate[$channel];
+        } else {
+            error_log("Unknown colocalization threshold mode.");
+            return;
+        }
+    }
+
+    
+     /* --------------------- Histogram tasks ---------------------------- */
+
+     /*!
+     \brief       Gets options for the 'histogram' task.
+     \param       $chanR A channel number acting as red channel.
+     \param       $chanG A channel number acting as green channel.
+     \param       $runCnt The number of histogram tasks
+     \return      Tcl list with the 'histogram' task and its options.
+    */
+    private function getTaskHist($chanR, $chanG, $runCnt) {
+
+        $imgHist = "";
+        foreach ($this->histoArray as $key => $value) {
+            
+            if ($key != "listID") {
+                $imgHist .= " " . $key . " ";
+            }
+            
+            switch( $key ) {
+            case 'chanR':
+                $imgHist .= $chanR;
+                break;
+            case 'chanG':
+                $imgHist .= $chanG;
+                break;
+            case 'destDir':
+                $destDir  = $this->getDestDir() . "/hrm_previews";
+                $imgHist .= $this->string2tcllist($destDir);
+                break;        
+            case 'destFile':
+                $destFile  = $this->getThumbBaseName() . ".hist_chan" . $chanR;
+                $destFile .= "_" . "chan" . $chanG;
+                $imgHist  .= $destFile;
+                break;
+            case 'listID':
+                $imgHist  = $this->string2tcllist($imgHist);
+                $imgHist  = $value . ":" . $runCnt . " " . $imgHist . " ";
+                break;
+            default:
+                error_log("2D histogram option '$key' not yet implemented.");
+            }
+        }
+
+        return $imgHist;
+    }
+
+    /* ------------------------ Thumbnail tasks------------------------------- */
 
     /*!
      \brief       Gets options for each of the thumbnail tasks.
@@ -1532,7 +1834,35 @@ class HuygensTemplate {
         return $suffix;
     } 
 
-    /* ------------------------------ Utilities -------------------------------- */
+    /* ----------------------------- Utilities ------------------------------- */
+
+    /*!
+     \brief       Gets the environment export format option
+     \return      Tcl-complaint nested list with the export format details
+    */
+    private function getExportFormat( ) {
+
+        $exportFormat = "";
+        foreach ($this->expFormatArray as $key => $value) {
+            $exportFormat .= " " . $key . " ";
+
+            switch( $key ) {
+            case 'type':
+                $exportFormat .= $this->getOutputFileType();
+                break;
+            case 'multidir':
+                $exportFormat .= $this->getMultiDirOpt();
+                break;
+            case 'cmode':
+                $exportFormat .= $value;
+                break;
+            default:
+                error_log("Export format option $key not yet implemented");
+            }
+        }
+
+        return $this->string2tcllist($exportFormat);
+    }
 
     /*!
      \brief       Gets the basic name that all thumbnails share, based on job id.
@@ -1654,7 +1984,8 @@ class HuygensTemplate {
             $param = "";
             for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
                 if (!$default) {
-                    $param .= $this->getParameterValue($paramName,$chanCnt) . " ";
+                    $param .= $this->getParameterValue($paramName,$chanCnt);
+                    $param .= " ";
                 } else {
                     $param .= $default . " ";
                 }
@@ -1737,40 +2068,73 @@ class HuygensTemplate {
     }
 
     /*!
-     \brief       Gets options for the 'algorithm' task. All channels.
-     \return      Deconvolution 'algorithm' task string and its options.
-    */
-    private function getImgProcessAlgorithms( ) {
-        $numberOfChannels = $this->getNumberOfChannels();
-        $algorithms = "";
-        for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $algorithm = $this->getAlgorithm($chanCnt);
-            $algOptions = $this->getTaskAlgorithm($chanCnt);
-            $algorithms .= " ${algorithm}:$chanCnt $algOptions";
-        }
-
-        return $algorithms;
-    }
-
-    /*!
      \brief       Gets the Huygens task name of a task.
      \param       $key   A task array key
      \param       $task  A task compliant with the Huygens template task names
      \return      The task name (includes channel number, preview number, etc.)
     */
     private function parseTask($key,$task) {
-
-        if ($task == "" && $key == "algorithms") {
-            $task = $this->parseAlgorithm();
-        } elseif ($task == "previewGen") {
-            $task = $this->parsePreviewGen($key,$task);
-        } else {
-            return $task;
+        switch ($task) {
+            case 'imgOpen':
+            case 'setp':
+            case 'adjbl':
+            case 'imgSave':
+                break;
+            case 'coloc':
+            case 'hist':
+                $task = $this->parseMultiChan($task);
+                break;
+            case 'previewGen':
+                $task = $this->parsePreviewGen($key,$task);
+                break;
+            case '':
+                if ($key == "algorithms") {
+                    $task = $this->parseAlgorithm();                    
+                }
+                break;
+            default:
+                error_log("Huygens template task '$task' not yet implemented.");
         }
-
-        return $task;
+        
+        return $task;            
     }
 
+    /*!
+     \brief       Gets the Huygens deconvolution task names of every channel
+     \return      The Huygens deconvolution task names
+    */
+    private function parseAlgorithm( ) {
+        $numberOfChannels = $this->getNumberOfChannels();
+        $algorithms = "";
+        for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
+            $algorithms .= $this->getAlgorithm().":$chanCnt ";
+        }
+        return trim($algorithms);
+    }
+
+    /*!
+     \brief       Gets the Huygens task name of a task run every two channels.
+     \param       $key A task array key
+     \return      The Huygens task name.
+     */
+    private function parseMultiChan($task)
+    {
+        $tasks = "";
+
+        /* At the moment there are only coloc/hist tasks as multichannel task.
+         There must be as many runs as specified by the coloc channels. */
+        $runCnt = $this->getNumberColocRuns();
+
+        if ($runCnt == 0) return $tasks;
+        
+        /* The template task run counter starts at 0. */
+        for ($run = 0; $run < $runCnt; $run++ ) {
+            $tasks .= $task . ":$run ";
+        }
+        
+        return trim($tasks);
+    }
+    
     /*!
      \brief       Gets the Huygens task name of a thumbnail task
      \param       $key   A task array key
@@ -1802,6 +2166,27 @@ class HuygensTemplate {
         }
 
         return $task;
+    }
+
+    /*!
+     \brief   Gets the number of colocalization runs as a result of combining
+              the choice of channels for colocalization analysis.
+     \return  The number of colocalization runs.
+    */
+    private function getNumberColocRuns ( ) {
+
+        $colocRuns = 0;
+
+        if ($this->getColocalization() == "1") {
+            
+            $chanCnt = count($this->getColocChannels());
+
+                /* The number of combinations between channels obeys the following
+                 formula: n ( n - 1 ) / 2 ; where n is the number of channels. */
+            $colocRuns = $chanCnt * ( $chanCnt - 1) / 2;
+        }
+
+        return $colocRuns;
     }
 
     /*!
@@ -1859,19 +2244,6 @@ class HuygensTemplate {
         if ($slicerPixelsYT >= $maxPixelsPerDim) {
             $this->compareTviews = FALSE;
         }
-    }
-
-    /*!
-     \brief       Gets the Huygens deconvolution task names of every channel
-     \return      The Huygens deconvolution task names
-    */
-    private function parseAlgorithm ( ) {
-        $numberOfChannels = $this->getNumberOfChannels();
-        $algorithms = "";
-        for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $algorithms .= $this->getAlgorithm().":$chanCnt ";
-        }
-        return trim($algorithms);
     }
 
     /*
@@ -2055,7 +2427,7 @@ class HuygensTemplate {
         return $outFileFormat->extension();
     }
 
-    /* ------------------------------------------------------------------------- */
+    /* ----------------------------------------------------------------------- */
 }
 
 ?>

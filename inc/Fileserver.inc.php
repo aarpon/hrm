@@ -75,6 +75,12 @@ class Fileserver {
   private $validArchiveExtensions =  array();
 
   /*!
+   \var     $previewBase
+   \brief   Part of the file name common to all preview files.
+  */
+  private $previewBase;
+
+  /*!
     \brief  Constructor: creates a new Fileserver
   */
   function __construct($name) {
@@ -1389,7 +1395,12 @@ echo '</body></html>';
 
       $dir = dirname($pdest."/".$file);
       $base = basename($pdest."/".$file);
-      $prevBase = $dir."/hrm_previews/".$base;
+
+          /* All preview files share a common root name. Set it here. */
+      $this->previewBase = $base;
+
+          /* The root name involving the path as well. */	
+      $prevBase = $dir."/hrm_previews/".$base;      
 
       $fileBase = $dir."/".$base;
       $path_info = pathinfo($fileBase);
@@ -1461,6 +1472,15 @@ echo '</body></html>';
           $movie['tSeriesSfpMovie'] = $file.".tSeries.sfp.avi";
           $msize['tSeriesSfpMovie'] = round(filesize($test) / 1024.0);
       }
+      
+      // Colocalization results
+      $filePattern = $this->getFilePattern(basename($file));
+      $filePattern = str_replace(".*",".coloc.*",$filePattern);
+      
+      $colocFile = glob($dir . "/" . $filePattern);
+      if (isset($colocFile) && !empty($colocFile)) {
+          $path['colocalization'] = $colocFile[0];
+      }
 
       // Remarks file
       $test = $pdest."/".$file.".remarks.txt";
@@ -1490,6 +1510,7 @@ echo '</body></html>';
                       'stackMovie'      => "stack movie",
                       'tSeriesMovie'    => "series movie",
                       'tSeriesSfpMovie' => "series SFP movie",
+                      'colocalization'  => "colocalization NEW !",
                       'history'         => "history",
                       'remarks'         => "remarks" );
 
@@ -1502,6 +1523,7 @@ echo '</body></html>';
                       'stackMovie'      => "Download Z-stack movie",
                       'tSeriesMovie'    => "Download time series MIP movie",
                       'tSeriesSfpMovie' => "Download time series SFP movie" ,
+                      'colocalization'  => "See colocalization results",
                       'history'         => "See the image restoration history, the executed Huygens - Tcl commands.",
                       'remarks'         => "See the image restoration warnings." );
 
@@ -1608,10 +1630,21 @@ echo '</body></html>';
           $this->viewStrip( $file, "$mode.compare", "dest", true );
           echo "<div id=\"previewImg\">\n";
           echo "<center>Original - Restored<br>(drag scrollbar for browsing)</center>";
-      } else if ( $mode == "log" || $mode == "history" || $mode == "remarks" || $mode == "parameters" ) {
+      } else if ( $mode == "log" || $mode == "history"
+                  || $mode == "remarks" || $mode == "parameters" ) {
           echo "<div id=\"logFile\">\n";
           print "<pre>";
           readfile ($path[$mode]);
+          print "</pre>";
+      } else if ( $mode == "colocalization" ) {
+          
+          echo "<div id='colocPage'>\n";
+          print "<pre>";
+
+          /* There exists a pre-formatted colocalization page created by the
+           Queue Manager. That html code cannot just be echo'ed, several
+           variables must be inserted before. */
+          echo $this->displayColocalization($path["colocalization"]);
           print "</pre>";
       } else {
 
@@ -1643,7 +1676,6 @@ echo '</body></html>';
 
           echo "\n<td><img src=\"file_management.php?getThumbnail=$rsfp".
               "&amp;dir=dest\" alt=\"Restored SFP preview\" /></td>";
-
       }
 
       echo "\n</tr>";
@@ -2657,5 +2689,264 @@ echo '</body></html>';
     $dir->close();
     return $files;
   }
+  
+                        /* -------- Colocalization ------ */
+  
+  /*!
+    \brief  Retrieves the HTML code for the colocalization preview page.
+    \param  $colocFile   file with the pre-formatted html coloc page.
+    \return String containing the HTML code of the colocalization preview page.
+  */
+  private function displayColocalization($colocFile) {
+
+          /* The pre-formatted html code of the page containing the coloc title,
+           the introduction and the coefficients table. */
+      $colocHtml = file_get_contents($colocFile);      
+      
+          /* The pre-formatted code has to be adapted to incorporate, among
+           others, several tabs that will show specific information. */
+      $colocTabs = array (  'Coefficients' => "coefficients" ,
+                            'Coloc maps'   => "maps" );
+
+          /* Variables storing the user requests on tab choice and
+           threshold value for highlight purposes. */
+      $postedTab = $_POST['tab'];
+      $postedThr = $_POST['threshold'];
+
+          /* Initialize the user request variables if necessary. */
+      if ($postedThr <= 0)    $postedThr = null;
+      if ($postedTab == null) $postedTab = "coefficients";
+
+          /* Get the code specific of each tab. */
+      switch ( $postedTab ) {
+          case 'coefficients':
+              $colocHtml = $this->showCoefficientsTab($colocHtml,$postedThr);
+              break;
+          case 'maps':
+              $colocHtml = $this->showColocMapsTab($colocHtml);
+              break;
+          default:
+              error_log("Coloc tab '$postedTab' not implemented yet.");
+      }
+      
+          /* Create the forms associated to the coloc tabs to convey the user
+           requests. Notice that, unlike the general tabs on the left hand side
+           of the page, the specific colocalization tabs are not coded in the
+           URL. */
+      $tabsDiv = "";
+      foreach ($colocTabs as $tabName => $tabValue) {
+          
+          if ($tabValue == $postedTab) {
+              $state = 'selected';
+          } else {
+              $state = 'normal';
+          }
+          
+          $form  = "<form action='' method='post'>";
+          $form .= "<input type='hidden' name='tab' value='$tabValue'/>";
+          $form .= "<input type='hidden' name='threshold' value='$postedThr'/>";
+          $form .= "<input type='submit' value='$tabName' id='colocTab' ";
+          $form .= "class='$state'/>";          
+          $form .= "</form>";
+          
+          $tabsDiv .= $form;
+      }
+
+          /* Insert the tabs forms in the appropriate place in the existing
+           colocalization html code. There is dummy div in $colocHtml created
+           by the Queue Manager that serves as a hook for inserting this code. */
+      $replaceThis = "</div><!-- colocTabs";
+      $replaceWith = $tabsDiv . "</div><!-- colocTabs";
+      $colocHtml = str_replace($replaceThis,$replaceWith,$colocHtml);
+
+      return $colocHtml;
+  }
+
+  /*!
+    \brief  Creates html code specific for the colocalization coefficients tab.
+    \param  $colocHtml  The pre-formatted html coloc page.
+    \param  $threshold Value above which coloc values will be highlighted.
+    \return String containing HTML code for the colocalization preview page.
+  */
+  private function showCoefficientsTab($colocHtml, $threshold) {
+
+          /* Next to the pre-formatted coefficient tables show the 2D histograms. */
+      $colocHtml = $this->showHistograms($colocHtml);
+      
+          /* Adapt the pre-formatted html code containing the colocalization
+           tables to highlight the table cells that are above threshold. */
+      if ( $threshold ) {
+
+              /* Loop over the table values: the colocalization coefficients. */
+          $pattern = "/class=\"coefficient\" colspan=\"1\">([0-9.]+)/";
+          preg_match_all($pattern, $colocHtml, $matches);
+          
+          foreach($matches[1] as $coefficient) {
+
+                  /* Highlight the coefficients above the threshold. */
+              if ($coefficient > $threshold) {
+
+                      /* Change the html properties of that particular cell. */
+                  $replaceThis = "coefficient\" colspan=\"1\">$coefficient";
+                  $replaceWith = "marked\" colspan=\"1\">$coefficient";
+                  $colocHtml = str_replace($replaceThis,$replaceWith,$colocHtml);
+              }
+          }
+      }
+
+		  /* TODO: Improve the below layout via css. */
+      
+          /* Form used to ask for the threshold value. */
+      $form  = "<br /><br />";
+      $form .= "<form action='' method='post'>";
+      $form .= "\t\t\t\t\tColocalization coefficients larger than:   ";
+      $form .= "<input type='text' name='threshold' value='$threshold'/>";
+      $form .= "<input type='hidden' name='tab' value='$tab' />   ";
+      $form .= "<button name='submit' type='submit' ";
+      $form .= "onmouseover=\"Tip('Highlight all values above the set ";
+      $form .= "threshold.')\ onmouseout=\"UnTip()\" > Highlight </button>";
+      $form .= "<br /><br /></form>";
+
+          /* Insert the form before the output of the first coloc run. */
+      $replaceThis = "/<div id=\"colocRun\"/";
+      $replaceWith = $form . "<div id=\"colocRun\"";
+      $colocHtml   = preg_replace($replaceThis,$replaceWith,$colocHtml,1);
+      
+      return $colocHtml;
+  }
+
+  /*!
+   \brief    Inserts existing 2D histograms into the coloc coefficients tab.
+   \param    $coefficientsTab Html string containing the coefficients tab.
+   \return   The adapted coefficients tab html string with histograms.
+  */                                   
+  private function showHistograms($coefficientsTab)
+  {
+      
+          /* Histogram tooltip: it's common to all histograms. */
+      $tooltip  = "Position in histogram shows voxel intensity.<br />";
+      $tooltip .= "Bottom-Left = Low intensity.<br />";
+      $tooltip .= "Top-Right   = High intensity.<br /><br />";
+      $tooltip .= "Color shows the number of voxels of that intensity.<br />";
+      $tooltip .= "Purple-Blue = Low number of voxels.<br />";
+      $tooltip .= "Red-Yellow  = High number of voxels.";
+
+          /* Search all 2 channels combinations whose 2D histogram
+           should be shown. */
+      $pattern = "/Hook chan ([0-9]) - chan ([0-9])/";
+      if (!preg_match_all($pattern,$coefficientsTab,$matches)) {
+          error_log("Impossible to retrieve channels from coloc report.");
+      }
+
+          /* Insert the histograms. */
+      foreach ($matches[1] as $key => $chanR) {
+          $chanG = $matches[2][$key];
+          
+              /* Histogram file. */
+          $histFile  = $this->previewBase .".hist_chan".$chanR;
+          $histFile .= "_chan".$chanG.".jpg";
+          
+              /* Histogram hook. */
+          $replaceThis = "Hook chan $chanR - chan $chanG";
+          
+              /* Histogram html code. */
+          $replaceWith  = "<img src='file_management.php?getThumbnail=$histFile";
+          $replaceWith .= "&amp;dir=dest' alt='2D histogram channels ";
+          $replaceWith .= "$chanR - $chanG' height='256' width='256'";
+          $replaceWith .= "onmouseover=\"Tip('$tooltip')\"";
+          $replaceWith .= "onmouseout=\"UnTip()\" />";
+          $replaceWith .= "<br /><i>2D Histogram:  Ch. ";
+          $replaceWith .= "$chanR ~vs~ Ch. $chanG.</i>";
+          
+          $coefficientsTab = str_replace($replaceThis,
+                                         $replaceWith,
+                                         $coefficientsTab);
+      }
+      
+      return $coefficientsTab;
+  }
+  
+  /*!
+   \brief   Creates html code specific for the colocalization maps tab.
+   \param   $colocHtml The pre-formatted html coloc page.
+   \return  String containing HTML code for the colocalization preview page.
+  */
+  private function showColocMapsTab($colocHtml) 
+  {
+          /* Location where the colocalization maps are stored. */
+      $mapFolder = $this->destinationFolder() . "/hrm_previews/";
+      
+          /* Remove the coloc coefficients from the pre-formatted html table. */
+      $replaceThis = "/Hist --><div.+?colocCoefficients -->/";
+      $replaceWith = "Hist -->";
+      $colocMapTab = preg_replace($replaceThis,$replaceWith,$colocHtml);
+      
+          /* Search the channel hooks indicating which maps must be shown. */
+      $pattern = "/Hook chan ([0-9]) - chan ([0-9])/";
+      if (!preg_match_all($pattern,$colocMapTab,$matches)) {
+          error_log("Impossible to retrieve channels from coloc report.");
+      }
+      
+          /* Loop over the existing channel hooks. */
+      foreach ($matches[1] as $key => $chanR) {
+          $chanG = $matches[2][$key];
+          
+              /* The image hook will be subtituted with the actual maps. */
+          $replaceThis  = "<div id=\"colocHist\">";
+          $replaceThis .= "Hook chan $chanR - chan $chanG";
+          $replaceThis .= "</div><!-- colocHist -->";
+          
+              /* The corresponding coloc maps will be assembled in a table. */
+          $replaceWith  = "<div id=\"colocMap\"><table>";
+          $replaceWith .= "<tr><td class=\"title\" colspan=\"2\">";
+          $replaceWith .= "Channel $chanR  ~vs~  Channel $chanG</td></tr>";
+          $replaceWith .= "<tr>";
+          
+              /* Find all existing coloc maps containing these 2 channels. */
+          $pattern  = $mapFolder . $this->previewBase . ".*.map_chan";
+          $pattern .= $chanR . "_chan" . $chanG . "*";
+          $mapsChanRChanG = glob($pattern);
+          
+              /* Loop over the existing maps for each channel hook. */
+          foreach ($mapsChanRChanG as $map) {
+              
+                  /* Get this map's file name (without path). */
+              $mapFile = basename($map);
+
+                  /* Get the coefficient name of this coloc map. */
+              $pattern  = "/.*\.(.*)\.map_chan" . $chanR;
+              $pattern .= "_chan" . $chanG . "(|\.Deconvolved)\.jpg/";
+              
+              if (!preg_match($pattern,$mapFile,$coefficient)) {
+                  error_log("Impossible to find coefficient type from map.");
+              }
+              
+                  /* Add a short description to the map name. */
+              if (strstr($coefficient[2],"Deconvolved")) {
+                  $label  = "<b>Deconvolved image</b>";
+                  $label .= "<br /><i>Showing channels $chanR & $chanG</i>";
+              } else {
+                  $label  = "<b>Colocalization map</b>";
+                  $label .= "<br /><b><i>$coefficient[1]</b> coefficient</i>";
+              }
+
+                  /* Insert this map and its title into the table. */
+              $replaceWith .= "<td class=\"cell\">$label<br /><br />";
+              $replaceWith .= "<img src='file_management.php?getThumbnail=";
+              $replaceWith .= "$mapFile&amp;dir=dest' alt='Coloc map channels ";
+              $replaceWith .= "$chanR - $chanG' height='256' width='256'>";
+              $replaceWith .= "</td>";
+          }
+
+              /* The table is formed by the maps of a 2-channel combination. */
+          $replaceWith .= "</tr></table></div><!-- colocMap --><br />";
+
+              /* Replace the channel hook with the coloc maps code. */
+          $colocMapTab = str_replace($replaceThis,$replaceWith,$colocMapTab);
+      }
+  
+      return $colocMapTab;
+  }
+  
 
 } // End of FileServer class
