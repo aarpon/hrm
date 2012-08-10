@@ -35,6 +35,7 @@ if (!$_SESSION['user']->isAdmin()) {
   $admin = new User();
   $admin->setName( "admin" );
   $admin_editor = new TaskSettingEditor($admin);
+  $_SESSION['admin_taskeditor'] = $admin_editor;
 }
 
 $message = "";
@@ -117,7 +118,8 @@ else if (isset($_POST['OK']) && $_POST['OK']=="OK" ) {
   }
 }
 
-$script = "settings.js";
+$script = array( "jquery-1.7.2.min.js", "settings.js",
+    "common.js", "ajax_utils.js" );
 
 include("header.inc.php");
 
@@ -229,7 +231,8 @@ if (!$_SESSION['user']->isAdmin()) {
 
 ?>
                     <select name="public_setting"
-                            size="5"<?php echo $flag ?>>
+                        onchange="getParameterListForSet('task_setting', $(this).val(), true);"
+                        size="5"<?php echo $flag ?>>
 <?php
 
   if (sizeof($settings) == 0) {
@@ -289,9 +292,10 @@ $flag = "";
 if (sizeof($settings) == 0) $flag = " disabled=\"disabled\"";
 
 ?>
-                    <select name="task_setting" 
-                            size="<?php echo $size ?>"
-                            <?php echo $flag ?>>
+                    <select name="task_setting"
+                        onchange="getParameterListForSet('task_setting', $(this).val(), false);"
+                        size="<?php echo $size ?>"
+                        <?php echo $flag ?>>
 <?php
 
 if (sizeof($settings) == 0) {
@@ -354,7 +358,7 @@ if (!$_SESSION['user']->isAdmin()) {
 ?>
                 <input type="hidden" name="annihilate" />
                 <input name="delete"
-                       type="submit"
+                       type="button"
                        value=""
                        class="icon delete"
                        onclick="warn(this.form,
@@ -414,7 +418,9 @@ if (!$_SESSION['user']->isAdmin()) {
       processing procedure.</p>";
 	}
 	?>
-        <p>These are the choice of the deconvolution algorithm and its options (signal-to-noise ratio, background estimation mode and stopping criteria) as well as post-deconvolution tasks such as colocalization.</p>
+      <p>These are the choice of the deconvolution algorithm, the 
+      signal-to-noise ratio, the background estimation mode and the
+      stopping criteria.</p>
 
     <?php        
 	if (!$_SESSION['user']->isAdmin()) {

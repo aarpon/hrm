@@ -26,8 +26,8 @@ if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
 
 $message = "";
 
-// Refresh the page every 5 seconds
-$meta = "<meta http-equiv=\"refresh\" content=\"5\" />";
+$script = array( "jquery-1.7.2.min.js", "ajax_utils.js" );
+
 include("header.inc.php");
 
 ?>
@@ -309,7 +309,10 @@ include("header.inc.php");
                         <a href="./job_queue.php">Queue status</a>
                         <br />
                         <p />See all jobs.<br />
-                        You have <?php echo $str; ?> in the queue.
+                        You have <?php 
+                            echo "<strong><span id=\"jobsInQueue\">
+                                $str</span> </strong>"; ?>
+                        in the queue.
                         </div>
                     </td>
                     <?php
@@ -390,3 +393,11 @@ include("header.inc.php");
 include("footer.inc.php");
 
 ?>
+
+<!-- Ajax function to update the number of jobs in the queue every 10 s -->
+<script type="text/javascript">
+    $(document).ready(function() {
+        window.setInterval(function() { getNumberOfJobsInQueue(); }, 10000);
+    });
+</script>
+  
