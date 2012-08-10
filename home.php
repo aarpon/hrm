@@ -287,10 +287,12 @@ include("header.inc.php");
                     <td class="text"><div class="cell">
                         <a href="./job_queue.php">Queue status</a>
                         <br />
-                        <p class="added_jobs"/>
-                        <a href="./job_queue.php">Congratulations!<br />
-                        You added <strong><?php echo $str; ?></strong> to
-                        the queue!</a>
+                        <div id="jobsInQueue">
+                            <p class="added_jobs"/>
+                            <a href="./job_queue.php">Congratulations!<br />
+                            You added <strong><?php echo $str; ?></strong> to
+                            the queue!</a>
+                        </div>
                         </div>
                     </td>
                     <?php
@@ -308,11 +310,13 @@ include("header.inc.php");
                     <td class="text"><div class="cell">
                         <a href="./job_queue.php">Queue status</a>
                         <br />
-                        <p />See all jobs.<br />
-                        You have <?php 
-                            echo "<strong><span id=\"jobsInQueue\">
-                                $str</span> </strong>"; ?>
-                        in the queue.
+                        <div id="jobsInQueue">
+                            <p />See all jobs.<br />
+                            You have <?php 
+                                echo "<strong><span id=\"jobsInQueue\">
+                                    $str</span> </strong>"; ?>
+                            in the queue.
+                        </div>
                         </div>
                     </td>
                     <?php
@@ -397,7 +401,7 @@ include("footer.inc.php");
 <!-- Ajax function to update the number of jobs in the queue every 10 s -->
 <script type="text/javascript">
     $(document).ready(function() {
-        window.setInterval(function() { getNumberOfJobsInQueue(); }, 10000);
+        setInterval(function() { getNumberOfJobsInQueue(); }, 10000);
     });
 </script>
   

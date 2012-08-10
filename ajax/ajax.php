@@ -15,14 +15,16 @@ function getParameters($editor, $setName, $numChannels) {
 
 // Get number of jobs currently in the queue
 function getNumberOfJobsInQueue($user) {
+    $data = "<p />See all jobs.<br />You have <strong>";
     $jobsInQueue = $_SESSION['user']->numberOfJobsInQueue();
     if ($jobsInQueue == 0) {
-        $data = "no jobs";
+        $data .= "no jobs";
     } elseif ($jobsInQueue == 1) {
-        $data = "1 job";
+        $data .= "1 job";
     } else {
-        $data = "$jobsInQueue jobs";
+        $data .= "$jobsInQueue jobs";
     }
+    $data .= "</strong> in the queue.";
     return $data;
 }
 
