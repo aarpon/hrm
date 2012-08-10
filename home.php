@@ -26,7 +26,7 @@ if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
 
 $message = "";
 
-$script = array( "jquery-1.7.2.min.js", "ajax_utils.js" );
+$script = array( "ajax_utils.js" );
 
 include("header.inc.php");
 

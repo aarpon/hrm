@@ -81,7 +81,7 @@ if ( $_SESSION[ 'task_setting' ]->checkPostedTaskParameters( $_POST ) ) {
 //$noRange = False;
 
 // Javascript includes
-$script = array( "jquery-1.7.2.min.js", "settings.js", "quickhelp/help.js",
+$script = array( "settings.js", "quickhelp/help.js",
                 "quickhelp/taskParameterHelp.js" );
 
 include("header.inc.php");

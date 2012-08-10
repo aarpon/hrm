@@ -135,18 +135,19 @@ function switchSnrMode() {
     //changeVisibility('cmle-it');
 }
 
+// Requires jQuery 
 function switchColocMode() {
-    var element = document.getElementById('ColocAnalysis');
-    if (element.selectedIndex == 1) {
-        show('ColocChannelSelectionDiv');
-        show('ColocCoefficientSelectionDiv');
-        show('ColocThresholdSelectionDiv');
-        show('ColocMapSelectionDiv');
+    if ($('#ColocAnalysis').val() == 1) {
+        $('#ColocChannelSelectionDiv').show();
+        $('#ColocCoefficientSelectionDiv').show();
+        $('#ColocThresholdSelectionDiv').show();
+        $('#ColocMapSelectionDiv').show();
     } else {
-        hide('ColocChannelSelectionDiv');
-        hide('ColocCoefficientSelectionDiv');
-        hide('ColocThresholdSelectionDiv');
-        hide('ColocMapSelectionDiv');
+        $('#ColocChannelSelectionDiv').hide();
+        $('#ColocCoefficientSelectionDiv').hide();
+        $('#ColocThresholdSelectionDiv').hide();
+        $('#ColocMapSelectionDiv').hide();
+
     }
 }
 

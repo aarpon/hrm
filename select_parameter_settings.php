@@ -114,8 +114,7 @@ else if (isset($_POST['OK']) && $_POST['OK']=="OK" ) {
   }
 }
 
-$script = array( "jquery-1.7.2.min.js", "settings.js", 
-    "common.js", "ajax_utils.js" );
+$script = array( "settings.js", "common.js", "ajax_utils.js" );
 
 include("header.inc.php");
 
