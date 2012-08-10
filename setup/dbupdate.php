@@ -2172,8 +2172,8 @@ if ($current_revision < $n) {
     $record = array();
     $record["parameter"] = "ColocAnalysis";
     $record["value"] = "0";
-    $record["translation"] = "No,it is not necessary.";
-    $record["isDefault"] = "F";
+    $record["translation"] = "No, it is not necessary.";
+    $record["isDefault"] = "T";
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" .
                        $record["parameter"] . "' AND value='" .
                        $record["value"] . "' AND translation='" .
@@ -2195,7 +2195,7 @@ if ($current_revision < $n) {
     $record["parameter"] = "ColocAnalysis";
     $record["value"] = "1";
     $record["translation"] = "Yes, perform colocalization analysis.";
-    $record["isDefault"] = "T";
+    $record["isDefault"] = "F";
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" .
                        $record["parameter"] . "' AND value='" .
                        $record["value"] . "' AND translation='" .
