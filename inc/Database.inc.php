@@ -739,10 +739,11 @@ class DatabaseConnection {
     $parameter      = $taskSetting->parameter('ColocAnalysis');
     $colocAnalysis  = $parameter->value();
 
-    $query = "insert into statistics values ('" . $id ."', '" . $owner ."', '" . $group . "','"
-              . $startTime . "', '" . $stopTime . "', '" . $inFormat . "', '" . $outFormat . "', '"
-              . $PSF . "', '" . $geometry . "', '" . $microscope . "', '" . $colocAnalysis . "')";
-    
+    $query = "insert into statistics values ('" . $id ."', '" . $owner ."', '" .
+        $group . "','" . $startTime . "', '" . $stopTime . "', '" . $inFormat .
+        "', '" . $outFormat . "', '" . $PSF . "', '" . $geometry . "', '" .
+        $microscope . "', '" . $colocAnalysis . "')";
+
     $this->execute($query);
 
   }

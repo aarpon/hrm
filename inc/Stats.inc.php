@@ -687,26 +687,66 @@ class Stats {
     $admin = true;
     $user  = false;
 
-    $this->m_Stats_Array[] = new Type(
-      "JobsPerUser",  "owner", "Number of jobs per user (%)", "piechart", $admin );
-    $this->m_Stats_Array[] = new Type(
-      "JobsPerGroup", "research_group", "Number of jobs per group (%)", "piechart", $admin );
-    $this->m_Stats_Array[] = new Type(
-      "ImageFileFormat", "ImageFileFormat", "Input file format (%)", "piechart", $user );
-    $this->m_Stats_Array[] = new Type(
-      "OutputFileFormat", "OutputFileFormat", "Output file format (%)", "piechart", $user );
-    $this->m_Stats_Array[] = new Type(
-      "PointSpreadFunction", "PointSpreadFunction", "Type of Point-Spread Function used (%)", "piechart", $user );
-    $this->m_Stats_Array[] = new Type(
-      "ImageGeometry", "ImageGeometry", "Image geometry (%)", "piechart", $user );
-    $this->m_Stats_Array[] = new Type(
-      "MicroscopeType", "MicroscopeType", "Microscope type (%)", "piechart", $user );
-    $this->m_Stats_Array[] = new Type(
-      "TotalRunTimePerUser", "time", "Total run time per user", "text", $user );
-    $this->m_Stats_Array[] = new Type(
-      "TotalRunTimePerGroup", "time", "Total run time per group", "text", $admin );
-    $this->m_Stats_Array[] = new Type(
-      "DumpTable", "", "Export all statistics to file", "dumptable", $admin );
+    $this->m_Stats_Array[] = new Type( "JobsPerUser",
+                                       "owner",
+                                       "Number of jobs per user (%)",
+                                       "piechart",
+                                       $admin );
+    $this->m_Stats_Array[] = new Type( "JobsPerGroup",
+                                       "research_group",
+                                       "Number of jobs per group (%)",
+                                       "piechart",
+                                       $admin );
+    $this->m_Stats_Array[] = new Type( "TotalColocRunsPerUser",
+                                       "owner",
+                                       "Number of colocalization runs per user (%)",
+                                       "piechart",
+                                       $admin );
+    $this->m_Stats_Array[] = new Type( "TotalColocRunsPerGroup",
+                                       "research_group",
+                                       "Number of colocalization runs per group (%)",
+                                       "piechart",
+                                       $admin );
+    $this->m_Stats_Array[] = new Type( "ImageFileFormat",
+                                       "ImageFileFormat",
+                                       "Input file format (%)",
+                                       "piechart",
+                                       $user );
+    $this->m_Stats_Array[] = new Type( "OutputFileFormat",
+                                       "OutputFileFormat",
+                                       "Output file format (%)",
+                                       "piechart",
+                                       $user );
+    $this->m_Stats_Array[] = new Type( "PointSpreadFunction",
+                                       "PointSpreadFunction",
+                                       "Type of Point-Spread Function used (%)",
+                                       "piechart",
+                                       $user );
+    $this->m_Stats_Array[] = new Type( "ImageGeometry",
+                                       "ImageGeometry",
+                                       "Image geometry (%)",
+                                       "piechart",
+                                       $user );
+    $this->m_Stats_Array[] = new Type( "MicroscopeType",
+                                       "MicroscopeType",
+                                       "Microscope type (%)",
+                                       "piechart",
+                                       $user );
+    $this->m_Stats_Array[] = new Type( "TotalRunTimePerUser",
+                                       "time",
+                                       "Total run time per user",
+                                       "text",
+                                       $user );
+    $this->m_Stats_Array[] = new Type( "TotalRunTimePerGroup",
+                                       "time",
+                                       "Total run time per group",
+                                       "text",
+                                       $admin );
+    $this->m_Stats_Array[] = new Type( "DumpTable",
+                                       "",
+                                       "Export all statistics to file",
+                                       "dumptable",
+                                       $admin );
   }
 
   /*!
