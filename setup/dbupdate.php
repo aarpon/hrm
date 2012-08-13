@@ -2499,7 +2499,7 @@ if ($current_revision < $n) {
     }
 
     $tabname   = "statistics";
-    $newcolumn = "colocRun VARCHAR(1)";
+    $newcolumn = "ColocAnalysis VARCHAR(1)";
     $SQLquery  = "ALTER TABLE " . $tabname . " ADD COLUMN " . $newcolumn;
 
     if(!$db->Execute($SQLquery)) {

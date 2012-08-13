@@ -725,20 +725,24 @@ class DatabaseConnection {
     $user = $desc->owner();
     $owner = $user->name();
     $group = $user->userGroup($owner);
-    $parameter = $parameterSetting->parameter('ImageFileFormat');
-    $inFormat = $parameter->value();
-    $parameter = $parameterSetting->parameter('PointSpreadFunction');
-    $PSF = $parameter->value();
-    $parameter = $parameterSetting->parameter('ImageGeometry');
-    $geometry = $parameter->value();
-    $parameter = $parameterSetting->parameter('MicroscopeType');
-    $microscope = $parameter->value();
-    $parameter = $taskSetting->parameter('OutputFileFormat');
-    $outFormat = $parameter->value();
+    
+    $parameter      = $parameterSetting->parameter('ImageFileFormat');
+    $inFormat       = $parameter->value();
+    $parameter      = $parameterSetting->parameter('PointSpreadFunction');
+    $PSF            = $parameter->value();
+    $parameter      = $parameterSetting->parameter('ImageGeometry');
+    $geometry       = $parameter->value();
+    $parameter      = $parameterSetting->parameter('MicroscopeType');
+    $microscope     = $parameter->value();
+    $parameter      = $taskSetting->parameter('OutputFileFormat');
+    $outFormat      = $parameter->value();
+    $parameter      = $taskSetting->parameter('ColocAnalysis');
+    $colocAnalysis  = $parameter->value();
 
     $query = "insert into statistics values ('" . $id ."', '" . $owner ."', '" . $group . "','"
               . $startTime . "', '" . $stopTime . "', '" . $inFormat . "', '" . $outFormat . "', '"
-              . $PSF . "', '" . $geometry . "', '" . $microscope . "')";
+              . $PSF . "', '" . $geometry . "', '" . $microscope . "', '" . $colocAnalysis . "')";
+    
     $this->execute($query);
 
   }
