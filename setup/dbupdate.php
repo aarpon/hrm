@@ -2497,6 +2497,18 @@ if ($current_revision < $n) {
             return;
         }
     }
+
+    $tabname   = "statistics";
+    $newcolumn = "colocRun VARCHAR(1)";
+    $SQLquery  = "ALTER TABLE " . $tabname . " ADD COLUMN " . $newcolumn;
+
+    if(!$db->Execute($SQLquery)) {
+        $msg = "An error occurred while updating the database to revision " .
+            $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
 }
 
 

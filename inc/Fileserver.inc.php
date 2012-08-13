@@ -1510,7 +1510,7 @@ echo '</body></html>';
                       'stackMovie'      => "stack movie",
                       'tSeriesMovie'    => "series movie",
                       'tSeriesSfpMovie' => "series SFP movie",
-                      'colocalization'  => "colocalization NEW !",
+                      'colocalization'  => "colocalization",
                       'history'         => "history",
                       'remarks'         => "remarks" );
 
