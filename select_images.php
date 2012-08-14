@@ -193,22 +193,7 @@ $info = " <h3>Quick help</h3> <p>In this step, you will select the files " .
  
 
 ?>
-    <!--
-      Tooltips
-    -->
-    <span id="ttSpanDown">
-        Add files to the list of selected images.
-    </span>
-    <span id="ttSpanUp">
-        Remove files from the list of selected images.
-    </span>
-    <span id="ttSpanRefresh">
-        Refresh the list of available images on the server.
-    </span>
-    <span id="ttSpanForward">
-        Continue to step 2/4 - Image parameters
-    </span>
-    
+
     <div id="nav">
         <ul>
             <li>
@@ -339,11 +324,9 @@ if ($files == null) echo "                        <option>&nbsp;</option>\n";
             
             <div id="selection">
                 <input name="down" type="submit" value="" class="icon down"
-                    onmouseover="TagToTip('ttSpanDown' )"
-                    onmouseout="UnTip()" />
+                    id="controls_down" />
                 <input name="up" type="submit" value="" class="icon remove"
-                    onmouseover="TagToTip('ttSpanUp' )"
-                    onmouseout="UnTip()" />
+                    id="controls_up" />
             </div>
             
             <fieldset>
@@ -385,8 +368,7 @@ else echo "                        <option>&nbsp;</option>\n";
                        type="submit"
                        value=""
                        class="icon update"
-                        onmouseover="TagToTip('ttSpanRefresh' )"
-                        onmouseout="UnTip()" />
+                       id="controls_refresh" />
                 <input name="OK" type="hidden" />
             </div>
             
@@ -396,8 +378,7 @@ else echo "                        <option>&nbsp;</option>\n";
                      value=""
                      class="icon next"
                      onclick="process()"
-                     onmouseover="TagToTip('ttSpanForward' )"
-                     onmouseout="UnTip()" />
+                     id="controls_forward" />
             </div>
 
         </form>
@@ -429,6 +410,19 @@ echo "<p>$message</p>";
         
     </div> <!-- rightpanel -->
 
-<?php                                                                      
+<?php
+
+/*
+ * Tooltips. 
+ * 
+ * Define $tooltips array with object id as key and tooltip string as value.
+ */
+$tooltips = array(
+    "controls_down" => "Add files to the list of selected images.",
+    "controls_up" => "Remove files from the list of selected images.",
+    "controls_refresh" => "Refresh the list of available images on the server.",
+    "controls_forward" => "Continue to step 2/4 - Image parameters."
+);
+
 include("footer.inc.php");
 ?>

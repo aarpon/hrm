@@ -77,23 +77,6 @@ include("header.inc.php");
 
 ?>
 
-    <!--
-      Tooltips
-    -->
-    <span id="ttSpanCancel">
-        Abort editing and go back to the image parameters selection page.
-        All changes will be lost!
-    </span>
-    <span id="ttSpanForward">
-        Continue to next page.
-    </span>
-    <?php
-        // Another tooltip is used only if there are parameters that
-        // might require resetting (and is therefore defined later). Here
-        // we initialize a counter.
-        $nParamRequiringReset = 0;
-    ?>
-
     <div id="nav">
         <ul>
             <li
@@ -159,11 +142,9 @@ include("header.inc.php");
                 <div class="values">
                     <?php
                     if ( ! $parameterImageGeometry->mustProvide() ) {
-                        $nParamRequiringReset++;
                     ?>
                     <div class="reset"
-                        onmouseover="TagToTip('ttSpanReset' )"
-                        onmouseout="UnTip()"
+                        id="controls_reset"
                         onclick="document.forms[0].ImageGeometry[0].checked = true;" >
                     </div>
                     <?php
@@ -248,11 +229,9 @@ function check($parameter, $value) {
                 <div class="values">
                     <?php
                     if ( ! $parameterNumberOfChannels->mustProvide() ) {
-                        $nParamRequiringReset++;
                     ?>
                     <div class="reset"
-                        onmouseover="TagToTip('ttSpanReset' )"
-                        onmouseout="UnTip()"
+                        id="controls_reset"
                         onclick="document.forms[0].NumberOfChannels[0].checked = true;" >
                     </div>
                     <?php
@@ -331,11 +310,9 @@ function check($parameter, $value) {
                 <div class="values">
                     <?php
                     if ( ! $parameterPointSpreadFunction->mustProvide() ) {
-                        $nParamRequiringReset++;
                     ?>
                     <div class="reset"
-                        onmouseover="TagToTip('ttSpanReset' )"
-                        onmouseout="UnTip()"
+                        id="controls_reset"
                         onclick="document.forms[0].PointSpreadFunction[0].checked = true;" >
                     </div>
                     <?php
@@ -385,28 +362,16 @@ function check($parameter, $value) {
             <div id="controls"
                  onmouseover="javascript:changeQuickHelp( 'default' )">
               <input type="button" value="" class="icon up"
-                  onmouseover="TagToTip('ttSpanCancel' )"
-                  onmouseout="UnTip()"
+                  id="controls_cancel"
                   onclick="document.location.href='select_parameter_settings.php'" />
               <input type="submit" value="" class="icon next"
-                  onmouseover="TagToTip('ttSpanForward' )"
-                  onmouseout="UnTip()"
+                  id="controls_forward"
                   onclick="process()" />
             </div>
             
             <div><input name="OK" type="hidden" /></div>
             
         </form>
-
-        <?php
-            if ( $nParamRequiringReset > 0 ) {
-        ?>
-            <span id="ttSpanReset">
-                Click to unselect all options.
-            </span>
-        <?php
-        }
-        ?>
 
     </div> <!-- content -->
     
@@ -438,6 +403,17 @@ echo "<p>$message</p>";
     </div> <!-- rightpanel -->
     
 <?php
+
+/*
+ * Tooltips. 
+ * 
+ * Define $tooltips array with object id as key and tooltip string as value.
+ */
+$tooltips = array(
+    "controls_cancel" => "Abort editing and go back to the image parameters selection page. All changes will be lost!",
+    "controls_forward" => "Continue to next page.",
+    "controls_reset" => "Click to unselect all options."
+);
 
 include("footer.inc.php");
 

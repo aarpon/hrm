@@ -26,7 +26,6 @@ if (isset($meta)) {
   <title>Huygens Remote Manager</title>
     <link rel="SHORTCUT ICON" href="images/hrm.ico"/>
 
-    <script type="text/javascript" src="scripts/jquery-1.7.2.min.js"></script>
     <script type="text/javascript" src="scripts/common.js"></script>
 
 <?php
@@ -98,13 +97,6 @@ if (isset($generatedScript)) {
 </head>
 
 <body>
-
-<!--
-    // Use the great Tooltip JavaScript Library by Walter Zorn
--->
-<script type="text/javascript"
-    src="./scripts/wz_tooltip/wz_tooltip.js">
-</script>
 
 <div id="basket">
 

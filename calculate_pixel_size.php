@@ -78,15 +78,6 @@ if ( $_SESSION[ 'setting' ]->checkPostedCalculatePixelSizeParameters( $_POST ) )
 $script = "settings.js";
 include ("header.inc.php");
 ?>
-<!--
-  Tooltips
--->
-<span id="ttSpanCancel">
-    Go back to previous page without calculating the pixel size.
-</span>  
-<span id="ttSpanForward">
-    Update the pixel size field on previous page with the calculated value.
-</span>  
 
 <div id="nav">  
     <ul>
@@ -220,13 +211,9 @@ foreach ( $sortedPossibleValues as $possibleValue) {
     </fieldset>
        
     <div id="controls">      
-        <input type="button" value="" class="icon up"
-            onmouseover="TagToTip('ttSpanCancel' )"
-            onmouseout="UnTip()"
+        <input type="button" value="" class="icon up" id="controls_cancel"
             onclick="document.location.href='capturing_parameter.php'" />
-         <input type="submit" value="" class="icon next"
-            onmouseover="TagToTip('ttSpanForward' )"
-            onmouseout="UnTip()"
+         <input type="submit" value="" class="icon next" id="controls_forward"
             onclick="process()" />
     </div>
 
@@ -260,6 +247,16 @@ echo "<p>$message</p>";
     </div> <!-- rightpanel -->
     
 <?php
+
+/*
+ * Tooltips. 
+ * 
+ * Define $tooltips array with object id as key and tooltip string as value.
+ */
+$tooltips = array(
+    "controls_cancel" => "Go back to previous page without calculating the pixel size.",
+    "controls_forward" => "Update the pixel size field on previous page with the calculated value."
+    );
 
 include ("footer.inc.php");
 

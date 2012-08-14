@@ -171,61 +171,17 @@ if ( $nyquist === false ) {
   $NyquistMessage .= ".";
 }
 
+// Controls: icon and tooltip
+if ( $saveToDB == true ) {
+    $iconClass = "icon save";
+    $controls_forward_tooltip = 
+        "Save and return to the image parameters selection page.";
+} else {
+    $iconClass = "icon next";
+    $controls_forward_tooltip = "Continue to next page.";
+}
+
 ?>
-    <!--
-      Tooltips
-    -->
-    <?php
-      if ( $_SESSION['setting']->isWidefield() ||
-              $_SESSION['setting']->isMultiPointConfocal() ) {
-    ?>
-    <span id="ttSpanPixelSizeFromCCD">
-        Calculate the image pixel size from the CCD pixel size.
-    </span>
-    <?php
-      }
-    ?>
-    <?php
-      if ( $_SESSION['setting']->isMultiPointOrSinglePointConfocal() ) {
-    ?>
-    <span id="ttSpanPinholeRadius">
-        Calculate the back-projected pinhole radius for your microscope.
-    </span>
-    <?php
-        if ($_SESSION['setting']->isNipkowDisk()) {
-    ?>
-    <span id="ttSpanPinholeSpacing">
-        Calculate the back-projected pinhole spacing for your microscope.
-    </span>
-    <?php
-      }
-    }
-    ?>
-    <span id="ttSpanNyquist">
-        Check your sampling with the online Nyquist calculator.
-    </span>
-    <span id="ttSpanBack">
-        Go back to previous page.
-    </span>
-    <span id="ttSpanCancel">
-        Abort editing and go back to the image parameters selection page.
-        All changes will be lost!
-    </span>
-    <?php
-        if ( $saveToDB == true ) {
-            $iconClass = "icon save";
-    ?>
-        <span id="ttSpanForward">
-            Save and return to the image parameters selection page.
-        </span>
-    <?php
-        } else {
-            $iconClass = "icon next";
-    ?>
-        <span id="ttSpanForward">Continue to next page.</span>
-    <?php
-    }
-    ?>
 
     <div id="nav">
         <ul>
@@ -298,9 +254,7 @@ $textForCaptorSize = "pixel size (nm)";
                           $_SESSION['setting']->isMultiPointConfocal() ) {
             ?>
 
-            <a href="#"
-              onmouseover="TagToTip('ttSpanPixelSizeFromCCD' )"
-              onmouseout="UnTip()"
+            <a href="#" id="calc_pixelSizeFromCCD"
               onclick="storeValuesAndRedirect( 'calculate_pixel_size.php');" >
               <img src="images/calc_small.png" alt="" />
               Calculate from CCD pixel size
@@ -345,9 +299,7 @@ if ($_SESSION['setting']->isThreeDimensional()) {
 
                 </ul>
 
-                <a href="#"
-                    onmouseover="TagToTip('ttSpanNyquist' )"
-                    onmouseout="UnTip()"
+                <a href="#" id="calc_Nyquist"
                     onclick="storeValuesAndRedirectExtern(
                       'http://support.svi.nl/wiki/NyquistCalculator');">
                     <img src="images/calc_small.png" alt="" />
@@ -484,9 +436,7 @@ if ($_SESSION['setting']->isMultiPointOrSinglePointConfocal()) {
                     $_SESSION['setting']->parameter("NumericalAperture");
 				  $na = $parameterNA->value();
 				?>
-                <a href="#"
-                  onmouseover="TagToTip('ttSpanPinholeRadius' )"
-                  onmouseout="UnTip()"
+                <a href="#" id="calc_pinholeRadius"
                   onclick="storeValuesAndRedirect(
                     'calculate_bp_pinhole.php?na=<?php echo $na;?>');" >
                   <img src="images/calc_small.png" alt="" />
@@ -543,9 +493,7 @@ if ($_SESSION['setting']->isNipkowDisk()) {
           </ul>
           <p />
 
-                <a href="#"
-                   onmouseover="TagToTip('ttSpanPinholeSpacing' )"
-                   onmouseout="UnTip()"
+                <a href="#" id="calc_pinholeSpacing"
                    onclick="storeValuesAndRedirect(
                      'calculate_bp_pinhole.php?na=<?php echo $na;?>');">
                     <img src="images/calc_small.png" alt="" />
@@ -572,18 +520,15 @@ if ($_SESSION['setting']->isNipkowDisk()) {
             <div id="controls"
                  onmouseover="javascript:changeQuickHelp( 'default' )">
               <input type="button" value="" class="icon previous"
-                  onmouseover="TagToTip('ttSpanBack' )"
-                  onmouseout="UnTip()"
+                     id="controls_back"
                   onclick="javascript:deleteValuesAndRedirect(
                     'microscope_parameter.php' );" />
               <input type="button" value="" class="icon up"
-                  onmouseover="TagToTip('ttSpanCancel' )"
-                  onmouseout="UnTip()"
+                     id="controls_cancel"
                   onclick="javascript:deleteValuesAndRedirect(
                     'select_parameter_settings.php' );" />
               <input type="submit" value="" class="<?php echo $iconClass; ?>"
-                  onmouseover="TagToTip('ttSpanForward' )"
-                  onmouseout="UnTip()"
+                     id="controls_forward"
                   onclick="javascript:deleteValuesAndProcess();" />
             </div>
 
@@ -624,6 +569,21 @@ echo "<p>$message</p>";
     </div> <!-- rightpanel -->
 
 <?php
+
+/*
+ * Tooltips. 
+ * 
+ * Define $tooltips array with object id as key and tooltip string as value.
+ */
+$tooltips = array(
+    "calc_pixelSizeFromCCD" => "Calculate the image pixel size from the CCD pixel size.",
+    "calc_pinholeRadius" => "Calculate the back-projected pinhole radius for your microscope.",
+    "calc_pinholeSpacing" => "Calculate the back-projected pinhole spacing for your microscope.",
+    "calc_Nyquist" => "Check your sampling with the online Nyquist calculator.",
+    "controls_back" => "Go back to previous page.",
+    "controls_cancel" => "Abort editing and go back to the image parameters selection page. All changes will be lost!",
+    "controls_forward" => $controls_forward_tooltip
+    );
 
 include("footer.inc.php");
 

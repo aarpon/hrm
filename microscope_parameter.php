@@ -96,25 +96,6 @@ $script = array( "settings.js", "quickhelp/help.js",
 include("header.inc.php");
 
 ?>
-    <!--
-      Tooltips
-    -->
-    <span id="ttSpanBack">
-        Go back to previous page.
-    </span>
-    <span id="ttSpanCancel">
-        Abort editing and go back to the image parameters selection page.
-        All changes will be lost!
-    </span>
-    <span id="ttSpanForward">
-        Continue to next page.
-    </span>
-    <?php
-        // Another tooltip is used only if there are parameters that
-        // might require resetting (and is therefore defined later). Here
-        // we initialize a counter.
-        $nParamRequiringReset = 0;
-    ?>
 
     <div id="nav">
         <ul>
@@ -167,11 +148,9 @@ include("header.inc.php");
                 <div class="values">
                     <?php
                     if ( ! $parameterMicroscopeType->mustProvide() ) {
-                        $nParamRequiringReset++;
                     ?>
                     <div class="reset"
-                        onmouseover="TagToTip('ttSpanReset' )"
-                        onmouseout="UnTip()"
+                        id="controls_reset"
                         onclick="document.forms[0].MicroscopeType[0].checked = true;" >
                     </div>
                     <?php
@@ -376,12 +355,10 @@ if ( $i == 3 ) {
                 <div class="values">
                     <?php
                     if ( ! $parameterObjectiveType->mustProvide() ) {
-                        $nParamRequiringReset++;
                     ?>
                     <div class="reset"
-                        onmouseover="TagToTip('ttSpanReset' )"
-                        onmouseout="UnTip()"
-                        onclick="document.forms[0].ObjectiveType[0].checked = true;" >
+                        id="controls_reset"
+                       onclick="document.forms[0].ObjectiveType[0].checked = true;" >
                     </div>
                     <?php
                     }
@@ -451,11 +428,9 @@ foreach ($possibleValues as $possibleValue) {
                 <div class="values">
                     <?php
                     if ( ! $parameterSampleMedium->mustProvide() ) {
-                        $nParamRequiringReset++;
                     ?>
                     <div class="reset"
-                        onmouseover="TagToTip('ttSpanReset' )"
-                        onmouseout="UnTip()"
+                        id="controls_reset"
                         onclick="document.forms[0].SampleMedium[0].checked = true;" >
                     </div>
                     <?php
@@ -525,30 +500,17 @@ if (!$default) {
             <div id="controls"
                  onmouseover="javascript:changeQuickHelp( 'default' )">
               <input type="button" value="" class="icon previous"
-                  onmouseover="TagToTip('ttSpanBack' )"
-                  onmouseout="UnTip()"
+                  id="controls_back"
                   onclick="document.location.href='image_format.php'" />
               <input type="button" value="" class="icon up"
-                  onmouseover="TagToTip('ttSpanCancel' )"
-                  onmouseout="UnTip()"
+                  id="controls_cancel"
                   onclick="document.location.href='select_parameter_settings.php'" />
               <input type="submit" value="" class="icon next"
-                  onmouseover="TagToTip('ttSpanForward' )"
-                  onmouseout="UnTip()"
+                  id="controls_forward"
                   onclick="process()" />
             </div>
 
         </form>
-
-        <?php
-            if ( $nParamRequiringReset > 0 ) {
-        ?>
-            <span id="ttSpanReset">
-                Click to unselect all options.
-            </span>
-        <?php
-        }
-        ?>
 
     </div> <!-- content -->
 
@@ -582,6 +544,18 @@ echo "<p>$message</p>";
     </div> <!-- rightpanel -->
 
 <?php
+
+/*
+ * Tooltips. 
+ * 
+ * Define $tooltips array with object id as key and tooltip string as value.
+ */
+$tooltips = array(
+    "controls_reset" => "Click to unselect all options.",
+    "controls_back" => "Go back to previous page.",
+    "controls_cancel" => "Abort editing and go back to the image parameters selection page. All changes will be lost!",
+    "controls_forward" => "Continue to next page.",
+);
 
 include("footer.inc.php");
 

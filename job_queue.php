@@ -39,18 +39,7 @@ $script = "queue.js";
 include("header.inc.php");
 
 ?>
-    <!--
-      Tooltips
-    -->
-    <span id="ttRefresh">Refresh the queue.</span>
-    <?php
-      $rows = $queue->getContents();
-      if (count($rows) != 0) {
-    ?>
-    <span id="ttDelete">Delete selected job(s) from the queue. If a job is running, it will be killed!</span>
-    <?php
-      }
-    ?>
+
     <div id="nav">
         <ul>
             <li>
@@ -81,8 +70,7 @@ include("header.inc.php");
     <form method="post" action="" id="jobqueue">
     <p>
         <input name="update" type="submit" value="" class="icon update"
-            onmouseover="TagToTip('ttRefresh' )"
-            onmouseout="UnTip()" /><?php echo date("l d. F Y, H:i:s"); ?>
+            id="controls_refresh" /><?php echo date("l d. F Y, H:i:s"); ?>
    </p>
 
     <?php
@@ -270,8 +258,7 @@ if (count($rows) != 0) {
                     With selected:
                     <input name="delete" type="submit" value=""
                       class="icon delete"
-                      onmouseover="TagToTip('ttDelete' )"
-                      onmouseout="UnTip()"/>
+                      id="controls_delete" />
                 </label>
 <?php
 
@@ -286,6 +273,16 @@ if (count($rows) != 0) {
     </div> <!-- joblist -->
 
 <?php
+
+/*
+ * Tooltips. 
+ * 
+ * Define $tooltips array with object id as key and tooltip string as value.
+ */
+$tooltips = array(
+    "controls_refresh" => "Refresh the queue.",
+    "controls_delete" => "Delete selected job(s) from the queue. If a job is running, it will be killed!"
+);
 
 include("footer.inc.php");
 
