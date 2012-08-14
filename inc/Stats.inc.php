@@ -126,30 +126,49 @@ class Type {
   	\param	$userNameFilter	Filter on username, \see getUsernameFilter()
 	\return the JS script to generate the pie chart.
 	*/
-  private function getPieChart( DatabaseConnection $db, $variable, $group, $dateFilter, $groupFilter, $userNameFilter ) {
-
+  private function getPieChart( DatabaseConnection $db, $variable, $group,
+                                $dateFilter, $groupFilter, $userNameFilter ) {
+      
+      if (strstr($this->m_Name, 'Coloc')) {
+          $colocFilter = " AND ColocAnalysis = '1' ";
+      } else {
+          $colocFilter = " ";
+      }
+      
     // Get data
     // -------------------------------------------------------------------------
-    $row      = $db->execute( "SELECT COUNT( id ) FROM statistics WHERE " . $dateFilter . $groupFilter . $userNameFilter . ";" )->FetchRow( );
+    $row      = $db->execute( "SELECT COUNT( id ) FROM statistics WHERE " .
+                              $dateFilter . $groupFilter . $userNameFilter .
+                              $colocFilter . ";" )->FetchRow( );
     $numJobs  = $row[ 0 ];
     if ( $numJobs == 0 ) {
-
       $data     = "[]";
       $title    = "Nothing to display!";
       $subtitle = "";
-
     } else {
+      $entities    = $db->execute( "SELECT DISTINCT( " . $variable . ") " .
+                                   "FROM statistics WHERE " . $dateFilter .
+                                   $groupFilter . $userNameFilter .
+                                   $colocFilter . ";" );
 
-      $entities    = $db->execute( "SELECT DISTINCT( " . $variable . ") FROM statistics WHERE " . $dateFilter . $groupFilter . $userNameFilter . ";" );
-      $row      = $db->execute( "SELECT COUNT( DISTINCT( " . $variable . " ) ) FROM statistics WHERE " . $dateFilter . $groupFilter . $userNameFilter . ";" )->FetchRow( );
+      $row      = $db->execute( "SELECT COUNT( DISTINCT( " . $variable . " ) ) " .
+                                "FROM statistics WHERE " . $dateFilter .
+                                $groupFilter . $userNameFilter . $colocFilter .
+                                ";" )->FetchRow( );
+
       $numEntities = $row[ 0 ];
       $data = "[";
 
       for ( $i = 0; $i < $numEntities; $i++ ) {
+          
         // Get current username
         $row = $entities->FetchRow( );
         $variableName = $row[ 0 ];
-        $row = $db->execute( "SELECT COUNT(id) FROM statistics WHERE " . $variable . " = '" . $variableName . "' AND " . $dateFilter . $groupFilter . $userNameFilter . ";" )->FetchRow( );
+        $row = $db->execute( "SELECT COUNT(id) FROM statistics WHERE " .
+                             $variable . " = '" . $variableName . "' AND " .
+                             $dateFilter . $groupFilter . $userNameFilter .
+                             $colocFilter . ";" )->FetchRow( );
+
         $numUserJobs = $row[ 0 ];
         $percent = 100 * $numUserJobs / $numJobs;
         $percent = number_format($percent, 2);
