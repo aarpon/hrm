@@ -136,7 +136,8 @@ function smoothChangeDiv(div, html, time) {
 function getExtension(file) {    
 
     var nameDivisions;
-    if ((nameDivisions = file.match(/\.([^\.]+)$/)) == null) return '';
+    if ((nameDivisions = file.match(/\.([^\.\s]+)[\s\(\)a-zA-Z0-9]*$/)) == null) 
+        return '';
     return nameDivisions[1];
 }
 
