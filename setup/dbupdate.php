@@ -2134,7 +2134,7 @@ if ($current_revision < $n) {
         }
     }
 
-    // Delete the OverrideParameter entries from possible_values
+    // Delete the OverrideConfidence entries from possible_values
     $tabname = 'possible_values';
     $record = array();
     $record["parameter"]   = 'OverrideConfidence';
@@ -2158,6 +2158,359 @@ if ($current_revision < $n) {
         }
     }
 }
+
+
+// -----------------------------------------------------------------------------
+// Update to revision 10
+// Description: Add 'ColocAnalysis' as parameter to possible_values
+// -----------------------------------------------------------------------------
+$n = 10;
+if ($current_revision < $n) {
+
+    // Values for parameter 'ColocAnalysis'.
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "ColocAnalysis";
+    $record["value"] = "0";
+    $record["translation"] = "No, it is not necessary.";
+    $record["isDefault"] = "T";
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" .
+                       $record["parameter"] . "' AND value='" .
+                       $record["value"] . "' AND translation='" .
+                       $record["translation"] . "' AND isDefault='" .
+                       $record["isDefault"] . "'");
+    if ($rs->EOF) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating the database to revision ".
+                $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "ColocAnalysis";
+    $record["value"] = "1";
+    $record["translation"] = "Yes, perform colocalization analysis.";
+    $record["isDefault"] = "F";
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" .
+                       $record["parameter"] . "' AND value='" .
+                       $record["value"] . "' AND translation='" .
+                       $record["translation"] . "' AND isDefault='" .
+                       $record["isDefault"] . "'");
+    if ($rs->EOF) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating the database to revision ".
+                $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "ColocCoefficient";
+    $record["value"] = "Pearson";
+    $record["translation"] = "Pearson";
+    $record["isDefault"] = "T";
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" .
+                       $record["parameter"] . "' AND value='" .
+                       $record["value"] . "' AND translation='" .
+                       $record["translation"] . "' AND isDefault='" .
+                       $record["isDefault"] . "'");
+    if ($rs->EOF) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating the database to revision ".
+                $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "ColocCoefficient";
+    $record["value"] = "ObjectPearson";
+    $record["translation"] = "Object Pearson";
+    $record["isDefault"] = "T";
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" .
+                       $record["parameter"] . "' AND value='" .
+                       $record["value"] . "' AND translation='" .
+                       $record["translation"] . "' AND isDefault='" .
+                       $record["isDefault"] . "'");
+    if ($rs->EOF) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating the database to revision ".
+                $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "ColocCoefficient";
+    $record["value"] = "Spearman";
+    $record["translation"] = "Spearman";
+    $record["isDefault"] = "T";
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" .
+                       $record["parameter"] . "' AND value='" .
+                       $record["value"] . "' AND translation='" .
+                       $record["translation"] . "' AND isDefault='" .
+                       $record["isDefault"] . "'");
+    if ($rs->EOF) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating the database to revision ".
+                $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "ColocCoefficient";
+    $record["value"] = "ObjectSpearman";
+    $record["translation"] = "Object Spearman";
+    $record["isDefault"] = "T";
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" .
+                       $record["parameter"] . "' AND value='" .
+                       $record["value"] . "' AND translation='" .
+                       $record["translation"] . "' AND isDefault='" .
+                       $record["isDefault"] . "'");
+    if ($rs->EOF) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating the database to revision ".
+                $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "ColocCoefficient";
+    $record["value"] = "overlap";
+    $record["translation"] = "Overlap";
+    $record["isDefault"] = "T";
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" .
+                       $record["parameter"] . "' AND value='" .
+                       $record["value"] . "' AND translation='" .
+                       $record["translation"] . "' AND isDefault='" .
+                       $record["isDefault"] . "'");
+    if ($rs->EOF) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating the database to revision ".
+                $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "ColocCoefficient";
+    $record["value"] = "k12";
+    $record["translation"] = "k1,2";
+    $record["isDefault"] = "T";
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" .
+                       $record["parameter"] . "' AND value='" .
+                       $record["value"] . "' AND translation='" .
+                       $record["translation"] . "' AND isDefault='" .
+                       $record["isDefault"] . "'");
+    if ($rs->EOF) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating the database to revision ".
+                $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+    
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "ColocCoefficient";
+    $record["value"] = "i12";
+    $record["translation"] = "i1,2";
+    $record["isDefault"] = "T";
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" .
+                       $record["parameter"] . "' AND value='" .
+                       $record["value"] . "' AND translation='" .
+                       $record["translation"] . "' AND isDefault='" .
+                       $record["isDefault"] . "'");
+    if ($rs->EOF) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating the database to revision ".
+                $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "ColocCoefficient";
+    $record["value"] = "Manders";
+    $record["translation"] = "M1,2";
+    $record["isDefault"] = "T";
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" .
+                       $record["parameter"] . "' AND value='" .
+                       $record["value"] . "' AND translation='" .
+                       $record["translation"] . "' AND isDefault='" .
+                       $record["isDefault"] . "'");
+    if ($rs->EOF) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating the database to revision ".
+                $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+    
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "ColocCoefficient";
+    $record["value"] = "inters";
+    $record["translation"] = "Inters";
+    $record["isDefault"] = "T";
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" .
+                       $record["parameter"] . "' AND value='" .
+                       $record["value"] . "' AND translation='" .
+                       $record["translation"] . "' AND isDefault='" .
+                       $record["isDefault"] . "'");
+    if ($rs->EOF) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating the database to revision ".
+                $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "ColocMap";
+    $record["value"] = "Pearson";
+    $record["translation"] = "Pearson";
+    $record["isDefault"] = "T";
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" .
+                       $record["parameter"] . "' AND value='" .
+                       $record["value"] . "' AND translation='" .
+                       $record["translation"] . "' AND isDefault='" .
+                       $record["isDefault"] . "'");
+    if ($rs->EOF) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating the database to revision ".
+                $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "ColocMap";
+    $record["value"] = "ObjectPearson";
+    $record["translation"] = "Object Pearson";
+    $record["isDefault"] = "F";
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" .
+                       $record["parameter"] . "' AND value='" .
+                       $record["value"] . "' AND translation='" .
+                       $record["translation"] . "' AND isDefault='" .
+                       $record["isDefault"] . "'");
+    if ($rs->EOF) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating the database to revision ".
+                $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "ColocMap";
+    $record["value"] = "Manders";
+    $record["translation"] = "M1,2";
+    $record["isDefault"] = "F";
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" .
+                       $record["parameter"] . "' AND value='" .
+                       $record["value"] . "' AND translation='" .
+                       $record["translation"] . "' AND isDefault='" .
+                       $record["isDefault"] . "'");
+    if ($rs->EOF) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating the database to revision ".
+                $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "ColocMap";
+    $record["value"] = "overlap";
+    $record["translation"] = "Overlap";
+    $record["isDefault"] = "F";
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" .
+                       $record["parameter"] . "' AND value='" .
+                       $record["value"] . "' AND translation='" .
+                       $record["translation"] . "' AND isDefault='" .
+                       $record["isDefault"] . "'");
+    if ($rs->EOF) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating the database to revision ".
+                $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $tabname   = "statistics";
+    $newcolumn = "ColocAnalysis VARCHAR(1)";
+    $SQLquery  = "ALTER TABLE " . $tabname . " ADD COLUMN " . $newcolumn;
+
+    if(!$db->Execute($SQLquery)) {
+        $msg = "An error occurred while updating the database to revision " .
+            $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+}
+
 
 // Update revision
 if(!update_dbrevision($n))

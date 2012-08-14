@@ -26,8 +26,8 @@ if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
 
 $message = "";
 
-// Refresh the page every 5 seconds
-$meta = "<meta http-equiv=\"refresh\" content=\"5\" />";
+$script = array( "ajax_utils.js" );
+
 include("header.inc.php");
 
 ?>
@@ -263,7 +263,7 @@ include("header.inc.php");
 			  <td class="text"><div class="cell">
                 <a href="./select_images.php">Start a job</a>
                 <br />
-				<p />Create and start deconvolution jobs.
+				<p />Create and start restoration and analysis jobs.
                 </div>
 			  </td>
 			  
@@ -287,10 +287,12 @@ include("header.inc.php");
                     <td class="text"><div class="cell">
                         <a href="./job_queue.php">Queue status</a>
                         <br />
-                        <p class="added_jobs"/>
-                        <a href="./job_queue.php">Congratulations!<br />
-                        You added <strong><?php echo $str; ?></strong> to
-                        the queue!</a>
+                        <div id="jobsInQueue">
+                            <p class="added_jobs"/>
+                            <a href="./job_queue.php">Congratulations!<br />
+                            You added <strong><?php echo $str; ?></strong> to
+                            the queue!</a>
+                        </div>
                         </div>
                     </td>
                     <?php
@@ -308,8 +310,13 @@ include("header.inc.php");
                     <td class="text"><div class="cell">
                         <a href="./job_queue.php">Queue status</a>
                         <br />
-                        <p />See all jobs.<br />
-                        You have <?php echo $str; ?> in the queue.
+                        <div id="jobsInQueue">
+                            <p />See all jobs.<br />
+                            You have <?php 
+                                echo "<strong><span id=\"jobsInQueue\">
+                                    $str</span> </strong>"; ?>
+                            in the queue.
+                        </div>
                         </div>
                     </td>
                     <?php
@@ -390,3 +397,11 @@ include("header.inc.php");
 include("footer.inc.php");
 
 ?>
+
+<!-- Ajax function to update the number of jobs in the queue every 10 s -->
+<script type="text/javascript">
+    $(document).ready(function() {
+        setInterval(function() { getNumberOfJobsInQueue(); }, 10000);
+    });
+</script>
+  

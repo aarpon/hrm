@@ -1589,8 +1589,14 @@ class TaskSetting extends Setting {
             'OutputFileFormat',
             'MultiChannelOutput',
             'QualityChangeStoppingCriterion',
-            'DeconvolutionAlgorithm'
+            'DeconvolutionAlgorithm',
+            'ColocAnalysis',
+            'ColocChannel',
+            'ColocCoefficient',
+            'ColocThreshold',
+            'ColocMap',
         );
+
         foreach ($parameterClasses as $class) {
             $param = new $class;
             $name = $param->name();
@@ -1744,6 +1750,101 @@ class TaskSetting extends Setting {
 
         return $noErrorsFound;
     }
+
+    /*!
+      \brief	Checks that the posted Post Processing Parameters are all
+                defined and valid
+      \param	$postedParameters	The $_POST array
+    */
+    public function checkPostedPostParameters($postedParameters) {
+        if (count($postedParameters) == 0) {
+            $this->message = '';
+            return False;
+        }
+
+        $this->message = '';
+        $noErrorsFound = True;
+
+        $parameter = $this->parameter("ColocAnalysis");
+        $parameter->setValue($postedParameters["ColocAnalysis"]);
+        $this->set($parameter);
+
+        if ($parameter->value() == False) {
+            return $noErrorsFound;
+        }
+
+            // At least two channels must be selected.
+        if (!isset($postedParameters["ColocChannel"])
+            || $postedParameters["ColocChannel"] == "") {
+            $this->message  = "Please indicate the channels (at least two) for ";
+            $this->message .= "colocalization analysis.";
+            return False;
+        } else {
+            $parameter = $this->parameter("ColocChannel");
+            $parameter->setValue($postedParameters["ColocChannel"]);
+            $this->set($parameter);
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                return False;
+            }
+        }
+
+            // At least one coefficient must be selected.
+        if (!isset($postedParameters["ColocCoefficient"])
+            || $postedParameters["ColocCoefficient"] == "") {
+            $this->message  = "Please indicate the coefficients for ";
+            $this->message .= "colocalization analysis.";
+            return False;
+        } else {    
+            $parameter = $this->parameter("ColocCoefficient");
+            $parameter->setValue($postedParameters["ColocCoefficient"]);
+            $this->set($parameter);
+        }
+
+          // Colocaliztion threshold mode
+        if (!isset($postedParameters["ColocThresholdMode"]) ||
+                $postedParameters["ColocThresholdMode"] == '') {
+            $this->message = 'Please choose a colocalization threshold mode!';
+            $noErrorsFound = False;
+        } else {
+            $value = array(null, null, null, null, null);
+            switch ($postedParameters["ColocThresholdMode"]) {
+                case 'auto':
+
+                    $value[0] = 'auto';
+                    break;
+                    
+                case 'manual' :
+
+                    for ($i = 0; $i < 5; $i++) {
+                        $name = "ColocThreshold$i";
+                        if (isset($postedParameters[$name])) {
+                            $value[$i] = $postedParameters[$name];
+                        }
+                    }
+                    break;
+
+                default :
+                    $this->message = 'Unknown colocalization threshold mode!';
+                    $noErrorsFound = False;
+            }
+            
+            $parameter = $this->parameter("ColocThreshold");
+            $parameter->setValue($value);
+            $this->set($parameter);
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = False;
+            }
+        }
+        
+        $parameter = $this->parameter("ColocMap");
+        $parameter->setValue($postedParameters["ColocMap"]);
+        $this->set($parameter);
+        
+        return $noErrorsFound;
+    }
+    
 
     /*!
       \brief	Returns all Task Parameter names

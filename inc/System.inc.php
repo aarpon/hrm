@@ -21,7 +21,7 @@ class System {
 
 		This value has to be set by the developers!
 		*/
-	const HRM_VERSION = "2.1.2";
+	const HRM_VERSION = "3.0";
 
 	/*!
 		\var 	DB_LAST_REVISION
@@ -29,7 +29,7 @@ class System {
 
 		This value has to be set by the developers!
 		*/
-	const DB_LAST_REVISION = 9;
+	const DB_LAST_REVISION = 10;
 
 	/*!
 		\var 	MIN_HUCORE_VERSION
@@ -37,7 +37,7 @@ class System {
 
 		This value has to be set by the developers!
 		*/
-	const MIN_HUCORE_VERSION = 4010002;
+	const MIN_HUCORE_VERSION = 4020105;
 
 	/*!
 		\brief	Returns the HRM version
@@ -213,6 +213,7 @@ class System {
 					case '9':  return ( $r . " (Leopard)" );
 					case '10': return ( $r . " (Snow Leopard)" );
 					case '11': return ( $r . " (Lion)" );
+					case '12': return ( $r . " (Mountain Lion)" );
 					default:   return ( $r );
 				}
 			} else {

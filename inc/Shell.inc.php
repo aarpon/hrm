@@ -259,7 +259,7 @@ class ExternalProcess {
         if ($ret === False) {
             return False;
         } else {
-            // Asume execution success!!
+            // Assume execution success!!
             return True;
         }
     }

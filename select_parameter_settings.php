@@ -29,6 +29,7 @@ if (!$_SESSION['user']->isAdmin()) {
   $admin = new User();
   $admin->setName("admin");
   $admin_editor = new SettingEditor($admin);
+  $_SESSION['admin_editor'] = $admin_editor;
 }
 
 // fileserver related code (for measured PSF files check)
@@ -120,7 +121,7 @@ else if (isset($_POST['OK']) && $_POST['OK']=="OK" ) {
   }
 }
 
-$script = "settings.js";
+$script = array( "settings.js", "common.js", "ajax_utils.js" );
 
 include("header.inc.php");
 
@@ -232,15 +233,16 @@ if (!$_SESSION['user']->isAdmin()) {
 
 ?>
                     <select name="public_setting"
+                            onchange="getParameterListForSet('setting', $(this).val(), true);"
                             size="5"<?php echo $flag ?>>
 <?php
 
   if (sizeof($settings) == 0) {
-    echo "                        <option>&nbsp;</option>\n";
+    echo "<option>&nbsp;</option>\n";
   }
   else {
     foreach ($settings as $setting) {
-      echo "                        <option>".$setting->name()."</option>\n";
+      echo "<option>".$setting->name()."</option>\n";
     }
   }
 
@@ -293,6 +295,7 @@ if (sizeof($settings) == 0) $flag = " disabled=\"disabled\"";
 
 ?>
                     <select name="setting"
+                            onchange="getParameterListForSet('setting', $(this).val(), false);"
                             size="<?php echo $size ?>"<?php echo $flag ?>>
 <?php
 
@@ -352,7 +355,7 @@ if (!$_SESSION['user']->isAdmin()) {
 ?>
                 <input type="hidden" name="annihilate" />
                 <input name="delete"
-                       type="submit"
+                       type="button"
                        value=""
                        class="icon delete"
                        onclick="warn(this.form,

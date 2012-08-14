@@ -86,8 +86,9 @@ abstract class Parameter {
 		\return true if the confidence level is lower than 'reported'.
 	*/
 	public function mustProvide( ) {
-        return !( $this->confidenceLevel == "reported" ||
-			$this->confidenceLevel == "verified" );
+        return !( $this->confidenceLevel == "reported"
+                  || $this->confidenceLevel == "verified"
+                  || $this->confidenceLevel == "asIs" );
 	}
 
 
@@ -850,6 +851,7 @@ class NumericalArrayParameter extends NumericalParameter {
 		\param	$value	Array of values for the parameter
 	*/
 	public function setValue($value) {
+
 		$n = count( $value );
 		for ( $i = 0; $i < 5; $i++ ) {
 			if ( $i < $n ) {
@@ -885,17 +887,38 @@ class NumericalArrayParameter extends NumericalParameter {
 /*!
 	\class    AnyTypeArrayParameter
 	\brief    Class for a Parameter that has an array of variable of any type
-				as possible value. It inherits from NumericalArrayParameter and
-				relaxes the condition that the values must be integers.
+		  as possible value. It inherits from NumericalArrayParameter and
+		  relaxes the condition that the values must be integers.
 */
 class AnyTypeArrayParameter extends NumericalArrayParameter {
+    
+        /*!
+         \var	$possibleValues
+         \brief	Possible values for AnyTypeArrayParameter
+	*/
+	protected $possibleValues;
 
 	/*!
 		\brief	Constructor: creates an empty Parameter
 		\param	$name	Name of the new Parameter
 	*/
 	public function __construct($name) {
+            
 		parent::__construct($name);
+
+                $possibleValues = array ();
+                
+                    // Get and set the Parameter possible values
+                $db = new DatabaseConnection;
+                $this->possibleValues = $db->readPossibleValues($this);
+	}
+        
+       /*!
+                \brief	Returns the possible values for the Parameter
+                \return	the possible values
+	*/
+	public function possibleValues() {
+            return $this->possibleValues;
 	}
 
 	/*!
@@ -2253,7 +2276,7 @@ class OutputFileFormat extends ChoiceParameter {
 }
 
 /*
-	============================================================================
+============================================================================
 */
 
 /*!
@@ -2280,7 +2303,202 @@ class DeconvolutionAlgorithm extends ChoiceParameter {
 }
 
 /*
-	============================================================================
+============================================================================
+*/
+
+/*!
+ \class	ColocAnalysis
+ \brief	A ChoiceParameter to represent the colocalization analysis choice.
+*/
+class ColocAnalysis extends ChoiceParameter {
+
+	/*!
+		\brief	Constructor: creates an empty Parameter
+	*/
+	public function __construct() {
+            parent::__construct("ColocAnalysis");
+	}
+
+	/*!
+         \brief	Checks whether the Parameter is a Task Parameter
+         \return    true if the Parameter is a Task Parameter, false otherwise
+	*/
+	public function isTaskParameter() {
+		return True;
+	}
+
+}
+
+/*!
+ \class	ColocChannel
+ \brief	A NumericalParameter to represent the colocalization channel choice.
+*/
+class ColocChannel extends NumericalArrayParameter {
+
+
+	/*!
+		\brief	Constructor: creates an empty Parameter
+	*/
+	public function __construct() {
+            parent::__construct("ColocChannel");
+	}
+
+        /*!
+         \brief	Checks whether the Parameter is a Task Parameter
+         \return    true if the Parameter is a Task Parameter, false otherwise
+	*/
+	public function isTaskParameter() {
+		return True;
+	}
+
+        /*! 
+         \brief	Checks whether the Parameter is valid
+         \return	true if the Parameter is valid, false otherwise
+        */
+        public function check() {
+            $this->message = '';
+            $value = $this->internalValue();
+            $result = True;
+            
+                /* Do not count empty elements. Do count channel '0'. */
+            if (count(array_filter($value, 'strlen')) < 2) {
+                $this->message = "Please select at least 2 channels.";
+                $result = False;
+            }
+            return $result;
+	}
+}
+
+/*!
+ \class	ColocCoefficient
+ \brief	A ChoiceParameter to represent the colocalization coefficients choice.
+*/
+class ColocCoefficient extends AnyTypeArrayParameter {
+
+
+	/*!
+         \brief	Constructor: creates an empty Parameter
+	*/
+	public function __construct() {
+            parent::__construct("ColocCoefficient");
+	}
+
+        /*!
+         \brief	Checks whether the Parameter is a Task Parameter
+         \return    true if the Parameter is a Task Parameter, false otherwise
+	*/
+	public function isTaskParameter() {
+		return True;
+	}
+
+        /*!
+         \brief	Sets the value of the parameter
+         \param	$value	Value for the parameter
+	*/
+        public function setValue($value) {
+
+                /* The parent function links the number of channels and the
+                 allowed number of values for a parameter. Thus, a parameter
+                 can have 5 values, at most. This is clearly not enough for
+                 the 'ColocCoefficient' class. */
+            
+            $n = count( $value );
+            $valueCnt = count($this->possibleValues);
+            
+            for ( $i = 0; $i < $valueCnt; $i++ ) {
+                if ( $i < $n ) {
+                    $this->value[ $i ] = $value[ $i ];
+                } else {
+                    $this->value[ $i ] = null;
+                }
+            }
+	}
+
+        /*!
+         \brief	Dummy function to override the parent 'setNumberOfChannels'.
+	*/
+        public function setNumberOfChannels( ) 
+        {
+                /* The parent function links the number of channels and the
+                 allowed number of values for a parameter. Thus, a parameter
+                 can have 5 values, at most. This is clearly not enough for
+                 the 'ColocCoefficient' class. */
+            return;
+        }
+        
+}
+
+/*!
+ \class	ColocThreshold
+ \brief	An AnyTypeArrayParameter to represent the colocalization threshold
+*/
+class ColocThreshold extends AnyTypeArrayParameter {
+
+
+	/*!
+		\brief	Constructor: creates an empty Parameter
+	*/
+	public function __construct() {
+            parent::__construct("ColocThreshold");
+	}
+
+        /*!
+		\brief	Checks whether the Parameter is valid
+		\return	true if the Parameter is valid, false otherwise
+	*/
+	public function check() {
+		$this->message = '';
+		$value = $this->internalValue();
+		$result = True;
+		if ($value[0] == "auto")
+			return True;
+		for ($i = 0; $i < $this->numberOfChannels; $i++) {
+			$result = $result && $this->checkValue($value[$i]);
+		}
+		if ( $result == False ) {
+                    $this->message = 'Colocalization threshold: ' .
+                        $this->message;
+		}
+		return $result;
+	}
+
+        /*!
+         \brief	Checks whether the Parameter is a Task Parameter
+         \return    true if the Parameter is a Task Parameter, false otherwise
+	*/
+	public function isTaskParameter() {
+		return True;
+	}
+}
+
+
+/*!
+ \class	ColocMap
+ \brief	A ChoiceParameter to represent the colocalization map choice.
+*/
+class ColocMap extends ChoiceParameter {
+
+
+	/*!
+		\brief	Constructor: creates an empty Parameter
+	*/
+	public function __construct() {
+            parent::__construct("ColocMap");
+	}
+
+    /*!
+         \brief	Checks whether the Parameter is a Task Parameter
+         \return    true if the Parameter is a Task Parameter, false otherwise
+	*/
+	public function isTaskParameter() {
+		return True;
+	}
+}
+
+
+
+/*
+============================================================================
 */
 
 /*!
