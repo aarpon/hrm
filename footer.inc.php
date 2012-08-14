@@ -112,10 +112,13 @@ $loggedIn = ( isset($_SESSION['user'] ) && $_SESSION['user']->isLoggedIn( ) );
         
     <?php
             }
-        }
     ?>
         } );
         </script>
+    <?php
+    }
+    ?>
+
 </body>
 
 </html>

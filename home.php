@@ -404,4 +404,3 @@ include("footer.inc.php");
         setInterval(function() { getNumberOfJobsInQueue(); }, 10000);
     });
 </script>
-  
