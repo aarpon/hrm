@@ -35,7 +35,7 @@ $message = "";
 if ( $_SESSION[ 'task_setting' ]->checkPostedPostParameters( $_POST ) ) {
 $saved = $_SESSION['task_setting']->save();
   if ($saved) {
-    header("Location: " . "select_task_settings.php"); exit();
+    header("Location: " . "select_analysis_settings.php"); exit();
   } else {
     $message = $_SESSION['task_setting']->message();
   }
@@ -74,7 +74,7 @@ include("header.inc.php");
 
     <div id="content">
 
-        <h3>Post - deconvolution</h3>
+        <h3>Analysis - colocalization</h3>
 
         <form method="post" action="" id="select">
 
@@ -398,12 +398,9 @@ foreach ($possibleValues as $possibleValue) {
 
             <div id="controls"
                  onmouseover="javascript:changeQuickHelp( 'default' )">
-              <input type="button" value="" class="icon previous"
-                  id="controls_back"
-                  onclick="document.location.href='task_parameter.php'" />
               <input type="button" value="" class="icon up"
                   id="controls_cancel"                     
-                  onclick="document.location.href='select_task_settings.php'" />
+                  onclick="document.location.href='select_analysis_settings.php'" />
               <input type="submit" value="" class="icon save"
                   id="controls_save"
                   onclick="process()" />
@@ -451,7 +448,6 @@ echo "<p>$message</p>";
  * Define $tooltips array with object id as key and tooltip string as value.
  */
 $tooltips = array(
-    "controls_back" => "Go back to previous page.",
     "controls_cancel" => "Abort editing and go back to the processing parameters selection page. All changes will be lost!",
     "controls_save" => "Save and return to the processing parameters selection page.",
 );

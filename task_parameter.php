@@ -57,19 +57,14 @@ if ( ! ( strpos( $_SERVER[ 'HTTP_REFERER' ],
  **************************************************************************** */
 
 if ( $_SESSION[ 'task_setting' ]->checkPostedTaskParameters( $_POST ) ) {
-    if ($_SESSION[ 'task_setting']->numberOfChannels() == 1) {
-        $saved = $_SESSION['task_setting']->save();
-        if ($saved) {
-            header("Location: " . "select_task_settings.php"); exit();
-        } else {
-            $message = $_SESSION['task_setting']->message();
-        }
-    } else {
-            // Continue to next page
-        header("Location: " . "post_processing.php"); exit();
-    }
-} else {
+  $saved = $_SESSION['task_setting']->save();
+  if ($saved) {
+    header("Location: " . "select_task_settings.php"); exit();
+  } else {
     $message = $_SESSION['task_setting']->message();
+  }
+} else {
+  $message = $_SESSION['task_setting']->message();
 }
 
 /* *****************************************************************************
@@ -503,13 +498,8 @@ $value = $parameter->value();
                   />
     
     <?php
-    if ($_SESSION['task_setting']->numberOfChannels() == 1) {
         $acceptButton  = "icon save";
         $acceptToolTip = "Save and return to the processing parameters selection page.";
-    } else {
-        $acceptButton  = "icon next";
-        $acceptToolTip = "Continue to next page.";
-    }
     ?>
 
             <input type="submit" value="" 

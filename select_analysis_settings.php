@@ -64,7 +64,7 @@ else if (isset($_POST['create'])) {
     $_POST['new_setting']);
   if ($task_setting != NULL) {
     $_SESSION['task_setting'] = $task_setting;
-    header("Location: " . "task_parameter.php"); exit();
+    header("Location: " . "coloc_analysis.php"); exit();
   }
   $message = $_SESSION['taskeditor']->message();
 }
@@ -76,7 +76,7 @@ else if (isset($_POST['edit'])) {
   $task_setting = $_SESSION['taskeditor']->loadSelectedSetting();
   if ($task_setting) {
     $_SESSION['task_setting'] = $task_setting;
-    header("Location: " . "task_parameter.php"); exit();
+    header("Location: " . "coloc_analysis.php"); exit();
   }
   $message = $_SESSION['taskeditor']->message();
 }
