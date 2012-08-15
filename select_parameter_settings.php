@@ -174,7 +174,7 @@ if ($_SESSION['user']->isAdmin()) {
 else {
 
 ?>
-        <h3>Step 2/4 - Image parameters</h3>
+        <h3>Step 2/5 - Image parameters</h3>
 <?php
 
 }
@@ -442,8 +442,8 @@ $tooltips = array(
     "controls_delete" => "Delete the selected parameter set.",
     "controls_default" => "Sets (or resets) the selected parameter set as the default one.",
     "controls_copyTemplate" => "Copy a template.",
-    "controls_back" => "Go back to step 1/4 - Select images.",
-    "controls_forward" => "Continue to step 3/4 - Restoration parameters.",
+    "controls_back" => "Go back to step 1/5 - Select images.",
+    "controls_forward" => "Continue to step 3/5 - Restoration parameters.",
 );
 
 include("footer.inc.php");

@@ -227,7 +227,7 @@ $info = " <h3>Quick help</h3> <p>In this step, you will select the files " .
     
     <div id="content">
     
-        <h3>Step 1/4 - Select images</h3>
+        <h3>Step 1/5 - Select images</h3>
                     <form method="post" action="" id="fileformat">
                     <fieldset class="setting <?php
                 echo X ?>"
@@ -421,7 +421,7 @@ $tooltips = array(
     "controls_down" => "Add files to the list of selected images.",
     "controls_up" => "Remove files from the list of selected images.",
     "controls_refresh" => "Refresh the list of available images on the server.",
-    "controls_forward" => "Continue to step 2/4 - Image parameters."
+    "controls_forward" => "Continue to step 2/5 - Image parameters."
 );
 
 include("footer.inc.php");

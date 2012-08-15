@@ -99,7 +99,7 @@ include("header.inc.php");
 
     <div id="content">
 
-        <h3>Step 4/4 - Create job</h3>
+        <h3>Step 5/5 - Create job</h3>
 
         <form method="post" action="" id="createjob">
 
@@ -279,7 +279,7 @@ if (!isset($_SESSION['jobcreated'])) {
 
 ?>
             <input type="button" name="previous" value="" class="icon previous"
-              onclick="document.location.href='select_task_settings.php'"
+              onclick="document.location.href='select_analysis_settings.php'"
               id="controls_back" />
             <input type="button" name="create job" value="" class="icon ok"
               onclick="document.forms['createjob'].submit()"
@@ -351,7 +351,7 @@ echo "<p>$message</p>";
  * Define $tooltips array with object id as key and tooltip string as value.
  */
 $tooltips = array(
-    "controls_back" => "Go back to step 3/4 - Processing parameters.",
+    "controls_back" => "Go back to step 4/5 - Analysis parameters.",
     "controls_createJob" => "Create job, add it to the queue, and go back to your home page.",
 );
 

@@ -91,7 +91,7 @@ else if ( isset($_POST['annihilate']) &&
 }
 else if (isset($_POST['OK']) && $_POST['OK']=="OK" ) {
   if (!isset($_POST['task_setting'])) {
-    $message = "Please select some restoration parameters";
+    $message = "Please select some analysis parameters";
   }
   else {
     $_SESSION['task_setting'] =
@@ -110,9 +110,9 @@ else if (isset($_POST['OK']) && $_POST['OK']=="OK" ) {
         'BackgroundOffsetPercent' )->check();
     
     if ($ok) {
-      header("Location: " . "select_analysis_settings.php"); exit();
+      header("Location: " . "create_job.php"); exit();
     }
-    $message = "The number of channels in the selected restoration " .
+    $message = "The number of channels in the selected analysis " .
       "parameters does not match the number of channels in the image " .
       "parameters. Please fix this!";
   }
@@ -164,14 +164,14 @@ include("header.inc.php");
 if ($_SESSION['user']->isAdmin()) {
 
 ?>
-        <h3>Restoration parameters</h3>
+        <h3>Analysis parameters</h3>
 <?php
 
 }
 else {
 
 ?>
-        <h3>Step 3/5 - Restoration parameters</h3>
+        <h3>Step 4/5 - Analysis parameters</h3>
 <?php
 
 }
@@ -183,7 +183,7 @@ if (!$_SESSION['user']->isAdmin()) {
         <form method="post" action="">
         
             <fieldset>
-              <legend>Template restoration parameters</legend>
+              <legend>Template analysis parameters</legend>
               <p class="message_small">
                   These are the parameter sets prepared by your administrator.
               </p>
@@ -237,11 +237,11 @@ if (!$_SESSION['user']->isAdmin()) {
             
               <?php
                 if ($_SESSION['user']->isAdmin()) {
-                  echo "<legend>Template restoration parameters</legend>";
+                  echo "<legend>Template analysis parameters</legend>";
                   echo "<p class=\"message_small\">Create template parameter " .
                     "sets visible to all users.</p>";
                 } else {
-                  echo "<legend>Your restoration parameters</legend>";
+                  echo "<legend>Your analysis parameters</legend>";
                   echo "<p class=\"message_small\">These are your (private) " .
                     "parameter sets.</p>";
                 }
@@ -342,7 +342,7 @@ if (!$_SESSION['user']->isAdmin()) {
                   <input type="button"
                          value=""
                          class="icon previous"
-                         onclick="document.location.href='select_parameter_settings.php'"
+                         onclick="document.location.href='select_task_settings.php'"
                          id="controls_back" />
                   <input type="submit" 
                          value=""
@@ -369,10 +369,10 @@ if (!$_SESSION['user']->isAdmin()) {
     <?php    
 	if (!$_SESSION['user']->isAdmin()) {
       echo "<p>In this step, you are asked to specify all parameters relative
-        to the restoration of your images.</p>";
+        to the analysis of your images.</p>";
 	} else {
 	  echo "<p>Here, you can create template parameters relative to the
-      restoration procedure.</p>";
+      analysis procedure.</p>";
 	}
 	?>
         <p>These are the choice of the deconvolution algorithm and its options
@@ -381,9 +381,9 @@ if (!$_SESSION['user']->isAdmin()) {
 
     <?php        
 	if (!$_SESSION['user']->isAdmin()) {
-      echo "<p>'Template restoration parameters' created by your facility
-        manager can be copied to the list of 'Your restoration parameters' and
-        adapted to fit your restoration needs.</p>";
+      echo "<p>'Template analysis parameters' created by your facility
+        manager can be copied to the list of 'Your analysis parameters' and
+        adapted to fit your analysis needs.</p>";
 	} else {
 	  echo "<p>The created templates will be visible for the users in an
       additional selection field from which they can be copied to the user's
@@ -417,8 +417,8 @@ $tooltips = array(
     "controls_delete" => "Delete the selected parameter set.",
     "controls_default" => "Sets (or resets) the selected parameter set as the default one.",
     "controls_copyTemplate" => "Copy a template.",
-    "controls_back" => "Go back to step 2/5 - Image parameters.",
-    "controls_forward" => "Continue to step 4/5 - Analysis parameters.",
+    "controls_back" => "Go back to step 3/5 - Restoration parameters.",
+    "controls_forward" => "Continue to step 5/5 - Create job.",
 );
 
 include("footer.inc.php");
