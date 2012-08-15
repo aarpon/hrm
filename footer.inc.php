@@ -19,6 +19,8 @@ $loggedIn = ( isset($_SESSION['user'] ) && $_SESSION['user']->isLoggedIn( ) );
                     "\"Tip('Login to see contact information.' )\" " .
 					"onmouseout=\"UnTip()\">Volker Baecker</span>";
 		?>
+        and released under the terms of the 
+        <a href="http://huygens-rm.org/home/?q=node/26">CeCILL license</a>
 		<br />extended 2006-2012 by
 		<?php
 			if ( $loggedIn == true ) {
