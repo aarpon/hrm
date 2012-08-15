@@ -106,9 +106,10 @@ $loggedIn = ( isset($_SESSION['user'] ) && $_SESSION['user']->isLoggedIn( ) );
                 textAlign: 'center',
                 border: {
                     width: 1,
-                    radius: 3,
+                    radius: 2,
                     color: 'darkgray'
-                }
+                },
+                'font-size': '90%'
             }
         });
         
