@@ -731,7 +731,26 @@ input.save {
 }
 
 #warning td.text {
-  color: #360840;
+  color: #E80010;
+  padding-left: 6px;
+}
+
+#scaling table { 
+  font-size: 105%;
+  padding-bottom: 1em;
+  width: 610px;
+  border: none;
+  left:0px;
+} 
+
+#scaling td {
+  text-align: left;
+  border: thin solid;
+}
+
+#scaling td.text {
+  color: #3366FF;
+  padding-left: 6px;
 }
 
 #listusers {

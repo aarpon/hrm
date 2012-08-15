@@ -538,7 +538,7 @@ class Job {
 
         $div   = $title;
         $div  .= $text;
-        $html  = $this->writeWarning($reportFile);
+        $html  = $this->writeMessages($reportFile);
         $html .= $this->insertDiv($div);
 
         /* Insert the summary tables. */
@@ -556,7 +556,7 @@ class Job {
      \param       $reportFile An array with the contents of the file.
      \return      A string with the formatted table.
     */
-    private function writeWarning($reportFile) {
+    private function writeMessages($reportFile) {
 
         $warning = "";
 
@@ -566,15 +566,14 @@ class Job {
             if (!preg_match($pattern,$reportEntry,$matches)) {
                 continue;
             }
-
-            $channel = $matches[1];
+            
             $warning .= "<p><b><u>WARNING</u>:</b>";
-            $warning .= " The <b>microscope type</b> selected in this ";
-            $warning .= "deconvolution job <b>may be<br />incorrect</b> as it ";
-            $warning .= "does not match the microscope type stored in the file";
-            $warning .= "<br />metadata. Notice that the restoration process may";
-            $warning .= " lead to <b>wrong results</b><br />if the microscope ";
-            $warning .= "type is not selected properly.";
+            $warning .= " The <b>microscope type</b> selected for this ";
+            $warning .= "deconvolution job <b>may not<br />be correct</b>. ";
+            $warning .= "The file metadata states a different microscope type. ";
+            $warning .= "The<br />restoration process may produce ";
+            $warning .= "<b>wrong results</b> if the microscope type is<br />";
+            $warning .= "not selected properly.<br />";
             $warning  = $this->insertCell($warning,"text"); 
             $warning  = $this->insertTable($warning);
             $warning  = $this->insertDiv($warning,"warning");
@@ -582,7 +581,37 @@ class Job {
             break;
         }
 
-        return $warning;
+        
+        $scaling = "";
+
+            /* Extract data from the file and into the table. */
+        $pattern  = "/the image will be multiplied by (.*).}/";
+        foreach ($reportFile as $reportEntry) {
+            if (!preg_match($pattern,$reportEntry,$matches)) {
+                continue;
+            }
+            
+            $scaling .= "<p><b><u>SCALING FACTORS</u>:</b> ";
+            $scaling .= "Due to differences between the dynamic ranges of the ";
+            $scaling .= "<br />deconvolved image and of the output file format ";
+            $scaling .= "all <b>deconvolved channels</b><br />have been ";
+            $scaling .= "<b>scaled</b>. Scaling was performed by multiplying ";
+            $scaling .= "the deconvolved<br />channels by a factor ";
+            $scaling .= "<b>$matches[1]</b> Proportions between ";
+            $scaling .= "channels were preserved.<br />";
+            $scaling  = $this->insertCell($scaling,"text"); 
+            $scaling  = $this->insertTable($scaling);
+            $scaling  = $this->insertDiv($scaling,"scaling");
+            break;
+        }
+
+        $messages = "";
+        if (strlen($warning) > 0 || strlen($scaling) > 0) {
+            $messages  = $warning . " " . $scaling;
+            $messages .= $this->insertSeparator("") . "<br />";
+        }
+        
+        return $messages;
     }
     
     /*!
