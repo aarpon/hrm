@@ -244,9 +244,9 @@ $info = " <h3>Quick help</h3> <p>In this step, you will select the files " .
                 </legend>
                     
                     <select name="ImageFileFormat" id="ImageFileFormat"
-                                                                      size="1"
-                  onchange="javascript:filterImages(this)"
-                  onkeyup="this.blur();this.focus();" >
+                     size="1"
+                     onclick="javascript:filterImages(this)"
+                     onkeyup="this.blur();this.focus();" >
 
 <?php
 
@@ -268,15 +268,15 @@ foreach($values as $key => $value) {
       $translation = $fileFormat->translatedValueFor( $value );
     if (stristr($value, "tiff")) {
       $translation .= " (*.tiff)";
-    }    
+    }
+
+    $extensions = $fileFormat->fileExtensions($value);
+    $extension = $extensions[0];
     
-    if ($value == $fileFormat->value()) {
+    if ($extension == $fileFormat->value()) {
       $selected = " selected=\"selected\"";      
     }
   }
-  
-  $extensions = $fileFormat->fileExtensions($value);
-  $extension = $extensions[0];
 ?>
       <option <?php echo "name = \"" . $value . "\"  value = \"" . $extension  . "\"" . $selected ?>>
            <?php echo $translation ?>
