@@ -25,9 +25,10 @@ if (!isset($_SESSION['fileserver'])) {
   $_SESSION['fileserver'] = new Fileserver($name);
 }
 
-$_SESSION['setting'] = new ParameterSetting();
-$fileFormat = $_SESSION['setting']->parameter("ImageFileFormat");
-
+if (!isset($_SESSION[ 'parameterSetting' ])) {
+    $_SESSION[ 'parameterSetting' ] = new ParameterSetting();
+}
+$fileFormat = $_SESSION[ 'parameterSetting' ]->parameter("ImageFileFormat");
 
 $message = "";
 if (isset($_POST['down'])) {
@@ -35,9 +36,9 @@ if (isset($_POST['down'])) {
         $_SESSION['fileserver']->removeFilesFromSelection($_POST['selectedfiles']);
         $_SESSION['fileserver']->addFilesToSelection($_POST['userfiles']);
     }
-    if (isset($_POST['ImageFileFormat'])) {
-        $_SESSION[ 'setting' ]->checkPostedImageParameters( $_POST );
-        $_SESSION[ 'setting' ]->parameter("ImageFileFormat")->setValue($_POST["ImageFileFormat"]);
+    if (isset($_POST['ImageFileFormat']) && !empty($_POST['ImageFileFormat'])) {
+        $_SESSION[ 'parameterSetting' ]->checkPostedImageParameters( $_POST );
+        $fileFormat->setValue($_POST["ImageFileFormat"]);
     }
     
 }
@@ -50,13 +51,14 @@ else if (isset($_POST['update'])) {
   $_SESSION['fileserver']->resetFiles();
 }
 else if (isset($_POST['OK'])) {
+
     if (!$_SESSION['fileserver']->hasSelection()) {
         $message = "Please add at least one image to your selection";
     }
     else {
-        if (isset($_POST['ImageFileFormat'])) {
-            $_SESSION[ 'setting' ]->checkPostedImageParameters( $_POST );
-            $_SESSION[ 'setting' ]->parameter("ImageFileFormat")->setValue($_POST["ImageFileFormat"]);
+        if (isset($_POST['ImageFileFormat']) && !empty($_POST['ImageFileFormat'])) {
+            $_SESSION[ 'parameterSetting' ]->checkPostedImageParameters( $_POST );
+            $fileFormat->setValue($_POST["ImageFileFormat"]);
         }
         header("Location: " . "select_parameter_settings.php"); exit();
     }
@@ -254,33 +256,26 @@ $msgTranslation = 'Please choose a file format...';
 $values = array();
 $values[ 0 ] = $msgValue;
 $values = array_merge( $values, $fileFormat->possibleValues());
-$geometryFlag = "";
-$channelsFlag = "";
+
 sort($values);
 
-foreach($values as $value) {
+foreach($values as $key => $value) {
   $selected = "";
+
   if ( $value == $msgValue ) {
-    $translation = $msgTranslation;
+      $translation = $msgTranslation;
   } else {
       $translation = $fileFormat->translatedValueFor( $value );
     if (stristr($value, "tiff")) {
       $translation .= " (*.tiff)";
-    }
+    }    
+    
     if ($value == $fileFormat->value()) {
-      $selected = " selected=\"selected\"";
-      if ($value == "lsm-single" || $value == "tiff-single") {
-        $geometryFlag = "disabled=\"disabled\" ";
-      }
-      else if ($value == "tiff-series") {
-        $geometryFlag = "disabled=\"disabled\" ";
-        $channelsFlag = "disabled=\"disabled\" ";
-      }
+      $selected = " selected=\"selected\"";      
     }
   }
-
-  $fileFormat->setValue($value);
-  $extensions = $fileFormat->fileExtensions();
+  
+  $extensions = $fileFormat->fileExtensions($value);
   $extension = $extensions[0];
 ?>
       <option <?php echo "name = \"" . $value . "\"  value = \"" . $extension  . "\"" . $selected ?>>

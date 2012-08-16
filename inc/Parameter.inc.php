@@ -1203,10 +1203,15 @@ class ImageFileFormat extends SingleOrMultiChannelParameter {
 		\brief	Returns all image file extensions
 		\return array of file extensions
 	*/
-	public function fileExtensions() {
-		$db = new DatabaseConnection();
-		$result = $db->fileExtensions($this->value());
-		return $result;
+	public function fileExtensions($value = NULL) {
+
+            if ($value == NULL) {
+                $value = $this->value();
+            }
+            
+            $db = new DatabaseConnection();
+            $result = $db->fileExtensions($value);
+            return $result;
 	}
 
 	/*!

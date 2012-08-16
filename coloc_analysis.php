@@ -160,9 +160,10 @@ Channels
     <?php
 $parameterColocChannel =
     $_SESSION['task_setting']->parameter("ColocChannel");
+
 $selectedValues = $parameterColocChannel->value();
 
-    for ($chan=0;$chan< $_SESSION['task_setting']->numberOfChannels();$chan++) {
+    for ($chan=0;$chan< $_SESSION['setting']->numberOfChannels();$chan++) {
         if (true == isValueInArray($selectedValues, $chan)) {
             $checked = "checked";
         } else {
