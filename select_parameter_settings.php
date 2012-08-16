@@ -44,6 +44,10 @@ if (isset($_POST['setting'])) {
   $_SESSION['editor']->setSelected($_POST['setting']);
 }
 
+    // The file format is stored in a parameter setting created at stage 1.
+$fileFormat =
+    $_SESSION['parametersetting']->parameter("ImageFileFormat")->value();
+
 if (isset($_POST['copy_public'])) {
   if (isset($_POST['public_setting'])) {
     if (!$_SESSION['editor']->copyPublicSetting(
@@ -54,10 +58,6 @@ if (isset($_POST['copy_public'])) {
   else $message = "Please select a setting to copy";
 }
 else if (isset($_POST['create'])) {
-
-    // The file format is stored in a dummy setting created at stage 1.
-    $fileFormat = $_SESSION['setting']->parameter("ImageFileFormat")->value();
-    
     $setting = $_SESSION['editor']->createNewSetting($_POST['new_setting']);
     $setting->parameter("ImageFileFormat")->setValue($fileFormat);
     $_SESSION['setting'] = $setting;
@@ -74,8 +74,9 @@ else if (isset($_POST['copy'])) {
 else if (isset($_POST['edit'])) {
   $setting = $_SESSION['editor']->loadSelectedSetting();
   if ($setting) {
-    $_SESSION['setting'] = $setting;
-    header("Location: " . "image_format.php"); exit();
+      $setting->parameter("ImageFileFormat")->setValue($fileFormat);
+      $_SESSION['setting'] = $setting;
+      header("Location: " . "image_format.php"); exit();
   }
   $message = $_SESSION['editor']->message();
 }
@@ -94,6 +95,8 @@ else if (isset($_POST['OK']) && $_POST['OK']=="OK" ) {
     $message = "Please select some image parameters";
   } else {
     $_SESSION['setting'] = $_SESSION['editor']->loadSelectedSetting();
+    $_SESSION['setting']->parameter("ImageFileFormat")->setValue($fileFormat);
+    
     // if measured PSF, check files availability
     $ok = True;
     $psfParam = $_SESSION['setting']->parameter("PointSpreadFunction");

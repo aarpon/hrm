@@ -25,10 +25,10 @@ if (!isset($_SESSION['fileserver'])) {
   $_SESSION['fileserver'] = new Fileserver($name);
 }
 
-if (!isset($_SESSION[ 'parameterSetting' ])) {
-    $_SESSION[ 'parameterSetting' ] = new ParameterSetting();
+if (!isset($_SESSION[ 'parametersetting' ])) {
+    $_SESSION[ 'parametersetting' ] = new ParameterSetting();
 }
-$fileFormat = $_SESSION[ 'parameterSetting' ]->parameter("ImageFileFormat");
+$fileFormat = $_SESSION[ 'parametersetting' ]->parameter("ImageFileFormat");
 
 $message = "";
 if (isset($_POST['down'])) {
@@ -37,7 +37,7 @@ if (isset($_POST['down'])) {
         $_SESSION['fileserver']->addFilesToSelection($_POST['userfiles']);
     }
     if (isset($_POST['ImageFileFormat']) && !empty($_POST['ImageFileFormat'])) {
-        $_SESSION[ 'parameterSetting' ]->checkPostedImageParameters( $_POST );
+        $_SESSION[ 'parametersetting' ]->checkPostedImageParameters( $_POST );
         $fileFormat->setValue($_POST["ImageFileFormat"]);
     }
     
@@ -57,7 +57,7 @@ else if (isset($_POST['OK'])) {
     }
     else {
         if (isset($_POST['ImageFileFormat']) && !empty($_POST['ImageFileFormat'])) {
-            $_SESSION[ 'parameterSetting' ]->checkPostedImageParameters( $_POST );
+            $_SESSION[ 'parametersetting' ]->checkPostedImageParameters( $_POST );
             $fileFormat->setValue($_POST["ImageFileFormat"]);
         }
         header("Location: " . "select_parameter_settings.php"); exit();
