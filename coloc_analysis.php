@@ -20,8 +20,8 @@ if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
   header("Location: " . "login.php"); exit();
 }
 
-if (!isset($_SESSION['task_setting'])) {
-  $_SESSION['task_setting'] = new TaskSetting();
+if (!isset($_SESSION['analysis_setting'])) {
+  $_SESSION['analysis_setting'] = new AnalysisSetting();
 }
 $message = "";
 
@@ -32,15 +32,15 @@ $message = "";
  *
  **************************************************************************** */
 
-if ( $_SESSION[ 'task_setting' ]->checkPostedPostParameters( $_POST ) ) {
-$saved = $_SESSION['task_setting']->save();
+if ( $_SESSION[ 'analysis_setting' ]->checkPostedAnalysisParameters( $_POST ) ) {
+$saved = $_SESSION['analysis_setting']->save();
   if ($saved) {
     header("Location: " . "select_analysis_settings.php"); exit();
   } else {
-    $message = $_SESSION['task_setting']->message();
+    $message = $_SESSION['analysis_setting']->message();
   }
 } else {
-  $message = $_SESSION['task_setting']->message();
+  $message = $_SESSION['analysis_setting']->message();
 }
 
 
@@ -106,7 +106,7 @@ include("header.inc.php");
       COLOCALIZATION ANALYSIS
 */
 $parameterPerformColocAnalysis =
-    $_SESSION['task_setting']->parameter("ColocAnalysis");
+    $_SESSION['analysis_setting']->parameter("ColocAnalysis");
 $possibleValues = $parameterPerformColocAnalysis->possibleValues();
 $selectedMode  = $parameterPerformColocAnalysis->value();
 
@@ -159,7 +159,7 @@ Channels
 
     <?php
 $parameterColocChannel =
-    $_SESSION['task_setting']->parameter("ColocChannel");
+    $_SESSION['analysis_setting']->parameter("ColocChannel");
 
 $selectedValues = $parameterColocChannel->value();
 
@@ -204,7 +204,7 @@ Colocalization coefficients
 <table>
     <?php
 $parameterColocCoefficient =
-    $_SESSION['task_setting']->parameter("ColocCoefficient");
+    $_SESSION['analysis_setting']->parameter("ColocCoefficient");
 
 /* Which coloc coefficients should be displayed as choice? */
 $possibleValues = $parameterColocCoefficient->possibleValues();
@@ -271,7 +271,7 @@ Threshold
 
     <?php
 $parameterColocThresh =
-    $_SESSION['task_setting']->parameter("ColocThreshold");
+    $_SESSION['analysis_setting']->parameter("ColocThreshold");
 $colocThreshold = $parameterColocThresh->internalValue();
 
 $flag = "";
@@ -304,7 +304,7 @@ if ($colocThreshold[0] != "" && $colocThreshold[0] != "auto") {
     <div class="multichannel">
 <?php
 
-    for ($chan=0; $chan < $_SESSION['task_setting']->numberOfChannels(); $chan++) {
+    for ($chan=0; $chan < $_SESSION['analysis_setting']->numberOfChannels(); $chan++) {
         $threshold = "";
         if ($colocThreshold[0] != "auto") {
             $threshold = $colocThreshold[$chan];
@@ -363,7 +363,7 @@ Colocalization maps
 
     <?php
 $parameterColocMap =
-    $_SESSION['task_setting']->parameter("ColocMap");
+    $_SESSION['analysis_setting']->parameter("ColocMap");
 
 
 $possibleValues = $parameterColocMap->possibleValues();

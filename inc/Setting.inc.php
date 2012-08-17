@@ -1589,13 +1589,7 @@ class TaskSetting extends Setting {
             'OutputFileFormat',
             'MultiChannelOutput',
             'QualityChangeStoppingCriterion',
-            'DeconvolutionAlgorithm',
-            'ColocAnalysis',
-            'ColocChannel',
-            'ColocCoefficient',
-            'ColocThreshold',
-            'ColocMap',
-        );
+            'DeconvolutionAlgorithm' );
 
         foreach ($parameterClasses as $class) {
             $param = new $class;
@@ -1749,14 +1743,138 @@ class TaskSetting extends Setting {
         }
 
         return $noErrorsFound;
+    }    
+
+    /*!
+      \brief	Returns all Task Parameter names
+      \return array of Task Parameter names
+    */
+    public function taskParameterNames() {
+        $names = array();
+        foreach ($this->parameter as $parameter) {
+            if ($parameter->isTaskParameter()) {
+                $names[] = $parameter->name();
+            }
+        }
+        return $names;
     }
 
     /*!
-      \brief	Checks that the posted Post Processing Parameters are all
+      \brief	Returns the number of channels of the Setting
+      \return	the number of channels for the Setting
+    */
+    public function numberOfChannels() {
+        return $this->numberOfChannels;
+    }
+
+    /* !
+      \brief  Displays the setting as a text containing Parameter names 
+              and their values
+      \param	$numberOfChannels Number of channels (optional, default 
+              value is 0)
+     */
+    public function displayString($numberOfChannels = 0) {
+        $result = '';
+        $algorithm = $this->parameter('DeconvolutionAlgorithm')->value();
+        foreach ($this->parameter as $parameter) {
+            if ($parameter->name() == 'SignalNoiseRatio') {
+                $parameter->setAlgorithm($algorithm);
+            }
+            $result = $result . 
+                $parameter->displayString($this->numberOfChannels());
+        }
+        return $result;
+    }
+
+    /*!
+      \brief	Returns the TaskSetting as a text containing all parameters
+              and their values. Only the parameter OutputFileFormat is left out.
+   
+      This is used for the web display where the output file format has
+      not been choosen yet.
+    
+      \param	$numberOfChannels Number of channels (optional, default value is 0)
+      \todo	Refactor!
+    */
+    public function displayStringWithoutOutputFileFormat($numberOfChannels = 0) {
+        $parameter = $this->parameter('OutputFileFormat');
+        $parameterList = $this->parameter;
+        unset($parameterList['OutputFileFormat']);
+        $this->parameter = $parameterList;
+        $result = $this->displayString($numberOfChannels);
+        $parameterList['OutputFileFormat'] = $parameter;
+        $this->parameter = $parameterList;
+        return $result;
+    }
+
+} // End of class taskSetting
+
+/*
+ ============================================================================
+ */
+
+/*!
+  \class	AnalysisSetting
+  \brief	An AnalysisSetting is a complete set of analysis parameters
+*/
+class AnalysisSetting extends Setting {
+
+    /*!
+      \var	$numberOfChannels
+      \brief	Number of channels for the parameters of the TaskSetting
+    */
+
+    /*!
+      \brief	Constructor: constructs and initializes an AnalysisSetting
+    */
+    public function AnalysisSetting() {
+        parent::__construct();
+        $parameterClasses = array(
+            'ColocAnalysis',
+            'ColocChannel',
+            'ColocCoefficient',
+            'ColocThreshold',
+            'ColocMap',
+        );
+
+        foreach ($parameterClasses as $class) {
+            $param = new $class;
+            $name = $param->name();
+            $this->parameter[$name] = $param;
+            $this->numberOfChannels = NULL;
+        }
+    }
+
+    /*!
+      \brief	Returns the name of the database table in which the list of
+              Setting names are stored.
+
+      Besides the name, the table contains the Setting's name, owner and
+      the standard (default) flag. This is an abstract function and must
+      be reimplemented.
+    */
+    public function table() {
+        return "analysis_setting";
+    }
+
+    /*!
+      \brief	Returns the name of the database table in which all the Parameters
+              for the Settings stored in the table specified in table()
+
+      This is an abstract function and must be reimplemented.
+    
+      \see table()
+    */
+    public function parameterTable() {
+        return "analysis_parameter";
+    }
+    
+    /*!
+      \brief	Checks that the posted analysis Parameters are all
                 defined and valid
       \param	$postedParameters	The $_POST array
     */
-    public function checkPostedPostParameters($postedParameters) {
+    public function checkPostedAnalysisParameters($postedParameters) {
         if (count($postedParameters) == 0) {
             $this->message = '';
             return False;
@@ -1845,21 +1963,6 @@ class TaskSetting extends Setting {
         return $noErrorsFound;
     }
     
-
-    /*!
-      \brief	Returns all Task Parameter names
-      \return array of Task Parameter names
-    */
-    public function taskParameterNames() {
-        $names = array();
-        foreach ($this->parameter as $parameter) {
-            if ($parameter->isTaskParameter()) {
-                $names[] = $parameter->name();
-            }
-        }
-        return $names;
-    }
-
     /*!
       \brief	Returns the number of channels of the Setting
       \return	the number of channels for the Setting
@@ -1876,11 +1979,7 @@ class TaskSetting extends Setting {
      */
     public function displayString($numberOfChannels = 0) {
         $result = '';
-        $algorithm = $this->parameter('DeconvolutionAlgorithm')->value();
         foreach ($this->parameter as $parameter) {
-            if ($parameter->name() == 'SignalNoiseRatio') {
-                $parameter->setAlgorithm($algorithm);
-            }
             $result = $result . 
                 $parameter->displayString($this->numberOfChannels());
         }
@@ -1908,7 +2007,7 @@ class TaskSetting extends Setting {
         return $result;
     }
 
-} // End of class taskSetting
+} // End of class analysisSetting
 
 /*
  ============================================================================

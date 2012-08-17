@@ -26,16 +26,16 @@ if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
   header("Location: " . "login.php"); exit();
 }
 
-if (!isset($_SESSION['taskeditor'])) {
-  $_SESSION['taskeditor'] = new TaskSettingEditor($_SESSION['user']);
+if (!isset($_SESSION['analysiseditor'])) {
+  $_SESSION['analysiseditor'] = new AnalysisSettingEditor($_SESSION['user']);
 }
 
 // add public setting support
 if (!$_SESSION['user']->isAdmin()) {
   $admin = new User();
   $admin->setName( "admin" );
-  $admin_editor = new TaskSettingEditor($admin);
-  $_SESSION['admin_taskeditor'] = $admin_editor;
+  $admin_editor = new AnalysisSettingEditor($admin);
+  $_SESSION['admin_analysiseditor'] = $admin_editor;
 }
 
 $message = "";
@@ -46,13 +46,13 @@ $message = "";
  *
  **************************************************************************** */
 
-if (isset($_POST['task_setting'])) {
-  $_SESSION['taskeditor']->setSelected($_POST['task_setting']);
+if (isset($_POST['analysis_setting'])) {
+  $_SESSION['analysiseditor']->setSelected($_POST['analysis_setting']);
 }
 
 if (isset($_POST['copy_public'])) {
   if (isset($_POST["public_setting"])) {
-    if (!$_SESSION['taskeditor']->copyPublicSetting(
+    if (!$_SESSION['analysiseditor']->copyPublicSetting(
         $admin_editor->setting($_POST['public_setting']))) {
       $message = $_SESSION['editor']->message();
     }
@@ -60,61 +60,46 @@ if (isset($_POST['copy_public'])) {
   else $message = "Please select a setting to copy";
 }
 else if (isset($_POST['create'])) {
-  $task_setting = $_SESSION['taskeditor']->createNewSetting(
+  $analysis_setting = $_SESSION['analysiseditor']->createNewSetting(
     $_POST['new_setting']);
-  if ($task_setting != NULL) {
-    $_SESSION['task_setting'] = $task_setting;
+  if ($analysis_setting != NULL) {
+    $_SESSION['analysis_setting'] = $analysis_setting;
     header("Location: " . "coloc_analysis.php"); exit();
   }
-  $message = $_SESSION['taskeditor']->message();
+  $message = $_SESSION['analysiseditor']->message();
 }
 else if (isset($_POST['copy'])) {
-  $_SESSION['taskeditor']->copySelectedSetting($_POST['new_setting']);
-  $message = $_SESSION['taskeditor']->message();
+  $_SESSION['analysiseditor']->copySelectedSetting($_POST['new_setting']);
+  $message = $_SESSION['analysiseditor']->message();
 }
 else if (isset($_POST['edit'])) {
-  $task_setting = $_SESSION['taskeditor']->loadSelectedSetting();
-  if ($task_setting) {
-    $_SESSION['task_setting'] = $task_setting;
+  $analysis_setting = $_SESSION['analysiseditor']->loadSelectedSetting();
+  if ($analysis_setting) {
+    $_SESSION['analysis_setting'] = $analysis_setting;
     header("Location: " . "coloc_analysis.php"); exit();
   }
-  $message = $_SESSION['taskeditor']->message();
+  $message = $_SESSION['analysiseditor']->message();
 }
 else if (isset($_POST['make_default'])) {
-  $_SESSION['taskeditor']->makeSelectedSettingDefault();
-  $message = $_SESSION['taskeditor']->message();
+  $_SESSION['analysiseditor']->makeSelectedSettingDefault();
+  $message = $_SESSION['analysiseditor']->message();
 }
 else if ( isset($_POST['annihilate']) &&
     strcmp( $_POST['annihilate'], "yes") == 0 ) {
-        $_SESSION['taskeditor']->deleteSelectedSetting();
-        $message = $_SESSION['taskeditor']->message();
+        $_SESSION['analysiseditor']->deleteSelectedSetting();
+        $message = $_SESSION['analysiseditor']->message();
 }
 else if (isset($_POST['OK']) && $_POST['OK']=="OK" ) {
-  if (!isset($_POST['task_setting'])) {
+  if (!isset($_POST['analysis_setting'])) {
     $message = "Please select some analysis parameters";
   }
   else {
-    $_SESSION['task_setting'] =
-        $_SESSION['taskeditor']->loadSelectedSetting();
-    $_SESSION['task_setting']->setNumberOfChannels(
+    $_SESSION['analysis_setting'] =
+        $_SESSION['analysiseditor']->loadSelectedSetting();
+    $_SESSION['analysis_setting']->setNumberOfChannels(
         $_SESSION['setting']->numberOfChannels());
     
-    /*
-      Here we just check that the Parameters that have a variable of values per
-      channel have all their values set properly.
-    */
-    $ok = True;
-    $ok = $ok && $_SESSION['task_setting']->parameter(
-        'SignalNoiseRatio' )->check();
-    $ok = $ok && $_SESSION['task_setting']->parameter(
-        'BackgroundOffsetPercent' )->check();
-    
-    if ($ok) {
       header("Location: " . "create_job.php"); exit();
-    }
-    $message = "The number of channels in the selected analysis " .
-      "parameters does not match the number of channels in the image " .
-      "parameters. Please fix this!";
   }
 }
 
@@ -196,7 +181,7 @@ if (!$_SESSION['user']->isAdmin()) {
 
 ?>
                     <select name="public_setting"
-                        onchange="getParameterListForSet('task_setting', $(this).val(), true);"
+                        onchange="getParameterListForSet('analysis_setting', $(this).val(), true);"
                         size="5"<?php echo $flag ?>>
 <?php
 
@@ -249,15 +234,15 @@ if (!$_SESSION['user']->isAdmin()) {
               <div id="settings">
 <?php
 
-$settings = $_SESSION['taskeditor']->settings();
+$settings = $_SESSION['analysiseditor']->settings();
 $size = "8";
 if ($_SESSION['user']->isAdmin()) $size = "12";
 $flag = "";
 if (sizeof($settings) == 0) $flag = " disabled=\"disabled\"";
 
 ?>
-                    <select name="task_setting"
-                        onchange="getParameterListForSet('task_setting', $(this).val(), false);"
+                    <select name="analysis_setting"
+                        onchange="getParameterListForSet('analysis_setting', $(this).val(), false);"
                         size="<?php echo $size ?>"
                         <?php echo $flag ?>>
 <?php
@@ -271,7 +256,7 @@ else {
     if ($set->isDefault()) {
       echo " class=\"default\"";
     }
-    if ($_SESSION['taskeditor']->selected() == $set->name()) {
+    if ($_SESSION['analysiseditor']->selected() == $set->name()) {
       echo " selected=\"selected\"";
     }
     echo ">".$set->name()."</option>\n";
@@ -323,7 +308,7 @@ if (!$_SESSION['user']->isAdmin()) {
                        class="icon delete"
                        onclick="warn(this.form,
                          'Do you really want to delete this parameter set?',
-                         this.form['task_setting'].selectedIndex )"
+                         this.form['analysis_setting'].selectedIndex )"
                        id="controls_delete" />
                 <label>New/clone parameter set name:
                     <input name="new_setting"
@@ -342,7 +327,7 @@ if (!$_SESSION['user']->isAdmin()) {
                   <input type="button"
                          value=""
                          class="icon previous"
-                         onclick="document.location.href='select_task_settings.php'"
+                         onclick="document.location.href='select_analysis_settings.php'"
                          id="controls_back" />
                   <input type="submit" 
                          value=""
@@ -375,9 +360,7 @@ if (!$_SESSION['user']->isAdmin()) {
       analysis procedure.</p>";
 	}
 	?>
-        <p>These are the choice of the deconvolution algorithm and its options
-        (signal-to-noise ratio, background estimation mode and stopping criteria)
-        as well as post-deconvolution tasks such as colocalization.</p>
+        <p>These are the choice for colocalization analysis, colocalization coefficients and maps.</p>
 
     <?php        
 	if (!$_SESSION['user']->isAdmin()) {

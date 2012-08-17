@@ -425,3 +425,41 @@ class TaskSettingEditor extends BaseSettingEditor {
         return (new TaskSetting());
     }
 }
+
+
+/*
+============================================================================
+*/
+
+/*!
+  \class	AnalysisSettingEditor
+  \brief	Implements an Editor for AnalysisSetting
+*/
+class AnalysisSettingEditor extends BaseSettingEditor {
+
+    /*!
+      \brief	Constructor: creates a new SettingEditor and selects the default
+              Setting if a default Setting exists.
+      \param	$user	Current User
+    */
+    public function __construct(User $user) {
+        parent::__construct($user);
+    }
+
+    /*!
+      \brief	Returns the name of the database table in which the
+                AnalysisSetting's are stored
+      \return	table name
+    */
+    function table() {
+        return "analysis_setting";
+    }
+
+    /*!
+      \brief	Creates and returns a new AnalysisSetting
+      \return	a new AnalysisSetting
+    */
+    function newSettingObject() {
+        return (new AnalysisSetting());
+    }
+}

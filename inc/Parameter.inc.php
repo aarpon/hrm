@@ -2323,15 +2323,6 @@ class ColocAnalysis extends ChoiceParameter {
 	public function __construct() {
             parent::__construct("ColocAnalysis");
 	}
-
-	/*!
-         \brief	Checks whether the Parameter is a Task Parameter
-         \return    true if the Parameter is a Task Parameter, false otherwise
-	*/
-	public function isTaskParameter() {
-		return True;
-	}
-
 }
 
 /*!
@@ -2346,14 +2337,6 @@ class ColocChannel extends NumericalArrayParameter {
 	*/
 	public function __construct() {
             parent::__construct("ColocChannel");
-	}
-
-        /*!
-         \brief	Checks whether the Parameter is a Task Parameter
-         \return    true if the Parameter is a Task Parameter, false otherwise
-	*/
-	public function isTaskParameter() {
-		return True;
 	}
 
         /*! 
@@ -2387,15 +2370,7 @@ class ColocCoefficient extends AnyTypeArrayParameter {
 	public function __construct() {
             parent::__construct("ColocCoefficient");
 	}
-
-        /*!
-         \brief	Checks whether the Parameter is a Task Parameter
-         \return    true if the Parameter is a Task Parameter, false otherwise
-	*/
-	public function isTaskParameter() {
-		return True;
-	}
-
+        
         /*!
          \brief	Sets the value of the parameter
          \param	$value	Value for the parameter
@@ -2466,14 +2441,6 @@ class ColocThreshold extends AnyTypeArrayParameter {
 		}
 		return $result;
 	}
-
-        /*!
-         \brief	Checks whether the Parameter is a Task Parameter
-         \return    true if the Parameter is a Task Parameter, false otherwise
-	*/
-	public function isTaskParameter() {
-		return True;
-	}
 }
 
 
@@ -2490,17 +2457,8 @@ class ColocMap extends ChoiceParameter {
 	public function __construct() {
             parent::__construct("ColocMap");
 	}
-
-    /*!
-         \brief	Checks whether the Parameter is a Task Parameter
-         \return    true if the Parameter is a Task Parameter, false otherwise
-	*/
-	public function isTaskParameter() {
-		return True;
-	}
+        
 }
-
-
 
 /*
 ============================================================================
