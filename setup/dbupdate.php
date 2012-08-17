@@ -2168,8 +2168,8 @@ $n = 10;
 if ($current_revision < $n) {
 
 // ------------  Add tables for the 'analysis' templates ---------------------
-// analysis
-    $tabname = "analysis";
+// analysis_parameter
+    $tabname = "analysis_parameter";
     $flds = "
         owner C(30) NOTNULL DEFAULT 0 PRIMARY,
         setting C(30) NOTNULL DEFAULT 0 PRIMARY,
@@ -2193,8 +2193,8 @@ if ($current_revision < $n) {
             return;
     }
 
-// job_analysis
-    $tabname = "job_analysis";
+// job_analysis_parameter
+    $tabname = "job_analysis_parameter";
     if (in_array($tabname, $tables)) {
         if (!drop_table($tabname))
             return;
