@@ -2162,11 +2162,70 @@ if ($current_revision < $n) {
 
 // -----------------------------------------------------------------------------
 // Update to revision 10
-// Description: Add 'ColocAnalysis' as parameter to possible_values
+// Description: Add 'Analysis' as setting and job tables.
 // -----------------------------------------------------------------------------
 $n = 10;
 if ($current_revision < $n) {
 
+// ------------  Add tables for the 'analysis' templates ---------------------
+// analysis
+    $tabname = "analysis";
+    $flds = "
+        owner C(30) NOTNULL DEFAULT 0 PRIMARY,
+        setting C(30) NOTNULL DEFAULT 0 PRIMARY,
+        name C(30) NOTNULL DEFAULT 0 PRIMARY,
+        value C(255) DEFAULT NULL
+    ";
+    if (!in_array($tabname, $tables)) {
+        if (!create_table($tabname, $flds))
+            return;
+    }
+
+// analysis_setting
+    $tabname = "analysis_setting";
+    $flds = "
+        owner C(30) NOTNULL DEFAULT 0 PRIMARY,
+        name C(30) NOTNULL PRIMARY,
+        standard C(1) DEFAULT f
+    ";
+    if (!in_array($tabname, $tables)) {
+        if (!create_table($tabname, $flds))
+            return;
+    }
+
+// job_analysis
+    $tabname = "job_analysis";
+    if (in_array($tabname, $tables)) {
+        if (!drop_table($tabname))
+            return;
+    }
+        // Create table
+    $flds = "
+        owner C(30) NOTNULL DEFAULT 0 PRIMARY,
+        setting C(30) NOTNULL DEFAULT 0 PRIMARY,
+        name C(30) NOTNULL DEFAULT 0 PRIMARY,
+        value C(255) DEFAULT NULL
+    ";
+    if (!create_table($tabname, $flds))
+        return;
+
+// job_analysis_setting
+    $tabname = "job_analysis_setting";
+    if (in_array($tabname, $tables)) {
+        if (!drop_table($tabname))
+            return;
+    }
+    // Create table
+    $flds = "
+        owner C(30) NOTNULL DEFAULT 0 PRIMARY,
+        name C(30) NOTNULL PRIMARY,
+        standard C(1) DEFAULT t
+    ";
+    if (!create_table($tabname, $flds))
+        return;
+
+// ------------------ Add entries to 'possible_values' -------------------------
+    
     // Values for parameter 'ColocAnalysis'.
     $tabname = "possible_values";
     $record = array();
@@ -2498,6 +2557,7 @@ if ($current_revision < $n) {
         }
     }
 
+// ------------------ Add entries to 'statistics' -------------------------
     $tabname   = "statistics";
     $newcolumn = "ColocAnalysis VARCHAR(1)";
     $SQLquery  = "ALTER TABLE " . $tabname . " ADD COLUMN " . $newcolumn;
