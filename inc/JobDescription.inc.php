@@ -267,6 +267,7 @@ class JobDescription {
     $analysisParameterSetting->setOwner($this->owner);
     $analysisParameterSetting->setName($this->id);
     $analysisParameterSetting->copyParameterFrom($this->analysisSetting);
+    $result = $result && $analysisParameterSetting->save();
     
     $db = new DatabaseConnection();
     $result = $result && $db->saveJobFiles($this->id, $this->owner, $this->files);
@@ -322,7 +323,7 @@ class JobDescription {
     $analysisSetting->setOwner($owner);
     $analysisSetting = $analysisSetting->load();
     $this->setAnalysisSetting($analysisSetting);
-    
+
     $this->setFiles($db->getJobFilesFor($this->id()));
   }
 

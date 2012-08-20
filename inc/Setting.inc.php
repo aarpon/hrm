@@ -1986,27 +1986,6 @@ class AnalysisSetting extends Setting {
         return $result;
     }
 
-    /*!
-      \brief	Returns the TaskSetting as a text containing all parameters
-              and their values. Only the parameter OutputFileFormat is left out.
-   
-      This is used for the web display where the output file format has
-      not been choosen yet.
-    
-      \param	$numberOfChannels Number of channels (optional, default value is 0)
-      \todo	Refactor!
-    */
-    public function displayStringWithoutOutputFileFormat($numberOfChannels = 0) {
-        $parameter = $this->parameter('OutputFileFormat');
-        $parameterList = $this->parameter;
-        unset($parameterList['OutputFileFormat']);
-        $this->parameter = $parameterList;
-        $result = $this->displayString($numberOfChannels);
-        $parameterList['OutputFileFormat'] = $parameter;
-        $this->parameter = $parameterList;
-        return $result;
-    }
-
 } // End of class analysisSetting
 
 /*
