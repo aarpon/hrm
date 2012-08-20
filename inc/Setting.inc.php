@@ -1882,7 +1882,7 @@ class AnalysisSetting extends Setting {
 
         $this->message = '';
         $noErrorsFound = True;
-
+        
         $parameter = $this->parameter("ColocAnalysis");
         $parameter->setValue($postedParameters["ColocAnalysis"]);
         $this->set($parameter);
@@ -2078,3 +2078,36 @@ class JobTaskSetting extends TaskSetting {
     }
 
 } // End of class JobTaskSetting
+
+/*
+ ============================================================================
+ */
+
+/*!
+  \class	JobAnalysisSetting
+  \brief	A job analysis setting is a complete set of analysis parameters
+                that is used when a job is processed by the queue manager.
+*/
+class JobAnalysisSetting extends AnalysisSetting {
+
+    /*!
+      \brief	Returns the name of the database table in which the list of
+              Setting names are stored.
+
+      Besides the name, the table contains the Setting's name, owner and
+      the standard (default) flag.
+    */
+    public function table() {
+        return "job_analysis_setting";
+    }
+
+    /*!
+      \brief	Returns the name of the database table in which all the Parameters
+              for the Settings stored in the table specified in table()
+      \see table()
+    */
+    public function parameterTable() {
+        return "job_analysis";
+    }
+
+} // End of class JobAnalysisSetting

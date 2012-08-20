@@ -36,6 +36,7 @@ if (isset($_POST['create'])) {
     $job = new JobDescription();
     $job->setParameterSetting($_SESSION['setting']);
     $job->setTaskSetting($_SESSION['task_setting']);
+    $job->setAnalysisSetting($_SESSION['analysis_setting']);
     $job->setFiles($_SESSION['fileserver']->selectedFiles());
     if ($job->addJob()) {
       $_SESSION['jobcreated'] = True;

@@ -718,13 +718,14 @@ class DatabaseConnection {
 
     $desc = $job->description();
     $parameterSetting = $desc->parameterSetting();
-    $taskSetting = $desc->taskSetting();
+    $taskSetting      = $desc->taskSetting();
+    $analysisSetting  = $desc->analysisSetting();
 
     $stopTime = date("Y-m-d H:i:s");
-    $id = $desc->id();
-    $user = $desc->owner();
-    $owner = $user->name();
-    $group = $user->userGroup($owner);
+    $id       = $desc->id();
+    $user     = $desc->owner();
+    $owner    = $user->name();
+    $group    = $user->userGroup($owner);
     
     $parameter      = $parameterSetting->parameter('ImageFileFormat');
     $inFormat       = $parameter->value();
@@ -736,7 +737,7 @@ class DatabaseConnection {
     $microscope     = $parameter->value();
     $parameter      = $taskSetting->parameter('OutputFileFormat');
     $outFormat      = $parameter->value();
-    $parameter      = $taskSetting->parameter('ColocAnalysis');
+    $parameter      = $analysisSetting->parameter('ColocAnalysis');
     $colocAnalysis  = $parameter->value();
 
     $query = "insert into statistics values ('" . $id ."', '" . $owner ."', '" .
