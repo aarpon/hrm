@@ -252,6 +252,7 @@ echo $_SESSION['task_setting']->
                 </a>
                 <a href="select_analysis_settings.php">
                     Analysis parameters
+    </a>: <?php echo $_SESSION['analysis_setting']->name() ?>
                 </a>
             </legend>
             <textarea name="analysis_settings_report"
