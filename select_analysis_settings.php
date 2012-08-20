@@ -327,7 +327,7 @@ if (!$_SESSION['user']->isAdmin()) {
                   <input type="button"
                          value=""
                          class="icon previous"
-                         onclick="document.location.href='select_analysis_settings.php'"
+                         onclick="document.location.href='select_task_settings.php'"
                          id="controls_back" />
                   <input type="submit" 
                          value=""

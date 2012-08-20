@@ -208,7 +208,7 @@ foreach ($possibleValues as $possibleValue) {
             </legend>
             <textarea name="parameter_settings_report"
                       cols="50"
-                      rows="15"
+                      rows="5"
                       readonly="readonly">
 <?php
 
@@ -230,7 +230,7 @@ echo $_SESSION['setting']->displayString();
             </legend>
             <textarea name="task_settings_report"
                       cols="50"
-                      rows="6"
+                      rows="5"
                       readonly="readonly">
 <?php
 
@@ -242,6 +242,31 @@ echo $_SESSION['task_setting']->
 ?>
             </textarea>
         </fieldset>
+
+            
+   <fieldset class="report">
+            <legend>
+                <a href="javascript:openWindow(
+                   'http://www.svi.nl/HuygensRemoteManagerHelpCreateJob')">
+                    <img src="images/help.png" alt="?" />
+                </a>
+                <a href="select_analysis_settings.php">
+                    Analysis parameters
+                </a>
+            </legend>
+            <textarea name="analysis_settings_report"
+                      cols="50"
+                      rows="5"
+                      readonly="readonly">
+<?php
+
+echo $_SESSION['analysis_setting']->displayString();
+
+?>
+            </textarea>
+
+        </fieldset>
+            
 
         <fieldset class="report">
             <legend>
@@ -255,7 +280,7 @@ echo $_SESSION['task_setting']->
             </legend>
             <textarea name="task_settings_report"
                       cols="50"
-                      rows="5"
+                      rows="3"
                       readonly="readonly">
 <?php
 
@@ -268,6 +293,7 @@ foreach ($files as $file) {
             </textarea>
 
         </fieldset>
+            
 
         <form method="post" action="">
 
