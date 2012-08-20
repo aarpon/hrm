@@ -100,7 +100,7 @@ include("header.inc.php");
 
     <div id="content">
 
-        <h3><img alt="Launch" src="./images/Launch.png" width="40"/>&nbsp;Step 5/5 - Launch the job</h3>
+        <h3><img alt="Launch" src="./images/launch.png" width="40"/>&nbsp;Step 5/5 - Launch the job</h3>
 
         <form method="post" action="" id="createjob">
 
@@ -347,7 +347,7 @@ else {
             a mistake, use the links on the left to go back and fix it.</p>
 
             <p>Once you are okay with the parameters, press the
-            <img src="images/Launch.png" alt="Create job" width="22"
+            <img src="images/launch.png" alt="Create job" width="22"
                  height="22" /> <b>launch job</b> button to add the job to the
             queue and go back to
             the home page.</p>

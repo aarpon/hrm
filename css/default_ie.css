@@ -1049,7 +1049,7 @@ input.previous {
 input.launch {
     width: 60px;
     height: 60px;
-    background: url(../images/Launch.png) no-repeat right;
+    background: url(../images/launch.png) no-repeat right;
 }
 
 input.next {

@@ -156,7 +156,7 @@ if ($_SESSION['user']->isAdmin()) {
 else {
 
 ?>
-        <h3><img alt="Analysis" src="./images/Analysis.png" width="40"/>&nbsp;&nbsp;Step 4/5 - Analysis parameters</h3>
+        <h3><img alt="Analysis" src="./images/analysis.png" width="40"/>&nbsp;&nbsp;Step 4/5 - Analysis parameters</h3>
 <?php
 
 }
