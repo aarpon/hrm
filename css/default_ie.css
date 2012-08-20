@@ -208,11 +208,11 @@ table {
 }
 
 #content h3 {
-    background-color: #eee;
-    font-size: 16px;
-    height: 18px;
-    font-weight: bold;
-    text-align: center;
+  background-color: #eee;
+  font-size: 16px;
+  height: 40px;
+  font-weight: bold;
+  text-align: center;
 }
 
 #content h4 {
@@ -1044,6 +1044,12 @@ input.previous {
     width: 60px;
     height: 60px;
     background: url(../images/previous.png) no-repeat right;
+}
+
+input.launch {
+    width: 60px;
+    height: 60px;
+    background: url(../images/Launch.png) no-repeat right;
 }
 
 input.next {

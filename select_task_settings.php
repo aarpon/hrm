@@ -171,7 +171,7 @@ if ($_SESSION['user']->isAdmin()) {
 else {
 
 ?>
-        <h3>Step 3/5 - Restoration parameters</h3>
+        <h3><img alt="Restoration" src="./images/Restoration.png" width="40"/>&nbsp;&nbsp;Step 3/5 - Restoration parameters</h3>
 <?php
 
 }

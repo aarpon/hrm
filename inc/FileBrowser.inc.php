@@ -336,7 +336,14 @@ include("header.inc.php");
 
 
     <div id="content" >
-        <h3><?php echo $page_title; ?></h3>
+    
+    <?php if ($page_title == "Raw images") {
+    $icon = "./images/raw.png";
+} else {
+    $icon = "./images/deconvolved.png";
+} ?>
+        
+<h3><img alt=<?php echo $page_title;?> src=<?php echo $icon;?> width="40"/>&nbsp;&nbsp;<?php echo $page_title; ?></h3>
         <p class="message_small"><?php echo $explanation_text; ?></p>
   <form method="post" action="?folder=<?php echo $browse_folder;?>"
         id="file_browser" onsubmit="return confirmSubmit()" >

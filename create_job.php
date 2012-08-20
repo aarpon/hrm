@@ -100,7 +100,7 @@ include("header.inc.php");
 
     <div id="content">
 
-        <h3>Step 5/5 - Create job</h3>
+        <h3><img alt="Launch" src="./images/Launch.png" width="40"/>&nbsp;Step 5/5 - Launch the job</h3>
 
         <form method="post" action="" id="createjob">
 
@@ -309,7 +309,7 @@ if (!isset($_SESSION['jobcreated'])) {
             <input type="button" name="previous" value="" class="icon previous"
               onclick="document.location.href='select_analysis_settings.php'"
               id="controls_back" />
-            <input type="button" name="create job" value="" class="icon ok"
+            <input type="button" name="create job" value="" class="icon launch"
               onclick="document.forms['createjob'].submit()"
               id="controls_createJob" />
 
@@ -347,8 +347,8 @@ else {
             a mistake, use the links on the left to go back and fix it.</p>
 
             <p>Once you are okay with the parameters, press the
-            <img src="images/ok_help.png" alt="Create job" width="22"
-                 height="22" /><b>create job</b> button to add the job to the
+            <img src="images/Launch.png" alt="Create job" width="22"
+                 height="22" /> <b>launch job</b> button to add the job to the
             queue and go back to
             the home page.</p>
 

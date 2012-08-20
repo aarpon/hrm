@@ -228,8 +228,8 @@ $info = " <h3>Quick help</h3> <p>In this step, you will select the files " .
     </div>
     
     <div id="content">
-    
-        <h3>Step 1/5 - Select images</h3>
+        <h3><img alt="SelectImages" src="./images/Select_Images.png" width="40"/> &nbsp;Step 1/5 - Select images</h3>
+        
                     <form method="post" action="" id="fileformat">
                     <fieldset class="setting <?php
                 echo X ?>"
