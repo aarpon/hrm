@@ -2086,7 +2086,7 @@ class JobAnalysisSetting extends AnalysisSetting {
       \see table()
     */
     public function parameterTable() {
-        return "job_analysis";
+        return "job_analysis_parameter";
     }
 
 } // End of class JobAnalysisSetting
