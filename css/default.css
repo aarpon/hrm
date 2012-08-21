@@ -203,7 +203,7 @@ table {
     border-right-style: dotted;
     border-right-width: 1px;
     margin: 0px 0px 0px 0px;
-    padding: 3px 15px 5px 15px;
+    padding: 0px 15px 0px 15px;
 }
 
 #content h3 {
@@ -1042,6 +1042,12 @@ input.launch {
     width: 60px;
     height: 60px;
     background: url(../images/launch.png) no-repeat right;
+}
+
+input.launch_start {
+  width: 80px;
+  height: 60px;
+  background: url(../images/launch_start.png) no-repeat right;
 }
 
 input.next {

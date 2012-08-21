@@ -309,7 +309,7 @@ if (!isset($_SESSION['jobcreated'])) {
             <input type="button" name="previous" value="" class="icon previous"
               onclick="document.location.href='select_analysis_settings.php'"
               id="controls_back" />
-            <input type="button" name="create job" value="" class="icon launch"
+            <input type="button" name="create job" value="" class="icon launch_start"
               onclick="document.forms['createjob'].submit()"
               id="controls_createJob" />
 
