@@ -303,8 +303,7 @@ if ($colocThreshold[0] != "" && $colocThreshold[0] != "auto") {
     
     <div class="multichannel">
 <?php
-
-    for ($chan=0; $chan < $_SESSION['analysis_setting']->numberOfChannels(); $chan++) {
+    for ($chan=0; $chan < $_SESSION['setting']->numberOfChannels(); $chan++) {
         $threshold = "";
         if ($colocThreshold[0] != "auto") {
             $threshold = $colocThreshold[$chan];
