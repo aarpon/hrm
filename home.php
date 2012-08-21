@@ -401,6 +401,11 @@ include("footer.inc.php");
 <!-- Ajax function to update the number of jobs in the queue every 10 s -->
 <script type="text/javascript">
     $(document).ready(function() {
-        setInterval(function() { getNumberOfJobsInQueue(); }, 10000);
+        setInterval(function() { 
+          getNumberOfUserJobsInQueue(
+            'jobsInQueue',
+            '<p />See all jobs.<br />You have <strong>',
+            '</strong> in the queue.'); },
+            10000);
     });
 </script>
