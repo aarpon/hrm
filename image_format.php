@@ -378,7 +378,6 @@ function check($parameter, $value) {
     <div id="rightpanel" onmouseover="javascript:changeQuickHelp( 'default' )">
     
         <div id="info">
-            
             <h3>Quick help</h3>
             
             <div id="contextHelp">
