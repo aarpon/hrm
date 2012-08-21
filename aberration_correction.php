@@ -83,7 +83,7 @@ include("header.inc.php");
     
     <div id="content">
     
-        <h3>Spherical aberration correction</h3>
+        <h2>Spherical aberration correction</h2>
           
         <form method="post" action="" id="select">
             

@@ -214,6 +214,14 @@ table {
   text-align: center;
 }
 
+#content h2 {
+  background-color: #eee;
+  font-size: 16px;
+  height: 18px;
+  font-weight: bold;
+  text-align: center;
+}
+
 #content h4 {
     font-size: 12px;
     font-weight: bold;

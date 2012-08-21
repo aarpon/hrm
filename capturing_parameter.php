@@ -200,7 +200,7 @@ if ( $saveToDB == true ) {
 
     <div id="content">
 
-        <h3>Optical parameters / 2</h3>
+        <h2>Optical parameters / 2</h2>
 
         <form method="post" action="capturing_parameter.php" id="select">
 

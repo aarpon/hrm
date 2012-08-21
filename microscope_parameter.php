@@ -115,7 +115,7 @@ include("header.inc.php");
 
     <div id="content">
 
-        <h3>Optical parameters / 1</h3>
+        <h2>Optical parameters / 1</h2>
 
         <form method="post" action="" id="select">
 

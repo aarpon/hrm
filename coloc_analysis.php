@@ -74,7 +74,7 @@ include("header.inc.php");
 
     <div id="content">
 
-        <h3>Analysis - colocalization</h3>
+        <h2>Analysis - colocalization</h2>
 
         <form method="post" action="" id="select">
 

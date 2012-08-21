@@ -95,7 +95,7 @@ include("header.inc.php");
     
     <div id="content">
 
-        <h3>Image format and PSF modality</h3>
+        <h2>Image format and PSF modality</h2>
         
         <form method="post" action="" id="select">
         

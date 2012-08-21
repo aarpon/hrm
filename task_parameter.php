@@ -100,7 +100,7 @@ include("header.inc.php");
 
     <div id="content">
 
-        <h3>Restoration - Deconvolution</h3>
+        <h2>Restoration - Deconvolution</h2>
 
         <form method="post" action="" id="select">
 
