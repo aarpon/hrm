@@ -24,6 +24,13 @@ if (!isset($_SESSION['editor'])) {
   $_SESSION['editor'] = new SettingEditor($_SESSION['user']);
 }
 
+// Settings by the admin are general for any file format, no specific confidence
+// levels. Thus, we set the file format to tiff, which has the lowest CL.
+if ($_SESSION['user']->isAdmin()) {
+    $_SESSION[ 'parametersetting' ] = new ParameterSetting();
+    $_SESSION[ 'parametersetting' ]->parameter("ImageFileFormat")->setValue("tif");
+}
+
 // add public setting support
 if (!$_SESSION['user']->isAdmin()) {
   $admin = new User();
@@ -44,7 +51,7 @@ if (isset($_POST['setting'])) {
   $_SESSION['editor']->setSelected($_POST['setting']);
 }
 
-    // The file format is stored in a parameter setting created at stage 1.
+// Except for the admin, the file format is selected at 'select_images'.
 $fileFormat =
     $_SESSION['parametersetting']->parameter("ImageFileFormat")->value();
 
