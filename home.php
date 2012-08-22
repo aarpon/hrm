@@ -115,7 +115,24 @@ include("header.inc.php");
 				}
 			  ?>
 			  
-			  <td class="icon">
+		    			  <td class="icon">
+				<a href="./account.php">
+				<img alt="Account" src="./images/account.png" />
+				</a>
+			  </td>
+			  
+			  <td class="text"><div class="cell">
+                <a href="./account.php">Your account</a>
+                <br />
+				<p />View and change your personal data.
+                </div>
+			  </td>			  
+
+			</tr>
+                               <tr class="separator"><td></td><td></td><td></td><td></td></tr>
+                            
+			<tr>
+                                               <td class="icon">
 				<a href="./job_queue.php">
 				<img alt="Queue" src="./images/queue.png" />
 				</a>
@@ -127,24 +144,7 @@ include("header.inc.php");
 				<p />See and manage all jobs.
                           </div>
 			  </td>
-		    
-			</tr>
-                               <tr class="separator"><td></td><td></td><td></td><td></td></tr>
-                            
-			<tr>
 			  
-			  <td class="icon">
-				<a href="./file_management.php?folder=src">
-				<img alt="FileManager" src="./images/filemanager.png" />
-				</a>
-			  </td>
-			  
-			  <td class="text"><div class="cell">
-                <a href="./file_management.php?folder=src">File manager</a>
-                <br />
-			  <p />Upload your raw data.
-                </div>
-			  </td>
 			  
 			  <td class="icon">
 				<a href="./statistics.php">
@@ -207,19 +207,20 @@ include("header.inc.php");
 				<p />Create templates for the analysis parameters.
                 </div>
 			  </td>
-			
-			  <td class="icon">
-				<a href="./account.php">
-				<img alt="Account" src="./images/account.png" />
+                                                                  			  <td class="icon">
+				<a href="./file_management.php?folder=src">
+				<img alt="FileManager" src="./images/filemanager.png" />
 				</a>
 			  </td>
 			  
 			  <td class="text"><div class="cell">
-                <a href="./account.php">Your account</a>
+                <a href="./file_management.php?folder=src">File manager</a>
                 <br />
-				<p />View and change your personal data.
+			  <p />Upload your raw data.
                 </div>
-			  </td>			  
+			  </td>
+
+			
 		    </tr>
 			<tr class="separator"><td></td><td></td><td></td><td></td></tr>
 			<tr>
