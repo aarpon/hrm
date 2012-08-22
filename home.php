@@ -191,6 +191,18 @@ include("header.inc.php");
 		    </tr>
 
 			<tr>
+                          <td class="icon">
+                                <a href="./select_analysis_settings.php">
+				<img alt="Analysis" src="./images/analysis.png" />
+				</a>
+			  </td>
+			  
+			  <td class="text"><div class="cell">
+                <a href="./select_analysis_settings.php">Analysis templates</a>
+                <br />
+				<p />Create templates for the analysis parameters.
+                </div>
+			  </td>
 			
 			  <td class="icon">
 				<a href="./account.php">
@@ -203,9 +215,12 @@ include("header.inc.php");
                 <br />
 				<p />View and change your personal data.
                 </div>
-			  </td>
+			  </td>			  
+		    </tr>
+			
+			<tr>
 
-			  <td class="icon">
+                                                                  			  <td class="icon">
 				<a href="./update.php">
 				<img alt="Update" src="./images/updatedb.png" />
 				</a>
@@ -217,10 +232,7 @@ include("header.inc.php");
 				<p />Update the database to the latest version.
                 </div>
 			  </td>
-			  
-		    </tr>
-			
-			<tr>
+
 			
 			  <td class="icon">
 				<a href="./system.php">
@@ -233,11 +245,7 @@ include("header.inc.php");
                 <br />
 				<p />Inspect your system.
                 </div>
-			  </td>
-
-			  <td class="icon"></td>
-			  
-			  <td class="text">&nbsp;</td>			  
+			  </td>		  
 
 		    </tr>
 
