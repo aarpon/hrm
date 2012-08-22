@@ -829,6 +829,14 @@ input.save {
     vertical-align: bottom;
 }
 
+#homepage table tr.separator {
+  height: 1px;
+  width: 200px;
+  border-width: 1px 0px 0px 0px;
+  border-style: solid;
+  border-color: #CCCCCC;
+}
+
 #homepage table td {
     padding: 3px;
 }

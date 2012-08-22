@@ -129,7 +129,8 @@ include("header.inc.php");
 			  </td>
 		    
 			</tr>
-			
+                               <tr class="separator"><td></td><td></td><td></td><td></td></tr>
+                            
 			<tr>
 			  
 			  <td class="icon">
@@ -160,6 +161,8 @@ include("header.inc.php");
 			  
 		    </tr>
 
+                               <tr class="separator"><td></td><td></td><td></td><td></td></tr>
+
 			<tr>
 			  
 			  <td class="icon">
@@ -167,6 +170,7 @@ include("header.inc.php");
 				<img alt="Parameter templates" src="./images/parameters.png" />
 				</a>
 			  </td>
+                               
 			  
 			  <td class="text"><div class="cell">
                 <a href="./select_parameter_settings.php">Image templates</a>
@@ -217,7 +221,7 @@ include("header.inc.php");
                 </div>
 			  </td>			  
 		    </tr>
-			
+			<tr class="separator"><td></td><td></td><td></td><td></td></tr>
 			<tr>
 
                                                                   			  <td class="icon">
