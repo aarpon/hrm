@@ -20,6 +20,13 @@ if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
   header("Location: " . "login.php"); exit();
 }
 
+if ($_SESSION['user']->isAdmin()) {
+  $_SESSION['analysis_setting']->setNumberOfChannels(5);
+} else {
+  $_SESSION['analysis_setting']->setNumberOfChannels(
+          $_SESSION['setting']->numberOfChannels());
+}
+
 if (!isset($_SESSION['analysis_setting'])) {
   $_SESSION['analysis_setting'] = new AnalysisSetting();
 }
@@ -163,7 +170,9 @@ $parameterColocChannel =
 
 $selectedValues = $parameterColocChannel->value();
 
-    for ($chan=0;$chan< $_SESSION['setting']->numberOfChannels();$chan++) {
+    for ($chan=0;
+         $chan< $_SESSION['analysis_setting']->numberOfChannels();
+         $chan++) {
         if (true == isValueInArray($selectedValues, $chan)) {
             $checked = "checked";
         } else {
@@ -303,7 +312,9 @@ if ($colocThreshold[0] != "" && $colocThreshold[0] != "auto") {
     
     <div class="multichannel">
 <?php
-    for ($chan=0; $chan < $_SESSION['setting']->numberOfChannels(); $chan++) {
+    for ($chan=0;
+         $chan < $_SESSION['analysis_setting']->numberOfChannels();
+         $chan++) {
         $threshold = "";
         if ($colocThreshold[0] != "auto") {
             $threshold = $colocThreshold[$chan];
