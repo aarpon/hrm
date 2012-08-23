@@ -528,24 +528,19 @@ class Job {
      \return      The parameters in a formatted way.
     */
     private function HuReportFile2Html ($reportFile) {
-        
-        /* Insert a title and an explanation. */
-        $title = "<b><u>Parameters used during deconvolution</u></b><br /><br />";
-        $text  = "Those parameters that were <b>missing</b> in your ";
-        $text .= "settings are highlighted in <b>green</b>. Alternative <br />";
-        $text .= "values found in the metadata of the image were used ";
-        $text .= "instead, please examine their <b>validity</b>.<br />";
 
-        $div   = $title;
-        $div  .= $text;
-        $html  = $this->writeMessages($reportFile);
-        $html .= $this->insertDiv($div);
+            /* Insert warnings if necessary. */
+        $div   = $this->writeWarning($reportFile);
+        $html  = $this->insertDiv($div);
+
+            /* Insert scaling factors if necessary. */
+        $div   = $this->writeScalingFactorsTable($reportFile);
+        $html .= $this->insertDiv($div,"scaling");
 
         /* Insert the summary tables. */
-        $div   = $this->insertSeparator("");
-        $div  .= $this->writeImageParamTable($reportFile);
-        $div  .= $this->insertSeparator("");
-        $div  .= $this->writeRestoParamTable();
+        $div   = $this->writeImageParamTable($reportFile);
+        $html .= $this->insertDiv($div,"jobParameters");
+        $div   = $this->writeRestoParamTable();
         $html .= $this->insertDiv($div,"jobParameters");
 
         return $html;
@@ -556,9 +551,9 @@ class Job {
      \param       $reportFile An array with the contents of the file.
      \return      A string with the formatted table.
     */
-    private function writeMessages($reportFile) {
+    private function writeWarning($reportFile) {
 
-        $warning = "";
+        $micrMismatch = False;
 
         /* Extract data from the file and into the table. */
         $pattern  = "/{Microscope conflict for channel ([0-9]):(.*)}/";
@@ -566,53 +561,88 @@ class Job {
             if (!preg_match($pattern,$reportEntry,$matches)) {
                 continue;
             }
+
+            $micrMismatch = True;
             
-            $warning .= "<p><b><u>WARNING</u>:</b>";
-            $warning .= " The <b>microscope type</b> selected for this ";
-            $warning .= "deconvolution job <b>may not<br />be correct</b>. ";
-            $warning .= "The file metadata states a different microscope type. ";
+            $warning  = "<p><b><u>WARNING</u>:</b>";
+            $warning .= " The <b>microscope type</b> chosen to deconvolve this ";
+            $warning .= "image <b>may not<br />be correct</b>. ";
+            $warning .= "The image metadata states a different microscope type. ";
             $warning .= "The<br />restoration process may produce ";
             $warning .= "<b>wrong results</b> if the microscope type is<br />";
-            $warning .= "not selected properly.<br />";
+            $warning .= "not set properly.<br />";
             $warning  = $this->insertCell($warning,"text"); 
             $warning  = $this->insertTable($warning);
             $warning  = $this->insertDiv($warning,"warning");
-            $warning .= "<br />";
             break;
         }
-
         
-        $scaling = "";
+        if ($micrMismatch) {
+            return $warning . $this->insertSeparator("");
+        }
+    }
+
+    /*!
+     \brief       Parses the deconvolution output to look for scaling factors.
+     \param       $reportFile An array with the contents of the file.
+     \return      A string with the formatted table.
+    */
+    private function writeScalingFactorsTable($reportFile) {
+
+        $scaling = False;
+        
+            /* Insert a title and an explanation. */
+        $title = "<br /><b><u>Scaling factors summary</u></b>";
+        $text  = "<br /><br />";
+        $text .= "All or some of the image channels were <b>scaled</b>. ";
+        $text .= "Scale factors may be applied during the<br />restoration ";
+        $text .= "to gain dynamic range. Scaling may also occur when the ";
+        $text .= "deconvolved data is<br />exported to a TIFF file.<br /><br />";
+
+            /* Insert the headers. */
+        $row    = $this->insertCell("Scaling Factors","header",4);
+        $table  = $this->insertRow($row);
+        
+        $row    = $this->insertCell("Factor","param");
+        $row   .= $this->insertCell("Channel","channel");
+        $row   .= $this->insertCell("Reason","reason");
+        $row   .= $this->insertCell("Value","value");
+        $table .= $this->insertRow($row);
 
             /* Extract data from the file and into the table. */
-        $pattern  = "/the image will be multiplied by (.*).}/";
         foreach ($reportFile as $reportEntry) {
-            if (!preg_match($pattern,$reportEntry,$matches)) {
-                continue;
+
+            $pattern  = "/the image will be multiplied by (.*)\.}}/";
+            if (preg_match($pattern,$reportEntry,$matches)) {
+                $scaling = True;
+                
+                $row    = $this->insertCell("Scaling factor","cell"); 
+                $row   .= $this->insertCell("All","cell");
+                $row   .= $this->insertCell("Output file format","cell");
+                $row   .= $this->insertCell($matches[1],"cell");
+                $table .= $this->insertRow($row);
             }
-            
-            $scaling .= "<p><b><u>SCALING FACTORS</u>:</b> ";
-            $scaling .= "Due to differences between the dynamic ranges of the ";
-            $scaling .= "<br />deconvolved image and of the output file format ";
-            $scaling .= "all <b>deconvolved channels</b><br />have been ";
-            $scaling .= "<b>scaled</b>. Scaling was performed by multiplying ";
-            $scaling .= "the deconvolved<br />channels by a factor ";
-            $scaling .= "<b>$matches[1]</b> Proportions between ";
-            $scaling .= "channels were preserved.<br />";
-            $scaling  = $this->insertCell($scaling,"text"); 
-            $scaling  = $this->insertTable($scaling);
-            $scaling  = $this->insertDiv($scaling,"scaling");
-            break;
+
+            $pattern  = "/{Scaling of channel ([0-9]): (.*)}}/";
+            if (preg_match($pattern,$reportEntry,$matches)) {
+                $scaling = True;
+                
+                $row    = $this->insertCell("Scaling factor","cell"); 
+                $row   .= $this->insertCell($matches[1],"cell");
+                $row   .= $this->insertCell("Restoration","cell");
+                $row   .= $this->insertCell($matches[2],"cell");
+                $table .= $this->insertRow($row);
+            }
         }
 
-        $messages = "";
-        if (strlen($warning) > 0 || strlen($scaling) > 0) {
-            $messages  = $warning . " " . $scaling;
-            $messages .= $this->insertSeparator("") . "<br />";
+        if ($scaling) {
+            $table = $this->insertTable($table);
+            $div   = $this->insertDiv($table,"scaling");
+            
+            return $title . $text . $div . $this->insertSeparator("");
         }
-        
-        return $messages;
     }
+    
     
     /*!
      \brief       Parses the Huygens deconvolution output file into a table.
@@ -620,6 +650,15 @@ class Job {
      \return      A string with the formatted table.
     */
     private function writeImageParamTable($reportFile) {
+
+            /* Insert a title and an explanation. */
+        $title = "<br /><b><u>Image parameters summary</u></b>";
+        $text  = "<br /><br />";
+        $text .= "Parameter values that were <b>missing</b> from your ";
+        $text .= "settings are highlighted in <b>green</b>.<br />Alternative ";
+        $text .= "values found in the metadata of the image were used ";
+        $text .= "instead. Please examine<br />their <b>validity</b>.<br />";
+        $text .= "<br />";
 
         /* Insert the column titles. */
         $row   = $this->insertCell("Image Parameters","header",4);
@@ -670,7 +709,11 @@ class Job {
             $table .= $this->insertRow($row);
         }
 
-        return $this->insertTable($table);
+        $html  = $title . $text;
+        $html .= $this->insertTable($table);
+        $html .= $this->insertSeparator("");
+
+        return $html;
     }
 
     /*!
@@ -679,6 +722,10 @@ class Job {
     */
     private function writeRestoParamTable( ) {
 
+            /* Insert a title and an explanation. */
+        $title  = "<br /><b><u>Restoration parameters summary</u></b>";
+        $text  = "<br /><br />";
+        
         /* Retrieve restoration data set by the user. */
         $taskSettings = $this->jobDescription->taskSetting()->displayString();
         
@@ -728,7 +775,9 @@ class Job {
             }
         }
 
-        return $this->insertTable($table);
+        $html = $title . $text . $this->insertTable($table);
+
+        return $html;
     }
 
                        /* -------- Colocalization ------ */

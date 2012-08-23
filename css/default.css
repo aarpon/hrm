@@ -744,21 +744,45 @@ input.save {
 }
 
 #scaling table { 
-  font-size: 105%;
-  padding-bottom: 1em;
+  margin-bottom: 2em;
+  font-size: 100%;
   width: 610px;
-  border: none;
-  left:0px;
 } 
 
 #scaling td {
-  text-align: left;
-  border: thin solid;
+  text-align: center;
 }
 
-#scaling td.text {
-  color: #3366FF;
-  padding-left: 6px;
+#scaling td.header { 
+  font-weight: bold;
+}
+
+#scaling td.param {
+  width: 175px;
+  font-weight: bold;
+  background-color: #eee;
+}
+
+#scaling td.value {
+  width: 100px;
+  font-weight: bold;
+  background-color: #eee;
+}
+
+#scaling td.channel {
+  width: 50px;
+  font-weight: bold;
+  background-color: #eee;
+}
+
+#scaling td.reason {
+  width: 100px;
+  font-weight: bold;
+  background-color: #eee;
+}
+
+#scaling td.cell { 
+  background-color: #CFD7F2;
 }
 
 #listusers {
