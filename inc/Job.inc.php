@@ -520,7 +520,7 @@ class Job {
         }
     }
 
-                /* -------- Image & Restoration Parameters ------ */
+        /* -------- Image & Restoration Parameters, Scaling factors ------ */
     
     /*!
      \brief       Formats data from the Huygens report file as html output.
@@ -536,10 +536,13 @@ class Job {
             /* Insert scaling factors if necessary. */
         $div   = $this->writeScalingFactorsTable($reportFile);
         $html .= $this->insertDiv($div,"scaling");
+        
 
-        /* Insert the summary tables. */
+            /* Insert the summary tables. */
+        
         $div   = $this->writeImageParamTable($reportFile);
         $html .= $this->insertDiv($div,"jobParameters");
+        
         $div   = $this->writeRestoParamTable();
         $html .= $this->insertDiv($div,"jobParameters");
 
@@ -571,14 +574,17 @@ class Job {
             $warning .= "The<br />restoration process may produce ";
             $warning .= "<b>wrong results</b> if the microscope type is<br />";
             $warning .= "not set properly.<br />";
-            $warning  = $this->insertCell($warning,"text"); 
-            $warning  = $this->insertTable($warning);
-            $warning  = $this->insertDiv($warning,"warning");
+            
+            $row    = $this->insertCell($warning,"text");
+            $table  = $this->insertRow($row);
+            $div    = $this->insertTable($table);
+            $html   = $this->insertDiv($div,"warning");
+            $html  .= $this->insertSeparator("");
             break;
         }
         
         if ($micrMismatch) {
-            return $warning . $this->insertSeparator("");
+            return $html;
         }
     }
 
@@ -599,14 +605,14 @@ class Job {
         $text .= "to gain dynamic range. Scaling may also occur when the ";
         $text .= "deconvolved data is<br />exported to a TIFF file.<br /><br />";
 
-            /* Insert the headers. */
+            /* Insert the table headers. */
         $row    = $this->insertCell("Scaling Factors","header",4);
         $table  = $this->insertRow($row);
         
-        $row    = $this->insertCell("Factor","param");
+        $row    = $this->insertCell("Factor" ,"param"  );
         $row   .= $this->insertCell("Channel","channel");
-        $row   .= $this->insertCell("Reason","reason");
-        $row   .= $this->insertCell("Value","value");
+        $row   .= $this->insertCell("Reason" ,"reason" );
+        $row   .= $this->insertCell("Value"  ,"value"  );
         $table .= $this->insertRow($row);
 
             /* Extract data from the file and into the table. */
@@ -616,10 +622,10 @@ class Job {
             if (preg_match($pattern,$reportEntry,$matches)) {
                 $scaling = True;
                 
-                $row    = $this->insertCell("Scaling factor","cell"); 
-                $row   .= $this->insertCell("All","cell");
+                $row    = $this->insertCell("Scaling factor"    ,"cell"); 
+                $row   .= $this->insertCell("All"               ,"cell");
                 $row   .= $this->insertCell("Output file format","cell");
-                $row   .= $this->insertCell($matches[1],"cell");
+                $row   .= $this->insertCell($matches[1]         ,"cell");
                 $table .= $this->insertRow($row);
             }
 
@@ -628,18 +634,20 @@ class Job {
                 $scaling = True;
                 
                 $row    = $this->insertCell("Scaling factor","cell"); 
-                $row   .= $this->insertCell($matches[1],"cell");
-                $row   .= $this->insertCell("Restoration","cell");
-                $row   .= $this->insertCell($matches[2],"cell");
+                $row   .= $this->insertCell($matches[1]     ,"cell");
+                $row   .= $this->insertCell("Restoration"   ,"cell");
+                $row   .= $this->insertCell($matches[2]     ,"cell");
                 $table .= $this->insertRow($row);
             }
         }
 
-        if ($scaling) {
-            $table = $this->insertTable($table);
-            $div   = $this->insertDiv($table,"scaling");
+        if ($scaling) {            
+            $div   = $this->insertTable($table);
+            $html  = $this->insertDiv($div,"scaling");
+            $html  = $title . $text . $html;
+            $html .= $this->insertSeparator("");
             
-            return $title . $text . $div . $this->insertSeparator("");
+            return $html;
         }
     }
     
@@ -660,17 +668,17 @@ class Job {
         $text .= "instead. Please examine<br />their <b>validity</b>.<br />";
         $text .= "<br />";
 
-        /* Insert the column titles. */
+            /* Insert the column titles. */
         $row   = $this->insertCell("Image Parameters","header",4);
         $table = $this->insertRow($row);
 
         $row    = $this->insertCell("Parameter","param");
-        $row   .= $this->insertCell("Channel","channel");
-        $row   .= $this->insertCell("Source","source");
-        $row   .= $this->insertCell("Value","value");
+        $row   .= $this->insertCell("Channel"  ,"channel");
+        $row   .= $this->insertCell("Source"   ,"source");
+        $row   .= $this->insertCell("Value"    ,"value");
         $table .= $this->insertRow($row);
      
-        /* Extract data from the file and into the table. */
+            /* Extract data from the file and into the table. */
         $pattern  = "/{Parameter ([a-z]+?) (of channel ([0-9])\s|)(.*) ";
         $pattern .= "(template|metadata): (.*).}}/";
 
@@ -692,25 +700,25 @@ class Job {
                 
             if ($source == "template") {
                 $source = "User defined";
-                $style = "userdef";
+                $style  = "userdef";
             } else {
                 $source = "File metadata";
-                $style = "metadata";
+                $style  = "metadata";
             }
             if ($channel == "") {
                 $channel = "All";
             }
                 
             /* Insert data into the table. */
-            $row  = $this->insertCell($paramText,$style);
-            $row .= $this->insertCell($channel,$style);
-            $row .= $this->insertCell($source,$style);
-            $row .= $this->insertCell($value,$style);
+            $row    = $this->insertCell($paramText,$style);
+            $row   .= $this->insertCell($channel  ,$style);
+            $row   .= $this->insertCell($source   ,$style);
+            $row   .= $this->insertCell($value    ,$style);
             $table .= $this->insertRow($row);
         }
-
-        $html  = $title . $text;
-        $html .= $this->insertTable($table);
+        
+        $html  = $this->insertTable($table);
+        $html  = $title . $text . $html;
         $html .= $this->insertSeparator("");
 
         return $html;
@@ -724,7 +732,7 @@ class Job {
 
             /* Insert a title and an explanation. */
         $title  = "<br /><b><u>Restoration parameters summary</u></b>";
-        $text  = "<br /><br />";
+        $text   = "<br /><br />";
         
         /* Retrieve restoration data set by the user. */
         $taskSettings = $this->jobDescription->taskSetting()->displayString();
@@ -734,9 +742,9 @@ class Job {
         $table = $this->insertRow($row);
 
         $row    = $this->insertCell("Parameter","param");
-        $row   .= $this->insertCell("Channel","channel");
-        $row   .= $this->insertCell("Source","source");
-        $row   .= $this->insertCell("Value","value");
+        $row   .= $this->insertCell("Channel"  ,"channel");
+        $row   .= $this->insertCell("Source"   ,"source");
+        $row   .= $this->insertCell("Value"    ,"value");
         $table .= $this->insertRow($row);
 
         /* This table contains no metadata. It's all defined by the user. */
@@ -763,9 +771,9 @@ class Job {
 
             /* Insert data into the table. */
             foreach ($paramValues as $paramValue) {
-                $row    = $this->insertCell($paramText,$style);
-                $row   .= $this->insertCell($channel,$style);
-                $row   .= $this->insertCell($source,$style);
+                $row    = $this->insertCell($paramText       ,$style);
+                $row   .= $this->insertCell($channel         ,$style);
+                $row   .= $this->insertCell($source          ,$style);
                 $row   .= $this->insertCell(trim($paramValue),$style);
                 $table .= $this->insertRow($row);    
 
@@ -775,7 +783,8 @@ class Job {
             }
         }
 
-        $html = $title . $text . $this->insertTable($table);
+        $html = $this->insertTable($table);
+        $html = $title . $text . $html;
 
         return $html;
     }
@@ -799,9 +808,6 @@ class Job {
         $text .= "presence of two labeled targets in the same region of the ";
         $text .= "imaged sample.<br /><br />";
 
-        $html  = $title;
-        $html .= $text;
-
             /* Insert dummy 'div' which will be filled up with 'dynamic'
              content in the 'Fileserver' class. */
         $div   = $this->insertDiv("<br /><br />","colocTabs");
@@ -809,8 +815,10 @@ class Job {
             /* Insert the coloc table or tables. Notice that there's one
              table per combination of two channels. */
         $div  .= $this->writeColocTables($reportFile);
-        $html .= $this->insertDiv($div,"colocResults");
-                
+        $html  = $this->insertDiv($div,"colocResults");
+
+        $html  = $title . $text . $html;
+        
         return $html;
     }
 
@@ -954,6 +962,23 @@ class Job {
     }
 
     /* ---------------------- HTML formatting utilities --------------------- */
+
+    /* The standard followed above builds html code using functions that
+     create little html 'widgets' and which build up into larger ones.
+     
+     For example:
+     cell   = "contents"
+     row   .= insertCell(cell)
+     table .= insertRow(row)
+     div    = insertTable(table)
+     html   = insertDiv(div)
+
+     Notice that the variable names are chosen to keep larger widgets on the
+     left hand side of the '=' and smaller widgets on the right hand side.
+     The fictious widget 'html' being the largest one.
+    */
+
+    
 
     /*!
      \brief       Adds a new cell to an html table.
