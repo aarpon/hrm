@@ -347,11 +347,7 @@ if (!$_SESSION['user']->isAdmin()) {
 if (!$_SESSION['user']->isAdmin()) {
 
 ?>
-                <div id="controls">      
-                  <input type="submit"
-                         value=""
-                         class="icon empty"
-                         disabled="disabled" />
+                <div id="controls">
                   <input type="button"
                          value=""
                          class="icon previous"

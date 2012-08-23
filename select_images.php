@@ -231,8 +231,7 @@ $info = " <h3>Quick help</h3> <p>In this step, you will select the files " .
         <h3><img alt="SelectImages" src="./images/select_images.png" width="40"/> &nbsp;Step 1/5 - Select images</h3>
         
                     <form method="post" action="" id="fileformat">
-                    <fieldset class="setting <?php
-                echo X ?>"
+                    <fieldset class="setting"
                 onmouseover="javascript:changeQuickHelp( 'format' );" >
             
                 <legend>
@@ -318,10 +317,12 @@ if ($files == null) echo "                        <option>&nbsp;</option>\n";
             </fieldset>
             
             <div id="selection">
-                <input name="down" type="submit" value="" class="icon down"
-                    id="controls_down" />
-                <input name="up" type="submit" value="" class="icon remove"
-                    id="controls_up" />
+                <input name="down" type="submit"
+    value="" class="icon down"
+    id="controls_down"/>
+                <input name="up" type="submit"
+    value="" class="icon remove"
+    id="controls_up" />
             </div>
             
             <fieldset>

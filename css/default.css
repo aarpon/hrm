@@ -994,8 +994,9 @@ fieldset legend {
 }
 
 fieldset.report {
-    margin-top:10px;
-    margin-bottom:10px;
+  margin-top:10px;
+  margin-bottom:10px;
+  padding-right:15px;
 }
 
 fieldset.p {
@@ -1342,7 +1343,7 @@ option.default {
 }
 
 #report {
-    background: #ff9;
+  background: #ff9;
 }
 
 
