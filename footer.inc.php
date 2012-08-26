@@ -78,49 +78,6 @@ $loggedIn = ( isset($_SESSION['user'] ) && $_SESSION['user']->isLoggedIn( ) );
     </div>
 
     </div> <!-- basket -->
-   
-    <!-- Include jQuery and jQuery-qTip --> 
-    <script type="text/javascript" src="scripts/jquery-1.7.2.min.js"></script>
-    <script type="text/javascript" src="scripts/jquery.qtip-1.0.0-rc3.min.js"></script>
-
-    <!-- Tooltips -->
-    <?php
-        if (isset($tooltips) && is_array($tooltips)) {
-    ?>
-
-    <script type="text/javascript">
-        $(document).ready( function( ) {
-            
-    <?php
-        $keys = array_keys($tooltips);
-        foreach ($keys as $key) {
-    ?>
-    
-        $("#<?php echo $key; ?>").qtip({
-            content: '<?php echo $tooltips[$key]; ?>',
-            show: 'mouseover',
-            hide: 'mouseout',
-            style: {
-                padding: 5,
-                background: '#FFFFE0',
-                textAlign: 'center',
-                border: {
-                    width: 1,
-                    radius: 2,
-                    color: 'darkgray'
-                },
-                'font-size': '90%'
-            }
-        });
-        
-    <?php
-            }
-    ?>
-        } );
-        </script>
-    <?php
-    }
-    ?>
 
 </body>
 

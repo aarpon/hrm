@@ -153,6 +153,12 @@ if (isset($_POST['modify'])) {
 include("header.inc.php");
 ?>
 
+<!--
+  Tooltips
+-->
+<span class=toolTip" id="ttSpanCancel">Discard changes and go back to your home page.</span>
+<span class=toolTip" id="ttSpanSave">Save the changes.</span>
+
 <div id="nav">
     <ul>
         <li>
@@ -248,10 +254,14 @@ include("header.inc.php");
 
             <div id="controls">
                 <input type="button" name="cancel" value=""
-                       class="icon cancel" id ="controls_cancel"
+                       class="icon cancel"
+                       onmouseover="TagToTip('ttSpanCancel' )"
+                       onmouseout="UnTip()"
                        onclick="document.location.href='<?php echo $referer ?>'" />
                 <input type="button" name="save" value=""
-                       class="icon save" id ="controls_save"
+                       class="icon save"
+                       onmouseover="TagToTip('ttSpanSave' )"
+                       onmouseout="UnTip()"
                        onclick="document.forms['useraccount'].submit()" />
             </div>
 
@@ -280,15 +290,6 @@ include("header.inc.php");
 
 <?php
 
-/*
- * Tooltips. 
- * 
- * Define $tooltips array with object id as key and tooltip string as value.
- */
-$tooltips = array(
-    "controls_cancel" => "Discard changes and go back to your home page.",
-    "controls_save" => "Save the changes."
-);
-
 include("footer.inc.php");
+
 ?>

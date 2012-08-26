@@ -196,6 +196,22 @@ $info = " <h3>Quick help</h3> <p>In this step, you will select the files " .
 
 ?>
 
+    <!--
+      Tooltips
+    -->
+    <span class="toolTip" id="ttSpanDown">
+        Add files to the list of selected images.
+    </span>
+    <span class="toolTip"  id="ttSpanUp">
+        Remove files from the list of selected images.
+    </span>
+    <span class="toolTip"  id="ttSpanRefresh">
+        Refresh the list of available images on the server.
+    </span>
+    <span class="toolTip"  id="ttSpanForward">
+        Continue to step 2/4 - Image parameters
+    </span>
+
     <div id="nav">
         <ul>
             <li>
@@ -291,13 +307,13 @@ foreach($values as $key => $value) {
         
             <fieldset>
                 <legend>Images available on server</legend>
-                <div id="userfiles"  onmouseover="showPreview()">
+                <div id="userfiles" onmouseover="showPreview()">
 <?php
 
 $flag = "";
 if ($files == null) {
     $flag = " disabled=\"disabled\"";
-    $message .= "No images of type X";
+    $message .= "";
 }
 
 ?>
@@ -317,12 +333,21 @@ if ($files == null) echo "                        <option>&nbsp;</option>\n";
             </fieldset>
             
             <div id="selection">
-                <input name="down" type="submit"
-    value="" class="icon down"
-    id="controls_down"/>
-                <input name="up" type="submit"
-    value="" class="icon remove"
-    id="controls_up" />
+
+              <input name="down"
+                type="submit"
+                value="" 
+                class="icon down"
+                onmouseover="TagToTip('ttSpanDown')"
+                onmouseout="UnTip()" />
+                
+              <input name="up"
+                type="submit"
+                value=""
+                class="icon remove"
+                onmouseover="TagToTip('ttSpanUp')"
+                onmouseout="UnTip()" />
+                
             </div>
             
             <fieldset>
@@ -364,7 +389,9 @@ else echo "                        <option>&nbsp;</option>\n";
                        type="submit"
                        value=""
                        class="icon update"
-                       id="controls_refresh" />
+                       onmouseover="TagToTip('ttSpanRefresh')"
+                       onmouseout="UnTip()"
+                       />
                 <input name="OK" type="hidden" />
             </div>
             
@@ -374,7 +401,8 @@ else echo "                        <option>&nbsp;</option>\n";
                      value=""
                      class="icon next"
                      onclick="process()"
-                     id="controls_forward" />
+                     onmouseover="TagToTip('ttSpanForward')"
+                     onmouseout="UnTip()" />
             </div>
 
         </form>
@@ -408,17 +436,6 @@ echo "<p>$message</p>";
 
 <?php
 
-/*
- * Tooltips. 
- * 
- * Define $tooltips array with object id as key and tooltip string as value.
- */
-$tooltips = array(
-    "controls_down" => "Add files to the list of selected images.",
-    "controls_up" => "Remove files from the list of selected images.",
-    "controls_refresh" => "Refresh the list of available images on the server.",
-    "controls_forward" => "Continue to step 2/5 - Image parameters."
-);
-
 include("footer.inc.php");
+
 ?>

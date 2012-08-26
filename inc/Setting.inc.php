@@ -1781,7 +1781,7 @@ class TaskSetting extends Setting {
                 $parameter->setAlgorithm($algorithm);
             }
             $result = $result . 
-                $parameter->displayString($this->numberOfChannels());
+                $parameter->displayString($numberOfChannels);
         }
         return $result;
     }

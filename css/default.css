@@ -1605,3 +1605,8 @@ option.default {
     text-align: center;
     font-size: 18px;
 }
+
+/* Make sure the tooltip is initially hidden */
+.toolTip {
+  display: none;
+}

@@ -82,6 +82,41 @@ $script = array( "settings.js", "quickhelp/help.js",
 include("header.inc.php");
 
 ?>
+    <!--
+      Tooltips
+    -->
+    <span class="toolTip" id="ttSpanCancel">
+        Abort editing and go back to the Restoration parameters
+        selection page. All changes will be lost!
+    </span>
+    
+    <?php
+    if ($_SESSION['task_setting']->numberOfChannels() == 1) {
+    ?>
+    <span class="toolTip" id="ttSpanSave">
+    Save and return to the processing parameters selection page.
+    </span>
+    
+    <?php
+    } else {
+    ?>
+    <span class="toolTip" id="ttSpanForward">
+        Continue to next page.
+    </span>
+    <?php
+    }
+    ?>
+    
+    <span class="toolTip" id="ttEstimateSnr">
+        Use a sample raw image to find a SNR estimate for each channel.
+    </span>
+    <span class="toolTip" id="ttEstimateSnrBeta">
+        Give the new SNR estimator (beta) a try!
+    </span>
+    <span class="toolTip" id="ttEstimateSnrBetaFeedback">
+        Please help us improve the new SNR estimator by providing your
+        observations and remarks!
+    </span>
 
     <div id="nav">
         <ul>
@@ -219,7 +254,8 @@ for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
                       </ul>
 
                         <p><a href="#"
-                          id="calc_estimateSnr"
+                          onmouseover="TagToTip('ttEstimateSnr' )"
+                          onmouseout="UnTip()"
                           onclick="storeValuesAndRedirect(
                             'estimate_snr_from_image.php');">
                           <img src="images/calc_small.png" alt="" />
@@ -230,13 +266,15 @@ for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
                           <img src="images/newSNR.png" alt="" />&nbsp;&nbsp;
                           Try the
                           <a href="#"
-                            id="calc_estimateSnrBeta"
+                            onmouseover="TagToTip('ttEstimateSnrBeta' )"
+                            onmouseout="UnTip()"
                             onclick="storeValuesAndRedirect(
                             'estimate_snr_from_image_beta.php');">
                           new SNR estimator (beta)</a> and
                           <a href="javascript:openWindow(
                           'http://www.svi.nl/BetaSNRFeedback')"
-                          id="controls_estimateSnrBetaFeedback">
+                          onmouseover="TagToTip('ttEstimateSnrBetaFeedback' )"
+                          onmouseout="UnTip()">
                           report your feedback!</a>&nbsp;&nbsp;
                           <img src="images/newSNR.png" alt="" /></div>
                     </div>
@@ -492,23 +530,22 @@ $value = $parameter->value();
 
             <div id="controls"
                  onmouseover="javascript:changeQuickHelp( 'default' )">
+              
               <input type="button" value="" class="icon up"
-                  id="controls_cancel"
-                  onclick="javascript:deleteValuesAndRedirect('select_task_settings.php' );"
-                  />
+                onmouseover="TagToTip('ttSpanCancel' )"
+                onmouseout="UnTip()"
+                onclick="javascript:deleteValuesAndRedirect('select_task_settings.php' );" />
     
-    <?php
-        $acceptButton  = "icon save";
-        $acceptToolTip = "Save and return to the processing parameters selection page.";
-    ?>
-
-            <input type="submit" value="" 
-                id="controls_forward"
-                class="<?php echo $acceptButton; ?>" 
+              <input type="submit" value=""
+                class="icon save"
+                onmouseover="TagToTip('ttSpanSave')"
+                onmouseout="UnTip()"
                 onclick="process()" />
- 
+
             </div>
+        
         </form>
+    
     </div> <!-- content -->
 
     <div id="rightpanel" onmouseover="javascript:changeQuickHelp( 'default' )">
@@ -534,19 +571,6 @@ echo "<p>$message</p>";
     </div> <!-- rightpanel -->
 
 <?php
-
-/*
- * Tooltips. 
- * 
- * Define $tooltips array with object id as key and tooltip string as value.
- */
-$tooltips = array(
-    "controls_cancel" => "Abort editing and go back to the Restoration parameters selection page. All changes will be lost!",
-    "controls_forward" => $acceptToolTip,
-    "calc_estimateSnr" => "Use a sample raw image to find a SNR estimate for each channel.",
-    "calc_estimateSnrBeta" => "Give the new SNR estimator (beta) a try!",
-    "controls_estimateSnrBetaFeedback" => "Please help us improve the new SNR estimator by providing your observations and remarks!"
-);
 
 include("footer.inc.php");
 

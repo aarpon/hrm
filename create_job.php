@@ -58,7 +58,16 @@ else if (isset($_POST['OK'])) {
 include("header.inc.php");
 
 ?>
-
+    <!--
+      Tooltips
+    -->
+    <span class="toolTip" id="ttSpanBack">
+        Go back to step 3/4 - Processing parameters.
+    </span>
+    <span class="toolTip" id="ttSpanCreateJob">
+        Create job, add it to the queue, and go back to your home page.
+    </span>
+    
      <div id="nav">
         <ul>
             <li>
@@ -307,11 +316,14 @@ if (!isset($_SESSION['jobcreated'])) {
 
 ?>
             <input type="button" name="previous" value="" class="icon previous"
-              onclick="document.location.href='select_analysis_settings.php'"
-              id="controls_back" />
-            <input type="button" name="create job" value="" class="icon launch_start"
+              onclick="document.location.href='select_task_settings.php'"
+              onmouseover="TagToTip('ttSpanBack' )"
+              onmouseout="UnTip()" />
+            <input type="button" name="create job" value="" class="icon ok"
               onclick="document.forms['createjob'].submit()"
-              id="controls_createJob" />
+              onmouseover="TagToTip('ttSpanCreateJob' )"
+              onmouseout="UnTip()" />
+
 
 <?php
 
@@ -372,16 +384,6 @@ echo "<p>$message</p>";
     </div> <!-- rightpanel -->
 
 <?php
-
-/*
- * Tooltips. 
- * 
- * Define $tooltips array with object id as key and tooltip string as value.
- */
-$tooltips = array(
-    "controls_back" => "Go back to step 4/5 - Analysis parameters.",
-    "controls_createJob" => "Create job, add it to the queue, and go back to your home page.",
-);
 
 include("footer.inc.php");
 

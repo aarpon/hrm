@@ -38,6 +38,20 @@ include("header.inc.php");
 
 ?>
 
+    <!--
+      Tooltips
+    -->
+    <span class="toolTip" id="ttRefresh">Refresh the queue.</span>
+    <?php
+      $rows = $queue->getContents();
+      if (count($rows) != 0) {
+    ?>
+    <span class="toolTip" id="ttDelete">Delete selected job(s) from the queue.
+      If a job is running, it will be killed!</span>
+    <?php
+      }
+    ?>
+    
     <div id="nav">
         <ul>
             <li>
@@ -66,16 +80,17 @@ include("header.inc.php");
    <h3><img src="images/queue_small.png" alt="Queue" />&nbsp;Queue status</h3>
     
     <form method="post" action="" id="jobqueue">
-    <p>
-        <input name="update" type="submit" value="" class="icon update"
-            id="controls_refresh" /><?php echo date("l d. F Y, H:i:s"); ?>
-   </p>
-
+      
    <!-- Display total number and number of jobs owned by current user.
    This will be filled in by Ajax calls. -->
-   <p id="summary"><img src="./images/note.png" alt=\"Summary\" />&nbsp;
-     <span id="totalJobNumber">&nbsp</span>
-     <span id="userJobNumber">&nbsp;</p>
+   <div id="summary">
+      <input name="update" type="submit" value="" class="icon update"
+        onmouseover="TagToTip('ttRefresh' )"
+        onmouseout="UnTip()" style="vertical-align: middle;" />
+      &nbsp;
+     <span id="totalJobNumber"  style="vertical-align: middle;">&nbsp</span>
+     <span id="userJobNumber"  style="vertical-align: middle;">&nbsp;</span>
+   </div>
 
    <!-- Display full queue table. -->
     <div id="queue">&nbsp; </div> <!-- queue -->
@@ -85,16 +100,6 @@ include("header.inc.php");
     </div> <!-- joblist -->
 
 <?php
-
-/*
- * Tooltips. 
- * 
- * Define $tooltips array with object id as key and tooltip string as value.
- */
-$tooltips = array(
-    "controls_refresh" => "Refresh the queue.",
-    "controls_delete" => "Delete selected job(s) from the queue. If a job is running, it will be killed!"
-);
 
 include("footer.inc.php");
 

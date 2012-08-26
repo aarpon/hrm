@@ -66,6 +66,21 @@ $script = array( "settings.js", "quickhelp/help.js",
 include("header.inc.php");
 
 ?>
+
+    <!--
+      Tooltips
+    -->
+    <span class=toolTip" id="ttSpanBack">
+        Go back to previous page.
+    </span>
+    <span class=toolTip" id="ttSpanCancel">
+        Abort editing and go back to the image parameters selection page.
+        All changes will be lost!
+    </span>
+    <span class=toolTip" id="ttSpanSave">
+        Save and return to the image parameters selection page.
+    </span>
+    
     <div id="nav">
         <ul>
             <li>
@@ -447,13 +462,20 @@ if ( ($parameterPerformAberrationCorrection->value( ) == 1) &&
     <div><input name="OK" type="hidden" /></div>
 
     <div id="controls" onmouseover="javascript:changeQuickHelp( 'default' )">      
-        <input type="button" value="" class="icon previous" id="controls_back"
+        <input type="button" value="" class="icon previous"
+            onmouseover="TagToTip('ttSpanBack' )"
+            onmouseout="UnTip()"
             onclick="document.location.href='capturing_parameter.php'" />
-        <input type="button" value="" class="icon up" id="controls_cancel"
+        <input type="button" value="" class="icon up"
+            onmouseover="TagToTip('ttSpanCancel' )"
+            onmouseout="UnTip()"
             onclick="document.location.href='select_parameter_settings.php'" />
-        <input type="submit" value="" class="icon save" id="controls_save"
+        <input type="submit" value="" class="icon save"
+            onmouseover="TagToTip('ttSpanSave' )"
+            onmouseout="UnTip()"
             onclick="process()" />
-      </div>            
+      </div> 
+    
     </form>
         
     </div> <!-- content -->
@@ -488,17 +510,6 @@ echo "<p>$message</p>";
     </div> <!-- rightpanel -->
     
 <?php
-
-/*
- * Tooltips. 
- * 
- * Define $tooltips array with object id as key and tooltip string as value.
- */
-$tooltips = array(
-    "controls_back" => "Go back to previous page.",
-    "controls_cancel" => "Abort editing and go back to the image parameters selection page. All changes will be lost!",
-    "controls_save" => "Save and return to the image parameters selection page."
-    );
 
 include("footer.inc.php");
 

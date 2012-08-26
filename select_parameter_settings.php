@@ -136,7 +136,39 @@ $script = array( "settings.js", "common.js", "ajax_utils.js" );
 include("header.inc.php");
 
 ?>
-
+    <!--
+      Tooltips
+    -->
+    <span class="toolTip" id="ttSpanCreate">
+        Create a new parameter set with the specified name.
+    </span>
+    <span class="toolTip" id="ttSpanEdit">
+        Edit the selected parameter set.
+    </span>
+    <span class="toolTip" id="ttSpanClone">
+        Copy the selected parameter set to a new one with the
+      specified name.</span>
+    <span class="toolTip" id="ttSpanDelete">
+        Delete the selected parameter set.
+    </span>
+    <?php
+      if (!$_SESSION['user']->isAdmin()) {
+        ?>
+        <span class="toolTip" id="ttSpanDefault">
+            Sets (or resets) the selected parameter set as the default one
+            .</span>
+        <span class="toolTip" id="ttSpanCopyTemplate">Copy a template.
+        </span>
+        <span class="toolTip" id="ttSpanBack">
+            Go back to step 1/5 - Select images.
+        </span>
+        <span class="toolTip" id="ttSpanForward">
+            Continue to step 3/5 - Restoration parameters.
+        </span>
+    <?php
+      }
+    ?>
+    
     <div id="nav">
         <ul>
             <li>
@@ -234,7 +266,8 @@ if (!$_SESSION['user']->isAdmin()) {
                        type="submit"
                        value=""
                        class="icon copy"
-                       id="controls_copyTemplate" />
+                       onmouseover="TagToTip('ttSpanCopyTemplate' )"
+                       onmouseout="UnTip()" />
             </div>
             
         </form>
@@ -303,16 +336,19 @@ else {
                        type="submit"
                        value=""
                        class="icon create"
-                       id="controls_create" />
+                       onmouseover="TagToTip('ttSpanCreate' )"
+                       onmouseout="UnTip()" />
                 <input name="edit"
                        type="submit"
                        value=""
                        class="icon edit"
-                       id="controls_edit" />
+                       onmouseover="TagToTip('ttSpanEdit' )"
+                       onmouseout="UnTip()" />
                 <input name="copy" type="submit" 
                        value=""
                        class="icon clone"
-                       id="controls_clone" />
+                       onmouseover="TagToTip('ttSpanClone' )"
+                       onmouseout="UnTip()" />
 <?php
 
 if (!$_SESSION['user']->isAdmin()) {
@@ -320,7 +356,8 @@ if (!$_SESSION['user']->isAdmin()) {
 ?>
                 <input name="make_default" type="submit" value=""
                       class="icon mark"
-                      id="controls_default" />
+                      onmouseover="TagToTip('ttSpanDefault' )"
+                      onmouseout="UnTip()" />
 <?php
 
 }
@@ -334,7 +371,8 @@ if (!$_SESSION['user']->isAdmin()) {
                        onclick="warn(this.form,
                         'Do you really want to delete this parameter set?',
                         this.form['setting'].selectedIndex )"
-                       id="controls_delete" />
+                       onmouseover="TagToTip('ttSpanDelete' )"
+                       onmouseout="UnTip()" />
                 <label>New/clone parameter set name:
                     <input name="new_setting"
                            type="text"
@@ -347,17 +385,23 @@ if (!$_SESSION['user']->isAdmin()) {
 if (!$_SESSION['user']->isAdmin()) {
 
 ?>
-                <div id="controls">
+                <div id="controls">      
+                  <input type="submit"
+                         value=""
+                         class="icon empty"
+                         disabled="disabled" />
                   <input type="button"
                          value=""
                          class="icon previous"
                          onclick="document.location.href='select_images.php'"
-                         id="controls_back" />
+                        onmouseover="TagToTip('ttSpanBack' )"
+                        onmouseout="UnTip()" />
                   <input type="submit"
                          value=""
                          class="icon next"
                          onclick="process()"
-                         id="controls_forward" />
+                         onmouseover="TagToTip('ttSpanForward' )"
+                         onmouseout="UnTip()" />
                 </div>
 <?php
 
@@ -435,22 +479,6 @@ echo "<p>$message</p>";
     </div> <!-- rightpanel -->
     
 <?php
-
-/*
- * Tooltips. 
- * 
- * Define $tooltips array with object id as key and tooltip string as value.
- */
-$tooltips = array(
-    "controls_create" => "Create a new parameter set with the specified name.",
-    "controls_edit" => "Edit the selected parameter set.",
-    "controls_clone" => "Copy the selected parameter set to a new one with the specified name.",
-    "controls_delete" => "Delete the selected parameter set.",
-    "controls_default" => "Sets (or resets) the selected parameter set as the default one.",
-    "controls_copyTemplate" => "Copy a template.",
-    "controls_back" => "Go back to step 1/5 - Select images.",
-    "controls_forward" => "Continue to step 3/5 - Restoration parameters.",
-);
 
 include("footer.inc.php");
 

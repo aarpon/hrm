@@ -76,7 +76,20 @@ $script = "settings.js";
 include("header.inc.php");
 
 ?>
-
+    <!--
+      Tooltips
+    -->
+    <span class="toolTip" id="ttSpanBack">
+        Go back to previous page.
+    </span>
+    <span class="toolTip" id="ttSpanCancel">
+        Abort editing and go back to the image parameters selection page.
+        All changes will be lost!
+    </span>
+    <span class="toolTip" id="ttSpanSave">
+        Save and return to the image parameters selection page.
+    </span>
+    
     <div id="nav">
         <ul>
             <li>
@@ -162,13 +175,16 @@ for ($i = 0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
             
             <div id="controls">
               <input type="button" value="" class="icon previous"
-                  id="controls_back"
+                  onmouseover="TagToTip('ttSpanBack' )"
+                  onmouseout="UnTip()"
                   onclick="document.location.href='capturing_parameter.php'" />
               <input type="button" value="" class="icon up"
-                  id="controls_cancel"
+                  onmouseover="TagToTip('ttSpanCancel' )"
+                  onmouseout="UnTip()"
                   onclick="document.location.href='select_parameter_settings.php'" />
               <input type="submit" value="" class="icon save"
-                  id="controls_save" />
+                  onmouseover="TagToTip('ttSpanSave' )"
+                  onmouseout="UnTip()" onclick="process()" />
             </div>
                         
         </form>
@@ -197,17 +213,6 @@ echo "<p>$message</p>";
     </div> <!-- rightpanel -->
     
 <?php
-
-/*
- * Tooltips. 
- * 
- * Define $tooltips array with object id as key and tooltip string as value.
- */
-$tooltips = array(
-    "controls_back" => "Go back to previous page.",
-    "controls_cancel" => "Abort editing and go back to the image parameters selection page. All changes will be lost!",
-    "controls_save" => "Save and return to the image parameters selection page."
-);
 
 include("footer.inc.php");
 
