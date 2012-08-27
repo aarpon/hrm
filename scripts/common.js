@@ -91,7 +91,7 @@ function FadeOpacity(elem, fromOpacity, toOpacity, time, fps)
 function FadeOpacityStep(elem, stepNum, steps, fromOpacity,
         delta, timePerStep)
 {
-    e = document.getElementById(elem);
+    var e = document.getElementById(elem);
     SetOpacity(e,
             Math.round(parseInt(fromOpacity) + (delta * stepNum)));
 
@@ -391,7 +391,7 @@ function cancelSelection() {
 
 function imgPrev(infile, mode, gen, compare, index, dir, referer, data) {
 
-    file = unescape(infile);
+    var file = unescape(infile);
 
     if (mode == 0 && gen == 1) {
         try

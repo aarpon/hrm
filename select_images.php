@@ -118,7 +118,7 @@ function imageAction (list) {
 
     var snew = 0;
 
-    count = 0;
+    var count = 0;
     for (i=0; i<list.options.length; i++) {
         if (list.options[i].selected) {
             if( undefined === window.lastSelectedImgsKey[i] ){
