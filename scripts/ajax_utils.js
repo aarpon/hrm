@@ -8,7 +8,7 @@
 // \param pSetType    : either 'setting' or 'task_setting'
 // \param pSetName    : name of the setting to be returned
 // \param pPublicSet  : either true (for public, template sets) or false
-function getParameterListForSet(pSetType, pSetName, pPublicSet) {
+function ajaxGetParameterListForSet(pSetType, pSetName, pPublicSet) {
   $.ajaxSetup ({  
     cache: false  
   });
@@ -30,7 +30,7 @@ function getParameterListForSet(pSetType, pSetName, pPublicSet) {
 // id  : id of the div where the returned string will be placed
 // pre : string to be attached before the returned data
 // post: String to be appened to the returned data
-function getNumberOfUserJobsInQueue(id, pre, post) {
+function ajaxGetNumberOfUserJobsInQueue(id, pre, post) {
   $.ajaxSetup ({  
     cache: false  
   });
@@ -49,7 +49,7 @@ function getNumberOfUserJobsInQueue(id, pre, post) {
 
 // Requires jQuery
 // Posts a request for the number of jobs currently in the queue
-function getTotalNumberOfJobsInQueue(id) {
+function ajaxGetTotalNumberOfJobsInQueue(id) {
   $.ajaxSetup ({  
     cache: false  
   });
@@ -65,16 +65,33 @@ function getTotalNumberOfJobsInQueue(id) {
 
 // Requires jQuery
 // Posts a request for the full job queue table
-function getJobQueuetable(id) {
+function ajaxGetJobQueueTable(id) {
   $.ajaxSetup ({  
     cache: false  
   });
   $.post(
     "ajax/ajax.php",
-    { action: "getJobQueuetable"
+    { action: "getJobQueueTable"
     },
     function(data) {
       $('#' + id).html(data);
+    }
+  );
+}
+
+// Requires jQuery
+// Stores the selected file format in the session
+function ajaxSetFileFormat(pFormat) {
+  $.ajaxSetup ({  
+    cache: false  
+  });
+  $.post(
+    "ajax/ajax.php",
+    { action: "setFileFormat",
+      format: pFormat
+    },
+    function(data) {
+      // Nothing to return
     }
   );
 }

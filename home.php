@@ -415,7 +415,7 @@ include("footer.inc.php");
 <script type="text/javascript">
     $(document).ready(function() {
         setInterval(function() { 
-          getNumberOfUserJobsInQueue(
+          ajaxGetNumberOfUserJobsInQueue(
             'jobsInQueue',
             '<p />See all jobs.<br />You have <strong>',
             '</strong> in the queue.'); },

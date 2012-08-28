@@ -110,28 +110,28 @@ include("footer.inc.php");
   
     // Fill in the information about jobs and draw the job queue table as
     // soon as the page is ready
-    getTotalNumberOfJobsInQueue('totalJobNumber');
-    getNumberOfUserJobsInQueue('userJobNumber', 'You own ', '.');
-    getJobQueuetable('queue');
+    ajaxGetTotalNumberOfJobsInQueue('totalJobNumber');
+    ajaxGetNumberOfUserJobsInQueue('userJobNumber', 'You own ', '.');
+    ajaxGetJobQueueTable('queue');
     
     // Then, update the total number of jobs every 10 s
     $(document).ready(function() {
         setInterval(function() { 
-          getTotalNumberOfJobsInQueue('totalJobNumber'); 
+          ajaxGetTotalNumberOfJobsInQueue('totalJobNumber'); 
         }, 10000 );
     });
     
     // Update the number of jobs per user every 10 s
     $(document).ready(function() {
         setInterval(function() { 
-          getNumberOfUserJobsInQueue('userJobNumber', 'You own ', '.'); 
+          ajaxGetNumberOfUserJobsInQueue('userJobNumber', 'You own ', '.'); 
         }, 10000 );
     });
 
     // Update the job queue table every 10 s
     $(document).ready(function() {
         setInterval(function() { 
-          getJobQueuetable('queue'); 
+          ajaxGetJobQueueTable('queue'); 
         }, 10000 );
     });
 

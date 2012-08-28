@@ -64,7 +64,7 @@ else if (isset($_POST['OK'])) {
     }
 }
 
-$script = "settings.js";
+$script = array( "settings.js", "ajax_utils.js" );
 
 // All the user's files in the server.
 $files = $_SESSION['fileserver']->files();
@@ -73,6 +73,20 @@ $files = $_SESSION['fileserver']->files();
 if ($files != null) {
 
     $generatedScript = "
+function storeFileFormatSelection(sel) {
+  
+   // Get current selection
+   var format = $('#' + sel.id + ' :selected').attr(\"name\");
+   
+   // Store it
+   ajaxSetFileFormat(format);
+   
+   // Now filter by type
+   filterImages(sel);
+};
+";
+  
+    $generatedScript .= "
 function filterImages (extension) {
 
     var selectObject = document.getElementById(\"selectedimages\");

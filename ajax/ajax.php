@@ -212,6 +212,22 @@ function getJobQueuetable() {
  * ========================================================================== */
 
 /**
+ * Set the selected image format in the $_SESSION
+ * @param format Selected image file format
+ */
+function setFileFormat($format) {
+  if (isset($_SESSION['parametersetting'])) {
+    $fileFormat = $_SESSION[ 'parametersetting' ]->parameter("ImageFileFormat");
+    $fileFormat->setValue($format);
+    $_SESSION[ 'parametersetting' ]->set($fileFormat);
+    return "";
+  }
+}
+
+/* ==========================================================================
+ * ========================================================================== */
+
+/**
  * Calls the requested action and collects the output 
  * @param String $action Action to be performed
  * @param Reference $data String to be returned
@@ -301,8 +317,17 @@ function act( $action, &$data ) {
 
         // ---------------------------------------------------------------------
 
-        case 'getJobQueuetable':
-            $data = getJobQueuetable();
+        case 'getJobQueueTable':
+            $data = getJobQueueTable();
+            return true;
+            break;
+
+        // ---------------------------------------------------------------------
+
+        case 'setFileFormat':
+            if (isset( $_POST['format'])) {
+              $data = setFileFormat($_POST['format']);
+            }
             return true;
             break;
 

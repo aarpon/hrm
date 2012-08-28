@@ -213,7 +213,7 @@ if (!$_SESSION['user']->isAdmin()) {
 
 ?>
                     <select name="public_setting"
-                        onchange="getParameterListForSet('analysis_setting', $(this).val(), true);"
+                        onchange="ajaxGetParameterListForSet('analysis_setting', $(this).val(), true);"
                         size="5"<?php echo $flag ?>>
 <?php
 
@@ -274,7 +274,7 @@ if (sizeof($settings) == 0) $flag = " disabled=\"disabled\"";
 
 ?>
                     <select name="analysis_setting"
-                        onchange="getParameterListForSet('analysis_setting', $(this).val(), false);"
+                        onchange="ajaxGetParameterListForSet('analysis_setting', $(this).val(), false);"
                         size="<?php echo $size ?>"
                         <?php echo $flag ?>>
 <?php
