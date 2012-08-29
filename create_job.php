@@ -319,7 +319,8 @@ if (!isset($_SESSION['jobcreated'])) {
               onclick="document.location.href='select_task_settings.php'"
               onmouseover="TagToTip('ttSpanBack' )"
               onmouseout="UnTip()" />
-            <input type="button" name="create job" value="" class="icon ok"
+            <input type="button" name="create job" value=""
+              class="icon launch_start"
               onclick="document.forms['createjob'].submit()"
               onmouseover="TagToTip('ttSpanCreateJob' )"
               onmouseout="UnTip()" />
