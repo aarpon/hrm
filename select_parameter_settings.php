@@ -24,8 +24,9 @@ if (!isset($_SESSION['editor'])) {
   $_SESSION['editor'] = new SettingEditor($_SESSION['user']);
 }
 
-// Settings by the admin are general for any file format, no specific confidence
-// levels. Thus, we set the file format to tiff, which has the lowest CL.
+// Settings by the admin can be used with any file format, no specific confidence
+// levels. Thus, we set the lowest confidence levels, whic corresponds to the
+// tiff format to force the admin to enter all the parameters.
 if ($_SESSION['user']->isAdmin()) {
     $_SESSION[ 'parametersetting' ] = new ParameterSetting();
     $_SESSION[ 'parametersetting' ]->parameter("ImageFileFormat")->setValue("tif");
@@ -243,7 +244,7 @@ if (!$_SESSION['user']->isAdmin()) {
 
 ?>
                     <select name="public_setting"
-                            onchange="ajaxGetParameterListForSet('setting', $(this).val(), true);"
+                            onclick="ajaxGetParameterListForSet('setting', $(this).val(), true);"
                             size="5"<?php echo $flag ?>>
 <?php
 
@@ -305,7 +306,7 @@ if (sizeof($settings) == 0) $flag = " disabled=\"disabled\"";
 
 ?>
                     <select name="setting"
-                            onchange="ajaxGetParameterListForSet('setting', $(this).val(), false);"
+                     onclick="ajaxGetParameterListForSet('setting', $(this).val(), false);"
                             size="<?php echo $size ?>"<?php echo $flag ?>>
 <?php
 
