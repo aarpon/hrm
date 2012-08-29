@@ -165,7 +165,7 @@ include("header.inc.php");
 </ul>
 </div>
 
-<div id="content"><?php
+<div id="welcome"><?php
 // Check that the database is reachable
 $db   = new DatabaseConnection( );
 if ( !$db->isReachable( ) ) {
@@ -250,7 +250,7 @@ Optics platform</a></p>
 </div>
 
 </div>
-<!-- content -->
+<!-- welcome -->
 
 <div id="rightpanel">
 <p />
