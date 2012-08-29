@@ -229,9 +229,10 @@ if (!$_SESSION['user']->isAdmin()) {
   if (sizeof($settings) == 0) $flag = " disabled=\"disabled\"";
 
 ?>
-                    <select name="public_setting"
-                        onclick="ajaxGetParameterListForSet('task_setting', $(this).val(), true);"
-                        size="5"<?php echo $flag ?>>
+<select name="public_setting"
+     onclick="ajaxGetParameterListForSet('task_setting', $(this).val(), true);"
+     onchange="ajaxGetParameterListForSet('task_setting', $(this).val(), true);"
+     size="5"<?php echo $flag ?>>
 <?php
 
   if (sizeof($settings) == 0) {
@@ -291,9 +292,10 @@ $flag = "";
 if (sizeof($settings) == 0) $flag = " disabled=\"disabled\"";
 
 ?>
-                    <select name="task_setting"
-                        onclick="ajaxGetParameterListForSet('task_setting', $(this).val(), false);"
-                        size="<?php echo $size ?>"
+<select name="task_setting"
+    onclick="ajaxGetParameterListForSet('task_setting', $(this).val(), false);"
+    onchange="ajaxGetParameterListForSet('task_setting', $(this).val(), false);"
+    size="<?php echo $size ?>"
                         <?php echo $flag ?>>
 <?php
 
