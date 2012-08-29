@@ -265,13 +265,20 @@ function act( $action, &$data ) {
             } else {
               return false;
             }
-          } else {
+          } elseif ($setType == "task_setting") {
             if ( isset( $_SESSION['admin_taskeditor'] ) ) {
               $editor = $_SESSION['admin_taskeditor'];
             } else {
               return false;
             }
-            
+          } elseif ($setType == "analysis_setting") {
+            if ( isset( $_SESSION['admin_analysiseditor'] ) ) {
+              $editor = $_SESSION['admin_analysiseditor'];
+            } else {
+              return false;
+            } 
+          } else {
+              return false;
           }
         } else {
           $publicSet = 0;
@@ -281,12 +288,20 @@ function act( $action, &$data ) {
             } else {
               return false;
             }
-          } else {
+          } elseif ( $setType == "task_setting" ) {
             if ( isset( $_SESSION['taskeditor'] ) ) {
               $editor = $_SESSION['taskeditor'];
             } else {
               return false;
             }            
+          } elseif ( $setType == "analysis_setting" ) {
+            if ( isset( $_SESSION['analysiseditor'] ) ) {
+              $editor = $_SESSION['analysiseditor'];
+            } else {
+              return false;
+            }              
+          } else {
+              return false;
           }
         }
         
