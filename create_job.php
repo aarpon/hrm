@@ -356,7 +356,7 @@ else {
             <p>As a last step, please choose the output file format for your
             restored images.</p>
 
-            <p>Also, use this is summary to check your parameters. If you spot
+            <p>Also, use this as summary to check your parameters. If you spot
             a mistake, use the links on the left to go back and fix it.</p>
 
             <p>Once you are okay with the parameters, press the

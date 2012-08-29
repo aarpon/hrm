@@ -439,7 +439,7 @@ if (!$_SESSION['user']->isAdmin()) {
 }
 
 	if (!$_SESSION['user']->isAdmin()) {
-      echo "<p>In the first step, you are asked to specify all parameters
+      echo "<p>In this step, you are asked to specify all parameters
           relative to the images you want to restore.</p>";
 	} else {
 	  echo "<p>Here, you can create template parameters relative to the images
