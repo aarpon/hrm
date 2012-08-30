@@ -324,18 +324,6 @@ class ParameterSetting extends Setting {
         $this->message = '';
         $noErrorsFound = True;
 
-            // The file format must be defined
-        if (isset($postedParameters["ImageFileFormat"])) {
-                
-            $parameter = $this->parameter("ImageFileFormat");
-            $parameter->setValue($postedParameters["ImageFileFormat"]);
-            $this->set($parameter);
-            if (!$parameter->check()) {
-                $this->message = $parameter->message();
-                return False;
-            }
-        }
-
         // The PSF type must be defined
         if (!isset($postedParameters["PointSpreadFunction"]) ||
                 $postedParameters["PointSpreadFunction"] == "") {

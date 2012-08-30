@@ -38,7 +38,6 @@ if (isset($_POST['down'])) {
     }
     if (isset($_POST['ImageFileFormat']) && !empty($_POST['ImageFileFormat'])) {
         $_SESSION[ 'parametersetting' ]->checkPostedImageParameters( $_POST );
-        $fileFormat->setValue($_POST["ImageFileFormat"]);
     }
     
 }
@@ -58,7 +57,6 @@ else if (isset($_POST['OK'])) {
     else {
         if (isset($_POST['ImageFileFormat']) && !empty($_POST['ImageFileFormat'])) {
             $_SESSION[ 'parametersetting' ]->checkPostedImageParameters( $_POST );
-            $fileFormat->setValue($_POST["ImageFileFormat"]);
         }
         header("Location: " . "select_parameter_settings.php"); exit();
     }
@@ -272,7 +270,7 @@ $info = " <h3>Quick help</h3> <p>In this step, you can select the files " .
                     
                     <select name="ImageFileFormat" id="ImageFileFormat"
                      size="1"
-                     onclick="javascript:filterImages(this)"
+                     onclick="javascript:storeFileFormatSelection(this)"
                      onkeyup="this.blur();this.focus();" >
 
 <?php
@@ -296,13 +294,13 @@ foreach($values as $key => $value) {
     if (stristr($value, "tiff")) {
       $translation .= " (*.tiff)";
     }
+    
+    if ($value == $fileFormat->value()) {
+      $selected = " selected=\"selected\"";      
+    }
 
     $extensions = $fileFormat->fileExtensions($value);
     $extension = $extensions[0];
-    
-    if ($extension == $fileFormat->value()) {
-      $selected = " selected=\"selected\"";      
-    }
   }
 ?>
       <option <?php echo "name = \"" . $value . "\"  value = \"" . $extension  . "\"" . $selected ?>>
