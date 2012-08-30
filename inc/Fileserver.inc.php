@@ -182,6 +182,19 @@ class Fileserver {
   }
 
   /*!
+   \brief   Extracts the file extension, also if it's a subimage.
+   \param   $file The file name
+   \return  The file extension
+  */
+  public function getExtension($file) {
+      $pattern = "/\.([^\.\s]+)[\s\(\)a-zA-Z0-9]*$/";
+      if (!preg_match($pattern,$file,$matches)) {
+          return false;
+      }      
+      return $matches[1];
+  }
+
+  /*!
     \brief  Searches the source folder recursively and returns all found files
     \param  $expandSubInages    if true, names of subimages (as in the case of
                                 lif files) are expanded and returned in the
@@ -2149,7 +2162,7 @@ echo '</body></html>';
 
 /*
                               PRIVATE FUNCTIONS
-*/
+*/  
 
   /*!
     \brief  Checks whether an image preview is available

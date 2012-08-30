@@ -334,7 +334,22 @@ if ($files == null) {
                             multiple="multiple"<?php echo $flag ?>>
 <?php
 $keyArr = array();
-if ($files == null) echo "                        <option>&nbsp;</option>\n";
+if ($files == null) {
+    echo "                        <option>&nbsp;</option>\n";
+} else {
+    if ($fileFormat->value() != "") {
+        $format = $fileFormat->value();
+        $extensions = $fileFormat->fileExtensions($format);
+        $extension  = $extensions[0];
+        
+        foreach ($files as $key => $file) {
+            if ($_SESSION['fileserver']->getExtension($file) == $extension) {
+                echo "<option>" . $file . "</option>\n";       
+            }
+        }
+    }
+}
+
 
 ?>
                     </select>
