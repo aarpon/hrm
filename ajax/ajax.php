@@ -216,6 +216,14 @@ function getJobQueuetable() {
  * @param format Selected image file format
  */
 function setFileFormat($format) {
+
+        /* Setting a new file format should clean up the existing file
+         selection. */
+  if (isset($_SESSION['fileserver'])) {
+          $fileServer = $_SESSION['fileserver'];
+          $fileServer->removeFilesFromSelection($_POST['selectedfiles']);
+  }
+  
   if (isset($_SESSION['parametersetting'])) {
     $fileFormat = $_SESSION[ 'parametersetting' ]->parameter("ImageFileFormat");
     $fileFormat->setValue($format);

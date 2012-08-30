@@ -33,13 +33,11 @@ $fileFormat = $_SESSION[ 'parametersetting' ]->parameter("ImageFileFormat");
 $message = "";
 if (isset($_POST['down'])) {
     if (isset($_POST['userfiles']) && is_array($_POST['userfiles'])) {
-        $_SESSION['fileserver']->removeFilesFromSelection($_POST['selectedfiles']);
         $_SESSION['fileserver']->addFilesToSelection($_POST['userfiles']);
     }
     if (isset($_POST['ImageFileFormat']) && !empty($_POST['ImageFileFormat'])) {
         $_SESSION[ 'parametersetting' ]->checkPostedImageParameters( $_POST );
     }
-    
 }
 else if (isset($_POST['up'])) {		
   if (isset($_POST['selectedfiles']) && is_array($_POST['selectedfiles'])) {
@@ -271,6 +269,7 @@ $info = " <h3>Quick help</h3> <p>In this step, you can select the files " .
                     <select name="ImageFileFormat" id="ImageFileFormat"
                      size="1"
                      onclick="javascript:storeFileFormatSelection(this)"
+                     onchange="javascript:storeFileFormatSelection(this)"
                      onkeyup="this.blur();this.focus();" >
 
 <?php
