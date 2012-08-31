@@ -19,6 +19,11 @@ require_once '../inc/JobQueue.inc.php';
 function getParameters($editor, $setName, $numChannels) {
   $setting = $editor->setting($setName);
   $data = $setting->displayString($numChannels, true);
+
+      /* Make a distinction between the parameter name and value. */
+  $data = "<small><b>" . str_replace("\n","\n<b>",$data);
+  $data = str_replace(": ",":</b> ",$data) . "</small>";
+  
   return $data;
 }
 
