@@ -2323,6 +2323,22 @@ class ColocAnalysis extends ChoiceParameter {
 	public function __construct() {
             parent::__construct("ColocAnalysis");
 	}
+
+       /*!
+		\brief	Returns the string representation of the Parameter
+		\param	$numberOfChannels	This is ignored
+		\return	string representation of the Parameter
+	*/
+	public function displayString( $numberOfChannels = 0 ) {
+		if ($this->value( ) == 0 ) {
+			$value = "no";
+		} else {
+			$value = "yes";
+		}
+		$result = $this->formattedName( );
+		$result = $result . $value . "\n";
+		return $result;
+	}
 }
 
 /*!
@@ -2353,6 +2369,22 @@ class ColocChannel extends NumericalArrayParameter {
                 $this->message = "Please select at least 2 channels.";
                 $result = False;
             }
+            return $result;
+	}
+
+        /*!
+		\brief	Returns the string representation of the Parameter
+		\return	string representation of the Parameter
+	*/
+	public function displayString( $numberOfChannels = 0 ) {
+            
+            $result = $this->formattedName( );
+            
+                /* Do not count empty elements. Do count channel '0'. */
+            $channels = array_filter($this->value, 'strlen');
+            $value = implode(", ", $channels);
+            $result = $result . $value . "\n";
+            
             return $result;
 	}
 }
