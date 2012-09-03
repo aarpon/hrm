@@ -2437,6 +2437,22 @@ class ColocCoefficient extends AnyTypeArrayParameter {
                  the 'ColocCoefficient' class. */
             return;
         }
+
+        /*!
+         \brief	Returns the string representation of the Parameter
+         \return	string representation of the Parameter
+	*/
+	public function displayString( $numberOfChannels = 0 ) {
+            
+            $result = $this->formattedName( );
+            
+                /* Do not count empty elements. */
+            $values = array_filter($this->value, 'strlen');
+            $value = implode(", ", $values);
+            $result = $result . $value . "\n";
+            
+            return $result;
+	}
         
 }
 
@@ -2472,6 +2488,22 @@ class ColocThreshold extends AnyTypeArrayParameter {
                         $this->message;
 		}
 		return $result;
+	}
+
+        /*!
+         \brief	Returns the string representation of the Parameter
+         \return	string representation of the Parameter
+	*/
+	public function displayString( $numberOfChannels = 0 ) {
+            
+            $result = $this->formattedName( );
+            
+                /* Do not count empty elements. */
+            $channels = array_filter($this->value, 'strlen');
+            $value = implode(", ", $channels);
+            $result = $result . $value . "\n";
+            
+            return $result;
 	}
 }
 
