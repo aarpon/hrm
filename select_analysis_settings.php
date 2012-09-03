@@ -32,12 +32,23 @@ if (!isset($_SESSION['analysiseditor'])) {
 
 /* The analysis stage contains no meaningful selections for single channel
  images. We'll gray out most parts of the page if there's only one channel.*/
-if ($_SESSION['setting']->numberOfChannels() <= 1) {
-    $divState = "_disabled";
-    $widgetState = "disabled=\"disabled\"";
+$message     = "";
+$widgetState = "";
+$divState    = "";
+if ($_SESSION['user']->isAdmin()) {
+    $analysisEnabled = True;
+} elseif ($_SESSION['setting']->numberOfChannels() > 1) {
+    $analysisEnabled = True;
 } else {
-    $divState = "";
-    $widgetState = "";
+    $analysisEnabled = False;
+}
+
+if (!$analysisEnabled) {
+    $message     = "Analysis only available for multichannel images.\n\n";
+    $message    .= "Please continue.";
+
+    $widgetState = "disabled=\"disabled\"";
+    $divState    = "_disabled";
 }
 
 // add public setting support
@@ -47,8 +58,6 @@ if (!$_SESSION['user']->isAdmin()) {
   $admin_editor = new AnalysisSettingEditor($admin);
   $_SESSION['admin_analysiseditor'] = $admin_editor;
 }
-
-$message = "";
 
 /* *****************************************************************************
  *
@@ -100,17 +109,24 @@ else if ( isset($_POST['annihilate']) &&
         $message = $_SESSION['analysiseditor']->message();
 }
 else if (isset($_POST['OK']) && $_POST['OK']=="OK" ) {
-  if (!isset($_POST['analysis_setting'])) {
-    $message = "Please select some analysis parameters";
-  }
-  else {
-    $_SESSION['analysis_setting'] =
-        $_SESSION['analysiseditor']->loadSelectedSetting();
-    $_SESSION['analysis_setting']->setNumberOfChannels(
-        $_SESSION['setting']->numberOfChannels());
+
+        /* Create default analysis setting if necessary. */
+    if ($analysisEnabled) {
+        if (!isset($_POST['analysis_setting'])) {
+            $message = "Please select some analysis parameters";
+        } else {
+            $_SESSION['analysis_setting'] =
+                $_SESSION['analysiseditor']->loadSelectedSetting();
+            $_SESSION['analysis_setting']->setNumberOfChannels(
+                $_SESSION['setting']->numberOfChannels());
+            
+            header("Location: " . "create_job.php"); exit();
+        }
+    } else {
+        $_SESSION['analysis_setting'] = new AnalysisSetting();
+        header("Location: " . "create_job.php"); exit();
+    }
     
-      header("Location: " . "create_job.php"); exit();
-  }
 }
 
 /*******************************************************************************/
