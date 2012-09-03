@@ -1967,7 +1967,15 @@ class AnalysisSetting extends Setting {
      */
     public function displayString($numberOfChannels = 0) {
         $result = '';
+
+        $colocAnalysis = $this->parameter("ColocAnalysis")->value();
         foreach ($this->parameter as $parameter) {
+
+            if ($parameter->name() != "ColocAnalysis"
+                && $colocAnalysis == False) {
+                continue;
+            }
+            
             $result = $result . 
                 $parameter->displayString($this->numberOfChannels());
         }
