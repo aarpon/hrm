@@ -539,7 +539,7 @@ class QueueManager {
                     $message .=
                         "\n\n-HUYGENS REPORT (stdout) --------------------\n\n"
                             . file_get_contents($logFile);
-                }
+                }                
                 if ($send_mail) {
                     $this->notifyError($job, $message, $startTime);
                 }
@@ -926,14 +926,22 @@ class QueueManager {
  	private function parameterText(Job $job) {
         $desc = $job->description();
         $result = '';
+        
         $result = $result . "\nImage parameters:\n\n";
         $parameterSetting = $desc->parameterSetting();
         $parameterSettingString = $parameterSetting->displayString();
         $result = $result . $parameterSettingString;
+        
         $result = $result . "\nRestoration parameters:\n\n";
         $taskSetting = $desc->taskSetting();
         $taskSettingString = $taskSetting->displayString();
         $result = $result . $taskSettingString;
+
+        $result = $result . "\nAnalysis parameters:\n\n";
+        $analysisSetting = $desc->analysisSetting();
+        $analysisSettingString = $analysisSetting->displayString();
+        $result = $result . $analysisSettingString;
+
         return $result;
     }
 
