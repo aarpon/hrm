@@ -316,7 +316,7 @@ if (!isset($_SESSION['jobcreated'])) {
 
 ?>
             <input type="button" name="previous" value="" class="icon previous"
-              onclick="document.location.href='select_task_settings.php'"
+              onclick="document.location.href='select_analysis_settings.php'"
               onmouseover="TagToTip('ttSpanBack' )"
               onmouseout="UnTip()" />
             <input type="button" name="create job" value=""

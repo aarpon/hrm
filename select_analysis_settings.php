@@ -30,6 +30,16 @@ if (!isset($_SESSION['analysiseditor'])) {
   $_SESSION['analysiseditor'] = new AnalysisSettingEditor($_SESSION['user']);
 }
 
+/* The analysis stage contains no meaningful selections for single channel
+ images. We'll gray out most parts of the page if there's only one channel.*/
+if ($_SESSION['setting']->numberOfChannels() <= 1) {
+    $divState = "_disabled";
+    $widgetState = "disabled=\"disabled\"";
+} else {
+    $divState = "";
+    $widgetState = "";
+}
+
 // add public setting support
 if (!$_SESSION['user']->isAdmin()) {
   $admin = new User();
@@ -103,6 +113,9 @@ else if (isset($_POST['OK']) && $_POST['OK']=="OK" ) {
   }
 }
 
+/*******************************************************************************/
+
+
 $script = array( "settings.js", "common.js", "ajax_utils.js" );
 
 include("header.inc.php");
@@ -174,7 +187,7 @@ include("header.inc.php");
         </ul>
     </div>
     
-    <div id="content">
+                    <div id=<?php echo "content" . $divState; ?>>
     
 <?php
 
@@ -209,13 +222,18 @@ if (!$_SESSION['user']->isAdmin()) {
 
   $settings = $admin_editor->settings();
   $flag = "";
-  if (sizeof($settings) == 0) $flag = " disabled=\"disabled\"";
+  if (sizeof($settings) == 0) {
+      $flag = " disabled=\"disabled\"";
+  } else {
+      $flag = $widgetState;
+  }
 
 ?>
 <select name="public_setting"
      onclick="ajaxGetParameterListForSet('analysis_setting', $(this).val(), true);"
      onchange="ajaxGetParameterListForSet('analysis_setting', $(this).val(), true);"
      size="5"<?php echo $flag ?>>
+     
 <?php
 
   if (sizeof($settings) == 0) {
@@ -231,14 +249,13 @@ if (!$_SESSION['user']->isAdmin()) {
                     </select>
                 </div>
             </fieldset>
-
-            
-            <div id="selection">
+                          <div id=<?php echo "selection" . $divState; ?>>
                 <input name="copy_public"
+                          <?php echo $widgetState; ?>
                        type="submit"
                        value=""
                        class="icon down"
-                       id="controls_copyTemplate" />
+                       id="controls_copyTemplate"/>
             </div>
             
         </form>
@@ -270,8 +287,13 @@ if (!$_SESSION['user']->isAdmin()) {
 $settings = $_SESSION['analysiseditor']->settings();
 $size = "8";
 if ($_SESSION['user']->isAdmin()) $size = "12";
+
 $flag = "";
-if (sizeof($settings) == 0) $flag = " disabled=\"disabled\"";
+if (sizeof($settings) == 0) {
+    $flag = " disabled=\"disabled\"";
+} else {
+    $flag = $widgetState;
+}
 
 ?>
 <select name="analysis_setting"
@@ -303,21 +325,24 @@ else {
                 
             </fieldset>
             
-            <div id="actions"
+                    <div id=<?php echo "actions" . $divState; ?>
                  class="taskselection">
                 <input name="create"
+                       <?php echo $widgetState ?>
                        type="submit"
                        value=""
                        class="icon create"
                        onmouseover="TagToTip('ttSpanCreate' )"
-                       onmouseout="UnTip()" />
+                       onmouseout="UnTip()"/>
                 <input name="edit"
+                       <?php echo $widgetState ?>
                        type="submit"
                        value=""
                        class="icon edit"
                        onmouseover="TagToTip('ttSpanEdit' )"
                        onmouseout="UnTip()" />
                 <input name="copy"
+                       <?php echo $widgetState ?>
                        type="submit"
                        value=""
                        class="icon clone"
@@ -328,7 +353,8 @@ else {
 if (!$_SESSION['user']->isAdmin()) {
 
 ?>
-                <input name="make_default" 
+                <input name="make_default"
+                      <?php echo $widgetState ?>
                        type="submit"
                        value=""
                        class="icon mark"
@@ -341,6 +367,7 @@ if (!$_SESSION['user']->isAdmin()) {
 ?>
                 <input type="hidden" name="annihilate" />
                 <input name="delete"
+                       <?php echo $widgetState ?>
                        type="button"
                        value=""
                        class="icon delete"
