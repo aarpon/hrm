@@ -226,10 +226,11 @@ class ExternalProcess {
       \return 		true if the shell started successfully, false otherwise
     */
     public function runShell() {
-        global $huygens_user;
 
         $this->shell = proc_open("bash", $this->descriptorSpec, $this->pipes);
-        if (!is_resource($this->shell)) {
+        
+        if (!is_resource($this->shell) || !$this->shell) {
+            $this->release();
             return False;
         }
         return True;
@@ -420,6 +421,7 @@ class ExternalProcess {
         if ($result) {
             $result = $result && $this->execute($command);
         }
+        
         return $result;
     }
 
@@ -554,9 +556,12 @@ class LocalExternalProcess extends ExternalProcess {
     public function runShell() {
 
         $this->shell = proc_open("sh", $this->descriptorSpec, $this->pipes);
-        if (!is_resource($this->shell)) {
+        
+        if (!is_resource($this->shell) || !$this->shell) {
+            $this->release();
             return False;
         }
+        
         return True;
     }
 

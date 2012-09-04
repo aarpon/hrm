@@ -39,7 +39,7 @@ class QueueManager {
 
     /*!
     \var	$shallStop
-    \brief	Flag to indeicate whether a Job should stop
+    \brief	Flag to indicate whether a Job should stop
     */
     private $shallStop;
 
@@ -129,13 +129,18 @@ class QueueManager {
         $proc = newExternalProcessFor($server, $server . "_" .$job->id() .
             "_out.txt", $server . "_" .$job->id(). "_error.txt");
         report("shell process created", 1);
-        $ssh = $proc->runShell();
+
+            /* Check whether the shell is ready to accept further execution. */
+        if (!$proc->runShell()) {
+            return False;
+        }
+        
         report("running shell: $clientScriptPath$scriptName", 1);
         $pid = $proc->runHuygensTemplate($clientScriptPath . $scriptName);
 
         report("running script (pid $pid)", 1);
 
-        // Release the shell, the script in the background will keep running.
+            /* The script in the background will keep running after release. */
         $proc->release();
 
         $job->setPid($pid);
@@ -805,14 +810,14 @@ class QueueManager {
  	\return true if the QueueManager shall stop
     */
  	public function shallStop() {
-        if ($this->shallStop) {
-            return True;
+            if ($this->shallStop) {
+                return True;
+            }
+            $this->waitForDatabaseConnection();
+            $db = new DatabaseConnection();
+            $this->shallStop = !$db->isSwitchOn();
+            return $this->shallStop;
         }
-        $this->waitForDatabaseConnection();
-        $db = new DatabaseConnection();
-        $this->shallStop = !$db->isSwitchOn();
-        return $this->shallStop;
-    }
 
     /*!
  	\brief	Waits until a DatabaseConnection could be established
@@ -898,11 +903,15 @@ class QueueManager {
                     continue;
                 }
                 report("script has been created", 1);
+                
                 // Execute the script on the Huygens server and
                 // update the database state
                 $result = $result && $this->executeScript($job);
-                if (!$result)
+                
+                if (!$result) {                    
                     continue;
+                }
+                
                 report("script has been executed", 1);
                 $result = $result && $queue->startJob($job);
                 report("job has been started ("
