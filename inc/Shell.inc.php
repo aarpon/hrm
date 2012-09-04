@@ -372,27 +372,28 @@ class ExternalProcess {
 
         return $pid;
     }
-
+    
+        /************* OBSOLETE? *************/
     /*!
       \brief	Check whether a Job with given Process IDentifier is running
       \param	$pid	Process IDentifier of the Job
       \return 	the PID if the Job is running, null otherwise
     */
-    public function isJobWithPidRunning($pid) {
-        $command = "ps -p $pid; ps -p $pid \n"; // -p
-        $this->execute($command);
-        $answer = '';
-        $pipe = fopen($this->descriptorSpec[1][1], "r");
-        fseek($pipe, 0, SEEK_END);
-        $line = fgets($pipe, 1024);
-        $answer = $answer . $line;
-        if (!feof($pipe)) {
-            $line = fgets($pipe, 1024);
-            $answer = $answer . $line;
-        }
-        $result = (strstr($answer, "\n" . $pid . " "));
-        return $result;
-    }
+//     public function isJobWithPidRunning($pid) {
+//         $command = "ps -p $pid; ps -p $pid \n"; // -p
+//         $this->execute($command);
+//         $answer = '';
+//         $pipe = fopen($this->descriptorSpec[1][1], "r");
+//         fseek($pipe, 0, SEEK_END);
+//         $line = fgets($pipe, 1024);
+//         $answer = $answer . $line;
+//         if (!feof($pipe)) {
+//             $line = fgets($pipe, 1024);
+//             $answer = $answer . $line;
+//         }
+//         $result = (strstr($answer, "\n" . $pid . " "));
+//         return $result;
+//     }
 
     /*!
       \brief	Releases all files and pipes and closes the shell
@@ -565,25 +566,26 @@ class LocalExternalProcess extends ExternalProcess {
         return True;
     }
 
+        /************* OBSOLETE? *************/
     /*!
       \brief	Check whether a Job with given Process IDentifier is running
       \param	$pid	Process IDentifier of the Job
       \return 	the PID if the Job is running, null otherwise
     */
-    public function isJobWithPidRunning($pid) {
-        $command = "ps -p $pid; ps -p $pid \n";
-        $this->execute($command);
-        $answer = '';
-        $pipe = $this->pipes[1];
-        $line = fgets($pipe, 1024);
-        $answer = $answer . $line;
-        if (!feof($pipe)) {
-            $line = fgets($pipe, 1024);
-            $answer = $answer . $line;
-        }
-        $result = (strstr($answer, "\n" . $pid . " "));
-        return $result;
-    }
+//     public function isJobWithPidRunning($pid) {
+//         $command = "ps -p $pid; ps -p $pid \n";
+//         $this->execute($command);
+//         $answer = '';
+//         $pipe = $this->pipes[1];
+//         $line = fgets($pipe, 1024);
+//         $answer = $answer . $line;
+//         if (!feof($pipe)) {
+//             $line = fgets($pipe, 1024);
+//             $answer = $answer . $line;
+//         }
+//         $result = (strstr($answer, "\n" . $pid . " "));
+//         return $result;
+//     }
 
     /*!
       \brief	Kill the Huygens process with the given Process IDentifier and 
