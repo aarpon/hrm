@@ -1926,39 +1926,6 @@ echo '</body></html>';
       $extra = "";
       $series = "auto";
 
-      if ( $data ) {
-          $nchan = $_SESSION['setting']->NumberOfChannels();
-          $lmbV = "\"";
-          $lambda = $_SESSION['setting']->parameter("EmissionWavelength");
-          $l = $lambda->value();
-          for ( $i = 0; $i < $nchan; $i++ ) {
-              $lmbV .= " ".$l[$i];
-          }
-          $lmbV .= "\"";
-
-          $xy = $_SESSION['setting']->parameter("CCDCaptorSizeX");
-          $z = $_SESSION['setting']->parameter("ZStepSize");
-          $xy_s = $xy->value() / 1000.0;
-          $z_s = $z->value() / 1000.0;
-          $extra = " -emission $lmbV -sampling \"$xy_s $xy_s $z_s\"";
-
-          // Enable the -series off option depending on the file type.
-          if (stristr($file, ".stk")) {
-              $geom = $_SESSION['setting']->parameter("ImageGeometry");
-              $geometry = $geom->value();
-              if ( !stristr($geometry, "time") ) {
-                  $series = "off";
-              }
-          }
-          $formatParam = $_SESSION['setting']->parameter('ImageFileFormat');
-          $format = $formatParam->value();
-          if ($format == "tiff" || $format == "tiff-single") {
-              // Olympus FluoView, or single XY plane: always
-              $series = "off";
-          }
-
-      }
-
       $opt = "-filename \"$basename\" -src \"$psrc\" -dest \"$pdest\" ".
              "-scheme auto -sizes \{$sizes\} -series $series $extra";
 
