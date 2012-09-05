@@ -134,6 +134,16 @@ class ExternalProcess {
     }
 
     /*!
+     \brief   Destructor: Valid from PHP 5 on. Gets called when there are no
+                          other references to a particular object, or in any
+                          order during the shutdown sequence (see php.net).
+    */
+    public function __destruct() {
+        $this->release();
+    }
+    
+
+    /*!
       \brief	Checks whether an Huygens Process with given Process IDentifier
               exists
       \param	$pid	Process identifier as returned by the OS
@@ -331,13 +341,14 @@ class ExternalProcess {
         return $answer;
     }
 
+        /************* OBSOLETE? *************/
     /*!
       \brief	Reads from STDOUT (the log file)
       \return 	the read buffer
     */
-    public function read() {
-        return fgets($this->pipes[1], 2048);
-    }
+//     public function read() {
+//         return fgets($this->pipes[1], 2048);
+//     }
 
     /*!
       \brief	Runs the Huygens template with a given name in the shell
@@ -351,7 +362,6 @@ class ExternalProcess {
         $command = $this->huscript_path . " $hutask \"" . $templateName . "\"";
 
         // TODO better management of file handles
-        //$out_file = fopen($this->descriptorSpec[1][1], "r");
         $this->out_file = fopen($this->descriptorSpec[1][1], "r");
         fseek($this->out_file, 0, SEEK_END);
 
@@ -399,14 +409,23 @@ class ExternalProcess {
       \brief	Releases all files and pipes and closes the shell
     */
     public function release() {
-        // close pipes
-        fclose($this->pipes[0]);
-        // TODO check why stdout and stderr are not closed
-        @fclose($this->pipes[1]);
-        @fclose($this->pipes[2]);
-        // TODO better management of file handles
-        @fclose($this->out_file);
-        $result = proc_close($this->shell);
+
+            /* TODO better management of file handles. */
+        
+            /* Close pipes. Check first if they are proper handlers. If, for
+             example, opening them did not work out, the handlers won't exist. */
+        if (is_resource($this->pipes[0])) {
+            fclose($this->pipes[0]);
+        }
+        
+        if (is_resource($this->out_file)) {
+            fclose($this->out_file);
+        }
+
+        if (is_resource($this->shell)) {
+            $result = proc_close($this->shell);
+        }
+        
         report("released external process", 2);
     }
 
