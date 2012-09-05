@@ -147,7 +147,6 @@ function switchColocMode() {
         $('#ColocCoefficientSelectionDiv').hide();
         $('#ColocThresholdSelectionDiv').hide();
         $('#ColocMapSelectionDiv').hide();
-
     }
 }
 
