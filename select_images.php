@@ -364,14 +364,23 @@ if ($files == null) {
                 class="icon down"
                 onmouseover="TagToTip('ttSpanDown')"
                 onmouseout="UnTip()" />
-                
+    
               <input name="up"
                 type="submit"
                 value=""
                 class="icon remove"
                 onmouseover="TagToTip('ttSpanUp')"
                 onmouseout="UnTip()" />
-                
+
+    <label>
+              <input type="checkbox"
+                name="series"
+                class="series"
+                id="series"
+                value=""
+                onclick="" />
+    Automatically load file series
+    </label>
             </div>
             
             <fieldset>
