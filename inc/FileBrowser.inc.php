@@ -34,7 +34,7 @@ function fileButton($type) {
     case "download":
       $onClick = "downloadImages()";
       $name = "download";
-      $tip = 'Pack selected images and related files, and download';
+      $tip = 'Compress and download';
       break;
 
     case "upload":
@@ -54,7 +54,7 @@ function fileButton($type) {
     case "delete":
       $onClick = "deleteImages()";
       $name = "delete";
-      $tip = 'Delete selected images and related files';
+      $tip = 'Delete selected images';
       break;
 
     case "update":
