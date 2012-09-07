@@ -240,6 +240,60 @@ class Fileserver {
   }
 
   /*!
+   \brief Experimental function not yet functional. It intends to return the
+          first file of a file series.
+  \param  $file A file that may or may not belong to a file series.
+  \return The name of the first file of  the series.
+  */
+  public function condenseSeries($file) {
+
+      $extension = $this->getExtension($file);
+
+      switch ( $extension ) {
+          case 'stk':
+              $this->condenseStkSeries();
+              break;
+          case 'tiff':
+              $this->condenseTimeSeries();
+              break;
+          case 'tif':
+              $this->condenseTimeSeries();
+              break;
+      }
+      
+      return false;
+  }
+  
+
+  /*!
+   \brief  Checks whether a file belongs to a file series.
+   \param  $file The file to be checked
+   \return Boolean: true or false.
+  */
+  public function belongsToFileSeries($file) {
+
+      $extension = $this->getExtension($file);
+
+      switch ( $extension ) {
+          case 'stk':
+              $pattern = "/[^_]+_(T|t)[0-9]+\.\w+/";
+              break;
+          case 'tiff':
+              $pattern = "/\w+[0-9]+\.\w+/";
+              break;
+          case 'tif':
+              $pattern = "/\w+[0-9]+\.\w+/";
+              break;
+      }
+    
+      if (preg_match($pattern, $file, $matches)) {
+          return true;
+      } else {
+          return false;
+      }
+  }
+
+  /*!
     \brief  A wrapper function to list files of a certain type
     \param  $format  Extension to be considered to scan the folder.
     \return array of file names

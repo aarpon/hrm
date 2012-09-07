@@ -69,7 +69,7 @@ $files = $_SESSION['fileserver']->files();
 if ($files != null) {
 
     $generatedScript = "
-function storeFileFormatSelection(sel) {
+function storeFileFormatSelection(sel,series) {
   
    // Get current selection
    var format = $('#' + sel.id + ' :selected').attr(\"name\");
@@ -78,12 +78,12 @@ function storeFileFormatSelection(sel) {
    ajaxSetFileFormat(format);
    
    // Now filter by type
-   filterImages(sel);
+   filterImages(sel,series);
 };
 ";
   
     $generatedScript .= "
-function filterImages (extension) {
+function filterImages (extension,series) {
 
     var selectObject = document.getElementById(\"selectedimages\");
     if (selectObject.length >= 0) {
@@ -100,16 +100,56 @@ function filterImages (extension) {
     }
 
     var selectedExtension = extension.options[extension.selectedIndex].value;
+
+    var autoseries = document.getElementById(\"series\");
 ";
 
+        /* For each file, create javascript code for the case that it
+         belongs to a file series or for the case that it's independent. */
+    
     foreach ($files as $key => $file) {
-        $generatedScript .= "
-            if(getExtension(\"$file\") == selectedExtension) {
-                var selectItem = document.createElement('option');
-                selectItem.text = \"$file\";
-                selectObject.add(selectItem,null);
+        if ($_SESSION['fileserver']->belongsToFileSeries($file)) {
+
+            $generatedScript .= "
+
+           // Automatically load file series. 
+              if(autoseries.checked) {
+              ";
+            
+            if ($_SESSION['fileserver']->condenseSeries($file)) {
+
+                $generatedScript .= "
+                    var selectItem = document.createElement('option');
+                    selectItem.text = \"$file\";
+                    selectObject.add(selectItem,null);
+                ";  
             }
-            ";
+                
+            $generatedScript .= "
+
+              } else {
+
+           // Do not load file series automatically.    
+                  if(getExtension(\"$file\") == selectedExtension) {
+                     var selectItem = document.createElement('option');
+                     selectItem.text = \"$file\";
+                     selectObject.add(selectItem,null);
+                  }
+              }
+              ";
+                
+        } else {
+            $generatedScript .= "
+
+            // File does not belong to a file series. 
+               if(getExtension(\"$file\") == selectedExtension) {
+                   var selectItem = document.createElement('option');
+                   selectItem.text = \"$file\";
+                   selectObject.add(selectItem,null);
+               }
+               ";
+        }
+        
     }
 
     $generatedScript .= "
@@ -268,8 +308,8 @@ $info = " <h3>Quick help</h3> <p>In this step, you can select the files " .
                     
                     <select name="ImageFileFormat" id="ImageFileFormat"
                      size="1"
-                     onclick="javascript:storeFileFormatSelection(this)"
-                     onchange="javascript:storeFileFormatSelection(this)"
+                     onclick="javascript:storeFileFormatSelection(this,series)"
+                     onchange="javascript:storeFileFormatSelection(this,series)"
                      onkeyup="this.blur();this.focus();" >
 
 <?php
@@ -373,12 +413,13 @@ if ($files == null) {
                 onmouseout="UnTip()" />
 
     <label>
+
               <input type="checkbox"
                 name="series"
                 class="series"
                 id="series"
-                value=""
-                onclick="" />
+                value="autoseries"
+                onclick="javascript:storeFileFormatSelection(ImageFileFormat,this)" />
     Automatically load file series
     </label>
             </div>

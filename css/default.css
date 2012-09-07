@@ -362,7 +362,7 @@ table {
 
 #selection label { 
   position: relative;
-  left: 15em;
+  left: 13.8em;
 }
 
 #selection_disabled {
@@ -1531,6 +1531,7 @@ option.default {
 .asIs {
 	background: url(../images/param_reported.png) repeat-y left;
 }
+
 .verified {
 	background: url(../images/param_verified.png) repeat-y left;
 }

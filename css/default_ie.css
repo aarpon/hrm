@@ -353,7 +353,17 @@ table {
 }
 
 #selection input {
-    vertical-align: middle;
+  vertical-align: middle;
+}
+
+#selection input.series { 
+  position: relative;
+  margin: 0em -12em 0em 0em;
+}
+
+#selection label { 
+  position: relative;
+  left: 13.8em;
 }
 
 #selection_disabled {
