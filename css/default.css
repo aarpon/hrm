@@ -305,7 +305,7 @@ table {
 }
 
 #separator {
-  width: 1200px;
+  width: 1500px;
   border-width: 1px;
   border-style: solid;
   border-color: #CCCCCC;
@@ -713,9 +713,10 @@ input.save {
 }
 
 #colocTabs {
-    border-bottom-width: 1px;
-    border-bottom-style: solid;
-    overflow: hidden;
+  width: 1500px;
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+  overflow: hidden;
 }
 
 #colocTab {
@@ -745,12 +746,12 @@ input.save {
 }
 
 #colocResults { 
-  width: 1200px;
+  width: 1600px;
 }
 
 #colocRun { 
   float: left;
-  width: 1200px;
+  width: 1600px;
 }
 
 #colocHist {
@@ -773,7 +774,7 @@ input.save {
 
 #colocCoefficients table { 
   font-size: 100%;
-  width: 800px;
+  width: 1200px;
   float: left;
 } 
 
