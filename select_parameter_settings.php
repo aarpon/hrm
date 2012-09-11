@@ -67,10 +67,10 @@ if (isset($_POST['copy_public'])) {
 }
 else if (isset($_POST['create'])) {
     $setting = $_SESSION['editor']->createNewSetting($_POST['new_setting']);
-    $setting->parameter("ImageFileFormat")->setValue($fileFormat);
-    $_SESSION['setting'] = $setting;
     
     if ($setting != NULL) {
+        $setting->parameter("ImageFileFormat")->setValue($fileFormat);
+        $_SESSION['setting'] = $setting;
         header("Location: " . "image_format.php"); exit();
     }
     $message = $_SESSION['editor']->message();
