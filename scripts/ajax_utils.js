@@ -26,7 +26,8 @@ function ajaxGetParameterListForSet(pSetType, pSetName, pPublicSet) {
 }
 
 // Requires jQuery
-// Posts a request for the number of jobs currently in the queue
+// Posts a request for the number of jobs currently in the queue.
+// The returned data is 'no jobs', '1 job', or '<n> jobs'
 // id  : id of the div where the returned string will be placed
 // pre : string to be attached before the returned data
 // post: String to be appened to the returned data
@@ -49,6 +50,9 @@ function ajaxGetNumberOfUserJobsInQueue(id, pre, post) {
 
 // Requires jQuery
 // Posts a request for the number of jobs currently in the queue
+// The returned data is in the form "There {is|are} {'no jobs'|'1 job'|'<n> jobs'}
+// in the queue."
+// \param id : if of the div that will display the returned html (data)
 function ajaxGetTotalNumberOfJobsInQueue(id) {
   $.ajaxSetup ({  
     cache: false  
@@ -65,6 +69,7 @@ function ajaxGetTotalNumberOfJobsInQueue(id) {
 
 // Requires jQuery
 // Posts a request for the full job queue table
+// \param id : if of the div that will display the returned html (data)
 function ajaxGetJobQueueTable(id) {
   $.ajaxSetup ({  
     cache: false  
@@ -81,6 +86,7 @@ function ajaxGetJobQueueTable(id) {
 
 // Requires jQuery
 // Stores the selected file format in the session
+// \param pFormat: selected file format
 function ajaxSetFileFormat(pFormat) {
   $.ajaxSetup ({  
     cache: false  
