@@ -88,7 +88,7 @@ include("header.inc.php");
         onmouseover="TagToTip('ttRefresh' )"
         onmouseout="UnTip()" style="vertical-align: middle;" />
       &nbsp;
-     <span id="totalJobNumber"  style="vertical-align: middle;">&nbsp</span>
+     <span id="totalJobNumber"  style="vertical-align: middle;">&nbsp;</span>
      <span id="userJobNumber"  style="vertical-align: middle;">&nbsp;</span>
    </div>
 

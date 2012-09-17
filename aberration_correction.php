@@ -70,14 +70,14 @@ include("header.inc.php");
     <!--
       Tooltips
     -->
-    <span class=toolTip" id="ttSpanBack">
+    <span class="toolTip" id="ttSpanBack">
         Go back to previous page.
     </span>
-    <span class=toolTip" id="ttSpanCancel">
+    <span class="toolTip" id="ttSpanCancel">
         Abort editing and go back to the image parameters selection page.
         All changes will be lost!
     </span>
-    <span class=toolTip" id="ttSpanSave">
+    <span class="toolTip" id="ttSpanSave">
         Save and return to the image parameters selection page.
     </span>
     
@@ -392,7 +392,7 @@ if ( ($parameterPerformAberrationCorrection->value( ) == 1) &&
 
         <select id="AdvancedCorrectionOptions"
             name="AdvancedCorrectionOptions"
-            onchange="javascript:switchAdvancedCorrectionScheme();" >;
+            onchange="javascript:switchAdvancedCorrectionScheme();" >
 
             <?php
 

@@ -156,8 +156,8 @@ include("header.inc.php");
 <!--
   Tooltips
 -->
-<span class=toolTip" id="ttSpanCancel">Discard changes and go back to your home page.</span>
-<span class=toolTip" id="ttSpanSave">Save the changes.</span>
+<span class="toolTip" id="ttSpanCancel">Discard changes and go back to your home page.</span>
+<span class="toolTip" id="ttSpanSave">Save the changes.</span>
 
 <div id="nav">
     <ul>

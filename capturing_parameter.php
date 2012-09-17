@@ -180,7 +180,7 @@ if ( $nyquist === false ) {
       if ( $_SESSION['setting']->isWidefield() ||
               $_SESSION['setting']->isMultiPointConfocal() ) {
     ?>
-    <span class=toolTip" id="ttSpanPixelSizeFromCCD">
+    <span class="toolTip" id="ttSpanPixelSizeFromCCD">
         Calculate the image pixel size from the CCD pixel size.
     </span>
     <?php
@@ -189,26 +189,26 @@ if ( $nyquist === false ) {
     <?php
       if ( $_SESSION['setting']->isMultiPointOrSinglePointConfocal() ) {
     ?>
-    <span class=toolTip" id="ttSpanPinholeRadius">
+    <span class="toolTip" id="ttSpanPinholeRadius">
         Calculate the back-projected pinhole radius for your microscope.
     </span>
     <?php
         if ($_SESSION['setting']->isNipkowDisk()) {
     ?>
-    <span class=toolTip" id="ttSpanPinholeSpacing">
+    <span class="toolTip" id="ttSpanPinholeSpacing">
         Calculate the back-projected pinhole spacing for your microscope.
     </span>
     <?php
       }
     }
     ?>
-    <span class=toolTip" id="ttSpanNyquist">
+    <span class="toolTip" id="ttSpanNyquist">
         Check your sampling with the online Nyquist calculator.
     </span>
-    <span class=toolTip" id="ttSpanBack">
+    <span class="toolTip" id="ttSpanBack">
         Go back to previous page.
     </span>
-    <span class=toolTip" id="ttSpanCancel">
+    <span class="toolTip" id="ttSpanCancel">
         Abort editing and go back to the image parameters selection page.
         All changes will be lost!
     </span>
@@ -216,14 +216,14 @@ if ( $nyquist === false ) {
         if ( $saveToDB == true ) {
             $iconClass = "icon save";
     ?>
-        <span class=toolTip" id="ttSpanForward">
+        <span class="toolTip" id="ttSpanForward">
             Save and return to the image parameters selection page.
         </span>
     <?php
         } else {
             $iconClass = "icon next";
     ?>
-        <span class=toolTip" id="ttSpanForward">Continue to next page.</span>
+        <span class="toolTip" id="ttSpanForward">Continue to next page.</span>
     <?php
     }
     ?>
