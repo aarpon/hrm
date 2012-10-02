@@ -104,32 +104,32 @@ function filterImages (extension,series) {
     var autoseries = document.getElementById(\"series\");
 ";
 
-        /* For each file, create javascript code for the case that it
-         belongs to a file series or for the case that it's independent. */
-    
+        /* For each file, create javascript code for when the file
+         belongs to a series and for when it doesn't. */
+    $condensedSeries = $_SESSION['fileserver']->condenseSeries();
+
     foreach ($files as $key => $file) {
-        if ($_SESSION['fileserver']->belongsToFileSeries($file)) {
+        
+        if ($_SESSION['fileserver']->isPartOfFileSeries($file)) {
 
             $generatedScript .= "
 
-           // Automatically load file series. 
+              // Automatically load file series. 
               if(autoseries.checked) {
               ";
-            
-            if ($_SESSION['fileserver']->condenseSeries($file)) {
 
+            if (in_array($file,$condensedSeries)) {
                 $generatedScript .= "
                     var selectItem = document.createElement('option');
                     selectItem.text = \"$file\";
                     selectObject.add(selectItem,null);
-                ";  
+                    ";
             }
-                
-            $generatedScript .= "
+            $generatedScript .= "     
 
               } else {
 
-           // Do not load file series automatically.    
+                  // Do not load file series automatically.    
                   if(getExtension(\"$file\") == selectedExtension) {
                      var selectItem = document.createElement('option');
                      selectItem.text = \"$file\";
@@ -141,7 +141,7 @@ function filterImages (extension,series) {
         } else {
             $generatedScript .= "
 
-            // File does not belong to a file series. 
+               // File does not belong to a file series. 
                if(getExtension(\"$file\") == selectedExtension) {
                    var selectItem = document.createElement('option');
                    selectItem.text = \"$file\";

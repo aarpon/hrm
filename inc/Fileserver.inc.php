@@ -240,28 +240,16 @@ class Fileserver {
   }
 
   /*!
-   \brief Experimental function not yet functional. It intends to return the
-          first file of a file series.
-  \param  $file A file that may or may not belong to a file series.
-  \return The name of the first file of  the series.
+   \brief  Return the first file of each series.
+   \return The name of the first file of  the series.
   */
-  public function condenseSeries($file) {
-
-      $extension = $this->getExtension($file);
-
-      switch ( $extension ) {
-          case 'stk':
-              $this->condenseStkSeries();
-              break;
-          case 'tiff':
-              $this->condenseTimeSeries();
-              break;
-          case 'tif':
-              $this->condenseTimeSeries();
-              break;
-      }
+  public function condenseSeries( ) {
       
-      return false;
+      $this->condenseStkSeries();
+      $this->condenseTiffLeica();
+      $this->condenseTiffLeica();
+
+      return $this->files;
   }
   
 
@@ -270,7 +258,7 @@ class Fileserver {
    \param  $file The file to be checked
    \return Boolean: true or false.
   */
-  public function belongsToFileSeries($file) {
+  public function isPartOfFileSeries($file) {
 
       $extension = $this->getExtension($file);
 
@@ -285,7 +273,7 @@ class Fileserver {
               $pattern = "/\w+[0-9]+\.\w+/";
               break;
       }
-    
+      
       if (preg_match($pattern, $file, $matches)) {
           return true;
       } else {
@@ -2491,10 +2479,11 @@ echo '</body></html>';
     $tiff_series =  preg_grep("/[^_]+_(T|t|Z|z|CH|ch)[0-9]+\w+\.\w+/", $this->files);
     $lastValue = "";
     foreach ($tiff_series as $key => $value) {
-       if ($this->leicaStyleNumberingBasename($lastValue)==$this->leicaStyleNumberingBasename($value)) {
+       if ($this->leicaStyleNumberingBasename($lastValue)
+           == $this->leicaStyleNumberingBasename($value)) {
           //echo $value;
-          unset($this->files[$key]);
-      }
+           unset($this->files[$key]);
+       }
       $lastValue = $value;
     }
   }
