@@ -413,12 +413,15 @@ if ($files == null) {
                 onmouseout="UnTip()" />
 
     <label>
-
+                    
               <input type="checkbox"
                 name="series"
                 class="series"
                 id="series"
                 value="autoseries"
+<?php if ($_POST['series'] == "autoseries") {
+    echo " checked=\"checked\" ";
+} ?>
                 onclick="javascript:storeFileFormatSelection(ImageFileFormat,this)" />
     Automatically load file series
     </label>
