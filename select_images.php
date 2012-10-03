@@ -120,9 +120,11 @@ function filterImages (extension,series) {
 
             if (in_array($file,$condensedSeries)) {
                 $generatedScript .= "
-                    var selectItem = document.createElement('option');
-                    selectItem.text = \"$file\";
-                    selectObject.add(selectItem,null);
+                  if(getExtension(\"$file\") == selectedExtension) {
+                     var selectItem = document.createElement('option');
+                     selectItem.text = \"$file\";
+                     selectObject.add(selectItem,null);
+                  }
                     ";
             }
             $generatedScript .= "     
