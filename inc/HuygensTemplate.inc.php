@@ -1457,15 +1457,19 @@ class HuygensTemplate {
     }
 
     /*!
-     \brief       Gets the PSF path.
+     \brief       Gets the PSF path including subfolders created by the user.
      \param       $channel A channel
      \return      Psf path
     */
     private function getPsfPath($channel) {
         if ($this->getPsfMode() == "file") {
+
+            /* The PSF may be located in a different subfolder than the raw data.
+             Thus, its path must be found independently of the raw images. */
+            $userFileArea = $this->jobDescription->sourceFolder();
             $microSetting = $this->microSetting;
-            $psfFiles = $microSetting->parameter("PSF")->value();
-            $psfPath = trim($this->getSrcDir() ."/". $psfFiles[$channel]);
+            $psfFiles     = $microSetting->parameter("PSF")->value();
+            $psfPath      = trim($userFileArea ."/". $psfFiles[$channel]);
         } else {
             $psfPath = "";
         }
