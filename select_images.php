@@ -32,6 +32,11 @@ $fileFormat = $_SESSION[ 'parametersetting' ]->parameter("ImageFileFormat");
 
 $message = "";
 if (isset($_POST['down'])) {
+    if (isset($_POST['autoseries'])) {
+        $_SESSION['autoseries'] = $_POST['autoseries'];
+    } else {
+        $_SESSION['autoseries'] = "";
+    }
     if (isset($_POST['userfiles']) && is_array($_POST['userfiles'])) {
         $_SESSION['fileserver']->addFilesToSelection($_POST['userfiles']);
     }
@@ -39,13 +44,23 @@ if (isset($_POST['down'])) {
         $_SESSION[ 'parametersetting' ]->checkPostedImageParameters( $_POST );
     }
 }
-else if (isset($_POST['up'])) {		
-  if (isset($_POST['selectedfiles']) && is_array($_POST['selectedfiles'])) {
-    $_SESSION['fileserver']->removeFilesFromSelection($_POST['selectedfiles']);
-  }  
+else if (isset($_POST['up'])) {
+    if (isset($_POST['autoseries'])) {
+        $_SESSION['autoseries'] = $_POST['autoseries'];
+    } else {
+        $_SESSION['autoseries'] = "";
+    }   
+    if (isset($_POST['selectedfiles']) && is_array($_POST['selectedfiles'])) {
+        $_SESSION['fileserver']->removeFilesFromSelection($_POST['selectedfiles']);
+    }  
 }
 else if (isset($_POST['update'])) {
-  $_SESSION['fileserver']->resetFiles();
+    if (isset($_POST['autoseries'])) {
+        $_SESSION['autoseries'] = $_POST['autoseries'];
+    } else {
+        $_SESSION['autoseries'] = "";
+    }
+    $_SESSION['fileserver']->resetFiles();
 }
 else if (isset($_POST['OK'])) {
 
@@ -101,7 +116,7 @@ function filterImages (extension,series) {
 
     var selectedExtension = extension.options[extension.selectedIndex].value;
 
-    var autoseries = document.getElementById(\"series\");
+    var autoseries = document.getElementById(\"autoseries\");
 ";
 
         /* For each file, create javascript code for when the file
@@ -310,8 +325,8 @@ $info = " <h3>Quick help</h3> <p>In this step, you can select the files " .
                     
                     <select name="ImageFileFormat" id="ImageFileFormat"
                      size="1"
-                     onclick="javascript:storeFileFormatSelection(this,series)"
-                     onchange="javascript:storeFileFormatSelection(this,series)"
+                     onclick="javascript:storeFileFormatSelection(this,autoseries)"
+                     onchange="javascript:storeFileFormatSelection(this,autoseries)"
                      onkeyup="this.blur();this.focus();" >
 
 <?php
@@ -417,11 +432,11 @@ if ($files == null) {
     <label>
                     
               <input type="checkbox"
-                name="series"
-                class="series"
-                id="series"
-                value="autoseries"
-<?php if ($_POST['series'] == "autoseries") {
+                name="autoseries"
+                class="autoseries"
+                id="autoseries"
+                value="TRUE"
+    <?php if ($_SESSION['autoseries'] == "TRUE") {
     echo " checked=\"checked\" ";
 } ?>
                 onclick="javascript:storeFileFormatSelection(ImageFileFormat,this)" />

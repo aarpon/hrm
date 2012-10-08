@@ -37,7 +37,8 @@ if (isset($_POST['create'])) {
     $job->setParameterSetting($_SESSION['setting']);
     $job->setTaskSetting($_SESSION['task_setting']);
     $job->setAnalysisSetting($_SESSION['analysis_setting']);
-    $job->setFiles($_SESSION['fileserver']->selectedFiles());
+    $job->setFiles($_SESSION['fileserver']->selectedFiles(),$_SESSION['autoseries']);
+
     if ($job->addJob()) {
       $_SESSION['jobcreated'] = True;
       $_SESSION['numberjobadded'] = count( $job->files() );

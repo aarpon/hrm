@@ -574,11 +574,11 @@ class DatabaseConnection {
 	\param	$files	Array of file names
 	\return	true if the job files could be saved successfully; false otherwise
   */
-  public function saveJobFiles($id, $owner, $files) {
+  public function saveJobFiles($id, $owner, $files, $autoseries) {
     $result = True;
     $username = $owner->name();
     foreach ($files as $file) {
-      $query = "insert into job_files values ('" . $id ."', '" . $username ."', '" . addslashes($file) . "')";
+      $query = "insert into job_files values ('" . $id ."', '" . $username ."', '" . addslashes($file) . "', '" . $autoseries . "')";
       $result = $result && $this->execute($query);
     }
     return $result;
@@ -1024,6 +1024,18 @@ class DatabaseConnection {
     $query = "select file from job_files where job = '" . $id . "'";
     $result = $this->query($query);
     $result = $this->flatten($result);
+    return $result;
+  }
+
+  /*!
+	\brief  Returns the file series mode of a job with given id
+	\param	$id	Job id
+	\return true or false
+  */
+  public function getSeriesModeForId($id) {
+    $query = "select autoseries from job_files where job = '" . $id . "'";
+    $result = $this->queryLastValue($query);
+    
     return $result;
   }
 

@@ -356,7 +356,7 @@ table {
   vertical-align: middle;
 }
 
-#selection input.series { 
+#selection input.autoseries { 
   position: relative;
   margin: 0em -12em 0em 0em;
 }

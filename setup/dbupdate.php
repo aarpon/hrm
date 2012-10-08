@@ -2569,6 +2569,20 @@ if ($current_revision < $n) {
         write_to_error($msg);
         return;
     }
+
+// ------------------ Add entries to 'job_files' -------------------------
+    $tabname   = "job_files";
+    $newcolumn = "autoseries VARCHAR(1)";
+    $SQLquery  = "ALTER TABLE " . $tabname . " ADD COLUMN " . $newcolumn .
+        " DEFAULT 'f'";
+
+    if(!$db->Execute($SQLquery)) {
+        $msg = "An error occurred while updating the database to revision " .
+            $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
 }
 
 

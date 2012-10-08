@@ -1464,15 +1464,19 @@ class HuygensTemplate {
     }
 
     /*!
-     \brief       Gets the PSF path.
+     \brief       Gets the PSF path including subfolders created by the user.
      \param       $channel A channel
      \return      Psf path
     */
     private function getPsfPath($channel) {
         if ($this->getPsfMode() == "file") {
+
+            /* The PSF may be located in a different subfolder than the raw data.
+             Thus, its path must be found independently of the raw images. */
+            $userFileArea = $this->jobDescription->sourceFolder();
             $microSetting = $this->microSetting;
-            $psfFiles = $microSetting->parameter("PSF")->value();
-            $psfPath = trim($this->getSrcDir() ."/". $psfFiles[$channel]);
+            $psfFiles     = $microSetting->parameter("PSF")->value();
+            $psfPath      = trim($userFileArea ."/". $psfFiles[$channel]);
         } else {
             $psfPath = "";
         }
@@ -2258,17 +2262,13 @@ class HuygensTemplate {
      \return      The series mode: whether auto or off.
     */
     private function getSeriesMode( ) {
-        $microSetting = $this->microSetting;
-        $imageGeometry = $microSetting->parameter("ImageGeometry")->value();
- 
-        $srcInfo = pathinfo($this->srcImage);        
-        if ((preg_match("/stk/i",$srcInfo['extension'])
-             || preg_match("/tif/i",$srcInfo['extension']))
-            && preg_match("/time/",$imageGeometry)) {
+
+        if ($this->jobDescription->autoseries()) {
             $seriesMode = "auto";
         } else {
             $seriesMode = "off";
         }
+        
         return $seriesMode;
     }
 

@@ -50,6 +50,12 @@ class JobDescription {
   private $files;
 
   /*!
+   \var     $autoseries
+   \brief   Boolean, whether or not to load a series automatically.
+  */
+  private $autoseries;
+
+  /*!
     \var    $owner
     \brief  The user who created the Job
   */
@@ -158,6 +164,14 @@ class JobDescription {
   }
 
   /*!
+    \brief Returns the automatically load series mode of the job
+    \return boolean: true or false
+  */
+  public function autoseries() {
+    return $this->autoseries;
+  }
+
+  /*!
     \brief Sets the ParameterSetting for the job
     \param $setting A ParameterSetting object
   */
@@ -185,9 +199,11 @@ class JobDescription {
   /*!
     \brief Sets the list of files for the job
     \param $files Array of file names
+    \param $autoseries whether or not file series should be loaded automatically
   */
-  public function setFiles($files) {
+  public function setFiles($files, $autoseries = FALSE) {
     $this->files = $files;
+    $this->autoseries = $autoseries;
   }
 
   /*!
@@ -270,7 +286,10 @@ class JobDescription {
     $result = $result && $analysisParameterSetting->save();
     
     $db = new DatabaseConnection();
-    $result = $result && $db->saveJobFiles($this->id, $this->owner, $this->files);
+    $result = $result && $db->saveJobFiles($this->id,
+                                           $this->owner,
+                                           $this->files,
+                                           $this->autoseries);
 
     $queue = new JobQueue();
     $result = $result && $queue->queueJob($this);
@@ -324,7 +343,8 @@ class JobDescription {
     $analysisSetting = $analysisSetting->load();
     $this->setAnalysisSetting($analysisSetting);
 
-    $this->setFiles($db->getJobFilesFor($this->id()));
+    
+    $this->setFiles($db->getJobFilesFor($this->id()), $db->getSeriesModeForId($this->id()));
   }
 
   /*!

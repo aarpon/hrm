@@ -20,7 +20,7 @@ function getParameters($editor, $setName, $numChannels) {
   $setting = $editor->setting($setName);
   $data = $setting->displayString($numChannels, true);
 
-      /* Make a distinction between the parameter name and value. */
+      /* Stress which part is the parameter name and which is the value. */
   $data = "<small><b>" . str_replace("\n","\n<b>",$data);
   $data = str_replace(": ",":</b> ",$data) . "</small>";
   
