@@ -1046,11 +1046,21 @@ class DatabaseConnection {
     \return	number of jobs in queue
   */
   public function getNumberOfQueuedJobsForUser($username) {
-	$query = "SELECT COUNT(id) FROM job_queue WHERE username = '" . $_SESSION['user']->name( ) . "';";
+	$query = "SELECT COUNT(id) FROM job_queue WHERE username = '" . $username . "';";
     $row = $this->Execute( $query )->FetchRow( );
     return $row[ 0 ];
   }
 
+  /*!
+	\brief	Returns the total number of jobs currently in the queue
+    \return	total number of jobs in queue
+  */
+  public function getTotalNumberOfQueuedJobs() {
+	$query = "SELECT COUNT(id) FROM job_queue;";
+    $row = $this->Execute( $query )->FetchRow( );
+    return $row[ 0 ];
+  }
+  
   /*!
 	\brief	Returns the name of the user who created the job with given id
 	\param	$id	String	id of the job

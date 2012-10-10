@@ -52,9 +52,8 @@ function getNumberOfUserJobsInQueue(User $user) {
  * @return String 
  */
 function getTotalNumberOfJobsInQueue() {
-    $queue = new JobQueue();
-    $rows = $queue->getContents();
-    $allJobsInQueue = count($rows);
+    $db = new DatabaseConnection();
+    $allJobsInQueue = $db->getTotalNumberOfQueuedJobs();
     $data = 'There ';
     if ( $allJobsInQueue == 0 ) {
       $data .= "are no jobs";

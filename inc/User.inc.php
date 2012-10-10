@@ -353,10 +353,7 @@ class User extends Owner{
             return 0;
         }
         $db = new DatabaseConnection();
-        $query = "SELECT COUNT(id) FROM job_queue WHERE username = '" .
-                $_SESSION['user']->name() . "';";
-        $row = $db->execute($query)->FetchRow();
-        return $row[0];
+        return $db->getNumberOfQueuedJobsForUser($this->name);
     }
 
     /*!

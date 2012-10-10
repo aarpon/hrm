@@ -2559,33 +2559,44 @@ if ($current_revision < $n) {
 
 // ------------------ Add entries to 'statistics' -------------------------
     $tabname   = "statistics";
-    $newcolumn = "ColocAnalysis VARCHAR(1)";
-    $SQLquery  = "ALTER TABLE " . $tabname . " ADD COLUMN " . $newcolumn;
-
-    if(!$db->Execute($SQLquery)) {
-        $msg = "An error occurred while updating the database to revision " .
-            $n . ".";
-        write_message($msg);
-        write_to_error($msg);
-        return;
+    $newcolumn = "ColocAnalysis";
+    $type = "VARCHAR(1)";
+    
+    // Does the column exist already?
+    $columns = $db->MetaColumnNames( $tabname );
+    if ( !array_key_exists( strtoupper( $newcolumn ), $columns ) ) {
+        $SQLquery  = "ALTER TABLE " . $tabname . " ADD COLUMN " . $newcolumn .
+                " " . $type;
+        if(!$db->Execute($SQLquery)) {
+            $msg = "An error occurred while updating the database to revision " .
+                    $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+            }
+        }
     }
 
 // ------------------ Add entries to 'job_files' -------------------------
     $tabname   = "job_files";
-    $newcolumn = "autoseries VARCHAR(1)";
-    $SQLquery  = "ALTER TABLE " . $tabname . " ADD COLUMN " . $newcolumn .
-        " DEFAULT 'f'";
+    $newcolumn = "autoseries";
+    $yype = "VARCHAR(1)";
+    
+    // Does the column exist already?
+    $columns = $db->MetaColumnNames( $tabname );
+    if ( !array_key_exists( strtoupper( $newcolumn ), $columns ) ) {
+        $SQLquery  = "ALTER TABLE " . $tabname . " ADD COLUMN " . $newcolumn .
+            " " . $type . " DEFAULT 'f'";
 
-    if(!$db->Execute($SQLquery)) {
-        $msg = "An error occurred while updating the database to revision " .
-            $n . ".";
-        write_message($msg);
-        write_to_error($msg);
-        return;
+        if(!$db->Execute($SQLquery)) {
+            $msg = "An error occurred while updating the database to revision " .
+                $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
     }
-}
-
-
+    
 // Update revision
 if(!update_dbrevision($n))
     return;
