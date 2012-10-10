@@ -313,24 +313,26 @@ table {
 }
 
 #logos {
+    margin: 15px;
     font-size: 70%;
     text-align: center;
-    padding-top: 1em;
-    padding-bottom: 3em;
+}
+#logos table {
+    border: 0px;
 }
 
-#logos div {
-    float: left;
-    width: 150px;
-    padding-right: 4px;
-    padding-bottom: 1em;
-    padding-left: 4px;
+#logos table tr.logo {
+    vertical-align: middle;
 }
 
-#logos div p {
+#logos table tr.caption {
+    vertical-align: top;
+}
+
+#logos table td {
+    padding-top: 20px;
     text-align: center;
-    padding-right: 5px;
-    padding-left: 5px;
+    width: 150px;
 }
 
 #templates select {

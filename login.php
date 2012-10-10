@@ -227,28 +227,72 @@ deconvolution.</p>
     }
 ?>
 
-<div id="logos">
-<div class="logo-fmi"><a
-	href="javascript:openWindow('http://www.fmi.ch')"><img
-	src="images/logo_fmi.png" alt="FMI" /></a>
-<p>Friedrich Miescher Institute</p>
-<p><a href="javascript:openWindow('http://www.fmi.ch/faim')">Facility
-for Advanced Imaging and Microscopy</a></p>
-</div>
-<div class="logo-mri"><a
-	href="javascript:openWindow('http://www.mri.cnrs.fr')"><img
-	src="images/logo_mri.png" alt="MRI" />
-<p>Montpellier RIO Imaging</p></a>
-</div>
-<div class="logo-epfl"><a
-	href="javascript:openWindow('http://www.epfl.ch')"><img
-	src="images/logo_epfl.png" alt="EPFL" /></a>
-<p>Federal Institute of Technology - Lausanne</p>
-<p><a href="javascript:openWindow('http://biop.epfl.ch')">BioImaging and
-Optics platform</a></p>
-</div>
-</div>
+<h2>Collaborators</h2>
 
+<div  id="logos">
+<table>
+    <tr class="logo">
+        <td>
+            <a href="javascript:openWindow('http://www.bsse.ethz.ch/')">
+                <img src="images/logo_bsse.png" alt="BSSE ETH Zurich" />
+            </a>
+        </td>
+        <td>
+            <a href="javascript:openWindow('http://www.svi.nl')">
+                <img src="images/logo_svi.png" alt="SVI" />
+            </a>
+        </td>
+        <td>
+            <a href="javascript:openWindow('http://www.fmi.ch')">
+                <img src="images/logo_fmi.png" alt="FMI" />
+            </a>
+        </td>
+    </tr>
+    <tr class="caption">
+        <td>
+            ETH Zurich<br />
+            Single-Cell Unit
+        </td>
+        <td>
+            Scientific Volume Imaging
+        </td>
+        <td>
+             Friedrich Miescher Institute<br />
+            <a href="javascript:openWindow('http://www.fmi.ch/faim')">
+                Facility for Advanced<br />Imaging and Microscopy
+            </a>
+        </td>
+    </tr>
+    <tr class="logo">
+        <td>
+            <a href="javascript:openWindow('http://www.epfl.ch')">
+                <img src="images/logo_epfl.png" alt="EPFL" />
+            </a>
+        </td>
+        <td>
+           &nbsp;
+        </td>        <td>
+            <a href="javascript:openWindow('http://www.mri.cnrs.fr')">
+                <img src="images/logo_mri.png" alt="MRI" />
+            </a>
+        </td>
+    </tr>
+    <tr class="caption">
+        <td>
+            EPF Lausanne<br />
+            <a href="javascript:openWindow('http://biop.epfl.ch')">
+                BioImaging and Optics platform
+            </a>
+        </td>
+        <td>
+           &nbsp;
+        </td>
+        <td>
+            Montpellier RIO Imaging
+        </td>
+    </tr>
+ </table>
+</div>
 </div>
 <!-- welcome -->
 
