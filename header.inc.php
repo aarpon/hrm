@@ -27,7 +27,7 @@ if (isset($meta)) {
     <link rel="SHORTCUT ICON" href="images/hrm.ico"/>
 
     <!-- Include jQuery --> 
-    <script type="text/javascript" src="scripts/jquery-1.8.0.min.js"></script>
+    <script type="text/javascript" src="scripts/jquery-1.8.2.min.js"></script>
     
     <script type="text/javascript" src="scripts/common.js"></script>
 

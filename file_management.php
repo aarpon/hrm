@@ -18,6 +18,19 @@ if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
   header("Location: " . "login.php"); exit();
 }
 
+// Keep track of who the referer is: the filemanager (src) will allow returning
+// to some selected pages
+if ( isset( $_SERVER['HTTP_REFERER'] ) ) {
+    if ( strpos( $_SERVER['HTTP_REFERER'], 'home.php' ) ||
+         strpos( $_SERVER['HTTP_REFERER'], 'select_parameter_settings.php' ) ||
+         strpos( $_SERVER['HTTP_REFERER'], 'select_task_settings.php' ) ||
+         strpos( $_SERVER['HTTP_REFERER'], 'select_analysis_settings.php' ) ||
+         strpos( $_SERVER['HTTP_REFERER'], 'select_images.php' ) ||
+         strpos( $_SERVER['HTTP_REFERER'], 'create_job.php' ) ) {
+        $_SESSION['filemanager_referer'] = $_SERVER['HTTP_REFERER'];
+    }
+}
+
 if (isset($_SERVER['HTTP_REFERER']) &&
         !strstr($_SERVER['HTTP_REFERER'], 'job_queue')) {
   $_SESSION['referer'] = $_SERVER['HTTP_REFERER'];
@@ -219,22 +232,16 @@ if ( $browse_folder == "dest" ) {
     // Number of displayed files.
     $size = 15;
     $multiple_files = true;
-    $page_title = "Deconvolved images";
-    $explanation_text = "These are the <b>deconvolved image files</b> " .
+    $page_title = "Results";
+    $explanation_text = "These are the <b>processed image files</b> " .
     "currently in your file area.";
     $form_title = "Your files";
-    if ( !$_SESSION['user']->isAdmin()) {
-        $fileBrowserLinks = '<li><a href="file_manager.php">'.
-            '<img src="images/filemanager_small.png" alt="file manager" />'.
-            '&nbsp;File manager</a></li>';
-    } else {
-        $fileBrowserLinks = '';
-    }
 
     $info = "<h3>Quick help</h3>
             <p>Click on a file name to see a preview.</p>
             <p><strong>Click on <img src = \"images/eye.png\" /> Detailed View
-            over the file preview to get additional information.</strong></p>";
+            over the file preview to access previews, reports and 
+            analysis results.</strong></p>";
 
     if ($allowHttpTransfer) {
     $info .= "<p>Select the files you want to download (you can <b>SHIFT-</b> 
@@ -257,13 +264,6 @@ if ( $browse_folder == "dest" ) {
     $explanation_text = "These are the <b>original image files</b> currently " .
       "in your file area.";
     $form_title = "Your files";
-    if ( !$_SESSION['user']->isAdmin()) {
-        $fileBrowserLinks = '<li><a href="file_manager.php">'.
-            '<img src="images/filemanager_small.png" alt="file manager" />'.
-            '&nbsp;File manager</a></li>';
-    } else {
-        $fileBrowserLinks = '';
-    }
 
     $info = "<h3>Quick help</h3>
             <p>Click on a file name to see (or create) a preview.</p>
@@ -290,9 +290,20 @@ $top_navigation = '
             <li>
                 <img src="images/user.png" alt="user" />
                 &nbsp;'.$_SESSION['user']->name().'
-            </li>
-            '.$fileBrowserLinks.'
+            </li>';
+        
+if ( isset( $_SESSION['filemanager_referer'] ) ) {
+    $referer = $_SESSION['filemanager_referer'];
+        if ( strpos( $referer, 'home.php' ) === False ) {
+$top_navigation .= '
             <li>
+                <a href="' . $referer . '">
+                    <img src="images/back_small.png" alt="back" />&nbsp;Back</a>
+            </li>';
+       }
+    }
+            
+ $top_navigation .= '<li>
                 <a href="'.getThisPageName().'?home=home">
                     <img src="images/home.png" alt="home" />
                     &nbsp;Home

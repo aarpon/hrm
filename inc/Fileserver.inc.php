@@ -1661,7 +1661,7 @@ echo '</body></html>';
       switch ($op) {
           case "close":
              echo "onclick=\"window.close()\"".
-             "onmouseover=\"Tip('Close this window and go back to the File Manager.')\" onmouseout=\"UnTip()\">".
+             "onmouseover=\"Tip('Close this window and go back to your raw images.')\" onmouseout=\"UnTip()\">".
              "<a href=\"#\">".
              "<img src=\"images/cancel_help.png\" alt=\"cancel\" /> Back".
              "</a>\n";
@@ -1901,7 +1901,7 @@ echo '</body></html>';
       switch ($op) {
           case "close":
              echo " <a href=\"#\" onclick=\"window.close()\" ".
-             "onmouseover=\"Tip('Close this window and go back to the File Manager.')\" onmouseout=\"UnTip()\">".
+             "onmouseover=\"Tip('Close this window and go back to your raw images.')\" onmouseout=\"UnTip()\">".
              "<img src=\"images/cancel_help.png\" alt=\"cancel\" />".
              "</a>\n";
              break;

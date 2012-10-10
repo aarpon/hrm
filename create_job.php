@@ -78,9 +78,9 @@ include("header.inc.php");
             <?php
             if ( !$_SESSION['user']->isAdmin()) {
             ?>
-            <li><a href="file_manager.php">
-                    <img src="images/filemanager_small.png" alt="file manager" />
-                    &nbsp;File manager
+            <li><a href="file_management.php?folder=src">
+                    <img src="images/filemanager_small.png" alt="raw images" />
+                    &nbsp;Raw images
                 </a>
             </li>
             <?php

@@ -286,9 +286,9 @@ $info = " <h3>Quick help</h3> <p>In this step, you can select the files " .
             <?php
             if ( !$_SESSION['user']->isAdmin()) {
             ?>
-            <li><a href="file_manager.php">
-                    <img src="images/filemanager_small.png" alt="file manager" />
-                    &nbsp;File manager
+            <li><a href="file_management.php?folder=src">
+                    <img src="images/filemanager_small.png" alt="Raw images" />
+                    &nbsp;Raw images
                 </a>
             </li>
             <?php
