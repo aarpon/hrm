@@ -150,7 +150,7 @@ function getJobQueuetable() {
           $data .= '
           <td>
             <input name="jobs_to_kill[]" type="checkbox"
-              value="<?php echo $row[\'id\'] ?>" />
+              value="' . $row['id'] . '" />
           </td>';
         } else {
 
