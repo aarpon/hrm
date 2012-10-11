@@ -362,7 +362,7 @@ include("header.inc.php");
 			  <td class="text"><div class="cell">
                 <a href="./file_management.php?folder=dest">Results</a>
                 <br />
-				<p />Inspect and download your deconvolved data and results.
+				<p />Inspect and download your restored data and analysis results.
                 </div>
 			  </td>
 			  

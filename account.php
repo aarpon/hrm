@@ -181,7 +181,7 @@ include("header.inc.php");
 
 <div id="content">
 
-    <h3>Your account</h3>
+    <h3><img alt="SelectImages" src="./images/account_title.png" width="40"/>&nbsp;Your account</h3>
 
     <form method="post" action="" id="useraccount">
 
