@@ -358,9 +358,12 @@ table {
   vertical-align: middle;
 }
 
-#selection input.autoseries { 
-  position: relative;
-  margin: 0em -12em 0em 0em;
+#autoseries_label { 
+    font-size: 80%;
+}
+
+#autoseries { 
+    margin-top: 5px;
 }
 
 #selection label { 

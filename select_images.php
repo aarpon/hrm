@@ -411,6 +411,24 @@ if ($files == null) {
 ?>
                     </select>
                 </div>
+                
+                <label id="autoseries_label">
+                        
+                    <input type="checkbox"
+                           name="autoseries"
+                           class="autoseries"
+                           id="autoseries"
+                           value="TRUE"
+                           <?php
+                           if ($_SESSION['autoseries'] == "TRUE") {
+                               echo " checked=\"checked\" ";
+                           }
+                           ?>
+                           onclick="javascript:storeFileFormatSelection(ImageFileFormat,this)" />
+                    Automatically load file series
+                
+                </label>
+
             </fieldset>
             
             <div id="selection">
@@ -428,20 +446,7 @@ if ($files == null) {
                 class="icon remove"
                 onmouseover="TagToTip('ttSpanUp')"
                 onmouseout="UnTip()" />
-
-    <label>
-                    
-              <input type="checkbox"
-                name="autoseries"
-                class="autoseries"
-                id="autoseries"
-                value="TRUE"
-    <?php if ($_SESSION['autoseries'] == "TRUE") {
-    echo " checked=\"checked\" ";
-} ?>
-                onclick="javascript:storeFileFormatSelection(ImageFileFormat,this)" />
-    Automatically load file series
-    </label>
+            
             </div>
             
             <fieldset>
