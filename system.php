@@ -48,7 +48,7 @@ include("header.inc.php");
 
     <div id="content">
 
-      <h3>System summary</h3>
+      <h3><img alt="Summary" src="./images/system_title.png" width="40"/>&nbsp;System summary</h3>
 
       <div id="system">
         <table>
