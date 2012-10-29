@@ -247,8 +247,7 @@ echo $_SESSION['setting']->displayString();
 
 $numberOfChannels =
     $_SESSION['setting']->parameter( "NumberOfChannels" )->value( );
-echo $_SESSION['task_setting']->
-    displayStringWithoutOutputFileFormat( $numberOfChannels );
+echo $_SESSION['task_setting']->displayString( $numberOfChannels );
 
 ?>
             </textarea>
