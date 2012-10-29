@@ -399,7 +399,9 @@ if ($files == null) {
         
         foreach ($files as $key => $file) {
             if ($_SESSION['fileserver']->getExtension($file) == $extension) {
-                echo "<option>" . $file . "</option>\n";       
+                echo "<option>" . $file . "</option>\n";
+
+                $keyArr[$file] = $key;
             }
         }
     }
