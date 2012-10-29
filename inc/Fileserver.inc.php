@@ -275,7 +275,7 @@ class Fileserver {
           default:
               return false;
       }
-      
+
       if (preg_match($pattern, $file, $matches)) {
           return true;
       } else {
@@ -443,6 +443,13 @@ class Fileserver {
     sort($this->selectedFiles);
   }
 
+  /*!
+    \brief  Remove all files from current selection
+  */
+  public function removeAllFilesFromSelection() {
+    $this->selectedFiles = NULL;
+  }
+  
   /*!
     \brief  Remove files from current selection (if they are in)
     \param  $files  Array of file names to be removed
