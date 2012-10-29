@@ -40,9 +40,6 @@ if (isset($_POST['down'])) {
     if (isset($_POST['userfiles']) && is_array($_POST['userfiles'])) {
         $_SESSION['fileserver']->addFilesToSelection($_POST['userfiles']);
     }
-    if (isset($_POST['ImageFileFormat']) && !empty($_POST['ImageFileFormat'])) {
-        $_SESSION[ 'parametersetting' ]->checkPostedImageParameters( $_POST );
-    }
 }
 else if (isset($_POST['up'])) {
     if (isset($_POST['autoseries'])) {
@@ -66,11 +63,7 @@ else if (isset($_POST['OK'])) {
 
     if (!$_SESSION['fileserver']->hasSelection()) {
         $message = "Please add at least one image to your selection";
-    }
-    else {
-        if (isset($_POST['ImageFileFormat']) && !empty($_POST['ImageFileFormat'])) {
-            $_SESSION[ 'parametersetting' ]->checkPostedImageParameters( $_POST );
-        }
+    } else {
         header("Location: " . "select_parameter_settings.php"); exit();
     }
 }
@@ -400,7 +393,6 @@ if ($files == null) {
         foreach ($files as $key => $file) {
             if ($_SESSION['fileserver']->getExtension($file) == $extension) {
                 echo "<option>" . $file . "</option>\n";
-
                 $keyArr[$file] = $key;
             }
         }
@@ -420,10 +412,10 @@ if ($files == null) {
                            id="autoseries"
                            value="TRUE"
                            <?php
-                    if (isset($_SESSION['autoseries'])
-                        && $_SESSION['autoseries'] == "TRUE") {
-                        echo " checked=\"checked\" ";
-                    }
+                           if (isset($_SESSION['autoseries']) && 
+                                   $_SESSION['autoseries'] == "TRUE") {
+                               echo " checked=\"checked\" ";
+                           }
                            ?>
                            onclick="javascript:storeFileFormatSelection(ImageFileFormat,this)" />
                     Automatically load file series
