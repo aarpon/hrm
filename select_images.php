@@ -329,39 +329,37 @@ $info = " <h3>Quick help</h3> <p>In this step, you can select the files " .
                      onchange="javascript:storeFileFormatSelection(this,autoseries)"
                      onkeyup="this.blur();this.focus();" >
 
+
+<option name = '' value = '' extension = ''>
+Please choose a file format...
+</option>
+        
 <?php
 
-// new file formats support
-$msgValue       = '';
-$msgTranslation = 'Please choose a file format...';
-$values = array();
-$values[ 0 ] = $msgValue;
-$values = array_merge( $values, $fileFormat->possibleValues());
-
+// File formats support
+$values = $fileFormat->possibleValues();
 sort($values);
 
 foreach($values as $key => $value) {
-  $selected = "";
+  $translation = $fileFormat->translatedValueFor( $value );
+      
+      if (stristr($value, "tiff")) {
+          $translation .= " (*.tiff)";
+      }
+      
+      if ($value == $fileFormat->value()) {
+          $selected = " selected=\"selected\"";      
+      } else {
+          $selected = "";
+      }
+      
+      $extensions = $fileFormat->fileExtensions($value);
+      $extension  = $extensions[0];
 
-  if ( $value == $msgValue ) {
-      $translation = $msgTranslation;
-  } else {
-      $translation = $fileFormat->translatedValueFor( $value );
-    if (stristr($value, "tiff")) {
-      $translation .= " (*.tiff)";
-    }
-    
-    if ($value == $fileFormat->value()) {
-      $selected = " selected=\"selected\"";      
-    }
-
-    $extensions = $fileFormat->fileExtensions($value);
-    $extension = $extensions[0];
-  }
 ?>
-      <option <?php echo "name = \"" . $value . "\"  value = \"" . $extension  . "\"" . $selected ?>>
-           <?php echo $translation ?>
-           </option>
+      <option <?php echo "name = \"" . $value . "\"  value = \"" .
+           $extension  . "\"" . $selected ?>><?php echo $translation ?>
+      </option>
 <?php
 
 }
@@ -420,9 +418,10 @@ if ($files == null) {
                            id="autoseries"
                            value="TRUE"
                            <?php
-                           if ($_SESSION['autoseries'] == "TRUE") {
-                               echo " checked=\"checked\" ";
-                           }
+                    if (isset($_SESSION['autoseries'])
+                        && $_SESSION['autoseries'] == "TRUE") {
+                        echo " checked=\"checked\" ";
+                    }
                            ?>
                            onclick="javascript:storeFileFormatSelection(ImageFileFormat,this)" />
                     Automatically load file series

@@ -223,17 +223,17 @@ function setFileFormat($format) {
 
         /* Setting a new file format should clean up the existing file
          selection. */
-  if (isset($_SESSION['fileserver'])) {
-          $fileServer = $_SESSION['fileserver'];
-          $fileServer->removeFilesFromSelection($_POST['selectedfiles']);
-  }
+    if (isset($_SESSION['fileserver']) && isset($_POST['selectedfiles'])) {
+        $fileServer = $_SESSION['fileserver'];
+        $fileServer->removeFilesFromSelection($_POST['selectedfiles']);
+    }
   
-  if (isset($_SESSION['parametersetting'])) {
-    $fileFormat = $_SESSION[ 'parametersetting' ]->parameter("ImageFileFormat");
-    $fileFormat->setValue($format);
-    $_SESSION[ 'parametersetting' ]->set($fileFormat);
-    return "";
-  }
+    if (isset($_SESSION['parametersetting'])) {
+        $fileFormat = $_SESSION[ 'parametersetting' ]->parameter("ImageFileFormat");
+        $fileFormat->setValue($format);
+        $_SESSION[ 'parametersetting' ]->set($fileFormat);
+        return "";
+    }
 }
 
 /* ==========================================================================

@@ -261,7 +261,7 @@ class Fileserver {
   public function isPartOfFileSeries($file) {
 
       $extension = $this->getExtension($file);
-
+      
       switch ( $extension ) {
           case 'stk':
               $pattern = "/[^_]+_(T|t)[0-9]+\.\w+/";
@@ -272,6 +272,8 @@ class Fileserver {
           case 'tif':
               $pattern = "/\w+[0-9]+\.\w+/";
               break;
+          default:
+              return false;
       }
       
       if (preg_match($pattern, $file, $matches)) {
@@ -446,10 +448,16 @@ class Fileserver {
     \param  $files  Array of file names to be removed
   */
   public function removeFilesFromSelection($files) {
+
+      if (!is_array($files)) {
+          return;
+      }
+      
       foreach ($files as $key => $file) {
           $files[$key] = stripslashes($file);
       }
-    $this->selectedFiles = array_diff($this->selectedFiles, $files);
+      
+      $this->selectedFiles = array_diff($this->selectedFiles, $files);
   }
 
   /*!
