@@ -162,7 +162,11 @@ if ($browse_folder == "src") {
     $fileFormat = $fileFormatParam->value();
     $extensions = $fileFormatParam->fileExtensions();
     $_SESSION['fileserver']->setImageExtensions($extensions);
-    $files = $_SESSION['fileserver']->filesOfType($fileFormat);
+    $isTimeSeries = false;
+    if (isset($_SESSION['autoseries']) && $_SESSION['autoseries'] == "TRUE") {
+        $isTimeSeries = true;
+    }
+    $files = $_SESSION['fileserver']->filesOfType($fileFormat, $isTimeSeries);
   }
 } else {
   // When listing results images, all types are shown.
