@@ -129,6 +129,21 @@ include("header.inc.php");
 
           <select name="Statistics" id="Statistics" size="1">
 
+          <!-- Show/hide the group selector based on the statistics chosen -->
+          <script>
+              $(document).ready(function() {
+                  $('select#Statistics').change(function() {
+                     if ($('select#Statistics').val() == 'Export all statistics to file') {
+                        $('select#Group').hide();
+                        $('#cal_filter').hide();
+                     } else {
+                        $('select#Group').show();
+                        $('#cal_filter').show();
+                     } 
+                  })
+              });
+          </script>
+              
           <?php
 
           foreach ($possibleStats as $currentStats) {

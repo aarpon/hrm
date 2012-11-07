@@ -22,15 +22,16 @@ window.helpText[ "voxel" ] =
   'of the input signal in order to be able to reconstruct the original ' + 
   'perfectly from the sampled version. Meeting the Nyquist rate is an ' +
   'important requisite for successful deconvolution. The ' +
-  '<span style="background-color:yellow">highlighted values </span> are ' +
+  '<span style="background-color:yellow">highlighted values</span> are ' +
   'the ideal voxel size for your parameters. The HRM will not try to stop ' +
-  'you from running a deconvolution on undersampled data (i.e. with a ' +
+  'you from running a deconvolution on under-sampled data (i.e. with a ' +
   'sampling rate much larger than the ideal), but do not expect meaningful ' +
-  'results!</p>';
+  'results! Set the z-step to <b>1</b> for 2D datasets.</p>';
 
 window.helpText[ "time" ] =
   '<p>The time interval is the (temporal) distance between two frames in a ' +
-  'time series, and relates to the temporal sampling.</p>';
+  'time series, and relates to the temporal sampling. Set the time interval ' +
+  'to <b>1</b> if you are not deconvoling time series.</p>';
 
 window.helpText[ "pinhole_radius" ] =
   '<p>The pinhole of confocal microscopes is a small hole used to get rid ' +

@@ -162,13 +162,9 @@ if ( $nyquist === false ) {
 } else {
   $NyquistMessage = "Calculated from current optical parameters, the " .
 	"(Nyquist) ideal pixel size is <span style=\"background-color:yellow\">" .
-	$nyquist[0] . " nm</span>";
-  if ($_SESSION['setting']->isThreeDimensional() ) {
-	$NyquistMessage .=
-	  " and the ideal z-step is <span style=\"background-color:yellow\">" .
-	  $nyquist[1] . " nm</span>";
-  }
-  $NyquistMessage .= ".";
+	$nyquist[0] . " nm</span> ".
+	  "and the ideal z-step is <span style=\"background-color:yellow\">" .
+	  $nyquist[1] . " nm</span>.";
 }
 
 ?>
@@ -311,11 +307,6 @@ $textForCaptorSize = "pixel size (nm)";
                   }
             ?>
                     </li>
-<?php
-
-if ($_SESSION['setting']->isThreeDimensional()) {
-
-?>
 
                     <li>
                         z-step (nm):
@@ -336,13 +327,10 @@ if ($_SESSION['setting']->isThreeDimensional()) {
                           type="text"
                           size="5"
                           value="<?php echo $parameterZStepSize->value() ?>" />
+                        <span class="message_small">&nbsp;
+                            Set to <b>1</b> for 2D datasets.
+                        </span>
                     </li>
-
-<?php
-
-}
-
-?>
 
                 </ul>
 
@@ -364,12 +352,6 @@ if ($_SESSION['setting']->isThreeDimensional()) {
                 &nbsp;
             </p>
 			</fieldset>
-
-<?php
-
-if ($_SESSION['setting']->isTimeSeries()) {
-
-?>
 
     <?php
 
@@ -399,6 +381,9 @@ if ($_SESSION['setting']->isTimeSeries()) {
                        type="text"
                        size="5"
                        value="<?php echo $parameterTimeInterval->value() ?>" />
+                <span class="message_small">&nbsp;
+                    Set to <b>1</b> if you do not have a time series.
+                </span>
               </li>
             </ul>
 
@@ -411,11 +396,6 @@ if ($_SESSION['setting']->isTimeSeries()) {
             </p>
 
             </fieldset>
-<?php
-
-}
-
-?>
 
 <?php
 

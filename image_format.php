@@ -112,103 +112,11 @@ include("header.inc.php");
     
     <div id="content">
 
-        <h2>Image format and PSF modality</h2>
+        <h2>Number of channels and PSF modality</h2>
         
         <form method="post" action="" id="select">
         
-            <h4>What image format will be processed with these settings?</h4>
-
-    <?php
-
-    /***************************************************************************
-    
-      ImageFileFormat
-    
-    ***************************************************************************/
-
-    $parameterImageFileFormat =
-        $_SESSION['setting']->parameter("ImageFileFormat");
-
-
-    /***************************************************************************
-    
-      ImageGeometry
-    
-    ***************************************************************************/
-
-    $parameterImageGeometry =
-        $_SESSION['setting']->parameter("ImageGeometry");
-
-    ?>
-    
-            <fieldset id="geometry"
-                      class="setting <?php
-                      echo $parameterImageGeometry->confidenceLevel(); ?>"
-                      <?php if ($geometryFlag != "")
-              echo " style=\"color: grey\"" ?>
-              onmouseover="javascript:changeQuickHelp( 'geometry' );" >
-            
-                <legend>
-                    <a href="javascript:openWindow(
-                       'http://www.svi.nl/ImageGeometry')">
-                        <img src="images/help.png" alt="?" />
-                    </a>
-                    image geometry
-                </legend>
-
-                <div class="values">
-                    <?php
-                    if ( ! $parameterImageGeometry->mustProvide() ) {
-                        $nParamRequiringReset++;
-                    ?>
-                    <div class="reset"
-                        onmouseover="TagToTip('ttSpanReset' )"
-                        onmouseout="UnTip()"
-                        onclick="document.forms[0].ImageGeometry[0].checked = true;" >
-                    </div>
-                    <?php
-                    }
-                    ?>
-
-                    <input name="ImageGeometry"
-                           type="radio"
-                           value=""
-                           style="display:none;" />
-                
-
-<?php
-
-$possibleValues = $parameterImageGeometry->possibleValues();
-foreach($possibleValues as $possibleValue) {
-  $value = "multi_" . $possibleValue;
-  $flag = "";
-  if (!($parameterImageFileFormat->value() == "lsm-single" || 
-          $parameterImageFileFormat->value() == "tiff-single") &&
-          $possibleValue == $parameterImageGeometry->value())
-    $flag = "checked=\"checked\" ";
-
-?>
-                <input name="ImageGeometry"
-                       type="radio"
-                       value="<?php echo $value ?>"
-                       <?php echo $geometryFlag ?>
-                       <?php echo $flag ?>/>
-                       <?php echo $possibleValue ?>
-                
-<?php
-
-}
-
-?>
-                    </div> <!-- values -->
-                    <div class="bottom">
-                        <p class="message_confidence_<?php
-                        echo $parameterImageGeometry->confidenceLevel(); ?>">
-                            &nbsp;
-                        </p>
-                    </div>
-                
-            </fieldset>
+            <h4>How many channels (wavelengths) in your datasets?</h4>
 
     <?php
 
@@ -225,8 +133,6 @@ foreach($possibleValues as $possibleValue) {
             
             <fieldset id="channels" class="setting <?php 
                 echo $parameterNumberOfChannels->confidenceLevel(); ?>"
-                <?php if ($channelsFlag != "")
-              echo " style=\"color: grey\"" ?>
               onmouseover="javascript:changeQuickHelp( 'channels' );" >
             
                 <legend>

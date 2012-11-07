@@ -143,7 +143,7 @@ if ( ( $value == 'TIFF 18-bit' ) || ( $value == 'TIFF 16-bit' ) ) {
 // Make sure that if we had Imaris Classic as output file format and a
 // time-series dataset, we reset the value to ics
 if ( $value == 'IMS (Imaris Classic)' ) {
-  if ( $_SESSION['setting']->isTimeSeries() ) {
+  if ( $_SESSION['autoseries'] == "TRUE" ) {
     $parameter->setValue("ICS (Image Cytometry Standard)");
     $_SESSION['first_visit'] = False;
   }
@@ -167,7 +167,7 @@ if ( $numberOfChannels > 1 ) {
 }
 
 // If the dataset is a time series, we remove Imaris classic from the list
-if ( $_SESSION['setting']->isTimeSeries() ) {
+if ( $_SESSION['autoseries'] == "TRUE" ) {
     $possibleValues =
         array_diff($possibleValues, array( 'IMS (Imaris Classic)' ) );
     $possibleValues = array_values( $possibleValues );

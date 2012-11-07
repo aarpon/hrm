@@ -286,9 +286,10 @@ class Fileserver {
   /*!
     \brief  A wrapper function to list files of a certain type
     \param  $format  Extension to be considered to scan the folder.
+    \param  $isTimeSeries True for time series, false otherwise.
     \return array of file names
   */
-  public function filesOfType( $format ) {
+  public function filesOfType( $format, $isTimeSeries ) {
       
         if ($format == "ics") {
             $files = $_SESSION['fileserver']->files("ics");
@@ -303,17 +304,12 @@ class Fileserver {
             $files = $_SESSION['fileserver']->tiffLeicaFiles();
         }
         else if ($format == "stk") {
-            if(isset($_SESSION['setting'])) {
-                if ($_SESSION['setting']->isTimeSeries()) {
-                    $files = $_SESSION['fileserver']->stkSeriesFiles();
-                }
-                else {
-                    $files = $_SESSION['fileserver']->stkFiles();
-                }  
+            if ($isTimeSeries == true) {
+                $files = $_SESSION['fileserver']->stkSeriesFiles();
             }
             else {
                 $files = $_SESSION['fileserver']->stkFiles();
-            }
+            }  
         }
         else {
             $files = $_SESSION['fileserver']->files();        

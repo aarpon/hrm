@@ -167,14 +167,12 @@ function estimateSnrFromFile($file) {
         $z_s = $z->value() / 1000.0;
         $extra = " -emission $lmbV -sampling \"$xy_s $xy_s $z_s\"";
 
-        // Enable the -series off option depending on the file type.
-        if (stristr($file, ".stk")) {
-            $geom = $_SESSION['setting']->parameter("ImageGeometry");
-            $geometry = $geom->value();
-            if ( !stristr($geometry, "time") ) {
-                $series = "off";
-            }
+        // Set the -series auto | off option depending on the file type.
+        $series = "off";
+        if (isset($_SESSION['autoseries']) && $_SESSION['autoseries'] == "TRUE") {
+            $series = "auto";
         }
+
         $formatParam = $_SESSION['setting']->parameter('ImageFileFormat');
         $format = $formatParam->value();
         if ($format == "tiff" || $format == "tiff-single") {

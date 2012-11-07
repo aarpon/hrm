@@ -741,11 +741,6 @@ class Stats {
                                        "Type of Point-Spread Function used (%)",
                                        "piechart",
                                        $user );
-    $this->m_Stats_Array[] = new Type( "ImageGeometry",
-                                       "ImageGeometry",
-                                       "Image geometry (%)",
-                                       "piechart",
-                                       $user );
     $this->m_Stats_Array[] = new Type( "MicroscopeType",
                                        "MicroscopeType",
                                        "Microscope type (%)",
@@ -798,27 +793,33 @@ class Stats {
     if ( $res ) {
 
       // Open a temporary file
-      $fileName = "stats_dump_" . date( "Y-m-d_H-i-s" ) . ".txt";
+      $fileName = "stats_dump_" . date( "Y-m-d_H-i-s" ) . ".csv";
       $fullFileName = "/tmp/" .$fileName;
       $fileHandle = fopen( $fullFileName, 'w+' );
       if ( $fileHandle == 0 ) {
         return "<h3>Error: could not open file.</h3>";
       }
 
+      // Export header
+      $header = "Job id, Owner, Group, Start time, End time, Input format, " .
+                "Output format, PSF type, Microscope, Coloc run\n";
+      
+      fwrite( $fileHandle, $header );
+      
       // Now export the data
       while ( $row = $res->FetchRow( ) ) {
 
         $currentRow =
-        $row[ "id" ] . "\t" .
-        $row[ "owner" ] . "\t" .
-        $row[ "research_group" ] . "\t" .
-        $row[ "start" ] . "\t" .
-        $row[ "stop" ] . "\t" .
-        $row[ "ImageFileFormat" ] . "\t" .
-        $row[ "OutputFileFormat" ] . "\t" .
-        $row[ "PointSpreadFunction" ] . "\t" .
-        $row[ "ImageGeometry" ] . "\t" .
-        $row[ "MicroscopeType" ] . "\n";
+        $row[ "id" ] . ", " .
+        $row[ "owner" ] . ", " .
+        $row[ "research_group" ] . ", " .
+        $row[ "start" ] . ", " .
+        $row[ "stop" ] . ", " .
+        $row[ "imagefileformat" ] . ", " .
+        $row[ "outputfileformat" ] . ", " .
+        $row[ "pointspreadfunction" ] . ", " .
+        $row[ "microscopetype" ] . ", " .
+        $row[ "colocanalysis" ] . "\n";
 
         fwrite( $fileHandle, $currentRow );
 

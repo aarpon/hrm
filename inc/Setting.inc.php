@@ -341,29 +341,6 @@ class ParameterSetting extends Setting {
             }
         }
 
-        // The geometry must be defined for most file formats
-        $singleParameters = $this->fixedGeometryFileFormats();
-        if (!( array_search($postedParameters["ImageFileFormat"],
-                $singleParameters) === false )) {
-            $postedParameters["ImageGeometry"] = "XY - time";
-        } elseif ($postedParameters["ImageFileFormat"] == 'tiff-series') {
-            $postedParameters["ImageGeometry"] = "XYZ";
-        } else {
-            // We check that the value was posted
-            if (!isset($postedParameters["ImageGeometry"]) ||
-                    $postedParameters["ImageGeometry"] == "") {
-                $this->message = "Please set the image geometry!";
-                return False;
-            }
-        }
-        $parameter = $this->parameter("ImageGeometry");
-        $parameter->setValue($postedParameters["ImageGeometry"]);
-        $this->set($parameter);
-        if (!$parameter->check()) {
-            $this->message = $parameter->message();
-            return False;
-        }
-
         // The number of channels must be defined for most file formats
         if ($postedParameters["ImageFileFormat"] == 'tiff-series') {
             $postedParameters["NumberOfChannels"] = "1";
@@ -567,69 +544,63 @@ class ParameterSetting extends Setting {
             }
         }
 
-        // ZStepSize must be defined for all 3D geometries
-        if ($this->isThreeDimensional()) {
+        // ZStepSize
+        $valueSet = isset($postedParameters["ZStepSize"]) &&
+                $postedParameters["ZStepSize"] != '';
 
-            $valueSet = isset($postedParameters["ZStepSize"]) &&
-                    $postedParameters["ZStepSize"] != '';
+        $parameter = $this->parameter("ZStepSize");
 
-            $parameter = $this->parameter("ZStepSize");
+        if ($valueSet) {
 
-            if ($valueSet) {
+            // Set the Parameter and check the value
+            $parameter->setValue($postedParameters["ZStepSize"]);
+            $this->set($parameter);
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = False;
+            }
+        } else {
 
-                // Set the Parameter and check the value
-                $parameter->setValue($postedParameters["ZStepSize"]);
-                $this->set($parameter);
-                if (!$parameter->check()) {
-                    $this->message = $parameter->message();
-                    $noErrorsFound = False;
-                }
-            } else {
+            $mustProvide = $parameter->mustProvide();
 
-                $mustProvide = $parameter->mustProvide();
+            // Reset the Parameter
+            $parameter->reset();
+            $this->set($parameter);
 
-                // Reset the Parameter
-                $parameter->reset();
-                $this->set($parameter);
-
-                // If the Parameter value must be provided, we return an error
-                if ($mustProvide) {
-                    $this->message = "Please set the z-step!";
-                    $noErrorsFound = False;
-                }
+            // If the Parameter value must be provided, we return an error
+            if ($mustProvide) {
+                $this->message = "Please set the z-step!";
+                $noErrorsFound = False;
             }
         }
 
-        // TimeInterval must be defined for the XY-time and XYZ-time geometry
-        if ($this->isTimeSeries()) {
 
-            $valueSet = isset($postedParameters["TimeInterval"]) &&
-                    $postedParameters["TimeInterval"] != '';
+        // TimeInterval
+        $valueSet = isset($postedParameters["TimeInterval"]) &&
+                $postedParameters["TimeInterval"] != '';
 
-            $parameter = $this->parameter("TimeInterval");
+        $parameter = $this->parameter("TimeInterval");
 
-            if ($valueSet) {
+        if ($valueSet) {
 
-                // Set the Parameter and check the value
-                $parameter->setValue($postedParameters["TimeInterval"]);
-                $this->set($parameter);
-                if (!$parameter->check()) {
-                    $this->message = $parameter->message();
-                    $noErrorsFound = False;
-                }
-            } else {
+            // Set the Parameter and check the value
+            $parameter->setValue($postedParameters["TimeInterval"]);
+            $this->set($parameter);
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = False;
+            }
+        } else {
 
-                $mustProvide = $parameter->mustProvide();
+            $mustProvide = $parameter->mustProvide();
+            // Reset the Parameter
+            $parameter->reset();
+            $this->set($parameter);
 
-                // Reset the Parameter
-                $parameter->reset();
-                $this->set($parameter);
-
-                // If the Parameter value must be provided, we return an error
-                if ($mustProvide) {
-                    $this->message = "Please set the time interval!";
-                    $noErrorsFound = False;
-                }
+            // If the Parameter value must be provided, we return an error
+            if ($mustProvide) {
+                $this->message = "Please set the time interval!";
+                $noErrorsFound = False;
             }
         }
 
@@ -1073,13 +1044,9 @@ class ParameterSetting extends Setting {
             if (!$this->isMultiPointOrSinglePointConfocal() &&
                     $parameter->name() == 'PinholeSize')
                 continue;
+            if ($parameter->name() == 'ImageGeometry')
+                continue;
             if ($parameter->name() == 'IsMultiChannel')
-                continue;
-            if (!$this->isThreeDimensional() && 
-                    $parameter->name() == 'ZStepSize')
-                continue;
-            if (!$this->isTimeSeries() && 
-                    $parameter->name() == 'TimeInterval')
                 continue;
             if (!$this->isNipkowDisk() && 
                     $parameter->name() == 'PinholeSpacing')
@@ -1172,60 +1139,6 @@ class ParameterSetting extends Setting {
         $ideal = askHuCore("calculateNyquistRate", $opt);
         // print_r($ideal);
         return array($ideal['xy'], $ideal['z']);
-    }
-
-    /*!
-      \brief	Checks whether the chosen file format is multi channel
-      \todo 	This is currently UNUSED!
-      \return	true if multi channel, false otherwise
-    */
-    public function checkMultiChannelImageParameter() {
-        $result = True;
-        $parameter = $this->parameter('ImageFileFormat');
-        $fileFormat = $parameter->value();
-        if ((!in_array($fileFormat, $this->multiChannelFileFormats()))) {
-            $this->message = "Please select a multichannel file format (" .
-                    implode(", ", $this->multiChannelFileFormats()) . ")!";
-            return False;
-        }
-        if (!in_array($fileFormat, $this->fixedGeometryFileFormats())) {
-            $result = $this->checkGeometry('multi');
-        }
-        /*
-          if (in_array($fileFormat, $this->variableChannelFileFormats())) {
-          $result = $this->checkNumberOfChannels() && $result;
-          }
-         */
-        return $result;
-    }
-
-    /*!
-      \brief	Checks the Image Geometry (two or three dimensional, time series 
-              or single image).
-      \param	$prefix	Either 'single' (for single-channel geometries) or 'multi' 
-              (for multi-channel geometries)
-      \todo	This is currently UNUSED!
-      \return	true if the geometry is valid, false otherwise
-    */
-    public function checkGeometry($prefix) {
-        $result = True;
-        $parameter = $this->parameter('ImageGeometry');
-        $geometry = $parameter->internalValue();
-        if ($geometry == '') {
-            $geometry = '_';
-        }
-        $parts = explode('_', $geometry);
-        $geometry = $parts[1];
-        $prefix_ok = True;
-        if ($prefix != $parts[0]) {
-            $prefix_ok = False;
-        }
-        if (!$parameter->check() || !$prefix_ok) {
-            $this->message = "Please select the image kind (" .
-                    implode(", ", $parameter->possibleValues()) . ")!";
-            return False;
-        }
-        return $result;
     }
 
     /*!
@@ -1460,33 +1373,6 @@ class ParameterSetting extends Setting {
     public function isMultiPointOrSinglePointConfocal() {
         return ($this->isSinglePointConfocal() || 
                 $this->isMultiPointConfocal());
-    }
-
-    /*!
-      \brief	Checks that this Setting is for a 3D geometry and file format
-      \return	true if both selected geometry and file format are 3D, 
-              false otherwise
-    */
-    public function isThreeDimensional() {
-        $parameter = $this->parameter('ImageGeometry');
-        $value = $parameter->value();
-        $format = $this->parameter('ImageFileFormat');
-        $formatValue = $format->value();
-        return (in_array($value, $this->threeDimensionalGeometries()) &&
-                !in_array($formatValue, $this->fixedGeometryFileFormats()));
-    }
-
-    /*!
-      \brief	Checks that this Setting is for a time series of images
-      \return	true if both selected geometry and file format are for time series,
-              false otherwise
-    */
-    public function isTimeSeries() {
-        if ($this->isFixedGeometryFormat())
-            return False;
-        $parameter = $this->parameter('ImageGeometry');
-        $value = $parameter->value();
-        return (in_array($value, $this->timeSeriesGeometries()));
     }
 
     /*!
