@@ -263,6 +263,9 @@ deconvolution.</p>
             </a>
         </td>
     </tr>
+   </table>
+                
+   <table>
     <tr class="logo">
         <td>
             <a href="javascript:openWindow('http://www.epfl.ch')">
@@ -270,8 +273,6 @@ deconvolution.</p>
             </a>
         </td>
         <td>
-           &nbsp;
-        </td>        <td>
             <a href="javascript:openWindow('http://www.mri.cnrs.fr')">
                 <img src="images/logo_mri.png" alt="MRI" />
             </a>
@@ -283,9 +284,6 @@ deconvolution.</p>
             <a href="javascript:openWindow('http://biop.epfl.ch')">
                 BioImaging and Optics platform
             </a>
-        </td>
-        <td>
-           &nbsp;
         </td>
         <td>
             Montpellier RIO Imaging
