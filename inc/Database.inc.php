@@ -1529,6 +1529,53 @@ class DatabaseConnection {
 
   }
 
+  /*!
+   \brief    Updates the database with the current HuCore license details.
+   \param    $licDetails A string with the supported license features.
+   \return   Boolean: true if the license details were successfully saved.
+  */
+  public function storeLicenseDetails ( $licDetails ) {
+
+    $licStored = true;  
+      
+    // Make sure that the hucore_license table exists.
+    $tables = $this->connection->MetaTables("TABLES");
+    if (!in_array("hucore_license", $tables) ) {
+        $msg = "Table hucore_license does not exist! " .
+		  "Please update the database!";
+        report( $msg, 1 ); exit( $msg );
+    }
+
+    // Empty table: remove existing values from older licenses.
+    $query = "DELETE FROM hucore_license";
+    $result = $this->execute($query);
+
+    if (!$result) {
+        report("Could not store license details in the database!\n", 1);
+        $licStored = false;
+        return $licStored;
+    }
+
+    // Populate the table with the new license.
+    $features = explode(" ", $licDetails);
+    foreach ($features as $feature) {
+        
+        $query = "INSERT INTO hucore_license (feature) ".
+                 "VALUES ('". $feature ."')";
+        $result = $this->execute($query);
+
+        if (!$result) {
+            report("Could not store license feature
+                    '$feature' in the database!\n", 1);
+            $licStored = false;
+            break;
+        }
+    }
+
+    return $licStored;    
+  }
+  
+
 
   /*!
     \brief	Store the confidence levels returned by huCore into the database for faster retrieval

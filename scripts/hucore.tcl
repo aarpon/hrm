@@ -47,6 +47,11 @@ proc reportMsg {msg} {
 }
 
 
+proc reportHuCoreLicense { } {
+    reportKeyValue "license" [huOpt license]
+}
+
+
 proc reportImageDimensions { } {
     set error [ getInputVariables {path filename series} ]
     if { $error } { exit 1 }

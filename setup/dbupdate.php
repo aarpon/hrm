@@ -2166,6 +2166,34 @@ if ($current_revision < $n) {
 // -----------------------------------------------------------------------------
 $n = 10;
 if ($current_revision < $n) {
+    
+// ------------  Add tables for the 'hucore_license'  ---------------------
+// hucore_license
+    
+    $tabname = "hucore_license";
+    
+        // Create the hucore_license table
+        // Update tables array
+    $tables = $db->MetaTables("TABLES");
+
+	// Does the hucore_license table exist?
+	if ( !in_array( $tabname, $tables ) ) {
+            
+            $flds = "feature C(30) NOTNULL DEFAULT 0 PRIMARY";
+            
+            if (!create_table($tabname, $flds)) {
+                $msg = "An error occurred while updating the database to ".
+                       "revision " . $n . ", hucore_license table creation.";
+                write_message($msg);
+                write_to_log($msg);
+                write_to_error($msg);
+
+                return;
+            }
+        }
+        
+            
+
 
 // ------------  Add tables for the 'analysis' templates ---------------------
 // analysis_parameter

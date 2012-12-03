@@ -858,6 +858,11 @@ class QueueManager {
             return;
         }
 
+        if (!$this->storeHuCoreLicenseDetailsIntoDB()) {
+            error_log("An error occurred while saving HuCore license details");
+            return;
+        }
+
         if (!$this->storeConfidenceLevelsIntoDB()) {
             error_log("An error occurred while storing the confidence " .
                 "levels in the database");
@@ -968,14 +973,32 @@ class QueueManager {
             successful, false otherwise
     */
  	private function askHuCoreVersionAndStoreIntoDB() {
-        $huversion = askHuCore("reportVersionNumberAsInteger");
-        $huversion = $huversion["version"];
-        report("HuCore version = " . $huversion . "\n", 2);
-        if (!System::setHuCoreVersion($huversion)) {
-            return false;
+            $huversion = askHuCore("reportVersionNumberAsInteger");
+            $huversion = $huversion["version"];
+            report("HuCore version = " . $huversion . "\n", 2);
+            if (!System::setHuCoreVersion($huversion)) {
+                return false;
+            }
+            return true;
         }
-        return true;
-    }
+
+        /*!
+         \brief   Gets license details from HuCore and saves them into the db.
+         \return  Boolean: true if everything went OK.
+        */
+        private function storeHuCoreLicenseDetailsIntoDB( ) {
+            $licDetails = askHuCore("reportHuCoreLicense");
+
+            // Store the license details in the database.
+            $db = new DatabaseConnection();
+            if (!$db->storeLicenseDetails($licDetails['license'])) {
+                report("Could not store license details in the database!\n", 1);
+                return false;
+            }
+
+            return true;
+        }
+            
 
     /*!
  	\brief	Store the confidence levels returned by huCore into the database
