@@ -1530,6 +1530,31 @@ class DatabaseConnection {
   }
 
   /*!
+   \brief   Finds out whether a Huygens module is supported by the license.
+   \param   $feature The module to find out about.
+   \return  Boolean: true if the module is supported by the license.
+  */
+  public function hasLicense ( $feature ) {
+      
+          // Make sure that the hucore_license table exists.
+      $tables = $this->connection->MetaTables("TABLES");
+      if (!in_array("hucore_license", $tables) ) {
+          $msg = "Table hucore_license does not exist! " .
+              "Please update the database!";
+          report( $msg, 1 ); exit( $msg );
+      }
+
+      $query = "SELECT feature FROM hucore_license WHERE " .
+          "feature = '" . $feature . "' LIMIT 1;";
+
+      if ( $this->queryLastValue($query) === FALSE ) {
+          return false;
+      } else {
+          return true;
+      }
+  }    
+
+  /*!
    \brief    Updates the database with the current HuCore license details.
    \param    $licDetails A string with the supported license features.
    \return   Boolean: true if the license details were successfully saved.
@@ -1574,8 +1599,6 @@ class DatabaseConnection {
 
     return $licStored;    
   }
-  
-
 
   /*!
     \brief	Store the confidence levels returned by huCore into the database for faster retrieval

@@ -108,9 +108,16 @@ else if (isset($_POST['OK']) && $_POST['OK']=="OK" ) {
         'SignalNoiseRatio' )->check();
     $ok = $ok && $_SESSION['task_setting']->parameter(
         'BackgroundOffsetPercent' )->check();
-    
+
+    // If there's no coloc license the analysis stage is skipped. A default
+    // (switched-off coloc) analysis setting will be created .
     if ($ok) {
-      header("Location: " . "select_analysis_settings.php"); exit();
+        if (hasLicense("coloc")) {
+            header("Location: " . "select_analysis_settings.php"); exit();
+        } else {
+            $_SESSION['analysis_setting'] = new AnalysisSetting();            
+            header("Location: " . "create_job.php"); exit();
+        }
     }
     $message = "The number of channels in the selected restoration " .
       "parameters does not match the number of channels in the image " .

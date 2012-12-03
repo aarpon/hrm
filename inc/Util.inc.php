@@ -538,4 +538,11 @@ function using_IE() {
     return False;
 }
 
+function hasLicense( $feature ) {
+    $db = new DatabaseConnection();
+    return $db->hasLicense( $feature );
+}
+
+    
+
 ?>
