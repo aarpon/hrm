@@ -89,7 +89,8 @@ include("header.inc.php");
 			  ?>
 				<td class="icon">
 				  <a href="./user_management.php">
-				  <img alt="Users" src="./images/users.png" />
+				  <img alt="Users"
+                                        src="./images/users_huygens.png" />
 				  </a>
 				</td>
 				
@@ -117,7 +118,8 @@ include("header.inc.php");
 			  
 		    			  <td class="icon">
 				<a href="./account.php">
-				<img alt="Account" src="./images/account.png" />
+				<img alt="Account"
+                                      src="./images/account_huygens.png" />
 				</a>
 			  </td>
 			  
@@ -388,7 +390,8 @@ include("header.inc.php");
 			?>
 			  <td class="icon">
 				<a href="./account.php">
-				<img alt="Account" src="./images/account.png" />
+				<img alt="Account"
+                                      src="./images/account_huygens.png" />
 				</a>
 			  </td>
 			  
