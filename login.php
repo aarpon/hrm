@@ -250,8 +250,10 @@ deconvolution.</p>
     </tr>
     <tr class="caption">
         <td>
-            ETH Zurich<br />
-            Single-Cell Unit
+            EPF Lausanne<br />
+            <a href="javascript:openWindow('http://biop.epfl.ch')">
+                BioImaging and Optics platform
+            </a>
         </td>
         <td>
             Montpellier RIO Imaging
@@ -277,10 +279,8 @@ deconvolution.</p>
     </tr>
     <tr class="caption">
         <td>
-            EPF Lausanne<br />
-            <a href="javascript:openWindow('http://biop.epfl.ch')">
-                BioImaging and Optics platform
-            </a>
+            ETH Zurich<br />
+            Single-Cell Unit
         </td>
         <td>
              Friedrich Miescher Institute<br />
