@@ -323,6 +323,7 @@ function report($text, $level) {
     $text = date("Y-m-d H:i:s") . " " . $text;
     $logpath = $logdir . "/" . $logfile;
 
+    // First rotate the log file if necessary.
     if (file_exists($logpath)
             && (filesize($logpath) > $logfile_max_size * 1000 * 1000)) {
         if (file_exists($logpath . ".old")) {
@@ -330,6 +331,7 @@ function report($text, $level) {
         }
         rename($logpath, $logpath . ".old");
     }
+    
     $file = fopen($logpath, 'a');
     if ($file === FALSE) {
       // Cannot write to the log dir (or the file)

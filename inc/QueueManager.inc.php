@@ -495,10 +495,14 @@ class QueueManager {
                 continue;
 
             // Check if Huygens host is reachable
-            $proc = newExternalProcessFor($job->server(),
+            $proc = newExternalProcessFor(
+                $job->server(),
                 $job->server() . "_" . $job->id() . "_out.txt",
-                $job->server() . "_" . $job->id() . "_error.txt");
-            if (!$proc->ping()) {
+                $job->server() . "_" . $job->id() . "_error.txt" );
+            $ping = $proc->ping();
+            $proc->release();
+            
+            if (!$ping) {
                 continue;
             }
             
