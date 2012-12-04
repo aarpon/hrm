@@ -238,13 +238,13 @@ deconvolution.</p>
             </a>
         </td>
         <td>
-            <a href="javascript:openWindow('http://www.svi.nl')">
-                <img src="images/logo_svi.png" alt="SVI" />
+            <a href="javascript:openWindow('http://www.mri.cnrs.fr')">
+                <img src="images/logo_mri.png" alt="MRI" />
             </a>
         </td>
         <td>
-            <a href="javascript:openWindow('http://www.mri.cnrs.fr')">
-                <img src="images/logo_mri.png" alt="MRI" />
+            <a href="javascript:openWindow('http://www.svi.nl')">
+                <img src="images/logo_svi.png" alt="SVI" />
             </a>
         </td>
     </tr>
@@ -254,10 +254,10 @@ deconvolution.</p>
             Single-Cell Unit
         </td>
         <td>
-            Scientific Volume Imaging
+            Montpellier RIO Imaging
         </td>
         <td>
-            Montpellier RIO Imaging
+            Scientific Volume Imaging
         </td>
     </tr>
    </table>
