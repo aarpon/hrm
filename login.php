@@ -233,8 +233,8 @@ deconvolution.</p>
 <table>
     <tr class="logo">
         <td>
-            <a href="javascript:openWindow('http://www.bsse.ethz.ch/')">
-                <img src="images/logo_bsse.png" alt="BSSE ETH Zurich" />
+            <a href="javascript:openWindow('http://www.epfl.ch')">
+                <img src="images/logo_epfl.png" alt="EPFL" />
             </a>
         </td>
         <td>
@@ -243,8 +243,8 @@ deconvolution.</p>
             </a>
         </td>
         <td>
-            <a href="javascript:openWindow('http://www.fmi.ch')">
-                <img src="images/logo_fmi.png" alt="FMI" />
+            <a href="javascript:openWindow('http://www.mri.cnrs.fr')">
+                <img src="images/logo_mri.png" alt="MRI" />
             </a>
         </td>
     </tr>
@@ -257,10 +257,7 @@ deconvolution.</p>
             Scientific Volume Imaging
         </td>
         <td>
-             Friedrich Miescher Institute<br />
-            <a href="javascript:openWindow('http://www.fmi.ch/faim')">
-                Facility for Advanced<br />Imaging and Microscopy
-            </a>
+            Montpellier RIO Imaging
         </td>
     </tr>
    </table>
@@ -268,13 +265,13 @@ deconvolution.</p>
    <table>
     <tr class="logo">
         <td>
-            <a href="javascript:openWindow('http://www.epfl.ch')">
-                <img src="images/logo_epfl.png" alt="EPFL" />
+            <a href="javascript:openWindow('http://www.bsse.ethz.ch/')">
+                <img src="images/logo_bsse.png" alt="BSSE ETH Zurich" />
             </a>
         </td>
         <td>
-            <a href="javascript:openWindow('http://www.mri.cnrs.fr')">
-                <img src="images/logo_mri.png" alt="MRI" />
+            <a href="javascript:openWindow('http://www.fmi.ch')">
+                <img src="images/logo_fmi.png" alt="FMI" />
             </a>
         </td>
     </tr>
@@ -286,7 +283,10 @@ deconvolution.</p>
             </a>
         </td>
         <td>
-            Montpellier RIO Imaging
+             Friedrich Miescher Institute<br />
+            <a href="javascript:openWindow('http://www.fmi.ch/faim')">
+                Facility for Advanced<br />Imaging and Microscopy
+            </a>
         </td>
     </tr>
  </table>

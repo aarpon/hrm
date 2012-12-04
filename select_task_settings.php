@@ -110,7 +110,7 @@ else if (isset($_POST['OK']) && $_POST['OK']=="OK" ) {
         'BackgroundOffsetPercent' )->check();
 
     // If there's no coloc license the analysis stage is skipped. A default
-    // (switched-off coloc) analysis setting will be created .
+    // (switched-off coloc) analysis setting will be created.
     if ($ok) {
         if (hasLicense("coloc")) {
             header("Location: " . "select_analysis_settings.php"); exit();
