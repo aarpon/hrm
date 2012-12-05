@@ -460,6 +460,34 @@ class QueueManager {
     }
 
     /*!
+     \brief   Checks whether the processing server reacts on 'ping'.
+     \param   $server The server's name
+     \param   $outLog A string specific of the output log file name.
+     \param   $errLog A string specific of the error log file name.
+     \return  Boolean: true on success.
+    */
+    private function isProcessingServerReachable($server,
+                                                 $outLog = NULL,
+                                                 $errLog = NULL) {
+        if ( $outLog ) {
+            $outLog .= "_";
+        }
+
+        if ( $errLog ) {
+            $errLog .= "_";
+        }
+
+        $proc = newExternalProcessFor( $server,
+                                       $server . $outLog . "_out.txt",
+                                       $server . $errLog . "_error.txt" );
+        $isReachable = $proc->ping();
+        
+        $proc->release();
+        
+        return $isReachable;
+    }   
+
+    /*!
  	\brief	Updates the Job and server status
 
  	This methods kills all Jobs that are marked to be killed, checks whether
@@ -491,22 +519,15 @@ class QueueManager {
         foreach ($runningJobs as $job) {
             $desc = $job->description();
             $user = $desc->owner();
-
-            // Check if fileserver is reachable
+            
             $fileserver = new Fileserver($user->name());
             if (!$fileserver->isReachable())
                 continue;
 
-            // Check if Huygens host is reachable
-            $proc = newExternalProcessFor(
-                $job->server(),
-                $job->server() . "_" . $job->id() . "_out.txt",
-                $job->server() . "_" . $job->id() . "_error.txt" );
-            $ping = $proc->ping();
-            $proc->release();
-
-            if (!$ping) {
-                continue;
+            if ( !$this->isProcessingServerReachable($job->server(),
+                                                     $job->id(),
+                                                     $job->id()) ) {
+                continue;    
             }
             
             // Check finished marker
@@ -783,25 +804,20 @@ class QueueManager {
  	public function getFreeServer() {
             
         $db = new DatabaseConnection();
-        $serverNames = $db->availableServer();
+        $servers = $db->availableServer();
         
-        foreach ($serverNames as $name) {
-            $status = $db->statusOfServer($name);
+        foreach ($servers as $server) {
+            $status = $db->statusOfServer($server);
             if ($status == 'free') {
-                $proc = newExternalProcessFor($name,
-                                              $name . "_out.txt",
-                                              $name . "_error.txt");
-                $ping = $proc->ping();
-                $proc->release();
 
-                if ($ping) {
-                    $this->nping[$name] = 0;
-                    $this->freeServer = $name;
+                if ( $this->isProcessingServerReachable($server) ) {
+                    $this->nping[$server] = 0;
+                    $this->freeServer = $server;
                     return True;
                 } else {
-                    $this->incNPing($name);
-                    if ($this->nping[$name] == 40) {
-                        $this->notifyPingError($name);
+                    $this->incNPing($server);
+                    if ($this->nping[$server] == 40) {
+                        $this->notifyPingError($server);
                     }
                 }
             }
