@@ -16,23 +16,30 @@ $hutask = "-noExecLog -checkUpdates disable -template";
 
 /*!
   \brief  Runs a new shell either with or without secure connection between the
-          queue manager and the Image area
+          queue manager and the Image area.
  		
-  Which of the two modes is chosen depends on the value of the configuration 
-  variable $imageProcessingIsOnQueueManager.
- 
+          Which of the two modes is chosen depends on the value of
+          the configuration variable $imageProcessingIsOnQueueManager.
+          
   \todo	Implement better management of multiple hosts
 */
 function newExternalProcessFor($host, $logfilename, $errfilename) {
     global $imageProcessingIsOnQueueManager;
+    
     $db = new DatabaseConnection();
     $huscript_path = $db->huscriptPathOn($host);
+    
     if ($imageProcessingIsOnQueueManager)
-        $shell = new LocalExternalProcess($host, $huscript_path, 
-            $logfilename, $errfilename);
+        $shell = new LocalExternalProcess($host,
+                                          $huscript_path, 
+                                          $logfilename,
+                                          $errfilename);
     else
-        $shell = new ExternalProcess($host, $huscript_path, 
-            $logfilename, $errfilename);
+        $shell = new ExternalProcess($host,
+                                     $huscript_path, 
+                                     $logfilename,
+                                     $errfilename);
+    
     return $shell;
 }
 

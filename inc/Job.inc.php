@@ -388,13 +388,18 @@ class Job {
         
         clearstatcache();
 
-        $this->shell = newExternalProcessFor($this->server(), 
-                                             $this->server() . 
-                                             "_" .$this->id() . "_out.txt", 
-                                             $this->server() .  "_"
-                                             . $this->id(). "_error.txt");
+        $this->shell = newExternalProcessFor(
+            $this->server(), 
+            $this->server() . "_" . $this->id() . "_out.txt", 
+            $this->server() .  "_". $this->id(). "_error.txt");
         $proc = $this->shell;
-        $proc->runShell();
+
+            /* Check whether the shell is ready to accept further execution. If
+             not, the shell will be released internally, no need to release it
+             here. */
+        if (!$proc->runShell()) {
+            return False;
+        }
 
         // Server name without proc number
         $server = $this->server;

@@ -126,11 +126,14 @@ class QueueManager {
             report("images copied to IP server", 1);
         }
 
-        $proc = newExternalProcessFor($server, $server . "_" .$job->id() .
-            "_out.txt", $server . "_" .$job->id(). "_error.txt");
+        $proc = newExternalProcessFor($server,
+                                      $server . "_" .$job->id() . "_out.txt",
+                                      $server . "_" . $job->id(). "_error.txt");
         report("shell process created", 1);
 
-            /* Check whether the shell is ready to accept further execution. */
+            /* Check whether the shell is ready to accept further execution. If
+             not, the shell will be released internally, no need to release it
+             here. */
         if (!$proc->runShell()) {
             return False;
         }
@@ -501,16 +504,18 @@ class QueueManager {
                 $job->server() . "_" . $job->id() . "_error.txt" );
             $ping = $proc->ping();
             $proc->release();
-            
+
             if (!$ping) {
                 continue;
             }
             
             // Check finished marker
             $finished = $job->checkProcessFinished();
+
             if (!$finished) {
                 continue;
             }
+            
             report("checked finished process", 2);
 
             // Check result image
@@ -776,16 +781,20 @@ class QueueManager {
  	\return name of a free server
  	*/
  	public function getFreeServer() {
+            
         $db = new DatabaseConnection();
         $serverNames = $db->availableServer();
+        
         foreach ($serverNames as $name) {
             $status = $db->statusOfServer($name);
             if ($status == 'free') {
-                $proc = newExternalProcessFor($name, $name . "_out.txt",
-                    $name . "_error.txt");
-                //report("found free server", 2);
-                if ($proc->ping()) {
-                    //report("ping succeeded for $name", 2);
+                $proc = newExternalProcessFor($name,
+                                              $name . "_out.txt",
+                                              $name . "_error.txt");
+                $ping = $proc->ping();
+                $proc->release();
+
+                if ($ping) {
                     $this->nping[$name] = 0;
                     $this->freeServer = $name;
                     return True;
@@ -797,7 +806,9 @@ class QueueManager {
                 }
             }
         }
+        
         $this->freeServer = False;
+        
         return $this->freeServer;
     }
 

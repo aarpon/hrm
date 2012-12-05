@@ -174,8 +174,8 @@ class JobQueue {
             $pid = $row['process_info'];
             $server = $row['server'];
             $proc = newExternalProcessFor($server,
-            $server . "_". $id . "_out.txt",
-            $server . "_". $id . "_error.txt");
+                                          $server . "_". $id . "_out.txt",
+                                          $server . "_". $id . "_error.txt");
             $killed = $proc->killHucoreProcess($pid);
             report("Trying to kill running job with pid $pid: $killed",1);
             $result = $result && $killed;
@@ -185,6 +185,8 @@ class JobQueue {
                 $errorFile = $logdir . "/" . $server .  "_" .$id. "_error.txt";
                 if (file_exists($errorFile)) unlink($errorFile);
             }
+
+            $proc->release();
         }
         return $result;
     }
