@@ -2725,7 +2725,7 @@ echo '</body></html>';
     return $files;
   }
   
-                        /* -------- Colocalization ------ */
+      /* ------------------------- Colocalization -------------------------- */
   
   /*!
     \brief  Retrieves the HTML code for the colocalization preview page.
@@ -2801,6 +2801,8 @@ echo '</body></html>';
       return $colocHtml;
   }
 
+
+                     /* -------- Coefficients tab ------ */
   /*!
     \brief  Creates html code specific for the colocalization coefficients tab.
     \param  $colocHtml  The pre-formatted html coloc page.
@@ -2809,31 +2811,27 @@ echo '</body></html>';
   */
   private function showCoefficientsTab($colocHtml, $threshold) {
 
-          /* Next to the pre-formatted coefficient tables show the 2D histograms. */
-      $colocHtml = $this->showHistograms($colocHtml);
+          /* Allow the user to visualize coefficients above a threshold. */
+      $colocHtml = $this->addThresholdForm($colocHtml, $threshold);
       
-          /* Adapt the pre-formatted html code containing the colocalization
-           tables to highlight the table cells that are above threshold. */
-      if ( $threshold ) {
+          /* In addition to the coefficient tables show the 2D histograms. */
+      $colocHtml = $this->add2DHistograms($colocHtml);
 
-              /* Loop over the table values: the colocalization coefficients. */
-          $pattern = "/class=\"coefficient\" colspan=\"1\">([0-9.]+)/";
-          preg_match_all($pattern, $colocHtml, $matches);
-          
-          foreach($matches[1] as $coefficient) {
+          /* Filter out the coefficients if the user entered a threshold. */
+      $colocHtml = $this->highlightCoefficients($colocHtml, $threshold);
+      
+      return $colocHtml;
+  }
 
-                  /* Highlight the coefficients above the threshold. */
-              if ($coefficient > $threshold) {
+  /*!
+   \brief   A form to allow the user to filter out coeffiecient values.
+   \param   $colocHtml A string with the html code of the tab so far.
+   \param   $threshold The value of a threshold typed by the user.
+   \return  An html string including the tab with the threshold form.
+  */
+  private function addThresholdForm($colocHtml, $threshold) {
 
-                      /* Change the html properties of that particular cell. */
-                  $replaceThis = "coefficient\" colspan=\"1\">$coefficient";
-                  $replaceWith = "marked\" colspan=\"1\">$coefficient";
-                  $colocHtml = str_replace($replaceThis,$replaceWith,$colocHtml);
-              }
-          }
-      }
-
-		  /* TODO: Improve the below layout via css. */
+          /* TODO: Improve the below layout via css. */
       
           /* Form used to ask for the threshold value. */
       $form  = "<br /><br />";
@@ -2845,21 +2843,21 @@ echo '</body></html>';
       $form .= "onmouseover=\"Tip('Highlight all values above the set ";
       $form .= "threshold.')\ onmouseout=\"UnTip()\" > Highlight </button>";
       $form .= "<br /><br /></form>";
-
+      
           /* Insert the form before the output of the first coloc run. */
       $replaceThis = "/<div id=\"colocRun\"/";
       $replaceWith = $form . "<div id=\"colocRun\"";
-      $colocHtml   = preg_replace($replaceThis,$replaceWith,$colocHtml,1);
       
-      return $colocHtml;
+      return preg_replace($replaceThis,$replaceWith,$colocHtml,1);
   }
+  
 
   /*!
    \brief    Inserts existing 2D histograms into the coloc coefficients tab.
    \param    $coefficientsTab Html string containing the coefficients tab.
    \return   The adapted coefficients tab html string with histograms.
   */                                   
-  private function showHistograms($coefficientsTab)
+  private function add2DHistograms($coefficientsTab)
   {
       
           /* Histogram tooltip: it's common to all histograms. */
@@ -2904,6 +2902,40 @@ echo '</body></html>';
       
       return $coefficientsTab;
   }
+
+  /*!
+   \brief  Marks coloc coefficient values above a threshold with a colour.
+   \param  $colocHtml A string with the tab html code so far.
+   \param  $threshold A numeric value for a threshold entered by the user.
+   \return A string with the html code of the tab and the highlighted values.
+  */
+  private function highlightCoefficients( $colocHtml, $threshold ) {
+
+          /* Adapt the pre-formatted html code containing the colocalization
+           tables to highlight the table cells that are above threshold. */
+      if ( $threshold ) {
+          
+              /* Loop over the table values: the colocalization coefficients. */
+          $pattern = "/class=\"coefficient\" colspan=\"1\">([0-9.]+)/";
+          preg_match_all($pattern, $colocHtml, $matches);
+          
+          foreach($matches[1] as $coefficient) {
+              
+                  /* Highlight the coefficients above the threshold. */
+              if ($coefficient > $threshold) {
+                  
+                      /* Change the html properties of that particular cell. */
+                  $replaceThis = "coefficient\" colspan=\"1\">$coefficient";
+                  $replaceWith = "marked\" colspan=\"1\">$coefficient";
+                  $colocHtml = str_replace($replaceThis,$replaceWith,$colocHtml);
+              }
+          }
+      }
+
+      return $colocHtml;
+  }
+  
+                     /* -------- Colocalization maps tab ------ */
   
   /*!
    \brief   Creates html code specific for the colocalization maps tab.
