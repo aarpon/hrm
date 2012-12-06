@@ -2840,7 +2840,7 @@ echo '</body></html>';
       $form .= "<form action='' method='post'>";
       $form .= "\t\t\t\t\tColocalization coefficients larger than:   ";
       $form .= "<input type='text' name='threshold' value='$threshold'/>";
-      $form .= "<input type='hidden' name='tab' value='$tab' />   ";
+      $form .= "<input type='hidden' name='tab' value='coefficients' />   ";
       $form .= "<button name='submit' type='submit' ";
       $form .= "onmouseover=\"Tip('Highlight all values above the set ";
       $form .= "threshold.')\ onmouseout=\"UnTip()\" > Highlight </button>";
@@ -2911,21 +2911,22 @@ echo '</body></html>';
    \return  String containing HTML code for the colocalization preview page.
   */
   private function showColocMapsTab($colocHtml) 
-  {
-      $colocMapTab = $this->collapseColocCoefficients( $colocHtml );
+  {   
+      $colocHtml = $this->collapseColocCoefficients( $colocHtml );
       
           /* Search for channel hooks indicating which channel
            combinations should display colocalization maps. */
       $pattern = "/Hook chan ([0-9]) - chan ([0-9])/";
-      if (!preg_match_all($pattern,$colocMapTab,$channels)) {
+      if (!preg_match_all($pattern,$colocHtml,$channels)) {
           error_log("Impossible to retrieve channels from coloc report.");
       }
       
           /* Loop over the channel combinations and add their coloc maps. */
+      $colocMapTab = "";
       foreach ($channels[1] as $key => $chanR) {
           $chanG = $channels[2][$key];
 
-          $colocMapTab .= $this->addColocMaps($chanR, $chanG, $colocMapTab);
+          $colocMapTab .= $this->addColocMaps($chanR, $chanG, $colocHtml);
       }
   
       return $colocMapTab;
@@ -3094,7 +3095,7 @@ echo '</body></html>';
               $html  = "</tr></table></div><!-- colocMap --><br />";
               break;
           case 'mapTitle':
-              $mapType .= $this->getColocMapType($map,$chanR,$chanG);
+              $mapType = $this->getColocMapType( $map, $chanR, $chanG );
               
               if (strstr($mapType,"Deconvolved")) {
                   $html .= "<b>Deconvolved image</b>";
@@ -3105,7 +3106,7 @@ echo '</body></html>';
               }
               break;
           case 'mapEntry':
-              $mapTitle = $this->getColocMapTitle($map, $chanR, $chanG);
+              $mapTitle = $this->getColocMapTitle( $map, $chanR, $chanG );
               
               $html .= "<td class=\"cell\">$mapTitle<br /><br />";
               $html .= "<img src='file_management.php?getThumbnail=";
