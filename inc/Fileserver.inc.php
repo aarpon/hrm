@@ -1419,7 +1419,12 @@ echo '</body></html>';
   public function previewPage ($file , $op = "close", $mode = "MIP", $size = 400) {
       global $allowHttpTransfer;
 
+
       $file = stripslashes($file);
+
+          /* All job previews share a common root name and relative path. */
+      $this->previewBase = $file;
+      
       echo '<?xml version=\"1.0\" encoding=\"UTF-8\"?'.'>';
 
       echo ' <!DOCTYPE html
@@ -1460,9 +1465,6 @@ echo '</body></html>';
 
       $dir = dirname($pdest."/".$file);
       $base = basename($pdest."/".$file);
-
-          /* All preview files share a common root name. Set it here. */
-      $this->previewBase = $base;
 
           /* The root name involving the path as well. */	
       $prevBase = $dir."/hrm_previews/".$base;      
@@ -2743,12 +2745,16 @@ echo '</body></html>';
 
           /* Variables storing the user requests on tab choice and
            threshold value for highlight purposes. */
+      if (!isset($_POST['tab']) || is_null($_POST['tab'])) {
+          $_POST['tab'] = 'coefficients';
+      }
+      
+      if (!isset($_POST['threshold']) || $_POST['threshold'] < 0) {
+          $_POST['threshold'] = null;
+      }
+          
       $postedTab = $_POST['tab'];
       $postedThr = $_POST['threshold'];
-
-          /* Initialize the user request variables if necessary. */
-      if ($postedThr <= 0)    $postedThr = null;
-      if ($postedTab == null) $postedTab = "coefficients";
 
           /* Get the code specific of each tab. */
       switch ( $postedTab ) {
@@ -2906,80 +2912,213 @@ echo '</body></html>';
   */
   private function showColocMapsTab($colocHtml) 
   {
-          /* Location where the colocalization maps are stored. */
-      $mapFolder = $this->destinationFolder() . "/hrm_previews/";
+      $colocMapTab = $this->collapseColocCoefficients( $colocHtml );
       
-          /* Remove the coloc coefficients from the pre-formatted html table. */
-      $replaceThis = "/Hist --><div.+?colocCoefficients -->/";
-      $replaceWith = "Hist -->";
-      $colocMapTab = preg_replace($replaceThis,$replaceWith,$colocHtml);
-      
-          /* Search the channel hooks indicating which maps must be shown. */
+          /* Search for channel hooks indicating which channel
+           combinations should display colocalization maps. */
       $pattern = "/Hook chan ([0-9]) - chan ([0-9])/";
-      if (!preg_match_all($pattern,$colocMapTab,$matches)) {
+      if (!preg_match_all($pattern,$colocMapTab,$channels)) {
           error_log("Impossible to retrieve channels from coloc report.");
       }
       
-          /* Loop over the existing channel hooks. */
-      foreach ($matches[1] as $key => $chanR) {
-          $chanG = $matches[2][$key];
-          
-              /* The image hook will be subtituted with the actual maps. */
-          $replaceThis  = "<div id=\"colocHist\">";
-          $replaceThis .= "Hook chan $chanR - chan $chanG";
-          $replaceThis .= "</div><!-- colocHist -->";
-          
-              /* The corresponding coloc maps will be assembled in a table. */
-          $replaceWith  = "<div id=\"colocMap\"><table>";
-          $replaceWith .= "<tr><td class=\"title\" colspan=\"2\">";
-          $replaceWith .= "Channel $chanR  ~vs~  Channel $chanG</td></tr>";
-          $replaceWith .= "<tr>";
-          
-              /* Find all existing coloc maps containing these 2 channels. */
-          $pattern  = $mapFolder . $this->previewBase . ".*.map_chan";
-          $pattern .= $chanR . "_chan" . $chanG . "*";
-          $mapsChanRChanG = glob($pattern);
-          
-              /* Loop over the existing maps for each channel hook. */
-          foreach ($mapsChanRChanG as $map) {
-              
-                  /* Get this map's file name (without path). */
-              $mapFile = basename($map);
+          /* Loop over the channel combinations and add their coloc maps. */
+      foreach ($channels[1] as $key => $chanR) {
+          $chanG = $channels[2][$key];
 
-                  /* Get the coefficient name of this coloc map. */
-              $pattern  = "/.*\.(.*)\.map_chan" . $chanR;
-              $pattern .= "_chan" . $chanG . "(|\.Deconvolved)\.jpg/";
-              
-              if (!preg_match($pattern,$mapFile,$coefficient)) {
-                  error_log("Impossible to find coefficient type from map.");
-              }
-              
-                  /* Add a short description to the map name. */
-              if (strstr($coefficient[2],"Deconvolved")) {
-                  $label  = "<b>Deconvolved image</b>";
-                  $label .= "<br /><i>Showing channels $chanR & $chanG</i>";
-              } else {
-                  $label  = "<b>Colocalization map</b>";
-                  $label .= "<br /><b><i>$coefficient[1]</b> coefficient</i>";
-              }
-
-                  /* Insert this map and its title into the table. */
-              $replaceWith .= "<td class=\"cell\">$label<br /><br />";
-              $replaceWith .= "<img src='file_management.php?getThumbnail=";
-              $replaceWith .= "$mapFile&amp;dir=dest' alt='Coloc map channels ";
-              $replaceWith .= "$chanR - $chanG' height='256' width='256'>";
-              $replaceWith .= "</td>";
-          }
-
-              /* The table is formed by the maps of a 2-channel combination. */
-          $replaceWith .= "</tr></table></div><!-- colocMap --><br />";
-
-              /* Replace the channel hook with the coloc maps code. */
-          $colocMapTab = str_replace($replaceThis,$replaceWith,$colocMapTab);
+          $colocMapTab .= $this->addColocMaps($chanR, $chanG, $colocMapTab);
       }
   
       return $colocMapTab;
   }
+
+  /*!
+   \brief   Gathers all the coloc maps of a 2-channel combination.
+   \param   $chanR One of the channels of the colocalization map.
+   \param   $chanG The other channel of the colocalization map.
+   \return  An html string with the coloc maps of the 2 channels.
+  */
+  private function addColocMaps($chanR, $chanG, $colocMapTab) {
+
+      $mapsChanRChanG = $this->findColocMaps( $chanR, $chanG );
+      
+          /* The two channel html hook will be subtituted with the coloc maps. */
+      $colocHook = $this->getHtmlForColocMap("divHook", $chanR, $chanG);    
+      
+          /* The coloc maps of these two channels are assembled in a table. */
+      $colocMaps = $this->getHtmlForColocMap("divMap", $chanR, $chanG);
+      
+          /* Loop over the existing maps of these two
+           channels and add entries to the table. */
+      foreach ($mapsChanRChanG as $map) {
+          
+              /* Insert this map and its title into the table. */
+          $colocMaps .= $this->getHtmlForColocMap("mapEntry",$chanR,$chanG,$map);
+      }
+      
+      $colocMaps .= $this->getHtmlForColocMap("divMapEnd", $chanR, $chanG);
+      
+          /* Replace the channel hook with the coloc maps of the two channels. */
+      $colocMapTab = str_replace($colocHook,$colocMaps,$colocMapTab);
+
+      return $colocMapTab;
+  } 
+
+  /*!
+   \brief  Gets a headline to show on top of each coloc map.
+   \param  $mapFile Name and relative path to the coloc map.
+   \param  $chanR One of the channels of the colocalization map.
+   \param  $chanG The other channel of the colocalization map.
+   \return An html string with the title.
+  */
+  private function getColocMapTitle( $mapFile, $chanR, $chanG ) {
+      return $this->getHtmlForColocMap( "mapTitle", $chanR, $chanG, $mapFile );
+  }
+
+  /*!
+   \brief  Finds all the coloc maps of a job per combination of two channels.
+   \param  $chanR One of the channels of the colocalization map.
+   \param  $chanG The other channel of the colocalization map.
+   \return An array whose elements are the names of the found coloc maps.
+  */
+  private function findColocMaps( $chanR, $chanG ) {
+
+          /* Get the user's general destination folder. */
+      $destDir = $this->destinationFolder();
+
+          /* Path to the colocalization maps. */
+      $previewsDir = $this->getPathToJobPreviews( );
+      
+          /* Find all existing coloc maps containing these 2 channels. */
+      $pattern  = $previewsDir . "*.map_chan";
+      $pattern .= $chanR . "_chan" . $chanG . "*";
+
+      $mapsChanRChanG = glob($pattern);
+
+          /* Get this map's file name (without path). */
+      $mapsChanRChanG = str_replace( $destDir . "/" , "" , $mapsChanRChanG );
+      $mapsChanRChanG = str_replace( "hrm_previews/", "" , $mapsChanRChanG );
+      
+      return $mapsChanRChanG;
+  }
+  
+  
+  /*!
+   \brief   Removes the coefficient section from the pre-formatted coloc html.
+   \param   $colocHtml A string with the pre-formatted coloc html.
+   \return  The coloc html string with no coefficients.  
+  */
+  private function collapseColocCoefficients( $colocHtml ) {
+
+          /* Remove the coloc coefficients from the pre-formatted html table. */
+      $replaceThis = "/Hist --><div.+?colocCoefficients -->/";
+      $replaceWith = "Hist -->";
+      
+      return preg_replace($replaceThis,$replaceWith,$colocHtml);
+  }
+
+  /*!
+   \brief   Type of colocalization map based on the coefficient names.
+   \param   $colocMapFile Name and relative path to the coloc map.
+   \param   $chanR One of the two channels of a coloc map.
+   \param   $chanG The other channel of a coloc map.
+   \return  The type name of the colocalization map.
+  */
+  private function getColocMapType( $colocMapFile, $chanR, $chanG ) {
+
+          /* Get the coefficient name of this coloc map. */
+      $pattern  = "/.*\.(.*)\.map_chan" . $chanR;
+      $pattern .= "_chan" . $chanG . "(|\.Deconvolved)\.jpg/";
+      
+      if (!preg_match($pattern,$colocMapFile,$coefficient)) {
+          error_log("Impossible to find coefficient type from map.");
+          return false;
+      }
+
+      if (strstr($coefficient[2],"Deconvolved")) {
+          return $coefficient[2];
+      } else {
+          return $coefficient[1];
+      }
+  }
+  
+  /*!
+   \brief   Job previews may be located in subfolders, hence the need for
+            this function.
+   \return  The path to the previews.
+  */
+  private function getPathToJobPreviews( ) {
+
+      /* 'previewBase' contains job-specific subfolders + the job id.
+      if (!$this->previewBase) {
+          return false;
+      }    
+
+      /* Main path to destination images. */
+      $path  = $this->destinationFolder() . "/";
+
+      /* Job specific subfolders. */
+      $path .= dirname($this->previewBase);
+
+      /* The previews folder. */
+      $path .= "/hrm_previews/";
+
+      return $path;
+  }
+
+  /*!
+   \brief   It tries to centralize renderization of html code for coloc maps.
+   \param   $section Which type of html code for the  coloc maps.
+   \param   $chanR One of the two channels of a coloc map.
+   \param   $chanG The other channel of a coloc map.
+   \param   $map Name and relative path to the coloc map.
+   \return  String with the requested html code.
+  */
+  private function getHtmlForColocMap( $section, $chanR, $chanG, $map = NULL) {
+      
+      $html = "";
+      
+      switch ( $section ) {
+          case 'divHook':
+          case 'divHookEnd':
+              $html .= "<div id=\"colocHist\">";
+              $html .= "Hook chan $chanR - chan $chanG";
+              $html .= "</div><!-- colocHist -->";
+              break;
+          case 'divMap':
+              $html .= "<div id=\"colocMap\"><table>";
+              $html .= "<tr><td class=\"title\" colspan=\"2\">";
+              $html .= "Channel $chanR  ~vs~  Channel $chanG</td></tr>";
+              $html .= "<tr>";
+              break;
+          case 'divMapEnd':
+              $html  = "</tr></table></div><!-- colocMap --><br />";
+              break;
+          case 'mapTitle':
+              $mapType .= $this->getColocMapType($map,$chanR,$chanG);
+              
+              if (strstr($mapType,"Deconvolved")) {
+                  $html .= "<b>Deconvolved image</b>";
+                  $html .= "<br /><i>Showing channels $chanR & $chanG</i>";
+              } else {
+                  $html .= "<b>Colocalization map</b>";
+                  $html .= "<br /><b><i>$mapType</b> coefficient</i>";
+              }
+              break;
+          case 'mapEntry':
+              $mapTitle = $this->getColocMapTitle($map, $chanR, $chanG);
+              
+              $html .= "<td class=\"cell\">$mapTitle<br /><br />";
+              $html .= "<img src='file_management.php?getThumbnail=";
+              $html .= "$map&amp;dir=dest' alt='Coloc map channels ";
+              $html .= "$chanR - $chanG' height='256' width='256'>";
+              $html .= "</td>";
+              break;
+          default:
+              error_log("Html section not yet implemented.");
+      }
+
+      return $html;
+  } 
   
 
 } // End of FileServer class
