@@ -1676,7 +1676,7 @@ echo '</body></html>';
              echo "onclick=\"window.close()\"".
              "onmouseover=\"Tip('Close this window and go back to your raw images.')\" onmouseout=\"UnTip()\">".
              "<a href=\"#\">".
-             "<img src=\"images/cancel_help.png\" alt=\"cancel\" /> Back".
+             "<img src=\"images/back_small.png\" alt=\"back\" /> Back".
              "</a>\n";
              break;
           case "home":
@@ -1915,7 +1915,7 @@ echo '</body></html>';
           case "close":
              echo " <a href=\"#\" onclick=\"window.close()\" ".
              "onmouseover=\"Tip('Close this window and go back to your raw images.')\" onmouseout=\"UnTip()\">".
-             "<img src=\"images/cancel_help.png\" alt=\"cancel\" />".
+             "<img src=\"images/back_small.png\" alt=\"back\" />".
              "</a>\n";
              break;
           case "home":
@@ -2765,7 +2765,7 @@ echo '</body></html>';
               $colocHtml = $this->showColocMapsTab($colocHtml);
               break;
           default:
-              error_log("Coloc tab '$postedTab' not implemented yet.");
+              error_log("Coloc tab '$postedTab' not yet implemented.");
       }
       
           /* Create the forms associated to the coloc tabs to convey the user
