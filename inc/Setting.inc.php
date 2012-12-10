@@ -306,6 +306,55 @@ class ParameterSetting extends Setting {
     }
 
     /*!
+     \brief
+     \return
+    */
+    public function checkParameterSetting( ) {
+
+        $postedParams = array();
+        
+        foreach ($this->parameter as $objName => $objInstance) {
+
+            switch ( $objName ) {
+                case "ExcitationWavelength" :
+                case "EmissionWavelength" :
+                case "PinholeSize" :
+                    $chanValues = $objInstance->value();
+
+                    foreach ( $chanValues as $chan => $value) {
+                        if ($value) {
+                            $postedParams["$objName$chan"] = $value;
+                        }
+                    }
+                default:
+                    $postedParams[$objName] = $objInstance->value();   
+            }
+        }
+        
+        if ( !$this->checkPostedImageParameters($postedParams) ) {
+            return False;
+        }
+        
+        if ( !$this->checkPostedMicroscopyParameters($postedParams) ) {
+            return False;
+        }
+        
+        if ( !$this->checkPostedCapturingParameters($postedParams) ) {
+            return False;
+        }
+        
+        if (!$this->checkPostedAberrationCorrectionParameters($postedParams)) {
+            return False;
+        }
+
+            /* Only for widefiled and spinning disk. */
+//         $this->checkPostedCalculatePixelSizeParameters($postedParams);
+
+        return True;
+    }
+    
+
+    /*!
       \brief	Checks that the posted Image Parameters are all defined
               and valid
 
@@ -380,7 +429,7 @@ class ParameterSetting extends Setting {
             $this->message = '';
             return False;
         }
-
+        
         $this->message = '';
         $noErrorsFound = True;
 
@@ -438,6 +487,7 @@ class ParameterSetting extends Setting {
                 // $mustProvide flag)
                 $parameter = $this->parameter($name);
                 $parameter->setValue($value);
+
                 $this->set($parameter);
                 if (!$parameter->check()) {
                     $this->message = $parameter->message();
@@ -969,11 +1019,13 @@ class ParameterSetting extends Setting {
     */
     public function microscopeParameterNames() {
         $names = array();
+
         foreach ($this->parameter as $parameter) {
             if ($parameter->isForMicroscope()) {
                 $names[] = $parameter->name();
             }
         }
+
         return $names;
     }
 

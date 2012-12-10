@@ -128,6 +128,12 @@ else if (isset($_POST['OK']) && $_POST['OK']=="OK" ) {
         $ok = False;
       }
     }
+
+    if ( !$_SESSION['setting']->checkParameterSetting( ) ) {
+        $message = $_SESSION['setting']->message();
+        $ok = False;
+    }
+    
     if ($ok) {header("Location: " . "select_task_settings.php"); exit();}
   }
 }
@@ -470,7 +476,6 @@ if (!$_SESSION['user']->isAdmin()) {
 <?php
 
 echo "<p>$message</p>";
-
 
 ?>
         </div>
