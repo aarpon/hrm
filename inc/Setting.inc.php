@@ -312,6 +312,8 @@ class ParameterSetting extends Setting {
     */
     public function checkParameterSetting( ) {
 
+        $ok = True;
+
             /* Initialization: among others, create an array where to
              accumulate the microscopic parameters.*/
         $postedParams = array();
@@ -347,25 +349,42 @@ class ParameterSetting extends Setting {
              with the selected file format. */
              
         if ( !$this->checkPostedImageParameters($postedParams) ) {
-            return False;
-        }
-        
-        if ( !$this->checkPostedMicroscopyParameters($postedParams) ) {
-            return False;
-        }
-        
-        if ( !$this->checkPostedCapturingParameters($postedParams) ) {
-            return False;
-        }
-        
-        if (!$this->checkPostedAberrationCorrectionParameters($postedParams)) {
-            return False;
+            $ok = False;
         }
 
-            /* Only for widefiled and spinning disk. */
-//         $this->checkPostedCalculatePixelSizeParameters($postedParams);
+        if ($ok) {
+            if (  !$this->checkPostedMicroscopyParameters($postedParams) ) {
+                $ok = False;
+            }
+        }
 
-        return True;
+        if ($ok) {
+            if ( !$this->checkPostedCapturingParameters($postedParams) ) {
+                $ok = False;
+            }
+        }
+
+        if ($ok) {
+            if (!$this->checkPostedAberrationCorrectionParameters($postedParams)) {
+                $ok = False;
+            }
+        }
+
+            /* Only for widefield and spinning disk. To be finished. */
+//         if ($ok) {
+//             if ($this->checkPostedCalculatePixelSizeParameters($postedParams) ) {
+//                 $ok = False;
+//             }   
+//         }
+
+        if ( !$ok ) {
+            $this->message  = "The selected parameter set contains empty values ";
+            $this->message .= "which the $imageFormat format misses in its ";
+            $this->message .= "metadata. Please proceed to add them or select a ";
+            $this->message .= "different parameter set.";
+        }
+
+        return $ok;
     }
     
 
