@@ -306,13 +306,20 @@ class ParameterSetting extends Setting {
     }
 
     /*!
-     \brief
-     \return
+     \brief    A general check on  the status of the image parameter setting
+               and its compatibility with the selected image format.
+     \return   Boolean: true if the setting is OK.
     */
     public function checkParameterSetting( ) {
 
+            /* Initialization: among others, create an array where to
+             accumulate the microscopic parameters.*/
         $postedParams = array();
         
+        $db = new DatabaseConnection();
+        $imageFormat = $this->parameter("ImageFileFormat")->value();
+
+            /* Loop over the values of this setting's parameters. */
         foreach ($this->parameter as $objName => $objInstance) {
 
             switch ( $objName ) {
@@ -329,8 +336,16 @@ class ParameterSetting extends Setting {
                 default:
                     $postedParams[$objName] = $objInstance->value();   
             }
+
+                /* Set the confidence level of this parameter according
+                 to the file format chosen in the image selection page. */
+            $cLevel = $db->getParameterConfidenceLevel( $imageFormat, $objName );
+            $objInstance->setConfidenceLevel( $cLevel );
         }
-        
+
+            /* Check if the status of the parameter setting is compatible
+             with the selected file format. */
+             
         if ( !$this->checkPostedImageParameters($postedParams) ) {
             return False;
         }
