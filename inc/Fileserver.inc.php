@@ -3022,8 +3022,8 @@ echo '</body></html>';
       $previewsDir = $this->getPathToJobPreviews( );
       
           /* Find all existing coloc maps containing these 2 channels. */
-      $pattern  = $previewsDir . "*.map_chan";
-      $pattern .= $chanR . "_chan" . $chanG . "*";
+      $pattern  = $previewsDir . basename($this->previewBase);
+      $pattern .= "*.map_chan" . $chanR . "_chan" . $chanG . "*";
 
       $mapsChanRChanG = glob($pattern);
 
