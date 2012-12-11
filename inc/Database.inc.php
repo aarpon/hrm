@@ -935,9 +935,13 @@ class DatabaseConnection {
     $query = $query . "1 = 1";
     $answer = $this->query($query);
     $result = array();
-    foreach ($answer as $row) {
-      $result[] = end($row);
+
+    if ( !empty($answer) ) {
+        foreach ($answer as $row) {
+            $result[] = end($row);
+        }
     }
+    
     return $result;
   }
 
