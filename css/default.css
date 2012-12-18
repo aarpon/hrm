@@ -1502,7 +1502,8 @@ option.default {
 }
 
 #system table td.section {
-    padding-top: 5px;
+    padding-top: 10px;
+    padding-bottom: 3px;
     vertical-align: top;
     text-align: left;
     width: 70%;

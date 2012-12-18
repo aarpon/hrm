@@ -4,6 +4,7 @@
 
 require_once("./inc/User.inc.php");
 require_once("./inc/System.inc.php");
+require_once("./inc/Util.inc.php");
 
 session_start();
 
@@ -94,7 +95,7 @@ include("header.inc.php");
           </tr>
           <tr>
             <td class="key">
-                HuCore version
+                HuCore current version
             </td>
             <td class="value">
                 <?php echo System::huCoreVersionAsString(); ?>
@@ -102,12 +103,66 @@ include("header.inc.php");
           </tr>
           <tr>
             <td class="section">
-                System
+                Licenses in use
             </td>
             <td class="value">
                 &nbsp;
             </td>
           </tr>
+          <tr>
+            <td class="key">
+                Server type
+            </td>
+            <td class="value">
+                <?php echo "TODO" ?>
+            </td>
+          </tr>         
+          <tr>
+            <td class="key">
+                Microscope types
+            </td>
+            <td class="value">
+                <?php
+                $micro = array();
+                if (hasLicense("widefield")) {
+                    $micro[] = "widefield";
+                }
+                if (hasLicense("confocal")) {
+                    $micro[] = "single-point confocal";
+                }
+                if (hasLicense("nipkow-disk")) {
+                    $micro[] = "multi-point confocal";
+                }
+                if (hasLicense("multi-photon")) {
+                    $micro[] = "two photon";
+                }
+                $microStrg = implode("<br />", $micro);
+                echo $microStrg;
+                ?>
+            </td>
+          </tr>
+          <tr>
+            <td class="key">
+                Analysis modules
+            </td>
+            <td class="value">
+                <?php
+                $analysis = array();
+                if (hasLicense("coloc")) {
+                    $analysis[] = "colocalization";
+                }
+                $analysisStr = implode("<br />", $analysis);
+                echo $analysisStr;
+                ?>
+            </td>
+          </tr>          
+          <tr>
+            <td class="section">
+                System
+            </td>
+            <td class="value">
+                &nbsp;
+            </td>
           <tr>
             <td class="key">
                 Operating system
