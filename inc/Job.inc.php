@@ -255,16 +255,14 @@ class Job {
         if ($desc->isCompound()) {
             $result = $result && $desc->createSubJobs();
             if ($result) {
-                error_log("created sub jobs");
                 report("created sub jobs", 1);
             }
             if ($result) {
                 $queue = new JobQueue();
                 $result = $result && $queue->removeJob($desc);
                 if ($result)
-                    error_log("removed compound job");
-                report("removed compound job\n", 1);
-                // TODO: check if this does fix compound job processing
+                    report("removed compound job\n", 1);
+                    // TODO: check if this does fix compound job processing
                 $result = False;
             }
         } else {
