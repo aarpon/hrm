@@ -1535,12 +1535,12 @@ class DatabaseConnection {
 
   /*!
    \brief   Finds out whether a Huygens module is supported by the license.
-   \param   $feature The module to find out about.
+   \param   $feature The module to find out about. It can use (SQL) wildcards.
    \return  Boolean: true if the module is supported by the license.
   */
   public function hasLicense ( $feature ) {
       
-          // Make sure that the hucore_license table exists.
+      // Make sure that the hucore_license table exists.
       $tables = $this->connection->MetaTables("TABLES");
       if (!in_array("hucore_license", $tables) ) {
           $msg = "Table hucore_license does not exist! " .
@@ -1549,7 +1549,7 @@ class DatabaseConnection {
       }
 
       $query = "SELECT feature FROM hucore_license WHERE " .
-          "feature = '" . $feature . "' LIMIT 1;";
+          "feature LIKE '" . $feature . "' LIMIT 1;";
 
       if ( $this->queryLastValue($query) === FALSE ) {
           return false;
