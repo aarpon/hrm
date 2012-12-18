@@ -1678,6 +1678,7 @@ class DatabaseConnection {
 	$levels[ 'estimated' ] = 1;
 	$levels[ 'reported' ]  = 2;
 	$levels[ 'verified' ]  = 3;
+        $levels[ 'asIs' ]      = 3;
 
 	if ( $levels[ $level1 ] <= $levels[ $level2 ] ) {
 	  return $level1;
