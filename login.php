@@ -82,9 +82,9 @@ if ( isset( $_POST['password'] ) && isset( $_POST['username'] ) ) {
 			if ($tentativeUser ->isLoggedIn()) {
 				// Make sure that the user source and destination folders exist
 				{
-					$fileServer = new FileServer( $clean['username'] );
+                    $fileServer = new FileServer( $clean['username'] );
 					if ( $fileServer->isReachable() == false ) {
-						shell_exec("bin/hrm create " . $clean['username'] );
+						shell_exec($userManager . " create " . $clean['username']);
 					}
 				}
 
