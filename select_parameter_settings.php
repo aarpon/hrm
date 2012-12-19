@@ -25,7 +25,7 @@ if (!isset($_SESSION['editor'])) {
 }
 
 // Settings by the admin can be used with any file format, no specific confidence
-// levels. Thus, we set the lowest confidence levels, whic corresponds to the
+// levels. Thus, we set the lowest confidence levels, which corresponds to the
 // tiff format to force the admin to enter all the parameters.
 if ($_SESSION['user']->isAdmin()) {
     $_SESSION[ 'parametersetting' ] = new ParameterSetting();

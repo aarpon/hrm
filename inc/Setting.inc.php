@@ -811,6 +811,12 @@ class ParameterSetting extends Setting {
             }
         }
 
+        // If the aberration correction is inactive, there is no point in
+        // checking the other parameters.
+        if ($this->parameter("PerformAberrationCorrection")->value() == 0) {
+            return $noErrorsFound;
+        }
+        
         // CoverslipRelativePosition
         $valueSet = isset($postedParameters["CoverslipRelativePosition"]) &&
                 $postedParameters["CoverslipRelativePosition"] != '';
