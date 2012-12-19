@@ -1,64 +1,11 @@
 <?php
-// This script checks the configuration files for completeness
-
-// First version: Aaron Ponti, 2010/04/12
-// Checks against HRM version 2.1.x
-
-// This file is part of huygens remote manager.
-
-// Copyright: Montpellier RIO Imaging (CNRS)
-
-// contributors :
-// 	     Pierre Travo	(concept)
-// 	     Volker Baecker	(concept, implementation)
-
-// email:
-// 	pierre.travo@crbm.cnrs.fr
-// 	volker.baecker@crbm.cnrs.fr
-
-// Web:     www.mri.cnrs.fr
-
-// Author: Aaron Ponti
-
-// huygens remote manager is a software that has been developed at 
-// Montpellier Rio Imaging (mri) in 2004 by Pierre Travo and Volker 
-// Baecker. It allows running image restoration jobs that are processed 
-// by 'Huygens professional' from SVI. Users can create and manage parameter 
-// settings, apply them to multiple images and start image processing 
-// jobs from a web interface. A queue manager component is responsible for 
-// the creation and the distribution of the jobs and for informing the user 
-// when jobs finished.
-
-// This software is governed by the CeCILL license under French law and 
-// abiding by the rules of distribution of free software. You can use, 
-// modify and/ or redistribute the software under the terms of the CeCILL 
-// license as circulated by CEA, CNRS and INRIA at the following URL 
-// "http://www.cecill.info".
-
-// As a counterpart to the access to the source code and  rights to copy, 
-// modify and redistribute granted by the license, users are provided only 
-// with a limited warranty and the software's author, the holder of the 
-// economic rights, and the successive licensors  have only limited 
-// liability.
-
-// In this respect, the user's attention is drawn to the risks associated 
-// with loading, using, modifying and/or developing or reproducing the 
-// software by the user in light of its specific status of free software, 
-// that may mean that it is complicated to manipulate, and that also 
-// therefore means that it is reserved for developers and experienced 
-// professionals having in-depth IT knowledge. Users are therefore encouraged 
-// to load and test the software's suitability as regards their requirements 
-// in conditions enabling the security of their systems and/or data to be 
-// ensured and, more generally, to use and operate it in the same conditions 
-// as regards security.
-
-// The fact that you are presently reading this means that you have had 
-// knowledge of the CeCILL license and that you accept its terms.
+// This file is part of the Huygens Remote Manager
+// Copyright and license notice: see license.txt
 
     // To use: execute from bash
-    // $ php check.php /path/to/config/file
+    // $ php checkConfig.php /path/to/config/file
     //
-    // Example: php check.php /var/www/html/hrm/inc/hrm_server.config.inc
+    // Example: php checkConfig.php /var/www/hrm/config/hrm_server.config.inc
     
     switch ( $argc ) {
         case 1:
@@ -87,7 +34,7 @@
             return;
          }
          
-         echo "Check against HRM v2.1.x." . PHP_EOL;
+         echo "Check against HRM v2.2.x." . PHP_EOL;
          
          require_once $configFile;
          
@@ -107,7 +54,8 @@
 			"useDESEncryption", "imageProcessingIsOnQueueManager",
 			"copy_images_to_huygens_server", "useThumbnails",
 			"genThumbnails", "movieMaxSize", "saveSfpPreviews",
-			"maxComparisonSize", "ping_command", "ping_parameter" );
+			"maxComparisonSize", "ping_command", "ping_parameter",
+            "omero_transfers", "omero_server");
 
         // Variables that were removed
 		$variablesRemoved = array( "internal_link", "external_link",
