@@ -190,7 +190,7 @@ foreach($possibleValues as $possibleValue) {
   if ($possibleValue == $parameterMicroscopeType->value()) {
       $flag = "checked=\"checked\" ";
   }
-
+  if ($parameterMicroscopeType->hasLicense($possibleValue)) {
 ?>
                 <input type="radio" 
                        name="MicroscopeType"
@@ -200,7 +200,7 @@ foreach($possibleValues as $possibleValue) {
 
                 <br />
 <?php
-
+  }
 }
 
 ?>

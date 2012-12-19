@@ -1338,6 +1338,29 @@ class MicroscopeType extends ChoiceParameter {
 		$result = $db->translationFor($this->name, $this->value);
 		return $result;
 	}
+    
+	/*!
+		\brief	Returns true if the given microscope type has a license
+
+        \param  $value Microscope type to check for a valid license; $value
+                must be one one of the possible values.
+		\return true if the microscope type is licensed, false otherwise
+	*/
+	static public function hasLicense($value) {
+		$db = new DatabaseConnection();
+        switch ($value) {
+            case 'widefield':
+                return $db->hasLicense("widefield");
+            case 'multipoint confocal (spinning disk)':
+                return $db->hasLicense("nipkow-disk");
+            case 'single point confocal':
+                return $db->hasLicense("confocal");
+            case 'two photon':
+                return $db->hasLicense("multi-photon");
+            default:
+                return false;
+        }
+	}    
 }
 
 /*
