@@ -29,7 +29,7 @@ if (isset($meta)) {
     <link rel="stylesheet" href="scripts/jquery-ui/jquery-ui-1.9.1.custom.css">
 
     <!-- Include jQuery --> 
-    <script type="text/javascript" src="scripts/jquery-1.8.2.min.js"></script>
+    <script type="text/javascript" src="scripts/jquery-1.8.3.min.js"></script>
     
     <script type="text/javascript" src="scripts/common.js"></script>
     <script type="text/javascript" src="scripts/omero.js"></script>
