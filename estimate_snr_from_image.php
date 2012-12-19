@@ -52,27 +52,46 @@ function showFileBrowser() {
     }
     $file_buttons = array();
     $file_buttons[] = "update";
-
+    
     $additionalHTMLElements = "
              <!-- SNR estimation algorithm -->
              <fieldset class=\"setting\"
                onmouseover=\"javascript:changeQuickHelp( 'method' );\" >
 
                  <legend>
-                     <a href=\"javascript:openWindow(
-                       'http://support.svi.nl/wiki/RestorationMethod')\">
+                     <a href=\"javascript:openWindow('#')\">
                        <img src=\"images/help.png\" alt=\"?\" /></a>
                        SNR estimation algorithm
                  </legend>
 
                  <select name=\"SNREstimationAlgorithm\" >
-                    <option value=\"old\">Classic estimator</option>
-                    <option value=\"new\">New estimator (beta)</option>
-                </select>
-
-            </fieldset>
-            <p />
-        ";
+                 ";
+    
+    $algorithm = "";
+    if (isset($_POST["SNREstimationAlgorithm"])) {
+        $algorithm = $_POST["SNREstimationAlgorithm"];
+    }
+    
+    $selected = "";
+    if ($algorithm == "old") {
+        $selected = "selected=\"selected\""; 
+    }
+    
+    $additionalHTMLElements .= "
+        <option value=\"old\" $selected>Classic estimator</option>";
+  
+    $selected = "";
+    if ($algorithm == "new") {
+        $selected = "selected=\"selected\""; 
+    }
+    
+    $additionalHTMLElements .= "
+        <option value=\"new\" $selected>New estimator (beta)</option>";
+    
+    $additionalHTMLElements .= "        
+          </select>
+        </fieldset>
+        <p />";
 
     $control_buttons = "
         <input type=\"button\" value=\"\" class=\"icon up\"
