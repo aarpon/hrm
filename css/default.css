@@ -453,6 +453,12 @@ input.download {
 input.upload {
     background: url(../images/upload.png) no-repeat center;
 }
+input.import {
+    background: url(../images/import.png) no-repeat center;
+}
+input.export {
+    background: url(../images/export.png) no-repeat center;
+}
 
 input.save {
     width: 60px;
@@ -486,6 +492,16 @@ input.save {
     margin-top: 20px;
     margin-bottom: 20px;
     padding-left: 5px;
+}
+
+#omeroActions {
+    text-align: center;
+    font-size: 70%;
+    padding: 5px 0 0 0;
+}
+
+#omeroTree { 
+  width: 450px;
 }
 
 #login {

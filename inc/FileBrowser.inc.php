@@ -12,6 +12,7 @@
 */
 
 require_once( "inc/Util.inc.php" );
+require_once( "inc/OmeroConnection.inc.php");
 
 /*!
   \brief  Generates basic buttons for the image file browser
@@ -68,6 +69,25 @@ function fileButton($type) {
       $class = "icon update";
       $tip = "Refresh image list";
       break;
+      
+    case "omeroImport":
+        $name    = "getOmeroData";
+        $value   = "OMERO Data";
+        $mode    = "post";
+        $onClick = "setActionToUpdate();";
+        $class = "";
+        $tip = 'Select and import data for deconvolution '.
+               'from your OMERO account';
+        break;
+
+    case "omeroExport":
+        $name    = "getOmeroData";
+        $value   = "OMERO Data";
+        $mode    = "post";
+        $onClick = "setActionToUpdate();";
+        $class = "";
+        $tip = 'Select and export deconvolved data to your OMERO account';
+        break;
 
     default:
       $error = "No button of type $type";
@@ -123,8 +143,53 @@ if (isset($_POST['update'])) {
   }
 }
 
+
+
+    /*************** Code for the interaction with Omero. ***************/
+
+if ($omero_transfers) {
+    if (isset($_SESSION['omeroConnection'])) {
+        $omeroConnection = $_SESSION['omeroConnection'];
+    }
+}
+
+if (isset($_POST['getOmeroData']) || isset($_POST['exportToOmero'])) {
+    
+    if (isset($omeroConnection)) {
+        if ($omeroConnection->loggedIn) {
+            $omeroTree = $omeroConnection->getLastOmeroTree();
+        }
+    }
+}
+
+if (isset($_POST['importFromOmero'])) {
+    
+    if (isset($omeroConnection)) {
+        if ($omeroConnection->loggedIn) {
+            $omeroTree = $omeroConnection->getLastOmeroTree();
+        }
+    }
+}
+
+if (isset($_POST['refreshOmero'])) {
+    
+    if (isset($omeroConnection)) {
+        if ($omeroConnection->loggedIn) {
+            $omeroTree = $omeroConnection->getUpdatedOmeroTree();
+        }
+    }
+}
+
+    /************ End of code for the interaction with Omero. **********/
+    
+
+
 // JavaScript
-$script = "settings.js";
+$script = array("settings.js",
+                "jquery-1.8.2.min.js",
+                "jqTree/tree.jquery.js",
+                "jquery-ui/jquery-ui-1.9.1.custom.js",
+                "jquery-ui/jquery.bgiframe-2.1.2.js");
 
 if (!isset($operationResult)) {
   $operationResult = "";
@@ -357,15 +422,11 @@ include("header.inc.php");
       <fieldset >
 
         <legend><?php echo $form_title; ?></legend>
-<?php
-?>
-
-
-
 
         <div id="userfiles" onmouseover="showPreview()">
-          <select onchange="javascript:imageAction(this)"
-                  onkeyup="this.blur();this.focus();" name="userfiles[]"
+          <select name="userfiles[]" id="fileSelection"
+                  onchange="javascript:imageAction(this)"
+                  onkeyup="this.blur();this.focus();" 
                   size="<?php echo $size;?>" <?php echo $multiple.$flag ?>>
           <?php
           // Populate the select field with the list of available images:
@@ -395,12 +456,20 @@ include("header.inc.php");
            onmouseover="showInstructions()">
         <?php echo $control_buttons; ?>
       </div>
-  </form>
+      </form>
+
+      
+      <?php
+      include("./omero_UI.php");
+      ?>  
+
+      
   <div id="upMsg"><!-- do not remove !--></div>
+
+
   <div id="up_form" onmouseover="showInstructions()">
       <!-- do not remove !-->
   </div>
-
     </div> <!-- content -->
 
 

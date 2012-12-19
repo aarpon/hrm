@@ -1073,7 +1073,7 @@ class QueueManager {
         $confidenceLevels = array();
 
         // Confidence level regexp
-        $levelRegExp = '(asIs|reported|estimated|default|verified)';        
+        $levelRegExp = '(asIs|reported|estimated|default|verified)';
 
         // Process the substrings
         foreach ($groups as $group) {

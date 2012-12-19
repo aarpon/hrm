@@ -178,6 +178,7 @@ function deleteImages() {
 
 }
 
+
 function checkSelection() {
 
     sel = document.getElementsByTagName('select');
@@ -190,6 +191,7 @@ function checkSelection() {
 }
 
 function confirmSubmit() {
+
     if (action != '') {
         changeDiv('actions', 'Please wait...<input type="hidden" name="'+action+'" value="1">');
         // Make the message vanish after a reasonable time.
@@ -249,8 +251,6 @@ function confirmUpload() {
     return true;
 }
 
-
-
 function removeFile(file) {
 
     changeDiv('upfile_'+file, '');
@@ -261,7 +261,6 @@ function removeFile(file) {
     if (cnt == 0) {
         cancelSelection();
     }
-
 }
 
 function addFileEntry() {
@@ -358,8 +357,6 @@ function uploadImages(maxFile, maxPost, archiveExt) {
 
 }
 
-
-
 function downloadImages() {
 
     changeDiv('message', '');
@@ -384,6 +381,7 @@ function cancelSelection() {
     action = '';
     changeDiv('message', '');
     changeDiv('upMsg', '');
+    changeDiv('omeroSelection','');
     changeDiv('actions', '');
     changeDiv('up_form', '');
     changeDiv('selection', control);
@@ -520,7 +518,6 @@ function imgPrev(infile, mode, gen, compare, index, dir, referer, data) {
     window.infoShown = false;
     window.previewSelected = html;
 }
-
 
 function showInstructions() {
     if (window.infoShown) return;

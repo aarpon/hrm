@@ -228,4 +228,15 @@ $ping_command = 'ping -w 4';	// use this on linux systems
 // The parameter for the ping command after the hostname
 $ping_parameter = '';	        // use this on linux systems
 //$ping_parameter = '56 4';	// use this on cygwin
+
+//==============================================================================
+// HRM + Omero 
+//==============================================================================
+
+// Switch on/off (true/false) data transfers between HRM and Omero.
+$omero_transfers = false;
+
+// Server name of the Omero machine. If Omero runs in the same server as
+// HRM leave it as 'localhost';
+$omero_server = "localhost";
 ?>

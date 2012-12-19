@@ -25,3 +25,8 @@ SUSER="apache"
 # HRM log directory
 HRM_LOG="/var/log/hrm"
 
+# Interaction with OMERO (if switched on in hrm/config).
+OMERO_SERVER_USER="omero"
+OMERO_HOME="/path/to/OMERO.server"
+
+ 

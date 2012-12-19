@@ -222,6 +222,7 @@ if (isset($_POST['delete'])) {
         }
 }
 
+
 // To (re)generate the thumbnails, don't use template data, as it is not present
 // here.
 
@@ -242,20 +243,19 @@ if ( $browse_folder == "dest" ) {
             <p><strong>Click on <img src = \"images/eye.png\" /> Detailed View
             over the file preview to access previews, reports and 
             analysis results.</strong></p>";
-
+    
     if ($allowHttpTransfer) {
-    $info .= "<p>Select the files you want to download (you can <b>SHIFT-</b> 
+        $info .= "<p>Select the files you want to download (you can <b>SHIFT-</b> 
             and <b>CTRL-click</b> for multiple selection) and press the
             <b>download</b> icon to compress the files into an archive and 
             start the download process. (Please mind that large files may take
             a <b>long time </b>to be packaged before downloading.)</p>
             <p> Use the <b>delete</b> icon to delete the selected files
             instead.</p>";
-    $file_buttons[] = "download";
+        $file_buttons[] = "download";
     }
     $info .= "<p><strong>Move your mouse pointer over the action buttons at " .
       "the bottom to redisplay this help.</strong></p>";
-
 } else {
     $browse_folder = "src";
     $size = 15;
@@ -271,6 +271,8 @@ if ( $browse_folder == "dest" ) {
             <b>CTRL-click</b> for multiple selection) and press the
             <b>delete</b> icon to delete them.
             </p>";
+
+    
     if (System::uploadEnabled() == "enabled") {
 
         $validExtensions = str_replace( " ", ", ",
@@ -327,7 +329,7 @@ $control_buttons = '
 <input name="OK" type="hidden" />
 ';
 
-
+include ("omero_actions.php");
 
 include("./inc/FileBrowser.inc.php");
 

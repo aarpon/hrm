@@ -5,6 +5,7 @@
 require_once("hrm_config.inc.php");
 require_once("Database.inc.php");
 require_once("Util.inc.php");
+require_once("OmeroConnection.inc.php");
 
 /*!
   \class Fileserver
@@ -621,6 +622,59 @@ class Fileserver {
           }
       }
   }
+
+  /*!
+   \brief  Exports a deconvolved image to the Omero server.
+  */
+  public function exportToOmero( ) {
+      
+      if (!isset($_SESSION['omeroConnection'])) {
+          return "Impossible to reach your Omero account.";
+      }
+
+      if (!isset($_POST['selectedFiles'])) {
+          return "Please select a deconvolved image to export to Omero.";
+      }
+      
+      if (!isset($_POST['OmeDatasetId'])
+          || empty($_POST['OmeDatasetId'])) {
+          return "Please select a destination dataset
+                  within the Omero data tree.";
+      }
+
+      $omeroConnection = $_SESSION['omeroConnection'];
+
+      $omeroConnection->exportImage($_POST, $this);
+  }
+
+  /*!
+   \brief  Imports a raw image from the Omero server.
+  */
+  public function importFromOmero() {
+      
+      if (!isset($_SESSION['omeroConnection'])) {
+          return "Impossible to reach your Omero account.";
+      }
+
+      if (!isset($_POST['OmeImageId'])
+          || empty($_POST['OmeImageId'])) {
+          return "Please select an image within the Omero data tree.";
+      }
+
+      if (!isset($_POST['OmeImageName'])
+          || empty($_POST['OmeImageName'])) {
+          return "Please select an image within the Omero data tree.";
+      }
+      
+      if (!isset($_POST['OmeDatasetId'])
+          || empty($_POST['OmeDatasetId'])) {
+          return "Please select an image within the Omero data tree.";
+      }
+
+      $omeroConnection = $_SESSION['omeroConnection'];
+
+      $omeroConnection->importImage($_POST, $this);
+  }  
 
   /*!
     \brief  Extracts files from compressed archives
