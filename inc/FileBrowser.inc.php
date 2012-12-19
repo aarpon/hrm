@@ -414,10 +414,18 @@ include("header.inc.php");
         
 <h3><img alt=<?php echo $page_title;?> src=<?php echo $icon;?> width="40"/>
     &nbsp;&nbsp;<?php echo $page_title; ?></h3>
-        <p class="message_small"><?php echo $explanation_text; ?></p>
-  <form method="post" action="?folder=<?php echo $browse_folder;?>"
+
+    <form method="post" action="?folder=<?php echo $browse_folder;?>"
         id="file_browser" onsubmit="return confirmSubmit()" >
 
+        <?php 
+            // Add additional input elements if defined
+            if (isset($additionalHTMLElements)) {
+                echo $additionalHTMLElements;
+            }
+        ?>
+
+        <p class="message_small"><?php echo $explanation_text; ?></p>
 
       <fieldset >
 

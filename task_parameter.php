@@ -259,24 +259,9 @@ for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
                           onclick="storeValuesAndRedirect(
                             'estimate_snr_from_image.php');">
                           <img src="images/calc_small.png" alt="" />
-                          Estimate SNR from image (classic)</a>
+                          Estimate SNR from image</a>
                         </p>
 
-                          <div class="message_small_SNR_beta">
-                          <img src="images/newSNR.png" alt="" />&nbsp;&nbsp;
-                          Try the
-                          <a href="#"
-                            onmouseover="TagToTip('ttEstimateSnrBeta' )"
-                            onmouseout="UnTip()"
-                            onclick="storeValuesAndRedirect(
-                            'estimate_snr_from_image_beta.php');">
-                          new SNR estimator (beta)</a> and
-                          <a href="javascript:openWindow(
-                          'http://www.svi.nl/BetaSNRFeedback')"
-                          onmouseover="TagToTip('ttEstimateSnrBetaFeedback' )"
-                          onmouseout="UnTip()">
-                          report your feedback!</a>&nbsp;&nbsp;
-                          <img src="images/newSNR.png" alt="" /></div>
                     </div>
 <?php
 

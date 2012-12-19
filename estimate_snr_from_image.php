@@ -53,6 +53,27 @@ function showFileBrowser() {
     $file_buttons = array();
     $file_buttons[] = "update";
 
+    $additionalHTMLElements = "
+             <!-- SNR estimation algorithm -->
+             <fieldset class=\"setting\"
+               onmouseover=\"javascript:changeQuickHelp( 'method' );\" >
+
+                 <legend>
+                     <a href=\"javascript:openWindow(
+                       'http://support.svi.nl/wiki/RestorationMethod')\">
+                       <img src=\"images/help.png\" alt=\"?\" /></a>
+                       SNR estimation algorithm
+                 </legend>
+
+                 <select name=\"SNREstimationAlgorithm\" >
+                    <option value=\"old\">Classic estimator</option>
+                    <option value=\"new\">New estimator (beta)</option>
+                </select>
+
+            </fieldset>
+            <p />
+        ";
+
     $control_buttons = "
         <input type=\"button\" value=\"\" class=\"icon up\"
         onmouseover=\"Tip('Go back without estimating the SNR.')\"
@@ -177,13 +198,15 @@ function estimateSnrFromFile($file) {
     }
 
 
-    // Change returnImages to \"0.6 1 1.66 \" in order to show SNR
-    // estimates calculated af given factors of the best match. This
-    // requires Huygens 3.5.1p2.
-    // For 3.5.1p1, use '-returnImages sample' instead.
-
+    // Build the call to HuCore to estimate the SNR value with one of the 
+    // two algorithms
+    if (isset($_POST['SNREstimationAlgorithm'])) {
+        $algorithm = $_POST['SNREstimationAlgorithm'];
+    } else {
+        $algorithm = "old";
+    }
     $opt = "-basename \"$basename\" -src \"$psrc\" -dest \"$pdest\" ".
-        "-returnImages \"0.5 0.71 1 1.71 \" -snrVersion \"old\" ".
+        "-returnImages \"0.5 0.71 1 1.71 \" -snrVersion \"$algorithm\" ".
         "-series $series $extra";
 
     // When no particular SNR estimation image is shown (in a small portion of
