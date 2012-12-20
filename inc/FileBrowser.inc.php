@@ -76,7 +76,7 @@ function fileButton($type) {
         $value   = "OMERO Data";
         $mode    = "post";
         $onClick = "setActionToUpdate();";
-        $class = "";
+        $class = "icon omero";
         $tip = 'Select and import data for deconvolution '.
                'from your OMERO account';
         break;
@@ -86,7 +86,7 @@ function fileButton($type) {
         $value   = "OMERO Data";
         $mode    = "post";
         $onClick = "setActionToUpdate();";
-        $class = "";
+        $class = "icon omero";
         $tip = 'Select and export deconvolved data to your OMERO account';
         break;
 

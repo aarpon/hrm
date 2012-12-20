@@ -460,6 +460,9 @@ input.download {
 input.upload {
     background: url(../images/upload.png) no-repeat center;
 }
+input.omero {
+    background: url(../images/omero_data.png) no-repeat center;
+}
 
 input.save {
     width: 60px;

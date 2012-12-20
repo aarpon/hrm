@@ -459,11 +459,8 @@ input.download {
 input.upload {
     background: url(../images/upload.png) no-repeat center;
 }
-input.import {
-    background: url(../images/import.png) no-repeat center;
-}
-input.export {
-    background: url(../images/export.png) no-repeat center;
+input.omero {
+    background: url(../images/omero_data.png) no-repeat center;
 }
 
 input.save {
