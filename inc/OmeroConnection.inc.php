@@ -38,17 +38,17 @@ class OmeroConnection {
     /*!
      \brief   Constructor
     */
-    public function __construct() {
+    public function __construct( $omeroUser, $omeroPass ) {
         
-        if (isset($_POST['omeroUser'])) {
-            $this->omeroUser = $_POST['omeroUser'];
+        if ( !empty($omeroUser) ) {
+            $this->omeroUser = $omeroUser;
         } else {
             return "Impossible to log on to your Omero account.
                     Please try again. ";
         }
 
-        if (isset($_POST['omeroPass'])) {
-            $this->omeroPass = $_POST['omeroPass'];
+        if ( !empty($omeroPass) ) {
+            $this->omeroPass = $omeroPass;
         } else {
             return "Impossible to log on to your Omero account.
                     Please try again. ";

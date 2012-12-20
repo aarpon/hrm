@@ -17,7 +17,20 @@ if ($omero_transfers && !$_SESSION['user']->isAdmin()) {
 if (isset($_POST['omeroCheckCredentials'])) {
     
     if (!isset($_SESSION['omeroConnection'])) {
-        $omeroConnection = new OmeroConnection();
+
+        if (isset($_POST['omeroUser']) ) {
+            $omeroUser = $_POST['omeroUser'];
+        } else {
+            $omeroUser = '';
+        }
+        
+        if (isset($_POST['omeroPass']) ) {
+            $omeroPass = $_POST['omeroPass'];
+        } else {
+            $omeroPass = '';
+        }
+        
+        $omeroConnection = new OmeroConnection( $omeroUser, $omeroPass );
 
         if ($omeroConnection->loggedIn) {
             $_SESSION['omeroConnection'] = $omeroConnection;
