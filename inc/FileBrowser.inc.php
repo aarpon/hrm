@@ -129,8 +129,6 @@ function fileButton($type) {
   \cond
 */
 
-global $omero_transfers;
-
 // FileServer related code:
 if (!isset($_SESSION['fileserver'])) {
   $name = $_SESSION['user']->name();
@@ -149,7 +147,7 @@ if (isset($_POST['update'])) {
 
 
     /*************** Code for the interaction with Omero. ***************/
-
+global $omero_transfers;
 if ($omero_transfers) {
     if (isset($_SESSION['omeroConnection'])) {
         $omeroConnection = $_SESSION['omeroConnection'];
