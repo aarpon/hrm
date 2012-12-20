@@ -425,15 +425,10 @@ class ParameterSetting extends Setting {
         }
 
         // The number of channels must be defined for most file formats
-        if ($postedParameters["ImageFileFormat"] == 'tiff-series') {
-            $postedParameters["NumberOfChannels"] = "1";
-        } else {
-            // We check that the value was posted
-            if (!isset($postedParameters["NumberOfChannels"]) ||
-                    $postedParameters["NumberOfChannels"] == "") {
-                $this->message = "Please set the number of channels!";
-                return False;
-            }
+        if (!isset($postedParameters["NumberOfChannels"]) ||
+                $postedParameters["NumberOfChannels"] == "") {
+            $this->message = "Please set the number of channels!";
+            return False;
         }
         $parameter = $this->parameter("NumberOfChannels");
         $parameter->setValue($postedParameters["NumberOfChannels"]);

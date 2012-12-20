@@ -172,27 +172,22 @@ function check($parameter, $value) {
                     <input name="NumberOfChannels" 
                            type="radio"
                            value="1"
-                           <?php echo $channelsFlag ?>
                            <?php check($parameterNumberOfChannels, 1) ?>/>1
                     <input name="NumberOfChannels" 
                            type="radio"
                            value="2"
-                           <?php echo $channelsFlag ?>
                            <?php check($parameterNumberOfChannels, 2) ?>/>2
                     <input name="NumberOfChannels" 
                            type="radio"
                            value="3"
-                           <?php echo $channelsFlag ?>
                            <?php check($parameterNumberOfChannels, 3) ?>/>3
                     <input name="NumberOfChannels" 
                            type="radio"
                            value="4"
-                            <?php echo $channelsFlag ?>
                             <?php check($parameterNumberOfChannels, 4) ?>/>4
                     <input name="NumberOfChannels" 
                            type="radio"
                            value="5"
-                           <?php echo $channelsFlag ?>
                            <?php check($parameterNumberOfChannels, 5) ?>/>5
                 </div> <!-- values -->
 

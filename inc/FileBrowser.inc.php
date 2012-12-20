@@ -23,6 +23,7 @@ require_once( "inc/OmeroConnection.inc.php");
   \param  $type   One of 'download', 'upload', 'delete', or 'update'.
  */
 function fileButton($type) {
+
   global $decompressBin;
 
   $error = false;
@@ -127,6 +128,8 @@ function fileButton($type) {
 /*!
   \cond
 */
+
+global $omero_transfers;
 
 // FileServer related code:
 if (!isset($_SESSION['fileserver'])) {
@@ -503,7 +506,9 @@ include("header.inc.php");
     <div id="message">
 <?php
      // Display any message coming from lower instances.
-
+     if (!isset($message)) {
+         $message = "";
+     }
      echo "<p>$message</p>";
 
 ?>
