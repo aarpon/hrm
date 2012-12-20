@@ -223,7 +223,7 @@ if ($browse_folder == "src") {
   } else {
 
     // Show files of one image type only.
-
+    $copyFileserver = clone($_SESSION['fileserver']);
     $fileFormatParam = $_SESSION['setting']->parameter("ImageFileFormat");
     $fileFormat = $fileFormatParam->value();
     $extensions = $fileFormatParam->fileExtensions();
@@ -233,6 +233,7 @@ if ($browse_folder == "src") {
         $isTimeSeries = true;
     }
     $files = $_SESSION['fileserver']->filesOfType($fileFormat, $isTimeSeries);
+    $_SESSION['fileserver'] = $copyFileserver;
   }
 } else {
   // When listing results images, all types are shown.
