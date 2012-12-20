@@ -56,7 +56,7 @@ $loggedIn = ( isset($_SESSION['user'] ) && $_SESSION['user']->isLoggedIn( ) );
 		?> &amp;
 		<?php
 			if ( $loggedIn == true ) {
-				echo '<a href="mailto:aaron.ponti@fmi.ch">Aaron Ponti</a>';
+				echo '<a href="mailto:aaron.ponti@bsse.ethz.ch">Aaron Ponti</a>';
 			} else
 				echo "<span onmouseover=" .
                     "\"Tip('Login to see contact information.' )\" " .
