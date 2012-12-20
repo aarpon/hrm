@@ -84,6 +84,12 @@ table {
 
 /* specific div elements */
 
+.ui-dialog-titlebar {
+  background-color: #62B0F9;
+  background-image: none;
+  color: #FFFFFF;
+}
+
 .intro {
     font-size: 16px;
     padding-top: 15px;
