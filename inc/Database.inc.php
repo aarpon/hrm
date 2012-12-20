@@ -1490,6 +1490,15 @@ class DatabaseConnection {
 	  case 'AdvancedCorrectionOptions':
 	  case 'PSF' :
 		return "provided";
+      case 'Binning':
+      case 'IsMultiChannel':
+      case 'ObjectiveMagnification':
+      case 'CMount':
+      case 'TubeFactor':
+      case 'AberrationCorrectionNecessary':
+      case 'CCDCaptorSize':
+      case 'PSFGenerationDepth':
+          return "default";
 	  default:
 
 		// For the other Parameters, the $fileFormat must be specified
@@ -1706,6 +1715,9 @@ class DatabaseConnection {
 	}
 
 	// Use the mapped file format to retrieve the
+    if (!array_key_exists($parameterName, $this->parameterNameDictionary)) {
+        return "default";
+    }
 	$query = "SELECT " . $this->parameterNameDictionary[ $parameterName ] .
 	  " FROM confidence_levels WHERE fileFormat = '" . $hucoreFileFormat .
 	  "' LIMIT 1;";

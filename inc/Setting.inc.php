@@ -314,14 +314,14 @@ class ParameterSetting extends Setting {
 
         $ok = True;
 
-            /* Initialization: among others, create an array where to
-             accumulate the microscopic parameters.*/
+        /* Initialization: among others, create an array where to
+           accumulate the microscopic parameters.*/
         $postedParams = array();
         
         $db = new DatabaseConnection();
         $imageFormat = $this->parameter("ImageFileFormat")->value();
 
-            /* Loop over the values of this setting's parameters. */
+        /* Loop over the values of this setting's parameters. */
         foreach ($this->parameter as $objName => $objInstance) {
 
             switch ( $objName ) {
