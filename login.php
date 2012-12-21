@@ -315,10 +315,10 @@ deconvolution.</p>
         }
         echo $login_message;
     ?>
-        <label for="username">Username:</label>
+        <label for="username">Username</label><br />
         <input id="username" name="username" type="text" class="textfield"
                tabindex="1" /> <br />
-        <label for="password">Password:</label>
+        <label for="password">Password</label><br />
         <input id="password" name="password" type="password" class="textfield"
                tabindex="2" /> <br />
         <input type="hidden" name="request" value="<?php echo $req ?>" />

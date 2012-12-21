@@ -510,6 +510,7 @@ input.save {
 
 #login {
     font-size: 14px;
+    text-align: center;
 }
 
 #login fieldset {
@@ -534,6 +535,24 @@ input.save {
     font-weight: normal;
     text-align: left;
     padding: 0px 5px;
+}
+
+#login label {
+    font-size: 12px;
+    font-weight: normal;
+}
+
+#login input.textfield {
+    width: 90%;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+#login input.button {
+    margin-top: 10px;
+    font-size: 12px;
+    width: 60%;
+    font-weight: bold;
 }
 
 #rightpanel {
