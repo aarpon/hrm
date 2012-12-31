@@ -124,26 +124,34 @@ proc reportSubImages {} {
             continue
         }
 
-
         if { [isMultiImgFile $path] } {
             puts "TYPE"
             puts "multiple"
-            set error [ catch { \
-                img preOpen $path } contents]
-            if { $error } {
+
+            if { [ catch {
+                img preOpen $path 
+            } contents ] } {
                 reportError "Can't find subimages for $image: $contents"
             } else {
+
+                # Since Huygens 3.3.3, the preOpen command returns an option-value list
                 set ver [versionAsInteger]
                 if { $ver >= 3030300 } {
-                    # Since Huygens 3.3.3, the preOpen command returns an
-                    # option-value list
+                    
+                    # Make sure there are no rests from the previous iteration.
+                    if { [info exists res] } {
+                        array unset res
+                    }
+
                     catch { array set res $contents }
+
                     if { ! [info exists res(subImages)] } {
                         set contents {}
                     } else {
                         set contents $res(subImages)
                     }
                 }
+
                 puts "COUNT"
                 puts "[llength $contents]"
                 foreach subImg $contents {
