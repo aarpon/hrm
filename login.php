@@ -237,9 +237,13 @@ deconvolution.</p>
          onclick="javascript:openWindow('http://biop.epfl.ch')"
          style='cursor:pointer'>
         </td>
+        <td>
+        </td>
         <td class="mri"
          onclick="javascript:openWindow('http://www.mri.cnrs.fr')"
          style='cursor:pointer'>
+        </td>
+        <td>
         </td>
         <td class="svi"
          onclick="javascript:openWindow('http://www.svi.nl')"
@@ -248,47 +252,57 @@ deconvolution.</p>
     </tr>
 
     <tr class="caption">
-        <td>
+        <td class="caption_efpl">
             EPF Lausanne<br />
             <a href="javascript:openWindow('http://biop.epfl.ch')">
                 BioImaging and Optics platform
             </a>
         </td>
         <td>
+        </td>
+        <td class="caption_mri">
             Montpellier RIO Imaging
         </td>
         <td>
+        </td>
+        <td class="caption_svi">
             Scientific Volume Imaging
         </td>
     </tr>
 
-   </table>
-
-<br />
-
-   <table>
-
     <tr class="logo">
-        <td class="bsse"
-         onclick="javascript:openWindow('http://www.bsse.ethz.ch')"
-         style='cursor:pointer'>
+        <td>
         </td>
         <td class="fmi"
          onclick="javascript:openWindow('http://www.fmi.ch')"
          style='cursor:pointer'>
         </td>
+        <td>
+        </td>
+        <td class="bsse"
+         onclick="javascript:openWindow('http://www.bsse.ethz.ch')"
+         style='cursor:pointer'>
+        </td>
+        <td>
+        </td>
     </tr>
 
     <tr class="caption">
         <td>
-            ETH Zurich<br />
-            Single-Cell Unit
         </td>
-        <td>
+        <td class="caption_fmi">
              Friedrich Miescher Institute<br />
             <a href="javascript:openWindow('http://www.fmi.ch/faim')">
                 Facility for Advanced<br />Imaging and Microscopy
             </a>
+        </td>
+        <td>
+        </td>
+        <td class="caption_bsse">
+            ETH Zurich<br />
+            Single-Cell Unit
+        </td>
+        <td>
         </td>
     </tr>
                 

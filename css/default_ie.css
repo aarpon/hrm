@@ -328,8 +328,8 @@ table {
   border: 0px;
 }
 
-#logos table tr.logo {
-  height: 48px;
+#logos table tr.logo {  
+  height: 60px;
   vertical-align: middle;
 }
 
@@ -339,27 +339,47 @@ table {
 
 #logos table td.epfl {
   background: url(../images/logo_epfl.png) no-repeat center;
-  background-size: 48px;
+  background-size: 60px;
 }
 
 #logos table td.mri {
-  background: url(../images/logo_mri.png) no-repeat center;
-  background-size: 48px;
+  background: url(../images/logo_mri.png) no-repeat left;
+  background-size: 60px;
 }
 
 #logos table td.svi {
   background: url(../images/logo_svi.png) no-repeat center;
-  background-size: 48px;
+  background-size: 60px;
 }
 
 #logos table td.bsse {
   background: url(../images/logo_bsse.png) no-repeat center;
-  background-size: 48px;
+  background-size: 60px;
 }
 
 #logos table td.fmi {
   background: url(../images/logo_fmi.png) no-repeat center;
-  background-size: 48px;
+  background-size: 60px;
+}
+
+#logos table td.caption_epfl {
+  text-align: center;
+}
+
+#logos table td.caption_mri {
+  text-align: left;
+}
+
+#logos table td.caption_svi {
+  text-align: center;
+}
+
+#logos table td.caption_bsse {
+  text-align: center;
+}
+
+#logos table td.caption_fmi {
+  text-align: center;
 }
 
 #templates select {
