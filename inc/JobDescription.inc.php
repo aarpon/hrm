@@ -539,6 +539,18 @@ class JobDescription {
     return $result;
   }
 
+  /*!
+   \brief     Convenience function to get all the parameters of the task setting.
+   \return    A string with all the parameters of the task setting.
+  */
+  public function taskSettingAsString( ) {
+      $numChannels = $this->parameterSetting()->parameter( "NumberOfChannels" );
+      $numChannels = $numChannels->value();
+      
+      return $this->taskSetting()->displayString( $numChannels );
+  }
+  
+
 /*
                               PRIVATE FUNCTIONS
 */

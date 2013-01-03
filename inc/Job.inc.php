@@ -738,7 +738,7 @@ class Job {
         $text   = "<br /><br />";
         
         /* Retrieve restoration data set by the user. */
-        $taskSettings = $this->jobDescription->taskSetting()->displayString();
+        $taskParameters = $this->jobDescription->taskSettingAsString();
         
         /* Insert the column titles. */
         $row   = $this->insertCell("Restoration Parameters","header",4);
@@ -759,7 +759,7 @@ class Job {
 
             $pattern  = "/(.*)$paramName(.*):";
             $pattern .= "\s+([0-9\,\s]+|[a-zA-Z0-9]+\s?[a-zA-Z0-9]*)/";
-            if (!preg_match($pattern,$taskSettings,$matches)) {
+            if (!preg_match($pattern,$taskParameters,$matches)) {
                 continue;
             }
 
