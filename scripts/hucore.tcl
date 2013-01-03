@@ -56,13 +56,27 @@ proc reportImageDimensions { } {
     set error [ getInputVariables {path filename series} ]
     if { $error } { exit 1 }
 
-    set src [hrmImgOpen $path "$filename" -series $series]
+    if { [ catch {
+        set src [hrmImgOpen $path "$filename" -series $series]
 
-    reportKeyValue "sizeX" [$src getdims -mode x]
-    reportKeyValue "sizeY" [$src getdims -mode y]
-    reportKeyValue "sizeZ" [$src getdims -mode z]
-    reportKeyValue "sizeT" [$src getdims -mode t]
-    reportKeyValue "sizeC" [$src getdims -mode ch]
+        set sizeX [$src getdims -mode x]
+        set sizeY [$src getdims -mode y]
+        set sizeZ [$src getdims -mode z]
+        set sizeT [$src getdims -mode t]
+        set sizeC [$src getdims -mode ch]
+    } result ] } {
+        set sizeX 0
+        set sizeY 0
+        set sizeZ 0
+        set sizeC 0
+        set sizeT 0
+    }
+           
+    reportKeyValue "sizeX" $sizeX
+    reportKeyValue "sizeY" $sizeY
+    reportKeyValue "sizeZ" $sizeZ
+    reportKeyValue "sizeT" $sizeT
+    reportKeyValue "sizeC" $sizeC
     
     catch { del $src }
 } 

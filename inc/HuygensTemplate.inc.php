@@ -2207,23 +2207,27 @@ class HuygensTemplate {
     private function isEligibleForSlicers($image) {
         global $maxComparisonSize;
 
+        $this->compareZviews = TRUE;
+        $this->compareTviews = TRUE;
+
         if ($maxComparisonSize == 0) {
             $this->compareZviews = FALSE;
             $this->compareTviews = FALSE;
             return;
         }
-
-        /* The maximum number of pixels per dimension that the JPEG libraries 
-         can handle. If the image is larger than this, we won't be able to
-         generate a slicer preview. */
-        $maxPixelsPerDim = 65000;
-
+        
         $imgDims = $this->getImageDimensions($image);
 
         $imgSizeX = $imgDims['sizeX'];
         $imgSizeY = $imgDims['sizeY'];
         $imgSizeZ = $imgDims['sizeZ'];
         $imgSizeT = $imgDims['sizeT'];
+
+        if ($imgSizeX == 0 && $imgSizeY == 0) {
+            $this->compareZviews = FALSE;
+            $this->compareTviews = FALSE;
+            return;
+        }
 
         if ($imgSizeX < $maxComparisonSize) {
             $imgSizeX = $maxComparisonSize;
@@ -2233,14 +2237,16 @@ class HuygensTemplate {
             $imgSizeY = $maxComparisonSize;
         }
 
-        $this->compareZviews = TRUE;
-        $this->compareTviews = TRUE;
-
         /* It could happen that even if imgSizeX and imgSizeY are small the image
          contains so many slices or time frames that the slicer gets huge. */
         $slicerPixelsX  = 2 * $imgSizeX;
         $slicerPixelsYZ = $imgSizeY * $imgSizeZ;
         $slicerPixelsYT = $imgSizeY * $imgSizeT;
+
+            /* The maximum number of pixels per dimension that the JPEG libraries 
+         can handle. If the image is larger than this, we won't be able to
+         generate a slicer preview. */
+        $maxPixelsPerDim = 65000;
 
         if ($slicerPixelsX >= $maxPixelsPerDim) {
             $this->compareZviews = FALSE;
