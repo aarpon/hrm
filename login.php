@@ -231,23 +231,22 @@ deconvolution.</p>
 
 <div  id="logos">
 <table>
+
     <tr class="logo">
-        <td>
-            <a href="javascript:openWindow('http://www.epfl.ch')">
-                <img src="images/logo_epfl.png" alt="EPFL" />
-            </a>
+        <td class="epfl"
+         onclick="javascript:openWindow('http://biop.epfl.ch')"
+         style='cursor:pointer'>
         </td>
-        <td>
-            <a href="javascript:openWindow('http://www.mri.cnrs.fr')">
-                <img src="images/logo_mri.png" alt="MRI" />
-            </a>
+        <td class="mri"
+         onclick="javascript:openWindow('http://www.mri.cnrs.fr')"
+         style='cursor:pointer'>
         </td>
-        <td>
-            <a href="javascript:openWindow('http://www.svi.nl')">
-                <img src="images/logo_svi.png" alt="SVI" />
-            </a>
+        <td class="svi"
+         onclick="javascript:openWindow('http://www.svi.nl')"
+         style='cursor:pointer'>
         </td>
     </tr>
+
     <tr class="caption">
         <td>
             EPF Lausanne<br />
@@ -262,21 +261,24 @@ deconvolution.</p>
             Scientific Volume Imaging
         </td>
     </tr>
+
    </table>
-                
+
+<br />
+
    <table>
+
     <tr class="logo">
-        <td>
-            <a href="javascript:openWindow('http://www.bsse.ethz.ch/')">
-                <img src="images/logo_bsse.png" alt="BSSE ETH Zurich" />
-            </a>
+        <td class="bsse"
+         onclick="javascript:openWindow('http://www.bsse.ethz.ch')"
+         style='cursor:pointer'>
         </td>
-        <td>
-            <a href="javascript:openWindow('http://www.fmi.ch')">
-                <img src="images/logo_fmi.png" alt="FMI" />
-            </a>
+        <td class="fmi"
+         onclick="javascript:openWindow('http://www.fmi.ch')"
+         style='cursor:pointer'>
         </td>
     </tr>
+
     <tr class="caption">
         <td>
             ETH Zurich<br />
@@ -289,7 +291,9 @@ deconvolution.</p>
             </a>
         </td>
     </tr>
+                
  </table>
+                
 </div>
 </div>
 <!-- welcome -->

@@ -319,26 +319,46 @@ table {
 }
 
 #logos {
-    margin: 15px;
-    font-size: 70%;
-    text-align: center;
+  margin: 15px;
+  font-size: 70%;
+  text-align: center;
 }
 #logos table {
-    border: 0px;
+  border: 0px;
 }
 
 #logos table tr.logo {
-    vertical-align: middle;
+  height: 48px;
+  vertical-align: middle;
 }
 
 #logos table tr.caption {
-    vertical-align: top;
+  vertical-align: top;
 }
 
-#logos table td {
-    padding-top: 20px;
-    text-align: center;
-    width: 150px;
+#logos table td.epfl {
+  background: url(../images/logo_epfl.png) no-repeat center;
+  background-size: 48px;
+}
+
+#logos table td.mri {
+  background: url(../images/logo_mri.png) no-repeat center;
+  background-size: 48px;
+}
+
+#logos table td.svi {
+  background: url(../images/logo_svi.png) no-repeat center;
+  background-size: 48px;
+}
+
+#logos table td.bsse {
+  background: url(../images/logo_bsse.png) no-repeat center;
+  background-size: 48px;
+}
+
+#logos table td.fmi {
+  background: url(../images/logo_fmi.png) no-repeat center;
+  background-size: 48px;
 }
 
 #templates select {
