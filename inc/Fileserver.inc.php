@@ -3008,11 +3008,11 @@ echo '</body></html>';
       }
       
           /* Loop over the channel combinations and add their coloc maps. */
-      $colocMapTab = "";
+      $colocMapTab = $colocHtml;
       foreach ($channels[1] as $key => $chanR) {
           $chanG = $channels[2][$key];
 
-          $colocMapTab .= $this->addColocMaps($chanR, $chanG, $colocHtml);
+          $colocMapTab = $this->addColocMaps($chanR, $chanG, $colocMapTab);
       }
   
       return $colocMapTab;
