@@ -887,7 +887,7 @@ class Job {
             /* Extract colocalization coefficients frame by frame. */
         foreach ($frameResults as $frameCnt => $frameResult) {
             
-            $pattern = "/([0-9a-zA-Z]+) {([0-9.]+)}/";
+            $pattern = "/([0-9a-zA-Z]+) {(-?[0-9.]+)}/";
             if (!preg_match_all($pattern, $frameResult, $matches)) {
                 continue;
             }
@@ -907,11 +907,11 @@ class Job {
                             break;
                         case "threshR": 
                             $headerRow .=
-                                $this->insertCell("Thresh. Ch. $chanR","header");
+                                $this->insertCell("Thresh. Ch.$chanR","header");
                             break;
                         case "threshG":
                             $headerRow .=
-                                $this->insertCell("Thresh. Ch. $chanG","header");
+                                $this->insertCell("Thresh. Ch.$chanG","header");
                             break;
                         default:
                             $headerRow .= $this->insertCell($parameter,"header");
@@ -933,7 +933,7 @@ class Job {
                         break;
                     default:
                         $frameRow .=
-                            $this->insertCell(round($value,4),"coefficient");
+                            $this->insertCell(round($value,3),"coefficient");
                 }
             }
             
