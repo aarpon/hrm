@@ -844,7 +844,13 @@ class NumericalArrayParameter extends NumericalParameter {
         // First check that all values are set
         if (array_search("", array_slice($this->value, 
                 0, $this->numberOfChannels)) !== FALSE) {
-            $this->message = 'Some of the values are missing!';
+            if ($this->mustProvide()) {
+                $this->message = 'Some of the values are missing!';
+            } else {
+                $this->message = 'You can omit typing values for this ' .
+                    'parameter. If you decide to provide them, though, ' .
+                        'you must provide them all.';
+            }
             return false;
         }
         // Now check the values themselves
