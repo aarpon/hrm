@@ -370,13 +370,6 @@ class ParameterSetting extends Setting {
             }
         }
 
-            /* Only for widefield and spinning disk. To be finished. */
-//         if ($ok) {
-//             if ($this->checkPostedCalculatePixelSizeParameters($postedParams) ) {
-//                 $ok = False;
-//             }   
-//         }
-
         if ( !$ok ) {
             $this->message  = "The selected parameter set contains empty values ";
             $this->message .= "which the $imageFormat format misses in its ";
@@ -424,7 +417,7 @@ class ParameterSetting extends Setting {
             }
         }
 
-        // The number of channels must be defined for most file formats
+        // The number of channels must be defined for all file formats
         if (!isset($postedParameters["NumberOfChannels"]) ||
                 $postedParameters["NumberOfChannels"] == "") {
             $this->message = "Please set the number of channels!";
