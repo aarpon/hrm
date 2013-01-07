@@ -309,7 +309,7 @@ $top_navigation .= '
         $top_navigation .= '
             <li>
                 <a href="file_management.php?folder=src">
-                    <img src="images/rawdata_small.png" alt="raw data" />&nbsp;&nbsp;Raw data</a>
+                    <img src="images/rawdata_small.png" alt="raw images" />&nbsp;&nbsp;Raw images</a>
             </li>';
     } else {
         $top_navigation .= '
