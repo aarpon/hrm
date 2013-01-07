@@ -111,7 +111,7 @@ include("header.inc.php");
     </div>
     
     <div id="content">
-
+        
         <h2>Number of channels and PSF modality</h2>
         
         <form method="post" action="" id="select">
