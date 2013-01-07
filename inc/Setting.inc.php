@@ -464,6 +464,96 @@ class ParameterSetting extends Setting {
         $names[array_search('EmissionWavelength', $names)] = 
             'EmissionWavelength0';
 
+        // We handle multi-value parameters differently than single-valued ones
+        
+        // Excitation wavelengths
+        $value = array(null, null, null, null, null);
+        for ($i = 0; $i < 5; $i++) {
+            if (isset($postedParameters["ExcitationWavelength$i"])) {
+                $value[$i] = $postedParameters["ExcitationWavelength$i"];
+                unset($postedParameters["ExcitationWavelength$i"]);
+            }
+        }
+        $name = 'ExcitationWavelength';
+        unset($names[array_search("ExcitationWavelength0", $names)]);
+        $valueSet = count(array_filter($value)) > 0;
+
+        if ($valueSet) {
+        
+            // Set the value
+            $parameter = $this->parameter($name);
+            $parameter->setValue($value);
+            $this->set($parameter);
+
+            // Check
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = False;
+            }
+            
+        } else {
+          
+            // In this case it is important to know whether the Parameter
+            // must have a value or not
+            $parameter = $this->parameter($name);
+            $mustProvide = $parameter->mustProvide();
+
+            // Reset the Parameter
+            $parameter->reset();
+            $this->set($parameter);
+            
+            // If the Parameter value must be provided, we return an error
+            if ($mustProvide) {
+                $this->message = "Please set the excitation wavelength!";
+                $noErrorsFound = False;
+            }
+
+        }
+
+        // Emission wavelengths
+        $value = array(null, null, null, null, null);
+        for ($i = 0; $i < 5; $i++) {
+            if (isset($postedParameters["EmissionWavelength$i"])) {
+                $value[$i] = $postedParameters["EmissionWavelength$i"];
+                unset($postedParameters["EmissionWavelength$i"]);
+            }
+        }
+        $name = 'EmissionWavelength';
+        unset($names[array_search("EmissionWavelength0", $names)]);
+        $valueSet = count(array_filter($value)) > 0;
+        
+        if ($valueSet) {
+        
+            // Set the value
+            $parameter = $this->parameter($name);
+            $parameter->setValue($value);
+            $this->set($parameter);
+
+            // Check
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = False;
+            }
+            
+        } else {
+          
+            // In this case it is important to know whether the Parameter
+            // must have a value or not
+            $parameter = $this->parameter($name);
+            $mustProvide = $parameter->mustProvide();
+
+            // Reset the Parameter
+            $parameter->reset();
+            $this->set($parameter);
+            
+            // If the Parameter value must be provided, we return an error
+            if ($mustProvide) {
+                $this->message = "Please set the emission wavelength!";
+                $noErrorsFound = False;
+            }
+
+        }
+        
         // Check that the Parameters are set and contain valid values
         foreach ($names as $name) {
 
@@ -475,28 +565,7 @@ class ParameterSetting extends Setting {
             // provided or not
             if ($valueSet) {
 
-                // Handle particular parameters
-                if ($name == 'ExcitationWavelength0') {
-                    $value = array(null, null, null, null, null);
-                    $value[0] = $postedParameters[$name];
-                    for ($i = 1; $i < 5; $i++) {
-                        if (isset($postedParameters["ExcitationWavelength$i"])) {
-                            $value[$i] = 
-                                $postedParameters["ExcitationWavelength$i"];
-                        }
-                    }
-                    $name = 'ExcitationWavelength';
-                } elseif ($name == 'EmissionWavelength0') {
-                    $value = array(null, null, null, null, null);
-                    $value[0] = $postedParameters[$name];
-                    for ($i = 1; $i < 5; $i++) {
-                        if (isset($postedParameters["EmissionWavelength$i"])) {
-                            $value[$i] = 
-                                $postedParameters["EmissionWavelength$i"];
-                        }
-                    }
-                    $name = 'EmissionWavelength';
-                } elseif ($name == "SampleMedium" &&
+                if ($name == "SampleMedium" &&
                         $postedParameters[$name] == "custom") {
                     if (isset($postedParameters['SampleMediumCustomValue'])) {
                         $value = $postedParameters['SampleMediumCustomValue'];
@@ -519,11 +588,6 @@ class ParameterSetting extends Setting {
 
                 // In this case it is important to know whether the Parameter
                 // must have a value or not
-                if ($name == "ExcitationWavelength0") {
-                    $name = "ExcitationWavelength";
-                } elseif ($name == "EmissionWavelength0") {
-                    $name = "EmissionWavelength";
-                }
                 $parameter = $this->parameter($name);
                 $mustProvide = $parameter->mustProvide();
 
@@ -679,43 +743,50 @@ class ParameterSetting extends Setting {
         // PinholeSize must be defined for all confocal microscopes
         if ($this->isMultiPointOrSinglePointConfocal()) {
 
-            $valueSet = isset($postedParameters["PinholeSize0"]) &&
-                    $postedParameters["PinholeSize0"] != '';
-
-            $parameter = $this->parameter("PinholeSize");
+            // Pinhole sizes
+            $value = array(null, null, null, null, null);
+            for ($i = 0; $i < 5; $i++) {
+                if (isset($postedParameters["PinholeSize$i"])) {
+                    $value[$i] = $postedParameters["PinholeSize$i"];
+                    unset($postedParameters["PinholeSize$i"]);
+                }
+            }
+            $name = 'PinholeSize';
+            $valueSet = count(array_filter($value)) > 0;
 
             if ($valueSet) {
-
-                // Set the Parameter and check the value
-                $value = array(null, null, null, null, null);
-                $value[0] = $postedParameters["PinholeSize0"];
-                for ($i = 1; $i < 5; $i++) {
-                    if (isset($postedParameters["PinholeSize$i"])) {
-                        $value[$i] = $postedParameters["PinholeSize$i"];
-                    }
-                }
+        
+                // Set the value
+                $parameter = $this->parameter($name);
                 $parameter->setValue($value);
                 $this->set($parameter);
+
+                // Check
                 if (!$parameter->check()) {
                     $this->message = $parameter->message();
                     $noErrorsFound = False;
                 }
+            
             } else {
-
+          
+                // In this case it is important to know whether the Parameter
+                // must have a value or not
+                $parameter = $this->parameter($name);
                 $mustProvide = $parameter->mustProvide();
 
                 // Reset the Parameter
                 $parameter->reset();
                 $this->set($parameter);
-
+            
                 // If the Parameter value must be provided, we return an error
                 if ($mustProvide) {
                     $this->message = "Please set the pinhole size!";
                     $noErrorsFound = False;
                 }
+
             }
         }
-
+            
         // PinholeSpacing must be defined for spinning disk confocals
         if ($this->isNipkowDisk()) {
 

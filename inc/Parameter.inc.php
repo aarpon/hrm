@@ -104,10 +104,15 @@ abstract class Parameter {
 		\return	true if the value is *not set* (i.e. null)
 	*/
 	public function notSet( ) {
-		if ( is_array( $this->value ) ) {
-			return( $this->value[ 0 ] == null );
+		if (is_array($this->value)) {
+            foreach ($this->value as $value) {
+                if ($value != null) {
+                    return false;
+                }
+            }
+			return true;
 		}
-		return( $this->value == null );
+		return($this->value == null);
 	}
 
 	/*!
@@ -836,6 +841,13 @@ class NumericalArrayParameter extends NumericalParameter {
 	public function check() {
 	    $this->message = '';
 		$result = True;
+        // First check that all values are set
+        if (array_search("", array_slice($this->value, 
+                0, $this->numberOfChannels)) !== FALSE) {
+            $this->message = 'Some of the values are missing!';
+            return false;
+        }
+        // Now check the values themselves
 		for ( $i = 0; $i < $this->numberOfChannels; $i++ ) {
 	        $result = $result && parent::checkValue( $this->value[ $i ] );
 	    }
