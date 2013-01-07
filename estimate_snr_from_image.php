@@ -242,7 +242,7 @@ function estimateSnrFromFile($file) {
 
     <div id="content">
       <div id="output" >
-        <h3><img alt="SNR" src="./images/results_title_tmp.png" 
+        <h3><img alt="SNR" src="./images/results_title.png" 
                  width="40" />&nbsp;&nbsp;Estimating SNR
         </h3>
         <fieldset>
@@ -286,7 +286,7 @@ function estimateSnrFromFile($file) {
     $estimation = askHuCore("estimateSnrFromImage", $opt);
     // No line-breaks in the output, it is going to be escaped for JavaScript.
     $output =
-        "<h3><img alt=\"SNR\" src=\"./images/results_title_tmp.png\" " .
+        "<h3><img alt=\"SNR\" src=\"./images/results_title.png\" " .
         "width=\"40\"/>&nbsp;&nbsp;SNR estimation</h3>" .
         "<fieldset>" .
         "<table>";

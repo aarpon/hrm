@@ -236,7 +236,7 @@ if ( $browse_folder == "dest" ) {
     $page_title = "Results";
     $explanation_text = "These are the <b>processed image files</b> " .
     "currently in your file area.";
-    $form_title = "Your files";
+    $form_title = "Your result files";
 
     $info = "<h3>Quick help</h3>
             <p>Click on a file name to see a preview.</p>
@@ -263,7 +263,7 @@ if ( $browse_folder == "dest" ) {
     $page_title = "Raw images";
     $explanation_text = "These are the <b>original image files</b> currently " .
       "in your file area.";
-    $form_title = "Your files";
+    $form_title = "Your raw files";
 
     $info = "<h3>Quick help</h3>
             <p>Click on a file name to see (or create) a preview.</p>
@@ -304,8 +304,22 @@ $top_navigation .= '
             </li>';
        }
     }
-            
- $top_navigation .= '<li>
+
+    if ( $browse_folder == "dest" ) {
+        $top_navigation .= '
+            <li>
+                <a href="file_management.php?folder=src">
+                    <img src="images/rawdata_small.png" alt="raw data" />&nbsp;&nbsp;Raw data</a>
+            </li>';
+    } else {
+        $top_navigation .= '
+            <li>
+                <a href="file_management.php?folder=dest">
+                    <img src="images/results_small.png" alt="results" />&nbsp;&nbsp;Results</a>
+            </li>';
+    }
+    
+$top_navigation .= '<li>
                 <a href="'.getThisPageName().'?home=home">
                     <img src="images/home.png" alt="home" />
                     &nbsp;Home

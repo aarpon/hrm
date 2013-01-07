@@ -211,7 +211,7 @@ include("header.inc.php");
 			  </td>
         <td class="icon">
 				<a href="./file_management.php?folder=src">
-				<img alt="FileManager" src="./images/filemanager_tmp.png" />
+				<img alt="FileManager" src="./images/rawdata.png" />
 				</a>
 			  </td>
 			  
@@ -344,7 +344,7 @@ include("header.inc.php");
 			  
 			  <td class="icon">
 				<a href="./file_management.php?folder=src">
-				<img alt="Raw images" src="./images/filemanager_tmp.png" />
+				<img alt="Raw images" src="./images/rawdata.png" />
 				</a>
 			  </td>
 			  
@@ -358,7 +358,7 @@ include("header.inc.php");
 			  <td class="icon">
 				<a href="./file_management.php?folder=dest">
 				<img alt="Results"
-                                 src="./images/results_tmp.png" />
+                                 src="./images/results.png" />
 				</a>
 			  </td>
 			  

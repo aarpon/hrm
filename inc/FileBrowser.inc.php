@@ -409,9 +409,9 @@ include("header.inc.php");
     <div id="content" >
     
     <?php if ($page_title == "Raw images") {
-    $icon = "./images/filemanager_title_tmp.png";
+    $icon = "./images/rawdata_title.png";
 } else {
-    $icon = "./images/results_title_tmp.png";
+    $icon = "./images/results_title.png";
 } ?>
         
 <h3><img alt=<?php echo $page_title;?> src=<?php echo $icon;?> width="40"/>
