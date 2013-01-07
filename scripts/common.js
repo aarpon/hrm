@@ -505,7 +505,7 @@ function imgPrev(infile, mode, gen, compare, index, dir, referer, data) {
                   +        'openWindow(\'' + link + '\'); '
                   +    '"'
                   + '><div class="expandedView">'
-                  + '<img src="images/eye.png"> Go to deconvolution result'
+                  + '<img src="images/eye.png">&nbsp;&nbsp;Go to detailed results'
                   + '</div>'
                   + html + '</a>' ;
     }
