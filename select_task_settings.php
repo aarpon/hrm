@@ -175,7 +175,7 @@ include("header.inc.php");
             if ( !$_SESSION['user']->isAdmin()) {
             ?>
             <li><a href="file_management.php?folder=src">
-                    <img src="images/filemanager_small.png" alt="raw" />
+                    <img src="images/rawdata_small.png" alt="raw" />
                     &nbsp;Raw images
                 </a>
             </li>
