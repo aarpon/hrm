@@ -322,17 +322,9 @@ deconvolution.</p>
                'http://www.svi.nl/HuygensRemoteManagerHelpLogin')">
                 <img src="images/help.png" alt="?" /></a> Login
         </legend>
-    <?php
-        if ($authenticateAgainst == "MYSQL") {
-            $login_message = "<p class=\"expl\">" .
-                    "If you do not have an account, please register " .
-                    "<a href=\"registration.php\">here</a>.</p>";
-        } else {
-            $login_message = "<p class=\"expl\">Please enter your ".
-                    "credentials.</p>";
-        }
-        echo $login_message;
-    ?>
+        
+        <p class="expl">Please enter your credentials.</p>
+
         <label for="username">Username</label><br />
         <input id="username" name="username" type="text" class="textfield"
                tabindex="1" /> <br />
@@ -342,6 +334,26 @@ deconvolution.</p>
         <input type="hidden" name="request" value="<?php echo $req ?>" />
         <input type="submit" class="button" value="login" />
     </fieldset>
+    
+    <?php
+       if ($authenticateAgainst == "MYSQL") {
+    ?>
+    <fieldset>
+        <legend>
+            <a href="javascript:openWindow(
+               'http://www.svi.nl/HuygensRemoteManagerHelpLogin')">
+                <img src="images/help.png" alt="?" /></a> Registration
+        </legend>
+                
+        <div id="login_registration">
+            <b>No HRM account yet?</b><br />
+            Please register <a href="registration.php">here</a>.
+        </div>
+    </fieldset>
+    <?php
+        }
+    ?>
+
 </form>
 </div>
 

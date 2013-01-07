@@ -552,6 +552,16 @@ input.save {
     text-align: center;
 }
 
+#login_registration {
+    background: url("../images/registration.png") no-repeat left center;
+    font-size: 12px;
+    height: 48px;
+    width: 150px;
+    text-align: left;
+    padding-left: 50px;
+    padding-top: 20px;
+}
+
 #login fieldset {
     -moz-border-radius: 7px;
     -webkit-border-radius: 7px;
