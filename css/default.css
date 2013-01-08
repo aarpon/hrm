@@ -319,21 +319,31 @@ table {
 }
 
 #logos {
-  margin: 15px;
   font-size: 70%;
   text-align: center;
 }
+
 #logos table {
   border: 0px;
+  width: 480px;
+}
+
+#logos table.firstRow {
+  margin: 20px 0px 30px 0px;
+}
+
+#logos table.secondRow {
+  margin: 20px 0px 30px 0px;
 }
 
 #logos table tr.caption {
   vertical-align: top;
+  text-align: center;
 }
 
 #logos table td.epfl {
   height: 60px;
-  width: 90px;
+  width: 160px;
   cursor: pointer;
   background: url("../images/logo_epfl.png") no-repeat center;
   background-size: 90px;
@@ -341,6 +351,7 @@ table {
 
 #logos table td.mri {
   height: 60px;
+  width: 160px;
   cursor: pointer;
   background: url("../images/logo_mri.png") no-repeat center;
   background-size: 60px;
@@ -348,6 +359,7 @@ table {
 
 #logos table td.svi {
   height: 60px;   
+  width: 160px;
   cursor: pointer;
   background: url("../images/logo_svi.png") no-repeat center;
   background-size: 60px;
@@ -355,38 +367,24 @@ table {
 
 #logos table td.bsse {
   height: 80px;
-  width: 100px;
+  width: 240px;
+  margin-top: 50px;
+  padding-bottom: 5px;
   cursor: pointer;
-  background: url("../images/logo_bsse.png") no-repeat right;
+  background: url("../images/logo_bsse.png") no-repeat center;
   background-size: 100px;
 }
 
 #logos table td.fmi {
-  height: 60px;
-  width: 120px;
+  height: 80px;
+  width: 240px;
   cursor: pointer;
   background: url("../images/logo_fmi.png") no-repeat center;
   background-size: 70px;
 }
 
-#logos table td.caption_epfl {
-  text-align: center;
-}
-
-#logos table td.caption_mri {
-  text-align: center;
-}
-
-#logos table td.caption_svi {
-  text-align: center;
-}
-
-#logos table td.caption_bsse {
-  text-align: center;
-}
-
-#logos table td.caption_fmi {
-  text-align: center;
+#logos table td.blank {
+  width: 40px;
 }
 
 #templates select {

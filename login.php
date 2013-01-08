@@ -230,80 +230,74 @@ deconvolution.</p>
 <h2>Collaborators</h2>
 
 <div  id="logos">
-<table>
-
-    <tr class="logo">
-        <td class="epfl"
-         onclick="javascript:openWindow('http://biop.epfl.ch')" >
-        </td>
-        <td>
-        </td>
-        <td class="mri"
-         onclick="javascript:openWindow('http://www.mri.cnrs.fr')" >
-        </td>
-        <td>
-        </td>
-        <td class="svi"
-         onclick="javascript:openWindow('http://www.svi.nl')" >
-        </td>
+  
+  <!-- First row -->
+  <table class="firstRow">
+    
+    <!-- Logos -->
+    <tr>
+      <td class="epfl"
+          onclick="javascript:openWindow('http://biop.epfl.ch')" >
+      </td>
+      <td class="mri"
+          onclick="javascript:openWindow('http://www.mri.cnrs.fr')" >
+      </td>
+      <td class="svi"
+          onclick="javascript:openWindow('http://www.svi.nl')" >
+      </td>
     </tr>
-
+      
+    <!-- Captions -->
     <tr class="caption">
-        <td class="caption_efpl">
-            EPF Lausanne<br />
-            <a href="javascript:openWindow('http://biop.epfl.ch')">
-                BioImaging and Optics platform
-            </a>
-        </td>
-        <td>
-        </td>
-        <td class="caption_mri">
-            Montpellier RIO Imaging
-        </td>
-        <td>
-        </td>
-        <td class="caption_svi">
-            Scientific Volume Imaging
-        </td>
+      <td>
+        EPF Lausanne<br />
+        <a href="javascript:openWindow('http://biop.epfl.ch')">
+          BioImaging and Optics platform
+        </a>
+      </td>
+      <td>
+        Montpellier RIO Imaging
+      </td>
+      <td>
+        Scientific Volume Imaging
+      </td>
+    </tr>
+      
+  </table>
+    
+  <!-- Second row -->  
+  <table class="secondRow">
+      
+    <!-- Logos -->
+    <tr>
+      <td class="blank">&nbsp;</td>
+      <td class="fmi"
+          onclick="javascript:openWindow('http://www.fmi.ch')" >
+      </td>
+      <td class="bsse"
+          onclick="javascript:openWindow('http://www.bsse.ethz.ch')" >
+      </td>
+      <td class="blank">&nbsp;</td>
     </tr>
 
-    <tr class="logo">
-        <td>
-        </td>
-        <td class="fmi"
-         onclick="javascript:openWindow('http://www.fmi.ch')" >
-        </td>
-        <td>
-        </td>
-        <td class="bsse"
-         onclick="javascript:openWindow('http://www.bsse.ethz.ch')" >
-        </td>
-        <td>
-        </td>
-    </tr>
-
+    <!-- Captions -->
     <tr class="caption">
-        <td>
-        </td>
-        <td class="caption_fmi">
-             Friedrich Miescher Institute<br />
-            <a href="javascript:openWindow('http://www.fmi.ch/faim')">
-                Facility for Advanced Imaging and Microscopy
-            </a>
-        </td>
-        <td>
-        </td>
-        <td class="caption_bsse">
-            <br />
-            ETH Zurich<br />
-            Single-Cell Unit
-        </td>
-        <td>
-        </td>
+      <td class="blank">&nbsp;</td>
+      <td>
+        Friedrich Miescher Institute<br />
+        <a href="javascript:openWindow('http://www.fmi.ch/faim')">
+          Facility for Advanced Imaging and Microscopy
+        </a>
+      </td>
+      <td>
+        ETH Zurich<br />
+        Single-Cell Unit
+      </td>
+      <td class="blank">&nbsp;</td>
     </tr>
-                
- </table>
-                
+
+  </table>
+    
 </div>
 </div>
 <!-- welcome -->
