@@ -110,7 +110,7 @@ table {
 #title {
     position: relative;
     height: 86px;
-    background: url(../images/title_bkg.png) repeat-x top left;
+    background: url("../images/title_bkg.png") repeat-x top left;
     padding-left: 180px;
     border: #fff 2px solid;
     color: white;
@@ -122,7 +122,7 @@ table {
     left: 0px;
     width: 186px;
     height: 86px;
-    background: url(../images/logo.png) no-repeat top left;
+    background: url("../images/logo.png") no-repeat top left;
 }
 
 #stats {
@@ -335,33 +335,38 @@ table {
 #logos table td.epfl {
   height: 60px;
   width: 90px;
-  background: url(../images/logo_epfl.png) no-repeat center;
+  cursor: pointer;
+  background: url("../images/logo_epfl.png") no-repeat center;
   background-size: 90px;
 }
 
 #logos table td.mri {
   height: 60px;
-  background: url(../images/logo_mri.png) no-repeat center;
+  cursor: pointer;
+  background: url("../images/logo_mri.png") no-repeat center;
   background-size: 60px;
 }
 
 #logos table td.svi {
-  height: 60px;    
-  background: url(../images/logo_svi.png) no-repeat center;
+  height: 60px;
+  cursor: pointer;
+  background: url("../images/logo_svi.png") no-repeat center;
   background-size: 60px;
 }
 
 #logos table td.bsse {
   height: 80px;
   width: 100px;
-  background: url(../images/logo_bsse.png) no-repeat right;
+  cursor: pointer;
+  background: url("../images/logo_bsse.png") no-repeat right;
   background-size: 100px;
 }
 
 #logos table td.fmi {
   height: 60px;
   width: 120px;
-  background: url(../images/logo_fmi.png) no-repeat center;
+  cursor: pointer;
+  background: url("../images/logo_fmi.png") no-repeat center;
   background-size: 70px;
 }
 
@@ -462,55 +467,55 @@ table {
 }
 
 input.copy {
-    background: url(../images/copy.png) no-repeat center;
+    background: url("../images/copy.png") no-repeat center;
 }
 
 input.down {
-    background: url(../images/add.png) no-repeat center;
+    background: url("../images/add.png") no-repeat center;
 }
 
 input.remove {
-    background: url(../images/remove.png) no-repeat center;
+    background: url("../images/remove.png") no-repeat center;
 }
 
 input.create {
-    background: url(../images/create.png) no-repeat center;
+    background: url("../images/create.png") no-repeat center;
 }
 
 input.edit {
-    background: url(../images/edit.png) no-repeat center;
+    background: url("../images/edit.png") no-repeat center;
 }
 
 input.clone {
-    background: url(../images/clone.png) no-repeat center;
+    background: url("../images/clone.png") no-repeat center;
 }
 
 input.mark {
-    background: url(../images/mark.png) no-repeat center;
+    background: url("../images/mark.png") no-repeat center;
 }
 
 input.delete {
-    background: url(../images/delete.png) no-repeat center;
+    background: url("../images/delete.png") no-repeat center;
 }
 
 input.update {
-    background: url(../images/update.png) no-repeat center;
+    background: url("../images/update.png") no-repeat center;
 }
 
 input.download {
-    background: url(../images/download.png) no-repeat center;
+    background: url("../images/download.png") no-repeat center;
 }
 input.upload {
-    background: url(../images/upload.png) no-repeat center;
+    background: url("../images/upload.png") no-repeat center;
 }
 input.omero {
-    background: url(../images/omero_data.png) no-repeat center;
+    background: url("../images/omero_data.png") no-repeat center;
 }
 
 input.save {
     width: 60px;
     height: 60px;
-    background: url(../images/save.png) no-repeat center;
+    background: url("../images/save.png") no-repeat center;
 }
 
 #actions {
@@ -660,7 +665,7 @@ input.save {
 }
 
 #validation {
-    background: url(../images/validation_bkg.png) repeat-x top left;
+    background: url("../images/validation_bkg.png") repeat-x top left;
     text-align: center;
     padding-top: 10px;
     padding-bottom: 10px;
@@ -1113,14 +1118,14 @@ input.save {
 #homepage .added_jobs a:link {
     color: #4988de;
     font-weight: normal;
-    font-decoration: none;
+    text-decoration: none;
     font-size: 14px;
 }
 
 #homepage .added_jobs a:visited {
     color: #4988de;
     font-weight: normal;
-    font-decoration: none;
+    text-decoration: none;
     font-size: 14px;
 }
 
@@ -1244,7 +1249,7 @@ fieldset .values {
 
 fieldset .reset
 {
-    background: url(../images/reset.png) no-repeat left center;
+    background: url("../images/reset.png") no-repeat left center;
     position: absolute;
     top: 0px;
     left: 0px;
@@ -1279,91 +1284,91 @@ input.empty {
     width: 60px;
     height: 60px;
     cursor: default;
-    background: url(../images/empty.png);
+    background: url("../images/empty.png");
 }
 
 input.previous {
     width: 60px;
     height: 60px;
-    background: url(../images/previous.png) no-repeat right;
+    background: url("../images/previous.png") no-repeat right;
 }
 
 input.launch {
     width: 60px;
     height: 60px;
-    background: url(../images/launch.png) no-repeat right;
+    background: url("../images/launch.png") no-repeat right;
 }
 
 input.launch_start {
   width: 80px;
   height: 60px;
-  background: url(../images/launch_start.png) no-repeat right;
+  background: url("../images/launch_start.png") no-repeat right;
 }
 
 input.next {
     width: 60px;
     height: 60px;
-    background: url(../images/next.png) no-repeat right;
+    background: url("../images/next.png") no-repeat right;
 }
 
 input.up {
     width: 60px;
     height: 60px;
-    background: url(../images/up.png) no-repeat right;
+    background: url("../images/up.png") no-repeat right;
 }
 
 input.calc {
     width: 60px;
     height: 60px;
-    background: url(../images/calc.png) no-repeat right;
+    background: url("../images/calc.png") no-repeat right;
 }
 
 input.ok {
     width: 60px;
     height: 60px;
-    background: url(../images/ok.png) no-repeat center;
+    background: url("../images/ok.png") no-repeat center;
 }
 
 input.cancel {
     width: 60px;
     height: 60px;
-    background: url(../images/cancel.png) no-repeat center;
+    background: url("../images/cancel.png") no-repeat center;
 }
 
 input.apply {
     width: 60px;
     height: 60px;
-    background: url(../images/apply.png) no-repeat center;
+    background: url("../images/apply.png") no-repeat center;
 }
 
 input.back {
     width: 60px;
     height: 60px;
-    background: url(../images/back.png) no-repeat center;
+    background: url("../images/back.png") no-repeat center;
 }
 
 input.restart {
     width: 60px;
     height: 60px;
-    background: url(../images/restart.png) no-repeat center;
+    background: url("../images/restart.png") no-repeat center;
 }
 
 input.upload {
     width: 60px;
     height: 60px;
-    background: url(../images/upload.png) no-repeat center;
+    background: url("../images/upload.png") no-repeat center;
 }
 
 input.abort {
     width: 60px;
     height: 60px;
-    background: url(../images/cancel_small.png) no-repeat center;
+    background: url("../images/cancel_small.png") no-repeat center;
 }
 
 input.noPreview {
     width: 200px;
     height: 200px;
-    background: url(../images/no_preview_button.png) no-repeat center;
+    background: url("../images/no_preview_button.png") no-repeat center;
 }
 
 .expandedView {
@@ -1620,27 +1625,27 @@ option.default {
 /* Confidence levels for parameters: provided, asIs, verified, 
    reported, estimated, default */
 .asIs {
-	background: url(../images/param_reported.png) repeat-y left;
+	background: url("../images/param_reported.png") repeat-y left;
 }
 
 .verified {
-	background: url(../images/param_verified.png) repeat-y left;
+	background: url("../images/param_verified.png") repeat-y left;
 }
 
 .reported {
-	background: url(../images/param_reported.png) repeat-y left;
+	background: url("../images/param_reported.png") repeat-y left;
 }
 
 .estimated {
-	background: url(../images/param_estimated.png) repeat-y left;
+	background: url("../images/param_estimated.png") repeat-y left;
 }
 
 .default {
-	background: url(../images/param_default.png) repeat-y left;
+	background: url("../images/param_default.png") repeat-y left;
 }
 
 .provided {
-    background: url(../images/param_provided.png) repeat-y left;
+    background: url("../images/param_provided.png") repeat-y left;
 }
 
 .message_confidence_asIs {
@@ -1648,7 +1653,7 @@ option.default {
     height: 30px;
     margin-top: 5px;
     margin-bottom: -5px;
-    background: url(../images/text_reported.png) no-repeat bottom;
+    background: url("../images/text_reported.png") no-repeat bottom;
     color: #b09065;
 }
 
@@ -1657,7 +1662,7 @@ option.default {
     height: 30px;
     margin-top: 5px;
     margin-bottom: -5px;
-    background: url(../images/text_verified.png) no-repeat bottom;
+    background: url("../images/text_verified.png") no-repeat bottom;
     color: #000000;
 }
 
@@ -1666,7 +1671,7 @@ option.default {
     height: 30px;
     margin-top: 5px;
     margin-bottom: -5px;
-    background: url(../images/text_reported.png) no-repeat bottom;
+    background: url("../images/text_reported.png") no-repeat bottom;
     color: #b09065;
 }
 
@@ -1675,7 +1680,7 @@ option.default {
     height: 30px;
     margin-top: 5px;
     margin-bottom: -5px;
-    background: url(../images/text_estimated.png) no-repeat bottom;
+    background: url("../images/text_estimated.png") no-repeat bottom;
     color: #1F467F;
 }
 
@@ -1684,7 +1689,7 @@ option.default {
     height: 30px;
     margin-top: 5px;
     margin-bottom: -5px;
-    background: url(../images/text_default.png) no-repeat bottom;
+    background: url("../images/text_default.png") no-repeat bottom;
     color: #009C89;
 }
 
@@ -1693,7 +1698,7 @@ option.default {
     height: 30px;
     margin-top: 5px;
     margin-bottom: -5px;
-    background: url(../images/text_provided.png) no-repeat bottom;
+    background: url("../images/text_provided.png") no-repeat bottom;
     color: #555A43;
 }
 

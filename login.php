@@ -234,20 +234,17 @@ deconvolution.</p>
 
     <tr class="logo">
         <td class="epfl"
-         onclick="javascript:openWindow('http://biop.epfl.ch')"
-         style='cursor:pointer'>
+         onclick="javascript:openWindow('http://biop.epfl.ch')" >
         </td>
         <td>
         </td>
         <td class="mri"
-         onclick="javascript:openWindow('http://www.mri.cnrs.fr')"
-         style='cursor:pointer'>
+         onclick="javascript:openWindow('http://www.mri.cnrs.fr')" >
         </td>
         <td>
         </td>
         <td class="svi"
-         onclick="javascript:openWindow('http://www.svi.nl')"
-         style='cursor:pointer'>
+         onclick="javascript:openWindow('http://www.svi.nl')" >
         </td>
     </tr>
 
@@ -274,14 +271,12 @@ deconvolution.</p>
         <td>
         </td>
         <td class="fmi"
-         onclick="javascript:openWindow('http://www.fmi.ch')"
-         style='cursor:pointer'>
+         onclick="javascript:openWindow('http://www.fmi.ch')" >
         </td>
         <td>
         </td>
         <td class="bsse"
-         onclick="javascript:openWindow('http://www.bsse.ethz.ch')"
-         style='cursor:pointer'>
+         onclick="javascript:openWindow('http://www.bsse.ethz.ch')" >
         </td>
         <td>
         </td>
