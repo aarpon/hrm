@@ -328,38 +328,41 @@ table {
   border: 0px;
 }
 
-#logos table tr.logo {  
-  height: 60px;
-  vertical-align: middle;
-}
-
 #logos table tr.caption {
   vertical-align: top;
 }
 
 #logos table td.epfl {
+  height: 60px;
+  width: 90px;
   background: url(../images/logo_epfl.png) no-repeat center;
-  background-size: 60px;
+  background-size: 90px;
 }
 
 #logos table td.mri {
-  background: url(../images/logo_mri.png) no-repeat left;
+  height: 60px;
+  background: url(../images/logo_mri.png) no-repeat center;
   background-size: 60px;
 }
 
 #logos table td.svi {
+  height: 60px;    
   background: url(../images/logo_svi.png) no-repeat center;
   background-size: 60px;
 }
 
 #logos table td.bsse {
-  background: url(../images/logo_bsse.png) no-repeat center;
-  background-size: 60px;
+  height: 80px;
+  width: 100px;
+  background: url(../images/logo_bsse.png) no-repeat right;
+  background-size: 100px;
 }
 
 #logos table td.fmi {
+  height: 60px;
+  width: 120px;
   background: url(../images/logo_fmi.png) no-repeat center;
-  background-size: 60px;
+  background-size: 70px;
 }
 
 #logos table td.caption_epfl {
@@ -367,7 +370,7 @@ table {
 }
 
 #logos table td.caption_mri {
-  text-align: left;
+  text-align: center;
 }
 
 #logos table td.caption_svi {

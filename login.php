@@ -293,12 +293,13 @@ deconvolution.</p>
         <td class="caption_fmi">
              Friedrich Miescher Institute<br />
             <a href="javascript:openWindow('http://www.fmi.ch/faim')">
-                Facility for Advanced<br />Imaging and Microscopy
+                Facility for Advanced Imaging and Microscopy
             </a>
         </td>
         <td>
         </td>
         <td class="caption_bsse">
+            <br />
             ETH Zurich<br />
             Single-Cell Unit
         </td>
