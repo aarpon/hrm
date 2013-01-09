@@ -427,8 +427,8 @@ if (!$_SESSION['user']->isAdmin()) {
 	}
 	?>
         <p>These are the choice of the deconvolution algorithm and its options
-        (signal-to-noise ratio, background estimation mode and stopping criteria)
-        as well as post-deconvolution tasks such as colocalization.</p>
+        (signal-to-noise ratio, background estimation mode and stopping 
+        criteria).</p>
 
     <?php        
 	if (!$_SESSION['user']->isAdmin()) {
