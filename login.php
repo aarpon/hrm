@@ -336,9 +336,18 @@ deconvolution.</p>
         </legend>
                 
         <div id="login_registration">
-            <b>No HRM account yet?</b><br />
-            Please register <a href="registration.php">here</a>.
+           <table>
+            <tr>
+             <td class="icon" onclick="document.location.href='registration.php'" >
+             </td>
+             <td class="text">
+               <b>No HRM account yet?</b><br />
+               Please register <a href="registration.php">here</a>.
+             </td>
+            </tr>
+           </table>
         </div>
+    
     </fieldset>
     <?php
         }

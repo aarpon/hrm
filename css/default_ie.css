@@ -560,13 +560,32 @@ input.save {
 }
 
 #login_registration {
-    background: url("../images/registration.png") no-repeat left center;
-    font-size: 12px;
-    height: 48px;
-    width: 150px;
-    text-align: left;
-    padding-left: 50px;
-    padding-top: 20px;
+  font-size: 12px;
+  height: 48px;
+  width: 150px;
+  text-align: left;
+  padding-left: 0px;
+  padding-bottom: 10px;
+}
+
+#login_registration table {
+  border: 0px;
+  width: 200px;
+}
+
+#login_registration table td.icon {
+  height: 48px;
+  width: 40px;
+  cursor: pointer;
+  background: url("../images/registration.png") no-repeat center;
+  background-size: 48px;
+}
+
+#login_registration table td.text {
+  text-align: center;
+  height: 48px;
+  width: 100px;
+  
 }
 
 #login fieldset {
