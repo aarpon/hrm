@@ -58,7 +58,7 @@ $saved = $_SESSION['analysis_setting']->save();
  **************************************************************************** */
 
 // Javascript includes
-$script = array( "settings.js", "quickhelp/help.js");
+$script = array( "settings.js", "quickhelp/help.js", "quickhelp/colocHelp.js" );
 
 include("header.inc.php");
 
@@ -94,7 +94,7 @@ include("header.inc.php");
     ***************************************************************************/
     ?>
             <fieldset class="setting"
-            onmouseover="javascript:changeQuickHelp( 'type' );" >
+                onmouseover="javascript:changeQuickHelp( 'perform' );" >
 
                 <legend>
                     <a href="javascript:openWindow(
@@ -154,7 +154,7 @@ if ($parameterPerformColocAnalysis->value( ) == 1)
 
 <div id="ColocChannelSelectionDiv"<?php echo $visibility?>>
  <fieldset class="setting"
-            onmouseover="javascript:changeQuickHelp( 'type' );" >
+            onmouseover="javascript:changeQuickHelp( 'channels' );" >
 
                 <legend>
                     <a href="javascript:openWindow(
@@ -201,7 +201,7 @@ $selectedValues = $parameterColocChannel->value();
 
 <div id="ColocCoefficientSelectionDiv"<?php echo $visibility?>>
  <fieldset class="setting"
-            onmouseover="javascript:changeQuickHelp( 'type' );" >
+            onmouseover="javascript:changeQuickHelp( 'coeff' );" >
 
                 <legend>
                     <a href="javascript:openWindow(
@@ -269,7 +269,7 @@ foreach ($possibleValues as $possibleValue) {
 ?>
 <div id="ColocThresholdSelectionDiv"<?php echo $visibility?>>
 <fieldset class="setting"
-    onmouseover="javascript:changeQuickHelp( 'type' );" >
+    onmouseover="javascript:changeQuickHelp( 'threshold' );" >
     <legend>
 <a href="javascript:openWindow(
                        'http://www.svi.nl/ColocalizationBasics')">
@@ -360,7 +360,7 @@ if ($colocThreshold[0] != "" && $colocThreshold[0] != "auto") {
 
 <div id="ColocMapSelectionDiv"<?php echo $visibility?>>
  <fieldset class="setting"
-            onmouseover="javascript:changeQuickHelp( 'type' );" >
+            onmouseover="javascript:changeQuickHelp( 'maps' );" >
 
                 <legend>
                     <a href="javascript:openWindow(
