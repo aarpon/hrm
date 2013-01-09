@@ -331,7 +331,7 @@ deconvolution.</p>
     <fieldset>
         <legend>
             <a href="javascript:openWindow(
-               'http://www.svi.nl/HuygensRemoteManagerHelpLogin')">
+               'http://www.svi.nl/HuygensRemoteManagerHelpRegistration')">
                 <img src="images/help.png" alt="?" /></a> Registration
         </legend>
                 
