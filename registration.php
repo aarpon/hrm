@@ -165,7 +165,8 @@ include("header.inc.php");
 
     <div id="content">
 
-        <h3>Registration</h3>
+        <h3><img alt="Analysis" src="./images/registration_title.png" width="40"/>
+            &nbsp;&nbsp;Registration</h3>
 
 <?php
 
