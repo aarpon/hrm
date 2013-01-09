@@ -1207,11 +1207,26 @@ a.filled {
 
 #adduser {
     text-align: right;
-    padding-right: 3em;
+}
+
+#adduser label {
+  vertical-align: top;
+  display: inline-block;
+}
+
+#adduser input {
+    display: inline-block;
+    vertical-align: top;
+    width: 300px;
+    margin-left: 10px;
+    margin-bottom: 3px;
 }
 
 #adduser textarea {
-    width: 50%;
+    width: 300px;
+    height: 100px;
+    margin-left: 10px;
+    margin-bottom: 10px;
 }
 
 #addanotherfile {
