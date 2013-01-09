@@ -979,7 +979,8 @@ class QueueManager {
         
         $result = $result . "\nRestoration parameters:\n\n";
         $taskSetting = $desc->taskSetting();
-        $taskSettingString = $taskSetting->displayString();
+        $numberOfChannels = $taskSetting->numberOfChannels();
+        $taskSettingString = $taskSetting->displayString($numberOfChannels);
         $result = $result . $taskSettingString;
 
         $result = $result . "\nAnalysis parameters:\n\n";
