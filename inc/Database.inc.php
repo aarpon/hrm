@@ -1620,8 +1620,8 @@ class DatabaseConnection {
             case 'medium':
             case 'large':
             case 'extreme':
-                $feature = "server={" . $feature . "}";
-                report("Licensed sever: $feature", 1);
+                $feature = "server=" . $feature;
+                report("Licensed server: $feature", 1);
             default:
                 report("Licensed feature: $feature", 1);
         }
