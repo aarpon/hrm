@@ -1713,14 +1713,14 @@ echo '</body></html>';
           echo "\n<div class=\"menuEntry\"
           onmouseover=\"Tip('Pack and download the restored image with all accessory files')\"
           onmouseout=\"UnTip()\"
-          onclick=\"changeDiv('report','Packaging files, please wait until the download dialog appears...'); setTimeout(smoothChangeDiv,60000,'report','',5000); document.location.href='file_management.php?download=".rawurlencode($downloadFile)."'\" ><a href='#'>download files</a></div>\n";
+          onclick=\"changeDiv('report','Packaging files, please wait until the download dialog appears...'); setTimeout(smoothChangeDiv,60000,'report','',5000); document.location.href='file_management.php?download=".rawurlencode($downloadFile)."'\" ><a href='#'><img src=\"images/download_s.png\" alt=\"back\" /></a></div>\n";
       }
 
       echo "\n<div class=\"menuEntry\" onclick=\"javascript:openWindow(".
           "'http://support.svi.nl/wiki/style=hrm&amp;".
           "help=HuygensRemoteManagerHelpCompareResult')\" ".
              "onmouseover=\"Tip('Open a pop up with help about this window.')\" onmouseout=\"UnTip()\">".
-          "<a href=\"#\"><img src=\"images/help.png\" alt=\"help\" /> Help".
+          "<a href=\"#\"><img src=\"images/help.png\" alt=\"help\" />".
           "</a></div>";
 
       echo "\n<div class=\"menuEntry\" ";
@@ -1730,7 +1730,7 @@ echo '</body></html>';
              echo "onclick=\"window.close()\"".
              "onmouseover=\"Tip('Close this window and go back to your raw images.')\" onmouseout=\"UnTip()\">".
              "<a href=\"#\">".
-             "<img src=\"images/back_small.png\" alt=\"back\" /> Back".
+             "<img src=\"images/results_small.png\" alt=\"back\" />".
              "</a>\n";
              break;
           case "home":
@@ -1739,7 +1739,7 @@ echo '</body></html>';
              " onmouseout=\"UnTip()\" ".
              "'select_parameter_settings.php'\">".
              "<a href=\"#\">".
-             "<img src=\"images/home.png\" alt=\"home\" /> Home".
+             "<img src=\"images/home.png\" alt=\"home\" />".
              "</a>\n";
              break;
       }
@@ -1969,7 +1969,7 @@ echo '</body></html>';
           case "close":
              echo " <a href=\"#\" onclick=\"window.close()\" ".
              "onmouseover=\"Tip('Close this window and go back to your raw images.')\" onmouseout=\"UnTip()\">".
-             "<img src=\"images/back_small.png\" alt=\"back\" />".
+             "<img src=\"images/results_small.png\" alt=\"back\" />".
              "</a>\n";
              break;
           case "home":
