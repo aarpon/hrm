@@ -1613,6 +1613,18 @@ class DatabaseConnection {
     // Populate the table with the new license.
     $features = explode(" ", $licDetails);
     foreach ($features as $feature) {
+
+        switch( $feature ) {
+            case 'desktop':
+            case 'small':
+            case 'medium':
+            case 'large':
+            case 'extreme':
+                $feature = "server={" . $feature . "}";
+                report("Licensed sever: $feature", 1);
+            default:
+                report("Licensed feature: $feature", 1);
+        }
         
         $query = "INSERT INTO hucore_license (feature) ".
                  "VALUES ('". $feature ."')";
