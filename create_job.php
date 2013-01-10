@@ -129,9 +129,9 @@ include("header.inc.php");
 $parameter = $_SESSION['task_setting']->parameter("OutputFileFormat");
 $value = $parameter->value();
 
-// Make sure that if we had 16-bit TIFF (8 is fine) as output file format and a
+// Make sure that if we had TIFF (8 or 16 bit) as output file format and a
 // multichannel dataset, we reset the value to ics
-if ( $value == 'TIFF 16-bit' ) {
+if ( ( $value == 'TIFF 18-bit' ) || ( $value == 'TIFF 16-bit' ) ) {
   $nChannelsParameter = $_SESSION['setting']->parameter("NumberOfChannels");
   $numberOfChannels = $nChannelsParameter->value( );
   if ( $numberOfChannels > 1 ) {
@@ -160,8 +160,9 @@ sort( $possibleValues );
 // options from the list
 $nChannelsParameter = $_SESSION['setting']->parameter("NumberOfChannels");
 $numberOfChannels = $nChannelsParameter->value( );
-if ( $numberOfChannels == 2 || $numberOfChannels == 3 ) {
+if ( $numberOfChannels > 1 ) {
   $possibleValues = array_diff($possibleValues, array( 'TIFF 16-bit' ) );
+  $possibleValues = array_diff($possibleValues, array( 'TIFF 8-bit' ) );
   $possibleValues = array_values( $possibleValues );
 }
 
