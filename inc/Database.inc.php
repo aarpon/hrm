@@ -1562,13 +1562,26 @@ class DatabaseConnection {
  	/*!
 		\brief	Checks whether Huygens Core has a valid license
 		\return	true if the license is valid, false otherwise
-		\TODO Extract the information from the database.
     */
   public function hucoreHasValidLicense( ) {
       
       // We (ab)use the hasLicense() method
       return ( $this->hasLicense("freeware") == false);
   }
+
+ 	/*!
+		\brief	Gets the licensed server type for Huygens Core.
+		\return	one of desktop, small, medium, large, extreme
+		*/
+	public function hucoreServerType() {
+
+        $query = "SELECT feature FROM hucore_license WHERE feature LIKE 'server=%';";
+        $server = $this->queryLastValue($query);
+        if ($server == false) {
+            return "no server information";
+        }
+        return substr($server, 7);
+	}
 
   /*!
    \brief    Updates the database with the current HuCore license details.

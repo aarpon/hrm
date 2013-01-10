@@ -190,7 +190,16 @@ class System {
         $db = new DatabaseConnection();
         return $db->hasLicense( $feature );
     }
-    
+
+ 	/*!
+		\brief	Gets the licensed server type for Huygens Core.
+		\return	one of desktop, small, medium, large, extreme
+		*/
+	public static function hucoreServerType() {
+        $db = new DatabaseConnection();
+        return $db->hucoreServerType();
+	}    
+
 	/*!
 		\brief	Returns information about operating system and machine
 		architecture
@@ -326,7 +335,7 @@ class System {
     	global $max_post_limit;
     	if ( isset( $max_post_limit ) ) {
     		if ( $max_post_limit == 0 ) {
-    			return "Limited by php.ini.";
+    			return "limited by php.ini.";
     		} else {
     			return System::formatMemoryStringByUnit(
     			let_to_num( ini_get( '$max_post_limit' ) ), $unit );
@@ -423,7 +432,7 @@ class System {
     	global $max_upload_limit;
     	if ( isset( $max_upload_limit ) ) {
     		if ( $max_upload_limit == 0 ) {
-    			return "Limited by php.ini.";
+    			return "limited by php.ini.";
     		} else {
     			return System::formatMemoryStringByUnit(
     			let_to_num( $max_upload_limit ), $unit );

@@ -110,10 +110,24 @@ include("header.inc.php");
           </tr>
           <tr>
             <td class="key">
+                HuCore license file
+            </td>
+            <td class="value">
+                <?php
+                    if (System::hucoreHasValidLicense()) {
+                        echo "valid";
+                    } else {
+                        echo "missing or invalid";
+                    }
+                ?>
+            </td>
+          </tr>         
+          <tr>
+            <td class="key">
                 Server type
             </td>
             <td class="value">
-                <?php echo "TODO" ?>
+                <?php echo System::hucoreServerType(); ?>
             </td>
           </tr>         
           <tr>
@@ -136,7 +150,7 @@ include("header.inc.php");
                     $micro[] = "two photon";
                 }
                 if (count($micro) == 0) {
-                    $microStrg = "No licenses found.";
+                    $microStrg = "no microscope licenses.";
                 } else {
                     $microStrg = implode("<br />", $micro);
                 }
@@ -155,7 +169,7 @@ include("header.inc.php");
                     $analysis[] = "colocalization";
                 }
                 if (count($analysis) == 0) {
-                    $analysisStrg = "No licenses found.";
+                    $analysisStrg = "no analysis licenses.";
                 } else {
                     $analysisStrg = implode("<br />", $analysis);
                 }
