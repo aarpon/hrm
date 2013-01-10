@@ -140,6 +140,17 @@ if ( ( $value == 'TIFF 18-bit' ) || ( $value == 'TIFF 16-bit' ) ) {
   }
 }
 
+// Make sure that if we had RGB-TIFF 8 bit as output file format and a
+// single-channel dataset or more than 3 channels, we reset the value to ics
+if ( $value == 'RGB TIFF 8-bit' ) {
+  $nChannelsParameter = $_SESSION['setting']->parameter("NumberOfChannels");
+  $numberOfChannels = $nChannelsParameter->value( );
+  if ( ( $numberOfChannels == 1 || $numberOfChannels > 3 ) ) {
+    $parameter->setValue("ICS (Image Cytometry Standard)");
+    $_SESSION['first_visit'] = False;
+  }
+}
+
 // Make sure that if we had Imaris Classic as output file format and a
 // time-series dataset, we reset the value to ics
 if ( $value == 'IMS (Imaris Classic)' ) {
@@ -163,6 +174,15 @@ $numberOfChannels = $nChannelsParameter->value( );
 if ( $numberOfChannels > 1 ) {
   $possibleValues = array_diff($possibleValues, array( 'TIFF 16-bit' ) );
   $possibleValues = array_diff($possibleValues, array( 'TIFF 8-bit' ) );
+  $possibleValues = array_values( $possibleValues );
+}
+
+// If the dataset is single-channel or has more than 3 channels, we remove 
+// the RGB TIFF 8-bit option from the list
+$nChannelsParameter = $_SESSION['setting']->parameter("NumberOfChannels");
+$numberOfChannels = $nChannelsParameter->value( );
+if ( ( $numberOfChannels == 1 ) || ( $numberOfChannels > 3) ) {
+  $possibleValues = array_diff($possibleValues, array( 'RGB TIFF 8-bit' ) );
   $possibleValues = array_values( $possibleValues );
 }
 

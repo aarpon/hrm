@@ -2624,7 +2624,32 @@ if ($current_revision < $n) {
             return;
         }
     }
+
+// ------------------ Add RGB TIFF 8 bit as output format ----------------------
     
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "OutputFileFormat";
+    $record["value"] = "RGB TIFF 8-bit";
+    $record["translation"] = "tiffrgb";
+    $record["isDefault"] = "f";
+    // Check if it already exists
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" .
+            $record["parameter"] . "' AND value='" .
+            $record["value"] . "' AND translation='" .
+            $record["translation"] . "' AND isDefault='" .
+            $record["isDefault"] . "'");
+    
+    if ($rs->EOF) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
 // Update revision
 if(!update_dbrevision($n))
     return;
