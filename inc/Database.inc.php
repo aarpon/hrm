@@ -1549,14 +1549,6 @@ class DatabaseConnection {
   */
   public function hasLicense ( $feature ) {
       
-      // Make sure that the hucore_license table exists.
-      $tables = $this->connection->MetaTables("TABLES");
-      if (!in_array("hucore_license", $tables) ) {
-          $msg = "Table hucore_license does not exist! " .
-              "Please update the database!";
-          report( $msg, 1 ); exit( $msg );
-      }
-
       $query = "SELECT feature FROM hucore_license WHERE " .
           "feature LIKE '" . $feature . "' LIMIT 1;";
 
@@ -1566,6 +1558,17 @@ class DatabaseConnection {
           return true;
       }
   }    
+
+ 	/*!
+		\brief	Checks whether Huygens Core has a valid license
+		\return	true if the license is valid, false otherwise
+		\TODO Extract the information from the database.
+    */
+  public function hucoreHasValidLicense( ) {
+      
+      // We (ab)use the hasLicense() method
+      return ( $this->hasLicense("freeware") == false);
+  }
 
   /*!
    \brief    Updates the database with the current HuCore license details.
@@ -1687,7 +1690,7 @@ class DatabaseConnection {
 	$levels[ 'estimated' ] = 1;
 	$levels[ 'reported' ]  = 2;
 	$levels[ 'verified' ]  = 3;
-        $levels[ 'asIs' ]      = 3;
+    $levels[ 'asIs' ]      = 3;
 
 	if ( $levels[ $level1 ] <= $levels[ $level2 ] ) {
 	  return $level1;

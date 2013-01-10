@@ -175,10 +175,10 @@ class System {
  	/*!
 		\brief	Checks whether Huygens Core has a valid license
 		\return	true if the license is valid, false otherwise
-		\TODO Extract the information from the database,
 		*/
 	public static function hucoreHasValidLicense() {
-		return true;
+        $db = new DatabaseConnection();
+        return $db->hucoreHasValidLicense();
 	}
 
     /*!
