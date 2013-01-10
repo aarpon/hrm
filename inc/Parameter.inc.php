@@ -2301,22 +2301,23 @@ class OutputFileFormat extends ChoiceParameter {
 	public function extension( ) {
 		$result = $this->translatedValue( );
 		switch ( $result ) {
-			case "tiff":
-			case "tiff16":
-				return "tif";
-			case "imaris":
-				return "ims";
-			case "ome":
-				return "ome";
-			case "ics":
-			case "ics2":
-				return "ics";
-			case "hdf5":
-				return "h5";
-            case "r3d":
-                return "r3d";
-			default:
-				return "";
+                    case "tiff":
+                    case "tiffrgb":
+                    case "tiff16":
+                        return "tif";
+                    case "imaris":
+                        return "ims";
+                    case "ome":
+                        return "ome";
+                    case "ics":
+                    case "ics2":
+                        return "ics";
+                    case "hdf5":
+                        return "h5";
+                    case "r3d":
+                        return "r3d";
+                    default:
+                        return "";
 		}
 	}
 }
