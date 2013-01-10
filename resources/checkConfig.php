@@ -55,7 +55,7 @@
 			"copy_images_to_huygens_server", "useThumbnails",
 			"genThumbnails", "movieMaxSize", "saveSfpPreviews",
 			"maxComparisonSize", "ping_command", "ping_parameter",
-            "omero_transfers", "omero_server");
+            "omero_transfers");
 
         // Variables that were removed
 		$variablesRemoved = array( "internal_link", "external_link",
