@@ -4,7 +4,6 @@
 
 require_once("./inc/User.inc.php");
 require_once("./inc/System.inc.php");
-require_once("./inc/Util.inc.php");
 
 session_start();
 
@@ -124,19 +123,23 @@ include("header.inc.php");
             <td class="value">
                 <?php
                 $micro = array();
-                if (hasLicense("widefield")) {
+                if (System::hasLicense("widefield")) {
                     $micro[] = "widefield";
                 }
-                if (hasLicense("confocal")) {
+                if (System::hasLicense("confocal")) {
                     $micro[] = "single-point confocal";
                 }
-                if (hasLicense("nipkow-disk")) {
+                if (System::hasLicense("nipkow-disk")) {
                     $micro[] = "multi-point confocal";
                 }
-                if (hasLicense("multi-photon")) {
+                if (System::hasLicense("multi-photon")) {
                     $micro[] = "two photon";
                 }
-                $microStrg = implode("<br />", $micro);
+                if (count($micro) == 0) {
+                    $microStrg = "No licenses found.";
+                } else {
+                    $microStrg = implode("<br />", $micro);
+                }
                 echo $microStrg;
                 ?>
             </td>
@@ -148,11 +151,15 @@ include("header.inc.php");
             <td class="value">
                 <?php
                 $analysis = array();
-                if (hasLicense("coloc")) {
+                if (System::hasLicense("coloc")) {
                     $analysis[] = "colocalization";
                 }
-                $analysisStr = implode("<br />", $analysis);
-                echo $analysisStr;
+                if (count($analysis) == 0) {
+                    $analysisStrg = "No licenses found.";
+                } else {
+                    $analysisStrg = implode("<br />", $analysis);
+                }
+                echo $analysisStrg;
                 ?>
             </td>
           </tr>          

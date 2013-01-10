@@ -540,16 +540,4 @@ function using_IE() {
     return False;
 }
 
-/*!
- \brief   Finds out whether a Huygens module is supported by the license.
- \param   $feature The module to find out about. It can use (SQL) wildcards.
- \return  Boolean: true if the module is supported by the license.
-*/
-function hasLicense( $feature ) {
-    $db = new DatabaseConnection();
-    return $db->hasLicense( $feature );
-}
-
-    
-
 ?>

@@ -6,7 +6,7 @@ require_once("./inc/User.inc.php");
 require_once("./inc/Parameter.inc.php");
 require_once("./inc/Setting.inc.php");
 require_once("./inc/SettingEditor.inc.php");
-require_once("./inc/Util.inc.php");
+require_once("./inc/System.inc.php");
 
 global $enableUserAdmin;
 
@@ -112,7 +112,7 @@ else if (isset($_POST['OK']) && $_POST['OK']=="OK" ) {
     // If there's no coloc license the analysis stage is skipped. A default
     // (switched-off coloc) analysis setting will be created.
     if ($ok) {
-        if (hasLicense("coloc")) {
+        if (System::hasLicense("coloc")) {
             header("Location: " . "select_analysis_settings.php"); exit();
         } else {
             $_SESSION['analysis_setting'] = new AnalysisSetting();            

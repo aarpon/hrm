@@ -172,6 +172,25 @@ class System {
 		return $versionString;
 	}
 
+ 	/*!
+		\brief	Checks whether Huygens Core has a valid license
+		\return	true if the license is valid, false otherwise
+		\TODO Extract the information from the database,
+		*/
+	public static function hucoreHasValidLicense() {
+		return true;
+	}
+
+    /*!
+    \brief   Finds out whether a Huygens module is supported by the license.
+    \param   $feature The module to find out about. It can use (SQL) wildcards.
+    \return  Boolean: true if the module is supported by the license.
+    */
+    public static function hasLicense( $feature ) {
+        $db = new DatabaseConnection();
+        return $db->hasLicense( $feature );
+    }
+    
 	/*!
 		\brief	Returns information about operating system and machine
 		architecture
