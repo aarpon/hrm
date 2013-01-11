@@ -2695,69 +2695,6 @@ if ($current_revision < $n) {
         }
     }
 
-    $tabname = "file_extension";
-    $record = array();
-    $record["file_format"] = "tiff-generic";
-    $record["extension"] = "tiff";
-    
-    // Check if it already exists
-    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE file_format='" .
-            $record["file_format"] . "' AND extension='" .
-            $record["extension"] . "'");
-    
-    if ($rs->EOF) {
-        $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
-            $msg = "An error occurred while updating the database to revision " . $n . ".";
-            write_message($msg);
-            write_to_error($msg);
-            return;
-        }
-    }
-
-    $tabname = "file_extension";
-    $record = array();
-    $record["file_format"] = "tiff-generic";
-    $record["extension"] = "tif";
-    
-    // Check if it already exists
-    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE file_format='" .
-            $record["file_format"] . "' AND extension='" .
-            $record["extension"] . "'");
-    
-    if ($rs->EOF) {
-        $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
-            $msg = "An error occurred while updating the database to revision " . $n . ".";
-            write_message($msg);
-            write_to_error($msg);
-            return;
-        }
-    }    
-    
-    // -------------------- Allow longer file extensions -----------------------
-    
-    // There seems to be a problem with AdoDB's DataDictionary::ChangeTableSQL()
-    // so we hard-code the query
-    if ($db_type == "mysql") {
-        $query = "ALTER TABLE file_extension MODIFY COLUMN extension VARCHAR(10);";
-    } else if ($db_type = "postgres") {
-        $query = "ALTER TABLE file_extension ALTER COLUMN extension TYPE VARCHAR(10);";
-    } else {
-        // This should not happen!
-       $msg = "Unsupported database!";
-       write_message($msg);
-       write_to_error($msg);
-       return;
-    }
-    // Execute the query
-    if (!$db->Execute($query)) {
-        $msg = "An error occurred while updating the database to revision " . $n . ".";
-        write_message($msg);
-        write_to_error($msg);
-        return;
-    }
-
     // ---------------------- Add OME-TIFF file format -------------------------
     
     $tabname = "possible_values";
@@ -2803,26 +2740,6 @@ if ($current_revision < $n) {
         }
     }
 
-    $tabname = "file_extension";
-    $record = array();
-    $record["file_format"] = "ome-tiff";
-    $record["extension"] = ".ome.tiff";
-    
-    // Check if it already exists
-    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE file_format='" .
-            $record["file_format"] . "' AND extension='" .
-            $record["extension"] . "'");
-    
-    if ($rs->EOF) {
-        $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
-            $msg = "An error occurred while updating the database to revision " . $n . ".";
-            write_message($msg);
-            write_to_error($msg);
-            return;
-        }
-    }
-        
 // ---------------------- Remove lsm-single file format ------------------------
 
     $tabname = "possible_values";
@@ -2867,25 +2784,6 @@ if ($current_revision < $n) {
         }
     }    
 
-    $tabname = "file_extension";
-    $record = array();
-    $record["file_format"] = "lsm-single";
-    $record["extension"] = "lsm";
-    
-    // Check if it exists and delete it
-    $whereClause = " WHERE file_format='" .
-            $record["file_format"] . "' AND extension='" .
-            $record["extension"] . "'";
-    $rs = $db->Execute("SELECT * FROM " . $tabname . $whereClause );
-    if (!$rs->EOF) {
-        if(!$db->Execute("DELETE FROM " . $tabname . $whereClause )) {
-            $msg = "An error occurred while updating the database to revision " . $n . ".";
-            write_message($msg);
-            write_to_error($msg);
-            return;
-        }
-    }    
-    
 // ---------------------- Remove tiff-single file format ------------------------
 
     $tabname = "possible_values";
@@ -2929,28 +2827,7 @@ if ($current_revision < $n) {
             return;
         }
     }    
-
-    $tabname = "file_extension";
-    $record = array();
-    $record["file_format"] = "tiff-single";
-    $record["extension"] = "tiff";
-    $record["extension2"] = "tif";
-
-    // Check if it exists and delete it
-    $whereClause = " WHERE file_format='" .
-            $record["file_format"] . "' AND extension='" .
-            $record["extension"] . "' OR extension='" .
-            $record["extension2"] ."'";
-    $rs = $db->Execute("SELECT * FROM " . $tabname . $whereClause );
-    if (!$rs->EOF) {
-        if(!$db->Execute("DELETE FROM " . $tabname . $whereClause )) {
-            $msg = "An error occurred while updating the database to revision " . $n . ".";
-            write_message($msg);
-            write_to_error($msg);
-            return;
-        }
-    }    
-
+   
 // ---------------------- Remove tiff-series file format -----------------------
 
     $tabname = "possible_values";
@@ -2995,26 +2872,45 @@ if ($current_revision < $n) {
         }
     }    
 
+// -------------------- Recreate the file extension table ----------------------
+    
+    // Table name
     $tabname = "file_extension";
-    $record = array();
-    $record["file_format"] = "tiff-series";
-    $record["extension"] = "tiff";
-    $record["extension2"] = "tif";
 
-    // Check if it exists and delete it
-    $whereClause = " WHERE file_format='" .
-            $record["file_format"] . "' AND extension='" .
-            $record["extension"] . "' OR extension='" .
-            $record["extension2"] ."'";
-    $rs = $db->Execute("SELECT * FROM " . $tabname . $whereClause );
-    if (!$rs->EOF) {
-        if(!$db->Execute("DELETE FROM " . $tabname . $whereClause )) {
-            $msg = "An error occurred while updating the database to revision " . $n . ".";
-            write_message($msg);
-            write_to_error($msg);
-            return;
-        }
-    }    
+    // Drop the table if it exists (it should, obviously)
+    $query = "DROP TABLE IF EXISTS " . $tabname . ";";
+    if (!$db->Execute($query)) {
+        $msg = "An error occurred while updating the database to revision " . $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+    
+    // Now recreate it
+ 
+    // Table structure
+    $flds = ("
+        id I(11) NOTNULL AUTOINCREMENT PRIMARY,
+        file_format C(30),
+        extension C(10)
+    ");
+    if (!create_table($tabname, $flds))
+        return;
+    
+    // Create the records to be added
+    $records = array(
+        "file_format"=>array(
+            "dv", "ics", "ims", "lif", "lsm", "ome-xml", "pic", "stk", 
+            "tiff-leica", "tiff-leica", "zvi", "ics2", "hdf5", "r3d",
+            "oif", "tiff-generic", "tiff-generic", "ome-tiff", "ome-tiff"),
+        "extension"=>array(
+            "dv", "ics", "ims", "lif", "lsm", "ome", "pic", "stk",
+             "tif", "tiff", "zvi", "ics", "h5", "r3d", "oif", "tif",
+             "tiff", ".ome.tif", ".ome.tiff "));
+
+    // Insert the records
+    if(!insert_records($records,$tabname))
+        return;
     
 // Update revision
 if(!update_dbrevision($n))
