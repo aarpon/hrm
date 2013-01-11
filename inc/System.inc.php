@@ -21,7 +21,7 @@ class System {
 
 		This value has to be set by the developers!
 		*/
-	const HRM_VERSION = "2.2";
+	const HRM_VERSION = "3.0";
 
 	/*!
 		\var 	DB_LAST_REVISION
