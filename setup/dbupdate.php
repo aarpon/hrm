@@ -2714,14 +2714,33 @@ if ($current_revision < $n) {
             return;
         }
     }
+
+    $tabname = "file_extension";
+    $record = array();
+    $record["file_format"] = "tiff-generic";
+    $record["extension"] = "tif";
     
+    // Check if it already exists
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE file_format='" .
+            $record["file_format"] . "' AND extension='" .
+            $record["extension"] . "'");
+    
+    if ($rs->EOF) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }    
     
     // -------------------- Allow longer file extensions -----------------------
     
     // There seems to be a problem with AdoDB's DataDictionary::ChangeTableSQL()
     // so we hard-code the query
     if ($db_type == "mysql") {
-        $query = "ALTER TABLE file_extension MODIFY COLUMN extension VARCHAR(10))";
+        $query = "ALTER TABLE file_extension MODIFY COLUMN extension VARCHAR(10);";
     } else if ($db_type = "postgres") {
         $query = "ALTER TABLE file_extension ALTER COLUMN extension TYPE VARCHAR(10);";
     } else {
@@ -2732,8 +2751,7 @@ if ($current_revision < $n) {
        return;
     }
     // Execute the query
-    $rs = $db->Execute($query);
-    if (!$rs->EOF) {
+    if (!$db->Execute($query)) {
         $msg = "An error occurred while updating the database to revision " . $n . ".";
         write_message($msg);
         write_to_error($msg);
