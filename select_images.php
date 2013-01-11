@@ -334,21 +334,22 @@ $values = $fileFormat->possibleValues();
 sort($values);
 
 foreach($values as $key => $value) {
-  $translation = $fileFormat->translatedValueFor( $value );
-      
-      if (stristr($value, "tiff")) {
-          $translation .= " (*.tiff)";
-      }
-      
-      if ($value == $fileFormat->value()) {
-          $selected = " selected=\"selected\"";      
-      } else {
-          $selected = "";
-      }
-      
-      $extensions = $fileFormat->fileExtensions($value);
-      $extension  = $extensions[0];
+  $translation = $fileFormat->translatedValueFor($value);
 
+    if ($value == $fileFormat->value()) {
+        $selected = " selected=\"selected\"";
+    } else {
+        $selected = "";
+    }
+
+    $extensions = $fileFormat->fileExtensions($value);
+    if (in_array("tiff", $extensions)) {
+        $extension = "tiff";
+    } else if (in_array("ome-tiff", $script)) {
+        $extension = "ome-tiff";
+    } else {
+        $extension = $extensions[0];
+    }
 ?>
       <option <?php echo "name = \"" . $value . "\"  value = \"" .
            $extension  . "\"" . $selected ?>><?php echo $translation ?>
@@ -418,7 +419,7 @@ if ($files == null) {
                            }
                            ?>
                            onclick="javascript:storeFileFormatSelection(ImageFileFormat,this)" />
-                    Automatically load file series
+                    Automatically load file series if supported
                 
                 </label>
 

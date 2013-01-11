@@ -2656,7 +2656,7 @@ if ($current_revision < $n) {
     $record = array();
     $record["parameter"] = "ImageFileFormat";
     $record["value"] = "tiff-generic";
-    $record["translation"] = "Generic TIFF";
+    $record["translation"] = "Generic TIFF (*.tiff, *.tif)";
     $record["isDefault"] = "f";
     // Check if it already exists
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" .
@@ -2701,7 +2701,7 @@ if ($current_revision < $n) {
     $record = array();
     $record["parameter"] = "ImageFileFormat";
     $record["value"] = "ome-tiff";
-    $record["translation"] = "OME-TIFF";
+    $record["translation"] = "OME-TIFF (*.ome.tiff, *.ome.tif)";
     $record["isDefault"] = "f";
     // Check if it already exists
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" .
@@ -2740,6 +2740,34 @@ if ($current_revision < $n) {
         }
     }
 
+// ------- Correct the translations of Olympus FluoView and Leica series -------
+
+    // Correct Olympus FluoView description
+    $tabname = 'possible_values';
+    $record = array();
+    $record["parameter"]   = 'ImageFileFormat';
+    $record["translation"] = 'Olympus FluoView (*.tiff, *.tif)';
+    $record["isDefault"]   = 'f';
+    if (!$db->AutoExecute($tabname, $record, 'UPDATE', "value = 'tiff'")) {
+        $msg = error_message($tabname);
+        write_message($msg);
+        write_to_error($msg);
+        return false;
+    }
+
+    // Correct Leica series description
+    $tabname = 'possible_values';
+    $record = array();
+    $record["parameter"]   = 'ImageFileFormat';
+    $record["translation"] = 'Leica series (*.tiff, *.tif)';
+    $record["isDefault"]   = 'f';
+    if (!$db->AutoExecute($tabname, $record, 'UPDATE', "value = 'tiff-leica'")) {
+        $msg = error_message($tabname);
+        write_message($msg);
+        write_to_error($msg);
+        return false;
+    }    
+    
 // ---------------------- Remove lsm-single file format ------------------------
 
     $tabname = "possible_values";
@@ -2902,11 +2930,12 @@ if ($current_revision < $n) {
         "file_format"=>array(
             "dv", "ics", "ims", "lif", "lsm", "ome-xml", "pic", "stk", 
             "tiff-leica", "tiff-leica", "zvi", "ics2", "hdf5", "r3d",
-            "oif", "tiff-generic", "tiff-generic", "ome-tiff", "ome-tiff"),
+            "oif", "tiff", "tiff", "tiff-generic", "tiff-generic", 
+            "ome-tiff", "ome-tiff"),
         "extension"=>array(
             "dv", "ics", "ims", "lif", "lsm", "ome", "pic", "stk",
-             "tif", "tiff", "zvi", "ics", "h5", "r3d", "oif", "tif",
-             "tiff", ".ome.tif", ".ome.tiff "));
+             "tif", "tiff", "zvi", "ics", "h5", "r3d", "oif", "tif", 
+             "tiff", "tif", "tiff", "ome.tif", "ome.tiff "));
 
     // Insert the records
     if(!insert_records($records,$tabname))
