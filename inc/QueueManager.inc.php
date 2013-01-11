@@ -225,7 +225,7 @@ class QueueManager {
     }
 
     /*!
-    \brief	Copies the images needed by a given Job to the [rocessing server
+    \brief	Copies the images needed by a given Job to the processing server
     \param	$job	A Job object
     \param	$server_hostname	Name of the server to which to copy the files
     \return	the full path to which the files were copied
@@ -456,7 +456,7 @@ class QueueManager {
 
         $result = exec("sudo chown -R " . $image_user . ":" . $image_group .
             " " . $image_folder . "/" . $username);
-        error_log("Restoring ownership... " . $result);
+        report("Restoring ownership... " . $result, 1);
     }
 
     /*!
