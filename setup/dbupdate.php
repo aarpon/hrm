@@ -2907,10 +2907,76 @@ if ($current_revision < $n) {
             return;
         }
     }    
-        
+
+// ---------------------- Remove tiff-series file format -----------------------
+
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "ImageFileFormat";
+    $record["value"] = "tiff-series";
+    $record["translation"] = "Numbered series";
+    $record["isDefault"] = "f";
+    
+    // Check if it exists and delete it
+    $whereClause = " WHERE parameter='" .
+            $record["parameter"] . "' AND value='" .
+            $record["value"] . "' AND translation='" .
+            $record["translation"] . "' AND isDefault='" .
+            $record["isDefault"] . "'";
+    $rs = $db->Execute("SELECT * FROM " . $tabname . $whereClause );
+    if (!$rs->EOF) {
+        if(!$db->Execute("DELETE FROM " . $tabname . $whereClause )) {
+            $msg = "An error occurred while updating the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $tabname = "file_format";
+    $record = array();
+    $record["name"] = "tiff-series";
+    $record["hucorename"] = "tiff";
+    
+    // Check if it exists and delete it
+    $whereClause = " WHERE name='" .
+            $record["name"] . "' AND hucorename='" .
+            $record["hucorename"] . "'";
+    $rs = $db->Execute("SELECT * FROM " . $tabname . $whereClause );
+    if (!$rs->EOF) {
+        if(!$db->Execute("DELETE FROM " . $tabname . $whereClause )) {
+            $msg = "An error occurred while updating the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }    
+
+    $tabname = "file_extension";
+    $record = array();
+    $record["file_format"] = "tiff-series";
+    $record["extension"] = "tiff";
+    $record["extension2"] = "tif";
+
+    // Check if it exists and delete it
+    $whereClause = " WHERE file_format='" .
+            $record["file_format"] . "' AND extension='" .
+            $record["extension"] . "' OR extension='" .
+            $record["extension2"] ."'";
+    $rs = $db->Execute("SELECT * FROM " . $tabname . $whereClause );
+    if (!$rs->EOF) {
+        if(!$db->Execute("DELETE FROM " . $tabname . $whereClause )) {
+            $msg = "An error occurred while updating the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }    
+    
 // Update revision
 if(!update_dbrevision($n))
     return;
+
 $current_revision = $n;
 $msg = "Database successfully updated to revision " . $current_revision . ".";
 write_message($msg);
