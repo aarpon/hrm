@@ -1719,7 +1719,7 @@ echo '</body></html>';
       echo "\n<div class=\"menuEntry\" onclick=\"javascript:openWindow(".
           "'http://support.svi.nl/wiki/style=hrm&amp;".
           "help=HuygensRemoteManagerHelpCompareResult')\" ".
-             "onmouseover=\"Tip('Open a pop up with help about this window.')\" onmouseout=\"UnTip()\">".
+             "onmouseover=\"Tip('Open a pop up with help about this window')\" onmouseout=\"UnTip()\">".
           "<a href=\"#\"><img src=\"images/help.png\" alt=\"help\" />".
           "</a></div>";
 
@@ -1728,7 +1728,7 @@ echo '</body></html>';
       switch ($op) {
           case "close":
              echo "onclick=\"window.close()\"".
-             "onmouseover=\"Tip('Close this window and go back to your raw images.')\" onmouseout=\"UnTip()\">".
+             "onmouseover=\"Tip('Close this window and go back to your results')\" onmouseout=\"UnTip()\">".
              "<a href=\"#\">".
              "<img src=\"images/results_small.png\" alt=\"back\" />".
              "</a>\n";
@@ -1968,7 +1968,7 @@ echo '</body></html>';
       switch ($op) {
           case "close":
              echo " <a href=\"#\" onclick=\"window.close()\" ".
-             "onmouseover=\"Tip('Close this window and go back to your raw images.')\" onmouseout=\"UnTip()\">".
+             "onmouseover=\"Tip('Close this window and go back to your results')\" onmouseout=\"UnTip()\">".
              "<img src=\"images/results_small.png\" alt=\"back\" />".
              "</a>\n";
              break;
