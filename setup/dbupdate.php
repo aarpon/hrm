@@ -2715,6 +2715,31 @@ if ($current_revision < $n) {
         }
     }
     
+    
+    // -------------------- Allow longer file extensions -----------------------
+    
+    // There seems to be a problem with AdoDB's DataDictionary::ChangeTableSQL()
+    // so we hard-code the query
+    if ($db_type == "mysql") {
+        $query = "ALTER TABLE file_extension MODIFY COLUMN extension VARCHAR(10))";
+    } else if ($db_type = "postgres") {
+        $query = "ALTER TABLE file_extension ALTER COLUMN extension TYPE VARCHAR(10);";
+    } else {
+        // This should not happen!
+       $msg = "Unsupported database!";
+       write_message($msg);
+       write_to_error($msg);
+       return;
+    }
+    // Execute the query
+    $rs = $db->Execute($query);
+    if (!$rs->EOF) {
+        $msg = "An error occurred while updating the database to revision " . $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
     // ---------------------- Add OME-TIFF file format -------------------------
     
     $tabname = "possible_values";
@@ -2763,7 +2788,7 @@ if ($current_revision < $n) {
     $tabname = "file_extension";
     $record = array();
     $record["file_format"] = "ome-tiff";
-    $record["extension"] = "tiff";
+    $record["extension"] = ".ome.tiff";
     
     // Check if it already exists
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE file_format='" .
