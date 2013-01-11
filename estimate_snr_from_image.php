@@ -224,9 +224,17 @@ function estimateSnrFromFile($file) {
     } else {
         $algorithm = "old";
     }
+    
     $opt = "-basename \"$basename\" -src \"$psrc\" -dest \"$pdest\" ".
         "-returnImages \"0.5 0.71 1 1.71 \" -snrVersion \"$algorithm\" ".
         "-series $series $extra";
+
+    // Build a label to be shown at the SNR results page .
+    if ($algorithm == "old") {
+        $algLabel = "Classic";
+    } else {
+        $algLabel = "Beta";
+    }
 
     // When no particular SNR estimation image is shown (in a small portion of
     // the image), the image preview goes back to the whole image.
@@ -287,7 +295,7 @@ function estimateSnrFromFile($file) {
     // No line-breaks in the output, it is going to be escaped for JavaScript.
     $output =
         "<h3><img alt=\"SNR\" src=\"./images/results_title.png\" " .
-        "width=\"40\"/>&nbsp;&nbsp;SNR estimation</h3>" .
+        "width=\"40\"/>&nbsp;&nbsp;SNR estimation (" . $algLabel . ")</h3>" .
         "<fieldset>" .
         "<table>";
 
