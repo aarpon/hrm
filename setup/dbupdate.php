@@ -2650,6 +2650,264 @@ if ($current_revision < $n) {
         }
     }
 
+    // ---------------------- Add Generic TIFF file format ---------------------
+    
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "ImageFileFormat";
+    $record["value"] = "tiff-generic";
+    $record["translation"] = "Generic TIFF";
+    $record["isDefault"] = "f";
+    // Check if it already exists
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" .
+            $record["parameter"] . "' AND value='" .
+            $record["value"] . "' AND translation='" .
+            $record["translation"] . "' AND isDefault='" .
+            $record["isDefault"] . "'");
+    
+    if ($rs->EOF) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $tabname = "file_format";
+    $record = array();
+    $record["name"] = "tiff-generic";
+    $record["hucorename"] = "tiff";
+    
+    // Check if it already exists
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE name='" .
+            $record["name"] . "' AND hucorename='" .
+            $record["hucorename"] . "'");
+    
+    if ($rs->EOF) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $tabname = "file_extension";
+    $record = array();
+    $record["file_format"] = "tiff-generic";
+    $record["extension"] = "tiff";
+    
+    // Check if it already exists
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE file_format='" .
+            $record["file_format"] . "' AND extension='" .
+            $record["extension"] . "'");
+    
+    if ($rs->EOF) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+    
+    // ---------------------- Add OME-TIFF file format -------------------------
+    
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "ImageFileFormat";
+    $record["value"] = "ome-tiff";
+    $record["translation"] = "OME-TIFF";
+    $record["isDefault"] = "f";
+    // Check if it already exists
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" .
+            $record["parameter"] . "' AND value='" .
+            $record["value"] . "' AND translation='" .
+            $record["translation"] . "' AND isDefault='" .
+            $record["isDefault"] . "'");
+    
+    if ($rs->EOF) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $tabname = "file_format";
+    $record = array();
+    $record["name"] = "ome-tiff";
+    $record["hucorename"] = "ome";
+    
+    // Check if it already exists
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE name='" .
+            $record["name"] . "' AND hucorename='" .
+            $record["hucorename"] . "'");
+    
+    if ($rs->EOF) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $tabname = "file_extension";
+    $record = array();
+    $record["file_format"] = "ome-tiff";
+    $record["extension"] = "tiff";
+    
+    // Check if it already exists
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE file_format='" .
+            $record["file_format"] . "' AND extension='" .
+            $record["extension"] . "'");
+    
+    if ($rs->EOF) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+        
+// ---------------------- Remove lsm-single file format ------------------------
+
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "ImageFileFormat";
+    $record["value"] = "lsm-single";
+    $record["translation"] = "Zeiss (*.lsm) single XY plane";
+    $record["isDefault"] = "f";
+    
+    // Check if it exists and delete it
+    $whereClause = " WHERE parameter='" .
+            $record["parameter"] . "' AND value='" .
+            $record["value"] . "' AND translation='" .
+            $record["translation"] . "' AND isDefault='" .
+            $record["isDefault"] . "'";
+    $rs = $db->Execute("SELECT * FROM " . $tabname . $whereClause );
+    if (!$rs->EOF) {
+        if(!$db->Execute("DELETE FROM " . $tabname . $whereClause )) {
+            $msg = "An error occurred while updating the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+    
+    $tabname = "file_format";
+    $record = array();
+    $record["name"] = "lsm-single";
+    $record["hucorename"] = "lsm";
+    
+    // Check if it exists and delete it
+    $whereClause = " WHERE name='" .
+            $record["name"] . "' AND hucorename='" .
+            $record["hucorename"] . "'";
+    $rs = $db->Execute("SELECT * FROM " . $tabname . $whereClause );
+    if (!$rs->EOF) {
+        if(!$db->Execute("DELETE FROM " . $tabname . $whereClause )) {
+            $msg = "An error occurred while updating the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }    
+
+    $tabname = "file_extension";
+    $record = array();
+    $record["file_format"] = "lsm-single";
+    $record["extension"] = "lsm";
+    
+    // Check if it exists and delete it
+    $whereClause = " WHERE file_format='" .
+            $record["file_format"] . "' AND extension='" .
+            $record["extension"] . "'";
+    $rs = $db->Execute("SELECT * FROM " . $tabname . $whereClause );
+    if (!$rs->EOF) {
+        if(!$db->Execute("DELETE FROM " . $tabname . $whereClause )) {
+            $msg = "An error occurred while updating the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }    
+    
+// ---------------------- Remove tiff-single file format ------------------------
+
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "ImageFileFormat";
+    $record["value"] = "tiff-single";
+    $record["translation"] = "single XY plane";
+    $record["isDefault"] = "f";
+    
+    // Check if it exists and delete it
+    $whereClause = " WHERE parameter='" .
+            $record["parameter"] . "' AND value='" .
+            $record["value"] . "' AND translation='" .
+            $record["translation"] . "' AND isDefault='" .
+            $record["isDefault"] . "'";
+    $rs = $db->Execute("SELECT * FROM " . $tabname . $whereClause );
+    if (!$rs->EOF) {
+        if(!$db->Execute("DELETE FROM " . $tabname . $whereClause )) {
+            $msg = "An error occurred while updating the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $tabname = "file_format";
+    $record = array();
+    $record["name"] = "tiff-single";
+    $record["hucorename"] = "tiff";
+    
+    // Check if it exists and delete it
+    $whereClause = " WHERE name='" .
+            $record["name"] . "' AND hucorename='" .
+            $record["hucorename"] . "'";
+    $rs = $db->Execute("SELECT * FROM " . $tabname . $whereClause );
+    if (!$rs->EOF) {
+        if(!$db->Execute("DELETE FROM " . $tabname . $whereClause )) {
+            $msg = "An error occurred while updating the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }    
+
+    $tabname = "file_extension";
+    $record = array();
+    $record["file_format"] = "tiff-single";
+    $record["extension"] = "tiff";
+    $record["extension2"] = "tif";
+
+    // Check if it exists and delete it
+    $whereClause = " WHERE file_format='" .
+            $record["file_format"] . "' AND extension='" .
+            $record["extension"] . "' OR extension='" .
+            $record["extension2"] ."'";
+    $rs = $db->Execute("SELECT * FROM " . $tabname . $whereClause );
+    if (!$rs->EOF) {
+        if(!$db->Execute("DELETE FROM " . $tabname . $whereClause )) {
+            $msg = "An error occurred while updating the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }    
+        
 // Update revision
 if(!update_dbrevision($n))
     return;
@@ -2657,10 +2915,6 @@ $current_revision = $n;
 $msg = "Database successfully updated to revision " . $current_revision . ".";
 write_message($msg);
 write_to_log($msg);
-
-//$msg = "\nThe current revision of your HRM database is " . $current_revision . ".";
-//write_message($msg);
-//write_to_log($msg);
 
 fclose($fh);
 
