@@ -252,21 +252,21 @@ include("header.inc.php");
 <?php
             $referer = $_SESSION['referer'];
 ?>
-
-            <div id="controls">
-                <input type="button" name="cancel" value=""
-                       class="icon cancel"
-                       onmouseover="TagToTip('ttSpanCancel' )"
-                       onmouseout="UnTip()"
-                       onclick="document.location.href='<?php echo $referer ?>'" />
-                <input type="button" name="save" value=""
-                       class="icon save"
-                       onmouseover="TagToTip('ttSpanSave' )"
-                       onmouseout="UnTip()"
-                       onclick="document.forms['useraccount'].submit()" />
-            </div>
-
         </div>
+        
+        <div id="controls">
+            <input type="button" name="cancel" value=""
+                   class="icon cancel"
+                   onmouseover="TagToTip('ttSpanCancel' )"
+                   onmouseout="UnTip()"
+                   onclick="document.location.href='<?php echo $referer ?>'" />
+            <input type="button" name="save" value=""
+                   class="icon save"
+                   onmouseover="TagToTip('ttSpanSave' )"
+                   onmouseout="UnTip()"
+                   onclick="document.forms['useraccount'].submit()" />
+        </div>
+
     </form>
 
 </div> <!-- content -->
