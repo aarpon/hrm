@@ -309,8 +309,7 @@ $info = "<h3>Quick help</h3>" .
         <h3><img alt="SelectImages" src="./images/select_images.png" width="40"/> &nbsp;Step 1/5 - Select images</h3>
         
                     <form method="post" action="" id="fileformat">
-                    <fieldset class="setting"
-                onmouseover="javascript:changeQuickHelp( 'format' );" >
+                    <fieldset class="setting" >
             
                 <legend>
                     <a href="javascript:openWindow(
