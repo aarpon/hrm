@@ -29,7 +29,7 @@ if (!isset($_SESSION['editor'])) {
 // tiff format to force the admin to enter all the parameters.
 if ($_SESSION['user']->isAdmin()) {
     $_SESSION[ 'parametersetting' ] = new ParameterSetting();
-    $_SESSION[ 'parametersetting' ]->parameter("ImageFileFormat")->setValue("tif");
+    $_SESSION[ 'parametersetting' ]->parameter("ImageFileFormat")->setValue("hdf5");
 }
 
 // add public setting support

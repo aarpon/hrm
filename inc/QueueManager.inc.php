@@ -786,7 +786,7 @@ class QueueManager {
  	public function notifyPingError($name) {
         global $email_sender;
         global $email_admin;
-        report("Ping error notification sent");
+        report("Ping error notification sent", 1);
         $text = "Huygens Remote Manager warning:\n"
                 . $name . " could not be pinged on " . date("r", time());
         $mail = new Mail($email_sender);
