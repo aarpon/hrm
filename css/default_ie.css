@@ -196,8 +196,10 @@ table {
     color: #000;
 }
 
-#requirements {
-  text-align: center;
+.requirements {
+    text-align: center;
+    background: #4988DE;
+    color: white;
 }
 
 #controls {
