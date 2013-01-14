@@ -408,7 +408,7 @@ foreach ($possibleValues as $possibleValue) {
             <div><input name="OK" type="hidden" /></div>
 
             <div id="controls"
-                 onmouseover="javascript:changeQuickHelp( 'default' )">
+                 onmouseover="javascript:changeQuickHelp( 'default' )';">
               <input type="button" value="" class="icon up"
                   id="controls_cancel"                     
                   onclick="document.location.href='select_analysis_settings.php'" />

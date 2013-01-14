@@ -187,12 +187,33 @@ class Fileserver {
    \param   $file The file name
    \return  The file extension
   */
-  public function getExtension($file) {
-      $pattern = "/\.([^\.\s]+)[\s\(\)a-zA-Z0-9]*$/";
-      if (!preg_match($pattern,$file,$matches)) {
-          return false;
+  public function getFileType($file) {
+
+      $filetype = false;
+      
+      $pattern = "/[^_]+_(T|t|Z|z|CH|ch)[0-9]+\w+\.\w+/";
+      if (preg_match($pattern,$file,$matches)) {
+          return "tiff-leica";
+      }
+
+      $pattern = "/[^_]+_(T|t)[0-9]+\.\w+/";
+      if (preg_match($pattern,$file,$matches)) {
+          return "stk";
       }      
-      return $matches[1];
+      
+      $pattern = "/\.([^\.\s]+)[\s\(\)a-zA-Z0-9]*$/";
+      if (preg_match($pattern,$file,$matches)) {
+
+          switch ($matches[1]) {
+              case "h5":
+                  $filetype = "hdf5";
+                  break;
+              default:
+                  $filetype = $matches[1]; 
+          }
+      }
+
+      return $filetype;
   }
 
   /*!
@@ -248,7 +269,6 @@ class Fileserver {
       
       $this->condenseStkSeries();
       $this->condenseTiffLeica();
-      $this->condenseTiffLeica();
 
       return $this->files;
   }
@@ -261,7 +281,7 @@ class Fileserver {
   */
   public function isPartOfFileSeries($file) {
 
-      $extension = $this->getExtension($file);
+      $extension = $this->getFileType($file);
       
       switch ( $extension ) {
           case 'stk':

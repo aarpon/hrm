@@ -68,7 +68,10 @@ else if (isset($_POST['OK'])) {
     }
 }
 
-$script = array( "settings.js", "ajax_utils.js" );
+$script = array( "settings.js",
+                 "ajax_utils.js",
+                 "quickhelp/help.js",
+                 "quickhelp/imageFormatHelp.js" );
 
 // All the user's files in the server.
 $files = $_SESSION['fileserver']->files();
@@ -128,7 +131,7 @@ function filterImages (extension,series) {
 
             if (in_array($file,$condensedSeries)) {
                 $generatedScript .= "
-                  if(getExtension(\"$file\") == selectedExtension) {
+                  if(getFileType(\"$file\") == selectedExtension) {
                      var selectItem = document.createElement('option');
                      selectItem.text = \"$file\";
                      selectObject.add(selectItem,null);
@@ -140,7 +143,7 @@ function filterImages (extension,series) {
               } else {
 
                   // Do not load file series automatically.    
-                  if(getExtension(\"$file\") == selectedExtension) {
+                  if(getFileType(\"$file\") == selectedExtension) {
                      var selectItem = document.createElement('option');
                      selectItem.text = \"$file\";
                      selectObject.add(selectItem,null);
@@ -152,7 +155,7 @@ function filterImages (extension,series) {
             $generatedScript .= "
 
                // File does not belong to a file series. 
-               if(getExtension(\"$file\") == selectedExtension) {
+               if(getFileType(\"$file\") == selectedExtension) {
                    var selectItem = document.createElement('option');
                    selectItem.text = \"$file\";
                    selectObject.add(selectItem,null);
@@ -337,6 +340,8 @@ Please choose a file format...
 $values = $fileFormat->possibleValues();
 sort($values);
 
+
+
 foreach($values as $key => $value) {
   $translation = $fileFormat->translatedValueFor($value);
 
@@ -347,6 +352,7 @@ foreach($values as $key => $value) {
     }
 
     $extensions = $fileFormat->fileExtensions($value);
+    
     if (in_array("tiff", $extensions)) {
         $extension = "tiff";
     } else if (in_array("ome-tiff", $script)) {
@@ -356,7 +362,7 @@ foreach($values as $key => $value) {
     }
 ?>
       <option <?php echo "name = \"" . $value . "\"  value = \"" .
-           $extension  . "\"" . $selected ?>><?php echo $translation ?>
+           $value  . "\"" . $selected ?>><?php echo $translation ?>
       </option>
 <?php
 
@@ -396,7 +402,7 @@ if ($files == null) {
         $extension  = $extensions[0];
         
         foreach ($files as $key => $file) {
-            if ($_SESSION['fileserver']->getExtension($file) == $extension) {
+            if ($_SESSION['fileserver']->getFileType($file) == $extension) {
                 echo "<option>" . $file . "</option>\n";
                 $keyArr[$file] = $key;
             }

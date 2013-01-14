@@ -133,12 +133,33 @@ function smoothChangeDiv(div, html, time) {
     }
 }
 
-function getExtension(file) {    
+function getFileType(file) {    
 
     var nameDivisions;
-    if ((nameDivisions = file.match(/\.([^\.\s]+)[\s\(\)a-zA-Z0-9]*$/)) == null) 
-        return '';
-    return nameDivisions[1];
+
+    var filetype = '';
+
+    if ((file.match(/[^_]+_(T|t|Z|z|CH|ch)[0-9]+\w+\.\w+/)) != null) {
+        return 'tiff-leica';
+    }
+
+    if ((file.match(/[^_]+_(T|t)[0-9]+\.\w+/)) != null) {
+        return 'stk';
+    }
+    
+
+    if ((nameDivisions = file.match(/\.([^\.\s]+)[\s\(\)a-zA-Z0-9]*$/)) != null) {
+
+        switch (nameDivisions[1]) {
+            case 'h5':
+                filetype = 'hdf5';
+            break:
+            default:
+                filetype = nameDivisions[1];
+        }
+    }
+
+    return filetype;
 }
 
 function changeOpenerDiv (div, html) {
