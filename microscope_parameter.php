@@ -569,6 +569,23 @@ if (!$default) {
                   and of the objective-embedding medium.</p>
             </div>
 
+      <?php
+              if ( !$_SESSION["user"]->isAdmin() ) {
+      ?>
+                  
+            <div class="requirements">                
+               Parameter requirements<br />adapted for <b>  
+               <?php
+               $fileFormat = $_SESSION['setting']->parameter( "ImageFileFormat" );
+               echo $fileFormat->value();
+               ?>
+               </b> files
+            </div>
+      
+      <?php
+              }
+      ?>
+       
         </div>
 
         <div id="message">
