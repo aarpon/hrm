@@ -245,13 +245,17 @@ function imageAction (list) {
 
 include("header.inc.php");
 
-$info = " <h3>Quick help</h3> <p>In this step, you can select the files " .
-    "from the list of available images that will be restored.</p><p>You " .
-    "can use SHIFT- and " .
-    "CTRL-click to select multiple files.</p> <p>Click on a file name in " .
-    "any of the fields to get a preview.</p>";
+$info = "<h3>Quick help</h3>" .
+        "<p>Here you can select the files to be restored from the list " .
+        "of available images. The file names are filtered by the selected " .
+        "file format. Use SHIFT- and CTRL-click to select multiple files.</p>" .
+        "<p>Where applicable, the files belonging to a series can be condensed " .
+        "into one file name by checking the 'autoseries' option. These files " .
+        "will be loaded and deconvolved as one large dataset. Unchecking " .
+        "'autoseries' causes each file to be deconvolved independently.</p>" .
+        "<p>Click on a file name in any of the fields to get (or to create) " .
+        "a preview.</p>";
  
-
 ?>
 
     <!--
