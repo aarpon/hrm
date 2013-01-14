@@ -208,6 +208,17 @@ class Fileserver {
               case "h5":
                   $filetype = "hdf5";
                   break;
+              case 'tif':
+              case 'tiff':
+                  $filetype = "tiff-generic";
+                  break;
+              case 'ome.tif':
+              case 'ome.tiff':
+                  $filetype = "ome-tiff";
+                  break;
+              case 'ome':
+                  $filetype = "ome-xml";
+                  break;
               default:
                   $filetype = $matches[1]; 
           }

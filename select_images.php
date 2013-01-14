@@ -68,10 +68,7 @@ else if (isset($_POST['OK'])) {
     }
 }
 
-$script = array( "settings.js",
-                 "ajax_utils.js",
-                 "quickhelp/help.js",
-                 "quickhelp/imageFormatHelp.js" );
+$script = array( "settings.js","ajax_utils.js" );
 
 // All the user's files in the server.
 $files = $_SESSION['fileserver']->files();
