@@ -91,7 +91,7 @@ function storeFileFormatSelection(sel,series) {
 ";
   
     $generatedScript .= "
-function filterImages (extension,series) {
+function filterImages (format,series) {
 
     var selectObject = document.getElementById(\"selectedimages\");
     if (selectObject.length >= 0) {
@@ -100,14 +100,14 @@ function filterImages (extension,series) {
         }
     }
 
-    var selectObject = document.getElementById(\"filesPerExtension\");
+    var selectObject = document.getElementById(\"filesPerFormat\");
     if (selectObject.length > 0) {
         for (i = selectObject.length - 1; i>=0; i--) {
             selectObject.remove(selectObject.length - 1);
         }
     }
 
-    var selectedExtension = extension.options[extension.selectedIndex].value;
+    var selectedFormat = format.options[format.selectedIndex].value;
 
     var autoseries = document.getElementById(\"autoseries\");
 ";
@@ -128,7 +128,7 @@ function filterImages (extension,series) {
 
             if (in_array($file,$condensedSeries)) {
                 $generatedScript .= "
-                  if(getFileType(\"$file\") == selectedExtension) {
+                  if(checkAgainstFormat(\"$file\", selectedFormat)) {
                      var selectItem = document.createElement('option');
                      selectItem.text = \"$file\";
                      selectObject.add(selectItem,null);
@@ -140,7 +140,7 @@ function filterImages (extension,series) {
               } else {
 
                   // Do not load file series automatically.    
-                  if(getFileType(\"$file\") == selectedExtension) {
+                  if(checkAgainstFormat(\"$file\", selectedFormat)) {
                      var selectItem = document.createElement('option');
                      selectItem.text = \"$file\";
                      selectObject.add(selectItem,null);
@@ -152,7 +152,7 @@ function filterImages (extension,series) {
             $generatedScript .= "
 
                // File does not belong to a file series. 
-               if(getFileType(\"$file\") == selectedExtension) {
+               if(checkAgainstFormat(\"$file\", selectedFormat)) {
                    var selectItem = document.createElement('option');
                    selectItem.text = \"$file\";
                    selectObject.add(selectItem,null);
@@ -326,39 +326,39 @@ $info = "<h3>Quick help</h3>" .
                      onkeyup="this.blur();this.focus();" >
 
 
-<option name = '' value = '' extension = ''>
+<option name = '' value = '' format = ''>
 Please choose a file format...
 </option>
         
 <?php
 
 // File formats support
-$values = $fileFormat->possibleValues();
-sort($values);
+$formats = $fileFormat->possibleValues();
+sort($formats);
 
 
 
-foreach($values as $key => $value) {
-  $translation = $fileFormat->translatedValueFor($value);
+foreach($formats as $key => $format) {
+  $translation = $fileFormat->translatedValueFor($format);
 
-    if ($value == $fileFormat->value()) {
+    if ($format == $fileFormat->value()) {
         $selected = " selected=\"selected\"";
     } else {
         $selected = "";
     }
 
-    $extensions = $fileFormat->fileExtensions($value);
+//     $extensions = $fileFormat->fileExtensions($value);
     
-    if (in_array("tiff", $extensions)) {
-        $extension = "tiff";
-    } else if (in_array("ome-tiff", $script)) {
-        $extension = "ome-tiff";
-    } else {
-        $extension = $extensions[0];
-    }
+//     if (in_array("tiff", $extensions)) {
+//         $extension = "tiff";
+//     } else if (in_array("ome-tiff", $script)) {
+//         $extension = "ome-tiff";
+//     } else {
+//         $extension = $extensions[0];
+//     }
 ?>
-      <option <?php echo "name = \"" . $value . "\"  value = \"" .
-           $value  . "\"" . $selected ?>><?php echo $translation ?>
+      <option <?php echo "name = \"" . $format . "\"  value = \"" .
+           $format  . "\"" . $selected ?>><?php echo $translation ?>
       </option>
 <?php
 
@@ -383,7 +383,7 @@ if ($files == null) {
 ?>
 
                     <select onchange="javascript:imageAction(this)"
-                            id = "filesPerExtension"
+                            id = "filesPerFormat"
                             name="userfiles[]"
                             size="10"
                             multiple="multiple"<?php echo $flag ?>>
@@ -398,7 +398,7 @@ if ($files == null) {
         $extension  = $extensions[0];
         
         foreach ($files as $key => $file) {
-            if ($_SESSION['fileserver']->getFileType($file) == $extension) {
+            if ($_SESSION['fileserver']->getFileFormat($file) == $extension) {
                 echo "<option>" . $file . "</option>\n";
                 $keyArr[$file] = $key;
             }

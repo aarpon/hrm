@@ -187,7 +187,7 @@ class Fileserver {
    \param   $file The file name
    \return  The file extension
   */
-  public function getFileType($file) {
+  public function getFileFormat($file) {
 
       $filetype = false;
       
@@ -218,6 +218,9 @@ class Fileserver {
                   break;
               case 'ome':
                   $filetype = "ome-xml";
+                  break;
+              case 'ics':
+                  $filetype = "ics2";
                   break;
               default:
                   $filetype = $matches[1]; 
@@ -292,7 +295,7 @@ class Fileserver {
   */
   public function isPartOfFileSeries($file) {
 
-      $extension = $this->getFileType($file);
+      $extension = $this->getFileFormat($file);
       
       switch ( $extension ) {
           case 'stk':

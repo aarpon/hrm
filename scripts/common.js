@@ -133,44 +133,96 @@ function smoothChangeDiv(div, html, time) {
     }
 }
 
-function getFileType(file) {    
+function checkAgainstFormat(file, selectedFormat) {    
 
     var nameDivisions;
 
-    var filetype = '';
-
-    if ((file.match(/[^_]+_(T|t|Z|z|CH|ch)[0-9]+\w+\.\w+/)) != null) {
-        return 'tiff-leica';
-    }
-
-    if ((file.match(/[^_]+_(T|t)[0-9]+\.\w+/)) != null) {
-        return 'stk';
-    }
+    var fileType      = '';
+    var fileFormat    = '';
+    var fileExtension = '';
     
+        // ome.tiff        = (\.([^\..]+)|)
+        // file extension: = \.([^\.\s]+)
+        // lif subimages:  = [\s\(\)a-zA-Z0-9]*$
+    nameDivisions = file.match(/(\.([^\..]+)|)\.([^\.\s]+)[\s\(\)a-zA-Z0-9]*$/);
 
-    if ((nameDivisions = file.match(/\.([^\.\s]+)[\s\(\)a-zA-Z0-9]*$/)) != null) {
-
-        switch (nameDivisions[1]) {
+    if (nameDivisions != null) {
+        
+        if (typeof nameDivisions[2] !== 'undefined') {
+            fileType = nameDivisions[2];
+        }
+        
+        if (typeof nameDivisions[3] !== 'undefined') {
+            fileType += nameDivisions[3];
+        }
+        
+        switch (fileType) {
             case 'h5':
-                filetype = 'hdf5';
-            break:
+                fileFormat     = 'hdf5';
+                fileExtension  = "h5";
+                break;
             case 'tif':
             case 'tiff':
-                filetype = 'tiff-generic';
+                fileFormat    = 'tiff-generic';
+                fileExtension = "tiff";
                 break;
-            case 'ome.tif':
-            case 'ome.tiff':
-                filetype = 'ome-tiff';
+            case 'ometif':
+            case 'ometiff':
+                fileFormat    = 'ome-tiff';
+                fileExtension = "ome.tiff";
                 break;
             case 'ome':
-                filetype = 'ome-xml';
+                fileFormat    = 'ome-xml';
+                fileExtension = 'ome';
+                break;
+            case 'ics':
+                fileFormat    = 'ics2';
+                fileExtension = 'ics';
+                break;
+            case 'dv':
+            case 'ims':
+            case 'lif':
+            case 'lsm':
+            case 'oif':
+            case 'pic':
+            case 'r3d':
+            case 'zvi':
+                fileFormat    = fileType;
+                fileExtension = fileFormat;
                 break;
             default:
-                filetype = nameDivisions[1];
+                fileFormat    = '';
+                fileExtension = '';
         }
     }
 
-    return filetype;
+    if ((file.match(/[^_]+_(T|t|Z|z|CH|ch)[0-9]+\w+\.\w+/)) != null) {
+        if (fileExtension == 'tiff' || fileExtension == 'tif') {
+            fileFormat = 'tiff-leica';
+        } else {
+            fileFormat = '';
+        }
+    }
+
+    if ((file.match(/[^_]+_(T|t)[0-9]+\.\w+/)) != null) {
+        if (fileExtension == 'stk') {
+            fileFormat = 'stk';
+        } else {
+            fileFormat = '';
+        }
+    }
+
+    if (fileExtension == 'ics') {
+        if (selectedFormat == 'ics' || selectedFormat == 'ics2') {
+            fileFormat = selectedFormat;
+        }
+    }
+
+    if (selectedFormat != '' && selectedFormat == fileFormat) {
+        return true;
+    } else {
+        return false;
+    }
 }
 
 function changeOpenerDiv (div, html) {
