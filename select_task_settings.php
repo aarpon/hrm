@@ -30,6 +30,23 @@ if (!isset($_SESSION['taskeditor'])) {
   $_SESSION['taskeditor'] = new TaskSettingEditor($_SESSION['user']);
 }
 
+if (System::hasLicense("coloc")) {
+    $numberSteps   = 5;
+    $goNextMessage = " - Analysis parameters.";
+} else {
+    $numberSteps = 4;
+    $goNextMessage = " - Create job.";
+}
+
+$currentStep  = 3;
+$previousStep = $currentStep - 1;
+$nextStep     = $currentStep + 1;
+
+$goBackMessage  = " - Image parameters.";
+$goBackMessage  = "Go back to step $previousStep/$numberSteps" . $goBackMessage;
+
+$goNextMessage  = "Continue to step $nextStep/$numberSteps" . $goNextMessage;
+
 // add public setting support
 if (!$_SESSION['user']->isAdmin()) {
   $admin = new User();
@@ -156,10 +173,10 @@ include("header.inc.php");
             Copy a template.
         </span>
         <span class="toolTip" id="ttSpanBack">
-            Go back to step 2/5 - Image parameters.
+        <?php echo $goBackMessage; ?>
         </span>
         <span class="toolTip" id="ttSpanForward">
-            Continue to step 4/5 - Analysis parameters.
+        <?php echo $goNextMessage; ?>
         </span>
     <?php
       }
@@ -212,7 +229,10 @@ if ($_SESSION['user']->isAdmin()) {
 else {
 
 ?>
-        <h3><img alt="Restoration" src="./images/restoration.png" width="40"/>&nbsp;&nbsp;Step 3/5 - Restoration parameters</h3>
+        <h3><img alt="Restoration" src="./images/restoration.png"
+        width="40"/>&nbsp;&nbsp;Step
+        <?php echo $currentStep . "/" . $numberSteps; ?>
+         - Restoration parameters</h3>
 <?php
 
 }

@@ -4,6 +4,7 @@
 
 require_once("./inc/User.inc.php");
 require_once("./inc/Fileserver.inc.php");
+require_once("./inc/System.inc.php");
 
 session_start();
 
@@ -18,6 +19,16 @@ if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
 if (isset($_SESSION['jobcreated'])) {
   unset($_SESSION['jobcreated']);
 }
+
+if (System::hasLicense("coloc")) {
+    $numberSteps = 5;
+} else {
+    $numberSteps = 4;
+}
+$currentStep = 1;
+$nextStep    = $currentStep + 1;
+$goNextMessage  = "Continue to step $nextStep/$numberSteps - ";
+$goNextMessage .= "Image parameters";
 
 if (!isset($_SESSION['fileserver'])) {
   # session_register("fileserver");
@@ -271,7 +282,7 @@ $info = "<h3>Quick help</h3>" .
         Refresh the list of available images on the server.
     </span>
     <span class="toolTip"  id="ttSpanForward">
-        Continue to step 2/4 - Image parameters
+    <?php echo $goNextMessage;?>
     </span>
 
     <div id="nav">
@@ -306,7 +317,12 @@ $info = "<h3>Quick help</h3>" .
     </div>
     
     <div id="content">
-        <h3><img alt="SelectImages" src="./images/select_images.png" width="40"/> &nbsp;Step 1/5 - Select images</h3>
+       <h3><img alt="SelectImages" src="./images/select_images.png"
+           width="40"/>
+           &nbsp;Step
+           <?php echo $currentStep . "/" . $numberSteps; ?>
+           - Select images
+       </h3>
         
                     <form method="post" action="" id="fileformat">
                     <fieldset class="setting" >

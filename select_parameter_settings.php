@@ -7,6 +7,7 @@ require_once("./inc/Parameter.inc.php");
 require_once("./inc/Setting.inc.php");
 require_once("./inc/SettingEditor.inc.php");
 require_once("./inc/Fileserver.inc.php");
+require_once("./inc/System.inc.php");
 
 global $enableUserAdmin;
 
@@ -39,6 +40,22 @@ if (!$_SESSION['user']->isAdmin()) {
   $admin_editor = new SettingEditor($admin);
   $_SESSION['admin_editor'] = $admin_editor;
 }
+
+if (System::hasLicense("coloc")) {
+    $numberSteps   = 5;
+} else {
+    $numberSteps = 4;
+}
+
+$currentStep  = 2;
+$previousStep = $currentStep - 1;
+$nextStep     = $currentStep + 1;
+
+$goBackMessage  = " - Select images.";
+$goBackMessage  = "Go back to step $previousStep/$numberSteps" . $goBackMessage;
+
+$goNextMessage  = " - Restoration parameters.";
+$goNextMessage  = "Continue to step $nextStep/$numberSteps" . $goNextMessage;
 
 // fileserver related code (for measured PSF files check)
 if (!isset($_SESSION['fileserver'])) {
@@ -167,10 +184,10 @@ include("header.inc.php");
         <span class="toolTip" id="ttSpanCopyTemplate">Copy a template.
         </span>
         <span class="toolTip" id="ttSpanBack">
-            Go back to step 1/5 - Select images.
+        <?php echo $goBackMessage; ?>
         </span>
         <span class="toolTip" id="ttSpanForward">
-            Continue to step 3/5 - Restoration parameters.
+        <?php echo $goNextMessage; ?>
         </span>
     <?php
       }
@@ -223,7 +240,10 @@ if ($_SESSION['user']->isAdmin()) {
 else {
 
 ?>
-        <h3><img alt="ImageParameters" src="./images/image_parameters.png" width="40"/>&nbsp;&nbsp;Step 2/5 - Image parameters</h3>
+        <h3><img alt="ImageParameters" src="./images/image_parameters.png"
+        width="40"/>&nbsp;&nbsp;Step
+        <?php echo $currentStep . "/" . $numberSteps; ?>
+        - Image parameters</h3>
 <?php
 
 }

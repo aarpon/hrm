@@ -24,6 +24,21 @@ if (!isset($_SESSION['fileserver'])) {
   $_SESSION['fileserver'] = new Fileserver($name);
 }
 
+if (System::hasLicense("coloc")) {
+    $currentStep   = 5;
+    $goBackLink    = "select_analysis_settings.php";
+    $goBackMessage = "Analysis parameters.";
+} else {
+    $currentStep   = 4;
+    $goBackLink    = "select_task_settings.php";
+    $goBackMessage = "Processing parameters.";
+}
+
+$previousStep   = $currentStep - 1;
+$goBackMessage  = "Go back to step $previousStep/$currentStep - " . $goBackMessage;
+
+
+
 $message = "";
 
 if (isset($_POST['create'])) {
@@ -63,7 +78,7 @@ include("header.inc.php");
       Tooltips
     -->
     <span class="toolTip" id="ttSpanBack">
-        Go back to step 3/4 - Processing parameters.
+    <?php echo $goBackMessage; ?>
     </span>
     <span class="toolTip" id="ttSpanCreateJob">
         Create job, add it to the queue, and go back to your home page.
@@ -110,7 +125,10 @@ include("header.inc.php");
 
     <div id="content">
 
-        <h3><img alt="Launch" src="./images/launch.png" width="40"/>&nbsp;Step 5/5 - Launch the job</h3>
+        <h3><img alt="Launch" src="./images/launch.png" width="40"/>
+                              &nbsp;Step
+                              <?php echo $currentStep . "/" . $currentStep; ?>
+                              - Launch the job</h3>
 
         <form method="post" action="" id="createjob">
 
@@ -280,7 +298,12 @@ echo $_SESSION['task_setting']->displayString( $numberOfChannels );
                    'http://www.svi.nl/HuygensRemoteManagerHelpCreateJob')">
                     <img src="images/help.png" alt="?" />
                 </a>
+            
+            <?php if (System::hasLicense("coloc")) { ?>
                 <a href="select_analysis_settings.php">
+            <?php } else { ?>
+                <a>
+            <?php } ?>
                     Analysis parameters
     </a>: <?php echo $_SESSION['analysis_setting']->name() ?>
             </legend>
@@ -335,7 +358,7 @@ if (!isset($_SESSION['jobcreated'])) {
 
 ?>
             <input type="button" name="previous" value="" class="icon previous"
-              onclick="document.location.href='select_analysis_settings.php'"
+              onclick="document.location.href='<?php echo $goBackLink; ?>'"
               onmouseover="TagToTip('ttSpanBack' )"
               onmouseout="UnTip()" />
             <input type="button" name="create job" value=""
