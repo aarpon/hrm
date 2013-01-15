@@ -133,52 +133,34 @@ function smoothChangeDiv(div, html, time) {
     }
 }
 
-function checkAgainstFormat(file, selectedFormat) {    
+function checkAgainstFormat(file, selectedFormat) {
 
-    var nameDivisions;
-
-    var fileType      = '';
+        // Both variables as in the 'file_extension' table.
     var fileFormat    = '';
     var fileExtension = '';
     
-        // ome.tiff        = (\.([^\..]+)|)
-        // file extension: = \.([^\.\s]+)
-        // lif subimages:  = [\s\(\)a-zA-Z0-9]*$
+        // Pattern ome.tiff        = (\.([^\..]+)|)
+        // Pattern file extension: = \.([^\.\s]+)
+        // Pattern lif subimages:  = [\s\(\)a-zA-Z0-9]*$
+    var nameDivisions;
     nameDivisions = file.match(/(\.([^\..]+)|)\.([^\.\s]+)[\s\(\)a-zA-Z0-9]*$/);
 
+        // A first check on the file format.
     if (nameDivisions != null) {
         
+        // Specific to ome-tiff.
         if (typeof nameDivisions[2] !== 'undefined') {
-            fileType = nameDivisions[2];
+            if (nameDivisions[2] == 'ome') {
+                fileExtension = nameDivisions[2] + '.';
+            }
         }
         
+        // Main extension.
         if (typeof nameDivisions[3] !== 'undefined') {
-            fileType += nameDivisions[3];
+            fileExtension += nameDivisions[3];
         }
         
-        switch (fileType) {
-            case 'h5':
-                fileFormat     = 'hdf5';
-                fileExtension  = "h5";
-                break;
-            case 'tif':
-            case 'tiff':
-                fileFormat    = 'tiff-generic';
-                fileExtension = "tiff";
-                break;
-            case 'ometif':
-            case 'ometiff':
-                fileFormat    = 'ome-tiff';
-                fileExtension = "ome.tiff";
-                break;
-            case 'ome':
-                fileFormat    = 'ome-xml';
-                fileExtension = 'ome';
-                break;
-            case 'ics':
-                fileFormat    = 'ics2';
-                fileExtension = 'ics';
-                break;
+        switch (fileExtension) {
             case 'dv':
             case 'ims':
             case 'lif':
@@ -186,32 +168,50 @@ function checkAgainstFormat(file, selectedFormat) {
             case 'oif':
             case 'pic':
             case 'r3d':
+            case 'stk':
             case 'zvi':
-                fileFormat    = fileType;
-                fileExtension = fileFormat;
+                fileFormat = fileExtension;
+                break;
+            case 'h5':
+                fileFormat    = 'hdf5';
+                break;
+            case 'tif':
+            case 'tiff':
+                fileFormat    = 'tiff-generic';
+                fileExtension = "tiff";
+                break;
+            case 'ome.tif':
+            case 'ome.tiff':
+                fileFormat    = 'ome-tiff';
+                fileExtension = "ome.tiff";
+                break;
+            case 'ome':
+                fileFormat    = 'ome-xml';
+                break;
+            case 'ics':
+                fileFormat    = 'ics2';
                 break;
             default:
                 fileFormat    = '';
                 fileExtension = '';
         }
-    }
+    }    
 
+        // Control over tiffs: this structure corresponds to Leica tiffs.
     if ((file.match(/[^_]+_(T|t|Z|z|CH|ch)[0-9]+\w+\.\w+/)) != null) {
         if (fileExtension == 'tiff' || fileExtension == 'tif') {
             fileFormat = 'tiff-leica';
-        } else {
-            fileFormat = '';
-        }
+        } 
     }
 
+        // Control over stks: redundant.
     if ((file.match(/[^_]+_(T|t)[0-9]+\.\w+/)) != null) {
         if (fileExtension == 'stk') {
             fileFormat = 'stk';
-        } else {
-            fileFormat = '';
-        }
+        } 
     }
 
+        // Control over ics's, no distinction between ics and ics2.
     if (fileExtension == 'ics') {
         if (selectedFormat == 'ics' || selectedFormat == 'ics2') {
             fileFormat = selectedFormat;
