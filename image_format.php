@@ -5,7 +5,7 @@
 require_once("./inc/User.inc.php");
 require_once("./inc/Parameter.inc.php");
 require_once("./inc/Setting.inc.php");
-require_once ("./inc/System.inc.php");
+require_once("./inc/System.inc.php");
 
 /* *****************************************************************************
  *
@@ -70,8 +70,7 @@ if ( $_SESSION[ 'setting' ]->checkPostedImageParameters( $_POST ) ) {
  **************************************************************************** */
 
 // Javascript includes
-$script = array( "settings.js", "quickhelp/help.js",
-                "quickhelp/imageFormatHelp.js" );
+$script = array( "settings.js", "quickhelp/help.js" );
 
 include("header.inc.php");
 
@@ -318,10 +317,7 @@ function check($parameter, $value) {
             <h3>Quick help</h3>
             
             <div id="contextHelp">
-              <p>Here you are asked to provide information on format and
-              geometry for the files you want to restore.</p>
-            
-              <p>Moreover, you must define whether you want to use a theoretical
+              <p>Here you are asked to define whether you want to use a theoretical
               PSF, or if you instead want to use a measured PSF you distilled
               with the Huygens software.</p>
             </div>

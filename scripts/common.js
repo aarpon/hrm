@@ -145,7 +145,7 @@ function checkAgainstFormat(file, selectedFormat) {
     var nameDivisions;
     nameDivisions = file.match(/(\.([^\..]+)|)\.([^\.\s]+)[\s\(\)a-zA-Z0-9]*$/);
 
-        // A first check on the file format.
+        // A first check on the file extension.
     if (nameDivisions != null) {
         
         // Specific to ome-tiff.

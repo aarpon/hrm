@@ -394,11 +394,9 @@ if ($files == null) {
 } else {
     if ($fileFormat->value() != "") {
         $format = $fileFormat->value();
-        $extensions = $fileFormat->fileExtensions($format);
-        $extension  = $extensions[0];
         
         foreach ($files as $key => $file) {
-            if ($_SESSION['fileserver']->getFileFormat($file) == $extension) {
+            if ($_SESSION['fileserver']->checkAgainstFormat($file, $format)) {
                 echo "<option>" . $file . "</option>\n";
                 $keyArr[$file] = $key;
             }

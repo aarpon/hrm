@@ -185,49 +185,102 @@ class Fileserver {
   /*!
    \brief   Extracts the file extension, also if it's a subimage.
    \param   $file The file name
+   \param   $selectedFormat The format selected at the select images stage.
    \return  The file extension
   */
-  public function getFileFormat($file) {
-
-      $filetype = false;
+  public function checkAgainstFormat($file, $selectedFormat) {
       
-      $pattern = "/[^_]+_(T|t|Z|z|CH|ch)[0-9]+\w+\.\w+/";
-      if (preg_match($pattern,$file,$matches)) {
-          return "tiff-leica";
-      }
-
-      $pattern = "/[^_]+_(T|t)[0-9]+\.\w+/";
-      if (preg_match($pattern,$file,$matches)) {
-          return "stk";
-      }      
+          // Both variables as in the 'file_extension' table.
+      $fileFormat    = false;
+      $fileExtension = false;
       
-      $pattern = "/\.([^\.\s]+)[\s\(\)a-zA-Z0-9]*$/";
-      if (preg_match($pattern,$file,$matches)) {
-
-          switch ($matches[1]) {
-              case "h5":
-                  $filetype = "hdf5";
+          // Pattern ome.tiff        = (\.([^\..]+)|)
+          // Pattern file extension: = \.([^\.\s]+)
+          // Pattern lif subimages:  = [\s\(\)a-zA-Z0-9]*$
+      $pattern = "/(\.([^\..]+)|)\.([^\.\s]+)[\s\(\)a-zA-Z0-9]*$/";
+      
+          // A first check on the file extension.
+      if (preg_match($pattern,$file,$nameDivisions)) {
+          
+              // Specific to ome-tiff.
+          if (isset($nameDivisions[2])) {
+              if ($nameDivisions[2] == 'ome') {
+                  $fileExtension = $nameDivisions[2] . ".";
+              }
+          }
+          
+              // Main extension.
+          if (isset($nameDivisions[3])) {
+              $fileExtension .= $nameDivisions[3];
+          }
+          
+          switch ($fileExtension) {
+              case 'dv':
+              case 'ims':
+              case 'lif':
+              case 'lsm':
+              case 'oif':
+              case 'pic':
+              case 'r3d':
+              case 'stk':
+              case 'zvi':
+                  $fileFormat = $fileExtension;
+                  break;
+              case 'h5':
+                  $fileFormat = 'hdf5';
                   break;
               case 'tif':
               case 'tiff':
-                  $filetype = "tiff-generic";
+                  $fileFormat    = 'tiff-generic';
+                  $fileExtension = "tiff";
                   break;
               case 'ome.tif':
               case 'ome.tiff':
-                  $filetype = "ome-tiff";
+                  $fileFormat    = 'ome-tiff';
+                  $fileExtension = "ome.tiff";
                   break;
               case 'ome':
-                  $filetype = "ome-xml";
+                  $fileFormat    = 'ome-xml';
                   break;
               case 'ics':
-                  $filetype = "ics2";
+                  $fileFormat    = 'ics2';
                   break;
               default:
-                  $filetype = $matches[1]; 
+                  $fileFormat    = '';
+                  $fileExtension = '';
           }
       }
+      
+          // Control over tiffs: this structure corresponds to Leica tiffs.
+      $pattern = "/[^_]+_(T|t|Z|z|CH|ch)[0-9]+\w+\.\w+/";
+      
+      if (preg_match($pattern,$file,$matches)) {
+          if ($fileExtension == 'tiff' || $fileExtension == 'tif') {
+              $fileFormat = 'tiff-leica';
+          } 
+      }
 
-      return $filetype;
+          // Control over stks: redundant.
+      $pattern = "/[^_]+_(T|t)[0-9]+\.\w+/";
+      
+      if (preg_match($pattern,$file,$matches)) {
+          if ($fileExtension == 'stk') {
+              $fileFormat = 'stk';
+          } 
+      }
+
+          // Control over ics's, no distinction between ics and ics2.
+      if ($fileExtension == 'ics') {
+        if ($selectedFormat == 'ics' || $selectedFormat == 'ics2') {
+            $fileFormat = $selectedFormat;
+        }
+      }
+      
+      if ($selectedFormat != '' && $selectedFormat == $fileFormat) {
+          return true;
+      } else {
+          return false;
+      }
   }
 
   /*!
@@ -295,9 +348,18 @@ class Fileserver {
   */
   public function isPartOfFileSeries($file) {
 
-      $extension = $this->getFileFormat($file);
+      $fileExtension = false;
       
-      switch ( $extension ) {
+          // Pattern file extension: = \.([^\.\s]+)
+          // Pattern lif subimages:  = [\s\(\)a-zA-Z0-9]*$
+      $pattern = "/\.([^\.\s]+)[\s\(\)a-zA-Z0-9]*$/";
+      
+          // First find the file extension.
+      if (preg_match($pattern,$file,$nameDivisions)) {
+          $fileExtension = $nameDivisions[1];
+      }
+      
+      switch ( $fileExtension ) {
           case 'stk':
               $pattern = "/[^_]+_(T|t)[0-9]+\.\w+/";
               break;
