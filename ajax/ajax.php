@@ -17,6 +17,12 @@ require_once '../inc/JobQueue.inc.php';
  * @return String parameter dump
  */
 function getParameters($editor, $setName, $numChannels) {
+  if ($setName == '') {
+      // In Chrome, the onclick event is fired even if one clicks on an empty
+      // area of an input field (passing a value of ''). In Firefox, the event
+      // is fired only if one clicks on one of the existing values.
+      return;
+  }
   $setting = $editor->setting($setName);
   $data = $setting->displayString($numChannels, true);
 
