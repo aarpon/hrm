@@ -2766,9 +2766,16 @@ echo '</body></html>';
     \param  $prefix    The actual path prefix relative to the user's destination folder
   */
   private function getDestFilesFrom($startDir, $prefix) {
+      // In case reading current directory fails, we just skip it and continue. 
+      // This is a recursive method, meaning the $this->destFiles array grows
+      // at every iteration with the content of each subfolder. Originally, the
+      // $this->destFiles array was reset to array() if any of the directory 
+      // could not be accessed, but this is not the correct behavior (no files
+      // at all are listed in the end, and not just the ones which actually 
+      // cannot be obtained). Not cleaning the $this->destFiles array should 
+      // be safe.
       $dir = dir($startDir);
       if ( $dir == false ) {
-          $this->destFiles = array();
           return;
       }
       while ($entry = $dir->read()) {
@@ -2808,6 +2815,9 @@ echo '</body></html>';
   */
   private function cleanNonImages($startDir, $prefix, &$valid, &$msg) {
     $dir = dir($startDir);
+    if ($dir == false) {
+        return;
+    }
     while ($entry = $dir->read()) {
         if ($entry != "." && $entry != ".." && $entry != "hrm_previews") {
             if (is_dir($startDir . "/" . $entry)) {
@@ -2852,6 +2862,9 @@ echo '</body></html>';
   private function listFilesFrom($startDir, $prefix, $extension) {
     $files = array();
     $dir = dir($startDir);
+    if ($dir == false) {
+        return $files;
+    }
     while ($entry = $dir->read()) {
       if ($entry != "." && $entry != "..") {
 	if (is_dir($startDir . "/" . $entry)) {
