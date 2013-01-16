@@ -1831,7 +1831,7 @@ echo '</body></html>';
              break;
           case "home":
              echo " onclick=\"document.location.href='home.php'\" ".
-             "onmouseover=\"Tip('Go to your HRM home page.')\" ".
+             "onmouseover=\"Tip('Go to your HRM home page')\" ".
              " onmouseout=\"UnTip()\" ".
              "'select_parameter_settings.php'\">".
              "<a href=\"#\">".
@@ -2297,10 +2297,14 @@ echo '</body></html>';
       return False;
     }
     $dir = opendir($folder);
+    if ($dir == false) {
+        // Directory could not be read
+        return False;
+    }
     $result = False;
     while ($name = readdir($dir)) {
       if (strstr($name, $string)) {
-	$result = True;
+        $result = True;
       }
     }
     closedir($dir);
@@ -2318,6 +2322,10 @@ echo '</body></html>';
       return False;
     }
     $dir = opendir($folder);
+    if ($dir == false) {
+        // Directory could not be read
+        return False;
+    }
     $result = False;
     $db = new DatabaseConnection();
     while ($name = readdir($dir)) {
@@ -2728,6 +2736,7 @@ echo '</body></html>';
     // obtained). Not cleaning the $this->files array should be safe.
     $dir = dir($startDir);
     if ($dir == false) {
+        // Directory could not be read
         return;
     }
     while ($entry = $dir->read()) {
@@ -2776,6 +2785,7 @@ echo '</body></html>';
       // be safe.
       $dir = dir($startDir);
       if ( $dir == false ) {
+          // Directory could not be read
           return;
       }
       while ($entry = $dir->read()) {
@@ -2816,6 +2826,7 @@ echo '</body></html>';
   private function cleanNonImages($startDir, $prefix, &$valid, &$msg) {
     $dir = dir($startDir);
     if ($dir == false) {
+        // Directory could not be read
         return;
     }
     while ($entry = $dir->read()) {
@@ -2863,6 +2874,7 @@ echo '</body></html>';
     $files = array();
     $dir = dir($startDir);
     if ($dir == false) {
+        // Directory could not be read
         return $files;
     }
     while ($entry = $dir->read()) {
