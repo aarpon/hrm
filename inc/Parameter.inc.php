@@ -807,6 +807,7 @@ class NumericalArrayParameter extends NumericalParameter {
 		\param	$number	Number of channels
 	*/
 	public function setNumberOfChannels($number) {
+
 	    if ( $number == $this->numberOfChannels ) {
 	        return;
 	    }
@@ -2122,7 +2123,8 @@ class BackgroundOffsetPercent extends AnyTypeArrayParameter {
 		return $result;
 	}
 
-	public function displayString( ) {
+	public function displayString( $numberOfChannels = 0) {
+            
 		if ( $this->value[ 0 ] == 'auto' ) {
 			$name = ' background estimation';
 			$value = 'auto';
@@ -2130,12 +2132,12 @@ class BackgroundOffsetPercent extends AnyTypeArrayParameter {
 			$name = ' background estimation';
 			$value = 'in/near object';
 		} else {
-			if ( $this->numberOfChannels == 1 ) {
+			if ( $numberOfChannels == 1 ) {
 				$name = 'background absolute value';
 				$value = $this->value[ 0 ];
 			} else {
 				$name = ' background absolute values';
-				$value = array_slice( $this->value, 0, $this->numberOfChannels);
+				$value = array_slice( $this->value, 0, $numberOfChannels);
 				$value = implode( $value, ", " );
 			}
 		}
