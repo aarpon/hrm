@@ -2719,9 +2719,15 @@ echo '</body></html>';
     \TODO   times.
   */
   private function getFilesFrom($startDir, $prefix) {
+    // In case reading current directory fails, we just skip it and continue. 
+    // This is a recursive method, meaning the $this->files array grows
+    // at every iteration with the content of each subfolder. Originally, the
+    // $this->files array was reset to array() if any of the directory could
+    // not be accessed, but this is not the correct behavior (no files at all
+    // are listed in the end, and not just the ones which actually cannot be
+    // obtained). Not cleaning the $this->files array should be safe.
     $dir = dir($startDir);
     if ($dir == false) {
-        $this->files = array();
         return;
     }
     while ($entry = $dir->read()) {
