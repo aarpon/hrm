@@ -101,13 +101,20 @@ foreach ($files as $file) {
   if ($mType != $mTypeSetting ) {
       $mismatch = true;
   }
-  if (abs($NA - $NAsetting) / $NA > .02 ) {
+
+  if (!isset($NA) || $NA == '') {
+      $mismatch = true;
+  } elseif (abs($NA - $NAsetting) / $NA > .02 ) {
       $mismatch = true;
   }
-  if (abs($em - $emSetting) / $emSetting > .05 ) {
+
+  if (!isset($emSetting) || $emSetting == '') {
+      $mismatch = true;
+  } elseif (abs($em - $emSetting) / $emSetting > .05 ) {
       $mismatch = true;
   }
-  if ($mismatch ) {
+  
+  if ($mismatch) {
       $showWarning = true;
       $style = "class=\"info\" ";
   }
