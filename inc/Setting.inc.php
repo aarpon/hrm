@@ -1197,6 +1197,8 @@ class ParameterSetting extends Setting {
                 continue;
             if ($parameter->name() == 'ImageGeometry')
                 continue;
+            if ($parameter->name() == 'ImageFileFormat')
+                continue;
             if ($parameter->name() == 'IsMultiChannel')
                 continue;
             if (!$this->isNipkowDisk() && 
@@ -1806,6 +1808,9 @@ class TaskSetting extends Setting {
                 $parameter->setAlgorithm($algorithm);
             }
             if ($parameter->name() == 'OutputFileFormat') {
+                continue;
+            }
+            if ($parameter->name() == 'MultiChannelOutput') {
                 continue;
             }
             $result = $result . 
