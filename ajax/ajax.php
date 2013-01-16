@@ -236,13 +236,13 @@ function setFileFormat($format) {
         $_SESSION[ 'parametersetting' ]->parameter("ImageFileFormat");
     $fileFormat = $parameterFileFormat->value();
     
-    // Do we need to update current selection?
-    if ($fileFormat == NULL || strcmp($fileFormat, $format) != 0) {
-        $_SESSION[ 'fileserver' ]->removeAllFilesFromSelection();
-        $parameterFileFormat->setValue($format);
-        $_SESSION[ 'parametersetting' ]->set($parameterFileFormat);
-    }
-
+        // There has been an event of the type "Image file format" selection,
+        // "Automatically load file series" or similar. Thus, let's update the
+        // current selection.
+    $_SESSION[ 'fileserver' ]->removeAllFilesFromSelection();
+    $parameterFileFormat->setValue($format);
+    $_SESSION[ 'parametersetting' ]->set($parameterFileFormat);
+    
     return "";
 }
 

@@ -126,6 +126,8 @@ function filterImages (format,series) {
         /* For each file, create javascript code for when the file
          belongs to a series and for when it doesn't. */
     $condensedSeries = $_SESSION['fileserver']->condenseSeries();
+    $_SESSION['fileserver']->resetFiles();
+    
 
     foreach ($files as $key => $file) {
         
@@ -438,7 +440,10 @@ if ($files == null) {
                                echo " checked=\"checked\" ";
                            }
                            ?>
-                           onclick="javascript:storeFileFormatSelection(ImageFileFormat,this)" />
+                           onclick="javascript:storeFileFormatSelection(ImageFileFormat,this)"
+                           onchange="javascript:storeFileFormatSelection(ImageFileFormat,this)"
+    />
+    
                     Automatically load file series if supported
                 
                 </label>
