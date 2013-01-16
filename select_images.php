@@ -48,6 +48,7 @@ if (isset($_POST['down'])) {
     } else {
         $_SESSION['autoseries'] = "";
     }
+
     if (isset($_POST['userfiles']) && is_array($_POST['userfiles'])) {
         $_SESSION['fileserver']->addFilesToSelection($_POST['userfiles']);
     }
@@ -81,16 +82,15 @@ else if (isset($_POST['OK'])) {
 
 $script = array( "settings.js","ajax_utils.js" );
 
-// All the user's series in the server.
-$files = $_SESSION['fileserver']->files();
-$condensedSeries = $_SESSION['fileserver']->condenseSeries();
-
 // All the user's files in the server.
 $_SESSION['fileserver']->resetFiles();
-$files = $_SESSION['fileserver']->files();
+$allFiles = $_SESSION['fileserver']->files();
+
+// All the user's series in the server.
+$condensedSeries = $_SESSION['fileserver']->condenseSeries();
 
 // display only relevant files.
-if ($files != null) {
+if ($allFiles != null) {
 
     $generatedScript = "
 function storeFileFormatSelection(sel,series) {
@@ -130,7 +130,7 @@ function filterImages (format,series) {
 
         /* For each file, create javascript code for when the file
          belongs to a series and for when it doesn't. */
-    foreach ($files as $key => $file) {
+    foreach ($allFiles as $key => $file) {
         
         if ($_SESSION['fileserver']->isPartOfFileSeries($file)) {
 
@@ -241,7 +241,7 @@ function imageAction (list) {
     {
 ";
 
-    foreach ($files as $key => $file) {
+    foreach ($allFiles as $key => $file) {
         $generatedScript .= "
         case \"$file\" :
             ". $_SESSION['fileserver']->getImageAction($file,
@@ -365,16 +365,6 @@ foreach($formats as $key => $format) {
     } else {
         $selected = "";
     }
-
-//     $extensions = $fileFormat->fileExtensions($value);
-    
-//     if (in_array("tiff", $extensions)) {
-//         $extension = "tiff";
-//     } else if (in_array("ome-tiff", $script)) {
-//         $extension = "ome-tiff";
-//     } else {
-//         $extension = $extensions[0];
-//     }
 ?>
       <option <?php echo "name = \"" . $format . "\"  value = \"" .
            $format  . "\"" . $selected ?>><?php echo $translation ?>
@@ -394,7 +384,7 @@ foreach($formats as $key => $format) {
 <?php
 
 $flag = "";
-if ($files == null) {
+if ($allFiles == null) {
     $flag = " disabled=\"disabled\"";
     $message .= "";
 }
@@ -408,7 +398,7 @@ if ($files == null) {
                             multiple="multiple"<?php echo $flag ?>>
 <?php
 $keyArr = array();
-if ($files == null) {
+if ($allFiles == null) {
     echo "                        <option>&nbsp;</option>\n";
 } else {
     if ($fileFormat->value() != "") {
@@ -416,11 +406,11 @@ if ($files == null) {
 
         if (isset($_SESSION['autoseries']) && 
             $_SESSION['autoseries'] == "TRUE") {
-            $_SESSION['fileserver']->condenseSeries();
+            $files = $condensedSeries; 
         } else {
-            $_SESSION['fileserver']->resetFiles();
+            $files = $allFiles;
+            
         }
-        $files = $_SESSION['fileserver']->files();
         
         foreach ($files as $key => $file) {
             if ($_SESSION['fileserver']->checkAgainstFormat($file, $format)) {
@@ -482,9 +472,10 @@ if ($files == null) {
                 <div id="selectedfiles" onmouseover="showPreview()">
 <?php
 
-$files = $_SESSION['fileserver']->selectedFiles();
+$selectedFiles = $_SESSION['fileserver']->selectedFiles();
+
 $flag = "";
-if ($files == null) {
+if ($selectedFiles == null) {
     $flag = " disabled=\"disabled\"";
 }
 
@@ -496,8 +487,8 @@ if ($files == null) {
                             size="5"
                             multiple="multiple"<?php echo $flag ?>>
 <?php                     
-if ($files != null) {
-  foreach ($files as $filename) {
+if ($selectedFiles != null) {
+  foreach ($selectedFiles as $filename) {
           $key = $keyArr[$filename];
           echo $_SESSION['fileserver']->getImageOptionLine($filename,
               $key, "src", "preview", 0, 1) ;
