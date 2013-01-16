@@ -81,7 +81,12 @@ else if (isset($_POST['OK'])) {
 
 $script = array( "settings.js","ajax_utils.js" );
 
+// All the user's series in the server.
+$files = $_SESSION['fileserver']->files();
+$condensedSeries = $_SESSION['fileserver']->condenseSeries();
+
 // All the user's files in the server.
+$_SESSION['fileserver']->resetFiles();
 $files = $_SESSION['fileserver']->files();
 
 // display only relevant files.
@@ -125,10 +130,6 @@ function filterImages (format,series) {
 
         /* For each file, create javascript code for when the file
          belongs to a series and for when it doesn't. */
-    $condensedSeries = $_SESSION['fileserver']->condenseSeries();
-    $_SESSION['fileserver']->resetFiles();
-    
-
     foreach ($files as $key => $file) {
         
         if ($_SESSION['fileserver']->isPartOfFileSeries($file)) {
@@ -412,6 +413,14 @@ if ($files == null) {
 } else {
     if ($fileFormat->value() != "") {
         $format = $fileFormat->value();
+
+        if (isset($_SESSION['autoseries']) && 
+            $_SESSION['autoseries'] == "TRUE") {
+            $_SESSION['fileserver']->condenseSeries();
+        } else {
+            $_SESSION['fileserver']->resetFiles();
+        }
+        $files = $_SESSION['fileserver']->files();
         
         foreach ($files as $key => $file) {
             if ($_SESSION['fileserver']->checkAgainstFormat($file, $format)) {
