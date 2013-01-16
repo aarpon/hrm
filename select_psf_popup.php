@@ -159,6 +159,10 @@ foreach ($files as $file) {
         "unexpected results.</p>";
   }
 
+// The PSF popup sets the fileserver to HDF5 and ICS in order to be able to read
+// metadata. Reset it to ALL files to avoid problems with the image selector.
+$_SESSION['fileserver']->resetFiles();
+$files = $_SESSION['fileserver']->files();
 
 ?>
     </div>
