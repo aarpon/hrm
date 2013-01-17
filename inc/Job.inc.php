@@ -758,7 +758,8 @@ class Job {
         foreach ($this->restParam as $paramName => $paramText) {
 
             $pattern  = "/(.*)$paramName(.*):";
-            $pattern .= "\s+([0-9\,\s]+|[a-zA-Z0-9]+\s?[a-zA-Z0-9]*)/";
+            $pattern .= "\s+([0-9\,\s]+|[a-zA-Z0-9\,\s]+\s?[a-zA-Z0-9]*)\n/";
+            
             if (!preg_match($pattern,$taskParameters,$matches)) {
                 continue;
             }
