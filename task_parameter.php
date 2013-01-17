@@ -57,19 +57,14 @@ if ( ! ( strpos( $_SERVER[ 'HTTP_REFERER' ],
  **************************************************************************** */
 
 if ( $_SESSION[ 'task_setting' ]->checkPostedTaskParameters( $_POST ) ) {
-    if ($_SESSION[ 'task_setting']->numberOfChannels() == 1) {
-        $saved = $_SESSION['task_setting']->save();
-        if ($saved) {
-            header("Location: " . "select_task_settings.php"); exit();
-        } else {
-            $message = $_SESSION['task_setting']->message();
-        }
-    } else {
-            // Continue to next page
-        header("Location: " . "post_processing.php"); exit();
-    }
-} else {
+  $saved = $_SESSION['task_setting']->save();
+  if ($saved) {
+    header("Location: " . "select_task_settings.php"); exit();
+  } else {
     $message = $_SESSION['task_setting']->message();
+  }
+} else {
+  $message = $_SESSION['task_setting']->message();
 }
 
 /* *****************************************************************************
@@ -90,7 +85,7 @@ include("header.inc.php");
     <!--
       Tooltips
     -->
-    <span id="ttSpanCancel">
+    <span class="toolTip" id="ttSpanCancel">
         Abort editing and go back to the Restoration parameters
         selection page. All changes will be lost!
     </span>
@@ -98,27 +93,27 @@ include("header.inc.php");
     <?php
     if ($_SESSION['task_setting']->numberOfChannels() == 1) {
     ?>
-    <span id="ttSpanSave">
+    <span class="toolTip" id="ttSpanSave">
     Save and return to the processing parameters selection page.
     </span>
     
     <?php
     } else {
     ?>
-    <span id="ttSpanForward">
+    <span class="toolTip" id="ttSpanForward">
         Continue to next page.
     </span>
     <?php
     }
     ?>
     
-    <span id="ttEstimateSnr">
+    <span class="toolTip" id="ttEstimateSnr">
         Use a sample raw image to find a SNR estimate for each channel.
     </span>
-    <span id="ttEstimateSnrBeta">
+    <span class="toolTip" id="ttEstimateSnrBeta">
         Give the new SNR estimator (beta) a try!
     </span>
-    <span id="ttEstimateSnrBetaFeedback">
+    <span class="toolTip" id="ttEstimateSnrBetaFeedback">
         Please help us improve the new SNR estimator by providing your
         observations and remarks!
     </span>
@@ -140,7 +135,7 @@ include("header.inc.php");
 
     <div id="content">
 
-        <h3>Restoration - Deconvolution</h3>
+        <h2>Restoration - Deconvolution</h2>
 
         <form method="post" action="" id="select">
 
@@ -264,24 +259,9 @@ for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
                           onclick="storeValuesAndRedirect(
                             'estimate_snr_from_image.php');">
                           <img src="images/calc_small.png" alt="" />
-                          Estimate SNR from image (classic)</a>
+                          Estimate SNR from image</a>
                         </p>
 
-                          <div class="message_small_SNR_beta">
-                          <img src="images/newSNR.png" alt="" />&nbsp;&nbsp;
-                          Try the
-                          <a href="#"
-                            onmouseover="TagToTip('ttEstimateSnrBeta' )"
-                            onmouseout="UnTip()"
-                            onclick="storeValuesAndRedirect(
-                            'estimate_snr_from_image_beta.php');">
-                          new SNR estimator (beta)</a> and
-                          <a href="javascript:openWindow(
-                          'http://www.svi.nl/BetaSNRFeedback')"
-                          onmouseover="TagToTip('ttEstimateSnrBetaFeedback' )"
-                          onmouseout="UnTip()">
-                          report your feedback!</a>&nbsp;&nbsp;
-                          <img src="images/newSNR.png" alt="" /></div>
                     </div>
 <?php
 
@@ -535,29 +515,22 @@ $value = $parameter->value();
 
             <div id="controls"
                  onmouseover="javascript:changeQuickHelp( 'default' )">
+              
               <input type="button" value="" class="icon up"
-                  onmouseover="TagToTip('ttSpanCancel' )"
-                  onmouseout="UnTip()"
-                  onclick="javascript:deleteValuesAndRedirect('select_task_settings.php' );"
-                  />
+                onmouseover="TagToTip('ttSpanCancel' )"
+                onmouseout="UnTip()"
+                onclick="javascript:deleteValuesAndRedirect('select_task_settings.php' );" />
     
-    <?php
-    if ($_SESSION['task_setting']->numberOfChannels() == 1) {
-        $acceptButton  = "icon save";
-        $acceptToolTip = "TagToTip('ttSpanSave')";
-    } else {
-        $acceptButton  = "icon next";
-        $acceptToolTip = "TagToTip('ttSpanForward')";
-    }
-    ?>
+              <input type="submit" value=""
+                class="icon save"
+                onmouseover="TagToTip('ttSpanSave')"
+                onmouseout="UnTip()"
+                onclick="process()" />
 
-<input type="submit" value=""
-    class=<?php echo "\"" . $acceptButton . "\" ";?>
-onmouseover=<?php echo "\"" . $acceptToolTip . "\" ";?>
-onmouseout="UnTip()"
-    onclick="process()" />
             </div>
+        
         </form>
+    
     </div> <!-- content -->
 
     <div id="rightpanel" onmouseover="javascript:changeQuickHelp( 'default' )">
@@ -621,7 +594,7 @@ if ( using_IE() && !isset( $_SERVER[ 'HTTP_REFERER' ] ) ) {
 ?>
         <script type="text/javascript">
             $(document).ready( retrieveValues( ) );
-        </script>"
+        </script>
 <?php
 }
 ?>

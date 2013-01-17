@@ -39,7 +39,7 @@ class QueueManager {
 
     /*!
     \var	$shallStop
-    \brief	Flag to indeicate whether a Job should stop
+    \brief	Flag to indicate whether a Job should stop
     */
     private $shallStop;
 
@@ -126,16 +126,24 @@ class QueueManager {
             report("images copied to IP server", 1);
         }
 
-        $proc = newExternalProcessFor($server, $server . "_" .$job->id() .
-            "_out.txt", $server . "_" .$job->id(). "_error.txt");
+        $proc = newExternalProcessFor($server,
+                                      $server . "_" .$job->id() . "_out.txt",
+                                      $server . "_" . $job->id(). "_error.txt");
         report("shell process created", 1);
-        $ssh = $proc->runShell();
+
+            /* Check whether the shell is ready to accept further execution. If
+             not, the shell will be released internally, no need to release it
+             here. */
+        if (!$proc->runShell()) {
+            return False;
+        }
+        
         report("running shell: $clientScriptPath$scriptName", 1);
         $pid = $proc->runHuygensTemplate($clientScriptPath . $scriptName);
 
         report("running script (pid $pid)", 1);
 
-        // Release the shell, the script in the background will keep running.
+            /* The script in the background will keep running after release. */
         $proc->release();
 
         $job->setPid($pid);
@@ -217,7 +225,7 @@ class QueueManager {
     }
 
     /*!
-    \brief	Copies the images needed by a given Job to the [rocessing server
+    \brief	Copies the images needed by a given Job to the processing server
     \param	$job	A Job object
     \param	$server_hostname	Name of the server to which to copy the files
     \return	the full path to which the files were copied
@@ -448,8 +456,36 @@ class QueueManager {
 
         $result = exec("sudo chown -R " . $image_user . ":" . $image_group .
             " " . $image_folder . "/" . $username);
-        error_log("Restoring ownership... " . $result);
+        report("Restoring ownership... " . $result, 1);
     }
+
+    /*!
+     \brief   Checks whether the processing server reacts on 'ping'.
+     \param   $server The server's name
+     \param   $outLog A string specific of the output log file name.
+     \param   $errLog A string specific of the error log file name.
+     \return  Boolean: true on success.
+    */
+    private function isProcessingServerReachable($server,
+                                                 $outLog = NULL,
+                                                 $errLog = NULL) {
+        if ( $outLog ) {
+            $outLog .= "_";
+        }
+
+        if ( $errLog ) {
+            $errLog .= "_";
+        }
+
+        $proc = newExternalProcessFor( $server,
+                                       $server . $outLog . "_out.txt",
+                                       $server . $errLog . "_error.txt" );
+        $isReachable = $proc->ping();
+        
+        $proc->release();
+        
+        return $isReachable;
+    }   
 
     /*!
  	\brief	Updates the Job and server status
@@ -483,25 +519,24 @@ class QueueManager {
         foreach ($runningJobs as $job) {
             $desc = $job->description();
             $user = $desc->owner();
-
-            // Check if fileserver is reachable
+            
             $fileserver = new Fileserver($user->name());
             if (!$fileserver->isReachable())
                 continue;
 
-            // Check if Huygens host is reachable
-            $proc = newExternalProcessFor($job->server(),
-                $job->server() . "_" . $job->id() . "_out.txt",
-                $job->server() . "_" . $job->id() . "_error.txt");
-            if (!$proc->ping()) {
-                continue;
+            if ( !$this->isProcessingServerReachable($job->server(),
+                                                     $job->id(),
+                                                     $job->id()) ) {
+                continue;    
             }
             
             // Check finished marker
             $finished = $job->checkProcessFinished();
+
             if (!$finished) {
                 continue;
             }
+            
             report("checked finished process", 2);
 
             // Check result image
@@ -539,7 +574,7 @@ class QueueManager {
                     $message .=
                         "\n\n-HUYGENS REPORT (stdout) --------------------\n\n"
                             . file_get_contents($logFile);
-                }
+                }                
                 if ($send_mail) {
                     $this->notifyError($job, $message, $startTime);
                 }
@@ -751,7 +786,7 @@ class QueueManager {
  	public function notifyPingError($name) {
         global $email_sender;
         global $email_admin;
-        report("Ping error notification sent");
+        report("Ping error notification sent", 1);
         $text = "Huygens Remote Manager warning:\n"
                 . $name . " could not be pinged on " . date("r", time());
         $mail = new Mail($email_sender);
@@ -767,28 +802,29 @@ class QueueManager {
  	\return name of a free server
  	*/
  	public function getFreeServer() {
+            
         $db = new DatabaseConnection();
-        $serverNames = $db->availableServer();
-        foreach ($serverNames as $name) {
-            $status = $db->statusOfServer($name);
+        $servers = $db->availableServer();
+        
+        foreach ($servers as $server) {
+            $status = $db->statusOfServer($server);
             if ($status == 'free') {
-                $proc = newExternalProcessFor($name, $name . "_out.txt",
-                    $name . "_error.txt");
-                //report("found free server", 2);
-                if ($proc->ping()) {
-                    //report("ping succeeded for $name", 2);
-                    $this->nping[$name] = 0;
-                    $this->freeServer = $name;
+
+                if ( $this->isProcessingServerReachable($server) ) {
+                    $this->nping[$server] = 0;
+                    $this->freeServer = $server;
                     return True;
                 } else {
-                    $this->incNPing($name);
-                    if ($this->nping[$name] == 40) {
-                        $this->notifyPingError($name);
+                    $this->incNPing($server);
+                    if ($this->nping[$server] == 40) {
+                        $this->notifyPingError($server);
                     }
                 }
             }
         }
+        
         $this->freeServer = False;
+        
         return $this->freeServer;
     }
 
@@ -805,14 +841,14 @@ class QueueManager {
  	\return true if the QueueManager shall stop
     */
  	public function shallStop() {
-        if ($this->shallStop) {
-            return True;
+            if ($this->shallStop) {
+                return True;
+            }
+            $this->waitForDatabaseConnection();
+            $db = new DatabaseConnection();
+            $this->shallStop = !$db->isSwitchOn();
+            return $this->shallStop;
         }
-        $this->waitForDatabaseConnection();
-        $db = new DatabaseConnection();
-        $this->shallStop = !$db->isSwitchOn();
-        return $this->shallStop;
-    }
 
     /*!
  	\brief	Waits until a DatabaseConnection could be established
@@ -850,6 +886,11 @@ class QueueManager {
 
         if (!$this->askHuCoreVersionAndStoreIntoDB()) {
             error_log("An error occurred while reading HuCore version");
+            return;
+        }
+
+        if (!$this->storeHuCoreLicenseDetailsIntoDB()) {
+            error_log("An error occurred while saving HuCore license details");
             return;
         }
 
@@ -898,11 +939,15 @@ class QueueManager {
                     continue;
                 }
                 report("script has been created", 1);
+                
                 // Execute the script on the Huygens server and
                 // update the database state
                 $result = $result && $this->executeScript($job);
-                if (!$result)
+                
+                if (!$result) {                    
                     continue;
+                }
+                
                 report("script has been executed", 1);
                 $result = $result && $queue->startJob($job);
                 report("job has been started ("
@@ -926,14 +971,23 @@ class QueueManager {
  	private function parameterText(Job $job) {
         $desc = $job->description();
         $result = '';
+        
         $result = $result . "\nImage parameters:\n\n";
         $parameterSetting = $desc->parameterSetting();
         $parameterSettingString = $parameterSetting->displayString();
         $result = $result . $parameterSettingString;
+        
         $result = $result . "\nRestoration parameters:\n\n";
         $taskSetting = $desc->taskSetting();
-        $taskSettingString = $taskSetting->displayString();
+        $numberOfChannels = $taskSetting->numberOfChannels();
+        $taskSettingString = $taskSetting->displayString($numberOfChannels);
         $result = $result . $taskSettingString;
+
+        $result = $result . "\nAnalysis parameters:\n\n";
+        $analysisSetting = $desc->analysisSetting();
+        $analysisSettingString = $analysisSetting->displayString();
+        $result = $result . $analysisSettingString;
+
         return $result;
     }
 
@@ -951,14 +1005,32 @@ class QueueManager {
             successful, false otherwise
     */
  	private function askHuCoreVersionAndStoreIntoDB() {
-        $huversion = askHuCore("reportVersionNumberAsInteger");
-        $huversion = $huversion["version"];
-        report("HuCore version = " . $huversion . "\n", 2);
-        if (!System::setHuCoreVersion($huversion)) {
-            return false;
+            $huversion = askHuCore("reportVersionNumberAsInteger");
+            $huversion = $huversion["version"];
+            report("HuCore version = " . $huversion . "\n", 2);
+            if (!System::setHuCoreVersion($huversion)) {
+                return false;
+            }
+            return true;
         }
-        return true;
-    }
+
+        /*!
+         \brief   Gets license details from HuCore and saves them into the db.
+         \return  Boolean: true if everything went OK.
+        */
+        private function storeHuCoreLicenseDetailsIntoDB( ) {
+            $licDetails = askHuCore("reportHuCoreLicense");
+
+            // Store the license details in the database.
+            $db = new DatabaseConnection();
+            if (!$db->storeLicenseDetails($licDetails['license'])) {
+                report("Could not store license details in the database!\n", 1);
+                return false;
+            }
+
+            return true;
+        }
+            
 
     /*!
  	\brief	Store the confidence levels returned by huCore into the database
@@ -1002,7 +1074,7 @@ class QueueManager {
         $confidenceLevels = array();
 
         // Confidence level regexp
-        $levelRegExp = '(asIs|reported|estimated|default|verified)';        
+        $levelRegExp = '(asIs|reported|estimated|default|verified)';
 
         // Process the substrings
         foreach ($groups as $group) {

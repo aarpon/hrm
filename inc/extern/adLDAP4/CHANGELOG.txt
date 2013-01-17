@@ -8,6 +8,24 @@ http://adldap.sourceforge.net/
 CHANGELOG
 -------------------------------------------------------------------------------------------
 
+Version 4.0.4
+-------------
+[+] New Feature: Ability to delete a group $adldap->group()->delete($groupName);
+[+] New Feature: #30 Add magic __isset method to adLDAPCollection
+[-] Feature Change: #34 A better recursiveGroups() implementation
+[-] Feature Change: Changed $adldap->user()->getLastLogon from using the lastLogin attribute to lastLogonTimestamp. The difference between the two is detailed here http://blogs.technet.com/b/askds/archive/2009/04/15/the-lastlogontimestamp-attribute-what-it-was-designed-for-and-how-it-works.aspx
+[-] Bug Fix: $adldap->user()->getLastLogon('mySAMAccountName') produced a PHP error 'Non-static method adLDAPUtils::convertWindowsTimeToUnixTime() should not be called statically'
+[-] Bug Fix: #29 $includeDescription broken in adLDAPContacts->all()
+[-] Bug Fix: #25 exchange->createMailbox typo in $storageGroup variable null checking
+[-] Bug Fix: #25 exchange->createMailbox Call to undefined method adLDAPExchange::utilities()
+[-] Bug Fix: #27 Case mismatch on an array key in the folder()->create()
+[-] Bug Fix: Typo in $adldap->contact()->contactMailEnable() for email address so that the function wouldn't work as intended
+[-] Bug Fix: $adldap->folder->create() typo would have failed to create the folder correctly
+[-] Bug Fix: Some uninitialized variable warnings quashed for PHP Strict Mode
+[-] Bug Fix: Ensure a connection is established before calling ldap_close in __destruct()
+[-] Bug Fix: #32 undefined offset in getPrimaryGroup()
+[-] Bug Fix: #31 Non-recursive group()->members method sometimes does not work
+
 Version 4.0.3
 -------------
 [+] New feature: Added support for homephone attribute to the adLDAP schema

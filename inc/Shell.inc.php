@@ -16,23 +16,30 @@ $hutask = "-noExecLog -checkUpdates disable -template";
 
 /*!
   \brief  Runs a new shell either with or without secure connection between the
-          queue manager and the Image area
+          queue manager and the Image area.
  		
-  Which of the two modes is chosen depends on the value of the configuration 
-  variable $imageProcessingIsOnQueueManager.
- 
+          Which of the two modes is chosen depends on the value of
+          the configuration variable $imageProcessingIsOnQueueManager.
+          
   \todo	Implement better management of multiple hosts
 */
 function newExternalProcessFor($host, $logfilename, $errfilename) {
     global $imageProcessingIsOnQueueManager;
+    
     $db = new DatabaseConnection();
     $huscript_path = $db->huscriptPathOn($host);
+    
     if ($imageProcessingIsOnQueueManager)
-        $shell = new LocalExternalProcess($host, $huscript_path, 
-            $logfilename, $errfilename);
+        $shell = new LocalExternalProcess($host,
+                                          $huscript_path, 
+                                          $logfilename,
+                                          $errfilename);
     else
-        $shell = new ExternalProcess($host, $huscript_path, 
-            $logfilename, $errfilename);
+        $shell = new ExternalProcess($host,
+                                     $huscript_path, 
+                                     $logfilename,
+                                     $errfilename);
+    
     return $shell;
 }
 
@@ -134,6 +141,16 @@ class ExternalProcess {
     }
 
     /*!
+     \brief   Destructor: Valid from PHP 5 on. Gets called when there are no
+                          other references to a particular object, or in any
+                          order during the shutdown sequence (see php.net).
+    */
+    public function __destruct() {
+        $this->release();
+    }
+    
+
+    /*!
       \brief	Checks whether an Huygens Process with given Process IDentifier
               exists
       \param	$pid	Process identifier as returned by the OS
@@ -226,10 +243,11 @@ class ExternalProcess {
       \return 		true if the shell started successfully, false otherwise
     */
     public function runShell() {
-        global $huygens_user;
 
         $this->shell = proc_open("bash", $this->descriptorSpec, $this->pipes);
-        if (!is_resource($this->shell)) {
+        
+        if (!is_resource($this->shell) || !$this->shell) {
+            $this->release();
             return False;
         }
         return True;
@@ -330,13 +348,14 @@ class ExternalProcess {
         return $answer;
     }
 
+        /************* OBSOLETE? *************/
     /*!
       \brief	Reads from STDOUT (the log file)
       \return 	the read buffer
     */
-    public function read() {
-        return fgets($this->pipes[1], 2048);
-    }
+//     public function read() {
+//         return fgets($this->pipes[1], 2048);
+//     }
 
     /*!
       \brief	Runs the Huygens template with a given name in the shell
@@ -350,7 +369,6 @@ class ExternalProcess {
         $command = $this->huscript_path . " $hutask \"" . $templateName . "\"";
 
         // TODO better management of file handles
-        //$out_file = fopen($this->descriptorSpec[1][1], "r");
         $this->out_file = fopen($this->descriptorSpec[1][1], "r");
         fseek($this->out_file, 0, SEEK_END);
 
@@ -371,40 +389,50 @@ class ExternalProcess {
 
         return $pid;
     }
-
+    
+        /************* OBSOLETE? *************/
     /*!
       \brief	Check whether a Job with given Process IDentifier is running
       \param	$pid	Process IDentifier of the Job
       \return 	the PID if the Job is running, null otherwise
     */
-    public function isJobWithPidRunning($pid) {
-        $command = "ps -p $pid; ps -p $pid \n"; // -p
-        $this->execute($command);
-        $answer = '';
-        $pipe = fopen($this->descriptorSpec[1][1], "r");
-        fseek($pipe, 0, SEEK_END);
-        $line = fgets($pipe, 1024);
-        $answer = $answer . $line;
-        if (!feof($pipe)) {
-            $line = fgets($pipe, 1024);
-            $answer = $answer . $line;
-        }
-        $result = (strstr($answer, "\n" . $pid . " "));
-        return $result;
-    }
+//     public function isJobWithPidRunning($pid) {
+//         $command = "ps -p $pid; ps -p $pid \n"; // -p
+//         $this->execute($command);
+//         $answer = '';
+//         $pipe = fopen($this->descriptorSpec[1][1], "r");
+//         fseek($pipe, 0, SEEK_END);
+//         $line = fgets($pipe, 1024);
+//         $answer = $answer . $line;
+//         if (!feof($pipe)) {
+//             $line = fgets($pipe, 1024);
+//             $answer = $answer . $line;
+//         }
+//         $result = (strstr($answer, "\n" . $pid . " "));
+//         return $result;
+//     }
 
     /*!
       \brief	Releases all files and pipes and closes the shell
     */
     public function release() {
-        // close pipes
-        fclose($this->pipes[0]);
-        // TODO check why stdout and stderr are not closed
-        @fclose($this->pipes[1]);
-        @fclose($this->pipes[2]);
-        // TODO better management of file handles
-        @fclose($this->out_file);
-        $result = proc_close($this->shell);
+
+            /* TODO better management of file handles. */
+        
+            /* Close pipes. Check first if they are proper handlers. If, for
+             example, opening them did not work out, the handlers won't exist. */
+        if (is_resource($this->pipes[0])) {
+            fclose($this->pipes[0]);
+        }
+        
+        if (is_resource($this->out_file)) {
+            fclose($this->out_file);
+        }
+
+        if (is_resource($this->shell)) {
+            $result = proc_close($this->shell);
+        }
+        
         report("released external process", 2);
     }
 
@@ -420,6 +448,7 @@ class ExternalProcess {
         if ($result) {
             $result = $result && $this->execute($command);
         }
+        
         return $result;
     }
 
@@ -554,31 +583,35 @@ class LocalExternalProcess extends ExternalProcess {
     public function runShell() {
 
         $this->shell = proc_open("sh", $this->descriptorSpec, $this->pipes);
-        if (!is_resource($this->shell)) {
+        
+        if (!is_resource($this->shell) || !$this->shell) {
+            $this->release();
             return False;
         }
+        
         return True;
     }
 
+        /************* OBSOLETE? *************/
     /*!
       \brief	Check whether a Job with given Process IDentifier is running
       \param	$pid	Process IDentifier of the Job
       \return 	the PID if the Job is running, null otherwise
     */
-    public function isJobWithPidRunning($pid) {
-        $command = "ps -p $pid; ps -p $pid \n";
-        $this->execute($command);
-        $answer = '';
-        $pipe = $this->pipes[1];
-        $line = fgets($pipe, 1024);
-        $answer = $answer . $line;
-        if (!feof($pipe)) {
-            $line = fgets($pipe, 1024);
-            $answer = $answer . $line;
-        }
-        $result = (strstr($answer, "\n" . $pid . " "));
-        return $result;
-    }
+//     public function isJobWithPidRunning($pid) {
+//         $command = "ps -p $pid; ps -p $pid \n";
+//         $this->execute($command);
+//         $answer = '';
+//         $pipe = $this->pipes[1];
+//         $line = fgets($pipe, 1024);
+//         $answer = $answer . $line;
+//         if (!feof($pipe)) {
+//             $line = fgets($pipe, 1024);
+//             $answer = $answer . $line;
+//         }
+//         $result = (strstr($answer, "\n" . $pid . " "));
+//         return $result;
+//     }
 
     /*!
       \brief	Kill the Huygens process with the given Process IDentifier and 

@@ -17,11 +17,15 @@ HRM_DEST="huygens_dst"
 
 # User with rights to run /bin/mkdir, /bin/chown,
 # /bin/chmod and /bin/rm on the file manager for
-# user management - leave empty if apache has
+# user management - leave empty if the queue
+# manager is run by the web server user and has
 # read/write access to the fileserver and thus
 # does not need to sudo these commands
-SUSER="apache"
+SUSER="hrm"
 
 # HRM log directory
 HRM_LOG="/var/log/hrm"
 
+# Interaction with OMERO (if switched on in hrm/config).
+OMERO_SERVER_USER="omero"
+OMERO_HOME="/path/to/OMERO.server"

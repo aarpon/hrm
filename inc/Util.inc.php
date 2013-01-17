@@ -323,6 +323,7 @@ function report($text, $level) {
     $text = date("Y-m-d H:i:s") . " " . $text;
     $logpath = $logdir . "/" . $logfile;
 
+    // First rotate the log file if necessary.
     if (file_exists($logpath)
             && (filesize($logpath) > $logfile_max_size * 1000 * 1000)) {
         if (file_exists($logpath . ".old")) {
@@ -330,7 +331,12 @@ function report($text, $level) {
         }
         rename($logpath, $logpath . ".old");
     }
+    
     $file = fopen($logpath, 'a');
+    if ($file === FALSE) {
+      // Cannot write to the log dir (or the file)
+      return;
+    }
     if ($log_verbosity >= $level) {
         fwrite($file, $text);
         fwrite($file, "\n");
@@ -457,7 +463,8 @@ function getMaxFileSize() {
                      (default: true)
   \return if reading was not successful, the function returns false. If reading
           was successful, the function returns the number of read bytes if
-        $retbytes is true, and false otherwise
+          $retbytes is true, and a boolean otherwise (true if the file was 
+          closed successfully, false otherwise).
   \see    http://nl.php.net/manual/en/function.readfile.php#54295
  */
 function readfile_chunked($filename, $retbytes=true) {

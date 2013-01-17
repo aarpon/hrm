@@ -255,16 +255,14 @@ class Job {
         if ($desc->isCompound()) {
             $result = $result && $desc->createSubJobs();
             if ($result) {
-                error_log("created sub jobs");
                 report("created sub jobs", 1);
             }
             if ($result) {
                 $queue = new JobQueue();
                 $result = $result && $queue->removeJob($desc);
                 if ($result)
-                    error_log("removed compound job");
-                report("removed compound job\n", 1);
-                // TODO: check if this does fix compound job processing
+                    report("removed compound job\n", 1);
+                    // TODO: check if this does fix compound job processing
                 $result = False;
             }
         } else {
@@ -388,13 +386,18 @@ class Job {
         
         clearstatcache();
 
-        $this->shell = newExternalProcessFor($this->server(), 
-                                             $this->server() . 
-                                             "_" .$this->id() . "_out.txt", 
-                                             $this->server() .  "_"
-                                             . $this->id(). "_error.txt");
+        $this->shell = newExternalProcessFor(
+            $this->server(), 
+            $this->server() . "_" . $this->id() . "_out.txt", 
+            $this->server() .  "_". $this->id(). "_error.txt");
         $proc = $this->shell;
-        $proc->runShell();
+
+            /* Check whether the shell is ready to accept further execution. If
+             not, the shell will be released internally, no need to release it
+             here. */
+        if (!$proc->runShell()) {
+            return False;
+        }
 
         // Server name without proc number
         $server = $this->server;
@@ -520,7 +523,7 @@ class Job {
         }
     }
 
-                /* -------- Image & Restoration Parameters ------ */
+        /* -------- Image & Restoration Parameters, Scaling factors ------ */
     
     /*!
      \brief       Formats data from the Huygens report file as html output.
@@ -528,24 +531,22 @@ class Job {
      \return      The parameters in a formatted way.
     */
     private function HuReportFile2Html ($reportFile) {
+
+            /* Insert warnings if necessary. */
+        $div   = $this->writeWarning($reportFile);
+        $html  = $this->insertDiv($div);
+
+            /* Insert scaling factors if necessary. */
+        $div   = $this->writeScalingFactorsTable($reportFile);
+        $html .= $this->insertDiv($div,"scaling");
         
-        /* Insert a title and an explanation. */
-        $title = "<b><u>Parameters used during deconvolution</u></b><br /><br />";
-        $text  = "Those parameters that were <b>missing</b> in your ";
-        $text .= "settings are highlighted in <b>green</b>. Alternative <br />";
-        $text .= "values found in the metadata of the image were used ";
-        $text .= "instead, please examine their <b>validity</b>.<br />";
 
-        $div   = $title;
-        $div  .= $text;
-        $html  = $this->writeWarning($reportFile);
-        $html .= $this->insertDiv($div);
-
-        /* Insert the summary tables. */
-        $div   = $this->insertSeparator("");
-        $div  .= $this->writeImageParamTable($reportFile);
-        $div  .= $this->insertSeparator("");
-        $div  .= $this->writeRestoParamTable();
+            /* Insert the summary tables. */
+        
+        $div   = $this->writeImageParamTable($reportFile);
+        $html .= $this->insertDiv($div,"jobParameters");
+        
+        $div   = $this->writeRestoParamTable();
         $html .= $this->insertDiv($div,"jobParameters");
 
         return $html;
@@ -558,7 +559,7 @@ class Job {
     */
     private function writeWarning($reportFile) {
 
-        $warning = "";
+        $micrMismatch = False;
 
         /* Extract data from the file and into the table. */
         $pattern  = "/{Microscope conflict for channel ([0-9]):(.*)}/";
@@ -567,23 +568,92 @@ class Job {
                 continue;
             }
 
-            $channel = $matches[1];
-            $warning .= "<p><b><u>WARNING</u>:</b>";
-            $warning .= " The <b>microscope type</b> selected in this ";
-            $warning .= "deconvolution job <b>may be<br />incorrect</b> as it ";
-            $warning .= "does not match the microscope type stored in the file";
-            $warning .= "<br />metadata. Notice that the restoration process may";
-            $warning .= " lead to <b>wrong results</b><br />if the microscope ";
-            $warning .= "type is not selected properly.";
-            $warning  = $this->insertCell($warning,"text"); 
-            $warning  = $this->insertTable($warning);
-            $warning  = $this->insertDiv($warning,"warning");
-            $warning .= "<br />";
+            $micrMismatch = True;
+            
+            $warning  = "<p><b><u>WARNING</u>:</b>";
+            $warning .= " The <b>microscope type</b> chosen to deconvolve this ";
+            $warning .= "image <b>may not<br />be correct</b>. ";
+            $warning .= "The image metadata claims a different microscope type. ";
+            $warning .= "The<br />restoration process may produce ";
+            $warning .= "<b>wrong results</b> if the microscope type is<br />";
+            $warning .= "not set properly.<br />";
+            
+            $row    = $this->insertCell($warning,"text");
+            $table  = $this->insertRow($row);
+            $div    = $this->insertTable($table);
+            $html   = $this->insertDiv($div,"warning");
+            $html  .= $this->insertSeparator("");
             break;
         }
-
-        return $warning;
+        
+        if ($micrMismatch) {
+            return $html;
+        }
     }
+
+    /*!
+     \brief       Parses the deconvolution output to look for scaling factors.
+     \param       $reportFile An array with the contents of the file.
+     \return      A string with the formatted table.
+    */
+    private function writeScalingFactorsTable($reportFile) {
+
+        $scaling = False;
+        
+            /* Insert a title and an explanation. */
+        $title = "<br /><b><u>Scaling factors summary</u></b>";
+        $text  = "<br /><br />";
+        $text .= "All or some of the image channels were <b>scaled</b>. ";
+        $text .= "Scale factors may be applied during the<br />restoration ";
+        $text .= "to gain dynamic range. Scaling may also occur when the ";
+        $text .= "deconvolved data is<br />exported to a TIFF file.<br /><br />";
+
+            /* Insert the table headers. */
+        $row    = $this->insertCell("Scaling Factors","header",4);
+        $table  = $this->insertRow($row);
+        
+        $row    = $this->insertCell("Factor" ,"param"  );
+        $row   .= $this->insertCell("Channel","channel");
+        $row   .= $this->insertCell("Reason" ,"reason" );
+        $row   .= $this->insertCell("Value"  ,"value"  );
+        $table .= $this->insertRow($row);
+
+            /* Extract data from the file and into the table. */
+        foreach ($reportFile as $reportEntry) {
+
+            $pattern  = "/the image will be multiplied by (.*)\.}}/";
+            if (preg_match($pattern,$reportEntry,$matches)) {
+                $scaling = True;
+                
+                $row    = $this->insertCell("Scaling factor"    ,"cell"); 
+                $row   .= $this->insertCell("All"               ,"cell");
+                $row   .= $this->insertCell("Output file format","cell");
+                $row   .= $this->insertCell($matches[1]         ,"cell");
+                $table .= $this->insertRow($row);
+            }
+
+            $pattern  = "/{Scaling of channel ([0-9]): (.*)}}/";
+            if (preg_match($pattern,$reportEntry,$matches)) {
+                $scaling = True;
+                
+                $row    = $this->insertCell("Scaling factor","cell"); 
+                $row   .= $this->insertCell($matches[1]     ,"cell");
+                $row   .= $this->insertCell("Restoration"   ,"cell");
+                $row   .= $this->insertCell($matches[2]     ,"cell");
+                $table .= $this->insertRow($row);
+            }
+        }
+
+        if ($scaling) {            
+            $div   = $this->insertTable($table);
+            $html  = $this->insertDiv($div,"scaling");
+            $html  = $title . $text . $html;
+            $html .= $this->insertSeparator("");
+            
+            return $html;
+        }
+    }
+    
     
     /*!
      \brief       Parses the Huygens deconvolution output file into a table.
@@ -592,17 +662,26 @@ class Job {
     */
     private function writeImageParamTable($reportFile) {
 
-        /* Insert the column titles. */
+            /* Insert a title and an explanation. */
+        $title = "<br /><b><u>Image parameters summary</u></b>";
+        $text  = "<br /><br />";
+        $text .= "Parameter values that were <b>missing</b> from your ";
+        $text .= "settings are highlighted in <b>green</b>.<br />Alternative ";
+        $text .= "values found in the metadata of the image were used ";
+        $text .= "instead. Please examine<br />their <b>validity</b>.<br />";
+        $text .= "<br />";
+
+            /* Insert the column titles. */
         $row   = $this->insertCell("Image Parameters","header",4);
         $table = $this->insertRow($row);
 
         $row    = $this->insertCell("Parameter","param");
-        $row   .= $this->insertCell("Channel","channel");
-        $row   .= $this->insertCell("Source","source");
-        $row   .= $this->insertCell("Value","value");
+        $row   .= $this->insertCell("Channel"  ,"channel");
+        $row   .= $this->insertCell("Source"   ,"source");
+        $row   .= $this->insertCell("Value"    ,"value");
         $table .= $this->insertRow($row);
      
-        /* Extract data from the file and into the table. */
+            /* Extract data from the file and into the table. */
         $pattern  = "/{Parameter ([a-z]+?) (of channel ([0-9])\s|)(.*) ";
         $pattern .= "(template|metadata): (.*).}}/";
 
@@ -624,24 +703,28 @@ class Job {
                 
             if ($source == "template") {
                 $source = "User defined";
-                $style = "userdef";
+                $style  = "userdef";
             } else {
                 $source = "File metadata";
-                $style = "metadata";
+                $style  = "metadata";
             }
             if ($channel == "") {
                 $channel = "All";
             }
                 
             /* Insert data into the table. */
-            $row  = $this->insertCell($paramText,$style);
-            $row .= $this->insertCell($channel,$style);
-            $row .= $this->insertCell($source,$style);
-            $row .= $this->insertCell($value,$style);
+            $row    = $this->insertCell($paramText,$style);
+            $row   .= $this->insertCell($channel  ,$style);
+            $row   .= $this->insertCell($source   ,$style);
+            $row   .= $this->insertCell($value    ,$style);
             $table .= $this->insertRow($row);
         }
+        
+        $html  = $this->insertTable($table);
+        $html  = $title . $text . $html;
+        $html .= $this->insertSeparator("");
 
-        return $this->insertTable($table);
+        return $html;
     }
 
     /*!
@@ -650,17 +733,21 @@ class Job {
     */
     private function writeRestoParamTable( ) {
 
+            /* Insert a title and an explanation. */
+        $title  = "<br /><b><u>Restoration parameters summary</u></b>";
+        $text   = "<br /><br />";
+        
         /* Retrieve restoration data set by the user. */
-        $taskSettings = $this->jobDescription->taskSetting()->displayString();
+        $taskParameters = $this->jobDescription->taskSettingAsString();
         
         /* Insert the column titles. */
         $row   = $this->insertCell("Restoration Parameters","header",4);
         $table = $this->insertRow($row);
 
         $row    = $this->insertCell("Parameter","param");
-        $row   .= $this->insertCell("Channel","channel");
-        $row   .= $this->insertCell("Source","source");
-        $row   .= $this->insertCell("Value","value");
+        $row   .= $this->insertCell("Channel"  ,"channel");
+        $row   .= $this->insertCell("Source"   ,"source");
+        $row   .= $this->insertCell("Value"    ,"value");
         $table .= $this->insertRow($row);
 
         /* This table contains no metadata. It's all defined by the user. */
@@ -672,7 +759,7 @@ class Job {
 
             $pattern  = "/(.*)$paramName(.*):";
             $pattern .= "\s+([0-9\,\s]+|[a-zA-Z0-9]+\s?[a-zA-Z0-9]*)/";
-            if (!preg_match($pattern,$taskSettings,$matches)) {
+            if (!preg_match($pattern,$taskParameters,$matches)) {
                 continue;
             }
 
@@ -687,9 +774,9 @@ class Job {
 
             /* Insert data into the table. */
             foreach ($paramValues as $paramValue) {
-                $row    = $this->insertCell($paramText,$style);
-                $row   .= $this->insertCell($channel,$style);
-                $row   .= $this->insertCell($source,$style);
+                $row    = $this->insertCell($paramText       ,$style);
+                $row   .= $this->insertCell($channel         ,$style);
+                $row   .= $this->insertCell($source          ,$style);
                 $row   .= $this->insertCell(trim($paramValue),$style);
                 $table .= $this->insertRow($row);    
 
@@ -699,7 +786,10 @@ class Job {
             }
         }
 
-        return $this->insertTable($table);
+        $html = $this->insertTable($table);
+        $html = $title . $text . $html;
+
+        return $html;
     }
 
                        /* -------- Colocalization ------ */
@@ -721,9 +811,6 @@ class Job {
         $text .= "presence of two labeled targets in the same region of the ";
         $text .= "imaged sample.<br /><br />";
 
-        $html  = $title;
-        $html .= $text;
-
             /* Insert dummy 'div' which will be filled up with 'dynamic'
              content in the 'Fileserver' class. */
         $div   = $this->insertDiv("<br /><br />","colocTabs");
@@ -731,8 +818,10 @@ class Job {
             /* Insert the coloc table or tables. Notice that there's one
              table per combination of two channels. */
         $div  .= $this->writeColocTables($reportFile);
-        $html .= $this->insertDiv($div,"colocResults");
-                
+        $html  = $this->insertDiv($div,"colocResults");
+
+        $html  = $title . $text . $html;
+        
         return $html;
     }
 
@@ -798,7 +887,7 @@ class Job {
             /* Extract colocalization coefficients frame by frame. */
         foreach ($frameResults as $frameCnt => $frameResult) {
             
-            $pattern = "/([0-9a-zA-Z]+) {([0-9.]+)}/";
+            $pattern = "/([0-9a-zA-Z]+) {(-?[0-9.]+)}/";
             if (!preg_match_all($pattern, $frameResult, $matches)) {
                 continue;
             }
@@ -818,11 +907,11 @@ class Job {
                             break;
                         case "threshR": 
                             $headerRow .=
-                                $this->insertCell("Thresh. Ch. $chanR","header");
+                                $this->insertCell("Thresh. Ch.$chanR","header");
                             break;
                         case "threshG":
                             $headerRow .=
-                                $this->insertCell("Thresh. Ch. $chanG","header");
+                                $this->insertCell("Thresh. Ch.$chanG","header");
                             break;
                         default:
                             $headerRow .= $this->insertCell($parameter,"header");
@@ -844,7 +933,7 @@ class Job {
                         break;
                     default:
                         $frameRow .=
-                            $this->insertCell(round($value,4),"coefficient");
+                            $this->insertCell(round($value,3),"coefficient");
                 }
             }
             
@@ -876,6 +965,23 @@ class Job {
     }
 
     /* ---------------------- HTML formatting utilities --------------------- */
+
+    /* The standard followed above builds html code using functions that
+     create little html 'widgets' and which build up into larger ones.
+     
+     For example:
+     cell   = "contents"
+     row   .= insertCell(cell)
+     table .= insertRow(row)
+     div    = insertTable(table)
+     html   = insertDiv(div)
+
+     Notice that the variable names are chosen to keep larger widgets on the
+     left hand side of the '=' and smaller widgets on the right hand side.
+     The fictious widget 'html' being the largest one.
+    */
+
+    
 
     /*!
      \brief       Adds a new cell to an html table.

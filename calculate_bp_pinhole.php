@@ -214,7 +214,7 @@ function start() {
 
     echo "<h4>Please choose a microscope from the following list:</h4>";
     
-   echo "\n<ul>";
+    echo "\n<ul>";
 
     $script = $_SERVER['PHP_SELF'];
 
@@ -268,6 +268,9 @@ function form($error=false,$imglink="") {
 global $params, $reportparams, $ref, $help, $rtag, $ru;
 global $a, $b, $c, $d, $u, $param, $wl, $na, $mo, $msys, $micro, $units ;
 global $cmsys, $table, $extra1, $txt1, $extra2, $txt2, $checked1, $checked2;
+
+        // Initialize message
+        $message = "";
 
         if ($error) print $error . "<br><br>";
         print "\n<h2>".str_replace("_"," ",$micro)."</h2>";
@@ -572,8 +575,6 @@ include("header.inc.php");
 </div>
 <?php
 echo "<div id=\"content\"> <h3>Backprojected pinhole calculator</h3>";
-
-$message = "";
 
 switch($task) {
     case 'calc':

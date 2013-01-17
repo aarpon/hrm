@@ -165,7 +165,8 @@ include("header.inc.php");
 
     <div id="content">
 
-        <h3>Registration</h3>
+        <h3><img alt="Analysis" src="./images/registration_title.png" width="40"/>
+            &nbsp;&nbsp;Registration</h3>
 
 <?php
 
@@ -176,63 +177,68 @@ if (!$processed) {
 
             <div id="adduser">
 
-                <label for="username">*Username: </label>
+              <div>
+                <label for="username">* Username: </label>
                 <input type="text" 
                        name="username"
                        id="username"
                        maxlength="30"
                        value="<?php echo $clean["username"] ?>" />
 
-                <br />
+              </div>
 
-                <label for="email">*E-mail address: </label>
+              <div>
+                <label for="email">* E-mail address: </label>
                 <input type="text" 
                        name="email"
                        id="email"
                        maxlength="80"
                        value="<?php echo $clean["email"] ?>" />
-
-                <br />
-
-                <label for="group">*Research group: </label>
+              </div>
+              
+              <div>
+                <label for="group">* Research group: </label>
                 <input type="text" 
                        name="group"
                        id="group"
                        maxlength="30"
                        value="<?php echo $clean["group"] ?>" />
 
-                <br />
+              </div>
 
-                <label for="pass1">*Password: </label>
+              <div>
+                <label for="pass1">* Password: </label>
                 <input type="password" 
                        name="pass1"
                        id="pass1" />
 
-                <br />
+              </div>
 
-                <label for="pass2">*(verify) Password: </label>
+              <div>
+                <label for="pass2">* (verify) Password: </label>
                 <input type="password" 
                        name="pass2"
                        id="pass2" />
 
-                <br />
-
+              </div>
+              
+              <div>
                 <label for="note">Request message:</label>
                 <textarea name="note" 
                           id="note"
                           rows="3"
                           cols="30"><?php echo $clean["note"] ?>
                 </textarea>
+              </div>
+          
+              <div>
+                <input name="OK"
+                       type="submit"
+                       value="register" />
 
-                <div>
-                    <input name="OK"
-                           type="submit"
-                           value="register"
-                           class="button" />
-                </div>
-
-            </div>
-        </form>
+              </div>
+        </div>
+     </form>
 <?php
 
 }

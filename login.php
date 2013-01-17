@@ -82,9 +82,9 @@ if ( isset( $_POST['password'] ) && isset( $_POST['username'] ) ) {
 			if ($tentativeUser ->isLoggedIn()) {
 				// Make sure that the user source and destination folders exist
 				{
-					$fileServer = new FileServer( $clean['username'] );
+                    $fileServer = new FileServer( $clean['username'] );
 					if ( $fileServer->isReachable() == false ) {
-						shell_exec("bin/hrm create " . $clean['username'] );
+						shell_exec($userManager . " create " . $clean['username']);
 					}
 				}
 
@@ -165,7 +165,7 @@ include("header.inc.php");
 </ul>
 </div>
 
-<div id="content"><?php
+<div id="welcome"><?php
 // Check that the database is reachable
 $db   = new DatabaseConnection( );
 if ( !$db->isReachable( ) ) {
@@ -205,6 +205,14 @@ if ( System::isDBUpToDate( ) == false ) {
   				  "until this issue has been fixed.</p>";
 	echo "<p>Only the administrator can login.</p></div>";
 }
+// Check that HuCore has a valid license
+if ( System::hucoreHasValidLicense( ) == false ) {
+	echo "<div class=\"dbOutDated\">Warning: no valid HuCore license found!\n";
+	echo "<p>Please contact the administrator.</p></div>";
+    echo "</div>\n";
+	include("footer.inc.php");
+	return;
+}
 ?>
 <h2>Welcome</h2>
 
@@ -227,30 +235,80 @@ deconvolution.</p>
     }
 ?>
 
-<div id="logos">
-<div class="logo-fmi"><a
-	href="javascript:openWindow('http://www.fmi.ch')"><img
-	src="images/logo_fmi.png" alt="FMI" /></a>
-<p>Friedrich Miescher Institute</p>
-<p><a href="javascript:openWindow('http://www.fmi.ch/faim')">Facility
-for Advanced Imaging and Microscopy</a></p>
-</div>
-<div class="logo-mri"><a
-	href="javascript:openWindow('http://www.mri.cnrs.fr')"><img
-	src="images/logo_mri.png" alt="MRI" />
-<p>Montpellier RIO Imaging</p></a>
-</div>
-<div class="logo-epfl"><a
-	href="javascript:openWindow('http://www.epfl.ch')"><img
-	src="images/logo_epfl.png" alt="EPFL" /></a>
-<p>Federal Institute of Technology - Lausanne</p>
-<p><a href="javascript:openWindow('http://biop.epfl.ch')">BioImaging and
-Optics platform</a></p>
-</div>
-</div>
+<h2>Collaborators</h2>
 
+<div  id="logos">
+  
+  <!-- First row -->
+  <table class="firstRow">
+    
+    <!-- Logos -->
+    <tr>
+      <td class="epfl"
+          onclick="javascript:openWindow('http://biop.epfl.ch')" >
+      </td>
+      <td class="mri"
+          onclick="javascript:openWindow('http://www.mri.cnrs.fr')" >
+      </td>
+      <td class="svi"
+          onclick="javascript:openWindow('http://www.svi.nl')" >
+      </td>
+    </tr>
+      
+    <!-- Captions -->
+    <tr class="caption">
+      <td>
+        EPF Lausanne<br />
+        <a href="javascript:openWindow('http://biop.epfl.ch')">
+          BioImaging and Optics platform
+        </a>
+      </td>
+      <td>
+        Montpellier RIO Imaging
+      </td>
+      <td>
+        Scientific Volume Imaging
+      </td>
+    </tr>
+      
+  </table>
+    
+  <!-- Second row -->  
+  <table class="secondRow">
+      
+    <!-- Logos -->
+    <tr>
+      <td class="blank">&nbsp;</td>
+      <td class="fmi"
+          onclick="javascript:openWindow('http://www.fmi.ch')" >
+      </td>
+      <td class="bsse"
+          onclick="javascript:openWindow('http://www.bsse.ethz.ch')" >
+      </td>
+      <td class="blank">&nbsp;</td>
+    </tr>
+
+    <!-- Captions -->
+    <tr class="caption">
+      <td class="blank">&nbsp;</td>
+      <td>
+        Friedrich Miescher Institute<br />
+        <a href="javascript:openWindow('http://www.fmi.ch/faim')">
+          Facility for Advanced Imaging and Microscopy
+        </a>
+      </td>
+      <td>
+        ETH Zurich<br />
+        Single-Cell Unit
+      </td>
+      <td class="blank">&nbsp;</td>
+    </tr>
+
+  </table>
+    
 </div>
-<!-- content -->
+</div>
+<!-- welcome -->
 
 <div id="rightpanel">
 <p />
@@ -262,26 +320,47 @@ Optics platform</a></p>
                'http://www.svi.nl/HuygensRemoteManagerHelpLogin')">
                 <img src="images/help.png" alt="?" /></a> Login
         </legend>
-    <?php
-        if ($authenticateAgainst == "MYSQL") {
-            $login_message = "<p class=\"expl\">" .
-                    "If you do not have an account, please register " .
-                    "<a href=\"registration.php\">here</a>.</p>";
-        } else {
-            $login_message = "<p class=\"expl\">Please enter your ".
-                    "credentials.</p>";
-        }
-        echo $login_message;
-    ?>
-        <label for="username">Username:</label>
+        
+        <p class="expl">Please enter your credentials.</p>
+
+        <label for="username">Username</label><br />
         <input id="username" name="username" type="text" class="textfield"
                tabindex="1" /> <br />
-        <label for="password">Password:</label>
+        <label for="password">Password</label><br />
         <input id="password" name="password" type="password" class="textfield"
                tabindex="2" /> <br />
         <input type="hidden" name="request" value="<?php echo $req ?>" />
         <input type="submit" class="button" value="login" />
     </fieldset>
+    
+    <?php
+       if ($authenticateAgainst == "MYSQL") {
+    ?>
+    <fieldset>
+        <legend>
+            <a href="javascript:openWindow(
+               'http://www.svi.nl/HuygensRemoteManagerHelpRegistration')">
+                <img src="images/help.png" alt="?" /></a> Registration
+        </legend>
+                
+        <div id="login_registration">
+           <table>
+            <tr>
+             <td class="icon" onclick="document.location.href='registration.php'" >
+             </td>
+             <td class="text">
+               <b>No HRM account yet?</b><br />
+               Please register <a href="registration.php">here</a>.
+             </td>
+            </tr>
+           </table>
+        </div>
+    
+    </fieldset>
+    <?php
+        }
+    ?>
+
 </form>
 </div>
 

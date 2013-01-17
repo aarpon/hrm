@@ -6,7 +6,7 @@ require_once("./inc/User.inc.php");
 require_once("./inc/Parameter.inc.php");
 require_once("./inc/Setting.inc.php");
 require_once("./inc/SettingEditor.inc.php");
-require_once("./inc/Util.inc.php");
+require_once("./inc/System.inc.php");
 
 global $enableUserAdmin;
 
@@ -29,6 +29,23 @@ if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
 if (!isset($_SESSION['taskeditor'])) {
   $_SESSION['taskeditor'] = new TaskSettingEditor($_SESSION['user']);
 }
+
+if (System::hasLicense("coloc")) {
+    $numberSteps   = 5;
+    $goNextMessage = " - Analysis parameters.";
+} else {
+    $numberSteps = 4;
+    $goNextMessage = " - Create job.";
+}
+
+$currentStep  = 3;
+$previousStep = $currentStep - 1;
+$nextStep     = $currentStep + 1;
+
+$goBackMessage  = " - Image parameters.";
+$goBackMessage  = "Go back to step $previousStep/$numberSteps" . $goBackMessage;
+
+$goNextMessage  = "Continue to step $nextStep/$numberSteps" . $goNextMessage;
 
 // add public setting support
 if (!$_SESSION['user']->isAdmin()) {
@@ -91,7 +108,7 @@ else if ( isset($_POST['annihilate']) &&
 }
 else if (isset($_POST['OK']) && $_POST['OK']=="OK" ) {
   if (!isset($_POST['task_setting'])) {
-    $message = "Please select some processing parameters";
+    $message = "Please select some restoration parameters";
   }
   else {
     $_SESSION['task_setting'] =
@@ -108,11 +125,18 @@ else if (isset($_POST['OK']) && $_POST['OK']=="OK" ) {
         'SignalNoiseRatio' )->check();
     $ok = $ok && $_SESSION['task_setting']->parameter(
         'BackgroundOffsetPercent' )->check();
-    
+
+    // If there's no coloc license the analysis stage is skipped. A default
+    // (switched-off coloc) analysis setting will be created.
     if ($ok) {
-      header("Location: " . "select_images.php"); exit();
+        if (System::hasLicense("coloc")) {
+            header("Location: " . "select_analysis_settings.php"); exit();
+        } else {
+            $_SESSION['analysis_setting'] = new AnalysisSetting();            
+            header("Location: " . "create_job.php"); exit();
+        }
     }
-    $message = "The number of channels in the selected processing " .
+    $message = "The number of channels in the selected restoration " .
       "parameters does not match the number of channels in the image " .
       "parameters. Please fix this!";
   }
@@ -126,33 +150,33 @@ include("header.inc.php");
     <!--
       Tooltips
     -->
-    <span id="ttSpanCreate">
+    <span class="toolTip" id="ttSpanCreate">
         Create a new parameter set with the specified name.
     </span>
-    <span id="ttSpanEdit">
+    <span class="toolTip" id="ttSpanEdit">
         Edit the selected parameter set.
     </span>
-    <span id="ttSpanClone">
+    <span class="toolTip" id="ttSpanClone">
         Copy the selected parameter set to a new one with the
       specified name.
     </span>
-    <span id="ttSpanDelete">
+    <span class="toolTip" id="ttSpanDelete">
         Delete the selected parameter set.
     </span>
     <?php
       if (!$_SESSION['user']->isAdmin()) {
         ?>
-        <span id="ttSpanDefault">
+        <span class="toolTip" id="ttSpanDefault">
             Sets (or resets) the selected parameter set as the default one.
         </span>
-        <span id="ttSpanCopyTemplate">
+        <span class="toolTip" id="ttSpanCopyTemplate">
             Copy a template.
         </span>
-        <span id="ttSpanBack">
-            Go back to step 1/4 - Image parameters.
+        <span class="toolTip" id="ttSpanBack">
+        <?php echo $goBackMessage; ?>
         </span>
-        <span id="ttSpanForward">
-            Continue to step 3/4 - Select images.
+        <span class="toolTip" id="ttSpanForward">
+        <?php echo $goNextMessage; ?>
         </span>
     <?php
       }
@@ -167,9 +191,9 @@ include("header.inc.php");
             <?php
             if ( !$_SESSION['user']->isAdmin()) {
             ?>
-            <li><a href="file_manager.php">
-                    <img src="images/filemanager_small.png" alt="file manager" />
-                    &nbsp;File manager
+            <li><a href="file_management.php?folder=src">
+                    <img src="images/rawdata_small.png" alt="raw" />
+                    &nbsp;Raw images
                 </a>
             </li>
             <?php
@@ -198,14 +222,17 @@ include("header.inc.php");
 if ($_SESSION['user']->isAdmin()) {
 
 ?>
-        <h3>Processing parameters</h3>
+        <h3>Restoration parameters</h3>
 <?php
 
 }
 else {
 
 ?>
-        <h3>Step 2/4 - Processing parameters</h3>
+        <h3><img alt="Restoration" src="./images/restoration.png"
+        width="40"/>&nbsp;&nbsp;Step
+        <?php echo $currentStep . "/" . $numberSteps; ?>
+         - Restoration parameters</h3>
 <?php
 
 }
@@ -217,7 +244,7 @@ if (!$_SESSION['user']->isAdmin()) {
         <form method="post" action="">
         
             <fieldset>
-              <legend>Template processing parameters</legend>
+              <legend>Template restoration parameters</legend>
               <p class="message_small">
                   These are the parameter sets prepared by your administrator.
               </p>
@@ -229,9 +256,10 @@ if (!$_SESSION['user']->isAdmin()) {
   if (sizeof($settings) == 0) $flag = " disabled=\"disabled\"";
 
 ?>
-                    <select name="public_setting"
-                        onchange="getParameterListForSet('task_setting', $(this).val(), true);"
-                        size="5"<?php echo $flag ?>>
+<select name="public_setting"
+     onclick="ajaxGetParameterListForSet('task_setting', $(this).val(), true);"
+     onchange="ajaxGetParameterListForSet('task_setting', $(this).val(), true);"
+     size="5"<?php echo $flag ?>>
 <?php
 
   if (sizeof($settings) == 0) {
@@ -272,11 +300,11 @@ if (!$_SESSION['user']->isAdmin()) {
             
               <?php
                 if ($_SESSION['user']->isAdmin()) {
-                  echo "<legend>Template processing parameters</legend>";
+                  echo "<legend>Template restoration parameters</legend>";
                   echo "<p class=\"message_small\">Create template parameter " .
                     "sets visible to all users.</p>";
                 } else {
-                  echo "<legend>Your processing parameters</legend>";
+                  echo "<legend>Your restoration parameters</legend>";
                   echo "<p class=\"message_small\">These are your (private) " .
                     "parameter sets.</p>";
                 }
@@ -291,9 +319,10 @@ $flag = "";
 if (sizeof($settings) == 0) $flag = " disabled=\"disabled\"";
 
 ?>
-                    <select name="task_setting"
-                        onchange="getParameterListForSet('task_setting', $(this).val(), false);"
-                        size="<?php echo $size ?>"
+<select name="task_setting"
+    onclick="ajaxGetParameterListForSet('task_setting', $(this).val(), false);"
+    onchange="ajaxGetParameterListForSet('task_setting', $(this).val(), false);"
+    size="<?php echo $size ?>"
                         <?php echo $flag ?>>
 <?php
 
@@ -411,21 +440,21 @@ if (!$_SESSION['user']->isAdmin()) {
     <?php    
 	if (!$_SESSION['user']->isAdmin()) {
       echo "<p>In this step, you are asked to specify all parameters relative
-        to the processing of your images.</p>";
+        to the restoration of your images.</p>";
 	} else {
 	  echo "<p>Here, you can create template parameters relative to the
-      processing procedure.</p>";
+      restoration procedure.</p>";
 	}
 	?>
-      <p>These are the choice of the deconvolution algorithm, the 
-      signal-to-noise ratio, the background estimation mode and the
-      stopping criteria.</p>
+        <p>These are the choice of the deconvolution algorithm and its options
+        (signal-to-noise ratio, background estimation mode and stopping 
+        criteria).</p>
 
     <?php        
 	if (!$_SESSION['user']->isAdmin()) {
-      echo "<p>'Template processing parameters' created by your facility
-        manager can be copied to the list of 'Your processing parameters' and
-        adapted to fit your processing needs.</p>";
+      echo "<p>'Template restoration parameters' created by your facility
+        manager can be copied to the list of 'Your restoration parameters' and
+        adapted to fit your restoration needs.</p>";
 	} else {
 	  echo "<p>The created templates will be visible for the users in an
       additional selection field from which they can be copied to the user's

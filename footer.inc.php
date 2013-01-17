@@ -19,6 +19,8 @@ $loggedIn = ( isset($_SESSION['user'] ) && $_SESSION['user']->isLoggedIn( ) );
                     "\"Tip('Login to see contact information.' )\" " .
 					"onmouseout=\"UnTip()\">Volker Baecker</span>";
 		?>
+        and released under the terms of the 
+        <a href="http://huygens-rm.org/home/?q=node/26">CeCILL license</a>
 		<br />extended 2006-2012 by
 		<?php
 			if ( $loggedIn == true ) {
@@ -54,7 +56,7 @@ $loggedIn = ( isset($_SESSION['user'] ) && $_SESSION['user']->isLoggedIn( ) );
 		?> &amp;
 		<?php
 			if ( $loggedIn == true ) {
-				echo '<a href="mailto:aaron.ponti@fmi.ch">Aaron Ponti</a>';
+				echo '<a href="mailto:aaron.ponti@bsse.ethz.ch">Aaron Ponti</a>';
 			} else
 				echo "<span onmouseover=" .
                     "\"Tip('Login to see contact information.' )\" " .
@@ -74,9 +76,11 @@ $loggedIn = ( isset($_SESSION['user'] ) && $_SESSION['user']->isLoggedIn( ) );
                 src="images/valid-css21.png" alt="Valid CSS!" />
 		</a>
     </div>
-    
-</div> <!-- basket -->
+
+    </div> <!-- basket -->
 
 </body>
 
 </html>
+
+    

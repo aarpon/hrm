@@ -56,7 +56,7 @@ function release() {
 
     var element = document.getElementById('geometry');
     element.style.color = 'black';
-    var element = document.getElementById('channels');
+    element = document.getElementById('channels');
     element.style.color = 'black';
 }
 
@@ -147,7 +147,6 @@ function switchColocMode() {
         $('#ColocCoefficientSelectionDiv').hide();
         $('#ColocThresholdSelectionDiv').hide();
         $('#ColocMapSelectionDiv').hide();
-
     }
 }
 
@@ -225,7 +224,7 @@ function retrieveValues( ignore ) {
     // Make sure 'ignore' is an array if not undefined
     if ( !( ignore === undefined ) ) {
         if ( !( ignore instanceof Array ) ) {
-            var ignore = new Array( ignore );
+            ignore = new Array( ignore );
         }
     }
     // Select fields

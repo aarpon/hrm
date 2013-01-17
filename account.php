@@ -152,11 +152,12 @@ if (isset($_POST['modify'])) {
 
 include("header.inc.php");
 ?>
+
 <!--
   Tooltips
 -->
-<span id="ttSpanCancel">Discard changes and go back to your home page.</span>
-<span id="ttSpanSave">Save the changes.</span>
+<span class="toolTip" id="ttSpanCancel">Discard changes and go back to your home page.</span>
+<span class="toolTip" id="ttSpanSave">Save the changes.</span>
 
 <div id="nav">
     <ul>
@@ -180,7 +181,8 @@ include("header.inc.php");
 
 <div id="content">
 
-    <h3>Your account</h3>
+    <h3><img alt="SelectImages" src="./images/account_title.png"
+              width="40"/>&nbsp;Your account</h3>
 
     <form method="post" action="" id="useraccount">
 
@@ -250,21 +252,21 @@ include("header.inc.php");
 <?php
             $referer = $_SESSION['referer'];
 ?>
-
-            <div id="controls">
-                <input type="button" name="cancel" value=""
-                       class="icon cancel"
-                       onmouseover="TagToTip('ttSpanCancel' )"
-                       onmouseout="UnTip()"
-                       onclick="document.location.href='<?php echo $referer ?>'" />
-                <input type="button" name="save" value=""
-                       class="icon save"
-                       onmouseover="TagToTip('ttSpanSave' )"
-                       onmouseout="UnTip()"
-                       onclick="document.forms['useraccount'].submit()" />
-            </div>
-
         </div>
+        
+        <div id="controls">
+            <input type="button" name="cancel" value=""
+                   class="icon cancel"
+                   onmouseover="TagToTip('ttSpanCancel' )"
+                   onmouseout="UnTip()"
+                   onclick="document.location.href='<?php echo $referer ?>'" />
+            <input type="button" name="save" value=""
+                   class="icon save"
+                   onmouseover="TagToTip('ttSpanSave' )"
+                   onmouseout="UnTip()"
+                   onclick="document.forms['useraccount'].submit()" />
+        </div>
+
     </form>
 
 </div> <!-- content -->
@@ -287,6 +289,8 @@ include("header.inc.php");
 
 </div> <!-- rightpanel -->
 
-        <?php
-            include("footer.inc.php");
-        ?>
+<?php
+
+include("footer.inc.php");
+
+?>

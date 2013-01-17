@@ -162,16 +162,13 @@ if ( $nyquist === false ) {
 } else {
   $NyquistMessage = "Calculated from current optical parameters, the " .
 	"(Nyquist) ideal pixel size is <span style=\"background-color:yellow\">" .
-	$nyquist[0] . " nm</span>";
-  if ($_SESSION['setting']->isThreeDimensional() ) {
-	$NyquistMessage .=
-	  " and the ideal z-step is <span style=\"background-color:yellow\">" .
-	  $nyquist[1] . " nm</span>";
-  }
-  $NyquistMessage .= ".";
+	$nyquist[0] . " nm</span> ".
+	  "and the ideal z-step is <span style=\"background-color:yellow\">" .
+	  $nyquist[1] . " nm</span>.";
 }
 
 ?>
+
     <!--
       Tooltips
     -->
@@ -179,7 +176,7 @@ if ( $nyquist === false ) {
       if ( $_SESSION['setting']->isWidefield() ||
               $_SESSION['setting']->isMultiPointConfocal() ) {
     ?>
-    <span id="ttSpanPixelSizeFromCCD">
+    <span class="toolTip" id="ttSpanPixelSizeFromCCD">
         Calculate the image pixel size from the CCD pixel size.
     </span>
     <?php
@@ -188,26 +185,26 @@ if ( $nyquist === false ) {
     <?php
       if ( $_SESSION['setting']->isMultiPointOrSinglePointConfocal() ) {
     ?>
-    <span id="ttSpanPinholeRadius">
+    <span class="toolTip" id="ttSpanPinholeRadius">
         Calculate the back-projected pinhole radius for your microscope.
     </span>
     <?php
         if ($_SESSION['setting']->isNipkowDisk()) {
     ?>
-    <span id="ttSpanPinholeSpacing">
+    <span class="toolTip" id="ttSpanPinholeSpacing">
         Calculate the back-projected pinhole spacing for your microscope.
     </span>
     <?php
       }
     }
     ?>
-    <span id="ttSpanNyquist">
+    <span class="toolTip" id="ttSpanNyquist">
         Check your sampling with the online Nyquist calculator.
     </span>
-    <span id="ttSpanBack">
+    <span class="toolTip" id="ttSpanBack">
         Go back to previous page.
     </span>
-    <span id="ttSpanCancel">
+    <span class="toolTip" id="ttSpanCancel">
         Abort editing and go back to the image parameters selection page.
         All changes will be lost!
     </span>
@@ -215,14 +212,14 @@ if ( $nyquist === false ) {
         if ( $saveToDB == true ) {
             $iconClass = "icon save";
     ?>
-        <span id="ttSpanForward">
+        <span class="toolTip" id="ttSpanForward">
             Save and return to the image parameters selection page.
         </span>
     <?php
         } else {
             $iconClass = "icon next";
     ?>
-        <span id="ttSpanForward">Continue to next page.</span>
+        <span class="toolTip" id="ttSpanForward">Continue to next page.</span>
     <?php
     }
     ?>
@@ -244,7 +241,7 @@ if ( $nyquist === false ) {
 
     <div id="content">
 
-        <h3>Optical parameters / 2</h3>
+        <h2>Optical parameters / 2</h2>
 
         <form method="post" action="capturing_parameter.php" id="select">
 
@@ -310,11 +307,6 @@ $textForCaptorSize = "pixel size (nm)";
                   }
             ?>
                     </li>
-<?php
-
-if ($_SESSION['setting']->isThreeDimensional()) {
-
-?>
 
                     <li>
                         z-step (nm):
@@ -335,13 +327,10 @@ if ($_SESSION['setting']->isThreeDimensional()) {
                           type="text"
                           size="5"
                           value="<?php echo $parameterZStepSize->value() ?>" />
+                        <span class="message_small">&nbsp;
+                            Set to <b>1</b> for 2D datasets.
+                        </span>
                     </li>
-
-<?php
-
-}
-
-?>
 
                 </ul>
 
@@ -363,12 +352,6 @@ if ($_SESSION['setting']->isThreeDimensional()) {
                 &nbsp;
             </p>
 			</fieldset>
-
-<?php
-
-if ($_SESSION['setting']->isTimeSeries()) {
-
-?>
 
     <?php
 
@@ -398,6 +381,9 @@ if ($_SESSION['setting']->isTimeSeries()) {
                        type="text"
                        size="5"
                        value="<?php echo $parameterTimeInterval->value() ?>" />
+                <span class="message_small">&nbsp;
+                    Set to <b>1</b> if you do not have a time series.
+                </span>
               </li>
             </ul>
 
@@ -410,11 +396,6 @@ if ($_SESSION['setting']->isTimeSeries()) {
             </p>
 
             </fieldset>
-<?php
-
-}
-
-?>
 
 <?php
 
@@ -611,6 +592,23 @@ if ($_SESSION['setting']->isNipkowDisk()) {
 
 		  </div>
 
+      <?php
+              if ( !$_SESSION["user"]->isAdmin() ) {
+      ?>
+                  
+            <div class="requirements">                
+               Parameter requirements<br />adapted for <b>  
+               <?php
+               $fileFormat = $_SESSION['setting']->parameter( "ImageFileFormat" );
+               echo $fileFormat->value();
+               ?>
+               </b> files
+            </div>
+      
+      <?php
+              }
+      ?>
+      
         </div>
 
         <div id="message">

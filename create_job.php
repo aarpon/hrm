@@ -24,6 +24,21 @@ if (!isset($_SESSION['fileserver'])) {
   $_SESSION['fileserver'] = new Fileserver($name);
 }
 
+if (System::hasLicense("coloc")) {
+    $currentStep   = 5;
+    $goBackLink    = "select_analysis_settings.php";
+    $goBackMessage = "Analysis parameters.";
+} else {
+    $currentStep   = 4;
+    $goBackLink    = "select_task_settings.php";
+    $goBackMessage = "Processing parameters.";
+}
+
+$previousStep   = $currentStep - 1;
+$goBackMessage  = "Go back to step $previousStep/$currentStep - " . $goBackMessage;
+
+
+
 $message = "";
 
 if (isset($_POST['create'])) {
@@ -36,7 +51,9 @@ if (isset($_POST['create'])) {
     $job = new JobDescription();
     $job->setParameterSetting($_SESSION['setting']);
     $job->setTaskSetting($_SESSION['task_setting']);
-    $job->setFiles($_SESSION['fileserver']->selectedFiles());
+    $job->setAnalysisSetting($_SESSION['analysis_setting']);
+    $job->setFiles($_SESSION['fileserver']->selectedFiles(),$_SESSION['autoseries']);
+
     if ($job->addJob()) {
       $_SESSION['jobcreated'] = True;
       $_SESSION['numberjobadded'] = count( $job->files() );
@@ -60,13 +77,13 @@ include("header.inc.php");
     <!--
       Tooltips
     -->
-    <span id="ttSpanBack">
-        Go back to step 3/4 - Select images.
+    <span class="toolTip" id="ttSpanBack">
+    <?php echo $goBackMessage; ?>
     </span>
-    <span id="ttSpanCreateJob">
+    <span class="toolTip" id="ttSpanCreateJob">
         Create job, add it to the queue, and go back to your home page.
     </span>
-
+    
      <div id="nav">
         <ul>
             <li>
@@ -76,9 +93,9 @@ include("header.inc.php");
             <?php
             if ( !$_SESSION['user']->isAdmin()) {
             ?>
-            <li><a href="file_manager.php">
-                    <img src="images/filemanager_small.png" alt="file manager" />
-                    &nbsp;File manager
+            <li><a href="file_management.php?folder=src">
+                    <img src="images/rawdata_small.png" alt="raw images" />
+                    &nbsp;Raw images
                 </a>
             </li>
             <?php
@@ -108,7 +125,10 @@ include("header.inc.php");
 
     <div id="content">
 
-        <h3>Step 4/4 - Create job</h3>
+        <h3><img alt="Launch" src="./images/launch.png" width="40"/>
+                              &nbsp;Step
+                              <?php echo $currentStep . "/" . $currentStep; ?>
+                              - Launch the job</h3>
 
         <form method="post" action="" id="createjob">
 
@@ -138,10 +158,21 @@ if ( ( $value == 'TIFF 18-bit' ) || ( $value == 'TIFF 16-bit' ) ) {
   }
 }
 
+// Make sure that if we had RGB-TIFF 8 bit as output file format and a
+// single-channel dataset or more than 3 channels, we reset the value to ics
+if ( $value == 'RGB TIFF 8-bit' ) {
+  $nChannelsParameter = $_SESSION['setting']->parameter("NumberOfChannels");
+  $numberOfChannels = $nChannelsParameter->value( );
+  if ( ( $numberOfChannels == 1 || $numberOfChannels > 3 ) ) {
+    $parameter->setValue("ICS (Image Cytometry Standard)");
+    $_SESSION['first_visit'] = False;
+  }
+}
+
 // Make sure that if we had Imaris Classic as output file format and a
 // time-series dataset, we reset the value to ics
 if ( $value == 'IMS (Imaris Classic)' ) {
-  if ( $_SESSION['setting']->isTimeSeries() ) {
+  if ( $_SESSION['autoseries'] == "TRUE" ) {
     $parameter->setValue("ICS (Image Cytometry Standard)");
     $_SESSION['first_visit'] = False;
   }
@@ -154,7 +185,7 @@ if ( $value == 'IMS (Imaris Classic)' ) {
 $possibleValues = $parameter->possibleValues();
 sort( $possibleValues );
 
-// If the dataset is multi-channel, we remove the TIFF-8 and TIFF-16 bit
+// If the dataset is multi-channel, we remove the TIFF-16 bit
 // options from the list
 $nChannelsParameter = $_SESSION['setting']->parameter("NumberOfChannels");
 $numberOfChannels = $nChannelsParameter->value( );
@@ -164,8 +195,17 @@ if ( $numberOfChannels > 1 ) {
   $possibleValues = array_values( $possibleValues );
 }
 
+// If the dataset is single-channel or has more than 3 channels, we remove 
+// the RGB TIFF 8-bit option from the list
+$nChannelsParameter = $_SESSION['setting']->parameter("NumberOfChannels");
+$numberOfChannels = $nChannelsParameter->value( );
+if ( ( $numberOfChannels == 1 ) || ( $numberOfChannels > 3) ) {
+  $possibleValues = array_diff($possibleValues, array( 'RGB TIFF 8-bit' ) );
+  $possibleValues = array_values( $possibleValues );
+}
+
 // If the dataset is a time series, we remove Imaris classic from the list
-if ( $_SESSION['setting']->isTimeSeries() ) {
+if ( $_SESSION['autoseries'] == "TRUE" ) {
     $possibleValues =
         array_diff($possibleValues, array( 'IMS (Imaris Classic)' ) );
     $possibleValues = array_values( $possibleValues );
@@ -217,7 +257,7 @@ foreach ($possibleValues as $possibleValue) {
             </legend>
             <textarea name="parameter_settings_report"
                       cols="50"
-                      rows="15"
+                      rows="5"
                       readonly="readonly">
 <?php
 
@@ -239,18 +279,47 @@ echo $_SESSION['setting']->displayString();
             </legend>
             <textarea name="task_settings_report"
                       cols="50"
-                      rows="6"
+                      rows="5"
                       readonly="readonly">
 <?php
 
 $numberOfChannels =
     $_SESSION['setting']->parameter( "NumberOfChannels" )->value( );
-echo $_SESSION['task_setting']->
-    displayStringWithoutOutputFileFormat( $numberOfChannels );
+echo $_SESSION['task_setting']->displayString( $numberOfChannels );
 
 ?>
             </textarea>
         </fieldset>
+
+            
+   <fieldset class="report">
+            <legend>
+                <a href="javascript:openWindow(
+                   'http://www.svi.nl/HuygensRemoteManagerHelpCreateJob')">
+                    <img src="images/help.png" alt="?" />
+                </a>
+            
+            <?php if (System::hasLicense("coloc")) { ?>
+                <a href="select_analysis_settings.php">
+            <?php } else { ?>
+                <a>
+            <?php } ?>
+                    Analysis parameters
+    </a>: <?php echo $_SESSION['analysis_setting']->name() ?>
+            </legend>
+            <textarea name="analysis_settings_report"
+                      cols="50"
+                      rows="5"
+                      readonly="readonly">
+<?php
+
+echo $_SESSION['analysis_setting']->displayString();
+
+?>
+            </textarea>
+
+        </fieldset>
+            
 
         <fieldset class="report">
             <legend>
@@ -264,7 +333,7 @@ echo $_SESSION['task_setting']->
             </legend>
             <textarea name="task_settings_report"
                       cols="50"
-                      rows="5"
+                      rows="3"
                       readonly="readonly">
 <?php
 
@@ -277,6 +346,7 @@ foreach ($files as $file) {
             </textarea>
 
         </fieldset>
+            
 
         <form method="post" action="">
 
@@ -288,13 +358,15 @@ if (!isset($_SESSION['jobcreated'])) {
 
 ?>
             <input type="button" name="previous" value="" class="icon previous"
-              onclick="document.location.href='select_images.php'"
+              onclick="document.location.href='<?php echo $goBackLink; ?>'"
               onmouseover="TagToTip('ttSpanBack' )"
               onmouseout="UnTip()" />
-            <input type="button" name="create job" value="" class="icon ok"
+            <input type="button" name="create job" value=""
+              class="icon launch_start"
               onclick="document.forms['createjob'].submit()"
               onmouseover="TagToTip('ttSpanCreateJob' )"
               onmouseout="UnTip()" />
+
 
 <?php
 
@@ -326,12 +398,12 @@ else {
             <p>As a last step, please choose the output file format for your
             restored images.</p>
 
-            <p>Also, use this is summary to check your parameters. If you spot
+            <p>Also, use this as summary to check your parameters. If you spot
             a mistake, use the links on the left to go back and fix it.</p>
 
             <p>Once you are okay with the parameters, press the
-            <img src="images/ok_help.png" alt="Create job" width="22"
-                 height="22" /><b>create job</b> button to add the job to the
+            <img src="images/launch_start.png" alt="Create job" width="30"
+                 height="22" /> <b>launch job</b> button to add the job to the
             queue and go back to
             the home page.</p>
 

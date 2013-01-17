@@ -37,7 +37,7 @@ class System {
 
 		This value has to be set by the developers!
 		*/
-	const MIN_HUCORE_VERSION = 4020105;
+	const MIN_HUCORE_VERSION = 4030002;
 
 	/*!
 		\brief	Returns the HRM version
@@ -171,6 +171,34 @@ class System {
 		}
 		return $versionString;
 	}
+
+ 	/*!
+		\brief	Checks whether Huygens Core has a valid license
+		\return	true if the license is valid, false otherwise
+		*/
+	public static function hucoreHasValidLicense() {
+        $db = new DatabaseConnection();
+        return $db->hucoreHasValidLicense();
+	}
+
+    /*!
+    \brief   Finds out whether a Huygens module is supported by the license.
+    \param   $feature The module to find out about. It can use (SQL) wildcards.
+    \return  Boolean: true if the module is supported by the license.
+    */
+    public static function hasLicense( $feature ) {
+        $db = new DatabaseConnection();
+        return $db->hasLicense( $feature );
+    }
+
+ 	/*!
+		\brief	Gets the licensed server type for Huygens Core.
+		\return	one of desktop, small, medium, large, extreme
+		*/
+	public static function hucoreServerType() {
+        $db = new DatabaseConnection();
+        return $db->hucoreServerType();
+	}    
 
 	/*!
 		\brief	Returns information about operating system and machine
@@ -307,7 +335,7 @@ class System {
     	global $max_post_limit;
     	if ( isset( $max_post_limit ) ) {
     		if ( $max_post_limit == 0 ) {
-    			return "Limited by php.ini.";
+    			return "limited by php.ini.";
     		} else {
     			return System::formatMemoryStringByUnit(
     			let_to_num( ini_get( '$max_post_limit' ) ), $unit );
@@ -404,7 +432,7 @@ class System {
     	global $max_upload_limit;
     	if ( isset( $max_upload_limit ) ) {
     		if ( $max_upload_limit == 0 ) {
-    			return "Limited by php.ini.";
+    			return "limited by php.ini.";
     		} else {
     			return System::formatMemoryStringByUnit(
     			let_to_num( $max_upload_limit ), $unit );

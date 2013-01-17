@@ -52,6 +52,46 @@ function showFileBrowser() {
     }
     $file_buttons = array();
     $file_buttons[] = "update";
+    
+    $additionalHTMLElements = "
+             <!-- SNR estimation algorithm -->
+             <fieldset class=\"setting\"
+               onmouseover=\"javascript:changeQuickHelp( 'method' );\" >
+
+                 <legend>
+                     <a href=\"javascript:openWindow('#')\">
+                       <img src=\"images/help.png\" alt=\"?\" /></a>
+                       SNR estimation algorithm
+                 </legend>
+
+                 <select name=\"SNREstimationAlgorithm\" >
+                 ";
+    
+    $algorithm = "";
+    if (isset($_POST["SNREstimationAlgorithm"])) {
+        $algorithm = $_POST["SNREstimationAlgorithm"];
+    }
+    
+    $selected = "";
+    if ($algorithm == "old") {
+        $selected = "selected=\"selected\""; 
+    }
+    
+    $additionalHTMLElements .= "
+        <option value=\"old\" $selected>Classic estimator</option>";
+  
+    $selected = "";
+    if ($algorithm == "new") {
+        $selected = "selected=\"selected\""; 
+    }
+    
+    $additionalHTMLElements .= "
+        <option value=\"new\" $selected>New estimator (beta)</option>";
+    
+    $additionalHTMLElements .= "        
+          </select>
+        </fieldset>
+        <p />";
 
     $control_buttons = "
         <input type=\"button\" value=\"\" class=\"icon up\"
@@ -162,14 +202,12 @@ function estimateSnrFromFile($file) {
         $z_s = $z->value() / 1000.0;
         $extra = " -emission $lmbV -sampling \"$xy_s $xy_s $z_s\"";
 
-        // Enable the -series off option depending on the file type.
-        if (stristr($file, ".stk")) {
-            $geom = $_SESSION['setting']->parameter("ImageGeometry");
-            $geometry = $geom->value();
-            if ( !stristr($geometry, "time") ) {
-                $series = "off";
-            }
+        // Set the -series auto | off option depending on the file type.
+        $series = "off";
+        if (isset($_SESSION['autoseries']) && $_SESSION['autoseries'] == "TRUE") {
+            $series = "auto";
         }
+
         $formatParam = $_SESSION['setting']->parameter('ImageFileFormat');
         $format = $formatParam->value();
         if ($format == "tiff" || $format == "tiff-single") {
@@ -179,14 +217,24 @@ function estimateSnrFromFile($file) {
     }
 
 
-    // Change returnImages to \"0.6 1 1.66 \" in order to show SNR
-    // estimates calculated af given factors of the best match. This
-    // requires Huygens 3.5.1p2.
-    // For 3.5.1p1, use '-returnImages sample' instead.
-
+    // Build the call to HuCore to estimate the SNR value with one of the 
+    // two algorithms
+    if (isset($_POST['SNREstimationAlgorithm'])) {
+        $algorithm = $_POST['SNREstimationAlgorithm'];
+    } else {
+        $algorithm = "old";
+    }
+    
     $opt = "-basename \"$basename\" -src \"$psrc\" -dest \"$pdest\" ".
-        "-returnImages \"0.5 0.71 1 1.71 \" -snrVersion \"old\" ".
+        "-returnImages \"0.5 0.71 1 1.71 \" -snrVersion \"$algorithm\" ".
         "-series $series $extra";
+
+    // Build a label to be shown at the SNR results page .
+    if ($algorithm == "old") {
+        $algLabel = "Classic";
+    } else {
+        $algLabel = "Beta";
+    }
 
     // When no particular SNR estimation image is shown (in a small portion of
     // the image), the image preview goes back to the whole image.
@@ -202,8 +250,9 @@ function estimateSnrFromFile($file) {
 
     <div id="content">
       <div id="output" >
-        <h3>Estimating SNR</h3>
-
+        <h3><img alt="SNR" src="./images/results_title.png" 
+                 width="40" />&nbsp;&nbsp;Estimating SNR
+        </h3>
         <fieldset>
         <center>
         Processing file<br /><?php echo $file; ?>...<br />
@@ -245,8 +294,9 @@ function estimateSnrFromFile($file) {
     $estimation = askHuCore("estimateSnrFromImage", $opt);
     // No line-breaks in the output, it is going to be escaped for JavaScript.
     $output =
-        "<h3>SNR estimation</h3>".
-        "<fieldset>".
+        "<h3><img alt=\"SNR\" src=\"./images/results_title.png\" " .
+        "width=\"40\"/>&nbsp;&nbsp;SNR estimation (" . $algLabel . ")</h3>" .
+        "<fieldset>" .
         "<table>";
 
     $chanCnt = $estimation['channelCnt'];
@@ -514,4 +564,3 @@ if ( isset($_POST['estimate'] ) && isset($_POST['userfiles'] ) ) {
 include("footer.inc.php");
 
 ?>
-

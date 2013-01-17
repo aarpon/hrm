@@ -5,7 +5,7 @@
 require_once("./inc/User.inc.php");
 require_once("./inc/Parameter.inc.php");
 require_once("./inc/Setting.inc.php");
-require_once ("./inc/System.inc.php");
+require_once("./inc/System.inc.php");
 
 /* *****************************************************************************
  *
@@ -70,8 +70,7 @@ if ( $_SESSION[ 'setting' ]->checkPostedImageParameters( $_POST ) ) {
  **************************************************************************** */
 
 // Javascript includes
-$script = array( "settings.js", "quickhelp/help.js",
-                "quickhelp/imageFormatHelp.js" );
+$script = array( "settings.js", "quickhelp/help.js" );
 
 include("header.inc.php");
 
@@ -80,11 +79,11 @@ include("header.inc.php");
     <!--
       Tooltips
     -->
-    <span id="ttSpanCancel">
+    <span class="toolTip" id="ttSpanCancel">
         Abort editing and go back to the image parameters selection page.
         All changes will be lost!
     </span>
-    <span id="ttSpanForward">
+    <span class="toolTip" id="ttSpanForward">
         Continue to next page.
     </span>
     <?php
@@ -93,7 +92,7 @@ include("header.inc.php");
         // we initialize a counter.
         $nParamRequiringReset = 0;
     ?>
-
+    
     <div id="nav">
         <ul>
             <li
@@ -111,173 +110,12 @@ include("header.inc.php");
     </div>
     
     <div id="content">
-
-        <h3>Image format and PSF modality</h3>
+        
+        <h2>Number of channels and PSF modality</h2>
         
         <form method="post" action="" id="select">
         
-            <h4>What image format will be processed with these settings?</h4>
-
-    <?php
-
-    /***************************************************************************
-    
-      ImageFileFormat
-    
-    ***************************************************************************/
-
-    $parameterImageFileFormat =
-        $_SESSION['setting']->parameter("ImageFileFormat");
-
-    ?>  
-            
-            <fieldset class="setting <?php
-                echo $parameterImageFileFormat->confidenceLevel(); ?>"
-                onmouseover="javascript:changeQuickHelp( 'format' );" >
-            
-                <legend>
-                    <a href="javascript:openWindow(
-                       'http://www.svi.nl/FileFormats')">
-                        <img src="images/help.png" alt="?" />
-                    </a>
-                    image file format
-                </legend>
-                
-                <select name="ImageFileFormat" id="ImageFileFormat" size="1"
-                  onchange="javascript:imageFormatProcess( 
-                    this.name, this.options[this.selectedIndex].value )"
-                  onkeyup="this.blur();this.focus();" >
-                
-<?php
-
-// new file formats support
-$msgValue       = '';
-$msgTranslation = 'Please choose a file format...';
-$values = array();
-$values[ 0 ] = $msgValue;
-$values = array_merge( $values, $parameterImageFileFormat->possibleValues() );
-$geometryFlag = "";
-$channelsFlag = "";
-sort($values);
-foreach($values as $value) {
-  $selected = "";
-  if ( $value == $msgValue ) {
-    $translation = $msgTranslation;
-  } else {
-    $translation = $parameterImageFileFormat->translatedValueFor( $value );
-    if (stristr($value, "tiff")) {
-      $translation .= " (*.tiff)";
-    }
-    if ($value == $parameterImageFileFormat->value()) {
-      $selected = " selected=\"selected\"";
-      if ($value == "lsm-single" || $value == "tiff-single") {
-        $geometryFlag = "disabled=\"disabled\" ";
-      }
-      else if ($value == "tiff-series") {
-        $geometryFlag = "disabled=\"disabled\" ";
-        $channelsFlag = "disabled=\"disabled\" ";
-      }
-    }
-  }
-  
-?>
-                <option <?php echo "value = \"" .$value . "\"" . $selected ?>>
-                    <?php echo $translation ?>
-                </option>
-<?php
-
-}
-
-?>
-
-                </select>
-                <p class="message_confidence_<?php
-                    echo $parameterImageFileFormat->confidenceLevel(); ?>">
-                    &nbsp;
-                </p>
-            </fieldset>
-
-    <?php
-
-    /***************************************************************************
-    
-      ImageGeometry
-    
-    ***************************************************************************/
-
-    $parameterImageGeometry =
-        $_SESSION['setting']->parameter("ImageGeometry");
-
-    ?>
-    
-            <fieldset id="geometry"
-                      class="setting <?php
-                      echo $parameterImageGeometry->confidenceLevel(); ?>"
-                      <?php if ($geometryFlag != "")
-              echo " style=\"color: grey\"" ?>
-              onmouseover="javascript:changeQuickHelp( 'geometry' );" >
-            
-                <legend>
-                    <a href="javascript:openWindow(
-                       'http://www.svi.nl/ImageGeometry')">
-                        <img src="images/help.png" alt="?" />
-                    </a>
-                    image geometry
-                </legend>
-
-                <div class="values">
-                    <?php
-                    if ( ! $parameterImageGeometry->mustProvide() ) {
-                        $nParamRequiringReset++;
-                    ?>
-                    <div class="reset"
-                        onmouseover="TagToTip('ttSpanReset' )"
-                        onmouseout="UnTip()"
-                        onclick="document.forms[0].ImageGeometry[0].checked = true;" >
-                    </div>
-                    <?php
-                    }
-                    ?>
-
-                    <input name="ImageGeometry"
-                           type="radio"
-                           value=""
-                           style="display:none;" />
-                
-
-<?php
-
-$possibleValues = $parameterImageGeometry->possibleValues();
-foreach($possibleValues as $possibleValue) {
-  $value = "multi_" . $possibleValue;
-  $flag = "";
-  if (!($parameterImageFileFormat->value() == "lsm-single" || 
-          $parameterImageFileFormat->value() == "tiff-single") &&
-          $possibleValue == $parameterImageGeometry->value())
-    $flag = "checked=\"checked\" ";
-
-?>
-                <input name="ImageGeometry"
-                       type="radio"
-                       value="<?php echo $value ?>"
-                       <?php echo $geometryFlag ?>
-                       <?php echo $flag ?>/>
-                       <?php echo $possibleValue ?>
-                
-<?php
-
-}
-
-?>
-                    </div> <!-- values -->
-                    <div class="bottom">
-                        <p class="message_confidence_<?php
-                        echo $parameterImageGeometry->confidenceLevel(); ?>">
-                            &nbsp;
-                        </p>
-                    </div>
-                
-            </fieldset>
+            <h4>How many channels (wavelengths) in your datasets?</h4>
 
     <?php
 
@@ -294,8 +132,6 @@ foreach($possibleValues as $possibleValue) {
             
             <fieldset id="channels" class="setting <?php 
                 echo $parameterNumberOfChannels->confidenceLevel(); ?>"
-                <?php if ($channelsFlag != "")
-              echo " style=\"color: grey\"" ?>
               onmouseover="javascript:changeQuickHelp( 'channels' );" >
             
                 <legend>
@@ -335,27 +171,22 @@ function check($parameter, $value) {
                     <input name="NumberOfChannels" 
                            type="radio"
                            value="1"
-                           <?php echo $channelsFlag ?>
                            <?php check($parameterNumberOfChannels, 1) ?>/>1
                     <input name="NumberOfChannels" 
                            type="radio"
                            value="2"
-                           <?php echo $channelsFlag ?>
                            <?php check($parameterNumberOfChannels, 2) ?>/>2
                     <input name="NumberOfChannels" 
                            type="radio"
                            value="3"
-                           <?php echo $channelsFlag ?>
                            <?php check($parameterNumberOfChannels, 3) ?>/>3
                     <input name="NumberOfChannels" 
                            type="radio"
                            value="4"
-                            <?php echo $channelsFlag ?>
                             <?php check($parameterNumberOfChannels, 4) ?>/>4
                     <input name="NumberOfChannels" 
                            type="radio"
                            value="5"
-                           <?php echo $channelsFlag ?>
                            <?php check($parameterNumberOfChannels, 5) ?>/>5
                 </div> <!-- values -->
 
@@ -447,12 +278,13 @@ function check($parameter, $value) {
                     echo $parameterPointSpreadFunction->confidenceLevel(); ?>">
                         &nbsp;
                     </p>
+                    
                 </div>
-                
             </fieldset>
-
+                    
             <div id="controls"
                  onmouseover="javascript:changeQuickHelp( 'default' )">
+
               <input type="button" value="" class="icon up"
                   onmouseover="TagToTip('ttSpanCancel' )"
                   onmouseout="UnTip()"
@@ -466,11 +298,11 @@ function check($parameter, $value) {
             <div><input name="OK" type="hidden" /></div>
             
         </form>
-
+        
         <?php
             if ( $nParamRequiringReset > 0 ) {
         ?>
-            <span id="ttSpanReset">
+            <span class="toolTip" id="ttSpanReset">
                 Click to unselect all options.
             </span>
         <?php
@@ -482,18 +314,33 @@ function check($parameter, $value) {
     <div id="rightpanel" onmouseover="javascript:changeQuickHelp( 'default' )">
     
         <div id="info">
-            
             <h3>Quick help</h3>
             
             <div id="contextHelp">
-              <p>Here you are asked to provide information on format and
-              geometry for the files you want to restore.</p>
-            
-              <p>Moreover, you must define whether you want to use a theoretical
+              <p>Here you are asked to define whether you want to use a theoretical
               PSF, or if you instead want to use a measured PSF you distilled
               with the Huygens software.</p>
             </div>
 
+              
+      <?php
+              if ( !$_SESSION["user"]->isAdmin() ) {
+      ?>
+                  
+            <div class="requirements">                
+               Parameter requirements<br />adapted for <b>  
+               <?php
+               $fileFormat = $_SESSION['setting']->parameter( "ImageFileFormat" );
+               echo $fileFormat->value();
+               ?>
+               </b> files
+            </div>
+      
+      <?php
+              }
+       ?>
+
+       
         </div>
         
         <div id="message">

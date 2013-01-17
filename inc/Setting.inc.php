@@ -306,6 +306,82 @@ class ParameterSetting extends Setting {
     }
 
     /*!
+     \brief    A general check on  the status of the image parameter setting
+               and its compatibility with the selected image format.
+     \return   Boolean: true if the setting is OK.
+    */
+    public function checkParameterSetting( ) {
+
+        $ok = True;
+
+        /* Initialization: among others, create an array where to
+           accumulate the microscopic parameters.*/
+        $postedParams = array();
+        
+        $db = new DatabaseConnection();
+        $imageFormat = $this->parameter("ImageFileFormat")->value();
+
+        /* Loop over the values of this setting's parameters. */
+        foreach ($this->parameter as $objName => $objInstance) {
+
+            switch ( $objName ) {
+                case "ExcitationWavelength" :
+                case "EmissionWavelength" :
+                case "PinholeSize" :
+                    $chanValues = $objInstance->value();
+
+                    foreach ( $chanValues as $chan => $value) {
+                        if ($value) {
+                            $postedParams["$objName$chan"] = $value;
+                        }
+                    }
+                default:
+                    $postedParams[$objName] = $objInstance->value();   
+            }
+
+                /* Set the confidence level of this parameter according
+                 to the file format chosen in the image selection page. */
+            $cLevel = $db->getParameterConfidenceLevel( $imageFormat, $objName );
+            $objInstance->setConfidenceLevel( $cLevel );
+        }
+
+            /* Check if the status of the parameter setting is compatible
+             with the selected file format. */
+             
+        if ( !$this->checkPostedImageParameters($postedParams) ) {
+            $ok = False;
+        }
+
+        if ($ok) {
+            if (  !$this->checkPostedMicroscopyParameters($postedParams) ) {
+                $ok = False;
+            }
+        }
+
+        if ($ok) {
+            if ( !$this->checkPostedCapturingParameters($postedParams) ) {
+                $ok = False;
+            }
+        }
+
+        if ($ok) {
+            if (!$this->checkPostedAberrationCorrectionParameters($postedParams)) {
+                $ok = False;
+            }
+        }
+
+        if ( !$ok ) {
+            $this->message  = "The selected parameter set contains empty values ";
+            $this->message .= "which the $imageFormat format misses in its ";
+            $this->message .= "metadata. Please proceed to add them or select a ";
+            $this->message .= "different parameter set.";
+        }
+
+        return $ok;
+    }
+    
+
+    /*!
       \brief	Checks that the posted Image Parameters are all defined
               and valid
 
@@ -324,21 +400,6 @@ class ParameterSetting extends Setting {
         $this->message = '';
         $noErrorsFound = True;
 
-        // The file format must be defined
-        if (!isset($postedParameters["ImageFileFormat"]) ||
-                $postedParameters["ImageFileFormat"] == "") {
-            $this->message = "Please choose a file format!";
-            return False;
-        } else {
-            $parameter = $this->parameter("ImageFileFormat");
-            $parameter->setValue($postedParameters["ImageFileFormat"]);
-            $this->set($parameter);
-            if (!$parameter->check()) {
-                $this->message = $parameter->message();
-                return False;
-            }
-        }
-
         // The PSF type must be defined
         if (!isset($postedParameters["PointSpreadFunction"]) ||
                 $postedParameters["PointSpreadFunction"] == "") {
@@ -356,39 +417,11 @@ class ParameterSetting extends Setting {
             }
         }
 
-        // The geometry must be defined for most file formats
-        $singleParameters = $this->fixedGeometryFileFormats();
-        if (!( array_search($postedParameters["ImageFileFormat"],
-                $singleParameters) === false )) {
-            $postedParameters["ImageGeometry"] = "XY - time";
-        } elseif ($postedParameters["ImageFileFormat"] == 'tiff-series') {
-            $postedParameters["ImageGeometry"] = "XYZ";
-        } else {
-            // We check that the value was posted
-            if (!isset($postedParameters["ImageGeometry"]) ||
-                    $postedParameters["ImageGeometry"] == "") {
-                $this->message = "Please set the image geometry!";
-                return False;
-            }
-        }
-        $parameter = $this->parameter("ImageGeometry");
-        $parameter->setValue($postedParameters["ImageGeometry"]);
-        $this->set($parameter);
-        if (!$parameter->check()) {
-            $this->message = $parameter->message();
+        // The number of channels must be defined for all file formats
+        if (!isset($postedParameters["NumberOfChannels"]) ||
+                $postedParameters["NumberOfChannels"] == "") {
+            $this->message = "Please set the number of channels!";
             return False;
-        }
-
-        // The number of channels must be defined for most file formats
-        if ($postedParameters["ImageFileFormat"] == 'tiff-series') {
-            $postedParameters["NumberOfChannels"] = "1";
-        } else {
-            // We check that the value was posted
-            if (!isset($postedParameters["NumberOfChannels"]) ||
-                    $postedParameters["NumberOfChannels"] == "") {
-                $this->message = "Please set the number of channels!";
-                return False;
-            }
         }
         $parameter = $this->parameter("NumberOfChannels");
         $parameter->setValue($postedParameters["NumberOfChannels"]);
@@ -418,7 +451,7 @@ class ParameterSetting extends Setting {
             $this->message = '';
             return False;
         }
-
+        
         $this->message = '';
         $noErrorsFound = True;
 
@@ -431,6 +464,96 @@ class ParameterSetting extends Setting {
         $names[array_search('EmissionWavelength', $names)] = 
             'EmissionWavelength0';
 
+        // We handle multi-value parameters differently than single-valued ones
+        
+        // Excitation wavelengths
+        $value = array(null, null, null, null, null);
+        for ($i = 0; $i < 5; $i++) {
+            if (isset($postedParameters["ExcitationWavelength$i"])) {
+                $value[$i] = $postedParameters["ExcitationWavelength$i"];
+                unset($postedParameters["ExcitationWavelength$i"]);
+            }
+        }
+        $name = 'ExcitationWavelength';
+        unset($names[array_search("ExcitationWavelength0", $names)]);
+        $valueSet = count(array_filter($value)) > 0;
+
+        if ($valueSet) {
+        
+            // Set the value
+            $parameter = $this->parameter($name);
+            $parameter->setValue($value);
+            $this->set($parameter);
+
+            // Check
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = False;
+            }
+            
+        } else {
+          
+            // In this case it is important to know whether the Parameter
+            // must have a value or not
+            $parameter = $this->parameter($name);
+            $mustProvide = $parameter->mustProvide();
+
+            // Reset the Parameter
+            $parameter->reset();
+            $this->set($parameter);
+            
+            // If the Parameter value must be provided, we return an error
+            if ($mustProvide) {
+                $this->message = "Please set the excitation wavelength!";
+                $noErrorsFound = False;
+            }
+
+        }
+
+        // Emission wavelengths
+        $value = array(null, null, null, null, null);
+        for ($i = 0; $i < 5; $i++) {
+            if (isset($postedParameters["EmissionWavelength$i"])) {
+                $value[$i] = $postedParameters["EmissionWavelength$i"];
+                unset($postedParameters["EmissionWavelength$i"]);
+            }
+        }
+        $name = 'EmissionWavelength';
+        unset($names[array_search("EmissionWavelength0", $names)]);
+        $valueSet = count(array_filter($value)) > 0;
+        
+        if ($valueSet) {
+        
+            // Set the value
+            $parameter = $this->parameter($name);
+            $parameter->setValue($value);
+            $this->set($parameter);
+
+            // Check
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = False;
+            }
+            
+        } else {
+          
+            // In this case it is important to know whether the Parameter
+            // must have a value or not
+            $parameter = $this->parameter($name);
+            $mustProvide = $parameter->mustProvide();
+
+            // Reset the Parameter
+            $parameter->reset();
+            $this->set($parameter);
+            
+            // If the Parameter value must be provided, we return an error
+            if ($mustProvide) {
+                $this->message = "Please set the emission wavelength!";
+                $noErrorsFound = False;
+            }
+
+        }
+        
         // Check that the Parameters are set and contain valid values
         foreach ($names as $name) {
 
@@ -442,28 +565,7 @@ class ParameterSetting extends Setting {
             // provided or not
             if ($valueSet) {
 
-                // Handle particular parameters
-                if ($name == 'ExcitationWavelength0') {
-                    $value = array(null, null, null, null, null);
-                    $value[0] = $postedParameters[$name];
-                    for ($i = 1; $i < 5; $i++) {
-                        if (isset($postedParameters["ExcitationWavelength$i"])) {
-                            $value[$i] = 
-                                $postedParameters["ExcitationWavelength$i"];
-                        }
-                    }
-                    $name = 'ExcitationWavelength';
-                } elseif ($name == 'EmissionWavelength0') {
-                    $value = array(null, null, null, null, null);
-                    $value[0] = $postedParameters[$name];
-                    for ($i = 1; $i < 5; $i++) {
-                        if (isset($postedParameters["EmissionWavelength$i"])) {
-                            $value[$i] = 
-                                $postedParameters["EmissionWavelength$i"];
-                        }
-                    }
-                    $name = 'EmissionWavelength';
-                } elseif ($name == "SampleMedium" &&
+                if ($name == "SampleMedium" &&
                         $postedParameters[$name] == "custom") {
                     if (isset($postedParameters['SampleMediumCustomValue'])) {
                         $value = $postedParameters['SampleMediumCustomValue'];
@@ -476,6 +578,7 @@ class ParameterSetting extends Setting {
                 // $mustProvide flag)
                 $parameter = $this->parameter($name);
                 $parameter->setValue($value);
+
                 $this->set($parameter);
                 if (!$parameter->check()) {
                     $this->message = $parameter->message();
@@ -485,11 +588,6 @@ class ParameterSetting extends Setting {
 
                 // In this case it is important to know whether the Parameter
                 // must have a value or not
-                if ($name == "ExcitationWavelength0") {
-                    $name = "ExcitationWavelength";
-                } elseif ($name == "EmissionWavelength0") {
-                    $name = "EmissionWavelength";
-                }
                 $parameter = $this->parameter($name);
                 $mustProvide = $parameter->mustProvide();
 
@@ -582,112 +680,113 @@ class ParameterSetting extends Setting {
             }
         }
 
-        // ZStepSize must be defined for all 3D geometries
-        if ($this->isThreeDimensional()) {
+        // ZStepSize
+        $valueSet = isset($postedParameters["ZStepSize"]) &&
+                $postedParameters["ZStepSize"] != '';
 
-            $valueSet = isset($postedParameters["ZStepSize"]) &&
-                    $postedParameters["ZStepSize"] != '';
+        $parameter = $this->parameter("ZStepSize");
 
-            $parameter = $this->parameter("ZStepSize");
+        if ($valueSet) {
 
-            if ($valueSet) {
+            // Set the Parameter and check the value
+            $parameter->setValue($postedParameters["ZStepSize"]);
+            $this->set($parameter);
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = False;
+            }
+        } else {
 
-                // Set the Parameter and check the value
-                $parameter->setValue($postedParameters["ZStepSize"]);
-                $this->set($parameter);
-                if (!$parameter->check()) {
-                    $this->message = $parameter->message();
-                    $noErrorsFound = False;
-                }
-            } else {
+            $mustProvide = $parameter->mustProvide();
 
-                $mustProvide = $parameter->mustProvide();
+            // Reset the Parameter
+            $parameter->reset();
+            $this->set($parameter);
 
-                // Reset the Parameter
-                $parameter->reset();
-                $this->set($parameter);
-
-                // If the Parameter value must be provided, we return an error
-                if ($mustProvide) {
-                    $this->message = "Please set the z-step!";
-                    $noErrorsFound = False;
-                }
+            // If the Parameter value must be provided, we return an error
+            if ($mustProvide) {
+                $this->message = "Please set the z-step!";
+                $noErrorsFound = False;
             }
         }
 
-        // TimeInterval must be defined for the XY-time and XYZ-time geometry
-        if ($this->isTimeSeries()) {
 
-            $valueSet = isset($postedParameters["TimeInterval"]) &&
-                    $postedParameters["TimeInterval"] != '';
+        // TimeInterval
+        $valueSet = isset($postedParameters["TimeInterval"]) &&
+                $postedParameters["TimeInterval"] != '';
 
-            $parameter = $this->parameter("TimeInterval");
+        $parameter = $this->parameter("TimeInterval");
 
-            if ($valueSet) {
+        if ($valueSet) {
 
-                // Set the Parameter and check the value
-                $parameter->setValue($postedParameters["TimeInterval"]);
-                $this->set($parameter);
-                if (!$parameter->check()) {
-                    $this->message = $parameter->message();
-                    $noErrorsFound = False;
-                }
-            } else {
+            // Set the Parameter and check the value
+            $parameter->setValue($postedParameters["TimeInterval"]);
+            $this->set($parameter);
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = False;
+            }
+        } else {
 
-                $mustProvide = $parameter->mustProvide();
+            $mustProvide = $parameter->mustProvide();
+            // Reset the Parameter
+            $parameter->reset();
+            $this->set($parameter);
 
-                // Reset the Parameter
-                $parameter->reset();
-                $this->set($parameter);
-
-                // If the Parameter value must be provided, we return an error
-                if ($mustProvide) {
-                    $this->message = "Please set the time interval!";
-                    $noErrorsFound = False;
-                }
+            // If the Parameter value must be provided, we return an error
+            if ($mustProvide) {
+                $this->message = "Please set the time interval!";
+                $noErrorsFound = False;
             }
         }
 
         // PinholeSize must be defined for all confocal microscopes
         if ($this->isMultiPointOrSinglePointConfocal()) {
 
-            $valueSet = isset($postedParameters["PinholeSize0"]) &&
-                    $postedParameters["PinholeSize0"] != '';
-
-            $parameter = $this->parameter("PinholeSize");
+            // Pinhole sizes
+            $value = array(null, null, null, null, null);
+            for ($i = 0; $i < 5; $i++) {
+                if (isset($postedParameters["PinholeSize$i"])) {
+                    $value[$i] = $postedParameters["PinholeSize$i"];
+                    unset($postedParameters["PinholeSize$i"]);
+                }
+            }
+            $name = 'PinholeSize';
+            $valueSet = count(array_filter($value)) > 0;
 
             if ($valueSet) {
-
-                // Set the Parameter and check the value
-                $value = array(null, null, null, null, null);
-                $value[0] = $postedParameters["PinholeSize0"];
-                for ($i = 1; $i < 5; $i++) {
-                    if (isset($postedParameters["PinholeSize$i"])) {
-                        $value[$i] = $postedParameters["PinholeSize$i"];
-                    }
-                }
+        
+                // Set the value
+                $parameter = $this->parameter($name);
                 $parameter->setValue($value);
                 $this->set($parameter);
+
+                // Check
                 if (!$parameter->check()) {
                     $this->message = $parameter->message();
                     $noErrorsFound = False;
                 }
+            
             } else {
-
+          
+                // In this case it is important to know whether the Parameter
+                // must have a value or not
+                $parameter = $this->parameter($name);
                 $mustProvide = $parameter->mustProvide();
 
                 // Reset the Parameter
                 $parameter->reset();
                 $this->set($parameter);
-
+            
                 // If the Parameter value must be provided, we return an error
                 if ($mustProvide) {
                     $this->message = "Please set the pinhole size!";
                     $noErrorsFound = False;
                 }
+
             }
         }
-
+            
         // PinholeSpacing must be defined for spinning disk confocals
         if ($this->isNipkowDisk()) {
 
@@ -771,6 +870,12 @@ class ParameterSetting extends Setting {
             }
         }
 
+        // If the aberration correction is inactive, there is no point in
+        // checking the other parameters.
+        if ($this->parameter("PerformAberrationCorrection")->value() == 0) {
+            return $noErrorsFound;
+        }
+        
         // CoverslipRelativePosition
         $valueSet = isset($postedParameters["CoverslipRelativePosition"]) &&
                 $postedParameters["CoverslipRelativePosition"] != '';
@@ -1003,6 +1108,7 @@ class ParameterSetting extends Setting {
                 $names[] = $parameter->name();
             }
         }
+        
         return $names;
     }
 
@@ -1012,11 +1118,13 @@ class ParameterSetting extends Setting {
     */
     public function microscopeParameterNames() {
         $names = array();
+
         foreach ($this->parameter as $parameter) {
             if ($parameter->isForMicroscope()) {
                 $names[] = $parameter->name();
             }
         }
+
         return $names;
     }
 
@@ -1087,13 +1195,11 @@ class ParameterSetting extends Setting {
             if (!$this->isMultiPointOrSinglePointConfocal() &&
                     $parameter->name() == 'PinholeSize')
                 continue;
+            if ($parameter->name() == 'ImageGeometry')
+                continue;
+            if ($parameter->name() == 'ImageFileFormat')
+                continue;
             if ($parameter->name() == 'IsMultiChannel')
-                continue;
-            if (!$this->isThreeDimensional() && 
-                    $parameter->name() == 'ZStepSize')
-                continue;
-            if (!$this->isTimeSeries() && 
-                    $parameter->name() == 'TimeInterval')
                 continue;
             if (!$this->isNipkowDisk() && 
                     $parameter->name() == 'PinholeSpacing')
@@ -1186,60 +1292,6 @@ class ParameterSetting extends Setting {
         $ideal = askHuCore("calculateNyquistRate", $opt);
         // print_r($ideal);
         return array($ideal['xy'], $ideal['z']);
-    }
-
-    /*!
-      \brief	Checks whether the chosen file format is multi channel
-      \todo 	This is currently UNUSED!
-      \return	true if multi channel, false otherwise
-    */
-    public function checkMultiChannelImageParameter() {
-        $result = True;
-        $parameter = $this->parameter('ImageFileFormat');
-        $fileFormat = $parameter->value();
-        if ((!in_array($fileFormat, $this->multiChannelFileFormats()))) {
-            $this->message = "Please select a multichannel file format (" .
-                    implode(", ", $this->multiChannelFileFormats()) . ")!";
-            return False;
-        }
-        if (!in_array($fileFormat, $this->fixedGeometryFileFormats())) {
-            $result = $this->checkGeometry('multi');
-        }
-        /*
-          if (in_array($fileFormat, $this->variableChannelFileFormats())) {
-          $result = $this->checkNumberOfChannels() && $result;
-          }
-         */
-        return $result;
-    }
-
-    /*!
-      \brief	Checks the Image Geometry (two or three dimensional, time series 
-              or single image).
-      \param	$prefix	Either 'single' (for single-channel geometries) or 'multi' 
-              (for multi-channel geometries)
-      \todo	This is currently UNUSED!
-      \return	true if the geometry is valid, false otherwise
-    */
-    public function checkGeometry($prefix) {
-        $result = True;
-        $parameter = $this->parameter('ImageGeometry');
-        $geometry = $parameter->internalValue();
-        if ($geometry == '') {
-            $geometry = '_';
-        }
-        $parts = explode('_', $geometry);
-        $geometry = $parts[1];
-        $prefix_ok = True;
-        if ($prefix != $parts[0]) {
-            $prefix_ok = False;
-        }
-        if (!$parameter->check() || !$prefix_ok) {
-            $this->message = "Please select the image kind (" .
-                    implode(", ", $parameter->possibleValues()) . ")!";
-            return False;
-        }
-        return $result;
     }
 
     /*!
@@ -1477,33 +1529,6 @@ class ParameterSetting extends Setting {
     }
 
     /*!
-      \brief	Checks that this Setting is for a 3D geometry and file format
-      \return	true if both selected geometry and file format are 3D, 
-              false otherwise
-    */
-    public function isThreeDimensional() {
-        $parameter = $this->parameter('ImageGeometry');
-        $value = $parameter->value();
-        $format = $this->parameter('ImageFileFormat');
-        $formatValue = $format->value();
-        return (in_array($value, $this->threeDimensionalGeometries()) &&
-                !in_array($formatValue, $this->fixedGeometryFileFormats()));
-    }
-
-    /*!
-      \brief	Checks that this Setting is for a time series of images
-      \return	true if both selected geometry and file format are for time series,
-              false otherwise
-    */
-    public function isTimeSeries() {
-        if ($this->isFixedGeometryFormat())
-            return False;
-        $parameter = $this->parameter('ImageGeometry');
-        $value = $parameter->value();
-        return (in_array($value, $this->timeSeriesGeometries()));
-    }
-
-    /*!
       \brief	Returns the pixel size (the value of CCDCaptorSizeX) in nm
       \todo	This is redundant!
       \return	pixel size in nm
@@ -1591,13 +1616,7 @@ class TaskSetting extends Setting {
             'OutputFileFormat',
             'MultiChannelOutput',
             'QualityChangeStoppingCriterion',
-            'DeconvolutionAlgorithm',
-            'ColocAnalysis',
-            'ColocChannel',
-            'ColocCoefficient',
-            'ColocThreshold',
-            'ColocMap',
-        );
+            'DeconvolutionAlgorithm' );
 
         foreach ($parameterClasses as $class) {
             $param = new $class;
@@ -1751,14 +1770,123 @@ class TaskSetting extends Setting {
         }
 
         return $noErrorsFound;
+    }    
+
+    /*!
+      \brief	Returns all Task Parameter names
+      \return array of Task Parameter names
+    */
+    public function taskParameterNames() {
+        $names = array();
+        foreach ($this->parameter as $parameter) {
+            if ($parameter->isTaskParameter()) {
+                $names[] = $parameter->name();
+            }
+        }
+        return $names;
     }
 
     /*!
-      \brief	Checks that the posted Post Processing Parameters are all
+      \brief	Returns the number of channels of the Setting
+      \return	the number of channels for the Setting
+    */
+    public function numberOfChannels() {
+        return $this->numberOfChannels;
+    }
+
+    /* !
+      \brief  Displays the setting as a text containing Parameter names 
+              and their values
+      \param	$numberOfChannels Number of channels (optional, default 
+              value is 0)
+     */
+    public function displayString($numberOfChannels = 0) {
+        $result = '';
+        $algorithm = $this->parameter('DeconvolutionAlgorithm')->value();
+        foreach ($this->parameter as $parameter) {
+            if ($parameter->name() == 'SignalNoiseRatio') {
+                $parameter->setAlgorithm($algorithm);
+            }
+            if ($parameter->name() == 'OutputFileFormat') {
+                continue;
+            }
+            if ($parameter->name() == 'MultiChannelOutput') {
+                continue;
+            }
+            $result = $result . 
+                $parameter->displayString($numberOfChannels);
+        }
+        return $result;
+    }
+
+} // End of class taskSetting
+
+/*
+ ============================================================================
+ */
+
+/*!
+  \class	AnalysisSetting
+  \brief	An AnalysisSetting is a complete set of analysis parameters
+*/
+class AnalysisSetting extends Setting {
+
+    /*!
+      \var	$numberOfChannels
+      \brief	Number of channels for the parameters of the TaskSetting
+    */
+
+    /*!
+      \brief	Constructor: constructs and initializes an AnalysisSetting
+    */
+    public function AnalysisSetting() {
+        parent::__construct();
+        $parameterClasses = array(
+            'ColocAnalysis',
+            'ColocChannel',
+            'ColocCoefficient',
+            'ColocThreshold',
+            'ColocMap',
+        );
+
+        foreach ($parameterClasses as $class) {
+            $param = new $class;
+            $name = $param->name();
+            $this->parameter[$name] = $param;
+            $this->numberOfChannels = NULL;
+        }
+    }
+
+    /*!
+      \brief	Returns the name of the database table in which the list of
+              Setting names are stored.
+
+      Besides the name, the table contains the Setting's name, owner and
+      the standard (default) flag. This is an abstract function and must
+      be reimplemented.
+    */
+    public function table() {
+        return "analysis_setting";
+    }
+
+    /*!
+      \brief	Returns the name of the database table in which all the Parameters
+              for the Settings stored in the table specified in table()
+
+      This is an abstract function and must be reimplemented.
+    
+      \see table()
+    */
+    public function parameterTable() {
+        return "analysis_parameter";
+    }
+    
+    /*!
+      \brief	Checks that the posted analysis Parameters are all
                 defined and valid
       \param	$postedParameters	The $_POST array
     */
-    public function checkPostedPostParameters($postedParameters) {
+    public function checkPostedAnalysisParameters($postedParameters) {
         if (count($postedParameters) == 0) {
             $this->message = '';
             return False;
@@ -1766,7 +1894,7 @@ class TaskSetting extends Setting {
 
         $this->message = '';
         $noErrorsFound = True;
-
+        
         $parameter = $this->parameter("ColocAnalysis");
         $parameter->setValue($postedParameters["ColocAnalysis"]);
         $this->set($parameter);
@@ -1847,21 +1975,6 @@ class TaskSetting extends Setting {
         return $noErrorsFound;
     }
     
-
-    /*!
-      \brief	Returns all Task Parameter names
-      \return array of Task Parameter names
-    */
-    public function taskParameterNames() {
-        $names = array();
-        foreach ($this->parameter as $parameter) {
-            if ($parameter->isTaskParameter()) {
-                $names[] = $parameter->name();
-            }
-        }
-        return $names;
-    }
-
     /*!
       \brief	Returns the number of channels of the Setting
       \return	the number of channels for the Setting
@@ -1878,39 +1991,22 @@ class TaskSetting extends Setting {
      */
     public function displayString($numberOfChannels = 0) {
         $result = '';
-        $algorithm = $this->parameter('DeconvolutionAlgorithm')->value();
+
+        $colocAnalysis = $this->parameter("ColocAnalysis")->value();
         foreach ($this->parameter as $parameter) {
-            if ($parameter->name() == 'SignalNoiseRatio') {
-                $parameter->setAlgorithm($algorithm);
+
+            if ($parameter->name() != "ColocAnalysis"
+                && $colocAnalysis == False) {
+                continue;
             }
+            
             $result = $result . 
                 $parameter->displayString($this->numberOfChannels());
         }
         return $result;
     }
 
-    /*!
-      \brief	Returns the TaskSetting as a text containing all parameters
-              and their values. Only the parameter OutputFileFormat is left out.
-   
-      This is used for the web display where the output file format has
-      not been choosen yet.
-    
-      \param	$numberOfChannels Number of channels (optional, default value is 0)
-      \todo	Refactor!
-    */
-    public function displayStringWithoutOutputFileFormat($numberOfChannels = 0) {
-        $parameter = $this->parameter('OutputFileFormat');
-        $parameterList = $this->parameter;
-        unset($parameterList['OutputFileFormat']);
-        $this->parameter = $parameterList;
-        $result = $this->displayString($numberOfChannels);
-        $parameterList['OutputFileFormat'] = $parameter;
-        $this->parameter = $parameterList;
-        return $result;
-    }
-
-} // End of class taskSetting
+} // End of class analysisSetting
 
 /*
  ============================================================================
@@ -1981,3 +2077,36 @@ class JobTaskSetting extends TaskSetting {
     }
 
 } // End of class JobTaskSetting
+
+/*
+ ============================================================================
+ */
+
+/*!
+  \class	JobAnalysisSetting
+  \brief	A job analysis setting is a complete set of analysis parameters
+                that is used when a job is processed by the queue manager.
+*/
+class JobAnalysisSetting extends AnalysisSetting {
+
+    /*!
+      \brief	Returns the name of the database table in which the list of
+              Setting names are stored.
+
+      Besides the name, the table contains the Setting's name, owner and
+      the standard (default) flag.
+    */
+    public function table() {
+        return "job_analysis_setting";
+    }
+
+    /*!
+      \brief	Returns the name of the database table in which all the Parameters
+              for the Settings stored in the table specified in table()
+      \see table()
+    */
+    public function parameterTable() {
+        return "job_analysis_parameter";
+    }
+
+} // End of class JobAnalysisSetting

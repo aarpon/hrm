@@ -91,7 +91,7 @@ function FadeOpacity(elem, fromOpacity, toOpacity, time, fps)
 function FadeOpacityStep(elem, stepNum, steps, fromOpacity,
         delta, timePerStep)
 {
-    e = document.getElementById(elem);
+    var e = document.getElementById(elem);
     SetOpacity(e,
             Math.round(parseInt(fromOpacity) + (delta * stepNum)));
 
@@ -133,9 +133,97 @@ function smoothChangeDiv(div, html, time) {
     }
 }
 
+function checkAgainstFormat(file, selectedFormat) {
 
+        // Both variables as in the 'file_extension' table.
+    var fileFormat    = '';
+    var fileExtension = '';
+    
+        // Pattern ome.tiff        = (\.([^\..]+)|)
+        // Pattern file extension: = \.([^\.\s]+)
+        // Pattern lif subimages:  = [\s\(\)a-zA-Z0-9]*$
+    var nameDivisions;
+    nameDivisions = file.match(/(\.([^\..]+)|)\.([^\.\s]+)[\s\(\)a-zA-Z0-9]*$/);
 
+        // A first check on the file extension.
+    if (nameDivisions != null) {
+        
+        // Specific to ome-tiff.
+        if (typeof nameDivisions[2] !== 'undefined') {
+            if (nameDivisions[2] == 'ome') {
+                fileExtension = nameDivisions[2] + '.';
+            }
+        }
+        
+        // Main extension.
+        if (typeof nameDivisions[3] !== 'undefined') {
+            fileExtension += nameDivisions[3];
+        }
+        
+        switch (fileExtension) {
+            case 'dv':
+            case 'ims':
+            case 'lif':
+            case 'lsm':
+            case 'oif':
+            case 'pic':
+            case 'r3d':
+            case 'stk':
+            case 'zvi':
+                fileFormat = fileExtension;
+                break;
+            case 'h5':
+                fileFormat    = 'hdf5';
+                break;
+            case 'tif':
+            case 'tiff':
+                fileFormat    = 'tiff-generic';
+                fileExtension = "tiff";
+                break;
+            case 'ome.tif':
+            case 'ome.tiff':
+                fileFormat    = 'ome-tiff';
+                fileExtension = "ome.tiff";
+                break;
+            case 'ome':
+                fileFormat    = 'ome-xml';
+                break;
+            case 'ics':
+                fileFormat    = 'ics2';
+                break;
+            default:
+                fileFormat    = '';
+                fileExtension = '';
+        }
+    }    
 
+        // Control over tiffs: this structure corresponds to Leica tiffs.
+    if ((file.match(/[^_]+_(T|t|Z|z|CH|ch)[0-9]+\w+\.\w+/)) != null) {
+        if (fileExtension == 'tiff' || fileExtension == 'tif') {
+            fileFormat = 'tiff-leica';
+        } 
+    }
+
+        // Control over stks: redundant.
+    if ((file.match(/[^_]+_(T|t)[0-9]+\.\w+/)) != null) {
+        if (fileExtension == 'stk') {
+            fileFormat = 'stk';
+        } 
+    }
+
+        // Control over ics's, no distinction between ics and ics2.
+    if (fileExtension == 'ics') {
+        if (selectedFormat == 'ics' || selectedFormat == 'ics2') {
+            fileFormat = selectedFormat;
+        }
+    }
+
+    if (selectedFormat != '' && selectedFormat == fileFormat) {
+        return true;
+    } else {
+        return false;
+    }
+}
 
 function changeOpenerDiv (div, html) {
     window.opener.document.getElementById(div).innerHTML= html;
@@ -174,6 +262,7 @@ function deleteImages() {
 
 }
 
+
 function checkSelection() {
 
     sel = document.getElementsByTagName('select');
@@ -186,6 +275,7 @@ function checkSelection() {
 }
 
 function confirmSubmit() {
+
     if (action != '') {
         changeDiv('actions', 'Please wait...<input type="hidden" name="'+action+'" value="1">');
         // Make the message vanish after a reasonable time.
@@ -245,8 +335,6 @@ function confirmUpload() {
     return true;
 }
 
-
-
 function removeFile(file) {
 
     changeDiv('upfile_'+file, '');
@@ -257,7 +345,6 @@ function removeFile(file) {
     if (cnt == 0) {
         cancelSelection();
     }
-
 }
 
 function addFileEntry() {
@@ -354,8 +441,6 @@ function uploadImages(maxFile, maxPost, archiveExt) {
 
 }
 
-
-
 function downloadImages() {
 
     changeDiv('message', '');
@@ -380,6 +465,7 @@ function cancelSelection() {
     action = '';
     changeDiv('message', '');
     changeDiv('upMsg', '');
+    changeDiv('omeroSelection','');
     changeDiv('actions', '');
     changeDiv('up_form', '');
     changeDiv('selection', control);
@@ -387,7 +473,7 @@ function cancelSelection() {
 
 function imgPrev(infile, mode, gen, compare, index, dir, referer, data) {
 
-    file = unescape(infile);
+    var file = unescape(infile);
 
     if (mode == 0 && gen == 1) {
         try
@@ -503,7 +589,7 @@ function imgPrev(infile, mode, gen, compare, index, dir, referer, data) {
                   +        'openWindow(\'' + link + '\'); '
                   +    '"'
                   + '><div class="expandedView">'
-                  + '<img src="images/eye.png"> Click for detailed view'
+                  + '<img src="images/eye.png">&nbsp;&nbsp;Go to detailed results'
                   + '</div>'
                   + html + '</a>' ;
     }
@@ -516,7 +602,6 @@ function imgPrev(infile, mode, gen, compare, index, dir, referer, data) {
     window.infoShown = false;
     window.previewSelected = html;
 }
-
 
 function showInstructions() {
     if (window.infoShown) return;

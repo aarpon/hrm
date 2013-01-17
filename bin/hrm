@@ -18,21 +18,21 @@ fi
 create() {
 	if [ ! -d "$HRM_DATA"/"$1" ]
 	then
-		$CMD mkdir "$HRM_DATA"/"$1"
-		$CMD mkdir "$HRM_DATA"/"$1"/"$HRM_SOURCE"
-		$CMD mkdir "$HRM_DATA"/"$1"/"$HRM_DEST"
+		$CMD mkdir -p "$HRM_DATA"/"$1"
+		$CMD mkdir -p "$HRM_DATA"/"$1"/"$HRM_SOURCE"
+		$CMD mkdir -p "$HRM_DATA"/"$1"/"$HRM_DEST"
 		# sudo -u "$SUSER" chown -R "$2":users "$HRM_DATA"/"$1"
 		$CMD chmod -R 0777 "$HRM_DATA"/"$1"
 
 	else
 		if [ ! -d "$HRM_DATA"/"$1"/"$HRM_SOURCE" ]
 		then
-			$CMD mkdir "$HRM_DATA"/"$1"/"$HRM_SOURCE"
+			$CMD mkdir -p "$HRM_DATA"/"$1"/"$HRM_SOURCE"
 		fi
 		
 		if [ ! -d "$HRM_DATA"/"$1"/"$HRM_DEST" ]
 		then
-			$CMD mkdir "$HRM_DATA"/"$1"/"$HRM_DEST"
+			$CMD mkdir -p "$HRM_DATA"/"$1"/"$HRM_DEST"
 		fi
                 # sudo -u "$SUSER" chown -R "$2":users "$HRM_DATA"/"$1"
                 $CMD chmod -R 0777 "$HRM_DATA"/"$1"

@@ -1,7 +1,7 @@
 <?php
 /**
  * PHP LDAP CLASS FOR MANIPULATING ACTIVE DIRECTORY 
- * Version 4.0.3
+ * Version 4.0.4
  * 
  * PHP Version 5 with SSL and LDAP support
  * 
@@ -9,7 +9,7 @@
  *   email: scott@wiggumworld.com, adldap@richardhyland.com
  *   http://adldap.sourceforge.net/
  * 
- * Copyright (c) 2006-2011 Scott Barnett, Richard Hyland
+ * Copyright (c) 2006-2012 Scott Barnett, Richard Hyland
  * 
  * We'd appreciate any improvements or additions to be submitted back
  * to benefit the entire community :)
@@ -28,10 +28,10 @@
  * @package adLDAP
  * @subpackage Utils
  * @author Scott Barnett, Richard Hyland
- * @copyright (c) 2006-2011 Scott Barnett, Richard Hyland
+ * @copyright (c) 2006-2012 Scott Barnett, Richard Hyland
  * @license http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html LGPLv2.1
  * @revision $Revision: 97 $
- * @version 4.0.3
+ * @version 4.0.4
  * @link http://adldap.sourceforge.net/
  */
 require_once(dirname(__FILE__) . '/../adLDAP.php');
@@ -40,7 +40,7 @@ require_once(dirname(__FILE__) . '/../adLDAP.php');
 * UTILITY FUNCTIONS
 */
 class adLDAPUtils {
-    const ADLDAP_VERSION = '4.0.3';
+    const ADLDAP_VERSION = '4.0.4';
     
     /**
     * The current adLDAP connection via dependency injection
@@ -255,7 +255,7 @@ class adLDAPUtils {
     * @param long $windowsTime
     * @return long $unixTime
     */
-    public function convertWindowsTimeToUnixTime($windowsTime) {
+    public static function convertWindowsTimeToUnixTime($windowsTime) {
       $unixTime = round($windowsTime / 10000000) - 11644477200; 
       return $unixTime; 
     }

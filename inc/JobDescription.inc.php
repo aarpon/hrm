@@ -38,10 +38,22 @@ class JobDescription {
   public $taskSetting;
 
   /*!
+    \var    $analysisSetting
+    \brief  The Job's AnalysisSetting
+  */
+  public $analysisSetting;
+
+  /*!
     \var    $files
     \brief  The list of files to be processed by the Job
   */
   private $files;
+
+  /*!
+   \var     $autoseries
+   \brief   Boolean, whether or not to load a series automatically.
+  */
+  private $autoseries;
 
   /*!
     \var    $owner
@@ -136,11 +148,27 @@ class JobDescription {
   }
 
   /*!
+    \brief Returns the AnalysisSetting associated with the job
+    \return an AnalysisSetting object
+  */
+  public function analysisSetting() {
+    return $this->analysisSetting;
+  }
+
+  /*!
     \brief Returns the files associated with the job
     \return array of file names
   */
   public function files() {
     return $this->files;
+  }
+
+  /*!
+    \brief Returns the automatically load series mode of the job
+    \return boolean: true or false
+  */
+  public function autoseries() {
+    return $this->autoseries;
   }
 
   /*!
@@ -161,11 +189,21 @@ class JobDescription {
   }
 
   /*!
+    \brief Sets the AnalysisSetting for the job
+    \param $setting An AnalysisSetting object
+  */
+  public function setAnalysisSetting( AnalysisSetting $setting) {
+    $this->analysisSetting = $setting;
+  }
+
+  /*!
     \brief Sets the list of files for the job
     \param $files Array of file names
+    \param $autoseries whether or not file series should be loaded automatically
   */
-  public function setFiles($files) {
+  public function setFiles($files, $autoseries = FALSE) {
     $this->files = $files;
+    $this->autoseries = $autoseries;
   }
 
   /*!
@@ -234,13 +272,25 @@ class JobDescription {
     $jobParameterSetting->setName($this->id);
     $jobParameterSetting->copyParameterFrom($this->parameterSetting);
     $result = $result && $jobParameterSetting->save();
+    
     $taskParameterSetting = new JobTaskSetting();
     $taskParameterSetting->setOwner($this->owner);
     $taskParameterSetting->setName($this->id);
     $taskParameterSetting->copyParameterFrom($this->taskSetting);
     $result = $result && $taskParameterSetting->save();
+
+    $analysisParameterSetting = new JobAnalysisSetting();
+    $analysisParameterSetting->setOwner($this->owner);
+    $analysisParameterSetting->setName($this->id);
+    $analysisParameterSetting->copyParameterFrom($this->analysisSetting);
+    $result = $result && $analysisParameterSetting->save();
+    
     $db = new DatabaseConnection();
-    $result = $result && $db->saveJobFiles($this->id, $this->owner, $this->files);
+    $result = $result && $db->saveJobFiles($this->id,
+                                           $this->owner,
+                                           $this->files,
+                                           $this->autoseries);
+
     $queue = new JobQueue();
     $result = $result && $queue->queueJob($this);
     if (!$result) {
@@ -269,6 +319,7 @@ class JobDescription {
   */
   public function load() {
     $db = new DatabaseConnection();
+    
     $parameterSetting = new JobParameterSetting;
     $owner = new User;
     $name = $db->userWhoCreatedJob($this->id);
@@ -277,13 +328,23 @@ class JobDescription {
     $parameterSetting->setName($this->id);
     $parameterSetting = $parameterSetting->load();
     $this->setParameterSetting($parameterSetting);
+    
     $taskSetting = new JobTaskSetting;
     $taskSetting->setNumberOfChannels($parameterSetting->numberOfChannels());
     $taskSetting->setName($this->id);
     $taskSetting->setOwner($owner);
     $taskSetting = $taskSetting->load();
     $this->setTaskSetting($taskSetting);
-    $this->setFiles($db->getJobFilesFor($this->id()));
+
+    $analysisSetting = new JobAnalysisSetting;
+    $analysisSetting->setNumberOfChannels($parameterSetting->numberOfChannels());
+    $analysisSetting->setName($this->id);
+    $analysisSetting->setOwner($owner);
+    $analysisSetting = $analysisSetting->load();
+    $this->setAnalysisSetting($analysisSetting);
+
+    
+    $this->setFiles($db->getJobFilesFor($this->id()), $db->getSeriesModeForId($this->id()));
   }
 
   /*!
@@ -293,6 +354,7 @@ class JobDescription {
   public function copyFrom( JobDescription $aJobDescription ) {
     $this->setParameterSetting($aJobDescription->parameterSetting());
     $this->setTaskSetting($aJobDescription->taskSetting());
+    $this->setAnalysisSetting($aJobDescription->analysisSetting());
     $this->setOwner($aJobDescription->owner());
     $this->setGroup($aJobDescription->group());
   }
@@ -476,6 +538,18 @@ class JobDescription {
 
     return $result;
   }
+
+  /*!
+   \brief     Convenience function to get all the parameters of the task setting.
+   \return    A string with all the parameters of the task setting.
+  */
+  public function taskSettingAsString( ) {
+      $numChannels = $this->parameterSetting()->parameter( "NumberOfChannels" );
+      $numChannels = $numChannels->value();
+      
+      return $this->taskSetting()->displayString( $numChannels );
+  }
+  
 
 /*
                               PRIVATE FUNCTIONS

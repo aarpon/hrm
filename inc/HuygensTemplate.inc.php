@@ -208,6 +208,12 @@ class HuygensTemplate {
     private $deconSetting;
 
     /*!
+      \var    $analysisSetting
+      \brief  An AnalysisSetting object: unformatted analysis parameters.
+    */
+    private $analysisSetting;
+
+    /*!
      \var     $compareZviews
      \brief   A boolean to know whether a Z slicer will be created.
     */
@@ -271,9 +277,10 @@ class HuygensTemplate {
      \param       $jobDescription JobDescription object
     */
     private function initialize($jobDescription) {
-        $this->jobDescription = $jobDescription;
-        $this->microSetting   = $jobDescription->parameterSetting;
-        $this->deconSetting   = $jobDescription->taskSetting;
+        $this->jobDescription  = $jobDescription;
+        $this->microSetting    = $jobDescription->parameterSetting;
+        $this->deconSetting    = $jobDescription->taskSetting;
+        $this->analysisSetting = $jobDescription->analysisSetting;
 
         $this->initializeImg();
         $this->initializeThumbCounter();
@@ -1585,7 +1592,7 @@ class HuygensTemplate {
     */
     private function getColocalization( ) 
     {    
-        return $this->deconSetting->parameter('ColocAnalysis')->value();
+        return $this->analysisSetting->parameter('ColocAnalysis')->value();
     }
 
     /*!
@@ -1593,7 +1600,7 @@ class HuygensTemplate {
      \return      Which channels to use in the colocalization analysis.
     */
     private function getColocChannels( ) {
-        $colocChannels = $this->deconSetting->parameter('ColocChannel')->value();
+        $colocChannels = $this->analysisSetting->parameter('ColocChannel')->value();
         
             /* Do not count empty elements. Do count channel '0'. */
         return array_filter($colocChannels, 'strlen');
@@ -1606,7 +1613,7 @@ class HuygensTemplate {
     private function getColocCoefficients( ) 
     {
         $colocCoefficients = "";
-        $coefArr = $this->deconSetting->parameter('ColocCoefficient')->value();
+        $coefArr = $this->analysisSetting->parameter('ColocCoefficient')->value();
 
         foreach ($coefArr as $key => $coefficient) {
             $colocCoefficients .= $coefficient . " ";
@@ -1621,7 +1628,7 @@ class HuygensTemplate {
     */
     private function getColocMap( ) 
     {    
-        return $this->deconSetting->parameter('ColocMap')->value();
+        return $this->analysisSetting->parameter('ColocMap')->value();
     }
 
     /*!
@@ -1629,7 +1636,7 @@ class HuygensTemplate {
      \return      The colocalization threshold mode.
     */
     private function getColocThreshMode( ) {
-        $bgParam = $this->deconSetting->parameter("ColocThreshold");
+        $bgParam = $this->analysisSetting->parameter("ColocThreshold");
         $bgValue = $bgParam->value();
 
         if ($bgValue[0] == "auto") {
@@ -1648,8 +1655,8 @@ class HuygensTemplate {
         if ($this->getColocThreshMode() == "auto") {
             return 0.0;
         } elseif ($this->getColocThreshMode() == "manual") {
-            $deconSetting = $this->deconSetting;
-            $bgRate = $deconSetting->parameter("ColocThreshold")->value();
+            $analysisSetting = $this->analysisSetting;
+            $bgRate = $analysisSetting->parameter("ColocThreshold")->value();
             return $bgRate[$channel];
         } else {
             error_log("Unknown colocalization threshold mode.");
@@ -2200,23 +2207,27 @@ class HuygensTemplate {
     private function isEligibleForSlicers($image) {
         global $maxComparisonSize;
 
+        $this->compareZviews = TRUE;
+        $this->compareTviews = TRUE;
+
         if ($maxComparisonSize == 0) {
             $this->compareZviews = FALSE;
             $this->compareTviews = FALSE;
             return;
         }
-
-        /* The maximum number of pixels per dimension that the JPEG libraries 
-         can handle. If the image is larger than this, we won't be able to
-         generate a slicer preview. */
-        $maxPixelsPerDim = 65000;
-
+        
         $imgDims = $this->getImageDimensions($image);
 
         $imgSizeX = $imgDims['sizeX'];
         $imgSizeY = $imgDims['sizeY'];
         $imgSizeZ = $imgDims['sizeZ'];
         $imgSizeT = $imgDims['sizeT'];
+
+        if ($imgSizeX == 0 && $imgSizeY == 0) {
+            $this->compareZviews = FALSE;
+            $this->compareTviews = FALSE;
+            return;
+        }
 
         if ($imgSizeX < $maxComparisonSize) {
             $imgSizeX = $maxComparisonSize;
@@ -2226,14 +2237,16 @@ class HuygensTemplate {
             $imgSizeY = $maxComparisonSize;
         }
 
-        $this->compareZviews = TRUE;
-        $this->compareTviews = TRUE;
-
         /* It could happen that even if imgSizeX and imgSizeY are small the image
          contains so many slices or time frames that the slicer gets huge. */
         $slicerPixelsX  = 2 * $imgSizeX;
         $slicerPixelsYZ = $imgSizeY * $imgSizeZ;
         $slicerPixelsYT = $imgSizeY * $imgSizeT;
+
+            /* The maximum number of pixels per dimension that the JPEG libraries 
+         can handle. If the image is larger than this, we won't be able to
+         generate a slicer preview. */
+        $maxPixelsPerDim = 65000;
 
         if ($slicerPixelsX >= $maxPixelsPerDim) {
             $this->compareZviews = FALSE;
@@ -2255,17 +2268,13 @@ class HuygensTemplate {
      \return      The series mode: whether auto or off.
     */
     private function getSeriesMode( ) {
-        $microSetting = $this->microSetting;
-        $imageGeometry = $microSetting->parameter("ImageGeometry")->value();
- 
-        $srcInfo = pathinfo($this->srcImage);        
-        if ((preg_match("/stk/i",$srcInfo['extension'])
-             || preg_match("/tif/i",$srcInfo['extension']))
-            && preg_match("/time/",$imageGeometry)) {
+
+        if ($this->jobDescription->autoseries()) {
             $seriesMode = "auto";
         } else {
             $seriesMode = "off";
         }
+        
         return $seriesMode;
     }
 

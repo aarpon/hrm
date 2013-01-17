@@ -48,7 +48,7 @@ include("header.inc.php");
 
     <div id="content">
 
-      <h3>System summary</h3>
+      <h3><img alt="Summary" src="./images/system_title.png" width="40"/>&nbsp;System summary</h3>
 
       <div id="system">
         <table>
@@ -94,7 +94,7 @@ include("header.inc.php");
           </tr>
           <tr>
             <td class="key">
-                HuCore version
+                HuCore current version
             </td>
             <td class="value">
                 <?php echo System::huCoreVersionAsString(); ?>
@@ -102,12 +102,88 @@ include("header.inc.php");
           </tr>
           <tr>
             <td class="section">
-                System
+                Licenses in use
             </td>
             <td class="value">
                 &nbsp;
             </td>
           </tr>
+          <tr>
+            <td class="key">
+                HuCore license file
+            </td>
+            <td class="value">
+                <?php
+                    if (System::hucoreHasValidLicense()) {
+                        echo "valid";
+                    } else {
+                        echo "missing or invalid";
+                    }
+                ?>
+            </td>
+          </tr>         
+          <tr>
+            <td class="key">
+                Server type
+            </td>
+            <td class="value">
+                <?php echo System::hucoreServerType(); ?>
+            </td>
+          </tr>         
+          <tr>
+            <td class="key">
+                Microscope types
+            </td>
+            <td class="value">
+                <?php
+                $micro = array();
+                if (System::hasLicense("widefield")) {
+                    $micro[] = "widefield";
+                }
+                if (System::hasLicense("confocal")) {
+                    $micro[] = "single-point confocal";
+                }
+                if (System::hasLicense("nipkow-disk")) {
+                    $micro[] = "multi-point confocal";
+                }
+                if (System::hasLicense("multi-photon")) {
+                    $micro[] = "two photon";
+                }
+                if (count($micro) == 0) {
+                    $microStrg = "no microscope licenses.";
+                } else {
+                    $microStrg = implode("<br />", $micro);
+                }
+                echo $microStrg;
+                ?>
+            </td>
+          </tr>
+          <tr>
+            <td class="key">
+                Analysis modules
+            </td>
+            <td class="value">
+                <?php
+                $analysis = array();
+                if (System::hasLicense("coloc")) {
+                    $analysis[] = "colocalization";
+                }
+                if (count($analysis) == 0) {
+                    $analysisStrg = "no analysis licenses.";
+                } else {
+                    $analysisStrg = implode("<br />", $analysis);
+                }
+                echo $analysisStrg;
+                ?>
+            </td>
+          </tr>          
+          <tr>
+            <td class="section">
+                System
+            </td>
+            <td class="value">
+                &nbsp;
+            </td>
           <tr>
             <td class="key">
                 Operating system

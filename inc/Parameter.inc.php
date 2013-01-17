@@ -104,10 +104,15 @@ abstract class Parameter {
 		\return	true if the value is *not set* (i.e. null)
 	*/
 	public function notSet( ) {
-		if ( is_array( $this->value ) ) {
-			return( $this->value[ 0 ] == null );
+		if (is_array($this->value)) {
+            foreach ($this->value as $value) {
+                if ($value != null) {
+                    return false;
+                }
+            }
+			return true;
 		}
-		return( $this->value == null );
+		return($this->value == null);
 	}
 
 	/*!
@@ -802,6 +807,7 @@ class NumericalArrayParameter extends NumericalParameter {
 		\param	$number	Number of channels
 	*/
 	public function setNumberOfChannels($number) {
+
 	    if ( $number == $this->numberOfChannels ) {
 	        return;
 	    }
@@ -836,6 +842,19 @@ class NumericalArrayParameter extends NumericalParameter {
 	public function check() {
 	    $this->message = '';
 		$result = True;
+        // First check that all values are set
+        if (array_search("", array_slice($this->value, 
+                0, $this->numberOfChannels)) !== FALSE) {
+            if ($this->mustProvide()) {
+                $this->message = 'Some of the values are missing!';
+            } else {
+                $this->message = 'You can omit typing values for this ' .
+                    'parameter. If you decide to provide them, though, ' .
+                        'you must provide them all.';
+            }
+            return false;
+        }
+        // Now check the values themselves
 		for ( $i = 0; $i < $this->numberOfChannels; $i++ ) {
 	        $result = $result && parent::checkValue( $this->value[ $i ] );
 	    }
@@ -1203,10 +1222,15 @@ class ImageFileFormat extends SingleOrMultiChannelParameter {
 		\brief	Returns all image file extensions
 		\return array of file extensions
 	*/
-	public function fileExtensions() {
-		$db = new DatabaseConnection();
-		$result = $db->fileExtensions($this->value());
-		return $result;
+	public function fileExtensions($value = NULL) {
+
+            if ($value == NULL) {
+                $value = $this->value();
+            }
+            
+            $db = new DatabaseConnection();
+            $result = $db->fileExtensions($value);
+            return $result;
 	}
 
 	/*!
@@ -1333,6 +1357,29 @@ class MicroscopeType extends ChoiceParameter {
 		$result = $db->translationFor($this->name, $this->value);
 		return $result;
 	}
+    
+	/*!
+		\brief	Returns true if the given microscope type has a license
+
+        \param  $value Microscope type to check for a valid license; $value
+                must be one one of the possible values.
+		\return true if the microscope type is licensed, false otherwise
+	*/
+	static public function hasLicense($value) {
+		$db = new DatabaseConnection();
+        switch ($value) {
+            case 'widefield':
+                return $db->hasLicense("widefield");
+            case 'multipoint confocal (spinning disk)':
+                return $db->hasLicense("nipkow-disk");
+            case 'single point confocal':
+                return $db->hasLicense("confocal");
+            case 'two photon':
+                return $db->hasLicense("multi-photon");
+            default:
+                return false;
+        }
+	}    
 }
 
 /*
@@ -2076,7 +2123,8 @@ class BackgroundOffsetPercent extends AnyTypeArrayParameter {
 		return $result;
 	}
 
-	public function displayString( ) {
+	public function displayString( $numberOfChannels = 0) {
+            
 		if ( $this->value[ 0 ] == 'auto' ) {
 			$name = ' background estimation';
 			$value = 'auto';
@@ -2084,12 +2132,12 @@ class BackgroundOffsetPercent extends AnyTypeArrayParameter {
 			$name = ' background estimation';
 			$value = 'in/near object';
 		} else {
-			if ( $this->numberOfChannels == 1 ) {
+			if ( $numberOfChannels == 1 ) {
 				$name = 'background absolute value';
 				$value = $this->value[ 0 ];
 			} else {
 				$name = ' background absolute values';
-				$value = array_slice( $this->value, 0, $this->numberOfChannels);
+				$value = array_slice( $this->value, 0, $numberOfChannels);
 				$value = implode( $value, ", " );
 			}
 		}
@@ -2255,22 +2303,23 @@ class OutputFileFormat extends ChoiceParameter {
 	public function extension( ) {
 		$result = $this->translatedValue( );
 		switch ( $result ) {
-			case "tiff":
-			case "tiff16":
-				return "tif";
-			case "imaris":
-				return "ims";
-			case "ome":
-				return "ome";
-			case "ics":
-			case "ics2":
-				return "ics";
-			case "hdf5":
-				return "h5";
-            case "r3d":
-                return "r3d";
-			default:
-				return "";
+                    case "tiff":
+                    case "tiffrgb":
+                    case "tiff16":
+                        return "tif";
+                    case "imaris":
+                        return "ims";
+                    case "ome":
+                        return "ome";
+                    case "ics":
+                    case "ics2":
+                        return "ics";
+                    case "hdf5":
+                        return "h5";
+                    case "r3d":
+                        return "r3d";
+                    default:
+                        return "";
 		}
 	}
 }
@@ -2319,14 +2368,21 @@ class ColocAnalysis extends ChoiceParameter {
             parent::__construct("ColocAnalysis");
 	}
 
-	/*!
-         \brief	Checks whether the Parameter is a Task Parameter
-         \return    true if the Parameter is a Task Parameter, false otherwise
+       /*!
+		\brief	Returns the string representation of the Parameter
+		\param	$numberOfChannels	This is ignored
+		\return	string representation of the Parameter
 	*/
-	public function isTaskParameter() {
-		return True;
+	public function displayString( $numberOfChannels = 0 ) {
+		if ($this->value( ) == 0 ) {
+			$value = "no";
+		} else {
+			$value = "yes";
+		}
+		$result = $this->formattedName( );
+		$result = $result . $value . "\n";
+		return $result;
 	}
-
 }
 
 /*!
@@ -2341,14 +2397,6 @@ class ColocChannel extends NumericalArrayParameter {
 	*/
 	public function __construct() {
             parent::__construct("ColocChannel");
-	}
-
-        /*!
-         \brief	Checks whether the Parameter is a Task Parameter
-         \return    true if the Parameter is a Task Parameter, false otherwise
-	*/
-	public function isTaskParameter() {
-		return True;
 	}
 
         /*! 
@@ -2367,6 +2415,22 @@ class ColocChannel extends NumericalArrayParameter {
             }
             return $result;
 	}
+
+        /*!
+		\brief	Returns the string representation of the Parameter
+		\return	string representation of the Parameter
+	*/
+	public function displayString( $numberOfChannels = 0 ) {
+            
+            $result = $this->formattedName( );
+            
+                /* Do not count empty elements. Do count channel '0'. */
+            $channels = array_filter($this->value, 'strlen');
+            $value = implode(", ", $channels);
+            $result = $result . $value . "\n";
+            
+            return $result;
+	}
 }
 
 /*!
@@ -2382,15 +2446,7 @@ class ColocCoefficient extends AnyTypeArrayParameter {
 	public function __construct() {
             parent::__construct("ColocCoefficient");
 	}
-
-        /*!
-         \brief	Checks whether the Parameter is a Task Parameter
-         \return    true if the Parameter is a Task Parameter, false otherwise
-	*/
-	public function isTaskParameter() {
-		return True;
-	}
-
+        
         /*!
          \brief	Sets the value of the parameter
          \param	$value	Value for the parameter
@@ -2425,6 +2481,22 @@ class ColocCoefficient extends AnyTypeArrayParameter {
                  the 'ColocCoefficient' class. */
             return;
         }
+
+        /*!
+         \brief	Returns the string representation of the Parameter
+         \return	string representation of the Parameter
+	*/
+	public function displayString( $numberOfChannels = 0 ) {
+            
+            $result = $this->formattedName( );
+            
+                /* Do not count empty elements. */
+            $values = array_filter($this->value, 'strlen');
+            $value = implode(", ", $values);
+            $result = $result . $value . "\n";
+            
+            return $result;
+	}
         
 }
 
@@ -2463,11 +2535,19 @@ class ColocThreshold extends AnyTypeArrayParameter {
 	}
 
         /*!
-         \brief	Checks whether the Parameter is a Task Parameter
-         \return    true if the Parameter is a Task Parameter, false otherwise
+         \brief	Returns the string representation of the Parameter
+         \return	string representation of the Parameter
 	*/
-	public function isTaskParameter() {
-		return True;
+	public function displayString( $numberOfChannels = 0 ) {
+            
+            $result = $this->formattedName( );
+            
+                /* Do not count empty elements. */
+            $channels = array_filter($this->value, 'strlen');
+            $value = implode(", ", $channels);
+            $result = $result . $value . "\n";
+            
+            return $result;
 	}
 }
 
@@ -2485,17 +2565,8 @@ class ColocMap extends ChoiceParameter {
 	public function __construct() {
             parent::__construct("ColocMap");
 	}
-
-    /*!
-         \brief	Checks whether the Parameter is a Task Parameter
-         \return    true if the Parameter is a Task Parameter, false otherwise
-	*/
-	public function isTaskParameter() {
-		return True;
-	}
+        
 }
-
-
 
 /*
 ============================================================================

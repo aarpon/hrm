@@ -18,6 +18,19 @@ if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
   header("Location: " . "login.php"); exit();
 }
 
+// Keep track of who the referer is: the filemanager (src) will allow returning
+// to some selected pages
+if ( isset( $_SERVER['HTTP_REFERER'] ) ) {
+    if ( strpos( $_SERVER['HTTP_REFERER'], 'home.php' ) ||
+         strpos( $_SERVER['HTTP_REFERER'], 'select_parameter_settings.php' ) ||
+         strpos( $_SERVER['HTTP_REFERER'], 'select_task_settings.php' ) ||
+         strpos( $_SERVER['HTTP_REFERER'], 'select_analysis_settings.php' ) ||
+         strpos( $_SERVER['HTTP_REFERER'], 'select_images.php' ) ||
+         strpos( $_SERVER['HTTP_REFERER'], 'create_job.php' ) ) {
+        $_SESSION['filemanager_referer'] = $_SERVER['HTTP_REFERER'];
+    }
+}
+
 if (isset($_SERVER['HTTP_REFERER']) &&
         !strstr($_SERVER['HTTP_REFERER'], 'job_queue')) {
   $_SESSION['referer'] = $_SERVER['HTTP_REFERER'];
@@ -209,6 +222,7 @@ if (isset($_POST['delete'])) {
         }
 }
 
+
 // To (re)generate the thumbnails, don't use template data, as it is not present
 // here.
 
@@ -219,36 +233,29 @@ if ( $browse_folder == "dest" ) {
     // Number of displayed files.
     $size = 15;
     $multiple_files = true;
-    $page_title = "Deconvolved images";
-    $explanation_text = "These are the <b>deconvolved image files</b> " .
+    $page_title = "Results";
+    $explanation_text = "These are the <b>processed image files</b> " .
     "currently in your file area.";
-    $form_title = "Your files";
-    if ( !$_SESSION['user']->isAdmin()) {
-        $fileBrowserLinks = '<li><a href="file_manager.php">'.
-            '<img src="images/filemanager_small.png" alt="file manager" />'.
-            '&nbsp;File manager</a></li>';
-    } else {
-        $fileBrowserLinks = '';
-    }
+    $form_title = "Your result files";
 
     $info = "<h3>Quick help</h3>
             <p>Click on a file name to see a preview.</p>
             <p><strong>Click on <img src = \"images/eye.png\" /> Detailed View
-            over the file preview to get additional information.</strong></p>";
-
+            over the file preview to access previews, reports and 
+            analysis results.</strong></p>";
+    
     if ($allowHttpTransfer) {
-    $info .= "<p>Select the files you want to download (you can <b>SHIFT-</b> 
+        $info .= "<p>Select the files you want to download (you can <b>SHIFT-</b> 
             and <b>CTRL-click</b> for multiple selection) and press the
             <b>download</b> icon to compress the files into an archive and 
             start the download process. (Please mind that large files may take
             a <b>long time </b>to be packaged before downloading.)</p>
             <p> Use the <b>delete</b> icon to delete the selected files
             instead.</p>";
-    $file_buttons[] = "download";
+        $file_buttons[] = "download";
     }
     $info .= "<p><strong>Move your mouse pointer over the action buttons at " .
       "the bottom to redisplay this help.</strong></p>";
-
 } else {
     $browse_folder = "src";
     $size = 15;
@@ -256,14 +263,7 @@ if ( $browse_folder == "dest" ) {
     $page_title = "Raw images";
     $explanation_text = "These are the <b>original image files</b> currently " .
       "in your file area.";
-    $form_title = "Your files";
-    if ( !$_SESSION['user']->isAdmin()) {
-        $fileBrowserLinks = '<li><a href="file_manager.php">'.
-            '<img src="images/filemanager_small.png" alt="file manager" />'.
-            '&nbsp;File manager</a></li>';
-    } else {
-        $fileBrowserLinks = '';
-    }
+    $form_title = "Your raw files";
 
     $info = "<h3>Quick help</h3>
             <p>Click on a file name to see (or create) a preview.</p>
@@ -271,6 +271,8 @@ if ( $browse_folder == "dest" ) {
             <b>CTRL-click</b> for multiple selection) and press the
             <b>delete</b> icon to delete them.
             </p>";
+
+    
     if (System::uploadEnabled() == "enabled") {
 
         $validExtensions = str_replace( " ", ", ",
@@ -290,9 +292,34 @@ $top_navigation = '
             <li>
                 <img src="images/user.png" alt="user" />
                 &nbsp;'.$_SESSION['user']->name().'
-            </li>
-            '.$fileBrowserLinks.'
+            </li>';
+        
+if ( isset( $_SESSION['filemanager_referer'] ) ) {
+    $referer = $_SESSION['filemanager_referer'];
+        if ( strpos( $referer, 'home.php' ) === False ) {
+$top_navigation .= '
             <li>
+                <a href="' . $referer . '">
+                    <img src="images/back_small.png" alt="back" />&nbsp;Back</a>
+            </li>';
+       }
+    }
+
+    if ( $browse_folder == "dest" ) {
+        $top_navigation .= '
+            <li>
+                <a href="file_management.php?folder=src">
+                    <img src="images/rawdata_small.png" alt="raw images" />&nbsp;&nbsp;Raw images</a>
+            </li>';
+    } else {
+        $top_navigation .= '
+            <li>
+                <a href="file_management.php?folder=dest">
+                    <img src="images/results_small.png" alt="results" />&nbsp;&nbsp;Results</a>
+            </li>';
+    }
+    
+$top_navigation .= '<li>
                 <a href="'.getThisPageName().'?home=home">
                     <img src="images/home.png" alt="home" />
                     &nbsp;Home
@@ -316,7 +343,7 @@ $control_buttons = '
 <input name="OK" type="hidden" />
 ';
 
-
+include ("omero_actions.php");
 
 include("./inc/FileBrowser.inc.php");
 

@@ -12,6 +12,7 @@
 */
 
 require_once( "inc/Util.inc.php" );
+require_once( "inc/OmeroConnection.inc.php");
 
 /*!
   \brief  Generates basic buttons for the image file browser
@@ -22,6 +23,7 @@ require_once( "inc/Util.inc.php" );
   \param  $type   One of 'download', 'upload', 'delete', or 'update'.
  */
 function fileButton($type) {
+
   global $decompressBin;
 
   $error = false;
@@ -34,7 +36,7 @@ function fileButton($type) {
     case "download":
       $onClick = "downloadImages()";
       $name = "download";
-      $tip = 'Pack selected images and related files, and download';
+      $tip = 'Compress and download';
       break;
 
     case "upload":
@@ -54,7 +56,7 @@ function fileButton($type) {
     case "delete":
       $onClick = "deleteImages()";
       $name = "delete";
-      $tip = 'Delete selected images and related files';
+      $tip = 'Delete selected images';
       break;
 
     case "update":
@@ -68,6 +70,25 @@ function fileButton($type) {
       $class = "icon update";
       $tip = "Refresh image list";
       break;
+      
+    case "omeroImport":
+        $name    = "getOmeroData";
+        $value   = "OMERO Data";
+        $mode    = "post";
+        $onClick = "setActionToUpdate();";
+        $class = "icon omero";
+        $tip = 'Select and import data for deconvolution '.
+               'from your OMERO account';
+        break;
+
+    case "omeroExport":
+        $name    = "getOmeroData";
+        $value   = "OMERO Data";
+        $mode    = "post";
+        $onClick = "setActionToUpdate();";
+        $class = "icon omero";
+        $tip = 'Select and export deconvolved data to your OMERO account';
+        break;
 
     default:
       $error = "No button of type $type";
@@ -123,8 +144,53 @@ if (isset($_POST['update'])) {
   }
 }
 
+
+
+    /*************** Code for the interaction with Omero. ***************/
+global $omero_transfers;
+if ($omero_transfers) {
+    if (isset($_SESSION['omeroConnection'])) {
+        $omeroConnection = $_SESSION['omeroConnection'];
+    }
+}
+
+if (isset($_POST['getOmeroData']) || isset($_POST['exportToOmero'])) {
+    
+    if (isset($omeroConnection)) {
+        if ($omeroConnection->loggedIn) {
+            $omeroTree = $omeroConnection->getLastOmeroTree();
+        }
+    }
+}
+
+if (isset($_POST['importFromOmero'])) {
+    
+    if (isset($omeroConnection)) {
+        if ($omeroConnection->loggedIn) {
+            $omeroTree = $omeroConnection->getLastOmeroTree();
+        }
+    }
+}
+
+if (isset($_POST['refreshOmero'])) {
+    
+    if (isset($omeroConnection)) {
+        if ($omeroConnection->loggedIn) {
+            $omeroTree = $omeroConnection->getUpdatedOmeroTree();
+        }
+    }
+}
+
+    /************ End of code for the interaction with Omero. **********/
+    
+
+
 // JavaScript
-$script = "settings.js";
+$script = array("settings.js",
+                "jquery-1.8.3.min.js",
+                "jqTree/tree.jquery.js",
+                "jquery-ui/jquery-ui-1.9.1.custom.js",
+                "jquery-ui/jquery.bgiframe-2.1.2.js");
 
 if (!isset($operationResult)) {
   $operationResult = "";
@@ -157,12 +223,17 @@ if ($browse_folder == "src") {
   } else {
 
     // Show files of one image type only.
-
+    $copyFileserver = clone($_SESSION['fileserver']);
     $fileFormatParam = $_SESSION['setting']->parameter("ImageFileFormat");
     $fileFormat = $fileFormatParam->value();
     $extensions = $fileFormatParam->fileExtensions();
     $_SESSION['fileserver']->setImageExtensions($extensions);
-    $files = $_SESSION['fileserver']->filesOfType($fileFormat);
+    $isTimeSeries = false;
+    if (isset($_SESSION['autoseries']) && $_SESSION['autoseries'] == "TRUE") {
+        $isTimeSeries = true;
+    }
+    $files = $_SESSION['fileserver']->filesOfType($fileFormat, $isTimeSeries);
+    $_SESSION['fileserver'] = $copyFileserver;
   }
 } else {
   // When listing results images, all types are shown.
@@ -336,24 +407,36 @@ include("header.inc.php");
 
 
     <div id="content" >
-        <h3><?php echo $page_title; ?></h3>
-        <p class="message_small"><?php echo $explanation_text; ?></p>
-  <form method="post" action="?folder=<?php echo $browse_folder;?>"
+    
+    <?php if ($page_title == "Raw images") {
+    $icon = "./images/rawdata_title.png";
+} else {
+    $icon = "./images/results_title.png";
+} ?>
+        
+<h3><img alt=<?php echo $page_title;?> src=<?php echo $icon;?> width="40"/>
+    &nbsp;&nbsp;<?php echo $page_title; ?></h3>
+
+    <form method="post" action="?folder=<?php echo $browse_folder;?>"
         id="file_browser" onsubmit="return confirmSubmit()" >
 
+        <?php 
+            // Add additional input elements if defined
+            if (isset($additionalHTMLElements)) {
+                echo $additionalHTMLElements;
+            }
+        ?>
+
+        <p class="message_small"><?php echo $explanation_text; ?></p>
 
       <fieldset >
 
         <legend><?php echo $form_title; ?></legend>
-<?php
-?>
-
-
-
 
         <div id="userfiles" onmouseover="showPreview()">
-          <select onchange="javascript:imageAction(this)"
-                  onkeyup="this.blur();this.focus();" name="userfiles[]"
+          <select name="userfiles[]" id="fileSelection"
+                  onchange="javascript:imageAction(this)"
+                  onkeyup="this.blur();this.focus();" 
                   size="<?php echo $size;?>" <?php echo $multiple.$flag ?>>
           <?php
           // Populate the select field with the list of available images:
@@ -383,12 +466,20 @@ include("header.inc.php");
            onmouseover="showInstructions()">
         <?php echo $control_buttons; ?>
       </div>
-  </form>
+      </form>
+
+      
+      <?php
+      include("./omero_UI.php");
+      ?>  
+
+      
   <div id="upMsg"><!-- do not remove !--></div>
+
+
   <div id="up_form" onmouseover="showInstructions()">
       <!-- do not remove !-->
   </div>
-
     </div> <!-- content -->
 
 
@@ -414,7 +505,9 @@ include("header.inc.php");
     <div id="message">
 <?php
      // Display any message coming from lower instances.
-
+     if (!isset($message)) {
+         $message = "";
+     }
      echo "<p>$message</p>";
 
 ?>

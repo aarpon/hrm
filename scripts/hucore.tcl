@@ -47,17 +47,36 @@ proc reportMsg {msg} {
 }
 
 
+proc reportHuCoreLicense { } {
+    reportKeyValue "license" [huOpt license]
+}
+
+
 proc reportImageDimensions { } {
     set error [ getInputVariables {path filename series} ]
     if { $error } { exit 1 }
 
-    set src [hrmImgOpen $path "$filename" -series $series]
+    if { [ catch {
+        set src [hrmImgOpen $path "$filename" -series $series]
 
-    reportKeyValue "sizeX" [$src getdims -mode x]
-    reportKeyValue "sizeY" [$src getdims -mode y]
-    reportKeyValue "sizeZ" [$src getdims -mode z]
-    reportKeyValue "sizeT" [$src getdims -mode t]
-    reportKeyValue "sizeC" [$src getdims -mode ch]
+        set sizeX [$src getdims -mode x]
+        set sizeY [$src getdims -mode y]
+        set sizeZ [$src getdims -mode z]
+        set sizeT [$src getdims -mode t]
+        set sizeC [$src getdims -mode ch]
+    } result ] } {
+        set sizeX 0
+        set sizeY 0
+        set sizeZ 0
+        set sizeC 0
+        set sizeT 0
+    }
+           
+    reportKeyValue "sizeX" $sizeX
+    reportKeyValue "sizeY" $sizeY
+    reportKeyValue "sizeZ" $sizeZ
+    reportKeyValue "sizeT" $sizeT
+    reportKeyValue "sizeC" $sizeC
     
     catch { del $src }
 } 
@@ -119,26 +138,34 @@ proc reportSubImages {} {
             continue
         }
 
-
         if { [isMultiImgFile $path] } {
             puts "TYPE"
             puts "multiple"
-            set error [ catch { \
-                img preOpen $path } contents]
-            if { $error } {
+
+            if { [ catch {
+                img preOpen $path 
+            } contents ] } {
                 reportError "Can't find subimages for $image: $contents"
             } else {
+
+                # Since Huygens 3.3.3, the preOpen command returns an option-value list
                 set ver [versionAsInteger]
                 if { $ver >= 3030300 } {
-                    # Since Huygens 3.3.3, the preOpen command returns an
-                    # option-value list
+                    
+                    # Make sure there are no rests from the previous iteration.
+                    if { [info exists res] } {
+                        array unset res
+                    }
+
                     catch { array set res $contents }
+
                     if { ! [info exists res(subImages)] } {
                         set contents {}
                     } else {
                         set contents $res(subImages)
                     }
                 }
+
                 puts "COUNT"
                 puts "[llength $contents]"
                 foreach subImg $contents {

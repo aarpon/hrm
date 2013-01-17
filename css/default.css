@@ -84,6 +84,12 @@ table {
 
 /* specific div elements */
 
+.ui-dialog-titlebar {
+  background-color: #62B0F9;
+  background-image: none;
+  color: #FFFFFF;
+}
+
 .intro {
     font-size: 16px;
     padding-top: 15px;
@@ -104,7 +110,7 @@ table {
 #title {
     position: relative;
     height: 86px;
-    background: url(../images/title_bkg.png) repeat-x top left;
+    background: url("../images/title_bkg.png") repeat-x top left;
     padding-left: 180px;
     border: #fff 2px solid;
     color: white;
@@ -116,7 +122,7 @@ table {
     left: 0px;
     width: 186px;
     height: 86px;
-    background: url(../images/logo.png) no-repeat top left;
+    background: url("../images/logo.png") no-repeat top left;
 }
 
 #stats {
@@ -189,11 +195,50 @@ table {
     color: #000;
 }
 
+.requirements {
+    text-align: center;
+    background: #4988DE;
+    color: white;
+}
+
 #controls {
     text-align: center;
     border-top: #ccc 1px dotted;
     margin-top: 30px;
     width: 100%;
+}
+
+#welcome {
+    float: left;
+    width: 480px;
+    text-align: left;
+    border-right-style: dotted;
+    border-right-width: 1px;
+    margin: 0px 0px 0px 0px;
+    padding: 0px 15px 0px 15px;
+}
+
+#welcome h3 {
+  background-color: #eee;
+  font-size: 16px;
+  height: 40px;
+  font-weight: bold;
+  text-align: center;
+}
+
+#welcome h2 {
+  font-size: 20px;
+  margin-top: 15px;
+}
+
+#welcome h4 {
+    font-size: 12px;
+    font-weight: bold;
+    text-align: justify;
+}
+
+#welcome p {
+    text-align: justify;
 }
 
 #content {
@@ -203,15 +248,23 @@ table {
     border-right-style: dotted;
     border-right-width: 1px;
     margin: 0px 0px 0px 0px;
-    padding: 3px 15px 5px 15px;
+    padding: 0px 15px 0px 15px;
 }
 
 #content h3 {
-    background-color: #eee;
-    font-size: 16px;
-    height: 18px;
-    font-weight: bold;
-    text-align: center;
+  background-color: #eee;
+  font-size: 16px;
+  height: 40px;
+  font-weight: bold;
+  text-align: center;
+}
+
+#content h2 {
+  background-color: #eee;
+  font-size: 16px;
+  height: 18px;
+  font-weight: bold;
+  text-align: center;
 }
 
 #content h4 {
@@ -224,8 +277,47 @@ table {
     text-align: justify;
 }
 
+#content_disabled {
+  float: left;
+  width: 480px;
+  text-align: left;
+  border-right-style: dotted;
+  border-right-width: 1px;
+  margin: 0px 0px 0px 0px;
+  padding: 0px 15px 0px 15px;
+}
+
+#content_disabled h3 {
+  background-color: #eee;
+  color: grey;
+  font-size: 16px;
+  height: 40px;
+  font-weight: bold;
+  text-align: center;
+}
+
+#content_disabled h2 {
+  background-color: #eee;
+  color: grey;
+  font-size: 16px;
+  height: 18px;
+  font-weight: bold;
+  text-align: center;
+}
+
+#content_disabled h4 {
+  color: grey;
+  font-size: 12px;
+  font-weight: bold;
+  text-align: justify;
+}
+
+#content_disabled p {
+    text-align: justify;
+}
+
 #separator {
-  width: 1200px;
+  width: 1500px;
   border-width: 1px;
   border-style: solid;
   border-color: #CCCCCC;
@@ -233,24 +325,72 @@ table {
 }
 
 #logos {
-    font-size: 70%;
-    text-align: center;
-    padding-top: 1em;
-    padding-bottom: 3em;
+  font-size: 70%;
+  text-align: center;
 }
 
-#logos div {
-    float: left;
-    width: 150px;
-    padding-right: 4px;
-    padding-bottom: 1em;
-    padding-left: 4px;
+#logos table {
+  border: 0px;
+  width: 480px;
 }
 
-#logos div p {
-    text-align: center;
-    padding-right: 5px;
-    padding-left: 5px;
+#logos table.firstRow {
+  margin: 20px 0px 30px 0px;
+}
+
+#logos table.secondRow {
+  margin: 20px 0px 30px 0px;
+}
+
+#logos table tr.caption {
+  vertical-align: top;
+  text-align: center;
+}
+
+#logos table td.epfl {
+  height: 60px;
+  width: 160px;
+  cursor: pointer;
+  background: url("../images/logo_epfl.png") no-repeat center;
+  background-size: 90px;
+}
+
+#logos table td.mri {
+  height: 60px;
+  width: 160px;
+  cursor: pointer;
+  background: url("../images/logo_mri.png") no-repeat center;
+  background-size: 60px;
+}
+
+#logos table td.svi {
+  height: 60px;   
+  width: 160px;
+  cursor: pointer;
+  background: url("../images/logo_svi.png") no-repeat center;
+  background-size: 60px;
+}
+
+#logos table td.bsse {
+  height: 80px;
+  width: 240px;
+  margin-top: 50px;
+  padding-bottom: 5px;
+  cursor: pointer;
+  background: url("../images/logo_bsse.png") no-repeat center;
+  background-size: 100px;
+}
+
+#logos table td.fmi {
+  height: 80px;
+  width: 240px;
+  cursor: pointer;
+  background: url("../images/logo_fmi.png") no-repeat center;
+  background-size: 70px;
+}
+
+#logos table td.blank {
+  width: 40px;
 }
 
 #templates select {
@@ -272,7 +412,27 @@ table {
 }
 
 #selection input {
-    vertical-align: middle;
+  vertical-align: middle;
+}
+
+#autoseries_label { 
+    font-size: 80%;
+}
+
+#autoseries { 
+    margin-top: 5px;
+}
+
+#selection label { 
+  position: relative;
+  left: 13.8em;
+}
+
+#selection_disabled {
+  opacity: 0.4;
+  filter: alpha(opacity=40);
+  font-size: 0.8em;
+  text-align: center;
 }
 
 #up_form {
@@ -310,52 +470,61 @@ table {
 }
 
 input.copy {
-    background: url(../images/copy.png) no-repeat center;
+    background: url("../images/copy.png") no-repeat center;
 }
 
 input.down {
-    background: url(../images/add.png) no-repeat center;
+    background: url("../images/add.png") no-repeat center;
 }
 
 input.remove {
-    background: url(../images/remove.png) no-repeat center;
+    background: url("../images/remove.png") no-repeat center;
 }
 
 input.create {
-    background: url(../images/create.png) no-repeat center;
+    background: url("../images/create.png") no-repeat center;
 }
 
 input.edit {
-    background: url(../images/edit.png) no-repeat center;
+    background: url("../images/edit.png") no-repeat center;
 }
 
 input.clone {
-    background: url(../images/clone.png) no-repeat center;
+    background: url("../images/clone.png") no-repeat center;
 }
 
 input.mark {
-    background: url(../images/mark.png) no-repeat center;
+    background: url("../images/mark.png") no-repeat center;
 }
 
 input.delete {
-    background: url(../images/delete.png) no-repeat center;
+    background: url("../images/delete.png") no-repeat center;
 }
 
 input.update {
-    background: url(../images/update.png) no-repeat center;
+    background: url("../images/update.png") no-repeat center;
 }
 
 input.download {
-    background: url(../images/download.png) no-repeat center;
+    background: url("../images/download.png") no-repeat center;
 }
 input.upload {
-    background: url(../images/upload.png) no-repeat center;
+    background: url("../images/upload.png") no-repeat center;
+}
+input.omero {
+    background: url("../images/omero_data.png") no-repeat center;
 }
 
 input.save {
     width: 60px;
     height: 60px;
-    background: url(../images/save.png) no-repeat center;
+    background: url("../images/save.png") no-repeat center;
+}
+
+#actions {
+  text-align: center;
+  font-size: 70%;
+  padding: 5px 0 0 0;
 }
 
 #actions label {
@@ -365,14 +534,63 @@ input.save {
     padding-left: 5px;
 }
 
-#actions {
+#actions_disabled {
+  opacity: 0.4;
+  filter: alpha(opacity=40);
+  text-align: center;
+  font-size: 70%;
+  padding: 5px 0 0 0;
+}
+
+#actions_disabled label {
+    display: block;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    padding-left: 5px;
+}
+
+#omeroActions {
     text-align: center;
     font-size: 70%;
     padding: 5px 0 0 0;
 }
 
+#omeroTree { 
+  width: 450px;
+}
+
 #login {
     font-size: 14px;
+    text-align: center;
+}
+
+#login_registration {
+  font-size: 12px;
+  height: 48px;
+  width: 150px;
+  text-align: left;
+  padding-left: 0px;
+  padding-bottom: 10px;
+}
+
+#login_registration table {
+  border: 0px;
+  width: 200px;
+}
+
+#login_registration table td.icon {
+  height: 48px;
+  width: 40px;
+  cursor: pointer;
+  background: url("../images/registration.png") no-repeat center;
+  background-size: 48px;
+}
+
+#login_registration table td.text {
+  text-align: center;
+  height: 48px;
+  width: 100px;
+  
 }
 
 #login fieldset {
@@ -394,12 +612,30 @@ input.save {
     padding: 0px 5px;
 }
 
+#login label {
+    font-size: 12px;
+    font-weight: normal;
+}
+
+#login input.textfield {
+    width: 90%;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+#login input.button {
+    margin-top: 10px;
+    font-size: 12px;
+    width: 60%;
+    font-weight: bold;
+}
+
 #rightpanel {
     float: right;
     width: 250px;
     text-align: right;
     margin: 0px 0px 0px 0px;
-    padding: 3px 20px 5px 15px;
+    padding: 0px 20px 0px 15px;
 }
 
 #info {
@@ -446,7 +682,7 @@ input.save {
 }
 
 #validation {
-    background: url(../images/validation_bkg.png) repeat-x top left;
+    background: url("../images/validation_bkg.png") repeat-x top left;
     text-align: center;
     padding-top: 10px;
     padding-bottom: 10px;
@@ -601,9 +837,10 @@ input.save {
 }
 
 #colocTabs {
-    border-bottom-width: 1px;
-    border-bottom-style: solid;
-    overflow: hidden;
+  width: 1500px;
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+  overflow: hidden;
 }
 
 #colocTab {
@@ -633,12 +870,12 @@ input.save {
 }
 
 #colocResults { 
-  width: 1200px;
+  width: 1600px;
 }
 
 #colocRun { 
   float: left;
-  width: 1200px;
+  width: 1600px;
 }
 
 #colocHist {
@@ -661,7 +898,7 @@ input.save {
 
 #colocCoefficients table { 
   font-size: 100%;
-  width: 800px;
+  width: 1200px;
   float: left;
 } 
 
@@ -731,7 +968,50 @@ input.save {
 }
 
 #warning td.text {
-  color: #360840;
+  color: #E80010;
+  padding-left: 6px;
+}
+
+#scaling table { 
+  margin-bottom: 2em;
+  font-size: 100%;
+  width: 610px;
+} 
+
+#scaling td {
+  text-align: center;
+}
+
+#scaling td.header { 
+  font-weight: bold;
+}
+
+#scaling td.param {
+  width: 175px;
+  font-weight: bold;
+  background-color: #eee;
+}
+
+#scaling td.value {
+  width: 100px;
+  font-weight: bold;
+  background-color: #eee;
+}
+
+#scaling td.channel {
+  width: 50px;
+  font-weight: bold;
+  background-color: #eee;
+}
+
+#scaling td.reason {
+  width: 100px;
+  font-weight: bold;
+  background-color: #eee;
+}
+
+#scaling td.cell { 
+  background-color: #CFD7F2;
 }
 
 #listusers {
@@ -802,6 +1082,14 @@ input.save {
     vertical-align: bottom;
 }
 
+#homepage table tr.separator {
+  height: 1px;
+  width: 200px;
+  border-width: 1px 0px 0px 0px;
+  border-style: solid;
+  border-color: #CCCCCC;
+}
+
 #homepage table td {
     padding: 3px;
 }
@@ -847,14 +1135,14 @@ input.save {
 #homepage .added_jobs a:link {
     color: #4988de;
     font-weight: normal;
-    font-decoration: none;
+    text-decoration: none;
     font-size: 14px;
 }
 
 #homepage .added_jobs a:visited {
     color: #4988de;
     font-weight: normal;
-    font-decoration: none;
+    text-decoration: none;
     font-size: 14px;
 }
 
@@ -925,11 +1213,26 @@ a.filled {
 
 #adduser {
     text-align: right;
-    padding-right: 3em;
+}
+
+#adduser label {
+  vertical-align: top;
+  display: inline-block;
+}
+
+#adduser input {
+    display: inline-block;
+    vertical-align: top;
+    width: 300px;
+    margin-left: 10px;
+    margin-bottom: 3px;
 }
 
 #adduser textarea {
-    width: 50%;
+    width: 300px;
+    height: 100px;
+    margin-left: 10px;
+    margin-bottom: 10px;
 }
 
 #addanotherfile {
@@ -959,8 +1262,9 @@ fieldset legend {
 }
 
 fieldset.report {
-    margin-top:10px;
-    margin-bottom:10px;
+  margin-top:10px;
+  margin-bottom:10px;
+  padding-right:15px;
 }
 
 fieldset.p {
@@ -975,7 +1279,7 @@ fieldset .values {
 
 fieldset .reset
 {
-    background: url(../images/reset.png) no-repeat left center;
+    background: url("../images/reset.png") no-repeat left center;
     position: absolute;
     top: 0px;
     left: 0px;
@@ -1010,79 +1314,91 @@ input.empty {
     width: 60px;
     height: 60px;
     cursor: default;
-    background: url(../images/empty.png);
+    background: url("../images/empty.png");
 }
 
 input.previous {
     width: 60px;
     height: 60px;
-    background: url(../images/previous.png) no-repeat right;
+    background: url("../images/previous.png") no-repeat right;
+}
+
+input.launch {
+    width: 60px;
+    height: 60px;
+    background: url("../images/launch.png") no-repeat right;
+}
+
+input.launch_start {
+  width: 80px;
+  height: 60px;
+  background: url("../images/launch_start.png") no-repeat right;
 }
 
 input.next {
     width: 60px;
     height: 60px;
-    background: url(../images/next.png) no-repeat right;
+    background: url("../images/next.png") no-repeat right;
 }
 
 input.up {
     width: 60px;
     height: 60px;
-    background: url(../images/up.png) no-repeat right;
+    background: url("../images/up.png") no-repeat right;
 }
 
 input.calc {
     width: 60px;
     height: 60px;
-    background: url(../images/calc.png) no-repeat right;
+    background: url("../images/calc.png") no-repeat right;
 }
 
 input.ok {
     width: 60px;
     height: 60px;
-    background: url(../images/ok.png) no-repeat center;
+    background: url("../images/ok.png") no-repeat center;
 }
 
 input.cancel {
     width: 60px;
     height: 60px;
-    background: url(../images/cancel.png) no-repeat center;
+    background: url("../images/cancel.png") no-repeat center;
 }
 
 input.apply {
     width: 60px;
     height: 60px;
-    background: url(../images/apply.png) no-repeat center;
+    background: url("../images/apply.png") no-repeat center;
 }
 
 input.back {
     width: 60px;
     height: 60px;
-    background: url(../images/back.png) no-repeat center;
+    background: url("../images/back.png") no-repeat center;
 }
 
 input.restart {
     width: 60px;
     height: 60px;
-    background: url(../images/restart.png) no-repeat center;
+    background: url("../images/restart.png") no-repeat center;
 }
 
 input.upload {
     width: 60px;
     height: 60px;
-    background: url(../images/upload.png) no-repeat center;
+    background: url("../images/upload.png") no-repeat center;
 }
 
 input.abort {
     width: 60px;
     height: 60px;
-    background: url(../images/cancel_small.png) no-repeat center;
+    background: url("../images/cancel_small.png") no-repeat center;
 }
 
 input.noPreview {
     width: 200px;
     height: 200px;
-    background: url(../images/no_preview_button.png) no-repeat center;
+    background: url("../images/no_preview_button.png") no-repeat center;
 }
 
 .expandedView {
@@ -1155,7 +1471,7 @@ option.default {
     width: 50%;
     text-align: left;
     vertical-align: middle;
-    margin-right: 5px;
+    margin: 1px 5px 1px 1px;
 }
 
 .psffile {
@@ -1170,7 +1486,6 @@ option.default {
 .button {
     width: 25%;
     text-align: center;
-    margin: 5px 15px 5px 0px;
 }
 
 .submit {
@@ -1195,21 +1510,6 @@ option.default {
     margin-left: 15px;
     margin-right: 15px;
     padding: 0px;
-}
-
-.message_small_SNR_beta {
-    width: 100%;
-    text-align: center;
-    font-size: 10px;
-    margin-bottom: 0px;
-    margin-top: 20px;
-    background-color: #eee;
-}
-
-.message_large_SNR_beta {
-    width: 100%;
-    font-size: 12px;
-    margin-bottom: 0px;
 }
 
 .notice {
@@ -1295,7 +1595,7 @@ option.default {
 }
 
 #report {
-    background: #ff9;
+  background: #ff9;
 }
 
 
@@ -1320,7 +1620,8 @@ option.default {
 }
 
 #system table td.section {
-    padding-top: 5px;
+    padding-top: 10px;
+    padding-bottom: 3px;
     vertical-align: top;
     text-align: left;
     width: 70%;
@@ -1353,26 +1654,27 @@ option.default {
 /* Confidence levels for parameters: provided, asIs, verified, 
    reported, estimated, default */
 .asIs {
-	background: url(../images/param_reported.png) repeat-y left;
+	background: url("../images/param_asis.png") repeat-y left;
 }
+
 .verified {
-	background: url(../images/param_verified.png) repeat-y left;
+	background: url("../images/param_verified.png") repeat-y left;
 }
 
 .reported {
-	background: url(../images/param_reported.png) repeat-y left;
+	background: url("../images/param_reported.png") repeat-y left;
 }
 
 .estimated {
-	background: url(../images/param_estimated.png) repeat-y left;
+	background: url("../images/param_estimated.png") repeat-y left;
 }
 
 .default {
-	background: url(../images/param_default.png) repeat-y left;
+	background: url("../images/param_default.png") repeat-y left;
 }
 
 .provided {
-    background: url(../images/param_provided.png) repeat-y left;
+    background: url("../images/param_provided.png") repeat-y left;
 }
 
 .message_confidence_asIs {
@@ -1380,7 +1682,7 @@ option.default {
     height: 30px;
     margin-top: 5px;
     margin-bottom: -5px;
-    background: url(../images/text_reported.png) no-repeat bottom;
+    background: url("../images/text_asis.png") no-repeat bottom;
     color: #b09065;
 }
 
@@ -1389,7 +1691,7 @@ option.default {
     height: 30px;
     margin-top: 5px;
     margin-bottom: -5px;
-    background: url(../images/text_verified.png) no-repeat bottom;
+    background: url("../images/text_verified.png") no-repeat bottom;
     color: #000000;
 }
 
@@ -1398,7 +1700,7 @@ option.default {
     height: 30px;
     margin-top: 5px;
     margin-bottom: -5px;
-    background: url(../images/text_reported.png) no-repeat bottom;
+    background: url("../images/text_reported.png") no-repeat bottom;
     color: #b09065;
 }
 
@@ -1407,7 +1709,7 @@ option.default {
     height: 30px;
     margin-top: 5px;
     margin-bottom: -5px;
-    background: url(../images/text_estimated.png) no-repeat bottom;
+    background: url("../images/text_estimated.png") no-repeat bottom;
     color: #1F467F;
 }
 
@@ -1416,7 +1718,7 @@ option.default {
     height: 30px;
     margin-top: 5px;
     margin-bottom: -5px;
-    background: url(../images/text_default.png) no-repeat bottom;
+    background: url("../images/text_default.png") no-repeat bottom;
     color: #009C89;
 }
 
@@ -1425,7 +1727,7 @@ option.default {
     height: 30px;
     margin-top: 5px;
     margin-bottom: -5px;
-    background: url(../images/text_provided.png) no-repeat bottom;
+    background: url("../images/text_provided.png") no-repeat bottom;
     color: #555A43;
 }
 
@@ -1532,4 +1834,9 @@ option.default {
 #filemanager #bottom p {
     text-align: center;
     font-size: 18px;
+}
+
+/* Make sure the tooltip is initially hidden */
+.toolTip {
+  display: none;
 }

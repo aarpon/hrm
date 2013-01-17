@@ -7,6 +7,7 @@ require_once("./inc/Parameter.inc.php");
 require_once("./inc/Setting.inc.php");
 require_once("./inc/SettingEditor.inc.php");
 require_once("./inc/Fileserver.inc.php");
+require_once("./inc/System.inc.php");
 
 global $enableUserAdmin;
 
@@ -24,6 +25,14 @@ if (!isset($_SESSION['editor'])) {
   $_SESSION['editor'] = new SettingEditor($_SESSION['user']);
 }
 
+// Settings by the admin can be used with any file format, no specific confidence
+// levels. Thus, we set the lowest confidence levels, which corresponds to the
+// tiff format to force the admin to enter all the parameters.
+if ($_SESSION['user']->isAdmin()) {
+    $_SESSION[ 'parametersetting' ] = new ParameterSetting();
+    $_SESSION[ 'parametersetting' ]->parameter("ImageFileFormat")->setValue("hdf5");
+}
+
 // add public setting support
 if (!$_SESSION['user']->isAdmin()) {
   $admin = new User();
@@ -31,6 +40,22 @@ if (!$_SESSION['user']->isAdmin()) {
   $admin_editor = new SettingEditor($admin);
   $_SESSION['admin_editor'] = $admin_editor;
 }
+
+if (System::hasLicense("coloc")) {
+    $numberSteps   = 5;
+} else {
+    $numberSteps = 4;
+}
+
+$currentStep  = 2;
+$previousStep = $currentStep - 1;
+$nextStep     = $currentStep + 1;
+
+$goBackMessage  = " - Select images.";
+$goBackMessage  = "Go back to step $previousStep/$numberSteps" . $goBackMessage;
+
+$goNextMessage  = " - Restoration parameters.";
+$goNextMessage  = "Continue to step $nextStep/$numberSteps" . $goNextMessage;
 
 // fileserver related code (for measured PSF files check)
 if (!isset($_SESSION['fileserver'])) {
@@ -44,6 +69,10 @@ if (isset($_POST['setting'])) {
   $_SESSION['editor']->setSelected($_POST['setting']);
 }
 
+// Except for the admin, the file format is selected at 'select_images'.
+$fileFormat =
+    $_SESSION['parametersetting']->parameter("ImageFileFormat")->value();
+
 if (isset($_POST['copy_public'])) {
   if (isset($_POST['public_setting'])) {
     if (!$_SESSION['editor']->copyPublicSetting(
@@ -54,12 +83,14 @@ if (isset($_POST['copy_public'])) {
   else $message = "Please select a setting to copy";
 }
 else if (isset($_POST['create'])) {
-  $setting = $_SESSION['editor']->createNewSetting($_POST['new_setting']);
-  if ($setting != NULL) {
-    $_SESSION['setting'] = $setting;
-    header("Location: " . "image_format.php"); exit();
-  }
-  $message = $_SESSION['editor']->message();
+    $setting = $_SESSION['editor']->createNewSetting($_POST['new_setting']);
+    
+    if ($setting != NULL) {
+        $setting->parameter("ImageFileFormat")->setValue($fileFormat);
+        $_SESSION['setting'] = $setting;
+        header("Location: " . "image_format.php"); exit();
+    }
+    $message = $_SESSION['editor']->message();
 }
 else if (isset($_POST['copy'])) {
   $_SESSION['editor']->copySelectedSetting($_POST['new_setting']);
@@ -68,8 +99,9 @@ else if (isset($_POST['copy'])) {
 else if (isset($_POST['edit'])) {
   $setting = $_SESSION['editor']->loadSelectedSetting();
   if ($setting) {
-    $_SESSION['setting'] = $setting;
-    header("Location: " . "image_format.php"); exit();
+      $setting->parameter("ImageFileFormat")->setValue($fileFormat);
+      $_SESSION['setting'] = $setting;
+      header("Location: " . "image_format.php"); exit();
   }
   $message = $_SESSION['editor']->message();
 }
@@ -83,10 +115,13 @@ else if ( isset($_POST['annihilate']) &&
         $message = $_SESSION['editor']->message();
 }
 else if (isset($_POST['OK']) && $_POST['OK']=="OK" ) {
+
   if (!isset($_POST['setting'])) {
     $message = "Please select some image parameters";
   } else {
     $_SESSION['setting'] = $_SESSION['editor']->loadSelectedSetting();
+    $_SESSION['setting']->parameter("ImageFileFormat")->setValue($fileFormat);
+    
     // if measured PSF, check files availability
     $ok = True;
     $psfParam = $_SESSION['setting']->parameter("PointSpreadFunction");
@@ -110,6 +145,12 @@ else if (isset($_POST['OK']) && $_POST['OK']=="OK" ) {
         $ok = False;
       }
     }
+
+    if ( !$_SESSION['setting']->checkParameterSetting( ) ) {
+        $message = $_SESSION['setting']->message();
+        $ok = False;
+    }
+    
     if ($ok) {header("Location: " . "select_task_settings.php"); exit();}
   }
 }
@@ -122,33 +163,36 @@ include("header.inc.php");
     <!--
       Tooltips
     -->
-    <span id="ttSpanCreate">
+    <span class="toolTip" id="ttSpanCreate">
         Create a new parameter set with the specified name.
     </span>
-    <span id="ttSpanEdit">
+    <span class="toolTip" id="ttSpanEdit">
         Edit the selected parameter set.
     </span>
-    <span id="ttSpanClone">
+    <span class="toolTip" id="ttSpanClone">
         Copy the selected parameter set to a new one with the
       specified name.</span>
-    <span id="ttSpanDelete">
+    <span class="toolTip" id="ttSpanDelete">
         Delete the selected parameter set.
     </span>
     <?php
       if (!$_SESSION['user']->isAdmin()) {
         ?>
-        <span id="ttSpanDefault">
+        <span class="toolTip" id="ttSpanDefault">
             Sets (or resets) the selected parameter set as the default one
             .</span>
-        <span id="ttSpanCopyTemplate">Copy a template.
+        <span class="toolTip" id="ttSpanCopyTemplate">Copy a template.
         </span>
-        <span id="ttSpanForward">
-            Continue to step 2/4 - Restoration parameters.
+        <span class="toolTip" id="ttSpanBack">
+        <?php echo $goBackMessage; ?>
+        </span>
+        <span class="toolTip" id="ttSpanForward">
+        <?php echo $goNextMessage; ?>
         </span>
     <?php
       }
     ?>
-
+    
     <div id="nav">
         <ul>
             <li>
@@ -158,9 +202,9 @@ include("header.inc.php");
             <?php
             if ( !$_SESSION['user']->isAdmin()) {
             ?>
-            <li><a href="file_manager.php">
-                    <img src="images/filemanager_small.png" alt="file manager" />
-                    &nbsp;File manager
+            <li><a href="file_management.php?folder=src">
+                    <img src="images/rawdata_small.png" alt="Raw images" />
+                    &nbsp;Raw images
                 </a>
             </li>
             <?php
@@ -196,7 +240,10 @@ if ($_SESSION['user']->isAdmin()) {
 else {
 
 ?>
-        <h3>Step 1/4 - Image parameters</h3>
+        <h3><img alt="ImageParameters" src="./images/image_parameters.png"
+        width="40"/>&nbsp;&nbsp;Step
+        <?php echo $currentStep . "/" . $numberSteps; ?>
+        - Image parameters</h3>
 <?php
 
 }
@@ -222,9 +269,10 @@ if (!$_SESSION['user']->isAdmin()) {
   }
 
 ?>
-                    <select name="public_setting"
-                            onchange="getParameterListForSet('setting', $(this).val(), true);"
-                            size="5"<?php echo $flag ?>>
+      <select name="public_setting"
+           onclick="ajaxGetParameterListForSet('setting', $(this).val(), true);"
+           onchange="ajaxGetParameterListForSet('setting', $(this).val(), true);"
+           size="5"<?php echo $flag ?>>
 <?php
 
   if (sizeof($settings) == 0) {
@@ -284,9 +332,10 @@ $flag = "";
 if (sizeof($settings) == 0) $flag = " disabled=\"disabled\"";
 
 ?>
-                    <select name="setting"
-                            onchange="getParameterListForSet('setting', $(this).val(), false);"
-                            size="<?php echo $size ?>"<?php echo $flag ?>>
+<select name="setting"
+    onclick="ajaxGetParameterListForSet('setting', $(this).val(), false);"
+    onchange="ajaxGetParameterListForSet('setting', $(this).val(), false);"
+    size="<?php echo $size ?>"<?php echo $flag ?>>
 <?php
 
 if (sizeof($settings) == 0) {
@@ -365,11 +414,13 @@ if (!$_SESSION['user']->isAdmin()) {
 if (!$_SESSION['user']->isAdmin()) {
 
 ?>
-                <div id="controls">      
-                  <input type="submit"
+                <div id="controls">
+                  <input type="button"
                          value=""
-                         class="icon empty"
-                         disabled="disabled" />
+                         class="icon previous"
+                         onclick="document.location.href='select_images.php'"
+                        onmouseover="TagToTip('ttSpanBack' )"
+                        onmouseout="UnTip()" />
                   <input type="submit"
                          value=""
                          class="icon next"
@@ -414,14 +465,14 @@ if (!$_SESSION['user']->isAdmin()) {
 }
 
 	if (!$_SESSION['user']->isAdmin()) {
-      echo "<p>In the first step, you are asked to specify all parameters
+      echo "<p>In this step, you are asked to specify all parameters
           relative to the images you want to restore.</p>";
 	} else {
 	  echo "<p>Here, you can create template parameters relative to the images
       to restore.</p>";
 	}
 	?>
-      <p>These include: file information (format, geometry, voxel size);
+      <p>These include: file information (geometry, voxel size);
       microscopic parameters (such as microscope type, numerical aperture of
       the objective, fluorophore wavelengths); whether a measured or a
       theoretical PSF should be used; whether depth-dependent correction
@@ -445,7 +496,6 @@ if (!$_SESSION['user']->isAdmin()) {
 <?php
 
 echo "<p>$message</p>";
-
 
 ?>
         </div>

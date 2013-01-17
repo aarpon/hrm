@@ -89,7 +89,8 @@ include("header.inc.php");
 			  ?>
 				<td class="icon">
 				  <a href="./user_management.php">
-				  <img alt="Users" src="./images/users.png" />
+				  <img alt="Users"
+                                        src="./images/users.png" />
 				  </a>
 				</td>
 				
@@ -115,7 +116,25 @@ include("header.inc.php");
 				}
 			  ?>
 			  
-			  <td class="icon">
+		    			  <td class="icon">
+				<a href="./account.php">
+				<img alt="Account"
+                                      src="./images/account.png" />
+				</a>
+			  </td>
+			  
+			  <td class="text"><div class="cell">
+                <a href="./account.php">Account</a>
+                <br />
+				<p />View and change your personal data.
+                </div>
+			  </td>			  
+
+			</tr>
+                               <tr class="separator"><td></td><td></td><td></td><td></td></tr>
+                            
+			<tr>
+                                               <td class="icon">
 				<a href="./job_queue.php">
 				<img alt="Queue" src="./images/queue.png" />
 				</a>
@@ -127,23 +146,7 @@ include("header.inc.php");
 				<p />See and manage all jobs.
                           </div>
 			  </td>
-		    
-			</tr>
-			
-			<tr>
 			  
-			  <td class="icon">
-				<a href="./file_management.php?folder=src">
-				<img alt="FileManager" src="./images/filemanager.png" />
-				</a>
-			  </td>
-			  
-			  <td class="text"><div class="cell">
-                <a href="./file_management.php?folder=src">File manager</a>
-                <br />
-			  <p />Upload your raw data.
-                </div>
-			  </td>
 			  
 			  <td class="icon">
 				<a href="./statistics.php">
@@ -160,6 +163,8 @@ include("header.inc.php");
 			  
 		    </tr>
 
+                               <tr class="separator"><td></td><td></td><td></td><td></td></tr>
+
 			<tr>
 			  
 			  <td class="icon">
@@ -167,6 +172,7 @@ include("header.inc.php");
 				<img alt="Parameter templates" src="./images/parameters.png" />
 				</a>
 			  </td>
+                               
 			  
 			  <td class="text"><div class="cell">
                 <a href="./select_parameter_settings.php">Image templates</a>
@@ -191,21 +197,37 @@ include("header.inc.php");
 		    </tr>
 
 			<tr>
-			
-			  <td class="icon">
-				<a href="./account.php">
-				<img alt="Account" src="./images/account.png" />
+                          <td class="icon">
+                                <a href="./select_analysis_settings.php">
+				<img alt="Analysis" src="./images/analysis.png" />
 				</a>
 			  </td>
 			  
 			  <td class="text"><div class="cell">
-                <a href="./account.php">Your account</a>
+                <a href="./select_analysis_settings.php">Analysis templates</a>
                 <br />
-				<p />View and change your personal data.
+				<p />Create templates for the analysis parameters.
+                </div>
+			  </td>
+        <td class="icon">
+				<a href="./file_management.php?folder=src">
+				<img alt="FileManager" src="./images/rawdata.png" />
+				</a>
+			  </td>
+			  
+			  <td class="text"><div class="cell">
+                <a href="./file_management.php?folder=src">Raw images</a>
+                <br />
+			  <p />Upload your raw images.
                 </div>
 			  </td>
 
-			  <td class="icon">
+			
+		    </tr>
+			<tr class="separator"><td></td><td></td><td></td><td></td></tr>
+			<tr>
+
+        <td class="icon">
 				<a href="./update.php">
 				<img alt="Update" src="./images/updatedb.png" />
 				</a>
@@ -217,10 +239,7 @@ include("header.inc.php");
 				<p />Update the database to the latest version.
                 </div>
 			  </td>
-			  
-		    </tr>
-			
-			<tr>
+
 			
 			  <td class="icon">
 				<a href="./system.php">
@@ -233,11 +252,7 @@ include("header.inc.php");
                 <br />
 				<p />Inspect your system.
                 </div>
-			  </td>
-
-			  <td class="icon"></td>
-			  
-			  <td class="text">&nbsp;</td>			  
+			  </td>		  
 
 		    </tr>
 
@@ -255,13 +270,13 @@ include("header.inc.php");
 			<tr >
 			  
 			  <td class="icon">
-				<a href="./select_parameter_settings.php">
+				<a href="./select_images.php">
 				<img alt="Jobs" src="./images/start.png" />
 				</a>
 			  </td>
 			  
 			  <td class="text"><div class="cell">
-                <a href="./select_parameter_settings.php">Start a job</a>
+                <a href="./select_images.php">Start a job</a>
                 <br />
 				<p />Create and start restoration and analysis jobs.
                 </div>
@@ -328,18 +343,36 @@ include("header.inc.php");
 			<tr>
 			  
 			  <td class="icon">
-				<a href="./file_manager.php">
-				<img alt="FileManager" src="./images/filemanager.png" />
+				<a href="./file_management.php?folder=src">
+				<img alt="Raw images" src="./images/rawdata.png" />
 				</a>
 			  </td>
 			  
 			  <td class="text"><div class="cell">
-                <a href="./file_manager.php">File manager</a>
+                <a href="./file_management.php?folder=src">Raw images</a>
                 <br />
-			  <p />Upload, download and view your raw and deconvolved data.
+			  <p />Upload raw images to deconvolve.
                 </div>
 			  </td>
 			  
+			  <td class="icon">
+				<a href="./file_management.php?folder=dest">
+				<img alt="Results"
+                                 src="./images/results.png" />
+				</a>
+			  </td>
+			  
+			  <td class="text"><div class="cell">
+                <a href="./file_management.php?folder=dest">Results</a>
+                <br />
+				<p />Inspect and download your restored data and analysis results.
+                </div>
+			  </td>
+			  
+      </tr>
+
+    	<tr>
+
 			  <td class="icon">
 				<a href="./statistics.php">
 				<img alt="Statistics" src="./images/stats.png" />
@@ -347,41 +380,40 @@ include("header.inc.php");
 			  </td>
 			  
 			  <td class="text"><div class="cell">
-                <a href="./statistics.php">Your statistics</a>
+                <a href="./statistics.php">Statistics</a>
                 <br />
 				<p />Summary of your usage statistics.
                 </div>
 			  </td>
-			  
-		    </tr>
-			
+        
 			<?php
 			if ( $authenticateAgainst == "MYSQL" ) {
 			?>
-			<tr>
-			
 			  <td class="icon">
 				<a href="./account.php">
-				<img alt="Account" src="./images/account.png" />
+				<img alt="Account"
+                                      src="./images/account.png" />
 				</a>
 			  </td>
 			  
 			  <td class="text"><div class="cell">
-                <a href="./account.php">Your account</a>
+                <a href="./account.php">Account</a>
                 <br />
 				<p />View and change your personal data.
                 </div>
 			  </td>
 			  
-			  <td class="icon"></td>
-			  
-			  <td class="text">&nbsp;</td>
-			  
-		    </tr>
+			<?php
+			} else {
+			?>
+        <td class="icon">&nbsp;</td>
+        <td class="text">&nbsp;</td>
 			<?php
 			}
 			?>
-			
+        
+	    </tr>
+
 		  </tbody>
 		  
 		</table>
@@ -401,7 +433,11 @@ include("footer.inc.php");
 <!-- Ajax function to update the number of jobs in the queue every 10 s -->
 <script type="text/javascript">
     $(document).ready(function() {
-        setInterval(function() { getNumberOfJobsInQueue(); }, 10000);
+        setInterval(function() { 
+          ajaxGetNumberOfUserJobsInQueue(
+            'jobsInQueue',
+            '<p />See all jobs.<br />You have <strong>',
+            '</strong> in the queue.'); },
+            10000);
     });
 </script>
-  

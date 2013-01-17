@@ -71,7 +71,8 @@ $info = preg_replace('%<img border="0" src=%s', "<img src=", $info );
 
     <div id="content">
 
-      <h3>Extended system summary</h3>
+      <h3><img alt="Summary" src="./images/system_title.png" width="40"/>
+          &nbsp;Extended system summary</h3>
 
       <div id="phpinfo">
         <?php echo $info; ?>

@@ -79,17 +79,17 @@ include("header.inc.php");
     <!--
       Tooltips
     -->
-    <span id="ttSpanBack">
+    <span class="toolTip" id="ttSpanBack">
         Go back to previous page.
     </span>
-    <span id="ttSpanCancel">
+    <span class="toolTip" id="ttSpanCancel">
         Abort editing and go back to the image parameters selection page.
         All changes will be lost!
     </span>
-    <span id="ttSpanSave">
+    <span class="toolTip" id="ttSpanSave">
         Save and return to the image parameters selection page.
     </span>
-
+    
     <div id="nav">
         <ul>
             <li>

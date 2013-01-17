@@ -78,15 +78,16 @@ if ( $_SESSION[ 'setting' ]->checkPostedCalculatePixelSizeParameters( $_POST ) )
 $script = "settings.js";
 include ("header.inc.php");
 ?>
+
 <!--
   Tooltips
 -->
-<span id="ttSpanCancel">
+<span class="toolTip" id="ttSpanCancel">
     Go back to previous page without calculating the pixel size.
 </span>  
-<span id="ttSpanForward">
+<span class="toolTip" id="ttSpanForward">
     Update the pixel size field on previous page with the calculated value.
-</span>  
+</span>
 
 <div id="nav">  
     <ul>

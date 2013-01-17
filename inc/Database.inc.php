@@ -574,11 +574,11 @@ class DatabaseConnection {
 	\param	$files	Array of file names
 	\return	true if the job files could be saved successfully; false otherwise
   */
-  public function saveJobFiles($id, $owner, $files) {
+  public function saveJobFiles($id, $owner, $files, $autoseries) {
     $result = True;
     $username = $owner->name();
     foreach ($files as $file) {
-      $query = "insert into job_files values ('" . $id ."', '" . $username ."', '" . addslashes($file) . "')";
+      $query = "insert into job_files values ('" . $id ."', '" . $username ."', '" . addslashes($file) . "', '" . $autoseries . "')";
       $result = $result && $this->execute($query);
     }
     return $result;
@@ -718,13 +718,14 @@ class DatabaseConnection {
 
     $desc = $job->description();
     $parameterSetting = $desc->parameterSetting();
-    $taskSetting = $desc->taskSetting();
+    $taskSetting      = $desc->taskSetting();
+    $analysisSetting  = $desc->analysisSetting();
 
     $stopTime = date("Y-m-d H:i:s");
-    $id = $desc->id();
-    $user = $desc->owner();
-    $owner = $user->name();
-    $group = $user->userGroup($owner);
+    $id       = $desc->id();
+    $user     = $desc->owner();
+    $owner    = $user->name();
+    $group    = $user->userGroup($owner);
     
     $parameter      = $parameterSetting->parameter('ImageFileFormat');
     $inFormat       = $parameter->value();
@@ -736,7 +737,7 @@ class DatabaseConnection {
     $microscope     = $parameter->value();
     $parameter      = $taskSetting->parameter('OutputFileFormat');
     $outFormat      = $parameter->value();
-    $parameter      = $taskSetting->parameter('ColocAnalysis');
+    $parameter      = $analysisSetting->parameter('ColocAnalysis');
     $colocAnalysis  = $parameter->value();
 
     $query = "insert into statistics values ('" . $id ."', '" . $owner ."', '" .
@@ -934,9 +935,13 @@ class DatabaseConnection {
     $query = $query . "1 = 1";
     $answer = $this->query($query);
     $result = array();
-    foreach ($answer as $row) {
-      $result[] = end($row);
+
+    if ( !empty($answer) ) {
+        foreach ($answer as $row) {
+            $result[] = end($row);
+        }
     }
+    
     return $result;
   }
 
@@ -1027,17 +1032,39 @@ class DatabaseConnection {
   }
 
   /*!
+	\brief  Returns the file series mode of a job with given id
+	\param	$id	Job id
+	\return true or false
+  */
+  public function getSeriesModeForId($id) {
+    $query = "select autoseries from job_files where job = '" . $id . "'";
+    $result = $this->queryLastValue($query);
+    
+    return $result;
+  }
+
+  /*!
 	\brief	Returns the number of jobs currently in the queue for a
 			given username
     \param	$username	Name of the user
     \return	number of jobs in queue
   */
   public function getNumberOfQueuedJobsForUser($username) {
-	$query = "SELECT COUNT(id) FROM job_queue WHERE username = '" . $_SESSION['user']->name( ) . "';";
+	$query = "SELECT COUNT(id) FROM job_queue WHERE username = '" . $username . "';";
     $row = $this->Execute( $query )->FetchRow( );
     return $row[ 0 ];
   }
 
+  /*!
+	\brief	Returns the total number of jobs currently in the queue
+    \return	total number of jobs in queue
+  */
+  public function getTotalNumberOfQueuedJobs() {
+	$query = "SELECT COUNT(id) FROM job_queue;";
+    $row = $this->Execute( $query )->FetchRow( );
+    return $row[ 0 ];
+  }
+  
   /*!
 	\brief	Returns the name of the user who created the job with given id
 	\param	$id	String	id of the job
@@ -1463,6 +1490,15 @@ class DatabaseConnection {
 	  case 'AdvancedCorrectionOptions':
 	  case 'PSF' :
 		return "provided";
+      case 'Binning':
+      case 'IsMultiChannel':
+      case 'ObjectiveMagnification':
+      case 'CMount':
+      case 'TubeFactor':
+      case 'AberrationCorrectionNecessary':
+      case 'CCDCaptorSize':
+      case 'PSFGenerationDepth':
+          return "default";
 	  default:
 
 		// For the other Parameters, the $fileFormat must be specified
@@ -1506,6 +1542,104 @@ class DatabaseConnection {
 
   }
 
+  /*!
+   \brief   Finds out whether a Huygens module is supported by the license.
+   \param   $feature The module to find out about. It can use (SQL) wildcards.
+   \return  Boolean: true if the module is supported by the license.
+  */
+  public function hasLicense ( $feature ) {
+      
+      $query = "SELECT feature FROM hucore_license WHERE " .
+          "feature LIKE '" . $feature . "' LIMIT 1;";
+
+      if ( $this->queryLastValue($query) === FALSE ) {
+          return false;
+      } else {
+          return true;
+      }
+  }    
+
+ 	/*!
+		\brief	Checks whether Huygens Core has a valid license
+		\return	true if the license is valid, false otherwise
+    */
+  public function hucoreHasValidLicense( ) {
+      
+      // We (ab)use the hasLicense() method
+      return ( $this->hasLicense("freeware") == false);
+  }
+
+ 	/*!
+		\brief	Gets the licensed server type for Huygens Core.
+		\return	one of desktop, small, medium, large, extreme
+		*/
+	public function hucoreServerType() {
+
+        $query = "SELECT feature FROM hucore_license WHERE feature LIKE 'server=%';";
+        $server = $this->queryLastValue($query);
+        if ($server == false) {
+            return "no server information";
+        }
+        return substr($server, 7);
+	}
+
+  /*!
+   \brief    Updates the database with the current HuCore license details.
+   \param    $licDetails A string with the supported license features.
+   \return   Boolean: true if the license details were successfully saved.
+  */
+  public function storeLicenseDetails ( $licDetails ) {
+
+    $licStored = true;  
+      
+    // Make sure that the hucore_license table exists.
+    $tables = $this->connection->MetaTables("TABLES");
+    if (!in_array("hucore_license", $tables) ) {
+        $msg = "Table hucore_license does not exist! " .
+		  "Please update the database!";
+        report( $msg, 1 ); exit( $msg );
+    }
+
+    // Empty table: remove existing values from older licenses.
+    $query = "DELETE FROM hucore_license";
+    $result = $this->execute($query);
+
+    if (!$result) {
+        report("Could not store license details in the database!\n", 1);
+        $licStored = false;
+        return $licStored;
+    }
+
+    // Populate the table with the new license.
+    $features = explode(" ", $licDetails);
+    foreach ($features as $feature) {
+
+        switch( $feature ) {
+            case 'desktop':
+            case 'small':
+            case 'medium':
+            case 'large':
+            case 'extreme':
+                $feature = "server=" . $feature;
+                report("Licensed server: $feature", 1);
+            default:
+                report("Licensed feature: $feature", 1);
+        }
+        
+        $query = "INSERT INTO hucore_license (feature) ".
+                 "VALUES ('". $feature ."')";
+        $result = $this->execute($query);
+
+        if (!$result) {
+            report("Could not store license feature
+                    '$feature' in the database!\n", 1);
+            $licStored = false;
+            break;
+        }
+    }
+
+    return $licStored;    
+  }
 
   /*!
     \brief	Store the confidence levels returned by huCore into the database for faster retrieval
@@ -1581,6 +1715,7 @@ class DatabaseConnection {
 	$levels[ 'estimated' ] = 1;
 	$levels[ 'reported' ]  = 2;
 	$levels[ 'verified' ]  = 3;
+    $levels[ 'asIs' ]      = 3;
 
 	if ( $levels[ $level1 ] <= $levels[ $level2 ] ) {
 	  return $level1;
@@ -1608,6 +1743,9 @@ class DatabaseConnection {
 	}
 
 	// Use the mapped file format to retrieve the
+    if (!array_key_exists($parameterName, $this->parameterNameDictionary)) {
+        return "default";
+    }
 	$query = "SELECT " . $this->parameterNameDictionary[ $parameterName ] .
 	  " FROM confidence_levels WHERE fileFormat = '" . $hucoreFileFormat .
 	  "' LIMIT 1;";

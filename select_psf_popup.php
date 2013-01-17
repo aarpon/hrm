@@ -101,13 +101,20 @@ foreach ($files as $file) {
   if ($mType != $mTypeSetting ) {
       $mismatch = true;
   }
-  if (abs($NA - $NAsetting) / $NA > .02 ) {
+
+  if (!isset($NA) || $NA == '') {
+      $mismatch = true;
+  } elseif (abs($NA - $NAsetting) / $NA > .02 ) {
       $mismatch = true;
   }
-  if (abs($em - $emSetting) / $emSetting > .05 ) {
+
+  if (!isset($emSetting) || $emSetting == '') {
+      $mismatch = true;
+  } elseif (abs($em - $emSetting) / $emSetting > .05 ) {
       $mismatch = true;
   }
-  if ($mismatch ) {
+  
+  if ($mismatch) {
       $showWarning = true;
       $style = "class=\"info\" ";
   }
@@ -152,6 +159,10 @@ foreach ($files as $file) {
         "unexpected results.</p>";
   }
 
+// The PSF popup sets the fileserver to HDF5 and ICS in order to be able to read
+// metadata. Reset it to ALL files to avoid problems with the image selector.
+$_SESSION['fileserver']->resetFiles();
+$files = $_SESSION['fileserver']->files();
 
 ?>
     </div>

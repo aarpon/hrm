@@ -99,14 +99,14 @@ include("header.inc.php");
     <!--
       Tooltips
     -->
-    <span id="ttSpanBack">
+    <span class="toolTip" id="ttSpanBack">
         Go back to previous page.
     </span>
-    <span id="ttSpanCancel">
+    <span class="toolTip" id="ttSpanCancel">
         Abort editing and go back to the image parameters selection page.
         All changes will be lost!
     </span>
-    <span id="ttSpanForward">
+    <span class="toolTip" id="ttSpanForward">
         Continue to next page.
     </span>
     <?php
@@ -115,7 +115,7 @@ include("header.inc.php");
         // we initialize a counter.
         $nParamRequiringReset = 0;
     ?>
-
+    
     <div id="nav">
         <ul>
             <li>
@@ -134,7 +134,7 @@ include("header.inc.php");
 
     <div id="content">
 
-        <h3>Optical parameters / 1</h3>
+        <h2>Optical parameters / 1</h2>
 
         <form method="post" action="" id="select">
 
@@ -190,7 +190,7 @@ foreach($possibleValues as $possibleValue) {
   if ($possibleValue == $parameterMicroscopeType->value()) {
       $flag = "checked=\"checked\" ";
   }
-
+  if ($parameterMicroscopeType->hasLicense($possibleValue)) {
 ?>
                 <input type="radio" 
                        name="MicroscopeType"
@@ -200,7 +200,7 @@ foreach($possibleValues as $possibleValue) {
 
                 <br />
 <?php
-
+  }
 }
 
 ?>
@@ -543,7 +543,7 @@ if (!$default) {
         <?php
             if ( $nParamRequiringReset > 0 ) {
         ?>
-            <span id="ttSpanReset">
+            <span class="toolTip" id="ttSpanReset">
                 Click to unselect all options.
             </span>
         <?php
@@ -569,6 +569,23 @@ if (!$default) {
                   and of the objective-embedding medium.</p>
             </div>
 
+      <?php
+              if ( !$_SESSION["user"]->isAdmin() ) {
+      ?>
+                  
+            <div class="requirements">                
+               Parameter requirements<br />adapted for <b>  
+               <?php
+               $fileFormat = $_SESSION['setting']->parameter( "ImageFileFormat" );
+               echo $fileFormat->value();
+               ?>
+               </b> files
+            </div>
+      
+      <?php
+              }
+      ?>
+       
         </div>
 
         <div id="message">

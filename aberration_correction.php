@@ -66,20 +66,21 @@ $script = array( "settings.js", "quickhelp/help.js",
 include("header.inc.php");
 
 ?>
+
     <!--
       Tooltips
     -->
-    <span id="ttSpanBack">
+    <span class="toolTip" id="ttSpanBack">
         Go back to previous page.
     </span>
-    <span id="ttSpanCancel">
+    <span class="toolTip" id="ttSpanCancel">
         Abort editing and go back to the image parameters selection page.
         All changes will be lost!
     </span>
-    <span id="ttSpanSave">
+    <span class="toolTip" id="ttSpanSave">
         Save and return to the image parameters selection page.
     </span>
-
+    
     <div id="nav">
         <ul>
             <li>
@@ -97,7 +98,7 @@ include("header.inc.php");
     
     <div id="content">
     
-        <h3>Spherical aberration correction</h3>
+        <h2>Spherical aberration correction</h2>
           
         <form method="post" action="" id="select">
             
@@ -391,7 +392,7 @@ if ( ($parameterPerformAberrationCorrection->value( ) == 1) &&
 
         <select id="AdvancedCorrectionOptions"
             name="AdvancedCorrectionOptions"
-            onchange="javascript:switchAdvancedCorrectionScheme();" >;
+            onchange="javascript:switchAdvancedCorrectionScheme();" >
 
             <?php
 
@@ -473,7 +474,8 @@ if ( ($parameterPerformAberrationCorrection->value( ) == 1) &&
             onmouseover="TagToTip('ttSpanSave' )"
             onmouseout="UnTip()"
             onclick="process()" />
-      </div>            
+      </div> 
+    
     </form>
         
     </div> <!-- content -->
@@ -494,9 +496,26 @@ if ( ($parameterPerformAberrationCorrection->value( ) == 1) &&
                 mismatches some artifacts can be  generated. Advanced parameters
                 allow for fine-tuning of the correction.</p>
           </div>
-            
+
+      <?php
+              if ( !$_SESSION["user"]->isAdmin() ) {
+      ?>
+                  
+            <div class="requirements">                
+               Parameter requirements<br />adapted for <b>  
+               <?php
+               $fileFormat = $_SESSION['setting']->parameter( "ImageFileFormat" );
+               echo $fileFormat->value();
+               ?>
+               </b> files
+            </div>
+      
+      <?php
+              }
+      ?>
+                
         </div>
-        
+       
         <div id="message">
 <?php
 
