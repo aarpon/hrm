@@ -433,11 +433,52 @@ include("footer.inc.php");
 <!-- Ajax function to update the number of jobs in the queue every 10 s -->
 <script type="text/javascript">
     $(document).ready(function() {
-        setInterval(function() { 
-          ajaxGetNumberOfUserJobsInQueue(
+        
+        // Keep track of the interval id
+        var interval = null;
+        
+        // Fill in the information about jobs in the queue as soon as the
+        // page is ready
+        update();
+        
+        // Start the repeated update of the queue status (10s interval). In some
+        // browsers, one has to actively activate the window for the focus()
+        // function to be launched, while for others the focus() function is 
+        // called when the page is ready. To make sure that it is called at
+        // least once, we trigger it here (and we keep track of wether the timer
+        // id is set to prevent from starting more than timer in parallel).
+        startUpdate();
+        
+        // Make sure to start the time when the window gets focus and
+        // to stop it when the window loses focus.
+        $(window).focus(startUpdate);
+        $(window).blur(stopUpdate);
+        
+        // Function to start the repeated update
+        function startUpdate() {
+            if (interval === null) {
+                interval = window.setInterval(function() { 
+                    update(); 
+                },
+                10000);
+            }
+        };
+        
+        // Function to stop the repeated update
+        function stopUpdate() {
+            if (interval !== null) {
+                window.clearInterval(interval);
+                interval = null;
+            }
+        }
+        
+        // Function that queries the server via an Ajax call
+        function update() {
+            ajaxGetNumberOfUserJobsInQueue(
             'jobsInQueue',
             '<p />See all jobs.<br />You have <strong>',
-            '</strong> in the queue.'); },
-            10000);
+            '</strong> in the queue.');
+        }
+
     });
 </script>
