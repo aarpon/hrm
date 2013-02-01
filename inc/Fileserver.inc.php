@@ -213,7 +213,8 @@ class Fileserver {
           if (isset($nameDivisions[3])) {
               $fileExtension .= $nameDivisions[3];
           }
-          
+
+          $fileExtension = strtolower($fileExtension);
           switch ($fileExtension) {
               case 'dv':
               case 'ims':
@@ -222,12 +223,9 @@ class Fileserver {
               case 'oif':
               case 'pic':
               case 'r3d':
+              case 'stk':
               case 'zvi':
                   $fileFormat = $fileExtension;
-                  break;
-              case 'stk':
-              case 'STK':
-                  $fileFormat = 'stk';
                   break;
               case 'h5':
                   $fileFormat = 'hdf5';
@@ -267,7 +265,7 @@ class Fileserver {
       $pattern = "/[^_]+_(T|t)[0-9]+\.\w+/";
       
       if (preg_match($pattern,$file,$matches)) {
-          if ($fileExtension == 'stk' || $fileExtension == 'STK') {
+          if ($fileExtension == 'stk') {
               $fileFormat = 'stk';
           } 
       }

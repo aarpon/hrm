@@ -9,7 +9,9 @@ var debug = '';
 var control = '';
 
 function clean() {
-    if (popup != null) popup.close();
+    if (popup != null) {
+        popup.close();
+    }
 }
 
 function warn(form, msg, value) {
@@ -160,6 +162,7 @@ function checkAgainstFormat(file, selectedFormat) {
             fileExtension += nameDivisions[3];
         }
         
+        fileExtension = fileExtension.toLowerCase();
         switch (fileExtension) {
             case 'dv':
             case 'ims':
@@ -168,12 +171,9 @@ function checkAgainstFormat(file, selectedFormat) {
             case 'oif':
             case 'pic':
             case 'r3d':           
+            case 'stk':
             case 'zvi':
                 fileFormat = fileExtension;
-                break;
-            case 'stk':
-            case 'STK':
-                fileFormat = 'stk';
                 break;
             case 'h5':
                 fileFormat    = 'hdf5';
@@ -209,7 +209,7 @@ function checkAgainstFormat(file, selectedFormat) {
 
         // Control over stks: redundant.
     if ((file.match(/[^_]+_(T|t)[0-9]+\.\w+/)) != null) {
-        if (fileExtension == 'stk' || fileExtensions == 'STK') {
+        if (fileExtension == 'stk') {
             fileFormat = 'stk';
         } 
     }
