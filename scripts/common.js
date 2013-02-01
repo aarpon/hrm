@@ -167,10 +167,13 @@ function checkAgainstFormat(file, selectedFormat) {
             case 'lsm':
             case 'oif':
             case 'pic':
-            case 'r3d':
-            case 'stk':
+            case 'r3d':           
             case 'zvi':
                 fileFormat = fileExtension;
+                break;
+            case 'stk':
+            case 'STK':
+                fileFormat = 'stk';
                 break;
             case 'h5':
                 fileFormat    = 'hdf5';
@@ -206,7 +209,7 @@ function checkAgainstFormat(file, selectedFormat) {
 
         // Control over stks: redundant.
     if ((file.match(/[^_]+_(T|t)[0-9]+\.\w+/)) != null) {
-        if (fileExtension == 'stk') {
+        if (fileExtension == 'stk' || fileExtensions == 'STK') {
             fileFormat = 'stk';
         } 
     }

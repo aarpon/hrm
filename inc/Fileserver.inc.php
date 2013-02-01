@@ -222,9 +222,12 @@ class Fileserver {
               case 'oif':
               case 'pic':
               case 'r3d':
-              case 'stk':
               case 'zvi':
                   $fileFormat = $fileExtension;
+                  break;
+              case 'stk':
+              case 'STK':
+                  $fileFormat = 'stk';
                   break;
               case 'h5':
                   $fileFormat = 'hdf5';
@@ -264,7 +267,7 @@ class Fileserver {
       $pattern = "/[^_]+_(T|t)[0-9]+\.\w+/";
       
       if (preg_match($pattern,$file,$matches)) {
-          if ($fileExtension == 'stk') {
+          if ($fileExtension == 'stk' || $fileExtension == 'STK') {
               $fileFormat = 'stk';
           } 
       }
