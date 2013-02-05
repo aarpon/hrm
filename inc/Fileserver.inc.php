@@ -470,8 +470,8 @@ class Fileserver {
   */
   public function stkFiles() {
     $this->getFiles();
-    // TODO refactor
-    $this->trimStkSeries();
+        // TODO refactor
+//  $this->trimStkSeries();
     return $this->files;
   }
 
@@ -482,7 +482,7 @@ class Fileserver {
   public function stkSeriesFiles() {
     $this->getFiles();
     // TODO refactor
-    $this->trimStk();
+//  $this->trimStk();
     $this->condenseStkSeries();
     return $this->files;
   }
