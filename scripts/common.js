@@ -637,3 +637,72 @@ function show(id) {
     blockElement = document.getElementById(id);
     blockElement.style.display = "block";
 }
+
+/**
+ * Return the numeric index of a file with name like file1.ext.
+ *
+ * In case of more than a groups of digits in the file name (e.g. 'Day01Image23.tif'),
+ * the numerical index closest to the end of the name is returned (i.e. 23).
+ *
+ * @param s file name
+ * @return numeric index, or undefined if not found.
+ */
+function getNumericIndex(s) {
+    var reg = /\d+/g;
+    var m = s.match(reg);
+    if (!m) {
+        return undefined;
+    } else {
+        // Pick the index closest to the end of the string
+        return (parseInt(m[m.length - 1]));
+    }
+}
+
+/**
+ * Sorts by comparing the (last) numeric extension in a file name.
+ *
+ * This sorter is used to sort arrays of file names with numerical indices that
+ * do not have a consistent number of digits, thus resulting in the alphabetical
+ * sorting to differ from the numerical one.
+ *
+ * Consider this example:
+ *
+ *    file1.tif, file2.tif, file10.tif
+ *
+ * are sorted alphabetically into:
+ *
+ *    file1.tif, file10.tif, file2.tif
+ *
+ * but we would like to have them sorted like this:
+ *
+ *    file1.tif, file2.tif, file10.tif
+ *
+ * If fileNames is an array of filenames, e.g.:
+ *
+ *    var fileNames = ["file1.tif", "file2.tif", "file10.tif"];
+ *
+ * use following call to sort them numerically:
+ *
+ *    fileNames.sort(numericSorter);
+ *
+ * Notice that sorting will work also in this case (mind the leading 0):
+ *
+ *     file1.tif, file02.tif, file10.tif
+ *
+ * @param a first file name
+ * @param b second file name
+ * @return < 0 if a comes before b, > 0 if a comes after b, 0 if a = b
+ */
+function numericSorter(a, b) {
+    var indxA = getNumericIndex(a);
+    if (indxA === undefined) {
+        // Place a after
+        return 1;
+    }
+    var indxB = getNumericIndex(b);
+    if (indxB === undefined) {
+        // Place b after
+        return -1;
+    }
+    return (indxA - indxB);
+}
