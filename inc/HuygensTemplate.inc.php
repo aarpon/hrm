@@ -2408,8 +2408,8 @@ class HuygensTemplate {
         $path = $pathInfo['dirname'];
         $filename = $pathInfo['basename'];
         $series = $this->getSeriesMode();
-        $opt = "-path $path -filename \"$filename\" -series $series";
-
+        $opt = "-path \"$path\" -filename \"$filename\" -series $series";
+        
         /* Retrieve the image dimensions */
         return askHuCore( "reportImageDimensions", $opt );
     }

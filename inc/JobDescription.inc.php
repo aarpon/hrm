@@ -343,8 +343,8 @@ class JobDescription {
     $analysisSetting = $analysisSetting->load();
     $this->setAnalysisSetting($analysisSetting);
 
-    
-    $this->setFiles($db->getJobFilesFor($this->id()), $db->getSeriesModeForId($this->id()));
+    $this->setFiles($db->getJobFilesFor($this->id()),
+                    $db->getSeriesModeForId($this->id()));
   }
 
   /*!
@@ -556,7 +556,7 @@ class JobDescription {
 */
 
   /*!
-    \brief Create elementare Jobs from multi-file compound Jobs
+    \brief Create elementary Jobs from multi-file compound Jobs
     \return true if elementary Jobs could be created, false otherwise
   */
   private function createSubJobsforFiles() {

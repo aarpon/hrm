@@ -177,17 +177,12 @@ class QueueManager {
         $this->chmodFiles(glob($srcPreviews),0777);
         $this->chmodFiles(dirname($srcPreviews),0777);
 
-        // Grant all permissions to the source preview in the destination folder
-        $destFolder = $fileserver->destinationFolder();
-        $srcPreviews = $destFolder . str_replace(" ","_",$subdirPreviewPattern);
-        $this->chmodFiles(glob($srcPreviews),0777);
-        $this->chmodFiles(dirname($srcPreviews),0777);
-
         // Find the results directory. Grant all permissions to it, if necessary
+        $destFolder = $fileserver->destinationFolder();
         if (dirname($resultFiles[0]) == "." ) {
             $jobFileDir = $destFolder;
         } else {
-            $subdir = dirname($resultFiles[0]);
+            $subdir = str_replace(" ", "_", dirname($resultFiles[0]));
             $jobFileDir = $destFolder . "/" . $subdir;
             $this->chmodFiles($jobFileDir,0777);
         }
@@ -203,10 +198,14 @@ class QueueManager {
         $taskSetting = $desc->taskSetting();
         $jobFilePattern = dirname($jobFilePattern) . "/hrm_previews/";
         $jobFilePattern .= "*" . $taskSetting->name() . "_hrm*";
-
+        
         // Grant all permissions the job previews.
         $this->chmodFiles(glob($jobFilePattern),0777);
-
+        
+        // Grant all permissions to the source preview in the destination folder
+        $srcPreviews = $destFolder . str_replace(" ","_",$subdirPreviewPattern);
+        $this->chmodFiles(glob($srcPreviews),0777);
+        $this->chmodFiles(dirname($srcPreviews),0777);
     }
 
     /*!

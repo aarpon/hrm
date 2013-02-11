@@ -360,7 +360,7 @@ class Fileserver {
           $fileExtension = $nameDivisions[1];
       }
       
-      switch ( $fileExtension ) {
+      switch ( strtolower($fileExtension) ) {
           case 'stk':
               $pattern = "/[^_]+_(T|t)[0-9]+\.\w+/";
               break;
@@ -531,10 +531,10 @@ class Fileserver {
       foreach ($files as $key => $file) {
           $files[$key] = stripslashes($file);
       }
-    $selected = $this->selectedFiles();
-    $new = array_diff($files, $selected);
-    $this->selectedFiles = array_merge($new, $this->selectedFiles);
-    sort($this->selectedFiles);
+      $selected = $this->selectedFiles();
+      $new = array_diff($files, $selected);
+      $this->selectedFiles = array_merge($new, $this->selectedFiles);
+      sort($this->selectedFiles);
   }
 
   /*!
@@ -2404,7 +2404,7 @@ echo '</body></html>';
     if (count($this->files) == 0) return False;
     $extArr = $this->imageExtensions();
 
-    // When only one file type is listed, expand subimages if they exists.
+    // When only one file type is listed, expand subimages if they exist.
 
     if ( count ( $extArr ) == 1 ) {
         $ext = $extArr[0];
@@ -2435,6 +2435,7 @@ echo '</body></html>';
         }
     }
     natsort($this->files);
+
     // TODO refactor
     //$this->condenseTimeSeries();
     // trim TIFF series to the first file in the sequence
