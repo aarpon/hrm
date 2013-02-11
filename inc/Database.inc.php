@@ -578,7 +578,12 @@ class DatabaseConnection {
     $result = True;
     $username = $owner->name();
     foreach ($files as $file) {
-      $query = "insert into job_files values ('" . $id ."', '" . $username ."', '" . addslashes($file) . "', '" . $autoseries . "')";
+      if (strcasecmp($autoseries, "TRUE") == 0 || strcasecmp($autoseries, "T") == 0) {
+          $sqlAutoSeries = "T";
+      } else {
+          $sqlAutoSeries = "F";
+      }
+      $query = "insert into job_files values ('" . $id ."', '" . $username ."', '" . addslashes($file) . "', '" . $sqlAutoseries . "')";
       $result = $result && $this->execute($query);
     }
     return $result;
