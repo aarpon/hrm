@@ -2434,7 +2434,7 @@ echo '</body></html>';
                   $this->getSubImages($expandfiles));
         }
     }
-    sort($this->files);
+    natsort($this->files);
     // TODO refactor
     //$this->condenseTimeSeries();
     // trim TIFF series to the first file in the sequence
