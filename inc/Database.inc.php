@@ -577,13 +577,12 @@ class DatabaseConnection {
   public function saveJobFiles($id, $owner, $files, $autoseries) {
     $result = True;
     $username = $owner->name();
+    $sqlAutoSeries = "F";
     foreach ($files as $file) {
       if (strcasecmp($autoseries, "TRUE") == 0 || strcasecmp($autoseries, "T") == 0) {
           $sqlAutoSeries = "T";
-      } else {
-          $sqlAutoSeries = "F";
       }
-      $query = "insert into job_files values ('" . $id ."', '" . $username ."', '" . addslashes($file) . "', '" . $sqlAutoseries . "')";
+      $query = "insert into job_files values ('" . $id ."', '" . $username ."', '" . addslashes($file) . "', '" . $sqlAutoSeries . "')";
       $result = $result && $this->execute($query);
     }
     return $result;
