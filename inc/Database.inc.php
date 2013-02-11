@@ -577,7 +577,7 @@ class DatabaseConnection {
   public function saveJobFiles($id, $owner, $files, $autoseries) {
     $result = True;
     $username = $owner->name();
-    $sqlAutoSeries = "F";
+    $sqlAutoSeries = "";
     foreach ($files as $file) {
       if (strcasecmp($autoseries, "TRUE") == 0 || strcasecmp($autoseries, "T") == 0) {
           $sqlAutoSeries = "T";
