@@ -220,6 +220,9 @@ if (isset($_POST['delete'])) {
         } else {
             $_SESSION['fileserver']->resetFiles();
         }
+} else if (!isset($_POST['update']) && isset($_GET) && isset($_GET['folder'])){
+        // Force an update in the file browser
+        $_POST['update'] = "1";
 }
 
 
