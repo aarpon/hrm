@@ -111,14 +111,14 @@ function filterImages (format,series) {
 
     var selectObject = document.getElementById(\"selectedimages\");
     if (selectObject.length >= 0) {
-        for (i = selectObject.length - 1; i>=0; i--) {
+        for (var i = selectObject.length - 1; i>=0; i--) {
             selectObject.remove(selectObject.length - 1);
         }
     }
 
     var selectObject = document.getElementById(\"filesPerFormat\");
     if (selectObject.length > 0) {
-        for (i = selectObject.length - 1; i>=0; i--) {
+        for (var i = selectObject.length - 1; i>=0; i--) {
             selectObject.remove(selectObject.length - 1);
         }
     }
@@ -193,7 +193,7 @@ function imageAction (list) {
     var snew = 0;
 
     var count = 0;
-    for (i=0; i<list.options.length; i++) {
+    for (var i=0; i<list.options.length; i++) {
         if (list.options[i].selected) {
             if( undefined === window.lastSelectedImgsKey[i] ){
                 // New selected item
@@ -206,7 +206,7 @@ function imageAction (list) {
 
     if (snew == 0) {
         // deselected image
-        for (i=0; i<window.lastSelectedImgs.length; i++) {
+        for (var i=0; i<window.lastSelectedImgs.length; i++) {
             key = window.lastSelectedImgs[i];
             if ( !list.options[key].selected ) {
                 snew = -1
@@ -218,7 +218,7 @@ function imageAction (list) {
     window.lastSelectedImgs = [];
     window.lastSelectedImgsKey = [];
     count = 0;
-    for (i=0; i<list.options.length; i++) {
+    for (var i=0; i<list.options.length; i++) {
         if (list.options[i].selected) {
             window.lastSelectedImgs[count] = i;
             window.lastSelectedImgsKey[i] = true;

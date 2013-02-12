@@ -477,6 +477,7 @@ function cancelSelection() {
 function imgPrev(infile, mode, gen, compare, index, dir, referer, data) {
 
     var file = unescape(infile);
+    var tip, html, link, onClick = "";
 
     if (mode == 0 && gen == 1) {
         try
