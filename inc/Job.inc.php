@@ -498,7 +498,8 @@ class Job {
         $this->shell->renameFile($huygensOut,$tmpFile);
 
         /* TODO: find workaround. The multiserver configuration has latency 
-         between renaming and reading files. A sleep(5) fixes it. */
+         between renaming and reading files. A sleep(1) fixes it. The single
+         server configuration seems to be benefited from it as well. */
         sleep(1);
 
         /* Read the Huygens output file and make an html table from it. */
