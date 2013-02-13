@@ -565,7 +565,7 @@ class JobDescription {
       // error_log("file=".$file);
       $newJobDescription = new JobDescription();
       $newJobDescription->copyFrom($this);
-      $newJobDescription->setFiles(array($file));
+      $newJobDescription->setFiles(array($file),$this->autoseries);
       $result = $result && $newJobDescription->createJob();
     }
     return $result;
