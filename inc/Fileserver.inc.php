@@ -2648,16 +2648,21 @@ echo '</body></html>';
     \brief Condensed Leica TIFF series to the first file in the series
   */
   private function condenseTiffLeica() {
-    if (count($this->files)==0) return False;
-    $tiff_series =  preg_grep("/[^_]+_(T|t|Z|z|CH|ch)[0-9]+\w+\.\w+/", $this->files);
-    $lastValue = "";
+    if (count($this->files)==0) {
+        return False;
+    }
+    
+    $tiff_series =  preg_grep("/[^_]+_(T|t|Z|z|CH|ch)[0-9]+\w+\.ti(f{1,2})$/i", $this->files);
+    $baseNames = array();
     foreach ($tiff_series as $key => $value) {
-       if ($this->leicaStyleNumberingBasename($lastValue)
-           == $this->leicaStyleNumberingBasename($value)) {
-          //echo $value;
+       $currentBaseName = $this->leicaStyleNumberingBasename($value);
+       if (!in_array($currentBaseName, $baseNames)) {
+            // Add a new base name
+            $baseNames[] = $currentBaseName;
+       } else {
+           //echo $value;
            unset($this->files[$key]);
        }
-      $lastValue = $value;
     }
   }
 
@@ -2675,15 +2680,20 @@ echo '</body></html>';
     \brief  Condensed STK time series series to the first file in the series
   */
   private function condenseStkSeries() {
-    if (count($this->files)==0) return False;
-    $stk_series =  preg_grep("/[^_]+_(T|t)[0-9]+\.\w+/", $this->files);
-    $lastValue = "";
+    if (count($this->files) == 0) {
+      return False;
+    }
+    
+    $stk_series = preg_grep("/[^_]+_(T|t)[0-9]+\.stk$/i", $this->files);
+    $baseNames = array();
     foreach ($stk_series as $key => $value) {
-       if ($this->stkSeriesBasename($lastValue)==$this->stkSeriesBasename($value)) {
-          //echo $value;
-          unset($this->files[$key]);
-      }
-      $lastValue = $value;
+        $currentBaseName = $this->stkSeriesBasename($value);
+        if (!in_array($currentBaseName, $baseNames)) {
+            // Add a new base name
+            $baseNames[] = $currentBaseName;
+        } else {
+            unset($this->files[$key]);
+        }
     }
   }
 
