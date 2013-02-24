@@ -192,7 +192,7 @@ else echo "        var added = false;\n";
       <div>
         <input type="button" 
                value="close"
-               onclick="window.close()" />
+               onclick="window.close();" />
       </div>
 
     </div> <!-- box -->
