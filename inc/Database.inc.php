@@ -1006,7 +1006,8 @@ class DatabaseConnection {
     $query = "SELECT id, username, queued, start, stop, server, process_info, status, file
     FROM job_queue, job_files
     WHERE job_queue.id = job_files.job AND job_queue.username = job_files.owner
-    ORDER BY job_queue.priority asc, job_queue.queued asc, job_queue.status asc, job_files.file asc";
+    ORDER BY job_queue.priority asc, job_queue.queued asc, job_queue.status asc, job_files.file asc
+    LIMIT 100";
     $result = $this->query($query);
     return $result;
   }
