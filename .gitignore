@@ -2,4 +2,4 @@
 config/*_config.inc
 resources/hrmd.plist
 user/login_user.inc
-
+/nbproject/
