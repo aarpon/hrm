@@ -32,7 +32,7 @@ else if (isset($_POST['update']) && $_POST['update']=='update') {
   // nothing to do
 }
 
-$script = array( "queue.js", "ajax_utils.js" );
+$script = array( "queue.js", "ajax_utils.js", "json-rpc-client.js" );
 
 include("header.inc.php");
 
@@ -88,8 +88,9 @@ include("header.inc.php");
         onmouseover="TagToTip('ttRefresh' )"
         onmouseout="UnTip()" style="vertical-align: middle;" />
       &nbsp;
-     <span id="totalJobNumber"  style="vertical-align: middle;">&nbsp;</span>
-     <span id="userJobNumber"  style="vertical-align: middle;">&nbsp;</span>
+     <span id="jobNumber"  style="vertical-align: middle;">&nbsp;</span>
+     <br />
+     <span id="lastUpdateTime" style="vertical-align: middle;">&nbsp;</span>
    </div>
 
    <!-- Display full queue table. -->
@@ -114,12 +115,100 @@ include("footer.inc.php");
         updateAll();
 
         // Set up timer for the repeated update
-        var interval = window.setInterval(function() { updateAll(); }, 5000);
+        window.setInterval(function() { updateAll(); }, 10000);
 
         // Function that queries the server via Ajax calls
         function updateAll() {
-            ajaxGetTotalNumberOfJobsInQueue('totalJobNumber');
-            ajaxGetNumberOfUserJobsInQueue('userJobNumber', 'You own ', '.');
+            JSONRPCRequest({
+                method : 'jsonGetUserAndTotalNumberOfJobsInQueue',
+                params: []
+            }, function(response) {
+                if (!response) {
+                    $("#jobNumber").html("<b>Error: could not query job status!</b>");
+                    return;
+                }
+                if (response.success === "false") {
+                    $("#jobNumber").html("<b>" + response.message + "</b>");
+                    return;
+                }
+                // Make sure to work with integers
+                var numAllJobsInQueue =  parseInt(response.numAllJobsInQueue);
+                var numUserJobsInQueue = parseInt(response.numUserJobsInQueue);
+                
+                // Update the page
+                var message = "";
+                outer:
+                switch (numAllJobsInQueue) {
+                
+                    case 0:
+                        message = "There are <b>no jobs</b> in the queue."
+                        break;
+                        
+                    case 1:
+                        switch (numUserJobsInQueue) {
+                            
+                            case 0:
+                                message = "There is <b>1 job</b> owned by " +
+                                    "another user in the queue.";
+                                break outer;
+                                
+                            case 1:
+                                 message = "<b>Yours is the only job</b> " +
+                                         "in the queue.";
+                                 break outer;
+                                 
+                            default:
+                                message = "<b>Error: inconsistent job count!</b>";
+                                break outer;
+                        }
+                        break;
+                        
+                    default:
+                        switch (numUserJobsInQueue) {
+                            
+                            case 0:
+                                message = "There are <b>" + numAllJobsInQueue +
+                                        " jobs</b> in the queue, <b>none</b> " +
+                                        "of which is yours.";
+                                break outer;
+                                
+                            case 1:
+                                message = "There are <b>" + numAllJobsInQueue +
+                                        " jobs</b> in the queue, <b>1</b> " +
+                                        "of which is yours.";
+                                break outer;
+                                 
+                            default:
+                                var insert = "";
+                                if (numAllJobsInQueue > 100) {
+                                    insert = " (showing first 100) ";
+                                }
+                                if (numAllJobsInQueue === numUserJobsInQueue) {
+                                    message = "There are <b>" + numAllJobsInQueue +
+                                        " jobs</b> in the queue" + insert +
+                                        ", <b>all</b> yours.";
+                                    
+                                } else if (numAllJobsInQueue > numUserJobsInQueue) {
+                                    message = "There are <b>" + numAllJobsInQueue +
+                                        " jobs</b> in the queue " + insert +
+                                        ", <b>" + numUserJobsInQueue + "</b>" +
+                                        " of which are yours.";
+                                } else {
+                                    message = "<b>Error: inconsistent job count!</b>";
+                                }
+                                break outer;
+                        }
+                        
+                        break;
+                }
+                $("#jobNumber").html(message);
+                
+                // Update the time as well
+                $("#lastUpdateTime").text("Last update: " + 
+                        response.lastUpdateTime);
+            });
+            
+            // Redraw the table
             ajaxGetJobQueueTable('queue');
         }
     });
