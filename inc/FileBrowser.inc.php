@@ -484,11 +484,9 @@ include("header.inc.php");
 
 
     <script type="text/javascript">
-        <!--
             window.pageInstructions='<?php echo escapeJavaScript($info); ?>';
             window.infoShown = true;
             window.previewSelected = -1;
-        -->
     </script>
     <div id="rightpanel">
         <div id="info">
