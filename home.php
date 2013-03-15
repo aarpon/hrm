@@ -43,7 +43,7 @@ include("header.inc.php");
             ?>
    	        <li>
                 <a href="#" onclick="checkForUpdates();">
-                <img src="images/eye.png" alt="Check for updates" />
+                <img src="images/check_for_update.png" alt="Check for updates" />
                 &nbsp;Check for updates
                 </a>
             </li>
@@ -458,7 +458,7 @@ include("footer.inc.php");
             
                 if (!response || response.success === "false") {
                     $("#update").html("<p class='updateError'>" +
-                            "<img src=\"images/eye.png\" alt=\"Error\" />" +
+                            "<img src=\"images/check_for_update.png\" alt=\"Error\" />" +
                             "&nbsp;&nbspError: could not retrieve version " +
                             "information!</p>");
                     $("#update").show();
@@ -466,7 +466,7 @@ include("footer.inc.php");
                 }
                 if (response.newerVersionExist === "false") {
                     $("#update").html("<p class='noUpdateNotification'>" +
-                            "<img src=\"images/eye.png\" alt=\"Latest version\" />" +
+                            "<img src=\"images/check_for_update.png\" alt=\"Latest version\" />" +
                             "&nbsp;&nbspCongratulations! You are running the " +
                             "latest version of the HRM!</p>");
                     $("#update").show();
@@ -475,7 +475,7 @@ include("footer.inc.php");
                 $("#update").html(
                         "<p class='updateNotification'>" +
                     "<a href='#'>" +
-                    "<img src=\"images/eye.png\" alt=\"New version\" />" +
+                    "<img src=\"images/check_for_update.png\" alt=\"New version\" />" +
                     "&nbsp;&nbspA newer version of the HRM (" +
                     response.newVersion +
                     ") is available!</a></p>");

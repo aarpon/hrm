@@ -60,7 +60,7 @@ include("header.inc.php");
         ?>
           <p class="updateNotification"><a href="javascript:openWindow(
                 'http://huygens-rm.org/home/?q=node/4')">
-                <img src="images/eye.png" alt="Version check" />
+                <img src="images/check_for_update.png" alt="Version check" />
               &nbsp;&nbsp
             A newer version of the HRM 
               <?php
@@ -71,7 +71,7 @@ include("header.inc.php");
         } else {
         ?>
           <p class="noUpdateNotification">
-            <img src="images/eye.png" alt="Version check" />&nbsp;&nbsp
+            <img src="images/check_for_update.png" alt="Version check" />&nbsp;&nbsp
             Congratulations, you are running the latest version of the HRM!</p>
         <?php
         }
