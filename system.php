@@ -51,6 +51,32 @@ include("header.inc.php");
       <h3><img alt="Summary" src="./images/system_title.png" width="40"/>&nbsp;System summary</h3>
 
       <div id="system">
+
+        <?php
+        // Check if we have the latest HRM version
+        $latestVersion = System::getLatestHRMVersionFromRemoteAsInteger();
+        if ($latestVersion != -1 &&
+                System::getHRMVersionAsInteger() < $latestVersion) {
+        ?>
+          <p class="updateNotification"><a href="javascript:openWindow(
+                'http://huygens-rm.org/home/?q=node/4')">
+                <img src="images/eye.png" alt="Version check" />
+              &nbsp;&nbsp
+            A newer version of the HRM 
+              <?php
+                echo "(" . System::getHRMVersionAsString($latestVersion) . ")";
+              ?>
+            is available!</a></p>
+        <?php
+        } else {
+        ?>
+          <p class="noUpdateNotification">
+            <img src="images/eye.png" alt="Version check" />&nbsp;&nbsp
+            Congratulations, you are running the latest version of the HRM!</p>
+        <?php
+        }
+        ?>
+
         <table>
           <tr>
             <td class="section">
@@ -65,7 +91,7 @@ include("header.inc.php");
                 HRM version
             </td>
             <td class="value">
-                <?php echo System::getHRMVersion(); ?>
+                <?php echo System::getHRMVersionAsString(); ?>
             </td>
           </tr>
           <tr>
@@ -89,7 +115,7 @@ include("header.inc.php");
                 HuCore minimum required version
             </td>
             <td class="value">
-                <?php echo System::minHuCoreVersion(); ?>
+                <?php echo System::getMinHuCoreVersionAsString(); ?>
             </td>
           </tr>
           <tr>
@@ -97,7 +123,7 @@ include("header.inc.php");
                 HuCore current version
             </td>
             <td class="value">
-                <?php echo System::huCoreVersionAsString(); ?>
+                <?php echo System::getHucoreVersionAsString(); ?>
             </td>
           </tr>
           <tr>
@@ -127,7 +153,7 @@ include("header.inc.php");
                 Server type
             </td>
             <td class="value">
-                <?php echo System::hucoreServerType(); ?>
+                <?php echo System::getHucoreServerType(); ?>
             </td>
           </tr>         
           <tr>
@@ -189,7 +215,7 @@ include("header.inc.php");
                 Operating system
             </td>
             <td class="value">
-                <?php echo System::operatingSystem(); ?>
+                <?php echo System::getOperatingSystem(); ?>
             </td>
           </tr>
           <tr>
@@ -197,7 +223,7 @@ include("header.inc.php");
                 Kernel release
             </td>
             <td class="value">
-                <?php echo System::kernelRelease(); ?>
+                <?php echo System::getKernelRelease(); ?>
             </td>
           </tr>
           <tr>
@@ -213,7 +239,7 @@ include("header.inc.php");
                 Apache version
             </td>
             <td class="value">
-                <?php echo System::apacheVersion(); ?>
+                <?php echo System::getApacheVersion(); ?>
             </td>
           </tr>
           <tr>
@@ -221,8 +247,8 @@ include("header.inc.php");
                 Database type and version
             </td>
             <td class="value">
-                <?php echo System::databaseType() . ' ' .
-                System::databaseVersion(); ?>
+                <?php echo System::getDatabaseType() . ' ' .
+                System::getDatabaseVersion(); ?>
             </td>
           </tr>
           <tr>
@@ -230,7 +256,7 @@ include("header.inc.php");
                 PHP (Apache mod) version
             </td>
             <td class="value">
-                <?php echo System::phpVersion(); ?>
+                <?php echo System::getPHPVersion(); ?>
             </td>
           </tr>
           <tr>
@@ -246,7 +272,7 @@ include("header.inc.php");
                 >Memory limit
             </td>
             <td class="value">
-                <?php echo System::memoryLimit(); ?>
+                <?php echo System::getMemoryLimit(); ?>
             </td>
           </tr>
           <tr>
@@ -254,7 +280,7 @@ include("header.inc.php");
                 Max execution time
             </td>
             <td class="value">
-                <?php echo System::maxExecutionTimeFromIni(); ?>
+                <?php echo System::getMaxExecutionTimeFromIni(); ?>
             </td>
           </tr>
           <tr>
@@ -270,7 +296,7 @@ include("header.inc.php");
                 HRM configuration
             </td>
             <td class="value">
-                <?php echo System::downloadEnabledFromConfig(); ?>
+                <?php echo System::isDownloadEnabledFromConfig(); ?>
             </td>
           </tr>
           <tr>
@@ -286,7 +312,7 @@ include("header.inc.php");
                 php.ini
             </td>
             <td class="value">
-                <?php echo System::postMaxSizeFromIni(); ?>
+                <?php echo System::getPostMaxSizeFromIni(); ?>
             </td>
           </tr>
           <tr>
@@ -294,7 +320,7 @@ include("header.inc.php");
                 HRM configuration
             </td>
             <td class="value">
-                <?php echo System::postMaxSizeFromConfig(); ?>
+                <?php echo System::getPostMaxSizeFromConfig(); ?>
             </td>
           </tr>
           <tr>
@@ -302,7 +328,7 @@ include("header.inc.php");
                 in use
             </td>
             <td class="value">
-                <?php echo System::postMaxSize(); ?>
+                <?php echo System::getPostMaxSize(); ?>
             </td>
           </tr>
           <tr>
@@ -318,7 +344,7 @@ include("header.inc.php");
                 php.ini
             </td>
             <td class="value">
-                <?php echo System::uploadEnabledFromIni(); ?>
+                <?php echo System::isUploadEnabledFromIni(); ?>
             </td>
           </tr>
           <tr>
@@ -326,14 +352,14 @@ include("header.inc.php");
                 HRM configuration
             </td>
             <td class="value">
-                <?php echo System::uploadEnabledFromConfig(); ?>
+                <?php echo System::isUploadEnabledFromConfig(); ?>
             </td>
           </tr>
           <tr>
             <td class="subkey">in use
             </td>
             <td class="value">
-                <?php echo System::uploadEnabled(); ?>
+                <?php echo System::isUploadEnabled(); ?>
             </td>
           </tr>
           <tr>
@@ -349,7 +375,7 @@ include("header.inc.php");
                 php.ini
             </td>
             <td class="value">
-                <?php echo System::uploadMaxFileSizeFromIni(); ?>
+                <?php echo System::isUploadMaxFileSizeFromIni(); ?>
             </td>
           </tr>
           <tr>
@@ -357,14 +383,14 @@ include("header.inc.php");
                 HRM configuration
             </td>
             <td class="value">
-                <?php echo System::uploadMaxFileSizeFromConfig(); ?>
+                <?php echo System::isUploadMaxFileSizeFromConfig(); ?>
             </td>
           </tr>
           <tr>
             <td class="subkey">in use
             </td>
             <td class="value">
-                <?php echo System::uploadMaxFileSize(); ?>
+                <?php echo System::getUploadMaxFileSize(); ?>
             </td>
           </tr>
           <tr>

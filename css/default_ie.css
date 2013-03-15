@@ -1850,3 +1850,18 @@ option.default {
 .toolTip {
   display: none;
 }
+
+.updateNotification {
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.noUpdateNotification {
+  font-size: 13px;
+}
+
+.updateError {
+    font-size: 13px;
+    font-weight: bold;
+    color: red;
+}

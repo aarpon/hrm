@@ -78,11 +78,8 @@ if (isset($generatedScript)) {
 
 ?>
 
-    <script type="text/javascript">
-    <!--
-    <?php echo $generatedScript ?>
-    -->
-    </script>
+    <script type="text/javascript"><?php echo $generatedScript ?></script>
+    
 <?php
 
 }
@@ -109,9 +106,7 @@ if (isset($generatedScript)) {
       <!--
         // Use the great Tooltip JavaScript Library by Walter Zorn
       -->
-      <script type="text/javascript"
-        src="./scripts/wz_tooltip/wz_tooltip.js">
-      </script>
+      <script type="text/javascript" src="./scripts/wz_tooltip/wz_tooltip.js"></script>
 
 <div id="basket">
 
@@ -119,7 +114,7 @@ if (isset($generatedScript)) {
 	  <div id="title">
 	  <h1>
           Huygens Remote Manager
-            <span id="about">v<?php echo System::getHRMVersion( ); ?></span>
+            <span id="about">v<?php echo System::getHRMVersionAsString( ); ?></span>
       </h1>
   	  <div id="logo"></div>
 	  </div>

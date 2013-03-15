@@ -26,7 +26,7 @@ if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
 
 $message = "";
 
-$script = array( "ajax_utils.js" );
+$script = array("ajax_utils.js", "json-rpc-client.js");
 
 include("header.inc.php");
 
@@ -38,6 +38,18 @@ include("header.inc.php");
                 <img src="images/user.png" alt="user" />
                 &nbsp;<?php echo $_SESSION['user']->name(); ?>
             </li>
+            <?php
+            if ($_SESSION['user']->isAdmin()) {
+            ?>
+   	        <li>
+                <a href="#" onclick="checkForUpdates();">
+                <img src="images/eye.png" alt="Check for updates" />
+                &nbsp;Check for updates
+                </a>
+            </li>
+            <?php
+            }
+            ?>
 	        <li>
                 <a href="javascript:openWindow(
                    'http://huygens-rm.org/home/?q=node/7')">
@@ -62,7 +74,7 @@ include("header.inc.php");
     </div>
     
     <div id="homepage">
-
+        
         <?php
             $textHome = "Home";
             if ( !isset( $_SESSION['BEEN_HOME'] ) ) {
@@ -72,6 +84,9 @@ include("header.inc.php");
         ?>
         <h3><img src="images/home.png" alt="Home" />&nbsp;
             <?php echo $textHome; ?></h3>
+
+        <!-- Here we display update information. This div is initially hidden -->
+        <div id="update"></div>
         
         <?php
 
@@ -131,7 +146,8 @@ include("header.inc.php");
 			  </td>			  
 
 			</tr>
-                               <tr class="separator"><td></td><td></td><td></td><td></td></tr>
+            
+            <tr class="separator"><td></td><td></td><td></td><td></td></tr>
                             
 			<tr>
                                                <td class="icon">
@@ -162,8 +178,8 @@ include("header.inc.php");
 			  </td>
 			  
 		    </tr>
-
-                               <tr class="separator"><td></td><td></td><td></td><td></td></tr>
+            
+            <tr class="separator"><td></td><td></td><td></td><td></td></tr>
 
 			<tr>
 			  
@@ -197,10 +213,10 @@ include("header.inc.php");
 		    </tr>
 
 			<tr>
-                          <td class="icon">
-                                <a href="./select_analysis_settings.php">
-				<img alt="Analysis" src="./images/analysis.png" />
-				</a>
+              <td class="icon">
+                  <a href="./select_analysis_settings.php">
+                      <img alt="Analysis" src="./images/analysis.png" />
+                  </a>
 			  </td>
 			  
 			  <td class="text"><div class="cell">
@@ -430,8 +446,60 @@ include("footer.inc.php");
 
 ?>
 
-<!-- Ajax function to update the number of jobs in the queue every 10 s -->
+<!-- Ajax functions -->
 <script type="text/javascript">
+    
+    // Function checkForUpdates
+    function checkForUpdates() {
+        JSONRPCRequest({
+                method : 'jsonCheckForUpdates',
+                params: []
+            }, function(response) {
+            
+                if (!response || response.success === "false") {
+                    $("#update").html("<p class='updateError'>" +
+                            "<img src=\"images/eye.png\" alt=\"Error\" />" +
+                            "&nbsp;&nbspError: could not retrieve version " +
+                            "information!</p>");
+                    $("#update").show();
+                    return;
+                }
+                if (response.newerVersionExist === "false") {
+                    $("#update").html("<p class='noUpdateNotification'>" +
+                            "<img src=\"images/eye.png\" alt=\"Latest version\" />" +
+                            "&nbsp;&nbspCongratulations! You are running the " +
+                            "latest version of the HRM!</p>");
+                    $("#update").show();
+                    return;
+                }
+                $("#update").html(
+                        "<p class='updateNotification'>" +
+                    "<a href='#'>" +
+                    "<img src=\"images/eye.png\" alt=\"New version\" />" +
+                    "&nbsp;&nbspA newer version of the HRM (" +
+                    response.newVersion +
+                    ") is available!</a></p>");
+                $("#update").on("click", function() {
+                    openWindow("http://huygens-rm.org/home/?q=node/4");
+                });
+                $("#update").show();
+                return;    
+            }
+        )
+    }
+
+    // Hide the "update" div in the beginning
+    $(document).ready(function() {
+        $("#update").hide();   
+    });
+    
+    <?php
+    
+    if (!$_SESSION['user']->isAdmin()) {
+        
+    ?>
+        
+    // Update job information
     $(document).ready(function() {
         
         // Fill in the information about jobs in the queue as soon as the
@@ -450,4 +518,11 @@ include("footer.inc.php");
         }
 
     });
+    
+    <?php
+    
+    }
+        
+    ?>
+
 </script>

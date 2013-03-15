@@ -1005,7 +1005,7 @@ if ($current_revision == 0) {
 // -----------------------------------------------------------------------------
 // Update the database to the last revision
 // -----------------------------------------------------------------------------
-$msg = "Needed database revision for HRM v" .System::getHRMVersion( ) .
+$msg = "Needed database revision for HRM v" .System::getHRMVersionAsString( ) .
     " is number " . $LAST_REVISION . ".\n";
 $msg .= "Current database revision is number " . $current_revision . ".\n";
 if( $LAST_REVISION == $current_revision ) {
