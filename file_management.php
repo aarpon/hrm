@@ -181,7 +181,7 @@ if ($allowHttpTransfer) {
 
 $operationResult = "";
 
-if ( System::uploadEnabled() == "enabled" ) {
+if ( System::isUploadEnabled() == "enabled" ) {
 
     if (isset($_POST['uploadForm']) && isset($_FILES) ) {
         $operationResult =
@@ -276,7 +276,7 @@ if ( $browse_folder == "dest" ) {
             </p>";
 
     
-    if (System::uploadEnabled() == "enabled") {
+    if (System::isUploadEnabled() == "enabled") {
 
         $validExtensions = str_replace( " ", ", ",
           $_SESSION['fileserver']->getValidArchiveTypesAsString() );

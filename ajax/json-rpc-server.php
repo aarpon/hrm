@@ -6,6 +6,7 @@
 require_once '../inc/User.inc.php';
 require_once '../inc/JobQueue.inc.php';
 require_once '../inc/Database.inc.php';
+require_once '../inc/System.inc.php';
 
 // This is not strictly necessary for the Ajax communication, but will be 
 // necessary for accessing session data to create the response.
@@ -55,7 +56,12 @@ switch ($method) {
         
         $json = jsonGetUserAndTotalNumberOfJobsInQueue();
         break;
-    
+      
+    case 'jsonCheckForUpdates':
+      
+        $json = jsonCheckForUpdates();
+        break;
+
     default:
         
         // Unknown method
@@ -120,6 +126,41 @@ function jsonGetUserAndTotalNumberOfJobsInQueue() {
     
     // Return as a JSON string
     return (json_encode($json));
+}
+
+
+/**
+ * Check whether there is an update for the HRM. 
+ * @return JSON-encoded array with key 'newerVersionExist' and 'newVersion'
+ */
+function jsonCheckForUpdates() {
+
+  // Prepare the output array
+  $json = initJSONArray();
+
+  try {
+    
+    // Check if there is a newer version
+    $isNew = System::isThereNewHRMRelease();
+    
+    if ($isNew) {
+        $json["newerVersionExist"] = "true";
+        $json["newVersion"] = System::getLatestHRMVersionFromRemoteAsString();
+    } else {
+        $json["newerVersionExist"] = "false";
+        $json["newVersion"] = "";
+    }
+
+  } catch (Exception $e) {
+      $json["success"] = "false";
+      $json["message"] = $e->getMessage();
+      $json["newerVersionExist"] = "false";
+      $json["newVersion"] = "";
+  }
+
+  // Return as a JSON string
+  return (json_encode($json));
+
 }
 
 ?>

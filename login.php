@@ -178,7 +178,7 @@ if ( !$db->isReachable( ) ) {
 	return;
 }
 // Check that the hucore version is known
-if ( System::huCoreVersion( ) == 0 ) {
+if ( System::getHuCoreVersionAsInteger( ) == 0 ) {
 	echo "<div class=\"dbOutDated\">Warning: unknown HuCore version!\n";
 	echo "<p>Please ask the administrator to start the queue manager.</p>" .
          "<p>You are now allowed to login until this issue has been " .
@@ -190,8 +190,8 @@ if ( System::huCoreVersion( ) == 0 ) {
 // Check that hucore is recent enough to run this version of the HRM
 if ( System::isMinHuCoreVersion( ) == false ) {
 	echo "<div class=\"dbOutDated\">Warning: you need at least HuCore " .
-	"version " . System::minHuCoreVersion() . " for HRM " .
-    System::getHRMVersion() . "!\n";
+	"version " . System::getMinHuCoreVersionAsString() . " for HRM " .
+    System::getHRMVersionAsString() . "!\n";
 	echo "<p>Please contact the administrator.</p></div>";
 	echo "</div>\n";
 	include("footer.inc.php");
