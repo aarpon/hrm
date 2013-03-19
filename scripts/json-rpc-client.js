@@ -36,28 +36,31 @@
  *     JSONRPCRequest(data, function(response) {
  *       // ... do something with response 
  *     }
- */   
+ */
 function JSONRPCRequest(data, callback) {
 
-  // Append RPC info to the data array to be sent to
-  // the server
-  data.id = "1";
-  data.jsonrpc = "2.0";
-
-  // Disable caching
-  $.ajaxSetup ({  
-    cache: false  
-  });
-
-  // Submit the Ajax call
-  $.ajax(
-    { 
-      url: "ajax/json-rpc-server.php",
-      type: "POST",
-      dataType: "json",
-      async: true,
-      data: data,
-      success: callback
-    }
-  );
+    // Use ECMAScript 5 strict mode
+    "use strict";
+    
+    // Append RPC info to the data array to be sent to
+    // the server
+    data.id = "1";
+    data.jsonrpc = "2.0";
+    
+    // Disable caching
+    $.ajaxSetup({
+        cache: false
+    });
+    
+    // Submit the Ajax call
+    $.ajax(
+        {
+            url: "ajax/json-rpc-server.php",
+            type: "POST",
+            dataType: "json",
+            async: true,
+            data: data,
+            success: callback
+        }
+    );
 }
