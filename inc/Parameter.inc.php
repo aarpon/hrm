@@ -1856,6 +1856,24 @@ class ZStepSize extends NumericalParameter {
 	public function isForCapture() {
 		return True;
 	}
+        
+    /*!
+		\brief	Checks whether the Parameter is valid
+		\return	true if the Parameter is valid, false otherwise
+	*/
+	public function check( ) {
+        // The ZStepSize parameter can have a special value of 1
+        // for 2D datasets.
+        if (intval($this->value) === 1) {
+            return True;
+        }
+        // Now run the standard test
+		$result = parent::check( );
+		if ( $result == false ) {
+			$this->message = "Pinhole size: " . $this->message;
+		}
+		return $result;
+	}
 }
 
 /*
