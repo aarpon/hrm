@@ -532,7 +532,7 @@ else echo "                        <option>&nbsp;</option>\n";
             window.pageInstructions='<?php echo escapeJavaScript($info); ?>';
             window.infoShown = true;
             window.previewSelected = -1;
-        -->
+        //-->
     </script>
 
 

@@ -67,7 +67,7 @@ class OmeroConnection {
 
         $cmd = $this->buildCredentialsCmd();
 
-            /* Authenticate against the Omero server. */
+        /* Authenticate against the Omero server. */
         $loggedIn = shell_exec($cmd);
 
         if ($loggedIn == NULL) {
@@ -75,7 +75,7 @@ class OmeroConnection {
             return "Attempt to log on to Omero server failed.";
         }
         
-            /* Check whether the attempt was successful. */
+        /* Check whether the attempt was successful. */
         if (strstr($loggedIn, '-1')) {
             $this->loggedIn = FALSE;
         } else {
