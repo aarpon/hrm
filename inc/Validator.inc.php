@@ -72,7 +72,7 @@ class Validator {
   */
   public static function isGroupNameValid( $inputGroupName ) {
 
-    return self:: isStringSanitized( $inputGroupName );
+    return self::isStringSanitized( $inputGroupName );
 
   }
 
@@ -106,7 +106,7 @@ class Validator {
   */
   public static function isNoteValid( $inputNote ) {
 
-    return self:: isStringSanitized( $inputNote );
+    return self::isStringSanitized( $inputNote );
 
   }
 

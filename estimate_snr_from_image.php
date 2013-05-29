@@ -490,7 +490,7 @@ function estimateSnrFromFile($file) {
          smoothChangeDiv('controls',
              '<?php echo escapeJavaScript($buttons); ?>',1500);
          changeDiv('tmp','');
-    -->
+    //-->
     </script>
 
 <?php
