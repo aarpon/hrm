@@ -17,11 +17,11 @@ if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
     return;
 }
 
-// =============================================================================
+// ============================================================================
 //
 // PROCESS THE POSTED ARGUMENTS
 //
-// =============================================================================
+// ============================================================================
 
 // Check that we have a valid request
 if (!isset($_POST)) {
@@ -46,8 +46,13 @@ if (!isset($_POST['method']) && !isset($_POST['params'])) {
 // Get the method
 $method = $_POST['method'];
 
-// TODO: for methods that require parameters, they ca be obtained like this:
+// TODO
+// Currently, none of the implemented method require arguments.
+// For methods that require input parameters, these can be obtained as follows:
+//
 // $params = $_POST['params'];
+//
+// where $params is an array.
 
 // Call the requested method and collect the JSON-encoded response
 switch ($method) {
@@ -75,11 +80,11 @@ echo $json;
 
 return true;
 
-// =============================================================================
+// ============================================================================
 //
 // METHOD IMPLEMENTATIONS
 //
-// =============================================================================
+// ============================================================================
 
 /**
  * Create default (PHP) array with "success" and "message" properties. Methods 
@@ -101,6 +106,7 @@ function initJSONArray() {
 /**
  * Get the total number and the number of jobs owned by the specified user
  * currently in the queue. 
+ *
  * @return JSON-encoded array with keys 'numAllJobsInQueue' and 'numUserJobsInQueue'
  */
 function jsonGetUserAndTotalNumberOfJobsInQueue() {

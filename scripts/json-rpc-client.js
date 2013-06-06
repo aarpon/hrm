@@ -2,9 +2,10 @@
 // Copyright and license notice: see license.txt
 
 /**
- * Performs an asynchronous Ajax call to the (PHP) JSON-RPC (2.0) server and
- * passes the results in JSON format to the provided callback
- * in the form function(response) {}
+ * Performs an asynchronous Ajax call to the (PHP) JSON-RPC (2.0) server 
+ * (json-rpc-server.php) and passes the results in JSON format to the provided 
+ * callback in the form function(response) {}
+ *
  * @param {JSON object} data   Javascript object in JSON format; it must be in 
  *                             the form:
  *                             
@@ -13,9 +14,9 @@
  *                                   params: [ 'param1', 'param2', ... ]
  *                                 }
  *
- *                               the 'params' property is mandatory; if the
- *                               method does not take parameters, just pass
- *                               an empty array, like this:
+ *                             the 'params' property is mandatory; if the
+ *                             method does not take parameters, just pass
+ *                             an empty array, like this:
  *                             
  *                                 data = {
  *                                   method: 'someMethod',
@@ -43,7 +44,7 @@ function JSONRPCRequest(data, callback) {
     "use strict";
     
     // Append RPC info to the data array to be sent to
-    // the server
+    // the server. We hard-code the id to be "1".
     data.id = "1";
     data.jsonrpc = "2.0";
     
@@ -52,7 +53,7 @@ function JSONRPCRequest(data, callback) {
         cache: false
     });
     
-    // Submit the Ajax call
+    // Submit the asyncronous Ajax call
     $.ajax(
         {
             url: "ajax/json-rpc-server.php",
