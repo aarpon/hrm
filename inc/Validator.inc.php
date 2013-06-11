@@ -18,13 +18,13 @@ class Validator {
     \param  $string A string coming from a text field or the like that is not
             meant to be input to the database.
   */
-  private static function isStringSanitized( $string ) {
+  private static function isStringSanitized($string) {
 
     // Clean the string
-    $tmp = filter_var( $string, FILTER_SANITIZE_STRING );
+    $tmp = filter_var($string, FILTER_SANITIZE_STRING);
 
     // Check if the input passed all tests
-    return ( strcmp( $tmp, $string ) == 0 );
+    return (strcmp($tmp, $string) == 0);
 
   }
 
@@ -34,21 +34,21 @@ class Validator {
 
     The user name is forced to be lowercase. Only single words are accepted.
   */
-  public static function isUserNameValid( $inputUserName ) {
+  public static function isUserNameValid($inputUserName) {
 
     // Force the username to be lowercase
-    $inputUserName = strtolower( $inputUserName );
+    $inputUserName = strtolower($inputUserName);
 
     // Clean the string
-    $tmp = filter_var( $inputUserName, FILTER_SANITIZE_STRING );
+    $tmp = filter_var($inputUserName, FILTER_SANITIZE_STRING);
 
-    // No spaces, '&', or '!'
-    if ( strstr( $tmp, " " ) || strstr( $tmp, "&" ) || strstr( $tmp, "!" ) ) {
+    // No spaces
+    if (strstr($tmp, " ")) {
         return false;
     }
 
     // Check if the input passed all tests
-    return ( strcmp( $tmp, $inputUserName ) == 0 );
+    return (strcmp($tmp, $inputUserName) == 0);
 
   }
 
@@ -58,9 +58,9 @@ class Validator {
 
     It must be a valid e-mail address.
   */
-  public static function isEmailValid( $inputEmail ) {
+  public static function isEmailValid($inputEmail) {
 
-    return ( filter_var( $inputEmail, FILTER_VALIDATE_EMAIL ) );
+    return (filter_var($inputEmail, FILTER_VALIDATE_EMAIL));
 
   }
 
@@ -70,9 +70,9 @@ class Validator {
 
     The group name can be any (sane) string and can contain blank spaces.
   */
-  public static function isGroupNameValid( $inputGroupName ) {
+  public static function isGroupNameValid($inputGroupName) {
 
-    return self::isStringSanitized( $inputGroupName );
+    return self::isStringSanitized($inputGroupName);
 
   }
 
@@ -80,21 +80,20 @@ class Validator {
     \brief  Validates the password
     \param  $inputPassword  Password input through some login form
 
-    The password cannot contain spaces, & and ? signs (to prevent some evil
-    database hacking).
+    The password cannot contain spaces.
   */
-  public static function isPasswordValid( $inputPassword ) {
+  public static function isPasswordValid($inputPassword) {
 
     // Clean the string
-    $tmp = filter_var( $inputPassword, FILTER_SANITIZE_STRING );
+    $tmp = filter_var($inputPassword, FILTER_SANITIZE_STRING);
 
-    // No spaces or '&'
-    if ( strstr( $tmp, " " ) || strstr( $tmp, "&" ) ) {
+    // No spaces
+    if (strstr($tmp, " ")) {
         return false;
     }
 
     // Check if the input passed all tests
-    return ( strcmp( $tmp, $inputPassword ) == 0 );
+    return (strcmp($tmp, $inputPassword) == 0);
 
   }
 
@@ -104,9 +103,9 @@ class Validator {
 
     The note can be any (sane) string.
   */
-  public static function isNoteValid( $inputNote ) {
+  public static function isNoteValid($inputNote) {
 
-    return self::isStringSanitized( $inputNote );
+    return self::isStringSanitized($inputNote);
 
   }
 
