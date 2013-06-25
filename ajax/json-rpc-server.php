@@ -71,7 +71,6 @@ switch ($method) {
         
         // Unknown method
         die("Unknown method.");
-
 }
 
 // Return the JSON object
@@ -88,7 +87,7 @@ return true;
 
 /**
  * Create default (PHP) array with "success" and "message" properties. Methods 
- * should initialize their json output array with this function, to make sure 
+ * should initialize their JSON output array with this function, to make sure 
  * that there are a "success" and a "message" properties in the returned object
  * (defaulting to "true" and "", respectivey) and then expand it as needed. 
  * 
@@ -100,6 +99,8 @@ return true;
  * @return PHP array with "success" = "true" and "message" = "" properties.
  */
 function initJSONArray() {
+
+    // Initialize the JSON array with success
     return (array("success" => "true", "message" => ""));
 }
 
@@ -166,7 +167,6 @@ function jsonCheckForUpdates() {
 
   // Return as a JSON string
   return (json_encode($json));
-
 }
 
 ?>
