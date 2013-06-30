@@ -75,6 +75,11 @@ class ActiveDirectory {
         try {
             $this->m_AdLDAP = new adLDAP( $options );
         } catch ( adLDAPException $e ) {
+            // Make sure to clean stack traces
+            $pos = stripos($e, 'AD said:');
+            if ($pos !== false) {
+                $e = substr($e, 0, $pos);
+            }
             echo $e;
             exit();
         }

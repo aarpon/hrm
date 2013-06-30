@@ -6,7 +6,7 @@
     // detailed help on configuring adLdap.
 
     // The account suffix for your domain
-	$ACCOUNT_SUFFIX = "@mydomain.local";
+    $ACCOUNT_SUFFIX = "@mydomain.local";
     
     // The base dn for your domain
     $BASE_DN = "DC=mydomain,DC=local"; 
