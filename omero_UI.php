@@ -71,7 +71,7 @@
         
               <?php
               if ($browse_folder == "src") {
-                  ?>
+              ?>
                   <input name="importFromOmero" type="submit"
                   value="" class="icon remove"
                   onmouseover="Tip('Transfer selected files')"
@@ -97,7 +97,16 @@
                    onclick="UnTip(); setActionToUpdate()"
                    onmouseover="Tip('Reload Omero tree view')"
                    onmouseout="UnTip()"/>
-
+		 
+              <?php
+              if ($browse_folder == "src") {
+              ?>
+	      <p><img alt ="Disclaimer: " src="./images/note.png" />
+	      HRM cannot guarantee that <b>OME-TIFFs</b>
+	         provided by Omero contain the original metadata.</p>
+              <?php
+	      }
+              ?>
               <input name="OmeImageId" type="hidden">
               <input name="OmeImageName" type="hidden">
               <input name="OmeDatasetId" type="hidden">
