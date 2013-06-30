@@ -248,6 +248,7 @@ function setActionToCalcSNR() {
 
 function deleteImages() {
 
+    changeDiv('omeroSelection','');
     if (!checkSelection()) {
         changeDiv('upMsg', 'Select one or more images to delete.');
         return;
@@ -393,6 +394,8 @@ function disableAddMore() {
 function uploadImages(maxFile, maxPost, archiveExt) {
         // + '<iframe id="target_upload" name="target_upload" src="" style="width:1px;height:1px;border:0"></iframe>'
 
+  cancelOmeroSelection();
+
     control = document.getElementById('selection').innerHTML;
     action = 'upload';
     upsubmitted = false;
@@ -446,7 +449,9 @@ function uploadImages(maxFile, maxPost, archiveExt) {
 
 function downloadImages() {
 
+    changeDiv('omeroSelection','');
     changeDiv('message', '');
+
     if (!checkSelection()) {
         changeDiv('upMsg', 'Select one or more images to download.');
         return;
