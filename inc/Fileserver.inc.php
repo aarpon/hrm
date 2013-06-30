@@ -410,7 +410,7 @@ class Fileserver {
             }  
         }
         else {
-            $files = $_SESSION['fileserver']->files();        
+            $files = $_SESSION['fileserver']->files($format);        
         }
 
         return $files;
@@ -1069,7 +1069,7 @@ class Fileserver {
   public function isValidImage($filename, $alsoExtras = false) {
       $filename = strtolower($filename);
       $ext = substr(strrchr($filename, "."),1);
-      if ( $ext == "gz" ) {
+      if ( $ext === "gz" ) {
           // Use two suffixes as extension
           $filename  = basename($filename, ".gz");
           $ext = substr(strrchr($filename, "."),1) . ".gz";
@@ -2900,12 +2900,22 @@ echo '</body></html>';
 	  }
 	  $files = array_merge($files, $this->listFilesFrom($newDir, $newPrefix, $extension));
 	} else {
-          $ext = substr(strrchr($entry, "."),1);
-          $ext = strtolower($ext);
-	  if ($extension != "") {
-            if ($ext != $extension) continue;
-          }
-      //echo $entry,$prefix,",";
+            $found = false;
+            foreach ($this->imageExtensions as $current) {
+                // @TODO The extension ome.tiff in the database has
+                // one blank space appended at the end. This will be 
+                // corrected in a later release. For the time being,
+                // we just trim the space.
+                $current = trim($current);
+                $nc = (int)strlen($current);
+                if (strcasecmp(substr($entry, -$nc), $current) == 0) {
+                    $found = true;
+                    break;
+                }
+            }
+            if ($found === false) {
+                continue;
+            }
 	  if ($prefix=="") {
 	    $files[] = $entry;
 	  } else {
