@@ -169,14 +169,17 @@ if ( $value == 'RGB TIFF 8-bit' ) {
   }
 }
 
-// Make sure that if we had Imaris Classic as output file format and a
-// time-series dataset, we reset the value to ics
-if ( $value == 'IMS (Imaris Classic)' ) {
+// Make sure that if we had Imaris Classic, TIFF 8, or TIFF 16 
+// as output file format and a time-series dataset, we reset 
+// the value to ics
+if (($value == 'IMS (Imaris Classic)') ||
+        ($value == 'TIFF 18-bit') || ($value == 'TIFF 16-bit')) {
   if ( $_SESSION['autoseries'] == "TRUE" ) {
     $parameter->setValue("ICS (Image Cytometry Standard)");
     $_SESSION['first_visit'] = False;
   }
 }
+
 ?>
                 <select name="OutputFileFormat" id="OutputFileFormat" size="1">
 <?php
