@@ -483,16 +483,18 @@ class Job {
      \brief       one file containing html parsed deconvolution parameters.
     */
     private function filterHuygensOutput( ) {
+      global $logdir;
 
         /* Set file names. */
         $historyFile = $this->destImage . $this->pipeProducts["history"];
         $tmpFile     = $this->destImage . $this->pipeProducts["tmp"];
         $paramFile   = $this->destImage . $this->pipeProducts["parameters"];
         $colocFile   = $this->destImage . $this->pipeProducts["coloc"];
+	$errorFile   = $logdir . "/" . $this->server() . "_" . $this->id() . "_error.txt";
         $huygensOut  = dirname($this->destImage)."/".$this->pipeProducts["main"];
 
         /* The Huygens history file will be removed. */
-        $this->shell->removeFile($historyFile);
+	$this->shell->removeFile($historyFile);
 
         /* The Huygens job main file will be given a job id name. */
         $this->shell->renameFile($huygensOut,$tmpFile);
@@ -507,24 +509,30 @@ class Job {
         
         if (!empty($jobReport)) {
 
+	  if ("" !== $error = $this->checkForErrors($jobReport)) {
+	    $this->copyString2File($error, $errorFile);
+	    $this->shell->copyFile2Host($errorFile);
+	  } else {
+
             /* Build parameter tables from the Huygens output file. */
             $parsedParam = $this->HuReportFile2Html($jobReport);
             $this->copyString2File($parsedParam,$paramFile);
             $this->shell->copyFile2Host($paramFile);
-
+	    
             /* Build colocalization tables from the Huygens output file. */
             $parsedColoc = $this->HuColoc2Html($jobReport);
             
             if ($this->colocRunOk) {    
-                $this->copyString2File($parsedColoc,$colocFile);
-                $this->shell->copyFile2Host($colocFile);
+	      $this->copyString2File($parsedColoc,$colocFile);
+	      $this->shell->copyFile2Host($colocFile);
             }
-            
-            $this->shell->removeFile($tmpFile);
+	  }
+	  
+	  $this->shell->removeFile($tmpFile);
         }
     }
-
-        /* -------- Image & Restoration Parameters, Scaling factors ------ */
+    
+    /* -------- Image & Restoration Parameters, Scaling factors ------ */
     
     /*!
      \brief       Formats data from the Huygens report file as html output.
@@ -542,8 +550,7 @@ class Job {
         $html .= $this->insertDiv($div,"scaling");
         
 
-            /* Insert the summary tables. */
-        
+            /* Insert the summary tables. */        
         $div   = $this->writeImageParamTable($reportFile);
         $html .= $this->insertDiv($div,"jobParameters");
         
@@ -554,12 +561,33 @@ class Job {
     }
 
     /*!
+     \brief    Checks whether there are errors in the Huygens output file.
+     \param    $reportFile  An aarya with the contents of the file.
+     \return   A string with any found error.
+    */
+    private function checkForErrors($reportFile) {
+      $error = "";
+      
+      $pattern = "/^Error: (.*)/"; 
+      foreach ($reportFile as $reportEntry) {
+	if (preg_match($pattern, $reportEntry, $matches)) {
+	  $error = $matches[0] . "\n";
+
+	  /* We'll report one single error. */
+	  break;
+	}
+      }
+      
+      return $error;
+    }
+
+    /*!
      \brief       Parses the Huygens deconvolution output to look for warnings.
      \param       $reportFile An array with the contents of the file.
      \return      A string with the formatted table.
     */
     private function writeWarning($reportFile) {
-
+     
         $micrMismatch = False;
 
         /* Extract data from the file and into the table. */
