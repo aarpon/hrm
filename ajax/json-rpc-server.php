@@ -193,7 +193,7 @@ function jsonSendTestEmail() {
   $mail->setReceiver($email_admin);
   $mail->setSubject('HRM test e-mail');
   $mail->setMessage('Congratulations! You have successfully ' .
-          'configured your email server!');
+          'configured your e-mail server!');
   if ($mail->send()) {
       $json['success'] = "true";
       $json['message'] = "Sent!";
