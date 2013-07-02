@@ -772,9 +772,9 @@ class QueueManager {
 	  $mailContent .= "------\n\n";
 	  
 	  $mailContent .= "Your job started on $startTime and failed ";
-	  $mailContent .= "on " . date("Y-m-d H:i:s") . ".\n\n";
+	  $mailContent .= "on " . date("Y-m-d H:i:s") . ".\n";
 	  
-	  $mailContent .= "\nJob id: $id (pid $pid on $server)\n\n";
+	  $mailContent .= "Job id: $id (pid $pid on $server)\n";
 
 	
 	  /* Send the error mail to the user. */
