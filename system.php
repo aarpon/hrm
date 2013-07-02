@@ -21,6 +21,9 @@ if (isset($_SERVER['HTTP_REFERER'])) {
 
 $message = "";
 
+// Javascript includes
+$script = array( "ajax_utils.js", "json-rpc-client.js" );
+
 include("header.inc.php");
 
 ?>
@@ -268,6 +271,18 @@ include("header.inc.php");
             </td>
           </tr>
           <tr>
+            <td class="key">
+                <a href="#" id="sendMail">
+                    <img src="images/note.png" alt="Send" />
+                    Send test e-mail to HRM admin
+                </a>
+            </td>
+            <td class="value" id="sendMailStatus">
+                &nbsp;
+            </td>
+          </tr>
+
+          <tr>
             <td class="key"
                 >Memory limit
             </td>
@@ -448,3 +463,14 @@ echo "<p>$message</p>";
 include("footer.inc.php");
 
 ?>
+<!-- Activate Ajax functions to get image parameters -->
+<script type="text/javascript">
+    $(document).ready($('#sendMail').click(function() {
+            JSONRPCRequest({
+                method : 'jsonSendTestEmail',
+                params: []
+            }, function(response) {
+                $('#sendMailStatus').html("<b>" + response['message'] + "</b>");
+            });  
+    }));
+</script>

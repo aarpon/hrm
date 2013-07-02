@@ -7,6 +7,7 @@ require_once '../inc/User.inc.php';
 require_once '../inc/JobQueue.inc.php';
 require_once '../inc/Database.inc.php';
 require_once '../inc/System.inc.php';
+require_once '../inc/Mail.inc.php';
 
 // This is not strictly necessary for the Ajax communication, but will be 
 // necessary for accessing session data to create the response.
@@ -67,6 +68,11 @@ switch ($method) {
         $json = jsonCheckForUpdates();
         break;
 
+    case 'jsonSendTestEmail':
+      
+        $json = jsonSendTestEmail();
+        break;
+    
     default:
         
         // Unknown method
@@ -163,6 +169,37 @@ function jsonCheckForUpdates() {
       $json["message"] = $e->getMessage();
       $json["newerVersionExist"] = "false";
       $json["newVersion"] = "";
+  }
+
+  // Return as a JSON string
+  return (json_encode($json));
+}
+
+/**
+ * Send a test email to the administrator to check that the email system is set
+ * up properly.
+ * @return JSON-encoded array with key 'success' and 'message'
+ */
+function jsonSendTestEmail() {
+
+  // Include configuration file
+  include( dirname( __FILE__ ) . "/../config/hrm_client_config.inc" );
+  
+  // Prepare the output array
+  $json = initJSONArray();
+
+  // Send an email
+  $mail = new Mail($email_sender);
+  $mail->setReceiver($email_admin);
+  $mail->setSubject('HRM test e-mail');
+  $mail->setMessage('Congratulations! You have successfully ' .
+          'configured your e-mail server!');
+  if ($mail->send()) {
+      $json['success'] = "true";
+      $json['message'] = "Sent!";
+  } else {
+      $json['success'] = "false";
+      $json['message'] = "Failed!";
   }
 
   // Return as a JSON string

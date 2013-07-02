@@ -147,6 +147,9 @@ include("header.inc.php");
 $parameter = $_SESSION['task_setting']->parameter("OutputFileFormat");
 $value = $parameter->value();
 
+$timeParameter = $_SESSION['setting']->parameter("TimeInterval");
+$timeValue = $timeParameter->value();
+
 // Make sure that if we had TIFF (8 or 16 bit) as output file format and a
 // multichannel dataset, we reset the value to ics
 if ( ( $value == 'TIFF 18-bit' ) || ( $value == 'TIFF 16-bit' ) ) {
@@ -174,7 +177,7 @@ if ( $value == 'RGB TIFF 8-bit' ) {
 // the value to ics
 if (($value == 'IMS (Imaris Classic)') ||
         ($value == 'TIFF 18-bit') || ($value == 'TIFF 16-bit')) {
-  if ( $_SESSION['autoseries'] == "TRUE" ) {
+  if ( ($_SESSION['autoseries'] == "TRUE") || ($timeValue > 0) ) {
     $parameter->setValue("ICS (Image Cytometry Standard)");
     $_SESSION['first_visit'] = False;
   }
@@ -209,22 +212,18 @@ if ( ( $numberOfChannels == 1 ) || ( $numberOfChannels > 3) ) {
   $possibleValues = array_values( $possibleValues );
 }
 
-// If the dataset is a time series, we remove Imaris classic from the list
-if ( $_SESSION['autoseries'] == "TRUE" ) {
+// If the dataset is a time series, we remove Imaris classic, TIFF 8 and
+// TIFF 16 from the list
+if (($_SESSION['autoseries'] == "TRUE") || ($timeValue > 0) ) {
     $possibleValues =
         array_diff($possibleValues, array( 'IMS (Imaris Classic)' ) );
+    $possibleValues = array_diff($possibleValues, array( 'TIFF 16-bit' ) );
+    $possibleValues = array_diff($possibleValues, array( 'TIFF 8-bit' ) );
     $possibleValues = array_values( $possibleValues );
 }
 
-// If the dataset is a time series, we remove the TIFF outputs
-if ( $_SESSION['autoseries'] == "TRUE" ) {
-  $possibleValues = array_diff($possibleValues, array( 'TIFF 16-bit' ) );
-  $possibleValues = array_diff($possibleValues, array( 'TIFF 8-bit' ) );
-  $possibleValues = array_values( $possibleValues );
-}
-
-if (!isset($_SESSION['first_visit'])) { // if 'first visit' is not set, set
-// the OutputFileFormat as ICS
+// if 'first visit' is not set, set the OutputFileFormat as ICS
+if (!isset($_SESSION['first_visit'])) {
   $parameter->setValue("ICS (Image Cytometry Standard)");
   $_SESSION['first_visit'] = False;
 }

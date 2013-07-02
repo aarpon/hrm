@@ -1862,15 +1862,15 @@ class ZStepSize extends NumericalParameter {
 		\return	true if the Parameter is valid, false otherwise
 	*/
 	public function check( ) {
-        // The ZStepSize parameter can have a special value of 1
+        // The ZStepSize parameter can have a special value of 0
         // for 2D datasets.
-        if (intval($this->value) === 1) {
+        if (floatval($this->value) == 0.0) {
             return True;
         }
         // Now run the standard test
 		$result = parent::check( );
 		if ( $result == false ) {
-			$this->message = "Pinhole size: " . $this->message;
+			$this->message = "Z step: " . $this->message;
 		}
 		return $result;
 	}
@@ -1893,7 +1893,25 @@ class TimeInterval extends NumericalParameter {
 		parent::__construct("TimeInterval");
 	}
 
-	/*!
+    /*!
+		\brief	Checks whether the Parameter is valid
+		\return	true if the Parameter is valid, false otherwise
+	*/
+	public function check( ) {
+        // The TimeInterval parameter can have a special value of 0
+        // if datasets are not time series.
+        if (floatval($this->value) == 0.0) {
+            return True;
+        }
+        // Now run the standard test
+		$result = parent::check( );
+		if ( $result == false ) {
+			$this->message = "Time interval: " . $this->message;
+		}
+		return $result;
+	}
+
+    /*!
 		\brief	Confirms that this is a Capture Parameter.
 		\return true
 	*/

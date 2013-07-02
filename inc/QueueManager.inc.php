@@ -553,29 +553,17 @@ class QueueManager {
             if (!$resultSaved) {
                 report("finishing job " . $desc->id() .
                         " with error on " . $job->server(), 1);
+
                 // Clean up server
                 $this->cleanUpFileServer($job);
+
                 // Reset server and remove job from the job queue
                 // (update database)
                 $this->stopTime = $queue->stopJob($job);
-                // Write email
-                $message = "";
-                if (!$resultSaved) {
-                    $message .= "\nNo result file stored in the " .
-                        "destination directory.\n";
-                }
-                if (file_exists($errorFile)) {
-                    $message .=
-                        "\n\n-HUYGENS ERROR REPORT (stderr) --------------\n\n"
-                            . file_get_contents($errorFile);
-                }
-                if (file_exists($logFile)) {
-                    $message .=
-                        "\n\n-HUYGENS REPORT (stdout) --------------------\n\n"
-                            . file_get_contents($logFile);
-                }                
-                if ($send_mail) {
-                    $this->notifyError($job, $message, $startTime);
+
+                // Write email             
+                if ($send_mail) {   
+		  $this->notifyError($job, $startTime);
                 }
 
                 if (file_exists($errorFile)) {
@@ -603,8 +591,7 @@ class QueueManager {
                 $this->cleanUpFileServer($job);
                 // Reset server and remove job from the job queue
                 $this->stopTime = $queue->stopJob($job);
-                $this->assembleJobLogFile($job,
-                    $startTime, $logFile, $errorFile);
+                $this->assembleJobLogFile($job, $startTime, $logFile, $errorFile);
 
                 // Write email
                 if ($send_mail)
@@ -718,64 +705,93 @@ class QueueManager {
     }
 
     /*!
-    \brief	Sends an e-mail to the User notifying a failed Job
- 	\param	$job		A Job object
- 	\param	$message	An optional, additional error message.
- 	\param	$startTime	Start time of the Job
+    \brief	Sends an e-mail to the User and Admin notifying a failed Job
+    \param	$job		A Job object
+    \param	$startTime	Start time of the Job
     */
- 	public function notifyError($job, $message, $startTime) {
-        global $email_sender;
-        global $email_admin;
+ 	public function notifyError($job, $startTime) {
+	  global $email_sender;
+	  global $email_admin;
+	  global $logdir;
+	  
+	  
+	  /* Definitions: relevant files. */
+	  $basename  = $logdir . "/" . $job->server() . "_" . $job->id();
+	  $errorFile = $basename . "_error.txt";
+	  $logFile   = $basename . "_out.txt";
+	  
+	  /* Definitions: dataset name. */
+	  $desc = $job->description();
+	  $sourceFileName = $desc->sourceImageNameWithoutPath();
 
-        $job->createScript();
-        $desc = $job->description();
-        $user = $desc->owner();
-        $emailAddress = $user->emailAddress();
-        $sourceFileName = $desc->sourceImageNameWithoutPath();
-        $text = "\nThis is a mail generated automatically by " .
-            "the Huygens Remote Manager.\n\n";
-        $text .= "Sorry, the processing of the image \n" .
-            $sourceFileName . "\nhas been terminated with an error.\n\n";
-        $text .= "Your job started at $startTime and failed at " .
-            date("Y-m-d H:i:s") . ".\n\n";
-        $text .= "Best regards,\nHuygens Remote Manager\n";
+	  // Definitions: job id, pid, server. */
+	  $id     = $desc->id();
+	  $pid    = $job->pid();
+	  $server = $job->server();
+	  $script = $job->createScript();
+	  
+	  /* Email destination. */
+	  $user = $desc->owner();
+	  $emailAddress = $user->emailAddress();
+	  
 
-        // Job id, pid, server
-        $id = $desc->id();
-        $pid = $job->pid();
-        $server = $job->server();
-        $text .= "\nJob id: $id (pid $pid on $server)\n\n";
+	  $mailContent  = "\nThis is a mail generated automatically by ";
+	  $mailContent .= "the Huygens Remote Manager.\n\n";
+	
+	  $mailContent .= "Sorry, the processing of the image \n";
+	  $mailContent .= $sourceFileName . "\nhas been terminated with ";
+	  $mailContent .= "an error.\n\n";
+	  
+	  $mailContent .= "Best regards,\nHuygens Remote Manager\n";	  
+	  	  
+	  /* The error should be shown up in the email. */
+	  if (file_exists($errorFile)) {
+	    $mailContent .= "\n\n-HUYGENS ERROR REPORT (stderr) --------------";
+	    $mailContent .= "\n\n" . file_get_contents($errorFile);
+	  }
 
-        // Export the user-defined parameters
-        $text .=
-            "\n\n- USER PARAMETERS -----------------------------------\n\n";
-        $text = $text . "These are the parameters you set in the HRM:\n\n";
-        $text = $text . $this->parameterText($job);
+	  $mailContent .= "\n\n- USER PARAMETERS -----------------------------";
+	  $mailContent .= "------\n\n";
+	  $mailContent .= "These are the parameters you set in the HRM:\n\n";
+	  $mailContent .= $this->parameterText($job);
+	  
+	  $mailContent .= "\n\n-TEMPLATE -------------------------------------";
+	  $mailContent .= "------\n\n";
+	  $mailContent .= "What follows is the Huygens Core template executed ";
+	  $mailContent .= "when the error occured:\n\n";
+	  $mailContent .= $job->script();
+	  $mailContent .= "\n\n-----------------------------------------------";
+	  $mailContent .= "------\n\n";
 
-        $text .=
-            "\n\n-TEMPLATE -------------------------------------------\n\n";
-        $text .= "What follows is the Huygens Core template executed " .
-            "when the error occured:\n\n";
-        $text .= $job->script();
-        $text .= 
-            "\n\n-----------------------------------------------------\n\n";
+	  if (file_exists($logFile)) {
+	    $mailContent .= "\n\n-HUYGENS REPORT (stdout) --------------------";
+	    $mailContent .= "\n\n" . file_get_contents($logFile);
+	  }
 
-        // Append the log
-        $text .= $message;
+	  $mailContent .= "\n\n-PROCESS DETAILS-------------------------------";
+	  $mailContent .= "------\n\n";
+	  
+	  $mailContent .= "Your job started on $startTime and failed ";
+	  $mailContent .= "on " . date("Y-m-d H:i:s") . ".\n";
+	  
+	  $mailContent .= "Job id: $id (pid $pid on $server)\n";
 
-        // Send the error mail to the user
-        $mail = new Mail($email_sender);
-        $mail->setReceiver($emailAddress);
-        $mail->setSubject('Your HRM job finished with an error');
-        $mail->setMessage($text);
-        $mail->send();
+	
+	  /* Send the error mail to the user. */
+	  $mail = new Mail($email_sender);
+	  $mail->setReceiver($emailAddress);
+	  $mail->setSubject('Your HRM job finished with an error');
+	  $mail->setMessage($mailContent);
+	  $mail->send();
         
-        // Also notify the error to the admin
-        $mail->setReceiver($email_admin);
-        $mail->setSubject('An HRM job from user "' . $user->name() .
-            '" finished with an error.');
-        $mail->send();
-    }
+	  /* Also notify the error to the admin. */
+	  $mail->setReceiver($email_admin);
+	  $mail->setSubject('An HRM job from user "' . $user->name() .
+			    '" finished with an error.');
+	  
+	  $mail->send();
+	}
+	
 
     /*!
  	\brief	Sends an e-mail to the Admin notifying that a server could
