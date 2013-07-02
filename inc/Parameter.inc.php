@@ -1864,7 +1864,7 @@ class ZStepSize extends NumericalParameter {
 	public function check( ) {
         // The ZStepSize parameter can have a special value of 0
         // for 2D datasets.
-        if (intval($this->value) === 0) {
+        if (floatval($this->value) == 0.0) {
             return True;
         }
         // Now run the standard test
@@ -1900,7 +1900,7 @@ class TimeInterval extends NumericalParameter {
 	public function check( ) {
         // The TimeInterval parameter can have a special value of 0
         // if datasets are not time series.
-        if (intval($this->value) === 0) {
+        if (floatval($this->value) == 0.0) {
             return True;
         }
         // Now run the standard test
