@@ -26,12 +26,12 @@ window.helpText[ "voxel" ] =
   'the ideal voxel size for your parameters. The HRM will not try to stop ' +
   'you from running a deconvolution on under-sampled data (i.e. with a ' +
   'sampling rate much larger than the ideal), but do not expect meaningful ' +
-  'results! Set the z-step to <b>1</b> for 2D datasets.</p>';
+  'results! Set the z-step to <b>0</b> for 2D datasets.</p>';
 
 window.helpText[ "time" ] =
   '<p>The time interval is the (temporal) distance between two frames in a ' +
   'time series, and relates to the temporal sampling. Set the time interval ' +
-  'to <b>1</b> if you are not deconvoling time series.</p>';
+  'to <b>0</b> if you are not deconvoling time series.</p>';
 
 window.helpText[ "pinhole_radius" ] =
   '<p>The pinhole of confocal microscopes is a small hole used to get rid ' +

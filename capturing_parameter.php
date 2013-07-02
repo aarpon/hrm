@@ -382,7 +382,7 @@ $textForCaptorSize = "pixel size (nm)";
                        size="5"
                        value="<?php echo $parameterTimeInterval->value() ?>" />
                 <span class="message_small">&nbsp;
-                    Set to <b>0</b> if you do not have a time series.
+                    Set to <b>0</b> for a single time point.
                 </span>
               </li>
             </ul>
