@@ -742,16 +742,8 @@ class QueueManager {
 	  $mailContent .= $sourceFileName . "\nhas been terminated with ";
 	  $mailContent .= "an error.\n\n";
 	  
-	  $mailContent .= "Your job started at $startTime and failed ";
-	  $mailContent .= "at " . date("Y-m-d H:i:s") . ".\n\n";
-
-	  $mailContent .= "Best regards,\nHuygens Remote Manager\n";
-	  
-	  $mailContent .= "\nJob id: $id (pid $pid on $server)\n\n";
-	  
-	  $mailContent .= "\nNo result file stored in the ";
-	  $mailContent .= "destination directory.\n";
-	  
+	  $mailContent .= "Best regards,\nHuygens Remote Manager\n";	  
+	  	  
 	  /* The error should be shown up in the email. */
 	  if (file_exists($errorFile)) {
 	    $mailContent .= "\n\n-HUYGENS ERROR REPORT (stderr) --------------";
@@ -775,6 +767,15 @@ class QueueManager {
 	    $mailContent .= "\n\n-HUYGENS REPORT (stdout) --------------------";
 	    $mailContent .= "\n\n" . file_get_contents($logFile);
 	  }
+
+	  $mailContent .= "\n\n-PROCESS DETAILS-------------------------------";
+	  $mailContent .= "------\n\n";
+	  
+	  $mailContent .= "Your job started on $startTime and failed ";
+	  $mailContent .= "on " . date("Y-m-d H:i:s") . ".\n\n";
+	  
+	  $mailContent .= "\nJob id: $id (pid $pid on $server)\n\n";
+
 	
 	  /* Send the error mail to the user. */
 	  $mail = new Mail($email_sender);
