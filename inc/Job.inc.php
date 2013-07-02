@@ -712,7 +712,7 @@ class Job {
      
             /* Extract data from the file and into the table. */
         $pattern  = "/{Parameter ([a-z]+?) (of channel ([0-9])\s|)(.*) ";
-        $pattern .= "(template|metadata): (.*).}}/";
+        $pattern .= "(template|metadata|meta data): (.*).}}/";
 
         foreach ($reportFile as $reportEntry) {
             if (!preg_match($pattern,$reportEntry,$matches)) {
@@ -787,7 +787,7 @@ class Job {
         foreach ($this->restParam as $paramName => $paramText) {
 
             $pattern  = "/(.*)$paramName(.*):";
-            $pattern .= "\s+([0-9\,\s]+|[a-zA-Z0-9\,\s]+\s?[a-zA-Z0-9]*)\n/";
+            $pattern .= "\s+([0-9\.\s\,]+|[a-zA-Z0-9\,\s\/]+\s?[a-zA-Z0-9]*)\n/";
             
             if (!preg_match($pattern,$taskParameters,$matches)) {
                 continue;
