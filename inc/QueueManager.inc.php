@@ -728,6 +728,7 @@ class QueueManager {
 	  $id     = $desc->id();
 	  $pid    = $job->pid();
 	  $server = $job->server();
+	  $script = $job->createScript();
 	  
 	  /* Email destination. */
 	  $user = $desc->owner();
