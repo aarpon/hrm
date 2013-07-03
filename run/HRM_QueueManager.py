@@ -6,6 +6,12 @@
 The prototype of a new GC3Pie-based Queue Manager for HRM.
 """
 
+# TODO:
+# - monitor a "new" directory via pyinotify
+# - read in job files via ConfigParser
+# - assemble a gc3libs.Application
+# - add them to the queue
+
 # stdlib imports
 import sys
 import time
