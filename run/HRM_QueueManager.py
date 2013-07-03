@@ -19,10 +19,27 @@ import time
 # GC3Pie imports
 import gc3libs
 
+import ConfigParser
+
 import logging
 # loglevel = logging.DEBUG
 loglevel = logging.WARN
 gc3libs.configure_logger(loglevel, "qmgc3")
+warn = gc3libs.log.warn
+
+jobfile = ConfigParser.RawConfigParser()
+jobfile.read('../docs/example.job')
+for section in jobfile.sections():
+    warn('Section: %s' % section)
+    for option in jobfile.options(section):
+        if (option == 'input_data'):
+            values = jobfile.get(section, option).split(',')
+            for value in values:
+                warn('Option: %s = %s' % (option, value))
+        else:
+            warn('Option: %s = %s' % (option, jobfile.get(section, option)))
+sys.exit()
+
 
 class HucoreDeconvolveApp(gc3libs.Application):
     """

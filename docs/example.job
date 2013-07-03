@@ -1,0 +1,4 @@
+[deconvolution]
+username = hrmuser
+template = /path/to/template.tcl
+input_data = '/path/to/image1.tif','/path/to/image2.tif'
