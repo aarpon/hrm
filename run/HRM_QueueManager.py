@@ -19,6 +19,7 @@ import time
 import gc3libs
 
 import ConfigParser
+import pprint
 
 import logging
 # loglevel = logging.DEBUG
@@ -65,13 +66,12 @@ def parse_jobfile(fname):
     for option in jobparser.options('inputfiles'):
         infile = jobparser.get(section, option)
         job['infiles'].append(infile)
-    warn(job)
     return job
 
 # TODO: use argparse for the jobfname
 jobfname = 'spool/examples/deconvolution_job.cfg'
-parse_jobfile(jobfname)
-sys.exit()
+job = parse_jobfile(jobfname)
+warn(pprint.pformat(job))
 
 
 class HucoreDeconvolveApp(gc3libs.Application):
