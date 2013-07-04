@@ -81,15 +81,17 @@ class HucoreDeconvolveApp(gc3libs.Application):
     # TODO: path to hucore should not be hardcoded here
     def __init__(self, job):
         warn("Job settings:\n%s" % pprint.pformat(job))
-        # FIXME: we need to allow for template files specified in the config
-        # with an absolute path, this needs to be stripped down to the raw
-        # filename then as the file gets transferred to the central spool
-        # directory on the target resource by gc3pie
+        # we need to add the template (with the local path) to the list of
+        # files that need to be transferred to the system running hucore:
         job['infiles'].append(job['template'])
+        # for the execution on the remote host, we need to strip all paths from
+        # this string as the template file will end up in the temporary
+        # processing directory together with all the images:
+        templ_on_tgt = job['template'].split('/')[-1]
         gc3libs.Application.__init__(
             self,
             arguments = ["/usr/local/bin/hucore",
-                '-template', job['template']],
+                '-template', templ_on_tgt],
             inputs = job['infiles'],
             outputs = ['resultdir', 'previews'],
             output_dir = './deconvolved',
