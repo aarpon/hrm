@@ -49,20 +49,26 @@ if (isset($_POST['create'])) {
   // save preferred output file format
   if ($_SESSION['task_setting']->save()) {
     // TODO source/destination folder names should be given to JobDescription
-    $job = new JobDescription();
-    $job->setParameterSetting($_SESSION['setting']);
-    $job->setTaskSetting($_SESSION['task_setting']);
-    $job->setAnalysisSetting($_SESSION['analysis_setting']);
-    $job->setFiles($_SESSION['fileserver']->selectedFiles(),$_SESSION['autoseries']);
+    $jobDescription = new JobDescription();
+    $jobDescription->setParameterSetting($_SESSION['setting']);
+    $jobDescription->setTaskSetting($_SESSION['task_setting']);
+    $jobDescription->setAnalysisSetting($_SESSION['analysis_setting']);
+    $jobDescription->setFiles($_SESSION['fileserver']->selectedFiles(),
+                              $_SESSION['autoseries']);
 
-    if ($job->addJob()) {
+    if ($jobDescription->addJob()) {
       $_SESSION['jobcreated'] = True;
-      $_SESSION['numberjobadded'] = count( $job->files() );
+      $_SESSION['numberjobadded'] = count( $jobDescription->files() );
+
+      $job = new Job($jobDescription);
+      $job->createHuygensTemplate();
+      $job->createSubJobsOrHuTemplate();
+      
       header("Location: " . "home.php");
       exit();
     }
     else {
-      $message = $job->message();
+      $message = $jobDescription->message();
     }
   }
   else $message = "An unknown error has occured. " .
