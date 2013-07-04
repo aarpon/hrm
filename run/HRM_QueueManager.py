@@ -26,6 +26,35 @@ loglevel = logging.WARN
 gc3libs.configure_logger(loglevel, "qmgc3")
 warn = gc3libs.log.warn
 
+def parse_job_hucore(jobparser, sections, job):
+    '''Does the specific parsing of "hucore" type jobfiles.
+    .
+    Parses the "hucore" and the "inputfiles" sections of HRM job configuration
+    files.
+    .
+    Returns
+    -------
+    void
+        Adds all information directly to the "job" dict.
+    '''
+    # the "hucore" section:
+    try:
+        job['exec'] = jobparser.get('hucore', 'executable')
+    except ConfigParser.NoOptionError:
+        raise Exception("Can't find executable in '%s'" % jobfname)
+    try:
+        job['template'] = jobparser.get('hucore', 'template')
+    except ConfigParser.NoOptionError:
+        raise Exception("Can't find template in '%s'" % jobfname)
+    # and the input file(s):
+    if not 'inputfiles' in sections:
+        raise Exception("No input files defined in '%s'" % jobfname)
+    job['infiles'] = []
+    for option in jobparser.options('inputfiles'):
+        infile = jobparser.get('inputfiles', option)
+        job['infiles'].append(infile)
+
+
 def parse_jobfile(fname):
     '''Parse details for an HRM job and check for sanity.
     .
@@ -60,24 +89,10 @@ def parse_jobfile(fname):
         raise Exception("Can't find jobtype in '%s'" % jobfname)
 
     # from here on a jobtype specific parsing must be done:
-    if not (job['type'] == 'hucore'):
+    if job['type'] == 'hucore':
+        parse_job_hucore(jobparser, sections, job)
+    else:
         raise Exception("Unknown jobtype '%s'" % job['type'])
-    try:
-        job['exec'] = jobparser.get('hucore', 'executable')
-    except ConfigParser.NoOptionError:
-        raise Exception("Can't find executable in '%s'" % jobfname)
-    try:
-        job['template'] = jobparser.get('hucore', 'template')
-    except ConfigParser.NoOptionError:
-        raise Exception("Can't find template in '%s'" % jobfname)
-
-    # and the input file(s)
-    if not 'inputfiles' in sections:
-        raise Exception("No input files defined in '%s'" % jobfname)
-    job['infiles'] = []
-    for option in jobparser.options('inputfiles'):
-        infile = jobparser.get('inputfiles', option)
-        job['infiles'].append(infile)
     return job
 
 # TODO: use argparse for the jobfname
