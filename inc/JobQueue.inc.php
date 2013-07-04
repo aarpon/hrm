@@ -179,12 +179,12 @@ class JobQueue {
             $killed = $proc->killHucoreProcess($pid);
             report("Trying to kill running job with pid $pid: $killed",1);
             $result = $result && $killed;
-            if ($killed) {
-                $result = $result && $this->removeJobWithId($id);
-                $result = $result && $db->markServerAsFree($server);
-                $errorFile = $logdir . "/" . $server .  "_" .$id. "_error.txt";
-                if (file_exists($errorFile)) unlink($errorFile);
-            }
+            
+            // Clean the database and the error file
+            $result = $result && $this->removeJobWithId($id);
+            $result = $result && $db->markServerAsFree($server);
+            $errorFile = $logdir . "/" . $server .  "_" .$id. "_error.txt";
+            if (file_exists($errorFile)) unlink($errorFile);
 
             $proc->release();
         }
@@ -201,8 +201,10 @@ class JobQueue {
         if ($ids != null && count($ids) > 0) {
             if ( $this->killJobs($ids) ) {
                 report("running broken jobs killed and removed", 2);
+                return True;
             } else {
                 report("killing running broken jobs failed", 2);
+                return False;
             }
         } else {
             return False;
@@ -234,7 +236,8 @@ class JobQueue {
         $result = True;
         $db = new DatabaseConnection();
         $tables = array('job_queue', 'job_files', 'job_parameter', 
-            'job_parameter_setting', 'job_task_parameter', 'job_task_setting');
+            'job_parameter_setting', 'job_task_parameter', 'job_task_setting',
+            'job_analysis_parameter', 'job_analysis_setting');
         $columns = array('id', 'job', 'setting', 'name', 'setting', 'name');
         $result = $result && 
           $db->deleteFromTablesWhereColumnEquals($tables, $columns, $id);

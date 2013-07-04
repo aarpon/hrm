@@ -317,8 +317,10 @@ function report($text, $level) {
     global $logfile;
     global $logfile_max_size;
 
-    if ($log_verbosity == 0)
-        return True;
+    // Anything to log?
+    if ($level > $log_verbosity) {
+        return;
+    }
 
     $text = date("Y-m-d H:i:s") . " " . $text;
     $logpath = $logdir . "/" . $logfile;
@@ -337,11 +339,9 @@ function report($text, $level) {
       // Cannot write to the log dir (or the file)
       return;
     }
-    if ($log_verbosity >= $level) {
-        fwrite($file, $text);
-        fwrite($file, "\n");
-        fflush($file);
-    }
+    fwrite($file, $text);
+    fwrite($file, "\n");
+    fflush($file);
     fclose($file);
 }
 

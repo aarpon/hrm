@@ -654,7 +654,7 @@ class LocalExternalProcess extends ExternalProcess {
                 $dead = true;
             }
         } else {
-            $dead = false;
+            $dead = true;
         }
 
         return $dead;
