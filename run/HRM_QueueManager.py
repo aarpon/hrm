@@ -8,7 +8,6 @@ The prototype of a new GC3Pie-based Queue Manager for HRM.
 
 # TODO:
 # - monitor a "new" directory via pyinotify
-# - read in job files via ConfigParser
 # - assemble a gc3libs.Application
 # - add them to the queue
 
@@ -69,6 +68,7 @@ def parse_jobfile(fname):
     warn(job)
     return job
 
+# TODO: use argparse for the jobfname
 jobfname = 'spool/examples/deconvolution_job.cfg'
 parse_jobfile(jobfname)
 sys.exit()
@@ -103,6 +103,7 @@ engine = gc3libs.create_engine()
 # yet, but will make the engine *aware* of the application.
 engine.add(app)
 
+# TODO: use argparse to have a sophisticated and sane way for this:
 # in case you want to select a specific resource, call
 # `Engine.select_resource(<resource_name>)`
 if len(sys.argv)>1:
