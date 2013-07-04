@@ -34,7 +34,9 @@ def parse_jobfile(fname):
     processing task. Raises Exceptions in case something unexpected is found
     in the given file.
     '''
-    # FIXME: currently only deconvolution jobs are supported!
+    # FIXME: currently only deconvolution jobs are supported, until hucore will
+    # be able to do the other things like SNR estimation and previewgen using
+    # templates as well!
     job = {}
     jobparser = ConfigParser.RawConfigParser()
     jobparser.read(jobfname)
@@ -46,24 +48,35 @@ def parse_jobfile(fname):
         job['ver'] = jobparser.get('hrmjobfile', 'version')
     except ConfigParser.NoOptionError:
         raise Exception("Can't find version in '%s'" % jobfname)
-    # TODO: check the version number and parse accordingly...
+    if not (job['ver'] == '2'):
+        raise Exception("Unexpected jobfile version '%s'" % job['ver'])
     try:
         job['user'] = jobparser.get('hrmjobfile', 'username')
     except ConfigParser.NoOptionError:
         raise Exception("Can't find username in '%s'" % jobfname)
-    # now parse the deconvolution section
     try:
-        job['template'] = jobparser.get('deconvolution', 'template')
+        job['type'] = jobparser.get('hrmjobfile', 'jobtype')
+    except ConfigParser.NoOptionError:
+        raise Exception("Can't find jobtype in '%s'" % jobfname)
+
+    # from here on a jobtype specific parsing must be done:
+    if not (job['type'] == 'hucore'):
+        raise Exception("Unknown jobtype '%s'" % job['type'])
+    try:
+        job['exec'] = jobparser.get('hucore', 'executable')
+    except ConfigParser.NoOptionError:
+        raise Exception("Can't find executable in '%s'" % jobfname)
+    try:
+        job['template'] = jobparser.get('hucore', 'template')
     except ConfigParser.NoOptionError:
         raise Exception("Can't find template in '%s'" % jobfname)
 
     # and the input file(s)
-    section = 'inputfiles'
-    if not section in sections:
+    if not 'inputfiles' in sections:
         raise Exception("No input files defined in '%s'" % jobfname)
     job['infiles'] = []
     for option in jobparser.options('inputfiles'):
-        infile = jobparser.get(section, option)
+        infile = jobparser.get('inputfiles', option)
         job['infiles'].append(infile)
     return job
 
@@ -78,7 +91,6 @@ class HucoreDeconvolveApp(gc3libs.Application):
     stdout/stderr in a file named `stdout.txt` plus the directories `resultdir`
     and `previews` into a directory `deconvolved` inside the current directory.
     """
-    # TODO: path to hucore should not be hardcoded here
     def __init__(self, job):
         warn("Job settings:\n%s" % pprint.pformat(job))
         # we need to add the template (with the local path) to the list of
@@ -90,8 +102,7 @@ class HucoreDeconvolveApp(gc3libs.Application):
         templ_on_tgt = job['template'].split('/')[-1]
         gc3libs.Application.__init__(
             self,
-            arguments = ["/usr/local/bin/hucore",
-                '-template', templ_on_tgt],
+            arguments = [job['exec'], '-template', templ_on_tgt],
             inputs = job['infiles'],
             outputs = ['resultdir', 'previews'],
             output_dir = './deconvolved',
