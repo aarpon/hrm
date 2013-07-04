@@ -92,11 +92,11 @@ class HucoreDeconvolveApp(gc3libs.Application):
             stderr = 'stdout.txt', # combine stdout & stderr
             stdout = 'stdout.txt')
 
-# Create an instance of HucoreDeconvolveApp
-app = HucoreDeconvolveApp()
+warn('Creating an instance of HucoreDeconvolveApp using the parsed job.')
+app = HucoreDeconvolveApp(job)
 
-# Create an instance of `Engine` using the configuration file present in your
-# home directory.
+warn('Creating an instance of a GC3Pie engine using the configuration '
+    'file present in your home directory.')
 engine = gc3libs.create_engine()
 
 # Add your application to the engine. This will NOT submit your application
