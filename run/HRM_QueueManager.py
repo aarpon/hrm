@@ -18,6 +18,7 @@ import time
 import gc3libs
 
 import ConfigParser
+import argparse
 import pprint
 
 import logging
@@ -122,9 +123,17 @@ class HucoreDeconvolveApp(gc3libs.Application):
 
 
 def main():
-    # TODO: use argparse for the jobfname
-    jobfname = 'spool/examples/deconvolution_job.cfg'
-    job = parse_jobfile(jobfname)
+    argparser = argparse.ArgumentParser(description=__doc__)
+    argparser.add_argument('-j', '--jobfile', required=True,
+        help='job description file in ConfigParser format')
+    argparser.add_argument('-r', '--resource', required=False,
+        help='GC3Pie resource name')
+    try:
+        args = argparser.parse_args()
+    except IOError as e:
+        argparser.error(str(e))
+
+    job = parse_jobfile(args.jobfile)
 
     warn('Creating an instance of HucoreDeconvolveApp using the parsed job.')
     app = HucoreDeconvolveApp(job)
@@ -137,11 +146,9 @@ def main():
     # yet, but will make the engine *aware* of the application.
     engine.add(app)
 
-    # TODO: use argparse to have a sophisticated and sane way for this:
-    # in case you want to select a specific resource, call
-    # `Engine.select_resource(<resource_name>)`
-    if len(sys.argv)>1:
-        engine.select_resource(sys.argv[1])
+    # select a specific resource if requested on the cmdline:
+    if args.resource:
+        engine.select_resource(args.resource)
 
     # Periodically check the status of your application.
     while app.execution.state != gc3libs.Run.State.TERMINATED:
