@@ -69,7 +69,7 @@ def parse_jobfile(fname):
     warn(job)
     return job
 
-jobfname = '../docs/example.job'
+jobfname = 'spool/examples/deconvolution_job.cfg'
 parse_jobfile(jobfname)
 sys.exit()
 
