@@ -66,6 +66,7 @@ def parse_jobfile(fname):
     # FIXME: currently only deconvolution jobs are supported, until hucore will
     # be able to do the other things like SNR estimation and previewgen using
     # templates as well!
+    jobfname = fname
     job = {}
     jobparser = ConfigParser.RawConfigParser()
     jobparser.read(jobfname)
@@ -95,10 +96,6 @@ def parse_jobfile(fname):
         raise Exception("Unknown jobtype '%s'" % job['type'])
     return job
 
-# TODO: use argparse for the jobfname
-jobfname = 'spool/examples/deconvolution_job.cfg'
-job = parse_jobfile(jobfname)
-
 
 class HucoreDeconvolveApp(gc3libs.Application):
     """
@@ -124,32 +121,41 @@ class HucoreDeconvolveApp(gc3libs.Application):
             stderr = 'stdout.txt', # combine stdout & stderr
             stdout = 'stdout.txt')
 
-warn('Creating an instance of HucoreDeconvolveApp using the parsed job.')
-app = HucoreDeconvolveApp(job)
 
-warn('Creating an instance of a GC3Pie engine using the configuration '
-    'file present in your home directory.')
-engine = gc3libs.create_engine()
+def main():
+    # TODO: use argparse for the jobfname
+    jobfname = 'spool/examples/deconvolution_job.cfg'
+    job = parse_jobfile(jobfname)
 
-# Add your application to the engine. This will NOT submit your application
-# yet, but will make the engine *aware* of the application.
-engine.add(app)
+    warn('Creating an instance of HucoreDeconvolveApp using the parsed job.')
+    app = HucoreDeconvolveApp(job)
 
-# TODO: use argparse to have a sophisticated and sane way for this:
-# in case you want to select a specific resource, call
-# `Engine.select_resource(<resource_name>)`
-if len(sys.argv)>1:
-    engine.select_resource(sys.argv[1])
+    warn('Creating an instance of a GC3Pie engine using the configuration '
+        'file present in your home directory.')
+    engine = gc3libs.create_engine()
 
-# Periodically check the status of your application.
-while app.execution.state != gc3libs.Run.State.TERMINATED:
-    print "Job in status %s " % app.execution.state
-    # `Engine.progress()` will do the GC3Pie magic: submit new jobs, update
-    # status of submitted jobs, get results of terminating jobs etc...
-    engine.progress()
+    # Add your application to the engine. This will NOT submit your application
+    # yet, but will make the engine *aware* of the application.
+    engine.add(app)
 
-    # Wait a few seconds...
-    time.sleep(1)
+    # TODO: use argparse to have a sophisticated and sane way for this:
+    # in case you want to select a specific resource, call
+    # `Engine.select_resource(<resource_name>)`
+    if len(sys.argv)>1:
+        engine.select_resource(sys.argv[1])
 
-print "Job is now terminated."
-print "The output of the application is in `%s`." %  app.output_dir
+    # Periodically check the status of your application.
+    while app.execution.state != gc3libs.Run.State.TERMINATED:
+        print "Job in status %s " % app.execution.state
+        # `Engine.progress()` will do the GC3Pie magic: submit new jobs, update
+        # status of submitted jobs, get results of terminating jobs etc...
+        engine.progress()
+
+        # Wait a few seconds...
+        time.sleep(1)
+
+    print "Job is now terminated."
+    print "The output of the application is in `%s`." %  app.output_dir
+
+if __name__ == "__main__":
+    sys.exit(main())
