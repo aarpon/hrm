@@ -55,7 +55,7 @@ def parse_job_hucore(jobparser, sections, job):
         job['infiles'].append(infile)
 
 
-def parse_jobfile(fname):
+def parse_jobfile(name):
     '''Parse details for an HRM job and check for sanity.
     .
     Take a job description file and assemble a dicitonary with the collected
@@ -66,28 +66,27 @@ def parse_jobfile(fname):
     # FIXME: currently only deconvolution jobs are supported, until hucore will
     # be able to do the other things like SNR estimation and previewgen using
     # templates as well!
-    jobfname = fname
     job = {}
     jobparser = ConfigParser.RawConfigParser()
-    jobparser.read(jobfname)
+    jobparser.read(name)
     sections = jobparser.sections()
     # parse generic information, version, user etc.
     if not 'hrmjobfile' in sections:
-        raise Exception("Error parsing job '%s'" % jobfname)
+        raise Exception("Error parsing job '%s'" % name)
     try:
         job['ver'] = jobparser.get('hrmjobfile', 'version')
     except ConfigParser.NoOptionError:
-        raise Exception("Can't find version in '%s'" % jobfname)
+        raise Exception("Can't find version in '%s'" % name)
     if not (job['ver'] == '2'):
         raise Exception("Unexpected jobfile version '%s'" % job['ver'])
     try:
         job['user'] = jobparser.get('hrmjobfile', 'username')
     except ConfigParser.NoOptionError:
-        raise Exception("Can't find username in '%s'" % jobfname)
+        raise Exception("Can't find username in '%s'" % name)
     try:
         job['type'] = jobparser.get('hrmjobfile', 'jobtype')
     except ConfigParser.NoOptionError:
-        raise Exception("Can't find jobtype in '%s'" % jobfname)
+        raise Exception("Can't find jobtype in '%s'" % name)
 
     # from here on a jobtype specific parsing must be done:
     if job['type'] == 'hucore':
