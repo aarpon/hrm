@@ -27,17 +27,50 @@ loglevel = logging.WARN
 gc3libs.configure_logger(loglevel, "qmgc3")
 warn = gc3libs.log.warn
 
-jobfile = ConfigParser.RawConfigParser()
-jobfile.read('../docs/example.job')
-for section in jobfile.sections():
-    warn('Section: %s' % section)
-    for option in jobfile.options(section):
-        if (option == 'input_data'):
-            values = jobfile.get(section, option).split(',')
-            for value in values:
-                warn('Option: %s = %s' % (option, value))
-        else:
-            warn('Option: %s = %s' % (option, jobfile.get(section, option)))
+def parse_jobfile(fname):
+    '''Parse details for an HRM job and check for sanity.
+    .
+    Take a job description file and assemble a dicitonary with the collected
+    information that contains all the information for launching a new hucore
+    processing task. Raises Exceptions in case something unexpected is found
+    in the given file.
+    '''
+    # FIXME: currently only deconvolution jobs are supported!
+    job = {}
+    jobparser = ConfigParser.RawConfigParser()
+    jobparser.read(jobfname)
+    sections = jobparser.sections()
+    # parse generic information, version, user etc.
+    if not 'hrmjobfile' in sections:
+        raise Exception("Error parsing job '%s'" % jobfname)
+    try:
+        job['ver'] = jobparser.get('hrmjobfile', 'version')
+    except ConfigParser.NoOptionError:
+        raise Exception("Can't find version in '%s'" % jobfname)
+    # TODO: check the version number and parse accordingly...
+    try:
+        job['user'] = jobparser.get('hrmjobfile', 'username')
+    except ConfigParser.NoOptionError:
+        raise Exception("Can't find username in '%s'" % jobfname)
+    # now parse the deconvolution section
+    try:
+        job['templ'] = jobparser.get('deconvolution', 'template')
+    except ConfigParser.NoOptionError:
+        raise Exception("Can't find template in '%s'" % jobfname)
+
+    # and the input file(s)
+    section = 'inputfiles'
+    if not section in sections:
+        raise Exception("No input files defined in '%s'" % jobfname)
+    job['infiles'] = []
+    for option in jobparser.options('inputfiles'):
+        infile = jobparser.get(section, option)
+        job['infiles'].append(infile)
+    warn(job)
+    return job
+
+jobfname = '../docs/example.job'
+parse_jobfile(jobfname)
 sys.exit()
 
 

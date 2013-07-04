@@ -1,4 +1,11 @@
-[deconvolution]
+[hrmjobfile]
+version = 1
 username = hrmuser
+
+[deconvolution]
 template = /path/to/template.tcl
-input_data = '/path/to/image1.tif','/path/to/image2.tif'
+
+[inputfiles]
+file1 = /path/to/image1.tif
+file2 = /path/to/image2.tif
+file3 = /unquoted/path/with some spaces.tif
