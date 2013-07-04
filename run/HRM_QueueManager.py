@@ -73,7 +73,7 @@ def parse_jobfile(name):
     sections = jobparser.sections()
     # parse generic information, version, user etc.
     if not 'hrmjobfile' in sections:
-        raise Exception("Error parsing job '%s'" % name)
+        raise Exception("Can't find expected header in '%s'" % name)
     try:
         job['ver'] = jobparser.get('hrmjobfile', 'version')
     except ConfigParser.NoOptionError:
