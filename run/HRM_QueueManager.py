@@ -8,7 +8,6 @@ The prototype of a new GC3Pie-based Queue Manager for HRM.
 
 # TODO:
 # - monitor a "new" directory via pyinotify
-# - assemble a gc3libs.Application
 # - add them to the queue
 
 # stdlib imports
@@ -54,7 +53,7 @@ def parse_jobfile(fname):
         raise Exception("Can't find username in '%s'" % jobfname)
     # now parse the deconvolution section
     try:
-        job['templ'] = jobparser.get('deconvolution', 'template')
+        job['template'] = jobparser.get('deconvolution', 'template')
     except ConfigParser.NoOptionError:
         raise Exception("Can't find template in '%s'" % jobfname)
 
@@ -71,7 +70,6 @@ def parse_jobfile(fname):
 # TODO: use argparse for the jobfname
 jobfname = 'spool/examples/deconvolution_job.cfg'
 job = parse_jobfile(jobfname)
-warn(pprint.pformat(job))
 
 
 class HucoreDeconvolveApp(gc3libs.Application):
@@ -80,13 +78,15 @@ class HucoreDeconvolveApp(gc3libs.Application):
     stdout/stderr in a file named `stdout.txt` plus the directories `resultdir`
     and `previews` into a directory `deconvolved` inside the current directory.
     """
-    # TODO: parametrize this class!
-    def __init__(self):
+    # TODO: path to hucore should not be hardcoded here
+    def __init__(self, job):
+        warn("Job settings:\n%s" % pprint.pformat(job))
+        job['infiles'].append(job['template'])
         gc3libs.Application.__init__(
             self,
             arguments = ["/usr/local/bin/hucore",
-                '-template', 'hucore_template_relative.tcl'],
-            inputs = ['./hucore_template_relative.tcl', 'bad.lsm'],
+                '-template', job['template']],
+            inputs = job['infiles'],
             outputs = ['resultdir', 'previews'],
             output_dir = './deconvolved',
             stderr = 'stdout.txt', # combine stdout & stderr
