@@ -29,16 +29,17 @@ function newExternalProcessFor($host, $logfilename, $errfilename) {
     $db = new DatabaseConnection();
     $huscript_path = $db->huscriptPathOn($host);
     
-    if ($imageProcessingIsOnQueueManager)
-        $shell = new LocalExternalProcess($host,
-                                          $huscript_path, 
-                                          $logfilename,
-                                          $errfilename);
-    else
-        $shell = new ExternalProcess($host,
-                                     $huscript_path, 
-                                     $logfilename,
-                                     $errfilename);
+    if ($imageProcessingIsOnQueueManager) {
+      $shell = new LocalExternalProcess($host,
+					$huscript_path, 
+					$logfilename,
+					$errfilename);
+    } else {
+      $shell = new ExternalProcess($host,
+				   $huscript_path, 
+				   $logfilename,
+				   $errfilename);
+    }
     
     return $shell;
 }
@@ -120,26 +121,39 @@ class ExternalProcess {
       \param	$errfileName	Name of the process error log (relative to the 
                             global $logdir)
     */
-    public function __construct($host, $huscript_path, $logfileName, $errfileName) {
-        global $logdir;
-        // Make sure to save into the log dir
-        $this->logfileName = $logdir . "/" . $logfileName;
-        $this->errfileName = $logdir . "/" . $errfileName;
-        $this->descriptorSpec = array(
-            0 => array("pipe", "r"), // STDIN
-            1 => array("file", $this->logfileName, "a"), // STDOUT
-            2 => array("file", $this->errfileName, "a"));  // STDERR
-        $this->host = $host;
-        $this->huscript_path = $huscript_path;
-        if (strpos($host, " ")) {
-            $components = explode(" ", $host);
-            array_pop($components);
-            $realHost = implode("", $components);
-            $this->host = $realHost;
-        }
-        $this->pid = NULL;
-    }
+    public function __construct( $host, 
+				 $huscript_path, 
+				 $logfileName, 
+				 $errfileName) {
+      global $logdir;
 
+
+      $this->huscript_path = $huscript_path;
+
+      if (strpos($host, " ") === True) {
+	$components = explode(" ", $host);
+	array_pop($components);
+	$realHost = implode("", $components);
+	$this->host = $realHost;
+      } else {
+	$this->host = $host;
+      }
+      $this->pid = NULL;
+      
+      // Make sure to save into the log dir
+      $this->logfileName = $logdir . "/" . $logfileName;
+      $this->errfileName = $logdir . "/" . $errfileName;
+      $this->descriptorSpec = array(
+				    0 => array("pipe", // STDIN 
+					       "r"), 
+				    1 => array("file", // STDOUT 
+					       $this->logfileName, 
+					       "a"), 
+				    2 => array("file", // STDERR
+					       $this->errfileName, 
+					       "a"));  
+    }
+    
     /*!
      \brief   Destructor: Valid from PHP 5 on. Gets called when there are no
                           other references to a particular object, or in any
@@ -158,15 +172,15 @@ class ExternalProcess {
       \todo	Refactor
     */
     public function existsHuygensProcess($pid) {
-        global $logdir, $hucore;
-        global $huygens_user;
-        $answer = system("ssh $huygens_user" . '@' . $this->host . " " . 
+      global $logdir, $hucore, $huygens_user;
+      
+      $answer = system("ssh $huygens_user" . '@' . $this->host . " " . 
                 "ps -p $pid | grep -e $hucore > " . $logdir . "/hrm_tmp", 
-                $result); // -p
-        if ($result == 0) {
-            return True;
-        }
-        return False;
+		       $result);
+      if ($result == 0) {
+	return True;
+      }
+      return False;
     }
 
     /*!
@@ -177,15 +191,15 @@ class ExternalProcess {
       \todo	Refactor: why is this saving to hrm_tmp?
     */
     public function isHuygensProcessSleeping($pid) {
-        global $logdir, $hucore;
-        global $huygens_user;
-        $answer = system("ssh $huygens_user" . '@' . $this->host . " " . 
+      global $logdir, $hucore, $huygens_user;
+
+      $answer = system("ssh $huygens_user" . '@' . $this->host . " " . 
             "ps -lf -p " . "$pid | grep -e $hucore | grep -e S > " . $logdir .
-                "/hrm_tmp", $result);
-        if ($result == 0) {
-            return True;
-        }
-        return False;
+		       "/hrm_tmp", $result);
+      if ($result == 0) {
+	return True;
+      }
+      return False;
     }
 
     /*!
@@ -194,6 +208,7 @@ class ExternalProcess {
     */
     public function rewakeHuygensProcess($pid) {
         global $huygens_user;
+
         $answer = "none";
         ob_start();
         while ($answer != "") {
@@ -217,9 +232,7 @@ class ExternalProcess {
       \todo	Refactor: why is this saving to hrm_tmp?
     */
     public function ping() {
-        global $logdir;
-        global $ping_command;
-        global $ping_parameter;
+      global $logdir, $ping_command, $ping_parameter;
 
         $result = "";
         $command = $ping_command . " " . $this->host . " " . $ping_parameter .
@@ -289,7 +302,7 @@ class ExternalProcess {
     public function removeFile($fileName) {
 
         // Build a remove command involving the file.
-        $cmd = "if [ -f \"" . $fileName . "\" ]; ";
+        $cmd  = "if [ -f \"" . $fileName . "\" ]; ";
         $cmd .= "then ";
         $cmd .= "rm \"" . $fileName . "\"; ";
         $cmd .= "fi";
@@ -322,11 +335,11 @@ class ExternalProcess {
         global $huygens_user;
 
         // Build a read command involving the file.
-        $cmd = "if [ -f \"" . $fileName . "\" ]; ";
+        $cmd  = "if [ -f \"" . $fileName . "\" ]; ";
         $cmd .= "then ";
         $cmd .= "cat \"" . $fileName . "\"; ";
         $cmd .= "fi";
-        $cmd = "ssh " . $huygens_user . "@" . $this->host . " " . "'$cmd'";
+        $cmd  = "ssh " . $huygens_user . "@" . $this->host . " " . "'$cmd'";
 
         $answer = exec($cmd, $result);
 
@@ -352,31 +365,39 @@ class ExternalProcess {
       \brief	Runs the Huygens template with a given name in the shell
       \param	$templateName	File name of the Huygens template
       \return 	the Process Identifier of the running task
-      \todo        Improve the pid acquisition process
+      \todo     Improve the pid acquisition process
+      \todo     Better management of file handles
+      \todo     Refactor
     */
     public function runHuygensTemplate($templateName) {
         global $hutask;
 
-        $command = $this->huscript_path . " $hutask \"" . $templateName . "\"";
+	$pid = "";
 
-        // TODO better management of file handles
         $this->out_file = fopen($this->descriptorSpec[1][1], "r");
         fseek($this->out_file, 0, SEEK_END);
 
+        $command = $this->huscript_path . " $hutask \"" . $templateName . "\"";
         $this->execute($command);
+
         sleep(1);
+
         $found = False;
         while (!$found) {
-            // TODO refactor
-            if (feof($this->out_file))
-                return False;
-            $pid = fgets($this->out_file, 1024);
-            $pid = intval($pid);
-            if ($pid != -1 && $pid != 0) {
-                $found = True;
-                $this->pid = $pid;
-            }
+	  if (feof($this->out_file)) { 
+	    fclose($this->out_file);
+	    break;
+	  }
+
+	  $pid = fgets($this->out_file, 1024);
+	  $pid = intval($pid);
+	  if ($pid != -1 && $pid != 0) {
+	    $found = True;
+	    $this->pid = $pid;
+	  }
         }
+	
+	fclose($this->out_file);
 
         return $pid;
     }
@@ -447,7 +468,10 @@ class LocalExternalProcess extends ExternalProcess {
       \param	$errfileName    Name of the process error log (relative to the 
                               global $logdir)
     */
-    public function __construct($host, $huscript_path, $logfileName, $errfileName) {
+    public function __construct($host, 
+				$huscript_path, 
+				$logfileName, 
+				$errfileName) {
         parent::__construct($host, $huscript_path, $logfileName, $errfileName);
     }
 
@@ -459,15 +483,14 @@ class LocalExternalProcess extends ExternalProcess {
       \todo	Refactor
     */
     public function existsHuygensProcess($pid) {
-        global $hucore;
-        global $logdir;
+      global $hucore, $logdir;
 
-        $answer = system("ps -p $pid | grep -e $hucore > " . $logdir . 
-            "/hrm_tmp", $result);
-        if ($result == 0) {
-            return True;
-        }
-        return False;
+      $answer = system("ps -p $pid | grep -e $hucore > " . $logdir . 
+		       "/hrm_tmp", $result);
+      if ($result == 0) {
+	return True;
+      }
+      return False;
     }
 
     /*!
