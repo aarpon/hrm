@@ -1091,7 +1091,7 @@ class DatabaseConnection {
   */
   public function deleteJobFromTables($id) {
       // TODO: Use foreign keys in the database!
-      $result = True;
+      $result = True;
       $result = $result && $this->execute(
               "delete from job_analysis_parameter where setting='$id'");
       $result = $result && $this->execute(
