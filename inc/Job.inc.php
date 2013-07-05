@@ -348,10 +348,10 @@ class Job {
         $fileserver = new Fileserver($username);
         
         $controllerName = $this->g3cControllerName();
-        $controllerPath = $fileserver->sourceFolder();
+        $controllerPath = dirname(__FILE__) . "/../run/spool";
         $controllerFile = $controllerPath . "/" . $controllerName;
-        $file = fopen($controllerFile, "w");
 
+        $file = fopen($controllerFile, "w");
         if (!$file ) {
             report ("Error opening file $controllerFile, verify permissions!", 0);
             report ("Waiting 15 seconds...", 1);
