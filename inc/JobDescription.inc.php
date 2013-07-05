@@ -223,6 +223,14 @@ class JobDescription {
   }
 
   /*!
+   \brief       Returns the name of the job controller to be used by G3CPie
+   \return      The controller name with a unique HRM id 
+  */
+  public function getG3CPieControllerName() {
+    return ".g3c_" . $this->id() . ".cfg";
+  }
+
+  /*!
     \brief Add a Job to the queue
     \return true if the Job could be added to the queue, false otherwise
   */

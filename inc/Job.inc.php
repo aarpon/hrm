@@ -10,13 +10,20 @@ require_once ("Fileserver.inc.php");
 require_once ("Shell.inc.php");
 require_once ("Mail.inc.php");
 require_once ("HuygensTemplate.inc.php");
+require_once ("G3CPieController.inc.php");
 require_once ("System.inc.php");
 
 /*!
   \class Job
-  \brief    Stores all information for a deconvolution Job
+  \brief	Stores all information for a deconvolution Job
  */
 class Job {
+
+    /*!
+      \var      $controller
+      \brief    Contains a G3CPie controller to run a job
+    */
+    private $controller;
 
     /*!
       \var      $script
@@ -88,8 +95,8 @@ class Job {
     /* ------------------------------------------------------------------------ */
     
     /*!
-     \brief Constructor
-     \param $jobDescription JobDescrition object
+     \brief	Constructor
+     \param	$jobDescription	JobDescrition object
     */
     public function __construct($jobDescription) {
         $this->initialize($jobDescription);
@@ -157,24 +164,24 @@ class Job {
     }
 
     /*!
-     \brief Returns the JobDescription associated with the Job
-     \return    JobDescription object
+     \brief	Returns the JobDescription associated with the Job
+     \return	JobDescription object
     */
     public function description() {
         return $this->jobDescription;
     }
 
     /*!
-     \brief Sets the server which will run the Job
-     \param $server Server name
+     \brief	Sets the server which will run the Job
+     \param	$server	Server name
     */
     public function setServer($server) {
         $this->server = $server;
     }
 
     /*!
-     \brief Returns the name of the server associated with the Job
-     \return    server name
+     \brief	Returns the name of the server associated with the Job
+     \return	server name
     */
     public function server() {
         return $this->server;
@@ -189,16 +196,16 @@ class Job {
     }
     
     /*!
-     \brief Returns the process identifier associated with the Job
-     \return    process identifier
+     \brief	Returns the process identifier associated with the Job
+     \return	process identifier
     */
     public function pid() {
         return $this->pid;
     }
     
     /*!
-     \brief Returns the Job id
-     \return    Job id
+     \brief	Returns the Job id
+     \return	Job id
     */
     public function id() {
         $desc = $this->description();
@@ -206,24 +213,24 @@ class Job {
     }
     
     /*!
-     \brief Sets the process identifier associated with the Job
-     \param $pid    Process identifier
+     \brief	Sets the process identifier associated with the Job
+     \param	$pid	Process identifier
     */
     public function setPid($pid) {
         $this->pid = $pid;
     }
     
     /*!
-     \brief Returns the Job status
-     \return    Job status
+     \brief	Returns the Job status
+     \return	Job status
     */
     public function status() {
         return $this->status;
     }
 
     /*!
-     \brief Sets the status of the Job
-     \param $status Status of the Job
+     \brief	Sets the status of the Job
+     \param	$status	Status of the Job
     */
     public function setStatus($status) {
         $this->status = $status;
@@ -239,20 +246,38 @@ class Job {
     }
 
     /*!
+     \brief     Creates a job controller for G3CPie
+    */
+    public function createG3CPieController() {
+        $jobDescription = $this->description();
+        $g3cPie = new G3CPieController($jobDescription);
+        $this->controller = $g3cPie->controller;
+    }
+
+    /*!
      \brief Returns the script name (it contains the id to make it univocal)
-     \return    the sript name
+     \return	the sript name
     */
     public function scriptName() {
         $desc = $this->description();
         $result = ".hrm_" . $desc->id() . ".tcl";
         return $result;
     }
+
+    /*!
+     \brief	Returns the G3CPie controller name containing the unique job id
+     \return	the sript name
+    */
+    public function g3cControllerName() {
+        $jobDescription = $this->description();
+        return $jobDescription->getG3CPieControllerName();
+    }
     
     /*!
      \brief Creates a script for elementary jobs or splits compound jobs
      \return    for elementary jobs, returns true if the script was generated
-     successfully, or false otherwise; for compound jobs, it always
-     returns false
+                successfully, or false otherwise; for compound jobs, it always
+                returns false
     */
     public function createSubJobsOrScript() {
         $result = True;
@@ -276,6 +301,10 @@ class Job {
             $this->createScript();
             report("Created script", 1);
             $result = $result && $this->writeScript();
+            
+            $this->createG3CPieController();
+            $result = $result && $this->writeG3CPieController();
+            report("Created G3CPie controller", 1);
         }
         return $result;
     }
@@ -308,8 +337,38 @@ class Job {
     }
 
     /*!
-     \brief Checks whether the result image is present in the destination directory
-     \return    true if the result image could be found, false otherwise
+     \brief	Writes the G3CPie controller to the user's source folder
+     \return	true if the controller could be written, false otherwise
+    */
+    public function writeG3CPieController() {
+        $result = True;
+        $desc = $this->description();
+        $user = $desc->owner();
+        $username = $user->name();
+        $fileserver = new Fileserver($username);
+        
+        $controllerName = $this->g3cControllerName();
+        $controllerPath = $fileserver->sourceFolder();
+        $controllerFile = $controllerPath . "/" . $controllerName;
+        $file = fopen($controllerFile, "w");
+
+        if (!$file ) {
+            report ("Error opening file $controllerFile, verify permissions!", 0);
+            report ("Waiting 15 seconds...", 1);
+            sleep(15);
+            return False;
+        } else {
+	  $result = $result && (fwrite($file, $this->controller) > 0);
+	  fclose($file);
+	  report("Wrote g3c controller $controllerFile", 1);
+        }
+        
+        return $result;
+    }
+
+    /*!
+     \brief	Checks whether the result image is present in the destination directory
+     \return	true if the result image could be found, false otherwise
      \todo Refactor
     */
     public function checkResultImage() {
@@ -341,7 +400,7 @@ class Job {
         // If fileshare is not on the same host as Huygens
         if (!$imageProcessingIsOnQueueManager && $copy_images_to_huygens_server) {
             $image = $huygens_server_image_folder . $user->name() .
-                "/" . $image_destination . "/" .
+            	"/" . $image_destination . "/" .
                 $desc->relativeSourcePath() . $destFileName .  "*";
             $previews = $huygens_server_image_folder;
             $previews .= $user->name() . "/" . $image_destination . "/";
@@ -380,8 +439,8 @@ class Job {
     }
 
     /*!
-     \brief Checks if the process is finished
-     \return    true if the process is finished, false otherwise
+     \brief	Checks if the process is finished
+     \return	true if the process is finished, false otherwise
      \todo Refactor
     */
     public function checkProcessFinished() {
@@ -502,7 +561,7 @@ class Job {
             $this->pipeProducts["main"];
 
         /* The Huygens history file will be removed. */
-        $this->shell->removeFile($historyFile);
+	$this->shell->removeFile($historyFile);
 
         /* The Huygens job main file will be given a job id name. */
         $this->shell->renameFile($huygensOut,$tmpFile);
@@ -516,27 +575,27 @@ class Job {
         $jobReport = $this->shell->readFile($tmpFile);
         
         if (!empty($jobReport)) {
+
+	  if ("" !== $error = $this->checkForErrors($jobReport)) {
+	    $this->copyString2File($error, $errorFile);
+	    $this->shell->copyFile2Host($errorFile);
+	  } else {
+
+            /* Build parameter tables from the Huygens output file. */
+            $parsedParam = $this->HuReportFile2Html($jobReport);
+            $this->copyString2File($parsedParam,$paramFile);
+            $this->shell->copyFile2Host($paramFile);
+	    
+            /* Build colocalization tables from the Huygens output file. */
+            $parsedColoc = $this->HuColoc2Html($jobReport);
             
-            if ("" !== $error = $this->checkForErrors($jobReport)) {
-                $this->copyString2File($error, $errorFile);
-                $this->shell->copyFile2Host($errorFile);
-            } else {
-                
-                /* Build parameter tables from the Huygens output file. */
-                $parsedParam = $this->HuReportFile2Html($jobReport);
-                $this->copyString2File($parsedParam,$paramFile);
-                $this->shell->copyFile2Host($paramFile);
-                
-                /* Build colocalization tables from the Huygens output file. */
-                $parsedColoc = $this->HuColoc2Html($jobReport);
-                
-                if ($this->colocRunOk) {    
-                    $this->copyString2File($parsedColoc,$colocFile);
-                    $this->shell->copyFile2Host($colocFile);
-                }
+            if ($this->colocRunOk) {    
+	      $this->copyString2File($parsedColoc,$colocFile);
+	      $this->shell->copyFile2Host($colocFile);
             }
-            
-            $this->shell->removeFile($tmpFile);
+	  }
+	  
+	  $this->shell->removeFile($tmpFile);
         }
     }
     
@@ -578,12 +637,12 @@ class Job {
       
       $pattern = "/^Error: (.*)/"; 
       foreach ($reportFile as $reportEntry) {
-    if (preg_match($pattern, $reportEntry, $matches)) {
-      $error = $matches[0] . "\n";
+	if (preg_match($pattern, $reportEntry, $matches)) {
+	  $error = $matches[0] . "\n";
 
-      /* We'll report one single error. */
-      break;
-    }
+	  /* We'll report one single error. */
+	  break;
+	}
       }
       
       return $error;
@@ -724,7 +783,6 @@ class Job {
         $pattern .= "(template|metadata|meta data): (.*).}}/";
 
         foreach ($reportFile as $reportEntry) {
-            
             /* Use strpos on most lines for speed reasons. */
             if (strpos($reportEntry,"Parameter") === FALSE ) {
                 continue;
@@ -743,7 +801,7 @@ class Job {
             if ($paramText == "") {
                 continue;
             }
-
+                
             /* Filter some reports that don't make sense for some microscopes. */
             if ($paramName == 'micr') {
                 $micrType[$channel] = $matches[6]; 
