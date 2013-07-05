@@ -122,6 +122,34 @@ class HucoreDeconvolveApp(gc3libs.Application):
             stdout = 'stdout.txt')
 
 
+def run_job(engine, job):
+    '''Run a job in a singlethreaded and blocking manner via GC3Pie.'''
+    warn('Instantiating a HucoreDeconvolveApp using the parsed job.')
+    app = HucoreDeconvolveApp(job)
+
+    # Add your application to the engine. This will NOT submit your application
+    # yet, but will make the engine *aware* of the application.
+    engine.add(app)
+
+    # Periodically check the status of your application.
+    laststate = app.execution.state
+    curstate = app.execution.state
+    while laststate != gc3libs.Run.State.TERMINATED:
+        # `Engine.progress()` will do the GC3Pie magic: submit new jobs, update
+        # status of submitted jobs, get results of terminating jobs etc...
+        engine.progress()
+        curstate = app.execution.state
+        if not (curstate == laststate):
+            print "Job in status %s " % curstate
+
+        laststate = app.execution.state
+        # Wait a few seconds...
+        time.sleep(1)
+
+    print "Job is now terminated."
+    print "The output of the application is in `%s`." %  app.output_dir
+
+
 def main():
     argparser = argparse.ArgumentParser(description=__doc__)
     argparser.add_argument('-j', '--jobfile', required=True,
@@ -135,33 +163,15 @@ def main():
 
     job = parse_jobfile(args.jobfile)
 
-    warn('Creating an instance of HucoreDeconvolveApp using the parsed job.')
-    app = HucoreDeconvolveApp(job)
 
     warn('Creating an instance of a GC3Pie engine using the configuration '
         'file present in your home directory.')
     engine = gc3libs.create_engine()
-
-    # Add your application to the engine. This will NOT submit your application
-    # yet, but will make the engine *aware* of the application.
-    engine.add(app)
-
     # select a specific resource if requested on the cmdline:
     if args.resource:
         engine.select_resource(args.resource)
 
-    # Periodically check the status of your application.
-    while app.execution.state != gc3libs.Run.State.TERMINATED:
-        print "Job in status %s " % app.execution.state
-        # `Engine.progress()` will do the GC3Pie magic: submit new jobs, update
-        # status of submitted jobs, get results of terminating jobs etc...
-        engine.progress()
-
-        # Wait a few seconds...
-        time.sleep(1)
-
-    print "Job is now terminated."
-    print "The output of the application is in `%s`." %  app.output_dir
+    run_job(engine, job)
 
 if __name__ == "__main__":
     sys.exit(main())
