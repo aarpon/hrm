@@ -130,15 +130,15 @@ class ExternalProcess {
 
       $this->huscript_path = $huscript_path;
 
-      if (strpos($host, " ") === True) {
-	$components = explode(" ", $host);
-	array_pop($components);
-	$realHost = implode("", $components);
-	$this->host = $realHost;
-      } else {
-	$this->host = $host;
-      }
-      $this->pid = NULL;
+        if (strpos($host, " ") !== False) {
+            $components = explode(" ", $host);
+            array_pop($components);
+            $realHost = implode("", $components);
+            $this->host = $realHost;
+        } else {
+            $this->host = $host;
+        }
+        $this->pid = NULL;
       
       // Make sure to save into the log dir
       $this->logfileName = $logdir . "/" . $logfileName;
