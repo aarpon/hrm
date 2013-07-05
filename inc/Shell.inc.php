@@ -407,10 +407,10 @@ class ExternalProcess {
     */
     public function release() {
 
-            /* TODO better management of file handles. */
+        /* TODO better management of file handles. */
         
-            /* Close pipes. Check first if they are proper handlers. If, for
-             example, opening them did not work out, the handlers won't exist. */
+        /* Close pipes. Check first if they are proper handlers. If, for
+           example, opening them did not work out, the handlers won't exist. */
         if (is_resource($this->pipes[0])) {
             fclose($this->pipes[0]);
         }
@@ -423,23 +423,65 @@ class ExternalProcess {
             $result = proc_close($this->shell);
         }
         
-        report("released external process", 2);
+        // Report
+        if ($result == -1) {
+            report("Error releasing shell.", 0);
+        }
     }
 
     /*!
-      \brief	Kill the Huygens process with given Process IDentifier
+      \brief	Kill the Huygens process with the given Process IDentifier and 
+              its child, if it exists
       \param	$pid	Process IDentifier of the Job
       \return	true if the Job was killed, false otherwise
     */
     public function killHucoreProcess($pid) {
-        $command = "kill " . $pid;
-        $result = True;
-        $result = $result && $this->runShell();
-        if ($result) {
-            $result = $result && $this->execute($command);
+
+        // Kill the child, if it exists.
+        $noChild = $this->killHucoreChild($pid);
+
+        if ($noChild == False) {
+            report('Failed killing child process.', 0);
         }
+
+        // Kill the parent.
+        $noParent = posix_kill($pid, 15);
         
-        return $result;
+        if ($noParent == False) {
+            report('Failed killing parent process.', 0);
+        }
+
+        return ($noParent && $noChild);
+    }
+
+    /*!
+      \brief       Kill the child of the Huygens process if it exists
+      \param       $ppid Process Identifier of the parent
+      \return      true if a child was killed or didn't exist, false otherwise
+    */
+    public function killHucoreChild($ppid) {
+
+        // Get the pid of the child
+        exec("ps -ef| awk '\$3 == '$ppid' { print  \$2 }'", $child, $error);
+
+        if (!$error) {
+
+            // Kill the child if it exists. Return true if it does not exist.
+            if (array_key_exists(0, $child)) {
+                $childPid = $child[0];
+                if ($childPid > 0) {
+                    $dead = posix_kill($childPid, 15);
+                } else {
+                    $dead = true;
+                }
+            } else {
+                $dead = true;
+            }
+        } else {
+            $dead = true;
+        }
+
+        return $dead;
     }
 
 }
@@ -583,53 +625,6 @@ class LocalExternalProcess extends ExternalProcess {
         }
         
         return True;
-    }
-
-    /*!
-      \brief	Kill the Huygens process with the given Process IDentifier and 
-              its child, if it exists
-      \param	$pid	Process IDentifier of the Job
-      \return	true if the Job was killed, false otherwise
-    */
-    public function killHucoreProcess($pid) {
-
-        // Kill the child, if it exists.
-        $noChild = $this->killHucoreChild($pid);
-
-        // Kill the parent.
-        $noParent = posix_kill($pid, 15);
-
-        return ($noParent && $noChild);
-    }
-
-    /*!
-      \brief       Kill the child of the Huygens process if it exists
-      \param       $ppid Process Identifier of the parent
-      \return      true if a child was killed or didn't exist, false otherwise
-    */
-    public function killHucoreChild($ppid) {
-
-        // Get the pid of the child
-        exec("ps -ef| awk '\$3 == '$ppid' { print  \$2 }'", $child, $error);
-
-        if (!$error) {
-
-            // Kill the child if it exists. Return true if it does not exist.
-            if (array_key_exists(0, $child)) {
-                $childPid = $child[0];
-                if ($childPid > 0) {
-                    $dead = posix_kill($childPid, 15);
-                } else {
-                    $dead = true;
-                }
-            } else {
-                $dead = true;
-            }
-        } else {
-            $dead = true;
-        }
-
-        return $dead;
     }
 
 }
