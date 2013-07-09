@@ -423,8 +423,8 @@ class ExternalProcess {
             $result = proc_close($this->shell);
         }
         
-        // Report
-        if ($result == -1) {
+        //Report
+        if (isset($result) && $result == -1) {
             report("Error releasing shell.", 0);
         }
     }
@@ -440,14 +440,14 @@ class ExternalProcess {
         // Kill the child, if it exists.
         $noChild = $this->killHucoreChild($pid);
 
-        if ($noChild == False) {
+        if ($noChild == False) {
             report('Failed killing child process.', 0);
         }
 
         // Kill the parent.
         $noParent = posix_kill($pid, 15);
         
-        if ($noParent == False) {
+        if ($noParent == False) {
             report('Failed killing parent process.', 0);
         }
 
