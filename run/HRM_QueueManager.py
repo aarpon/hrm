@@ -11,7 +11,6 @@ The prototype of a new GC3Pie-based Queue Manager for HRM.
 # - let gc3pie decide when to dispatch a job (currently the call to run_job()
 #   is blocking and thus the whole thing is limited to single sequential job
 #   instances, even if more resources were available
-# - create a class for the jobparser stuff
 
 # stdlib imports
 import sys
@@ -25,80 +24,13 @@ import pyinotify
 import argparse
 import pprint
 
+import HRM
+
 import logging
 # loglevel = logging.DEBUG
 loglevel = logging.WARN
 gc3libs.configure_logger(loglevel, "qmgc3")
 warn = gc3libs.log.warn
-
-def parse_job_hucore(jobparser, sections, job):
-    '''Does the specific parsing of "hucore" type jobfiles.
-    .
-    Parses the "hucore" and the "inputfiles" sections of HRM job configuration
-    files.
-    .
-    Returns
-    -------
-    void
-        Adds all information directly to the "job" dict.
-    '''
-    # the "hucore" section:
-    try:
-        job['exec'] = jobparser.get('hucore', 'executable')
-    except ConfigParser.NoOptionError:
-        raise Exception("Can't find executable in '%s'" % jobfname)
-    try:
-        job['template'] = jobparser.get('hucore', 'template')
-    except ConfigParser.NoOptionError:
-        raise Exception("Can't find template in '%s'" % jobfname)
-    # and the input file(s):
-    if not 'inputfiles' in sections:
-        raise Exception("No input files defined in '%s'" % jobfname)
-    job['infiles'] = []
-    for option in jobparser.options('inputfiles'):
-        infile = jobparser.get('inputfiles', option)
-        job['infiles'].append(infile)
-
-
-def parse_jobfile(name):
-    '''Parse details for an HRM job and check for sanity.
-    .
-    Take a job description file and assemble a dicitonary with the collected
-    information that contains all the information for launching a new hucore
-    processing task. Raises Exceptions in case something unexpected is found
-    in the given file.
-    '''
-    # FIXME: currently only deconvolution jobs are supported, until hucore will
-    # be able to do the other things like SNR estimation and previewgen using
-    # templates as well!
-    job = {}
-    jobparser = ConfigParser.RawConfigParser()
-    jobparser.read(name)
-    sections = jobparser.sections()
-    # parse generic information, version, user etc.
-    if not 'hrmjobfile' in sections:
-        raise Exception("Can't find expected header in '%s'" % name)
-    try:
-        job['ver'] = jobparser.get('hrmjobfile', 'version')
-    except ConfigParser.NoOptionError:
-        raise Exception("Can't find version in '%s'" % name)
-    if not (job['ver'] == '2'):
-        raise Exception("Unexpected jobfile version '%s'" % job['ver'])
-    try:
-        job['user'] = jobparser.get('hrmjobfile', 'username')
-    except ConfigParser.NoOptionError:
-        raise Exception("Can't find username in '%s'" % name)
-    try:
-        job['type'] = jobparser.get('hrmjobfile', 'jobtype')
-    except ConfigParser.NoOptionError:
-        raise Exception("Can't find jobtype in '%s'" % name)
-
-    # from here on a jobtype specific parsing must be done:
-    if job['type'] == 'hucore':
-        parse_job_hucore(jobparser, sections, job)
-    else:
-        raise Exception("Unknown jobtype '%s'" % job['type'])
-    return job
 
 
 class EventHandler(pyinotify.ProcessEvent):
@@ -107,8 +39,8 @@ class EventHandler(pyinotify.ProcessEvent):
 
     def process_IN_CREATE(self, event):
         warn("Found new jobfile '%s', processing..." % event.pathname)
-        self.joblist.append(parse_jobfile(event.pathname))
-        warn(self.joblist)
+        self.joblist.append(HRM.JobDescription(event.pathname, 'file'))
+        # warn(self.joblist)
 
 
 class HucoreDeconvolveApp(gc3libs.Application):
@@ -118,7 +50,7 @@ class HucoreDeconvolveApp(gc3libs.Application):
     and `previews` into a directory `deconvolved` inside the current directory.
     """
     def __init__(self, job):
-        warn("Job settings:\n%s" % pprint.pformat(job))
+        warn("Job settings:\n%s" % job)
         # we need to add the template (with the local path) to the list of
         # files that need to be transferred to the system running hucore:
         job['infiles'].append(job['template'])
