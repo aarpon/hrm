@@ -4,5 +4,8 @@ resources/hrmd.plist
 user/login_user.inc
 /nbproject/
 
+# Python bytecode
+*.py[cod]
+
 # vim swap files
 .*.sw?
