@@ -41,7 +41,9 @@ class EventHandler(pyinotify.ProcessEvent):
 
     def process_IN_CREATE(self, event):
         warn("Found new jobfile '%s', processing..." % event.pathname)
-        self.joblist.append(HRM.JobDescription(event.pathname, 'file'))
+        job = HRM.JobDescription(event.pathname, 'file')
+        pprint.pprint(job)
+        self.joblist.append(job)
         # warn(self.joblist)
 
 
