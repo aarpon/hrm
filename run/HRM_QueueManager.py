@@ -56,7 +56,7 @@ class HucoreDeconvolveApp(gc3libs.Application):
     """
 
     def __init__(self, job):
-        warn("Job settings:\n%s" % job)
+        warn('Instantiating a HucoreDeconvolveApp:\n%s' % job)
         # we need to add the template (with the local path) to the list of
         # files that need to be transferred to the system running hucore:
         job['infiles'].append(job['template'])
@@ -96,14 +96,13 @@ def run_job(engine, job):
         engine.progress()
         curstate = app.execution.state
         if not (curstate == laststate):
-            print "Job in status %s " % curstate
+            warn("Job in status %s " % curstate)
 
         laststate = app.execution.state
         # Wait a few seconds...
         time.sleep(1)
-
-    print "Job is now terminated."
-    print "The output of the application is in `%s`." %  app.output_dir
+    warn("Job is now terminated.")
+    warn("The output of the application is in `%s`." %  app.output_dir)
 
 
 def main():
