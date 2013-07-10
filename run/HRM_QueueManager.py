@@ -19,7 +19,6 @@ import time
 # GC3Pie imports
 import gc3libs
 
-import ConfigParser
 import pyinotify
 import argparse
 import pprint
