@@ -74,6 +74,22 @@ class HucoreDeconvolveApp(gc3libs.Application):
             stdout = 'stdout.txt')
 
 
+class HucorePreviewgenApp(gc3libs.Application):
+
+    """App object for 'hucore' image preview generation jobs."""
+
+    # stub!
+    pass
+
+
+class HucorePreviewgenApp(gc3libs.Application):
+
+    """App object for 'hucore' SNR estimation jobs."""
+
+    # stub!
+    pass
+
+
 def run_job(engine, job):
     """Run a job in a singlethreaded and blocking manner via GC3Pie.
 
