@@ -34,6 +34,9 @@ warn = gc3libs.log.warn
 
 
 class EventHandler(pyinotify.ProcessEvent):
+
+    """Handler for pyinotify filesystem events."""
+
     def __init__(self, joblist):
         self.joblist = joblist
 
@@ -44,11 +47,14 @@ class EventHandler(pyinotify.ProcessEvent):
 
 
 class HucoreDeconvolveApp(gc3libs.Application):
-    """
+
+    """App object for 'hucore' deconvolution jobs.
+
     This application calls `hucore` with a given template file and retrives the
     stdout/stderr in a file named `stdout.txt` plus the directories `resultdir`
     and `previews` into a directory `deconvolved` inside the current directory.
     """
+
     def __init__(self, job):
         warn("Job settings:\n%s" % job)
         # we need to add the template (with the local path) to the list of
@@ -69,8 +75,12 @@ class HucoreDeconvolveApp(gc3libs.Application):
 
 
 def run_job(engine, job):
-    '''Run a job in a singlethreaded and blocking manner via GC3Pie.'''
-    warn('Instantiating a HucoreDeconvolveApp using the parsed job.')
+    """Run a job in a singlethreaded and blocking manner via GC3Pie.
+
+    NOTE: this doesn't mean the process executed during this job is
+    singlethreaded, it just means that currently no more than one job is run
+    *at a time*.
+    """
     app = HucoreDeconvolveApp(job)
 
     # Add your application to the engine. This will NOT submit your application

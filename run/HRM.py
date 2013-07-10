@@ -16,8 +16,8 @@ __all__ = ['JobDescription']
 
 
 class JobDescription(object):
-    """
-    Abstraction class for handling HRM job descriptions.
+
+    """Abstraction class for handling HRM job descriptions.
 
     Read an HRM job description either from a file or a string and parse
     the sections, check them for sane values and store them in a dict.
