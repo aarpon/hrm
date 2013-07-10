@@ -16,7 +16,7 @@ import pprint
 __all__ = ['JobDescription']
 
 
-class JobDescription(object):
+class JobDescription(dict):
 
     """Abstraction class for handling HRM job descriptions.
 
@@ -26,7 +26,7 @@ class JobDescription(object):
 
     def __init__(self, job, srctype):
         """Initialize depending on the type of description source."""
-        self.job = {}
+        self.job = dict()
         self.jobparser = ConfigParser.RawConfigParser()
         self._sections = []
         if (srctype == 'file'):
@@ -40,16 +40,19 @@ class JobDescription(object):
         else:
             raise Exception("Unknown source type '%s'" % srctype)
 
-    def __getitem__(self, key):
-        return self.job[key]
 
-    def __setitem__(self, key, value):
-        self.job[key] = value
+    # get/set/repr are now inherited from dict, thus we don't need to
+    # redefine them ourselves here anymore:
+    # def __getitem__(self, key):
+    #     return self.job[key]
 
-    def __repr__(self):
-        # TODO: figure out why pprint.pformat() behaves different on repr()
-        # compared to pformat({})
-        return repr(self.job)
+    # def __setitem__(self, key, value):
+    #     self.job[key] = value
+
+    # def __repr__(self):
+    #     # TODO: figure out why pprint.pformat() behaves different on repr()
+    #     # compared to pformat({})
+    #     return repr(self.job)
 
     def _parse_jobfile(self, fname):
         """Initialize ConfigParser for a file and run parsing method."""
