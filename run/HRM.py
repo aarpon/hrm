@@ -11,6 +11,7 @@ JobDescription()
 """
 
 import ConfigParser
+import pprint
 
 __all__ = ['JobDescription']
 
@@ -31,6 +32,7 @@ class JobDescription(object):
         if (srctype == 'file'):
             self.name = "file '%s'" % job
             self._parse_jobfile(job)
+            pprint.pprint(self.job)
         elif (srctype == 'string'):
             # TODO: _parse_jobstring(job)
             self.name = "string received from socket"
