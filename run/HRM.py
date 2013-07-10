@@ -67,26 +67,26 @@ class JobDescription(object):
         self._sections = self.jobparser.sections()
         # parse generic information, version, user etc.
         if not 'hrmjobfile' in self._sections:
-            raise Exception("Error parsing job from %s." % self.name)
+            raise ValueError("Error parsing job from %s." % self.name)
         try:
             self.job['ver'] = self.jobparser.get('hrmjobfile', 'version')
         except ConfigParser.NoOptionError:
-            raise Exception("Can't find version in %s." % self.name)
+            raise ValueError("Can't find version in %s." % self.name)
         if not (self.job['ver'] == '2'):
-            raise Exception("Unexpected version in %s." % self.job['ver'])
+            raise ValueError("Unexpected version in %s." % self.job['ver'])
         try:
             self.job['user'] = self.jobparser.get('hrmjobfile', 'username')
         except ConfigParser.NoOptionError:
-            raise Exception("Can't find username in %s." % self.name)
+            raise ValueError("Can't find username in %s." % self.name)
         try:
             self.job['type'] = self.jobparser.get('hrmjobfile', 'jobtype')
         except ConfigParser.NoOptionError:
-            raise Exception("Can't find jobtype in %s." % self.name)
+            raise ValueError("Can't find jobtype in %s." % self.name)
         # from here on a jobtype specific parsing must be done:
         if self.job['type'] == 'hucore':
             self._parse_job_hucore()
         else:
-            raise Exception("Unknown jobtype '%s'" % self.job['type'])
+            raise ValueError("Unknown jobtype '%s'" % self.job['type'])
 
     def _parse_job_hucore(self):
         """Do the specific parsing of "hucore" type jobfiles.
@@ -103,14 +103,14 @@ class JobDescription(object):
         try:
             self.job['exec'] = self.jobparser.get('hucore', 'executable')
         except ConfigParser.NoOptionError:
-            raise Exception("Can't find executable in %s." % self.name)
+            raise ValueError("Can't find executable in %s." % self.name)
         try:
             self.job['template'] = self.jobparser.get('hucore', 'template')
         except ConfigParser.NoOptionError:
-            raise Exception("Can't find template in %s." % self.name)
+            raise ValueError("Can't find template in %s." % self.name)
         # and the input file(s):
         if not 'inputfiles' in self._sections:
-            raise Exception("No input files defined in %s." % self.name)
+            raise ValueError("No input files defined in %s." % self.name)
         self.job['infiles'] = []
         for option in self.jobparser.options('inputfiles'):
             infile = self.jobparser.get('inputfiles', option)
