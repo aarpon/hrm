@@ -23,18 +23,20 @@ class JobDescription(object):
     the sections, check them for sane values and store them in a dict.
     """
 
-    def __init__(self, job, method):
-        """Check method ('string' or 'file') and initalize accordingly."""
+    def __init__(self, job, srctype):
+        """Initialize depending on the type of description source."""
         self.job = {}
         self.jobparser = ConfigParser.RawConfigParser()
         self._sections = []
-        if (method == 'file'):
+        if (srctype == 'file'):
             self.name = "file '%s'" % job
             self._parse_jobfile(job)
-        else:
+        elif (srctype == 'string'):
             # TODO: _parse_jobstring(job)
             self.name = "string received from socket"
-            raise Exception("Method 'string' not yet implemented!")
+            raise Exception("Source type 'string' not yet implemented!")
+        else:
+            raise Exception("Unknown source type '%s'" % srctype)
 
     def __getitem__(self, key):
         return self.job[key]
