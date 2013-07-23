@@ -3001,10 +3001,14 @@ if ($current_revision < $n) {
         return;
     }
 
+        // Correct a blank to many. 
+    $tabname = "file_extension";
+    $rs = $db->Execute("UPDATE file_extension SET extension = \"ome.tiff\" WHERE extension = \"ome.tiff \"");
+    
         // Update revision
     if(!update_dbrevision($n))
         return;
-
+    
     $current_revision = $n;
     $msg = "Database successfully updated to revision " . $current_revision . ".";
     write_message($msg);
