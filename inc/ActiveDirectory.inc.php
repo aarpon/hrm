@@ -86,13 +86,47 @@ class ActiveDirectory {
     }
 
     /*!
+      \brief	Destructor. Closes the connection started by the adLDAP object.
+     */
+    public function __destruct() {
+        // We ask the adLDAP object to close the connection. A check whether a
+        // conection actually exists will be made by the adLDAP object itself.
+        $this->disconnect();
+    }
+
+    /*!
+     \brief     Open the connection.
+      
+     If the connection is already open, nothing will happen.
+     */
+    public function connect() {
+        if (! $this->m_AdLDAP->ldapConnection) {
+            $this->m_AdLDAP->connect();
+        }
+    }
+    
+    /*!
+     \brief     Close the connection.
+
+     If the connection is already closed, nothing will happen.
+     */
+    public function disconnect() {
+        if ($this->m_AdLDAP->ldapConnection) {
+            $this->m_AdLDAP->close();
+        }
+    }
+    
+    /*!
       \brief	Tries to authenticate a user against Active Directory.
       \param	$username	User name
       \param	$password	Password
       \return	true if the user could be authenticated; false otherwise
      */
     public function authenticate( $username, $password ) {
-        return $this->m_AdLDAP->user( )->authenticate( $username, $password );
+        $this->connect();
+        $b = $this->m_AdLDAP->user( )->authenticate( $username, $password );
+        $this->disconnect();
+        return $b;
     }
 
     /*!
@@ -101,8 +135,10 @@ class ActiveDirectory {
       \return	The e-mail address
      */
     public function emailAddress( $username ) {
+        $this->connect();
         $info = $this->m_AdLDAP->user( )->infoCollection(
             $username, array( "mail" ) );
+        $this->disconnect();
         if ( !$info ) {
             return "";
         }
@@ -115,7 +151,9 @@ class ActiveDirectory {
       \return	One or more groups
      */
     public function getGroup( $username ) {
+        $this->connect();
         $userGroups = $this->m_AdLDAP->user( )->groups( $username );
+        $this->disconnect();
         if ( !$userGroups ) {
             return "";
         }
