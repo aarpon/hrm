@@ -1411,7 +1411,7 @@ input.noPreview {
 }
 
 .expandedView {
-    font-size: 80%;
+    font-size: 110%;
     font-weight: bold;
     color: #4988de;
     cursor: pointer;
