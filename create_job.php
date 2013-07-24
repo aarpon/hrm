@@ -187,7 +187,7 @@ if (($value == 'IMS (Imaris Classic)') ||
                 <select name="OutputFileFormat" id="OutputFileFormat" size="1">
 <?php
 
-// FILTERÂ POSSIBLEÂ OUTPUTÂ FILEÂ FORMATS
+// FILTER POSSIBLE OUTPUT FILE FORMATS
 
 // Extract possible values for OutputFileFormat
 $possibleValues = $parameter->possibleValues();
@@ -212,13 +212,14 @@ if ( ( $numberOfChannels == 1 ) || ( $numberOfChannels > 3) ) {
   $possibleValues = array_values( $possibleValues );
 }
 
-// If the dataset is a time series, we remove Imaris classic, TIFF 8 and
-// TIFF 16 from the list
+// If the dataset is a time series, we remove Imaris classic, TIFF 8,
+// TIFF RGB and TIFF 16 from the list
 if (($_SESSION['autoseries'] == "TRUE") || ($timeValue > 0) ) {
     $possibleValues =
         array_diff($possibleValues, array( 'IMS (Imaris Classic)' ) );
     $possibleValues = array_diff($possibleValues, array( 'TIFF 16-bit' ) );
     $possibleValues = array_diff($possibleValues, array( 'TIFF 8-bit' ) );
+    $possibleValues = array_diff($possibleValues, array( 'RGB TIFF 8-bit' ) );
     $possibleValues = array_values( $possibleValues );
 }
 
