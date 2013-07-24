@@ -1385,7 +1385,7 @@ class Fileserver {
       } else {
            $imgsrc = "<img src=\"images/no_preview.jpg\" alt=\"No preview\" />";
            // $ret = "<p><center>No preview available.</center></p>";
-           $ret .= "$imgsrc<br />No preview available";
+           $ret = "$imgsrc<br />No preview available";
       }
 
       if ($escape) {
