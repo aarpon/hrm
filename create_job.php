@@ -187,7 +187,7 @@ if (($value == 'IMS (Imaris Classic)') ||
                 <select name="OutputFileFormat" id="OutputFileFormat" size="1">
 <?php
 
-// FILTER POSSIBLE OUTPUT FILE FORMATS
+// FILTER POSSIBLE OUTPUT FILE FORMATS
 
 // Extract possible values for OutputFileFormat
 $possibleValues = $parameter->possibleValues();
