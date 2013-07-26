@@ -225,6 +225,7 @@ class Fileserver {
               case 'r3d':
               case 'stk':
               case 'zvi':
+              case 'czi':
                   $fileFormat = $fileExtension;
                   break;
               case 'h5':
@@ -1384,7 +1385,7 @@ class Fileserver {
       } else {
            $imgsrc = "<img src=\"images/no_preview.jpg\" alt=\"No preview\" />";
            // $ret = "<p><center>No preview available.</center></p>";
-           $ret .= "$imgsrc<br />No preview available";
+           $ret = "$imgsrc<br />No preview available";
       }
 
       if ($escape) {
@@ -2902,14 +2903,9 @@ echo '</body></html>';
 	} else {
             $found = false;
             foreach ($this->imageExtensions as $current) {
-                // @TODO The extension ome.tiff in the database has
-                // one blank space appended at the end. This will be 
-                // corrected in a later release. For the time being,
-                // we just trim the space.
-                $current = trim($current);
                 $nc = (int)strlen($current);
                 if (strcasecmp(substr($entry, -$nc), $current) == 0) {
-                    $found = true;
+                    $found = true;
                     break;
                 }
             }

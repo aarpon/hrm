@@ -86,13 +86,27 @@ class ActiveDirectory {
     }
 
     /*!
+      \brief	Destructor. Closes the connection started by the adLDAP object.
+     */
+    public function __destruct() {
+        // We ask the adLDAP object to close the connection. A check whether a
+        // conection actually exists will be made by the adLDAP object itself.
+        // This is a fallback to make sure to close any open sockets when the
+        // object is deleted, since all methods of this class that access the
+        // adLDAP object explicitly close the connection when done.
+        $this->m_AdLDAP->close();
+    }
+
+    /*!
       \brief	Tries to authenticate a user against Active Directory.
       \param	$username	User name
       \param	$password	Password
       \return	true if the user could be authenticated; false otherwise
      */
     public function authenticate( $username, $password ) {
-        return $this->m_AdLDAP->user( )->authenticate( $username, $password );
+        $b = $this->m_AdLDAP->user( )->authenticate( $username, $password );
+        $this->m_AdLDAP->close();
+        return $b;
     }
 
     /*!
@@ -103,6 +117,7 @@ class ActiveDirectory {
     public function emailAddress( $username ) {
         $info = $this->m_AdLDAP->user( )->infoCollection(
             $username, array( "mail" ) );
+        $this->m_AdLDAP->close();
         if ( !$info ) {
             return "";
         }
@@ -116,6 +131,7 @@ class ActiveDirectory {
      */
     public function getGroup( $username ) {
         $userGroups = $this->m_AdLDAP->user( )->groups( $username );
+        $this->m_AdLDAP->close();
         if ( !$userGroups ) {
             return "";
         }

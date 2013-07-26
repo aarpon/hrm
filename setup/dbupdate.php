@@ -2157,6 +2157,14 @@ if ($current_revision < $n) {
             }
         }
     }
+
+        // Update revision
+    if(!update_dbrevision($n))
+        return;
+    $current_revision = $n;
+    $msg = "Database successfully updated to revision " . $current_revision . ".";
+    write_message($msg);
+    write_to_log($msg);
 }
 
 
@@ -2191,9 +2199,6 @@ if ($current_revision < $n) {
                 return;
             }
         }
-        
-            
-
 
 // ------------  Add tables for the 'analysis' templates ---------------------
 // analysis_parameter
@@ -2594,14 +2599,13 @@ if ($current_revision < $n) {
     $columns = $db->MetaColumnNames( $tabname );
     if ( !array_key_exists( strtoupper( $newcolumn ), $columns ) ) {
         $SQLquery  = "ALTER TABLE " . $tabname . " ADD COLUMN " . $newcolumn .
-                " " . $type;
+            " " . $type;
         if(!$db->Execute($SQLquery)) {
             $msg = "An error occurred while updating the database to revision " .
-                    $n . ".";
+                $n . ".";
             write_message($msg);
             write_to_error($msg);
             return;
-            }
         }
     }
 
@@ -2940,15 +2944,76 @@ if ($current_revision < $n) {
     // Insert the records
     if(!insert_records($records,$tabname))
         return;
-    
-// Update revision
-if(!update_dbrevision($n))
-    return;
 
-$current_revision = $n;
-$msg = "Database successfully updated to revision " . $current_revision . ".";
-write_message($msg);
-write_to_log($msg);
+        // Update revision
+    if(!update_dbrevision($n))
+        return;
+    $current_revision = $n;
+    $msg = "Database successfully updated to revision " . $current_revision . ".";
+    write_message($msg);
+    write_to_log($msg);
+}
+
+
+// -----------------------------------------------------------------------------
+// Update to revision 11
+// Description: support for czi file format in HRM
+// -----------------------------------------------------------------------------
+$n = 11;
+if ($current_revision < $n) {
+    $tabname = "file_extension";
+    $record = array();
+    $record["file_format"] = "czi";
+    $record["extension"] = "czi";
+    $insertSQL = $db->GetInsertSQL($tabname, $record);
+    if(!$db->Execute($insertSQL)) {
+        $msg = "An error occurred while updating the database to revision " . $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $tabname = "file_format";
+    $record = array();
+    $record["name"] = "czi";
+    $record["isFixedGeometry"] = "f";
+    $record["isSingleChannel"] = "f";
+    $record["isVariableChannel"] = "t";
+    $insertSQL = $db->GetInsertSQL($tabname, $record);
+    if(!$db->Execute($insertSQL)) {
+        $msg = "An error occurred while updating the database to revision " . $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "ImageFileFormat";
+    $record["value"] = "czi";
+    $record["translation"] = "Carl Zeiss Image (*.czi)";
+    $record["isDefault"] = "f";
+    $insertSQL = $db->GetInsertSQL($tabname, $record);
+    if(!$db->Execute($insertSQL)) {
+        $msg = "An error occurred while updating the database to revision " . $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+        // Correct a blank to many. 
+    $tabname = "file_extension";
+    $rs = $db->Execute("UPDATE file_extension SET extension = \"ome.tiff\" WHERE extension = \"ome.tiff \"");
+    
+        // Update revision
+    if(!update_dbrevision($n))
+        return;
+    
+    $current_revision = $n;
+    $msg = "Database successfully updated to revision " . $current_revision . ".";
+    write_message($msg);
+    write_to_log($msg);
+}
 
 fclose($fh);
 

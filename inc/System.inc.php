@@ -25,7 +25,7 @@ class System {
 
     const HRM_VERSION_MAJOR = 3;
     const HRM_VERSION_MINOR = 0;
-    const HRM_VERSION_MAINTENANCE = 2;
+    const HRM_VERSION_MAINTENANCE = 3;
 
     /* !
       \var 	DB_LAST_REVISION
@@ -33,7 +33,7 @@ class System {
 
       This value has to be set by the developers!
      */
-    const DB_LAST_REVISION = 10;
+    const DB_LAST_REVISION = 11;
 
     /* !
       \var 	MIN_HUCORE_VERSION_{MAJOR|MINOR|MAINTENANCE|PATCH}
@@ -360,7 +360,7 @@ class System {
 
     public static function getApacheVersion() {
         $apver = "";
-        if (preg_match('|Apache\/(\d+)\.(\d+)\.(\d+)|', apache_get_version(), &$apver)) {
+        if (preg_match('|Apache\/(\d+)\.(\d+)\.(\d+)|', apache_get_version(), $apver)) {
             return "${apver[1]}.${apver[2]}.${apver[3]}";
         } else {
             return "Unknown";
@@ -386,7 +386,7 @@ class System {
     public static function getDatabaseVersion() {
         $dbver = "";
         $db = new DatabaseConnection();
-        if (preg_match('|(\d+)\.(\d+)\.(\d+)|', $db->version(), &$dbver)) {
+        if (preg_match('|(\d+)\.(\d+)\.(\d+)|', $db->version(), $dbver)) {
             return "${dbver[1]}.${dbver[2]}.${dbver[3]}";
         } else {
             return "Unknown";

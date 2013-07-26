@@ -1085,23 +1085,32 @@ class DatabaseConnection {
   }
 
   /*!
-    \brief	Deletes entries from specified tables and columns for given id
-    \param	$tables		Array of names of tables
-    \param	$columns	Array of names of the columns
-    \param	$id			Id of the job
+    \brief	Deletes job with specified ID from all job tables
+    \param	$id	Id of the job
     \return	true if success
   */
-  public function deleteFromTablesWhereColumnEquals($tables, $columns, $id) {
-    $result = True;
-    $index = 0;
-    foreach ($tables as $table) {
-      $query = "delete from $table where $columns[$index] = '" . $id . "'";
-      $result = $result && $this->execute($query);
-      $index++;
-    }
+  public function deleteJobFromTables($id) {
+      // TODO: Use foreign keys in the database!
+      $result = True;
+      $result = $result && $this->execute(
+              "delete from job_analysis_parameter where setting='$id'");
+      $result = $result && $this->execute(
+              "delete from job_analysis_setting where name='$id'");
+      $result = $result && $this->execute(
+              "delete from job_files where job='$id'");
+      $result = $result && $this->execute(
+              "delete from job_parameter where setting='$id'");
+      $result = $result && $this->execute(
+              "delete from job_parameter_setting where name='$id'");
+      $result = $result && $this->execute(
+              "delete from job_queue where id='$id'");
+      $result = $result && $this->execute(
+              "delete from job_task_parameter where setting='$id'");
+      $result = $result && $this->execute(
+              "delete from job_task_setting where name='$id'");
     return $result;
   }
-
+ 
   /*!
     \brief	Returns the path to hucore on given host
     \param	$host	String	Host name
@@ -1357,7 +1366,7 @@ class DatabaseConnection {
     \return	query result
   */
   public function markServerAsFree($server) {
-    $query = "update server set status='free' where name='" . $server . "'";
+    $query = "update server set status='free', job=NULL where name='" . $server . "'";
     $result = $this->execute($query);
     return $result;
   }
