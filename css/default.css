@@ -395,11 +395,13 @@ table {
 
 #templates select {
     width: 100%;
+    resize: both;
 }
 
 #userfiles select {
     width: 100%;
     text-align: left;
+    resize: both;
 }
 
 #selection {
@@ -456,11 +458,13 @@ table {
 
 #settings select {
     width: 100%;
+    resize: both;
 }
 
 #selectedfiles select {
     width: 100%;
     text-align: left;
+    resize: both;
 }
 
 #upMsg {
