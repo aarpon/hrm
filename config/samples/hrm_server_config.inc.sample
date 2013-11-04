@@ -106,13 +106,13 @@ switch ($compressExt) {
         $dlMimeType = "application/x-force-download";
         break;
     case ".zip":
-        $compressBin = "cd %DEST% \n /usr/bin/zip ";
+        $compressBin = "cd %DEST% \n /usr/bin/zip -0 ";
         $packExcludePath =true;
         $dlMimeType = "application/x-force-download";
         break;
     default:
         $compressExt = ".zip";
-        $compressBin = "cd %DEST% \n/usr/bin/zip -D";
+        $compressBin = "cd %DEST% \n/usr/bin/zip -0 -D";
         $packExcludePath = true;
         $dlMimeType = "application/x-force-download";
 }
