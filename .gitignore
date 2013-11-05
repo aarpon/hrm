@@ -4,3 +4,6 @@ resources/hrmd.plist
 user/login_user.inc
 /nbproject/
 /.idea/
+
+# local logging directory
+log/
