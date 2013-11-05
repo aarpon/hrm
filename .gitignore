@@ -1,5 +1,6 @@
 # Configuration files
 config/*_config.inc
+config/hrm.conf
 resources/hrmd.plist
 user/login_user.inc
 /nbproject/
