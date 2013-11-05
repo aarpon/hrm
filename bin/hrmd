@@ -15,6 +15,9 @@
 # This file is part of the Huygens Remote Manager
 # Copyright and license notice: see license.txt
 
+# set the defaul value for the PHP CLI binary:
+PHP_CLI="php"
+
 # hrm.conf defines variable HRM_HOME
 . /etc/hrm.conf
 
@@ -33,9 +36,9 @@ start() {
         echo Reporting to "$HRM_LOG"/log.txt "$HRM_LOG"/error_log.txt
 	if [[ "$SUSER" == "" ]]
 	then
-		php -q "$HRM_HOME"/run/runHuygensRemoteManager.php 1> "$HRM_LOG"/log.txt 2> "$HRM_LOG"/error_log.txt &
+                $PHP_CLI -q "$HRM_HOME"/run/runHuygensRemoteManager.php 1> "$HRM_LOG"/log.txt 2> "$HRM_LOG"/error_log.txt &
 	else
-		sudo -u "$SUSER" php -q "$HRM_HOME"/run/runHuygensRemoteManager.php 1> "$HRM_LOG"/log.txt 2> "$HRM_LOG"/error_log.txt &
+                sudo -u "$SUSER" $PHP_CLI -q "$HRM_HOME"/run/runHuygensRemoteManager.php 1> "$HRM_LOG"/log.txt 2> "$HRM_LOG"/error_log.txt &
 	fi
 	if [ "$?" = 0 ]
 	then
