@@ -8,3 +8,9 @@ user/login_user.inc
 
 # local logging directory
 log/
+
+# Python bytecode
+*.py[cod]
+
+# vim swap files
+.*.sw?
