@@ -33,44 +33,26 @@ include("header.inc.php");
 ?>
 
     <div id="nav">
-        <ul>
-			<li>
-                <img src="images/user.png" alt="user" />
-                &nbsp;<?php echo $_SESSION['user']->name(); ?>
-            </li>
-            <?php
-            if ($_SESSION['user']->isAdmin()) {
-            ?>
-   	        <li>
-                <a href="#" onclick="checkForUpdates();">
-                <img src="images/check_for_update.png" alt="Check for updates" />
-                &nbsp;Check for updates
-                </a>
-            </li>
-            <?php
-            }
-            ?>
-	        <li>
-                <a href="javascript:openWindow(
-                   'http://huygens-rm.org/home/?q=node/7')">
-                    <img src="images/manual.png" alt="manual" />
-                    &nbsp;User manual
-                </a>
-            </li>
-			<li>
-                <a href="<?php echo getThisPageName();?>?exited=exited">
-                    <img src="images/exit.png" alt="exit" />
-                    &nbsp;Logout
-                </a>
-            </li>
-            <li>
-                <a href="javascript:openWindow(
-                   'http://www.svi.nl/HuygensRemoteManagerHelpHome')">
-                    <img src="images/help.png" alt="help" />
-                    &nbsp;Help
-                </a>
-            </li>
-        </ul>
+        <div id="navleft">
+            <ul>
+                <li>
+                    <a href="javascript:openWindow(
+                       'http://www.svi.nl/HuygensRemoteManagerHelpHome')">
+                        <img src="images/help.png" alt="help" />
+                        &nbsp;Help
+                    </a>
+                </li>
+                <?php include("./inc/nav/manual.inc.php"); ?>
+                <?php include("./inc/nav/check_updates.inc.php"); ?>
+            </ul>
+        </div>
+        <div id="navright">
+            <ul>
+                <?php include("./inc/nav/user.inc.php"); ?>
+                <?php include("./inc/nav/logout.inc.php"); ?>
+            </ul>
+        </div>
+        <div class="clear"></div>
     </div>
     
     <div id="homepage">

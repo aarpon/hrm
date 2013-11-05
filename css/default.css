@@ -165,13 +165,24 @@ table {
     background-color: #eee;
 }
 
+.clear { clear: both;}
+
 #nav {
     color: #888;
     font-size: 12px;
     font-weight: bold;
-    text-align: right;
     border-top: #ccc 2px solid;
     border-bottom: #ccc 2px solid;
+}
+
+#navright {
+    text-align: right;
+    float: right;
+}
+
+#navleft {
+    text-align: left;
+    float: left;
 }
 
 #nav ul {
@@ -185,12 +196,7 @@ table {
     padding-right: 10px;
 }
 
-#nav a:link {
-    font-weight: bold;
-    color: #000;
-}
-
-#nav a:visited {
+#nav a {
     font-weight: bold;
     color: #000;
 }
