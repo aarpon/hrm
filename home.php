@@ -32,28 +32,28 @@ include("header.inc.php");
 
 ?>
 
-    <div id="nav">
-        <div id="navleft">
-            <ul>
-                <li>
-                    <a href="javascript:openWindow(
-                       'http://www.svi.nl/HuygensRemoteManagerHelpHome')">
-                        <img src="images/help.png" alt="help" />
-                        &nbsp;Help
-                    </a>
-                </li>
-                <?php include("./inc/nav/manual.inc.php"); ?>
-                <?php include("./inc/nav/check_updates.inc.php"); ?>
-            </ul>
-        </div>
-        <div id="navright">
-            <ul>
-                <?php include("./inc/nav/user.inc.php"); ?>
-                <?php include("./inc/nav/logout.inc.php"); ?>
-            </ul>
-        </div>
-        <div class="clear"></div>
+<div id="nav">
+    <div id="navleft">
+        <ul>
+            <li>
+                <a href="javascript:openWindow(
+                   'http://www.svi.nl/HuygensRemoteManagerHelpHome')">
+                    <img src="images/help.png" alt="help" />
+                    &nbsp;Help
+                </a>
+            </li>
+            <?php include("./inc/nav/manual.inc.php"); ?>
+            <?php include("./inc/nav/check_updates.inc.php"); ?>
+        </ul>
     </div>
+    <div id="navright">
+        <ul>
+            <?php include("./inc/nav/user.inc.php"); ?>
+            <?php include("./inc/nav/logout.inc.php"); ?>
+        </ul>
+    </div>
+    <div class="clear"></div>
+</div>
     
     <div id="homepage">
         
