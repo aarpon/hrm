@@ -343,8 +343,8 @@ else {
                 
             </fieldset>
             
-                    <div id=<?php echo "actions" . $divState; ?>
-                 class="taskselection">
+                    <div id="<?php echo "actions" . $divState; ?>" 
+                         class="taskselection">
                 <input name="create"
                        <?php echo $widgetState ?>
                        type="submit"
