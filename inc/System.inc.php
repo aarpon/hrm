@@ -343,6 +343,7 @@ class System {
                     case '10': return ( $r . " (Snow Leopard)" );
                     case '11': return ( $r . " (Lion)" );
                     case '12': return ( $r . " (Mountain Lion)" );
+                    case '13': return ( $r . " (Mavericks)" );
                     default: return ( $r );
                 }
             } else {
