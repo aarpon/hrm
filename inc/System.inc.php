@@ -605,9 +605,10 @@ class System {
                 $unit_string );
     }
 
-    /**
+    /* !
      * Parses an integer HRM version number into its string representation
      * @param type $version String representation of the version number
+     * @return HRM version as integer
      */
     private static function parseHRMVersionIntegerToString($version) {
         $major = floor($version / 1000000);
@@ -623,9 +624,10 @@ class System {
         return $version;
     }
 
-    /**
+    /* !
      * Parses an integer HuCore version number into its string representation
      * @param type $version String representation of the version number
+     * @return string representation of the version number
      */
     private static function parseHucoreVersionIntegerToString($version) {
         $major = floor($version / 1000000);

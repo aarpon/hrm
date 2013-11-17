@@ -5,6 +5,7 @@
 require_once "Database.inc.php";
 require_once "Setting.inc.php";
 require_once "hrm_config.inc.php";
+require_once "System.inc.php";
 
 global $authenticateAgainst;
 global $use_ldaps;
@@ -28,7 +29,7 @@ class Owner {
     \var    $name
     \brief  Name of the owner: could be a job id or a user's login name
     */
-    private $name;
+    protected $name;
 
     /*!
     \brief  Constructor. Creates a new Owner.
@@ -49,7 +50,7 @@ class Owner {
     \brief  Sets the name of the Owner
     \param  $name The name of the Owner
     */
-    function setName($name) {
+    public function setName($name) {
         $this->name = $name;
     }
 
@@ -119,7 +120,7 @@ class User extends Owner{
       \brief  Returns the user current IP address
       \return the user's IP address
     */
-    public function ip($ip) {
+    public function ip() {
         return $this->ip;
     }
 
@@ -193,6 +194,7 @@ class User extends Owner{
     */
     function logOut() {
         $this->isLoggedIn = False;
+        $this->name = "";
     }
 
     /*!
@@ -204,7 +206,6 @@ class User extends Owner{
       \return true if the user has been accepted
     */
     public function isStatusAccepted() {
-        $result = false;
         $db = new DatabaseConnection();
         $status = $db->getUserStatus($this->name());
         $result = ($status == $this->getAcceptedStatus());
@@ -229,7 +230,6 @@ class User extends Owner{
       \return true if the user was suspened by the administrator
     */
     public function isSuspended() {
-        $result = false;
         $db = new DatabaseConnection();
         $status = $db->getUserStatus($this->name());
         $result = ($status == $this->getSuspendedStatus());
@@ -244,7 +244,6 @@ class User extends Owner{
       \return true if the user exists in the database
     */
     public function exists() {
-        $result = false;
         $db = new DatabaseConnection();
         return $db->checkUser($this->name());
     }
@@ -256,8 +255,6 @@ class User extends Owner{
     public function emailAddress() {
 
         global $email_admin;
-
-        $result = "";
 
         if ($this->isAdmin()) {
             return $email_admin;
@@ -382,13 +379,22 @@ class User extends Owner{
     /*!
       \brief   Returns the user (encrypted) password
 
-      The password is obtained from either the HRM user management, LDAP, or
-      ACTIVE DIRECTORY, depending on the value of the global configuration
-      variable $authenticateAgainst.
+      This method can only be used if the HRM embedded user management is in use
+      and will throw an exception if the value of the global configuration
+      variable $authenticateAgainst is NOT "MYSQL". Since this method is private,
+      it should not be a problem for the users of the class, but the check enforces
+      internal consistency.
 
+      \param $name User name
       \return  the encrypted password
     */
-    private function password($name, $password) {
+    private function password($name) {
+
+        // Make sure this method is called only for the MYSQL authentication mode.
+        if (strcasecmp($this->authMode, "MYSQL") !== 0) {
+            throw new Exception("Attempt to call User::password() method " .
+            "for external authentication methods!");
+        }
 
         // If the user is the admin, we check against the MYSQL DB
         if ($name == $this->getAdminName()) {
@@ -398,36 +404,11 @@ class User extends Owner{
             return $password;
         }
 
-        switch ($this->authMode) {
+        // Get and return the password
+        $db = new DatabaseConnection();
+        $password = $db->queryLastValue($db->passwordQueryString($name));
+        return $password;
 
-            case "LDAP":
-
-                // ldap code
-                $my_ldap = new Ldap();
-                $my_ldap->connectForReading();
-                $user_data = $my_ldap->loadUser($name, $password);
-                return $user_data["password"];
-                break;
-
-            case "ACTIVE_DIR":
-
-                // This function must not be called for ACTIVE_DIR.
-                echo "User::password() cannot be called for ACTIVE_DIR!\n";
-                exit(1);
-
-            case "MYSQL":
-
-                // db code
-                $db = new DatabaseConnection();
-                $password = $db->queryLastValue($db->passwordQueryString($name));
-                return $password;
-
-                break;
-
-            default:
-
-                throw new Exception("Bad value for $this->authMode in User::password().");
-        }
     }
 
     /*!
@@ -490,7 +471,7 @@ class User extends Owner{
         // add user management
         if (!$this->isStatusAccepted())
             return false;
-        $dbPassword = $this->password($name, $password);
+        $dbPassword = $this->password($name);
         if (!$dbPassword)
             return false;
         $result = ($dbPassword == 

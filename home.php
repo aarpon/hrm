@@ -15,6 +15,7 @@ session_start();
 
 if (isset($_GET['exited'])) {
   $_SESSION['user']->logout();
+  $_SESSION = array();
   session_unset();
   session_destroy();
   header("Location: " . "login.php"); exit();
