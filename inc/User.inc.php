@@ -381,20 +381,16 @@ class User extends Owner{
 
       This method can only be used if the HRM embedded user management is in use
       and will throw an exception if the value of the global configuration
-      variable $authenticateAgainst is NOT "MYSQL". Since this method is private,
-      it should not be a problem for the users of the class, but the check enforces
-      internal consistency.
+      variable $authenticateAgainst is NOT "MYSQL". (Notable exception is the admin
+      user, since his credentials are stored in the HRM database independent of the
+      selected authentication method.)
+      Since this method is private, it should not be a problem for the users of the
+      class, but the check enforces internal consistency.
 
       \param $name User name
       \return  the encrypted password
     */
     private function password($name) {
-
-        // Make sure this method is called only for the MYSQL authentication mode.
-        if (strcasecmp($this->authMode, "MYSQL") !== 0) {
-            throw new Exception("Attempt to call User::password() method " .
-            "for external authentication methods!");
-        }
 
         // If the user is the admin, we check against the MYSQL DB
         if ($name == $this->getAdminName()) {
@@ -402,6 +398,13 @@ class User extends Owner{
             $db = new DatabaseConnection();
             $password = $db->queryLastValue($db->passwordQueryString($name));
             return $password;
+        }
+
+        // Make sure that for non-admin users, this method is called only for
+        // the MYSQL authentication mode.
+        if (strcasecmp($this->authMode, "MYSQL") !== 0) {
+            throw new Exception("Attempt to call User::password() method " .
+                "for external authentication methods!");
         }
 
         // Get and return the password
