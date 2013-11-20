@@ -463,7 +463,7 @@ echo "<p>$message</p>";
 include("footer.inc.php");
 
 ?>
-<!-- Activate Ajax functions to get image parameters -->
+<!-- Activate Ajax functions to send a test email to the HRM administrator -->
 <script type="text/javascript">
     $(document).ready($('#sendMail').click(function() {
             JSONRPCRequest({

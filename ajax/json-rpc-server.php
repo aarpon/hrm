@@ -3,11 +3,64 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
+/*
+
+Server implementing the JSON-RPC (version 2.0) protocol.
+
+This is an example Javascript code to interface with json-rpc-server.php:
+
+01:    <script type="text/javascript">
+02:        $(document).ready($('#button').click(function() {
+03:            JSONRPCRequest({
+04:                method : 'jsonGetParameter',
+05:                params : { parameterName : 'ExcitationWavelength'}
+06:            }, function(response) {
+07:                $('#report').html("<b>" + response['message'] + "</b>");
+08:            });
+09:        }));
+10:    </script>
+
+Passing parameters to the Ajax method is very flexible (line 5). The recommended method is:
+
+                  params : {parameter : 'value'}
+
+for one parameter, and:
+
+                  params : {parameterOne : 'valueOne',
+                            parameterTwo : 'valueTwo'}
+
+for more parameters. If a parameter is an array, use:
+
+
+                  params : {parameter : ['valueOne', 'valueTwo', 'valueThree']}
+
+In PHP, the parameters can then be retrieved with:
+
+                  $params = $_POST['params'];
+
+===
+
+For illustration, the following is also possible:
+
+For a single value:
+
+Javascript:   params : 'ExcitationWavelength'
+PHP:          $params := "ExcitationWavelength"
+
+For a vector:
+
+Javascript:   params : ['ExcitationWavelength', 'EmissionWavelength']
+PHP:          $params[0] := "ExcitationWavelength"
+              $params[1] := "EmissionWavelength"
+
+*/
+
 require_once '../inc/User.inc.php';
 require_once '../inc/JobQueue.inc.php';
 require_once '../inc/Database.inc.php';
 require_once '../inc/System.inc.php';
 require_once '../inc/Mail.inc.php';
+require_once '../inc/Parameter.inc.php';
 
 // This is not strictly necessary for the Ajax communication, but will be 
 // necessary for accessing session data to create the response.
@@ -47,13 +100,11 @@ if (!isset($_POST['method']) && !isset($_POST['params'])) {
 // Get the method
 $method = $_POST['method'];
 
-// TODO
-// Currently, none of the implemented method require arguments.
-// For methods that require input parameters, these can be obtained as follows:
-//
-// $params = $_POST['params'];
-//
-// where $params is an array.
+// Method parameters
+$params = null;
+if (isset($_POST['params'])) {
+    $params = $_POST['params'];
+}
 
 // Call the requested method and collect the JSON-encoded response
 switch ($method) {
@@ -72,7 +123,17 @@ switch ($method) {
       
         $json = jsonSendTestEmail();
         break;
-    
+
+    case 'jsonGetParameter':
+
+        // Get the Parameter name
+        $paramName = null;
+        if (isset($params['parameterName'])) {
+            $paramName = $params['parameterName'];
+        }
+        $json = jsonGetParameter($paramName);
+        break;
+
     default:
         
         // Unknown method
@@ -188,12 +249,14 @@ function jsonSendTestEmail() {
   // Prepare the output array
   $json = initJSONArray();
 
-  // Send an email
+  // Configure the email
   $mail = new Mail($email_sender);
   $mail->setReceiver($email_admin);
   $mail->setSubject('HRM test e-mail');
   $mail->setMessage('Congratulations! You have successfully ' .
           'configured your e-mail server!');
+
+  // Send it
   if ($mail->send()) {
       $json['success'] = "true";
       $json['message'] = "Sent!";
@@ -204,6 +267,34 @@ function jsonSendTestEmail() {
 
   // Return as a JSON string
   return (json_encode($json));
+}
+
+/**
+ * Return a JSON-encoded version of the requested PHP parameter.
+ * @param $parameterName Class name of the Parameter to be serialized
+ *
+ * @return JSON-encoded Parameter string.
+ */
+function jsonGetParameter($parameterName) {
+
+    // Prepare the output array
+    $json = initJSONArray();
+
+    try {
+
+        // Try to instantiate the requested parameter
+        $param = new $parameterName;
+
+        // Get the JSON data
+        $json = $param->getJsonData();
+
+    } catch (Exception $e) {
+        $json['success'] = "false";
+        $json['message'] = "Failed retrieving parameter " . $parameterName . "!";
+    }
+
+    // Return as a JSON string
+    return (json_encode($json));
 }
 
 ?>
