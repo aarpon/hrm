@@ -134,6 +134,11 @@ switch ($method) {
         $json = jsonGetParameter($paramName);
         break;
 
+    case 'jsonGetAllImageParameters':
+
+        $json = jsonGetAllImageParameters();
+        break;
+
     default:
         
         // Unknown method
@@ -291,6 +296,43 @@ function jsonGetParameter($parameterName) {
     } catch (Exception $e) {
         $json['success'] = "false";
         $json['message'] = "Failed retrieving parameter " . $parameterName . "!";
+    }
+
+    // Return as a JSON string
+    return (json_encode($json));
+}
+
+/**
+ * Return a JSON-encoded version of all image PHP parameter.
+ *
+ * @return JSON-encoded array of Parameters.
+ */
+function jsonGetAllImageParameters() {
+
+    // Prepare the output array
+    $json = initJSONArray();
+
+    try {
+
+        // Get all image parameters
+        $setting = new ParameterSetting();
+        $names = $setting->parameterNames();
+
+        // Initialize parameter array
+        $json["parameters"] = array();
+
+        // Now serialize the Parameters
+        foreach ($names as $name) {
+
+            // Get and encode the JSON data
+            $json["parameters"][$name] =
+                $setting->parameter($name)->getJsonData();
+
+        }
+
+    } catch (Exception $e) {
+        $json['success'] = "false";
+        $json['message'] = "Failed retrieving parameters!";
     }
 
     // Return as a JSON string
