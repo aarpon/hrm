@@ -5,6 +5,7 @@
 require_once("./inc/User.inc.php");
 require_once("./inc/Fileserver.inc.php");
 require_once("./inc/System.inc.php");
+require_once("./inc/wiki_help.inc.php");
 
 session_start();
 
@@ -289,37 +290,26 @@ $info = "<h3>Quick help</h3>" .
     <?php echo $goNextMessage;?>
     </span>
 
-    <div id="nav">
+<div id="nav">
+    <div id="navleft">
         <ul>
-            <li>
-                <img src="images/user.png" alt="user" />
-                &nbsp;<?php echo $_SESSION['user']->name(); ?>
-            </li>
             <?php
-            if ( !$_SESSION['user']->isAdmin()) {
+                wiki_link('HuygensRemoteManagerHelpSelectImages');
             ?>
-            <li><a href="file_management.php?folder=src">
-                    <img src="images/rawdata_small.png" alt="Raw images" />
-                    &nbsp;Raw images
-                </a>
-            </li>
-            <?php
-            }
-            ?>
-            <li>
-                <a href="<?php echo getThisPageName();?>?home=home">
-                    <img src="images/home.png" alt="home" />&nbsp;Home
-                </a>
-            </li>
-            <li>
-                <a href="javascript:openWindow(
-                   'http://www.svi.nl/HuygensRemoteManagerHelpSelectImages')">
-                    <img src="images/help.png" alt="help" />&nbsp;Help
-                </a>
-            </li>
         </ul>
     </div>
-    
+    <div id="navright">
+        <ul>
+            <?php
+                include("./inc/nav/user.inc.php");
+                include("./inc/nav/raw_images.inc.php");
+                include("./inc/nav/home.inc.php");
+            ?>
+        </ul>
+    </div>
+    <div class="clear"></div>
+</div>
+
     <div id="content">
        <h3><img alt="SelectImages" src="./images/select_images.png"
            width="40"/>

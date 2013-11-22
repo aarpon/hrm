@@ -5,6 +5,7 @@
 require_once("./inc/User.inc.php");
 require_once("./inc/Fileserver.inc.php");
 require_once("./inc/Stats.inc.php");
+require_once("./inc/wiki_help.inc.php");
 
 session_start();
 
@@ -89,27 +90,25 @@ if ( using_IE() ) {
 include("header.inc.php");
 
 ?>
-    <div id="nav">
+
+<div id="nav">
+    <div id="navleft">
         <ul>
-            <li>
-                <img src="images/user.png" alt="user" />
-                &nbsp;<?php echo $_SESSION['user']->name(); ?>
-            </li>
-            <li>
-                <a href="<?php echo getThisPageName();?>?home=home">
-                    <img src="images/home.png" alt="home" />
-                    &nbsp;Home
-                </a>
-            </li>
-            <li>
-                <a href="javascript:openWindow(
-                   'http://www.svi.nl/HuygensRemoteManagerHelpStatistics')">
-                    <img src="images/help.png" alt="help" />
-                    &nbsp;Help
-                </a>
-            </li>
+            <?php
+                wiki_link('HuygensRemoteManagerHelpStatistics');
+            ?>
         </ul>
     </div>
+    <div id="navright">
+        <ul>
+            <?php
+                include("./inc/nav/user.inc.php");
+                include("./inc/nav/home.inc.php");
+            ?>
+        </ul>
+    </div>
+    <div class="clear"></div>
+</div>
 
     <!-- Here we put a select element for the user to choose which stats he
          wants to display -->

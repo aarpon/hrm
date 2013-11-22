@@ -3,6 +3,7 @@
 // Copyright and license notice: see license.txt
 
 require_once ("./inc/User.inc.php");
+require_once("./inc/wiki_help.inc.php");
 
 session_start();
 
@@ -558,21 +559,25 @@ $script = "settings.js";
 
 include("header.inc.php");
 ?>
+
 <div id="nav">
+    <div id="navleft">
         <ul>
-            <li>
-                <img src="images/user.png" alt="user" />
-                &nbsp;<?php echo $_SESSION['user']->name(); ?>
-            </li>
-            <li>
-                <a href="javascript:openWindow(
-                   'http://support.svi.nl/wiki/BackprojectedPinholeCalculator')">
-                    <img src="images/help.png" alt="help" />
-                    &nbsp;Help
-                </a>
-            </li>
+            <?php
+                wiki_link('BackprojectedPinholeCalculator');
+            ?>
         </ul>
+    </div>
+    <div id="navright">
+        <ul>
+            <?php
+                include("./inc/nav/user.inc.php");
+            ?>
+        </ul>
+    </div>
+    <div class="clear"></div>
 </div>
+
 <?php
 echo "<div id=\"content\"> <h3>Backprojected pinhole calculator</h3>";
 

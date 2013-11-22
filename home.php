@@ -6,6 +6,7 @@ require_once("./inc/User.inc.php");
 require_once("./inc/hrm_config.inc.php");
 require_once("./inc/Fileserver.inc.php");
 require_once("./inc/System.inc.php");
+require_once("./inc/wiki_help.inc.php");
 
 global $email_admin;
 global $enableUserAdmin;
@@ -35,21 +36,19 @@ include("header.inc.php");
 <div id="nav">
     <div id="navleft">
         <ul>
-            <li>
-                <a href="javascript:openWindow(
-                   'http://www.svi.nl/HuygensRemoteManagerHelpHome')">
-                    <img src="images/help.png" alt="help" />
-                    &nbsp;Help
-                </a>
-            </li>
-            <?php include("./inc/nav/manual.inc.php"); ?>
-            <?php include("./inc/nav/check_updates.inc.php"); ?>
+            <?php
+                wiki_link('HuygensRemoteManagerHelpHome');
+                include("./inc/nav/manual.inc.php");
+                include("./inc/nav/check_updates.inc.php");
+            ?>
         </ul>
     </div>
     <div id="navright">
         <ul>
-            <?php include("./inc/nav/user.inc.php"); ?>
-            <?php include("./inc/nav/logout.inc.php"); ?>
+            <?php
+                include("./inc/nav/user.inc.php");
+                include("./inc/nav/logout.inc.php");
+            ?>
         </ul>
     </div>
     <div class="clear"></div>

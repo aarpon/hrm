@@ -4,6 +4,7 @@
 
 require_once("./inc/User.inc.php");
 require_once("./inc/Fileserver.inc.php");
+require_once("./inc/wiki_help.inc.php");
 
 /* *****************************************************************************
  *
@@ -89,23 +90,25 @@ include("header.inc.php");
     <span class="toolTip" id="ttSpanSave">
         Save and return to the image parameters selection page.
     </span>
-    
-    <div id="nav">
+
+<div id="nav">
+    <div id="navleft">
         <ul>
-            <li>
-                <img src="images/user.png" alt="user" />
-                &nbsp;<?php echo $_SESSION['user']->name(); ?>
-            </li>
-            <li>
-                <a href="javascript:openWindow(
-                   'http://www.svi.nl/HuygensRemoteManagerHelpSelectPSFFiles')">
-                    <img src="images/help.png" alt="help" />
-                    &nbsp;Help
-                </a>
-            </li>
+            <?php
+                wiki_link('HuygensRemoteManagerHelpSelectPSFFiles');
+            ?>
         </ul>
     </div>
-    
+    <div id="navright">
+        <ul>
+            <?php
+                include("./inc/nav/user.inc.php");
+            ?>
+        </ul>
+    </div>
+    <div class="clear"></div>
+</div>
+
     <div id="content">
     
         <h3>Distilled PSF file selection</h3>
