@@ -3,6 +3,7 @@
 // Copyright and license notice: see license.txt
 
 require_once ("./inc/User.inc.php");
+require_once("./inc/wiki_help.inc.php");
 
 
 /* *****************************************************************************
@@ -89,21 +90,24 @@ include ("header.inc.php");
     Update the pixel size field on previous page with the calculated value.
 </span>
 
-<div id="nav">  
-    <ul>
-        <li>
-            <img src="images/user.png" alt="user" />
-            &nbsp;<?php echo $_SESSION['user']->name(); ?>
-        </li>
-        <li>
-            <a href="javascript:openWindow('')">
-                <img src="images/help.png" alt="help" />
-                &nbsp;Help
-            </a>
-        </li>
-    </ul>
+<div id="nav">
+    <div id="navleft">
+        <ul>
+            <?php
+                wiki_link('HRMHelp#Calculate_pixel_size');
+            ?>
+        </ul>
+    </div>
+    <div id="navright">
+        <ul>
+            <?php
+                include("./inc/nav/user.inc.php");
+            ?>
+        </ul>
+    </div>
+    <div class="clear"></div>
 </div>
-    
+
 <div id="content">
     
     <h3>Calculate pixel size</h3>
