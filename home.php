@@ -42,6 +42,7 @@ include("header.inc.php");
             <?php
                 wiki_link('HuygensRemoteManagerHelpHome');
                 include("./inc/nav/manual.inc.php");
+                include("./inc/nav/report_issue.inc.php");
                 include("./inc/nav/check_updates.inc.php");
             ?>
         </ul>
