@@ -7,6 +7,7 @@ require_once("./inc/Database.inc.php");
 require_once("./inc/hrm_config.inc.php");
 require_once("./inc/Util.inc.php");
 require_once("./inc/Validator.inc.php");
+require_once("./inc/wiki_help.inc.php");
 
 global $email_sender;
 
@@ -160,23 +161,22 @@ include("header.inc.php");
 <span class="toolTip" id="ttSpanSave">Save the changes.</span>
 
 <div id="nav">
-    <ul>
-        <li>
-            <img src="images/user.png" alt="user" />
-            &nbsp;<?php echo $_SESSION['user']->name(); ?>
-        </li>
-        <li>
-            <a href="<?php echo getThisPageName(); ?>?home=home">
-                <img src="images/home.png" alt="home" />&nbsp;Home
-            </a>
-        </li>
-        <li>
-            <a href="javascript:openWindow('
-               http://www.svi.nl/HuygensRemoteManagerHelpAccount')">
-                <img src="images/help.png" alt="help" />&nbsp;Help
-            </a>
-        </li>
-    </ul>
+    <div id="navleft">
+        <ul>
+            <?php
+                wiki_link('HuygensRemoteManagerHelpAccount');
+            ?>
+        </ul>
+    </div>
+    <div id="navright">
+        <ul>
+            <?php
+                include("./inc/nav/user.inc.php");
+                include("./inc/nav/home.inc.php");
+            ?>
+        </ul>
+    </div>
+    <div class="clear"></div>
 </div>
 
 <div id="content">

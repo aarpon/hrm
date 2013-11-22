@@ -8,6 +8,7 @@ require_once("./inc/hrm_config.inc.php");
 require_once("./inc/Fileserver.inc.php");
 require_once("./inc/System.inc.php");
 require_once("./inc/Validator.inc.php");
+require_once("./inc/wiki_help.inc.php");
 
 global $email_admin;
 global $enableUserAdmin;
@@ -137,32 +138,24 @@ include("header.inc.php");
 ?>
 
 <div id="nav">
-<ul>
-	<li>
-        <a href="javascript:openWindow(
-           'http://huygens-rm.org/home/?q=node/27')">
-            <img src="images/whatsnew.png" alt="website" />
-            &nbsp;What's new?
-        </a>
-    </li>
-	<li><a href="javascript:openWindow('http://www.huygens-rm.org')">
-            <img src="images/logo_small.png" alt="website" />
-            &nbsp;Website
-        </a>
-    </li>
-	<li>
-        <a href="javascript:openWindow('http://www.svi.nl/FrontPage')">
-            <img src="images/wiki.png" alt="website" />
-            &nbsp;SVI wiki
-        </a>
-    </li>
-	<li><a href="javascript:openWindow(
-           'http://www.svi.nl/HuygensRemoteManagerHelpLogin')">
-            <img src="images/help.png" alt="help" />
-            &nbsp;Help
-        </a>
-    </li>
-</ul>
+    <div id="navleft">
+        <ul>
+            <?php
+                wiki_link('HuygensRemoteManagerHelpLogin');
+                include("./inc/nav/manual.inc.php");
+            ?>
+        </ul>
+    </div>
+    <div id="navright">
+        <ul>
+            <?php
+                include("./inc/nav/whats_new.inc.php");
+                include("./inc/nav/hrm_project_website.inc.php");
+                include("./inc/nav/svi_wiki.inc.php");
+            ?>
+        </ul>
+    </div>
+    <div class="clear"></div>
 </div>
 
 <div id="welcome"><?php

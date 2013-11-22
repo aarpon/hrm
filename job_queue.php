@@ -5,6 +5,7 @@
 require_once("./inc/User.inc.php");
 require_once("./inc/JobDescription.inc.php");
 require_once("./inc/JobQueue.inc.php");
+require_once("./inc/wiki_help.inc.php");
 
 session_start();
 
@@ -51,31 +52,27 @@ include("header.inc.php");
     <?php
       }
     ?>
-    
-    <div id="nav">
+
+<div id="nav">
+    <div id="navleft">
         <ul>
-            <li>
-                <img src="images/user.png" alt="user" />
-                &nbsp;<?php echo $_SESSION['user']->name(); ?>
-            </li>
-            <?php $referer = $_SESSION['referer']; ?>
-            <li>
-                <a href="<?php echo $referer;?>">
-                    <img src="images/back_small.png" alt="back" />&nbsp;Back</a>
-            </li>
-            <li>
-                <a href="<?php echo getThisPageName();?>?home=home">
-                    <img src="images/home.png" alt="home" />&nbsp;Home</a>
-            </li>
-            <li>
-                <a href="javascript:openWindow('
-                   http://www.svi.nl/HuygensRemoteManagerHelpQueue')">
-                    <img src="images/help.png" alt="help" />&nbsp;Help
-                </a>
-            </li>
+            <?php
+                wiki_link('HuygensRemoteManagerHelpQueue');
+            ?>
         </ul>
     </div>
-   
+    <div id="navright">
+        <ul>
+            <?php
+                include("./inc/nav/user.inc.php");
+                include("./inc/nav/back.inc.php");
+                include("./inc/nav/home.inc.php");
+            ?>
+        </ul>
+    </div>
+    <div class="clear"></div>
+</div>
+
    <div id="joblist">
    <h3><img alt="SelectImages" src="./images/queue_title.png" width="40"/>&nbsp;&nbsp;Queue status</h3>
     
