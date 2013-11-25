@@ -14,3 +14,6 @@ log/
 
 # vim swap files
 .*.sw?
+
+# file marking a development version
+.hrm_devel_version
