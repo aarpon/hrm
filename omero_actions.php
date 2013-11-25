@@ -5,17 +5,17 @@
 
 // This is for the 'Omero Data' button.
 if ($omero_transfers && !$_SESSION['user']->isAdmin()) {
-    
+
     if ( $browse_folder == "src" ) {
         $file_buttons[] = "omeroImport";
     } else {
         $file_buttons[] = "omeroExport";
-    }   
+    }
 }
 
 // If the 'Omero Data' button gets pressed we'll instantiate the class.
 if (isset($_POST['omeroCheckCredentials'])) {
-    
+
     if (!isset($_SESSION['omeroConnection'])) {
 
         if (isset($_POST['omeroUser']) ) {
@@ -23,13 +23,13 @@ if (isset($_POST['omeroCheckCredentials'])) {
         } else {
             $omeroUser = '';
         }
-        
+
         if (isset($_POST['omeroPass']) ) {
             $omeroPass = $_POST['omeroPass'];
         } else {
             $omeroPass = '';
         }
-        
+
         $omeroConnection = new OmeroConnection( $omeroUser, $omeroPass );
 
         if ($omeroConnection->loggedIn) {
@@ -44,7 +44,7 @@ if (isset($_POST['omeroCheckCredentials'])) {
 if (isset($_POST['importFromOmero'])) {
     $message = $_SESSION['fileserver']->importFromOmero();
 } else if (isset($_POST['update'])) {
-    
+
     if ( $browse_folder == "src" ) {
         $_SESSION['fileserver']->resetFiles();
     } else {
@@ -56,7 +56,7 @@ if (isset($_POST['importFromOmero'])) {
 if (isset($_POST['exportToOmero'])) {
     $message = $_SESSION['fileserver']->exportToOmero();
 } else if (isset($_POST['update'])) {
-    
+
     if ( $browse_folder == "src" ) {
         $_SESSION['fileserver']->resetFiles();
     } else {

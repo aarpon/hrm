@@ -2,18 +2,18 @@
 
   // This file is part of the Huygens Remote Manager
   // Copyright and license notice: see license.txt
-      
+
         // Dialog to ask for the Omero credentials.
       if (isset($_POST['getOmeroData']) && !isset($omeroConnection)) {
           ?>
     <div id="floatingCredentialsDialog" title="Omero login credentials">
-              
+
       <p>Your Omero username and password are needed for
          retrieving data. </p>
       <p>Your login credentials will not be stored.</p>
 
       <form name="omeroCheckCredentials" method="post">
-                        
+
         <label for="omeroUser">Username:</label>
         <input name="omeroUser" type="text" size="8" value="">
         <br />
@@ -22,11 +22,11 @@
 
         <input name="omeroCheckCredentials" type="hidden" value="true">
         <input name="getOmeroData" type="hidden" value="true">
-                                   
+
         <br />
 
     <script>
-                                   
+
       $(function() {
 
             // Workaround to bind the 'Enter' button to the 'Submit' action.
@@ -34,10 +34,10 @@
                 if(e.keyCode == $.ui.keyCode.ENTER) {
                    $(':button:contains("Submit")').click();
                 }
-            });            
-                                                       
+            });
+
             $( "#floatingCredentialsDialog" ).dialog();
-            
+
             $( "#floatingCredentialsDialog" ).dialog({
                   buttons: {
                         "Submit": function() {
@@ -47,28 +47,28 @@
                     }
                 })
       });
-          
-    </script>                                   
+
+    </script>
 
     </form> <!-- omeroCheckCredentials !-->
-          
+
     </div> <!-- floatingCredentialsDialog !-->
    <?php }
 
 
-      
-      if (isset($omeroTree)) {?>              
-          
+
+      if (isset($omeroTree)) {?>
+
     <div id="omeroSelection">
-              
+
     <form name="omeroForm"
               onsubmit="return omeroTransfer(this, fileSelection,
                            '<?php echo $browse_folder; ?>')"
               action="?folder=<?php echo $browse_folder;?>"
               method="post">
-              
+
          <div id="omeroActions">
-        
+
               <?php
               if ($browse_folder == "src") {
               ?>
@@ -86,7 +86,7 @@
               <?php
               }
               ?>
-              
+
               <input type="button" class="icon abort"
                    onclick="UnTip(); cancelOmeroSelection()"
                    onmouseover="Tip('Cancel data transfer!')"
@@ -97,28 +97,28 @@
                    onclick="UnTip(); setActionToUpdate()"
                    onmouseover="Tip('Reload Omero tree view')"
                    onmouseout="UnTip()"/>
-		 
+
               <?php
               if ($browse_folder == "src") {
               ?>
-	      <p><img alt ="Disclaimer: " src="./images/note.png" />
-	      HRM cannot guarantee that <b>OME-TIFFs</b>
-	         provided by Omero contain the original metadata.</p>
+              <p><img alt ="Disclaimer: " src="./images/note.png" />
+              HRM cannot guarantee that <b>OME-TIFFs</b>
+                 provided by Omero contain the original metadata.</p>
               <?php
-	      }
+              }
               ?>
               <input name="OmeImageId" type="hidden">
               <input name="OmeImageName" type="hidden">
               <input name="OmeDatasetId" type="hidden">
               <input name="selectedFiles" type="hidden">
-                   
+
          </div> <!-- omeroActions !-->
-                   
+
      </form> <!-- omeroForm !-->
-             
+
      <fieldset>
      <legend>Your Omero data</legend>
-                   
+
      <div id="omeroTree">
         <br /> <br />
 
@@ -126,41 +126,41 @@
 
           if ($omeroTree != null) {?>
 
-            <script>              
+            <script>
             $(function() {
                   var data = <?php echo $omeroTree; ?>;
-                            
+
                   $('#omeroTree').tree({
                         data: data,
                         selectable: true,
                         onCanSelectNode: function(node) {
-                              
+
                             if (node.id == "-1") {
 
-                               // Not selectable.  
+                               // Not selectable.
                                return false;
                             } else {
 
-                               // Selectable 
-                               return true;    
+                               // Selectable
+                               return true;
                             }
                          }
                       });
-              });               
+              });
             </script>
-                                   
+
         <?php
           }
           else echo "                        <option>&nbsp;</option>\n";
         ?>
 
       </div> <!-- omeroTree !-->
-            
+
      </fieldset>
-            
+
      </div> <!-- omeroSelection -->
 
-            
+
         <?php
             }
   ?>

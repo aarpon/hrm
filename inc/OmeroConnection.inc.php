@@ -9,7 +9,7 @@ require_once( "Fileserver.inc.php" );
 class OmeroConnection {
 
     /*!
-      \var    $omeroTree    
+      \var    $omeroTree
       \brief  Stores the contents of the user's Omero tree.
     */
     private $omeroTree;
@@ -31,7 +31,7 @@ class OmeroConnection {
       \brief  Boolean to know whether the login was successful.
     */
     public $loggedIn;
-    
+
 
         /* ----------------------- Constructor ---------------------------- */
 
@@ -39,7 +39,7 @@ class OmeroConnection {
      \brief   Constructor
     */
     public function __construct( $omeroUser, $omeroPass ) {
-        
+
         if ( !empty($omeroUser) ) {
             $this->omeroUser = $omeroUser;
         } else {
@@ -74,7 +74,7 @@ class OmeroConnection {
             report("Attempt to log on to Omero server failed.", 1);
             return "Attempt to log on to Omero server failed.";
         }
-        
+
         /* Check whether the attempt was successful. */
         if (strstr($loggedIn, '-1')) {
             $this->loggedIn = FALSE;
@@ -88,7 +88,7 @@ class OmeroConnection {
      \return  The XML string with the Omero data tree.
     */
     private function getRawOmeroDataTree () {
-        
+
         $cmd = $this->buildTreeCmd();
 
         $omeroData = shell_exec($cmd);
@@ -96,14 +96,14 @@ class OmeroConnection {
             report("Retrieving Omero data failed.", 1);
             return "Retrieving Omero data failed.";
         }
-        
+
             /* Filter out any Omero output that is not XML. */
         preg_match("/<(.*)/",$omeroData,$matches);
         $omeroData = "<" . end($matches);
-        
+
         return $omeroData;
     }
-    
+
     /*!
      \brief   Retrieves one image from the Omero server.
      \param   $postedParams Alias of $_POST with the user selection.
@@ -111,7 +111,7 @@ class OmeroConnection {
      \return  Ocassionally, an error message.
     */
     public function importImage($postedParams, $fileServer) {
-        
+
         if (isset($postedParams['OmeImageName'])) {
             $imgName = basename($postedParams['OmeImageName']);
             $imgName = str_replace("Image: ","",$imgName);
@@ -124,9 +124,9 @@ class OmeroConnection {
         } else {
             return "No files selected.";
         }
-        
+
         $cmd = $this->buildImportCmd($imgName, $fileServer, $imgId);
-        
+
         if (shell_exec($cmd) == NULL) {
             report("Importing image from Omero failed.", 1);
             return "Importing image from Omero failed.";
@@ -152,12 +152,12 @@ class OmeroConnection {
         } else {
             return "No destination dataset selected.";
         }
-        
+
             /* Export all the selected files. */
         foreach ($selectedFiles as $file) {
-            
+
             $cmd = $this->buildExportCmd($file, $fileServer, $datasetId);
-            
+
             if (shell_exec($cmd) == NULL) {
                 report("Exporting image to Omero failed.", 1);
                 return "Exporting image to Omero failed.";
@@ -170,7 +170,7 @@ class OmeroConnection {
     /*!
      \brief   It builds an 'ome_hrm' (see script) compliant command
               to check whether the user can log on to Omero.
-     \return  A string with the complete command.                       
+     \return  A string with the complete command.
     */
     private function buildCredentialsCmd() {
 
@@ -184,12 +184,12 @@ class OmeroConnection {
         $cmd .= $this->omeroPass;
 
         return $cmd;
-    } 
+    }
 
     /*!
      \brief   It builds an 'ome_hrm' (see script) compliant command
               to retrieve the user's Omero data tree.
-     \return  A string with the complete command.                       
+     \return  A string with the complete command.
     */
     private function buildTreeCmd() {
 
@@ -203,15 +203,15 @@ class OmeroConnection {
         $cmd .= $this->omeroPass;
 
         return $cmd;
-    }   
-    
+    }
+
     /*!
      \brief   It builds an 'ome_hrm' (see script) compliant command
               to export one image to the Omero server.
      \param   $file The name and relative path of the image to be exported.
      \param   $fileServer An instance of the Fileserver class.
      \param   $datasetId  The Omero ID of the dataset to export the image to.
-     \return  A string with the complete command.                       
+     \return  A string with the complete command.
     */
     private function buildExportCmd($file, $fileServer, $datasetId) {
 
@@ -219,17 +219,17 @@ class OmeroConnection {
         $fileAndPath = $fileServer->destinationFolder() . "/" . $file;
 
             /* See 'HRMToOmero' command in file 'bin/ome_hrm'. */
-        $cmd  = "bin/ome_hrm";         
+        $cmd  = "bin/ome_hrm";
         $cmd .= " ";
-        $cmd .= "HRMToOmero";          
+        $cmd .= "HRMToOmero";
         $cmd .= " ";
-        $cmd .= $this->omeroUser;       
+        $cmd .= $this->omeroUser;
         $cmd .= " ";
-        $cmd .= $this->omeroPass;      
+        $cmd .= $this->omeroPass;
         $cmd .= " ";
-        $cmd .= $datasetId;            
+        $cmd .= $datasetId;
         $cmd .= " ";
-        $cmd .= $fileAndPath;          
+        $cmd .= $fileAndPath;
         $cmd .= " ";
         $cmd .= $this->getOriginalName($file);
         $cmd .= " ";
@@ -244,7 +244,7 @@ class OmeroConnection {
      \param   $imgName The name of the image in the Omero server.
      \param   $fileServer An instance of the Fileserver class.
      \param   $imgId The ID of the image in the Omero server.
-     \return  A string with the complete command.                       
+     \return  A string with the complete command.
     */
     private function buildImportCmd($imgName, $fileServer, $imgId) {
 
@@ -277,7 +277,7 @@ class OmeroConnection {
         if (!isset($this->omeroTree)) {
             $this->getUpdatedOmeroTree();
         }
-        
+
         return $this->omeroTree;
     }
 
@@ -288,9 +288,9 @@ class OmeroConnection {
     public function getUpdatedOmeroTree() {
 
         $omeroTree = array();
-        
+
         $omeroData = $this->getRawOmeroDataTree();
-        
+
         $pattern = "/<Project>(.*?)<\/Project>/";
         preg_match_all($pattern, $omeroData, $allProjects);
 
@@ -307,16 +307,16 @@ class OmeroConnection {
                     /* If the project has no children. */
                 if (empty($projectDatasets)) {
                     $omeroTree[$key] = "Project: " . $projectInfo[1];
-                    
+
                 } else {
-                    
+
                         /* Project name. */
                     $omeroTree[$key][(string) "label" ]
                         = (string) "Project: " . $projectInfo[1];
 
                         /* Project id. */
                     $omeroTree[$key][(string) "id" ] = $projectInfo[2];
-                    
+
                         /* Children. */
                     $omeroTree[$key][(string) "children" ] = $projectDatasets;
                 }
@@ -340,14 +340,14 @@ class OmeroConnection {
             /* Get the project datasets. */
         $pattern = "/<Dataset>(.*?)<\/Dataset>/";
         preg_match_all($pattern, $project, $allDatasets);
-        
+
             /* Loop over the datasets. */
         foreach ($allDatasets[1] as $key => $dataset) {
-            
+
                 /* Get the dataset details. */
             $pattern = "/(.*?)<id>(.*?)<\/id>/";
             if (preg_match($pattern, $dataset, $datasetInfo)) {
-                
+
                     /* Look for dataset children. */
                 $datasetImages = $this->getDatasetImages($dataset);
 
@@ -365,9 +365,9 @@ class OmeroConnection {
 
                         /* Children. */
                     $projectDatasets[$key][(string) "children" ]
-                        = $datasetImages;                    
+                        = $datasetImages;
                 }
-            }   
+            }
         }
 
         return $projectDatasets;
@@ -382,7 +382,7 @@ class OmeroConnection {
 
             /* Initizalize the array. */
         $datasetImages = array();
-        
+
 
         $pattern = "/<Image>(.*?)<id>(.*?)<\/id>/";
         if (!preg_match_all($pattern, $dataset, $allImages)) {
@@ -393,13 +393,13 @@ class OmeroConnection {
 
 
         } else {
-        
+
                 /* If the dataset does contains images we'll loop over them. */
             foreach ($allImages[1] as $key => $imageName) {
-                
+
                     /* Image name. */
                 $datasetImages[$key][(string) "label"] = "Image: " . $imageName;
-                
+
                     /* The image 'id' is located in a sub-array within
                      'allImages', which can be accessed with the current 'key'.*/
                 $datasetImages[$key][(string) "id"] = $allImages[2][$key];
@@ -447,7 +447,7 @@ class OmeroConnection {
             foreach ($rows as $key => $row) {
 
                     /* Irrelevant information. */
-                if ($key == 1 || $key == 2) {        
+                if ($key == 1 || $key == 2) {
                     continue;
                 }
 
@@ -459,27 +459,27 @@ class OmeroConnection {
                     if ($key == 3) {
                         continue;
                     }
-                    
+
                     $column = strip_tags($column);
                     $column = explode(">",$column);
-                    
+
                     if (isset($column[1])) {
                         if ($key == 1) {
                             $summary .=
                                 str_replace("(&mu;m)","(mu)",$column[1]);
                         }
-                        
+
                         if ($key == 2) {
                             $summary .=
                                 " (ch. " . strtolower($column[1]) . "): ";
                         }
-                        
+
                         if ($key == 4) {
                             $summary .= $column[1] . " | ";
                         }
                     }
                 }
-            }    
+            }
         }
 
         return $summary . "'";
@@ -507,7 +507,7 @@ class OmeroConnection {
             return $file;
         }
     }
-    
+
 }
 
 

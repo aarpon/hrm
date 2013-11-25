@@ -30,7 +30,7 @@ checkCredentials () {
      # Try to log in.
      omeroLogin
 
-     # Try to log out in any case.   
+     # Try to log out in any case.
      omeroLogout
 
      # If we couldn't get the user id, the credentials weren't Ok.
@@ -55,7 +55,7 @@ omeroLogin () {
 
 
 omeroLogout () {
-    $OMERO_EXEC logout  
+    $OMERO_EXEC logout
 }
 
 
@@ -71,14 +71,14 @@ retrieveUserId () {
 
 
 retrieveUserProjects () {
-        
-    # Retrieve the user projects.     
-    QRY="select i.id from Project i"
-    QRY_OUTPUT=$($OMERO_EXEC hql -q "$QRY")    
 
-    # Parse and print the project names. 
+    # Retrieve the user projects.
+    QRY="select i.id from Project i"
+    QRY_OUTPUT=$($OMERO_EXEC hql -q "$QRY")
+
+    # Parse and print the project names.
     QRY_OUTPUT=${QRY_OUTPUT#*0}
-    QRY_OUTPUT=${QRY_OUTPUT%(*}    
+    QRY_OUTPUT=${QRY_OUTPUT%(*}
     ARR=$(echo $QRY_OUTPUT | tr " | " "\n")
 
     USER_PROJECTS=''
@@ -101,21 +101,21 @@ retrieveUserProjects () {
 retrieveProjectName () {
 
     if [ -z "$1" ];
-    then 
+    then
         echo "Missing project id.\n"
     else
         PROJECT_ID=$1
     fi
 
-    # Retrieve the project name. 
+    # Retrieve the project name.
     QRY="select i.name from Project i where i.id='$PROJECT_ID'"
     QRY_OUTPUT=$($OMERO_EXEC hql -q "$QRY")
 
-    # Parse and print the project name. 
+    # Parse and print the project name.
     QRY_OUTPUT=${QRY_OUTPUT#*0}
-    QRY_OUTPUT=${QRY_OUTPUT%(*}    
+    QRY_OUTPUT=${QRY_OUTPUT%(*}
     PROJECT_NAME=$(echo $QRY_OUTPUT | tr " | " " ")
-    PROJECT_NAME=$(echo $PROJECT_NAME | tr -d ' ')  
+    PROJECT_NAME=$(echo $PROJECT_NAME | tr -d ' ')
 }
 
 
@@ -123,13 +123,13 @@ retrieveProjectDatasets () {
 
     PROJECT_ID=$1
 
-    # Retrieve the project datasets. 
+    # Retrieve the project datasets.
     QRY="select child from ProjectDatasetLink where parent='$PROJECT_ID'"
     QRY_OUTPUT=$($OMERO_EXEC hql -q "$QRY")
 
-    # Parse and print the project datasets. 
+    # Parse and print the project datasets.
     QRY_OUTPUT=${QRY_OUTPUT#*0}
-    QRY_OUTPUT=${QRY_OUTPUT%(*}    
+    QRY_OUTPUT=${QRY_OUTPUT%(*}
 
     ARR=( $(echo $QRY_OUTPUT | tr " | " "\n") )
 
@@ -150,19 +150,19 @@ retrieveProjectDatasets () {
 retrieveDatasetName () {
 
     if [ -z "$1" ];
-    then 
+    then
         echo "Missing dataset ID.\n"
     else
-        DATASET_ID=$1     
+        DATASET_ID=$1
     fi
 
-    # Retrieve the dataset name. 
+    # Retrieve the dataset name.
     QRY="select name from Dataset where id='$DATASET_ID'"
     QRY_OUTPUT=$($OMERO_EXEC hql -q "$QRY")
 
-    # Parse and print the dataset name. 
+    # Parse and print the dataset name.
     QRY_OUTPUT=${QRY_OUTPUT#*0}
-    QRY_OUTPUT=${QRY_OUTPUT%(*}  
+    QRY_OUTPUT=${QRY_OUTPUT%(*}
 
     DATASET_NAME=$(echo $QRY_OUTPUT | tr " | " " ")
     DATASET_NAME=$(echo $DATASET_NAME | tr -d ' ')
@@ -173,14 +173,14 @@ retrieveDatasetImages () {
 
     DATASET_ID=$1
 
-    # Retrieve the dataset images. 
+    # Retrieve the dataset images.
     QRY="select I.id from Image I, DatasetImageLink D where I.id = D.child "
     QRY=$QRY"AND I.archived = 't' AND parent='$DATASET_ID'"
     QRY_OUTPUT=$($OMERO_EXEC hql -q "$QRY")
 
     # Parse and print the dataset images.
     QRY_OUTPUT=${QRY_OUTPUT#*0}
-    QRY_OUTPUT=${QRY_OUTPUT%(*}    
+    QRY_OUTPUT=${QRY_OUTPUT%(*}
 
     ARR=( $(echo $QRY_OUTPUT | tr " | " "\n") )
     DATASET_IMAGES=''
@@ -206,19 +206,19 @@ retrieveDatasetImages () {
 retrieveImageName () {
 
     if [ -z "$1" ];
-    then 
+    then
         echo "Missing image id.\n"
     else
-        IMAGE_ID=$1     
+        IMAGE_ID=$1
     fi
 
-    # Retrieve the image name. 
+    # Retrieve the image name.
     QRY="select name from Image where id='$IMAGE_ID'"
     QRY_OUTPUT=$($OMERO_EXEC hql -q "$QRY")
- 
-    # Parse and print the image name. 
+
+    # Parse and print the image name.
     QRY_OUTPUT=${QRY_OUTPUT#*0}
-    QRY_OUTPUT=${QRY_OUTPUT%(*}  
+    QRY_OUTPUT=${QRY_OUTPUT%(*}
 
     IMAGE_NAME=$(echo $QRY_OUTPUT | tr " | " " ")
     IMAGE_NAME=$(echo $IMAGE_NAME | tr -d ' ')
@@ -228,22 +228,22 @@ retrieveImageName () {
 retrieveArchivedImageId () {
 
     if [ -z "$1" ];
-    then 
+    then
         echo "Missing image id.\n"
     else
-        IMAGE_ID=$1     
+        IMAGE_ID=$1
     fi
 
-    # Retrieve the archived image id. 
+    # Retrieve the archived image id.
     QRY="select o.id from Image i join i.pixels p join p.pixelsFileMaps m "
     QRY=$QRY"join m.parent o where i.id=$IMAGE_ID"
     QRY_OUTPUT=$($OMERO_EXEC hql -q "$QRY")
-    
-    # Parse and print the archived image id. 
+
+    # Parse and print the archived image id.
     QRY_OUTPUT=${QRY_OUTPUT#*0}
-    QRY_OUTPUT=${QRY_OUTPUT%(*}  
+    QRY_OUTPUT=${QRY_OUTPUT%(*}
     QRY_OUTPUT=${QRY_OUTPUT#*|}
-    QRY_OUTPUT=${QRY_OUTPUT%|*}  
+    QRY_OUTPUT=${QRY_OUTPUT%|*}
 
     ARR=( $(echo $QRY_OUTPUT | tr " " "\n") )
     ARCHIVED_ID=${ARR[0]}
@@ -253,7 +253,7 @@ retrieveArchivedImageId () {
 retrieveUserTree () {
 
     initialize $1 $2
-    
+
     omeroLogin $USER_LOGIN $USER_PASSD
 
     retrieveUserProjects
@@ -268,7 +268,7 @@ retrieveUserTree () {
        USER_TREE=$USER_TREE"<Project>$PROJECT_NAME"
 
        USER_TREE=$USER_TREE"<id>$project</id>"
- 
+
        retrieveProjectDatasets $project
 
        for dataset in $PROJECT_DATA
@@ -278,24 +278,24 @@ retrieveUserTree () {
 
           USER_TREE=$USER_TREE"<Dataset>$DATASET_NAME"
 
-          USER_TREE=$USER_TREE"<id>$dataset</id>"  
+          USER_TREE=$USER_TREE"<id>$dataset</id>"
 
           retrieveDatasetImages $dataset
 
           for image in $DATASET_IMAGES
           do
-        
+
              retrieveImageName $image
 
              USER_TREE=$USER_TREE"<Image>$IMAGE_NAME"
 
              USER_TREE=$USER_TREE"<id>$image</id>"
 
-             USER_TREE=$USER_TREE"</Image>"      
+             USER_TREE=$USER_TREE"</Image>"
 
           done
 
-          USER_TREE=$USER_TREE"</Dataset>"         
+          USER_TREE=$USER_TREE"</Dataset>"
 
        done
 
@@ -319,14 +319,14 @@ exportImage () {
     initialize $1 $2
 
     if [ -z "$3" ];
-    then 
+    then
         echo "Missing Omero's image id.\n"
     else
         IMAGE_ID=$3
     fi
 
     if [ -z "$4" ];
-    then 
+    then
         echo "Missing image destination path.\n"
     else
         IMAGE_DEST=$4
@@ -340,7 +340,7 @@ exportImage () {
     then
        $OMERO_EXEC download $ARCHIVED_ID $IMAGE_DEST
     fi
-    
+
     omeroLogout
 }
 
@@ -350,28 +350,28 @@ importImage () {
     initialize $1 $2
 
     if [ -z "$3" ];
-    then 
+    then
         echo "Missing Omero's dataset id.\n"
     else
         DATASET_ID=$3
     fi
 
     if [ -z "$4" ];
-    then 
+    then
         echo "Missing path to image.\n"
     else
         IMAGE_PATH=$4
     fi
 
     if [ -z "$5" ];
-    then 
+    then
         echo "Missing image name.\n"
     else
         IMAGE_NAME=$5
     fi
 
     if [ -z "$6" ];
-    then 
+    then
         echo "Missing annotation text.\n"
     else
         ANNOTATION_TEXT="$6"
@@ -394,20 +394,20 @@ COMMAND="$1"
 shift
 
 case $COMMAND in
-        checkCredentials)
-                checkCredentials "$@"
-                ;;
-	retrieveUserTree)
-		retrieveUserTree "$@"
-		;;
-        omeroToHRM)
-                exportImage "$@"
-                ;;
-        HRMToOmero)
-                importImage "$@"
-                ;;
-	*)
-		echo $"Usage: $0
+    checkCredentials)
+        checkCredentials "$@"
+        ;;
+    retrieveUserTree)
+        retrieveUserTree "$@"
+        ;;
+    omeroToHRM)
+        exportImage "$@"
+        ;;
+    HRMToOmero)
+        importImage "$@"
+        ;;
+    *)
+        echo "Usage: $0
                                  {checkCredentials |
                                   retrieveUserTree |
                                   omeroToHRM       |
