@@ -1,5 +1,5 @@
 <li>
-    <a href="javascript:openWindow('http://www.svi.nl/FrontPage')">
+    <a href="http://www.svi.nl/FrontPage" target="_blank">
         <img src="images/wiki.png" alt="website" />
         &nbsp;SVI wiki
     </a>
