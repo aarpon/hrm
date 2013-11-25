@@ -316,7 +316,7 @@ $control_buttons = '
 <input name="OK" type="hidden" />
 ';
 
-include ("omero_actions.php");
+include("omero_actions.php");
 
 include("./inc/FileBrowser.inc.php");
 
