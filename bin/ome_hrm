@@ -310,7 +310,12 @@ retrieveUserTree () {
 
 
 exportImage () {
-
+    # Download an image from OMERO to the local filesystem.
+    #
+    # \param  $USERNAME  OMERO username.
+    # \param  $PASSWORD  OMERO password.
+    # \param  $ID        OMERO image id.
+    # \param  $DEST      Destination to store the downloaded image.
     initialize $1 $2
 
     if [ -z "$3" ];
