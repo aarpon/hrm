@@ -25,7 +25,10 @@ HRM_LOG="/var/log/hrm"
 
 # Interaction with OMERO (if switched on in hrm/config).
 OMERO_SERVER_USER="omero"
-OMERO_HOME="/path/to/OMERO.server"
+# OMERO_PKG specifies the path where the "OMERO.server" package is installed
+OMERO_PKG="/path/to/OMERO.server"
+OMERO_HOSTNAME="localhost"
+OMERO_PORT="4064"
 
 # Set a custom PHP CLI binary if necessary:
 # PHP_CLI="/usr/local/php/bin/php"

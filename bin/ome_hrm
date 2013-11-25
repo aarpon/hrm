@@ -1,12 +1,12 @@
 #!/bin/bash
 
-# hrm.conf defines variables OMERO_SERVER_USER and OMERO_HOME
+# hrm.conf defines variables OMERO_SERVER_USER and OMERO_PKG
 . /etc/hrm.conf
 
 initialize () {
 
     if [ -z "$1" ];
-    then 
+    then
         echo "Missing user login.\n"
     else
         USER_LOGIN=$1
@@ -19,7 +19,7 @@ initialize () {
         USER_PASSD=$2
     fi
 
-    OMERO_EXEC="sudo -H -u $OMERO_SERVER_USER $OMERO_HOME/bin/./omero"    
+    OMERO_EXEC="sudo -H -u $OMERO_SERVER_USER $OMERO_PKG/bin/omero"
 }
 
 
@@ -45,7 +45,10 @@ checkCredentials () {
 
 omeroLogin () {
 
-    $OMERO_EXEC login -u $USER_LOGIN -w $USER_PASSD -s localhost
+    $OMERO_EXEC login -u $USER_LOGIN \
+                      -w $USER_PASSD \
+                      -s $OMERO_HOSTNAME \
+                      -p $OMERO_PORT
 
     retrieveUserId
 }
