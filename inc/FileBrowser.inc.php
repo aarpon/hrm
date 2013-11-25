@@ -402,7 +402,20 @@ include("header.inc.php");
 ?>
 
     <div id="nav">
-        <ul><?php echo $top_navigation; ?></ul>
+        <div id="navleft">
+            <ul>
+            <?php echo $top_nav_left; ?>
+            </ul>
+        </div>
+        <div id="navright">
+            <ul>
+            <?php echo $top_nav_right;
+            include("./inc/nav/user.inc.php");
+            include("./inc/nav/home.inc.php");
+            ?>
+            </ul>
+        </div>
+        <div class="clear"></div>
     </div>
 
 
