@@ -402,11 +402,17 @@ table {
 
 #templates select {
     width: 100%;
+    /* "resize" is not supported by IE up to (at least) version 10, however
+    we still keep it here and pray for the future. */
+    resize: both;
 }
 
 #userfiles select {
     width: 100%;
     text-align: left;
+    /* "resize" is not supported by IE up to (at least) version 10, however
+    we still keep it here and pray for the future. */
+    resize: both;
 }
 
 #selection {
@@ -463,11 +469,17 @@ table {
 
 #settings select {
     width: 100%;
+    /* "resize" is not supported by IE up to (at least) version 10, however
+    we still keep it here and pray for the future. */
+    resize: both;
 }
 
 #selectedfiles select {
     width: 100%;
     text-align: left;
+    /* "resize" is not supported by IE up to (at least) version 10, however
+    we still keep it here and pray for the future. */
+    resize: both;
 }
 
 #upMsg {
