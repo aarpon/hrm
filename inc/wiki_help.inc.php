@@ -14,7 +14,8 @@
  */
 function get_wiki_link($pagename, $linkname="Help") {
         $html = '<li>';
-        $html .= '<a href="http://www.svi.nl/' . $pagename . '" target="_blank">';
+        $html .= '<a href="http://www.svi.nl/' . $pagename . '" ';
+        $html .= 'onclick="this.target=\'_blank\';return true;">';
         $html .= '<img src="images/help.png" alt="help" />';
         $html .= '&nbsp;' . $linkname;
         $html .= '</a>';
