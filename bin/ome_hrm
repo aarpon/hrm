@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# hrm.conf defines variables OMERO_SERVER_USER and OMERO_PKG
+# hrm.conf defines variables OMERO_PKG
 . /etc/hrm.conf
 
 initialize () {
@@ -19,7 +19,9 @@ initialize () {
         USER_PASSD=$2
     fi
 
-    OMERO_EXEC="sudo -H -u $OMERO_SERVER_USER $OMERO_PKG/bin/omero"
+    # The user running the OMERO commands (usually the same running apache)
+    # needs to have r/w permissions for the $HRM_DATA area.
+    OMERO_EXEC="$OMERO_PKG/bin/omero"
 }
 
 
