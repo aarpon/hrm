@@ -3,7 +3,7 @@
 // Copyright and license notice: see license.txt
 
 
-// This is for the 'Omero Data' button.
+// This is for the 'OMERO Data' button.
 if ($omero_transfers && !$_SESSION['user']->isAdmin()) {
 
     if ( $browse_folder == "src" ) {
@@ -13,7 +13,7 @@ if ($omero_transfers && !$_SESSION['user']->isAdmin()) {
     }
 }
 
-// If the 'Omero Data' button gets pressed we'll instantiate the class.
+// If the 'OMERO Data' button gets pressed we'll instantiate the class.
 if (isset($_POST['omeroCheckCredentials'])) {
 
     if (!isset($_SESSION['omeroConnection'])) {

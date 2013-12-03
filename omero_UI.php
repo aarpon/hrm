@@ -3,12 +3,12 @@
   // This file is part of the Huygens Remote Manager
   // Copyright and license notice: see license.txt
 
-        // Dialog to ask for the Omero credentials.
+        // Dialog to ask for the OMERO credentials.
       if (isset($_POST['getOmeroData']) && !isset($omeroConnection)) {
           ?>
-    <div id="floatingCredentialsDialog" title="Omero login credentials">
+    <div id="floatingCredentialsDialog" title="OMERO login credentials">
 
-      <p>Your Omero username and password are needed for
+      <p>Your OMERO username and password are needed for
          retrieving data. </p>
       <p>Your login credentials will not be stored.</p>
 
@@ -103,7 +103,7 @@
               ?>
               <p><img alt ="Disclaimer: " src="./images/note.png" />
               HRM cannot guarantee that <b>OME-TIFFs</b>
-                 provided by Omero contain the original metadata.</p>
+                 provided by OMERO contain the original metadata.</p>
               <?php
               }
               ?>
@@ -117,7 +117,7 @@
      </form> <!-- omeroForm !-->
 
      <fieldset>
-     <legend>Your Omero data</legend>
+     <legend>Your OMERO data</legend>
 
      <div id="omeroTree">
         <br /> <br />

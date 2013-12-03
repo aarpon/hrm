@@ -402,16 +402,16 @@ case $COMMAND in
     retrieveUserTree)
         retrieveUserTree "$@"
         ;;
-    omeroToHRM)
+    OMEROtoHRM)
         exportImage "$@"
         ;;
-    HRMToOmero)
+    HRMtoOMERO)
         importImage "$@"
         ;;
     *)
         echo "Usage: $0
                                  {checkCredentials |
                                   retrieveUserTree |
-                                  omeroToHRM       |
-                                  HRMToOmero       } args"
+                                  OMEROtoHRM       |
+                                  HRMtoOMERO       } args"
 esac

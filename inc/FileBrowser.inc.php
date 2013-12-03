@@ -147,7 +147,7 @@ if (isset($_POST['update'])) {
 
 
 
-    /*************** Code for the interaction with Omero. ***************/
+    /*************** Code for the interaction with OMERO. ***************/
 global $omero_transfers;
 if ($omero_transfers) {
     if (isset($_SESSION['omeroConnection'])) {
@@ -182,7 +182,7 @@ if (isset($_POST['refreshOmero'])) {
     }
 }
 
-    /************ End of code for the interaction with Omero. **********/
+    /************ End of code for the interaction with OMERO. **********/
     
 
 
