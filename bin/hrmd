@@ -15,6 +15,9 @@
 # This file is part of the Huygens Remote Manager
 # Copyright and license notice: see license.txt
 
+# Make sure to have a known locale environment for the script:
+export LC_ALL=C
+
 # set the defaul value for the PHP CLI binary:
 PHP_CLI="php"
 
