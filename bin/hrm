@@ -8,7 +8,7 @@
 # hrm.conf defines variable HRM_DATA
 . /etc/hrm.conf
 
-if [ "$SUSER" = "" ]
+if [ -z "$SUSER" ]
 then
     CMD=""
 else
