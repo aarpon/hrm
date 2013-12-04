@@ -31,6 +31,11 @@ else
     CMD="sudo -u $SUSER"
 fi
 
+# Global variables definition:
+LOG_OUT="${HRM_LOG}/log.txt"
+LOG_ERR="${HRM_LOG}/error_log.txt"
+HRMD_PID="${HRM_LOG}/hrmd.pid"
+
 start() {
     # Is an instance of the Queue Manager already running?
     inst=`ps aux | grep runHuygensRemoteManager.php`;
@@ -43,27 +48,27 @@ start() {
     fi
     
     cd "$HRM_HOME"/run
-    echo Reporting to "$HRM_LOG"/log.txt "$HRM_LOG"/error_log.txt
-    $CMD $PHP_CLI -q "$HRM_HOME"/run/runHuygensRemoteManager.php 1> "$HRM_LOG"/log.txt 2> "$HRM_LOG"/error_log.txt &
+    echo Reporting to "$LOG_OUT" "$LOG_ERR"
+    $CMD $PHP_CLI -q "$HRM_HOME"/run/runHuygensRemoteManager.php 1> "$LOG_OUT" 2> "$LOG_ERR" &
     if [ "$?" = 0 ]
     then
         sleep 3
-        $CMD ps -o pid,command | grep "$HRM_HOME" | grep "php" | sed -e "s/^ * //" | cut -d" " -f1 > "$HRM_LOG"/hrmd.pid
+        $CMD ps -o pid,command | grep "$HRM_HOME" | grep "php" | sed -e "s/^ * //" | cut -d" " -f1 > "$HRMD_PID"
         echo "Starting HRM daemon...................ok"
     fi
     # This will show if anything went wrong during the start up.
-    tail "$HRM_LOG"/log.txt
+    tail "$LOG_OUT"
 }
 
 
 stop() {
-    if [ -f "$HRM_LOG"/hrmd.pid ]
+    if [ -f "$HRMD_PID" ]
     then
-        $CMD kill -9 $(more "$HRM_LOG"/hrmd.pid)
+        $CMD kill -9 $(more "$HRMD_PID")
         
         if [ "$?" = 0 ]
         then
-            $CMD rm -f "$HRM_LOG"/hrmd.pid
+            $CMD rm -f "$HRMD_PID"
             echo "Shutting down HRM daemon..............ok"
         fi
     fi
