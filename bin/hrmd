@@ -24,6 +24,13 @@ PHP_CLI="php"
 # hrm.conf defines variable HRM_HOME
 . /etc/hrm.conf
 
+# Simplify the "sudo" usage below:
+if [ -z "$SUSER" ] ; then
+    CMD=""
+else
+    CMD="sudo -u $SUSER"
+fi
+
 start() {
     # Is an instance of the Queue Manager already running?
     inst=`ps aux | grep runHuygensRemoteManager.php`;
@@ -37,21 +44,11 @@ start() {
     
     cd "$HRM_HOME"/run
     echo Reporting to "$HRM_LOG"/log.txt "$HRM_LOG"/error_log.txt
-    if [[ "$SUSER" == "" ]]
-    then
-        $PHP_CLI -q "$HRM_HOME"/run/runHuygensRemoteManager.php 1> "$HRM_LOG"/log.txt 2> "$HRM_LOG"/error_log.txt &
-    else
-        sudo -u "$SUSER" $PHP_CLI -q "$HRM_HOME"/run/runHuygensRemoteManager.php 1> "$HRM_LOG"/log.txt 2> "$HRM_LOG"/error_log.txt &
-    fi
+    $CMD $PHP_CLI -q "$HRM_HOME"/run/runHuygensRemoteManager.php 1> "$HRM_LOG"/log.txt 2> "$HRM_LOG"/error_log.txt &
     if [ "$?" = 0 ]
     then
         sleep 3
-        if [[ "$SUSER" == "" ]]
-        then
-            ps -o pid,command | grep "$HRM_HOME" | grep "php" | sed -e "s/^ * //" | cut -d" " -f1 > "$HRM_LOG"/hrmd.pid
-        else
-            sudo -u "$SUSER" ps -o pid,command | grep "$HRM_HOME" | grep "php" | sed -e "s/^ * //" | cut -d" " -f1 > "$HRM_LOG"/hrmd.pid
-        fi
+        $CMD ps -o pid,command | grep "$HRM_HOME" | grep "php" | sed -e "s/^ * //" | cut -d" " -f1 > "$HRM_LOG"/hrmd.pid
         echo "Starting HRM daemon...................ok"
     fi
     # This will show if anything went wrong during the start up.
@@ -62,21 +59,11 @@ start() {
 stop() {
     if [ -f "$HRM_LOG"/hrmd.pid ]
     then
-        if [[ "$SUSER" == "" ]]
-        then
-            kill -9 $(more "$HRM_LOG"/hrmd.pid)
-        else
-            sudo -u "$SUSER" kill -9 $(more "$HRM_LOG"/hrmd.pid)
-        fi
+        $CMD kill -9 $(more "$HRM_LOG"/hrmd.pid)
         
         if [ "$?" = 0 ]
         then
-            if [[ "$SUSER" == "" ]]
-            then
-                rm -f "$HRM_LOG"/hrmd.pid
-            else
-                sudo -u "$SUSER" rm -f "$HRM_LOG"/hrmd.pid
-            fi
+            $CMD rm -f "$HRM_LOG"/hrmd.pid
             echo "Shutting down HRM daemon..............ok"
         fi
     fi
