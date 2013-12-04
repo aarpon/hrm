@@ -26,72 +26,72 @@ start() {
     inst=`ps aux | grep runHuygensRemoteManager.php`;
     if [[ $inst == *"php -q"* ]]
     then
-	echo""
-	echo "The Queue Manager is already running: I won't start another instance."
+        echo""
+        echo "The Queue Manager is already running: I won't start another instance."
         echo "Usage: hrmd {start|stop|restart}" 
         exit
     fi
     
-    cd  "$HRM_HOME"/run
-        echo Reporting to "$HRM_LOG"/log.txt "$HRM_LOG"/error_log.txt
-	if [[ "$SUSER" == "" ]]
-	then
-                $PHP_CLI -q "$HRM_HOME"/run/runHuygensRemoteManager.php 1> "$HRM_LOG"/log.txt 2> "$HRM_LOG"/error_log.txt &
-	else
-                sudo -u "$SUSER" $PHP_CLI -q "$HRM_HOME"/run/runHuygensRemoteManager.php 1> "$HRM_LOG"/log.txt 2> "$HRM_LOG"/error_log.txt &
-	fi
-	if [ "$?" = 0 ]
-	then
-		sleep 3
-		if [[ "$SUSER" == "" ]]
-		then
-			ps -o pid,command | grep "$HRM_HOME" | grep "php" | sed -e "s/^ * //" | cut -d" " -f1 > "$HRM_LOG"/hrmd.pid
-		else
-			sudo -u "$SUSER" ps -o pid,command | grep "$HRM_HOME" | grep "php" | sed -e "s/^ * //" | cut -d" " -f1 > "$HRM_LOG"/hrmd.pid
-		fi
-		echo "Starting HRM daemon...................ok"
-	fi
-        # This will show if anything went wrong during the start up.
-        tail "$HRM_LOG"/log.txt
+    cd "$HRM_HOME"/run
+    echo Reporting to "$HRM_LOG"/log.txt "$HRM_LOG"/error_log.txt
+    if [[ "$SUSER" == "" ]]
+    then
+        $PHP_CLI -q "$HRM_HOME"/run/runHuygensRemoteManager.php 1> "$HRM_LOG"/log.txt 2> "$HRM_LOG"/error_log.txt &
+    else
+        sudo -u "$SUSER" $PHP_CLI -q "$HRM_HOME"/run/runHuygensRemoteManager.php 1> "$HRM_LOG"/log.txt 2> "$HRM_LOG"/error_log.txt &
+    fi
+    if [ "$?" = 0 ]
+    then
+        sleep 3
+        if [[ "$SUSER" == "" ]]
+        then
+            ps -o pid,command | grep "$HRM_HOME" | grep "php" | sed -e "s/^ * //" | cut -d" " -f1 > "$HRM_LOG"/hrmd.pid
+        else
+            sudo -u "$SUSER" ps -o pid,command | grep "$HRM_HOME" | grep "php" | sed -e "s/^ * //" | cut -d" " -f1 > "$HRM_LOG"/hrmd.pid
+        fi
+        echo "Starting HRM daemon...................ok"
+    fi
+    # This will show if anything went wrong during the start up.
+    tail "$HRM_LOG"/log.txt
 }
 
 
 stop() {
-	if [ -f "$HRM_LOG"/hrmd.pid ]
-	then
-		if [[ "$SUSER" == "" ]]
-		then
-			kill -9 $(more "$HRM_LOG"/hrmd.pid)
-		else
-			sudo -u "$SUSER" kill -9 $(more "$HRM_LOG"/hrmd.pid)
-		fi
-		
-		if [ "$?" = 0 ]
-		then
-			if [[ "$SUSER" == "" ]]
-			then
-				rm -f "$HRM_LOG"/hrmd.pid
-			else
-				sudo -u "$SUSER" rm -f "$HRM_LOG"/hrmd.pid
-			fi
-			echo "Shutting down HRM daemon..............ok"
-		fi
-	fi
+    if [ -f "$HRM_LOG"/hrmd.pid ]
+    then
+        if [[ "$SUSER" == "" ]]
+        then
+            kill -9 $(more "$HRM_LOG"/hrmd.pid)
+        else
+            sudo -u "$SUSER" kill -9 $(more "$HRM_LOG"/hrmd.pid)
+        fi
+        
+        if [ "$?" = 0 ]
+        then
+            if [[ "$SUSER" == "" ]]
+            then
+                rm -f "$HRM_LOG"/hrmd.pid
+            else
+                sudo -u "$SUSER" rm -f "$HRM_LOG"/hrmd.pid
+            fi
+            echo "Shutting down HRM daemon..............ok"
+        fi
+    fi
 }
 
 
 case "$1" in
-	start)
-		start
-		;;
-	stop)
-		stop
-		;;
-	restart)
-		stop
-		start
-		;;
-	*)
-		echo "Usage: hrmd {start|stop|restart}"
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    restart)
+        stop
+        start
+        ;;
+    *)
+        echo "Usage: hrmd {start|stop|restart}"
 esac
 
