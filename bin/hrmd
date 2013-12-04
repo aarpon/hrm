@@ -41,7 +41,7 @@ start() {
     inst=`ps aux | grep runHuygensRemoteManager.php`;
     if [[ $inst == *"php -q"* ]]
     then
-        echo""
+        echo
         echo "The Queue Manager is already running: I won't start another instance."
         echo "Usage: hrmd {start|stop|restart}" 
         exit
