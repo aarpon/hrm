@@ -36,6 +36,11 @@ LOG_OUT="${HRM_LOG}/log.txt"
 LOG_ERR="${HRM_LOG}/error_log.txt"
 HRMD_PID="${HRM_LOG}/hrmd.pid"
 
+usage_exit() {
+    echo "Usage: $0 {start|stop|restart}"
+    exit 1
+}
+
 start() {
     # Is an instance of the Queue Manager already running?
     inst=`ps aux | grep runHuygensRemoteManager.php`;
@@ -43,8 +48,7 @@ start() {
     then
         echo
         echo "The Queue Manager is already running: I won't start another instance."
-        echo "Usage: hrmd {start|stop|restart}" 
-        exit
+        usage_exit
     fi
     
     cd "$HRM_HOME"/run
@@ -87,6 +91,6 @@ case "$1" in
         start
         ;;
     *)
-        echo "Usage: hrmd {start|stop|restart}"
+        usage_exit
 esac
 
