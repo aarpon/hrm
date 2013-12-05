@@ -18,7 +18,7 @@
 # Make sure to have a known locale environment for the script:
 export LC_ALL=C
 
-# set the defaul value for the PHP CLI binary:
+# Set the default for the PHP CLI binary (can be overridden in hrm.conf):
 PHP_CLI="php"
 
 # hrm.conf defines variable HRM_HOME
