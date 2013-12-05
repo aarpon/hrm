@@ -1,6 +1,9 @@
 #!/bin/bash
 #
-# HRM administration script
+# HRM user directories administration script
+#
+# This script is used by the HRM to create and remove the directory structure
+# for the users that keep their raw and deconvolved files.
 #
 # This file is part of the Huygens Remote Manager
 # Copyright and license notice: see license.txt
