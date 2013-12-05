@@ -11,11 +11,18 @@
 # hrm.conf defines variable HRM_DATA
 . /etc/hrm.conf
 
-if [ -z "$SUSER" ]
+# Set the command prefix.
+#   This depends on the "SUSER" setting the hrm.conf as well as on the
+#   effective account (id) that is used to call this script. Only if "SUSER" is
+#   not empty (which is the recommended setup) *AND* it differs from the user
+#   calling this script, we need to use sudo here.
+CMD=""
+if [ -n "$SUSER" ]
 then
-    CMD=""
-else
-    CMD="sudo -u $SUSER"
+    WHOAMI=$(id -u -n)
+    if [ "$SUSER" != "$WHOAMI" ] ; then
+        CMD="sudo -u $SUSER"
+    fi
 fi
 
 create() {
