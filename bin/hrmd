@@ -15,6 +15,23 @@
 # This file is part of the Huygens Remote Manager
 # Copyright and license notice: see license.txt
 
+warn_daemon_user() {
+    cat << EOF
+WARNING *** WARNING *** WARNING *** WARNING *** WARNING *** WARNING *** WARNING
+
+Your setup does not have the "SUSER" variable configured to be used for running
+the HRM Queue Manager. Usually, this results in the daemon being run as root.
+
+This is HIGHLY DEPRECATED as of HRM 3.1.0 and will not be supported in future
+releases. Please see the documentation how to correctly configure your HRM:
+
+http://huygens-rm.org/
+
+WARNING *** WARNING *** WARNING *** WARNING *** WARNING *** WARNING *** WARNING
+
+EOF
+}
+
 # Make sure to have a known locale environment for the script:
 export LC_ALL=C
 
@@ -27,6 +44,7 @@ PHP_CLI="php"
 # Simplify the "sudo" usage below:
 if [ -z "$SUSER" ] ; then
     CMD=""
+    warn_daemon_user
 else
     CMD="sudo -u $SUSER"
 fi
