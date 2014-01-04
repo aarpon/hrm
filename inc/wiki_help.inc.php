@@ -1,4 +1,6 @@
 <?php
+// This file is part of the Huygens Remote Manager
+// Copyright and license notice: see license.txt
 
 /*!
   \brief Generate HTML code to link to a specific page in the SVI wiki.
