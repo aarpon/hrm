@@ -2965,47 +2965,75 @@ if ($current_revision < $n) {
     $record = array();
     $record["file_format"] = "czi";
     $record["extension"] = "czi";
-    $insertSQL = $db->GetInsertSQL($tabname, $record);
-    if(!$db->Execute($insertSQL)) {
-        $msg = "An error occurred while updating the database to revision " . $n . ".";
-        write_message($msg);
-        write_to_error($msg);
-        return;
-    }
 
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+             " WHERE file_format='" . $record['file_format'] .
+             "' AND extension='" . $record['extension'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                   "the database to revision " . $n . ".";   
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }    
+
+    
     $tabname = "file_format";
     $record = array();
     $record["name"] = "czi";
     $record["isFixedGeometry"] = "f";
     $record["isSingleChannel"] = "f";
     $record["isVariableChannel"] = "t";
-    $insertSQL = $db->GetInsertSQL($tabname, $record);
-    if(!$db->Execute($insertSQL)) {
-        $msg = "An error occurred while updating the database to revision " . $n . ".";
-        write_message($msg);
-        write_to_error($msg);
-        return;
+    
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .      
+             " WHERE name='" . $record['name'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+       if(!$db->Execute($insertSQL)) {
+           $msg = "An error occurred while updating " .
+                  "the database to revision " . $n . ".";
+           write_message($msg);
+           write_to_error($msg);
+           return;
+       }
     }
 
+    
     $tabname = "possible_values";
     $record = array();
     $record["parameter"] = "ImageFileFormat";
     $record["value"] = "czi";
     $record["translation"] = "Carl Zeiss Image (*.czi)";
     $record["isDefault"] = "f";
-    $insertSQL = $db->GetInsertSQL($tabname, $record);
-    if(!$db->Execute($insertSQL)) {
-        $msg = "An error occurred while updating the database to revision " . $n . ".";
-        write_message($msg);
-        write_to_error($msg);
-        return;
+    
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .      
+             " WHERE value='" . $record['value'] .
+             "' AND parameter='" . $record['parameter'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {    
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+       if(!$db->Execute($insertSQL)) {
+           $msg = "An error occurred while updating " .
+                  "the database to revision " . $n . ".";
+           write_message($msg);
+           write_to_error($msg);
+           return;
+       }
     }
 
-        // Correct a blank to many. 
+    // Correct a blank too many. 
     $tabname = "file_extension";
-    $rs = $db->Execute("UPDATE file_extension SET extension = \"ome.tiff\" WHERE extension = \"ome.tiff \"");
+    $query = "UPDATE file_extension SET extension = \"ome.tiff\" " .
+             "WHERE extension = \"ome.tiff \"";
+    $rs = $db->Execute($query);
+
     
-        // Update revision
+    // Update revision
     if(!update_dbrevision($n))
         return;
     
@@ -3014,6 +3042,106 @@ if ($current_revision < $n) {
     write_message($msg);
     write_to_log($msg);
 }
+
+
+// -----------------------------------------------------------------------------
+// Update to revision 12
+// Description: support for nd2 file format and STED microscopy in HRM
+// -----------------------------------------------------------------------------
+$n = 12;
+if ($current_revision < $n) {
+
+    // Fix a blank left in a table by previous revision.
+    $ok = $db->AutoExecute( "file_format",
+                            array( "hucoreName" => "czi"),
+                            "UPDATE", "name = 'czi'" );
+    if ( !$ok ) {
+       $msg = "An error occurred while updating " .
+              "the database to revision " . $n . ", file_format table update.";
+       write_message($msg);
+       write_to_log($msg);
+       write_to_error($msg);
+       return;
+    }
+
+    
+    $tabname = "file_extension";
+    $record = array();
+    $record["file_format"] = "nd2";
+    $record["extension"] = "nd2";
+
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .      
+             " WHERE file_format='" . $record['file_format'] .
+             "' AND extension='" . $record['extension'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {    
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+       if(!$db->Execute($insertSQL)) {
+           $msg = "An error occurred while updating " .
+                  "the database to revision " . $n . ".";
+           write_message($msg);
+           write_to_error($msg);
+           return;
+       }
+    }
+    
+
+    $tabname = "file_format";
+    $record = array();
+    $record["name"] = "nd2";
+    $record["isFixedGeometry"] = "f";
+    $record["isSingleChannel"] = "f";
+    $record["isVariableChannel"] = "t";
+    $record["hucoreName"] = "nd2";
+
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .      
+             " WHERE name='" . $record['name'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {    
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+       if(!$db->Execute($insertSQL)) {
+           $msg = "An error occurred while updating " .
+                  "the database to revision " . $n . ".";
+           write_message($msg);
+           write_to_error($msg);
+           return;
+       }
+    }
+
+    
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "ImageFileFormat";
+    $record["value"] = "nd2";
+    $record["translation"] = "Nikon NIS-Elements (*.nd2)";
+    $record["isDefault"] = "f";
+
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .      
+             " WHERE parameter='" . $record['parameter'] .
+             "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {    
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                   "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+    
+
+    //Update revision
+    if(!update_dbrevision($n))
+        return;
+    
+    $current_revision = $n;
+    $msg = "Database successfully updated to revision " . $current_revision . ".";
+    write_message($msg);
+    write_to_log($msg);
+}
+
 
 fclose($fh);
 
