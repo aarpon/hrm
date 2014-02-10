@@ -226,6 +226,7 @@ class Fileserver {
               case 'stk':
               case 'zvi':
               case 'czi':
+              case 'nd2': 
                   $fileFormat = $fileExtension;
                   break;
               case 'h5':
