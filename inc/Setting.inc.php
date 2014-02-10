@@ -1474,6 +1474,28 @@ class ParameterSetting extends Setting {
     }
 
     /*!
+      \brief   Checks whether the currently selected microscope type is sted.
+      \return  true if the currently selected microscope type is sted, false
+               otherwise.
+    */
+    public function isSted() {
+        $parameter = $this->parameter('MicroscopeType');
+        $value = $parameter->value();
+        return ($value == 'sted');
+    }
+
+    /*!
+      \brief   Checks whether the currently selected microscope type is sted 3X.
+      \return  true if the currently selected microscope type is sted 3X, false
+               otherwise.
+    */
+    public function isSted3X() {
+        $parameter = $this->parameter('MicroscopeType');
+        $value = $parameter->value();
+        return ($value == 'sted3x');
+    }
+
+    /*!
       \brief	Checks whether the currently selected microscope type is spinning
               (Nipkow) disk confocal
       \return	true if the currently selected microscope type is spinning (Nipkow)

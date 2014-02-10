@@ -1376,6 +1376,10 @@ class MicroscopeType extends ChoiceParameter {
                 return $db->hasLicense("confocal");
             case 'two photon':
                 return $db->hasLicense("multi-photon");
+            case 'STED':
+                return $db->hasLicense("sted");
+            case 'STED 3X':
+                return $db->hasLicense("sted3D");
             default:
                 return false;
         }

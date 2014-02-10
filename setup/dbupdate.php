@@ -3476,6 +3476,52 @@ if ($current_revision < $n) {
             return;
         }
     }
+
+
+    $record = array();
+    $record["parameter"] = "MicroscopeType";
+    $record["value"] = "STED";
+    $record["translation"] = "sted";
+    $record["isDefault"] = "f";
+    $record["parameter_key"] = "MicroscopeType5";     
+
+        // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .      
+             " WHERE parameter='" . $record['parameter'] .
+             "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {    
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                   "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+
+    $record = array();
+    $record["parameter"] = "MicroscopeType";
+    $record["value"] = "STED 3X";
+    $record["translation"] = "sted3x";
+    $record["isDefault"] = "f";
+    $record["parameter_key"] = "MicroscopeType6";           
+
+        // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .      
+             " WHERE parameter='" . $record['parameter'] .
+             "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {    
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                   "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
     
 
     //Update revision
