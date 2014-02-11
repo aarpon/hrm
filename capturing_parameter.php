@@ -183,7 +183,8 @@ if ( $nyquist === false ) {
       }
     ?>
     <?php
-      if ( $_SESSION['setting']->isMultiPointOrSinglePointConfocal() ) {
+
+if ( $_SESSION['setting']->hasPinhole() ) {
     ?>
     <span class="toolTip" id="ttSpanPinholeRadius">
         Calculate the back-projected pinhole radius for your microscope.
@@ -399,7 +400,7 @@ $textForCaptorSize = "pixel size (nm)";
 
 <?php
 
-if ($_SESSION['setting']->isMultiPointOrSinglePointConfocal()) {
+if ($_SESSION['setting']->hasPinhole()) {
 
     /***************************************************************************
 

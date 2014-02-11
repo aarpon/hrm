@@ -1481,7 +1481,7 @@ class ParameterSetting extends Setting {
     public function isSted() {
         $parameter = $this->parameter('MicroscopeType');
         $value = $parameter->value();
-        return ($value == 'sted');
+        return ($value === 'STED');
     }
 
     /*!
@@ -1492,7 +1492,7 @@ class ParameterSetting extends Setting {
     public function isSted3X() {
         $parameter = $this->parameter('MicroscopeType');
         $value = $parameter->value();
-        return ($value == 'sted3x');
+        return ($value === 'STED 3X');
     }
 
     /*!
@@ -1550,6 +1550,22 @@ class ParameterSetting extends Setting {
                 $this->isMultiPointConfocal());
     }
 
+    /*!
+    \brief    This determines which microscope types have a pinhole
+    \return   True if the microscope contains a pinhole. False otherwise.
+    */
+    public function hasPinhole() {
+        if ($this->isMultiPointOrSinglePointConfocal()) {
+            return True;
+        } elseif ($this->isSted()) {
+            return True;
+        } elseif ($this->isSted3X()) {
+            return True;
+        } else {
+            return False;
+        }
+    }
+    
     /*!
       \brief	Returns the pixel size (the value of CCDCaptorSizeX) in nm
       \todo	This is redundant!
