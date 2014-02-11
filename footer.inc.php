@@ -65,16 +65,6 @@ $loggedIn = ( isset($_SESSION['user'] ) && $_SESSION['user']->isLoggedIn( ) );
 	</div>
     
     <div id="validation">
-        <a href="javascript:openWindow(
-           'http://validator.w3.org/')" onclick="clean()">
-            <img style="border:0;width:88px;height:31px"
-                src="images/valid-xhtml10.png" alt="Valid XHTML 1.0 Strict" />
-        </a>
-		<a href="javascript:openWindow(
-           'http://jigsaw.w3.org/css-validator/')" onclick="clean()">
-			<img style="border:0;width:88px;height:31px"
-                src="images/valid-css21.png" alt="Valid CSS!" />
-		</a>
     </div>
 
     </div> <!-- basket -->

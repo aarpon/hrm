@@ -113,7 +113,7 @@ table {
     background: url("../images/title_bkg.png") repeat-x top left;
     padding-left: 180px;
     border: #fff 2px solid;
-    color: white;
+    color:  #585858;
 }
 
 #logo {
@@ -690,6 +690,7 @@ input.save {
 #validation {
     background: url("../images/validation_bkg.png") repeat-x top left;
     text-align: center;
+    height: 32px;
     padding-top: 10px;
     padding-bottom: 10px;
 }
