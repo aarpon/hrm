@@ -115,5 +115,6 @@ case "$1" in
         ;;
     *)
         usage_exit
+        ;;
 esac
 
