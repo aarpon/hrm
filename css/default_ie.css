@@ -188,13 +188,13 @@ table {
 
 #nav ul {
     list-style-type: none;
-    padding: 2px 0px 4px 6px;
+    padding: 2px 2px 2px 2px;
     margin: 0px;
 }
 
 #nav li {
     display: inline;
-    padding-right: 10px;
+    padding: 4px;
 }
 
 #nav a {
