@@ -9,3 +9,4 @@ user/login_user.inc
 
 # vim swap files
 .*.sw?
+/.idea/
