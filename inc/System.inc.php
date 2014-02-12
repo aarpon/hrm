@@ -24,8 +24,8 @@ class System {
      */
 
     const HRM_VERSION_MAJOR = 3;
-    const HRM_VERSION_MINOR = 0;
-    const HRM_VERSION_MAINTENANCE = 4;
+    const HRM_VERSION_MINOR = 1;
+    const HRM_VERSION_MAINTENANCE = 0;
 
     /* !
       \var 	DB_LAST_REVISION
@@ -111,13 +111,13 @@ class System {
         }
         return self::parseHRMVersionIntegerToString($version);
     }
-    
+
     /* !
       \brief	Checks wether there is a new HRM release
-     
+
       isThereNewHRMRelease() throws an Exception if the version could not
       be obtained from the remote server.
-     
+
       \return True if a newer HRM release exist, false otherwise; if no version
               information could be retrieved, an Exception is thrown.
      */
