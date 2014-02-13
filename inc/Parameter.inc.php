@@ -344,6 +344,20 @@ abstract class Parameter {
 		return ( str_replace( $uppercase, $lowercase, $string ) );
 	}
 
+    /*!
+        \brief    Serialized, JSON-encoded Parameter.
+
+        \return JSON-encoded Parameter string.
+    */
+    public function getJsonData(){
+        $var = get_object_vars($this);
+        foreach($var as &$value){
+            if(is_object($value) && method_exists($value,'getJsonData')){
+                $value = $value->getJsonData();
+            }
+        }
+        return $var;
+    }
 
 } // End of Parameter class
 
