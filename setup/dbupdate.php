@@ -3522,8 +3522,77 @@ if ($current_revision < $n) {
             return;
         }
     }
-    
 
+
+    $record = array();
+    $record["parameter"] = "StedSubMode";
+    $record["value"] = "CW gated detection";
+    $record["translation"] = "CWGated";
+    $record["isDefault"] = "f";
+    $record["parameter_key"] = "StedSubMode1";           
+
+        // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .      
+             " WHERE parameter='" . $record['parameter'] .
+             "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {    
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                   "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+
+    $record = array();
+    $record["parameter"] = "StedSubMode";
+    $record["value"] = "CW Non gated detection";
+    $record["translation"] = "CWNonGated";
+    $record["isDefault"] = "f";
+    $record["parameter_key"] = "StedSubMode2";           
+
+        // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .      
+             " WHERE parameter='" . $record['parameter'] .
+             "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {    
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                   "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+
+    $record = array();
+    $record["parameter"] = "StedSubMode";
+    $record["value"] = "Pulsed";
+    $record["translation"] = "pulsed";
+    $record["isDefault"] = "t";
+    $record["parameter_key"] = "StedSubMode3";           
+
+        // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .      
+             " WHERE parameter='" . $record['parameter'] .
+             "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {    
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                   "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    
     //Update revision
     if(!update_dbrevision($n))
         return;
