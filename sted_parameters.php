@@ -21,6 +21,8 @@ if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
 }
 $message = "";
 
+$chanCnt = $_SESSION['setting']->numberOfChannels();
+
 /* *****************************************************************************
  *
  * SET THE CONFIDENCES FOR THE RELEVANT PARAMETERS
@@ -56,6 +58,28 @@ for ($i=0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
 $stedDeplParam->setValue($stedDepl);
 $_SESSION['setting']->set($stedDeplParam);
 
+/* *****************************************************************************
+ *
+ * MANAGE THE STED SATURATION FACTOR
+ *
+ **************************************************************************** */
+
+$stedSatFactParam = $_SESSION['setting']->parameter("StedSatFact");
+$stedSatFactParam->setNumberOfChannels(
+    $_SESSION['setting']->numberOfChannels() );
+$stedSatFact = $stedSatFactParam->value();
+
+for ($i=0; $i < $chanCnt; $i++) {
+  $stedSatFactKey = "stedSatFact{$i}";
+  if (isset($_POST[$stedSatFactKey])) {
+      $stedSatFact[$i] = $_POST[$stedSatFactKey];
+  }
+}
+$stedSatFactParam->setValue($stedSatFact);
+$stedSatFactParam->setNumberOfChannels(
+    $_SESSION['setting']->numberOfChannels( ) );
+
+$_SESSION['setting']->set($stedSatFactParam);
 
 /* *****************************************************************************
  *
@@ -151,7 +175,6 @@ if ($_SESSION[ 'setting' ]->checkPostedStedParameters( $_POST ) ) {
 // Javascript includes
 $script = array( "settings.js", "quickhelp/help.js" );
 include("header.inc.php");
-
 ?>
 
    <!--
@@ -220,7 +243,6 @@ include("header.inc.php");
                           
 <?php                              
 $possibleValues = $parameterStedDeplMode->possibleValues();
-$chanCnt = $_SESSION['setting']->numberOfChannels();
 
 /* Loop on rows. */
 for ($chan = 0; $chan < $chanCnt; $chan++) {
@@ -256,6 +278,65 @@ for ($chan = 0; $chan < $chanCnt; $chan++) {
                 </p>
             </div>
             </fieldset>
+
+
+<?php
+    /***************************************************************************
+
+      StedSatFact
+
+    ***************************************************************************/
+
+    $parameterStedSatFact = $_SESSION['setting']->parameter("StedSatFact");
+?>
+
+            <fieldset class="setting <?php
+            echo $parameterStedSatFact->confidenceLevel(); ?>"
+            onmouseover="javascript:changeQuickHelp( 'type' );" >
+
+                <legend>
+                    <a href="javascript:openWindow(
+                       'http://www.svi.nl/STED')">
+                        <img src="images/help.png" alt="?" />
+                    </a>
+                    STED Saturation Factor
+                </legend>
+
+
+                    <div class="multichannel">
+<?php
+
+for ($i = 0; $i < $chanCnt; $i++) {
+
+// Add a line break after 3 entries
+if ( $i == 3 ) {
+    echo "<br />";
+}
+?>
+	<span class="nowrap">
+        Ch<?php echo $i ?>:&nbsp;&nbsp;&nbsp;
+        <span class="multichannel">
+            <input name="SaturationFactor<?php echo $i ?>"
+                   type="text"
+                   size="6"
+                   value="<?php
+                    if ($i <= sizeof($stedSatFact)) {
+                        echo $stedSatFact[$i];
+                    } ?>"
+                   class="multichannelinput" />
+        </span>&nbsp;
+    </span>
+<?php
+}
+?>
+    
+                <div class="bottom">
+                <p class="message_confidence_<?php 
+                echo $parameterStedSatFact->confidenceLevel(); ?>">&nbsp;
+                </p>
+            </div>
+            </fieldset>
+
 
 
 <?php

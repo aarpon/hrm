@@ -277,7 +277,8 @@ class ParameterSetting extends Setting {
             'AberrationCorrectionMode',
             'AdvancedCorrectionOptions',
             'PSFGenerationDepth',
-            'StedDeplMode'
+            'StedDeplMode',
+            'StedSatFact'
         );
         foreach ($parameterClasses as $class) {
             $param = new $class;
