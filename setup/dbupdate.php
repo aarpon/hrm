@@ -180,8 +180,13 @@ function insert_record($tabname, $array, $colnames) {
 function insert_column($tabname,$fields) {
     global $datadict;
 
-    $sqlarray = $datadict->AddColumnSQL($tabname, $fields); // NOTE: ADOdb AddColumnSQL, not guaranteed to work under all situations.
-    $rs = $datadict->ExecuteSQLArray($sqlarray);    // return 0 if failed, 1 if executed all but with errors, 2 if executed successfully
+    // NOTE: ADOdb AddColumnSQL, not guaranteed to work under all situations.
+    // Please document here those situations (unknown as of February 2014).
+    $sqlarray = $datadict->AddColumnSQL($tabname, $fields);
+
+    // return 0 if failed, 1 if executed all but with errors,
+    // 2 if executed successfully
+    $rs = $datadict->ExecuteSQLArray($sqlarray);    
     if($rs != 2) {
         $msg = error_message($tabname);
         write_message($msg);
@@ -3592,6 +3597,32 @@ if ($current_revision < $n) {
         }
     }
 
+
+// ------------------ Add columns to 'confidence_levels' ----------------------
+    $tabname   = "confidence_levels";
+    $newcolumns = array("stedMode",
+                        "stedLambda",
+                        "stedSatFact",
+                        "stedImmunity",
+                        "sted3D");
+    $type = "C(16)";
+
+    $allcolumns = $db->MetaColumnNames( 'confidence_levels' );    
+    foreach ($newcolumns as $newcolumn) {
+        if (array_key_exists( strtoupper($newcolumn), $allcolumns) ) {
+            continue;
+        }
+        if ( !insert_column($tabname, $newcolumn . " " . $type) ) {
+            $msg = "An error occurred while updating " .
+                "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_log($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+// ----------------------------------------------------------------------------
     
     //Update revision
     if(!update_dbrevision($n))
