@@ -1674,6 +1674,12 @@ option.default {
     padding-left: 10px;
 }
 
+div.StedDeplModeValues {
+   width: 250px;
+   float: left;
+   vertical-align: center;
+}
+
 /* Confidence levels for parameters: provided, asIs, verified, 
    reported, estimated, default */
 .asIs {

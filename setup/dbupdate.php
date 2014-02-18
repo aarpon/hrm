@@ -3530,11 +3530,11 @@ if ($current_revision < $n) {
 
 
     $record = array();
-    $record["parameter"] = "StedSubMode";
+    $record["parameter"] = "StedDeplMode";
     $record["value"] = "CW gated detection";
     $record["translation"] = "CWGated";
     $record["isDefault"] = "f";
-    $record["parameter_key"] = "StedSubMode1";           
+    $record["parameter_key"] = "StedDeplMode1";           
 
         // Skip it if the row is already there.
     $query = "SELECT * FROM " . $tabname .      
@@ -3553,11 +3553,11 @@ if ($current_revision < $n) {
 
 
     $record = array();
-    $record["parameter"] = "StedSubMode";
+    $record["parameter"] = "StedDeplMode";
     $record["value"] = "CW Non gated detection";
     $record["translation"] = "CWNonGated";
     $record["isDefault"] = "f";
-    $record["parameter_key"] = "StedSubMode2";           
+    $record["parameter_key"] = "StedDeplMode2";           
 
         // Skip it if the row is already there.
     $query = "SELECT * FROM " . $tabname .      
@@ -3576,11 +3576,11 @@ if ($current_revision < $n) {
 
 
     $record = array();
-    $record["parameter"] = "StedSubMode";
+    $record["parameter"] = "StedDeplMode";
     $record["value"] = "Pulsed";
     $record["translation"] = "pulsed";
     $record["isDefault"] = "t";
-    $record["parameter_key"] = "StedSubMode3";           
+    $record["parameter_key"] = "StedDeplMode3";           
 
         // Skip it if the row is already there.
     $query = "SELECT * FROM " . $tabname .      
@@ -3604,7 +3604,7 @@ if ($current_revision < $n) {
                         "stedLambda",
                         "stedSatFact",
                         "stedImmunity",
-                        "sted3D");
+                        "sted3X");
     $type = "C(16)";
 
     $allcolumns = $db->MetaColumnNames( 'confidence_levels' );    

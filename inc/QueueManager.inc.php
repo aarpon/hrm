@@ -1133,14 +1133,14 @@ class QueueManager {
                 "stedLambda"     => "default",
                 "stedSatFact"    => "default",
                 "stedImmunity"   => "default",
-                "sted3D"         => "default");
+                "sted3X"         => "default");
 
             // To enable parsing of sted parameters in a loop.
             $stedParams = array("stedMode",
                                 "stedLambda",
                                 "stedSatFact",
                                 "stedImmunity",
-                                "sted3D");
+                                "sted3D"); /* Officially called 3X. */
 
             // Store the file format
             $params['fileFormat'] = $fileFormat;

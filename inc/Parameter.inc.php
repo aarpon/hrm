@@ -160,6 +160,17 @@ abstract class Parameter {
 		return False;
 	}
 
+    /*!
+		\brief	Checks whether the Parameter is a Sted Parameter
+
+		This function should be <b>overloaded</b> by the subclasses
+
+		\return	true if the Parameter is a Sted Parameter, false otherwise
+	*/
+	public function isForSted() {
+		return False;
+	}
+
 	/*!
 		\brief	Checks whether the Parameter is a Variable Channel Parameter
 
@@ -1361,7 +1372,7 @@ class MicroscopeType extends ChoiceParameter {
 		\brief	Returns the Parameter translated value
 
 		The translated form of the Parameter value is then one used in
-		the Tcl script. The translation of the microscope yype is read from
+		the Tcl script. The translation of the microscope type is read from
 		the database.
 
 		\return translated value
@@ -2787,4 +2798,57 @@ class AberrationCorrectionNecessary extends BooleanParameter {
 		parent::__construct("AberrationCorrectionNecessary");
 	}
 
+}
+
+/*
+	============================================================================
+*/
+
+/*!
+ \class	StedDeplMode
+ \brief	A ChoiceParameter to represent the STED depletion mode
+*/
+class StedDeplMode extends ChoiceParameter {
+
+	/*!
+		\brief	Constructor: creates an empty Parameter
+	*/
+	public function __construct() {
+		parent::__construct("StedDeplMode");
+	}
+
+	/*!
+		\brief	Confirms that this is NOT a Microscope Parameter.
+        \brief  We make a distinction between STED parameters and 
+                microscope parameters.
+        \return true
+	*/
+	public function isForMicroscope() {
+		return False;
+	}
+
+    	/*!
+		\brief	Confirms that this is a Sted Parameter.
+        \brief  We make a distinction between STED parameters and 
+                microscope parameters.
+        \return true
+	*/
+	public function isForSted() {
+		return True;
+	}
+
+	/*!
+		\brief	Returns the Parameter translated value
+
+		The translated form of the Parameter value is then one used in
+		the Tcl script. The translation of the sted depletion mode is read from
+		the database.
+
+		\return translated value
+	*/
+	public function translatedValue() {
+		$db = new DatabaseConnection();
+		$result = $db->translationFor($this->name, $this->value);
+		return $result;
+	}    
 }

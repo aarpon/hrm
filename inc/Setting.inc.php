@@ -277,6 +277,7 @@ class ParameterSetting extends Setting {
             'AberrationCorrectionMode',
             'AdvancedCorrectionOptions',
             'PSFGenerationDepth',
+            'StedDeplMode'
         );
         foreach ($parameterClasses as $class) {
             $param = new $class;
@@ -446,7 +447,7 @@ class ParameterSetting extends Setting {
       \return	true if all Paraneters are defined and valid, false otherwise
     */
     public function checkPostedMicroscopyParameters($postedParameters) {
-
+        
         if (count($postedParameters) == 0) {
             $this->message = '';
             return False;
@@ -454,6 +455,7 @@ class ParameterSetting extends Setting {
         
         $this->message = '';
         $noErrorsFound = True;
+
 
         // Get the names of the relevant parameters
         $names = $this->microscopeParameterNames();
@@ -553,7 +555,7 @@ class ParameterSetting extends Setting {
             }
 
         }
-        
+
         // Check that the Parameters are set and contain valid values
         foreach ($names as $name) {
 
@@ -629,8 +631,30 @@ class ParameterSetting extends Setting {
                 }
             }
         }
+        
         return $noErrorsFound;
     }
+
+
+        
+    /*!
+      \brief	Checks that the posted STED Parameters are all defined
+              and valid
+      \param	$postedParameters	The $_POST array
+      \return	true if all Paraneters are defined and valid, false otherwise
+    */
+    public function checkPostedStedParameters($postedParameters) {
+        if (count($postedParameters) == 0) {
+            $this->message = '';
+            return False;
+        }
+
+        $this->message = '';
+        $noErrorsFound = True;
+
+        return $noErrorsFound;
+    }
+    
     
     /*!
       \brief	Checks that the posted Capturing Parameters are all defined
@@ -638,7 +662,6 @@ class ParameterSetting extends Setting {
       \param	$postedParameters	The $_POST array
       \return	true if all Paraneters are defined and valid, false otherwise
     */
-
     public function checkPostedCapturingParameters($postedParameters) {
 
         if (count($postedParameters) == 0) {
@@ -818,6 +841,10 @@ class ParameterSetting extends Setting {
                     $noErrorsFound = False;
                 }
             }
+        }
+        
+        if ($this->isSted() || $this->isSted3X()) {
+            $noErrorsFound = True;
         }
 
         return $noErrorsFound;
@@ -1121,6 +1148,22 @@ class ParameterSetting extends Setting {
 
         foreach ($this->parameter as $parameter) {
             if ($parameter->isForMicroscope()) {
+                $names[] = $parameter->name();
+            }
+        }
+
+        return $names;
+    }
+
+    /*!
+      \brief	Returns all Sted Parameter names
+      \return array of Sted Parameter names
+    */ 
+    public function stedParameterNames() {
+        $names = array();
+
+        foreach ($this->parameter as $parameter) {
+            if ($parameter->isForSted()) {
                 $names[] = $parameter->name();
             }
         }

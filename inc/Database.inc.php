@@ -67,7 +67,12 @@ class DatabaseConnection {
 	  "unused3"              => "imagingDir",
 	  "unused4"              => "objQuality",
 	  "unused5"              => "photonCnt",
-	  "unused6"              => "exBeamFill" );
+	  "unused6"              => "exBeamFill",
+      "StedDeplMode"         => "stedMode",
+      "StedLambda"           => "stedLambda",
+      "StedSatFact"          => "stedSatFact",
+      "StedImmunity"         => "stedImmunity",
+      "Sted3X"               => "sted3X");
   }
 
   /*!

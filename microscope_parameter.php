@@ -76,7 +76,6 @@ $_SESSION['setting']->set($emissionParam);
  * PROCESS THE POSTED PARAMETERS
  *
  **************************************************************************** */
-
 if ( $_SESSION[ 'setting' ]->checkPostedMicroscopyParameters(  $_POST ) ) {
   header("Location: " . "capturing_parameter.php"); exit();
 } else {

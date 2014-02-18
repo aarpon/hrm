@@ -72,9 +72,12 @@ $_SESSION['setting']->set($pinholeParam);
 
 $saveToDB = false;
 
-// First check the selection of the PSF
 $PSF = $_SESSION['setting']->parameter( 'PointSpreadFunction' )->value( );
-if ($PSF == 'measured' ) {
+$MICR = $_SESSION['setting']->parameter("MicroscopeType")->value( );
+
+if ($MICR == "STED" || $MICR == 'STED 3X') {
+    $pageToGo = 'sted_parameters.php';  
+} elseif ($PSF == 'measured' ) {
   $pageToGo = 'select_psf.php';
   // Make sure to turn off the correction
   $_SESSION['setting']->parameter(
@@ -126,7 +129,6 @@ if ($PSF == 'measured' ) {
  * PROCESS THE POSTED PARAMETERS
  *
  **************************************************************************** */
-
 if ($_SESSION[ 'setting' ]->checkPostedCapturingParameters( $_POST ) ) {
   if ( $saveToDB ) {
     $saved = $_SESSION['setting']->save();
