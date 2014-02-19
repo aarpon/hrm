@@ -279,7 +279,8 @@ class ParameterSetting extends Setting {
             'PSFGenerationDepth',
             'StedDeplMode',
             'StedSatFact',
-            'StedLambda'
+            'StedLambda',
+            'StedImmunity'
         );
         foreach ($parameterClasses as $class) {
             $param = new $class;

@@ -102,6 +102,27 @@ $_SESSION['setting']->set($stedLambdaParam);
 
 /* *****************************************************************************
  *
+ * MANAGE THE STED IMMUNITY FRACTION
+ *
+ **************************************************************************** */
+
+$stedImmunityParam = $_SESSION['setting']->parameter("StedImmunity");
+$stedImmunityParam->setNumberOfChannels($chanCnt);
+$stedImmunity = $stedImmunityParam->value();
+
+for ($i=0; $i < $chanCnt; $i++) {
+  $stedImmunityKey = "stedImmunity{$i}";
+  if (isset($_POST[$stedImmunityKey])) {
+      $stedImmunity[$i] = $_POST[$stedImmunityKey];
+  }
+}
+$stedImmunityParam->setValue($stedImmunity);
+$stedImmunityParam->setNumberOfChannels($chanCnt);
+
+$_SESSION['setting']->set($stedImmunityParam);
+
+/* *****************************************************************************
+ *
  * WHICH IS THE NEXT PAGE?
  *
  **************************************************************************** */
@@ -409,6 +430,64 @@ if ( $i == 3 ) {
                 <div class="bottom">
                 <p class="message_confidence_<?php 
                 echo $parameterStedLambda->confidenceLevel(); ?>">&nbsp;
+                </p>
+            </div>
+            </fieldset>
+
+
+<?php
+    /***************************************************************************
+
+      StedImmunity
+
+    ***************************************************************************/
+
+    $parameterStedImmunity = $_SESSION['setting']->parameter("StedImmunity");
+?>
+
+            <fieldset class="setting <?php
+            echo $parameterStedImmunity->confidenceLevel(); ?>"
+            onmouseover="javascript:changeQuickHelp( 'type' );" >
+
+                <legend>
+                    <a href="javascript:openWindow(
+                       'http://www.svi.nl/STED')">
+                        <img src="images/help.png" alt="?" />
+                    </a>
+    STED Immunity Fraction (%)
+                </legend>
+
+
+                    <div class="multichannel">
+<?php
+
+for ($i = 0; $i < $chanCnt; $i++) {
+
+// Add a line break after 3 entries
+if ( $i == 3 ) {
+    echo "<br />";
+}
+?>
+	<span class="nowrap">
+        Ch<?php echo $i ?>:&nbsp;&nbsp;&nbsp;
+        <span class="multichannel">
+            <input name="StedWavelength<?php echo $i ?>"
+                   type="text"
+                   size="6"
+                   value="<?php
+                    if ($i <= sizeof($stedImmunity)) {
+                        echo $stedImmunity[$i];
+                    } ?>"
+                   class="multichannelinput" />
+        </span>&nbsp;
+    </span>
+<?php
+}
+?>
+    
+                <div class="bottom">
+                <p class="message_confidence_<?php 
+                echo $parameterStedImmunity->confidenceLevel(); ?>">&nbsp;
                 </p>
             </div>
             </fieldset>
