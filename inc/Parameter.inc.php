@@ -2808,7 +2808,7 @@ class AberrationCorrectionNecessary extends BooleanParameter {
  \class	StedDeplMode
  \brief	A ChoiceParameter to represent the STED depletion mode
 */
-class StedDeplMode extends ChoiceParameter {
+class StedDeplMode extends AnyTypeArrayParameter {
 
 	/*!
 		\brief	Constructor: creates an empty Parameter
@@ -2850,7 +2850,21 @@ class StedDeplMode extends ChoiceParameter {
 		$db = new DatabaseConnection();
 		$result = $db->translationFor($this->name, $this->value);
 		return $result;
-	}    
+	}
+
+    /*!
+		\brief	Checks whether the Parameter is valid
+		\return	true if the Parameter is valid, false otherwise
+	*/
+	public function check( ) {
+	  for ( $i = 0; $i < $this->numberOfChannels(); $i++) {
+		  if ( $this->value[ $i ] == NULL ) {
+		    $this->message = "Please select a depletion mode for channel $i!";
+		    return False;
+          }
+	  }
+	  return True;
+	}
 }
 
 /*

@@ -312,7 +312,7 @@ for ($chan = 0; $chan < $chanCnt; $chan++) {
 ?>    
     <tr><td>Ch<?php echo $chan; ?>:</td>
     
-    <td><select id="StedDeplMode<?php echo $chan; ?>">
+    <td><select name="StedDeplMode<?php echo $chan; ?>">
     
 <?php
     /* Loop for select options. */
@@ -379,7 +379,7 @@ if ( $i == 3 ) {
 	<span class="nowrap">
         Ch<?php echo $i ?>:&nbsp;&nbsp;&nbsp;
         <span class="multichannel">
-            <input name="SaturationFactor<?php echo $i ?>"
+            <input name="StedSatFact<?php echo $i ?>"
                    type="text"
                    size="6"
                    value="<?php
@@ -436,7 +436,7 @@ if ( $i == 3 ) {
 	<span class="nowrap">
         Ch<?php echo $i ?>:&nbsp;&nbsp;&nbsp;
         <span class="multichannel">
-            <input name="StedWavelength<?php echo $i ?>"
+            <input name="StedLambda<?php echo $i ?>"
                    type="text"
                    size="6"
                    value="<?php
@@ -605,6 +605,52 @@ if ($_SESSION['setting']->isSted3X()) {
         </form>
 
    </div> <!-- content -->
+
+    
+   <div id="rightpanel"
+         onmouseover="javascript:changeQuickHelp( 'default' );" >
+
+        <div id="info">
+
+          <h3>Quick help</h3>
+
+            <div id="contextHelp">
+              <p>On this page you specify the parameters of the STED sytem
+                 for your experimental setup.</p>
+
+    <p>These parameters consist of the STED depletion mode, wavelength,
+       saturation factor, immunity percentage and, when applicable ,
+       STED 3X percentage.</p>
+            </div>
+
+      <?php
+              if ( !$_SESSION["user"]->isAdmin() ) {
+      ?>
+                  
+            <div class="requirements">                
+               Parameter requirements<br />adapted for <b>  
+               <?php
+               $fileFormat = $_SESSION['setting']->parameter( "ImageFileFormat" );
+               echo $fileFormat->value();
+               ?>
+               </b> files
+            </div>
+      
+      <?php
+              }
+      ?>
+       
+        </div>
+
+        <div id="message">
+<?php
+
+echo "<p>$message</p>";
+
+?>
+        </div>
+
+    </div> <!-- rightpanel -->
 
 <?php
 include("footer.inc.php");

@@ -3598,6 +3598,29 @@ if ($current_revision < $n) {
     }
 
 
+    $record = array();
+    $record["parameter"] = "StedDeplMode";
+    $record["value"] = "Off/Confocal";
+    $record["translation"] = "off-confocal";
+    $record["isDefault"] = "f";
+    $record["parameter_key"] = "StedDeplMode4";           
+
+        // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .      
+             " WHERE parameter='" . $record['parameter'] .
+             "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {    
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                   "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+
 // ------------------ Add columns to 'confidence_levels' ----------------------
     $tabname   = "confidence_levels";
     $newcolumns = array("stedMode",

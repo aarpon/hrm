@@ -370,6 +370,12 @@ class ParameterSetting extends Setting {
         }
 
         if ($ok) {
+            if ( !$this->checkPostedStedParameters($postedParams) )  {
+                $ok = False;
+            }
+        }
+
+        if ($ok) {
             if (!$this->checkPostedAberrationCorrectionParameters($postedParams)) {
                 $ok = False;
             }
@@ -648,13 +654,236 @@ class ParameterSetting extends Setting {
       \return	true if all Paraneters are defined and valid, false otherwise
     */
     public function checkPostedStedParameters($postedParameters) {
+        $this->message = '';
+        
         if (count($postedParameters) == 0) {
-            $this->message = '';
             return False;
         }
 
-        $this->message = '';
+
+        if (!$this->isSted() && !$this->isSted3X()) {
+            return False;
+        }
+
         $noErrorsFound = True;
+
+
+        // Depletion Mode
+        $value = array(null, null, null, null, null);
+        for ($i = 0; $i < 5; $i++) {
+            if (isset($postedParameters["StedDeplMode$i"])) {
+                $value[$i] = $postedParameters["StedDeplMode$i"];
+                unset($postedParameters["StedDeplMode$i"]);
+            }
+        }
+        $name = 'StedDeplMode';
+        $valueSet = count(array_filter($value)) > 0;
+        
+        if ($valueSet) {
+            
+            // Set the value
+            $parameter = $this->parameter($name);
+            $parameter->setValue($value);
+            $this->set($parameter);
+            
+            // Check
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = False;
+            }
+            
+        } else {
+            
+            // In this case it is important to know whether the Parameter
+            // must have a value or not
+            $parameter = $this->parameter($name);
+            $mustProvide = $parameter->mustProvide();
+            
+            // Reset the Parameter
+            $parameter->reset();
+            $this->set($parameter);
+            
+            // If the Parameter value must be provided, we return an error
+            if ($mustProvide) {
+                $this->message = "Please set the Sted depletion mode!";
+                $noErrorsFound = False;
+            }
+        }
+
+        
+        // Saturation Factor
+        $value = array(null, null, null, null, null);
+        for ($i = 0; $i < 5; $i++) {
+            if (isset($postedParameters["StedSatFact$i"])) {
+                $value[$i] = $postedParameters["StedSatFact$i"];
+                unset($postedParameters["StedSatFact$i"]);
+            }
+        }
+        $name = 'StedSatFact';
+        $valueSet = count(array_filter($value)) > 0;
+        
+        if ($valueSet) {
+            
+            // Set the value
+            $parameter = $this->parameter($name);
+            $parameter->setValue($value);
+            $this->set($parameter);
+            
+            // Check
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = False;
+            }
+            
+        } else {
+            
+            // In this case it is important to know whether the Parameter
+            // must have a value or not
+            $parameter = $this->parameter($name);
+            $mustProvide = $parameter->mustProvide();
+            
+            // Reset the Parameter
+            $parameter->reset();
+            $this->set($parameter);
+            
+            // If the Parameter value must be provided, we return an error
+            if ($mustProvide) {
+                $this->message = "Please set the Sted saturation factor!";
+                $noErrorsFound = False;
+            }
+        }
+
+        
+        // Sted Wavelength
+        $value = array(null, null, null, null, null);
+        for ($i = 0; $i < 5; $i++) {
+            if (isset($postedParameters["StedLambda$i"])) {
+                $value[$i] = $postedParameters["StedLambda$i"];
+                unset($postedParameters["StedLambda$i"]);
+            }
+        }
+        $name = 'StedLambda';
+        $valueSet = count(array_filter($value)) > 0;
+        
+        if ($valueSet) {
+            
+            // Set the value
+            $parameter = $this->parameter($name);
+            $parameter->setValue($value);
+            $this->set($parameter);
+            
+            // Check
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = False;
+            }
+            
+        } else {
+            
+            // In this case it is important to know whether the Parameter
+            // must have a value or not
+            $parameter = $this->parameter($name);
+            $mustProvide = $parameter->mustProvide();
+            
+            // Reset the Parameter
+            $parameter->reset();
+            $this->set($parameter);
+            
+            // If the Parameter value must be provided, we return an error
+            if ($mustProvide) {
+                $this->message = "Please set the Sted wavelength!";
+                $noErrorsFound = False;
+            }
+        }
+
+
+        // Sted Immunity Fraction
+        $value = array(null, null, null, null, null);
+        for ($i = 0; $i < 5; $i++) {
+            if (isset($postedParameters["StedImmunity$i"])) {
+                $value[$i] = $postedParameters["StedImmunity$i"];
+                unset($postedParameters["StedImmunity$i"]);
+            }
+        }
+        $name = 'StedImmunity';
+        $valueSet = count(array_filter($value)) > 0;
+        
+        if ($valueSet) {
+            
+            // Set the value
+            $parameter = $this->parameter($name);
+            $parameter->setValue($value);
+            $this->set($parameter);
+            
+            // Check
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = False;
+            }
+            
+        } else {
+            
+            // In this case it is important to know whether the Parameter
+            // must have a value or not
+            $parameter = $this->parameter($name);
+            $mustProvide = $parameter->mustProvide();
+            
+            // Reset the Parameter
+            $parameter->reset();
+            $this->set($parameter);
+            
+            // If the Parameter value must be provided, we return an error
+            if ($mustProvide) {
+                $this->message = "Please set the Sted immunity fraction!";
+                $noErrorsFound = False;
+            }
+        }
+         
+
+        // Sted 3X
+        if ($this->isSted3X()) {
+            $value = array(null, null, null, null, null);
+            for ($i = 0; $i < 5; $i++) {
+                if (isset($postedParameters["Sted3X$i"])) {
+                    $value[$i] = $postedParameters["Sted3X$i"];
+                    unset($postedParameters["Sted3X$i"]);
+                }
+            }
+            $name = 'Sted3X';
+            $valueSet = count(array_filter($value)) > 0;
+            
+            if ($valueSet) {
+                
+                // Set the value
+                $parameter = $this->parameter($name);
+                $parameter->setValue($value);
+                $this->set($parameter);
+                
+                // Check
+                if (!$parameter->check()) {
+                    $this->message = $parameter->message();
+                    $noErrorsFound = False;
+                }
+                
+            } else {
+                
+                // In this case it is important to know whether the Parameter
+                // must have a value or not
+                $parameter = $this->parameter($name);
+                $mustProvide = $parameter->mustProvide();
+                
+                // Reset the Parameter
+                $parameter->reset();
+                $this->set($parameter);
+                
+                // If the Parameter value must be provided, we return an error
+                if ($mustProvide) {
+                    $this->message = "Please set the Sted 3X percentage!";
+                    $noErrorsFound = False;
+                }
+            }
+        }
+        
 
         return $noErrorsFound;
     }
