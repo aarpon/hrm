@@ -399,6 +399,7 @@ if ( $i == 3 ) {
         Ch<?php echo $i ?>:&nbsp;&nbsp;&nbsp;
         <span class="multichannel">
             <input name="StedSatFact<?php echo $i ?>"
+                   id="StedSatFact<?php echo $i ?>"
                    type="text"
                    size="6"
                    value="<?php
@@ -456,6 +457,7 @@ if ( $i == 3 ) {
         Ch<?php echo $i ?>:&nbsp;&nbsp;&nbsp;
         <span class="multichannel">
             <input name="StedLambda<?php echo $i ?>"
+                   id="StedLambda<?php echo $i ?>"
                    type="text"
                    size="6"
                    value="<?php
@@ -514,6 +516,7 @@ if ( $i == 3 ) {
         Ch<?php echo $i ?>:&nbsp;&nbsp;&nbsp;
         <span class="multichannel">
             <input name="StedImmunity<?php echo $i ?>"
+                   id="StedImmunity<?php echo $i ?>"
                    type="text"
                    size="6"
                    value="<?php
@@ -573,6 +576,7 @@ if ($_SESSION['setting']->isSted3X()) {
         Ch<?php echo $i ?>:&nbsp;&nbsp;&nbsp;
         <span class="multichannel">
             <input name="Sted3X<?php echo $i ?>"
+                   id="Sted3X<?php echo $i ?>"
                    type="text"
                    size="6"
                    value="<?php

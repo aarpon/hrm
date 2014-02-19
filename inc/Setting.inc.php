@@ -329,6 +329,11 @@ class ParameterSetting extends Setting {
         foreach ($this->parameter as $objName => $objInstance) {
 
             switch ( $objName ) {
+                case "StedDeplMode" :
+                case "StedLambda" :
+                case "StedSatFact" :
+                case "StedImmunity" :
+                case "Sted3X" :
                 case "ExcitationWavelength" :
                 case "EmissionWavelength" :
                 case "PinholeSize" :
@@ -361,7 +366,7 @@ class ParameterSetting extends Setting {
                 $ok = False;
             }
         }
-
+        
         if ($ok) {
             if ( !$this->checkPostedCapturingParameters($postedParams) ) {
                 $ok = False;
@@ -464,7 +469,7 @@ class ParameterSetting extends Setting {
         
         $this->message = '';
         $noErrorsFound = True;
-
+        
 
         // Get the names of the relevant parameters
         $names = $this->microscopeParameterNames();
@@ -996,7 +1001,7 @@ class ParameterSetting extends Setting {
         }
 
         // PinholeSize must be defined for all confocal microscopes
-        if ($this->isMultiPointOrSinglePointConfocal()) {
+        if ($this->hasPinhole()) {
 
             // Pinhole sizes
             $value = array(null, null, null, null, null);
@@ -1008,7 +1013,6 @@ class ParameterSetting extends Setting {
             }
             $name = 'PinholeSize';
             $valueSet = count(array_filter($value)) > 0;
-
             if ($valueSet) {
         
                 // Set the value
@@ -1467,8 +1471,7 @@ class ParameterSetting extends Setting {
         // the current Setting (e.g. it does not make sense to display the 
         // pinhole size if the microscope type is 'widefield'.
         foreach ($this->parameter as $parameter) {
-            if (!$this->isMultiPointOrSinglePointConfocal() &&
-                    $parameter->name() == 'PinholeSize')
+            if (!$this->hasPinhole() && $parameter->name() == 'PinholeSize')
                 continue;
             if ($parameter->name() == 'ImageGeometry')
                 continue;
