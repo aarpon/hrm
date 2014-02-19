@@ -123,6 +123,29 @@ $_SESSION['setting']->set($stedImmunityParam);
 
 /* *****************************************************************************
  *
+ * MANAGE THE STED 3X FACTOR
+ *
+ **************************************************************************** */
+
+if ($_SESSION['setting']->isSted3X()) {
+    $sted3XParam = $_SESSION['setting']->parameter("Sted3X");
+    $sted3XParam->setNumberOfChannels($chanCnt);
+    $sted3X = $sted3XParam->value();
+    
+    for ($i=0; $i < $chanCnt; $i++) {
+        $sted3XKey = "sted3X{$i}";
+        if (isset($_POST[$sted3XKey])) {
+            $sted3X[$i] = $_POST[$sted3XKey];
+        }
+    }
+    $sted3XParam->setValue($sted3X);
+    $sted3XParam->setNumberOfChannels($chanCnt);
+    
+    $_SESSION['setting']->set($sted3XParam);
+}
+
+/* *****************************************************************************
+ *
  * WHICH IS THE NEXT PAGE?
  *
  **************************************************************************** */
@@ -471,7 +494,7 @@ if ( $i == 3 ) {
 	<span class="nowrap">
         Ch<?php echo $i ?>:&nbsp;&nbsp;&nbsp;
         <span class="multichannel">
-            <input name="StedWavelength<?php echo $i ?>"
+            <input name="StedImmunity<?php echo $i ?>"
                    type="text"
                    size="6"
                    value="<?php
@@ -493,6 +516,66 @@ if ( $i == 3 ) {
             </fieldset>
 
 
+<?php
+    /***************************************************************************
+
+      Sted3X
+
+    ***************************************************************************/
+
+if ($_SESSION['setting']->isSted3X()) {
+    $parameterSted3X = $_SESSION['setting']->parameter("Sted3X");
+?>
+
+            <fieldset class="setting <?php
+            echo $parameterSted3X->confidenceLevel(); ?>"
+            onmouseover="javascript:changeQuickHelp( 'type' );" >
+
+                <legend>
+                    <a href="javascript:openWindow(
+                       'http://www.svi.nl/STED')">
+                        <img src="images/help.png" alt="?" />
+                    </a>
+    STED 3X (%)
+                </legend>
+
+
+                    <div class="multichannel">
+<?php
+
+    for ($i = 0; $i < $chanCnt; $i++) {
+
+        // Add a line break after 3 entries
+        if ( $i == 3 ) {
+            echo "<br />";
+        }
+?>
+	<span class="nowrap">
+        Ch<?php echo $i ?>:&nbsp;&nbsp;&nbsp;
+        <span class="multichannel">
+            <input name="Sted3X<?php echo $i ?>"
+                   type="text"
+                   size="6"
+                   value="<?php
+                    if ($i <= sizeof($sted3X)) {
+                        echo $sted3X[$i];
+                    } ?>"
+                   class="multichannelinput" />
+        </span>&nbsp;
+    </span>
+<?php
+    }
+?>
+    
+                <div class="bottom">
+                <p class="message_confidence_<?php 
+                echo $parameterSted3X->confidenceLevel(); ?>">&nbsp;
+                </p>
+            </div>
+            </fieldset>
+<?php
+}
+?>
 
 <?php
 /****************************************************************************

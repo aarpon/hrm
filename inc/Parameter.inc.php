@@ -3002,3 +3002,53 @@ class StedImmunity extends NumericalArrayParameter {
 		return $result;
 	}
 }
+
+/*
+	============================================================================
+*/
+
+/*!
+ \class	Sted3X
+ \brief	A NumericalParameter to represent the STED immunity fraction
+*/
+class Sted3X extends NumericalArrayParameter {
+
+	/*!
+		\brief	Constructor: creates an empty Parameter
+	*/
+	public function __construct() {
+		parent::__construct("Sted3X");
+	}
+
+	/*!
+		\brief	Confirms that this is NOT a Microscope Parameter.
+         \brief  We make a distinction between STED parameters and 
+                microscope parameters.
+		\return true
+	*/
+	public function isForMicroscope() {
+		return False;
+	}
+
+    /*!
+      \brief	Confirms that this is a Sted Parameter.
+      \brief  We make a distinction between STED parameters and 
+      microscope parameters.
+      \return true
+    */
+	public function isForSted() {
+		return True;
+	}
+
+	/*!
+		\brief	Checks whether the Parameter is valid
+		\return	true if the Parameter is valid, false otherwise
+	*/
+	public function check( ) {
+		$result = parent::check( );
+		if ( $result == false ) {
+			$this->message = "STED 3X: " . $this->message;
+		}
+		return $result;
+	}
+}

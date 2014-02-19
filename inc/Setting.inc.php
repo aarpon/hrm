@@ -280,7 +280,8 @@ class ParameterSetting extends Setting {
             'StedDeplMode',
             'StedSatFact',
             'StedLambda',
-            'StedImmunity'
+            'StedImmunity',
+            'Sted3X'
         );
         foreach ($parameterClasses as $class) {
             $param = new $class;
