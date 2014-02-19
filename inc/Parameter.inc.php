@@ -2830,7 +2830,7 @@ class StedDeplMode extends AnyTypeArrayParameter {
     /*!
       \brief	Confirms that this is a Sted Parameter.
       \brief  We make a distinction between STED parameters and 
-      microscope parameters.
+              microscope parameters.
       \return true
     */
 	public function isForSted() {

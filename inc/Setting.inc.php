@@ -205,7 +205,6 @@ abstract class Setting {
     */
     public function save() {
         $db = new DatabaseConnection();
-
         $result = $db->saveParameterSettings($this);
         if (!$result) {
             $this->message = "save setting - database access failed!";

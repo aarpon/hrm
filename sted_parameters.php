@@ -307,28 +307,47 @@ include("header.inc.php");
 <?php                              
 $possibleValues = $parameterStedDeplMode->possibleValues();
 
-/* Loop on rows. */
+/* Make sure the Confocal option is the last one. */
+for ($i = 0; $i < count($possibleValues); $i++) {
+    $arrValue = array_shift($possibleValues);
+    array_push($possibleValues,$arrValue);
+    if (strstr($arrValue,"Confocal")) {
+        break;
+    }
+}
+
+                        /* Loop on rows. */
+
 for ($chan = 0; $chan < $chanCnt; $chan++) {
 ?>    
     <tr><td>Ch<?php echo $chan; ?>:</td>
     
-    <td><select name="StedDeplMode<?php echo $chan; ?>">
+    <td><select name="StedDeplMode<?php echo $chan;?>">
     
 <?php
-    /* Loop for select options. */
+                        /* Loop for select options. */
+    
     foreach($possibleValues as $possibleValue) {
+        $translatedValue =
+        $parameterStedDeplMode->translatedValueFor($possibleValue);
+        
+        if ($translatedValue == $stedDepl[$chan]) {
+            $selected = " selected=\"selected\"";
+        } else {
+            $selected = "";
+        }
 ?>
-          <option value=<?php echo "$possibleValue";?> >
+        <option value=<?php echo $translatedValue; echo $selected;?>>
             <?php echo $possibleValue; ?> 
-          </option>
+            </option>
 <?php
-    } /* End of loop for select options. */
+    }                    /* End of loop for select options. */
 ?>    
     </select></td>            
 
     </tr>
 <?php   
-} /* End of loop on rows. */
+}                        /* End of loop on rows. */
 ?>
 
                 </table> <!-- StedDeplModeValues -->

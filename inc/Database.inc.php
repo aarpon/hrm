@@ -375,9 +375,11 @@ class DatabaseConnection {
       $result = $result && $this->execute($query);
     }
     $existsAlready = $this->existsParametersFor($settings);
+
     foreach ($settings->parameterNames() as $parameterName) {
       $parameter = $settings->parameter($parameterName);
       $parameterValue = $parameter->internalValue();
+
       if (is_array($parameterValue)) {
           // Before, # was used as a separator, but the first element with
           // index zero was always NULL because channels started their indexing
@@ -414,6 +416,7 @@ class DatabaseConnection {
       }
       $result = $result && $this->execute($query);
     }
+
     return $result;
   }
 

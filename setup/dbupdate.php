@@ -3600,7 +3600,7 @@ if ($current_revision < $n) {
 
     $record = array();
     $record["parameter"] = "StedDeplMode";
-    $record["value"] = "Off/Confocal";
+    $record["value"] = "-- Off / Confocal --";
     $record["translation"] = "off-confocal";
     $record["isDefault"] = "f";
     $record["parameter_key"] = "StedDeplMode4";           
