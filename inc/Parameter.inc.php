@@ -2902,3 +2902,53 @@ class StedSatFact extends NumericalArrayParameter {
 		return $result;
 	}
 }
+
+/*
+	============================================================================
+*/
+
+/*!
+ \class	StedLambda
+ \brief	A NumericalParameter to represent the STED depletion wavelength
+*/
+class StedLambda extends NumericalArrayParameter {
+
+	/*!
+		\brief	Constructor: creates an empty Parameter
+	*/
+	public function __construct() {
+		parent::__construct("StedLambda");
+	}
+
+	/*!
+		\brief	Confirms that this is NOT a Microscope Parameter.
+         \brief  We make a distinction between STED parameters and 
+                microscope parameters.
+		\return true
+	*/
+	public function isForMicroscope() {
+		return False;
+	}
+
+    /*!
+      \brief	Confirms that this is a Sted Parameter.
+      \brief  We make a distinction between STED parameters and 
+      microscope parameters.
+      \return true
+    */
+	public function isForSted() {
+		return True;
+	}
+
+	/*!
+		\brief	Checks whether the Parameter is valid
+		\return	true if the Parameter is valid, false otherwise
+	*/
+	public function check( ) {
+		$result = parent::check( );
+		if ( $result == false ) {
+			$this->message = "Depletion Wavelength: " . $this->message;
+		}
+		return $result;
+	}
+}

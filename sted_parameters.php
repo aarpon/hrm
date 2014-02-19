@@ -49,7 +49,7 @@ foreach ( $parameterNames as $name ) {
 
 $stedDeplParam = $_SESSION['setting']->parameter("StedDeplMode");
 $stedDepl = $stedDeplParam->value();
-for ($i=0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
+for ($i=0; $i < $chanCnt; $i++) {
   $stedDeplKey = "stedDepl{$i}";
   if (isset($_POST[$stedDeplKey])) {
     $stedDepl[$i] = $_POST[$stedDeplKey];
@@ -65,8 +65,7 @@ $_SESSION['setting']->set($stedDeplParam);
  **************************************************************************** */
 
 $stedSatFactParam = $_SESSION['setting']->parameter("StedSatFact");
-$stedSatFactParam->setNumberOfChannels(
-    $_SESSION['setting']->numberOfChannels() );
+$stedSatFactParam->setNumberOfChannels($chanCnt);
 $stedSatFact = $stedSatFactParam->value();
 
 for ($i=0; $i < $chanCnt; $i++) {
@@ -76,10 +75,30 @@ for ($i=0; $i < $chanCnt; $i++) {
   }
 }
 $stedSatFactParam->setValue($stedSatFact);
-$stedSatFactParam->setNumberOfChannels(
-    $_SESSION['setting']->numberOfChannels( ) );
+$stedSatFactParam->setNumberOfChannels($chanCnt);
 
 $_SESSION['setting']->set($stedSatFactParam);
+
+/* *****************************************************************************
+ *
+ * MANAGE THE STED DEPLETION WAVELENGTH
+ *
+ **************************************************************************** */
+
+$stedLambdaParam = $_SESSION['setting']->parameter("StedLambda");
+$stedLambdaParam->setNumberOfChannels($chanCnt);
+$stedLambda = $stedLambdaParam->value();
+
+for ($i=0; $i < $chanCnt; $i++) {
+  $stedLambdaKey = "stedLambda{$i}";
+  if (isset($_POST[$stedLambdaKey])) {
+      $stedLambda[$i] = $_POST[$stedLambdaKey];
+  }
+}
+$stedLambdaParam->setValue($stedLambda);
+$stedLambdaParam->setNumberOfChannels($chanCnt);
+
+$_SESSION['setting']->set($stedLambdaParam);
 
 /* *****************************************************************************
  *
@@ -333,6 +352,63 @@ if ( $i == 3 ) {
                 <div class="bottom">
                 <p class="message_confidence_<?php 
                 echo $parameterStedSatFact->confidenceLevel(); ?>">&nbsp;
+                </p>
+            </div>
+            </fieldset>
+
+<?php
+    /***************************************************************************
+
+      StedLambda
+
+    ***************************************************************************/
+
+    $parameterStedLambda = $_SESSION['setting']->parameter("StedLambda");
+?>
+
+            <fieldset class="setting <?php
+            echo $parameterStedLambda->confidenceLevel(); ?>"
+            onmouseover="javascript:changeQuickHelp( 'type' );" >
+
+                <legend>
+                    <a href="javascript:openWindow(
+                       'http://www.svi.nl/STED')">
+                        <img src="images/help.png" alt="?" />
+                    </a>
+                    STED Wavelength
+                </legend>
+
+
+                    <div class="multichannel">
+<?php
+
+for ($i = 0; $i < $chanCnt; $i++) {
+
+// Add a line break after 3 entries
+if ( $i == 3 ) {
+    echo "<br />";
+}
+?>
+	<span class="nowrap">
+        Ch<?php echo $i ?>:&nbsp;&nbsp;&nbsp;
+        <span class="multichannel">
+            <input name="StedWavelength<?php echo $i ?>"
+                   type="text"
+                   size="6"
+                   value="<?php
+                    if ($i <= sizeof($stedLambda)) {
+                        echo $stedLambda[$i];
+                    } ?>"
+                   class="multichannelinput" />
+        </span>&nbsp;
+    </span>
+<?php
+}
+?>
+    
+                <div class="bottom">
+                <p class="message_confidence_<?php 
+                echo $parameterStedLambda->confidenceLevel(); ?>">&nbsp;
                 </p>
             </div>
             </fieldset>
