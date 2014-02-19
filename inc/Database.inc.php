@@ -72,7 +72,7 @@ class DatabaseConnection {
       "StedLambda"           => "stedLambda",
       "StedSatFact"          => "stedSatFact",
       "StedImmunity"         => "stedImmunity",
-      "Sted3X"               => "sted3X");
+      "Sted3D"               => "sted3D");
   }
 
   /*!

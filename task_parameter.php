@@ -507,9 +507,39 @@ $value = $parameter->value();
 
                 </div>
 
-
             </fieldset>
-            </div>
+
+    </div>
+
+
+    
+    <div id="Stabilization">
+    <?php
+    if ($_SESSION['setting']->isSted() || $_SESSION['setting']->isSted3D()) {
+        $param = $_SESSION['task_setting']->parameter("ZStabilizationEnabled");
+    ?>
+
+    <fieldset class="setting provided"
+    onmouseover="javascript:changeQuickHelp( '' );" >
+    
+    <legend>
+    Stabilization in Z
+    </legend>
+
+    <p>STED images often need to be stabilized in the Z direction before they
+        are deconvolved. Please note that skipping this step might affect the
+        quality of the deconvolution.</p> 
+    <input id="ZStabilizationEnabled"
+         name="ZStabilizationEnabled"
+         type="checkbox"
+         value="<?php echo $param->value(); ?>" /> <label> Stabilize </label>
+
+    <?php
+    }
+    ?>
+    </div> <!-- Stabilization -->
+
+
 
             <div><input name="OK" type="hidden" /></div>
 

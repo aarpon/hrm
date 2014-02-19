@@ -1403,7 +1403,7 @@ class MicroscopeType extends ChoiceParameter {
                 return $db->hasLicense("multi-photon");
             case 'STED':
                 return $db->hasLicense("sted");
-            case 'STED 3X':
+            case 'STED 3D':
                 return $db->hasLicense("sted3D");
             default:
                 return false;
@@ -3022,16 +3022,16 @@ class StedImmunity extends NumericalArrayParameter {
 */
 
 /*!
- \class	Sted3X
+ \class	Sted3D
  \brief	A NumericalParameter to represent the STED immunity fraction
 */
-class Sted3X extends NumericalArrayParameter {
+class Sted3D extends NumericalArrayParameter {
 
 	/*!
 		\brief	Constructor: creates an empty Parameter
 	*/
 	public function __construct() {
-		parent::__construct("Sted3X");
+		parent::__construct("Sted3D");
 	}
 
 	/*!
@@ -3061,8 +3061,28 @@ class Sted3X extends NumericalArrayParameter {
 	public function check( ) {
 		$result = parent::check( );
 		if ( $result == false ) {
-			$this->message = "STED 3X: " . $this->message;
+			$this->message = "STED 3D: " . $this->message;
 		}
 		return $result;
 	}
+}
+
+/*
+	============================================================================
+*/
+
+/*!
+ \class	ZStabilizationEnabled
+ \brief	A BooleanParameter to indicate whether stabilization in the Z
+        direction is enabled.
+*/
+class ZStabilizationEnabled extends BooleanParameter {
+
+	/*!
+		\brief	Constructor: creates an empty Parameter
+	*/
+	public function __construct() {
+		parent::__construct("ZStabilizationEnabled");
+	}
+
 }

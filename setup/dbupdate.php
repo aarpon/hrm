@@ -3508,8 +3508,8 @@ if ($current_revision < $n) {
 
     $record = array();
     $record["parameter"] = "MicroscopeType";
-    $record["value"] = "STED 3X";
-    $record["translation"] = "sted3x";
+    $record["value"] = "STED 3D";
+    $record["translation"] = "sted3d";
     $record["isDefault"] = "f";
     $record["parameter_key"] = "MicroscopeType6";           
 
@@ -3600,7 +3600,7 @@ if ($current_revision < $n) {
 
     $record = array();
     $record["parameter"] = "StedDeplMode";
-    $record["value"] = "-- Off / Confocal --";
+    $record["value"] = "Off/Confocal";
     $record["translation"] = "off-confocal";
     $record["isDefault"] = "f";
     $record["parameter_key"] = "StedDeplMode4";           
@@ -3627,7 +3627,7 @@ if ($current_revision < $n) {
                         "stedLambda",
                         "stedSatFact",
                         "stedImmunity",
-                        "sted3X");
+                        "sted3D");
     $type = "C(16)";
 
     $allcolumns = $db->MetaColumnNames( 'confidence_levels' );    

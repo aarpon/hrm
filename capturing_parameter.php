@@ -75,7 +75,7 @@ $saveToDB = false;
 $PSF = $_SESSION['setting']->parameter( 'PointSpreadFunction' )->value( );
 $MICR = $_SESSION['setting']->parameter("MicroscopeType")->value( );
 
-if ($MICR == "STED" || $MICR == 'STED 3X') {
+if ($MICR == "STED" || $MICR == 'STED 3D') {
     $pageToGo = 'sted_parameters.php';  
 } elseif ($PSF == 'measured' ) {
   $pageToGo = 'select_psf.php';

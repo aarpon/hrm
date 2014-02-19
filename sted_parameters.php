@@ -123,25 +123,25 @@ $_SESSION['setting']->set($stedImmunityParam);
 
 /* *****************************************************************************
  *
- * MANAGE THE STED 3X FACTOR
+ * MANAGE THE STED 3D FACTOR
  *
  **************************************************************************** */
 
-if ($_SESSION['setting']->isSted3X()) {
-    $sted3XParam = $_SESSION['setting']->parameter("Sted3X");
-    $sted3XParam->setNumberOfChannels($chanCnt);
-    $sted3X = $sted3XParam->value();
+if ($_SESSION['setting']->isSted3D()) {
+    $sted3DParam = $_SESSION['setting']->parameter("Sted3D");
+    $sted3DParam->setNumberOfChannels($chanCnt);
+    $sted3D = $sted3DParam->value();
     
     for ($i=0; $i < $chanCnt; $i++) {
-        $sted3XKey = "sted3X{$i}";
-        if (isset($_POST[$sted3XKey])) {
-            $sted3X[$i] = $_POST[$sted3XKey];
+        $sted3DKey = "sted3D{$i}";
+        if (isset($_POST[$sted3DKey])) {
+            $sted3D[$i] = $_POST[$sted3DKey];
         }
     }
-    $sted3XParam->setValue($sted3X);
-    $sted3XParam->setNumberOfChannels($chanCnt);
+    $sted3DParam->setValue($sted3D);
+    $sted3DParam->setNumberOfChannels($chanCnt);
     
-    $_SESSION['setting']->set($sted3XParam);
+    $_SESSION['setting']->set($sted3DParam);
 }
 
 /* *****************************************************************************
@@ -541,16 +541,16 @@ if ( $i == 3 ) {
 <?php
     /***************************************************************************
 
-      Sted3X
+      Sted3D
 
     ***************************************************************************/
 
-if ($_SESSION['setting']->isSted3X()) {
-    $parameterSted3X = $_SESSION['setting']->parameter("Sted3X");
+if ($_SESSION['setting']->isSted3D()) {
+    $parameterSted3D = $_SESSION['setting']->parameter("Sted3D");
 ?>
 
             <fieldset class="setting <?php
-            echo $parameterSted3X->confidenceLevel(); ?>"
+            echo $parameterSted3D->confidenceLevel(); ?>"
             onmouseover="javascript:changeQuickHelp( 'type' );" >
 
                 <legend>
@@ -558,7 +558,7 @@ if ($_SESSION['setting']->isSted3X()) {
                        'http://www.svi.nl/STED')">
                         <img src="images/help.png" alt="?" />
                     </a>
-    STED 3X (%)
+    STED 3D (%)
                 </legend>
 
 
@@ -575,13 +575,13 @@ if ($_SESSION['setting']->isSted3X()) {
 	<span class="nowrap">
         Ch<?php echo $i ?>:&nbsp;&nbsp;&nbsp;
         <span class="multichannel">
-            <input name="Sted3X<?php echo $i ?>"
-                   id="Sted3X<?php echo $i ?>"
+            <input name="Sted3D<?php echo $i ?>"
+                   id="Sted3D<?php echo $i ?>"
                    type="text"
                    size="6"
                    value="<?php
-                    if ($i <= sizeof($sted3X)) {
-                        echo $sted3X[$i];
+                    if ($i <= sizeof($sted3D)) {
+                        echo $sted3D[$i];
                     } ?>"
                    class="multichannelinput" />
         </span>&nbsp;
@@ -592,7 +592,7 @@ if ($_SESSION['setting']->isSted3X()) {
     
                 <div class="bottom">
                 <p class="message_confidence_<?php 
-                echo $parameterSted3X->confidenceLevel(); ?>">&nbsp;
+                echo $parameterSted3D->confidenceLevel(); ?>">&nbsp;
                 </p>
             </div>
             </fieldset>
@@ -642,8 +642,8 @@ if ($_SESSION['setting']->isSted3X()) {
                  for your experimental setup.</p>
 
     <p>These parameters consist of the STED depletion mode, wavelength,
-       saturation factor, immunity percentage and, when applicable ,
-       STED 3X percentage.</p>
+       saturation factor, immunity percentage and, when applicable,
+       STED 3D percentage.</p>
             </div>
 
       <?php

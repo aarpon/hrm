@@ -280,7 +280,7 @@ class ParameterSetting extends Setting {
             'StedSatFact',
             'StedLambda',
             'StedImmunity',
-            'Sted3X'
+            'Sted3D'
         );
         foreach ($parameterClasses as $class) {
             $param = new $class;
@@ -333,7 +333,7 @@ class ParameterSetting extends Setting {
                 case "StedLambda" :
                 case "StedSatFact" :
                 case "StedImmunity" :
-                case "Sted3X" :
+                case "Sted3D" :
                 case "ExcitationWavelength" :
                 case "EmissionWavelength" :
                 case "PinholeSize" :
@@ -665,7 +665,7 @@ class ParameterSetting extends Setting {
         }
 
 
-        if (!$this->isSted() && !$this->isSted3X()) {
+        if (!$this->isSted() && !$this->isSted3D()) {
             return False;
         }
 
@@ -844,16 +844,16 @@ class ParameterSetting extends Setting {
         }
          
 
-        // Sted 3X
-        if ($this->isSted3X()) {
+        // Sted 3D
+        if ($this->isSted3D()) {
             $value = array(null, null, null, null, null);
             for ($i = 0; $i < 5; $i++) {
-                if (isset($postedParameters["Sted3X$i"])) {
-                    $value[$i] = $postedParameters["Sted3X$i"];
-                    unset($postedParameters["Sted3X$i"]);
+                if (isset($postedParameters["Sted3D$i"])) {
+                    $value[$i] = $postedParameters["Sted3D$i"];
+                    unset($postedParameters["Sted3D$i"]);
                 }
             }
-            $name = 'Sted3X';
+            $name = 'Sted3D';
             $valueSet = count(array_filter($value)) > 0;
             
             if ($valueSet) {
@@ -882,7 +882,7 @@ class ParameterSetting extends Setting {
                 
                 // If the Parameter value must be provided, we return an error
                 if ($mustProvide) {
-                    $this->message = "Please set the Sted 3X percentage!";
+                    $this->message = "Please set the Sted 3D percentage!";
                     $noErrorsFound = False;
                 }
             }
@@ -1079,7 +1079,7 @@ class ParameterSetting extends Setting {
             }
         }
         
-        if ($this->isSted() || $this->isSted3X()) {
+        if ($this->isSted() || $this->isSted3D()) {
             $noErrorsFound = True;
         }
 
@@ -1763,14 +1763,14 @@ class ParameterSetting extends Setting {
     }
 
     /*!
-      \brief   Checks whether the currently selected microscope type is sted 3X.
-      \return  true if the currently selected microscope type is sted 3X, false
+      \brief   Checks whether the currently selected microscope type is sted 3D.
+      \return  true if the currently selected microscope type is sted 3D, false
                otherwise.
     */
-    public function isSted3X() {
+    public function isSted3D() {
         $parameter = $this->parameter('MicroscopeType');
         $value = $parameter->value();
-        return ($value === 'STED 3X');
+        return ($value === 'STED 3D');
     }
 
     /*!
@@ -1837,7 +1837,7 @@ class ParameterSetting extends Setting {
             return True;
         } elseif ($this->isSted()) {
             return True;
-        } elseif ($this->isSted3X()) {
+        } elseif ($this->isSted3D()) {
             return True;
         } else {
             return False;
@@ -1932,7 +1932,8 @@ class TaskSetting extends Setting {
             'OutputFileFormat',
             'MultiChannelOutput',
             'QualityChangeStoppingCriterion',
-            'DeconvolutionAlgorithm' );
+            'DeconvolutionAlgorithm',
+            'ZStabilizationEnabled');
 
         foreach ($parameterClasses as $class) {
             $param = new $class;
