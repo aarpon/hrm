@@ -1456,6 +1456,7 @@ class ParameterSetting extends Setting {
     public function displayString() {
         $result = '';
 
+
         // These parameters are important to properly display all the others
         $numberOfChannels = $this->parameter("NumberOfChannels")->value();
         $PSFmode = $this->parameter("PointSpreadFunction")->value();
@@ -1512,6 +1513,20 @@ class ParameterSetting extends Setting {
                     !( $performAberrationCorrection == 1 &&
                     $aberrationCorrectionMode == 'advanced' &&
                     $advancedCorrectionOptions == 'user' ))
+                continue;
+            if ($parameter->name() == 'StedDeplMode'
+                && (!$this->isSted() && !$this->isSted3D()))
+                continue;
+            if ($parameter->name() == 'StedSatFact'
+                && (!$this->isSted() && !$this->isSted3D()))
+                continue;
+            if ($parameter->name() == 'StedLambda'
+                && (!$this->isSted() && !$this->isSted3D()))
+                continue;
+            if ($parameter->name() == 'StedImmunity'
+                && (!$this->isSted() && !$this->isSted3D()))
+                continue;
+            if ($parameter->name() == 'Sted3D' && !$this->isSted3D())
                 continue;
             $result = $result . $parameter->displayString($numberOfChannels);
         }
@@ -2141,7 +2156,7 @@ class TaskSetting extends Setting {
             }
             if ($parameter->name() == 'MultiChannelOutput') {
                 continue;
-            }
+            }           
             $result = $result . 
                 $parameter->displayString($numberOfChannels);
         }
