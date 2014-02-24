@@ -3072,17 +3072,32 @@ class Sted3D extends NumericalArrayParameter {
 */
 
 /*!
- \class	ZStabilizationEnabled
+ \class	ZStabilization
  \brief	A BooleanParameter to indicate whether stabilization in the Z
         direction is enabled.
 */
-class ZStabilizationEnabled extends BooleanParameter {
+class ZStabilization extends ChoiceParameter {
 
 	/*!
 		\brief	Constructor: creates an empty Parameter
 	*/
 	public function __construct() {
-		parent::__construct("ZStabilizationEnabled");
+		parent::__construct("ZStabilization");
 	}
 
+    /*!
+		\brief	Returns the string representation of the Parameter
+		\param	$numberOfChannels	This is ignored
+		\return	string representation of the Parameter
+	*/
+	public function displayString( $numberOfChannels = 0 ) {
+		if ($this->value( ) == 0 ) {
+			$value = "no";
+		} else {
+			$value = "yes";
+		}
+		$result = $this->formattedName( );
+		$result = $result . $value . "\n";
+		return $result;
+	}
 }

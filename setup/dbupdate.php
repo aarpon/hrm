@@ -3483,6 +3483,51 @@ if ($current_revision < $n) {
     }
 
 
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "ZStabilization";
+    $record["value"] = "1";
+    $record["translation"] = "Yes, stabilize the dataset in the Z direction";
+    $record["isDefault"] = "t";
+
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .      
+             " WHERE parameter='" . $record['parameter'] .
+             "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {    
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                   "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "ZStabilization";
+    $record["value"] = "0";
+    $record["translation"] = "No, stabilization is not necessary.";
+    $record["isDefault"] = "f";
+
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .      
+             " WHERE parameter='" . $record['parameter'] .
+             "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {    
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                   "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
     $record = array();
     $record["parameter"] = "MicroscopeType";
     $record["value"] = "STED";

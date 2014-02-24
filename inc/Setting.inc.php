@@ -1933,7 +1933,7 @@ class TaskSetting extends Setting {
             'MultiChannelOutput',
             'QualityChangeStoppingCriterion',
             'DeconvolutionAlgorithm',
-            'ZStabilizationEnabled');
+            'ZStabilization');
 
         foreach ($parameterClasses as $class) {
             $param = new $class;
@@ -2079,6 +2079,18 @@ class TaskSetting extends Setting {
                 $postedParameters["QualityChangeStoppingCriterion"] == '') {
             $parameter = $this->parameter("QualityChangeStoppingCriterion");
             $parameter->setValue($postedParameters["QualityChangeStoppingCriterion"]);
+            $this->set($parameter);
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = False;
+            }
+        }
+
+        // Stabilization in Z
+        if (isset($postedParameters["ZStabilization"]) ||
+                $postedParameters["ZStabilization"] == '') {
+            $parameter = $this->parameter("ZStabilization");
+            $parameter->setValue($postedParameters["ZStabilization"]);
             $this->set($parameter);
             if (!$parameter->check()) {
                 $this->message = $parameter->message();

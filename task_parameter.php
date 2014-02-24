@@ -56,6 +56,7 @@ if ( ! ( strpos( $_SERVER[ 'HTTP_REFERER' ],
  *
  **************************************************************************** */
 
+
 if ( $_SESSION[ 'task_setting' ]->checkPostedTaskParameters( $_POST ) ) {
   $saved = $_SESSION['task_setting']->save();
   if ($saved) {
@@ -516,28 +517,58 @@ $value = $parameter->value();
     <div id="Stabilization">
     <?php
     if ($_SESSION['setting']->isSted() || $_SESSION['setting']->isSted3D()) {
-        $param = $_SESSION['task_setting']->parameter("ZStabilizationEnabled");
     ?>
 
     <fieldset class="setting provided"
     onmouseover="javascript:changeQuickHelp( '' );" >
     
     <legend>
-    Stabilization in Z
+        <a href="javascript:openWindow(
+                       'http://www.svi.nl/ObjectStabilizer')">
+                        <img src="images/help.png" alt="?" />
+        </a>
+    Would you like to stabilize the dataset in the Z direction?
     </legend>
 
-    <p>STED images often need to be stabilized in the Z direction before they
-        are deconvolved. Please note that skipping this step might affect the
-        quality of the deconvolution.</p> 
-    <input id="ZStabilizationEnabled"
-         name="ZStabilizationEnabled"
-         type="checkbox"
-         value="<?php echo $param->value(); ?>" /> <label> Stabilize </label>
+            <p>STED images often need to be stabilized in the Z direction before they
+       are deconvolved. Please note that skipping this step might affect the
+       quality of the deconvolution.</p> 
 
-    <?php
+        <select id="ZStabilization"
+        name="ZStabilization">
+<?php
+                    
+/*
+      STABILIZATION
+*/
+$parameterStabilization =
+    $_SESSION['task_setting']->parameter("ZStabilization");
+$possibleValues = $parameterStabilization->possibleValues();
+$selectedMode  = $parameterStabilization->value();
+
+        foreach($possibleValues as $possibleValue) {
+            $translation =
+                $parameterStabilization->translatedValueFor( $possibleValue );
+            if ( $possibleValue == $selectedMode ) {
+                $option = "selected=\"selected\"";
+            } else {
+                $option = "";
+            }
+?>
+                    <option <?php echo $option?>
+                        value="<?php echo $possibleValue?>">
+                        <?php echo $translation?>
+                    </option>
+<?php
+        }
+?>
+
+</select>
+
+<?php
     }
-    ?>
-    </div> <!-- Stabilization -->
+?>
+</div> <!-- Stabilization -->
 
 
 
