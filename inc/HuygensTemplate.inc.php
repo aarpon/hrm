@@ -431,6 +431,11 @@ class HuygensTemplate {
                     'ri'                        => '',
                     'ril'                       => '',
                     'na'                        => '',
+                    'stedMode'                  => '',
+                    'stedLambda'                => '',
+                    'stedSatFact'               => '',
+                    'stedImmunity'              => '',
+                    'sted3D'                    => '',
                     'listID'                    => 'setp' );
 
         /* Options for the 'set image pararmeter' action */
@@ -451,6 +456,11 @@ class HuygensTemplate {
                     'ri'                        =>  'parState,ri',
                     'ril'                       =>  'parState,ril',
                     'na'                        =>  'parState,na',
+                    'stedMode'                  =>  'parState,stedMode',
+                    'stedLambda'                =>  'parState,stedLambda',
+                    'stedSatFact'               =>  'parState,stedSatFact',
+                    'stedImmunity'              =>  'parState,stedImmunity',
+                    'sted3D'                    =>  'parState,sted3D',
                     'listID'                    =>  'setp' );
 
         /* Options for the 'adjust baseline' action */
@@ -878,6 +888,11 @@ class HuygensTemplate {
             case 'na':
             case 'iFacePrim':
             case 'iFaceScnd':
+            case 'stedMode':
+            case 'stedLambda':
+            case 'stedSatFact':
+            case 'stedImmunity':
+            case 'sted3D':
                 break;
             case 'listID':
                 $setp = $this->string2tcllist($setp);
@@ -1104,6 +1119,61 @@ class HuygensTemplate {
 
     /* -------------------------- Setp task ---------------------------------- */
 
+    /*!
+      \brief     Gets the STED depletion mode. One channel.
+      \param     $channel A channel
+      \return    The STED depletion mode.
+    */
+    private function getStedMode($channel) {
+        $microSetting = $this->microSetting;
+        $stedMode = $microSetting->parameter("StedDeplMode")->value();       
+        return $stedMode[$channel];        
+    }
+
+    /*!
+      \brief     Gets the STED lambda. One channel.
+      \param     $channel A channel
+      \return    The STED lambda.
+    */
+    private function getStedLambda($channel) {
+        $microSetting = $this->microSetting;
+        $stedLambda = $microSetting->parameter("StedLambda")->value();       
+        return $stedLambda[$channel];        
+    }
+
+    /*!
+      \brief     Gets the STED saturation factor. One channel.
+      \param     $channel A channel
+      \return    The STED saturation factor.
+    */
+    private function getStedSaturationFactor($channel) {
+        $microSetting = $this->microSetting;
+        $stedSatFact = $microSetting->parameter("StedSatFact")->value();       
+        return $stedSatFact[$channel];        
+    }
+
+    /*!
+      \brief     Gets the STED immunity factor. One channel.
+      \param     $channel A channel
+      \return    The STED immunity factor.
+    */
+    private function getStedImmunity($channel) {
+        $microSetting = $this->microSetting;
+        $stedImmunity = $microSetting->parameter("StedImmunity")->value();
+        return $stedImmunity[$channel];        
+    }
+
+    /*!
+      \brief     Gets the STED lambda. One channel.
+      \param     $channel A channel
+      \return    The STED lambda.
+    */
+    private function getSted3D($channel) {
+        $microSetting = $this->microSetting;
+        $sted3D = $microSetting->parameter("Sted3D")->value();       
+        return $sted3D[$channel];        
+    }
+    
     /*!
      \brief       Gets the pinhole radius. One channel.
      \param       $channel A channel
@@ -1906,6 +1976,11 @@ class HuygensTemplate {
         case 'ri':
         case 'ril':
         case 'na':
+        case 'stedMode':
+        case 'stedLambda':
+        case 'stedSatFact':
+        case 'stedImmunity':
+        case 'sted3D':
             $numberOfChannels = $this->getNumberOfChannels();
             $cList = "";
 
@@ -1991,6 +2066,11 @@ class HuygensTemplate {
         case 'ri':
         case 'ril':
         case 'na':
+        case 'stedMode':
+        case 'stedLambda':
+        case 'stedSatFact':
+        case 'stedImmunity':
+        case 'sted3D':
             $numberOfChannels = $this->getNumberOfChannels();
             $param = "";
             for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
@@ -2066,6 +2146,21 @@ class HuygensTemplate {
             break;
         case 'sT':
             $parameterValue = $this->getSamplingSizeT();
+            break;
+        case 'stedMode':
+            $parameterValue = $this->getStedMode($channel);
+            break;
+        case 'stedLambda':
+            $parameterValue = $this->getStedLambda($channel);
+            break;
+        case 'stedSatFact':
+            $parameterValue = $this->getStedSaturationFactor($channel);
+            break;            
+        case 'stedImmunity':
+            $parameterValue = $this->getStedImmunity($channel);
+            break;
+        case 'sted3D':
+            $parameterValue = $this->getSted3D($channel);
             break;
         default:
             $parameterValue = "";

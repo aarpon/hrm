@@ -2156,7 +2156,9 @@ class TaskSetting extends Setting {
             }
             if ($parameter->name() == 'MultiChannelOutput') {
                 continue;
-            }           
+            }
+            if ($parameter->name() == 'ZStabilization')
+                continue;            
             $result = $result . 
                 $parameter->displayString($numberOfChannels);
         }
