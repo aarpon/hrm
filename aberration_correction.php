@@ -53,6 +53,19 @@ if ( $_SESSION['setting']->checkPostedAberrationCorrectionParameters( $_POST ) )
   $message = $_SESSION['setting']->message();
 }
 
+
+/* *****************************************************************************
+ *
+ * PREVIOUS PAGE
+ *
+ **************************************************************************** */
+
+if ( $_SESSION['setting']->isSted() || $_SESSION['setting']->isSted3D()) {
+    $back = "sted_parameters.php";
+} else {
+    $back = "capturing_parameter.php";
+}
+
 /* *****************************************************************************
  *
  * CREATE THE PAGE
@@ -465,7 +478,7 @@ if ( ($parameterPerformAberrationCorrection->value( ) == 1) &&
         <input type="button" value="" class="icon previous"
             onmouseover="TagToTip('ttSpanBack' )"
             onmouseout="UnTip()"
-            onclick="document.location.href='capturing_parameter.php'" />
+            onclick="document.location.href='<?php echo $back; ?>'" />
         <input type="button" value="" class="icon up"
             onmouseover="TagToTip('ttSpanCancel' )"
             onmouseout="UnTip()"

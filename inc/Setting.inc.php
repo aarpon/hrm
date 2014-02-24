@@ -666,7 +666,7 @@ class ParameterSetting extends Setting {
 
 
         if (!$this->isSted() && !$this->isSted3D()) {
-            return False;
+            return True;
         }
 
         $noErrorsFound = True;

@@ -615,7 +615,7 @@ if ($_SESSION['setting']->isSted3D()) {
               <input type="button" value="" class="icon previous"
                   onmouseover="TagToTip('ttSpanBack' )"
                   onmouseout="UnTip()"
-                  onclick="document.location.href='image_format.php'" />
+                  onclick="document.location.href='capturing_parameter.php'" />
               <input type="button" value="" class="icon up"
                   onmouseover="TagToTip('ttSpanCancel' )"
                   onmouseout="UnTip()"
