@@ -3577,7 +3577,7 @@ if ($current_revision < $n) {
     $record = array();
     $record["parameter"] = "StedDeplMode";
     $record["value"] = "CW gated detection";
-    $record["translation"] = "CWGated";
+    $record["translation"] = "vortexCWGated";
     $record["isDefault"] = "f";
     $record["parameter_key"] = "StedDeplMode1";           
 
@@ -3600,7 +3600,7 @@ if ($current_revision < $n) {
     $record = array();
     $record["parameter"] = "StedDeplMode";
     $record["value"] = "CW Non gated detection";
-    $record["translation"] = "CWNonGated";
+    $record["translation"] = "vortexCW";
     $record["isDefault"] = "f";
     $record["parameter_key"] = "StedDeplMode2";           
 
@@ -3623,7 +3623,7 @@ if ($current_revision < $n) {
     $record = array();
     $record["parameter"] = "StedDeplMode";
     $record["value"] = "Pulsed";
-    $record["translation"] = "pulsed";
+    $record["translation"] = "vortexPulsed";
     $record["isDefault"] = "t";
     $record["parameter_key"] = "StedDeplMode3";           
 
