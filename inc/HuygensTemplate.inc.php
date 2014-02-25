@@ -868,13 +868,7 @@ class HuygensTemplate {
                 $setp .= $key . " " . $this->getNumberOfChannels();
                 break;
             case 'ps':
-                if ($this->getMicroscopeType() != "nipkow") {
-                    continue 2;
-                }
             case 'pr':
-                if ($this->getMicroscopeType() == "widefield") {
-                    continue 2;
-                }
             case 'micr':
             case 's':
             case 'imagingDir':
@@ -1124,10 +1118,20 @@ class HuygensTemplate {
       \param     $channel A channel
       \return    The STED depletion mode.
     */
-    private function getStedMode($channel) {
+    private function getStedMode($channel, $parseConfocals = False) {
         $microSetting = $this->microSetting;
-        $stedMode = $microSetting->parameter("StedDeplMode")->value();       
-        return $stedMode[$channel];        
+        $stedMode = $microSetting->parameter("StedDeplMode")->value();
+        $deplMode = $stedMode[$channel];
+
+        /* In this case the major microscope mode will be confocal, and the
+           STED depletion mode will not matter. */
+        if ($parseConfocals) {
+            if (strstr($deplMode,'confocal')) {
+                $deplMode = "vortexPulsed";
+            }
+        }
+        
+        return $deplMode;        
     }
 
     /*!
@@ -1186,12 +1190,27 @@ class HuygensTemplate {
     }      
 
     /*!
-     \brief       Gets the microscope type. Same for all channels.
+     \brief       Gets the microscope type.
+     \param       $channel A channel
      \return      The microscope type.
     */
-    private function getMicroscopeType( ) {
-        $microSetting = $this->microSetting;
-        return $microSetting->parameter('MicroscopeType')->translatedValue();
+    private function getMicroscopeType($channel) {
+        $microChoice = $this->microSetting->parameter('MicroscopeType');
+        $micrType = $microChoice->translatedValue();
+
+        if (strstr($micrType,'sted3d')) {
+            $micrType = 'sted';
+        }
+        
+        if (strstr($micrType,'sted')) {
+            $stedMode = $this->getStedMode($channel);
+            
+            if (strstr($stedMode,'confocal')) {
+                $micrType = 'confocal';
+            }
+        }
+        
+        return $micrType;
     }
 
     /*!
@@ -2103,7 +2122,7 @@ class HuygensTemplate {
     private function getParameterValue($paramName,$channel) {
         switch ( $paramName ) {
         case 'micr':
-            $parameterValue = $this->getMicroscopeType();
+            $parameterValue = $this->getMicroscopeType($channel);
             break;
         case 'pr':
             $parameterValue = $this->getPinholeRadius($channel);
@@ -2148,7 +2167,7 @@ class HuygensTemplate {
             $parameterValue = $this->getSamplingSizeT();
             break;
         case 'stedMode':
-            $parameterValue = $this->getStedMode($channel);
+            $parameterValue = $this->getStedMode($channel, True);
             break;
         case 'stedLambda':
             $parameterValue = $this->getStedLambda($channel);
