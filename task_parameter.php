@@ -569,6 +569,11 @@ $selectedMode  = $parameterStabilization->value();
 </select>
 
 <?php
+    } else {
+        $_SESSION['task_setting']->parameter("ZStabilization")->setValue( '0' );
+        ?>
+        <input name="ZStabilization" type="hidden" value="0">
+        <?php
     }
 ?>
 </div> <!-- Stabilization -->

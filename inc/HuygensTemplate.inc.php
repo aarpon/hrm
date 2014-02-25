@@ -130,6 +130,12 @@ class HuygensTemplate {
     private $imgSaveArray;
 
     /*!
+     \var    $ZStabilizeArray
+     \brief  Array with information on the Z stabilize subtask.
+    */
+    private $ZStabilizeArray;
+
+    /*!
      \var    $adjblArray;
      \brief  Array with information on the image adjbl subtask.
     */
@@ -387,6 +393,7 @@ class HuygensTemplate {
                    'setParameters'              =>  'setp',
                    'adjustBaseline'             =>  'adjbl',
                    'algorithms'                 =>  '',
+                   'ZStabilization'              => 'stabilize',
                    'colocalization'             =>  'coloc',
                    '2Dhistogram'                =>  'hist',
                    'XYXZRawAtSrcDir'            =>  'previewGen',
@@ -485,6 +492,13 @@ class HuygensTemplate {
                     'mode'                      =>  'fast',
                     'itMode'                    =>  'auto',
                     'listID'                    =>  '' );
+
+        /* Options for the 'ZStabilization' action.
+           A bit redundant to work with an array here, but this way the
+           foundations for more complex stabilization tasks are laid. */
+        $this->ZStabilizeArray =
+            array( 'enabled'                    =>  '0',
+                   'listID'                    =>   'stabilize');
 
         /* Options for the 'colocalization analysis' action */
         $this->colocArray  =
@@ -722,6 +736,7 @@ class HuygensTemplate {
             case 'setParameters':
             case 'adjustBaseline':
             case 'algorithms':
+            case 'ZStabilization':
             case 'colocalization':
             case '2Dhistogram':    
             case 'XYXZRawAtSrcDir':
@@ -777,6 +792,9 @@ class HuygensTemplate {
                 break;
             case 'adjustBaseline':
                 $taskList .= $this->getImgProcessAdjbl();
+                break;
+            case 'ZStabilization':
+                $taskList .= $this->getImgProcessZStabilize();
                 break;
             case 'algorithms':
                 $taskList .= $this->getImgProcessAlgorithms();
@@ -934,6 +952,38 @@ class HuygensTemplate {
         }
 
         return $imgAdjbl;
+    }
+
+
+    /*!
+      \brief      Get options for the 'ZStabilize' task. 
+      \return     Tcl lsit with the 'ZStabilize' task and its options.
+    */
+    private function getImgProcessZStabilize( ) {
+        $imgZStabilize = "";
+
+        $ZStabilizeParam = $this->deconSetting->parameter('ZStabilization');
+
+        foreach ($this->ZStabilizeArray as $key => $value) {
+            
+            if ($key != "listID") {
+                $imgZStabilize .= " " . $key . " ";
+            }
+
+            switch( $key ) {
+            case 'enabled':
+                $imgZStabilize .= $ZStabilizeParam->value();
+                break;
+            case 'listID':
+                $imgZStabilize = $this->string2tcllist($imgZStabilize);
+                $imgZStabilize = $value . " " . $imgZStabilize;
+                break;
+            default:
+                error_log("Image Z stabilize option $key not yet implemented.");
+            }
+        }
+
+        return $imgZStabilize;
     }
 
     /*!
@@ -2200,25 +2250,26 @@ class HuygensTemplate {
     */
     private function parseTask($key,$task) {
         switch ($task) {
-            case 'imgOpen':
-            case 'setp':
-            case 'adjbl':
-            case 'imgSave':
-                break;
-            case 'coloc':
-            case 'hist':
-                $task = $this->parseMultiChan($task);
-                break;
-            case 'previewGen':
-                $task = $this->parsePreviewGen($key,$task);
-                break;
-            case '':
-                if ($key == "algorithms") {
-                    $task = $this->parseAlgorithm();                    
-                }
-                break;
-            default:
-                error_log("Huygens template task '$task' not yet implemented.");
+        case 'imgOpen':
+        case 'setp':
+        case 'adjbl':
+        case 'imgSave':
+        case 'stabilize':
+            break;
+        case 'coloc':
+        case 'hist':
+            $task = $this->parseMultiChan($task);
+            break;
+        case 'previewGen':
+            $task = $this->parsePreviewGen($key,$task);
+            break;
+        case '':
+            if ($key == "algorithms") {
+                $task = $this->parseAlgorithm();                    
+            }
+            break;
+        default:
+            error_log("Huygens template task '$task' not yet implemented.");
         }
         
         return $task;            
