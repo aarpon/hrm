@@ -130,7 +130,12 @@ class Job {
                                   'ps'             => 'Pinhole spacing (nm)',
                                   'ex'             => 'Excitation wavelength (nm)',
                                   'em'             => 'Emission wavelength (nm)',
-                                  'micr'           => 'Microscope type' );
+                                  'micr'           => 'Microscope type',
+                                  'stedMode'       => 'STED depletion mode',
+                                  'stedLambda'     => 'STED wavelength',
+                                  'stedSatFact'    => 'STED saturation factor (%)',
+                                  'stedImmunity'   => 'STED immunity (%)',
+                                  'sted3D'         => 'STED 3D (%)' );
 
         $this->restParam = array( 'algorithm'      =>'Deconvolution algorithm',
                                   'iterations'     =>'Number of iterations',
@@ -711,7 +716,7 @@ class Job {
         $table .= $this->insertRow($row);
      
             /* Extract data from the file and into the table. */
-        $pattern  = "/{Parameter ([a-z]+?) (of channel ([0-9])\s|)(.*) ";
+        $pattern  = "/{Parameter ([a-zA-Z]+?) (of channel ([0-9])\s|)(.*) ";
         $pattern .= "(template|metadata|meta data): (.*).}}/";
 
         foreach ($reportFile as $reportEntry) {
