@@ -236,7 +236,8 @@ if ($_SESSION[ 'setting' ]->checkPostedStedParameters( $_POST ) ) {
  **************************************************************************** */
 
 // Javascript includes
-$script = array( "settings.js", "quickhelp/help.js" );
+$script = array( "settings.js", "quickhelp/help.js",
+                 "quickhelp/stedParameters.js");
 include("header.inc.php");
 ?>
 
@@ -291,7 +292,7 @@ include("header.inc.php");
 
             <fieldset class="setting <?php
             echo $parameterStedDeplMode->confidenceLevel(); ?>"
-            onmouseover="javascript:changeQuickHelp( 'type' );" >
+            onmouseover="javascript:changeQuickHelp( 'deplMode' );" >
 
                 <legend>
                     <a href="javascript:openWindow(
@@ -374,7 +375,7 @@ for ($chan = 0; $chan < $chanCnt; $chan++) {
 
             <fieldset class="setting <?php
             echo $parameterStedSatFact->confidenceLevel(); ?>"
-            onmouseover="javascript:changeQuickHelp( 'type' );" >
+            onmouseover="javascript:changeQuickHelp( 'satFact' );" >
 
                 <legend>
                     <a href="javascript:openWindow(
@@ -432,14 +433,14 @@ if ( $i == 3 ) {
 
             <fieldset class="setting <?php
             echo $parameterStedLambda->confidenceLevel(); ?>"
-            onmouseover="javascript:changeQuickHelp( 'type' );" >
+            onmouseover="javascript:changeQuickHelp( 'lambda' );" >
 
                 <legend>
                     <a href="javascript:openWindow(
                        'http://www.svi.nl/HuygensRemoteManagerHelpSTED')">
                         <img src="images/help.png" alt="?" />
                     </a>
-                    STED Wavelength
+    STED Wavelength (nm)
                 </legend>
 
 
@@ -491,7 +492,7 @@ if ( $i == 3 ) {
 
             <fieldset class="setting <?php
             echo $parameterStedImmunity->confidenceLevel(); ?>"
-            onmouseover="javascript:changeQuickHelp( 'type' );" >
+            onmouseover="javascript:changeQuickHelp( 'immunity' );" >
 
                 <legend>
                     <a href="javascript:openWindow(
@@ -551,7 +552,7 @@ if ($_SESSION['setting']->isSted3D()) {
 
             <fieldset class="setting <?php
             echo $parameterSted3D->confidenceLevel(); ?>"
-            onmouseover="javascript:changeQuickHelp( 'type' );" >
+            onmouseover="javascript:changeQuickHelp( '3d' );" >
 
                 <legend>
                     <a href="javascript:openWindow(
@@ -637,13 +638,8 @@ if ($_SESSION['setting']->isSted3D()) {
 
           <h3>Quick help</h3>
 
-            <div id="contextHelp">
-              <p>On this page you specify the parameters of the STED sytem
-                 for your experimental setup.</p>
-
-    <p>These parameters consist of the STED depletion mode, wavelength,
-       saturation factor, immunity percentage and, when applicable,
-       STED 3D percentage.</p>
+            <div id="contextHelp"
+             onmouseover="javascript:changeQuickHelp( 'default' )">
             </div>
 
       <?php
