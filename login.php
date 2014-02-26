@@ -264,10 +264,14 @@ deconvolution.</p>
         </a>
       </td>
       <td>
+       <a href="javascript:openWindow('http://www.mri.cnrs.fr')">
         Montpellier RIO Imaging
+       </a>
       </td>
       <td>
+       <a href="javascript:openWindow('http://svi.nl')">
         Scientific Volume Imaging
+       </a>
       </td>
     </tr>
       
@@ -278,19 +282,19 @@ deconvolution.</p>
       
     <!-- Logos -->
     <tr>
-      <td class="blank">&nbsp;</td>
       <td class="fmi"
           onclick="javascript:openWindow('http://www.fmi.ch')" >
       </td>
       <td class="bsse"
           onclick="javascript:openWindow('http://www.bsse.ethz.ch')" >
       </td>
-      <td class="blank">&nbsp;</td>
+      <td class="bio-basel"
+          onclick="javascript:openWindow('http://www.biozentrum.unibas.ch')" >
+      </td>
     </tr>
 
     <!-- Captions -->
     <tr class="caption">
-      <td class="blank">&nbsp;</td>
       <td>
         Friedrich Miescher Institute<br />
         <a href="javascript:openWindow('http://www.fmi.ch/faim')">
@@ -298,10 +302,18 @@ deconvolution.</p>
         </a>
       </td>
       <td>
+        <a href="javascript:openWindow('http://www.bsse.ethz.ch/')">
         ETH Zurich<br />
         Single-Cell Unit
+        </a>
       </td>
-      <td class="blank">&nbsp;</td>
+      <td>
+       <a href="javascript:openWindow('http://www.biozentrum.unibas.ch')">
+        BIO Zentrum Basel<br />
+        Universität Basel<br />
+        The Center for Molecular Sciences
+      </a>    
+      </td>
     </tr>
 
   </table>
