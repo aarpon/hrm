@@ -262,7 +262,7 @@ include("header.inc.php");
             </li>
             <li>
                 <a href="javascript:openWindow(
-                   'http://www.svi.nl/HuygensRemoteManagerHelpOptics')">
+                   'http://www.svi.nl/STED')">
                     <img src="images/help.png" alt="help" />
                     &nbsp;Help
                 </a>
@@ -295,7 +295,7 @@ include("header.inc.php");
 
                 <legend>
                     <a href="javascript:openWindow(
-                       'http://www.svi.nl/STED')">
+                       'http://www.svi.nl/HuygensRemoteManagerHelpSTED')">
                         <img src="images/help.png" alt="?" />
                     </a>
                     STED Depletion Mode
@@ -378,7 +378,7 @@ for ($chan = 0; $chan < $chanCnt; $chan++) {
 
                 <legend>
                     <a href="javascript:openWindow(
-                       'http://www.svi.nl/STED')">
+                       'http://www.svi.nl/HuygensRemoteManagerHelpSTED')">
                         <img src="images/help.png" alt="?" />
                     </a>
                     STED Saturation Factor
@@ -436,7 +436,7 @@ if ( $i == 3 ) {
 
                 <legend>
                     <a href="javascript:openWindow(
-                       'http://www.svi.nl/STED')">
+                       'http://www.svi.nl/HuygensRemoteManagerHelpSTED')">
                         <img src="images/help.png" alt="?" />
                     </a>
                     STED Wavelength
@@ -495,7 +495,7 @@ if ( $i == 3 ) {
 
                 <legend>
                     <a href="javascript:openWindow(
-                       'http://www.svi.nl/STED')">
+                       'http://www.svi.nl/HuygensRemoteManagerHelpSTED')">
                         <img src="images/help.png" alt="?" />
                     </a>
     STED Immunity Fraction (%)
