@@ -2168,6 +2168,31 @@ class TaskSetting extends Setting {
         return $result;
     }
 
+    /*!
+      \brief   Checks whether the restoration should allow for stabilization.
+      \param   $paramSetting An instance of the ParameterSetting clase.
+      \return  Boolean: TRUE to enable stabilization option, FALSE otherwise.
+    */
+    public function isEligibleForStabilization(ParameterSetting $paramSetting) {
+        
+        if (!$paramSetting->isSted() && !$paramSetting->isSted3D()) {
+            return FALSE;
+        }
+        if ($paramSetting->parameter("ZStepSize")->value() === '0') {
+            return FALSE;
+        }
+        if (!System::hasLicense("stabilizer")) {
+            return FALSE;
+        }
+        if (!System::hasLicense("sted")) {
+            return FALSE;
+        }
+        if (!System::hasLicense("sted3d")) {
+            return FALSE;
+        }
+        return TRUE;
+    }
+
 } // End of class taskSetting
 
 /*

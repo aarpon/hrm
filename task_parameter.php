@@ -516,9 +516,7 @@ $value = $parameter->value();
     
     <div id="ZStabilization">
     <?php
-    if ($_SESSION['setting']->parameter("ZStepSize")->value() !== '0'
-        && ($_SESSION['setting']->isSted()
-            || $_SESSION['setting']->isSted3D()) ) {
+    if ($_SESSION['task_setting']->isEligibleForStabilization($_SESSION['setting'])) {
 
     ?>
 
