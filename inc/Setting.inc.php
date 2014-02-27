@@ -581,11 +581,14 @@ class ParameterSetting extends Setting {
             // provided or not
             if ($valueSet) {
 
-                if ($name == "SampleMedium" &&
-                        $postedParameters[$name] == "custom") {
+                if ($name == "SampleMedium"
+                    && $postedParameters[$name] == "custom") {
                     if (isset($postedParameters['SampleMediumCustomValue'])) {
                         $value = $postedParameters['SampleMediumCustomValue'];
                     }
+                } elseif($name == "ObjectiveType"
+                         && $postedParameters[$name] == "custom") {
+                    $value = $postedParameters['ObjectiveTypeCustomValue'];
                 } else {
                     $value = $postedParameters[$name];
                 }

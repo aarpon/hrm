@@ -1502,7 +1502,7 @@ class ObjectiveType extends ChoiceParameter {
 		return True;
 	}
 
-	/*!
+    /*!
 		\brief	Returns the Parameter translated value
 
 		The translated form of the Parameter value is then one used in
@@ -1512,11 +1512,33 @@ class ObjectiveType extends ChoiceParameter {
 		\return translated value
 	*/
 	public function translatedValue() {
-		$db = new DatabaseConnection();
-		$result = $db->translationFor($this->name, $this->value);
-		return $result;
+		if ( in_array( $this->value, $this->possibleValues ) ) {
+			$db = new DatabaseConnection();
+			$result = $db->translationFor($this->name, $this->value);
+			return $result;
+		} else {
+			return $this->value;
+		}
 	}
 
+	/*!
+		\brief	Checks whether the Parameter is valid
+		\return	true if the Parameter is valid, false otherwise
+	*/
+	public function check( ) {
+		$this->message = '';
+		$result = in_array( $this->value, $this->possibleValues() );
+		if ( $result == False ) {
+			// No preset selected: the value must then be numeric
+			if ( !is_numeric( $this->value ) ) {
+				$this->message = "The refractive index of the lens embedding ".
+					"medium must be a number!";
+			} else {
+				$result = True;
+			}
+		}
+		return $result;
+	}
 }
 
 /*

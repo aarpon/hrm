@@ -356,20 +356,21 @@ if ( $i == 3 ) {
 
     ***************************************************************************/
 
-    $parameterObjectiveType = $_SESSION['setting']->parameter("ObjectiveType");
+    $parameterObjectiveType =
+    $_SESSION['setting']->parameter("ObjectiveType");
 
   ?>
 
             <fieldset class="setting <?php
-            echo $parameterObjectiveType->confidenceLevel(); ?>"
-              onmouseover="javascript:changeQuickHelp( 'objective' );" >
+                echo $parameterObjectiveType->confidenceLevel(); ?>"
+                onmouseover="javascript:changeQuickHelp( 'objective' );" >
 
                 <legend>
                     <a href="javascript:openWindow(
                        'http://www.svi.nl/LensImmersionMedium')">
                         <img src="images/help.png" alt="?" />
                     </a>
-                    objective type
+    objective type
                 </legend>
 
                 <div class="values">
@@ -393,31 +394,52 @@ if ( $i == 3 ) {
 
 <?php
 
-$possibleValues = $parameterObjectiveType->possibleValues();
-sort($possibleValues);
-foreach ($possibleValues as $possibleValue) {
+$default = False;
+foreach ($parameterObjectiveType->possibleValues() as $possibleValue) {
   $flag = "";
   if ($possibleValue == $parameterObjectiveType->value()) {
-      $flag = " checked=\"checked\"";
+    $flag = " checked=\"checked\"";
+    $default = True;
   }
+  $translation = $parameterObjectiveType->translatedValueFor( $possibleValue );
 
 ?>
-                    <input name="ObjectiveType" 
+                    <input name="ObjectiveType"
                            type="radio"
                            value="<?php echo $possibleValue ?>"
                            <?php echo $flag ?> />
                     <?php echo $possibleValue ?>
+                    <span class="title">[<?php echo $translation ?>]</span>
 
+                    <br />
 <?php
 
 }
 
-?>
-                </div> <!-- values -->
+$value = "";
+$flag = "";
+if (!$default) {
+  $value = $parameterObjectiveType->value();
+  if ( $value != "" ) {
+    $flag = " checked=\"checked\"";
+  }
+}
 
+?>
+                <input name="ObjectiveType"
+                       type="radio"
+                       value="custom"<?php echo $flag ?> />
+
+                <input name="ObjectiveTypeCustomValue"
+                       type="text"
+                       size="5"
+                       value="<?php echo $value ?>"
+                       onclick="this.form.ObjectiveType[3].checked=true" />
+
+                </div> <!-- values -->
                 <div class="bottom">
                     <p class="message_confidence_<?php
-                        echo $parameterObjectiveType->confidenceLevel(); ?>">
+                    echo $parameterObjectiveType->confidenceLevel(); ?>">
                         &nbsp;
                     </p>
                 </div>
@@ -444,7 +466,7 @@ foreach ($possibleValues as $possibleValue) {
                        'http://www.svi.nl/SpecimenEmbeddingMedium')">
                         <img src="images/help.png" alt="?" />
                     </a>
-                    sample medium
+    sample medium
                 </legend>
 
                 <div class="values">
