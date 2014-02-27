@@ -254,6 +254,9 @@ include("header.inc.php");
     <span class="toolTip" id="ttSpanForward">
         Continue to next page.
     </span>
+    <span class="toolTip" id="ttSpanSave">
+        Save and return to the image parameters selection page.
+    </span>
 
         <div id="nav">
         <ul>
@@ -621,10 +624,23 @@ if ($_SESSION['setting']->isSted3D()) {
                   onmouseover="TagToTip('ttSpanCancel' )"
                   onmouseout="UnTip()"
                   onclick="document.location.href='select_parameter_settings.php'" />
+    <?php
+    if ($pageToGo != "select_parameter_settings.php") {
+    ?>
               <input type="submit" value="" class="icon next"
                   onmouseover="TagToTip('ttSpanForward' )"
                   onmouseout="UnTip()"
                   onclick="process()" />
+    <?php
+    } else {
+    ?>
+              <input type="submit" value="" class="icon save"
+                  onmouseover="TagToTip('ttSpanSave' )"
+                  onmouseout="UnTip()"
+                  onclick="process()" />
+    <?php
+    }
+    ?>
             </div>
         </form>
 

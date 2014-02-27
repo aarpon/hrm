@@ -434,7 +434,7 @@ if (!$default) {
                        type="text"
                        size="5"
                        value="<?php echo $value ?>"
-                       onclick="this.form.ObjectiveType[3].checked=true" />
+                       onclick="this.form.ObjectiveType[5].checked=true" />
 
                 </div> <!-- values -->
                 <div class="bottom">
