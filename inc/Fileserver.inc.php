@@ -194,11 +194,12 @@ class Fileserver {
       $fileFormat    = false;
       $fileExtension = false;
       
-          // Pattern ome.tiff        = (\.([^\..]+)|)
-          // Pattern file extension: = \.([^\.\s]+)
-          // Pattern lif subimages:  = [\s\(\)a-zA-Z0-9]*$
-      $pattern = "/(\.([^\..]+)|)\.([^\.\s]+)[\s\(\)a-zA-Z0-9]*$/";
-      
+          // Pattern ome.tiff        = (\.([^\..]+))*
+          // Pattern file extension: = \.([A-Za-z0-9]+)
+          // Pattern lif subimages:  = (\s\(.*\))*
+
+      $pattern = "/(\.([^\..]+))*\.([A-Za-z0-9]+)(\s\(.*\))*$/";
+
           // A first check on the file extension.
       if (preg_match($pattern,$file,$nameDivisions)) {
           
@@ -1139,6 +1140,7 @@ class Fileserver {
       $opt = "-count $i $imgList -dir \"". $this->sourceFolder() ."\"";
 
       $answer = huCoreTools( "reportSubImages", $opt);
+
 
       if (! $answer ) return;
       # printDebug ($answer);
@@ -2437,6 +2439,7 @@ echo '</body></html>';
         }
     }
     natsort($this->files);
+
 
     // TODO refactor
     //$this->condenseTimeSeries();

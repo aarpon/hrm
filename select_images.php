@@ -84,10 +84,11 @@ $script = array( "settings.js","ajax_utils.js" );
 
 // All the user's files in the server.
 $_SESSION['fileserver']->resetFiles();
-$allFiles = $_SESSION['fileserver']->files();
+$allFiles = $_SESSION['fileserver']->listFiles(TRUE);
 
 // All the user's series in the server.
 $condensedSeries = $_SESSION['fileserver']->condenseSeries();
+
 
 // display only relevant files.
 if ($allFiles != null) {
@@ -127,7 +128,7 @@ function filterImages (format,series) {
 
     var autoseries = document.getElementById(\"autoseries\");
 ";
-
+    
         /* For each file, create javascript code for when the file
          belongs to a series and for when it doesn't. */
     foreach ($allFiles as $key => $file) {

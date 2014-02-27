@@ -140,12 +140,13 @@ function checkAgainstFormat(file, selectedFormat) {
         // Both variables as in the 'file_extension' table.
     var fileFormat    = '';
     var fileExtension = '';
-    
-        // Pattern ome.tiff        = (\.([^\..]+)|)
-        // Pattern file extension: = \.([^\.\s]+)
-        // Pattern lif subimages:  = [\s\(\)a-zA-Z0-9]*$
+
+    // Pattern ome.tiff        = (\.([^\..]+))*
+    // Pattern file extension: = \.([A-Za-z0-9]+)
+    // Pattern lif subimages:  = (\s\(.*\))*
+
     var nameDivisions;
-    nameDivisions = file.match(/(\.([^\..]+)|)\.([^\.\s]+)[\s\(\)a-zA-Z0-9]*$/);
+    nameDivisions = file.match(/(\.([^\..]+))*\.([A-Za-z0-9]+)(\s\(.*\))*$/);    
 
         // A first check on the file extension.
     if (nameDivisions != null) {
@@ -163,6 +164,7 @@ function checkAgainstFormat(file, selectedFormat) {
         }
         
         fileExtension = fileExtension.toLowerCase();
+
         switch (fileExtension) {
             case 'dv':
             case 'ims':
