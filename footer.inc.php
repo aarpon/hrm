@@ -93,7 +93,7 @@ $loggedIn = ( isset($_SESSION['user'] ) && $_SESSION['user']->isLoggedIn( ) );
 		<?php
             $name_list = array("Asheesh Gulati", "Alessandra Griffa",
                 "Jos&eacute; Vi&ntilde;a", "Daniel Sevilla",
-                "Nikolaus Ehrenfeuchter", "Torsten St&ouml;ter",
+                "Niko Ehrenfeuchter", "Torsten St&ouml;ter",
                 "Aaron Ponti");
             if ($loggedIn == true) {
                 // Previous developers have their email address hidden for privacy
