@@ -10,7 +10,11 @@ user/login_user.inc
 
 # vim swap files
 .*.sw?
+
 /.idea/
+
+# file marking a development version
+.hrm_devel_version
 
 # local logging directory
 log/
