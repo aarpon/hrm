@@ -10,3 +10,6 @@ user/login_user.inc
 # vim swap files
 .*.sw?
 /.idea/
+
+# local logging directory
+log/
