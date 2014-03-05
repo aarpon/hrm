@@ -240,11 +240,14 @@ deconvolution.</p>
       <td class="epfl"
           onclick="javascript:openWindow('http://biop.epfl.ch')" >
       </td>
+      <td class="fmi"
+          onclick="javascript:openWindow('http://www.fmi.ch')" >
+      </td>
       <td class="mri"
           onclick="javascript:openWindow('http://www.mri.cnrs.fr')" >
       </td>
-      <td class="svi"
-          onclick="javascript:openWindow('http://www.svi.nl')" >
+      <td class="bsse"
+          onclick="javascript:openWindow('http://www.bsse.ethz.ch')" >
       </td>
     </tr>
       
@@ -257,14 +260,22 @@ deconvolution.</p>
         </a>
       </td>
       <td>
+        Friedrich Miescher Institute<br />
+        <a href="javascript:openWindow('http://www.fmi.ch/faim')">
+          Facility for Advanced<br />
+          Imaging and Microscopy
+        </a>
+      </td>
+      <td>
        <a href="javascript:openWindow('http://www.mri.cnrs.fr')">
         Montpellier RIO Imaging
        </a>
       </td>
       <td>
-       <a href="javascript:openWindow('http://svi.nl')">
-        Scientific Volume Imaging
-       </a>
+        <a href="javascript:openWindow('http://www.bsse.ethz.ch/')">
+        ETH Zurich<br />
+        Single-Cell Unit
+        </a>
       </td>
     </tr>
       
@@ -275,37 +286,46 @@ deconvolution.</p>
       
     <!-- Logos -->
     <tr>
-      <td class="fmi"
-          onclick="javascript:openWindow('http://www.fmi.ch')" >
+      <td class="svi"
+          onclick="javascript:openWindow('http://www.svi.nl')" >
       </td>
-      <td class="bsse"
-          onclick="javascript:openWindow('http://www.bsse.ethz.ch')" >
+      <td class="lin"
+          onclick="javascript:openWindow('http://www.lin-magdeburg.de')" >
       </td>
       <td class="bio-basel"
           onclick="javascript:openWindow('http://www.biozentrum.unibas.ch')" >
+      </td>
+      <td class="cni"
+          onclick="javascript:openWindow('http://cni.ifn-magdeburg.de')" >
       </td>
     </tr>
 
     <!-- Captions -->
     <tr class="caption">
       <td>
-        Friedrich Miescher Institute<br />
-        <a href="javascript:openWindow('http://www.fmi.ch/faim')">
-          Facility for Advanced Imaging and Microscopy
-        </a>
+       <a href="javascript:openWindow('http://svi.nl')">
+        Scientific Volume Imaging
+       </a>
       </td>
       <td>
-        <a href="javascript:openWindow('http://www.bsse.ethz.ch/')">
-        ETH Zurich<br />
-        Single-Cell Unit
-        </a>
+       <a href="javascript:openWindow('http://www.lin-magdeburg.de')">
+        Leibniz Institute for Neurobiology<br />
+        Magdeburg
+       </a>
       </td>
       <td>
        <a href="javascript:openWindow('http://www.biozentrum.unibas.ch')">
         BIO Zentrum Basel<br />
         Universität Basel<br />
-        The Center for Molecular Sciences
+        The Center for<br />
+        Molecular Sciences
       </a>    
+      </td>
+      <td>
+       <a href="javascript:openWindow('http://cni.ifn-magdeburg.de')">
+        Combinatorial Neuroimaging<br />
+        Magdeburg 
+       </a>    
       </td>
     </tr>
 

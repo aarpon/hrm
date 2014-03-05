@@ -403,6 +403,22 @@ table {
   background-size: 90px;
 }
 
+#logos table td.lin {
+  height: 80px;
+  width: 240px;
+  cursor: pointer;
+  background: url("../images/logo_lin_en.png") no-repeat center;
+  background-size: 90px;
+}
+
+#logos table td.cni {
+  height: 80px;
+  width: 240px;
+  cursor: pointer;
+  background: url("../images/logo_cni_pp.png") no-repeat center;
+  background-size: 90px;
+}
+
 #logos table td.blank {
   width: 40px;
 }
