@@ -359,8 +359,8 @@ global $cmsys, $table, $extra1, $txt1, $extra2, $txt2, $checked1, $checked2;
             <p>
                Enter or confirm the requested values and press the calculator
                button to calculate the
-               <a href=\"javascript:openWindow('
-                  http://support.svi.nl/wiki/BackProjected')\">
+               <a href="javascript:openWindow('
+                  http://support.svi.nl/wiki/BackProjected')">
                   back projected
                </a>
                pinhole radius.
@@ -368,7 +368,7 @@ global $cmsys, $table, $extra1, $txt1, $extra2, $txt2, $checked1, $checked2;
             </p>
             <p>
                 Read more about the
-               <a href=\"javascript:openWindow('<?php echo $help; ?>')">
+               <a href="javascript:openWindow('<?php echo $help; ?>')">
                    <?php echo $micro; ?></a> model.
             </p>
 
