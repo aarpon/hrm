@@ -569,7 +569,7 @@ class ParameterSetting extends Setting {
             }
 
         }
-
+        
         // Check that the Parameters are set and contain valid values
         foreach ($names as $name) {
 
@@ -678,9 +678,9 @@ class ParameterSetting extends Setting {
         // Depletion Mode
         $value = array(null, null, null, null, null);
         for ($i = 0; $i < 5; $i++) {
-            if (isset($postedParameters["StedDeplMode$i"])) {
-                $value[$i] = $postedParameters["StedDeplMode$i"];
-                unset($postedParameters["StedDeplMode$i"]);
+            if (isset($postedParameters["StedDepl$i"])) {
+                $value[$i] = $postedParameters["StedDepl$i"];
+                unset($postedParameters["StedDepl$i"]);
             }
         }
         $name = 'StedDeplMode';
@@ -716,14 +716,13 @@ class ParameterSetting extends Setting {
                 $noErrorsFound = False;
             }
         }
-
         
         // Saturation Factor
         $value = array(null, null, null, null, null);
         for ($i = 0; $i < 5; $i++) {
-            if (isset($postedParameters["StedSatFact$i"])) {
-                $value[$i] = $postedParameters["StedSatFact$i"];
-                unset($postedParameters["StedSatFact$i"]);
+            if (isset($postedParameters["StedSaturationFactor$i"])) {
+                $value[$i] = $postedParameters["StedSaturationFactor$i"];
+                unset($postedParameters["StedSaturationFactor$i"]);
             }
         }
         $name = 'StedSatFact';
@@ -764,9 +763,9 @@ class ParameterSetting extends Setting {
         // Sted Wavelength
         $value = array(null, null, null, null, null);
         for ($i = 0; $i < 5; $i++) {
-            if (isset($postedParameters["StedLambda$i"])) {
-                $value[$i] = $postedParameters["StedLambda$i"];
-                unset($postedParameters["StedLambda$i"]);
+            if (isset($postedParameters["StedWavelength$i"])) {
+                $value[$i] = $postedParameters["StedWavelength$i"];
+                unset($postedParameters["StedWavelength$i"]);
             }
         }
         $name = 'StedLambda';

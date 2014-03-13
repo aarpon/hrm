@@ -50,7 +50,7 @@ foreach ( $parameterNames as $name ) {
 $stedDeplParam = $_SESSION['setting']->parameter("StedDeplMode");
 $stedDepl = $stedDeplParam->value();
 for ($i=0; $i < $chanCnt; $i++) {
-  $stedDeplKey = "stedDepl{$i}";
+  $stedDeplKey = "StedDepl{$i}";
   if (isset($_POST[$stedDeplKey])) {
     $stedDepl[$i] = $_POST[$stedDeplKey];
   }
@@ -69,11 +69,12 @@ $stedSatFactParam->setNumberOfChannels($chanCnt);
 $stedSatFact = $stedSatFactParam->value();
 
 for ($i=0; $i < $chanCnt; $i++) {
-  $stedSatFactKey = "stedSatFact{$i}";
+  $stedSatFactKey = "StedSaturationFactor{$i}";
   if (isset($_POST[$stedSatFactKey])) {
       $stedSatFact[$i] = $_POST[$stedSatFactKey];
   }
 }
+
 $stedSatFactParam->setValue($stedSatFact);
 $stedSatFactParam->setNumberOfChannels($chanCnt);
 
@@ -90,7 +91,7 @@ $stedLambdaParam->setNumberOfChannels($chanCnt);
 $stedLambda = $stedLambdaParam->value();
 
 for ($i=0; $i < $chanCnt; $i++) {
-  $stedLambdaKey = "stedLambda{$i}";
+  $stedLambdaKey = "StedWavelength{$i}";
   if (isset($_POST[$stedLambdaKey])) {
       $stedLambda[$i] = $_POST[$stedLambdaKey];
   }
@@ -111,7 +112,7 @@ $stedImmunityParam->setNumberOfChannels($chanCnt);
 $stedImmunity = $stedImmunityParam->value();
 
 for ($i=0; $i < $chanCnt; $i++) {
-  $stedImmunityKey = "stedImmunity{$i}";
+  $stedImmunityKey = "StedImmunity{$i}";
   if (isset($_POST[$stedImmunityKey])) {
       $stedImmunity[$i] = $_POST[$stedImmunityKey];
   }
@@ -133,7 +134,7 @@ if ($_SESSION['setting']->isSted3D()) {
     $sted3D = $sted3DParam->value();
     
     for ($i=0; $i < $chanCnt; $i++) {
-        $sted3DKey = "sted3D{$i}";
+        $sted3DKey = "Sted3D{$i}";
         if (isset($_POST[$sted3DKey])) {
             $sted3D[$i] = $_POST[$sted3DKey];
         }
@@ -326,7 +327,7 @@ for ($chan = 0; $chan < $chanCnt; $chan++) {
 ?>    
     <tr><td>Ch<?php echo $chan; ?>:</td>
     
-    <td><select name="StedDeplMode<?php echo $chan;?>">
+    <td><select name="StedDepl<?php echo $chan;?>">
     
 <?php
                         /* Loop for select options. */
@@ -374,6 +375,7 @@ for ($chan = 0; $chan < $chanCnt; $chan++) {
     ***************************************************************************/
 
     $parameterStedSatFact = $_SESSION['setting']->parameter("StedSatFact");
+
 ?>
 
             <fieldset class="setting <?php
@@ -402,8 +404,8 @@ if ( $i == 3 ) {
 	<span class="nowrap">
         Ch<?php echo $i ?>:&nbsp;&nbsp;&nbsp;
         <span class="multichannel">
-            <input name="StedSatFact<?php echo $i ?>"
-                   id="StedSatFact<?php echo $i ?>"
+            <input name="StedSaturationFactor<?php echo $i ?>"
+                   id="StedSaturationFactor<?php echo $i ?>"
                    type="text"
                    size="6"
                    value="<?php
@@ -460,8 +462,8 @@ if ( $i == 3 ) {
 	<span class="nowrap">
         Ch<?php echo $i ?>:&nbsp;&nbsp;&nbsp;
         <span class="multichannel">
-            <input name="StedLambda<?php echo $i ?>"
-                   id="StedLambda<?php echo $i ?>"
+            <input name="StedWavelength<?php echo $i ?>"
+                   id="StedWavelength<?php echo $i ?>"
                    type="text"
                    size="6"
                    value="<?php
