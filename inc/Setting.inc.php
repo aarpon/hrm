@@ -667,13 +667,11 @@ class ParameterSetting extends Setting {
             return False;
         }
 
-
         if (!$this->isSted() && !$this->isSted3D()) {
             return True;
         }
 
         $noErrorsFound = True;
-
 
         // Depletion Mode
         $value = array(null, null, null, null, null);
@@ -693,12 +691,14 @@ class ParameterSetting extends Setting {
             $parameter->setValue($value);
             $this->set($parameter);
             
-            // Check
+            // Keep the 'deplModes' so that it can be checked below if any STED
+            // parameters need to be forced, e.g when 'deplMode' is 'confocal'.
             if (!$parameter->check()) {
                 $this->message = $parameter->message();
                 $noErrorsFound = False;
+            } else {
+                $deplModes = $parameter->value();               
             }
-            
         } else {
             
             // In this case it is important to know whether the Parameter
@@ -716,18 +716,29 @@ class ParameterSetting extends Setting {
                 $noErrorsFound = False;
             }
         }
+
         
         // Saturation Factor
         $value = array(null, null, null, null, null);
+
         for ($i = 0; $i < 5; $i++) {
             if (isset($postedParameters["StedSaturationFactor$i"])) {
                 $value[$i] = $postedParameters["StedSaturationFactor$i"];
                 unset($postedParameters["StedSaturationFactor$i"]);
+
+                // Fallback to '0' if no value was provided and
+                // the channel is confocal.
+                if (empty($value[$i])
+                    && isset($deplModes[$i])
+                    && $deplModes[$i] == "off-confocal") {
+                    $value[$i] = 0;
+                }
             }
         }
         $name = 'StedSatFact';
-        $valueSet = count(array_filter($value)) > 0;
-        
+
+        // Do not filter '0'. Thus, use 'strlen' as callback for filtering.
+        $valueSet = count(array_filter($value, 'strlen')) > 0;
         if ($valueSet) {
             
             // Set the value
@@ -735,7 +746,6 @@ class ParameterSetting extends Setting {
             $parameter->setValue($value);
             $this->set($parameter);
             
-            // Check
             if (!$parameter->check()) {
                 $this->message = $parameter->message();
                 $noErrorsFound = False;
@@ -766,11 +776,20 @@ class ParameterSetting extends Setting {
             if (isset($postedParameters["StedWavelength$i"])) {
                 $value[$i] = $postedParameters["StedWavelength$i"];
                 unset($postedParameters["StedWavelength$i"]);
-            }
+
+                // Fallback to '0' if no value was provided and
+                // the channel is confocal.
+                if (empty($value[$i])
+                    && isset($deplModes[$i])
+                    && $deplModes[$i] == "off-confocal") {
+                    $value[$i] = 0;
+                }
+            } 
         }
         $name = 'StedLambda';
-        $valueSet = count(array_filter($value)) > 0;
-        
+
+        // Do not filter '0'. Thus, use 'strlen' as callback for filtering.
+        $valueSet = count(array_filter($value, 'strlen')) > 0;
         if ($valueSet) {
             
             // Set the value
@@ -778,7 +797,6 @@ class ParameterSetting extends Setting {
             $parameter->setValue($value);
             $this->set($parameter);
             
-            // Check
             if (!$parameter->check()) {
                 $this->message = $parameter->message();
                 $noErrorsFound = False;
@@ -809,11 +827,20 @@ class ParameterSetting extends Setting {
             if (isset($postedParameters["StedImmunity$i"])) {
                 $value[$i] = $postedParameters["StedImmunity$i"];
                 unset($postedParameters["StedImmunity$i"]);
-            }
+                
+                // Fallback to '0' if no value was provided and
+                // the channel is confocal.
+                if (empty($value[$i])
+                    && isset($deplModes[$i])
+                    && $deplModes[$i] == "off-confocal") {
+                    $value[$i] = 0;
+                }
+            } 
         }
         $name = 'StedImmunity';
-        $valueSet = count(array_filter($value)) > 0;
-        
+
+        // Do not filter '0'. Thus, use 'strlen' as callback for filtering.
+        $valueSet = count(array_filter($value, 'strlen')) > 0;
         if ($valueSet) {
             
             // Set the value
@@ -821,7 +848,6 @@ class ParameterSetting extends Setting {
             $parameter->setValue($value);
             $this->set($parameter);
             
-            // Check
             if (!$parameter->check()) {
                 $this->message = $parameter->message();
                 $noErrorsFound = False;
@@ -853,11 +879,20 @@ class ParameterSetting extends Setting {
                 if (isset($postedParameters["Sted3D$i"])) {
                     $value[$i] = $postedParameters["Sted3D$i"];
                     unset($postedParameters["Sted3D$i"]);
+                    
+                    // Fallback to '0' if no value was provided and
+                    // the channel is confocal.
+                    if (empty($value[$i])
+                        && isset($deplModes[$i])
+                        && $deplModes[$i] == "off-confocal") {
+                        $value[$i] = 0;
+                    }
                 }
             }
             $name = 'Sted3D';
-            $valueSet = count(array_filter($value)) > 0;
-            
+
+            // Do not filter '0'. Thus, use 'strlen' as callback for filtering.
+            $valueSet = count(array_filter($value, 'strlen')) > 0;
             if ($valueSet) {
                 
                 // Set the value
@@ -865,7 +900,6 @@ class ParameterSetting extends Setting {
                 $parameter->setValue($value);
                 $this->set($parameter);
                 
-                // Check
                 if (!$parameter->check()) {
                     $this->message = $parameter->message();
                     $noErrorsFound = False;
