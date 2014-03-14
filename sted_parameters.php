@@ -327,7 +327,10 @@ for ($chan = 0; $chan < $chanCnt; $chan++) {
 ?>    
     <tr><td>Ch<?php echo $chan; ?>:</td>
     
-    <td><select name="StedDepl<?php echo $chan;?>">
+    <td>
+    <select name="StedDepl<?php echo $chan;?>"
+    onclick="javascript:changeStedEntryProperties(this,<?php echo $chan;?>)"
+    onchange="javascript:changeStedEntryProperties(this,<?php echo $chan;?>)">
     
 <?php
                         /* Loop for select options. */
@@ -348,7 +351,8 @@ for ($chan = 0; $chan < $chanCnt; $chan++) {
 <?php
     }                    /* End of loop for select options. */
 ?>    
-    </select></td>            
+    </select>
+    </td>            
 
     </tr>
 <?php   
@@ -688,6 +692,10 @@ echo "<p>$message</p>";
         </div>
 
     </div> <!-- rightpanel -->
+
+    <script type="text/javascript">
+    setStedEntryProperties();
+    </script>
 
 <?php
 include("footer.inc.php");

@@ -135,6 +135,43 @@ function smoothChangeDiv(div, html, time) {
     }
 }
 
+// Grey out the STED input fields of a specific channel if the
+// corresponding depletion mode is set to 'confocal'.
+function changeStedEntryProperties(selectObj, channel) {
+    var tagArray = ["StedSaturationFactor",
+                    "StedWavelength",
+                    "StedImmunity",
+                    "Sted3D"];
+
+    for (var i = 0; i < tagArray.length; i++) {
+        var tag = tagArray[i];
+        var id = tag.concat(channel);
+
+        inputElement = document.getElementById(id);
+        
+        if ( selectObj.value == 'off-confocal' ) {
+            inputElement.readOnly = true;
+            inputElement.style.color="#000";
+            inputElement.style.backgroundColor="#888";
+        } else {
+            inputElement.readOnly = false;
+            inputElement.style.color="#000";
+            inputElement.style.backgroundColor="";
+        }
+    }
+}
+
+function setStedEntryProperties( ) {
+    var tag = "StedDepl";
+    
+    for (var chan = 0; chan < 5; chan++) {
+        var name = tag.concat(chan);
+
+        inputElement = document.getElementsByName(name);
+        changeStedEntryProperties(inputElement[0], chan);
+    }
+}
+
 function checkAgainstFormat(file, selectedFormat) {
 
         // Both variables as in the 'file_extension' table.
