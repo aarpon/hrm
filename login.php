@@ -315,8 +315,8 @@ deconvolution.</p>
       </td>
       <td>
        <a href="javascript:openWindow('http://www.biozentrum.unibas.ch')">
-        BIO Zentrum Basel<br />
-        Universität Basel<br />
+        Biozentrum Basel<br />
+        University of Basel<br />
         The Center for<br />
         Molecular Sciences
       </a>    
