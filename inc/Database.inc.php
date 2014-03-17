@@ -68,9 +68,9 @@ class DatabaseConnection {
 	  "unused4"              => "objQuality",
 	  "unused5"              => "photonCnt",
 	  "unused6"              => "exBeamFill",
-      "StedDeplMode"         => "stedMode",
-      "StedLambda"           => "stedLambda",
-      "StedSatFact"          => "stedSatFact",
+      "StedDepletionMode"    => "stedMode",
+      "StedWavelength"       => "stedLambda",
+      "StedSaturationFactor" => "stedSatFact",
       "StedImmunity"         => "stedImmunity",
       "Sted3D"               => "sted3D");
   }

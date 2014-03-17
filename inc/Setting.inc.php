@@ -276,9 +276,9 @@ class ParameterSetting extends Setting {
             'AberrationCorrectionMode',
             'AdvancedCorrectionOptions',
             'PSFGenerationDepth',
-            'StedDeplMode',
-            'StedSatFact',
-            'StedLambda',
+            'StedDepletionMode',
+            'StedSaturationFactor',
+            'StedWavelength',
             'StedImmunity',
             'Sted3D'
         );
@@ -329,9 +329,9 @@ class ParameterSetting extends Setting {
         foreach ($this->parameter as $objName => $objInstance) {
 
             switch ( $objName ) {
-                case "StedDeplMode" :
-                case "StedLambda" :
-                case "StedSatFact" :
+                case "StedDepletionMode" :
+                case "StedWavelength" :
+                case "StedSaturationFactor" :
                 case "StedImmunity" :
                 case "Sted3D" :
                 case "ExcitationWavelength" :
@@ -340,7 +340,7 @@ class ParameterSetting extends Setting {
                     $chanValues = $objInstance->value();
 
                     foreach ( $chanValues as $chan => $value) {
-                        if ($value) {
+                        if (isset($value)) {
                             $postedParams["$objName$chan"] = $value;
                         }
                     }
@@ -676,12 +676,12 @@ class ParameterSetting extends Setting {
         // Depletion Mode
         $value = array(null, null, null, null, null);
         for ($i = 0; $i < 5; $i++) {
-            if (isset($postedParameters["StedDepl$i"])) {
-                $value[$i] = $postedParameters["StedDepl$i"];
-                unset($postedParameters["StedDepl$i"]);
+            if (isset($postedParameters["StedDepletionMode$i"])) {
+                $value[$i] = $postedParameters["StedDepletionMode$i"];
+                unset($postedParameters["StedDepletionMode$i"]);
             }
         }
-        $name = 'StedDeplMode';
+        $name = 'StedDepletionMode';
         $valueSet = count(array_filter($value)) > 0;
         
         if ($valueSet) {
@@ -735,7 +735,7 @@ class ParameterSetting extends Setting {
                 }
             }
         }
-        $name = 'StedSatFact';
+        $name = 'StedSaturationFactor';
 
         // Do not filter '0'. Thus, use 'strlen' as callback for filtering.
         $valueSet = count(array_filter($value, 'strlen')) > 0;
@@ -786,7 +786,7 @@ class ParameterSetting extends Setting {
                 }
             } 
         }
-        $name = 'StedLambda';
+        $name = 'StedWavelength';
 
         // Do not filter '0'. Thus, use 'strlen' as callback for filtering.
         $valueSet = count(array_filter($value, 'strlen')) > 0;
@@ -1550,13 +1550,13 @@ class ParameterSetting extends Setting {
                     $aberrationCorrectionMode == 'advanced' &&
                     $advancedCorrectionOptions == 'user' ))
                 continue;
-            if ($parameter->name() == 'StedDeplMode'
+            if ($parameter->name() == 'StedDepletionMode'
                 && (!$this->isSted() && !$this->isSted3D()))
                 continue;
-            if ($parameter->name() == 'StedSatFact'
+            if ($parameter->name() == 'StedSaturationFactor'
                 && (!$this->isSted() && !$this->isSted3D()))
                 continue;
-            if ($parameter->name() == 'StedLambda'
+            if ($parameter->name() == 'StedWavelength'
                 && (!$this->isSted() && !$this->isSted3D()))
                 continue;
             if ($parameter->name() == 'StedImmunity'

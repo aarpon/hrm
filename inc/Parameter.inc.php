@@ -2827,16 +2827,16 @@ class AberrationCorrectionNecessary extends BooleanParameter {
 */
 
 /*!
- \class StedDeplMode
+ \class StedDepletionMode
  \brief A ChoiceParameter to represent the STED depletion mode
 */
-class StedDeplMode extends AnyTypeArrayParameter {
+class StedDepletionMode extends AnyTypeArrayParameter {
 
     /*!
         \brief  Constructor: creates an empty Parameter
     */
     public function __construct() {
-        parent::__construct("StedDeplMode");
+        parent::__construct("StedDepletionMode");
     }
 
     /*!
@@ -2894,16 +2894,16 @@ class StedDeplMode extends AnyTypeArrayParameter {
 */
 
 /*!
- \class StedSatFact
+ \class StedSaturationFactor
  \brief A NumericalParameter to represent the STED saturation factor
 */
-class StedSatFact extends NumericalArrayParameter {
+class StedSaturationFactor extends NumericalArrayParameter {
 
     /*!
         \brief  Constructor: creates an empty Parameter
     */
     public function __construct() {
-        parent::__construct("StedSatFact");
+        parent::__construct("StedSaturationFactor");
     }
 
     /*!
@@ -2963,16 +2963,16 @@ class StedSatFact extends NumericalArrayParameter {
 */
 
 /*!
- \class StedLambda
+ \class StedWavelength
  \brief A NumericalParameter to represent the STED depletion wavelength
 */
-class StedLambda extends NumericalArrayParameter {
+class StedWavelength extends NumericalArrayParameter {
 
     /*!
         \brief  Constructor: creates an empty Parameter
     */
     public function __construct() {
-        parent::__construct("StedLambda");
+        parent::__construct("StedWavelength");
     }
 
     /*!

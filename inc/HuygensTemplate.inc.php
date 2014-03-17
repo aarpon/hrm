@@ -1170,7 +1170,7 @@ class HuygensTemplate {
     */
     private function getStedMode($channel, $parseConfocals = False) {
         $microSetting = $this->microSetting;
-        $stedMode = $microSetting->parameter("StedDeplMode")->value();
+        $stedMode = $microSetting->parameter("StedDepletionMode")->value();
         $deplMode = $stedMode[$channel];
 
         /* In this case the major microscope mode will be confocal, and the
@@ -1191,7 +1191,7 @@ class HuygensTemplate {
     */
     private function getStedLambda($channel) {
         $microSetting = $this->microSetting;
-        $stedLambda = $microSetting->parameter("StedLambda")->value();       
+        $stedLambda = $microSetting->parameter("StedWavelength")->value();       
         return $stedLambda[$channel];        
     }
 
@@ -1202,7 +1202,8 @@ class HuygensTemplate {
     */
     private function getStedSaturationFactor($channel) {
         $microSetting = $this->microSetting;
-        $stedSatFact = $microSetting->parameter("StedSatFact")->value();       
+        $stedSatFact =
+            $microSetting->parameter("StedSaturationFactor")->value();       
         return $stedSatFact[$channel];        
     }
 

@@ -47,7 +47,7 @@ foreach ( $parameterNames as $name ) {
  *
  **************************************************************************** */
 
-$stedDeplParam = $_SESSION['setting']->parameter("StedDeplMode");
+$stedDeplParam = $_SESSION['setting']->parameter("StedDepletionMode");
 $stedDepl = $stedDeplParam->value();
 for ($i=0; $i < $chanCnt; $i++) {
   $stedDeplKey = "StedDepl{$i}";
@@ -64,7 +64,7 @@ $_SESSION['setting']->set($stedDeplParam);
  *
  **************************************************************************** */
 
-$stedSatFactParam = $_SESSION['setting']->parameter("StedSatFact");
+$stedSatFactParam = $_SESSION['setting']->parameter("StedSaturationFactor");
 $stedSatFactParam->setNumberOfChannels($chanCnt);
 $stedSatFact = $stedSatFactParam->value();
 
@@ -86,7 +86,7 @@ $_SESSION['setting']->set($stedSatFactParam);
  *
  **************************************************************************** */
 
-$stedLambdaParam = $_SESSION['setting']->parameter("StedLambda");
+$stedLambdaParam = $_SESSION['setting']->parameter("StedWavelength");
 $stedLambdaParam->setNumberOfChannels($chanCnt);
 $stedLambda = $stedLambdaParam->value();
 
@@ -284,15 +284,15 @@ include("header.inc.php");
             <h4>How did you set up the STED system?</h4>
 
 
-    <?php
-    /***************************************************************************
+<?php
+/***************************************************************************
 
-      StedDeplMode
+   StedDeplMode
 
-    ***************************************************************************/
+***************************************************************************/
 
-    $parameterStedDeplMode = $_SESSION['setting']->parameter("StedDeplMode");
-    ?>
+$parameterStedDeplMode = $_SESSION['setting']->parameter("StedDepletionMode");
+?>
 
             <fieldset class="setting <?php
             echo $parameterStedDeplMode->confidenceLevel(); ?>"
@@ -328,7 +328,7 @@ for ($chan = 0; $chan < $chanCnt; $chan++) {
     <tr><td>Ch<?php echo $chan; ?>:</td>
     
     <td>
-    <select name="StedDepl<?php echo $chan;?>"
+    <select name="StedDepletionMode<?php echo $chan;?>"
     onclick="javascript:changeStedEntryProperties(this,<?php echo $chan;?>)"
     onchange="javascript:changeStedEntryProperties(this,<?php echo $chan;?>)">
     
@@ -372,14 +372,13 @@ for ($chan = 0; $chan < $chanCnt; $chan++) {
 
 
 <?php
-    /***************************************************************************
+/***************************************************************************
 
-      StedSatFact
+  StedSatFact
 
-    ***************************************************************************/
+***************************************************************************/
 
-    $parameterStedSatFact = $_SESSION['setting']->parameter("StedSatFact");
-
+$parameterStedSatFact = $_SESSION['setting']->parameter("StedSaturationFactor");
 ?>
 
             <fieldset class="setting <?php
@@ -431,13 +430,13 @@ if ( $i == 3 ) {
             </fieldset>
 
 <?php
-    /***************************************************************************
+/***************************************************************************
 
-      StedLambda
+  StedLambda
 
-    ***************************************************************************/
+***************************************************************************/
 
-    $parameterStedLambda = $_SESSION['setting']->parameter("StedLambda");
+$parameterStedLambda = $_SESSION['setting']->parameter("StedWavelength");
 ?>
 
             <fieldset class="setting <?php

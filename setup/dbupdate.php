@@ -3575,11 +3575,11 @@ if ($current_revision < $n) {
 
 
     $record = array();
-    $record["parameter"] = "StedDeplMode";
+    $record["parameter"] = "StedDepletionMode";
     $record["value"] = "CW gated detection";
     $record["translation"] = "vortexCWGated";
     $record["isDefault"] = "f";
-    $record["parameter_key"] = "StedDeplMode1";           
+    $record["parameter_key"] = "StedDepletionMode1";           
 
         // Skip it if the row is already there.
     $query = "SELECT * FROM " . $tabname .      
@@ -3598,11 +3598,11 @@ if ($current_revision < $n) {
 
 
     $record = array();
-    $record["parameter"] = "StedDeplMode";
+    $record["parameter"] = "StedDepletionMode";
     $record["value"] = "CW Non gated detection";
     $record["translation"] = "vortexCW";
     $record["isDefault"] = "f";
-    $record["parameter_key"] = "StedDeplMode2";           
+    $record["parameter_key"] = "StedDepletionMode2";           
 
         // Skip it if the row is already there.
     $query = "SELECT * FROM " . $tabname .      
@@ -3621,11 +3621,11 @@ if ($current_revision < $n) {
 
 
     $record = array();
-    $record["parameter"] = "StedDeplMode";
+    $record["parameter"] = "StedDepletionMode";
     $record["value"] = "Pulsed";
     $record["translation"] = "vortexPulsed";
     $record["isDefault"] = "t";
-    $record["parameter_key"] = "StedDeplMode3";           
+    $record["parameter_key"] = "StedDepletionMode3";           
 
         // Skip it if the row is already there.
     $query = "SELECT * FROM " . $tabname .      
@@ -3644,11 +3644,11 @@ if ($current_revision < $n) {
 
 
     $record = array();
-    $record["parameter"] = "StedDeplMode";
+    $record["parameter"] = "StedDepletionMode";
     $record["value"] = "Off/Confocal";
     $record["translation"] = "off-confocal";
     $record["isDefault"] = "f";
-    $record["parameter_key"] = "StedDeplMode4";           
+    $record["parameter_key"] = "StedDepletionMode4";           
 
         // Skip it if the row is already there.
     $query = "SELECT * FROM " . $tabname .      
