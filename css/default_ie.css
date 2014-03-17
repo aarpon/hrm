@@ -729,8 +729,8 @@ input.save {
     padding: 5px 0px 5px 0px;
 }
 
-#validation {
-    background: url("../images/validation_bkg.png") repeat-x top left;
+#bottom {
+    background: url("../images/bottom_bkg.png") repeat-x top left;
     text-align: center;
     height: 32px;
     padding-top: 10px;

@@ -109,7 +109,7 @@ $loggedIn = ( isset($_SESSION['user'] ) && $_SESSION['user']->isLoggedIn( ) );
 
 	</div>
 
-    <div id="validation">
+    <div id="bottom">
     </div>
 
 
