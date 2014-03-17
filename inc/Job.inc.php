@@ -605,8 +605,8 @@ class Job {
             $micrMismatch = True;
             
             $warning  = "<p><b><u>WARNING</u>:</b>";
-            $warning .= " The <b>microscope type</b> chosen to deconvolve this ";
-            $warning .= "image <b>may not<br />be correct</b>. ";
+            $warning .= " The <b>microscope type</b> selected to deconvolve ";
+            $warning .= "this image <b>may not<br />be correct</b>. ";
             $warning .= "The image metadata claims a different microscope type. ";
             $warning .= "The<br />restoration process may produce ";
             $warning .= "<b>wrong results</b> if the microscope type is<br />";
