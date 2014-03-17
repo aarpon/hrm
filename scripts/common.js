@@ -162,7 +162,7 @@ function changeStedEntryProperties(selectObj, channel) {
 }
 
 function setStedEntryProperties( ) {
-    var tag = "StedDepl";
+    var tag = "StedDepletionMode";
     
     for (var chan = 0; chan < 5; chan++) {
         var name = tag.concat(chan);
