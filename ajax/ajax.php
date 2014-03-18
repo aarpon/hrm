@@ -25,10 +25,6 @@ function getParameters($editor, $setName, $numChannels) {
   }
   $setting = $editor->setting($setName);
   $data = $setting->displayString($numChannels);
-
-      /* Stress which part is the parameter name and which is the value. */
-  $data = "<small><b>" . str_replace("\n","\n<b>",$data);
-  $data = str_replace(": ",":</b> ",$data) . "</small>";
   
   return $data;
 }
@@ -339,7 +335,12 @@ function act( $action, &$data ) {
           $numChannels = null;
         }
         $data = getParameters( $editor, $setName, $numChannels);
+        
+        /* Make a distinction between the parameter name and its value. */
+        $data = "<small><b>" . str_replace("\n","\n<b>",$data);
+        $data = str_replace(": ",":</b> ",$data) . "</small>";        
         $data = "<h3>Preview</h3>" . nl2br($data);
+        
         return true;
         break;
         
