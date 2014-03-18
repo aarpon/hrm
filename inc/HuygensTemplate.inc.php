@@ -962,17 +962,30 @@ class HuygensTemplate {
     private function getImgProcessZStabilize( ) {
         $imgZStabilize = "";
 
-        $ZStabilizeParam = $this->deconSetting->parameter('ZStabilization');
+        $stedData = False;
+        $numberOfChannels = $this->getNumberOfChannels();
+        for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
+            if (strstr($this->getMicroscopeType($chanCnt),'sted')) {
+                $stedData = True;
+                break;
+            }
+        }
 
+        $ZStabilizeParam = $this->deconSetting->parameter('ZStabilization');
         foreach ($this->ZStabilizeArray as $key => $value) {
             
             if ($key != "listID") {
                 $imgZStabilize .= " " . $key . " ";
             }
 
+            /* Stabilization should only be applied to STED data. */
             switch( $key ) {
             case 'enabled':
-                $imgZStabilize .= $ZStabilizeParam->value();
+                if ($stedData) {
+                    $imgZStabilize .= $ZStabilizeParam->value();
+                } else {
+                    $imgZStabilize .= '0';
+                }
                 break;
             case 'listID':
                 $imgZStabilize = $this->string2tcllist($imgZStabilize);
