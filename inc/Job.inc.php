@@ -608,10 +608,11 @@ class Job {
             $warning  = "<p><b><u>WARNING</u>:</b>";
             $warning .= " The <b>microscope type</b> selected to deconvolve ";
             $warning .= "this image <b>may not<br />be correct</b>. ";
-            $warning .= "The image metadata claims a different microscope type. ";
-            $warning .= "The<br />restoration process may produce ";
-            $warning .= "<b>wrong results</b> if the microscope type is<br />";
-            $warning .= "not set properly.<br />";
+            $warning .= "The acquisition system registered a different ";
+            $warning .= "microscope type<br />in the image metadata. ";
+            $warning .= "The restoration process may produce ";
+            $warning .= "<b>wrong results</b><br />if the microscope type ";
+            $warning .= "is not set properly.<br />";
             
             $row    = $this->insertCell($warning,"text");
             $table  = $this->insertRow($row);
@@ -702,7 +703,7 @@ class Job {
         $text  = "<br /><br />";
         $text .= "Parameter values that were <b>missing</b> from your ";
         $text .= "settings are highlighted in <b>green</b>.<br />Alternative ";
-        $text .= "values found in the metadata of the image were used ";
+        $text .= "values found in the image metadata were used ";
         $text .= "instead. Please examine<br />their <b>validity</b>.<br />";
         $text .= "<br />";
 
