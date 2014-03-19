@@ -1489,7 +1489,7 @@ class ParameterSetting extends Setting {
       \brief  Displays the setting as a text containing Parameter names and 
               their values
     */
-    public function displayString() {
+    public function displayString($numberOfChannels = 0, $micrType = NULL) {
         $result = '';
 
 
@@ -1756,7 +1756,7 @@ class ParameterSetting extends Setting {
         return $result;
     }
 
-    /*
+    /*!
       \brief	Returns the number of channels of the Setting
       \return	the number of channels
     */
@@ -1766,6 +1766,20 @@ class ParameterSetting extends Setting {
             return ( (int) $parameter->value() );
         } else {
             return ( (int) 1 );
+        }
+    }
+
+    /*!
+      \brief  Returns the main microscope mode.
+      \return Whether confocal, widefield, STED, STED 3D, spinning disk or
+              multiphoton.
+    */
+    public function microscopeType( ) {
+        $parameter = $this->parameter('MicroscopeType');
+        if ($parameter) {
+            return $parameter->value();
+        } else {
+            return NULL;
         }
     }
 
@@ -2180,7 +2194,7 @@ class TaskSetting extends Setting {
       \param	$numberOfChannels Number of channels (optional, default 
               value is 0)
      */
-    public function displayString($numberOfChannels = 0) {
+    public function displayString($numberOfChannels = 0, $micrType = NULL) {
         $result = '';
         $algorithm = $this->parameter('DeconvolutionAlgorithm')->value();
         foreach ($this->parameter as $parameter) {
@@ -2193,8 +2207,10 @@ class TaskSetting extends Setting {
             if ($parameter->name() == 'MultiChannelOutput') {
                 continue;
             }
-            if ($parameter->name() == 'ZStabilization')
-                continue;            
+            if ($parameter->name() == 'ZStabilization'
+                &&  !strstr($micrType,"STED")) {
+                continue;
+            }
             $result = $result . 
                 $parameter->displayString($numberOfChannels);
         }
@@ -2396,7 +2412,7 @@ class AnalysisSetting extends Setting {
       \param	$numberOfChannels Number of channels (optional, default 
               value is 0)
      */
-    public function displayString($numberOfChannels = 0) {
+    public function displayString($numberOfChannels = 0, $micrType = NULL) {
         $result = '';
 
         $colocAnalysis = $this->parameter("ColocAnalysis")->value();

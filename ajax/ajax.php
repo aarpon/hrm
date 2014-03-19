@@ -16,7 +16,7 @@ require_once '../inc/JobQueue.inc.php';
  * @param int $numChannels Number of channels
  * @return String parameter dump
  */
-function getParameters($editor, $setName, $numChannels) {
+function getParameters($editor, $setName, $numChannels, $micrType) {
   if ($setName == '') {
       // In Chrome, the onclick event is fired even if one clicks on an empty
       // area of an input field (passing a value of ''). In Firefox, the event
@@ -24,7 +24,7 @@ function getParameters($editor, $setName, $numChannels) {
       return;
   }
   $setting = $editor->setting($setName);
-  $data = $setting->displayString($numChannels);
+  $data = $setting->displayString($numChannels, $micrType);
   
   return $data;
 }
@@ -334,7 +334,12 @@ function act( $action, &$data ) {
         } else {
           $numChannels = null;
         }
-        $data = getParameters( $editor, $setName, $numChannels);
+        if ( isset($_SESSION['setting']) ) {
+            $micrType = $_SESSION['setting']->microscopeType();
+        } else {
+            $micrType = null;
+        }
+        $data = getParameters( $editor, $setName, $numChannels, $micrType);
         
         /* Make a distinction between the parameter name and its value. */
         $data = "<small><b>" . str_replace("\n","\n<b>",$data);
