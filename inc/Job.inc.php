@@ -736,7 +736,34 @@ class Job {
             if ($paramText == "") {
                 continue;
             }
-                
+
+            /* Filter some reports that don't make sense for some microscopes. */
+            if ($paramName == 'micr') {
+                $micrType[$channel] = $matches[6]; 
+            }
+            if (strstr($paramName,"sted")) {
+                if (isset($micrType[$channel])) {
+                    if ($micrType[$channel] != "sted") {
+                        continue;
+                    }
+                }
+            }
+            if ($paramName == "ps") {
+                if (isset($micrType[$channel])) {
+                    if ($micrType[$channel] != "nipkow") {
+                        continue;
+                    }
+                }
+            }
+            if ($paramName == "pr") {
+                if (isset($micrType[$channel])) {
+                    if ($micrType[$channel] == "widefield") {
+                        continue;
+                    }
+                }
+            }
+
+            /* The remaining parameters do make sense, report them. */
             if ($source == "template") {
                 $source = "User defined";
                 $style  = "userdef";
