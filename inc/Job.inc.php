@@ -722,6 +722,11 @@ class Job {
         $pattern .= "(template|metadata|meta data): (.*).}}/";
 
         foreach ($reportFile as $reportEntry) {
+
+            /* Use strpos on most lines for speed reasons. */
+            if (strpos($reportEntry,"Parameter") === FALSE ) {
+                continue;
+            }
             if (!preg_match($pattern,$reportEntry,$matches)) {
                 continue;
             }
