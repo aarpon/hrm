@@ -392,8 +392,8 @@ class HuygensTemplate {
             array ('open'                       =>  'imgOpen',
                    'setParameters'              =>  'setp',
                    'adjustBaseline'             =>  'adjbl',
-                   'algorithms'                 =>  '',
                    'ZStabilization'              => 'stabilize',
+                   'algorithms'                 =>  '',
                    'colocalization'             =>  'coloc',
                    '2Dhistogram'                =>  'hist',
                    'XYXZRawAtSrcDir'            =>  'previewGen',
@@ -728,7 +728,6 @@ class HuygensTemplate {
     private function getImgProcessTasks( ) {
 
         $taskList = "";
-
         foreach ($this->imgProcessTasksArray as $key => $value) {
             switch ( $key ) {
             case 'open':
