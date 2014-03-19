@@ -143,7 +143,8 @@ class Job {
                                   'format'         =>'Output file format',
                                   'absolute'       =>'Background absolute value',
                                   'estimation'     =>'Background estimation',
-                                  'ratio'          =>'Signal/Noise ratio' );
+                                  'ratio'          =>'Signal/Noise ratio',
+                                  'stabilization'  =>'Z Stabilization');
     }
 
     /*!
