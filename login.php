@@ -255,24 +255,28 @@ deconvolution.</p>
     <tr class="caption">
       <td>
         EPF Lausanne<br />
-        <a href="javascript:openWindow('http://biop.epfl.ch')">
-          BioImaging and Optics platform
+        <a href="http://biop.epfl.ch"
+        onclick="this.target='_blank'; return true;">
+        BioImaging and Optics platform
         </a>
       </td>
       <td>
         Friedrich Miescher Institute<br />
-        <a href="javascript:openWindow('http://www.fmi.ch/faim')">
-          Facility for Advanced<br />
-          Imaging and Microscopy
+        <a href="http://www.fmi.ch/faim"
+        onclick="this.target='_blank'; return true;">
+        Facility for Advanced<br />
+        Imaging and Microscopy
         </a>
       </td>
       <td>
-       <a href="javascript:openWindow('http://www.mri.cnrs.fr')">
+        <a href="http://www.mri.cnrs.fr"
+        onclick="this.target='_blank'; return true;">
         Montpellier RIO Imaging
-       </a>
+        </a>
       </td>
       <td>
-        <a href="javascript:openWindow('http://www.bsse.ethz.ch/')">
+        <a href="http://www.bsse.ethz.ch"
+        onclick="this.target='_blank'; return true;">
         ETH Zurich<br />
         Single-Cell Unit
         </a>
@@ -303,18 +307,21 @@ deconvolution.</p>
     <!-- Captions -->
     <tr class="caption">
       <td>
-       <a href="javascript:openWindow('http://svi.nl')">
+       <a href="http://svi.nl"
+       onclick="this.target='_blank'; return true;">
         Scientific Volume Imaging
        </a>
       </td>
       <td>
-       <a href="javascript:openWindow('http://www.lin-magdeburg.de')">
+       <a href="http://www.lin-magdeburg.de"
+       onclick="this.target='_blank'; return true;">
         Leibniz Institute for Neurobiology<br />
         Magdeburg
        </a>
       </td>
       <td>
-       <a href="javascript:openWindow('http://www.biozentrum.unibas.ch')">
+       <a href="http://www.biozentrum.unibas.ch"
+       onclick="this.target='_blank'; return true;">
         Biozentrum Basel<br />
         University of Basel<br />
         The Center for<br />
@@ -322,7 +329,8 @@ deconvolution.</p>
       </a>    
       </td>
       <td>
-       <a href="javascript:openWindow('http://cni.ifn-magdeburg.de')">
+       <a href="http://cni.ifn-magdeburg.de"
+       onclick="this.target='_blank'; return true;">
         Combinatorial Neuroimaging<br />
         Magdeburg 
        </a>    
