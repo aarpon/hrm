@@ -318,7 +318,7 @@ deconvolution.</p>
         Biozentrum Basel<br />
         University of Basel<br />
         The Center for<br />
-        Molecular Sciences
+        Molecular Life Sciences
       </a>    
       </td>
       <td>
