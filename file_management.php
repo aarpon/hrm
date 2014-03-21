@@ -298,21 +298,21 @@ if ( isset( $_SESSION['filemanager_referer'] ) ) {
     $referer = $_SESSION['filemanager_referer'];
     if ( strpos( $referer, 'home.php' ) === False ) {
         $top_nav_right .= get_include_contents("./inc/nav/back.inc.php");
-       }
     }
+}
 
-    if ( $browse_folder == "dest" ) {
-        $top_nav_right .= file_get_contents("./inc/nav/files_raw.inc.html");
-    } else {
-        $top_nav_right .= file_get_contents("./inc/nav/files_results.inc.html");
-    }
+if ( $browse_folder == "dest" ) {
+    $top_nav_right .= file_get_contents("./inc/nav/files_raw.inc.html");
+} else {
+    $top_nav_right .= file_get_contents("./inc/nav/files_results.inc.html");
+}
 
 
 $file_buttons[] = "delete";
 $file_buttons[] = "update";
 
 $control_buttons = '
-<input name="ref" type="hidden" value="'.$_SESSION['referer'].'" />
+<input name="ref" type="hidden" value="' . $_SESSION['referer'] . '" />
 <input name="OK" type="hidden" />
 ';
 
