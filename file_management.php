@@ -5,7 +5,6 @@
 require_once("./inc/User.inc.php");
 require_once("./inc/Fileserver.inc.php");
 require_once("./inc/System.inc.php");
-require_once("./inc/wiki_help.inc.php");
 
 session_start();
 
@@ -290,23 +289,6 @@ if ( $browse_folder == "dest" ) {
     $info .= "<p><strong>Move your mouse pointer over the action buttons at " .
       "the bottom to redisplay this help.</strong></p>";
 }
-
-$top_nav_left = get_wiki_link('HuygensRemoteManagerHelpFileManagement');
-$top_nav_right = '';
-
-if ( isset( $_SESSION['filemanager_referer'] ) ) {
-    $referer = $_SESSION['filemanager_referer'];
-    if ( strpos( $referer, 'home.php' ) === False ) {
-        $top_nav_right .= get_include_contents("./inc/nav/back.inc.php");
-    }
-}
-
-if ( $browse_folder == "dest" ) {
-    $top_nav_right .= file_get_contents("./inc/nav/files_raw.inc.html");
-} else {
-    $top_nav_right .= file_get_contents("./inc/nav/files_results.inc.html");
-}
-
 
 $file_buttons[] = "delete";
 $file_buttons[] = "update";
