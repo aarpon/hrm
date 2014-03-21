@@ -112,6 +112,7 @@ table {
     height: 86px;
     background: url("../images/title_bkg.png") repeat-x top left;
     padding-left: 180px;
+    padding-top: 5px;
     border: #fff 2px solid;
     color: white;
 }
@@ -370,7 +371,7 @@ table {
 }
 
 #logos table td.svi {
-  height: 60px;   
+  height: 60px;
   width: 160px;
   cursor: pointer;
   background: url("../images/logo_svi.png") no-repeat center;
@@ -447,15 +448,15 @@ table {
   vertical-align: middle;
 }
 
-#autoseries_label { 
+#autoseries_label {
     font-size: 80%;
 }
 
-#autoseries { 
+#autoseries {
     margin-top: 5px;
 }
 
-#selection label { 
+#selection label {
   position: relative;
   left: 13.8em;
 }
@@ -589,7 +590,7 @@ input.save {
     padding: 5px 0 0 0;
 }
 
-#omeroTree { 
+#omeroTree {
   width: 450px;
 }
 
@@ -624,7 +625,7 @@ input.save {
   text-align: center;
   height: 48px;
   width: 100px;
-  
+
 }
 
 #login fieldset {
@@ -821,17 +822,17 @@ input.save {
   margin-top: 2em;
 }
 
-#jobParameters table { 
+#jobParameters table {
   margin-bottom: 2em;
   font-size: 100%;
   width: 610px;
-} 
+}
 
 #jobParameters td {
   text-align: center;
 }
 
-#jobParameters td.header { 
+#jobParameters td.header {
   font-weight: bold;
 }
 
@@ -859,11 +860,11 @@ input.save {
   background-color: #eee;
 }
 
-#jobParameters td.metadata { 
+#jobParameters td.metadata {
   background-color: #CEFEC6;
 }
 
-#jobParameters td.userdef { 
+#jobParameters td.userdef {
   background-color: #CFD7F2;
 }
 
@@ -890,7 +891,7 @@ input.save {
 
 #colocTab.normal {
     color: #4988DE;
-    background-color: #fff;  
+    background-color: #fff;
     border-color: #888;
 }
 
@@ -904,11 +905,11 @@ input.save {
     border-color: #555;
 }
 
-#colocResults { 
+#colocResults {
   width: 1600px;
 }
 
-#colocRun { 
+#colocRun {
   float: left;
   width: 1600px;
 }
@@ -919,7 +920,7 @@ input.save {
   text-align: center;
 }
 
-#ColocCoefficientSelectionDiv table { 
+#ColocCoefficientSelectionDiv table {
   font-size: 100%;
 }
 
@@ -931,11 +932,11 @@ input.save {
   text-align: left;
 }
 
-#colocCoefficients table { 
+#colocCoefficients table {
   font-size: 100%;
   width: 1200px;
   float: left;
-} 
+}
 
 #colocCoefficients td {
   text-align: center;
@@ -969,11 +970,11 @@ input.save {
   background-color: #B6ECFF;
 }
 
-#colocMap table { 
+#colocMap table {
   font-size: 100%;
   width: 800px;
   float: left;
-} 
+}
 
 #colocMap td {
   text-align: center;
@@ -989,13 +990,13 @@ input.save {
   padding-right: 1em;
 }
 
-#warning table { 
+#warning table {
   font-size: 105%;
   padding-bottom: 1em;
   width: 610px;
   border: none;
   left:0px;
-} 
+}
 
 #warning td {
   text-align: left;
@@ -1007,17 +1008,17 @@ input.save {
   padding-left: 6px;
 }
 
-#scaling table { 
+#scaling table {
   margin-bottom: 2em;
   font-size: 100%;
   width: 610px;
-} 
+}
 
 #scaling td {
   text-align: center;
 }
 
-#scaling td.header { 
+#scaling td.header {
   font-weight: bold;
 }
 
@@ -1045,7 +1046,7 @@ input.save {
   background-color: #eee;
 }
 
-#scaling td.cell { 
+#scaling td.cell {
   background-color: #CFD7F2;
 }
 
@@ -1692,7 +1693,7 @@ div.StedDeplModeValues {
    vertical-align: center;
 }
 
-/* Confidence levels for parameters: provided, asIs, verified, 
+/* Confidence levels for parameters: provided, asIs, verified,
    reported, estimated, default */
 .asIs {
 	background: url("../images/param_asis.png") repeat-y left;
