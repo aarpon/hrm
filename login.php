@@ -182,7 +182,8 @@ if ( System::getHuCoreVersionAsInteger( ) == 0 ) {
 }
 // Check that hucore is recent enough to run this version of the HRM
 if ( System::isMinHuCoreVersion( ) == false ) {
-	echo "<div class=\"dbOutDated\">Warning: you need at least HuCore " .
+	echo "<div class=\"dbOutDated\">Warning: your HuCore version is " .
+	System::getHucoreVersionAsString() . ", you need at least HuCore " .
 	"version " . System::getMinHuCoreVersionAsString() . " for HRM " .
     System::getHRMVersionAsString() . "!\n";
 	echo "<p>Please contact the administrator.</p></div>";
