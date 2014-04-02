@@ -720,11 +720,11 @@ class Job {
         $table .= $this->insertRow($row);
      
             /* Extract data from the file and into the table. */
-        $pattern  = "/{Parameter ([a-zA-Z]+?) (of channel ([0-9])\s|)(.*) ";
+        $pattern  = "/{Parameter ([a-zA-Z3]+?) (of channel ([0-9])\s|)(.*) ";
         $pattern .= "(template|metadata|meta data): (.*).}}/";
 
         foreach ($reportFile as $reportEntry) {
-
+            
             /* Use strpos on most lines for speed reasons. */
             if (strpos($reportEntry,"Parameter") === FALSE ) {
                 continue;
