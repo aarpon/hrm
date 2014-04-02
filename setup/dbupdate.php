@@ -3487,8 +3487,7 @@ if ($current_revision < $n) {
     $record = array();
     $record["parameter"] = "ZStabilization";
     $record["value"] = "1";
-    $record["translation"] = "Stabilize the dataset in the Z direction\
-                              (if possible)";
+    $record["translation"] = "Stabilize the dataset in the Z direction (if possible)";
     $record["isDefault"] = "t";
 
     // Skip it if the row is already there.
