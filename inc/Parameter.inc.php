@@ -2954,6 +2954,10 @@ class StedSaturationFactor extends NumericalArrayParameter {
         for ( $i = 0; $i < $this->numberOfChannels; $i++ ) {
             $result = $result && parent::checkValue( $this->value[ $i ] );
         }
+        if ( $result == false ) {
+            $this->message = "STED Saturation Factor: " . $this->message;
+        }
+        
         return $result;
     }
 }
@@ -3022,6 +3026,10 @@ class StedWavelength extends NumericalArrayParameter {
         for ( $i = 0; $i < $this->numberOfChannels; $i++ ) {
             $result = $result && parent::checkValue( $this->value[ $i ] );
         }
+        if ( $result == false ) {
+            $this->message = "STED Wavelength: " . $this->message;
+        }
+
         return $result;
     }
 }
@@ -3090,6 +3098,10 @@ class StedImmunity extends NumericalArrayParameter {
         for ( $i = 0; $i < $this->numberOfChannels; $i++ ) {
             $result = $result && parent::checkValue( $this->value[ $i ] );
         }
+        if ( $result == false ) {
+            $this->message = "STED Immunity Fraction: " . $this->message;
+        }
+
         return $result;
     }
 }
@@ -3158,6 +3170,10 @@ class Sted3D extends NumericalArrayParameter {
         for ( $i = 0; $i < $this->numberOfChannels; $i++ ) {
             $result = $result && parent::checkValue( $this->value[ $i ] );
         }
+        if ( $result == false ) {
+            $this->message = "STED 3D: " . $this->message;
+        }
+
         return $result;
     }
 }
