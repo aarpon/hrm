@@ -67,7 +67,12 @@ class DatabaseConnection {
 	  "unused3"              => "imagingDir",
 	  "unused4"              => "objQuality",
 	  "unused5"              => "photonCnt",
-	  "unused6"              => "exBeamFill" );
+	  "unused6"              => "exBeamFill",
+      "StedDepletionMode"    => "stedMode",
+      "StedWavelength"       => "stedLambda",
+      "StedSaturationFactor" => "stedSatFact",
+      "StedImmunity"         => "stedImmunity",
+      "Sted3D"               => "sted3D");
   }
 
   /*!
@@ -370,9 +375,11 @@ class DatabaseConnection {
       $result = $result && $this->execute($query);
     }
     $existsAlready = $this->existsParametersFor($settings);
+
     foreach ($settings->parameterNames() as $parameterName) {
       $parameter = $settings->parameter($parameterName);
       $parameterValue = $parameter->internalValue();
+
       if (is_array($parameterValue)) {
           // Before, # was used as a separator, but the first element with
           // index zero was always NULL because channels started their indexing
@@ -409,6 +416,7 @@ class DatabaseConnection {
       }
       $result = $result && $this->execute($query);
     }
+
     return $result;
   }
 

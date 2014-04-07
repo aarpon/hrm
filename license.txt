@@ -4,10 +4,16 @@ Original concept and implementation
 
 		* Pierre Travo and Volker Baecker, Montpellier RIO Imaging (CNRS).
 
+Current project coordinator
+
+		* Aaron Ponti
+
 Current developers
 
-		* Aaron Ponti (developer and current project coordinator), Friedrich Miescher Institute, Basel (FMI);
+		* Aaron Ponti, Department of Biosystems Science and Engineering (D-BSSE), ETH Zurich, Basel.
 		* Daniel Sevilla, Scientific Volume Imaging, Hilversum (SVI).
+		* Niko Ehrenfeuchter, Imaging Core Facility, Biozentrum, University of Basel.
+		* Torsten Stoeter, Leibniz Institute for Neurobiology, Magdeburg.
 
 Former developers
 

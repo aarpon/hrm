@@ -31,7 +31,7 @@ window.helpText[ "voxel" ] =
 window.helpText[ "time" ] =
   '<p>The time interval is the (temporal) distance between two frames in a ' +
   'time series, and relates to the temporal sampling. Set the time interval ' +
-  'to <b>0</b> if you are not deconvoling time series.</p>';
+  'to <b>0</b> if you are not deconvolving time series.</p>';
 
 window.helpText[ "pinhole_radius" ] =
   '<p>The pinhole of confocal microscopes is a small hole used to get rid ' +

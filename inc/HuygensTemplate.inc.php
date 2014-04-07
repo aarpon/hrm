@@ -130,6 +130,12 @@ class HuygensTemplate {
     private $imgSaveArray;
 
     /*!
+     \var    $ZStabilizeArray
+     \brief  Array with information on the Z stabilize subtask.
+    */
+    private $ZStabilizeArray;
+
+    /*!
      \var    $adjblArray;
      \brief  Array with information on the image adjbl subtask.
     */
@@ -386,6 +392,7 @@ class HuygensTemplate {
             array ('open'                       =>  'imgOpen',
                    'setParameters'              =>  'setp',
                    'adjustBaseline'             =>  'adjbl',
+                   'ZStabilization'              => 'stabilize',
                    'algorithms'                 =>  '',
                    'colocalization'             =>  'coloc',
                    '2Dhistogram'                =>  'hist',
@@ -431,6 +438,11 @@ class HuygensTemplate {
                     'ri'                        => '',
                     'ril'                       => '',
                     'na'                        => '',
+                    'stedMode'                  => '',
+                    'stedLambda'                => '',
+                    'stedSatFact'               => '',
+                    'stedImmunity'              => '',
+                    'sted3D'                    => '',
                     'listID'                    => 'setp' );
 
         /* Options for the 'set image pararmeter' action */
@@ -451,6 +463,11 @@ class HuygensTemplate {
                     'ri'                        =>  'parState,ri',
                     'ril'                       =>  'parState,ril',
                     'na'                        =>  'parState,na',
+                    'stedMode'                  =>  'parState,stedMode',
+                    'stedLambda'                =>  'parState,stedLambda',
+                    'stedSatFact'               =>  'parState,stedSatFact',
+                    'stedImmunity'              =>  'parState,stedImmunity',
+                    'sted3D'                    =>  'parState,sted3D',
                     'listID'                    =>  'setp' );
 
         /* Options for the 'adjust baseline' action */
@@ -475,6 +492,13 @@ class HuygensTemplate {
                     'mode'                      =>  'fast',
                     'itMode'                    =>  'auto',
                     'listID'                    =>  '' );
+
+        /* Options for the 'ZStabilization' action.
+           A bit redundant to work with an array here, but this way the
+           foundations for more complex stabilization tasks are laid. */
+        $this->ZStabilizeArray =
+            array( 'enabled'                    =>  '0',
+                   'listID'                    =>   'stabilize');
 
         /* Options for the 'colocalization analysis' action */
         $this->colocArray  =
@@ -704,7 +728,6 @@ class HuygensTemplate {
     private function getImgProcessTasks( ) {
 
         $taskList = "";
-
         foreach ($this->imgProcessTasksArray as $key => $value) {
             switch ( $key ) {
             case 'open':
@@ -712,6 +735,7 @@ class HuygensTemplate {
             case 'setParameters':
             case 'adjustBaseline':
             case 'algorithms':
+            case 'ZStabilization':
             case 'colocalization':
             case '2Dhistogram':    
             case 'XYXZRawAtSrcDir':
@@ -767,6 +791,9 @@ class HuygensTemplate {
                 break;
             case 'adjustBaseline':
                 $taskList .= $this->getImgProcessAdjbl();
+                break;
+            case 'ZStabilization':
+                $taskList .= $this->getImgProcessZStabilize();
                 break;
             case 'algorithms':
                 $taskList .= $this->getImgProcessAlgorithms();
@@ -858,13 +885,7 @@ class HuygensTemplate {
                 $setp .= $key . " " . $this->getNumberOfChannels();
                 break;
             case 'ps':
-                if ($this->getMicroscopeType() != "nipkow") {
-                    continue 2;
-                }
             case 'pr':
-                if ($this->getMicroscopeType() == "widefield") {
-                    continue 2;
-                }
             case 'micr':
             case 's':
             case 'imagingDir':
@@ -878,6 +899,11 @@ class HuygensTemplate {
             case 'na':
             case 'iFacePrim':
             case 'iFaceScnd':
+            case 'stedMode':
+            case 'stedLambda':
+            case 'stedSatFact':
+            case 'stedImmunity':
+            case 'sted3D':
                 break;
             case 'listID':
                 $setp = $this->string2tcllist($setp);
@@ -925,6 +951,51 @@ class HuygensTemplate {
         }
 
         return $imgAdjbl;
+    }
+
+
+    /*!
+      \brief      Get options for the 'ZStabilize' task. 
+      \return     Tcl lsit with the 'ZStabilize' task and its options.
+    */
+    private function getImgProcessZStabilize( ) {
+        $imgZStabilize = "";
+
+        $stedData = False;
+        $numberOfChannels = $this->getNumberOfChannels();
+        for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
+            if (strstr($this->getMicroscopeType($chanCnt),'sted')) {
+                $stedData = True;
+                break;
+            }
+        }
+
+        $ZStabilizeParam = $this->deconSetting->parameter('ZStabilization');
+        foreach ($this->ZStabilizeArray as $key => $value) {
+            
+            if ($key != "listID") {
+                $imgZStabilize .= " " . $key . " ";
+            }
+
+            /* Stabilization should only be applied to STED data. */
+            switch( $key ) {
+            case 'enabled':
+                if ($stedData) {
+                    $imgZStabilize .= $ZStabilizeParam->value();
+                } else {
+                    $imgZStabilize .= '0';
+                }
+                break;
+            case 'listID':
+                $imgZStabilize = $this->string2tcllist($imgZStabilize);
+                $imgZStabilize = $value . " " . $imgZStabilize;
+                break;
+            default:
+                error_log("Image Z stabilize option $key not yet implemented.");
+            }
+        }
+
+        return $imgZStabilize;
     }
 
     /*!
@@ -1105,6 +1176,72 @@ class HuygensTemplate {
     /* -------------------------- Setp task ---------------------------------- */
 
     /*!
+      \brief     Gets the STED depletion mode. One channel.
+      \param     $channel A channel
+      \return    The STED depletion mode.
+    */
+    private function getStedMode($channel, $parseConfocals = False) {
+        $microSetting = $this->microSetting;
+        $stedMode = $microSetting->parameter("StedDepletionMode")->value();
+        $deplMode = $stedMode[$channel];
+
+        /* In this case the major microscope mode will be confocal, and the
+           STED depletion mode will not matter. */
+        if ($parseConfocals) {
+            if (strstr($deplMode,'confocal')) {
+                $deplMode = "vortexPulsed";
+            }
+        }
+        
+        return $deplMode;        
+    }
+
+    /*!
+      \brief     Gets the STED lambda. One channel.
+      \param     $channel A channel
+      \return    The STED lambda.
+    */
+    private function getStedLambda($channel) {
+        $microSetting = $this->microSetting;
+        $stedLambda = $microSetting->parameter("StedWavelength")->value();       
+        return $stedLambda[$channel];        
+    }
+
+    /*!
+      \brief     Gets the STED saturation factor. One channel.
+      \param     $channel A channel
+      \return    The STED saturation factor.
+    */
+    private function getStedSaturationFactor($channel) {
+        $microSetting = $this->microSetting;
+        $stedSatFact =
+            $microSetting->parameter("StedSaturationFactor")->value();       
+        return $stedSatFact[$channel];        
+    }
+
+    /*!
+      \brief     Gets the STED immunity factor. One channel.
+      \param     $channel A channel
+      \return    The STED immunity factor.
+    */
+    private function getStedImmunity($channel) {
+        $microSetting = $this->microSetting;
+        $stedImmunity = $microSetting->parameter("StedImmunity")->value();
+        return $stedImmunity[$channel];        
+    }
+
+    /*!
+      \brief     Gets the STED lambda. One channel.
+      \param     $channel A channel
+      \return    The STED lambda.
+    */
+    private function getSted3D($channel) {
+        $microSetting = $this->microSetting;
+        $sted3D = $microSetting->parameter("Sted3D")->value();       
+        return $sted3D[$channel];        
+    }
+    
+    /*!
      \brief       Gets the pinhole radius. One channel.
      \param       $channel A channel
      \return      The pinhole radius.
@@ -1116,12 +1253,27 @@ class HuygensTemplate {
     }      
 
     /*!
-     \brief       Gets the microscope type. Same for all channels.
+     \brief       Gets the microscope type.
+     \param       $channel A channel
      \return      The microscope type.
     */
-    private function getMicroscopeType( ) {
-        $microSetting = $this->microSetting;
-        return $microSetting->parameter('MicroscopeType')->translatedValue();
+    private function getMicroscopeType($channel) {
+        $microChoice = $this->microSetting->parameter('MicroscopeType');
+        $micrType = $microChoice->translatedValue();
+
+        if (strstr($micrType,'sted3d')) {
+            $micrType = 'sted';
+        }
+        
+        if (strstr($micrType,'sted')) {
+            $stedMode = $this->getStedMode($channel);
+            
+            if (strstr($stedMode,'confocal')) {
+                $micrType = 'confocal';
+            }
+        }
+        
+        return $micrType;
     }
 
     /*!
@@ -1906,6 +2058,11 @@ class HuygensTemplate {
         case 'ri':
         case 'ril':
         case 'na':
+        case 'stedMode':
+        case 'stedLambda':
+        case 'stedSatFact':
+        case 'stedImmunity':
+        case 'sted3D':
             $numberOfChannels = $this->getNumberOfChannels();
             $cList = "";
 
@@ -1991,6 +2148,11 @@ class HuygensTemplate {
         case 'ri':
         case 'ril':
         case 'na':
+        case 'stedMode':
+        case 'stedLambda':
+        case 'stedSatFact':
+        case 'stedImmunity':
+        case 'sted3D':
             $numberOfChannels = $this->getNumberOfChannels();
             $param = "";
             for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
@@ -2023,7 +2185,7 @@ class HuygensTemplate {
     private function getParameterValue($paramName,$channel) {
         switch ( $paramName ) {
         case 'micr':
-            $parameterValue = $this->getMicroscopeType();
+            $parameterValue = $this->getMicroscopeType($channel);
             break;
         case 'pr':
             $parameterValue = $this->getPinholeRadius($channel);
@@ -2067,6 +2229,21 @@ class HuygensTemplate {
         case 'sT':
             $parameterValue = $this->getSamplingSizeT();
             break;
+        case 'stedMode':
+            $parameterValue = $this->getStedMode($channel, True);
+            break;
+        case 'stedLambda':
+            $parameterValue = $this->getStedLambda($channel);
+            break;
+        case 'stedSatFact':
+            $parameterValue = $this->getStedSaturationFactor($channel);
+            break;            
+        case 'stedImmunity':
+            $parameterValue = $this->getStedImmunity($channel);
+            break;
+        case 'sted3D':
+            $parameterValue = $this->getSted3D($channel);
+            break;
         default:
             $parameterValue = "";
         }
@@ -2086,25 +2263,26 @@ class HuygensTemplate {
     */
     private function parseTask($key,$task) {
         switch ($task) {
-            case 'imgOpen':
-            case 'setp':
-            case 'adjbl':
-            case 'imgSave':
-                break;
-            case 'coloc':
-            case 'hist':
-                $task = $this->parseMultiChan($task);
-                break;
-            case 'previewGen':
-                $task = $this->parsePreviewGen($key,$task);
-                break;
-            case '':
-                if ($key == "algorithms") {
-                    $task = $this->parseAlgorithm();                    
-                }
-                break;
-            default:
-                error_log("Huygens template task '$task' not yet implemented.");
+        case 'imgOpen':
+        case 'setp':
+        case 'adjbl':
+        case 'imgSave':
+        case 'stabilize':
+            break;
+        case 'coloc':
+        case 'hist':
+            $task = $this->parseMultiChan($task);
+            break;
+        case 'previewGen':
+            $task = $this->parsePreviewGen($key,$task);
+            break;
+        case '':
+            if ($key == "algorithms") {
+                $task = $this->parseAlgorithm();                    
+            }
+            break;
+        default:
+            error_log("Huygens template task '$task' not yet implemented.");
         }
         
         return $task;            

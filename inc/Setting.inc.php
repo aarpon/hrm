@@ -205,7 +205,6 @@ abstract class Setting {
     */
     public function save() {
         $db = new DatabaseConnection();
-
         $result = $db->saveParameterSettings($this);
         if (!$result) {
             $this->message = "save setting - database access failed!";
@@ -277,6 +276,11 @@ class ParameterSetting extends Setting {
             'AberrationCorrectionMode',
             'AdvancedCorrectionOptions',
             'PSFGenerationDepth',
+            'StedDepletionMode',
+            'StedSaturationFactor',
+            'StedWavelength',
+            'StedImmunity',
+            'Sted3D'
         );
         foreach ($parameterClasses as $class) {
             $param = new $class;
@@ -325,13 +329,18 @@ class ParameterSetting extends Setting {
         foreach ($this->parameter as $objName => $objInstance) {
 
             switch ( $objName ) {
+                case "StedDepletionMode" :
+                case "StedWavelength" :
+                case "StedSaturationFactor" :
+                case "StedImmunity" :
+                case "Sted3D" :
                 case "ExcitationWavelength" :
                 case "EmissionWavelength" :
                 case "PinholeSize" :
                     $chanValues = $objInstance->value();
 
                     foreach ( $chanValues as $chan => $value) {
-                        if ($value) {
+                        if (isset($value)) {
                             $postedParams["$objName$chan"] = $value;
                         }
                     }
@@ -357,9 +366,15 @@ class ParameterSetting extends Setting {
                 $ok = False;
             }
         }
-
+        
         if ($ok) {
             if ( !$this->checkPostedCapturingParameters($postedParams) ) {
+                $ok = False;
+            }
+        }
+
+        if ($ok) {
+            if ( !$this->checkPostedStedParameters($postedParams) )  {
                 $ok = False;
             }
         }
@@ -446,7 +461,7 @@ class ParameterSetting extends Setting {
       \return	true if all Paraneters are defined and valid, false otherwise
     */
     public function checkPostedMicroscopyParameters($postedParameters) {
-
+        
         if (count($postedParameters) == 0) {
             $this->message = '';
             return False;
@@ -454,6 +469,7 @@ class ParameterSetting extends Setting {
         
         $this->message = '';
         $noErrorsFound = True;
+        
 
         // Get the names of the relevant parameters
         $names = $this->microscopeParameterNames();
@@ -565,11 +581,14 @@ class ParameterSetting extends Setting {
             // provided or not
             if ($valueSet) {
 
-                if ($name == "SampleMedium" &&
-                        $postedParameters[$name] == "custom") {
+                if ($name == "SampleMedium"
+                    && $postedParameters[$name] == "custom") {
                     if (isset($postedParameters['SampleMediumCustomValue'])) {
                         $value = $postedParameters['SampleMediumCustomValue'];
                     }
+                } elseif($name == "ObjectiveType"
+                         && $postedParameters[$name] == "custom") {
+                    $value = $postedParameters['ObjectiveTypeCustomValue'];
                 } else {
                     $value = $postedParameters[$name];
                 }
@@ -629,8 +648,286 @@ class ParameterSetting extends Setting {
                 }
             }
         }
+        
         return $noErrorsFound;
     }
+
+
+        
+    /*!
+      \brief	Checks that the posted STED Parameters are all defined
+              and valid
+      \param	$postedParameters	The $_POST array
+      \return	true if all Paraneters are defined and valid, false otherwise
+    */
+    public function checkPostedStedParameters($postedParameters) {
+        $this->message = '';
+        
+        if (count($postedParameters) == 0) {
+            return False;
+        }
+
+        if (!$this->isSted() && !$this->isSted3D()) {
+            return True;
+        }
+
+        $noErrorsFound = True;
+
+        // Depletion Mode
+        $value = array(null, null, null, null, null);
+        for ($i = 0; $i < 5; $i++) {
+            if (isset($postedParameters["StedDepletionMode$i"])) {
+                $value[$i] = $postedParameters["StedDepletionMode$i"];
+                unset($postedParameters["StedDepletionMode$i"]);
+            }
+        }
+        $name = 'StedDepletionMode';
+        $valueSet = count(array_filter($value)) > 0;
+        
+        if ($valueSet) {
+            
+            // Set the value
+            $parameter = $this->parameter($name);
+            $parameter->setValue($value);
+            $this->set($parameter);
+            
+            // Keep the 'deplModes' so that it can be checked below if any STED
+            // parameters need to be forced, e.g when 'deplMode' is 'confocal'.
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = False;
+            } else {
+                $deplModes = $parameter->value();               
+            }
+        } else {
+            
+            // In this case it is important to know whether the Parameter
+            // must have a value or not
+            $parameter = $this->parameter($name);
+            $mustProvide = $parameter->mustProvide();
+            
+            // Reset the Parameter
+            $parameter->reset();
+            $this->set($parameter);
+            
+            // If the Parameter value must be provided, we return an error
+            if ($mustProvide) {
+                $this->message = "Please set the Sted depletion mode!";
+                $noErrorsFound = False;
+            }
+        }
+
+        
+        // Saturation Factor
+        $value = array(null, null, null, null, null);
+
+        for ($i = 0; $i < 5; $i++) {
+            if (isset($postedParameters["StedSaturationFactor$i"])) {
+                $value[$i] = $postedParameters["StedSaturationFactor$i"];
+                unset($postedParameters["StedSaturationFactor$i"]);
+
+                // Fallback to '0' if no value was provided and
+                // the channel is confocal.
+                if (empty($value[$i])
+                    && isset($deplModes[$i])
+                    && $deplModes[$i] == "off-confocal") {
+                    $value[$i] = 0;
+                }
+            }
+        }
+        $name = 'StedSaturationFactor';
+
+        // Do not filter '0'. Thus, use 'strlen' as callback for filtering.
+        $valueSet = count(array_filter($value, 'strlen')) > 0;
+        if ($valueSet) {
+            
+            // Set the value
+            $parameter = $this->parameter($name);
+            $parameter->setValue($value);
+            $this->set($parameter);
+            
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = False;
+            }
+            
+        } else {
+            
+            // In this case it is important to know whether the Parameter
+            // must have a value or not
+            $parameter = $this->parameter($name);
+            $mustProvide = $parameter->mustProvide();
+            
+            // Reset the Parameter
+            $parameter->reset();
+            $this->set($parameter);
+            
+            // If the Parameter value must be provided, we return an error
+            if ($mustProvide) {
+                $this->message = "Please set the Sted saturation factor!";
+                $noErrorsFound = False;
+            }
+        }
+
+        
+        // Sted Wavelength
+        $value = array(null, null, null, null, null);
+        for ($i = 0; $i < 5; $i++) {
+            if (isset($postedParameters["StedWavelength$i"])) {
+                $value[$i] = $postedParameters["StedWavelength$i"];
+                unset($postedParameters["StedWavelength$i"]);
+
+                // Fallback to '0' if no value was provided and
+                // the channel is confocal.
+                if (empty($value[$i])
+                    && isset($deplModes[$i])
+                    && $deplModes[$i] == "off-confocal") {
+                    $value[$i] = 0;
+                }
+            } 
+        }
+        $name = 'StedWavelength';
+
+        // Do not filter '0'. Thus, use 'strlen' as callback for filtering.
+        $valueSet = count(array_filter($value, 'strlen')) > 0;
+        if ($valueSet) {
+            
+            // Set the value
+            $parameter = $this->parameter($name);
+            $parameter->setValue($value);
+            $this->set($parameter);
+            
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = False;
+            }
+            
+        } else {
+            
+            // In this case it is important to know whether the Parameter
+            // must have a value or not
+            $parameter = $this->parameter($name);
+            $mustProvide = $parameter->mustProvide();
+            
+            // Reset the Parameter
+            $parameter->reset();
+            $this->set($parameter);
+            
+            // If the Parameter value must be provided, we return an error
+            if ($mustProvide) {
+                $this->message = "Please set the Sted wavelength!";
+                $noErrorsFound = False;
+            }
+        }
+
+
+        // Sted Immunity Fraction
+        $value = array(null, null, null, null, null);
+        for ($i = 0; $i < 5; $i++) {
+            if (isset($postedParameters["StedImmunity$i"])) {
+                $value[$i] = $postedParameters["StedImmunity$i"];
+                unset($postedParameters["StedImmunity$i"]);
+                
+                // Fallback to '0' if no value was provided and
+                // the channel is confocal.
+                if (empty($value[$i])
+                    && isset($deplModes[$i])
+                    && $deplModes[$i] == "off-confocal") {
+                    $value[$i] = 0;
+                }
+            } 
+        }
+        $name = 'StedImmunity';
+
+        // Do not filter '0'. Thus, use 'strlen' as callback for filtering.
+        $valueSet = count(array_filter($value, 'strlen')) > 0;
+        if ($valueSet) {
+            
+            // Set the value
+            $parameter = $this->parameter($name);
+            $parameter->setValue($value);
+            $this->set($parameter);
+            
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = False;
+            }
+            
+        } else {
+            
+            // In this case it is important to know whether the Parameter
+            // must have a value or not
+            $parameter = $this->parameter($name);
+            $mustProvide = $parameter->mustProvide();
+            
+            // Reset the Parameter
+            $parameter->reset();
+            $this->set($parameter);
+            
+            // If the Parameter value must be provided, we return an error
+            if ($mustProvide) {
+                $this->message = "Please set the Sted immunity fraction!";
+                $noErrorsFound = False;
+            }
+        }
+         
+
+        // Sted 3D
+        if ($this->isSted3D()) {
+            $value = array(null, null, null, null, null);
+            for ($i = 0; $i < 5; $i++) {
+                if (isset($postedParameters["Sted3D$i"])) {
+                    $value[$i] = $postedParameters["Sted3D$i"];
+                    unset($postedParameters["Sted3D$i"]);
+                    
+                    // Fallback to '0' if no value was provided and
+                    // the channel is confocal.
+                    if (empty($value[$i])
+                        && isset($deplModes[$i])
+                        && $deplModes[$i] == "off-confocal") {
+                        $value[$i] = 0;
+                    }
+                }
+            }
+            $name = 'Sted3D';
+
+            // Do not filter '0'. Thus, use 'strlen' as callback for filtering.
+            $valueSet = count(array_filter($value, 'strlen')) > 0;
+            if ($valueSet) {
+                
+                // Set the value
+                $parameter = $this->parameter($name);
+                $parameter->setValue($value);
+                $this->set($parameter);
+                
+                if (!$parameter->check()) {
+                    $this->message = $parameter->message();
+                    $noErrorsFound = False;
+                }
+                
+            } else {
+                
+                // In this case it is important to know whether the Parameter
+                // must have a value or not
+                $parameter = $this->parameter($name);
+                $mustProvide = $parameter->mustProvide();
+                
+                // Reset the Parameter
+                $parameter->reset();
+                $this->set($parameter);
+                
+                // If the Parameter value must be provided, we return an error
+                if ($mustProvide) {
+                    $this->message = "Please set the Sted 3D percentage!";
+                    $noErrorsFound = False;
+                }
+            }
+        }
+        
+
+        return $noErrorsFound;
+    }
+    
     
     /*!
       \brief	Checks that the posted Capturing Parameters are all defined
@@ -638,7 +935,6 @@ class ParameterSetting extends Setting {
       \param	$postedParameters	The $_POST array
       \return	true if all Paraneters are defined and valid, false otherwise
     */
-
     public function checkPostedCapturingParameters($postedParameters) {
 
         if (count($postedParameters) == 0) {
@@ -741,7 +1037,7 @@ class ParameterSetting extends Setting {
         }
 
         // PinholeSize must be defined for all confocal microscopes
-        if ($this->isMultiPointOrSinglePointConfocal()) {
+        if ($this->hasPinhole()) {
 
             // Pinhole sizes
             $value = array(null, null, null, null, null);
@@ -753,7 +1049,6 @@ class ParameterSetting extends Setting {
             }
             $name = 'PinholeSize';
             $valueSet = count(array_filter($value)) > 0;
-
             if ($valueSet) {
         
                 // Set the value
@@ -818,6 +1113,10 @@ class ParameterSetting extends Setting {
                     $noErrorsFound = False;
                 }
             }
+        }
+        
+        if ($this->isSted() || $this->isSted3D()) {
+            $noErrorsFound = True;
         }
 
         return $noErrorsFound;
@@ -1129,6 +1428,22 @@ class ParameterSetting extends Setting {
     }
 
     /*!
+      \brief	Returns all Sted Parameter names
+      \return array of Sted Parameter names
+    */ 
+    public function stedParameterNames() {
+        $names = array();
+
+        foreach ($this->parameter as $parameter) {
+            if ($parameter->isForSted()) {
+                $names[] = $parameter->name();
+            }
+        }
+
+        return $names;
+    }
+
+    /*!
       \brief	Returns all Capture Parameter names
       \return array of Capture Parameter names
      */
@@ -1174,8 +1489,9 @@ class ParameterSetting extends Setting {
       \brief  Displays the setting as a text containing Parameter names and 
               their values
     */
-    public function displayString() {
+    public function displayString($numberOfChannels = 0, $micrType = NULL) {
         $result = '';
+
 
         // These parameters are important to properly display all the others
         $numberOfChannels = $this->parameter("NumberOfChannels")->value();
@@ -1192,8 +1508,7 @@ class ParameterSetting extends Setting {
         // the current Setting (e.g. it does not make sense to display the 
         // pinhole size if the microscope type is 'widefield'.
         foreach ($this->parameter as $parameter) {
-            if (!$this->isMultiPointOrSinglePointConfocal() &&
-                    $parameter->name() == 'PinholeSize')
+            if (!$this->hasPinhole() && $parameter->name() == 'PinholeSize')
                 continue;
             if ($parameter->name() == 'ImageGeometry')
                 continue;
@@ -1234,6 +1549,20 @@ class ParameterSetting extends Setting {
                     !( $performAberrationCorrection == 1 &&
                     $aberrationCorrectionMode == 'advanced' &&
                     $advancedCorrectionOptions == 'user' ))
+                continue;
+            if ($parameter->name() == 'StedDepletionMode'
+                && (!$this->isSted() && !$this->isSted3D()))
+                continue;
+            if ($parameter->name() == 'StedSaturationFactor'
+                && (!$this->isSted() && !$this->isSted3D()))
+                continue;
+            if ($parameter->name() == 'StedWavelength'
+                && (!$this->isSted() && !$this->isSted3D()))
+                continue;
+            if ($parameter->name() == 'StedImmunity'
+                && (!$this->isSted() && !$this->isSted3D()))
+                continue;
+            if ($parameter->name() == 'Sted3D' && !$this->isSted3D())
                 continue;
             $result = $result . $parameter->displayString($numberOfChannels);
         }
@@ -1427,7 +1756,7 @@ class ParameterSetting extends Setting {
         return $result;
     }
 
-    /*
+    /*!
       \brief	Returns the number of channels of the Setting
       \return	the number of channels
     */
@@ -1437,6 +1766,20 @@ class ParameterSetting extends Setting {
             return ( (int) $parameter->value() );
         } else {
             return ( (int) 1 );
+        }
+    }
+
+    /*!
+      \brief  Returns the main microscope mode.
+      \return Whether confocal, widefield, STED, STED 3D, spinning disk or
+              multiphoton.
+    */
+    public function microscopeType( ) {
+        $parameter = $this->parameter('MicroscopeType');
+        if ($parameter) {
+            return $parameter->value();
+        } else {
+            return NULL;
         }
     }
 
@@ -1471,6 +1814,28 @@ class ParameterSetting extends Setting {
         $parameter = $this->parameter('MicroscopeType');
         $value = $parameter->value();
         return ($value == 'single point confocal');
+    }
+
+    /*!
+      \brief   Checks whether the currently selected microscope type is sted.
+      \return  true if the currently selected microscope type is sted, false
+               otherwise.
+    */
+    public function isSted() {
+        $parameter = $this->parameter('MicroscopeType');
+        $value = $parameter->value();
+        return ($value === 'STED');
+    }
+
+    /*!
+      \brief   Checks whether the currently selected microscope type is sted 3D.
+      \return  true if the currently selected microscope type is sted 3D, false
+               otherwise.
+    */
+    public function isSted3D() {
+        $parameter = $this->parameter('MicroscopeType');
+        $value = $parameter->value();
+        return ($value === 'STED 3D');
     }
 
     /*!
@@ -1528,6 +1893,22 @@ class ParameterSetting extends Setting {
                 $this->isMultiPointConfocal());
     }
 
+    /*!
+    \brief    This determines which microscope types have a pinhole
+    \return   True if the microscope contains a pinhole. False otherwise.
+    */
+    public function hasPinhole() {
+        if ($this->isMultiPointOrSinglePointConfocal()) {
+            return True;
+        } elseif ($this->isSted()) {
+            return True;
+        } elseif ($this->isSted3D()) {
+            return True;
+        } else {
+            return False;
+        }
+    }
+    
     /*!
       \brief	Returns the pixel size (the value of CCDCaptorSizeX) in nm
       \todo	This is redundant!
@@ -1616,7 +1997,8 @@ class TaskSetting extends Setting {
             'OutputFileFormat',
             'MultiChannelOutput',
             'QualityChangeStoppingCriterion',
-            'DeconvolutionAlgorithm' );
+            'DeconvolutionAlgorithm',
+            'ZStabilization');
 
         foreach ($parameterClasses as $class) {
             $param = new $class;
@@ -1769,6 +2151,18 @@ class TaskSetting extends Setting {
             }
         }
 
+        // Stabilization in Z
+        if (isset($postedParameters["ZStabilization"]) ||
+                $postedParameters["ZStabilization"] == '') {
+            $parameter = $this->parameter("ZStabilization");
+            $parameter->setValue($postedParameters["ZStabilization"]);
+            $this->set($parameter);
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = False;
+            }
+        }
+
         return $noErrorsFound;
     }    
 
@@ -1800,7 +2194,7 @@ class TaskSetting extends Setting {
       \param	$numberOfChannels Number of channels (optional, default 
               value is 0)
      */
-    public function displayString($numberOfChannels = 0) {
+    public function displayString($numberOfChannels = 0, $micrType = NULL) {
         $result = '';
         $algorithm = $this->parameter('DeconvolutionAlgorithm')->value();
         foreach ($this->parameter as $parameter) {
@@ -1813,10 +2207,39 @@ class TaskSetting extends Setting {
             if ($parameter->name() == 'MultiChannelOutput') {
                 continue;
             }
+            if ($parameter->name() == 'ZStabilization'
+                &&  !strstr($micrType,"STED")) {
+                continue;
+            }
             $result = $result . 
                 $parameter->displayString($numberOfChannels);
         }
         return $result;
+    }
+
+    /*!
+      \brief   Checks whether the restoration should allow for stabilization.
+      \param   $paramSetting An instance of the ParameterSetting clase.
+      \return  Boolean: TRUE to enable stabilization option, FALSE otherwise.
+    */
+    public function isEligibleForStabilization(ParameterSetting $paramSetting) {
+        
+        if (!$paramSetting->isSted() && !$paramSetting->isSted3D()) {
+            return FALSE;
+        }
+        if ($paramSetting->parameter("ZStepSize")->value() === '0') {
+            return FALSE;
+        }
+        if (!System::hasLicense("stabilizer")) {
+            return FALSE;
+        }
+        if (!System::hasLicense("sted")) {
+            return FALSE;
+        }
+        if (!System::hasLicense("sted3d")) {
+            return FALSE;
+        }
+        return TRUE;
     }
 
 } // End of class taskSetting
@@ -1989,7 +2412,7 @@ class AnalysisSetting extends Setting {
       \param	$numberOfChannels Number of channels (optional, default 
               value is 0)
      */
-    public function displayString($numberOfChannels = 0) {
+    public function displayString($numberOfChannels = 0, $micrType = NULL) {
         $result = '';
 
         $colocAnalysis = $this->parameter("ColocAnalysis")->value();

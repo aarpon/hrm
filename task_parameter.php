@@ -57,6 +57,7 @@ if ( ! ( strpos( $_SERVER[ 'HTTP_REFERER' ],
  *
  **************************************************************************** */
 
+
 if ( $_SESSION[ 'task_setting' ]->checkPostedTaskParameters( $_POST ) ) {
   $saved = $_SESSION['task_setting']->save();
   if ($saved) {
@@ -512,9 +513,75 @@ $value = $parameter->value();
 
                 </div>
 
-
             </fieldset>
-            </div>
+
+    </div>
+
+
+    
+    <div id="ZStabilization">
+    <?php
+    if ($_SESSION['task_setting']->isEligibleForStabilization($_SESSION['setting'])) {
+
+    ?>
+
+    <fieldset class="setting provided"
+    onmouseover="javascript:changeQuickHelp( '' );" >
+    
+    <legend>
+        <a href="javascript:openWindow(
+                       'http://www.svi.nl/ObjectStabilizer')">
+                        <img src="images/help.png" alt="?" />
+        </a>
+    Would you like to stabilize the dataset in the Z direction?
+    </legend>
+
+            <p>STED images often need to be stabilized in the Z direction before they
+       are deconvolved. Please note that skipping this step might affect the
+       quality of the deconvolution.</p> 
+
+        <select id="ZStabilization"
+        name="ZStabilization">
+<?php
+                    
+/*
+      STABILIZATION
+*/
+$parameterStabilization =
+    $_SESSION['task_setting']->parameter("ZStabilization");
+$possibleValues = $parameterStabilization->possibleValues();
+$selectedMode  = $parameterStabilization->value();
+
+        foreach($possibleValues as $possibleValue) {
+            $translation =
+                $parameterStabilization->translatedValueFor( $possibleValue );
+            if ( $possibleValue == $selectedMode ) {
+                $option = "selected=\"selected\"";
+            } else {
+                $option = "";
+            }
+?>
+                    <option <?php echo $option?>
+                        value="<?php echo $possibleValue?>">
+                        <?php echo $translation?>
+                    </option>
+<?php
+        }
+?>
+
+</select>
+
+<?php
+    } else {
+        $_SESSION['task_setting']->parameter("ZStabilization")->setValue( '0' );
+        ?>
+        <input name="ZStabilization" type="hidden" value="0">
+        <?php
+    }
+?>
+</div> <!-- Stabilization -->
+
+
 
             <div><input name="OK" type="hidden" /></div>
 

@@ -49,6 +49,8 @@ $microscopes = array (
     array ("micro=Leica_TCS_SP2_Airy_units&param=Number+of+Airy+disks&msys=0&mo=0&c=0.56419&a=0&b=0&u=0&wl=580", "http://support.svi.nl/wiki/LeicaConfocal_TCS_SP2"),
     "Leica confocal SP5" => 
     array ("micro=Leica_TCS_SP5_Airy_units&param=Number+of+Airy+disks&msys=0&mo=0&c=0.56419&a=0&b=0&u=0&wl=580", "http://support.svi.nl/wiki/LeicaConfocal_TCS_SP5"),
+    "Leica confocal SP8" => 
+    array ("micro=Leica_TCS_SP8_Airy_units&param=Number+of+Airy+disks&msys=0&mo=0&c=0.56419&a=0&b=0&u=0&wl=580", "http://support.svi.nl/wiki/LeicaConfocal_TCS_SP8"),
     "Nikon TE2000-E with the C1 scanning head" =>
     array ("micro=Nikon_TE2000E_C1&param=Pinhole+diameter+(microns)&a=1&b=0&na=0&wl=0&msys=1&c=0.5&u=-6&extra1=1.5&txt1=Optional+1.5x+magnification",
     "http://support.svi.nl/wiki/Nikon_TE2000E_C1"),
@@ -359,8 +361,8 @@ global $cmsys, $table, $extra1, $txt1, $extra2, $txt2, $checked1, $checked2;
             <p>
                Enter or confirm the requested values and press the calculator
                button to calculate the
-               <a href=\"javascript:openWindow('
-                  http://support.svi.nl/wiki/BackProjected')\">
+               <a href="javascript:openWindow('
+                  http://support.svi.nl/wiki/BackProjected')">
                   back projected
                </a>
                pinhole radius.
@@ -368,7 +370,7 @@ global $cmsys, $table, $extra1, $txt1, $extra2, $txt2, $checked1, $checked2;
             </p>
             <p>
                 Read more about the
-               <a href=\"javascript:openWindow('<?php echo $help; ?>')">
+               <a href="javascript:openWindow('<?php echo $help; ?>')">
                    <?php echo $micro; ?></a> model.
             </p>
 

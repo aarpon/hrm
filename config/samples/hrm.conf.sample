@@ -15,12 +15,9 @@ HRM_DATA="/path/to/hrm/data"
 HRM_SOURCE="huygens_src"
 HRM_DEST="huygens_dst"
 
-# User with rights to run /bin/mkdir, /bin/chown,
-# /bin/chmod and /bin/rm on the file manager for
-# user management - leave empty if the queue
-# manager is run by the web server user and has
-# read/write access to the fileserver and thus
-# does not need to sudo these commands
+# User to run the HRM daemon with rights to
+# execute /bin/mkdir, /bin/chown, /bin/chmod and
+# /bin/rm on HRM_DATA (see above) for user management.
 SUSER="hrm"
 
 # HRM log directory

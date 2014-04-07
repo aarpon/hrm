@@ -544,10 +544,10 @@ class JobDescription {
    \return    A string with all the parameters of the task setting.
   */
   public function taskSettingAsString( ) {
-      $numChannels = $this->parameterSetting()->parameter( "NumberOfChannels" );
-      $numChannels = $numChannels->value();
+      $numChannels = $this->parameterSetting->numberOfChannels();
+      $micrType = $this->parameterSetting->microscopeType();
       
-      return $this->taskSetting()->displayString( $numChannels );
+      return $this->taskSetting()->displayString( $numChannels, $micrType );
   }
   
 

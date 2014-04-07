@@ -180,8 +180,13 @@ function insert_record($tabname, $array, $colnames) {
 function insert_column($tabname,$fields) {
     global $datadict;
 
-    $sqlarray = $datadict->AddColumnSQL($tabname, $fields); // NOTE: ADOdb AddColumnSQL, not guaranteed to work under all situations.
-    $rs = $datadict->ExecuteSQLArray($sqlarray);    // return 0 if failed, 1 if executed all but with errors, 2 if executed successfully
+    // NOTE: ADOdb AddColumnSQL, not guaranteed to work under all situations.
+    // Please document here those situations (unknown as of February 2014).
+    $sqlarray = $datadict->AddColumnSQL($tabname, $fields);
+
+    // return 0 if failed, 1 if executed all but with errors,
+    // 2 if executed successfully
+    $rs = $datadict->ExecuteSQLArray($sqlarray);    
     if($rs != 2) {
         $msg = error_message($tabname);
         write_message($msg);
@@ -516,96 +521,442 @@ if ($current_revision == 0) {
         return;
 
     // Insert records in table
-    $records = array("parameter"=>array("IsMultiChannel","IsMultiChannel",
-                                "ImageFileFormat","ImageFileFormat","ImageFileFormat","ImageFileFormat","ImageFileFormat","ImageFileFormat","ImageFileFormat","ImageFileFormat",
-                                "NumberOfChannels","NumberOfChannels","NumberOfChannels","NumberOfChannels",
-                                "ImageGeometry","ImageGeometry","ImageGeometry",
-                                "MicroscopeType","MicroscopeType","MicroscopeType","MicroscopeType",
-                                "ObjectiveMagnification","ObjectiveMagnification","ObjectiveMagnification","ObjectiveMagnification",
-                                "ObjectiveType","ObjectiveType","ObjectiveType",
-                                "SampleMedium","SampleMedium",
-                                "Binning","Binning","Binning","Binning","Binning",
-                                "MicroscopeName","MicroscopeName","MicroscopeName","MicroscopeName","MicroscopeName","MicroscopeName","MicroscopeName","MicroscopeName",
-                                "Resolution","Resolution","Resolution","Resolution","Resolution",
-                                "RemoveNoiseEffectiveness","RemoveNoiseEffectiveness","RemoveNoiseEffectiveness",
-                                "OutputFileFormat","OutputFileFormat","OutputFileFormat","OutputFileFormat","OutputFileFormat",
-                                "ObjectiveMagnification","ObjectiveMagnification",
-                                "PointSpreadFunction","PointSpreadFunction",
-                                "HasAdaptedValues","HasAdaptedValues",
-                                "ImageFileFormat","ImageFileFormat","ImageFileFormat","ImageFileFormat","ImageFileFormat",
-                                "ObjectiveType"),
-                           "value"=>array("True","False",
-                                "dv","stk","tiff-series","tiff-single","ims","lsm","lsm-single","pic",
-                                "1","2","3","4",
-                                "XYZ","XY - time","XYZ - time",
-                                "widefield","multipoint confocal (spinning disk)","single point confocal","two photon",
-                                "10","20","25","40",
-                                "oil","water","air",
-                                "water / buffer","liquid vectashield / 90-10 (v:v) glycerol - PBS ph 7.4",
-                                "1","2","3","4","5",
-                                "Zeiss 510","Zeiss 410","Zeiss Two Photon 1","Zeiss Two Photon 2","Leica DMRA","Leica DMRB","Leica Two Photon 1","Leica Two Photon 2",
-                                "128","256","512","1024","2048",
-                                "1","2","3",
-                                "TIFF 8-bit","TIFF 16-bit","IMS (Imaris Classic)","ICS (Image Cytometry Standard)","OME-XML",
-                                "63","100",
-                                "theoretical","measured",
-                                "True","False",
-                                "ome-xml","tiff","lif","tiff-leica","ics",
-                                "glycerol"),
-                           "translation"=>array("","",
-                                "Delta Vision (*.dv)","Metamorph (*.stk)","Numbered series","single XY plane","Imaris Classic (*.ims)","Zeiss (*.lsm)","Zeiss (*.lsm) single XY plane","Biorad (*.pic)",
-                                "","","","",
-                                "","","",
-                                "widefield","nipkow","confocal","widefield",
-                                "","","","",
-                                "1.515","1.3381","1.0",
-                                "1.339","1.47",
-                                "","","","","",
-                                "","","","","","","","",
-                                "","","","","",
-                                "","","",
-                                "tiff","tiff16","imaris","ics","ome",
-                                "","",
-                                "","",
-                                "","",
-                                "OME-XML (*.ome)","Olympus FluoView","Leica (*.lif)","Leica series","Image Cytometry Standard (*.ics/*.ids)",
-                                "1.4729"),
-                           "isDefault"=>array("f","f",
-                                "f","f","f","f","f","f","f","f",
-                                "f","f","f","f",
-                                "f","f","f",
-                                "f","f","f","f",
-                                "f","f","f","f",
-                                "f","f","f",
-                                "f","f",
-                                "f","f","f","f","f",
-                                "f","f","f","f","f","f","f","f",
-                                "f","f","f","f","f",
-                                "f","f","f",
-                                "f","f","t","f","f",
-                                "f","f",
-                                "f","f",
-                                "f","f",
-                                "f","f","f","f","f",
-                                "f"),
-                           "parameter_key"=>array("IsMultiChannel1","IsMultiChannel2",
-                                "ImageFileFormat1","ImageFileFormat2","ImageFileFormat3","ImageFileFormat4","ImageFileFormat5","ImageFileFormat6","ImageFileFormat7","ImageFileFormat8",
-                                "NumberOfChannels1","NumberOfChannels2","NumberOfChannels3","NumberOfChannels4",
-                                "ImageGeometry1","ImageGeometry2","ImageGeometry3",
-                                "MicroscopeType1","MicroscopeType2","MicroscopeType3","MicroscopeType4",
-                                "ObjectiveMagnification1","ObjectiveMagnification2","ObjectiveMagnification3","ObjectiveMagnification4",
-                                "ObjectiveType1","ObjectiveType2","ObjectiveType3",
-                                "SampleMedium1","SampleMedium2",
-                                "Binning1","Binning2","Binning3","Binning4","Binning5",
-                                "MicroscopeName1","MicroscopeName2","MicroscopeName3","MicroscopeName4","MicroscopeName5","MicroscopeName6","MicroscopeName7","MicroscopeName8",
-                                "Resolution1","Resolution2","Resolution3","Resolution4","Resolution5",
-                                "RemoveNoiseEffectiveness1","RemoveNoiseEffectiveness2","RemoveNoiseEffectiveness3",
-                                "OutputFileFormat1","OutputFileFormat2","OutputFileFormat3","OutputFileFormat4","OutputFileFormat5",
-                                "ObjectiveMagnification1","ObjectiveMagnification2",
-                                "PointSpreadFunction1","PointSpreadFunction2",
-                                "HasAdaptedValues1","HasAdaptedValues2",
-                                "ImageFileFormat1","ImageFileFormat2","ImageFileFormat3","ImageFileFormat4","ImageFileFormat5",
-                                "ObjectiveType"));
+    $records = array(
+             "parameter"=>array(
+                        "IsMultiChannel",
+                        "IsMultiChannel",
+                        
+                        "ImageFileFormat",
+                        "ImageFileFormat",
+                        "ImageFileFormat",
+                        "ImageFileFormat",
+                        "ImageFileFormat",
+                        "ImageFileFormat",
+                        "ImageFileFormat",
+                        "ImageFileFormat",
+                        
+                        "NumberOfChannels",
+                        "NumberOfChannels",
+                        "NumberOfChannels",
+                        "NumberOfChannels",
+                        
+                        "ImageGeometry",
+                        "ImageGeometry",
+                        "ImageGeometry",
+                        
+                        "MicroscopeType",
+                        "MicroscopeType",
+                        "MicroscopeType",
+                        "MicroscopeType",
+                        
+                        "ObjectiveMagnification",
+                        "ObjectiveMagnification",
+                        "ObjectiveMagnification",
+                        "ObjectiveMagnification",
+                        
+                        "ObjectiveType",
+                        "ObjectiveType",
+                        "ObjectiveType",
+                        
+                        "SampleMedium",
+                        "SampleMedium",
+                        
+                        "Binning",
+                        "Binning",
+                        "Binning",
+                        "Binning",
+                        "Binning",
+                        
+                        "MicroscopeName",
+                        "MicroscopeName",
+                        "MicroscopeName",
+                        "MicroscopeName",
+                        "MicroscopeName",
+                        "MicroscopeName",
+                        "MicroscopeName",
+                        "MicroscopeName",
+                        
+                        "Resolution",
+                        "Resolution",
+                        "Resolution",
+                        "Resolution",
+                        "Resolution",
+                        
+                        "RemoveNoiseEffectiveness",
+                        "RemoveNoiseEffectiveness",
+                        "RemoveNoiseEffectiveness",
+                        
+                        "OutputFileFormat",
+                        "OutputFileFormat",
+                        "OutputFileFormat",
+                        "OutputFileFormat",
+                        "OutputFileFormat",
+                        
+                        "ObjectiveMagnification",
+                        "ObjectiveMagnification",
+                        
+                        "PointSpreadFunction",
+                        "PointSpreadFunction",
+                        
+                        "HasAdaptedValues",
+                        "HasAdaptedValues",
+                        
+                        "ImageFileFormat",
+                        "ImageFileFormat",
+                        "ImageFileFormat",
+                        "ImageFileFormat",
+                        "ImageFileFormat",
+                        
+                        "ObjectiveType"),
+             "value"=>array(
+                    "True",      /* IsMultiChannel */ 
+                    "False",
+                    
+                    "dv",        /* ImageFileFormat */
+                    "stk",
+                    "tiff-series",
+                    "tiff-single",
+                    "ims",
+                    "lsm",
+                    "lsm-single",
+                    "pic",
+                    
+                    "1",         /* NumberOfChannels */  
+                    "2",
+                    "3",
+                    "4",
+                    
+                    "XYZ",       /* ImageGeometry */
+                    "XY - time",
+                    "XYZ - time",
+                    
+                    "widefield", /* MicroscopeType */
+                    "multipoint confocal (spinning disk)",
+                    "single point confocal",
+                    "two photon",
+                    
+                    "10",        /* ObjectiveMagnification */ 
+                    "20",
+                    "25",
+                    "40",
+                    
+                    "oil",       /* ObjectiveType */
+                    "water",
+                    "air",
+                    
+                    "water / buffer",  /* SampleMedium */
+                    "liquid vectashield / 90-10 (v:v) glycerol - PBS ph 7.4",
+                    
+                    "1",         /* Binning */
+                    "2",
+                    "3",
+                    "4",
+                    "5",
+                    
+                    "Zeiss 510", /* MicroscopeName */
+                    "Zeiss 410",
+                    "Zeiss Two Photon 1",
+                    "Zeiss Two Photon 2",
+                    "Leica DMRA",
+                    "Leica DMRB",
+                    "Leica Two Photon 1",
+                    "Leica Two Photon 2",
+                    
+                    "128",       /* Resolution */
+                    "256",
+                    "512",
+                    "1024",
+                    "2048",
+                    
+                    "1",         /* RemoveNoiseEffectiveness */
+                    "2",
+                    "3",
+                    
+                    "TIFF 8-bit", /* OutputFileFormat */
+                    "TIFF 16-bit",
+                    "IMS (Imaris Classic)",
+                    "ICS (Image Cytometry Standard)",
+                    "OME-XML",
+                    
+                    "63",          /* ObjectiveMagnification */
+                    "100",
+                    
+                    "theoretical", /* PointSpreadFunction */
+                    "measured",
+                    
+                    "True",        /* HasAdaptedValues */
+                    "False",
+                    
+                    "ome-xml",     /* ImageFileFormat */
+                    "tiff",
+                    "lif",
+                    "tiff-leica",
+                    "ics",
+                    
+                    "glycerol"     /* ObjectiveType */
+                    ),
+             "translation"=>array(
+                          "",                       /* IsMultiChannel */ 
+                          "",
+                          
+                          "Delta Vision (*.dv)",    /* ImageFileFormat */
+                          "Metamorph (*.stk)",
+                          "Numbered series",
+                          "single XY plane",
+                          "Imaris Classic (*.ims)",
+                          "Zeiss (*.lsm)",
+                          "Zeiss (*.lsm) single XY plane",
+                          "Biorad (*.pic)",
+                          
+                          "",                       /* NumberOfChannels */ 
+                          "",
+                          "",
+                          "",
+                          
+                          "",                       /* ImageGeometry */
+                          "",
+                          "",
+                          
+                          "widefield",              /* MicroscopeType */
+                          "nipkow",
+                          "confocal",
+                          "widefield",
+                          
+                          "",                       /* ObjectiveMagnification */ 
+                          "",
+                          "",
+                          "",
+                          
+                          "1.515",                  /* ObjectiveType */
+                          "1.3381",
+                          "1.0",
+                          
+                          "1.339",                  /* SampleMedium */
+                          "1.47",
+                          
+                          "",                       /* Binning */
+                          "",
+                          "",
+                          "",
+                          "",
+                          
+                          "",                       /* MicroscopeName */ 
+                          "",
+                          "",
+                          "",
+                          "",
+                          "",
+                          "",
+                          "",
+                          
+                          "",                       /* Resolution */
+                          "",
+                          "",
+                          "",
+                          "",
+                          
+                          "",                    /* RemoveNoiseEffectiveness */
+                          "",
+                          "",
+                          
+                          "tiff",                /* OutputFileFormat */
+                          "tiff16",
+                          "imaris",
+                          "ics",
+                          "ome",                
+                          
+                          "",                    /* ObjectiveMagnification */
+                          "",
+                          
+                          "",                    /* PointSpreadFunction */
+                          "",
+                          
+                          "",                    /* HasAdaptedValues */
+                          "",
+                          
+                          "OME-XML (*.ome)",      /* ImageFileFormat */
+                          "Olympus FluoView",
+                          "Leica (*.lif)",
+                          "Leica series",
+                          "Image Cytometry Standard (*.ics/*.ids)",
+                          
+                          "1.4729"                /* ObjectiveType */
+                          ),
+             "isDefault"=>array(
+                        "f",                   /* IsMultiChannel */ 
+                        "f",
+                        
+                        "f",                   /* ImageFileFormat */
+                        "f",
+                        "f",
+                        "f",
+                        "f",
+                        "f",
+                        "f",
+                        "f",
+                        
+                        "f",                    /* NumberOfChannels */
+                        "f",
+                        "f",
+                        "f",
+                        
+                        "f",                    /* ImageGeometry */
+                        "f",
+                        "f",
+                        
+                        "f",                    /* MicroscopeType */
+                        "f",
+                        "f",
+                        "f",
+                        
+                        "f",                     /* ObjectiveMagnification */
+                        "f",
+                        "f",
+                        "f",
+                        
+                        "f",                     /* ObjectiveType */
+                        "f",
+                        "f",
+                        
+                        "f",                     /* SampleMedium */
+                        "f",
+                        
+                        "f",                     /* Binning */
+                        "f",
+                        "f",
+                        "f",
+                        "f",
+                        
+                        "f",                     /* MicroscopeName */
+                        "f",
+                        "f",
+                        "f",
+                        "f",
+                        "f",
+                        "f",
+                        "f",
+                        
+                        "f",                     /* Resolution */
+                        "f",
+                        "f",
+                        "f",
+                        "f",
+                        
+                        "f",                /* RemoveNoiseEffectiveness */
+                        "f",
+                        "f",
+                        
+                        "f",                     /* OutputFileFormat */
+                        "f",
+                        "t",
+                        "f",
+                        "f",
+                        
+                        "f",                   /* ObjectiveMagnification */
+                        "f",
+                        
+                        "f",                    /* PointSpreadFunction */
+                        "f",
+                        
+                        "f",                    /* HasAdaptedValues */
+                        "f",
+                        
+                        "f",                    /* ImageFileFormat */
+                        "f",
+                        "f",
+                        "f",
+                        "f",
+                        
+                        "f"                     /* ObjectiveType */
+                        ),
+             "parameter_key"=>array(
+                    "IsMultiChannel1",          /* IsMultiChannel */ 
+                    "IsMultiChannel2",
+                    
+                    "ImageFileFormat1",          /* ImageFileFormat */
+                    "ImageFileFormat2",
+                    "ImageFileFormat3",
+                    "ImageFileFormat4",
+                    "ImageFileFormat5",
+                    "ImageFileFormat6",
+                    "ImageFileFormat7",
+                    "ImageFileFormat8",
+                    
+                    "NumberOfChannels1",         /* NumberOfChannels */
+                    "NumberOfChannels2",
+                    "NumberOfChannels3",
+                    "NumberOfChannels4",
+                    
+                    "ImageGeometry1",            /* ImageGeometry */
+                    "ImageGeometry2",
+                    "ImageGeometry3",
+                    
+                    "MicroscopeType1",           /* MicroscopeType */
+                    "MicroscopeType2",
+                    "MicroscopeType3",
+                    "MicroscopeType4",
+                    
+                    "ObjectiveMagnification1",   /* ObjectiveMagnification */
+                    "ObjectiveMagnification2",
+                    "ObjectiveMagnification3",
+                    "ObjectiveMagnification4",
+                    
+                    "ObjectiveType1",                /* ObjectiveType */
+                    "ObjectiveType2",
+                    "ObjectiveType3",
+                    
+                    "SampleMedium1",                 /* SampleMedium */
+                    "SampleMedium2",
+                    
+                    "Binning1",                      /* Binning */
+                    "Binning2",
+                    "Binning3",
+                    "Binning4",
+                    "Binning5",
+                    
+                    "MicroscopeName1",               /* MicroscopeName */ 
+                    "MicroscopeName2",
+                    "MicroscopeName3",
+                    "MicroscopeName4",
+                    "MicroscopeName5",
+                    "MicroscopeName6",
+                    "MicroscopeName7",
+                    "MicroscopeName8",
+                    
+                    "Resolution1",                   /* Resolution */
+                    "Resolution2",
+                    "Resolution3",
+                    "Resolution4",
+                    "Resolution5",
+                    
+                    "RemoveNoiseEffectiveness1",  /* RemoveNoiseEffectiveness */
+                    "RemoveNoiseEffectiveness2",
+                    "RemoveNoiseEffectiveness3",
+                    
+                    "OutputFileFormat1",            /* OutputFileFormat */
+                    "OutputFileFormat2",
+                    "OutputFileFormat3",
+                    "OutputFileFormat4",
+                    "OutputFileFormat5",
+                    
+                    "ObjectiveMagnification1",      /* ObjectiveMagnification */
+                    "ObjectiveMagnification2",
+                    
+                    "PointSpreadFunction1",       /* PointSpreadFunction */
+                    "PointSpreadFunction2",
+                    
+                    "HasAdaptedValues1",          /* HasAdaptedValues */ 
+                    "HasAdaptedValues2",
+                    
+                    "ImageFileFormat1",           /* ImageFileFormat */
+                    "ImageFileFormat2",
+                    "ImageFileFormat3",
+                    "ImageFileFormat4",
+                    "ImageFileFormat5",
+                    
+                    "ObjectiveType"               /* Objective Type */
+                    )
+                 );
     if(!insert_records($records,$tabname))
         return;
 
@@ -2965,47 +3316,75 @@ if ($current_revision < $n) {
     $record = array();
     $record["file_format"] = "czi";
     $record["extension"] = "czi";
-    $insertSQL = $db->GetInsertSQL($tabname, $record);
-    if(!$db->Execute($insertSQL)) {
-        $msg = "An error occurred while updating the database to revision " . $n . ".";
-        write_message($msg);
-        write_to_error($msg);
-        return;
-    }
 
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+             " WHERE file_format='" . $record['file_format'] .
+             "' AND extension='" . $record['extension'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                   "the database to revision " . $n . ".";   
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }    
+
+    
     $tabname = "file_format";
     $record = array();
     $record["name"] = "czi";
     $record["isFixedGeometry"] = "f";
     $record["isSingleChannel"] = "f";
     $record["isVariableChannel"] = "t";
-    $insertSQL = $db->GetInsertSQL($tabname, $record);
-    if(!$db->Execute($insertSQL)) {
-        $msg = "An error occurred while updating the database to revision " . $n . ".";
-        write_message($msg);
-        write_to_error($msg);
-        return;
+    
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .      
+             " WHERE name='" . $record['name'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+       if(!$db->Execute($insertSQL)) {
+           $msg = "An error occurred while updating " .
+                  "the database to revision " . $n . ".";
+           write_message($msg);
+           write_to_error($msg);
+           return;
+       }
     }
 
+    
     $tabname = "possible_values";
     $record = array();
     $record["parameter"] = "ImageFileFormat";
     $record["value"] = "czi";
     $record["translation"] = "Carl Zeiss Image (*.czi)";
     $record["isDefault"] = "f";
-    $insertSQL = $db->GetInsertSQL($tabname, $record);
-    if(!$db->Execute($insertSQL)) {
-        $msg = "An error occurred while updating the database to revision " . $n . ".";
-        write_message($msg);
-        write_to_error($msg);
-        return;
+    
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .      
+             " WHERE value='" . $record['value'] .
+             "' AND parameter='" . $record['parameter'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {    
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+       if(!$db->Execute($insertSQL)) {
+           $msg = "An error occurred while updating " .
+                  "the database to revision " . $n . ".";
+           write_message($msg);
+           write_to_error($msg);
+           return;
+       }
     }
 
-        // Correct a blank to many. 
+    // Correct a blank too many. 
     $tabname = "file_extension";
-    $rs = $db->Execute("UPDATE file_extension SET extension = \"ome.tiff\" WHERE extension = \"ome.tiff \"");
+    $query = "UPDATE file_extension SET extension = \"ome.tiff\" " .
+             "WHERE extension = \"ome.tiff \"";
+    $rs = $db->Execute($query);
+
     
-        // Update revision
+    // Update revision
     if(!update_dbrevision($n))
         return;
     
@@ -3014,6 +3393,315 @@ if ($current_revision < $n) {
     write_message($msg);
     write_to_log($msg);
 }
+
+
+// -----------------------------------------------------------------------------
+// Update to revision 12
+// Description: support for nd2 file format and STED microscopy in HRM
+// -----------------------------------------------------------------------------
+$n = 12;
+if ($current_revision < $n) {
+
+    // Fix a blank left in a table by previous revision.
+    $ok = $db->AutoExecute( "file_format",
+                            array( "hucoreName" => "czi"),
+                            "UPDATE", "name = 'czi'" );
+    if ( !$ok ) {
+       $msg = "An error occurred while updating " .
+              "the database to revision " . $n . ", file_format table update.";
+       write_message($msg);
+       write_to_log($msg);
+       write_to_error($msg);
+       return;
+    }
+
+    
+    $tabname = "file_extension";
+    $record = array();
+    $record["file_format"] = "nd2";
+    $record["extension"] = "nd2";
+
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .      
+             " WHERE file_format='" . $record['file_format'] .
+             "' AND extension='" . $record['extension'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {    
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+       if(!$db->Execute($insertSQL)) {
+           $msg = "An error occurred while updating " .
+                  "the database to revision " . $n . ".";
+           write_message($msg);
+           write_to_error($msg);
+           return;
+       }
+    }
+    
+
+    $tabname = "file_format";
+    $record = array();
+    $record["name"] = "nd2";
+    $record["isFixedGeometry"] = "f";
+    $record["isSingleChannel"] = "f";
+    $record["isVariableChannel"] = "t";
+    $record["hucoreName"] = "nd2";
+
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .      
+             " WHERE name='" . $record['name'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {    
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+       if(!$db->Execute($insertSQL)) {
+           $msg = "An error occurred while updating " .
+                  "the database to revision " . $n . ".";
+           write_message($msg);
+           write_to_error($msg);
+           return;
+       }
+    }
+
+    
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "ImageFileFormat";
+    $record["value"] = "nd2";
+    $record["translation"] = "Nikon NIS-Elements (*.nd2)";
+    $record["isDefault"] = "f";
+
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .      
+             " WHERE parameter='" . $record['parameter'] .
+             "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {    
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                   "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "ZStabilization";
+    $record["value"] = "1";
+    $record["translation"] = "Stabilize the dataset in the Z direction (if possible)";
+    $record["isDefault"] = "t";
+
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .      
+             " WHERE parameter='" . $record['parameter'] .
+             "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {    
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                   "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "ZStabilization";
+    $record["value"] = "0";
+    $record["translation"] = "No, stabilization is not necessary.";
+    $record["isDefault"] = "f";
+
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .      
+             " WHERE parameter='" . $record['parameter'] .
+             "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {    
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                   "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $record = array();
+    $record["parameter"] = "MicroscopeType";
+    $record["value"] = "STED";
+    $record["translation"] = "sted";
+    $record["isDefault"] = "f";
+    $record["parameter_key"] = "MicroscopeType5";     
+
+        // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .      
+             " WHERE parameter='" . $record['parameter'] .
+             "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {    
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                   "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+
+    $record = array();
+    $record["parameter"] = "MicroscopeType";
+    $record["value"] = "STED 3D";
+    $record["translation"] = "sted3d";
+    $record["isDefault"] = "f";
+    $record["parameter_key"] = "MicroscopeType6";           
+
+        // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .      
+             " WHERE parameter='" . $record['parameter'] .
+             "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {    
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                   "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+
+    $record = array();
+    $record["parameter"] = "StedDepletionMode";
+    $record["value"] = "CW gated detection";
+    $record["translation"] = "vortexCWGated";
+    $record["isDefault"] = "f";
+    $record["parameter_key"] = "StedDepletionMode1";           
+
+        // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .      
+             " WHERE parameter='" . $record['parameter'] .
+             "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {    
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                   "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+
+    $record = array();
+    $record["parameter"] = "StedDepletionMode";
+    $record["value"] = "CW Non gated detection";
+    $record["translation"] = "vortexCW";
+    $record["isDefault"] = "f";
+    $record["parameter_key"] = "StedDepletionMode2";           
+
+        // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .      
+             " WHERE parameter='" . $record['parameter'] .
+             "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {    
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                   "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+
+    $record = array();
+    $record["parameter"] = "StedDepletionMode";
+    $record["value"] = "Pulsed";
+    $record["translation"] = "vortexPulsed";
+    $record["isDefault"] = "t";
+    $record["parameter_key"] = "StedDepletionMode3";           
+
+        // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .      
+             " WHERE parameter='" . $record['parameter'] .
+             "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {    
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                   "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+
+    $record = array();
+    $record["parameter"] = "StedDepletionMode";
+    $record["value"] = "Off/Confocal";
+    $record["translation"] = "off-confocal";
+    $record["isDefault"] = "f";
+    $record["parameter_key"] = "StedDepletionMode4";           
+
+        // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .      
+             " WHERE parameter='" . $record['parameter'] .
+             "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {    
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                   "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+
+// ------------------ Add columns to 'confidence_levels' ----------------------
+    $tabname   = "confidence_levels";
+    $newcolumns = array("stedMode",
+                        "stedLambda",
+                        "stedSatFact",
+                        "stedImmunity",
+                        "sted3D");
+    $type = "C(16)";
+
+    $allcolumns = $db->MetaColumnNames( 'confidence_levels' );    
+    foreach ($newcolumns as $newcolumn) {
+        if (array_key_exists( strtoupper($newcolumn), $allcolumns) ) {
+            continue;
+        }
+        if ( !insert_column($tabname, $newcolumn . " " . $type) ) {
+            $msg = "An error occurred while updating " .
+                "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_log($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+// ----------------------------------------------------------------------------
+    
+    //Update revision
+    if(!update_dbrevision($n))
+        return;
+    
+    $current_revision = $n;
+    $msg = "Database successfully updated to revision " . $current_revision . ".";
+    write_message($msg);
+    write_to_log($msg);
+}
+
 
 fclose($fh);
 

@@ -245,13 +245,13 @@ if ( $browse_folder == "dest" ) {
     $info = "<h3>Quick help</h3>
             <p>Click on a file name to see a preview.</p>
             <p><strong>Click on <img src = \"images/eye.png\" /> Detailed View
-            over the file preview to access previews, reports and 
+            over the file preview to access previews, reports and
             analysis results.</strong></p>";
-    
+
     if ($allowHttpTransfer) {
-        $info .= "<p>Select the files you want to download (you can <b>SHIFT-</b> 
+        $info .= "<p>Select the files you want to download (you can <b>SHIFT-</b>
             and <b>CTRL-click</b> for multiple selection) and press the
-            <b>download</b> icon to compress the files into an archive and 
+            <b>download</b> icon to compress the files into an archive and
             start the download process. (Please mind that large files may take
             a <b>long time </b>to be packaged before downloading.)</p>
             <p> Use the <b>delete</b> icon to delete the selected files
@@ -276,7 +276,7 @@ if ( $browse_folder == "dest" ) {
             <b>delete</b> icon to delete them.
             </p>";
 
-    
+
     if (System::isUploadEnabled() == "enabled") {
 
         $validExtensions = str_replace( " ", ", ",
@@ -291,28 +291,11 @@ if ( $browse_folder == "dest" ) {
       "the bottom to redisplay this help.</strong></p>";
 }
 
-$top_nav_left = get_wiki_link('HuygensRemoteManagerHelpFileManagement');
-$top_nav_right = '';
-        
-if ( isset( $_SESSION['filemanager_referer'] ) ) {
-    $referer = $_SESSION['filemanager_referer'];
-    if ( strpos( $referer, 'home.php' ) === False ) {
-        $top_nav_right .= get_include_contents("./inc/nav/back.inc.php");
-       }
-    }
-
-    if ( $browse_folder == "dest" ) {
-        $top_nav_right .= file_get_contents("./inc/nav/files_raw.inc.html");
-    } else {
-        $top_nav_right .= file_get_contents("./inc/nav/files_results.inc.html");
-    }
-
-
 $file_buttons[] = "delete";
 $file_buttons[] = "update";
 
 $control_buttons = '
-<input name="ref" type="hidden" value="'.$_SESSION['referer'].'" />
+<input name="ref" type="hidden" value="' . $_SESSION['referer'] . '" />
 <input name="OK" type="hidden" />
 ';
 
