@@ -3690,7 +3690,45 @@ if ($current_revision < $n) {
         }
     }
 
-// ----------------------------------------------------------------------------
+// -------------------- Add limits to percentage values ------------------------
+
+    $tabname = "boundary_values";
+
+    $record = array();
+    $record["parameter"] = "StedImmunity";
+    $record["min"] = "0";
+    $record["max"] = "100";
+    $record["min_included"] = "T";
+    $record["max_included"] = "T";
+    $record["standard"] = "0";
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND min='" . $record["min"] . "' AND max='" . $record["max"] . "' AND min_included='" . $record["min_included"] . "' AND max_included='" . $record["max_included"] . "' AND standard='" . $record["standard"] . "'");
+    if ($rs->EOF) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $record = array();
+    $record["parameter"] = "Sted3D";
+    $record["min"] = "0";
+    $record["max"] = "100";
+    $record["min_included"] = "T";
+    $record["max_included"] = "T";
+    $record["standard"] = "0";
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND min='" . $record["min"] . "' AND max='" . $record["max"] . "' AND min_included='" . $record["min_included"] . "' AND max_included='" . $record["max_included"] . "' AND standard='" . $record["standard"] . "'");
+    if ($rs->EOF) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
     
     //Update revision
     if(!update_dbrevision($n))
