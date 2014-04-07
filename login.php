@@ -8,6 +8,7 @@ require_once("./inc/hrm_config.inc.php");
 require_once("./inc/Fileserver.inc.php");
 require_once("./inc/System.inc.php");
 require_once("./inc/Validator.inc.php");
+require_once("./inc/wiki_help.inc.php");
 
 global $email_admin;
 global $enableUserAdmin;
@@ -137,32 +138,24 @@ include("header.inc.php");
 ?>
 
 <div id="nav">
-<ul>
-	<li>
-        <a href="javascript:openWindow(
-           'http://huygens-rm.org/home/?q=node/27')">
-            <img src="images/whatsnew.png" alt="website" />
-            &nbsp;What's new?
-        </a>
-    </li>
-	<li><a href="javascript:openWindow('http://www.huygens-rm.org')">
-            <img src="images/logo_small.png" alt="website" />
-            &nbsp;Website
-        </a>
-    </li>
-	<li>
-        <a href="javascript:openWindow('http://www.svi.nl/FrontPage')">
-            <img src="images/wiki.png" alt="website" />
-            &nbsp;SVI wiki
-        </a>
-    </li>
-	<li><a href="javascript:openWindow(
-           'http://www.svi.nl/HuygensRemoteManagerHelpLogin')">
-            <img src="images/help.png" alt="help" />
-            &nbsp;Help
-        </a>
-    </li>
-</ul>
+    <div id="navleft">
+        <ul>
+            <?php
+                wiki_link('HuygensRemoteManagerHelpLogin');
+                include("./inc/nav/manual.inc.php");
+            ?>
+        </ul>
+    </div>
+    <div id="navright">
+        <ul>
+            <?php
+                include("./inc/nav/whats_new.inc.php");
+                include("./inc/nav/hrm_project_website.inc.php");
+                include("./inc/nav/svi_wiki.inc.php");
+            ?>
+        </ul>
+    </div>
+    <div class="clear"></div>
 </div>
 
 <div id="welcome"><?php
@@ -189,7 +182,8 @@ if ( System::getHuCoreVersionAsInteger( ) == 0 ) {
 }
 // Check that hucore is recent enough to run this version of the HRM
 if ( System::isMinHuCoreVersion( ) == false ) {
-	echo "<div class=\"dbOutDated\">Warning: you need at least HuCore " .
+	echo "<div class=\"dbOutDated\">Warning: your HuCore version is " .
+	System::getHucoreVersionAsString() . ", you need at least HuCore " .
 	"version " . System::getMinHuCoreVersionAsString() . " for HRM " .
     System::getHRMVersionAsString() . "!\n";
 	echo "<p>Please contact the administrator.</p></div>";
@@ -247,11 +241,14 @@ deconvolution.</p>
       <td class="epfl"
           onclick="javascript:openWindow('http://biop.epfl.ch')" >
       </td>
+      <td class="fmi"
+          onclick="javascript:openWindow('http://www.fmi.ch')" >
+      </td>
       <td class="mri"
           onclick="javascript:openWindow('http://www.mri.cnrs.fr')" >
       </td>
-      <td class="svi"
-          onclick="javascript:openWindow('http://www.svi.nl')" >
+      <td class="bsse"
+          onclick="javascript:openWindow('http://www.bsse.ethz.ch')" >
       </td>
     </tr>
       
@@ -259,15 +256,31 @@ deconvolution.</p>
     <tr class="caption">
       <td>
         EPF Lausanne<br />
-        <a href="javascript:openWindow('http://biop.epfl.ch')">
-          BioImaging and Optics platform
+        <a href="http://biop.epfl.ch"
+        onclick="this.target='_blank'; return true;">
+        BioImaging and Optics platform
         </a>
       </td>
       <td>
-        Montpellier RIO Imaging
+        Friedrich Miescher Institute<br />
+        <a href="http://www.fmi.ch/faim"
+        onclick="this.target='_blank'; return true;">
+        Facility for Advanced<br />
+        Imaging and Microscopy
+        </a>
       </td>
       <td>
-        Scientific Volume Imaging
+        <a href="http://www.mri.cnrs.fr"
+        onclick="this.target='_blank'; return true;">
+        Montpellier RIO Imaging
+        </a>
+      </td>
+      <td>
+        <a href="http://www.bsse.ethz.ch"
+        onclick="this.target='_blank'; return true;">
+        ETH Zurich<br />
+        Single-Cell Unit
+        </a>
       </td>
     </tr>
       
@@ -278,30 +291,51 @@ deconvolution.</p>
       
     <!-- Logos -->
     <tr>
-      <td class="blank">&nbsp;</td>
-      <td class="fmi"
-          onclick="javascript:openWindow('http://www.fmi.ch')" >
+      <td class="svi"
+          onclick="javascript:openWindow('http://www.svi.nl')" >
       </td>
-      <td class="bsse"
-          onclick="javascript:openWindow('http://www.bsse.ethz.ch')" >
+      <td class="lin"
+          onclick="javascript:openWindow('http://www.lin-magdeburg.de')" >
       </td>
-      <td class="blank">&nbsp;</td>
+      <td class="bio-basel"
+          onclick="javascript:openWindow('http://www.biozentrum.unibas.ch')" >
+      </td>
+      <td class="cni"
+          onclick="javascript:openWindow('http://cni.ifn-magdeburg.de')" >
+      </td>
     </tr>
 
     <!-- Captions -->
     <tr class="caption">
-      <td class="blank">&nbsp;</td>
       <td>
-        Friedrich Miescher Institute<br />
-        <a href="javascript:openWindow('http://www.fmi.ch/faim')">
-          Facility for Advanced Imaging and Microscopy
-        </a>
+       <a href="http://svi.nl"
+       onclick="this.target='_blank'; return true;">
+        Scientific Volume Imaging
+       </a>
       </td>
       <td>
-        ETH Zurich<br />
-        Single-Cell Unit
+       <a href="http://www.lin-magdeburg.de"
+       onclick="this.target='_blank'; return true;">
+        Leibniz Institute for Neurobiology<br />
+        Magdeburg
+       </a>
       </td>
-      <td class="blank">&nbsp;</td>
+      <td>
+       <a href="http://www.biozentrum.unibas.ch"
+       onclick="this.target='_blank'; return true;">
+        Biozentrum Basel<br />
+        University of Basel<br />
+        The Center for<br />
+        Molecular Life Sciences
+      </a>    
+      </td>
+      <td>
+       <a href="http://cni.ifn-magdeburg.de"
+       onclick="this.target='_blank'; return true;">
+        Combinatorial Neuroimaging<br />
+        Magdeburg 
+       </a>    
+      </td>
     </tr>
 
   </table>

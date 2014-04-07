@@ -114,7 +114,15 @@ if (isset($generatedScript)) {
 	  <div id="title">
 	  <h1>
           Huygens Remote Manager
-            <span id="about">v<?php echo System::getHRMVersionAsString( ); ?></span>
+            <span id="about">
+            <?php
+            $devel = '.hrm_devel_version';
+            if (file_exists($devel)) {
+                echo file_get_contents($devel);
+            } else {
+                echo "v" . System::getHRMVersionAsString();
+            }
+            ?></span>
       </h1>
   	  <div id="logo"></div>
 	  </div>

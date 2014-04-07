@@ -5,7 +5,7 @@
 require_once("./inc/Util.inc.php");
 require_once("./inc/User.inc.php");
 require_once("./inc/Fileserver.inc.php");
-
+require_once("./inc/wiki_help.inc.php");
 
 // Two private functions, for the two tasks of this script:
 
@@ -20,15 +20,8 @@ function showFileBrowser() {
     $explanation_text = "Please choose an image and click on the calculator " .
     "button to estimate the SNR.";
     $form_title = "Available images";
-    $top_navigation = "
-            <li><img src=\"images/user.png\" alt=\"user\" />&nbsp;".
-                $_SESSION['user']->name()."</li>
-            <li><a href=\"javascript:openWindow('".
-                "http://support.svi.nl/wiki/style=hrm&amp;".
-                "help=HuygensRemoteManagerHelpSnrEstimator".
-              "')\">".
-            "<img src=\"images/help.png\" alt=\"help\" />&nbsp;Help</a></li>
-            ";
+    $top_nav_left = get_wiki_link('HuygensRemoteManagerHelpSnrEstimator');
+    $top_nav_right = "";
     $multiple_files = false;
     // Number of displayed files.
     $size = 15;
@@ -151,19 +144,8 @@ function estimateSnrFromFile($file) {
     }
     include("header.inc.php");
 
-    $top_navigation = "
-            <li><img src=\"images/user.png\" alt=\"user\" />&nbsp;".
-                $_SESSION['user']->name()."</li>
-            <li><a href=\"javascript:openWindow('".
-                 "http://support.svi.nl/wiki/style=hrm&amp;".
-                 "help=HuygensRemoteManagerHelpSnrEstimator".
-              "')\">".
-              "<img src=\"images/help.png\" alt=\"help\" />&nbsp;Help</a></li>
-            ";
-
-    echo "<div id=\"nav\">
-        <ul>$top_navigation</ul>
-    </div>";
+    $top_nav_left = get_wiki_link('HuygensRemoteManagerHelpSnrEstimator');
+    $top_nav_right = "";
 
     // Noise estimations can be done only in raw images.
 
@@ -243,9 +225,6 @@ function estimateSnrFromFile($file) {
 
 
     ?>
-
-    <div id="nav">
-    </div>
 
 
     <div id="content">

@@ -7,6 +7,7 @@ require_once("./inc/Parameter.inc.php");
 require_once("./inc/Setting.inc.php");
 require_once("./inc/Util.inc.php");
 require_once("./inc/System.inc.php");
+require_once("./inc/wiki_help.inc.php");
 
 /* *****************************************************************************
  *
@@ -53,6 +54,19 @@ if ( $_SESSION['setting']->checkPostedAberrationCorrectionParameters( $_POST ) )
   $message = $_SESSION['setting']->message();
 }
 
+
+/* *****************************************************************************
+ *
+ * PREVIOUS PAGE
+ *
+ **************************************************************************** */
+
+if ( $_SESSION['setting']->isSted() || $_SESSION['setting']->isSted3D()) {
+    $back = "sted_parameters.php";
+} else {
+    $back = "capturing_parameter.php";
+}
+
 /* *****************************************************************************
  *
  * CREATE THE PAGE
@@ -80,21 +94,24 @@ include("header.inc.php");
     <span class="toolTip" id="ttSpanSave">
         Save and return to the image parameters selection page.
     </span>
-    
-    <div id="nav">
+
+<div id="nav">
+    <div id="navleft">
         <ul>
-            <li>
-                <img src="images/user.png" alt="user" />
-                &nbsp;<?php echo $_SESSION['user']->name(); ?>
-            </li>
-            <li>
-                <a href="javascript:openWindow(
-                   'http://www.svi.nl/HuygensRemoteManagerHelpEnableSACorrection')">
-                    <img src="images/help.png" alt="help" />&nbsp;Help
-                </a>
-            </li>
+            <?php
+                wiki_link('HuygensRemoteManagerHelpEnableSACorrection');
+            ?>
         </ul>
     </div>
+    <div id="navright">
+        <ul>
+            <?php
+                include("./inc/nav/user.inc.php");
+            ?>
+        </ul>
+    </div>
+    <div class="clear"></div>
+</div>
     
     <div id="content">
     
@@ -465,7 +482,7 @@ if ( ($parameterPerformAberrationCorrection->value( ) == 1) &&
         <input type="button" value="" class="icon previous"
             onmouseover="TagToTip('ttSpanBack' )"
             onmouseout="UnTip()"
-            onclick="document.location.href='capturing_parameter.php'" />
+            onclick="document.location.href='<?php echo $back; ?>'" />
         <input type="button" value="" class="icon up"
             onmouseover="TagToTip('ttSpanCancel' )"
             onmouseout="UnTip()"

@@ -135,17 +135,55 @@ function smoothChangeDiv(div, html, time) {
     }
 }
 
+// Grey out the STED input fields of a specific channel if the
+// corresponding depletion mode is set to 'confocal'.
+function changeStedEntryProperties(selectObj, channel) {
+    var tagArray = ["StedSaturationFactor",
+                    "StedWavelength",
+                    "StedImmunity",
+                    "Sted3D"];
+
+    for (var i = 0; i < tagArray.length; i++) {
+        var tag = tagArray[i];
+        var id = tag.concat(channel);
+
+        inputElement = document.getElementById(id);
+        
+        if ( selectObj.value == 'off-confocal' ) {
+            inputElement.readOnly = true;
+            inputElement.style.color="#000";
+            inputElement.style.backgroundColor="#888";
+        } else {
+            inputElement.readOnly = false;
+            inputElement.style.color="#000";
+            inputElement.style.backgroundColor="";
+        }
+    }
+}
+
+function setStedEntryProperties( ) {
+    var tag = "StedDepletionMode";
+    
+    for (var chan = 0; chan < 5; chan++) {
+        var name = tag.concat(chan);
+
+        inputElement = document.getElementsByName(name);
+        changeStedEntryProperties(inputElement[0], chan);
+    }
+}
+
 function checkAgainstFormat(file, selectedFormat) {
 
         // Both variables as in the 'file_extension' table.
     var fileFormat    = '';
     var fileExtension = '';
-    
-        // Pattern ome.tiff        = (\.([^\..]+)|)
-        // Pattern file extension: = \.([^\.\s]+)
-        // Pattern lif subimages:  = [\s\(\)a-zA-Z0-9]*$
+
+    // Pattern ome.tiff        = (\.([^\..]+))*
+    // Pattern file extension: = \.([A-Za-z0-9]+)
+    // Pattern lif subimages:  = (\s\(.*\))*
+
     var nameDivisions;
-    nameDivisions = file.match(/(\.([^\..]+)|)\.([^\.\s]+)[\s\(\)a-zA-Z0-9]*$/);
+    nameDivisions = file.match(/(\.([^\..]+))*\.([A-Za-z0-9]+)(\s\(.*\))*$/);    
 
         // A first check on the file extension.
     if (nameDivisions != null) {
@@ -163,6 +201,7 @@ function checkAgainstFormat(file, selectedFormat) {
         }
         
         fileExtension = fileExtension.toLowerCase();
+
         switch (fileExtension) {
             case 'dv':
             case 'ims':
@@ -174,6 +213,7 @@ function checkAgainstFormat(file, selectedFormat) {
             case 'stk':
             case 'zvi':
             case 'czi':
+            case 'nd2':
                 fileFormat = fileExtension;
                 break;
             case 'h5':
@@ -599,7 +639,8 @@ function imgPrev(infile, mode, gen, compare, index, dir, referer, data) {
                   +        'openWindow(\'' + link + '\'); '
                   +    '"'
                   + '><div class="expandedView">'
-                  + '<img src="images/eye.png">&nbsp;&nbsp;Go to detailed results'
+                  + '<img src="images/eye.png">&nbsp;&nbsp;'
+                  + 'Click on the preview for the fully detailed results:'
                   + '</div>'
                   + html + '</a>' ;
     }

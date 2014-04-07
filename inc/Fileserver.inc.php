@@ -189,26 +189,27 @@ class Fileserver {
    \return  The file extension
   */
   public function checkAgainstFormat($file, $selectedFormat) {
-      
+
           // Both variables as in the 'file_extension' table.
       $fileFormat    = false;
       $fileExtension = false;
-      
-          // Pattern ome.tiff        = (\.([^\..]+)|)
-          // Pattern file extension: = \.([^\.\s]+)
-          // Pattern lif subimages:  = [\s\(\)a-zA-Z0-9]*$
-      $pattern = "/(\.([^\..]+)|)\.([^\.\s]+)[\s\(\)a-zA-Z0-9]*$/";
-      
+
+          // Pattern ome.tiff        = (\.([^\..]+))*
+          // Pattern file extension: = \.([A-Za-z0-9]+)
+          // Pattern lif subimages:  = (\s\(.*\))*
+
+      $pattern = "/(\.([^\..]+))*\.([A-Za-z0-9]+)(\s\(.*\))*$/";
+
           // A first check on the file extension.
       if (preg_match($pattern,$file,$nameDivisions)) {
-          
+
               // Specific to ome-tiff.
           if (isset($nameDivisions[2])) {
               if ($nameDivisions[2] == 'ome') {
                   $fileExtension = $nameDivisions[2] . ".";
               }
           }
-          
+
               // Main extension.
           if (isset($nameDivisions[3])) {
               $fileExtension .= $nameDivisions[3];
@@ -226,6 +227,7 @@ class Fileserver {
               case 'stk':
               case 'zvi':
               case 'czi':
+              case 'nd2':
                   $fileFormat = $fileExtension;
                   break;
               case 'h5':
@@ -252,23 +254,23 @@ class Fileserver {
                   $fileExtension = '';
           }
       }
-      
+
           // Control over tiffs: this structure corresponds to Leica tiffs.
       $pattern = "/[^_]+_(T|t|Z|z|CH|ch)[0-9]+\w+\.\w+/";
-      
+
       if (preg_match($pattern,$file,$matches)) {
           if ($fileExtension == 'tiff' || $fileExtension == 'tif') {
               $fileFormat = 'tiff-leica';
-          } 
+          }
       }
 
           // Control over stks: redundant.
       $pattern = "/[^_]+_(T|t)[0-9]+\.\w+/";
-      
+
       if (preg_match($pattern,$file,$matches)) {
           if ($fileExtension == 'stk') {
               $fileFormat = 'stk';
-          } 
+          }
       }
 
           // Control over ics's, no distinction between ics and ics2.
@@ -277,7 +279,7 @@ class Fileserver {
             $fileFormat = $selectedFormat;
         }
       }
-      
+
       if ($selectedFormat != '' && $selectedFormat == $fileFormat) {
           return true;
       } else {
@@ -335,13 +337,13 @@ class Fileserver {
    \return The name of the first file of  the series.
   */
   public function condenseSeries( ) {
-      
+
       $this->condenseStkSeries();
       $this->condenseTiffLeica();
 
       return $this->files;
   }
-  
+
 
   /*!
    \brief  Checks whether a file belongs to a file series.
@@ -351,16 +353,16 @@ class Fileserver {
   public function isPartOfFileSeries($file) {
 
       $fileExtension = false;
-      
+
           // Pattern file extension: = \.([^\.\s]+)
           // Pattern lif subimages:  = [\s\(\)a-zA-Z0-9]*$
       $pattern = "/\.([^\.\s]+)[\s\(\)a-zA-Z0-9]*$/";
-      
+
           // First find the file extension.
       if (preg_match($pattern,$file,$nameDivisions)) {
           $fileExtension = $nameDivisions[1];
       }
-      
+
       switch ( strtolower($fileExtension) ) {
           case 'stk':
               $pattern = "/[^_]+_(T|t)[0-9]+\.\w+/";
@@ -389,7 +391,7 @@ class Fileserver {
     \return array of file names
   */
   public function filesOfType( $format, $isTimeSeries ) {
-      
+
         if ($format == "ics") {
             $files = $_SESSION['fileserver']->files("ics");
         }
@@ -408,10 +410,10 @@ class Fileserver {
             }
             else {
                 $files = $_SESSION['fileserver']->stkFiles();
-            }  
+            }
         }
         else {
-            $files = $_SESSION['fileserver']->files($format);        
+            $files = $_SESSION['fileserver']->files($format);
         }
 
         return $files;
@@ -544,7 +546,7 @@ class Fileserver {
   public function removeAllFilesFromSelection() {
     $this->selectedFiles = NULL;
   }
-  
+
   /*!
     \brief  Remove files from current selection (if they are in)
     \param  $files  Array of file names to be removed
@@ -554,11 +556,11 @@ class Fileserver {
       if (!is_array($files)) {
           return;
       }
-      
+
       foreach ($files as $key => $file) {
           $files[$key] = stripslashes($file);
       }
-      
+
       $this->selectedFiles = array_diff($this->selectedFiles, $files);
   }
 
@@ -725,7 +727,7 @@ class Fileserver {
    \brief  Exports a deconvolved image to the Omero server.
   */
   public function exportToOmero( ) {
-      
+
       if (!isset($_SESSION['omeroConnection'])) {
           return "Impossible to reach your Omero account.";
       }
@@ -733,7 +735,7 @@ class Fileserver {
       if (!isset($_POST['selectedFiles'])) {
           return "Please select a deconvolved image to export to Omero.";
       }
-      
+
       if (!isset($_POST['OmeDatasetId'])
           || empty($_POST['OmeDatasetId'])) {
           return "Please select a destination dataset
@@ -749,7 +751,7 @@ class Fileserver {
    \brief  Imports a raw image from the Omero server.
   */
   public function importFromOmero() {
-      
+
       if (!isset($_SESSION['omeroConnection'])) {
           return "Impossible to reach your Omero account.";
       }
@@ -763,7 +765,7 @@ class Fileserver {
           || empty($_POST['OmeImageName'])) {
           return "Please select an image within the Omero data tree.";
       }
-      
+
       if (!isset($_POST['OmeDatasetId'])
           || empty($_POST['OmeDatasetId'])) {
           return "Please select an image within the Omero data tree.";
@@ -772,7 +774,7 @@ class Fileserver {
       $omeroConnection = $_SESSION['omeroConnection'];
 
       $omeroConnection->importImage($_POST, $this);
-  }  
+  }
 
   /*!
     \brief  Extracts files from compressed archives
@@ -1139,6 +1141,7 @@ class Fileserver {
 
       $answer = huCoreTools( "reportSubImages", $opt);
 
+
       if (! $answer ) return;
       # printDebug ($answer);
 
@@ -1354,7 +1357,7 @@ class Fileserver {
   }
 
   /*!
-    \brief  Generates a link to retreive an image thumbnail, which is a jpg
+    \brief  Generates a link to retrieve an image thumbnail, which is a jpg
             file saved near the file itself.
     \param  $image  Image file name
     \param  $dir    Destination directory, one of 'src' or 'dst'
@@ -1576,7 +1579,7 @@ echo '</body></html>';
 
           /* All job previews share a common root name and relative path. */
       $this->previewBase = $file;
-      
+
       echo '<?xml version=\"1.0\" encoding=\"UTF-8\"?'.'>';
 
       echo ' <!DOCTYPE html
@@ -1618,8 +1621,8 @@ echo '</body></html>';
       $dir = dirname($pdest."/".$file);
       $base = basename($pdest."/".$file);
 
-          /* The root name involving the path as well. */	
-      $prevBase = $dir."/hrm_previews/".$base;      
+          /* The root name involving the path as well. */
+      $prevBase = $dir."/hrm_previews/".$base;
 
       $fileBase = $dir."/".$base;
       $path_info = pathinfo($fileBase);
@@ -1691,11 +1694,11 @@ echo '</body></html>';
           $movie['tSeriesSfpMovie'] = $file.".tSeries.sfp.avi";
           $msize['tSeriesSfpMovie'] = round(filesize($test) / 1024.0);
       }
-      
+
       // Colocalization results
       $filePattern = $this->getFilePattern(basename($file));
       $filePattern = str_replace(".*",".coloc.*",$filePattern);
-      
+
       $colocFile = glob($dir . "/" . $filePattern);
       if (isset($colocFile) && !empty($colocFile)) {
           $path['colocalization'] = $colocFile[0];
@@ -1856,7 +1859,7 @@ echo '</body></html>';
           readfile ($path[$mode]);
           print "</pre>";
       } else if ( $mode == "colocalization" ) {
-          
+
           echo "<div id='colocPage'>\n";
           print "<pre>";
 
@@ -2343,7 +2346,7 @@ echo '</body></html>';
 
 /*
                               PRIVATE FUNCTIONS
-*/  
+*/
 
   /*!
     \brief  Checks whether an image preview is available
@@ -2436,6 +2439,7 @@ echo '</body></html>';
         }
     }
     natsort($this->files);
+
 
     // TODO refactor
     //$this->condenseTimeSeries();
@@ -2652,7 +2656,7 @@ echo '</body></html>';
     if (count($this->files)==0) {
         return False;
     }
-    
+
     $tiff_series =  preg_grep("/[^_]+_(T|t|Z|z|CH|ch)[0-9]+\w+\.ti(f{1,2})$/i", $this->files);
     $baseNames = array();
     foreach ($tiff_series as $key => $value) {
@@ -2684,7 +2688,7 @@ echo '</body></html>';
     if (count($this->files) == 0) {
       return False;
     }
-    
+
     $stk_series = preg_grep("/[^_]+_(T|t)[0-9]+\.stk$/i", $this->files);
     $baseNames = array();
     foreach ($stk_series as $key => $value) {
@@ -2740,7 +2744,7 @@ echo '</body></html>';
     \TODO   times.
   */
   private function getFilesFrom($startDir, $prefix) {
-    // In case reading current directory fails, we just skip it and continue. 
+    // In case reading current directory fails, we just skip it and continue.
     // This is a recursive method, meaning the $this->files array grows
     // at every iteration with the content of each subfolder. Originally, the
     // $this->files array was reset to array() if any of the directory could
@@ -2788,13 +2792,13 @@ echo '</body></html>';
     \param  $prefix    The actual path prefix relative to the user's destination folder
   */
   private function getDestFilesFrom($startDir, $prefix) {
-      // In case reading current directory fails, we just skip it and continue. 
+      // In case reading current directory fails, we just skip it and continue.
       // This is a recursive method, meaning the $this->destFiles array grows
       // at every iteration with the content of each subfolder. Originally, the
-      // $this->destFiles array was reset to array() if any of the directory 
+      // $this->destFiles array was reset to array() if any of the directory
       // could not be accessed, but this is not the correct behavior (no files
-      // at all are listed in the end, and not just the ones which actually 
-      // cannot be obtained). Not cleaning the $this->destFiles array should 
+      // at all are listed in the end, and not just the ones which actually
+      // cannot be obtained). Not cleaning the $this->destFiles array should
       // be safe.
       $dir = dir($startDir);
       if ( $dir == false ) {
@@ -2923,9 +2927,9 @@ echo '</body></html>';
     $dir->close();
     return $files;
   }
-  
+
       /* ------------------------- Colocalization -------------------------- */
-  
+
   /*!
     \brief  Retrieves the HTML code for the colocalization preview page.
     \param  $colocFile   file with the pre-formatted html coloc page.
@@ -2935,8 +2939,8 @@ echo '</body></html>';
 
           /* The pre-formatted html code of the page containing the coloc title,
            the introduction and the coefficients table. */
-      $colocHtml = file_get_contents($colocFile);      
-      
+      $colocHtml = file_get_contents($colocFile);
+
           /* The pre-formatted code has to be adapted to incorporate, among
            others, several tabs that will show specific information. */
       $colocTabs = array (  'Coefficients' => "coefficients" ,
@@ -2947,11 +2951,11 @@ echo '</body></html>';
       if (!isset($_POST['tab']) || is_null($_POST['tab'])) {
           $_POST['tab'] = 'coefficients';
       }
-      
+
       if (!isset($_POST['threshold']) || $_POST['threshold'] < 0) {
           $_POST['threshold'] = null;
       }
-          
+
       $postedTab = $_POST['tab'];
       $postedThr = $_POST['threshold'];
 
@@ -2966,27 +2970,27 @@ echo '</body></html>';
           default:
               error_log("Coloc tab '$postedTab' not yet implemented.");
       }
-      
+
           /* Create the forms associated to the coloc tabs to convey the user
            requests. Notice that, unlike the general tabs on the left hand side
            of the page, the specific colocalization tabs are not coded in the
            URL. */
       $tabsDiv = "";
       foreach ($colocTabs as $tabName => $tabValue) {
-          
+
           if ($tabValue == $postedTab) {
               $state = 'selected';
           } else {
               $state = 'normal';
           }
-          
+
           $form  = "<form action='' method='post'>";
           $form .= "<input type='hidden' name='tab' value='$tabValue'/>";
           $form .= "<input type='hidden' name='threshold' value='$postedThr'/>";
           $form .= "<input type='submit' value='$tabName' id='colocTab' ";
-          $form .= "class='$state'/>";          
+          $form .= "class='$state'/>";
           $form .= "</form>";
-          
+
           $tabsDiv .= $form;
       }
 
@@ -3012,13 +3016,13 @@ echo '</body></html>';
 
           /* Allow the user to visualize coefficients above a threshold. */
       $colocHtml = $this->addThresholdForm($colocHtml, $threshold);
-      
+
           /* In addition to the coefficient tables show the 2D histograms. */
       $colocHtml = $this->add2DHistograms($colocHtml);
 
           /* Filter out the coefficients if the user entered a threshold. */
       $colocHtml = $this->highlightCoefficients($colocHtml, $threshold);
-      
+
       return $colocHtml;
   }
 
@@ -3031,7 +3035,7 @@ echo '</body></html>';
   private function addThresholdForm($colocHtml, $threshold) {
 
           /* TODO: Improve the below layout via css. */
-      
+
           /* Form used to ask for the threshold value. */
       $form  = "<br /><br />";
       $form .= "<form action='' method='post'>";
@@ -3042,23 +3046,23 @@ echo '</body></html>';
       $form .= "onmouseover=\"Tip('Highlight all values above the set ";
       $form .= "threshold.')\ onmouseout=\"UnTip()\" > Highlight </button>";
       $form .= "<br /><br /></form>";
-      
+
           /* Insert the form before the output of the first coloc run. */
       $replaceThis = "/<div id=\"colocRun\"/";
       $replaceWith = $form . "<div id=\"colocRun\"";
-      
+
       return preg_replace($replaceThis,$replaceWith,$colocHtml,1);
   }
-  
+
 
   /*!
    \brief    Inserts existing 2D histograms into the coloc coefficients tab.
    \param    $coefficientsTab Html string containing the coefficients tab.
    \return   The adapted coefficients tab html string with histograms.
-  */                                   
+  */
   private function add2DHistograms($coefficientsTab)
   {
-      
+
           /* Histogram tooltip: it's common to all histograms. */
       $tooltip  = "Position in histogram shows voxel intensity.<br />";
       $tooltip .= "Bottom-Left = Low intensity.<br />";
@@ -3077,14 +3081,14 @@ echo '</body></html>';
           /* Insert the histograms. */
       foreach ($matches[1] as $key => $chanR) {
           $chanG = $matches[2][$key];
-          
+
               /* Histogram file. */
           $histFile  = $this->previewBase .".hist_chan".$chanR;
           $histFile .= "_chan".$chanG.".jpg";
-          
+
               /* Histogram hook. */
           $replaceThis = "Hook chan $chanR - chan $chanG";
-          
+
               /* Histogram html code. */
           $replaceWith  = "<img src='file_management.php?getThumbnail=$histFile";
           $replaceWith .= "&amp;dir=dest' alt='2D histogram channels ";
@@ -3093,12 +3097,12 @@ echo '</body></html>';
           $replaceWith .= "onmouseout=\"UnTip()\" />";
           $replaceWith .= "<br /><i>2D Histogram:  Ch. ";
           $replaceWith .= "$chanR ~vs~ Ch. $chanG.</i>";
-          
+
           $coefficientsTab = str_replace($replaceThis,
                                          $replaceWith,
                                          $coefficientsTab);
       }
-      
+
       return $coefficientsTab;
   }
 
@@ -3113,16 +3117,16 @@ echo '</body></html>';
           /* Adapt the pre-formatted html code containing the colocalization
            tables to highlight the table cells that are above threshold. */
       if ( $threshold ) {
-          
+
               /* Loop over the table values: the colocalization coefficients. */
           $pattern = "/class=\"coefficient\" colspan=\"1\">([0-9.]+)/";
           preg_match_all($pattern, $colocHtml, $matches);
-          
+
           foreach($matches[1] as $coefficient) {
-              
+
                   /* Highlight the coefficients above the threshold. */
               if ($coefficient > $threshold) {
-                  
+
                       /* Change the html properties of that particular cell. */
                   $replaceThis = "coefficient\" colspan=\"1\">$coefficient";
                   $replaceWith = "marked\" colspan=\"1\">$coefficient";
@@ -3133,25 +3137,25 @@ echo '</body></html>';
 
       return $colocHtml;
   }
-  
+
                      /* -------- Colocalization maps tab ------ */
-  
+
   /*!
    \brief   Creates html code specific for the colocalization maps tab.
    \param   $colocHtml The pre-formatted html coloc page.
    \return  String containing HTML code for the colocalization preview page.
   */
-  private function showColocMapsTab($colocHtml) 
-  {   
+  private function showColocMapsTab($colocHtml)
+  {
       $colocHtml = $this->collapseColocCoefficients( $colocHtml );
-      
+
           /* Search for channel hooks indicating which channel
            combinations should display colocalization maps. */
       $pattern = "/Hook chan ([0-9]) - chan ([0-9])/";
       if (!preg_match_all($pattern,$colocHtml,$channels)) {
           error_log("Impossible to retrieve channels from coloc report.");
       }
-      
+
           /* Loop over the channel combinations and add their coloc maps. */
       $colocMapTab = $colocHtml;
       foreach ($channels[1] as $key => $chanR) {
@@ -3159,7 +3163,7 @@ echo '</body></html>';
 
           $colocMapTab = $this->addColocMaps($chanR, $chanG, $colocMapTab);
       }
-  
+
       return $colocMapTab;
   }
 
@@ -3172,28 +3176,28 @@ echo '</body></html>';
   private function addColocMaps($chanR, $chanG, $colocMapTab) {
 
       $mapsChanRChanG = $this->findColocMaps( $chanR, $chanG );
-      
+
           /* The two channel html hook will be subtituted with the coloc maps. */
-      $colocHook = $this->getHtmlForColocMap("divHook", $chanR, $chanG);    
-      
+      $colocHook = $this->getHtmlForColocMap("divHook", $chanR, $chanG);
+
           /* The coloc maps of these two channels are assembled in a table. */
       $colocMaps = $this->getHtmlForColocMap("divMap", $chanR, $chanG);
-      
+
           /* Loop over the existing maps of these two
            channels and add entries to the table. */
       foreach ($mapsChanRChanG as $map) {
-          
+
               /* Insert this map and its title into the table. */
           $colocMaps .= $this->getHtmlForColocMap("mapEntry",$chanR,$chanG,$map);
       }
-      
+
       $colocMaps .= $this->getHtmlForColocMap("divMapEnd", $chanR, $chanG);
-      
+
           /* Replace the channel hook with the coloc maps of the two channels. */
       $colocMapTab = str_replace($colocHook,$colocMaps,$colocMapTab);
 
       return $colocMapTab;
-  } 
+  }
 
   /*!
    \brief  Gets a headline to show on top of each coloc map.
@@ -3219,7 +3223,7 @@ echo '</body></html>';
 
           /* Path to the colocalization maps. */
       $previewsDir = $this->getPathToJobPreviews( );
-      
+
           /* Find all existing coloc maps containing these 2 channels. */
       $pattern  = $previewsDir . basename($this->previewBase);
       $pattern .= "*.map_chan" . $chanR . "_chan" . $chanG . "*";
@@ -3229,22 +3233,22 @@ echo '</body></html>';
           /* Get this map's file name (without path). */
       $mapsChanRChanG = str_replace( $destDir . "/" , "" , $mapsChanRChanG );
       $mapsChanRChanG = str_replace( "hrm_previews/", "" , $mapsChanRChanG );
-      
+
       return $mapsChanRChanG;
   }
-  
-  
+
+
   /*!
    \brief   Removes the coefficient section from the pre-formatted coloc html.
    \param   $colocHtml A string with the pre-formatted coloc html.
-   \return  The coloc html string with no coefficients.  
+   \return  The coloc html string with no coefficients.
   */
   private function collapseColocCoefficients( $colocHtml ) {
 
           /* Remove the coloc coefficients from the pre-formatted html table. */
       $replaceThis = "/Hist --><div.+?colocCoefficients -->/";
       $replaceWith = "Hist -->";
-      
+
       return preg_replace($replaceThis,$replaceWith,$colocHtml);
   }
 
@@ -3260,7 +3264,7 @@ echo '</body></html>';
           /* Get the coefficient name of this coloc map. */
       $pattern  = "/.*\.(.*)\.map_chan" . $chanR;
       $pattern .= "_chan" . $chanG . "(|\.Deconvolved)\.jpg/";
-      
+
       if (!preg_match($pattern,$colocMapFile,$coefficient)) {
           error_log("Impossible to find coefficient type from map.");
           return false;
@@ -3272,7 +3276,7 @@ echo '</body></html>';
           return $coefficient[1];
       }
   }
-  
+
   /*!
    \brief   Job previews may be located in subfolders, hence the need for
             this function.
@@ -3283,7 +3287,7 @@ echo '</body></html>';
       /* 'previewBase' contains job-specific subfolders + the job id.
       if (!$this->previewBase) {
           return false;
-      }    
+      }
 
       /* Main path to destination images. */
       $path  = $this->destinationFolder() . "/";
@@ -3306,9 +3310,9 @@ echo '</body></html>';
    \return  String with the requested html code.
   */
   private function getHtmlForColocMap( $section, $chanR, $chanG, $map = NULL) {
-      
+
       $html = "";
-      
+
       switch ( $section ) {
           case 'divHook':
           case 'divHookEnd':
@@ -3327,7 +3331,7 @@ echo '</body></html>';
               break;
           case 'mapTitle':
               $mapType = $this->getColocMapType( $map, $chanR, $chanG );
-              
+
               if (strstr($mapType,"Deconvolved")) {
                   $html .= "<b>Deconvolved image</b>";
                   $html .= "<br /><i>Showing channels $chanR & $chanG</i>";
@@ -3338,7 +3342,7 @@ echo '</body></html>';
               break;
           case 'mapEntry':
               $mapTitle = $this->getColocMapTitle( $map, $chanR, $chanG );
-              
+
               $html .= "<td class=\"cell\">$mapTitle<br /><br />";
               $html .= "<img src='file_management.php?getThumbnail=";
               $html .= "$map&amp;dir=dest' alt='Coloc map channels ";
@@ -3350,7 +3354,7 @@ echo '</body></html>';
       }
 
       return $html;
-  } 
-  
+  }
+
 
 } // End of FileServer class

@@ -14,7 +14,7 @@ require_once ("System.inc.php");
 
 /*!
   \class Job
-  \brief	Stores all information for a deconvolution Job
+  \brief    Stores all information for a deconvolution Job
  */
 class Job {
 
@@ -88,8 +88,8 @@ class Job {
     /* ------------------------------------------------------------------------ */
     
     /*!
-     \brief	Constructor
-     \param	$jobDescription	JobDescrition object
+     \brief Constructor
+     \param $jobDescription JobDescrition object
     */
     public function __construct($jobDescription) {
         $this->initialize($jobDescription);
@@ -130,7 +130,12 @@ class Job {
                                   'ps'             => 'Pinhole spacing (nm)',
                                   'ex'             => 'Excitation wavelength (nm)',
                                   'em'             => 'Emission wavelength (nm)',
-                                  'micr'           => 'Microscope type' );
+                                  'micr'           => 'Microscope type',
+                                  'stedMode'       => 'STED depletion mode',
+                                  'stedLambda'     => 'STED wavelength',
+                                  'stedSatFact'    => 'STED saturation factor (%)',
+                                  'stedImmunity'   => 'STED immunity (%)',
+                                  'sted3D'         => 'STED 3D (%)' );
 
         $this->restParam = array( 'algorithm'      =>'Deconvolution algorithm',
                                   'iterations'     =>'Number of iterations',
@@ -138,7 +143,8 @@ class Job {
                                   'format'         =>'Output file format',
                                   'absolute'       =>'Background absolute value',
                                   'estimation'     =>'Background estimation',
-                                  'ratio'          =>'Signal/Noise ratio' );
+                                  'ratio'          =>'Signal/Noise ratio',
+                                  'stabilization'  =>'Z Stabilization');
     }
 
     /*!
@@ -151,48 +157,48 @@ class Job {
     }
 
     /*!
-     \brief	Returns the JobDescription associated with the Job
-     \return	JobDescription object
+     \brief Returns the JobDescription associated with the Job
+     \return    JobDescription object
     */
     public function description() {
         return $this->jobDescription;
     }
 
     /*!
-     \brief	Sets the server which will run the Job
-     \param	$server	Server name
+     \brief Sets the server which will run the Job
+     \param $server Server name
     */
     public function setServer($server) {
         $this->server = $server;
     }
 
     /*!
-     \brief	Returns the name of the server associated with the Job
-     \return	server name
+     \brief Returns the name of the server associated with the Job
+     \return    server name
     */
     public function server() {
         return $this->server;
     }
     
     /*!
-     \brief	Returns the script generated for the Job
-     \return	script
+     \brief Returns the script generated for the Job
+     \return    script
     */
     public function script() {
         return $this->script;
     }
     
     /*!
-     \brief	Returns the process identifier associated with the Job
-     \return	process identifier
+     \brief Returns the process identifier associated with the Job
+     \return    process identifier
     */
     public function pid() {
         return $this->pid;
     }
     
     /*!
-     \brief	Returns the Job id
-     \return	Job id
+     \brief Returns the Job id
+     \return    Job id
     */
     public function id() {
         $desc = $this->description();
@@ -200,31 +206,31 @@ class Job {
     }
     
     /*!
-     \brief	Sets the process identifier associated with the Job
-     \param	$pid	Process identifier
+     \brief Sets the process identifier associated with the Job
+     \param $pid    Process identifier
     */
     public function setPid($pid) {
         $this->pid = $pid;
     }
     
     /*!
-     \brief	Returns the Job status
-     \return	Job status
+     \brief Returns the Job status
+     \return    Job status
     */
     public function status() {
         return $this->status;
     }
 
     /*!
-     \brief	Sets the status of the Job
-     \param	$status	Status of the Job
+     \brief Sets the status of the Job
+     \param $status Status of the Job
     */
     public function setStatus($status) {
         $this->status = $status;
     }
 
     /*!
-     \brief	Creates a script
+     \brief Creates a script
     */
     public function createScript() {   
         $jobDescription = $this->description();
@@ -233,8 +239,8 @@ class Job {
     }
 
     /*!
-     \brief	Returns the script name (it contains the id to make it univocal)
-     \return	the sript name
+     \brief Returns the script name (it contains the id to make it univocal)
+     \return    the sript name
     */
     public function scriptName() {
         $desc = $this->description();
@@ -243,8 +249,8 @@ class Job {
     }
     
     /*!
-     \brief	Creates a script for elementary jobs or splits compound jobs
-     \return	for elementary jobs, returns true if the script was generated
+     \brief Creates a script for elementary jobs or splits compound jobs
+     \return    for elementary jobs, returns true if the script was generated
      successfully, or false otherwise; for compound jobs, it always
      returns false
     */
@@ -275,8 +281,8 @@ class Job {
     }
 
     /*!
-     \brief	Writes the script to the user's source folder
-     \return	true if the script could be written, false otherwise
+     \brief Writes the script to the user's source folder
+     \return    true if the script could be written, false otherwise
     */
     public function writeScript() {
         $result = True;
@@ -302,8 +308,8 @@ class Job {
     }
 
     /*!
-     \brief	Checks whether the result image is present in the destination directory
-     \return	true if the result image could be found, false otherwise
+     \brief Checks whether the result image is present in the destination directory
+     \return    true if the result image could be found, false otherwise
      \todo Refactor
     */
     public function checkResultImage() {
@@ -335,7 +341,7 @@ class Job {
         // If fileshare is not on the same host as Huygens
         if (!$imageProcessingIsOnQueueManager && $copy_images_to_huygens_server) {
             $image = $huygens_server_image_folder . $user->name() .
-            	"/" . $image_destination . "/" .
+                "/" . $image_destination . "/" .
                 $desc->relativeSourcePath() . $destFileName .  "*";
             $previews = $huygens_server_image_folder;
             $previews .= $user->name() . "/" . $image_destination . "/";
@@ -374,8 +380,8 @@ class Job {
     }
 
     /*!
-     \brief	Checks if the process is finished
-     \return	true if the process is finished, false otherwise
+     \brief Checks if the process is finished
+     \return    true if the process is finished, false otherwise
      \todo Refactor
     */
     public function checkProcessFinished() {
@@ -490,11 +496,13 @@ class Job {
         $tmpFile     = $this->destImage . $this->pipeProducts["tmp"];
         $paramFile   = $this->destImage . $this->pipeProducts["parameters"];
         $colocFile   = $this->destImage . $this->pipeProducts["coloc"];
-	$errorFile   = $logdir . "/" . $this->server() . "_" . $this->id() . "_error.txt";
-        $huygensOut  = dirname($this->destImage)."/".$this->pipeProducts["main"];
+        $errorFile   = $logdir . "/" . $this->server() . "_" . 
+            $this->id() . "_error.txt";
+        $huygensOut  = dirname($this->destImage). "/" .
+            $this->pipeProducts["main"];
 
         /* The Huygens history file will be removed. */
-	$this->shell->removeFile($historyFile);
+        $this->shell->removeFile($historyFile);
 
         /* The Huygens job main file will be given a job id name. */
         $this->shell->renameFile($huygensOut,$tmpFile);
@@ -508,27 +516,27 @@ class Job {
         $jobReport = $this->shell->readFile($tmpFile);
         
         if (!empty($jobReport)) {
-
-	  if ("" !== $error = $this->checkForErrors($jobReport)) {
-	    $this->copyString2File($error, $errorFile);
-	    $this->shell->copyFile2Host($errorFile);
-	  } else {
-
-            /* Build parameter tables from the Huygens output file. */
-            $parsedParam = $this->HuReportFile2Html($jobReport);
-            $this->copyString2File($parsedParam,$paramFile);
-            $this->shell->copyFile2Host($paramFile);
-	    
-            /* Build colocalization tables from the Huygens output file. */
-            $parsedColoc = $this->HuColoc2Html($jobReport);
             
-            if ($this->colocRunOk) {    
-	      $this->copyString2File($parsedColoc,$colocFile);
-	      $this->shell->copyFile2Host($colocFile);
+            if ("" !== $error = $this->checkForErrors($jobReport)) {
+                $this->copyString2File($error, $errorFile);
+                $this->shell->copyFile2Host($errorFile);
+            } else {
+                
+                /* Build parameter tables from the Huygens output file. */
+                $parsedParam = $this->HuReportFile2Html($jobReport);
+                $this->copyString2File($parsedParam,$paramFile);
+                $this->shell->copyFile2Host($paramFile);
+                
+                /* Build colocalization tables from the Huygens output file. */
+                $parsedColoc = $this->HuColoc2Html($jobReport);
+                
+                if ($this->colocRunOk) {    
+                    $this->copyString2File($parsedColoc,$colocFile);
+                    $this->shell->copyFile2Host($colocFile);
+                }
             }
-	  }
-	  
-	  $this->shell->removeFile($tmpFile);
+            
+            $this->shell->removeFile($tmpFile);
         }
     }
     
@@ -570,12 +578,12 @@ class Job {
       
       $pattern = "/^Error: (.*)/"; 
       foreach ($reportFile as $reportEntry) {
-	if (preg_match($pattern, $reportEntry, $matches)) {
-	  $error = $matches[0] . "\n";
+    if (preg_match($pattern, $reportEntry, $matches)) {
+      $error = $matches[0] . "\n";
 
-	  /* We'll report one single error. */
-	  break;
-	}
+      /* We'll report one single error. */
+      break;
+    }
       }
       
       return $error;
@@ -600,12 +608,13 @@ class Job {
             $micrMismatch = True;
             
             $warning  = "<p><b><u>WARNING</u>:</b>";
-            $warning .= " The <b>microscope type</b> chosen to deconvolve this ";
-            $warning .= "image <b>may not<br />be correct</b>. ";
-            $warning .= "The image metadata claims a different microscope type. ";
-            $warning .= "The<br />restoration process may produce ";
-            $warning .= "<b>wrong results</b> if the microscope type is<br />";
-            $warning .= "not set properly.<br />";
+            $warning .= " The <b>microscope type</b> selected to deconvolve ";
+            $warning .= "this image <b>may not<br />be correct</b>. ";
+            $warning .= "The acquisition system registered a different ";
+            $warning .= "microscope type<br />in the image metadata. ";
+            $warning .= "The restoration process may produce ";
+            $warning .= "<b>wrong results</b><br />if the microscope type ";
+            $warning .= "is not set properly.<br />";
             
             $row    = $this->insertCell($warning,"text");
             $table  = $this->insertRow($row);
@@ -696,7 +705,7 @@ class Job {
         $text  = "<br /><br />";
         $text .= "Parameter values that were <b>missing</b> from your ";
         $text .= "settings are highlighted in <b>green</b>.<br />Alternative ";
-        $text .= "values found in the metadata of the image were used ";
+        $text .= "values found in the image metadata were used ";
         $text .= "instead. Please examine<br />their <b>validity</b>.<br />";
         $text .= "<br />";
 
@@ -711,10 +720,15 @@ class Job {
         $table .= $this->insertRow($row);
      
             /* Extract data from the file and into the table. */
-        $pattern  = "/{Parameter ([a-z]+?) (of channel ([0-9])\s|)(.*) ";
+        $pattern  = "/{Parameter ([a-zA-Z3]+?) (of channel ([0-9])\s|)(.*) ";
         $pattern .= "(template|metadata|meta data): (.*).}}/";
 
         foreach ($reportFile as $reportEntry) {
+            
+            /* Use strpos on most lines for speed reasons. */
+            if (strpos($reportEntry,"Parameter") === FALSE ) {
+                continue;
+            }
             if (!preg_match($pattern,$reportEntry,$matches)) {
                 continue;
             }
@@ -729,7 +743,34 @@ class Job {
             if ($paramText == "") {
                 continue;
             }
-                
+
+            /* Filter some reports that don't make sense for some microscopes. */
+            if ($paramName == 'micr') {
+                $micrType[$channel] = $matches[6]; 
+            }
+            if (strstr($paramName,"sted")) {
+                if (isset($micrType[$channel])) {
+                    if ($micrType[$channel] != "sted") {
+                        continue;
+                    }
+                }
+            }
+            if ($paramName == "ps") {
+                if (isset($micrType[$channel])) {
+                    if ($micrType[$channel] != "nipkow") {
+                        continue;
+                    }
+                }
+            }
+            if ($paramName == "pr") {
+                if (isset($micrType[$channel])) {
+                    if ($micrType[$channel] == "widefield") {
+                        continue;
+                    }
+                }
+            }
+
+            /* The remaining parameters do make sense, report them. */
             if ($source == "template") {
                 $source = "User defined";
                 $style  = "userdef";

@@ -244,13 +244,13 @@ if ( $browse_folder == "dest" ) {
     $info = "<h3>Quick help</h3>
             <p>Click on a file name to see a preview.</p>
             <p><strong>Click on <img src = \"images/eye.png\" /> Detailed View
-            over the file preview to access previews, reports and 
+            over the file preview to access previews, reports and
             analysis results.</strong></p>";
-    
+
     if ($allowHttpTransfer) {
-        $info .= "<p>Select the files you want to download (you can <b>SHIFT-</b> 
+        $info .= "<p>Select the files you want to download (you can <b>SHIFT-</b>
             and <b>CTRL-click</b> for multiple selection) and press the
-            <b>download</b> icon to compress the files into an archive and 
+            <b>download</b> icon to compress the files into an archive and
             start the download process. (Please mind that large files may take
             a <b>long time </b>to be packaged before downloading.)</p>
             <p> Use the <b>delete</b> icon to delete the selected files
@@ -275,7 +275,7 @@ if ( $browse_folder == "dest" ) {
             <b>delete</b> icon to delete them.
             </p>";
 
-    
+
     if (System::isUploadEnabled() == "enabled") {
 
         $validExtensions = str_replace( " ", ", ",
@@ -290,59 +290,11 @@ if ( $browse_folder == "dest" ) {
       "the bottom to redisplay this help.</strong></p>";
 }
 
-$top_navigation = '
-            <ul>
-            <li>
-                <img src="images/user.png" alt="user" />
-                &nbsp;'.$_SESSION['user']->name().'
-            </li>';
-        
-if ( isset( $_SESSION['filemanager_referer'] ) ) {
-    $referer = $_SESSION['filemanager_referer'];
-        if ( strpos( $referer, 'home.php' ) === False ) {
-$top_navigation .= '
-            <li>
-                <a href="' . $referer . '">
-                    <img src="images/back_small.png" alt="back" />&nbsp;Back</a>
-            </li>';
-       }
-    }
-
-    if ( $browse_folder == "dest" ) {
-        $top_navigation .= '
-            <li>
-                <a href="file_management.php?folder=src">
-                    <img src="images/rawdata_small.png" alt="raw images" />&nbsp;&nbsp;Raw images</a>
-            </li>';
-    } else {
-        $top_navigation .= '
-            <li>
-                <a href="file_management.php?folder=dest">
-                    <img src="images/results_small.png" alt="results" />&nbsp;&nbsp;Results</a>
-            </li>';
-    }
-    
-$top_navigation .= '<li>
-                <a href="'.getThisPageName().'?home=home">
-                    <img src="images/home.png" alt="home" />
-                    &nbsp;Home
-                </a>
-            </li>
-            <li>
-                <a href="javascript:openWindow(
-                \'http://www.svi.nl/HuygensRemoteManagerHelpFileManagement\')">
-                <img src="images/help.png" alt="help" />
-                &nbsp;Help
-                </a>
-                </li>
-        </ul>
- ';
-
 $file_buttons[] = "delete";
 $file_buttons[] = "update";
 
 $control_buttons = '
-<input name="ref" type="hidden" value="'.$_SESSION['referer'].'" />
+<input name="ref" type="hidden" value="' . $_SESSION['referer'] . '" />
 <input name="OK" type="hidden" />
 ';
 

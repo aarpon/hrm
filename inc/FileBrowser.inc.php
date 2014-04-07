@@ -13,6 +13,7 @@
 
 require_once( "inc/Util.inc.php" );
 require_once( "inc/OmeroConnection.inc.php");
+require_once( "inc/wiki_help.inc.php" );
 
 /*!
   \brief  Generates basic buttons for the image file browser
@@ -402,7 +403,36 @@ include("header.inc.php");
 ?>
 
     <div id="nav">
-        <ul><?php echo $top_navigation; ?></ul>
+        <div id="navleft">
+            <ul>
+            <?php
+                wiki_link('HuygensRemoteManagerHelpFileManagement');
+            ?>
+            </ul>
+        </div>
+        <div id="navright">
+            <ul>
+            <?php
+            if ( isset( $_SESSION['filemanager_referer'] ) ) {
+                $referer = $_SESSION['filemanager_referer'];
+                // the "Back" button is only displayed if the referring page
+                // was not the dashboard (home.php) but e.g. the "Select
+                // images" when creating a new job.
+                if ( strpos( $referer, 'home.php' ) === False ) {
+                    include("./inc/nav/back.inc.php");
+                }
+            }
+            if ( $browse_folder == "dest" ) {
+                include("./inc/nav/files_raw.inc.html");
+            } else {
+                include("./inc/nav/files_results.inc.html");
+            }
+            include("./inc/nav/user.inc.php");
+            include("./inc/nav/home.inc.php");
+            ?>
+            </ul>
+        </div>
+        <div class="clear"></div>
     </div>
 
 

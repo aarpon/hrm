@@ -1121,14 +1121,26 @@ class QueueManager {
                 "imagingDir" 	 => "default",
                 "pinholeSpacing" => "default",
                 "objQuality" 	 => "default",
-                "lambdaEx" 	 => "default",
+                "lambdaEx" 	     => "default",
                 "lambdaEm"       => "default",
                 "mType"          => "default",
                 "NA"             => "default",
-                "RIMedia" 	 => "default",
+                "RIMedia" 	     => "default",
                 "RILens"         => "default",
                 "photonCnt" 	 => "default",
-                "exBeamFill" 	 => "default");
+                "exBeamFill" 	 => "default",
+                "stedMode"       => "default",
+                "stedLambda"     => "default",
+                "stedSatFact"    => "default",
+                "stedImmunity"   => "default",
+                "sted3D"         => "default");
+
+            // To enable parsing of sted parameters in a loop.
+            $stedParams = array("stedMode",
+                                "stedLambda",
+                                "stedSatFact",
+                                "stedImmunity",
+                                "sted3D");
 
             // Store the file format
             $params['fileFormat'] = $fileFormat;
@@ -1365,6 +1377,21 @@ class QueueManager {
                         $fileFormat . " and parameter exBeamFill\!";
                 report($msg, 1);
                 exit($msg);
+            }
+
+            // sted parameters
+            foreach ($stedParams as $stedParam) {
+                $exp = "/$stedParam\s\{" . $levelRegExp . "\}/";
+                $match = array();
+                preg_match($exp, $parameters, $match);
+                if (isset($match[1])) {
+                    $params[$stedParam] = $match[1];
+                } else {
+                    $msg = "Could not find confidence level for file format " .
+                        $fileFormat . " and parameter $stedParam\!";
+                    report($msg, 1);
+                    exit($msg);
+                }
             }
 
             // Store the parameters for current file format

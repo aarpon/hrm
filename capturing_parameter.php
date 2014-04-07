@@ -7,6 +7,7 @@ require_once("./inc/Parameter.inc.php");
 require_once("./inc/Setting.inc.php");
 require_once("./inc/Util.inc.php");
 require_once("./inc/Database.inc.php");
+require_once("./inc/wiki_help.inc.php");
 
 /* *****************************************************************************
  *
@@ -72,9 +73,12 @@ $_SESSION['setting']->set($pinholeParam);
 
 $saveToDB = false;
 
-// First check the selection of the PSF
 $PSF = $_SESSION['setting']->parameter( 'PointSpreadFunction' )->value( );
-if ($PSF == 'measured' ) {
+$MICR = $_SESSION['setting']->parameter("MicroscopeType")->value( );
+
+if ($MICR == "STED" || $MICR == 'STED 3D') {
+    $pageToGo = 'sted_parameters.php';  
+} elseif ($PSF == 'measured' ) {
   $pageToGo = 'select_psf.php';
   // Make sure to turn off the correction
   $_SESSION['setting']->parameter(
@@ -126,7 +130,6 @@ if ($PSF == 'measured' ) {
  * PROCESS THE POSTED PARAMETERS
  *
  **************************************************************************** */
-
 if ($_SESSION[ 'setting' ]->checkPostedCapturingParameters( $_POST ) ) {
   if ( $saveToDB ) {
     $saved = $_SESSION['setting']->save();
@@ -183,7 +186,8 @@ if ( $nyquist === false ) {
       }
     ?>
     <?php
-      if ( $_SESSION['setting']->isMultiPointOrSinglePointConfocal() ) {
+
+if ( $_SESSION['setting']->hasPinhole() ) {
     ?>
     <span class="toolTip" id="ttSpanPinholeRadius">
         Calculate the back-projected pinhole radius for your microscope.
@@ -224,20 +228,24 @@ if ( $nyquist === false ) {
     }
     ?>
 
-    <div id="nav">
+<div id="nav">
+    <div id="navleft">
         <ul>
-            <li>
-                <img src="images/user.png" alt="user" />
-                &nbsp;<?php echo $_SESSION['user']->name(); ?>
-            </li>
-            <li>
-                <a href="javascript:openWindow(
-                   'http://www.svi.nl/HuygensRemoteManagerHelpCaptor')">
-                    <img src="images/help.png" alt="help" />&nbsp;Help
-                </a>
-            </li>
+            <?php
+                wiki_link('HuygensRemoteManagerHelpCaptor');
+            ?>
         </ul>
     </div>
+    <div id="navright">
+        <ul>
+            <?php
+                include("./inc/nav/user.inc.php");
+            ?>
+        </ul>
+    </div>
+    <div class="clear"></div>
+</div>
+
 
     <div id="content">
 
@@ -399,7 +407,7 @@ $textForCaptorSize = "pixel size (nm)";
 
 <?php
 
-if ($_SESSION['setting']->isMultiPointOrSinglePointConfocal()) {
+if ($_SESSION['setting']->hasPinhole()) {
 
     /***************************************************************************
 

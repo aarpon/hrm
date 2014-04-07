@@ -6,7 +6,8 @@ require_once("./inc/User.inc.php");
 require_once("./inc/Parameter.inc.php");
 require_once("./inc/Setting.inc.php");
 require_once("./inc/Util.inc.php");
-require_once ("./inc/System.inc.php");
+require_once("./inc/System.inc.php");
+require_once("./inc/wiki_help.inc.php");
 
 /* *****************************************************************************
  *
@@ -55,6 +56,7 @@ if ( ! ( strpos( $_SERVER[ 'HTTP_REFERER' ],
  * PROCESS THE POSTED PARAMETERS
  *
  **************************************************************************** */
+
 
 if ( $_SESSION[ 'task_setting' ]->checkPostedTaskParameters( $_POST ) ) {
   $saved = $_SESSION['task_setting']->save();
@@ -118,20 +120,24 @@ include("header.inc.php");
         observations and remarks!
     </span>
 
-    <div id="nav">
+<div id="nav">
+    <div id="navleft">
         <ul>
-            <li>
-                <img src="images/user.png" alt="user" />
-                &nbsp;<?php echo $_SESSION['user']->name(); ?>
-            </li>
-            <li>
-                <a href="javascript:openWindow(
-                   'http://www.svi.nl/HuygensRemoteManagerHelpRestorationParameters')">
-                    <img src="images/help.png" alt="help" />
-                    &nbsp;Help</a>
-            </li>
+            <?php
+                wiki_link('HuygensRemoteManagerHelpRestorationParameters');
+            ?>
         </ul>
     </div>
+    <div id="navright">
+        <ul>
+            <?php
+                include("./inc/nav/user.inc.php");
+            ?>
+        </ul>
+    </div>
+    <div class="clear"></div>
+</div>
+
 
     <div id="content">
 
@@ -507,9 +513,75 @@ $value = $parameter->value();
 
                 </div>
 
-
             </fieldset>
-            </div>
+
+    </div>
+
+
+    
+    <div id="ZStabilization">
+    <?php
+    if ($_SESSION['task_setting']->isEligibleForStabilization($_SESSION['setting'])) {
+
+    ?>
+
+    <fieldset class="setting provided"
+    onmouseover="javascript:changeQuickHelp( '' );" >
+    
+    <legend>
+        <a href="javascript:openWindow(
+                       'http://www.svi.nl/ObjectStabilizer')">
+                        <img src="images/help.png" alt="?" />
+        </a>
+    Would you like to stabilize the dataset in the Z direction?
+    </legend>
+
+            <p>STED images often need to be stabilized in the Z direction before they
+       are deconvolved. Please note that skipping this step might affect the
+       quality of the deconvolution.</p> 
+
+        <select id="ZStabilization"
+        name="ZStabilization">
+<?php
+                    
+/*
+      STABILIZATION
+*/
+$parameterStabilization =
+    $_SESSION['task_setting']->parameter("ZStabilization");
+$possibleValues = $parameterStabilization->possibleValues();
+$selectedMode  = $parameterStabilization->value();
+
+        foreach($possibleValues as $possibleValue) {
+            $translation =
+                $parameterStabilization->translatedValueFor( $possibleValue );
+            if ( $possibleValue == $selectedMode ) {
+                $option = "selected=\"selected\"";
+            } else {
+                $option = "";
+            }
+?>
+                    <option <?php echo $option?>
+                        value="<?php echo $possibleValue?>">
+                        <?php echo $translation?>
+                    </option>
+<?php
+        }
+?>
+
+</select>
+
+<?php
+    } else {
+        $_SESSION['task_setting']->parameter("ZStabilization")->setValue( '0' );
+        ?>
+        <input name="ZStabilization" type="hidden" value="0">
+        <?php
+    }
+?>
+</div> <!-- Stabilization -->
+
+
 
             <div><input name="OK" type="hidden" /></div>
 
