@@ -83,8 +83,12 @@ else if (isset($_POST['OK'])) {
 
 $script = array( "settings.js","ajax_utils.js" );
 
-// All the user's files in the server.
 $_SESSION['fileserver']->resetFiles();
+
+/* Set the default extensions. */
+$_SESSION['fileserver']->imageExtensions();
+
+// All the user's files in the server.
 $allFiles = $_SESSION['fileserver']->listFiles(TRUE);
 
 // All the user's series in the server.
