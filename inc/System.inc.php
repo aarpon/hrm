@@ -25,7 +25,7 @@ class System {
 
     const HRM_VERSION_MAJOR = 3;
     const HRM_VERSION_MINOR = 1;
-    const HRM_VERSION_MAINTENANCE = 0;
+    const HRM_VERSION_MAINTENANCE = 1;
 
     /* !
       \var 	DB_LAST_REVISION
