@@ -109,6 +109,7 @@ class OmeroConnection {
      \param   $postedParams Alias of $_POST with the user selection.
      \param   $fileServer Instance of the Fileserver class.
      \return  Ocassionally, an error message.
+     \todo    Should we return "true" in case of success?
     */
     public function importImage($postedParams, $fileServer) {
 
@@ -138,6 +139,7 @@ class OmeroConnection {
      \param   $postedParams An alias of $_POST with names of selected files.
      \param   $fileServer   An instance of the Fileserver class.
      \return  Ocassionally an error message.
+     \todo    Should we return "true" in case of success?
     */
     public function exportImage($postedParams, $fileServer) {
 
