@@ -174,7 +174,7 @@ class OmeroConnection {
     */
     private function buildCredentialsCmd() {
 
-            /* See 'chechCredentials' command in file 'bin/ome_hrm'. */
+            /* See 'checkCredentials' command in file 'bin/ome_hrm'. */
         $cmd  = "bin/ome_hrm";
         $cmd .= " ";
         $cmd .= "checkCredentials";
