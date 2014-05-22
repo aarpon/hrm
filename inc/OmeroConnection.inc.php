@@ -60,14 +60,14 @@ class OmeroConnection {
         /* -------------------- General OMERO processes -------------------- */
 
     /*!
-     \brief    From the login credentials provided by the user it attempts
-               to establish communication with the OMERO server.
+     \brief   Try to establish communication with the OMERO server using the
+              login credentials provided by the user.
     */
     private function checkOmeroCredentials() {
 
         $cmd = $this->buildCredentialsCmd();
 
-        /* Authenticate against the OMERO server. */
+            /* Authenticate against the OMERO server. */
         $loggedIn = shell_exec($cmd);
 
         if ($loggedIn == NULL) {
@@ -75,7 +75,7 @@ class OmeroConnection {
             return "Attempt to log on to OMERO server failed.";
         }
 
-        /* Check whether the attempt was successful. */
+            /* Check whether the attempt was successful. */
         if (strstr($loggedIn, '-1')) {
             $this->loggedIn = FALSE;
         } else {
@@ -168,8 +168,8 @@ class OmeroConnection {
         /* ---------------------- Command builders--------------------------- */
 
     /*!
-     \brief   It builds an 'ome_hrm' (see script) compliant command
-              to check whether the user can log on to OMERO.
+     \brief   Build an 'ome_hrm' (see script) compliant command to check
+              whether the user can log on to OMERO.
      \return  A string with the complete command.
     */
     private function buildCredentialsCmd() {
@@ -187,8 +187,8 @@ class OmeroConnection {
     }
 
     /*!
-     \brief   It builds an 'ome_hrm' (see script) compliant command
-              to retrieve the user's OMERO data tree.
+     \brief   Build an 'ome_hrm' (see script) compliant command to retrieve the
+              user's OMERO data tree.
      \return  A string with the complete command.
     */
     private function buildTreeCmd() {
