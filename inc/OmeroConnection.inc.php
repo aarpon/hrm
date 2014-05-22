@@ -43,14 +43,14 @@ class OmeroConnection {
         if ( !empty($omeroUser) ) {
             $this->omeroUser = $omeroUser;
         } else {
-            return "Impossible to log on to your OMERO account.
+            return "No OMERO user name given, cannot login.
                     Please try again. ";
         }
 
         if ( !empty($omeroPass) ) {
             $this->omeroPass = $omeroPass;
         } else {
-            return "Impossible to log on to your OMERO account.
+            return "No password for the OMERO user given, cannot login.
                     Please try again. ";
         }
 
