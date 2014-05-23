@@ -3,21 +3,30 @@
 # hrm.conf defines variables OMERO_PKG
 . /etc/hrm.conf
 
+usage_exit() {
+    if [ -n "$1" ] ; then
+        echo "$1"
+        echo
+    fi
+    echo "Usage: $0  { checkCredentials |
+                       retrieveUserTree |
+                       OMEROtoHRM       |
+                       HRMtoOMERO       } args"
+    exit 1
+}
+
 initialize () {
 
-    if [ -z "$1" ];
-    then
-        echo "Missing user login.\n"
-    else
-        USER_LOGIN=$1
+    if [ -z "$1" ]; then
+        usage_exit "Missing user login."
     fi
 
-    if [ -z "$2" ];
-    then
-        echo "Missing user password.\n"
-    else
-        USER_PASSD=$2
+    if [ -z "$2" ]; then
+        usage_exit "Missing user password."
     fi
+
+    USER_LOGIN=$1
+    USER_PASSD=$2
 
     # The user running the OMERO commands (usually the same running apache)
     # needs to have r/w permissions for the $HRM_DATA area.
@@ -409,9 +418,5 @@ case $COMMAND in
         importImage "$@"
         ;;
     *)
-        echo "Usage: $0
-                                 {checkCredentials |
-                                  retrieveUserTree |
-                                  OMEROtoHRM       |
-                                  HRMtoOMERO       } args"
+        usage_exit
 esac
