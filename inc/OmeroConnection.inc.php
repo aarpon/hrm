@@ -10,19 +10,19 @@ class OmeroConnection {
 
     /*!
       \var    $omeroTree
-      \brief  Stores the contents of the user's OMERO tree.
+      \brief  The contents of the user's OMERO tree.
     */
     private $omeroTree;
 
     /*!
       \var    $omeroUser
-      \brief  Stores the OMERO user name for logging purposes.
+      \brief  The OMERO user name for authentication and logging purposes.
     */
     private $omeroUser;
 
     /*!
       \var    $omeroPass
-      \brief  Stores the OMERO user password for logging purposes.
+      \brief  The OMERO user password for authentication and logging purposes.
     */
     private $omeroPass;
 
@@ -84,7 +84,7 @@ class OmeroConnection {
     }
 
     /*!
-     \brief   Retrieves the OMERO data tree as returned by the ome_hrm script.
+     \brief   Retrieve the OMERO data tree as returned by the ome_hrm script.
      \return  The XML string with the OMERO data tree.
     */
     private function getRawOmeroDataTree () {
@@ -105,7 +105,7 @@ class OmeroConnection {
     }
 
     /*!
-     \brief   Retrieves one image from the OMERO server.
+     \brief   Retrieve one image from the OMERO server.
      \param   $postedParams Alias of $_POST with the user selection.
      \param   $fileServer Instance of the Fileserver class.
      \return  Ocassionally, an error message.
@@ -135,7 +135,7 @@ class OmeroConnection {
     }
 
     /*!
-     \brief   Attaches a deconvolved image to an OMERO dataset.
+     \brief   Attach a deconvolved image to an OMERO dataset.
      \param   $postedParams An alias of $_POST with names of selected files.
      \param   $fileServer   An instance of the Fileserver class.
      \return  Ocassionally an error message.
@@ -208,8 +208,8 @@ class OmeroConnection {
     }
 
     /*!
-     \brief   It builds an 'ome_hrm' (see script) compliant command
-              to export one image to the OMERO server.
+     \brief   Build an 'ome_hrm' (see script) compliant command to export one
+              image to the OMERO server.
      \param   $file The name and relative path of the image to be exported.
      \param   $fileServer An instance of the Fileserver class.
      \param   $datasetId  The OMERO ID of the dataset to export the image to.
@@ -241,8 +241,8 @@ class OmeroConnection {
     }
 
     /*!
-     \brief   It builds an 'ome_hrm' (see script) compliant command
-              to import one image from the OMERO server.
+     \brief   Build an 'ome_hrm' (see script) compliant command to import one
+              image from the OMERO server.
      \param   $imgName The name of the image in the OMERO server.
      \param   $fileServer An instance of the Fileserver class.
      \param   $imgId The ID of the image in the OMERO server.
@@ -271,7 +271,7 @@ class OmeroConnection {
         /* ---------------------- OMERO Tree Assemblers ------------------- */
 
     /*!
-     \brief  Gets the last requested JSON version of the user's OMERO tree.
+     \brief  Get the last requested JSON version of the user's OMERO tree.
      \return The string with the JSON information.
     */
     public function getLastOmeroTree() {
@@ -284,7 +284,7 @@ class OmeroConnection {
     }
 
     /*!
-     \brief  Gets an updated JSON version of the user's OMERO tree.
+     \brief  Get an updated JSON version of the user's OMERO tree.
      \return The string with the JSON information.
     */
     public function getUpdatedOmeroTree() {
@@ -331,7 +331,7 @@ class OmeroConnection {
     }
 
     /*!
-     \brief  Gets the OMERO project info in a multidimensional array.
+     \brief  Get the OMERO project info in a multidimensional array.
      \param  $project The XML string with the project information.
      \return The multidimensional array with the project information.
     */
@@ -376,7 +376,7 @@ class OmeroConnection {
     }
 
     /*!
-     \brief  Gets the OMERO image of a dataset in a multidimensional array.
+     \brief  Get the OMERO image of a dataset in a multidimensional array.
      \param  $dataset An XML string with the dataset information.
      \return The multidimensional array with the image names and their id's.
     */
@@ -413,8 +413,8 @@ class OmeroConnection {
 
         /* ------------------------- Parsers ------------------------------ */
     /*!
-     \brief   Parses the HRM job parameters (html) file into a plain string
-              to be used as OMERO annotation.
+     \brief   Parse the HRM job parameters (html) file into a plain string to
+              be used as OMERO annotation.
      \param   $file The path and file name of the HRM deconvolution result.
      \return  The plain string with the parameter summary.
     */
@@ -488,7 +488,7 @@ class OmeroConnection {
     }
 
     /*!
-     \brief   Removes the deconvolution suffix to find the original file name.
+     \brief   Remove the deconvolution suffix to find the original file name.
      \param   The name of the deconvolved dataset.
      \return  The name of the raw dataset.
     */
