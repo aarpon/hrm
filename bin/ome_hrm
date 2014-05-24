@@ -256,6 +256,25 @@ retrieveArchivedImageId () {
 
 retrieveUserTree () {
 
+    # FIXME: this can be accelerated several orders of magnitude by requesting
+    # the whole information at once and processing it locally, instead of
+    # launching the omero tool individually for each piece, e.g.
+    ## omero hql -q --limit -1 'SELECT p.id, pdl.parent, p.name, \
+    ##    pdl.child, ds.name, dil.child, i.id, i.name \
+    ##      FROM Project p, ProjectDatasetLink pdl, Dataset ds, \
+    ##           DatasetImageLink dil, Image i \
+    ##      WHERE pdl.parent=p.id AND pdl.child=ds.id AND \
+    ##            dil.parent=pdl.child AND dil.child=i.id'
+    ## omero hql -q --limit -1 \
+    ##     'SELECT p.id, p.name, ds.id, ds.name, i.id, i.name \
+    ##      FROM Project p, ProjectDatasetLink pdl, Dataset ds, \
+    ##           DatasetImageLink dil, Image i \
+    ##      WHERE pdl.parent=p.id \
+    ##            AND pdl.child=ds.id \
+    ##            AND dil.parent=pdl.child \
+    ##            AND dil.child=i.id'
+
+
     initialize $1 $2
 
     omeroLogin $USER_LOGIN $USER_PASSD
