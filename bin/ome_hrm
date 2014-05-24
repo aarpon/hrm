@@ -148,6 +148,7 @@ retrieveProjectDatasets () {
         PROJECT_DATA=$PROJECT_DATA" ${ARR[$key+1]}"
       fi
     done
+    log "Project datasets for id $PROJECT_ID: $PROJECT_DATA"
 }
 
 
