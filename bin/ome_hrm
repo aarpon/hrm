@@ -77,7 +77,8 @@ omeroLogout () {
 omero_query() {
     log "QUERYING OMERO-DB: $1"
     # TODO: capture output of omero-query somewhere
-    $OMERO_EXEC hql -q "$1" 2>/dev/null
+    # by default results are limited to 25, we need to disable this (-1)
+    $OMERO_EXEC hql -q --limit -1 "$1" 2>/dev/null
 }
 
 
