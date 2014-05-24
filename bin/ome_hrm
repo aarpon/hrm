@@ -256,77 +256,44 @@ retrieveArchivedImageId () {
 }
 
 
-retrieveUserTree () {
-
-    # FIXME: this can be accelerated several orders of magnitude by requesting
-    # the whole information at once and processing it locally, instead of
-    # launching the omero tool individually for each piece, e.g.
-    ## omero hql -q --limit -1 'SELECT p.id, pdl.parent, p.name, \
-    ##    pdl.child, ds.name, dil.child, i.id, i.name \
-    ##      FROM Project p, ProjectDatasetLink pdl, Dataset ds, \
-    ##           DatasetImageLink dil, Image i \
-    ##      WHERE pdl.parent=p.id AND pdl.child=ds.id AND \
-    ##            dil.parent=pdl.child AND dil.child=i.id'
-    ## omero hql -q --limit -1 \
-    ##     'SELECT p.id, p.name, ds.id, ds.name, i.id, i.name \
-    ##      FROM Project p, ProjectDatasetLink pdl, Dataset ds, \
-    ##           DatasetImageLink dil, Image i \
-    ##      WHERE pdl.parent=p.id \
-    ##            AND pdl.child=ds.id \
-    ##            AND dil.parent=pdl.child \
-    ##            AND dil.child=i.id'
-
+retrieveUserTree() {
 
     initialize $1 $2
 
     omeroLogin $USER_LOGIN $USER_PASSD
 
-    retrieveUserProjects
+    QRY="SELECT p.id, p.name, ds.id, ds.name, i.id, i.name
+         FROM Project p, ProjectDatasetLink pdl, Dataset ds,
+             DatasetImageLink dil, Image i
+         WHERE pdl.parent=p.id
+             AND pdl.child=ds.id
+             AND dil.parent=pdl.child
+             AND dil.child=i.id"
 
+    RES=$(omero_query "$QRY" | head -n -1 | tail -n +3 | sed 's,  *|  *,|,g' | cut -d '|' -f 2-)
+    PROJS=$(echo "$RES" | cut -d '|' -f 1,2 | sort -n | uniq)
     USER_TREE=''
+    while read -r proj ; do
+        PROJ_ID=$(echo "$proj" | cut -d '|' -f 1)
+        PROJ_NAME=$(echo "$proj" | cut -d '|' -f 2)
+        USER_TREE+="<Project>$PROJ_NAME<id>$PROJ_ID</id>"
 
-    for project in $USER_PROJECTS
-    do
+        DSETS=$(echo "$RES" | cut -d '|' -f 1,3,4 | sort -n | uniq | grep "^$PROJ_ID|" | cut -d '|' -f 2-)
+        while read -r dset ; do
+            DS_ID=$(echo "$dset" | cut -d '|' -f 1)
+            DS_NAME=$(echo "$dset" | cut -d '|' -f 2)
+            USER_TREE+="<Dataset>$DS_NAME<id>$DS_ID</id>"
 
-       retrieveProjectName $project
-
-       USER_TREE=$USER_TREE"<Project>$PROJECT_NAME"
-
-       USER_TREE=$USER_TREE"<id>$project</id>"
-
-       retrieveProjectDatasets $project
-
-       for dataset in $PROJECT_DATA
-       do
-
-          retrieveDatasetName $dataset
-
-          USER_TREE=$USER_TREE"<Dataset>$DATASET_NAME"
-
-          USER_TREE=$USER_TREE"<id>$dataset</id>"
-
-          retrieveDatasetImages $dataset
-
-          for image in $DATASET_IMAGES
-          do
-
-             retrieveImageName $image
-
-             USER_TREE=$USER_TREE"<Image>$IMAGE_NAME"
-
-             USER_TREE=$USER_TREE"<id>$image</id>"
-
-             USER_TREE=$USER_TREE"</Image>"
-
-          done
-
-          USER_TREE=$USER_TREE"</Dataset>"
-
-       done
-
-       USER_TREE=$USER_TREE"</Project>"
-
-    done
+            IMGS=$(echo "$RES" | cut -d '|' -f 3,5,6 | sort -n | uniq | grep "^$DS_ID|" | cut -d '|' -f 2-)
+            while read -r img ; do
+                IMG_ID=$(echo "$img" | cut -d '|' -f 1)
+                IMG_NAME=$(echo "$img" | cut -d '|' -f 2)
+                USER_TREE+="<Image>$IMG_NAME<id>$IMG_ID</id></Image>"
+            done <<< "$IMGS"
+            USER_TREE+="</Dataset>"
+        done <<< "$DSETS"
+        USER_TREE+="</Project>"
+    done <<< "$PROJS"
 
     omeroLogout
 
