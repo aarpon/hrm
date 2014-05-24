@@ -117,7 +117,7 @@ retrieveUserProjects () {
         USER_PROJECTS=$USER_PROJECTS" $x"
       fi
     done
-    log $USER_PROJECTS
+    log "User project ID's: $USER_PROJECTS"
 }
 
 
@@ -139,7 +139,7 @@ retrieveProjectName () {
     RES=${RES%(*}
     PROJECT_NAME=$(echo $RES | tr " | " " ")
     PROJECT_NAME=$(echo $PROJECT_NAME | tr -d ' ')
-    log "$PROJECT_NAME"
+    log "Project name: $PROJECT_NAME"
 }
 
 
@@ -285,7 +285,6 @@ retrieveUserTree () {
 
     USER_TREE=''
 
-    log "ID's of user projects:$USER_PROJECTS"
     for project in $USER_PROJECTS
     do
 
