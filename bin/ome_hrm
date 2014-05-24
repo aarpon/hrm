@@ -74,14 +74,21 @@ omeroLogout () {
 }
 
 
+omero_query() {
+    log "QUERYING OMERO-DB: $1"
+    # TODO: capture output of omero-query somewhere
+    $OMERO_EXEC hql -q "$1" 2>/dev/null
+}
+
+
 retrieveUserId () {
 
     # Retrieve the user id.
     QRY="select i.id from Experimenter i where i.omeName='$USER_LOGIN'"
-    QRY_OUTPUT=$($OMERO_EXEC hql -q "$QRY")
+    RES=$(omero_query "$QRY")
 
     # Parse the data and return just the id.
-    USER_ID=$(expr "$QRY_OUTPUT" : '.* | \(.*\) .*(.*')
+    USER_ID=$(expr "$RES" : '.* | \(.*\) .*(.*')
 }
 
 
@@ -89,12 +96,12 @@ retrieveUserProjects () {
 
     log "Retrieving user's projects."
     QRY="select i.id from Project i"
-    QRY_OUTPUT=$($OMERO_EXEC hql -q "$QRY")
+    RES=$(omero_query "$QRY")
 
     # Parse and print the project names.
-    QRY_OUTPUT=${QRY_OUTPUT#*0}
-    QRY_OUTPUT=${QRY_OUTPUT%(*}
-    ARR=$(echo $QRY_OUTPUT | tr " | " "\n")
+    RES=${RES#*0}
+    RES=${RES%(*}
+    ARR=$(echo $RES | tr " | " "\n")
 
     USER_PROJECTS=''
 
@@ -125,12 +132,12 @@ retrieveProjectName () {
 
     # Retrieve the project name.
     QRY="select i.name from Project i where i.id='$PROJECT_ID'"
-    QRY_OUTPUT=$($OMERO_EXEC hql -q "$QRY")
+    RES=$(omero_query "$QRY")
 
     # Parse and print the project name.
-    QRY_OUTPUT=${QRY_OUTPUT#*0}
-    QRY_OUTPUT=${QRY_OUTPUT%(*}
-    PROJECT_NAME=$(echo $QRY_OUTPUT | tr " | " " ")
+    RES=${RES#*0}
+    RES=${RES%(*}
+    PROJECT_NAME=$(echo $RES | tr " | " " ")
     PROJECT_NAME=$(echo $PROJECT_NAME | tr -d ' ')
     log "$PROJECT_NAME"
 }
@@ -142,13 +149,13 @@ retrieveProjectDatasets () {
 
     log "Retrieving datasets for project $PROJECT_ID."
     QRY="select child from ProjectDatasetLink where parent='$PROJECT_ID'"
-    QRY_OUTPUT=$($OMERO_EXEC hql -q "$QRY")
+    RES=$(omero_query "$QRY")
 
     # Parse and print the project datasets.
-    QRY_OUTPUT=${QRY_OUTPUT#*0}
-    QRY_OUTPUT=${QRY_OUTPUT%(*}
+    RES=${RES#*0}
+    RES=${RES%(*}
 
-    ARR=( $(echo $QRY_OUTPUT | tr " | " "\n") )
+    ARR=( $(echo $RES | tr " | " "\n") )
 
     PROJECT_DATA=''
     key=-1
@@ -175,13 +182,13 @@ retrieveDatasetName () {
 
     # Retrieve the dataset name.
     QRY="select name from Dataset where id='$DATASET_ID'"
-    QRY_OUTPUT=$($OMERO_EXEC hql -q "$QRY")
+    RES=$(omero_query "$QRY")
 
     # Parse and print the dataset name.
-    QRY_OUTPUT=${QRY_OUTPUT#*0}
-    QRY_OUTPUT=${QRY_OUTPUT%(*}
+    RES=${RES#*0}
+    RES=${RES%(*}
 
-    DATASET_NAME=$(echo $QRY_OUTPUT | tr " | " " ")
+    DATASET_NAME=$(echo $RES | tr " | " " ")
     DATASET_NAME=$(echo $DATASET_NAME | tr -d ' ')
     log "$DATASET_NAME"
 }
@@ -194,13 +201,13 @@ retrieveDatasetImages () {
     # Retrieve the dataset images.
     QRY="select I.id from Image I, DatasetImageLink D where I.id = D.child "
     QRY=$QRY"AND I.archived = 't' AND parent='$DATASET_ID'"
-    QRY_OUTPUT=$($OMERO_EXEC hql -q "$QRY")
+    RES=$(omero_query "$QRY")
 
     # Parse and print the dataset images.
-    QRY_OUTPUT=${QRY_OUTPUT#*0}
-    QRY_OUTPUT=${QRY_OUTPUT%(*}
+    RES=${RES#*0}
+    RES=${RES%(*}
 
-    ARR=( $(echo $QRY_OUTPUT | tr " | " "\n") )
+    ARR=( $(echo $RES | tr " | " "\n") )
     DATASET_IMAGES=''
 
     key=-1
@@ -232,13 +239,13 @@ retrieveImageName () {
 
     # Retrieve the image name.
     QRY="select name from Image where id='$IMAGE_ID'"
-    QRY_OUTPUT=$($OMERO_EXEC hql -q "$QRY")
+    RES=$(omero_query "$QRY")
 
     # Parse and print the image name.
-    QRY_OUTPUT=${QRY_OUTPUT#*0}
-    QRY_OUTPUT=${QRY_OUTPUT%(*}
+    RES=${RES#*0}
+    RES=${RES%(*}
 
-    IMAGE_NAME=$(echo $QRY_OUTPUT | tr " | " " ")
+    IMAGE_NAME=$(echo $RES | tr " | " " ")
     IMAGE_NAME=$(echo $IMAGE_NAME | tr -d ' ')
 }
 
@@ -255,15 +262,15 @@ retrieveArchivedImageId () {
     # Retrieve the archived image id.
     QRY="select o.id from Image i join i.pixels p join p.pixelsFileMaps m "
     QRY=$QRY"join m.parent o where i.id=$IMAGE_ID"
-    QRY_OUTPUT=$($OMERO_EXEC hql -q "$QRY")
+    RES=$(omero_query "$QRY")
 
     # Parse and print the archived image id.
-    QRY_OUTPUT=${QRY_OUTPUT#*0}
-    QRY_OUTPUT=${QRY_OUTPUT%(*}
-    QRY_OUTPUT=${QRY_OUTPUT#*|}
-    QRY_OUTPUT=${QRY_OUTPUT%|*}
+    RES=${RES#*0}
+    RES=${RES%(*}
+    RES=${RES#*|}
+    RES=${RES%|*}
 
-    ARR=( $(echo $QRY_OUTPUT | tr " " "\n") )
+    ARR=( $(echo $RES | tr " " "\n") )
     ARCHIVED_ID=${ARR[0]}
 }
 
