@@ -105,24 +105,20 @@ retrieveUserProjects() {
 }
 
 
-retrieveProjectName () {
-
-    if [ -z "$1" ];
-    then
-        echo "Missing project id.\n"
+retrieveProjectName() {
+    if [ -z "$1" ] ; then
+        echo "Missing project id."
     else
         PROJECT_ID=$1
     fi
 
-    # Retrieve the project name.
-    QRY="select i.name from Project i where i.id='$PROJECT_ID'"
+    log "Retrieving project name for project id $PROJECT_ID."
+    QRY="SELECT i.name FROM Project i WHERE i.id='$PROJECT_ID'"
     RES=$(omero_query "$QRY")
 
-    # Parse and print the project name.
-    RES=${RES#*0}
-    RES=${RES%(*}
-    PROJECT_NAME=$(echo $RES | tr " | " " ")
-    PROJECT_NAME=$(echo $PROJECT_NAME | tr -d ' ')
+    # sed -n - print only third line
+    # sed    - remove first column
+    PROJECT_NAME=$(echo "$RES" | sed -n '3p' | sed 's,^.* | ,,')
     log "Project name: $PROJECT_NAME"
 }
 
