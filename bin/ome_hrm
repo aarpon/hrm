@@ -92,31 +92,15 @@ retrieveUserId () {
 }
 
 
-retrieveUserProjects () {
+retrieveUserProjects() {
 
     log "Retrieving user's projects."
-    QRY="select i.id from Project i"
-    RES=$(omero_query "$QRY")
+    RES=$(omero_query "SELECT i.id FROM Project i")
 
-    # Parse and print the project names.
-    RES=${RES#*0}
-    RES=${RES%(*}
-    ARR=$(echo $RES | tr " | " "\n")
-
-    USER_PROJECTS=''
-
-    key=-1
-    for x in $ARR
-    do
-      ((key++))
-
-      rem=$(($key%2))
-
-      if [ $rem -eq 0 ]
-      then
-        USER_PROJECTS=$USER_PROJECTS" $x"
-      fi
-    done
+    # head/tail - remote header/footer
+    # cut - remove index column
+    # tr - remove newlines (optional)
+    USER_PROJECTS=$(echo "$RES" | head -n -1 | tail -n +3 | cut -d '|' -f 2 | tr -d '\n')
     log "User project ID's: $USER_PROJECTS"
 }
 
