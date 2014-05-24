@@ -255,12 +255,17 @@ retrieveArchivedImageId () {
     ARCHIVED_ID=${ARR[0]}
 }
 
+get_uniq_cols() {
+    echo "$1" | cut -d '|' -f "$2" | sort -n | uniq
+}
 
 retrieveUserTree() {
 
     initialize $1 $2
 
     omeroLogin $USER_LOGIN $USER_PASSD
+
+    USER_TREE=''
 
     QRY="SELECT p.id, p.name, ds.id, ds.name, i.id, i.name
          FROM Project p, ProjectDatasetLink pdl, Dataset ds,
@@ -269,29 +274,31 @@ retrieveUserTree() {
              AND pdl.child=ds.id
              AND dil.parent=pdl.child
              AND dil.child=i.id"
+    RES=$(omero_query "$QRY" | head -n -1 | tail -n +3 |
+          sed 's,  *|  *,|,g' | cut -d '|' -f 2-)
 
-    RES=$(omero_query "$QRY" | head -n -1 | tail -n +3 | sed 's,  *|  *,|,g' | cut -d '|' -f 2-)
-    PROJS=$(echo "$RES" | cut -d '|' -f 1,2 | sort -n | uniq)
-    USER_TREE=''
+    PROJS=$(get_uniq_cols "$RES" "1,2")
     while read -r proj ; do
         PROJ_ID=$(echo "$proj" | cut -d '|' -f 1)
         PROJ_NAME=$(echo "$proj" | cut -d '|' -f 2)
         USER_TREE+="<Project>$PROJ_NAME<id>$PROJ_ID</id>"
 
-        DSETS=$(echo "$RES" | cut -d '|' -f 1,3,4 | sort -n | uniq | grep "^$PROJ_ID|" | cut -d '|' -f 2-)
+        DATASETS=$(get_uniq_cols "$RES" "1,3,4" |
+                   grep "^$PROJ_ID|" | cut -d '|' -f 2-)
         while read -r dset ; do
             DS_ID=$(echo "$dset" | cut -d '|' -f 1)
             DS_NAME=$(echo "$dset" | cut -d '|' -f 2)
             USER_TREE+="<Dataset>$DS_NAME<id>$DS_ID</id>"
 
-            IMGS=$(echo "$RES" | cut -d '|' -f 3,5,6 | sort -n | uniq | grep "^$DS_ID|" | cut -d '|' -f 2-)
+            IMAGES=$(get_uniq_cols "$RES" "3,5,6" |
+                     grep "^$DS_ID|" | cut -d '|' -f 2-)
             while read -r img ; do
                 IMG_ID=$(echo "$img" | cut -d '|' -f 1)
                 IMG_NAME=$(echo "$img" | cut -d '|' -f 2)
                 USER_TREE+="<Image>$IMG_NAME<id>$IMG_ID</id></Image>"
-            done <<< "$IMGS"
+            done <<< "$IMAGES"
             USER_TREE+="</Dataset>"
-        done <<< "$DSETS"
+        done <<< "$DATASETS"
         USER_TREE+="</Project>"
     done <<< "$PROJS"
 
