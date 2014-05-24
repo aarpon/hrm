@@ -3,6 +3,10 @@
 # hrm.conf defines variables OMERO_PKG
 . /etc/hrm.conf
 
+log() {
+    echo "$1" >&2
+}
+
 usage_exit() {
     if [ -n "$1" ] ; then
         echo "$1"
