@@ -87,7 +87,7 @@ retrieveUserId () {
 
 retrieveUserProjects () {
 
-    # Retrieve the user projects.
+    log "Retrieving user's projects."
     QRY="select i.id from Project i"
     QRY_OUTPUT=$($OMERO_EXEC hql -q "$QRY")
 
@@ -110,6 +110,7 @@ retrieveUserProjects () {
         USER_PROJECTS=$USER_PROJECTS" $x"
       fi
     done
+    log $USER_PROJECTS
 }
 
 
@@ -131,6 +132,7 @@ retrieveProjectName () {
     QRY_OUTPUT=${QRY_OUTPUT%(*}
     PROJECT_NAME=$(echo $QRY_OUTPUT | tr " | " " ")
     PROJECT_NAME=$(echo $PROJECT_NAME | tr -d ' ')
+    log "$PROJECT_NAME"
 }
 
 
@@ -138,7 +140,7 @@ retrieveProjectDatasets () {
 
     PROJECT_ID=$1
 
-    # Retrieve the project datasets.
+    log "Retrieving datasets for project $PROJECT_ID."
     QRY="select child from ProjectDatasetLink where parent='$PROJECT_ID'"
     QRY_OUTPUT=$($OMERO_EXEC hql -q "$QRY")
 
@@ -181,6 +183,7 @@ retrieveDatasetName () {
 
     DATASET_NAME=$(echo $QRY_OUTPUT | tr " | " " ")
     DATASET_NAME=$(echo $DATASET_NAME | tr -d ' ')
+    log "$DATASET_NAME"
 }
 
 
@@ -275,6 +278,7 @@ retrieveUserTree () {
 
     USER_TREE=''
 
+    log "ID's of user projects:$USER_PROJECTS"
     for project in $USER_PROJECTS
     do
 
