@@ -93,13 +93,12 @@ retrieveUserId () {
 
 
 retrieveUserProjects() {
-
     log "Retrieving user's projects."
     RES=$(omero_query "SELECT i.id FROM Project i")
 
     # head/tail - remote header/footer
-    # cut - remove index column
-    # tr - remove newlines (optional)
+    # cut       - remove index column
+    # tr        - remove newlines (optional)
     USER_PROJECTS=$(echo "$RES" | head -n -1 | tail -n +3 | cut -d '|' -f 2 | tr -d '\n')
     log "User project ID's: $USER_PROJECTS"
 }
