@@ -85,7 +85,7 @@ omero_query() {
 retrieveUserId () {
 
     # Retrieve the user id.
-    QRY="select i.id from Experimenter i where i.omeName='$USER_LOGIN'"
+    QRY="SELECT i.id FROM Experimenter i WHERE i.omeName='$USER_LOGIN'"
     RES=$(omero_query "$QRY")
 
     # Parse the data and return just the id.
@@ -103,8 +103,8 @@ retrieveArchivedImageId () {
     fi
 
     # Retrieve the archived image id.
-    QRY="select o.id from Image i join i.pixels p join p.pixelsFileMaps m "
-    QRY=$QRY"join m.parent o where i.id=$IMAGE_ID"
+    QRY="SELECT o.id FROM Image i JOIN i.pixels p JOIN p.pixelsFileMaps m "
+    QRY=$QRY"JOIN m.parent o WHERE i.id=$IMAGE_ID"
     RES=$(omero_query "$QRY")
 
     # Parse and print the archived image id.
