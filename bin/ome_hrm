@@ -168,37 +168,41 @@ retrieveUserTree() {
 }
 
 
-exportImage () {
+exportImage() {
     # Download an image from OMERO to the local filesystem.
     #
     # \param  $USERNAME  OMERO username.
     # \param  $PASSWORD  OMERO password.
     # \param  $ID        OMERO image id.
     # \param  $DEST      Destination to store the downloaded image.
+    #
+    # NOTE: the OMERO cli has two subcommands to request pixel data from the
+    # server: "export" and "download". To retrieve OME-TIFFs, the "export"
+    # command has to be used as "download" provides access to the file in its
+    # original format, which only works if the "archive" box was checked by the
+    # user when initially uploading the data into the OMERO server.
+    #
+    # NOTE2: the above statement is true for OMERO-4, the situation for OMERO-5
+    # still has to be evaluated!
+
     initialize $1 $2
 
     if [ -z "$3" ] ; then
         echo "Missing Omero's image id."
         return
-    else
-        IMAGE_ID=$3
     fi
+    IMAGE_ID=$3
 
     if [ -z "$4" ] ; then
         echo "Missing image destination path."
         return
-    else
-        IMAGE_DEST=$4
     fi
+    IMAGE_DEST=$4
 
     omeroLogin $USER_LOGIN $USER_PASSD
 
-    retrieveArchivedImageId $IMAGE_ID
-
-    if [[ "$ARCHIVED_ID" =~ ^[0-9]+$ ]];
-    then
-       $OMERO_EXEC download $ARCHIVED_ID $IMAGE_DEST
-    fi
+    log "Requesting image $IMAGE_ID from OMERO to be exported as $IMAGE_DEST."
+    $OMERO_EXEC export --file $IMAGE_DEST Image:$IMAGE_ID
 
     omeroLogout
 }
