@@ -223,7 +223,15 @@ exportImage() {
 }
 
 
-importImage () {
+importImage() {
+    # Upload a deconvolved image from the local filesystem to OMERO.
+    #
+    # \param  $USERNAME         OMERO username.
+    # \param  $PASSWORD         OMERO password.
+    # \param  $DATASET_ID       OMERO dataset id.
+    # \param  $IMAGE_PATH       Path of image to be uploaded.
+    # \param  $IMAGE_NAME       Name of image to be uploaded.
+    # \param  $ANNOTATION_TEXT  Text to be added as annotation in OMERO.
 
     initialize $1 $2
 
