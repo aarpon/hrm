@@ -109,6 +109,11 @@ retrieveUserId() {
 
 
 retrieveArchivedImageId() {
+    # Retrieve ID of corresponding "archived" image if available.
+    #
+    # NOTE: this function is currently not in use anymore but might be required
+    # at a later point to allow for retrieving images in their original format
+    # (needs to be checked with OMERO-5).
     if [ -z "$1" ] ; then
         echo "Missing image id."
         return
@@ -142,6 +147,9 @@ retrieveUserTree() {
              AND dil.parent=pdl.child
              AND dil.child=i.id"
     RES=$(omero_query "$QRY")
+
+    # format of RES is as follows:
+    # PROJECT_ID|PROJECT_NAME|DATASET_ID|DATASET_NAME|IMAGE_ID|IMAGE_NAME
 
     PROJS=$(get_uniq_cols "$RES" "1,2")
     while read -r proj ; do
