@@ -49,8 +49,7 @@ checkCredentials () {
      omeroLogout
 
      # If we couldn't get the user id, the credentials weren't Ok.
-     if [ -z "$USER_ID" ];
-     then
+     if [ -z "$USER_ID" ] ; then
        echo "-1"
      else
        echo $USER_ID
@@ -95,9 +94,8 @@ retrieveUserId () {
 
 retrieveArchivedImageId () {
 
-    if [ -z "$1" ];
-    then
-        echo "Missing image id.\n"
+    if [ -z "$1" ] ; then
+        echo "Missing image id."
     else
         IMAGE_ID=$1
     fi
@@ -179,16 +177,16 @@ exportImage () {
     # \param  $DEST      Destination to store the downloaded image.
     initialize $1 $2
 
-    if [ -z "$3" ];
-    then
-        echo "Missing Omero's image id.\n"
+    if [ -z "$3" ] ; then
+        echo "Missing Omero's image id."
+        return
     else
         IMAGE_ID=$3
     fi
 
-    if [ -z "$4" ];
-    then
-        echo "Missing image destination path.\n"
+    if [ -z "$4" ] ; then
+        echo "Missing image destination path."
+        return
     else
         IMAGE_DEST=$4
     fi
