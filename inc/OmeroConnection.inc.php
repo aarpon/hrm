@@ -263,7 +263,7 @@ class OmeroConnection {
         $cmd .= " ";
         $cmd .= $imgId;
         $cmd .= " ";
-        $cmd .= $fileAndPath;
+        $cmd .= '"' . $fileAndPath . '"';
 
         return $cmd;
     }
