@@ -92,6 +92,13 @@ omero_query() {
         cut -d '|' -f 2-       # cut away first column (results index)
 }
 
+get_uniq_cols() {
+    # Convenience function to be used with results of omero_query() that
+    # returns a subset of the |-delimited text with only the requested columns,
+    # sorted and without duplicates.
+    echo "$1" | cut -d '|' -f "$2" | sort -n | uniq
+}
+
 
 retrieveUserId() {
     # Retrieve the user id.
@@ -117,10 +124,6 @@ retrieveArchivedImageId() {
     else
         log "No archived image found for $IMAGE_ID."
     fi
-}
-
-get_uniq_cols() {
-    echo "$1" | cut -d '|' -f "$2" | sort -n | uniq
 }
 
 retrieveUserTree() {
