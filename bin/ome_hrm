@@ -93,11 +93,11 @@ omero_query() {
 }
 
 
-retrieveUserId () {
-
+retrieveUserId() {
     # Retrieve the user id.
     QRY="SELECT i.id FROM Experimenter i WHERE i.omeName='$USER_LOGIN'"
     USER_ID=$(omero_query "$QRY")
+    log "OMERO user ID for username $USER_LOGIN: $USER_ID."
 }
 
 
@@ -108,10 +108,15 @@ retrieveArchivedImageId() {
     fi
     IMAGE_ID=$1
 
-    # Retrieve the archived image id.
+    log "Requesting archived image ID for ID $IMAGE_ID."
     QRY="SELECT o.id FROM Image i JOIN i.pixels p JOIN p.pixelsFileMaps m "
     QRY=$QRY"JOIN m.parent o WHERE i.id=$IMAGE_ID"
     ARCHIVED_ID=$(omero_query "$QRY")
+    if [ -n "$ARCHIVED_ID" ] ; then
+        log "Archived image ID: $ARCHIVED_ID."
+    else
+        log "No archived image found for $IMAGE_ID."
+    fi
 }
 
 get_uniq_cols() {
