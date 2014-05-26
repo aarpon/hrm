@@ -229,28 +229,28 @@ importImage () {
 
     if [ -z "$3" ];
     then
-        echo "Missing Omero's dataset id.\n"
+        echo "Missing OMERO's dataset id."
     else
         DATASET_ID=$3
     fi
 
     if [ -z "$4" ];
     then
-        echo "Missing path to image.\n"
+        echo "Missing path to image."
     else
         IMAGE_PATH=$4
     fi
 
     if [ -z "$5" ];
     then
-        echo "Missing image name.\n"
+        echo "Missing image name."
     else
         IMAGE_NAME=$5
     fi
 
     if [ -z "$6" ];
     then
-        echo "Missing annotation text.\n"
+        echo "Missing annotation text."
     else
         ANNOTATION_TEXT="$6"
     fi
