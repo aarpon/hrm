@@ -231,11 +231,11 @@ class OmeroConnection {
         $cmd .= " ";
         $cmd .= $datasetId;
         $cmd .= " ";
-        $cmd .= $fileAndPath;
+        $cmd .= '"' . $fileAndPath . '"';
         $cmd .= " ";
-        $cmd .= $this->getOriginalName($file);
+        $cmd .= '"' . $this->getOriginalName($file) . '"';
         $cmd .= " ";
-        $cmd .= $this->getDeconParameterSummary($fileAndPath);
+        $cmd .= '"' . $this->getDeconParameterSummary($fileAndPath) . '"';
 
         return $cmd;
     }

@@ -238,14 +238,14 @@ importImage () {
     then
         echo "Missing path to image."
     else
-        IMAGE_PATH=$4
+        IMAGE_PATH="$4"
     fi
 
     if [ -z "$5" ];
     then
         echo "Missing image name."
     else
-        IMAGE_NAME=$5
+        IMAGE_NAME="$5"
     fi
 
     if [ -z "$6" ];
@@ -257,7 +257,7 @@ importImage () {
 
     omeroLogin $USER_LOGIN $USER_PASSD
 
-    $OMERO_EXEC import $IMAGE_PATH -d $DATASET_ID -n $IMAGE_NAME \
+    $OMERO_EXEC import "$IMAGE_PATH" -d $DATASET_ID -n "$IMAGE_NAME" \
         -c -x "Deconvolved with Huygens" \
         --annotation_ns "HuygensDeconvolved" \
         --annotation_text "$ANNOTATION_TEXT"
