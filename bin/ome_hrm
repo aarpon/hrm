@@ -202,7 +202,7 @@ exportImage() {
     initialize $1 $2
 
     if [ -z "$3" ] ; then
-        echo "Missing Omero's image id."
+        echo "Missing OMERO's image id."
         return
     fi
     IMAGE_ID=$3
@@ -215,8 +215,9 @@ exportImage() {
 
     omeroLogin $USER_LOGIN $USER_PASSD
 
-    log "Requesting image $IMAGE_ID from OMERO to be exported as $IMAGE_DEST."
+    log "Requesting image $IMAGE_ID from OMERO to be exported as '$IMAGE_DEST'."
     $OMERO_EXEC export --file $IMAGE_DEST Image:$IMAGE_ID
+    log "Done requesting image."
 
     omeroLogout
 }
