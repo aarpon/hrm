@@ -32,6 +32,12 @@ class OmeroConnection {
     */
     public $loggedIn;
 
+   /*!
+      \var    $omeroWrapper
+      \brief  The shell wrapper to OMERO's command line tool.
+    */
+    private $omeroWrapper = "bin/ome_hrm";
+
 
         /* ----------------------- Constructor ---------------------------- */
 
@@ -171,6 +177,23 @@ class OmeroConnection {
     }
 
         /* ---------------------- Command builders--------------------------- */
+
+    /*!
+     \brief   Generic command builder for the OMERO wrapper script, making sure
+              all parameters are properly quoted.
+     \return  A string with the complete command.
+    */
+    private function buildCmd($parameters) {
+        // first we enclose all parameters with single quotes to prevent the
+        // shell from interpreting them or splitting them at whitespaces
+        foreach($parameters as &$param) {
+            $param = "'" . $param . "'";
+        }
+        // now we assemble the full shell command
+        $cmd  = $this->omeroWrapper . " ";
+        $cmd .= join(" ", $parameters);
+        return $cmd;
+    }
 
     /*!
      \brief   Build an 'ome_hrm' (see script) compliant command to check
