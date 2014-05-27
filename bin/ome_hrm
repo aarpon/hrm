@@ -4,7 +4,7 @@
 . /etc/hrm.conf
 
 log() {
-    echo "$1" >&2
+    echo "$*" >&2
 }
 
 usage_exit() {
