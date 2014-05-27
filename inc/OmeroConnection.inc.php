@@ -201,22 +201,11 @@ class OmeroConnection {
     }
 
     /*!
-     \brief   Build an 'ome_hrm' (see script) compliant command to check
-              whether the user can log on to OMERO.
+     \brief   Build the command to check whether the user can log on to OMERO.
      \return  A string with the complete command.
     */
     private function buildCredentialsCmd() {
-
-            /* See 'checkCredentials' command in file 'bin/ome_hrm'. */
-        $cmd  = "bin/ome_hrm";
-        $cmd .= " ";
-        $cmd .= "checkCredentials";
-        $cmd .= " ";
-        $cmd .= $this->omeroUser;
-        $cmd .= " ";
-        $cmd .= $this->omeroPass;
-
-        return $cmd;
+        return $this->buildCmd("checkCredentials");
     }
 
     /*!
