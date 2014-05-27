@@ -217,36 +217,20 @@ class OmeroConnection {
     }
 
     /*!
-     \brief   Build an 'ome_hrm' (see script) compliant command to export one
-              image to the OMERO server.
-     \param   $file The name and relative path of the image to be exported.
-     \param   $fileServer An instance of the Fileserver class.
-     \param   $datasetId  The OMERO ID of the dataset to export the image to.
+     \brief   Build the command to export one image to the OMERO server.
+     \param   $file - The name and relative path of the image file.
+     \param   $fileServer - An instance of the Fileserver class.
+     \param   $datasetId - The OMERO ID of the dataset to export the image to.
      \return  A string with the complete command.
     */
     private function buildExportCmd($file, $fileServer, $datasetId) {
 
             /* $file may contain relative paths. Here the absolute path. */
         $fileAndPath = $fileServer->destinationFolder() . "/" . $file;
-
-            /* See 'HRMtoOMERO' command in file 'bin/ome_hrm'. */
-        $cmd  = "bin/ome_hrm";
-        $cmd .= " ";
-        $cmd .= "HRMtoOMERO";
-        $cmd .= " ";
-        $cmd .= $this->omeroUser;
-        $cmd .= " ";
-        $cmd .= $this->omeroPass;
-        $cmd .= " ";
-        $cmd .= $datasetId;
-        $cmd .= " ";
-        $cmd .= '"' . $fileAndPath . '"';
-        $cmd .= " ";
-        $cmd .= '"' . $this->getOriginalName($file) . '"';
-        $cmd .= " ";
-        $cmd .= '"' . $this->getDeconParameterSummary($fileAndPath) . '"';
-
-        return $cmd;
+        return $this->buildCmd("HRMtoOMERO",
+            array($datasetId, $fileAndPath,
+                  $this->getOriginalName($file),
+                  $this->getDeconParameterSummary($fileAndPath)));
     }
 
     /*!
