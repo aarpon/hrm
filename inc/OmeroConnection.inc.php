@@ -179,17 +179,20 @@ class OmeroConnection {
         /* ---------------------- Command builders--------------------------- */
 
     /*!
-     \brief   Generic command builder for the OMERO wrapper script, making sure
-              all parameters are properly quoted.
+     \brief   Generic command builder for the OMERO wrapper script, adding the
+              credentials and making sure all parameters are properly quoted.
      \return  A string with the complete command.
     */
-    private function buildCmd($parameters) {
+    private function buildCmd($command, $parameters="") {
         // escape all shell arguments
         foreach($parameters as &$param) {
             $param = escapeshellarg($param);
         }
         // now we assemble the full shell command
         $cmd  = $this->omeroWrapper . " ";
+        $cmd .= $command . " ";
+        $cmd .= escapeshellarg($this->omeroUser) . " ";
+        $cmd .= escapeshellarg($this->omeroPass) . " ";
         $cmd .= join(" ", $parameters);
         return $cmd;
     }
