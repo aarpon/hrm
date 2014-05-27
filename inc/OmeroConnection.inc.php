@@ -181,6 +181,9 @@ class OmeroConnection {
     /*!
      \brief   Generic command builder for the OMERO wrapper script, adding the
               credentials and making sure all parameters are properly quoted.
+     \param   $command - The command to be run by the wrapper.
+     \param   $parameters (optional) - An array of additional parameters
+              required by the wrapper to run the requested command.
      \return  A string with the complete command.
     */
     private function buildCmd($command, $parameters="") {
