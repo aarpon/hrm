@@ -224,8 +224,9 @@ class OmeroConnection {
      \return  A string with the complete command.
     */
     private function buildExportCmd($file, $fileServer, $datasetId) {
-
-            /* $file may contain relative paths. Here the absolute path. */
+        // FIXME: previous documentation said "$file may contain relative
+        // paths" - is this always true? Otherwise this method of constructing
+        // the absolute path will fail!
         $fileAndPath = $fileServer->destinationFolder() . "/" . $file;
         return $this->buildCmd("HRMtoOMERO",
             array($datasetId, $fileAndPath,
@@ -241,7 +242,9 @@ class OmeroConnection {
      \return  A string with the complete command.
     */
     private function buildImportCmd($imgName, $fileServer, $imgId) {
-
+        // FIXME: previous documentation said "$file may contain relative
+        // paths" - is this always true? Otherwise this method of constructing
+        // the absolute path will fail!
         $fileAndPath = $fileServer->sourceFolder() . "/" . $imgName;
         return $this->buildCmd("OMEROtoHRM ", array($imgId, $fileAndPath));
     }
