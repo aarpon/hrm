@@ -265,8 +265,12 @@ importImage() {
 
     omeroLogin $USER_LOGIN $USER_PASSD
 
-    $OMERO_EXEC import "$IMAGE_PATH" -d $DATASET_ID -n "$IMAGE_NAME" \
-        -c -x "Deconvolved with Huygens / HRM" \
+    # FIXME: why the "-c" flag (continue after errors) ??
+    $OMERO_EXEC import "$IMAGE_PATH" \
+        -d $DATASET_ID \
+        -n "$IMAGE_NAME" \
+        -c \
+        -x "Deconvolved with Huygens / HRM" \
         --annotation_ns "HuygensHRMDeconvolved" \
         --annotation_text "$ANNOTATION_TEXT"
 
