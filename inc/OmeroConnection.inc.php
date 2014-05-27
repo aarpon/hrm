@@ -184,10 +184,9 @@ class OmeroConnection {
      \return  A string with the complete command.
     */
     private function buildCmd($parameters) {
-        // first we enclose all parameters with single quotes to prevent the
-        // shell from interpreting them or splitting them at whitespaces
+        // escape all shell arguments
         foreach($parameters as &$param) {
-            $param = "'" . $param . "'";
+            $param = escapeshellarg($param);
         }
         // now we assemble the full shell command
         $cmd  = $this->omeroWrapper . " ";
