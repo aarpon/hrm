@@ -35,7 +35,7 @@ if (isset($_POST['omeroCheckCredentials'])) {
         if ($omeroConnection->loggedIn) {
             $_SESSION['omeroConnection'] = $omeroConnection;
         } else {
-            $message = "Impossible to log in. Please try again.";
+            $message = "Logging into OMERO failed, please try again!";
         }
     }
 }
