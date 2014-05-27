@@ -40,19 +40,18 @@ class OmeroConnection {
     */
     public function __construct( $omeroUser, $omeroPass ) {
 
-        if ( !empty($omeroUser) ) {
-            $this->omeroUser = $omeroUser;
-        } else {
-            return "No OMERO user name given, cannot login.
-                    Please try again. ";
+        if (empty($omeroUser)) {
+            report("No OMERO user name given, cannot login.", 2);
+            return;
         }
 
-        if ( !empty($omeroPass) ) {
-            $this->omeroPass = $omeroPass;
-        } else {
-            return "No password for the OMERO user given, cannot login.
-                    Please try again. ";
+        if (empty($omeroPass)) {
+            report("No OMERO password given, cannot login.", 2);
+            return;
         }
+
+        $this->omeroUser = $omeroUser;
+        $this->omeroPass = $omeroPass;
 
         $this->checkOmeroCredentials();
     }
