@@ -209,22 +209,11 @@ class OmeroConnection {
     }
 
     /*!
-     \brief   Build an 'ome_hrm' (see script) compliant command to retrieve the
-              user's OMERO data tree.
+     \brief   Build the command to retrieve the user's OMERO data tree.
      \return  A string with the complete command.
     */
     private function buildTreeCmd() {
-
-            /* See 'retrieveUserTree' command in file 'bin/ome_hrm'. */
-        $cmd  = "bin/ome_hrm";
-        $cmd .= " ";
-        $cmd .= "retrieveUserTree";
-        $cmd .= " ";
-        $cmd .= $this->omeroUser;
-        $cmd .= " ";
-        $cmd .= $this->omeroPass;
-
-        return $cmd;
+        return $this->buildCmd("retrieveUserTree");
     }
 
     /*!
