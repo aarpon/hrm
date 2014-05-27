@@ -234,31 +234,16 @@ class OmeroConnection {
     }
 
     /*!
-     \brief   Build an 'ome_hrm' (see script) compliant command to import one
-              image from the OMERO server.
-     \param   $imgName The name of the image in the OMERO server.
-     \param   $fileServer An instance of the Fileserver class.
-     \param   $imgId The ID of the image in the OMERO server.
+     \brief   Build the command to import one image from the OMERO server.
+     \param   $imgName - The name of the image in the OMERO server.
+     \param   $fileServer - An instance of the Fileserver class.
+     \param   $imgId - The ID of the image in the OMERO server.
      \return  A string with the complete command.
     */
     private function buildImportCmd($imgName, $fileServer, $imgId) {
 
         $fileAndPath = $fileServer->sourceFolder() . "/" . $imgName;
-
-            /* See 'OMEROtoHRM' command in file 'bin/ome_hrm'. */
-        $cmd  = "bin/ome_hrm";
-        $cmd .= " ";
-        $cmd .= "OMEROtoHRM ";
-        $cmd .= " ";
-        $cmd .= $this->omeroUser;
-        $cmd .= " ";
-        $cmd .= $this->omeroPass;
-        $cmd .= " ";
-        $cmd .= $imgId;
-        $cmd .= " ";
-        $cmd .= '"' . $fileAndPath . '"';
-
-        return $cmd;
+        return $this->buildCmd("OMEROtoHRM ", array($imgId, $fileAndPath));
     }
 
         /* ---------------------- OMERO Tree Assemblers ------------------- */
