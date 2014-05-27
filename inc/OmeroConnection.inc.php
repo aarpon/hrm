@@ -64,19 +64,23 @@ class OmeroConnection {
     */
     private function checkOmeroCredentials() {
 
+        report("Attempting to log on to OMERO, user=[" . $this->omeroUser .
+               "], password=[********].", 2);
         $cmd = $this->buildCredentialsCmd();
 
             /* Authenticate against the OMERO server. */
         $loggedIn = shell_exec($cmd);
 
+            /* Returns NULL if an error occurred or no output was produced. */
         if ($loggedIn == NULL) {
-            report("Attempt to log on to OMERO server failed.", 1);
-            return "Attempt to log on to OMERO server failed.";
+            report("ERROR logging on to OMERO.", 0);
+            return;
         }
 
             /* Check whether the attempt was successful. */
         if (strstr($loggedIn, '-1')) {
             $this->loggedIn = FALSE;
+            report("Attempt to log on to OMERO server failed.", 1);
         } else {
             $this->loggedIn = TRUE;
         }
