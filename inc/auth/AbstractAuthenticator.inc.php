@@ -28,9 +28,9 @@ abstract class AbstractAuthenticator {
     abstract public function getEmailAddress($username);
 
     /*!
-    \brief Return the group or groups the user with given username belongs to.
-    \param $username String Username for which to query the group(s).
-    \return String Group or Array of groups or NULL if not found.
+    \brief Return the group the user with given username belongs to.
+    \param $username String Username for which to query the group.
+    \return String Group or "" if not found.
     */
     abstract public function getGroup($username);
 

@@ -13,7 +13,8 @@
   configuration file for queries to be possible.
  */
 
-require_once("./AbstractAuthenticator.php");
+// Include AbstractAuthenticator and Util.inc.php.
+require_once("./AbstractAuthenticator.inc.php");
 require_once("../Util.inc.php");
 
 class LDAPAuthenticator extends AbstractAuthenticator {
@@ -103,20 +104,24 @@ class LDAPAuthenticator extends AbstractAuthenticator {
     public function __construct() {
 
         // Include the configuration file
-        include( dirname(__FILE__) . "../../config/ldap_config.inc" );
+        include(dirname(__FILE__) . "../../config/ldap_config.inc");
+
+        global $ldap_host, $ldap_port, $ldap_use_ssl, $ldap_use_tls, $ldap_root,
+               $ldap_manager_base_DN, $ldap_manager, $ldap_password,
+               $ldap_user_search_DN, $ldap_manager_ou, $ldap_valid_groups;
 
         // Assign the variables
-        $this->m_LDAP_Host            = $ldap_host;
-        $this->m_LDAP_Port            = $ldap_port;
-        $this->m_LDAP_Use_SSL         = $ldap_use_ssl;
-        $this->m_LDAP_Use_TLS         = $ldap_use_tls;
-        $this->m_LDAP_Root            = $ldap_root;
+        $this->m_LDAP_Host = $ldap_host;
+        $this->m_LDAP_Port = $ldap_port;
+        $this->m_LDAP_Use_SSL = $ldap_use_ssl;
+        $this->m_LDAP_Use_TLS = $ldap_use_tls;
+        $this->m_LDAP_Root = $ldap_root;
         $this->m_LDAP_Manager_Base_DN = $ldap_manager_base_DN;
-        $this->m_LDAP_Manager         = $ldap_manager;
-        $this->m_LDAP_Password        = $ldap_password;
-        $this->m_LDAP_User_Search_DN  = $ldap_user_search_DN;
-        $this->m_LDAP_Manager_OU      = $ldap_manager_ou;
-        $this->m_LDAP_Valid_Groups    = $ldap_valid_groups;
+        $this->m_LDAP_Manager = $ldap_manager;
+        $this->m_LDAP_Password = $ldap_password;
+        $this->m_LDAP_User_Search_DN = $ldap_user_search_DN;
+        $this->m_LDAP_Manager_OU = $ldap_manager_ou;
+        $this->m_LDAP_Valid_Groups = $ldap_valid_groups;
 
         // Set the connection to null
         $this->m_Connection = null;
@@ -136,7 +141,8 @@ class LDAPAuthenticator extends AbstractAuthenticator {
 
             // Set protocol (and check)
             if (!ldap_set_option($this->m_Connection,
-                LDAP_OPT_PROTOCOL_VERSION, 3)) {
+                LDAP_OPT_PROTOCOL_VERSION, 3)
+            ) {
                 report("[LDAP] ERROR: Could not set LDAP protocol version to 3.",
                     0);
             }
@@ -198,7 +204,7 @@ class LDAPAuthenticator extends AbstractAuthenticator {
     public function authenticate($uid, $userPassword) {
 
         if (!$this->isConnected()) {
-            report( "[LDAP] ERROR: Authenticate -- not connected!", 0 );
+            report("[LDAP] ERROR: Authenticate -- not connected!", 0);
             return false;
         }
 
@@ -206,7 +212,7 @@ class LDAPAuthenticator extends AbstractAuthenticator {
         // binding succeeds!
         // Therefore we check in advance that the password is NOT empty!
         if (empty($userPassword)) {
-            report( "[LDAP] ERROR: Authenticate: empty manager password!", 0 );
+            report("[LDAP] ERROR: Authenticate: empty manager password!", 0);
             return false;
         }
 
@@ -216,14 +222,17 @@ class LDAPAuthenticator extends AbstractAuthenticator {
             return "";
         }
 
+        // Make sure $uid is lowercase
+        $uid = strtolower($uid);
+
         // Searching for user $uid
         $filter = "(uid=" . $uid . ")";
         $searchbase = $this->searchbaseStr();
         $sr = @ldap_search(
             $this->m_Connection, $searchbase, $filter, array('uid'));
         if (!$sr) {
-            report( "[LDAP] ERROR: Authenticate -- search failed! " .
-                    "Search base: \"$searchbase\"", 0 );
+            report("[LDAP] ERROR: Authenticate -- search failed! " .
+                "Search base: \"$searchbase\"", 0);
             return false;
         }
         if (@ldap_count_entries($this->m_Connection, $sr) != 1) {
@@ -234,7 +243,8 @@ class LDAPAuthenticator extends AbstractAuthenticator {
         $result = @ldap_get_entries($this->m_Connection, $sr);
         if ($result[0]) {
             if (@ldap_bind($this->m_Connection,
-                $result[0]['dn'], $userPassword)) {
+                $result[0]['dn'], $userPassword)
+            ) {
                 return true;
             } else {
                 // Wrong password
@@ -246,9 +256,9 @@ class LDAPAuthenticator extends AbstractAuthenticator {
     }
 
     /*!
-    \brief Return the group or groups the user with given username belongs to.
-    \param $username String Username for which to query the group(s).
-    \return String Group or Array of groups or NULL if not found.
+    \brief Return the group the user with given username belongs to.
+    \param $username String Username for which to query the group.
+    \return String Group or "" if not found.
     */
     public function getGroup($uid) {
 
@@ -263,7 +273,7 @@ class LDAPAuthenticator extends AbstractAuthenticator {
         $sr = @ldap_search($this->m_Connection, $searchbase, $filter,
             array('uid', 'memberof'));
         if (!$sr) {
-            report( "[LDAP] WARNING: Group -- no group information found!", 0 );
+            report("[LDAP] WARNING: Group -- no group information found!", 0);
             return "";
         }
 
@@ -279,16 +289,16 @@ class LDAPAuthenticator extends AbstractAuthenticator {
                 explode(',', strtolower($groups[0])),
                 explode(',', strtolower($searchbase)));
             if (count($groups) == 0) {
-                return 'hrm';
+                return "";
             }
             $groups = $groups[0];
             // Remove ou= or cn= entries
             $matches = array();
             if (!preg_match('/^(OU=|CN=)(.+)/i', $groups, $matches)) {
-                return "hrm";
+                return "";
             } else {
                 if ($matches[2] == null) {
-                    return "hrm";
+                    return "";
                 }
                 return $matches[2];
             }
@@ -298,7 +308,7 @@ class LDAPAuthenticator extends AbstractAuthenticator {
             for ($i = 0; $i < count($groups); $i++) {
                 for ($j = 0; $j < count($this->m_LDAP_Valid_Groups); $j++) {
                     if (strpos($groups[$i], $this->m_LDAP_Valid_Groups[$j])) {
-                        return ( $this->m_LDAP_Valid_Groups[$j] );
+                        return ($this->m_LDAP_Valid_Groups[$j]);
                     }
                 }
             }
@@ -311,7 +321,7 @@ class LDAPAuthenticator extends AbstractAuthenticator {
       \return	true if the connection is up, false otherwise
      */
     public function isConnected() {
-        return ( $this->m_Connection != null );
+        return ($this->m_Connection != null);
     }
 
     /*!
@@ -348,8 +358,8 @@ class LDAPAuthenticator extends AbstractAuthenticator {
         }
 
         // If binding failed, we report
-        report( "[LDAP] ERROR: Binding: binding failed! " .
-                "Search DN: \"$dn\"", 0 );
+        report("[LDAP] ERROR: Binding: binding failed! " .
+            "Search DN: \"$dn\"", 0);
         return false;
     }
 
@@ -369,13 +379,13 @@ class LDAPAuthenticator extends AbstractAuthenticator {
 
     private function dnStr() {
         $dn = $this->m_LDAP_Manager_Base_DN . "=" .
-              $this->m_LDAP_Manager . "," .
-              $this->m_LDAP_Manager_OU . "," .
-              $this->m_LDAP_User_Search_DN . "," .
-              $this->m_LDAP_Root;
+            $this->m_LDAP_Manager . "," .
+            $this->m_LDAP_Manager_OU . "," .
+            $this->m_LDAP_User_Search_DN . "," .
+            $this->m_LDAP_Root;
         // Since m_LDAP_Manager_OU can be empty, we make sure not
         // to have double commas
-        $dn = str_replace( ',,', ',', $dn);
+        $dn = str_replace(',,', ',', $dn);
         return $dn;
     }
 
