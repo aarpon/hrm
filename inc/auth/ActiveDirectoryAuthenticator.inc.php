@@ -3,20 +3,21 @@
 // Copyright and license notice: see license.txt
 
 // Include adLDAP.php
-require_once( dirname(__FILE__) . "/extern/adLDAP4/src/adLDAP.php" );
+require_once("./AbstractAuthenticator.php");
+require_once(dirname(__FILE__) . "/extern/adLDAP4/src/adLDAP.php");
 
 /*!
-  \class	ActiveDirectory
-  \brief	Manages active directory connections through the adLDAP library
+  \class	ActiveDirectoryAuthenticator
+  \brief	Manages Active Directory connections through the adLDAP library.
 
-  The configuration file for the ActiveDirectory class is
+  The configuration file for the ActiveDirectoryAuthenticator class is
   config/active_directory_config.inc. A sample configuration file is
   config/samples/active_directory_config.inc.sample.
   A user with read-access to Active Directory must be set up in the
   configuration file for queries to be possible.
  */
 
-class ActiveDirectory {
+class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
 
     /*!
       \var      $m_AdLDAP
@@ -31,7 +32,7 @@ class ActiveDirectory {
       Users usually belong to several groups, m_GroupIndex defines which
       level of the hierarchy to consider.
       If $m_GroupIndex is -1 and the $m_ValidGroups array is empty,
-      ActiveDirectory::getGroup( ) will return an array with all groups.
+      ActiveDirectoryAuthenticator::getGroup( ) will return an array with all groups.
      */
     private $m_GroupIndex;
 
@@ -48,14 +49,14 @@ class ActiveDirectory {
     private $m_ValidGroups;
 
     /*!
-      \brief	Constructor: instantiates an ActiveDirectory object with
+      \brief	Constructor: instantiates an ActiveDirectoryAuthenticator object with
       the settings specified in the configuration file. No
       parameters are passed to the constructor.
      */
     public function __construct( ) {
 
         // Include configuration file
-        include( dirname( __FILE__ ) . "/../config/active_directory_config.inc" );
+        include(dirname(__FILE__) . "/../config/active_directory_config.inc");
 
         // Set up the adLDAP object
         $options = array(
@@ -98,11 +99,12 @@ class ActiveDirectory {
     }
 
     /*!
-      \brief	Tries to authenticate a user against Active Directory.
-      \param	$username	User name
-      \param	$password	Password
-      \return	true if the user could be authenticated; false otherwise
-     */
+    \brief  Authenticates the User with given username and password against
+            Active Directory.
+    \param  $username String Username for authentication.
+    \param  $password String Password for authentication.
+    \return boolean: True if authentication succeeded, false otherwise.
+    */
     public function authenticate( $username, $password ) {
         $b = $this->m_AdLDAP->user( )->authenticate( $username, $password );
         $this->m_AdLDAP->close();
@@ -110,11 +112,11 @@ class ActiveDirectory {
     }
 
     /*!
-      \brief	Returns the e-mail address for an existing user
-      \param	$username	User name
-      \return	The e-mail address
-     */
-    public function emailAddress( $username ) {
+    \brief  Return the email address of user with given username.
+    \param  $username String Username for which to query the email address.
+    \return String email address or NULL
+    */
+    public function getEmailAddress( $username ) {
         $info = $this->m_AdLDAP->user( )->infoCollection(
             $username, array( "mail" ) );
         $this->m_AdLDAP->close();
@@ -125,10 +127,10 @@ class ActiveDirectory {
     }
 
     /*!
-      \brief	Returns the group(s) to which a user belongs.
-      \param	$username	User name
-      \return	One or more groups
-     */
+    \brief Return the group or groups the user with given username belongs to.
+    \param $username String Username for which to query the group(s).
+    \return String Group or Array of groups or NULL if not found.
+    */
     public function getGroup( $username ) {
         $userGroups = $this->m_AdLDAP->user( )->groups( $username );
         $this->m_AdLDAP->close();

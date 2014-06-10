@@ -12,11 +12,11 @@ global $use_ldaps;
 global $email_admin;
 
 if ( $authenticateAgainst == "ACTIVE_DIR" ) {
-    require_once "ActiveDirectory.inc.php";
+    require_once "ActiveDirectoryAuthenticator.inc.php";
 }
 
 if ( $authenticateAgainst == "LDAP" ) {
-    require_once "Ldap.inc.php";
+    require_once "LDAPAuthenticatorAuthenticator.inc.php";
 }
 
 /*!
@@ -79,7 +79,7 @@ class User extends Owner{
       \brief  The user's current ip address
     */
     private $ip;
-  
+
     /*!
       \var    $authMode
       \brief  Authentication mode, one of "MYSQL", "LDAP", or "ACTIVE_DIR"
@@ -155,7 +155,7 @@ class User extends Owner{
     /*!
       \brief  Logs in the user with given user name and password
 
-      This function will use different authentication modes depending on the 
+      This function will use different authentication modes depending on the
       value of the global configuration variable $authenticateAgainst.
 
       If $authenticateAgainst is:
@@ -202,7 +202,7 @@ class User extends Owner{
               administrator
 
       This can only be used if authentication is against the HRM user management.
-    
+
       \return true if the user has been accepted
     */
     public function isStatusAccepted() {
@@ -226,7 +226,7 @@ class User extends Owner{
       \brief  Checks whether the user has been suspended by the administrator
 
       This can only be used if authentication is against the HRM user management.
-      
+
       \return true if the user was suspened by the administrator
     */
     public function isSuspended() {
@@ -240,7 +240,7 @@ class User extends Owner{
       \brief  Checks whether the user account exists in the database
 
       This can only be used if authentication is against the HRM user management.
-    
+
       \return true if the user exists in the database
     */
     public function exists() {
@@ -264,15 +264,15 @@ class User extends Owner{
 
             case "LDAP":
 
-                $ldap = new Ldap();
-                $result = $ldap->emailAddress($this->name());
+                $ldap = new LDAPAuthenticator();
+                $result = $ldap->getEmailAddress($this->name());
                 return $result;
                 break;
 
             case "ACTIVE_DIR":
 
-                $activeDir = new ActiveDirectory( );
-                $result = $activeDir->emailAddress($this->name());
+                $activeDir = new ActiveDirectoryAuthenticator( );
+                $result = $activeDir->getEmailAddress($this->name());
                 return $result;
                 break;
 
@@ -284,7 +284,7 @@ class User extends Owner{
 
             default:
 
-                throw new Exception("Bad value for $this->authMode in User::emailAddress().");
+                throw new Exception("Bad value for $this->authMode in User::getEmailAddress().");
         }
 
         return $result;
@@ -315,14 +315,14 @@ class User extends Owner{
 
             case "LDAP":
 
-                $ldap = new Ldap();
+                $ldap = new LDAPAuthenticator();
                 $result = $ldap->getGroup($this->name());
                 return $result;
                 break;
 
             case "ACTIVE_DIR":
 
-                $activeDir = new ActiveDirectory( );
+                $activeDir = new ActiveDirectoryAuthenticator( );
                 $result = $activeDir->getGroup($this->name());
                 return $result;
                 break;
@@ -427,7 +427,7 @@ class User extends Owner{
 
         // If the db is outdated and the user is not the admin, we do not allow
         // the login
-        if (($this->isLoginRestrictedToAdmin() == true) && 
+        if (($this->isLoginRestrictedToAdmin() == true) &&
                 (strcmp($name, 'admin') != 0))
             return $result;
 
@@ -477,7 +477,7 @@ class User extends Owner{
         $dbPassword = $this->password($name);
         if (!$dbPassword)
             return false;
-        $result = ($dbPassword == 
+        $result = ($dbPassword ==
             ($this->encrypt($password, substr($dbPassword, 0, 2))));
         return $result;
     }
@@ -490,7 +490,7 @@ class User extends Owner{
       \return true if authentication succeeded, false otherwise
     */
     private function checkLoginAgainstLDAP($name, $password) {
-        $ldap = new Ldap();
+        $ldap = new LDAPAuthenticator();
         $result = $ldap->authenticate(strtolower($name), $password);
         return $result;
     }
@@ -502,7 +502,7 @@ class User extends Owner{
       \return true if authentication succeeded, false otherwise
     */
     private function checkLoginAgainstACTIVEDIR($name, $password) {
-        $activeDir = new ActiveDirectory( );
+        $activeDir = new ActiveDirectoryAuthenticator( );
         $result = $activeDir->authenticate(strtolower($name), $password);
         return $result;
     }

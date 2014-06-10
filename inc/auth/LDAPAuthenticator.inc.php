@@ -4,18 +4,19 @@
 // Copyright and license notice: see license.txt
 
 /*!
-  \class	Ldap
+  \class	LDAPAuthenticator
   \brief	Manages LDAP connections through built-in PHP LDAP support
 
-  The configuration file for the Ldap class is config/ldap_config.inc. A sample
-  configuration file is config/samples/ldap_config.inc.sample.
+  The configuration file for the LDAPAuthenticator class is config/ldap_config.inc.
+  A sample configuration file is config/samples/ldap_config.inc.sample.
   A user with read-access to the LDAP server must be set up in the
   configuration file for queries to be possible.
  */
 
-require_once( "Util.inc.php" );
+require_once("./AbstractAuthenticator.php");
+require_once("../Util.inc.php");
 
-class Ldap {
+class LDAPAuthenticator extends AbstractAuthenticator {
 
     /*!
       \var    $m_Connection
@@ -82,7 +83,7 @@ class Ldap {
 
     /*!
       \var    $m_LDAP_Manager_OU
-      \brief  Ldap manager OU: used in case the Ldap_Manager is in some
+      \brief  LDAPAuthenticator manager OU: used in case the Ldap_Manager is in some
       special OU that distinguishes it from the other users
      */
     private $m_LDAP_Manager_OU;
@@ -96,13 +97,13 @@ class Ldap {
 
 
     /*!
-      \brief	Constructor: instantiates an Ldap object with the settings
+      \brief	Constructor: instantiates an LDAPAuthenticator object with the settings
       specified in the configuration file.
      */
     public function __construct() {
 
         // Include the configuration file
-        include( dirname(__FILE__) . "/../config/ldap_config.inc" );
+        include( dirname(__FILE__) . "../../config/ldap_config.inc" );
 
         // Assign the variables
         $this->m_LDAP_Host            = $ldap_host;
@@ -161,11 +162,11 @@ class Ldap {
     }
 
     /*!
-      \brief	Returns the e-mail address of a user with given id
-      \param	$uid	User name
-      \return	e-mail address
-     */
-    public function emailAddress($uid) {
+    \brief  Return the email address of user with given username.
+    \param  $username String Username for which to query the email address.
+    \return String email address or NULL
+    */
+    public function getEmailAddress($uid) {
 
         // Bind the manager
         if (!$this->bindManager()) {
@@ -189,11 +190,11 @@ class Ldap {
     }
 
     /*!
-      \brief	Tries to authenticate a user against LDAP
-      \param	$uid            User name
-      \param	$userPassword	Password
-      \return	true if the user could be authenticated; false otherwise
-     */
+    \brief  Authenticates the User with given username and password against LDAP.
+    \param  $username String Username for authentication.
+    \param  $password String Password for authentication.
+    \return boolean: True if authentication succeeded, false otherwise.
+    */
     public function authenticate($uid, $userPassword) {
 
         if (!$this->isConnected()) {
@@ -202,7 +203,7 @@ class Ldap {
         }
 
         // This is a weird behavior of LDAP: if the password is empty, the
-        // binding succeds!
+        // binding succeeds!
         // Therefore we check in advance that the password is NOT empty!
         if (empty($userPassword)) {
             report( "[LDAP] ERROR: Authenticate: empty manager password!", 0 );
@@ -245,10 +246,10 @@ class Ldap {
     }
 
     /*!
-      \brief	Returns the group for a given user name (filtered)
-      \param	$uid    User name
-      \return	user name
-     */
+    \brief Return the group or groups the user with given username belongs to.
+    \param $username String Username for which to query the group(s).
+    \return String Group or Array of groups or NULL if not found.
+    */
     public function getGroup($uid) {
 
         // Bind the manager
@@ -302,6 +303,7 @@ class Ldap {
                 }
             }
         }
+        return "";
     }
 
     /*!
