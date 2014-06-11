@@ -14,8 +14,9 @@
  */
 
 // Include AbstractAuthenticator and Util.inc.php.
-require_once("./AbstractAuthenticator.inc.php");
-require_once("../Util.inc.php");
+require_once(dirname(__FILE__) . "/AbstractAuthenticator.inc.php");
+require_once(dirname(__FILE__) . "/../Util.inc.php");
+
 
 class LDAPAuthenticator extends AbstractAuthenticator {
 
@@ -103,12 +104,12 @@ class LDAPAuthenticator extends AbstractAuthenticator {
      */
     public function __construct() {
 
-        // Include the configuration file
-        include(dirname(__FILE__) . "../../config/ldap_config.inc");
-
         global $ldap_host, $ldap_port, $ldap_use_ssl, $ldap_use_tls, $ldap_root,
                $ldap_manager_base_DN, $ldap_manager, $ldap_password,
                $ldap_user_search_DN, $ldap_manager_ou, $ldap_valid_groups;
+
+        // Include the configuration file
+        include(dirname(__FILE__) . "/../../config/ldap_config.inc");
 
         // Assign the variables
         $this->m_LDAP_Host = $ldap_host;
@@ -141,8 +142,7 @@ class LDAPAuthenticator extends AbstractAuthenticator {
 
             // Set protocol (and check)
             if (!ldap_set_option($this->m_Connection,
-                LDAP_OPT_PROTOCOL_VERSION, 3)
-            ) {
+                LDAP_OPT_PROTOCOL_VERSION, 3)) {
                 report("[LDAP] ERROR: Could not set LDAP protocol version to 3.",
                     0);
             }
@@ -219,11 +219,16 @@ class LDAPAuthenticator extends AbstractAuthenticator {
         // Bind the manager -- or we won't be allowed to search for the user
         // to authenticate
         if (!$this->bindManager()) {
-            return "";
+            return false;
         }
 
         // Make sure $uid is lowercase
         $uid = strtolower($uid);
+
+        // Is the user active?
+        if (!$this->isActive($uid)) {
+            return false;
+        }
 
         // Searching for user $uid
         $filter = "(uid=" . $uid . ")";

@@ -114,7 +114,7 @@ if ( isset( $_POST['password'] ) && isset( $_POST['username'] ) ) {
 				}
             }
 		} else if ( $tentativeUser->isLoginRestrictedToAdmin() ) {
-			if ( $tentativeUser->isAdmin() && $tentativeUser->exists() ) {
+			if ( $tentativeUser->isAdmin() ) {
 				$message = "Wrong password";
 			} else {
 				$message = "Only the administrator is allowed to login " .
@@ -232,10 +232,10 @@ deconvolution.</p>
 <h2>Collaborators</h2>
 
 <div  id="logos">
-  
+
   <!-- First row -->
   <table class="firstRow">
-    
+
     <!-- Logos -->
     <tr>
       <td class="epfl"
@@ -251,7 +251,7 @@ deconvolution.</p>
           onclick="javascript:openWindow('http://www.bsse.ethz.ch')" >
       </td>
     </tr>
-      
+
     <!-- Captions -->
     <tr class="caption">
       <td>
@@ -283,12 +283,12 @@ deconvolution.</p>
         </a>
       </td>
     </tr>
-      
+
   </table>
-    
-  <!-- Second row -->  
+
+  <!-- Second row -->
   <table class="secondRow">
-      
+
     <!-- Logos -->
     <tr>
       <td class="svi"
@@ -327,19 +327,19 @@ deconvolution.</p>
         University of Basel<br />
         The Center for<br />
         Molecular Life Sciences
-      </a>    
+      </a>
       </td>
       <td>
        <a href="http://cni.ifn-magdeburg.de"
        onclick="this.target='_blank'; return true;">
         Combinatorial Neuroimaging<br />
-        Magdeburg 
-       </a>    
+        Magdeburg
+       </a>
       </td>
     </tr>
 
   </table>
-    
+
 </div>
 </div>
 <!-- welcome -->
@@ -354,7 +354,7 @@ deconvolution.</p>
                'http://www.svi.nl/HuygensRemoteManagerHelpLogin')">
                 <img src="images/help.png" alt="?" /></a> Login
         </legend>
-        
+
         <p class="expl">Please enter your credentials.</p>
 
         <label for="username">Username</label><br />
@@ -366,7 +366,7 @@ deconvolution.</p>
         <input type="hidden" name="request" value="<?php echo $req ?>" />
         <input type="submit" class="button" value="login" />
     </fieldset>
-    
+
     <?php
        if ($authenticateAgainst == "MYSQL") {
     ?>
@@ -376,7 +376,7 @@ deconvolution.</p>
                'http://www.svi.nl/HuygensRemoteManagerHelpRegistration')">
                 <img src="images/help.png" alt="?" /></a> Registration
         </legend>
-                
+
         <div id="login_registration">
            <table>
             <tr>
@@ -389,7 +389,7 @@ deconvolution.</p>
             </tr>
            </table>
         </div>
-    
+
     </fieldset>
     <?php
         }

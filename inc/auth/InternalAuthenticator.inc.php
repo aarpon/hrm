@@ -3,8 +3,9 @@
 // Copyright and license notice: see license.txt
 
 // Include AbstractAuthenticator and the HRM configuration files.
-require_once("./AbstractAuthenticator.inc.php");
-require_once("../../inc/hrm_config.inc.php");
+
+require_once(dirname(__FILE__) . "/AbstractAuthenticator.inc.php");
+require_once(dirname(__FILE__) . "/../hrm_config.inc.php");
 
 /*!
   \class	InternalAuthenticator
@@ -34,8 +35,8 @@ class InternalAuthenticator extends AbstractAuthenticator {
     */
     public function authenticate($username, $password) {
 
-        // Was the user accepted yet?
-        if (!$this->isStatusAccepted($username)) {
+        // Is the user active?
+        if (!$this->isActive($username)) {
             return false;
         }
 
@@ -71,16 +72,6 @@ class InternalAuthenticator extends AbstractAuthenticator {
     }
 
     /*!
-    \brief Checks whether the user account exists in the database.
-    \param $username String Username for which to check for existence.
-    \return true if the user exists in the database; false otherwise.
-    */
-    public function exists($username) {
-        $db = new DatabaseConnection();
-        return $db->checkUser($username);
-    }
-
-    /*!
     \brief  Updates the User last access in the database.
     \param  $username String Username for which to update the last access time.
     */
@@ -91,24 +82,31 @@ class InternalAuthenticator extends AbstractAuthenticator {
 
 
     /*!
-    \brief Check whether a new user request has been accepted by the
-           administrator.
-    \param $username String Username for which to query whether the status is
-           accepted.
-    \return true if the user has been accepted
+    \brief Checks whether a request from the user with given name was
+           accepted by the administrator.
+
+    Please notice that the base implementation always returns true. Re-
+    implement if needed!
+
+    \param $username String Username for which to query the accepted status.
+    \return bool True if the user was accepted, false otherwise.
     */
-    public function isStatusAccepted($username) {
+    public function isAccepted($username) {
         $db = new DatabaseConnection();
         return ($db->getUserStatus($username) == self::STATUS_ACCEPTED);
     }
 
     /*!
-    \brief  Checks whether the user has been suspended by the administrator
-    \param $username String Username for which to query whether the status is
-           suspended.
-    \return true if the user was suspended by the administrator
+    \brief Checks whether the user with given name was suspended by the
+           administrator.
+
+    Please notice that the base implementation always returns false. Re-
+    implement if needed!
+
+    \param $username String Username for which to query the suspended status.
+    \return bool True if the user was suspended, false otherwise.
     */
-    public function isStatusSuspended($username) {
+    public function isSuspended($username) {
         $db = new DatabaseConnection();
         return ($db->getUserStatus($username) == self::STATUS_SUSPENDED);
     }

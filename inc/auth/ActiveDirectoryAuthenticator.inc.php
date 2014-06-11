@@ -3,8 +3,8 @@
 // Copyright and license notice: see license.txt
 
 // Include adLDAP.php and the AbstractAuthenticator.
-require_once("./AbstractAuthenticator.inc.php");
-require_once(dirname(__FILE__) . "../extern/adLDAP4/src/adLDAP.php");
+require_once(dirname(__FILE__) . "/AbstractAuthenticator.inc.php");
+require_once(dirname(__FILE__) . "/../extern/adLDAP4/src/adLDAP.php");
 
 /*!
   \class	ActiveDirectoryAuthenticator
@@ -111,6 +111,10 @@ class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
     */
     public function authenticate($username, $password) {
 
+        // Make sure the user is active
+        if (!$this->isActive($username)) {
+            return false;
+        }
         // Authenticate against AD
         $b = $this->m_AdLDAP->user()->authenticate(
             strtolower($username), $password);

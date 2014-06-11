@@ -3,8 +3,8 @@
 // Copyright and license notice: see license.txt
 
 // Include AbstractAuthenticator and the HRM configuration files.
-require_once("./AbstractAuthenticator.inc.php");
-require_once("../../inc/hrm_config.inc.php");
+require_once(dirname(__FILE__) . "/InternalAuthenticator.inc.php");
+require_once(dirname(__FILE__) . "/../hrm_config.inc.php");
 
 global $email_admin;
 
@@ -14,7 +14,7 @@ global $email_admin;
 
  */
 
-class AdminAuthenticator extends InternalAuthenticator {
+class InternalAdminAuthenticator extends InternalAuthenticator {
 
     /*!
       \brief	Constructor: instantiates an AdminAuthenticator object.

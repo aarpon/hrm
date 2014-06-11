@@ -2,10 +2,11 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
-require_once "Database.inc.php";
-require_once "Setting.inc.php";
-require_once "hrm_config.inc.php";
-require_once "System.inc.php";
+require_once(dirname(__FILE__) . "/auth/AuthenticatorFactory.inc.php");
+require_once(dirname(__FILE__) . "/Database.inc.php");
+require_once(dirname(__FILE__) . "/Setting.inc.php");
+require_once(dirname(__FILE__) . "/hrm_config.inc.php");
+require_once(dirname(__FILE__) . "/System.inc.php");
 
 global $authenticateAgainst;
 
@@ -90,7 +91,7 @@ class User {
 
             // Set isLoggedIn status to true
             $this->isLoggedIn = True;
-            
+
             // Update the last access in the database if using the
             // internal HRM user management.
             // \TODO Later, this will be extended to all authentication mechanisms.
@@ -127,72 +128,35 @@ class User {
       \brief  Check whether a new user request has been accepted by the
               administrator
 
-      This can only be used if authentication is against the HRM user management.
+      This should only be used if authentication is against the HRM user management.
 
       \return true if the user has been accepted; false otherwise.
     */
     public function isStatusAccepted() {
-
-        global $authenticateAgainst;
-
-        // Make sure this is used only if the internal user management is active.
-        if ($authenticateAgainst != "MYSQL") {
-            throw new Exception("User::isStatusAccepted() can be used only " .
-            "if the internal user management is used!");
-        }
 
         if ($this->isAdmin()) {
             return true;
         }
 
         $authenticator = AuthenticatorFactory::getAuthenticator(false);
-        return $authenticator->isStatusAccepted($this->name());
+        return $authenticator->isAccepted($this->name());
     }
 
     /*!
       \brief  Checks whether the user has been suspended by the administrator
 
-      This can only be used if authentication is against the HRM user management.
+      This should only be used if authentication is against the HRM user management.
 
       \return true if the user was suspended by the administrator; false otherwise.
     */
     public function isSuspended() {
-
-        global $authenticateAgainst;
-
-        // Make sure this is used only if the internal user management is active.
-        if ($authenticateAgainst != "MYSQL") {
-            throw new Exception("User::isSuspended() can be used only " .
-                "if the internal user management is used!");
-        }
 
         if ($this->isAdmin()) {
             return false;
         }
 
         $authenticator = AuthenticatorFactory::getAuthenticator(false);
-        return $authenticator->isStatusSuspended($this->name());
-    }
-
-    /*!
-      \brief  Checks whether the user account exists in the database.
-
-      This can only be used if authentication is against the HRM user management.
-
-      \return true if the user exists in the database; false otherwise.
-    */
-    public function exists() {
-
-        global $authenticateAgainst;
-
-        // Make sure this is used only if the internal user management is active.
-        if ($authenticateAgainst != "MYSQL") {
-            throw new Exception("User::exists() can be used only " .
-                "if the internal user management is used!");
-        }
-
-        $authenticator = AuthenticatorFactory::getAuthenticator($this->isAdmin());
-        return $authenticator->exists($this->name());
+        return $authenticator->isSuspended($this->name());
     }
 
     /*!
@@ -210,7 +174,7 @@ class User {
       \brief  Returns the administrator name
       \return the administrator name
     */
-    public function getAdminName() {
+    static public function getAdminName() {
         return 'admin';
     }
 
@@ -239,7 +203,7 @@ class User {
       \return number of jobs in queue
     */
     public function numberOfJobsInQueue() {
-        if ($this->name == "") {
+        if ($this->name() == "") {
             return 0;
         }
         $db = new DatabaseConnection();

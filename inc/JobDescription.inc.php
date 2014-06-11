@@ -272,7 +272,7 @@ class JobDescription {
     $jobParameterSetting->setName($this->id);
     $jobParameterSetting->copyParameterFrom($this->parameterSetting);
     $result = $result && $jobParameterSetting->save();
-    
+
     $taskParameterSetting = new JobTaskSetting();
     $taskParameterSetting->setOwner($this->owner);
     $taskParameterSetting->setName($this->id);
@@ -284,7 +284,7 @@ class JobDescription {
     $analysisParameterSetting->setName($this->id);
     $analysisParameterSetting->copyParameterFrom($this->analysisSetting);
     $result = $result && $analysisParameterSetting->save();
-    
+
     $db = new DatabaseConnection();
     $result = $result && $db->saveJobFiles($this->id,
                                            $this->owner,
@@ -319,16 +319,16 @@ class JobDescription {
   */
   public function load() {
     $db = new DatabaseConnection();
-    
+
     $parameterSetting = new JobParameterSetting;
-    $owner = new User;
+    $owner = new User();
     $name = $db->userWhoCreatedJob($this->id);
     $owner->setName($name);
     $parameterSetting->setOwner($owner);
     $parameterSetting->setName($this->id);
     $parameterSetting = $parameterSetting->load();
     $this->setParameterSetting($parameterSetting);
-    
+
     $taskSetting = new JobTaskSetting;
     $taskSetting->setNumberOfChannels($parameterSetting->numberOfChannels());
     $taskSetting->setName($this->id);
@@ -546,10 +546,10 @@ class JobDescription {
   public function taskSettingAsString( ) {
       $numChannels = $this->parameterSetting->numberOfChannels();
       $micrType = $this->parameterSetting->microscopeType();
-      
+
       return $this->taskSetting()->displayString( $numChannels, $micrType );
   }
-  
+
 
 /*
                               PRIVATE FUNCTIONS

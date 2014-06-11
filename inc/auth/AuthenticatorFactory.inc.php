@@ -3,7 +3,7 @@
 // Copyright and license notice: see license.txt
 
 // Include the HRM configuration files.
-require_once("../hrm_config.inc.php");
+require_once(dirname(__FILE__) . "/../hrm_config.inc.php");
 
 /*!
 \class  AuthenticatorFactory
@@ -26,8 +26,8 @@ class AuthenticatorFactory {
         // If the user is the Admin, we currently must return
         // an InternalAuthenticator
         if ($isAdmin) {
-            require_once("./auth/InternalAuthenticator.inc.php");
-            return new InternalAuthenticator();
+            require_once(dirname(__FILE__) ."/InternalAdminAuthenticator.inc.php");
+            return new InternalAdminAuthenticator();
         }
 
         // Initialize the authenticator
@@ -35,18 +35,18 @@ class AuthenticatorFactory {
 
             case "MYSQL":
 
-                require_once("./auth/InternalAuthenticator.inc.php");
+                require_once(dirname(__FILE__) ."/InternalAuthenticator.inc.php");
                 return new InternalAuthenticator();
 
             case "LDAP":
 
-                require_once("./auth/LDAPAuthenticator.inc.php");
+                require_once(dirname(__FILE__) ."/LDAPAuthenticator.inc.php");
                 return new LDAPAuthenticator();
 
             case "ACTIVE_DIR":
 
                 // Initialize the ActiveDirectoryAuthenticator object
-                require_once("./auth/ActiveDirectoryAuthenticator.inc.php");
+                require_once(dirname(__FILE__) ."/ActiveDirectoryAuthenticator.inc.php");
                 return new ActiveDirectoryAuthenticator();
 
             default:
