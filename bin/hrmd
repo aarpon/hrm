@@ -41,6 +41,10 @@ PHP_CLI="php"
 # hrm.conf defines variable HRM_HOME
 . /etc/hrm.conf
 
+if [ -n "$DEBUG_HRMD" ] ; then
+    set -o xtrace
+fi
+
 # Simplify the "sudo" usage below:
 if [ -z "$SUSER" ] ; then
     CMD=""
