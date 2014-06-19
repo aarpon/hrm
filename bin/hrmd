@@ -93,15 +93,24 @@ start() {
 
 
 stop() {
-    if [ -f "$HRMD_PID" ]
+    if ! [ -f "$HRMD_PID" ]
     then
-        $CMD kill -9 $(more "$HRMD_PID")
-        
+        echo "No PID file found, no HRM seems to be running."
+        exit 0
+    fi
+
+    PID=$(more "$HRMD_PID")
+    if [ -n "$PID" ] ; then
+        $CMD kill -15 $PID
         if [ "$?" = 0 ]
         then
             $CMD rm -f "$HRMD_PID"
             echo "Shutting down HRM daemon..............ok"
         fi
+    else
+        echo "WARNING: empty PID file found, trying to remove it:"
+        $CMD rm -f -v "$HRMD_PID"
+        exit 1
     fi
 }
 
