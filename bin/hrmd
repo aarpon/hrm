@@ -80,8 +80,8 @@ start() {
     MARK="$(date "+%F %H:%M:%S") - trying to start the HRM Queue Manager"
     echo "$MARK" >> "$LOG_OUT"
     echo "$MARK" >> "$LOG_ERR"
-    # TODO: should we rather append to them, instead of overwriting?
-    $CMD $PHP_CLI -q "$HRM_HOME"/run/runHuygensRemoteManager.php 1> "$LOG_OUT" 2> "$LOG_ERR" &
+    QUEUEMGR="$PHP_CLI -q "$HRM_HOME"/run/runHuygensRemoteManager.php"
+    $CMD $QUEUEMGR 1>> "$LOG_OUT" 2>> "$LOG_ERR" &
     if [ "$?" = 0 ]
     then
         sleep 3
