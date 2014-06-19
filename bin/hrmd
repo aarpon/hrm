@@ -76,8 +76,11 @@ start() {
     
     cd "$HRM_HOME"/run
     # TODO: do we really need two different logfiles here?
+    echo "Reporting stdout to '$LOG_OUT' and stderr to '$LOG_ERR'."
+    MARK="$(date "+%F %H:%M:%S") - trying to start the HRM Queue Manager"
+    echo "$MARK" >> "$LOG_OUT"
+    echo "$MARK" >> "$LOG_ERR"
     # TODO: should we rather append to them, instead of overwriting?
-    echo Reporting to "$LOG_OUT" "$LOG_ERR"
     $CMD $PHP_CLI -q "$HRM_HOME"/run/runHuygensRemoteManager.php 1> "$LOG_OUT" 2> "$LOG_ERR" &
     if [ "$?" = 0 ]
     then
