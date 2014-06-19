@@ -4,10 +4,6 @@ config/hrm.conf
 resources/hrmd.plist
 user/login_user.inc
 /nbproject/
-/.idea/
-
-# local logging directory
-log/
 
 # Python bytecode
 *.py[cod]

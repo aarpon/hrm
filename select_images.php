@@ -59,10 +59,10 @@ else if (isset($_POST['up'])) {
         $_SESSION['autoseries'] = $_POST['autoseries'];
     } else {
         $_SESSION['autoseries'] = "";
-    }   
+    }
     if (isset($_POST['selectedfiles']) && is_array($_POST['selectedfiles'])) {
         $_SESSION['fileserver']->removeFilesFromSelection($_POST['selectedfiles']);
-    }  
+    }
 }
 else if (isset($_POST['update'])) {
     if (isset($_POST['autoseries'])) {
@@ -83,30 +83,35 @@ else if (isset($_POST['OK'])) {
 
 $script = array( "settings.js","ajax_utils.js" );
 
-// All the user's files in the server.
 $_SESSION['fileserver']->resetFiles();
-$allFiles = $_SESSION['fileserver']->files();
+
+/* Set the default extensions. */
+$_SESSION['fileserver']->imageExtensions();
+
+// All the user's files in the server.
+$allFiles = $_SESSION['fileserver']->listFiles(TRUE);
 
 // All the user's series in the server.
 $condensedSeries = $_SESSION['fileserver']->condenseSeries();
+
 
 // display only relevant files.
 if ($allFiles != null) {
 
     $generatedScript = "
 function storeFileFormatSelection(sel,series) {
-  
+
    // Get current selection
    var format = $('#' + sel.id + ' :selected').attr(\"name\");
-   
+
    // Store it
    ajaxSetFileFormat(format);
-   
+
    // Now filter by type
    filterImages(sel,series);
 };
 ";
-  
+
     $generatedScript .= "
 function filterImages (format,series) {
 
@@ -132,12 +137,12 @@ function filterImages (format,series) {
         /* For each file, create javascript code for when the file
          belongs to a series and for when it doesn't. */
     foreach ($allFiles as $key => $file) {
-        
+
         if ($_SESSION['fileserver']->isPartOfFileSeries($file)) {
 
             $generatedScript .= "
 
-              // Automatically load file series. 
+              // Automatically load file series.
               if(autoseries.checked) {
               ";
 
@@ -150,11 +155,11 @@ function filterImages (format,series) {
                   }
                     ";
             }
-            $generatedScript .= "     
+            $generatedScript .= "
 
               } else {
 
-                  // Do not load file series automatically.    
+                  // Do not load file series automatically.
                   if(checkAgainstFormat(\"$file\", selectedFormat)) {
                      var selectItem = document.createElement('option');
                      selectItem.text = \"$file\";
@@ -162,11 +167,11 @@ function filterImages (format,series) {
                   }
               }
               ";
-                
+
         } else {
             $generatedScript .= "
 
-               // File does not belong to a file series. 
+               // File does not belong to a file series.
                if(checkAgainstFormat(\"$file\", selectedFormat)) {
                    var selectItem = document.createElement('option');
                    selectItem.text = \"$file\";
@@ -174,8 +179,20 @@ function filterImages (format,series) {
                }
                ";
         }
-        
+
     }
+
+    $generatedScript .= "
+
+               // Since we have changed the file format, we reset
+               // the last selected image index. Otherwise, if the
+               // user chose the first file of format A and then switches
+               // to the first file of format B, the thumbnail won't
+               // be refreshed.
+               window.lastSelectedImgs = [];
+               window.lastSelectedImgsKey = [];
+               window.lastShownIndex = -1;
+               ";
 
     $generatedScript .= "
 
@@ -270,7 +287,7 @@ $info = "<h3>Quick help</h3>" .
         "'autoseries' causes each file to be deconvolved independently.</p>" .
         "<p>Click on a file name in any of the fields to get (or to create) " .
         "a preview.</p>";
- 
+
 ?>
 
     <!--
@@ -316,10 +333,10 @@ $info = "<h3>Quick help</h3>" .
            <?php echo $currentStep . "/" . $numberSteps; ?>
            - Select images
        </h3>
-        
+
                     <form method="post" action="" id="fileformat">
                     <fieldset class="setting" >
-            
+
                 <legend>
                     <a href="javascript:openWindow(
                        'http://www.svi.nl/FileFormats')">
@@ -327,7 +344,7 @@ $info = "<h3>Quick help</h3>" .
                     </a>
                     Image file format
                 </legend>
-                    
+
                     <select name="ImageFileFormat" id="ImageFileFormat"
                      size="1"
                      onclick="javascript:storeFileFormatSelection(this,autoseries)"
@@ -338,7 +355,7 @@ $info = "<h3>Quick help</h3>" .
 <option name = '' value = '' format = ''>
 Please choose a file format...
 </option>
-        
+
 <?php
 
 // File formats support
@@ -367,7 +384,7 @@ foreach($formats as $key => $format) {
 
 </select>
 </fieldset>
-        
+
             <fieldset>
                 <legend>Images available on server</legend>
                 <div id="userfiles" onmouseover="showPreview()">
@@ -394,14 +411,14 @@ if ($allFiles == null) {
     if ($fileFormat->value() != "") {
         $format = $fileFormat->value();
 
-        if (isset($_SESSION['autoseries']) && 
+        if (isset($_SESSION['autoseries']) &&
             $_SESSION['autoseries'] == "TRUE") {
-            $files = $condensedSeries; 
+            $files = $condensedSeries;
         } else {
             $files = $allFiles;
-            
+
         }
-        
+
         foreach ($files as $key => $file) {
             if ($_SESSION['fileserver']->checkAgainstFormat($file, $format)) {
                 echo "<option>" . $file . "</option>\n";
@@ -415,16 +432,16 @@ if ($allFiles == null) {
 ?>
                     </select>
                 </div>
-                
+
                 <label id="autoseries_label">
-                        
+
                     <input type="checkbox"
                            name="autoseries"
                            class="autoseries"
                            id="autoseries"
                            value="TRUE"
                            <?php
-                           if (isset($_SESSION['autoseries']) && 
+                           if (isset($_SESSION['autoseries']) &&
                                    $_SESSION['autoseries'] == "TRUE") {
                                echo " checked=\"checked\" ";
                            }
@@ -432,31 +449,31 @@ if ($allFiles == null) {
                            onclick="javascript:storeFileFormatSelection(ImageFileFormat,this)"
                            onchange="javascript:storeFileFormatSelection(ImageFileFormat,this)"
     />
-    
+
                     Automatically load file series if supported
-                
+
                 </label>
 
             </fieldset>
-            
+
             <div id="selection">
 
               <input name="down"
                 type="submit"
-                value="" 
+                value=""
                 class="icon down"
                 onmouseover="TagToTip('ttSpanDown')"
                 onmouseout="UnTip()" />
-    
+
               <input name="up"
                 type="submit"
                 value=""
                 class="icon remove"
                 onmouseover="TagToTip('ttSpanUp')"
                 onmouseout="UnTip()" />
-            
+
             </div>
-            
+
             <fieldset>
                 <legend>Selected images</legend>
                 <div id="selectedfiles" onmouseover="showPreview()">
@@ -470,13 +487,13 @@ if ($selectedFiles == null) {
 }
 
 ?>
-                    <select onclick="javascript:imageAction(this)" 
+                    <select onclick="javascript:imageAction(this)"
                             onchange="javascript:imageAction(this)"
                             id = "selectedimages"
                             name="selectedfiles[]"
                             size="5"
                             multiple="multiple"<?php echo $flag ?>>
-<?php                     
+<?php
 if ($selectedFiles != null) {
   foreach ($selectedFiles as $filename) {
           $key = $keyArr[$filename];
@@ -490,7 +507,7 @@ else echo "                        <option>&nbsp;</option>\n";
                     </select>
                 </div>
             </fieldset>
-            
+
             <div id="actions" class="imageselection"
                  onmouseover="showInstructions()">
                 <input name="update"
@@ -502,7 +519,7 @@ else echo "                        <option>&nbsp;</option>\n";
                        />
                 <input name="OK" type="hidden" />
             </div>
-            
+
             <div id="controls"
                  onmouseover="showInstructions()">
               <input type="submit"
@@ -531,7 +548,7 @@ else echo "                        <option>&nbsp;</option>\n";
         <div id="info">
         <?php echo $info; ?>
         </div>
-        
+
         <div id="message">
 <?php
 
@@ -539,7 +556,7 @@ echo "<p>$message</p>";
 
 ?>
         </div>
-        
+
     </div> <!-- rightpanel -->
 
 <?php

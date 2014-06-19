@@ -24,8 +24,8 @@ class System {
      */
 
     const HRM_VERSION_MAJOR = 3;
-    const HRM_VERSION_MINOR = 0;
-    const HRM_VERSION_MAINTENANCE = 3;
+    const HRM_VERSION_MINOR = 1;
+    const HRM_VERSION_MAINTENANCE = 1;
 
     /* !
       \var 	DB_LAST_REVISION
@@ -33,7 +33,7 @@ class System {
 
       This value has to be set by the developers!
      */
-    const DB_LAST_REVISION = 11;
+    const DB_LAST_REVISION = 12;
 
     /* !
       \var 	MIN_HUCORE_VERSION_{MAJOR|MINOR|MAINTENANCE|PATCH}
@@ -42,9 +42,9 @@ class System {
       This value has to be set by the developers!
      */
     const MIN_HUCORE_VERSION_MAJOR = 4;
-    const MIN_HUCORE_VERSION_MINOR = 3;
-    const MIN_HUCORE_VERSION_MAINTENANCE = 0;
-    const MIN_HUCORE_VERSION_PATCH = 2;
+    const MIN_HUCORE_VERSION_MINOR = 5;
+    const MIN_HUCORE_VERSION_MAINTENANCE = 1;
+    const MIN_HUCORE_VERSION_PATCH = 1;
 
     /* !
       \brief	Returns the HRM version
@@ -111,13 +111,13 @@ class System {
         }
         return self::parseHRMVersionIntegerToString($version);
     }
-    
+
     /* !
       \brief	Checks wether there is a new HRM release
-     
+
       isThereNewHRMRelease() throws an Exception if the version could not
       be obtained from the remote server.
-     
+
       \return True if a newer HRM release exist, false otherwise; if no version
               information could be retrieved, an Exception is thrown.
      */

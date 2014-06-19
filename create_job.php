@@ -278,9 +278,9 @@ echo $_SESSION['setting']->displayString();
                       readonly="readonly">
 <?php
 
-$numberOfChannels =
-    $_SESSION['setting']->parameter( "NumberOfChannels" )->value( );
-echo $_SESSION['task_setting']->displayString( $numberOfChannels );
+$numberOfChannels = $_SESSION['setting']->numberOfChannels();
+$micrType = $_SESSION['setting']->microscopeType();
+    echo $_SESSION['task_setting']->displayString($numberOfChannels, $micrType);
 
 ?>
             </textarea>

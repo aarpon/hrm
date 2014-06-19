@@ -130,16 +130,24 @@ class Ldap {
 
         if ($ds) {
 
-            // Set protocol
-            @ldap_set_option($this->m_Connection,
-                LDAP_OPT_PROTOCOL_VERSION, 3);
-
-            if ($this->m_LDAP_Use_TLS) {
-                ldap_start_tls($ds);
-            }
-
             // Set the connection
             $this->m_Connection = $ds;
+
+            // Set protocol (and check)
+            if (!ldap_set_option($this->m_Connection,
+                LDAP_OPT_PROTOCOL_VERSION, 3)) {
+                report("[LDAP] ERROR: Could not set LDAP protocol version to 3.",
+                    0);
+            }
+
+            if ($this->m_LDAP_Use_TLS) {
+                if (!ldap_start_tls($ds)) {
+                    report("[LDAP] ERROR: Could not activate TLS.", 0);
+                }
+            }
+
+        } else {
+            report("[LDAP] ERROR: Could not connect to $this->m_LDAP_Host.", 0);
         }
     }
 
@@ -275,7 +283,7 @@ class Ldap {
             $groups = $groups[0];
             // Remove ou= or cn= entries
             $matches = array();
-            if (!preg_match('/^(OU=|CN=)(.+)/i', $groups, &$matches)) {
+            if (!preg_match('/^(OU=|CN=)(.+)/i', $groups, $matches)) {
                 return "hrm";
             } else {
                 if ($matches[2] == null) {

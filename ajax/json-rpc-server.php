@@ -62,7 +62,7 @@ require_once '../inc/System.inc.php';
 require_once '../inc/Mail.inc.php';
 require_once '../inc/Parameter.inc.php';
 
-// This is not strictly necessary for the Ajax communication, but will be 
+// This is not strictly necessary for the Ajax communication, but will be
 // necessary for accessing session data to create the response.
 session_start();
 
@@ -108,19 +108,19 @@ if (isset($_POST['params'])) {
 
 // Call the requested method and collect the JSON-encoded response
 switch ($method) {
-    
+
     case 'jsonGetUserAndTotalNumberOfJobsInQueue':
-        
+
         $json = jsonGetUserAndTotalNumberOfJobsInQueue();
         break;
-      
+
     case 'jsonCheckForUpdates':
-      
+
         $json = jsonCheckForUpdates();
         break;
 
     case 'jsonSendTestEmail':
-      
+
         $json = jsonSendTestEmail();
         break;
 
@@ -134,13 +134,28 @@ switch ($method) {
         $json = jsonGetParameter($paramName);
         break;
 
+    case 'jsonGetImageParameterFromSession':
+
+        // Get the Parameter name
+        $paramName = null;
+        if (isset($params['parameterName'])) {
+            $paramName = $params['parameterName'];
+        }
+        $json = jsonGetImageParameterFromSession($paramName);
+        break;
+
     case 'jsonGetAllImageParameters':
 
         $json = jsonGetAllImageParameters();
         break;
 
+    case 'jsonGetAllImageParametersFromSession':
+
+        $json = jsonGetAllImageParametersFromSession();
+        break;
+
     default:
-        
+
         // Unknown method
         die("Unknown method.");
 }
@@ -158,17 +173,17 @@ return true;
 // ============================================================================
 
 /**
- * Create default (PHP) array with "success" and "message" properties. Methods 
- * should initialize their JSON output array with this function, to make sure 
+ * Create default (PHP) array with "success" and "message" properties. Methods
+ * should initialize their JSON output array with this function, to make sure
  * that there are a "success" and a "message" properties in the returned object
- * (defaulting to "true" and "", respectivey) and then expand it as needed. 
- * 
+ * (defaulting to "true" and "", respectivey) and then expand it as needed.
+ *
  * Before the method functions return, they must call json_encode() on it!
- * 
+ *
  * The two valid values for the property "success" are the strings (and not
  * booleans!) "true" and "false".
- * 
- * @return PHP array with "success" = "true" and "message" = "" properties.
+ *
+ * @return Array (PHP) with "success" = "true" and "message" = "" properties.
  */
 function initJSONArray() {
 
@@ -178,20 +193,22 @@ function initJSONArray() {
 
 /**
  * Get the total number and the number of jobs owned by the specified user
- * currently in the queue. 
+ * currently in the queue.
  *
- * @return JSON-encoded array with keys 'numAllJobsInQueue' and 'numUserJobsInQueue'
+ * @return String JSON-encoded array with keys 'numAllJobsInQueue' and
+ * 'numUserJobsInQueue'
  */
 function jsonGetUserAndTotalNumberOfJobsInQueue() {
 
     // Prepare the output array
     $json = initJSONArray();
-    
+
     // Get the total number of jobs
     $db = new DatabaseConnection();
     $json["numAllJobsInQueue"] = $db->getTotalNumberOfQueuedJobs();
-    
+
     // Get the number of jobs for current user
+    /** @var $user User */
     $user = $_SESSION['user'];
     if ($user->isAdmin()) {
         $numUserJobsInQueue = 0;
@@ -199,18 +216,18 @@ function jsonGetUserAndTotalNumberOfJobsInQueue() {
         $numUserJobsInQueue = $user->numberOfJobsInQueue();
     }
     $json["numUserJobsInQueue"] = $numUserJobsInQueue;
-    
+
     // Also add time of update
     $json["lastUpdateTime"] = date('H:i:s');
-    
+
     // Return as a JSON string
     return (json_encode($json));
 }
 
 
 /**
- * Check whether there is an update for the HRM. 
- * @return JSON-encoded array with key 'newerVersionExist' and 'newVersion'
+ * Check whether there is an update for the HRM.
+ * @return String JSON-encoded array with key 'newerVersionExist' and 'newVersion'
  */
 function jsonCheckForUpdates() {
 
@@ -218,10 +235,10 @@ function jsonCheckForUpdates() {
   $json = initJSONArray();
 
   try {
-    
+
     // Check if there is a newer version
     $isNew = System::isThereNewHRMRelease();
-    
+
     if ($isNew) {
         $json["newerVersionExist"] = "true";
         $json["newVersion"] = System::getLatestHRMVersionFromRemoteAsString();
@@ -244,13 +261,13 @@ function jsonCheckForUpdates() {
 /**
  * Send a test email to the administrator to check that the email system is set
  * up properly.
- * @return JSON-encoded array with key 'success' and 'message'
+ * @return String JSON-encoded array with key 'success' and 'message'
  */
 function jsonSendTestEmail() {
 
   // Include configuration file
   include( dirname( __FILE__ ) . "/../config/hrm_client_config.inc" );
-  
+
   // Prepare the output array
   $json = initJSONArray();
 
@@ -275,10 +292,19 @@ function jsonSendTestEmail() {
 }
 
 /**
- * Return a JSON-encoded version of the requested PHP parameter.
+ * Return a JSON-encoded version of the requested PHP parameter. The Parameter can
+ * be of the image, restoration or processing Parameter classes.
+ *
+ * The Parameter is constructed and immediately returned. This method is to
+ * be used to run checks on the user-defined values at the client side before
+ * they get posted and stored in the session. Its value is not set.
+ *
+ * To retrieve a specific Parameter from current session use the
+ * jsonGet*ParameterFromSession() methods instead.
+ *
  * @param $parameterName Class name of the Parameter to be serialized
  *
- * @return JSON-encoded Parameter string.
+ * @return String JSON-encoded Parameter string.
  */
 function jsonGetParameter($parameterName) {
 
@@ -291,9 +317,69 @@ function jsonGetParameter($parameterName) {
         $param = new $parameterName;
 
         // Get the JSON data
+        /** @var $json Parameter */
         $json = $param->getJsonData();
 
     } catch (Exception $e) {
+
+        // Return failure
+        $json['success'] = "false";
+        $json['message'] = "Failed retrieving parameter " . $parameterName . "!";
+
+    }
+
+    // Return as a JSON string
+    return (json_encode($json));
+}
+
+/**
+ * Return a JSON-encoded version of the requested image Parameter from current
+ * session.
+ *
+ * The Parameter is retrieved from the session, and therefore contains the
+ * value(s) set by the user in the browser.
+ *
+ * @param $parameterName Class name of the Parameter to be serialized
+ *
+ * @return JSON-encoded Parameter.
+ *
+ * @todo Implement corresponding method for restoration and processing Parameters.
+ */
+function jsonGetImageParameterFromSession($parameterName) {
+
+    // Prepare the output array
+    $json = initJSONArray();
+
+    // Get all image parameters
+    $setting = new ParameterSetting();
+    $names = $setting->parameterNames();
+
+    // Check that we are asking for an image Parameter
+    if (! in_array($parameterName, $names)) {
+
+        // Return failure
+        $json['success'] = "false";
+        $json['message'] = "Parameter " . $parameterName . " is not " .
+            "an image Parameter!";
+
+        // Return as a JSON string
+        return (json_encode($json));
+
+    }
+
+    // Is the session active?
+    if (isset($_SESSION['setting'])) {
+
+        // Get the Parameter from the session
+        $param = $_SESSION['setting']->parameter($parameterName);
+
+        // Get the JSON data
+        /** @var $json Parameter */
+        $json = $param->getJsonData();
+
+    } else {
+
+        // Return failure
         $json['success'] = "false";
         $json['message'] = "Failed retrieving parameter " . $parameterName . "!";
     }
@@ -305,7 +391,16 @@ function jsonGetParameter($parameterName) {
 /**
  * Return a JSON-encoded version of all image PHP parameter.
  *
- * @return JSON-encoded array of Parameters.
+ * The Parameters are constructed and immediately returned. This method is to
+ * be used to run checks on the user-defined values at the client side before
+ * they get posted and stored in the session. Their values are not set.
+ *
+ * To retrieve all Parameters from current session use the
+ * jsonGet*ParameterFromSession() methods instead.
+ *
+ * @return String JSON-encoded array of Parameters.
+ *
+ * @todo Implement corresponding method for restoration and processing Parameters.
  */
 function jsonGetAllImageParameters() {
 
@@ -333,6 +428,52 @@ function jsonGetAllImageParameters() {
     } catch (Exception $e) {
         $json['success'] = "false";
         $json['message'] = "Failed retrieving parameters!";
+    }
+
+    // Return as a JSON string
+    return (json_encode($json));
+}
+
+/**
+ * Return a JSON-encoded version of all image PHP parameter from current session.
+ *
+ * The Parameters are retrieved from the session, and therefore contain the current
+ * values set by the user in the browser.
+ *
+ * @return String JSON-encoded array of Parameters.
+ */
+function jsonGetAllImageParametersFromSession() {
+
+    // Prepare the output array
+    $json = initJSONArray();
+
+    // Is the session active?
+    if (isset($_SESSION["setting"])) {
+
+        // Retrieve the settings from the session
+        $setting = $_SESSION["setting"];
+
+        // Get all names
+        $names = $setting->parameterNames();
+
+        // Initialize parameter array
+        $json["parameters"] = array();
+
+        // Now serialize the Parameters
+        foreach ($names as $name) {
+
+            // Get and encode the JSON data
+            $json["parameters"][$name] =
+                $setting->parameter($name)->getJsonData();
+
+        }
+
+    } else {
+
+    	// Return failure
+        $json['success'] = "false";
+        $json['message'] = "Failed retrieving parameters!";
+
     }
 
     // Return as a JSON string
