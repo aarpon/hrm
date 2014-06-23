@@ -75,8 +75,10 @@ $microscopes = array (
     array("micro=Zeiss_LSM510&param=Pinhole+diameter+(microns)&a=1&b=0&na=0&wl=0&msys=3.33&c=0.5&u=-6", "http://support.svi.nl/wiki/Zeiss_LSM510"),
     "Zeiss LSM700" =>
     array("micro=Zeiss_LSM700&param=Pinhole+diameter+(microns)&a=1&b=0&na=0&wl=0&msys=1.53&c=0.564&u=-6", "http://support.svi.nl/wiki/Zeiss_LSM700"),
-    "Zeiss LSM710/LSM780" =>
+    "Zeiss LSM710" =>
     array("micro=Zeiss_LSM710&param=Pinhole+diameter+(microns)&a=1&b=0&na=0&wl=0&msys=1.9048&c=0.564&u=-6", "http://support.svi.nl/wiki/Zeiss_LSM710"),
+    "Zeiss LSM780" =>
+    array("micro=Zeiss_780&param=Pinhole+diameter+(microns)&a=1&b=0&na=0&wl=0&msys=1.9048&c=0.564&u=-6", "http://support.svi.nl/wiki/Zeiss_LSM780"),
     "Not listed" => 
     array ("micro=Not_listed_microscope&param=Pinhole+physical+diameter+(microns)&a=1&b=0&na=0&wl=0&u=-6", "http://support.svi.nl/wiki/ReportOtherMicroscope")
 );
