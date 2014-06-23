@@ -12,7 +12,7 @@ require_once ("hrm_config.inc.php");
   \brief    (Abstract) base class for all specific Setting classes
  */
 abstract class Setting {
-    
+
     /*!
       \var		$parameter
       \brief	Array of Parameter object
@@ -71,7 +71,7 @@ abstract class Setting {
     }
 
     /*!
-      \brief	Sets a Parameter. The Parameter is stored in the Setting under 
+      \brief	Sets a Parameter. The Parameter is stored in the Setting under
               its name.
       \param	$parameter	A Parameter.
     */
@@ -100,7 +100,7 @@ abstract class Setting {
     }
 
     /*!
-      \brief	Returns the Owner of the Setting
+      \brief	Returns the User owner of the Setting
       \return	Owner of the Setting
     */
     public function owner() {
@@ -108,10 +108,10 @@ abstract class Setting {
     }
 
     /*!
-      \brief  Sets the Owner of the Setting
+      \brief  Sets the User owner of the Setting
       \param  $owner	The owner of the Setting
     */
-    public function setOwner( Owner $owner) {
+    public function setOwner(User $owner) {
         $this->owner = $owner;
     }
 
@@ -292,7 +292,7 @@ class ParameterSetting extends Setting {
     /*!
       \brief	Returns the name of the database table in which the list of
       Setting names are stored.
-    
+
       Besides the name, the table contains the Setting's name, owner and
       the standard (default) flag.
     */
@@ -321,7 +321,7 @@ class ParameterSetting extends Setting {
         /* Initialization: among others, create an array where to
            accumulate the microscopic parameters.*/
         $postedParams = array();
-        
+
         $db = new DatabaseConnection();
         $imageFormat = $this->parameter("ImageFileFormat")->value();
 
@@ -345,7 +345,7 @@ class ParameterSetting extends Setting {
                         }
                     }
                 default:
-                    $postedParams[$objName] = $objInstance->value();   
+                    $postedParams[$objName] = $objInstance->value();
             }
 
                 /* Set the confidence level of this parameter according
@@ -356,7 +356,7 @@ class ParameterSetting extends Setting {
 
             /* Check if the status of the parameter setting is compatible
              with the selected file format. */
-             
+
         if ( !$this->checkPostedImageParameters($postedParams) ) {
             $ok = False;
         }
@@ -366,7 +366,7 @@ class ParameterSetting extends Setting {
                 $ok = False;
             }
         }
-        
+
         if ($ok) {
             if ( !$this->checkPostedCapturingParameters($postedParams) ) {
                 $ok = False;
@@ -394,7 +394,7 @@ class ParameterSetting extends Setting {
 
         return $ok;
     }
-    
+
 
     /*!
       \brief	Checks that the posted Image Parameters are all defined
@@ -461,15 +461,15 @@ class ParameterSetting extends Setting {
       \return	true if all Paraneters are defined and valid, false otherwise
     */
     public function checkPostedMicroscopyParameters($postedParameters) {
-        
+
         if (count($postedParameters) == 0) {
             $this->message = '';
             return False;
         }
-        
+
         $this->message = '';
         $noErrorsFound = True;
-        
+
 
         // Get the names of the relevant parameters
         $names = $this->microscopeParameterNames();
@@ -477,11 +477,11 @@ class ParameterSetting extends Setting {
         // Small correction to the multi-channel names
         $names[array_search('ExcitationWavelength', $names)] =
             'ExcitationWavelength0';
-        $names[array_search('EmissionWavelength', $names)] = 
+        $names[array_search('EmissionWavelength', $names)] =
             'EmissionWavelength0';
 
         // We handle multi-value parameters differently than single-valued ones
-        
+
         // Excitation wavelengths
         $value = array(null, null, null, null, null);
         for ($i = 0; $i < 5; $i++) {
@@ -495,7 +495,7 @@ class ParameterSetting extends Setting {
         $valueSet = count(array_filter($value)) > 0;
 
         if ($valueSet) {
-        
+
             // Set the value
             $parameter = $this->parameter($name);
             $parameter->setValue($value);
@@ -506,9 +506,9 @@ class ParameterSetting extends Setting {
                 $this->message = $parameter->message();
                 $noErrorsFound = False;
             }
-            
+
         } else {
-          
+
             // In this case it is important to know whether the Parameter
             // must have a value or not
             $parameter = $this->parameter($name);
@@ -517,7 +517,7 @@ class ParameterSetting extends Setting {
             // Reset the Parameter
             $parameter->reset();
             $this->set($parameter);
-            
+
             // If the Parameter value must be provided, we return an error
             if ($mustProvide) {
                 $this->message = "Please set the excitation wavelength!";
@@ -537,9 +537,9 @@ class ParameterSetting extends Setting {
         $name = 'EmissionWavelength';
         unset($names[array_search("EmissionWavelength0", $names)]);
         $valueSet = count(array_filter($value)) > 0;
-        
+
         if ($valueSet) {
-        
+
             // Set the value
             $parameter = $this->parameter($name);
             $parameter->setValue($value);
@@ -550,9 +550,9 @@ class ParameterSetting extends Setting {
                 $this->message = $parameter->message();
                 $noErrorsFound = False;
             }
-            
+
         } else {
-          
+
             // In this case it is important to know whether the Parameter
             // must have a value or not
             $parameter = $this->parameter($name);
@@ -561,7 +561,7 @@ class ParameterSetting extends Setting {
             // Reset the Parameter
             $parameter->reset();
             $this->set($parameter);
-            
+
             // If the Parameter value must be provided, we return an error
             if ($mustProvide) {
                 $this->message = "Please set the emission wavelength!";
@@ -569,7 +569,7 @@ class ParameterSetting extends Setting {
             }
 
         }
-        
+
         // Check that the Parameters are set and contain valid values
         foreach ($names as $name) {
 
@@ -577,7 +577,7 @@ class ParameterSetting extends Setting {
             $valueSet = isset($postedParameters[$name]) &&
                     $postedParameters[$name] != '';
 
-            // If the value is set, we check it no matter if it must be 
+            // If the value is set, we check it no matter if it must be
             // provided or not
             if ($valueSet) {
 
@@ -619,28 +619,28 @@ class ParameterSetting extends Setting {
 
                     switch ($name) {
                         case "MicroscopeType" :
-                            $this->message = 
+                            $this->message =
                                 "Please set the microscope type!";
                             break;
                         case "NumericalAperture" :
-                            $this->message = 
+                            $this->message =
                                 "Please set the numerical aperture!";
                             break;
                         case "ObjectiveType" :
-                            $this->message = 
+                            $this->message =
                                 "Please set the objective type!";
                             break;
                         case "SampleMedium" :
-                            $this->message = 
+                            $this->message =
                                 "Please set the refractive index " .
                                     "of the sample medium!";
                             break;
                         case "ExcitationWavelength" :
-                            $this->message = 
+                            $this->message =
                                 "Please set the excitation wavelength!";
                             break;
                         case "EmissionWavelength" :
-                            $this->message = 
+                            $this->message =
                                 "Please set the emission wavelength!";
                             break;
                     }
@@ -648,12 +648,12 @@ class ParameterSetting extends Setting {
                 }
             }
         }
-        
+
         return $noErrorsFound;
     }
 
 
-        
+
     /*!
       \brief	Checks that the posted STED Parameters are all defined
               and valid
@@ -662,7 +662,7 @@ class ParameterSetting extends Setting {
     */
     public function checkPostedStedParameters($postedParameters) {
         $this->message = '';
-        
+
         if (count($postedParameters) == 0) {
             return False;
         }
@@ -683,33 +683,33 @@ class ParameterSetting extends Setting {
         }
         $name = 'StedDepletionMode';
         $valueSet = count(array_filter($value)) > 0;
-        
+
         if ($valueSet) {
-            
+
             // Set the value
             $parameter = $this->parameter($name);
             $parameter->setValue($value);
             $this->set($parameter);
-            
+
             // Keep the 'deplModes' so that it can be checked below if any STED
             // parameters need to be forced, e.g when 'deplMode' is 'confocal'.
             if (!$parameter->check()) {
                 $this->message = $parameter->message();
                 $noErrorsFound = False;
             } else {
-                $deplModes = $parameter->value();               
+                $deplModes = $parameter->value();
             }
         } else {
-            
+
             // In this case it is important to know whether the Parameter
             // must have a value or not
             $parameter = $this->parameter($name);
             $mustProvide = $parameter->mustProvide();
-            
+
             // Reset the Parameter
             $parameter->reset();
             $this->set($parameter);
-            
+
             // If the Parameter value must be provided, we return an error
             if ($mustProvide) {
                 $this->message = "Please set the Sted depletion mode!";
@@ -717,7 +717,7 @@ class ParameterSetting extends Setting {
             }
         }
 
-        
+
         // Saturation Factor
         $value = array(null, null, null, null, null);
 
@@ -740,28 +740,28 @@ class ParameterSetting extends Setting {
         // Do not filter '0'. Thus, use 'strlen' as callback for filtering.
         $valueSet = count(array_filter($value, 'strlen')) > 0;
         if ($valueSet) {
-            
+
             // Set the value
             $parameter = $this->parameter($name);
             $parameter->setValue($value);
             $this->set($parameter);
-            
+
             if (!$parameter->check()) {
                 $this->message = $parameter->message();
                 $noErrorsFound = False;
             }
-            
+
         } else {
-            
+
             // In this case it is important to know whether the Parameter
             // must have a value or not
             $parameter = $this->parameter($name);
             $mustProvide = $parameter->mustProvide();
-            
+
             // Reset the Parameter
             $parameter->reset();
             $this->set($parameter);
-            
+
             // If the Parameter value must be provided, we return an error
             if ($mustProvide) {
                 $this->message = "Please set the Sted saturation factor!";
@@ -769,7 +769,7 @@ class ParameterSetting extends Setting {
             }
         }
 
-        
+
         // Sted Wavelength
         $value = array(null, null, null, null, null);
         for ($i = 0; $i < 5; $i++) {
@@ -784,35 +784,35 @@ class ParameterSetting extends Setting {
                     && $deplModes[$i] == "off-confocal") {
                     $value[$i] = 0;
                 }
-            } 
+            }
         }
         $name = 'StedWavelength';
 
         // Do not filter '0'. Thus, use 'strlen' as callback for filtering.
         $valueSet = count(array_filter($value, 'strlen')) > 0;
         if ($valueSet) {
-            
+
             // Set the value
             $parameter = $this->parameter($name);
             $parameter->setValue($value);
             $this->set($parameter);
-            
+
             if (!$parameter->check()) {
                 $this->message = $parameter->message();
                 $noErrorsFound = False;
             }
-            
+
         } else {
-            
+
             // In this case it is important to know whether the Parameter
             // must have a value or not
             $parameter = $this->parameter($name);
             $mustProvide = $parameter->mustProvide();
-            
+
             // Reset the Parameter
             $parameter->reset();
             $this->set($parameter);
-            
+
             // If the Parameter value must be provided, we return an error
             if ($mustProvide) {
                 $this->message = "Please set the Sted wavelength!";
@@ -827,7 +827,7 @@ class ParameterSetting extends Setting {
             if (isset($postedParameters["StedImmunity$i"])) {
                 $value[$i] = $postedParameters["StedImmunity$i"];
                 unset($postedParameters["StedImmunity$i"]);
-                
+
                 // Fallback to '0' if no value was provided and
                 // the channel is confocal.
                 if (empty($value[$i])
@@ -835,42 +835,42 @@ class ParameterSetting extends Setting {
                     && $deplModes[$i] == "off-confocal") {
                     $value[$i] = 0;
                 }
-            } 
+            }
         }
         $name = 'StedImmunity';
 
         // Do not filter '0'. Thus, use 'strlen' as callback for filtering.
         $valueSet = count(array_filter($value, 'strlen')) > 0;
         if ($valueSet) {
-            
+
             // Set the value
             $parameter = $this->parameter($name);
             $parameter->setValue($value);
             $this->set($parameter);
-            
+
             if (!$parameter->check()) {
                 $this->message = $parameter->message();
                 $noErrorsFound = False;
             }
-            
+
         } else {
-            
+
             // In this case it is important to know whether the Parameter
             // must have a value or not
             $parameter = $this->parameter($name);
             $mustProvide = $parameter->mustProvide();
-            
+
             // Reset the Parameter
             $parameter->reset();
             $this->set($parameter);
-            
+
             // If the Parameter value must be provided, we return an error
             if ($mustProvide) {
                 $this->message = "Please set the Sted immunity fraction!";
                 $noErrorsFound = False;
             }
         }
-         
+
 
         // Sted 3D
         if ($this->isSted3D()) {
@@ -879,7 +879,7 @@ class ParameterSetting extends Setting {
                 if (isset($postedParameters["Sted3D$i"])) {
                     $value[$i] = $postedParameters["Sted3D$i"];
                     unset($postedParameters["Sted3D$i"]);
-                    
+
                     // Fallback to '0' if no value was provided and
                     // the channel is confocal.
                     if (empty($value[$i])
@@ -894,28 +894,28 @@ class ParameterSetting extends Setting {
             // Do not filter '0'. Thus, use 'strlen' as callback for filtering.
             $valueSet = count(array_filter($value, 'strlen')) > 0;
             if ($valueSet) {
-                
+
                 // Set the value
                 $parameter = $this->parameter($name);
                 $parameter->setValue($value);
                 $this->set($parameter);
-                
+
                 if (!$parameter->check()) {
                     $this->message = $parameter->message();
                     $noErrorsFound = False;
                 }
-                
+
             } else {
-                
+
                 // In this case it is important to know whether the Parameter
                 // must have a value or not
                 $parameter = $this->parameter($name);
                 $mustProvide = $parameter->mustProvide();
-                
+
                 // Reset the Parameter
                 $parameter->reset();
                 $this->set($parameter);
-                
+
                 // If the Parameter value must be provided, we return an error
                 if ($mustProvide) {
                     $this->message = "Please set the Sted 3D percentage!";
@@ -923,12 +923,12 @@ class ParameterSetting extends Setting {
                 }
             }
         }
-        
+
 
         return $noErrorsFound;
     }
-    
-    
+
+
     /*!
       \brief	Checks that the posted Capturing Parameters are all defined
               and valid
@@ -1050,7 +1050,7 @@ class ParameterSetting extends Setting {
             $name = 'PinholeSize';
             $valueSet = count(array_filter($value)) > 0;
             if ($valueSet) {
-        
+
                 // Set the value
                 $parameter = $this->parameter($name);
                 $parameter->setValue($value);
@@ -1061,9 +1061,9 @@ class ParameterSetting extends Setting {
                     $this->message = $parameter->message();
                     $noErrorsFound = False;
                 }
-            
+
             } else {
-          
+
                 // In this case it is important to know whether the Parameter
                 // must have a value or not
                 $parameter = $this->parameter($name);
@@ -1072,7 +1072,7 @@ class ParameterSetting extends Setting {
                 // Reset the Parameter
                 $parameter->reset();
                 $this->set($parameter);
-            
+
                 // If the Parameter value must be provided, we return an error
                 if ($mustProvide) {
                     $this->message = "Please set the pinhole size!";
@@ -1081,7 +1081,7 @@ class ParameterSetting extends Setting {
 
             }
         }
-            
+
         // PinholeSpacing must be defined for spinning disk confocals
         if ($this->isNipkowDisk()) {
 
@@ -1114,7 +1114,7 @@ class ParameterSetting extends Setting {
                 }
             }
         }
-        
+
         if ($this->isSted() || $this->isSted3D()) {
             $noErrorsFound = True;
         }
@@ -1123,7 +1123,7 @@ class ParameterSetting extends Setting {
     }
 
     /*!
-      \brief	Checks that the posted Aberration Correction Parameters are all 
+      \brief	Checks that the posted Aberration Correction Parameters are all
               defined and valid
       \param	$postedParameters	The $_POST array
       \return	true if all Paraneters are defined and valid, false otherwise
@@ -1174,7 +1174,7 @@ class ParameterSetting extends Setting {
         if ($this->parameter("PerformAberrationCorrection")->value() == 0) {
             return $noErrorsFound;
         }
-        
+
         // CoverslipRelativePosition
         $valueSet = isset($postedParameters["CoverslipRelativePosition"]) &&
                 $postedParameters["CoverslipRelativePosition"] != '';
@@ -1200,7 +1200,7 @@ class ParameterSetting extends Setting {
 
             // If the Parameter value must be provided, we return an error
             if ($mustProvide) {
-                $this->message = 
+                $this->message =
                     "Please choose the relative coverslip position!";
                 $noErrorsFound = False;
             }
@@ -1261,7 +1261,7 @@ class ParameterSetting extends Setting {
 
             // If the Parameter value must be provided, we return an error
             if ($mustProvide) {
-                $this->message = 
+                $this->message =
                     "Please indicate the options for the advanced correction!";
                 $noErrorsFound = False;
             }
@@ -1338,7 +1338,7 @@ class ParameterSetting extends Setting {
         foreach ($names as $name) {
             if (!isset($postedParameters[$name]) ||
                     $postedParameters[$name] == '') {
-                // The Parameter is not set or empty, return an informative 
+                // The Parameter is not set or empty, return an informative
                 // error message
                 switch ($name) {
                     case "CCDCaptorSize" :
@@ -1354,7 +1354,7 @@ class ParameterSetting extends Setting {
                         $this->message = "Please set the tube factore!";
                         break;
                     case "ObjectiveMagnification" :
-                        $this->message = 
+                        $this->message =
                             "Please set the objective magnification!";
                         break;
                 }
@@ -1376,22 +1376,22 @@ class ParameterSetting extends Setting {
 
     /*!
       \brief	Returns the Parameter values needed for the aberration correction
-      \return array with all Parameter values for the aberration correction. 
+      \return array with all Parameter values for the aberration correction.
               The keys are the Parameter names
      */
     public function getAberractionCorrectionParameters() {
         $parameters = array(
-            'AberrationCorrectionNecessary' => 
+            'AberrationCorrectionNecessary' =>
                 $this->parameter('AberrationCorrectionNecessary')->value(),
-            'PerformAberrationCorrection' => 
+            'PerformAberrationCorrection' =>
                 $this->parameter('PerformAberrationCorrection')->value(),
-            'CoverslipRelativePosition' => 
+            'CoverslipRelativePosition' =>
                 $this->parameter('CoverslipRelativePosition')->value(),
-            'AberrationCorrectionMode' => 
+            'AberrationCorrectionMode' =>
                 $this->parameter('AberrationCorrectionMode')->value(),
-            'AdvancedCorrectionOptions' => 
+            'AdvancedCorrectionOptions' =>
                 $this->parameter('AdvancedCorrectionOptions')->value(),
-            'PSFGenerationDepth' => 
+            'PSFGenerationDepth' =>
                 $this->parameter('PSFGenerationDepth')->value());
         return $parameters;
     }
@@ -1407,7 +1407,7 @@ class ParameterSetting extends Setting {
                 $names[] = $parameter->name();
             }
         }
-        
+
         return $names;
     }
 
@@ -1430,7 +1430,7 @@ class ParameterSetting extends Setting {
     /*!
       \brief	Returns all Sted Parameter names
       \return array of Sted Parameter names
-    */ 
+    */
     public function stedParameterNames() {
         $names = array();
 
@@ -1486,7 +1486,7 @@ class ParameterSetting extends Setting {
     }
 
     /*!
-      \brief  Displays the setting as a text containing Parameter names and 
+      \brief  Displays the setting as a text containing Parameter names and
               their values
     */
     public function displayString($numberOfChannels = 0, $micrType = NULL) {
@@ -1496,16 +1496,16 @@ class ParameterSetting extends Setting {
         // These parameters are important to properly display all the others
         $numberOfChannels = $this->parameter("NumberOfChannels")->value();
         $PSFmode = $this->parameter("PointSpreadFunction")->value();
-        $performAberrationCorrection = 
+        $performAberrationCorrection =
             $this->parameter("PerformAberrationCorrection")->value();
-        $aberrationCorrectionMode = 
+        $aberrationCorrectionMode =
             $this->parameter("AberrationCorrectionMode")->value();
-        $advancedCorrectionOptions = 
+        $advancedCorrectionOptions =
             $this->parameter("AdvancedCorrectionOptions")->value();
 
         // Not everything needs to be displayed, either because the Parameter
         // might be only internally used, or because it does not make sense for
-        // the current Setting (e.g. it does not make sense to display the 
+        // the current Setting (e.g. it does not make sense to display the
         // pinhole size if the microscope type is 'widefield'.
         foreach ($this->parameter as $parameter) {
             if (!$this->hasPinhole() && $parameter->name() == 'PinholeSize')
@@ -1516,7 +1516,7 @@ class ParameterSetting extends Setting {
                 continue;
             if ($parameter->name() == 'IsMultiChannel')
                 continue;
-            if (!$this->isNipkowDisk() && 
+            if (!$this->isNipkowDisk() &&
                     $parameter->name() == 'PinholeSpacing')
                 continue;
             if ($parameter->name() == 'CMount') // This is obsolete
@@ -1707,7 +1707,7 @@ class ParameterSetting extends Setting {
         static $variableChannelFileFormats;
         if ($variableChannelFileFormats == NULL) {
             $db = new DatabaseConnection();
-            $variableChannelFileFormats = 
+            $variableChannelFileFormats =
                 $db->fileFormatsWith(NULL, True, NULL);
         }
         return $variableChannelFileFormats;
@@ -1744,7 +1744,7 @@ class ParameterSetting extends Setting {
     }
 
     /*!
-      \brief	Checks whether currently selected file format is one of the 
+      \brief	Checks whether currently selected file format is one of the
               TIFF variants
       \return	true if the currently selected file format is a TIFF variant
     */
@@ -1784,9 +1784,9 @@ class ParameterSetting extends Setting {
     }
 
     /*!
-      \brief	Checks whether the currently selected microscope type is spinning 
+      \brief	Checks whether the currently selected microscope type is spinning
               (Nipkow) disk confocal
-      \return	true if the currently selected microscope type is spinning (Nipkow) 
+      \return	true if the currently selected microscope type is spinning (Nipkow)
               disk, false otherwise
     */
     public function isNipkowDisk() {
@@ -1795,7 +1795,7 @@ class ParameterSetting extends Setting {
 
     /*!
       \brief	Checks whether the currently selected microscope type is 2-Photon
-      \return	true if the currently selected microscope type is 2-Photon, 
+      \return	true if the currently selected microscope type is 2-Photon,
               false otherwise
     */
     public function isTwoPhoton() {
@@ -1805,9 +1805,9 @@ class ParameterSetting extends Setting {
     }
 
     /*!
-      \brief	Checks whether the currently selected microscope type is 
+      \brief	Checks whether the currently selected microscope type is
               single-point confocal
-      \return	true if the currently selected microscope type is single-point 
+      \return	true if the currently selected microscope type is single-point
               confocal, false otherwise
     */
     public function isSinglePointConfocal() {
@@ -1863,7 +1863,7 @@ class ParameterSetting extends Setting {
     }
 
     /*!
-      \brief	Checks whether the currently selected microscope type is either 
+      \brief	Checks whether the currently selected microscope type is either
               widefield of spinning disk
       \return	true if the currently selected microscope type is either widefield
               of spinning disk, false otherwise
@@ -1873,7 +1873,7 @@ class ParameterSetting extends Setting {
     }
 
     /*!
-      \brief	Checks whether the currently selected microscope type is either 
+      \brief	Checks whether the currently selected microscope type is either
               2-Photon or single-point confocal
       \return	true if the currently selected microscope type is either 2-Photon
               or single-point confocal, false otherwise
@@ -1885,11 +1885,11 @@ class ParameterSetting extends Setting {
     /*!
       \brief	Checks whether the currently selected microscope type is any type
               of confocal
-      \return	true if the currently selected microscope type is any type of 
+      \return	true if the currently selected microscope type is any type of
               confocal, false otherwise
     */
     public function isMultiPointOrSinglePointConfocal() {
-        return ($this->isSinglePointConfocal() || 
+        return ($this->isSinglePointConfocal() ||
                 $this->isMultiPointConfocal());
     }
 
@@ -1908,7 +1908,7 @@ class ParameterSetting extends Setting {
             return False;
         }
     }
-    
+
     /*!
       \brief	Returns the pixel size (the value of CCDCaptorSizeX) in nm
       \todo	This is redundant!
@@ -1936,7 +1936,7 @@ class ParameterSetting extends Setting {
       \brief	Returns the sample size in Y direction in um
 
       This just returns the value in X direction.
-      
+
       \return	sample size in um
     */
     public function sampleSizeY() {
@@ -2025,7 +2025,7 @@ class TaskSetting extends Setting {
               for the Settings stored in the table specified in table()
 
       This is an abstract function and must be reimplemented.
-    
+
       \see table()
     */
     public function parameterTable() {
@@ -2164,7 +2164,7 @@ class TaskSetting extends Setting {
         }
 
         return $noErrorsFound;
-    }    
+    }
 
     /*!
       \brief	Returns all Task Parameter names
@@ -2189,9 +2189,9 @@ class TaskSetting extends Setting {
     }
 
     /* !
-      \brief  Displays the setting as a text containing Parameter names 
+      \brief  Displays the setting as a text containing Parameter names
               and their values
-      \param	$numberOfChannels Number of channels (optional, default 
+      \param	$numberOfChannels Number of channels (optional, default
               value is 0)
      */
     public function displayString($numberOfChannels = 0, $micrType = NULL) {
@@ -2211,7 +2211,7 @@ class TaskSetting extends Setting {
                 &&  !strstr($micrType,"STED")) {
                 continue;
             }
-            $result = $result . 
+            $result = $result .
                 $parameter->displayString($numberOfChannels);
         }
         return $result;
@@ -2223,7 +2223,7 @@ class TaskSetting extends Setting {
       \return  Boolean: TRUE to enable stabilization option, FALSE otherwise.
     */
     public function isEligibleForStabilization(ParameterSetting $paramSetting) {
-        
+
         if (!$paramSetting->isSted() && !$paramSetting->isSted3D()) {
             return FALSE;
         }
@@ -2297,13 +2297,13 @@ class AnalysisSetting extends Setting {
               for the Settings stored in the table specified in table()
 
       This is an abstract function and must be reimplemented.
-    
+
       \see table()
     */
     public function parameterTable() {
         return "analysis_parameter";
     }
-    
+
     /*!
       \brief	Checks that the posted analysis Parameters are all
                 defined and valid
@@ -2317,7 +2317,7 @@ class AnalysisSetting extends Setting {
 
         $this->message = '';
         $noErrorsFound = True;
-        
+
         $parameter = $this->parameter("ColocAnalysis");
         $parameter->setValue($postedParameters["ColocAnalysis"]);
         $this->set($parameter);
@@ -2348,7 +2348,7 @@ class AnalysisSetting extends Setting {
             $this->message  = "Please indicate the coefficients for ";
             $this->message .= "colocalization analysis.";
             return False;
-        } else {    
+        } else {
             $parameter = $this->parameter("ColocCoefficient");
             $parameter->setValue($postedParameters["ColocCoefficient"]);
             $this->set($parameter);
@@ -2366,7 +2366,7 @@ class AnalysisSetting extends Setting {
 
                     $value[0] = 'auto';
                     break;
-                    
+
                 case 'manual' :
 
                     for ($i = 0; $i < 5; $i++) {
@@ -2381,7 +2381,7 @@ class AnalysisSetting extends Setting {
                     $this->message = 'Unknown colocalization threshold mode!';
                     $noErrorsFound = False;
             }
-            
+
             $parameter = $this->parameter("ColocThreshold");
             $parameter->setValue($value);
             $this->set($parameter);
@@ -2390,14 +2390,14 @@ class AnalysisSetting extends Setting {
                 $noErrorsFound = False;
             }
         }
-        
+
         $parameter = $this->parameter("ColocMap");
         $parameter->setValue($postedParameters["ColocMap"]);
         $this->set($parameter);
-        
+
         return $noErrorsFound;
     }
-    
+
     /*!
       \brief	Returns the number of channels of the Setting
       \return	the number of channels for the Setting
@@ -2407,9 +2407,9 @@ class AnalysisSetting extends Setting {
     }
 
     /* !
-      \brief  Displays the setting as a text containing Parameter names 
+      \brief  Displays the setting as a text containing Parameter names
               and their values
-      \param	$numberOfChannels Number of channels (optional, default 
+      \param	$numberOfChannels Number of channels (optional, default
               value is 0)
      */
     public function displayString($numberOfChannels = 0, $micrType = NULL) {
@@ -2422,8 +2422,8 @@ class AnalysisSetting extends Setting {
                 && $colocAnalysis == False) {
                 continue;
             }
-            
-            $result = $result . 
+
+            $result = $result .
                 $parameter->displayString($this->numberOfChannels());
         }
         return $result;

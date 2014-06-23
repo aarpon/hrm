@@ -128,13 +128,13 @@ class Type {
 	*/
   private function getPieChart( DatabaseConnection $db, $variable, $group,
                                 $dateFilter, $groupFilter, $userNameFilter ) {
-      
+
       if (strstr($this->m_Name, 'Coloc')) {
           $colocFilter = " AND ColocAnalysis = '1' ";
       } else {
           $colocFilter = " ";
       }
-      
+
     // Get data
     // -------------------------------------------------------------------------
     $row      = $db->execute( "SELECT COUNT( id ) FROM statistics WHERE " .
@@ -160,7 +160,7 @@ class Type {
       $data = "[";
 
       for ( $i = 0; $i < $numEntities; $i++ ) {
-          
+
         // Get current username
         $row = $entities->FetchRow( );
         $variableName = $row[ 0 ];
@@ -769,8 +769,7 @@ class Stats {
 	\return	True if the user is the admin user, false otherwise.
   */
   private function isAdmin(  ) {
-    $user = new User();
-    return ( $this->m_Username == $user->getAdminName() );
+    return ( $this->m_Username == User::getAdminName() );
   }
 
   /*!
@@ -803,9 +802,9 @@ class Stats {
       // Export header
       $header = "Job id, Owner, Group, Start time, End time, Input format, " .
                 "Output format, PSF type, Microscope, Coloc run\n";
-      
+
       fwrite( $fileHandle, $header );
-      
+
       // Now export the data
       while ( $row = $res->FetchRow( ) ) {
 
