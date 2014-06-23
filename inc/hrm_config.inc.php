@@ -8,13 +8,15 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-if (!isset($isServer))
-	$isServer = false;
+if (!isset($isServer)) {
+    $isServer = false;
+}
 
-if ($isServer == true)
-	require_once(dirname( __FILE__ ) . "/../config/hrm_server_config.inc");
-else
-	require_once(dirname( __FILE__ ) . "/../config/hrm_client_config.inc");
+if ($isServer == true) {
+    require_once(dirname(__FILE__) . "/../config/hrm_server_config.inc");
+} else {
+    require_once(dirname( __FILE__ ) . "/../config/hrm_client_config.inc");
+}
 
 // This is a hidden parameter for advanced users
 if (!isset($userManager)) {
@@ -23,5 +25,4 @@ if (!isset($userManager)) {
     // creating an empty directory for each new user.
     $userManager = "bin/hrm";
 }
-
 ?>
