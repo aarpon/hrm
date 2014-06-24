@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+        PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+
+    <title>Huygens Remote Manager</title>
+    <link rel="SHORTCUT ICON" href="images/hrm.ico"/>
+    <link rel="stylesheet" href="scripts/jqTree/jqtree.css">
+    <link rel="stylesheet" href="scripts/jquery-ui/jquery-ui-1.9.1.custom.css">
+
+    <!-- Include jQuery -->
+    <script type="text/javascript" src="scripts/jquery-1.8.3.min.js"></script>
+
+    <script type="text/javascript" src="scripts/common.js"></script>
+    <script type="text/javascript" src="scripts/omero.js"></script>
+
+
+    <script type="text/javascript"
+            src="scripts/settings.js"></script>
+    <script type="text/javascript"
+            src="scripts/common.js"></script>
+    <script type="text/javascript"
+            src="scripts/ajax_utils.js"></script>
+
+    <style type="text/css">
+
+        @import url("css/default.css");
+    </style>
+
+</head>
+
+<body data-ng-app="hrmApp">
+
+<!--
+  // Use the great Tooltip JavaScript Library by Walter Zorn
+-->
+<script type="text/javascript" src="./scripts/wz_tooltip/wz_tooltip.js"></script>
+
+<div id="basket">
+
+<div id="title">
+    <h1>
+        Huygens Remote Manager
+            <span id="about">
+            v3.1.1</span>
+    </h1>
+    <div id="logo"></div>
+</div>
+
+<!--
+  Tooltips
+-->
+    <span class="toolTip" id="ttSpanCreate">
+        Create a new parameter set with the specified name.
+    </span>
+    <span class="toolTip" id="ttSpanEdit">
+        Edit the selected parameter set.
+    </span>
+    <span class="toolTip" id="ttSpanClone">
+        Copy the selected parameter set to a new one with the
+      specified name.</span>
+    <span class="toolTip" id="ttSpanDelete">
+        Delete the selected parameter set.
+    </span>
+            <span class="toolTip" id="ttSpanDefault">
+            Sets (or resets) the selected parameter set as the default one
+            .</span>
+        <span class="toolTip" id="ttSpanCopyTemplate">Copy a template.
+        </span>
+        <span class="toolTip" id="ttSpanBack">
+        Go back to step 1/5 - Select images.        </span>
+        <span class="toolTip" id="ttSpanForward">
+        Continue to step 3/5 - Restoration parameters.        </span>
+
+<div id="nav">
+    <div id="navleft">
+        <ul>
+            <li><a href="http://www.svi.nl/HuygensRemoteManagerHelpSelectParameterSettings" onclick="this.target='_blank';return true;"><img src="images/help.png" alt="help" />&nbsp;Help</a></li>        </ul>
+    </div>
+    <div id="navright">
+        <ul>
+            <li>
+                <img src="images/user.png" alt="user" />
+                &nbsp;olivier</li>
+            <li>
+                <a href="file_management.php?folder=src">
+                    <img src="images/rawdata_small.png" alt="raw images" />
+                    &nbsp;Raw images
+                </a>
+            </li>
+            <li>
+                <a href="select_parameter_settings.php?home=home">
+                    <img src="images/home.png" alt="home" />&nbsp;Home
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="clear"></div>
+</div>
+
+
+<div id="content" ng-controller="settingsController">
+
+    <h3><img alt="ImageParameters" src="./images/image_parameters.png"
+             width="40"/>&nbsp;&nbsp;Step
+        2/5        - Image parameters</h3>
+    <form method="post" action="">
+
+        <fieldset>
+            <legend>Template image parameters</legend>
+            <p class="message_small">
+                These are the parameter sets prepared by your administrator.
+            </p>
+            <div id="templates">
+                <input type="text" ng-model="settingname" placeholder="Search...">
+                <select label="public" name="public_setting" size="5"
+                        ng-model="selectedsetting"
+                        ng-options="setting.name for setting in settings | ">
+                </select>
+            </div>
+        </fieldset>
+
+        <div id="selection">
+            <input name="copy_public"
+                   type="submit"
+                   value=""
+                   class="icon copy"
+                   onmouseover="TagToTip('ttSpanCopyTemplate' )"
+                   onmouseout="UnTip()" />
+        </div>
+
+    </form>
+
+
+    <form method="post" action="" id="select">
+
+        <fieldset>
+
+            <legend>Your image parameters</legend><p class="message_small">These are your (private) parameter sets.</p>
+            <div id="settings">
+                <select name="setting"
+                        onclick="ajaxGetParameterListForSet('setting', $(this).val(), false);"
+                        onchange="ajaxGetParameterListForSet('setting', $(this).val(), false);"
+                        size="8">
+                    <option>aaaaa</option>
+                    <option selected="selected">olivier - Conf 2ch 63x/1.4</option>
+                    <option class="default">trial</option>
+                </select>
+            </div>
+
+        </fieldset>
+
+        <div id="actions" class="parameterselection">
+            <input name="create"
+                   type="submit"
+                   value=""
+                   class="icon create"
+                   onmouseover="TagToTip('ttSpanCreate' )"
+                   onmouseout="UnTip()" />
+            <input name="edit"
+                   type="submit"
+                   value=""
+                   class="icon edit"
+                   onmouseover="TagToTip('ttSpanEdit' )"
+                   onmouseout="UnTip()" />
+            <input name="copy" type="submit"
+                   value=""
+                   class="icon clone"
+                   onmouseover="TagToTip('ttSpanClone' )"
+                   onmouseout="UnTip()" />
+            <input name="make_default" type="submit" value=""
+                   class="icon mark"
+                   onmouseover="TagToTip('ttSpanDefault' )"
+                   onmouseout="UnTip()" />
+            <input type="hidden" name="annihilate" />
+            <input name="delete"
+                   type="button"
+                   value=""
+                   class="icon delete"
+                   onclick="warn(this.form,
+                        'Do you really want to delete this parameter set?',
+                        this.form['setting'].selectedIndex )"
+                   onmouseover="TagToTip('ttSpanDelete' )"
+                   onmouseout="UnTip()" />
+            <label>New/clone parameter set name:
+                <input name="new_setting"
+                       type="text"
+                       class="textfield" />
+            </label>
+            <input name="OK" type="hidden" />
+        </div>
+        <div id="controls">
+            <input type="button"
+                   value=""
+                   class="icon previous"
+                   onclick="document.location.href='select_images.php'"
+                   onmouseover="TagToTip('ttSpanBack' )"
+                   onmouseout="UnTip()" />
+            <input type="submit"
+                   value=""
+                   class="icon next"
+                   onclick="process()"
+                   onmouseover="TagToTip('ttSpanForward' )"
+                   onmouseout="UnTip()" />
+        </div>
+
+    </form> <!-- select -->
+
+</div> <!-- content -->
+
+<div id="rightpanel">
+
+    <div id="info">
+
+        <h3>Quick help</h3>
+
+        <p><strong>Placing the mouse pointer over the various icons will
+            display a tooltip with explanations.</strong></p>
+
+        <p><strong>For a more detailed explanation on the possible actions,
+            please follow the
+            <img src="images/help.png" alt="Help" width="22" height="22" />
+            <b>Help</b> link in the navigation bar.</strong></p>
+
+        <p />
+
+        <p>In this step, you are asked to specify all parameters
+            relative to the images you want to restore.</p>      <p>These include: file information (geometry, voxel size);
+        microscopic parameters (such as microscope type, numerical aperture of
+        the objective, fluorophore wavelengths); whether a measured or a
+        theoretical PSF should be used; whether depth-dependent correction
+        on the PSF should be applied.</p>
+
+        <p>'Template image parameters' created by your facility manager can
+            be copied to the list of 'Your image parameters' and adapted to fit your
+            specific experimental setup.</p>
+    </div>
+
+    <div id="message">
+        <p></p>        </div>
+
+</div> <!-- rightpanel -->
+
+
+
+<div id="footer">
+
+    created 2004 by
+    <a href="mailto:volker.baecker@mri.cnrs.fr">Volker B&auml;cker</a>
+    and released under the terms of the
+    <a href="http://huygens-rm.org/home/?q=node/26">CeCILL license</a>
+    <br />extended 2006-2014 by
+    <span onmouseover="Tip('Login to see contact information.' )" onmouseout="UnTip()">Asheesh Gulati</span>, <span onmouseover="Tip('Login to see contact information.' )" onmouseout="UnTip()">Alessandra Griffa</span>, <span onmouseover="Tip('Login to see contact information.' )" onmouseout="UnTip()">Jos&eacute; Vi&ntilde;a</span>, <a href="mailto:daniel@svi.nl">Daniel Sevilla</a>, <a href="mailto:nikolaus.ehrenfeuchter@unibas.ch">Niko Ehrenfeuchter</a>, <a href="mailto:torsten.stoeter@ifn-magdeburg.de">Torsten St&ouml;ter</a> & <a href="mailto:aaron.ponti@bsse.ethz.ch">Aaron Ponti</a>
+</div>
+
+<div id="bottom">
+</div>
+
+
+</div> <!-- basket -->
+<script type="text/javascript" src="scripts/angular.min.js"></script>
+<script type="text/javascript" src="scripts/app.js"></script>
+<script type="text/javascript" src="scripts/controllers.js"></script>
+</body>
+
+</html>
+
+
