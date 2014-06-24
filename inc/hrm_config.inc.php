@@ -19,10 +19,10 @@ if ($isServer == true) {
 }
 
 // This is a hidden parameter for advanced users
-if (!isset($userManager)) {
+if (!isset($userManagerScript)) {
     // This default user manager script can be replaced in the configuration.
     // A demo server, for example, may use links to a demo directory instead of
     // creating an empty directory for each new user.
-    $userManager = "bin/hrm";
+    $userManagerScript = "bin/hrm";
 }
 ?>
