@@ -16,7 +16,7 @@ global $email_admin;
 global $image_host;
 global $image_folder;
 global $image_source;
-global $userManager;
+global $userManagerScript;
 
 session_start();
 
@@ -149,7 +149,7 @@ if (isset($_POST['accept'])) {
         $mail->setSubject("HRM account activated");
         $mail->setMessage($text);
         $mail->send();
-        shell_exec("$userManager create \"" . $clean['username'] . "\"");
+        shell_exec("$userManagerScript create \"" . $clean['username'] . "\"");
     } else $message = "Database error, please inform the administrator";
 } else if (isset($_POST['reject'])) {
     $email = $db->emailAddress($clean['username']);
@@ -168,7 +168,7 @@ if (isset($_POST['accept'])) {
         $result = $db->deleteUser($clean['username']);
         // TODO refactor
         if ($result) {
-            shell_exec("$userManager delete \"" . $_POST['username'] . "\"");
+            shell_exec("$userManagerScript delete \"" . $_POST['username'] . "\"");
         } else {
             $message = "Database error, please inform the administrator";
         }
