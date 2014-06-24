@@ -1518,7 +1518,8 @@ div.multichannel {
 }
 
 option.default {
-    color: #ff0000;
+    font-weight: bold;
+    background: #c5d4ff;
 }
 
 .line {

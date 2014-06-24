@@ -280,7 +280,7 @@ include("header.inc.php");
 
 
     <div id="content">
-
+    <h2>Current Parameter Set: "<?php  echo $_SESSION['setting']->name(); ?>"</h2>
         <h2>STED parameters </h2>
 
         <form method="post" action="" id="select">

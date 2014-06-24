@@ -138,7 +138,7 @@ include("header.inc.php");
 
 
     <div id="content">
-
+    <h2>Current Parameter Set: "<?php  echo $_SESSION['setting']->name(); ?>"</h2>
         <h2>Optical parameters / 1</h2>
 
         <form method="post" action="" id="select">

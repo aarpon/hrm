@@ -85,6 +85,7 @@ include("header.inc.php");
 
 
     <div id="content">
+        <h2>Current Parameter Set: "<?php  echo $_SESSION['analysis_setting']->name(); ?>"</h2>
 
         <h2>Analysis - colocalization</h2>
 
