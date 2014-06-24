@@ -93,11 +93,14 @@ if (!$_SESSION['user']->isAdmin()) {
     exit();
 }
 
+// Get the UserManager
+$userManager = UserManagerFactory::getUserManager($_SESSION['user']->isAdmin());
+
 // Now we have a valid admin user logon, we can continue
 $db = new DatabaseConnection();
 
 if (isset($_GET['seed'])) {
-    if (!$_SESSION['user']->existsUserRequestWithSeed($_GET['seed'])) {
+    if (!$userManager->existsUserRequestWithSeed($_GET['seed'])) {
         header("Location: " . "login.php");
         exit();
     }

@@ -1722,6 +1722,25 @@ class DatabaseConnection {
 
   }
 
+  /*!
+    \brief  Checks whether a user with a given seed exists in the database
+
+    If a user requests an account, his username is added to the database with
+    a random seed as status.
+
+    \return true if a user with given seed exists, false otherwise
+  */
+  public function existsUserRequestWithSeed($seed) {
+      $query = "SELECT status FROM username WHERE status = '" . $seed . "'";
+      $value = $this->queryLastValue($query);
+      if ($value == false) {
+          return false;
+      } else {
+          return ( $value == $seed );
+      }
+
+  }
+
   /*
                               PRIVATE FUNCTIONS
   */

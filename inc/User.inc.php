@@ -125,41 +125,6 @@ class User {
     }
 
     /*!
-      \brief  Check whether a new user request has been accepted by the
-              administrator
-
-      This should only be used if authentication is against the HRM user management.
-
-      \return true if the user has been accepted; false otherwise.
-    */
-    public function isStatusAccepted() {
-
-        if ($this->isAdmin()) {
-            return true;
-        }
-
-        $authenticator = AuthenticatorFactory::getAuthenticator(false);
-        return $authenticator->isAccepted($this->name());
-    }
-
-    /*!
-      \brief  Checks whether the user has been suspended by the administrator
-
-      This should only be used if authentication is against the HRM user management.
-
-      \return true if the user was suspended by the administrator; false otherwise.
-    */
-    public function isSuspended() {
-
-        if ($this->isAdmin()) {
-            return false;
-        }
-
-        $authenticator = AuthenticatorFactory::getAuthenticator(false);
-        return $authenticator->isSuspended($this->name());
-    }
-
-    /*!
       \brief  Returns the User e-mail address
       \return the User e-mail address
     */
@@ -208,25 +173,6 @@ class User {
         }
         $db = new DatabaseConnection();
         return $db->getNumberOfQueuedJobsForUser($this->name);
-    }
-
-    /*!
-      \brief  Checks whether a user with a given seed exists in the database
-
-      If a user requests an account, his username is added to the database with
-      a random seed as status.
-
-      \return true if a user with given seed exists, false otherwise
-    */
-    public function existsUserRequestWithSeed($seed) {
-        $query = "SELECT status FROM username WHERE status = '" . $seed . "'";
-        $db = new DatabaseConnection();
-        $value = $db->queryLastValue($query);
-        if ($value == false) {
-            return false;
-        } else {
-            return ( $value == $seed );
-        }
     }
 
 }
