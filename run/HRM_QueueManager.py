@@ -49,7 +49,8 @@ class EventHandler(pyinotify.ProcessEvent):
     def process_IN_CREATE(self, event):
         logw("Found new jobfile '%s', processing..." % event.pathname)
         job = HRM.JobDescription(event.pathname, 'file')
-        pprint.pprint(job)
+        logi("Dict assembled from the processed job file:")
+        logi(pprint.pformat(job))
         self.joblist.append(job)
         logd("Current joblist: %s" % self.joblist)
 
@@ -162,18 +163,19 @@ def main():
     # documentation for more details about this:
     # http://gc3pie.readthedocs.org/en/latest/programmers/api/gc3libs.html
     if args.config:
-        logw('Creating an instance of a GC3Pie engine using the configuration '
+        logi('Creating an instance of a GC3Pie engine using the configuration '
              'file "%s".' % args.config)
         engine = gc3libs.create_engine(args.config)
     else:
-        logw('Creating an instance of a GC3Pie engine using the configuration '
+        logi('Creating an instance of a GC3Pie engine using the configuration '
              'file present in your home directory.')
         engine = gc3libs.create_engine()
     # select a specific resource if requested on the cmdline:
     if args.resource:
         engine.select_resource(args.resource)
 
-    print('Added watch to "%s", press Ctrl-C to abort.' % watchdir)
+    print('HRM Queue Manager started, watching spool directory "%s", '
+          'press Ctrl-C to abort.' % watchdir)
     # FIXME: Ctrl-C while a job is running leaves it alone (and thus as well
     # the files transferred for / generated from processing)
     while True:
