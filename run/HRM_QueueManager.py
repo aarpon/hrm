@@ -153,6 +153,10 @@ def main():
 
     logw('Creating an instance of a GC3Pie engine using the configuration '
         'file present in your home directory.')
+    # If no configuration file is passed to create_engine(), it will take the
+    # default config which is expected to be in ~/.gc3/gc3pie.conf. See the API
+    # documentation for more details about this:
+    # http://gc3pie.readthedocs.org/en/latest/programmers/api/gc3libs.html
     engine = gc3libs.create_engine()
     # select a specific resource if requested on the cmdline:
     if args.resource:
