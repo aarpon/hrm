@@ -7,7 +7,6 @@ The prototype of a new GC3Pie-based Queue Manager for HRM.
 """
 
 # TODO:
-# - add commandline parameter to specify gc3pie config file (#254)
 # - check if a sane (usable) gc3pie configuration exists!
 # - if instantiating a gc3libs.Application fails, the QM stops watching and
 #   parsing new job files (resulting in a "dead" state right now), so
@@ -136,6 +135,8 @@ def main():
     argparser = argparse.ArgumentParser(description=__doc__)
     argparser.add_argument('-s', '--spooldir', required=True,
         help='spooling directory for new jobfiles')
+    argparser.add_argument('-c', '--config', required=False,
+        help='GC3Pie config file (default: ~/.gc3/gc3pie.conf)')
     argparser.add_argument('-r', '--resource', required=False,
         help='GC3Pie resource name')
     try:
@@ -152,13 +153,18 @@ def main():
     watchdir = args.spooldir
     wdd = wm.add_watch(watchdir, mask, rec=False)
 
-    logw('Creating an instance of a GC3Pie engine using the configuration '
-        'file present in your home directory.')
     # If no configuration file is passed to create_engine(), it will take the
     # default config which is expected to be in ~/.gc3/gc3pie.conf. See the API
     # documentation for more details about this:
     # http://gc3pie.readthedocs.org/en/latest/programmers/api/gc3libs.html
-    engine = gc3libs.create_engine()
+    if args.config:
+        logw('Creating an instance of a GC3Pie engine using the configuration '
+             'file "%s".' % args.config)
+        engine = gc3libs.create_engine(args.config)
+    else:
+        logw('Creating an instance of a GC3Pie engine using the configuration '
+             'file present in your home directory.')
+        engine = gc3libs.create_engine()
     # select a specific resource if requested on the cmdline:
     if args.resource:
         engine.select_resource(args.resource)
