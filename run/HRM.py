@@ -41,27 +41,28 @@ class JobDescription(dict):
         if (srctype == 'file'):
             self.name = "file '%s'" % job
             self._parse_jobfile(job)
-            pprint.pprint(self.job)
         elif (srctype == 'string'):
             # TODO: _parse_jobstring(job)
             self.name = "string received from socket"
             raise Exception("Source type 'string' not yet implemented!")
         else:
             raise Exception("Unknown source type '%s'" % srctype)
+        pprint.pprint("Finished initialization of JobDescription().")
+        pprint.pprint(self)
 
 
     # get/set/repr are now inherited from dict, thus we don't need to
     # redefine them ourselves here anymore:
     # def __getitem__(self, key):
-    #     return self.job[key]
+    #     return self[key]
 
     # def __setitem__(self, key, value):
-    #     self.job[key] = value
+    #     self[key] = value
 
     # def __repr__(self):
     #     # TODO: figure out why pprint.pformat() behaves different on repr()
     #     # compared to pformat({})
-    #     return repr(self.job)
+    #     return repr(self)
 
     def _parse_jobfile(self, fname):
         """Initialize ConfigParser for a file and run parsing method."""
@@ -85,24 +86,24 @@ class JobDescription(dict):
         if not 'hrmjobfile' in self._sections:
             raise ValueError("Error parsing job from %s." % self.name)
         try:
-            self.job['ver'] = self.jobparser.get('hrmjobfile', 'version')
+            self['ver'] = self.jobparser.get('hrmjobfile', 'version')
         except ConfigParser.NoOptionError:
             raise ValueError("Can't find version in %s." % self.name)
-        if not (self.job['ver'] == '2'):
-            raise ValueError("Unexpected version in %s." % self.job['ver'])
+        if not (self['ver'] == '2'):
+            raise ValueError("Unexpected version in %s." % self['ver'])
         try:
-            self.job['user'] = self.jobparser.get('hrmjobfile', 'username')
+            self['user'] = self.jobparser.get('hrmjobfile', 'username')
         except ConfigParser.NoOptionError:
             raise ValueError("Can't find username in %s." % self.name)
         try:
-            self.job['type'] = self.jobparser.get('hrmjobfile', 'jobtype')
+            self['type'] = self.jobparser.get('hrmjobfile', 'jobtype')
         except ConfigParser.NoOptionError:
             raise ValueError("Can't find jobtype in %s." % self.name)
         # from here on a jobtype specific parsing must be done:
-        if self.job['type'] == 'hucore':
+        if self['type'] == 'hucore':
             self._parse_job_hucore()
         else:
-            raise ValueError("Unknown jobtype '%s'" % self.job['type'])
+            raise ValueError("Unknown jobtype '%s'" % self['type'])
 
     def _parse_job_hucore(self):
         """Do the specific parsing of "hucore" type jobfiles.
@@ -113,21 +114,21 @@ class JobDescription(dict):
         Returns
         -------
         void
-            All information is added to the "self.job" dict.
+            All information is added to the "self" dict.
         """
         # the "hucore" section:
         try:
-            self.job['exec'] = self.jobparser.get('hucore', 'executable')
+            self['exec'] = self.jobparser.get('hucore', 'executable')
         except ConfigParser.NoOptionError:
             raise ValueError("Can't find executable in %s." % self.name)
         try:
-            self.job['template'] = self.jobparser.get('hucore', 'template')
+            self['template'] = self.jobparser.get('hucore', 'template')
         except ConfigParser.NoOptionError:
             raise ValueError("Can't find template in %s." % self.name)
         # and the input file(s):
         if not 'inputfiles' in self._sections:
             raise ValueError("No input files defined in %s." % self.name)
-        self.job['infiles'] = []
+        self['infiles'] = []
         for option in self.jobparser.options('inputfiles'):
             infile = self.jobparser.get('inputfiles', option)
-            self.job['infiles'].append(infile)
+            self['infiles'].append(infile)
