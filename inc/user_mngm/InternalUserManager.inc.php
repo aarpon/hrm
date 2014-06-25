@@ -68,13 +68,9 @@ class InternalUserManager extends AbstractUserManager {
         $db = new DatabaseConnection();
         $db->updateUserNoPassword($user->name(), $user->emailAddress(),
             $user->userGroup());
-    }
 
-    /*!
-    \param User $user User to be created (added to the HRM user database)
-    */
-    public function createUser(User $user) {
-        throw new Exception("IMPLEMENT ME!");
+        // Update last access time
+        $db->updateLastAccessDate($user->name());
     }
 
 } 

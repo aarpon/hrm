@@ -82,8 +82,7 @@ if (isset($_POST['password']) && isset($_POST['username'])) {
 		$tentativeUser ->setName($clean['username']);
 		$tentativeUser ->logOut(); // TODO
 
-		if ($tentativeUser->logIn($clean['username'], $clean['password'],
-                $_SERVER['REMOTE_ADDR'])) {
+		if ($tentativeUser->logIn($clean['username'], $clean['password'])) {
 			if ($tentativeUser ->isLoggedIn()) {
 				// Make sure that the user source and destination folders exist
 				{

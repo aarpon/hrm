@@ -32,11 +32,6 @@ abstract class AbstractUserManager {
     abstract public static function canModifyUsers();
 
     /*!
-    \param User $user User to be created (added to the HRM user database)
-    */
-    abstract public function createUser(User $user);
-
-    /*!
     \param User $user User to be updated in the database.
     \
     \return true if the update was successful; false otherwise.
@@ -111,4 +106,16 @@ abstract class AbstractUserManager {
         return ($db->checkUser($user->name()));
     }
 
+    /*!
+    \brief Create a new user.
+    \param $username String User login name.
+    \param $password String User password.
+    \param $email    String User e-mail address,
+    \param $group    String User group.
+    \param $status   Char   Status ('a' or 'd')
+    */
+    public function createUser($username, $password, $email, $group, $status) {
+        $db = new DatabaseConnection();
+        $db->addNewUser($username, $password, $email, $group, 'a');
+    }
 };

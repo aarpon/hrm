@@ -47,7 +47,9 @@ class ExternalReadOnlyUserManager extends AbstractUserManager {
 
         // Make sure the user is in the database, otherwise add it
         if (! $this->existsInHRM($user)) {
-            $this->createUser($user);
+            $randomPasswd = substr(md5(microtime()), rand(0, 26), 12);
+            $this->createUser($user->name(), $randomPasswd,
+                $user->emailAddress(), $user->userGroup(), 'a');
             return;
         }
 
@@ -55,13 +57,11 @@ class ExternalReadOnlyUserManager extends AbstractUserManager {
         $db = new DatabaseConnection();
         $db->updateUserNoPassword($user->name(), $user->emailAddress(),
             $user->userGroup());
+
+        // Update last access time
+        $db->updateLastAccessDate($user->name());
+
     }
 
-    /*!
-    \param User $user User to be created (added to the HRM user database)
-    */
-    public function createUser(User $user) {
-        throw new Exception("IMPLEMENT ME!");
-    }
 
 }
