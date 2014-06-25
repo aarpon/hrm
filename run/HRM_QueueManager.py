@@ -16,7 +16,6 @@ The prototype of a new GC3Pie-based Queue Manager for HRM.
 # - let gc3pie decide when to dispatch a job (currently the call to run_job()
 #   is blocking and thus the whole thing is limited to single sequential job
 #   instances, even if more resources were available
-# - add verbosity parameter to adjust the loglevel
 
 # stdlib imports
 import sys
@@ -32,10 +31,9 @@ import pprint
 import HRM
 
 import logging
+# we set a default loglevel and add some shortcuts for logging:
 loglevel = logging.WARN
-# loglevel = logging.DEBUG
 gc3libs.configure_logger(loglevel, "qmgc3")
-# some shortcuts for logging:
 logw = gc3libs.log.warn
 logi = gc3libs.log.info
 logd = gc3libs.log.debug
@@ -139,10 +137,16 @@ def main():
         help='GC3Pie config file (default: ~/.gc3/gc3pie.conf)')
     argparser.add_argument('-r', '--resource', required=False,
         help='GC3Pie resource name')
+    argparser.add_argument('-v', '--verbosity', dest='verbosity',
+        action='count', default=0)
     try:
         args = argparser.parse_args()
     except IOError as e:
         argparser.error(str(e))
+
+    # set the loglevel as requested on the commandline
+    loglevel = logging.WARN - (args.verbosity * 10)
+    gc3libs.configure_logger(loglevel, "qmgc3")
 
     joblist = []
 
