@@ -31,10 +31,13 @@ import pprint
 import HRM
 
 import logging
-# loglevel = logging.DEBUG
 loglevel = logging.WARN
+# loglevel = logging.DEBUG
 gc3libs.configure_logger(loglevel, "qmgc3")
-warn = gc3libs.log.warn
+# some shortcuts for logging:
+logw = gc3libs.log.warn
+logi = gc3libs.log.info
+logd = gc3libs.log.debug
 
 
 class EventHandler(pyinotify.ProcessEvent):
@@ -45,11 +48,11 @@ class EventHandler(pyinotify.ProcessEvent):
         self.joblist = joblist
 
     def process_IN_CREATE(self, event):
-        warn("Found new jobfile '%s', processing..." % event.pathname)
+        logw("Found new jobfile '%s', processing..." % event.pathname)
         job = HRM.JobDescription(event.pathname, 'file')
         pprint.pprint(job)
         self.joblist.append(job)
-        # warn(self.joblist)
+        logd("Current joblist: %s" % self.joblist)
 
 
 class HucoreDeconvolveApp(gc3libs.Application):
@@ -62,7 +65,7 @@ class HucoreDeconvolveApp(gc3libs.Application):
     """
 
     def __init__(self, job):
-        warn('Instantiating a HucoreDeconvolveApp:\n%s' % job)
+        logw('Instantiating a HucoreDeconvolveApp:\n%s' % job)
         # we need to add the template (with the local path) to the list of
         # files that need to be transferred to the system running hucore:
         job['infiles'].append(job['template'])
@@ -118,13 +121,13 @@ def run_job(engine, job):
         engine.progress()
         curstate = app.execution.state
         if not (curstate == laststate):
-            warn("Job in status %s " % curstate)
+            logw("Job in status %s " % curstate)
 
         laststate = app.execution.state
         # Wait a few seconds...
         time.sleep(1)
-    warn("Job is now terminated.")
-    warn("The output of the application is in `%s`." %  app.output_dir)
+    logw("Job is now terminated.")
+    logw("The output of the application is in `%s`." %  app.output_dir)
 
 
 def main():
@@ -147,7 +150,7 @@ def main():
     watchdir = args.spooldir
     wdd = wm.add_watch(watchdir, mask, rec=False)
 
-    warn('Creating an instance of a GC3Pie engine using the configuration '
+    logw('Creating an instance of a GC3Pie engine using the configuration '
         'file present in your home directory.')
     engine = gc3libs.create_engine()
     # select a specific resource if requested on the cmdline:
