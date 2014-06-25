@@ -7,6 +7,7 @@ The prototype of a new GC3Pie-based Queue Manager for HRM.
 """
 
 # TODO:
+# - add commandline parameter to specify gc3pie config file (#254)
 # - check if a sane (usable) gc3pie configuration exists!
 # - if instantiating a gc3libs.Application fails, the QM stops watching and
 #   parsing new job files (resulting in a "dead" state right now), so
