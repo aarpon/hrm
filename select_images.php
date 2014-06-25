@@ -418,11 +418,20 @@ if ($allFiles == null) {
             $files = $allFiles;
 
         }
+        $selectedFiles = $_SESSION['fileserver']->selectedFiles();
 
         foreach ($files as $key => $file) {
             if ($_SESSION['fileserver']->checkAgainstFormat($file, $format)) {
-                echo "<option>" . $file . "</option>\n";
-                $keyArr[$file] = $key;
+                $exists = false;
+                foreach ($selectedFiles as $skey => $sfile) {
+                    if (strcmp($sfile, $file) == 0) {
+                        $exists=true;
+                    }
+                }
+                if(!$exists){
+                    echo "<option>" . $file . "</option>\n";
+                    $keyArr[$file] = $key;
+                }
             }
         }
     }
