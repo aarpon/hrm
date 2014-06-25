@@ -49,15 +49,36 @@ class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
     private $m_ValidGroups;
 
     /*!
+    \var    $m_UsernameSuffix
+    \brief  TODO Complete
+    */
+    private $m_UsernameSuffix;
+
+    /*!
+    \var    $m_UsernameSuffixReplaceMatch
+    \brief  TODO Complete
+    */
+    private $m_UsernameSuffixReplaceMatch;
+
+    /*!
+    \var    $m_UsernameSuffixReplaceString
+    \brief  TODO Complete
+    */
+    private $m_UsernameSuffixReplaceString;
+
+    /*!
       \brief	Constructor: instantiates an ActiveDirectoryAuthenticator object with
       the settings specified in the configuration file. No
       parameters are passed to the constructor.
      */
     public function __construct() {
 
-        global $ACCOUNT_SUFFIX, $BASE_DN, $DOMAIN_CONTROLLERS, $AD_USERNAME,
-        $AD_PASSWORD, $REAL_PRIMARY_GROUP, $USE_SSL, $USE_TLS, $RECURSIVE_GROUPS,
-        $GROUP_INDEX, $VALID_GROUPS;
+        global $ACCOUNT_SUFFIX, $AD_PORT, $BASE_DN, $DOMAIN_CONTROLLERS,
+               $AD_USERNAME, $AD_PASSWORD, $REAL_PRIMARY_GROUP, $USE_SSL,
+               $USE_TLS, $RECURSIVE_GROUPS, $GROUP_INDEX, $VALID_GROUPS,
+               $AD_USERNAME_SUFFIX, $AD_USERNAME_SUFFIX_REPLACE_MATCH,
+               $AD_USERNAME_SUFFIX_REPLACE_STRING;
+
 
         // Include configuration file
         include(dirname(__FILE__) . "/../../config/active_directory_config.inc");
@@ -65,6 +86,7 @@ class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
         // Set up the adLDAP object
         $options = array(
             'account_suffix'     => $ACCOUNT_SUFFIX,
+            'ad_port'            => $AD_PORT,
             'base_dn'            => $BASE_DN,
             'domain_controllers' => $DOMAIN_CONTROLLERS,
             'admin_username'     => $AD_USERNAME,
@@ -76,6 +98,10 @@ class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
 
         $this->m_GroupIndex      =  $GROUP_INDEX;
         $this->m_ValidGroups     =  $VALID_GROUPS;
+
+        $this->m_UsernameSuffix = $AD_USERNAME_SUFFIX;
+        $this->m_UsernameSuffixReplaceMatch = $AD_USERNAME_SUFFIX_REPLACE_MATCH;
+        $this->m_UsernameSuffixReplaceString = $AD_USERNAME_SUFFIX_REPLACE_STRING;
 
         try {
             $this->m_AdLDAP = new adLDAP($options);
@@ -129,9 +155,15 @@ class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
     */
     public function getEmailAddress($username) {
 
+        // If needed, process the user name suffix for subdomains
+        $username .= $this->m_UsernameSuffix;
+        $username = ereg_replace($this->m_UsernameSuffixReplaceMatch,
+            $this->m_UsernameSuffixReplaceString, $username);
+
         // Get the email from AD
         $info = $this->m_AdLDAP->user()->infoCollection(
             $username, array("mail"));
+
         $this->m_AdLDAP->close();
         if (!$info) {
             return "";
@@ -145,6 +177,11 @@ class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
     \return String Group or "" if not found.
     */
     public function getGroup($username) {
+
+        // If needed, process the user name suffix for subdomains
+        $username .= $this->m_UsernameSuffix;
+        $username = ereg_replace($this->m_UsernameSuffixReplaceMatch,
+            $this->m_UsernameSuffixReplaceString, $username);
 
         // Get the user groups from AD
         $userGroups = $this->m_AdLDAP->user()->groups($username);
