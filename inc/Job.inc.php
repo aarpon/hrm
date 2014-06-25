@@ -127,7 +127,7 @@ class Job {
                                   'ri'             => 'Sample refractive index',
                                   'ril'            => 'Lens refractive index',
                                   'pr'             => 'Pinhole size (nm)',
-                                  'ps'             => 'Pinhole spacing (nm)',
+                                  'ps'             => 'Pinhole spacing (&mu;m)',
                                   'ex'             => 'Excitation wavelength (nm)',
                                   'em'             => 'Emission wavelength (nm)',
                                   'micr'           => 'Microscope type',
