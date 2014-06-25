@@ -83,27 +83,24 @@ if (isset($_POST['password']) && isset($_POST['username'])) {
 		$tentativeUser ->logOut(); // TODO
 
 		if ($tentativeUser->logIn($clean['username'], $clean['password'])) {
+
 			if ($tentativeUser ->isLoggedIn()) {
-				// Make sure that the user source and destination folders exist
-				{
-                    $fileServer = new FileServer($clean['username']);
-					if ($fileServer->isReachable() == false) {
-						shell_exec($userManagerScript . " create " . $clean['username']);
-					}
-				}
 
-				// TODO unregister also "setting" and "task_setting"
-				unset($_SESSION['editor']);
-
-				// Register the user in the session
+                // Register the user in the session
 				$_SESSION['user'] = $tentativeUser;
 
-                // Update the user data in the database
+                // Make sure that the user source and destination folders exist
+                $fileServer = new FileServer($tentativeUser->name());
+                if (! $fileServer->isReachable()) {
+                    $userManager->createUserFolders($tentativeUser);
+                }
+
+                // Update the user data and the access date in the database
                 $userManager->updateUser($_SESSION['user']);
 
-                // If the database is not up-to-date go straigth to the
+                // If the database is not up-to-date go straight to the
                 // database update page
-                if (!System::isDBUpToDate()) {
+                if (! System::isDBUpToDate()) {
                     if ($_SESSION['user']->isAdmin()) {
                         header("Location: update.php");
 					    exit();

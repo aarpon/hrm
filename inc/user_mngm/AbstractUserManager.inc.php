@@ -3,7 +3,9 @@
 // Copyright and license notice: see license.txt
 
 require_once(dirname(__FILE__) . "/../System.inc.php");
+require_once(dirname(__FILE__) . "/../hrm_config.inc.php");
 
+global $userManagerScript;
 
 /*!
   \class	AbstractUserManager
@@ -118,4 +120,17 @@ abstract class AbstractUserManager {
         $db = new DatabaseConnection();
         $db->addNewUser($username, $password, $email, $group, 'a');
     }
+
+    /*!
+    \brief Create User data folders.
+    \@param User $user User for which to create the folders.
+    */
+    public function createUserFolders(User $user) {
+
+        // TODO Use the Shell classes!
+
+        global $userManagerScript;
+        shell_exec($userManagerScript . " create " . $user->name());
+    }
+
 };
