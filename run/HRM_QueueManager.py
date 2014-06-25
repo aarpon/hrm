@@ -8,6 +8,10 @@ The prototype of a new GC3Pie-based Queue Manager for HRM.
 
 # TODO:
 # - check if a sane (usable) gc3pie configuration exists!
+# - if instantiating a gc3libs.Application fails, the QM stops watching and
+#   parsing new job files (resulting in a "dead" state right now), so
+#   exceptions on dispatching jobs need to be caught and some notification
+#   needs to be sent/printed to the user (later this should trigger an email).
 # - move processed jobfiles to cur/done
 # - let gc3pie decide when to dispatch a job (currently the call to run_job()
 #   is blocking and thus the whole thing is limited to single sequential job
