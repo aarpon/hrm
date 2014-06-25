@@ -164,6 +164,8 @@ def main():
     while True:
         try:
             if len(joblist) > 0:
+                logd("Current joblist: %s" % self.joblist)
+                logd("Dispatching next job.")
                 run_job(engine, joblist.pop(0))
             time.sleep(1)
         except KeyboardInterrupt:
