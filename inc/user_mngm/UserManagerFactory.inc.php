@@ -40,14 +40,14 @@ class UserManagerFactory {
 
             case "LDAP":
 
-                require_once(dirname(__FILE__) ."/ExternalUserManager.inc.php");
-                return new ExternalUserManager();
+                require_once(dirname(__FILE__) . "/ExternalReadOnlyUserManager.inc.php");
+                return new ExternalReadOnlyUserManager();
 
             case "ACTIVE_DIR":
 
                 // Initialize the ActiveDirectoryAuthenticator object
-                require_once(dirname(__FILE__) ."/ExternalUserManager.inc.php");
-                return new ExternalUserManager();
+                require_once(dirname(__FILE__) . "/ExternalReadOnlyUserManager.inc.php");
+                return new ExternalReadOnlyUserManager();
 
             default:
 

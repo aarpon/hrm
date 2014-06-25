@@ -99,6 +99,9 @@ if (isset($_POST['password']) && isset($_POST['username'])) {
 				// Register the user in the session
 				$_SESSION['user'] = $tentativeUser;
 
+                // Update the user data in the database
+                $userManager->updateUser($_SESSION['user']);
+
                 // If the database is not up-to-date go straigth to the
                 // database update page
                 if (!System::isDBUpToDate()) {

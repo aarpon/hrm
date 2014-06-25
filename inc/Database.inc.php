@@ -219,7 +219,10 @@ class DatabaseConnection {
   	\return	$success	True if success; false otherwise
   */
   public function addNewUser($username, $password, $email, $group, $status) {
-	$query = "INSERT INTO username (name, password, email, research_group, status) ".
+      $username = mysql_real_escape_string($username);
+      $email = mysql_real_escape_string($email);
+      $group = mysql_real_escape_string($group);
+      $query = "INSERT INTO username (name, password, email, research_group, status) ".
                         "VALUES ('".$username."', ".
                                 "'".md5($password)."', ".
                                 "'".$email."', ".
@@ -270,6 +273,39 @@ class DatabaseConnection {
 	  return false;
 	}
   }
+
+    /*!
+    \brief	Updates an existing user in the database (all parameters are
+            expected to be already validated!)
+
+    The last access time will be updated as well.
+
+    \param	$username  	The name of the user (used to query)
+    \param	$email  	E-mail address
+    \param	$group  	Research group
+
+    \return	$success	True if success; false otherwise
+    */
+    public function updateUserNoPassword($username, $email, $group) {
+
+        if ($email == "" || $group=="") {
+            report("User data update: e-mail and group cannot be empty! " .
+                "No changes to the database!", 0);
+            return false;
+        }
+
+        // Build query
+        $query = "UPDATE username SET email ='" . $email . "', " .
+                "research_group ='" . $group . "' " .
+                "WHERE name = '" . $username . "';";
+
+        $result = $this->execute($query);
+        if ( $result ) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
   /*!
 	\brief	Updates the status of an existing user in the database (username

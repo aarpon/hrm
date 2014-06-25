@@ -18,15 +18,39 @@ class User {
 
     /*!
     \var    $name
-    \brief  Name of the owner: could be a job id or a user's login name.
+    \brief  Name of the user.
     */
     protected $name;
+
+    /*!
+    \var    $emailAddress
+    \brief  E-mail address of the user.
+    */
+    protected $emailAddress;
+
+    /*!
+    \var    $group
+    \brief  Group of the user.
+    */
+    protected $group;
 
     /*!
     \var    $isLoggedIn
     \brief  True if the user is logged in; false otherwise.
     */
     private $isLoggedIn;
+
+    /*!
+      \brief  Constructor. Creates a new (unnamed) User.
+    */
+    function __construct() {
+
+        // Initialize members to empty
+        $this->name = "";
+        $this->emailAddress = "";
+        $this->group = "";
+        $this->isLoggedIn = False;
+    }
 
     /*!
     \brief  Returns the name of the Owner
@@ -42,16 +66,6 @@ class User {
     */
     public function setName($name) {
         $this->name = $name;
-    }
-
-    /*!
-      \brief  Constructor. Creates a new (unnamed) User.
-    */
-    function __construct() {
-
-        // Initialize members
-        $this->name = '';
-        $this->isLoggedIn = False;
     }
 
     /*!
@@ -92,13 +106,6 @@ class User {
             // Set isLoggedIn status to true
             $this->isLoggedIn = True;
 
-            // Update the last access in the database if using the
-            // internal HRM user management.
-            // \TODO Later, this will be extended to all authentication mechanisms.
-            if ($authenticateAgainst == 'MYSQL') {
-                $authenticator->updateLastAccessDate($this->name());
-            }
-
             // Store the entry in the log
             report("User " . $this->name() . " logged on.", 1);
 
@@ -125,14 +132,55 @@ class User {
     }
 
     /*!
+      \brief  Check whether a new user request has been accepted by the
+              administrator
+
+      This should only be used if authentication is against the HRM user management.
+
+      \return true if the user has been accepted; false otherwise.
+    */
+    public function isStatusAccepted() {
+
+        if ($this->isAdmin()) {
+            return true;
+        }
+
+        $authenticator = AuthenticatorFactory::getAuthenticator(false);
+        return $authenticator->isAccepted($this->name());
+    }
+
+    /*!
+      \brief  Checks whether the user has been suspended by the administrator
+
+      This should only be used if authentication is against the HRM user management.
+
+      \return true if the user was suspended by the administrator; false otherwise.
+    */
+    public function isSuspended() {
+
+        if ($this->isAdmin()) {
+            return false;
+        }
+
+        $authenticator = AuthenticatorFactory::getAuthenticator(false);
+        return $authenticator->isSuspended($this->name());
+    }
+
+    /*!
       \brief  Returns the User e-mail address
       \return the User e-mail address
     */
     public function emailAddress() {
 
-        // Get the user's email address
-        $authenticator = AuthenticatorFactory::getAuthenticator($this->isAdmin());
-        return $authenticator->getEmailAddress($this->name());
+        // If the email is already stored in the object, return it; otherwise
+        // retrieve it.
+        if ($this->emailAddress == "") {
+            $authenticator = AuthenticatorFactory::getAuthenticator($this->isAdmin());
+            $this->emailAddress = $authenticator->getEmailAddress($this->name());
+        }
+
+        return $this->emailAddress;
+
     }
 
     /*!
@@ -157,9 +205,14 @@ class User {
     */
     public function userGroup() {
 
-        // Get the user's group.
-        $authenticator = AuthenticatorFactory::getAuthenticator($this->isAdmin());
-        return $authenticator->getGroup($this->name());
+        // If the group is already stored in the object, return it; otherwise
+        // retrieve it.
+        if ($this->group == "") {
+            $authenticator = AuthenticatorFactory::getAuthenticator($this->isAdmin());
+            $this->group = $authenticator->getGroup($this->name());
+        }
+
+        return $this->group;
 
     }
 
@@ -173,6 +226,25 @@ class User {
         }
         $db = new DatabaseConnection();
         return $db->getNumberOfQueuedJobsForUser($this->name);
+    }
+
+    /*!
+      \brief  Checks whether a user with a given seed exists in the database
+
+      If a user requests an account, his username is added to the database with
+      a random seed as status.
+
+      \return true if a user with given seed exists, false otherwise
+    */
+    public function existsUserRequestWithSeed($seed) {
+        $query = "SELECT status FROM username WHERE status = '" . $seed . "'";
+        $db = new DatabaseConnection();
+        $value = $db->queryLastValue($query);
+        if ($value == false) {
+            return false;
+        } else {
+            return ( $value == $seed );
+        }
     }
 
 }

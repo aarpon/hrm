@@ -16,42 +16,28 @@ global $image_source;
 global $userManager;
 
 /*!
-  \class   InternalUserManager
-  \brief   Manages the HRM users without relying on any external authentication
-           or management solution.
+  \class   ExternalReadOnly
+  \brief   Manages the HRM users relying on an external authentication mechanism.
+           No user-related information can be modified using this Manager; for
+           instance, user password or e-mail address cannot be modified from
+           the HRM.
 */
 
-class InternalUserManager extends AbstractUserManager {
+class ExternalReadOnlyUserManager extends AbstractUserManager {
 
     /*!
-    \brief Return true since the HRM internal user management system
-           can create users.
+    \brief Return false since the external, read only manager can not
+           create users.
     \return always true.
     */
-    public static function canCreateUsers() { return true; }
+    public static function canCreateUsers() { return false; }
 
     /*!
-    \brief Return true since the HRM internal user management system
-           can modify users.
+    \brief Return false since the external, read only manager can not
+           modify users.
     \return always true.
      */
-    public static function canModifyUsers() { return true; }
-
-    /*!
-    \brief  Checks whether a user with a given seed exists in the database.
-
-    \param User $user User to be checked for existing seed.
-    \param String $seed Seed to be compared.
-
-    If a user requests an account, his username is added to the database with
-    a random seed as status.
-
-    \return true if a user with given seed exists, false otherwise.
-    */
-    public function existsUserRequestWithSeed($seed) {
-        $db = new DatabaseConnection();
-        return ($db->existsUserRequestWithSeed($seed));
-    }
+    public static function canModifyUsers() { return false; }
 
     /*!
     \brief Update the user information.
@@ -59,8 +45,9 @@ class InternalUserManager extends AbstractUserManager {
     */
     public function updateUser(User $user) {
 
-        // Make sure the user is in the database, otherwise return immediately!
+        // Make sure the user is in the database, otherwise add it
         if (! $this->existsInHRM($user)) {
+            $this->createUser($user);
             return;
         }
 
@@ -77,4 +64,4 @@ class InternalUserManager extends AbstractUserManager {
         throw new Exception("IMPLEMENT ME!");
     }
 
-} 
+}

@@ -14,6 +14,36 @@ require_once(dirname(__FILE__) . "/../System.inc.php");
 abstract class AbstractUserManager {
 
     /*!
+    \brief Return true if the UserManager can create users in the backing
+           user management system (e.g. Active Directory or LDAP). If false,
+           users will exist in the HRM as soon they are authenticated the
+           the first time (e.g. by Active Directory). If true, they will
+           be considered existing users only if they are stored in the HRM
+           database.
+    \return true if the UserManager can create users, false otherwise.
+    */
+    abstract public static function canCreateUsers();
+
+    /*!
+    \brief Return true if the UserManager can delete users.
+    \see AbstractUserManager::canCreateUsers() for the concept.
+    \return true if the UserManager can delete users, false otherwise.
+     */
+    abstract public static function canModifyUsers();
+
+    /*!
+    \param User $user User to be created (added to the HRM user database)
+    */
+    abstract public function createUser(User $user);
+
+    /*!
+    \param User $user User to be updated in the database.
+    \
+    \return true if the update was successful; false otherwise.
+    */
+    abstract public function updateUser(User $user);
+
+    /*!
       \brief  Checks if user login is restricted to the administrator for
               maintenance (e.g. in case the database has to be updated).
       \return true if the user login is restricted to the administrator.
@@ -69,6 +99,16 @@ abstract class AbstractUserManager {
     */
     public function existsUserRequestWithSeed($seed = "ignored") {
         return false;
+    }
+
+    /*!
+    \param User $user User for which to check for existence
+    \
+    \return true if the user exists; false otherwise.
+    */
+    public function existsInHRM(User $user) {
+        $db = new DatabaseConnection();
+        return ($db->checkUser($user->name()));
     }
 
 };
