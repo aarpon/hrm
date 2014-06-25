@@ -25,8 +25,17 @@ class JobDescription(dict):
     """
 
     def __init__(self, job, srctype):
-        """Initialize depending on the type of description source."""
-        self.job = dict()
+        """Initialize depending on the type of description source.
+
+        Parameters
+        ----------
+        job : string
+        srctype : string
+
+        Example
+        -------
+        >>> job = HRM.JobDescription('/path/to/jobdescription.cfg', 'file')
+        """
         self.jobparser = ConfigParser.RawConfigParser()
         self._sections = []
         if (srctype == 'file'):
