@@ -16,6 +16,7 @@ The prototype of a new GC3Pie-based Queue Manager for HRM.
 # - let gc3pie decide when to dispatch a job (currently the call to run_job()
 #   is blocking and thus the whole thing is limited to single sequential job
 #   instances, even if more resources were available
+# - add verbosity parameter to adjust the loglevel
 
 # stdlib imports
 import sys
