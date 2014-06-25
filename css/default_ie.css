@@ -1483,6 +1483,10 @@ input.noPreview {
     cursor: pointer;
 }
 
+#thumb {
+    position: relative;
+}
+
 select {
     width: 100%;
     text-align: center;
