@@ -179,7 +179,7 @@ def main():
     while True:
         try:
             if len(joblist) > 0:
-                logd("Current joblist: %s" % self.joblist)
+                logd("Current joblist: %s" % joblist)
                 logd("Dispatching next job.")
                 run_job(engine, joblist.pop(0))
             time.sleep(1)
