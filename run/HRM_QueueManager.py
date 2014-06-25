@@ -7,6 +7,7 @@ The prototype of a new GC3Pie-based Queue Manager for HRM.
 """
 
 # TODO:
+# - check if a sane (usable) gc3pie configuration exists!
 # - move processed jobfiles to cur/done
 # - let gc3pie decide when to dispatch a job (currently the call to run_job()
 #   is blocking and thus the whole thing is limited to single sequential job
