@@ -61,7 +61,7 @@ class JobDescription(dict):
 
     def _parse_jobdescription(self):
         """Parse details for an HRM job and check for sanity.
-        .
+
         Use the ConfigParser object and assemble a dicitonary with the
         collected details that contains all the information for launching a new
         processing task. Raises Exceptions in case something unexpected is
@@ -97,10 +97,10 @@ class JobDescription(dict):
 
     def _parse_job_hucore(self):
         """Do the specific parsing of "hucore" type jobfiles.
-        .
+
         Parse the "hucore" and the "inputfiles" sections of HRM job
         configuration files.
-        .
+
         Returns
         -------
         void
