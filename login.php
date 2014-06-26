@@ -96,7 +96,10 @@ if (isset($_POST['password']) && isset($_POST['username'])) {
                 }
 
                 // Update the user data and the access date in the database
-                $userManager->updateUser($_SESSION['user']);
+                $userManager->storeUser($_SESSION['user']);
+
+                // Log successful logon
+                report("User " . $_SESSION['user']->name() . " logged on.", 1);
 
                 // If the database is not up-to-date go straight to the
                 // database update page

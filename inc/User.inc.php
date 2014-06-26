@@ -8,8 +8,6 @@ require_once(dirname(__FILE__) . "/Setting.inc.php");
 require_once(dirname(__FILE__) . "/hrm_config.inc.php");
 require_once(dirname(__FILE__) . "/System.inc.php");
 
-global $authenticateAgainst;
-
 /*!
   \class   User
   \brief   Manages a user and its state.
@@ -88,29 +86,14 @@ class User {
     */
     public function logIn($name, $password) {
 
-        global $authenticateAgainst;
-
         // Set the name
         $this->setName($name);
 
-        // Set the user isLoggedIn status to false;
-        $this->isLoggedIn = False;
-
         // Try authenticating the user against the appropriate mechanism
         $authenticator = AuthenticatorFactory::getAuthenticator($this->isAdmin());
-        $result = $authenticator->authenticate($this->name(), $password);
+        $this->isLoggedIn = $authenticator->authenticate($this->name(), $password);
 
-        // In case of successful authentication, update the user information.
-        if ($result) {
-
-            // Set isLoggedIn status to true
-            $this->isLoggedIn = True;
-
-            // Store the entry in the log
-            report("User " . $this->name() . " logged on.", 1);
-
-        }
-        return $result;
+        return $this->isLoggedIn;
     }
 
     /*!
@@ -118,17 +101,6 @@ class User {
     */
     function logOut() {
         $this->isLoggedIn = False;
-        $this->name = "";
-    }
-
-    /*!
-      \brief  Checks if user login is restricted to the administrator for
-              maintenance (in case the database has to be updated)
-      \return true if the user login is restricted to the administrator
-    */
-    public function isLoginRestrictedToAdmin() {
-        $result = !( System::isDBUpToDate() );
-        return $result;
     }
 
     /*!
@@ -139,7 +111,7 @@ class User {
 
       \return true if the user has been accepted; false otherwise.
     */
-    public function isStatusAccepted() {
+    public function isAccepted() {
 
         if ($this->isAdmin()) {
             return true;

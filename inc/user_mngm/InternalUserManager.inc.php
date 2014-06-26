@@ -25,7 +25,7 @@ class InternalUserManager extends AbstractUserManager {
 
     /*!
     \brief Return true since the HRM internal user management system
-           can create users.
+           can create and delete users.
     \return always true.
     */
     public static function canCreateUsers() { return true; }
@@ -54,10 +54,10 @@ class InternalUserManager extends AbstractUserManager {
     }
 
     /*!
-    \brief Update the user information.
-    \param User $user User for which last access has to be updated
+    \brief Store (update) the user information.
+    \param User $user User to store in the database.
     */
-    public function updateUser(User $user) {
+    public function storeUser(User $user) {
 
         // Make sure the user is in the database, otherwise return immediately!
         if (! $this->existsInHRM($user)) {
@@ -73,4 +73,46 @@ class InternalUserManager extends AbstractUserManager {
         $db->updateLastAccessDate($user->name());
     }
 
-} 
+    /*!
+    \brief Updates an existing user in the database
+
+    \TODO   This will need some refactoring (together with the corresponding
+            DatabaseConnection::updateExistingUser() method.
+
+    \param	$username  	The name of the user
+    \param	$password  	Password (plain, not encrypted)
+    \param	$email  	E-mail address
+    \param	$group  	Research group
+    \return	$success	True if success; false otherwise
+    */
+    public function updateUser($isAdmin, $username, $password, $email, $group) {
+
+        // Update the user: in case $isAdmin is true, only the password can
+        // be changed; all other settings will be ignored.
+        $db = new DatabaseConnection();
+        return ($db->updateExistingUser($isAdmin, $username, $password,
+            $email, $group));
+
+    }
+
+    /*!
+    \brief Deletes a user from the database
+    \param	User $user User to be deleted.
+    \return	bool True if success; false otherwise
+    */
+    public function deleteUser(User $user) {
+
+        // Delete the user
+        $db = new DatabaseConnection();
+        if ($db->deleteUser($user->name())) {
+
+            // Delete the user folders
+            $this->deleteUserFolders($user);
+
+            return True;
+        }
+
+        return False;
+    }
+
+}

@@ -27,7 +27,7 @@ class ExternalReadOnlyUserManager extends AbstractUserManager {
 
     /*!
     \brief Return false since the external, read only manager can not
-           create users.
+           create or delete users.
     \return always true.
     */
     public static function canCreateUsers() { return false; }
@@ -40,10 +40,10 @@ class ExternalReadOnlyUserManager extends AbstractUserManager {
     public static function canModifyUsers() { return false; }
 
     /*!
-    \brief Update the user information.
-    \param User $user User for which last access has to be updated
+    \brief Store (update) the user information.
+    \param User $user User to store in the database.
     */
-    public function updateUser(User $user) {
+    public function storeUser(User $user) {
 
         // Make sure the user is in the database, otherwise add it
         if (! $this->existsInHRM($user)) {

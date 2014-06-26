@@ -22,7 +22,7 @@ abstract class AbstractUserManager {
            the first time (e.g. by Active Directory). If true, they will
            be considered existing users only if they are stored in the HRM
            database.
-    \return true if the UserManager can create users, false otherwise.
+    \return true if the UserManager can create and delete users, false otherwise.
     */
     abstract public static function canCreateUsers();
 
@@ -34,11 +34,11 @@ abstract class AbstractUserManager {
     abstract public static function canModifyUsers();
 
     /*!
-    \param User $user User to be updated in the database.
+    \param User $user User to be stored (updated) in the database.
     \
-    \return true if the update was successful; false otherwise.
+    \return true if storing the User was successful; false otherwise.
     */
-    abstract public function updateUser(User $user);
+    abstract public function storeUser(User $user);
 
     /*!
       \brief  Checks if user login is restricted to the administrator for
@@ -133,4 +133,15 @@ abstract class AbstractUserManager {
         shell_exec($userManagerScript . " create " . $user->name());
     }
 
+    /*!
+    \brief Delete User data folders.
+    \@param User $user User whose folders are to be deleted.
+    */
+    public function deleteUserFolders(User $user) {
+
+        // TODO Use the Shell classes!
+
+        global $userManagerScript;
+        shell_exec($userManagerScript . " delete " . $user->name());
+    }
 };
