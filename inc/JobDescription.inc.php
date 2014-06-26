@@ -227,7 +227,7 @@ class JobDescription {
    \return      The controller name with a unique HRM id 
   */
   public function getG3CPieControllerName() {
-    return ".g3c_" . $this->id() . ".cfg";
+    return "g3c_" . $this->id() . ".cfg";
   }
 
   /*!
