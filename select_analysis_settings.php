@@ -107,6 +107,10 @@ else if (isset($_POST['make_default'])) {
   $_SESSION['analysiseditor']->makeSelectedSettingDefault();
   $message = $_SESSION['analysiseditor']->message();
 }
+else if (isset($_POST['share'])) {
+    $_SESSION['analysiseditor']->shareSelectedSetting(array("aaron@lic"));
+    $message = $_SESSION['analysiseditor']->message();
+}
 else if ( isset($_POST['annihilate']) &&
     strcmp( $_POST['annihilate'], "yes") == 0 ) {
         $_SESSION['analysiseditor']->deleteSelectedSetting();
@@ -152,6 +156,8 @@ include("header.inc.php");
     <span class="toolTip" id="ttSpanClone">
         Copy the selected parameter set to a new one with the
       specified name.</span>
+    <span class="toolTip" id="ttSpanShare">
+        Share the selected parameter set with one or more HRM users.</span>
     <span class="toolTip" id="ttSpanDelete">
         Delete the selected parameter set.
     </span>
@@ -355,6 +361,11 @@ else {
                        class="icon clone"
                        onmouseover="TagToTip('ttSpanClone' )"
                        onmouseout="UnTip()" />
+                        <input name="share" type="submit"
+                               value=""
+                               class="icon share"
+                               onmouseover="TagToTip('ttSpanShare' )"
+                               onmouseout="UnTip()" />
 <?php
 
 if (!$_SESSION['user']->isAdmin()) {

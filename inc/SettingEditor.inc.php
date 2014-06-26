@@ -180,6 +180,26 @@ abstract class BaseSettingEditor {
     }
 
     /*!
+      \brief  Copies the selected setting to the share table for the given
+              recipients.
+      \param  $recipients Array of user names.
+      \return	true if the copy was successful, false otherwise
+    */
+    public function shareSelectedSetting($recipients) {
+        if (!$this->checkSelectedSetting()) {
+            return False;
+        }
+        $settings = $this->settings();
+        $sel = $this->selected();
+        $setting = $settings[$sel];
+        foreach ($recipients as $recipient) {
+            $result = $setting->shareWith($recipient);
+        }
+        $this->message = $setting->message();
+        return $result;
+    }
+
+    /*!
       \brief	Creates a new Setting in the database and copies
               the values from a public Setting
 

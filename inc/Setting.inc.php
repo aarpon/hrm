@@ -201,13 +201,30 @@ abstract class Setting {
 
     /*!
       \brief  Saves all Parameter values from current Setting to the database
-      \return	true if saving was successul, false otherwise
+      \return	true if saving was successful, false otherwise
     */
     public function save() {
         $db = new DatabaseConnection();
         $result = $db->saveParameterSettings($this);
         if (!$result) {
             $this->message = "save setting - database access failed!";
+        }
+        return $result;
+    }
+
+    /*!
+      \brief  Shares the selected setting with the given user.
+      \param String $username Name of the user to share with
+      \return	true if sharing was successful, false otherwise
+    */
+    public function shareWith($username) {
+        $db = new DatabaseConnection();
+        $settings = $db->loadParameterSettings($this);
+        $result = $db->saveSharedParameterSettings($settings, $username);
+        if (!$result) {
+            $this->message = "save setting - database access failed!";
+        } else {
+            $this->message = "Your settings were successfully shared!";
         }
         return $result;
     }
@@ -301,6 +318,14 @@ class ParameterSetting extends Setting {
     }
 
     /*!
+      \brief	Returns the name of the database table in which the list of
+      shared Setting names are stored.
+    */
+    public function sharedTable() {
+        return "shared_parameter_setting";
+    }
+
+    /*!
       \brief	Returns the name of the database table in which all the Parameters
               for the Settings stored in the table specified in table()
       \see table()
@@ -308,6 +333,16 @@ class ParameterSetting extends Setting {
     public function parameterTable() {
         return "parameter";
     }
+
+    /*!
+      \brief	Returns the name of the database table to use for sharing
+                settings.
+      \see table()
+    */
+    public function sharedParameterTable() {
+        return "shared_parameter";
+    }
+
 
     /*!
      \brief    A general check on  the status of the image parameter setting
@@ -2021,6 +2056,14 @@ class TaskSetting extends Setting {
     }
 
     /*!
+      \brief	Returns the name of the database table in which the list of
+      shared Setting names are stored.
+    */
+    public function sharedTable() {
+        return "shared_task_setting";
+    }
+
+    /*!
       \brief	Returns the name of the database table in which all the Parameters
               for the Settings stored in the table specified in table()
 
@@ -2030,6 +2073,15 @@ class TaskSetting extends Setting {
     */
     public function parameterTable() {
         return "task_parameter";
+    }
+
+    /*!
+    \brief	Returns the name of the database table to use for sharing
+            settings.
+    \see table()
+    */
+    public function sharedParameterTable() {
+        return "shared_task_parameter";
     }
 
     /*!
@@ -2293,6 +2345,14 @@ class AnalysisSetting extends Setting {
     }
 
     /*!
+      \brief	Returns the name of the database table in which the list of
+      shared Setting names are stored.
+    */
+    public function sharedTable() {
+        return "shared_analysis_setting";
+    }
+
+    /*!
       \brief	Returns the name of the database table in which all the Parameters
               for the Settings stored in the table specified in table()
 
@@ -2302,6 +2362,15 @@ class AnalysisSetting extends Setting {
     */
     public function parameterTable() {
         return "analysis_parameter";
+    }
+
+    /*!
+      \brief	Returns the name of the database table to use for sharing
+                settings.
+      \see table()
+    */
+    public function sharedParameterTable() {
+        return "shared_analysis_parameter";
     }
 
     /*!

@@ -106,6 +106,10 @@ else if (isset($_POST['edit'])) {
   }
   $message = $_SESSION['editor']->message();
 }
+else if (isset($_POST['share'])) {
+    $_SESSION['editor']->shareSelectedSetting(array("aaron@lic"));
+    $message = $_SESSION['editor']->message();
+}
 else if (isset($_POST['make_default'])) {
   $_SESSION['editor']->makeSelectedSettingDefault();
   $message = $_SESSION['editor']->message();
@@ -173,6 +177,8 @@ include("header.inc.php");
     <span class="toolTip" id="ttSpanClone">
         Copy the selected parameter set to a new one with the
       specified name.</span>
+    <span class="toolTip" id="ttSpanShare">
+        Share the selected parameter set with one or more HRM users.</span>
     <span class="toolTip" id="ttSpanDelete">
         Delete the selected parameter set.
     </span>
@@ -366,6 +372,11 @@ else {
                        value=""
                        class="icon clone"
                        onmouseover="TagToTip('ttSpanClone' )"
+                       onmouseout="UnTip()" />
+                <input name="share" type="submit"
+                       value=""
+                       class="icon share"
+                       onmouseover="TagToTip('ttSpanShare' )"
                        onmouseout="UnTip()" />
 <?php
 

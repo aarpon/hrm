@@ -537,6 +537,10 @@ input.clone {
     background: url("../images/clone.png") no-repeat center;
 }
 
+input.share {
+    background: url("../images/share.png") no-repeat center;
+}
+
 input.mark {
     background: url("../images/mark.png") no-repeat center;
 }

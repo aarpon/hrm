@@ -2,15 +2,9 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
-/*!
-  \var 		$adodb
-  \brief	Location of /adodb/adodb.inc.php
-*/
-$adodb = dirname(__FILE__) . "/extern/adodb5/adodb.inc.php";
-
-require_once( "hrm_config.inc.php" );
-require_once( "Util.inc.php" );
-require_once( $adodb );
+require_once(dirname(__FILE__) . "/hrm_config.inc.php" );
+require_once(dirname(__FILE__) . "/Util.inc.php" );
+require_once(dirname(__FILE__) . "/extern/adodb5/adodb.inc.php");
 
 /*!
 	\class	DatabaseConnection
@@ -456,14 +450,85 @@ class DatabaseConnection {
     return $result;
   }
 
-  /*!
-	\brief	Loads the parameter values for a setting and returns a copy of
-			the setting with the loaded parameter values. If a value starts
-			with # it is considered to be an array with the first value at
-			the index 0
-	\param	$settings	Setting object to be loaded
-	\return	$settings object with loaded values
-  */
+    /*!
+  \brief	Saves the parameter values of the setting object into the database.
+          If the setting already exists, the old values are overwritten,
+          otherwise a new setting is created
+  \param	$settings	Settings object to be saved
+  \param  $isShare    Boolean (default = False): True if the setting is to
+                      be saved to the share table, False if it is a standard
+                      save.
+  \return	true if saving was successful, false otherwise
+*/
+    public function saveSharedParameterSettings($settings, $targetUserName) {
+        $owner = $settings->owner();
+        $original_user = $owner->name();
+        $name = $settings->name();
+        $new_owner = new User();
+        $new_owner->setName($targetUserName);
+        $settings->setOwner($new_owner);
+        $settingTable = $settings->sharedTable();
+        $table = $settings->sharedParameterTable();
+        $standard = "f";
+        $result = True;
+        if (!$this->existsSharedSetting($settings)) {
+            $query = "insert into $settingTable values ('" . $targetUserName . "', '" . $original_user . "', '" . $name . "', '" . $standard . "')";
+            $result = $result && $this->execute($query);
+        }
+        $existsAlready = $this->existsSharedParametersFor($settings);
+
+        foreach ($settings->parameterNames() as $parameterName) {
+            $parameter = $settings->parameter($parameterName);
+            $parameterValue = $parameter->internalValue();
+
+            if (is_array($parameterValue)) {
+                // Before, # was used as a separator, but the first element with
+                // index zero was always NULL because channels started their indexing
+                // at one. To keep backwards compatibility with the database, we use
+                // # now as a channel marker, and even the first channel has a # in
+                // front of its value.
+                // "/" separator is used to mark range values for signal to noise ratio
+
+                /*!
+                  \todo Currently there are not longer "range values" (values
+                  separated by /). In the future they will be reintroduced.
+                  We leave the code in place.
+                */
+                if (is_array($parameterValue[0])) {
+                    for ($i = 0; $i < 5; $i++) {
+                        if ($parameterValue[$i] != null) {
+                            $parameterValue[$i] = implode("/", array_filter($parameterValue[$i]));
+                        }
+                    }
+                }
+                $parameterValue = "#".implode("#", $parameterValue);
+            }
+            if (!$existsAlready) {
+                $query = "insert into $table values ('" . $targetUserName . "', '" . $name . "', '" . $parameterName . "', '" . $parameterValue . "')";
+            } else {
+                // Check that the parameter itself exists
+                $query = "select name from $table where owner='" . $targetUserName . "' and setting='" . $name . "' and name='" . $parameterName . "' limit 1";
+                $newValue = $this->queryLastValue($query);
+                if ( $newValue != NULL ) {
+                    $query = "update $table set value = '" . $parameterValue . "' where owner='" . $targetUserName . "' and setting='" . $name . "' and name='" . $parameterName . "'";
+                } else {
+                    $query = "insert into $table values ('" . $targetUserName . "', '" . $name . "', '" . $parameterName . "', '" . $parameterValue . "')";
+                }
+            }
+            $result = $result && $this->execute($query);
+        }
+
+        return $result;
+    }
+
+    /*!
+      \brief	Loads the parameter values for a setting and returns a copy of
+              the setting with the loaded parameter values. If a value starts
+              with # it is considered to be an array with the first value at
+              the index 0
+      \param	$settings	Setting object to be loaded
+      \return	$settings object with loaded values
+    */
   public function loadParameterSettings($settings) {
     $user = $settings->owner();
     $user = $user->name();
@@ -591,6 +656,26 @@ class DatabaseConnection {
     return $result;
   }
 
+    /*!
+      \brief	Checks whether parameters are already stored for a given shared
+                setting
+      \param	$settings	Settings object to be used to check for existence in
+                          the database
+      \return	true if the parameters exist in the database; false otherwise
+    */
+    public function existsSharedParametersFor($settings) {
+        $owner = $settings->owner();
+        $user = $owner->name();
+        $name = $settings->name();
+        $table = $settings->sharedParameterTable();
+        $query = "select name from $table where owner='" . $user . "' and setting='" . $name ."' LIMIT 1";
+        $result = True;
+        if (!$this->queryLastValue($query)) {
+            $result = False;
+        }
+        return $result;
+    }
+
   /*!
 	\brief	Checks whether settings exist in the database for a given owner
 	\param	$settings	Settings object to be used to check for existance in
@@ -610,6 +695,26 @@ class DatabaseConnection {
     }
     return $result;
   }
+
+    /*!
+      \brief	Checks whether settings exist in the database for a given owner
+      \param	$settings	Settings object to be used to check for existance in
+                          the database (the name of the owner must be set in the
+                          settings)
+      \return	true if the settings exist in the database; false otherwise
+    */
+    public function existsSharedSetting($settings) {
+        $owner = $settings->owner();
+        $user = $owner->name();
+        $name = $settings->name();
+        $table = $settings->sharedTable();
+        $query = "select standard from $table where owner='" . $user . "' and name='" . $name ."' LIMIT 1";
+        $result = True;
+        if (!$this->queryLastValue($query)) {
+            $result = False;
+        }
+        return $result;
+    }
 
   /*!
 	\brief	Adds all files for a given job id and user to the database

@@ -3729,15 +3729,129 @@ if ($current_revision < $n) {
             return;
         }
     }
-    
+}
+
+// -----------------------------------------------------------------------------
+// Update to revision 13
+// Description: support for template sharing
+// -----------------------------------------------------------------------------
+$n = 13;
+if ($current_revision < $n) {
+
+    // Get current tables
+    $tables = $db->MetaTables();
+
+    // Create new table: shared_analysis_parameter
+    $tabname = "shared_analysis_parameter";
+    $flds = "
+        owner C(30) NOTNULL DEFAULT 0 PRIMARY,
+        setting C(30) NOTNULL DEFAULT 0 PRIMARY,
+        name C(30) NOTNULL DEFAULT 0 PRIMARY,
+        value C(255) DEFAULT NULL
+    ";
+    if (!in_array($tabname, $tables)) {
+        if (!create_table($tabname, $flds)) {
+            $msg = "Could not create table $tabname!";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    // Create new table: shared_analysis_setting
+    $tabname = "shared_analysis_setting";
+    $flds = "
+        owner C(30) NOTNULL DEFAULT 0 PRIMARY,
+        source C(30) NOTNULL DEFAULT 0 PRIMARY,
+        name C(30) NOTNULL PRIMARY,
+        standard C(1) DEFAULT f
+    ";
+    if (!in_array($tabname, $tables)) {
+        if (!create_table($tabname, $flds)) {
+            $msg = "Could not create table $tabname!";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    // Create new table: shared_parameter
+    $tabname = "shared_parameter";
+    $flds = "
+        owner C(30) NOTNULL DEFAULT 0 PRIMARY,
+        setting C(30) NOTNULL DEFAULT 0 PRIMARY,
+        name C(30) NOTNULL DEFAULT 0 PRIMARY,
+        value C(255) DEFAULT NULL
+    ";
+    if (!in_array($tabname, $tables)) {
+        if (!create_table($tabname, $flds)) {
+            $msg = "Could not create table $tabname!";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    // Create new table: shared_parameter_setting
+    $tabname = "shared_parameter_setting";
+    $flds = "
+        owner C(30) NOTNULL DEFAULT 0 PRIMARY,
+        source C(30) NOTNULL DEFAULT 0 PRIMARY,
+        name C(30) NOTNULL PRIMARY,
+        standard C(1) DEFAULT f
+    ";
+    if (!in_array($tabname, $tables)) {
+        if (!create_table($tabname, $flds)) {
+            $msg = "Could not create table $tabname!";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    // Create new table: shared_task_parameter
+    $tabname = "shared_task_parameter";
+    $flds = "
+        owner C(30) NOTNULL DEFAULT 0 PRIMARY,
+        setting C(30) NOTNULL PRIMARY,
+        name C(30) NOTNULL PRIMARY,
+        value C(255) DEFAULT NULL
+    ";
+    if (!in_array($tabname, $tables)) {
+        if (!create_table($tabname, $flds)) {
+            $msg = "Could not create table $tabname!";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    // Create new table: shared_task_setting
+    $tabname = "shared_task_setting";
+    $flds = "
+        owner C(30) NOTNULL DEFAULT 0 PRIMARY,
+        source C(30) NOTNULL DEFAULT 0 PRIMARY,
+        name C(30) NOTNULL PRIMARY,
+        standard C(1) DEFAULT f
+    ";
+    if (!in_array($tabname, $tables)) {
+        if (!create_table($tabname, $flds)) {
+            $msg = "Could not create table $tabname!";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
     //Update revision
     if(!update_dbrevision($n))
         return;
-    
+
     $current_revision = $n;
     $msg = "Database successfully updated to revision " . $current_revision . ".";
     write_message($msg);
     write_to_log($msg);
+
 }
 
 
