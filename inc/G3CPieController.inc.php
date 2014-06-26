@@ -39,16 +39,16 @@ class G3CPieController {
     private $hrmJobFileList;
 
     /*!
-     \brief $deconArray 
+     \brief $hucoreArray
      \var   Array with fields for the deconvolution section of the controller.
     */
-    private $deconArray;
+    private $hucoreArray;
 
     /*!
-     \brief $deconList 
-     \var   Deconvolution section of the controller sorted properly for G3CPie.
+     \brief $hucoreList
+     \var   Section of the controller where to specify details about HuCore.
     */
-    private $deconList;
+    private $hucoreList;
 
     /*!
      \brief $inputFilesArray;
@@ -71,7 +71,7 @@ class G3CPieController {
         $this->jobDescription  = $jobDescription;
         $this->initializeSections();
         $this->setHrmJobFileSectionList();
-        $this->setDeconSectionList();
+        $this->setHuCoreSectionList();
         $this->setInputFilesSectionList();
         $this->assembleController();
     }
@@ -84,15 +84,17 @@ class G3CPieController {
     private function initializeSections() {
         
         $this->sectionsArray = array ( 'hrmjobfile'  ,
-                                       'deconvolution',   
+                                       'hucore',   
                                        'inputfiles' );        
         
-        $this->hrmJobFileArray = array( 'version'   =>  '1',
-                                        'username'  =>  ' ');
+        $this->hrmJobFileArray = array( 'version'   =>  '2',
+                                        'username'  =>  '',
+                                        'jobtype'   =>  'hucore');
         
-        $this->deconArray = array( 'template'       =>  ' ');
+        $this->hucoreArray = array( 'executable'    =>   '',
+                                    'template'      =>   '');
 
-        $this->inputFilesArray = array( 'file'      =>  ' ');
+        $this->inputFilesArray = array( 'file'      =>   '');
     }
 
     /*!
@@ -111,6 +113,9 @@ class G3CPieController {
                     $this->hrmJobFileList .= " = ";
                     $this->hrmJobFileList .= $this->jobDescription->owner()->name();
                     break;
+                case "jobtype":
+                    $this->hrmJobFileList .= " = " .  $value;
+                    break;
                 default:
                     error_log("Unimplemented HRM job file section field: $key");
             }
@@ -121,20 +126,30 @@ class G3CPieController {
     /*!
      \brief  Sets the deconvolution section field.
     */
-    private function setDeconSectionList() {
-        $this->deconList = "";
-        
-        foreach ($this->deconArray as $key => $value) {
-	  $this->deconList .= $key;
+    private function setHuCoreSectionList() {
+        global $local_huygens_core;
+
+        $this->hucoreList = "";
+        $templatePath = $this->jobDescription->sourceFolder();
+        foreach ($this->hucoreArray as $key => $value) {
+            $this->hucoreList .= $key;
             switch ( $key ) {
+                    case "executable":
+                        if (isset($local_huygens_core)) {
+                            $this->hucoreList .= " = " . $local_huygens_core;
+                        } else {
+                            error_log("Unreachable hucore binary.");
+                        }
+                    break;
                 case "template":
-                    $this->deconList .= " = ";
-                    $this->deconList .= $this->jobDescription->getHuTemplateName();
+                    $this->hucoreList .= " = ";
+                    $this->hucoreList .= $templatePath;
+                    $this->hucoreList .= $this->jobDescription->getHuTemplateName();
                     break;
                 default:
                     error_log("Unimplemented HRM decon section field: $key");
             }
-            $this->deconList .= "\n";
+            $this->hucoreList .= "\n";
         }
     }
 
@@ -145,10 +160,12 @@ class G3CPieController {
         $numberedFiles = "";
 
         $fileCnt = 0;
+        $filePath   = $this->jobDescription->sourceFolder();
         $inputFiles = $this->jobDescription->files();
         foreach ($inputFiles as $file) {
             $fileCnt++;
-            $numberedFiles .= "file" . $fileCnt . " = " . $file . "\n";
+            $numberedFiles .= "file" . $fileCnt . " = ";
+            $numberedFiles .= $filePath . $file . "\n";
         }
 
         foreach ($this->inputFilesArray as $key => $value) {
@@ -174,9 +191,9 @@ class G3CPieController {
                     $this->controller .= "[" . $section . "]" . "\n";
                     $this->controller .= $this->hrmJobFileList;
                     break;
-                case "deconvolution":
+                case "hucore":
                     $this->controller .= "[" . $section . "]" . "\n";
-                    $this->controller .= $this->deconList;
+                    $this->controller .= $this->hucoreList;
                     break;
                 case "inputfiles":
                     $this->controller .= "[" . $section . "]" . "\n";
