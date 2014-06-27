@@ -97,9 +97,9 @@ class QueueManager {
 
     /*!
     \brief  Executes given Job
-    \todo   Update scriptName variable with templateName
+    \todo   Update templateName variable with templateName
     */
-    public function executeScript( Job $job) {
+    public function executeTemplate( Job $job) {
         global $imageProcessingIsOnQueueManager;
         global $copy_images_to_huygens_server;
         global $logdir;
@@ -109,19 +109,19 @@ class QueueManager {
         $s = split(" ", $server);
         $server_hostname = $s[0];
         $desc = $job->description();
-        $clientScriptPath = $desc->sourceFolder();
-        $scriptName = $job->scriptName();
+        $clientTemplatePath = $desc->sourceFolder();
+        $templateName = $job->huTemplateName();
         
         // The new job must not get merged with debris from previously
         // failed jobs.
         $this->removeHuygensOutputFiles($desc, $server_hostname);
 
-        report(">>>>> Executing script: " .
+        report(">>>>> Executing templatex: " .
             $imageProcessingIsOnQueueManager . " " .
                 $copy_images_to_huygens_server, 2);
         if (!$imageProcessingIsOnQueueManager &&
                 $copy_images_to_huygens_server) {
-            $clientScriptPath =
+            $clientTemplatePath =
                 $this->copyImagesToServer($job, $server_hostname);
             report("images copied to IP server", 1);
         }
@@ -138,12 +138,12 @@ class QueueManager {
             return False;
         }
         
-        report("running shell: $clientScriptPath$scriptName", 1);
-        $pid = $proc->runHuygensTemplate($clientScriptPath . $scriptName);
+        report("running shell: $clientTemplatePath$templateName", 1);
+        $pid = $proc->runHuygensTemplate($clientTemplatePath . $templateName);
 
-        report("running script (pid $pid)", 1);
+        report("running template (pid $pid)", 1);
 
-            /* The script in the background will keep running after release. */
+            /* The template in the background will keep running after release. */
         $proc->release();
 
         $job->setPid($pid);
@@ -250,7 +250,7 @@ class QueueManager {
         $batch .= "-mkdir \"" . $image_source . "\"\n";
         $batch .= "cd \"" . $image_source . "\"\n";
         $batch .= "put \"" . $image_folder . "/" . $user->name() . "/" .
-            $image_source . "/" . $job->scriptName() . "\"\n";
+            $image_source . "/" . $job->huTemplateName() . "\"\n";
 
         // Transfer the experimental PSF(s)
         $parameterSetting = $desc->parameterSetting;
@@ -728,7 +728,7 @@ class QueueManager {
 	  $id     = $desc->id();
 	  $pid    = $job->pid();
 	  $server = $job->server();
-	  $script = $job->createScript();
+	  $template = $job->createTemplate();
 	  
 	  /* Email destination. */
 	  $user = $desc->owner();
@@ -759,7 +759,7 @@ class QueueManager {
 	  $mailContent .= "------\n\n";
 	  $mailContent .= "What follows is the Huygens Core template executed ";
 	  $mailContent .= "when the error occured:\n\n";
-	  $mailContent .= $job->script();
+	  $mailContent .= $job->template();
 	  $mailContent .= "\n\n-----------------------------------------------";
 	  $mailContent .= "------\n\n";
 
@@ -947,23 +947,23 @@ class QueueManager {
 
                 // TODO check this <<
                 // If the job is compound create sub jobs and
-                // remove job otherwise create script
-                $result = $job->createSubJobsOrScript();
+                // remove job otherwise create template
+                $result = $job->createSubJobsOrHuTemplate();
                 if (!$result || $desc->isCompound()) {
                     error_log("error or compound job");
                     continue;
                 }
-                report("script has been created", 1);
+                report("template has been created", 1);
                 
-                // Execute the script on the Huygens server and
+                // Execute the template on the Huygens server and
                 // update the database state
-                $result = $result && $this->executeScript($job);
+                $result = $result && $this->executeTemplate($job);
                 
                 if (!$result) {                    
                     continue;
                 }
                 
-                report("script has been executed", 1);
+                report("Template has been executed", 1);
                 $result = $result && $queue->startJob($job);
                 report("job has been started ("
                         . date("Y-m-d H:i:s") . ")", 1);

@@ -223,6 +223,14 @@ class JobDescription {
   }
 
   /*!
+   \brief	Returns the Huygens template name containing the unique HRM id
+   \return	the template name
+  */
+  public function getHuTemplateName() {
+      return ".hrm_" . $this->id() . ".hgsb";
+  }
+
+  /*!
     \brief Add a Job to the queue
     \return true if the Job could be added to the queue, false otherwise
   */
