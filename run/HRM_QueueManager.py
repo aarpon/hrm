@@ -8,6 +8,9 @@ The prototype of a new GC3Pie-based Queue Manager for HRM.
 
 # TODO:
 # - check if a sane (usable) gc3pie configuration exists!
+# - check if the gc3pie resource folder is clean on startup (for now this
+#   is ~/.gc3/shellcmd.d but this will probably change when switching to the
+#   session based variant of GC3Pie
 # - if instantiating a gc3libs.Application fails, the QM stops watching and
 #   parsing new job files (resulting in a "dead" state right now), so
 #   exceptions on dispatching jobs need to be caught and some notification
