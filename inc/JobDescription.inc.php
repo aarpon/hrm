@@ -223,6 +223,14 @@ class JobDescription {
   }
 
   /*!
+   \brief	Returns the Huygens template name containing the unique HRM id
+   \return	the template name
+  */
+  public function getHuTemplateName() {
+      return ".hrm_" . $this->id() . ".hgsb";
+  }
+
+  /*!
    \brief       Returns the name of the job controller to be used by G3CPie
    \return      The controller name with a unique HRM id 
   */
