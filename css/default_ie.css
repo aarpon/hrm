@@ -1434,12 +1434,6 @@ input.back {
     background: url("../images/back.png") no-repeat center;
 }
 
-input.restart {
-    width: 60px;
-    height: 60px;
-    background: url("../images/restart.png") no-repeat center;
-}
-
 input.upload {
     width: 60px;
     height: 60px;
@@ -1712,7 +1706,7 @@ option.default {
 div.StedDeplModeValues {
    width: 250px;
    float: left;
-   vertical-align: center;
+   vertical-align: middle;
 }
 
 /* Confidence levels for parameters: provided, asIs, verified,
@@ -1828,7 +1822,7 @@ div.StedDeplModeValues {
 #phpinfo tr {
     border-bottom-style: solid;
     border-bottom-color: #ccc;
-    border-bottom-width: 0.5px;
+    border-bottom-width: 1px;
 }
 
 #phpinfo td {

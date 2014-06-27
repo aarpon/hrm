@@ -34,7 +34,6 @@ if (isset($meta)) {
     <script type="text/javascript" src="scripts/common.js"></script>
     <script type="text/javascript" src="scripts/omero.js"></script>
 
-
 <?php
 
 if (isset($script)) {
