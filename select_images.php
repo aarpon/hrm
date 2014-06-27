@@ -166,7 +166,7 @@ function filterImages (format,series) {
                 $generatedScript .= "
                   if(checkAgainstFormat(\"$file\", selectedFormat)) {
                       var f = \"$file\";
-                      f = f.replace(/ /g, '&#160;');
+                      f = f.replace(/ /g, '&nbsp;');
                       var selectItem = document.createElement('option');
                       $(selectItem).html(f);
                       selectObject.add(selectItem,null);
@@ -180,7 +180,7 @@ function filterImages (format,series) {
                   // Do not load file series automatically.
                   if(checkAgainstFormat(\"$file\", selectedFormat)) {
                       var f = \"$file\";
-                      f = f.replace(/ /g, '&#160;');
+                      f = f.replace(/ /g, '&nbsp;');
                       var selectItem = document.createElement('option');
                       $(selectItem).html(f);
                       selectObject.add(selectItem,null);
@@ -194,7 +194,7 @@ function filterImages (format,series) {
                // File does not belong to a file series.
                if(checkAgainstFormat(\"$file\", selectedFormat)) {
                    var f = \"$file\";
-                   f = f.replace(/ /g, '&#160;');
+                   f = f.replace(/ /g, '&nbsp;');
                    var selectItem = document.createElement('option');
                    $(selectItem).html(f);
                    selectObject.add(selectItem,null);
