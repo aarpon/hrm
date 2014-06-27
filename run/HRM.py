@@ -96,6 +96,10 @@ class JobDescription(dict):
         except ConfigParser.NoOptionError:
             raise ValueError("Can't find username in %s." % self.name)
         try:
+            self['email'] = self.jobparser.get('hrmjobfile', 'useremail')
+        except ConfigParser.NoOptionError:
+            raise ValueError("Can't find email address in %s." % self.name)
+        try:
             self['type'] = self.jobparser.get('hrmjobfile', 'jobtype')
         except ConfigParser.NoOptionError:
             raise ValueError("Can't find jobtype in %s." % self.name)
