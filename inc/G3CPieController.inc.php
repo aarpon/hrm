@@ -87,8 +87,9 @@ class G3CPieController {
                                        'hucore',   
                                        'inputfiles' );        
         
-        $this->hrmJobFileArray = array( 'version'   =>  '2',
+        $this->hrmJobFileArray = array( 'version'   =>  '3',
                                         'username'  =>  '',
+                                        'useremail' =>  '',
                                         'jobtype'   =>  'hucore');
         
         $this->hucoreArray = array( 'executable'    =>   '',
@@ -102,7 +103,9 @@ class G3CPieController {
     */
     private function setHrmJobFileSectionList() {
         $this->hrmJobFileList = "";
-        
+
+        $user = $this->jobDescription->owner();
+
         foreach ($this->hrmJobFileArray as $key => $value) {
 	    $this->hrmJobFileList .= $key;
             switch ( $key ) {
@@ -111,7 +114,11 @@ class G3CPieController {
                     break;
                 case "username":
                     $this->hrmJobFileList .= " = ";
-                    $this->hrmJobFileList .= $this->jobDescription->owner()->name();
+                    $this->hrmJobFileList .= $user->name();
+                    break;
+                case "useremail":
+                    $this->hrmJobFileList .= " = ";
+                    $this->hrmJobFileList .= $user->emailAddress();
                     break;
                 case "jobtype":
                     $this->hrmJobFileList .= " = " .  $value;
