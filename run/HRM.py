@@ -19,6 +19,7 @@ __all__ = ['JobDescription']
 # expected version for job description files:
 JOBFILE_VER = '3'
 
+
 class JobDescription(dict):
 
     """Abstraction class for handling HRM job descriptions.
@@ -52,20 +53,6 @@ class JobDescription(dict):
             raise Exception("Unknown source type '%s'" % srctype)
         pprint.pprint("Finished initialization of JobDescription().")
         pprint.pprint(self)
-
-
-    # get/set/repr are now inherited from dict, thus we don't need to
-    # redefine them ourselves here anymore:
-    # def __getitem__(self, key):
-    #     return self[key]
-
-    # def __setitem__(self, key, value):
-    #     self[key] = value
-
-    # def __repr__(self):
-    #     # TODO: figure out why pprint.pformat() behaves different on repr()
-    #     # compared to pformat({})
-    #     return repr(self)
 
     def _parse_jobfile(self, fname):
         """Initialize ConfigParser for a file and run parsing method."""
