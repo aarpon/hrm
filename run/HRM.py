@@ -16,6 +16,9 @@ import pprint
 __all__ = ['JobDescription']
 
 
+# expected version for job description files:
+JOBFILE_VER = '3'
+
 class JobDescription(dict):
 
     """Abstraction class for handling HRM job descriptions.
@@ -89,7 +92,7 @@ class JobDescription(dict):
             self['ver'] = self.jobparser.get('hrmjobfile', 'version')
         except ConfigParser.NoOptionError:
             raise ValueError("Can't find version in %s." % self.name)
-        if not (self['ver'] == '3'):
+        if not (self['ver'] == JOBFILE_VER):
             raise ValueError("Unexpected version in %s." % self['ver'])
         try:
             self['user'] = self.jobparser.get('hrmjobfile', 'username')

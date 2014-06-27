@@ -177,6 +177,7 @@ def main():
     if args.resource:
         engine.select_resource(args.resource)
 
+    logi('Excpected job description files version: %s.' % HRM.JOBFILE_VER)
     print('HRM Queue Manager started, watching spool directory "%s", '
           'press Ctrl-C to abort.' % watchdir)
     # FIXME: Ctrl-C while a job is running leaves it alone (and thus as well
