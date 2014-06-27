@@ -57,6 +57,7 @@ if (isset($_POST['down'])) {
         foreach ($_POST['userfiles'] as $file) {
             $name = htmlentities($file, null, 'utf-8');
             $name = str_replace("&nbsp;", " ", $name);
+            $name = html_entity_decode($name);
             $fileNames[] = $name;
         }
         $_SESSION['fileserver']->addFilesToSelection($fileNames);
@@ -75,6 +76,7 @@ else if (isset($_POST['up'])) {
         foreach ($_POST['selectedfiles'] as $file) {
             $name = htmlentities($file, null, 'utf-8');
             $name = str_replace("&nbsp;", " ", $name);
+            $name = html_entity_decode($name);
             $fileNames[] = $name;
         }
         $_SESSION['fileserver']->removeFilesFromSelection($fileNames);
@@ -444,7 +446,7 @@ if ($allFiles == null) {
         foreach ($files as $key => $file) {
             if ($_SESSION['fileserver']->checkAgainstFormat($file, $format)) {
                 // Consecutive spaces are collapsed into one space in HTML.
-                // Hence '&nbsp;' to correct that when the file has more spaces.
+                // Hence '&nbsp;' to correct this when the file has more spaces.
                 echo "<option>" .
                     str_replace(' ','&nbsp;',$file) .
                     "</option>\n";
