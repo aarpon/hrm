@@ -53,13 +53,13 @@ if (isset($_POST['down'])) {
     if (isset($_POST['userfiles']) && is_array($_POST['userfiles'])) {
 
         // Remove spaces added by the HRM file selector. See '&#160;' below.
-        $newfiles = array();
+        $fileNames = array();
         foreach ($_POST['userfiles'] as $file) {
             $name = htmlentities($file, null, 'utf-8');
             $name = str_replace("&#160;", " ", $name);
-            $newfiles[] = $name;
+            $fileNames[] = $name;
         }
-        $_SESSION['fileserver']->addFilesToSelection($newfiles);
+        $_SESSION['fileserver']->addFilesToSelection($fileNames);
     }
 }
 else if (isset($_POST['up'])) {
@@ -69,7 +69,15 @@ else if (isset($_POST['up'])) {
         $_SESSION['autoseries'] = "";
     }
     if (isset($_POST['selectedfiles']) && is_array($_POST['selectedfiles'])) {
-        $_SESSION['fileserver']->removeFilesFromSelection($_POST['selectedfiles']);
+
+        // Remove spaces added by the HRM file selector. See '&#160;' below.
+        $fileNames = array();
+        foreach ($_POST['selectedfiles'] as $file) {
+            $name = htmlentities($file, null, 'utf-8');
+            $name = str_replace("&#160;", " ", $name);
+            $fileNames[] = $name;
+        }
+        $_SESSION['fileserver']->removeFilesFromSelection($fileNames);
     }
 }
 else if (isset($_POST['update'])) {
