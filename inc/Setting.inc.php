@@ -194,7 +194,7 @@ abstract class Setting {
         $db = new DatabaseConnection();
         $result = $db->loadParameterSettings($this);
         if (!$result) {
-            $this->message = "load setting - database access failed!";
+            $this->message = "Could not load settings!";
         }
         return $result;
     }
@@ -207,7 +207,7 @@ abstract class Setting {
         $db = new DatabaseConnection();
         $result = $db->saveParameterSettings($this);
         if (!$result) {
-            $this->message = "save setting - database access failed!";
+            $this->message = "Could not save settings!";
         }
         return $result;
     }
@@ -222,9 +222,9 @@ abstract class Setting {
         $settings = $db->loadParameterSettings($this);
         $result = $db->saveSharedParameterSettings($settings, $username);
         if (!$result) {
-            $this->message = "save setting - database access failed!";
+            $this->message = "Sharing settings failed!" ;
         } else {
-            $this->message = "Your settings were successfully shared!";
+            $this->message = "Settings successfully shared!";
         }
         return $result;
     }
@@ -2002,6 +2002,17 @@ class ParameterSetting extends Setting {
         return $size / 1;
     }
 
+    /*!
+      \brief  Shares the selected setting with the given user.
+      \param String $username Name of the user to share with
+      \return	true if sharing was successful, false otherwise
+    */
+    public static function getSharedTemplates($username) {
+        $db = new DatabaseConnection();
+        $result = $db->getSharedTemplates($username, self::sharedTable());
+        return $result;
+    }
+
 }
 
 
@@ -2294,6 +2305,18 @@ class TaskSetting extends Setting {
         return TRUE;
     }
 
+
+    /*!
+      \brief  Shares the selected setting with the given user.
+      \param String $username Name of the user to share with
+      \return	true if sharing was successful, false otherwise
+    */
+    public static function getSharedTemplates($username) {
+        $db = new DatabaseConnection();
+        $result = $db->getSharedTemplates($username, self::sharedTable());
+        return $result;
+    }
+
 } // End of class taskSetting
 
 /*
@@ -2423,7 +2446,7 @@ class AnalysisSetting extends Setting {
             $this->set($parameter);
         }
 
-          // Colocaliztion threshold mode
+          // Colocalizastion threshold mode
         if (!isset($postedParameters["ColocThresholdMode"]) ||
                 $postedParameters["ColocThresholdMode"] == '') {
             $this->message = 'Please choose a colocalization threshold mode!';
@@ -2495,6 +2518,18 @@ class AnalysisSetting extends Setting {
             $result = $result .
                 $parameter->displayString($this->numberOfChannels());
         }
+        return $result;
+    }
+
+
+    /*!
+      \brief  Shares the selected setting with the given user.
+      \param String $username Name of the user to share with
+      \return	true if sharing was successful, false otherwise
+    */
+    public static function getSharedTemplates($username) {
+        $db = new DatabaseConnection();
+        $result = $db->getSharedTemplates($username, self::sharedTable());
         return $result;
     }
 

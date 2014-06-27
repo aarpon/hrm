@@ -3741,30 +3741,13 @@ if ($current_revision < $n) {
     // Get current tables
     $tables = $db->MetaTables();
 
-    // Create new table: shared_analysis_parameter
-    $tabname = "shared_analysis_parameter";
-    $flds = "
-        owner C(30) NOTNULL DEFAULT 0 PRIMARY,
-        setting C(30) NOTNULL DEFAULT 0 PRIMARY,
-        name C(30) NOTNULL DEFAULT 0 PRIMARY,
-        value C(255) DEFAULT NULL
-    ";
-    if (!in_array($tabname, $tables)) {
-        if (!create_table($tabname, $flds)) {
-            $msg = "Could not create table $tabname!";
-            write_message($msg);
-            write_to_error($msg);
-            return;
-        }
-    }
-
     // Create new table: shared_analysis_setting
     $tabname = "shared_analysis_setting";
     $flds = "
-        owner C(30) NOTNULL DEFAULT 0 PRIMARY,
-        source C(30) NOTNULL DEFAULT 0 PRIMARY,
-        name C(30) NOTNULL PRIMARY,
-        standard C(1) DEFAULT f
+        id I(11) NOTNULL AUTOINCREMENT PRIMARY,
+        owner C(30) NOTNULL DEFAULT 0,
+        previous_owner C(30) NOTNULL DEFAULT 0,
+        name C(30) NOTNULL
     ";
     if (!in_array($tabname, $tables)) {
         if (!create_table($tabname, $flds)) {
@@ -3775,12 +3758,14 @@ if ($current_revision < $n) {
         }
     }
 
-    // Create new table: shared_parameter
-    $tabname = "shared_parameter";
+    // Create new table: shared_analysis_parameter
+    $tabname = "shared_analysis_parameter";
     $flds = "
-        owner C(30) NOTNULL DEFAULT 0 PRIMARY,
-        setting C(30) NOTNULL DEFAULT 0 PRIMARY,
-        name C(30) NOTNULL DEFAULT 0 PRIMARY,
+        id I(11) NOTNULL AUTOINCREMENT PRIMARY,
+        setting_id I(11) CONSTRAINTS 'FOREIGN KEY REFERENCES shared_analysis_setting (id)',
+        owner C(30) NOTNULL DEFAULT 0,
+        setting C(30) NOTNULL DEFAULT 0,
+        name C(30) NOTNULL DEFAULT 0,
         value C(255) DEFAULT NULL
     ";
     if (!in_array($tabname, $tables)) {
@@ -3795,10 +3780,10 @@ if ($current_revision < $n) {
     // Create new table: shared_parameter_setting
     $tabname = "shared_parameter_setting";
     $flds = "
-        owner C(30) NOTNULL DEFAULT 0 PRIMARY,
-        source C(30) NOTNULL DEFAULT 0 PRIMARY,
-        name C(30) NOTNULL PRIMARY,
-        standard C(1) DEFAULT f
+        id I(11) NOTNULL AUTOINCREMENT PRIMARY,
+        owner C(30) NOTNULL DEFAULT 0,
+        previous_owner C(30) NOTNULL DEFAULT 0,
+        name C(30) NOTNULL
     ";
     if (!in_array($tabname, $tables)) {
         if (!create_table($tabname, $flds)) {
@@ -3809,12 +3794,14 @@ if ($current_revision < $n) {
         }
     }
 
-    // Create new table: shared_task_parameter
-    $tabname = "shared_task_parameter";
+    // Create new table: shared_parameter
+    $tabname = "shared_parameter";
     $flds = "
-        owner C(30) NOTNULL DEFAULT 0 PRIMARY,
-        setting C(30) NOTNULL PRIMARY,
-        name C(30) NOTNULL PRIMARY,
+        id I(11) NOTNULL AUTOINCREMENT PRIMARY,
+        setting_id I(11) CONSTRAINTS 'FOREIGN KEY REFERENCES shared_parameter_setting (id)',
+        owner C(30) NOTNULL DEFAULT 0,
+        setting C(30) NOTNULL DEFAULT 0,
+        name C(30) NOTNULL DEFAULT 0,
         value C(255) DEFAULT NULL
     ";
     if (!in_array($tabname, $tables)) {
@@ -3829,10 +3816,29 @@ if ($current_revision < $n) {
     // Create new table: shared_task_setting
     $tabname = "shared_task_setting";
     $flds = "
-        owner C(30) NOTNULL DEFAULT 0 PRIMARY,
-        source C(30) NOTNULL DEFAULT 0 PRIMARY,
-        name C(30) NOTNULL PRIMARY,
-        standard C(1) DEFAULT f
+        id I(11) NOTNULL AUTOINCREMENT PRIMARY,
+        owner C(30) NOTNULL DEFAULT 0,
+        previous_owner C(30) NOTNULL DEFAULT 0,
+        name C(30) NOTNULL
+    ";
+    if (!in_array($tabname, $tables)) {
+        if (!create_table($tabname, $flds)) {
+            $msg = "Could not create table $tabname!";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    // Create new table: shared_task_parameter
+    $tabname = "shared_task_parameter";
+    $flds = "
+        id I(11) NOTNULL AUTOINCREMENT PRIMARY,
+        setting_id I(11) CONSTRAINTS 'FOREIGN KEY REFERENCES shared_task_setting (id)',
+        owner C(30) NOTNULL DEFAULT 0,
+        setting C(30) NOTNULL,
+        name C(30) NOTNULL,
+        value C(255) DEFAULT NULL
     ";
     if (!in_array($tabname, $tables)) {
         if (!create_table($tabname, $flds)) {

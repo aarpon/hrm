@@ -469,15 +469,31 @@ class DatabaseConnection {
         $settings->setOwner($new_owner);
         $settingTable = $settings->sharedTable();
         $table = $settings->sharedParameterTable();
-        $standard = "f";
         $result = True;
         if (!$this->existsSharedSetting($settings)) {
-            $query = "insert into $settingTable values ('" . $targetUserName . "', '" . $original_user . "', '" . $name . "', '" . $standard . "')";
+            $query = "insert into $settingTable " .
+                "(owner, previous_owner, name) values " .
+                "('$targetUserName', '$original_user', '$name')";
             $result = $result && $this->execute($query);
         }
-        $existsAlready = $this->existsSharedParametersFor($settings);
 
+        if (!$result) {
+            return False;
+        }
+
+        // Get the Id
+        $query = "select id from $settingTable where " .
+            "owner='$targetUserName' " .
+            "AND previous_owner='$original_user' " .
+            "AND name='$name'";
+        $id = $this->queryLastValue($query);
+        if (! $id) {
+            return False;
+        }
+
+        // Add the parameters
         foreach ($settings->parameterNames() as $parameterName) {
+
             $parameter = $settings->parameter($parameterName);
             $parameterValue = $parameter->internalValue();
 
@@ -503,18 +519,11 @@ class DatabaseConnection {
                 }
                 $parameterValue = "#".implode("#", $parameterValue);
             }
-            if (!$existsAlready) {
-                $query = "insert into $table values ('" . $targetUserName . "', '" . $name . "', '" . $parameterName . "', '" . $parameterValue . "')";
-            } else {
-                // Check that the parameter itself exists
-                $query = "select name from $table where owner='" . $targetUserName . "' and setting='" . $name . "' and name='" . $parameterName . "' limit 1";
-                $newValue = $this->queryLastValue($query);
-                if ( $newValue != NULL ) {
-                    $query = "update $table set value = '" . $parameterValue . "' where owner='" . $targetUserName . "' and setting='" . $name . "' and name='" . $parameterName . "'";
-                } else {
-                    $query = "insert into $table values ('" . $targetUserName . "', '" . $name . "', '" . $parameterName . "', '" . $parameterValue . "')";
-                }
-            }
+
+            $query = "insert into $table " .
+                "(setting_id, owner, setting, name, value) " .
+                "values ('$id', '$targetUserName', '$name', " .
+                "'$parameterName', '$parameterValue')";
             $result = $result && $this->execute($query);
         }
 
@@ -592,6 +601,18 @@ class DatabaseConnection {
     }
     return $settings;
   }
+
+    /*!
+      \brief	Returns the list of shared templates
+      \param	$username	Name of the user for whom to query for shared templates
+      \param    $table      Shared table to query
+      \return	list of shared jobs
+    */
+    public function getSharedTemplates($username, $table) {
+        $query = "SELECT * FROM $table WHERE owner='$username'";
+        $result = $this->query($query);
+        return $result;
+    }
 
   /*!
 	\brief	Updates the default entry in the database according to the default

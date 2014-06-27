@@ -107,7 +107,7 @@ else if (isset($_POST['edit'])) {
   $message = $_SESSION['editor']->message();
 }
 else if (isset($_POST['share'])) {
-    $_SESSION['editor']->shareSelectedSetting(array("aaron@lic"));
+    $_SESSION['editor']->shareSelectedSetting(array("test"));
     $message = $_SESSION['editor']->message();
 }
 else if (isset($_POST['make_default'])) {
@@ -211,6 +211,17 @@ include("header.inc.php");
     <div id="navright">
         <ul>
             <?php
+                $sharedTemplates = ParameterSetting::getSharedTemplates($_SESSION['user']->name());
+                $numSharedTemplates = count($sharedTemplates);
+                if ($numSharedTemplates > 0) {
+            ?>
+                    <li>
+                        <img src="images/user.png" alt="user" />
+                        &nbsp;You have <?php echo $numSharedTemplates; ?>
+                        shared template(s).
+                    </li>
+            <?php
+                }
                 include("./inc/nav/user.inc.php");
                 include("./inc/nav/raw_images.inc.php");
                 include("./inc/nav/home.inc.php");
