@@ -52,11 +52,11 @@ if (isset($_POST['down'])) {
 
     if (isset($_POST['userfiles']) && is_array($_POST['userfiles'])) {
 
-        // Remove spaces added by the HRM file selector. See '&#160;' below.
+        // Remove spaces added by the HRM file selector. See '&nbsp;' below.
         $fileNames = array();
         foreach ($_POST['userfiles'] as $file) {
             $name = htmlentities($file, null, 'utf-8');
-            $name = str_replace("&#160;", " ", $name);
+            $name = str_replace("&nbsp;", " ", $name);
             $fileNames[] = $name;
         }
         $_SESSION['fileserver']->addFilesToSelection($fileNames);
@@ -70,11 +70,11 @@ else if (isset($_POST['up'])) {
     }
     if (isset($_POST['selectedfiles']) && is_array($_POST['selectedfiles'])) {
 
-        // Remove spaces added by the HRM file selector. See '&#160;' below.
+        // Remove spaces added by the HRM file selector. See '&nbsp;' below.
         $fileNames = array();
         foreach ($_POST['selectedfiles'] as $file) {
             $name = htmlentities($file, null, 'utf-8');
-            $name = str_replace("&#160;", " ", $name);
+            $name = str_replace("&nbsp;", " ", $name);
             $fileNames[] = $name;
         }
         $_SESSION['fileserver']->removeFilesFromSelection($fileNames);
@@ -444,9 +444,9 @@ if ($allFiles == null) {
         foreach ($files as $key => $file) {
             if ($_SESSION['fileserver']->checkAgainstFormat($file, $format)) {
                 // Consecutive spaces are collapsed into one space in HTML.
-                // Hence '&#160;' to correct that when the file has more spaces.
+                // Hence '&nbsp;' to correct that when the file has more spaces.
                 echo "<option>" .
-                    str_replace(' ','&#160;',$file) .
+                    str_replace(' ','&nbsp;',$file) .
                     "</option>\n";
                 $keyArr[$file] = $key;
             }
