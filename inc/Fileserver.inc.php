@@ -1313,6 +1313,10 @@ class Fileserver {
       else
           $filename = $file;
 
+      // Consecutive spaces are collapsed into one space in HTML.
+      // Hence '&#160;' to correct that when the file has more spaces.
+      $filename = str_replace(' ','&#160;',$filename);
+
       return
       "                        <option value=\"$file\">$filename</option>\n";
   }

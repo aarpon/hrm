@@ -51,7 +51,15 @@ if (isset($_POST['down'])) {
     }
 
     if (isset($_POST['userfiles']) && is_array($_POST['userfiles'])) {
-        $_SESSION['fileserver']->addFilesToSelection($_POST['userfiles']);
+
+        // Remove spaces added by the HRM file selector. See '&#160;' below.
+        $newfiles = array();
+        foreach ($_POST['userfiles'] as $file) {
+            $name = htmlentities($file, null, 'utf-8');
+            $name = str_replace("&#160;", " ", $name);
+            $newfiles[] = $name;
+        }
+        $_SESSION['fileserver']->addFilesToSelection($newfiles);
     }
 }
 else if (isset($_POST['up'])) {
@@ -149,9 +157,11 @@ function filterImages (format,series) {
             if (in_array($file,$condensedSeries)) {
                 $generatedScript .= "
                   if(checkAgainstFormat(\"$file\", selectedFormat)) {
-                     var selectItem = document.createElement('option');
-                     selectItem.text = \"$file\";
-                     selectObject.add(selectItem,null);
+                      var f = \"$file\";
+                      f = f.replace(/ /g, '&#160;');
+                      var selectItem = document.createElement('option');
+                      $(selectItem).html(f);
+                      selectObject.add(selectItem,null);
                   }
                     ";
             }
@@ -161,9 +171,11 @@ function filterImages (format,series) {
 
                   // Do not load file series automatically.
                   if(checkAgainstFormat(\"$file\", selectedFormat)) {
-                     var selectItem = document.createElement('option');
-                     selectItem.text = \"$file\";
-                     selectObject.add(selectItem,null);
+                      var f = \"$file\";
+                      f = f.replace(/ /g, '&#160;');
+                      var selectItem = document.createElement('option');
+                      $(selectItem).html(f);
+                      selectObject.add(selectItem,null);
                   }
               }
               ";
@@ -173,8 +185,10 @@ function filterImages (format,series) {
 
                // File does not belong to a file series.
                if(checkAgainstFormat(\"$file\", selectedFormat)) {
+                   var f = \"$file\";
+                   f = f.replace(/ /g, '&#160;');
                    var selectItem = document.createElement('option');
-                   selectItem.text = \"$file\";
+                   $(selectItem).html(f);
                    selectObject.add(selectItem,null);
                }
                ";
@@ -421,7 +435,11 @@ if ($allFiles == null) {
 
         foreach ($files as $key => $file) {
             if ($_SESSION['fileserver']->checkAgainstFormat($file, $format)) {
-                echo "<option>" . $file . "</option>\n";
+                // Consecutive spaces are collapsed into one space in HTML.
+                // Hence '&#160;' to correct that when the file has more spaces.
+                echo "<option>" .
+                    str_replace(' ','&#160;',$file) .
+                    "</option>\n";
                 $keyArr[$file] = $key;
             }
         }
