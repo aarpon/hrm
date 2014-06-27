@@ -2,13 +2,14 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
-require_once("./inc/User.inc.php");
-require_once("./inc/Database.inc.php");
-require_once("./inc/hrm_config.inc.php");
-require_once("./inc/Mail.inc.php");
-require_once("./inc/Util.inc.php");
-require_once("./inc/Validator.inc.php");
-require_once("./inc/wiki_help.inc.php");
+require_once(dirname(__FILE__) . "/inc/User.inc.php");
+require_once(dirname(__FILE__) . "/inc/Database.inc.php");
+require_once(dirname(__FILE__) . "/inc/hrm_config.inc.php");
+require_once(dirname(__FILE__) . "/inc/Mail.inc.php");
+require_once(dirname(__FILE__) . "/inc/Util.inc.php");
+require_once(dirname(__FILE__) . "/inc/Validator.inc.php");
+require_once(dirname(__FILE__) . "/inc/wiki_help.inc.php");
+require_once(dirname(__FILE__) . "/inc/user_mngm/UserManagerFactory.inc.php");
 
 global $hrm_url;
 global $email_sender;
@@ -17,6 +18,7 @@ global $image_host;
 global $image_folder;
 global $image_source;
 global $userManagerScript;
+global $authenticateAgainst;
 
 session_start();
 
