@@ -3741,6 +3741,12 @@ if ($current_revision < $n) {
     // Get current tables
     $tables = $db->MetaTables();
 
+    // Drop the geometry table
+    $tabname = "geometry";
+    if (in_array($tabname, $tables)) {
+        drop_table($tabname);
+    }
+
     // Create new table: shared_analysis_setting
     $tabname = "shared_analysis_setting";
     $flds = "
