@@ -84,7 +84,8 @@ if (!isset($_POST)) {
 
 // Do we jave a JSON-RPC 2.0 request? We do NOT test for the value of id.
 if (!(isset($_POST['id']) &&
-        isset($_POST['jsonrpc']) && $_POST['jsonrpc'] == "2.0")) {
+    isset($_POST['jsonrpc']) && $_POST['jsonrpc'] == "2.0")
+) {
 
     // Invalid JSON-RPC 2.0 call
     die("Invalid JSON-RPC 2.0 call.");
@@ -231,31 +232,31 @@ function jsonGetUserAndTotalNumberOfJobsInQueue() {
  */
 function jsonCheckForUpdates() {
 
-  // Prepare the output array
-  $json = initJSONArray();
+    // Prepare the output array
+    $json = initJSONArray();
 
-  try {
+    try {
 
-    // Check if there is a newer version
-    $isNew = System::isThereNewHRMRelease();
+        // Check if there is a newer version
+        $isNew = System::isThereNewHRMRelease();
 
-    if ($isNew) {
-        $json["newerVersionExist"] = "true";
-        $json["newVersion"] = System::getLatestHRMVersionFromRemoteAsString();
-    } else {
+        if ($isNew) {
+            $json["newerVersionExist"] = "true";
+            $json["newVersion"] = System::getLatestHRMVersionFromRemoteAsString();
+        } else {
+            $json["newerVersionExist"] = "false";
+            $json["newVersion"] = "";
+        }
+
+    } catch (Exception $e) {
+        $json["success"] = "false";
+        $json["message"] = $e->getMessage();
         $json["newerVersionExist"] = "false";
         $json["newVersion"] = "";
     }
 
-  } catch (Exception $e) {
-      $json["success"] = "false";
-      $json["message"] = $e->getMessage();
-      $json["newerVersionExist"] = "false";
-      $json["newVersion"] = "";
-  }
-
-  // Return as a JSON string
-  return (json_encode($json));
+    // Return as a JSON string
+    return (json_encode($json));
 }
 
 /**
@@ -265,30 +266,33 @@ function jsonCheckForUpdates() {
  */
 function jsonSendTestEmail() {
 
-  // Include configuration file
-  include( dirname( __FILE__ ) . "/../config/hrm_client_config.inc" );
+    global $email_sender;
+    global $email_admin;
 
-  // Prepare the output array
-  $json = initJSONArray();
+    // Include configuration file
+    include(dirname(__FILE__) . "/../config/hrm_client_config.inc");
 
-  // Configure the email
-  $mail = new Mail($email_sender);
-  $mail->setReceiver($email_admin);
-  $mail->setSubject('HRM test e-mail');
-  $mail->setMessage('Congratulations! You have successfully ' .
-          'configured your e-mail server!');
+    // Prepare the output array
+    $json = initJSONArray();
 
-  // Send it
-  if ($mail->send()) {
-      $json['success'] = "true";
-      $json['message'] = "Sent!";
-  } else {
-      $json['success'] = "false";
-      $json['message'] = "Failed!";
-  }
+    // Configure the email
+    $mail = new Mail($email_sender);
+    $mail->setReceiver($email_admin);
+    $mail->setSubject('HRM test e-mail');
+    $mail->setMessage('Congratulations! You have successfully ' .
+        'configured your e-mail server!');
 
-  // Return as a JSON string
-  return (json_encode($json));
+    // Send it
+    if ($mail->send()) {
+        $json['success'] = "true";
+        $json['message'] = "Sent!";
+    } else {
+        $json['success'] = "false";
+        $json['message'] = "Failed!";
+    }
+
+    // Return as a JSON string
+    return (json_encode($json));
 }
 
 /**
@@ -355,7 +359,7 @@ function jsonGetImageParameterFromSession($parameterName) {
     $names = $setting->parameterNames();
 
     // Check that we are asking for an image Parameter
-    if (! in_array($parameterName, $names)) {
+    if (!in_array($parameterName, $names)) {
 
         // Return failure
         $json['success'] = "false";
@@ -470,7 +474,7 @@ function jsonGetAllImageParametersFromSession() {
 
     } else {
 
-    	// Return failure
+        // Return failure
         $json['success'] = "false";
         $json['message'] = "Failed retrieving parameters!";
 

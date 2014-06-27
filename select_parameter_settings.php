@@ -206,20 +206,27 @@ include("header.inc.php");
             <?php
                 wiki_link('HuygensRemoteManagerHelpSelectParameterSettings');
             ?>
+            <?php
+            $sharedTemplates = ParameterSetting::getSharedTemplates($_SESSION['user']->name());
+            $numSharedTemplates = count($sharedTemplates);
+            if ($numSharedTemplates > 0) {
+            ?>
+            <script>
+                function toggleSharedTemplatesDiv() {
+                    $('#sharedTemplatePicker').toggle();
+                }
+            </script>
+
+            <li>
+                <img src="images/note.png" alt="user" />
+                &nbsp;You have <a href="#" onclick="toggleSharedTemplatesDiv();">
+                    <?php echo $numSharedTemplates; ?>
+                    shared template<?php echo($numSharedTemplates > 1 ? "s" : ""); ?></a>.
+            </li>
         </ul>
     </div>
     <div id="navright">
         <ul>
-            <?php
-                $sharedTemplates = ParameterSetting::getSharedTemplates($_SESSION['user']->name());
-                $numSharedTemplates = count($sharedTemplates);
-                if ($numSharedTemplates > 0) {
-            ?>
-                    <li>
-                        <img src="images/user.png" alt="user" />
-                        &nbsp;You have <?php echo $numSharedTemplates; ?>
-                        shared template(s).
-                    </li>
             <?php
                 }
                 include("./inc/nav/user.inc.php");
@@ -233,7 +240,26 @@ include("header.inc.php");
 
     
     <div id="content">
- 
+
+    <div id="sharedTemplatePicker">
+        <h4>These are the templates shared with you:</h4>
+        <table>
+            <?php
+                foreach ($sharedTemplates as $template) {
+             ?>
+            <tr>
+                <td class="accept_template"><a href="#">&nbsp;</a></td>
+                <td class="reject_template"><a href="#">&nbsp;</a></td>
+                <td style="text-align: left">
+               <?php echo("'<b>" . $template['name'] . "</b>' from " .
+                   $template['previous_owner']); ?>
+                </td>
+            </tr>
+            <?php
+                }
+            ?>
+        </table>
+    </div>
 <?php
 
 if ($_SESSION['user']->isAdmin()) {
@@ -512,7 +538,7 @@ echo "<p>$message</p>";
         </div>
         
     </div> <!-- rightpanel -->
-    
+
 <?php
 
 include("footer.inc.php");

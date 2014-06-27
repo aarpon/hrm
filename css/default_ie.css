@@ -1913,3 +1913,24 @@ div.StedDeplModeValues {
     font-weight: bold;
     color: red;
 }
+
+#sharedTemplatePicker {
+    display: none;
+    margin: 10px;
+    padding: 5px;
+    font-size: 12px;
+    background-color: lightyellow;
+}
+
+.accept_template {
+    width: 20px;
+    height: 16px;
+    background: url("../images/accept.png") no-repeat top left;
+}
+
+.reject_template {
+    width: 20px;
+    height: 16px;
+    background: url("../images/reject.png") no-repeat top left;
+    margin-right: 10px;
+}
