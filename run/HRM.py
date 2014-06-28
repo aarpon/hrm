@@ -12,6 +12,7 @@ JobDescription()
 
 import ConfigParser
 import pprint
+from collections import deque
 from hashlib import sha1
 
 __all__ = ['JobDescription']
@@ -19,6 +20,12 @@ __all__ = ['JobDescription']
 
 # expected version for job description files:
 JOBFILE_VER = '3'
+
+def deq_del(d, n):
+    """Delete the n'th element of a deque object."""
+    d.rotate(-n)
+    d.popleft()
+    d.rotate(n)
 
 
 class JobDescription(dict):
@@ -136,3 +143,57 @@ class JobDescription(dict):
     def get_category(self):
         """Get the category of this job, in our case the value of 'user'."""
         return self['user']
+
+
+class JobQueue(object):
+
+    """Class to store a list of jobs that need to be processed.
+
+    An instance of this class can be used to keep track of lists of jobs of
+    different categories (e.g. individual users). The instance will contain a
+    scheduler so that it is possible for the caller to simply request the next
+    job from this queue without having to care about priorities or anything
+    else.
+    """
+
+    def __init__(self):
+        """Initialize an empty job queue."""
+        self.cats = deque('')  # categories / users, used by the scheduler
+        self.jobqueue = dict()
+        # We need a mapping from the UID of a given job to its current number
+        # in the corresponding jobqueue to keep the access to a certain job
+        # fast (e.g. for deletion), so we use a dict with the "category" as
+        # keys, each containing a dict with the mapping 'UID':'index':
+        self.jobindices = dict()
+
+    def append(self, job):
+        """Add a new job to the queue."""
+        # If there are already jobs of this category, we don't touch the
+        # scheduler / priority queue:
+        cat = job.get_category()
+        if not cat in self.cats:
+            print('Adding category "%s" to the JobQueue.' % cat)
+            self.cats.append(cat)
+            print('Creating a queue for category "%s".' % cat)
+            self.jobqueue[cat] = deque()
+            self.jobqueue[cat].append(job)
+            print(self.jobqueue[cat])
+            self.jobindices[cat] = {job['uid']: 0}
+            print(self.jobindices[cat])
+        else:
+            print('JobQueue already contains category "%s".' % cat)
+            self.jobqueue[cat].append(job)
+            print(self.jobqueue[cat])
+            self.jobindices[cat][job['uid']] = len(self.jobqueue[cat]) - 1
+            print(self.jobindices[cat])
+
+    def pop(self):
+        """Returns the next job description for processing."""
+        cat = self.cats[0]
+        if len(self.jobqueue[cat]) > 1:
+            self.cats.rotate(-1)  # move the first element to last position
+        else:
+            self.cats.popleft()  # remove the first element
+        job = self.jobqueue[cat].popleft()
+        del self.jobindices[cat][job['uid']]
+        return job
