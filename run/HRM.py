@@ -12,6 +12,7 @@ JobDescription()
 
 import ConfigParser
 import pprint
+from hashlib import sha1
 
 __all__ = ['JobDescription']
 
@@ -51,6 +52,11 @@ class JobDescription(dict):
             raise Exception("Source type 'string' not yet implemented!")
         else:
             raise Exception("Unknown source type '%s'" % srctype)
+        # store the SHA1 digest of this job, serving as the UID:
+        # TODO: this should better be the hash of the actual (unparsed) string
+        # instead of the representation of the Python object, but therefore
+        # we need to hook into the parsing itself (or read the file twice).
+        self['uid'] = sha1(self.__repr__()).hexdigest()
         pprint.pprint("Finished initialization of JobDescription().")
         pprint.pprint(self)
 
