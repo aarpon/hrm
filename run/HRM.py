@@ -132,3 +132,7 @@ class JobDescription(dict):
         for option in self.jobparser.options('inputfiles'):
             infile = self.jobparser.get('inputfiles', option)
             self['infiles'].append(infile)
+
+    def get_category(self):
+        """Get the category of this job, in our case the value of 'user'."""
+        return self['user']
