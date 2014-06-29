@@ -161,7 +161,6 @@ class JobQueue(object):
     else.
     """
 
-    # TODO: implement remove()
     # TODO: implement len() or similar
     # TODO: either remove items from jobs[] upon pop() / remove() or add their
     # ID to a list so the jobs[] dict can get garbage-collected later
@@ -209,3 +208,18 @@ class JobQueue(object):
         debug("Current queue categories: %s" % self.cats)
         debug("Current contents of all queues: %s" % self.queue)
         return self.jobs[jobid]
+
+    def remove(self, uid):
+        """Remove a job with a given UID from the queue."""
+        warn("Trying to remove job with uid '%s'." % uid)
+        cat = self.jobs[uid].get_category()
+        debug("Category of job to remove: '%s'." % cat)
+        self.queue[cat].remove(uid)
+        debug("Current queue categories: %s" % self.cats)
+        debug("Current contents of all queues: %s" % self.queue)
+        if len(self.queue[cat]) < 1:
+            debug("Queue for category '%s' now empty, removing it." % cat)
+            self.cats.remove(cat)  # remove it from the categories list
+            del self.queue[cat]    # delete the category from the queue dict
+            debug("Current queue categories: %s" % self.cats)
+            debug("Current contents of all queues: %s" % self.queue)
