@@ -193,7 +193,16 @@ class JobQueue(object):
         # debug("Overall list of job descriptions: %s" % self.jobs)
 
     def pop(self):
-        """Return the next job description for processing."""
+        """Return the next job description for processing.
+
+        Picks the next that should be processed from that queue that has the
+        topmost position in the categories queue. After selecting the job, the
+        categories queue is shifted one to the left, meaning that the category
+        of the just picked job is then at the last position in the categories
+        queue.
+        This implements a very simple round-robin (token based) scheduler that
+        is going one-by-one through the existing categories.
+        """
         try:
             cat = self.cats[0]
         except IndexError as e:
