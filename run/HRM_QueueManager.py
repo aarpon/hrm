@@ -161,6 +161,9 @@ def main():
         help='GC3Pie config file (default: ~/.gc3/gc3pie.conf)')
     argparser.add_argument('-r', '--resource', required=False,
         help='GC3Pie resource name')
+    # TODO: use HRM.queue_details_hr() for generating the queuelist:
+    argparser.add_argument('-q', '--queuelist', required=False,
+        help='file to write the current queuelist to (default: stdout)')
     argparser.add_argument('-v', '--verbosity', dest='verbosity',
         action='count', default=0)
     try:
