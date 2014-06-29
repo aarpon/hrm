@@ -54,7 +54,7 @@ class EventHandler(pyinotify.ProcessEvent):
     process_IN_CREATE()
     """
 
-    def __init__(self, joblist):
+    def __init__(self, queues):
         """Initialize the inotify event handler.
 
         Parameters
@@ -65,7 +65,7 @@ class EventHandler(pyinotify.ProcessEvent):
         """
         logi("Initialized the event handler for inotify.")
         # TODO: we need to distinguish different job types and act accordingly
-        self.joblist = joblist
+        self.queues = queues
 
     def process_IN_CREATE(self, event):
         """Method handling 'create' events."""
@@ -73,8 +73,9 @@ class EventHandler(pyinotify.ProcessEvent):
         job = HRM.JobDescription(event.pathname, 'file')
         logi("Dict assembled from the processed job file:")
         logi(pprint.pformat(job))
-        self.joblist.append(job)
-        logd("Current joblist: %s" % self.joblist)
+        self.queues[job['type']].append(job)
+        logd("Current job queue for type '%s': %s" %
+                (job['type'], self.queues[job['type']].queue))
 
 
 class HucoreDeconvolveApp(gc3libs.Application):
@@ -171,11 +172,12 @@ def main():
     loglevel = logging.WARN - (args.verbosity * 10)
     gc3libs.configure_logger(loglevel, "qmgc3")
 
-    joblist = []
+    jobqueues = dict()
+    jobqueues['hucore'] = HRM.JobQueue()
 
     wm = pyinotify.WatchManager() # Watch Manager
     mask = pyinotify.IN_CREATE # watched events
-    notifier = pyinotify.ThreadedNotifier(wm, EventHandler(joblist))
+    notifier = pyinotify.ThreadedNotifier(wm, EventHandler(jobqueues))
     notifier.start()
     watchdir = args.spooldir
     wdd = wm.add_watch(watchdir, mask, rec=False)
@@ -203,16 +205,17 @@ def main():
     # the files transferred for / generated from processing)
     while True:
         try:
-            if len(joblist) > 0:
-                logd("Current joblist: %s" % joblist)
+            nextjob = jobqueues['hucore'].pop()
+            if nextjob is not None:
+                logd("Current joblist: %s" % jobqueues['hucore'].queue)
                 logd("Dispatching next job.")
-                run_job(engine, joblist.pop(0))
+                run_job(engine, nextjob)
             time.sleep(1)
         except KeyboardInterrupt:
             break
 
-    print('Cleaning up.')
-    print(joblist)
+    print('Cleaning up. Remaining jobs:')
+    print(jobqueues['hucore'].queue)
     wm.rm_watch(wdd.values())
     notifier.stop()
 
