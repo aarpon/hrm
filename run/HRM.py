@@ -210,7 +210,17 @@ class JobQueue(object):
         return self.jobs[jobid]
 
     def remove(self, uid):
-        """Remove a job with a given UID from the queue."""
+        """Remove a job with a given UID from the queue.
+
+        Take a job UID, look up the corresponding category for this job and
+        remove the job from this category's queue. If this queue is empty
+        afterwards, clean up by removing the job's category from the categories
+        list and deleting the category deque from the queue dict.
+
+        Parameters
+        ----------
+        uid : str (UID of job to remove)
+        """
         warn("Trying to remove job with uid '%s'." % uid)
         try:
             cat = self.jobs[uid].get_category()
