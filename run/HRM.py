@@ -155,7 +155,7 @@ class JobQueue(object):
     else.
     """
 
-    # TODO: implement len() or similar
+    # TODO: implement __len__()
     # TODO: either remove items from jobs[] upon pop() / remove() or add their
     # ID to a list so the jobs[] dict can get garbage-collected later
     def __init__(self):
