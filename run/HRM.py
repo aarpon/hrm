@@ -168,45 +168,44 @@ class JobQueue(object):
     def __init__(self):
         """Initialize an empty job queue."""
         self.cats = deque('')  # categories / users, used by the scheduler
-        self.jobqueue = dict()
-        # We need a mapping from the UID of a given job to its current number
-        # in the corresponding jobqueue to keep the access to a certain job
-        # fast (e.g. for deletion), so we use a dict with the "category" as
-        # keys, each containing a dict with the mapping 'UID':'index':
-        self.jobindices = dict()
+        # jobs is a dict containing the JobDescription objects using their
+        # UID as the indexing key for fast access:
+        self.jobs = dict()
+        self.queue = dict()
 
     def append(self, job):
         """Add a new job to the queue."""
         # TODO: should we catch duplicate jobs? Currently they are enqueued.
-        # If there are already jobs of this category, we don't touch the
-        # scheduler / priority queue:
         cat = job.get_category()
+        uid = job['uid']
+        info("Enqueueing job '%s' into category '%s'." % (uid, cat))
+        self.jobs[uid] = job  # store the job in the global dict
         if not cat in self.cats:
             warn("Adding a new queue for '%s' to the JobQueue." % cat)
             self.cats.append(cat)
-            print('Creating a queue for category "%s".' % cat)
-            self.jobqueue[cat] = deque()
-            self.jobqueue[cat].append(job)
-            print(self.jobqueue[cat])
-            self.jobindices[cat] = {job['uid']: 0}
-            print(self.jobindices[cat])
+            self.queue[cat] = deque()
+            debug("Current queue categories: %s" % self.cats)
         else:
-            print('JobQueue already contains category "%s".' % cat)
-            self.jobqueue[cat].append(job)
-            print(self.jobqueue[cat])
-            self.jobindices[cat][job['uid']] = len(self.jobqueue[cat]) - 1
-            print(self.jobindices[cat])
+            # in case there are already jobs of this category, we don't touch
+            # the scheduler / priority queue:
+            debug("JobQueue already contains a queue for '%s'." % cat)
+        self.queue[cat].append(uid)
+        info("Queue for category '%s': %s" % (cat, self.queue[cat]))
+        # debug("Overall list of job descriptions: %s" % self.jobs)
 
     def pop(self):
         """Return the next job description for processing."""
         # TODO: catch an empty categories queue
         cat = self.cats[0]
-        info("Retrieving next job: category '%s'." % cat, jobid)
-        if len(self.jobqueue[cat]) > 1:
+        jobid = self.queue[cat].popleft()
+        info("Retrieving next job: category '%s', uid '%s'." % (cat, jobid))
+        if len(self.queue[cat]) >= 1:
             debug("Shifting category list.")
             self.cats.rotate(-1)  # move the first element to last position
         else:
-            self.cats.popleft()  # remove the first element
-        job = self.jobqueue[cat].popleft()
-        del self.jobindices[cat][job['uid']]
-        return job
+            debug("Queue for category '%s' now empty, removing it." % cat)
+            self.cats.popleft()  # remove it from the categories list
+            del self.queue[cat]  # delete the category from the queue dict
+        debug("Current queue categories: %s" % self.cats)
+        debug("Current contents of all queues: %s" % self.queue)
+        return self.jobs[jobid]
