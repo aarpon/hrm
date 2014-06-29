@@ -18,6 +18,8 @@ import pprint
 from collections import deque
 from hashlib import sha1
 
+from hrm_logger import warn, info, debug, set_loglevel
+
 __all__ = ['JobDescription', 'JobQueue']
 
 
@@ -175,7 +177,7 @@ class JobQueue(object):
         # scheduler / priority queue:
         cat = job.get_category()
         if not cat in self.cats:
-            print('Adding category "%s" to the JobQueue.' % cat)
+            warn("Adding a new queue for '%s' to the JobQueue." % cat)
             self.cats.append(cat)
             print('Creating a queue for category "%s".' % cat)
             self.jobqueue[cat] = deque()
@@ -193,7 +195,9 @@ class JobQueue(object):
     def pop(self):
         """Returns the next job description for processing."""
         cat = self.cats[0]
+        info("Retrieving next job: category '%s'." % cat, jobid)
         if len(self.jobqueue[cat]) > 1:
+            debug("Shifting category list.")
             self.cats.rotate(-1)  # move the first element to last position
         else:
             self.cats.popleft()  # remove the first element
