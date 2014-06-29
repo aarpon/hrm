@@ -44,11 +44,26 @@ logd = gc3libs.log.debug
 
 class EventHandler(pyinotify.ProcessEvent):
 
-    """Handler for pyinotify filesystem events."""
+    """Handler for pyinotify filesystem events.
+
+    An instance of this class can be registered as a handler to pyinotify and
+    then gets called to process an event registered by pyinotify.
+
+    Public Methods
+    --------------
+    process_IN_CREATE()
+    """
 
     def __init__(self, joblist):
-        """Initializing the inotify event handler."""
-        logi(self.__init__.__doc__)
+        """Initialize the inotify event handler.
+
+        Parameters
+        ----------
+        queues : dict
+            Containing the JobQueue objects for the different queues, using the
+            corresponding 'type' keyword as identifier.
+        """
+        logi("Initialized the event handler for inotify.")
         # TODO: we need to distinguish different job types and act accordingly
         self.joblist = joblist
 
