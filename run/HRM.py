@@ -250,3 +250,34 @@ class JobQueue(object):
             del self.queue[cat]    # delete the category from the queue dict
             debug("Current queue categories: %s" % self.cats)
             debug("Current contents of all queues: %s" % self.queue)
+
+    def queue_details_hr(self):
+        """Generate a human readable list with the current queue details."""
+        ci = 0  # pointer for categories
+        cmax = len(self.cats)  # number of categories
+        cdone = 0
+        print('Queue categories: %i' % cmax)
+        queues = dict()
+        for i in range(len(self.cats)):
+            # jobid = self.queue[self.cats[i]]
+            queues[self.cats[i]] = 0  # pointers to jobs in separate categories
+        print(queues)
+        while True:
+            cat = self.cats[ci]
+            # print("Current category: %i (%s)" % (ci, cat))
+            curqueue = self.queue[cat]
+            # print("Current queue: %s" % curqueue)
+            # print("Current in-queue pointers: %s" % queues)
+            if queues[cat] > -1:
+                jobid = curqueue[queues[cat]]
+                print("Next job id: %s" % jobid)
+                queues[cat] += 1
+                if queues[cat] >= len(self.queue[cat]):
+                    queues[cat] = -1
+                    cdone += 1  # increase counter of processed categories
+                    if cdone == cmax:
+                        return
+            ci += 1
+            if ci >= cmax: ci = 0
+            # print("Category pointer: %i" % ci)
+            # print("Current in-queue pointers: %s" % queues)
