@@ -211,11 +211,21 @@ class JobQueue(object):
 
     def remove(self, uid):
         """Remove a job with a given UID from the queue."""
-        # TODO: cover non-existing UID's
         warn("Trying to remove job with uid '%s'." % uid)
-        cat = self.jobs[uid].get_category()
+        try:
+            cat = self.jobs[uid].get_category()
+        except KeyError as e:
+            warn("No job with uid '%s' was found!" % e)
+            return
         debug("Category of job to remove: '%s'." % cat)
-        self.queue[cat].remove(uid)
+        try:
+            self.queue[cat].remove(uid)
+        except KeyError as e:
+            warn("No queue for category %s was found!" % e)
+            return
+        except ValueError as e:
+            warn("No job with uid '%s' in queue! (%s)" % (uid, e))
+            return
         debug("Current queue categories: %s" % self.cats)
         debug("Current contents of all queues: %s" % self.queue)
         if len(self.queue[cat]) < 1:
