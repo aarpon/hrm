@@ -47,9 +47,13 @@ class EventHandler(pyinotify.ProcessEvent):
     """Handler for pyinotify filesystem events."""
 
     def __init__(self, joblist):
+        """Initializing the inotify event handler."""
+        logi(self.__init__.__doc__)
+        # TODO: we need to distinguish different job types and act accordingly
         self.joblist = joblist
 
     def process_IN_CREATE(self, event):
+        """Method handling 'create' events."""
         logw("Found new jobfile '%s', processing..." % event.pathname)
         job = HRM.JobDescription(event.pathname, 'file')
         logi("Dict assembled from the processed job file:")
