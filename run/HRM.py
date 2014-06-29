@@ -194,8 +194,11 @@ class JobQueue(object):
 
     def pop(self):
         """Return the next job description for processing."""
-        # TODO: catch an empty categories queue
-        cat = self.cats[0]
+        try:
+            cat = self.cats[0]
+        except IndexError as e:
+            warn('Categories queue is empty, no jobs left!')
+            return
         jobid = self.queue[cat].popleft()
         info("Retrieving next job: category '%s', uid '%s'." % (cat, jobid))
         if len(self.queue[cat]) >= 1:
