@@ -161,6 +161,10 @@ class JobQueue(object):
     else.
     """
 
+    # TODO: implement remove()
+    # TODO: implement len() or similar
+    # TODO: either remove items from jobs[] upon pop() / remove() or add their
+    # ID to a list so the jobs[] dict can get garbage-collected later
     def __init__(self):
         """Initialize an empty job queue."""
         self.cats = deque('')  # categories / users, used by the scheduler
@@ -173,6 +177,7 @@ class JobQueue(object):
 
     def append(self, job):
         """Add a new job to the queue."""
+        # TODO: should we catch duplicate jobs? Currently they are enqueued.
         # If there are already jobs of this category, we don't touch the
         # scheduler / priority queue:
         cat = job.get_category()
@@ -193,7 +198,8 @@ class JobQueue(object):
             print(self.jobindices[cat])
 
     def pop(self):
-        """Returns the next job description for processing."""
+        """Return the next job description for processing."""
+        # TODO: catch an empty categories queue
         cat = self.cats[0]
         info("Retrieving next job: category '%s'." % cat, jobid)
         if len(self.jobqueue[cat]) > 1:
