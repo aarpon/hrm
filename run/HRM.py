@@ -26,12 +26,6 @@ __all__ = ['JobDescription', 'JobQueue']
 # expected version for job description files:
 JOBFILE_VER = '3'
 
-def deq_del(d, n):
-    """Delete the n'th element of a deque object."""
-    d.rotate(-n)
-    d.popleft()
-    d.rotate(n)
-
 
 class JobDescription(dict):
 
