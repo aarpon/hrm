@@ -215,6 +215,8 @@ def main():
             break
 
     print('Cleaning up. Remaining jobs:')
+    # TODO: before exiting with a non-empty queue, it should be serialized and
+    # stored in a file (e.g. using the "pickle" module)
     print(jobqueues['hucore'].queue)
     wm.rm_watch(wdd.values())
     notifier.stop()
