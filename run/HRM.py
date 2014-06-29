@@ -8,6 +8,9 @@ Classes
 
 JobDescription()
     Parser for job descriptions, works on files or strings.
+
+JobQueue()
+    Job handling and scheduling.
 """
 
 import ConfigParser
@@ -15,7 +18,7 @@ import pprint
 from collections import deque
 from hashlib import sha1
 
-__all__ = ['JobDescription']
+__all__ = ['JobDescription', 'JobQueue']
 
 
 # expected version for job description files:
