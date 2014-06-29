@@ -211,6 +211,7 @@ class JobQueue(object):
 
     def remove(self, uid):
         """Remove a job with a given UID from the queue."""
+        # TODO: cover non-existing UID's
         warn("Trying to remove job with uid '%s'." % uid)
         cat = self.jobs[uid].get_category()
         debug("Category of job to remove: '%s'." % cat)
