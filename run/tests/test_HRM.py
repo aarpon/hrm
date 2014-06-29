@@ -13,6 +13,10 @@ try:
 except ImportError:
     raise SystemExit(__doc__)
 
+# the reload statement is here so we can us the script in subsequent calls
+# during a single IPython session:
+reload(HRM)
+
 jobs_ok = [
     'spool/examples/deconvolution_job.cfg'
 ]
