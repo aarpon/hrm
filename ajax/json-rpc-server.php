@@ -62,6 +62,7 @@ require_once '../inc/System.inc.php';
 require_once '../inc/Mail.inc.php';
 require_once '../inc/Parameter.inc.php';
 
+
 // This is not strictly necessary for the Ajax communication, but will be
 // necessary for accessing session data to create the response.
 session_start();
@@ -77,9 +78,10 @@ if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
 //
 // ============================================================================
 
+
 // Check that we have a valid request
 if (!isset($_POST)) {
-    die("Nothing POSTed!");
+    die("Nothing $POSTed!");
 }
 
 // Do we jave a JSON-RPC 2.0 request? We do NOT test for the value of id.
@@ -154,6 +156,21 @@ switch ($method) {
         $json = jsonGetAllImageParametersFromSession();
         break;
 
+    case 'jsonGetImageFormats':
+        $json = jsonGetImageFormats();
+        break;
+  
+    case 'jsonGetImagesList':
+         // Get the Parameter name
+        $format = null;
+        if (isset($params['format'])) {
+            $format = $params['format'];
+        }
+        $json = jsonGetImagesList($format);
+        break;
+    case 'jsonGetContributors':
+        $json = jsonGetContributors();
+        break;
     default:
 
         // Unknown method
@@ -191,6 +208,79 @@ function initJSONArray() {
     return (array("success" => "true", "message" => ""));
 }
 
+/**
+ * Get all the currently supported image formats
+*/
+function jsonGetImageFormats() {
+    // Prepare the output array
+    $json = initJSONArray();
+    
+    // Grab the info
+    $ps = new ParameterSetting();
+    $fileFormat = $ps->parameter("ImageFileFormat");
+    // File formats support
+    $formats = $fileFormat->possibleValues();
+    sort($formats);
+    foreach($formats as $key => $format) {
+      $translation = $fileFormat->translatedValueFor($format);
+      $json["formats"][$key] = array("name" => $translation, "format"=> $format);
+    }
+      return (json_encode($json));
+}
+
+/**
+ * Get all the files owned by the current user
+*/
+function jsonGetImagesList($format) {
+    // Prepare the output array
+    $json = initJSONArray();
+    if (!isset($_SESSION['fileserver'])) {
+    # session_register("fileserver");
+    $name = $_SESSION['user']->name();
+   $_SESSION['fileserver'] = new Fileserver($name);
+    }
+     $allFiles = $_SESSION['fileserver']->listFiles(true);
+    foreach($allFiles as $id => $fileName) {
+      $json["files"][$id] = array("id" => $id, "filename"=> $fileName);
+    }
+      return (json_encode($json));
+}
+
+/**
+ * Get all the contributors to the HRM project
+*/
+function jsonGetContributors() {
+  // Check whether a user is currently logged in
+  $loggedIn = ( isset($_SESSION['user'] ) && $_SESSION['user']->isLoggedIn( ) );
+  
+  // Prepare the output array
+  $json = initJSONArray();
+  
+  $name_list = array("Asheesh Gulati", 
+                     "Alessandra Griffa",
+                     "José Viña",
+                     "Daniel Sevilla",
+                     "Niko Ehrenfeuchter",
+                     "Torsten Stöter",
+                     "Olivier Burri",
+                     "Aaron Ponti");
+  
+  $email_list = array("",
+                      "",
+                      "",
+                      "daniel@svi.nl",
+                      "nikolaus.ehrenfeuchter@unibas.ch",
+                      "torsten.stoeter@ifn-magdeburg.de",
+                      "olivier.burri@epfl.ch",
+                      "aaron.ponti@bsse.ethz.ch");
+  
+  for ($i=0; $i<count($name_list); $i++) {
+    $json['contributors'][$i] = array('name' => $name_list[$i], 'email'=> ($loggedIn ? $email_list[$i] : ""));
+  }
+  
+  return (json_encode($json));
+}
+      
 /**
  * Get the total number and the number of jobs owned by the specified user
  * currently in the queue.
@@ -456,7 +546,7 @@ function jsonGetAllImageParametersFromSession() {
         // Get all names
         $names = $setting->parameterNames();
 
-        // Initialize parameter array
+       // Initialize parameter array
         $json["parameters"] = array();
 
         // Now serialize the Parameters

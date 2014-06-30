@@ -1,0 +1,19 @@
+    <div id="footer">
+        Created in 2004 by
+        <a href="mailto:volker.baecker@mri.cnrs.fr">Volker B&auml;cker</a>
+        and released under the terms of the
+        <a href="http://huygens-rm.org/home/?q=node/26">CeCILL license</a>
+		
+      <br />
+      Extended 2006-2014 by
+       <span class="contributor" ng-repeat="contributor in contributors" ng-switch="contributor.email">
+         <a ng-switch-default href="mailto:{{contributor.email}}" tooltip="{{showMessage($index)}}">{{contributor.name}}</a>
+         <span ng-switch-when="">{{contributor.name}}</span>
+        </span>
+      </div>
+<style type="text/css">
+  
+  .contributor:before { content:","; }
+
+  .contributor:first-child:before { content:""; }
+</style>
