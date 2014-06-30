@@ -24,7 +24,7 @@ __all__ = ['JobDescription', 'JobQueue']
 
 
 # expected version for job description files:
-JOBFILE_VER = '3'
+JOBFILE_VER = '4'
 
 
 class JobDescription(dict):

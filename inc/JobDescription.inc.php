@@ -238,6 +238,15 @@ class JobDescription {
     return "g3c_" . $this->id() . ".cfg";
   }
 
+    /*!
+    \brief      The task type to write in the GC3Pie config  file.
+    \return     The task type.
+    */
+    public function getTaskType( ) {
+        /* TODO update with other types */
+        return "decon";
+    }
+
   /*!
     \brief Add a Job to the queue
     \return true if the Job could be added to the queue, false otherwise

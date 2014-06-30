@@ -34,13 +34,13 @@ class G3CPieController {
 
     /*!
      \brief $hrmJobFileList 
-     \var   HRM section of the controller sorted properly for G3CPie.
+     \var   HRM section of the controller sorted for G3CPie.
     */
     private $hrmJobFileList;
 
     /*!
      \brief $hucoreArray
-     \var   Array with fields for the deconvolution section of the controller.
+     \var   Array with fields for hucore tasks.
     */
     private $hucoreArray;
 
@@ -61,6 +61,12 @@ class G3CPieController {
      \var   Input file section of the controller sorted properly for G3CPie.
     */
     private $inputFilesList;
+
+    /*!
+     \brief  $taskPriorityArray
+     \var    Array with fields for the task priorities.
+    */
+    private $taskPriorityArray;
     
         /* ------------------------ Constructor ----------------------------- */   
     /*!
@@ -87,15 +93,22 @@ class G3CPieController {
                                        'hucore',   
                                        'inputfiles' );        
         
-        $this->hrmJobFileArray = array( 'version'   =>  '3',
+        $this->hrmJobFileArray = array( 'version'   =>  '4',
                                         'username'  =>  '',
                                         'useremail' =>  '',
-                                        'jobtype'   =>  'hucore');
-        
+                                        'jobtype'   =>  'hucore',
+                                        'priority'  =>  '');
+
         $this->hucoreArray = array( 'executable'    =>   '',
                                     'template'      =>   '');
 
         $this->inputFilesArray = array( 'file'      =>   '');
+
+        /* Priorities stated in 'nice' units. */
+        $this->tasksPriorityArray = array( 'decon'        =>   '20',
+                                           'snr'          =>   '15',
+                                           'previewGen'   =>   '5',
+                                           'deleteJob'    =>   '1');
     }
 
     /*!
@@ -123,6 +136,9 @@ class G3CPieController {
                 case "jobtype":
                     $this->hrmJobFileList .= " = " .  $value;
                     break;
+                case "priority":
+                    $this->hrmJobFileList .= " = " . $this->getTaskPriority();
+                    break;
                 default:
                     error_log("Unimplemented HRM job file section field: $key");
             }
@@ -131,13 +147,45 @@ class G3CPieController {
     }
 
     /*!
-     \brief  Sets the deconvolution section field.
+    \brief   Returns the priority of a task.
+    \return  The task priority
+    */
+    private function getTaskPriority( ) {
+        $priority = "";
+        $taskType = $this->jobDescription->getTaskType();
+;
+        foreach ($this->tasksPriorityArray as $key => $value) {
+            switch( $key ) {
+                case "decon":
+                case "snr":
+                case "previewGen":
+                case "deleteJob":
+                if ($key == $taskType) {
+                        $priority = $value;
+                }
+                break;
+                default:
+                    error_log("Unknown task type: $key");
+
+            }
+        }
+
+        if ($priority == "") {
+            error_log("No priority found for task $taskType");
+        }
+
+        return $priority;
+    }
+
+    /*!
+     \brief  Sets the hucore section field.
     */
     private function setHuCoreSectionList() {
         global $local_huygens_core;
 
         $this->hucoreList = "";
         $templatePath = $this->jobDescription->sourceFolder();
+        $templateName = $this->jobDescription->getHuTemplateName();
         foreach ($this->hucoreArray as $key => $value) {
             $this->hucoreList .= $key;
             switch ( $key ) {
@@ -151,10 +199,10 @@ class G3CPieController {
                 case "template":
                     $this->hucoreList .= " = ";
                     $this->hucoreList .= $templatePath;
-                    $this->hucoreList .= $this->jobDescription->getHuTemplateName();
+                    $this->hucoreList .= $templateName;
                     break;
                 default:
-                    error_log("Unimplemented HRM decon section field: $key");
+                    error_log("Unimplemented Hucore section field: $key");
             }
             $this->hucoreList .= "\n";
         }
