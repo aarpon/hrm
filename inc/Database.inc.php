@@ -472,8 +472,8 @@ class DatabaseConnection {
         $result = True;
         if (!$this->existsSharedSetting($settings)) {
             $query = "insert into $settingTable " .
-                "(owner, previous_owner, name) values " .
-                "('$targetUserName', '$original_user', '$name')";
+                "(owner, previous_owner, sharing_date, name) values " .
+                "('$targetUserName', '$original_user', CURRENT_TIMESTAMP, '$name')";
             $result = $result && $this->execute($query);
         }
 
@@ -900,7 +900,7 @@ class DatabaseConnection {
     $user     = $desc->owner();
     $owner    = $user->name();
     $group    = $user->userGroup($owner);
-    
+
     $parameter      = $parameterSetting->parameter('ImageFileFormat');
     $inFormat       = $parameter->value();
     $parameter      = $parameterSetting->parameter('PointSpreadFunction');
@@ -1115,7 +1115,7 @@ class DatabaseConnection {
             $result[] = end($row);
         }
     }
-    
+
     return $result;
   }
 
@@ -1214,7 +1214,7 @@ class DatabaseConnection {
   public function getSeriesModeForId($id) {
     $query = "select autoseries from job_files where job = '" . $id . "'";
     $result = $this->queryLastValue($query);
-    
+
     return $result;
   }
 
@@ -1239,7 +1239,7 @@ class DatabaseConnection {
     $row = $this->Execute( $query )->FetchRow( );
     return $row[ 0 ];
   }
-  
+
   /*!
 	\brief	Returns the name of the user who created the job with given id
 	\param	$id	String	id of the job
@@ -1280,7 +1280,7 @@ class DatabaseConnection {
               "delete from job_task_setting where name='$id'");
     return $result;
   }
- 
+
   /*!
     \brief	Returns the path to hucore on given host
     \param	$host	String	Host name
@@ -1585,6 +1585,17 @@ class DatabaseConnection {
   }
 
   /*!
+    \brief  Return the list of known users.
+    \param  String User name to filter out from the list (optional).
+    \return String JSON-encoded array of user names.
+    */
+    public function getUserList($name) {
+        $query = "select name from username where name != '" . $name . "';";
+        $result = $this->query($query);
+        return $result;
+    }
+
+  /*!
     \brief	Get the name of the user who owns a job with given id
     \param	$id	Job id
     \return	name of the user who owns the job
@@ -1732,7 +1743,7 @@ class DatabaseConnection {
    \return  Boolean: true if the module is supported by the license.
   */
   public function hasLicense ( $feature ) {
-      
+
       $query = "SELECT feature FROM hucore_license WHERE " .
           "feature LIKE '" . $feature . "' LIMIT 1;";
 
@@ -1741,14 +1752,14 @@ class DatabaseConnection {
       } else {
           return true;
       }
-  }    
+  }
 
  	/*!
 		\brief	Checks whether Huygens Core has a valid license
 		\return	true if the license is valid, false otherwise
     */
   public function hucoreHasValidLicense( ) {
-      
+
       // We (ab)use the hasLicense() method
       return ( $this->hasLicense("freeware") == false);
   }
@@ -1774,8 +1785,8 @@ class DatabaseConnection {
   */
   public function storeLicenseDetails ( $licDetails ) {
 
-    $licStored = true;  
-      
+    $licStored = true;
+
     // Make sure that the hucore_license table exists.
     $tables = $this->connection->MetaTables("TABLES");
     if (!in_array("hucore_license", $tables) ) {
@@ -1809,7 +1820,7 @@ class DatabaseConnection {
             default:
                 report("Licensed feature: $feature", 1);
         }
-        
+
         $query = "INSERT INTO hucore_license (feature) ".
                  "VALUES ('". $feature ."')";
         $result = $this->execute($query);
@@ -1822,7 +1833,7 @@ class DatabaseConnection {
         }
     }
 
-    return $licStored;    
+    return $licStored;
   }
 
   /*!

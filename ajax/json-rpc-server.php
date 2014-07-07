@@ -155,6 +155,12 @@ switch ($method) {
         $json = jsonGetAllImageParametersFromSession();
         break;
 
+    case 'jsonGetUserList':
+
+        $username = $params[0];
+        $json = jsonGetUserList($username);
+        break;
+
     default:
 
         // Unknown method
@@ -479,6 +485,27 @@ function jsonGetAllImageParametersFromSession() {
         $json['message'] = "Failed retrieving parameters!";
 
     }
+
+    // Return as a JSON string
+    return (json_encode($json));
+}
+
+/**
+ * Return the list of known users.
+ * @param  String User name to filter out from the list (optional).
+ * @return String JSON-encoded array of user names.
+ */
+function jsonGetUserList($username) {
+
+    // Prepare the output array
+    $json = initJSONArray();
+
+    // Retrieve user list from database
+    $db = new DatabaseConnection();
+
+    // Get the list of users
+    $users = $db->getUserList($username);
+    $json["users"] = $users;
 
     // Return as a JSON string
     return (json_encode($json));
