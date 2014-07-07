@@ -1901,19 +1901,31 @@ div.StedDeplModeValues {
     display: none;
     margin: 10px;
     padding: 5px;
-    font-size: 12px;
+    font-size: 10px;
     background-color: lightyellow;
+}
+
+.from_template {
+    text-align: left;
 }
 
 .accept_template {
     width: 20px;
     height: 16px;
     background: url("../images/accept.png") no-repeat top left;
+    margin-left: 10px;
 }
 
 .reject_template {
     width: 20px;
     height: 16px;
     background: url("../images/reject.png") no-repeat top left;
+}
+
+.preview_template {
+    width: 20px;
+    height: 16px;
+    background: url("../images/preview.png") no-repeat top left;
     margin-right: 10px;
 }
+

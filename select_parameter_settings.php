@@ -245,18 +245,27 @@ include("header.inc.php");
         <h4>These are the templates shared with you:</h4>
         <table>
             <?php
-                foreach ($sharedTemplates as $template) {
-             ?>
-            <tr>
-                <td class="accept_template"><a href="#">&nbsp;</a></td>
-                <td class="reject_template"><a href="#">&nbsp;</a></td>
-                <td style="text-align: left">
-               <?php echo("'<b>" . $template['name'] . "</b>' from " .
-                   $template['previous_owner']); ?>
-                </td>
-            </tr>
+            $lastUser = null;
+            ksort($sharedTemplates);
+            foreach ($sharedTemplates as $template) {
+                if ($template['previous_owner'] != $lastUser) {
+            ?>
+                <tr><td class="from_template" rowspan="4"><b>From <?php echo($template['previous_owner']); ?>:</b></td></tr>
+            <?php
+                    $lastUser = $template['previous_owner'];
+                } else {
+            ?>
+                <tr>
+                    <td class="accept_template"><a href="#">&nbsp;</a></td>
+                    <td class="reject_template"><a href="#">&nbsp;</a></td>
+                    <td class="preview_template"><a href="#">&nbsp;</a></td>
+                    <td style="text-align: left">
+                    <?php echo("'<b>" . $template['name'] . "</b>' from " .
+                        $template['previous_owner']); ?></td>
+                </tr>
             <?php
                 }
+            }
             ?>
         </table>
     </div>
