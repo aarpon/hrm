@@ -1913,27 +1913,31 @@ div.StedDeplModeValues {
     border-radius: 7px;
 }
 
+.accept_template, .reject_template, .preview_template {
+    width: 25px;
+    height: 16px;
+}
+
 .from_template {
-height: 30px;
-vertical-align: middle;
-text-align: left;
+    height: 30px;
+    vertical-align: middle;
+    text-align: left;
 }
 
 .accept_template {
-width: 25px;
-height: 16px;
-background: url("../images/accept.png") no-repeat top center;
+    background: url("../images/accept.png") no-repeat top center;
 }
 
 .reject_template {
-width: 25px;
-height: 16px;
-background: url("../images/reject.png") no-repeat top center;
+    background: url("../images/reject.png") no-repeat top center;
 }
 
 .preview_template {
-width: 25px;
-height: 16px;
-background: url("../images/preview.png") no-repeat top center;
+    background: url("../images/preview.png") no-repeat top center;
+}
+
+.name_template {
+    text-align: left;
+    font-weight: bold;
 }
 

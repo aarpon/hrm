@@ -175,7 +175,7 @@ abstract class Setting {
       the standard (default) flag. This is an abstract function and must
       be reimplemented.
     */
-    abstract function table();
+    abstract static function table();
 
     /*!
       \brief	Returns the name of the database table in which all the Parameters
@@ -184,7 +184,7 @@ abstract class Setting {
       This is an abstract function and must be reimplemented.
       \see table()
     */
-    abstract function parameterTable();
+    abstract static function parameterTable();
 
     /*!
       \brief  Loads the Parameter values into current Setting
@@ -313,7 +313,7 @@ class ParameterSetting extends Setting {
       Besides the name, the table contains the Setting's name, owner and
       the standard (default) flag.
     */
-    public function table() {
+    public static function table() {
         return "parameter_setting";
     }
 
@@ -321,7 +321,7 @@ class ParameterSetting extends Setting {
       \brief	Returns the name of the database table in which the list of
       shared Setting names are stored.
     */
-    public function sharedTable() {
+    public static function sharedTable() {
         return "shared_parameter_setting";
     }
 
@@ -330,7 +330,7 @@ class ParameterSetting extends Setting {
               for the Settings stored in the table specified in table()
       \see table()
     */
-    public function parameterTable() {
+    public static function parameterTable() {
         return "parameter";
     }
 
@@ -339,7 +339,7 @@ class ParameterSetting extends Setting {
                 settings.
       \see table()
     */
-    public function sharedParameterTable() {
+    public static function sharedParameterTable() {
         return "shared_parameter";
     }
 
@@ -2062,7 +2062,7 @@ class TaskSetting extends Setting {
       the standard (default) flag. This is an abstract function and must
       be reimplemented.
     */
-    public function table() {
+    public static function table() {
         return "task_setting";
     }
 
@@ -2070,7 +2070,7 @@ class TaskSetting extends Setting {
       \brief	Returns the name of the database table in which the list of
       shared Setting names are stored.
     */
-    public function sharedTable() {
+    public static function sharedTable() {
         return "shared_task_setting";
     }
 
@@ -2082,7 +2082,7 @@ class TaskSetting extends Setting {
 
       \see table()
     */
-    public function parameterTable() {
+    public static function parameterTable() {
         return "task_parameter";
     }
 
@@ -2091,7 +2091,7 @@ class TaskSetting extends Setting {
             settings.
     \see table()
     */
-    public function sharedParameterTable() {
+    public static function sharedParameterTable() {
         return "shared_task_parameter";
     }
 
@@ -2363,7 +2363,7 @@ class AnalysisSetting extends Setting {
       the standard (default) flag. This is an abstract function and must
       be reimplemented.
     */
-    public function table() {
+    public static function table() {
         return "analysis_setting";
     }
 
@@ -2371,7 +2371,7 @@ class AnalysisSetting extends Setting {
       \brief	Returns the name of the database table in which the list of
       shared Setting names are stored.
     */
-    public function sharedTable() {
+    public static function sharedTable() {
         return "shared_analysis_setting";
     }
 
@@ -2383,7 +2383,7 @@ class AnalysisSetting extends Setting {
 
       \see table()
     */
-    public function parameterTable() {
+    public static function parameterTable() {
         return "analysis_parameter";
     }
 
@@ -2392,7 +2392,7 @@ class AnalysisSetting extends Setting {
                 settings.
       \see table()
     */
-    public function sharedParameterTable() {
+    public static function sharedParameterTable() {
         return "shared_analysis_parameter";
     }
 
@@ -2557,7 +2557,7 @@ class JobParameterSetting extends ParameterSetting {
       Besides the name, the table contains the Setting's name, owner and
       the standard (default) flag.
     */
-    public function table() {
+    public static function table() {
         return "job_parameter_setting";
     }
 
@@ -2566,7 +2566,7 @@ class JobParameterSetting extends ParameterSetting {
               for the Settings stored in the table specified in table()
       \see table()
     */
-    public function parameterTable() {
+    public static function parameterTable() {
         return "job_parameter";
     }
 
@@ -2590,7 +2590,7 @@ class JobTaskSetting extends TaskSetting {
       Besides the name, the table contains the Setting's name, owner and
       the standard (default) flag.
     */
-    public function table() {
+    public static function table() {
         return "job_task_setting";
     }
 
@@ -2599,7 +2599,7 @@ class JobTaskSetting extends TaskSetting {
               for the Settings stored in the table specified in table()
       \see table()
     */
-    public function parameterTable() {
+    public static function parameterTable() {
         return "job_task_parameter";
     }
 
@@ -2623,7 +2623,7 @@ class JobAnalysisSetting extends AnalysisSetting {
       Besides the name, the table contains the Setting's name, owner and
       the standard (default) flag.
     */
-    public function table() {
+    public static function table() {
         return "job_analysis_setting";
     }
 
@@ -2632,7 +2632,7 @@ class JobAnalysisSetting extends AnalysisSetting {
               for the Settings stored in the table specified in table()
       \see table()
     */
-    public function parameterTable() {
+    public static function parameterTable() {
         return "job_analysis_parameter";
     }
 

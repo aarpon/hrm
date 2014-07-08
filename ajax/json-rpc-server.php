@@ -55,12 +55,14 @@ PHP:          $params[0] := "ExcitationWavelength"
 
 */
 
-require_once '../inc/User.inc.php';
-require_once '../inc/JobQueue.inc.php';
-require_once '../inc/Database.inc.php';
-require_once '../inc/System.inc.php';
-require_once '../inc/Mail.inc.php';
-require_once '../inc/Parameter.inc.php';
+require_once(dirname(__FILE__) . '/../inc/User.inc.php');
+require_once(dirname(__FILE__) . '/../inc/JobQueue.inc.php');
+require_once(dirname(__FILE__) . '/../inc/Database.inc.php');
+require_once(dirname(__FILE__) . '/../inc/System.inc.php');
+require_once(dirname(__FILE__) . '/../inc/Mail.inc.php');
+require_once(dirname(__FILE__) . '/../inc/Parameter.inc.php');
+require_once(dirname(__FILE__) . '/../inc/SettingEditor.inc.php');
+require_once(dirname(__FILE__) . '/../inc/Setting.inc.php');
 
 // This is not strictly necessary for the Ajax communication, but will be
 // necessary for accessing session data to create the response.
@@ -159,6 +161,26 @@ switch ($method) {
 
         $username = $params[0];
         $json = jsonGetUserList($username);
+        break;
+
+    case 'jsonGetSharedTemplateList':
+
+        $username = $params[0];
+        $json = jsonGetSharedTemplateList($username);
+        break;
+
+    case 'jsonAcceptSharedTemplate':
+
+        $template = $params[0];
+        $type = $params[1];
+        $json = jsonAcceptSharedTemplate($template, $type);
+        break;
+
+    case 'jsonDeleteSharedTemplate':
+
+        $template = $params[0];
+        $type = $params[1];
+        $json = jsonDeleteSharedTemplate($template, $type);
         break;
 
     default:
@@ -505,7 +527,144 @@ function jsonGetUserList($username) {
 
     // Get the list of users
     $users = $db->getUserList($username);
+    if ($users == null) {
+
+        // Return failure
+        $json['success'] = "false";
+        $json['message'] = "Failed retrieving user list!";
+
+    }
     $json["users"] = $users;
+
+    // Return as a JSON string
+    return (json_encode($json));
+}
+
+/**
+ * Return the list of shared templates with the given user.
+ * @param  String Name of the user for which to query for shared templates.
+ * @return String JSON-encoded array of shared templates.
+ */
+function jsonGetSharedTemplateList($username) {
+
+    // Prepare the output array
+    $json = initJSONArray();
+
+    // Retrieve list of shared templates
+    $sharedTemplates = ParameterSetting::getSharedTemplates($username);
+    $json["sharedTemplates"] = $sharedTemplates;
+
+    // Return as a JSON string
+    return (json_encode($json));
+}
+
+/**
+ * Accept and copy a template to the target user.
+ * @param  String Name of the user for which to query for shared templates.
+ * @param  String Type of the template: 'parameter', 'task', 'analysis'.
+ * @return String JSON-encoded array with 'success' and 'message' fields.
+ */
+function jsonAcceptSharedTemplate($template, $type) {
+
+    // Prepare the output array
+    $json = initJSONArray();
+
+    // Get a database connection
+    $db = new DatabaseConnection();
+
+    // Copy the setting
+    $success = True;
+    switch ($type) {
+
+        case "parameter":
+
+            // Copy the template
+            $db->copySharedTemplate($template[id],
+                ParameterSetting::sharedTable(),
+                ParameterSetting::sharedParameterTable(),
+                ParameterSetting::table(),
+                ParameterSetting::parameterTable());
+
+            break;
+
+        case "task":
+
+            throw new Exception("IMPLEMENT ME!");
+            break;
+
+        case "analysis":
+
+            throw new Exception("IMPLEMENT ME!");
+            break;
+
+        default;
+
+            // Return failure
+            $json['success'] = "false";
+            $json['message'] = "Unknown template type!";
+
+    }
+    if (! $success) {
+
+        // Return failure
+        $json['success'] = "false";
+        $json['message'] = "Could not accept selected template.";
+    }
+
+    // Return as a JSON string
+    return (json_encode($json));
+}
+
+/**
+ * Delete a shared template without copying it.
+ * @param  String Name of the user for which to query for shared templates.
+ * @param  String Type of the template: 'parameter', 'task', 'analysis'.
+ * @return String JSON-encoded array with 'success' and 'message' fields.
+ */
+function jsonDeleteSharedTemplate($template, $type) {
+
+    // Prepare the output array
+    $json = initJSONArray();
+
+    // Get a database connection
+    $db = new DatabaseConnection();
+
+    // Copy the setting
+    $success = True;
+    switch ($type) {
+
+        case "parameter":
+
+            // Copy the template
+            $db->deleteSharedTemplate($template[id],
+                ParameterSetting::sharedTable(),
+                ParameterSetting::sharedParameterTable());
+
+            break;
+
+        case "task":
+
+            throw new Exception("IMPLEMENT ME!");
+            break;
+
+        case "analysis":
+
+            throw new Exception("IMPLEMENT ME!");
+            break;
+
+        default;
+
+            // Return failure
+            $json['success'] = "false";
+            $json['message'] = "Unknown template type!";
+
+    }
+    if (! $success) {
+
+        // Return failure
+        $json['success'] = "false";
+        $json['message'] = "Could not delete selected template.";
+    }
 
     // Return as a JSON string
     return (json_encode($json));

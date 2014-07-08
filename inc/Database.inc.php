@@ -614,6 +614,111 @@ class DatabaseConnection {
         return $result;
     }
 
+    /*!
+      \brief	Copies the relevant rows from shared- to user- tables.
+      \param    $id          ID of the setting to be copied
+      \param    $sourceSettingTable Setting table to copy from
+      \param    $sourceParameterTable Parameter table to copy from
+      \param    $destSettingTable Setting table to copy to
+      \param    $destParameterTable Parameter table to copy to
+      \return	True if copying was successful; false otherwise.
+    */
+    public function copySharedTemplate($id, $sourceSettingTable,
+            $sourceParameterTable, $destSettingTable, $destParameterTable) {
+
+        // Get all rows from source table for given setting id
+        $query = "select * from $sourceParameterTable where setting_id=$id";
+        $rows = $this->query($query);
+        if (count($rows) == 0) {
+            return False;
+        }
+
+        // Now add the rows to the destination table
+        $ok = True;
+        $record = array();
+        $this->connection->BeginTrans();
+        foreach ($rows as $row) {
+            $record["owner"] = $row["owner"];
+            $record["setting"] = $row["setting"];
+            $record["name"] = $row["name"];
+            $record["value"] = $row["value"];
+            $insertSQL = $this->connection->GetInsertSQL($destParameterTable,
+                $record);
+            $ok &= $this->connection->Execute($insertSQL);
+            if (! $ok) {
+                break;
+            }
+        }
+
+        // If everything went okay, we commit the transaction; otherwise we roll
+        // back
+        if ($ok) {
+            $this->connection->CommitTrans();
+        } else {
+            $this->connection->RollbackTrans();
+            return False;
+        }
+
+        // Now add the setting to the setting table
+        $query = "select * from $sourceSettingTable where id=$id";
+        $rows = $this->query($query);
+        if (count($rows) != 1) {
+            return False;
+        }
+
+        $this->connection->BeginTrans();
+        $record = array();
+        $row = $rows[0];
+        $record["owner"] = $row["owner"];
+        $record["name"] = $row["name"];
+        $record["standard"] = 'f';
+        $insertSQL = $this->connection->GetInsertSQL($destSettingTable,
+            $record);
+        $ok = $this->connection->Execute($insertSQL);
+
+        if ($ok) {
+            $this->connection->CommitTrans();
+        } else {
+            $this->connection->RollbackTrans();
+            return False;
+        }
+
+        // Now we can delete the records from the source tables. Even if it
+        // if it fails we do not roll back, since the parameters were copied
+        // successfully.
+
+        // Delete setting entry
+        $query = "delete from $sourceSettingTable where id=$id";
+        $this->connection->Execute($query);
+
+        // Delete parameter entries
+        $query = "delete from $sourceParameterTable where setting_id=$id";
+        $this->connection->Execute($query);
+
+        return True;
+    }
+
+    /*!
+      \brief	Delete the relevant rows from the shared tables.
+      \param    $id          ID of the setting to be deleted
+      \param    $sourceSettingTable Setting table to copy from
+      \param    $sourceParameterTable Parameter table to copy from
+      \return	True if copying was successful; false otherwise.
+    */
+    public function deleteSharedTemplate($id, $sourceSettingTable,
+                                       $sourceParameterTable) {
+
+        // Delete setting entry
+        $query = "delete from $sourceSettingTable where id=$id";
+        $this->connection->Execute($query);
+
+        // Delete parameter entries
+        $query = "delete from $sourceParameterTable where setting_id=$id";
+        $this->connection->Execute($query);
+
+        return True;
+    }
+
   /*!
 	\brief	Updates the default entry in the database according to the default
 			value in the setting

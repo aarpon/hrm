@@ -218,32 +218,10 @@ include("header.inc.php");
             <?php
                 wiki_link('HuygensRemoteManagerHelpSelectParameterSettings');
             ?>
-            <?php
-            $sharedTemplates = ParameterSetting::getSharedTemplates($_SESSION['user']->name());
-            $numSharedTemplates = count($sharedTemplates);
-            ?>
-
-            <script>
-                function toggleSharedTemplatesDiv() {
-                    $('#sharedTemplatePicker').toggle();
-                }
-            </script>
-
             <li>
                 <img src="images/share_small.png" alt="shared_templates" />&nbsp;
-                <?php
-                if ($numSharedTemplates == 0) {
-                ?>
-                You have no shared templates.
-                <?php
-                } else {
-                    ?>
-                You have <a href="#" onclick="toggleSharedTemplatesDiv();">
-                <?php echo("$numSharedTemplates shared template" . ($numSharedTemplates > 1 ? "s" : "") ."!");?>
-                </a>
-                <?php
-                }
-                ?>
+                <!-- This is where the template sharing notification is shown -->
+                <span id="templateSharingNotifier">&nbsp;</span>
             </li>
         </ul>
     </div>
@@ -262,60 +240,19 @@ include("header.inc.php");
 
     <div id="content">
 
+    <!-- This is where the shared templates are shown with action buttons
+    to accept, reject, and preview them. -->
+
     <div id="sharedTemplatePicker">
-        <h4>These are the templates shared with you:</h4>
-        <table>
-            <?php
-
-            // Sort the templates by previous user
-            function sort_by_previous_owner($template1, $template2) {
-                $a = $template1["previous_owner"];
-                $b = $template2["previous_owner"];
-                if ($a == $b) {
-                    return 0;
-                }
-                return ($a < $b) ? -1 : 1;
-            }
-            usort($sharedTemplates, "sort_by_previous_owner");
-
-            // Now fill the table
-            $lastUser = null;
-            foreach ($sharedTemplates as $template) {
-                if ($template['previous_owner'] != $lastUser) {
-            ?>
-                <tr>
-                    <td colspan="4" class="from_template">
-                        From <b><?php echo($template['previous_owner']); ?>:</b>
-                    </td>
-                </tr>
-            <?php
-                    $lastUser = $template['previous_owner'];
-                }
-            ?>
-                <tr>
-                    <td class="accept_template"
-                        onmouseover="TagToTip('ttSpanAcceptTemplate' )"
-                        onmouseout="UnTip()">
-                        <a href="#">&nbsp;</a>
-                    </td>
-                    <td class="reject_template"
-                        onmouseover="TagToTip('ttSpanRejectTemplate' )"
-                        onmouseout="UnTip()">
-                        <a href="#">&nbsp;</a></td>
-                    <td class="preview_template"
-                        onmouseover="TagToTip('ttSpanPreviewTemplate' )"
-                        onmouseout="UnTip()">
-                        <a href="#">&nbsp;</a></td>
-                    <td style="text-align: left">
-                    <?php echo("'<b>" . $template['name'] . "</b>' on " .
-                        $template['sharing_date']); ?></td>
-                </tr>
-            <?php
-            }
-            ?>
+        <h4><img src="images/share.png" />&nbsp;
+            These are the templates shared with you:</h4>
+        <table id="sharedTemplatePickerTable">
+            <tbody>
+            </tbody>
         </table>
     </div>
-<?php
+
+    <?php
 
 if ($_SESSION['user']->isAdmin()) {
 
@@ -426,7 +363,7 @@ if (sizeof($settings) == 0) $flag = " disabled=\"disabled\"";
 <?php
 
 if (sizeof($settings) == 0) {
-  echo "                        <option>&nbsp;</option>\n";
+  echo "<option>&nbsp;</option>\n";
 }
 else {
   foreach ($settings as $setting) {
@@ -642,9 +579,119 @@ include("footer.inc.php");
 
 ?>
 
-<!-- Activate Ajax functions to get  the dynamic views -->
 <script type="text/javascript">
 
+    // Prepare list of templates for sharing
+    $(document).ready(function() {
+
+        // Get the user name from the session
+        var username = <?php echo("'" . $_SESSION['user']->name() . "'");?>;
+
+        if (null === username) {
+            return;
+        }
+
+        // Query server for list of shared templates
+        JSONRPCRequest({
+            method : 'jsonGetSharedTemplateList',
+            params: [username]
+        }, function(response) {
+
+            // Failure?
+            if (response.success != "true") {
+
+                $("#message").append("<p>Problem retrieving list of shared templates!</p>");
+                return;
+
+            }
+
+            // Get the templates
+            var sharedTemplates = response.sharedTemplates;
+
+            // Sort them by previous owner
+            sharedTemplates.sort(sort_by_previous_owner);
+
+            // Get the number of templates
+            var numSharedTemplates = sharedTemplates.length;
+
+            // Write the notification
+            if (numSharedTemplates == 0) {
+                $("#templateSharingNotifier").html("You have no shared templates.");
+            } else {
+                $("#templateSharingNotifier").html("You have " +
+                    "<a href='' onclick='toggleSharedTemplatesDiv(); return false;'><b>" +
+                    String(numSharedTemplates) + " shared template" +
+                    (numSharedTemplates > 1 ? "s" : "") + "</b></a>!");
+            }
+
+            // Now fill in the shared template table
+            fillInSharedTemplatesTable(sharedTemplates);
+
+        });
+    });
+
+    // Fill in the shared template table
+    function fillInSharedTemplatesTable(sharedTemplates) {
+
+        // Remove content from table
+        var tbody = $("#sharedTemplatePickerTable tbody");
+        tbody.empty();
+
+        // Make sure to clear the template data
+        tbody.data("shared_templates", null);
+
+        if (sharedTemplates.length == 0) {
+            tbody.append("<tr><td>No templates shared with you.</td>/<tr>");
+            return;
+        }
+
+        // Store the shared templates
+        tbody.data("shared_templates", sharedTemplates);
+
+        // Now fill the table
+        var lastUser = null;
+        for (var i = 0; i < sharedTemplates.length; i++) {
+
+            // Add 'header' row if needed
+            if (sharedTemplates[i].previous_owner != lastUser) {
+
+                // Add "From 'user'" header
+                tbody.append("<tr><td colspan='4' class='from_template'>" +
+                    "From <b>" + sharedTemplates[i].previous_owner +
+                    "</b>:</td></tr>");
+
+                lastUser = sharedTemplates[i].previous_owner;
+            }
+
+            // Add template with actions
+            var tdAccept = "<td class='accept_template' " +
+                "title='Accept the template.' " +
+                "onclick=acceptTemplate(" + String(i) + ") >" +
+                "<a href='#'>&nbsp;</a></td>";
+
+            var tdReject = "<td class='reject_template' " +
+                "title='Reject the template.' " +
+                "onclick=rejectTemplate(" + String(i) + ") >" +
+                "<a href='#'>&nbsp;</a></td>";
+
+            var tdPreview = "<td class='preview_template'  " +
+                "title='Preview the template.' " +
+                "onclick=previewTemplate(" + String(i) + ") >" +
+                "<a href='#'>&nbsp;</a></td>";
+
+            var tdTemplate = "<td class='name_template' " +
+                "title='Shared with you on " +
+                sharedTemplates[i].sharing_date + ".' >" +
+                sharedTemplates[i].name + "</td>";
+
+            tbody.append("<tr>" + tdAccept + tdReject +
+                tdPreview + tdTemplate + "</tr>");
+
+        }
+
+    }
+
+    // Prepare the page for template sharing
     function prepareUserSelectionForSharing(username) {
 
         // Is there a selected template?
@@ -661,7 +708,7 @@ include("footer.inc.php");
             params: [username]
         }, function(response) {
 
-            // Success?
+            // Failure?
             if (response.success != "true") {
 
                 $("#message").append("<p>Could not retrieve user list!</p>");
@@ -687,6 +734,95 @@ include("footer.inc.php");
             $("#formUserList").show();
 
         });
+    }
+
+    // Accept the template with specified index
+    function acceptTemplate(template_index) {
+
+        // Get the shared templates content from table
+        var tbody = $("#sharedTemplatePickerTable tbody");
+        var sharedTemplates = tbody.data("shared_templates");
+
+        if (sharedTemplates == null) {
+            return;
+        }
+
+        // Send an asynchronous call to the server to accept the template
+        JSONRPCRequest({
+            method : 'jsonAcceptSharedTemplate',
+            params: [sharedTemplates[template_index], 'parameter']
+        }, function(response) {
+
+            // Failure?
+            if (response.success != "true") {
+
+                $("#message").append("<p>Could not accept template!</p>");
+                return;
+
+            }
+
+            // Now reload the page to udpate everything
+            location.reload(true);
+        });
+
+    }
+
+    // Delete the template with specified index
+    function rejectTemplate(template_index) {
+
+        // Get the shared templates content from table
+        var tbody = $("#sharedTemplatePickerTable tbody");
+        var sharedTemplates = tbody.data("shared_templates");
+
+        if (sharedTemplates == null) {
+            return;
+        }
+
+        // Ask the user for confirmation
+        if (! confirm("Are you sure you want to discard this template?")) {
+            return;
+        }
+
+        // Send an asynchronous call to the server to accept the template
+        JSONRPCRequest({
+            method : 'jsonDeleteSharedTemplate',
+            params: [sharedTemplates[template_index], 'parameter']
+        }, function(response) {
+
+            // Failure?
+            if (response.success != "true") {
+
+                $("#message").append("<p>Could not delete template!</p>");
+                return;
+
+            }
+
+            // Now reload the page to udpate everything
+            location.reload(true);
+        });
+
+    }
+
+    // Preview the template with specified index
+    function previewTemplate(template_index) {
+
+        alert("Not implemented yet!");
+
+    }
+
+    // Sort the templates by previous user
+    function sort_by_previous_owner(template1, template2) {
+        var a = template1['previous_owner'];
+        var b = template2['previous_owner'];
+        if (a == b) {
+            return 0;
+        }
+        return (a < b) ? -1 : 1;
+    }
+
+    // Toggles visibility of the shared templates div.
+    function toggleSharedTemplatesDiv() {
+        $('#sharedTemplatePicker').toggle();
     }
 
 </script>
