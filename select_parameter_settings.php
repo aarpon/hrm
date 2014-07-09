@@ -246,6 +246,10 @@ include("header.inc.php");
     <div id="sharedTemplatePicker">
         <div id="shareTemplatePickerHeader">
             <p>These are the templates shared with you:</p>
+            <div id="shareTemplatePickerHeaderClose" title="Close"
+                 onclick="closeSharedTemplatesDiv();">
+                X
+            </div>
         </div>
         <div id="shareTemplatePickerBody">
             <table id="sharedTemplatePickerTable">
@@ -831,4 +835,8 @@ include("footer.inc.php");
         $('#sharedTemplatePicker').toggle();
     }
 
+    // Closes the shared templates div.
+    function closeSharedTemplatesDiv() {
+        $('#sharedTemplatePicker').hide();
+    }
 </script>

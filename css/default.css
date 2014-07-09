@@ -1898,11 +1898,11 @@ div.StedDeplModeValues {
 }
 
 #sharedTemplatePicker {
-    width: 700px;
+    width: 500px;
     display: none;
     left: 50%;
     top: 130px;
-    margin-left: -370px;
+    margin-left: -397px;
     padding: 0px;
     font-size: 12px;
     /* background-color: rgb(224, 245, 255); */
@@ -1915,13 +1915,24 @@ div.StedDeplModeValues {
 
 #shareTemplatePickerHeader {
     display: block;
-    width: 680px;
+    width: 480px;
     height: 35px;
     background: url("../images/share.png") no-repeat center left;
     margin-left: 10px;
 }
 
+#shareTemplatePickerHeaderClose {
+    float: right;
+    position: relative;
+    top: 7px;
+    font-weight: bold;
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+}
+
 #shareTemplatePickerHeader p {
+    float: left;
     position: absolute;
     top: -2px;
     left: 50px;
@@ -1933,7 +1944,7 @@ div.StedDeplModeValues {
 #shareTemplatePickerBody {
     position: relative;
     display: block;
-    width: 680px;
+    width: 480px;
     border-top: solid 1px black;
     border-bottom: solid 1px black;
     background-color: white;
@@ -1942,7 +1953,7 @@ div.StedDeplModeValues {
 
 #shareTemplatePickerFooter {
     display: block;
-    width: 680px;
+    width: 480px;
     height: 12px;
 }
 
@@ -1965,6 +1976,7 @@ div.StedDeplModeValues {
 .accept_template, .reject_template, .preview_template {
     width: 20px;
     height: 16px;
+    cursor: pointer;
 }
 
 .accept_template {
@@ -1983,4 +1995,3 @@ div.StedDeplModeValues {
     text-align: left;
     font-weight: bold;
 }
-
