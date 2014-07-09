@@ -626,6 +626,35 @@ class DatabaseConnection {
     public function copySharedTemplate($id, $sourceSettingTable,
             $sourceParameterTable, $destSettingTable, $destParameterTable) {
 
+        // Get the name of the previous owner (they one sharing the setting)
+        $query = "select previous_owner from $sourceSettingTable where id=$id";
+        $previous_owner = $this->queryLastValue($query);
+
+        // Get the name of the shared setting
+        $query = "select setting from $sourceParameterTable where setting_id=$id";
+        $setting_name = $this->queryLastValue($query);
+
+        // Compose the new name of the setting
+        $out_setting_name = $previous_owner  . "_" . $setting_name;
+
+        // Check if a setting with this name already exists in the target tables
+        $query = "select name from $destSettingTable where name='$out_setting_name'";
+        if ($this->queryLastValue($query)) {
+
+            // The setting already exists; we try adding numerical indices
+            $n = 1; $original_out_setting_name = $out_setting_name;
+            while (1) {
+
+                $test_name = $original_out_setting_name . "_" . $n++;
+                $query = "select name from $destSettingTable where name='$test_name'";
+                if (! $this->queryLastValue($query)) {
+                    $out_setting_name = $test_name;
+                    break;
+                }
+            }
+
+        }
+
         // Get all rows from source table for given setting id
         $query = "select * from $sourceParameterTable where setting_id=$id";
         $rows = $this->query($query);
@@ -639,7 +668,7 @@ class DatabaseConnection {
         $this->connection->BeginTrans();
         foreach ($rows as $row) {
             $record["owner"] = $row["owner"];
-            $record["setting"] = $row["setting"];
+            $record["setting"] = $out_setting_name;
             $record["name"] = $row["name"];
             $record["value"] = $row["value"];
             $insertSQL = $this->connection->GetInsertSQL($destParameterTable,
@@ -670,7 +699,7 @@ class DatabaseConnection {
         $record = array();
         $row = $rows[0];
         $record["owner"] = $row["owner"];
-        $record["name"] = $row["name"];
+        $record["name"] = $out_setting_name;
         $record["standard"] = 'f';
         $insertSQL = $this->connection->GetInsertSQL($destSettingTable,
             $record);
