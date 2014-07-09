@@ -1903,25 +1903,68 @@ div.StedDeplModeValues {
     left: 50%;
     top: 130px;
     margin-left: -370px;
-    padding: 15px;
+    padding: 0px;
     font-size: 12px;
     /* background-color: rgb(224, 245, 255); */
-    background-color: lightyellow;
+    background-color: #428BCA;
     position: absolute;
     z-index: 15;
     border: 2px solid #000;
     border-radius: 7px;
 }
 
-.accept_template, .reject_template, .preview_template {
-    width: 25px;
-    height: 16px;
+#shareTemplatePickerHeader {
+    display: block;
+    width: 680px;
+    height: 35px;
+    background: url("../images/share.png") no-repeat center left;
+    margin-left: 10px;
 }
+
+#shareTemplatePickerHeader p {
+    position: absolute;
+    top: -2px;
+    left: 50px;
+    font-size: 14px;
+    font-weight: bold;
+    color: white;
+}
+
+#shareTemplatePickerBody {
+    position: relative;
+    display: block;
+    width: 680px;
+    border-top: solid 1px black;
+    border-bottom: solid 1px black;
+    background-color: white;
+    padding: 10px 10px 20px;
+}
+
+#shareTemplatePickerFooter {
+    display: block;
+    width: 680px;
+    height: 12px;
+}
+
+#shareTemplatePickerFooter p {
+    position: relative;
+    top: -5px;
+    left: 5px;
+    font-size: 10px;
+    color: white;
+    font-weight: normal;
+}
+
 
 .from_template {
     height: 30px;
     vertical-align: middle;
     text-align: left;
+}
+
+.accept_template, .reject_template, .preview_template {
+    width: 20px;
+    height: 16px;
 }
 
 .accept_template {

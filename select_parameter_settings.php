@@ -244,12 +244,18 @@ include("header.inc.php");
     to accept, reject, and preview them. -->
 
     <div id="sharedTemplatePicker">
-        <h4><img src="images/share.png" />&nbsp;
-            These are the templates shared with you:</h4>
-        <table id="sharedTemplatePickerTable">
-            <tbody>
-            </tbody>
-        </table>
+        <div id="shareTemplatePickerHeader">
+            <p>These are the templates shared with you:</p>
+        </div>
+        <div id="shareTemplatePickerBody">
+            <table id="sharedTemplatePickerTable">
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+        <div id="shareTemplatePickerFooter">
+            <p>Mouseover template names for more information.</p>
+        </div>
     </div>
 
     <?php
