@@ -125,7 +125,7 @@ else if ( isset($_POST['annihilate']) &&
 else if (isset($_POST['OK']) && $_POST['OK']=="OK" ) {
 
   if (!isset($_POST['setting'])) {
-    $message = "Please select some image parameters";
+    $message = "Please select an image template";
   } else {
     $_SESSION['setting'] = $_SESSION['editor']->loadSelectedSetting();
     $_SESSION['setting']->parameter("ImageFileFormat")->setValue($fileFormat);
@@ -267,7 +267,7 @@ include("header.inc.php");
 if ($_SESSION['user']->isAdmin()) {
 
 ?>
-        <h3>Image parameters</h3>
+        <h3>Select image template</h3>
 <?php
 
 }
@@ -277,7 +277,7 @@ else {
         <h3><img alt="ImageParameters" src="./images/image_parameters.png"
         width="40"/>&nbsp;&nbsp;Step
         <?php echo $currentStep . "/" . $numberSteps; ?>
-        - Image parameters</h3>
+        - Select image template</h3>
 <?php
 
 }
@@ -289,9 +289,9 @@ if (!$_SESSION['user']->isAdmin()) {
         <form id="formTemplateImageParameters" method="post" action="">
 
             <fieldset>
-                <legend>Template image parameters</legend>
+                <legend>Admin image templates</legend>
                 <p class="message_small">
-                    These are the parameter sets prepared by your administrator.
+                    These are the image templates prepared by your administrator.
                 </p>
                 <div id="templates">
 <?php
@@ -346,13 +346,13 @@ if (!$_SESSION['user']->isAdmin()) {
 
             <?php
             if ($_SESSION['user']->isAdmin()) {
-              echo "<legend>Template image parameters</legend>";
-              echo "<p class=\"message_small\">Create template parameter " .
-                "sets visible to all users.</p>";
+              echo "<legend>Admin image template</legend>";
+              echo "<p class=\"message_small\">Create image templates " .
+                "visible to all users.</p>";
             } else {
-              echo "<legend>Your image parameters</legend>";
+              echo "<legend>Your image templates</legend>";
               echo "<p class=\"message_small\">These are your (private) " .
-                "parameter sets.</p>";
+                "image templates.</p>";
             }
             ?>
 
@@ -553,7 +553,7 @@ if (!$_SESSION['user']->isAdmin()) {
       to restore.</p>";
 	}
 	?>
-      <p>These include: file information (geometry, voxel size);
+      <p>These include: file information (e.g. voxel size);
       microscopic parameters (such as microscope type, numerical aperture of
       the objective, fluorophore wavelengths); whether a measured or a
       theoretical PSF should be used; whether depth-dependent correction
@@ -561,8 +561,8 @@ if (!$_SESSION['user']->isAdmin()) {
 
     <?php
 	if (!$_SESSION['user']->isAdmin()) {
-      echo "<p>'Template image parameters' created by your facility manager can
-        be copied to the list of 'Your image parameters' and adapted to fit your
+      echo "<p>'Admin image templates' created by your facility manager can
+        be copied to the list of 'Your image templates' and adapted to fit your
         specific experimental setup.</p>";
 	} else {
 	  echo "<p>The created templates will be visible for the users in an
@@ -626,11 +626,11 @@ include("footer.inc.php");
 
             // Write the notification
             if (numSharedTemplates == 0) {
-                $("#templateSharingNotifier").html("You have no shared templates.");
+                $("#templateSharingNotifier").html("You have no shared user templates.");
             } else {
                 $("#templateSharingNotifier").html("You have " +
                     "<a href='' onclick='toggleSharedTemplatesDiv(); return false;'><b>" +
-                    String(numSharedTemplates) + " shared template" +
+                    String(numSharedTemplates) + " user shared template" +
                     (numSharedTemplates > 1 ? "s" : "") + "</b></a>!");
             }
 
@@ -651,7 +651,7 @@ include("footer.inc.php");
         tbody.data("shared_templates", null);
 
         if (sharedTemplates.length == 0) {
-            tbody.append("<tr><td>No templates shared with you.</td>/<tr>");
+            tbody.append("<tr><td>No user templates shared with you.</td>/<tr>");
             return;
         }
 
