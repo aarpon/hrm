@@ -783,7 +783,8 @@ class DatabaseConnection {
             $record["value"] = $row["value"];
             $insertSQL = $this->connection->GetInsertSQL($destParameterTable,
                 $record);
-            $ok &= $this->connection->Execute($insertSQL);
+            $status = $this->connection->Execute($insertSQL);
+            $ok &= !(false === $status);
             if (! $ok) {
                 break;
             }
@@ -805,6 +806,7 @@ class DatabaseConnection {
             return False;
         }
 
+        $ok = True;
         $this->connection->BeginTrans();
         $record = array();
         $row = $rows[0];
@@ -813,7 +815,8 @@ class DatabaseConnection {
         $record["standard"] = 'f';
         $insertSQL = $this->connection->GetInsertSQL($destSettingTable,
             $record);
-        $ok = $this->connection->Execute($insertSQL);
+        $status = $this->connection->Execute($insertSQL);
+        $ok &= !(false === $status);
 
         if ($ok) {
             $this->connection->CommitTrans();
@@ -848,17 +851,19 @@ class DatabaseConnection {
                                        $sourceParameterTable) {
 
         // Initialize success
-        $success = True;
+        $ok = True;
 
         // Delete setting entry
         $query = "delete from $sourceSettingTable where id=$id";
-        $success &= $this->connection->Execute($query);
+        $status = $this->connection->Execute($query);
+        $ok &= !(false === $status);
 
         // Delete parameter entries
         $query = "delete from $sourceParameterTable where setting_id=$id";
-        $success &= $this->connection->Execute($query);
+        $status = $this->connection->Execute($query);
+        $ok &= !(false === $status);
 
-        return $success;
+        return $ok;
     }
 
   /*!

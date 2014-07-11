@@ -622,7 +622,7 @@ function jsonAcceptSharedTemplate($template, $type) {
         case "parameter":
 
             // Copy the template
-            $success = $db->copySharedTemplate($template[id],
+            $success = $db->copySharedTemplate($template["id"],
                 ParameterSetting::sharedTable(),
                 ParameterSetting::sharedParameterTable(),
                 ParameterSetting::table(),
@@ -633,7 +633,7 @@ function jsonAcceptSharedTemplate($template, $type) {
         case "task":
 
             // Copy the template
-            $success = $db->copySharedTemplate($template[id],
+            $success = $db->copySharedTemplate($template["id"],
                 TaskSetting::sharedTable(),
                 TaskSetting::sharedParameterTable(),
                 TaskSetting::table(),
@@ -684,7 +684,7 @@ function jsonDeleteSharedTemplate($template, $type) {
         case "parameter":
 
             // Delete the template
-            $success = $db->deleteSharedTemplate($template[id],
+            $success = $db->deleteSharedTemplate($template["id"],
                 ParameterSetting::sharedTable(),
                 ParameterSetting::sharedParameterTable());
 
@@ -693,7 +693,7 @@ function jsonDeleteSharedTemplate($template, $type) {
         case "task":
 
             // Delete the template
-            $success = $db->deleteSharedTemplate($template[id],
+            $success = $db->deleteSharedTemplate($template["id"],
                 TaskSetting::sharedTable(),
                 TaskSetting::sharedParameterTable());
             break;
