@@ -229,7 +229,8 @@ include("header.inc.php");
 
 <div id="content">
 
-<h3>Manage users</h3>
+<h3><img alt="ManageUsers" src="./images/users.png"
+         width="40"/>&nbsp;&nbsp;Manage users</h3>
 
 <?php
 
