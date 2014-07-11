@@ -5,13 +5,27 @@
 
 var snitch;
 
+/**
+   Requires jQuery.
+
+   Sets the value "OK" to the hidden input element in the page form. Used
+   for submitting a form via a normal button.
+ */
 function process() {
-    if ( document.forms["select"] != null ) {
-        if ( document.forms["select"].elements["OK"] != null ) {
-            document.forms["select"].elements["OK"].value = "OK";
-            document.forms["select"].submit();
+    var el = $("form input[name='OK']:hidden");
+    if (null === el) {
+        return;
+
+    }
+    var parent = el.parent();
+    while (!parent.is("form")) {
+        parent = parent.parent();
+        if (null === parent) {
+            return;
         }
     }
+    el.val("OK");
+    parent.submit();
 }
 
 function imageFormatProcess(e, value) {
@@ -135,7 +149,7 @@ function switchSnrMode() {
     //changeVisibility('cmle-it');
 }
 
-// Requires jQuery 
+// Requires jQuery
 function switchColocMode() {
     if ($('#ColocAnalysis').val() == 1) {
         $('#ColocChannelSelectionDiv').show();
