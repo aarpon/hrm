@@ -77,7 +77,7 @@ $PSF = $_SESSION['setting']->parameter( 'PointSpreadFunction' )->value( );
 $MICR = $_SESSION['setting']->parameter("MicroscopeType")->value( );
 
 if ($MICR == "STED" || $MICR == 'STED 3D') {
-    $pageToGo = 'sted_parameters.php';  
+    $pageToGo = 'sted_parameters.php';
 } elseif ($PSF == 'measured' ) {
   $pageToGo = 'select_psf.php';
   // Make sure to turn off the correction
@@ -435,7 +435,7 @@ if ($_SESSION['setting']->hasPinhole()) {
 
             <?php
               if ( $_SESSION['setting']->numberOfChannels() > 1 ) {
-              ?>  <p /> <?php
+              ?>  <p>&nbsp;</p> <?php
             }
             ?>
 <div class="multichannel">
@@ -466,7 +466,7 @@ if ($_SESSION['setting']->hasPinhole()) {
   }
 
 ?></div>
-                <p />
+                <p>&nbsp;</p>
 
 				<?php
 				  $parameterNA =
@@ -530,7 +530,7 @@ if ($_SESSION['setting']->isNipkowDisk()) {
                   value="<?php echo $parameterPinholeSpacing->value() ?>" />
                 </li>
           </ul>
-          <p />
+                <p>&nbsp;</p>
 
                 <a href="#"
                    onmouseover="TagToTip('ttSpanPinholeSpacing' )"
@@ -603,20 +603,20 @@ if ($_SESSION['setting']->isNipkowDisk()) {
       <?php
               if ( !$_SESSION["user"]->isAdmin() ) {
       ?>
-                  
-            <div class="requirements">                
-               Parameter requirements<br />adapted for <b>  
+
+            <div class="requirements">
+               Parameter requirements<br />adapted for <b>
                <?php
                $fileFormat = $_SESSION['setting']->parameter( "ImageFileFormat" );
                echo $fileFormat->value();
                ?>
                </b> files
             </div>
-      
+
       <?php
               }
       ?>
-      
+
         </div>
 
         <div id="message">

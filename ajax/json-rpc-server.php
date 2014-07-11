@@ -574,7 +574,7 @@ function jsonGetSharedTemplateList($username, $type) {
 
         case "analysis":
 
-            throw new Exception("IMPLEMENT ME!");
+            $sharedTemplates = AnalysisSetting::getSharedTemplates($username);
             break;
 
         default;
@@ -616,7 +616,6 @@ function jsonAcceptSharedTemplate($template, $type) {
     $db = new DatabaseConnection();
 
     // Copy the setting
-    $success = True;
     switch ($type) {
 
         case "parameter":
@@ -643,7 +642,12 @@ function jsonAcceptSharedTemplate($template, $type) {
 
         case "analysis":
 
-            throw new Exception("IMPLEMENT ME!");
+            // Copy the template
+            $success = $db->copySharedTemplate($template["id"],
+                AnalysisSetting::sharedTable(),
+                AnalysisSetting::sharedParameterTable(),
+                AnalysisSetting::table(),
+                AnalysisSetting::parameterTable());
             break;
 
         default;
@@ -700,7 +704,10 @@ function jsonDeleteSharedTemplate($template, $type) {
 
         case "analysis":
 
-            throw new Exception("IMPLEMENT ME!");
+            // Delete the template
+            $success = $db->deleteSharedTemplate($template["id"],
+                AnalysisSetting::sharedTable(),
+                AnalysisSetting::sharedParameterTable());
             break;
 
         default;

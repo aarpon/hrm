@@ -105,10 +105,12 @@ else if (isset($_POST['make_default'])) {
   $_SESSION['analysiseditor']->makeSelectedSettingDefault();
   $message = $_SESSION['analysiseditor']->message();
 }
-else if (isset($_POST['share'])) {
+else if (isset($_POST['pickUser']) &&
+    isset($_POST["usernameselect"]) &&
+    isset($_POST["templateToShare"])) {
     $_SESSION['analysiseditor']->shareSelectedSetting($_POST["templateToShare"],
         $_POST["usernameselect"]);
-    $message = $_SESSION['analysiseditor']->message();
+    $message = $_SESSION['editor']->message();
 }
 else if ( isset($_POST['annihilate']) &&
     strcmp( $_POST['annihilate'], "yes") == 0 ) {
@@ -138,7 +140,7 @@ else if (isset($_POST['OK']) && $_POST['OK']=="OK" ) {
 /*******************************************************************************/
 
 
-$script = array( "settings.js", "common.js", "ajax_utils.js" );
+$script = array( "settings.js", "common.js", "json-rpc-client.js", "shared.js", "ajax_utils.js" );
 
 include("header.inc.php");
 
@@ -147,29 +149,29 @@ include("header.inc.php");
       Tooltips
     -->
     <span class="toolTip" id="ttSpanCreate">
-        Create a new parameter set with the specified name.
+        Create a new analysis template with the specified name.
     </span>
     <span class="toolTip" id="ttSpanEdit">
-        Edit the selected parameter set.
+        Edit the selected analysis template.
     </span>
     <span class="toolTip" id="ttSpanClone">
-        Copy the selected parameter set to a new one with the
+        Copy the selected analysis template to a new one with the
       specified name.</span>
     <span class="toolTip" id="ttSpanShare">
-        Share the selected parameter set with one or more HRM users.</span>
+        Share the selected analysis template with one or more HRM users.</span>
     <span class="toolTip" id="ttSpanDelete">
-        Delete the selected parameter set.
+        Delete the selected analysis template.
     </span>
     <?php
       if (!$_SESSION['user']->isAdmin()) {
         ?>
         <span class="toolTip" id="ttSpanDefault">
-            Sets (or resets) the selected parameter set as the default one
+            Sets (or resets) the selected analysis template as the default one
             .</span>
         <span class="toolTip" id="ttSpanCopyTemplate">Copy a template.
         </span>
         <span class="toolTip" id="ttSpanBack">
-            Go back to step 3/5 - Restoration parameters.
+            Go back to step 3/5 - Select restoration template.
         </span>
         <span class="toolTip" id="ttSpanForward">
             Continue to step 5/5 - Create job.
@@ -184,6 +186,11 @@ include("header.inc.php");
             <?php
                 wiki_link('HuygensRemoteManagerHelpSelectTaskSettings');
             ?>
+            <li>
+                <img src="images/share_small.png" alt="shared_templates" />&nbsp;
+                <!-- This is where the template sharing notification is shown -->
+                <span id="templateSharingNotifier">&nbsp;</span>
+            </li>
         </ul>
     </div>
     <div id="navright">
@@ -201,19 +208,41 @@ include("header.inc.php");
 
                     <div id=<?php echo "content" . $divState; ?>>
 
+<!-- This is where the shared templates are shown with action buttons
+to accept, reject, and preview them. -->
+
+    <div id="sharedTemplatePicker">
+        <div id="shareTemplatePickerHeader">
+            <p>These are the templates shared with you:</p>
+            <div id="shareTemplatePickerHeaderClose" title="Close"
+                onclick="closeSharedTemplatesDiv();">
+                X
+            </div>
+        </div>
+        <div id="shareTemplatePickerBody">
+            <table id="sharedTemplatePickerTable">
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+        <div id="shareTemplatePickerFooter">
+            <p>Mouseover template names for more information.</p>
+        </div>
+    </div>
+
 <?php
 
 if ($_SESSION['user']->isAdmin()) {
 
 ?>
-        <h3>Analysis parameters</h3>
+        <h3>Select analysis template</h3>
 <?php
 
 }
 else {
 
 ?>
-        <h3><img alt="Analysis" src="./images/analysis.png" width="40"/>&nbsp;&nbsp;Step 4/5 - Analysis parameters</h3>
+        <h3><img alt="Analysis" src="./images/analysis.png" width="40"/>&nbsp;&nbsp;Step 4/5 - Select analysis template</h3>
 <?php
 
 }
@@ -222,12 +251,12 @@ else {
 if (!$_SESSION['user']->isAdmin()) {
 
 ?>
-        <form method="post" action="">
+        <form id="formTemplateTypeParameters" method="post" action="">
 
             <fieldset>
-              <legend>Admin template analysis parameters</legend>
+              <legend>Admin analysis templates</legend>
               <p class="message_small">
-                  These are the parameter sets prepared by your administrator.
+                  These are the analysis templates prepared by your administrator.
               </p>
               <div id="templates">
 <?php
@@ -249,11 +278,11 @@ if (!$_SESSION['user']->isAdmin()) {
 <?php
 
   if (sizeof($settings) == 0) {
-    echo "                        <option>&nbsp;</option>\n";
+    echo "<option>&nbsp;</option>\n";
   }
   else {
     foreach ($settings as $set) {
-      echo "                        <option>".$set->name()."</option>\n";
+      echo "<option>".$set->name()."</option>\n";
     }
   }
 
@@ -284,13 +313,13 @@ if (!$_SESSION['user']->isAdmin()) {
 
               <?php
                 if ($_SESSION['user']->isAdmin()) {
-                  echo "<legend>Admin template analysis parameters</legend>";
+                  echo "<legend>Admin analysis templates</legend>";
                   echo "<p class=\"message_small\">Create template " .
                     "visible to all users.</p>";
                 } else {
                   echo "<legend>Your analysis templates</legend>";
                   echo "<p class=\"message_small\">These are your (private) " .
-                    "templates.</p>";
+                    "analysis templates.</p>";
                 }
               ?>
               <div id="settings">
@@ -308,19 +337,19 @@ if (sizeof($settings) == 0) {
 }
 
 ?>
-<select name="analysis_setting"
-    onclick="ajaxGetParameterListForSet('analysis_setting', $(this).val(), false);"
+<select name="analysis_setting" id="setting"
+        onclick="ajaxGetParameterListForSet('analysis_setting', $(this).val(), false);"
     onchange="ajaxGetParameterListForSet('analysis_setting', $(this).val(), false);"
     size="<?php echo $size ?>"
     <?php echo $flag ?>>
 <?php
 
 if (sizeof($settings) == 0) {
-  echo "                        <option>&nbsp;</option>\n";
+  echo "<option>&nbsp;</option>\n";
 }
 else {
   foreach ($settings as $set) {
-    echo "                        <option";
+    echo "<option";
     if ($set->isDefault()) {
       echo " class=\"default\"";
     }
@@ -360,16 +389,22 @@ else {
                        class="icon clone"
                        onmouseover="TagToTip('ttSpanClone' )"
                        onmouseout="UnTip()" />
-                        <input name="share" type="submit"
-                               value=""
-                               class="icon share"
-                               onmouseover="TagToTip('ttSpanShare' )"
-                               onmouseout="UnTip()" />
+
 <?php
 
 if (!$_SESSION['user']->isAdmin()) {
 
 ?>
+
+                <input name="share"
+                    <?php echo $widgetState ?>
+                    type="button"
+                    onclick="prepareUserSelectionForSharing('<?php echo $_SESSION['user']->name() ?>');"
+                    value=""
+                    class="icon share"
+                    onmouseover="TagToTip('ttSpanShare' )"
+                    onmouseout="UnTip()" />
+
                 <input name="make_default"
                       <?php echo $widgetState ?>
                        type="submit"
@@ -389,11 +424,11 @@ if (!$_SESSION['user']->isAdmin()) {
                        value=""
                        class="icon delete"
                        onclick="warn(this.form,
-                         'Do you really want to delete this parameter set?',
+                         'Do you really want to delete this analysis template?',
                          this.form['analysis_setting'].selectedIndex )"
                        onmouseover="TagToTip('ttSpanDelete' )"
                        onmouseout="UnTip()" />
-                <label>New/clone parameter set name:
+                <label>New/clone analysis template set name:
                     <input name="new_setting"
                            type="text"
                            class="textfield" />
@@ -428,6 +463,47 @@ if (!$_SESSION['user']->isAdmin()) {
 
         </form> <!-- select -->
 
+<!-- Form for picking users with whom to share templates, initially hidden -->
+<form id="formUserList" method="post" action="" hidden>
+
+    <fieldset>
+        <legend>Users you may share with</legend>
+        <p class="message_small">
+            This is the list of users you may share your template with.
+        </p>
+        <div id="users">
+
+            <select id="usernameselect" name="usernameselect[]"
+                    size="5" multiple="multiple">
+                <option>&nbsp;</option>
+            </select>
+        </div>
+    </fieldset>
+
+    <!-- Hidden input where to store the selected template -->
+    <input hidden id="templateToShare" name="templateToShare" value="">
+
+    <div id="actions" class="userSelection">
+
+        <input name="cancelUser"
+               type="submit"
+               value=""
+               class="icon cancel"
+               onmouseover="TagToTip('' )"
+               onmouseout="UnTip()" />
+
+        <input name="pickUser"
+               type="submit"
+               value=""
+               class="icon apply"
+               onmouseover="TagToTip('' )"
+               onmouseout="UnTip()" />
+
+
+    </div>
+
+    </form> <!-- Form for picking users with whom to share templates -->
+
     </div> <!-- content -->
 
     <div id="rightpanel">
@@ -445,12 +521,12 @@ if (!$_SESSION['user']->isAdmin()) {
       analysis procedure.</p>";
 	}
 	?>
-        <p>These are the choice for colocalization analysis, colocalization coefficients and maps.</p>
+        <p>These are the choices for colocalization analysis, colocalization coefficients and maps.</p>
 
     <?php
 	if (!$_SESSION['user']->isAdmin()) {
-      echo "<p>'Admin template analysis parameters' created by your facility
-        manager can be copied to the list of 'Your analysis parameters' and
+      echo "<p>'Admin analysis templates' created by your facility
+        manager can be copied to the list of 'Your analysis templates' and
         adapted to fit your analysis needs.</p>";
 	} else {
 	  echo "<p>The created templates will be visible for the users in an
@@ -476,3 +552,23 @@ echo "<p>$message</p>";
 include("footer.inc.php");
 
 ?>
+
+<script type="text/javascript">
+
+    // Prepare list of templates for sharing
+    $(document).ready(function() {
+
+        // Get the user name from the session
+        var username = "";
+        username = <?php echo("'" . $_SESSION['user']->name() . "'");?>;
+
+        if (null === username) {
+            return;
+        }
+
+        retrieveSharedTemplates(username, 'analysis');
+
+    });
+
+</script>
+

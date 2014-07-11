@@ -247,13 +247,13 @@ include("header.inc.php");
             <input name="pass2" id="pass2" type="password" />
             <input name="modify" type="hidden" value="modify" />
 
-            <p />
+            <p>&nbsp;</p>
 
 <?php
             $referer = $_SESSION['referer'];
 ?>
         </div>
-        
+
         <div id="controls">
             <input type="button" name="cancel" value=""
                    class="icon cancel"

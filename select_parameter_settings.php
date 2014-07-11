@@ -351,7 +351,7 @@ if (!$_SESSION['user']->isAdmin()) {
 
             <?php
             if ($_SESSION['user']->isAdmin()) {
-              echo "<legend>Admin image template</legend>";
+              echo "<legend>Admin image templates</legend>";
               echo "<p class=\"message_small\">Create image templates " .
                 "visible to all users.</p>";
             } else {
@@ -541,7 +541,7 @@ if (!$_SESSION['user']->isAdmin()) {
             <img src="images/help.png" alt="Help" width="22" height="22" />
             <b>Help</b> link in the navigation bar.</strong></p>
 
-          <p />
+          <p>&nbsp;</p>
 <?php
 
 // add user management

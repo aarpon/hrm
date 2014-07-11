@@ -632,6 +632,9 @@ class DatabaseConnection {
 
             case "analysis":
 
+                $settingTable = AnalysisSetting::sharedTable();
+                $table = AnalysisSetting::sharedParameterTable();
+                $settings = new AnalysisSetting();
                 break;
 
             default:
@@ -831,11 +834,17 @@ class DatabaseConnection {
 
         // Delete setting entry
         $query = "delete from $sourceSettingTable where id=$id";
-        $this->connection->Execute($query);
+        $status = $this->connection->Execute($query);
+        if (false === $status) {
+            return False;
+        }
 
         // Delete parameter entries
         $query = "delete from $sourceParameterTable where setting_id=$id";
-        $this->connection->Execute($query);
+        $status = $this->connection->Execute($query);
+        if (false === $status) {
+            return False;
+        }
 
         return True;
     }

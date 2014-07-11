@@ -354,7 +354,7 @@ deconvolution.</p>
 <!-- welcome -->
 
 <div id="rightpanel">
-<p />
+<p>&nbsp;</p>
 <div id="login">
 <form method="post" action="">
     <fieldset>
