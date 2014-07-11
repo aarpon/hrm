@@ -26,20 +26,6 @@ function process() {
     }
 }
 
-function imageFormatProcess(e, value) {
-    if ( e != "ImageFileFormat" ) {
-        return;
-    }
-    release( );
-    if ( value == "lsm-single" || value == "tiff-single") {
-        fixGeometry( 'multi_XY - time' );
-    } else if ( value == "tiff-series" ) {
-        fixGeometryAndChannels('multi_XYZ', '1');
-    } else {
-        setGeometry( 'multi_XYZ' );
-    }
-}
-
 function release() {
     var geometryFirst = true;
     var channelsFirst = true;
@@ -70,61 +56,6 @@ function release() {
     element.style.color = 'black';
     element = document.getElementById('channels');
     element.style.color = 'black';
-}
-
-function forceGeometry() {
-    release();
-    for (var i = 0; i < document.forms["select"].elements.length; i++) {
-        var e = document.forms["select"].elements[i];
-        if (e.name == 'ImageGeometry') {
-            e.disabled = true;
-            e.checked = false;
-        }
-    }
-    document.forms["select"].elements["geometry"].style.color = "grey";
-}
-
-function setGeometry(geometry) {
-    for (var i = 0; i < document.forms["select"].elements.length; i++) {
-        var e = document.forms["select"].elements[i];
-        if (e.name == 'ImageGeometry') {
-            if (e.value == geometry)
-                e.checked = true;
-        }
-    }
-}
-
-function fixGeometry(geometry) {
-    for (var i = 0; i < document.forms["select"].elements.length; i++) {
-        var e = document.forms["select"].elements[i];
-        if (e.name == 'ImageGeometry') {
-            e.disabled = true;
-            if (e.value == geometry)
-                e.checked = true;
-        }
-    }
-
-    var element = document.getElementById('geometry');
-    element.style.color = 'grey';
-}
-
-function fixChannels(channels) {
-    for (var i = 0; i < document.forms["select"].elements.length; i++) {
-        var e = document.forms["select"].elements[i];
-        if (e.name == 'NumberOfChannels') {
-            e.disabled = true;
-            if (e.value == channels)
-                e.checked = true;
-        }
-    }
-    var element = document.getElementById('channels');
-    element.style.color = 'grey';
-}
-
-function fixGeometryAndChannels(geometry, channels) {
-    release();
-    fixGeometry(geometry);
-    fixChannels(channels);
 }
 
 function seek(channel) {
