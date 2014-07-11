@@ -172,18 +172,18 @@ include("header.inc.php");
       Tooltips
     -->
     <span class="toolTip" id="ttSpanCreate">
-        Create a new parameter set with the specified name.
+        Create a new image template set with the specified name.
     </span>
     <span class="toolTip" id="ttSpanEdit">
-        Edit the selected parameter set.
+        Edit the selected image template.
     </span>
     <span class="toolTip" id="ttSpanClone">
-        Copy the selected parameter set to a new one with the
+        Copy the selected image template to a new one with the
       specified name.</span>
     <span class="toolTip" id="ttSpanShare">
-        Share the selected parameter set with one or more HRM users.</span>
+        Share the selected image template with one or more HRM users.</span>
     <span class="toolTip" id="ttSpanDelete">
-        Delete the selected parameter set.
+        Delete the selected image template.
     </span>
     <span class="toolTip" id="ttSpanAcceptTemplate">
         Accept the template.
@@ -198,7 +198,7 @@ include("header.inc.php");
       if (!$_SESSION['user']->isAdmin()) {
         ?>
         <span class="toolTip" id="ttSpanDefault">
-            Sets (or resets) the selected parameter set as the default one
+            Sets (or resets) the selected image template as the default one
             .</span>
         <span class="toolTip" id="ttSpanCopyTemplate">Copy a template.
         </span>
@@ -438,11 +438,11 @@ if (!$_SESSION['user']->isAdmin()) {
                        value=""
                        class="icon delete"
                        onclick="warn(this.form,
-                        'Do you really want to delete this parameter set?',
+                        'Do you really want to delete this image template?',
                         this.form['setting'].selectedIndex )"
                        onmouseover="TagToTip('ttSpanDelete' )"
                        onmouseout="UnTip()" />
-                <label>New/clone parameter set name:
+                <label>New/clone image template name:
                     <input name="new_setting"
                            type="text"
                            class="textfield" />
