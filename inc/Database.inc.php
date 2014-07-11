@@ -603,6 +603,94 @@ class DatabaseConnection {
   }
 
     /*!
+      \brief	Loads the parameter values for a setting and returns a copy of
+              the setting with the loaded parameter values. If a value starts
+              with # it is considered to be an array with the first value at
+              the index 0
+      \param	$id	Setting id
+      \param	$id	Setting id
+      \return	$settings object with loaded values
+    */
+    public function loadSharedParameterSettings($id) {
+
+        // Get the setting info
+        $table = ParameterSetting::sharedTable();
+        $query = "select * from $table where id=$id;";
+        $response = $this->queryLastRow($query);
+        if (!$response) {
+            return NULL;
+        }
+
+        // Create a setting
+        $settings = new ParameterSetting();
+        $settings->setName($response["name"]);
+        $user = new User();
+        $user->setName($response["owner"]);
+        $settings->setOwner($user);
+
+        // Load from shared table
+        $table = ParameterSetting::sharedParameterTable();
+
+        foreach ($settings->parameterNames() as $parameterName) {
+            $parameter = $settings->parameter($parameterName);
+            $query = "select value from $table where setting_id=$id and name='$parameterName'";
+            $newValue = $this->queryLastValue($query);
+            if ($newValue == NULL) {
+                // See if the Parameter has a usable default
+                $newValue = $parameter->defaultValue( );
+                if ($newValue == NULL) {
+                    continue;
+                }
+            }
+            if ($newValue{0}=='#') {
+                if ( strcmp( $parameterName, "ExcitationWavelength" ) != 0 ||
+                    strcmp( $parameterName, "EmissionWavelength" ) != 0 ||
+                    strcmp( $parameterName, "SignalNoiseRatio" ||
+                        strcmp( $parameterName, "BackgroundOffsetPercent" ) != 0) != 0 ) {
+                    $newValue = substr($newValue,1);
+                }
+                $newValues = explode("#", $newValue);
+                if (strcmp( $parameterName, "PSF" ) != 0 && strpos($newValue, "/")) {
+                    $newValue = array();
+                    for ($i = 0; $i < count($newValues); $i++) {
+                        //$val = explode("/", $newValues[$i]);
+                        //$range = array(NULL, NULL, NULL, NULL);
+                        //for ($j = 0; $j < count($val); $j++) {
+                        //  $range[$j] = $val[$j];
+                        //}
+                        //$newValue[] = $range;
+                        /*!
+                          \todo Currently there are not longer "range values" (values
+                                separated by /). In the future they will be reintroduced.
+                                We leave the code in place.
+                        */
+                        if (strpos($newValues[$i], "/")) {
+                            $newValue[] = explode("/", $newValues[$i]);
+                        }
+                        else {
+                            $newValue[] = array($newValues[$i]);
+                        }
+                    }
+                }
+                else {
+                    $newValue = $newValues;
+                }
+            }
+            //$shiftedNewValue = array(1 => NULL, 2 => NULL, 3 => NULL, 4 => NULL, 5 => NULL);
+            //if (is_array($newValue)) {
+            //  // start array at 1
+            //  for ($i = 1; $i <= count($newValue); $i++) {
+            //    $shiftedNewValue[$i] = $newValue[$i - 1];
+            //  }
+            //}
+            //else $shiftedNewValue = $newValue;
+            $parameter->setValue($newValue);
+            $settings->set($parameter);
+        }
+        return $settings;
+    }
+
+    /*!
       \brief	Returns the list of shared templates
       \param	$username	Name of the user for whom to query for shared templates
       \param    $table      Shared table to query

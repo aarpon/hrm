@@ -183,6 +183,13 @@ switch ($method) {
         $json = jsonDeleteSharedTemplate($template, $type);
         break;
 
+    case 'jsonPreviewSharedTemplate':
+
+        $template = $params[0];
+        $type = $params[1];
+        $json = jsonPreviewSharedTemplate($template, $type);
+        break;
+
     default:
 
         // Unknown method
@@ -668,6 +675,75 @@ function jsonDeleteSharedTemplate($template, $type) {
 
     // Return as a JSON string
     return (json_encode($json));
+}
+
+/**
+ * Preview the shared template.
+ * @param  String Id of the template.
+ * @param  String Type of the template: 'parameter', 'task', 'analysis'.
+ * @return String JSON-encoded array with .
+ */
+function jsonPreviewSharedTemplate($template, $type) {
+
+    // Prepare the output array
+    $json = initJSONArray();
+
+    // Prepare the 'preview' field
+    $json["preview"] = "";
+
+    // Get a database connection
+    $db = new DatabaseConnection();
+
+    // Load the setting
+    switch ($type) {
+
+        case "parameter":
+
+            // Read the settings from the shared table and prepare the preview
+            $settings = $db->loadSharedParameterSettings($template["id"]);
+
+            break;
+
+        case "task":
+
+            throw new Exception("IMPLEMENT ME!");
+            break;
+
+        case "analysis":
+
+            throw new Exception("IMPLEMENT ME!");
+            break;
+
+        default;
+
+            $settings = null;
+
+    }
+    if (! $settings) {
+
+        // Return failure
+        $json['success'] = "false";
+        $json['message'] = "Could not preview selected template.";
+        $json['preview'] = "";
+
+    } else {
+
+        // Get the parameters into a string
+        $paramStr = $settings->displayString();
+
+        // Prepare the string for display
+        $paramStr = "<small><b>" . str_replace("\n","\n<b>",$paramStr);
+        $paramStr = str_replace(": ",":</b> ",$paramStr) . "</small>";
+        $paramStr = "<h3>Shared template preview</h3>" . nl2br($paramStr);
+
+        // Add the preview to the json array
+        $json['preview'] = $paramStr;
+
+    }
+
+    // Return as a JSON string
+    return (json_encode($json));
+
 }
 
 ?>

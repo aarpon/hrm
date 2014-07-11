@@ -807,7 +807,7 @@ include("footer.inc.php");
 
             }
 
-            // Now reload the page to udpate everything
+            // Now reload the page to update everything
             location.reload(true);
         });
 
@@ -816,7 +816,28 @@ include("footer.inc.php");
     // Preview the template with specified index
     function previewTemplate(template_index) {
 
-        alert("Not implemented yet!");
+        // Get the shared templates content from table
+        var tbody = $("#sharedTemplatePickerTable tbody");
+        var sharedTemplates = tbody.data("shared_templates");
+
+        // Send an asynchronous call to the server to accept the template
+        JSONRPCRequest({
+            method : 'jsonPreviewSharedTemplate',
+            params: [sharedTemplates[template_index], 'parameter']
+        }, function(response) {
+
+            // Failure?
+            if (response.success != "true") {
+
+                $("#message").append("<p>Could not load template for preview!</p>");
+                return;
+
+            }
+
+            // Replace the content of the 'info' div
+            $("#info").html(response.preview);
+
+        });
 
     }
 
@@ -839,4 +860,5 @@ include("footer.inc.php");
     function closeSharedTemplatesDiv() {
         $('#sharedTemplatePicker').hide();
     }
+
 </script>
