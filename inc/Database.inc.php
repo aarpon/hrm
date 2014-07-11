@@ -1848,10 +1848,11 @@ class DatabaseConnection {
   /*!
     \brief  Return the list of known users.
     \param  String User name to filter out from the list (optional).
-    \return String JSON-encoded array of user names.
+    \return Array of users.
     */
     public function getUserList($name) {
-        $query = "select name from username where name != '" . $name . "';";
+        $query = "select name from username where name != '" . $name . "' " .
+            " and name != 'admin';";
         $result = $this->query($query);
         return $result;
     }

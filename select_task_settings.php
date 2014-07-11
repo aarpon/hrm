@@ -205,12 +205,19 @@ include("header.inc.php");
         <ul>
             <?php
                 wiki_link('HuygensRemoteManagerHelpSelectTaskSettings');
+
+            if ( ! $_SESSION["user"]->isAdmin()) {
             ?>
-            <li>
-                <img src="images/share_small.png" alt="shared_templates" />&nbsp;
-                <!-- This is where the template sharing notification is shown -->
-                <span id="templateSharingNotifier">&nbsp;</span>
-            </li>
+
+                <li>
+                    <img src="images/share_small.png" alt="shared_templates" />&nbsp;
+                    <!-- This is where the template sharing notification is shown -->
+                    <span id="templateSharingNotifier">&nbsp;</span>
+                </li>
+
+            <?php
+            }
+            ?>
         </ul>
     </div>
     <div id="navright">
@@ -255,7 +262,8 @@ include("header.inc.php");
 if ($_SESSION['user']->isAdmin()) {
 
 ?>
-        <h3>Select restoration template</h3>
+        <h3><img alt="Restoration" src="./images/restoration.png"
+                 width="40"/>&nbsp;&nbsp;Create restoration template</h3>
 <?php
 
 }
@@ -573,12 +581,21 @@ include("footer.inc.php");
         var username = "";
         username = <?php echo("'" . $_SESSION['user']->name() . "'");?>;
 
+        // Check that we have a user name
         if (null === username) {
             return;
         }
 
-        retrieveSharedTemplates(username, "task");
+        // No templates can be shared with the admin
+        if (username == "admin") {
+            return;
+        }
+
+        // Retrieve the templates shared with current user
+        retrieveSharedTemplates(username, 'task');
+
 
     });
+
 
 </script>

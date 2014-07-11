@@ -222,12 +222,19 @@ include("header.inc.php");
         <ul>
             <?php
                 wiki_link('HuygensRemoteManagerHelpSelectParameterSettings');
+
+            if ( ! $_SESSION["user"]->isAdmin()) {
             ?>
+
             <li>
                 <img src="images/share_small.png" alt="shared_templates" />&nbsp;
                 <!-- This is where the template sharing notification is shown -->
                 <span id="templateSharingNotifier">&nbsp;</span>
             </li>
+
+            <?php
+                }
+            ?>
         </ul>
     </div>
     <div id="navright">
@@ -272,7 +279,8 @@ include("header.inc.php");
 if ($_SESSION['user']->isAdmin()) {
 
 ?>
-        <h3>Select image template</h3>
+        <h3><img alt="ImageParameters" src="./images/image_parameters.png"
+                 width="40"/>&nbsp;&nbsp;Create image template</h3>
 <?php
 
 }
@@ -606,10 +614,17 @@ include("footer.inc.php");
         var username = "";
         username = <?php echo("'" . $_SESSION['user']->name() . "'");?>;
 
+        // Check that we have a user name
         if (null === username) {
             return;
         }
 
+        // No templates can be shared with the admin
+        if (username == "admin") {
+            return;
+        }
+
+        // Retrieve the templates shared with current user
         retrieveSharedTemplates(username, 'parameter');
 
     });
