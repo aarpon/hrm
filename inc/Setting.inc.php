@@ -222,9 +222,9 @@ abstract class Setting {
         $settings = $db->loadParameterSettings($this);
         $result = $db->saveSharedParameterSettings($settings, $username);
         if (!$result) {
-            $this->message = "Sharing settings failed!" ;
+            $this->message = "Sharing template failed!" ;
         } else {
-            $this->message = "Settings successfully shared!";
+            $this->message = "Template successfully shared!";
         }
         return $result;
     }

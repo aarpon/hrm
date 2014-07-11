@@ -166,7 +166,8 @@ switch ($method) {
     case 'jsonGetSharedTemplateList':
 
         $username = $params[0];
-        $json = jsonGetSharedTemplateList($username);
+        $type = $params[1];
+        $json = jsonGetSharedTemplateList($username, $type);
         break;
 
     case 'jsonAcceptSharedTemplate':
@@ -552,14 +553,49 @@ function jsonGetUserList($username) {
  * @param  String Name of the user for which to query for shared templates.
  * @return String JSON-encoded array of shared templates.
  */
-function jsonGetSharedTemplateList($username) {
+function jsonGetSharedTemplateList($username, $type) {
 
     // Prepare the output array
     $json = initJSONArray();
 
     // Retrieve list of shared templates
-    $sharedTemplates = ParameterSetting::getSharedTemplates($username);
-    $json["sharedTemplates"] = $sharedTemplates;
+    $success = True;
+    switch ($type) {
+
+        case "parameter":
+
+            $sharedTemplates = ParameterSetting::getSharedTemplates($username);
+            break;
+
+        case "task":
+
+            $sharedTemplates = TaskSetting::getSharedTemplates($username);
+            break;
+
+        case "analysis":
+
+            throw new Exception("IMPLEMENT ME!");
+            break;
+
+        default;
+
+            // Return failure
+            $success = False;
+
+    }
+
+    if (! $success) {
+
+        // Return failure
+        $json['success'] = "false";
+        $json['message'] = "Could not accept selected template.";
+        $json["sharedTemplates"] = "";
+
+    } else {
+
+        $json["sharedTemplates"] = $sharedTemplates;
+
+    }
 
     // Return as a JSON string
     return (json_encode($json));
@@ -586,7 +622,7 @@ function jsonAcceptSharedTemplate($template, $type) {
         case "parameter":
 
             // Copy the template
-            $db->copySharedTemplate($template[id],
+            $success = $db->copySharedTemplate($template[id],
                 ParameterSetting::sharedTable(),
                 ParameterSetting::sharedParameterTable(),
                 ParameterSetting::table(),
@@ -596,7 +632,13 @@ function jsonAcceptSharedTemplate($template, $type) {
 
         case "task":
 
-            throw new Exception("IMPLEMENT ME!");
+            // Copy the template
+            $success = $db->copySharedTemplate($template[id],
+                TaskSetting::sharedTable(),
+                TaskSetting::sharedParameterTable(),
+                TaskSetting::table(),
+                TaskSetting::parameterTable());
+
             break;
 
         case "analysis":
@@ -607,8 +649,7 @@ function jsonAcceptSharedTemplate($template, $type) {
         default;
 
             // Return failure
-            $json['success'] = "false";
-            $json['message'] = "Unknown template type!";
+            $success = False;
 
     }
     if (! $success) {
@@ -642,8 +683,8 @@ function jsonDeleteSharedTemplate($template, $type) {
 
         case "parameter":
 
-            // Copy the template
-            $db->deleteSharedTemplate($template[id],
+            // Delete the template
+            $success = $db->deleteSharedTemplate($template[id],
                 ParameterSetting::sharedTable(),
                 ParameterSetting::sharedParameterTable());
 
@@ -651,7 +692,10 @@ function jsonDeleteSharedTemplate($template, $type) {
 
         case "task":
 
-            throw new Exception("IMPLEMENT ME!");
+            // Delete the template
+            $success = $db->deleteSharedTemplate($template[id],
+                TaskSetting::sharedTable(),
+                TaskSetting::sharedParameterTable());
             break;
 
         case "analysis":
@@ -694,31 +738,8 @@ function jsonPreviewSharedTemplate($template, $type) {
     // Get a database connection
     $db = new DatabaseConnection();
 
-    // Load the setting
-    switch ($type) {
-
-        case "parameter":
-
-            // Read the settings from the shared table and prepare the preview
-            $settings = $db->loadSharedParameterSettings($template["id"]);
-
-            break;
-
-        case "task":
-
-            throw new Exception("IMPLEMENT ME!");
-            break;
-
-        case "analysis":
-
-            throw new Exception("IMPLEMENT ME!");
-            break;
-
-        default;
-
-            $settings = null;
-
-    }
+    // Read the settings from the shared table and prepare the preview
+    $settings = $db->loadSharedParameterSettings($template["id"], $type);
     if (! $settings) {
 
         // Return failure

@@ -9,8 +9,6 @@ require_once("./inc/SettingEditor.inc.php");
 require_once("./inc/System.inc.php");
 require_once("./inc/wiki_help.inc.php");
 
-global $enableUserAdmin;
-
 /* *****************************************************************************
  *
  * START SESSION, CHECK LOGIN STATE, INITIALIZE WHAT NEEDED
@@ -33,7 +31,7 @@ if (!isset($_SESSION['taskeditor'])) {
 
 if (System::hasLicense("coloc")) {
     $numberSteps   = 5;
-    $goNextMessage = " - Analysis parameters.";
+    $goNextMessage = " - Select analysis template.";
 } else {
     $numberSteps = 4;
     $goNextMessage = " - Create job.";
@@ -43,7 +41,7 @@ $currentStep  = 3;
 $previousStep = $currentStep - 1;
 $nextStep     = $currentStep + 1;
 
-$goBackMessage  = " - Image parameters.";
+$goBackMessage  = " - Select image template.";
 $goBackMessage  = "Go back to step $previousStep/$numberSteps" . $goBackMessage;
 
 $goNextMessage  = "Continue to step $nextStep/$numberSteps" . $goNextMessage;
@@ -98,9 +96,12 @@ else if (isset($_POST['edit'])) {
   }
   $message = $_SESSION['taskeditor']->message();
 }
-else if (isset($_POST['share'])) {
-    $_SESSION['taskeditor']->shareSelectedSetting(array("aaron@lic"));
-    $message = $_SESSION['taskeditor']->message();
+else if (isset($_POST['pickUser']) &&
+    isset($_POST["usernameselect"]) &&
+    isset($_POST["templateToShare"])) {
+    $_SESSION['taskeditor']->shareSelectedSetting($_POST["templateToShare"],
+        $_POST["usernameselect"]);
+    $message = $_SESSION['editor']->message();
 }
 else if (isset($_POST['make_default'])) {
   $_SESSION['taskeditor']->makeSelectedSettingDefault();
@@ -113,14 +114,14 @@ else if ( isset($_POST['annihilate']) &&
 }
 else if (isset($_POST['OK']) && $_POST['OK']=="OK" ) {
   if (!isset($_POST['task_setting'])) {
-    $message = "Please select some restoration parameters";
+    $message = "Please select a restoration template";
   }
   else {
     $_SESSION['task_setting'] =
         $_SESSION['taskeditor']->loadSelectedSetting();
     $_SESSION['task_setting']->setNumberOfChannels(
         $_SESSION['setting']->numberOfChannels());
-    
+
     /*
       Here we just check that the Parameters that have a variable of values per
       channel have all their values set properly.
@@ -137,7 +138,7 @@ else if (isset($_POST['OK']) && $_POST['OK']=="OK" ) {
         if (System::hasLicense("coloc")) {
             header("Location: " . "select_analysis_settings.php"); exit();
         } else {
-            $_SESSION['analysis_setting'] = new AnalysisSetting();            
+            $_SESSION['analysis_setting'] = new AnalysisSetting();
             header("Location: " . "create_job.php"); exit();
         }
     }
@@ -147,7 +148,7 @@ else if (isset($_POST['OK']) && $_POST['OK']=="OK" ) {
   }
 }
 
-$script = array( "settings.js", "common.js", "ajax_utils.js" );
+$script = array( "settings.js", "common.js", "json-rpc-client.js", "shared.js", "ajax_utils.js" );
 
 include("header.inc.php");
 
@@ -156,25 +157,35 @@ include("header.inc.php");
       Tooltips
     -->
     <span class="toolTip" id="ttSpanCreate">
-        Create a new parameter set with the specified name.
+        Create a new restoration template with the specified name.
     </span>
     <span class="toolTip" id="ttSpanEdit">
-        Edit the selected parameter set.
+        Edit the selected restoration template.
     </span>
     <span class="toolTip" id="ttSpanClone">
-        Copy the selected parameter set to a new one with the
+        Copy the selected restoration template to a new one with the
       specified name.
     </span>
     <span class="toolTip" id="ttSpanShare">
-        Share the selected parameter set with one or more HRM users.</span>
+        Share the selected restoration template with one or more HRM users.
+    </span>
     <span class="toolTip" id="ttSpanDelete">
-        Delete the selected parameter set.
+        Delete the selected restoration template.
+    </span>
+    <span class="toolTip" id="ttSpanAcceptTemplate">
+        Accept the template.
+    </span>
+    <span class="toolTip" id="ttSpanRejectTemplate">
+        Reject the template.
+    </span>
+    <span class="toolTip" id="ttSpanPreviewTemplate">
+        Preview the template.
     </span>
     <?php
       if (!$_SESSION['user']->isAdmin()) {
         ?>
         <span class="toolTip" id="ttSpanDefault">
-            Sets (or resets) the selected parameter set as the default one.
+            Sets (or resets) the selected restoration template as the default one.
         </span>
         <span class="toolTip" id="ttSpanCopyTemplate">
             Copy a template.
@@ -195,6 +206,11 @@ include("header.inc.php");
             <?php
                 wiki_link('HuygensRemoteManagerHelpSelectTaskSettings');
             ?>
+            <li>
+                <img src="images/share_small.png" alt="shared_templates" />&nbsp;
+                <!-- This is where the template sharing notification is shown -->
+                <span id="templateSharingNotifier">&nbsp;</span>
+            </li>
         </ul>
     </div>
     <div id="navright">
@@ -209,15 +225,37 @@ include("header.inc.php");
     <div class="clear"></div>
 </div>
 
-    
+
     <div id="content">
-    
+
+    <!-- This is where the shared templates are shown with action buttons
+    to accept, reject, and preview them. -->
+
+    <div id="sharedTemplatePicker">
+        <div id="shareTemplatePickerHeader">
+            <p>These are the templates shared with you:</p>
+            <div id="shareTemplatePickerHeaderClose" title="Close"
+                 onclick="closeSharedTemplatesDiv();">
+                X
+            </div>
+        </div>
+        <div id="shareTemplatePickerBody">
+            <table id="sharedTemplatePickerTable">
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+        <div id="shareTemplatePickerFooter">
+            <p>Mouseover template names for more information.</p>
+        </div>
+    </div>
+
 <?php
 
 if ($_SESSION['user']->isAdmin()) {
 
 ?>
-        <h3>Restoration parameters</h3>
+        <h3>Select restoration template</h3>
 <?php
 
 }
@@ -227,7 +265,7 @@ else {
         <h3><img alt="Restoration" src="./images/restoration.png"
         width="40"/>&nbsp;&nbsp;Step
         <?php echo $currentStep . "/" . $numberSteps; ?>
-         - Restoration parameters</h3>
+         - Select restoration template</h3>
 <?php
 
 }
@@ -236,19 +274,21 @@ else {
 if (!$_SESSION['user']->isAdmin()) {
 
 ?>
-        <form method="post" action="">
-        
+        <form id="formTemplateTypeParameters" method="post" action="">
+
             <fieldset>
-              <legend>Template restoration parameters</legend>
+              <legend>Admin restoration templates</legend>
               <p class="message_small">
-                  These are the parameter sets prepared by your administrator.
+                  These are the restoration templates prepared by your administrator.
               </p>
               <div id="templates">
 <?php
 
   $settings = $admin_editor->settings();
   $flag = "";
-  if (sizeof($settings) == 0) $flag = " disabled=\"disabled\"";
+  if (sizeof($settings) == 0) {
+      $flag = " disabled=\"disabled\"";
+  }
 
 ?>
 <select name="public_setting"
@@ -271,7 +311,7 @@ if (!$_SESSION['user']->isAdmin()) {
                 </div>
             </fieldset>
 
-            
+
             <div id="selection">
                 <input name="copy_public"
                        type="submit"
@@ -280,9 +320,9 @@ if (!$_SESSION['user']->isAdmin()) {
                        onmouseover="TagToTip('ttSpanCopyTemplate' )"
                        onmouseout="UnTip()" />
             </div>
-            
+
         </form>
-        
+
 <?php
 
 }
@@ -290,18 +330,18 @@ if (!$_SESSION['user']->isAdmin()) {
 ?>
 
         <form method="post" action="" id="select">
-        
+
             <fieldset>
-            
+
               <?php
                 if ($_SESSION['user']->isAdmin()) {
-                  echo "<legend>Template restoration parameters</legend>";
-                  echo "<p class=\"message_small\">Create template parameter " .
-                    "sets visible to all users.</p>";
+                  echo "<legend>Admin template restoration templates</legend>";
+                  echo "<p class=\"message_small\">Create restoration templates " .
+                    "visible to all users.</p>";
                 } else {
-                  echo "<legend>Your restoration parameters</legend>";
+                  echo "<legend>Your restoration templates</legend>";
                   echo "<p class=\"message_small\">These are your (private) " .
-                    "parameter sets.</p>";
+                    "restoration templates.</p>";
                 }
               ?>
               <div id="settings">
@@ -314,7 +354,7 @@ $flag = "";
 if (sizeof($settings) == 0) $flag = " disabled=\"disabled\"";
 
 ?>
-<select name="task_setting"
+<select name="task_setting" id="setting"
     onclick="ajaxGetParameterListForSet('task_setting', $(this).val(), false);"
     onchange="ajaxGetParameterListForSet('task_setting', $(this).val(), false);"
     size="<?php echo $size ?>"
@@ -340,9 +380,9 @@ else {
 ?>
                     </select>
                 </div>
-                
+
             </fieldset>
-            
+
             <div id="actions"
                  class="taskselection">
                 <input name="create"
@@ -363,17 +403,20 @@ else {
                        class="icon clone"
                        onmouseover="TagToTip('ttSpanClone' )"
                        onmouseout="UnTip()" />
-                <input name="share" type="submit"
-                       value=""
-                       class="icon share"
-                       onmouseover="TagToTip('ttSpanShare' )"
-                       onmouseout="UnTip()" />
 <?php
 
 if (!$_SESSION['user']->isAdmin()) {
 
 ?>
-                <input name="make_default" 
+
+                <input name="share"
+                    type="button"
+                    onclick="prepareUserSelectionForSharing('<?php echo $_SESSION['user']->name() ?>');"
+                    value=""
+                    class="icon share"
+                    onmouseover="TagToTip('ttSpanShare' )"
+                    onmouseout="UnTip()" />
+                <input name="make_default"
                        type="submit"
                        value=""
                        class="icon mark"
@@ -390,31 +433,31 @@ if (!$_SESSION['user']->isAdmin()) {
                        value=""
                        class="icon delete"
                        onclick="warn(this.form,
-                         'Do you really want to delete this parameter set?',
+                         'Do you really want to delete this restoration template?',
                          this.form['task_setting'].selectedIndex )"
                        onmouseover="TagToTip('ttSpanDelete' )"
                        onmouseout="UnTip()" />
-                <label>New/clone parameter set name:
+                <label>New/clone restoration template name:
                     <input name="new_setting"
                            type="text"
                            class="textfield" />
                 </label>
                 <input name="OK" type="hidden" />
-                
+
             </div>
 <?php
 
 if (!$_SESSION['user']->isAdmin()) {
 
 ?>
-                <div id="controls">      
+                <div id="controls">
                   <input type="button"
                          value=""
                          class="icon previous"
                          onclick="document.location.href='select_parameter_settings.php'"
                         onmouseover="TagToTip('ttSpanBack' )"
                         onmouseout="UnTip()" />
-                  <input type="submit" 
+                  <input type="submit"
                          value=""
                          class="icon next"
                         onclick="process()"
@@ -426,18 +469,59 @@ if (!$_SESSION['user']->isAdmin()) {
 }
 
 ?>
-            
+
         </form> <!-- select -->
-        
+
+    <!-- Form for picking users with whom to share templates, initially hidden -->
+    <form id="formUserList" method="post" action="" hidden>
+
+        <fieldset>
+            <legend>Users you may share with</legend>
+            <p class="message_small">
+                This is the list of users you may share your template with.
+            </p>
+            <div id="users">
+
+                <select id="usernameselect" name="usernameselect[]"
+                        size="5" multiple="multiple">
+                    <option>&nbsp;</option>
+                </select>
+            </div>
+        </fieldset>
+
+        <!-- Hidden input where to store the selected template -->
+        <input hidden id="templateToShare" name="templateToShare" value="">
+
+        <div id="actions" class="userSelection">
+
+            <input name="cancelUser"
+                   type="submit"
+                   value=""
+                   class="icon cancel"
+                   onmouseover="TagToTip('' )"
+                   onmouseout="UnTip()" />
+
+            <input name="pickUser"
+                   type="submit"
+                   value=""
+                   class="icon apply"
+                   onmouseover="TagToTip('' )"
+                   onmouseout="UnTip()" />
+
+
+        </div>
+
+    </form> <!-- Form for picking users with whom to share templates -->
+
     </div> <!-- content -->
-    
+
     <div id="rightpanel">
-    
+
         <div id="info">
-          
+
           <h3>Quick help</h3>
-    
-    <?php    
+
+    <?php
 	if (!$_SESSION['user']->isAdmin()) {
       echo "<p>In this step, you are asked to specify all parameters relative
         to the restoration of your images.</p>";
@@ -447,23 +531,23 @@ if (!$_SESSION['user']->isAdmin()) {
 	}
 	?>
         <p>These are the choice of the deconvolution algorithm and its options
-        (signal-to-noise ratio, background estimation mode and stopping 
+        (signal-to-noise ratio, background estimation mode and stopping
         criteria).</p>
 
-    <?php        
+    <?php
 	if (!$_SESSION['user']->isAdmin()) {
-      echo "<p>'Template restoration parameters' created by your facility
-        manager can be copied to the list of 'Your restoration parameters' and
+      echo "<p>'Admin restoration templates' created by your facility
+        manager can be copied to the list of 'Your restoration templates' and
         adapted to fit your restoration needs.</p>";
 	} else {
 	  echo "<p>The created templates will be visible for the users in an
       additional selection field from which they can be copied to the user's
-      parameters.</p>";
+      templates.</p>";
 	}
 	?>
 
     </div>
-        
+
     <div id="message">
 <?php
 
@@ -471,11 +555,30 @@ echo "<p>$message</p>";
 
 ?>
         </div>
-        
+
     </div> <!-- rightpanel -->
-    
+
 <?php
 
 include("footer.inc.php");
 
 ?>
+
+<script type="text/javascript">
+
+    // Prepare list of templates for sharing
+    $(document).ready(function() {
+
+        // Get the user name from the session
+        var username = "";
+        username = <?php echo("'" . $_SESSION['user']->name() . "'");?>;
+
+        if (null === username) {
+            return;
+        }
+
+        retrieveSharedTemplates(username, "task");
+
+    });
+
+</script>

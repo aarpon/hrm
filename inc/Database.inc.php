@@ -611,26 +611,48 @@ class DatabaseConnection {
       \param	$id	Setting id
       \return	$settings object with loaded values
     */
-    public function loadSharedParameterSettings($id) {
+    public function loadSharedParameterSettings($id, $type) {
+
+        // Get the correct objects
+        switch ($type) {
+
+            case "parameter":
+
+                $settingTable = ParameterSetting::sharedTable();
+                $table = ParameterSetting::sharedParameterTable();
+                $settings = new ParameterSetting();
+                break;
+
+            case "task":
+
+                $settingTable = TaskSetting::sharedTable();
+                $table = TaskSetting::sharedParameterTable();
+                $settings = new TaskSetting();
+                break;
+
+            case "analysis":
+
+                break;
+
+            default:
+
+                throw new Exception("bad value for type!");
+        }
 
         // Get the setting info
-        $table = ParameterSetting::sharedTable();
-        $query = "select * from $table where id=$id;";
+        $query = "select * from $settingTable where id=$id;";
         $response = $this->queryLastRow($query);
         if (!$response) {
             return NULL;
         }
 
-        // Create a setting
-        $settings = new ParameterSetting();
+        // Fill the setting
         $settings->setName($response["name"]);
         $user = new User();
         $user->setName($response["owner"]);
         $settings->setOwner($user);
 
         // Load from shared table
-        $table = ParameterSetting::sharedParameterTable();
-
         foreach ($settings->parameterNames() as $parameterName) {
             $parameter = $settings->parameter($parameterName);
             $query = "select value from $table where setting_id=$id and name='$parameterName'";
@@ -820,20 +842,23 @@ class DatabaseConnection {
       \param    $id          ID of the setting to be deleted
       \param    $sourceSettingTable Setting table to copy from
       \param    $sourceParameterTable Parameter table to copy from
-      \return	True if copying was successful; false otherwise.
+      \return	True if deleting was successful; false otherwise.
     */
     public function deleteSharedTemplate($id, $sourceSettingTable,
                                        $sourceParameterTable) {
 
+        // Initialize success
+        $success = True;
+
         // Delete setting entry
         $query = "delete from $sourceSettingTable where id=$id";
-        $this->connection->Execute($query);
+        $success &= $this->connection->Execute($query);
 
         // Delete parameter entries
         $query = "delete from $sourceParameterTable where setting_id=$id";
-        $this->connection->Execute($query);
+        $success &= $this->connection->Execute($query);
 
-        return True;
+        return $success;
     }
 
   /*!

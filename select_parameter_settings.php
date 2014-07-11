@@ -10,7 +10,11 @@ require_once("./inc/Fileserver.inc.php");
 require_once("./inc/System.inc.php");
 require_once("./inc/wiki_help.inc.php");
 
-global $enableUserAdmin;
+/* *****************************************************************************
+ *
+ * START SESSION, CHECK LOGIN STATE, INITIALIZE WHAT NEEDED
+ *
+ **************************************************************************** */
 
 session_start();
 
@@ -55,7 +59,7 @@ $nextStep     = $currentStep + 1;
 $goBackMessage  = " - Select images.";
 $goBackMessage  = "Go back to step $previousStep/$numberSteps" . $goBackMessage;
 
-$goNextMessage  = " - Restoration parameters.";
+$goNextMessage  = " - Select restoration template.";
 $goNextMessage  = "Continue to step $nextStep/$numberSteps" . $goNextMessage;
 
 // fileserver related code (for measured PSF files check)
@@ -141,7 +145,7 @@ else if (isset($_POST['OK']) && $_POST['OK']=="OK" ) {
       if ($files != null) {
         for ($i=0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
           if (!in_array($value[$i], $files)) {
-            $message = "Please verify selected setting, as some PSF " .
+            $message = "Please verify selected template, as some PSF " .
               "files appear to be missing";
             $ok = False;
             break;
@@ -200,7 +204,8 @@ include("header.inc.php");
         <span class="toolTip" id="ttSpanDefault">
             Sets (or resets) the selected image template as the default one
             .</span>
-        <span class="toolTip" id="ttSpanCopyTemplate">Copy a template.
+        <span class="toolTip" id="ttSpanCopyTemplate">
+            Copy a template.
         </span>
         <span class="toolTip" id="ttSpanBack">
         <?php echo $goBackMessage; ?>
@@ -286,7 +291,7 @@ else {
 if (!$_SESSION['user']->isAdmin()) {
 
 ?>
-        <form id="formTemplateImageParameters" method="post" action="">
+        <form id="formTemplateTypeParameters" method="post" action="">
 
             <fieldset>
                 <legend>Admin image templates</legend>
@@ -327,7 +332,7 @@ if (!$_SESSION['user']->isAdmin()) {
                 <input name="copy_public"
                        type="submit"
                        value=""
-                       class="icon copy"
+                       class="icon down"
                        onmouseover="TagToTip('ttSpanCopyTemplate' )"
                        onmouseout="UnTip()" />
             </div>
@@ -340,7 +345,7 @@ if (!$_SESSION['user']->isAdmin()) {
 
 ?>
 
-        <form id="formImageParameters" method="post" action="" id="select">
+        <form method="post" action="" id="select">
 
             <fieldset>
 
@@ -407,22 +412,25 @@ else {
                        class="icon edit"
                        onmouseover="TagToTip('ttSpanEdit' )"
                        onmouseout="UnTip()" />
-                <input name="copy" type="submit"
+                <input name="copy"
+                       type="submit"
                        value=""
                        class="icon clone"
                        onmouseover="TagToTip('ttSpanClone' )"
                        onmouseout="UnTip()" />
-                <input name="share" type="button"
-                       onclick="prepareUserSelectionForSharing('<?php echo $_SESSION['user']->name() ?>');"
-                       value=""
-                       class="icon share"
-                       onmouseover="TagToTip('ttSpanShare' )"
-                       onmouseout="UnTip()" />
+
 <?php
 
 if (!$_SESSION['user']->isAdmin()) {
 
 ?>
+                <input name="share"
+                    type="button"
+                    onclick="prepareUserSelectionForSharing('<?php echo $_SESSION['user']->name() ?>');"
+                    value=""
+                    class="icon share"
+                    onmouseover="TagToTip('ttSpanShare' )"
+                    onmouseout="UnTip()" />
                 <input name="make_default" type="submit" value=""
                       class="icon mark"
                       onmouseover="TagToTip('ttSpanDefault' )"
@@ -567,7 +575,7 @@ if (!$_SESSION['user']->isAdmin()) {
 	} else {
 	  echo "<p>The created templates will be visible for the users in an
       additional selection field from which they can be copied to the user's
-      parameters.</p>";
+      templates.</p>";
 	}
 	?>
 
@@ -602,7 +610,7 @@ include("footer.inc.php");
             return;
         }
 
-        retrieveSharedTemplates(username);
+        retrieveSharedTemplates(username, 'parameter');
 
     });
 

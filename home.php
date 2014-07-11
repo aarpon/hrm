@@ -9,7 +9,6 @@ require_once("./inc/System.inc.php");
 require_once("./inc/wiki_help.inc.php");
 
 global $email_admin;
-global $enableUserAdmin;
 global $authenticateAgainst;
 
 session_start();
@@ -57,9 +56,9 @@ include("header.inc.php");
     </div>
     <div class="clear"></div>
 </div>
-    
+
     <div id="homepage">
-        
+
         <?php
             $textHome = "Home";
             if ( !isset( $_SESSION['BEEN_HOME'] ) ) {
@@ -72,16 +71,16 @@ include("header.inc.php");
 
         <!-- Here we display update information. This div is initially hidden -->
         <div id="update"></div>
-        
+
         <?php
 
         if ($_SESSION['user']->isAdmin()) {
         ?>
-		
+
 		  <table>
-		  
+
 		  <tbody>
-			
+
 			<tr >
 
 			  <?php
@@ -93,7 +92,7 @@ include("header.inc.php");
                                         src="./images/users.png" />
 				  </a>
 				</td>
-				
+
 				<td class="text"><div class="cell">
                    <a href="./user_management.php">Manage users</a>
                    <br />
@@ -115,86 +114,86 @@ include("header.inc.php");
 			  <?php
 				}
 			  ?>
-			  
+
 		    			  <td class="icon">
 				<a href="./account.php">
 				<img alt="Account"
                                       src="./images/account.png" />
 				</a>
 			  </td>
-			  
+
 			  <td class="text"><div class="cell">
                 <a href="./account.php">Account</a>
                 <br />
 				<p>View and change your personal data.</p>
                 </div>
-			  </td>			  
+			  </td>
 
 			</tr>
-            
+
             <tr class="separator"><td></td><td></td><td></td><td></td></tr>
-                            
+
 			<tr>
                                                <td class="icon">
 				<a href="./job_queue.php">
 				<img alt="Queue" src="./images/queue.png" />
 				</a>
 			  </td>
-			  
+
 			  <td class="text"><div class="cell">
                 <a href="./job_queue.php">Queue status</a>
                 <br />
 				<p>See and manage all jobs.</p>
                           </div>
 			  </td>
-			  
-			  
+
+
 			  <td class="icon">
 				<a href="./statistics.php">
 				<img alt="Statistics" src="./images/stats.png" />
 				</a>
 			  </td>
-			  
+
 			  <td class="text"><div class="cell">
                   <a href="./statistics.php">Global statistics</a>
                   <br />
 				<p>Summary of usage statistics for all users.</p>
                   </div>
 			  </td>
-			  
+
 		    </tr>
-            
+
             <tr class="separator"><td></td><td></td><td></td><td></td></tr>
 
 			<tr>
-			  
+
 			  <td class="icon">
 				<a href="./select_parameter_settings.php">
 				<img alt="Parameter templates" src="./images/parameters.png" />
 				</a>
 			  </td>
-                               
-			  
+
+
 			  <td class="text"><div class="cell">
                 <a href="./select_parameter_settings.php">Image templates</a>
                 <br />
 			    <p>Create templates for the image parameters.</p>
                 </div>
 			  </td>
-			  
+
 			  <td class="icon">
 				<a href="./select_task_settings.php">
 				<img alt="Task parameters" src="./images/tasks.png" />
 				</a>
 			  </td>
-			  
+
 			  <td class="text"><div class="cell">
                 <a href="./select_task_settings.php">Restoration templates</a>
                 <br />
 				<p>Create templates for the restoration parameters.</p>
                 </div>
 			  </td>
-			  
+
 		    </tr>
 
 			<tr>
@@ -203,7 +202,7 @@ include("header.inc.php");
                       <img alt="Analysis" src="./images/analysis.png" />
                   </a>
 			  </td>
-			  
+
 			  <td class="text"><div class="cell">
                 <a href="./select_analysis_settings.php">Analysis templates</a>
                 <br />
@@ -215,7 +214,7 @@ include("header.inc.php");
 				<img alt="FileManager" src="./images/rawdata.png" />
 				</a>
 			  </td>
-			  
+
 			  <td class="text"><div class="cell">
                 <a href="./file_management.php?folder=src">Raw images</a>
                 <br />
@@ -223,7 +222,7 @@ include("header.inc.php");
                 </div>
 			  </td>
 
-			
+
 		    </tr>
 			<tr class="separator"><td></td><td></td><td></td><td></td></tr>
 			<tr>
@@ -233,7 +232,7 @@ include("header.inc.php");
 				<img alt="Update" src="./images/updatedb.png" />
 				</a>
 			  </td>
-			  
+
 			  <td class="text"><div class="cell">
                 <a href="./update.php">Database update</a>
                 <br />
@@ -241,54 +240,54 @@ include("header.inc.php");
                 </div>
 			  </td>
 
-			
+
 			  <td class="icon">
 				<a href="./system.php">
 				<img alt="System summary" src="./images/system.png" />
 				</a>
 			  </td>
-			  
+
 			  <td class="text"><div class="cell">
                 <a href="./system.php">System summary</a>
                 <br />
 				<p>Inspect your system.</p>
                 </div>
-			  </td>		  
+			  </td>
 
 		    </tr>
 
 		  </tbody>
-		  
+
 		</table>
-        
+
         <?php
 		  } else {
         ?>
 		<table>
-		  
+
 		  <tbody>
-			
+
 			<tr >
-			  
+
 			  <td class="icon">
 				<a href="./select_images.php">
 				<img alt="Jobs" src="./images/start.png" />
 				</a>
 			  </td>
-			  
+
 			  <td class="text"><div class="cell">
                 <a href="./select_images.php">Start a job</a>
                 <br />
 				<p>Create and start restoration and analysis jobs.</p>
                 </div>
 			  </td>
-			  
+
 			  <td class="icon">
 				<a href="./job_queue.php">
 				<img alt="Queue" src="./images/queue.png" />
 				</a>
 			  </td>
-			  
+
 			  <?php
                 if ( isset( $_SESSION['jobcreated'] ) &&
                      isset( $_SESSION['numberjobadded'] ) &&
@@ -329,7 +328,7 @@ include("header.inc.php");
                         <br />
                         <div id="jobsInQueue">
                             <p>See all jobs.<br />
-                            You have <?php 
+                            You have <?php
                                 echo "<strong><span id=\"jobsInQueue\">
                                     $str</span> </strong>"; ?>
                             in the queue.</p>
@@ -339,37 +338,37 @@ include("header.inc.php");
                     <?php
                 }
 			  ?>
-		    
+
 			</tr>
-			
+
 			<tr>
-			  
+
 			  <td class="icon">
 				<a href="./file_management.php?folder=src">
 				<img alt="Raw images" src="./images/rawdata.png" />
 				</a>
 			  </td>
-			  
+
 			  <td class="text"><div class="cell">
                 <a href="./file_management.php?folder=src">Raw images</a>
                 <br />
 			    <p>Upload raw images to deconvolve.</p>
                 </div>
 			  </td>
-			  
+
 			  <td class="icon">
 				<a href="./file_management.php?folder=dest">
 				<img alt="Results" src="./images/results.png" />
 				</a>
 			  </td>
-			  
+
 			  <td class="text"><div class="cell">
                 <a href="./file_management.php?folder=dest">Results</a>
                 <br />
 				<p>Inspect and download your restored data and analysis results.</p>
                 </div>
 			  </td>
-			  
+
       </tr>
 
     	<tr>
@@ -379,14 +378,14 @@ include("header.inc.php");
 				<img alt="Statistics" src="./images/stats.png" />
 				</a>
 			  </td>
-			  
+
 			  <td class="text"><div class="cell">
                 <a href="./statistics.php">Statistics</a>
                 <br />
 				<p>Summary of your usage statistics.</p>
                 </div>
 			  </td>
-        
+
 			<?php
 			if ( $authenticateAgainst == "MYSQL" ) {
 			?>
@@ -395,14 +394,14 @@ include("header.inc.php");
 				<img alt="Account" src="./images/account.png" />
 				</a>
 			  </td>
-			  
+
 			  <td class="text"><div class="cell">
                 <a href="./account.php">Account</a>
                 <br />
 				<p>View and change your personal data.</p>
                 </div>
 			  </td>
-			  
+
 			<?php
 			} else {
 			?>
@@ -411,17 +410,17 @@ include("header.inc.php");
 			<?php
 			}
 			?>
-        
+
 	    </tr>
 
 		  </tbody>
-		  
+
 		</table>
 
         <?php
         }
-        ?>        
-   
+        ?>
+
     </div> <!-- home -->
 
 <?php
@@ -432,14 +431,14 @@ include("footer.inc.php");
 
 <!-- Ajax functions -->
 <script type="text/javascript">
-    
+
     // Function checkForUpdates
     function checkForUpdates() {
         JSONRPCRequest({
                 method : 'jsonCheckForUpdates',
                 params: []
             }, function(response) {
-            
+
                 if (!response || response.success === "false") {
                     $("#update").html("<p class='updateError'>" +
                             "<img src=\"images/check_for_update.png\" alt=\"Error\" />" +
@@ -467,32 +466,32 @@ include("footer.inc.php");
                     openWindow("http://huygens-rm.org/home/?q=node/4");
                 });
                 $("#update").show();
-                return;    
+                return;
             }
         )
     }
 
     // Hide the "update" div in the beginning
     $(document).ready(function() {
-        $("#update").hide();   
+        $("#update").hide();
     });
-    
+
     <?php
-    
+
     if (!$_SESSION['user']->isAdmin()) {
-        
+
     ?>
-        
+
     // Update job information
     $(document).ready(function() {
-        
+
         // Fill in the information about jobs in the queue as soon as the
         // page is ready
         update();
-        
+
         // Set up timer for the repeated update
         var interval = window.setInterval(function() { update(); }, 5000);
-        
+
         // Function that queries the server via an Ajax call
         function update() {
             ajaxGetNumberOfUserJobsInQueue(
@@ -502,11 +501,11 @@ include("footer.inc.php");
         }
 
     });
-    
+
     <?php
-    
+
     }
-        
+
     ?>
 
 </script>

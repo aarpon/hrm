@@ -9,8 +9,6 @@ require_once("./inc/SettingEditor.inc.php");
 require_once("./inc/Util.inc.php");
 require_once("./inc/wiki_help.inc.php");
 
-global $enableUserAdmin;
-
 /* *****************************************************************************
  *
  * START SESSION, CHECK LOGIN STATE, INITIALIZE WHAT NEEDED
@@ -108,7 +106,8 @@ else if (isset($_POST['make_default'])) {
   $message = $_SESSION['analysiseditor']->message();
 }
 else if (isset($_POST['share'])) {
-    $_SESSION['analysiseditor']->shareSelectedSetting(array("aaron@lic"));
+    $_SESSION['analysiseditor']->shareSelectedSetting($_POST["templateToShare"],
+        $_POST["usernameselect"]);
     $message = $_SESSION['analysiseditor']->message();
 }
 else if ( isset($_POST['annihilate']) &&
@@ -123,7 +122,7 @@ else if (isset($_POST['OK']) && $_POST['OK']=="OK" ) {
         $_SESSION['analysis_setting'] = new AnalysisSetting();
         header("Location: " . "create_job.php"); exit();
     }
-    
+
     if (!isset($_POST['analysis_setting'])) {
         $message = "Please select some analysis parameters";
     } else {
@@ -131,9 +130,9 @@ else if (isset($_POST['OK']) && $_POST['OK']=="OK" ) {
             $_SESSION['analysiseditor']->loadSelectedSetting();
         $_SESSION['analysis_setting']->setNumberOfChannels(
             $_SESSION['setting']->numberOfChannels());
-        
+
         header("Location: " . "create_job.php"); exit();
-    }    
+    }
 }
 
 /*******************************************************************************/
@@ -199,9 +198,9 @@ include("header.inc.php");
     <div class="clear"></div>
 </div>
 
-    
+
                     <div id=<?php echo "content" . $divState; ?>>
-    
+
 <?php
 
 if ($_SESSION['user']->isAdmin()) {
@@ -224,9 +223,9 @@ if (!$_SESSION['user']->isAdmin()) {
 
 ?>
         <form method="post" action="">
-        
+
             <fieldset>
-              <legend>Template analysis parameters</legend>
+              <legend>Admin template analysis parameters</legend>
               <p class="message_small">
                   These are the parameter sets prepared by your administrator.
               </p>
@@ -246,7 +245,7 @@ if (!$_SESSION['user']->isAdmin()) {
      onclick="ajaxGetParameterListForSet('analysis_setting', $(this).val(), true);"
      onchange="ajaxGetParameterListForSet('analysis_setting', $(this).val(), true);"
      size="5"<?php echo $flag ?>>
-     
+
 <?php
 
   if (sizeof($settings) == 0) {
@@ -270,9 +269,9 @@ if (!$_SESSION['user']->isAdmin()) {
                        class="icon down"
                        id="controls_copyTemplate"/>
             </div>
-            
+
         </form>
-        
+
 <?php
 
 }
@@ -280,18 +279,18 @@ if (!$_SESSION['user']->isAdmin()) {
 ?>
 
         <form method="post" action="" id="select">
-        
+
             <fieldset>
-            
+
               <?php
                 if ($_SESSION['user']->isAdmin()) {
-                  echo "<legend>Template analysis parameters</legend>";
-                  echo "<p class=\"message_small\">Create template parameter " .
-                    "sets visible to all users.</p>";
+                  echo "<legend>Admin template analysis parameters</legend>";
+                  echo "<p class=\"message_small\">Create template " .
+                    "visible to all users.</p>";
                 } else {
-                  echo "<legend>Your analysis parameters</legend>";
+                  echo "<legend>Your analysis templates</legend>";
                   echo "<p class=\"message_small\">These are your (private) " .
-                    "parameter sets.</p>";
+                    "templates.</p>";
                 }
               ?>
               <div id="settings">
@@ -335,10 +334,10 @@ else {
 ?>
                     </select>
                 </div>
-                
+
             </fieldset>
-            
-                    <div id="<?php echo "actions" . $divState; ?>" 
+
+                    <div id="<?php echo "actions" . $divState; ?>"
                          class="taskselection">
                 <input name="create"
                        <?php echo $widgetState ?>
@@ -400,21 +399,21 @@ if (!$_SESSION['user']->isAdmin()) {
                            class="textfield" />
                 </label>
                 <input name="OK" type="hidden" />
-                
+
             </div>
 <?php
 
 if (!$_SESSION['user']->isAdmin()) {
 
 ?>
-                <div id="controls">      
+                <div id="controls">
                   <input type="button"
                          value=""
                          class="icon previous"
                          onclick="document.location.href='select_task_settings.php'"
                          onmouseover="TagToTip('ttSpanBack' )"
                         onmouseout="UnTip()" />
-                  <input type="submit" 
+                  <input type="submit"
                          value=""
                          class="icon next"
                         onclick="process()"
@@ -426,31 +425,31 @@ if (!$_SESSION['user']->isAdmin()) {
 }
 
 ?>
-            
+
         </form> <!-- select -->
-        
+
     </div> <!-- content -->
-    
+
     <div id="rightpanel">
-    
+
         <div id="info">
-          
+
           <h3>Quick help</h3>
-    
-    <?php    
+
+    <?php
 	if (!$_SESSION['user']->isAdmin()) {
       echo "<p>In this step, you are asked to specify all parameters relative
         to the analysis of your images.</p>";
 	} else {
-	  echo "<p>Here, you can create template parameters relative to the
+	  echo "<p>Here, you can create templates relative to the
       analysis procedure.</p>";
 	}
 	?>
         <p>These are the choice for colocalization analysis, colocalization coefficients and maps.</p>
 
-    <?php        
+    <?php
 	if (!$_SESSION['user']->isAdmin()) {
-      echo "<p>'Template analysis parameters' created by your facility
+      echo "<p>'Admin template analysis parameters' created by your facility
         manager can be copied to the list of 'Your analysis parameters' and
         adapted to fit your analysis needs.</p>";
 	} else {
@@ -461,7 +460,7 @@ if (!$_SESSION['user']->isAdmin()) {
 	?>
 
     </div>
-        
+
     <div id="message">
 <?php
 
@@ -469,9 +468,9 @@ echo "<p>$message</p>";
 
 ?>
         </div>
-        
+
     </div> <!-- rightpanel -->
-    
+
 <?php
 
 include("footer.inc.php");

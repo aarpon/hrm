@@ -12,7 +12,6 @@ require_once(dirname(__FILE__) . "/inc/Validator.inc.php");
 require_once(dirname(__FILE__) . "/inc/wiki_help.inc.php");
 
 global $email_admin;
-global $enableUserAdmin;
 global $authenticateAgainst;
 
 /*

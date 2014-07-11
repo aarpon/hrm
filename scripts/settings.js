@@ -15,17 +15,15 @@ function process() {
     var el = $("form input[name='OK']:hidden");
     if (null === el) {
         return;
-
     }
-    var parent = el.parent();
-    while (!parent.is("form")) {
-        parent = parent.parent();
-        if (null === parent) {
-            return;
-        }
+    var fr = $("form#select");
+    if (null === fr) {
+        return;
     }
-    el.val("OK");
-    parent.submit();
+    if ($.contains(fr.get(0), el.get(0))) {
+        el.val("OK");
+        fr.submit();
+    }
 }
 
 function imageFormatProcess(e, value) {

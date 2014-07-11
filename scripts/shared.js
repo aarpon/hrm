@@ -5,18 +5,18 @@
 
 
 // Fill in the shared template table
-function retrieveSharedTemplates(username) {
+function retrieveSharedTemplates(username, type) {
 
     // Query server for list of shared templates
     JSONRPCRequest({
         method : 'jsonGetSharedTemplateList',
-        params: [username]
+        params: [username, type]
     }, function(response) {
 
         // Failure?
         if (response.success != "true") {
 
-            $("#message").append("<p>Problem retrieving list of shared templates!</p>");
+            $("#message").html("<p>Problem retrieving list of shared templates!</p>");
             return;
 
         }
@@ -41,13 +41,13 @@ function retrieveSharedTemplates(username) {
         }
 
         // Now fill in the shared template table
-        fillInSharedTemplatesTable(sharedTemplates);
+        fillInSharedTemplatesTable(sharedTemplates, type);
 
     });
 }
 
 // Fill in the shared template table
-function fillInSharedTemplatesTable(sharedTemplates) {
+function fillInSharedTemplatesTable(sharedTemplates, type) {
 
     // Remove content from table
     var tbody = $("#sharedTemplatePickerTable tbody");
@@ -82,17 +82,17 @@ function fillInSharedTemplatesTable(sharedTemplates) {
         // Add template with actions
         var tdAccept = "<td class='accept_template' " +
             "title='Accept the template.' " +
-            "onclick=acceptTemplate(" + String(i) + ") >" +
+            "onclick='acceptTemplate(" + String(i) + ", \"" + type + "\")' >" +
             "<a href='#'>&nbsp;</a></td>";
 
         var tdReject = "<td class='reject_template' " +
             "title='Reject the template.' " +
-            "onclick=rejectTemplate(" + String(i) + ") >" +
+            "onclick='rejectTemplate(" + String(i) + ", \"" + type + "\")' >" +
             "<a href='#'>&nbsp;</a></td>";
 
         var tdPreview = "<td class='preview_template'  " +
             "title='Preview the template.' " +
-            "onclick=previewTemplate(" + String(i) + ") >" +
+            "onclick='previewTemplate(" + String(i) + ", \"" + type + "\")' >" +
             "<a href='#'>&nbsp;</a></td>";
 
         var tdTemplate = "<td class='name_template' " +
@@ -114,7 +114,7 @@ function prepareUserSelectionForSharing(username) {
     var templateToShare = $("#setting").val();
     if (null === templateToShare) {
         // No template selected; inform and return
-        $("#message").append("<p>Please pick a template to share!</p>");
+        $("#message").html("<p>Please pick a template to share!</p>");
         return;
     }
 
@@ -127,7 +127,7 @@ function prepareUserSelectionForSharing(username) {
         // Failure?
         if (response.success != "true") {
 
-            $("#message").append("<p>Could not retrieve user list!</p>");
+            $("#message").html("<p>Could not retrieve user list!</p>");
             return;
 
         }
@@ -143,8 +143,8 @@ function prepareUserSelectionForSharing(username) {
         $("#templateToShare").val(templateToShare);
 
         // Hide the forms that are not relevant now
-        $("#formTemplateImageParameters").hide();
-        $("#formImageParameters").hide();
+        $("#formTemplateTypeParameters").hide();
+        $("#select").hide();
 
         // Display the user selection form
         $("#formUserList").show();
@@ -153,7 +153,7 @@ function prepareUserSelectionForSharing(username) {
 }
 
 // Accept the template with specified index
-function acceptTemplate(template_index) {
+function acceptTemplate(template_index, type) {
 
     // Get the shared templates content from table
     var tbody = $("#sharedTemplatePickerTable tbody");
@@ -166,13 +166,13 @@ function acceptTemplate(template_index) {
     // Send an asynchronous call to the server to accept the template
     JSONRPCRequest({
         method : 'jsonAcceptSharedTemplate',
-        params: [sharedTemplates[template_index], 'parameter']
+        params: [sharedTemplates[template_index], type]
     }, function(response) {
 
         // Failure?
         if (response.success != "true") {
 
-            $("#message").append("<p>Could not accept template!</p>");
+            $("#message").html("<p>Could not accept template!</p>");
             return;
 
         }
@@ -184,7 +184,7 @@ function acceptTemplate(template_index) {
 }
 
 // Delete the template with specified index
-function rejectTemplate(template_index) {
+function rejectTemplate(template_index, type) {
 
     // Get the shared templates content from table
     var tbody = $("#sharedTemplatePickerTable tbody");
@@ -202,13 +202,13 @@ function rejectTemplate(template_index) {
     // Send an asynchronous call to the server to accept the template
     JSONRPCRequest({
         method : 'jsonDeleteSharedTemplate',
-        params: [sharedTemplates[template_index], 'parameter']
+        params: [sharedTemplates[template_index], type]
     }, function(response) {
 
         // Failure?
         if (response.success != "true") {
 
-            $("#message").append("<p>Could not delete template!</p>");
+            $("#message").html("<p>Could not delete template!</p>");
             return;
 
         }
@@ -220,7 +220,7 @@ function rejectTemplate(template_index) {
 }
 
 // Preview the template with specified index
-function previewTemplate(template_index) {
+function previewTemplate(template_index, type) {
 
     // Get the shared templates content from table
     var tbody = $("#sharedTemplatePickerTable tbody");
@@ -229,13 +229,13 @@ function previewTemplate(template_index) {
     // Send an asynchronous call to the server to accept the template
     JSONRPCRequest({
         method : 'jsonPreviewSharedTemplate',
-        params: [sharedTemplates[template_index], 'parameter']
+        params: [sharedTemplates[template_index], type]
     }, function(response) {
 
         // Failure?
         if (response.success != "true") {
 
-            $("#message").append("<p>Could not load template for preview!</p>");
+            $("#message").html("<p>Could not load template for preview!</p>");
             return;
 
         }
