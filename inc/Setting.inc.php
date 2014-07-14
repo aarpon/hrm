@@ -58,6 +58,23 @@ abstract class Setting {
     }
 
     /*!
+     * Deep copy method.
+     *
+     * Call:
+     *
+     *    $settingClone = clone $setting
+     *
+     * to get a deep copy of the original object.
+     */
+    public function __clone() {
+        foreach($this as $key => $val) {
+            if (is_object($val) || (is_array($val))) {
+                $this->{$key} = unserialize(serialize($val));
+            }
+        }
+    }
+
+    /*!
       \brief	Returns the Parameter of given name
       \param	$name	Name of the Parameter to return
       \return	a Parameter object or NULL if the Parameter does not exist

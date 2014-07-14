@@ -191,8 +191,8 @@ abstract class BaseSettingEditor {
         if (! array_key_exists($templateName, $settings)) {
             return False;
         }
-        $setting = $settings[$templateName];
         foreach ($recipients as $recipient) {
+            $setting = clone $settings[$templateName];
             $result = $setting->shareWith($recipient);
         }
         $this->message = $setting->message();
