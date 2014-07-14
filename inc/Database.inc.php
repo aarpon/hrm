@@ -739,19 +739,22 @@ class DatabaseConnection {
     public function copySharedTemplate($id, $sourceSettingTable,
             $sourceParameterTable, $destSettingTable, $destParameterTable) {
 
-        // Get the name of the previous owner (they one sharing the setting)
-        $query = "select previous_owner from $sourceSettingTable where id=$id";
-        $previous_owner = $this->queryLastValue($query);
-
-        // Get the name of the shared setting
-        $query = "select setting from $sourceParameterTable where setting_id=$id";
-        $setting_name = $this->queryLastValue($query);
+        // Get the name of the previous owner (the one sharing the setting).
+        $query = "select previous_owner, owner, name from $sourceSettingTable where id=$id";
+        $rows = $this->queryLastRow($query);
+        if (False === $rows) {
+            return False;
+        }
+        $previous_owner = $rows["previous_owner"];
+        $owner = $rows["owner"];
+        $setting_name = $rows["name"];
 
         // Compose the new name of the setting
         $out_setting_name = $previous_owner  . "_" . $setting_name;
 
         // Check if a setting with this name already exists in the target tables
-        $query = "select name from $destSettingTable where name='$out_setting_name'";
+        $query = "select name from $destSettingTable where " .
+            "name='$out_setting_name' and owner='$owner'";
         if ($this->queryLastValue($query)) {
 
             // The setting already exists; we try adding numerical indices
@@ -759,7 +762,7 @@ class DatabaseConnection {
             while (1) {
 
                 $test_name = $original_out_setting_name . "_" . $n++;
-                $query = "select name from $destSettingTable where name='$test_name'";
+                $query = "select name from $destSettingTable where name='$test_name' and owner='$owner'";
                 if (! $this->queryLastValue($query)) {
                     $out_setting_name = $test_name;
                     break;
@@ -980,7 +983,7 @@ class DatabaseConnection {
 
     /*!
       \brief	Checks whether settings exist in the database for a given owner
-      \param	$settings	Settings object to be used to check for existance in
+      \param	$settings	Settings object to be used to check for existence in
                           the database (the name of the owner must be set in the
                           settings)
       \return	true if the settings exist in the database; false otherwise
