@@ -162,6 +162,15 @@ include("header.inc.php");
     <span class="toolTip" id="ttSpanDelete">
         Delete the selected analysis template.
     </span>
+    <span class="toolTip" id="ttSpanAcceptTemplate">
+        Accept the template.
+    </span>
+    <span class="toolTip" id="ttSpanRejectTemplate">
+        Reject the template.
+    </span>
+    <span class="toolTip" id="ttSpanPreviewTemplate">
+        Preview the template.
+    </span>
     <?php
       if (!$_SESSION['user']->isAdmin()) {
         ?>
@@ -220,14 +229,20 @@ to accept, reject, and preview them. -->
 
     <div id="sharedTemplatePicker">
         <div id="shareTemplatePickerHeader">
-            <p>These are the templates shared with you:</p>
+            <p>These are your shared templates:</p>
             <div id="shareTemplatePickerHeaderClose" title="Close"
-                onclick="closeSharedTemplatesDiv();">
+                 onclick="closeSharedTemplatesDiv();">
                 X
             </div>
         </div>
         <div id="shareTemplatePickerBody">
+            <p class="tableTitle">Templates shared <b>with</b> you:</p>
             <table id="sharedWithTemplatePickerTable">
+                <tbody>
+                </tbody>
+            </table>
+            <p class="tableTitle">Templates shared <b>by</b> you:</p>
+            <table id="sharedByTemplatePickerTable">
                 <tbody>
                 </tbody>
             </table>
