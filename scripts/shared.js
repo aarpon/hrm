@@ -252,7 +252,7 @@ function rejectSharedWithTemplate(template_index, type) {
     }
 
     // Ask the user for confirmation
-    if (! confirm("Are you sure you want to discard this template?")) {
+    if (! confirm("Are you sure you want to reject this template?")) {
         return;
     }
 
@@ -265,7 +265,7 @@ function rejectSharedWithTemplate(template_index, type) {
         // Failure?
         if (response.success != "true") {
 
-            $("#message").html("<p>Could not delete template!</p>");
+            $("#message").html("<p>Could not reject template!</p>");
             return;
 
         }
