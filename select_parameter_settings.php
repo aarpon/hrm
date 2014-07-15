@@ -257,14 +257,20 @@ include("header.inc.php");
 
     <div id="sharedTemplatePicker">
         <div id="shareTemplatePickerHeader">
-            <p>These are the templates shared with you:</p>
+            <p>These are your shared templates:</p>
             <div id="shareTemplatePickerHeaderClose" title="Close"
                  onclick="closeSharedTemplatesDiv();">
                 X
             </div>
         </div>
         <div id="shareTemplatePickerBody">
-            <table id="sharedTemplatePickerTable">
+            <p class="tableTitle">Templates shared <b>with</b> you:</p>
+            <table id="sharedWithTemplatePickerTable">
+                <tbody>
+                </tbody>
+            </table>
+            <p class="tableTitle">Templates shared <b>by</b> you:</p>
+            <table id="sharedByTemplatePickerTable">
                 <tbody>
                 </tbody>
             </table>

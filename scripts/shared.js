@@ -4,7 +4,7 @@
 // Copyright and license notice: see license.txt
 
 
-// Fill in the shared template table
+// Retrieve and fill in shared templates (both shared with and shared by the user)
 function retrieveSharedTemplates(username, type) {
 
     // Query server for list of shared templates
@@ -22,13 +22,16 @@ function retrieveSharedTemplates(username, type) {
         }
 
         // Get the templates
-        var sharedTemplates = response.sharedTemplates;
+        var sharedTemplatesWith = response.sharedTemplatesWith;
+        var sharedTemplatesBy   = response.sharedTemplatesBy;
 
-        // Sort them by previous owner
-        sharedTemplates.sort(sort_by_previous_owner);
+        // Sort them
+        sharedTemplatesWith.sort(sort_by_previous_owner);
+        sharedTemplatesBy.sort(sort_by_owner);
 
         // Get the number of templates
-        var numSharedTemplates = sharedTemplates.length;
+        var numSharedTemplates = sharedTemplatesWith.length +
+            sharedTemplatesBy.length;
 
         // Write the notification
         if (numSharedTemplates == 0) {
@@ -41,66 +44,114 @@ function retrieveSharedTemplates(username, type) {
         }
 
         // Now fill in the shared template table
-        fillInSharedTemplatesTable(sharedTemplates, type);
+        fillInSharedTemplatesTable(sharedTemplatesWith, sharedTemplatesBy, type);
 
     });
 }
 
 // Fill in the shared template table
-function fillInSharedTemplatesTable(sharedTemplates, type) {
+function fillInSharedTemplatesTable(sharedTemplatesWith, sharedTemplatesBy, type) {
 
-    // Remove content from table
-    var tbody = $("#sharedTemplatePickerTable tbody");
-    tbody.empty();
+    // Get the data container
+    var templatePicker = $("#shareTemplatePickerBody");
 
     // Make sure to clear the template data
-    tbody.data("shared_templates", null);
+    templatePicker.data("sharedTemplatesWith", null);
+    templatePicker.data("sharedTemplatesBy", null);
 
-    if (sharedTemplates.length == 0) {
-        tbody.append("<tr><td>No user templates shared with you.</td>/<tr>");
-        return;
+    // Get the shared with/by table bodies
+    var tbodyWith = $("#sharedWithTemplatePickerTable tbody");
+    var tbodyBy = $("#sharedByTemplatePickerTable tbody");
+
+    // Remove content from tables
+    tbodyWith.empty();
+    tbodyBy.empty();
+
+    // Now fill the tables
+    if (sharedTemplatesWith.length == 0) {
+        tbodyWith.append("<tr><td>No user templates shared with you.</td>/<tr>");
+    }
+
+    if (sharedTemplatesBy.length == 0) {
+        tbodyBy.append("<tr><td>No user templates shared by you.</td>/<tr>");
     }
 
     // Store the shared templates
-    tbody.data("shared_templates", sharedTemplates);
+    templatePicker.data("sharedTemplatesWith", sharedTemplatesWith);
+    templatePicker.data("sharedTemplatesBy", sharedTemplatesBy);
 
-    // Now fill the table
+    // Now fill the shared with table
     var lastUser = null;
-    for (var i = 0; i < sharedTemplates.length; i++) {
+    for (var i = 0; i < sharedTemplatesWith.length; i++) {
 
         // Add 'header' row if needed
-        if (sharedTemplates[i].previous_owner != lastUser) {
+        if (sharedTemplatesWith[i].previous_owner != lastUser) {
 
             // Add "From 'user'" header
-            tbody.append("<tr><td colspan='4' class='from_template'>" +
-                "From <b>" + sharedTemplates[i].previous_owner +
+            tbodyWith.append("<tr><td colspan='4' class='from_by_template'>" +
+                "From <b>" + sharedTemplatesWith[i].previous_owner +
                 "</b>:</td></tr>");
 
-            lastUser = sharedTemplates[i].previous_owner;
+            lastUser = sharedTemplatesWith[i].previous_owner;
         }
 
         // Add template with actions
         var tdAccept = "<td class='accept_template' " +
             "title='Accept the template.' " +
-            "onclick='acceptTemplate(" + String(i) + ", \"" + type + "\")' >" +
+            "onclick='acceptSharedWithTemplate(" + String(i) + ", \"" + type + "\")' >" +
             "<a href='#'>&nbsp;</a></td>";
 
         var tdReject = "<td class='reject_template' " +
             "title='Reject the template.' " +
-            "onclick='rejectTemplate(" + String(i) + ", \"" + type + "\")' >" +
+            "onclick='rejectSharedWithTemplate(" + String(i) + ", \"" + type + "\")' >" +
             "<a href='#'>&nbsp;</a></td>";
 
         var tdPreview = "<td class='preview_template'  " +
             "title='Preview the template.' " +
-            "onclick='previewTemplate(" + String(i) + ", \"" + type + "\")' >" +
+            "onclick='previewSharedWithTemplate(" + String(i) + ", \"" + type + "\")' >" +
             "<a href='#'>&nbsp;</a></td>";
 
         var tdTemplate = "<td class='name_template' " +
             "title='Shared with you on " +
-            sharedTemplates[i].sharing_date + ".' >" +
-            sharedTemplates[i].name + "</td>";
+            sharedTemplatesWith[i].sharing_date + ".' >" +
+            sharedTemplatesWith[i].name + "</td>";
 
-        tbody.append("<tr>" + tdAccept + tdReject +
+        tbodyWith.append("<tr>" + tdAccept + tdReject +
+            tdPreview + tdTemplate + "</tr>");
+
+    }
+
+    // Now fill the shared by table
+    var lastUser = null;
+    for (var i = 0; i < sharedTemplatesBy.length; i++) {
+
+        // Add 'header' row if needed
+        if (sharedTemplatesBy[i].owner != lastUser) {
+
+            // Add "With 'user'" header
+            tbodyBy.append("<tr><td colspan='4' class='from_by_template'>" +
+                "With <b>" + sharedTemplatesBy[i].owner +
+                "</b>:</td></tr>");
+
+            lastUser = sharedTemplatesBy[i].owner;
+        }
+
+        // Add template with actions
+        var tdAccept = "<td class='blank_template'>&nbsp;</td>";
+
+        var tdReject = "<td class='reject_template' " +
+            "title='Reject the template.' " +
+            "onclick='rejectSharedByTemplate(" + String(i) + ", \"" + type + "\")' >" +
+            "<a href='#'>&nbsp;</a></td>";
+
+        var tdPreview = "<td class='blank_template'>&nbsp;</td>";
+
+        var tdTemplate = "<td class='name_template' " +
+            "title='You shared with " + sharedTemplatesBy[i].owner + " on " +
+            sharedTemplatesBy[i].sharing_date + ".' >" +
+            sharedTemplatesBy[i].name + "</td>";
+
+        tbodyBy.append("<tr>" + tdAccept + tdReject +
             tdPreview + tdTemplate + "</tr>");
 
     }
@@ -153,20 +204,21 @@ function prepareUserSelectionForSharing(username) {
 }
 
 // Accept the template with specified index
-function acceptTemplate(template_index, type) {
+function acceptSharedWithTemplate(template_index, type) {
 
-    // Get the shared templates content from table
-    var tbody = $("#sharedTemplatePickerTable tbody");
-    var sharedTemplates = tbody.data("shared_templates");
+    // Get the data container
+    var templatePicker = $("#shareTemplatePickerBody");
 
-    if (sharedTemplates == null) {
+    // Get the shared templates content from the data container
+    var sharedTemplatesWith = templatePicker.data("sharedTemplatesWith");
+    if (sharedTemplatesWith == null) {
         return;
     }
 
     // Send an asynchronous call to the server to accept the template
     JSONRPCRequest({
         method : 'jsonAcceptSharedTemplate',
-        params: [sharedTemplates[template_index], type]
+        params: [sharedTemplatesWith[template_index], type]
     }, function(response) {
 
         // Failure?
@@ -179,30 +231,75 @@ function acceptTemplate(template_index, type) {
 
         // Now reload the page to udpate everything
         location.reload(true);
+
+        // Inform
+        $("#message").html("<p>Template accepted!</p>");
+
     });
 
 }
 
 // Delete the template with specified index
-function rejectTemplate(template_index, type) {
+function rejectSharedWithTemplate(template_index, type) {
 
-    // Get the shared templates content from table
-    var tbody = $("#sharedTemplatePickerTable tbody");
-    var sharedTemplates = tbody.data("shared_templates");
+    // Get the data container
+    var templatePicker = $("#shareTemplatePickerBody");
 
-    if (sharedTemplates == null) {
+    // Get the shared templates content from the data container
+    var sharedTemplatesWith = templatePicker.data("sharedTemplatesWith");
+    if (sharedTemplatesWith == null) {
         return;
     }
 
     // Ask the user for confirmation
-    if (! confirm("Are you sure you want to discard this template?")) {
+    if (! confirm("Are you sure you want to reject this template?")) {
         return;
     }
 
     // Send an asynchronous call to the server to accept the template
     JSONRPCRequest({
         method : 'jsonDeleteSharedTemplate',
-        params: [sharedTemplates[template_index], type]
+        params: [sharedTemplatesWith[template_index], type]
+    }, function(response) {
+
+        // Failure?
+        if (response.success != "true") {
+
+            $("#message").html("<p>Could not reject template!</p>");
+            return;
+
+        }
+
+        // Now reload the page to update everything
+        location.reload(true);
+
+        // Inform
+        $("#message").html("<p>Template rejected.</p>");
+    });
+
+}
+
+// Delete the template with specified index
+function rejectSharedByTemplate(template_index, type) {
+
+    // Get the data container
+    var templatePicker = $("#shareTemplatePickerBody");
+
+    // Get the shared templates content from the data container
+    var sharedTemplatesBy = templatePicker.data("sharedTemplatesBy");
+    if (sharedTemplatesBy == null) {
+        return;
+    }
+
+    // Ask the user for confirmation
+    if (! confirm("Are you sure you want to cancel sharing of this template?")) {
+        return;
+    }
+
+    // Send an asynchronous call to the server to accept the template
+    JSONRPCRequest({
+        method : 'jsonDeleteSharedTemplate',
+        params: [sharedTemplatesBy[template_index], type]
     }, function(response) {
 
         // Failure?
@@ -215,21 +312,29 @@ function rejectTemplate(template_index, type) {
 
         // Now reload the page to update everything
         location.reload(true);
+
+        // Inform
+        $("#message").html("<p>Template sharing canceled.</p>");
     });
 
 }
 
 // Preview the template with specified index
-function previewTemplate(template_index, type) {
+function previewSharedWithTemplate(template_index, type) {
 
-    // Get the shared templates content from table
-    var tbody = $("#sharedTemplatePickerTable tbody");
-    var sharedTemplates = tbody.data("shared_templates");
+    // Get the data container
+    var templatePicker = $("#shareTemplatePickerBody");
+
+    // Get the shared templates content from the data container
+    var sharedTemplatesWith = templatePicker.data("sharedTemplatesWith");
+    if (sharedTemplatesWith == null) {
+        return;
+    }
 
     // Send an asynchronous call to the server to accept the template
     JSONRPCRequest({
         method : 'jsonPreviewSharedTemplate',
-        params: [sharedTemplates[template_index], type]
+        params: [sharedTemplatesWith[template_index], type]
     }, function(response) {
 
         // Failure?
@@ -251,6 +356,16 @@ function previewTemplate(template_index, type) {
 function sort_by_previous_owner(template1, template2) {
     var a = template1['previous_owner'];
     var b = template2['previous_owner'];
+    if (a == b) {
+        return 0;
+    }
+    return (a < b) ? -1 : 1;
+}
+
+// Sort the templates by user
+function sort_by_owner(template1, template2) {
+    var a = template1['owner'];
+    var b = template2['owner'];
     if (a == b) {
         return 0;
     }

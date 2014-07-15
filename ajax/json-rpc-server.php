@@ -564,17 +564,20 @@ function jsonGetSharedTemplateList($username, $type) {
 
         case "parameter":
 
-            $sharedTemplates = ParameterSetting::getSharedTemplates($username);
+            $sharedTemplatesWith = ParameterSetting::getTemplatesSharedWith($username);
+            $sharedTemplatesBy   = ParameterSetting::getTemplatesSharedBy($username);
             break;
 
         case "task":
 
-            $sharedTemplates = TaskSetting::getSharedTemplates($username);
+            $sharedTemplatesWith = TaskSetting::getTemplatesSharedWith($username);
+            $sharedTemplatesBy = TaskSetting::getTemplatesSharedBy($username);
             break;
 
         case "analysis":
 
-            $sharedTemplates = AnalysisSetting::getSharedTemplates($username);
+            $sharedTemplatesWith = AnalysisSetting::getTemplatesSharedWith($username);
+            $sharedTemplatesBy = AnalysisSetting::getTemplatesSharedBy($username);
             break;
 
         default;
@@ -589,11 +592,13 @@ function jsonGetSharedTemplateList($username, $type) {
         // Return failure
         $json['success'] = "false";
         $json['message'] = "Could not accept selected template.";
-        $json["sharedTemplates"] = "";
+        $json["sharedTemplatesWith"] = "";
+        $json["sharedTemplatesBy"] = "";
 
     } else {
 
-        $json["sharedTemplates"] = $sharedTemplates;
+        $json["sharedTemplatesWith"] = $sharedTemplatesWith;
+        $json["sharedTemplatesBy"] = $sharedTemplatesBy;
 
     }
 

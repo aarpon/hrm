@@ -1968,6 +1968,13 @@ div.StedDeplModeValues {
     padding: 10px 10px 20px;
 }
 
+.tableTitle {
+    border-bottom: 1px solid #428BCA;
+    color: #428BCA;
+    margin-top: 10px;
+    font-weight: bold;
+}
+
 #shareTemplatePickerFooter {
     display: block;
     width: 480px;
@@ -1983,17 +1990,27 @@ div.StedDeplModeValues {
     font-weight: normal;
 }
 
-
-.from_template {
-    height: 30px;
-    vertical-align: middle;
-    text-align: left;
+#sharedWithTemplatePickerTable {
+    margin-bottom: 25px;
 }
 
-.accept_template, .reject_template, .preview_template {
+#sharedByTemplatePickerTable {
+}
+
+.from_by_template {
+    vertical-align: middle;
+    text-align: left;
+    padding-bottom: 5px;
+}
+
+.accept_template, .reject_template, .preview_template, .blank_template {
     width: 20px;
     height: 16px;
     cursor: pointer;
+}
+
+.blank_template {
+    cursor: default;
 }
 
 .accept_template {
