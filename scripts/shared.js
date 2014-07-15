@@ -4,7 +4,7 @@
 // Copyright and license notice: see license.txt
 
 
-// Fill in the shared template table
+// Retrieve and fill in shared templates (both shared with and shared by the user)
 function retrieveSharedTemplates(username, type) {
 
     // Query server for list of shared templates

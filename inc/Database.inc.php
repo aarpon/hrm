@@ -716,13 +716,25 @@ class DatabaseConnection {
     }
 
     /*!
-      \brief	Returns the list of shared templates
+      \brief	Returns the list of shared templates with the given user.
       \param	$username	Name of the user for whom to query for shared templates
       \param    $table      Shared table to query
       \return	list of shared jobs
     */
     public function getTemplatesSharedWith($username, $table) {
         $query = "SELECT * FROM $table WHERE owner='$username'";
+        $result = $this->query($query);
+        return $result;
+    }
+
+    /*!
+      \brief	Returns the list of shared templates by the given user.
+      \param	$username	Name of the user for whom to query for shared templates
+      \param    $table      Shared table to query
+      \return	list of shared jobs
+    */
+    public function getTemplatesSharedBy($username, $table) {
+        $query = "SELECT * FROM $table WHERE previous_owner='$username'";
         $result = $this->query($query);
         return $result;
     }

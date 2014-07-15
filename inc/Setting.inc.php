@@ -2030,8 +2030,17 @@ class ParameterSetting extends Setting {
         return $result;
     }
 
+    /*!
+      \brief  Get the list of templates shared by the given user.
+      \param String $username Name of the user to query for.
+      \return	list of shared templates by the user.
+    */
+    public static function getTemplatesSharedBy($username) {
+        $db = new DatabaseConnection();
+        $result = $db->getTemplatesSharedBy($username, self::sharedTable());
+        return $result;
+    }
 }
-
 
 /*
  ============================================================================
@@ -2334,6 +2343,17 @@ class TaskSetting extends Setting {
         return $result;
     }
 
+    /*!
+    \brief  Get the list of templates shared by the given user.
+    \param String $username Name of the user to query for.
+    \return	list of shared templates by the user.
+    */
+    public static function getTemplatesSharedBy($username) {
+        $db = new DatabaseConnection();
+        $result = $db->getTemplatesSharedBy($username, self::sharedTable());
+        return $result;
+    }
+
 } // End of class taskSetting
 
 /*
@@ -2547,6 +2567,17 @@ class AnalysisSetting extends Setting {
     public static function getTemplatesSharedWith($username) {
         $db = new DatabaseConnection();
         $result = $db->getTemplatesSharedWith($username, self::sharedTable());
+        return $result;
+    }
+
+    /*!
+    \brief  Get the list of templates shared by the given user.
+    \param String $username Name of the user to query for.
+    \return	list of shared templates by the user.
+    */
+    public static function getTemplatesSharedBy($username) {
+        $db = new DatabaseConnection();
+        $result = $db->getTemplatesSharedBy($username, self::sharedTable());
         return $result;
     }
 
