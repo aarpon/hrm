@@ -105,12 +105,14 @@ else if (isset($_POST['make_default'])) {
   $_SESSION['analysiseditor']->makeSelectedSettingDefault();
   $message = $_SESSION['analysiseditor']->message();
 }
-else if (isset($_POST['pickUser']) &&
-    isset($_POST["usernameselect"]) &&
-    isset($_POST["templateToShare"])) {
-    $_SESSION['analysiseditor']->shareSelectedSetting($_POST["templateToShare"],
-        $_POST["usernameselect"]);
-    $message = $_SESSION['editor']->message();
+else if (isset($_POST['pickUser']) && isset($_POST["templateToShare"])) {
+    if (isset($_POST["usernameselect"])) {
+        $_SESSION['analysiseditor']->shareSelectedSetting($_POST["templateToShare"],
+            $_POST["usernameselect"]);
+        $message = $_SESSION['analysiseditor']->message();
+    } else {
+        $message = "Please pick one or more recipients.";
+    }
 }
 else if ( isset($_POST['annihilate']) &&
     strcmp( $_POST['annihilate'], "yes") == 0 ) {

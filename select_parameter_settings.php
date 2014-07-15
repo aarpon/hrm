@@ -110,12 +110,14 @@ else if (isset($_POST['edit'])) {
   }
   $message = $_SESSION['editor']->message();
 }
-else if (isset($_POST['pickUser']) &&
-        isset($_POST["usernameselect"]) &&
-        isset($_POST["templateToShare"])) {
-    $_SESSION['editor']->shareSelectedSetting($_POST["templateToShare"],
-        $_POST["usernameselect"]);
-    $message = $_SESSION['editor']->message();
+else if (isset($_POST['pickUser']) && isset($_POST["templateToShare"])) {
+    if (isset($_POST["usernameselect"])) {
+        $_SESSION['editor']->shareSelectedSetting($_POST["templateToShare"],
+            $_POST["usernameselect"]);
+        $message = $_SESSION['editor']->message();
+    } else {
+        $message = "Please pick one or more recipients.";
+    }
 }
 else if (isset($_POST['make_default'])) {
   $_SESSION['editor']->makeSelectedSettingDefault();
