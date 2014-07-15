@@ -2020,13 +2020,13 @@ class ParameterSetting extends Setting {
     }
 
     /*!
-      \brief  Shares the selected setting with the given user.
-      \param String $username Name of the user to share with
-      \return	true if sharing was successful, false otherwise
+      \brief  Get the list of templates shared with the given user.
+      \param String $username Name of the user to query for.
+      \return	list of shared templates with the user.
     */
-    public static function getSharedTemplates($username) {
+    public static function getTemplatesSharedWith($username) {
         $db = new DatabaseConnection();
-        $result = $db->getSharedTemplates($username, self::sharedTable());
+        $result = $db->getTemplatesSharedWith($username, self::sharedTable());
         return $result;
     }
 
@@ -2324,13 +2324,13 @@ class TaskSetting extends Setting {
 
 
     /*!
-      \brief  Shares the selected setting with the given user.
-      \param String $username Name of the user to share with
-      \return	true if sharing was successful, false otherwise
+      \brief  Get the list of templates shared with the given user.
+      \param String $username Name of the user to query for.
+      \return	list of shared templates with the user.
     */
-    public static function getSharedTemplates($username) {
+    public static function getTemplatesSharedWith($username) {
         $db = new DatabaseConnection();
-        $result = $db->getSharedTemplates($username, self::sharedTable());
+        $result = $db->getTemplatesSharedWith($username, self::sharedTable());
         return $result;
     }
 
@@ -2540,13 +2540,13 @@ class AnalysisSetting extends Setting {
 
 
     /*!
-      \brief  Shares the selected setting with the given user.
-      \param String $username Name of the user to share with
-      \return	true if sharing was successful, false otherwise
+      \brief  Get the list of templates shared with the given user.
+      \param String $username Name of the user to query for.
+      \return	list of shared templates with the user.
     */
-    public static function getSharedTemplates($username) {
+    public static function getTemplatesSharedWith($username) {
         $db = new DatabaseConnection();
-        $result = $db->getSharedTemplates($username, self::sharedTable());
+        $result = $db->getTemplatesSharedWith($username, self::sharedTable());
         return $result;
     }
 

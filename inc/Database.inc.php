@@ -721,7 +721,7 @@ class DatabaseConnection {
       \param    $table      Shared table to query
       \return	list of shared jobs
     */
-    public function getSharedTemplates($username, $table) {
+    public function getTemplatesSharedWith($username, $table) {
         $query = "SELECT * FROM $table WHERE owner='$username'";
         $result = $this->query($query);
         return $result;

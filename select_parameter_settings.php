@@ -264,7 +264,7 @@ include("header.inc.php");
             </div>
         </div>
         <div id="shareTemplatePickerBody">
-            <table id="sharedTemplatePickerTable">
+            <table id="sharedWithTemplatePickerTable">
                 <tbody>
                 </tbody>
             </table>

@@ -227,7 +227,7 @@ to accept, reject, and preview them. -->
             </div>
         </div>
         <div id="shareTemplatePickerBody">
-            <table id="sharedTemplatePickerTable">
+            <table id="sharedWithTemplatePickerTable">
                 <tbody>
                 </tbody>
             </table>

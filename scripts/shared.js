@@ -22,13 +22,13 @@ function retrieveSharedTemplates(username, type) {
         }
 
         // Get the templates
-        var sharedTemplates = response.sharedTemplates;
+        var sharedTemplatesWith = response.sharedTemplatesWith;
 
         // Sort them by previous owner
-        sharedTemplates.sort(sort_by_previous_owner);
+        sharedTemplatesWith.sort(sort_by_previous_owner);
 
         // Get the number of templates
-        var numSharedTemplates = sharedTemplates.length;
+        var numSharedTemplates = sharedTemplatesWith.length;
 
         // Write the notification
         if (numSharedTemplates == 0) {
@@ -41,42 +41,42 @@ function retrieveSharedTemplates(username, type) {
         }
 
         // Now fill in the shared template table
-        fillInSharedTemplatesTable(sharedTemplates, type);
+        fillInSharedTemplatesTable(sharedTemplatesWith, type);
 
     });
 }
 
 // Fill in the shared template table
-function fillInSharedTemplatesTable(sharedTemplates, type) {
+function fillInSharedTemplatesTable(sharedTemplatesWith, type) {
 
     // Remove content from table
-    var tbody = $("#sharedTemplatePickerTable tbody");
+    var tbody = $("#sharedWithTemplatePickerTable tbody");
     tbody.empty();
 
     // Make sure to clear the template data
-    tbody.data("shared_templates", null);
+    tbody.data("sharedTemplatesWith", null);
 
-    if (sharedTemplates.length == 0) {
+    if (sharedTemplatesWith.length == 0) {
         tbody.append("<tr><td>No user templates shared with you.</td>/<tr>");
         return;
     }
 
     // Store the shared templates
-    tbody.data("shared_templates", sharedTemplates);
+    tbody.data("sharedTemplatesWith", sharedTemplatesWith);
 
     // Now fill the table
     var lastUser = null;
-    for (var i = 0; i < sharedTemplates.length; i++) {
+    for (var i = 0; i < sharedTemplatesWith.length; i++) {
 
         // Add 'header' row if needed
-        if (sharedTemplates[i].previous_owner != lastUser) {
+        if (sharedTemplatesWith[i].previous_owner != lastUser) {
 
             // Add "From 'user'" header
             tbody.append("<tr><td colspan='4' class='from_template'>" +
-                "From <b>" + sharedTemplates[i].previous_owner +
+                "From <b>" + sharedTemplatesWith[i].previous_owner +
                 "</b>:</td></tr>");
 
-            lastUser = sharedTemplates[i].previous_owner;
+            lastUser = sharedTemplatesWith[i].previous_owner;
         }
 
         // Add template with actions
@@ -97,8 +97,8 @@ function fillInSharedTemplatesTable(sharedTemplates, type) {
 
         var tdTemplate = "<td class='name_template' " +
             "title='Shared with you on " +
-            sharedTemplates[i].sharing_date + ".' >" +
-            sharedTemplates[i].name + "</td>";
+            sharedTemplatesWith[i].sharing_date + ".' >" +
+            sharedTemplatesWith[i].name + "</td>";
 
         tbody.append("<tr>" + tdAccept + tdReject +
             tdPreview + tdTemplate + "</tr>");
@@ -156,17 +156,17 @@ function prepareUserSelectionForSharing(username) {
 function acceptTemplate(template_index, type) {
 
     // Get the shared templates content from table
-    var tbody = $("#sharedTemplatePickerTable tbody");
-    var sharedTemplates = tbody.data("shared_templates");
+    var tbody = $("#sharedWithTemplatePickerTable tbody");
+    var sharedTemplatesWith = tbody.data("sharedTemplatesWith");
 
-    if (sharedTemplates == null) {
+    if (sharedTemplatesWith == null) {
         return;
     }
 
     // Send an asynchronous call to the server to accept the template
     JSONRPCRequest({
         method : 'jsonAcceptSharedTemplate',
-        params: [sharedTemplates[template_index], type]
+        params: [sharedTemplatesWith[template_index], type]
     }, function(response) {
 
         // Failure?
@@ -179,6 +179,10 @@ function acceptTemplate(template_index, type) {
 
         // Now reload the page to udpate everything
         location.reload(true);
+
+        // Inform
+        $("#message").html("<p>Template accepted!</p>");
+
     });
 
 }
@@ -187,10 +191,10 @@ function acceptTemplate(template_index, type) {
 function rejectTemplate(template_index, type) {
 
     // Get the shared templates content from table
-    var tbody = $("#sharedTemplatePickerTable tbody");
-    var sharedTemplates = tbody.data("shared_templates");
+    var tbody = $("#sharedWithTemplatePickerTable tbody");
+    var sharedTemplatesWith = tbody.data("sharedTemplatesWith");
 
-    if (sharedTemplates == null) {
+    if (sharedTemplatesWith == null) {
         return;
     }
 
@@ -202,7 +206,7 @@ function rejectTemplate(template_index, type) {
     // Send an asynchronous call to the server to accept the template
     JSONRPCRequest({
         method : 'jsonDeleteSharedTemplate',
-        params: [sharedTemplates[template_index], type]
+        params: [sharedTemplatesWith[template_index], type]
     }, function(response) {
 
         // Failure?
@@ -215,6 +219,9 @@ function rejectTemplate(template_index, type) {
 
         // Now reload the page to update everything
         location.reload(true);
+
+        // Inform
+        $("#message").html("<p>Template rejected.</p>");
     });
 
 }
@@ -223,13 +230,13 @@ function rejectTemplate(template_index, type) {
 function previewTemplate(template_index, type) {
 
     // Get the shared templates content from table
-    var tbody = $("#sharedTemplatePickerTable tbody");
-    var sharedTemplates = tbody.data("shared_templates");
+    var tbody = $("#sharedWithTemplatePickerTable tbody");
+    var sharedTemplatesWith = tbody.data("sharedTemplatesWith");
 
     // Send an asynchronous call to the server to accept the template
     JSONRPCRequest({
         method : 'jsonPreviewSharedTemplate',
-        params: [sharedTemplates[template_index], type]
+        params: [sharedTemplatesWith[template_index], type]
     }, function(response) {
 
         // Failure?
@@ -263,6 +270,6 @@ function toggleSharedTemplatesDiv() {
 }
 
 // Closes the shared templates div.
-function closeSharedTemplatesDiv() {
+function closefSharedTemplatesDiv() {
     $('#sharedTemplatePicker').hide();
 }
