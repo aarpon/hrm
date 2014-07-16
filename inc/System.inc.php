@@ -570,7 +570,11 @@ class System {
      */
 
     public static function getMaxExecutionTimeFromIni() {
-        return ini_get('max_execution_time') . "s";
+        $maxExecTime = ini_get('max_execution_time');
+        if ($maxExecTime == 0) {
+            return "default";
+        }
+        return "" + $maxExecTime . "s";
     }
 
     /* !
