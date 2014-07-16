@@ -224,7 +224,7 @@ if (System::hucoreHasValidLicense() == false) {
 Remote Manager</a> is an easy to use interface to the Huygens Software
 by <a href="javascript:openWindow('http://www.svi.nl')">Scientific
 Volume Imaging B.V.</a> that allows for multi-user, large-scale
-deconvolution.</p>
+deconvolution and analysis.</p>
 
 <?php
     /*
