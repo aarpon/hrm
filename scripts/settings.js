@@ -27,19 +27,9 @@ function process() {
 }
 
 function release() {
-    var geometryFirst = true;
     var channelsFirst = true;
     for (var i = 0; i < document.forms["select"].elements.length; i++) {
         var e = document.forms["select"].elements[i];
-        if (e.name == 'ImageGeometry') {
-            if ( e.disabled == true ) {
-                e.disabled = false;
-                if (geometryFirst) {
-                    e.checked = true;
-                    geometryFirst = false;
-                }
-            }
-        }
         if (e.name == 'NumberOfChannels') {
             if ( e.disabled == true ) {
                 e.disabled = false;

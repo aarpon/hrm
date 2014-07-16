@@ -3747,6 +3747,34 @@ if ($current_revision < $n) {
         drop_table($tabname);
     }
 
+    // Remove the ImageGeometry possible values (if they exist)
+    $query = "SELECT * FROM possible_values WHERE parameter = 'ImageGeometry';";
+    $rs = $db->Execute($query);
+    $rows = $rs->getRows();
+    if (count($rows) > 0) {
+        $query = "DELETE from possible_values WHERE parameter='ImageGeometry';";
+        $rs = $db->Execute($query);
+        if(!$rs) {
+            $msg = "Could not delete obsolete ImageGeometry entries from possible_values table.";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    // Remove the ImageGeometry column from the statistics table
+    $columns = $db->MetaColumnNames('statistics');
+    if (in_array("ImageGeometry", $columns) ) {
+        $dropColumnSQL = $datadict->DropColumnSQL('statistics', 'ImageGeometry');
+        $rs = $db->Execute($dropColumnSQL[0]);
+        if (!$rs) {
+            $msg = "Could not delete ImageGeometry column from statistics table.";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
     // Timestamp
     $defaultTimestamp = timestampADODB();
 

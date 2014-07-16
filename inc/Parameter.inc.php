@@ -868,7 +868,7 @@ class NumericalArrayParameter extends NumericalParameter {
         $this->message = '';
         $result = True;
         // First check that all values are set
-        if (array_search("", array_slice($this->value, 
+        if (array_search("", array_slice($this->value,
                 0, $this->numberOfChannels)) !== FALSE) {
             if ($this->mustProvide()) {
                 $this->message = 'Some of the values are missing!';
@@ -935,7 +935,7 @@ class NumericalArrayParameter extends NumericalParameter {
           relaxes the condition that the values must be integers.
 */
 class AnyTypeArrayParameter extends NumericalArrayParameter {
-    
+
         /*!
          \var   $possibleValues
          \brief Possible values for AnyTypeArrayParameter
@@ -947,16 +947,16 @@ class AnyTypeArrayParameter extends NumericalArrayParameter {
         \param  $name   Name of the new Parameter
     */
     public function __construct($name) {
-            
+
         parent::__construct($name);
 
                 $possibleValues = array ();
-                
+
                     // Get and set the Parameter possible values
                 $db = new DatabaseConnection;
                 $this->possibleValues = $db->readPossibleValues($this);
     }
-        
+
        /*!
                 \brief  Returns the possible values for the Parameter
                 \return the possible values
@@ -1119,7 +1119,7 @@ class SingleOrMultiChannelParameter extends ChoiceParameter {
     protected function __construct($name) {
         parent::__construct($name);
     }
-    
+
     /*!
         \brief  Checks whether the Parameter is multi-channel
         \return true if the Parameter is multi-channel
@@ -1252,7 +1252,7 @@ class ImageFileFormat extends SingleOrMultiChannelParameter {
             if ($value == NULL) {
                 $value = $this->value();
             }
-            
+
             $db = new DatabaseConnection();
             $result = $db->fileExtensions($value);
             return $result;
@@ -1308,46 +1308,6 @@ class NumberOfChannels extends ChoiceParameter {
 */
 
 /*!
- \class ImageGeometry
- \brief A SingleOrMultiChannelParameter to represent the image geometry
-*/
-class ImageGeometry extends SingleOrMultiChannelParameter {
-
-    /*!
-        \brief  Constructor: creates an empty Parameter
-    */
-    public function __construct() {
-        parent::__construct("ImageGeometry");
-    }
-
-    /*!
-        \brief  Confirms that this is an Image Parameter.
-        \return true
-    */
-    public function isForImage() {
-        return True;
-    }
-
-    /*!
-        \brief  Returns the string representation of the Parameter
-        \return string representation of the Parameter
-    */
-    public function displayString( $numberOfChannels = 0 ) {
-        $result = $this->formattedName( );
-        if ( $this->notSet() ) {
-            $result = $result . "*not set*" . "\n";
-        } else {
-            $result = $result . $this->value . "\n";
-        }
-        return $result;
-    }
-}
-
-/*
-    ============================================================================
-*/
-
-/*!
  \class MicroscopeType
  \brief A ChoiceParameter to represent the microscope type
 */
@@ -1382,7 +1342,7 @@ class MicroscopeType extends ChoiceParameter {
         $result = $db->translationFor($this->name, $this->value);
         return $result;
     }
-    
+
     /*!
         \brief  Returns true if the given microscope type has a license
 
@@ -1408,7 +1368,7 @@ class MicroscopeType extends ChoiceParameter {
             default:
                 return false;
         }
-    }    
+    }
 }
 
 /*
@@ -1907,7 +1867,7 @@ class ZStepSize extends NumericalParameter {
     public function isForCapture() {
         return True;
     }
-        
+
     /*!
         \brief  Checks whether the Parameter is valid
         \return true if the Parameter is valid, false otherwise
@@ -2211,7 +2171,7 @@ class BackgroundOffsetPercent extends AnyTypeArrayParameter {
     }
 
     public function displayString( $numberOfChannels = 0) {
-            
+
         if ( $this->value[ 0 ] == 'auto' ) {
             $name = ' background estimation';
             $value = 'auto';
@@ -2486,7 +2446,7 @@ class ColocChannel extends NumericalArrayParameter {
             parent::__construct("ColocChannel");
     }
 
-        /*! 
+        /*!
          \brief Checks whether the Parameter is valid
          \return    true if the Parameter is valid, false otherwise
         */
@@ -2494,7 +2454,7 @@ class ColocChannel extends NumericalArrayParameter {
             $this->message = '';
             $value = $this->internalValue();
             $result = True;
-            
+
                 /* Do not count empty elements. Do count channel '0'. */
             if (count(array_filter($value, 'strlen')) < 2) {
                 $this->message = "Please select at least 2 channels.";
@@ -2508,14 +2468,14 @@ class ColocChannel extends NumericalArrayParameter {
         \return string representation of the Parameter
     */
     public function displayString( $numberOfChannels = 0 ) {
-            
+
             $result = $this->formattedName( );
-            
+
                 /* Do not count empty elements. Do count channel '0'. */
             $channels = array_filter($this->value, 'strlen');
             $value = implode(", ", $channels);
             $result = $result . $value . "\n";
-            
+
             return $result;
     }
 }
@@ -2533,7 +2493,7 @@ class ColocCoefficient extends AnyTypeArrayParameter {
     public function __construct() {
             parent::__construct("ColocCoefficient");
     }
-        
+
         /*!
          \brief Sets the value of the parameter
          \param $value  Value for the parameter
@@ -2544,10 +2504,10 @@ class ColocCoefficient extends AnyTypeArrayParameter {
                  allowed number of values for a parameter. Thus, a parameter
                  can have 5 values, at most. This is clearly not enough for
                  the 'ColocCoefficient' class. */
-            
+
             $n = count( $value );
             $valueCnt = count($this->possibleValues);
-            
+
             for ( $i = 0; $i < $valueCnt; $i++ ) {
                 if ( $i < $n ) {
                     $this->value[ $i ] = $value[ $i ];
@@ -2560,7 +2520,7 @@ class ColocCoefficient extends AnyTypeArrayParameter {
         /*!
          \brief Dummy function to override the parent 'setNumberOfChannels'.
     */
-        public function setNumberOfChannels( ) 
+        public function setNumberOfChannels( )
         {
                 /* The parent function links the number of channels and the
                  allowed number of values for a parameter. Thus, a parameter
@@ -2574,17 +2534,17 @@ class ColocCoefficient extends AnyTypeArrayParameter {
          \return    string representation of the Parameter
     */
     public function displayString( $numberOfChannels = 0 ) {
-            
+
             $result = $this->formattedName( );
-            
+
                 /* Do not count empty elements. */
             $values = array_filter($this->value, 'strlen');
             $value = implode(", ", $values);
             $result = $result . $value . "\n";
-            
+
             return $result;
     }
-        
+
 }
 
 /*!
@@ -2626,14 +2586,14 @@ class ColocThreshold extends AnyTypeArrayParameter {
          \return    string representation of the Parameter
     */
     public function displayString( $numberOfChannels = 0 ) {
-            
+
             $result = $this->formattedName( );
-            
+
                 /* Do not count empty elements. */
             $channels = array_filter($this->value, 'strlen');
             $value = implode(", ", $channels);
             $result = $result . $value . "\n";
-            
+
             return $result;
     }
 }
@@ -2652,7 +2612,7 @@ class ColocMap extends ChoiceParameter {
     public function __construct() {
             parent::__construct("ColocMap");
     }
-        
+
 }
 
 /*
@@ -2841,7 +2801,7 @@ class StedDepletionMode extends AnyTypeArrayParameter {
 
     /*!
         \brief  Confirms that this is NOT a Microscope Parameter.
-        \brief  We make a distinction between STED parameters and 
+        \brief  We make a distinction between STED parameters and
                 microscope parameters.
         \return true
     */
@@ -2851,7 +2811,7 @@ class StedDepletionMode extends AnyTypeArrayParameter {
 
     /*!
       \brief    Confirms that this is a Sted Parameter.
-      \brief  We make a distinction between STED parameters and 
+      \brief  We make a distinction between STED parameters and
               microscope parameters.
       \return true
     */
@@ -2908,7 +2868,7 @@ class StedSaturationFactor extends NumericalArrayParameter {
 
     /*!
         \brief  Confirms that this is NOT a Microscope Parameter.
-         \brief  We make a distinction between STED parameters and 
+         \brief  We make a distinction between STED parameters and
                 microscope parameters.
         \return true
     */
@@ -2918,7 +2878,7 @@ class StedSaturationFactor extends NumericalArrayParameter {
 
     /*!
       \brief    Confirms that this is a Sted Parameter.
-      \brief  We make a distinction between STED parameters and 
+      \brief  We make a distinction between STED parameters and
       microscope parameters.
       \return true
     */
@@ -2934,7 +2894,7 @@ class StedSaturationFactor extends NumericalArrayParameter {
     public function check() {
         $this->message = '';
         $result = True;
-        
+
         $values = array_slice($this->value,0, $this->numberOfChannels);
 
             // First check that all values are set.
@@ -2957,7 +2917,7 @@ class StedSaturationFactor extends NumericalArrayParameter {
         if ( $result == false ) {
             $this->message = "STED Saturation Factor: " . $this->message;
         }
-        
+
         return $result;
     }
 }
@@ -2981,7 +2941,7 @@ class StedWavelength extends NumericalArrayParameter {
 
     /*!
         \brief  Confirms that this is NOT a Microscope Parameter.
-         \brief  We make a distinction between STED parameters and 
+         \brief  We make a distinction between STED parameters and
                 microscope parameters.
         \return true
     */
@@ -2991,7 +2951,7 @@ class StedWavelength extends NumericalArrayParameter {
 
     /*!
       \brief    Confirms that this is a Sted Parameter.
-      \brief  We make a distinction between STED parameters and 
+      \brief  We make a distinction between STED parameters and
       microscope parameters.
       \return true
     */
@@ -3006,7 +2966,7 @@ class StedWavelength extends NumericalArrayParameter {
     public function check() {
         $this->message = '';
         $result = True;
-        
+
         $values = array_slice($this->value,0, $this->numberOfChannels);
 
             // First check that all values are set.
@@ -3053,7 +3013,7 @@ class StedImmunity extends NumericalArrayParameter {
 
     /*!
         \brief  Confirms that this is NOT a Microscope Parameter.
-         \brief  We make a distinction between STED parameters and 
+         \brief  We make a distinction between STED parameters and
                 microscope parameters.
         \return true
     */
@@ -3063,7 +3023,7 @@ class StedImmunity extends NumericalArrayParameter {
 
     /*!
       \brief    Confirms that this is a Sted Parameter.
-      \brief  We make a distinction between STED parameters and 
+      \brief  We make a distinction between STED parameters and
       microscope parameters.
       \return true
     */
@@ -3078,14 +3038,14 @@ class StedImmunity extends NumericalArrayParameter {
     public function check() {
         $this->message = '';
         $result = True;
-        
+
         $values = array_slice($this->value,0, $this->numberOfChannels);
 
             // First check that all values are set.
             // '0' is a valid entry. Thus, search in 'strict' mode.
         if (array_search("",$values, true) !== FALSE) {
             if ($this->mustProvide()) {
-                $this->message = 'STED immunity fraction: ' . 
+                $this->message = 'STED immunity fraction: ' .
                     'some of the values are missing!';
             } else {
                 $this->message = 'You can omit typing values for this ' .
@@ -3125,7 +3085,7 @@ class Sted3D extends NumericalArrayParameter {
 
     /*!
         \brief  Confirms that this is NOT a Microscope Parameter.
-         \brief  We make a distinction between STED parameters and 
+         \brief  We make a distinction between STED parameters and
                 microscope parameters.
         \return true
     */
@@ -3135,7 +3095,7 @@ class Sted3D extends NumericalArrayParameter {
 
     /*!
       \brief    Confirms that this is a Sted Parameter.
-      \brief  We make a distinction between STED parameters and 
+      \brief  We make a distinction between STED parameters and
       microscope parameters.
       \return true
     */
@@ -3150,7 +3110,7 @@ class Sted3D extends NumericalArrayParameter {
     public function check() {
         $this->message = '';
         $result = True;
-        
+
         $values = array_slice($this->value,0, $this->numberOfChannels);
 
             // First check that all values are set.

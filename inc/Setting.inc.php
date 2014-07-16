@@ -285,7 +285,6 @@ class ParameterSetting extends Setting {
             'IsMultiChannel',
             'ImageFileFormat',
             'NumberOfChannels',
-            'ImageGeometry',
             'MicroscopeType',
             'NumericalAperture',
             'ObjectiveMagnification',
@@ -1561,8 +1560,6 @@ class ParameterSetting extends Setting {
         // pinhole size if the microscope type is 'widefield'.
         foreach ($this->parameter as $parameter) {
             if (!$this->hasPinhole() && $parameter->name() == 'PinholeSize')
-                continue;
-            if ($parameter->name() == 'ImageGeometry')
                 continue;
             if ($parameter->name() == 'ImageFileFormat')
                 continue;
