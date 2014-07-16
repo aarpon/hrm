@@ -164,6 +164,21 @@ class User {
     }
 
     /*!
+    \brief Reload info from the source.
+     */
+    public function reload() {
+
+        // Reload e-mail address
+        $this->emailAddress = "";
+        $this->emailAddress();
+
+        // Reload group
+        $this->group = "";
+        $this->userGroup();
+
+    }
+
+    /*!
       \brief  Checks whether the user is the administrator
       \return true if the user is the administrator
     */
