@@ -1181,8 +1181,6 @@ class DatabaseConnection {
     $inFormat       = $parameter->value();
     $parameter      = $parameterSetting->parameter('PointSpreadFunction');
     $PSF            = $parameter->value();
-    $parameter      = $parameterSetting->parameter('ImageGeometry');
-    $geometry       = $parameter->value();
     $parameter      = $parameterSetting->parameter('MicroscopeType');
     $microscope     = $parameter->value();
     $parameter      = $taskSetting->parameter('OutputFileFormat');
@@ -1192,7 +1190,7 @@ class DatabaseConnection {
 
     $query = "insert into statistics values ('" . $id ."', '" . $owner ."', '" .
         $group . "','" . $startTime . "', '" . $stopTime . "', '" . $inFormat .
-        "', '" . $outFormat . "', '" . $PSF . "', '" . $geometry . "', '" .
+        "', '" . $outFormat . "', '" . $PSF . "', '" .
         $microscope . "', '" . $colocAnalysis . "')";
 
     $this->execute($query);
@@ -1953,7 +1951,6 @@ class DatabaseConnection {
 	switch ( $parameterName ) {
 	  case 'ImageFileFormat' :
 	  case 'NumberOfChannels' :
-	  case 'ImageGeometry':
 	  case 'PointSpreadFunction':
 	  case 'MicroscopeType' :
 	  case 'CoverslipRelativePosition':
