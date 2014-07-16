@@ -234,8 +234,7 @@ include("header.inc.php");
 
 <?php
 
-$rows = $db->query("SELECT * FROM username");
-sort($rows);
+$rows = $userManager->getAllUserDBRows();
 $i = 0;
 foreach ($rows as $row) {
     $name = $row["name"];
@@ -311,11 +310,10 @@ if (!$i) {
 <?php
 
 // All users (independent of their status), including the administrator
-$count = $db->queryLastValue(
-    "SELECT count(*) FROM username WHERE status = 'a' OR status = 'd'");
+$count = $userManager->getTotalNumberOfUsers();
 
 // Active users
-$rows = $db->query("SELECT * FROM username WHERE status = 'a'");
+$rows = $userManager->getAllActiveUserDBRows();
 $emails = array();
 foreach ($rows as $row) {
     $e = trim($row['email']);
@@ -347,37 +345,47 @@ sort($emails);
     </a> all users
 </p>
 
+<?php
+
+    /* Get the number of users with names starting with each of the letters
+    of the alphabet. */
+    $counts = $userManager->getNumberCountPerInitialLetter();
+    $letters = array_keys($counts);
+?>
+
 <form method="post" action="" id="user_management">
     <div><input type="hidden" name="action"/></div>
 </form>
 <table>
     <tr>
         <td colspan="3" class="menu">
+            <div class="line">
             <?php
 
-            $i = 0;
-            echo "                            <div class=\"line\">";
-            $style = " class=\"filled\"";
-            if ($_SESSION['index'] == "all") $style = " class=\"selected\"";
-            echo "[<a href=\"?index=all\"" . $style . ">&nbsp;all&nbsp;</a>]&nbsp;[";
-            while (True) {
-                $c = chr(97 + $i);
-                $style = "";
-                $result = $db->queryLastValue("SELECT * FROM username WHERE name LIKE '"
-                    . $c . "%' AND name NOT LIKE 'admin' AND (status = 'a' OR status = 'd')");
-                if ($_SESSION['index'] == $c) $style = " class=\"selected\"";
-                else if (!$result) $style = " class=\"empty\"";
-                else $style = " class=\"filled\"";
-                echo "<a href=\"?index=" . chr(97 + $i) . "\"" . $style . ">&nbsp;" .
-                    strtoupper($c) . "&nbsp;</a>";
-                if ($i == 25) {
-                    echo "]</div>\n";
-                    break;
-                }
-                $i++;
+            $style = "filled";
+            if ($_SESSION['index'] == "all") {
+                $style = "selected";
             }
-
             ?>
+
+            [<a href="?index=all" class="<?php echo($style); ?>">&nbsp;all&nbsp;</a>]&nbsp;[
+
+            <?php
+            for ($i = 0; $i < count($counts); $i++) {
+                $c = $letters[$i];
+                if ($_SESSION['index'] == $c) {
+                    $style = "selected";
+                } else if ($counts[$c] == 0) {
+                    $style = "empty";
+                } else {
+                    $style = "filled";
+                }
+
+                echo "<a href=\"?index=$c\" class=\"$style\">&nbsp;" .
+                    strtoupper($c) . "&nbsp;</a>";
+            }
+            ?>
+            ]</div>
         </td>
     </tr>
     <tr>
@@ -386,12 +394,11 @@ sort($emails);
     <?php
 
     if ($_SESSION['index'] != "") {
-        $condition = "";
         if ($_SESSION['index'] != "all") {
-            $condition = " WHERE name LIKE '" . $_SESSION['index'] . "%'";
+            $rows = $userManager->getAllUserDBRowsByInitialLetter($_SESSION['index']);
+        } else {
+            $rows = $userManager->getAllActiveUserDBRows();
         }
-        $rows = $db->query("SELECT * FROM username" . $condition);
-        sort($rows);
         $i = 0;
         foreach ($rows as $row) {
             if ($row['name'] != "admin") {

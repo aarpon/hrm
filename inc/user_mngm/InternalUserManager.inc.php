@@ -115,4 +115,79 @@ class InternalUserManager extends AbstractUserManager {
         return False;
     }
 
+    /*!
+    \brief Return all user rows from the database (sorted by user name).
+    \return Array of user rows sorted by user name.
+    */
+    public function getAllUserDBRows() {
+        $db = new DatabaseConnection();
+        $rows = $db->query("SELECT * FROM username ORDER BY name");
+        return $rows;
+    }
+
+    /*!
+    \brief Return all active user rows from the database (sorted by user name).
+    \return Array of active user rows sorted by user name.
+    */
+    public function getAllActiveUserDBRows() {
+        $db = new DatabaseConnection();
+        $rows = $db->query("SELECT * FROM username WHERE status = 'a' ORDER BY name");
+        return $rows;
+    }
+
+    /*!
+    \brief Return all user rows from the database for user names starting
+           by a given letter (sorted by user name).
+    \param $c First letter
+    \return Array of user rows filtered by first letter and sorted by user name.
+    */
+    public function getAllUserDBRowsByInitialLetter($c) {
+        $c = strtolower($c);
+        $db = new DatabaseConnection();
+        $rows = $db->query("SELECT * FROM username WHERE name LIKE '$c%' ORDER BY name");
+        return $rows;
+    }
+
+    /*!
+     \brief Return the total number of users independent of their status (and counting
+            the administrator).
+     \return Number of users
+     */
+    public function getTotalNumberOfUsers() {
+        $db = new DatabaseConnection();
+        $count = $db->queryLastValue(
+            "SELECT count(*) FROM username WHERE 1");
+        return $count;
+    }
+
+    /*!
+     \brief Return a vector of counts of how many users have names starting with
+            each of the letters of the alphabet.
+     \return array of counts
+     */
+    public function getNumberCountPerInitialLetter() {
+
+        // Open database connection
+        $db = new DatabaseConnection();
+
+        // Initialize array of counts
+        $counts = array();
+
+        // Query and store the counts
+        for ($i = 0; $i < 26; $i++) {
+
+            // Initial letter (filter)
+            $c = chr(97 + $i);
+
+            // Get users with name staring by $c
+            $query = "SELECT * FROM username WHERE name LIKE '$c%' AND name != 'admin' AND (status = 'a' OR status = 'd')";
+            $result = $db->query($query);
+
+            // Store the count
+            $counts[$c] = count($result);
+
+        }
+
+        return $counts;
+    }
 }
