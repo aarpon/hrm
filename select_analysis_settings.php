@@ -250,7 +250,7 @@ to accept, reject, and preview them. -->
             </table>
         </div>
         <div id="shareTemplatePickerFooter">
-            <p>Mouseover template names for more information.</p>
+            <p>Mouse over template names for more information.</p>
         </div>
     </div>
 

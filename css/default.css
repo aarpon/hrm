@@ -1906,7 +1906,7 @@ div.StedDeplModeValues {
     padding: 0px;
     font-size: 12px;
     /* background-color: rgb(224, 245, 255); */
-    background-color: #428BCA;
+    background-color: #82BCED;
     position: absolute;
     z-index: 15;
     border: 2px solid #000;
@@ -1952,8 +1952,8 @@ div.StedDeplModeValues {
 }
 
 .tableTitle {
-    border-bottom: 1px solid #428BCA;
-    color: #428BCA;
+    border-bottom: 1px solid #82BCED;
+    color: #82BCED;
     margin-top: 10px;
     font-weight: bold;
 }
