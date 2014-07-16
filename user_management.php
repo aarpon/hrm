@@ -3,7 +3,6 @@
 // Copyright and license notice: see license.txt
 
 require_once(dirname(__FILE__) . "/inc/User.inc.php");
-require_once(dirname(__FILE__) . "/inc/Database.inc.php");
 require_once(dirname(__FILE__) . "/inc/hrm_config.inc.php");
 require_once(dirname(__FILE__) . "/inc/Mail.inc.php");
 require_once(dirname(__FILE__) . "/inc/Util.inc.php");
@@ -98,9 +97,6 @@ if (!$_SESSION['user']->isAdmin()) {
 // Get the UserManager
 $userManager = UserManagerFactory::getUserManager($_SESSION['user']->isAdmin());
 
-// Now we have a valid admin user logon, we can continue
-$db = new DatabaseConnection();
-
 if (isset($_GET['seed'])) {
     if (!$userManager->existsUserRequestWithSeed($_GET['seed'])) {
         header("Location: " . "login.php");
@@ -137,10 +133,12 @@ if (!isset($_SESSION['index'])) {
 $message = "";
 
 if (isset($_POST['accept'])) {
-    $result = $db->updateUserStatus($clean['username'], 'a');
+    $result = $userManager->acceptUser($clean['username']);
     // TODO refactor
     if ($result) {
-        $email = $db->emailAddress($clean['username']);
+        $accepted_user = new User();
+        $accepted_user->setName($clean['username']);
+        $email = $accepted_user->emailAddress();
         $text = "Your account has been activated:\n\n";
         $text .= "\t      Username: " . $clean['username'] . "\n";
         $text .= "\tE-mail address: " . $email . "\n\n";
@@ -157,10 +155,14 @@ if (isset($_POST['accept'])) {
         shell_exec("$userManagerScript create \"" . $clean['username'] . "\"");
     } else $message = "Database error, please inform the administrator";
 } else if (isset($_POST['reject'])) {
-    $email = $db->emailAddress($clean['username']);
-    $result = $db->deleteUser($clean['username']);
+    $user_to_reject = new User();
+    $user_to_reject->setName($clean['username']);
+    $email = $user_to_reject->emailAddress();
+    $result = $userManager->deleteUser($user_to_reject->name());
     // TODO refactor
-    if (!$result) $message = "Database error, please inform the administrator";
+    if (!$result) {
+        $message = "Database error, please inform the administrator";
+    }
     $text = "Your request for an HRM account has been rejected. Please " .
         "contact " . $email_admin . " for any enquiries.\n";
     $mail = new Mail($email_sender);
@@ -170,11 +172,8 @@ if (isset($_POST['accept'])) {
     $mail->send();
 } else if (isset($_POST['annihilate']) && $_POST['annihilate'] == "yes") {
     if ($clean['username'] != "admin") {
-        $result = $db->deleteUser($clean['username']);
-        // TODO refactor
-        if ($result) {
-            shell_exec("$userManagerScript delete \"" . $_POST['username'] . "\"");
-        } else {
+        $result = $userManager->deleteUser($clean['username']);
+        if (! $result) {
             $message = "Database error, please inform the administrator";
         }
     } else {
@@ -190,14 +189,14 @@ if (isset($_POST['accept'])) {
     header("Location: " . "account.php");
     exit();
 } else if (isset($_POST['enable'])) {
-    $result = $db->updateUserStatus($clean['username'], 'a');
+    $result = $userManager->enableUser($clean['username']);
 } else if (isset($_POST['disable'])) {
-    $result = $db->updateUserStatus($clean['username'], 'd');
+    $result = $userManager->disableUser($clean['username']);
 } else if (isset($_POST['action'])) {
     if ($_POST['action'] == "disable") {
-        $result = $db->updateAllUsersStatus('d');
+        $result = $userManager->disableAllUsers();
     } else if ($_POST['action'] == "enable") {
-        $result = $db->updateAllUsersStatus('a');
+        $result = $userManager->enableAllUsers();
     }
 }
 // TODO refactor to here
@@ -397,7 +396,7 @@ sort($emails);
         if ($_SESSION['index'] != "all") {
             $rows = $userManager->getAllUserDBRowsByInitialLetter($_SESSION['index']);
         } else {
-            $rows = $userManager->getAllActiveUserDBRows();
+            $rows = $userManager->getAllUserDBRows();
         }
         $i = 0;
         foreach ($rows as $row) {

@@ -96,18 +96,66 @@ class InternalUserManager extends AbstractUserManager {
     }
 
     /*!
+    \brief Accepts user with given username.
+    \param $username Name of the user to accept.
+    \return True if the user could be accepted; false otherwise.
+    */
+    public function acceptUser($username) {
+        $db = new DatabaseConnection();
+        return ($db->updateUserStatus($username, 'a'));
+    }
+
+    /*!
+    \brief Enables user with given username.
+    \param $username Name of the user to enable.
+    \return True if the user could be enabled; false otherwise.
+    */
+    public function enableUser($username) {
+        $db = new DatabaseConnection();
+        return ($db->updateUserStatus($username, 'a'));
+    }
+
+    /*!
+    \brief Enables all users.
+    \return True if all users could be enabled; false otherwise.
+    */
+    public function enableAllUsers() {
+        $db = new DatabaseConnection();
+        return ($db->updateAllUsersStatus('a'));
+    }
+
+    /*!
+    \brief Disables user with given username.
+    \param $username Name of the user to disable.
+    \return True if the user could be disabled; false otherwise.
+    */
+    public function disableUser($username) {
+        $db = new DatabaseConnection();
+        return ($db->updateUserStatus($username, 'd'));
+    }
+
+    /*!
+    \brief Disables all users.
+    \return True if all users could be disabled; false otherwise.
+    */
+    public function disableAllUsers() {
+        $db = new DatabaseConnection();
+        return ($db->updateAllUsersStatus('d'));
+    }
+
+    /*!
     \brief Deletes a user from the database
     \param	User $user User to be deleted.
     \return	bool True if success; false otherwise
     */
-    public function deleteUser(User $user) {
+    public function deleteUser($username) {
 
         // Delete the user
         $db = new DatabaseConnection();
-        if ($db->deleteUser($user->name())) {
+        if ($db->deleteUser($username)) {
 
             // Delete the user folders
-            $this->deleteUserFolders($user);
+            $this->deleteUserFolders($username);
 
             return True;
         }

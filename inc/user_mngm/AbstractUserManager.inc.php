@@ -125,23 +125,23 @@ abstract class AbstractUserManager {
     \brief Create User data folders.
     \@param User $user User for which to create the folders.
     */
-    public function createUserFolders(User $user) {
+    public function createUserFolders($username) {
 
         // TODO Use the Shell classes!
 
         global $userManagerScript;
-        shell_exec($userManagerScript . " create " . $user->name());
+        shell_exec($userManagerScript . " create " . $username);
     }
 
     /*!
     \brief Delete User data folders.
     \@param User $user User whose folders are to be deleted.
     */
-    public function deleteUserFolders(User $user) {
+    public function deleteUserFolders($username) {
 
         // TODO Use the Shell classes!
 
         global $userManagerScript;
-        shell_exec($userManagerScript . " delete " . $user->name());
+        shell_exec($userManagerScript . " delete " . $username);
     }
 };
