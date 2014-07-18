@@ -520,8 +520,9 @@ $value = $parameter->value();
 
     
     <div id="ZStabilization">
-    <?php
-    if ($_SESSION['task_setting']->isEligibleForStabilization($_SESSION['setting'])) {
+<?php
+    if ($_SESSION['user']->isAdmin()
+        || $_SESSION['task_setting']->isEligibleForStabilization($_SESSION['setting'])) {
 
     ?>
 
