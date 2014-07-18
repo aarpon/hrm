@@ -3741,6 +3741,72 @@ if ($current_revision < $n) {
 }
 
 
+
+// -----------------------------------------------------------------------------
+// Update to revision 13
+// Description: autocrop
+// -----------------------------------------------------------------------------
+$n = 13;
+if ($current_revision < $n) {
+
+
+// -------------------- Add autocrop option ------------------------
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "Autocrop";
+    $record["value"] = "1";
+    $record["translation"] = "Conservative autocrop.";
+    $record["isDefault"] = "f";
+
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .      
+             " WHERE parameter='" . $record['parameter'] .
+             "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {    
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                   "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "Autocrop";
+    $record["value"] = "0";
+    $record["translation"] = "Do not crop the image.";
+    $record["isDefault"] = "t";
+
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .      
+             " WHERE parameter='" . $record['parameter'] .
+             "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {    
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                   "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    //Update revision
+    if(!update_dbrevision($n))
+        return;
+    
+    $current_revision = $n;
+    $msg = "Database successfully updated to revision " . $current_revision . ".";
+    write_message($msg);
+    write_to_log($msg);
+}
+
+
 fclose($fh);
 
 return;
