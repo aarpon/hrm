@@ -728,7 +728,7 @@ class QueueManager {
 	  $id     = $desc->id();
 	  $pid    = $job->pid();
 	  $server = $job->server();
-	  $template = $job->createTemplate();
+	  $template = $job->createHuygensTemplate();
 	  
 	  /* Email destination. */
 	  $user = $desc->owner();
@@ -759,7 +759,7 @@ class QueueManager {
 	  $mailContent .= "------\n\n";
 	  $mailContent .= "What follows is the Huygens Core template executed ";
 	  $mailContent .= "when the error occured:\n\n";
-	  $mailContent .= $job->template();
+	  $mailContent .= $job->getHuTemplate();
 	  $mailContent .= "\n\n-----------------------------------------------";
 	  $mailContent .= "------\n\n";
 
