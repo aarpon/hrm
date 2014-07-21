@@ -41,10 +41,10 @@ class System {
 
       This value has to be set by the developers!
      */
-    const MIN_HUCORE_VERSION_MAJOR = 4;
-    const MIN_HUCORE_VERSION_MINOR = 5;
-    const MIN_HUCORE_VERSION_MAINTENANCE = 1;
-    const MIN_HUCORE_VERSION_PATCH = 1;
+    const MIN_HUCORE_VERSION_MAJOR = 14;
+    const MIN_HUCORE_VERSION_MINOR = 6;
+    const MIN_HUCORE_VERSION_MAINTENANCE = 0;
+    const MIN_HUCORE_VERSION_PATCH = 0;
 
     /* !
       \brief	Returns the HRM version
