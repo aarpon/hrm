@@ -47,3 +47,9 @@ window.helpText[ "default" ] =
   '<p>These parameters comprise the deconvolution algorithm, the ' +
   'signal-to-noise ratio (SNR) of the images, the mode for background ' +
   'estimation, and the stopping criteria.</p>';
+
+window.helpText[ "zstabilization"] =
+  '<p></p>';
+
+window.helpText[ "autocrop"] =
+  '<p></p>';

@@ -3755,7 +3755,7 @@ if ($current_revision < $n) {
     $record = array();
     $record["parameter"] = "Autocrop";
     $record["value"] = "1";
-    $record["translation"] = "Conservative autocrop.";
+    $record["translation"] = "Apply conservative crop";
     $record["isDefault"] = "f";
 
     // Skip it if the row is already there.
@@ -3778,7 +3778,7 @@ if ($current_revision < $n) {
     $record = array();
     $record["parameter"] = "Autocrop";
     $record["value"] = "0";
-    $record["translation"] = "Do not crop the image.";
+    $record["translation"] = "Do not crop the image";
     $record["isDefault"] = "t";
 
     // Skip it if the row is already there.

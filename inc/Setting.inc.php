@@ -1991,6 +1991,7 @@ class TaskSetting extends Setting {
     public function TaskSetting() {
         parent::__construct();
         $parameterClasses = array(
+            'Autocrop',
             'SignalNoiseRatio',
             'BackgroundOffsetPercent',
             'NumberOfIterations',
@@ -2156,6 +2157,18 @@ class TaskSetting extends Setting {
                 $postedParameters["ZStabilization"] == '') {
             $parameter = $this->parameter("ZStabilization");
             $parameter->setValue($postedParameters["ZStabilization"]);
+            $this->set($parameter);
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = False;
+            }
+        }
+
+        // Autocrop
+        if (isset($postedParameters["Autocrop"]) ||
+                $postedParameters["Autocrop"] == '') {
+            $parameter = $this->parameter("Autocrop");
+            $parameter->setValue($postedParameters["Autocrop"]);
             $this->set($parameter);
             if (!$parameter->check()) {
                 $this->message = $parameter->message();
