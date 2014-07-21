@@ -527,7 +527,7 @@ $value = $parameter->value();
     ?>
 
     <fieldset class="setting provided"
-    onmouseover="javascript:changeQuickHelp( '' );" >
+    onmouseover="javascript:changeQuickHelp( 'zstabilization' );" >
     
     <legend>
         <a href="javascript:openWindow(
