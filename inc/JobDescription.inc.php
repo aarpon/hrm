@@ -317,7 +317,7 @@ class JobDescription {
     $compoundJobs = $queue->getCompoundJobs();
     foreach ($compoundJobs as $jobDescription) {
       $job = new Job($jobDescription);
-      $job->createSubJobsOrScript();
+      $job->createSubJobsOrHuTemplate();
     }
   }
 
