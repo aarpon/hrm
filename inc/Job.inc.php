@@ -143,6 +143,7 @@ class Job {
                                   'absolute'       =>'Background absolute value',
                                   'estimation'     =>'Background estimation',
                                   'ratio'          =>'Signal/Noise ratio',
+                                  'autocrop'       =>'Autocrop',
                                   'stabilization'  =>'Z Stabilization');
     }
 
