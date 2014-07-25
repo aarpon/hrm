@@ -23,6 +23,22 @@ class Fileserver {
   /*!
     \var    $files
     \brief  Array of image file names in the user's source directory
+
+    This variable is meant to be accessed via the files() method.
+
+    The variable $files has access modifier 'private' to make sure that
+    clients of this class will only be allowed to access it via the files()
+    method.
+
+    The method files() checks whether $files is NULL, in which case it will
+    scan the src folder and store the resulting file list in $files. Next
+    call to files() will be quicker because the src folder has been scanned
+    already and the $files content is returned.
+
+    Accessing $files directly from other class methods could then cause NULL
+    to be returned if files() has not been called yet!
+
+    Note: To force a rescan of the src folder, please call resetFiles().
   */
   private $files;
 
@@ -292,6 +308,10 @@ class Fileserver {
     \param  $expandSubInages    if true, names of subimages (as in the case of
                                 lif files) are expanded and returned in the
                                 list of file names
+
+    Please notice that this function DOES NOT STORE THE LIST OF FILES. It
+    just returns it!
+
     \return sorted array of file names
   */
   public function listFiles( $expand ) {
@@ -921,7 +941,7 @@ class Fileserver {
                   $zsuffix ++;
                   $testExpand = $uploaddir . "/" . $file_name. "_$zsuffix" ;
                   if ($zsuffix > $zmaxSuffix) {
-                      $err .= "Directory <kbd>".$filename.
+                      $err .= "Directory <kbd>".$file_name.
                           "</kbd> exists, <b>can't store more ".
                           " than $zmaxSuffix versions.</b><br>\n";
                       break;
@@ -2558,8 +2578,8 @@ echo '</body></html>';
             attribute.
   */
   private function condenseTimeSeries() {
-    if (count($this->files)==0) return False;
-    $time_series =  preg_grep("/\w+[0-9]+\.\w+/", $this->files);
+    if (count($this->files())==0) return False;
+    $time_series =  preg_grep("/\w+[0-9]+\.\w+/", $this->files());
     $lastValue = "";
     foreach ($time_series as $key => $value) {
        if ($this->basename($lastValue)==$this->basename($value)) {
@@ -2576,8 +2596,8 @@ echo '</body></html>';
     \todo Refactor
   */
   private function trimTiffSeries() {
-    if (count($this->files)==0) return False;
-    $tiff_series = preg_grep("/[^_]+_(T|t|Z|z|CH|ch)[0-9]+\w+\.\w+/", $this->files);
+    if (count($this->files())==0) return False;
+    $tiff_series = preg_grep("/[^_]+_(T|t|Z|z|CH|ch)[0-9]+\w+\.\w+/", $this->files());
     foreach ($tiff_series as $key => $value) {
 	unset($this->files[$key]);
     }
@@ -2592,8 +2612,8 @@ echo '</body></html>';
     \todo Refactor
   */
   private function trimTiffLeica() {
-    if (count($this->files)==0) return False;
-    $tiff = preg_grep("/[^_]+_(T|t|Z|z|CH|ch)[0-9]+\w+\.\w+/", $this->files, PREG_GREP_INVERT);
+    if (count($this->files())==0) return False;
+    $tiff = preg_grep("/[^_]+_(T|t|Z|z|CH|ch)[0-9]+\w+\.\w+/", $this->files(), PREG_GREP_INVERT);
     foreach ($tiff as $key => $value) {
 	unset($this->files[$key]);
     }
@@ -2605,8 +2625,8 @@ echo '</body></html>';
     \todo Refactor
   */
   private function trimTiff() {
-    if (count($this->files)==0) return False;
-    $tiff_series = preg_grep("/[^_]+_(T|t|Z|z|CH|ch)[0-9]+\w+\.\w+/", $this->files);
+    if (count($this->files())==0) return False;
+    $tiff_series = preg_grep("/[^_]+_(T|t|Z|z|CH|ch)[0-9]+\w+\.\w+/", $this->files());
     foreach ($tiff_series as $key => $value) {
 	unset($this->files[$key]);
     }
@@ -2621,8 +2641,8 @@ echo '</body></html>';
     \brief  Trims STK files
   */
   private function trimStk() {
-    if (count($this->files)==0) return False;
-    $stk = preg_grep("/[^_]+_(T|t)[0-9]+\.\w+/", $this->files, PREG_GREP_INVERT);
+    if (count($this->files())==0) return False;
+    $stk = preg_grep("/[^_]+_(T|t)[0-9]+\.\w+/", $this->files(), PREG_GREP_INVERT);
     foreach ($stk as $key => $value) {
 	unset($this->files[$key]);
     }
@@ -2632,8 +2652,8 @@ echo '</body></html>';
     \brief  Trims STK time series
   */
  private function trimStkSeries() {
-   if (count($this->files)==0) return False;
-   $stk = preg_grep("/[^_]+_(T|t)[0-9]+\.\w+/", $this->files);
+   if (count($this->files())==0) return False;
+   $stk = preg_grep("/[^_]+_(T|t)[0-9]+\.\w+/", $this->files());
    foreach ($stk as $key => $value) {
        unset($this->files[$key]);
    }
@@ -2653,11 +2673,11 @@ echo '</body></html>';
     \brief Condensed Leica TIFF series to the first file in the series
   */
   private function condenseTiffLeica() {
-    if (count($this->files)==0) {
+    if (count($this->files())==0) {
         return False;
     }
 
-    $tiff_series =  preg_grep("/[^_]+_(T|t|Z|z|CH|ch)[0-9]+\w+\.ti(f{1,2})$/i", $this->files);
+    $tiff_series =  preg_grep("/[^_]+_(T|t|Z|z|CH|ch)[0-9]+\w+\.ti(f{1,2})$/i", $this->files());
     $baseNames = array();
     foreach ($tiff_series as $key => $value) {
        $currentBaseName = $this->leicaStyleNumberingBasename($value);
@@ -2685,11 +2705,11 @@ echo '</body></html>';
     \brief  Condensed STK time series series to the first file in the series
   */
   private function condenseStkSeries() {
-    if (count($this->files) == 0) {
+    if (count($this->files()) == 0) {
       return False;
     }
 
-    $stk_series = preg_grep("/[^_]+_(T|t)[0-9]+\.stk$/i", $this->files);
+    $stk_series = preg_grep("/[^_]+_(T|t)[0-9]+\.stk$/i", $this->files());
     $baseNames = array();
     foreach ($stk_series as $key => $value) {
         $currentBaseName = $this->stkSeriesBasename($value);
