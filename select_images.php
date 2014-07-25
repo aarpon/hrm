@@ -134,8 +134,8 @@ function filterImages (format,series) {
     var autoseries = document.getElementById(\"autoseries\");
 ";
 
-        /* For each file, create javascript code for when the file
-         belongs to a series and for when it doesn't. */
+    /* For each file, create javascript code for when the file
+    belongs to a series and for when it doesn't. */
     foreach ($allFiles as $key => $file) {
 
         if ($_SESSION['fileserver']->isPartOfFileSeries($file)) {
@@ -148,22 +148,28 @@ function filterImages (format,series) {
 
             if (in_array($file,$condensedSeries)) {
                 $generatedScript .= "
-                  if(checkAgainstFormat(\"$file\", selectedFormat)) {
-                     var selectItem = document.createElement('option');
-                     selectItem.text = \"$file\";
-                     selectObject.add(selectItem,null);
+                  if(checkAgainstFormat('$file', selectedFormat)) {
+                    var selectItem = document.createElement('option');
+                    var titleAttr = document.createAttribute('title');
+                    titleAttr.value = '$file';
+                    selectItem.setAttributeNode(titleAttr);
+                    selectItem.text = '$file';
+                    selectObject.add(selectItem,null);
                   }
-                    ";
+                  ";
             }
             $generatedScript .= "
 
               } else {
 
                   // Do not load file series automatically.
-                  if(checkAgainstFormat(\"$file\", selectedFormat)) {
-                     var selectItem = document.createElement('option');
-                     selectItem.text = \"$file\";
-                     selectObject.add(selectItem,null);
+                  if(checkAgainstFormat('$file', selectedFormat)) {
+                    var selectItem = document.createElement('option');
+                    var titleAttr = document.createAttribute('title');
+                    titleAttr.value = '$file';
+                    selectItem.setAttributeNode(titleAttr);
+                    selectItem.text = '$file';
+                    selectObject.add(selectItem,null);
                   }
               }
               ";
@@ -172,10 +178,13 @@ function filterImages (format,series) {
             $generatedScript .= "
 
                // File does not belong to a file series.
-               if(checkAgainstFormat(\"$file\", selectedFormat)) {
-                   var selectItem = document.createElement('option');
-                   selectItem.text = \"$file\";
-                   selectObject.add(selectItem,null);
+               if(checkAgainstFormat('$file', selectedFormat)) {
+                 var selectItem = document.createElement('option');
+                 var titleAttr = document.createAttribute('title');
+                 titleAttr.value = '$file';
+                 selectItem.setAttributeNode(titleAttr);
+                 selectItem.text = '$file';
+                 selectObject.add(selectItem,null);
                }
                ";
         }
