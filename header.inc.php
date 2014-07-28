@@ -28,12 +28,10 @@ if (isset($meta)) {
     <link rel="stylesheet" href="scripts/jqTree/jqtree.css">
     <link rel="stylesheet" href="scripts/jquery-ui/jquery-ui-1.9.1.custom.css">
 
-    <!-- Include jQuery --> 
+    <!-- Include jQuery -->
     <script type="text/javascript" src="scripts/jquery-1.8.3.min.js"></script>
-    
-    <script type="text/javascript" src="scripts/common.js"></script>
-    <script type="text/javascript" src="scripts/omero.js"></script>
 
+    <script type="text/javascript" src="scripts/common.js"></script>
 
 <?php
 
@@ -79,7 +77,7 @@ if (isset($generatedScript)) {
 ?>
 
     <script type="text/javascript"><?php echo $generatedScript ?></script>
-    
+
 <?php
 
 }
@@ -96,9 +94,9 @@ if (isset($generatedScript)) {
         echo '@import url("css/default.css");';
     }
 ?>
-      
+
     </style>
-    
+
 </head>
 
 <body>

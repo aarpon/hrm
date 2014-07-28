@@ -294,7 +294,7 @@ class JobDescription {
     $queue = new JobQueue();
     $result = $result && $queue->queueJob($this);
     if (!$result) {
-      $this->message = "create job - database error!";
+      $this->message = "Could not create job!";
     }
     return $result;
   }

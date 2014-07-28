@@ -2,15 +2,9 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
-/*!
-  \var 		$adodb
-  \brief	Location of /adodb/adodb.inc.php
-*/
-$adodb = dirname(__FILE__) . "/extern/adodb5/adodb.inc.php";
-
-require_once( "hrm_config.inc.php" );
-require_once( "Util.inc.php" );
-require_once( $adodb );
+require_once(dirname(__FILE__) . "/hrm_config.inc.php" );
+require_once(dirname(__FILE__) . "/Util.inc.php" );
+require_once(dirname(__FILE__) . "/extern/adodb5/adodb.inc.php");
 
 /*!
 	\class	DatabaseConnection
@@ -219,7 +213,10 @@ class DatabaseConnection {
   	\return	$success	True if success; false otherwise
   */
   public function addNewUser($username, $password, $email, $group, $status) {
-	$query = "INSERT INTO username (name, password, email, research_group, status) ".
+      $username = mysql_real_escape_string($username);
+      $email = mysql_real_escape_string($email);
+      $group = mysql_real_escape_string($group);
+      $query = "INSERT INTO username (name, password, email, research_group, status) ".
                         "VALUES ('".$username."', ".
                                 "'".md5($password)."', ".
                                 "'".$email."', ".
@@ -270,6 +267,39 @@ class DatabaseConnection {
 	  return false;
 	}
   }
+
+    /*!
+    \brief	Updates an existing user in the database (all parameters are
+            expected to be already validated!)
+
+    The last access time will be updated as well.
+
+    \param	$username  	The name of the user (used to query)
+    \param	$email  	E-mail address
+    \param	$group  	Research group
+
+    \return	$success	True if success; false otherwise
+    */
+    public function updateUserNoPassword($username, $email, $group) {
+
+        if ($email == "" || $group=="") {
+            report("User data update: e-mail and group cannot be empty! " .
+                "No changes to the database!", 0);
+            return false;
+        }
+
+        // Build query
+        $query = "UPDATE username SET email ='" . $email . "', " .
+                "research_group ='" . $group . "' " .
+                "WHERE name = '" . $username . "';";
+
+        $result = $this->execute($query);
+        if ( $result ) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
   /*!
 	\brief	Updates the status of an existing user in the database (username
@@ -420,14 +450,94 @@ class DatabaseConnection {
     return $result;
   }
 
-  /*!
-	\brief	Loads the parameter values for a setting and returns a copy of
-			the setting with the loaded parameter values. If a value starts
-			with # it is considered to be an array with the first value at
-			the index 0
-	\param	$settings	Setting object to be loaded
-	\return	$settings object with loaded values
-  */
+    /*!
+  \brief	Saves the parameter values of the setting object into the database.
+          If the setting already exists, the old values are overwritten,
+          otherwise a new setting is created
+  \param	$settings	Settings object to be saved
+  \param  $isShare    Boolean (default = False): True if the setting is to
+                      be saved to the share table, False if it is a standard
+                      save.
+  \return	true if saving was successful, false otherwise
+*/
+    public function saveSharedParameterSettings($settings, $targetUserName) {
+        $owner = $settings->owner();
+        $original_user = $owner->name();
+        $name = $settings->name();
+        $new_owner = new User();
+        $new_owner->setName($targetUserName);
+        $settings->setOwner($new_owner);
+        $settingTable = $settings->sharedTable();
+        $table = $settings->sharedParameterTable();
+        $result = True;
+        if (!$this->existsSharedSetting($settings)) {
+            $query = "insert into $settingTable " .
+                "(owner, previous_owner, sharing_date, name) values " .
+                "('$targetUserName', '$original_user', CURRENT_TIMESTAMP, '$name')";
+            $result = $result && $this->execute($query);
+        }
+
+        if (!$result) {
+            return False;
+        }
+
+        // Get the Id
+        $query = "select id from $settingTable where " .
+            "owner='$targetUserName' " .
+            "AND previous_owner='$original_user' " .
+            "AND name='$name'";
+        $id = $this->queryLastValue($query);
+        if (! $id) {
+            return False;
+        }
+
+        // Add the parameters
+        foreach ($settings->parameterNames() as $parameterName) {
+
+            $parameter = $settings->parameter($parameterName);
+            $parameterValue = $parameter->internalValue();
+
+            if (is_array($parameterValue)) {
+                // Before, # was used as a separator, but the first element with
+                // index zero was always NULL because channels started their indexing
+                // at one. To keep backwards compatibility with the database, we use
+                // # now as a channel marker, and even the first channel has a # in
+                // front of its value.
+                // "/" separator is used to mark range values for signal to noise ratio
+
+                /*!
+                  \todo Currently there are not longer "range values" (values
+                  separated by /). In the future they will be reintroduced.
+                  We leave the code in place.
+                */
+                if (is_array($parameterValue[0])) {
+                    for ($i = 0; $i < 5; $i++) {
+                        if ($parameterValue[$i] != null) {
+                            $parameterValue[$i] = implode("/", array_filter($parameterValue[$i]));
+                        }
+                    }
+                }
+                $parameterValue = "#".implode("#", $parameterValue);
+            }
+
+            $query = "insert into $table " .
+                "(setting_id, owner, setting, name, value) " .
+                "values ('$id', '$targetUserName', '$name', " .
+                "'$parameterName', '$parameterValue')";
+            $result = $result && $this->execute($query);
+        }
+
+        return $result;
+    }
+
+    /*!
+      \brief	Loads the parameter values for a setting and returns a copy of
+              the setting with the loaded parameter values. If a value starts
+              with # it is considered to be an array with the first value at
+              the index 0
+      \param	$settings	Setting object to be loaded
+      \return	$settings object with loaded values
+    */
   public function loadParameterSettings($settings) {
     $user = $settings->owner();
     $user = $user->name();
@@ -492,6 +602,294 @@ class DatabaseConnection {
     return $settings;
   }
 
+    /*!
+      \brief	Loads the parameter values for a setting and returns a copy of
+              the setting with the loaded parameter values. If a value starts
+              with # it is considered to be an array with the first value at
+              the index 0
+      \param	$id	Setting id
+      \param	$id	Setting id
+      \return	$settings object with loaded values
+    */
+    public function loadSharedParameterSettings($id, $type) {
+
+        // Get the correct objects
+        switch ($type) {
+
+            case "parameter":
+
+                $settingTable = ParameterSetting::sharedTable();
+                $table = ParameterSetting::sharedParameterTable();
+                $settings = new ParameterSetting();
+                break;
+
+            case "task":
+
+                $settingTable = TaskSetting::sharedTable();
+                $table = TaskSetting::sharedParameterTable();
+                $settings = new TaskSetting();
+                break;
+
+            case "analysis":
+
+                $settingTable = AnalysisSetting::sharedTable();
+                $table = AnalysisSetting::sharedParameterTable();
+                $settings = new AnalysisSetting();
+                break;
+
+            default:
+
+                throw new Exception("bad value for type!");
+        }
+
+        // Get the setting info
+        $query = "select * from $settingTable where id=$id;";
+        $response = $this->queryLastRow($query);
+        if (!$response) {
+            return NULL;
+        }
+
+        // Fill the setting
+        $settings->setName($response["name"]);
+        $user = new User();
+        $user->setName($response["owner"]);
+        $settings->setOwner($user);
+
+        // Load from shared table
+        foreach ($settings->parameterNames() as $parameterName) {
+            $parameter = $settings->parameter($parameterName);
+            $query = "select value from $table where setting_id=$id and name='$parameterName'";
+            $newValue = $this->queryLastValue($query);
+            if ($newValue == NULL) {
+                // See if the Parameter has a usable default
+                $newValue = $parameter->defaultValue( );
+                if ($newValue == NULL) {
+                    continue;
+                }
+            }
+            if ($newValue{0}=='#') {
+                if ( strcmp( $parameterName, "ExcitationWavelength" ) != 0 ||
+                    strcmp( $parameterName, "EmissionWavelength" ) != 0 ||
+                    strcmp( $parameterName, "SignalNoiseRatio" ||
+                        strcmp( $parameterName, "BackgroundOffsetPercent" ) != 0) != 0 ) {
+                    $newValue = substr($newValue,1);
+                }
+                $newValues = explode("#", $newValue);
+                if (strcmp( $parameterName, "PSF" ) != 0 && strpos($newValue, "/")) {
+                    $newValue = array();
+                    for ($i = 0; $i < count($newValues); $i++) {
+                        //$val = explode("/", $newValues[$i]);
+                        //$range = array(NULL, NULL, NULL, NULL);
+                        //for ($j = 0; $j < count($val); $j++) {
+                        //  $range[$j] = $val[$j];
+                        //}
+                        //$newValue[] = $range;
+                        /*!
+                          \todo Currently there are not longer "range values" (values
+                                separated by /). In the future they will be reintroduced.
+                                We leave the code in place.
+                        */
+                        if (strpos($newValues[$i], "/")) {
+                            $newValue[] = explode("/", $newValues[$i]);
+                        }
+                        else {
+                            $newValue[] = array($newValues[$i]);
+                        }
+                    }
+                }
+                else {
+                    $newValue = $newValues;
+                }
+            }
+            //$shiftedNewValue = array(1 => NULL, 2 => NULL, 3 => NULL, 4 => NULL, 5 => NULL);
+            //if (is_array($newValue)) {
+            //  // start array at 1
+            //  for ($i = 1; $i <= count($newValue); $i++) {
+            //    $shiftedNewValue[$i] = $newValue[$i - 1];
+            //  }
+            //}
+            //else $shiftedNewValue = $newValue;
+            $parameter->setValue($newValue);
+            $settings->set($parameter);
+        }
+        return $settings;
+    }
+
+    /*!
+      \brief	Returns the list of shared templates with the given user.
+      \param	$username	Name of the user for whom to query for shared templates
+      \param    $table      Shared table to query
+      \return	list of shared jobs
+    */
+    public function getTemplatesSharedWith($username, $table) {
+        $query = "SELECT * FROM $table WHERE owner='$username'";
+        $result = $this->query($query);
+        return $result;
+    }
+
+    /*!
+      \brief	Returns the list of shared templates by the given user.
+      \param	$username	Name of the user for whom to query for shared templates
+      \param    $table      Shared table to query
+      \return	list of shared jobs
+    */
+    public function getTemplatesSharedBy($username, $table) {
+        $query = "SELECT * FROM $table WHERE previous_owner='$username'";
+        $result = $this->query($query);
+        return $result;
+    }
+
+    /*!
+      \brief	Copies the relevant rows from shared- to user- tables.
+      \param    $id          ID of the setting to be copied
+      \param    $sourceSettingTable Setting table to copy from
+      \param    $sourceParameterTable Parameter table to copy from
+      \param    $destSettingTable Setting table to copy to
+      \param    $destParameterTable Parameter table to copy to
+      \return	True if copying was successful; false otherwise.
+    */
+    public function copySharedTemplate($id, $sourceSettingTable,
+            $sourceParameterTable, $destSettingTable, $destParameterTable) {
+
+        // Get the name of the previous owner (the one sharing the setting).
+        $query = "select previous_owner, owner, name from $sourceSettingTable where id=$id";
+        $rows = $this->queryLastRow($query);
+        if (False === $rows) {
+            return False;
+        }
+        $previous_owner = $rows["previous_owner"];
+        $owner = $rows["owner"];
+        $setting_name = $rows["name"];
+
+        // Compose the new name of the setting
+        $out_setting_name = $previous_owner  . "_" . $setting_name;
+
+        // Check if a setting with this name already exists in the target tables
+        $query = "select name from $destSettingTable where " .
+            "name='$out_setting_name' and owner='$owner'";
+        if ($this->queryLastValue($query)) {
+
+            // The setting already exists; we try adding numerical indices
+            $n = 1; $original_out_setting_name = $out_setting_name;
+            while (1) {
+
+                $test_name = $original_out_setting_name . "_" . $n++;
+                $query = "select name from $destSettingTable where name='$test_name' and owner='$owner'";
+                if (! $this->queryLastValue($query)) {
+                    $out_setting_name = $test_name;
+                    break;
+                }
+            }
+
+        }
+
+        // Get all rows from source table for given setting id
+        $query = "select * from $sourceParameterTable where setting_id=$id";
+        $rows = $this->query($query);
+        if (count($rows) == 0) {
+            return False;
+        }
+
+        // Now add the rows to the destination table
+        $ok = True;
+        $record = array();
+        $this->connection->BeginTrans();
+        foreach ($rows as $row) {
+            $record["owner"] = $row["owner"];
+            $record["setting"] = $out_setting_name;
+            $record["name"] = $row["name"];
+            $record["value"] = $row["value"];
+            $insertSQL = $this->connection->GetInsertSQL($destParameterTable,
+                $record);
+            $status = $this->connection->Execute($insertSQL);
+            $ok &= !(false === $status);
+            if (! $ok) {
+                break;
+            }
+        }
+
+        // If everything went okay, we commit the transaction; otherwise we roll
+        // back
+        if ($ok) {
+            $this->connection->CommitTrans();
+        } else {
+            $this->connection->RollbackTrans();
+            return False;
+        }
+
+        // Now add the setting to the setting table
+        $query = "select * from $sourceSettingTable where id=$id";
+        $rows = $this->query($query);
+        if (count($rows) != 1) {
+            return False;
+        }
+
+        $ok = True;
+        $this->connection->BeginTrans();
+        $record = array();
+        $row = $rows[0];
+        $record["owner"] = $row["owner"];
+        $record["name"] = $out_setting_name;
+        $record["standard"] = 'f';
+        $insertSQL = $this->connection->GetInsertSQL($destSettingTable,
+            $record);
+        $status = $this->connection->Execute($insertSQL);
+        $ok &= !(false === $status);
+
+        if ($ok) {
+            $this->connection->CommitTrans();
+        } else {
+            $this->connection->RollbackTrans();
+            return False;
+        }
+
+        // Now we can delete the records from the source tables. Even if it
+        // if it fails we do not roll back, since the parameters were copied
+        // successfully.
+
+        // Delete setting entry
+        $query = "delete from $sourceSettingTable where id=$id";
+        $status = $this->connection->Execute($query);
+        if (false === $status) {
+            return False;
+        }
+
+        // Delete parameter entries
+        $query = "delete from $sourceParameterTable where setting_id=$id";
+        $status = $this->connection->Execute($query);
+        if (false === $status) {
+            return False;
+        }
+
+        return True;
+    }
+
+    /*!
+      \brief	Delete the relevant rows from the shared tables.
+      \param    $id          ID of the setting to be deleted
+      \param    $sourceSettingTable Setting table to copy from
+      \param    $sourceParameterTable Parameter table to copy from
+      \return	True if deleting was successful; false otherwise.
+    */
+    public function deleteSharedTemplate($id, $sourceSettingTable,
+                                       $sourceParameterTable) {
+
+        // Initialize success
+        $ok = True;
+
+        // Delete setting entry
+        $query = "delete from $sourceSettingTable where id=$id";
+        $status = $this->connection->Execute($query);
+        $ok &= !(false === $status);
+
+        // Delete parameter entries
+        $query = "delete from $sourceParameterTable where setting_id=$id";
+        $status = $this->connection->Execute($query);
+        $ok &= !(false === $status);
+
+        return $ok;
+    }
+
   /*!
 	\brief	Updates the default entry in the database according to the default
 			value in the setting
@@ -555,6 +953,26 @@ class DatabaseConnection {
     return $result;
   }
 
+    /*!
+      \brief	Checks whether parameters are already stored for a given shared
+                setting
+      \param	$settings	Settings object to be used to check for existence in
+                          the database
+      \return	true if the parameters exist in the database; false otherwise
+    */
+    public function existsSharedParametersFor($settings) {
+        $owner = $settings->owner();
+        $user = $owner->name();
+        $name = $settings->name();
+        $table = $settings->sharedParameterTable();
+        $query = "select name from $table where owner='" . $user . "' and setting='" . $name ."' LIMIT 1";
+        $result = True;
+        if (!$this->queryLastValue($query)) {
+            $result = False;
+        }
+        return $result;
+    }
+
   /*!
 	\brief	Checks whether settings exist in the database for a given owner
 	\param	$settings	Settings object to be used to check for existance in
@@ -574,6 +992,26 @@ class DatabaseConnection {
     }
     return $result;
   }
+
+    /*!
+      \brief	Checks whether settings exist in the database for a given owner
+      \param	$settings	Settings object to be used to check for existence in
+                          the database (the name of the owner must be set in the
+                          settings)
+      \return	true if the settings exist in the database; false otherwise
+    */
+    public function existsSharedSetting($settings) {
+        $owner = $settings->owner();
+        $user = $owner->name();
+        $name = $settings->name();
+        $table = $settings->sharedTable();
+        $query = "select standard from $table where owner='" . $user . "' and name='" . $name ."' LIMIT 1";
+        $result = True;
+        if (!$this->queryLastValue($query)) {
+            $result = False;
+        }
+        return $result;
+    }
 
   /*!
 	\brief	Adds all files for a given job id and user to the database
@@ -738,13 +1176,11 @@ class DatabaseConnection {
     $user     = $desc->owner();
     $owner    = $user->name();
     $group    = $user->userGroup($owner);
-    
+
     $parameter      = $parameterSetting->parameter('ImageFileFormat');
     $inFormat       = $parameter->value();
     $parameter      = $parameterSetting->parameter('PointSpreadFunction');
     $PSF            = $parameter->value();
-    $parameter      = $parameterSetting->parameter('ImageGeometry');
-    $geometry       = $parameter->value();
     $parameter      = $parameterSetting->parameter('MicroscopeType');
     $microscope     = $parameter->value();
     $parameter      = $taskSetting->parameter('OutputFileFormat');
@@ -754,7 +1190,7 @@ class DatabaseConnection {
 
     $query = "insert into statistics values ('" . $id ."', '" . $owner ."', '" .
         $group . "','" . $startTime . "', '" . $stopTime . "', '" . $inFormat .
-        "', '" . $outFormat . "', '" . $PSF . "', '" . $geometry . "', '" .
+        "', '" . $outFormat . "', '" . $PSF . "', '" .
         $microscope . "', '" . $colocAnalysis . "')";
 
     $this->execute($query);
@@ -953,7 +1389,7 @@ class DatabaseConnection {
             $result[] = end($row);
         }
     }
-    
+
     return $result;
   }
 
@@ -1052,7 +1488,7 @@ class DatabaseConnection {
   public function getSeriesModeForId($id) {
     $query = "select autoseries from job_files where job = '" . $id . "'";
     $result = $this->queryLastValue($query);
-    
+
     return $result;
   }
 
@@ -1077,7 +1513,7 @@ class DatabaseConnection {
     $row = $this->Execute( $query )->FetchRow( );
     return $row[ 0 ];
   }
-  
+
   /*!
 	\brief	Returns the name of the user who created the job with given id
 	\param	$id	String	id of the job
@@ -1118,7 +1554,7 @@ class DatabaseConnection {
               "delete from job_task_setting where name='$id'");
     return $result;
   }
- 
+
   /*!
     \brief	Returns the path to hucore on given host
     \param	$host	String	Host name
@@ -1423,6 +1859,18 @@ class DatabaseConnection {
   }
 
   /*!
+    \brief  Return the list of known users.
+    \param  String User name to filter out from the list (optional).
+    \return Array of users.
+    */
+    public function getUserList($name) {
+        $query = "select name from username where name != '" . $name . "' " .
+            " and name != 'admin';";
+        $result = $this->query($query);
+        return $result;
+    }
+
+  /*!
     \brief	Get the name of the user who owns a job with given id
     \param	$id	Job id
     \return	name of the user who owns the job
@@ -1503,7 +1951,6 @@ class DatabaseConnection {
 	switch ( $parameterName ) {
 	  case 'ImageFileFormat' :
 	  case 'NumberOfChannels' :
-	  case 'ImageGeometry':
 	  case 'PointSpreadFunction':
 	  case 'MicroscopeType' :
 	  case 'CoverslipRelativePosition':
@@ -1570,7 +2017,7 @@ class DatabaseConnection {
    \return  Boolean: true if the module is supported by the license.
   */
   public function hasLicense ( $feature ) {
-      
+
       $query = "SELECT feature FROM hucore_license WHERE " .
           "feature LIKE '" . $feature . "' LIMIT 1;";
 
@@ -1579,14 +2026,14 @@ class DatabaseConnection {
       } else {
           return true;
       }
-  }    
+  }
 
  	/*!
 		\brief	Checks whether Huygens Core has a valid license
 		\return	true if the license is valid, false otherwise
     */
   public function hucoreHasValidLicense( ) {
-      
+
       // We (ab)use the hasLicense() method
       return ( $this->hasLicense("freeware") == false);
   }
@@ -1612,8 +2059,8 @@ class DatabaseConnection {
   */
   public function storeLicenseDetails ( $licDetails ) {
 
-    $licStored = true;  
-      
+    $licStored = true;
+
     // Make sure that the hucore_license table exists.
     $tables = $this->connection->MetaTables("TABLES");
     if (!in_array("hucore_license", $tables) ) {
@@ -1647,7 +2094,7 @@ class DatabaseConnection {
             default:
                 report("Licensed feature: $feature", 1);
         }
-        
+
         $query = "INSERT INTO hucore_license (feature) ".
                  "VALUES ('". $feature ."')";
         $result = $this->execute($query);
@@ -1660,7 +2107,7 @@ class DatabaseConnection {
         }
     }
 
-    return $licStored;    
+    return $licStored;
   }
 
   /*!
@@ -1719,6 +2166,25 @@ class DatabaseConnection {
 	}
 
 	return true;
+
+  }
+
+  /*!
+    \brief  Checks whether a user with a given seed exists in the database
+
+    If a user requests an account, his username is added to the database with
+    a random seed as status.
+
+    \return true if a user with given seed exists, false otherwise
+  */
+  public function existsUserRequestWithSeed($seed) {
+      $query = "SELECT status FROM username WHERE status = '" . $seed . "'";
+      $value = $this->queryLastValue($query);
+      if ($value == false) {
+          return false;
+      } else {
+          return ( $value == $seed );
+      }
 
   }
 

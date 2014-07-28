@@ -45,7 +45,7 @@ function showFileBrowser() {
     }
     $file_buttons = array();
     $file_buttons[] = "update";
-    
+
     $additionalHTMLElements = "
              <!-- SNR estimation algorithm -->
              <fieldset class=\"setting\"
@@ -59,32 +59,32 @@ function showFileBrowser() {
 
                  <select name=\"SNREstimationAlgorithm\" >
                  ";
-    
+
     $algorithm = "";
     if (isset($_POST["SNREstimationAlgorithm"])) {
         $algorithm = $_POST["SNREstimationAlgorithm"];
     }
-    
+
     $selected = "";
     if ($algorithm == "old") {
-        $selected = "selected=\"selected\""; 
+        $selected = "selected=\"selected\"";
     }
-    
+
     $additionalHTMLElements .= "
         <option value=\"old\" $selected>Classic estimator</option>";
-  
+
     $selected = "";
     if ($algorithm == "new") {
-        $selected = "selected=\"selected\""; 
+        $selected = "selected=\"selected\"";
     }
-    
+
     $additionalHTMLElements .= "
         <option value=\"new\" $selected>New estimator (beta)</option>";
-    
-    $additionalHTMLElements .= "        
+
+    $additionalHTMLElements .= "
           </select>
         </fieldset>
-        <p />";
+        <p>&nbsp;</p>";
 
     $control_buttons = "
         <input type=\"button\" value=\"\" class=\"icon up\"
@@ -199,14 +199,14 @@ function estimateSnrFromFile($file) {
     }
 
 
-    // Build the call to HuCore to estimate the SNR value with one of the 
+    // Build the call to HuCore to estimate the SNR value with one of the
     // two algorithms
     if (isset($_POST['SNREstimationAlgorithm'])) {
         $algorithm = $_POST['SNREstimationAlgorithm'];
     } else {
         $algorithm = "old";
     }
-    
+
     $opt = "-basename \"$basename\" -src \"$psrc\" -dest \"$pdest\" ".
         "-returnImages \"0.5 0.71 1 1.71 \" -snrVersion \"$algorithm\" ".
         "-series $series $extra";
@@ -229,7 +229,7 @@ function estimateSnrFromFile($file) {
 
     <div id="content">
       <div id="output" >
-        <h3><img alt="SNR" src="./images/results_title.png" 
+        <h3><img alt="SNR" src="./images/results_title.png"
                  width="40" />&nbsp;&nbsp;Estimating SNR
         </h3>
         <fieldset>

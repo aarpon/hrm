@@ -180,6 +180,26 @@ abstract class BaseSettingEditor {
     }
 
     /*!
+      \brief  Copies the selected setting to the share table for the given
+              recipients.
+      \param  $templateName Name of the template to copy,
+      \param  $recipients Array of user names.
+      \return	true if the copy was successful, false otherwise
+    */
+    public function shareSelectedSetting($templateName, $recipients) {
+        $settings = $this->settings();
+        if (! array_key_exists($templateName, $settings)) {
+            return False;
+        }
+        foreach ($recipients as $recipient) {
+            $setting = clone $settings[$templateName];
+            $result = $setting->shareWith($recipient);
+        }
+        $this->message = $setting->message();
+        return $result;
+    }
+
+    /*!
       \brief	Creates a new Setting in the database and copies
               the values from a public Setting
 
@@ -244,7 +264,7 @@ abstract class BaseSettingEditor {
     */
     public function makeSelectedSettingDefault() {
         if (!$this->checkSelectedSetting()) {
-            $this->message = 
+            $this->message =
                 "Please select a setting in the list before pressing the button!";
             return False;
         }
@@ -316,13 +336,13 @@ abstract class BaseSettingEditor {
             $names[] = $setting->name();
         }
         if (trim($name) == '') {
-            $this->message = 
+            $this->message =
                 "Please enter a name for the setting and try again!";
             return False;
         }
         if (in_array($name, $names)) {
-            $this->message = 
-                "A setting with the name $name already exists. " . 
+            $this->message =
+                "A setting with the name $name already exists. " .
                     "Please enter another name!";
             return False;
         }

@@ -55,12 +55,14 @@ PHP:          $params[0] := "ExcitationWavelength"
 
 */
 
-require_once '../inc/User.inc.php';
-require_once '../inc/JobQueue.inc.php';
-require_once '../inc/Database.inc.php';
-require_once '../inc/System.inc.php';
-require_once '../inc/Mail.inc.php';
-require_once '../inc/Parameter.inc.php';
+require_once(dirname(__FILE__) . '/../inc/User.inc.php');
+require_once(dirname(__FILE__) . '/../inc/JobQueue.inc.php');
+require_once(dirname(__FILE__) . '/../inc/Database.inc.php');
+require_once(dirname(__FILE__) . '/../inc/System.inc.php');
+require_once(dirname(__FILE__) . '/../inc/Mail.inc.php');
+require_once(dirname(__FILE__) . '/../inc/Parameter.inc.php');
+require_once(dirname(__FILE__) . '/../inc/SettingEditor.inc.php');
+require_once(dirname(__FILE__) . '/../inc/Setting.inc.php');
 
 // This is not strictly necessary for the Ajax communication, but will be
 // necessary for accessing session data to create the response.
@@ -84,7 +86,8 @@ if (!isset($_POST)) {
 
 // Do we jave a JSON-RPC 2.0 request? We do NOT test for the value of id.
 if (!(isset($_POST['id']) &&
-        isset($_POST['jsonrpc']) && $_POST['jsonrpc'] == "2.0")) {
+    isset($_POST['jsonrpc']) && $_POST['jsonrpc'] == "2.0")
+) {
 
     // Invalid JSON-RPC 2.0 call
     die("Invalid JSON-RPC 2.0 call.");
@@ -152,6 +155,40 @@ switch ($method) {
     case 'jsonGetAllImageParametersFromSession':
 
         $json = jsonGetAllImageParametersFromSession();
+        break;
+
+    case 'jsonGetUserList':
+
+        $username = $params[0];
+        $json = jsonGetUserList($username);
+        break;
+
+    case 'jsonGetSharedTemplateList':
+
+        $username = $params[0];
+        $type = $params[1];
+        $json = jsonGetSharedTemplateList($username, $type);
+        break;
+
+    case 'jsonAcceptSharedTemplate':
+
+        $template = $params[0];
+        $type = $params[1];
+        $json = jsonAcceptSharedTemplate($template, $type);
+        break;
+
+    case 'jsonDeleteSharedTemplate':
+
+        $template = $params[0];
+        $type = $params[1];
+        $json = jsonDeleteSharedTemplate($template, $type);
+        break;
+
+    case 'jsonPreviewSharedTemplate':
+
+        $template = $params[0];
+        $type = $params[1];
+        $json = jsonPreviewSharedTemplate($template, $type);
         break;
 
     default:
@@ -231,31 +268,31 @@ function jsonGetUserAndTotalNumberOfJobsInQueue() {
  */
 function jsonCheckForUpdates() {
 
-  // Prepare the output array
-  $json = initJSONArray();
+    // Prepare the output array
+    $json = initJSONArray();
 
-  try {
+    try {
 
-    // Check if there is a newer version
-    $isNew = System::isThereNewHRMRelease();
+        // Check if there is a newer version
+        $isNew = System::isThereNewHRMRelease();
 
-    if ($isNew) {
-        $json["newerVersionExist"] = "true";
-        $json["newVersion"] = System::getLatestHRMVersionFromRemoteAsString();
-    } else {
+        if ($isNew) {
+            $json["newerVersionExist"] = "true";
+            $json["newVersion"] = System::getLatestHRMVersionFromRemoteAsString();
+        } else {
+            $json["newerVersionExist"] = "false";
+            $json["newVersion"] = "";
+        }
+
+    } catch (Exception $e) {
+        $json["success"] = "false";
+        $json["message"] = $e->getMessage();
         $json["newerVersionExist"] = "false";
         $json["newVersion"] = "";
     }
 
-  } catch (Exception $e) {
-      $json["success"] = "false";
-      $json["message"] = $e->getMessage();
-      $json["newerVersionExist"] = "false";
-      $json["newVersion"] = "";
-  }
-
-  // Return as a JSON string
-  return (json_encode($json));
+    // Return as a JSON string
+    return (json_encode($json));
 }
 
 /**
@@ -265,30 +302,33 @@ function jsonCheckForUpdates() {
  */
 function jsonSendTestEmail() {
 
-  // Include configuration file
-  include( dirname( __FILE__ ) . "/../config/hrm_client_config.inc" );
+    global $email_sender;
+    global $email_admin;
 
-  // Prepare the output array
-  $json = initJSONArray();
+    // Include configuration file
+    include(dirname(__FILE__) . "/../config/hrm_client_config.inc");
 
-  // Configure the email
-  $mail = new Mail($email_sender);
-  $mail->setReceiver($email_admin);
-  $mail->setSubject('HRM test e-mail');
-  $mail->setMessage('Congratulations! You have successfully ' .
-          'configured your e-mail server!');
+    // Prepare the output array
+    $json = initJSONArray();
 
-  // Send it
-  if ($mail->send()) {
-      $json['success'] = "true";
-      $json['message'] = "Sent!";
-  } else {
-      $json['success'] = "false";
-      $json['message'] = "Failed!";
-  }
+    // Configure the email
+    $mail = new Mail($email_sender);
+    $mail->setReceiver($email_admin);
+    $mail->setSubject('HRM test e-mail');
+    $mail->setMessage('Congratulations! You have successfully ' .
+        'configured your e-mail server!');
 
-  // Return as a JSON string
-  return (json_encode($json));
+    // Send it
+    if ($mail->send()) {
+        $json['success'] = "true";
+        $json['message'] = "Sent!";
+    } else {
+        $json['success'] = "false";
+        $json['message'] = "Failed!";
+    }
+
+    // Return as a JSON string
+    return (json_encode($json));
 }
 
 /**
@@ -355,7 +395,7 @@ function jsonGetImageParameterFromSession($parameterName) {
     $names = $setting->parameterNames();
 
     // Check that we are asking for an image Parameter
-    if (! in_array($parameterName, $names)) {
+    if (!in_array($parameterName, $names)) {
 
         // Return failure
         $json['success'] = "false";
@@ -470,7 +510,7 @@ function jsonGetAllImageParametersFromSession() {
 
     } else {
 
-    	// Return failure
+        // Return failure
         $json['success'] = "false";
         $json['message'] = "Failed retrieving parameters!";
 
@@ -478,6 +518,265 @@ function jsonGetAllImageParametersFromSession() {
 
     // Return as a JSON string
     return (json_encode($json));
+}
+
+/**
+ * Return the list of known users.
+ * @param  String User name to filter out from the list (optional).
+ * @return String JSON-encoded array of user names.
+ */
+function jsonGetUserList($username) {
+
+    // Prepare the output array
+    $json = initJSONArray();
+
+    // Retrieve user list from database
+    $db = new DatabaseConnection();
+
+    // Get the list of users
+    $users = $db->getUserList($username);
+    if ($users == null) {
+
+        // Return failure
+        $json['success'] = "false";
+        $json['message'] = "Failed retrieving user list!";
+
+    }
+    $json["users"] = $users;
+
+    // Return as a JSON string
+    return (json_encode($json));
+}
+
+/**
+ * Return the list of shared templates with the given user.
+ * @param  String Name of the user for which to query for shared templates.
+ * @return String JSON-encoded array of shared templates.
+ */
+function jsonGetSharedTemplateList($username, $type) {
+
+    // Prepare the output array
+    $json = initJSONArray();
+
+    // Retrieve list of shared templates
+    $success = True;
+    switch ($type) {
+
+        case "parameter":
+
+            $sharedTemplatesWith = ParameterSetting::getTemplatesSharedWith($username);
+            $sharedTemplatesBy   = ParameterSetting::getTemplatesSharedBy($username);
+            break;
+
+        case "task":
+
+            $sharedTemplatesWith = TaskSetting::getTemplatesSharedWith($username);
+            $sharedTemplatesBy = TaskSetting::getTemplatesSharedBy($username);
+            break;
+
+        case "analysis":
+
+            $sharedTemplatesWith = AnalysisSetting::getTemplatesSharedWith($username);
+            $sharedTemplatesBy = AnalysisSetting::getTemplatesSharedBy($username);
+            break;
+
+        default;
+
+            // Return failure
+            $success = False;
+
+    }
+
+    if (! $success) {
+
+        // Return failure
+        $json['success'] = "false";
+        $json['message'] = "Could not accept selected template.";
+        $json["sharedTemplatesWith"] = "";
+        $json["sharedTemplatesBy"] = "";
+
+    } else {
+
+        $json["sharedTemplatesWith"] = $sharedTemplatesWith;
+        $json["sharedTemplatesBy"] = $sharedTemplatesBy;
+
+    }
+
+    // Return as a JSON string
+    return (json_encode($json));
+}
+
+/**
+ * Accept and copy a template to the target user.
+ * @param  String Name of the user for which to query for shared templates.
+ * @param  String Type of the template: 'parameter', 'task', 'analysis'.
+ * @return String JSON-encoded array with 'success' and 'message' fields.
+ */
+function jsonAcceptSharedTemplate($template, $type) {
+
+    // Prepare the output array
+    $json = initJSONArray();
+
+    // Get a database connection
+    $db = new DatabaseConnection();
+
+    // Copy the setting
+    switch ($type) {
+
+        case "parameter":
+
+            // Copy the template
+            $success = $db->copySharedTemplate($template["id"],
+                ParameterSetting::sharedTable(),
+                ParameterSetting::sharedParameterTable(),
+                ParameterSetting::table(),
+                ParameterSetting::parameterTable());
+
+            break;
+
+        case "task":
+
+            // Copy the template
+            $success = $db->copySharedTemplate($template["id"],
+                TaskSetting::sharedTable(),
+                TaskSetting::sharedParameterTable(),
+                TaskSetting::table(),
+                TaskSetting::parameterTable());
+
+            break;
+
+        case "analysis":
+
+            // Copy the template
+            $success = $db->copySharedTemplate($template["id"],
+                AnalysisSetting::sharedTable(),
+                AnalysisSetting::sharedParameterTable(),
+                AnalysisSetting::table(),
+                AnalysisSetting::parameterTable());
+            break;
+
+        default;
+
+            // Return failure
+            $success = False;
+
+    }
+    if (! $success) {
+
+        // Return failure
+        $json['success'] = "false";
+        $json['message'] = "Could not accept selected template.";
+    }
+
+    // Return as a JSON string
+    return (json_encode($json));
+}
+
+/**
+ * Delete a shared template without copying it.
+ * @param  String Name of the user for which to query for shared templates.
+ * @param  String Type of the template: 'parameter', 'task', 'analysis'.
+ * @return String JSON-encoded array with 'success' and 'message' fields.
+ */
+function jsonDeleteSharedTemplate($template, $type) {
+
+    // Prepare the output array
+    $json = initJSONArray();
+
+    // Get a database connection
+    $db = new DatabaseConnection();
+
+    // Copy the setting
+    $success = True;
+    switch ($type) {
+
+        case "parameter":
+
+            // Delete the template
+            $success = $db->deleteSharedTemplate($template["id"],
+                ParameterSetting::sharedTable(),
+                ParameterSetting::sharedParameterTable());
+
+            break;
+
+        case "task":
+
+            // Delete the template
+            $success = $db->deleteSharedTemplate($template["id"],
+                TaskSetting::sharedTable(),
+                TaskSetting::sharedParameterTable());
+            break;
+
+        case "analysis":
+
+            // Delete the template
+            $success = $db->deleteSharedTemplate($template["id"],
+                AnalysisSetting::sharedTable(),
+                AnalysisSetting::sharedParameterTable());
+            break;
+
+        default;
+
+            // Return failure
+            $json['success'] = "false";
+            $json['message'] = "Unknown template type!";
+
+    }
+    if (! $success) {
+
+        // Return failure
+        $json['success'] = "false";
+        $json['message'] = "Could not delete selected template.";
+    }
+
+    // Return as a JSON string
+    return (json_encode($json));
+}
+
+/**
+ * Preview the shared template.
+ * @param  String Id of the template.
+ * @param  String Type of the template: 'parameter', 'task', 'analysis'.
+ * @return String JSON-encoded array with .
+ */
+function jsonPreviewSharedTemplate($template, $type) {
+
+    // Prepare the output array
+    $json = initJSONArray();
+
+    // Prepare the 'preview' field
+    $json["preview"] = "";
+
+    // Get a database connection
+    $db = new DatabaseConnection();
+
+    // Read the settings from the shared table and prepare the preview
+    $settings = $db->loadSharedParameterSettings($template["id"], $type);
+    if (! $settings) {
+
+        // Return failure
+        $json['success'] = "false";
+        $json['message'] = "Could not preview selected template.";
+        $json['preview'] = "";
+
+    } else {
+
+        // Get the parameters into a string
+        $paramStr = $settings->displayString();
+
+        // Prepare the string for display
+        $paramStr = "<small><b>" . str_replace("\n","\n<b>",$paramStr);
+        $paramStr = str_replace(": ",":</b> ",$paramStr) . "</small>";
+        $paramStr = "<h3>Shared template preview</h3>" . nl2br($paramStr);
+
+        // Add the preview to the json array
+        $json['preview'] = $paramStr;
+
+    }
+
+    // Return as a JSON string
+    return (json_encode($json));
+
 }
 
 ?>

@@ -33,7 +33,7 @@ class System {
 
       This value has to be set by the developers!
      */
-    const DB_LAST_REVISION = 12;
+    const DB_LAST_REVISION = 13;
 
     /* !
       \var 	MIN_HUCORE_VERSION_{MAJOR|MINOR|MAINTENANCE|PATCH}
@@ -570,7 +570,11 @@ class System {
      */
 
     public static function getMaxExecutionTimeFromIni() {
-        return ini_get('max_execution_time') . "s";
+        $maxExecTime = ini_get('max_execution_time');
+        if ($maxExecTime == 0) {
+            return "default";
+        }
+        return "" + $maxExecTime . "s";
     }
 
     /* !

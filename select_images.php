@@ -152,8 +152,8 @@ function filterImages (format,series) {
     var autoseries = document.getElementById(\"autoseries\");
 ";
 
-        /* For each file, create javascript code for when the file
-         belongs to a series and for when it doesn't. */
+    /* For each file, create javascript code for when the file
+    belongs to a series and for when it doesn't. */
     foreach ($allFiles as $key => $file) {
 
         if ($_SESSION['fileserver']->isPartOfFileSeries($file)) {
@@ -166,42 +166,43 @@ function filterImages (format,series) {
 
             if (in_array($file,$condensedSeries)) {
                 $generatedScript .= "
-                  if(checkAgainstFormat(\"$file\", selectedFormat)) {
-                      var f = \"$file\";
-                      f = f.replace(/ /g, '&nbsp;');
-                      var selectItem = document.createElement('option');
-                      $(selectItem).html(f);
-                      selectObject.add(selectItem,null);
+                  if(checkAgainstFormat('$file', selectedFormat)) {
+                    var f = \"$file\";
+                    f = f.replace(/ /g, '&nbsp;');
+                    var selectItem = document.createElement('option');
+                    $(selectItem).html(f);
+                    $(selectItem).attr('title', '$file');
+                    selectObject.add(selectItem,null);
                   }
-                    ";
+                  ";
             }
             $generatedScript .= "
 
               } else {
 
                   // Do not load file series automatically.
-                  if(checkAgainstFormat(\"$file\", selectedFormat)) {
-                      var f = \"$file\";
-                      f = f.replace(/ /g, '&nbsp;');
-                      var selectItem = document.createElement('option');
-                      $(selectItem).html(f);
-                      selectObject.add(selectItem,null);
+                  if(checkAgainstFormat('$file', selectedFormat)) {
+                    var f = \"$file\";
+                    f = f.replace(/ /g, '&nbsp;');
+                    var selectItem = document.createElement('option');
+                    $(selectItem).html(f);
+                    $(selectItem).attr('title', '$file');
+                    selectObject.add(selectItem,null);
                   }
               }
               ";
 
         } else {
             $generatedScript .= "
-
-               // File does not belong to a file series.
-               if(checkAgainstFormat(\"$file\", selectedFormat)) {
-                   var f = \"$file\";
-                   f = f.replace(/ /g, '&nbsp;');
-                   var selectItem = document.createElement('option');
-                   $(selectItem).html(f);
-                   selectObject.add(selectItem,null);
-               }
-               ";
+            if(checkAgainstFormat('$file', selectedFormat)) {
+                    var f = \"$file\";
+                    f = f.replace(/ /g, '&nbsp;');
+                    var selectItem = document.createElement('option');
+                    $(selectItem).html(f);
+                    $(selectItem).attr('title', '$file');
+                    selectObject.add(selectItem,null);
+                  }
+            ";
         }
 
     }

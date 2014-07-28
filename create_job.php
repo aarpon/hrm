@@ -366,19 +366,9 @@ if (!isset($_SESSION['jobcreated'])) {
 <?php
 
 }
-else {
 
 ?>
-            <input type="button"
-                   value="restart"
-                   onclick="document.location.href='home.php'"
-                   class="icon restart" />
-<?php
-
-}
-
-?>
-                </div>
+          </div>
 
             </form>
 
