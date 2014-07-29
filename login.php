@@ -91,7 +91,7 @@ if (isset($_POST['password']) && isset($_POST['username'])) {
                 // Make sure that the user source and destination folders exist
                 $fileServer = new FileServer($tentativeUser->name());
                 if (! $fileServer->isReachable()) {
-                    $userManager->createUserFolders($tentativeUser);
+                    $userManager->createUserFolders($tentativeUser->name());
                 }
 
                 // Update the user data and the access date in the database

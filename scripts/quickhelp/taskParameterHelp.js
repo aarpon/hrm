@@ -42,6 +42,21 @@ window.helpText[ "stopcrit" ] =
   'before the maximum number is reached: set the quality change to a low ' +
   'value or zero if you want to make sure all the set iterations are run.</p>';
 
+window.helpText[ "zstabilization" ] =
+  '<p>Due to the high lateral resolution, <b>STED</b> image ' +
+  'acquisition is more sensitive to drift than other imaging modes.</p>' +
+  '<p>It is <b>strongly recommended</b> to stabilize STED images ' +
+  'along the Z direction.</p>';
+
+window.helpText[ "autocrop"] =
+  '<p>The time needed to deconvolve an image increases more than ' +
+  'proportionally with its volume. Therefore, deconvolution can be ' +
+  'accelerated considerably by cropping the image.</p>' +
+  '<p>Huygens will automatically survey the image to find a reasonable ' +
+  'proposal for the crop region. In computing this initial proposal the ' +
+  'Microscopic Parameters are taken into account, making sure that ' +
+  'cropping will not have a negative impact on the deconvolution result.</p>' ;
+
 window.helpText[ "default" ] =
   '<p>On this page you specify the parameters for restoration.</p>' +
   '<p>These parameters comprise the deconvolution algorithm, the ' +

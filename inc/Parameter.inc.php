@@ -3172,3 +3172,37 @@ class ZStabilization extends ChoiceParameter {
         return $result;
     }
 }
+
+/*
+    ============================================================================
+*/
+
+/*!
+ \class Autocrop
+ \brief A BooleanParameter to indicate whether autocrop is enabled.
+*/
+class Autocrop extends ChoiceParameter {
+
+    /*!
+        \brief  Constructor: creates an empty Parameter
+    */
+    public function __construct() {
+        parent::__construct("Autocrop");
+    }
+
+    /*!
+        \brief  Returns the string representation of the Parameter
+        \param  $numberOfChannels   This is ignored
+        \return string representation of the Parameter
+    */
+    public function displayString( $numberOfChannels = 0 ) {
+        if ($this->value( ) == 0 ) {
+            $value = "no";
+        } else {
+            $value = "yes";
+        }
+        $result = $this->formattedName( );
+        $result = $result . $value . "\n";
+        return $result;
+    }
+}

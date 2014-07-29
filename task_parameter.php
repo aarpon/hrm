@@ -91,14 +91,14 @@ include("header.inc.php");
         Abort editing and go back to the Restoration parameters
         selection page. All changes will be lost!
     </span>
-    
+
     <?php
     if ($_SESSION['task_setting']->numberOfChannels() == 1) {
     ?>
     <span class="toolTip" id="ttSpanSave">
     Save and return to the processing parameters selection page.
     </span>
-    
+
     <?php
     } else {
     ?>
@@ -108,7 +108,7 @@ include("header.inc.php");
     <?php
     }
     ?>
-    
+
     <span class="toolTip" id="ttEstimateSnr">
         Use a sample raw image to find a SNR estimate for each channel.
     </span>
@@ -147,7 +147,7 @@ include("header.inc.php");
 
            <h4>How should your images be restored?</h4>
 
-            <!-- deconvolution algorithm -->
+          <!-- deconvolution algorithm -->
              <fieldset class="setting provided"
               onmouseover="javascript:changeQuickHelp( 'method' );" >
 
@@ -186,8 +186,10 @@ foreach($possibleValues as $possibleValue) {
 }
 ?>
                 </select>
-
             </fieldset>
+
+
+
 
             <!-- signal/noise ratio -->
             <fieldset class="setting provided"
@@ -204,7 +206,6 @@ foreach($possibleValues as $possibleValue) {
                      onmouseover="javascript:changeQuickHelp( 'snr' );">
 
 <?php
-
 $visibility = " style=\"display: none\"";
 if ($selectedMode == "cmle") {
   $visibility = " style=\"display: block\"";
@@ -339,6 +340,52 @@ for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
 
 
             </fieldset>
+
+
+ <div id="Autocrop">
+    <fieldset class="setting provided"
+    onmouseover="javascript:changeQuickHelp( 'autocrop' );" >
+
+    <legend>
+    <a href="javascript:openWindow(
+                       'http://www.svi.nl/HelpCropper')">
+                        <img src="images/help.png" alt="?" />
+        </a>
+    crop surrounding background areas?
+    </legend>
+
+        <select id="Autocrop"
+        name="Autocrop">
+<?php
+
+/*
+      AUTOCROP
+*/
+$parameterAutocrop =
+    $_SESSION['task_setting']->parameter("Autocrop");
+$possibleValues = $parameterAutocrop->possibleValues();
+$selectedMode  = $parameterAutocrop->value();
+
+        foreach($possibleValues as $possibleValue) {
+            $translation =
+                $parameterAutocrop->translatedValueFor( $possibleValue );
+            if ( $possibleValue == $selectedMode ) {
+                $option = "selected=\"selected\"";
+            } else {
+                $option = "";
+            }
+?>
+                    <option <?php echo $option?>
+                        value="<?php echo $possibleValue?>">
+                        <?php echo $translation?>
+                    </option>
+<?php
+        }
+?>
+
+</select>
+</div> <!-- Autocrop -->
+
 
             <!-- background mode -->
             <fieldset class="setting provided"
@@ -518,32 +565,33 @@ $value = $parameter->value();
     </div>
 
 
-    
+
     <div id="ZStabilization">
-    <?php
-    if ($_SESSION['task_setting']->isEligibleForStabilization($_SESSION['setting'])) {
+<?php
+    if ($_SESSION['user']->isAdmin()
+        || $_SESSION['task_setting']->isEligibleForStabilization($_SESSION['setting'])) {
 
     ?>
 
     <fieldset class="setting provided"
-    onmouseover="javascript:changeQuickHelp( '' );" >
-    
+    onmouseover="javascript:changeQuickHelp( 'zstabilization' );" >
+
     <legend>
         <a href="javascript:openWindow(
                        'http://www.svi.nl/ObjectStabilizer')">
                         <img src="images/help.png" alt="?" />
         </a>
-    Would you like to stabilize the dataset in the Z direction?
+    stabilize the dataset in the Z direction?
     </legend>
 
             <p>STED images often need to be stabilized in the Z direction before they
        are deconvolved. Please note that skipping this step might affect the
-       quality of the deconvolution.</p> 
+       quality of the deconvolution.</p>
 
         <select id="ZStabilization"
         name="ZStabilization">
 <?php
-                    
+
 /*
       STABILIZATION
 */
@@ -587,12 +635,12 @@ $selectedMode  = $parameterStabilization->value();
 
             <div id="controls"
                  onmouseover="javascript:changeQuickHelp( 'default' )">
-              
+
               <input type="button" value="" class="icon up"
                 onmouseover="TagToTip('ttSpanCancel' )"
                 onmouseout="UnTip()"
                 onclick="javascript:deleteValuesAndRedirect('select_task_settings.php' );" />
-    
+
               <input type="submit" value=""
                 class="icon save"
                 onmouseover="TagToTip('ttSpanSave')"
@@ -600,9 +648,9 @@ $selectedMode  = $parameterStabilization->value();
                 onclick="process()" />
 
             </div>
-        
+
         </form>
-    
+
     </div> <!-- content -->
 
     <div id="rightpanel" onmouseover="javascript:changeQuickHelp( 'default' )">

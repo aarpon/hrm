@@ -130,6 +130,12 @@ class HuygensTemplate {
     private $imgSaveArray;
 
     /*!
+     \var    $autocropArray
+     \brief  Array with information on the autocrop subtask.
+    */
+    private $autocropArray;
+
+    /*!
      \var    $ZStabilizeArray
      \brief  Array with information on the Z stabilize subtask.
     */
@@ -318,7 +324,7 @@ class HuygensTemplate {
 
         $this->jobInfoArray = 
             array ('title'                      => 'Batch Processing template',
-                   'version'                    => '2.2',
+                   'version'                    => '2.3',
                    'templateName'               => '',
                    'date'                       => '',
                    'listID'                     => 'info');
@@ -391,8 +397,9 @@ class HuygensTemplate {
         $this->imgProcessTasksArray = 
             array ('open'                       =>  'imgOpen',
                    'setParameters'              =>  'setp',
+                   'autocrop'                   =>  'autocrop',
                    'adjustBaseline'             =>  'adjbl',
-                   'ZStabilization'              => 'stabilize',
+                   'ZStabilization'             =>  'stabilize',
                    'algorithms'                 =>  '',
                    'colocalization'             =>  'coloc',
                    '2Dhistogram'                =>  'hist',
@@ -493,12 +500,18 @@ class HuygensTemplate {
                     'itMode'                    =>  'auto',
                     'listID'                    =>  '' );
 
-        /* Options for the 'ZStabilization' action.
+        /* Options for the 'autocrop' action.
            A bit redundant to work with an array here, but this way the
-           foundations for more complex stabilization tasks are laid. */
+           foundations for more complex autocrop tasks are laid. */
+        $this->autocropArray =
+            array( 'enabled'                    =>  '0',
+                   'listID'                     =>  'autocrop');
+
+        /* Options for the 'ZStabilization' action.
+           A bit redundant to work with an array here, same reason as above. */
         $this->ZStabilizeArray =
             array( 'enabled'                    =>  '0',
-                   'listID'                    =>   'stabilize');
+                   'listID'                     =>  'stabilize');
 
         /* Options for the 'colocalization analysis' action */
         $this->colocArray  =
@@ -733,9 +746,10 @@ class HuygensTemplate {
             case 'open':
             case 'save':
             case 'setParameters':
+            case 'autocrop':
             case 'adjustBaseline':
-            case 'algorithms':
             case 'ZStabilization':
+            case 'algorithms':
             case 'colocalization':
             case '2Dhistogram':    
             case 'XYXZRawAtSrcDir':
@@ -788,6 +802,9 @@ class HuygensTemplate {
                 break;
             case 'setParameters':
                 $taskList .= $this->getImgProcessSetp();
+                break;
+            case 'autocrop':
+                $taskList .= $this->getImgProcessAutocrop();
                 break;
             case 'adjustBaseline':
                 $taskList .= $this->getImgProcessAdjbl();
@@ -955,8 +972,40 @@ class HuygensTemplate {
 
 
     /*!
+      \brief      Get options for the 'Autocrop' task. 
+      \return     Tcl list with the 'autocrop' task and its options.
+    */
+    private function getImgProcessAutocrop( ) {
+        $imgAutocrop = "";
+
+
+        $autocropParam = $this->deconSetting->parameter('Autocrop');
+        foreach ($this->autocropArray as $key => $value) {
+            
+            if ($key != "listID") {
+                $imgAutocrop .= " " . $key . " ";
+            }
+
+            switch( $key ) {
+            case 'enabled':
+                $imgAutocrop .= $autocropParam->value();
+                break;
+            case 'listID':
+                $imgAutocrop = $this->string2tcllist($imgAutocrop);
+                $imgAutocrop = $value . " " . $imgAutocrop;
+                break;
+            default:
+                error_log("Image autocrop option $key not yet implemented.");
+            }
+        }
+
+        return $imgAutocrop;
+    }
+    
+
+    /*!
       \brief      Get options for the 'ZStabilize' task. 
-      \return     Tcl lsit with the 'ZStabilize' task and its options.
+      \return     Tcl list with the 'ZStabilize' task and its options.
     */
     private function getImgProcessZStabilize( ) {
         $imgZStabilize = "";
@@ -2265,6 +2314,7 @@ class HuygensTemplate {
         switch ($task) {
         case 'imgOpen':
         case 'setp':
+        case 'autocrop':
         case 'adjbl':
         case 'imgSave':
         case 'stabilize':
