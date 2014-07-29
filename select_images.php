@@ -443,14 +443,23 @@ if ($allFiles == null) {
             $files = $allFiles;
 
         }
+        $selectedFiles = $_SESSION['fileserver']->selectedFiles();
 
         foreach ($files as $key => $file) {
             if ($_SESSION['fileserver']->checkAgainstFormat($file, $format)) {
                 // Consecutive spaces are collapsed into one space in HTML.
                 // Hence '&nbsp;' to correct this when the file has more spaces.
-                echo "<option>" .
-                    str_replace(' ','&nbsp;',$file) .
-                    "</option>\n";
+                $filteredFile = str_replace(' ', '&nbsp;', $file);
+                $exists = false;
+                foreach ($selectedFiles as $skey => $sfile) {
+                    if (strcmp($sfile, $file) == 0) {
+                        $exists=true;
+                    }
+                }
+                if(!$exists){
+                    echo "<option>" . $filteredFile . "</option>\n";
+                    $keyArr[$file] = $key;
+                }
                 $keyArr[$file] = $key;
             }
         }

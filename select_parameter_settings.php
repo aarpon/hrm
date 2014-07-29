@@ -299,6 +299,7 @@ else {
         width="40"/>&nbsp;&nbsp;Step
         <?php echo $currentStep . "/" . $numberSteps; ?>
         - Select image template</h3>
+    <h4></h4>
 <?php
 
 }

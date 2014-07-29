@@ -110,7 +110,8 @@ include("header.inc.php");
 </div>
 
     <div id="content">
-    
+        <h2>Current Parameter Set: "<?php  echo $_SESSION['setting']->name(); ?>"</h2>
+
         <h3>Distilled PSF file selection</h3>
         
         <form method="post" action="select_psf.php" id="select">

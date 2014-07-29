@@ -426,7 +426,7 @@ function estimateSnrFromFile($file) {
         $buttons .= "<input type=\"hidden\" name=\"store\" value=\"store\" />";
         for ( $i = 0; $i < count( $calculatedSNRValues ); $i++ ) {
             $buttons .= "<input type=\"hidden\" ".
-            "name=\"Channel$i\" value=\"$calculatedSNRValues[$i]\" />";
+            "name=\"Channel$i\" id=\"btn-channel'.($i+1).'\" value=\"$calculatedSNRValues[$i]\" />";
         }
 
         $buttons .= "<input type=\"button\" value=\"\" class=\"icon previous\" ".
@@ -450,10 +450,8 @@ function estimateSnrFromFile($file) {
         $buttons .= "</form>";
 
     ?>
-
     </div>
     <script type="text/javascript">
-    <!--
          window.divCondition = 'general';
          <?php
          // Preloading code doesn't seem to help (at least if it doesn't go in
@@ -469,7 +467,38 @@ function estimateSnrFromFile($file) {
          smoothChangeDiv('controls',
              '<?php echo escapeJavaScript($buttons); ?>',1500);
          changeDiv('tmp','');
-    //-->
+
+    function getScrollTop() {
+        if (typeof window.pageYOffset !== 'undefined' ) {
+            // Most browsers
+            return window.pageYOffset;
+        }
+
+        var d = document.documentElement;
+        if (d.clientHeight) {
+            // IE in standards mode
+            return d.scrollTop;
+        }
+
+        // IE in quirks mode
+        return document.body.scrollTop;
+    }
+    window.onscroll = function() {
+        var box = document.getElementById('thumb'),
+        scroll = getScrollTop();
+
+        var basketEl = document.getElementById('basket');
+        console.log(basketEl.clientHeight);
+        if (scroll <= 200) {
+        box.style.top = "0px";
+        }
+        else if (scroll > basketEl.clientHeight) {
+
+        } else {
+            box.style.top = (scroll - 200) + "px";
+        }
+    };
+
     </script>
 
 <?php

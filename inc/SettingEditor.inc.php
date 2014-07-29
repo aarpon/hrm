@@ -212,7 +212,7 @@ abstract class BaseSettingEditor {
     */
     public function copyPublicSetting(Setting $setting) {
         $success = False;
-        $newName = $setting->name();
+        $newName = $this->user->name(). ' - '.$setting->name();
         $nTrials = 0;
         while ( $success == False ) {
             if ( $nTrials >= 10 ) {

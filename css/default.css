@@ -117,6 +117,12 @@ table {
     color: white;
 }
 
+/* Added by Oli for the image name */
+
+#title h2 {
+    position: relative;
+    margin-top: -20px;
+}
 #logo {
     position: absolute;
     top: 0px;
@@ -1459,6 +1465,9 @@ input.noPreview {
     cursor: pointer;
 }
 
+#thumb {
+    position: relative;
+}
 select {
     width: 100%;
     text-align: center;
@@ -1494,7 +1503,8 @@ div.multichannel {
 }
 
 option.default {
-    color: #ff0000;
+    font-weight: bold;
+    background: #c5d4ff;
 }
 
 .line {

@@ -353,12 +353,12 @@ if (!isset($_SESSION['jobcreated'])) {
 
 ?>
             <input type="button" name="previous" value="" class="icon previous"
-              onclick="document.location.href='<?php echo $goBackLink; ?>'"
+              onclick="goBack()"
               onmouseover="TagToTip('ttSpanBack' )"
               onmouseout="UnTip()" />
             <input type="button" name="create job" value=""
               class="icon launch_start"
-              onclick="document.forms['createjob'].submit()"
+              onclick="submitJob()"
               onmouseover="TagToTip('ttSpanCreateJob' )"
               onmouseout="UnTip()" />
 
@@ -411,6 +411,30 @@ echo "<p>$message</p>";
 
     </div> <!-- rightpanel -->
 
+<!-- Short script to make sure the user does not navigate away until he has submitted.
+ We just set a variable canLeave to true when we should not display the warning.
+ The warning comes from the onbeforeunload funciton. This is hard-coded into Firefox so
+ the custom message does not display. In other browsers, the message here should show. -->
+<script type="text/javascript" >
+    var canLeave = false;
+    function submitJob() {
+        canLeave = true;
+        document.forms['createjob'].submit();
+
+    }
+    function goBack() {
+        canLeave = true;
+        document.location.href='<?php echo $goBackLink; ?>';
+    }
+    // Check if the user is quitting it
+    window.onbeforeunload = function(e) {
+        if (!canLeave) {
+        document.forms['createjob'].is
+        return 'You did not submit the job. Are you sure you want to exit?';
+        }
+    };
+
+</script>
 <?php
 
 include("footer.inc.php");
