@@ -234,6 +234,7 @@ if ( $_SESSION['setting']->hasPinhole() ) {
             <?php
                 wiki_link('HuygensRemoteManagerHelpCaptor');
             ?>
+            <li> [ <?php  echo $_SESSION['setting']->name(); ?> ] </li>
         </ul>
     </div>
     <div id="navright">
@@ -248,7 +249,6 @@ if ( $_SESSION['setting']->hasPinhole() ) {
 
 
     <div id="content">
-    <h2>Current Parameter Set: "<?php  echo $_SESSION['setting']->name(); ?>"</h2>
 
         <h2>Optical parameters / 2</h2>
 

@@ -126,6 +126,7 @@ include("header.inc.php");
             <?php
                 wiki_link('HuygensRemoteManagerHelpRestorationParameters');
             ?>
+            <li> [ <?php  echo $_SESSION['task_setting']->name(); ?> ] </li>
         </ul>
     </div>
     <div id="navright">
@@ -140,7 +141,6 @@ include("header.inc.php");
 
 
     <div id="content">
-    <h2>Current Parameter Set: "<?php  echo $_SESSION['task_setting']->name(); ?>"</h2>
 
         <h2>Restoration - Deconvolution</h2>
 

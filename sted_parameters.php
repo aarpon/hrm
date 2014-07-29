@@ -133,7 +133,7 @@ if ($_SESSION['setting']->isSted3D()) {
     $sted3DParam = $_SESSION['setting']->parameter("Sted3D");
     $sted3DParam->setNumberOfChannels($chanCnt);
     $sted3D = $sted3DParam->value();
-    
+
     for ($i=0; $i < $chanCnt; $i++) {
         $sted3DKey = "Sted3D{$i}";
         if (isset($_POST[$sted3DKey])) {
@@ -142,7 +142,7 @@ if ($_SESSION['setting']->isSted3D()) {
     }
     $sted3DParam->setValue($sted3D);
     $sted3DParam->setNumberOfChannels($chanCnt);
-    
+
     $_SESSION['setting']->set($sted3DParam);
 }
 
@@ -266,6 +266,7 @@ include("header.inc.php");
             <?php
                 wiki_link('STED');
             ?>
+            <li> [ <?php  echo $_SESSION['setting']->name(); ?> ] </li>
         </ul>
     </div>
     <div id="navright">
@@ -280,7 +281,7 @@ include("header.inc.php");
 
 
     <div id="content">
-    <h2>Current Parameter Set: "<?php  echo $_SESSION['setting']->name(); ?>"</h2>
+
         <h2>STED parameters </h2>
 
         <form method="post" action="" id="select">
@@ -310,10 +311,10 @@ $parameterStedDeplMode = $_SESSION['setting']->parameter("StedDepletionMode");
                     STED Depletion Mode
                 </legend>
 
-                <div class="StedDeplModeValues">                              
+                <div class="StedDeplModeValues">
                 <table class="StedDeplModeValues">
-                          
-<?php                              
+
+<?php
 $possibleValues = $parameterStedDeplMode->possibleValues();
 
 /* Make sure the Confocal option is the last one. */
@@ -328,21 +329,21 @@ for ($i = 0; $i < count($possibleValues); $i++) {
                         /* Loop on rows. */
 
 for ($chan = 0; $chan < $chanCnt; $chan++) {
-?>    
+?>
     <tr><td>Ch<?php echo $chan; ?>:</td>
-    
+
     <td>
     <select name="StedDepletionMode<?php echo $chan;?>"
     onclick="javascript:changeStedEntryProperties(this,<?php echo $chan;?>)"
     onchange="javascript:changeStedEntryProperties(this,<?php echo $chan;?>)">
-    
+
 <?php
                         /* Loop for select options. */
-    
+
     foreach($possibleValues as $possibleValue) {
         $translatedValue =
         $parameterStedDeplMode->translatedValueFor($possibleValue);
-        
+
         if ($translatedValue == $stedDepl[$chan]) {
             $selected = " selected=\"selected\"";
         } else {
@@ -350,25 +351,25 @@ for ($chan = 0; $chan < $chanCnt; $chan++) {
         }
 ?>
         <option value=<?php echo $translatedValue; echo $selected;?>>
-            <?php echo $possibleValue; ?> 
+            <?php echo $possibleValue; ?>
             </option>
 <?php
     }                    /* End of loop for select options. */
-?>    
+?>
     </select>
-    </td>            
+    </td>
 
     </tr>
-<?php   
+<?php
 }                        /* End of loop on rows. */
 ?>
 
                 </table> <!-- StedDeplModeValues -->
                 </div> <!-- StedDeplModeValues -->
 
-            
+
             <div class="bottom">
-                <p class="message_confidence_<?php 
+                <p class="message_confidence_<?php
                 echo $parameterStedDeplMode->confidenceLevel(); ?>">&nbsp;
                 </p>
             </div>
@@ -425,9 +426,9 @@ if ( $i == 3 ) {
 <?php
 }
 ?>
-    
+
                 <div class="bottom">
-                <p class="message_confidence_<?php 
+                <p class="message_confidence_<?php
                 echo $parameterStedSatFact->confidenceLevel(); ?>">&nbsp;
                 </p>
             </div>
@@ -483,9 +484,9 @@ if ( $i == 3 ) {
 <?php
 }
 ?>
-    
+
                 <div class="bottom">
-                <p class="message_confidence_<?php 
+                <p class="message_confidence_<?php
                 echo $parameterStedLambda->confidenceLevel(); ?>">&nbsp;
                 </p>
             </div>
@@ -542,9 +543,9 @@ if ( $i == 3 ) {
 <?php
 }
 ?>
-    
+
                 <div class="bottom">
-                <p class="message_confidence_<?php 
+                <p class="message_confidence_<?php
                 echo $parameterStedImmunity->confidenceLevel(); ?>">&nbsp;
                 </p>
             </div>
@@ -602,9 +603,9 @@ if ($_SESSION['setting']->isSted3D()) {
 <?php
     }
 ?>
-    
+
                 <div class="bottom">
-                <p class="message_confidence_<?php 
+                <p class="message_confidence_<?php
                 echo $parameterSted3D->confidenceLevel(); ?>">&nbsp;
                 </p>
             </div>
@@ -616,7 +617,7 @@ if ($_SESSION['setting']->isSted3D()) {
 <?php
 /****************************************************************************
 
-                       End of Parameters 
+                       End of Parameters
 
 ****************************************************************************/
 ?>
@@ -655,7 +656,7 @@ if ($_SESSION['setting']->isSted3D()) {
 
    </div> <!-- content -->
 
-    
+
    <div id="rightpanel"
          onmouseover="javascript:changeQuickHelp( 'default' );" >
 
@@ -670,20 +671,20 @@ if ($_SESSION['setting']->isSted3D()) {
       <?php
               if ( !$_SESSION["user"]->isAdmin() ) {
       ?>
-                  
-            <div class="requirements">                
-               Parameter requirements<br />adapted for <b>  
+
+            <div class="requirements">
+               Parameter requirements<br />adapted for <b>
                <?php
                $fileFormat = $_SESSION['setting']->parameter( "ImageFileFormat" );
                echo $fileFormat->value();
                ?>
                </b> files
             </div>
-      
+
       <?php
               }
       ?>
-       
+
         </div>
 
         <div id="message">
