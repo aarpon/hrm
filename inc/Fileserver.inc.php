@@ -2453,10 +2453,15 @@ echo '</body></html>';
     public function createHardLinksFromSharedPSFs($psfFiles, $targetUser, $previousUser) {
 
         global $image_folder;
+        global $image_source;
 
         // Full path to psf_sharing and psf_sharing/buffer
         $psf_sharing = $image_folder . "/" . "psf_sharing";
         $buffer = $psf_sharing . "/" . "buffer";
+
+        // Create a timestamp for current hard links
+        $mt = microtime(); $mt = explode(" ", $mt);
+        $targetTimestamp = (string)$mt[1] . (string)round(1e6 * $mt[0]);
 
         // Full path with user and time information
         $full_buffer = $buffer . "/" . $targetUser . "/" . $previousUser . "/";
@@ -2480,15 +2485,13 @@ echo '</body></html>';
                     $destPFSPaths[$i] = "";
                     continue;
                 }
-                $timestamp = substr($fullSourcePSFPath, strlen($full_buffer),
-                    ($pos - strlen($full_buffer)));
 
                 // Relative PSF path
-                $relPSFPath = substr($fullSourcePSFPath, ($pos + 1));
+                $relPSFPath = $targetTimestamp . "/" . substr($fullSourcePSFPath, ($pos + 1));
 
                 // Destination psf file path
                 $fullDestPSFPath = $image_folder . "/" . $targetUser . "/" .
-                    $relPSFPath;
+                    $image_source . "/" . $relPSFPath;
 
                 // Destination psf containing folder
                 $contDestPSFFolder = dirname($fullDestPSFPath);
@@ -2525,18 +2528,12 @@ echo '</body></html>';
                 $destPFSPaths[$i] = $relPSFPath;
 
                 // Delete the containing folders if they are no longer needed
-                if ($this->is_dir_empty($full_buffer . $timestamp)) {
-                    unlink($full_buffer . $timestamp);
-
-                    // Is the parent dir also empty?
-                    if ($this->is_dir_empty($full_buffer)) {
-                        unlink($full_buffer);
-
-                        // Is the parent dir empty as well?
-                        if ($this->is_dir_empty($buffer . "/" . $targetUser)) {
-                            unlink($buffer . "/" . $targetUser);
-                        }
+                $contFolder = dirname($fullSourcePSFPath);
+                while ($contFolder != $buffer && $this->is_dir_empty($contFolder)) {
+                    if (!rmdir($contFolder)) {
+                        break;
                     }
+                    $contFolder = dirname($contFolder . "..");
                 }
 
             } else {
