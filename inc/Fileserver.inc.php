@@ -2370,8 +2370,9 @@ echo '</body></html>';
   }
 
   /*!
-   \brief Create hard links to the psf_sharing/buffer folder and returns an array
-          of full paths to the target links.
+   \brief Create hard links into the psf_sharing/buffer folder from the
+          folder of the sharing user and return an array of full paths
+          created links.
    \param $psfFiles array of psf files paths relatives to current user.
    \return array of destination PSF paths.
    */
@@ -2382,22 +2383,24 @@ echo '</body></html>';
       // Prepare output
       $destPFSPaths = array();
 
+      // Full path to psf_sharing and psf_sharing/buffer
+      $psf_sharing = $image_folder . "/" . "psf_sharing";
+      $buffer = $psf_sharing . "/" . "buffer";
+
+      // Create a timestamp for current hard links
+      $mt = microtime(); $mt = explode(" ", $mt);
+      $timestamp = (string)$mt[1] . (string)round(1e6 * $mt[0]);
+
       // Go over all PSF files
       for ($i = 0; $i < count($psfFiles); $i++) {
 
           // If we have a file, process it
           if ($psfFiles[$i] != "") {
 
-              // Full path to psf_sharing and psf_sharing/buffer
-              $psf_sharing = $image_folder . "/" . "psf_sharing";
-              $buffer = $psf_sharing . "/" . "buffer";
-
               // Full psf file path
               $fullSourcePSFPath = $this->sourceFolder() . "/" . $psfFiles[$i];
 
               // Destination psf file path
-              $mt = microtime(); $mt = explode(" ", $mt);
-              $timestamp = (string)$mt[1] . (string)round(1e6 * $mt[0]);
               $fullDestPSFPath = $buffer . "/" . $targetUser . "/" .
                   $this->username . "/" . $timestamp . "/" .$psfFiles[$i];
 
@@ -2405,9 +2408,11 @@ echo '</body></html>';
               $contDestPSFFolder = dirname($fullDestPSFPath);
 
               // Create the container folder if it does not exist
-              if (! mkdir($contDestPSFFolder, 0777, true)) {
-                  $destPFSPaths[$i] = "";
-                  continue;
+              if (!file_exists($contDestPSFFolder)) {
+                  if (!mkdir($contDestPSFFolder, 0777, true)) {
+                      $destPFSPaths[$i] = "";
+                      continue;
+                  }
               }
 
               // Create hard link
@@ -2439,6 +2444,113 @@ echo '</body></html>';
   }
 
     /*!
+     \brief Create hard links into the folder of the target user from
+            the psf_sharing/buffer folder and return an array of full paths
+            created links.
+     \param $psfFiles array of psf files paths relatives to current user.
+     \return array of destination PSF paths.
+     */
+    public function createHardLinksFromSharedPSFs($psfFiles, $targetUser, $previousUser) {
+
+        global $image_folder;
+
+        // Full path to psf_sharing and psf_sharing/buffer
+        $psf_sharing = $image_folder . "/" . "psf_sharing";
+        $buffer = $psf_sharing . "/" . "buffer";
+
+        // Full path with user and time information
+        $full_buffer = $buffer . "/" . $targetUser . "/" . $previousUser . "/";
+
+        // Prepare output
+        $destPFSPaths = array();
+
+        // Go over all PSF files
+        for ($i = 0; $i < count($psfFiles); $i++) {
+
+            // If we have a file, process it
+            if ($psfFiles[$i] != "") {
+
+                // Full psf file path
+                $fullSourcePSFPath = $image_folder . "/" . $psfFiles[$i];
+
+                // Get the numeric timestamp
+                $pos = strpos($fullSourcePSFPath, "/", strlen($full_buffer));
+                if (False === $pos) {
+                    // This should not happen
+                    $destPFSPaths[$i] = "";
+                    continue;
+                }
+                $timestamp = substr($fullSourcePSFPath, strlen($full_buffer),
+                    ($pos - strlen($full_buffer)));
+
+                // Relative PSF path
+                $relPSFPath = substr($fullSourcePSFPath, ($pos + 1));
+
+                // Destination psf file path
+                $fullDestPSFPath = $image_folder . "/" . $targetUser . "/" .
+                    $relPSFPath;
+
+                // Destination psf containing folder
+                $contDestPSFFolder = dirname($fullDestPSFPath);
+
+                // Create the container folder if it does not exist
+                if (!file_exists($contDestPSFFolder)) {
+                    if (! mkdir($contDestPSFFolder, 0777, true)) {
+                        $destPFSPaths[$i] = "";
+                        continue;
+                    }
+                }
+
+                // Create hard link
+                $cmd = "ln \"" . $fullSourcePSFPath . "\" \"" . $contDestPSFFolder . "/.\"";
+                $out = shell_exec($cmd);
+
+                // Now delete the source file
+                unlink($fullSourcePSFPath);
+
+                // If the PSF file is a *.ics/*.ids pair, we make sure to
+                // hard-link also the companion file
+                $companion = $this->findCompanionFile($fullSourcePSFPath);
+                if (NULL !== $companion) {
+                    $cmd = "ln \"" . $companion . "\" \"" . $contDestPSFFolder . "/.\"";
+                    $out = shell_exec($cmd);
+
+                    // Now delete the companion file
+                    unlink($companion);
+
+                }
+
+                // Store the relative path to the destination PSF file to the
+                // output array
+                $destPFSPaths[$i] = $relPSFPath;
+
+                // Delete the containing folders if they are no longer needed
+                if ($this->is_dir_empty($full_buffer . $timestamp)) {
+                    unlink($full_buffer . $timestamp);
+
+                    // Is the parent dir also empty?
+                    if ($this->is_dir_empty($full_buffer)) {
+                        unlink($full_buffer);
+
+                        // Is the parent dir empty as well?
+                        if ($this->is_dir_empty($buffer . "/" . $targetUser)) {
+                            unlink($buffer . "/" . $targetUser);
+                        }
+                    }
+                }
+
+            } else {
+
+                $destPFSPaths[$i] = "";
+
+            }
+        }
+
+        // Return the aray of full PSF destination paths
+        return $destPFSPaths;
+    }
+
+    /*!
     \brief Given either an ics or and ids file, returns the companion.
 
     The companion file must exist.
@@ -2450,7 +2562,7 @@ echo '</body></html>';
   function findCompanionFile($file) {
 
       // Get the extension
-      $pos = strpos($file, ".");
+      $pos = strrpos($file, ".");
       if (False === $pos) {
           return NULL;
       }
@@ -3505,5 +3617,21 @@ echo '</body></html>';
       return $html;
   }
 
+    /*!
+    \brief Check if a directory is empty.
+    \param $dir Full path to directory to check.
+    \return bool|null True if the directory is empty, False if it is not; False
+                      if it is not readable or does not exist.
+     */
+    function is_dir_empty($dir) {
+        if (!is_readable($dir)) return NULL;
+        $handle = opendir($dir);
+        while (false !== ($entry = readdir($handle))) {
+            if ($entry != "." && $entry != "..") {
+                return FALSE;
+            }
+        }
+        return TRUE;
+    }
 
 } // End of FileServer class
