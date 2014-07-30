@@ -2369,6 +2369,130 @@ echo '</body></html>';
     return $result;
   }
 
+  /*!
+   \brief Create hard links to the psf_sharing/buffer folder and returns an array
+          of full paths to the target links.
+   \param $psfFiles array of psf files paths relatives to current user.
+   \return array of destination PSF paths.
+   */
+  public function createHardLinksToSharedPSFs($psfFiles, $targetUser) {
+
+      global $image_folder;
+
+      // Prepare output
+      $destPFSPaths = array();
+
+      // Go over all PSF files
+      for ($i = 0; $i < count($psfFiles); $i++) {
+
+          // If we have a file, process it
+          if ($psfFiles[$i] != "") {
+
+              // Full path to psf_sharing and psf_sharing/buffer
+              $psf_sharing = $image_folder . "/" . "psf_sharing";
+              $buffer = $psf_sharing . "/" . "buffer";
+
+              // Full psf file path
+              $fullSourcePSFPath = $this->sourceFolder() . "/" . $psfFiles[$i];
+
+              // Destination psf file path
+              $mt = microtime(); $mt = explode(" ", $mt);
+              $timestamp = (string)$mt[1] . (string)round(1e6 * $mt[0]);
+              $fullDestPSFPath = $buffer . "/" . $targetUser . "/" .
+                  $this->username . "/" . $timestamp . "/" .$psfFiles[$i];
+
+              // Destination psf containing folder
+              $contDestPSFFolder = dirname($fullDestPSFPath);
+
+              // Create the container folder if it does not exist
+              if (! mkdir($contDestPSFFolder, 0777, true)) {
+                  $destPFSPaths[$i] = "";
+                  continue;
+              }
+
+              // Create hard link
+              $cmd = "ln \"" . $fullSourcePSFPath . "\" \"" . $contDestPSFFolder . "/.\"";
+              $out = shell_exec($cmd);
+
+              // If the PSF file is a *.ics/*.ids pair, we make sure to
+              // hard-link also the companion file
+              $companion = $this->findCompanionFile($fullSourcePSFPath);
+              if (NULL !== $companion) {
+                  $cmd = "ln \"" . $companion . "\" \"" . $contDestPSFFolder . "/.\"";
+                  $out = shell_exec($cmd);
+              }
+
+              // Store the relative path to the destination PSF file to the
+              // output array
+              $relPath = substr($fullDestPSFPath, strlen($image_folder) + 1);
+              $destPFSPaths[$i] = $relPath;
+
+          } else {
+
+              $destPFSPaths[$i] = "";
+
+          }
+      }
+
+      // Return the aray of full PSF destination paths
+      return $destPFSPaths;
+  }
+
+    /*!
+    \brief Given either an ics or and ids file, returns the companion.
+
+    The companion file must exist.
+
+    \param $file File name with either .ics or .ids extension. The case might
+                 be different (e.g. .ICS)
+    \return full fine name of the companion file, if it exist; NULL otherwise.
+     */
+  function findCompanionFile($file) {
+
+      // Get the extension
+      $pos = strpos($file, ".");
+      if (False === $pos) {
+          return NULL;
+      }
+
+      // Split the file in bse and extension strings
+      $base = substr($file, 0, $pos);
+      $ext = substr($file, $pos);
+
+      if (strtoupper($ext) == ".ICS") {
+
+          $possExts = array(".ids", ".IDS", ".iDs", ".idS", ".iDS",
+              ".IdS", ".Ids", ".idS");
+
+          foreach ($possExts as $p) {
+              if (file_exists($base . $p)) {
+                  return $base . $p;
+              }
+          }
+
+          return NULL;
+
+      } elseif (strtoupper($ext) == ".IDS") {
+
+          $possExts = array(".ics", ".ICS", ".iCs", ".icS", ".iCS",
+              ".IcS", ".Ics", ".icS");
+
+          foreach ($possExts as $p) {
+              if (file_exists($base . $p)) {
+                  return $base . $p;
+              }
+          }
+
+          return NULL;
+
+      } else {
+
+          return NULL;
+
+      }
+
+  }
+
 /*
                               PRIVATE FUNCTIONS
 */

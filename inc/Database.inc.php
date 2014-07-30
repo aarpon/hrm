@@ -491,8 +491,11 @@ class DatabaseConnection {
             return False;
         }
 
+        // Get the parameter names
+        $parameterNames = $settings->parameterNames();
+
         // Add the parameters
-        foreach ($settings->parameterNames() as $parameterName) {
+        foreach ($parameterNames as $parameterName) {
 
             $parameter = $settings->parameter($parameterName);
             $parameterValue = $parameter->internalValue();
@@ -504,6 +507,18 @@ class DatabaseConnection {
                 // # now as a channel marker, and even the first channel has a # in
                 // front of its value.
                 // "/" separator is used to mark range values for signal to noise ratio
+
+
+                // Special treatment for the PSF parameter.
+                if ($parameter->name() == "PSF") {
+
+                    // Create hard links and update paths to the PSF files
+                    // to point to the hard-links.
+                    $fileServer = new Fileserver($original_user);
+                    $parameterValue = $fileServer->createHardLinksToSharedPSFs(
+                        $parameterValue, $targetUserName);
+
+                }
 
                 /*!
                   \todo Currently there are not longer "range values" (values
