@@ -3729,6 +3729,15 @@ if ($current_revision < $n) {
             return;
         }
     }
+
+    //Update revision
+    if(!update_dbrevision($n))
+        return;
+    
+    $current_revision = $n;
+    $msg = "Database successfully updated to revision " . $current_revision . ".";
+    write_message($msg);
+    write_to_log($msg);
 }
 
 // -----------------------------------------------------------------------------
