@@ -30,9 +30,10 @@ if (!isset($_SESSION['editor'])) {
   $_SESSION['editor'] = new SettingEditor($_SESSION['user']);
 }
 
-// Settings by the admin can be used with any file format, no specific confidence
-// levels. Thus, we set the lowest confidence levels, which corresponds to the
-// tiff format to force the admin to enter all the parameters.
+// The admin will be  the only user who gets the freedom to omit parameters
+// systematically. Thus, we set the highest confidence levels, which
+// corresponds to the hdf5 format. Hence, it'll be up to the admin to fill out
+// the template fields for the users.
 if ($_SESSION['user']->isAdmin()) {
     $_SESSION[ 'parametersetting' ] = new ParameterSetting();
     $_SESSION[ 'parametersetting' ]->parameter("ImageFileFormat")->setValue("hdf5");
