@@ -2421,7 +2421,7 @@ echo '</body></html>';
 
               // If the PSF file is a *.ics/*.ids pair, we make sure to
               // hard-link also the companion file
-              $companion = $this->findCompanionFile($fullSourcePSFPath);
+              $companion = Fileserver::findCompanionFile($fullSourcePSFPath);
               if (NULL !== $companion) {
                   $cmd = "ln \"" . $companion . "\" \"" . $contDestPSFFolder . "/.\"";
                   $out = shell_exec($cmd);
@@ -2513,7 +2513,7 @@ echo '</body></html>';
 
                 // If the PSF file is a *.ics/*.ids pair, we make sure to
                 // hard-link also the companion file
-                $companion = $this->findCompanionFile($fullSourcePSFPath);
+                $companion = Fileserver::findCompanionFile($fullSourcePSFPath);
                 if (NULL !== $companion) {
                     $cmd = "ln \"" . $companion . "\" \"" . $contDestPSFFolder . "/.\"";
                     $out = shell_exec($cmd);
@@ -2529,7 +2529,7 @@ echo '</body></html>';
 
                 // Delete the containing folders if they are no longer needed
                 $contFolder = dirname($fullSourcePSFPath);
-                while ($contFolder != $buffer && $this->is_dir_empty($contFolder)) {
+                while ($contFolder != $buffer && Fileserver::is_dir_empty($contFolder)) {
                     if (!rmdir($contFolder)) {
                         break;
                     }
@@ -2548,6 +2548,58 @@ echo '</body></html>';
     }
 
     /*!
+ \brief Delete PSF files (hard links) with given relative path from
+        the psf_sharing/buffer folder.
+ \param $psfFiles array of PSF files paths relative to the file server root.
+ */
+    public static function deleteSharedFSPFilesFromBuffer($psfFiles) {
+
+        global $image_folder;
+
+        // Full path of the psf_sharing/buffer folder
+        $buffer =  $image_folder . "/psf_sharing/buffer";
+
+        // Process the PSF files
+        foreach ($psfFiles as $f) {
+
+            // Make sure the file points in the the buffer folder!
+            if (strpos($f, "psf_sharing/buffer") === 0) {
+
+                // Full path
+                $f = $image_folder . "/" . $f;
+
+                // Delete the file. If the file does not exist or cannot be
+                // deleted, log it and continue.
+                if (! unlink($f)) {
+                    report("Could not delete " . $f, 0);
+                }
+
+                // Get companion file
+                $c = Fileserver::findCompanionFile($f);
+                if (NULL !== $c) {
+                    // Delete the companion file. If the file does not exist or
+                    // cannot be deleted, log it and continue.
+                    if (! unlink($c)) {
+                        report("Could not delete " . $c, 0);
+                    }
+                }
+
+                // Delete the containing folders if empty
+                $contFolder = dirname($f);
+                while ($contFolder != $buffer && Fileserver::is_dir_empty($contFolder)) {
+                    if (!rmdir($contFolder)) {
+                        break;
+                    }
+                    $contFolder = dirname($contFolder . "..");
+                }
+
+            }
+
+        }
+
+    }
+
+    /*!
     \brief Given either an ics or and ids file, returns the companion.
 
     The companion file must exist.
@@ -2556,7 +2608,7 @@ echo '</body></html>';
                  be different (e.g. .ICS)
     \return full fine name of the companion file, if it exist; NULL otherwise.
      */
-  function findCompanionFile($file) {
+  public static function findCompanionFile($file) {
 
       // Get the extension
       $pos = strrpos($file, ".");
@@ -3620,7 +3672,7 @@ echo '</body></html>';
     \return bool|null True if the directory is empty, False if it is not; False
                       if it is not readable or does not exist.
      */
-    function is_dir_empty($dir) {
+    public static function is_dir_empty($dir) {
         if (!is_readable($dir)) return NULL;
         $handle = opendir($dir);
         while (false !== ($entry = readdir($handle))) {
