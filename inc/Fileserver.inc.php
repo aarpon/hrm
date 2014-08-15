@@ -2124,6 +2124,8 @@ echo '</body></html>';
   */
   public function genPreview( $file, $src, $dest, $index, $sizes = "preview", $data = 0 ) {
 
+      global $change_ownership;
+
       $excludeTitle = true;
       include("header.inc.php");
 
@@ -2156,7 +2158,9 @@ echo '</body></html>';
       if (!file_exists($pdest)) {
           @mkdir($pdest, 0777);
       }
-      @chmod($pdest, 0777);
+      if (isset($change_ownership) && $change_ownership == true) {
+        @chmod($pdest, 0777);
+      }
 
       $extra = "";
       $series = "auto";
@@ -3013,38 +3017,6 @@ echo '</body></html>';
   }
 
   /*!
-    \brief  Since HRM 1.2, thumbnails and previews  are located in a
-            subdirectory hrm_previews. When and old preview is found in
-            the way, we can use this function to move it to the new location.
-            This code is mostly harmless, but we can remove it after a couple
-            of releases.
-    \param  $dir    Path to the old preview file's directory;
-    \param  $entry  File name;
-  */
-  private function relocateOldPreview($dir, $entry) {
-      if (strstr($entry, ".jpg") || strstr($entry, ".avi")) {
-          // Relocate old HRM previews to the new subdirectory.
-          // Since HRM 1.2, previews are all stored in a subdirectory
-          // 'hrm_previews', but old images may remain along with
-          // previous results.
-          if (!file_exists($dir."/hrm_previews")) {
-              // We keep doing things assuming a trusted environment,
-              // but real security would require making all directories
-              // accessible to the deamon only, that runs all file
-              // management operation after the apache queries.
-              // By now, grant 777 permissions.
-              @mkdir($dir."/hrm_previews", 0777);
-              // The creation mask doesn't seem to work correctly, chmod
-              // now:
-              @chmod($dir."/hrm_previews", 0777);
-          }
-          # echo "mv $dir/$entry -> $dir/hrm_previews/$entry <br>";
-          @rename ($dir."/".$entry, $dir."/hrm_previews/".$entry);
-          @chmod($dir."/hrm_previews/".$entry, 0666);
-      }
-  }
-
-  /*!
     \brief  The recursive function that collects the  image files from the
             user's source folder and its subfolders
     \param  $startDir  The folder to start from
@@ -3078,7 +3050,6 @@ echo '</body></html>';
 	  $this->getFilesFrom($newDir, $newPrefix);
 	} else {
             if (!$this->isValidImage($entry)) {
-                $this->relocateOldPreview($startDir, $entry);
                 continue;
             }
             // Skip also if the image is not of the currently selected type.
@@ -3127,7 +3098,6 @@ echo '</body></html>';
                   $this->getDestFilesFrom($newDir, $newPrefix);
               } else {
                   if (!$this->isValidImage($entry)) {
-                      $this->relocateOldPreview($startDir, $entry);
                       continue;
                   }
                   // echo $entry,$prefix," VALID,";

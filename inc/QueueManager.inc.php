@@ -213,13 +213,20 @@ class QueueManager {
     \param  $files An array of files or single file.
     \param  $permission The requested file permission.
     */
-    private function chmodFiles($files,$permission) {
-        if (is_array($files)) {
-            foreach ($files as $f) {
-                chmod($f,$permission);
+    private function chmodFiles($files, $permission) {
+
+        global $change_ownership;
+
+        if (isset($change_ownership) && $change_ownership == true) {
+
+            if (is_array($files)) {
+                foreach ($files as $f) {
+                    chmod($f, $permission);
+                }
+            } else {
+                chmod($files, $permission);
             }
-        } else {
-            chmod($files,$permission);
+
         }
     }
 
@@ -452,10 +459,13 @@ class QueueManager {
         global $image_user;
         global $image_group;
         global $image_folder;
+        global $change_ownership;
 
-        $result = exec("sudo chown -R " . $image_user . ":" . $image_group .
-            " " . $image_folder . "/" . $username);
-        report("Restoring ownership... " . $result, 1);
+        if (isset($change_ownership) && $change_ownership == true) {
+            $result = exec("sudo chown -R " . $image_user . ":" . $image_group .
+                " " . $image_folder . "/" . $username);
+            report("Restoring ownership... " . $result, 1);
+        }
     }
 
     /*!
