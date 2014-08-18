@@ -84,9 +84,9 @@ proc reportImageDimensions { } {
 
 # Auxiliary procedure isMultiImgFile.
 # Return 1 if the image is of a type that supports sub-images. Currently, only
-# LIF.
+# LIF and CZI.
 proc isMultiImgFile { filename } {
-    set multiImgExtensions { ".lif" }
+    set multiImgExtensions { ".lif" ".czi"}
 
     set ext [file extension $filename]
     set isMulti 0
@@ -100,7 +100,7 @@ proc isMultiImgFile { filename } {
 
 
 # Script for Huygens Core to explore multi-image files and return their
-# subimages. Currently valid for Leica LIF files.
+# subimages. Currently valid for Leica LIF and Zeiss CZI files.
 proc reportSubImages {} {
 
     set imgCount [Hu_getOpt -count]
@@ -148,24 +148,20 @@ proc reportSubImages {} {
                 reportError "Can't find subimages for $image: $contents"
             } else {
 
-                # Since Huygens 3.3.3, the preOpen command returns an option-value list
-                set ver [versionAsInteger]
-                if { $ver >= 3030300 } {
-                    
-                    # Make sure there are no rests from the previous iteration.
-                    if { [info exists res] } {
-                        array unset res
-                    }
-
-                    catch { array set res $contents }
-
-                    if { ! [info exists res(subImages)] } {
-                        set contents {}
-                    } else {
-                        set contents $res(subImages)
-                    }
+                # Make sure there are no rests from the previous iteration.
+                if { [info exists res] } {
+                    array unset res
                 }
-
+                
+                catch { array set res $contents }
+                
+                if { ! [info exists res(subImages)] } {
+                    set contents {}
+                } else {
+                    set contents $res(subImages)
+                }
+                
+                
                 puts "COUNT"
                 puts "[llength $contents]"
                 foreach subImg $contents {

@@ -296,7 +296,7 @@ class QueueManager {
         foreach ($files as $file) {
             $counter++;
             $match = array( );
-            if ( preg_match("/^(.*\.lif)\s\((.*)\)/i", $file, $match) ) {
+            if ( preg_match("/^(.*\.(lif|czi))\s\((.*)\)/i", $file, $match) ) {
                 $filteredFiles[ $counter ] = $match[ 1 ];
             } else {
                 $filteredFiles[ $counter ] = $file;
@@ -563,7 +563,7 @@ class QueueManager {
 
                 // Write email
                 if ($send_mail) {
-		  $this->notifyError($job, $startTime);
+                    $this->notifyError($job, $startTime);
                 }
 
                 if (file_exists($errorFile)) {

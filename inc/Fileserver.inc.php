@@ -1402,6 +1402,10 @@ class Fileserver {
       $dirname = dirname($pdir."/".$image);
       $base = basename($pdir."/".$image);
 
+      /* Huygens does not support ":" in names of saved files. */
+      $base  = str_replace(":", "_", $base);
+      $image = str_replace(":", "_", $image);
+
       // The thumbnail is saved in a subdirectory along with the image, and it
       // has a suffix indicating the thumbnail type plus the jpg extension.
       $path = $dirname."/hrm_previews/".$base.".".$type.".jpg";
@@ -2203,6 +2207,9 @@ echo '</body></html>';
       echo "</pre></div>";
       ob_flush();
       flush();
+
+      /* Huygens does not support ":" in names of saved files. */
+      $basename = str_replace(":", "_", $basename);
 
       $path = stripslashes($pdest."/".$basename.".preview_xy.jpg");
       if ($ok && ! file_exists($path)) {

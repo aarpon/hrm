@@ -3944,7 +3944,18 @@ if ($current_revision < $n) {
         }
     }
 
-    //Update revision
+// ------- Set CZI's as multifile format. ------
+    $tabname = "file_format";
+    $record = array();
+    $record["ismultifile"] = 't';
+    if (!$db->AutoExecute('file_format', $record, 'UPDATE', "name like 'czi'")){
+        $msg = error_message($tabname);
+        write_message($msg);
+        write_to_error($msg);
+        return false;
+    }    
+
+//Update revision
     if(!update_dbrevision($n))
         return;
 

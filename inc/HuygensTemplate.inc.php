@@ -262,10 +262,10 @@ class HuygensTemplate {
     private $thumbType;
 
     /*! 
-     \var     $thumbLif
-     \brief   Whether to make thumbnails for lif images.
+     \var     $thumbSubImg
+     \brief   Whether to make thumbnails for lif and czi sub images.
     */
-    private $thumbLif;
+    private $thumbSubImg;
 
     /* -------------------------- Constructor ------------------------------- */
 
@@ -404,7 +404,7 @@ class HuygensTemplate {
                    'colocalization'             =>  'coloc',
                    '2Dhistogram'                =>  'hist',
                    'XYXZRawAtSrcDir'            =>  'previewGen',
-                   'XYXZRawLifAtSrcDir'         =>  'previewGen',
+                   'XYXZRawSubImgAtSrcDir'      =>  'previewGen',
                    'XYXZRawAtDstDir'            =>  'previewGen',
                    'XYXZDecAtDstDir'            =>  'previewGen',
                    'orthoRawAtDstDir'           =>  'previewGen',
@@ -753,7 +753,7 @@ class HuygensTemplate {
             case 'colocalization':
             case '2Dhistogram':    
             case 'XYXZRawAtSrcDir':
-            case 'XYXZRawLifAtSrcDir':
+            case 'XYXZRawSubImgAtSrcDir':
             case 'XYXZRawAtDstDir':
             case 'XYXZDecAtDstDir':
             case 'orthoRawAtDstDir':
@@ -822,7 +822,7 @@ class HuygensTemplate {
                 $taskList .= $this->getImgProcessHistogram();
                 break;
             case 'XYXZRawAtSrcDir':
-            case 'XYXZRawLifAtSrcDir':
+            case 'XYXZRawSubImgAtSrcDir':
             case 'XYXZRawAtDstDir':
             case 'XYXZDecAtDstDir':
             case 'orthoRawAtDstDir':
@@ -1154,10 +1154,10 @@ class HuygensTemplate {
             $this->thumbFrom = null;
         }
 
-        if (preg_match("/Lif/i",$thumbType)) {
-            $this->thumbLif = "lif";
+        if (preg_match("/SubImg/i",$thumbType)) {
+            $this->thumbSubImg = "subimg";
         } else {
-            $this->thumbLif = null;
+            $this->thumbSubImg = null;
         }
 
         if (preg_match("/SrcDir/i",$thumbType)) {
@@ -1985,7 +1985,7 @@ class HuygensTemplate {
                 break;
             case 'XYXZ':
                 $destFile = basename($this->srcImage);
-                $destFile .= $this->getLifImageSuffix($this->thumbLif);
+                $destFile .= $this->getSubImageSuffix($this->thumbSubImg);
                 break;
             case 'orthoSlice':
                 $suffix = ".original";
@@ -2031,12 +2031,12 @@ class HuygensTemplate {
     }
 
     /*!
-     \brief       Gets the lif subimage name between parenthesis as suffix
-     \param       $lif Whether or not a lif image is being dealt with
+     \brief       Gets the subimage name between parenthesis as suffix
+     \param       $subImg Whether or not a sub image is being dealt with
      \return      The image suffix
     */
-    private function getLifImageSuffix($lif) {
-        if (isset($this->subImage) && $lif != null) {
+    private function getSubImageSuffix($subImg) {
+        if (isset($this->subImage) && $subImg != null) {
             $suffix = " (";
             $suffix .= $this->tcllist2string($this->subImage);
             $suffix .= ")";                    
@@ -2391,7 +2391,7 @@ class HuygensTemplate {
  
         if (strstr($key, 'SFP') && !$saveSfpPreviews) {
             $task = "";
-        } elseif (strstr($key, 'Lif') && !$this->isImageLif()) {
+        } elseif (strstr($key, 'SubImg') && !$this->hasSubImage()) {
             $task = "";
         } elseif (strstr($key, 'ZComparison') && !$this->compareZviews) {
             $task = "";
@@ -2507,12 +2507,10 @@ class HuygensTemplate {
     }
 
     /*!
-     \brief       Whether or not an image has lif extension. 
-     \brief       Not very elegant, but it is here convenient to check whether
-     \brief       an image is lif through the presence of subimages.
+     \brief       Whether or not an image has sub images. 
      \return      Boolean 
     */
-    private function isImageLif( ) {
+    private function hasSubImage( ) {
         if (isset($this->subImage)) {
             return true;
         } else {
@@ -2592,10 +2590,11 @@ class HuygensTemplate {
         $this->srcImage = $this->jobDescription->sourceImageName();
 
         /*If a (string) comes after the file name, the string is interpreted
-         as a subimage. Currently this is for LIF files only. */
-        if ( preg_match("/^(.*\.lif)\s\((.*)\)/i", $this->srcImage, $match) ) {
+         as a subimage. Currently this is for LIF and CZI files only. */
+        if ( preg_match("/^(.*\.(lif|czi))\s\((.*)\)/i",
+                        $this->srcImage, $match) ) {
             $this->srcImage = $match[1];
-            $this->subImage = $match[2];
+            $this->subImage = $match[3];
         }
     }
 
