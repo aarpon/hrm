@@ -1613,6 +1613,37 @@ class ParameterSetting extends Setting {
                 continue;
             if ($parameter->name() == 'Sted3D' && !$this->isSted3D())
                 continue;
+            if ($parameter->name() == 'PSF' && $PSFmode == 'measured') {
+
+                // If this is a shared template, process the PSF file paths
+                // to return the final path as it will be when the shared
+                // template is accepted.
+                $buffer = "psf_sharing/buffer/";
+                $psfFiles = $parameter->value();
+                for ($i = 0; $i < count($psfFiles); $i++) {
+
+                    // Get current PSF file path
+                    $f = $psfFiles[$i];
+
+                    // Process it
+                    $pos = strpos($f, $buffer);
+                    if ($pos === 0) {
+
+                        // Remove all temporary path prefix
+                        $tmp = substr($f, strlen($buffer));
+                        $pos = strpos($tmp, "/");
+                        $tmp = substr($tmp, $pos + 1); // Remove owner
+                        $pos = strpos($tmp, "/");
+                        $tmp = substr($tmp, $pos + 1); // Remove previous owner
+
+                        // Update the parameter
+                        $psfFiles[$i] = $tmp;
+                    }
+                }
+                $parameter->setValue($psfFiles);
+                $result = $result . $parameter->displayString($numberOfChannels);
+                continue;
+            }
             $result = $result . $parameter->displayString($numberOfChannels);
         }
         return $result;

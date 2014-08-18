@@ -2128,6 +2128,8 @@ echo '</body></html>';
   */
   public function genPreview( $file, $src, $dest, $index, $sizes = "preview", $data = 0 ) {
 
+      global $change_ownership;
+
       $excludeTitle = true;
       include("header.inc.php");
 
@@ -2160,7 +2162,9 @@ echo '</body></html>';
       if (!file_exists($pdest)) {
           @mkdir($pdest, 0777);
       }
-      @chmod($pdest, 0777);
+      if (isset($change_ownership) && $change_ownership == true) {
+        @chmod($pdest, 0777);
+      }
 
       $extra = "";
       $series = "auto";
@@ -2428,7 +2432,7 @@ echo '</body></html>';
 
               // If the PSF file is a *.ics/*.ids pair, we make sure to
               // hard-link also the companion file
-              $companion = $this->findCompanionFile($fullSourcePSFPath);
+              $companion = Fileserver::findCompanionFile($fullSourcePSFPath);
               if (NULL !== $companion) {
                   $cmd = "ln \"" . $companion . "\" \"" . $contDestPSFFolder . "/.\"";
                   $out = shell_exec($cmd);
@@ -2520,7 +2524,7 @@ echo '</body></html>';
 
                 // If the PSF file is a *.ics/*.ids pair, we make sure to
                 // hard-link also the companion file
-                $companion = $this->findCompanionFile($fullSourcePSFPath);
+                $companion = Fileserver::findCompanionFile($fullSourcePSFPath);
                 if (NULL !== $companion) {
                     $cmd = "ln \"" . $companion . "\" \"" . $contDestPSFFolder . "/.\"";
                     $out = shell_exec($cmd);
@@ -2536,7 +2540,7 @@ echo '</body></html>';
 
                 // Delete the containing folders if they are no longer needed
                 $contFolder = dirname($fullSourcePSFPath);
-                while ($contFolder != $buffer && $this->is_dir_empty($contFolder)) {
+                while ($contFolder != $buffer && Fileserver::is_dir_empty($contFolder)) {
                     if (!rmdir($contFolder)) {
                         break;
                     }
@@ -2555,6 +2559,58 @@ echo '</body></html>';
     }
 
     /*!
+ \brief Delete PSF files (hard links) with given relative path from
+        the psf_sharing/buffer folder.
+ \param $psfFiles array of PSF files paths relative to the file server root.
+ */
+    public static function deleteSharedFSPFilesFromBuffer($psfFiles) {
+
+        global $image_folder;
+
+        // Full path of the psf_sharing/buffer folder
+        $buffer =  $image_folder . "/psf_sharing/buffer";
+
+        // Process the PSF files
+        foreach ($psfFiles as $f) {
+
+            // Make sure the file points in the the buffer folder!
+            if (strpos($f, "psf_sharing/buffer") === 0) {
+
+                // Full path
+                $f = $image_folder . "/" . $f;
+
+                // Delete the file. If the file does not exist or cannot be
+                // deleted, log it and continue.
+                if (! unlink($f)) {
+                    report("Could not delete " . $f, 0);
+                }
+
+                // Get companion file
+                $c = Fileserver::findCompanionFile($f);
+                if (NULL !== $c) {
+                    // Delete the companion file. If the file does not exist or
+                    // cannot be deleted, log it and continue.
+                    if (! unlink($c)) {
+                        report("Could not delete " . $c, 0);
+                    }
+                }
+
+                // Delete the containing folders if empty
+                $contFolder = dirname($f);
+                while ($contFolder != $buffer && Fileserver::is_dir_empty($contFolder)) {
+                    if (!rmdir($contFolder)) {
+                        break;
+                    }
+                    $contFolder = dirname($contFolder . "..");
+                }
+
+            }
+
+        }
+
+    }
+
+    /*!
     \brief Given either an ics or and ids file, returns the companion.
 
     The companion file must exist.
@@ -2563,7 +2619,7 @@ echo '</body></html>';
                  be different (e.g. .ICS)
     \return full fine name of the companion file, if it exist; NULL otherwise.
      */
-  function findCompanionFile($file) {
+  public static function findCompanionFile($file) {
 
       // Get the extension
       $pos = strrpos($file, ".");
@@ -2968,38 +3024,6 @@ echo '</body></html>';
   }
 
   /*!
-    \brief  Since HRM 1.2, thumbnails and previews  are located in a
-            subdirectory hrm_previews. When and old preview is found in
-            the way, we can use this function to move it to the new location.
-            This code is mostly harmless, but we can remove it after a couple
-            of releases.
-    \param  $dir    Path to the old preview file's directory;
-    \param  $entry  File name;
-  */
-  private function relocateOldPreview($dir, $entry) {
-      if (strstr($entry, ".jpg") || strstr($entry, ".avi")) {
-          // Relocate old HRM previews to the new subdirectory.
-          // Since HRM 1.2, previews are all stored in a subdirectory
-          // 'hrm_previews', but old images may remain along with
-          // previous results.
-          if (!file_exists($dir."/hrm_previews")) {
-              // We keep doing things assuming a trusted environment,
-              // but real security would require making all directories
-              // accessible to the deamon only, that runs all file
-              // management operation after the apache queries.
-              // By now, grant 777 permissions.
-              @mkdir($dir."/hrm_previews", 0777);
-              // The creation mask doesn't seem to work correctly, chmod
-              // now:
-              @chmod($dir."/hrm_previews", 0777);
-          }
-          # echo "mv $dir/$entry -> $dir/hrm_previews/$entry <br>";
-          @rename ($dir."/".$entry, $dir."/hrm_previews/".$entry);
-          @chmod($dir."/hrm_previews/".$entry, 0666);
-      }
-  }
-
-  /*!
     \brief  The recursive function that collects the  image files from the
             user's source folder and its subfolders
     \param  $startDir  The folder to start from
@@ -3033,7 +3057,6 @@ echo '</body></html>';
 	  $this->getFilesFrom($newDir, $newPrefix);
 	} else {
             if (!$this->isValidImage($entry)) {
-                $this->relocateOldPreview($startDir, $entry);
                 continue;
             }
             // Skip also if the image is not of the currently selected type.
@@ -3082,7 +3105,6 @@ echo '</body></html>';
                   $this->getDestFilesFrom($newDir, $newPrefix);
               } else {
                   if (!$this->isValidImage($entry)) {
-                      $this->relocateOldPreview($startDir, $entry);
                       continue;
                   }
                   // echo $entry,$prefix," VALID,";
@@ -3627,7 +3649,7 @@ echo '</body></html>';
     \return bool|null True if the directory is empty, False if it is not; False
                       if it is not readable or does not exist.
      */
-    function is_dir_empty($dir) {
+    public static function is_dir_empty($dir) {
         if (!is_readable($dir)) return NULL;
         $handle = opendir($dir);
         while (false !== ($entry = readdir($handle))) {

@@ -918,6 +918,23 @@ class DatabaseConnection {
         // Initialize success
         $ok = True;
 
+        // Delete shared PSF files if any exist
+        if ($sourceParameterTable == "shared_parameter") {
+            $query = "select value from $sourceParameterTable where setting_id=$id and name='PSF'";
+            $psfFiles = $this->queryLastValue($query);
+            if (NULL != $psfFiles && $psfFiles != "#####") {
+                if ($psfFiles[0] == "#") {
+                    $psfFiles = substr($psfFiles, 1);
+                }
+
+                // Extract PSF file paths from the string
+                $psfFiles = explode("#", $psfFiles);
+
+                // Delete them
+                Fileserver::deleteSharedFSPFilesFromBuffer($psfFiles);
+            }
+        }
+
         // Delete setting entry
         $query = "delete from $sourceSettingTable where id=$id";
         $status = $this->connection->Execute($query);
