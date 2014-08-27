@@ -42,7 +42,6 @@ checkCredentials () {
 
      initialize $1 $2
 
-     # Try to log in.
      omeroLogin
 
      # Try to log out in any case.
@@ -50,15 +49,19 @@ checkCredentials () {
 
      # If we couldn't get the user id, the credentials weren't Ok.
      if [ -z "$USER_ID" ] ; then
-       echo "-1"
+         echo "-1"
+         log "ERROR logging into OMERO."
      else
-       echo $USER_ID
+         log "Successfully logged into OMERO with user ID $USER_ID."
+         echo $USER_ID
      fi
 }
 
 
 omeroLogin () {
 
+    log "Trying to log into OMERO."
+    # log "> $OMERO_EXEC login -u $USER_LOGIN -w **** -s $OMERO_HOSTNAME -p $OMERO_PORT"
     $OMERO_EXEC login -u $USER_LOGIN \
                       -w $USER_PASSD \
                       -s $OMERO_HOSTNAME \
@@ -104,7 +107,11 @@ retrieveUserId() {
     # Retrieve the user id.
     QRY="SELECT i.id FROM Experimenter i WHERE i.omeName='$USER_LOGIN'"
     USER_ID=$(omero_query "$QRY")
-    log "OMERO user ID for username $USER_LOGIN: $USER_ID."
+    if [ -z "$USER_ID" ] ; then
+        log "ERROR retrieving OMERO user ID for username $USER_LOGIN."
+    else
+        log "OMERO user ID for username $USER_LOGIN: $USER_ID."
+    fi
 }
 
 
