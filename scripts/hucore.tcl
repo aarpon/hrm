@@ -102,7 +102,7 @@ proc isMultiImgFile { filename } {
 # Script for Huygens Core to explore multi-image files and return their
 # subimages. Currently valid for Leica LIF and Zeiss CZI files.
 proc reportSubImages {} {
-
+    
     set imgCount [Hu_getOpt -count]
     set dir [Hu_getOpt -dir]
 
@@ -138,43 +138,46 @@ proc reportSubImages {} {
             continue
         }
 
-        if { [isMultiImgFile $path] } {
-            puts "TYPE"
-            puts "multiple"
-
-            if { [ catch {
-                img preOpen $path 
-            } contents ] } {
-                reportError "Can't find subimages for $image: $contents"
-            } else {
-
-                # Make sure there are no rests from the previous iteration.
-                if { [info exists res] } {
-                    array unset res
-                }
-                
-                catch { array set res $contents }
-                
-                if { ! [info exists res(subImages)] } {
-                    set contents {}
-                } else {
-                    set contents $res(subImages)
-                }
-                
-                
-                puts "COUNT"
-                puts "[llength $contents]"
-                foreach subImg $contents {
-                    puts "SUBIMG"
-                    puts "$subImg"
-                }
-            }
-        } else {
+        if { ![isMultiImgFile $path] } {
             puts "TYPE"
             puts "single"
             puts "COUNT"
             puts "0"
+            puts "END IMG"
+            continue
         }
+        
+        puts "TYPE"
+        puts "multiple"
+        
+        if { [ catch {
+            img preOpen $path 
+        } contents ] } {
+            reportError "Can't find subimages for $image: $contents"
+            puts "END IMG"
+            continue
+        }
+        
+        # LIFs can report 2-level nesting sub images, CZIs can't.
+        # Parse CZIs and 1st nesting level LIFs accordingly.
+        set extension [file extension $path]
+        if { [string equal -nocase $extension ".czi"] } {
+            set subImages [lindex $contents 1]
+        } elseif { [string equal -nocase $extension ".lif"] } {
+            set resDict [dict create {*}[lindex $contents 1]]
+            set subImages [dict keys $resDict]
+            
+            # Leave no debries to the next iteration.
+            dict unset $resDict $subImages
+        }
+        
+        puts "COUNT"
+        puts "[llength $subImages]"
+        foreach subImg $subImages {
+            puts "SUBIMG"
+            puts "$subImg"
+        }
+        
         puts "END IMG"
     }
 }
