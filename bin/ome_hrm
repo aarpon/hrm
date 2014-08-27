@@ -218,7 +218,8 @@ exportImage() {
         echo "Missing image destination path."
         return
     fi
-    IMAGE_DEST="$4"
+    # cut away the original suffix and append ".ome.tif" instead:
+    IMAGE_DEST=$(echo "$4" | sed 's,\.[^.*]*$,.ome.tif,')
 
     omeroLogin $USER_LOGIN $USER_PASSD
 
