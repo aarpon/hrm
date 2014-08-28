@@ -744,22 +744,22 @@ class Fileserver {
   }
 
   /*!
-   \brief  Exports a deconvolved image to the Omero server.
+   \brief  Exports a deconvolved image to the OMERO server.
   */
   public function exportToOmero( ) {
 
       if (!isset($_SESSION['omeroConnection'])) {
-          return "Impossible to reach your Omero account.";
+          return "Impossible to reach your OMERO account.";
       }
 
       if (!isset($_POST['selectedFiles'])) {
-          return "Please select a deconvolved image to export to Omero.";
+          return "Please select a deconvolved image to export to OMERO.";
       }
 
       if (!isset($_POST['OmeDatasetId'])
           || empty($_POST['OmeDatasetId'])) {
           return "Please select a destination dataset
-                  within the Omero data tree.";
+                  within the OMERO data tree.";
       }
 
       $omeroConnection = $_SESSION['omeroConnection'];
@@ -768,27 +768,27 @@ class Fileserver {
   }
 
   /*!
-   \brief  Imports a raw image from the Omero server.
+   \brief  Imports a raw image from the OMERO server.
   */
   public function importFromOmero() {
 
       if (!isset($_SESSION['omeroConnection'])) {
-          return "Impossible to reach your Omero account.";
+          return "Impossible to reach your OMERO account.";
       }
 
       if (!isset($_POST['OmeImageId'])
           || empty($_POST['OmeImageId'])) {
-          return "Please select an image within the Omero data tree.";
+          return "Please select an image within the OMERO data tree.";
       }
 
       if (!isset($_POST['OmeImageName'])
           || empty($_POST['OmeImageName'])) {
-          return "Please select an image within the Omero data tree.";
+          return "Please select an image within the OMERO data tree.";
       }
 
       if (!isset($_POST['OmeDatasetId'])
           || empty($_POST['OmeDatasetId'])) {
-          return "Please select an image within the Omero data tree.";
+          return "Please select an image within the OMERO data tree.";
       }
 
       $omeroConnection = $_SESSION['omeroConnection'];
