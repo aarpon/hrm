@@ -865,9 +865,9 @@ class Fileserver {
   public function uploadFiles($files, $dir) {
 
       if ( $dir == "src" ) {
-          $uploaddir =  $this->sourceFolder();
+          $uploadDir =  $this->sourceFolder();
       } else {
-          $uploaddir =  $this->destinationFolder();
+          $uploadDir =  $this->destinationFolder();
       }
 
       $max = getMaxFileSize() / 1024 / 1024;
@@ -877,12 +877,8 @@ class Fileserver {
       $err = "";
       $okCnt = 0;
 
-      # print_r($files); exit;
 
       // This needs some file type validation: only images should be allowed.
-
-      // decompression still pending.
-
       try {
 
       foreach ($files['name'] as $i => $name) {
@@ -891,17 +887,17 @@ class Fileserver {
               // This is also error UPLOAD_ERR_NO_FILE;
               continue;
           }
-          $basename = basename($name);
-          $basename = str_replace(" ","_",$basename);
-          $uploadfile = $uploaddir . "/" . $basename;
-          $info = pathinfo($uploadfile);
-          $file_name =  basename($uploadfile,'.'.$info['extension']);
+          $baseName = basename($name);
+          $baseName = str_replace(" ","_",$baseName);
+          $uploadFile = $uploadDir . "/" . $baseName;
+          $bareName = reset(explode('.',$baseName));
+          $extension = str_replace($bareName,"",$baseName);
 
-	  // If the php.ini upload variables are overriden in the HRM
-	  // config files, PHP does not rise this error.
- 	  if (($files['size'][$i] / 1024 / 1024) > $max) {
- 	     $files['error'][$i] = UPLOAD_ERR_INI_SIZE;
-  	  }
+          // If the php.ini upload variables are overriden in the HRM
+          // config files, PHP does not rise this error.
+          if (($files['size'][$i] / 1024 / 1024) > $max) {
+              $files['error'][$i] = UPLOAD_ERR_INI_SIZE;
+          }
 
           if ($files['error'][$i]) {
               $err .= "Invalid file <kbd>".$basename."</kbd>: <b>";
@@ -931,42 +927,42 @@ class Fileserver {
 
           if ( $type != "" ) {
               # If this is a compressed archive, extract its files.
-              $subdir = $file_name;
-              $zsuffix = 0;
-              $zmaxSuffix = 100;
-
-              $testExpand = $uploaddir . "/" . $subdir;
+              $subDir = $baseName;
+              $zSuffix = 0;
+              $zMaxSuffix = 100;
+              
+              $testExpand = $uploadDir . "/" . $subDir;
 
               while (file_exists($testExpand)) {
-                  $zsuffix ++;
-                  $testExpand = $uploaddir . "/" . $file_name. "_$zsuffix" ;
-                  if ($zsuffix > $zmaxSuffix) {
-                      $err .= "Directory <kbd>".$file_name.
+                  $zSuffix ++;
+                  $testExpand = $uploadDir . "/" . $bareName .
+                      "_$zsuffix" . $extension;
+                  if ($zSuffix > $zMaxSuffix) {
+                      $err .= "Directory <kbd>".$baeName.
                           "</kbd> exists, <b>can't store more ".
-                          " than $zmaxSuffix versions.</b><br>\n";
+                          " than $zMaxSuffix versions.</b><br>\n";
                       break;
                   }
               }
-              if ($zsuffix > $zmaxSuffix) {
+              if ($zSuffix > $zMaxSuffix) {
                   continue;
               }
 
               $okCnt++;
-              $ok .= "<br>Processed <kbd>".$basename."</kbd>.<br>\n";
+              $ok .= "<br>Processed <kbd>".$baseName."</kbd>.<br>\n";
 
-
-              if ($zsuffix > 0) {
-                  $subdir = $file_name."_".$zsuffix;
-                  $ok .= "Extracting files to <kbd>$subdir</kbd>.<br>\n";
+              if ($zSuffix > 0) {
+                  $subDir = $baseName."_".$zSuffix;
+                  $ok .= "Extracting files to <kbd>$subDir</kbd>.<br>\n";
               }
               $this->decompressArchive($files['tmp_name'][$i], $type,
-                      $uploaddir, $ok, $err, $subdir, true);
+                      $uploadDir, $ok, $err, $subDir, true);
               continue;
 
           }
 
           if (!$this->isValidImage($name, true)) {
-              $err .= "Skipped <kbd>".$basename."</kbd>: ";
+              $err .= "Skipped <kbd>". $baseName ."</kbd>: ";
               $err .= "<b>unknown image type</b><br>\n";
               continue;
 
@@ -975,41 +971,42 @@ class Fileserver {
           $suffix = 0;
           $maxSuffix = 20;
 
-          while (file_exists($uploadfile)) {
+          while (file_exists($uploadFile)) {
               $suffix ++;
-              $uploadfile = $uploaddir . "/" . $file_name
-                  . "_$suffix." . $info['extension'];
+              $uploadFile = $uploadDir . "/" . $bareName .
+                  "_$suffix" . $extension;
               if ($suffix > $maxSuffix) {
-                  $err .= "File <kbd>".$basename.
-                      "</kbd> exists, <b>can't store more than $maxSuffix versions.</b>";
+                  $err .= "File <kbd>".$baseName.
+                      "</kbd> exists, <b>can't store more than " .
+                      "$maxSuffix versions.</b>";
                   break;
               }
           }
           if ($suffix > $maxSuffix) {
               continue;
           }
-
-          if (move_uploaded_file($files['tmp_name'][$i], $uploadfile)) {
+          
+          if (move_uploaded_file($files['tmp_name'][$i], $uploadFile)) {
               // echo "File is valid, and was successfully uploaded.\n";
               if ($suffix == 0) {
-                  $ok .= "<kbd>".$basename."</kbd> uploaded <br>\n";
+                  $ok .= "<kbd>". $baseName ."</kbd> uploaded <br>\n";
               } else {
-                  $ok .= "<kbd>".$basename.
+                  $ok .= "<kbd>". $baseName .
                       "</kbd> already exists, uploaded and <b>renamed</b> ".
-                      "to <kbd>$file_name"
-                      . "_$suffix." . $info['extension']. "</kbd><br>\n";
+                      "to <kbd>$bareName" . 
+                      "_$suffix" . $extension . "</kbd><br>\n";
               }
               $okCnt++;
           } else {
-              $err .= "File ".$basename." could not be written to its ".
-                      "final destination. Please make sure that " .
+              $err .= "File ".$baseName." could not be written to its ".
+                  "final destination. Please make sure that " .
                       "directory permissions are correctly set!<br>\n";
           }
       }
       } catch (Exception $e) {
           $err .= "Error uploading files: ".$e->getMessage();
-      }
-
+      }      
+      
       $msg = "<h3>Upload report</h3>\n";
 
       if ($okCnt == 0) {
@@ -1019,7 +1016,8 @@ class Fileserver {
           if ($okCnt > 1) {
               $plural = "s";
           }
-          $msg .= "<p class=\"report\">$okCnt file$plural uploaded.</p><p class=\"report\">$ok</p><p class=\"report\">$err</p>";
+          $msg .= "<p class=\"report\">$okCnt file$plural uploaded.</p>" .
+              "<p class=\"report\">$ok</p><p class=\"report\">$err</p>";
       }
 
       if ( $dir == "src" ) {
@@ -1161,9 +1159,7 @@ class Fileserver {
 
       $answer = huCoreTools( "reportSubImages", $opt);
 
-
       if (! $answer ) return;
-      # printDebug ($answer);
 
       $lines = count($answer);
 
@@ -1215,9 +1211,6 @@ class Fileserver {
       }
 
       return $new_files;
-
-      # printDebug ($tree);
-
   }
 
   /*!
@@ -1248,12 +1241,8 @@ class Fileserver {
       }
 
       $opt = "-count $i $imgList -dir \"". $this->sourceFolder() ."\"";
-
-
       $answer = huCoreTools( "getMetaData", $opt);
-
       if (! $answer ) return;
-      # printDebug ($answer);
 
       $lines = count($answer);
 
@@ -1309,8 +1298,6 @@ class Fileserver {
           }
       }
 
-
-      # printDebug ($tree);
       return $tree;
 
   }
@@ -2171,11 +2158,7 @@ echo '</body></html>';
 
       $opt = "-filename \"$basename\" -src \"$psrc\" -dest \"$pdest\" ".
              "-scheme auto -sizes \{$sizes\} -series $series $extra";
-
       $answer = huCoreTools( "generateImagePreview", $opt);
-
-      # if (! $answer ) return;
-      # printDebug ($answer);
 
       $lines = count($answer);
       $html = "";
