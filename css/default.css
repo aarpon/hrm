@@ -1284,7 +1284,8 @@ a.filled {
 #addanotherfile {
     margin: 5px;
     color: #f23;
-    font-size: 80%;
+    font-size: 100%;
+    text-decoration: underline;
 }
 
 span.spacer {
