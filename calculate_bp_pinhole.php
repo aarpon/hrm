@@ -45,11 +45,11 @@ $microscopes = array (
     array
     ("micro=Leica_TCS4d_SP1_NT_Airy_units&param=Number+of+Airy+disks&msys=0&mo=0&c=0.56419&a=0&b=0&u=0&wl=580",
     "http://support.svi.nl/wiki/LeicaConfocal_TCS4d_SP1_NT"),
-    "Leica confocal SP2" => 
+    "Leica confocal SP2" =>
     array ("micro=Leica_TCS_SP2_Airy_units&param=Number+of+Airy+disks&msys=0&mo=0&c=0.56419&a=0&b=0&u=0&wl=580", "http://support.svi.nl/wiki/LeicaConfocal_TCS_SP2"),
-    "Leica confocal SP5" => 
+    "Leica confocal SP5" =>
     array ("micro=Leica_TCS_SP5_Airy_units&param=Number+of+Airy+disks&msys=0&mo=0&c=0.56419&a=0&b=0&u=0&wl=580", "http://support.svi.nl/wiki/LeicaConfocal_TCS_SP5"),
-    "Leica confocal SP8" => 
+    "Leica confocal SP8" =>
     array ("micro=Leica_TCS_SP8_Airy_units&param=Number+of+Airy+disks&msys=0&mo=0&c=0.56419&a=0&b=0&u=0&wl=580", "http://support.svi.nl/wiki/LeicaConfocal_TCS_SP8"),
     "Nikon TE2000-E with the C1 scanning head" =>
     array ("micro=Nikon_TE2000E_C1&param=Pinhole+diameter+(microns)&a=1&b=0&na=0&wl=0&msys=1&c=0.5&u=-6&extra1=1.5&txt1=Optional+1.5x+magnification",
@@ -63,13 +63,13 @@ $microscopes = array (
     "Olympus FV1000" =>
     array ("micro=Olympus_FV1000&param=Pinhole+side+(microns)&a=1&b=0&na=0&wl=0&msys=3.82&c=0.5641896&u=-6", "http://support.svi.nl/wiki/Olympus_FV1000"),
     "Yokogawa spinning disk (pinhole radius)" =>
-    array ("micro=Yokogawa_spinning_disk&d=50&a=1&b=0&na=0&wl=0&msys=1&c=0.5&u=-6", 
+    array ("micro=Yokogawa_spinning_disk&d=50&a=1&b=0&na=0&wl=0&msys=1&c=0.5&u=-6",
     "http://support.svi.nl/wiki/YokogawaDisk"),
     "Yokogawa spinning disk (pinhole distance)" =>
-    array ("micro=Yokogawa_disk_(pinhole_distance)&d=253&a=1&b=0&na=0&wl=0&msys=1&c=1&u=-6&ru=-6&rtag=pinhole+distance", 
+    array ("micro=Yokogawa_disk_(pinhole_distance)&d=253&a=1&b=0&na=0&wl=0&msys=1&c=1&u=-6&ru=-6&rtag=pinhole+distance",
     "http://support.svi.nl/wiki/BackProjectedPinholeDistance"),
     "Zeiss LSM410 inverted" =>
-    array ("micro=Zeiss_LSM410_inverted_P8&param=Reported+parameter+(P_8)&a=3.92157&b=0&na=0&wl=0&msys=2.23&c=0.56419&u=-6", 
+    array ("micro=Zeiss_LSM410_inverted_P8&param=Reported+parameter+(P_8)&a=3.92157&b=0&na=0&wl=0&msys=2.23&c=0.56419&u=-6",
     "http://support.svi.nl/wiki/Zeiss_LSM410_inverted"),
     "Zeiss LSM510" =>
     array("micro=Zeiss_LSM510&param=Pinhole+diameter+(microns)&a=1&b=0&na=0&wl=0&msys=3.33&c=0.5&u=-6", "http://support.svi.nl/wiki/Zeiss_LSM510"),
@@ -77,6 +77,8 @@ $microscopes = array (
     array("micro=Zeiss_LSM700&param=Pinhole+diameter+(microns)&a=1&b=0&na=0&wl=0&msys=1.53&c=0.564&u=-6", "http://support.svi.nl/wiki/Zeiss_LSM700"),
     "Zeiss LSM710" =>
     array("micro=Zeiss_LSM710&param=Pinhole+diameter+(microns)&a=1&b=0&na=0&wl=0&msys=1.9048&c=0.564&u=-6", "http://support.svi.nl/wiki/Zeiss_LSM710"),
+    "Zeiss LSM780" =>
+    array("micro=Zeiss_780&param=Pinhole+diameter+(microns)&a=1&b=0&na=0&wl=0&msys=1.9048&c=0.564&u=-6", "http://support.svi.nl/wiki/Zeiss_LSM780"),
     "Not listed" => 
     array ("micro=Not_listed_microscope&param=Pinhole+physical+diameter+(microns)&a=1&b=0&na=0&wl=0&u=-6", "http://support.svi.nl/wiki/ReportOtherMicroscope")
 );
@@ -90,7 +92,7 @@ function globalize_vars ($var_string, $type) {
       global ${$var_name};
       if (!isset(${$var_name}) && isset(${$type}["$var_name"]))
          ${$var_name} = ${$type}["$var_name"];
-         #echo $var_name, $$var_name, " "; 
+         #echo $var_name, $$var_name, " ";
       while ($var_name) {
          $var_name = trim(strtok (","));
          global ${$var_name};
@@ -216,7 +218,7 @@ function start() {
     global $microscopes, $na;
 
     echo "<h4>Please choose a microscope from the following list:</h4>";
-    
+
     echo "\n<ul>";
 
     $script = $_SERVER['PHP_SELF'];
@@ -232,9 +234,9 @@ function start() {
         echo "\n<li><a href=\"$script?$data[0]&help=$data[1]&task=form$extra\">$m</a></li>";
     }
     echo "\n</ul>";
-    
+
     echo "<div id=\"controls\">
-    
+
             <input type=\"button\" value=\"\" class=\"icon up\"
                   onmouseover=\"Tip('Go back without calculating the ' +
                   'backprojected pinhole radius for your microscope.')\"
@@ -246,16 +248,16 @@ function start() {
          <div id="rightpanel">
 
         <div id="info">
-            
+
             <h3>Quick help</h3>
 
-            <?php 
+            <?php
             echo "<p>The following forms will assist you in calculating the ".
             "(circular-equivalent) backprojected pinhole radius expressed in ".
             "nanometers, that you can enter directly in the HRM settings.</p>";
             echo "<p>Please mind that there is one special entry to calculate ";
             echo "pinhole distances in spinning disks.</p>";
-    echo "<p>Click <b>Help</b> on the top menu for more details.</p>";    
+    echo "<p>Click <b>Help</b> on the top menu for more details.</p>";
 
     echo "<p>Start by selecting your microscope model from the list on the
         left, or click on cancel at the bottom to go back.</p>";
@@ -308,7 +310,7 @@ global $cmsys, $table, $extra1, $txt1, $extra2, $txt2, $checked1, $checked2;
 
      foreach ($reportparams as $entry) {
 
-        if (!isset($$entry) && $$entry !== "" && $$entry !== 0 
+        if (!isset($$entry) && $$entry !== "" && $$entry !== 0
             || ($entry == "msys" && $cmsys==1) ) {
             print fieldEntry($entry)."<br>\n";
         }
@@ -330,15 +332,15 @@ global $cmsys, $table, $extra1, $txt1, $extra2, $txt2, $checked1, $checked2;
      print "<div><input name=\"OK\" type=\"hidden\" /></div>";
 
 
- 
+
      print "\n$afterTable";
 
 ?>
 
           </fieldset>
 
-          <div id="controls">          
-            <input type="button" value="" class="icon previous"          
+          <div id="controls">
+            <input type="button" value="" class="icon previous"
                   onmouseover="Tip('Go back to the microscope list.' )"
                   onmouseout="UnTip()"
                   onclick="document.location.href='<?php echo $_SERVER['PHP_SELF']; ?>'" />
@@ -348,16 +350,16 @@ global $cmsys, $table, $extra1, $txt1, $extra2, $txt2, $checked1, $checked2;
                   onmouseout="UnTip()"
                   onclick="process()" />
           </div>
-          
+
         </form>
       </div> <!-- content -->
 
       <div id="rightpanel">
-        
+
         <div id="info">
 
         <h3>Quick help</h3>
-        
+
             <p>
                Enter or confirm the requested values and press the calculator
                button to calculate the
@@ -419,10 +421,10 @@ if ( ($mo == 0 || $msys == 0) && ($na == 0 && $wl ==0) ) {
     if ($extra2) $M *= $extra2;
 }
 
-if ($c == 0) 
+if ($c == 0)
     $error .= "Wrong shape factor value.<br>\n";
 
-if ($d == 0 || !isset($d)) 
+if ($d == 0 || !isset($d))
     $error .= "Wrong pinhole value. Please enter a value as reported " .
         "by your microscope.<br>\n";
 
@@ -487,13 +489,13 @@ if ($error) {
 }
 else
 {
-    $result = round($phr / $M,2);    
+    $result = round($phr / $M,2);
     $out .= "<h4>";
     $out .=  "Backprojected $rtag $runits: <b>$result</b>";
     $out .= "</h4>";
 
     $out .= "<p>&nbsp;</p>";
-    
+
     $out .= "<p>This is the parameter list used in this calculation:</p>";
     $out .= $warning;
 
@@ -514,11 +516,11 @@ else
 $out .= "<div id=\"controls\">";
 
 $toScript = $_SERVER['HTTP_REFERER'];
-        
+
 $out .= "<input type=\"button\" value=\"\" class=\"icon previous\"
     onmouseover=\"Tip('Try again with other parameters.' )\"
     onmouseout=\"UnTip()\"
-    onclick=\"document.location.href='" . $toScript ."'\" />";        
+    onclick=\"document.location.href='" . $toScript ."'\" />";
 
 $out .= "<input type=\"button\" value=\"\" class=\"icon next\"
     onmouseover=\"Tip('Proceed to the optical parameters back.' )\"
@@ -526,11 +528,11 @@ $out .= "<input type=\"button\" value=\"\" class=\"icon next\"
     onclick=\"document.location.href='" . $ref ."'\" /></div>";
 
 $out .= "</div> <!-- content -->";
-                  
+
 $out .= "<div id=\"rightpanel\">
         <div id=\"info\">
         <h3>Quick help</h3>";
-        
+
 if ($error) {
     $out .= "<p>Please go back and correct the wrong or missing parameter(s) or
                 proceed to the optical parameter pages.</p>";
@@ -581,14 +583,15 @@ include("header.inc.php");
 </div>
 
 <?php
-echo "<div id=\"content\"> <h3>Backprojected pinhole calculator</h3>";
+echo "<div id=\"content\"><h3><img alt=\"CalcPinhole\" src=\"./images/pinhole.png\"
+         width=\"40\"/>&nbsp;Backprojected pinhole calculator</h3>";
 
 switch($task) {
     case 'calc':
         $html =  serve();
         echo $html;
         break;
-    case 'form':    
+    case 'form':
         form();
         break;
     default:

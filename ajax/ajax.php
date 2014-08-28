@@ -10,7 +10,7 @@ require_once '../inc/JobQueue.inc.php';
 // Functions
 
 /**
- * Get the summary for current parameter set
+ * Get the summary for current template
  * @param SettingsEditor $editor  SettingsEditor
  * @param String $setName Parameter name
  * @param int $numChannels Number of channels

@@ -116,7 +116,7 @@ class QueueManager {
         // failed jobs.
         $this->removeHuygensOutputFiles($desc, $server_hostname);
 
-        report(">>>>> Executing templatex: " .
+        report(">>>>> Executing template: " .
             $imageProcessingIsOnQueueManager . " " .
                 $copy_images_to_huygens_server, 2);
         if (!$imageProcessingIsOnQueueManager &&
@@ -214,12 +214,16 @@ class QueueManager {
     \param  $permission The requested file permission.
     */
     private function chmodFiles($files,$permission) {
+        global $change_ownership;
+
+        if (isset($change_ownership) && $change_ownership == true) {
         if (is_array($files)) {
             foreach ($files as $f) {
                 chmod($f,$permission);
             }
         } else {
             chmod($files,$permission);
+            }
         }
     }
 
@@ -296,7 +300,7 @@ class QueueManager {
         foreach ($files as $file) {
             $counter++;
             $match = array( );
-            if ( preg_match("/^(.*\.lif)\s\((.*)\)/i", $file, $match) ) {
+            if ( preg_match("/^(.*\.(lif|czi))\s\((.*)\)/i", $file, $match) ) {
                 $filteredFiles[ $counter ] = $match[ 1 ];
             } else {
                 $filteredFiles[ $counter ] = $file;
@@ -452,10 +456,13 @@ class QueueManager {
         global $image_user;
         global $image_group;
         global $image_folder;
+        global $change_ownership;
 
+        if (isset($change_ownership) && $change_ownership == true) {
         $result = exec("sudo chown -R " . $image_user . ":" . $image_group .
             " " . $image_folder . "/" . $username);
         report("Restoring ownership... " . $result, 1);
+    }
     }
 
     /*!

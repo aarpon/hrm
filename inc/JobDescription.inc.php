@@ -302,7 +302,7 @@ class JobDescription {
     $queue = new JobQueue();
     $result = $result && $queue->queueJob($this);
     if (!$result) {
-      $this->message = "create job - database error!";
+      $this->message = "Could not create job!";
     }
     return $result;
   }
@@ -432,7 +432,7 @@ class JobDescription {
   }
 
   /*!
-    \brief Returns the file base name with some special handling for Lif files
+    \brief Returns the file base name. Special handling for LIF and CZI files.
     \return file base name
   */
   public function sourceImageShortName() {
@@ -445,14 +445,12 @@ class JobDescription {
     $parameterSetting = $this->parameterSetting;
     $parameter = $parameterSetting->parameter('ImageFileFormat');
 	$fileFormat = $parameter->value();
-    if ( strcasecmp( $fileFormat, 'lif' ) == 0 ) {
-      if ( preg_match("/^(.*)\.lif\s\((.*)\)/i", $inputFile[0], $match) ) {
+    if (preg_match("/^(.*)\.(lif|czi)\s\((.*)\)/i", $inputFile[0], $match)) {
         $inputFile = $match[ 1 ] . '_' . $match[ 2 ];
-      } else {
-        $inputFile = substr(end($inputFile), 0, strrpos(end($inputFile), ".")); }
     } else {
-      $inputFile = substr(end($inputFile), 0, strrpos(end($inputFile), "."));
+        $inputFile = substr(end($inputFile), 0, strrpos(end($inputFile), "."));
     }
+  
     return $inputFile;
   }
 
@@ -464,7 +462,8 @@ class JobDescription {
     global $huygens_server_image_folder;
     global $image_source;
     $user = $this->owner();
-    $result = $huygens_server_image_folder . $user->name() . "/" . $image_source . "/";
+    $result = $huygens_server_image_folder .
+        $user->name() . "/" . $image_source . "/";
     return $result;
   }
 

@@ -10,7 +10,11 @@ require_once("./inc/Fileserver.inc.php");
 require_once("./inc/System.inc.php");
 require_once("./inc/wiki_help.inc.php");
 
-global $enableUserAdmin;
+/* *****************************************************************************
+ *
+ * START SESSION, CHECK LOGIN STATE, INITIALIZE WHAT NEEDED
+ *
+ **************************************************************************** */
 
 session_start();
 
@@ -26,9 +30,10 @@ if (!isset($_SESSION['editor'])) {
   $_SESSION['editor'] = new SettingEditor($_SESSION['user']);
 }
 
-// Settings by the admin can be used with any file format, no specific confidence
-// levels. Thus, we set the lowest confidence levels, which corresponds to the
-// tiff format to force the admin to enter all the parameters.
+// The admin will be  the only user who gets the freedom to omit parameters
+// systematically. Thus, we set the highest confidence levels, which
+// corresponds to the hdf5 format. Hence, it'll be up to the admin to fill out
+// the template fields for the users.
 if ($_SESSION['user']->isAdmin()) {
     $_SESSION[ 'parametersetting' ] = new ParameterSetting();
     $_SESSION[ 'parametersetting' ]->parameter("ImageFileFormat")->setValue("hdf5");
@@ -55,7 +60,7 @@ $nextStep     = $currentStep + 1;
 $goBackMessage  = " - Select images.";
 $goBackMessage  = "Go back to step $previousStep/$numberSteps" . $goBackMessage;
 
-$goNextMessage  = " - Restoration parameters.";
+$goNextMessage  = " - Select restoration template.";
 $goNextMessage  = "Continue to step $nextStep/$numberSteps" . $goNextMessage;
 
 // fileserver related code (for measured PSF files check)
@@ -85,7 +90,7 @@ if (isset($_POST['copy_public'])) {
 }
 else if (isset($_POST['create'])) {
     $setting = $_SESSION['editor']->createNewSetting($_POST['new_setting']);
-    
+
     if ($setting != NULL) {
         $setting->parameter("ImageFileFormat")->setValue($fileFormat);
         $_SESSION['setting'] = $setting;
@@ -106,6 +111,15 @@ else if (isset($_POST['edit'])) {
   }
   $message = $_SESSION['editor']->message();
 }
+else if (isset($_POST['pickUser']) && isset($_POST["templateToShare"])) {
+    if (isset($_POST["usernameselect"])) {
+        $_SESSION['editor']->shareSelectedSetting($_POST["templateToShare"],
+            $_POST["usernameselect"]);
+        $message = $_SESSION['editor']->message();
+    } else {
+        $message = "Please pick one or more recipients.";
+    }
+}
 else if (isset($_POST['make_default'])) {
   $_SESSION['editor']->makeSelectedSettingDefault();
   $message = $_SESSION['editor']->message();
@@ -118,15 +132,15 @@ else if ( isset($_POST['annihilate']) &&
 else if (isset($_POST['OK']) && $_POST['OK']=="OK" ) {
 
   if (!isset($_POST['setting'])) {
-    $message = "Please select some image parameters";
+    $message = "Please select an image template";
   } else {
     $_SESSION['setting'] = $_SESSION['editor']->loadSelectedSetting();
     $_SESSION['setting']->parameter("ImageFileFormat")->setValue($fileFormat);
-    
+
     // if measured PSF, check files availability
     $ok = True;
     $psfParam = $_SESSION['setting']->parameter("PointSpreadFunction");
-    
+
     if ($psfParam->value() == "measured") {
       $psf = $_SESSION['setting']->parameter("PSF");
       $value = $psf->value();
@@ -134,12 +148,12 @@ else if (isset($_POST['OK']) && $_POST['OK']=="OK" ) {
       if ($files != null) {
         for ($i=0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
           if (!in_array($value[$i], $files)) {
-            $message = "Please verify selected setting, as some PSF " .
+            $message = "Please verify selected template, as some PSF " .
               "files appear to be missing";
             $ok = False;
             break;
           }
-        }    
+        }
       } else {
         $message = "Source image folder not found! Make sure path " .
           $_SESSION['fileserver']->sourceFolder()." exists";
@@ -151,12 +165,12 @@ else if (isset($_POST['OK']) && $_POST['OK']=="OK" ) {
         $message = $_SESSION['setting']->message();
         $ok = False;
     }
-    
+
     if ($ok) {header("Location: " . "select_task_settings.php"); exit();}
   }
 }
 
-$script = array( "settings.js", "common.js", "ajax_utils.js" );
+$script = array( "settings.js", "common.js", "json-rpc-client.js", "shared.js", "ajax_utils.js" );
 
 include("header.inc.php");
 
@@ -165,24 +179,36 @@ include("header.inc.php");
       Tooltips
     -->
     <span class="toolTip" id="ttSpanCreate">
-        Create a new parameter set with the specified name.
+        Create a new image template set with the specified name.
     </span>
     <span class="toolTip" id="ttSpanEdit">
-        Edit the selected parameter set.
+        Edit the selected image template.
     </span>
     <span class="toolTip" id="ttSpanClone">
-        Copy the selected parameter set to a new one with the
+        Copy the selected image template to a new one with the
       specified name.</span>
+    <span class="toolTip" id="ttSpanShare">
+        Share the selected image template with one or more HRM users.</span>
     <span class="toolTip" id="ttSpanDelete">
-        Delete the selected parameter set.
+        Delete the selected image template.
+    </span>
+    <span class="toolTip" id="ttSpanAcceptTemplate">
+        Accept the template.
+    </span>
+    <span class="toolTip" id="ttSpanRejectTemplate">
+        Reject the template.
+    </span>
+    <span class="toolTip" id="ttSpanPreviewTemplate">
+        Preview the template.
     </span>
     <?php
       if (!$_SESSION['user']->isAdmin()) {
         ?>
         <span class="toolTip" id="ttSpanDefault">
-            Sets (or resets) the selected parameter set as the default one
+            Sets (or resets) the selected image template as the default one
             .</span>
-        <span class="toolTip" id="ttSpanCopyTemplate">Copy a template.
+        <span class="toolTip" id="ttSpanCopyTemplate">
+            Copy a template.
         </span>
         <span class="toolTip" id="ttSpanBack">
         <?php echo $goBackMessage; ?>
@@ -199,6 +225,18 @@ include("header.inc.php");
         <ul>
             <?php
                 wiki_link('HuygensRemoteManagerHelpSelectParameterSettings');
+
+            if ( ! $_SESSION["user"]->isAdmin()) {
+            ?>
+
+            <li>
+                <img src="images/share_small.png" alt="shared_templates" />&nbsp;
+                <!-- This is where the template sharing notification is shown -->
+                <span id="templateSharingNotifier">&nbsp;</span>
+            </li>
+
+            <?php
+                }
             ?>
         </ul>
     </div>
@@ -214,15 +252,44 @@ include("header.inc.php");
     <div class="clear"></div>
 </div>
 
-    
+
     <div id="content">
- 
-<?php
+
+    <!-- This is where the shared templates are shown with action buttons
+    to accept, reject, and preview them. -->
+
+    <div id="sharedTemplatePicker">
+        <div id="shareTemplatePickerHeader">
+            <p>These are your shared templates:</p>
+            <div id="shareTemplatePickerHeaderClose" title="Close"
+                 onclick="closeSharedTemplatesDiv();">
+                X
+            </div>
+        </div>
+        <div id="shareTemplatePickerBody">
+            <p class="tableTitle">Templates shared <b>with</b> you:</p>
+            <table id="sharedWithTemplatePickerTable">
+                <tbody>
+                </tbody>
+            </table>
+            <p class="tableTitle">Templates shared <b>by</b> you:</p>
+            <table id="sharedByTemplatePickerTable">
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+        <div id="shareTemplatePickerFooter">
+            <p>Mouse over template names for more information.</p>
+        </div>
+    </div>
+
+    <?php
 
 if ($_SESSION['user']->isAdmin()) {
 
 ?>
-        <h3>Image parameters</h3>
+        <h3><img alt="ImageParameters" src="./images/image_parameters.png"
+                 width="40"/>&nbsp;&nbsp;Create image template</h3>
 <?php
 
 }
@@ -232,7 +299,8 @@ else {
         <h3><img alt="ImageParameters" src="./images/image_parameters.png"
         width="40"/>&nbsp;&nbsp;Step
         <?php echo $currentStep . "/" . $numberSteps; ?>
-        - Image parameters</h3>
+        - Select image template</h3>
+    <h4></h4>
 <?php
 
 }
@@ -241,12 +309,12 @@ else {
 if (!$_SESSION['user']->isAdmin()) {
 
 ?>
-        <form method="post" action="">
-        
+        <form id="formTemplateTypeParameters" method="post" action="">
+
             <fieldset>
-                <legend>Template image parameters</legend>
+                <legend>Admin image templates</legend>
                 <p class="message_small">
-                    These are the parameter sets prepared by your administrator.
+                    These are the image templates prepared by your administrator.
                 </p>
                 <div id="templates">
 <?php
@@ -277,18 +345,18 @@ if (!$_SESSION['user']->isAdmin()) {
                     </select>
                 </div>
             </fieldset>
-            
+
             <div id="selection">
-                <input name="copy_public" 
+                <input name="copy_public"
                        type="submit"
                        value=""
-                       class="icon copy"
+                       class="icon down"
                        onmouseover="TagToTip('ttSpanCopyTemplate' )"
                        onmouseout="UnTip()" />
             </div>
-            
+
         </form>
-        
+
 <?php
 
 }
@@ -296,21 +364,21 @@ if (!$_SESSION['user']->isAdmin()) {
 ?>
 
         <form method="post" action="" id="select">
-        
+
             <fieldset>
-            
+
             <?php
             if ($_SESSION['user']->isAdmin()) {
-              echo "<legend>Template image parameters</legend>";
-              echo "<p class=\"message_small\">Create template parameter " .
-                "sets visible to all users.</p>";
+              echo "<legend>Admin image templates</legend>";
+              echo "<p class=\"message_small\">Create image templates " .
+                "visible to all users.</p>";
             } else {
-              echo "<legend>Your image parameters</legend>";
+              echo "<legend>Your image templates</legend>";
               echo "<p class=\"message_small\">These are your (private) " .
-                "parameter sets.</p>";
+                "image templates.</p>";
             }
             ?>
-        
+
              <div id="settings">
 <?php
 
@@ -321,14 +389,14 @@ $flag = "";
 if (sizeof($settings) == 0) $flag = " disabled=\"disabled\"";
 
 ?>
-<select name="setting"
+<select name="setting" id="setting"
     onclick="ajaxGetParameterListForSet('setting', $(this).val(), false);"
     onchange="ajaxGetParameterListForSet('setting', $(this).val(), false);"
     size="<?php echo $size ?>"<?php echo $flag ?>>
 <?php
 
 if (sizeof($settings) == 0) {
-  echo "                        <option>&nbsp;</option>\n";
+  echo "<option>&nbsp;</option>\n";
 }
 else {
   foreach ($settings as $setting) {
@@ -346,9 +414,9 @@ else {
 ?>
                     </select>
                 </div>
-                
+
             </fieldset>
-            
+
             <div id="actions" class="parameterselection">
                 <input name="create"
                        type="submit"
@@ -362,16 +430,25 @@ else {
                        class="icon edit"
                        onmouseover="TagToTip('ttSpanEdit' )"
                        onmouseout="UnTip()" />
-                <input name="copy" type="submit" 
+                <input name="copy"
+                       type="submit"
                        value=""
                        class="icon clone"
                        onmouseover="TagToTip('ttSpanClone' )"
                        onmouseout="UnTip()" />
+
 <?php
 
 if (!$_SESSION['user']->isAdmin()) {
 
 ?>
+                <input name="share"
+                    type="button"
+                    onclick="prepareUserSelectionForSharing('<?php echo $_SESSION['user']->name() ?>');"
+                    value=""
+                    class="icon share"
+                    onmouseover="TagToTip('ttSpanShare' )"
+                    onmouseout="UnTip()" />
                 <input name="make_default" type="submit" value=""
                       class="icon mark"
                       onmouseover="TagToTip('ttSpanDefault' )"
@@ -387,17 +464,17 @@ if (!$_SESSION['user']->isAdmin()) {
                        value=""
                        class="icon delete"
                        onclick="warn(this.form,
-                        'Do you really want to delete this parameter set?',
+                        'Do you really want to delete this image template?',
                         this.form['setting'].selectedIndex )"
                        onmouseover="TagToTip('ttSpanDelete' )"
                        onmouseout="UnTip()" />
-                <label>New/clone parameter set name:
+                <label>New/clone image template name:
                     <input name="new_setting"
                            type="text"
                            class="textfield" />
                 </label>
                 <input name="OK" type="hidden" />
-        </div>                
+        </div>
 <?php
 
 if (!$_SESSION['user']->isAdmin()) {
@@ -422,26 +499,67 @@ if (!$_SESSION['user']->isAdmin()) {
 }
 
 ?>
-            
+
         </form> <!-- select -->
-        
+
+    <!-- Form for picking users with whom to share templates, initially hidden -->
+    <form id="formUserList" method="post" action="" hidden>
+
+        <fieldset>
+            <legend>Users you may share with</legend>
+            <p class="message_small">
+                This is the list of users you may share your template with.
+            </p>
+            <div id="users">
+
+                <select id="usernameselect" name="usernameselect[]"
+                        size="5" multiple="multiple">
+                    <option>&nbsp;</option>
+                </select>
+            </div>
+        </fieldset>
+
+        <!-- Hidden input where to store the selected template -->
+        <input hidden id="templateToShare" name="templateToShare" value="">
+
+        <div id="actions" class="userSelection">
+
+            <input name="cancelUser"
+                   type="submit"
+                   value=""
+                   class="icon cancel"
+                   onmouseover="TagToTip('' )"
+                   onmouseout="UnTip()" />
+
+            <input name="pickUser"
+                   type="submit"
+                   value=""
+                   class="icon apply"
+                   onmouseover="TagToTip('' )"
+                   onmouseout="UnTip()" />
+
+
+        </div>
+
+    </form> <!-- Form for picking users with whom to share templates -->
+
     </div> <!-- content -->
-    
+
     <div id="rightpanel">
-    
+
         <div id="info">
-          
+
           <h3>Quick help</h3>
 
-          <p><strong>Placing the mouse pointer over the various icons will 
+          <p><strong>Placing the mouse pointer over the various icons will
           display a tooltip with explanations.</strong></p>
-    
-          <p><strong>For a more detailed explanation on the possible actions, 
+
+          <p><strong>For a more detailed explanation on the possible actions,
             please follow the
             <img src="images/help.png" alt="Help" width="22" height="22" />
             <b>Help</b> link in the navigation bar.</strong></p>
 
-          <p />
+          <p>&nbsp;</p>
 <?php
 
 // add user management
@@ -461,26 +579,26 @@ if (!$_SESSION['user']->isAdmin()) {
       to restore.</p>";
 	}
 	?>
-      <p>These include: file information (geometry, voxel size);
+      <p>These include: file information (e.g. voxel size);
       microscopic parameters (such as microscope type, numerical aperture of
       the objective, fluorophore wavelengths); whether a measured or a
       theoretical PSF should be used; whether depth-dependent correction
       on the PSF should be applied.</p>
 
-    <?php        
+    <?php
 	if (!$_SESSION['user']->isAdmin()) {
-      echo "<p>'Template image parameters' created by your facility manager can
-        be copied to the list of 'Your image parameters' and adapted to fit your
+      echo "<p>'Admin image templates' created by your facility manager can
+        be copied to the list of 'Your image templates' and adapted to fit your
         specific experimental setup.</p>";
 	} else {
 	  echo "<p>The created templates will be visible for the users in an
       additional selection field from which they can be copied to the user's
-      parameters.</p>";
+      templates.</p>";
 	}
 	?>
 
   </div>
-        
+
   <div id="message">
 <?php
 
@@ -488,11 +606,37 @@ echo "<p>$message</p>";
 
 ?>
         </div>
-        
+
     </div> <!-- rightpanel -->
-    
+
 <?php
 
 include("footer.inc.php");
 
 ?>
+
+<script type="text/javascript">
+
+    // Prepare list of templates for sharing
+    $(document).ready(function() {
+
+        // Get the user name from the session
+        var username = "";
+        username = <?php echo("'" . $_SESSION['user']->name() . "'");?>;
+
+        // Check that we have a user name
+        if (null === username) {
+            return;
+        }
+
+        // No templates can be shared with the admin
+        if (username == "admin") {
+            return;
+        }
+
+        // Retrieve the templates shared with current user
+        retrieveSharedTemplates(username, 'parameter');
+
+    });
+
+</script>

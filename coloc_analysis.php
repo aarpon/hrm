@@ -71,6 +71,7 @@ include("header.inc.php");
             <?php
                 wiki_link('HuygensRemoteManagerHelpOptics');
             ?>
+            <li> [ <?php  echo $_SESSION['analysis_setting']->name(); ?> ] </li>
         </ul>
     </div>
     <div id="navright">
@@ -113,7 +114,7 @@ include("header.inc.php");
                               onchange="javascript:switchColocMode();">
 
 <?php
-                    
+
 /*
       COLOCALIZATION ANALYSIS
 */
@@ -166,7 +167,7 @@ if ($parameterPerformColocAnalysis->value( ) == 1)
                        'http://www.svi.nl/ColocalizationBasics')">
                         <img src="images/help.png" alt="?" />
                     </a>
-Channels 
+Channels
                     </legend>
 
     <?php
@@ -183,7 +184,7 @@ $selectedValues = $parameterColocChannel->value();
         } else {
             $checked = "";
         }
-        
+
         ?>
         Ch. <?php echo $chan;?>: <input type="checkbox" name="ColocChannel[]" value=<?php echo $chan;
     if ($checked) {
@@ -213,7 +214,7 @@ $selectedValues = $parameterColocChannel->value();
                        'http://www.svi.nl/ColocalizationCoefficientsInBrief')">
                         <img src="images/help.png" alt="?" />
                     </a>
-Colocalization coefficients 
+Colocalization coefficients
                     </legend>
 <table>
     <?php
@@ -236,13 +237,13 @@ foreach ($possibleValues as $possibleValue) {
     } else {
         $checked = "";
     }
-    
+
     if (($cellCnt % 3) == 0) {
         echo "<tr>";
     }
     $translation =
         $parameterColocCoefficient->translatedValueFor( $possibleValue );
-    
+
     echo "<td class=\"text\">" . $translation ?>
         </td><td class="check">
         <input type="checkbox" name="ColocCoefficient[]" value=
@@ -256,7 +257,7 @@ foreach ($possibleValues as $possibleValue) {
                     echo "</tr>";
                 }
     $cellCnt++;
-    
+
 }
 ?>
 </table>
@@ -280,7 +281,7 @@ foreach ($possibleValues as $possibleValue) {
                        'http://www.svi.nl/ColocalizationBasics')">
     <img src="images/help.png" alt="?" />
     </a>
-Threshold 
+Threshold
                     </legend>
 
     <?php
@@ -314,7 +315,7 @@ if ($colocThreshold[0] != "" && $colocThreshold[0] != "auto") {
          name="ColocThresholdMode"
          value="manual"<?php echo $flag ?> />
     Percentage of the intensity range (%):
-    
+
     <div class="multichannel">
 <?php
     for ($chan=0;
@@ -324,7 +325,7 @@ if ($colocThreshold[0] != "" && $colocThreshold[0] != "auto") {
         if ($colocThreshold[0] != "auto") {
             $threshold = $colocThreshold[$chan];
         }
-        
+
             /* Add a line break after 3 entries. */
         if ( $chan == 3 ) {
             echo "<br />";
@@ -333,7 +334,7 @@ if ($colocThreshold[0] != "" && $colocThreshold[0] != "auto") {
         <span class="nowrap">
         Ch<?php echo $chan ?>:&nbsp;&nbsp;&nbsp;
         <span class="multichannel">
-        
+
         <input id="ColocThreshold<?php echo $chan ?>"
         name="ColocThreshold<?php echo $chan ?>"
         type="text"
@@ -341,7 +342,7 @@ if ($colocThreshold[0] != "" && $colocThreshold[0] != "auto") {
         value="<?php echo $threshold ?>"
         class="multichannelinput"
         onclick="document.forms[0].ColocThresholdManual.checked=true"/>
-        
+
         </span>&nbsp;
         </span>
 
@@ -372,7 +373,7 @@ if ($colocThreshold[0] != "" && $colocThreshold[0] != "auto") {
                        'http://www.svi.nl/ColocalizationMap')">
                         <img src="images/help.png" alt="?" />
                     </a>
-Colocalization maps 
+Colocalization maps
                     </legend>
 
 
@@ -386,19 +387,19 @@ $possibleValues = $parameterColocMap->possibleValues();
 foreach ($possibleValues as $possibleValue) {
     $translation =
         $parameterColocMap->translatedValueFor( $possibleValue );
-    
+
     $flag = "";
     if ($possibleValue == $parameterColocMap->value()) {
         $flag = "checked=\"checked\" ";
     }
 
     ?>
-        <input type="radio" 
+        <input type="radio"
              name="ColocMap"
              value="<?php echo $possibleValue ?>"
              <?php echo $flag ?>/>
              <?php echo $translation ?>
-<?php                    
+<?php
 }
 ?>
 
@@ -408,14 +409,14 @@ foreach ($possibleValues as $possibleValue) {
 
 
 
-                    
-                    
+
+
             <div><input name="OK" type="hidden" /></div>
 
             <div id="controls"
                  onmouseover="javascript:changeQuickHelp( 'default' );">
               <input type="button" value="" class="icon up"
-                  id="controls_cancel"                     
+                  id="controls_cancel"
                   onclick="document.location.href='select_analysis_settings.php'" />
               <input type="submit" value="" class="icon save"
                   id="controls_save"
@@ -454,13 +455,13 @@ echo "<p>$message</p>";
 
     </div> <!-- rightpanel -->
 
-        
-        
+
+
 <?php
 
 /*
- * Tooltips. 
- * 
+ * Tooltips.
+ *
  * Define $tooltips array with object id as key and tooltip string as value.
  */
 $tooltips = array(
