@@ -411,33 +411,29 @@ class Fileserver {
     \return array of file names
   */
   public function filesOfType( $format, $isTimeSeries ) {
-
-        if ($format == "ics") {
-            $files = $_SESSION['fileserver']->files("ics");
-        }
-        else if ($format == "tiff" || $format == "tiff-single") {
-            $files = $_SESSION['fileserver']->tiffFiles();
-        }
-        else if ($format == "tiff-series") {
+      
+      if ($format == "ics") {
+          $files = $_SESSION['fileserver']->files("ics");
+      } else if ($format == "tiff" || $format == "tiff-single") {
+          $files = $_SESSION['fileserver']->tiffFiles();
+      } else if ($format == "tiff-series") {
             $files = $_SESSION['fileserver']->tiffSeriesFiles();
-        }
-        else if ($format == "tiff-leica") {
-            $files = $_SESSION['fileserver']->tiffLeicaFiles();
-        }
-        else if ($format == "stk") {
-            if ($isTimeSeries == true) {
-                $files = $_SESSION['fileserver']->stkSeriesFiles();
-            }
-            else {
-                $files = $_SESSION['fileserver']->stkFiles();
-            }
-        }
-        else {
-            $files = $_SESSION['fileserver']->files($format);
-        }
-
-        return $files;
-
+      } else if ($format == "tiff-leica") {
+          $files = $_SESSION['fileserver']->tiffLeicaFiles();
+      } else if ($format == "stk") {
+          if ($isTimeSeries == true) {
+              $files = $_SESSION['fileserver']->stkSeriesFiles();
+          } else {
+              $files = $_SESSION['fileserver']->stkFiles();
+          }
+      } else {
+          /* The format has already been set in the class, which very badly
+             needs to be refactored. By not passing the format again to this
+             function we force to list the subimages as well. */
+          $files = $_SESSION['fileserver']->files();
+      }
+      
+      return $files;
   }
 
   /*!
@@ -3173,7 +3169,8 @@ echo '</body></html>';
 	  } else {
 	    $newPrefix = $prefix . "/" . $entry;
 	  }
-	  $files = array_merge($files, $this->listFilesFrom($newDir, $newPrefix, $extension));
+	  $files = array_merge($files,
+                           $this->listFilesFrom($newDir, $newPrefix, $extension));
 	} else {
             $found = false;
             foreach ($this->imageExtensions as $current) {
