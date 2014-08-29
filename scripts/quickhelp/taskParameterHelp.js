@@ -50,8 +50,8 @@ window.helpText[ "zstabilization" ] =
 
 window.helpText[ "autocrop"] =
   '<p>The time needed to deconvolve an image increases more than ' +
-  'proportionally with its volume. Therefore, deconvolution can be ' +
-  'accelerated considerably by cropping the image.</p>' +
+  'proportionally with its volume. Therefore, deconvolution <b>can be ' +
+  'accelerated</b> considerably by cropping the image.</p>' +
   '<p>Huygens will automatically survey the image to find a reasonable ' +
   'proposal for the crop region. In computing this initial proposal the ' +
   'Microscopic Parameters are taken into account, making sure that ' +
