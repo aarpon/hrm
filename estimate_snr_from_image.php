@@ -510,6 +510,10 @@ function estimateSnrFromFile($file) {
 
 session_start();
 
+if (isset($_GET['home'])) {
+  header("Location: " . "home.php"); exit();
+}
+
 // Ask the user to login if necessary.
 if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
   header("Location: " . "login.php"); exit();
