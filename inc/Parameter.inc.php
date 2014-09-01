@@ -396,7 +396,6 @@ abstract class ChoiceParameter extends Parameter {
     */
     protected function __construct($name) {
         parent::__construct($name);
-        $possibleValues = array ();
 
         // Get and set the Parameter possible values
         $db = new DatabaseConnection;
@@ -405,7 +404,7 @@ abstract class ChoiceParameter extends Parameter {
 
         // Get and set the Parameter default value
         $defaultValue = $this->defaultValue();
-        if ($defaultValue != NULL) {
+        if ($defaultValue !== NULL) {
             $this->value = $defaultValue;
         }
     }
