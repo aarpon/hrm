@@ -558,13 +558,17 @@ class DatabaseConnection {
         $user = $user->name();
         $name = $settings->name();
         $table = $settings->parameterTable();
+        
         foreach ($settings->parameterNames() as $parameterName) {
             $parameter = $settings->parameter($parameterName);
             $query = "select value from $table where owner='" . $user . "' and setting='" . $name . "' and name='" . $parameterName . "'";
             $newValue = $this->queryLastValue($query);
+
             if ($newValue == NULL) {
+
                 // See if the Parameter has a usable default
                 $newValue = $parameter->defaultValue( );
+
                 if ($newValue == NULL) {
                     continue;
                 }
@@ -1458,10 +1462,11 @@ class DatabaseConnection {
     */
     public function defaultValue($parameterName) {
         $query = "select value from possible_values where parameter='" .$parameterName . "' and isDefault='t'";
-        $result = $this->queryLastValue($query);
-        if (!$result) {
+        $result = $this->queryLastValue($query);                
+        if ($result === False) {
             return NULL;
         }
+        
         return $result;
     }
 
