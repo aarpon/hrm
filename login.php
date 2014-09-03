@@ -151,7 +151,7 @@ include("header.inc.php");
         <ul>
             <?php
                 wiki_link('HuygensRemoteManagerHelpLogin');
-                include("./inc/nav/manual.inc.php");
+                include("./inc/nav/mailing.inc.php");
             ?>
         </ul>
     </div>
