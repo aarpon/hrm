@@ -43,8 +43,8 @@ class System {
      */
     const MIN_HUCORE_VERSION_MAJOR = 14;
     const MIN_HUCORE_VERSION_MINOR = 6;
-    const MIN_HUCORE_VERSION_MAINTENANCE = 0;
-    const MIN_HUCORE_VERSION_PATCH = 0;
+    const MIN_HUCORE_VERSION_MAINTENANCE = 1;
+    const MIN_HUCORE_VERSION_PATCH = 6;
 
     /* !
       \brief	Returns the HRM version
