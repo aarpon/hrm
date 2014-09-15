@@ -47,12 +47,12 @@ class OmeroConnection {
     public function __construct( $omeroUser, $omeroPass ) {
 
         if (empty($omeroUser)) {
-            report("No OMERO user name given, cannot login.", 2);
+            report("No OMERO user name provided, cannot login.", 2);
             return;
         }
 
         if (empty($omeroPass)) {
-            report("No OMERO password given, cannot login.", 2);
+            report("No OMERO password provided, cannot login.", 2);
             return;
         }
 
