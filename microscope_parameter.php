@@ -122,6 +122,7 @@ include("header.inc.php");
             <?php
                 wiki_link('HuygensRemoteManagerHelpOptics');
             ?>
+            <li> [ <?php  echo $_SESSION['setting']->name(); ?> ] </li>
         </ul>
     </div>
     <div id="navright">
@@ -197,7 +198,7 @@ foreach($possibleValues as $possibleValue) {
   }
   if ($parameterMicroscopeType->hasLicense($possibleValue)) {
 ?>
-                <input type="radio" 
+                <input type="radio"
                        name="MicroscopeType"
                        value="<?php echo $possibleValue ?>"
                        <?php echo $flag ?>/>
@@ -211,7 +212,7 @@ foreach($possibleValues as $possibleValue) {
 ?>
             </div> <!-- values -->
             <div class="bottom">
-                <p class="message_confidence_<?php 
+                <p class="message_confidence_<?php
                 echo $parameterMicroscopeType->confidenceLevel(); ?>">&nbsp;
                 </p>
             </div>
@@ -242,7 +243,7 @@ foreach($possibleValues as $possibleValue) {
               </legend>
               <ul>
                 <li>NA:
-                <input name="NumericalAperture" 
+                <input name="NumericalAperture"
                        type="text"
                        size="5"
                        value="<?php
@@ -599,20 +600,20 @@ if (!$default) {
       <?php
               if ( !$_SESSION["user"]->isAdmin() ) {
       ?>
-                  
-            <div class="requirements">                
-               Parameter requirements<br />adapted for <b>  
+
+            <div class="requirements">
+               Parameter requirements<br />adapted for <b>
                <?php
                $fileFormat = $_SESSION['setting']->parameter( "ImageFileFormat" );
                echo $fileFormat->value();
                ?>
                </b> files
             </div>
-      
+
       <?php
               }
       ?>
-       
+
         </div>
 
         <div id="message">

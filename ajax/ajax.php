@@ -10,8 +10,8 @@ require_once '../inc/JobQueue.inc.php';
 // Functions
 
 /**
- * Get the summary for current parameter set
- * @param SettingsEditor $editor  SettingsEditor 
+ * Get the summary for current template
+ * @param SettingsEditor $editor  SettingsEditor
  * @param String $setName Parameter name
  * @param int $numChannels Number of channels
  * @return String parameter dump
@@ -25,14 +25,14 @@ function getParameters($editor, $setName, $numChannels, $micrType) {
   }
   $setting = $editor->setting($setName);
   $data = $setting->displayString($numChannels, $micrType);
-  
+
   return $data;
 }
 
 /**
  * Get number of jobs currently in the queue for current user
  * @param User $user User object
- * @return String 
+ * @return String
  */
 function getNumberOfUserJobsInQueue(User $user) {
     if ($user->isAdmin()) {
@@ -51,7 +51,7 @@ function getNumberOfUserJobsInQueue(User $user) {
 
 /**
  * Get total number of jobs in the queue (for all users)
- * @return String 
+ * @return String
  */
 function getTotalNumberOfJobsInQueue() {
     $db = new DatabaseConnection();
@@ -60,7 +60,7 @@ function getTotalNumberOfJobsInQueue() {
     if ( $allJobsInQueue == 0 ) {
       $data .= "are no jobs";
     } elseif ( $allJobsInQueue == 1 ) {
-      $data .= "is <strong>1 job</strong>";      
+      $data .= "is <strong>1 job</strong>";
     } else {
       $data .= 'are <strong>' .$allJobsInQueue . ' jobs</strong>';
     }
@@ -70,7 +70,7 @@ function getTotalNumberOfJobsInQueue() {
 
 /**
  * Get complete job queue table for rendering
- * @return String 
+ * @return String
  */
 function getJobQueuetable() {
 
@@ -222,29 +222,24 @@ function getJobQueuetable() {
  * @param format Selected image file format
  */
 function setFileFormat($format) {
-    
-    // Check that parameter settings exist
-    if (!isset($_SESSION['parametersetting'])) {
-        $_SESSION[ 'parametersetting' ] = new ParameterSetting();
+
+    // Check that parameter settings and fileserver exist
+    if (!isset($_SESSION['parametersetting']) ||
+        (!isset($_SESSION['fileserver']))) {
+        return "";
     }
-    
-    // Check that file server exists
-    if (!isset($_SESSION['fileserver'])) {
-        $_SESSION[ 'fileserver' ] = new Fileserver();
-    }
-    
+
     // Get current file format
-    $parameterFileFormat = 
-        $_SESSION[ 'parametersetting' ]->parameter("ImageFileFormat");
-    $fileFormat = $parameterFileFormat->value();
-    
-        // There has been an event of the type "Image file format" selection,
-        // "Automatically load file series" or similar. Thus, let's update the
-        // current selection.
-    $_SESSION[ 'fileserver' ]->removeAllFilesFromSelection();
+    $parameterFileFormat =
+        $_SESSION['parametersetting']->parameter("ImageFileFormat");
+
+    // There has been an event of the type "Image file format" selection,
+    // "Automatically load file series" or similar. Thus, let's update the
+    // current selection.
+    $_SESSION['fileserver']->removeAllFilesFromSelection();
     $parameterFileFormat->setValue($format);
-    $_SESSION[ 'parametersetting' ]->set($parameterFileFormat);
-    
+    $_SESSION['parametersetting']->set($parameterFileFormat);
+
     return "";
 }
 
@@ -252,17 +247,17 @@ function setFileFormat($format) {
  * ========================================================================== */
 
 /**
- * Calls the requested action and collects the output 
+ * Calls the requested action and collects the output
  * @param String $action Action to be performed
  * @param Reference $data String to be returned
  * @return true if the call was successful, false otherwise
  */
 function act( $action, &$data ) {
-  
+
   switch ( $action ) {
-      
+
       case 'getParameterListForSet':
-        
+
         if ( isset( $_POST['setType'] ) ) {
           $setType = $_POST['setType'];
         } else {
@@ -274,13 +269,13 @@ function act( $action, &$data ) {
         } else {
           return false;
         }
-        
+
         if ( isset( $_POST['publicSet'] ) ) {
           $publicSet = $_POST['publicSet'];
         } else {
           return false;
         }
-        
+
         if ( $publicSet == "true" ) {
           $publicSet = 1;
           if ( $setType == "setting" ) {
@@ -300,7 +295,7 @@ function act( $action, &$data ) {
               $editor = $_SESSION['admin_analysiseditor'];
             } else {
               return false;
-            } 
+            }
           } else {
               return false;
           }
@@ -317,18 +312,18 @@ function act( $action, &$data ) {
               $editor = $_SESSION['taskeditor'];
             } else {
               return false;
-            }            
+            }
           } elseif ( $setType == "analysis_setting" ) {
             if ( isset( $_SESSION['analysiseditor'] ) ) {
               $editor = $_SESSION['analysiseditor'];
             } else {
               return false;
-            }              
+            }
           } else {
               return false;
           }
         }
-        
+
         if ( isset( $_SESSION['setting'] ) ) {
           $numChannels = $_SESSION['setting']->numberOfChannels();
         } else {
@@ -340,15 +335,15 @@ function act( $action, &$data ) {
             $micrType = null;
         }
         $data = getParameters( $editor, $setName, $numChannels, $micrType);
-        
+
         /* Make a distinction between the parameter name and its value. */
         $data = "<small><b>" . str_replace("\n","\n<b>",$data);
-        $data = str_replace(": ",":</b> ",$data) . "</small>";        
+        $data = str_replace(": ",":</b> ",$data) . "</small>";
         $data = "<h3>Preview</h3>" . nl2br($data);
-        
+
         return true;
         break;
-        
+
         // ---------------------------------------------------------------------
 
         case 'getNumberOfUserJobsInQueue':
@@ -356,7 +351,7 @@ function act( $action, &$data ) {
             $data = getNumberOfUserJobsInQueue($user);
             return true;
             break;
-            
+
         // ---------------------------------------------------------------------
 
         case 'getTotalNumberOfJobsInQueue':

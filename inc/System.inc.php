@@ -24,8 +24,8 @@ class System {
      */
 
     const HRM_VERSION_MAJOR = 3;
-    const HRM_VERSION_MINOR = 1;
-    const HRM_VERSION_MAINTENANCE = 1;
+    const HRM_VERSION_MINOR = 2;
+    const HRM_VERSION_MAINTENANCE = 0;
 
     /* !
       \var 	DB_LAST_REVISION
@@ -33,7 +33,7 @@ class System {
 
       This value has to be set by the developers!
      */
-    const DB_LAST_REVISION = 12;
+    const DB_LAST_REVISION = 13;
 
     /* !
       \var 	MIN_HUCORE_VERSION_{MAJOR|MINOR|MAINTENANCE|PATCH}
@@ -41,10 +41,10 @@ class System {
 
       This value has to be set by the developers!
      */
-    const MIN_HUCORE_VERSION_MAJOR = 4;
-    const MIN_HUCORE_VERSION_MINOR = 5;
+    const MIN_HUCORE_VERSION_MAJOR = 14;
+    const MIN_HUCORE_VERSION_MINOR = 6;
     const MIN_HUCORE_VERSION_MAINTENANCE = 1;
-    const MIN_HUCORE_VERSION_PATCH = 1;
+    const MIN_HUCORE_VERSION_PATCH = 6;
 
     /* !
       \brief	Returns the HRM version
@@ -343,6 +343,7 @@ class System {
                     case '10': return ( $r . " (Snow Leopard)" );
                     case '11': return ( $r . " (Lion)" );
                     case '12': return ( $r . " (Mountain Lion)" );
+                    case '13': return ( $r . " (Mavericks)" );
                     default: return ( $r );
                 }
             } else {
@@ -569,7 +570,11 @@ class System {
      */
 
     public static function getMaxExecutionTimeFromIni() {
-        return ini_get('max_execution_time') . "s";
+        $maxExecTime = ini_get('max_execution_time');
+        if ($maxExecTime == 0) {
+            return "default";
+        }
+        return "" + $maxExecTime . "s";
     }
 
     /* !
@@ -604,9 +609,10 @@ class System {
                 $unit_string );
     }
 
-    /**
+    /* !
      * Parses an integer HRM version number into its string representation
      * @param type $version String representation of the version number
+     * @return HRM version as integer
      */
     private static function parseHRMVersionIntegerToString($version) {
         $major = floor($version / 1000000);
@@ -622,9 +628,10 @@ class System {
         return $version;
     }
 
-    /**
+    /* !
      * Parses an integer HuCore version number into its string representation
      * @param type $version String representation of the version number
+     * @return string representation of the version number
      */
     private static function parseHucoreVersionIntegerToString($version) {
         $major = floor($version / 1000000);

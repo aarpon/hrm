@@ -33,7 +33,7 @@ $parameterNames = $_SESSION['setting']->correctionParameterNames();
 $db = new DatabaseConnection();
 foreach ( $parameterNames as $name ) {
   $parameter = $_SESSION['setting']->parameter( $name );
-  $confidenceLevel = $db->getParameterConfidenceLevel( '', $name );  
+  $confidenceLevel = $db->getParameterConfidenceLevel( '', $name );
   $parameter->setConfidenceLevel( $confidenceLevel );
   $_SESSION['setting']->set( $parameter );
 }
@@ -101,6 +101,7 @@ include("header.inc.php");
             <?php
                 wiki_link('HuygensRemoteManagerHelpEnableSACorrection');
             ?>
+            <li> [ <?php  echo $_SESSION['setting']->name(); ?> ] </li>
         </ul>
     </div>
     <div id="navright">
@@ -112,27 +113,27 @@ include("header.inc.php");
     </div>
     <div class="clear"></div>
 </div>
-    
+
     <div id="content">
-    
+
         <h2>Spherical aberration correction</h2>
-          
+
         <form method="post" action="" id="select">
-            
+
             <!-- (1) PERFORM SPHERICAL ABERRATION CORRECTION? -->
-            
-        <h4>Do you want to enable depth-specific PSF correction? 
+
+        <h4>Do you want to enable depth-specific PSF correction?
             This will try to compensate for spherical aberrations introduced
             by refractive index mismatches.
         </h4>
- 
+
 
     <?php
 
     /***************************************************************************
-    
+
       PerformAberrationCorrection
-    
+
     ***************************************************************************/
 
       $parameterPerformAberrationCorrection =
@@ -144,7 +145,7 @@ include("header.inc.php");
             echo $parameterPerformAberrationCorrection->confidenceLevel();
             ?>"
             onmouseover="javascript:changeQuickHelp( 'enable' );" >
-            
+
             <legend>
                 <a href="javascript:openWindow(
                    'http://www.svi.nl/HuygensRemoteManagerHelpDepthDependentPsf')">
@@ -153,10 +154,10 @@ include("header.inc.php");
                 enable depth-dependent PSF correction?
             </legend>
 
-            <select id="PerformAberrationCorrection" 
+            <select id="PerformAberrationCorrection"
                     name="PerformAberrationCorrection"
                     onchange="javascript:switchCorrection();" >
-                
+
             <?php
 
                 $possibleValues =
@@ -191,13 +192,13 @@ include("header.inc.php");
                 }
             ?>
 
-            </select>    
-                
-        <p class="message_confidence_<?php 
+            </select>
+
+        <p class="message_confidence_<?php
             echo $parameterPerformAberrationCorrection->confidenceLevel(); ?>">
             &nbsp;
         </p>
-        
+
         </fieldset>
 
     <!-- (2) SPECIFY SAMPLE ORIENTATION -->
@@ -211,8 +212,8 @@ if ($parameterPerformAberrationCorrection->value( ) == 1)
 ?>
 
     <div id="CoverslipRelativePositionDiv"<?php echo $visibility?>>
-        
-    <h4>For depth-dependent correction to work properly, you have to specify 
+
+    <h4>For depth-dependent correction to work properly, you have to specify
         the relative position of the coverslip with respect to the first
         acquired plane of the dataset.
     </h4>
@@ -220,20 +221,20 @@ if ($parameterPerformAberrationCorrection->value( ) == 1)
     <?php
 
     /***************************************************************************
-    
+
       CoverslipRelativePosition
-    
+
     ***************************************************************************/
 
     $parameterCoverslipRelativePosition =
         $_SESSION['setting']->parameter("CoverslipRelativePosition");
 
     ?>
-            
+
         <fieldset class="setting <?php
             echo $parameterCoverslipRelativePosition->confidenceLevel(); ?>"
             onmouseover="javascript:changeQuickHelp( 'orientation' );" >
-            
+
             <legend>
                 <a href="javascript:openWindow(
                    'http://www.svi.nl/HuygensRemoteManagerHelpSpecifySampleOrientation')">
@@ -241,7 +242,7 @@ if ($parameterPerformAberrationCorrection->value( ) == 1)
                 </a>
                 specify sample orientation
             </legend>
-                    
+
             <select name="CoverslipRelativePosition" >
 
             <?php
@@ -270,9 +271,9 @@ if ($parameterPerformAberrationCorrection->value( ) == 1)
             <?php
                 }
             ?>
-                
+
             </select>
-                
+
         <p class="message_confidence_<?php
             echo $parameterCoverslipRelativePosition->confidenceLevel(); ?>">
             &nbsp;
@@ -297,26 +298,26 @@ if ($parameterPerformAberrationCorrection->value( ) == 1)
     <?php
 
     /***************************************************************************
-    
+
       AberrationCorrectionMode
-    
+
     ***************************************************************************/
 
     $parameterAberrationCorrectionMode =
         $_SESSION['setting']->parameter("AberrationCorrectionMode");
 
-    ?>        
-        
+    ?>
+
     <h4>At this point the HRM has enough information to perform depth-dependent
         aberration correction. Please notice that in certain circumstances,
         the automatic correction scheme might generate artifacts in the result.
         If this is the case, please choose the advanced correction mode.
     </h4>
-            
-    <fieldset class="setting <?php 
+
+    <fieldset class="setting <?php
         echo $parameterAberrationCorrectionMode->confidenceLevel(); ?>"
         onmouseover="javascript:changeQuickHelp( 'mode' );" >
-            
+
         <legend>
             <a href="javascript:openWindow(
                'http://www.svi.nl/HuygensRemoteManagerHelpSaCorrectionMode')">
@@ -325,7 +326,7 @@ if ($parameterPerformAberrationCorrection->value( ) == 1)
             correction mode
         </legend>
 
-        <select id="AberrationCorrectionMode" 
+        <select id="AberrationCorrectionMode"
             name="AberrationCorrectionMode"
             onchange="javascript:switchAdvancedCorrection();" >
 
@@ -355,10 +356,10 @@ if ($parameterPerformAberrationCorrection->value( ) == 1)
             <?php
             }
             ?>
-                
+
         </select>
-        
-        <p class="message_confidence_<?php 
+
+        <p class="message_confidence_<?php
             echo $parameterAberrationCorrectionMode->confidenceLevel(); ?>">
             &nbsp;
         </p>
@@ -366,7 +367,7 @@ if ($parameterPerformAberrationCorrection->value( ) == 1)
         </fieldset>
 
     </div> <!-- AberrationCorrectionModeDiv -->
-    
+
     <!-- (4) ADVANCED CORRECTION MODE -->
 
 <?php
@@ -383,22 +384,22 @@ if ( ($parameterPerformAberrationCorrection->value( ) == 1) &&
     <?php
 
     /***************************************************************************
-    
+
       AdvancedCorrectionOptions
-    
+
     ***************************************************************************/
 
     $parameterAdvancedCorrectionOptions =
         $_SESSION['setting']->parameter("AdvancedCorrectionOptions");
 
     ?>
-        
+
     <h4>Here you can choose an advanced correction scheme.</h4>
-            
+
     <fieldset class="setting <?php echo
         $parameterAdvancedCorrectionOptions->confidenceLevel(); ?>"
         onmouseover="javascript:changeQuickHelp( 'advanced' );" >
-            
+
     <legend>
         <a href="javascript:openWindow(
            'http://www.svi.nl/HuygensRemoteManagerHelpAdvancedSaCorrection')">
@@ -435,7 +436,7 @@ if ( ($parameterPerformAberrationCorrection->value( ) == 1) &&
             <?php
                 }
             ?>
-                
+
         </select>
 
 <?php
@@ -447,9 +448,9 @@ if ( ($parameterPerformAberrationCorrection->value( ) == 1) &&
   $visibility = " style=\"display: block\"";
 
     /***************************************************************************
-    
+
       PSFGenerationDepth
-    
+
     ***************************************************************************/
 
     $parameterPSFGenerationDepth =
@@ -457,7 +458,7 @@ if ( ($parameterPerformAberrationCorrection->value( ) == 1) &&
     $selectedValue  = $parameterPSFGenerationDepth->value();
 
 ?>
-            
+
     <div id="PSFGenerationDepthDiv"<?php echo $visibility?> >
         <p>Depth for PSF generation (&micro;m):
             <input name="PSFGenerationDepth"
@@ -466,7 +467,7 @@ if ( ($parameterPerformAberrationCorrection->value( ) == 1) &&
                value="<?php echo $selectedValue; ?>" />
         </p>
     </div>
-            
+
     <p class="message_confidence_<?php
         echo $parameterAdvancedCorrectionOptions->confidenceLevel(); ?>">
         &nbsp;
@@ -475,10 +476,10 @@ if ( ($parameterPerformAberrationCorrection->value( ) == 1) &&
     </fieldset>
 
     </div> <!-- AdvancedCorrectionOptionsDiv -->
-            
+
     <div><input name="OK" type="hidden" /></div>
 
-    <div id="controls" onmouseover="javascript:changeQuickHelp( 'default' )">      
+    <div id="controls" onmouseover="javascript:changeQuickHelp( 'default' )">
         <input type="button" value="" class="icon previous"
             onmouseover="TagToTip('ttSpanBack' )"
             onmouseout="UnTip()"
@@ -491,19 +492,19 @@ if ( ($parameterPerformAberrationCorrection->value( ) == 1) &&
             onmouseover="TagToTip('ttSpanSave' )"
             onmouseout="UnTip()"
             onclick="process()" />
-      </div> 
-    
+      </div>
+
     </form>
-        
+
     </div> <!-- content -->
-    
+
     <div id="rightpanel"  onmouseover="javascript:changeQuickHelp( 'default' )">
-    
+
         <div id="info">
-          
+
           <h3>Quick help</h3>
-          
-          <div id="contextHelp">  
+
+          <div id="contextHelp">
             <p>The main cause of spherical aberration is a mismatch between
                 the refractive index of the lens immersion medium and specimen
                 embedding medium and causes the PSF to become asymmetric at
@@ -517,22 +518,22 @@ if ( ($parameterPerformAberrationCorrection->value( ) == 1) &&
       <?php
               if ( !$_SESSION["user"]->isAdmin() ) {
       ?>
-                  
-            <div class="requirements">                
-               Parameter requirements<br />adapted for <b>  
+
+            <div class="requirements">
+               Parameter requirements<br />adapted for <b>
                <?php
                $fileFormat = $_SESSION['setting']->parameter( "ImageFileFormat" );
                echo $fileFormat->value();
                ?>
                </b> files
             </div>
-      
+
       <?php
               }
       ?>
-                
+
         </div>
-       
+
         <div id="message">
 <?php
 
@@ -540,9 +541,9 @@ echo "<p>$message</p>";
 
 ?>
         </div>
-        
+
     </div> <!-- rightpanel -->
-    
+
 <?php
 
 include("footer.inc.php");

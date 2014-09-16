@@ -3,7 +3,10 @@ config/*_config.inc
 config/hrm.conf
 resources/hrmd.plist
 user/login_user.inc
+
+# IDE project settings
 /nbproject/
+/.idea/
 
 # Python bytecode
 *.py[cod]
@@ -11,10 +14,5 @@ user/login_user.inc
 # vim swap files
 .*.sw?
 
-/.idea/
-
 # file marking a development version
 .hrm_devel_version
-
-# local logging directory
-log/

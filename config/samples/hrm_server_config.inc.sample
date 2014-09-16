@@ -11,7 +11,7 @@
 // The database type (mysql or postgres)
 $db_type = "mysql";
 
-// The name of the database host machine (this may be localhost if it is the 
+// The name of the database host machine (this may be localhost if it is the
 // machine on which the web server runs)
 $db_host = "localhost";
 
@@ -33,10 +33,10 @@ $huygens_user = "huygens";
 $huygens_group = "huygens";
 
 // Path to a local Huygens Core executable, to handle image information and
-// thumbnails. This installatation of hucore doesn't require a full license
+// thumbnails. This installation of hucore doesn't require a full license
 // unless this is also the computation server. For image information and
 // thumbnails mostly freeware functions will be used, but support for certain
-// propietary file formats requires a B flag in the license string. (See
+// proprietary file formats requires a B flag in the license string. (See
 // http://support.svi.nl/wiki/FileFormats).
 //
 // In combination with Huygens 3.5.1 or higher, HRM can also provide an
@@ -67,15 +67,24 @@ $image_destination = "huygens_dst";
 // File server base folder as seen from the Huygens server machines (with trailing /)
 $huygens_server_image_folder = "/path/to/hrm_data/";
 
+// This is a temporary flag to change ownership of the generated files
+// and folders to the $SUSER use (see config/samples/hrm.com.sample) and force
+// permissions to 777 to prevent issues in the case the various components of
+// the HRM (web server and Queue Manager) are run by different users with
+// different access rights to the file server area.
+//
+// THIS WILL BE REMOVED IN HRM 3.3!
+$change_ownership = false;
+
 // Allow HTTP transfer of the restored (download) images
 $allowHttpTransfer = true;
 
 // Allow HTTP transfer of original (upload) images.
-// Limitations in upload size must be configured in the below parameters 
-// $max_upload_limit AND $max_post_limit. If these are set to 0, they are  
+// Limitations in upload size must be configured in the below parameters
+// $max_upload_limit AND $max_post_limit. If these are set to 0, they are
 // instead read from the PHP settings. If set to higher values, make sure
 // that the PHP settings allow for such transfer limits. These PHP settings
-// are normally located in php.ini, with the options upload_max filesize AND 
+// are normally located in php.ini, with the options upload_max filesize AND
 // post_max size.
 // Unzipping large archives may also require high max_execution_time and
 // memory_limit variables.
@@ -140,7 +149,7 @@ $hrm_path = "/var/www/html/hrm";
 
 // Logging
 // Please create a directory for the logging (default and recommended is /var/log/hrm)
-// and make sure to grant read/write access to the web server user. 
+// and make sure to grant read/write access to the web server user.
 $log_verbosity = 1;         // 0=quiet, 1=normal, 2=debug
 $logdir  = "/var/log/hrm";
 $logfile = "hrm.log";
@@ -150,7 +159,7 @@ $logfile_max_size = 100;    // maximum size of the logfile in MB
 $send_mail = true;
 $email_sender = "hrm@localhost";
 $email_admin = "hrm@localhost";
-// Comma (',') is the standard separator for lists of email addresses. 
+// Comma (',') is the standard separator for lists of email addresses.
 // Please see: http://tools.ietf.org/html/rfc2822#section-3.6.3
 // Unfortunately, Microsoft Outlook uses semicolon (';') by default and
 // ',' only optionally. Please see: http://support.microsoft.com/kb/820868
@@ -165,7 +174,7 @@ $authenticateAgainst = "MYSQL";
 // If true, use DES password encryption; if false, use MD5
 $useDESEncryption = false;
 
-// If true, the queue manager and the image processing server run on the same 
+// If true, the queue manager and the image processing server run on the same
 // machine
 $imageProcessingIsOnQueueManager = true;
 
@@ -230,7 +239,7 @@ $ping_parameter = '';	        // use this on linux systems
 //$ping_parameter = '56 4';	// use this on cygwin
 
 //==============================================================================
-// HRM + Omero 
+// HRM + Omero
 //==============================================================================
 
 // Switch on/off (true/false) data transfers between HRM and Omero.

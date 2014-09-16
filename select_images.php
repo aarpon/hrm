@@ -51,7 +51,16 @@ if (isset($_POST['down'])) {
     }
 
     if (isset($_POST['userfiles']) && is_array($_POST['userfiles'])) {
-        $_SESSION['fileserver']->addFilesToSelection($_POST['userfiles']);
+
+        // Remove spaces added by the HRM file selector. See '&nbsp;' below.
+        $fileNames = array();
+        foreach ($_POST['userfiles'] as $file) {
+            $name = htmlentities($file, null, 'utf-8');
+            $name = str_replace("&nbsp;", " ", $name);
+            $name = html_entity_decode($name);
+            $fileNames[] = $name;
+        }
+        $_SESSION['fileserver']->addFilesToSelection($fileNames);
     }
 }
 else if (isset($_POST['up'])) {
@@ -61,7 +70,16 @@ else if (isset($_POST['up'])) {
         $_SESSION['autoseries'] = "";
     }
     if (isset($_POST['selectedfiles']) && is_array($_POST['selectedfiles'])) {
-        $_SESSION['fileserver']->removeFilesFromSelection($_POST['selectedfiles']);
+
+        // Remove spaces added by the HRM file selector. See '&nbsp;' below.
+        $fileNames = array();
+        foreach ($_POST['selectedfiles'] as $file) {
+            $name = htmlentities($file, null, 'utf-8');
+            $name = str_replace("&nbsp;", " ", $name);
+            $name = html_entity_decode($name);
+            $fileNames[] = $name;
+        }
+        $_SESSION['fileserver']->removeFilesFromSelection($fileNames);
     }
 }
 else if (isset($_POST['update'])) {
@@ -134,8 +152,8 @@ function filterImages (format,series) {
     var autoseries = document.getElementById(\"autoseries\");
 ";
 
-        /* For each file, create javascript code for when the file
-         belongs to a series and for when it doesn't. */
+    /* For each file, create javascript code for when the file
+    belongs to a series and for when it doesn't. */
     foreach ($allFiles as $key => $file) {
 
         if ($_SESSION['fileserver']->isPartOfFileSeries($file)) {
@@ -148,36 +166,43 @@ function filterImages (format,series) {
 
             if (in_array($file,$condensedSeries)) {
                 $generatedScript .= "
-                  if(checkAgainstFormat(\"$file\", selectedFormat)) {
-                     var selectItem = document.createElement('option');
-                     selectItem.text = \"$file\";
-                     selectObject.add(selectItem,null);
+                  if(checkAgainstFormat('$file', selectedFormat)) {
+                    var f = \"$file\";
+                    f = f.replace(/ /g, '&nbsp;');
+                    var selectItem = document.createElement('option');
+                    $(selectItem).html(f);
+                    $(selectItem).attr('title', '$file');
+                    selectObject.add(selectItem,null);
                   }
-                    ";
+                  ";
             }
             $generatedScript .= "
 
               } else {
 
                   // Do not load file series automatically.
-                  if(checkAgainstFormat(\"$file\", selectedFormat)) {
-                     var selectItem = document.createElement('option');
-                     selectItem.text = \"$file\";
-                     selectObject.add(selectItem,null);
+                  if(checkAgainstFormat('$file', selectedFormat)) {
+                    var f = \"$file\";
+                    f = f.replace(/ /g, '&nbsp;');
+                    var selectItem = document.createElement('option');
+                    $(selectItem).html(f);
+                    $(selectItem).attr('title', '$file');
+                    selectObject.add(selectItem,null);
                   }
               }
               ";
 
         } else {
             $generatedScript .= "
-
-               // File does not belong to a file series.
-               if(checkAgainstFormat(\"$file\", selectedFormat)) {
-                   var selectItem = document.createElement('option');
-                   selectItem.text = \"$file\";
-                   selectObject.add(selectItem,null);
-               }
-               ";
+            if(checkAgainstFormat('$file', selectedFormat)) {
+                    var f = \"$file\";
+                    f = f.replace(/ /g, '&nbsp;');
+                    var selectItem = document.createElement('option');
+                    $(selectItem).html(f);
+                    $(selectItem).attr('title', '$file');
+                    selectObject.add(selectItem,null);
+                  }
+            ";
         }
 
     }
@@ -418,10 +443,23 @@ if ($allFiles == null) {
             $files = $allFiles;
 
         }
+        $selectedFiles = $_SESSION['fileserver']->selectedFiles();
 
         foreach ($files as $key => $file) {
             if ($_SESSION['fileserver']->checkAgainstFormat($file, $format)) {
-                echo "<option>" . $file . "</option>\n";
+                // Consecutive spaces are collapsed into one space in HTML.
+                // Hence '&nbsp;' to correct this when the file has more spaces.
+                $filteredFile = str_replace(' ', '&nbsp;', $file);
+                $exists = false;
+                foreach ($selectedFiles as $skey => $sfile) {
+                    if (strcmp($sfile, $file) == 0) {
+                        $exists=true;
+                    }
+                }
+                if(!$exists){
+                    echo "<option>" . $filteredFile . "</option>\n";
+                    $keyArr[$file] = $key;
+                }
                 $keyArr[$file] = $key;
             }
         }

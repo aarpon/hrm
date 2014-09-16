@@ -5,6 +5,7 @@
 require_once("./inc/User.inc.php");
 require_once("./inc/Fileserver.inc.php");
 require_once("./inc/System.inc.php");
+require_once("./inc/wiki_help.inc.php");
 
 session_start();
 
@@ -298,7 +299,7 @@ $control_buttons = '
 <input name="OK" type="hidden" />
 ';
 
-include ("omero_actions.php");
+include("omero_actions.php");
 
 include("./inc/FileBrowser.inc.php");
 

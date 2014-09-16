@@ -99,7 +99,7 @@ if (isset($_POST['add'])) {
             $mail->send();
             //$user->setName( '' );
             $message = "New user successfully added to the system";
-            shell_exec("$userManager create \"" . $clean["username"] . "\"" );
+            shell_exec("$userManagerScript create \"" . $clean["username"] . "\"" );
             $added = True;
           }
           else $message = "Database error, please inform the person in charge";

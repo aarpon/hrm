@@ -65,7 +65,7 @@ include("header.inc.php");
                 'http://huygens-rm.org/home/?q=node/4')">
                 <img src="images/check_for_update.png" alt="Version check" />
               &nbsp;&nbsp
-            A newer version of the HRM 
+            A newer version of the HRM
               <?php
                 echo "(" . System::getHRMVersionAsString($latestVersion) . ")";
               ?>
@@ -150,7 +150,7 @@ include("header.inc.php");
                     }
                 ?>
             </td>
-          </tr>         
+          </tr>
           <tr>
             <td class="key">
                 Server type
@@ -158,7 +158,7 @@ include("header.inc.php");
             <td class="value">
                 <?php echo System::getHucoreServerType(); ?>
             </td>
-          </tr>         
+          </tr>
           <tr>
             <td class="key">
                 Microscope types
@@ -205,7 +205,7 @@ include("header.inc.php");
                 echo $analysisStrg;
                 ?>
             </td>
-          </tr>          
+          </tr>
           <tr>
             <td class="section">
                 System
@@ -442,7 +442,7 @@ include("header.inc.php");
           <p>This page displays information about your installation
               and server.</p>
 
-          <p>Click on <b>Display PHP info</b> at the bottom of the 
+          <p>Click on <b>Display PHP info</b> at the bottom of the
               table to get more extended information on your
               installation.</p>
 
@@ -463,14 +463,19 @@ echo "<p>$message</p>";
 include("footer.inc.php");
 
 ?>
-<!-- Activate Ajax functions to get image parameters -->
+<!-- Activate Ajax functions to send a test email to the HRM administrator -->
 <script type="text/javascript">
     $(document).ready($('#sendMail').click(function() {
             JSONRPCRequest({
                 method : 'jsonSendTestEmail',
                 params: []
             }, function(response) {
-                $('#sendMailStatus').html("<b>" + response['message'] + "</b>");
-            });  
+                if ("message" in response) {
+                    $('#sendMailStatus').html("<b>" + response['message'] + "</b>");
+                } else {
+                    // In case of a timeout
+                    $('#sendMailStatus').html("<b>Interrupted!</b>");
+                }
+            });
     }));
 </script>
