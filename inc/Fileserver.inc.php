@@ -1599,7 +1599,7 @@ echo '</body></html>';
           <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 
           <head>
-          <title>Huygens Remote Manager</title>
+          <title>HRM - ' . $file . ' - results preview</title>
           <link rel="SHORTCUT ICON" href="images/hrm.ico"/>
           <script type="text/javascript" src="scripts/common.js"></script>
           <style type="text/css">
