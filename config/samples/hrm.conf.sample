@@ -6,14 +6,14 @@
 # Copyright and license notice: see license.txt
 
 # HRM install directory
-HRM_HOME="/path/to/hrm/home"
+HRM_HOME="/var/www/html/hrm"
 
 # HRM image share
-HRM_DATA="/path/to/hrm/data"
+HRM_DATA="/scratch/hrm_data"
 
 # Source and destination folder names
-HRM_SOURCE="huygens_src"
-HRM_DEST="huygens_dst"
+HRM_SOURCE="src"
+HRM_DEST="dst"
 
 # User to run the HRM daemon with rights to
 # execute /bin/mkdir, /bin/chown, /bin/chmod and
@@ -25,7 +25,7 @@ HRM_LOG="/var/log/hrm"
 
 # Interaction with OMERO (if switched on in hrm/config).
 # OMERO_PKG specifies the path where the "OMERO.server" package is installed
-OMERO_PKG="/path/to/OMERO.server"
+OMERO_PKG="/opt/OMERO/OMERO.server-5.0.3-ice34-b41.linux"
 OMERO_HOSTNAME="localhost"
 OMERO_PORT="4064"
 
