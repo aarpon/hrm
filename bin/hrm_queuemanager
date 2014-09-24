@@ -1,0 +1,127 @@
+#!/bin/bash
+#
+# hrm_queuemanager     Huygens Remote Manager - Queue Manager wrapper script
+
+### TASKS / PURPOSE of this wrapper script
+
+# [x] do NOT depend on the names of related processes, use PID's instead!
+# [ ] do sanity checks regarding the hrm config (are logs writable etc.)
+# [ ] take over the start/stop responsibilites for the actual (PHP) daemon
+#     [ ] START:
+#         [ ] check if another instance of the QM is already running (return)
+#         [ ] update log files
+#         [x] start the Queue Manager
+#         [x] check success and write PID into file
+
+# - this script is meant to be run as either the user that should run the QM or as root, in the latter
+#   case it will switch to the QM-user by re-exec'ing itself
+
+warn_daemon_user() {
+    cat << EOF
+WARNING *** WARNING *** WARNING *** WARNING *** WARNING *** WARNING *** WARNING
+
+Your setup does not have the "SUSER" variable configured to be used for running
+the HRM Queue Manager. Usually, this results in the daemon being run as root.
+
+This is HIGHLY DEPRECATED as of HRM 3.1.0 and will not be supported in future
+releases. Please see the documentation how to correctly configure your HRM:
+
+http://huygens-rm.org/
+
+WARNING *** WARNING *** WARNING *** WARNING *** WARNING *** WARNING *** WARNING
+
+EOF
+}
+
+usage_exit() {
+    echo "Usage: $0 {start|stop|restart}"
+    exit 1
+}
+
+# Make sure to have a known locale environment for the script:
+export LC_ALL=C
+
+# Set the default for the PHP CLI binary (can be overridden in hrm.conf):
+PHP_CLI="php"
+
+# hrm.conf defines variable HRM_HOME
+. /etc/hrm.conf
+
+if [ -n "$DEBUG_HRMD" ] ; then
+    set -o xtrace
+fi
+
+# Global variables definition:
+LOG_OUT="${HRM_LOG}/log.txt"
+LOG_ERR="${HRM_LOG}/error_log.txt"
+PID_FILE="${HRM_LOG}/hrmd.pid"
+
+# install the signal handler:
+trap "cleanup_exit" SIGINT SIGTERM
+
+start() {
+    ### # check if a PID file is existing and whether it contains useful information:
+    ### if [ -f "$PID_FILE" ] ; then
+    ###     PID=$(more "$PID_FILE")
+    ###     if [ -z "$PID" ] ; then
+    ###         echo "WARNING: empty PID file found, trying to remove it:"
+    ###         $CMD rm -f -v "$PID_FILE"
+    ###         exit 1
+    ###     else
+    ###         echo
+    ###         echo "The Queue Manager seems to be running already."
+    ###         echo "NOT starting a second instance!"
+    ###         usage_exit
+    ###     fi
+    ### fi
+
+    # TODO: do we really need two different logfiles here?
+    echo "Reporting stdout to '$LOG_OUT' and stderr to '$LOG_ERR'."
+    MARK="$(date "+%F %H:%M:%S") - trying to start the HRM Queue Manager"
+    echo "$MARK" >> "$LOG_OUT"
+    echo "$MARK" >> "$LOG_ERR"
+
+    QUEUEMGR="$PHP_CLI -q "$HRM_HOME"/run/runHuygensRemoteManager.php"
+    $QUEUEMGR 1>> "$LOG_OUT" 2>> "$LOG_ERR" &
+    # bash provides the PID of the background process in "$!", so we save it:
+    QUEUEMGR_PID=$!
+    if [ "$?" != 0 ] ; then
+        # This will show if anything went wrong during the start up.
+        tail "$LOG_OUT"
+        return 1
+    fi
+
+    # write the PID into the corresponding file:
+    echo $QUEUEMGR_PID > "$PID_FILE"
+
+    # loop until we receive SIGINT or SIGTERM:
+    while :
+    do
+        sleep 1
+    done
+}
+
+cleanup_exit() {
+    kill -15 $QUEUEMGR_PID
+    rm -f "$PID_FILE"
+}
+
+# refuse to start if no SUSER is configured:
+if [ -z "$SUSER" ] ; then
+    warn_daemon_user
+    exit 1
+fi
+
+# re-exec with correct user in case we were started as root:
+if [ "$(id -u)" = 0 ] ; then
+    exec su -l $SUSER -c "$0 $@"
+fi
+
+# refuse to start if we were started with the wrong account:
+WHOAMI=$(id -u -n)
+if [ "$WHOAMI" != "$SUSER" ] ; then
+    echo "User mismatch: '$WHOAMI' <-> '$SUSER'."
+    exit 2
+fi
+
+start
