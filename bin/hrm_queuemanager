@@ -118,6 +118,8 @@ cleanup_exit() {
     # kill the running Queue Manager and clean up the PID file
     kill -15 $QUEUEMGR_PID
     rm -f "$PID_FILE"
+    # exit with status "0" unless $1 is set explicitly:
+    exit ${1-0}
 }
 
 # refuse to start if no SUSER is configured:
