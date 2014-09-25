@@ -87,13 +87,13 @@ start() {
     cd "$HRM_HOME/run"
     QUEUEMGR="$PHP_CLI -q $HRM_HOME/run/runHuygensRemoteManager.php"
     $QUEUEMGR 1>> "$LOG_OUT" 2>> "$LOG_ERR" &
+    # NOTE: we cannot check the status of the previous command via "$?" as this
+    # variable is only set for commands executed in *foreground* (see "man
+    # bash" in the "Special Parameters" section), therefore we have to use the
+    # method from below.
+
     # bash provides the PID of the background process in "$!", so we save it:
     QUEUEMGR_PID=$!
-    if [ "$?" != 0 ] ; then
-        # This will show if anything went wrong during the start up.
-        tail "$LOG_OUT"
-        return 1
-    fi
 
     # NOTE: we do *NOT* put the PID of the actual queue manager into the
     # pidfile but the PID of *this* bash process as *we* are meant to stay
