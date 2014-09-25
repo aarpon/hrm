@@ -109,13 +109,13 @@ start() {
         # also be true if there was *more* than one subprocess:
         if [ "$QUEUEMGR_PID" != "$(jobs -p)" ] ; then
             echo "WARNING: the HRM Queue Manager is not running any more!"
-            echo "Cleaning up..."
             cleanup_exit
         fi
     done
 }
 
 cleanup_exit() {
+    echo "HRM Queue Manager: cleaning up..."
     # kill the running Queue Manager and clean up the PID file
     kill -15 $QUEUEMGR_PID 2>/dev/null
     rm -f "$PID_FILE"
