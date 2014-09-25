@@ -111,7 +111,7 @@ start() {
         # also be true if there was *more* than one subprocess:
         if [ "$QUEUEMGR_PID" != "$(jobs -p)" ] ; then
             echo "WARNING: the HRM Queue Manager is not running any more!"
-            cleanup_exit
+            cleanup_exit 1
         fi
         # NOTE: due to some weird bash behaviour (bug?), the joblist doesn't
         # get updated when "jobs -p" is called but *ONLY* if we call "jobs -l"
