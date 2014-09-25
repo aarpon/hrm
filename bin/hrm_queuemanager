@@ -78,7 +78,8 @@ start() {
 
     # TODO: do we really need two different logfiles here?
     echo "Reporting stdout to '$LOG_OUT' and stderr to '$LOG_ERR'."
-    MARK="$(date "+%F %H:%M:%S") - trying to start the HRM Queue Manager"
+    MARK="$(date "+%F %H:%M:%S") - starting the HRM Queue Manager"
+    MARK="============================= $MARK ============================="
     echo "$MARK" >> "$LOG_OUT"
     echo "$MARK" >> "$LOG_ERR"
 
