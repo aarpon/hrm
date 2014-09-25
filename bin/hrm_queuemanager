@@ -92,8 +92,11 @@ start() {
         return 1
     fi
 
-    # write the PID into the corresponding file:
-    echo $QUEUEMGR_PID > "$PID_FILE"
+    # NOTE: we do *NOT* put the PID of the actual queue manager into the
+    # pidfile but the PID of *this* bash process as *we* are meant to stay
+    # alive during its runtime to handle signals and clean up after the QM has
+    # stopped (upon request/signal or crashed):
+    echo $$ > "$PID_FILE"
 
     # loop until we receive SIGINT or SIGTERM:
     while :
