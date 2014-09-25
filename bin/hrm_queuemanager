@@ -23,8 +23,9 @@ WARNING *** WARNING *** WARNING *** WARNING *** WARNING *** WARNING *** WARNING
 Your setup does not have the "SUSER" variable configured to be used for running
 the HRM Queue Manager. Usually, this results in the daemon being run as root.
 
-This is HIGHLY DEPRECATED as of HRM 3.1.0 and will not be supported in future
-releases. Please see the documentation how to correctly configure your HRM:
+This configuration has been DEPRECATED as of HRM 3.1.0 and is not supported in
+HRM 3.2.0 and newer releases. Please see the documentation how to correctly
+configure your HRM:
 
 http://huygens-rm.org/
 
