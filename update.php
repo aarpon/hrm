@@ -26,7 +26,7 @@ if (isset($_GET["action"])) {
         $interface = "hrm";
         include("setup/dbupdate.php");
     }
-        
+
 }
 
 include("header.inc.php");
@@ -53,8 +53,9 @@ include("header.inc.php");
 </div>
 
     <div id="content">
-    
-        <h3>Database update</h3>
+
+        <h3><img alt="UpdateDatabase" src="./images/updatedb.png"
+                 width="40"/>&nbsp;&nbsp;Update database</h3>
 
     <?php
     if ( System::isDBUpToDate( ) == true ) {
@@ -74,38 +75,38 @@ echo $message;
 ?>
             </textarea>
         </fieldset>
-        
+
     </div> <!-- content -->
-    
+
     <div id="rightpanel">
-    
+
         <div id="info">
-        
+
             <h3>Quick help</h3>
-            
+
             <p>
                 This page allows you to verify and patch the database after an
                 update to a new release. The interface might not function
                 properly until you do so.
             </p>
-            
+
             <p>
-                New HRM releases are available from the project 
+                New HRM releases are available from the project
                 <a href="javascript:openWindow(
                    'http://sourceforge.net/projects/hrm')">website</a>.
             </p>
-            
+
             <br>
-            
+
             <form method="GET" action="" id="dbupdate">
                 <input type="hidden" name="action" value="dbupdate">
             </form>
-            
+
             <input type="button" name="" value="update"
                    onclick="document.forms['dbupdate'].submit()" />
-            
+
         </div>
-        
+
         <div id="message">
 <?php
 
@@ -113,9 +114,9 @@ echo $message;
 
 ?>
         </div>
-        
+
     </div> <!-- rightpanel -->
-    
+
 <?php
 
 include("footer.inc.php");

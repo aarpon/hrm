@@ -130,6 +130,12 @@ class HuygensTemplate {
     private $imgSaveArray;
 
     /*!
+     \var    $autocropArray
+     \brief  Array with information on the autocrop subtask.
+    */
+    private $autocropArray;
+
+    /*!
      \var    $ZStabilizeArray
      \brief  Array with information on the Z stabilize subtask.
     */
@@ -256,10 +262,10 @@ class HuygensTemplate {
     private $thumbType;
 
     /*! 
-     \var     $thumbLif
-     \brief   Whether to make thumbnails for lif images.
+     \var     $thumbSubImg
+     \brief   Whether to make thumbnails for lif and czi sub images.
     */
-    private $thumbLif;
+    private $thumbSubImg;
 
     /* -------------------------- Constructor ------------------------------- */
 
@@ -318,7 +324,7 @@ class HuygensTemplate {
 
         $this->jobInfoArray = 
             array ('title'                      => 'Batch Processing template',
-                   'version'                    => '2.2',
+                   'version'                    => '2.3',
                    'templateName'               => '',
                    'date'                       => '',
                    'listID'                     => 'info');
@@ -391,13 +397,14 @@ class HuygensTemplate {
         $this->imgProcessTasksArray = 
             array ('open'                       =>  'imgOpen',
                    'setParameters'              =>  'setp',
+                   'autocrop'                   =>  'autocrop',
                    'adjustBaseline'             =>  'adjbl',
-                   'ZStabilization'              => 'stabilize',
+                   'ZStabilization'             =>  'stabilize',
                    'algorithms'                 =>  '',
                    'colocalization'             =>  'coloc',
                    '2Dhistogram'                =>  'hist',
                    'XYXZRawAtSrcDir'            =>  'previewGen',
-                   'XYXZRawLifAtSrcDir'         =>  'previewGen',
+                   'XYXZRawSubImgAtSrcDir'      =>  'previewGen',
                    'XYXZRawAtDstDir'            =>  'previewGen',
                    'XYXZDecAtDstDir'            =>  'previewGen',
                    'orthoRawAtDstDir'           =>  'previewGen',
@@ -493,12 +500,18 @@ class HuygensTemplate {
                     'itMode'                    =>  'auto',
                     'listID'                    =>  '' );
 
-        /* Options for the 'ZStabilization' action.
+        /* Options for the 'autocrop' action.
            A bit redundant to work with an array here, but this way the
-           foundations for more complex stabilization tasks are laid. */
+           foundations for more complex autocrop tasks are laid. */
+        $this->autocropArray =
+            array( 'enabled'                    =>  '0',
+                   'listID'                     =>  'autocrop');
+
+        /* Options for the 'ZStabilization' action.
+           A bit redundant to work with an array here, same reason as above. */
         $this->ZStabilizeArray =
             array( 'enabled'                    =>  '0',
-                   'listID'                    =>   'stabilize');
+                   'listID'                     =>  'stabilize');
 
         /* Options for the 'colocalization analysis' action */
         $this->colocArray  =
@@ -733,13 +746,14 @@ class HuygensTemplate {
             case 'open':
             case 'save':
             case 'setParameters':
+            case 'autocrop':
             case 'adjustBaseline':
-            case 'algorithms':
             case 'ZStabilization':
+            case 'algorithms':
             case 'colocalization':
             case '2Dhistogram':    
             case 'XYXZRawAtSrcDir':
-            case 'XYXZRawLifAtSrcDir':
+            case 'XYXZRawSubImgAtSrcDir':
             case 'XYXZRawAtDstDir':
             case 'XYXZDecAtDstDir':
             case 'orthoRawAtDstDir':
@@ -789,6 +803,9 @@ class HuygensTemplate {
             case 'setParameters':
                 $taskList .= $this->getImgProcessSetp();
                 break;
+            case 'autocrop':
+                $taskList .= $this->getImgProcessAutocrop();
+                break;
             case 'adjustBaseline':
                 $taskList .= $this->getImgProcessAdjbl();
                 break;
@@ -805,7 +822,7 @@ class HuygensTemplate {
                 $taskList .= $this->getImgProcessHistogram();
                 break;
             case 'XYXZRawAtSrcDir':
-            case 'XYXZRawLifAtSrcDir':
+            case 'XYXZRawSubImgAtSrcDir':
             case 'XYXZRawAtDstDir':
             case 'XYXZDecAtDstDir':
             case 'orthoRawAtDstDir':
@@ -955,8 +972,40 @@ class HuygensTemplate {
 
 
     /*!
+      \brief      Get options for the 'Autocrop' task. 
+      \return     Tcl list with the 'autocrop' task and its options.
+    */
+    private function getImgProcessAutocrop( ) {
+        $imgAutocrop = "";
+
+
+        $autocropParam = $this->deconSetting->parameter('Autocrop');
+        foreach ($this->autocropArray as $key => $value) {
+            
+            if ($key != "listID") {
+                $imgAutocrop .= " " . $key . " ";
+            }
+
+            switch( $key ) {
+            case 'enabled':
+                $imgAutocrop .= $autocropParam->value();
+                break;
+            case 'listID':
+                $imgAutocrop = $this->string2tcllist($imgAutocrop);
+                $imgAutocrop = $value . " " . $imgAutocrop;
+                break;
+            default:
+                error_log("Image autocrop option $key not yet implemented.");
+            }
+        }
+
+        return $imgAutocrop;
+    }
+    
+
+    /*!
       \brief      Get options for the 'ZStabilize' task. 
-      \return     Tcl lsit with the 'ZStabilize' task and its options.
+      \return     Tcl list with the 'ZStabilize' task and its options.
     */
     private function getImgProcessZStabilize( ) {
         $imgZStabilize = "";
@@ -1105,10 +1154,10 @@ class HuygensTemplate {
             $this->thumbFrom = null;
         }
 
-        if (preg_match("/Lif/i",$thumbType)) {
-            $this->thumbLif = "lif";
+        if (preg_match("/SubImg/i",$thumbType)) {
+            $this->thumbSubImg = "subimg";
         } else {
-            $this->thumbLif = null;
+            $this->thumbSubImg = null;
         }
 
         if (preg_match("/SrcDir/i",$thumbType)) {
@@ -1936,7 +1985,7 @@ class HuygensTemplate {
                 break;
             case 'XYXZ':
                 $destFile = basename($this->srcImage);
-                $destFile .= $this->getLifImageSuffix($this->thumbLif);
+                $destFile .= $this->getSubImageSuffix($this->thumbSubImg);
                 break;
             case 'orthoSlice':
                 $suffix = ".original";
@@ -1982,12 +2031,12 @@ class HuygensTemplate {
     }
 
     /*!
-     \brief       Gets the lif subimage name between parenthesis as suffix
-     \param       $lif Whether or not a lif image is being dealt with
+     \brief       Gets the subimage name between parenthesis as suffix
+     \param       $subImg Whether or not a sub image is being dealt with
      \return      The image suffix
     */
-    private function getLifImageSuffix($lif) {
-        if (isset($this->subImage) && $lif != null) {
+    private function getSubImageSuffix($subImg) {
+        if (isset($this->subImage) && $subImg != null) {
             $suffix = " (";
             $suffix .= $this->tcllist2string($this->subImage);
             $suffix .= ")";                    
@@ -2265,6 +2314,7 @@ class HuygensTemplate {
         switch ($task) {
         case 'imgOpen':
         case 'setp':
+        case 'autocrop':
         case 'adjbl':
         case 'imgSave':
         case 'stabilize':
@@ -2341,7 +2391,7 @@ class HuygensTemplate {
  
         if (strstr($key, 'SFP') && !$saveSfpPreviews) {
             $task = "";
-        } elseif (strstr($key, 'Lif') && !$this->isImageLif()) {
+        } elseif (strstr($key, 'SubImg') && !$this->hasSubImage()) {
             $task = "";
         } elseif (strstr($key, 'ZComparison') && !$this->compareZviews) {
             $task = "";
@@ -2457,12 +2507,10 @@ class HuygensTemplate {
     }
 
     /*!
-     \brief       Whether or not an image has lif extension. 
-     \brief       Not very elegant, but it is here convenient to check whether
-     \brief       an image is lif through the presence of subimages.
+     \brief       Whether or not an image has sub images. 
      \return      Boolean 
     */
-    private function isImageLif( ) {
+    private function hasSubImage( ) {
         if (isset($this->subImage)) {
             return true;
         } else {
@@ -2542,10 +2590,11 @@ class HuygensTemplate {
         $this->srcImage = $this->jobDescription->sourceImageName();
 
         /*If a (string) comes after the file name, the string is interpreted
-         as a subimage. Currently this is for LIF files only. */
-        if ( preg_match("/^(.*\.lif)\s\((.*)\)/i", $this->srcImage, $match) ) {
+         as a subimage. Currently this is for LIF and CZI files only. */
+        if ( preg_match("/^(.*\.(lif|czi))\s\((.*)\)/i",
+                        $this->srcImage, $match) ) {
             $this->srcImage = $match[1];
-            $this->subImage = $match[2];
+            $this->subImage = $match[3];
         }
     }
 

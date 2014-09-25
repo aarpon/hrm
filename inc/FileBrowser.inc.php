@@ -147,7 +147,7 @@ if (isset($_POST['update'])) {
 
 
 
-    /*************** Code for the interaction with Omero. ***************/
+    /*************** Code for the interaction with OMERO. ***************/
 global $omero_transfers;
 if ($omero_transfers) {
     if (isset($_SESSION['omeroConnection'])) {
@@ -182,7 +182,7 @@ if (isset($_POST['refreshOmero'])) {
     }
 }
 
-    /************ End of code for the interaction with Omero. **********/
+    /************ End of code for the interaction with OMERO. **********/
     
 
 
@@ -191,7 +191,8 @@ $script = array("settings.js",
                 "jquery-1.8.3.min.js",
                 "jqTree/tree.jquery.js",
                 "jquery-ui/jquery-ui-1.9.1.custom.js",
-                "jquery-ui/jquery.bgiframe-2.1.2.js");
+                "jquery-ui/jquery.bgiframe-2.1.2.js",
+                "omero.js");
 
 if (!isset($operationResult)) {
   $operationResult = "";

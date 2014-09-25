@@ -9,20 +9,20 @@ require_once( "Fileserver.inc.php" );
 class OmeroConnection {
 
     /*!
-      \var    $omeroTree    
-      \brief  Stores the contents of the user's Omero tree.
+      \var    $omeroTree
+      \brief  The contents of the user's OMERO tree.
     */
     private $omeroTree;
 
     /*!
       \var    $omeroUser
-      \brief  Stores the Omero user name for logging purposes.
+      \brief  The OMERO user name for authentication and logging purposes.
     */
     private $omeroUser;
 
     /*!
       \var    $omeroPass
-      \brief  Stores the Omero user password for logging purposes.
+      \brief  The OMERO user password for authentication and logging purposes.
     */
     private $omeroPass;
 
@@ -31,7 +31,13 @@ class OmeroConnection {
       \brief  Boolean to know whether the login was successful.
     */
     public $loggedIn;
-    
+
+   /*!
+      \var    $omeroWrapper
+      \brief  The shell wrapper to OMERO's command line tool.
+    */
+    private $omeroWrapper = "bin/ome_hrm";
+
 
         /* ----------------------- Constructor ---------------------------- */
 
@@ -39,79 +45,83 @@ class OmeroConnection {
      \brief   Constructor
     */
     public function __construct( $omeroUser, $omeroPass ) {
-        
-        if ( !empty($omeroUser) ) {
-            $this->omeroUser = $omeroUser;
-        } else {
-            return "Impossible to log on to your Omero account.
-                    Please try again. ";
+
+        if (empty($omeroUser)) {
+            report("No OMERO user name provided, cannot login.", 2);
+            return;
         }
 
-        if ( !empty($omeroPass) ) {
-            $this->omeroPass = $omeroPass;
-        } else {
-            return "Impossible to log on to your Omero account.
-                    Please try again. ";
+        if (empty($omeroPass)) {
+            report("No OMERO password provided, cannot login.", 2);
+            return;
         }
+
+        $this->omeroUser = $omeroUser;
+        $this->omeroPass = $omeroPass;
 
         $this->checkOmeroCredentials();
     }
 
-        /* -------------------- General Omero processes -------------------- */
+        /* -------------------- General OMERO processes -------------------- */
 
     /*!
-     \brief    From the login credentials provided by the user it attempts
-               to establish communication with the Omero server.
+     \brief   Try to establish communication with the OMERO server using the
+              login credentials provided by the user.
     */
     private function checkOmeroCredentials() {
 
+        report("Attempting to log on to OMERO, user=[" . $this->omeroUser .
+               "], password=[********].", 2);
         $cmd = $this->buildCredentialsCmd();
 
-        /* Authenticate against the Omero server. */
+            /* Authenticate against the OMERO server. */
         $loggedIn = shell_exec($cmd);
 
+            /* Returns NULL if an error occurred or no output was produced. */
         if ($loggedIn == NULL) {
-            report("Attempt to log on to Omero server failed.", 1);
-            return "Attempt to log on to Omero server failed.";
+            report("ERROR logging on to OMERO.", 0);
+            return;
         }
-        
-        /* Check whether the attempt was successful. */
+
+            /* Check whether the attempt was successful. */
         if (strstr($loggedIn, '-1')) {
             $this->loggedIn = FALSE;
+            report("Attempt to log on to OMERO server failed.", 1);
         } else {
             $this->loggedIn = TRUE;
         }
     }
 
     /*!
-     \brief   Retrieves the Omero data tree as returned by the ome_hrm script.
-     \return  The XML string with the Omero data tree.
+     \brief   Retrieve the OMERO data tree as returned by the ome_hrm script.
+     \return  The XML string with the OMERO data tree.
     */
     private function getRawOmeroDataTree () {
-        
+
         $cmd = $this->buildTreeCmd();
 
         $omeroData = shell_exec($cmd);
         if ($omeroData == NULL) {
-            report("Retrieving Omero data failed.", 1);
-            return "Retrieving Omero data failed.";
+            report("Retrieving OMERO data failed.", 1);
+            return "Retrieving OMERO data failed.";
         }
-        
-            /* Filter out any Omero output that is not XML. */
+
+            /* Filter out any OMERO output that is not XML. */
         preg_match("/<(.*)/",$omeroData,$matches);
         $omeroData = "<" . end($matches);
-        
+
         return $omeroData;
     }
-    
+
     /*!
-     \brief   Retrieves one image from the Omero server.
+     \brief   Retrieve one image from the OMERO server.
      \param   $postedParams Alias of $_POST with the user selection.
      \param   $fileServer Instance of the Fileserver class.
      \return  Ocassionally, an error message.
+     \todo    Should we return "true" in case of success?
     */
     public function importImage($postedParams, $fileServer) {
-        
+
         if (isset($postedParams['OmeImageName'])) {
             $imgName = basename($postedParams['OmeImageName']);
             $imgName = str_replace("Image: ","",$imgName);
@@ -124,20 +134,21 @@ class OmeroConnection {
         } else {
             return "No files selected.";
         }
-        
+
         $cmd = $this->buildImportCmd($imgName, $fileServer, $imgId);
-        
+
         if (shell_exec($cmd) == NULL) {
-            report("Importing image from Omero failed.", 1);
-            return "Importing image from Omero failed.";
+            report("Importing image from OMERO failed.", 1);
+            return "Importing image from OMERO failed.";
         }
     }
 
     /*!
-     \brief   Attaches a deconvolved image to an Omero dataset.
+     \brief   Attach a deconvolved image to an OMERO dataset.
      \param   $postedParams An alias of $_POST with names of selected files.
      \param   $fileServer   An instance of the Fileserver class.
      \return  Ocassionally an error message.
+     \todo    Should we return "true" in case of success?
     */
     public function exportImage($postedParams, $fileServer) {
 
@@ -152,15 +163,15 @@ class OmeroConnection {
         } else {
             return "No destination dataset selected.";
         }
-        
+
             /* Export all the selected files. */
         foreach ($selectedFiles as $file) {
-            
+
             $cmd = $this->buildExportCmd($file, $fileServer, $datasetId);
-            
+
             if (shell_exec($cmd) == NULL) {
-                report("Exporting image to Omero failed.", 1);
-                return "Exporting image to Omero failed.";
+                report("Exporting image to OMERO failed.", 1);
+                return "Exporting image to OMERO failed.";
             }
         }
     }
@@ -168,108 +179,80 @@ class OmeroConnection {
         /* ---------------------- Command builders--------------------------- */
 
     /*!
-     \brief   It builds an 'ome_hrm' (see script) compliant command
-              to check whether the user can log on to Omero.
-     \return  A string with the complete command.                       
+     \brief   Generic command builder for the OMERO wrapper script, adding the
+              credentials and making sure all parameters are properly quoted.
+     \param   $command - The command to be run by the wrapper.
+     \param   $parameters (optional) - An array of additional parameters
+              required by the wrapper to run the requested command.
+     \return  A string with the complete command.
+    */
+    private function buildCmd($command, $parameters="") {
+        // escape all shell arguments
+        foreach($parameters as &$param) {
+            $param = escapeshellarg($param);
+        }
+        // now we assemble the full shell command
+        $cmd  = $this->omeroWrapper . " ";
+        $cmd .= $command . " ";
+        $cmd .= escapeshellarg($this->omeroUser) . " ";
+        $cmd .= escapeshellarg($this->omeroPass) . " ";
+        $cmd .= join(" ", $parameters);
+        return $cmd;
+    }
+
+    /*!
+     \brief   Build the command to check whether the user can log on to OMERO.
+     \return  A string with the complete command.
     */
     private function buildCredentialsCmd() {
-
-            /* See 'chechCredentials' command in file 'bin/ome_hrm'. */
-        $cmd  = "bin/ome_hrm";
-        $cmd .= " ";
-        $cmd .= "checkCredentials";
-        $cmd .= " ";
-        $cmd .= $this->omeroUser;
-        $cmd .= " ";
-        $cmd .= $this->omeroPass;
-
-        return $cmd;
-    } 
+        return $this->buildCmd("checkCredentials");
+    }
 
     /*!
-     \brief   It builds an 'ome_hrm' (see script) compliant command
-              to retrieve the user's Omero data tree.
-     \return  A string with the complete command.                       
+     \brief   Build the command to retrieve the user's OMERO data tree.
+     \return  A string with the complete command.
     */
     private function buildTreeCmd() {
+        return $this->buildCmd("retrieveUserTree");
+    }
 
-            /* See 'retrieveUserTree' command in file 'bin/ome_hrm'. */
-        $cmd  = "bin/ome_hrm";
-        $cmd .= " ";
-        $cmd .= "retrieveUserTree";
-        $cmd .= " ";
-        $cmd .= $this->omeroUser;
-        $cmd .= " ";
-        $cmd .= $this->omeroPass;
-
-        return $cmd;
-    }   
-    
     /*!
-     \brief   It builds an 'ome_hrm' (see script) compliant command
-              to export one image to the Omero server.
-     \param   $file The name and relative path of the image to be exported.
-     \param   $fileServer An instance of the Fileserver class.
-     \param   $datasetId  The Omero ID of the dataset to export the image to.
-     \return  A string with the complete command.                       
+     \brief   Build the command to export one image to the OMERO server.
+     \param   $file - The name and relative path of the image file.
+     \param   $fileServer - An instance of the Fileserver class.
+     \param   $datasetId - The OMERO ID of the dataset to export the image to.
+     \return  A string with the complete command.
     */
     private function buildExportCmd($file, $fileServer, $datasetId) {
-
-            /* $file may contain relative paths. Here the absolute path. */
+        // FIXME: previous documentation said "$file may contain relative
+        // paths" - is this always true? Otherwise this method of constructing
+        // the absolute path will fail!
         $fileAndPath = $fileServer->destinationFolder() . "/" . $file;
-
-            /* See 'HRMToOmero' command in file 'bin/ome_hrm'. */
-        $cmd  = "bin/ome_hrm";         
-        $cmd .= " ";
-        $cmd .= "HRMToOmero";          
-        $cmd .= " ";
-        $cmd .= $this->omeroUser;       
-        $cmd .= " ";
-        $cmd .= $this->omeroPass;      
-        $cmd .= " ";
-        $cmd .= $datasetId;            
-        $cmd .= " ";
-        $cmd .= $fileAndPath;          
-        $cmd .= " ";
-        $cmd .= $this->getOriginalName($file);
-        $cmd .= " ";
-        $cmd .= $this->getDeconParameterSummary($fileAndPath);
-
-        return $cmd;
+        return $this->buildCmd("HRMtoOMERO",
+            array($datasetId, $fileAndPath,
+                  $this->getOriginalName($file),
+                  $this->getDeconParameterSummary($fileAndPath)));
     }
 
     /*!
-     \brief   It builds an 'ome_hrm' (see script) compliant command
-              to import one image from the Omero server.
-     \param   $imgName The name of the image in the Omero server.
-     \param   $fileServer An instance of the Fileserver class.
-     \param   $imgId The ID of the image in the Omero server.
-     \return  A string with the complete command.                       
+     \brief   Build the command to import one image from the OMERO server.
+     \param   $imgName - The name of the image in the OMERO server.
+     \param   $fileServer - An instance of the Fileserver class.
+     \param   $imgId - The ID of the image in the OMERO server.
+     \return  A string with the complete command.
     */
     private function buildImportCmd($imgName, $fileServer, $imgId) {
-
+        // FIXME: previous documentation said "$file may contain relative
+        // paths" - is this always true? Otherwise this method of constructing
+        // the absolute path will fail!
         $fileAndPath = $fileServer->sourceFolder() . "/" . $imgName;
-
-            /* See 'omeroToHRM' command in file 'bin/ome_hrm'. */
-        $cmd  = "bin/ome_hrm";
-        $cmd .= " ";
-        $cmd .= "omeroToHRM ";
-        $cmd .= " ";
-        $cmd .= $this->omeroUser;
-        $cmd .= " ";
-        $cmd .= $this->omeroPass;
-        $cmd .= " ";
-        $cmd .= $imgId;
-        $cmd .= " ";
-        $cmd .= $fileAndPath;
-
-        return $cmd;
+        return $this->buildCmd("OMEROtoHRM ", array($imgId, $fileAndPath));
     }
 
-        /* ---------------------- Omero Tree Assemblers ------------------- */
+        /* ---------------------- OMERO Tree Assemblers ------------------- */
 
     /*!
-     \brief  Gets the last requested JSON version of the user's Omero tree.
+     \brief  Get the last requested JSON version of the user's OMERO tree.
      \return The string with the JSON information.
     */
     public function getLastOmeroTree() {
@@ -277,20 +260,20 @@ class OmeroConnection {
         if (!isset($this->omeroTree)) {
             $this->getUpdatedOmeroTree();
         }
-        
+
         return $this->omeroTree;
     }
 
     /*!
-     \brief  Gets an updated JSON version of the user's Omero tree.
+     \brief  Get an updated JSON version of the user's OMERO tree.
      \return The string with the JSON information.
     */
     public function getUpdatedOmeroTree() {
 
         $omeroTree = array();
-        
+
         $omeroData = $this->getRawOmeroDataTree();
-        
+
         $pattern = "/<Project>(.*?)<\/Project>/";
         preg_match_all($pattern, $omeroData, $allProjects);
 
@@ -307,16 +290,16 @@ class OmeroConnection {
                     /* If the project has no children. */
                 if (empty($projectDatasets)) {
                     $omeroTree[$key] = "Project: " . $projectInfo[1];
-                    
+
                 } else {
-                    
+
                         /* Project name. */
                     $omeroTree[$key][(string) "label" ]
                         = (string) "Project: " . $projectInfo[1];
 
                         /* Project id. */
                     $omeroTree[$key][(string) "id" ] = $projectInfo[2];
-                    
+
                         /* Children. */
                     $omeroTree[$key][(string) "children" ] = $projectDatasets;
                 }
@@ -329,7 +312,7 @@ class OmeroConnection {
     }
 
     /*!
-     \brief  Gets the Omero project info in a multidimensional array.
+     \brief  Get the OMERO project info in a multidimensional array.
      \param  $project The XML string with the project information.
      \return The multidimensional array with the project information.
     */
@@ -340,14 +323,14 @@ class OmeroConnection {
             /* Get the project datasets. */
         $pattern = "/<Dataset>(.*?)<\/Dataset>/";
         preg_match_all($pattern, $project, $allDatasets);
-        
+
             /* Loop over the datasets. */
         foreach ($allDatasets[1] as $key => $dataset) {
-            
+
                 /* Get the dataset details. */
             $pattern = "/(.*?)<id>(.*?)<\/id>/";
             if (preg_match($pattern, $dataset, $datasetInfo)) {
-                
+
                     /* Look for dataset children. */
                 $datasetImages = $this->getDatasetImages($dataset);
 
@@ -365,16 +348,16 @@ class OmeroConnection {
 
                         /* Children. */
                     $projectDatasets[$key][(string) "children" ]
-                        = $datasetImages;                    
+                        = $datasetImages;
                 }
-            }   
+            }
         }
 
         return $projectDatasets;
     }
 
     /*!
-     \brief  Gets the Omero image of a dataset in a multidimensional array.
+     \brief  Get the OMERO image of a dataset in a multidimensional array.
      \param  $dataset An XML string with the dataset information.
      \return The multidimensional array with the image names and their id's.
     */
@@ -382,7 +365,7 @@ class OmeroConnection {
 
             /* Initizalize the array. */
         $datasetImages = array();
-        
+
 
         $pattern = "/<Image>(.*?)<id>(.*?)<\/id>/";
         if (!preg_match_all($pattern, $dataset, $allImages)) {
@@ -393,13 +376,13 @@ class OmeroConnection {
 
 
         } else {
-        
+
                 /* If the dataset does contains images we'll loop over them. */
             foreach ($allImages[1] as $key => $imageName) {
-                
+
                     /* Image name. */
                 $datasetImages[$key][(string) "label"] = "Image: " . $imageName;
-                
+
                     /* The image 'id' is located in a sub-array within
                      'allImages', which can be accessed with the current 'key'.*/
                 $datasetImages[$key][(string) "id"] = $allImages[2][$key];
@@ -411,8 +394,8 @@ class OmeroConnection {
 
         /* ------------------------- Parsers ------------------------------ */
     /*!
-     \brief   Parses the HRM job parameters (html) file into a plain string
-              to be used as Omero annotation.
+     \brief   Parse the HRM job parameters (html) file into a plain string to
+              be used as OMERO annotation.
      \param   $file The path and file name of the HRM deconvolution result.
      \return  The plain string with the parameter summary.
     */
@@ -447,7 +430,7 @@ class OmeroConnection {
             foreach ($rows as $key => $row) {
 
                     /* Irrelevant information. */
-                if ($key == 1 || $key == 2) {        
+                if ($key == 1 || $key == 2) {
                     continue;
                 }
 
@@ -459,34 +442,34 @@ class OmeroConnection {
                     if ($key == 3) {
                         continue;
                     }
-                    
+
                     $column = strip_tags($column);
                     $column = explode(">",$column);
-                    
+
                     if (isset($column[1])) {
                         if ($key == 1) {
                             $summary .=
                                 str_replace("(&mu;m)","(mu)",$column[1]);
                         }
-                        
+
                         if ($key == 2) {
                             $summary .=
                                 " (ch. " . strtolower($column[1]) . "): ";
                         }
-                        
+
                         if ($key == 4) {
                             $summary .= $column[1] . " | ";
                         }
                     }
                 }
-            }    
+            }
         }
 
         return $summary . "'";
     }
 
     /*!
-     \brief   Removes the deconvolution suffix to find the original file name.
+     \brief   Remove the deconvolution suffix to find the original file name.
      \param   The name of the deconvolved dataset.
      \return  The name of the raw dataset.
     */
@@ -507,7 +490,7 @@ class OmeroConnection {
             return $file;
         }
     }
-    
+
 }
 
 

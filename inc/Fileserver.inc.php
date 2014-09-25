@@ -23,6 +23,22 @@ class Fileserver {
   /*!
     \var    $files
     \brief  Array of image file names in the user's source directory
+
+    This variable is meant to be accessed via the files() method.
+
+    The variable $files has access modifier 'private' to make sure that
+    clients of this class will only be allowed to access it via the files()
+    method.
+
+    The method files() checks whether $files is NULL, in which case it will
+    scan the src folder and store the resulting file list in $files. Next
+    call to files() will be quicker because the src folder has been scanned
+    already and the $files content is returned.
+
+    Accessing $files directly from other class methods could then cause NULL
+    to be returned if files() has not been called yet!
+
+    Note: To force a rescan of the src folder, please call resetFiles().
   */
   private $files;
 
@@ -292,6 +308,10 @@ class Fileserver {
     \param  $expandSubInages    if true, names of subimages (as in the case of
                                 lif files) are expanded and returned in the
                                 list of file names
+
+    Please notice that this function DOES NOT STORE THE LIST OF FILES. It
+    just returns it!
+
     \return sorted array of file names
   */
   public function listFiles( $expand ) {
@@ -391,33 +411,29 @@ class Fileserver {
     \return array of file names
   */
   public function filesOfType( $format, $isTimeSeries ) {
-
-        if ($format == "ics") {
-            $files = $_SESSION['fileserver']->files("ics");
-        }
-        else if ($format == "tiff" || $format == "tiff-single") {
-            $files = $_SESSION['fileserver']->tiffFiles();
-        }
-        else if ($format == "tiff-series") {
+      
+      if ($format == "ics") {
+          $files = $_SESSION['fileserver']->files("ics");
+      } else if ($format == "tiff" || $format == "tiff-single") {
+          $files = $_SESSION['fileserver']->tiffFiles();
+      } else if ($format == "tiff-series") {
             $files = $_SESSION['fileserver']->tiffSeriesFiles();
-        }
-        else if ($format == "tiff-leica") {
-            $files = $_SESSION['fileserver']->tiffLeicaFiles();
-        }
-        else if ($format == "stk") {
-            if ($isTimeSeries == true) {
-                $files = $_SESSION['fileserver']->stkSeriesFiles();
-            }
-            else {
-                $files = $_SESSION['fileserver']->stkFiles();
-            }
-        }
-        else {
-            $files = $_SESSION['fileserver']->files($format);
-        }
-
-        return $files;
-
+      } else if ($format == "tiff-leica") {
+          $files = $_SESSION['fileserver']->tiffLeicaFiles();
+      } else if ($format == "stk") {
+          if ($isTimeSeries == true) {
+              $files = $_SESSION['fileserver']->stkSeriesFiles();
+          } else {
+              $files = $_SESSION['fileserver']->stkFiles();
+          }
+      } else {
+          /* The format has already been set in the class, which very badly
+             needs to be refactored. By not passing the format again to this
+             function we force to list the subimages as well. */
+          $files = $_SESSION['fileserver']->files();
+      }
+      
+      return $files;
   }
 
   /*!
@@ -724,22 +740,22 @@ class Fileserver {
   }
 
   /*!
-   \brief  Exports a deconvolved image to the Omero server.
+   \brief  Exports a deconvolved image to the OMERO server.
   */
   public function exportToOmero( ) {
 
       if (!isset($_SESSION['omeroConnection'])) {
-          return "Impossible to reach your Omero account.";
+          return "Impossible to reach your OMERO account.";
       }
 
       if (!isset($_POST['selectedFiles'])) {
-          return "Please select a deconvolved image to export to Omero.";
+          return "Please select a deconvolved image to export to OMERO.";
       }
 
       if (!isset($_POST['OmeDatasetId'])
           || empty($_POST['OmeDatasetId'])) {
           return "Please select a destination dataset
-                  within the Omero data tree.";
+                  within the OMERO data tree.";
       }
 
       $omeroConnection = $_SESSION['omeroConnection'];
@@ -748,27 +764,27 @@ class Fileserver {
   }
 
   /*!
-   \brief  Imports a raw image from the Omero server.
+   \brief  Imports a raw image from the OMERO server.
   */
   public function importFromOmero() {
 
       if (!isset($_SESSION['omeroConnection'])) {
-          return "Impossible to reach your Omero account.";
+          return "Impossible to reach your OMERO account.";
       }
 
       if (!isset($_POST['OmeImageId'])
           || empty($_POST['OmeImageId'])) {
-          return "Please select an image within the Omero data tree.";
+          return "Please select an image within the OMERO data tree.";
       }
 
       if (!isset($_POST['OmeImageName'])
           || empty($_POST['OmeImageName'])) {
-          return "Please select an image within the Omero data tree.";
+          return "Please select an image within the OMERO data tree.";
       }
 
       if (!isset($_POST['OmeDatasetId'])
           || empty($_POST['OmeDatasetId'])) {
-          return "Please select an image within the Omero data tree.";
+          return "Please select an image within the OMERO data tree.";
       }
 
       $omeroConnection = $_SESSION['omeroConnection'];
@@ -845,9 +861,9 @@ class Fileserver {
   public function uploadFiles($files, $dir) {
 
       if ( $dir == "src" ) {
-          $uploaddir =  $this->sourceFolder();
+          $uploadDir =  $this->sourceFolder();
       } else {
-          $uploaddir =  $this->destinationFolder();
+          $uploadDir =  $this->destinationFolder();
       }
 
       $max = getMaxFileSize() / 1024 / 1024;
@@ -857,12 +873,8 @@ class Fileserver {
       $err = "";
       $okCnt = 0;
 
-      # print_r($files); exit;
 
       // This needs some file type validation: only images should be allowed.
-
-      // decompression still pending.
-
       try {
 
       foreach ($files['name'] as $i => $name) {
@@ -871,17 +883,17 @@ class Fileserver {
               // This is also error UPLOAD_ERR_NO_FILE;
               continue;
           }
-          $basename = basename($name);
-          $basename = str_replace(" ","_",$basename);
-          $uploadfile = $uploaddir . "/" . $basename;
-          $info = pathinfo($uploadfile);
-          $file_name =  basename($uploadfile,'.'.$info['extension']);
+          $baseName = basename($name);
+          $baseName = str_replace(" ","_",$baseName);
+          $uploadFile = $uploadDir . "/" . $baseName;
+          $bareName = reset(explode('.',$baseName));
+          $extension = str_replace($bareName,"",$baseName);
 
-	  // If the php.ini upload variables are overriden in the HRM
-	  // config files, PHP does not rise this error.
- 	  if (($files['size'][$i] / 1024 / 1024) > $max) {
- 	     $files['error'][$i] = UPLOAD_ERR_INI_SIZE;
-  	  }
+          // If the php.ini upload variables are overriden in the HRM
+          // config files, PHP does not rise this error.
+          if (($files['size'][$i] / 1024 / 1024) > $max) {
+              $files['error'][$i] = UPLOAD_ERR_INI_SIZE;
+          }
 
           if ($files['error'][$i]) {
               $err .= "Invalid file <kbd>".$basename."</kbd>: <b>";
@@ -911,42 +923,42 @@ class Fileserver {
 
           if ( $type != "" ) {
               # If this is a compressed archive, extract its files.
-              $subdir = $file_name;
-              $zsuffix = 0;
-              $zmaxSuffix = 100;
-
-              $testExpand = $uploaddir . "/" . $subdir;
+              $subDir = $baseName;
+              $zSuffix = 0;
+              $zMaxSuffix = 100;
+              
+              $testExpand = $uploadDir . "/" . $subDir;
 
               while (file_exists($testExpand)) {
-                  $zsuffix ++;
-                  $testExpand = $uploaddir . "/" . $file_name. "_$zsuffix" ;
-                  if ($zsuffix > $zmaxSuffix) {
-                      $err .= "Directory <kbd>".$filename.
+                  $zSuffix ++;
+                  $testExpand = $uploadDir . "/" . $bareName .
+                      "_$zsuffix" . $extension;
+                  if ($zSuffix > $zMaxSuffix) {
+                      $err .= "Directory <kbd>".$baeName.
                           "</kbd> exists, <b>can't store more ".
-                          " than $zmaxSuffix versions.</b><br>\n";
+                          " than $zMaxSuffix versions.</b><br>\n";
                       break;
                   }
               }
-              if ($zsuffix > $zmaxSuffix) {
+              if ($zSuffix > $zMaxSuffix) {
                   continue;
               }
 
               $okCnt++;
-              $ok .= "<br>Processed <kbd>".$basename."</kbd>.<br>\n";
+              $ok .= "<br>Processed <kbd>".$baseName."</kbd>.<br>\n";
 
-
-              if ($zsuffix > 0) {
-                  $subdir = $file_name."_".$zsuffix;
-                  $ok .= "Extracting files to <kbd>$subdir</kbd>.<br>\n";
+              if ($zSuffix > 0) {
+                  $subDir = $baseName."_".$zSuffix;
+                  $ok .= "Extracting files to <kbd>$subDir</kbd>.<br>\n";
               }
               $this->decompressArchive($files['tmp_name'][$i], $type,
-                      $uploaddir, $ok, $err, $subdir, true);
+                      $uploadDir, $ok, $err, $subDir, true);
               continue;
 
           }
 
           if (!$this->isValidImage($name, true)) {
-              $err .= "Skipped <kbd>".$basename."</kbd>: ";
+              $err .= "Skipped <kbd>". $baseName ."</kbd>: ";
               $err .= "<b>unknown image type</b><br>\n";
               continue;
 
@@ -955,41 +967,42 @@ class Fileserver {
           $suffix = 0;
           $maxSuffix = 20;
 
-          while (file_exists($uploadfile)) {
+          while (file_exists($uploadFile)) {
               $suffix ++;
-              $uploadfile = $uploaddir . "/" . $file_name
-                  . "_$suffix." . $info['extension'];
+              $uploadFile = $uploadDir . "/" . $bareName .
+                  "_$suffix" . $extension;
               if ($suffix > $maxSuffix) {
-                  $err .= "File <kbd>".$basename.
-                      "</kbd> exists, <b>can't store more than $maxSuffix versions.</b>";
+                  $err .= "File <kbd>".$baseName.
+                      "</kbd> exists, <b>can't store more than " .
+                      "$maxSuffix versions.</b>";
                   break;
               }
           }
           if ($suffix > $maxSuffix) {
               continue;
           }
-
-          if (move_uploaded_file($files['tmp_name'][$i], $uploadfile)) {
+          
+          if (move_uploaded_file($files['tmp_name'][$i], $uploadFile)) {
               // echo "File is valid, and was successfully uploaded.\n";
               if ($suffix == 0) {
-                  $ok .= "<kbd>".$basename."</kbd> uploaded <br>\n";
+                  $ok .= "<kbd>". $baseName ."</kbd> uploaded <br>\n";
               } else {
-                  $ok .= "<kbd>".$basename.
+                  $ok .= "<kbd>". $baseName .
                       "</kbd> already exists, uploaded and <b>renamed</b> ".
-                      "to <kbd>$file_name"
-                      . "_$suffix." . $info['extension']. "</kbd><br>\n";
+                      "to <kbd>$bareName" . 
+                      "_$suffix" . $extension . "</kbd><br>\n";
               }
               $okCnt++;
           } else {
-              $err .= "File ".$basename." could not be written to its ".
-                      "final destination. Please make sure that " .
+              $err .= "File ".$baseName." could not be written to its ".
+                  "final destination. Please make sure that " .
                       "directory permissions are correctly set!<br>\n";
           }
       }
       } catch (Exception $e) {
           $err .= "Error uploading files: ".$e->getMessage();
-      }
-
+      }      
+      
       $msg = "<h3>Upload report</h3>\n";
 
       if ($okCnt == 0) {
@@ -999,7 +1012,8 @@ class Fileserver {
           if ($okCnt > 1) {
               $plural = "s";
           }
-          $msg .= "<p class=\"report\">$okCnt file$plural uploaded.</p><p class=\"report\">$ok</p><p class=\"report\">$err</p>";
+          $msg .= "<p class=\"report\">$okCnt file$plural uploaded.</p>" .
+              "<p class=\"report\">$ok</p><p class=\"report\">$err</p>";
       }
 
       if ( $dir == "src" ) {
@@ -1141,9 +1155,7 @@ class Fileserver {
 
       $answer = huCoreTools( "reportSubImages", $opt);
 
-
       if (! $answer ) return;
-      # printDebug ($answer);
 
       $lines = count($answer);
 
@@ -1195,9 +1207,6 @@ class Fileserver {
       }
 
       return $new_files;
-
-      # printDebug ($tree);
-
   }
 
   /*!
@@ -1228,12 +1237,8 @@ class Fileserver {
       }
 
       $opt = "-count $i $imgList -dir \"". $this->sourceFolder() ."\"";
-
-
       $answer = huCoreTools( "getMetaData", $opt);
-
       if (! $answer ) return;
-      # printDebug ($answer);
 
       $lines = count($answer);
 
@@ -1289,8 +1294,6 @@ class Fileserver {
           }
       }
 
-
-      # printDebug ($tree);
       return $tree;
 
   }
@@ -1312,6 +1315,10 @@ class Fileserver {
           $filename = $path[0] . "/.../" . $path[count($path) - 1];
       else
           $filename = $file;
+
+      // Consecutive spaces are collapsed into one space in HTML.
+      // Hence '&nbsp;' to correct this when the file has more spaces.
+      $filename = str_replace(' ','&nbsp;',$filename);
 
       return
       "                        <option value=\"$file\">$filename</option>\n";
@@ -1377,6 +1384,10 @@ class Fileserver {
 
       $dirname = dirname($pdir."/".$image);
       $base = basename($pdir."/".$image);
+
+      /* Huygens does not support ":" in names of saved files. */
+      $base  = str_replace(":", "_", $base);
+      $image = str_replace(":", "_", $image);
 
       // The thumbnail is saved in a subdirectory along with the image, and it
       // has a suffix indicating the thumbnail type plus the jpg extension.
@@ -1588,7 +1599,7 @@ echo '</body></html>';
           <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 
           <head>
-          <title>Huygens Remote Manager</title>
+          <title>HRM - ' . $file . ' - results preview</title>
           <link rel="SHORTCUT ICON" href="images/hrm.ico"/>
           <script type="text/javascript" src="scripts/common.js"></script>
           <style type="text/css">
@@ -1603,6 +1614,7 @@ echo '</body></html>';
       <div id="prevBasket"> <!--basket-->
       <div id="title">
       <h1>HRM image preview</h1>
+      <h2>'.$file.'</h2>
       <div id="logo"></div>
       </div>';
 
@@ -2099,6 +2111,8 @@ echo '</body></html>';
   */
   public function genPreview( $file, $src, $dest, $index, $sizes = "preview", $data = 0 ) {
 
+      global $change_ownership;
+
       $excludeTitle = true;
       include("header.inc.php");
 
@@ -2131,18 +2145,16 @@ echo '</body></html>';
       if (!file_exists($pdest)) {
           @mkdir($pdest, 0777);
       }
-      @chmod($pdest, 0777);
+      if (isset($change_ownership) && $change_ownership == true) {
+        @chmod($pdest, 0777);
+      }
 
       $extra = "";
       $series = "auto";
 
       $opt = "-filename \"$basename\" -src \"$psrc\" -dest \"$pdest\" ".
              "-scheme auto -sizes \{$sizes\} -series $series $extra";
-
       $answer = huCoreTools( "generateImagePreview", $opt);
-
-      # if (! $answer ) return;
-      # printDebug ($answer);
 
       $lines = count($answer);
       $html = "";
@@ -2178,6 +2190,9 @@ echo '</body></html>';
       echo "</pre></div>";
       ob_flush();
       flush();
+
+      /* Huygens does not support ":" in names of saved files. */
+      $basename = str_replace(":", "_", $basename);
 
       $path = stripslashes($pdest."/".$basename.".preview_xy.jpg");
       if ($ok && ! file_exists($path)) {
@@ -2342,6 +2357,291 @@ echo '</body></html>';
     }
     closedir($dir);
     return $result;
+  }
+
+  /*!
+   \brief Create hard links into the psf_sharing/buffer folder from the
+          folder of the sharing user and return an array of full paths
+          created links.
+   \param $psfFiles array of psf files paths relatives to current user.
+   \return array of destination PSF paths.
+   */
+  public function createHardLinksToSharedPSFs($psfFiles, $targetUser) {
+
+      global $image_folder;
+
+      // Prepare output
+      $destPFSPaths = array();
+
+      // Full path to psf_sharing and psf_sharing/buffer
+      $psf_sharing = $image_folder . "/" . "psf_sharing";
+      $buffer = $psf_sharing . "/" . "buffer";
+
+      // Create a timestamp for current hard links
+      $mt = microtime(); $mt = explode(" ", $mt);
+      $timestamp = (string)$mt[1] . (string)round(1e6 * $mt[0]);
+
+      // Go over all PSF files
+      for ($i = 0; $i < count($psfFiles); $i++) {
+
+          // If we have a file, process it
+          if ($psfFiles[$i] != "") {
+
+              // Full psf file path
+              $fullSourcePSFPath = $this->sourceFolder() . "/" . $psfFiles[$i];
+
+              // Destination psf file path
+              $fullDestPSFPath = $buffer . "/" . $targetUser . "/" .
+                  $this->username . "/" . $timestamp . "/" .$psfFiles[$i];
+
+              // Destination psf containing folder
+              $contDestPSFFolder = dirname($fullDestPSFPath);
+
+              // Create the container folder if it does not exist
+              if (!file_exists($contDestPSFFolder)) {
+                  if (!mkdir($contDestPSFFolder, 0777, true)) {
+                      $destPFSPaths[$i] = "";
+                      continue;
+                  }
+              }
+
+              // Create hard link
+              $cmd = "ln \"" . $fullSourcePSFPath . "\" \"" . $contDestPSFFolder . "/.\"";
+              $out = shell_exec($cmd);
+
+              // If the PSF file is a *.ics/*.ids pair, we make sure to
+              // hard-link also the companion file
+              $companion = Fileserver::findCompanionFile($fullSourcePSFPath);
+              if (NULL !== $companion) {
+                  $cmd = "ln \"" . $companion . "\" \"" . $contDestPSFFolder . "/.\"";
+                  $out = shell_exec($cmd);
+              }
+
+              // Store the relative path to the destination PSF file to the
+              // output array
+              $relPath = substr($fullDestPSFPath, strlen($image_folder) + 1);
+              $destPFSPaths[$i] = $relPath;
+
+          } else {
+
+              $destPFSPaths[$i] = "";
+
+          }
+      }
+
+      // Return the aray of full PSF destination paths
+      return $destPFSPaths;
+  }
+
+    /*!
+     \brief Create hard links into the folder of the target user from
+            the psf_sharing/buffer folder and return an array of full paths
+            created links.
+     \param $psfFiles array of psf files paths relatives to current user.
+     \return array of destination PSF paths.
+     */
+    public function createHardLinksFromSharedPSFs($psfFiles, $targetUser, $previousUser) {
+
+        global $image_folder;
+        global $image_source;
+
+        // Full path to psf_sharing and psf_sharing/buffer
+        $psf_sharing = $image_folder . "/" . "psf_sharing";
+        $buffer = $psf_sharing . "/" . "buffer";
+
+        // Create a timestamp for current hard links
+        $mt = microtime(); $mt = explode(" ", $mt);
+        $targetTimestamp = (string)$mt[1] . (string)round(1e6 * $mt[0]);
+
+        // Full path with user and time information
+        $full_buffer = $buffer . "/" . $targetUser . "/" . $previousUser . "/";
+
+        // Prepare output
+        $destPFSPaths = array();
+
+        // Go over all PSF files
+        for ($i = 0; $i < count($psfFiles); $i++) {
+
+            // If we have a file, process it
+            if ($psfFiles[$i] != "") {
+
+                // Full psf file path
+                $fullSourcePSFPath = $image_folder . "/" . $psfFiles[$i];
+
+                // Get the numeric timestamp
+                $pos = strpos($fullSourcePSFPath, "/", strlen($full_buffer));
+                if (False === $pos) {
+                    // This should not happen
+                    $destPFSPaths[$i] = "";
+                    continue;
+                }
+
+                // Relative PSF path
+                $relPSFPath = $targetTimestamp . "/" . substr($fullSourcePSFPath, ($pos + 1));
+
+                // Destination psf file path
+                $fullDestPSFPath = $image_folder . "/" . $targetUser . "/" .
+                    $image_source . "/" . $relPSFPath;
+
+                // Destination psf containing folder
+                $contDestPSFFolder = dirname($fullDestPSFPath);
+
+                // Create the container folder if it does not exist
+                if (!file_exists($contDestPSFFolder)) {
+                    if (! mkdir($contDestPSFFolder, 0777, true)) {
+                        $destPFSPaths[$i] = "";
+                        continue;
+                    }
+                }
+
+                // Create hard link
+                $cmd = "ln \"" . $fullSourcePSFPath . "\" \"" . $contDestPSFFolder . "/.\"";
+                $out = shell_exec($cmd);
+
+                // Now delete the source file
+                unlink($fullSourcePSFPath);
+
+                // If the PSF file is a *.ics/*.ids pair, we make sure to
+                // hard-link also the companion file
+                $companion = Fileserver::findCompanionFile($fullSourcePSFPath);
+                if (NULL !== $companion) {
+                    $cmd = "ln \"" . $companion . "\" \"" . $contDestPSFFolder . "/.\"";
+                    $out = shell_exec($cmd);
+
+                    // Now delete the companion file
+                    unlink($companion);
+
+                }
+
+                // Store the relative path to the destination PSF file to the
+                // output array
+                $destPFSPaths[$i] = $relPSFPath;
+
+                // Delete the containing folders if they are no longer needed
+                $contFolder = dirname($fullSourcePSFPath);
+                while ($contFolder != $buffer && Fileserver::is_dir_empty($contFolder)) {
+                    if (!rmdir($contFolder)) {
+                        break;
+                    }
+                    $contFolder = dirname($contFolder . "..");
+                }
+
+            } else {
+
+                $destPFSPaths[$i] = "";
+
+            }
+        }
+
+        // Return the aray of full PSF destination paths
+        return $destPFSPaths;
+    }
+
+    /*!
+ \brief Delete PSF files (hard links) with given relative path from
+        the psf_sharing/buffer folder.
+ \param $psfFiles array of PSF files paths relative to the file server root.
+ */
+    public static function deleteSharedFSPFilesFromBuffer($psfFiles) {
+
+        global $image_folder;
+
+        // Full path of the psf_sharing/buffer folder
+        $buffer =  $image_folder . "/psf_sharing/buffer";
+
+        // Process the PSF files
+        foreach ($psfFiles as $f) {
+
+            // Make sure the file points in the the buffer folder!
+            if (strpos($f, "psf_sharing/buffer") === 0) {
+
+                // Full path
+                $f = $image_folder . "/" . $f;
+
+                // Delete the file. If the file does not exist or cannot be
+                // deleted, log it and continue.
+                if (! unlink($f)) {
+                    report("Could not delete " . $f, 0);
+                }
+
+                // Get companion file
+                $c = Fileserver::findCompanionFile($f);
+                if (NULL !== $c) {
+                    // Delete the companion file. If the file does not exist or
+                    // cannot be deleted, log it and continue.
+                    if (! unlink($c)) {
+                        report("Could not delete " . $c, 0);
+                    }
+                }
+
+                // Delete the containing folders if empty
+                $contFolder = dirname($f);
+                while ($contFolder != $buffer && Fileserver::is_dir_empty($contFolder)) {
+                    if (!rmdir($contFolder)) {
+                        break;
+                    }
+                    $contFolder = dirname($contFolder . "..");
+                }
+
+            }
+
+        }
+
+    }
+
+    /*!
+    \brief Given either an ics or and ids file, returns the companion.
+
+    The companion file must exist.
+
+    \param $file File name with either .ics or .ids extension. The case might
+                 be different (e.g. .ICS)
+    \return full fine name of the companion file, if it exist; NULL otherwise.
+     */
+  public static function findCompanionFile($file) {
+
+      // Get the extension
+      $pos = strrpos($file, ".");
+      if (False === $pos) {
+          return NULL;
+      }
+
+      // Split the file in bse and extension strings
+      $base = substr($file, 0, $pos);
+      $ext = substr($file, $pos);
+
+      if (strtoupper($ext) == ".ICS") {
+
+          $possExts = array(".ids", ".IDS", ".iDs", ".idS", ".iDS",
+              ".IdS", ".Ids", ".idS");
+
+          foreach ($possExts as $p) {
+              if (file_exists($base . $p)) {
+                  return $base . $p;
+              }
+          }
+
+          return NULL;
+
+      } elseif (strtoupper($ext) == ".IDS") {
+
+          $possExts = array(".ics", ".ICS", ".iCs", ".icS", ".iCS",
+              ".IcS", ".Ics", ".icS");
+
+          foreach ($possExts as $p) {
+              if (file_exists($base . $p)) {
+                  return $base . $p;
+              }
+          }
+
+          return NULL;
+
+      } else {
+
+          return NULL;
+
+      }
+
   }
 
 /*
@@ -2558,8 +2858,8 @@ echo '</body></html>';
             attribute.
   */
   private function condenseTimeSeries() {
-    if (count($this->files)==0) return False;
-    $time_series =  preg_grep("/\w+[0-9]+\.\w+/", $this->files);
+    if (count($this->files())==0) return False;
+    $time_series =  preg_grep("/\w+[0-9]+\.\w+/", $this->files());
     $lastValue = "";
     foreach ($time_series as $key => $value) {
        if ($this->basename($lastValue)==$this->basename($value)) {
@@ -2576,8 +2876,8 @@ echo '</body></html>';
     \todo Refactor
   */
   private function trimTiffSeries() {
-    if (count($this->files)==0) return False;
-    $tiff_series = preg_grep("/[^_]+_(T|t|Z|z|CH|ch)[0-9]+\w+\.\w+/", $this->files);
+    if (count($this->files())==0) return False;
+    $tiff_series = preg_grep("/[^_]+_(T|t|Z|z|CH|ch)[0-9]+\w+\.\w+/", $this->files());
     foreach ($tiff_series as $key => $value) {
 	unset($this->files[$key]);
     }
@@ -2592,8 +2892,8 @@ echo '</body></html>';
     \todo Refactor
   */
   private function trimTiffLeica() {
-    if (count($this->files)==0) return False;
-    $tiff = preg_grep("/[^_]+_(T|t|Z|z|CH|ch)[0-9]+\w+\.\w+/", $this->files, PREG_GREP_INVERT);
+    if (count($this->files())==0) return False;
+    $tiff = preg_grep("/[^_]+_(T|t|Z|z|CH|ch)[0-9]+\w+\.\w+/", $this->files(), PREG_GREP_INVERT);
     foreach ($tiff as $key => $value) {
 	unset($this->files[$key]);
     }
@@ -2605,8 +2905,8 @@ echo '</body></html>';
     \todo Refactor
   */
   private function trimTiff() {
-    if (count($this->files)==0) return False;
-    $tiff_series = preg_grep("/[^_]+_(T|t|Z|z|CH|ch)[0-9]+\w+\.\w+/", $this->files);
+    if (count($this->files())==0) return False;
+    $tiff_series = preg_grep("/[^_]+_(T|t|Z|z|CH|ch)[0-9]+\w+\.\w+/", $this->files());
     foreach ($tiff_series as $key => $value) {
 	unset($this->files[$key]);
     }
@@ -2621,8 +2921,8 @@ echo '</body></html>';
     \brief  Trims STK files
   */
   private function trimStk() {
-    if (count($this->files)==0) return False;
-    $stk = preg_grep("/[^_]+_(T|t)[0-9]+\.\w+/", $this->files, PREG_GREP_INVERT);
+    if (count($this->files())==0) return False;
+    $stk = preg_grep("/[^_]+_(T|t)[0-9]+\.\w+/", $this->files(), PREG_GREP_INVERT);
     foreach ($stk as $key => $value) {
 	unset($this->files[$key]);
     }
@@ -2632,8 +2932,8 @@ echo '</body></html>';
     \brief  Trims STK time series
   */
  private function trimStkSeries() {
-   if (count($this->files)==0) return False;
-   $stk = preg_grep("/[^_]+_(T|t)[0-9]+\.\w+/", $this->files);
+   if (count($this->files())==0) return False;
+   $stk = preg_grep("/[^_]+_(T|t)[0-9]+\.\w+/", $this->files());
    foreach ($stk as $key => $value) {
        unset($this->files[$key]);
    }
@@ -2653,11 +2953,11 @@ echo '</body></html>';
     \brief Condensed Leica TIFF series to the first file in the series
   */
   private function condenseTiffLeica() {
-    if (count($this->files)==0) {
+    if (count($this->files())==0) {
         return False;
     }
 
-    $tiff_series =  preg_grep("/[^_]+_(T|t|Z|z|CH|ch)[0-9]+\w+\.ti(f{1,2})$/i", $this->files);
+    $tiff_series =  preg_grep("/[^_]+_(T|t|Z|z|CH|ch)[0-9]+\w+\.ti(f{1,2})$/i", $this->files());
     $baseNames = array();
     foreach ($tiff_series as $key => $value) {
        $currentBaseName = $this->leicaStyleNumberingBasename($value);
@@ -2685,11 +2985,11 @@ echo '</body></html>';
     \brief  Condensed STK time series series to the first file in the series
   */
   private function condenseStkSeries() {
-    if (count($this->files) == 0) {
+    if (count($this->files()) == 0) {
       return False;
     }
 
-    $stk_series = preg_grep("/[^_]+_(T|t)[0-9]+\.stk$/i", $this->files);
+    $stk_series = preg_grep("/[^_]+_(T|t)[0-9]+\.stk$/i", $this->files());
     $baseNames = array();
     foreach ($stk_series as $key => $value) {
         $currentBaseName = $this->stkSeriesBasename($value);
@@ -2700,38 +3000,6 @@ echo '</body></html>';
             unset($this->files[$key]);
         }
     }
-  }
-
-  /*!
-    \brief  Since HRM 1.2, thumbnails and previews  are located in a
-            subdirectory hrm_previews. When and old preview is found in
-            the way, we can use this function to move it to the new location.
-            This code is mostly harmless, but we can remove it after a couple
-            of releases.
-    \param  $dir    Path to the old preview file's directory;
-    \param  $entry  File name;
-  */
-  private function relocateOldPreview($dir, $entry) {
-      if (strstr($entry, ".jpg") || strstr($entry, ".avi")) {
-          // Relocate old HRM previews to the new subdirectory.
-          // Since HRM 1.2, previews are all stored in a subdirectory
-          // 'hrm_previews', but old images may remain along with
-          // previous results.
-          if (!file_exists($dir."/hrm_previews")) {
-              // We keep doing things assuming a trusted environment,
-              // but real security would require making all directories
-              // accessible to the deamon only, that runs all file
-              // management operation after the apache queries.
-              // By now, grant 777 permissions.
-              @mkdir($dir."/hrm_previews", 0777);
-              // The creation mask doesn't seem to work correctly, chmod
-              // now:
-              @chmod($dir."/hrm_previews", 0777);
-          }
-          # echo "mv $dir/$entry -> $dir/hrm_previews/$entry <br>";
-          @rename ($dir."/".$entry, $dir."/hrm_previews/".$entry);
-          @chmod($dir."/hrm_previews/".$entry, 0666);
-      }
   }
 
   /*!
@@ -2768,7 +3036,6 @@ echo '</body></html>';
 	  $this->getFilesFrom($newDir, $newPrefix);
 	} else {
             if (!$this->isValidImage($entry)) {
-                $this->relocateOldPreview($startDir, $entry);
                 continue;
             }
             // Skip also if the image is not of the currently selected type.
@@ -2817,7 +3084,6 @@ echo '</body></html>';
                   $this->getDestFilesFrom($newDir, $newPrefix);
               } else {
                   if (!$this->isValidImage($entry)) {
-                      $this->relocateOldPreview($startDir, $entry);
                       continue;
                   }
                   // echo $entry,$prefix," VALID,";
@@ -2903,7 +3169,8 @@ echo '</body></html>';
 	  } else {
 	    $newPrefix = $prefix . "/" . $entry;
 	  }
-	  $files = array_merge($files, $this->listFilesFrom($newDir, $newPrefix, $extension));
+	  $files = array_merge($files,
+                           $this->listFilesFrom($newDir, $newPrefix, $extension));
 	} else {
             $found = false;
             foreach ($this->imageExtensions as $current) {
@@ -3356,5 +3623,21 @@ echo '</body></html>';
       return $html;
   }
 
+    /*!
+    \brief Check if a directory is empty.
+    \param $dir Full path to directory to check.
+    \return bool|null True if the directory is empty, False if it is not; False
+                      if it is not readable or does not exist.
+     */
+    public static function is_dir_empty($dir) {
+        if (!is_readable($dir)) return NULL;
+        $handle = opendir($dir);
+        while (false !== ($entry = readdir($handle))) {
+            if ($entry != "." && $entry != "..") {
+                return FALSE;
+            }
+        }
+        return TRUE;
+    }
 
 } // End of FileServer class

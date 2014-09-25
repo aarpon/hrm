@@ -24,8 +24,8 @@ class System {
      */
 
     const HRM_VERSION_MAJOR = 3;
-    const HRM_VERSION_MINOR = 1;
-    const HRM_VERSION_MAINTENANCE = 1;
+    const HRM_VERSION_MINOR = 2;
+    const HRM_VERSION_MAINTENANCE = 0;
 
     /* !
       \var 	DB_LAST_REVISION
@@ -33,7 +33,7 @@ class System {
 
       This value has to be set by the developers!
      */
-    const DB_LAST_REVISION = 12;
+    const DB_LAST_REVISION = 13;
 
     /* !
       \var 	MIN_HUCORE_VERSION_{MAJOR|MINOR|MAINTENANCE|PATCH}
@@ -41,10 +41,10 @@ class System {
 
       This value has to be set by the developers!
      */
-    const MIN_HUCORE_VERSION_MAJOR = 4;
-    const MIN_HUCORE_VERSION_MINOR = 5;
+    const MIN_HUCORE_VERSION_MAJOR = 14;
+    const MIN_HUCORE_VERSION_MINOR = 6;
     const MIN_HUCORE_VERSION_MAINTENANCE = 1;
-    const MIN_HUCORE_VERSION_PATCH = 1;
+    const MIN_HUCORE_VERSION_PATCH = 7;
 
     /* !
       \brief	Returns the HRM version
@@ -570,7 +570,11 @@ class System {
      */
 
     public static function getMaxExecutionTimeFromIni() {
-        return ini_get('max_execution_time') . "s";
+        $maxExecTime = ini_get('max_execution_time');
+        if ($maxExecTime == 0) {
+            return "default";
+        }
+        return "" + $maxExecTime . "s";
     }
 
     /* !

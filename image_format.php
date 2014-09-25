@@ -22,7 +22,7 @@ if ( !isset( $_SESSION[ 'user' ] ) || !$_SESSION[ 'user' ]->isLoggedIn() ) {
 
 if ( !isset( $_SESSION[ 'setting' ] ) ) {
   $_SESSION['setting'] = new ParameterSetting();
-}	
+}
 
 $message = "";
 
@@ -40,7 +40,7 @@ $parameterNames = $_SESSION['setting']->imageParameterNames();
 $db = new DatabaseConnection();
 foreach ( $parameterNames as $name ) {
   $parameter = $_SESSION['setting']->parameter( $name );
-  $confidenceLevel = $db->getParameterConfidenceLevel( '', $name );  
+  $confidenceLevel = $db->getParameterConfidenceLevel( '', $name );
   $parameter->setConfidenceLevel( $confidenceLevel );
   $_SESSION['setting']->set( $parameter );
 }
@@ -52,16 +52,16 @@ foreach ( $parameterNames as $name ) {
  **************************************************************************** */
 
 if ( $_SESSION[ 'setting' ]->checkPostedImageParameters( $_POST ) ) {
-  
+
   // Now we force all variable channel parameters to have the correct number
   // of channels
   $_SESSION[ 'setting' ]->setNumberOfChannels(
     $_SESSION[ 'setting']->numberOfChannels( ) );
-  
+
   // Continue to the next page
   header("Location: " . "microscope_parameter.php"); exit();
 } else {
-  $message = $_SESSION['setting']->message();  
+  $message = $_SESSION['setting']->message();
 }
 
 /* *****************************************************************************
@@ -100,6 +100,7 @@ include("header.inc.php");
             <?php
                 wiki_link('HuygensRemoteManagerHelpImageFormat');
             ?>
+            <li> [ <?php  echo $_SESSION['setting']->name(); ?> ] </li>
         </ul>
     </div>
     <div id="navright">
@@ -115,30 +116,30 @@ include("header.inc.php");
 </div>
 
     <div id="content">
-        
+
         <h2>Number of channels and PSF modality</h2>
-        
+
         <form method="post" action="" id="select">
-        
+
             <h4>How many channels (wavelengths) in your datasets?</h4>
 
     <?php
 
     /***************************************************************************
-    
+
       NumberOfChannels
-    
+
     ***************************************************************************/
 
     $parameterNumberOfChannels =
         $_SESSION['setting']->parameter("NumberOfChannels");
 
     ?>
-            
-            <fieldset id="channels" class="setting <?php 
+
+            <fieldset id="channels" class="setting <?php
                 echo $parameterNumberOfChannels->confidenceLevel(); ?>"
               onmouseover="javascript:changeQuickHelp( 'channels' );" >
-            
+
                 <legend>
                     <a href="javascript:openWindow(
                        'http://www.svi.nl/NumberOfChannels')">
@@ -146,7 +147,7 @@ include("header.inc.php");
                     </a>
                     number of channels
                 </legend>
-                
+
 <?php
 
 function check($parameter, $value) {
@@ -173,23 +174,23 @@ function check($parameter, $value) {
                            type="radio"
                            value=""
                            style="display:none;" />
-                    <input name="NumberOfChannels" 
+                    <input name="NumberOfChannels"
                            type="radio"
                            value="1"
                            <?php check($parameterNumberOfChannels, 1) ?>/>1
-                    <input name="NumberOfChannels" 
+                    <input name="NumberOfChannels"
                            type="radio"
                            value="2"
                            <?php check($parameterNumberOfChannels, 2) ?>/>2
-                    <input name="NumberOfChannels" 
+                    <input name="NumberOfChannels"
                            type="radio"
                            value="3"
                            <?php check($parameterNumberOfChannels, 3) ?>/>3
-                    <input name="NumberOfChannels" 
+                    <input name="NumberOfChannels"
                            type="radio"
                            value="4"
                             <?php check($parameterNumberOfChannels, 4) ?>/>4
-                    <input name="NumberOfChannels" 
+                    <input name="NumberOfChannels"
                            type="radio"
                            value="5"
                            <?php check($parameterNumberOfChannels, 5) ?>/>5
@@ -207,24 +208,24 @@ function check($parameter, $value) {
     <?php
 
     /***************************************************************************
-    
+
       PointSpreadFunction
-    
+
     ***************************************************************************/
 
     $parameterPointSpreadFunction =
         $_SESSION['setting']->parameter("PointSpreadFunction");
 
     ?>
-            
+
             <h4>Would you like to use an existing measured PSF obtained from
                 bead images or a theoretical PSF generated from explicitly
                 specified parameters?</h4>
-            
-            <fieldset class="setting <?php 
+
+            <fieldset class="setting <?php
                 echo $parameterPointSpreadFunction->confidenceLevel(); ?>"
                 onmouseover="javascript:changeQuickHelp( 'PSF' );" >
-            
+
                 <legend>
                     <a href="javascript:openWindow(
                        'http://www.svi.nl/PointSpreadFunction')">
@@ -263,7 +264,7 @@ function check($parameter, $value) {
                         <img src="images/help.png" alt="?" />
                     </a>
                     Theoretical
-                    <input type="radio" 
+                    <input type="radio"
                            name="PointSpreadFunction"
                            value="measured"
                            <?php
@@ -283,10 +284,10 @@ function check($parameter, $value) {
                     echo $parameterPointSpreadFunction->confidenceLevel(); ?>">
                         &nbsp;
                     </p>
-                    
+
                 </div>
             </fieldset>
-                    
+
             <div id="controls"
                  onmouseover="javascript:changeQuickHelp( 'default' )">
 
@@ -299,11 +300,11 @@ function check($parameter, $value) {
                   onmouseout="UnTip()"
                   onclick="process()" />
             </div>
-            
+
             <div><input name="OK" type="hidden" /></div>
-            
+
         </form>
-        
+
         <?php
             if ( $nParamRequiringReset > 0 ) {
         ?>
@@ -315,39 +316,39 @@ function check($parameter, $value) {
         ?>
 
     </div> <!-- content -->
-    
+
     <div id="rightpanel" onmouseover="javascript:changeQuickHelp( 'default' )">
-    
+
         <div id="info">
             <h3>Quick help</h3>
-            
+
             <div id="contextHelp">
               <p>Here you are asked to define whether you want to use a theoretical
               PSF, or if you instead want to use a measured PSF you distilled
               with the Huygens software.</p>
             </div>
 
-              
+
       <?php
               if ( !$_SESSION["user"]->isAdmin() ) {
       ?>
-                  
-            <div class="requirements">                
-               Parameter requirements<br />adapted for <b>  
+
+            <div class="requirements">
+               Parameter requirements<br />adapted for <b>
                <?php
                $fileFormat = $_SESSION['setting']->parameter( "ImageFileFormat" );
                echo $fileFormat->value();
                ?>
                </b> files
             </div>
-      
+
       <?php
               }
        ?>
 
-       
+
         </div>
-        
+
         <div id="message">
 <?php
 
@@ -355,9 +356,9 @@ echo "<p>$message</p>";
 
 ?>
         </div>
-        
+
     </div> <!-- rightpanel -->
-    
+
 <?php
 
 include("footer.inc.php");

@@ -2,13 +2,13 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
-require_once("./inc/User.inc.php");
-require_once("./inc/Database.inc.php");
-require_once("./inc/hrm_config.inc.php");
-require_once("./inc/Mail.inc.php");
-require_once("./inc/Util.inc.php");
-require_once("./inc/Validator.inc.php");
-require_once("./inc/wiki_help.inc.php");
+require_once(dirname(__FILE__) . "/inc/User.inc.php");
+require_once(dirname(__FILE__) . "/inc/hrm_config.inc.php");
+require_once(dirname(__FILE__) . "/inc/Mail.inc.php");
+require_once(dirname(__FILE__) . "/inc/Util.inc.php");
+require_once(dirname(__FILE__) . "/inc/Validator.inc.php");
+require_once(dirname(__FILE__) . "/inc/wiki_help.inc.php");
+require_once(dirname(__FILE__) . "/inc/user_mngm/UserManagerFactory.inc.php");
 
 global $hrm_url;
 global $email_sender;
@@ -17,6 +17,7 @@ global $image_host;
 global $image_folder;
 global $image_source;
 global $userManagerScript;
+global $authenticateAgainst;
 
 session_start();
 
@@ -93,11 +94,11 @@ if (!$_SESSION['user']->isAdmin()) {
     exit();
 }
 
-// Now we have a valid admin user logon, we can continue
-$db = new DatabaseConnection();
+// Get the UserManager
+$userManager = UserManagerFactory::getUserManager($_SESSION['user']->isAdmin());
 
 if (isset($_GET['seed'])) {
-    if (!$_SESSION['user']->existsUserRequestWithSeed($_GET['seed'])) {
+    if (!$userManager->existsUserRequestWithSeed($_GET['seed'])) {
         header("Location: " . "login.php");
         exit();
     }
@@ -132,10 +133,12 @@ if (!isset($_SESSION['index'])) {
 $message = "";
 
 if (isset($_POST['accept'])) {
-    $result = $db->updateUserStatus($clean['username'], 'a');
+    $result = $userManager->acceptUser($clean['username']);
     // TODO refactor
     if ($result) {
-        $email = $db->emailAddress($clean['username']);
+        $accepted_user = new User();
+        $accepted_user->setName($clean['username']);
+        $email = $accepted_user->emailAddress();
         $text = "Your account has been activated:\n\n";
         $text .= "\t      Username: " . $clean['username'] . "\n";
         $text .= "\tE-mail address: " . $email . "\n\n";
@@ -152,10 +155,14 @@ if (isset($_POST['accept'])) {
         shell_exec("$userManagerScript create \"" . $clean['username'] . "\"");
     } else $message = "Database error, please inform the administrator";
 } else if (isset($_POST['reject'])) {
-    $email = $db->emailAddress($clean['username']);
-    $result = $db->deleteUser($clean['username']);
+    $user_to_reject = new User();
+    $user_to_reject->setName($clean['username']);
+    $email = $user_to_reject->emailAddress();
+    $result = $userManager->deleteUser($user_to_reject->name());
     // TODO refactor
-    if (!$result) $message = "Database error, please inform the administrator";
+    if (!$result) {
+        $message = "Database error, please inform the administrator";
+    }
     $text = "Your request for an HRM account has been rejected. Please " .
         "contact " . $email_admin . " for any enquiries.\n";
     $mail = new Mail($email_sender);
@@ -165,11 +172,8 @@ if (isset($_POST['accept'])) {
     $mail->send();
 } else if (isset($_POST['annihilate']) && $_POST['annihilate'] == "yes") {
     if ($clean['username'] != "admin") {
-        $result = $db->deleteUser($clean['username']);
-        // TODO refactor
-        if ($result) {
-            shell_exec("$userManagerScript delete \"" . $_POST['username'] . "\"");
-        } else {
+        $result = $userManager->deleteUser($clean['username']);
+        if (! $result) {
             $message = "Database error, please inform the administrator";
         }
     } else {
@@ -185,14 +189,14 @@ if (isset($_POST['accept'])) {
     header("Location: " . "account.php");
     exit();
 } else if (isset($_POST['enable'])) {
-    $result = $db->updateUserStatus($clean['username'], 'a');
+    $result = $userManager->enableUser($clean['username']);
 } else if (isset($_POST['disable'])) {
-    $result = $db->updateUserStatus($clean['username'], 'd');
+    $result = $userManager->disableUser($clean['username']);
 } else if (isset($_POST['action'])) {
     if ($_POST['action'] == "disable") {
-        $result = $db->updateAllUsersStatus('d');
+        $result = $userManager->disableAllUsers();
     } else if ($_POST['action'] == "enable") {
-        $result = $db->updateAllUsersStatus('a');
+        $result = $userManager->enableAllUsers();
     }
 }
 // TODO refactor to here
@@ -224,12 +228,12 @@ include("header.inc.php");
 
 <div id="content">
 
-<h3>Manage users</h3>
+<h3><img alt="ManageUsers" src="./images/users.png"
+         width="40"/>&nbsp;&nbsp;Manage users</h3>
 
 <?php
 
-$rows = $db->query("SELECT * FROM username");
-sort($rows);
+$rows = $userManager->getAllUserDBRows();
 $i = 0;
 foreach ($rows as $row) {
     $name = $row["name"];
@@ -305,11 +309,10 @@ if (!$i) {
 <?php
 
 // All users (independent of their status), including the administrator
-$count = $db->queryLastValue(
-    "SELECT count(*) FROM username WHERE status = 'a' OR status = 'd'");
+$count = $userManager->getTotalNumberOfUsers();
 
 // Active users
-$rows = $db->query("SELECT * FROM username WHERE status = 'a'");
+$rows = $userManager->getAllActiveUserDBRows();
 $emails = array();
 foreach ($rows as $row) {
     $e = trim($row['email']);
@@ -340,6 +343,13 @@ sort($emails);
         enable
     </a> all users
 </p>
+<?php
+
+    /* Get the number of users with names starting with each of the letters
+    of the alphabet. */
+    $counts = $userManager->getNumberCountPerInitialLetter();
+    $letters = array_keys($counts);
+?>
 
 <form method="post" action="" id="user_management">
     <div><input type="hidden" name="action"/></div>
@@ -347,31 +357,33 @@ sort($emails);
 <table>
     <tr>
         <td colspan="3" class="menu">
+            <div class="line">
             <?php
 
-            $i = 0;
-            echo "                            <div class=\"line\">";
-            $style = " class=\"filled\"";
-            if ($_SESSION['index'] == "all") $style = " class=\"selected\"";
-            echo "[<a href=\"?index=all\"" . $style . ">&nbsp;all&nbsp;</a>]&nbsp;[";
-            while (True) {
-                $c = chr(97 + $i);
-                $style = "";
-                $result = $db->queryLastValue("SELECT * FROM username WHERE name LIKE '"
-                    . $c . "%' AND name NOT LIKE 'admin' AND (status = 'a' OR status = 'd')");
-                if ($_SESSION['index'] == $c) $style = " class=\"selected\"";
-                else if (!$result) $style = " class=\"empty\"";
-                else $style = " class=\"filled\"";
-                echo "<a href=\"?index=" . chr(97 + $i) . "\"" . $style . ">&nbsp;" .
-                    strtoupper($c) . "&nbsp;</a>";
-                if ($i == 25) {
-                    echo "]</div>\n";
-                    break;
+            $style = "filled";
+            if ($_SESSION['index'] == "all") {
+                $style = "selected";
                 }
-                $i++;
+            ?>
+
+            [<a href="?index=all" class="<?php echo($style); ?>">&nbsp;all&nbsp;</a>]&nbsp;[
+
+            <?php
+            for ($i = 0; $i < count($counts); $i++) {
+                $c = $letters[$i];
+                if ($_SESSION['index'] == $c) {
+                    $style = "selected";
+                } else if ($counts[$c] == 0) {
+                    $style = "empty";
+                } else {
+                    $style = "filled";
             }
 
+                echo "<a href=\"?index=$c\" class=\"$style\">&nbsp;" .
+                    strtoupper($c) . "&nbsp;</a>";
+            }
             ?>
+            ]</div>
         </td>
     </tr>
     <tr>
@@ -380,12 +392,11 @@ sort($emails);
     <?php
 
     if ($_SESSION['index'] != "") {
-        $condition = "";
         if ($_SESSION['index'] != "all") {
-            $condition = " WHERE name LIKE '" . $_SESSION['index'] . "%'";
+            $rows = $userManager->getAllUserDBRowsByInitialLetter($_SESSION['index']);
+        } else {
+            $rows = $userManager->getAllUserDBRows();
         }
-        $rows = $db->query("SELECT * FROM username" . $condition);
-        sort($rows);
         $i = 0;
         foreach ($rows as $row) {
             if ($row['name'] != "admin") {

@@ -223,6 +223,14 @@ class JobDescription {
   }
 
   /*!
+   \brief	Returns the Huygens template name containing the unique HRM id
+   \return	the template name
+  */
+  public function getHuTemplateName() {
+      return ".hrm_" . $this->id() . ".hgsb";
+  }
+
+  /*!
     \brief Add a Job to the queue
     \return true if the Job could be added to the queue, false otherwise
   */
@@ -272,7 +280,7 @@ class JobDescription {
     $jobParameterSetting->setName($this->id);
     $jobParameterSetting->copyParameterFrom($this->parameterSetting);
     $result = $result && $jobParameterSetting->save();
-    
+
     $taskParameterSetting = new JobTaskSetting();
     $taskParameterSetting->setOwner($this->owner);
     $taskParameterSetting->setName($this->id);
@@ -284,7 +292,7 @@ class JobDescription {
     $analysisParameterSetting->setName($this->id);
     $analysisParameterSetting->copyParameterFrom($this->analysisSetting);
     $result = $result && $analysisParameterSetting->save();
-    
+
     $db = new DatabaseConnection();
     $result = $result && $db->saveJobFiles($this->id,
                                            $this->owner,
@@ -294,7 +302,7 @@ class JobDescription {
     $queue = new JobQueue();
     $result = $result && $queue->queueJob($this);
     if (!$result) {
-      $this->message = "create job - database error!";
+      $this->message = "Could not create job!";
     }
     return $result;
   }
@@ -309,7 +317,7 @@ class JobDescription {
     $compoundJobs = $queue->getCompoundJobs();
     foreach ($compoundJobs as $jobDescription) {
       $job = new Job($jobDescription);
-      $job->createSubJobsOrScript();
+      $job->createSubJobsOrHuTemplate();
     }
   }
 
@@ -319,16 +327,16 @@ class JobDescription {
   */
   public function load() {
     $db = new DatabaseConnection();
-    
+
     $parameterSetting = new JobParameterSetting;
-    $owner = new User;
+    $owner = new User();
     $name = $db->userWhoCreatedJob($this->id);
     $owner->setName($name);
     $parameterSetting->setOwner($owner);
     $parameterSetting->setName($this->id);
     $parameterSetting = $parameterSetting->load();
     $this->setParameterSetting($parameterSetting);
-    
+
     $taskSetting = new JobTaskSetting;
     $taskSetting->setNumberOfChannels($parameterSetting->numberOfChannels());
     $taskSetting->setName($this->id);
@@ -424,7 +432,7 @@ class JobDescription {
   }
 
   /*!
-    \brief Returns the file base name with some special handling for Lif files
+    \brief Returns the file base name. Special handling for LIF and CZI files.
     \return file base name
   */
   public function sourceImageShortName() {
@@ -437,14 +445,12 @@ class JobDescription {
     $parameterSetting = $this->parameterSetting;
     $parameter = $parameterSetting->parameter('ImageFileFormat');
 	$fileFormat = $parameter->value();
-    if ( strcasecmp( $fileFormat, 'lif' ) == 0 ) {
-      if ( preg_match("/^(.*)\.lif\s\((.*)\)/i", $inputFile[0], $match) ) {
+    if (preg_match("/^(.*)\.(lif|czi)\s\((.*)\)/i", $inputFile[0], $match)) {
         $inputFile = $match[ 1 ] . '_' . $match[ 2 ];
-      } else {
-        $inputFile = substr(end($inputFile), 0, strrpos(end($inputFile), ".")); }
     } else {
-      $inputFile = substr(end($inputFile), 0, strrpos(end($inputFile), "."));
+        $inputFile = substr(end($inputFile), 0, strrpos(end($inputFile), "."));
     }
+  
     return $inputFile;
   }
 
@@ -456,7 +462,8 @@ class JobDescription {
     global $huygens_server_image_folder;
     global $image_source;
     $user = $this->owner();
-    $result = $huygens_server_image_folder . $user->name() . "/" . $image_source . "/";
+    $result = $huygens_server_image_folder .
+        $user->name() . "/" . $image_source . "/";
     return $result;
   }
 
@@ -546,10 +553,10 @@ class JobDescription {
   public function taskSettingAsString( ) {
       $numChannels = $this->parameterSetting->numberOfChannels();
       $micrType = $this->parameterSetting->microscopeType();
-      
+
       return $this->taskSetting()->displayString( $numChannels, $micrType );
   }
-  
+
 
 /*
                               PRIVATE FUNCTIONS

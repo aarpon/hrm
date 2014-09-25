@@ -4,18 +4,21 @@
 // Copyright and license notice: see license.txt
 
 /*!
-  \class	Ldap
+  \class	LDAPAuthenticator
   \brief	Manages LDAP connections through built-in PHP LDAP support
 
-  The configuration file for the Ldap class is config/ldap_config.inc. A sample
-  configuration file is config/samples/ldap_config.inc.sample.
+  The configuration file for the LDAPAuthenticator class is config/ldap_config.inc.
+  A sample configuration file is config/samples/ldap_config.inc.sample.
   A user with read-access to the LDAP server must be set up in the
   configuration file for queries to be possible.
  */
 
-require_once( "Util.inc.php" );
+// Include AbstractAuthenticator and Util.inc.php.
+require_once(dirname(__FILE__) . "/AbstractAuthenticator.inc.php");
+require_once(dirname(__FILE__) . "/../Util.inc.php");
 
-class Ldap {
+
+class LDAPAuthenticator extends AbstractAuthenticator {
 
     /*!
       \var    $m_Connection
@@ -82,7 +85,7 @@ class Ldap {
 
     /*!
       \var    $m_LDAP_Manager_OU
-      \brief  Ldap manager OU: used in case the Ldap_Manager is in some
+      \brief  LDAPAuthenticator manager OU: used in case the Ldap_Manager is in some
       special OU that distinguishes it from the other users
      */
     private $m_LDAP_Manager_OU;
@@ -96,26 +99,30 @@ class Ldap {
 
 
     /*!
-      \brief	Constructor: instantiates an Ldap object with the settings
+      \brief	Constructor: instantiates an LDAPAuthenticator object with the settings
       specified in the configuration file.
      */
     public function __construct() {
 
+        global $ldap_host, $ldap_port, $ldap_use_ssl, $ldap_use_tls, $ldap_root,
+               $ldap_manager_base_DN, $ldap_manager, $ldap_password,
+               $ldap_user_search_DN, $ldap_manager_ou, $ldap_valid_groups;
+
         // Include the configuration file
-        include( dirname(__FILE__) . "/../config/ldap_config.inc" );
+        include(dirname(__FILE__) . "/../../config/ldap_config.inc");
 
         // Assign the variables
-        $this->m_LDAP_Host            = $ldap_host;
-        $this->m_LDAP_Port            = $ldap_port;
-        $this->m_LDAP_Use_SSL         = $ldap_use_ssl;
-        $this->m_LDAP_Use_TLS         = $ldap_use_tls;
-        $this->m_LDAP_Root            = $ldap_root;
+        $this->m_LDAP_Host = $ldap_host;
+        $this->m_LDAP_Port = $ldap_port;
+        $this->m_LDAP_Use_SSL = $ldap_use_ssl;
+        $this->m_LDAP_Use_TLS = $ldap_use_tls;
+        $this->m_LDAP_Root = $ldap_root;
         $this->m_LDAP_Manager_Base_DN = $ldap_manager_base_DN;
-        $this->m_LDAP_Manager         = $ldap_manager;
-        $this->m_LDAP_Password        = $ldap_password;
-        $this->m_LDAP_User_Search_DN  = $ldap_user_search_DN;
-        $this->m_LDAP_Manager_OU      = $ldap_manager_ou;
-        $this->m_LDAP_Valid_Groups    = $ldap_valid_groups;
+        $this->m_LDAP_Manager = $ldap_manager;
+        $this->m_LDAP_Password = $ldap_password;
+        $this->m_LDAP_User_Search_DN = $ldap_user_search_DN;
+        $this->m_LDAP_Manager_OU = $ldap_manager_ou;
+        $this->m_LDAP_Valid_Groups = $ldap_valid_groups;
 
         // Set the connection to null
         $this->m_Connection = null;
@@ -161,11 +168,11 @@ class Ldap {
     }
 
     /*!
-      \brief	Returns the e-mail address of a user with given id
-      \param	$uid	User name
-      \return	e-mail address
-     */
-    public function emailAddress($uid) {
+    \brief  Return the email address of user with given username.
+    \param  $username String Username for which to query the email address.
+    \return String email address or NULL
+    */
+    public function getEmailAddress($uid) {
 
         // Bind the manager
         if (!$this->bindManager()) {
@@ -189,30 +196,38 @@ class Ldap {
     }
 
     /*!
-      \brief	Tries to authenticate a user against LDAP
-      \param	$uid            User name
-      \param	$userPassword	Password
-      \return	true if the user could be authenticated; false otherwise
-     */
+    \brief  Authenticates the User with given username and password against LDAP.
+    \param  $username String Username for authentication.
+    \param  $password String Password for authentication.
+    \return boolean: True if authentication succeeded, false otherwise.
+    */
     public function authenticate($uid, $userPassword) {
 
         if (!$this->isConnected()) {
-            report( "[LDAP] ERROR: Authenticate -- not connected!", 0 );
+            report("[LDAP] ERROR: Authenticate -- not connected!", 0);
             return false;
         }
 
         // This is a weird behavior of LDAP: if the password is empty, the
-        // binding succeds!
+        // binding succeeds!
         // Therefore we check in advance that the password is NOT empty!
         if (empty($userPassword)) {
-            report( "[LDAP] ERROR: Authenticate: empty manager password!", 0 );
+            report("[LDAP] ERROR: Authenticate: empty manager password!", 0);
             return false;
         }
 
         // Bind the manager -- or we won't be allowed to search for the user
         // to authenticate
         if (!$this->bindManager()) {
-            return "";
+            return false;
+        }
+
+        // Make sure $uid is lowercase
+        $uid = strtolower($uid);
+
+        // Is the user active?
+        if (!$this->isActive($uid)) {
+            return false;
         }
 
         // Searching for user $uid
@@ -221,8 +236,8 @@ class Ldap {
         $sr = @ldap_search(
             $this->m_Connection, $searchbase, $filter, array('uid'));
         if (!$sr) {
-            report( "[LDAP] ERROR: Authenticate -- search failed! " .
-                    "Search base: \"$searchbase\"", 0 );
+            report("[LDAP] ERROR: Authenticate -- search failed! " .
+                "Search base: \"$searchbase\"", 0);
             return false;
         }
         if (@ldap_count_entries($this->m_Connection, $sr) != 1) {
@@ -233,7 +248,8 @@ class Ldap {
         $result = @ldap_get_entries($this->m_Connection, $sr);
         if ($result[0]) {
             if (@ldap_bind($this->m_Connection,
-                $result[0]['dn'], $userPassword)) {
+                $result[0]['dn'], $userPassword)
+            ) {
                 return true;
             } else {
                 // Wrong password
@@ -245,10 +261,10 @@ class Ldap {
     }
 
     /*!
-      \brief	Returns the group for a given user name (filtered)
-      \param	$uid    User name
-      \return	user name
-     */
+    \brief Return the group the user with given username belongs to.
+    \param $username String Username for which to query the group.
+    \return String Group or "" if not found.
+    */
     public function getGroup($uid) {
 
         // Bind the manager
@@ -262,7 +278,7 @@ class Ldap {
         $sr = @ldap_search($this->m_Connection, $searchbase, $filter,
             array('uid', 'memberof'));
         if (!$sr) {
-            report( "[LDAP] WARNING: Group -- no group information found!", 0 );
+            report("[LDAP] WARNING: Group -- no group information found!", 0);
             return "";
         }
 
@@ -278,16 +294,16 @@ class Ldap {
                 explode(',', strtolower($groups[0])),
                 explode(',', strtolower($searchbase)));
             if (count($groups) == 0) {
-                return 'hrm';
+                return "";
             }
             $groups = $groups[0];
             // Remove ou= or cn= entries
             $matches = array();
             if (!preg_match('/^(OU=|CN=)(.+)/i', $groups, $matches)) {
-                return "hrm";
+                return "";
             } else {
                 if ($matches[2] == null) {
-                    return "hrm";
+                    return "";
                 }
                 return $matches[2];
             }
@@ -297,11 +313,12 @@ class Ldap {
             for ($i = 0; $i < count($groups); $i++) {
                 for ($j = 0; $j < count($this->m_LDAP_Valid_Groups); $j++) {
                     if (strpos($groups[$i], $this->m_LDAP_Valid_Groups[$j])) {
-                        return ( $this->m_LDAP_Valid_Groups[$j] );
+                        return ($this->m_LDAP_Valid_Groups[$j]);
                     }
                 }
             }
         }
+        return "";
     }
 
     /*!
@@ -309,7 +326,7 @@ class Ldap {
       \return	true if the connection is up, false otherwise
      */
     public function isConnected() {
-        return ( $this->m_Connection != null );
+        return ($this->m_Connection != null);
     }
 
     /*!
@@ -346,8 +363,8 @@ class Ldap {
         }
 
         // If binding failed, we report
-        report( "[LDAP] ERROR: Binding: binding failed! " .
-                "Search DN: \"$dn\"", 0 );
+        report("[LDAP] ERROR: Binding: binding failed! " .
+            "Search DN: \"$dn\"", 0);
         return false;
     }
 
@@ -367,13 +384,13 @@ class Ldap {
 
     private function dnStr() {
         $dn = $this->m_LDAP_Manager_Base_DN . "=" .
-              $this->m_LDAP_Manager . "," .
-              $this->m_LDAP_Manager_OU . "," .
-              $this->m_LDAP_User_Search_DN . "," .
-              $this->m_LDAP_Root;
+            $this->m_LDAP_Manager . "," .
+            $this->m_LDAP_Manager_OU . "," .
+            $this->m_LDAP_User_Search_DN . "," .
+            $this->m_LDAP_Root;
         // Since m_LDAP_Manager_OU can be empty, we make sure not
         // to have double commas
-        $dn = str_replace( ',,', ',', $dn);
+        $dn = str_replace(',,', ',', $dn);
         return $dn;
     }
 

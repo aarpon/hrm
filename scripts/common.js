@@ -180,7 +180,7 @@ function checkAgainstFormat(file, selectedFormat) {
 
     // Pattern ome.tiff        = (\.([^\..]+))*
     // Pattern file extension: = \.([A-Za-z0-9]+)
-    // Pattern lif subimages:  = (\s\(.*\))*
+    // Pattern lif, czi subimages:  = (\s\(.*\))*
 
     var nameDivisions;
     nameDivisions = file.match(/(\.([^\..]+))*\.([A-Za-z0-9]+)(\s\(.*\))*$/);    

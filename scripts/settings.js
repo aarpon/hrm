@@ -5,43 +5,31 @@
 
 var snitch;
 
-function process() {
-    if ( document.forms["select"] != null ) {
-        if ( document.forms["select"].elements["OK"] != null ) {
-            document.forms["select"].elements["OK"].value = "OK";
-            document.forms["select"].submit();
-        }
-    }
-}
+/**
+   Requires jQuery.
 
-function imageFormatProcess(e, value) {
-    if ( e != "ImageFileFormat" ) {
+   Sets the value "OK" to the hidden input element in the page form. Used
+   for submitting a form via a normal button.
+ */
+function process() {
+    var el = $("form input[name='OK']:hidden");
+    if (null === el) {
         return;
     }
-    release( );
-    if ( value == "lsm-single" || value == "tiff-single") {
-        fixGeometry( 'multi_XY - time' );
-    } else if ( value == "tiff-series" ) {
-        fixGeometryAndChannels('multi_XYZ', '1');
-    } else {
-        setGeometry( 'multi_XYZ' );
+    var fr = $("form#select");
+    if (null === fr) {
+        return;
+    }
+    if ($.contains(fr.get(0), el.get(0))) {
+        el.val("OK");
+        fr.submit();
     }
 }
 
 function release() {
-    var geometryFirst = true;
     var channelsFirst = true;
     for (var i = 0; i < document.forms["select"].elements.length; i++) {
         var e = document.forms["select"].elements[i];
-        if (e.name == 'ImageGeometry') {
-            if ( e.disabled == true ) {
-                e.disabled = false;
-                if (geometryFirst) {
-                    e.checked = true;
-                    geometryFirst = false;
-                }
-            }
-        }
         if (e.name == 'NumberOfChannels') {
             if ( e.disabled == true ) {
                 e.disabled = false;
@@ -58,61 +46,6 @@ function release() {
     element.style.color = 'black';
     element = document.getElementById('channels');
     element.style.color = 'black';
-}
-
-function forceGeometry() {
-    release();
-    for (var i = 0; i < document.forms["select"].elements.length; i++) {
-        var e = document.forms["select"].elements[i];
-        if (e.name == 'ImageGeometry') {
-            e.disabled = true;
-            e.checked = false;
-        }
-    }
-    document.forms["select"].elements["geometry"].style.color = "grey";
-}
-
-function setGeometry(geometry) {
-    for (var i = 0; i < document.forms["select"].elements.length; i++) {
-        var e = document.forms["select"].elements[i];
-        if (e.name == 'ImageGeometry') {
-            if (e.value == geometry)
-                e.checked = true;
-        }
-    }
-}
-
-function fixGeometry(geometry) {
-    for (var i = 0; i < document.forms["select"].elements.length; i++) {
-        var e = document.forms["select"].elements[i];
-        if (e.name == 'ImageGeometry') {
-            e.disabled = true;
-            if (e.value == geometry)
-                e.checked = true;
-        }
-    }
-
-    var element = document.getElementById('geometry');
-    element.style.color = 'grey';
-}
-
-function fixChannels(channels) {
-    for (var i = 0; i < document.forms["select"].elements.length; i++) {
-        var e = document.forms["select"].elements[i];
-        if (e.name == 'NumberOfChannels') {
-            e.disabled = true;
-            if (e.value == channels)
-                e.checked = true;
-        }
-    }
-    var element = document.getElementById('channels');
-    element.style.color = 'grey';
-}
-
-function fixGeometryAndChannels(geometry, channels) {
-    release();
-    fixGeometry(geometry);
-    fixChannels(channels);
 }
 
 function seek(channel) {
@@ -135,7 +68,7 @@ function switchSnrMode() {
     //changeVisibility('cmle-it');
 }
 
-// Requires jQuery 
+// Requires jQuery
 function switchColocMode() {
     if ($('#ColocAnalysis').val() == 1) {
         $('#ColocChannelSelectionDiv').show();
