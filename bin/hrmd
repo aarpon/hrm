@@ -104,7 +104,7 @@ stop() {
 
     PID=$(more "$HRMD_PID")
     if [ -n "$PID" ] ; then
-        $CMD kill -15 $PID
+        kill -15 $PID
         if [ "$?" = 0 ]
         then
             $CMD rm -f "$HRMD_PID"
