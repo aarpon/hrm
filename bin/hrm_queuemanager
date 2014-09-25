@@ -98,10 +98,19 @@ start() {
     # stopped (upon request/signal or crashed):
     echo $$ > "$PID_FILE"
 
-    # loop until we receive SIGINT or SIGTERM:
+    # loop until we receive SIGINT/SIGTERM or the subprocess exited for some
+    # other reason (e.g. because it crashed or was killed directly):
     while :
     do
         sleep 1
+        # "jobs -p" lists the PID's of *all* active jobs (asynchronous
+        # subprocesses of this bash instance), so the if-clause below would
+        # also be true if there was *more* than one subprocess:
+        if [ "$QUEUEMGR_PID" != "$(jobs -p)" ] ; then
+            echo "WARNING: the HRM Queue Manager is not running any more!"
+            echo "Cleaning up..."
+            cleanup_exit
+        fi
     done
 }
 
