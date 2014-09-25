@@ -5,13 +5,18 @@
 ### TASKS / PURPOSE of this wrapper script
 
 # [x] do NOT depend on the names of related processes, use PID's instead!
+# [ ] allow for setting a custom config file via an environment variable
 # [ ] do sanity checks regarding the hrm config (are logs writable etc.)
 # [ ] take over the start/stop responsibilites for the actual (PHP) daemon
 #     [ ] START:
 #         [ ] check if another instance of the QM is already running (return)
-#         [ ] update log files
+#         [ ] detach (continue in background)
+#         [x] update log files
 #         [x] start the Queue Manager
 #         [x] check success and write PID into file
+#     [x] STOP:
+#         [x] kill the actual PHP QM
+#         [x] clean up the pid file
 
 # - this script is meant to be run as either the user that should run the QM or as root, in the latter
 #   case it will switch to the QM-user by re-exec'ing itself
