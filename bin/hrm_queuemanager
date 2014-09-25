@@ -83,6 +83,8 @@ start() {
     echo "$MARK" >> "$LOG_OUT"
     echo "$MARK" >> "$LOG_ERR"
 
+    # the PHP QM expects to be run from within the "run/" subdirectory:
+    cd "$HRM_HOME/run"
     QUEUEMGR="$PHP_CLI -q $HRM_HOME/run/runHuygensRemoteManager.php"
     $QUEUEMGR 1>> "$LOG_OUT" 2>> "$LOG_ERR" &
     # bash provides the PID of the background process in "$!", so we save it:
