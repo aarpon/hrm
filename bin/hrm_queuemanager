@@ -5,7 +5,7 @@
 ### TASKS / PURPOSE of this wrapper script
 
 # [x] do NOT depend on the names of related processes, use PID's instead!
-# [ ] allow for setting a custom config file via an environment variable
+# [x] allow for setting a custom config file via an environment variable
 # [ ] do sanity checks regarding the hrm config (are logs writable etc.)
 # [ ] take over the start/stop responsibilites for the actual (PHP) daemon
 #     [ ] START:
@@ -51,7 +51,13 @@ export LC_ALL=C
 PHP_CLI="php"
 
 # hrm.conf defines variable HRM_HOME
-. /etc/hrm.conf
+set -e
+if [ -n "$HRM_CONF" ] ; then
+    . "$HRM_CONF"
+else
+    . /etc/hrm.conf
+fi
+set +e
 
 if [ -n "$DEBUG_HRMD" ] ; then
     set -o xtrace
