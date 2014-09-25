@@ -115,6 +115,7 @@ start() {
 }
 
 cleanup_exit() {
+    # kill the running Queue Manager and clean up the PID file
     kill -15 $QUEUEMGR_PID
     rm -f "$PID_FILE"
 }
