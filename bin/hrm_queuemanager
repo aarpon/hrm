@@ -111,6 +111,10 @@ start() {
             echo "WARNING: the HRM Queue Manager is not running any more!"
             cleanup_exit
         fi
+        # NOTE: due to some weird bash behaviour (bug?), the joblist doesn't
+        # get updated when "jobs -p" is called but *ONLY* if we call "jobs -l"
+        # or something, so we do this explicitly:
+        jobs -l > /dev/null
     done
 }
 
