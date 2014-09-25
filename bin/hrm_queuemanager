@@ -10,7 +10,7 @@
 # [ ] take over the start/stop responsibilites for the actual (PHP) daemon
 #     [ ] START:
 #         [ ] check if another instance of the QM is already running (return)
-#         [ ] detach (continue in background)
+#         [x] detach (continue in background)
 #         [x] update log files
 #         [x] start the Queue Manager
 #         [x] check success and write PID into file
@@ -162,6 +162,14 @@ WHOAMI=$(id -u -n)
 if [ "$WHOAMI" != "$SUSER" ] ; then
     echo "User mismatch: '$WHOAMI' <-> '$SUSER'."
     exit 2
+fi
+
+# detach into background if requested
+if [ "$1" = "--detach" ] ; then
+    shift
+    echo "Forking background process..."
+    "$0" "$@" &
+    exit 0
 fi
 
 start
