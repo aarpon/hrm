@@ -83,7 +83,7 @@ start() {
     echo "$MARK" >> "$LOG_OUT"
     echo "$MARK" >> "$LOG_ERR"
 
-    QUEUEMGR="$PHP_CLI -q "$HRM_HOME"/run/runHuygensRemoteManager.php"
+    QUEUEMGR="$PHP_CLI -q $HRM_HOME/run/runHuygensRemoteManager.php"
     $QUEUEMGR 1>> "$LOG_OUT" 2>> "$LOG_ERR" &
     # bash provides the PID of the background process in "$!", so we save it:
     QUEUEMGR_PID=$!
