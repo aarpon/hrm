@@ -129,6 +129,7 @@ abstract class AbstractUserManager {
 
         // TODO Use the Shell classes!
 
+        report("Creating directories for '" . $username . "'.", 1);
         global $userManagerScript;
         shell_exec($userManagerScript . " create " . $username);
     }
