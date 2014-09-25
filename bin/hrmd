@@ -74,24 +74,26 @@ start() {
         usage_exit
     fi
     
-    cd "$HRM_HOME"/run
     # TODO: do we really need two different logfiles here?
     echo "Reporting stdout to '$LOG_OUT' and stderr to '$LOG_ERR'."
     MARK="$(date "+%F %H:%M:%S") - trying to start the HRM Queue Manager"
     echo "$MARK" >> "$LOG_OUT"
     echo "$MARK" >> "$LOG_ERR"
+
+    cd "$HRM_HOME"/run
+    echo -n "Starting HRM daemon..................."
     QUEUEMGR="$PHP_CLI -q "$HRM_HOME"/run/runHuygensRemoteManager.php"
     $CMD $QUEUEMGR 1>> "$LOG_OUT" 2>> "$LOG_ERR" &
-    if [ "$?" = 0 ]
-    then
-        sleep 3
-        # TODO: As we're already relying on bash, we could probably just use
-        # the job control feature and retrieve the PID using "jobs -p"?
-        $CMD ps -o pid,command | grep "$HRM_HOME" | grep "php" | sed -e "s/^ * //" | cut -d" " -f1 > "$HRMD_PID"
-        echo "Starting HRM daemon...................ok"
+    # bash provides the PID of the background process in "$!", so we save it:
+    QUEUEMGR_PID=$!
+    if [ "$?" = 0 ] ; then
+        echo $QUEUEMGR_PID > "$HRMD_PID"
+        echo "[ok]"
+    else
+        echo "[ERROR]"
+        # This will show if anything went wrong during the start up.
+        tail "$LOG_OUT"
     fi
-    # This will show if anything went wrong during the start up.
-    tail "$LOG_OUT"
 }
 
 
