@@ -6,7 +6,7 @@
 
 # [x] do NOT depend on the names of related processes, use PID's instead!
 # [x] allow for setting a custom config file via an environment variable
-# [ ] do sanity checks regarding the hrm config (are logs writable etc.)
+# [x] do sanity checks regarding the hrm config (are logs writable etc.)
 # [ ] take over the start/stop responsibilites for the actual (PHP) daemon
 #     [ ] START:
 #         [ ] check if another instance of the QM is already running (return)
@@ -173,6 +173,11 @@ fi
 LOG_OUT="${HRM_LOG}/log.txt"
 LOG_ERR="${HRM_LOG}/error_log.txt"
 PID_FILE="${HRM_LOG}/hrmd.pid"
+
+# HRM_LOG needs to be writable as we store the pidfile there at the moment:
+test_writable "${HRM_LOG}"
+test_writable_create "${LOG_OUT}"
+test_writable_create "${LOG_ERR}"
 
 # install the signal handler:
 trap "cleanup_exit" SIGINT SIGTERM
