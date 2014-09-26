@@ -14,6 +14,7 @@
 #         [x] update log files
 #         [x] start the Queue Manager
 #         [x] check success and write PID into file
+#         [x] stop QM if pidfile writing failed
 #     [x] STOP:
 #         [x] kill the actual PHP QM
 #         [x] clean up the pid file
@@ -74,14 +75,17 @@ run_qm_daemon() {
     # bash" in the "Special Parameters" section), therefore we have to use the
     # method from below.
 
-    # bash provides the PID of the background process in "$!", so we save it:
+    # bash provides the PID of the background process in "$!", so remember it:
     QUEUEMGR_PID=$!
 
     # NOTE: we do *NOT* put the PID of the actual queue manager into the
     # pidfile but the PID of *this* bash process as *we* are meant to stay
     # alive during its runtime to handle signals and clean up after the QM has
     # stopped (upon request/signal or crashed):
-    echo $$ > "$PID_FILE"
+    echo $$ > "$PID_FILE" || {
+        echo "ERROR: can't write PID file '$PID_FILE'!"
+        cleanup_exit
+    }
 
     # loop until we receive SIGINT/SIGTERM or the subprocess exited for some
     # other reason (e.g. because it crashed or was killed directly):
