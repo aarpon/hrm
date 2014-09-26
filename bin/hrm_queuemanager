@@ -25,6 +25,27 @@
 
 ######################  function definitions  ######################
 
+test_writable() {
+    # test if a file or directory is writable, exit otherwise
+    if ! [ -w "$1" ] ; then
+        echo "ERROR: file or directory not writable: '$1'!"
+        exit 1
+    fi
+}
+
+test_writable_create() {
+    # test if a file exists and is writable, try to create it otherwise, if
+    # both fails exit with an error message
+    if ! [ -e "$1" ] ; then
+        touch "$1" 2>/dev/null || {
+            echo "ERROR: cannot create file: '$1'!"
+            exit 1
+        }
+    else
+        test_writable "$1"
+    fi
+}
+
 warn_daemon_user() {
     cat << EOF
 WARNING *** WARNING *** WARNING *** WARNING *** WARNING *** WARNING *** WARNING
