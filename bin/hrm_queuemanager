@@ -19,8 +19,11 @@
 #         [x] kill the actual PHP QM
 #         [x] clean up the pid file
 
-# - this script is meant to be run as either the user that should run the QM or as root, in the latter
-#   case it will switch to the QM-user by re-exec'ing itself
+# - this script is meant to be run as either the user that should run the QM or
+#   as root, in the latter case it will re-exec itself as the QM-user
+# - it will stay alive and monitor the actual PHP QM process, can be sent to
+#   background by using the "--detach" parameter
+# - requires LSB init functions to be available
 
 
 ######################  function definitions  ######################
