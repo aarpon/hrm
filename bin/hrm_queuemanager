@@ -21,6 +21,9 @@
 # - this script is meant to be run as either the user that should run the QM or as root, in the latter
 #   case it will switch to the QM-user by re-exec'ing itself
 
+
+######################  function definitions  ######################
+
 warn_daemon_user() {
     cat << EOF
 WARNING *** WARNING *** WARNING *** WARNING *** WARNING *** WARNING *** WARNING
@@ -39,39 +42,7 @@ WARNING *** WARNING *** WARNING *** WARNING *** WARNING *** WARNING *** WARNING
 EOF
 }
 
-usage_exit() {
-    echo "Usage: $0 {start|stop|restart}"
-    exit 1
-}
-
-# Make sure to have a known locale environment for the script:
-export LC_ALL=C
-
-# Set the default for the PHP CLI binary (can be overridden in hrm.conf):
-PHP_CLI="php"
-
-# hrm.conf defines variable HRM_HOME
-set -e
-if [ -n "$HRM_CONF" ] ; then
-    . "$HRM_CONF"
-else
-    . /etc/hrm.conf
-fi
-set +e
-
-if [ -n "$DEBUG_HRMD" ] ; then
-    set -o xtrace
-fi
-
-# Global variables definition:
-LOG_OUT="${HRM_LOG}/log.txt"
-LOG_ERR="${HRM_LOG}/error_log.txt"
-PID_FILE="${HRM_LOG}/hrmd.pid"
-
-# install the signal handler:
-trap "cleanup_exit" SIGINT SIGTERM
-
-start() {
+run_qm_daemon() {
     ### # check if a PID file is existing and whether it contains useful information:
     ### if [ -f "$PID_FILE" ] ; then
     ###     PID=$(more "$PID_FILE")
@@ -146,6 +117,41 @@ cleanup_exit() {
     exit ${1-0}
 }
 
+usage_exit() {
+    echo "Usage: $0 {start|stop|restart}"
+    exit 1
+}
+
+######################  function definitions  ######################
+
+
+# Make sure to have a known locale environment for the script:
+export LC_ALL=C
+
+# Set the default for the PHP CLI binary (can be overridden in hrm.conf):
+PHP_CLI="php"
+
+# hrm.conf defines variable HRM_HOME
+set -e
+if [ -n "$HRM_CONF" ] ; then
+    . "$HRM_CONF"
+else
+    . /etc/hrm.conf
+fi
+set +e
+
+if [ -n "$DEBUG_HRMD" ] ; then
+    set -o xtrace
+fi
+
+# Global variables definition:
+LOG_OUT="${HRM_LOG}/log.txt"
+LOG_ERR="${HRM_LOG}/error_log.txt"
+PID_FILE="${HRM_LOG}/hrmd.pid"
+
+# install the signal handler:
+trap "cleanup_exit" SIGINT SIGTERM
+
 # refuse to start if no SUSER is configured:
 if [ -z "$SUSER" ] ; then
     warn_daemon_user
@@ -172,4 +178,7 @@ if [ "$1" = "--detach" ] ; then
     exit 0
 fi
 
-start
+# once we reach this point we have made sure to run as the appropriate user and
+# backgrounding has happened (if requested), so we can then start the actual
+# daemon function:
+run_qm_daemon
