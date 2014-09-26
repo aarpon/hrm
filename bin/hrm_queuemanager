@@ -7,9 +7,9 @@
 # [x] do NOT depend on the names of related processes, use PID's instead!
 # [x] allow for setting a custom config file via an environment variable
 # [x] do sanity checks regarding the hrm config (are logs writable etc.)
-# [ ] take over the start/stop responsibilites for the actual (PHP) daemon
-#     [ ] START:
-#         [ ] check if another instance of the QM is already running (return)
+# [x] take over the start/stop responsibilites for the actual (PHP) daemon
+#     [x] START:
+#         [x] check if another instance of the QM is already running (return)
 #         [x] detach (continue in background)
 #         [x] update log files
 #         [x] start the Queue Manager
@@ -65,20 +65,6 @@ EOF
 }
 
 run_qm_daemon() {
-    ### # check if a PID file is existing and whether it contains useful information:
-    ### if [ -f "$PID_FILE" ] ; then
-    ###     PID=$(more "$PID_FILE")
-    ###     if [ -z "$PID" ] ; then
-    ###         echo "WARNING: empty PID file found, trying to remove it:"
-    ###         $CMD rm -f -v "$PID_FILE"
-    ###         exit 1
-    ###     else
-    ###         echo
-    ###         echo "The Queue Manager seems to be running already."
-    ###         echo "NOT starting a second instance!"
-    ###         usage_exit
-    ###     fi
-    ### fi
 
     # TODO: do we really need two different logfiles here?
     echo "Reporting stdout to '$LOG_OUT' and stderr to '$LOG_ERR'."
@@ -184,6 +170,30 @@ if [ -z "$SUSER" ] ; then
     warn_daemon_user
     exit 1
 fi
+
+# check if a Queue Manager is already running:
+set -e
+. /lib/lsb/init-functions
+set +e
+RUNNING_PID=$(pidofproc -p "$PID_FILE" "$0")
+RUNNING_STATUS=$?
+# NOTE: see the LSB specification for return values of "pidofproc"
+if [ -n "$RUNNING_PID" ] ; then
+    echo "The Queue Manager seems to be running already ($RUNNING_PID)."
+    echo "NOT starting a second instance!"
+    echo
+    exit 1
+fi
+if [ "$RUNNING_STATUS" = "1" ] ; then
+    echo "NOTE: leftover pid file '$PID_FILE' (no Queue Manager running)."
+fi
+if [ "$RUNNING_STATUS" = "4" ] ; then
+    echo "ERROR: unable to determine status from pid file '$PID_FILE'."
+    echo "       Please manually check if another instance is running"
+    echo "       and remove the file if not."
+    exit 1
+fi
+
 
 # re-exec with correct user in case we were started as root:
 if [ "$(id -u)" = 0 ] ; then
