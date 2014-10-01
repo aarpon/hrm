@@ -1,30 +1,53 @@
 #!/bin/bash
 #
 # hrm_queuemanager     Huygens Remote Manager - Queue Manager wrapper script
-
-### TASKS / PURPOSE of this wrapper script
-
-# [x] do NOT depend on the names of related processes, use PID's instead!
-# [x] allow for setting a custom config file via an environment variable
-# [x] do sanity checks regarding the hrm config (are logs writable etc.)
-# [x] take over the start/stop responsibilites for the actual (PHP) daemon
-#     [x] START:
-#         [x] check if another instance of the QM is already running (return)
-#         [x] detach (continue in background)
-#         [x] update log files
-#         [x] start the Queue Manager
-#         [x] check success and write PID into file
-#         [x] stop QM if pidfile writing failed
-#     [x] STOP:
-#         [x] kill the actual PHP QM
-#         [x] clean up the pid file
-
-# - this script is meant to be run as either the user that should run the QM or
-#   as root, in the latter case it will re-exec itself as the QM-user
-# - it will stay alive and monitor the actual PHP QM process, can be sent to
-#   background by using the "--detach" parameter
-# - requires LSB init functions to be available
-
+#
+# This is the daemon wrapper script for running the HRM Queue Manager (QM).
+#
+# It works the following way:
+# - Reads in the default configuration file (/etc/hrm.conf) unless an
+#   environment variable $HRM_CONF is set, in that case this one is used.
+# - From the $HRM_LOG setting configured in the config, the settings for the
+#   logs (default and error) and the PID files are derived and checked for
+#   existence and appropriate permissions (read/write).
+# - The config is checked if a system account for the HRM daemon has been
+#   configured ($SUSER setting), otherwise it stops.
+# - As the QM is not designed to run multiple instances at the same time it is
+#   checking if a QM is already running. This is done by using the
+#   corresponding functions required to be provided by any LSB compliant
+#   distribution. See http://refspecs.linuxbase.org/ for more details.
+# - In case the script was run as root, it re-exec's itself with the user
+#   account configured in the $SUSER variable. In case it was started as
+#   non-root it checks if this matches $SUSER (otherwise writing previews and
+#   deconvolution results would fail).
+# - If the script was started with the parameter '--detach' it forks itself
+#   into the background to run as a daemon. In fact this is done by
+#   re-executing itself as well as a subprocess (removing the 'detach'
+#   parameter) and then terminating the parent process.
+# - Having reached this point means that all sanity checks were successful,
+#   the script is running under the appropriate user account and was forked
+#   into the background if requested.
+# - For being able to handle shutdown requests in a meaningful way (i.e. to
+#   clean up), a signal handler for SIGINT and SIGTERM is set up. In case one
+#   of these signals is sent to the daemon, the "cleanup_exit" function is
+#   triggered.
+# - Before actually launching the QM, a marker with the current date and time
+#   is written to both log files for being able to identify which entries
+#   belong to a certain session.
+# - Then the actual PHP QM is launched as a subprocess. The PID of this
+#   subprocess is remembered in a variable. Note that it is *NOT* the PID that
+#   gets written to the pidfile later on! Instead, the PID of the daemon
+#   wrapper script is stored there as *this* is what should receive kill
+#   requests etc. If writing the pidfile fails, the script stops the QM and
+#   quits.
+# - After launching the QM, the script is switching to monitoring mode: in an
+#   endless loop it keeps checking once a second if the status of the
+#   subprocess (the QM). In case the status has changed (meaning that is has
+#   crashed or was shut down explicitly, which is not intended) the cleanup
+#   function is called and the script exits.
+# - The cleanup function (which is also triggered directly if the script
+#   receives the TERM or INT signal) sends the TERM signal to the QM, removes
+#   the pidfile and then exits.
 
 ######################  function definitions  ######################
 
