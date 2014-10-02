@@ -8,6 +8,9 @@
 # This file is part of the Huygens Remote Manager
 # Copyright and license notice: see license.txt
 
+# set the default filemode (can be overridden in the config file):
+FILE_MODE=0775
+
 # hrm.conf defines variable HRM_DATA
 . /etc/hrm.conf
 
@@ -17,8 +20,7 @@
 #   not empty (which is the recommended setup) *AND* it differs from the user
 #   calling this script, we need to use sudo here.
 CMD=""
-if [ -n "$SUSER" ]
-then
+if [ -n "$SUSER" ] ; then
     WHOAMI=$(id -u -n)
     if [ "$SUSER" != "$WHOAMI" ] ; then
         CMD="sudo -u $SUSER"
@@ -26,33 +28,13 @@ then
 fi
 
 create() {
-    if [ ! -d "$HRM_DATA"/"$1" ]
-    then
-        $CMD mkdir -p "$HRM_DATA"/"$1"
-        $CMD mkdir -p "$HRM_DATA"/"$1"/"$HRM_SOURCE"
-        $CMD mkdir -p "$HRM_DATA"/"$1"/"$HRM_DEST"
-        # sudo -u "$SUSER" chown -R "$2":users "$HRM_DATA"/"$1"
-        $CMD chmod -R 0777 "$HRM_DATA"/"$1"
-    else
-        if [ ! -d "$HRM_DATA"/"$1"/"$HRM_SOURCE" ]
-        then
-            $CMD mkdir -p "$HRM_DATA"/"$1"/"$HRM_SOURCE"
-        fi
-
-        if [ ! -d "$HRM_DATA"/"$1"/"$HRM_DEST" ]
-        then
-            $CMD mkdir -p "$HRM_DATA"/"$1"/"$HRM_DEST"
-        fi
-        # sudo -u "$SUSER" chown -R "$2":users "$HRM_DATA"/"$1"
-        $CMD chmod -R 0777 "$HRM_DATA"/"$1"
-    fi
+    $CMD mkdir -pv "${HRM_DATA}/${1}/${HRM_SOURCE}"
+    $CMD mkdir -pv "${HRM_DATA}/${1}/${HRM_DEST}"
+    $CMD chmod -R $FILE_MODE "${HRM_DATA}/${1}"
 }
 
 delete() {
-    if [ -d "$HRM_DATA"/"$1" ]
-    then
-        $CMD rm -R "$HRM_DATA"/"$1"
-    fi
+    $CMD rm -rf "${HRM_DATA}/${1}"
 }
 
 case "$1" in
