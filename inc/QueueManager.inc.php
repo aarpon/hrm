@@ -395,7 +395,7 @@ class QueueManager {
                 $src = $fileserver->sourceFolder();
                 $dest = $fileserver->destinationFolder();
                 report("fileserver not reachable: $src or $dest".
-                    "do not exist", 2);
+                    "do not exist", 1);
                 $pausedJobs = True;
                 $queue->pauseJob($jobDescription);
                 return NULL;
