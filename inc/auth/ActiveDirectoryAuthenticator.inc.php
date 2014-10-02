@@ -168,8 +168,10 @@ class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
 
         $this->m_AdLDAP->close();
         if (!$info) {
+            report('No email address found for username "' . $username . '"', 2);
             return "";
         }
+        report('Email for username "' . $username . '": ' . $info->mail, 2);
         return $info->mail;
     }
 
@@ -193,6 +195,7 @@ class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
 
         // If no groups found, return ""
         if (!$userGroups) {
+            report('No groups found for username "' . $username . '"', 2);
             return "";
         }
 
@@ -214,10 +217,12 @@ class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
         // the (filtered or original) group array.
         if ($this->m_GroupIndex >= 0 &&
             $this->m_GroupIndex < count($userGroups)) {
-            return $userGroups[$this->m_GroupIndex];
+            $group = $userGroups[$this->m_GroupIndex];
         } else {
-            return $userGroups[0];
+            $group = $userGroups[0];
         }
+        report('Group for username "' . $username . '": ' . $group, 2);
+        return $group;
 
     }
 
