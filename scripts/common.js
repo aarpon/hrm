@@ -598,7 +598,7 @@ function imgPrev(infile, mode, gen, compare, index, dir, referer, data) {
                   + tip + '\')" '
                   + ' onmouseout="UnTip()" >';
            tip = '<i>3D image XZ preview:</i><br>'+file;
-           html = html + '<br /><img id="ithumbb" '
+           html = html + '<img id="ithumbb" '
                   + 'src="file_management.php?getThumbnail='
                   + infile + '.preview_xz.jpg&dir=' + dir
                   + '" alt="XZ preview" onmouseover="Tip(\''
