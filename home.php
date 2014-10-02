@@ -15,6 +15,7 @@ session_start();
 
 if (isset($_GET['exited'])) {
     if (session_id() && isset($_SESSION['user'])) {
+        report("User " . $_SESSION['user']->name() . " logged off.", 1);
         $_SESSION['user']->logout();
         $_SESSION = array();
         session_unset();
