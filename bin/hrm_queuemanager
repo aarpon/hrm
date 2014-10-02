@@ -189,6 +189,24 @@ if [ -n "$DEBUG_HRMD" ] ; then
     set -o xtrace
 fi
 
+# refuse to start if no SUSER is configured:
+if [ -z "$SUSER" ] ; then
+    warn_daemon_user
+    exit 1
+fi
+
+# re-exec with correct user in case we were started as root:
+if [ "$(id -u)" = 0 ] ; then
+    exec su -l $SUSER -c "$0 $@"
+fi
+
+# refuse to start if we were started with the wrong account:
+WHOAMI=$(id -u -n)
+if [ "$WHOAMI" != "$SUSER" ] ; then
+    echo "User mismatch: '$WHOAMI' <-> '$SUSER'."
+    exit 2
+fi
+
 # Global variables definition:
 LOG_OUT="${HRM_LOG}/log.txt"
 LOG_ERR="${HRM_LOG}/error_log.txt"
@@ -198,12 +216,6 @@ PID_FILE="${HRM_LOG}/hrmd.pid"
 test_writable "${HRM_LOG}"
 test_writable_create "${LOG_OUT}"
 test_writable_create "${LOG_ERR}"
-
-# refuse to start if no SUSER is configured:
-if [ -z "$SUSER" ] ; then
-    warn_daemon_user
-    exit 1
-fi
 
 # check if a Queue Manager is already running:
 set -e
@@ -226,19 +238,6 @@ if [ "$RUNNING_STATUS" = "4" ] ; then
     echo "       Please manually check if another instance is running"
     echo "       and remove the file if not."
     exit 1
-fi
-
-
-# re-exec with correct user in case we were started as root:
-if [ "$(id -u)" = 0 ] ; then
-    exec su -l $SUSER -c "$0 $@"
-fi
-
-# refuse to start if we were started with the wrong account:
-WHOAMI=$(id -u -n)
-if [ "$WHOAMI" != "$SUSER" ] ; then
-    echo "User mismatch: '$WHOAMI' <-> '$SUSER'."
-    exit 2
 fi
 
 # detach into background if requested
