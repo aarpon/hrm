@@ -154,6 +154,14 @@ cleanup_exit() {
     exit ${1-0}
 }
 
+err() {
+    echo "$*" >> "$LOG_ERR"
+}
+
+log() {
+    echo "$*" >> "$LOG_OUT"
+}
+
 ######################  function definitions  ######################
 
 
