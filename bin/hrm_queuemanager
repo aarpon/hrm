@@ -95,9 +95,9 @@ run_qm_daemon() {
     # TODO: do we really need two different logfiles here?
     echo "Reporting stdout to '$LOG_OUT' and stderr to '$LOG_ERR'."
     MARK="$(date "+%F %H:%M:%S") - starting the HRM Queue Manager"
-    MARK="============================= $MARK ============================="
-    echo "$MARK" >> "$LOG_OUT"
-    echo "$MARK" >> "$LOG_ERR"
+    MARK="+++++++++++++++++++++++++++++ $MARK +++++++++++++++++++++++++++++"
+    log "$MARK"
+    err "$MARK"
 
     # the PHP QM expects to be run from within the "run/" subdirectory:
     cd "$HRM_HOME/run"
@@ -146,7 +146,11 @@ run_qm_daemon() {
 }
 
 cleanup_exit() {
-    echo "HRM Queue Manager: cleaning up..."
+    # update the logfiles with a shutdown message:
+    MARK="$(date "+%F %H:%M:%S") - HRM Queue Manager: cleaning up"
+    MARK="----------------------------- $MARK -----------------------------"
+    log "$MARK"
+    err "$MARK"
     # kill the running Queue Manager and clean up the PID file
     kill -15 $QUEUEMGR_PID 2>/dev/null
     rm -f "$PID_FILE"
