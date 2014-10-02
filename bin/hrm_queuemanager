@@ -117,6 +117,7 @@ run_qm_daemon() {
     # stopped (upon request/signal or crashed):
     echo $$ > "$PID_FILE" || {
         echo "ERROR: can't write PID file '$PID_FILE'!"
+        err "[$0] ERROR: can't write PID file '$PID_FILE'!"
         cleanup_exit
     }
 
