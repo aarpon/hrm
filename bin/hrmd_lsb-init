@@ -31,7 +31,7 @@ HRMD_PID="${HRM_LOG}/hrmd.pid"
 
 start() {
     # start the service
-    start_daemon -p $HRMD_PID "${HRM_HOME}/bin/hrm_queuemanager"
+    start_daemon -p $HRMD_PID "${HRM_HOME}/bin/hrm_queuemanager" --detach
 }
 
 stop() {
