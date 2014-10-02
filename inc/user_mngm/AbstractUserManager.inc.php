@@ -131,7 +131,7 @@ abstract class AbstractUserManager {
 
         report("Creating directories for '" . $username . "'.", 1);
         global $userManagerScript;
-        shell_exec($userManagerScript . " create " . $username);
+        report(shell_exec($userManagerScript . " create " . $username), 1);
     }
 
     /*!
@@ -142,7 +142,8 @@ abstract class AbstractUserManager {
 
         // TODO Use the Shell classes!
 
+        report("Removing directories for '" . $username . "'.", 1);
         global $userManagerScript;
-        shell_exec($userManagerScript . " delete " . $username);
+        report(shell_exec($userManagerScript . " delete " . $username), 1);
     }
 };
