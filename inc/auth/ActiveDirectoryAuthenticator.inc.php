@@ -157,8 +157,10 @@ class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
 
         // If needed, process the user name suffix for subdomains
         $username .= $this->m_UsernameSuffix;
-        $username = ereg_replace($this->m_UsernameSuffixReplaceMatch,
-            $this->m_UsernameSuffixReplaceString, $username);
+        if ($this->m_UsernameSuffixReplaceMatch != '') {
+            $username = ereg_replace($this->m_UsernameSuffixReplaceMatch,
+                $this->m_UsernameSuffixReplaceString, $username);
+        }
 
         // Get the email from AD
         $info = $this->m_AdLDAP->user()->infoCollection(
@@ -180,8 +182,10 @@ class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
 
         // If needed, process the user name suffix for subdomains
         $username .= $this->m_UsernameSuffix;
-        $username = ereg_replace($this->m_UsernameSuffixReplaceMatch,
-            $this->m_UsernameSuffixReplaceString, $username);
+        if ($this->m_UsernameSuffixReplaceMatch != '') {
+            $username = ereg_replace($this->m_UsernameSuffixReplaceMatch,
+                $this->m_UsernameSuffixReplaceString, $username);
+        }
 
         // Get the user groups from AD
         $userGroups = $this->m_AdLDAP->user()->groups($username);
