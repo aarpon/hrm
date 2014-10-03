@@ -14,27 +14,18 @@ FILE_MODE=0775
 # hrm.conf defines variable HRM_DATA
 . /etc/hrm.conf
 
-# Set the command prefix.
-#   This depends on the "SUSER" setting the hrm.conf as well as on the
-#   effective account (id) that is used to call this script. Only if "SUSER" is
-#   not empty (which is the recommended setup) *AND* it differs from the user
-#   calling this script, we need to use sudo here.
-CMD=""
-if [ -n "$SUSER" ] ; then
-    WHOAMI=$(id -u -n)
-    if [ "$SUSER" != "$WHOAMI" ] ; then
-        CMD="sudo -u $SUSER"
-    fi
-fi
+# NOTE: this script is called in the context of the web server (Apache), so
+# the user account that is running Apache has to have write permissions to
+# $HRM_DATA as otherwise these operations will fail!
 
 create() {
-    $CMD mkdir -pv "${HRM_DATA}/${1}/${HRM_SOURCE}"
-    $CMD mkdir -pv "${HRM_DATA}/${1}/${HRM_DEST}"
-    $CMD chmod -R $FILE_MODE "${HRM_DATA}/${1}"
+    mkdir -pv "${HRM_DATA}/${1}/${HRM_SOURCE}"
+    mkdir -pv "${HRM_DATA}/${1}/${HRM_DEST}"
+    chmod -R $FILE_MODE "${HRM_DATA}/${1}"
 }
 
 delete() {
-    $CMD rm -rf "${HRM_DATA}/${1}"
+    rm -rf "${HRM_DATA}/${1}"
 }
 
 case "$1" in
@@ -46,4 +37,5 @@ case "$1" in
         ;;
     *)
         echo $"Usage: $0 {create|delete} username"
+        ;;
 esac
