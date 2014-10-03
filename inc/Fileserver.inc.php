@@ -126,6 +126,8 @@ class Fileserver {
     \brief  Checks whether the file area is reachable
     \return true if the file area is reachable
   */
+  // FIXME: for most parts, this is not sufficient as it only checks for
+  // existence, not for permissions to read/write in these folders!
   public function isReachable() {
     $result = file_exists($this->sourceFolder());
     $result = $result && file_exists($this->destinationFolder());
