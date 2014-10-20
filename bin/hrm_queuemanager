@@ -21,9 +21,9 @@
 #   non-root it checks if this matches $SUSER (otherwise writing previews and
 #   deconvolution results would fail).
 # - If the script was started with the parameter '--detach' it forks itself
-#   into the background to run as a daemon. In fact this is done by
-#   re-executing itself as well as a subprocess (removing the 'detach'
-#   parameter) and then terminating the parent process.
+#   into the background to run as a daemon. In fact this is also done by
+#   re-executing itself as a subprocess (removing the '--detach' parameter) and
+#   then terminating the parent process.
 # - Having reached this point means that all sanity checks were successful,
 #   the script is running under the appropriate user account and was forked
 #   into the background if requested.
@@ -37,17 +37,18 @@
 # - Then the actual PHP QM is launched as a subprocess. The PID of this
 #   subprocess is remembered in a variable. Note that it is *NOT* the PID that
 #   gets written to the pidfile later on! Instead, the PID of the daemon
-#   wrapper script is stored there as *this* is what should receive kill
-#   requests etc. If writing the pidfile fails, the script stops the QM and
-#   quits.
+#   wrapper script (read: us!) is stored there as *this* is what should receive
+#   kill requests etc. If writing the pidfile fails, the script stops the QM
+#   and quits.
 # - After launching the QM, the script is switching to monitoring mode: in an
 #   endless loop it keeps checking once a second if the status of the
-#   subprocess (the QM). In case the status has changed (meaning that is has
-#   crashed or was shut down explicitly, which is not intended) the cleanup
-#   function is called and the script exits.
-# - The cleanup function (which is also triggered directly if the script
-#   receives the TERM or INT signal) sends the TERM signal to the QM, removes
-#   the pidfile and then exits.
+#   subprocess (the QM) has changed since the last check. A status change means
+#   that the QM has crashed or was shut down explicitly (which is not intended)
+#   the cleanup function is called and the script exits.
+# - This cleanup function (which is also triggered directly if the script
+#   receives the TERM or INT signal) sends the TERM signal to the QM (in case
+#   it is still running, which should be the default), removes the pidfile and
+#   then exits.
 
 ######################  function definitions  ######################
 
