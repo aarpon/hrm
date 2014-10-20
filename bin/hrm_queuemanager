@@ -99,6 +99,8 @@ run_qm_daemon() {
     log "$MARK"
     err "$MARK"
 
+    # a custom QUEUEMGR can be set in the config file, this is mostly meant
+    # for testing *this* script (e.g. set "sleep 99999999"):
     if [ -z "$QUEUEMGR" ] ; then
         QUEUEMGR="$PHP_CLI -q $HRM_HOME/run/runHuygensRemoteManager.php"
     fi
@@ -135,7 +137,7 @@ run_qm_daemon() {
             echo "WARNING: the HRM Queue Manager is not running any more!"
             # show everything of the errorlog since our startup-mark (maximum
             # of 100 lines) to give a hint what could have gone wrong:
-            echo "Showing errorlog entries since startup:"
+            echo "Showing errorlog entries since startup (max 100 lines):"
             echo "------------------ $LOG_ERR ------------------"
             tail -n 100 "$LOG_ERR" | sed "1,/$MARK/d"
             echo "------------------ $LOG_ERR ------------------"
@@ -143,7 +145,7 @@ run_qm_daemon() {
         fi
         # NOTE: due to some weird bash behaviour (bug?), the joblist doesn't
         # get updated when "jobs -p" is called but *ONLY* if we call "jobs -l"
-        # or something, so we do this explicitly:
+        # or something, so we do this explicitly as a workaround:
         jobs -l > /dev/null
     done
 }
@@ -169,8 +171,11 @@ log() {
     echo "$*" >> "$LOG_OUT"
 }
 
-######################  function definitions  ######################
+##################  end of function definitions  ###################
 
+
+
+######################### main script part #########################
 
 # Make sure to have a known locale environment for the script:
 export LC_ALL=C
@@ -178,7 +183,7 @@ export LC_ALL=C
 # Set the default for the PHP CLI binary (can be overridden in hrm.conf):
 PHP_CLI="php"
 
-# hrm.conf defines variable HRM_HOME
+# Read in hrm.conf (defines variables like HRM_HOME)
 set -e
 if [ -n "$HRM_CONF" ] ; then
     . "$HRM_CONF"
@@ -250,7 +255,8 @@ if [ "$1" = "--detach" ] ; then
     exit 0
 fi
 
-# install the signal handler:
+# install the signal handler (runs the function "cleanup_exit" when either of
+# the given signals SIGINT (2) or SIGTERM (15) is received):
 trap "cleanup_exit" SIGINT SIGTERM
 
 # once we reach this point we have made sure to run as the appropriate user and
