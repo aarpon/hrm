@@ -3075,7 +3075,7 @@ echo '</body></html>';
           // Directory could not be read
           return;
       }
-      while ($entry = $dir->read()) {
+      while (($entry = $dir->read()) !== False) {
           if ($entry != "." && $entry != ".." && $entry != "hrm_previews") {
               if (is_dir($startDir . "/" . $entry)) {
                   $newDir = $startDir . "/" . $entry;
