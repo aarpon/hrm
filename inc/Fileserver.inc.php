@@ -318,14 +318,17 @@ class Fileserver {
       // Store current selections and extensions
       $currentExtensions = $this->imageExtensions;
       $currentFiles = $this->files;
+      
       // Process
       $this->setDefaultImageExtensions(array());
       $this->expandSubImages($expand);
       $this->getFiles();
       $files = $this->files();
+      
       // Restore the previous selections
       $this->files = $currentFiles;
       $this->imageExtensions = $currentExtensions;
+      
       // Return the processed list of files
       return $files;
   }
@@ -3024,7 +3027,7 @@ echo '</body></html>';
         // Directory could not be read
         return;
     }
-    while ($entry = $dir->read()) {
+    while (($entry = $dir->read()) !== False) {
       if ($entry != "." && $entry != ".." && $entry != "hrm_previews") {
 	if (is_dir($startDir . "/" . $entry)) {
 	  $newDir = $startDir . "/" . $entry;
