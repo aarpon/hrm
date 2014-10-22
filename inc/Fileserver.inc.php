@@ -318,17 +318,17 @@ class Fileserver {
       // Store current selections and extensions
       $currentExtensions = $this->imageExtensions;
       $currentFiles = $this->files;
-      
+
       // Process
       $this->setDefaultImageExtensions(array());
       $this->expandSubImages($expand);
       $this->getFiles();
       $files = $this->files();
-      
+
       // Restore the previous selections
       $this->files = $currentFiles;
       $this->imageExtensions = $currentExtensions;
-      
+
       // Return the processed list of files
       return $files;
   }
@@ -414,7 +414,7 @@ class Fileserver {
     \return array of file names
   */
   public function filesOfType( $format, $isTimeSeries ) {
-      
+
       if ($format == "ics") {
           $files = $_SESSION['fileserver']->files("ics");
       } else if ($format == "tiff" || $format == "tiff-single") {
@@ -435,7 +435,7 @@ class Fileserver {
              function we force to list the subimages as well. */
           $files = $_SESSION['fileserver']->files();
       }
-      
+
       return $files;
   }
 
@@ -899,7 +899,7 @@ class Fileserver {
           }
 
           if ($files['error'][$i]) {
-              $err .= "Invalid file <kbd>".$basename."</kbd>: <b>";
+              $err .= "Invalid file <kbd>".$baseName."</kbd>: <b>";
               switch ($files['error'][$i]) {
                   case UPLOAD_ERR_INI_SIZE:
                      $err .= "larger than $maxFile.";
@@ -929,15 +929,15 @@ class Fileserver {
               $subDir = $baseName;
               $zSuffix = 0;
               $zMaxSuffix = 100;
-              
+
               $testExpand = $uploadDir . "/" . $subDir;
 
               while (file_exists($testExpand)) {
                   $zSuffix ++;
                   $testExpand = $uploadDir . "/" . $bareName .
-                      "_$zsuffix" . $extension;
+                      "_$zSuffix" . $extension;
                   if ($zSuffix > $zMaxSuffix) {
-                      $err .= "Directory <kbd>".$baeName.
+                      $err .= "Directory <kbd>".$bareName.
                           "</kbd> exists, <b>can't store more ".
                           " than $zMaxSuffix versions.</b><br>\n";
                       break;
@@ -984,7 +984,7 @@ class Fileserver {
           if ($suffix > $maxSuffix) {
               continue;
           }
-          
+
           if (move_uploaded_file($files['tmp_name'][$i], $uploadFile)) {
               // echo "File is valid, and was successfully uploaded.\n";
               if ($suffix == 0) {
@@ -992,7 +992,7 @@ class Fileserver {
               } else {
                   $ok .= "<kbd>". $baseName .
                       "</kbd> already exists, uploaded and <b>renamed</b> ".
-                      "to <kbd>$bareName" . 
+                      "to <kbd>$bareName" .
                       "_$suffix" . $extension . "</kbd><br>\n";
               }
               $okCnt++;
@@ -1004,8 +1004,8 @@ class Fileserver {
       }
       } catch (Exception $e) {
           $err .= "Error uploading files: ".$e->getMessage();
-      }      
-      
+      }
+
       $msg = "<h3>Upload report</h3>\n";
 
       if ($okCnt == 0) {
