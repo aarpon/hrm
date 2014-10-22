@@ -26,12 +26,12 @@ if (!isset($userManagerScript)) {
     // custom user management script in the configuration files, we do not
     // replace it -- no matter what the value of $change_ownership is!
     if (isset($change_ownership) && $change_ownership == true) {
-        $userManagerScript = "bin/hrm_user_manager_old";
+        $userManagerScript = dirname(__FILE__) . "/../bin/hrm_user_manager_old";
     } else {
         // This default user manager script can be replaced in the configuration.
         // A demo server, for example, may use links to a demo directory instead of
         // creating an empty directory for each new user.
-        $userManagerScript = "bin/hrm_user_manager";
+        $userManagerScript = dirname(__FILE__) . "/../bin/hrm_user_manager";
     }
 }
 
