@@ -3,7 +3,9 @@
 # HRM user directories administration script
 #
 # This script is used by the HRM to create and remove the directory structure
-# for the users that keep their raw and deconvolved files.
+# for the users that keep their raw and deconvolved files; moreover, it can be
+# used to set 0777 permissions on a given file or recursively to a folder (with 
+# full path).
 #
 # This file is part of the Huygens Remote Manager
 # Copyright and license notice: see license.txt
@@ -55,6 +57,16 @@ delete() {
     fi
 }
 
+set_permissions() {
+    if [ -d "$1" ]
+    then
+        $CMD chmod -R 0777 "$1"
+    elif [ -f "$1" ]
+    then
+        $CMD chmod 0777 "$1"
+    fi
+}
+
 case "$1" in
     create)
         create "$2"
@@ -62,6 +74,11 @@ case "$1" in
     delete)
         delete "$2"
         ;;
+    set_permissions)
+        set_permissions "$2"
+        ;;
     *)
-        echo $"Usage: $0 {create|delete} username"
+    echo "Usage:"
+    echo $"$0 {create|delete} username"
+	echo $"$0 set_permissions fullpath"
 esac

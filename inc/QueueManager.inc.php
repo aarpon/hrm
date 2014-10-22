@@ -18,7 +18,7 @@ require_once ("System.inc.php");
  \brief  Creates Jobs from JobDescriptions and manages them in a priority queue
  */
 class QueueManager {
-    
+
     /*!
      \var   $queue
      \brief A JobQueue object
@@ -74,13 +74,13 @@ class QueueManager {
     public function removeHuygensOutputFiles($desc, $server_hostname ) {
         global $imageProcessingIsOnQueueManager;
         global $huygens_user;
-        
+
         // Get the Huygens default output file.
         $user = $desc->owner();
         $fileserver = new Fileserver($user->name());
         $destPath = $fileserver->destinationFolderFor($desc);
         $huyOutFile = $destPath . "scheduler_client0.log";
-        
+
         // Build a remove command involving the file.
         $cmd  = "if [ -f \"" . $huyOutFile . "\" ]; ";
         $cmd .= "then ";
@@ -111,7 +111,7 @@ class QueueManager {
         $desc = $job->description();
         $clientTemplatePath = $desc->sourceFolder();
         $templateName = $job->huTemplateName();
-        
+
         // The new job must not get merged with debris from previously
         // failed jobs.
         $this->removeHuygensOutputFiles($desc, $server_hostname);
@@ -137,7 +137,7 @@ class QueueManager {
         if (!$proc->runShell()) {
             return False;
         }
-        
+
         report("running shell: $clientTemplatePath$templateName", 1);
         $pid = $proc->runHuygensTemplate($clientTemplatePath . $templateName);
 
@@ -198,10 +198,10 @@ class QueueManager {
         $taskSetting = $desc->taskSetting();
         $jobFilePattern = dirname($jobFilePattern) . "/hrm_previews/";
         $jobFilePattern .= "*" . $taskSetting->name() . "_hrm*";
-        
+
         // Grant all permissions the job previews.
         $this->chmodFiles(glob($jobFilePattern),0777);
-        
+
         // Grant all permissions to the source preview in the destination folder
         $srcPreviews = $destFolder . str_replace(" ","_",$subdirPreviewPattern);
         $this->chmodFiles(glob($srcPreviews),0777);
@@ -211,18 +211,22 @@ class QueueManager {
     /*!
     \brief  Changes file modes.
     \param  $files An array of files or single file.
-    \param  $permission The requested file permission.
+    \param  $permission The requested file permission. NOTE: this is ignored;
+            the permissions set are always 0777!
     */
     private function chmodFiles($files,$permission) {
         global $change_ownership;
+        global $userManagerScript;
 
         if (isset($change_ownership) && $change_ownership == true) {
         if (is_array($files)) {
             foreach ($files as $f) {
-                chmod($f,$permission);
+                report("Setting permissions on $f", 1);
+                shell_exec("$userManagerScript set_permissions \"" . $f . "\"" );
             }
         } else {
-            chmod($files,$permission);
+            report("Setting permissions on $files", 1);
+            shell_exec("$userManagerScript set_permissions \"" . $files . "\"" );
             }
         }
     }
@@ -487,11 +491,11 @@ class QueueManager {
                                        $server . $outLog . "_out.txt",
                                        $server . $errLog . "_error.txt" );
         $isReachable = $proc->ping();
-        
+
         $proc->release();
-        
+
         return $isReachable;
-    }   
+    }
 
     /*!
  	\brief	Updates the Job and server status
@@ -525,7 +529,7 @@ class QueueManager {
         foreach ($runningJobs as $job) {
             $desc = $job->description();
             $user = $desc->owner();
-            
+
             $fileserver = new Fileserver($user->name());
             if (!$fileserver->isReachable())
                 continue;
@@ -533,16 +537,16 @@ class QueueManager {
             if ( !$this->isProcessingServerReachable($job->server(),
                                                      $job->id(),
                                                      $job->id()) ) {
-                continue;    
+                continue;
             }
-            
+
             // Check finished marker
             $finished = $job->checkProcessFinished();
 
             if (!$finished) {
                 continue;
             }
-            
+
             report("checked finished process", 2);
 
             // Check result image
@@ -568,8 +572,8 @@ class QueueManager {
                 // (update database)
                 $this->stopTime = $queue->stopJob($job);
 
-                // Write email             
-                if ($send_mail) {   
+                // Write email
+                if ($send_mail) {
 		  $this->notifyError($job, $startTime);
                 }
 
@@ -720,13 +724,13 @@ class QueueManager {
 	  global $email_sender;
 	  global $email_admin;
 	  global $logdir;
-	  
-	  
+
+
 	  /* Definitions: relevant files. */
 	  $basename  = $logdir . "/" . $job->server() . "_" . $job->id();
 	  $errorFile = $basename . "_error.txt";
 	  $logFile   = $basename . "_out.txt";
-	  
+
 	  /* Definitions: dataset name. */
 	  $desc = $job->description();
 	  $sourceFileName = $desc->sourceImageNameWithoutPath();
@@ -736,21 +740,21 @@ class QueueManager {
 	  $pid    = $job->pid();
 	  $server = $job->server();
 	  $template = $job->createHuygensTemplate();
-	  
+
 	  /* Email destination. */
 	  $user = $desc->owner();
 	  $emailAddress = $user->emailAddress();
-	  
+
 
 	  $mailContent  = "\nThis is a mail generated automatically by ";
 	  $mailContent .= "the Huygens Remote Manager.\n\n";
-	
+
 	  $mailContent .= "Sorry, the processing of the image \n";
 	  $mailContent .= $sourceFileName . "\nhas been terminated with ";
 	  $mailContent .= "an error.\n\n";
-	  
-	  $mailContent .= "Best regards,\nHuygens Remote Manager\n";	  
-	  	  
+
+	  $mailContent .= "Best regards,\nHuygens Remote Manager\n";
+
 	  /* The error should be shown up in the email. */
 	  if (file_exists($errorFile)) {
 	    $mailContent .= "\n\n-HUYGENS ERROR REPORT (stderr) --------------";
@@ -761,7 +765,7 @@ class QueueManager {
 	  $mailContent .= "------\n\n";
 	  $mailContent .= "These are the parameters you set in the HRM:\n\n";
 	  $mailContent .= $this->parameterText($job);
-	  
+
 	  $mailContent .= "\n\n-TEMPLATE -------------------------------------";
 	  $mailContent .= "------\n\n";
 	  $mailContent .= "What follows is the Huygens Core template executed ";
@@ -777,28 +781,28 @@ class QueueManager {
 
 	  $mailContent .= "\n\n-PROCESS DETAILS-------------------------------";
 	  $mailContent .= "------\n\n";
-	  
+
 	  $mailContent .= "Your job started on $startTime and failed ";
 	  $mailContent .= "on " . date("Y-m-d H:i:s") . ".\n";
-	  
+
 	  $mailContent .= "Job id: $id (pid $pid on $server)\n";
 
-	
+
 	  /* Send the error mail to the user. */
 	  $mail = new Mail($email_sender);
 	  $mail->setReceiver($emailAddress);
 	  $mail->setSubject('Your HRM job finished with an error');
 	  $mail->setMessage($mailContent);
 	  $mail->send();
-        
+
 	  /* Also notify the error to the admin. */
 	  $mail->setReceiver($email_admin);
 	  $mail->setSubject('An HRM job from user "' . $user->name() .
 			    '" finished with an error.');
-	  
+
 	  $mail->send();
 	}
-	
+
 
     /*!
  	\brief	Sends an e-mail to the Admin notifying that a server could
@@ -824,10 +828,10 @@ class QueueManager {
  	\return name of a free server
  	*/
  	public function getFreeServer() {
-            
+
         $db = new DatabaseConnection();
         $servers = $db->availableServer();
-        
+
         foreach ($servers as $server) {
             $status = $db->statusOfServer($server);
             if ($status == 'free') {
@@ -844,9 +848,9 @@ class QueueManager {
                 }
             }
         }
-        
+
         $this->freeServer = False;
-        
+
         return $this->freeServer;
     }
 
@@ -961,15 +965,15 @@ class QueueManager {
                     continue;
                 }
                 report("template has been created", 1);
-                
+
                 // Execute the template on the Huygens server and
                 // update the database state
                 $result = $result && $this->executeTemplate($job);
-                
-                if (!$result) {                    
+
+                if (!$result) {
                     continue;
                 }
-                
+
                 report("Template has been executed", 1);
                 $result = $result && $queue->startJob($job);
                 report("job has been started ("
@@ -993,12 +997,12 @@ class QueueManager {
  	private function parameterText(Job $job) {
         $desc = $job->description();
         $result = '';
-        
+
         $result = $result . "\nImage parameters:\n\n";
         $parameterSetting = $desc->parameterSetting();
         $parameterSettingString = $parameterSetting->displayString();
         $result = $result . $parameterSettingString;
-        
+
         $result = $result . "\nRestoration parameters:\n\n";
         $taskSetting = $desc->taskSetting();
         $numberOfChannels = $taskSetting->numberOfChannels();
@@ -1052,7 +1056,7 @@ class QueueManager {
 
             return true;
         }
-            
+
 
     /*!
  	\brief	Store the confidence levels returned by huCore into the database
