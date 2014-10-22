@@ -1,0 +1,67 @@
+#!/bin/bash
+#
+# HRM user directories administration script
+#
+# This script is used by the HRM to create and remove the directory structure
+# for the users that keep their raw and deconvolved files.
+#
+# This file is part of the Huygens Remote Manager
+# Copyright and license notice: see license.txt
+
+# hrm.conf defines variable HRM_DATA
+. /etc/hrm.conf
+
+# Set the command prefix.
+#   This depends on the "SUSER" setting the hrm.conf as well as on the
+#   effective account (id) that is used to call this script. Only if "SUSER" is
+#   not empty (which is the recommended setup) *AND* it differs from the user
+#   calling this script, we need to use sudo here.
+CMD=""
+if [ -n "$SUSER" ]
+then
+    WHOAMI=$(id -u -n)
+    if [ "$SUSER" != "$WHOAMI" ] ; then
+        CMD="sudo -u $SUSER"
+    fi
+fi
+
+create() {
+    if [ ! -d "$HRM_DATA"/"$1" ]
+    then
+        $CMD mkdir -p "$HRM_DATA"/"$1"
+        $CMD mkdir -p "$HRM_DATA"/"$1"/"$HRM_SOURCE"
+        $CMD mkdir -p "$HRM_DATA"/"$1"/"$HRM_DEST"
+        # sudo -u "$SUSER" chown -R "$2":users "$HRM_DATA"/"$1"
+        $CMD chmod -R 0777 "$HRM_DATA"/"$1"
+    else
+        if [ ! -d "$HRM_DATA"/"$1"/"$HRM_SOURCE" ]
+        then
+            $CMD mkdir -p "$HRM_DATA"/"$1"/"$HRM_SOURCE"
+        fi
+
+        if [ ! -d "$HRM_DATA"/"$1"/"$HRM_DEST" ]
+        then
+            $CMD mkdir -p "$HRM_DATA"/"$1"/"$HRM_DEST"
+        fi
+        # sudo -u "$SUSER" chown -R "$2":users "$HRM_DATA"/"$1"
+        $CMD chmod -R 0777 "$HRM_DATA"/"$1"
+    fi
+}
+
+delete() {
+    if [ -d "$HRM_DATA"/"$1" ]
+    then
+        $CMD rm -R "$HRM_DATA"/"$1"
+    fi
+}
+
+case "$1" in
+    create)
+        create "$2"
+        ;;
+    delete)
+        delete "$2"
+        ;;
+    *)
+        echo $"Usage: $0 {create|delete} username"
+esac
