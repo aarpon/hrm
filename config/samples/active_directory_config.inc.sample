@@ -22,8 +22,8 @@
     // multidomain / forest environment. Leave empty in a regular AD setup.
     // See the documentation in case you're in an AD forest.
     $AD_USERNAME_SUFFIX = "";
-    $AD_USERNAME_SUFFIX_REPLACE_MATCH = "";
-    $AD_USERNAME_SUFFIX_REPLACE_STRING = "";
+    $AD_USERNAME_SUFFIX_PATTERN = "";
+    $AD_USERNAME_SUFFIX_REPLACE = "";
 
     // Optional account with higher privileges for searching (otherwise
     // leave it to NULL). This should be set to a domain admin account (only
