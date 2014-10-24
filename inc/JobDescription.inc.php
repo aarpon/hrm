@@ -397,7 +397,7 @@ class JobDescription {
   public function sourceImageName() {
     $files = $this->files();
     // avoid redundant slashes in path
-    $result = $this->sourceFolder() . preg_replace("/\//", "", end($files));
+    $result = $this->sourceFolder() . preg_replace("/^\//", "", end($files));
     return $result;
   }
 
