@@ -76,8 +76,8 @@ class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
         global $ACCOUNT_SUFFIX, $AD_PORT, $BASE_DN, $DOMAIN_CONTROLLERS,
                $AD_USERNAME, $AD_PASSWORD, $REAL_PRIMARY_GROUP, $USE_SSL,
                $USE_TLS, $RECURSIVE_GROUPS, $GROUP_INDEX, $VALID_GROUPS,
-               $AD_USERNAME_SUFFIX, $AD_USERNAME_SUFFIX_REPLACE_MATCH,
-               $AD_USERNAME_SUFFIX_REPLACE_STRING;
+               $AD_USERNAME_SUFFIX, $AD_USERNAME_SUFFIX_PATTERN,
+               $AD_USERNAME_SUFFIX_REPLACE;
 
 
         // Include configuration file
@@ -100,8 +100,8 @@ class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
         $this->m_ValidGroups     =  $VALID_GROUPS;
 
         $this->m_UsernameSuffix = $AD_USERNAME_SUFFIX;
-        $this->m_UsernameSuffixReplaceMatch = $AD_USERNAME_SUFFIX_REPLACE_MATCH;
-        $this->m_UsernameSuffixReplaceString = $AD_USERNAME_SUFFIX_REPLACE_STRING;
+        $this->m_UsernameSuffixReplaceMatch = $AD_USERNAME_SUFFIX_PATTERN;
+        $this->m_UsernameSuffixReplaceString = $AD_USERNAME_SUFFIX_REPLACE;
 
         try {
             $this->m_AdLDAP = new adLDAP($options);
