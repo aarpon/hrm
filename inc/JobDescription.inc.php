@@ -426,8 +426,10 @@ class JobDescription {
     $inputFile = explode("/", $inputFile);
     array_pop($inputFile);
     $path = implode("/", $inputFile);
-    // avoid redundant slashes in path
-    if (strlen($path) > 0) $path = preg_replace("#([^/])$#", "\\1/", $path);
+    if (strlen($path) > 0) {
+        // make sure to have exactly ONE slash at the end of $path:
+        $path = preg_replace("#//$#", "/", $path . '/');
+    }
     return $path;
   }
 
