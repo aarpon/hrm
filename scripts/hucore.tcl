@@ -274,12 +274,8 @@ proc generateImagePreview {} {
         ::WebTools::savePreview $src $dest $filename $sizes $scheme
         
         # Make the preview directory writable/readable to all users.
-        if { [ file owned $dest ] } {
-            if { [ catch { exec chmod 777 $dest } res ] } {
-                reportError "$res"
-            }
-            catch { exec chmod -R a+w $dest }
-        }
+        catch { exec chmod -R 777 $dest }
+
     }  res ] } {
         reportError "$res"
     } else {
