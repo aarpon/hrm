@@ -2114,9 +2114,6 @@ echo '</body></html>';
   */
   public function genPreview( $file, $src, $dest, $index, $sizes = "preview", $data = 0 ) {
 
-      global $change_ownership;
-      global $userManagerScript;
-
       $excludeTitle = true;
       include("header.inc.php");
 
@@ -2149,10 +2146,7 @@ echo '</body></html>';
       if (!file_exists($pdest)) {
           @mkdir($pdest, 0777);
       }
-      if (isset($change_ownership) && $change_ownership == true) {
-        report("Setting permissions on generated previews.", 1);
-        shell_exec("$userManagerScript set_permissions \"" . $pdest . "\"" );
-      }
+      @chmod($pdest, 0777);
 
       $extra = "";
       $series = "auto";
