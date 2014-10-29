@@ -211,24 +211,18 @@ class QueueManager {
     /*!
     \brief  Changes file modes.
     \param  $files An array of files or single file.
-    \param  $permission The requested file permission. NOTE: this is ignored;
-            the permissions set are always 0777!
+    \param  $permission The requested file permission.
     */
-    private function chmodFiles($files,$permission) {
-        global $change_ownership;
-        global $userManagerScript;
+    private function chmodFiles($files, $permission) {
 
-        if (isset($change_ownership) && $change_ownership == true) {
         if (is_array($files)) {
             foreach ($files as $f) {
-                report("Setting permissions on $f", 1);
-                shell_exec("$userManagerScript set_permissions \"" . $f . "\"" );
+                @chmod($f, $permission);
             }
         } else {
-            report("Setting permissions on $files", 1);
-            shell_exec("$userManagerScript set_permissions \"" . $files . "\"" );
-            }
+            @chmod($files, $permission);
         }
+
     }
 
     /*!
@@ -460,13 +454,9 @@ class QueueManager {
         global $image_user;
         global $image_group;
         global $image_folder;
-        global $change_ownership;
 
-        if (isset($change_ownership) && $change_ownership == true) {
         $result = exec("sudo chown -R " . $image_user . ":" . $image_group .
             " " . $image_folder . "/" . $username);
-        report("Restoring ownership... " . $result, 1);
-    }
     }
 
     /*!
