@@ -22,6 +22,11 @@ create() {
     mkdir -pv "${HRM_DATA}/${1}/${HRM_SOURCE}"
     mkdir -pv "${HRM_DATA}/${1}/${HRM_DEST}"
     chmod -R $FILE_MODE "${HRM_DATA}/${1}"
+    # TODO / discuss : We could use this function to make sure the newly
+    # created directory has the correct group (chgrp) and the setgid bit
+    # configured (chmod g+s). However, this requires to know the GROUP that is
+    # desired for the directory, but we don't have this anywhere in
+    # /etc/hrm.conf right now.
 }
 
 delete() {
