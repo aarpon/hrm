@@ -190,7 +190,7 @@ class QueueManager {
         // Build a file pattern to look for the deconvolved images.
         $jobFilePattern = $jobFileDir . "/" .
             $desc->destinationImageName() . "*";
-
+        
         // Grant all permissions to the deconvolved images.
         $this->chmodFiles(glob($jobFilePattern),0777);
 
@@ -214,7 +214,7 @@ class QueueManager {
     \param  $permission The requested file permission.
     */
     private function chmodFiles($files, $permission) {
-
+        
         if (is_array($files)) {
             foreach ($files as $f) {
                 @chmod($f, $permission);
@@ -578,21 +578,22 @@ class QueueManager {
                 if (file_exists($logFile)) {
                     unlink($logFile);
                 }
-            }
-            else {
-                $this->chmodJob($desc, $fileserver);
-
+            } else {
                 report("job " . $desc->id() . " completed on " .
                     $job->server(), 1);
 
                 // Report information to statistics table
                 $db = new DatabaseConnection();
                 $db->updateStatistics($job, $startTime);
+                
                 // Clean up server
                 $this->cleanUpFileServer($job);
+                
                 // Reset server and remove job from the job queue
                 $this->stopTime = $queue->stopJob($job);
                 $this->assembleJobLogFile($job, $startTime, $logFile, $errorFile);
+
+                $this->chmodJob($desc, $fileserver);
 
                 // Write email
                 if ($send_mail)
