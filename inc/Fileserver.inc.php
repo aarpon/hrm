@@ -318,14 +318,17 @@ class Fileserver {
       // Store current selections and extensions
       $currentExtensions = $this->imageExtensions;
       $currentFiles = $this->files;
+
       // Process
       $this->setDefaultImageExtensions(array());
       $this->expandSubImages($expand);
       $this->getFiles();
       $files = $this->files();
+
       // Restore the previous selections
       $this->files = $currentFiles;
       $this->imageExtensions = $currentExtensions;
+
       // Return the processed list of files
       return $files;
   }
@@ -411,7 +414,7 @@ class Fileserver {
     \return array of file names
   */
   public function filesOfType( $format, $isTimeSeries ) {
-      
+
       if ($format == "ics") {
           $files = $_SESSION['fileserver']->files("ics");
       } else if ($format == "tiff" || $format == "tiff-single") {
@@ -432,7 +435,7 @@ class Fileserver {
              function we force to list the subimages as well. */
           $files = $_SESSION['fileserver']->files();
       }
-      
+
       return $files;
   }
 
@@ -896,7 +899,7 @@ class Fileserver {
           }
 
           if ($files['error'][$i]) {
-              $err .= "Invalid file <kbd>".$basename."</kbd>: <b>";
+              $err .= "Invalid file <kbd>".$baseName."</kbd>: <b>";
               switch ($files['error'][$i]) {
                   case UPLOAD_ERR_INI_SIZE:
                      $err .= "larger than $maxFile.";
@@ -926,15 +929,15 @@ class Fileserver {
               $subDir = $baseName;
               $zSuffix = 0;
               $zMaxSuffix = 100;
-              
+
               $testExpand = $uploadDir . "/" . $subDir;
 
               while (file_exists($testExpand)) {
                   $zSuffix ++;
                   $testExpand = $uploadDir . "/" . $bareName .
-                      "_$zsuffix" . $extension;
+                      "_$zSuffix" . $extension;
                   if ($zSuffix > $zMaxSuffix) {
-                      $err .= "Directory <kbd>".$baeName.
+                      $err .= "Directory <kbd>".$bareName.
                           "</kbd> exists, <b>can't store more ".
                           " than $zMaxSuffix versions.</b><br>\n";
                       break;
@@ -981,7 +984,7 @@ class Fileserver {
           if ($suffix > $maxSuffix) {
               continue;
           }
-          
+
           if (move_uploaded_file($files['tmp_name'][$i], $uploadFile)) {
               // echo "File is valid, and was successfully uploaded.\n";
               if ($suffix == 0) {
@@ -989,7 +992,7 @@ class Fileserver {
               } else {
                   $ok .= "<kbd>". $baseName .
                       "</kbd> already exists, uploaded and <b>renamed</b> ".
-                      "to <kbd>$bareName" . 
+                      "to <kbd>$bareName" .
                       "_$suffix" . $extension . "</kbd><br>\n";
               }
               $okCnt++;
@@ -1001,8 +1004,8 @@ class Fileserver {
       }
       } catch (Exception $e) {
           $err .= "Error uploading files: ".$e->getMessage();
-      }      
-      
+      }
+
       $msg = "<h3>Upload report</h3>\n";
 
       if ($okCnt == 0) {
@@ -1068,7 +1071,7 @@ class Fileserver {
     \return true if the file extension matches the file format, false otherwise
   */
   public function isImage($filename) {
-    $ext = substr(strrchr($filename, "."),1);
+    $ext = $this->getFileNameExtension($filename);
     $ext = strtolower($ext);
     $result = False;
     if (in_array($ext, $this->imageExtensions())) {
@@ -1085,11 +1088,11 @@ class Fileserver {
   */
   public function isValidImage($filename, $alsoExtras = false) {
       $filename = strtolower($filename);
-      $ext = substr(strrchr($filename, "."),1);
+      $ext = $this->getFileNameExtension($filename);
       if ( $ext === "gz" ) {
           // Use two suffixes as extension
           $filename  = basename($filename, ".gz");
-          $ext = substr(strrchr($filename, "."),1) . ".gz";
+          $ext = $this->getFileNameExtension($filename) . ".gz";
       }
       $result = False;
       if (in_array($ext, $this->validImageExtensions)) {
@@ -1113,7 +1116,7 @@ class Fileserver {
           // This double extension is a special case.
           return "tar.gz";
       }
-      $ext = substr(strrchr($filename, "."),1);
+      $ext = $this->getFileNameExtension($filename);
       $ext = strtolower($ext);
       $result = "";
       if (in_array($ext, $this->validArchiveExtensions)) {
@@ -1599,7 +1602,7 @@ echo '</body></html>';
           <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 
           <head>
-          <title>Huygens Remote Manager</title>
+          <title>HRM - ' . $file . ' - results preview</title>
           <link rel="SHORTCUT ICON" href="images/hrm.ico"/>
           <script type="text/javascript" src="scripts/common.js"></script>
           <style type="text/css">
@@ -2111,8 +2114,6 @@ echo '</body></html>';
   */
   public function genPreview( $file, $src, $dest, $index, $sizes = "preview", $data = 0 ) {
 
-      global $change_ownership;
-
       $excludeTitle = true;
       include("header.inc.php");
 
@@ -2145,9 +2146,7 @@ echo '</body></html>';
       if (!file_exists($pdest)) {
           @mkdir($pdest, 0777);
       }
-      if (isset($change_ownership) && $change_ownership == true) {
-        @chmod($pdest, 0777);
-      }
+      @chmod($pdest, 0777);
 
       $extra = "";
       $series = "auto";
@@ -2726,7 +2725,7 @@ echo '</body></html>';
         foreach ($extArr as $mfext) {
             if ( !in_array( $mfext, $this->multiImageExtensions)) { continue; }
             foreach ($this->files as $key => $file) {
-                $ext = substr(strrchr($file, "."),1);
+                $ext = $this->getFileNameExtension($file);
                 $ext = strtolower($ext);
                 if ($ext != $mfext) continue;
                 $expandfiles[] = $file;
@@ -3024,7 +3023,7 @@ echo '</body></html>';
         // Directory could not be read
         return;
     }
-    while ($entry = $dir->read()) {
+    while (($entry = $dir->read()) !== False) {
       if ($entry != "." && $entry != ".." && $entry != "hrm_previews") {
 	if (is_dir($startDir . "/" . $entry)) {
 	  $newDir = $startDir . "/" . $entry;
@@ -3072,7 +3071,7 @@ echo '</body></html>';
           // Directory could not be read
           return;
       }
-      while ($entry = $dir->read()) {
+      while (($entry = $dir->read()) !== False) {
           if ($entry != "." && $entry != ".." && $entry != "hrm_previews") {
               if (is_dir($startDir . "/" . $entry)) {
                   $newDir = $startDir . "/" . $entry;
@@ -3638,6 +3637,31 @@ echo '</body></html>';
             }
         }
         return TRUE;
+    }
+
+    /*!
+    \brief Get file extension in a robust way.
+
+    Double extensions (as in .ome.tif) are correctly returned. There
+    is no support for longer, composite extensions because they do not
+    occur in practice.
+
+    \param $filename Filename to be processed.
+    \return String Complete extension.
+    *
+    */
+    private function getFileNameExtension($filename) {
+        $info = pathinfo($filename);
+        $info_ext = pathinfo($info["filename"]);
+        if ($info_ext["extension"] == "") {
+            return $info["extension"];
+        } else {
+            if (strlen($info_ext["extension"]) > 4) {
+                // Avoid pathological cases with dots somewhere in the file name.
+                return $info["extension"];
+            }
+            return $info_ext["extension"] . "." . $info["extension"];
+        }
     }
 
 } // End of FileServer class

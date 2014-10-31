@@ -397,7 +397,7 @@ class JobDescription {
   public function sourceImageName() {
     $files = $this->files();
     // avoid redundant slashes in path
-    $result = $this->sourceFolder() . ereg_replace("^/", "", end($files));
+    $result = $this->sourceFolder() . preg_replace("#^/#", "", end($files));
     return $result;
   }
 
@@ -426,8 +426,10 @@ class JobDescription {
     $inputFile = explode("/", $inputFile);
     array_pop($inputFile);
     $path = implode("/", $inputFile);
-    // avoid redundant slashes in path
-    if (strlen($path) > 0) $path = ereg_replace("([^/])$", "\\1/", $path);
+    if (strlen($path) > 0) {
+        // make sure to have exactly ONE slash at the end of $path:
+        $path = preg_replace("#/*$#", "/", $path);
+    }
     return $path;
   }
 

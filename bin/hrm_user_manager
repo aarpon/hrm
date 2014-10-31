@@ -1,0 +1,46 @@
+#!/bin/bash
+#
+# HRM user directories administration script
+#
+# This script is used by the HRM to create and remove the directory structure
+# for the users that keep their raw and deconvolved files.
+#
+# This file is part of the Huygens Remote Manager
+# Copyright and license notice: see license.txt
+
+# set the default filemode (can be overridden in the config file):
+FILE_MODE=0775
+
+# hrm.conf defines variable HRM_DATA
+. /etc/hrm.conf
+
+# NOTE: this script is called in the context of the web server (Apache), so
+# the user account that is running Apache has to have write permissions to
+# $HRM_DATA as otherwise these operations will fail!
+
+create() {
+    mkdir -pv "${HRM_DATA}/${1}/${HRM_SOURCE}"
+    mkdir -pv "${HRM_DATA}/${1}/${HRM_DEST}"
+    chmod -R $FILE_MODE "${HRM_DATA}/${1}"
+    # TODO / discuss : We could use this function to make sure the newly
+    # created directory has the correct group (chgrp) and the setgid bit
+    # configured (chmod g+s). However, this requires to know the GROUP that is
+    # desired for the directory, but we don't have this anywhere in
+    # /etc/hrm.conf right now.
+}
+
+delete() {
+    rm -rf "${HRM_DATA}/${1}"
+}
+
+case "$1" in
+    create)
+        create "$2"
+        ;;
+    delete)
+        delete "$2"
+        ;;
+    *)
+        echo $"Usage: $0 {create|delete} username"
+        ;;
+esac

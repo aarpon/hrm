@@ -98,7 +98,8 @@ if (isset($_POST['password']) && isset($_POST['username'])) {
                 $userManager->storeUser($_SESSION['user']);
 
                 // Log successful logon
-                report("User " . $_SESSION['user']->name() . " logged on.", 1);
+                report("User " . $_SESSION['user']->name() . " (" .
+                    $_SESSION['user']->emailAddress() .") logged on.", 1);
 
                 // If the database is not up-to-date go straight to the
                 // database update page

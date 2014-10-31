@@ -112,7 +112,6 @@ $allFiles = $_SESSION['fileserver']->listFiles(TRUE);
 // All the user's series in the server.
 $condensedSeries = $_SESSION['fileserver']->condenseSeries();
 
-
 // display only relevant files.
 if ($allFiles != null) {
 
@@ -156,6 +155,8 @@ function filterImages (format,series) {
     belongs to a series and for when it doesn't. */
     foreach ($allFiles as $key => $file) {
 
+        /* Escape here the string that will be passed to JavaScript only. */
+        $file = str_replace("'","\'",$file);
         if ($_SESSION['fileserver']->isPartOfFileSeries($file)) {
 
             $generatedScript .= "
