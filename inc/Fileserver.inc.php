@@ -1071,7 +1071,7 @@ class Fileserver {
     \return true if the file extension matches the file format, false otherwise
   */
   public function isImage($filename) {
-    $ext = substr(strrchr($filename, "."),1);
+    $ext = $this->getFileNameExtension($filename);
     $ext = strtolower($ext);
     $result = False;
     if (in_array($ext, $this->imageExtensions())) {
@@ -1088,11 +1088,11 @@ class Fileserver {
   */
   public function isValidImage($filename, $alsoExtras = false) {
       $filename = strtolower($filename);
-      $ext = substr(strrchr($filename, "."),1);
+      $ext = $this->getFileNameExtension($filename);
       if ( $ext === "gz" ) {
           // Use two suffixes as extension
           $filename  = basename($filename, ".gz");
-          $ext = substr(strrchr($filename, "."),1) . ".gz";
+          $ext = $this->getFileNameExtension($filename) . ".gz";
       }
       $result = False;
       if (in_array($ext, $this->validImageExtensions)) {
@@ -1116,7 +1116,7 @@ class Fileserver {
           // This double extension is a special case.
           return "tar.gz";
       }
-      $ext = substr(strrchr($filename, "."),1);
+      $ext = $this->getFileNameExtension($filename);
       $ext = strtolower($ext);
       $result = "";
       if (in_array($ext, $this->validArchiveExtensions)) {
@@ -2725,7 +2725,7 @@ echo '</body></html>';
         foreach ($extArr as $mfext) {
             if ( !in_array( $mfext, $this->multiImageExtensions)) { continue; }
             foreach ($this->files as $key => $file) {
-                $ext = substr(strrchr($file, "."),1);
+                $ext = $this->getFileNameExtension($file);
                 $ext = strtolower($ext);
                 if ($ext != $mfext) continue;
                 $expandfiles[] = $file;
@@ -3637,6 +3637,31 @@ echo '</body></html>';
             }
         }
         return TRUE;
+    }
+
+    /*!
+    \brief Get file extension in a robust way.
+
+    Double extensions (as in .ome.tif) are correctly returned. There
+    is no support for longer, composite extensions because they do not
+    occur in practice.
+
+    \param $filename Filename to be processed.
+    \return String Complete extension.
+    *
+    */
+    private function getFileNameExtension($filename) {
+        $info = pathinfo($filename);
+        $info_ext = pathinfo($info["filename"]);
+        if ($info_ext["extension"] == "") {
+            return $info["extension"];
+        } else {
+            if (strlen($info_ext["extension"]) > 4) {
+                // Avoid pathological cases with dots somewhere in the file name.
+                return $info["extension"];
+            }
+            return $info_ext["extension"] . "." . $info["extension"];
+        }
     }
 
 } // End of FileServer class
