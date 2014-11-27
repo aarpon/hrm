@@ -2317,15 +2317,15 @@ echo '</body></html>';
       return False;
     }
     $dir = opendir($folder);
-    if ($dir == false) {
+    if ($dir == False) {
         // Directory could not be read
         return False;
     }
     $result = False;
-    while ($name = readdir($dir)) {
-      if (strstr($name, $string)) {
-        $result = True;
-      }
+    while (False !== ($name = readdir($dir))) {
+        if (strstr($name, $string)) {
+            $result = True;
+        }
     }
     closedir($dir);
     return $result;
