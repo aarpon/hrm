@@ -355,7 +355,7 @@ $info = "<h3>Quick help</h3>" .
     <div id="content">
        <h3><img alt="SelectImages" src="./images/select_images.png"
            width="40"/>
-           &#32;Step
+           &nbsp;Step
            <?php echo $currentStep . "/" . $numberSteps; ?>
            - Select images
        </h3>
@@ -432,7 +432,7 @@ if ($allFiles == null) {
 <?php
 $keyArr = array();
 if ($allFiles == null) {
-    echo "                        <option>&#32;</option>\n";
+    echo "                        <option>&nbsp;</option>\n";
 } else {
     if ($fileFormat->value() != "") {
         $format = $fileFormat->value();
@@ -540,7 +540,7 @@ if ($selectedFiles != null) {
               $key, "src", "preview", 0, 1) ;
   }
 }
-else echo "                        <option>&#32;</option>\n";
+else echo "                        <option>&nbsp;</option>\n";
 
 ?>
                     </select>
