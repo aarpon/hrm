@@ -56,7 +56,7 @@ if (isset($_POST['down'])) {
         $fileNames = array();
         foreach ($_POST['userfiles'] as $file) {
             $name = htmlentities($file, null, 'utf-8');
-            $name = str_replace("&nbsp;", " ", $name);
+            $name = str_replace("&#32;", " ", $name);
             $name = html_entity_decode($name);
             $fileNames[] = $name;
         }
@@ -75,7 +75,7 @@ else if (isset($_POST['up'])) {
         $fileNames = array();
         foreach ($_POST['selectedfiles'] as $file) {
             $name = htmlentities($file, null, 'utf-8');
-            $name = str_replace("&nbsp;", " ", $name);
+            $name = str_replace("&#32;", " ", $name);
             $name = html_entity_decode($name);
             $fileNames[] = $name;
         }
@@ -169,7 +169,7 @@ function filterImages (format,series) {
                 $generatedScript .= "
                   if(checkAgainstFormat('$file', selectedFormat)) {
                     var f = \"$file\";
-                    f = f.replace(/ /g, '&nbsp;');
+                    f = f.replace(/ /g, '&#32;');
                     var selectItem = document.createElement('option');
                     $(selectItem).html(f);
                     $(selectItem).attr('title', '$file');
@@ -184,7 +184,7 @@ function filterImages (format,series) {
                   // Do not load file series automatically.
                   if(checkAgainstFormat('$file', selectedFormat)) {
                     var f = \"$file\";
-                    f = f.replace(/ /g, '&nbsp;');
+                    f = f.replace(/ /g, '&#32;');
                     var selectItem = document.createElement('option');
                     $(selectItem).html(f);
                     $(selectItem).attr('title', '$file');
@@ -197,7 +197,7 @@ function filterImages (format,series) {
             $generatedScript .= "
             if(checkAgainstFormat('$file', selectedFormat)) {
                     var f = \"$file\";
-                    f = f.replace(/ /g, '&nbsp;');
+                    f = f.replace(/ /g, '&#32;');
                     var selectItem = document.createElement('option');
                     $(selectItem).html(f);
                     $(selectItem).attr('title', '$file');
@@ -355,7 +355,7 @@ $info = "<h3>Quick help</h3>" .
     <div id="content">
        <h3><img alt="SelectImages" src="./images/select_images.png"
            width="40"/>
-           &nbsp;Step
+           &#32;Step
            <?php echo $currentStep . "/" . $numberSteps; ?>
            - Select images
        </h3>
@@ -432,7 +432,7 @@ if ($allFiles == null) {
 <?php
 $keyArr = array();
 if ($allFiles == null) {
-    echo "                        <option>&nbsp;</option>\n";
+    echo "                        <option>&#32;</option>\n";
 } else {
     if ($fileFormat->value() != "") {
         $format = $fileFormat->value();
@@ -450,7 +450,7 @@ if ($allFiles == null) {
             if ($_SESSION['fileserver']->checkAgainstFormat($file, $format)) {
                 // Consecutive spaces are collapsed into one space in HTML.
                 // Hence '&nbsp;' to correct this when the file has more spaces.
-                $filteredFile = str_replace(' ', '&nbsp;', $file);
+                $filteredFile = str_replace(' ', '&#32;', $file);
                 $exists = false;
                 foreach ($selectedFiles as $skey => $sfile) {
                     if (strcmp($sfile, $file) == 0) {
@@ -540,7 +540,7 @@ if ($selectedFiles != null) {
               $key, "src", "preview", 0, 1) ;
   }
 }
-else echo "                        <option>&nbsp;</option>\n";
+else echo "                        <option>&#32;</option>\n";
 
 ?>
                     </select>
