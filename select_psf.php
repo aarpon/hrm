@@ -123,6 +123,7 @@ for ($i = 0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
   $parameter = $_SESSION['setting']->parameter("PSF");
   $value = $parameter->value();
   $missing = False;
+  $_SESSION['fileserver']->imageExtensions();
   $files = $_SESSION['fileserver']->allFiles();
   if ($files != null) {
     if (!in_array($value[$i], $files)) {
