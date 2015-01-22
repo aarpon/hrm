@@ -17,12 +17,8 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 <head>
 <?php
 
-if (isset($meta)) {
-  echo "    ".$meta;
-} else {
-    if (using_IE()) {
-        echo '<meta http-equiv="X-UA-Compatible" content="IE=Edge"/>';
-    }
+if (using_IE()) {
+    echo '<meta http-equiv="X-UA-Compatible" content="IE=Edge"/>';
 }
 
 ?>
