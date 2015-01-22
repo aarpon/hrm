@@ -89,17 +89,10 @@ if (isset($generatedScript)) {
 
 
 ?>
-    <style type="text/css">
-
-<?php
-    if (using_IE_lt9()) {
-        echo '@import url("css/default_ie.css");';
-    } else {
-        echo '@import url("css/default.css");';
-    }
-?>
-
-    </style>
+    <link rel="stylesheet" href="css/default.css">
+    <!--[if lte IE 9]>
+    <link rel="stylesheet" href="css/default_ie.css">
+    <![endif]-->
 
 </head>
 
