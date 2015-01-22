@@ -71,7 +71,7 @@ if ( $_SESSION[ 'setting' ]->checkPostedImageParameters( $_POST ) ) {
  **************************************************************************** */
 
 // Javascript includes
-$script = array( "settings.js", "quickhelp/help.js" );
+$script = array( "settings.js", "quickhelp/help.js",  "quickhelp/imageFormat.js");
 
 include("header.inc.php");
 
@@ -323,9 +323,9 @@ function check($parameter, $value) {
             <h3>Quick help</h3>
 
             <div id="contextHelp">
-              <p>Here you are asked to define whether you want to use a theoretical
-              PSF, or if you instead want to use a measured PSF you distilled
-              with the Huygens software.</p>
+              <p>Here you are asked to define the number of channels in your
+                  data and whether you want to use a theoretical PSF or a
+                  measured PSF you distilled with the Huygens Software.</p>
             </div>
 
 
