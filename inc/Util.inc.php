@@ -540,15 +540,4 @@ function using_IE() {
     return False;
 }
 
-/*!
-  \brief  Check whether the browser is Internet Explorer older than version 9
-  \return true if the browser is IE <= 9, false otherwise
-*/
-function using_IE_lt9() {
-    if (preg_match('/MSIE [5-8]/i', $_SERVER['HTTP_USER_AGENT'])) {
-        return True;
-    }
-    return False;
-}
-
 ?>
