@@ -71,7 +71,7 @@ function fileButton($type) {
       $class = "icon update";
       $tip = "Refresh image list";
       break;
-      
+
     case "omeroImport":
         $name    = "getOmeroData";
         $value   = "OMERO Data";
@@ -156,7 +156,7 @@ if ($omero_transfers) {
 }
 
 if (isset($_POST['getOmeroData']) || isset($_POST['exportToOmero'])) {
-    
+
     if (isset($omeroConnection)) {
         if ($omeroConnection->loggedIn) {
             $omeroTree = $omeroConnection->getLastOmeroTree();
@@ -165,7 +165,7 @@ if (isset($_POST['getOmeroData']) || isset($_POST['exportToOmero'])) {
 }
 
 if (isset($_POST['importFromOmero'])) {
-    
+
     if (isset($omeroConnection)) {
         if ($omeroConnection->loggedIn) {
             $omeroTree = $omeroConnection->getLastOmeroTree();
@@ -174,7 +174,7 @@ if (isset($_POST['importFromOmero'])) {
 }
 
 if (isset($_POST['refreshOmero'])) {
-    
+
     if (isset($omeroConnection)) {
         if ($omeroConnection->loggedIn) {
             $omeroTree = $omeroConnection->getUpdatedOmeroTree();
@@ -183,7 +183,7 @@ if (isset($_POST['refreshOmero'])) {
 }
 
     /************ End of code for the interaction with OMERO. **********/
-    
+
 
 
 // JavaScript
@@ -391,11 +391,6 @@ if ($files == null) {
   $flag = " disabled=\"disabled\"";
 }
 
-// If using IE make sure to enforce IE7 Document Mode
-if ( using_IE( ) ) {
-    $meta = "<meta http-equiv=\"X-UA-Compatible\" content=\"IE=7.5\" >";
-}
-
 include("header.inc.php");
 
 
@@ -438,20 +433,20 @@ include("header.inc.php");
 
 
     <div id="content" >
-    
+
     <?php if ($page_title == "Raw images") {
     $icon = "./images/rawdata_title.png";
 } else {
     $icon = "./images/results_title.png";
 } ?>
-        
+
 <h3><img alt=<?php echo $page_title;?> src=<?php echo $icon;?> width="40"/>
     &nbsp;&nbsp;<?php echo $page_title; ?></h3>
 
     <form method="post" action="?folder=<?php echo $browse_folder;?>"
         id="file_browser" onsubmit="return confirmSubmit()" >
 
-        <?php 
+        <?php
             // Add additional input elements if defined
             if (isset($additionalHTMLElements)) {
                 echo $additionalHTMLElements;
@@ -467,7 +462,7 @@ include("header.inc.php");
         <div id="userfiles" onmouseover="showPreview()">
           <select name="userfiles[]" id="fileSelection"
                   onchange="javascript:imageAction(this)"
-                  onkeyup="this.blur();this.focus();" 
+                  onkeyup="this.blur();this.focus();"
                   size="<?php echo $size;?>" <?php echo $multiple.$flag ?>>
           <?php
           // Populate the select field with the list of available images:
@@ -499,12 +494,12 @@ include("header.inc.php");
       </div>
       </form>
 
-      
+
       <?php
       include("./omero_UI.php");
-      ?>  
+      ?>
 
-      
+
   <div id="upMsg"><!-- do not remove !--></div>
 
 
