@@ -20,7 +20,7 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 if (isset($meta)) {
   echo "    ".$meta;
 } else {
-    if ( using_IE() ) {
+    if (using_IE()) {
         echo '<meta http-equiv="X-UA-Compatible" content="IE=Edge"/>';
     }
 }
@@ -92,7 +92,7 @@ if (isset($generatedScript)) {
     <style type="text/css">
 
 <?php
-    if (using_IE () ) {
+    if (using_IE_lt9()) {
         echo '@import url("css/default_ie.css");';
     } else {
         echo '@import url("css/default.css");';
