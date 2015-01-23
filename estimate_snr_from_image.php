@@ -48,11 +48,11 @@ function showFileBrowser() {
 
     $additionalHTMLElements = "
              <!-- SNR estimation algorithm -->
-             <fieldset class=\"setting\"
-               onmouseover=\"javascript:changeQuickHelp( 'method' );\" >
+             <fieldset class=\"setting\" >
 
                  <legend>
-                     <a href=\"javascript:openWindow('#')\">
+                     <a href=\"javascript:openWindow(
+                       'http://www.svi.nl/HuygensRemoteManagerHelpSNREstimationAlgorithm')\">
                        <img src=\"images/help.png\" alt=\"?\" /></a>
                        SNR estimation algorithm
                  </legend>
@@ -104,7 +104,10 @@ function showFileBrowser() {
             <p>Select a raw image to estimate the Signal-to-Noise Ratio (SNR).
                You can then use the estimated SNR values in the Restoration
                Settings to deconvolve similar images, acquired under similar
-               conditions.</p>';
+               conditions.</p>
+
+            <p>You have a choice of two SNR estimation algorithms. Please click
+               on the corresponding help button for additional information.</p>';
 
     if ($type != "") {
         $info .= "<p>Only images of type <b>$type</b>, as set in the image
