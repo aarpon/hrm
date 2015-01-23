@@ -402,7 +402,11 @@ include("header.inc.php");
         <div id="navleft">
             <ul>
             <?php
-                wiki_link('HuygensRemoteManagerHelpFileManagement');
+                if (isset($top_nav_left)) {
+                    echo $top_nav_left;
+                } else {
+                    wiki_link('HuygensRemoteManagerHelpFileManagement');
+                }
             ?>
             </ul>
         </div>
