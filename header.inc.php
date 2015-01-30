@@ -86,7 +86,10 @@ if (isset($generatedScript)) {
 
 ?>
     <link rel="stylesheet" href="css/default.css">
-    <!--[if lte IE 9]>
+    <!--[if lt IE 9]>
+    <h3>This browser is OBSOLETE and is known to have important issues with the HRM.
+        Please upgrade to a later version of Internet Explorer or to a new
+        broswer altogether.</h3>
     <link rel="stylesheet" href="css/default_ie.css">
     <![endif]-->
 
