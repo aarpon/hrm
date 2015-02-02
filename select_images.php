@@ -52,7 +52,7 @@ if (isset($_POST['down'])) {
 
     if (isset($_POST['userfiles']) && is_array($_POST['userfiles'])) {
 
-        // Remove spaces added by the HRM file selector. See '&nbsp;' below.
+        // Remove spaces added by the HRM file selector. See '&#32;' below.
         $fileNames = array();
         foreach ($_POST['userfiles'] as $file) {
             $name = htmlentities($file, null, 'utf-8');
@@ -71,7 +71,7 @@ else if (isset($_POST['up'])) {
     }
     if (isset($_POST['selectedfiles']) && is_array($_POST['selectedfiles'])) {
 
-        // Remove spaces added by the HRM file selector. See '&nbsp;' below.
+        // Remove spaces added by the HRM file selector. See '&#32;' below.
         $fileNames = array();
         foreach ($_POST['selectedfiles'] as $file) {
             $name = htmlentities($file, null, 'utf-8');
@@ -449,7 +449,7 @@ if ($allFiles == null) {
         foreach ($files as $key => $file) {
             if ($_SESSION['fileserver']->checkAgainstFormat($file, $format)) {
                 // Consecutive spaces are collapsed into one space in HTML.
-                // Hence '&nbsp;' to correct this when the file has more spaces.
+                // Hence '&#32;' to correct this when the file has more spaces.
                 $filteredFile = str_replace(' ', '&#32;', $file);
                 $exists = false;
                 foreach ($selectedFiles as $skey => $sfile) {
