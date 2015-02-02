@@ -360,7 +360,7 @@ $info = "<h3>Quick help</h3>" .
            - Select images
        </h3>
 
-                    <form method="post" action="" id="fileformat">
+                    <form method="post" action="" id="select">
                     <fieldset class="setting" >
 
                 <legend>
