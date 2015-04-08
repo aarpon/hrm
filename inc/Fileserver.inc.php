@@ -1833,8 +1833,7 @@ echo '</body></html>';
       }
 
       echo "\n<div class=\"menuEntry\" onclick=\"javascript:openWindow(".
-          "'http://support.svi.nl/wiki/style=hrm&amp;".
-          "help=HuygensRemoteManagerHelpCompareResult')\" ".
+          "'http://support.svi.nl/wiki/HuygensRemoteManagerHelpCompareResult')\" ".
              "onmouseover=\"Tip('Open a pop up with help about this window')\" onmouseout=\"UnTip()\">".
           "<a href=\"#\"><img src=\"images/help.png\" alt=\"help\" />".
           "</a></div>";
@@ -2076,8 +2075,7 @@ echo '</body></html>';
       echo "</div>\n";
       echo "<div>\n";
       echo "\n<br /><br /><a href=\"javascript:openWindow(".
-          "'http://support.svi.nl/wiki/style=hrm&amp;".
-          "help=HuygensRemoteManagerHelpCompareResult')\">".
+          "'http://support.svi.nl/wiki/HuygensRemoteManagerHelpCompareResult')\">".
           "<img src=\"images/help.png\" alt=\"help\" />".
           "</a>";
 
