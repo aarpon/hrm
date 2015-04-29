@@ -30,6 +30,16 @@ Arguments:
 
 initialize () {
 
+    if [ -z "$OMERO_HOSTNAME" ] ; then
+        echo "OMERO hostname missing, check your configuration!"
+        exit 2
+    fi
+
+    if [ -z "$OMERO_PORT" ] ; then
+        echo "OMERO port missing, check your configuration!"
+        exit 2
+    fi
+
     if [ -z "$1" ]; then
         usage_exit "Missing user login."
     fi
