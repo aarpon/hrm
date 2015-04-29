@@ -12,10 +12,19 @@ usage_exit() {
         echo "$1"
         echo
     fi
-    echo "Usage: $0  { checkCredentials |
-                       retrieveUserTree |
-                       OMEROtoHRM       |
-                       HRMtoOMERO       } args"
+    echo "Usage: $0 <command> <arguments>
+
+Commands:
+
+    checkCredentials      check if login credentials are valid
+    retrieveUserTree      retrieve a user's Projects/Datasets/Images tree
+    OMEROtoHRM            download an image from the OMERO server
+    HRMtoOMERO            upload an image to the OMERO server
+
+Arguments:
+
+    username              the OMERO account name to use for logging in
+    password              the corresponding OMERO password"
     exit 1
 }
 
@@ -39,6 +48,7 @@ initialize () {
 
 
 checkCredentials () {
+     # check if credentials are valid by logging in and out with the OMERO server
 
      initialize $1 $2
 
