@@ -132,6 +132,7 @@
 
                   $('#omeroTree').tree({
                         data: data,
+                        saveState: true,
                         selectable: true,
                         onCanSelectNode: function(node) {
 
