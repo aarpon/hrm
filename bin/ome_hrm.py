@@ -20,6 +20,10 @@ if "OMERO_PASS" in os.environ:
     PASSWORD=os.environ['OMERO_PASS']
 
 
+def iprint(text, indent=0):
+    """Helper method for intented printing."""
+    print('%s%s' % (" " * indent, text))
+
 def print_obj(obj, indent=0):
     """Helper method to display info about OMERO objects.
 
@@ -57,14 +61,14 @@ def gen_image_dict(image):
 def gen_xml_tree(obj_tree):
     """Generate (print) an XML tree from the OMERO objects."""
     for proj in obj_tree:
-        print('<Project>%s<id>%s</id>' % (proj['name'], proj['id']))
+        iprint('<Project>%s<id>%s</id>' % (proj['name'], proj['id']))
         for dset in proj['children']:
-            print('<Dataset>%s<id>%s</id>' % (dset['name'], dset['id']))
+            iprint('<Dataset>%s<id>%s</id>' % (dset['name'], dset['id']), 4)
             for img in dset['children']:
-                print('<Image>%s<id>%s</id>' % (img['name'], img['id']))
-                print('</Image>')
-            print('</Dataset>')
-        print('</Project>')
+                iprint('<Image>%s<id>%s</id>' % (img['name'], img['id']), 8)
+                iprint('</Image>', 8)
+            iprint('</Dataset>', 4)
+        iprint('</Project>')
 
 
 conn = BlitzGateway(USERNAME, PASSWORD, host=HOST, port=PORT)
