@@ -1,5 +1,12 @@
 #!/usr/bin/env python
 
+"""OMERO connector for the Huygens Remote Manager (HRM).
+
+This wrapper processes all requests from the HRM web interface to communicate
+to an OMERO server for listing available images, transferring data, etc.
+"""
+
+
 import os
 from omero.gateway import BlitzGateway
 
