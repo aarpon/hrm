@@ -112,15 +112,19 @@ def omero_login():
     return conn
 
 
-obj_tree = []
-#for project in conn.listProjects(my_expId):
-for project in conn.listProjects():
-        proj_dict = gen_obj_dict(project)
-        for dataset in project.listChildren():
-                dset_dict = gen_obj_dict(dataset)
-                for image in dataset.listChildren():
-                        dset_dict['children'].append(gen_image_dict(image))
-                proj_dict['children'].append(dset_dict)
-        obj_tree.append(proj_dict)
+def retrieve_user_tree():
+    conn = omero_login()
+    obj_tree = []
+    iprint('<?xml version="1.0" ?>')
+    gen_xml_info_header(conn)
+    for project in conn.listProjects():
+            proj_dict = gen_obj_dict(project)
+            for dataset in project.listChildren():
+                    dset_dict = gen_obj_dict(dataset)
+                    for image in dataset.listChildren():
+                            dset_dict['children'].append(gen_image_dict(image))
+                    proj_dict['children'].append(dset_dict)
+            obj_tree.append(proj_dict)
+    gen_xml_tree(obj_tree)
 
-gen_xml_tree(obj_tree)
+
