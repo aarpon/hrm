@@ -101,8 +101,14 @@ def gen_xml_tree(obj_tree):
         iprint('</Project>')
 
 
-conn = BlitzGateway(USERNAME, PASSWORD, host=HOST, port=PORT)
-connected = conn.connect()
+def omero_login():
+    log('Trying to log into OMERO.')
+    conn = BlitzGateway(USERNAME, PASSWORD, host=HOST, port=PORT)
+    conn.connect()
+    user = conn.getUser()
+    log('OMERO user ID for username %s: %s' % (user.getName(), user.getId()))
+    return conn
+
 
 obj_tree = []
 #for project in conn.listProjects(my_expId):
