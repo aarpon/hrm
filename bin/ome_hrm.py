@@ -7,6 +7,8 @@ to an OMERO server for listing available images, transferring data, etc.
 """
 
 
+import sys
+import argparse
 import os
 from omero.gateway import BlitzGateway
 
@@ -128,3 +130,38 @@ def retrieve_user_tree():
     gen_xml_tree(obj_tree)
 
 
+def parse_arguments():
+    """Parse the commandline arguments."""
+    argparser = argparse.ArgumentParser(description=__doc__)
+        # help='check if login credentials are valid')
+    argparser.add_argument('action', choices=['checkCredentials',
+        'retrieveUserTree', 'OMEROtoHRM', 'HRMtoOMERO'],
+        help='Action to be performed by the connector.')
+    argparser.add_argument('-u', '--user', required=True,
+        help='OMERO username')
+    argparser.add_argument('-w', '--password', required=True,
+        help='OMERO password')
+    argparser.add_argument('-v', '--verbose', dest='verbosity',
+        action='count', default=0, help='verbosity (repeat for more details)')
+    try:
+        return argparser.parse_args()
+    except IOError as err:
+        argparser.error(str(err))
+
+
+def main():
+    """Parse commandline arguments and initiate the requested tasks."""
+    action_methods = {
+        'checkCredentials': omero_login,
+        'retrieveUserTree': retrieve_user_tree,
+        'OMEROtoHRM': iprint,
+        'HRMtoOMERO': iprint
+    }
+
+    args = parse_arguments()
+    print(args.action)
+    action_methods[args.action]()
+
+
+if __name__ == "__main__":
+    sys.exit(main())
