@@ -20,13 +20,13 @@ PASSWORD = 'bar'
 
 # allow overriding the default values
 if "OMERO_HOST" in os.environ:
-    HOST=os.environ['OMERO_HOST']
+    HOST = os.environ['OMERO_HOST']
 if "OMERO_PORT" in os.environ:
-    PORT=os.environ['OMERO_PORT']
+    PORT = os.environ['OMERO_PORT']
 if "OMERO_USER" in os.environ:
-    USERNAME=os.environ['OMERO_USER']
+    USERNAME = os.environ['OMERO_USER']
 if "OMERO_PASS" in os.environ:
-    PASSWORD=os.environ['OMERO_PASS']
+    PASSWORD = os.environ['OMERO_PASS']
 
 
 def log(text):
@@ -37,6 +37,7 @@ def log(text):
 def iprint(text, indent=0):
     """Helper method for intented printing."""
     print('%s%s' % (" " * indent, text))
+
 
 def print_obj(obj, indent=0):
     """Helper method to display info about OMERO objects.
@@ -90,15 +91,19 @@ def gen_xml_info_header(conn):
     print("Experimenter ID: %s" % my_expId)
     iprint('==== OMERO user information ==== -->')
 
+
 def gen_xml_tree(obj_tree):
     """Generate (print) an XML tree from the OMERO objects."""
     iprint('<OMERO_Tree>')
     for proj in obj_tree:
-        iprint('<Project><label>%s</label><id>%s</id>' % (proj['name'], proj['id']))
+        iprint('<Project><label>%s</label><id>%s</id>' %
+               (proj['name'], proj['id']))
         for dset in proj['children']:
-            iprint('<Dataset><label>%s</label><id>%s</id>' % (dset['name'], dset['id']), 4)
+            iprint('<Dataset><label>%s</label><id>%s</id>' %
+                   (dset['name'], dset['id']), 4)
             for img in dset['children']:
-                iprint('<Image><label>%s</label><id>%s</id>' % (img['name'], img['id']), 8)
+                iprint('<Image><label>%s</label><id>%s</id>' %
+                       (img['name'], img['id']), 8)
                 iprint('</Image>', 8)
             iprint('</Dataset>', 4)
         iprint('</Project>')
