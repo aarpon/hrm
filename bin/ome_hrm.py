@@ -15,12 +15,11 @@ from omero.gateway import BlitzGateway
 
 # possible actions (this will be used when showing the help message on the
 # command line later on as well, so keep this in mind when formatting!)
-ACTIONS = """Actions:
-
-    checkCredentials      Check if login credentials are valid.
-    retrieveUserTree      Retrieve a user's Projects/Datasets/Images tree.
-    OMEROtoHRM            Download an image from the OMERO server.
-    HRMtoOMERO            Upload an image to the OMERO server.
+ACTIONS = """actions:
+  checkCredentials      Check if login credentials are valid.
+  retrieveUserTree      Retrieve a user's Projects/Datasets/Images tree.
+  OMEROtoHRM            Download an image from the OMERO server.
+  HRMtoOMERO            Upload an image to the OMERO server.
 """
 
 
@@ -156,7 +155,7 @@ def parse_arguments():
     )
     argparser.add_argument('action', choices=['checkCredentials',
         'retrieveUserTree', 'OMEROtoHRM', 'HRMtoOMERO'],
-        help='Action to be performed by the connector.')
+        help='Action to be performed by the connector, see below for details.')
     argparser.add_argument('-u', '--user', required=True,
         help='OMERO username')
     argparser.add_argument('-w', '--password', required=True,
