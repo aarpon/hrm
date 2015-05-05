@@ -105,6 +105,8 @@ def gen_xml_info_header(conn):
 
 def gen_xml_tree(obj_tree):
     """Generate (print) an XML tree from the OMERO objects."""
+    iprint('<?xml version="1.0" ?>')
+    gen_xml_info_header(conn)
     iprint('<OMERO_Tree>')
     for proj in obj_tree:
         iprint('<Project><label>%s</label><id>%s</id>' %
@@ -133,8 +135,6 @@ def omero_login():
 def retrieve_user_tree():
     conn = omero_login()
     obj_tree = []
-    iprint('<?xml version="1.0" ?>')
-    gen_xml_info_header(conn)
     for project in conn.listProjects():
             proj_dict = gen_obj_dict(project)
             for dataset in project.listChildren():
