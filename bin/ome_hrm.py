@@ -12,6 +12,18 @@ import argparse
 import os
 from omero.gateway import BlitzGateway
 
+
+# possible actions (this will be used when showing the help message on the
+# command line later on as well, so keep this in mind when formatting!)
+ACTIONS = """Actions:
+
+    checkCredentials      Check if login credentials are valid.
+    retrieveUserTree      Retrieve a user's Projects/Datasets/Images tree.
+    OMEROtoHRM            Download an image from the OMERO server.
+    HRMtoOMERO            Upload an image to the OMERO server.
+"""
+
+
 # the default connection values
 HOST = 'omero.mynetwork.xy'
 PORT = 4064
@@ -137,8 +149,11 @@ def retrieve_user_tree():
 
 def parse_arguments():
     """Parse the commandline arguments."""
-    argparser = argparse.ArgumentParser(description=__doc__)
-        # help='check if login credentials are valid')
+    argparser = argparse.ArgumentParser(
+        description=__doc__,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog=ACTIONS
+    )
     argparser.add_argument('action', choices=['checkCredentials',
         'retrieveUserTree', 'OMEROtoHRM', 'HRMtoOMERO'],
         help='Action to be performed by the connector.')
