@@ -92,11 +92,11 @@ def gen_xml_tree(obj_tree):
     """Generate (print) an XML tree from the OMERO objects."""
     iprint('<OMERO_Tree>')
     for proj in obj_tree:
-        iprint('<Project>%s<id>%s</id>' % (proj['name'], proj['id']))
+        iprint('<Project><label>%s</label><id>%s</id>' % (proj['name'], proj['id']))
         for dset in proj['children']:
-            iprint('<Dataset>%s<id>%s</id>' % (dset['name'], dset['id']), 4)
+            iprint('<Dataset><label>%s</label><id>%s</id>' % (dset['name'], dset['id']), 4)
             for img in dset['children']:
-                iprint('<Image>%s<id>%s</id>' % (img['name'], img['id']), 8)
+                iprint('<Image><label>%s</label><id>%s</id>' % (img['name'], img['id']), 8)
                 iprint('</Image>', 8)
             iprint('</Dataset>', 4)
         iprint('</Project>')
