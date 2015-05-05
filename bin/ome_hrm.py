@@ -70,6 +70,24 @@ def gen_image_dict(image):
     return image_dict
 
 
+def gen_xml_info_header(conn):
+    user = conn.getUser()
+    iprint('<!-- ==== OMERO user information ====')
+    print "Current user:"
+    print "   ID:", user.getId()
+    print "   Username:", user.getName()
+    print "   Full Name:", user.getFullName()
+
+    for g in conn.getGroupsMemberOf():
+        print "   ID:", g.getName(), " Name:", g.getId()
+
+    group = conn.getGroupFromContext()
+    print "Current group: ", group.getName()
+
+    my_expId = conn.getUser().getId()
+    print("Experimenter ID: %s" % my_expId)
+    iprint('==== OMERO user information ==== -->')
+
 def gen_xml_tree(obj_tree):
     """Generate (print) an XML tree from the OMERO objects."""
     for proj in obj_tree:
@@ -85,24 +103,6 @@ def gen_xml_tree(obj_tree):
 
 conn = BlitzGateway(USERNAME, PASSWORD, host=HOST, port=PORT)
 connected = conn.connect()
-
-print('Connected? -> %s' % connected)
-
-user = conn.getUser()
-print "Current user:"
-print "   ID:", user.getId()
-print "   Username:", user.getName()
-print "   Full Name:", user.getFullName()
-
-for g in conn.getGroupsMemberOf():
-    print "   ID:", g.getName(), " Name:", g.getId()
-
-group = conn.getGroupFromContext()
-print "Current group: ", group.getName()
-
-my_expId = conn.getUser().getId()
-print("Experimenter ID: %s" % my_expId)
-
 
 obj_tree = []
 #for project in conn.listProjects(my_expId):
