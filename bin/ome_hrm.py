@@ -90,6 +90,7 @@ def gen_xml_info_header(conn):
 
 def gen_xml_tree(obj_tree):
     """Generate (print) an XML tree from the OMERO objects."""
+    iprint('<OMERO_Tree>')
     for proj in obj_tree:
         iprint('<Project>%s<id>%s</id>' % (proj['name'], proj['id']))
         for dset in proj['children']:
@@ -99,6 +100,7 @@ def gen_xml_tree(obj_tree):
                 iprint('</Image>', 8)
             iprint('</Dataset>', 4)
         iprint('</Project>')
+    iprint('</OMERO_Tree>')
 
 
 def omero_login():
