@@ -64,27 +64,6 @@ def print_obj(obj, indent=0):
         obj.getOwnerOmeName())
 
 
-def gen_obj_dict(obj):
-    """Create a dict from an OMERO object."""
-    obj_dict = {}
-    obj_dict['id'] = obj.getId()
-    obj_dict['label'] = obj.getName()
-    obj_dict['owner'] = obj.getOwnerOmeName()
-    obj_dict['children'] = []
-    return obj_dict
-
-
-def gen_image_dict(image):
-    """Create a dict from an OMERO image."""
-    if image.OMERO_CLASS is not 'Image':
-        raise ValueError
-    image_dict = {}
-    image_dict['id'] = image.getId()
-    image_dict['label'] = image.getName()
-    image_dict['owner'] = image.getOwnerOmeName()
-    return image_dict
-
-
 def gen_xml_info_header(conn):
     # TODO: has to be converted to sth producing a dict with connection infos
     user = conn.getUser()
@@ -118,6 +97,27 @@ def retrieve_user_tree():
     obj_tree = gen_obj_tree()
     print(json.dumps(obj_tree, sort_keys=True,
         indent=4, separators=(',', ': ')))
+
+
+def gen_obj_dict(obj):
+    """Create a dict from an OMERO object."""
+    obj_dict = dict()
+    obj_dict['id'] = obj.getId()
+    obj_dict['label'] = obj.getName()
+    obj_dict['owner'] = obj.getOwnerOmeName()
+    obj_dict['children'] = []
+    return obj_dict
+
+
+def gen_image_dict(image):
+    """Create a dict from an OMERO image."""
+    if image.OMERO_CLASS is not 'Image':
+        raise ValueError
+    image_dict = dict()
+    image_dict['id'] = image.getId()
+    image_dict['label'] = image.getName()
+    image_dict['owner'] = image.getOwnerOmeName()
+    return image_dict
 
 
 def gen_obj_tree():
