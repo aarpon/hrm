@@ -106,10 +106,6 @@ class OmeroConnection {
             return "Retrieving OMERO data failed.";
         }
 
-            /* Filter out any OMERO output that is not XML. */
-        preg_match("/<(.*)/",$omeroData,$matches);
-        $omeroData = "<" . end($matches);
-
         return $omeroData;
     }
 
@@ -306,7 +302,7 @@ class OmeroConnection {
             }
         }
 
-        $this->omeroTree = json_encode($omeroTree);
+        $this->omeroTree = $omeroData;
 
         return $this->omeroTree;
     }
