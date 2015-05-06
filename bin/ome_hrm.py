@@ -93,11 +93,15 @@ def omero_login():
     return conn
 
 
-def retrieve_user_tree():
-    # obj_tree = gen_proj_tree()
-    obj_tree = gen_group_tree()
-    print(json.dumps(obj_tree, sort_keys=True,
-        indent=4, separators=(',', ': ')))
+def tree_to_json(obj_tree):
+    return json.dumps(obj_tree, sort_keys=True,
+                      indent=4, separators=(',', ': '))
+
+
+def get_group_tree_json():
+    """Generates the group tree and returns it in JSON format."""
+    # TODO: this is probably also required for a user's sub-tree
+    print(tree_to_json(gen_group_tree()))
 
 
 def gen_obj_dict(obj):
@@ -215,7 +219,7 @@ def main():
     # create a dict with the functions to call
     action_methods = {
         'checkCredentials': omero_login,
-        'retrieveUserTree': retrieve_user_tree,
+        'retrieveUserTree': get_group_tree_json,
         'OMEROtoHRM': iprint,
         'HRMtoOMERO': iprint
     }
