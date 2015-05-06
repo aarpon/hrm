@@ -136,13 +136,13 @@ def retrieve_user_tree():
     conn = omero_login()
     obj_tree = []
     for project in conn.listProjects():
-            proj_dict = gen_obj_dict(project)
-            for dataset in project.listChildren():
-                    dset_dict = gen_obj_dict(dataset)
-                    for image in dataset.listChildren():
-                            dset_dict['children'].append(gen_image_dict(image))
-                    proj_dict['children'].append(dset_dict)
-            obj_tree.append(proj_dict)
+        proj_dict = gen_obj_dict(project)
+        for dataset in project.listChildren():
+            dset_dict = gen_obj_dict(dataset)
+            for image in dataset.listChildren():
+                dset_dict['children'].append(gen_image_dict(image))
+            proj_dict['children'].append(dset_dict)
+        obj_tree.append(proj_dict)
     gen_xml_tree(obj_tree)
 
 
