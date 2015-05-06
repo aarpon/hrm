@@ -144,11 +144,7 @@ def gen_image_dict(image):
     return image_dict
 
 
-def gen_proj_tree(conn=None,uid=None):
-    if conn is None:
-        conn = omero_login()
-    if uid is None:
-        uid = conn.getUserId()
+def gen_proj_tree(conn, uid):
     obj_tree = []
     for project in conn.listProjects(uid):
         proj_dict = gen_obj_dict(project)
