@@ -86,6 +86,7 @@ def gen_image_dict(image):
 
 
 def gen_xml_info_header(conn):
+    # TODO: has to be converted to sth producing a dict with connection infos
     user = conn.getUser()
     iprint('<!-- ==== OMERO user information ====')
     print "Current user:"
@@ -104,13 +105,12 @@ def gen_xml_info_header(conn):
     iprint('==== OMERO user information ==== -->')
 
 
-
 def omero_login():
-    log('Trying to log into OMERO.')
+    # log('Trying to log into OMERO.')
     conn = BlitzGateway(USERNAME, PASSWORD, host=HOST, port=PORT)
     conn.connect()
     user = conn.getUser()
-    log('OMERO user ID for username %s: %s' % (user.getName(), user.getId()))
+    # log('OMERO user ID for username %s: %s' % (user.getName(), user.getId()))
     return conn
 
 
@@ -158,6 +158,7 @@ def parse_arguments():
 
 def main():
     """Parse commandline arguments and initiate the requested tasks."""
+    # create a dict with the functions to call
     action_methods = {
         'checkCredentials': omero_login,
         'retrieveUserTree': retrieve_user_tree,
@@ -166,7 +167,6 @@ def main():
     }
 
     args = parse_arguments()
-    print(args.action)
     action_methods[args.action]()
 
 
