@@ -144,9 +144,9 @@ def gen_image_dict(image):
     return image_dict
 
 
-def gen_proj_tree(conn, uid):
+def gen_proj_tree(conn, user_obj):
     obj_tree = []
-    for project in conn.listProjects(uid):
+    for project in conn.listProjects(user_obj.getId()):
         proj_dict = gen_obj_dict(project)
         for dataset in project.listChildren():
             dset_dict = gen_obj_dict(dataset)
@@ -163,7 +163,7 @@ def gen_user_tree(conn, user_obj):
     user_dict['id'] = uid
     user_dict['label'] = user_obj.getFullName()
     user_dict['ome_name'] = user_obj.getName()
-    user_dict['children'] = gen_proj_tree(conn, uid)
+    user_dict['children'] = gen_proj_tree(conn, user_obj)
     return user_dict
 
 
