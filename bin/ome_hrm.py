@@ -106,6 +106,7 @@ def gen_obj_dict(obj):
     obj_dict['id'] = obj.getId()
     obj_dict['label'] = obj.getName()
     obj_dict['owner'] = obj.getOwnerOmeName()
+    obj_dict['class'] = obj.OMERO_CLASS
     obj_dict['children'] = []
     return obj_dict
 
