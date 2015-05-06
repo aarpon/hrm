@@ -95,7 +95,7 @@ def omero_login():
 
 def retrieve_user_tree():
     # obj_tree = gen_proj_tree()
-    obj_tree = gen_obj_tree_full_group()
+    obj_tree = gen_group_tree()
     print(json.dumps(obj_tree, sort_keys=True,
         indent=4, separators=(',', ': ')))
 
@@ -157,7 +157,7 @@ def gen_proj_tree(conn=None,uid=None):
     return obj_tree
 
 
-def gen_obj_tree_single_user(conn, user_obj):
+def gen_user_tree(conn, user_obj):
     user_dict = dict()
     uid = user_obj.getId()
     user_dict['id'] = uid
@@ -167,7 +167,7 @@ def gen_obj_tree_single_user(conn, user_obj):
     return user_dict
 
 
-def gen_obj_tree_full_group():
+def gen_group_tree():
     conn = omero_login()
     obj_tree = []
     group_obj = conn.getGroupFromContext()
@@ -178,9 +178,11 @@ def gen_obj_tree_full_group():
     group_dict['children'] = []
 
     user_obj = conn.getUser()
-    user_tree = gen_obj_tree_single_user(conn, user_obj)
+    user_tree = gen_user_tree(conn, user_obj)
     group_dict['children'].append(user_tree)
     obj_tree.append(group_dict)
+
+    # TODO: add trees (or stubs) for other group members
 
     return obj_tree
 
