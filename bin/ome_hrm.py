@@ -11,13 +11,14 @@ import sys
 import argparse
 import os
 from omero.gateway import BlitzGateway
+import json
 
 
 # possible actions (this will be used when showing the help message on the
 # command line later on as well, so keep this in mind when formatting!)
 ACTIONS = """actions:
   checkCredentials      Check if login credentials are valid.
-  retrieveUserTree      Retrieve a user's Projects/Datasets/Images tree.
+  retrieveUserTree      Get a user's Projects/Datasets/Images tree (JSON).
   OMEROtoHRM            Download an image from the OMERO server.
   HRMtoOMERO            Upload an image to the OMERO server.
 """
@@ -133,6 +134,12 @@ def omero_login():
 
 
 def retrieve_user_tree():
+    obj_tree = gen_obj_tree()
+    print(json.dumps(obj_tree, sort_keys=True,
+        indent=4, separators=(',', ': ')))
+
+
+def gen_obj_tree():
     conn = omero_login()
     obj_tree = []
     for project in conn.listProjects():
@@ -143,7 +150,7 @@ def retrieve_user_tree():
                 dset_dict['children'].append(gen_image_dict(image))
             proj_dict['children'].append(dset_dict)
         obj_tree.append(proj_dict)
-    gen_xml_tree(obj_tree)
+    return obj_tree
 
 
 def parse_arguments():
