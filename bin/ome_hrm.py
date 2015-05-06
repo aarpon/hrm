@@ -67,7 +67,7 @@ def gen_obj_dict(obj):
     """Create a dict from an OMERO object."""
     obj_dict = {}
     obj_dict['id'] = obj.getId()
-    obj_dict['name'] = obj.getName()
+    obj_dict['label'] = obj.getName()
     obj_dict['owner'] = obj.getOwnerOmeName()
     obj_dict['children'] = []
     return obj_dict
@@ -79,7 +79,7 @@ def gen_image_dict(image):
         raise ValueError
     image_dict = {}
     image_dict['id'] = image.getId()
-    image_dict['name'] = image.getName()
+    image_dict['label'] = image.getName()
     image_dict['owner'] = image.getOwnerOmeName()
     return image_dict
 
