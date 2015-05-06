@@ -145,6 +145,7 @@ def gen_image_dict(image):
 
 
 def gen_proj_tree(conn, user_obj):
+    """Create a list of project trees for a user."""
     obj_tree = []
     for project in conn.listProjects(user_obj.getId()):
         proj_dict = gen_obj_dict(project)
