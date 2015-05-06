@@ -94,7 +94,8 @@ def omero_login():
 
 
 def retrieve_user_tree():
-    obj_tree = gen_obj_tree()
+    # obj_tree = gen_proj_tree()
+    obj_tree = gen_obj_tree_full_group()
     print(json.dumps(obj_tree, sort_keys=True,
         indent=4, separators=(',', ': ')))
 
@@ -120,10 +121,13 @@ def gen_image_dict(image):
     return image_dict
 
 
-def gen_obj_tree():
-    conn = omero_login()
+def gen_proj_tree(conn=None,uid=None):
+    if conn is None:
+        conn = omero_login()
+    if uid is None:
+        uid = conn.getUserId()
     obj_tree = []
-    for project in conn.listProjects():
+    for project in conn.listProjects(uid):
         proj_dict = gen_obj_dict(project)
         for dataset in project.listChildren():
             dset_dict = gen_obj_dict(dataset)
@@ -132,6 +136,35 @@ def gen_obj_tree():
             proj_dict['children'].append(dset_dict)
         obj_tree.append(proj_dict)
     return obj_tree
+
+
+def gen_obj_tree_single_user(conn, user_obj):
+    user_dict = dict()
+    uid = user_obj.getId()
+    user_dict['id'] = uid
+    user_dict['label'] = user_obj.getFullName()
+    user_dict['ome_name'] = user_obj.getName()
+    user_dict['children'] = gen_proj_tree(conn, uid)
+    return user_dict
+
+
+def gen_obj_tree_full_group():
+    conn = omero_login()
+    obj_tree = []
+    group_obj = conn.getGroupFromContext()
+    group_dict = dict()
+    group_dict['id'] = group_obj.getId()
+    group_dict['label'] = group_obj.getName()
+    group_dict['description'] = group_obj.getDescription()
+    group_dict['children'] = []
+
+    user_obj = conn.getUser()
+    user_tree = gen_obj_tree_single_user(conn, user_obj)
+    group_dict['children'].append(user_tree)
+    obj_tree.append(group_dict)
+
+    return obj_tree
+
 
 
 def parse_arguments():
