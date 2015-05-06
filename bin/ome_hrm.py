@@ -104,25 +104,6 @@ def gen_xml_info_header(conn):
     iprint('==== OMERO user information ==== -->')
 
 
-def gen_xml_tree(obj_tree):
-    """Generate (print) an XML tree from the OMERO objects."""
-    iprint('<?xml version="1.0" ?>')
-    gen_xml_info_header(conn)
-    iprint('<OMERO_Tree>')
-    for proj in obj_tree:
-        iprint('<Project><label>%s</label><id>%s</id>' %
-               (proj['name'], proj['id']))
-        for dset in proj['children']:
-            iprint('<Dataset><label>%s</label><id>%s</id>' %
-                   (dset['name'], dset['id']), 4)
-            for img in dset['children']:
-                iprint('<Image><label>%s</label><id>%s</id>' %
-                       (img['name'], img['id']), 8)
-                iprint('</Image>', 8)
-            iprint('</Dataset>', 4)
-        iprint('</Project>')
-    iprint('</OMERO_Tree>')
-
 
 def omero_login():
     log('Trying to log into OMERO.')
