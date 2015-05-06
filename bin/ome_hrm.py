@@ -101,10 +101,22 @@ def retrieve_user_tree():
 
 
 def gen_obj_dict(obj):
-    """Create a dict from an OMERO object."""
+    """Create a dict from an OMERO object.
+
+    Structure
+    =========
+    {
+        'children': [],
+        'id': 1154L,
+        'label': 'HRM_TESTDATA',
+        'owner': u'demo01',
+        'class': 'Project'
+    }
+    """
     obj_dict = dict()
     obj_dict['id'] = obj.getId()
     obj_dict['label'] = obj.getName()
+    # TODO: it's probably better to store the owner's ID instead of the name
     obj_dict['owner'] = obj.getOwnerOmeName()
     obj_dict['class'] = obj.OMERO_CLASS
     obj_dict['children'] = []
@@ -112,12 +124,18 @@ def gen_obj_dict(obj):
 
 
 def gen_image_dict(image):
-    """Create a dict from an OMERO image."""
+    """Create a dict from an OMERO image.
+
+    Structure
+    =========
+    {'id': 1755L, 'label': 'Rot-13x-zstack.tif', 'owner': u'demo01'}
+    """
     if image.OMERO_CLASS is not 'Image':
         raise ValueError
     image_dict = dict()
     image_dict['id'] = image.getId()
     image_dict['label'] = image.getName()
+    # TODO: it's probably better to store the owner's ID instead of the name
     image_dict['owner'] = image.getOwnerOmeName()
     return image_dict
 
