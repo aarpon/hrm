@@ -195,6 +195,21 @@ def gen_user_tree(conn, user_obj):
 
 
 def gen_group_tree(conn, group_obj):
+    """Create a tree for a group with all user subtrees.
+
+    Parameters
+    ==========
+    conn : omero.gateway._BlitzGateway
+    group_obj : omero.gateway._ExperimenterGroupWrapper
+
+    Returns
+    =======
+    {
+        "id": (int, e.g. 9),
+        "label": (str, e.g. "Sandbox Lab"),
+        "children": user_trees (list of dict))
+    }
+    """
     group_dict = dict()
     group_dict['id'] = group_obj.getId()
     group_dict['label'] = group_obj.getName()
