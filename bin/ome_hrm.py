@@ -41,11 +41,6 @@ if "OMERO_PASS" in os.environ:
     PASSWORD = os.environ['OMERO_PASS']
 
 
-def log(text):
-    """Helper function to prepare proper logging later."""
-    iprint(text)
-
-
 def iprint(text, indent=0):
     """Helper method for intented printing."""
     print('%s%s' % (" " * indent, text))
@@ -85,11 +80,9 @@ def gen_xml_info_header(conn):
 
 
 def omero_login():
-    # log('Trying to log into OMERO.')
     conn = BlitzGateway(USERNAME, PASSWORD, host=HOST, port=PORT)
     conn.connect()
     user = conn.getUser()
-    # log('OMERO user ID for username %s: %s' % (user.getName(), user.getId()))
     return conn
 
 
@@ -226,7 +219,6 @@ def gen_group_tree(conn, group_obj):
     return group_dict
 
 
-
 def parse_arguments():
     """Parse the commandline arguments."""
     argparser = argparse.ArgumentParser(
@@ -234,15 +226,19 @@ def parse_arguments():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=ACTIONS
     )
-    argparser.add_argument('action', choices=['checkCredentials',
-        'retrieveUserTree', 'OMEROtoHRM', 'HRMtoOMERO'],
+    argparser.add_argument(
+        'action', choices=['checkCredentials',
+                           'retrieveUserTree',
+                           'OMEROtoHRM',
+                           'HRMtoOMERO'],
         help='Action to be performed by the connector, see below for details.')
-    argparser.add_argument('-u', '--user', required=True,
-        help='OMERO username')
-    argparser.add_argument('-w', '--password', required=True,
-        help='OMERO password')
-    argparser.add_argument('-v', '--verbose', dest='verbosity',
-        action='count', default=0, help='verbosity (repeat for more details)')
+    argparser.add_argument(
+        '-u', '--user', required=True, help='OMERO username')
+    argparser.add_argument(
+        '-w', '--password', required=True, help='OMERO password')
+    argparser.add_argument(
+        '-v', '--verbose', dest='verbosity', action='count', default=0,
+        help='verbosity (repeat for more details)')
     try:
         return argparser.parse_args()
     except IOError as err:
