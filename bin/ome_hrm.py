@@ -173,6 +173,15 @@ def gen_user_tree(conn, user_obj):
     ==========
     conn : omero.gateway._BlitzGateway
     user_obj : omero.gateway._ExperimenterWrapper
+
+    Returns
+    =======
+    {
+        "id": (int, e.g. 14),
+        "label": (str, e.g. "01 Demouser"),
+        "ome_name": (str, e.g. "demo01"),
+        "children": proj_tree (list)
+    }
     """
     user_dict = dict()
     uid = user_obj.getId()
