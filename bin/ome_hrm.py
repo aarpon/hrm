@@ -59,9 +59,9 @@ def print_obj(obj, indent=0):
         obj.getOwnerOmeName())
 
 
-def omero_login():
+def omero_login(user, passwd, host, port):
     """Establish the connection to an OMERO server."""
-    conn = BlitzGateway(USERNAME, PASSWORD, host=HOST, port=PORT)
+    conn = BlitzGateway(user, passwd, host=host, port=port)
     conn.connect()
     return conn
 
@@ -72,14 +72,12 @@ def tree_to_json(obj_tree):
                       indent=4, separators=(',', ': '))
 
 
-def get_group_tree_json():
+def get_group_tree_json(conn, group):
     """Generates the group tree and returns it in JSON format."""
     # TODO: this is probably also required for a user's sub-tree
-    conn = omero_login()  # FIXME: login should be done in a more central place
-    group_obj = conn.getGroupFromContext()
     # we're currently only having a single tree (dict), but jqTree expects a
     # list of dicts, so we have to encapsulate it in [] for now:
-    print(tree_to_json([gen_group_tree(conn, group_obj)]))
+    print(tree_to_json([gen_group_tree(conn, group)]))
 
 
 def gen_obj_dict(obj):
@@ -236,8 +234,13 @@ def main():
         'HRMtoOMERO': iprint
     }
 
+    conn = omero_login(USERNAME, PASSWORD, HOST, PORT)
+    # if not requested other, we're just using the default group
+    group_obj = conn.getGroupFromContext()
+    # TODO: implement requesting groups via cmdline option
+
     args = parse_arguments()
-    action_methods[args.action]()
+    action_methods[args.action](conn, group_obj)
 
 
 if __name__ == "__main__":
