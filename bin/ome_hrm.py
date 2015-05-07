@@ -41,11 +41,6 @@ if "OMERO_PASS" in os.environ:
     PASSWORD = os.environ['OMERO_PASS']
 
 
-def iprint(text, indent=0):
-    """Helper method for intented printing."""
-    print('%s%s' % (" " * indent, text))
-
-
 def omero_login(user, passwd, host, port):
     """Establish the connection to an OMERO server."""
     conn = BlitzGateway(user, passwd, host=host, port=port)
