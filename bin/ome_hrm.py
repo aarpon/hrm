@@ -103,7 +103,9 @@ def get_group_tree_json():
     # TODO: this is probably also required for a user's sub-tree
     conn = omero_login()
     group_obj = conn.getGroupFromContext()
-    print(tree_to_json(gen_group_tree(conn, group_obj)))
+    # we're currently only having a single tree (dict), but jqTree expects a
+    # list of dicts, so we have to encapsulate it in [] for now:
+    print(tree_to_json([gen_group_tree(conn, group_obj)]))
 
 
 def gen_obj_dict(obj):
@@ -193,7 +195,6 @@ def gen_user_tree(conn, user_obj):
 
 
 def gen_group_tree(conn, group_obj):
-    obj_tree = []
     group_dict = dict()
     group_dict['id'] = group_obj.getId()
     group_dict['label'] = group_obj.getName()
@@ -203,11 +204,8 @@ def gen_group_tree(conn, group_obj):
     user_obj = conn.getUser()
     user_tree = gen_user_tree(conn, user_obj)
     group_dict['children'].append(user_tree)
-    obj_tree.append(group_dict)
-
     # TODO: add trees (or stubs) for other group members
-
-    return obj_tree
+    return group_dict
 
 
 
