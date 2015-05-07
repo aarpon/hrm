@@ -224,14 +224,36 @@ def parse_arguments():
         argparser.error(str(err))
 
 
+def omero_to_hrm(conn, group, image_id):
+    from omero.rtypes import unwrap
+    from omero.sys import ParametersI
+    session = conn.c.getSession()
+    query = session.getQueryService()
+    params = ParametersI()
+    params.addLong('iid', image_id)
+    sql = "select f from Image i" \
+        " left outer join i.fileset as fs" \
+        " join fs.usedFiles as uf" \
+        " join uf.originalFile as f" \
+        " where i.id = :iid"
+    query_out = query.projection(sql, params, {'omero.group': '-1'})
+    print unwrap(query_out[0])[0].id.val
+
+
+
+
+def hrm_to_omero(conn, group):
+    pass
+
+
 def main():
     """Parse commandline arguments and initiate the requested tasks."""
     # create a dict with the functions to call
     action_methods = {
         'checkCredentials': omero_login,
         'retrieveUserTree': get_group_tree_json,
-        'OMEROtoHRM': iprint,
-        'HRMtoOMERO': iprint
+        'OMEROtoHRM': omero_to_hrm,
+        'HRMtoOMERO': hrm_to_omero
     }
 
     conn = omero_login(USERNAME, PASSWORD, HOST, PORT)
