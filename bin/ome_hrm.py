@@ -94,7 +94,7 @@ def tree_to_json(obj_tree):
 def get_group_tree_json():
     """Generates the group tree and returns it in JSON format."""
     # TODO: this is probably also required for a user's sub-tree
-    conn = omero_login()
+    conn = omero_login()  # FIXME: login should be done in a more central place
     group_obj = conn.getGroupFromContext()
     # we're currently only having a single tree (dict), but jqTree expects a
     # list of dicts, so we have to encapsulate it in [] for now:
