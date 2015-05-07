@@ -211,6 +211,17 @@ def parse_arguments():
         argparser.error(str(err))
 
 
+def check_credentials(conn, group):
+    """Check if supplied credentials are valid."""
+    # TODO: do we really need this function...?
+    connected = conn.connect()
+    if connected:
+        print('Success logging into OMERO with user ID %s' % conn.getUserId())
+    else:
+        print('ERROR logging into OMERO.')
+    return connected
+
+
 def omero_to_hrm(conn, group, image_id):
     from omero.rtypes import unwrap
     from omero.sys import ParametersI
@@ -237,7 +248,7 @@ def main():
     """Parse commandline arguments and initiate the requested tasks."""
     # create a dict with the functions to call
     action_methods = {
-        'checkCredentials': omero_login,
+        'checkCredentials': check_credentials,
         'retrieveUserTree': get_group_tree_json,
         'OMEROtoHRM': omero_to_hrm,
         'HRMtoOMERO': hrm_to_omero
