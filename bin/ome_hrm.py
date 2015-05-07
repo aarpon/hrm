@@ -145,8 +145,13 @@ def gen_image_dict(image):
 
 
 def gen_proj_tree(conn, user_obj):
-    """Create a list of project trees for a user."""
-    obj_tree = []
+    """Create a list of project trees for a user.
+
+    Parameters
+    ==========
+    conn : omero.gateway._BlitzGateway
+    user_obj : omero.gateway._ExperimenterWrapper
+    """
     for project in conn.listProjects(user_obj.getId()):
         proj_dict = gen_obj_dict(project)
         for dataset in project.listChildren():
@@ -159,6 +164,13 @@ def gen_proj_tree(conn, user_obj):
 
 
 def gen_user_tree(conn, user_obj):
+    """Create a tree with user information and corresponding projects.
+
+    Parameters
+    ==========
+    conn : omero.gateway._BlitzGateway
+    user_obj : omero.gateway._ExperimenterWrapper
+    """
     user_dict = dict()
     uid = user_obj.getId()
     user_dict['id'] = uid
