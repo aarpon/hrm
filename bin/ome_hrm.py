@@ -215,11 +215,14 @@ def gen_group_tree(conn, group_obj):
     group_dict['label'] = group_obj.getName()
     group_dict['description'] = group_obj.getDescription()
     group_dict['children'] = []
-
+    # add the user's own tree first:
     user_obj = conn.getUser()
     user_tree = gen_user_tree(conn, user_obj)
     group_dict['children'].append(user_tree)
-    # TODO: add trees (or stubs) for other group members
+    # then add the trees for other group members
+    for colleague in conn.listColleagues():
+        user_tree = gen_user_tree(conn, colleague)
+        group_dict['children'].append(user_tree)
     return group_dict
 
 
