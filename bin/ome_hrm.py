@@ -225,6 +225,7 @@ def check_credentials(conn, group):
 def omero_to_hrm(conn, group, image_id):
     from omero.rtypes import unwrap
     from omero.sys import ParametersI
+    from omero_model_OriginalFileI import OriginalFileI as OFile
     session = conn.c.getSession()
     query = session.getQueryService()
     params = ParametersI()
@@ -235,9 +236,10 @@ def omero_to_hrm(conn, group, image_id):
         " join uf.originalFile as f" \
         " where i.id = :iid"
     query_out = query.projection(sql, params, {'omero.group': '-1'})
-    print unwrap(query_out[0])[0].id.val
-
-
+    file_id = unwrap(query_out[0])[0].id.val
+    print file_id
+    orig_file = OFile(file_id)
+    # conn.c.download(orig_file, '/tmp/OMERO_python_download_test')
 
 
 def hrm_to_omero(conn, group):
