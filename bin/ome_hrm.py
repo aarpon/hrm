@@ -59,34 +59,15 @@ def print_obj(obj, indent=0):
         obj.getOwnerOmeName())
 
 
-def gen_xml_info_header(conn):
-    # TODO: has to be converted to sth producing a dict with connection infos
-    user = conn.getUser()
-    iprint('<!-- ==== OMERO user information ====')
-    print "Current user:"
-    print "   ID:", user.getId()
-    print "   Username:", user.getName()
-    print "   Full Name:", user.getFullName()
-
-    for g in conn.getGroupsMemberOf():
-        print "   ID:", g.getName(), " Name:", g.getId()
-
-    group = conn.getGroupFromContext()
-    print "Current group: ", group.getName()
-
-    my_expId = conn.getUser().getId()
-    print("Experimenter ID: %s" % my_expId)
-    iprint('==== OMERO user information ==== -->')
-
-
 def omero_login():
+    """Establish the connection to an OMERO server."""
     conn = BlitzGateway(USERNAME, PASSWORD, host=HOST, port=PORT)
     conn.connect()
-    user = conn.getUser()
     return conn
 
 
 def tree_to_json(obj_tree):
+    """Create a JSON object with a given format from a tree."""
     return json.dumps(obj_tree, sort_keys=True,
                       indent=4, separators=(',', ': '))
 
