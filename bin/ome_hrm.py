@@ -101,7 +101,9 @@ def tree_to_json(obj_tree):
 def get_group_tree_json():
     """Generates the group tree and returns it in JSON format."""
     # TODO: this is probably also required for a user's sub-tree
-    print(tree_to_json(gen_group_tree()))
+    conn = omero_login()
+    group_obj = conn.getGroupFromContext()
+    print(tree_to_json(gen_group_tree(conn, group_obj)))
 
 
 def gen_obj_dict(obj):
@@ -181,10 +183,8 @@ def gen_user_tree(conn, user_obj):
     return user_dict
 
 
-def gen_group_tree():
-    conn = omero_login()
+def gen_group_tree(conn, group_obj):
     obj_tree = []
-    group_obj = conn.getGroupFromContext()
     group_dict = dict()
     group_dict['id'] = group_obj.getId()
     group_dict['label'] = group_obj.getName()
