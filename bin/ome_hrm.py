@@ -152,6 +152,7 @@ def gen_proj_tree(conn, user_obj):
     conn : omero.gateway._BlitzGateway
     user_obj : omero.gateway._ExperimenterWrapper
     """
+    proj_tree = []
     for project in conn.listProjects(user_obj.getId()):
         proj_dict = gen_obj_dict(project)
         for dataset in project.listChildren():
@@ -159,8 +160,8 @@ def gen_proj_tree(conn, user_obj):
             for image in dataset.listChildren():
                 dset_dict['children'].append(gen_image_dict(image))
             proj_dict['children'].append(dset_dict)
-        obj_tree.append(proj_dict)
-    return obj_tree
+        proj_tree.append(proj_dict)
+    return proj_tree
 
 
 def gen_user_tree(conn, user_obj):
