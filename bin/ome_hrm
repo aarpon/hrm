@@ -70,63 +70,6 @@ checkCredentials () {
 }
 
 
-omeroLogin () {
-
-    log "Trying to log into OMERO."
-    # log "> $OMERO_EXEC login -u $USER_LOGIN -w **** -s $OMERO_HOSTNAME -p $OMERO_PORT"
-    $OMERO_EXEC login -u $USER_LOGIN \
-                      -w $USER_PASSD \
-                      -s $OMERO_HOSTNAME \
-                      -p $OMERO_PORT
-
-    retrieveUserId
-}
-
-
-omeroLogout () {
-    $OMERO_EXEC logout
-}
-
-
-omero_query() {
-    # Send a HQL query to the OMERO server and process (reformat) the output so
-    # it can be used directly, removing header/footer and surrounding
-    # whitespaces. The output format is one result per line, separator for
-    # columns is '|' (the pipe character).
-    #
-    # \param   $QRY        HQL query string for OMERO.
-
-    log "QUERYING OMERO-DB: $1"
-    # TODO: capture output of omero-query somewhere
-    # by default results are limited to 25, we need to disable this (-1)
-    $OMERO_EXEC hql -q --limit -1 "$1" 2>/dev/null |
-        tail -n +3 |           # remove first two lines
-        head -n -1 |           # remove last line
-        sed 's,  *$,,' |       # trim trailing whitespace at line end
-        sed 's,  *|  *,|,g' |  # trim leading/trailing WS in columns
-        cut -d '|' -f 2-       # cut away first column (results index)
-}
-
-get_uniq_cols() {
-    # Convenience function to be used with results of omero_query() that
-    # returns a subset of the |-delimited text with only the requested columns,
-    # sorted and without duplicates.
-    echo "$1" | cut -d '|' -f "$2" | sort -n | uniq
-}
-
-
-retrieveUserId() {
-    # Retrieve the user id.
-    QRY="SELECT i.id FROM Experimenter i WHERE i.omeName='$USER_LOGIN'"
-    USER_ID=$(omero_query "$QRY")
-    if [ -z "$USER_ID" ] ; then
-        log "ERROR retrieving OMERO user ID for username $USER_LOGIN."
-    else
-        log "OMERO user ID for username $USER_LOGIN: $USER_ID."
-    fi
-}
-
-
 retrieveUserTree() {
 
     initialize $1 $2
