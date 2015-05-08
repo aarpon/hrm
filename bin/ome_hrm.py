@@ -255,9 +255,8 @@ def omero_to_hrm(conn, image_id, dest):
     """
     from omero.rtypes import unwrap
     from omero.sys import ParametersI
-    from omero_model_OriginalFileI import OriginalFileI as OFile
-    session = conn.c.getSession()
-    query = session.getQueryService()
+    from omero_model_OriginalFileI import OriginalFileI
+    query = conn.c.getSession().getQueryService()
     params = ParametersI()
     params.addLong('iid', image_id)
     sql = "select f from Image i" \
@@ -265,11 +264,11 @@ def omero_to_hrm(conn, image_id, dest):
         " join fs.usedFiles as uf" \
         " join uf.originalFile as f" \
         " where i.id = :iid"
-    query_out = query.projection(sql, params, {'omero.group': '-1'})
-    file_id = unwrap(query_out[0])[0].id.val
+    query_res = query.projection(sql, params, {'omero.group': '-1'})
+    file_id = unwrap(query_res[0])[0].id.val
     print file_id
-    orig_file = OFile(file_id)
     # conn.c.download(orig_file, '/tmp/OMERO_python_download_test')
+    orig_file = OriginalFileI(file_id)
 
 
 def hrm_to_omero(conn, dset_id, image_file, image_name=None, ann=None):
