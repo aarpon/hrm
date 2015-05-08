@@ -29,6 +29,9 @@ Arguments:
 }
 
 initialize () {
+    # 1) check required parameters and assign them to global variables with a
+    # name reflecting their function
+    # 2) assign global variables OMERO_EXEC and PYTHONPATH
 
     if [ -z "$OMERO_HOSTNAME" ] ; then
         echo "OMERO hostname missing, check your configuration!"
