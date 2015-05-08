@@ -254,7 +254,7 @@ def omero_to_hrm(conn, image_id, dest):
     with the "archive" option.
     """
     if os.path.exists(dest):
-        raise IOError('target file already existing!')
+        raise IOError('target file "%s" already existing!' % dest)
     from omero.rtypes import unwrap
     from omero.sys import ParametersI
     from omero_model_OriginalFileI import OriginalFileI
