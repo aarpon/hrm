@@ -6,6 +6,8 @@ This wrapper processes all requests from the HRM web interface to communicate
 to an OMERO server for listing available images, transferring data, etc.
 """
 
+# pylint: disable=superfluous-parens
+
 
 import sys
 import argparse
@@ -181,7 +183,7 @@ def parse_arguments():
         description='Action to be performed, one of the following:')
 
     # checkCredentials parser
-    parser_chk = subparsers.add_parser(
+    subparsers.add_parser(
         'checkCredentials', help='check if login credentials are valid')
 
     # retrieveUserTree parser
