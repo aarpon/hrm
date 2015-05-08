@@ -258,7 +258,7 @@ def omero_to_hrm(conn, image_id, dest):
     # suffix that OMERO adds to the name in case the image belongs to a
     # fileset, enclosed in rectangular brackets "[...]", e.g. the file with the
     # OMERO name "foo.lsm [foo #2]" should become "foo.lsm"
-    dest = re.sub(' \[[^[]*\]$', '', dest)
+    dest = re.sub(r' \[[^[]*\]$', '', dest)
     if os.path.exists(dest):
         raise IOError('target file "%s" already existing!' % dest)
     from omero.rtypes import unwrap
