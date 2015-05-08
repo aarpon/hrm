@@ -253,6 +253,8 @@ def omero_to_hrm(conn, image_id, dest):
     we should check if older ones could have such a file if they were uploaded
     with the "archive" option.
     """
+    if os.path.exists(dest):
+        raise IOError('target file already existing!')
     from omero.rtypes import unwrap
     from omero.sys import ParametersI
     from omero_model_OriginalFileI import OriginalFileI
