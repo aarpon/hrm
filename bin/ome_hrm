@@ -80,74 +80,36 @@ retrieveUserTree() {
 
 exportImage() {
     # Download an image from OMERO to the local filesystem.
-    #
-    # \param  $USERNAME  OMERO username.
-    # \param  $PASSWORD  OMERO password.
-    # \param  $ID        OMERO image id.
-    # \param  $DEST      Destination to store the downloaded image.
 
     initialize $1 $2
     bin/ome_hrm.py \
-        -u $USER_LOGIN \
-        -w $USER_PASSD \
+        --user $USER_LOGIN \
+        --password $USER_PASSD \
         OMEROtoHRM \
-        -i $3 \
-        -d "$4"
+        --imageid $3 \
+        --dest "$4"
 }
 
 
 importImage() {
     # Upload a deconvolved image from the local filesystem to OMERO.
-    #
-    # \param  $USERNAME         OMERO username.
-    # \param  $PASSWORD         OMERO password.
-    # \param  $DATASET_ID       OMERO dataset id.
-    # \param  $IMAGE_PATH       Path of image to be uploaded.
-    # \param  $IMAGE_NAME       Name of image to be uploaded.
-    # \param  $ANNOTATION_TEXT  Text to be added as annotation in OMERO.
-
     initialize $1 $2
+    bin/ome_hrm.py \
+        --user $USER_LOGIN \
+        --password $USER_PASSD \
+        HRMtoOMERO \
+        --dset $3 \
+        --file "$4" \
+        --name "$5" \
+        --ann "$6"
 
-    if [ -z "$3" ];
-    then
-        echo "Missing OMERO's dataset id."
-    else
-        DATASET_ID=$3
-    fi
-
-    if [ -z "$4" ];
-    then
-        echo "Missing path to image."
-    else
-        IMAGE_PATH="$4"
-    fi
-
-    if [ -z "$5" ];
-    then
-        echo "Missing image name."
-    else
-        IMAGE_NAME="$5"
-    fi
-
-    if [ -z "$6" ];
-    then
-        echo "Missing annotation text."
-    else
-        ANNOTATION_TEXT="$6"
-    fi
-
-    omeroLogin $USER_LOGIN $USER_PASSD
-
-    # FIXME: why the "-c" flag (continue after errors) ??
-    $OMERO_EXEC import "$IMAGE_PATH" \
-        -d $DATASET_ID \
-        -n "$IMAGE_NAME" \
-        -c \
-        -x "Deconvolved with Huygens / HRM" \
-        --annotation_ns "HuygensHRMDeconvolved" \
-        --annotation_text "$ANNOTATION_TEXT"
-
-    omeroLogout
+    # $OMERO_EXEC import "$IMAGE_PATH" \
+    #     -d $DATASET_ID \
+    #     -n "$IMAGE_NAME" \
+    #     -c \
+    #     -x "Deconvolved with Huygens / HRM" \
+    #     --annotation_ns "HuygensHRMDeconvolved" \
+    #     --annotation_text "$ANNOTATION_TEXT"
 }
 
 
