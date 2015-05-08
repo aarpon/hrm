@@ -14,16 +14,6 @@ from omero.gateway import BlitzGateway
 import json
 
 
-# possible actions (this will be used when showing the help message on the
-# command line later on as well, so keep this in mind when formatting!)
-ACTIONS = """actions:
-  checkCredentials      Check if login credentials are valid.
-  retrieveUserTree      Get a user's Projects/Datasets/Images tree (JSON).
-  OMEROtoHRM            Download an image from the OMERO server.
-  HRMtoOMERO            Upload an image to the OMERO server.
-"""
-
-
 # the default connection values
 HOST = 'omero.mynetwork.xy'
 PORT = 4064
@@ -172,22 +162,60 @@ def parse_arguments():
     """Parse the commandline arguments."""
     argparser = argparse.ArgumentParser(
         description=__doc__,
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog=ACTIONS
+        formatter_class=argparse.RawDescriptionHelpFormatter
     )
     argparser.add_argument(
-        'action', choices=['checkCredentials',
-                           'retrieveUserTree',
-                           'OMEROtoHRM',
-                           'HRMtoOMERO'],
-        help='Action to be performed by the connector, see below for details.')
-    argparser.add_argument(
-        '-u', '--user', required=True, help='OMERO username')
-    argparser.add_argument(
-        '-w', '--password', required=True, help='OMERO password')
-    argparser.add_argument(
         '-v', '--verbose', dest='verbosity', action='count', default=0,
-        help='verbosity (repeat for more details)')
+        help='verbose messages (repeat for more details)')
+
+    ### required arguments group
+    req_args = argparser.add_argument_group('required arguments',
+        'NOTE: they MUST be provided before any subcommand!')
+    req_args.add_argument(
+        '-u', '--user', required=True, help='OMERO username')
+    req_args.add_argument(
+        '-w', '--password', required=True, help='OMERO password')
+
+    subparsers = argparser.add_subparsers(help='.', dest='action',
+        description='Action to be performed, one of the following:')
+
+    ### checkCredentials parser
+    parser_chk = subparsers.add_parser('checkCredentials',
+        help='check if login credentials are valid')
+
+    ### retrieveUserTree parser
+    parser_tree = subparsers.add_parser('retrieveUserTree',
+        help="get a user's Projects/Datasets/Images tree (JSON)")
+    parser_tree.add_argument(
+        '--allmembers', type=bool, default=False,
+        help='build tree for all members in the current group')
+
+    ### OMEROtoHRM parser
+    parser_o2h = subparsers.add_parser('OMEROtoHRM',
+        help='download an image from the OMERO server')
+    parser_o2h.add_argument(
+        '-i', '--imageid', type=int, required=True,
+        help='the OMERO ID of the image to download')
+    parser_o2h.add_argument(
+        '-d', '--dest', type=str, required=True,
+        help='the destination directory where to put the downloaded file')
+
+    ### HRMtoOMERO parser
+    parser_h2o = subparsers.add_parser('HRMtoOMERO',
+        help='upload an image to the OMERO server')
+    parser_h2o.add_argument(
+        '-d', '--dset', type=int, required=True, dest='dset',
+        help='the ID of the target dataset in OMERO ')
+    parser_h2o.add_argument(
+        '-f', '--file', type=str, required=True,
+        help='the image file to upload, including the full path')
+    parser_h2o.add_argument(
+        '-n', '--name', type=str, required=False,
+        help='a label to use for the image in OMERO')
+    parser_h2o.add_argument(
+        '-a', '--ann', type=str, required=False,
+        help='annotation text to be added to the image in OMERO')
+
     try:
         return argparser.parse_args()
     except IOError as err:
@@ -261,7 +289,7 @@ def main():
     elif args.action == 'retrieveUserTree':
         get_group_tree_json(conn, group)
     elif args.action == 'OMEROtoHRM':
-        omero_to_hrm(conn, None, None)
+        omero_to_hrm(conn, args.imageid, args.dest)
     elif args.action == 'HRMtoOMERO':
         hrm_to_omero(conn, None, None)
     else:
