@@ -266,9 +266,10 @@ def omero_to_hrm(conn, image_id, dest):
         " where i.id = :iid"
     query_res = query.projection(sql, params, {'omero.group': '-1'})
     file_id = unwrap(query_res[0])[0].id.val
-    print file_id
-    # conn.c.download(orig_file, '/tmp/OMERO_python_download_test')
+    # print('Downloading original file with ID: %s' % file_id)
     orig_file = OriginalFileI(file_id)
+    conn.c.download(orig_file, dest)
+    # print('Download complete.')
 
 
 def hrm_to_omero(conn, dset_id, image_file, image_name=None, ann=None):
