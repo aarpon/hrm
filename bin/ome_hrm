@@ -60,23 +60,10 @@ initialize () {
 
 
 checkCredentials () {
-     # check if credentials are valid by logging in and out with the OMERO server
-
+     # check for valid credentials by logging in and out with the OMERO server
      initialize $1 $2
 
-     omeroLogin
-
-     # Try to log out in any case.
-     omeroLogout
-
-     # If we couldn't get the user id, the credentials weren't Ok.
-     if [ -z "$USER_ID" ] ; then
-         echo "-1"
-         log "ERROR logging into OMERO."
-     else
-         log "Successfully logged into OMERO with user ID $USER_ID."
-         echo $USER_ID
-     fi
+     bin/ome_hrm.py -u $USER_LOGIN -w $USER_PASSD checkCredentials
 }
 
 
