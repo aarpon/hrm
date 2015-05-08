@@ -127,29 +127,6 @@ retrieveUserId() {
 }
 
 
-retrieveArchivedImageId() {
-    # Retrieve ID of corresponding "archived" image if available.
-    #
-    # NOTE: this function is currently not in use anymore but might be required
-    # at a later point to allow for retrieving images in their original format
-    # (needs to be checked with OMERO-5).
-    if [ -z "$1" ] ; then
-        echo "Missing image id."
-        return
-    fi
-    IMAGE_ID=$1
-
-    log "Requesting archived image ID for ID $IMAGE_ID."
-    QRY="SELECT o.id FROM Image i JOIN i.pixels p JOIN p.pixelsFileMaps m "
-    QRY=$QRY"JOIN m.parent o WHERE i.id=$IMAGE_ID"
-    ARCHIVED_ID=$(omero_query "$QRY")
-    if [ -n "$ARCHIVED_ID" ] ; then
-        log "Archived image ID: $ARCHIVED_ID."
-    else
-        log "No archived image found for $IMAGE_ID."
-    fi
-}
-
 retrieveUserTree() {
 
     initialize $1 $2
