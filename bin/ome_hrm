@@ -63,25 +63,17 @@ initialize () {
 
 
 checkCredentials () {
-     # check for valid credentials by logging in and out with the OMERO server
-     initialize $1 $2
-
      bin/ome_hrm.py -u $USER_LOGIN -w $USER_PASSD checkCredentials
 }
 
 
 retrieveUserTree() {
-
-    initialize $1 $2
-
     bin/ome_hrm.py -u $USER_LOGIN -w $USER_PASSD retrieveUserTree
 }
 
 
 exportImage() {
     # Download an image from OMERO to the local filesystem.
-
-    initialize $1 $2
     bin/ome_hrm.py \
         --user $USER_LOGIN \
         --password $USER_PASSD \
@@ -93,7 +85,6 @@ exportImage() {
 
 importImage() {
     # Upload a deconvolved image from the local filesystem to OMERO.
-    initialize $1 $2
     bin/ome_hrm.py \
         --user $USER_LOGIN \
         --password $USER_PASSD \
@@ -121,6 +112,8 @@ fi
 
 COMMAND="$1"
 shift
+
+initialize $1 $2
 
 case $COMMAND in
     checkCredentials)
