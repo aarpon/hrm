@@ -151,11 +151,7 @@ retrieveUserTree() {
 
     initialize $1 $2
 
-    # FIXME: obsolete debugging stuff
-    ## USER_TREE="$(bin/ome_hrm.py retrieveUserTree -u woo -w fang 2>> /tmp/ome_hrm_foo)"
-    ## echo "$USER_TREE" | wc -l >> /tmp/ome_hrm_foo
-
-    bin/ome_hrm.py retrieveUserTree -u woo -w fang
+    bin/ome_hrm.py -u $USER_LOGIN -w $USER_PASSD retrieveUserTree
 }
 
 
