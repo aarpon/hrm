@@ -194,7 +194,7 @@ def parse_arguments():
         argparser.error(str(err))
 
 
-def check_credentials(conn, group):
+def check_credentials(conn):
     """Check if supplied credentials are valid."""
     # TODO: do we really need this function...?
     connected = conn.connect()
@@ -205,7 +205,15 @@ def check_credentials(conn, group):
     return connected
 
 
-def omero_to_hrm(conn, group, image_id):
+def omero_to_hrm(conn, image_id, dest):
+    """Download the corresponding original file from an image ID.
+
+    This works only for image ID's that were created with OMERO 5.0 or later as
+    previous versions don't have an "original file" linked to an image.
+
+    TODO: we should check if older ones could have such a file if they were
+    uploaded with the "archive" option.
+    """
     from omero.rtypes import unwrap
     from omero.sys import ParametersI
     from omero_model_OriginalFileI import OriginalFileI as OFile
@@ -225,27 +233,39 @@ def omero_to_hrm(conn, group, image_id):
     # conn.c.download(orig_file, '/tmp/OMERO_python_download_test')
 
 
-def hrm_to_omero(conn, group):
+def hrm_to_omero(conn, dset_id, image_file, image_name=None, ann=None):
+    """Upload an image into a specific dataset in OMERO.
+
+    Parameters
+    ==========
+    dset_id: int - the ID of the target dataset in OMERO
+    image_file: str - the local image file including the full path
+    image_name: str (optional) - the label to use for the image in OMERO
+    ann: str (optional) - annotation text to be added in OMERO
+    """
     pass
 
 
 def main():
     """Parse commandline arguments and initiate the requested tasks."""
     args = parse_arguments()
-    # create a dict with the functions to call
-    action_methods = {
-        'checkCredentials': check_credentials,
-        'retrieveUserTree': get_group_tree_json,
-        'OMEROtoHRM': omero_to_hrm,
-        'HRMtoOMERO': hrm_to_omero
-    }
 
     conn = omero_login(args.user, args.password, HOST, PORT)
+
     # if not requested other, we're just using the default group
-    group_obj = conn.getGroupFromContext()
+    group = conn.getGroupFromContext()
     # TODO: implement requesting groups via cmdline option
 
-    action_methods[args.action](conn, group_obj)
+    if args.action == 'checkCredentials':
+        check_credentials(conn)
+    elif args.action == 'retrieveUserTree':
+        get_group_tree_json(conn, group)
+    elif args.action == 'OMEROtoHRM':
+        omero_to_hrm(conn, None, None)
+    elif args.action == 'HRMtoOMERO':
+        hrm_to_omero(conn, None, None)
+    else:
+        raise Exception('Huh, how could this happen?!')
 
 
 if __name__ == "__main__":
