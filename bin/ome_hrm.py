@@ -241,8 +241,15 @@ def omero_to_hrm(conn, image_id, dest):
     This works only for image ID's that were created with OMERO 5.0 or later as
     previous versions don't have an "original file" linked to an image.
 
-    TODO: we should check if older ones could have such a file if they were
-    uploaded with the "archive" option.
+    Parameters
+    ==========
+    image_id: int - OMERO image ID
+    dest: str - destination directory where to put the downloaded file
+
+    TODO
+    ====
+    we should check if older ones could have such a file if they were uploaded
+    with the "archive" option.
     """
     from omero.rtypes import unwrap
     from omero.sys import ParametersI
