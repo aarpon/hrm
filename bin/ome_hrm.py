@@ -14,6 +14,7 @@ import argparse
 import os
 from omero.gateway import BlitzGateway
 import json
+import re
 
 
 # the default connection values
@@ -253,9 +254,11 @@ def omero_to_hrm(conn, image_id, dest):
     we should check if older ones could have such a file if they were uploaded
     with the "archive" option.
     """
-    # FIXME: as we're downloading original files, we need to crop away the
-    # additional suffix that OMERO adds to the name in case the image belongs
-    # to a fileset, enclosed in rectangular brackets "[...]"
+    # as we're downloading original files, we need to crop away the additional
+    # suffix that OMERO adds to the name in case the image belongs to a
+    # fileset, enclosed in rectangular brackets "[...]", e.g. the file with the
+    # OMERO name "foo.lsm [foo #2]" should become "foo.lsm"
+    dest = re.sub(' \[[^[]*\]$', '', dest)
     if os.path.exists(dest):
         raise IOError('target file "%s" already existing!' % dest)
     from omero.rtypes import unwrap
