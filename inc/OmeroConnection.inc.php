@@ -94,7 +94,7 @@ class OmeroConnection {
 
     /*!
      \brief   Retrieve the OMERO data tree as returned by the ome_hrm script.
-     \return  The XML string with the OMERO data tree.
+     \return  The JSON string with the OMERO data tree.
     */
     private function getRawOmeroDataTree () {
 
