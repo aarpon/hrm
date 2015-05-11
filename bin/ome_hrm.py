@@ -12,10 +12,13 @@ to an OMERO server for listing available images, transferring data, etc.
 import sys
 import argparse
 import os
-from omero.gateway import BlitzGateway
 import json
 import re
+import hrm_config
 
+# put OMERO into our PYTHONPATH:
+sys.path.insert(0, '%s/lib/python' % hrm_config.CONFIG['OMERO_PKG'])
+from omero.gateway import BlitzGateway
 
 # the default connection values
 HOST = 'omero.mynetwork.xy'
