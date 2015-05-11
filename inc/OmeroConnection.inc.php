@@ -200,8 +200,8 @@ class OmeroConnection {
     */
     private function buildTreeCmd() {
         $cmd  = "bin/ome_hrm.py ";
-        $cmd .= "-u " . escapeshellarg($this->omeroUser) . " ";
-        $cmd .= "-w " . escapeshellarg($this->omeroPass) . " ";
+        $cmd .= "--user " . escapeshellarg($this->omeroUser) . " ";
+        $cmd .= "--password " . escapeshellarg($this->omeroPass) . " ";
         $cmd .= "retrieveUserTree ";
         return $cmd;
     }
