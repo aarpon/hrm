@@ -30,7 +30,14 @@ def parse_hrm_conf(filename):
         # we assume entries of the following form:
         # KEY="some-value"
         key = token
-        assert lexer.get_token() == '='
+        try:
+            equals = lexer.get_token()
+            assert equals == '='
+        except AssertionError:
+            raise SyntaxError(
+                "Can't parse %s, invalid syntax in line %s "
+                "(expected '=', found '%s')." %
+                (filename, lexer.lineno, equals))
         value = lexer.get_token()
         value = value.replace('"', '')  # remove double quotes
         value = value.replace("'", '')  # remove single quotes
