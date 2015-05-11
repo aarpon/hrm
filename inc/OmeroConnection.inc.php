@@ -93,23 +93,6 @@ class OmeroConnection {
     }
 
     /*!
-     \brief   Retrieve the OMERO data tree as returned by the ome_hrm script.
-     \return  The JSON string with the OMERO data tree.
-    */
-    private function getRawOmeroDataTree () {
-
-        $cmd = $this->buildTreeCmd();
-
-        $omeroData = shell_exec($cmd);
-        if ($omeroData == NULL) {
-            report("Retrieving OMERO data failed.", 1);
-            return "Retrieving OMERO data failed.";
-        }
-
-        return $omeroData;
-    }
-
-    /*!
      \brief   Retrieve one image from the OMERO server.
      \param   $postedParams Alias of $_POST with the user selection.
      \param   $fileServer Instance of the Fileserver class.
@@ -261,14 +244,23 @@ class OmeroConnection {
     }
 
     /*!
-     \brief  Get an updated JSON version of the user's OMERO tree.
-     \return The string with the JSON information.
+     \brief   Retrieve the OMERO data tree from the connector script.
+     \return  The JSON string with the OMERO data tree.
     */
     public function getUpdatedOmeroTree() {
 
-        $this->omeroTree = $this->getRawOmeroDataTree();
+        $cmd = $this->buildTreeCmd();
+        $omeroData = shell_exec($cmd);
+        if ($omeroData == NULL) {
+            $this->omeroTree = NULL;
+            report("Retrieving OMERO data failed.", 1);
+            return "Retrieving OMERO data failed.";
+        }
+
+        $this->omeroTree = $omeroData;
 
         return $this->omeroTree;
+
     }
 
 
