@@ -187,7 +187,11 @@ class OmeroConnection {
      \return  A string with the complete command.
     */
     private function buildCredentialsCmd() {
-        return $this->buildCmd("checkCredentials");
+        $cmd  = "bin/ome_hrm.py ";
+        $cmd .= "--user " . escapeshellarg($this->omeroUser) . " ";
+        $cmd .= "--password " . escapeshellarg($this->omeroPass) . " ";
+        $cmd .= "checkCredentials ";
+        return $cmd;
     }
 
     /*!
@@ -232,7 +236,13 @@ class OmeroConnection {
         // paths" - is this always true? Otherwise this method of constructing
         // the absolute path will fail!
         $fileAndPath = $fileServer->sourceFolder() . "/" . $imgName;
-        return $this->buildCmd("OMEROtoHRM ", array($imgId, $fileAndPath));
+        $cmd  = "bin/ome_hrm.py ";
+        $cmd .= "--user " . escapeshellarg($this->omeroUser) . " ";
+        $cmd .= "--password " . escapeshellarg($this->omeroPass) . " ";
+        $cmd .= "OMEROtoHRM ";
+        $cmd .= "--imageid " . $imgId . " ";
+        $cmd .= "--dest '" . $fileAndPath . "' ";
+        return $cmd;
     }
 
         /* ---------------------- OMERO Tree Assemblers ------------------- */
