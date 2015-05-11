@@ -192,7 +192,11 @@ class OmeroConnection {
      \return  A string with the complete command.
     */
     private function buildTreeCmd() {
-        return $this->buildCmd("retrieveUserTree");
+        $cmd  = "bin/ome_hrm.py ";
+        $cmd .= "-u " . escapeshellarg($this->omeroUser) . " ";
+        $cmd .= "-w " . escapeshellarg($this->omeroPass) . " ";
+        $cmd .= "retrieveUserTree ";
+        return $cmd;
     }
 
     /*!
