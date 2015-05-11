@@ -70,7 +70,7 @@ class OmeroConnection {
     */
     private function checkOmeroCredentials() {
 
-        report("Attempting to log on to OMERO, user=[" . $this->omeroUser .
+        report("OMERO connector: attempting to log on to OMERO, user=[" . $this->omeroUser .
                "], password=[********].", 2);
         $cmd = $this->buildCredentialsCmd();
 
@@ -242,6 +242,7 @@ class OmeroConnection {
         $cmd .= "OMEROtoHRM ";
         $cmd .= "--imageid " . $imgId . " ";
         $cmd .= "--dest '" . $fileAndPath . "' ";
+        report('OMERO connector: requesting ' . $imgId . ' to ' . $fileAndPath);
         return $cmd;
     }
 
