@@ -116,10 +116,13 @@ class OmeroConnection {
 
         $cmd = $this->buildImportCmd($imgName, $fileServer, $imgId);
 
-        if (shell_exec($cmd) == NULL) {
-            report("Importing image from OMERO failed.", 1);
-            return "Importing image from OMERO failed.";
+        exec($cmd, $out, $retval);
+        if ($retval != 0) {
+            $msg = "OMERO connector: failed retrieving " . $imgId;
+            report($msg, 1);
+            return $msg;
         }
+        report("OMERO connector: successfully retrieved " . $imgId, 1);
     }
 
     /*!
