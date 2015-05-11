@@ -15,7 +15,31 @@ import sys
 
 
 def parse_hrm_conf(filename):
-    """Assemble a dict from the HRM config file (shell syntax)."""
+    """Assemble a dict from the HRM config file (shell syntax).
+
+    Parameters
+    ==========
+    filename: str  - the filename to parse
+
+    Returns
+    =======
+    config: dict
+
+    Example
+    =======
+    {
+        'HRM_DATA': '/export/hrm_data',
+        'HRM_DEST': 'dst',
+        'HRM_HOME': '/var/www/hrm',
+        'HRM_LOG': '/var/log/hrm',
+        'HRM_SOURCE': 'src',
+        'OMERO_HOSTNAME': 'omero.mynetwork.xy',
+        'OMERO_PKG': '/opt/OMERO/OMERO.server',
+        'OMERO_PORT': '4064',
+        'PHP_CLI': '/usr/local/php/bin/php',
+        'SUSER': 'hrm'
+    }
+    """
     config = dict()
     body = file(filename, 'r').read()
     lexer = shlex.shlex(body)
