@@ -10,6 +10,20 @@ This module is not meant to be executed directly and doesn't do anything in
 this case.
 """
 
+# NOTE:
+# It might be worth checking out the solution described on stackoverflow [1]
+# using an approach based on a real shell subprocess like this:
+"""
+>>> command = ['bash', '-c', 'source init_env && env']
+>>> proc = subprocess.Popen(command, stdout = subprocess.PIPE)
+>>> for line in proc.stdout:
+...    (key, _, value) = line.partition("=")
+...    os.environ[key] = value
+>>> proc.communicate()
+"""
+# [1]: http://stackoverflow.com/questions/3503719/
+
+
 import shlex
 import sys
 
