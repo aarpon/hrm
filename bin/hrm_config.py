@@ -24,6 +24,9 @@ def parse_hrm_conf(filename):
         token = lexer.get_token()
         if token is None or token == '':
             break
+        # it's valid sh syntax to use a semicolon to join lines, so accept it:
+        if token == ';':
+            continue
         # we assume entries of the following form:
         # KEY="some-value"
         key = token
