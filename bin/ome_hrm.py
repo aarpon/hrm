@@ -167,72 +167,6 @@ def gen_group_tree(conn, group_obj):
     return group_dict
 
 
-def parse_arguments():
-    """Parse the commandline arguments."""
-    argparser = argparse.ArgumentParser(
-        description=__doc__,
-        formatter_class=argparse.RawDescriptionHelpFormatter
-    )
-    argparser.add_argument(
-        '-v', '--verbose', dest='verbosity', action='count', default=0,
-        help='verbose messages (repeat for more details)')
-
-    # required arguments group
-    req_args = argparser.add_argument_group(
-        'required arguments', 'NOTE: MUST be given before any subcommand!')
-    req_args.add_argument(
-        '-u', '--user', required=True, help='OMERO username')
-    req_args.add_argument(
-        '-w', '--password', required=True, help='OMERO password')
-
-    subparsers = argparser.add_subparsers(
-        help='.', dest='action',
-        description='Action to be performed, one of the following:')
-
-    # checkCredentials parser
-    subparsers.add_parser(
-        'checkCredentials', help='check if login credentials are valid')
-
-    # retrieveUserTree parser
-    parser_tree = subparsers.add_parser(
-        'retrieveUserTree',
-        help="get a user's Projects/Datasets/Images tree (JSON)")
-    parser_tree.add_argument(
-        '--allmembers', type=bool, default=False,
-        help='build tree for all members in the current group')
-
-    # OMEROtoHRM parser
-    parser_o2h = subparsers.add_parser(
-        'OMEROtoHRM', help='download an image from the OMERO server')
-    parser_o2h.add_argument(
-        '-i', '--imageid', type=int, required=True,
-        help='the OMERO ID of the image to download')
-    parser_o2h.add_argument(
-        '-d', '--dest', type=str, required=True,
-        help='the destination directory where to put the downloaded file')
-
-    # HRMtoOMERO parser
-    parser_h2o = subparsers.add_parser(
-        'HRMtoOMERO', help='upload an image to the OMERO server')
-    parser_h2o.add_argument(
-        '-d', '--dset', type=int, required=True, dest='dset',
-        help='the ID of the target dataset in OMERO ')
-    parser_h2o.add_argument(
-        '-f', '--file', type=str, required=True,
-        help='the image file to upload, including the full path')
-    parser_h2o.add_argument(
-        '-n', '--name', type=str, required=False,
-        help='a label to use for the image in OMERO')
-    parser_h2o.add_argument(
-        '-a', '--ann', type=str, required=False,
-        help='annotation text to be added to the image in OMERO')
-
-    try:
-        return argparser.parse_args()
-    except IOError as err:
-        argparser.error(str(err))
-
-
 def check_credentials(conn):
     """Check if supplied credentials are valid."""
     # TODO: do we really need this function...?
@@ -300,6 +234,72 @@ def hrm_to_omero(conn, username, password, dset_id, image_file):
     cli.invoke(['import', '--server', conn.host, '--user', username,
                 '--password', password, '-d', str(dset_id), image_file])
     # TODO: create annotation, upload non-image result files
+
+
+def parse_arguments():
+    """Parse the commandline arguments."""
+    argparser = argparse.ArgumentParser(
+        description=__doc__,
+        formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+    argparser.add_argument(
+        '-v', '--verbose', dest='verbosity', action='count', default=0,
+        help='verbose messages (repeat for more details)')
+
+    # required arguments group
+    req_args = argparser.add_argument_group(
+        'required arguments', 'NOTE: MUST be given before any subcommand!')
+    req_args.add_argument(
+        '-u', '--user', required=True, help='OMERO username')
+    req_args.add_argument(
+        '-w', '--password', required=True, help='OMERO password')
+
+    subparsers = argparser.add_subparsers(
+        help='.', dest='action',
+        description='Action to be performed, one of the following:')
+
+    # checkCredentials parser
+    subparsers.add_parser(
+        'checkCredentials', help='check if login credentials are valid')
+
+    # retrieveUserTree parser
+    parser_tree = subparsers.add_parser(
+        'retrieveUserTree',
+        help="get a user's Projects/Datasets/Images tree (JSON)")
+    parser_tree.add_argument(
+        '--allmembers', type=bool, default=False,
+        help='build tree for all members in the current group')
+
+    # OMEROtoHRM parser
+    parser_o2h = subparsers.add_parser(
+        'OMEROtoHRM', help='download an image from the OMERO server')
+    parser_o2h.add_argument(
+        '-i', '--imageid', type=int, required=True,
+        help='the OMERO ID of the image to download')
+    parser_o2h.add_argument(
+        '-d', '--dest', type=str, required=True,
+        help='the destination directory where to put the downloaded file')
+
+    # HRMtoOMERO parser
+    parser_h2o = subparsers.add_parser(
+        'HRMtoOMERO', help='upload an image to the OMERO server')
+    parser_h2o.add_argument(
+        '-d', '--dset', type=int, required=True, dest='dset',
+        help='the ID of the target dataset in OMERO ')
+    parser_h2o.add_argument(
+        '-f', '--file', type=str, required=True,
+        help='the image file to upload, including the full path')
+    parser_h2o.add_argument(
+        '-n', '--name', type=str, required=False,
+        help='a label to use for the image in OMERO')
+    parser_h2o.add_argument(
+        '-a', '--ann', type=str, required=False,
+        help='annotation text to be added to the image in OMERO')
+
+    try:
+        return argparser.parse_args()
+    except IOError as err:
+        argparser.error(str(err))
 
 
 def main():
