@@ -27,18 +27,6 @@ ACTIONS = """actions:
 # the default connection values
 HOST = 'omero.mynetwork.xy'
 PORT = 4064
-USERNAME = 'foo'
-PASSWORD = 'bar'
-
-# allow overriding the default values
-if "OMERO_HOST" in os.environ:
-    HOST = os.environ['OMERO_HOST']
-if "OMERO_PORT" in os.environ:
-    PORT = os.environ['OMERO_PORT']
-if "OMERO_USER" in os.environ:
-    USERNAME = os.environ['OMERO_USER']
-if "OMERO_PASS" in os.environ:
-    PASSWORD = os.environ['OMERO_PASS']
 
 
 def omero_login(user, passwd, host, port):
@@ -243,6 +231,7 @@ def hrm_to_omero(conn, group):
 
 def main():
     """Parse commandline arguments and initiate the requested tasks."""
+    args = parse_arguments()
     # create a dict with the functions to call
     action_methods = {
         'checkCredentials': check_credentials,
@@ -251,12 +240,11 @@ def main():
         'HRMtoOMERO': hrm_to_omero
     }
 
-    conn = omero_login(USERNAME, PASSWORD, HOST, PORT)
+    conn = omero_login(args.user, args.password, HOST, PORT)
     # if not requested other, we're just using the default group
     group_obj = conn.getGroupFromContext()
     # TODO: implement requesting groups via cmdline option
 
-    args = parse_arguments()
     action_methods[args.action](conn, group_obj)
 
 
