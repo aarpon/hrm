@@ -43,9 +43,9 @@ class OmeroConnection {
 
    /*!
       \var    $omeroWrapper
-      \brief  The shell wrapper to OMERO's command line tool.
+      \brief  The OMERO Python connector.
     */
-    private $omeroWrapper = "bin/ome_hrm";
+    private $omeroWrapper = "bin/ome_hrm.py";
 
 
         /* ----------------------- Constructor ---------------------------- */
@@ -170,7 +170,7 @@ class OmeroConnection {
         /* ---------------------- Command builders--------------------------- */
 
     /*!
-     \brief   Generic command builder for the OMERO wrapper script, adding the
+     \brief   Generic command builder for the OMERO connector, adding the
               credentials and making sure all parameters are properly quoted.
      \param   $command - The command to be run by the wrapper.
      \param   $parameters (optional) - An array of additional parameters
@@ -182,12 +182,14 @@ class OmeroConnection {
         foreach($parameters as &$param) {
             $param = escapeshellarg($param);
         }
-        // now we assemble the full shell command
+        // assemble the full command
         $cmd  = $this->omeroWrapper . " ";
+        // user/password must be given first:
+        $cmd .= "--user " . escapeshellarg($this->omeroUser) . " ";
+        $cmd .= "--password " . escapeshellarg($this->omeroPass) . " ";
         $cmd .= $command . " ";
-        $cmd .= escapeshellarg($this->omeroUser) . " ";
-        $cmd .= escapeshellarg($this->omeroPass) . " ";
         $cmd .= join(" ", $parameters);
+        report($cmd);
         return $cmd;
     }
 
