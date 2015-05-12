@@ -20,9 +20,12 @@ import hrm_config
 sys.path.insert(0, '%s/lib/python' % hrm_config.CONFIG['OMERO_PKG'])
 from omero.gateway import BlitzGateway
 
-# the default connection values
-HOST = 'omero.mynetwork.xy'
-PORT = 4064
+# the connection values
+HOST = hrm_config.CONFIG['OMERO_HOSTNAME']
+if 'OMERO_PORT' in hrm_config.CONFIG:
+    PORT = hrm_config.CONFIG['OMERO_PORT']
+else:
+    PORT = 4064
 
 
 def omero_login(user, passwd, host, port):
