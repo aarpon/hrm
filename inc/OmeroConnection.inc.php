@@ -218,10 +218,15 @@ class OmeroConnection {
         // paths" - is this always true? Otherwise this method of constructing
         // the absolute path will fail!
         $fileAndPath = $fileServer->destinationFolder() . "/" . $file;
-        return $this->buildCmd("HRMtoOMERO",
-            array($datasetId, $fileAndPath,
-                  $this->getOriginalName($file),
-                  $this->getDeconParameterSummary($fileAndPath)));
+        $cmd  = "bin/ome_hrm.py ";
+        $cmd .= "--user " . escapeshellarg($this->omeroUser) . " ";
+        $cmd .= "--password " . escapeshellarg($this->omeroPass) . " ";
+        $cmd .= "HRMtoOMERO ";
+        $cmd .= "--file '" . $fileAndPath . "' ";
+        $cmd .= "--dset " . $datasetId . " ";
+        report('OMERO connector: uploading "' . $fileAndPath .
+            '" to dataset ' . $datasetId);
+        return $cmd;
     }
 
     /*!
