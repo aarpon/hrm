@@ -108,7 +108,7 @@ class OmeroConnection {
      \return  Ocassionally, an error message.
      \todo    Should we return "true" in case of success?
     */
-    public function importImage($postedParams, $fileServer) {
+    public function downloadFromOMERO($postedParams, $fileServer) {
 
         if (isset($postedParams['OmeImageName'])) {
             $imgName = basename($postedParams['OmeImageName']);
@@ -123,7 +123,7 @@ class OmeroConnection {
             return "No files selected.";
         }
 
-        $cmd = $this->buildImportCmd($imgName, $fileServer, $imgId);
+        $cmd = $this->buildOMEROtoHRMCmd($imgName, $fileServer, $imgId);
 
         exec($cmd, $out, $retval);
         if ($retval != 0) {
@@ -141,7 +141,7 @@ class OmeroConnection {
      \return  Ocassionally an error message.
      \todo    Should we return "true" in case of success?
     */
-    public function exportImage($postedParams, $fileServer) {
+    public function uploadToOMERO($postedParams, $fileServer) {
 
         if (isset($postedParams['selectedFiles'])) {
             $selectedFiles = explode(" ",trim($postedParams['selectedFiles']));
@@ -158,7 +158,7 @@ class OmeroConnection {
             /* Export all the selected files. */
         foreach ($selectedFiles as $file) {
 
-            $cmd = $this->buildExportCmd($file, $fileServer, $datasetId);
+            $cmd = $this->buildHRMtoOMEROCmd($file, $fileServer, $datasetId);
 
             if (shell_exec($cmd) == NULL) {
                 report("Exporting image to OMERO failed.", 1);
@@ -223,7 +223,7 @@ class OmeroConnection {
      \param   $datasetId - The OMERO ID of the dataset to export the image to.
      \return  A string with the complete command.
     */
-    private function buildExportCmd($file, $fileServer, $datasetId) {
+    private function buildHRMtoOMEROCmd($file, $fileServer, $datasetId) {
         // FIXME: previous documentation said "$file may contain relative
         // paths" - is this always true? Otherwise this method of constructing
         // the absolute path will fail!
@@ -243,7 +243,7 @@ class OmeroConnection {
      \param   $imgId - The ID of the image in the OMERO server.
      \return  A string with the complete command.
     */
-    private function buildImportCmd($imgName, $fileServer, $imgId) {
+    private function buildOMEROtoHRMCmd($imgName, $fileServer, $imgId) {
         // FIXME: previous documentation said "$file may contain relative
         // paths" - is this always true? Otherwise this method of constructing
         // the absolute path will fail!
