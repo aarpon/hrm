@@ -220,7 +220,7 @@ def omero_to_hrm(conn, image_id, dest):
     # print('Download complete.')
 
 
-def hrm_to_omero(conn, username, password, dset_id, image_file):
+def hrm_to_omero(conn, dset_id, image_file):
     """Upload an image into a specific dataset in OMERO.
 
     Parameters
@@ -231,8 +231,13 @@ def hrm_to_omero(conn, username, password, dset_id, image_file):
     from omero.cli import CLI
     cli = CLI()
     cli.loadplugins()
-    cli.invoke(['import', '--server', conn.host, '--user', username,
-                '--password', password, '-d', str(dset_id), image_file])
+    # NOTE: cli._client should be replaced with cli.set_client() when switching
+    # to support for OMERO 5.1 and later only:
+    cli._client = conn.c
+    import_args = ["import"]
+    import_args.extend(['-d', str(dset_id)])
+    import_args.append(image_file)
+    cli.invoke(import_args)
     # TODO: create annotation, upload non-image result files
 
 
@@ -319,7 +324,7 @@ def main():
     elif args.action == 'OMEROtoHRM':
         omero_to_hrm(conn, args.imageid, args.dest)
     elif args.action == 'HRMtoOMERO':
-        hrm_to_omero(conn, args.user, args.password, args.dset, args.file)
+        hrm_to_omero(conn, args.dset, args.file)
     else:
         raise Exception('Huh, how could this happen?!')
 
