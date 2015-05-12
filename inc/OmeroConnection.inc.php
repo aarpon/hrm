@@ -177,19 +177,26 @@ class OmeroConnection {
               required by the wrapper to run the requested command.
      \return  A string with the complete command.
     */
-    private function buildCmd($command, $parameters="") {
+    private function buildCmd($command, $parameters=array()) {
         // escape all shell arguments
         foreach($parameters as &$param) {
             $param = escapeshellarg($param);
         }
-        // assemble the full command
-        $cmd  = $this->omeroWrapper . " ";
+        // build a temporary array with the command elements, starting with the
+        // connector/wrapper itself:
+        $tmp = array($this->omeroWrapper);
         // user/password must be given first:
-        $cmd .= "--user " . escapeshellarg($this->omeroUser) . " ";
-        $cmd .= "--password " . escapeshellarg($this->omeroPass) . " ";
-        $cmd .= $command . " ";
-        $cmd .= join(" ", $parameters);
-        report($cmd);
+        array_push($tmp, "--user", escapeshellarg($this->omeroUser));
+        array_push($tmp, "--password", escapeshellarg($this->omeroPass));
+        // next the *actual* command:
+        array_push($tmp, escapeshellarg($command));
+        // and finally the parameters (if any):
+        $tmp = array_merge($tmp, $parameters);
+        // now we can assemble the full command string:
+        $cmd = join(" ", $tmp);
+        // and and intermediate one for logging w/o password:
+        $tmp[4] = "[********]";
+        report("OMERO connector> " . join(" ", $tmp), 1);
         return $cmd;
     }
 
