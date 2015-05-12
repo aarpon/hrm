@@ -15,6 +15,12 @@ require_once( "User.inc.php" );
 require_once( "Fileserver.inc.php" );
 
 
+// simple wrapper function to unify log messages from this module:
+function omelog($text, $level=0) {
+    report("OMERO connector: " . $text, $level);
+}
+
+
 class OmeroConnection {
 
     /*!
@@ -56,12 +62,12 @@ class OmeroConnection {
     public function __construct( $omeroUser, $omeroPass ) {
 
         if (empty($omeroUser)) {
-            report("No OMERO user name provided, cannot login.", 2);
+            omelog("No OMERO user name provided, cannot login.", 2);
             return;
         }
 
         if (empty($omeroPass)) {
-            report("No OMERO password provided, cannot login.", 2);
+            omelog("No OMERO password provided, cannot login.", 2);
             return;
         }
 
@@ -79,8 +85,7 @@ class OmeroConnection {
     */
     private function checkOmeroCredentials() {
 
-        report("OMERO connector: attempting to log on to OMERO, user=[" . $this->omeroUser .
-               "], password=[********].", 2);
+        omelog("attempting to log on to OMERO.", 2);
         $cmd = $this->buildCredentialsCmd();
 
             /* Authenticate against the OMERO server. */
@@ -88,14 +93,14 @@ class OmeroConnection {
 
             /* Returns NULL if an error occurred or no output was produced. */
         if ($loggedIn == NULL) {
-            report("ERROR logging on to OMERO.", 0);
+            omelog("ERROR logging on to OMERO.", 0);
             return;
         }
 
             /* Check whether the attempt was successful. */
         if (strstr($loggedIn, '-1')) {
             $this->loggedIn = FALSE;
-            report("Attempt to log on to OMERO server failed.", 1);
+            omelog("Attempt to log on to OMERO server failed.", 0);
         } else {
             $this->loggedIn = TRUE;
         }
@@ -127,11 +132,11 @@ class OmeroConnection {
 
         exec($cmd, $out, $retval);
         if ($retval != 0) {
-            $msg = "OMERO connector: failed retrieving " . $imgId;
-            report($msg, 1);
+            $msg = "failed retrieving " . $imgId;
+            omelog($msg, 1);
             return $msg;
         }
-        report("OMERO connector: successfully retrieved " . $imgId, 1);
+        omelog("successfully retrieved " . $imgId, 1);
     }
 
     /*!
@@ -161,9 +166,11 @@ class OmeroConnection {
             $cmd = $this->buildHRMtoOMEROCmd($file, $fileServer, $datasetId);
 
             if (shell_exec($cmd) == NULL) {
-                report("Exporting image to OMERO failed.", 1);
-                return "Exporting image to OMERO failed.";
+                $msg = "exporting image to OMERO failed.";
+                omelog($msg, 1);
+                return $msg;
             }
+            omelog("successfully uploaded " . $file, 1);
         }
     }
 
@@ -196,7 +203,7 @@ class OmeroConnection {
         $cmd = join(" ", $tmp);
         // and and intermediate one for logging w/o password:
         $tmp[4] = "[********]";
-        report("OMERO connector> " . join(" ", $tmp), 1);
+        omelog("> " . join(" ", $tmp), 1);
         return $cmd;
     }
 
@@ -228,7 +235,7 @@ class OmeroConnection {
         // paths" - is this always true? Otherwise this method of constructing
         // the absolute path will fail!
         $fileAndPath = $fileServer->destinationFolder() . "/" . $file;
-        report('OMERO connector: uploading "' . $fileAndPath .
+        omelog('uploading "' . $fileAndPath .
             '" to dataset ' . $datasetId);
         $param = array();
         array_push($param, "--file", $fileAndPath);
@@ -248,7 +255,7 @@ class OmeroConnection {
         // paths" - is this always true? Otherwise this method of constructing
         // the absolute path will fail!
         $fileAndPath = $fileServer->sourceFolder() . "/" . $imgName;
-        report('OMERO connector: requesting ' . $imgId . ' to ' . $fileAndPath);
+        omelog('requesting ' . $imgId . ' to ' . $fileAndPath);
         $param = array();
         array_push($param, "--imageid", $imgId);
         array_push($param, "--dest", $fileAndPath);
@@ -280,8 +287,9 @@ class OmeroConnection {
         $omeroData = shell_exec($cmd);
         if ($omeroData == NULL) {
             $this->omeroTree = NULL;
-            report("Retrieving OMERO data failed.", 1);
-            return "Retrieving OMERO data failed.";
+            $msg = "retrieving OMERO tree data failed!";
+            omelog($msg, 1);
+            return $msg;
         }
 
         $this->omeroTree = $omeroData;
