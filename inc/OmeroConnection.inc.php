@@ -198,11 +198,7 @@ class OmeroConnection {
      \return  A string with the complete command.
     */
     private function buildCredentialsCmd() {
-        $cmd  = "bin/ome_hrm.py ";
-        $cmd .= "--user " . escapeshellarg($this->omeroUser) . " ";
-        $cmd .= "--password " . escapeshellarg($this->omeroPass) . " ";
-        $cmd .= "checkCredentials ";
-        return $cmd;
+        return $this->buildCmd("checkCredentials");
     }
 
     /*!
@@ -210,11 +206,7 @@ class OmeroConnection {
      \return  A string with the complete command.
     */
     private function buildTreeCmd() {
-        $cmd  = "bin/ome_hrm.py ";
-        $cmd .= "--user " . escapeshellarg($this->omeroUser) . " ";
-        $cmd .= "--password " . escapeshellarg($this->omeroPass) . " ";
-        $cmd .= "retrieveUserTree ";
-        return $cmd;
+        return $this->buildCmd("retrieveUserTree");
     }
 
     /*!
@@ -229,15 +221,12 @@ class OmeroConnection {
         // paths" - is this always true? Otherwise this method of constructing
         // the absolute path will fail!
         $fileAndPath = $fileServer->destinationFolder() . "/" . $file;
-        $cmd  = "bin/ome_hrm.py ";
-        $cmd .= "--user " . escapeshellarg($this->omeroUser) . " ";
-        $cmd .= "--password " . escapeshellarg($this->omeroPass) . " ";
-        $cmd .= "HRMtoOMERO ";
-        $cmd .= "--file '" . $fileAndPath . "' ";
-        $cmd .= "--dset " . $datasetId . " ";
         report('OMERO connector: uploading "' . $fileAndPath .
             '" to dataset ' . $datasetId);
-        return $cmd;
+        $param = array();
+        array_push($param, "--file", $fileAndPath);
+        array_push($param, "--dset", $datasetId);
+        return $this->buildCmd("HRMtoOMERO", $param);
     }
 
     /*!
@@ -252,14 +241,11 @@ class OmeroConnection {
         // paths" - is this always true? Otherwise this method of constructing
         // the absolute path will fail!
         $fileAndPath = $fileServer->sourceFolder() . "/" . $imgName;
-        $cmd  = "bin/ome_hrm.py ";
-        $cmd .= "--user " . escapeshellarg($this->omeroUser) . " ";
-        $cmd .= "--password " . escapeshellarg($this->omeroPass) . " ";
-        $cmd .= "OMEROtoHRM ";
-        $cmd .= "--imageid " . $imgId . " ";
-        $cmd .= "--dest '" . $fileAndPath . "' ";
         report('OMERO connector: requesting ' . $imgId . ' to ' . $fileAndPath);
-        return $cmd;
+        $param = array();
+        array_push($param, "--imageid", $imgId);
+        array_push($param, "--dest", $fileAndPath);
+        return $this->buildCmd("OMEROtoHRM", $param);
     }
 
         /* ---------------------- OMERO Tree Assemblers ------------------- */
