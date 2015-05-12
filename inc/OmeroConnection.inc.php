@@ -251,9 +251,6 @@ class OmeroConnection {
      \return  A string with the complete command.
     */
     private function buildOMEROtoHRMCmd($imgName, $fileServer, $imgId) {
-        // FIXME: previous documentation said "$file may contain relative
-        // paths" - is this always true? Otherwise this method of constructing
-        // the absolute path will fail!
         $fileAndPath = $fileServer->sourceFolder() . "/" . $imgName;
         omelog('requesting ' . $imgId . ' to ' . $fileAndPath);
         $param = array();
