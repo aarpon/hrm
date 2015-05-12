@@ -4,10 +4,10 @@ import os
 from omero.gateway import BlitzGateway
 
 # the default connection values
-HOST='omero.mynetwork.xy'
-PORT=4064
-USERNAME='foo'
-PASSWORD='bar'
+HOST = 'omero.mynetwork.xy'
+PORT = 4064
+USERNAME = 'foo'
+PASSWORD = 'bar'
 
 # allow overriding the default values
 if "OMERO_HOST" in os.environ:
