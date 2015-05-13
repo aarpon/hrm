@@ -44,7 +44,7 @@ function omeroTransfer(form, fileSelection, browseFolder) {
         } else {
             return false;
         }
-            form.OmeDatasetId.value = dataset.id;
+        form.OmeDatasetId.value = dataset.id;
 
         // assemble a JSON array with the selected files:
         var filelist = new Array();
