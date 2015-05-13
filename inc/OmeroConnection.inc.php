@@ -154,11 +154,13 @@ class OmeroConnection {
             return "No files selected.";
         }
 
-        if (isset($postedParams['OmeDatasetId'])) {
-            $datasetId = $postedParams['OmeDatasetId'];
-        } else {
-            return "No destination dataset selected.";
+        if (! isset($postedParams['OmeDatasetId'])) {
+            $msg = "No destination dataset selected.";
+            omelog($msg);
+            return $msg;
         }
+
+        $datasetId = $postedParams['OmeDatasetId'];
 
             /* Export all the selected files. */
         foreach ($selectedFiles as $file) {
