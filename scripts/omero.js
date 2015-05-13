@@ -22,9 +22,8 @@ function omeroTransfer(form, fileSelection, browseFolder) {
 
     if (browseFolder == "src") {
 
-        if (typeof node.parent.name != 'undefined'
-            && typeof node.parent.parent.name != 'undefined') {
 
+        if (node.class == 'Image') {
             var image   = node;
             var dataset = image.parent;
             var project = image.parent.parent;
@@ -43,15 +42,13 @@ function omeroTransfer(form, fileSelection, browseFolder) {
         }
     } else {
 
-        if (typeof node.parent.name != 'undefined'
-            && typeof node.parent.parent.name != 'undefined') {
 
+        if (node.class == 'Image') {
             var image   = node;
             var dataset = image.parent;
             var project = image.parent.parent;
 
-        } else if (typeof node.name != 'undefined'
-                   && typeof node.parent.name != 'undefined') {
+        } else if (node.class = 'Dataset') {
 
             var dataset = node;
             var project = dataset.parent;
