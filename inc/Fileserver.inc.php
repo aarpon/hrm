@@ -752,6 +752,7 @@ class Fileserver {
       if (!isset($_SESSION['omeroConnection'])) {
           return "Impossible to reach your OMERO account.";
       }
+      // file_put_contents('/tmp/hrm_post.log', var_export($_POST, true));
 
       if (!isset($_POST['selectedFiles'])) {
           return "Please select a deconvolved image to export to OMERO.";
@@ -776,6 +777,7 @@ class Fileserver {
       if (!isset($_SESSION['omeroConnection'])) {
           return "Impossible to reach your OMERO account.";
       }
+      // file_put_contents('/tmp/hrm_post.log', var_export($_POST, true));
 
       if (!isset($_POST['OmeImageId'])
           || empty($_POST['OmeImageId'])) {
