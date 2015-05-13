@@ -77,7 +77,12 @@ def gen_image_dict(image):
 
     Structure
     =========
-    {'id': 1755L, 'label': 'Rot-13x-zstack.tif', 'owner': u'demo01'}
+    {
+        'id': 1755L,
+        'label': 'Rot-13x-zstack.tif',
+        'owner': u'demo01',
+        'class': 'Image'
+    }
     """
     if image.OMERO_CLASS is not 'Image':
         raise ValueError
@@ -86,6 +91,7 @@ def gen_image_dict(image):
     image_dict['label'] = image.getName()
     # TODO: it's probably better to store the owner's ID instead of the name
     image_dict['owner'] = image.getOwnerOmeName()
+    image_dict['class'] = image.OMERO_CLASS
     return image_dict
 
 
@@ -131,6 +137,7 @@ def gen_user_tree(conn, user_obj):
     user_dict['id'] = uid
     user_dict['label'] = user_obj.getFullName()
     user_dict['ome_name'] = user_obj.getName()
+    user_dict['class'] = user_obj.OMERO_CLASS
     user_dict['children'] = gen_proj_tree(conn, user_obj)
     return user_dict
 
@@ -155,6 +162,7 @@ def gen_group_tree(conn, group_obj):
     group_dict['id'] = group_obj.getId()
     group_dict['label'] = group_obj.getName()
     group_dict['description'] = group_obj.getDescription()
+    group_dict['class'] = group_obj.OMERO_CLASS
     group_dict['children'] = []
     # add the user's own tree first:
     user_obj = conn.getUser()
