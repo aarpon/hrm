@@ -3,11 +3,6 @@
   // Copyright and license notice: see license.txt
 
 // TODO:
-// - if no file is selected for upload, the connector will be called with the
-//   directory itself and therefore all files will be uploaded!
-// - the dataset selection for uploading doesn't work, it is only correctly
-//   assigned if an *IMAGE* was selected as the target, otherwise the wrong ID
-//   is reported and used!
 // - report success/failure to the web frontend
 // - block web frontend with an overlay to signalize upload/download
 
