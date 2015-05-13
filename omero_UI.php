@@ -135,26 +135,26 @@
 
             <script>
             $(function() {
-                  var data = <?php echo $omeroTree; ?>;
+                var data = <?php echo $omeroTree; ?>;
 
-                  $('#omeroTree').tree({
-                        data: data,
-                        saveState: true,
-                        selectable: true,
-                        onCanSelectNode: function(node) {
+                $('#omeroTree').tree({
+                    data: data,
+                    saveState: true,
+                    selectable: true,
+                    onCanSelectNode: function(node) {
 
-                            if (node.id == "-1") {
+                        if (node.id == "-1") {
 
-                               // Not selectable.
-                               return false;
-                            } else {
+                           // Not selectable.
+                           return false;
+                        } else {
 
-                               // Selectable
-                               return true;
-                            }
-                         }
-                      });
-              });
+                           // Selectable
+                           return true;
+                        }
+                    }
+                });
+            });
             </script>
 
         <?php
