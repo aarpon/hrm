@@ -36,9 +36,16 @@
                 }
             });
 
-            $( "#floatingCredentialsDialog" ).dialog();
-
             $( "#floatingCredentialsDialog" ).dialog({
+                  show: {
+                      effect: "slide",
+                      duration: 300
+                  },
+                  hide: {
+                      effect: "fade",
+                      duration: 300
+                  },
+                  modal: true,
                   buttons: {
                         "Submit": function() {
                             omeroLogin();
