@@ -41,8 +41,9 @@ function omeroTransfer(form, fileSelection, browseFolder) {
             var dataset = image.parent;
         } else if (node.class = 'Dataset') {
             var dataset = node;
+        } else {
+            return false;
         }
-
             form.OmeDatasetId.value = dataset.id;
     }
 
