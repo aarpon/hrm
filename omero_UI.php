@@ -141,15 +141,13 @@
                     data: data,
                     saveState: true,
                     selectable: true,
+                    // set which nodes can be selected:
                     onCanSelectNode: function(node) {
-
-                        if (node.id == "-1") {
-
-                           // Not selectable.
-                           return false;
+                        if ((node.class == "Project") ||
+                            (node.class == "Experimenter") ||
+                            (node.class == "ExperimenterGroup")) {
+                               return false;
                         } else {
-
-                           // Selectable
                            return true;
                         }
                     }
