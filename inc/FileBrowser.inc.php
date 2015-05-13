@@ -328,6 +328,8 @@ function imageAction (list) {
     {
 ";
 
+  # FIXME: this is broken with file names containing double quotes!
+
   # Generate at case for each of the available files, so that the
   # correspondent thumbnail and information is shown when the user clicks on
   # an image.
