@@ -21,8 +21,8 @@ function omeroTransfer(form, fileSelection, browseFolder) {
     var node = $("#omeroTree").tree('getSelectedNode');
 
     if (browseFolder == "src") {
-
-
+        // we're in the "src" folder view, this means we want to transfer
+        // images from OMERO to the HRM (download):
         if (node.class == 'Image') {
             var image   = node;
             var dataset = image.parent;
@@ -42,7 +42,8 @@ function omeroTransfer(form, fileSelection, browseFolder) {
         }
     } else {
 
-
+        // we're in the "dst" folder view, this means we want to transfer
+        // images from the HRM to OMERO (upload):
         if (node.class == 'Image') {
             var image   = node;
             var dataset = image.parent;
