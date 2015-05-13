@@ -45,15 +45,15 @@ function omeroTransfer(form, fileSelection, browseFolder) {
             return false;
         }
             form.OmeDatasetId.value = dataset.id;
-    }
 
-    form.selectedFiles.value = "";
-    for (i=0; i < fileSelection.options.length; i++) {
-
-        if (fileSelection.options[i].selected) {
-            form.selectedFiles.value += fileSelection.options[i].value;
-            form.selectedFiles.value += " ";
+        // assemble a JSON array with the selected files:
+        var filelist = new Array();
+        for (i=0; i < fileSelection.options.length; i++) {
+            if (fileSelection.options[i].selected) {
+                filelist.push(fileSelection.options[i].text);
+            }
         }
+        form.selectedFiles.value = JSON.stringify(filelist);
     }
 }
 

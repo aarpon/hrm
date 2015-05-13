@@ -148,10 +148,12 @@ class OmeroConnection {
     */
     public function uploadToOMERO($postedParams, $fileServer) {
 
-        if (isset($postedParams['selectedFiles'])) {
-            $selectedFiles = explode(" ",trim($postedParams['selectedFiles']));
-        } else {
-            return "No files selected.";
+        $selectedFiles = json_decode($postedParams['selectedFiles']);
+
+        if (sizeof($selectedFiles) < 1) {
+            $msg = "No files selected for upload.";
+            omelog($msg);
+            return $msg;
         }
 
         if (! isset($postedParams['OmeDatasetId'])) {
