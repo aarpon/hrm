@@ -26,20 +26,12 @@ function omeroTransfer(form, fileSelection, browseFolder) {
         if (node.class == 'Image') {
             var image   = node;
             var dataset = image.parent;
-            var project = image.parent.parent;
 
-            if (image.name.length > 0) {
-                form.OmeImageId.value = image.id;
-            }
-
-            if (dataset.name.length > 0) {
-                form.OmeImageName.value = image.name;
-            }
-
-            if (project.name.length > 0) {
-                form.OmeDatasetId.value = dataset.id;
-            }
+            form.OmeImageId.value = image.id;
+            form.OmeImageName.value = image.name;
+            form.OmeDatasetId.value = dataset.id;
         }
+
     } else {
 
         // we're in the "dst" folder view, this means we want to transfer
@@ -47,17 +39,11 @@ function omeroTransfer(form, fileSelection, browseFolder) {
         if (node.class == 'Image') {
             var image   = node;
             var dataset = image.parent;
-            var project = image.parent.parent;
-
         } else if (node.class = 'Dataset') {
-
             var dataset = node;
-            var project = dataset.parent;
         }
 
-        if (typeof dataset != 'undefined' && dataset.name.length > 0) {
             form.OmeDatasetId.value = dataset.id;
-        }
     }
 
     form.selectedFiles.value = "";
