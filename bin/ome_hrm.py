@@ -8,6 +8,12 @@ to an OMERO server for listing available images, transferring data, etc.
 
 # pylint: disable=superfluous-parens
 
+# TODO:
+# - trees for different groups
+# - generate sub-trees (to update and/or populate on demand)
+# - proper logging, separate logfile for the connector
+# - redirect logging of CLI
+
 
 import sys
 import argparse
