@@ -111,8 +111,7 @@ class OmeroConnection {
     public function downloadFromOMERO($postedParams, $fileServer) {
 
         if (isset($postedParams['OmeImageName'])) {
-            $imgName = basename($postedParams['OmeImageName']);
-            $imgName = str_replace("Image: ","",$imgName);
+            $imgName = $postedParams['OmeImageName'];
         } else {
             return "No files selected.";
         }
