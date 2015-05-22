@@ -1,1 +1,2 @@
+# if nothing is requested explicitly, go to the login page:
 DirectoryIndex login.php
