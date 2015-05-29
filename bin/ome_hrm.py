@@ -23,7 +23,8 @@ import re
 import hrm_config
 
 # put OMERO into our PYTHONPATH:
-sys.path.insert(0, '%s/lib/python' % hrm_config.CONFIG['OMERO_PKG'])
+OMERO_LIB = '%s/lib/python' % hrm_config.CONFIG['OMERO_PKG']
+sys.path.insert(0, OMERO_LIB)
 from omero.gateway import BlitzGateway
 
 # the connection values
