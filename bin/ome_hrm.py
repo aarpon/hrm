@@ -62,14 +62,14 @@ def gen_obj_dict(obj):
     =========
     {
         'children': [],
-        'id': 1154L,
+        'id': 'Project:1154',
         'label': 'HRM_TESTDATA',
         'owner': u'demo01',
         'class': 'Project'
     }
     """
     obj_dict = dict()
-    obj_dict['id'] = obj.getId()
+    obj_dict['id'] = "%s:%s" % (obj.OMERO_CLASS, obj.getId())
     obj_dict['label'] = obj.getName()
     # TODO: it's probably better to store the owner's ID instead of the name
     obj_dict['owner'] = obj.getOwnerOmeName()
@@ -84,7 +84,7 @@ def gen_image_dict(image):
     Structure
     =========
     {
-        'id': 1755L,
+        'id': 'Image:1755',
         'label': 'Rot-13x-zstack.tif',
         'owner': u'demo01',
         'class': 'Image'
@@ -93,7 +93,7 @@ def gen_image_dict(image):
     if image.OMERO_CLASS is not 'Image':
         raise ValueError
     image_dict = dict()
-    image_dict['id'] = image.getId()
+    image_dict['id'] = "%s:%s" % (image.OMERO_CLASS, image.getId())
     image_dict['label'] = image.getName()
     # TODO: it's probably better to store the owner's ID instead of the name
     image_dict['owner'] = image.getOwnerOmeName()
@@ -200,7 +200,7 @@ def omero_to_hrm(conn, image_id, dest):
 
     Parameters
     ==========
-    image_id: int - OMERO image ID
+    image_id: str - OMERO image ID (e.g. "Image:42")
     dest: str - destination directory where to put the downloaded file
 
     TODO
@@ -208,6 +208,8 @@ def omero_to_hrm(conn, image_id, dest):
     we should check if older ones could have such a file if they were uploaded
     with the "archive" option.
     """
+    # get the numeric ID from the combined string:
+    image_id = image_id.split(':')[1]
     # as we're downloading original files, we need to crop away the additional
     # suffix that OMERO adds to the name in case the image belongs to a
     # fileset, enclosed in rectangular brackets "[...]", e.g. the file with the
@@ -239,9 +241,11 @@ def hrm_to_omero(conn, dset_id, image_file):
 
     Parameters
     ==========
-    dset_id: int - the ID of the target dataset in OMERO
+    dset_id: str - the ID of the target dataset in OMERO (e.g. "Dataset:23")
     image_file: str - the local image file including the full path
     """
+    # get the numeric ID from the combined string:
+    dset_id = dset_id.split(':')[1]
     from omero.cli import CLI
     cli = CLI()
     cli.loadplugins()
@@ -293,8 +297,8 @@ def parse_arguments():
     parser_o2h = subparsers.add_parser(
         'OMEROtoHRM', help='download an image from the OMERO server')
     parser_o2h.add_argument(
-        '-i', '--imageid', type=int, required=True,
-        help='the OMERO ID of the image to download')
+        '-i', '--imageid', required=True,
+        help='the OMERO ID of the image to download, e.g. "Image:42"')
     parser_o2h.add_argument(
         '-d', '--dest', type=str, required=True,
         help='the destination directory where to put the downloaded file')
@@ -303,8 +307,8 @@ def parse_arguments():
     parser_h2o = subparsers.add_parser(
         'HRMtoOMERO', help='upload an image to the OMERO server')
     parser_h2o.add_argument(
-        '-d', '--dset', type=int, required=True, dest='dset',
-        help='the ID of the target dataset in OMERO ')
+        '-d', '--dset', required=True, dest='dset',
+        help='the ID of the target dataset in OMERO, e.g. "Dataset:23"')
     parser_h2o.add_argument(
         '-f', '--file', type=str, required=True,
         help='the image file to upload, including the full path')
