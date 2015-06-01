@@ -257,7 +257,13 @@ def hrm_to_omero(conn, dset_id, image_file):
     import_args.extend(['-d', str(dset_id)])
     import_args.append(image_file)
     cli.invoke(import_args)
-    # TODO: create annotation, upload non-image result files
+    # TODO: figure out object ID of the uploaded dataset (is it returned by
+    # cli.invoke() or do we have to guess it?), create annotation and upload
+    # non-image result files (.hgsb, .log.txt, .parameters.txt)
+    ann_base = re.sub(r'(_[0-9a-f]{13}_hrm)\..*', r'\1', image_file)
+    ann_list = []
+    for suff in ['.hgsb', '.log.txt', '.parameters.txt']:
+        ann_list.append(ann_base + suff)
 
 
 def parse_arguments():
