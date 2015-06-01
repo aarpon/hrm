@@ -79,29 +79,6 @@ def gen_obj_dict(obj):
     return obj_dict
 
 
-def gen_image_dict(image):
-    """Create a dict from an OMERO image.
-
-    Structure
-    =========
-    {
-        'id': 'Image:1755',
-        'label': 'Rot-13x-zstack.tif',
-        'owner': u'demo01',
-        'class': 'Image'
-    }
-    """
-    if image.OMERO_CLASS is not 'Image':
-        raise ValueError
-    image_dict = dict()
-    image_dict['id'] = "%s:%s" % (image.OMERO_CLASS, image.getId())
-    image_dict['label'] = image.getName()
-    # TODO: it's probably better to store the owner's ID instead of the name
-    image_dict['owner'] = image.getOwnerOmeName()
-    image_dict['class'] = image.OMERO_CLASS
-    return image_dict
-
-
 def gen_proj_tree(conn, user_obj):
     """Create a list of project trees for a user.
 
@@ -116,7 +93,7 @@ def gen_proj_tree(conn, user_obj):
         for dataset in project.listChildren():
             dset_dict = gen_obj_dict(dataset)
             for image in dataset.listChildren():
-                dset_dict['children'].append(gen_image_dict(image))
+                dset_dict['children'].append(gen_obj_dict(image))
             proj_dict['children'].append(dset_dict)
         proj_tree.append(proj_dict)
     return proj_tree
