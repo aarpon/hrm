@@ -176,6 +176,10 @@ def omero_to_hrm(conn, image_id, dest):
     This works only for image ID's that were created with OMERO 5.0 or later as
     previous versions don't have an "original file" linked to an image.
 
+    In addition to the original file, it also downloads a thumbnail of the
+    requested file from OMERO and puts it into the appropriate place so HRM
+    will show it as a preview until the user hits "re-generate preview".
+
     Parameters
     ==========
     image_id: str - OMERO image ID (e.g. "Image:42")
@@ -211,6 +215,17 @@ def omero_to_hrm(conn, image_id, dest):
     # print('Downloading original file with ID: %s' % file_id)
     orig_file = OriginalFileI(file_id)
     conn.c.download(orig_file, dest)
+    # in case PIL is installed, download the thumbnail as a preview:
+    try:
+        import Image
+        import StringIO
+    except ImportError:
+        return
+    image = conn.getObject("Image", image_id)
+    img_data = image.getThumbnail()
+    thumbnail = Image.open(StringIO.StringIO(img_data))
+    tgt, name = os.path.split(dest)
+    thumbnail.save(tgt + "/hrm_previews/" + name + ".preview_xy.jpg")
     # print('Download complete.')
 
 
