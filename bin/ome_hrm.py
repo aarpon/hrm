@@ -259,17 +259,17 @@ def hrm_to_omero(conn, dset_id, image_file):
     # round is not possible right now as the CLI wrapper (see below) doesn't
     # expose the ID of the newly created object in OMERO (confirmed by J-M and
     # Sebastien on the 2015 OME Meeting):
-    namespace = 'deconvolved.hrm'
-    # extract the image basename without suffix:
-    basename = re.sub(r'(_[0-9a-f]{13}_hrm)\..*', r'\1', image_file)
-    annotations = []
-    # TODO: the list of suffixes should not be hardcoded here!
-    for suffix in ['.hgsb', '.log.txt', '.parameters.txt']:
-        if not os.path.exists(basename + suffix):
-            continue
-        ann = conn.createFileAnnfromLocalFile(
-            basename + suffix, mimetype="text/plain", ns=namespace, desc=None)
-        annotations.append(ann.getId())
+    #### namespace = 'deconvolved.hrm'
+    #### # extract the image basename without suffix:
+    #### basename = re.sub(r'(_[0-9a-f]{13}_hrm)\..*', r'\1', image_file)
+    #### annotations = []
+    #### # TODO: the list of suffixes should not be hardcoded here!
+    #### for suffix in ['.hgsb', '.log.txt', '.parameters.txt']:
+    ####     if not os.path.exists(basename + suffix):
+    ####         continue
+    ####     ann = conn.createFileAnnfromLocalFile(
+    ####         basename + suffix, mimetype="text/plain", ns=namespace, desc=None)
+    ####     annotations.append(ann.getId())
     # currently there is no direct "Python way" to import data into OMERO, so
     # we have to use the CLI wrapper for this:
     from omero.cli import CLI
@@ -280,8 +280,8 @@ def hrm_to_omero(conn, dset_id, image_file):
     cli._client = conn.c
     import_args = ["import"]
     import_args.extend(['-d', dset_id.split(':')[1]])
-    for ann_id in annotations:
-        import_args.extend(['--annotation_link', str(ann_id)])
+    #### for ann_id in annotations:
+    ####     import_args.extend(['--annotation_link', str(ann_id)])
     import_args.append(image_file)
     # print("import_args: " + str(import_args))
     cli.invoke(import_args)
