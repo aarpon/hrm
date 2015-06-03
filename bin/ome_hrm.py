@@ -99,6 +99,28 @@ def gen_proj_tree(conn, user_obj):
     return proj_tree
 
 
+def gen_user_dict(user_obj):
+    """Create a dict from an OMERO user.
+
+    Structure
+    =========
+    {
+        'children': [],
+        'id': 'Experimenter:1154',
+        'label': 'demo user',
+        'ome_name': u'demo01',
+        'class': 'Experimenter'
+    }
+    """
+    user_dict = dict()
+    user_dict['id'] = "%s:%s" % (user_obj.OMERO_CLASS, user_obj.getId())
+    user_dict['label'] = user_obj.getFullName()
+    user_dict['ome_name'] = user_obj.getName()
+    user_dict['class'] = user_obj.OMERO_CLASS
+    user_dict['children'] = []
+    return user_dict
+
+
 def gen_user_tree(conn, user_obj):
     """Create a tree with user information and corresponding projects.
 
@@ -116,12 +138,7 @@ def gen_user_tree(conn, user_obj):
         "children": proj_tree (list)
     }
     """
-    user_dict = dict()
-    uid = user_obj.getId()
-    user_dict['id'] = uid
-    user_dict['label'] = user_obj.getFullName()
-    user_dict['ome_name'] = user_obj.getName()
-    user_dict['class'] = user_obj.OMERO_CLASS
+    user_dict = gen_user_dict(user_obj)
     user_dict['children'] = gen_proj_tree(conn, user_obj)
     return user_dict
 
