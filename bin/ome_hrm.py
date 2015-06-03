@@ -179,7 +179,7 @@ def omero_to_hrm(conn, image_id, dest):
     Parameters
     ==========
     image_id: str - OMERO image ID (e.g. "Image:42")
-    dest: str - destination directory where to put the downloaded file
+    dest: str - destination filename (incl. path)
 
     TODO
     ====
