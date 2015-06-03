@@ -254,8 +254,6 @@ def hrm_to_omero(conn, dset_id, image_file):
     dset_id: str - the ID of the target dataset in OMERO (e.g. "Dataset:23")
     image_file: str - the local image file including the full path
     """
-    # get the numeric ID from the combined string:
-    dset_id = dset_id.split(':')[1]
     from omero.cli import CLI
     cli = CLI()
     cli.loadplugins()
@@ -263,7 +261,7 @@ def hrm_to_omero(conn, dset_id, image_file):
     # to support for OMERO 5.1 and later only:
     cli._client = conn.c
     import_args = ["import"]
-    import_args.extend(['-d', str(dset_id)])
+    import_args.extend(['-d', dset_id.split(':')[1]])
     import_args.append(image_file)
     cli.invoke(import_args)
     # TODO: figure out object ID of the uploaded dataset (is it returned by
