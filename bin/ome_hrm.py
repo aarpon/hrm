@@ -72,9 +72,12 @@ def gen_obj_dict(obj):
     obj_dict = dict()
     obj_dict['id'] = "%s:%s" % (obj.OMERO_CLASS, obj.getId())
     obj_dict['label'] = obj.getName()
-    # TODO: it's probably better to store the owner's ID instead of the name
-    obj_dict['owner'] = obj.getOwnerOmeName()
     obj_dict['class'] = obj.OMERO_CLASS
+    if obj.OMERO_CLASS == 'Experimenter':
+        # TODO: is it better to store the owner's ID instead of the name?
+        obj_dict['owner'] = obj.getName()
+    else:
+        obj_dict['owner'] = obj.getOwnerOmeName()
     obj_dict['children'] = []
     return obj_dict
 
@@ -99,28 +102,6 @@ def gen_proj_tree(conn, user_obj):
     return proj_tree
 
 
-def gen_user_dict(user_obj):
-    """Create a dict from an OMERO user.
-
-    Structure
-    =========
-    {
-        'children': [],
-        'id': 'Experimenter:1154',
-        'label': 'demo user',
-        'ome_name': u'demo01',
-        'class': 'Experimenter'
-    }
-    """
-    user_dict = dict()
-    user_dict['id'] = "%s:%s" % (user_obj.OMERO_CLASS, user_obj.getId())
-    user_dict['label'] = user_obj.getFullName()
-    user_dict['ome_name'] = user_obj.getName()
-    user_dict['class'] = user_obj.OMERO_CLASS
-    user_dict['children'] = []
-    return user_dict
-
-
 def gen_user_tree(conn, user_obj):
     """Create a tree with user information and corresponding projects.
 
@@ -138,7 +119,7 @@ def gen_user_tree(conn, user_obj):
         "children": proj_tree (list)
     }
     """
-    user_dict = gen_user_dict(user_obj)
+    user_dict = gen_obj_dict(user_obj)
     user_dict['children'] = gen_proj_tree(conn, user_obj)
     return user_dict
 
