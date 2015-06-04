@@ -56,6 +56,11 @@ def get_group_tree_json(conn, group):
     print(tree_to_json([gen_group_tree(conn, group)]))
 
 
+def get_obj_tree_json(conn, obj_id):
+    """Generates the group tree and returns it in JSON format."""
+    print(tree_to_json([gen_obj_tree(conn, obj_id)]))
+
+
 def gen_obj_dict(obj):
     """Create a dict from an OMERO object.
 
@@ -80,6 +85,20 @@ def gen_obj_dict(obj):
         obj_dict['owner'] = obj.getOwnerOmeName()
     obj_dict['children'] = []
     return obj_dict
+
+
+def gen_obj_tree(conn, obj_id, full=False):
+    """Create a subtree of a given ID."""
+    obj_tree = []
+    obj_type, oid = obj_id.split(':')
+    obj = conn.getObject(obj_type, oid)
+    for child in obj.listChildren():
+        child_dict = gen_obj_dict(child)
+        obj_tree.append(child_dict)
+        if full == True:
+            # TODO: implement recursive sub-tree generation
+            pass
+    return obj_tree
 
 
 def gen_proj_tree(conn, user_obj):
@@ -294,6 +313,14 @@ def parse_arguments():
     subparsers.add_parser(
         'checkCredentials', help='check if login credentials are valid')
 
+    # retrieveSubTree parser
+    parser_subtree = subparsers.add_parser(
+        'retrieveSubTree',
+        help="get a subtree of a given object (JSON)")
+    parser_subtree.add_argument(
+        '--id', type=str, required=True,
+        help='ID string of the object to build the subtree for, e.g. "User:23"')
+
     # retrieveUserTree parser
     parser_tree = subparsers.add_parser(
         'retrieveUserTree',
@@ -348,6 +375,8 @@ def main():
         check_credentials(conn)
     elif args.action == 'retrieveUserTree':
         get_group_tree_json(conn, group)
+    elif args.action == 'retrieveSubTree':
+        get_obj_tree_json(conn, args.id)
     elif args.action == 'OMEROtoHRM':
         omero_to_hrm(conn, args.imageid, args.dest)
     elif args.action == 'HRMtoOMERO':
