@@ -201,6 +201,12 @@ def omero_to_hrm(conn, image_id, dest):
     # print('Downloading original file with ID: %s' % file_id)
     orig_file = OriginalFileI(file_id)
     conn.c.download(orig_file, dest)
+    download_thumb(conn, image_id, dest)
+    # print('Download complete.')
+
+
+def download_thumb(conn, image_id, dest):
+    """Download the thumbnail of a given image from OMERO."""
     # in case PIL is installed, download the thumbnail as a preview:
     try:
         import Image
@@ -212,7 +218,6 @@ def omero_to_hrm(conn, image_id, dest):
     thumbnail = Image.open(StringIO.StringIO(img_data))
     tgt, name = os.path.split(dest)
     thumbnail.save(tgt + "/hrm_previews/" + name + ".preview_xy.jpg")
-    # print('Download complete.')
 
 
 def hrm_to_omero(conn, dset_id, image_file):
