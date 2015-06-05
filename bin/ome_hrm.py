@@ -108,8 +108,8 @@ def gen_obj_tree(conn, obj_id, recurse=False):
     else:
         children_wrapper = obj.listChildren()
     for child in children_wrapper:
-        id_str = child.OMERO_CLASS + ':' + str(child.getId())
-        child_tree = gen_obj_tree(conn, id_str, recurse)
+        cid = child.OMERO_CLASS + ':' + str(child.getId())
+        child_tree = gen_obj_tree(conn, cid, recurse)
         obj_tree['children'].append(child_tree)
     return obj_tree
 
@@ -132,13 +132,13 @@ def gen_group_tree(conn, group_obj):
     """
     group_dict = gen_obj_dict(group_obj)
     # add the user's own tree first:
-    user_obj = conn.getUser()
-    id_str = user_obj.OMERO_CLASS + ':' + str(user_obj.getId())
-    group_dict['children'].append(gen_obj_tree(conn, id_str, recurse=True))
+    user = conn.getUser()
+    cid = user.OMERO_CLASS + ':' + str(user.getId())
+    group_dict['children'].append(gen_obj_tree(conn, cid, recurse=True))
     # then add the trees for other group members
-    for user_obj in conn.listColleagues():
-        id_str = user_obj.OMERO_CLASS + ':' + str(user_obj.getId())
-        group_dict['children'].append(gen_obj_tree(conn, id_str, recurse=True))
+    for user in conn.listColleagues():
+        cid = user.OMERO_CLASS + ':' + str(user.getId())
+        group_dict['children'].append(gen_obj_tree(conn, cid, recurse=True))
     return group_dict
 
 
