@@ -10,7 +10,6 @@ to an OMERO server for listing available images, transferring data, etc.
 
 # TODO:
 # - trees for different groups
-# - generate sub-trees (to update and/or populate on demand)
 # - proper logging, separate logfile for the connector
 # - redirect logging of CLI
 
@@ -50,7 +49,6 @@ def tree_to_json(obj_tree):
 
 def get_group_tree_json(conn, group=None):
     """Generates the group tree and returns it in JSON format."""
-    # TODO: this is probably also required for a user's sub-tree
     # we're currently only having a single tree (dict), but jqTree expects a
     # list of dicts, so we have to encapsulate it in [] for now:
     print(tree_to_json([gen_group_tree(conn, group)]))
