@@ -70,6 +70,7 @@ class OmeroConnection {
         $this->omeroPass = $omeroPass;
 
         $this->checkOmeroCredentials();
+        omelog("Successfully connected to OMERO!", 2);
     }
 
         /* -------------------- General OMERO processes -------------------- */
@@ -79,7 +80,6 @@ class OmeroConnection {
               login credentials provided by the user.
     */
     private function checkOmeroCredentials() {
-
         omelog("attempting to log on to OMERO.", 2);
         $cmd = $this->buildCredentialsCmd();
 
