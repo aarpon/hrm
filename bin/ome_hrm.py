@@ -172,20 +172,15 @@ def gen_group_tree(conn, group_obj):
         "children": user_trees (list of dict))
     }
     """
-    group_dict = dict()
-    group_dict['id'] = group_obj.getId()
-    group_dict['label'] = group_obj.getName()
-    group_dict['description'] = group_obj.getDescription()
-    group_dict['class'] = group_obj.OMERO_CLASS
-    group_dict['children'] = []
+    group_dict = gen_obj_dict(group_obj)
     # add the user's own tree first:
     user_obj = conn.getUser()
-    user_tree = gen_user_tree(conn, user_obj)
-    group_dict['children'].append(user_tree)
+    id_str = user_obj.OMERO_CLASS + ':' + str(user_obj.getId())
+    group_dict['children'].append(gen_obj_tree(conn, id_str, recurse=True))
     # then add the trees for other group members
-    for colleague in conn.listColleagues():
-        user_tree = gen_user_tree(conn, colleague)
-        group_dict['children'].append(user_tree)
+    for user_obj in conn.listColleagues():
+        id_str = user_obj.OMERO_CLASS + ':' + str(user_obj.getId())
+        group_dict['children'].append(gen_obj_tree(conn, id_str, recurse=True))
     return group_dict
 
 
