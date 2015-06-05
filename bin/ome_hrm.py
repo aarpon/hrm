@@ -107,6 +107,7 @@ def gen_obj_tree(conn, obj_id, recurse=False):
         children_wrapper = None  # FIXME
     else:
         children_wrapper = obj.listChildren()
+    # now recurse into children:
     for child in children_wrapper:
         cid = child.OMERO_CLASS + ':' + str(child.getId())
         child_tree = gen_obj_tree(conn, cid, recurse)
@@ -285,7 +286,7 @@ def parse_arguments():
         help="get a subtree of a given object (JSON)")
     parser_subtree.add_argument(
         '--id', type=str, required=True,
-        help='ID string of the object to build the subtree for, e.g. "User:23"')
+        help='ID string of the object to build a subtree for, e.g. "User:23"')
     parser_subtree.add_argument(
         '--recurse', action='store_true', default=False,
         help='generate full sub-tree by recursing into child nodes')
