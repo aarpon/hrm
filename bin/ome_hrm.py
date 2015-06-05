@@ -114,48 +114,6 @@ def gen_obj_tree(conn, obj_id, recurse=False):
     return obj_tree
 
 
-def gen_proj_tree(conn, user_obj):
-    """Create a list of project trees for a user.
-
-    Parameters
-    ==========
-    conn : omero.gateway._BlitzGateway
-    user_obj : omero.gateway._ExperimenterWrapper
-    """
-    proj_tree = []
-    for project in conn.listProjects(user_obj.getId()):
-        proj_dict = gen_obj_dict(project)
-        for dataset in project.listChildren():
-            dset_dict = gen_obj_dict(dataset)
-            for image in dataset.listChildren():
-                dset_dict['children'].append(gen_obj_dict(image))
-            proj_dict['children'].append(dset_dict)
-        proj_tree.append(proj_dict)
-    return proj_tree
-
-
-def gen_user_tree(conn, user_obj):
-    """Create a tree with user information and corresponding projects.
-
-    Parameters
-    ==========
-    conn : omero.gateway._BlitzGateway
-    user_obj : omero.gateway._ExperimenterWrapper
-
-    Returns
-    =======
-    {
-        "id": (int, e.g. 14),
-        "label": (str, e.g. "01 Demouser"),
-        "ome_name": (str, e.g. "demo01"),
-        "children": proj_tree (list)
-    }
-    """
-    user_dict = gen_obj_dict(user_obj)
-    user_dict['children'] = gen_proj_tree(conn, user_obj)
-    return user_dict
-
-
 def gen_group_tree(conn, group_obj):
     """Create a tree for a group with all user subtrees.
 
