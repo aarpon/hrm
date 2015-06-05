@@ -80,6 +80,10 @@ def gen_obj_dict(obj):
     obj_dict['class'] = obj.OMERO_CLASS
     if obj.OMERO_CLASS == 'Experimenter':
         obj_dict['owner'] = obj.getId()
+    elif obj.OMERO_CLASS == 'ExperimenterGroup':
+        # for some reason getOwner() et al. return nothing on a group, so we
+        # simply put it to None for group objects:
+        obj_dict['owner'] = None
     else:
         obj_dict['owner'] = obj.getOwnerOmeName()
     obj_dict['children'] = []
