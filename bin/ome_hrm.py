@@ -79,8 +79,7 @@ def gen_obj_dict(obj):
     obj_dict['label'] = obj.getName()
     obj_dict['class'] = obj.OMERO_CLASS
     if obj.OMERO_CLASS == 'Experimenter':
-        # TODO: is it better to store the owner's ID instead of the name?
-        obj_dict['owner'] = obj.getName()
+        obj_dict['owner'] = obj.getId()
     else:
         obj_dict['owner'] = obj.getOwnerOmeName()
     obj_dict['children'] = []
