@@ -48,7 +48,7 @@ def tree_to_json(obj_tree):
                       indent=4, separators=(',', ': '))
 
 
-def get_group_tree_json(conn, group):
+def get_group_tree_json(conn, group=None):
     """Generates the group tree and returns it in JSON format."""
     # TODO: this is probably also required for a user's sub-tree
     # we're currently only having a single tree (dict), but jqTree expects a
@@ -115,13 +115,13 @@ def gen_obj_tree(conn, obj_id, recurse=False):
     return obj_tree
 
 
-def gen_group_tree(conn, group_obj):
+def gen_group_tree(conn, group=None):
     """Create a tree for a group with all user subtrees.
 
     Parameters
     ==========
     conn : omero.gateway._BlitzGateway
-    group_obj : omero.gateway._ExperimenterGroupWrapper
+    group : omero.gateway._ExperimenterGroupWrapper
 
     Returns
     =======
@@ -131,7 +131,9 @@ def gen_group_tree(conn, group_obj):
         "children": user_trees (list of dict))
     }
     """
-    group_dict = gen_obj_dict(group_obj)
+    if group is None:
+        group = conn.getGroupFromContext()
+    group_dict = gen_obj_dict(group)
     # add the user's own tree first:
     user = conn.getUser()
     cid = user.OMERO_CLASS + ':' + str(user.getId())
@@ -337,14 +339,12 @@ def main():
 
     conn = omero_login(args.user, args.password, HOST, PORT)
 
-    # if not requested other, we're just using the default group
-    group = conn.getGroupFromContext()
     # TODO: implement requesting groups via cmdline option
 
     if args.action == 'checkCredentials':
         check_credentials(conn)
     elif args.action == 'retrieveUserTree':
-        get_group_tree_json(conn, group)
+        get_group_tree_json(conn)
     elif args.action == 'retrieveSubTree':
         get_obj_tree_json(conn, args.id, recurse=args.recurse)
     elif args.action == 'OMEROtoHRM':
