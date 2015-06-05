@@ -87,17 +87,27 @@ def gen_obj_dict(obj):
     return obj_dict
 
 
-def gen_obj_tree(conn, obj_id, full=False):
+def gen_obj_tree(conn, obj_id, recurse=False):
     """Create a subtree of a given ID."""
-    obj_tree = []
     obj_type, oid = obj_id.split(':')
+    if obj_type == 'Image':
+        return None
     obj = conn.getObject(obj_type, oid)
-    for child in obj.listChildren():
-        child_dict = gen_obj_dict(child)
-        obj_tree.append(child_dict)
-        if full == True:
-            # TODO: implement recursive sub-tree generation
-            pass
+    obj_tree = gen_obj_dict(obj)
+    # we need different child-wrappers, depending on the object type:
+    if obj_type == 'Experimenter':
+        children_wrapper = conn.listProjects(oid)
+    elif obj_type == 'ExperimenterGroup':
+        children_wrapper = None  # FIXME
+    else:
+        children_wrapper = obj.listChildren()
+    for child_obj in children_wrapper:
+        child = gen_obj_dict(child_obj)
+        if recurse == True:
+            child_tree = gen_obj_tree(conn, child['id'], recurse)
+            if child_tree is not None:
+                child['children'].append(child_tree)
+        obj_tree['children'].append(child)
     return obj_tree
 
 
