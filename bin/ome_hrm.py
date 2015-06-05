@@ -56,9 +56,9 @@ def get_group_tree_json(conn, group):
     print(tree_to_json([gen_group_tree(conn, group)]))
 
 
-def get_obj_tree_json(conn, obj_id):
+def get_obj_tree_json(conn, obj_id, recurse=False):
     """Generates the group tree and returns it in JSON format."""
-    print(tree_to_json([gen_obj_tree(conn, obj_id)]))
+    print(tree_to_json([gen_obj_tree(conn, obj_id, recurse)]))
 
 
 def gen_obj_dict(obj):
@@ -320,6 +320,9 @@ def parse_arguments():
     parser_subtree.add_argument(
         '--id', type=str, required=True,
         help='ID string of the object to build the subtree for, e.g. "User:23"')
+    parser_subtree.add_argument(
+        '--recurse', action='store_true', default=False,
+        help='generate full sub-tree by recursing into child nodes')
 
     # retrieveUserTree parser
     parser_tree = subparsers.add_parser(
@@ -376,7 +379,7 @@ def main():
     elif args.action == 'retrieveUserTree':
         get_group_tree_json(conn, group)
     elif args.action == 'retrieveSubTree':
-        get_obj_tree_json(conn, args.id)
+        get_obj_tree_json(conn, args.id, recurse=args.recurse)
     elif args.action == 'OMEROtoHRM':
         omero_to_hrm(conn, args.imageid, args.dest)
     elif args.action == 'HRMtoOMERO':
