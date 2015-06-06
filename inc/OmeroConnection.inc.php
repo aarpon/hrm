@@ -44,7 +44,7 @@ class OmeroConnection {
 
    /*!
       \var    $omeroWrapper
-      \brief  The OMERO Python connector.
+      \brief  The OMERO Python connector executable.
     */
     private $omeroWrapper = "bin/ome_hrm.py";
 
