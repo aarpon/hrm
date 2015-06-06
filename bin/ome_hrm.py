@@ -54,9 +54,9 @@ def get_group_tree_json(conn, group=None):
     print(tree_to_json([gen_group_tree(conn, group)]))
 
 
-def get_obj_tree_json(conn, obj_id, recurse=False):
+def get_obj_tree_json(conn, obj_id, levels=0):
     """Generates the group tree and returns it in JSON format."""
-    print(tree_to_json([gen_obj_tree(conn, obj_id, recurse)]))
+    print(tree_to_json([gen_obj_tree(conn, obj_id, levels)]))
 
 
 def gen_obj_dict(obj):
@@ -88,15 +88,15 @@ def gen_obj_dict(obj):
     return obj_dict
 
 
-def gen_obj_tree(conn, obj_id, recurse=False):
+def gen_obj_tree(conn, obj_id, levels=0):
     """Create a subtree of a given ID."""
     obj_type, oid = obj_id.split(':')
     obj = conn.getObject(obj_type, oid)
     obj_tree = gen_obj_dict(obj)
     if obj_type == 'Image':
         # the lowest level of our tree, so we don't recurse any further:
-        recurse = False
-    if not recurse:
+        levels = 0
+    if levels == 0:
         return obj_tree
     # we need different child-wrappers, depending on the object type:
     if obj_type == 'Experimenter':
@@ -108,7 +108,7 @@ def gen_obj_tree(conn, obj_id, recurse=False):
     # now recurse into children:
     for child in children_wrapper:
         cid = child.OMERO_CLASS + ':' + str(child.getId())
-        child_tree = gen_obj_tree(conn, cid, recurse)
+        child_tree = gen_obj_tree(conn, cid, levels - 1)
         obj_tree['children'].append(child_tree)
     return obj_tree
 
@@ -135,11 +135,11 @@ def gen_group_tree(conn, group=None):
     # add the user's own tree first:
     user = conn.getUser()
     cid = user.OMERO_CLASS + ':' + str(user.getId())
-    group_dict['children'].append(gen_obj_tree(conn, cid, recurse=True))
+    group_dict['children'].append(gen_obj_tree(conn, cid, levels=-1))
     # then add the trees for other group members
     for user in conn.listColleagues():
         cid = user.OMERO_CLASS + ':' + str(user.getId())
-        group_dict['children'].append(gen_obj_tree(conn, cid, recurse=True))
+        group_dict['children'].append(gen_obj_tree(conn, cid, levels=-1))
     return group_dict
 
 
@@ -294,8 +294,8 @@ def parse_arguments():
         '--id', type=str, required=True,
         help='ID string of the object to build a subtree for, e.g. "User:23"')
     parser_subtree.add_argument(
-        '--recurse', action='store_true', default=False,
-        help='generate full sub-tree by recursing into child nodes')
+        '--levels', type=int, default=-1,
+        help='number of tree levels to generate (-1 for all)')
 
     # retrieveUserTree parser
     parser_tree = subparsers.add_parser(
@@ -350,7 +350,7 @@ def main():
     elif args.action == 'retrieveUserTree':
         get_group_tree_json(conn)
     elif args.action == 'retrieveSubTree':
-        get_obj_tree_json(conn, args.id, recurse=args.recurse)
+        get_obj_tree_json(conn, args.id, levels=args.levels)
     elif args.action == 'OMEROtoHRM':
         omero_to_hrm(conn, args.imageid, args.dest)
     elif args.action == 'HRMtoOMERO':
