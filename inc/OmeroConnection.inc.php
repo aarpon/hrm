@@ -221,9 +221,12 @@ class OmeroConnection {
         return $this->buildCmd("retrieveUserTree");
     }
 
-    private function buildSubTreeCmd() {
+    private function buildSubTreeCmd($id='Project:51', $rec=true) {
         $param = array();
-        array_push($param, '--id', 'Project:51', '--rec');
+        array_push($param, '--id', $id);
+        if ($rec == true) {
+            array_push($param, '--recurse');
+        }
         return $this->buildCmd("retrieveSubTree", $param);
     }
 
