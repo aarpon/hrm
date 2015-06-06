@@ -48,6 +48,13 @@ class OmeroConnection {
     */
     private $omeroWrapper = "bin/ome_hrm.py";
 
+   /*!
+      \var    $nodeChildren
+      \brief  Associative array to hold children in JSON format, key is of the
+              form 'OMERO_CLASS:int', e.g. 'Dataset:23'
+    */
+    private $nodeChildren;
+
 
         /* ----------------------- Constructor ---------------------------- */
 
@@ -291,10 +298,16 @@ class OmeroConnection {
         return $omeroData;
     }
 
+    /*!
+     \brief  Get the children of a given node.
+     \return The string with the JSON information.
+    */
     public function getChildren($id) {
-        $cmd = $this->buildChildrenCmd($id);
-        $omeroData = shell_exec($cmd);
-        return $omeroData;
+        if (!isset($this->nodeChildren[$id])) {
+            $cmd = $this->buildChildrenCmd($id);
+            $this->nodeChildren[$id] = shell_exec($cmd);
+        }
+        return $this->nodeChildren[$id];
     }
 
     /*!
