@@ -14,6 +14,13 @@ if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
 
 $omeroConnection = $_SESSION['omeroConnection'];
 
-print($omeroConnection->getSubTree());
+// set a default node ID for testing:
+$node_id = 'Experimenter:34';
+
+if (isset($_GET['node'])) {
+    $node_id = $_GET['node'];
+}
+
+print($omeroConnection->getChildren($node_id));
 
 ?>
