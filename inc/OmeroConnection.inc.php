@@ -230,6 +230,12 @@ class OmeroConnection {
         return $this->buildCmd("retrieveSubTree", $param);
     }
 
+    private function buildChildrenCmd($id) {
+        $param = array();
+        array_push($param, '--id', $id);
+        return $this->buildCmd("retrieveChildren", $param);
+    }
+
     /*!
      \brief   Build the command to export one image to the OMERO server.
      \param   $file - The name and relative path of the image file.
@@ -283,6 +289,12 @@ class OmeroConnection {
 
     public function getSubTree($id='Experimenter:34', $rec=true) {
         $cmd = $this->buildSubTreeCmd($id, $rec);
+        $omeroData = shell_exec($cmd);
+        return $omeroData;
+    }
+
+    public function getChildren($id) {
+        $cmd = $this->buildChildrenCmd($id);
         $omeroData = shell_exec($cmd);
         return $omeroData;
     }
