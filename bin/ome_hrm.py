@@ -94,7 +94,8 @@ def gen_obj_dict(obj):
 
 
 def gen_children(conn, id_str):
-    obj_type, oid = id_str.split(':')
+    """Get the children for a given node."""
+    obj_type = id_str.split(':')[0]
     tree = gen_obj_tree(conn, id_str, levels=1)
     if not obj_type == 'Dataset':
         for child in tree['children']:
