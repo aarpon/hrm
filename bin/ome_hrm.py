@@ -47,6 +47,11 @@ def tree_to_json(obj_tree):
                       indent=4, separators=(',', ': '))
 
 
+def get_children_json(conn, id_str):
+    """Gets the child nodes of the given ID and returns them in JSON format."""
+    print(tree_to_json(gen_children(conn, id_str)))
+
+
 def get_group_tree_json(conn, group=None):
     """Generates the group tree and returns it in JSON format."""
     # we're currently only having a single tree (dict), but jqTree expects a
@@ -86,6 +91,15 @@ def gen_obj_dict(obj):
         obj_dict['owner'] = obj.getOwnerOmeName()
     obj_dict['children'] = []
     return obj_dict
+
+
+def gen_children(conn, id_str):
+    obj_type, oid = id_str.split(':')
+    tree = gen_obj_tree(conn, id_str, levels=1)
+    if not obj_type == 'Dataset':
+        for child in tree['children']:
+            child['load_on_demand'] = True
+    return tree['children']
 
 
 def gen_obj_tree(conn, obj_id, levels=0):
@@ -286,6 +300,14 @@ def parse_arguments():
     subparsers.add_parser(
         'checkCredentials', help='check if login credentials are valid')
 
+    # retrieveChildren parser
+    parser_subtree = subparsers.add_parser(
+        'retrieveChildren',
+        help="get the children of a given node object (JSON)")
+    parser_subtree.add_argument(
+        '--id', type=str, required=True,
+        help='ID string of the object to get the children for, e.g. "User:23"')
+
     # retrieveSubTree parser
     parser_subtree = subparsers.add_parser(
         'retrieveSubTree',
@@ -347,6 +369,8 @@ def main():
 
     if args.action == 'checkCredentials':
         check_credentials(conn)
+    elif args.action == 'retrieveChildren':
+        get_children_json(conn, args.id)
     elif args.action == 'retrieveUserTree':
         get_group_tree_json(conn)
     elif args.action == 'retrieveSubTree':
