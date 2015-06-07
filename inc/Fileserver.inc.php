@@ -750,7 +750,7 @@ class Fileserver {
   public function exportToOmero( ) {
 
       if (!isset($_SESSION['omeroConnection'])) {
-          return "Impossible to reach your OMERO account.";
+          return "Your OMERO connection was interrupted, please try again!";
       }
       // file_put_contents('/tmp/hrm_post.log', var_export($_POST, true));
 
@@ -775,7 +775,7 @@ class Fileserver {
   public function importFromOmero() {
 
       if (!isset($_SESSION['omeroConnection'])) {
-          return "Impossible to reach your OMERO account.";
+          return "Your OMERO connection was interrupted, please try again!";
       }
       // file_put_contents('/tmp/hrm_post.log', var_export($_POST, true));
 
