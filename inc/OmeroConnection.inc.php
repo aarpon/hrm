@@ -39,7 +39,6 @@ class OmeroConnection {
 
     /* ----------------------- Constructor ---------------------------- */
     public function __construct( $omeroUser, $omeroPass ) {
-
         if (empty($omeroUser)) {
             omelog("No OMERO user name provided, cannot login.", 2);
             return;
@@ -57,8 +56,8 @@ class OmeroConnection {
         omelog("Successfully connected to OMERO!", 2);
     }
 
-        /* -------------------- General OMERO processes -------------------- */
 
+    /* -------------------- General OMERO processes -------------------- */
     /*!
      \brief   Try to establish communication with the OMERO server using the
               login credentials provided by the user.
@@ -157,8 +156,8 @@ class OmeroConnection {
         }
     }
 
-        /* ---------------------- Command builders--------------------------- */
 
+    /* ---------------------- Command builders--------------------------- */
     /*!
      \brief   Generic command builder for the OMERO connector, adding the
               credentials and making sure all parameters are properly quoted.
@@ -255,8 +254,8 @@ class OmeroConnection {
         return $this->buildCmd("OMEROtoHRM", $param);
     }
 
-        /* ---------------------- OMERO Tree Assemblers ------------------- */
 
+    /* ---------------------- OMERO Tree Assemblers ------------------- */
     /*!
      \brief  Get the last requested JSON version of the user's OMERO tree.
      \return The string with the JSON information.
@@ -310,21 +309,21 @@ class OmeroConnection {
     }
 
 
-        /* ------------------------- Parsers ------------------------------ */
+    /* ------------------------- Parsers ------------------------------ */
     /*!
      \brief   Parse the HRM job parameters (html) file into a plain string to
               be used as OMERO annotation.
      \param   $file The path and file name of the HRM deconvolution result.
      \return  The plain string with the parameter summary.
     */
-    private function getDeconParameterSummary($file) {
 
-            /* A summary title. */
+    private function getDeconParameterSummary($file) {
+        /* A summary title. */
         $summary  = "'[Report of deconvolution parameters from the ";
         $summary .= "Huygens Remote Manager for file ";
         $summary .= basename($file) . " ]: ";
 
-            /* Get the parameter summary (HTML text) of the HRM job. */
+        /* Get the parameter summary (HTML text) of the HRM job. */
         $extension      = pathinfo($file, PATHINFO_EXTENSION);
         $parametersFile = str_replace($extension,"parameters.txt",$file);
         $parameters     = file_get_contents($parametersFile);
@@ -334,29 +333,29 @@ class OmeroConnection {
             return $summary;
         }
 
-            /* Loop over the parameter tables. */
+        /* Loop over the parameter tables. */
         $parameterSets = explode("<table>",$parameters);
         foreach ($parameterSets as $key => $parameterSet) {
 
-                /* Irrelevant information. */
+            /* Irrelevant information. */
             if ($key == 0) {
                 continue;
             }
 
-                /* Loop over the table rows. */
+            /* Loop over the table rows. */
             $rows = explode("<tr>",$parameterSet);
             foreach ($rows as $key => $row) {
 
-                    /* Irrelevant information. */
+                /* Filter out irrelevant information. */
                 if ($key == 1 || $key == 2) {
                     continue;
                 }
 
-                    /* Loop over the row columns. */
+                /* Loop over the row columns. */
                 $columns = explode("<td",$row);
                 foreach ($columns as $key => $column) {
 
-                        /* Irrelevant information. */
+                    /* Filter out irrelevant information. */
                     if ($key == 3) {
                         continue;
                     }
@@ -391,17 +390,17 @@ class OmeroConnection {
      \param   The name of the deconvolved dataset.
      \return  The name of the raw dataset.
     */
-    private function getOriginalName($file) {
 
-            /* Remove any relative paths that may exist. */
+    private function getOriginalName($file) {
+        /* Remove any relative paths that may exist. */
         $file = pathinfo($file, PATHINFO_BASENAME);
 
-            /* Remove the HRM deconvolution suffix and file extension. */
+        /* Remove the HRM deconvolution suffix and file extension. */
         $replaceThis  = "/_([a-z0-9]{13,13})_hrm\.(.*)$/";
         $replaceWith  = "";
         $originalName = preg_replace($replaceThis,$replaceWith,$file);
 
-            /* In case of error just return the name of the deconvolved file. */
+        /* In case of error just return the name of the deconvolved file. */
         if ($originalName != NULL) {
             return $originalName;
         } else {
