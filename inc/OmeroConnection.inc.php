@@ -67,7 +67,7 @@ class OmeroConnection {
      */
     private function checkOmeroCredentials() {
         omelog("attempting to log on to OMERO.", 2);
-        $cmd = $this->buildCredentialsCmd();
+        $cmd = $this->buildCmd("checkCredentials");
 
             /* Authenticate against the OMERO server. */
         $loggedIn = shell_exec($cmd);
@@ -106,8 +106,11 @@ class OmeroConnection {
             return "No files selected.";
         }
 
-        $cmd = $this->buildOMEROtoHRMCmd($imgName, $fileServer, $imgId);
+        $fileAndPath = $fileServer->sourceFolder() . "/" . $imgName;
+        $param = array("--imageid", $imgId, "--dest", $fileAndPath);
+        $cmd = $this->buildCmd("OMEROtoHRM", $param);
 
+        omelog('requesting ' . $imgId . ' to ' . $fileAndPath);
         exec($cmd, $out, $retval);
         if ($retval != 0) {
             $msg = "failed retrieving " . $imgId;
@@ -141,11 +144,14 @@ class OmeroConnection {
 
         $datasetId = $postedParams['OmeDatasetId'];
 
-            /* Export all the selected files. */
+        /* Export all the selected files. */
         foreach ($selectedFiles as $file) {
+            // TODO: check if $file may contain relative paths!
+            $fileAndPath = $fileServer->destinationFolder() . "/" . $file;
+            $param = array("--file", $fileAndPath, "--dset", $datasetId);
+            $cmd = $this->buildCmd("HRMtoOMERO", $param);
 
-            $cmd = $this->buildHRMtoOMEROCmd($file, $fileServer, $datasetId);
-
+            omelog('uploading "' . $fileAndPath . '" to dataset ' . $datasetId);
             if (shell_exec($cmd) == NULL) {
                 $msg = "exporting image to OMERO failed.";
                 omelog($msg, 1);
@@ -193,76 +199,6 @@ class OmeroConnection {
         return $cmd;
     }
 
-    /*! \brief   Build the command to check OMERO credentials.
-        \return  A string with the complete command.
-     */
-    private function buildCredentialsCmd() {
-        return $this->buildCmd("checkCredentials");
-    }
-
-    /*! \brief   Build the command to retrieve the user's OMERO data tree.
-        \return  A string with the complete command.
-     */
-    private function buildTreeCmd() {
-        return $this->buildCmd("retrieveUserTree");
-    }
-
-    /*! \brief   Command builder to retrieve the sub-tree of a given node.
-        \param   $id - The id string of the node, e.g. 'Project:23'
-        \param   $levels - The number of sub-levels to retrieve.
-        \return  A string with the complete command.
-     */
-    private function buildSubTreeCmd($id, $levels) {
-        $param = array();
-        array_push($param, '--id', $id);
-        array_push($param, '--levels', $levels);
-        return $this->buildCmd("retrieveSubTree", $param);
-    }
-
-    /*! \brief   Command builder to retrieve children of a given node.
-        \param   $id - The id string of the node, e.g. 'Project:23'
-        \return  A string with the complete command.
-     */
-    private function buildChildrenCmd($id) {
-        $param = array();
-        array_push($param, '--id', $id);
-        return $this->buildCmd("retrieveChildren", $param);
-    }
-
-    /*! \brief   Command builder to export one image to the OMERO server.
-        \param   $file - The name and relative path of the image file.
-        \param   $fileServer - An instance of the Fileserver class.
-        \param   $datasetId - OMERO ID of the dataset to export the image to.
-        \return  A string with the complete command.
-     */
-    private function buildHRMtoOMEROCmd($file, $fileServer, $datasetId) {
-        // FIXME: previous documentation said "$file may contain relative
-        // paths" - is this always true? Otherwise this method of constructing
-        // the absolute path will fail!
-        $fileAndPath = $fileServer->destinationFolder() . "/" . $file;
-        omelog('uploading "' . $fileAndPath .
-            '" to dataset ' . $datasetId);
-        $param = array();
-        array_push($param, "--file", $fileAndPath);
-        array_push($param, "--dset", $datasetId);
-        return $this->buildCmd("HRMtoOMERO", $param);
-    }
-
-    /*! \brief   Build the command to import one image from the OMERO server.
-        \param   $imgName - The name of the image in the OMERO server.
-        \param   $fileServer - An instance of the Fileserver class.
-        \param   $imgId - The ID of the image in the OMERO server.
-        \return  A string with the complete command.
-     */
-    private function buildOMEROtoHRMCmd($imgName, $fileServer, $imgId) {
-        $fileAndPath = $fileServer->sourceFolder() . "/" . $imgName;
-        omelog('requesting ' . $imgId . ' to ' . $fileAndPath);
-        $param = array();
-        array_push($param, "--imageid", $imgId);
-        array_push($param, "--dest", $fileAndPath);
-        return $this->buildCmd("OMEROtoHRM", $param);
-    }
-
 
     /* ---------------------- OMERO Tree Assemblers ------------------- */
 
@@ -283,7 +219,8 @@ class OmeroConnection {
         \return  JSON string with the sub-tree.
      */
     public function getSubTree($id, $levels) {
-        $cmd = $this->buildSubTreeCmd($id, $levels);
+        $param = array('--id', $id, '--levels', $levels);
+        $cmd = $this->buildCmd("retrieveSubTree", $param);
         $omeroData = shell_exec($cmd);
         return $omeroData;
     }
@@ -294,7 +231,8 @@ class OmeroConnection {
      */
     public function getChildren($id) {
         if (!isset($this->nodeChildren[$id])) {
-            $cmd = $this->buildChildrenCmd($id);
+            $param = array('--id', $id);
+            $cmd = $this->buildCmd("retrieveChildren", $param);
             $this->nodeChildren[$id] = shell_exec($cmd);
         }
         return $this->nodeChildren[$id];
@@ -304,7 +242,7 @@ class OmeroConnection {
         \return  JSON string with the OMERO data tree.
      */
     public function getUpdatedOmeroTree() {
-        $cmd = $this->buildTreeCmd();
+        $cmd = $this->buildCmd("retrieveUserTree");
         $omeroData = shell_exec($cmd);
         if ($omeroData == NULL) {
             $this->omeroTree = NULL;
