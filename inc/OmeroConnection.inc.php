@@ -163,7 +163,7 @@ class OmeroConnection {
     }
 
 
-    /* ---------------------- Command builders--------------------------- */
+    /* ---------------------- Command builder --------------------------- */
 
     /*! \brief   Generic command builder for the OMERO connector.
         \param   $command - The command to be run by the wrapper.
@@ -171,10 +171,10 @@ class OmeroConnection {
                  required by the wrapper to run the requested command.
         \return  A string with the complete command.
 
-        This is the generic command builder that is called by the special
-        command builders below and takes care of all the common tasks that are
-        independent of the specific command, like adding the credentials,
-        making sure all parameters are properly quoted, etc.
+        This is the generic command builder that is called by the various
+        functions using the connector executable and takes care of all the
+        common tasks that are independent of the specific command, like adding
+        the credentials, making sure all parameters are properly quoted, etc.
      */
     private function buildCmd($command, $parameters=array()) {
         // escape all shell arguments
