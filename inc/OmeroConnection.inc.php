@@ -17,35 +17,15 @@ function omelog($text, $level=0) {
 
 class OmeroConnection {
 
-    /*!
-      \var    $omeroTree
-      \brief  The contents of the user's OMERO tree.
-    */
-    private $omeroTree;
+    private $omeroTree; //!< The contents of the user's OMERO tree.
 
-    /*!
-      \var    $omeroUser
-      \brief  The OMERO user name for authentication and logging purposes.
-    */
-    private $omeroUser;
+    private $omeroUser; //!< The OMERO username for authentication + logging.
 
-    /*!
-      \var    $omeroPass
-      \brief  The OMERO user password for authentication and logging purposes.
-    */
-    private $omeroPass;
+    private $omeroPass; //!< The OMERO user password.
 
-   /*!
-      \var    $loggedIn
-      \brief  Boolean to know whether the login was successful.
-    */
-    public $loggedIn;
+    public $loggedIn;   //!< Boolean to know if the login was successful.
 
-   /*!
-      \var    $omeroWrapper
-      \brief  The OMERO Python connector executable.
-    */
-    private $omeroWrapper = "bin/ome_hrm.py";
+    private $omeroWrapper = "bin/ome_hrm.py"; //!< OMERO connector executable.
 
    /*!
       \var    $nodeChildren
