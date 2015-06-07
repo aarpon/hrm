@@ -58,10 +58,13 @@ class OmeroConnection {
 
 
     /* -------------------- General OMERO processes -------------------- */
-    /*!
-     \brief   Try to establish communication with the OMERO server using the
-              login credentials provided by the user.
-    */
+
+    /*! \brief  Check to authenticate to OMERO using given credentials.
+        \return Noting, sets the $this->loggedIn class variable.
+
+        Try to establish communication with the OMERO server using the login
+        credentials provided by the user.
+     */
     private function checkOmeroCredentials() {
         omelog("attempting to log on to OMERO.", 2);
         $cmd = $this->buildCredentialsCmd();
@@ -84,15 +87,13 @@ class OmeroConnection {
         }
     }
 
-    /*!
-     \brief   Retrieve one image from the OMERO server.
-     \param   $postedParams Alias of $_POST with the user selection.
-     \param   $fileServer Instance of the Fileserver class.
-     \return  Ocassionally, an error message.
-     \todo    Should we return "true" in case of success?
-    */
+    /*! \brief   Retrieve one image from the OMERO server.
+        \param   $postedParams Alias of $_POST with the user selection.
+        \param   $fileServer Instance of the Fileserver class.
+        \return  Ocassionally, an error message.
+        \todo    Should we return "true" in case of success?
+     */
     public function downloadFromOMERO($postedParams, $fileServer) {
-
         if (isset($postedParams['OmeImageName'])) {
             $imgName = $postedParams['OmeImageName'];
         } else {
@@ -117,13 +118,12 @@ class OmeroConnection {
         return "Successfully retrieved " . $imgId . "!";
     }
 
-    /*!
-     \brief   Attach a deconvolved image to an OMERO dataset.
-     \param   $postedParams An alias of $_POST with names of selected files.
-     \param   $fileServer   An instance of the Fileserver class.
-     \return  Ocassionally an error message.
-     \todo    Should we return "true" in case of success?
-    */
+    /*! \brief   Attach a deconvolved image to an OMERO dataset.
+        \param   $postedParams An alias of $_POST with names of selected files.
+        \param   $fileServer   An instance of the Fileserver class.
+        \return  Ocassionally an error message.
+        \todo    Should we return "true" in case of success?
+     */
     public function uploadToOMERO($postedParams, $fileServer) {
         $selectedFiles = json_decode($postedParams['selectedFiles']);
 
@@ -158,14 +158,18 @@ class OmeroConnection {
 
 
     /* ---------------------- Command builders--------------------------- */
-    /*!
-     \brief   Generic command builder for the OMERO connector, adding the
-              credentials and making sure all parameters are properly quoted.
-     \param   $command - The command to be run by the wrapper.
-     \param   $parameters (optional) - An array of additional parameters
-              required by the wrapper to run the requested command.
-     \return  A string with the complete command.
-    */
+
+    /*! \brief   Generic command builder for the OMERO connector.
+        \param   $command - The command to be run by the wrapper.
+        \param   $parameters (optional) - An array of additional parameters
+                 required by the wrapper to run the requested command.
+        \return  A string with the complete command.
+
+        This is the generic command builder that is called by the special
+        command builders below and takes care of all the common tasks that are
+        independent of the specific command, like adding the credentials,
+        making sure all parameters are properly quoted, etc.
+     */
     private function buildCmd($command, $parameters=array()) {
         // escape all shell arguments
         foreach($parameters as &$param) {
@@ -189,22 +193,25 @@ class OmeroConnection {
         return $cmd;
     }
 
-    /*!
-     \brief   Build the command to check whether the user can log on to OMERO.
-     \return  A string with the complete command.
-    */
+    /*! \brief   Build the command to check OMERO credentials.
+        \return  A string with the complete command.
+     */
     private function buildCredentialsCmd() {
         return $this->buildCmd("checkCredentials");
     }
 
-    /*!
-     \brief   Build the command to retrieve the user's OMERO data tree.
-     \return  A string with the complete command.
-    */
+    /*! \brief   Build the command to retrieve the user's OMERO data tree.
+        \return  A string with the complete command.
+     */
     private function buildTreeCmd() {
         return $this->buildCmd("retrieveUserTree");
     }
 
+    /*! \brief   Command builder to retrieve the sub-tree of a given node.
+        \param   $id - The id string of the node, e.g. 'Project:23'
+        \param   $levels - The number of sub-levels to retrieve.
+        \return  A string with the complete command.
+     */
     private function buildSubTreeCmd($id, $levels) {
         $param = array();
         array_push($param, '--id', $id);
@@ -212,19 +219,22 @@ class OmeroConnection {
         return $this->buildCmd("retrieveSubTree", $param);
     }
 
+    /*! \brief   Command builder to retrieve children of a given node.
+        \param   $id - The id string of the node, e.g. 'Project:23'
+        \return  A string with the complete command.
+     */
     private function buildChildrenCmd($id) {
         $param = array();
         array_push($param, '--id', $id);
         return $this->buildCmd("retrieveChildren", $param);
     }
 
-    /*!
-     \brief   Build the command to export one image to the OMERO server.
-     \param   $file - The name and relative path of the image file.
-     \param   $fileServer - An instance of the Fileserver class.
-     \param   $datasetId - The OMERO ID of the dataset to export the image to.
-     \return  A string with the complete command.
-    */
+    /*! \brief   Command builder to export one image to the OMERO server.
+        \param   $file - The name and relative path of the image file.
+        \param   $fileServer - An instance of the Fileserver class.
+        \param   $datasetId - OMERO ID of the dataset to export the image to.
+        \return  A string with the complete command.
+     */
     private function buildHRMtoOMEROCmd($file, $fileServer, $datasetId) {
         // FIXME: previous documentation said "$file may contain relative
         // paths" - is this always true? Otherwise this method of constructing
@@ -238,13 +248,12 @@ class OmeroConnection {
         return $this->buildCmd("HRMtoOMERO", $param);
     }
 
-    /*!
-     \brief   Build the command to import one image from the OMERO server.
-     \param   $imgName - The name of the image in the OMERO server.
-     \param   $fileServer - An instance of the Fileserver class.
-     \param   $imgId - The ID of the image in the OMERO server.
-     \return  A string with the complete command.
-    */
+    /*! \brief   Build the command to import one image from the OMERO server.
+        \param   $imgName - The name of the image in the OMERO server.
+        \param   $fileServer - An instance of the Fileserver class.
+        \param   $imgId - The ID of the image in the OMERO server.
+        \return  A string with the complete command.
+     */
     private function buildOMEROtoHRMCmd($imgName, $fileServer, $imgId) {
         $fileAndPath = $fileServer->sourceFolder() . "/" . $imgName;
         omelog('requesting ' . $imgId . ' to ' . $fileAndPath);
@@ -256,12 +265,11 @@ class OmeroConnection {
 
 
     /* ---------------------- OMERO Tree Assemblers ------------------- */
-    /*!
-     \brief  Get the last requested JSON version of the user's OMERO tree.
-     \return The string with the JSON information.
-    */
-    public function getLastOmeroTree() {
 
+    /*! \brief  Get the last requested JSON version of the user's OMERO tree.
+        \return The string with the JSON information.
+     */
+    public function getLastOmeroTree() {
         if (!isset($this->omeroTree)) {
             $this->getUpdatedOmeroTree();
         }
@@ -269,16 +277,21 @@ class OmeroConnection {
         return $this->omeroTree;
     }
 
+    /*! \brief   Get the sub-tree of a given node.
+        \param   $id - The id string of the node, e.g. 'Project:23'
+        \param   $levels - The number of sub-levels to retrieve.
+        \return  JSON string with the sub-tree.
+     */
     public function getSubTree($id, $levels) {
         $cmd = $this->buildSubTreeCmd($id, $levels);
         $omeroData = shell_exec($cmd);
         return $omeroData;
     }
 
-    /*!
-     \brief  Get the children of a given node.
-     \return The string with the JSON information.
-    */
+    /*! \brief   Get the children of a given node.
+        \param   $id - The id string of the node, e.g. 'Project:23'
+        \return  JSON string with the child-nodes.
+     */
     public function getChildren($id) {
         if (!isset($this->nodeChildren[$id])) {
             $cmd = $this->buildChildrenCmd($id);
@@ -287,12 +300,10 @@ class OmeroConnection {
         return $this->nodeChildren[$id];
     }
 
-    /*!
-     \brief   Retrieve the OMERO data tree from the connector script.
-     \return  The JSON string with the OMERO data tree.
-    */
+    /*! \brief   Retrieve the OMERO data tree from the connector script.
+        \return  JSON string with the OMERO data tree.
+     */
     public function getUpdatedOmeroTree() {
-
         $cmd = $this->buildTreeCmd();
         $omeroData = shell_exec($cmd);
         if ($omeroData == NULL) {
@@ -310,13 +321,14 @@ class OmeroConnection {
 
 
     /* ------------------------- Parsers ------------------------------ */
-    /*!
-     \brief   Parse the HRM job parameters (html) file into a plain string to
-              be used as OMERO annotation.
-     \param   $file The path and file name of the HRM deconvolution result.
-     \return  The plain string with the parameter summary.
-    */
 
+    /*! \brief   Create a string summarizing the HRM job parameters.
+        \param   $file - The path and file name of the HRM deconvolution result.
+        \return  The plain string with the parameter summary.
+
+        Parse the HRM job parameters (html) file and generate a plain string
+        with all the details to be used as OMERO annotation.
+     */
     private function getDeconParameterSummary($file) {
         /* A summary title. */
         $summary  = "'[Report of deconvolution parameters from the ";
@@ -385,12 +397,11 @@ class OmeroConnection {
         return $summary . "'";
     }
 
-    /*!
-     \brief   Remove the deconvolution suffix to find the original file name.
-     \param   The name of the deconvolved dataset.
-     \return  The name of the raw dataset.
-    */
 
+    /*! \brief   Remove the HRM-job suffix to find the original file name.
+        \param   The name of the deconvolved dataset.
+        \return  The name of the raw dataset.
+     */
     private function getOriginalName($file) {
         /* Remove any relative paths that may exist. */
         $file = pathinfo($file, PATHINFO_BASENAME);
