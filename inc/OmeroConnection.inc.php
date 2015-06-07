@@ -36,11 +36,8 @@ class OmeroConnection {
      */
     private $nodeChildren;
 
-        /* ----------------------- Constructor ---------------------------- */
 
-    /*!
-     \brief   Constructor
-    */
+    /* ----------------------- Constructor ---------------------------- */
     public function __construct( $omeroUser, $omeroPass ) {
 
         if (empty($omeroUser)) {
