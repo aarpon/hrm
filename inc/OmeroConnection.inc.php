@@ -27,13 +27,14 @@ class OmeroConnection {
 
     private $omeroWrapper = "bin/ome_hrm.py"; //!< OMERO connector executable.
 
-   /*!
-      \var    $nodeChildren
-      \brief  Associative array to hold children in JSON format, key is of the
-              form 'OMERO_CLASS:int', e.g. 'Dataset:23'
-    */
-    private $nodeChildren;
+    /*! \brief Array map to hold children in JSON format.
+        \var   $nodeChildren
 
+        Associative array that is used to cache children in JSON strings so
+        they don't have to be re-requested from the OMERO server. The key to
+        access entries is of the form 'OMERO_CLASS:int', e.g. 'Dataset:23'.
+     */
+    private $nodeChildren;
 
         /* ----------------------- Constructor ---------------------------- */
 
