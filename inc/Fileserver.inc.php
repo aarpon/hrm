@@ -766,7 +766,7 @@ class Fileserver {
 
       $omeroConnection = $_SESSION['omeroConnection'];
 
-      $omeroConnection->uploadToOMERO($_POST, $this);
+      return $omeroConnection->uploadToOMERO($_POST, $this);
   }
 
   /*!
@@ -796,7 +796,7 @@ class Fileserver {
 
       $omeroConnection = $_SESSION['omeroConnection'];
 
-      $omeroConnection->downloadFromOMERO($_POST, $this);
+      return $omeroConnection->downloadFromOMERO($_POST, $this);
   }
 
   /*!

@@ -3,7 +3,6 @@
   // Copyright and license notice: see license.txt
 
 // TODO:
-// - report success/failure to the web frontend
 // - block web frontend with an overlay to signalize upload/download
 
 require_once( "User.inc.php" );
@@ -138,6 +137,7 @@ class OmeroConnection {
             return $msg;
         }
         omelog("successfully retrieved " . $imgId, 1);
+        return "Successfully retrieved " . $imgId . "!";
     }
 
     /*!
@@ -148,7 +148,6 @@ class OmeroConnection {
      \todo    Should we return "true" in case of success?
     */
     public function uploadToOMERO($postedParams, $fileServer) {
-
         $selectedFiles = json_decode($postedParams['selectedFiles']);
 
         if (sizeof($selectedFiles) < 1) {
@@ -176,6 +175,7 @@ class OmeroConnection {
                 return $msg;
             }
             omelog("successfully uploaded " . $file, 1);
+            return "Successfully uploaded " . $file . "!";
         }
     }
 
