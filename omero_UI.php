@@ -135,16 +135,6 @@ if (isset($_POST['getOmeroData']) && !isset($omeroConnection)) {
 
             <script>
             $(function() {
-                var data = <?php
-                    // data was used with static trees, disabled for now:
-                    // echo $omeroTree;
-                    echo '""';
-                    // FIXME: $omeroTree is still generated before (without the
-                    // data being used here), resulting in another (redundant)
-                    // call to ome_hrm.py: this should be avoided by lazy
-                    // initialization of the tree data in
-                    // OmeroConnection.inc.php
-                ?>;
 
                 $('#omeroTree').tree({
                     saveState: true,
