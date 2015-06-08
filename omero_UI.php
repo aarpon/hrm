@@ -64,7 +64,12 @@ if (isset($_POST['getOmeroData']) && !isset($omeroConnection)) {
 
 
 
-      if (isset($omeroTree)) {?>
+// if we are connected to an OMERO server, always show the tree by default:
+if (isset($omeroConnection)) {
+    if ($omeroConnection->loggedIn) {
+        $omeroTree = $omeroConnection->getLastOmeroTree();
+    }
+?>
 
     <div id="omeroSelection">
 
