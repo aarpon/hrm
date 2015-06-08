@@ -81,14 +81,14 @@ if (isset($_POST['getOmeroData']) && !isset($omeroConnection)) {
               ?>
                   <input name="importFromOmero" type="submit"
                   value="" class="icon remove"
-                  onmouseover="Tip('Transfer selected files')"
+                  onmouseover="Tip('Transfer selected files from OMERO')"
                   onmouseout="UnTip()"/>
               <?php
               } else {
                   ?>
                   <input name="exportToOmero" type="submit"
                       value="" class="icon down"
-                      onmouseover="Tip('Transfer selected files')"
+                      onmouseover="Tip('Transfer selected files to OMERO')"
                       onmouseout="UnTip()" />
               <?php
               }
