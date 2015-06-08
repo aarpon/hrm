@@ -161,7 +161,6 @@ def gen_group_tree(conn, group=None):
 
 def check_credentials(conn):
     """Check if supplied credentials are valid."""
-    # TODO: do we really need this function...?
     connected = conn.connect()
     if connected:
         print('Success logging into OMERO with user ID %s' % conn.getUserId())
