@@ -1,11 +1,11 @@
 <?php
 
-  // This file is part of the Huygens Remote Manager
-  // Copyright and license notice: see license.txt
+// This file is part of the Huygens Remote Manager
+// Copyright and license notice: see license.txt
 
-        // Dialog to ask for the OMERO credentials.
-      if (isset($_POST['getOmeroData']) && !isset($omeroConnection)) {
-          ?>
+// Dialog to ask for the OMERO credentials.
+if (isset($_POST['getOmeroData']) && !isset($omeroConnection)) {
+?>
     <div id="floatingCredentialsDialog" title="OMERO login credentials">
 
       <p>Your OMERO username and password are needed for
@@ -28,7 +28,6 @@
     <script>
 
       $(function() {
-
             // Workaround to bind the 'Enter' button to the 'Submit' action.
             $( "#floatingCredentialsDialog" ).keypress(function(e){
                 if(e.keyCode == $.ui.keyCode.ENTER) {
@@ -60,7 +59,8 @@
     </form> <!-- omeroCheckCredentials !-->
 
     </div> <!-- floatingCredentialsDialog !-->
-   <?php }
+<?php
+}   // endif (isset($_POST['getOmeroData']) && !isset($omeroConnection))
 
 
 
@@ -175,6 +175,6 @@
      </div> <!-- omeroSelection -->
 
 
-        <?php
-            }
-  ?>
+<?php
+}  // endif (isset($omeroConnection))
+?>
