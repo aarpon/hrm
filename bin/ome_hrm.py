@@ -152,6 +152,34 @@ def gen_obj_tree(conn, obj_id, levels=0):
     return obj_tree
 
 
+def gen_base_tree(conn):
+    """Create the tree basis: group and members.
+
+    Parameters
+    ==========
+    conn : omero.gateway._BlitzGateway
+
+    Returns
+    =======
+    base : a nested dict containing the default group as the base and the
+           members of the group as a list of dicts in the 'children' item,
+           starting with the current user as the first entry
+    """
+    group = conn.getGroupFromContext()
+    group_dict = gen_obj_dict(group)
+    # add the user's own tree first:
+    user = conn.getUser()
+    user_dict = gen_obj_dict(user)
+    user_dict['load_on_demand'] = True
+    group_dict['children'].append(user_dict)
+    # then add the trees for other group members
+    for user in conn.listColleagues():
+        user_dict = gen_obj_dict(user)
+        user_dict['load_on_demand'] = True
+        group_dict['children'].append(user_dict)
+    return group_dict
+
+
 def gen_group_tree(conn, group=None):
     """Create a tree for a group with all user subtrees.
 
