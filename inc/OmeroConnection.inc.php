@@ -200,18 +200,6 @@ class OmeroConnection {
 
     /* ---------------------- OMERO Tree Assemblers ------------------- */
 
-    /*! \brief   Get the sub-tree of a given node.
-        \param   $id - The id string of the node, e.g. 'Project:23'
-        \param   $levels - The number of sub-levels to retrieve.
-        \return  JSON string with the sub-tree.
-     */
-    public function getSubTree($id, $levels) {
-        $param = array('--id', $id, '--levels', $levels);
-        $cmd = $this->buildCmd("retrieveSubTree", $param);
-        $omeroData = shell_exec($cmd);
-        return $omeroData;
-    }
-
     /*! \brief   Get the children of a given node.
         \param   $id - The id string of the node, e.g. 'Project:23'
         \return  JSON string with the child-nodes.
