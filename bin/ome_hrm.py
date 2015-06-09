@@ -95,7 +95,18 @@ def gen_obj_dict(obj):
 
 
 def gen_children(conn, id_str):
-    """Get the children for a given node."""
+    """Get the children for a given node.
+
+    Parameters
+    ==========
+    conn : omero.gateway._BlitzGateway
+    id_str : str - OMERO object ID string (e.g. "Image:42")
+
+    Returns
+    =======
+    list - a list of the child nodes dicts, having the 'load_on_demand'
+           property set to True required by the jqTree JavaScript library
+    """
     obj_type = id_str.split(':')[0]
     tree = gen_obj_tree(conn, id_str, levels=1)
     if not obj_type == 'Dataset':
@@ -105,7 +116,19 @@ def gen_children(conn, id_str):
 
 
 def gen_obj_tree(conn, obj_id, levels=0):
-    """Create a subtree of a given ID."""
+    """Create a subtree of a given ID, recursively for the requested levels.
+
+    Parameters
+    ==========
+    conn : omero.gateway._BlitzGateway
+    obj_id : str - OMERO object ID string (e.g. "Image:42")
+    levels : int - number of recursive levels (use -1 for all)
+
+    Returns
+    =======
+    dict - a tree of nested dicts, starting at the given object
+           (inclusive!), recursing into child nodes up to the requested level
+    """
     obj_type, oid = obj_id.split(':')
     obj = conn.getObject(obj_type, oid)
     obj_tree = gen_obj_dict(obj)
