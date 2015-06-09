@@ -2,6 +2,11 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
+// === OMERO Tree Loader ===
+// This file is handling the requests sent by jqTree when an on-demand node
+// gets expanded by the user. It ensures the user is logged in, has a valid
+// OMERO connection and finally asks the connector for the JSON data.
+
 require_once("inc/OmeroConnection.inc.php");
 
 session_start();

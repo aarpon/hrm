@@ -128,7 +128,7 @@ if (isset($omeroConnection)) {
      <fieldset>
      <legend>Your OMERO data</legend>
 
-     <div id="omeroTree" data-url="/hrm/omero_ondemand_loader.php">
+     <div id="omeroTree" data-url="omero_treeloader.php">
         <br /> <br />
 
         <?php
