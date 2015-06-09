@@ -302,6 +302,7 @@ def hrm_to_omero(conn, dset_id, image_file):
     #### namespace = 'deconvolved.hrm'
     #### mime = 'text/plain'
     #### # extract the image basename without suffix:
+    #### # TODO: is it [0-9a-f] or really [0-9a-z] as in the original PHP code?
     #### basename = re.sub(r'(_[0-9a-f]{13}_hrm)\..*', r'\1', image_file)
     #### annotations = []
     #### # TODO: the list of suffixes should not be hardcoded here!
