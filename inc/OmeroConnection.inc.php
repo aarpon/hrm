@@ -34,7 +34,7 @@ class OmeroConnection {
         they don't have to be re-requested from the OMERO server. The key to
         access entries is of the form 'OMERO_CLASS:int', e.g. 'Dataset:23'.
      */
-    private $nodeChildren;
+    private $nodeChildren = array();
 
 
     /* ----------------------- Constructor ---------------------------- */
