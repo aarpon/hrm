@@ -310,30 +310,6 @@ class OmeroConnection {
         return $summary . "'";
     }
 
-
-    /*! \brief   Remove the HRM-job suffix to find the original file name.
-        \param   The name of the deconvolved dataset.
-        \return  The name of the raw dataset.
-     */
-    private function getOriginalName($file) {
-        /* Remove any relative paths that may exist. */
-        $file = pathinfo($file, PATHINFO_BASENAME);
-
-        /* Remove the HRM deconvolution suffix and file extension. */
-        $replaceThis  = "/_([a-z0-9]{13,13})_hrm\.(.*)$/";
-        $replaceWith  = "";
-        $originalName = preg_replace($replaceThis,$replaceWith,$file);
-
-        /* In case of error just return the name of the deconvolved file. */
-        if ($originalName != NULL) {
-            return $originalName;
-        } else {
-            return $file;
-        }
-    }
-
 }
-
-
 
 ?>
