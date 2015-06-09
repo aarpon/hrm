@@ -123,7 +123,7 @@ if (isset($omeroConnection)) {
 
          </div> <!-- omeroActions !-->
 
-     </form> <!-- omeroForm !-->
+    </form> <!-- omeroForm !-->
 
      <fieldset>
      <legend>Your OMERO data</legend>
