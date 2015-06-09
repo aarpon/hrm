@@ -17,8 +17,6 @@ function omelog($text, $level=0) {
 
 class OmeroConnection {
 
-    private $omeroTree; //!< The contents of the user's OMERO tree.
-
     private $omeroUser; //!< The OMERO username for authentication + logging.
 
     private $omeroPass; //!< The OMERO user password.
@@ -201,17 +199,6 @@ class OmeroConnection {
 
 
     /* ---------------------- OMERO Tree Assemblers ------------------- */
-
-    /*! \brief  Get the last requested JSON version of the user's OMERO tree.
-        \return The string with the JSON information.
-     */
-    public function getLastOmeroTree() {
-        if (!isset($this->omeroTree)) {
-            $this->getUpdatedOmeroTree();
-        }
-
-        return $this->omeroTree;
-    }
 
     /*! \brief   Get the sub-tree of a given node.
         \param   $id - The id string of the node, e.g. 'Project:23'

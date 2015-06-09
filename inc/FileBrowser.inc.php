@@ -155,29 +155,12 @@ if ($omero_transfers) {
     }
 }
 
-if (isset($_POST['getOmeroData']) || isset($_POST['exportToOmero'])) {
-
-    if (isset($omeroConnection)) {
-        if ($omeroConnection->loggedIn) {
-            $omeroTree = $omeroConnection->getLastOmeroTree();
-        }
-    }
-}
-
-if (isset($_POST['importFromOmero'])) {
-
-    if (isset($omeroConnection)) {
-        if ($omeroConnection->loggedIn) {
-            $omeroTree = $omeroConnection->getLastOmeroTree();
-        }
-    }
-}
 
 if (isset($_POST['refreshOmero'])) {
-
     if (isset($omeroConnection)) {
         if ($omeroConnection->loggedIn) {
-            $omeroTree = $omeroConnection->getUpdatedOmeroTree();
+            // TODO: implement refresh, i.e. sth like:
+            // $omeroConnection->refreshChildren($selectedNode);
         }
     }
 }
