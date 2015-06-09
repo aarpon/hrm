@@ -14,9 +14,9 @@ if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
 
 $omeroConnection = $_SESSION['omeroConnection'];
 
-// set a default node ID for testing:
-$node_id = 'Experimenter:34';
-
+// default value to request the base tree (groups and users):
+$node_id = 'ROOT';
+// override the default if a specific part is requested:
 if (isset($_GET['node'])) {
     $node_id = $_GET['node'];
 }

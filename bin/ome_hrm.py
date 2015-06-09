@@ -107,6 +107,8 @@ def gen_children(conn, id_str):
     list - a list of the child nodes dicts, having the 'load_on_demand'
            property set to True required by the jqTree JavaScript library
     """
+    if id_str == 'ROOT':
+        return [gen_base_tree(conn)]
     obj_type = id_str.split(':')[0]
     tree = gen_obj_tree(conn, id_str, levels=1)
     if not obj_type == 'Dataset':
