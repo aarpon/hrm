@@ -213,24 +213,7 @@ class OmeroConnection {
         return $this->nodeChildren[$id];
     }
 
-    /*! \brief   Retrieve the OMERO data tree from the connector script.
-        \return  JSON string with the OMERO data tree.
-     */
-    public function getUpdatedOmeroTree() {
-        $cmd = $this->buildCmd("retrieveUserTree");
-        $omeroData = shell_exec($cmd);
-        if ($omeroData == NULL) {
-            $this->omeroTree = NULL;
-            $msg = "retrieving OMERO tree data failed!";
-            omelog($msg, 1);
-            return $msg;
-        }
 
-        $this->omeroTree = $omeroData;
-
-        return $this->omeroTree;
-
-    }
 
 
     /* ------------------------- Parsers ------------------------------ */
