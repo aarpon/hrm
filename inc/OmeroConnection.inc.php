@@ -213,7 +213,14 @@ class OmeroConnection {
         return $this->nodeChildren[$id];
     }
 
+    /*! \brief   Reset the array keeping the node data.
 
+        This is useful to refresh the tree, as all calls to getChildren() will
+        then request up-to-date information from OMERO.
+     */
+    public function resetNodes() {
+        $this->nodeChildren = array();
+    }
 
 
     /* ------------------------- Parsers ------------------------------ */
