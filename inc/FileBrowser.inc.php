@@ -159,8 +159,7 @@ if ($omero_transfers) {
 if (isset($_POST['refreshOmero'])) {
     if (isset($omeroConnection)) {
         if ($omeroConnection->loggedIn) {
-            // TODO: implement refresh, i.e. sth like:
-            // $omeroConnection->refreshChildren($selectedNode);
+            $omeroConnection->resetNodes();
         }
     }
 }
