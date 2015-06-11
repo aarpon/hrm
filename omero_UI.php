@@ -134,6 +134,13 @@ if (isset($omeroConnection)) {
      <div id="omeroTree" data-url="omero_treeloader.php">
         <br /> <br />
 
+        <script>
+            // the global variable _GET is a (JSON) representation of the
+            // browser _GET variable that tells us which folder we are showing
+            // and we use to derive which nodes of the tree will be selectable:
+            var _GET = <?php echo json_encode($_GET); ?>;
+        </script>
+
         <?php
           if ($omeroConnection->loggedIn) {
         ?>
