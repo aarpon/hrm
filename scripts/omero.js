@@ -36,18 +36,9 @@ function omeroTransfer(form, fileSelection, browseFolder) {
         }
 
     } else {
-
         // we're in the "dst" folder view, this means we want to transfer
         // images from the HRM to OMERO (upload):
-        if (node.class == 'Image') {
-            var image   = node;
-            var dataset = image.parent;
-        } else if (node.class = 'Dataset') {
-            var dataset = node;
-        } else {
-            return false;
-        }
-        form.OmeDatasetId.value = dataset.id;
+        form.OmeDatasetId.value = getSelectedDataset();
 
         // assemble a JSON array with the selected files:
         var filelist = new Array();
@@ -81,3 +72,15 @@ function getSelectedImages() {
         }
 }
 
+function getSelectedDataset() {
+        // return the ID of the selected dataset node or the one of the parent
+        // dataset in case an image is selected
+        var node = $("#omeroTree").tree('getSelectedNode');
+        if (node.class == 'Image') {
+            var dataset = node.parent;
+        } else if (node.class = 'Dataset') {
+            var dataset = node;
+        } else {
+            return false;
+        }
+}
