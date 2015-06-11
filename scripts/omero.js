@@ -60,4 +60,24 @@ function omeroTransfer(form, fileSelection, browseFolder) {
     }
 }
 
+function getSelectedImages() {
+        // return an array of image-dicts as a JSON object or an empty string
+        // if no image node was selected in the tree
+        var selected = $("#omeroTree").tree('getSelectedNodes');
+        var images = new Array();
+        selected.forEach(function(node) {
+            if (node.class == 'Image') {
+                var image = {
+                    'id' : node.id,
+                    'name' : node.name
+                }
+                images.push(image);
+            }
+        });
+        if (images.length == 0) {
+            return "";
+        } else {
+            return JSON.stringify(images);
+        }
+}
 
