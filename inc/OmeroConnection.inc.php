@@ -2,9 +2,6 @@
   // This file is part of the Huygens Remote Manager
   // Copyright and license notice: see license.txt
 
-// TODO:
-// - block web frontend with an overlay to signalize upload/download
-
 require_once( "User.inc.php" );
 require_once( "Fileserver.inc.php" );
 

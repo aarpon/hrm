@@ -63,6 +63,9 @@ if (isset($_POST['getOmeroData']) && !isset($omeroConnection)) {
 }   // endif (isset($_POST['getOmeroData']) && !isset($omeroConnection))
 
 
+// TODO:
+// - block web frontend with an overlay to signalize upload/download
+
 
 // if we are connected to an OMERO server, always show the tree by default:
 if (isset($omeroConnection)) {
