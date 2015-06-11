@@ -18,6 +18,7 @@ function cancelOmeroSelection() {
 
 function omeroTransfer(form, fileSelection, browseFolder) {
 
+    // TODO: multi selection!
     var node = $("#omeroTree").tree('getSelectedNode');
 
     if (browseFolder == "src") {
