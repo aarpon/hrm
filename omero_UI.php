@@ -147,21 +147,46 @@ if (isset($omeroConnection)) {
 
             <script>
             $(function() {
+                var oTree = $('#omeroTree');
 
-                $('#omeroTree').tree({
-                    saveState: true,
-                    selectable: true,
-                    // set which nodes can be selected:
-                    onCanSelectNode: function(node) {
-                        if ((node.class == "Project") ||
-                            (node.class == "Experimenter") ||
-                            (node.class == "ExperimenterGroup")) {
-                               return false;
-                        } else {
-                           return true;
+                if (_GET['folder'] == "src") {
+                    oTree.tree({
+                        saveState: true,
+                        selectable: true,
+                    });
+                    // for downloading from OMERO we allow multi-selection:
+                    oTree.bind(
+                        'tree.click',
+                        function(e) {
+                            e.preventDefault();  // disable single selection
+
+                            var clicked = e.node;
+
+                            if (oTree.tree('isNodeSelected', clicked)) {
+                                oTree.tree('removeFromSelection', clicked);
+                            } else {
+                                // allow only images to be selected:
+                                if (clicked.class == "Image") {
+                                    oTree.tree('addToSelection', clicked);
+                                }
+                            }
                         }
-                    }
-                });
+                    );
+                } else {  // we are in the "dest" folder (upload to OMERO)
+                    oTree.tree({
+                        saveState: true,
+                        selectable: true,
+                        // allow an image or dataset as the target:
+                        onCanSelectNode: function(node) {
+                            if ((node.class == "Image") ||
+                                (node.class == "Dataset")) {
+                                   return true;
+                            } else {
+                               return false;
+                            }
+                        }
+                    });
+                }
             });
             </script>
 
