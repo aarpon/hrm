@@ -85,8 +85,7 @@ class OmeroConnection {
     /*! \brief   Retrieve selected images from the OMERO server.
         \param   $images - JSON object with IDs and names of selected images.
         \param   $fileServer Instance of the Fileserver class.
-        \return  Ocassionally, an error message.
-        \todo    Should we return "true" in case of success?
+        \return  A human readable string reporting success and failed images.
      */
     public function downloadFromOMERO($images, $fileServer) {
         $selected = json_decode($images, true);
@@ -107,6 +106,7 @@ class OmeroConnection {
                 $done .= " " . $img['id'];
             }
         }
+        // build the return message:
         $msg = "";
         if ($done != "") {
             $msg = "Successfully retrieved" . $done . ". ";
@@ -120,8 +120,7 @@ class OmeroConnection {
     /*! \brief   Attach a deconvolved image to an OMERO dataset.
         \param   $postedParams An alias of $_POST with names of selected files.
         \param   $fileServer   An instance of the Fileserver class.
-        \return  Ocassionally an error message.
-        \todo    Should we return "true" in case of success?
+        \return  A human readable string reporting success and failed images.
      */
     public function uploadToOMERO($postedParams, $fileServer) {
         $selectedFiles = json_decode($postedParams['selectedFiles']);
