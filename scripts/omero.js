@@ -11,9 +11,11 @@ function omeroLogin() {
 }
 
 function cancelOmeroSelection() {
-
-    control = document.getElementById('selection').innerHTML;
-    cancelSelection();
+    oTree = $('#omeroTree');
+    selected_nodes = oTree.tree('getSelectedNodes');
+    selected_nodes.forEach(function(node) {
+        oTree.tree('removeFromSelection', node);
+    });
 }
 
 function omeroTransfer(form, fileSelection, browseFolder) {
