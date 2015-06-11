@@ -119,8 +119,7 @@ if (isset($omeroConnection)) {
               <?php
               }
               ?>
-              <input name="OmeImageId" type="hidden">
-              <input name="OmeImageName" type="hidden">
+              <input name="OmeImages" type="hidden">
               <input name="OmeDatasetId" type="hidden">
               <input name="selectedFiles" type="hidden">
 

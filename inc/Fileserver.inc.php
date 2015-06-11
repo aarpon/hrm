@@ -779,24 +779,14 @@ class Fileserver {
       }
       // file_put_contents('/tmp/hrm_post.log', var_export($_POST, true));
 
-      if (!isset($_POST['OmeImageId'])
-          || empty($_POST['OmeImageId'])) {
-          return "Please select an image within the OMERO data tree.";
-      }
-
-      if (!isset($_POST['OmeImageName'])
-          || empty($_POST['OmeImageName'])) {
-          return "Please select an image within the OMERO data tree.";
-      }
-
-      if (!isset($_POST['OmeDatasetId'])
-          || empty($_POST['OmeDatasetId'])) {
+      if (!isset($_POST['OmeImages'])
+          || empty($_POST['OmeImages'])) {
           return "Please select an image within the OMERO data tree.";
       }
 
       $omeroConnection = $_SESSION['omeroConnection'];
 
-      return $omeroConnection->downloadFromOMERO($_POST, $this);
+      return $omeroConnection->downloadFromOMERO($_POST['OmeImages'], $this);
   }
 
   /*!

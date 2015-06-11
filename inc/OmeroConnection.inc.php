@@ -82,38 +82,39 @@ class OmeroConnection {
         }
     }
 
-    /*! \brief   Retrieve one image from the OMERO server.
-        \param   $postedParams Alias of $_POST with the user selection.
+    /*! \brief   Retrieve selected images from the OMERO server.
+        \param   $images - JSON object with IDs and names of selected images.
         \param   $fileServer Instance of the Fileserver class.
         \return  Ocassionally, an error message.
         \todo    Should we return "true" in case of success?
      */
-    public function downloadFromOMERO($postedParams, $fileServer) {
-        if (isset($postedParams['OmeImageName'])) {
-            $imgName = $postedParams['OmeImageName'];
-        } else {
-            return "No files selected.";
-        }
+    public function downloadFromOMERO($images, $fileServer) {
+        $selected = json_decode($images, true);
+        $fail = "";
+        $done = "";
+        foreach ($selected as $img) {
+            $fileAndPath = $fileServer->sourceFolder() . "/" . $img['name'];
+            $param = array("--imageid", $img{'id'}, "--dest", $fileAndPath);
+            $cmd = $this->buildCmd("OMEROtoHRM", $param);
 
-        if (isset($postedParams['OmeImageId'])) {
-            $imgId = $postedParams['OmeImageId'];
-        } else {
-            return "No files selected.";
+            omelog('requesting ' . $img['id'] . ' to ' . $fileAndPath);
+            exec($cmd, $out, $retval);
+            if ($retval != 0) {
+                omelog("failed retrieving " . $img['id'], 1);
+                $fail .= " " . $img['id'];
+            } else {
+                omelog("successfully retrieved " . $img['id'], 1);
+                $done .= " " . $img['id'];
+            }
         }
-
-        $fileAndPath = $fileServer->sourceFolder() . "/" . $imgName;
-        $param = array("--imageid", $imgId, "--dest", $fileAndPath);
-        $cmd = $this->buildCmd("OMEROtoHRM", $param);
-
-        omelog('requesting ' . $imgId . ' to ' . $fileAndPath);
-        exec($cmd, $out, $retval);
-        if ($retval != 0) {
-            $msg = "failed retrieving " . $imgId;
-            omelog($msg, 1);
-            return $msg;
+        $msg = "";
+        if ($done != "") {
+            $msg = "Successfully retrieved" . $done . ". ";
         }
-        omelog("successfully retrieved " . $imgId, 1);
-        return "Successfully retrieved " . $imgId . "!";
+        if ($fail != "") {
+            $msg .= "Failed retrieving" . $fail . ".";
+        }
+        return $msg;
     }
 
     /*! \brief   Attach a deconvolved image to an OMERO dataset.

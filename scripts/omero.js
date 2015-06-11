@@ -19,21 +19,10 @@ function cancelOmeroSelection() {
 }
 
 function omeroTransfer(form, fileSelection, browseFolder) {
-
-    // TODO: multi selection!
-    var node = $("#omeroTree").tree('getSelectedNode');
-
     if (browseFolder == "src") {
         // we're in the "src" folder view, this means we want to transfer
         // images from OMERO to the HRM (download):
-        if (node.class == 'Image') {
-            var image   = node;
-            var dataset = image.parent;
-
-            form.OmeImageId.value = image.id;
-            form.OmeImageName.value = image.name;
-            form.OmeDatasetId.value = dataset.id;
-        }
+        form.OmeImages.value = getSelectedImages();
 
     } else {
         // we're in the "dst" folder view, this means we want to transfer
