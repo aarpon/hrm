@@ -73,3 +73,72 @@ function getSelectedDataset() {
             return false;
         }
 }
+
+/*******  jqTree helper functions ********/
+
+function processNodeHTML(node, li) {
+    // This is supposed to be used in jqTree's "onCreateLi" option to process
+    // the HTML of a <li> item created during tree assembly. It checks the
+    // type of the node to be created and inserts an icon depending on this.
+
+    // the mapping from node class to icons:
+    var icons = {
+        'ExperimenterGroup' : 'images/omero_group.png',
+        'Experimenter' : 'images/omero_user.png',
+        'Project' : 'images/omero_project.png',
+        'Dataset' : 'images/omero_dataset.png',
+        'Image' : 'images/omero_image.png'
+    }
+    // matching patterns for node types:
+    var pat = {
+        'folder' : 'jqtree-title-folder">',
+        'terminal' : 'jqtree_common">',
+    }
+    var context = li.find('.jqtree-element').context;
+    var orig = context.innerHTML;
+    var css_class = 'jqtree-' + node.class;
+    var icon = '<img class="' + css_class
+        + '" src="' + icons[node.class] + '"> ';
+    if (node.class == 'Image') {
+        // console.log('this is a terminal node');
+        context.innerHTML = orig.replace(
+            pat['terminal'], pat['terminal'] + icon);
+    } else {
+        // console.log('this is a folder node');
+        context.innerHTML = orig.replace(
+            pat['folder'], pat['folder'] + icon);
+    }
+}
+
+function handleMultiSelectClick(e) {
+    // Handler function to bind to jqTree's 'tree.click' event to allow
+    // multi-selection of nodes, depending on their type.
+
+    e.preventDefault();  // disable single selection
+
+    var oTree = $('#omeroTree');
+    var clicked = e.node;
+
+    if (oTree.tree('isNodeSelected', clicked)) {
+        oTree.tree('removeFromSelection', clicked);
+    } else {
+        // allow only images to be selected:
+        if (clicked.class == "Image") {
+            oTree.tree('addToSelection', clicked);
+        }
+    }
+}
+
+function allowNodeSelect(node) {
+    // Handler for jqTree's 'onCanSelectNode' function to determine if a node
+    // is valid to be selected by clicking on it.
+
+    // only an image or dataset may be selected:
+    if ((node.class == "Image") || (node.class == "Dataset")) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+/*******  jqTree helper functions ********/

@@ -145,77 +145,27 @@ if (isset($omeroConnection)) {
         ?>
 
             <script>
-            var processNodeHTML = function(node, li) {
-                // the mapping from node class to icons:
-                var icons = {
-                    'ExperimenterGroup' : 'images/omero_group.png',
-                    'Experimenter' : 'images/omero_user.png',
-                    'Project' : 'images/omero_project.png',
-                    'Dataset' : 'images/omero_dataset.png',
-                    'Image' : 'images/omero_image.png'
-                }
-                // matching patterns for node types:
-                var pat = {
-                    'folder' : 'jqtree-title-folder">',
-                    'terminal' : 'jqtree_common">',
-                }
-                var context = li.find('.jqtree-element').context;
-                var orig = context.innerHTML;
-                var css_class = 'jqtree-' + node.class;
-                var icon = '<img class="' + css_class
-                    + '" src="' + icons[node.class] + '"> ';
-                if (node.class == 'Image') {
-                    // console.log('this is a terminal node');
-                    context.innerHTML = orig.replace(
-                        pat['terminal'], pat['terminal'] + icon);
-                } else {
-                    // console.log('this is a folder node');
-                    context.innerHTML = orig.replace(
-                        pat['folder'], pat['folder'] + icon);
-                }
-            }
 
             $(function() {
                 var oTree = $('#omeroTree');
 
                 if (_GET['folder'] == "src") {
+                    // for downloading from OMERO we allow multi-selection:
+                    oTree.bind('tree.click', handleMultiSelectClick);
                     oTree.tree({
                         saveState: true,
                         selectable: true,
                         onCreateLi: processNodeHTML
                     });
-                    // for downloading from OMERO we allow multi-selection:
-                    oTree.bind(
-                        'tree.click',
-                        function(e) {
-                            e.preventDefault();  // disable single selection
 
-                            var clicked = e.node;
-
-                            if (oTree.tree('isNodeSelected', clicked)) {
-                                oTree.tree('removeFromSelection', clicked);
-                            } else {
-                                // allow only images to be selected:
-                                if (clicked.class == "Image") {
-                                    oTree.tree('addToSelection', clicked);
-                                }
-                            }
-                        }
-                    );
-                } else {  // we are in the "dest" folder (upload to OMERO)
+                } else {
+                    // we are in the "dest" folder (upload to OMERO), so we
+                    // only allow *single* selection of an image or dataset:
                     oTree.tree({
                         saveState: true,
                         selectable: true,
                         onCreateLi: processNodeHTML,
-                        // allow an image or dataset as the target:
-                        onCanSelectNode: function(node) {
-                            if ((node.class == "Image") ||
-                                (node.class == "Dataset")) {
-                                   return true;
-                            } else {
-                               return false;
-                            }
-                        }
+                        onCanSelectNode: allowNodeSelect
                     });
                 }
             });
