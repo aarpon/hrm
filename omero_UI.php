@@ -146,15 +146,31 @@ if (isset($omeroConnection)) {
 
             <script>
             var processNodeHTML = function(node, li) {
+                // the mapping from node class to icons:
+                var icons = {
+                    'Experimenter' : 'images/user.png',
+                    'ExperimenterGroup' : 'images/help.png',
+                    'Project' : 'images/home.png',
+                    'Dataset' : 'images/results_small.png',
+                    'Image' : 'images/rawdata_small.png'
+                }
+                // matching patterns for node types:
+                var pat = {
+                    'folder' : 'jqtree-title-folder">',
+                    'terminal' : 'jqtree_common">',
+                }
                 var context = li.find('.jqtree-element').context;
                 var orig = context.innerHTML;
-                // console.log(orig);
-                // console.log(node.class);
-                var icon = '<img src="images/help.png">';
-                var pat = 'jqtree-title-folder">';
-                var rep = context.innerHTML.replace(pat, pat + icon);
-                context.innerHTML = rep;
-                // console.log(context.innerHTML);
+                var icon = '<img src="' + icons[node.class] + '"> ';
+                if (node.class == 'Image') {
+                    // console.log('this is a terminal node');
+                    context.innerHTML = orig.replace(
+                        pat['terminal'], pat['terminal'] + icon);
+                } else {
+                    // console.log('this is a folder node');
+                    context.innerHTML = orig.replace(
+                        pat['folder'], pat['folder'] + icon);
+                }
             }
 
             $(function() {
