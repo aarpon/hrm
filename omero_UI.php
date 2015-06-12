@@ -148,11 +148,11 @@ if (isset($omeroConnection)) {
             var processNodeHTML = function(node, li) {
                 // the mapping from node class to icons:
                 var icons = {
-                    'Experimenter' : 'images/user.png',
-                    'ExperimenterGroup' : 'images/help.png',
-                    'Project' : 'images/home.png',
-                    'Dataset' : 'images/results_small.png',
-                    'Image' : 'images/rawdata_small.png'
+                    'ExperimenterGroup' : 'images/omero_group.png',
+                    'Experimenter' : 'images/omero_user.png',
+                    'Project' : 'images/omero_project.png',
+                    'Dataset' : 'images/omero_dataset.png',
+                    'Image' : 'images/omero_image.png'
                 }
                 // matching patterns for node types:
                 var pat = {
