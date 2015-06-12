@@ -145,6 +145,18 @@ if (isset($omeroConnection)) {
         ?>
 
             <script>
+            var processNodeHTML = function(node, li) {
+                var context = li.find('.jqtree-element').context;
+                var orig = context.innerHTML;
+                // console.log(orig);
+                // console.log(node.class);
+                var icon = '<img src="images/help.png">';
+                var pat = 'jqtree-title-folder">';
+                var rep = context.innerHTML.replace(pat, pat + icon);
+                context.innerHTML = rep;
+                // console.log(context.innerHTML);
+            }
+
             $(function() {
                 var oTree = $('#omeroTree');
 
@@ -152,6 +164,7 @@ if (isset($omeroConnection)) {
                     oTree.tree({
                         saveState: true,
                         selectable: true,
+                        onCreateLi: processNodeHTML
                     });
                     // for downloading from OMERO we allow multi-selection:
                     oTree.bind(
@@ -175,6 +188,7 @@ if (isset($omeroConnection)) {
                     oTree.tree({
                         saveState: true,
                         selectable: true,
+                        onCreateLi: processNodeHTML,
                         // allow an image or dataset as the target:
                         onCanSelectNode: function(node) {
                             if ((node.class == "Image") ||
