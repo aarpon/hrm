@@ -66,11 +66,11 @@ function getSelectedDataset() {
         // dataset in case an image is selected
         var node = $("#omeroTree").tree('getSelectedNode');
         if (node.class == 'Image') {
-            var dataset = node.parent;
+            return node.parent.id;
         } else if (node.class = 'Dataset') {
-            var dataset = node;
+            return node.id;
         } else {
-            return false;
+            return '';
         }
 }
 
