@@ -161,7 +161,9 @@ if (isset($omeroConnection)) {
                 }
                 var context = li.find('.jqtree-element').context;
                 var orig = context.innerHTML;
-                var icon = '<img src="' + icons[node.class] + '"> ';
+                var css_class = 'jqtree-' + node.class;
+                var icon = '<img class="' + css_class
+                    + '" src="' + icons[node.class] + '"> ';
                 if (node.class == 'Image') {
                     // console.log('this is a terminal node');
                     context.innerHTML = orig.replace(

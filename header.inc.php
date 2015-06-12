@@ -26,6 +26,7 @@ if (using_IE()) {
   <title>Huygens Remote Manager</title>
     <link rel="SHORTCUT ICON" href="images/hrm.ico"/>
     <link rel="stylesheet" href="scripts/jqTree/jqtree.css">
+    <link rel="stylesheet" href="css/jqtree-custom.css">
     <link rel="stylesheet" href="scripts/jquery-ui/jquery-ui-1.9.1.custom.css">
 
     <!-- Include jQuery -->
