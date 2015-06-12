@@ -747,7 +747,7 @@ class Fileserver {
   /*!
     \brief  Exports a deconvolved image to the OMERO server.
   */
-  public function exportToOmero( ) {
+  public function exportToOmero() {
 
       if (!isset($_SESSION['omeroConnection'])) {
           return "Your OMERO connection was interrupted, please try again!";

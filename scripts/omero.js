@@ -41,40 +41,41 @@ function omeroTransfer(form, fileSelection, browseFolder) {
 }
 
 function getSelectedImages() {
-        // return an array of image-dicts as a JSON object or an empty string
-        // if no image node was selected in the tree
-        var selected = $("#omeroTree").tree('getSelectedNodes');
-        var images = new Array();
-        selected.forEach(function(node) {
-            if (node.class == 'Image') {
-                var image = {
-                    'id' : node.id,
-                    'name' : node.name
-                }
-                images.push(image);
+    // return an array of image-dicts as a JSON object or an empty string
+    // if no image node was selected in the tree
+    var selected = $("#omeroTree").tree('getSelectedNodes');
+    var images = new Array();
+    selected.forEach(function(node) {
+        if (node.class == 'Image') {
+            var image = {
+                'id' : node.id,
+                'name' : node.name
             }
-        });
-        if (images.length == 0) {
-            return "";
-        } else {
-            return JSON.stringify(images);
+            images.push(image);
         }
+    });
+    if (images.length == 0) {
+        return "";
+    } else {
+        return JSON.stringify(images);
+    }
 }
 
 function getSelectedDataset() {
-        // return the ID of the selected dataset node or the one of the parent
-        // dataset in case an image is selected
-        var node = $("#omeroTree").tree('getSelectedNode');
-        if (node.class == 'Image') {
-            return node.parent.id;
-        } else if (node.class = 'Dataset') {
-            return node.id;
-        } else {
-            return '';
-        }
+    // return the ID of the selected dataset node or the one of the parent
+    // dataset in case an image is selected
+    var node = $("#omeroTree").tree('getSelectedNode');
+    if (node.class == 'Image') {
+        return node.parent.id;
+    } else if (node.class = 'Dataset') {
+        return node.id;
+    } else {
+        return '';
+    }
 }
 
-/*******  jqTree helper functions ********/
+
+/*******  jqTree handler functions ********/
 
 function processNodeHTML(node, li) {
     // This is supposed to be used in jqTree's "onCreateLi" option to process
@@ -141,4 +142,4 @@ function allowNodeSelect(node) {
     }
 }
 
-/*******  jqTree helper functions ********/
+/*******  jqTree handler functions ********/
