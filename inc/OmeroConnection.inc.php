@@ -140,6 +140,8 @@ class OmeroConnection {
         $datasetId = $postedParams['OmeDatasetId'];
 
         /* Export all the selected files. */
+        $fail = "";
+        $done = "";
         foreach ($selectedFiles as $file) {
             // TODO: check if $file may contain relative paths!
             $fileAndPath = $fileServer->destinationFolder() . "/" . $file;
@@ -148,13 +150,24 @@ class OmeroConnection {
 
             omelog('uploading "' . $fileAndPath . '" to dataset ' . $datasetId);
             if (shell_exec($cmd) == NULL) {
-                $msg = "exporting image to OMERO failed.";
-                omelog($msg, 1);
-                return $msg;
+                omelog("exporting '" . $file . "' to OMERO failed.", 1);
+                $fail .= " " . $file;
+            } else {
+                omelog("successfully uploaded " . $file, 1);
+                $done .= " " . $file;
             }
-            omelog("successfully uploaded " . $file, 1);
-            return "Successfully uploaded " . $file . "!";
         }
+        // reload the OMERO tree:
+        $this->resetNodes();
+        // build the return message:
+        $msg = "";
+        if ($done != "") {
+            $msg = "Successfully uploaded" . $done . ". ";
+        }
+        if ($fail != "") {
+            $msg .= "Failed uploading" . $fail . ".";
+        }
+        return $msg;
     }
 
 
