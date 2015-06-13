@@ -52,13 +52,6 @@ def get_children_json(conn, id_str):
     print(tree_to_json(gen_children(conn, id_str)))
 
 
-def get_group_tree_json(conn, group=None):
-    """Generates the group tree and returns it in JSON format."""
-    # we're currently only having a single tree (dict), but jqTree expects a
-    # list of dicts, so we have to encapsulate it in [] for now:
-    print(tree_to_json([gen_group_tree(conn, group)]))
-
-
 def get_obj_tree_json(conn, obj_id, levels=0):
     """Generates the group tree and returns it in JSON format."""
     print(tree_to_json([gen_obj_tree(conn, obj_id, levels)]))
@@ -179,36 +172,6 @@ def gen_base_tree(conn):
         user_dict = gen_obj_dict(user)
         user_dict['load_on_demand'] = True
         group_dict['children'].append(user_dict)
-    return group_dict
-
-
-def gen_group_tree(conn, group=None):
-    """Create a tree for a group with all user subtrees.
-
-    Parameters
-    ==========
-    conn : omero.gateway._BlitzGateway
-    group : omero.gateway._ExperimenterGroupWrapper
-
-    Returns
-    =======
-    {
-        "id": (int, e.g. 9),
-        "label": (str, e.g. "Sandbox Lab"),
-        "children": user_trees (list of dict))
-    }
-    """
-    if group is None:
-        group = conn.getGroupFromContext()
-    group_dict = gen_obj_dict(group)
-    # add the user's own tree first:
-    user = conn.getUser()
-    cid = user.OMERO_CLASS + ':' + str(user.getId())
-    group_dict['children'].append(gen_obj_tree(conn, cid, levels=-1))
-    # then add the trees for other group members
-    for user in conn.listColleagues():
-        cid = user.OMERO_CLASS + ':' + str(user.getId())
-        group_dict['children'].append(gen_obj_tree(conn, cid, levels=-1))
     return group_dict
 
 
@@ -429,14 +392,6 @@ def parse_arguments():
         '--levels', type=int, default=-1,
         help='number of tree levels to generate (-1 for all)')
 
-    # retrieveUserTree parser
-    parser_tree = subparsers.add_parser(
-        'retrieveUserTree',
-        help="get a user's Projects/Datasets/Images tree (JSON)")
-    parser_tree.add_argument(
-        '--allmembers', type=bool, default=False,
-        help='build tree for all members in the current group')
-
     # OMEROtoHRM parser
     parser_o2h = subparsers.add_parser(
         'OMEROtoHRM', help='download an image from the OMERO server')
@@ -481,8 +436,6 @@ def main():
         check_credentials(conn)
     elif args.action == 'retrieveChildren':
         get_children_json(conn, args.id)
-    elif args.action == 'retrieveUserTree':
-        get_group_tree_json(conn)
     elif args.action == 'retrieveSubTree':
         get_obj_tree_json(conn, args.id, levels=args.levels)
     elif args.action == 'OMEROtoHRM':
