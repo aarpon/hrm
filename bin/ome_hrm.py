@@ -64,7 +64,7 @@ def get_obj_tree_json(conn, obj_id, levels=0):
     print(tree_to_json([gen_obj_tree(conn, obj_id, levels)]))
 
 
-def gen_obj_dict(obj):
+def gen_obj_dict(obj, id_pfx=''):
     """Create a dict from an OMERO object.
 
     Structure
@@ -78,7 +78,6 @@ def gen_obj_dict(obj):
     }
     """
     obj_dict = dict()
-    obj_dict['id'] = "%s:%s" % (obj.OMERO_CLASS, obj.getId())
     obj_dict['label'] = obj.getName()
     obj_dict['class'] = obj.OMERO_CLASS
     if obj.OMERO_CLASS == 'Experimenter':
@@ -90,6 +89,7 @@ def gen_obj_dict(obj):
         obj_dict['owner'] = None
     else:
         obj_dict['owner'] = obj.getOwnerOmeName()
+    obj_dict['id'] = id_pfx + "%s:%s" % (obj.OMERO_CLASS, obj.getId())
     obj_dict['children'] = []
     return obj_dict
 
