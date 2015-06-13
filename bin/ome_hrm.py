@@ -88,7 +88,7 @@ def gen_children(conn, id_str):
     Parameters
     ==========
     conn : omero.gateway._BlitzGateway
-    id_str : str - OMERO object ID string (e.g. "Image:42")
+    id_str : str - OMERO object ID string (e.g. "G:23:Image:42")
 
     Returns
     =======
@@ -97,36 +97,10 @@ def gen_children(conn, id_str):
     """
     if id_str == 'ROOT':
         return gen_base_tree(conn)
-    obj_type = id_str.split(':')[0]
-    tree = gen_obj_tree(conn, id_str, levels=1)
-    if not obj_type == 'Dataset':
-        for child in tree['children']:
-            child['load_on_demand'] = True
-    return tree['children']
-
-
-def gen_obj_tree(conn, obj_id, levels=0):
-    """Create a subtree of a given ID, recursively for the requested levels.
-
-    Parameters
-    ==========
-    conn : omero.gateway._BlitzGateway
-    obj_id : str - OMERO object ID string (e.g. "Image:42")
-    levels : int - number of recursive levels (use -1 for all)
-
-    Returns
-    =======
-    dict - a tree of nested dicts, starting at the given object
-           (inclusive!), recursing into child nodes up to the requested level
-    """
-    obj_type, oid = obj_id.split(':')
+    children = []
+    _, gid, obj_type, oid = id_str.split(':')
+    conn.SERVICE_OPTS.setOmeroGroup(gid)
     obj = conn.getObject(obj_type, oid)
-    obj_tree = gen_obj_dict(obj)
-    if obj_type == 'Image':
-        # the lowest level of our tree, so we don't recurse any further:
-        levels = 0
-    if levels == 0:
-        return obj_tree
     # we need different child-wrappers, depending on the object type:
     if obj_type == 'Experimenter':
         children_wrapper = conn.listProjects(oid)
@@ -136,10 +110,12 @@ def gen_obj_tree(conn, obj_id, levels=0):
         children_wrapper = obj.listChildren()
     # now recurse into children:
     for child in children_wrapper:
-        cid = child.OMERO_CLASS + ':' + str(child.getId())
-        child_tree = gen_obj_tree(conn, cid, levels - 1)
-        obj_tree['children'].append(child_tree)
-    return obj_tree
+        children.append(gen_obj_dict(child, 'G:' + gid + ':'))
+    # set the on-demand flag unless the children are the last level:
+    if not obj_type == 'Dataset':
+        for child in children:
+            child['load_on_demand'] = True
+    return children
 
 
 def gen_base_tree(conn):
@@ -176,16 +152,16 @@ def gen_group_tree(conn, group=None):
         conn.SERVICE_OPTS.setOmeroGroup(group.getId())
     else:
         group = conn.getGroupFromContext()
-    gid = group.getId()
+    gid = str(group.getId())
     group_dict = gen_obj_dict(group)
     # add the user's own tree first:
     user = conn.getUser()
-    user_dict = gen_obj_dict(user)
+    user_dict = gen_obj_dict(user, 'G:' + gid + ':')
     user_dict['load_on_demand'] = True
     group_dict['children'].append(user_dict)
     # then add the trees for other group members
     for user in conn.listColleagues():
-        user_dict = gen_obj_dict(user)
+        user_dict = gen_obj_dict(user, 'G:' + gid + ':')
         user_dict['load_on_demand'] = True
         group_dict['children'].append(user_dict)
     return group_dict
@@ -221,8 +197,9 @@ def omero_to_hrm(conn, image_id, dest):
     we should check if older ones could have such a file if they were uploaded
     with the "archive" option.
     """
+    # FIXME: group switching required!!
     # get the numeric ID from the combined string:
-    image_id = image_id.split(':')[1]
+    image_id = image_id.split(':')[3]
     # as we're downloading original files, we need to crop away the additional
     # suffix that OMERO adds to the name in case the image belongs to a
     # fileset, enclosed in rectangular brackets "[...]", e.g. the file with the
@@ -273,6 +250,7 @@ def hrm_to_omero(conn, dset_id, image_file):
     dset_id: str - the ID of the target dataset in OMERO (e.g. "Dataset:23")
     image_file: str - the local image file including the full path
     """
+    # FIXME: group switching required!!
     # we have to create the annotations *before* we actually upload the image
     # data itself and link them to the image during the upload - the other way
     # round is not possible right now as the CLI wrapper (see below) doesn't
@@ -301,7 +279,7 @@ def hrm_to_omero(conn, dset_id, image_file):
     # to support for OMERO 5.1 and later only:
     cli._client = conn.c
     import_args = ["import"]
-    import_args.extend(['-d', dset_id.split(':')[1]])
+    import_args.extend(['-d', dset_id.split(':')[3]])
     if comment is not None:
         import_args.extend(['--annotation_ns', namespace])
         import_args.extend(['--annotation_text', comment])
