@@ -52,11 +52,6 @@ def get_children_json(conn, id_str):
     print(tree_to_json(gen_children(conn, id_str)))
 
 
-def get_obj_tree_json(conn, obj_id, levels=0):
-    """Generates the group tree and returns it in JSON format."""
-    print(tree_to_json([gen_obj_tree(conn, obj_id, levels)]))
-
-
 def gen_obj_dict(obj, id_pfx=''):
     """Create a dict from an OMERO object.
 
@@ -402,17 +397,6 @@ def parse_arguments():
         '--id', type=str, required=True,
         help='ID string of the object to get the children for, e.g. "User:23"')
 
-    # retrieveSubTree parser
-    parser_subtree = subparsers.add_parser(
-        'retrieveSubTree',
-        help="get a subtree of a given object (JSON)")
-    parser_subtree.add_argument(
-        '--id', type=str, required=True,
-        help='ID string of the object to build a subtree for, e.g. "User:23"')
-    parser_subtree.add_argument(
-        '--levels', type=int, default=-1,
-        help='number of tree levels to generate (-1 for all)')
-
     # OMEROtoHRM parser
     parser_o2h = subparsers.add_parser(
         'OMEROtoHRM', help='download an image from the OMERO server')
@@ -457,8 +441,6 @@ def main():
         check_credentials(conn)
     elif args.action == 'retrieveChildren':
         get_children_json(conn, args.id)
-    elif args.action == 'retrieveSubTree':
-        get_obj_tree_json(conn, args.id, levels=args.levels)
     elif args.action == 'OMEROtoHRM':
         omero_to_hrm(conn, args.imageid, args.dest)
     elif args.action == 'HRMtoOMERO':
