@@ -101,7 +101,7 @@ def gen_children(conn, id_str):
            property set to True required by the jqTree JavaScript library
     """
     if id_str == 'ROOT':
-        return [gen_base_tree(conn)]
+        return gen_base_tree(conn)
     obj_type = id_str.split(':')[0]
     tree = gen_obj_tree(conn, id_str, levels=1)
     if not obj_type == 'Dataset':
@@ -148,7 +148,7 @@ def gen_obj_tree(conn, obj_id, levels=0):
 
 
 def gen_base_tree(conn):
-    """Create the tree basis: group and members.
+    """Generate all group trees with their members as the basic tree.
 
     Parameters
     ==========
@@ -156,11 +156,32 @@ def gen_base_tree(conn):
 
     Returns
     =======
-    base : a nested dict containing the default group as the base and the
-           members of the group as a list of dicts in the 'children' item,
-           starting with the current user as the first entry
+    base : a list of grouptree dicts
     """
-    group = conn.getGroupFromContext()
+    tree = []
+    for group in conn.getGroupsMemberOf():
+        tree.append(gen_group_tree(conn, group))
+    return tree
+
+
+def gen_group_tree(conn, group=None):
+    """Create the tree nodes for a group and its members.
+
+    Parameters
+    ==========
+    conn : omero.gateway._BlitzGateway
+
+    Returns
+    =======
+    grouptree : a nested dict of a group (the default unless explicitly
+                requested) and its members as a list of dicts in the 'children'
+                item, starting with the current user as the first entry
+    """
+    if group is not None:
+        conn.SERVICE_OPTS.setOmeroGroup(group.getId())
+    else:
+        group = conn.getGroupFromContext()
+    gid = group.getId()
     group_dict = gen_obj_dict(group)
     # add the user's own tree first:
     user = conn.getUser()
