@@ -317,7 +317,7 @@ def gen_parameter_summary(fname):
     str - the formatted string containing the parameter summary
     """
     try:
-        from BeautifulSoup import BeautifulSoup
+        from bs4 import BeautifulSoup
     except ImportError:
         return 'HRM: BeautifulSoup module required for parameter summary!'
     try:
