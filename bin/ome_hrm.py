@@ -177,7 +177,7 @@ def check_credentials(conn):
     return connected
 
 
-def omero_to_hrm(conn, image_id, dest):
+def omero_to_hrm(conn, id_str, dest):
     """Download the corresponding original file from an image ID.
 
     This works only for image ID's that were created with OMERO 5.0 or later as
@@ -189,7 +189,7 @@ def omero_to_hrm(conn, image_id, dest):
 
     Parameters
     ==========
-    image_id: str - OMERO image ID (e.g. "Image:42")
+    id_str: str - the ID of the OMERO image (e.g. "G:23:Image:42")
     dest: str - destination filename (incl. path)
 
     TODO
@@ -198,8 +198,7 @@ def omero_to_hrm(conn, image_id, dest):
     with the "archive" option.
     """
     # FIXME: group switching required!!
-    # get the numeric ID from the combined string:
-    image_id = image_id.split(':')[3]
+    _, gid, obj_type, image_id = id_str.split(':')
     # as we're downloading original files, we need to crop away the additional
     # suffix that OMERO adds to the name in case the image belongs to a
     # fileset, enclosed in rectangular brackets "[...]", e.g. the file with the
@@ -242,15 +241,16 @@ def download_thumb(conn, image_id, dest):
     thumbnail.save(tgt + "/hrm_previews/" + name + ".preview_xy.jpg")
 
 
-def hrm_to_omero(conn, dset_id, image_file):
+def hrm_to_omero(conn, id_str, image_file):
     """Upload an image into a specific dataset in OMERO.
 
     Parameters
     ==========
-    dset_id: str - the ID of the target dataset in OMERO (e.g. "Dataset:23")
+    id_str: str - the ID of the target dataset in OMERO (e.g. "G:7:Dataset:23")
     image_file: str - the local image file including the full path
     """
     # FIXME: group switching required!!
+    _, gid, obj_type, dset_id = id_str.split(':')
     # we have to create the annotations *before* we actually upload the image
     # data itself and link them to the image during the upload - the other way
     # round is not possible right now as the CLI wrapper (see below) doesn't
@@ -279,7 +279,7 @@ def hrm_to_omero(conn, dset_id, image_file):
     # to support for OMERO 5.1 and later only:
     cli._client = conn.c
     import_args = ["import"]
-    import_args.extend(['-d', dset_id.split(':')[3]])
+    import_args.extend(['-d', dset_id])
     if comment is not None:
         import_args.extend(['--annotation_ns', namespace])
         import_args.extend(['--annotation_text', comment])
