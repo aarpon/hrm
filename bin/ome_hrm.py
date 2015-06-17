@@ -319,7 +319,10 @@ def gen_parameter_summary(fname):
     try:
         from bs4 import BeautifulSoup
     except ImportError:
-        return 'HRM: BeautifulSoup module required for parameter summary!'
+        try:
+            from BeautifulSoup import BeautifulSoup
+        except ImportError:
+            return 'HRM: BeautifulSoup module required for parameter summary!'
     try:
         soup = BeautifulSoup(open(fname, 'r'))
     except IOError:
