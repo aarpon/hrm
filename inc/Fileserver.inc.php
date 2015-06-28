@@ -1215,16 +1215,96 @@ class Fileserver {
   }
 
   /*!
-    \brief  Some files like ICS can report their metadata without having to
-            open the whole image, which is good e.g. to see the compatibility
-            of the selected PSF with the current Parameter Setting.
-            This is done by querying HuCore.
-    \param  $type File type, default is "ics"
-    \param  $file This can be a file name for the file to be inspected, or
-            "all" to inspect all the files of type $type that are in the source
-            folder
-    \return N-dimensional array of metadata per file
+  \brief  Some files like ICS can report their metadata without having to
+          open the whole image, which is good e.g. to see the compatibility
+          of the selected PSF with the current Parameter Setting.
+          This is done by querying HuCore.
+  \param  $files Array of file paths (relative to the source folder).
+  \return N-dimensional array of metadata per file
   */
+    public function getMetaDataFromFiles(array $files) {
+
+        $i = 0;
+        $imgList = "";
+
+        foreach ($files as $path) {
+            $imgList .= " -img_$i \"$path\"";
+            $i ++;
+        }
+
+        $opt = "-count $i $imgList -dir \"". $this->sourceFolder() ."\"";
+        $answer = huCoreTools( "getMetaData", $opt);
+        if (! $answer ) return;
+
+        $lines = count($answer);
+
+        $tree = array();
+        $new_files = array();
+        $cur = NULL;
+        $param = NULL;
+
+        for ($i = 0; $i < $lines; $i++ ) {
+            $key = $answer[$i];
+
+            switch ($key) {
+                case "BEGIN IMG":
+                    $i ++;
+                    $cur = $answer[$i];
+                    break;
+                case "ERROR":
+                    $i ++;
+                    echo($answer[$i]);
+                case "END IMG":
+                    $cur = NULL;
+                    $param = NULL;
+                    $len = 1;
+                    break;
+                case "PATH":
+                    if ($cur) {
+                        $i ++;
+                        $tree[$cur]['path'] = $answer[$i];
+                    }
+                    break;
+                case "LENGTH":
+                    if ($cur) {
+                        $i ++;
+                        $len = $answer[$i];
+                    }
+                    break;
+                case "DATA":
+                    if ($cur) {
+                        $i ++;
+                        $param= $answer[$i];
+                        $tree[$cur]['parameters'][] = $param;
+                    }
+                    break;
+                case "VALUE":
+                    if ($cur && $param) {
+                        $i ++;
+                        // This is always an array even if $len == 1, because in
+                        // other images this could be a multichannel parameter.
+                        $tree[$cur][$param][] = $answer[$i];
+                    }
+                    break;
+
+            }
+        }
+
+        return $tree;
+
+    }
+
+    /*!
+      \brief  Some files like ICS can report their metadata without having to
+              open the whole image, which is good e.g. to see the compatibility
+              of the selected PSF with the current Parameter Setting.
+              This is done by querying HuCore.
+      \param  $type File type, default is "ics"
+      \param  $file This can be a file name for the file to be inspected, or
+              "all" to inspect all the files of type $type that are in the source
+              folder
+      \return N-dimensional array of metadata per file
+    */
   public function getMetaData( $type = "ics", $file = "all" ) {
 
       $i = 0;
@@ -1835,8 +1915,7 @@ echo '</body></html>';
       }
 
       echo "\n<div class=\"menuEntry\" onclick=\"javascript:openWindow(".
-          "'http://support.svi.nl/wiki/style=hrm&amp;".
-          "help=HuygensRemoteManagerHelpCompareResult')\" ".
+          "'http://support.svi.nl/wiki/HuygensRemoteManagerHelpCompareResult')\" ".
              "onmouseover=\"Tip('Open a pop up with help about this window')\" onmouseout=\"UnTip()\">".
           "<a href=\"#\"><img src=\"images/help.png\" alt=\"help\" />".
           "</a></div>";
@@ -2078,8 +2157,7 @@ echo '</body></html>';
       echo "</div>\n";
       echo "<div>\n";
       echo "\n<br /><br /><a href=\"javascript:openWindow(".
-          "'http://support.svi.nl/wiki/style=hrm&amp;".
-          "help=HuygensRemoteManagerHelpCompareResult')\">".
+          "'http://support.svi.nl/wiki/HuygensRemoteManagerHelpCompareResult')\">".
           "<img src=\"images/help.png\" alt=\"help\" />".
           "</a>";
 
@@ -2645,6 +2723,17 @@ echo '</body></html>';
 
   }
 
+    /*!
+      \brief Return all files with extension ".ics" and ".h5" found by recursive scan of the source folder.
+      \return array of file names.
+     */
+    public function getPSFiles() {
+
+        // Get and return the files filtered by extension (ics, h5)
+        return $this->filterFilesFromDirByExtensions(
+            $this->sourceFolder(), "", array(".ics", ".h5"));
+    }
+
 /*
                               PRIVATE FUNCTIONS
 */
@@ -3146,6 +3235,73 @@ echo '</body></html>';
   }
 
   /*!
+  \brief  The recursive function that collects the files with given extension
+          from the user's image folder and its subfolders
+  \param  $startDir The folder to start from
+  \param  $relDir   The folder relative to $startDir. This will be created
+                    automatically when the function is called recursively.
+                    When calling from other functions, $relDir will normally be "".
+  \param  $extensions  Array of file extensions
+  \return Array of file names with given extension
+*/
+    private function filterFilesFromDirByExtensions($startDir, $relDir, array $extensions)
+    {
+        // Scan directory $startDir
+        $files = array();
+        $dir = dir($startDir);
+        if ($dir === false || $dir === null) {
+            // Directory could not be read
+            return $files;
+        }
+
+        // Now process all files
+        while (false !== ($entry = $dir->read())) {
+
+            // Skip '.' and '..'
+            if ($entry == "." || $entry == "..") {
+                continue;
+            }
+
+            // If subfolder, recurse into it
+            if (is_dir($startDir . "/" . $entry)) {
+                $newStartDir = $startDir . "/" . $entry;
+                if ($relDir=="") {
+                    $newRelDir = $entry;
+                } else {
+                    $newRelDir = $relDir . "/" . $entry;
+                }
+                $files = array_merge($files,
+                    $this->filterFilesFromDirByExtensions($newStartDir, $newRelDir, $extensions));
+            } else {
+
+                // Check whether the extension matches one of the filters
+                $found = false;
+                foreach($extensions as $ext) {
+                    if (0 == strcasecmp(substr($entry, -((int)strlen($ext))), $ext)) {
+                        $found = true;
+                        break;
+                    }
+                }
+                if (! $found) {
+                    continue;
+                }
+                if ($relDir == "") {
+                    $files[] = $entry;
+                } else {
+                    $files[] = $relDir . "/" . $entry;
+                }
+
+            }
+
+        }
+
+        // Close the directory and return
+        $dir->close();
+        sort($files);
+        return $files;
+    }
+
+  /*!
     \brief  The recursive function that collects the files with given extension
             from the user's image folder and its subfolders
     \param  $startDir The folder to start from
@@ -3154,47 +3310,47 @@ echo '</body></html>';
     \param  $extension  File extension
     \return Array of file names with given extension
   */
-  private function listFilesFrom($startDir, $prefix, $extension) {
-    $files = array();
-    $dir = dir($startDir);
-    if ($dir == false) {
-        // Directory could not be read
-        return $files;
-    }
-    while ($entry = $dir->read()) {
-      if ($entry != "." && $entry != "..") {
-	if (is_dir($startDir . "/" . $entry)) {
-	  $newDir = $startDir . "/" . $entry;
-	  if ($prefix=="") {
-	    $newPrefix = $entry;
-	  } else {
-	    $newPrefix = $prefix . "/" . $entry;
-	  }
-	  $files = array_merge($files,
-                           $this->listFilesFrom($newDir, $newPrefix, $extension));
-	} else {
-            $found = false;
-            foreach ($this->imageExtensions as $current) {
-                $nc = (int)strlen($current);
-                if (strcasecmp(substr($entry, -$nc), $current) == 0) {
-                    $found = true;
-                    break;
+    private function listFilesFrom($startDir, $prefix, $extension) {
+        $files = array();
+        $dir = dir($startDir);
+        if ($dir == false) {
+            // Directory could not be read
+            return $files;
+        }
+        while ($entry = $dir->read()) {
+            if ($entry != "." && $entry != "..") {
+                if (is_dir($startDir . "/" . $entry)) {
+                    $newDir = $startDir . "/" . $entry;
+                    if ($prefix=="") {
+                        $newPrefix = $entry;
+                    } else {
+                        $newPrefix = $prefix . "/" . $entry;
+                    }
+                    $files = array_merge($files,
+                        $this->listFilesFrom($newDir, $newPrefix, $extension));
+                } else {
+                    $found = false;
+                    foreach ($this->imageExtensions as $current) {
+                        $nc = (int)strlen($current);
+                        if (strcasecmp(substr($entry, -$nc), $current) == 0) {
+                            $found = true;
+                            break;
+                        }
+                    }
+                    if ($found === false) {
+                        continue;
+                    }
+                    if ($prefix=="") {
+                        $files[] = $entry;
+                    } else {
+                        $files[] = $prefix . "/" . $entry;
+                    }
                 }
             }
-            if ($found === false) {
-                continue;
-            }
-	  if ($prefix=="") {
-	    $files[] = $entry;
-	  } else {
-	    $files[] = $prefix . "/" . $entry;
-	  }
-	}
-      }
+        }
+        $dir->close();
+        return $files;
     }
-    $dir->close();
-    return $files;
-  }
 
       /* ------------------------- Colocalization -------------------------- */
 

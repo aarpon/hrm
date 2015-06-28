@@ -65,15 +65,9 @@ $emSetting = $emSettingArr[$chan];
       <fieldset>
       
         <legend>available PSF files</legend>
-<?php        
-$icsFiles = $_SESSION['fileserver']->files("ics");
-$icsData = $_SESSION['fileserver']->getMetaData("ics");
-$hdfFiles = $_SESSION['fileserver']->files("h5");
-$hdfData = $_SESSION['fileserver']->getMetaData("h5");
-
-$files = array_merge( $hdfFiles, $icsFiles);
-$data = array_merge( $hdfData, $icsData);
-sort($files);
+<?php
+$files = $_SESSION['fileserver']->getPSFiles();
+$data = $_SESSION['fileserver']->getMetaDataFromFiles($files);
 
 ?>
         <div id="userfiles">
