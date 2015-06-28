@@ -17,8 +17,8 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 <head>
 <?php
 
-if (isset($meta)) {
-  echo "    ".$meta;
+if (using_IE()) {
+    echo '<meta http-equiv="X-UA-Compatible" content="IE=Edge"/>';
 }
 
 ?>
@@ -28,12 +28,10 @@ if (isset($meta)) {
     <link rel="stylesheet" href="scripts/jqTree/jqtree.css">
     <link rel="stylesheet" href="scripts/jquery-ui/jquery-ui-1.9.1.custom.css">
 
-    <!-- Include jQuery --> 
+    <!-- Include jQuery -->
     <script type="text/javascript" src="scripts/jquery-1.8.3.min.js"></script>
-    
-    <script type="text/javascript" src="scripts/common.js"></script>
-    <script type="text/javascript" src="scripts/omero.js"></script>
 
+    <script type="text/javascript" src="scripts/common.js"></script>
 
 <?php
 
@@ -79,7 +77,7 @@ if (isset($generatedScript)) {
 ?>
 
     <script type="text/javascript"><?php echo $generatedScript ?></script>
-    
+
 <?php
 
 }
@@ -87,18 +85,14 @@ if (isset($generatedScript)) {
 
 
 ?>
-    <style type="text/css">
+    <link rel="stylesheet" href="css/default.css">
+    <!--[if lt IE 9]>
+    <h3>This browser is OBSOLETE and is known to have important issues with the HRM.
+        Please upgrade to a later version of Internet Explorer or to a new
+        broswer altogether.</h3>
+    <link rel="stylesheet" href="css/default_ie.css">
+    <![endif]-->
 
-<?php
-    if (using_IE () ) {
-        echo '@import url("css/default_ie.css");';
-    } else {
-        echo '@import url("css/default.css");';
-    }
-?>
-      
-    </style>
-    
 </head>
 
 <body>

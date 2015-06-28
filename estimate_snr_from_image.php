@@ -45,46 +45,46 @@ function showFileBrowser() {
     }
     $file_buttons = array();
     $file_buttons[] = "update";
-    
+
     $additionalHTMLElements = "
              <!-- SNR estimation algorithm -->
-             <fieldset class=\"setting\"
-               onmouseover=\"javascript:changeQuickHelp( 'method' );\" >
+             <fieldset class=\"setting\" >
 
                  <legend>
-                     <a href=\"javascript:openWindow('#')\">
+                     <a href=\"javascript:openWindow(
+                       'http://www.svi.nl/HuygensRemoteManagerHelpSNREstimationAlgorithm')\">
                        <img src=\"images/help.png\" alt=\"?\" /></a>
                        SNR estimation algorithm
                  </legend>
 
                  <select name=\"SNREstimationAlgorithm\" >
                  ";
-    
+
     $algorithm = "";
     if (isset($_POST["SNREstimationAlgorithm"])) {
         $algorithm = $_POST["SNREstimationAlgorithm"];
     }
-    
+
     $selected = "";
     if ($algorithm == "old") {
-        $selected = "selected=\"selected\""; 
+        $selected = "selected=\"selected\"";
     }
-    
+
     $additionalHTMLElements .= "
         <option value=\"old\" $selected>Classic estimator</option>";
-  
+
     $selected = "";
     if ($algorithm == "new") {
-        $selected = "selected=\"selected\""; 
+        $selected = "selected=\"selected\"";
     }
-    
+
     $additionalHTMLElements .= "
         <option value=\"new\" $selected>New estimator (beta)</option>";
-    
-    $additionalHTMLElements .= "        
+
+    $additionalHTMLElements .= "
           </select>
         </fieldset>
-        <p />";
+        <p>&nbsp;</p>";
 
     $control_buttons = "
         <input type=\"button\" value=\"\" class=\"icon up\"
@@ -104,7 +104,10 @@ function showFileBrowser() {
             <p>Select a raw image to estimate the Signal-to-Noise Ratio (SNR).
                You can then use the estimated SNR values in the Restoration
                Settings to deconvolve similar images, acquired under similar
-               conditions.</p>';
+               conditions.</p>
+
+            <p>You have a choice of two SNR estimation algorithms. Please click
+               on the corresponding help button for additional information.</p>';
 
     if ($type != "") {
         $info .= "<p>Only images of type <b>$type</b>, as set in the image
@@ -138,10 +141,6 @@ function showFileBrowser() {
 // validity of the estimate.
 function estimateSnrFromFile($file) {
 
-    // If using IE make sure to enforce IE7 Document Mode
-    if ( using_IE( ) ) {
-        $meta = "<meta http-equiv=\"X-UA-Compatible\" content=\"IE=7.5\" >";
-    }
     include("header.inc.php");
 
     $top_nav_left = get_wiki_link('HuygensRemoteManagerHelpSnrEstimator');
@@ -199,14 +198,14 @@ function estimateSnrFromFile($file) {
     }
 
 
-    // Build the call to HuCore to estimate the SNR value with one of the 
+    // Build the call to HuCore to estimate the SNR value with one of the
     // two algorithms
     if (isset($_POST['SNREstimationAlgorithm'])) {
         $algorithm = $_POST['SNREstimationAlgorithm'];
     } else {
         $algorithm = "old";
     }
-    
+
     $opt = "-basename \"$basename\" -src \"$psrc\" -dest \"$pdest\" ".
         "-returnImages \"0.5 0.71 1 1.71 \" -snrVersion \"$algorithm\" ".
         "-series $series $extra";
@@ -229,7 +228,7 @@ function estimateSnrFromFile($file) {
 
     <div id="content">
       <div id="output" >
-        <h3><img alt="SNR" src="./images/results_title.png" 
+        <h3><img alt="SNR" src="./images/results_title.png"
                  width="40" />&nbsp;&nbsp;Estimating SNR
         </h3>
         <fieldset>
@@ -426,7 +425,7 @@ function estimateSnrFromFile($file) {
         $buttons .= "<input type=\"hidden\" name=\"store\" value=\"store\" />";
         for ( $i = 0; $i < count( $calculatedSNRValues ); $i++ ) {
             $buttons .= "<input type=\"hidden\" ".
-            "name=\"Channel$i\" value=\"$calculatedSNRValues[$i]\" />";
+            "name=\"Channel$i\" id=\"btn-channel'.($i+1).'\" value=\"$calculatedSNRValues[$i]\" />";
         }
 
         $buttons .= "<input type=\"button\" value=\"\" class=\"icon previous\" ".
@@ -450,10 +449,8 @@ function estimateSnrFromFile($file) {
         $buttons .= "</form>";
 
     ?>
-
     </div>
     <script type="text/javascript">
-    <!--
          window.divCondition = 'general';
          <?php
          // Preloading code doesn't seem to help (at least if it doesn't go in
@@ -469,7 +466,38 @@ function estimateSnrFromFile($file) {
          smoothChangeDiv('controls',
              '<?php echo escapeJavaScript($buttons); ?>',1500);
          changeDiv('tmp','');
-    //-->
+
+    function getScrollTop() {
+        if (typeof window.pageYOffset !== 'undefined' ) {
+            // Most browsers
+            return window.pageYOffset;
+        }
+
+        var d = document.documentElement;
+        if (d.clientHeight) {
+            // IE in standards mode
+            return d.scrollTop;
+        }
+
+        // IE in quirks mode
+        return document.body.scrollTop;
+    }
+    window.onscroll = function() {
+        var box = document.getElementById('thumb'),
+        scroll = getScrollTop();
+
+        var basketEl = document.getElementById('basket');
+        console.log(basketEl.clientHeight);
+        if (scroll <= 200) {
+        box.style.top = "0px";
+        }
+        else if (scroll > basketEl.clientHeight) {
+
+        } else {
+            box.style.top = (scroll - 200) + "px";
+        }
+    };
+
     </script>
 
 <?php
@@ -480,6 +508,10 @@ function estimateSnrFromFile($file) {
 
 
 session_start();
+
+if (isset($_GET['home'])) {
+  header("Location: " . "home.php"); exit();
+}
 
 // Ask the user to login if necessary.
 if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {

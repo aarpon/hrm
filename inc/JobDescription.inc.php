@@ -319,7 +319,7 @@ class JobDescription {
     $queue = new JobQueue();
     $result = $result && $queue->queueJob($this);
     if (!$result) {
-      $this->message = "create job - database error!";
+      $this->message = "Could not create job!";
     }
     return $result;
   }
@@ -334,7 +334,7 @@ class JobDescription {
     $compoundJobs = $queue->getCompoundJobs();
     foreach ($compoundJobs as $jobDescription) {
       $job = new Job($jobDescription);
-      $job->createSubJobsOrScript();
+      $job->createSubJobsOrHuTemplate();
     }
   }
 
@@ -414,7 +414,7 @@ class JobDescription {
   public function sourceImageName() {
     $files = $this->files();
     // avoid redundant slashes in path
-    $result = $this->sourceFolder() . ereg_replace("^/", "", end($files));
+    $result = $this->sourceFolder() . preg_replace("#^/#", "", end($files));
     return $result;
   }
 
@@ -443,13 +443,15 @@ class JobDescription {
     $inputFile = explode("/", $inputFile);
     array_pop($inputFile);
     $path = implode("/", $inputFile);
-    // avoid redundant slashes in path
-    if (strlen($path) > 0) $path = ereg_replace("([^/])$", "\\1/", $path);
+    if (strlen($path) > 0) {
+        // make sure to have exactly ONE slash at the end of $path:
+        $path = preg_replace("#/*$#", "/", $path);
+    }
     return $path;
   }
 
   /*!
-    \brief Returns the file base name with some special handling for Lif files
+    \brief Returns the file base name. Special handling for LIF and CZI files.
     \return file base name
   */
   public function sourceImageShortName() {
@@ -462,14 +464,12 @@ class JobDescription {
     $parameterSetting = $this->parameterSetting;
     $parameter = $parameterSetting->parameter('ImageFileFormat');
 	$fileFormat = $parameter->value();
-    if ( strcasecmp( $fileFormat, 'lif' ) == 0 ) {
-      if ( preg_match("/^(.*)\.lif\s\((.*)\)/i", $inputFile[0], $match) ) {
+    if (preg_match("/^(.*)\.(lif|czi)\s\((.*)\)/i", $inputFile[0], $match)) {
         $inputFile = $match[ 1 ] . '_' . $match[ 2 ];
-      } else {
-        $inputFile = substr(end($inputFile), 0, strrpos(end($inputFile), ".")); }
     } else {
-      $inputFile = substr(end($inputFile), 0, strrpos(end($inputFile), "."));
+        $inputFile = substr(end($inputFile), 0, strrpos(end($inputFile), "."));
     }
+  
     return $inputFile;
   }
 
@@ -481,7 +481,8 @@ class JobDescription {
     global $huygens_server_image_folder;
     global $image_source;
     $user = $this->owner();
-    $result = $huygens_server_image_folder . $user->name() . "/" . $image_source . "/";
+    $result = $huygens_server_image_folder .
+        $user->name() . "/" . $image_source . "/";
     return $result;
   }
 

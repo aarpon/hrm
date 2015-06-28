@@ -39,7 +39,7 @@ for ($i = 0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
   $psfKey = "psf{$i}";
   if (isset($_POST[$psfKey])) {
     $psf[$i] = $_POST[$psfKey];
-  } 
+  }
 }
 // get rid of extra values in case the number of channels is changed
 $psfParam->setValue($psf);
@@ -52,7 +52,7 @@ $_SESSION['setting']->set($psfParam);
  * In this case, we do not need to check the confidence level of the PSF
  * Parameter (although it is set to Provide), since there is no other
  * meaningful alternative to having to provide the file names.
- * 
+ *
  **************************************************************************** */
 
 if (count($_POST) > 0) {
@@ -97,6 +97,7 @@ include("header.inc.php");
             <?php
                 wiki_link('HuygensRemoteManagerHelpSelectPSFFiles');
             ?>
+            <li> [ <?php  echo $_SESSION['setting']->name(); ?> ] </li>
         </ul>
     </div>
     <div id="navright">
@@ -110,11 +111,11 @@ include("header.inc.php");
 </div>
 
     <div id="content">
-    
+
         <h3>Distilled PSF file selection</h3>
-        
+
         <form method="post" action="select_psf.php" id="select">
-        
+
             <div id="psfselection" class="provided">
 <?php
 
@@ -122,6 +123,7 @@ for ($i = 0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
   $parameter = $_SESSION['setting']->parameter("PSF");
   $value = $parameter->value();
   $missing = False;
+  $_SESSION['fileserver']->imageExtensions();
   $files = $_SESSION['fileserver']->allFiles();
   if ($files != null) {
     if (!in_array($value[$i], $files)) {
@@ -131,7 +133,7 @@ for ($i = 0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
 ?>
                 <p>
                     <span class="title">Ch<?php echo $i ?>:</span>
-                    <input name="psf<?php echo $i ?>" 
+                    <input name="psf<?php echo $i ?>"
                            type="text"
                            value="<?php echo $value[$i] ?>"
                            class="
@@ -142,7 +144,7 @@ for ($i = 0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
                                 echo "psffile";
                             } ?>"
                            readonly="readonly" />
-                    <input type="button" 
+                    <input type="button"
                            onclick="seek('<?php echo $i ?>')"
                            value="browse" />
                 </p>
@@ -172,10 +174,10 @@ for ($i = 0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
 
 ?>
             </div>
-            
+
             <div><input name="OK" type="hidden" /></div>
             <p class="message_confidence_Provide">&nbsp;</p>
-            
+
             <div id="controls">
               <input type="button" value="" class="icon previous"
                   onmouseover="TagToTip('ttSpanBack' )"
@@ -189,22 +191,22 @@ for ($i = 0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
                   onmouseover="TagToTip('ttSpanSave' )"
                   onmouseout="UnTip()" onclick="process()" />
             </div>
-                        
+
         </form>
-        
+
     </div> <!-- content -->
-    
+
     <div id="rightpanel">
-    
+
         <div id="info">
-          
+
           <h3>Quick help</h3>
-          
+
           <p>Select a PSF file for each of the channels. Only
               <strong>single-channel PSF files</strong> are supported.</p>
-            
+
         </div>
-        
+
         <div id="message">
 <?php
 
@@ -212,9 +214,9 @@ echo "<p>$message</p>";
 
 ?>
         </div>
-        
+
     </div> <!-- rightpanel -->
-    
+
 <?php
 
 include("footer.inc.php");

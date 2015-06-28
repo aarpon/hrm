@@ -1,0 +1,266 @@
+#!/bin/bash
+#
+# hrm_queuemanager     Huygens Remote Manager - Queue Manager wrapper script
+#
+# This is the daemon wrapper script for running the HRM Queue Manager (QM).
+#
+# It works the following way:
+# - Reads in the default configuration file (/etc/hrm.conf) unless an
+#   environment variable $HRM_CONF is set, in that case this one is used.
+# - From the $HRM_LOG setting configured in the config, the settings for the
+#   logs (default and error) and the PID files are derived and checked for
+#   existence and appropriate permissions (read/write).
+# - The config is checked if a system account for the HRM daemon has been
+#   configured ($SUSER setting), otherwise it stops.
+# - As the QM is not designed to run multiple instances at the same time it is
+#   checking if a QM is already running. This is done by using the
+#   corresponding functions required to be provided by any LSB compliant
+#   distribution. See http://refspecs.linuxbase.org/ for more details.
+# - In case the script was run as root, it re-exec's itself with the user
+#   account configured in the $SUSER variable. In case it was started as
+#   non-root it checks if this matches $SUSER (otherwise writing previews and
+#   deconvolution results would fail).
+# - If the script was started with the parameter '--detach' it forks itself
+#   into the background to run as a daemon. In fact this is also done by
+#   re-executing itself as a subprocess (removing the '--detach' parameter) and
+#   then terminating the parent process.
+# - Having reached this point means that all sanity checks were successful,
+#   the script is running under the appropriate user account and was forked
+#   into the background if requested.
+# - For being able to handle shutdown requests in a meaningful way (i.e. to
+#   clean up), a signal handler for SIGINT and SIGTERM is set up. In case one
+#   of these signals is sent to the daemon, the "cleanup_exit" function is
+#   triggered.
+# - Before actually launching the QM, a marker with the current date and time
+#   is written to both log files for being able to identify which entries
+#   belong to a certain session.
+# - Then the actual PHP QM is launched as a subprocess. The PID of this
+#   subprocess is remembered in a variable. Note that it is *NOT* the PID that
+#   gets written to the pidfile later on! Instead, the PID of the daemon
+#   wrapper script (read: us!) is stored there as *this* is what should receive
+#   kill requests etc. If writing the pidfile fails, the script stops the QM
+#   and quits.
+# - After launching the QM, the script is switching to monitoring mode: in an
+#   endless loop it keeps checking once a second if the status of the
+#   subprocess (the QM) has changed since the last check. A status change means
+#   that the QM has crashed or was shut down explicitly (which is not intended)
+#   the cleanup function is called and the script exits.
+# - This cleanup function (which is also triggered directly if the script
+#   receives the TERM or INT signal) sends the TERM signal to the QM (in case
+#   it is still running, which should be the default), removes the pidfile and
+#   then exits.
+
+######################  function definitions  ######################
+
+test_writable() {
+    # Test if a file or directory is writable, exit otherwise.
+    if ! [ -w "$1" ] ; then
+        echo "ERROR: file or directory not writable: '$1'!"
+        exit 1
+    fi
+}
+
+test_writable_create() {
+    # Test if a file exists and is writable, try to create it otherwise. If
+    # both fails exit with an error message.
+    if ! [ -e "$1" ] ; then
+        touch "$1" 2>/dev/null || {
+            echo "ERROR: cannot create file: '$1'!"
+            exit 1
+        }
+    else
+        test_writable "$1"
+    fi
+}
+
+warn_daemon_user() {
+    cat << EOF
+WARNING *** WARNING *** WARNING *** WARNING *** WARNING *** WARNING *** WARNING
+
+Your setup does not have the "SUSER" variable configured to be used for running
+the HRM Queue Manager. Usually, this results in the daemon being run as root.
+
+This configuration has been DEPRECATED as of HRM 3.1.0 and is not supported in
+HRM 3.2.0 and newer releases. Please see the documentation how to correctly
+configure your HRM:
+
+http://huygens-rm.org/
+
+WARNING *** WARNING *** WARNING *** WARNING *** WARNING *** WARNING *** WARNING
+
+EOF
+}
+
+run_qm_daemon() {
+
+    # TODO: do we really need two different logfiles here?
+    echo "Reporting stdout to '$LOG_OUT' and stderr to '$LOG_ERR'."
+    MARK="$(date "+%F %H:%M:%S") - starting the HRM Queue Manager"
+    MARK="+++++++++++++++++++++++++++++ $MARK +++++++++++++++++++++++++++++"
+    log "$MARK"
+    err "$MARK"
+
+    # a custom QUEUEMGR can be set in the config file, this is mostly meant
+    # for testing *this* script (e.g. set "sleep 99999999"):
+    if [ -z "$QUEUEMGR" ] ; then
+        QUEUEMGR="$PHP_CLI -q $HRM_HOME/run/runHuygensRemoteManager.php"
+    fi
+    # the PHP QM expects to be run from within the "run/" subdirectory:
+    cd "$HRM_HOME/run"
+    $QUEUEMGR 1>> "$LOG_OUT" 2>> "$LOG_ERR" &
+    # NOTE: we cannot check the status of the previous command via "$?" as this
+    # variable is only set for commands executed in *foreground* (see "man
+    # bash" in the "Special Parameters" section), therefore we have to use the
+    # method from below.
+
+    # bash provides the PID of the background process in "$!", so remember it:
+    QUEUEMGR_PID=$!
+
+    # NOTE: we do *NOT* put the PID of the actual queue manager into the
+    # pidfile but the PID of *this* bash process as *we* are meant to stay
+    # alive during its runtime to handle signals and clean up after the QM has
+    # stopped (upon request/signal or crashed):
+    echo $$ > "$PID_FILE" || {
+        echo "ERROR: can't write PID file '$PID_FILE'!"
+        err "[$0] ERROR: can't write PID file '$PID_FILE'!"
+        cleanup_exit
+    }
+
+    # loop until we receive SIGINT/SIGTERM or the subprocess exited for some
+    # other reason (e.g. because it crashed or was killed directly):
+    while :
+    do
+        sleep 1
+        # "jobs -p" lists the PID's of *all* active jobs (asynchronous
+        # subprocesses of this bash instance), so the if-clause below would
+        # also be true if there was *more* than one subprocess:
+        if [ "$QUEUEMGR_PID" != "$(jobs -p)" ] ; then
+            echo "WARNING: the HRM Queue Manager is not running any more!"
+            # show everything of the errorlog since our startup-mark (maximum
+            # of 100 lines) to give a hint what could have gone wrong:
+            echo "Showing errorlog entries since startup (max 100 lines):"
+            echo "------------------ $LOG_ERR ------------------"
+            tail -n 100 "$LOG_ERR" | sed "1,/$MARK/d"
+            echo "------------------ $LOG_ERR ------------------"
+            cleanup_exit 1
+        fi
+        # NOTE: due to some weird bash behaviour (bug?), the joblist doesn't
+        # get updated when "jobs -p" is called but *ONLY* if we call "jobs -l"
+        # or something, so we do this explicitly as a workaround:
+        jobs -l > /dev/null
+    done
+}
+
+cleanup_exit() {
+    # update the logfiles with a shutdown message:
+    MARK="$(date "+%F %H:%M:%S") - HRM Queue Manager: cleaning up"
+    MARK="----------------------------- $MARK -----------------------------"
+    log "$MARK"
+    err "$MARK"
+    # kill the running Queue Manager and clean up the PID file
+    kill -15 $QUEUEMGR_PID 2>/dev/null
+    rm -f "$PID_FILE"
+    # exit with status "0" unless $1 is set explicitly:
+    exit ${1-0}
+}
+
+err() {
+    echo "$*" >> "$LOG_ERR"
+}
+
+log() {
+    echo "$*" >> "$LOG_OUT"
+}
+
+##################  end of function definitions  ###################
+
+
+
+######################### main script part #########################
+
+# Make sure to have a known locale environment for the script:
+export LC_ALL=C
+
+# Set the default for the PHP CLI binary (can be overridden in hrm.conf):
+PHP_CLI="php"
+
+# Read in hrm.conf (defines variables like HRM_HOME)
+set -e
+if [ -n "$HRM_CONF" ] ; then
+    . "$HRM_CONF"
+else
+    . /etc/hrm.conf
+fi
+set +e
+
+if [ -n "$DEBUG_HRMD" ] ; then
+    set -o xtrace
+fi
+
+# refuse to start if no SUSER is configured:
+if [ -z "$SUSER" ] ; then
+    warn_daemon_user
+    exit 1
+fi
+
+# re-exec with correct user in case we were started as root:
+if [ "$(id -u)" = 0 ] ; then
+    exec su -l $SUSER -c "$0 $@"
+fi
+
+# refuse to start if we were started with the wrong account:
+WHOAMI=$(id -u -n)
+if [ "$WHOAMI" != "$SUSER" ] ; then
+    echo "User mismatch: '$WHOAMI' <-> '$SUSER'."
+    exit 2
+fi
+
+# Global variables definition:
+LOG_OUT="${HRM_LOG}/log.txt"
+LOG_ERR="${HRM_LOG}/error_log.txt"
+PID_FILE="${HRM_LOG}/hrmd.pid"
+
+# HRM_LOG needs to be writable as we store the pidfile there at the moment:
+test_writable "${HRM_LOG}"
+test_writable_create "${LOG_OUT}"
+test_writable_create "${LOG_ERR}"
+
+# check if a Queue Manager is already running:
+set -e
+. /lib/lsb/init-functions
+set +e
+RUNNING_PID=$(pidofproc -p "$PID_FILE" "$0")
+RUNNING_STATUS=$?
+# NOTE: see the LSB specification for return values of "pidofproc"
+if [ -n "$RUNNING_PID" ] ; then
+    echo "The Queue Manager seems to be running already ($RUNNING_PID)."
+    echo "NOT starting a second instance!"
+    echo
+    exit 1
+fi
+if [ "$RUNNING_STATUS" = "1" ] ; then
+    echo "NOTE: leftover pid file '$PID_FILE' (no Queue Manager running)."
+fi
+if [ "$RUNNING_STATUS" = "4" ] ; then
+    echo "ERROR: unable to determine status from pid file '$PID_FILE'."
+    echo "       Please manually check if another instance is running"
+    echo "       and remove the file if not."
+    exit 1
+fi
+
+# detach into background if requested
+if [ "$1" = "--detach" ] ; then
+    shift
+    echo "Forking background process..."
+    "$0" "$@" &
+    exit 0
+fi
+
+# install the signal handler (runs the function "cleanup_exit" when either of
+# the given signals SIGINT (2) or SIGTERM (15) is received):
+trap "cleanup_exit" SIGINT SIGTERM
+
+# once we reach this point we have made sure to run as the appropriate user and
+# backgrounding has happened (if requested), so we can then start the actual
+# daemon function:
+run_qm_daemon

@@ -58,6 +58,23 @@ abstract class Setting {
     }
 
     /*!
+     * Deep copy method.
+     *
+     * Call:
+     *
+     *    $settingClone = clone $setting
+     *
+     * to get a deep copy of the original object.
+     */
+    public function __clone() {
+        foreach($this as $key => $val) {
+            if (is_object($val) || (is_array($val))) {
+                $this->{$key} = unserialize(serialize($val));
+            }
+        }
+    }
+
+    /*!
       \brief	Returns the Parameter of given name
       \param	$name	Name of the Parameter to return
       \return	a Parameter object or NULL if the Parameter does not exist
@@ -175,7 +192,7 @@ abstract class Setting {
       the standard (default) flag. This is an abstract function and must
       be reimplemented.
     */
-    abstract function table();
+    abstract static function table();
 
     /*!
       \brief	Returns the name of the database table in which all the Parameters
@@ -184,7 +201,7 @@ abstract class Setting {
       This is an abstract function and must be reimplemented.
       \see table()
     */
-    abstract function parameterTable();
+    abstract static function parameterTable();
 
     /*!
       \brief  Loads the Parameter values into current Setting
@@ -194,20 +211,37 @@ abstract class Setting {
         $db = new DatabaseConnection();
         $result = $db->loadParameterSettings($this);
         if (!$result) {
-            $this->message = "load setting - database access failed!";
+            $this->message = "Could not load settings!";
         }
         return $result;
     }
 
     /*!
       \brief  Saves all Parameter values from current Setting to the database
-      \return	true if saving was successul, false otherwise
+      \return	true if saving was successful, false otherwise
     */
     public function save() {
         $db = new DatabaseConnection();
         $result = $db->saveParameterSettings($this);
         if (!$result) {
-            $this->message = "save setting - database access failed!";
+            $this->message = "Could not save settings!";
+        }
+        return $result;
+    }
+
+    /*!
+      \brief  Shares the selected setting with the given user.
+      \param String $username Name of the user to share with
+      \return	true if sharing was successful, false otherwise
+    */
+    public function shareWith($username) {
+        $db = new DatabaseConnection();
+        $settings = $db->loadParameterSettings($this);
+        $result = $db->saveSharedParameterSettings($settings, $username);
+        if (!$result) {
+            $this->message = "Sharing template failed!" ;
+        } else {
+            $this->message = "Template successfully shared!";
         }
         return $result;
     }
@@ -251,7 +285,6 @@ class ParameterSetting extends Setting {
             'IsMultiChannel',
             'ImageFileFormat',
             'NumberOfChannels',
-            'ImageGeometry',
             'MicroscopeType',
             'NumericalAperture',
             'ObjectiveMagnification',
@@ -296,8 +329,16 @@ class ParameterSetting extends Setting {
       Besides the name, the table contains the Setting's name, owner and
       the standard (default) flag.
     */
-    public function table() {
+    public static function table() {
         return "parameter_setting";
+    }
+
+    /*!
+      \brief	Returns the name of the database table in which the list of
+      shared Setting names are stored.
+    */
+    public static function sharedTable() {
+        return "shared_parameter_setting";
     }
 
     /*!
@@ -305,9 +346,19 @@ class ParameterSetting extends Setting {
               for the Settings stored in the table specified in table()
       \see table()
     */
-    public function parameterTable() {
+    public static function parameterTable() {
         return "parameter";
     }
+
+    /*!
+      \brief	Returns the name of the database table to use for sharing
+                settings.
+      \see table()
+    */
+    public static function sharedParameterTable() {
+        return "shared_parameter";
+    }
+
 
     /*!
      \brief    A general check on  the status of the image parameter setting
@@ -1510,8 +1561,6 @@ class ParameterSetting extends Setting {
         foreach ($this->parameter as $parameter) {
             if (!$this->hasPinhole() && $parameter->name() == 'PinholeSize')
                 continue;
-            if ($parameter->name() == 'ImageGeometry')
-                continue;
             if ($parameter->name() == 'ImageFileFormat')
                 continue;
             if ($parameter->name() == 'IsMultiChannel')
@@ -1564,6 +1613,37 @@ class ParameterSetting extends Setting {
                 continue;
             if ($parameter->name() == 'Sted3D' && !$this->isSted3D())
                 continue;
+            if ($parameter->name() == 'PSF' && $PSFmode == 'measured') {
+
+                // If this is a shared template, process the PSF file paths
+                // to return the final path as it will be when the shared
+                // template is accepted.
+                $buffer = "psf_sharing/buffer/";
+                $psfFiles = $parameter->value();
+                for ($i = 0; $i < count($psfFiles); $i++) {
+
+                    // Get current PSF file path
+                    $f = $psfFiles[$i];
+
+                    // Process it
+                    $pos = strpos($f, $buffer);
+                    if ($pos === 0) {
+
+                        // Remove all temporary path prefix
+                        $tmp = substr($f, strlen($buffer));
+                        $pos = strpos($tmp, "/");
+                        $tmp = substr($tmp, $pos + 1); // Remove owner
+                        $pos = strpos($tmp, "/");
+                        $tmp = substr($tmp, $pos + 1); // Remove previous owner
+
+                        // Update the parameter
+                        $psfFiles[$i] = $tmp;
+                    }
+                }
+                $parameter->setValue($psfFiles);
+                $result = $result . $parameter->displayString($numberOfChannels);
+                continue;
+            }
             $result = $result . $parameter->displayString($numberOfChannels);
         }
         return $result;
@@ -1967,8 +2047,28 @@ class ParameterSetting extends Setting {
         return $size / 1;
     }
 
-}
+    /*!
+      \brief  Get the list of templates shared with the given user.
+      \param String $username Name of the user to query for.
+      \return	list of shared templates with the user.
+    */
+    public static function getTemplatesSharedWith($username) {
+        $db = new DatabaseConnection();
+        $result = $db->getTemplatesSharedWith($username, self::sharedTable());
+        return $result;
+    }
 
+    /*!
+      \brief  Get the list of templates shared by the given user.
+      \param String $username Name of the user to query for.
+      \return	list of shared templates by the user.
+    */
+    public static function getTemplatesSharedBy($username) {
+        $db = new DatabaseConnection();
+        $result = $db->getTemplatesSharedBy($username, self::sharedTable());
+        return $result;
+    }
+}
 
 /*
  ============================================================================
@@ -1991,6 +2091,7 @@ class TaskSetting extends Setting {
     public function TaskSetting() {
         parent::__construct();
         $parameterClasses = array(
+            'Autocrop',
             'SignalNoiseRatio',
             'BackgroundOffsetPercent',
             'NumberOfIterations',
@@ -2016,8 +2117,16 @@ class TaskSetting extends Setting {
       the standard (default) flag. This is an abstract function and must
       be reimplemented.
     */
-    public function table() {
+    public static function table() {
         return "task_setting";
+    }
+
+    /*!
+      \brief	Returns the name of the database table in which the list of
+      shared Setting names are stored.
+    */
+    public static function sharedTable() {
+        return "shared_task_setting";
     }
 
     /*!
@@ -2028,8 +2137,17 @@ class TaskSetting extends Setting {
 
       \see table()
     */
-    public function parameterTable() {
+    public static function parameterTable() {
         return "task_parameter";
+    }
+
+    /*!
+    \brief	Returns the name of the database table to use for sharing
+            settings.
+    \see table()
+    */
+    public static function sharedParameterTable() {
+        return "shared_task_parameter";
     }
 
     /*!
@@ -2163,6 +2281,18 @@ class TaskSetting extends Setting {
             }
         }
 
+        // Autocrop
+        if (isset($postedParameters["Autocrop"]) ||
+                $postedParameters["Autocrop"] == '') {
+            $parameter = $this->parameter("Autocrop");
+            $parameter->setValue($postedParameters["Autocrop"]);
+            $this->set($parameter);
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = False;
+            }
+        }
+
         return $noErrorsFound;
     }
 
@@ -2242,6 +2372,29 @@ class TaskSetting extends Setting {
         return TRUE;
     }
 
+
+    /*!
+      \brief  Get the list of templates shared with the given user.
+      \param String $username Name of the user to query for.
+      \return	list of shared templates with the user.
+    */
+    public static function getTemplatesSharedWith($username) {
+        $db = new DatabaseConnection();
+        $result = $db->getTemplatesSharedWith($username, self::sharedTable());
+        return $result;
+    }
+
+    /*!
+    \brief  Get the list of templates shared by the given user.
+    \param String $username Name of the user to query for.
+    \return	list of shared templates by the user.
+    */
+    public static function getTemplatesSharedBy($username) {
+        $db = new DatabaseConnection();
+        $result = $db->getTemplatesSharedBy($username, self::sharedTable());
+        return $result;
+    }
+
 } // End of class taskSetting
 
 /*
@@ -2288,8 +2441,16 @@ class AnalysisSetting extends Setting {
       the standard (default) flag. This is an abstract function and must
       be reimplemented.
     */
-    public function table() {
+    public static function table() {
         return "analysis_setting";
+    }
+
+    /*!
+      \brief	Returns the name of the database table in which the list of
+      shared Setting names are stored.
+    */
+    public static function sharedTable() {
+        return "shared_analysis_setting";
     }
 
     /*!
@@ -2300,8 +2461,17 @@ class AnalysisSetting extends Setting {
 
       \see table()
     */
-    public function parameterTable() {
+    public static function parameterTable() {
         return "analysis_parameter";
+    }
+
+    /*!
+      \brief	Returns the name of the database table to use for sharing
+                settings.
+      \see table()
+    */
+    public static function sharedParameterTable() {
+        return "shared_analysis_parameter";
     }
 
     /*!
@@ -2354,7 +2524,7 @@ class AnalysisSetting extends Setting {
             $this->set($parameter);
         }
 
-          // Colocaliztion threshold mode
+          // Colocalizastion threshold mode
         if (!isset($postedParameters["ColocThresholdMode"]) ||
                 $postedParameters["ColocThresholdMode"] == '') {
             $this->message = 'Please choose a colocalization threshold mode!';
@@ -2429,6 +2599,29 @@ class AnalysisSetting extends Setting {
         return $result;
     }
 
+
+    /*!
+      \brief  Get the list of templates shared with the given user.
+      \param String $username Name of the user to query for.
+      \return	list of shared templates with the user.
+    */
+    public static function getTemplatesSharedWith($username) {
+        $db = new DatabaseConnection();
+        $result = $db->getTemplatesSharedWith($username, self::sharedTable());
+        return $result;
+    }
+
+    /*!
+    \brief  Get the list of templates shared by the given user.
+    \param String $username Name of the user to query for.
+    \return	list of shared templates by the user.
+    */
+    public static function getTemplatesSharedBy($username) {
+        $db = new DatabaseConnection();
+        $result = $db->getTemplatesSharedBy($username, self::sharedTable());
+        return $result;
+    }
+
 } // End of class analysisSetting
 
 /*
@@ -2453,7 +2646,7 @@ class JobParameterSetting extends ParameterSetting {
       Besides the name, the table contains the Setting's name, owner and
       the standard (default) flag.
     */
-    public function table() {
+    public static function table() {
         return "job_parameter_setting";
     }
 
@@ -2462,7 +2655,7 @@ class JobParameterSetting extends ParameterSetting {
               for the Settings stored in the table specified in table()
       \see table()
     */
-    public function parameterTable() {
+    public static function parameterTable() {
         return "job_parameter";
     }
 
@@ -2486,7 +2679,7 @@ class JobTaskSetting extends TaskSetting {
       Besides the name, the table contains the Setting's name, owner and
       the standard (default) flag.
     */
-    public function table() {
+    public static function table() {
         return "job_task_setting";
     }
 
@@ -2495,7 +2688,7 @@ class JobTaskSetting extends TaskSetting {
               for the Settings stored in the table specified in table()
       \see table()
     */
-    public function parameterTable() {
+    public static function parameterTable() {
         return "job_task_parameter";
     }
 
@@ -2519,7 +2712,7 @@ class JobAnalysisSetting extends AnalysisSetting {
       Besides the name, the table contains the Setting's name, owner and
       the standard (default) flag.
     */
-    public function table() {
+    public static function table() {
         return "job_analysis_setting";
     }
 
@@ -2528,7 +2721,7 @@ class JobAnalysisSetting extends AnalysisSetting {
               for the Settings stored in the table specified in table()
       \see table()
     */
-    public function parameterTable() {
+    public static function parameterTable() {
         return "job_analysis_parameter";
     }
 

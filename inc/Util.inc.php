@@ -11,13 +11,13 @@
  \return A boolean: true if the value exists in the array, false otherwise.
 */
 function isValueInArray($array, $value){
- 
+
  if(!is_array($array)){
    return;
  }
 
   $found = FALSE;
- 
+
   foreach ($array as $arrKey => $arrValue) {
 
           /* A first filter on the length to distinguish '0' and '', which
@@ -29,7 +29,7 @@ function isValueInArray($array, $value){
           }
       }
   }
-  
+
   return $found;
 }
 
@@ -308,9 +308,9 @@ function askHuCore($tool, $options = "") {
           (defined in the HRM configuration files). If logfile becomes to big
           it is renamed and a new one is started.
   \param  $text The text to be logged
-  \param  $level  The log level of the text (0, 1, or 2)
+  \param  $level (optional) The log level of the text (0 (default), 1, or 2)
 */
-function report($text, $level) {
+function report($text, $level=0) {
     global $log_verbosity;
     global $hrm_path;
     global $logdir;
@@ -333,7 +333,7 @@ function report($text, $level) {
         }
         rename($logpath, $logpath . ".old");
     }
-    
+
     $file = fopen($logpath, 'a');
     if ($file === FALSE) {
       // Cannot write to the log dir (or the file)
@@ -370,7 +370,7 @@ function notifyRuntimeError($subject, $message) {
   \return string containing the name of current page
 */
 function getThisPageName() {
-    return substr($_SERVER["SCRIPT_NAME"], 
+    return substr($_SERVER["SCRIPT_NAME"],
         strrpos($_SERVER["SCRIPT_NAME"], "/") + 1);
 }
 
@@ -405,7 +405,7 @@ function let_to_num($v) {
 */
 function getMaxSingleUploadSize() {
 
-    $max_upload_size = min(let_to_num(ini_get('post_max_size')), 
+    $max_upload_size = min(let_to_num(ini_get('post_max_size')),
         let_to_num(ini_get('upload_max_filesize')));
 
     return $max_upload_size;
@@ -463,7 +463,7 @@ function getMaxFileSize() {
                      (default: true)
   \return if reading was not successful, the function returns false. If reading
           was successful, the function returns the number of read bytes if
-          $retbytes is true, and a boolean otherwise (true if the file was 
+          $retbytes is true, and a boolean otherwise (true if the file was
           closed successfully, false otherwise).
   \see    http://nl.php.net/manual/en/function.readfile.php#54295
  */
@@ -494,9 +494,9 @@ function readfile_chunked($filename, $retbytes=true) {
 if (!function_exists('printDebug')) {
 
     /* !
-      \brief  A global debugging function, that will print all its arguments 
-              whether are strings, arrays or objects. This works if a global 
-              variable $debug = true, that can be defined in 
+      \brief  A global debugging function, that will print all its arguments
+              whether are strings, arrays or objects. This works if a global
+              variable $debug = true, that can be defined in
               hrm_client_config.inc. Otherwise it does nothing.
      */
     function printDebug() {

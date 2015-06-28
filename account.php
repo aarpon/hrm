@@ -2,12 +2,12 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
-require_once("./inc/User.inc.php");
-require_once("./inc/Database.inc.php");
-require_once("./inc/hrm_config.inc.php");
-require_once("./inc/Util.inc.php");
-require_once("./inc/Validator.inc.php");
-require_once("./inc/wiki_help.inc.php");
+require_once(dirname(__FILE__) . "/inc/User.inc.php");
+require_once(dirname(__FILE__) . "/inc/hrm_config.inc.php");
+require_once(dirname(__FILE__) . "/inc/Util.inc.php");
+require_once(dirname(__FILE__) . "/inc/Validator.inc.php");
+require_once(dirname(__FILE__) . "/inc/wiki_help.inc.php");
+require_once(dirname(__FILE__) . "/inc/user_mngm/UserManagerFactory.inc.php");
 
 global $email_sender;
 
@@ -131,9 +131,12 @@ if (isset($_POST['modify'])) {
 
     // Update the information in the database
     if ($result == True) {
-        $db = new DatabaseConnection();
-        $success = $db->updateExistingUser($edit_user->isAdmin(),
-            $edit_user->name(), $passToUse, $emailToUse, $groupToUse);
+
+        // Get the user manager
+        $userManager = UserManagerFactory::getUserManager($edit_user->isAdmin());
+        $success = $userManager->updateUser($edit_user->isAdmin(), $edit_user->name(),
+            $passToUse, $emailToUse, $groupToUse);
+
         if ($success == True) {
             if (isset($_SESSION['account_user'])) {
                 $_SESSION['account_user'] =
@@ -142,6 +145,8 @@ if (isset($_POST['modify'])) {
                 exit();
             } else {
                 $message = "Account details successfully modified";
+                $edit_user->reload();
+                $_SESSION['user'] = $edit_user;
                 header("Location: " . $_SESSION['referer']);
                 exit();
             }
@@ -247,13 +252,13 @@ include("header.inc.php");
             <input name="pass2" id="pass2" type="password" />
             <input name="modify" type="hidden" value="modify" />
 
-            <p />
+            <p>&nbsp;</p>
 
 <?php
             $referer = $_SESSION['referer'];
 ?>
         </div>
-        
+
         <div id="controls">
             <input type="button" name="cancel" value=""
                    class="icon cancel"

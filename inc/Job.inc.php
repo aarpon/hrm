@@ -133,7 +133,7 @@ class Job {
                                   'ri'             => 'Sample refractive index',
                                   'ril'            => 'Lens refractive index',
                                   'pr'             => 'Pinhole size (nm)',
-                                  'ps'             => 'Pinhole spacing (nm)',
+                                  'ps'             => 'Pinhole spacing (&mu;m)',
                                   'ex'             => 'Excitation wavelength (nm)',
                                   'em'             => 'Emission wavelength (nm)',
                                   'micr'           => 'Microscope type',
@@ -150,6 +150,7 @@ class Job {
                                   'absolute'       =>'Background absolute value',
                                   'estimation'     =>'Background estimation',
                                   'ratio'          =>'Signal/Noise ratio',
+                                  'autocrop'       =>'Autocrop',
                                   'stabilization'  =>'Z Stabilization');
     }
 
@@ -846,7 +847,17 @@ class Job {
             $row   .= $this->insertCell($value    ,$style);
             $table .= $this->insertRow($row);
         }
-        
+
+        /* The PSF mode is an exception and needs no parsing. Add it straight. */
+        $setting = $this->jobDescription->parameterSetting();
+        $PSFmode = $setting->parameter("PointSpreadFunction")->value();
+        $row    = $this->insertCell("Point Spread Function", "userdef");
+        $row   .= $this->insertCell("All"                  , "userdef");
+        $row   .= $this->insertCell("User defined"         , "userdef");
+        $row   .= $this->insertCell($PSFmode               , "userdef");
+        $table .= $this->insertRow($row);
+
+       
         $html  = $this->insertTable($table);
         $html  = $title . $text . $html;
         $html .= $this->insertSeparator("");

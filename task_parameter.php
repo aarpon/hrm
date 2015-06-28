@@ -126,6 +126,7 @@ include("header.inc.php");
             <?php
                 wiki_link('HuygensRemoteManagerHelpRestorationParameters');
             ?>
+            <li> [ <?php  echo $_SESSION['task_setting']->name(); ?> ] </li>
         </ul>
     </div>
     <div id="navright">
@@ -340,6 +341,49 @@ for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
 
             </fieldset>
 
+ <div id="Autocrop">
+    <fieldset class="setting provided"
+    onmouseover="javascript:changeQuickHelp( 'autocrop' );" >
+
+    <legend>
+    <a href="javascript:openWindow(
+                       'http://www.svi.nl/HelpCropper')">
+                        <img src="images/help.png" alt="?" />
+        </a>
+    crop surrounding background areas?
+    </legend>
+
+        <select id="Autocrop"
+        name="Autocrop">
+<?php
+
+/*
+      AUTOCROP
+*/
+$parameterAutocrop =
+    $_SESSION['task_setting']->parameter("Autocrop");
+$possibleValues = $parameterAutocrop->possibleValues();
+$selectedMode  = $parameterAutocrop->value();
+
+        foreach($possibleValues as $possibleValue) {
+            $translation =
+                $parameterAutocrop->translatedValueFor( $possibleValue );
+            if ( $possibleValue == $selectedMode ) {
+                $option = "selected=\"selected\"";
+            } else {
+                $option = "";
+            }
+?>
+                    <option <?php echo $option?>
+                        value="<?php echo $possibleValue?>">
+                        <?php echo $translation?>
+                    </option>
+<?php
+        }
+?>
+
+</select>
+</div> <!-- Autocrop -->
             <!-- background mode -->
             <fieldset class="setting provided"
               onmouseover="javascript:changeQuickHelp( 'background' );" >
@@ -520,20 +564,21 @@ $value = $parameter->value();
 
     
     <div id="ZStabilization">
-    <?php
-    if ($_SESSION['task_setting']->isEligibleForStabilization($_SESSION['setting'])) {
+<?php
+    if ($_SESSION['user']->isAdmin()
+        || $_SESSION['task_setting']->isEligibleForStabilization($_SESSION['setting'])) {
 
     ?>
 
     <fieldset class="setting provided"
-    onmouseover="javascript:changeQuickHelp( '' );" >
+    onmouseover="javascript:changeQuickHelp( 'zstabilization' );" >
     
     <legend>
         <a href="javascript:openWindow(
                        'http://www.svi.nl/ObjectStabilizer')">
                         <img src="images/help.png" alt="?" />
         </a>
-    Would you like to stabilize the dataset in the Z direction?
+    stabilize the dataset in the Z direction?
     </legend>
 
             <p>STED images often need to be stabilized in the Z direction before they

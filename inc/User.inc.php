@@ -8,8 +8,6 @@ require_once(dirname(__FILE__) . "/Setting.inc.php");
 require_once(dirname(__FILE__) . "/hrm_config.inc.php");
 require_once(dirname(__FILE__) . "/System.inc.php");
 
-global $authenticateAgainst;
-
 /*!
   \class   User
   \brief   Manages a user and its state.
@@ -18,15 +16,39 @@ class User {
 
     /*!
     \var    $name
-    \brief  Name of the owner: could be a job id or a user's login name.
+    \brief  Name of the user.
     */
     protected $name;
+
+    /*!
+    \var    $emailAddress
+    \brief  E-mail address of the user.
+    */
+    protected $emailAddress;
+
+    /*!
+    \var    $group
+    \brief  Group of the user.
+    */
+    protected $group;
 
     /*!
     \var    $isLoggedIn
     \brief  True if the user is logged in; false otherwise.
     */
     private $isLoggedIn;
+
+    /*!
+      \brief  Constructor. Creates a new (unnamed) User.
+    */
+    function __construct() {
+
+        // Initialize members to empty
+        $this->name = "";
+        $this->emailAddress = "";
+        $this->group = "";
+        $this->isLoggedIn = False;
+    }
 
     /*!
     \brief  Returns the name of the Owner
@@ -42,16 +64,6 @@ class User {
     */
     public function setName($name) {
         $this->name = $name;
-    }
-
-    /*!
-      \brief  Constructor. Creates a new (unnamed) User.
-    */
-    function __construct() {
-
-        // Initialize members
-        $this->name = '';
-        $this->isLoggedIn = False;
     }
 
     /*!
@@ -74,36 +86,14 @@ class User {
     */
     public function logIn($name, $password) {
 
-        global $authenticateAgainst;
-
         // Set the name
         $this->setName($name);
 
-        // Set the user isLoggedIn status to false;
-        $this->isLoggedIn = False;
-
         // Try authenticating the user against the appropriate mechanism
         $authenticator = AuthenticatorFactory::getAuthenticator($this->isAdmin());
-        $result = $authenticator->authenticate($this->name(), $password);
+        $this->isLoggedIn = $authenticator->authenticate($this->name(), $password);
 
-        // In case of successful authentication, update the user information.
-        if ($result) {
-
-            // Set isLoggedIn status to true
-            $this->isLoggedIn = True;
-
-            // Update the last access in the database if using the
-            // internal HRM user management.
-            // \TODO Later, this will be extended to all authentication mechanisms.
-            if ($authenticateAgainst == 'MYSQL') {
-                $authenticator->updateLastAccessDate($this->name());
-            }
-
-            // Store the entry in the log
-            report("User " . $this->name() . " logged on.", 1);
-
-        }
-        return $result;
+        return $this->isLoggedIn;
     }
 
     /*!
@@ -111,17 +101,6 @@ class User {
     */
     function logOut() {
         $this->isLoggedIn = False;
-        $this->name = "";
-    }
-
-    /*!
-      \brief  Checks if user login is restricted to the administrator for
-              maintenance (in case the database has to be updated)
-      \return true if the user login is restricted to the administrator
-    */
-    public function isLoginRestrictedToAdmin() {
-        $result = !( System::isDBUpToDate() );
-        return $result;
     }
 
     /*!
@@ -132,7 +111,7 @@ class User {
 
       \return true if the user has been accepted; false otherwise.
     */
-    public function isStatusAccepted() {
+    public function isAccepted() {
 
         if ($this->isAdmin()) {
             return true;
@@ -165,9 +144,15 @@ class User {
     */
     public function emailAddress() {
 
-        // Get the user's email address
-        $authenticator = AuthenticatorFactory::getAuthenticator($this->isAdmin());
-        return $authenticator->getEmailAddress($this->name());
+        // If the email is already stored in the object, return it; otherwise
+        // retrieve it.
+        if ($this->emailAddress == "") {
+            $authenticator = AuthenticatorFactory::getAuthenticator($this->isAdmin());
+            $this->emailAddress = $authenticator->getEmailAddress($this->name());
+        }
+
+        return $this->emailAddress;
+
     }
 
     /*!
@@ -176,6 +161,21 @@ class User {
     */
     static public function getAdminName() {
         return 'admin';
+    }
+
+    /*!
+    \brief Reload info from the source.
+     */
+    public function reload() {
+
+        // Reload e-mail address
+        $this->emailAddress = "";
+        $this->emailAddress();
+
+        // Reload group
+        $this->group = "";
+        $this->userGroup();
+
     }
 
     /*!
@@ -192,9 +192,14 @@ class User {
     */
     public function userGroup() {
 
-        // Get the user's group.
-        $authenticator = AuthenticatorFactory::getAuthenticator($this->isAdmin());
-        return $authenticator->getGroup($this->name());
+        // If the group is already stored in the object, return it; otherwise
+        // retrieve it.
+        if ($this->group == "") {
+            $authenticator = AuthenticatorFactory::getAuthenticator($this->isAdmin());
+            $this->group = $authenticator->getGroup($this->name());
+        }
+
+        return $this->group;
 
     }
 

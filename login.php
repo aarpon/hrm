@@ -2,16 +2,16 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
-require_once("./inc/User.inc.php");
-require_once("./inc/Database.inc.php");
-require_once("./inc/hrm_config.inc.php");
-require_once("./inc/Fileserver.inc.php");
-require_once("./inc/System.inc.php");
-require_once("./inc/Validator.inc.php");
-require_once("./inc/wiki_help.inc.php");
+require_once(dirname(__FILE__) . "/inc/User.inc.php");
+require_once(dirname(__FILE__) . "/inc/user_mngm/UserManagerFactory.inc.php");
+require_once(dirname(__FILE__) . "/inc/Database.inc.php");
+require_once(dirname(__FILE__) . "/inc/hrm_config.inc.php");
+require_once(dirname(__FILE__) . "/inc/Fileserver.inc.php");
+require_once(dirname(__FILE__) . "/inc/System.inc.php");
+require_once(dirname(__FILE__) . "/inc/Validator.inc.php");
+require_once(dirname(__FILE__) . "/inc/wiki_help.inc.php");
 
 global $email_admin;
-global $enableUserAdmin;
 global $authenticateAgainst;
 
 /*
@@ -28,18 +28,18 @@ global $authenticateAgainst;
 // Here we store the cleaned variables
 $clean = array(
     "username" => "",
-    "password" => "" );
+    "password" => "");
 
 // Username
-if ( isset( $_POST["username"] ) ) {
-	if ( Validator::isUsernameValid( $_POST["username"] ) ) {
+if (isset($_POST["username"])) {
+	if (Validator::isUsernameValid($_POST["username"])) {
 		$clean["username"] = $_POST["username"];
 	}
 }
 
 // Password
-if ( isset( $_POST["password"] ) ) {
-	if ( Validator::isPasswordValid( $_POST["password"] ) ) {
+if (isset($_POST["password"])) {
+	if (Validator::isPasswordValid($_POST["password"])) {
 		$clean["password"] = $_POST["password"];
 	}
 }
@@ -70,58 +70,68 @@ session_destroy();
 
 session_start();
 
-if ( isset( $_POST['password'] ) && isset( $_POST['username'] ) ) {
-	if ( $clean['password'] != "" && $clean['username'] != "" ) {
+if (isset($_POST['password']) && isset($_POST['username'])) {
+	if ($clean['password'] != "" && $clean['username'] != "") {
+
+        // Get the UserManager
+        $userManager = UserManagerFactory::getUserManager(false);
 
 		// Create a user
 		$tentativeUser = new User();
 		$tentativeUser ->setName($clean['username']);
 		$tentativeUser ->logOut(); // TODO
 
-		if ($tentativeUser->logIn($clean['username'], $clean['password'],
-                $_SERVER['REMOTE_ADDR'])) {
+		if ($tentativeUser->logIn($clean['username'], $clean['password'])) {
+
 			if ($tentativeUser ->isLoggedIn()) {
-				// Make sure that the user source and destination folders exist
-				{
-                    $fileServer = new FileServer( $clean['username'] );
-					if ( $fileServer->isReachable() == false ) {
-						shell_exec($userManager . " create " . $clean['username']);
-					}
-				}
 
-				// TODO unregister also "setting" and "task_setting"
-				unset($_SESSION['editor']);
-
-				// Register the user in the session
+                // Register the user in the session
 				$_SESSION['user'] = $tentativeUser;
 
-                // If the database is not up-to-date go straigth to the
-                // database update page
-                if ( System::isDBUpToDate() == false &&
-                        $_SESSION['user']->isAdmin() ) {
-                    header("Location: update.php");
-					exit();
+                // Make sure that the user source and destination folders exist
+                $fileServer = new FileServer($tentativeUser->name());
+                if (! $fileServer->isReachable()) {
+                    $userManager->createUserFolders($tentativeUser->name());
                 }
 
-                // Is there a requested redirection?
-    			if ( $req != "" ) {
-					header("Location: " . $req);
-					exit();
-				} else {
-					// Proceed to home
-					header("Location: " . "home.php");
-					exit();
-				}
+                // Update the user data and the access date in the database
+                $userManager->storeUser($_SESSION['user']);
+
+                // Log successful logon
+                report("User " . $_SESSION['user']->name() . " (" .
+                    $_SESSION['user']->emailAddress() .") logged on.", 1);
+
+                // If the database is not up-to-date go straight to the
+                // database update page
+                if (! System::isDBUpToDate()) {
+                    if ($_SESSION['user']->isAdmin()) {
+                        header("Location: update.php");
+					    exit();
+                    } else {
+                        $message = "Only the administrator is allowed to login " .
+                            "to perform maintenance";
+                    }
+                } else {
+                    // Is there a requested redirection?
+                    if ($req != "") {
+                        header("Location: " . $req);
+                        exit();
+                    } else {
+                        // Proceed to home
+                        header("Location: " . "home.php");
+                        exit();
+                    }
+                }
             }
-		} else if ( $tentativeUser->isLoginRestrictedToAdmin() ) {
-			if ( $tentativeUser->isAdmin() ) {
+		} else if ($userManager->isLoginRestrictedToAdmin()) {
+			if ($tentativeUser->isAdmin()) {
 				$message = "Wrong password";
 			} else {
 				$message = "Only the administrator is allowed to login " .
                     "to perform maintenance";
 			}
 		} else {
-			if ( $tentativeUser->isSuspended()) {
+			if ($userManager->isSuspended($tentativeUser)) {
 				$message = "Your account has been suspended, please " .
                 "contact the administrator";
 			} else {
@@ -142,7 +152,7 @@ include("header.inc.php");
         <ul>
             <?php
                 wiki_link('HuygensRemoteManagerHelpLogin');
-                include("./inc/nav/manual.inc.php");
+                include("./inc/nav/mailing.inc.php");
             ?>
         </ul>
     </div>
@@ -160,8 +170,8 @@ include("header.inc.php");
 
 <div id="welcome"><?php
 // Check that the database is reachable
-$db   = new DatabaseConnection( );
-if ( !$db->isReachable( ) ) {
+$db   = new DatabaseConnection();
+if (!$db->isReachable()) {
 	echo "<div class=\"dbOutDated\">Warning: the database is not reachable!\n";
 	echo "<p>Please contact your administrator.</p>".
   				  "<p>You will not be allowed to login " .
@@ -171,7 +181,7 @@ if ( !$db->isReachable( ) ) {
 	return;
 }
 // Check that the hucore version is known
-if ( System::getHuCoreVersionAsInteger( ) == 0 ) {
+if (System::getHuCoreVersionAsInteger() == 0) {
 	echo "<div class=\"dbOutDated\">Warning: unknown HuCore version!\n";
 	echo "<p>Please ask the administrator to start the queue manager.</p>" .
          "<p>You are now allowed to login until this issue has been " .
@@ -181,7 +191,7 @@ if ( System::getHuCoreVersionAsInteger( ) == 0 ) {
 	return;
 }
 // Check that hucore is recent enough to run this version of the HRM
-if ( System::isMinHuCoreVersion( ) == false ) {
+if (System::isMinHuCoreVersion() == false) {
 	echo "<div class=\"dbOutDated\">Warning: your HuCore version is " .
 	System::getHucoreVersionAsString() . ", you need at least HuCore " .
 	"version " . System::getMinHuCoreVersionAsString() . " for HRM " .
@@ -192,7 +202,7 @@ if ( System::isMinHuCoreVersion( ) == false ) {
 	return;
 }
 // Check that the database is up-to-date
-if ( System::isDBUpToDate( ) == false ) {
+if (System::isDBUpToDate() == false) {
 	echo "<div class=\"dbOutDated\">Warning: the database is not up-to-date!\n";
 	echo "<p>This happens if HRM was recently updated but the " .
   				  "database was not. You are not allowed to login " .
@@ -200,7 +210,7 @@ if ( System::isDBUpToDate( ) == false ) {
 	echo "<p>Only the administrator can login.</p></div>";
 }
 // Check that HuCore has a valid license
-if ( System::hucoreHasValidLicense( ) == false ) {
+if (System::hucoreHasValidLicense() == false) {
 	echo "<div class=\"dbOutDated\">Warning: no valid HuCore license found!\n";
 	echo "<p>Please contact the administrator.</p></div>";
     echo "</div>\n";
@@ -215,14 +225,14 @@ if ( System::hucoreHasValidLicense( ) == false ) {
 Remote Manager</a> is an easy to use interface to the Huygens Software
 by <a href="javascript:openWindow('http://www.svi.nl')">Scientific
 Volume Imaging B.V.</a> that allows for multi-user, large-scale
-deconvolution.</p>
+deconvolution and analysis.</p>
 
 <?php
     /*
      * Include user/login_user.inc if it exists. This allows installations
      * to be customized without having to change anything in the HRM code.
      */
-    if ( file_exists( "user/login_user.inc" ) == true ) {
+    if (file_exists("user/login_user.inc") == true) {
         echo "<div id=\"login_user\">\n";
         include "user/login_user.inc";
         echo "</div>";
@@ -345,7 +355,7 @@ deconvolution.</p>
 <!-- welcome -->
 
 <div id="rightpanel">
-<p />
+<p>&nbsp;</p>
 <div id="login">
 <form method="post" action="">
     <fieldset>

@@ -56,6 +56,7 @@ function openTool(url) {
 }
 
 function changeDiv(div, html) {
+    // try to update the inner HTML for a specific <div> element
     try { document.getElementById(div).innerHTML= html; } catch(err) {}
 }
 
@@ -180,7 +181,7 @@ function checkAgainstFormat(file, selectedFormat) {
 
     // Pattern ome.tiff        = (\.([^\..]+))*
     // Pattern file extension: = \.([A-Za-z0-9]+)
-    // Pattern lif subimages:  = (\s\(.*\))*
+    // Pattern lif, czi subimages:  = (\s\(.*\))*
 
     var nameDivisions;
     nameDivisions = file.match(/(\.([^\..]+))*\.([A-Za-z0-9]+)(\s\(.*\))*$/);    
@@ -598,7 +599,7 @@ function imgPrev(infile, mode, gen, compare, index, dir, referer, data) {
                   + tip + '\')" '
                   + ' onmouseout="UnTip()" >';
            tip = '<i>3D image XZ preview:</i><br>'+file;
-           html = html + '<br /><img id="ithumbb" '
+           html = html + '<img id="ithumbb" '
                   + 'src="file_management.php?getThumbnail='
                   + infile + '.preview_xz.jpg&dir=' + dir
                   + '" alt="XZ preview" onmouseover="Tip(\''
