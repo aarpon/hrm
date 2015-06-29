@@ -99,17 +99,21 @@ else if (isset($_POST['create'])) {
     $message = $_SESSION['editor']->message();
 }
 else if (isset($_POST['copy'])) {
-  $_SESSION['editor']->copySelectedSetting($_POST['new_setting']);
-  $message = $_SESSION['editor']->message();
+    $_SESSION['editor']->copySelectedSetting($_POST['new_setting']);
+    $message = $_SESSION['editor']->message();
+}
+else if(isset($_POST['generate'])) {
+    $_SESSION['editor']->generateTemplateFromFile($_POST['new_setting']);
+    $message = $_SESSION['editor']->message();
 }
 else if (isset($_POST['edit'])) {
-  $setting = $_SESSION['editor']->loadSelectedSetting();
-  if ($setting) {
-      $setting->parameter("ImageFileFormat")->setValue($fileFormat);
-      $_SESSION['setting'] = $setting;
-      header("Location: " . "image_format.php"); exit();
-  }
-  $message = $_SESSION['editor']->message();
+    $setting = $_SESSION['editor']->loadSelectedSetting();
+    if ($setting) {
+        $setting->parameter("ImageFileFormat")->setValue($fileFormat);
+        $_SESSION['setting'] = $setting;
+        header("Location: " . "image_format.php"); exit();
+    }
+    $message = $_SESSION['editor']->message();
 }
 else if (isset($_POST['pickUser']) && isset($_POST["templateToShare"])) {
     if (isset($_POST["usernameselect"])) {
