@@ -184,6 +184,9 @@ include("header.inc.php");
     <span class="toolTip" id="ttSpanEdit">
         Edit the selected image template.
     </span>
+    <span class="toolTip" id="ttSpanGenerate">
+        Generate template from file.
+    </span>
     <span class="toolTip" id="ttSpanClone">
         Copy the selected image template to a new one with the
       specified name.</span>
@@ -434,7 +437,7 @@ else {
                        type="submit"
                        value=""
                        class="icon generate"
-                       onmouseover="TagToTip('ttSpanEdit' )"
+                       onmouseover="TagToTip('ttSpanGenerate' )"
                        onmouseout="UnTip()" />
                 <input name="copy"
                        type="submit"
