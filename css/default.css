@@ -530,6 +530,10 @@ input.edit {
     background: url("../images/edit.png") no-repeat center;
 }
 
+input.generate {
+    background: url("../images/template_from_file.png") no-repeat center;
+}
+
 input.clone {
     background: url("../images/clone.png") no-repeat center;
 }
