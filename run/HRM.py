@@ -104,7 +104,7 @@ class JobDescription(dict):
         # will be able to do the other things like SNR estimation and
         # previewgen using templates as well!
         # parse generic information, version, user etc.
-        if not 'hrmjobfile' in self._sections:
+        if not self.jobparser.has_section('hrmjobfile'):
             raise ValueError("Error parsing job from %s." % self.name)
         try:
             self['ver'] = self.jobparser.get('hrmjobfile', 'version')
