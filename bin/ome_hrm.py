@@ -337,7 +337,7 @@ def gen_parameter_summary(fname):
         for row in rows[2:]:
             cols = row.findAll('td')
             summary += "%s [Ch: %s]: %s\n" % (
-                cols[0].text.replace('&mu;m', 'um'),
+                cols[0].text.replace('&mu;m', 'um').replace(u'\u03bc', 'u'),
                 cols[1].text,
                 cols[3].text)
         summary += '\n'
