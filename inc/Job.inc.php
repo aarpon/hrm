@@ -283,6 +283,8 @@ class Job {
         $result = True;
         $desc = $this->jobDescription;
 
+
+
         if ($desc->isCompound()) {
             $result = $result && $desc->createSubJobs();
             if ($result) {
@@ -301,11 +303,11 @@ class Job {
             $this->createHuygensTemplate();
             $result = $result && $this->writeHuTemplate();
             report("Created Huygens template", 1);
-            
             $this->createG3CPieController();
             $result = $result && $this->writeG3CPieController();
             report("Created G3CPie controller", 1);
         }
+
         return $result;
     }
 
@@ -345,23 +347,26 @@ class Job {
         $desc = $this->description();
         $user = $desc->owner();
         $username = $user->name();
-        $fileserver = new Fileserver($username);
-        
-        $controllerName = $this->g3cControllerName();
-        $controllerPath = dirname(__FILE__) . "/../run/spool";
-        $controllerFile = $controllerPath . "/" . $controllerName;
 
+        $fileserver = new Fileserver($username);
+
+        $controllerName = $this->g3cControllerName();
+        $controllerPath = dirname(__FILE__) . "/../run/spool/new";
+        $controllerFile = $controllerPath . "/" . $controllerName;
         $file = fopen($controllerFile, "w");
+
         if (!$file ) {
+
             report ("Error opening file $controllerFile, verify permissions!", 0);
             report ("Waiting 15 seconds...", 1);
             sleep(15);
             return False;
         } else {
-	  $result = $result && (fwrite($file, $this->controller) > 0);
-	  fclose($file);
-	  report("Wrote g3c controller $controllerFile", 1);
+            $result = $result && (fwrite($file, $this->controller) > 0);
+            fclose($file);
+            report("Wrote g3c controller $controllerFile", 1);
         }
+
         return $result;
     }
 
