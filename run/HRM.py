@@ -69,18 +69,24 @@ class JobDescription(dict):
 
     def _parse_jobfile(self, fname):
         """Initialize ConfigParser for a file and run parsing method."""
+        debug("Parsing jobfile '%s'..." % fname)
         # sometimes the inotify event gets processed very rapidly and we're
         # trying to parse the file *BEFORE* it has been written to disk
         # entirely, which breaks the parsing, so we introduce two additional
         # levels of waiting time to avoid this race condition:
         for snooze in [0, 1, 5]:
+            if not self._sections and snooze > 0:
+                info("Sections are empty, re-trying in %is." % snooze)
             time.sleep(snooze)
             parsed = self.jobparser.read(fname)
+            debug("Parsed file '%s'." % parsed)
             self._sections = self.jobparser.sections()
             if self._sections:
                 continue
         if not self._sections:
+            warn("ERROR: Could not parse '%s'!" % fname)
             raise IOError("Can't parse '%s'" % fname)
+        debug("Job description sections: %s" % self._sections)
         self._parse_jobdescription()
 
     def _parse_jobdescription(self):
