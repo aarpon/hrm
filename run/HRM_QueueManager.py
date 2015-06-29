@@ -70,7 +70,7 @@ class EventHandler(pyinotify.ProcessEvent):
     def process_IN_CREATE(self, event):
         """Method handling 'create' events."""
         logw("Found new jobfile '%s', processing..." % event.pathname)
-        job = HRM.JobDescription(event.pathname, 'file')
+        job = HRM.JobDescription(event.pathname, 'file', loglevel)
         logi("Dict assembled from the processed job file:")
         logi(pprint.pformat(job))
         self.queues[job['type']].append(job)

@@ -36,7 +36,7 @@ class JobDescription(dict):
     the sections, check them for sane values and store them in a dict.
     """
 
-    def __init__(self, job, srctype):
+    def __init__(self, job, srctype, loglevel=None):
         """Initialize depending on the type of description source.
 
         Parameters
@@ -48,6 +48,8 @@ class JobDescription(dict):
         -------
         >>> job = HRM.JobDescription('/path/to/jobdescription.cfg', 'file')
         """
+        if loglevel is not None:
+            set_loglevel(loglevel)
         self.jobparser = ConfigParser.RawConfigParser()
         self._sections = []
         if (srctype == 'file'):
