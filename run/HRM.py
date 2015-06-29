@@ -99,10 +99,10 @@ class JobDescription(dict):
         processing task. Raises Exceptions in case something unexpected is
         found in the given file.
         """
+        # TODO: group code into parsing and sanity-checking
         # FIXME: currently only deconvolution jobs are supported, until hucore
         # will be able to do the other things like SNR estimation and
         # previewgen using templates as well!
-        # TODO: group code into parsing and sanity-checking
         # parse generic information, version, user etc.
         if not 'hrmjobfile' in self._sections:
             raise ValueError("Error parsing job from %s." % self.name)
