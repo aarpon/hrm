@@ -328,7 +328,7 @@ def gen_parameter_summary(fname):
     except IOError:
         return None
     summary = ''
-    for table in soup.findAll('table')[1:]:
+    for table in soup.findAll('table'):
         rows = table.findAll('tr')
         # the table header:
         summary += "%s\n" % rows[0].findAll('td')[0].text
