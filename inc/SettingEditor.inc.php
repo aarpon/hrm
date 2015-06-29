@@ -180,6 +180,32 @@ abstract class BaseSettingEditor {
     }
 
     /*!
+      \brief	Creates a new setting with the given name based on parsing
+                the first active file through HuCore
+      \param  $newName    The name of the new Setting
+      \return	true if the new template creation was successful,
+                false otherwise
+    */
+    public function generateTemplateFromFile($newName) {
+        /* It should not matter whether it works or not, in case there is no param just
+           do the same as create new
+        */
+        if (!$this->checkNewSettingName($newName)) {
+            return NULL;
+        }
+        // Do some magic with HuCore
+        // TODO
+        $newSetting = NULL;
+
+        if($newSetting == NULL) {
+            $newSetting = $this->createNewSetting($newName);
+        }
+        $result = $newSetting->save();
+        $this->message = $newSetting->message();
+        return $result;
+    }
+
+    /*!
       \brief  Copies the selected setting to the share table for the given
               recipients.
       \param  $templateName Name of the template to copy,
