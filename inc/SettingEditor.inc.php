@@ -5,6 +5,7 @@
 require_once("Setting.inc.php");
 require_once("Database.inc.php");
 require_once("User.inc.php");
+require_once("Util.inc.php");
 
 /*!
   \class    BaseSettingEditor
@@ -195,6 +196,12 @@ abstract class BaseSettingEditor {
         }
         // Do some magic with HuCore
         // TODO
+        $theFiles = $_SESSION['fileserver']->selectedFiles();
+        $opts="-path \"".$_SESSION['fileserver']->sourceFolder()."\" -filename ".$theFiles[0];
+        print($opts);
+        $data = askHuCore('getTemplateFromFile', $opts);
+        print_r($data);
+
         $newSetting = NULL;
 
         if($newSetting == NULL) {

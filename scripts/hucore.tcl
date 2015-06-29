@@ -46,7 +46,6 @@ proc reportMsg {msg} {
     puts $msg
 }
 
-
 proc reportHuCoreLicense { } {
     reportKeyValue "license" [huOpt license]
 }
@@ -98,6 +97,21 @@ proc isMultiImgFile { filename } {
     return $isMulti
 }   
 
+# Script for reading in a file and output template data
+proc getTemplateFromFile {} {
+    set error [ getInputVariables {path filename} ]
+
+    if { $error } { exit 1 }
+    set file [ hrmImgOpen $path $filename ]
+    array set output [ $file setp -tclReturn ]
+
+    $file del
+
+    foreach key [ array names output ] {
+        reportKeyValue $key $output($key)
+    }
+    
+}
 
 # Script for Huygens Core to explore multi-image files and return their
 # subimages. Currently valid for Leica LIF and Zeiss CZI files.
