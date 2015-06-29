@@ -15,6 +15,7 @@ JobQueue()
 
 import ConfigParser
 import pprint
+import time
 from collections import deque
 from hashlib import sha1
 
@@ -68,7 +69,18 @@ class JobDescription(dict):
 
     def _parse_jobfile(self, fname):
         """Initialize ConfigParser for a file and run parsing method."""
-        self.jobparser.read(fname)
+        # sometimes the inotify event gets processed very rapidly and we're
+        # trying to parse the file *BEFORE* it has been written to disk
+        # entirely, which breaks the parsing, so we introduce two additional
+        # levels of waiting time to avoid this race condition:
+        for snooze in [0, 1, 5]:
+            time.sleep(snooze)
+            parsed = self.jobparser.read(fname)
+            self._sections = self.jobparser.sections()
+            if self._sections:
+                continue
+        if not self._sections:
+            raise IOError("Can't parse '%s'" % fname)
         self._parse_jobdescription()
 
     def _parse_jobdescription(self):
@@ -83,7 +95,6 @@ class JobDescription(dict):
         # will be able to do the other things like SNR estimation and
         # previewgen using templates as well!
         # TODO: group code into parsing and sanity-checking
-        self._sections = self.jobparser.sections()
         # parse generic information, version, user etc.
         if not 'hrmjobfile' in self._sections:
             raise ValueError("Error parsing job from %s." % self.name)
