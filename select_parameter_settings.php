@@ -430,6 +430,12 @@ else {
                        class="icon edit"
                        onmouseover="TagToTip('ttSpanEdit' )"
                        onmouseout="UnTip()" />
+                <input name="generate"
+                       type="submit"
+                       value=""
+                       class="icon generate"
+                       onmouseover="TagToTip('ttSpanEdit' )"
+                       onmouseout="UnTip()" />
                 <input name="copy"
                        type="submit"
                        value=""
