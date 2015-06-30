@@ -1,0 +1,52 @@
+{"jobs":[
+    {"id":"1", 
+     "file":"Foo.h5",
+     "owner":"hrmuser",
+     "jobType":"deconvolution",
+     "state":"started",
+     "server":"localhost",
+     "progress":"19%",
+     "pid":"2154",
+     "created":"2015-06-30 14:00:00"
+    }
+    {"id":"2", 
+     "file":"Bar.h5",
+     "owner":"hrmuser",
+     "jobType":"snr estimation",
+     "state":"started",
+     "server":"localhost",
+     "progress":"28%",
+     "pid":"2155",
+     "created":"2015-06-30 16:00:00"
+    }
+    {"id":"3", 
+     "file":"Foo.h5",
+     "owner":"hrmuser",
+     "jobType":"preview generation",
+     "state":"queued",
+     "server":"localhost",
+     "progress":"0%",
+     "pid":"2157",
+     "created":"2015-06-30 14:30:00"
+    }
+    {"id":"78", 
+     "file":"Foo.h5",
+     "owner":"admin",
+     "jobType":"deconvolution",
+     "state":"killed",
+     "server":"localhost",
+     "progress":"79%",
+     "pid":"2159",
+     "created":"2015-06-30 12:00:00"
+    }
+    {"id":"87", 
+     "file":"Foo.h5",
+     "owner":"admin",
+     "jobType":"preview generation",
+     "state":"broken",
+     "server":"deep blue",
+     "progress":"12%",
+     "pid":"2146",
+     "created":"2015-06-30 11:00:00"
+    }
+]}
