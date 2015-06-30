@@ -48,6 +48,7 @@ class JobDescription(dict):
         -------
         >>> job = HRM.JobDescription('/path/to/jobdescription.cfg', 'file')
         """
+        super(JobDescription, self).__init__()
         if loglevel is not None:
             set_loglevel(loglevel)
         self.jobparser = ConfigParser.RawConfigParser()
