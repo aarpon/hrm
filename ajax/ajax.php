@@ -77,6 +77,7 @@ function getJobQueuetable() {
   // Get queue information
   $queue = new JobQueue();
   $rows = $queue->getContents();
+
   $allJobsInQueue = count($rows);
 
   // Disable displaying estimated end time for the time being
@@ -164,7 +165,7 @@ function getJobQueuetable() {
 
       // Fill job row
       $username = $row['username'];
-      $jobFiles = implode(';', $queue->getJobFilesFor($row['id']));
+      $jobFiles = $row['file'];
       $queued = $row['queued'];
       $status = $row['status'];
       $start = $row['start'];
@@ -181,7 +182,7 @@ function getJobQueuetable() {
         $data .= "<td>$stop</td>";
       }
 
-      $process_info = $row['process_info'];
+      $process_info = $row['pid'];
       $server = $row['server'];
       $data .= "
       <td>$process_info</td>
