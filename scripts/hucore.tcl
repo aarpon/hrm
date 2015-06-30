@@ -98,11 +98,14 @@ proc isMultiImgFile { filename } {
 }   
 
 # Script for reading in a file and output template data
-proc getTemplateFromFile {} {
+proc getDataFromFile {} {
     set error [ getInputVariables {path filename} ]
 
     if { $error } { exit 1 }
     set file [ hrmImgOpen $path $filename ]
+    set dims [ $file getdims ]
+    reportKeyValue "dims" $dims
+
     array set output [ $file setp -tclReturn ]
 
     $file del
@@ -110,7 +113,7 @@ proc getTemplateFromFile {} {
     foreach key [ array names output ] {
         reportKeyValue $key $output($key)
     }
-    
+
 }
 
 # Script for Huygens Core to explore multi-image files and return their
