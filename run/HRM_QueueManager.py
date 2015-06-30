@@ -98,7 +98,11 @@ class HucoreDeconvolveApp(gc3libs.Application):
         templ_on_tgt = job['template'].split('/')[-1]
         gc3libs.Application.__init__(
             self,
-            arguments = [job['exec'], '-exitOnDone -noExecLog -checkForUpdates disable -template', templ_on_tgt],
+            arguments = [job['exec'],
+                '-exitOnDone',
+                '-noExecLog',
+                '-checkForUpdates', 'disable',
+                '-template', templ_on_tgt],
             inputs = job['infiles'],
             outputs = ['resultdir', 'previews'],
             output_dir = './deconvolved',
