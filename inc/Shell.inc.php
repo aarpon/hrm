@@ -8,7 +8,7 @@ require_once("Fileserver.inc.php");
 global $hucore, $hutask, $logdir;
 
 $hucore = "hucore";
-$hutask = "-noExecLog -checkUpdates disable -template";
+$hutask = "-exitOnDone -noExecLog -checkUpdates disable -template";
 
 /*
  ============================================================================
