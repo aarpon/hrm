@@ -75,9 +75,9 @@ class JobDescription(dict):
         debug("Parsing jobfile '%s'..." % fname)
         # sometimes the inotify event gets processed very rapidly and we're
         # trying to parse the file *BEFORE* it has been written to disk
-        # entirely, which breaks the parsing, so we introduce two additional
+        # entirely, which breaks the parsing, so we introduce four additional
         # levels of waiting time to avoid this race condition:
-        for snooze in [0, 1, 5]:
+        for snooze in [0, 0.001, 0.1, 1, 5]:
             if not self._sections and snooze > 0:
                 info("Sections are empty, re-trying in %is." % snooze)
             time.sleep(snooze)
@@ -89,7 +89,8 @@ class JobDescription(dict):
                 raise IOError("ERROR in JobDescription: %s" % e)
             self._sections = self.jobparser.sections()
             if self._sections:
-                continue
+                debug("Job parsing succeeded after %s seconds!" % snooze)
+                break
         if not self._sections:
             warn("ERROR: Could not parse '%s'!" % fname)
             raise IOError("Can't parse '%s'" % fname)
