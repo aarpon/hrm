@@ -84,9 +84,9 @@ class JobDescription(dict):
             try:
                 parsed = self.jobparser.read(fname)
                 debug("Parsed file '%s'." % parsed)
-            except ConfigParser.MissingSectionHeaderError as e:
+            except ConfigParser.MissingSectionHeaderError as err:
                 # consider using SyntaxError here!
-                raise IOError("ERROR in JobDescription: %s" % e)
+                raise IOError("ERROR in JobDescription: %s" % err)
             self._sections = self.jobparser.sections()
             if self._sections:
                 debug("Job parsing succeeded after %s seconds!" % snooze)
@@ -278,7 +278,7 @@ class JobQueue(object):
 
     def queue_details_hr(self):
         """Generate a human readable list with the current queue details."""
-        ci = 0  # pointer for categories
+        cat_index = 0  # pointer for categories
         cmax = len(self.cats)  # number of categories
         cdone = 0
         print('Queue categories: %i' % cmax)
@@ -288,8 +288,8 @@ class JobQueue(object):
             queues[self.cats[i]] = 0  # pointers to jobs in separate categories
         print(queues)
         while True:
-            cat = self.cats[ci]
-            # print("Current category: %i (%s)" % (ci, cat))
+            cat = self.cats[cat_index]
+            # print("Current category: %i (%s)" % (cat_index, cat))
             curqueue = self.queue[cat]
             # print("Current queue: %s" % curqueue)
             # print("Current in-queue pointers: %s" % queues)
@@ -302,7 +302,8 @@ class JobQueue(object):
                     cdone += 1  # increase counter of processed categories
                     if cdone == cmax:
                         return
-            ci += 1
-            if ci >= cmax: ci = 0
-            # print("Category pointer: %i" % ci)
+            cat_index += 1
+            if cat_index >= cmax:
+                cat_index = 0
+            # print("Category pointer: %i" % cat_index)
             # print("Current in-queue pointers: %s" % queues)
