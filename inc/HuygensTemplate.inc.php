@@ -641,7 +641,8 @@ class HuygensTemplate {
 
             switch ( $key ) {
             case 'resultDir':
-                $env .= $this->string2tcllist($this->getDestDir());
+                /* An absolute path is not relevant for the GC3Pie QM.*/
+                $env .= $this->string2tcllist($key);
                 break;
             case 'exportFormat':
                 $env .= $this->getExportFormat();
@@ -862,7 +863,7 @@ class HuygensTemplate {
 
             switch( $key ) {
             case 'path':
-                $imgOpen .= $this->string2tcllist($this->srcImage);
+                $imgOpen .= $this->string2tcllist(basename($this->srcImage));
                 break;
             case 'series':
                 $imgOpen .= $this->getSeriesMode();
@@ -1161,9 +1162,9 @@ class HuygensTemplate {
         }
 
         if (preg_match("/SrcDir/i",$thumbType)) {
-            $this->thumbToDir = $this->getSrcDir() . "/hrm_previews";
+            $this->thumbToDir = ".";
         } elseif (preg_match("/DstDir/",$thumbType)) {
-            $this->thumbToDir = $this->getDestDir() . "/hrm_previews";
+            $this->thumbToDir = "resultDir/hrm_previews";
         }
         $this->thumbToDir = $this->string2tcllist($this->thumbToDir);
 
@@ -1766,7 +1767,7 @@ class HuygensTemplate {
                 $imgColoc .= $this->getColocMap();
                 break;
             case 'destDir':
-                $destDir   = $this->getDestDir() . "/hrm_previews";
+                $destDir   = "resultDir/hrm_previews";
                 $imgColoc .= $this->string2tcllist($destDir);
                 break;
             case 'destFile':
@@ -1892,7 +1893,7 @@ class HuygensTemplate {
                 $imgHist .= $chanG;
                 break;
             case 'destDir':
-                $destDir  = $this->getDestDir() . "/hrm_previews";
+                $destDir  = "resultDir/hrm_previews";
                 $imgHist .= $this->string2tcllist($destDir);
                 break;        
             case 'destFile':
