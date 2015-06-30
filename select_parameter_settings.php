@@ -103,7 +103,16 @@ else if (isset($_POST['copy'])) {
     $message = $_SESSION['editor']->message();
 }
 else if(isset($_POST['generate'])) {
-    $_SESSION['editor']->generateTemplateFromFile($_POST['new_setting']);
+    $setting = $_SESSION['editor']->generateTemplateFromFile($_POST['new_setting']);
+    if ($setting != NULL) {
+        // Need to set ImageFileFormat here, as for the template creation above
+        // Oli: I mostly copy-pasted this bit.
+        $setting->parameter("ImageFileFormat")->setValue($fileFormat);
+        $setting->save();
+        $_SESSION['setting'] = $setting;
+        header("Location: " . "image_format.php");
+        exit();
+    }
     $message = $_SESSION['editor']->message();
 }
 else if (isset($_POST['edit'])) {

@@ -195,21 +195,15 @@ abstract class BaseSettingEditor {
             return NULL;
         }
         // Do some magic with HuCore
-        // TODO
         $theFiles = $_SESSION['fileserver']->selectedFiles();
         $opts="-path \"".$_SESSION['fileserver']->sourceFolder()."\" -filename ".$theFiles[0];
-        print($opts);
-        $data = askHuCore('getTemplateFromFile', $opts);
-        print_r($data);
+        $newSetting = $this->createNewSetting($newName);
 
-        $newSetting = NULL;
-
-        if($newSetting == NULL) {
-            $newSetting = $this->createNewSetting($newName);
-        }
+        $data = askHuCore('getDataFromFile', $opts);
+        $newSetting->parseParamsFromHuCore($data);
         $result = $newSetting->save();
         $this->message = $newSetting->message();
-        return $result;
+        return $newSetting;
     }
 
     /*!
