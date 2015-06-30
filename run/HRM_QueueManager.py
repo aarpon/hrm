@@ -7,6 +7,9 @@ The prototype of a new GC3Pie-based Queue Manager for HRM.
 """
 
 # TODO:
+# - do not transfer the images, create a symlink or put their path into the
+#   HuCore Tcl script
+# - clean up the results, put them into a sane place etc.
 # - check if a sane (usable) gc3pie configuration exists!
 # - check if the gc3pie resource folder is clean on startup (for now this
 #   is ~/.gc3/shellcmd.d but this will probably change when switching to the
@@ -126,7 +129,7 @@ class HucorePreviewgenApp(gc3libs.Application):
     pass
 
 
-class HucorePreviewgenApp(gc3libs.Application):
+class HucoreEstimateSNRApp(gc3libs.Application):
 
     """App object for 'hucore' SNR estimation jobs."""
 
