@@ -1343,6 +1343,20 @@ class MicroscopeType extends ChoiceParameter {
     }
 
     /*!
+    \brief  Returns the value expected by HRM based on the key from Huygens
+
+    The translated form of the Parameter value is then one used in
+    the Tcl script. The translated value of the microscope type is read from
+    the database.
+
+    \return translated value
+*/
+    public function translateHucore($hucoreval) {
+        $db = new DatabaseConnection();
+        $result = $db->hucoreTranslation($this->name, $hucoreval);
+        return $result;
+    }
+    /*!
         \brief  Returns true if the given microscope type has a license
 
         \param  $value Microscope type to check for a valid license; $value
