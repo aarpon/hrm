@@ -56,16 +56,16 @@ $image_user = "apache";
 $image_group = "apache";
 
 // File server base folder (without trailing /)
-$image_folder = "/path/to/hrm_data";
+$image_folder = "/scratch/hrm_data";
 
 // File server image source folder
-$image_source = "huygens_src";
+$image_source = "src";
 
 // File server image destination folder
-$image_destination = "huygens_dst";
+$image_destination = "dst";
 
 // File server base folder as seen from the Huygens server machines (with trailing /)
-$huygens_server_image_folder = "/path/to/hrm_data/";
+$huygens_server_image_folder = "/scratch/hrm_data/";
 
 // This is a temporary flag to change ownership of the generated files
 // and folders to the $SUSER use (see config/samples/hrm.com.sample) and force
