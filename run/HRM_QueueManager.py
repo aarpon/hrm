@@ -187,8 +187,7 @@ def main():
     mask = pyinotify.IN_CREATE # watched events
     notifier = pyinotify.ThreadedNotifier(wm, EventHandler(queues=jobqueues))
     notifier.start()
-    watchdir = args.spooldir
-    wdd = wm.add_watch(watchdir, mask, rec=False)
+    wdd = wm.add_watch(args.spooldir, mask, rec=False)
 
     # If no configuration file is passed to create_engine(), it will take the
     # default config which is expected to be in ~/.gc3/gc3pie.conf. See the API
@@ -208,7 +207,7 @@ def main():
 
     logi('Excpected job description files version: %s.' % HRM.JOBFILE_VER)
     print('HRM Queue Manager started, watching spool directory "%s", '
-          'press Ctrl-C to abort.' % watchdir)
+          'press Ctrl-C to abort.' % args.spooldir)
     # FIXME: Ctrl-C while a job is running leaves it alone (and thus as well
     # the files transferred for / generated from processing)
     while True:
