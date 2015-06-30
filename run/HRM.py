@@ -84,6 +84,7 @@ class JobDescription(dict):
                 parsed = self.jobparser.read(fname)
                 debug("Parsed file '%s'." % parsed)
             except ConfigParser.MissingSectionHeaderError as e:
+                # consider using SyntaxError here!
                 raise IOError("ERROR in JobDescription: %s" % e)
             self._sections = self.jobparser.sections()
             if self._sections:
