@@ -224,7 +224,7 @@ class JobQueue(object):
         """
         try:
             cat = self.cats[0]
-        except IndexError as e:
+        except IndexError:
             warn('Categories queue is empty, no jobs left!')
             return
         jobid = self.queue[cat].popleft()
@@ -255,17 +255,17 @@ class JobQueue(object):
         warn("Trying to remove job with uid '%s'." % uid)
         try:
             cat = self.jobs[uid].get_category()
-        except KeyError as e:
-            warn("No job with uid '%s' was found!" % e)
+        except KeyError as err:
+            warn("No job with uid '%s' was found!" % err)
             return
         debug("Category of job to remove: '%s'." % cat)
         try:
             self.queue[cat].remove(uid)
-        except KeyError as e:
-            warn("No queue for category %s was found!" % e)
+        except KeyError as err:
+            warn("No queue for category %s was found!" % err)
             return
-        except ValueError as e:
-            warn("No job with uid '%s' in queue! (%s)" % (uid, e))
+        except ValueError as err:
+            warn("No job with uid '%s' in queue! (%s)" % (uid, err))
             return
         debug("Current queue categories: %s" % self.cats)
         debug("Current contents of all queues: %s" % self.queue)
