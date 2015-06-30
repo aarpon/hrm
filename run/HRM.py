@@ -80,8 +80,11 @@ class JobDescription(dict):
             if not self._sections and snooze > 0:
                 info("Sections are empty, re-trying in %is." % snooze)
             time.sleep(snooze)
-            parsed = self.jobparser.read(fname)
-            debug("Parsed file '%s'." % parsed)
+            try:
+                parsed = self.jobparser.read(fname)
+                debug("Parsed file '%s'." % parsed)
+            except ConfigParser.MissingSectionHeaderError as e:
+                raise IOError("ERROR in JobDescription: %s" % e)
             self._sections = self.jobparser.sections()
             if self._sections:
                 continue
