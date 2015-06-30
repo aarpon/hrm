@@ -126,7 +126,7 @@ class HucorePreviewgenApp(gc3libs.Application):
     pass
 
 
-class HucorePreviewgenApp(gc3libs.Application):
+class HucoreEstimateSNRApp(gc3libs.Application):
 
     """App object for 'hucore' SNR estimation jobs."""
 
