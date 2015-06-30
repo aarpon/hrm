@@ -23,6 +23,7 @@ The prototype of a new GC3Pie-based Queue Manager for HRM.
 # stdlib imports
 import sys
 import time
+import os
 
 # GC3Pie imports
 import gc3libs
@@ -175,6 +176,9 @@ def main():
         args = argparser.parse_args()
     except IOError as e:
         argparser.error(str(e))
+
+    if not os.path.exists(args.spooldir):
+        raise IOError("Spool directory doesn't exist: '%s'." % args.spooldir)
 
     # set the loglevel as requested on the commandline
     loglevel = logging.WARN - (args.verbosity * 10)
