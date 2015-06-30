@@ -1,3 +1,4 @@
+
 /*
 
 HRM default style
@@ -806,6 +807,11 @@ input.save {
 
 #queue td.started {
     width: 15%;
+    font-weight: bold;
+}
+
+#queue td.progress {
+    width: 5%;
     font-weight: bold;
 }
 

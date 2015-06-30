@@ -95,7 +95,8 @@ function getJobQueuetable() {
           <td class="files">file(s)</td>
           <td class="created">created</td>
           <td class="status">status</td>
-          <td class="started">started</td>';
+          <td class="started">started</td>
+          <td class="progress">progress</td>';
 
   if ($showStopTime == true) {
     $data .= '<td class="stop">estimated end</td>';
@@ -169,13 +170,15 @@ function getJobQueuetable() {
       $queued = $row['queued'];
       $status = $row['status'];
       $start = $row['start'];
+      $progress = $row['progress'];
       $data .= "
       <td>$index</td>
       <td>$username</td>
       <td>$jobFiles</td>
       <td>$queued</td>
       <td>$status</td>
-      <td>$start</td>";
+      <td>$start</td>
+      <td>$progress</td>";
 
       if ($showStopTime) {
         $stop = $row['stop'];
