@@ -263,6 +263,13 @@ abstract class Setting {
         }
     }
 
+    /*!
+  \brief	parses an array retuned by hucore after it has read a file
+    This is an abstract function and must
+  be reimplemented.
+*/
+ //   abstract public function ($hucorearray);
+
 } // End of Setting class
 
 /*
@@ -2068,6 +2075,161 @@ class ParameterSetting extends Setting {
         $result = $db->getTemplatesSharedBy($username, self::sharedTable());
         return $result;
     }
+
+    public function parseParamsFromHuCore($hucorearray){
+        /* Things to look at
+            'NumberOfChannels', chanCnt
+            'MicroscopeType', mType
+            'NumericalAperture', NA
+            'ObjectiveType', RILens
+            'SampleMedium', RIMedia
+            'ExcitationWavelength', lambdaEm
+            'EmissionWavelength', lambdaEx
+            'ZStepSize', dz
+            'TimeInterval', dt
+            'PinholeSize', pinhole
+            'PinholeSpacing', pinholeSpacing
+            'CoverslipRelativePosition', imagingDir
+            'StedDepletionMode', stedMode
+            'StedSaturationFactor', stedSatFact
+            'StedWavelength', sted
+            'StedImmunity', stedImmunity
+            'Sted3D', sted3D
+        */
+
+        // Get number of channels
+        $mtypes = explode(' ', $hucorearray['mType']);
+        $nchannels = count($mtypes);
+        if ($nchannels > 5) $nchannels=5;
+        $this->parameter['NumberOfChannels']->setValue($nchannels);
+
+
+        $dims = array_map('intval', explode(' ', $hucorearray['dims']));
+
+        // Use this to get the sizes of x y z t
+        $sampleSizes = array_map('floatval', explode(' ', $hucorearray['sampleSizes']));
+
+
+        // Get Microscope Type
+        if ( !strpos($hucorearray['parState,mType'], "default") ) {
+            $mictype = explode(" ", $hucorearray['mType'], 5);
+
+            //By default, take the first value
+            $hrmmic = $this->parameter['MicroscopeType']->translateHucore($mictype[0]);
+
+            // If there is STED, just make sure that it's the right one.
+            if(array_search('sted', $mictype)) $hrmmic = $this->parameter['MicroscopeType']->translateHucore('sted');
+            if(array_search('sted3d', $mictype)) $hrmmic = $this->parameter['MicroscopeType']->translateHucore('sted3d');
+
+            $this->parameter['MicroscopeType']->setValue($hrmmic);
+        }
+
+        // Get Numerical Aperture
+        if ( !strpos($hucorearray['parState,NA'], "default") ) {
+            $na = explode(" ", $hucorearray['NA'], 5);
+            $this->parameter['NumericalAperture']->setValue($na[0]);
+        }
+
+        // Get Objective Type
+        if ( !strpos($hucorearray['parState,RILens'], "default") ) {
+            $lens_imm = array_map('floatval', explode(' ', $hucorearray['RILens']));
+            $this->parameter['ObjectiveType']->setValue($lens_imm[0]);
+        }
+
+        // Get Sample Medium
+        if ( !strpos($hucorearray['parState,RIMedia'], "default") ) {
+            $med = array_map('floatval', explode(' ', $hucorearray['RIMedia']));
+            $this->parameter['SampleMedium']->setValue($med[0]);
+        }
+
+        // Get Excitation Wavelength
+        if ( !strpos($hucorearray['parState,lambdaEm'], "default") ) {
+            $lambda_em = array_map('intval', explode(' ', $hucorearray['lambdaEm']));
+            $this->parameter['ExcitationWavelength']->setValue($lambda_em);
+        }
+
+        // Get Emission Wavelength
+        if ( !strpos($hucorearray['parState,lambdaEx'], "default") ) {
+            $lambda_ex = array_map('intval', explode(' ', $hucorearray['lambdaEx']));
+            $this->parameter['EmissionWavelength']->setValue($lambda_ex);
+        }
+
+        // Get X step Size
+        if ( !strpos($hucorearray['parState,sampleSizes'], "default") ) {
+            $this->parameter['CCDCaptorSizeX']->setValue(round($sampleSizes[0]*1000));
+        }
+
+        // Get Z step Size
+        if ( !strpos($hucorearray['parState,sampleSizes'], "default") ) {
+            $dz= $sampleSizes[2]*1000;
+            $this->parameter['ZStepSize']->setValue(round($dz));
+        }
+
+        // Get Time interval
+        if ( !strpos($hucorearray['parState,sampleSizes'], "default") ) {
+
+            $dt = $sampleSizes[3];
+
+            $this->parameter['TimeInterval']->setValue($dt);
+        }
+
+        // Get Pinhole size Wavelength
+        if ( !strpos($hucorearray['parState,pinhole'], "default") ) {
+            $pinhole = array_map('intval', explode(' ', $hucorearray['pinhole']));
+            $this->parameter['PinholeSize']->setValue($pinhole);
+        }
+
+        // Get Pinhole spacing
+        if ( !strpos($hucorearray['parState,pinholeSpacing'], "default") ) {
+            $pinhole_spacing = array_map('floatval', explode(' ', $hucorearray['pinholeSpacing']));
+            $this->parameter['PinholeSpacing']->setValue($pinhole_spacing[0]);
+        }
+
+        // Get Coverslip Relative Position
+        if ( !strpos($hucorearray['parState,imagingDir'], "default") ) {
+            // downward is closest
+            $imaging_direction = explode(' ', $hucorearray['imagingDir']);
+            $cov_pos = "farthest";
+            if (strcmp("downward", $imaging_direction[0])) {
+                $cov_pos = "closest";
+            }
+            $this->parameter['CoverslipRelativePosition']->setValue($cov_pos);
+        }
+
+        // Get STED Depletion Mode
+        if ( !strpos($hucorearray['parState,stedMode'], "default") ) {
+            $sted_mode = explode(' ', $hucorearray['stedMode']);
+
+            // rename some modes if the mType is set to confocal
+            for($i=0; $i<count($sted_mode); $i++) {
+                if($mtypes[$i] == 'confocal') $sted_mode[$i] = 'off-confocal';
+            }
+            $this->parameter['StedDepletionMode']->setValue($sted_mode);
+        }
+
+        // Get STED Saturation Factor
+        if ( !strpos($hucorearray['parState,stedSatFact'], "default") ) {
+            $sted_sat_fact = array_map('floatval', explode(' ', $hucorearray['stedSatFact']));
+            $this->parameter['StedSaturationFactor']->setValue($sted_sat_fact);
+        }
+
+        // Get STED Wavelength
+        if ( !strpos($hucorearray['parState,stedLambda'], "default") ) {
+            $sted_lambda = array_map('floatval', explode(' ', $hucorearray['stedLambda']));
+            $this->parameter['StedWavelength']->setValue($sted_lambda);
+        }
+        // Get STED Immunity Fraction
+        if ( !strpos($hucorearray['parState,stedImmunity'], "default") ) {
+            $sted_immunity = array_map('floatval', explode(' ', $hucorearray['stedImmunity']));
+            $this->parameter['StedImmunity']->setValue($sted_immunity);
+        }
+
+        // Get whether it is STED3D
+        if ( !strpos($hucorearray['parState,sted3D'], "default") ) {
+            $sted3d = array_map('floatval', explode(' ', $hucorearray['sted3D']));
+            $this->parameter['Sted3D']->setValue($sted3d);
+        }
+    }
 }
 
 /*
@@ -2395,6 +2557,16 @@ class TaskSetting extends Setting {
         return $result;
     }
 
+    public function parseParamsFromHuCore($hucorearray) {
+        /* Loop over the values of this setting's parameters. */
+
+        foreach ($this->parameter as $objName => $objInstance) {
+
+        }
+        echo "I GOT SOME DATA";
+        print_r($hucorearray);
+
+    }
 } // End of class taskSetting
 
 /*

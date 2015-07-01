@@ -1311,6 +1311,18 @@ class DatabaseConnection {
     }
 
     /*!
+  \brief  Returns the translation of a hucore value
+  \param  $parameterName  Name of the Parameter object
+  \param  $hucorevalue          value name in HuCore
+  \return Expected value by HRM
+*/
+    public function hucoreTranslation($parameterName, $hucorevalue) {
+        $query = "select value from possible_values where parameter = '" .$parameterName . "' and translation = '" . $hucorevalue . "'";
+        $result = $this->queryLastValue($query);
+        return $result;
+    }
+
+    /*!
       \brief  Returns an array of all file extensions
       \return Array of file extensions
     */

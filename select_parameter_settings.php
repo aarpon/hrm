@@ -99,17 +99,56 @@ else if (isset($_POST['create'])) {
     $message = $_SESSION['editor']->message();
 }
 else if (isset($_POST['copy'])) {
-  $_SESSION['editor']->copySelectedSetting($_POST['new_setting']);
-  $message = $_SESSION['editor']->message();
+    $_SESSION['editor']->copySelectedSetting($_POST['new_setting']);
+    $message = $_SESSION['editor']->message();
+}
+else if(isset($_POST['generate']) && isset($_POST['fileselection'])) {
+    // Check whether we are going to work with an image or just a template upload
+    $setting = NULL;
+    if($_POST['fileselection']=='Upload a Template') {
+        // Get the file
+        $path_parts = pathinfo($_FILES["upfile"]["name"]);
+        if($path_parts['filename'] != '') {
+            $hrmtemplatename = 'From ' . $path_parts['filename'];
+            $setting = $_SESSION['editor']->createNewSetting($hrmtemplatename);
+            $filecontents = file_get_contents($_FILES["upfile"]["tmp_name"]);
+            $_SESSION['editor']->generateTemplateFromHuygensTemplate($setting, $filecontents);
+            $message = $_SESSION['editor']->message();
+
+        } else {
+            $message = 'You did not upload a template file';
+        }
+
+    } elseif ($_POST['fileselection']!='Choose a file or upload a template') {
+        $filestring = $_POST['fileselection'];
+        $path_parts = pathinfo($filestring);
+        $hrmtemplatename = 'Based on '.$path_parts['filename'];
+
+        $setting = $_SESSION['editor']->createNewSetting($hrmtemplatename);
+
+        $result = $_SESSION['editor']->generateTemplateFromImageFile($setting, $filestring);
+        $message = $_SESSION['editor']->message();
+
+    }
+
+    if ($setting != NULL) {
+        // Need to set ImageFileFormat here, as for the template creation above
+        // Oli: I mostly copy-pasted this bit.
+        $setting->parameter("ImageFileFormat")->setValue($fileFormat);
+        $_SESSION['setting'] = $setting;
+        header("Location: " . "image_format.php"); exit();
+    }
+
+
 }
 else if (isset($_POST['edit'])) {
-  $setting = $_SESSION['editor']->loadSelectedSetting();
-  if ($setting) {
-      $setting->parameter("ImageFileFormat")->setValue($fileFormat);
-      $_SESSION['setting'] = $setting;
-      header("Location: " . "image_format.php"); exit();
-  }
-  $message = $_SESSION['editor']->message();
+    $setting = $_SESSION['editor']->loadSelectedSetting();
+    if ($setting) {
+        $setting->parameter("ImageFileFormat")->setValue($fileFormat);
+        $_SESSION['setting'] = $setting;
+        header("Location: " . "image_format.php"); exit();
+    }
+    $message = $_SESSION['editor']->message();
 }
 else if (isset($_POST['pickUser']) && isset($_POST["templateToShare"])) {
     if (isset($_POST["usernameselect"])) {
@@ -183,6 +222,9 @@ include("header.inc.php");
     </span>
     <span class="toolTip" id="ttSpanEdit">
         Edit the selected image template.
+    </span>
+    <span class="toolTip" id="ttSpanGenerate">
+        Generate template from file.
     </span>
     <span class="toolTip" id="ttSpanClone">
         Copy the selected image template to a new one with the
@@ -363,7 +405,7 @@ if (!$_SESSION['user']->isAdmin()) {
 
 ?>
 
-        <form method="post" action="" id="select">
+        <form method="post" action="" enctype="multipart/form-data" id="select">
 
             <fieldset>
 
@@ -411,12 +453,13 @@ else {
   }
 }
 
+//
 ?>
                     </select>
                 </div>
 
             </fieldset>
-
+            <div id="upMsg"></div>
             <div id="actions" class="parameterselection">
                 <input name="create"
                        type="submit"
@@ -430,12 +473,20 @@ else {
                        class="icon edit"
                        onmouseover="TagToTip('ttSpanEdit' )"
                        onmouseout="UnTip()" />
+                <input name="generate"
+                       type="button"
+                       value=""
+                       class="icon generate"
+                       onmouseover="TagToTip('ttSpanGenerate' )"
+                       onmouseout="UnTip()"
+                       onclick='UnTip(); selectFileOrTemplate(<?php echo json_encode( $_SESSION['fileserver']->selectedFiles()); ?>)' />
                 <input name="copy"
                        type="submit"
                        value=""
                        class="icon clone"
                        onmouseover="TagToTip('ttSpanClone' )"
                        onmouseout="UnTip()" />
+
 
 <?php
 
@@ -458,6 +509,7 @@ if (!$_SESSION['user']->isAdmin()) {
 }
 
 ?>
+
                 <input type="hidden" name="annihilate" />
                 <input name="delete"
                        type="button"
@@ -474,6 +526,8 @@ if (!$_SESSION['user']->isAdmin()) {
                            class="textfield" />
                 </label>
                 <input name="OK" type="hidden" />
+
+
         </div>
 <?php
 
@@ -494,6 +548,8 @@ if (!$_SESSION['user']->isAdmin()) {
                          onmouseover="TagToTip('ttSpanForward' )"
                          onmouseout="UnTip()" />
                 </div>
+
+
 <?php
 
 }
@@ -501,6 +557,7 @@ if (!$_SESSION['user']->isAdmin()) {
 ?>
 
         </form> <!-- select -->
+
 
     <!-- Form for picking users with whom to share templates, initially hidden -->
     <form id="formUserList" method="post" action="" hidden>
@@ -542,7 +599,6 @@ if (!$_SESSION['user']->isAdmin()) {
         </div>
 
     </form> <!-- Form for picking users with whom to share templates -->
-
     </div> <!-- content -->
 
     <div id="rightpanel">
