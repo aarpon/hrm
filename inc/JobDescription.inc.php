@@ -80,8 +80,20 @@ class JobDescription {
   */
   private $group;
 
-  //public $rangeParameters;     // why not use a global variable from the beginning?!
+  /*!
+    \var    $taskType
+    \brief  Name of the task to use: decon, snr, etc.
+  */
+  private $taskType;
 
+  /*!
+    \var    $jobID 
+    \brief  ID of the job to delete, prioritize, etc.
+  */
+  private $jobID;
+  
+
+  
   /*!
     \brief Constructor
   */
@@ -238,53 +250,45 @@ class JobDescription {
     return "g3c_" . $this->id() . ".cfg";
   }
 
-    /*!
+  /*!
+    \brief
+    \return
+  */
+  public function setJobID( $jobID ) {
+      $this->jobID = $jobID;
+  }
+
+  /*!
+    \brief
+    \return
+  */
+  public function getJobID( ) {
+      return $this->jobID;
+  }
+  
+  /*!
+    \brief      Sets the task type as an object property.
+    \params     $taskType The name of the job task: decon, snr, etc.
+  */
+  public function setTaskType( $taskType ) {
+      switch( $taskType )  {
+      case 'snr':
+      case 'decon':
+      case 'deleteJob':
+          $this->taskType =  $taskType;
+          break;
+      default:
+          error_log("Unimplemented task type $taskType.");       
+      }
+  }
+
+  /*!
     \brief      The task type to write in the GC3Pie config  file.
     \return     The task type.
     */
     public function getTaskType( ) {
-        /* TODO update with other types */
-        return "decon";
+        return $this->taskType;
     }
-
-  /*!
-    \brief Add a Job to the queue
-    \return true if the Job could be added to the queue, false otherwise
-  */
-  public function addJob() {
-    // =========================================================================
-    //
-    // In previous versions of the HRM, the web interface would create compound
-    // jobs that the queue manager would then process. Now, this task has become
-    // responsibility of the web interface.
-    //
-    // =========================================================================
-
-    $result = True;
-
-    $lqueue = new JobQueue();
-    $lqueue->lock();
-
-    // createJob() function was originally called directly
-    $result = $result && $this->createJob();
-
-    if ( $result ) {
-
-      // Process compound jobs
-      $this->processCompoundJobs( );
-
-      // Assign priorities
-      $db = new DatabaseConnection();
-      $result = $db->setJobPriorities();
-      if ( !$result ) {
-        error_log( "Could not set job priorities!" );
-      }
-    }
-
-    $lqueue->unlock();
-
-    return $result;
-  }
 
   /*!
     \brief Create a Job from this JobDescription
