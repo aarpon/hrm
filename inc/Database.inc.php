@@ -213,9 +213,6 @@ class DatabaseConnection {
       \return $success    True if success; false otherwise
     */
     public function addNewUser($username, $password, $email, $group, $status) {
-        $username = mysql_real_escape_string($username);
-        $email = mysql_real_escape_string($email);
-        $group = mysql_real_escape_string($group);
         $query = "INSERT INTO username (name, password, email, research_group, status) ".
             "VALUES ('".$username."', ".
             "'".md5($password)."', ".
