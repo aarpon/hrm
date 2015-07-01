@@ -274,7 +274,7 @@ class GC3PieController {
         $controllerHandle = fopen($controllerName, "w");
 
         if (!$controllerHandle ) {
-            report ("Error opening file $controllerName, verify permissions!", 0);
+            report ("Impossible to open file $controllerName", 0);
             report ("Waiting 15 seconds...", 1);
             sleep(15);
             return False;
