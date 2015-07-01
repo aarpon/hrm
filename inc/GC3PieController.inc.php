@@ -270,7 +270,7 @@ class GC3PieController {
         $result = True;
 
         $controllerPath = dirname(__FILE__) . "/../run/spool/new";
-        $controllerName = tempnam($controllerPath, "gc3_");
+        $controllerName = tempnam($controllerPath, "gc3_") . ".cfg";
         $controllerHandle = fopen($controllerName, "w");
 
         if (!$controllerHandle ) {
