@@ -190,7 +190,8 @@ def resource_dirs_clean(engine):
     return True
 
 
-def main():
+def parse_arguments():
+    """Parse command line arguments."""
     argparser = argparse.ArgumentParser(description=__doc__)
     argparser.add_argument('-s', '--spooldir', required=True,
         help='spooling directory for new jobfiles')
@@ -204,9 +205,13 @@ def main():
     argparser.add_argument('-v', '--verbosity', dest='verbosity',
         action='count', default=0)
     try:
-        args = argparser.parse_args()
-    except IOError as e:
-        argparser.error(str(e))
+        return argparser.parse_args()
+    except IOError as err:
+        argparser.error(str(err))
+
+
+def main():
+    args = parse_arguments()
 
     if not os.path.exists(args.spooldir):
         raise IOError("Spool directory doesn't exist: '%s'." % args.spooldir)
