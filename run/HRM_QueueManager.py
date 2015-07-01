@@ -138,6 +138,7 @@ class HucorePreviewgenApp(gc3libs.Application):
     def __init__(self):
         # logw('Instantiating a HucorePreviewgenApp:\n%s' % job)
         logw('WARNING: this is a stub, nothing is implemented yet!')
+        super(HucorePreviewgenApp, self).__init__()
 
 
 class HucoreEstimateSNRApp(gc3libs.Application):
@@ -147,6 +148,7 @@ class HucoreEstimateSNRApp(gc3libs.Application):
     def __init__(self):
         # logw('Instantiating a HucoreEstimateSNRApp:\n%s' % job)
         logw('WARNING: this is a stub, nothing is implemented yet!')
+        super(HucoreEstimateSNRApp, self).__init__()
 
 
 def run_job(engine, job):
