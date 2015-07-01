@@ -26,7 +26,14 @@ import time
 import os
 
 # GC3Pie imports
-import gc3libs
+try:
+    import gc3libs
+except ImportError:
+    print("ERROR: unable to import GC3Pie library package, please make sure")
+    print("it is installed and active, e.g. by running this command prior to")
+    print("starting the HRM Queue Manager:")
+    print("\n$ source /path/to/your/gc3pie_installation/bin/activate\n")
+    sys.exit(1)
 
 import pyinotify
 import argparse
