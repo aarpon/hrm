@@ -338,35 +338,6 @@ class Job {
         return $result;
     }
 
-    /*!
-     \brief	Writes the GC3Pie controller to the user's source folder
-     \return	true if the controller could be written, false otherwise
-    */
-    public function writeGC3PieController() {
-        $result = True;
-        $desc = $this->description();
-        $user = $desc->owner();
-        $username = $user->name();
-
-        $controllerName = $this->gc3ControllerName();
-        $controllerPath = dirname(__FILE__) . "/../run/spool/new";
-        $controllerFile = $controllerPath . "/" . $controllerName;
-        $file = fopen($controllerFile, "w");
-
-        if (!$file ) {
-
-            report ("Error opening file $controllerFile, verify permissions!", 0);
-            report ("Waiting 15 seconds...", 1);
-            sleep(15);
-            return False;
-        } else {
-            $result = $result && (fwrite($file, $this->controller) > 0);
-            fclose($file);
-            report("Wrote gc3 controller $controllerFile", 1);
-        }
-
-        return $result;
-    }
 
     /*!
      \brief Checks whether the result image is present in the destination directory

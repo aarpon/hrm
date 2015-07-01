@@ -260,6 +260,33 @@ class GC3PieController {
 	    $this->controller .= "\n";
         }
     }
+
+
+    /*!
+      \brief	Writes the GC3Pie controller to the GC3Pie spool folder
+      \return	true if the controller could be written, false otherwise
+    */
+    public function write2Spool() {
+        $result = True;
+
+        $controllerPath = dirname(__FILE__) . "/../run/spool/new";
+        $controllerName = tempnam($controllerPath, "gc3_");
+        $controllerHandle = fopen($controllerName, "w");
+
+        if (!$controllerHandle ) {
+            report ("Error opening file $controllerName, verify permissions!", 0);
+            report ("Waiting 15 seconds...", 1);
+            sleep(15);
+            return False;
+        } else {
+            $result &= (fwrite($controllerHandle, $this->controller) > 0);
+            fclose($controllerHandle);
+            report("Wrote gc3 controller $controllerName", 1);
+        }
+
+        return $result;
+    }
+
 }
 
 ?>
