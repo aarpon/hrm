@@ -177,6 +177,9 @@ def resource_dirs_clean(engine):
     -------
     bool
     """
+    # NOTE: with the session-based GC3 approach, it should be possible to pick
+    # up existing (leftover) jobs in a resource directory upon start and figure
+    # out what their status is, clean up, collect results etc.
     for resource in engine.get_resources():
         resourcedir = os.path.expandvars(resource.cfg_resourcedir)
         print("Checking resource dir for resource '%s': %s" %
