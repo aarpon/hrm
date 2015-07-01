@@ -11,9 +11,6 @@ The prototype of a new GC3Pie-based Queue Manager for HRM.
 #   HuCore Tcl script
 # - clean up the results, put them into a sane place etc.
 # - check if a sane (usable) gc3pie configuration exists!
-# - check if the gc3pie resource folder is clean on startup (for now this
-#   is ~/.gc3/shellcmd.d but this will probably change when switching to the
-#   session based variant of GC3Pie
 # - if instantiating a gc3libs.Application fails, the QM stops watching and
 #   parsing new job files (resulting in a "dead" state right now), so
 #   exceptions on dispatching jobs need to be caught and some notification
@@ -168,6 +165,31 @@ def run_job(engine, job):
     logw("The output of the application is in `%s`." %  app.output_dir)
 
 
+def resource_dirs_clean(engine):
+    """Check if the resource dirs of all resources are clean.
+
+    Parameters
+    ----------
+    engine : gc3libs.core.Engine
+        The GC3 engine to check the resource directories for.
+
+    Returns
+    -------
+    bool
+    """
+    for resource in engine.get_resources():
+        resourcedir = os.path.expandvars(resource.cfg_resourcedir)
+        print("Checking resource dir for resource '%s': %s" %
+            (resource.name, resourcedir))
+        if not os.path.exists(resourcedir):
+            continue
+        files = os.listdir(resourcedir)
+        if files:
+            print("Resource dir unclean: %s" % files)
+            return False
+    return True
+
+
 def main():
     argparser = argparse.ArgumentParser(description=__doc__)
     argparser.add_argument('-s', '--spooldir', required=True,
@@ -217,6 +239,12 @@ def main():
     # select a specific resource if requested on the cmdline:
     if args.resource:
         engine.select_resource(args.resource)
+
+    if not resource_dirs_clean(engine):
+        print("Refusing to start, clean your resource dir first!")
+        wm.rm_watch(wdd.values())
+        notifier.stop()
+        sys.exit(1)
 
     logi('Excpected job description files version: %s.' % HRM.JOBFILE_VER)
     print('HRM Queue Manager started, watching spool directory "%s", '
