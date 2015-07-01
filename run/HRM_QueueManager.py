@@ -214,6 +214,7 @@ def parse_arguments():
 
 
 def main():
+    """Main loop of the HRM Queue Manager."""
     args = parse_arguments()
 
     if not os.path.exists(args.spooldir):
