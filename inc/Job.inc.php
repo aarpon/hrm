@@ -348,8 +348,6 @@ class Job {
         $user = $desc->owner();
         $username = $user->name();
 
-        $fileserver = new Fileserver($username);
-
         $controllerName = $this->gc3ControllerName();
         $controllerPath = dirname(__FILE__) . "/../run/spool/new";
         $controllerFile = $controllerPath . "/" . $controllerName;
