@@ -180,6 +180,7 @@ def run_job(engine, job):
         time.sleep(1)
     logw("Job is now terminated.")
     logw("The output of the application is in `%s`." %  app.output_dir)
+    # ToDo #155: Check how the return status of a finished job is handled.
 
 
 def resource_dirs_clean(engine):
