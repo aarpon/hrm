@@ -111,7 +111,7 @@ else if(isset($_POST['generate']) && isset($_POST['fileselection'])) {
         if($path_parts['filename'] != '') {
             $hrmtemplatename = 'From ' . $path_parts['filename'];
             $setting = $_SESSION['editor']->createNewSetting($hrmtemplatename);
-            $filecontents = file_get_contents($_FILES["upfile"]["tmp_name"][0]);
+            $filecontents = file_get_contents($_FILES["upfile"]["tmp_name"]);
             $_SESSION['editor']->generateTemplateFromHuygensTemplate($setting, $filecontents);
             $message = $_SESSION['editor']->message();
 
