@@ -97,6 +97,7 @@ class HucoreDeconvolveApp(gc3libs.Application):
 
     def __init__(self, job):
         logw('Instantiating a HucoreDeconvolveApp:\n%s' % job)
+        logi('Job UID: %s' % job['uid'])
         # we need to add the template (with the local path) to the list of
         # files that need to be transferred to the system running hucore:
         job['infiles'].append(job['template'])
