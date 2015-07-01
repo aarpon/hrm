@@ -6,11 +6,11 @@ require_once( "User.inc.php" );
 require_once( "JobDescription.inc.php" );
 require_once( "Fileserver.inc.php" );
 
-class G3CPieController {
+class GC3PieController {
 
     /*!
      \brief $controller
-     \var   String containing relevant information for the G3CPie job
+     \var   String containing relevant information for the GC3Pie job
     */
     public $controller;
 
@@ -22,7 +22,7 @@ class G3CPieController {
 
     /*!
      \brief $sectionsArray
-     \var   Array with the main G3CPie fields.
+     \var   Array with the main GC3Pie fields.
     */
     private $sectionsArray;
 
@@ -34,7 +34,7 @@ class G3CPieController {
 
     /*!
      \brief $hrmJobFileList 
-     \var   HRM section of the controller sorted for G3CPie.
+     \var   HRM section of the controller sorted for GC3Pie.
     */
     private $hrmJobFileList;
 
@@ -58,7 +58,7 @@ class G3CPieController {
 
     /*!
      \brief $inputFilesList 
-     \var   Input file section of the controller sorted properly for G3CPie.
+     \var   Input file section of the controller sorted properly for GC3Pie.
     */
     private $inputFilesList;
 
@@ -189,13 +189,13 @@ class G3CPieController {
         foreach ($this->hucoreArray as $key => $value) {
             $this->hucoreList .= $key;
             switch ( $key ) {
-                    case "executable":
-                        if (isset($local_huygens_core)) {
-                            $this->hucoreList .= " = " . $local_huygens_core;
-                        } else {
-                            error_log("Unreachable hucore binary.");
-                        }
-                    break;
+            case "executable":
+                if (isset($local_huygens_core)) {
+                    $this->hucoreList .= " = " . $local_huygens_core;
+                } else {
+                    error_log("Unreachable hucore binary.");
+                }
+                break;
                 case "template":
                     $this->hucoreList .= " = ";
                     $this->hucoreList .= $templatePath;
