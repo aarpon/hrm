@@ -2098,28 +2098,28 @@ class ParameterSetting extends Setting {
         */
 
         // Get number of channels
-        $nchannels = intval($hucorearray['chanCnt']);
+        $mtypes = explode(' ', $hucorearray['mType']);
+        $nchannels = count($mtypes);
         if ($nchannels > 5) $nchannels=5;
         $this->parameter['NumberOfChannels']->setValue($nchannels);
 
-        $checkData = array(
-            'mType' => 'MicroscopeType',
-            'NA'    => 'NumericalAperture',
-            'RILens'=> 'ObjectiveType',
-            'RIMedia'=> 'SampleMedium',
-            'RILens' => 'ObjectiveType',
-            'lambdaEx' => 'ExcitationWavelength',
-            'lambdaEm' => 'EmissionWavelength',
-            'dz' => 'ZStepSize',
-        );
 
         $dims = array_map('intval', explode(' ', $hucorearray['dims']));
+
+        // Use this to get the sizes of x y z t
+        $sampleSizes = array_map('floatval', explode(' ', $hucorearray['sampleSizes']));
+
 
         // Get Microscope Type
         if ( !strpos($hucorearray['parState,mType'], "default") ) {
             $mictype = explode(" ", $hucorearray['mType'], 5);
+
+            //By default, take the first value
             $hrmmic = $this->parameter['MicroscopeType']->translateHucore($mictype[0]);
-            print($hrmmic);
+
+            // If there is STED, just make sure that it's the right one.
+            if(array_search('sted', $mictype)) $hrmmic = $this->parameter['MicroscopeType']->translateHucore('sted');
+            if(array_search('sted3d', $mictype)) $hrmmic = $this->parameter['MicroscopeType']->translateHucore('sted3d');
 
             $this->parameter['MicroscopeType']->setValue($hrmmic);
         }
@@ -2155,30 +2155,21 @@ class ParameterSetting extends Setting {
         }
 
         // Get X step Size
-        if ( !strpos($hucorearray['parState,dx'], "default") ) {
-            $dx = floatval($hucorearray['dx']);
-            $this->parameter['CCDCaptorSizeX']->setValue(round($dx*1000));
+        if ( !strpos($hucorearray['parState,sampleSizes'], "default") ) {
+            $this->parameter['CCDCaptorSizeX']->setValue(round($sampleSizes[0]*1000));
         }
 
         // Get Z step Size
-        if ( !strpos($hucorearray['parState,dz'], "default") ) {
-            $dz = floatval($hucorearray['dz']);
-            if ($dims[2] < 2) {
-                $dz = 0;
-            }
-                $this->parameter['ZStepSize']->setValue(round($dz*1000));
-
+        if ( !strpos($hucorearray['parState,sampleSizes'], "default") ) {
+            $dz= $sampleSizes[2]*1000;
+            $this->parameter['ZStepSize']->setValue(round($dz));
         }
 
         // Get Time interval
-        if ( !strpos($hucorearray['parState,dt'], "default") ) {
+        if ( !strpos($hucorearray['parState,sampleSizes'], "default") ) {
 
-            $dt = floatval($hucorearray['dt']);
-            // check that we need it
+            $dt = $sampleSizes[3];
 
-            if ($dims[3] == 0) {
-                $dt = 0;
-            }
             $this->parameter['TimeInterval']->setValue($dt);
         }
 
@@ -2208,6 +2199,11 @@ class ParameterSetting extends Setting {
         // Get STED Depletion Mode
         if ( !strpos($hucorearray['parState,stedMode'], "default") ) {
             $sted_mode = explode(' ', $hucorearray['stedMode']);
+
+            // rename some modes if the mType is set to confocal
+            for($i=0; $i<count($sted_mode); $i++) {
+                if($mtypes[$i] == 'confocal') $sted_mode[$i] = 'off-confocal';
+            }
             $this->parameter['StedDepletionMode']->setValue($sted_mode);
         }
 
@@ -2229,12 +2225,11 @@ class ParameterSetting extends Setting {
         }
 
         // Get whether it is STED3D
-        if ( !strpos($hucorearray['parState,stedSatFact'], "default") ) {
-            $sted3d = array_map('floatval', explode(' ', $hucorearray['stedSatFact']));
+        if ( !strpos($hucorearray['parState,sted3D'], "default") ) {
+            $sted3d = array_map('floatval', explode(' ', $hucorearray['sted3D']));
             $this->parameter['Sted3D']->setValue($sted3d);
         }
     }
-
 }
 
 /*
