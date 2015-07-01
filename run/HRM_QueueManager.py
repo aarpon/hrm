@@ -9,7 +9,7 @@ The prototype of a new GC3Pie-based Queue Manager for HRM.
 # TODO:
 # - do not transfer the images, create a symlink or put their path into the
 #   HuCore Tcl script
-# - clean up the results, put them into a sane place etc.
+# - put the results dir back to the user's destination directory
 # - check if a sane (usable) gc3pie configuration exists!
 # - if instantiating a gc3libs.Application fails, the QM stops watching and
 #   parsing new job files (resulting in a "dead" state right now), so
@@ -41,6 +41,10 @@ gc3libs.configure_logger(loglevel, "qmgc3")
 logw = gc3libs.log.warn
 logi = gc3libs.log.info
 logd = gc3libs.log.debug
+
+
+# TODO: this has to be set+read in a config file eventually:
+GC3_SPOOLDIR = '/scratch/hrm_data'
 
 
 class EventHandler(pyinotify.ProcessEvent):
@@ -114,7 +118,8 @@ class HucoreDeconvolveApp(gc3libs.Application):
                 '-template', templ_on_tgt],
             inputs = job['infiles'],
             outputs = ['resultdir', 'previews'],
-            output_dir = './deconvolved',
+            # collect the results in a subfolder of GC3Pie's spooldir:
+            output_dir = os.path.join(GC3_SPOOLDIR, 'results_%s' % job['uid']),
             stderr = 'stdout.txt', # combine stdout & stderr
             stdout = 'stdout.txt')
 
