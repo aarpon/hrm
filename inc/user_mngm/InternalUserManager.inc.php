@@ -204,7 +204,7 @@ class InternalUserManager extends AbstractUserManager {
     public function getTotalNumberOfUsers() {
         $db = new DatabaseConnection();
         $count = $db->queryLastValue(
-            "SELECT count(*) FROM username WHERE 1");
+            "SELECT count(*) FROM username WHERE TRUE");
         return $count;
     }
 
