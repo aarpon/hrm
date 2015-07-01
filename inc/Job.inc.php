@@ -10,7 +10,7 @@ require_once ("Fileserver.inc.php");
 require_once ("Shell.inc.php");
 require_once ("Mail.inc.php");
 require_once ("HuygensTemplate.inc.php");
-require_once ("G3CPieController.inc.php");
+require_once ("GC3PieController.inc.php");
 require_once ("System.inc.php");
 
 /*!
@@ -21,7 +21,7 @@ class Job {
 
     /*!
       \var      $controller
-      \brief    Contains a G3CPie controller to run a job
+      \brief    Contains a GC3Pie controller to run a job
     */
     private $controller;
 
@@ -246,12 +246,12 @@ class Job {
     }
 
     /*!
-     \brief     Creates a job controller for G3CPie
+     \brief     Creates a job controller for GC3Pie
     */
-    public function createG3CPieController() {
+    public function createGC3PieController() {
         $jobDescription = $this->description();
-        $g3cPie = new G3CPieController($jobDescription);
-        $this->controller = $g3cPie->controller;
+        $gc3Pie = new GC3PieController($jobDescription);
+        $this->controller = $gc3Pie->controller;
     }
 
     /*!
@@ -264,12 +264,12 @@ class Job {
     }
     
     /*!
-     \brief	Returns the G3CPie controller name containing the unique job id
+     \brief	Returns the GC3Pie controller name containing the unique job id
      \return	the sript name
     */
-    public function g3cControllerName() {
+    public function gc3ControllerName() {
         $jobDescription = $this->description();
-        return $jobDescription->getG3CPieControllerName();
+        return $jobDescription->getGC3PieControllerName();
     }
 
     /*!
@@ -303,9 +303,9 @@ class Job {
             $this->createHuygensTemplate();
             $result = $result && $this->writeHuTemplate();
             report("Created Huygens template", 1);
-            $this->createG3CPieController();
-            $result = $result && $this->writeG3CPieController();
-            report("Created G3CPie controller", 1);
+            $this->createGC3PieController();
+            $result = $result && $this->writeGC3PieController();
+            report("Created GC3Pie controller", 1);
         }
 
         return $result;
@@ -339,10 +339,10 @@ class Job {
     }
 
     /*!
-     \brief	Writes the G3CPie controller to the user's source folder
+     \brief	Writes the GC3Pie controller to the user's source folder
      \return	true if the controller could be written, false otherwise
     */
-    public function writeG3CPieController() {
+    public function writeGC3PieController() {
         $result = True;
         $desc = $this->description();
         $user = $desc->owner();
@@ -350,7 +350,7 @@ class Job {
 
         $fileserver = new Fileserver($username);
 
-        $controllerName = $this->g3cControllerName();
+        $controllerName = $this->gc3ControllerName();
         $controllerPath = dirname(__FILE__) . "/../run/spool/new";
         $controllerFile = $controllerPath . "/" . $controllerName;
         $file = fopen($controllerFile, "w");
@@ -364,7 +364,7 @@ class Job {
         } else {
             $result = $result && (fwrite($file, $this->controller) > 0);
             fclose($file);
-            report("Wrote g3c controller $controllerFile", 1);
+            report("Wrote gc3 controller $controllerFile", 1);
         }
 
         return $result;

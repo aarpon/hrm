@@ -243,11 +243,11 @@ class JobDescription {
   }
 
   /*!
-   \brief       Returns the name of the job controller to be used by G3CPie
+   \brief       Returns the name of the job controller to be used by GC3Pie
    \return      The controller name with a unique HRM id 
   */
-  public function getG3CPieControllerName() {
-    return "g3c_" . $this->id() . ".cfg";
+  public function getGC3PieControllerName() {
+    return "gc3_" . $this->id() . ".cfg";
   }
 
   /*!
