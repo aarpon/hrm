@@ -255,7 +255,7 @@ def main():
         print("Refusing to start, clean your resource dir first!")
         wm.rm_watch(wdd.values())
         notifier.stop()
-        sys.exit(1)
+        return 2
 
     logi('Excpected job description files version: %s.' % HRM.JOBFILE_VER)
     print('HRM Queue Manager started, watching spool directory "%s", '
