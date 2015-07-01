@@ -56,7 +56,7 @@ if (isset($_POST['create'])) {
     $jobDescription->setFiles($_SESSION['fileserver']->selectedFiles(),
                               $_SESSION['autoseries']);
 
-    if ($jobDescription->addJob()) {
+    /* if ($jobDescription->addJob()) { */
       $_SESSION['jobcreated'] = True;
       $_SESSION['numberjobadded'] = count( $jobDescription->files() );
 
@@ -66,10 +66,10 @@ if (isset($_POST['create'])) {
       
       header("Location: " . "home.php");
       exit();
-    }
-    else {
-      $message = $jobDescription->message();
-    }
+    /* } */
+    /* else { */
+    /*   $message = $jobDescription->message(); */
+    /* } */
   }
   else $message = "An unknown error has occured. " .
       "Please inform the administrator";

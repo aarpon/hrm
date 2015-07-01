@@ -251,7 +251,7 @@ class Job {
     public function createGC3PieController() {
         $jobDescription = $this->description();
         $gc3Pie = new GC3PieController($jobDescription);
-        $this->controller = $gc3Pie->controller;
+        $this->controller = $gc3Pie;
     }
 
     /*!
@@ -301,10 +301,10 @@ class Job {
         } else {
             report("Job is elementary", 1);
             $this->createHuygensTemplate();
-            $result = $result && $this->writeHuTemplate();
+            $result &= $this->writeHuTemplate();
             report("Created Huygens template", 1);
             $this->createGC3PieController();
-            $result = $result && $this->writeGC3PieController();
+            $result &= $this->controller->write2Spool();
             report("Created GC3Pie controller", 1);
         }
 

@@ -1,7 +1,7 @@
 {"jobs":[
     {"id":"1", 
      "file":"Foo.h5",
-     "username":"hrmuser",
+     "username":"daniel",
      "jobType":"deconvolution",
      "status":"started",
      "server":"localhost",
