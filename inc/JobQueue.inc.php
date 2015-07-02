@@ -19,7 +19,7 @@ class JobQueue {
         $this->queueFile =  dirname(__FILE__) . "/../run/queue.json";
         
         if (!file_exists($this->queueFile)) {
-            error_log("Impossible to reach queue file.");
+            error_log("Impossible to reach the queue file.");
             return;
         }
     }
@@ -52,7 +52,9 @@ class JobQueue {
         
         $JobDescription->setJobID( implode(', ', $ids) );
         $GC3PieController = new GC3PieController( $JobDescription );
-        $result &= $GC3PieController->write2Spool();    
+        $result &= $GC3PieController->write2Spool();
+
+        report("Removing jobs " .  $JobDescription->getJobID(), 1);
         
         return $result;
     }

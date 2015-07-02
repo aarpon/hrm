@@ -346,7 +346,7 @@ class GC3PieController {
         } else {
             $result &= (fwrite($controllerHandle, $this->controller) > 0);
             fclose($controllerHandle);
-            report("Wrote gc3 controller $controllerName", 1);
+            report("Wrote gc3 controller $controllerName", 2);
         }
 
         return $result;
