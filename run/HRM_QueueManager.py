@@ -15,7 +15,7 @@ The prototype of a new GC3Pie-based Queue Manager for HRM.
 #   parsing new job files (resulting in a "dead" state right now), so
 #   exceptions on dispatching jobs need to be caught and some notification
 #   needs to be sent/printed to the user (later this should trigger an email).
-# - move processed jobfiles to cur/done
+# - move jobfiles of terminated jobs to 'done'
 # - let gc3pie decide when to dispatch a job (currently the call to run_job()
 #   is blocking and thus the whole thing is limited to single sequential job
 #   instances, even if more resources were available
@@ -24,6 +24,7 @@ The prototype of a new GC3Pie-based Queue Manager for HRM.
 import sys
 import time
 import os
+import shutil
 
 # GC3Pie imports
 try:
@@ -70,7 +71,7 @@ class EventHandler(pyinotify.ProcessEvent):
     process_IN_CREATE()
     """
 
-    def my_init(self, queues=dict()):
+    def my_init(self, queues=dict(), parsed_jobs=None):
         """Initialize the inotify event handler.
 
         Parameters
@@ -78,10 +79,13 @@ class EventHandler(pyinotify.ProcessEvent):
         queues : dict
             Containing the JobQueue objects for the different queues, using the
             corresponding 'type' keyword as identifier.
+        parsed_jobs : str
+            The path to a directory where to move parsed jobfiles.
         """
         logi("Initialized the event handler for inotify.")
         # TODO: we need to distinguish different job types and act accordingly
         self.queues = queues
+        self.parsed_jobs = parsed_jobs
 
     def process_IN_CREATE(self, event):
         """Method handling 'create' events."""
@@ -96,8 +100,15 @@ class EventHandler(pyinotify.ProcessEvent):
             # return silently
             return
         self.queues[job['type']].append(job)
+        self.move_jobfiles(event.pathname, job)
         logd("Current job queue for type '%s': %s" %
                 (job['type'], self.queues[job['type']].queue))
+
+    def move_jobfiles(self, jobfile, job):
+        """Move a parsed jobfile to the corresponding spooling subdir."""
+        target = os.path.join(self.parsed_jobs, job['uid'] + '.cfg')
+        logd("Moving jobfile '%s' to '%s'." % (jobfile, target))
+        shutil.move(jobfile, target)
 
 
 class HucoreDeconvolveApp(gc3libs.Application):
@@ -334,7 +345,8 @@ def main():
 
     wm = pyinotify.WatchManager()  # watch manager
     mask = pyinotify.IN_CREATE     # watched events
-    notifier = pyinotify.ThreadedNotifier(wm, EventHandler(queues=jobqueues))
+    notifier = pyinotify.ThreadedNotifier(wm,
+        EventHandler(queues=jobqueues, parsed_jobs=qm_spool['cur']))
     notifier.start()
     wdd = wm.add_watch(qm_spool['new'], mask, rec=False)
 
