@@ -178,8 +178,7 @@ def run_job(engine, job):
         laststate = app.execution.state
         # Wait a few seconds...
         time.sleep(1)
-    print("APP EXIT CODE: %s" % app.execution.exitcode)
-    logw("Job is now terminated.")
+    logw("Job terminated with exit code %s." % app.execution.exitcode)
     logw("The output of the application is in `%s`." %  app.output_dir)
     # ToDo #155: Check how the return status of a finished job is handled.
 
