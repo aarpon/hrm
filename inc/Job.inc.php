@@ -283,8 +283,6 @@ class Job {
         $result = True;
         $desc = $this->jobDescription;
 
-
-
         if ($desc->isCompound()) {
             $result = $result && $desc->createSubJobs();
             if ($result) {
@@ -339,181 +337,19 @@ class Job {
     }
 
 
-    /*!
-     \brief Checks whether the result image is present in the destination directory
-     \return    true if the result image could be found, false otherwise
-     \todo Refactor
-    */
-    public function checkResultImage() {
-        global $imageProcessingIsOnQueueManager;
-        global $copy_images_to_huygens_server;
-        global $huygens_user;
-        global $huygens_group;
-        global $huygens_server_image_folder;
-        global $image_destination;
-        
-        clearstatcache();
-
-        // Server name without proc number
-        $server = $this->server;
-        $s = split(" ", $server);
-        $server_hostname = $s[0];
-        
-        $desc = $this->description();
-        $user = $desc->owner();
-        
-        $fileserver = new Fileserver($user->name());
-        $path = $fileserver->destinationFolderFor($desc);
-
-        // TODO refactor JobDescription
-        $destFileName = $desc->destinationImageNameWithoutPath();
-        //$resultImage = $desc->sourceImageShortName() . "*" . "_" .
-        //$desc->id() . "*";
-
-        // If fileshare is not on the same host as Huygens
-        if (!$imageProcessingIsOnQueueManager && $copy_images_to_huygens_server) {
-            $image = $huygens_server_image_folder . $user->name() .
-                "/" . $image_destination . "/" .
-                $desc->relativeSourcePath() . $destFileName .  "*";
-            $previews = $huygens_server_image_folder;
-            $previews .= $user->name() . "/" . $image_destination . "/";
-            $previews .= $desc->relativeSourcePath() . "hrm_previews/";
-            $previews .= "*" . $desc->id() . "_hrm*";
-            // escape special characters in image path
-            $image = eregi_replace(" ", "\\ ", $image);
-            $image = str_replace(".ics",".i*s", $image);
-            $previews = eregi_replace(" ", "\\ ", $previews);
-
-            $result = exec("sudo mkdir -p " . escapeshellarg($path));
-            $result = exec("sudo mkdir -p " . escapeshellarg($path)
-                           . "/hrm_previews");
-            
-            $result = exec("(cd " . escapeshellarg($path) . 
-                    " && sudo scp " . $huygens_user . "@" . $server_hostname . 
-                    ":" . escapeshellarg($image) . " .)");
-            $result = exec("(cd " . escapeshellarg($path) .
-                    "/hrm_previews && sudo scp " . $huygens_user . "@" . 
-                    $server_hostname . ":" . escapeshellarg($previews) . " .)");
-            
-            //error_log($result);
-        }
-        
-        // TODO is checking for job id only a good idea?
-        // HuCore replaces blanks with underscores.
-        $path = str_replace(" ","_",$path);
-        $fileNameExists = $fileserver->folderContains($path, $destFileName);
-        
-        // TODO is checking for new files a relevant criterion?
-        $result = $fileNameExists/* || $newFileWritten*/;
-        if (!$result) {
-            report("Problem: no result file $destFileName in destination directory $path", 0);
-        } else { report("File $destFileName available", 2); }
-        return $result;
-    }
-
-    /*!
-     \brief Checks if the process is finished
-     \return    true if the process is finished, false otherwise
-     \todo Refactor
-    */
-    public function checkProcessFinished() {
-        global $imageProcessingIsOnQueueManager;
-        global $huygens_user;
-        global $huygens_server_image_folder;
-        global $image_source, $image_destination;
-        
-        clearstatcache();
-
-        $this->shell = newExternalProcessFor(
-            $this->server(), 
-            $this->server() . "_" . $this->id() . "_out.txt", 
-            $this->server() .  "_". $this->id(). "_error.txt");
-        $proc = $this->shell;
-
-            /* Check whether the shell is ready to accept further execution. If
-             not, the shell will be released internally, no need to release it
-             here. */
-        if (!$proc->runShell()) {
-            return False;
-        }
-
-        // Server name without proc number
-        $server = $this->server;
-        $s = split(" ", $server);
-        $server_hostname = $s[0];
-
-        $desc = $this->description();
-        $user = $desc->owner();
-        
-        $fileserver = new Fileserver($user->name());
-        $path = $fileserver->sourceFolder();
-        $dpath = $fileserver->destinationFolderFor($desc);
-
-        $finishedMarker = $desc->destinationImageName() . ".hgsb";
-        $endTimeMarker = ".EstimatedEndTime_" . $desc->id();
 
 
 
-        // If fileshare is not on the same host as Huygens.
-        if (!$imageProcessingIsOnQueueManager) {
-
-            // Old code: to be removed.
-            // $marker = $huygens_server_image_folder . $user->name() .
-            // "/" . $image_destination . "/" . $finishedMarker;
-
-            // Copy the finished marker
-            $marker = $dpath . $finishedMarker;
-            $remoteFile = exec("ssh " . $huygens_user . "@" .
-                               $server_hostname . " ls " . $marker);
-
-            // Old code: to be removed.
-            //error_log("ssh " . $huygens_user . "@" . $server_hostname . "
-            //ls " . $marker);
-            //error_log($result);
-
-            // TODO: is the queue manager a sudoer?
-            if ($remoteFile == $marker) {
-                if (!file_exists($dpath)) {
-                    $result = exec("sudo mkdir -p " . escapeshellarg($dpath));
-                }
-                exec("(cd " . $dpath . " && sudo scp " . $huygens_user . "@"
-                     . $server_hostname . ":" . $marker . " .)");
-
-                $this->filterHuygensOutput();
-            }
-        }
-
-        $result = file_exists($dpath . $finishedMarker);
-
-        if ($imageProcessingIsOnQueueManager) {
-
-            $result = !$proc->existsHuygensProcess($this->pid());
-            
-            // Notice that the job is finished if $result = true.
-            if (!$result && $proc->isHuygensProcessSleeping($this->pid())) {
-                $proc->rewakeHuygensProcess($this->pid());
-            } elseif ($result) {
-                $this->filterHuygensOutput();
-            }
-        }
-        
-        if ( !$result && file_exists($path . '/' . $endTimeMarker) ) {
-
-            // Tasks may report an estimated end time, whenever they can.
-            $estEndTime = file_get_contents($path . '/' . $endTimeMarker);
-            report("Estimated end time for ". $desc->id(). ": $estEndTime", 1);
-            $queue = new JobQueue();
-            $queue->updateEstimatedEndTime($desc->id(), $estEndTime );
-            
-            // Delete the end time file, to only look at it when the
-            // estimation is updated.
-            @unlink($path . '/' . $endTimeMarker);
-        }
-
-        return $result;
-    }
 
 
+
+
+
+
+
+
+    
+    /* ------------------ TO BE MOVED OVER TO THE PYTHON QM. ----------------- */
     /* -------- Utilities for renaming and formatting job specific files ------ */
 
     /*!
