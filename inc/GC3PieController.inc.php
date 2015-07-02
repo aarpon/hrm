@@ -10,13 +10,13 @@ class GC3PieController {
 
     /*!
      \brief $controller
-     \var   String containing relevant information for the GC3Pie job
+     \var   String containinginformation for the GC3Pie job
     */
     public $controller;
 
     /*!
      \var    $jobDescription
-     \brief  JobDescription object: unformatted microscopic & restoration data
+     \brief  JobDescription object.
     */
     private $jobDescription;
 
@@ -28,7 +28,7 @@ class GC3PieController {
 
     /*!
      \brief $hrmJobFileArray
-     \var   Array with fields for the HRM section of the controller.
+     \var   Array with fields for the HRM section.
     */
     private $hrmJobFileArray;
 
@@ -46,19 +46,25 @@ class GC3PieController {
 
     /*!
      \brief $hucoreList
-     \var   Section of the controller where to specify details about HuCore.
+     \var   Section where to specify details about HuCore.
     */
     private $hucoreList;
 
     /*!
+     \brief $idList
+     \var   Section where to specify job ids.
+    */
+    private $idList;
+
+    /*!
      \brief $inputFilesArray;
-     \var   Array with fields for the input file section of the controller.
+     \var   Array with fields for the input file section.
     */
     private $inputFilesArray;
 
     /*!
      \brief $inputFilesList 
-     \var   Input file section of the controller sorted properly for GC3Pie.
+     \var   Input file section sorted properly for GC3Pie.
     */
     private $inputFilesList;
 
@@ -68,7 +74,7 @@ class GC3PieController {
     */
     private $taskPriorityArray;
     
-        /* ------------------------ Constructor ----------------------------- */   
+        /* ------------ Constructor ----------------------- */   
     /*!
      \brief  Constructor
      \param  $jobDescription JobDescription object
@@ -79,6 +85,7 @@ class GC3PieController {
         $this->setHrmJobFileSectionList();
         $this->setHuCoreSectionList();
         $this->setInputFilesSectionList();
+        $this->setDeleteJobsSectionList();
         $this->assembleController();
     }
 
@@ -90,14 +97,18 @@ class GC3PieController {
     private function initializeSections() {
         
         $this->sectionsArray = array ( 'hrmjobfile'  ,
-                                       'hucore',   
+                                       'hucore',
+                                       'deletejobs',
                                        'inputfiles' );        
         
         $this->hrmJobFileArray = array( 'version'   =>  '4',
                                         'username'  =>  '',
                                         'useremail' =>  '',
                                         'jobtype'   =>  'hucore',
-                                        'priority'  =>  '');
+                                        'priority'  =>  '',
+                                        'timestamp' =>  '');
+
+        $this->deleteJobsArray = array( 'ids'       =>  '');
 
         $this->hucoreArray = array( 'executable'    =>   '',
                                     'template'      =>   '');
@@ -107,8 +118,8 @@ class GC3PieController {
         /* Priorities stated in 'nice' units. */
         $this->tasksPriorityArray = array( 'decon'        =>   '20',
                                            'snr'          =>   '15',
-                                           'previewGen'   =>   '5',
-                                           'deleteJob'    =>   '1');
+                                           'previewgen'   =>   '5',
+                                           'deletejobs'   =>   '1');
     }
 
     /*!
@@ -116,36 +127,65 @@ class GC3PieController {
     */
     private function setHrmJobFileSectionList() {
         $this->hrmJobFileList = "";
-
+        
         $user = $this->jobDescription->owner();
-
+        
         foreach ($this->hrmJobFileArray as $key => $value) {
-	    $this->hrmJobFileList .= $key;
+            $this->hrmJobFileList .= $key;
             switch ( $key ) {
-                case "version":
-                    $this->hrmJobFileList .= " = " . $value;
-                    break;
-                case "username":
-                    $this->hrmJobFileList .= " = ";
-                    $this->hrmJobFileList .= $user->name();
-                    break;
-                case "useremail":
-                    $this->hrmJobFileList .= " = ";
-                    $this->hrmJobFileList .= $user->emailAddress();
-                    break;
-                case "jobtype":
-                    $this->hrmJobFileList .= " = " .  $value;
-                    break;
-                case "priority":
-                    $this->hrmJobFileList .= " = " . $this->getTaskPriority();
-                    break;
-                default:
-                    error_log("Unimplemented HRM job file section field: $key");
+            case "version":
+                $this->hrmJobFileList .= " = " . $value;
+                break;
+            case "username":
+                $this->hrmJobFileList .= " = ";
+                $this->hrmJobFileList .= $user->name();
+                break;
+            case "useremail":
+                $this->hrmJobFileList .= " = ";
+                $this->hrmJobFileList .= $user->emailAddress();
+                break;
+            case "jobtype":
+                $this->hrmJobFileList .= " = " .  $this->jobDescription->getTaskType();
+                break;
+            case "priority":
+                $this->hrmJobFileList .= " = " . $this->getTaskPriority();
+                break;
+            case "id":
+                $this->hrmJobFileList .=  " = " . $this->jobDescription->getJobID();
+                break;
+            case "timestamp":
+                $this->hrmJobFileList .= " = " . microtime(true);
+                break;
+            default:
+                error_log("Unimplemented HRM job file section field: $key");
             }
             $this->hrmJobFileList .= "\n";
         }
     }
 
+    /*!
+     \brief  Sets the ID  section field.
+    */
+    private function setDeleteJobsSectionList() {
+        if ($this->jobDescription->getTaskType() != "deletejobs") {
+            return;
+        }
+        
+        $this->idList = "";
+        foreach ($this->deleteJobsArray as $key => $value) {
+            $this->idList .=  $key;
+            
+            switch($key) {
+            case "ids":
+                $this->idList .= " = " . $this->jobDescription->getJobID();
+                break;
+            default:
+                error_log();
+            }
+            $this->deleteJobsList .= "\n";
+        }
+    }
+    
     /*!
     \brief   Returns the priority of a task.
     \return  The task priority
@@ -158,8 +198,8 @@ class GC3PieController {
             switch( $key ) {
                 case "decon":
                 case "snr":
-                case "previewGen":
-                case "deleteJob":
+                case "previewgen":
+                case "deletejobs":
                 if ($key == $taskType) {
                         $priority = $value;
                 }
@@ -182,6 +222,10 @@ class GC3PieController {
     */
     private function setHuCoreSectionList() {
         global $local_huygens_core;
+
+        if ($this->jobDescription->getTaskType() == "deletejobs") {
+            return;
+        }
 
         $this->hucoreList = "";
         $templatePath = $this->jobDescription->sourceFolder();
@@ -212,6 +256,11 @@ class GC3PieController {
      \brief  Sets the input file section field.
     */
     private function setInputFilesSectionList() {
+
+        if ($this->jobDescription->getTaskType() == "deletejobs") {
+            return;
+        }
+        
         $numberedFiles = "";
 
         $fileCnt = 0;
@@ -241,27 +290,29 @@ class GC3PieController {
         $this->controller = "";
         
         foreach ($this->sectionsArray as $section) {
+            $this->controller .= "[" . $section . "]" . "\n";
+            
             switch ($section) {
-                case "hrmjobfile":
-                    $this->controller .= "[" . $section . "]" . "\n";
-                    $this->controller .= $this->hrmJobFileList;
-                    break;
-                case "hucore":
-                    $this->controller .= "[" . $section . "]" . "\n";
-                    $this->controller .= $this->hucoreList;
-                    break;
-                case "inputfiles":
-                    $this->controller .= "[" . $section . "]" . "\n";
-                    $this->controller .= $this->inputFilesList;
-                    break;
-                default:
-                    error_log("Unimplemented controller section: $section");
+            case "hrmjobfile":
+                $this->controller .= $this->hrmJobFileList;
+                break;
+            case "hucore":
+                $this->controller .= $this->hucoreList;
+                break;
+            case "deletejobs":
+                $this->controller .= $this->idList;
+                break;
+            case "inputfiles":
+                $this->controller .= $this->inputFilesList;
+                break;
+            default:
+                error_log("Unimplemented controller section: $section");
             }
-	    $this->controller .= "\n";
+            $this->controller .= "\n";
         }
     }
-
-
+    
+    
     /*!
       \brief	Writes the GC3Pie controller to the GC3Pie spool folder
       \return	true if the controller could be written, false otherwise
