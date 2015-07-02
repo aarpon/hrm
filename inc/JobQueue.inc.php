@@ -5,9 +5,16 @@
 
 class JobQueue {
 
+    /*! 
+      \var    $queueFile
+      \brief  A file where GC3Pie dumps the job queue.
+    */
     public $queueFile;
     
-    
+
+    /*!
+      \brief   Constructor.
+    */
     public function __construct() {
         $this->queueFile =  dirname(__FILE__) . "/../run/queue.json";
         
@@ -17,7 +24,11 @@ class JobQueue {
         }
     }
 
-    
+
+    /*!
+      \brief    A function to get queue contents in a convenient format. 
+      \return   The queue as an key-value list.
+    */
     public function getContents( ) {
         $contents = file_get_contents($this->queueFile);
         $contentArr = json_decode($contents, true);
