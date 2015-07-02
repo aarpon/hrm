@@ -104,7 +104,7 @@ class GC3PieController {
         $this->hrmJobFileArray = array( 'version'   =>  '4',
                                         'username'  =>  '',
                                         'useremail' =>  '',
-                                        'jobtype'   =>  'hucore',
+                                        'jobtype'   =>  '',
                                         'priority'  =>  '',
                                         'timestamp' =>  '');
 
@@ -116,7 +116,7 @@ class GC3PieController {
         $this->inputFilesArray = array( 'file'      =>   '');
 
         /* Priorities stated in 'nice' units. */
-        $this->tasksPriorityArray = array( 'decon'        =>   '20',
+        $this->tasksPriorityArray = array( 'hucore'       =>   '20',
                                            'snr'          =>   '15',
                                            'previewgen'   =>   '5',
                                            'deletejobs'   =>   '1');
@@ -199,6 +199,7 @@ class GC3PieController {
                 case "decon":
                 case "snr":
                 case "previewgen":
+                case "hucore":
                 case "deletejobs":
                 if ($key == $taskType) {
                         $priority = $value;
@@ -290,6 +291,19 @@ class GC3PieController {
         $this->controller = "";
         
         foreach ($this->sectionsArray as $section) {
+
+            if ($this->jobDescription->getTaskType()  == "deletejobs")  {
+                if ($section  == "hucore" || $section == "inputfiles") {
+                    continue;
+                }
+            }
+
+            if ($this->jobDescription->getTaskType() !=  "deletejobs") {
+                if ($section  == "deletejobs") {
+                    continue;
+                }
+            }
+            
             $this->controller .= "[" . $section . "]" . "\n";
             
             switch ($section) {
