@@ -248,11 +248,6 @@ def main():
     jobqueues = dict()
     jobqueues['hucore'] = HRM.JobQueue()
 
-    wm = pyinotify.WatchManager() # Watch Manager
-    mask = pyinotify.IN_CREATE # watched events
-    notifier = pyinotify.ThreadedNotifier(wm, EventHandler(queues=jobqueues))
-    notifier.start()
-    wdd = wm.add_watch(args.spooldir, mask, rec=False)
 
     # If create_engine() is called without arguments, it will use the default
     # config file in ~/.gc3/gc3pie.conf (see the gc3libs API for details).
@@ -268,9 +263,13 @@ def main():
 
     if not resource_dirs_clean(engine):
         print("Refusing to start, clean your resource dir first!")
-        wm.rm_watch(wdd.values())
-        notifier.stop()
         return 2
+
+    wm = pyinotify.WatchManager() # Watch Manager
+    mask = pyinotify.IN_CREATE # watched events
+    notifier = pyinotify.ThreadedNotifier(wm, EventHandler(queues=jobqueues))
+    notifier.start()
+    wdd = wm.add_watch(args.spooldir, mask, rec=False)
 
     logi('Excpected job description files version: %s.' % HRM.JOBFILE_VER)
     print('HRM Queue Manager started, watching spool directory "%s", '
