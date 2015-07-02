@@ -88,8 +88,8 @@ class EventHandler(pyinotify.ProcessEvent):
         logw("Found new jobfile '%s', processing..." % event.pathname)
         try:
             job = HRM.JobDescription(event.pathname, 'file', loglevel)
-            logi("Dict assembled from the processed job file:")
-            logi(pprint.pformat(job))
+            logd("Dict assembled from the processed job file:")
+            logd(pprint.pformat(job))
         except IOError as err:
             logw("Error parsing job description file: %s" % err)
             # in this case there is nothing to add to the queue, so we simply
