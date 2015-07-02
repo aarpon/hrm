@@ -141,8 +141,8 @@ class GC3PieController {
     /* ----------------------------- Utils ------------------------------ */
 
     /*!
-      \brief
-      \return
+      \brief    Assigns a queue type to a task type (decon, previewgen, etc).
+      \return   The queue type.
     */
     private function taskType2queueType() {
         $taskType = $this->jobDescription->getTaskType();
@@ -164,8 +164,8 @@ class GC3PieController {
     }
 
     /*!
-      \brief
-      \return
+      \brief   Assigns a job type to a task type (decon, previewgen, etc).
+      \return  The job type.
     */
     private function taskType2JobType() {
         $taskType = $this->jobDescription->getTaskType();
