@@ -40,7 +40,7 @@ include("header.inc.php");
     <div id="navleft">
         <ul>
             <?php
-                wiki_link('HuygensRemoteManagerHelpHome');
+                wiki_link('HuygensRemoteManager');
                 include("./inc/nav/manual.inc.php");
                 include("./inc/nav/report_issue.inc.php");
                 include("./inc/nav/check_updates.inc.php");
