@@ -98,34 +98,46 @@ class GC3PieController {
     */
     private function initializeSections() {
         
-        $this->sectionsArray = array ( 'hrmjobfile'  ,
-                                       'hucore',
-                                       'deletejobs',
-                                       'inputfiles' );        
+        $this->sectionsArray = array (
+            'hrmjobfile'  ,
+            'hucore',
+            'deletejobs',
+            'inputfiles'
+        );        
         
-        $this->hrmJobFileArray = array( 'version'   =>  '6',
-                                        'username'  =>  '',
-                                        'useremail' =>  '',
-                                        'queuetype' =>  '',
-                                        'jobtype'   =>  '',
-                                        'priority'  =>  '',
-                                        'timestamp' =>  '');
+        $this->hrmJobFileArray = array (
+            'version'       =>  '6',
+            'username'      =>  '',
+            'useremail'     =>  '',
+            'queuetype'     =>  '',
+            'jobtype'       =>  '',
+            'priority'      =>  '',
+            'timestamp'     =>  ''
+        );
+        
+        $this->deleteJobsArray = array (
+            'ids'           =>  ''
+        );
 
-        $this->deleteJobsArray = array( 'ids'       =>  '');
-
-        $this->hucoreArray = array( 'executable'    =>   '',
-                                    'template'      =>   '');
-
-        $this->inputFilesArray = array( 'file'      =>   '');
-
+        $this->hucoreArray = array (
+            'executable'    =>   '',
+            'template'      =>   ''
+        );
+        
+        $this->inputFilesArray = array (
+            'file'          =>   ''
+        );
+        
         /* Priorities stated in 'nice' units. */
-        $this->tasksPriorityArray = array( 'decon'        =>   '20',
-                                           'snr'          =>   '15',
-                                           'previewgen'   =>   '5',
-                                           'deletejobs'   =>   '1');
+        $this->tasksPriorityArray = array (
+            'decon'        =>   '20',
+            'snr'          =>   '15',
+            'previewgen'   =>   '5',
+            'deletejobs'   =>   '1'
+        );
     }
-
-
+    
+    
     /* ----------------------------- Utils ------------------------------ */
 
     /*!
