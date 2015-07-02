@@ -25,21 +25,23 @@ class JobQueue {
     }
 
 
-    public function markJobsAsRemoved($ids, $owner) {
+    /*!
+      \brief       Issues a remove operation via GC3 controller files.
+      \params      $ids   IDS of jobs to remove from the queue.
+      \params      $owner User who ownes the jobs.
+      \return      Boolean: true upon success, false otherwise.
+    */
+    public function removeJobs($ids, $owner) {
         $result = True;
-
+        if (count($ids) == 0) return $result;
+        
         $JobDescription = new JobDescription();
         $JobDescription->setOwner( $owner );
-        $JobDescription->setTaskType( "deletejobs" );
+        $JobDescription->setTaskType( "deletejobs" );        
         
-        foreach ($ids as $id) {
-            $JobDescription->setJobID( $id );
-            $GC3PieController = new GC3PieController( $JobDescription );
-            $result &= $GC3PieController->write2Spool();    
-        }
-        
-
-        if (count($ids)==0) return $result;
+        $JobDescription->setJobID( implode(', ', $ids) );
+        $GC3PieController = new GC3PieController( $JobDescription );
+        $result &= $GC3PieController->write2Spool();    
         
         return $result;
     }

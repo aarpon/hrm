@@ -25,7 +25,7 @@ if (isset($_SERVER['HTTP_REFERER']) &&
 
 if (isset($_POST['delete'])) {
   if (isset($_POST['jobs_to_kill'])) {
-    $queue->markJobsAsRemoved($_POST['jobs_to_kill'],
+    $queue->removeJobs($_POST['jobs_to_kill'],
         $_SESSION['user']);
   }
 }
