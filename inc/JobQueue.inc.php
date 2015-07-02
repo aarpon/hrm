@@ -27,16 +27,14 @@ class JobQueue {
 
     public function markJobsAsRemoved($ids, $owner) {
         $result = True;
-        
+
         $JobDescription = new JobDescription();
         $JobDescription->setOwner( $owner );
-        $JobDescription->setTaskType( "deleteJob" );
-
-        $GC3PieController = new GC3PieController( $JobDescription );
+        $JobDescription->setTaskType( "deletejobs" );
         
         foreach ($ids as $id) {
             $JobDescription->setJobID( $id );
-
+            $GC3PieController = new GC3PieController( $JobDescription );
             $result &= $GC3PieController->write2Spool();    
         }
         
