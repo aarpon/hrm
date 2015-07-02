@@ -50,6 +50,8 @@ gc3libs.configure_logger(loglevel, "qmgc3")
 logw = gc3libs.log.warn
 logi = gc3libs.log.info
 logd = gc3libs.log.debug
+loge = gc3libs.log.error
+logc = gc3libs.log.critical
 
 
 # this is read from the gc3pie config file for now, see below!
