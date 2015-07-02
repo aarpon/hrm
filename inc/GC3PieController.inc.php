@@ -334,22 +334,24 @@ class GC3PieController {
       \return	true if the controller could be written, false otherwise
     */
     public function write2Spool() {
-        $result = True;
 
         $controllerPath = dirname(__FILE__) . "/../run/spool/new";
         $controllerName = tempnam($controllerPath, "gc3_");
+        if (!chmod($controllerName, 0664)) {  /*Due to  'tempnam'. */
+            return False;
+        }
+        
         $controllerHandle = fopen($controllerName, "w");
-
         if (!$controllerHandle ) {
             report ("Impossible to open file $controllerName", 0);
             report ("Waiting 15 seconds...", 1);
             sleep(15);
             return False;
-        } else {
-            $result &= (fwrite($controllerHandle, $this->controller) > 0);
-            fclose($controllerHandle);
-            report("Wrote gc3 controller $controllerName", 2);
         }
+        
+        $result = (fwrite($controllerHandle, $this->controller) > 0);
+        fclose($controllerHandle);
+        report("Wrote gc3 controller $controllerName", 2);        
 
         return $result;
     }
