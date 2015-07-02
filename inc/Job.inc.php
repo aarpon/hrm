@@ -159,27 +159,27 @@ class Job {
      \brief	    Writes the template to the user's source folder
      \return	true if the template could be written, false otherwise
     */
-    public function writeHuTemplate() {
-        $result = True;
+    private function writeHuTemplate() {
         $jobDescription = $this->description();
+        
         $user = $jobDescription->owner();
         $username = $user->name();
         $fileserver = new Fileserver($username);
+        
         $templateName = $this->huTemplateName();
         $templatePath = $fileserver->sourceFolder();
         $templateFile = $templatePath . "/" . $templateName;
-        $file = fopen($templateFile, "w");
-        if (! $file ) {
+        $templateHandler = fopen($templateFile, "w");
+        
+        if ( !$templateHandler ) {
             report ("Error opening file $templateFile, verify permissions!", 0);
             report ("Waiting 15 seconds...", 1);
             sleep(15);
-            return False;
         } else {
-            $result = $result && (fwrite($file, $this->huTemplate) > 0);
-            fclose($file);
+            fwrite($templateHandler, $this->huTemplate);
+            fclose($templateHandler);
             report("Wrote template $templateFile", 1);
         }
-        return $result;
     }
 }
 
