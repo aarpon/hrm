@@ -35,6 +35,8 @@ except ImportError:
     print("\n$ source /path/to/your/gc3pie_installation/bin/activate\n")
     sys.exit(1)
 
+from gc3libs.config import Configuration
+
 import pyinotify
 import argparse
 import pprint
@@ -50,8 +52,8 @@ logi = gc3libs.log.info
 logd = gc3libs.log.debug
 
 
-# TODO: this has to be set+read in a config file eventually:
-GC3_SPOOLDIR = '/scratch/hrm_data'
+# this is read from the gc3pie config file for now, see below!
+GC3_SPOOLDIR = ''
 
 
 class EventHandler(pyinotify.ProcessEvent):
@@ -236,6 +238,7 @@ def parse_arguments():
 
 def main():
     """Main loop of the HRM Queue Manager."""
+    global GC3_SPOOLDIR
     args = parse_arguments()
 
     if not os.path.exists(args.spooldir):
@@ -248,15 +251,21 @@ def main():
     jobqueues = dict()
     jobqueues['hucore'] = HRM.JobQueue()
 
-
     # If create_engine() is called without arguments, it will use the default
     # config file in ~/.gc3/gc3pie.conf (see the gc3libs API for details).
+    gc3conffile = '~/.gc3/gc3pie.conf'
     if args.config:
-        logi('Creating GC3Pie engine using config file "%s".' % args.config)
-        engine = gc3libs.create_engine(args.config)
-    else:
-        logi('Creating GC3Pie engine with the default config file.')
-        engine = gc3libs.create_engine()
+        gc3conffile = args.config
+
+    conf = Configuration(gc3conffile)
+    try:
+        GC3_SPOOLDIR = conf.resources['localhost'].spooldir
+    except AttributeError:
+        raise AttributeError("Unable to parse spooldir for resource "
+            "'localhost' from gc3pie config file!")
+
+    logi('Creating GC3Pie engine using config file "%s".' % gc3conffile)
+    engine = gc3libs.create_engine(gc3conffile)
     # select a specific resource if requested on the cmdline:
     if args.resource:
         engine.select_resource(args.resource)
