@@ -23,7 +23,7 @@
     },
     {"id":"3", 
      "file":"Foo.h5",
-     "username":"hrmuser",
+     "username":"daniel",
      "jobType":"preview generation",
      "status":"queued",
      "server":"localhost",
