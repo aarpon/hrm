@@ -76,6 +76,8 @@ class JobDescription(dict):
         debug("Parsing jobfile '%s'..." % fname)
         if not os.path.exists(fname):
             raise IOError("Can't find file '%s'!" % fname)
+        if not os.access(fname, os.R_OK):
+            raise IOError("Can't read file '%s', permission problem!" % fname)
         # sometimes the inotify event gets processed very rapidly and we're
         # trying to parse the file *BEFORE* it has been written to disk
         # entirely, which breaks the parsing, so we introduce four additional
