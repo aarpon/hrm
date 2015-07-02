@@ -180,7 +180,10 @@ def run_job(engine, job):
         time.sleep(1)
     logw("Job terminated with exit code %s." % app.execution.exitcode)
     logw("The output of the application is in `%s`." %  app.output_dir)
-    # ToDo #155: Check how the return status of a finished job is handled.
+    # EXIT CODES:
+    # 0: all went well
+    # 143: hucore.bin received the HUP signal (9)
+    # 165: the .hgsb file could not be parsed (file missing or with errors)
 
 
 def resource_dirs_clean(engine):
