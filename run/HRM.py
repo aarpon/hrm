@@ -25,7 +25,7 @@ __all__ = ['JobDescription', 'JobQueue']
 
 
 # expected version for job description files:
-JOBFILE_VER = '4'
+JOBFILE_VER = '5'
 
 
 class JobDescription(dict):
@@ -112,20 +112,32 @@ class JobDescription(dict):
         # parse generic information, version, user etc.
         if not self.jobparser.has_section('hrmjobfile'):
             raise ValueError("Error parsing job from %s." % self.name)
+        # version
         try:
             self['ver'] = self.jobparser.get('hrmjobfile', 'version')
         except ConfigParser.NoOptionError:
             raise ValueError("Can't find version in %s." % self.name)
         if not (self['ver'] == JOBFILE_VER):
             raise ValueError("Unexpected version in %s." % self['ver'])
+        # username
         try:
             self['user'] = self.jobparser.get('hrmjobfile', 'username')
         except ConfigParser.NoOptionError:
             raise ValueError("Can't find username in %s." % self.name)
+        # useremail
         try:
             self['email'] = self.jobparser.get('hrmjobfile', 'useremail')
         except ConfigParser.NoOptionError:
             raise ValueError("Can't find email address in %s." % self.name)
+        # timestamp
+        try:
+            self['timestamp'] = self.jobparser.get('hrmjobfile', 'timestamp')
+            # the keyword "on_parsing" requires us to fill in the value:
+            if self['timestamp'] == 'on_parsing':
+                self['timestamp'] = time.time()
+        except ConfigParser.NoOptionError:
+            raise ValueError("Can't find timestamp in %s." % self.name)
+        # type
         try:
             self['type'] = self.jobparser.get('hrmjobfile', 'jobtype')
         except ConfigParser.NoOptionError:
