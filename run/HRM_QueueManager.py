@@ -79,7 +79,6 @@ class EventHandler(pyinotify.ProcessEvent):
         """
         logi("Initialized the event handler for inotify.")
         # TODO: we need to distinguish different job types and act accordingly
-        # FIXME: does it work setting an instance variable like this?!
         self.queues = queues
 
     def process_IN_CREATE(self, event):
