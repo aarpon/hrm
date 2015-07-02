@@ -236,6 +236,22 @@ def parse_arguments():
         argparser.error(str(err))
 
 
+def job_spooler(engine, jobqueues):
+    """Spooler function dispatching jobs from the queues."""
+    # FIXME: Ctrl-C while a job is running leaves it alone (and thus as well
+    # the files transferred for / generated from processing)
+    while True:
+        try:
+            nextjob = jobqueues['hucore'].pop()
+            if nextjob is not None:
+                logd("Current joblist: %s" % jobqueues['hucore'].queue)
+                logd("Dispatching next job.")
+                run_job(engine, nextjob)
+            time.sleep(1)
+        except KeyboardInterrupt:
+            break
+
+
 def main():
     """Main loop of the HRM Queue Manager."""
     global GC3_SPOOLDIR
@@ -280,28 +296,20 @@ def main():
     notifier.start()
     wdd = wm.add_watch(args.spooldir, mask, rec=False)
 
-    logi('Excpected job description files version: %s.' % HRM.JOBFILE_VER)
     print('HRM Queue Manager started, watching spool directory "%s", '
           'press Ctrl-C to abort.' % args.spooldir)
-    # FIXME: Ctrl-C while a job is running leaves it alone (and thus as well
-    # the files transferred for / generated from processing)
-    while True:
-        try:
-            nextjob = jobqueues['hucore'].pop()
-            if nextjob is not None:
-                logd("Current joblist: %s" % jobqueues['hucore'].queue)
-                logd("Dispatching next job.")
-                run_job(engine, nextjob)
-            time.sleep(1)
-        except KeyboardInterrupt:
-            break
+    logi('Excpected job description files version: %s.' % HRM.JOBFILE_VER)
 
-    print('Cleaning up. Remaining jobs:')
-    # TODO: before exiting with a non-empty queue, it should be serialized and
-    # stored in a file (e.g. using the "pickle" module)
-    print(jobqueues['hucore'].queue)
-    wm.rm_watch(wdd.values())
-    notifier.stop()
+    try:
+        # NOTE: job_spooler() is blocking, as it contains the main loop!
+        job_spooler(engine, jobqueues)
+    finally:
+        print('Cleaning up. Remaining jobs:')
+        # TODO: before exiting with a non-empty queue, it should be serialized
+        # and stored in a file (e.g. using the "pickle" module)
+        print(jobqueues['hucore'].queue)
+        wm.rm_watch(wdd.values())
+        notifier.stop()
 
 if __name__ == "__main__":
     sys.exit(main())
