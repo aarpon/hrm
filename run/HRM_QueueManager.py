@@ -291,8 +291,8 @@ def main():
         print("Refusing to start, clean your resource dir first!")
         return 2
 
-    wm = pyinotify.WatchManager() # Watch Manager
-    mask = pyinotify.IN_CREATE # watched events
+    wm = pyinotify.WatchManager()  # watch manager
+    mask = pyinotify.IN_CREATE     # watched events
     notifier = pyinotify.ThreadedNotifier(wm, EventHandler(queues=jobqueues))
     notifier.start()
     wdd = wm.add_watch(args.spooldir, mask, rec=False)
