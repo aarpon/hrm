@@ -101,7 +101,7 @@ class GC3PieController {
                                        'deletejobs',
                                        'inputfiles' );        
         
-        $this->hrmJobFileArray = array( 'version'   =>  '4',
+        $this->hrmJobFileArray = array( 'version'   =>  '5',
                                         'username'  =>  '',
                                         'useremail' =>  '',
                                         'jobtype'   =>  '',
