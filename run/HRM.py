@@ -16,6 +16,7 @@ JobQueue()
 import ConfigParser
 import pprint
 import time
+import os
 from collections import deque
 from hashlib import sha1
 
@@ -73,6 +74,8 @@ class JobDescription(dict):
     def _parse_jobfile(self, fname):
         """Initialize ConfigParser for a file and run parsing method."""
         debug("Parsing jobfile '%s'..." % fname)
+        if not os.path.exists(fname):
+            raise IOError("Can't find file '%s'!" % fname)
         # sometimes the inotify event gets processed very rapidly and we're
         # trying to parse the file *BEFORE* it has been written to disk
         # entirely, which breaks the parsing, so we introduce four additional
