@@ -34,7 +34,7 @@ class Job {
     private $jobDescription;
 
 
-    /* ------------------------------------------------------------------------ */
+    /* ---------------------------- Public methods --------------------------- */
     
     /*!
      \brief Constructor
@@ -44,6 +44,23 @@ class Job {
         $this->initialize($jobDescription);
     }
 
+    /*!
+      \brief  Splits the job into smaller parts when possible.
+      \brief  If the job cannot be split further, it submits it to the queue.
+    */
+    public function process () {
+        $jobDescription = $this->description();
+        
+        if ($jobDescription->isCompound()) {
+            $this->createSubJobs();
+        } else {
+            $this->createJobControllers();
+        }
+    }
+
+    /* ------------------------------------------------------------------------ */
+
+    
     /*!
      \brief       Sets general class properties to initial values
      \param       $jobDescription A jobDescription object
@@ -57,7 +74,7 @@ class Job {
      \brief     Returns the JobDescription associated with the Job
      \return    JobDescription object
     */
-    public function description() {
+    private function description() {
         return $this->jobDescription;
     }
     
@@ -65,7 +82,7 @@ class Job {
      \brief	Returns the Huygens template name (it contains the unique id)
      \return	the template name
     */
-    public function huTemplateName() {
+    private function huTemplateName() {
         $jobDescription = $this->description();
         return $jobDescription->getHuTemplateName();
     }
@@ -74,7 +91,7 @@ class Job {
      \brief	Returns the GC3Pie controller name containing the unique job id
      \return	the sript name
     */
-    public function gc3ControllerName() {
+    private function gc3ControllerName() {
         $jobDescription = $this->description();
         return $jobDescription->getGC3PieControllerName();
     }
@@ -83,14 +100,14 @@ class Job {
      \brief	Returns the Huygens template generated for the Job
      \return	huTemplate
     */
-    public function getHuTemplate() {
+    private function getHuTemplate() {
         return $this->huTemplate;
     }
     
     /*!
      \brief	Creates a Huygens Template
     */
-    public function createHuygensTemplate() {   
+    private function createHuygensTemplate() {   
         $jobDescription = $this->description();
         $huTemplate = new HuygensTemplate($jobDescription);
         $this->huTemplate = $huTemplate->template;
@@ -99,7 +116,7 @@ class Job {
     /*!
      \brief     Creates a job controller for GC3Pie
     */
-    public function createGC3PieController() {
+    private function createGC3PieController() {
         $jobDescription = $this->description();
         $gc3Pie = new GC3PieController($jobDescription);
         $this->controller = $gc3Pie;
@@ -108,7 +125,7 @@ class Job {
     /*!
       \brief   Submits the job to the queue by creating the file controllers.
     */
-    public function createJobControllers() {
+    private function createJobControllers() {
         report("Job is elementary", 1);
         
         $this->createHuygensTemplate();
@@ -125,7 +142,7 @@ class Job {
     /*!
       \brief   Splits  the job into smaller parts.
     */
-    public function createSubJobs( ) {
+    private function createSubJobs( ) {
         $jobDescription = $this->description();
         
         if ($jobDescription->createSubJobs()) {
@@ -138,20 +155,6 @@ class Job {
                 
                 report("removed compound job\n", 1);
             }
-        }
-    }
-    
-    /*!
-      \brief  Splits the job into smaller parts when possible.
-      \brief  If the job cannot be split further, it submits it to the queue.
-    */
-    public function process () {
-        $jobDescription = $this->description();
-        
-        if ($jobDescription->isCompound()) {
-            $this->createSubJobs();
-        } else {
-            $this->createJobControllers();
         }
     }
         
