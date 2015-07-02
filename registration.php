@@ -29,54 +29,54 @@ $message = "";
  *
  */
 
-  // Here we store the cleaned variables
-  $clean = array(
+// Here we store the cleaned variables
+$clean = array(
     "username" => "",
-    "email"    => '',
-    "group"    => "",
-    "pass1"    => "",
-    "pass2"    => "",
-    "note"     => "" );
+    "email" => '',
+    "group" => "",
+    "pass1" => "",
+    "pass2" => "",
+    "note" => "");
 
-  // Username
-  if ( isset( $_POST["username"] ) ) {
-    if ( Validator::isUsernameValid( $_POST["username"] ) ) {
-      $clean["username"] = $_POST["username"];
+// Username
+if (isset($_POST["username"])) {
+    if (Validator::isUsernameValid($_POST["username"])) {
+        $clean["username"] = $_POST["username"];
     }
-  }
+}
 
-  // Email
-  if ( isset( $_POST["email"] ) ) {
-    if ( Validator::isEmailValid( $_POST["email"] ) ) {
-      $clean["email"] = $_POST["email"];
+// Email
+if (isset($_POST["email"])) {
+    if (Validator::isEmailValid($_POST["email"])) {
+        $clean["email"] = $_POST["email"];
     }
-  }
+}
 
-  // Group name
-  if ( isset( $_POST["group"] ) ) {
-    if ( Validator::isGroupNameValid( $_POST["group"] ) ) {
-      $clean["group"] = $_POST["group"];
+// Group name
+if (isset($_POST["group"])) {
+    if (Validator::isGroupNameValid($_POST["group"])) {
+        $clean["group"] = $_POST["group"];
     }
-  }
+}
 
-  // Passwords
-  if ( isset( $_POST["pass1"] ) ) {
-    if ( Validator::isPasswordValid( $_POST["pass1"] ) ) {
-      $clean["pass1"] = $_POST["pass1"];
+// Passwords
+if (isset($_POST["pass1"])) {
+    if (Validator::isPasswordValid($_POST["pass1"])) {
+        $clean["pass1"] = $_POST["pass1"];
     }
-  }
-  if ( isset( $_POST["pass2"] ) ) {
-    if ( Validator::isPasswordValid( $_POST["pass2"] ) ) {
-      $clean["pass2"] = $_POST["pass2"];
+}
+if (isset($_POST["pass2"])) {
+    if (Validator::isPasswordValid($_POST["pass2"])) {
+        $clean["pass2"] = $_POST["pass2"];
     }
-  }
+}
 
-  // Note
-  if ( isset( $_POST["note"] ) ) {
-    if ( Validator::isNoteValid( $_POST["note"] ) ) {
-      $clean["note"] = $_POST["note"];
+// Note
+if (isset($_POST["note"])) {
+    if (Validator::isNoteValid($_POST["note"])) {
+        $clean["note"] = $_POST["note"];
     }
-  }
+}
 
 /*
  *
@@ -86,61 +86,62 @@ $message = "";
 
 if (isset($_POST["OK"])) {
 
-  // Check whether all fields have been correctly filled and whether the user
-  // already exists
-  if ( $clean["username"] != "" ) {
-    if ( $clean["email"] != "") {
-      if ( $clean["group"] != "") {
-        if ($clean["pass1"] != "" && $clean["pass2"] != "" ) {
-          if ( $clean["pass1"] == $clean["pass2"] ) {
+    // Check whether all fields have been correctly filled and whether the user
+    // already exists
+    if ($clean["username"] != "") {
+        if ($clean["email"] != "") {
+            if ($clean["group"] != "") {
+                if ($clean["pass1"] != "" && $clean["pass2"] != "") {
+                    if ($clean["pass1"] == $clean["pass2"]) {
 
-            // Store the new user into the database
-            $db = new DatabaseConnection();
-            if ( $db->emailAddress( $clean["username"] ) == "" ) {
-              $id = get_rand_id(10);
-              $result = $db->addNewUser( $clean["username"],
-                  $clean["pass1"], $clean["email"], $clean["group"], $id );
+                        // Store the new user into the database
+                        $db = new DatabaseConnection();
+                        if ($db->isReachable()) {
+                            if ($db->emailAddress($clean["username"]) == "") {
+                                $id = get_rand_id(10);
+                                $result = $db->addNewUser($clean["username"],
+                                    $clean["pass1"], $clean["email"], $clean["group"], $id);
 
-              // TODO refactor
-              if ($result) {
-                $text = "New user registration:\n\n";
-                $text .= "\t       Username: " . $clean["username"] ."\n";
-                $text .= "\t E-mail address: " . $clean["email"] ."\n";
-                $text .= "\t          Group: " . $clean["group"] . "\n";
-                $text .= "\tRequest message: " . $clean["note"] ."\n\n";
-                $text .= "Accept or reject this user here (login required)\n";
-                $text .= $hrm_url."/user_management.php?seed=" . $id;
-                $mail = new Mail($email_sender);
-                $mail->setReceiver($email_admin);
-                $mail->setSubject("New HRM user registration");
-                $mail->setMessage($text);
-                if ( $mail->send() ) {
-                  $notice = "Application successfully sent!\n" .
-                    "Your application will be processed by the " .
-                    "administrator and you will receive a confirmation " .
-                    "by e-mail.";
-                } else {
-                  $notice = "Your application was successfully stored, " .
-                    "but there was an error e-mailing the administrator! " .
-                    "Please contact the administrator yourself!";
-                }
-                $processed = True;
-              }
-                else $message = "Database error, please inform the person " .
-                    "in charge";
-              }
-              else $message = "This user name is already in use. Please " .
-                  "enter another one";
-            }
-            else $message = "Passwords do not match";
-          }
-          else $message = "Please fill in both password fields";
-        }
-        else $message = "Please fill in the group field";
-      }
-      else $message = "Please fill in the email field with a valid address";
-    }
-    else $message = "Please fill in the name field";
+                                // TODO refactor
+                                if ($result) {
+                                    $text = "New user registration:\n\n";
+                                    $text .= "\t       Username: " . $clean["username"] . "\n";
+                                    $text .= "\t E-mail address: " . $clean["email"] . "\n";
+                                    $text .= "\t          Group: " . $clean["group"] . "\n";
+                                    $text .= "\tRequest message: " . $clean["note"] . "\n\n";
+                                    $text .= "Accept or reject this user here (login required)\n";
+                                    $text .= $hrm_url . "/user_management.php?seed=" . $id;
+                                    $mail = new Mail($email_sender);
+                                    $mail->setReceiver($email_admin);
+                                    $mail->setSubject("New HRM user registration");
+                                    $mail->setMessage($text);
+                                    if ($mail->send()) {
+                                        $notice = "Application successfully sent!\n" .
+                                            "Your application will be processed by the " .
+                                            "administrator and you will receive a confirmation " .
+                                            "by e-mail.";
+                                    } else {
+                                        $notice = "Your application was successfully stored, " .
+                                            "but there was an error e-mailing the administrator! " .
+                                            "Please <a href=\"mailto:" . str_replace("@", "[at]", $email_admin) . "\">" .
+                                            "inform the person in charge</a>";
+                                    }
+                                    $processed = True;
+                                } else {
+                                    $message = "Could not add user to database.<br />" .
+                                        "Please <a href=\"mailto:" . str_replace("@", "[at]", $email_admin) . "\">" .
+                                        "inform the person in charge</a>";
+                                }
+                            } else $message = "This user name is already in use. Please " .
+                                "enter another one";
+                        } else $message = "Database error.<br />" .
+                            "Please <a href=\"mailto:" . str_replace("@", "[at]", $email_admin) . "\">" .
+                            "inform the person in charge</a>";
+                    } else $message = "Passwords do not match";
+                } else $message = "Please fill in both password fields";
+            } else $message = "Research group empty";
+        } else $message = "Error in Email field. <br />Please fill in the email field with a valid address";
+    } else $message = "Error in Name field. <br />Names should be &lt; 30 characters<br />and contain no spaces";
 }
 
 include("header.inc.php");
@@ -151,14 +152,14 @@ include("header.inc.php");
     <div id="navleft">
         <ul>
             <?php
-                wiki_link('HuygensRemoteManagerHelpRegistrationPage');
+            wiki_link('HuygensRemoteManagerHelpRegistrationPage');
             ?>
         </ul>
     </div>
     <div id="navright">
         <ul>
             <?php
-                include("./inc/nav/exit.inc.php");
+            include("./inc/nav/exit.inc.php");
             ?>
         </ul>
     </div>
@@ -166,103 +167,102 @@ include("header.inc.php");
 </div>
 
 
-    <div id="content">
+<div id="content">
 
-        <h3><img alt="Analysis" src="./images/registration_title.png" width="40"/>
-            &nbsp;&nbsp;Registration</h3>
+    <h3><img alt="Analysis" src="./images/registration_title.png" width="40"/>
+        &nbsp;&nbsp;Registration</h3>
 
-<?php
+    <?php
 
-if (!$processed) {
+    if (!$processed) {
 
-?>
+        ?>
         <form method="post" action="">
 
             <div id="adduser">
 
-              <div>
-                <label for="username">* Username: </label>
-                <input type="text" 
-                       name="username"
-                       id="username"
-                       maxlength="30"
-                       value="<?php echo $clean["username"] ?>" />
+                <div>
+                    <label for="username">* Username: </label>
+                    <input type="text"
+                           name="username"
+                           id="username"
+                           maxlength="30"
+                           value="<?php echo $clean["username"] ?>"/>
 
-              </div>
+                </div>
 
-              <div>
-                <label for="email">* E-mail address: </label>
-                <input type="text" 
-                       name="email"
-                       id="email"
-                       maxlength="80"
-                       value="<?php echo $clean["email"] ?>" />
-              </div>
-              
-              <div>
-                <label for="group">* Research group: </label>
-                <input type="text" 
-                       name="group"
-                       id="group"
-                       maxlength="30"
-                       value="<?php echo $clean["group"] ?>" />
+                <div>
+                    <label for="email">* E-mail address: </label>
+                    <input type="text"
+                           name="email"
+                           id="email"
+                           maxlength="80"
+                           value="<?php echo $clean["email"] ?>"/>
+                </div>
 
-              </div>
+                <div>
+                    <label for="group">* Research group: </label>
+                    <input type="text"
+                           name="group"
+                           id="group"
+                           maxlength="30"
+                           value="<?php echo $clean["group"] ?>"/>
 
-              <div>
-                <label for="pass1">* Password: </label>
-                <input type="password" 
-                       name="pass1"
-                       id="pass1" />
+                </div>
 
-              </div>
+                <div>
+                    <label for="pass1">* Password: </label>
+                    <input type="password"
+                           name="pass1"
+                           id="pass1"/>
 
-              <div>
-                <label for="pass2">* (verify) Password: </label>
-                <input type="password" 
-                       name="pass2"
-                       id="pass2" />
+                </div>
 
-              </div>
-              
-              <div>
-                <label for="note">Request message:</label>
-                <textarea name="note" 
+                <div>
+                    <label for="pass2">* (verify) Password: </label>
+                    <input type="password"
+                           name="pass2"
+                           id="pass2"/>
+
+                </div>
+
+                <div>
+                    <label for="note">Request message:</label>
+                <textarea name="note"
                           id="note"
                           rows="3"
                           cols="30"><?php echo $clean["note"] ?>
                 </textarea>
-              </div>
-          
-              <div>
-                <input name="OK"
-                       type="submit"
-                       value="register" />
+                </div>
 
-              </div>
-        </div>
-     </form>
-<?php
+                <div>
+                    <input name="OK"
+                           type="submit"
+                           value="register"/>
 
-}
-else {
+                </div>
+            </div>
+        </form>
+    <?php
 
-?>
+    } else {
+
+        ?>
         <div id="notice"><?php echo "<p>$notice</p>"; ?></div>
-<?php
+    <?php
 
-}
+    }
 
-?>
-    </div> <!-- content -->
+    ?>
+</div> <!-- content -->
 
-    <div id="rightpanel">
+<div id="rightpanel">
 
-<?php
+    <?php
 
-if (!$processed) {
+    if (!$processed) {
 
-?>
+        ?>
         <div id="info">
 
             <h3>Quick help</h3>
@@ -270,21 +270,21 @@ if (!$processed) {
             <p>* Required fields.</p>
 
         </div>
-<?php
+    <?php
 
-}
+    }
 
-?>
+    ?>
 
-        <div id="message">
-<?php
+    <div id="message">
+        <?php
 
-  echo "<p>$message</p>";
+        echo "<p>$message</p>";
 
-?>
-        </div>
+        ?>
+    </div>
 
-    </div>  <!-- rightpanel -->
+</div>  <!-- rightpanel -->
 
 <?php
 
