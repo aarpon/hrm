@@ -3,19 +3,16 @@
 // Copyright and license notice: see license.txt
 
 require_once ("Setting.inc.php");
-require_once ("Database.inc.php");
 require_once ("JobDescription.inc.php");
 require_once ("hrm_config.inc.php");
 require_once ("Fileserver.inc.php");
 require_once ("Shell.inc.php");
-require_once ("Mail.inc.php");
 require_once ("HuygensTemplate.inc.php");
 require_once ("GC3PieController.inc.php");
-require_once ("System.inc.php");
 
 /*!
-  \class Job
-  \brief    Stores all information for a deconvolution Job
+  \class    Job
+  \brief    Stores all information for a job.
  */
 class Job {
 
@@ -39,19 +36,19 @@ class Job {
 
     /*!        
      \var      $server
-     \brief    The server where the deconvolution job will be processed.
+     \brief    The server where the job will be processed.
     */
     private $server;
 
     /*!
      \var      $pid
-     \brief    Process identifier associated with the deconvolution job.
+     \brief    Process identifier associated with the job.
     */
     private $pid;
 
     /*!
      \var      $status
-     \brief    The processing status of the deconvolution job.
+     \brief    The processing status of the job.
     */
     private $status;
 
@@ -272,43 +269,60 @@ class Job {
         return $jobDescription->getGC3PieControllerName();
     }
 
-    /*!
-     \brief	Creates a Huygens Template for elementary jobs
-                or splits compound jobs
-     \return	for elementary jobs, returns true if the template was generated
-     successfully, or false otherwise; for compound jobs, it always
-     returns false
-    */
-    public function createSubJobsOrHuTemplate() {
-        $result = True;
-        $desc = $this->jobDescription;
 
-        if ($desc->isCompound()) {
-            $result = $result && $desc->createSubJobs();
-            if ($result) {
-                report("created sub jobs", 1);
-            }
-            if ($result) {
-                $queue = new JobQueue();
-                $result = $result && $queue->removeJob($desc);
-                if ($result)
-                    report("removed compound job\n", 1);
-                    // TODO: check if this does fix compound job processing
-                $result = False;
-            }
-        } else {
-            report("Job is elementary", 1);
-            $this->createHuygensTemplate();
-            $result &= $this->writeHuTemplate();
-            report("Created Huygens template", 1);
-            $this->createGC3PieController();
-            $result &= $this->controller->write2Spool();
-            report("Created GC3Pie controller", 1);
-        }
+    /*!
+      \brief   Submits the job to the queue by creating the file controllers.
+    */
+    public function createJobControllers() {
+        report("Job is elementary", 1);
+        
+        $this->createHuygensTemplate();
+        $this->writeHuTemplate();
+        report("Created Huygens template", 1);
+        
+        $this->createGC3PieController();
+        $this->controller->write2Spool();
+        report("Created GC3Pie controller", 1);
 
         return $result;
     }
 
+
+    /*!
+      \brief   Splits  the job into smaller parts.
+    */
+    public function createSubJobs( ) {
+        $jobDescription = $this->jobDescription;
+        
+        if ($jobDescription->createSubJobs()) {
+            report("created sub jobs", 1);
+        
+            $queue = new JobQueue();
+            if ($queue->removeJobs(
+                $jobDescription->id(),
+                $jobDescription->owner())) {
+                
+                report("removed compound job\n", 1);
+            }
+        }
+    }
+
+    
+    /*!
+      \brief  Splits the job into smaller parts when possible.
+      \brief  If the job cannot be split further, it submits it to the queue.
+    */
+    public function process () {
+        $jobDescription = $this->jobDescription;
+        
+        if ($jobDescription->isCompound()) {
+            $this->createSubJobs();
+        } else {
+            $this->createJobControllers();
+        }
+    }
+
+        
     /*!
      \brief	Writes the template to the user's source folder
      \return	true if the template could be written, false otherwise

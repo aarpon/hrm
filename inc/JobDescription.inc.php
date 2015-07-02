@@ -330,19 +330,6 @@ class JobDescription {
     return $result;
   }
 
-  /*!
-    \brief Processes compound Jobs to deliver elementary Jobs
-
-    A compound job contains multiple files.
-  */
-  public function processCompoundJobs() {
-    $queue = new JobQueue();
-    $compoundJobs = $queue->getCompoundJobs();
-    foreach ($compoundJobs as $jobDescription) {
-      $job = new Job($jobDescription);
-      $job->createSubJobsOrHuTemplate();
-    }
-  }
 
   /*!
     \brief Loads a JobDescription from the database for the user set in

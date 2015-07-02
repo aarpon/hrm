@@ -56,23 +56,17 @@ if (isset($_POST['create'])) {
     $jobDescription->setFiles($_SESSION['fileserver']->selectedFiles(),
                               $_SESSION['autoseries']);
 
-    /* if ($jobDescription->addJob()) { */
-      $_SESSION['jobcreated'] = True;
-      $_SESSION['numberjobadded'] = count( $jobDescription->files() );
-
-      $job = new Job($jobDescription);
-      $job->createHuygensTemplate();
-      $job->createSubJobsOrHuTemplate();
-      
-      header("Location: " . "home.php");
-      exit();
-    /* } */
-    /* else { */
-    /*   $message = $jobDescription->message(); */
-    /* } */
+    $_SESSION['jobcreated'] = True;
+    $_SESSION['numberjobadded'] = count( $jobDescription->files() );
+    
+    $job = new Job($jobDescription);
+    $job->process();
+    
+    header("Location: " . "home.php");
+    exit();
   }
   else $message = "An unknown error has occured. " .
-      "Please inform the administrator";
+           "Please inform the administrator";
 }
 else if (isset($_POST['OK'])) {
   header("Location: " . "select_parameter_settings.php"); exit();

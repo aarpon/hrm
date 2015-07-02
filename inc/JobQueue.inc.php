@@ -10,7 +10,9 @@ class JobQueue {
       \brief  A file where GC3Pie dumps the job queue.
     */
     public $queueFile;
-    
+
+
+    /* ------------------------------------------------------------------------ */
 
     /*!
       \brief   Constructor.

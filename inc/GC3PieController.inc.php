@@ -10,7 +10,7 @@ class GC3PieController {
 
     /*!
      \brief $controller
-     \var   String containinginformation for the GC3Pie job
+     \var   String containing information for the GC3Pie job.
     */
     public $controller;
 
@@ -73,8 +73,10 @@ class GC3PieController {
      \var    Array with fields for the task priorities.
     */
     private $taskPriorityArray;
+
+
+    /* ------------------------------------------------------------------------ */
     
-        /* ------------ Constructor ----------------------- */   
     /*!
      \brief  Constructor
      \param  $jobDescription JobDescription object
