@@ -282,12 +282,13 @@ def main():
     global GC3_SPOOLDIR
     args = parse_arguments()
 
-    if not os.path.exists(args.spooldir):
-        raise IOError("Spool directory doesn't exist: '%s'." % args.spooldir)
-
     # set the loglevel as requested on the commandline
     loglevel = logging.WARN - (args.verbosity * 10)
     gc3libs.configure_logger(loglevel, "qmgc3")
+
+    if not check_spooltree(args.spooldir):
+        logc("Error setting up spooling tree in '%s'." % args.spooldir)
+        return 3
 
     jobqueues = dict()
     jobqueues['hucore'] = HRM.JobQueue()
