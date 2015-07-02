@@ -217,6 +217,30 @@ def resource_dirs_clean(engine):
     return True
 
 
+def check_spooltree(spool_base):
+    """Check if spooling tree exists or try to create it otherwise.
+
+    The expected structure is like this:
+
+    spool_base
+        |-- cur
+        |-- done
+        `-- new
+    """
+    test_dirs = [spool_base]
+    for sub_dir in ['new', 'cur', 'done']:
+        test_dirs.append(os.path.join(spool_base, sub_dir))
+    for test_dir in test_dirs:
+        try:
+            if not os.access(test_dir, os.W_OK):
+                os.mkdir(test_dir)
+                logi("Created spool directory '%s'." % test_dir)
+        except OSError as err:
+            logc("Error creating spool directory '%s': %s" % (test_dir, err))
+            return False
+    return True
+
+
 def parse_arguments():
     """Parse command line arguments."""
     argparser = argparse.ArgumentParser(description=__doc__)
