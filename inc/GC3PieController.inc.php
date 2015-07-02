@@ -92,7 +92,7 @@ class GC3PieController {
     }
 
 
-        /* ----------------------- Initialization ---------------------------- */
+    /* ----------------------- Initialization ---------------------------- */
     /*!
      \brief  Sets general class properties to initial values.
     */
@@ -103,9 +103,10 @@ class GC3PieController {
                                        'deletejobs',
                                        'inputfiles' );        
         
-        $this->hrmJobFileArray = array( 'version'   =>  '5',
+        $this->hrmJobFileArray = array( 'version'   =>  '6',
                                         'username'  =>  '',
                                         'useremail' =>  '',
+                                        'queuetype' =>  '',
                                         'jobtype'   =>  '',
                                         'priority'  =>  '',
                                         'timestamp' =>  '');
@@ -118,12 +119,63 @@ class GC3PieController {
         $this->inputFilesArray = array( 'file'      =>   '');
 
         /* Priorities stated in 'nice' units. */
-        $this->tasksPriorityArray = array( 'hucore'       =>   '20',
+        $this->tasksPriorityArray = array( 'decon'        =>   '20',
                                            'snr'          =>   '15',
                                            'previewgen'   =>   '5',
                                            'deletejobs'   =>   '1');
     }
 
+
+    /* ----------------------------- Utils ------------------------------ */
+
+    /*!
+      \brief
+      \return
+    */
+    private function taskType2queueType() {
+        $taskType = $this->jobDescription->getTaskType();
+        
+        switch ( $taskType ) {
+        case "deletejobs":
+        case "decon":
+            $queueType = "primary";
+            break;
+        case "snr": 
+        case "previewgen":
+            $queueType = "secondary";
+            break;
+        default:
+            error_log("Impossible to set queue type for job type $taskType");
+        }
+        
+        return $queueType;
+    }
+
+    /*!
+      \brief
+      \return
+    */
+    private function taskType2JobType() {
+        $taskType = $this->jobDescription->getTaskType();
+        
+        switch ( $taskType ) {
+        case "snr":
+        case "previewgen":
+        case "decon":
+            $jobType = "hucore";
+            break;
+        case "deletejobs":
+            $jobType = $taskType;
+            break;
+        default:
+            error_log("Impossible to set job type for task type $jobType");
+        }
+        
+        return $jobType;
+    }
+
+    /* ----------------------------------------------------------------- */
+    
     /*!
      \brief  Sets the HRM job file section field.
     */
@@ -146,8 +198,12 @@ class GC3PieController {
                 $this->hrmJobFileList .= " = ";
                 $this->hrmJobFileList .= $user->emailAddress();
                 break;
+            case "queuetype":
+                $this->hrmJobFileList .= " = ";
+                $this->hrmJobFileList .= $this->taskType2queueType();
+                break;
             case "jobtype":
-                $this->hrmJobFileList .= " = " .  $this->jobDescription->getTaskType();
+                $this->hrmJobFileList .= " = " . $this->taskType2JobType();
                 break;
             case "priority":
                 $this->hrmJobFileList .= " = " . $this->getTaskPriority();
@@ -201,7 +257,6 @@ class GC3PieController {
                 case "decon":
                 case "snr":
                 case "previewgen":
-                case "hucore":
                 case "deletejobs":
                 if ($key == $taskType) {
                         $priority = $value;

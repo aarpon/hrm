@@ -272,7 +272,7 @@ class JobDescription {
   */
   public function setTaskType( $taskType ) {
       switch( $taskType )  {
-      case 'hucore':
+      case 'decon':
       case 'deletejobs':
           $this->taskType =  $taskType;
           break;
@@ -286,9 +286,6 @@ class JobDescription {
     \return     The task type.
     */
     public function getTaskType( ) {
-        if ($this->taskType == "") {
-            $this->taskType = "hucore";
-        }
         return $this->taskType;
     }
 
