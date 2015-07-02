@@ -217,7 +217,7 @@ def resource_dirs_clean(engine):
     return True
 
 
-def check_spooltree(spool_base):
+def setup_spooltree(spool_base):
     """Check if spooling tree exists or try to create it otherwise.
 
     The expected structure is like this:
@@ -226,10 +226,25 @@ def check_spooltree(spool_base):
         |-- cur
         |-- done
         `-- new
+
+    Parameters
+    ----------
+    spool_base : str
+        Base path where to set up / check the spool directories.
+
+    Returns
+    -------
+    full_subdirs : dict
+        { 'new'  : '/path/to/spool_base/new',
+          'cur'  : '/path/to/spool_base/cur',
+          'done' : '/path/to/spool_base/done' }
     """
+    sub_dirs = ['new', 'cur', 'done']
+    full_subdirs = dict()
     test_dirs = [spool_base]
-    for sub_dir in ['new', 'cur', 'done']:
-        test_dirs.append(os.path.join(spool_base, sub_dir))
+    for sub_dir in sub_dirs:
+        full_subdirs[sub_dir] = os.path.join(spool_base, sub_dir)
+        test_dirs.append(full_subdirs[sub_dir])
     for test_dir in test_dirs:
         try:
             if not os.access(test_dir, os.W_OK):
@@ -237,8 +252,8 @@ def check_spooltree(spool_base):
                 logi("Created spool directory '%s'." % test_dir)
         except OSError as err:
             logc("Error creating spool directory '%s': %s" % (test_dir, err))
-            return False
-    return True
+            return []
+    return full_subdirs
 
 
 def parse_arguments():
@@ -286,7 +301,8 @@ def main():
     loglevel = logging.WARN - (args.verbosity * 10)
     gc3libs.configure_logger(loglevel, "qmgc3")
 
-    if not check_spooltree(args.spooldir):
+    qm_spool = setup_spooltree(args.spooldir)
+    if not qm_spool:
         logc("Error setting up spooling tree in '%s'." % args.spooldir)
         return 3
 
@@ -320,10 +336,10 @@ def main():
     mask = pyinotify.IN_CREATE     # watched events
     notifier = pyinotify.ThreadedNotifier(wm, EventHandler(queues=jobqueues))
     notifier.start()
-    wdd = wm.add_watch(args.spooldir, mask, rec=False)
+    wdd = wm.add_watch(qm_spool['new'], mask, rec=False)
 
     print('HRM Queue Manager started, watching spool directory "%s", '
-          'press Ctrl-C to abort.' % args.spooldir)
+          'press Ctrl-C to abort.' % qm_spool['new'])
     logi('Excpected job description files version: %s.' % HRM.JOBFILE_VER)
 
     try:
