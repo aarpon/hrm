@@ -182,7 +182,7 @@ class GC3PieController {
             default:
                 error_log();
             }
-            $this->deleteJobsList .= "\n";
+            $this->idList .= "\n";
         }
     }
     
