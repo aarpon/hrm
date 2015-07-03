@@ -21,7 +21,6 @@ The prototype of a new GC3Pie-based Queue Manager for HRM.
 
 # stdlib imports
 import sys
-import time
 import os
 import shutil
 
@@ -50,10 +49,6 @@ logi = gc3libs.log.info
 logd = gc3libs.log.debug
 loge = gc3libs.log.error
 logc = gc3libs.log.critical
-
-
-# this is read from the gc3pie config file for now, see below!
-GC3_SPOOLDIR = ''
 
 
 class EventHandler(pyinotify.ProcessEvent):
@@ -130,7 +125,6 @@ def parse_arguments():
 
 def main():
     """Main loop of the HRM Queue Manager."""
-    global GC3_SPOOLDIR
     args = parse_arguments()
 
     # set the loglevel as requested on the commandline
