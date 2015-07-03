@@ -18,7 +18,7 @@ import pprint
 import time
 import os
 from collections import deque
-from hashlib import sha1
+from hashlib import sha1  # ignore this bug in pylint: disable-msg=E0611
 
 from hrm_logger import warn, info, debug, set_loglevel
 
