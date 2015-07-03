@@ -108,41 +108,6 @@ class EventHandler(pyinotify.ProcessEvent):
         shutil.move(jobfile, target)
 
 
-def run_job(engine, job):
-    """Run a job in a singlethreaded and blocking manner via GC3Pie.
-
-    NOTE: this doesn't mean the process executed during this job is
-    singlethreaded, it just means that currently no more than one job is run
-    *at a time*.
-    """
-    app = HRM.HucoreDeconvolveApp(job)
-
-    # Add your application to the engine. This will NOT submit your application
-    # yet, but will make the engine *aware* of the application.
-    engine.add(app)
-
-    # Periodically check the status of your application.
-    laststate = app.execution.state
-    curstate = app.execution.state
-    while laststate != gc3libs.Run.State.TERMINATED:
-        # `Engine.progress()` will do the GC3Pie magic: submit new jobs, update
-        # status of submitted jobs, get results of terminating jobs etc...
-        engine.progress()
-        curstate = app.execution.state
-        if not (curstate == laststate):
-            logw("Job in status %s " % curstate)
-
-        laststate = app.execution.state
-        # Wait a few seconds...
-        time.sleep(1)
-    logw("Job terminated with exit code %s." % app.execution.exitcode)
-    logw("The output of the application is in `%s`." %  app.output_dir)
-    # EXIT CODES:
-    # 0: all went well
-    # 143: hucore.bin received the HUP signal (9)
-    # 165: the .hgsb file could not be parsed (file missing or with errors)
-
-
 def parse_arguments():
     """Parse command line arguments."""
     argparser = argparse.ArgumentParser(description=__doc__)
@@ -161,22 +126,6 @@ def parse_arguments():
         return argparser.parse_args()
     except IOError as err:
         argparser.error(str(err))
-
-
-def job_spooler(engine, jobqueues):
-    """Spooler function dispatching jobs from the queues."""
-    # FIXME: Ctrl-C while a job is running leaves it alone (and thus as well
-    # the files transferred for / generated from processing)
-    while True:
-        try:
-            nextjob = jobqueues['hucore'].pop()
-            if nextjob is not None:
-                logd("Current joblist: %s" % jobqueues['hucore'].queue)
-                logd("Dispatching next job.")
-                run_job(engine, nextjob)
-            time.sleep(1)
-        except KeyboardInterrupt:
-            break
 
 
 def main():
@@ -209,8 +158,8 @@ def main():
     logi('Excpected job description files version: %s.' % HRM.JOBFILE_VER)
 
     try:
-        # NOTE: job_spooler() is blocking, as it contains the main loop!
-        job_spooler(engine, jobqueues)
+        # NOTE: spool() is blocking, as it contains the main spooling loop!
+        job_spooler.spool(jobqueues)
     finally:
         print('Cleaning up. Remaining jobs:')
         # TODO: before exiting with a non-empty queue, it should be serialized

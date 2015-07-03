@@ -469,6 +469,63 @@ class JobSpooler(object):
                 return False
         return True
 
+    def spool(self, jobqueues):
+        """Spooler function dispatching jobs from the queues. BLOCKING!"""
+        while True:
+            try:
+                nextjob = jobqueues['hucore'].pop()
+                if nextjob is not None:
+                    logd("Current joblist: %s" % jobqueues['hucore'].queue)
+                    logd("Dispatching next job.")
+                    self.run_job(nextjob)
+                time.sleep(1)
+            except KeyboardInterrupt:
+                break
+        # TODO: when the spooler gets stopped (e.g. via Ctrl-C or upon request
+        # from the web interface or the init script) while a job is still
+        # running, it leaves it alone (and thus as well the files transferred
+        # for / generated from processing)
+        return 0  # stopped on user request (interactive)
+
+    def run_job(self, job):
+        """Run a job in a singlethreaded and blocking manner via GC3Pie.
+
+        NOTE: this doesn't mean the process executed during this job is
+        singlethreaded, it just means that currently no more than one job is
+        run *at a time*.
+        """
+        # TODO: consider specifying the output dir in the jobfile!
+        # -> for now we simply use the gc3spooldir as the output directory to
+        # ensure results won't get moved across different storage locations:
+        app = HucoreDeconvolveApp(job, self.gc3spooldir)
+
+        # Add your application to the engine. This will NOT submit your
+        # application yet, but will make the engine *aware* of the application.
+        self.engine.add(app)
+
+        # Periodically check the status of your application.
+        laststate = app.execution.state
+        curstate = app.execution.state
+        while laststate != gc3libs.Run.State.TERMINATED:
+            # `Engine.progress()` will do the GC3Pie magic: submit new jobs,
+            # update status of submitted jobs, get results of terminating jobs
+            # etc...
+            self.engine.progress()
+            curstate = app.execution.state
+            if not (curstate == laststate):
+                logw("Job in status %s " % curstate)
+            laststate = app.execution.state
+            # Wait a few seconds...
+            time.sleep(1)
+        logw("Job terminated with exit code %s." % app.execution.exitcode)
+        logw("The output of the application is in `%s`." %  app.output_dir)
+        # hucore EXIT CODES:
+        # 0: all went well
+        # 143: hucore.bin received the HUP signal (9)
+        # 165: the .hgsb file could not be parsed (file missing or with errors)
+        return True
+
+
 class HucoreDeconvolveApp(gc3libs.Application):
 
     """App object for 'hucore' deconvolution jobs.
