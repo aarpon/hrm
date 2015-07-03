@@ -171,45 +171,6 @@ def resource_dirs_clean(engine):
     return True
 
 
-def setup_spooltree(spool_base):
-    """Check if spooling tree exists or try to create it otherwise.
-
-    The expected structure is like this:
-
-    spool_base
-        |-- cur
-        |-- done
-        `-- new
-
-    Parameters
-    ----------
-    spool_base : str
-        Base path where to set up / check the spool directories.
-
-    Returns
-    -------
-    full_subdirs : dict
-        { 'new'  : '/path/to/spool_base/new',
-          'cur'  : '/path/to/spool_base/cur',
-          'done' : '/path/to/spool_base/done' }
-    """
-    sub_dirs = ['new', 'cur', 'done']
-    full_subdirs = dict()
-    test_dirs = [spool_base]
-    for sub_dir in sub_dirs:
-        full_subdirs[sub_dir] = os.path.join(spool_base, sub_dir)
-        test_dirs.append(full_subdirs[sub_dir])
-    for test_dir in test_dirs:
-        try:
-            if not os.access(test_dir, os.W_OK):
-                os.mkdir(test_dir)
-                logi("Created spool directory '%s'." % test_dir)
-        except OSError as err:
-            logc("Error creating spool directory '%s': %s" % (test_dir, err))
-            return []
-    return full_subdirs
-
-
 def parse_arguments():
     """Parse command line arguments."""
     argparser = argparse.ArgumentParser(description=__doc__)
@@ -255,11 +216,7 @@ def main():
     loglevel = logging.WARN - (args.verbosity * 10)
     gc3libs.configure_logger(loglevel, "qmgc3")
 
-    job_spooler = HRM.JobSpooler(args.config)
-    qm_spool = setup_spooltree(args.spooldir)
-    if not qm_spool:
-        logc("Error setting up spooling tree in '%s'." % args.spooldir)
-        return 3
+    job_spooler = HRM.JobSpooler(args.spooldir, args.config)
 
     jobqueues = dict()
     jobqueues['hucore'] = HRM.JobQueue()
@@ -277,12 +234,12 @@ def main():
     wm = pyinotify.WatchManager()  # watch manager
     mask = pyinotify.IN_CREATE     # watched events
     notifier = pyinotify.ThreadedNotifier(wm,
-        EventHandler(queues=jobqueues, parsed_jobs=qm_spool['cur']))
+        EventHandler(queues=jobqueues, parsed_jobs=job_spooler.dirs['cur']))
     notifier.start()
-    wdd = wm.add_watch(qm_spool['new'], mask, rec=False)
+    wdd = wm.add_watch(job_spooler.dirs['new'], mask, rec=False)
 
     print('HRM Queue Manager started, watching spool directory "%s", '
-          'press Ctrl-C to abort.' % qm_spool['new'])
+          'press Ctrl-C to abort.' % job_spooler.dirs['new'])
     logi('Excpected job description files version: %s.' % HRM.JOBFILE_VER)
 
     try:
