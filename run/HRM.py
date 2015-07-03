@@ -358,10 +358,10 @@ class JobSpooler(object):
     def __init__(self, spool_dir, gc3conf=None):
         """Prepare the spooler.
 
-        Check the GC3Pie config file, set up the spool directories.
+        Check the GC3Pie config file, set up the spool directories, set up the
+        gc3 engine.
 
         TODO:
-         - set up the gc3 engine
          - check the resource directories
          - do the spooling: monitor the queue and dispatch jobs as required
         """
@@ -369,6 +369,7 @@ class JobSpooler(object):
         self.gc3conf = None
         self._check_gc3conf(gc3conf)
         self.dirs = self.setup_spooltree(spool_dir)
+        self.engine = self.setup_engine()
 
     def _check_gc3conf(self, gc3conffile=None):
         """Check the gc3 config file and extract the gc3 spooldir.
@@ -430,6 +431,15 @@ class JobSpooler(object):
                 raise OSError("Error creating Queue Manager spooling "
                     "directory '%s': %s" % (test_dir, err))
         return full_subdirs
+
+    def setup_engine(self):
+        """Set up the GC3Pie engine."""
+        logi('Creating GC3Pie engine using config file "%s".' % self.gc3conf)
+        return gc3libs.create_engine(self.gc3conf)
+
+    def select_resource(resource):
+        """Select a specific resource for the GC3Pie engine."""
+        self.engine.select_resource(resource)
 
 class HucoreDeconvolveApp(gc3libs.Application):
 

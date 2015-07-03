@@ -221,15 +221,9 @@ def main():
     jobqueues = dict()
     jobqueues['hucore'] = HRM.JobQueue()
 
-    logi('Creating GC3Pie engine using config file "%s".' % job_spooler.gc3conf)
-    engine = gc3libs.create_engine(job_spooler.gc3conf)
     # select a specific resource if requested on the cmdline:
     if args.resource:
-        engine.select_resource(args.resource)
-
-    if not resource_dirs_clean(engine):
-        print("Refusing to start, clean your resource dir first!")
-        return 2
+        job_spooler.select_resource(args.resource)
 
     wm = pyinotify.WatchManager()  # watch manager
     mask = pyinotify.IN_CREATE     # watched events
