@@ -143,34 +143,6 @@ def run_job(engine, job):
     # 165: the .hgsb file could not be parsed (file missing or with errors)
 
 
-def resource_dirs_clean(engine):
-    """Check if the resource dirs of all resources are clean.
-
-    Parameters
-    ----------
-    engine : gc3libs.core.Engine
-        The GC3 engine to check the resource directories for.
-
-    Returns
-    -------
-    bool
-    """
-    # NOTE: with the session-based GC3 approach, it should be possible to pick
-    # up existing (leftover) jobs in a resource directory upon start and figure
-    # out what their status is, clean up, collect results etc.
-    for resource in engine.get_resources():
-        resourcedir = os.path.expandvars(resource.cfg_resourcedir)
-        print("Checking resource dir for resource '%s': %s" %
-            (resource.name, resourcedir))
-        if not os.path.exists(resourcedir):
-            continue
-        files = os.listdir(resourcedir)
-        if files:
-            print("Resource dir unclean: %s" % files)
-            return False
-    return True
-
-
 def parse_arguments():
     """Parse command line arguments."""
     argparser = argparse.ArgumentParser(description=__doc__)

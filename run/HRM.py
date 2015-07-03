@@ -359,10 +359,9 @@ class JobSpooler(object):
         """Prepare the spooler.
 
         Check the GC3Pie config file, set up the spool directories, set up the
-        gc3 engine.
+        gc3 engine, check the resource directories.
 
         TODO:
-         - check the resource directories
          - do the spooling: monitor the queue and dispatch jobs as required
         """
         self.gc3spooldir = None
@@ -370,6 +369,8 @@ class JobSpooler(object):
         self._check_gc3conf(gc3conf)
         self.dirs = self.setup_spooltree(spool_dir)
         self.engine = self.setup_engine()
+        if not self.resource_dirs_clean():
+            raise RuntimeError("GC3 resource dir unclean, refusing to start!")
 
     def _check_gc3conf(self, gc3conffile=None):
         """Check the gc3 config file and extract the gc3 spooldir.
@@ -440,6 +441,33 @@ class JobSpooler(object):
     def select_resource(resource):
         """Select a specific resource for the GC3Pie engine."""
         self.engine.select_resource(resource)
+
+    def resource_dirs_clean(self):
+        """Check if the resource dirs of all resources are clean.
+
+        Parameters
+        ----------
+        engine : gc3libs.core.Engine
+            The GC3 engine to check the resource directories for.
+
+        Returns
+        -------
+        bool
+        """
+        # NOTE: with the session-based GC3 approach, it should be possible to
+        # pick up existing (leftover) jobs in a resource directory upon start
+        # and figure out what their status is, clean up, collect results etc.
+        for resource in self.engine.get_resources():
+            resourcedir = os.path.expandvars(resource.cfg_resourcedir)
+            logi("Checking resource dir for resource '%s': %s" %
+                (resource.name, resourcedir))
+            if not os.path.exists(resourcedir):
+                continue
+            files = os.listdir(resourcedir)
+            if files:
+                logw("Resource dir unclean: %s" % files)
+                return False
+        return True
 
 class HucoreDeconvolveApp(gc3libs.Application):
 
