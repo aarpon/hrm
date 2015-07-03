@@ -10,7 +10,6 @@ The prototype of a new GC3Pie-based Queue Manager for HRM.
 # - do not transfer the images, create a symlink or put their path into the
 #   HuCore Tcl script
 # - put the results dir back to the user's destination directory
-# - check if a sane (usable) gc3pie configuration exists!
 # - if instantiating a gc3libs.Application fails, the QM stops watching and
 #   parsing new job files (resulting in a "dead" state right now), so
 #   exceptions on dispatching jobs need to be caught and some notification
@@ -35,8 +34,6 @@ except ImportError:
     print("starting the HRM Queue Manager:")
     print("\n$ source /path/to/your/gc3pie_installation/bin/activate\n")
     sys.exit(1)
-
-from gc3libs.config import Configuration
 
 import pyinotify
 import argparse
@@ -258,6 +255,7 @@ def main():
     loglevel = logging.WARN - (args.verbosity * 10)
     gc3libs.configure_logger(loglevel, "qmgc3")
 
+    job_spooler = HRM.JobSpooler(args.config)
     qm_spool = setup_spooltree(args.spooldir)
     if not qm_spool:
         logc("Error setting up spooling tree in '%s'." % args.spooldir)
@@ -266,21 +264,8 @@ def main():
     jobqueues = dict()
     jobqueues['hucore'] = HRM.JobQueue()
 
-    # If create_engine() is called without arguments, it will use the default
-    # config file in ~/.gc3/gc3pie.conf (see the gc3libs API for details).
-    gc3conffile = '~/.gc3/gc3pie.conf'
-    if args.config:
-        gc3conffile = args.config
-
-    conf = Configuration(gc3conffile)
-    try:
-        GC3_SPOOLDIR = conf.resources['localhost'].spooldir
-    except AttributeError:
-        raise AttributeError("Unable to parse spooldir for resource "
-            "'localhost' from gc3pie config file!")
-
-    logi('Creating GC3Pie engine using config file "%s".' % gc3conffile)
-    engine = gc3libs.create_engine(gc3conffile)
+    logi('Creating GC3Pie engine using config file "%s".' % job_spooler.gc3conf)
+    engine = gc3libs.create_engine(job_spooler.gc3conf)
     # select a specific resource if requested on the cmdline:
     if args.resource:
         engine.select_resource(args.resource)

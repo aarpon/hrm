@@ -351,6 +351,45 @@ class JobQueue(object):
             # print("Current in-queue pointers: %s" % queues)
 
 
+class JobSpooler(object):
+
+    """Spooler class processing the queue, dispatching jobs, etc."""
+
+    def __init__(self, gc3conf=None):
+        """Prepare the spooler.
+
+        Check the GC3Pie config file.
+
+        TODO:
+         - set up the spool directories
+         - set up the gc3 engine
+         - check the resource directories
+         - do the spooling: monitor the queue and dispatch jobs as required
+        """
+        self.gc3spooldir = None
+        self.gc3conf = None
+        self._check_gc3conf(gc3conf)
+
+    def _check_gc3conf(self, gc3conffile=None):
+        """Check the gc3 config file and extract the gc3 spooldir.
+
+        Helper method to check the config file and set the instance variables
+        self.gc3spooldir : str
+            The path name to the gc3 spooling directory.
+        self.gc3conf : str
+            The file NAME of the gc3 config file.
+        """
+        # gc3libs methods like create_engine() use the default config in
+        # ~/.gc3/gc3pie.conf if none is specified (see API for details)
+        if gc3conffile is None:
+            gc3conffile = '~/.gc3/gc3pie.conf'
+        gc3conf = Configuration(gc3conffile)
+        try:
+            self.gc3spooldir = gc3conf.resources['localhost'].spooldir
+        except AttributeError:
+            raise AttributeError("Unable to parse spooldir for resource "
+                "'localhost' from gc3pie config file '%s'!" % gc3conffile)
+        self.gc3conf = gc3conffile
 class HucoreDeconvolveApp(gc3libs.Application):
 
     """App object for 'hucore' deconvolution jobs.
