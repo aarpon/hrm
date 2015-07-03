@@ -326,3 +326,57 @@ class JobQueue(object):
                 cat_index = 0
             # print("Category pointer: %i" % cat_index)
             # print("Current in-queue pointers: %s" % queues)
+
+
+class HucoreDeconvolveApp(gc3libs.Application):
+
+    """App object for 'hucore' deconvolution jobs.
+
+    This application calls `hucore` with a given template file and retrives the
+    stdout/stderr in a file named `stdout.txt` plus the directories `resultdir`
+    and `previews` into a directory `deconvolved` inside the current directory.
+    """
+
+    def __init__(self, job, gc3_output):
+        logw('Instantiating a HucoreDeconvolveApp:\n%s' % job)
+        logi('Job UID: %s' % job['uid'])
+        # we need to add the template (with the local path) to the list of
+        # files that need to be transferred to the system running hucore:
+        job['infiles'].append(job['template'])
+        # for the execution on the remote host, we need to strip all paths from
+        # this string as the template file will end up in the temporary
+        # processing directory together with all the images:
+        templ_on_tgt = job['template'].split('/')[-1]
+        gc3libs.Application.__init__(
+            self,
+            arguments = [job['exec'],
+                '-exitOnDone',
+                '-noExecLog',
+                '-checkForUpdates', 'disable',
+                '-template', templ_on_tgt],
+            inputs = job['infiles'],
+            outputs = ['resultdir', 'previews'],
+            # collect the results in a subfolder of GC3Pie's spooldir:
+            output_dir = os.path.join(gc3_output, 'results_%s' % job['uid']),
+            stderr = 'stdout.txt', # combine stdout & stderr
+            stdout = 'stdout.txt')
+
+
+class HucorePreviewgenApp(gc3libs.Application):
+
+    """App object for 'hucore' image preview generation jobs."""
+
+    def __init__(self):
+        # logw('Instantiating a HucorePreviewgenApp:\n%s' % job)
+        logw('WARNING: this is a stub, nothing is implemented yet!')
+        super(HucorePreviewgenApp, self).__init__()
+
+
+class HucoreEstimateSNRApp(gc3libs.Application):
+
+    """App object for 'hucore' SNR estimation jobs."""
+
+    def __init__(self):
+        # logw('Instantiating a HucoreEstimateSNRApp:\n%s' % job)
+        logw('WARNING: this is a stub, nothing is implemented yet!')
+        super(HucoreEstimateSNRApp, self).__init__()
