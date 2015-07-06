@@ -24,6 +24,10 @@ import sys
 import os
 import shutil
 
+TOP = os.path.abspath(os.path.dirname(sys.argv[0]) + '/../')
+LPY = os.path.join(TOP, "lib", "python")
+sys.path.insert(0, LPY)
+
 # GC3Pie imports
 try:
     import gc3libs
