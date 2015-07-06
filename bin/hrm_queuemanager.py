@@ -28,6 +28,11 @@ TOP = os.path.abspath(os.path.dirname(sys.argv[0]) + '/../')
 LPY = os.path.join(TOP, "lib", "python")
 sys.path.insert(0, LPY)
 
+import pyinotify
+import argparse
+import pprint
+
+
 # GC3Pie imports
 try:
     import gc3libs
@@ -37,10 +42,6 @@ except ImportError:
     print("starting the HRM Queue Manager:")
     print("\n$ source /path/to/your/gc3pie_installation/bin/activate\n")
     sys.exit(1)
-
-import pyinotify
-import argparse
-import pprint
 
 import HRM
 
