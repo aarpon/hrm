@@ -116,7 +116,7 @@ def parse_arguments():
     """Parse command line arguments."""
     argparser = argparse.ArgumentParser(description=__doc__)
     argparser.add_argument('-s', '--spooldir', required=True,
-        help='spooling directory for new jobfiles')
+        help='spooling directory for jobfiles (e.g. "run/spool/")')
     argparser.add_argument('-c', '--config', required=False, default=None,
         help='GC3Pie config file (default: ~/.gc3/gc3pie.conf)')
     argparser.add_argument('-r', '--resource', required=False,
