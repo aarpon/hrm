@@ -438,7 +438,7 @@ class JobSpooler(object):
         logi('Creating GC3Pie engine using config file "%s".' % self.gc3conf)
         return gc3libs.create_engine(self.gc3conf)
 
-    def select_resource(resource):
+    def select_resource(self, resource):
         """Select a specific resource for the GC3Pie engine."""
         self.engine.select_resource(resource)
 
