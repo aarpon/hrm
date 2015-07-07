@@ -51,44 +51,53 @@ __all__ = ['JobDescription', 'JobQueue']
 # expected version for job description files:
 JOBFILE_VER = '5'
 
-def setup_spooltree(spool_base):
-    """Check if spooling tree exists or try to create it otherwise.
+def setup_rundirs(base_dir):
+    """Check if all runtime directories exist or try to create them otherwise.
 
-    The expected structure is like this:
+    Assuming base_dir is '/run/hrm', the expected structure is like this:
 
-    spool_base
-        |-- cur
-        |-- done
-        |-- new
-        `-- queue
+    /run/hrm
+        |-- queue
+        |   |-- requests
+        |   `-- status
+        `-- spool
+            |-- cur
+            |-- done
+            `-- new
 
     Parameters
     ----------
-    spool_base : str
-        Base path where to set up / check the spool directories.
+    base_dir : str
+        Base path where to set up / check the run directories.
 
     Returns
     -------
     full_subdirs : dict
-        { 'new'   : '/path/to/spool_base/new',
-          'queue' : '/path/to/spool_base/queue',
-          'cur'   : '/path/to/spool_base/cur',
-          'done'  : '/path/to/spool_base/done' }
+        { 'new'      : '/run/hrm/spool/new',
+          'cur'      : '/run/hrm/spool/cur',
+          'done'     : '/run/hrm/spool/done',
+          'requests' : '/run/hrm/queue/requests',
+          'status'   : '/run/hrm/queue/status' }
     """
-    sub_dirs = ['new', 'queue', 'cur', 'done']
     full_subdirs = dict()
-    test_dirs = [spool_base]
-    for sub_dir in sub_dirs:
-        full_subdirs[sub_dir] = os.path.join(spool_base, sub_dir)
-        test_dirs.append(full_subdirs[sub_dir])
-    for test_dir in test_dirs:
-        try:
-            if not os.access(test_dir, os.W_OK):
-                os.mkdir(test_dir)
-                logi("Created spool directory '%s'." % test_dir)
-        except OSError as err:
-            raise OSError("Error creating Queue Manager spooling "
-                "directory '%s': %s" % (test_dir, err))
+    tree = {
+        'spool' : ['new', 'cur', 'done'],
+        'queue' : ['status', 'requests']
+    }
+    for run_dir in tree:
+        for sub_dir in tree[run_dir]:
+            cur = os.path.join(base_dir, run_dir, sub_dir)
+            if not os.access(cur, os.W_OK):
+                if os.path.exists(cur):
+                    raise OSError("Directory '%s' exists, but it is not "
+                        "writable for us. Stopping!" % cur)
+                try:
+                    os.makedirs(cur)
+                    logi("Created spool directory '%s'." % cur)
+                except OSError as err:
+                    raise OSError("Error creating Queue Manager runtime "
+                        "directory '%s': %s" % (cur, err))
+            full_subdirs[sub_dir] = cur
     return full_subdirs
 
 
@@ -407,7 +416,7 @@ class JobSpooler(object):
         self.gc3spooldir = None
         self.gc3conf = None
         self._check_gc3conf(gc3conf)
-        self.dirs = setup_spooltree(spool_dir)
+        self.dirs = setup_rundirs(spool_dir)
         self.engine = self.setup_engine()
         if not self.resource_dirs_clean():
             raise RuntimeError("GC3 resource dir unclean, refusing to start!")
