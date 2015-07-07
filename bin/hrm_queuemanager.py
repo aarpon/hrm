@@ -72,7 +72,7 @@ class EventHandler(pyinotify.ProcessEvent):
     process_IN_CREATE()
     """
 
-    def my_init(self, queues=dict(), parsed_jobs=None):
+    def my_init(self, queues, tgt=None):            # pylint: disable-msg=W0221
         """Initialize the inotify event handler.
 
         Parameters
@@ -80,13 +80,13 @@ class EventHandler(pyinotify.ProcessEvent):
         queues : dict
             Containing the JobQueue objects for the different queues, using the
             corresponding 'type' keyword as identifier.
-        parsed_jobs : str
+        tgt : str (optional)
             The path to a directory where to move parsed jobfiles.
         """
         logi("Initialized the event handler for inotify.")
         # TODO: we need to distinguish different job types and act accordingly
         self.queues = queues
-        self.parsed_jobs = parsed_jobs
+        self.tgt = tgt
 
     def process_IN_CREATE(self, event):
         """Method handling 'create' events."""
@@ -107,7 +107,7 @@ class EventHandler(pyinotify.ProcessEvent):
 
     def move_jobfiles(self, jobfile, job):
         """Move a parsed jobfile to the corresponding spooling subdir."""
-        target = os.path.join(self.parsed_jobs, job['uid'] + '.cfg')
+        target = os.path.join(self.tgt, job['uid'] + '.cfg')
         logd("Moving jobfile '%s' to '%s'." % (jobfile, target))
         shutil.move(jobfile, target)
 
@@ -153,7 +153,7 @@ def main():
     # set the mask which events to watch:
     mask = pyinotify.IN_CREATE                      # pylint: disable-msg=E1101
     notifier = pyinotify.ThreadedNotifier(watch_mgr,
-        EventHandler(queues=jobqueues, parsed_jobs=job_spooler.dirs['cur']))
+        EventHandler(queues=jobqueues, tgt=job_spooler.dirs['cur']))
     notifier.start()
     wdd = watch_mgr.add_watch(job_spooler.dirs['new'], mask, rec=False)
 
