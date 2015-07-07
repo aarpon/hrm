@@ -149,12 +149,12 @@ def main():
     if args.resource:
         job_spooler.select_resource(args.resource)
 
-    wm = pyinotify.WatchManager()  # watch manager
+    watch_mgr = pyinotify.WatchManager()
     mask = pyinotify.IN_CREATE     # watched events
-    notifier = pyinotify.ThreadedNotifier(wm,
+    notifier = pyinotify.ThreadedNotifier(watch_mgr,
         EventHandler(queues=jobqueues, parsed_jobs=job_spooler.dirs['cur']))
     notifier.start()
-    wdd = wm.add_watch(job_spooler.dirs['new'], mask, rec=False)
+    wdd = watch_mgr.add_watch(job_spooler.dirs['new'], mask, rec=False)
 
     print('HRM Queue Manager started, watching spool directory "%s", '
           'press Ctrl-C to abort.' % job_spooler.dirs['new'])
@@ -168,7 +168,7 @@ def main():
         # TODO: before exiting with a non-empty queue, it should be serialized
         # and stored in a file (e.g. using the "pickle" module)
         print(jobqueues['hucore'].queue)
-        wm.rm_watch(wdd.values())
+        watch_mgr.rm_watch(wdd.values())
         notifier.stop()
 
 if __name__ == "__main__":
