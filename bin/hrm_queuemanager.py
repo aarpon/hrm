@@ -100,6 +100,9 @@ class EventHandler(pyinotify.ProcessEvent):
             # in this case there is nothing to add to the queue, so we simply
             # return silently
             return
+        if not self.queues.has_key(job['type']):
+            logc("ERROR: no queue existing for jobtype '%s'!" % job['type'])
+            return
         self.queues[job['type']].append(job)
         self.move_jobfiles(event.pathname, job)
         logd("Current job queue for type '%s': %s" %
@@ -107,6 +110,9 @@ class EventHandler(pyinotify.ProcessEvent):
 
     def move_jobfiles(self, jobfile, job):
         """Move a parsed jobfile to the corresponding spooling subdir."""
+        if self.tgt is None:
+            logw("No target directory set, not moving job file!")
+            return
         target = os.path.join(self.tgt, job['uid'] + '.cfg')
         logd("Moving jobfile '%s' to '%s'." % (jobfile, target))
         shutil.move(jobfile, target)
