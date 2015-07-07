@@ -51,6 +51,46 @@ __all__ = ['JobDescription', 'JobQueue']
 # expected version for job description files:
 JOBFILE_VER = '5'
 
+def setup_spooltree(spool_base):
+    """Check if spooling tree exists or try to create it otherwise.
+
+    The expected structure is like this:
+
+    spool_base
+        |-- cur
+        |-- done
+        |-- new
+        `-- queue
+
+    Parameters
+    ----------
+    spool_base : str
+        Base path where to set up / check the spool directories.
+
+    Returns
+    -------
+    full_subdirs : dict
+        { 'new'   : '/path/to/spool_base/new',
+          'queue' : '/path/to/spool_base/queue',
+          'cur'   : '/path/to/spool_base/cur',
+          'done'  : '/path/to/spool_base/done' }
+    """
+    sub_dirs = ['new', 'queue', 'cur', 'done']
+    full_subdirs = dict()
+    test_dirs = [spool_base]
+    for sub_dir in sub_dirs:
+        full_subdirs[sub_dir] = os.path.join(spool_base, sub_dir)
+        test_dirs.append(full_subdirs[sub_dir])
+    for test_dir in test_dirs:
+        try:
+            if not os.access(test_dir, os.W_OK):
+                os.mkdir(test_dir)
+                logi("Created spool directory '%s'." % test_dir)
+        except OSError as err:
+            raise OSError("Error creating Queue Manager spooling "
+                "directory '%s': %s" % (test_dir, err))
+    return full_subdirs
+
 
 class JobDescription(dict):
 
@@ -367,7 +407,7 @@ class JobSpooler(object):
         self.gc3spooldir = None
         self.gc3conf = None
         self._check_gc3conf(gc3conf)
-        self.dirs = self.setup_spooltree(spool_dir)
+        self.dirs = setup_spooltree(spool_dir)
         self.engine = self.setup_engine()
         if not self.resource_dirs_clean():
             raise RuntimeError("GC3 resource dir unclean, refusing to start!")
@@ -392,46 +432,6 @@ class JobSpooler(object):
             raise AttributeError("Unable to parse spooldir for resource "
                 "'localhost' from gc3pie config file '%s'!" % gc3conffile)
         self.gc3conf = gc3conffile
-
-    def setup_spooltree(self, spool_base):
-        """Check if spooling tree exists or try to create it otherwise.
-
-        The expected structure is like this:
-
-        spool_base
-            |-- cur
-            |-- done
-            |-- new
-            `-- queue
-
-        Parameters
-        ----------
-        spool_base : str
-            Base path where to set up / check the spool directories.
-
-        Returns
-        -------
-        full_subdirs : dict
-            { 'new'   : '/path/to/spool_base/new',
-              'queue' : '/path/to/spool_base/queue',
-              'cur'   : '/path/to/spool_base/cur',
-              'done'  : '/path/to/spool_base/done' }
-        """
-        sub_dirs = ['new', 'queue', 'cur', 'done']
-        full_subdirs = dict()
-        test_dirs = [spool_base]
-        for sub_dir in sub_dirs:
-            full_subdirs[sub_dir] = os.path.join(spool_base, sub_dir)
-            test_dirs.append(full_subdirs[sub_dir])
-        for test_dir in test_dirs:
-            try:
-                if not os.access(test_dir, os.W_OK):
-                    os.mkdir(test_dir)
-                    logi("Created spool directory '%s'." % test_dir)
-            except OSError as err:
-                raise OSError("Error creating Queue Manager spooling "
-                    "directory '%s': %s" % (test_dir, err))
-        return full_subdirs
 
     def setup_engine(self):
         """Set up the GC3Pie engine."""
