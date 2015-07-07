@@ -51,8 +51,8 @@ import HRM
 
 import logging
 # we set a default loglevel and add some shortcuts for logging:
-loglevel = logging.WARN
-gc3libs.configure_logger(loglevel, "qmgc3")
+LOGLEVEL = logging.WARN
+gc3libs.configure_logger(LOGLEVEL, "qmgc3")
 logw = gc3libs.log.warn
 logi = gc3libs.log.info
 logd = gc3libs.log.debug
@@ -92,7 +92,8 @@ class EventHandler(pyinotify.ProcessEvent):
         """Method handling 'create' events."""
         logw("Found new jobfile '%s', processing..." % event.pathname)
         try:
-            job = HRM.JobDescription(event.pathname, 'file', loglevel)
+            # TODO: use better approach for the LOGLEVEL here:
+            job = HRM.JobDescription(event.pathname, 'file', LOGLEVEL)
             logd("Dict assembled from the processed job file:")
             logd(pprint.pformat(job))
         except IOError as err:
