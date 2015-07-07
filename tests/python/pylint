@@ -1,0 +1,34 @@
+#!/bin/bash
+
+# test if we are "inside" a virtualenv:
+if [ -z "$VIRTUAL_ENV" ] ; then
+    echo "Could not detect 'virtualenv' environment, not running 'pylint'."
+    exit 1
+fi
+
+
+# detect if we were run with an absolute or relative path:
+FIRST=$(echo $0 | cut -c 1)
+if [ "$FIRST" == "/" ] ; then
+    BASEDIR="$(dirname $0)/../.."
+else
+    BASEDIR="$(pwd)/$(dirname $0)/../.."
+fi
+LPY="$BASEDIR/lib/python"
+export PYTHONPATH="$LPY:$PYTHONPATH"
+## echo $PYTHONPATH
+
+
+# this is required so pylint can import the packages provided by virtualenv
+PYLINT="python $(which pylint)"
+## echo $PYLINT
+
+
+PYLINTRC="$(dirname $0)/pylintrc"
+## echo $PYLINTRC
+if [ -n "$1" ] ; then
+    SRC="$1"
+else
+    SRC="$BASEDIR/bin/hrm_queuemanager.py"
+fi
+$PYLINT --rcfile=$PYLINTRC "$SRC"
