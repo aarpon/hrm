@@ -2511,7 +2511,7 @@ class TaskSetting extends Setting {
 
     /*!
       \brief   Checks whether the restoration should allow for stabilization.
-      \param   $paramSetting An instance of the ParameterSetting clase.
+      \param   $paramSetting An instance of the ParameterSetting class.
       \return  Boolean: TRUE to enable stabilization option, FALSE otherwise.
     */
     public function isEligibleForStabilization(ParameterSetting $paramSetting) {
@@ -2531,6 +2531,19 @@ class TaskSetting extends Setting {
         if (!System::hasLicense("sted3d")) {
             return FALSE;
         }
+        return TRUE;
+    }
+
+    /*!
+      \brief   Checks whether the restoration should allow for CAC.
+      \param   $paramSetting  An instance of the ParameterSetting class.
+      \return  Boolean: TRUE to enalbe CAC, FALSE otherwise.
+    */
+    public function isEligibleForCAC(ParameterSetting $paramSetting) {
+        if ($this->numberOfChannels() == 1) {
+            return FALSE;
+        }
+
         return TRUE;
     }
 

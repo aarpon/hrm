@@ -628,6 +628,37 @@ $selectedMode  = $parameterStabilization->value();
 
 
 
+    <div id="ChromaticAberrationCorrector">
+<?php
+    if ($_SESSION['user']->isAdmin()
+        || $_SESSION['task_setting']->isEligibleForCAC($_SESSION['setting'])) {
+
+    ?>
+
+    <fieldset class="setting provided"
+    onmouseover="javascript:changeQuickHelp( 'cac' );" >
+    
+    <legend>
+        <a href="javascript:openWindow(
+                       'http://www.svi.nl/ChromaticAberrationCorrector')">
+                        <img src="images/help.png" alt="?" />
+        </a>
+    correct the image for chromatic aberration?
+    </legend>
+
+    <p>Multi-channel images usually present chromatic aberrations. The correction is crucial for meaningful analysis results, such as in colocalization.</p> 
+
+
+<?php
+    } else {
+
+    }
+?>
+</div> <!-- ChromaticAberrationCorrector -->
+
+
+
+
             <div><input name="OK" type="hidden" /></div>
 
             <div id="controls"
