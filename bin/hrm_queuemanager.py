@@ -150,7 +150,8 @@ def main():
         job_spooler.select_resource(args.resource)
 
     watch_mgr = pyinotify.WatchManager()
-    mask = pyinotify.IN_CREATE     # watched events
+    # set the mask which events to watch:
+    mask = pyinotify.IN_CREATE                      # pylint: disable-msg=E1101
     notifier = pyinotify.ThreadedNotifier(watch_mgr,
         EventHandler(queues=jobqueues, parsed_jobs=job_spooler.dirs['cur']))
     notifier.start()
