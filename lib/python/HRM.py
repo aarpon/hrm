@@ -379,6 +379,8 @@ class JobQueue(object):
             queues[self.cats[i]] = 0  # pointers to jobs in separate categories
         print(queues)
         while True:
+            if len(self.cats) == 0:
+                return
             cat = self.cats[cat_index]
             # print("Current category: %i (%s)" % (cat_index, cat))
             curqueue = self.queue[cat]
