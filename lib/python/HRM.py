@@ -480,18 +480,42 @@ class JobSpooler(object):
                 return False
         return True
 
+    def queue_request(self):
+        """Check if a status change for the QM was requested."""
+        valid = ['shutdown', 'refresh', 'pause']
+        for fname in valid:
+            check_file = os.path.join(self.dirs['requests'], fname)
+            if os.path.exists(check_file):
+                return fname
+        return None
+
     def spool(self, jobqueues):
         """Spooler function dispatching jobs from the queues. BLOCKING!"""
+        prev_request = None
         while True:
-            try:
+            request = self.queue_request()
+            if request != prev_request:
+                logi("Received queue request: %s" % request)
+                prev_request = request
+            else:
+                time.sleep(1)
+                continue
+            if request is None:
                 nextjob = jobqueues['hucore'].pop()
                 if nextjob is not None:
                     logd("Current joblist: %s" % jobqueues['hucore'].queue)
                     logd("Dispatching next job.")
+                    # FIXME: THIS IS BLOCKING!!
                     self.run_job(nextjob)
-                time.sleep(1)
-            except KeyboardInterrupt:
+                continue
+            elif request == 'shutdown':
                 break
+            elif request == 'refresh':
+                jobqueues['hucore'].queue_details_hr()
+            elif request == 'pause':
+                # no need to do anything, just sleep and check requests again:
+                pass
+            time.sleep(1)
         # TODO: when the spooler gets stopped (e.g. via Ctrl-C or upon request
         # from the web interface or the init script) while a job is still
         # running, it leaves it alone (and thus as well the files transferred
