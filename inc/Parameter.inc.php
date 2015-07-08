@@ -782,6 +782,115 @@ class NumericalParameter extends Parameter {
 */
 
 /*!
+  \class  NumericalVectorParameter
+  \brief  Class for a channel Parameter consisting of a N components.
+*/
+class NumericalVectorParameter extends NumericalParameter {
+    
+    /*!
+      \var    $componentCnt
+      \brief  Number of components in the vector.
+    */
+    protected $componentCnt;
+
+    /*!
+      \brief  Constructor:   creates an empty Parameter.
+      \param  $name          Name of the new Parameter
+      \param  $componentCnt  Number of components for the vector parameter.
+    */
+    public function __construct($name, $componentCnt) {
+        parent::__construct($name);
+        $this->reset($componentCnt);
+    }
+
+    /*!
+      \brief  Sets the Parameter value(s) to empty.
+      \param  $components Number of components for the vector parameter.
+    */
+    public function reset($componentCnt) {
+        for ($i = 1; $i <= $componentCnt; $i++ ) {
+            $this->value[] = NULL;
+        }
+    }
+
+    /*!
+      \brief  Checks whether all values in the array are valid.
+      
+      Each value in the array must be a number and might optionally
+      have to be larger than or equal to a given minimum value and smaller than
+      or equal to a given maximum.
+      \return True if all values are valid, false otherwise.
+    */
+    public function check() {
+        $this->message = '';
+        $result = True;
+        
+        /* First check that all values are set. */
+        if (array_search("", array_slice($this->value,
+                                         0, $this->componentCnt)) !== FALSE) {
+            if ($this->mustProvide()) {
+                $this->message = 'Some of the values are missing!';
+            } else {
+                $this->message = 'You can omit typing values for this ' .
+                    'parameter. If you decide to provide them, though, ' .
+                        'you must provide them all.';
+            }
+            return false;
+        }
+        
+        /* Now check the values themselves. */
+        for ( $i = 0; $i < $this->componentCnt; $i++ ) {
+            $result &= parent::checkValue( $this->value[ $i ] );
+        }
+        
+        return $result;
+    }
+
+    /*!
+      \brief  Sets the value of the parameter
+      
+      The value must be an array with as many components as $componentCnt
+      
+      \param  $value  Array of values for the parameter
+    */
+    public function setValue($value) {
+        
+        $n = count( $value );
+        for ( $i = 0; $i < $this->componentCnt; $i++ ) {
+            if ( $i < $n ) {
+                $this->value[ $i ] = $value[ $i ];
+            } else {
+                $this->value[ $i ] = null;
+            }
+        }
+    }
+    
+    /*!
+      \brief  Returns the string representation of the Parameter
+      \return string representation of the Parameter
+    */
+    public function displayString( ) {
+        $value = array_slice( $this->value, 0, $this->componentCnt );
+        $value = implode( $value, ', ' );
+        $result = $this->formattedName( );
+        if ( $this->notSet() ) {
+            $result = $result . "*not set*" . "\n";
+        } else {
+            $result = $result . $value . "\n";
+        }
+        
+        return $result;
+    }
+
+}
+
+/*
+    ============================================================================
+*/
+
+
+
+/*!
     \class  NumericalArrayParameter
     \brief  Class for a Parameter that has an array of numbers as possible value,
             where each entry represents a channel.
@@ -3189,6 +3298,21 @@ class ZStabilization extends ChoiceParameter {
 /*
     ============================================================================
 */
+
+/*!
+  \class   ChromaticAberration
+  \brief   A vector parameter to characterize the chromatic aberration.
+*/
+
+/* class ChromaticAberration extends { */
+
+/* } */
+
+
+/*
+    ============================================================================
+*/
+
 
 /*!
  \class Autocrop
