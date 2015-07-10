@@ -497,6 +497,10 @@ class JobSpooler(object):
 
     def spool(self, jobqueues):
         """Wrapper method for the spooler to catch Ctrl-C."""
+        # TODO: when the spooler gets stopped (e.g. via Ctrl-C or upon request
+        # from the web interface or the init script) while a job is still
+        # running, it leaves it alone (and thus as well the files transferred
+        # for / generated from processing)
         try:
             self._spool(jobqueues)
         except KeyboardInterrupt:
@@ -523,10 +527,6 @@ class JobSpooler(object):
                 # no need to do anything, just sleep and check requests again:
                 pass
             time.sleep(1)
-        # TODO: when the spooler gets stopped (e.g. via Ctrl-C or upon request
-        # from the web interface or the init script) while a job is still
-        # running, it leaves it alone (and thus as well the files transferred
-        # for / generated from processing)
         return 0  # stopped on user request (interactive)
 
     def run_job(self, job):
