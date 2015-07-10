@@ -519,7 +519,7 @@ class JobSpooler(object):
                     self.run_job(nextjob)
                     continue
             elif self.status_cur == 'shutdown':
-                break
+                return True
             elif self.status_cur == 'refresh':
                 jobqueues['hucore'].queue_details_hr()
                 self.status_cur = self.status_pre
@@ -527,7 +527,6 @@ class JobSpooler(object):
                 # no need to do anything, just sleep and check requests again:
                 pass
             time.sleep(1)
-        return 0  # stopped on user request (interactive)
 
     def run_job(self, job):
         """Run a job in a singlethreaded and blocking manner via GC3Pie.
