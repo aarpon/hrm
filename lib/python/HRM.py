@@ -412,9 +412,6 @@ class JobSpooler(object):
 
         Check the GC3Pie config file, set up the spool directories, set up the
         gc3 engine, check the resource directories.
-
-        TODO:
-         - do the spooling: monitor the queue and dispatch jobs as required
         """
         self.gc3spooldir = None
         self.gc3conf = None
@@ -483,7 +480,7 @@ class JobSpooler(object):
 
     def queue_request(self):
         """Check if a status change for the QM was requested."""
-        valid = ['shutdown', 'refresh', 'pause', 'resume']
+        valid = ['shutdown', 'refresh', 'pause', 'run']
         for fname in valid:
             check_file = os.path.join(self.dirs['requests'], fname)
             if os.path.exists(check_file):
@@ -501,28 +498,27 @@ class JobSpooler(object):
 
     def _spool(self, jobqueues):
         """Spooler function dispatching jobs from the queues. BLOCKING!"""
-        prev_request = None
+        prev_status = cur_status = 'run'
         while True:
             request = self.queue_request()
-            if request != prev_request:
-                logi("Received queue request: %s" % request)
-                prev_request = request
-            else:
-                time.sleep(1)
-                continue
-            if request is None:
+            if request is not None:
+                logi("Received queue status change request: %s" % request)
+                prev_status = cur_status
+                cur_status = request
+            if cur_status == 'run':
                 nextjob = jobqueues['hucore'].pop()
                 if nextjob is not None:
                     logd("Current joblist: %s" % jobqueues['hucore'].queue)
                     logd("Dispatching next job.")
                     # FIXME: THIS IS BLOCKING!!
                     self.run_job(nextjob)
-                continue
-            elif request == 'shutdown':
+                    continue
+            elif cur_status == 'shutdown':
                 break
-            elif request == 'refresh':
+            elif cur_status == 'refresh':
                 jobqueues['hucore'].queue_details_hr()
-            elif request == 'pause':
+                cur_status = prev_status
+            elif cur_status == 'pause':
                 # no need to do anything, just sleep and check requests again:
                 pass
             time.sleep(1)
