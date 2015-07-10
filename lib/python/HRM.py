@@ -493,6 +493,13 @@ class JobSpooler(object):
         return None
 
     def spool(self, jobqueues):
+        """Wrapper method for the spooler to catch Ctrl-C."""
+        try:
+            self._spool(jobqueues)
+        except KeyboardInterrupt:
+            logi("Received keyboard interrupt, stopping queue manager.")
+
+    def _spool(self, jobqueues):
         """Spooler function dispatching jobs from the queues. BLOCKING!"""
         prev_request = None
         while True:
