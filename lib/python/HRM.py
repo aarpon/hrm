@@ -98,6 +98,7 @@ def setup_rundirs(base_dir):
                     raise OSError("Error creating Queue Manager runtime "
                         "directory '%s': %s" % (cur, err))
             full_subdirs[sub_dir] = cur
+    logd("Runtime directories: %s" % full_subdirs)
     return full_subdirs
 
 
