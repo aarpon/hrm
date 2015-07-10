@@ -483,10 +483,12 @@ class JobSpooler(object):
 
     def queue_request(self):
         """Check if a status change for the QM was requested."""
-        valid = ['shutdown', 'refresh', 'pause']
+        valid = ['shutdown', 'refresh', 'pause', 'resume']
         for fname in valid:
             check_file = os.path.join(self.dirs['requests'], fname)
             if os.path.exists(check_file):
+                logd("Found file '%s'." % check_file)
+                os.remove(check_file)
                 return fname
         return None
 
