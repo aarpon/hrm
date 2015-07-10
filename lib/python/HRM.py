@@ -11,7 +11,24 @@ JobDescription()
 
 JobQueue()
     Job handling and scheduling.
+
+JobSpooler()
+    Spooler processing the job files.
+
+HucoreDeconvolveApp()
+HucorePreviewgenApp()
+HucoreEstimateSNRApp()
+    The gc3libs applications.
 """
+
+# TODO:
+# - move gc3libs.Application classes to separate mocule
+# - do not transfer the images, create a symlink or put their path into the
+#   HuCore Tcl script
+# - if instantiating a gc3libs.Application fails, the QM stops watching and
+#   parsing new job files (resulting in a "dead" state right now), so
+#   exceptions on dispatching jobs need to be caught and some notification
+#   needs to be sent/printed to the user (later this should trigger an email).
 
 import ConfigParser
 import pprint
@@ -515,7 +532,10 @@ class JobSpooler(object):
                 if nextjob is not None:
                     logd("Current joblist: %s" % jobqueues['hucore'].queue)
                     logd("Dispatching next job.")
-                    # FIXME: THIS IS BLOCKING!!
+                    # TODO: let gc3pie decide when to dispatch a job
+                    # (currently the call to run_job() is blocking and thus
+                    # the whole thing is limited to single sequential job
+                    # instances, even if more resources were available
                     self.run_job(nextjob)
                     continue
             elif self.status_cur == 'shutdown':
@@ -535,6 +555,8 @@ class JobSpooler(object):
         singlethreaded, it just means that currently no more than one job is
         run *at a time*.
         """
+        # TODO: move jobfiles of terminated jobs to 'done'
+        # TODO: put the results dir back to the user's destination directory
         # TODO: consider specifying the output dir in the jobfile!
         # -> for now we simply use the gc3spooldir as the output directory to
         # ensure results won't get moved across different storage locations:
