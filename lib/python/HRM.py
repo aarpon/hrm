@@ -420,6 +420,9 @@ class JobSpooler(object):
         self.engine = self.setup_engine()
         if not self.resource_dirs_clean():
             raise RuntimeError("GC3 resource dir unclean, refusing to start!")
+        # the default status is 'run' unless explicitly requested (which will
+        # be respected by the _spool() function anyway):
+        self.status_pre = self.status_cur = 'run'
 
     def _check_gc3conf(self, gc3conffile=None):
         """Check the gc3 config file and extract the gc3 spooldir.
@@ -478,16 +481,19 @@ class JobSpooler(object):
                 return False
         return True
 
-    def queue_request(self):
+    def check_status_request(self):
         """Check if a status change for the QM was requested."""
         valid = ['shutdown', 'refresh', 'pause', 'run']
         for fname in valid:
             check_file = os.path.join(self.dirs['requests'], fname)
             if os.path.exists(check_file):
-                logd("Found file '%s'." % check_file)
                 os.remove(check_file)
-                return fname
-        return None
+                self.status_pre = self.status_cur
+                self.status_cur = fname
+                logi("Status change requested: %s -> %s" %
+                    (self.status_pre, self.status_cur))
+                # we don't process more than one request at a time, so exit:
+                return
 
     def spool(self, jobqueues):
         """Wrapper method for the spooler to catch Ctrl-C."""
@@ -498,14 +504,9 @@ class JobSpooler(object):
 
     def _spool(self, jobqueues):
         """Spooler function dispatching jobs from the queues. BLOCKING!"""
-        prev_status = cur_status = 'run'
         while True:
-            request = self.queue_request()
-            if request is not None:
-                logi("Received queue status change request: %s" % request)
-                prev_status = cur_status
-                cur_status = request
-            if cur_status == 'run':
+            self.check_status_request()
+            if self.status_cur == 'run':
                 nextjob = jobqueues['hucore'].pop()
                 if nextjob is not None:
                     logd("Current joblist: %s" % jobqueues['hucore'].queue)
@@ -513,12 +514,12 @@ class JobSpooler(object):
                     # FIXME: THIS IS BLOCKING!!
                     self.run_job(nextjob)
                     continue
-            elif cur_status == 'shutdown':
+            elif self.status_cur == 'shutdown':
                 break
-            elif cur_status == 'refresh':
+            elif self.status_cur == 'refresh':
                 jobqueues['hucore'].queue_details_hr()
-                cur_status = prev_status
-            elif cur_status == 'pause':
+                self.status_cur = self.status_pre
+            elif self.status_cur == 'pause':
                 # no need to do anything, just sleep and check requests again:
                 pass
             time.sleep(1)
