@@ -171,7 +171,7 @@ class JobDescription(dict):
 
     def _parse_jobfile(self, fname):
         """Initialize ConfigParser for a file and run parsing method."""
-        debug("Parsing jobfile '%s'..." % fname)
+        logd("Parsing jobfile '%s'..." % fname)
         if not os.path.exists(fname):
             raise IOError("Can't find file '%s'!" % fname)
         if not os.access(fname, os.R_OK):
@@ -186,18 +186,18 @@ class JobDescription(dict):
             time.sleep(snooze)
             try:
                 parsed = self.jobparser.read(fname)
-                debug("Parsed file '%s'." % parsed)
+                logd("Parsed file '%s'." % parsed)
             except ConfigParser.MissingSectionHeaderError as err:
                 # consider using SyntaxError here!
                 raise IOError("ERROR in JobDescription: %s" % err)
             self._sections = self.jobparser.sections()
             if self._sections:
-                debug("Job parsing succeeded after %s seconds!" % snooze)
+                logd("Job parsing succeeded after %s seconds!" % snooze)
                 break
         if not self._sections:
             warn("ERROR: Could not parse '%s'!" % fname)
             raise IOError("Can't parse '%s'" % fname)
-        debug("Job description sections: %s" % self._sections)
+        logd("Job description sections: %s" % self._sections)
         self._parse_jobdescription()
 
     def _parse_jobdescription(self):
@@ -317,14 +317,14 @@ class JobQueue(object):
             warn("Adding a new queue for '%s' to the JobQueue." % cat)
             self.cats.append(cat)
             self.queue[cat] = deque()
-            debug("Current queue categories: %s" % self.cats)
+            logd("Current queue categories: %s" % self.cats)
         else:
             # in case there are already jobs of this category, we don't touch
             # the scheduler / priority queue:
-            debug("JobQueue already contains a queue for '%s'." % cat)
+            logd("JobQueue already contains a queue for '%s'." % cat)
         self.queue[cat].append(uid)
         info("Queue for category '%s': %s" % (cat, self.queue[cat]))
-        # debug("Overall list of job descriptions: %s" % self.jobs)
+        # logd("Overall list of job descriptions: %s" % self.jobs)
 
     def pop(self):
         """Return the next job description for processing.
@@ -345,14 +345,14 @@ class JobQueue(object):
         jobid = self.queue[cat].popleft()
         info("Retrieving next job: category '%s', uid '%s'." % (cat, jobid))
         if len(self.queue[cat]) >= 1:
-            debug("Shifting category list.")
+            logd("Shifting category list.")
             self.cats.rotate(-1)  # move the first element to last position
         else:
-            debug("Queue for category '%s' now empty, removing it." % cat)
+            logd("Queue for category '%s' now empty, removing it." % cat)
             self.cats.popleft()  # remove it from the categories list
             del self.queue[cat]  # delete the category from the queue dict
-        debug("Current queue categories: %s" % self.cats)
-        debug("Current contents of all queues: %s" % self.queue)
+        logd("Current queue categories: %s" % self.cats)
+        logd("Current contents of all queues: %s" % self.queue)
         return self.jobs[jobid]
 
     def remove(self, uid):
@@ -373,7 +373,7 @@ class JobQueue(object):
         except KeyError as err:
             warn("No job with uid '%s' was found!" % err)
             return
-        debug("Category of job to remove: '%s'." % cat)
+        logd("Category of job to remove: '%s'." % cat)
         try:
             self.queue[cat].remove(uid)
         except KeyError as err:
@@ -382,14 +382,14 @@ class JobQueue(object):
         except ValueError as err:
             warn("No job with uid '%s' in queue! (%s)" % (uid, err))
             return
-        debug("Current queue categories: %s" % self.cats)
-        debug("Current contents of all queues: %s" % self.queue)
+        logd("Current queue categories: %s" % self.cats)
+        logd("Current contents of all queues: %s" % self.queue)
         if len(self.queue[cat]) < 1:
-            debug("Queue for category '%s' now empty, removing it." % cat)
+            logd("Queue for category '%s' now empty, removing it." % cat)
             self.cats.remove(cat)  # remove it from the categories list
             del self.queue[cat]    # delete the category from the queue dict
-            debug("Current queue categories: %s" % self.cats)
-            debug("Current contents of all queues: %s" % self.queue)
+            logd("Current queue categories: %s" % self.cats)
+            logd("Current contents of all queues: %s" % self.queue)
 
     def queue_details_hr(self):
         """Generate a human readable list with the current queue details."""
