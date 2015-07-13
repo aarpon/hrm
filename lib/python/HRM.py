@@ -125,6 +125,12 @@ class JobDescription(dict):
 
     Read an HRM job description either from a file or a string and parse
     the sections, check them for sane values and store them in a dict.
+
+    Instance Variables
+    ------------------
+    jobparser : ConfigParser.RawConfigParser
+    _sections : list
+    name : str
     """
 
     def __init__(self, job, srctype, loglevel=None):
