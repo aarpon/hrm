@@ -97,7 +97,15 @@ class EventHandler(pyinotify.ProcessEvent):
                 (job['type'], self.queues[job['type']].queue))
 
     def move_jobfiles(self, jobfile, job):
-        """Move a parsed jobfile to the corresponding spooling subdir."""
+        """Move a parsed jobfile to the corresponding spooling subdir.
+
+        Parameters
+        ----------
+        jobfile : str
+            The path and filename of the jobfile to be moved.
+        job : HRM.JobDescription
+            The job description object.
+        """
         if self.tgt is None:
             logw("No target directory set, not moving job file!")
             return
