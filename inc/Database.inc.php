@@ -424,7 +424,6 @@ class DatabaseConnection {
                   We leave the code in place.
                 */
                 if (is_array($parameterValue[0])) {
-
                     $maxChanCnt = $this->getMaxChanCnt();
                     for ($i = 0; $i < $maxChanCnt; $i++) {
                         if ($parameterValue[$i] != null) {
@@ -1992,6 +1991,10 @@ class DatabaseConnection {
     }
 
 
+    /*!
+      \brief  Gets the maximum number of channels from the database.
+      \return The number of channels.
+    */
     public function getMaxChanCnt() {
         $query  = "SELECT MAX(value) as \"\" FROM possible_values ";
         $query .= "WHERE parameter='NumberOfChannels'";
