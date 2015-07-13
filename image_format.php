@@ -169,10 +169,7 @@ function check($parameter, $value) {
                     <?php
                     }
 
-$db = new DatabaseConnection;
-$maxChanCnt = $db->getMaxChanCnt();
-
-for ($i = 0; $i <= $maxChanCnt; $i++) {
+for ($i = 0; $i <= $db->getMaxChanCnt(); $i++) {
     if ($i == 0) {
 ?>
         <input name="NumberOfChannels"
