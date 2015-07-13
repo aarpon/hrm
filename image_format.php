@@ -171,37 +171,33 @@ function check($parameter, $value) {
                     </div>
                     <?php
                     }
-                    ?>
 
-                    <input name="NumberOfChannels"
-                           type="radio"
-                           value=""
-                           style="display:none;" />
-                    <input name="NumberOfChannels"
-                           type="radio"
-                           value="1"
-                           <?php check($parameterNumberOfChannels, 1) ?>/>1
-                    <input name="NumberOfChannels"
-                           type="radio"
-                           value="2"
-                           <?php check($parameterNumberOfChannels, 2) ?>/>2
-                    <input name="NumberOfChannels"
-                           type="radio"
-                           value="3"
-                           <?php check($parameterNumberOfChannels, 3) ?>/>3
-                    <input name="NumberOfChannels"
-                           type="radio"
-                           value="4"
-                            <?php check($parameterNumberOfChannels, 4) ?>/>4
-                    <input name="NumberOfChannels"
-                           type="radio"
-                           value="5"
-                           <?php check($parameterNumberOfChannels, 5) ?>/>5
-                    <input name="NumberOfChannels"
-                           type="radio"
-                           value="6"
-                           <?php check($parameterNumberOfChannels, 6) ?>/>6
+$db = new DatabaseConnection;
+$maxChanCnt = $db->getMaxChanCnt();
+
+for ($i = 0; $i <= $maxChanCnt; $i++) {
+    if ($i == 0) {
+?>
+        <input name="NumberOfChannels"
+        type="radio"
+        value=""
+        style="display:none;" />
+<?php
+    } else {
+?>
+        <input name="NumberOfChannels"
+        type="radio"
+        value="<?php echo $i;?>"
+<?php check($parameterNumberOfChannels, $i) ?>    /> <?php echo $i;?>
+<?php
+    }    
+}
+?>
+
+
+
                 </div> <!-- values -->
+
 
                 <div class="bottom">
                     <p class="message_confidence_<?php

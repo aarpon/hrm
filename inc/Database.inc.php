@@ -421,7 +421,9 @@ class DatabaseConnection {
                   We leave the code in place.
                 */
                 if (is_array($parameterValue[0])) {
-                    for ($i = 0; $i < 6; $i++) {
+
+                    $maxChanCnt = $this->getMaxChanCnt();
+                    for ($i = 0; $i < $maxChanCnt; $i++) {
                         if ($parameterValue[$i] != null) {
                             $parameterValue[$i] = implode("/", array_filter($parameterValue[$i]));
                         }
@@ -523,7 +525,8 @@ class DatabaseConnection {
                   We leave the code in place.
                 */
                 if (is_array($parameterValue[0])) {
-                    for ($i = 0; $i < 6; $i++) {
+                    $maxChanCnt = $this->getMaxChanCnt();
+                    for ($i = 0; $i < $maxChanCnt; $i++) {
                         if ($parameterValue[$i] != null) {
                             $parameterValue[$i] = implode("/", array_filter($parameterValue[$i]));
                         }
@@ -1996,6 +1999,20 @@ class DatabaseConnection {
         $result = $this->execute($query);
         return $result;
     }
+
+
+    public function getMaxChanCnt() {
+        $query  = "SELECT MAX(value) as \"\" FROM possible_values ";
+        $query .= "WHERE parameter='NumberOfChannels'";
+        $result = trim($this->execute($query));
+
+        if (!is_numeric($result)) {
+            $result = 5;
+        }
+        
+        return $result;
+    }
+    
 
     /*!
       \brief  Get the list of Setting's for the User

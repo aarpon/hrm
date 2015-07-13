@@ -761,6 +761,7 @@ class NumericalParameter extends Parameter {
         $this->value = $value;
     }
 
+
     /*!
         \brief  Returns the string representation of the Parameter
         \return string representation of the Parameter
@@ -817,12 +818,13 @@ class NumericalArrayParameter extends NumericalParameter {
         \brief  Sets the Parameter value(s) to empty
     */
     public function reset( ) {
-        $this->value = array (
-            0 => NULL,
-            1 => NULL,
-            2 => NULL,
-            3 => NULL,
-            4 => NULL );
+        $db = new DatabaseConnection;
+        $maxChanCnt = $db->getMaxChanCnt();
+
+        for ($i = 0; $i < $maxChanCnt; $i++) {
+            $this->value[$i] = NULL;
+        }
+        
         $this->numberOfChannels = 1;
     }
 
@@ -832,16 +834,19 @@ class NumericalArrayParameter extends NumericalParameter {
     */
     public function setNumberOfChannels($number) {
 
+        $db = new DatabaseConnection;
+        $maxChanCnt = $db->getMaxChanCnt();
+
         if ( $number == $this->numberOfChannels ) {
             return;
         }
         if ( $number < 1 ) {
             $number = 1;
         }
-        if ( $number > 6 ) {
-            $number = 6;
+        if ( $number > $maxChanCnt ) {
+            $number = $maxChanCnt;
         }
-        for ( $i = $number; $i < 6; $i++ ) {
+        for ( $i = $number; $i < $maxChanCnt; $i++ ) {
             $this->value[ $i ] = NULL;
         }
         $this->numberOfChannels = $number;
@@ -888,15 +893,17 @@ class NumericalArrayParameter extends NumericalParameter {
     /*!
         \brief  Sets the value of the parameter
 
-        The value must be an array with 6 values (those who refer to
+        The value must be an array with 'maxChanCnt' values (those who refer to
         non-existing channels should be null).
 
         \param  $value  Array of values for the parameter
     */
     public function setValue($value) {
+        $db = new DatabaseConnection;
+        $maxChanCnt = $db->getMaxChanCnt();
 
         $n = count( $value );
-        for ( $i = 0; $i < 6; $i++ ) {
+        for ( $i = 0; $i < $maxChanCnt; $i++ ) {
             if ( $i < $n ) {
                 $this->value[ $i ] = $value[ $i ];
             } else {
@@ -2500,9 +2507,8 @@ class ColocCoefficient extends AnyTypeArrayParameter {
         public function setValue($value) {
 
                 /* The parent function links the number of channels and the
-                 allowed number of values for a parameter. Thus, a parameter
-                 can have 6 values, at most. This is clearly not enough for
-                 the 'ColocCoefficient' class. */
+                 allowed number of values for a parameter. This is clearly not
+                 enough for the 'ColocCoefficient' class. */
 
             $n = count( $value );
             $valueCnt = count($this->possibleValues);
@@ -2522,9 +2528,8 @@ class ColocCoefficient extends AnyTypeArrayParameter {
         public function setNumberOfChannels( )
         {
                 /* The parent function links the number of channels and the
-                 allowed number of values for a parameter. Thus, a parameter
-                 can have 6 values, at most. This is clearly not enough for
-                 the 'ColocCoefficient' class. */
+                 allowed number of values for a parameter. This is clearly
+                 not enough for the 'ColocCoefficient' class. */
             return;
         }
 
