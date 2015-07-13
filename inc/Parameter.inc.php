@@ -838,10 +838,10 @@ class NumericalArrayParameter extends NumericalParameter {
         if ( $number < 1 ) {
             $number = 1;
         }
-        if ( $number > 5 ) {
-            $number = 5;
+        if ( $number > 6 ) {
+            $number = 6;
         }
-        for ( $i = $number; $i < 5; $i++ ) {
+        for ( $i = $number; $i < 6; $i++ ) {
             $this->value[ $i ] = NULL;
         }
         $this->numberOfChannels = $number;
@@ -888,7 +888,7 @@ class NumericalArrayParameter extends NumericalParameter {
     /*!
         \brief  Sets the value of the parameter
 
-        The value must be an array with 5 values (those who refer to
+        The value must be an array with 6 values (those who refer to
         non-existing channels should be null).
 
         \param  $value  Array of values for the parameter
@@ -896,7 +896,7 @@ class NumericalArrayParameter extends NumericalParameter {
     public function setValue($value) {
 
         $n = count( $value );
-        for ( $i = 0; $i < 5; $i++ ) {
+        for ( $i = 0; $i < 6; $i++ ) {
             if ( $i < $n ) {
                 $this->value[ $i ] = $value[ $i ];
             } else {
@@ -2501,7 +2501,7 @@ class ColocCoefficient extends AnyTypeArrayParameter {
 
                 /* The parent function links the number of channels and the
                  allowed number of values for a parameter. Thus, a parameter
-                 can have 5 values, at most. This is clearly not enough for
+                 can have 6 values, at most. This is clearly not enough for
                  the 'ColocCoefficient' class. */
 
             $n = count( $value );
@@ -2523,7 +2523,7 @@ class ColocCoefficient extends AnyTypeArrayParameter {
         {
                 /* The parent function links the number of channels and the
                  allowed number of values for a parameter. Thus, a parameter
-                 can have 5 values, at most. This is clearly not enough for
+                 can have 6 values, at most. This is clearly not enough for
                  the 'ColocCoefficient' class. */
             return;
         }

@@ -194,6 +194,10 @@ function check($parameter, $value) {
                            type="radio"
                            value="5"
                            <?php check($parameterNumberOfChannels, 5) ?>/>5
+                    <input name="NumberOfChannels"
+                           type="radio"
+                           value="6"
+                           <?php check($parameterNumberOfChannels, 6) ?>/>6
                 </div> <!-- values -->
 
                 <div class="bottom">

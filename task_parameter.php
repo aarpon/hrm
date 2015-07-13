@@ -25,7 +25,7 @@ if (!isset($_SESSION['task_setting'])) {
   $_SESSION['task_setting'] = new TaskSetting();
 }
 if ($_SESSION['user']->isAdmin()) {
-  $_SESSION['task_setting']->setNumberOfChannels(5);
+  $_SESSION['task_setting']->setNumberOfChannels(6);
 }
 else {
   $_SESSION['task_setting']->setNumberOfChannels(
