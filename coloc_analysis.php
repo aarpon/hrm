@@ -22,7 +22,7 @@ if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
 }
 
 if ($_SESSION['user']->isAdmin()) {
-  $_SESSION['analysis_setting']->setNumberOfChannels(5);
+  $_SESSION['analysis_setting']->setNumberOfChannels(6);
 } else {
   $_SESSION['analysis_setting']->setNumberOfChannels(
           $_SESSION['setting']->numberOfChannels());

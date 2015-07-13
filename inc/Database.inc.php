@@ -421,7 +421,7 @@ class DatabaseConnection {
                   We leave the code in place.
                 */
                 if (is_array($parameterValue[0])) {
-                    for ($i = 0; $i < 5; $i++) {
+                    for ($i = 0; $i < 6; $i++) {
                         if ($parameterValue[$i] != null) {
                             $parameterValue[$i] = implode("/", array_filter($parameterValue[$i]));
                         }
@@ -523,7 +523,7 @@ class DatabaseConnection {
                   We leave the code in place.
                 */
                 if (is_array($parameterValue[0])) {
-                    for ($i = 0; $i < 5; $i++) {
+                    for ($i = 0; $i < 6; $i++) {
                         if ($parameterValue[$i] != null) {
                             $parameterValue[$i] = implode("/", array_filter($parameterValue[$i]));
                         }
