@@ -22,7 +22,9 @@ if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
 }
 
 if ($_SESSION['user']->isAdmin()) {
-  $_SESSION['analysis_setting']->setNumberOfChannels(6);
+    $db = new DatabaseConnection;
+    $maxChanCnt = $db->getMaxChanCnt();
+    $_SESSION['analysis_setting']->setNumberOfChannels( $maxChanCnt );
 } else {
   $_SESSION['analysis_setting']->setNumberOfChannels(
           $_SESSION['setting']->numberOfChannels());
