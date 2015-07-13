@@ -160,8 +160,8 @@ class JobDescription(dict):
         # way one could simply use the cmdline utility "sha1sum" to check if a
         # certain job description file belongs to a specific UID.
         self['uid'] = sha1(self.__repr__()).hexdigest()
-        pprint.pprint("Finished initialization of JobDescription().")
-        pprint.pprint(self)
+        logi(pprint.pformat("Finished initialization of JobDescription()."))
+        logd(pprint.pformat(self))
 
     def _parse_jobfile(self, fname):
         """Initialize ConfigParser for a file and run parsing method."""
