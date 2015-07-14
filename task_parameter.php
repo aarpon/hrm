@@ -229,6 +229,7 @@ if ($selectedMode == "cmle") {
     $_SESSION['task_setting']->parameter("SignalNoiseRatio");
   $signalNoiseRatioValue = $signalNoiseRatioParam->value();
 
+
 for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
 
     $value = "";
@@ -239,6 +240,7 @@ for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
         if ( $i == 3 ) {
             echo "<br />";
         }
+
 
 ?>
                           <span class="nowrap">Ch<?php echo $i ?>:
@@ -678,8 +680,9 @@ echo "<p>$message</p>";
 
 include("footer.inc.php");
 
-// Retrieve values from sessionStore if coming back from one of the
-// SNR estimators
+
+/* Retrieve values from sessionStore if coming back from one of the SNR
+   estimators. */
 if ( !( strpos( $_SERVER[ 'HTTP_REFERER' ],
     'estimate_snr_from_image.php') === false ) ||
     !( strpos( $_SERVER[ 'HTTP_REFERER' ],
@@ -689,10 +692,13 @@ if ( !( strpos( $_SERVER[ 'HTTP_REFERER' ],
             $_SESSION['SNR_Calculated'] == 'true') {
 ?>
         <script type="text/javascript">
-            $(document).ready( retrieveValues(
-            new Array( 'SignalNoiseRatioCMLE0',
-            'SignalNoiseRatioCMLE1', 'SignalNoiseRatioCMLE2',
-            'SignalNoiseRatioCMLE3', 'SignalNoiseRatioCMLE4' ) ) );
+        
+        /* Consider the max chan cnt supported by Huygens. */
+        snrArray = new Array();
+        for (var i = 0; i < 32; i++) {
+            snrArray.push('SignalNoiseRatioCMLE' + i);
+        }
+        $(document).ready( retrieveValues( snrArray ) );
         </script>"
 
 <?php
