@@ -648,26 +648,28 @@ class HucoreDeconvolveApp(gc3libs.Application):
     """
 
     def __init__(self, job, gc3_output):
-        logw('Instantiating a HucoreDeconvolveApp:\n%s' % job)
-        logi('Job UID: %s' % job['uid'])
+        self.job = job   # remember the job object
+        uid = self.job['uid']
+        logw('Instantiating a HucoreDeconvolveApp:\n%s' % self.job)
+        logi('Job UID: %s' % uid)
         # we need to add the template (with the local path) to the list of
         # files that need to be transferred to the system running hucore:
-        job['infiles'].append(job['template'])
+        self.job['infiles'].append(self.job['template'])
         # for the execution on the remote host, we need to strip all paths from
         # this string as the template file will end up in the temporary
         # processing directory together with all the images:
-        templ_on_tgt = job['template'].split('/')[-1]
+        templ_on_tgt = self.job['template'].split('/')[-1]
         gc3libs.Application.__init__(
             self,
-            arguments = [job['exec'],
+            arguments = [self.job['exec'],
                 '-exitOnDone',
                 '-noExecLog',
                 '-checkForUpdates', 'disable',
                 '-template', templ_on_tgt],
-            inputs = job['infiles'],
+            inputs = self.job['infiles'],
             outputs = ['resultdir', 'previews'],
             # collect the results in a subfolder of GC3Pie's spooldir:
-            output_dir = os.path.join(gc3_output, 'results_%s' % job['uid']),
+            output_dir = os.path.join(gc3_output, 'results_%s' % uid),
             stderr = 'stdout.txt', # combine stdout & stderr
             stdout = 'stdout.txt')
 
