@@ -130,9 +130,9 @@ class JobDescription(dict):
     Instance Variables
     ------------------
     jobparser : ConfigParser.RawConfigParser
-    _sections : list
     srctype : str
     fname : str
+    _sections : list
     """
 
     def __init__(self, job, srctype, loglevel=None):
@@ -455,7 +455,15 @@ class JobQueue(object):
 
 class JobSpooler(object):
 
-    """Spooler class processing the queue, dispatching jobs, etc."""
+    """Spooler class processing the queue, dispatching jobs, etc.
+
+    Instance Variables
+    ------------------
+    gc3spooldir : str
+    gc3conf : str
+    dirs : dict
+    engine : gc3libs.core.Engine
+    """
 
     def __init__(self, spool_dir, gc3conf=None):
         """Prepare the spooler.
@@ -496,7 +504,12 @@ class JobSpooler(object):
         self.gc3conf = gc3conffile
 
     def setup_engine(self):
-        """Set up the GC3Pie engine."""
+        """Set up the GC3Pie engine.
+
+        Returns
+        -------
+        gc3libs.core.Engine
+        """
         logi('Creating GC3Pie engine using config file "%s".' % self.gc3conf)
         return gc3libs.create_engine(self.gc3conf)
 
