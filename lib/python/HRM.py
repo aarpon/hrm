@@ -116,7 +116,7 @@ def setup_rundirs(base_dir):
                     raise OSError("Error creating Queue Manager runtime "
                         "directory '%s': %s" % (cur, err))
             full_subdirs[sub_dir] = cur
-    logd("Runtime directories: %s" % full_subdirs)
+    logd("Runtime directories:\n%s" % pprint.pformat(full_subdirs))
     return full_subdirs
 
 
@@ -622,12 +622,15 @@ class JobSpooler(object):
             self.engine.progress()
             curstate = app.execution.state
             if not (curstate == laststate):
-                logw("Job in status %s " % curstate)
+                logi("Job in status %s " % curstate)
             laststate = app.execution.state
             # Wait a few seconds...
             time.sleep(1)
-        logw("Job terminated with exit code %s." % app.execution.exitcode)
-        logw("The output of the application is in `%s`." %  app.output_dir)
+        if app.execution.exitcode != 0:
+            logw("Abnormal job exit code: %s!" % app.execution.exitcode)
+        else:
+            logd("Job terminated successfuly!")
+        logd("The output of the application is in `%s`." %  app.output_dir)
         # hucore EXIT CODES:
         # 0: all went well
         # 143: hucore.bin received the HUP signal (9)
