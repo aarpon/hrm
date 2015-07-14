@@ -601,7 +601,6 @@ class JobSpooler(object):
         singlethreaded, it just means that currently no more than one job is
         run *at a time*.
         """
-        # TODO: move jobfiles of terminated jobs to 'done'
         # TODO: put the results dir back to the user's destination directory
         # TODO: consider specifying the output dir in the jobfile!
         # -> for now we simply use the gc3spooldir as the output directory to
@@ -631,6 +630,7 @@ class JobSpooler(object):
         else:
             logd("Job terminated successfuly!")
         logd("The output of the application is in `%s`." %  app.output_dir)
+        job.move_jobfile(self.dirs['done'])
         # hucore EXIT CODES:
         # 0: all went well
         # 143: hucore.bin received the HUP signal (9)
