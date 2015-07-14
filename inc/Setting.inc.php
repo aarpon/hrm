@@ -2157,6 +2157,8 @@ class TaskSetting extends Setting {
       \param	$postedParameters	The $_POST array
     */
     public function checkPostedTaskParameters($postedParameters) {
+        $db = new DatabaseConnection;
+        $maxChanCnt = $db->getMaxChanCnt();
 
         if (count($postedParameters) == 0) {
             $this->message = '';
@@ -2482,6 +2484,9 @@ class AnalysisSetting extends Setting {
       \param	$postedParameters	The $_POST array
     */
     public function checkPostedAnalysisParameters($postedParameters) {
+        $db = new DatabaseConnection;
+        $maxChanCnt = $db->getMaxChanCnt();
+
         if (count($postedParameters) == 0) {
             $this->message = '';
             return False;
