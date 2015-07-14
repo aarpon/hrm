@@ -35,6 +35,7 @@ import pprint
 import time
 import os
 import sys
+import shutil
 from collections import deque
 from hashlib import sha1  # ignore this bug in pylint: disable-msg=E0611
 
@@ -170,6 +171,31 @@ class JobDescription(dict):
         self['uid'] = sha1(self.__repr__()).hexdigest()
         logi(pprint.pformat("Finished initialization of JobDescription()."))
         logd(pprint.pformat(self))
+
+    def move_jobfile(self, target):
+        """Move a jobfile to the desired spooling subdir.
+
+        The file name will be set automatically to the job's UID with an
+        added suffix ".jobfile", no matter how the file was called before.
+
+        WARNING: destination file is not checked, if it exists and we have
+        write permissions, it is simply overwritten!
+
+        Parameters
+        ----------
+        target : str
+            The target directory.
+        """
+        # make sure to only move "file" job descriptions, return otherwise:
+        if self.srctype != 'file':
+            return
+        if target is None:
+            logw("No target directory set, not moving job file!")
+            return
+        target = os.path.join(target, self['uid'] + '.jobfile')
+        logd("Moving jobfile '%s' to '%s'." % (self.fname, target))
+        shutil.move(self.fname, target)
+        self.fname = target
 
     def _parse_jobfile(self):
         """Initialize ConfigParser for a file and run parsing method."""

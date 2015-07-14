@@ -9,7 +9,6 @@ The prototype of a new GC3Pie-based Queue Manager for HRM.
 # stdlib imports
 import sys
 import os
-import shutil
 
 TOP = os.path.abspath(os.path.dirname(sys.argv[0]) + '/../')
 LPY = os.path.join(TOP, "lib", "python")
@@ -92,26 +91,9 @@ class EventHandler(pyinotify.ProcessEvent):
             logc("ERROR: no queue existing for jobtype '%s'!" % job['type'])
             return
         self.queues[job['type']].append(job)
-        self.move_jobfiles(event.pathname, job)
+        job.move_jobfile(self.tgt)
         logd("Current job queue for type '%s': %s" %
                 (job['type'], self.queues[job['type']].queue))
-
-    def move_jobfiles(self, jobfile, job):
-        """Move a parsed jobfile to the corresponding spooling subdir.
-
-        Parameters
-        ----------
-        jobfile : str
-            The path and filename of the jobfile to be moved.
-        job : HRM.JobDescription
-            The job description object.
-        """
-        if self.tgt is None:
-            logw("No target directory set, not moving job file!")
-            return
-        target = os.path.join(self.tgt, job['uid'] + '.cfg')
-        logd("Moving jobfile '%s' to '%s'." % (jobfile, target))
-        shutil.move(jobfile, target)
 
 
 def parse_arguments():
