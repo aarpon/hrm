@@ -21,14 +21,14 @@ HucoreEstimateSNRApp()
     The gc3libs applications.
 """
 
-# TODO:
-# - move gc3libs.Application classes to separate mocule
-# - do not transfer the images, create a symlink or put their path into the
-#   HuCore Tcl script
-# - if instantiating a gc3libs.Application fails, the QM stops watching and
-#   parsing new job files (resulting in a "dead" state right now), so
-#   exceptions on dispatching jobs need to be caught and some notification
-#   needs to be sent/printed to the user (later this should trigger an email).
+# TODO: move gc3libs.Application classes to separate mocule
+# TODO: don't transfer the image files, create a symlink or put their path
+#       into the HuCore Tcl script
+# TODO: catch exceptions on dispatching jobs, otherwise the QM gets stuck:
+#       it stops watching the "new" spool directory if instantiating a
+#       gc3libs.Application fails (resulting in a "dead" state right now),
+#       instead a notification needs to be sent/printed to the user (later
+#       this should trigger an email).
 
 import ConfigParser
 import pprint
