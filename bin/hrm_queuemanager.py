@@ -70,7 +70,6 @@ class EventHandler(pyinotify.ProcessEvent):
             The path to a directory where to move parsed jobfiles.
         """
         logi("Initialized the event handler for inotify.")
-        # TODO: we need to distinguish different job types and act accordingly
         self.queues = queues
         self.tgt = tgt
 
@@ -90,6 +89,7 @@ class EventHandler(pyinotify.ProcessEvent):
         if not self.queues.has_key(job['type']):
             logc("ERROR: no queue existing for jobtype '%s'!" % job['type'])
             return
+        # TODO: we need to distinguish different job types and act accordingly
         self.queues[job['type']].append(job)
         job.move_jobfile(self.tgt)
         logd("Current job queue for type '%s': %s" %

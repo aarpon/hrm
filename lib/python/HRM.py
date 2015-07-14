@@ -157,8 +157,8 @@ class JobDescription(dict):
             self.fname = job
             self._parse_jobfile()
         elif (srctype == 'string'):
-            # TODO: _parse_jobstring(job)
             self.fname = "string"
+            # _parse_jobstring(job) needs to be implemented if required!
             raise Exception("Source type 'string' not yet implemented!")
         else:
             raise Exception("Unknown source type '%s'" % srctype)
