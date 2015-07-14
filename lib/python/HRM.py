@@ -130,7 +130,8 @@ class JobDescription(dict):
     ------------------
     jobparser : ConfigParser.RawConfigParser
     _sections : list
-    name : str
+    srctype : str
+    fname : str
     """
 
     def __init__(self, job, srctype, loglevel=None):
@@ -150,12 +151,13 @@ class JobDescription(dict):
             set_loglevel(loglevel)
         self.jobparser = ConfigParser.RawConfigParser()
         self._sections = []
+        self.srctype = srctype
         if (srctype == 'file'):
-            self.name = "file '%s'" % job
-            self._parse_jobfile(job)
+            self.fname = job
+            self._parse_jobfile()
         elif (srctype == 'string'):
             # TODO: _parse_jobstring(job)
-            self.name = "string received from socket"
+            self.fname = "string"
             raise Exception("Source type 'string' not yet implemented!")
         else:
             raise Exception("Unknown source type '%s'" % srctype)
@@ -169,13 +171,13 @@ class JobDescription(dict):
         logi(pprint.pformat("Finished initialization of JobDescription()."))
         logd(pprint.pformat(self))
 
-    def _parse_jobfile(self, fname):
+    def _parse_jobfile(self):
         """Initialize ConfigParser for a file and run parsing method."""
-        logd("Parsing jobfile '%s'..." % fname)
-        if not os.path.exists(fname):
-            raise IOError("Can't find file '%s'!" % fname)
-        if not os.access(fname, os.R_OK):
-            raise IOError("Can't read file '%s', permission problem!" % fname)
+        logd("Parsing jobfile '%s'..." % self.fname)
+        if not os.path.exists(self.fname):
+            raise IOError("Can't find file '%s'!" % self.fname)
+        if not os.access(self.fname, os.R_OK):
+            raise IOError("No permission reading file '%s'!" % self.fname)
         # sometimes the inotify event gets processed very rapidly and we're
         # trying to parse the file *BEFORE* it has been written to disk
         # entirely, which breaks the parsing, so we introduce four additional
@@ -185,7 +187,7 @@ class JobDescription(dict):
                 info("Sections are empty, re-trying in %is." % snooze)
             time.sleep(snooze)
             try:
-                parsed = self.jobparser.read(fname)
+                parsed = self.jobparser.read(self.fname)
                 logd("Parsed file '%s'." % parsed)
             except ConfigParser.MissingSectionHeaderError as err:
                 # consider using SyntaxError here!
@@ -195,8 +197,7 @@ class JobDescription(dict):
                 logd("Job parsing succeeded after %s seconds!" % snooze)
                 break
         if not self._sections:
-            warn("ERROR: Could not parse '%s'!" % fname)
-            raise IOError("Can't parse '%s'" % fname)
+            raise IOError("Can't parse '%s'" % self.fname)
         logd("Job description sections: %s" % self._sections)
         self._parse_jobdescription()
 
@@ -214,24 +215,24 @@ class JobDescription(dict):
         # previewgen using templates as well!
         # parse generic information, version, user etc.
         if not self.jobparser.has_section('hrmjobfile'):
-            raise ValueError("Error parsing job from %s." % self.name)
+            raise ValueError("Error parsing job from %s." % self.fname)
         # version
         try:
             self['ver'] = self.jobparser.get('hrmjobfile', 'version')
         except ConfigParser.NoOptionError:
-            raise ValueError("Can't find version in %s." % self.name)
+            raise ValueError("Can't find version in %s." % self.fname)
         if not (self['ver'] == JOBFILE_VER):
             raise ValueError("Unexpected version in %s." % self['ver'])
         # username
         try:
             self['user'] = self.jobparser.get('hrmjobfile', 'username')
         except ConfigParser.NoOptionError:
-            raise ValueError("Can't find username in %s." % self.name)
+            raise ValueError("Can't find username in %s." % self.fname)
         # useremail
         try:
             self['email'] = self.jobparser.get('hrmjobfile', 'useremail')
         except ConfigParser.NoOptionError:
-            raise ValueError("Can't find email address in %s." % self.name)
+            raise ValueError("Can't find email address in %s." % self.fname)
         # timestamp
         try:
             self['timestamp'] = self.jobparser.get('hrmjobfile', 'timestamp')
@@ -239,12 +240,12 @@ class JobDescription(dict):
             if self['timestamp'] == 'on_parsing':
                 self['timestamp'] = time.time()
         except ConfigParser.NoOptionError:
-            raise ValueError("Can't find timestamp in %s." % self.name)
+            raise ValueError("Can't find timestamp in %s." % self.fname)
         # type
         try:
             self['type'] = self.jobparser.get('hrmjobfile', 'jobtype')
         except ConfigParser.NoOptionError:
-            raise ValueError("Can't find jobtype in %s." % self.name)
+            raise ValueError("Can't find jobtype in %s." % self.fname)
         # from here on a jobtype specific parsing must be done:
         if self['type'] == 'hucore':
             self._parse_job_hucore()
@@ -266,14 +267,14 @@ class JobDescription(dict):
         try:
             self['exec'] = self.jobparser.get('hucore', 'executable')
         except ConfigParser.NoOptionError:
-            raise ValueError("Can't find executable in %s." % self.name)
+            raise ValueError("Can't find executable in %s." % self.fname)
         try:
             self['template'] = self.jobparser.get('hucore', 'template')
         except ConfigParser.NoOptionError:
-            raise ValueError("Can't find template in %s." % self.name)
+            raise ValueError("Can't find template in %s." % self.fname)
         # and the input file(s):
         if not 'inputfiles' in self._sections:
-            raise ValueError("No input files defined in %s." % self.name)
+            raise ValueError("No input files defined in %s." % self.fname)
         self['infiles'] = []
         for option in self.jobparser.options('inputfiles'):
             infile = self.jobparser.get('inputfiles', option)
