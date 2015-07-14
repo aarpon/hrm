@@ -819,9 +819,8 @@ class NumericalArrayParameter extends NumericalParameter {
     */
     public function reset( ) {
         $db = new DatabaseConnection;
-        $maxChanCnt = $db->getMaxChanCnt();
 
-        for ($i = 0; $i < $maxChanCnt; $i++) {
+        for ($i = 0; $i < $db->getMaxChanCnt(); $i++) {
             $this->value[$i] = NULL;
         }
         
