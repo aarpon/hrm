@@ -426,7 +426,8 @@ class DatabaseConnection {
                     $maxChanCnt = $this->getMaxChanCnt();
                     for ($i = 0; $i < $maxChanCnt; $i++) {
                         if ($parameterValue[$i] != null) {
-                            $parameterValue[$i] = implode("/", array_filter($parameterValue[$i]));
+                            $parameterValue[$i] =
+                                implode("/", array_filter($parameterValue[$i]));
                         }
                     }
                 }
@@ -434,16 +435,25 @@ class DatabaseConnection {
             }
 
             if (!$existsAlready) {
-                $query = "insert into $table values ('" . $user . "', '" . $name . "', '" . $parameterName . "', '" . $parameterValue . "')";
+                $query  = "INSERT INTO $table VALUES ('" . $user . "', '";
+                $query .= $name . "', '" . $parameterName . "', '";
+                $query .= $parameterValue . "')";
             } else {
-                // Check that the parameter itself exists
-                $query = "select name from $table where owner='" . $user . "' and setting='" . $name . "' and name='" . $parameterName . "' limit 1";
+                /* Check that the parameter itself exists. */
+                $query  = "SELECT name FROM $table WHERE owner='" . $user;
+                $query .= "' AND setting='" . $name;
+                $query .= "' AND name='" . $parameterName . "' LIMIT 1";
                 $newValue = $this->queryLastValue($query);
 
                 if ( $newValue != NULL ) {
-                    $query = "update $table set value = '" . $parameterValue . "' where owner='" . $user . "' and setting='" . $name . "' and name='" . $parameterName . "'";
+                    $query  = "UPDATE $table SET value = '" . $parameterValue;
+                    $query .= "' WHERE owner='" . $user;
+                    $query .= "' AND setting='" . $name;
+                    $query .= "' AND name='" . $parameterName . "'";
                 } else {
-                    $query = "insert into $table values ('" . $user . "', '" . $name . "', '" . $parameterName . "', '" . $parameterValue . "')";
+                    $query  = "INSERT INTO $table VALUES ('" . $user;
+                    $query .= "', '" . $name . "', '" . $parameterName;
+                    $query .= "', '" . $parameterValue . "')";
                 }
             }
             $result &= $this->execute($query);
