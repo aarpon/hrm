@@ -873,18 +873,10 @@ class NumericalVectorParameter extends NumericalParameter {
     public function value( ) {
         
         for ( $i = 0; $i < $this->componentCnt; $i++ ) {
-
-            if ( $this->value[$i] != null) {
-                $result .= $this->value[$i];
-            } else {
-                $result .= "not set";
-            }
-            
-            if ($i != $this->componentCnt - 1) {
-                $result .= ", ";
-            }
+            $result .= "#";
+            $result .= $this->value[$i];
         }
-        
+        $result .= "#";        
         return $result;
     }
     
@@ -3318,6 +3310,8 @@ class ZStabilization extends ChoiceParameter {
 
 class ChromaticAberration {
 
+    public $value;
+
     public $name;
     
     public $chanCnt;
@@ -3366,11 +3360,8 @@ class ChromaticAberration {
       \brief
     */
     public function displayString( ) {
-        /* TODO: Add camel case decomposition. */
-        $result = $this->name . ": ";
-
         for ($i = 0; $i < $this->chanCnt; $i++) {
-            $result .= $this->value[$i]->value() . "; ";
+            $result .= $this->value[$i]->displayString();
         }
         
         return $result;
@@ -3408,7 +3399,13 @@ class ChromaticAberration {
       \return the internal value of the Parameter
     */
     public function internalValue() {
-        return $this->value;
+        for ($i = 0; $i < $this->chanCnt; $i++) {
+            $result .= "#";
+            $result .= $this->value[$i]->internalValue();
+            $result .= "#";
+        }
+
+        return $result;
     }
 
 
