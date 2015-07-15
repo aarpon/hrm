@@ -2253,6 +2253,7 @@ class TaskSetting extends Setting {
     */
     public function TaskSetting() {
         parent::__construct();
+
         $parameterClasses = array(
             'Autocrop',
             'SignalNoiseRatio',
@@ -2262,11 +2263,13 @@ class TaskSetting extends Setting {
             'MultiChannelOutput',
             'QualityChangeStoppingCriterion',
             'DeconvolutionAlgorithm',
-            'ZStabilization');
+            'ZStabilization',
+            'ChromaticAberration');
 
         foreach ($parameterClasses as $class) {
             $param = new $class;
             $name = $param->name();
+
             $this->parameter[$name] = $param;
             $this->numberOfChannels = NULL;
         }
