@@ -792,7 +792,7 @@ class NumericalVectorParameter extends NumericalParameter {
       \var    $componentCnt
       \brief  Number of components in the vector.
     */
-    protected $componentCnt;
+    public $componentCnt;
 
     /*!
       \brief  Constructor:   creates an empty Parameter.
@@ -809,8 +809,9 @@ class NumericalVectorParameter extends NumericalParameter {
       \param  $components Number of components for the vector parameter.
     */
     public function reset($componentCnt) {
+        $this->componentCnt = $componentCnt;
         for ($i = 1; $i <= $componentCnt; $i++ ) {
-            $this->value[] = NULL;
+            $this->value[$i] = NULL;
         }
     }
 
@@ -864,6 +865,27 @@ class NumericalVectorParameter extends NumericalParameter {
                 $this->value[ $i ] = null;
             }
         }
+    }
+
+    /*!
+
+     */
+    public function value( ) {
+        
+        for ( $i = 0; $i < $this->componentCnt; $i++ ) {
+
+            if ( $this->value[$i] != null) {
+                $result .= $this->value[$i];
+            } else {
+                $result .= "not set";
+            }
+            
+            if ($i != $this->componentCnt - 1) {
+                $result .= ", ";
+            }
+        }
+        
+        return $result;
     }
     
     /*!
@@ -1088,7 +1110,7 @@ class AnyTypeArrayParameter extends NumericalArrayParameter {
         \return the internal value of the Parameter
     */
     public function internalValue() {
-        return $this->value;
+       return $this->value;
     }
 
 }
@@ -3298,7 +3320,7 @@ class ChromaticAberration {
 
     public $name;
     
-    protected $chanCnt;
+    public $chanCnt;
 
     /*!
       \brief   Constructor: creates an empty Parameter
@@ -3332,12 +3354,23 @@ class ChromaticAberration {
     }
 
     /*!
+      \brief  Confirms that the Parameter can have a variable number of channels
+      This overloads the base function.
+      \return true
+    */
+    public function isVariableChannel() {
+        return True;
+    }
+
+    /*!
       \brief
     */
     public function displayString( ) {
+        /* TODO: Add camel case decomposition. */
+        $result = $this->name . ": ";
 
         for ($i = 0; $i < $this->chanCnt; $i++) {
-            $result .= $this->value[$i]->displayString();
+            $result .= $this->value[$i]->value() . "; ";
         }
         
         return $result;
@@ -3349,6 +3382,10 @@ class ChromaticAberration {
         for ($i = 0; $i < $this->chanCnt; $i++) {
             $this->value[$i]->setValue( $value );
         }
+    }
+
+    public function setNumberOfChannels( $chanCnt ) {
+        $this->chanCnt = $chanCnt;
     }
 
     /*!
@@ -3364,6 +3401,14 @@ class ChromaticAberration {
         $name = $this->name( );
         $default = $db->defaultValue( $name );
         return ( $default );
+    }
+
+    /*!
+      \brief  Returns the internal value of the ChromaticAberration      
+      \return the internal value of the Parameter
+    */
+    public function internalValue() {
+        return $this->value;
     }
 
 
