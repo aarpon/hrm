@@ -557,28 +557,34 @@ class DatabaseConnection {
         $user = $user->name();
         $name = $settings->name();
         $table = $settings->parameterTable();
-        
+
         foreach ($settings->parameterNames() as $parameterName) {
             $parameter = $settings->parameter($parameterName);
-            $query = "select value from $table where owner='" . $user . "' and setting='" . $name . "' and name='" . $parameterName . "'";
+            
+            $query  = "SELECT value FROM $table WHERE owner='" . $user;
+            $query .= "' AND setting='" . $name . "' AND name='";
+            $query .= $parameterName . "'";
             $newValue = $this->queryLastValue($query);
 
             if ($newValue == NULL) {
 
                 // See if the Parameter has a usable default
                 $newValue = $parameter->defaultValue( );
-
                 if ($newValue == NULL) {
                     continue;
                 }
             }
+            
             if ($newValue{0}=='#') {
-                if ( strcmp( $parameterName, "ExcitationWavelength" ) != 0 ||
-                    strcmp( $parameterName, "EmissionWavelength" ) != 0 ||
-                    strcmp( $parameterName, "SignalNoiseRatio" ||
-                        strcmp( $parameterName, "BackgroundOffsetPercent" ) != 0) != 0 ) {
+                
+                if ( strcmp( $parameterName, "ExcitationWavelength" ) != 0
+                     || strcmp( $parameterName, "EmissionWavelength" ) != 0
+                     || strcmp( $parameterName, "SignalNoiseRatio") != 0
+                     || strcmp( $parameterName, "BackgroundOffsetPercent") != 0
+                     || strcmp( $parameterName, "ChromaticAberration") != 0) {
                     $newValue = substr($newValue,1);
                 }
+
                 $newValues = explode("#", $newValue);
                 if (strcmp( $parameterName, "PSF" ) != 0 && strpos($newValue, "/")) {
                     $newValue = array();
@@ -606,6 +612,7 @@ class DatabaseConnection {
                     $newValue = $newValues;
                 }
             }
+
             //$shiftedNewValue = array(1 => NULL, 2 => NULL, 3 => NULL, 4 => NULL, 5 => NULL);
             //if (is_array($newValue)) {
             //  // start array at 1
@@ -614,9 +621,11 @@ class DatabaseConnection {
             //  }
             //}
             //else $shiftedNewValue = $newValue;
+
             $parameter->setValue($newValue);
             $settings->set($parameter);
         }
+
         return $settings;
     }
 
@@ -1472,7 +1481,8 @@ class DatabaseConnection {
       \return Default value
     */
     public function defaultValue($parameterName) {
-        $query = "select value from possible_values where parameter='" .$parameterName . "' and isDefault='t'";
+        $query = "SELECT value FROM possible_values WHERE parameter='";
+        $query .= $parameterName . "' AND isDefault='t'";
         $result = $this->queryLastValue($query);                
         if ($result === False) {
             return NULL;
