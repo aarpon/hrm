@@ -3294,9 +3294,80 @@ class ZStabilization extends ChoiceParameter {
   \brief   A vector parameter to characterize the chromatic aberration.
 */
 
-/* class ChromaticAberration extends { */
+class ChromaticAberration {
 
-/* } */
+    public $name;
+    
+    protected $chanCnt;
+
+    /*!
+      \brief   Constructor: creates an empty Parameter
+      \param   $chanCnt  The number of channels of the data set.
+    */
+    public function __construct( ) {
+        
+        $this->name = "ChromaticAberration";
+
+        $db = new DatabaseConnection;
+        $this->chanCnt = $db->getMaxChanCnt();
+        
+        for ($i = 0; $i < $this->chanCnt; $i++) {
+
+            /* 5 components for shift x, y, z, rotation and scale. */
+            $this->value[$i] = new NumericalVectorParameter(
+                "ChromaticAberration", 5);
+        }
+    }
+
+    public function name( ) {
+        return $this->name;
+    }
+
+    /*!
+      \brief  Checks whether the Parameter is a Task Parameter
+      \return true if the Parameter is a Task Parameter, false otherwise
+    */
+    public function isTaskParameter() {
+        return True;
+    }
+
+    /*!
+      \brief
+    */
+    public function displayString( ) {
+
+        for ($i = 0; $i < $this->chanCnt; $i++) {
+            $result .= $this->value[$i]->displayString();
+        }
+        
+        return $result;
+    }
+
+    public function setValue( $value ) {
+        /*TODO: Implement for all channels. */
+        
+        for ($i = 0; $i < $this->chanCnt; $i++) {
+            $this->value[$i]->setValue( $value );
+        }
+    }
+
+    /*!
+      \brief  Returns the default value for the Parameters that have a default
+      value ot NULL for those that don't
+      
+        This function should be <b>overloaded</b> by the subclasses
+        
+        \return tyhe default value or NULL
+    */
+    public function defaultValue() {
+        $db = new DatabaseConnection;
+        $name = $this->name( );
+        $default = $db->defaultValue( $name );
+        return ( $default );
+    }
+
+
+}
 
 
 /*

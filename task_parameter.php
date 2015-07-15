@@ -650,7 +650,7 @@ $selectedMode  = $parameterStabilization->value();
     correct the image for chromatic aberration?
     </legend>
 
-    <p>Multi-channel images usually present chromatic aberrations. The correction is crucial for meaningful analysis results, such as in colocalization.</p> 
+    <p>Chromatic aberrations are often present in multi-channel images. Correcting for this is crucial for a meaningful image analysis.</p> 
 
 
 <?php
