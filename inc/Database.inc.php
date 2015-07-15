@@ -398,7 +398,8 @@ class DatabaseConnection {
             $standard = "f";
         $result = True;
         if (!$this->existsSetting($settings)) {
-            $query = "insert into $settingTable values ('" . $user."', '" . $name . "', '" .$standard . "')";
+            $query  = "insert into $settingTable values ('" . $user."', '";
+            $query .= $name . "', '" .$standard . "')";
             $result = $result && $this->execute($query);
         }
         $existsAlready = $this->existsParametersFor($settings);
@@ -408,12 +409,13 @@ class DatabaseConnection {
             $parameterValue = $parameter->internalValue();
 
             if (is_array($parameterValue)) {
-                // Before, # was used as a separator, but the first element with
-                // index zero was always NULL because channels started their indexing
-                // at one. To keep backwards compatibility with the database, we use
-                // # now as a channel marker, and even the first channel has a # in
-                // front of its value.
-                // "/" separator is used to mark range values for signal to noise ratio
+                /*! Before, # was used as a separator, but the first element
+                  with index zero was always NULL because channels started
+                  their indexing at one. To keep backwards compatibility with
+                  the database, we use # now as a channel marker, and even the
+                  first channel has a # in front of its value "/" separator is
+                  used to mark range values for signal to noise ratio.
+                */
 
                 /*!
                   \todo Currently there are not longer "range values" (values
@@ -430,20 +432,23 @@ class DatabaseConnection {
                 }
                 $parameterValue = "#".implode("#", $parameterValue);
             }
+
             if (!$existsAlready) {
                 $query = "insert into $table values ('" . $user . "', '" . $name . "', '" . $parameterName . "', '" . $parameterValue . "')";
             } else {
                 // Check that the parameter itself exists
                 $query = "select name from $table where owner='" . $user . "' and setting='" . $name . "' and name='" . $parameterName . "' limit 1";
                 $newValue = $this->queryLastValue($query);
+
                 if ( $newValue != NULL ) {
                     $query = "update $table set value = '" . $parameterValue . "' where owner='" . $user . "' and setting='" . $name . "' and name='" . $parameterName . "'";
                 } else {
                     $query = "insert into $table values ('" . $user . "', '" . $name . "', '" . $parameterName . "', '" . $parameterValue . "')";
                 }
             }
-            $result = $result && $this->execute($query);
+            $result &= $this->execute($query);
         }
+
 
         return $result;
     }
