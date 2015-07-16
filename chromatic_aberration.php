@@ -64,6 +64,7 @@ include("header.inc.php");
     <p>Chromatic aberrations are often present in multi-channel images.
        Correcting for this is crucial for accurate image analysis.</p> 
 
+<form method="post" action="" id="select">
 <table>
 <tr>
 <td class="header">Ch</td>
@@ -125,8 +126,32 @@ for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
                   onmouseout="UnTip()"
                   onclick="process()" />
             </div>
-
+                                 
+       </form>
     </div> <!-- content -->
+
+    <div id="rightpanel" onmouseover="javascript:changeQuickHelp( 'default' )">
+
+      <div id="info">
+      <h3>Quick help</h3>
+        <div id="contextHelp">
+          <p>On this page you specify the parameters for the chromatic
+             aberration correction.</p>
+          <p>These parameters comprise the shifts along x, y, z, the rotations
+             and the zoom factors across channels.</p>
+        </div>
+     </div>
+
+      <div id="message">
+<?php
+
+echo "<p>$message</p>";
+
+?>
+        </div>
+
+    </div> <!-- rightpanel -->
+    
 
 <?php
 include("footer.inc.php");
