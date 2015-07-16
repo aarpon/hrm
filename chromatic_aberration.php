@@ -26,6 +26,8 @@ $message = "";
  * PROCESS THE POSTED PARAMETERS
  *
  **************************************************************************** */
+
+echo print_r($_POST, true);
 /* if ( $_SESSION[ 'task_setting' ]->checkPostedAberrationCorrectionParameters( */
 /*          $_POST ) ) { */
 /*   header("Location: " . "capturing_parameter.php"); exit(); */
@@ -88,8 +90,8 @@ for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
 ?>
     
 <td><input
-        id="ChromaticAberrationCh<?php echo $i; ?>"
-        name="ChromaticAberrationCh<?php echo $i; ?>"
+        id="ChromaticAberrationCh<?php echo $i . _ . $j;?>"
+        name="ChromaticAberrationCh<?php echo $i . _ . $j;?>"
         type="text"
         size="6"
         value="<?php echo $value; ?>"
