@@ -828,6 +828,15 @@ input.save {
   vertical-align: middle;
 }
 
+#cac table {
+    font-size: 90%;
+    padding-bottom: 1em;
+}
+
+#cac td.header {
+    font-weight: bold;
+}
+
 #jobParameters {
   margin-top: 2em;
 }
