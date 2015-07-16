@@ -595,7 +595,7 @@ $value = $parameter->value();
                        'http://www.svi.nl/ObjectStabilizer')">
                         <img src="images/help.png" alt="?" />
         </a>
-    stabilize the dataset in the Z direction?
+    stabilize data sets in the Z direction?
     </legend>
 
             <p>STED images often need to be stabilized in the Z direction before they
@@ -660,10 +660,10 @@ $selectedMode  = $parameterStabilization->value();
                        'http://www.svi.nl/ChromaticAberrationCorrector')">
                         <img src="images/help.png" alt="?" />
         </a>
-    correct the image for chromatic aberration?
+    correct images for chromatic aberration?
     </legend>
 
-    <p>Chromatic aberrations are often present in multi-channel images. Correcting for this is crucial for a meaningful image analysis.</p> 
+    <p>Chromatic aberrations are often present in multi-channel images. Correcting for this is crucial for accurante image analysis.</p> 
 
 
 <?php
