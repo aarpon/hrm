@@ -27,7 +27,6 @@ $message = "";
  *
  **************************************************************************** */
 
-echo print_r($_POST, true);
 /* if ( $_SESSION[ 'task_setting' ]->checkPostedAberrationCorrectionParameters( */
 /*          $_POST ) ) { */
 /*   header("Location: " . "capturing_parameter.php"); exit(); */
