@@ -51,7 +51,7 @@ include("header.inc.php");
         <h2>Restoration - Chromatic Aberration</h2>
 
 
-    <div id="ChromaticAberrationCorrector">
+    <div id="cac">
 <?php
     if ($_SESSION['user']->isAdmin()
         || $_SESSION['task_setting']->isEligibleForCAC($_SESSION['setting'])) {
@@ -70,16 +70,16 @@ include("header.inc.php");
     </legend>
 
     <p>Chromatic aberrations are often present in multi-channel images.
-       Correcting for this is crucial for accurante image analysis.</p> 
+       Correcting for this is crucial for accurate image analysis.</p> 
 
 <table style="width:100%">
 <tr>
-<td>Ch</td>
-<td>Shift x (nm)</td>
-<td>Shift y (nm)</td>
-<td>Shift z (nm)</td>
-<td>Rotation (degrees)</td>
-<td>Scale (ratio)</td>
+<td class="header">Ch</td>
+<td class="header">Shift x<br />(&#956m)</td>
+<td class="header">Shift y<br />(&#956m)</td>
+<td class="header">Shift z<br />(&#956m)</td>
+<td class="header">Rotation<br />(degrees)</td>
+<td class="header">Scale<br />(ratio)</td>
 </tr>
 <?php
 
@@ -87,7 +87,7 @@ for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
     $value = "";
     echo "<tr>";
 ?>
-    <td><?php echo $i; ?></td>
+    <td class="header"><?php echo $i; ?></td>
 
 <?php
     for ($j = 0; $j < $_SESSION['task_setting']->parameter("ChromaticAberration")->componentCnt(); $j++) {
