@@ -3330,6 +3330,8 @@ class ChromaticAberration {
     
     public $chanCnt;
 
+    public $componentCnt;
+
     /*!
       \brief   Constructor: creates an empty Parameter
       \param   $chanCnt  The number of channels of the data set.
@@ -3338,19 +3340,26 @@ class ChromaticAberration {
         
         $this->name = "ChromaticAberration";
 
+        /* 5 components for shift x, y, z, rotation and scale. */
+        $this->componentCnt = 5;
+        
         $db = new DatabaseConnection;
         $this->chanCnt = $db->getMaxChanCnt();
         
-        for ($i = 0; $i < $this->chanCnt; $i++) {
+        for ($chan = 0; $chan < $this->chanCnt; $chan++) {
 
-            /* 5 components for shift x, y, z, rotation and scale. */
-            $this->value[$i] = new NumericalVectorParameter(
-                "ChromaticAberration", 5);
+
+            $this->value[$chan] = new NumericalVectorParameter(
+                $this->name() . "Ch" . $chan, $this->componentCnt());
         }
     }
 
     public function name( ) {
         return $this->name;
+    }
+
+    public function componentCnt( ) {
+        return $this->componentCnt;
     }
 
     /*!

@@ -61,15 +61,22 @@ if ( ! ( strpos( $_SERVER[ 'HTTP_REFERER' ],
 
 
 if ( $_SESSION[ 'task_setting' ]->checkPostedTaskParameters( $_POST ) ) {
-  $saved = $_SESSION['task_setting']->save();
-  if ($saved) {
-    header("Location: " . "select_task_settings.php"); exit();
-  } else {
-    $message = $_SESSION['task_setting']->message();
-  }
+
+    if ( $_SESSION[ 'task_setting' ]->numberOfChannels() > 1) {
+        header("Location: " . "chromatic_aberration.php"); exit();
+    } else {
+    
+        $saved = $_SESSION['task_setting']->save();
+        if ($saved) {
+            header("Location: " . "select_task_settings.php"); exit();
+        } else {
+            $message = $_SESSION['task_setting']->message();
+        }
+    }
 } else {
-  $message = $_SESSION['task_setting']->message();
+    $message = $_SESSION['task_setting']->message();
 }
+
 
 /* *****************************************************************************
  *
@@ -103,6 +110,7 @@ include("header.inc.php");
     
     <?php
     } else {
+
     ?>
     <span class="toolTip" id="ttSpanForward">
         Continue to next page.
@@ -644,38 +652,6 @@ $selectedMode  = $parameterStabilization->value();
 </div> <!-- Stabilization -->
 
 
-
-    <div id="ChromaticAberrationCorrector">
-<?php
-    if ($_SESSION['user']->isAdmin()
-        || $_SESSION['task_setting']->isEligibleForCAC($_SESSION['setting'])) {
-
-    ?>
-
-    <fieldset class="setting provided"
-    onmouseover="javascript:changeQuickHelp( 'cac' );" >
-    
-    <legend>
-        <a href="javascript:openWindow(
-                       'http://www.svi.nl/ChromaticAberrationCorrector')">
-                        <img src="images/help.png" alt="?" />
-        </a>
-    correct images for chromatic aberration?
-    </legend>
-
-    <p>Chromatic aberrations are often present in multi-channel images. Correcting for this is crucial for accurante image analysis.</p> 
-
-
-<?php
-    } else {
-
-    }
-?>
-</div> <!-- ChromaticAberrationCorrector -->
-
-
-
-
             <div><input name="OK" type="hidden" /></div>
 
             <div id="controls"
@@ -691,6 +667,12 @@ $selectedMode  = $parameterStabilization->value();
                 onmouseover="TagToTip('ttSpanSave')"
                 onmouseout="UnTip()"
                 onclick="process()" />
+
+              <input type="submit" value="" class="icon next"
+                  onmouseover="TagToTip('ttSpanForward' )"
+                  onmouseout="UnTip()"
+                  onclick="process()" />
+
 
             </div>
         
