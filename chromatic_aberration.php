@@ -43,20 +43,12 @@ $message = "";
  **************************************************************************** */
 
 include("header.inc.php");
-
 ?>
 
     <div id="content">
-
         <h2>Restoration - Chromatic Aberration</h2>
-
-
     <div id="cac">
-<?php
-    if ($_SESSION['user']->isAdmin()
-        || $_SESSION['task_setting']->isEligibleForCAC($_SESSION['setting'])) {
-        
-?>
+    
 
     <fieldset class="setting provided"
     onmouseover="javascript:changeQuickHelp( 'cac' );" >
@@ -72,7 +64,7 @@ include("header.inc.php");
     <p>Chromatic aberrations are often present in multi-channel images.
        Correcting for this is crucial for accurate image analysis.</p> 
 
-<table style="width:100%">
+<table>
 <tr>
 <td class="header">Ch</td>
 <td class="header">Shift x<br />(&#956m)</td>
@@ -81,28 +73,27 @@ include("header.inc.php");
 <td class="header">Rotation<br />(degrees)</td>
 <td class="header">Scale<br />(ratio)</td>
 </tr>
+                                 
 <?php
-
 for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
     $value = "";
-    echo "<tr>";
 ?>
+    <tr>
     <td class="header"><?php echo $i; ?></td>
 
 <?php
-    for ($j = 0; $j < $_SESSION['task_setting']->parameter("ChromaticAberration")->componentCnt(); $j++) {
+    $parameter = $_SESSION['task_setting']->parameter("ChromaticAberration");
+    for ($j = 0; $j < $parameter->componentCnt(); $j++) {
 ?>
     
-<td>
-                                  <input
-                                    id="ChromaticAberrationCh<?php echo $i; ?>"
-                                    name="ChromaticAberrationCh<?php echo $i; ?>"
-                                    type="text"
-                                    size="6"
-                                    value="<?php echo $value; ?>"
-                                    class="multichannelinput" />
-</td>
-<?php
+<td><input
+        id="ChromaticAberrationCh<?php echo $i; ?>"
+        name="ChromaticAberrationCh<?php echo $i; ?>"
+        type="text"
+        size="6"
+        value="<?php echo $value; ?>"
+        class="multichannelinput" /></td>
+<?php 
     }
 ?>
     <tr>
@@ -112,13 +103,6 @@ for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
 
 </table>
 
-
-    
-<?php
-    } else {
-
-    }
-?>
 </div> <!-- ChromaticAberrationCorrector -->
 
 
@@ -145,9 +129,7 @@ for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
     </div> <!-- content -->
 
 <?php
-
 include("footer.inc.php");
-
 
 // Workaround for IE
 if ( using_IE() && !isset( $_SERVER[ 'HTTP_REFERER' ] ) ) {
@@ -157,3 +139,4 @@ if ( using_IE() && !isset( $_SERVER[ 'HTTP_REFERER' ] ) ) {
         </script>
 <?php
 }
+?>
