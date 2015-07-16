@@ -601,10 +601,6 @@ class JobSpooler(object):
         singlethreaded, it just means that currently no more than one job is
         run *at a time*.
         """
-        # TODO: put the results dir back to the user's destination directory
-        # TODO: consider specifying the output dir in the jobfile!
-        # -> for now we simply use the gc3spooldir as the output directory to
-        # ensure results won't get moved across different storage locations:
         app = HucoreDeconvolveApp(job, self.gc3spooldir)
 
         # Add your application to the engine. This will NOT submit your
@@ -625,16 +621,7 @@ class JobSpooler(object):
             laststate = app.execution.state
             # Wait a few seconds...
             time.sleep(1)
-        if app.execution.exitcode != 0:
-            logw("Abnormal job exit code: %s!" % app.execution.exitcode)
-        else:
-            logd("Job terminated successfuly!")
-        logd("The output of the application is in `%s`." %  app.output_dir)
         job.move_jobfile(self.dirs['done'])
-        # hucore EXIT CODES:
-        # 0: all went well
-        # 143: hucore.bin received the HUP signal (9)
-        # 165: the .hgsb file could not be parsed (file missing or with errors)
         return True
 
 
@@ -673,6 +660,25 @@ class HucoreDeconvolveApp(gc3libs.Application):
             stderr = 'stdout.txt', # combine stdout & stderr
             stdout = 'stdout.txt')
         self.laststate = self.execution.state
+
+    def terminated(self):
+        """This is called when the app has terminated execution."""
+        # hucore EXIT CODES:
+        # 0: all went well
+        # 143: hucore.bin received the HUP signal (9)
+        # 165: the .hgsb file could not be parsed (file missing or with errors)
+        if self.execution.exitcode != 0:
+            logc("Job '%s' terminated with unexpected EXIT CODE: %s!" %
+                (self.job['uid'], self.execution.exitcode))
+        else:
+            logi("Job '%s' terminated successfully!" % self.job['uid'])
+        logd("The output of the application is in `%s`." % self.output_dir)
+        # TODO: put the results dir back to the user's destination directory
+        # (WARNING: we have to be careful if the data has already been
+        # collected in case of a remote execution scenario)
+        # TODO: consider specifying the output dir in the jobfile!
+        # -> for now we simply use the gc3spooldir as the output directory to
+        # ensure results won't get moved across different storage locations:
 
     def has_finished(self):
         """Check the if the execution of the app has finished.
