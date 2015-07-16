@@ -672,6 +672,22 @@ class HucoreDeconvolveApp(gc3libs.Application):
             output_dir = os.path.join(gc3_output, 'results_%s' % uid),
             stderr = 'stdout.txt', # combine stdout & stderr
             stdout = 'stdout.txt')
+        self.laststate = self.execution.state
+
+    def has_finished(self):
+        """Check the if the execution of the app has finished.
+
+        Track and update the internal execution status of the app and print a
+        log message if the status changes. Returns True if the app has
+        terminated, False otherwise.
+        """
+        if not self.execution.state == self.laststate:
+            logi("Job status changed to '%s'." % self.execution.state)
+            self.laststate = self.execution.state
+        if self.execution.state == gc3libs.Run.State.TERMINATED:
+            return True
+        else:
+            return False
 
 
 class HucorePreviewgenApp(gc3libs.Application):
