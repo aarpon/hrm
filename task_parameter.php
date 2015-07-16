@@ -236,25 +236,31 @@ for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
     if ($selectedMode == "cmle")
         $value = $signalNoiseRatioValue[$i];
 
-        // Add a line break after 3 entries
-        if ( $i == 3 ) {
+    /* Add a line break after a number of entries. */
+    if ( $_SESSION['task_setting']->numberOfChannels() == 4 ) {
+        if ($i == 2) {
             echo "<br />";
         }
+    } else {
+        if ($i == 3) {
+            echo "<br />";
+        }
+    }
 
 
 ?>
-                          <span class="nowrap">Ch<?php echo $i ?>:
-                              &nbsp;&nbsp;&nbsp;
+        <span class="nowrap">Ch<?php echo $i; ?>:
+        &nbsp;&nbsp;&nbsp;
                               <span class="multichannel">
                                   <input
-                                    id="SignalNoiseRatioCMLE<?php echo $i ?>"
-                                    name="SignalNoiseRatioCMLE<?php echo $i ?>"
+                                    id="SignalNoiseRatioCMLE<?php echo $i; ?>"
+                                    name="SignalNoiseRatioCMLE<?php echo $i; ?>"
                                     type="text"
                                     size="8"
-                                    value="<?php echo $value ?>"
+                                    value="<?php echo $value; ?>"
                                     class="multichannelinput" />
-                              </span>&nbsp;
-                          </span>
+                                        </span>&nbsp;
+                                    </span>
 <?php
 
 }
@@ -465,10 +471,17 @@ for ($i=0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
       $val = $backgroundOffset[$i];
   }
 
-    // Add a line break after 3 entries
-    if ( $i == 3 ) {
-        echo "<br />";
-    }
+  /* Add a line break after a number of entries. */
+  if ( $_SESSION['task_setting']->numberOfChannels() == 4 ) {
+      if ($i == 2) {
+          echo "<br />";
+      }
+  } else {
+      if ($i == 3) {
+          echo "<br />";
+      }
+  }
+
 
 ?>
                         <span class="nowrap">
