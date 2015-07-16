@@ -587,6 +587,10 @@ class JobSpooler(object):
                     logi("Adding another job to the gc3pie engine.")
                     app = HucoreDeconvolveApp(nextjob, self.gc3spooldir)
                     apps.append(app)
+                    # WARNING: simply adding all apps to the engine does work,
+                    # but it is causing a lot of error messages if the engine
+                    # has more tasks than available resources, see HRM ticket
+                    # #421 and upstream gc3pie ticket #359 for more details.
                     self.engine.add(app)
             elif self.status_cur == 'shutdown':
                 return True
