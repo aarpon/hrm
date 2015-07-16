@@ -1,0 +1,6 @@
+TODOs
+-----
+
+This directory ("run/") should *ONLY* contain variable data like queue information, jobs, etc.
+
+-> No actual code may reside here!
