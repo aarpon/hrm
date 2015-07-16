@@ -571,19 +571,23 @@ class JobSpooler(object):
 
     def _spool(self, jobqueues):
         """Spooler function dispatching jobs from the queues. BLOCKING!"""
+        apps = []
         while True:
             self.check_status_request()
             if self.status_cur == 'run':
+                self.engine.progress()
+                running_jobs = self.engine.stats()['RUNNING']
+                for i, app in enumerate(apps):
+                    if app.has_finished():
+                        app.job.move_jobfile(self.dirs['done'])
+                        apps.pop(i)
                 nextjob = jobqueues['hucore'].pop()
                 if nextjob is not None:
-                    logd("Current joblist: %s" % jobqueues['hucore'].queue)
-                    logd("Dispatching next job.")
-                    # TODO: let gc3pie decide when to dispatch a job
-                    # (currently the call to run_job() is blocking and thus
-                    # the whole thing is limited to single sequential job
-                    # instances, even if more resources were available
-                    self.run_job(nextjob)
-                    continue
+                    logi("Current joblist: %s" % jobqueues['hucore'].queue)
+                    logi("Adding another job to the gc3pie engine.")
+                    app = HucoreDeconvolveApp(nextjob, self.gc3spooldir)
+                    apps.append(app)
+                    self.engine.add(app)
             elif self.status_cur == 'shutdown':
                 return True
             elif self.status_cur == 'refresh':
@@ -593,36 +597,6 @@ class JobSpooler(object):
                 # no need to do anything, just sleep and check requests again:
                 pass
             time.sleep(1)
-
-    def run_job(self, job):
-        """Run a job in a singlethreaded and blocking manner via GC3Pie.
-
-        NOTE: this doesn't mean the process executed during this job is
-        singlethreaded, it just means that currently no more than one job is
-        run *at a time*.
-        """
-        app = HucoreDeconvolveApp(job, self.gc3spooldir)
-
-        # Add your application to the engine. This will NOT submit your
-        # application yet, but will make the engine *aware* of the application.
-        self.engine.add(app)
-
-        # Periodically check the status of your application.
-        laststate = app.execution.state
-        curstate = app.execution.state
-        while laststate != gc3libs.Run.State.TERMINATED:
-            # `Engine.progress()` will do the GC3Pie magic: submit new jobs,
-            # update status of submitted jobs, get results of terminating jobs
-            # etc...
-            self.engine.progress()
-            curstate = app.execution.state
-            if not (curstate == laststate):
-                logi("Job in status %s " % curstate)
-            laststate = app.execution.state
-            # Wait a few seconds...
-            time.sleep(1)
-        job.move_jobfile(self.dirs['done'])
-        return True
 
 
 class HucoreDeconvolveApp(gc3libs.Application):
