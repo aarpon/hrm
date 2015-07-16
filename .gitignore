@@ -19,3 +19,7 @@ user/login_user.inc
 
 # file marking a development version
 .hrm_devel_version
+
+# runtime directories
+/run/queue/
+/run/spool/
