@@ -11,9 +11,6 @@ user/login_user.inc
 # Python bytecode
 *.py[cod]
 
-# Python bytecode
-*.py[cod]
-
 # vim swap files
 .*.sw?
 
