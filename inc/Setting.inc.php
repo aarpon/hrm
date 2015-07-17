@@ -430,12 +430,6 @@ class ParameterSetting extends Setting {
             }
         }
 
-        if ($ok) {
-            if (!$this->checkPostedAberrationCorrectionParameters($postedParams)) {
-                $ok = False;
-            }
-        }
-
         if ( !$ok ) {
             $this->message  = "The selected parameter set contains empty values ";
             $this->message .= "which the $imageFormat format misses in its ";
@@ -1174,29 +1168,6 @@ class ParameterSetting extends Setting {
         return $noErrorsFound;
     }
 
-    /*!
-      \brief	Checks that the posted Aberration Correction Parameters are all
-              defined and valid
-      \param	$postedParameters	The $_POST array
-      \return	true if all Paraneters are defined and valid, false otherwise
-    */
-    public function checkPostedAberrationCorrectionParameters($postedParameters) {
-
-        /* if (count($postedParameters) == 0) { */
-        /*     $this->message = ''; */
-        /*     return False; */
-        /* } */
-
-        $this->message = '';
-        $noErrorsFound = True;
-
-        // PerformAberrationCorrection
-
-
-        
-
-        return $noErrorsFound;
-    }
 
     /*!
       \brief	Checks that the posted Calculate Pixel Size Parameters are all defined
@@ -2133,6 +2104,26 @@ class TaskSetting extends Setting {
         return $noErrorsFound;
     }
 
+    /*!
+      \brief	Checks that the posted Aberration Correction Parameters are all
+              defined and valid
+      \param	$postedParameters	The $_POST array
+      \return	true if all Paraneters are defined and valid, false otherwise
+    */
+    public function checkPostedChromaticAberrationParameters($postedParameters) {
+
+        if (count($postedParameters) == 0) {
+            $this->message = '';
+            return False;
+        }
+
+        $this->message = '';
+        $noErrorsFound = True;
+
+        return $noErrorsFound;
+    }
+    
+    
     /*!
       \brief	Returns all Task Parameter names
       \return array of Task Parameter names

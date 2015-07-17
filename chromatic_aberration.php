@@ -27,14 +27,11 @@ $message = "";
  *
  **************************************************************************** */
 
-/* if ( $_SESSION[ 'task_setting' ]->checkPostedAberrationCorrectionParameters( */
-/*          $_POST ) ) { */
-/*   header("Location: " . "capturing_parameter.php"); exit(); */
-/* } else { */
-/*   $message = $_SESSION['setting']->message(); */
-/* } */
-
-
+if ($_SESSION[ 'task_setting' ]->checkPostedChromaticAberrationParameters( $_POST )) {
+    header("Location: " . "select_task_settings.php"); exit();
+} else {
+    $message = $_SESSION['task_setting']->message();
+}
 
 
 /* *****************************************************************************
@@ -105,8 +102,8 @@ for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
 
 </table>
 
+                                 
 </div> <!-- ChromaticAberrationCorrector -->
-
 
             <div><input name="OK" type="hidden" /></div>
 
