@@ -84,7 +84,7 @@ include("header.inc.php");
 <?php
 $parameter = $_SESSION['task_setting']->parameter("ChromaticAberration");
 $componentCnt = $parameter->componentCnt();
-$values = explode('#', $parameter->internalValue());
+$values = $parameter->value();
 
 for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
     ksort($values);
