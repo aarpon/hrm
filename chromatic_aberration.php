@@ -48,8 +48,46 @@ if ($_SESSION[ 'task_setting' ]->checkPostedChromaticAberrationParameters( $_POS
  *
  **************************************************************************** */
 
+// Javascript includes
+$script = array( "settings.js", "quickhelp/help.js",
+                "quickhelp/taskParameterHelp.js" );
+
 include("header.inc.php");
 ?>
+
+    <!--
+      Tooltips
+    -->
+    <span class="toolTip" id="ttSpanCancel">
+        Abort editing and go back to the Restoration parameters
+        selection page. All changes will be lost!
+    </span>
+    <span class="toolTip" id="ttSpanSave">
+        Save and return to the processing parameters selection page.
+    </span>
+    <span class="toolTip" id="ttSpanBack">
+        Go back to previous page.
+    </span>
+
+    <div id="nav">
+    <div id="navleft">
+        <ul>
+            <?php
+                wiki_link('HuygensRemoteManagerHelpRestorationParameters');
+            ?>
+            <li> [ <?php  echo $_SESSION['task_setting']->name(); ?> ] </li>
+        </ul>
+    </div>
+    <div id="navright">
+        <ul>
+            <?php
+                include("./inc/nav/user.inc.php");
+            ?>
+        </ul>
+    </div>
+    <div class="clear"></div>
+    </div>
+
 
     <div id="content">
         <h2>Restoration - Chromatic Aberration</h2>
@@ -127,12 +165,12 @@ for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
                   onmouseover="TagToTip('ttSpanBack' )"
                   onmouseout="UnTip()"
                   onclick="javascript:deleteValuesAndRedirect(
-                    'microscope_parameter.php' );" />
+                    'task_parameter.php' );" />
               <input type="button" value="" class="icon up"
                   onmouseover="TagToTip('ttSpanCancel' )"
                   onmouseout="UnTip()"
                   onclick="javascript:deleteValuesAndRedirect(
-                    'select_parameter_settings.php' );" />
+                    'select_task_settings.php' );" />
               <input type="submit" value="" class="icon save"
                   onmouseover="TagToTip('ttSpanSave' )"
                   onmouseout="UnTip()"
