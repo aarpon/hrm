@@ -597,6 +597,7 @@ class DatabaseConnection {
                 case "SignalNoiseRatio":
                 case "BackgroundOffsetPercent":
                 case "ChromaticAberration":
+                    /* Extract and continue to explode. */
                     $newValue = substr($newValue,1);
                 default: 
                     $newValues = explode("#", $newValue);
@@ -717,6 +718,7 @@ class DatabaseConnection {
                 case "SignalNoiseRatio":
                 case "BackgroundOffsetPercent":
                 case "ChromaticAberration":
+                    /* Extract and continue to explode. */
                     $newValue = substr($newValue,1);
                 default: 
                     $newValues = explode("#", $newValue);
