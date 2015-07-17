@@ -36,6 +36,7 @@ import time
 import os
 import sys
 import shutil
+import itertools
 from collections import deque
 from hashlib import sha1  # ignore this bug in pylint: disable-msg=E0611
 
@@ -419,38 +420,38 @@ class JobQueue(object):
             logd("Current contents of all queues: %s" % self.queue)
 
     def queue_details_hr(self):
-        """Generate a human readable list with the current queue details."""
-        cat_index = 0  # pointer for categories
-        cmax = len(self.cats)  # number of categories
-        cdone = 0
-        print('Queue categories: %i' % cmax)
-        queues = dict()
-        for i in range(len(self.cats)):
-            # jobid = self.queue[self.cats[i]]
-            queues[self.cats[i]] = 0  # pointers to jobs in separate categories
-        print(queues)
-        while True:
-            if len(self.cats) == 0:
-                return
-            cat = self.cats[cat_index]
-            # print("Current category: %i (%s)" % (cat_index, cat))
-            curqueue = self.queue[cat]
-            # print("Current queue: %s" % curqueue)
-            # print("Current in-queue pointers: %s" % queues)
-            if queues[cat] > -1:
-                jobid = curqueue[queues[cat]]
-                print("Next job id: %s" % jobid)
-                queues[cat] += 1
-                if queues[cat] >= len(self.queue[cat]):
-                    queues[cat] = -1
-                    cdone += 1  # increase counter of processed categories
-                    if cdone == cmax:
-                        return
-            cat_index += 1
-            if cat_index >= cmax:
-                cat_index = 0
-            # print("Category pointer: %i" % cat_index)
-            # print("Current in-queue pointers: %s" % queues)
+        """Generate a human readable list with the current queue details.
+
+        For now this simply interleaves all queues from all users, until we
+        have implemented a more sophisticated scheduling. However, as the plan
+        is to have a dynamic scheduling mechanism, the order of the jobs in
+        the queue will be subject to constant change - and therefore the
+        queue details will in the best case give an estimate of which jobs
+        will be run next.
+
+        Example
+        -------
+        self.queue = {'user00': deque(['a0a49', '338ab', '42e44', '2f53d']),
+                      'user01': deque(['99113', 'c0f79', '86dbf']),
+                      'user02': deque(['c6e5f', 'd37fd'])}
+        """
+        print "-" * 25, " queue status ", "-" * 25
+        # create a zipped list of the queues of all users, padding with None
+        # to compensate the different queue lengths:
+        queues = map(None, *self.queue.values())
+        # using the example values from above, this results in the following:
+        # [('c6e5f', '99113', 'a0a49'),
+        #  ('d37fd', 'c0f79', '338ab'),
+        #  (None,    '86dbf', '42e44'),
+        #  (None,    None,    '2f53d')]
+
+        # now we can simply use itertools to flatten the tuple-list:
+        for jobid in itertools.chain.from_iterable(queues):
+            if jobid is not None:
+                job = self.jobs[jobid]
+                print("%s (%s): %s - %s" %
+                    (job['user'], job['email'], job['uid'], job['infiles']))
+        print "-" * 25, " queue status ", "-" * 25
 
 
 class JobSpooler(object):
