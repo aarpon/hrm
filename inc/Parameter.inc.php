@@ -3393,6 +3393,18 @@ class ChromaticAberration {
         }
     }
 
+    /*!
+      \brief  Returns the parameter value.
+    */
+    public function value( ) {
+        $valuesArray = explode('#', $this->internalValue());
+
+        /* The first element of the array will be empty due to the explode. */
+        unset($valuesArray[0]);            
+
+        return $valuesArray ;
+    }
+
     public function setNumberOfChannels( $chanCnt ) {
         $this->chanCnt = $chanCnt;
     }
@@ -3414,7 +3426,7 @@ class ChromaticAberration {
 
     /*!
       \brief  Returns the internal value of the ChromaticAberration      
-      \return the internal value of the Parameter
+      \return the internal value of the Parameter. A # formatted string.
     */
     public function internalValue() {
         for ($i = 0; $i < $this->chanCnt; $i++) {
