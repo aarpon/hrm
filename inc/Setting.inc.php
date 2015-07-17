@@ -513,17 +513,16 @@ class ParameterSetting extends Setting {
       \return	true if all Paraneters are defined and valid, false otherwise
     */
     public function checkPostedMicroscopyParameters($postedParameters) {
-        $db = new DatabaseConnection;
-        $maxChanCnt = $db->getMaxChanCnt();
-
         if (count($postedParameters) == 0) {
             $this->message = '';
             return False;
         }
 
+        $db = new DatabaseConnection;
+        $maxChanCnt = $db->getMaxChanCnt();
+
         $this->message = '';
         $noErrorsFound = True;
-
 
         // Get the names of the relevant parameters
         $names = $this->microscopeParameterNames();
@@ -715,8 +714,6 @@ class ParameterSetting extends Setting {
       \return	true if all Paraneters are defined and valid, false otherwise
     */
     public function checkPostedStedParameters($postedParameters) {
-        $this->message = '';
-
         if (count($postedParameters) == 0) {
             return False;
         }
@@ -724,7 +721,11 @@ class ParameterSetting extends Setting {
         if (!$this->isSted() && !$this->isSted3D()) {
             return True;
         }
-
+        
+        $db = new DatabaseConnection;
+        $maxChanCnt = $db->getMaxChanCnt();
+        
+        $this->message = '';
         $noErrorsFound = True;
 
         // Depletion Mode
@@ -989,11 +990,13 @@ class ParameterSetting extends Setting {
       \return	true if all Paraneters are defined and valid, false otherwise
     */
     public function checkPostedCapturingParameters($postedParameters) {
-
         if (count($postedParameters) == 0) {
             $this->message = '';
             return False;
         }
+
+        $db = new DatabaseConnection;
+        $maxChanCnt = $db->getMaxChanCnt();
 
         $this->message = '';
         $noErrorsFound = True;
@@ -2123,13 +2126,13 @@ class TaskSetting extends Setting {
       \param	$postedParameters	The $_POST array
     */
     public function checkPostedTaskParameters($postedParameters) {
-        $db = new DatabaseConnection;
-        $maxChanCnt = $db->getMaxChanCnt();
-
         if (count($postedParameters) == 0) {
             $this->message = '';
             return False;
         }
+
+        $db = new DatabaseConnection;
+        $maxChanCnt = $db->getMaxChanCnt();
 
         $this->message = '';
         $noErrorsFound = True;
@@ -2521,13 +2524,13 @@ class AnalysisSetting extends Setting {
       \param	$postedParameters	The $_POST array
     */
     public function checkPostedAnalysisParameters($postedParameters) {
-        $db = new DatabaseConnection;
-        $maxChanCnt = $db->getMaxChanCnt();
-
         if (count($postedParameters) == 0) {
             $this->message = '';
             return False;
         }
+
+        $db = new DatabaseConnection;
+        $maxChanCnt = $db->getMaxChanCnt();
 
         $this->message = '';
         $noErrorsFound = True;
