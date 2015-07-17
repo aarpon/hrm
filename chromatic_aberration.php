@@ -74,14 +74,20 @@ include("header.inc.php");
 </tr>
                                  
 <?php
+$parameter = $_SESSION['task_setting']->parameter("ChromaticAberration");
+$componentCnt = $parameter->componentCnt();
+$values = explode('#', $parameter->internalValue());
+                                 
 for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
-    $value = "";
+    ksort($values);
+    $offset = $i * $componentCnt;
+    $chanArray = array_slice($values, $offset, $componentCnt);
 ?>
     <tr>
     <td class="header"><?php echo $i; ?></td>
 
 <?php
-    $parameter = $_SESSION['task_setting']->parameter("ChromaticAberration");
+
     for ($j = 0; $j < $parameter->componentCnt(); $j++) {
 ?>
     
@@ -90,7 +96,7 @@ for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
         name="ChromaticAberrationCh<?php echo $i . _ . $j;?>"
         type="text"
         size="6"
-        value="<?php echo $value; ?>"
+        value="<?php echo $chanArray[$j]; ?>"
         class="multichannelinput" /></td>
 <?php 
     }

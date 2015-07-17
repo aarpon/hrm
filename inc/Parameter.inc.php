@@ -856,7 +856,6 @@ class NumericalVectorParameter extends NumericalParameter {
       \param  $value  Array of values for the parameter
     */
     public function setValue($value) {
-        
         $n = count( $value );
         for ( $i = 0; $i < $this->componentCnt; $i++ ) {
             if ( $i < $n ) {
@@ -870,13 +869,12 @@ class NumericalVectorParameter extends NumericalParameter {
     /*!
 
      */
-    public function value( ) {
-        
+    public function value( ) {        
         for ( $i = 0; $i < $this->componentCnt; $i++ ) {
-            $result .= "#";
             $result .= $this->value[$i];
+            $result .= "#";
         }
-        $result .= "#";        
+    
         return $result;
     }
     
@@ -885,6 +883,7 @@ class NumericalVectorParameter extends NumericalParameter {
       \return string representation of the Parameter
     */
     public function displayString( ) {
+        ksort($this->value);
         $value = array_slice( $this->value, 0, $this->componentCnt );
         $value = implode( $value, ', ' );
         $result = $this->formattedName( );
@@ -3380,7 +3379,8 @@ class ChromaticAberration {
       \param   $value A # separated string with the CA components.
       \brief
     */
-    public function setValue( $valuesArray ) {
+    public function setValue( $values ) {
+        $valuesArray = explode("#", $values);
         for ($chan = 0; $chan < $this->chanCnt; $chan++) {
             $offset = $chan * $this->componentCnt;
             $chanArray = array_slice($valuesArray, $offset, $this->componentCnt);
@@ -3413,9 +3413,7 @@ class ChromaticAberration {
     */
     public function internalValue() {
         for ($i = 0; $i < $this->chanCnt; $i++) {
-            $result .= "#";
             $result .= $this->value[$i]->internalValue();
-            $result .= "#";
         }
 
         return $result;
