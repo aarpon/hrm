@@ -661,18 +661,29 @@ $selectedMode  = $parameterStabilization->value();
                 onmouseover="TagToTip('ttSpanCancel' )"
                 onmouseout="UnTip()"
                 onclick="javascript:deleteValuesAndRedirect('select_task_settings.php' );" />
-    
+
+    <?php
+    /* Don't proceed to the chromatic aberration page. */
+    if ($_SESSION['task_setting']->numberOfChannels() == 1) {
+    ?>
               <input type="submit" value=""
                 class="icon save"
                 onmouseover="TagToTip('ttSpanSave')"
                 onmouseout="UnTip()"
                 onclick="process()" />
-
-              <input type="submit" value="" class="icon next"
+    
+    <?php
+    } else {
+    ?>
+                  <input type="submit" value="" class="icon next"
                   onmouseover="TagToTip('ttSpanForward' )"
                   onmouseout="UnTip()"
-                  onclick="process()" />
+                  onclick="process()" />    
+    <?php
+    }
+    ?>
 
+    
 
             </div>
         
