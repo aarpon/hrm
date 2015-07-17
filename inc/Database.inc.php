@@ -570,14 +570,19 @@ class DatabaseConnection {
                     continue;
                 }
             }
+            
             if ($newValue{0}=='#') {
-                if ( strcmp( $parameterName, "ExcitationWavelength" ) != 0 ||
-                    strcmp( $parameterName, "EmissionWavelength" ) != 0 ||
-                    strcmp( $parameterName, "SignalNoiseRatio" ||
-                        strcmp( $parameterName, "BackgroundOffsetPercent" ) != 0) != 0 ) {
+                switch($parameterName) {
+                case "ExcitationWavelength":
+                case "EmissionWavelength":
+                case "SignalNoiseRatio":
+                case "BackgroundOffsetPercent":
+                case "ChromaticAberration":
                     $newValue = substr($newValue,1);
+                default: 
+                    $newValues = explode("#", $newValue);
                 }
-                $newValues = explode("#", $newValue);
+
                 if (strcmp( $parameterName, "PSF" ) != 0 && strpos($newValue, "/")) {
                     $newValue = array();
                     for ($i = 0; $i < count($newValues); $i++) {
@@ -604,6 +609,7 @@ class DatabaseConnection {
                     $newValue = $newValues;
                 }
             }
+
             //$shiftedNewValue = array(1 => NULL, 2 => NULL, 3 => NULL, 4 => NULL, 5 => NULL);
             //if (is_array($newValue)) {
             //  // start array at 1
@@ -612,9 +618,11 @@ class DatabaseConnection {
             //  }
             //}
             //else $shiftedNewValue = $newValue;
+
             $parameter->setValue($newValue);
             $settings->set($parameter);
         }
+
         return $settings;
     }
 
@@ -684,13 +692,17 @@ class DatabaseConnection {
                 }
             }
             if ($newValue{0}=='#') {
-                if ( strcmp( $parameterName, "ExcitationWavelength" ) != 0 ||
-                    strcmp( $parameterName, "EmissionWavelength" ) != 0 ||
-                    strcmp( $parameterName, "SignalNoiseRatio" ||
-                        strcmp( $parameterName, "BackgroundOffsetPercent" ) != 0) != 0 ) {
+                switch($parameterName) {
+                case "ExcitationWavelength":
+                case "EmissionWavelength":
+                case "SignalNoiseRatio":
+                case "BackgroundOffsetPercent":
+                case "ChromaticAberration":
                     $newValue = substr($newValue,1);
+                default: 
+                    $newValues = explode("#", $newValue);
                 }
-                $newValues = explode("#", $newValue);
+                
                 if (strcmp( $parameterName, "PSF" ) != 0 && strpos($newValue, "/")) {
                     $newValue = array();
                     for ($i = 0; $i < count($newValues); $i++) {
