@@ -28,11 +28,19 @@ $message = "";
  **************************************************************************** */
 
 if ($_SESSION[ 'task_setting' ]->checkPostedChromaticAberrationParameters( $_POST )) {
-    header("Location: " . "select_task_settings.php"); exit();
+    $saved = $_SESSION['task_setting']->save();
+    if ($saved) {
+        header("Location: " . "select_task_settings.php"); exit();
+    } else {
+        $message = $_SESSION['task_setting']->message();
+    }
 } else {
     $message = $_SESSION['task_setting']->message();
 }
 
+
+
+    
 
 /* *****************************************************************************
  *
@@ -77,7 +85,7 @@ include("header.inc.php");
 $parameter = $_SESSION['task_setting']->parameter("ChromaticAberration");
 $componentCnt = $parameter->componentCnt();
 $values = explode('#', $parameter->internalValue());
-                                 
+
 for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
     ksort($values);
     $offset = $i * $componentCnt;

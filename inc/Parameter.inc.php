@@ -869,10 +869,10 @@ class NumericalVectorParameter extends NumericalParameter {
     /*!
 
      */
-    public function value( ) {        
+    public function value( ) {
         for ( $i = 0; $i < $this->componentCnt; $i++ ) {
-            $result .= $this->value[$i];
             $result .= "#";
+            $result .= $this->value[$i];
         }
     
         return $result;
@@ -3390,11 +3390,16 @@ class ChromaticAberration {
     }
 
     /*!
-      \param   $value A # separated string with the CA components.
+      \param   $value An array with the CA components.
       \brief
     */
-    public function setValue( $values ) {
-        $valuesArray = explode("#", $values);
+    public function setValue( $valuesArray ) {
+        if (!is_array($valuesArray)
+            || empty($valuesArray)
+            || is_null($valuesArray)) {
+            return;
+        }
+
         for ($chan = 0; $chan < $this->chanCnt; $chan++) {
             $offset = $chan * $this->componentCnt;
             $chanArray = array_slice($valuesArray, $offset, $this->componentCnt);
@@ -3427,7 +3432,7 @@ class ChromaticAberration {
     */
     public function internalValue() {
         for ($i = 0; $i < $this->chanCnt; $i++) {
-            $result .= $this->value[$i]->internalValue();
+            $result .= $this->value[$i]->value();
         }
 
         return $result;

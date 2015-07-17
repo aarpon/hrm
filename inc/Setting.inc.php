@@ -2298,16 +2298,17 @@ class TaskSetting extends Setting {
 
         /* The posted parameters are received in increasing 'chan component'
            order. */
-        $value = "";
+        $i = 0;
         foreach ($postedParameters as $name => $param) {
             if (strpos($name, 'ChromaticAberration') === false) {
                 continue;
             }
-            
-            $value .= "#" . $param;
+
+            $valuesArray[$i] = $param;
+            $i++;
         }
         
-        $parameter->setValue($value);
+        $parameter->setValue($valuesArray);
         
         return $noErrorsFound;
     }
