@@ -1173,6 +1173,201 @@ class ParameterSetting extends Setting {
 
 
     /*!
+      \brief	Checks that the posted Aberration Correction Parameters are all
+              defined and valid
+      \param	$postedParameters	The $_POST array
+      \return	true if all Paraneters are defined and valid, false otherwise
+    */
+    public function checkPostedAberrationCorrectionParameters($postedParameters) {
+
+        if (count($postedParameters) == 0) {
+            $this->message = '';
+            return False;
+        }
+
+        $this->message = '';
+        $noErrorsFound = True;
+
+        // PerformAberrationCorrection
+        $valueSet = isset($postedParameters["PerformAberrationCorrection"]) &&
+                $postedParameters["PerformAberrationCorrection"] != '';
+
+        $parameter = $this->parameter("PerformAberrationCorrection");
+
+        if ($valueSet) {
+
+            // Set the Parameter and check the value
+            $parameter->setValue($postedParameters["PerformAberrationCorrection"]);
+            $this->set($parameter);
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = False;
+            }
+        } else {
+
+            $mustProvide = $parameter->mustProvide();
+
+            // Reset the Parameter
+            $parameter->reset();
+            $this->set($parameter);
+
+            // If the Parameter value must be provided, we return an error
+            if ($mustProvide) {
+                $this->message =
+                    "Please choose whether to perform the correction!";
+                $noErrorsFound = False;
+            }
+        }
+
+        // If the aberration correction is inactive, there is no point in
+        // checking the other parameters.
+        if ($this->parameter("PerformAberrationCorrection")->value() == 0) {
+            return $noErrorsFound;
+        }
+
+        // CoverslipRelativePosition
+        $valueSet = isset($postedParameters["CoverslipRelativePosition"]) &&
+                $postedParameters["CoverslipRelativePosition"] != '';
+
+        $parameter = $this->parameter("CoverslipRelativePosition");
+
+        if ($valueSet) {
+
+            // Set the Parameter and check the value
+            $parameter->setValue($postedParameters["CoverslipRelativePosition"]);
+            $this->set($parameter);
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = False;
+            }
+        } else {
+
+            $mustProvide = $parameter->mustProvide();
+
+            // Reset the Parameter
+            $parameter->reset();
+            $this->set($parameter);
+
+            // If the Parameter value must be provided, we return an error
+            if ($mustProvide) {
+                $this->message =
+                    "Please choose the relative coverslip position!";
+                $noErrorsFound = False;
+            }
+        }
+
+        // AberrationCorrectionMode
+        $valueSet = isset($postedParameters["AberrationCorrectionMode"]) &&
+                $postedParameters["AberrationCorrectionMode"] != '';
+
+        $parameter = $this->parameter("AberrationCorrectionMode");
+
+        if ($valueSet) {
+
+            // Set the Parameter and check the value
+            $parameter->setValue($postedParameters["AberrationCorrectionMode"]);
+            $this->set($parameter);
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = False;
+            }
+        } else {
+
+            $mustProvide = $parameter->mustProvide();
+
+            // Reset the Parameter
+            $parameter->reset();
+            $this->set($parameter);
+
+            // If the Parameter value must be provided, we return an error
+            if ($mustProvide) {
+                $this->message = "Please set the aberration correction mode!";
+                $noErrorsFound = False;
+            }
+        }
+
+        // AdvancedCorrectionOptions
+        $valueSet = isset($postedParameters["AdvancedCorrectionOptions"]) &&
+                $postedParameters["AdvancedCorrectionOptions"] != '';
+
+        $parameter = $this->parameter("AdvancedCorrectionOptions");
+
+        if ($valueSet) {
+
+            // Set the Parameter and check the value
+            $parameter->setValue($postedParameters["AdvancedCorrectionOptions"]);
+            $this->set($parameter);
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = False;
+            }
+        } else {
+
+            $mustProvide = $parameter->mustProvide();
+
+            // Reset the Parameter
+            $parameter->reset();
+            $this->set($parameter);
+
+            // If the Parameter value must be provided, we return an error
+            if ($mustProvide) {
+                $this->message =
+                    "Please indicate the options for the advanced correction!";
+                $noErrorsFound = False;
+            }
+        }
+
+        // The following Parameters may be defined depending on the values of
+        // the previous one, but we will check them only if no errors have been
+        // found so far
+        if ($noErrorsFound == False) {
+            return $noErrorsFound;
+        }
+
+        $parameter = $this->parameter("PerformAberrationCorrection");
+        $perform = $parameter->value();
+        $parameter = $this->parameter("AberrationCorrectionMode");
+        $mode = $parameter->value();
+
+        if ($perform == 1 && $mode == "advanced") {
+
+            // PSFGenerationDepth
+            $valueSet = isset($postedParameters["PSFGenerationDepth"]) &&
+                    $postedParameters["PSFGenerationDepth"] != '';
+
+            $parameter = $this->parameter("PSFGenerationDepth");
+
+            if ($valueSet) {
+
+                // Set the Parameter and check the value
+                $parameter->setValue($postedParameters["PSFGenerationDepth"]);
+                $this->set($parameter);
+                if (!$parameter->check()) {
+                    $this->message = $parameter->message();
+                    $noErrorsFound = False;
+                }
+            } else {
+
+                $mustProvide = $parameter->mustProvide();
+
+                // Reset the Parameter
+                $parameter->reset();
+                $this->set($parameter);
+
+                // If the Parameter value must be provided, we return an error
+                if ($mustProvide) {
+                    $this->message =
+                        "Please indicate the depth for PSF generation!";
+                    $noErrorsFound = False;
+                }
+            }
+        }
+
+        return $noErrorsFound;
+    }
+
+    
+    /*!
       \brief	Checks that the posted Calculate Pixel Size Parameters are all defined
               and valid
       \param	$postedParameters	The $_POST array
