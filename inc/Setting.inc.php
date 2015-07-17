@@ -2105,10 +2105,10 @@ class TaskSetting extends Setting {
     }
 
     /*!
-      \brief	Checks that the posted Aberration Correction Parameters are all
-              defined and valid
-      \param	$postedParameters	The $_POST array
-      \return	true if all Paraneters are defined and valid, false otherwise
+      \brief   Checks that the posted Aberration Correction Parameters are 
+               defined. This correction is optional.
+      \param   $postedParameters    The $_POST array
+      \return  true if all Parameters are defined and valid, false otherwise.
     */
     public function checkPostedChromaticAberrationParameters($postedParameters) {
 
@@ -2120,6 +2120,33 @@ class TaskSetting extends Setting {
         $this->message = '';
         $noErrorsFound = True;
 
+        foreach ($postedParameters as $param) {
+            if ($param != "" && !ctype_digit($param)) {
+                $noErrorsFound = False;
+                $this->message = "Value must be numeric";
+                break;
+            }
+        }
+
+        if (!$noErrorsFound) {
+            return $noErrorsFound;
+        }
+
+        $parameter = $this->parameter("ChromaticAberration");
+
+        /* The posted parameters are received in increasing 'chan component'
+           order. */
+        $value = "";
+        foreach ($postedParameters as $name => $param) {
+            if (strpos($name, 'ChromaticAberration') === false) {
+                continue;
+            }
+            
+            $value .= "#" . $param;
+        }
+        
+        $parameter->setValue($value);
+        
         return $noErrorsFound;
     }
     
