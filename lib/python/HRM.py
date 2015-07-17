@@ -420,7 +420,16 @@ class JobQueue(object):
             logd("Current contents of all queues: %s" % self.queue)
 
     def queue_details_hr(self):
-        """Generate a human readable list with the current queue details.
+        """Generate a human readable list of the queue details."""
+        joblist = self.queue_details()
+        print "-" * 25, " queue status ", "-" * 25
+        for job in joblist:
+            print("%s (%s): %s - %s" %
+                (job['user'], job['email'], job['uid'], job['infiles']))
+        print "-" * 25, " queue status ", "-" * 25
+
+    def queue_details(self):
+        """Generate a list with the current queue details.
 
         For now this simply interleaves all queues from all users, until we
         have implemented a more sophisticated scheduling. However, as the plan
@@ -454,7 +463,6 @@ class JobQueue(object):
          'uid': '2f53d7f50c22285a92c7fcda74994a69f72e1bf1'}
 
         """
-        print "-" * 25, " queue status ", "-" * 25
         # create a zipped list of the queues of all users, padding with None
         # to compensate the different queue lengths:
         queues = map(None, *self.queue.values())
@@ -465,12 +473,11 @@ class JobQueue(object):
         #  (None,     None,     'u00_j3')]
 
         # now we can simply use itertools to flatten the tuple-list:
+        joblist = []
         for jobid in itertools.chain.from_iterable(queues):
             if jobid is not None:
-                job = self.jobs[jobid]
-                print("%s (%s): %s - %s" %
-                    (job['user'], job['email'], job['uid'], job['infiles']))
-        print "-" * 25, " queue status ", "-" * 25
+                joblist.append(self.jobs[jobid])
+        return joblist
 
 
 class JobSpooler(object):
