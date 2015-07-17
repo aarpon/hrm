@@ -431,19 +431,38 @@ class JobQueue(object):
 
         Example
         -------
-        self.queue = {'user00': deque(['a0a49', '338ab', '42e44', '2f53d']),
-                      'user01': deque(['99113', 'c0f79', '86dbf']),
-                      'user02': deque(['c6e5f', 'd37fd'])}
+        Given the following queue status:
+        self.queue = {'user00': deque(['u00_j0', 'u00_j1', 'u00_j2', 'u00_j3']),
+                      'user01': deque(['u01_j0', 'u01_j1', 'u01_j2']),
+                      'user02': deque(['u02_j0', 'u02_j1'])}
+
+        will result in a list of job dicts in the following order:
+        ['u02_j0', 'u01_j0', 'u00_j0',
+         'u02_j1', 'u01_j1', 'u00_j1'
+         'u01_j2', 'u00_j2'
+         'u00_j3']
+
+        where each of the dicts will be of this format:
+        {'ver': '5',
+         'infiles': ['tests/jobfiles/sandbox/faba128.h5'],
+         'exec': '/usr/local/bin/hucore',
+         'timestamp': 1437123471.579627,
+         'user': 'user00',
+         'template': 'hrm_faba128_iterations-3.hgsb',
+         'type': 'hucore',
+         'email': 'user00@mail.xy',
+         'uid': '2f53d7f50c22285a92c7fcda74994a69f72e1bf1'}
+
         """
         print "-" * 25, " queue status ", "-" * 25
         # create a zipped list of the queues of all users, padding with None
         # to compensate the different queue lengths:
         queues = map(None, *self.queue.values())
         # using the example values from above, this results in the following:
-        # [('c6e5f', '99113', 'a0a49'),
-        #  ('d37fd', 'c0f79', '338ab'),
-        #  (None,    '86dbf', '42e44'),
-        #  (None,    None,    '2f53d')]
+        # [('u02_j0', 'u01_j0', 'u00_j0'),
+        #  ('u02_j1', 'u01_j1', 'u00_j1'),
+        #  (None,     'u01_j2', 'u00_j2'),
+        #  (None,     None,     'u00_j3')]
 
         # now we can simply use itertools to flatten the tuple-list:
         for jobid in itertools.chain.from_iterable(queues):
