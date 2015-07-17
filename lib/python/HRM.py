@@ -37,6 +37,7 @@ import os
 import sys
 import shutil
 import itertools
+import json
 from collections import deque
 from hashlib import sha1  # ignore this bug in pylint: disable-msg=E0611
 
@@ -418,6 +419,27 @@ class JobQueue(object):
             del self.queue[cat]    # delete the category from the queue dict
             logd("Current queue categories: %s" % self.cats)
             logd("Current contents of all queues: %s" % self.queue)
+
+    def queue_details_json(self):
+        """Generate a JSON representation of the queue details."""
+        joblist = self.queue_details()
+        formatted = []
+        for job in joblist:
+            fjob = {
+                "id" : job['uid'],
+                "file" : job['infiles'],
+                "username" : job['user'],
+                "jobType" : job['type'],
+                "status" : 'N/A',
+                "server" : 'N/A',
+                "progress" : 'N/A',
+                "pid" : 'N/A',
+                "start" : 'N/A',
+                "queued" : job['timestamp'],
+            }
+            formatted.append(fjob)
+        return json.dumps({'jobs' : formatted})
+
 
     def queue_details_hr(self):
         """Generate a human readable list of the queue details."""
