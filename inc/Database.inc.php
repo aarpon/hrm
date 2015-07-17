@@ -456,6 +456,7 @@ class DatabaseConnection {
                     $query .= "', '" . $parameterValue . "')";
                 }
             }
+
             $result &= $this->execute($query);
         }
 
@@ -575,7 +576,6 @@ class DatabaseConnection {
 
         foreach ($settings->parameterNames() as $parameterName) {
             $parameter = $settings->parameter($parameterName);
-            
             $query  = "SELECT value FROM $table WHERE owner='" . $user;
             $query .= "' AND setting='" . $name . "' AND name='";
             $query .= $parameterName . "'";
@@ -589,7 +589,7 @@ class DatabaseConnection {
                     continue;
                 }
             }
-            
+
             if ($newValue{0}=='#') {
                 switch($parameterName) {
                 case "ExcitationWavelength":
@@ -599,24 +599,14 @@ class DatabaseConnection {
                 case "ChromaticAberration":
                     /* Extract and continue to explode. */
                     $newValue = substr($newValue,1);
-                default: 
+                default:
                     $newValues = explode("#", $newValue);
                 }
 
-                if (strcmp( $parameterName, "PSF" ) != 0 && strpos($newValue, "/")) {
+                if (strcmp( $parameterName, "PSF" ) != 0
+                    && strpos($newValue, "/")) {
                     $newValue = array();
                     for ($i = 0; $i < count($newValues); $i++) {
-                        //$val = explode("/", $newValues[$i]);
-                        //$range = array(NULL, NULL, NULL, NULL);
-                        //for ($j = 0; $j < count($val); $j++) {
-                        //  $range[$j] = $val[$j];
-                        //}
-                        //$newValue[] = $range;
-                        /*!
-                          \todo Currently there are not longer "range values" (values
-                                separated by /). In the future they will be reintroduced.
-                                We leave the code in place.
-                        */
                         if (strpos($newValues[$i], "/")) {
                             $newValue[] = explode("/", $newValues[$i]);
                         }
@@ -629,15 +619,6 @@ class DatabaseConnection {
                     $newValue = $newValues;
                 }
             }
-
-            //$shiftedNewValue = array(1 => NULL, 2 => NULL, 3 => NULL, 4 => NULL, 5 => NULL);
-            //if (is_array($newValue)) {
-            //  // start array at 1
-            //  for ($i = 1; $i <= count($newValue); $i++) {
-            //    $shiftedNewValue[$i] = $newValue[$i - 1];
-            //  }
-            //}
-            //else $shiftedNewValue = $newValue;
 
             $parameter->setValue($newValue);
             $settings->set($parameter);
