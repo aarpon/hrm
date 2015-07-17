@@ -3390,12 +3390,12 @@ class ChromaticAberration {
         return $result;
     }
 
+    /*!
+      \param   $value A # separated string with the CA components.
+      \brief
+    */
     public function setValue( $value ) {
-        /*TODO: Implement for all channels. */
-        
-        for ($i = 0; $i < $this->chanCnt; $i++) {
-            $this->value[$i]->setValue( $value );
-        }
+        /* $this->value[$chan]->setValue( ); */
     }
 
     public function setNumberOfChannels( $chanCnt ) {
