@@ -420,7 +420,7 @@ class JobQueue(object):
             logd("Current queue categories: %s" % self.cats)
             logd("Current contents of all queues: %s" % self.queue)
 
-    def queue_details_json(self):
+    def queue_details_json(self, jsonfile=None):
         """Generate a JSON representation of the queue details.
 
         The details are returned in a dict of the following form:
@@ -440,6 +440,9 @@ class JobQueue(object):
                },
             ]
         }
+
+        If the parameter "jsonfile" is given, the details are also written to
+        this file.
         """
         joblist = self.queue_details()
         formatted = []
@@ -457,7 +460,11 @@ class JobQueue(object):
                 "queued" : job['timestamp'],
             }
             formatted.append(fjob)
-        return json.dumps({'jobs' : formatted})
+        details = {'jobs' : formatted}
+        if jsonfile is not None:
+            with open(jsonfile, 'w') as fout:
+                json.dump(details, fout)
+        return json.dumps(details, indent=4)
 
 
     def queue_details_hr(self):
