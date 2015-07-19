@@ -421,7 +421,26 @@ class JobQueue(object):
             logd("Current contents of all queues: %s" % self.queue)
 
     def queue_details_json(self):
-        """Generate a JSON representation of the queue details."""
+        """Generate a JSON representation of the queue details.
+
+        The details are returned in a dict of the following form:
+        details = { "jobs" :
+            [
+                {
+                    "username" : "user00",
+                    "status"   : "N/A",
+                    "queued"   : 1437152020.751692,
+                    "file"     : [ "tests/jobfiles/sandbox/faba128.h5" ],
+                    "start"    : "N/A",
+                    "progress" : "N/A",
+                    "pid"      : "N/A",
+                    "id"       : "8cd0d80f36dd8f7655bde8679b192f526f9541bb",
+                    "jobType"  : "hucore",
+                    "server"   : "N/A"
+               },
+            ]
+        }
+        """
         joblist = self.queue_details()
         formatted = []
         for job in joblist:
