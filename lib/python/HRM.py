@@ -628,7 +628,7 @@ class JobSpooler(object):
                 os.remove(check_file)
                 self.status_pre = self.status_cur
                 self.status_cur = fname
-                logi("Status change requested: %s -> %s" %
+                logi("Received queue request: %s -> %s" %
                     (self.status_pre, self.status_cur))
                 # we don't process more than one request at a time, so exit:
                 return
