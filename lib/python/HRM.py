@@ -670,7 +670,10 @@ class JobSpooler(object):
             elif self.status_cur == 'shutdown':
                 return True
             elif self.status_cur == 'refresh':
-                jobqueues['hucore'].queue_details_hr()
+                # jobqueues['hucore'].queue_details_hr()
+                print jobqueues['hucore'].queue_details_hr()
+                jsonf = os.path.join(self.dirs['status'], 'queue.json')
+                jobqueues['hucore'].queue_details_json(jsonfile=jsonf)
                 self.status_cur = self.status_pre
             elif self.status_cur == 'pause':
                 # no need to do anything, just sleep and check requests again:
