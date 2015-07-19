@@ -18,7 +18,9 @@ class JobQueue {
       \brief   Constructor.
     */
     public function __construct() {
-        $this->queueFile =  dirname(__FILE__) . "/../run/queue.json";
+        // TODO: the "run" directory will be configurable eventually, so we
+        // have to respect the path to the JSON file here as well:
+        $this->queueFile =  dirname(__FILE__) . "/../run/queue/status/queue.json";
         
         if (!file_exists($this->queueFile)) {
             error_log("Impossible to reach the queue file.");
