@@ -364,6 +364,7 @@ class JobQueue(object):
             # the scheduler / priority queue:
             logd("JobQueue already contains a queue for '%s'." % cat)
         self.queue[cat].append(uid)
+        self.set_jobstatus(job, 'queued')
         info("Queue for category '%s': %s" % (cat, self.queue[cat]))
         # logd("Overall list of job descriptions: %s" % self.jobs)
 
