@@ -513,6 +513,13 @@ class JobQueue(object):
              'uid': '2f53d7f50c22285a92c7fcda74994a69f72e1bf1'}
 
         """
+        joblist = []
+        # if the queue is empty, we return immediately with an empty list:
+        # TODO: once __len__() is implemented, use it!
+        logd("Current queue values: %s" % self.queue.values())
+        if len(self.queue.values()) == 0:
+            logd('Empty queue!')
+            return joblist
         # create a zipped list of the queues of all users, padding with None
         # to compensate the different queue lengths:
         queues = map(None, *self.queue.values())
@@ -523,7 +530,6 @@ class JobQueue(object):
         #  (None,     None,     'u00_j3')]
 
         # now we can simply use itertools to flatten the tuple-list:
-        joblist = []
         for jobid in itertools.chain.from_iterable(queues):
             if jobid is not None:
                 joblist.append(self.jobs[jobid])
