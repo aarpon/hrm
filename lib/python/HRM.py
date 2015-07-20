@@ -719,6 +719,12 @@ class HucoreDeconvolveApp(gc3libs.Application):
 
     def terminated(self):
         """This is called when the app has terminated execution."""
+        # TODO: put the results dir back to the user's destination directory
+        # (WARNING: we have to be careful if the data has already been
+        # collected in case of a remote execution scenario)
+        # TODO: consider specifying the output dir in the jobfile!
+        # -> for now we simply use the gc3spooldir as the output directory to
+        # ensure results won't get moved across different storage locations:
         # hucore EXIT CODES:
         # 0: all went well
         # 143: hucore.bin received the HUP signal (9)
@@ -729,12 +735,6 @@ class HucoreDeconvolveApp(gc3libs.Application):
         else:
             logi("Job '%s' terminated successfully!" % self.job['uid'])
         logd("The output of the application is in `%s`." % self.output_dir)
-        # TODO: put the results dir back to the user's destination directory
-        # (WARNING: we have to be careful if the data has already been
-        # collected in case of a remote execution scenario)
-        # TODO: consider specifying the output dir in the jobfile!
-        # -> for now we simply use the gc3spooldir as the output directory to
-        # ensure results won't get moved across different storage locations:
 
     def has_finished(self):
         """Check the if the execution of the app has finished.
