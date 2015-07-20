@@ -74,9 +74,9 @@ JOBFILE_VER = '5'
 def setup_rundirs(base_dir):
     """Check if all runtime directories exist or try to create them otherwise.
 
-    Assuming base_dir is '/run/hrm', the expected structure is like this:
+    Assuming base_dir is '/run', the expected structure is like this:
 
-    /run/hrm
+    /run
         |-- queue
         |   |-- requests
         |   `-- status
@@ -93,11 +93,11 @@ def setup_rundirs(base_dir):
     Returns
     -------
     full_subdirs : dict
-        { 'new'      : '/run/hrm/spool/new',
-          'cur'      : '/run/hrm/spool/cur',
-          'done'     : '/run/hrm/spool/done',
-          'requests' : '/run/hrm/queue/requests',
-          'status'   : '/run/hrm/queue/status' }
+        { 'new'      : '/run/spool/new',
+          'cur'      : '/run/spool/cur',
+          'done'     : '/run/spool/done',
+          'requests' : '/run/queue/requests',
+          'status'   : '/run/queue/status' }
     """
     full_subdirs = dict()
     tree = {
