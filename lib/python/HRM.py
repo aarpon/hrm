@@ -484,14 +484,14 @@ class JobQueue(object):
                 json.dump(details, fout)
         return json.dumps(details, indent=4)
 
-
     def queue_details_hr(self):
         """Generate a human readable list of the queue details."""
         joblist = self.queue_details()
         print "-" * 25, " queue status ", "-" * 25
         for job in joblist:
-            print("%s (%s): %s - %s" %
-                (job['user'], job['email'], job['uid'], job['infiles']))
+            print("%s (%s): %s - %s [%s]" %
+                  (job['user'], job['email'], job['uid'],
+                   job['infiles'], job['status']))
         print "-" * 25, " queue status ", "-" * 25
 
     def queue_details(self):
