@@ -432,6 +432,11 @@ class JobQueue(object):
             logd("Current queue categories: %s" % self.cats)
             logd("Current contents of all queues: %s" % self.queue)
 
+    def set_jobstatus(self, job, status):
+        """Update the status of a job and trigger related actions."""
+        job['status'] = status
+        logd(self.queue_details_json())
+
     def queue_details_json(self, jsonfile=None):
         """Generate a JSON representation of the queue details.
 
