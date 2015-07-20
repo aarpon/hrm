@@ -528,7 +528,6 @@ class JobQueue(object):
         joblist = []
         # if the queue is empty, we return immediately with an empty list:
         # TODO: once __len__() is implemented, use it!
-        logd("Current queue values: %s" % self.queue.values())
         if len(self.queue.values()) == 0:
             logd('Empty queue!')
             return joblist
@@ -537,11 +536,11 @@ class JobQueue(object):
             # zipped list of the queues of all users, padding with 'None' to
             # compensate the different queue lengths:
             queues = map(None, *self.queue.values())
-        # using the example values from above, this results in the following:
-        # [('u02_j0', 'u01_j0', 'u00_j0'),
-        #  ('u02_j1', 'u01_j1', 'u00_j1'),
-        #  (None,     'u01_j2', 'u00_j2'),
-        #  (None,     None,     'u00_j3')]
+            # with the example values, this results in the following:
+            # [('u02_j0', 'u01_j0', 'u00_j0'),
+            #  ('u02_j1', 'u01_j1', 'u00_j1'),
+            #  (None,     'u01_j2', 'u00_j2'),
+            #  (None,     None,     'u00_j3')]
         else:
             queues = self.queue.values()
 
