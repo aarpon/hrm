@@ -176,6 +176,13 @@ class JobDescription(dict):
         # way one could simply use the cmdline utility "sha1sum" to check if a
         # certain job description file belongs to a specific UID.
         self['uid'] = sha1(self.__repr__()).hexdigest()
+        # after creating the UID, we fill in those keys that don't have a
+        # reasonable value yet, they'll be updated later:
+        self['status'] = "N/A"
+        self['start'] = "N/A"
+        self['progress'] = "N/A"
+        self['pid'] = "N/A"
+        self['server'] = "N/A"
         logi(pprint.pformat("Finished initialization of JobDescription()."))
         logd(pprint.pformat(self))
 
