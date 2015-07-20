@@ -119,6 +119,11 @@ def setup_rundirs(base_dir):
                         "directory '%s': %s" % (cur, err))
             full_subdirs[sub_dir] = cur
     logd("Runtime directories:\n%s" % pprint.pformat(full_subdirs))
+    # TODO: pick up jobs in 'new' and 'cur' instead of raising an error
+    # the latter is fine for now to prevent strange behaviour of the queue!
+    for check_empty in [full_subdirs['new'], full_subdirs['cur']]:
+        if len(os.listdir(check_empty)) > 0:
+            raise RuntimeError("Directory non-empty: %s" % check_empty)
     return full_subdirs
 
 
