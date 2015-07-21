@@ -339,11 +339,21 @@ class JobQueue(object):
     # TODO: either remove items from jobs[] upon pop() / remove() or add their
     # ID to a list so the jobs[] dict can get garbage-collected later
     def __init__(self):
-        """Initialize an empty job queue."""
+        """Initialize an empty job queue.
+
+        Instance Variables
+        ------------------
+        statusfile : str (default=None)
+            file name used to write the JSON formatted queue status to
+        cats : deque
+            categories (users), used by the scheduler
+        jobs : dict(JobDescription)
+            holding job descriptions using their UID as key
+        queue : dict(deque)
+            queues of each category (user)
+        """
         self.statusfile = None
-        self.cats = deque('')  # categories / users, used by the scheduler
-        # jobs is a dict containing the JobDescription objects using their
-        # UID as the indexing key for fast access:
+        self.cats = deque('')
         self.jobs = dict()
         self.queue = dict()
 
