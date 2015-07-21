@@ -454,6 +454,11 @@ class JobQueue(object):
         except ValueError as err:
             warn("No job with uid '%s' in queue! (%s)" % (uid, err))
             return
+        try:
+            del self.jobs[uid]
+            logw("Current joblist: %s" % self.jobs)
+        except KeyError as err:
+            logw("No job with uid '%s' in joblist! (%s)" % (uid, err))
         logd("Current queue categories: %s" % self.cats)
         logd("Current contents of all queues: %s" % self.queue)
         if len(self.queue[cat]) < 1:
