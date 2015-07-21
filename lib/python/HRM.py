@@ -528,7 +528,11 @@ class JobQueue(object):
         print "-" * 25, " queue status ", "-" * 25
 
     def queue_details(self):
-        """Generate a list with the current queue details.
+        """Generate a list with the current queue details."""
+        return [self.jobs[jobid] for jobid in self.joblist()]
+
+    def joblist(self):
+        """Generate a list with job ids respecting the current queue order.
 
         For now this simply interleaves all queues from all users, until we
         have implemented a more sophisticated scheduling. However, as the plan
@@ -581,7 +585,7 @@ class JobQueue(object):
         #  (None,     None,     'u00_j3')]
 
         # now flatten the tuple-list and fill with the job details:
-        joblist = [self.jobs[jobid]
+        joblist = [jobid
                        for roundlist in queues
                            for jobid in roundlist
                                if jobid is not None]
