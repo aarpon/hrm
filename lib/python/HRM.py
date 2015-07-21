@@ -336,8 +336,6 @@ class JobQueue(object):
     else.
     """
 
-    # TODO: either remove items from jobs[] upon pop() / remove() or add their
-    # ID to a list so the jobs[] dict can get garbage-collected later
     def __init__(self):
         """Initialize an empty job queue.
 
@@ -470,7 +468,10 @@ class JobQueue(object):
 
     def set_jobstatus(self, job, status):
         """Update the status of a job and trigger related actions."""
+        logd("Changing status of job %s to %s" % (job['uid'], status))
         job['status'] = status
+        if status == gc3libs.Run.State.TERMINATED:
+            self.remove(job['uid'])
         logd(self.queue_details_json())
 
     def queue_details_json(self):
