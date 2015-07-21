@@ -574,11 +574,11 @@ class JobQueue(object):
         # turn into a zipped list of the queues of all users, padding with
         # 'None' to compensate the different queue lengths:
         queues = [x for x in itertools.izip_longest(*queues)]
-            # with the example values, this results in the following:
-            # [('u02_j0', 'u01_j0', 'u00_j0'),
-            #  ('u02_j1', 'u01_j1', 'u00_j1'),
-            #  (None,     'u01_j2', 'u00_j2'),
-            #  (None,     None,     'u00_j3')]
+        # with the example values, this results in the following:
+        # [('u02_j0', 'u01_j0', 'u00_j0'),
+        #  ('u02_j1', 'u01_j1', 'u00_j1'),
+        #  (None,     'u01_j2', 'u00_j2'),
+        #  (None,     None,     'u00_j3')]
 
         # now flatten the tuple-list and fill with the job details:
         joblist = [self.jobs[jobid]
