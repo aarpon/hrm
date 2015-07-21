@@ -336,7 +336,6 @@ class JobQueue(object):
     else.
     """
 
-    # TODO: implement __len__()
     # TODO: either remove items from jobs[] upon pop() / remove() or add their
     # ID to a list so the jobs[] dict can get garbage-collected later
     def __init__(self):
@@ -346,6 +345,14 @@ class JobQueue(object):
         # UID as the indexing key for fast access:
         self.jobs = dict()
         self.queue = dict()
+
+    def __len__(self):
+        """Get the total number of jobs in all queues."""
+        numjobs = 0
+        for queue in self.queue.values():
+            numjobs += len(queue)
+        logd("JobQueue.__len__() = %s" % numjobs)
+        return numjobs
 
     def append(self, job):
         """Add a new job to the queue."""
@@ -533,8 +540,7 @@ class JobQueue(object):
         """
         joblist = []
         # if the queue is empty, we return immediately with an empty list:
-        # TODO: once __len__() is implemented, use it!
-        if len(self.queue.values()) == 0:
+        if len(self) == 0:
             logd('Empty queue!')
             return joblist
         if len(self.queue.keys()) > 1:
