@@ -569,12 +569,11 @@ class JobQueue(object):
         if len(self) == 0:
             logd('Empty queue!')
             return joblist
-        queues = self.queue.values()
-        if len(self.queue.keys()) > 1:
-            # if we're having jobs from more than a single user, create a
-            # zipped list of the queues of all users, padding with 'None' to
-            # compensate the different queue lengths:
-            queues = [x for x in itertools.izip_longest(*queues)]
+        # put queues into a list of lists, respecting the current queue order:
+        queues = [self.queue[cat] for cat in self.cats]
+        # turn into a zipped list of the queues of all users, padding with
+        # 'None' to compensate the different queue lengths:
+        queues = [x for x in itertools.izip_longest(*queues)]
             # with the example values, this results in the following:
             # [('u02_j0', 'u01_j0', 'u00_j0'),
             #  ('u02_j1', 'u01_j1', 'u00_j1'),
