@@ -413,7 +413,7 @@ class JobQueue(object):
             return None
         cat = self.cats[0]
         jobid = self.queue[cat][0]
-        info("Retrieving next job: category '%s', uid '%s'." % (cat, jobid))
+        logi("Retrieving next job: category '%s', uid '%s'." % (cat, jobid))
         if len(self.queue[cat]) >= 1:
             logd("Shifting category list.")
             self.cats.rotate(-1)  # move the first element to last position
@@ -437,26 +437,26 @@ class JobQueue(object):
         ----------
         uid : str (UID of job to remove)
         """
-        warn("Trying to remove job with uid '%s'." % uid)
+        logd("Trying to remove job with uid '%s'." % uid)
         try:
             cat = self.jobs[uid].get_category()
         except KeyError as err:
-            warn("No job with uid '%s' was found!" % err)
+            logd("No job with uid '%s' was found!" % err)
             return
         logd("Category of job to remove: '%s'." % cat)
         try:
             self.queue[cat].remove(uid)
         except KeyError as err:
-            warn("No queue for category %s was found!" % err)
+            logd("No queue for category %s was found!" % err)
             return
         except ValueError as err:
-            warn("No job with uid '%s' in queue! (%s)" % (uid, err))
+            logd("No job with uid '%s' in queue! (%s)" % (uid, err))
             return
         try:
             del self.jobs[uid]
-            logw("Current joblist: %s" % self.jobs)
+            logd("Current joblist: %s" % self.jobs)
         except KeyError as err:
-            logw("No job with uid '%s' in joblist! (%s)" % (uid, err))
+            logd("No job with uid '%s' in joblist! (%s)" % (uid, err))
         logd("Current queue categories: %s" % self.cats)
         logd("Current contents of all queues: %s" % self.queue)
         if len(self.queue[cat]) < 1:
