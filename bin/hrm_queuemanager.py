@@ -125,6 +125,10 @@ def main():
 
     jobqueues = dict()
     jobqueues['hucore'] = HRM.JobQueue()
+    for qname, queue in jobqueues.iteritems():
+        status = os.path.join(job_spooler.dirs['status'], qname + '.json')
+        queue.set_statusfile(status)
+
 
     # select a specific resource if requested on the cmdline:
     if args.resource:
