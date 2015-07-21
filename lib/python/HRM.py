@@ -411,11 +411,9 @@ class JobQueue(object):
         This implements a very simple round-robin (token based) scheduler that
         is going one-by-one through the existing categories.
         """
-        try:
-            cat = self.cats[0]
-        except IndexError:
-            warn('Categories queue is empty, no jobs left!')
-            return
+        if len(self.cats) == 0:
+            return None
+        cat = self.cats[0]
         jobid = self.queue[cat].popleft()
         info("Retrieving next job: category '%s', uid '%s'." % (cat, jobid))
         if len(self.queue[cat]) >= 1:
