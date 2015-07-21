@@ -485,7 +485,7 @@ class JobQueue(object):
                 "file" : job['infiles'],
                 "username" : job['user'],
                 "jobType" : job['type'],
-                "status" : 'N/A',
+                "status" : job['status'],
                 "server" : 'N/A',
                 "progress" : 'N/A',
                 "pid" : 'N/A',
@@ -695,7 +695,10 @@ class JobSpooler(object):
             if self.status_cur == 'run':
                 self.engine.progress()
                 for i, app in enumerate(apps):
-                    if app.has_finished():
+                    new_state = app.status_changed()
+                    if new_state is not None:
+                        jobqueues['hucore'].set_jobstatus(app.job, new_state)
+                    if new_state == gc3libs.Run.State.TERMINATED:
                         app.job.move_jobfile(self.dirs['done'])
                         apps.pop(i)
                 stats = self._engine_status()
@@ -793,20 +796,19 @@ class HucoreDeconvolveApp(gc3libs.Application):
             logi("Job '%s' terminated successfully!" % self.job['uid'])
         logd("The output of the application is in `%s`." % self.output_dir)
 
-    def has_finished(self):
-        """Check the if the execution of the app has finished.
+    def status_changed(self):
+        """Check the if the execution state of the app has changed.
 
         Track and update the internal execution status of the app and print a
-        log message if the status changes. Returns True if the app has
-        terminated, False otherwise.
+        log message if the status changes. Return the new state if the app it
+        has changed, otherwise None.
         """
         if not self.execution.state == self.laststate:
-            logi("Job status changed to '%s'." % self.execution.state)
+            logi("Job status changed to '%s'." % self.job['status'])
             self.laststate = self.execution.state
-        if self.execution.state == gc3libs.Run.State.TERMINATED:
-            return True
+            return self.execution.state
         else:
-            return False
+            return None
 
 
 class HucorePreviewgenApp(gc3libs.Application):
