@@ -340,6 +340,7 @@ class JobQueue(object):
     # ID to a list so the jobs[] dict can get garbage-collected later
     def __init__(self):
         """Initialize an empty job queue."""
+        self.statusfile = None
         self.cats = deque('')  # categories / users, used by the scheduler
         # jobs is a dict containing the JobDescription objects using their
         # UID as the indexing key for fast access:
@@ -353,6 +354,16 @@ class JobQueue(object):
             numjobs += len(queue)
         logd("JobQueue.__len__() = %s" % numjobs)
         return numjobs
+
+    def set_statusfile(self, statusfile):
+        """Set the file used to place the (JSON formatted) queue status in.
+
+        Parameters
+        ----------
+        statusfile : str
+        """
+        logi("Setting job queue status report file: %s" % statusfile)
+        self.statusfile = statusfile
 
     def append(self, job):
         """Add a new job to the queue."""
@@ -445,7 +456,7 @@ class JobQueue(object):
         job['status'] = status
         logd(self.queue_details_json())
 
-    def queue_details_json(self, jsonfile=None):
+    def queue_details_json(self):
         """Generate a JSON representation of the queue details.
 
         The details are returned in a dict of the following form:
@@ -465,9 +476,6 @@ class JobQueue(object):
                },
             ]
         }
-
-        If the parameter "jsonfile" is given, the details are also written to
-        this file.
         """
         joblist = self.queue_details()
         formatted = []
@@ -486,8 +494,8 @@ class JobQueue(object):
             }
             formatted.append(fjob)
         details = {'jobs' : formatted}
-        if jsonfile is not None:
-            with open(jsonfile, 'w') as fout:
+        if self.statusfile is not None:
+            with open(self.statusfile, 'w') as fout:
                 json.dump(details, fout)
         return json.dumps(details, indent=4)
 
@@ -712,8 +720,7 @@ class JobSpooler(object):
             elif self.status_cur == 'refresh':
                 # jobqueues['hucore'].queue_details_hr()
                 print jobqueues['hucore'].queue_details_hr()
-                jsonf = os.path.join(self.dirs['status'], 'queue.json')
-                logd(jobqueues['hucore'].queue_details_json(jsonfile=jsonf))
+                logd(jobqueues['hucore'].queue_details_json())
                 self.status_cur = self.status_pre
             elif self.status_cur == 'pause':
                 # no need to do anything, just sleep and check requests again:
