@@ -412,7 +412,7 @@ class JobQueue(object):
         if len(self.cats) == 0:
             return None
         cat = self.cats[0]
-        jobid = self.queue[cat].popleft()
+        jobid = self.queue[cat][0]
         info("Retrieving next job: category '%s', uid '%s'." % (cat, jobid))
         if len(self.queue[cat]) >= 1:
             logd("Shifting category list.")
