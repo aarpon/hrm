@@ -376,7 +376,12 @@ class JobQueue(object):
         self.statusfile = statusfile
 
     def append(self, job):
-        """Add a new job to the queue."""
+        """Add a new job to the queue.
+        Parameters
+        ----------
+        job : JobDescription
+            The job to be added to the queue.
+        """
         # TODO: should we catch duplicate jobs? Currently they are enqueued.
         cat = job.get_category()
         uid = job['uid']
@@ -394,7 +399,6 @@ class JobQueue(object):
         self.queue[cat].append(uid)
         self.set_jobstatus(job, 'queued')
         info("Queue for category '%s': %s" % (cat, self.queue[cat]))
-        # logd("Overall list of job descriptions: %s" % self.jobs)
 
     def pop(self):
         """Return the next job description for processing.
