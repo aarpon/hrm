@@ -561,23 +561,23 @@ class JobQueue(object):
         if len(self) == 0:
             logd('Empty queue!')
             return joblist
+        queues = self.queue.values()
         if len(self.queue.keys()) > 1:
             # if we're having jobs from more than a single user, create a
             # zipped list of the queues of all users, padding with 'None' to
             # compensate the different queue lengths:
-            queues = map(None, *self.queue.values())
+            queues = [x for x in itertools.izip_longest(*queues)]
             # with the example values, this results in the following:
             # [('u02_j0', 'u01_j0', 'u00_j0'),
             #  ('u02_j1', 'u01_j1', 'u00_j1'),
             #  (None,     'u01_j2', 'u00_j2'),
             #  (None,     None,     'u00_j3')]
-        else:
-            queues = self.queue.values()
 
-        # now we can simply use itertools to flatten the tuple-list:
-        for jobid in itertools.chain.from_iterable(queues):
-            if jobid is not None:
-                joblist.append(self.jobs[jobid])
+        # now flatten the tuple-list and fill with the job details:
+        joblist = [self.jobs[jobid]
+                       for roundlist in queues
+                           for jobid in roundlist
+                               if jobid is not None]
         return joblist
 
 
