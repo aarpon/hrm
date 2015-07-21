@@ -680,21 +680,26 @@ class JobSpooler(object):
             self.check_status_request()
             if self.status_cur == 'run':
                 self.engine.progress()
-                running_jobs = self.engine.stats()['RUNNING']
                 for i, app in enumerate(apps):
                     if app.has_finished():
                         app.job.move_jobfile(self.dirs['done'])
                         apps.pop(i)
+                stats = self._engine_status()
+                # NOTE: in theory, we could simply add all apps to the engine
+                # and let gc3 decide when to dispatch the next one, however
+                # this it is causing a lot of error messages if the engine has
+                # more tasks than available resources, see HRM ticket #421 and
+                # upstream gc3pie ticket #359 for more details. For now we do
+                # not submit new jobs if there are any running or submitted:
+                if stats['RUNNING'] > 0 or stats['SUBMITTED'] > 0:
+                    time.sleep(1)
+                    continue
                 nextjob = jobqueues['hucore'].pop()
                 if nextjob is not None:
-                    logi("Current joblist: %s" % jobqueues['hucore'].queue)
+                    logd("Current joblist: %s" % jobqueues['hucore'].queue)
                     logi("Adding another job to the gc3pie engine.")
                     app = HucoreDeconvolveApp(nextjob, self.gc3spooldir)
                     apps.append(app)
-                    # WARNING: simply adding all apps to the engine does work,
-                    # but it is causing a lot of error messages if the engine
-                    # has more tasks than available resources, see HRM ticket
-                    # #421 and upstream gc3pie ticket #359 for more details.
                     self.engine.add(app)
             elif self.status_cur == 'shutdown':
                 return True
@@ -708,6 +713,16 @@ class JobSpooler(object):
                 # no need to do anything, just sleep and check requests again:
                 pass
             time.sleep(1)
+
+    def _engine_status(self):
+        """Helper to get the engine status and print a formatted log."""
+        stats = self.engine.stats()
+        logd("Engine: NEW:%s  SUBM:%s  RUN:%s  TERM'ing:%s  TERM'ed:%s  "
+             "UNKNWN:%s  STOP:%s  (total:%s)" %
+            (stats['NEW'], stats['SUBMITTED'], stats['RUNNING'],
+             stats['TERMINATING'], stats['TERMINATED'], stats['UNKNOWN'],
+             stats['STOPPED'], stats['total']))
+        return stats
 
 
 class HucoreDeconvolveApp(gc3libs.Application):
