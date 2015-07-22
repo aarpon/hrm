@@ -692,7 +692,7 @@ class JobSpooler(object):
                 os.remove(check_file)
                 self.status_pre = self.status_cur
                 self.status_cur = fname
-                logi("Received queue request: %s -> %s" %
+                logw("Received queue request: %s -> %s" %
                     (self.status_pre, self.status_cur))
                 # we don't process more than one request at a time, so exit:
                 return
@@ -774,7 +774,8 @@ class HucoreDeconvolveApp(gc3libs.Application):
     def __init__(self, job, gc3_output):
         self.job = job   # remember the job object
         uid = self.job['uid']
-        logw('Instantiating a HucoreDeconvolveApp:\n%s' % self.job)
+        logw('Instantiating a HucoreDeconvolveApp:\n[%s]: %s --> %s' %
+            (self.job['user'], self.job['template'], self.job['infiles']))
         logi('Job UID: %s' % uid)
         # we need to add the template (with the local path) to the list of
         # files that need to be transferred to the system running hucore:
