@@ -514,7 +514,7 @@ class JobQueue(object):
         details = {'jobs' : formatted}
         if self.statusfile is not None:
             with open(self.statusfile, 'w') as fout:
-                json.dump(details, fout)
+                json.dump(details, fout, indent=4)
         return json.dumps(details, indent=4)
 
     def queue_details_hr(self):
