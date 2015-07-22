@@ -398,7 +398,7 @@ class JobQueue(object):
         self.set_jobstatus(job, 'queued')
         info("Queue for category '%s': %s" % (cat, self.queue[cat]))
 
-    def pop(self):
+    def next_job(self):
         """Return the next job description for processing.
 
         Picks the next that should be processed from that queue that has the
@@ -732,7 +732,7 @@ class JobSpooler(object):
                 if stats['RUNNING'] > 0 or stats['SUBMITTED'] > 0:
                     time.sleep(1)
                     continue
-                nextjob = jobqueues['hucore'].pop()
+                nextjob = jobqueues['hucore'].next_job()
                 if nextjob is not None:
                     logd("Current joblist: %s" % jobqueues['hucore'].queue)
                     logi("Adding another job to the gc3pie engine.")
