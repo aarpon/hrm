@@ -436,6 +436,11 @@ class JobQueue(object):
         Parameters
         ----------
         uid : str (UID of job to remove)
+
+        Returns
+        -------
+        job : JobDescription
+            The JobDescription dict of the job that was removed (on success).
         """
         logd("Trying to remove job with uid '%s'." % uid)
         try:
@@ -453,6 +458,9 @@ class JobQueue(object):
             logd("No job with uid '%s' in queue! (%s)" % (uid, err))
             return
         try:
+            # remember the job as we want to return it below:
+            job = self.jobs[uid]
+            # then remove it from the jobs dict:
             del self.jobs[uid]
             logd("Current joblist: %s" % self.jobs)
         except KeyError as err:
@@ -465,6 +473,7 @@ class JobQueue(object):
             del self.queue[cat]    # delete the category from the queue dict
             logd("Current queue categories: %s" % self.cats)
             logd("Current contents of all queues: %s" % self.queue)
+        return job
 
     def set_jobstatus(self, job, status):
         """Update the status of a job and trigger related actions."""
