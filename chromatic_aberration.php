@@ -108,6 +108,28 @@ include("header.inc.php");
     <p>Chromatic aberrations are often present in multi-channel images.
        Correcting for this is crucial for accurate image analysis.</p> 
 
+    
+    Reference channel:
+
+    <select name="ReferenceChannel"
+    onclick="javascript:changeChromaticReference(this)"
+    onchange="javascript:changeChromaticReference(this)">
+<?php
+$parameter = $_SESSION['task_setting']->parameter("ChromaticAberration");
+$chanCnt   = $_SESSION['task_setting']->numberOfChannels();
+$componentCnt = $parameter->componentCnt();
+$values = $parameter->value();
+for($chan = 0; $chan < $chanCnt; $chan++) {
+?>
+    <option value=<?php echo $chan;?>>
+    <?php echo $chan; ?>
+    </option>
+<?php    
+}
+?>  
+    </select>
+    
+    
 <form method="post" action="" id="select">
 <table>
 <tr>
@@ -120,29 +142,25 @@ include("header.inc.php");
 </tr>
                                  
 <?php
-$parameter = $_SESSION['task_setting']->parameter("ChromaticAberration");
-$componentCnt = $parameter->componentCnt();
-$values = $parameter->value();
-
-for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
+for ($chan = 0; $chan < $chanCnt; $chan++) {
     ksort($values);
-    $offset = $i * $componentCnt;
+    $offset = $chan * $componentCnt;
     $chanArray = array_slice($values, $offset, $componentCnt);
 ?>
     <tr>
-    <td class="header"><?php echo $i; ?></td>
+    <td class="header"><?php echo $chan; ?></td>
 
 <?php
 
-    for ($j = 0; $j < $parameter->componentCnt(); $j++) {
+    for ($component = 0; $component < $componentCnt; $component++) {
 ?>
     
 <td><input
-        id="ChromaticAberrationCh<?php echo $i . _ . $j;?>"
-        name="ChromaticAberrationCh<?php echo $i . _ . $j;?>"
+        id="ChromaticAberrationCh<?php echo $chan . _ . $component;?>"
+        name="ChromaticAberrationCh<?php echo $chan . _ . $component;?>"
         type="text"
         size="6"
-        value="<?php echo $chanArray[$j]; ?>"
+        value="<?php echo $chanArray[$component]; ?>"
         class="multichannelinput" /></td>
 <?php 
     }
