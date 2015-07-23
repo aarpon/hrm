@@ -137,6 +137,42 @@ function smoothChangeDiv(div, html, time) {
     }
 }
 
+// Grey out the reference channel for chromatic aberration correction.
+// Set the values of shift x,y,z rotation and scale to 0, 0, 0, 0, 1.
+function changeChromaticReference(selectObj) {
+    var tag = "ChromaticAberration";
+
+    table = document.getElementById(tag);
+    
+    channelCnt = table.rows.length - 1;
+    componentCnt = table.rows[0].cells.length - 1;
+    
+    for (var chan = 0; chan < channelCnt; chan++) {
+        for (var component = 0; component < componentCnt; component++) {
+            var id = tag + "Ch";
+            id = id.concat(chan);
+            id += "_";
+            id = id.concat(component);
+            inputElement = document.getElementById(id);
+            
+            if (chan == selectObj.value) {    
+                inputElement.readOnly = true;
+                inputElement.style.color="#000";
+                inputElement.style.backgroundColor="#888";
+                if (component == 4) {
+                    inputElement.value = 1;
+                } else {
+                    inputElement.value = 0;
+                }
+            } else {
+                inputElement.readOnly = false;
+                inputElement.style.color="#000";
+                inputElement.style.backgroundColor="";
+            }
+        }
+    }
+}
+
 // Grey out the STED input fields of a specific channel if the
 // corresponding depletion mode is set to 'confocal'.
 function changeStedEntryProperties(selectObj, channel) {

@@ -131,7 +131,7 @@ for($chan = 0; $chan < $chanCnt; $chan++) {
     
     
 <form method="post" action="" id="select">
-<table>
+<table id="ChromaticAberration">
 <tr>
 <td class="header">Ch</td>
 <td class="header">Shift x<br />(&#956m)</td>
@@ -165,7 +165,7 @@ for ($chan = 0; $chan < $chanCnt; $chan++) {
 <?php 
     }
 ?>
-    <tr>
+    </tr>
 <?php
 }
 ?>
