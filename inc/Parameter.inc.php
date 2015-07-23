@@ -3379,9 +3379,12 @@ class ChromaticAberration {
       \param   $value A '#' formatted string or an array with the CA components.
       \brief
     */
-    public function setValue( $values ) {       
+    public function setValue( $values ) {     
+        
         if (!is_array($values)) {
+            /* The first element of the array will be empty due to the explode. */
             $valuesArray = explode('#', $values);
+            unset($valuesArray[0]);            
         } else {
             $valuesArray = $values;
         }
@@ -3407,6 +3410,14 @@ class ChromaticAberration {
         unset($valuesArray[0]);            
 
         return $valuesArray ;
+    }
+
+    public function chanValue( $chan ) {
+        $valuesArray = $this->value();
+        $offset = $chan * $this->componentCnt;
+        $chanArray = array_slice($valuesArray, $offset, $this->componentCnt);
+   
+        return $chanArray;
     }
 
     public function setNumberOfChannels( $chanCnt ) {
