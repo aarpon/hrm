@@ -178,7 +178,7 @@ abstract class Setting {
         foreach ($setting->parameterNames() as $name) {
             $parameter = $this->parameter[$name];
             $otherParameter = $setting->parameter($name);
-            $newValue = $otherParameter->internalValue();
+            $newValue = $otherParameter->internalValue();    
             $parameter->setValue($newValue);
             $this->parameter[$name] = $parameter;
         }
@@ -2433,6 +2433,9 @@ class TaskSetting extends Setting {
     */
     public function isEligibleForCAC(ParameterSetting $paramSetting) {
         if ($this->numberOfChannels() == 1) {
+            return FALSE;
+        }
+        if (!System::hasLicense("chromaticS")) {
             return FALSE;
         }
 

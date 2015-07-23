@@ -3376,13 +3376,17 @@ class ChromaticAberration {
     }
 
     /*!
-      \param   $value An array with the CA components.
+      \param   $value A '#' formatted string or an array with the CA components.
       \brief
     */
-    public function setValue( $valuesArray ) {
-        if (!is_array($valuesArray)
-            || empty($valuesArray)
-            || is_null($valuesArray)) {
+    public function setValue( $values ) {       
+        if (!is_array($values)) {
+            $valuesArray = explode('#', $values);
+        } else {
+            $valuesArray = $values;
+        }
+        
+        if (empty($valuesArray) || is_null($valuesArray)) {
             return;
         }
 
