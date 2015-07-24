@@ -3422,7 +3422,8 @@ class ChromaticAberration {
         /* The first element of the array will be empty due to the explode. */
         unset($valuesArray[0]);            
 
-        return $valuesArray ;
+        /* Re-index with array_values. */
+        return array_values($valuesArray);
     }
 
     public function chanValue( $chan ) {
