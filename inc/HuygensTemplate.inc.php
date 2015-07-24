@@ -921,7 +921,7 @@ class HuygensTemplate {
 
             switch ( $key ) {
             case 'completeChanCnt':
-                $setp .= $key . " " . $this->getNumberOfChannels();
+                $setp .= $key . " " . $this->getChanCnt();
                 break;
             case 'ps':
             case 'pr':
@@ -1092,9 +1092,9 @@ class HuygensTemplate {
         $imgZStabilize = "";
 
         $stedData = False;
-        $numberOfChannels = $this->getNumberOfChannels();
-        for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            if (strstr($this->getMicroscopeType($chanCnt),'sted')) {
+        $chanCnt = $this->getChanCnt();
+        for($chan = 0; $chan < $chanCnt; $chan++) {
+            if (strstr($this->getMicroscopeType($chan),'sted')) {
                 $stedData = True;
                 break;
             }
@@ -1133,12 +1133,12 @@ class HuygensTemplate {
      \return      Deconvolution 'algorithm' task string and its options.
     */
     private function getImgTaskDescrAlgorithms( ) {
-        $numberOfChannels = $this->getNumberOfChannels();
+        $chanCnt = $this->getChanCnt();
         $algorithms = "";
-        for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $algorithm = $this->getAlgorithm($chanCnt);
-            $algOptions = $this->getTaskAlgorithm($chanCnt);
-            $algorithms .= " ${algorithm}:$chanCnt $algOptions";
+        for($chan = 0; $chan < $chanCnt; $chan++) {
+            $algorithm = $this->getAlgorithm($chan);
+            $algOptions = $this->getTaskAlgorithm($chan);
+            $algorithms .= " ${algorithm}:$chan $algOptions";
         }
 
         return $algorithms;
@@ -1803,7 +1803,7 @@ class HuygensTemplate {
     private function getChansForChromaticCorrection( ) {
         $channelsArray = array();
         
-        $chanCnt = $this->getNumberOfChannels();
+        $chanCnt = $this->getChanCnt();
         if ($chanCnt < 2) {
             return $channelsArray;
         }
@@ -2218,11 +2218,11 @@ class HuygensTemplate {
         case 'stedSatFact':
         case 'stedImmunity':
         case 'sted3D':
-            $numberOfChannels = $this->getNumberOfChannels();
+            $chanCnt = $this->getChanCnt();
             $cList = "";
 
-            for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-                $cLevel = $this->getConfidenceLevel($paramName,$chanCnt);
+            for($chan = 0; $chan < $chanCnt; $chan++) {
+                $cLevel = $this->getConfidenceLevel($paramName,$chan);
                 $cList .= "  " . $cLevel;
             }
             $paramConf = $this->string2tcllist($cList);
@@ -2308,11 +2308,11 @@ class HuygensTemplate {
         case 'stedSatFact':
         case 'stedImmunity':
         case 'sted3D':
-            $numberOfChannels = $this->getNumberOfChannels();
+            $chanCnt = $this->getChanCnt();
             $param = "";
-            for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
+            for($chan = 0; $chan < $chanCnt; $chan++) {
                 if (!$default) {
-                    $param .= $this->getParameterValue($paramName,$chanCnt);
+                    $param .= $this->getParameterValue($paramName,$chan);
                     $param .= " ";
                 } else {
                     $param .= $default . " ";
@@ -2472,10 +2472,10 @@ class HuygensTemplate {
      \return      The Huygens deconvolution task names
     */
     private function parseAlgorithm( ) {
-        $numberOfChannels = $this->getNumberOfChannels();
+        $chanCnt = $this->getChanCnt();
         $algorithms = "";
-        for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
-            $algorithms .= $this->getAlgorithm().":$chanCnt ";
+        for($chan = 0; $chan < $chanCnt; $chan++) {
+            $algorithms .= $this->getAlgorithm().":$chan ";
         }
         return trim($algorithms);
     }
@@ -2686,7 +2686,7 @@ class HuygensTemplate {
      \brief       Gets the number of channels selected by the user.
      \return      Number of channels.
     */
-    private function getNumberOfChannels( ) {
+    private function getChanCnt( ) {
         return $this->microSetting->numberOfChannels();
     }
 
