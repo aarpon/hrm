@@ -586,30 +586,30 @@ class HuygensTemplate {
     */
     private function setJobInfoList( ) {
         
-        $jobInfo = "";
+        $list = "";
 
         foreach ($this->jobInfoArray as $key => $value) {
 
             if ($key != "listID") {
-                $jobInfo .= " " . $key . " ";
+                $list .= " " . $key . " ";
             }
             
             switch ( $key ) {
             case 'version':
-                $jobInfo .= $value;
+                $list .= $value;
                 break;
             case 'title':
-                $jobInfo .= $this->string2tcllist($value);
+                $list .= $this->string2tcllist($value);
                 break;
             case 'templateName':
-                $jobInfo .= $this->getTemplateName();
+                $list .= $this->getTemplateName();
                 break;
             case 'date':
-                $jobInfo .= $this->getTemplateDate();
+                $list .= $this->getTemplateDate();
                 break;
             case 'listID':
-                $jobInfo = $this->string2tcllist($jobInfo);
-                $this->jobInfoList = $value . " " . $jobInfo;
+                $list = $this->string2tcllist($list);
+                $this->jobInfoList = $value . " " . $list;
                 break;
             default:
                 error_log("Job info field $key not yet implemented.");       
@@ -622,12 +622,12 @@ class HuygensTemplate {
     */
     private function setJobTasksList() {
 
-        $jobTasks = "";
+        $list = "";
 
         foreach ($this->jobTasksArray as $key => $value) {
 
             if ($key != "listID") {
-                $jobTasks .= " " . $key . " ";
+                $list .= " " . $key . " ";
             }
             
             switch ( $key ) {
@@ -635,8 +635,8 @@ class HuygensTemplate {
             case 'taskID:0':
                 break;
             case 'listID':
-                $jobTasks = $this->string2tcllist($jobTasks);
-                $this->jobTasksList = $value . " " . $jobTasks;       
+                $list = $this->string2tcllist($list);
+                $this->jobTasksList = $value . " " . $list;       
                 break;
             default:
                 error_log("Job task $key not yet implemented.");
@@ -649,30 +649,30 @@ class HuygensTemplate {
     */
     private function setEnvList( ) {
 
-        $env = "";
+        $list = "";
 
         foreach ($this->envArray as $key => $value) {
 
             if ($key != "listID") {
-                $env .= " " . $key . " ";
+                $list .= " " . $key . " ";
             }
 
             switch ( $key ) {
             case 'resultDir':
-                $env .= $this->string2tcllist($this->getDestDir());
+                $list .= $this->string2tcllist($this->getDestDir());
                 break;
             case 'exportFormat':
-                $env .= $this->getExportFormat();
+                $list .= $this->getExportFormat();
                 break;
             case 'listID':
-                $env = $this->string2tcllist($env);
-                $this->envList = $value . " " . $env;
+                $list = $this->string2tcllist($list);
+                $this->envList = $value . " " . $list;
                 break;
             case 'perJobThreadCnt':
             case 'concurrentJobCnt':
             case 'OMP_DYNAMIC':
             case 'timeOut':
-                $env .= $value;
+                $list .= $value;
                 break;
             default:
                 error_log("Environment field $key not yet implemented");
@@ -685,25 +685,25 @@ class HuygensTemplate {
     */
     private function setImgProcessList( ) {
         
-        $imgProcess = "";
+        $list = "";
         
         foreach ($this->imgProcessArray as $key => $value) {
             
             if ($key != "listID") {
-                $imgProcess .= " ";
+                $list .= " ";
             }
           
             switch ( $key ) {
             case 'info':
-                $imgProcess .= $this->getImgProcessInfo();
+                $list .= $this->getImgProcessInfoList();
                 break;
             case 'taskList':
-                $imgProcess .= $this->getImgProcessTasks();
-                $imgProcess .= $this->getImgProcessTasksDescr();
+                $list .= $this->getImgProcessTaskList();
+                $list .= $this->getImgProcessTasksDescr();
                 break;
             case 'listID':
-                $imgProcess = $this->string2tcllist($imgProcess);
-                $this->imgProcessList = $value . " " .$imgProcess;
+                $list = $this->string2tcllist($list);
+                $this->imgProcessList = $value . " " .$list;
                 break;
             default:
                 error_log("Image processing task $key not yet implemented");
@@ -717,13 +717,14 @@ class HuygensTemplate {
      \brief       Gets information on the template's only job.
      \return      The Tcl-compliant nested list with the info details.
     */
-    private function getImgProcessInfo( ) {
+    private function getImgProcessInfoList( ) {
 
-        $taskInfo = "";
+        $list = "";
+        
         foreach ($this->imgProcessInfoArray as $key => $value) {
 
             if ($key != "listID") {
-                $taskInfo .= " " . $key . " ";
+                $list .= " " . $key . " ";
             }
 
             switch( $key ) {
@@ -731,29 +732,31 @@ class HuygensTemplate {
             case 'tag':
             case 'state':
             case 'userDefConfidence':
-                $taskInfo .= $value;
+                $list .= $value;
                 break;
             case 'timeStartAbs':
-                $taskInfo .= time();
+                $list .= time();
                 break;                
             case 'listID':
-                $taskInfo = $this->string2tcllist($taskInfo);
-                $taskInfo = $value . " " . $taskInfo;
+                $list = $this->string2tcllist($list);
+                $list = $value . " " . $list;
                 break;
             default:
                 error_log("Info option $key not yet implemented");
             }
         }
         
-        return $taskInfo;
+        return $list;
     }
 
     /*!
      \brief       Gets the Huygens subtask names of the deconvolution process.
      \return      The Tcl-compliant nested list with subtask names.
     */
-    private function getImgProcessTasks( ) {
-        $taskList = "";
+    private function getImgProcessTaskList( ) {
+        
+        $list = "";
+        
         foreach ($this->imgProcessTasksArray as $key => $value) {
             switch ( $key ) {
             case 'open':
@@ -781,19 +784,19 @@ class HuygensTemplate {
             case 'TComparisonAtDstDir':
                 $task = $this->parseTask($key,$value);
                 if ($task != "") {
-                    $taskList .= $task ." ";
+                    $list .= $task ." ";
                 }
                 break;
             case 'listID':
-                $taskList = $this->string2tcllist($taskList);
-                $taskList = $value . " " . $taskList;
+                $list = $this->string2tcllist($list);
+                $list = $value . " " . $list;
                 break;
             default:
                 error_log("Image process task $key not yet implemented");
             }
         }
         
-        return $taskList;
+        return $list;
     }
 
     /*!
@@ -802,41 +805,41 @@ class HuygensTemplate {
     */
     private function getImgProcessTasksDescr( ) {
 
+        $tasksDescr = "";
+        
         $this->initializeThumbCounter();
-
-        $taskList = "";
         foreach ($this->imgProcessTasksArray as $key => $value) { 
-            $taskList .= " ";
+            $tasksDescr .= " ";
             switch ( $key ) {
             case 'open':
-                $taskList .= $this->getImgTaskDescrOpen();
+                $tasksDescr .= $this->getImgTaskDescrOpen();
                 break;
             case 'save':
-                $taskList .= $this->getImgTaskDescrSave();
+                $tasksDescr .= $this->getImgTaskDescrSave();
                 break;
             case 'setParameters':
-                $taskList .= $this->getImgTaskDescrSetp();
+                $tasksDescr .= $this->getImgTaskDescrSetp();
                 break;
             case 'autocrop':
-                $taskList .= $this->getImgTaskDescrAutocrop();
+                $tasksDescr .= $this->getImgTaskDescrAutocrop();
                 break;
             case 'adjustBaseline':
-                $taskList .= $this->getImgTaskDescrAdjbl();
+                $tasksDescr .= $this->getImgTaskDescrAdjbl();
                 break;
             case 'ZStabilization':
-                $taskList .= $this->getImgTaskDescrZStabilize();
+                $tasksDescr .= $this->getImgTaskDescrZStabilize();
                 break;
             case 'algorithms':
-                $taskList .= $this->getImgTaskDescrAlgorithms();
+                $tasksDescr .= $this->getImgTaskDescrAlgorithms();
                 break;
             case 'chromatic':
-                $taskList .= $this->getImgTaskDescrChromatic();
+                $tasksDescr .= $this->getImgTaskDescrChromatic();
                 break;
             case 'colocalization':
-                $taskList .= $this->getImgTaskDescrColoc();
+                $tasksDescr .= $this->getImgTaskDescrColocs();
                 break;
             case '2Dhistogram':
-                $taskList .= $this->getImgTaskDescrHistogram();
+                $tasksDescr .= $this->getImgTaskDescrHistograms();
                 break;
             case 'XYXZRawAtSrcDir':
             case 'XYXZRawSubImgAtSrcDir':
@@ -851,17 +854,17 @@ class HuygensTemplate {
             case 'TimeMovieDecAtDstDir':
             case 'ZComparisonAtDstDir':
             case 'TComparisonAtDstDir':
-                $taskList .= $this->getImgTaskDescrThumbnail($key,$value);
+                $tasksDescr .= $this->getImgTaskDescrThumbnail($key,$value);
                 break;
             case 'listID':
                 break;
             default:
-                $taskList = "";
+                $tasksDescr = "";
                 error_log("Image processing task $key not yet implemented.");
             }
         }
 
-        return $taskList;
+        return $tasksDescr;
     }
     
     /*!
@@ -870,39 +873,40 @@ class HuygensTemplate {
     */
     private function getImgTaskDescrOpen( ) {
 
-        $imgOpen = "";
+        $taskDescr = "";
+        
         foreach ($this->imgOpenArray as $key => $value) {
 
            if ($key != "subImg" && $key != 'listID') {
-                $imgOpen .= " " . $key . " ";
+                $taskDescr .= " " . $key . " ";
             }
 
             switch( $key ) {
             case 'path':
-                $imgOpen .= $this->string2tcllist($this->srcImage);
+                $taskDescr .= $this->string2tcllist($this->srcImage);
                 break;
             case 'series':
-                $imgOpen .= $this->getSeriesMode();
+                $taskDescr .= $this->getSeriesMode();
                 break;
             case 'index':
-                $imgOpen .= " " . $value . " ";
+                $taskDescr .= " " . $value . " ";
                 break;
             case 'subImg':
                 if (isset($this->subImage)) {
-                    $imgOpen .= " " . $key . " ";
-                    $imgOpen .= $this->string2tcllist($this->subImage);
+                    $taskDescr .= " " . $key . " ";
+                    $taskDescr .= $this->string2tcllist($this->subImage);
                 }
                 break;
             case 'listID':
-                $imgOpen = $this->string2tcllist($imgOpen);
-                $imgOpen = $value  . " " . $imgOpen;
+                $taskDescr = $this->string2tcllist($taskDescr);
+                $taskDescr = $value  . " " . $taskDescr;
                 break;
             default:
                 error_log("Image open option $key not yet implemented.");
             }
         }
 
-        return $imgOpen;
+        return $taskDescr;
     }
 
     /*!
@@ -911,12 +915,13 @@ class HuygensTemplate {
     */
     private function getImgTaskDescrSetp( ) {
 
-        $setp = "";
+        $taskDescr = "";
+        
         foreach ($this->setpArray as $key => $value) { 
 
             switch ( $key ) {
             case 'completeChanCnt':
-                $setp .= $key . " " . $this->getChanCnt();
+                $taskDescr .= $key . " " . $this->getChanCnt();
                 break;
             case 'ps':
             case 'pr':
@@ -940,15 +945,15 @@ class HuygensTemplate {
             case 'sted3D':
                 break;
             case 'listID':
-                $setp = $this->string2tcllist($setp);
-                $this->setpList = $value . " " . $setp;
+                $taskDescr = $this->string2tcllist($taskDescr);
+                $this->setpList = $value . " " . $taskDescr;
                 break;
             default:
                 error_log("Setp field $key not yet implemented.");       
             }
 
             if ($key != "listID" && $key != "completeChanCnt") {
-                $setp .= $this->getParameter($key,$value);
+                $taskDescr .= $this->getParameter($key,$value);
             }
         }
 
@@ -961,28 +966,29 @@ class HuygensTemplate {
     */
     private function getImgTaskDescrAdjbl( ) {
 
-        $imgAdjbl = "";
+        $taskDescr = "";
+        
         foreach ($this->adjblArray as $key => $value) {
 
             if ($key != "listID") {
-                $imgAdjbl .= " " . $key . " ";
+                $taskDescr .= " " . $key . " ";
             }
 
             switch( $key ) {
             case 'ni':
             case 'enabled':
-                $imgAdjbl .= $value;
+                $taskDescr .= $value;
                 break;
             case 'listID':
-                $imgAdjbl = $this->string2tcllist($imgAdjbl);
-                $imgAdjbl = $value . " " . $imgAdjbl;
+                $taskDescr = $this->string2tcllist($taskDescr);
+                $taskDescr = $value . " " . $taskDescr;
                 break;
             default:
                 error_log("Image adjbl option $key not yet implemented.");
             }
         }
 
-        return $imgAdjbl;
+        return $taskDescr;
     }
     
 
@@ -991,6 +997,7 @@ class HuygensTemplate {
      \return      Tcl list with the 'chromatic aberration' task and its options.
     */
     private function getImgTaskDescrChromatic( ) {
+        
         $allTasksDescr = "";
         
         $channelsArray = $this->getChansForChromaticCorrection();
@@ -1052,30 +1059,31 @@ class HuygensTemplate {
       \return     Tcl list with the 'autocrop' task and its options.
     */
     private function getImgTaskDescrAutocrop( ) {
-        $imgAutocrop = "";
+        
+        $taskDescr = "";
 
 
         $autocropParam = $this->deconSetting->parameter('Autocrop');
         foreach ($this->autocropArray as $key => $value) {
             
             if ($key != "listID") {
-                $imgAutocrop .= " " . $key . " ";
+                $taskDescr .= " " . $key . " ";
             }
 
             switch( $key ) {
             case 'enabled':
-                $imgAutocrop .= $autocropParam->value();
+                $taskDescr .= $autocropParam->value();
                 break;
             case 'listID':
-                $imgAutocrop = $this->string2tcllist($imgAutocrop);
-                $imgAutocrop = $value . " " . $imgAutocrop;
+                $taskDescr = $this->string2tcllist($taskDescr);
+                $taskDescr = $value . " " . $taskDescr;
                 break;
             default:
                 error_log("Image autocrop option $key not yet implemented.");
             }
         }
 
-        return $imgAutocrop;
+        return $taskDescr;
     }
     
 
@@ -1084,7 +1092,8 @@ class HuygensTemplate {
       \return     Tcl list with the 'ZStabilize' task and its options.
     */
     private function getImgTaskDescrZStabilize( ) {
-        $imgZStabilize = "";
+        
+        $taskDescr = "";
 
         $stedData = False;
         $chanCnt = $this->getChanCnt();
@@ -1099,28 +1108,28 @@ class HuygensTemplate {
         foreach ($this->ZStabilizeArray as $key => $value) {
             
             if ($key != "listID") {
-                $imgZStabilize .= " " . $key . " ";
+                $taskDescr .= " " . $key . " ";
             }
 
             /* Stabilization should only be applied to STED data. */
             switch( $key ) {
             case 'enabled':
                 if ($stedData) {
-                    $imgZStabilize .= $ZStabilizeParam->value();
+                    $taskDescr .= $ZStabilizeParam->value();
                 } else {
-                    $imgZStabilize .= '0';
+                    $taskDescr .= '0';
                 }
                 break;
             case 'listID':
-                $imgZStabilize = $this->string2tcllist($imgZStabilize);
-                $imgZStabilize = $value . " " . $imgZStabilize;
+                $taskDescr = $this->string2tcllist($taskDescr);
+                $taskDescr = $value . " " . $taskDescr;
                 break;
             default:
                 error_log("Image Z stabilize option $key not yet implemented.");
             }
         }
 
-        return $imgZStabilize;
+        return $taskDescr;
     }
 
     /*!
@@ -1128,27 +1137,29 @@ class HuygensTemplate {
      \return      Deconvolution 'algorithm' task string and its options.
     */
     private function getImgTaskDescrAlgorithms( ) {
+
+        $allTasksDescr = "";
+        
         $chanCnt = $this->getChanCnt();
-        $algorithms = "";
         for($chan = 0; $chan < $chanCnt; $chan++) {
             $algorithm = $this->getAlgorithm($chan);
-            $algOptions = $this->getTaskAlgorithm($chan);
-            $algorithms .= " ${algorithm}:$chan $algOptions";
+            $taskDescr = $this->getTaskDescrAlgorithm($chan);
+            $allTasksDescr .= " ${algorithm}:$chan $taskDescr";
         }
 
-        return $algorithms;
+        return $allTasksDescr;
     }
 
     /*!
      \brief       Gets options for all the 'colocalization' tasks.
      \return      Tcl list with the 'colocalization' tasks and their options.
     */
-    private function getImgTaskDescrColoc( ) {
+    private function getImgTaskDescrColocs( ) {
 
-        $imgColoc = "";
+        $allTasksDescr = "";
         
         if (!$this->getColocalization()) {
-            return $imgColoc;
+            return $allTasksDescr;
         }
 
         $colocChannels = $this->getColocChannels();
@@ -1163,7 +1174,8 @@ class HuygensTemplate {
                 $chanR = $colocChannels[$i];
                 $chanG = $colocChannels[$j];
                 
-                $imgColoc .= $this->getTaskColoc($chanR, $chanG, $runCnt);
+                $allTasksDescr .=
+                    $this->getTaskDescrColoc($chanR, $chanG, $runCnt);
                 
                 if ( $runCnt < $colocRuns ) {
                     $runCnt++;
@@ -1173,20 +1185,20 @@ class HuygensTemplate {
             }
         }
         
-        return $imgColoc;
+        return $allTasksDescr;
     }
 
     /*!
      \brief       Gets options for the '2Dhistogram' task.
      \return      Tcl list with the '2Dhistogram' task and its options.
     */
-    private function getImgTaskDescrHistogram( ) {
+    private function getImgTaskDescrHistograms( ) {
         
-        $imgHist = "";
+        $allTasksDescr = "";
 
         /* There should be one 2D histogram per colocalization run. */
         if (!$this->getColocalization()) {
-            return $imgHist;
+            return $allTasksDescr;
         }
 
         $colocChannels = $this->getColocChannels();
@@ -1201,7 +1213,8 @@ class HuygensTemplate {
                 $chanR = $colocChannels[$i];
                 $chanG = $colocChannels[$j];
                 
-                $imgHist .= $this->getTaskHist($chanR, $chanG, $runCnt);
+                $allTasksDescr .=
+                    $this->getTaskDescrHistogram($chanR, $chanG, $runCnt);
                 
                 if ( $runCnt < $colocRuns ) {
                     $runCnt++;
@@ -1211,7 +1224,7 @@ class HuygensTemplate {
             }
         }
 
-        return $imgHist;
+        return $allTasksDescr;
     }
 
     
@@ -1263,9 +1276,9 @@ class HuygensTemplate {
             $this->thumbType = null;
         }
 
-        $taskList = $this->getThumbnailTask($thumbType,$thumbID);
+        $taskDescr = $this->getThumbnailTaskDescr($thumbType,$thumbID);
 
-        return $taskList;
+        return $taskDescr;
     }
 
     /*!
@@ -1274,28 +1287,29 @@ class HuygensTemplate {
     */
     private function getImgTaskDescrSave( ) {
 
-        $imgSave = "";
+        $taskDescr = "";
+        
         foreach ($this->imgSaveArray as $key => $value) {
 
             if ($key != "listID") {
-                $imgSave .= " " . $key . " ";
+                $taskDescr .= " " . $key . " ";
             }
 
             switch( $key ) {
             case 'rootName':
                 $outName  = $this->getDestImageBaseName();
-                $imgSave .= $this->string2tcllist($outName);
+                $taskDescr .= $this->string2tcllist($outName);
                 break;
             case 'listID':
-                $imgSave = $this->string2tcllist($imgSave);
-                $imgSave = " " . $value . " " . $imgSave;
+                $taskDescr = $this->string2tcllist($taskDescr);
+                $taskDescr = " " . $value . " " . $taskDescr;
                 break;
             default:
                 error_log("Image save option $key not yet implemented.");
             }
         }
 
-        return $imgSave;
+        return $taskDescr;
     }
 
     /* -------------------------- Setp task ---------------------------------- */
@@ -1579,55 +1593,56 @@ class HuygensTemplate {
      \param       $channel A channel
      \return      Tcl list with the deconvolution 'algorithm' task + its options.
     */
-    private function getTaskAlgorithm($channel) {
+    private function getTaskDescrAlgorithm($channel) {
 
-        $imgAlg = "";
+        $taskDescr = "";
+        
         foreach ($this->algArray as $key => $value) {
 
             if ($key != "mode" && $key != "itMode" && $key != 'listID') {
-                $imgAlg .= " " . $key . " ";
+                $taskDescr .= " " . $key . " ";
             }
 
             switch ( $key ) {
             case 'timeOut':
             case 'pad':
             case 'blMode':
-                $imgAlg .= $value;
+                $taskDescr .= $value;
                 break;
             case 'q':
-                $imgAlg .= $this->getQualityFactor();
+                $taskDescr .= $this->getQualityFactor();
                 break;
             case 'brMode':
-                $imgAlg .= $this->getBrMode();
+                $taskDescr .= $this->getBrMode();
                 break;
             case 'it':
-                $imgAlg .= $this->getIterations();
+                $taskDescr .= $this->getIterations();
                 break;
             case 'bgMode':
-                $imgAlg .= $this->getBgMode();
+                $taskDescr .= $this->getBgMode();
                 break;
             case 'bg':
-                $imgAlg .= $this->getBgValue($channel);
+                $taskDescr .= $this->getBgValue($channel);
                 break;
             case 'sn':
-                $imgAlg .= $this->getSnrValue($channel);
+                $taskDescr .= $this->getSnrValue($channel);
                 break;
             case 'psfMode':
-                $imgAlg .= $this->getPsfMode();
+                $taskDescr .= $this->getPsfMode();
                 break;
             case 'psfPath':
-                $imgAlg .= $this->getPsfPath($channel);
+                $taskDescr .= $this->getPsfPath($channel);
                 break;
             case 'mode':
                 if ($this->getAlgorithm() == "cmle") {
-                    $imgAlg .= " " . $key . " ";
-                    $imgAlg .= $value;
+                    $taskDescr .= " " . $key . " ";
+                    $taskDescr .= $value;
                 }
                 break;
             case 'itMode':
                 if ($this->getAlgorithm() == "qmle") {
-                    $imgAlg .= " " . $key . " ";
-                    $imgAlg .= $value;
+                    $taskDescr .= " " . $key . " ";
+                    $taskDescr .= $value;
                 }
                 break;
             case 'listID':
@@ -1637,7 +1652,7 @@ class HuygensTemplate {
             }
         }
 
-        return $this->string2tcllist($imgAlg);
+        return $this->string2tcllist($taskDescr);
     }
     
     /*!
@@ -1831,9 +1846,10 @@ class HuygensTemplate {
      \param       $runCnt The number of colocalization tasks
      \return      Tcl list with the 'colocalization' task and its options.
     */
-    private function getTaskColoc($chanR, $chanG, $runCnt) {
+    private function getTaskDescrColoc($chanR, $chanG, $runCnt) {
         
-        $imgColoc = "";
+        $taskDescr = "";
+        
         foreach ($this->colocArray as $key => $value) {
 
             if ($key != "listID") {
@@ -1842,52 +1858,52 @@ class HuygensTemplate {
                         continue;
                     }
                 }
-                $imgColoc .= " " . $key . " ";
+                $taskDescr .= " " . $key . " ";
             }
 
             switch( $key ) {
             case 'chanR':
-                $imgColoc .= $chanR;
+                $taskDescr .= $chanR;
                 break;
             case 'chanG':
-                $imgColoc .= $chanG;
+                $taskDescr .= $chanG;
                 break;
             case 'threshMode':
-                $imgColoc .= $this->getColocThreshMode();
+                $taskDescr .= $this->getColocThreshMode();
                 break;
             case 'threshPercR':
-                $imgColoc .= $this->getColocThreshValue($chanR);
+                $taskDescr .= $this->getColocThreshValue($chanR);
                 break;
             case 'threshPercG':
-                $imgColoc .= $this->getColocThreshValue($chanG);
+                $taskDescr .= $this->getColocThreshValue($chanG);
                 break;
             case 'coefficients':
                 $coefficients  = $this->getColocCoefficients();
-                $imgColoc .= $this->string2tcllist($coefficients);
+                $taskDescr .= $this->string2tcllist($coefficients);
                 break;
             case 'map':
-                $imgColoc .= $this->getColocMap();
+                $taskDescr .= $this->getColocMap();
                 break;
             case 'destDir':
                 $destDir   = $this->getDestDir() . "/hrm_previews";
-                $imgColoc .= $this->string2tcllist($destDir);
+                $taskDescr .= $this->string2tcllist($destDir);
                 break;
             case 'destFile':
                 $destFile  = $this->getThumbBaseName() . ".";
                 $destFile .= $this->getColocMap() . ".map_chan";
                 $destFile .= $chanR . "_" . "chan" . $chanG;
-                $imgColoc .= $destFile;
+                $taskDescr .= $destFile;
                 break;
             case 'listID':
-                $imgColoc  = $this->string2tcllist($imgColoc);
-                $imgColoc  = $value . ":" . $runCnt . " " . $imgColoc . " ";
+                $taskDescr  = $this->string2tcllist($taskDescr);
+                $taskDescr  = $value . ":" . $runCnt . " " . $taskDescr . " ";
                 break;
             default:
                 error_log("Colocalization option '$key' not yet implemented.");
             }
         }
 
-        return $imgColoc;
+        return $taskDescr;
     }
 
     /*!
@@ -1978,41 +1994,42 @@ class HuygensTemplate {
      \param       $runCnt The number of histogram tasks
      \return      Tcl list with the 'histogram' task and its options.
     */
-    private function getTaskHist($chanR, $chanG, $runCnt) {
+    private function getTaskDescrHistogram($chanR, $chanG, $runCnt) {
 
-        $imgHist = "";
+        $taskDescr = "";
+        
         foreach ($this->histoArray as $key => $value) {
             
             if ($key != "listID") {
-                $imgHist .= " " . $key . " ";
+                $taskDescr .= " " . $key . " ";
             }
             
             switch( $key ) {
             case 'chanR':
-                $imgHist .= $chanR;
+                $taskDescr .= $chanR;
                 break;
             case 'chanG':
-                $imgHist .= $chanG;
+                $taskDescr .= $chanG;
                 break;
             case 'destDir':
                 $destDir  = $this->getDestDir() . "/hrm_previews";
-                $imgHist .= $this->string2tcllist($destDir);
+                $taskDescr .= $this->string2tcllist($destDir);
                 break;        
             case 'destFile':
                 $destFile  = $this->getThumbBaseName() . ".hist_chan" . $chanR;
                 $destFile .= "_" . "chan" . $chanG;
-                $imgHist  .= $destFile;
+                $taskDescr  .= $destFile;
                 break;
             case 'listID':
-                $imgHist  = $this->string2tcllist($imgHist);
-                $imgHist  = $value . ":" . $runCnt . " " . $imgHist . " ";
+                $taskDescr  = $this->string2tcllist($taskDescr);
+                $taskDescr  = $value . ":" . $runCnt . " " . $taskDescr . " ";
                 break;
             default:
                 error_log("2D histogram option '$key' not yet implemented.");
             }
         }
 
-        return $imgHist;
+        return $taskDescr;
     }
 
     /* ------------------------ Thumbnail tasks------------------------------- */
@@ -2023,7 +2040,7 @@ class HuygensTemplate {
      \param       $thumbID  The number of this thumbnail task.
      \return      Tcl-compliant list with the thumbnail generation details.
     */
-    private function getThumbnailTask($taskKey,$thumbID) {
+    private function getThumbnailTaskDescr($taskKey,$thumbID) {
 
         /* Get the Huygens task name of the thumbnail task */
         $task = $this->parseTask($taskKey,$thumbID);
@@ -2031,43 +2048,43 @@ class HuygensTemplate {
             return;
         }        
         
-        $previewGen = "";
+        $taskDescr = "";
 
         foreach ($this->thumbArray as $key => $value) {
 
             if ($key == "image" && !isset($this->thumbFrom)) {
-                $previewGen .= " ";
+                $taskDescr .= " ";
             } else {
-                $previewGen .= " " . $key . " ";
+                $taskDescr .= " " . $key . " ";
             }
 
             /* Notice that the 'size' is added to all thumbnail tasks even
              though some of them don't need it. */
             switch( $key ) {
             case 'image':
-                $previewGen .= $this->thumbFrom;
+                $taskDescr .= $this->thumbFrom;
                 break;
             case 'destDir':
-                $previewGen .= $this->thumbToDir;
+                $taskDescr .= $this->thumbToDir;
                 break;
             case 'destFile':
-                $previewGen .= $this->getThumbnailName();
+                $taskDescr .= $this->getThumbnailName();
                 break;
             case 'type':
-                $previewGen .= $this->thumbType;
+                $taskDescr .= $this->thumbType;
                 break;
             case 'size':
-                $previewGen .= $value;
+                $taskDescr .= $value;
                 break;
             default:
                 error_log("Thumb preview option $key not yet implemented");
             }
         }
 
-        $previewGen = $this->string2tcllist($previewGen);
-        $previewGen = " " . $task . " " . $previewGen;
+        $taskDescr = $this->string2tcllist($taskDescr);
+        $taskDescr = " " . $task . " " . $taskDescr;
 
-        return $previewGen;
+        return $taskDescr;
     }
 
     /*!
@@ -2449,6 +2466,7 @@ class HuygensTemplate {
       \return
     */
     private function parseChromatic($task) {
+        
         $chromaticTasks = "";
 
         $channelsArray = $this->getChansForChromaticCorrection();
@@ -2482,8 +2500,8 @@ class HuygensTemplate {
      \param       $key A task array key
      \return      The Huygens task name.
      */
-    private function parseMultiChan($task)
-    {
+    private function parseMultiChan($task) {
+        
         $tasks = "";
 
         /* At the moment there are only coloc/hist tasks as multichannel task.
