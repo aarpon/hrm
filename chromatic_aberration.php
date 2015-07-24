@@ -122,8 +122,9 @@ include("header.inc.php");
     Reference channel:
 
     <select name="ReferenceChannel"
-    onclick="javascript:changeChromaticReference(this)"
-    onchange="javascript:changeChromaticReference(this)">
+    id = "ReferenceChannel"
+    onclick="javascript:changeChromaticChannelReference(this)"
+    onchange="javascript:changeChromaticChannelReference(this)">
 <?php
 for($chan = 0; $chan < $chanCnt; $chan++) {
 ?>
@@ -223,7 +224,10 @@ echo "<p>$message</p>";
         </div>
 
     </div> <!-- rightpanel -->
-    
+
+    <script type="text/javascript">
+    initChromaticChannelReference();                
+    </script>
 
 <?php
 include("footer.inc.php");
