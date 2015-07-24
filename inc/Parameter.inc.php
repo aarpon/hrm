@@ -826,6 +826,7 @@ class NumericalVectorParameter extends NumericalParameter {
     public function check() {
         $this->message = '';
         $result = True;
+       
         
         /* First check that all values are set. */
         if (array_search("", array_slice($this->value,
@@ -842,7 +843,7 @@ class NumericalVectorParameter extends NumericalParameter {
         
         /* Now check the values themselves. */
         for ( $i = 0; $i < $this->componentCnt; $i++ ) {
-            $result &= parent::checkValue( $this->value[ $i ] );
+            $result &= parent::check( $this->value[ $i ] );
         }
         
         return $result;
@@ -3346,8 +3347,6 @@ class ChromaticAberration {
         $this->chanCnt = $db->getMaxChanCnt();
         
         for ($chan = 0; $chan < $this->chanCnt; $chan++) {
-
-
             $this->value[$chan] = new NumericalVectorParameter(
                 $this->name() . "Ch" . $chan, $this->componentCnt());
         }
