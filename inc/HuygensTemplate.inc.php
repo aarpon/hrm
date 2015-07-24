@@ -782,7 +782,7 @@ class HuygensTemplate {
             case 'TimeMovieDecAtDstDir':
             case 'ZComparisonAtDstDir':
             case 'TComparisonAtDstDir':
-                $task = $this->parseTask($key,$value);
+                $task = $this->getTaskName($key,$value);
                 if ($task != "") {
                     $list .= $task ." ";
                 }
@@ -1061,7 +1061,6 @@ class HuygensTemplate {
     private function getImgTaskDescrAutocrop( ) {
         
         $taskDescr = "";
-
 
         $autocropParam = $this->deconSetting->parameter('Autocrop');
         foreach ($this->autocropArray as $key => $value) {
@@ -2043,7 +2042,7 @@ class HuygensTemplate {
     private function getThumbnailTaskDescr($taskKey,$thumbID) {
 
         /* Get the Huygens task name of the thumbnail task */
-        $task = $this->parseTask($taskKey,$thumbID);
+        $task = $this->getTaskName($taskKey,$thumbID);
         if ($task == "") {
             return;
         }        
@@ -2426,11 +2425,12 @@ class HuygensTemplate {
 
     /*!
      \brief       Gets the Huygens task name of a task.
+     \brief       Notice that integers often need to be appended to the names.
      \param       $key   A task array key
      \param       $task  A task compliant with the Huygens template task names
      \return      The task name (includes channel number, preview number, etc.)
     */
-    private function parseTask($key,$task) {
+    private function getTaskName($key,$task) {
         switch ($task) {
         case 'imgOpen':
         case 'setp':
@@ -2441,17 +2441,17 @@ class HuygensTemplate {
             break;
         case 'coloc':
         case 'hist':
-            $task = $this->parseMultiChan($task);
+            $task = $this->getNameTaskMultiChan($task);
             break;
         case 'previewGen':
-            $task = $this->parsePreviewGen($key,$task);
+            $task = $this->getNameTaskPreviewGen($key,$task);
             break;
         case 'shift':
-            $task = $this->parseChromatic($task);
+            $task = $this->getNameTaskChromatic($task);
             break;
         case '':
             if ($key == 'algorithms') {
-                $task = $this->parseAlgorithm();
+                $task = $this->getNameTaskAlgorithm();
             }
             break;
         default:
@@ -2465,7 +2465,7 @@ class HuygensTemplate {
       \brief
       \return
     */
-    private function parseChromatic($task) {
+    private function getNameTaskChromatic($task) {
         
         $chromaticTasks = "";
 
@@ -2486,7 +2486,7 @@ class HuygensTemplate {
      \brief       Gets the Huygens deconvolution task names of every channel
      \return      The Huygens deconvolution task names
     */
-    private function parseAlgorithm( ) {
+    private function getNameTaskAlgorithm( ) {
         $chanCnt = $this->getChanCnt();
         $algorithms = "";
         for($chan = 0; $chan < $chanCnt; $chan++) {
@@ -2500,7 +2500,7 @@ class HuygensTemplate {
      \param       $key A task array key
      \return      The Huygens task name.
      */
-    private function parseMultiChan($task) {
+    private function getNameTaskMultiChan($task) {
         
         $tasks = "";
 
@@ -2524,7 +2524,7 @@ class HuygensTemplate {
      \param       $task  A task compliant with the Huygens template task names
      \return      The Huygens preview task name
     */
-    private function parsePreviewGen($key,$task) {
+    private function getNameTaskPreviewGen($key,$task) {
         global $useThumbnails;
         global $saveSfpPreviews;
         global $movieMaxSize;
