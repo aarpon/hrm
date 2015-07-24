@@ -105,7 +105,7 @@ include("header.inc.php");
     
 
     <fieldset class="setting provided"
-    onmouseover="javascript:changeQuickHelp( 'cac' );" >
+    onmouseover="javascript:changeQuickHelp( 'chromatic' );" >
     
     <legend>
         <a href="javascript:openWindow(
