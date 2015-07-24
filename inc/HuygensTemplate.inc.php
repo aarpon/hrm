@@ -386,7 +386,7 @@ class HuygensTemplate {
         /* All metadata will be accepted as long as the template counterparts
          don't exist. The accepted confidence level is therefore: "default". */
 
-        /* There are no specific names for the deconvolution and microscopic
+        /* There are no specific names for the deconvolution and microscopy
          templates in the Tcl-lists, they will be set to general names. */
         $this->imgProcessInfoArray = 
             array ( 'state'                     => 'readyToRun',
@@ -396,12 +396,11 @@ class HuygensTemplate {
                     'userDefConfidence'         => 'default',
                     'listID'                    => 'info' );
 
-        /* These are the operations carried out in a deconvolution job in 
-         HRM. Operations for thumbnail generation are included. Notice that 
-         the names of the thumbnail operations contain the destination
-         directory as well as the thumbnail type and the image type. The
-         thumbnail operation names code the type of action executed on the 
-         image.*/
+        /* These are the operations carried out by HuCore/HRM. Operations for
+           thumbnail generation are included. Notice that the names of the
+           thumbnail operations contain the destination directory as well as
+           the thumbnail type and the image type. The thumbnail operation
+           names code the type of action executed on the image.*/
         $this->imgProcessTasksArray = 
             array ('open'                       =>  'imgOpen',
                    'setParameters'              =>  'setp',
@@ -523,20 +522,17 @@ class HuygensTemplate {
                     'itMode'                    =>  'auto',
                     'listID'                    =>  '' );
 
-        /* Options for the 'autocrop' action.
-           A bit redundant to work with an array here, but this way the
-           foundations for more complex autocrop tasks are laid. */
+        /* Options for the 'autocrop' action. */
         $this->autocropArray =
             array( 'enabled'                    =>  '0',
                    'listID'                     =>  'autocrop');
 
-        /* Options for the 'ZStabilization' action.
-           A bit redundant to work with an array here, same reason as above. */
+        /* Options for the 'ZStabilization' action. */
         $this->ZStabilizeArray =
             array( 'enabled'                    =>  '0',
                    'listID'                     =>  'stabilize');
 
-        /* Options for the 'colocalization analysis' action */
+        /* Options for the 'colocalization analysis' action. */
         $this->colocArray  =
             array( 'chanR'                      =>  '',
                    'chanG'                      =>  '',
@@ -549,7 +545,7 @@ class HuygensTemplate {
                    'destFile'                   =>  '',
                    'listID'                     =>  'coloc' );
 
-            /* Options for the '2D histogram' action */
+            /* Options for the '2D histogram' action. */
         $this->histoArray  =
             array( 'chanR'                      =>  '',
                    'chanG'                      =>  '',
@@ -557,7 +553,7 @@ class HuygensTemplate {
                    'destFile'                   =>  '',
                    'listID'                     =>  'hist' );        
 
-        /* Options for the 'create thumbnail from image' action */
+        /* Options for the 'create thumbnail from image' action. */
         $this->thumbArray =
             array( 'image'                      =>  '',
                    'destDir'                    =>  '',
@@ -565,7 +561,7 @@ class HuygensTemplate {
                    'type'                       =>  '',
                    'size'                       =>  '400' );
         
-        /* Options for the 'save image' action */
+        /* Options for the 'save image' action. */
         $this->imgSaveArray = 
             array ( 'rootName'                  =>  '',
                     'listID'                    =>  'imgSave' );
@@ -576,8 +572,8 @@ class HuygensTemplate {
 
     /* --------------------- Main task list builders ------------------------- */
 
-        /*!
-     \brief       Puts the Huygens Batch template together
+    /*!
+     \brief       Puts the Huygens Batch template together.
     */
     private function assembleTemplate( ) {
         $this->template =  $this->jobInfoList . "\n";
@@ -690,7 +686,7 @@ class HuygensTemplate {
     }
     
     /*!
-     \brief       Sets the template's restoration and thumbnail operations
+     \brief       Sets the template's restoration and thumbnail operations.
     */
     private function setImgProcessList( ) {
         
@@ -708,7 +704,7 @@ class HuygensTemplate {
                 break;
             case 'taskList':
                 $imgProcess .= $this->getImgProcessTasks();
-                $imgProcess .= $this->getImgProcessSubTasks();
+                $imgProcess .= $this->getImgProcessTasksDescr();
                 break;
             case 'listID':
                 $imgProcess = $this->string2tcllist($imgProcess);
@@ -720,6 +716,8 @@ class HuygensTemplate {
         }
     }
 
+    /* ------------------- Secondary task list builders ---------------------- */
+    
     /*!
      \brief       Gets information on the template's only job.
      \return      The Tcl-compliant nested list with the info details.
@@ -734,21 +732,15 @@ class HuygensTemplate {
             }
 
             switch( $key ) {
-            case 'state':
-                $taskInfo .= $value;
-                break;
+            case 'timeOut':
             case 'tag':
+            case 'state':
+            case 'userDefConfidence':
                 $taskInfo .= $value;
                 break;
             case 'timeStartAbs':
                 $taskInfo .= time();
-                break;
-            case 'timeOut':
-                $taskInfo .= $value;
-                break;
-            case 'userDefConfidence':
-                $taskInfo .= $value;
-                break;
+                break;                
             case 'listID':
                 $taskInfo = $this->string2tcllist($taskInfo);
                 $taskInfo = $value . " " . $taskInfo;
@@ -813,7 +805,7 @@ class HuygensTemplate {
      \brief       Gets details of specific deconvolution subtasks. 
      \return      The Tcl-compliant nested list with subtask details.
     */
-    private function getImgProcessSubTasks( ) {
+    private function getImgProcessTasksDescr( ) {
 
         $this->initializeThumbCounter();
 
@@ -822,34 +814,34 @@ class HuygensTemplate {
             $taskList .= " ";
             switch ( $key ) {
             case 'open':
-                $taskList .= $this->getImgProcessOpen();
+                $taskList .= $this->getImgTaskDescrOpen();
                 break;
             case 'save':
-                $taskList .= $this->getImgProcessSave();
+                $taskList .= $this->getImgTaskDescrSave();
                 break;
             case 'setParameters':
-                $taskList .= $this->getImgProcessSetp();
+                $taskList .= $this->getImgTaskDescrSetp();
                 break;
             case 'autocrop':
-                $taskList .= $this->getImgProcessAutocrop();
+                $taskList .= $this->getImgTaskDescrAutocrop();
                 break;
             case 'adjustBaseline':
-                $taskList .= $this->getImgProcessAdjbl();
+                $taskList .= $this->getImgTaskDescrAdjbl();
                 break;
             case 'ZStabilization':
-                $taskList .= $this->getImgProcessZStabilize();
+                $taskList .= $this->getImgTaskDescrZStabilize();
                 break;
             case 'algorithms':
-                $taskList .= $this->getImgProcessAlgorithms();
+                $taskList .= $this->getImgTaskDescrAlgorithms();
                 break;
             case 'chromatic':
-                $taskList .= $this->getImgProcessChromatic();
+                $taskList .= $this->getImgTaskDescrChromatic();
                 break;
             case 'colocalization':
-                $taskList .= $this->getImgProcessColoc();
+                $taskList .= $this->getImgTaskDescrColoc();
                 break;
             case '2Dhistogram':
-                $taskList .= $this->getImgProcessHistogram();
+                $taskList .= $this->getImgTaskDescrHistogram();
                 break;
             case 'XYXZRawAtSrcDir':
             case 'XYXZRawSubImgAtSrcDir':
@@ -864,7 +856,7 @@ class HuygensTemplate {
             case 'TimeMovieDecAtDstDir':
             case 'ZComparisonAtDstDir':
             case 'TComparisonAtDstDir':
-                $taskList .= $this->getImgProcessThumbnail($key,$value);
+                $taskList .= $this->getImgTaskDescrThumbnail($key,$value);
                 break;
             case 'listID':
                 break;
@@ -881,7 +873,7 @@ class HuygensTemplate {
      \brief       Gets options for the 'image open' task.
      \return      Tcl list with the'Image open' task and its options.
     */
-    private function getImgProcessOpen( ) {
+    private function getImgTaskDescrOpen( ) {
 
         $imgOpen = "";
         foreach ($this->imgOpenArray as $key => $value) {
@@ -922,7 +914,7 @@ class HuygensTemplate {
      \brief       Gets options for the 'set parameters' task.
      \return      Tcl list with the 'Set parameters' task and its options.
     */
-    private function getImgProcessSetp( ) {
+    private function getImgTaskDescrSetp( ) {
 
         $setp = "";
         foreach ($this->setpArray as $key => $value) { 
@@ -972,7 +964,7 @@ class HuygensTemplate {
      \brief       Gets options for the 'adjust baseline' task.
      \return      Tcl list with the 'Adjust baseline' task and its options.
     */
-    private function getImgProcessAdjbl( ) {
+    private function getImgTaskDescrAdjbl( ) {
 
         $imgAdjbl = "";
         foreach ($this->adjblArray as $key => $value) {
@@ -982,10 +974,8 @@ class HuygensTemplate {
             }
 
             switch( $key ) {
-            case 'enabled':
-                $imgAdjbl .= $value;
-                break;
             case 'ni':
+            case 'enabled':
                 $imgAdjbl .= $value;
                 break;
             case 'listID':
@@ -999,41 +989,13 @@ class HuygensTemplate {
 
         return $imgAdjbl;
     }
-
-    /*!
-      \brief
-      \return
-    */
-    private function getChansForChromaticCorrection( ) {
-        $channelsArray = array();
-        
-        $chanCnt = $this->getNumberOfChannels();
-        if ($chanCnt < 2) {
-            return $channelsArray;
-        }
-
-        $chromaticParam = $this->deconSetting->parameter("ChromaticAberration");
-
-        for ($chan = 0; $chan < $chanCnt; $chan++) {
-            $chromaticChan = $chromaticParam->chanValue( $chan );
-            
-            foreach ($chromaticChan as $component => $value) {
-                if (isset($value) && $value > 0) {
-                    array_push($channelsArray, $chan);
-                    break;
-                }
-            }
-        }
-        
-        return $channelsArray;
-    }
     
 
     /*!
      \brief       Gets options for the 'chromatic aberration correction' task.
      \return      Tcl list with the 'chromatic aberration' task and its options.
     */
-    private function getImgProcessChromatic( ) {
+    private function getImgTaskDescrChromatic( ) {
         $allTasksDescr = "";
         
         $channelsArray = $this->getChansForChromaticCorrection();
@@ -1094,7 +1056,7 @@ class HuygensTemplate {
       \brief      Get options for the 'Autocrop' task. 
       \return     Tcl list with the 'autocrop' task and its options.
     */
-    private function getImgProcessAutocrop( ) {
+    private function getImgTaskDescrAutocrop( ) {
         $imgAutocrop = "";
 
 
@@ -1126,7 +1088,7 @@ class HuygensTemplate {
       \brief      Get options for the 'ZStabilize' task. 
       \return     Tcl list with the 'ZStabilize' task and its options.
     */
-    private function getImgProcessZStabilize( ) {
+    private function getImgTaskDescrZStabilize( ) {
         $imgZStabilize = "";
 
         $stedData = False;
@@ -1170,7 +1132,7 @@ class HuygensTemplate {
      \brief       Gets options for the 'algorithm' task. All channels.
      \return      Deconvolution 'algorithm' task string and its options.
     */
-    private function getImgProcessAlgorithms( ) {
+    private function getImgTaskDescrAlgorithms( ) {
         $numberOfChannels = $this->getNumberOfChannels();
         $algorithms = "";
         for($chanCnt = 0; $chanCnt < $numberOfChannels; $chanCnt++) {
@@ -1186,7 +1148,7 @@ class HuygensTemplate {
      \brief       Gets options for all the 'colocalization' tasks.
      \return      Tcl list with the 'colocalization' tasks and their options.
     */
-    private function getImgProcessColoc( ) {
+    private function getImgTaskDescrColoc( ) {
 
         $imgColoc = "";
         
@@ -1223,7 +1185,7 @@ class HuygensTemplate {
      \brief       Gets options for the '2Dhistogram' task.
      \return      Tcl list with the '2Dhistogram' task and its options.
     */
-    private function getImgProcessHistogram( ) {
+    private function getImgTaskDescrHistogram( ) {
         
         $imgHist = "";
 
@@ -1263,7 +1225,7 @@ class HuygensTemplate {
      \return     Tcl-compliant list with the thumbnail options.
      \todo       Set thumbtypes in an array at initialization.
     */
-    private function getImgProcessThumbnail($thumbType,$thumbID) {
+    private function getImgTaskDescrThumbnail($thumbType,$thumbID) {
 
         if (preg_match("/Raw/i",$thumbType)) {
             $this->thumbFrom = "raw";
@@ -1315,7 +1277,7 @@ class HuygensTemplate {
      \brief       Gets options for the 'image save' task.
      \return      Tcl list with the 'Image save' task and its options.
     */
-    private function getImgProcessSave( ) {
+    private function getImgTaskDescrSave( ) {
 
         $imgSave = "";
         foreach ($this->imgSaveArray as $key => $value) {
@@ -1632,6 +1594,11 @@ class HuygensTemplate {
             }
 
             switch ( $key ) {
+            case 'timeOut':
+            case 'pad':
+            case 'blMode':
+                $imgAlg .= $value;
+                break;
             case 'q':
                 $imgAlg .= $this->getQualityFactor();
                 break;
@@ -1655,15 +1622,6 @@ class HuygensTemplate {
                 break;
             case 'psfPath':
                 $imgAlg .= $this->getPsfPath($channel);
-                break;
-            case 'blMode':
-                $imgAlg .= $value;
-                break;
-            case 'pad':
-                $imgAlg .= $value;
-                break;
-            case 'timeOut':
-                $imgAlg .= $value;
                 break;
             case 'mode':
                 if ($this->getAlgorithm() == "cmle") {
@@ -1836,6 +1794,37 @@ class HuygensTemplate {
         return $this->microSetting->getAberractionCorrectionParameters();
     }
 
+    /* -------------- Chromatic Aberration correction tasks ------------------ */
+    
+    /*!
+      \brief    It creates an array with the target channels.
+      \return   The target array.
+    */
+    private function getChansForChromaticCorrection( ) {
+        $channelsArray = array();
+        
+        $chanCnt = $this->getNumberOfChannels();
+        if ($chanCnt < 2) {
+            return $channelsArray;
+        }
+
+        $chromaticParam = $this->deconSetting->parameter("ChromaticAberration");
+
+        for ($chan = 0; $chan < $chanCnt; $chan++) {
+            $chromaticChan = $chromaticParam->chanValue( $chan );
+            
+            foreach ($chromaticChan as $component => $value) {
+                if (isset($value) && $value > 0) {
+                    array_push($channelsArray, $chan);
+                    break;
+                }
+            }
+        }
+        
+        return $channelsArray;
+    }
+
+    
     /* --------------------- Colocalization tasks ---------------------------- */
 
     /*!
