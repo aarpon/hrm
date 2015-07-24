@@ -23,6 +23,19 @@ $message = "";
 
 /* *****************************************************************************
  *
+ * MANAGE THE CHROMATIC ABERRATION
+ *
+ **************************************************************************** */
+
+$parameter = $_SESSION['task_setting']->parameter("ChromaticAberration");
+$chanCnt   = $_SESSION['task_setting']->numberOfChannels();
+$componentCnt = $parameter->componentCnt();
+$chromaticArray = $parameter->value();
+ksort($chromaticArray);
+
+
+/* *****************************************************************************
+ *
  * PROCESS THE POSTED PARAMETERS
  *
  **************************************************************************** */
@@ -37,9 +50,6 @@ if ($_SESSION[ 'task_setting' ]->checkPostedChromaticAberrationParameters( $_POS
 } else {
     $message = $_SESSION['task_setting']->message();
 }
-
-
-
     
 
 /* *****************************************************************************
@@ -106,7 +116,7 @@ include("header.inc.php");
     </legend>
 
     <p>Chromatic aberrations are often present in multi-channel images.
-       Correcting for this is crucial for accurate image analysis.</p> 
+       Correcting for this is crucial for image visualization and analysis.</p> 
 
     
     Reference channel:
@@ -115,10 +125,6 @@ include("header.inc.php");
     onclick="javascript:changeChromaticReference(this)"
     onchange="javascript:changeChromaticReference(this)">
 <?php
-$parameter = $_SESSION['task_setting']->parameter("ChromaticAberration");
-$chanCnt   = $_SESSION['task_setting']->numberOfChannels();
-$componentCnt = $parameter->componentCnt();
-$values = $parameter->value();
 for($chan = 0; $chan < $chanCnt; $chan++) {
 ?>
     <option value=<?php echo $chan;?>>
@@ -143,9 +149,7 @@ for($chan = 0; $chan < $chanCnt; $chan++) {
                                  
 <?php
 for ($chan = 0; $chan < $chanCnt; $chan++) {
-    ksort($values);
     $offset = $chan * $componentCnt;
-    $chanArray = array_slice($values, $offset, $componentCnt);
 ?>
     <tr>
     <td class="header"><?php echo $chan; ?></td>
@@ -160,9 +164,10 @@ for ($chan = 0; $chan < $chanCnt; $chan++) {
         name="ChromaticAberrationCh<?php echo $chan . _ . $component;?>"
         type="text"
         size="6"
-        value="<?php echo $chanArray[$component]; ?>"
+        value="<?php echo $chromaticArray[$offset]; ?>"
         class="multichannelinput" /></td>
-<?php 
+<?php
+        $offset++;
     }
 ?>
     </tr>
@@ -182,8 +187,7 @@ for ($chan = 0; $chan < $chanCnt; $chan++) {
               <input type="button" value="" class="icon previous"
                   onmouseover="TagToTip('ttSpanBack' )"
                   onmouseout="UnTip()"
-                  onclick="javascript:deleteValuesAndRedirect(
-                    'task_parameter.php' );" />
+                  onclick="document.location.href='task_parameter.php'" />
               <input type="button" value="" class="icon up"
                   onmouseover="TagToTip('ttSpanCancel' )"
                   onmouseout="UnTip()"
