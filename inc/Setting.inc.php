@@ -2319,7 +2319,7 @@ class TaskSetting extends Setting {
         $noErrorsFound = True;
 
         foreach ($postedParameters as $param) {
-            if ($param != "" && !ctype_digit($param)) {
+            if ($param != "" && !is_numeric($param)) {
                 $noErrorsFound = False;
                 $this->message = "Value must be numeric";
                 break;

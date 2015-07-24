@@ -146,6 +146,13 @@ class HuygensTemplate {
      \brief  Array with information on the image adjbl subtask.
     */
     private $adjblArray;
+    
+    /*!
+     \var    $chromaticArray;
+     \brief  Array with information on the image chromatic aberration subtask.
+    */
+    private $chromaticArray;
+
 
     /*!
      \var    $algArray;
@@ -403,6 +410,7 @@ class HuygensTemplate {
                    'ZStabilization'             =>  'stabilize',
                    'algorithms'                 =>  '',
                    'colocalization'             =>  'coloc',
+                   'chromatic'                  =>  'shift',
                    '2Dhistogram'                =>  'hist',
                    'XYXZRawAtSrcDir'            =>  'previewGen',
                    'XYXZRawSubImgAtSrcDir'      =>  'previewGen',
@@ -483,6 +491,20 @@ class HuygensTemplate {
             array ( 'enabled'                   =>  '0',
                     'ni'                        =>  '0',
                     'listID'                    =>  'adjbl' );
+
+        /* Options for the 'chromatic aberration correction' action */
+        $this->chromaticArray = 
+            array ( 'q'                         =>  'standard',
+                    'vector'                    =>  '',
+                    'reference'                 =>  '',
+                    'channel'                   =>  '',
+                    'lambdaEm'                  =>  '480',
+                    'lambdaEx'                  =>  '480',
+                    'lambdaSted'                =>  '480',
+                    'mType'                     =>  'generic',
+                    'estMethod'                 =>  '2',
+                    'listID'                    =>  'shift');
+
 
         /* Options for the 'execute deconvolution' action */
         $this->algArray   = 
@@ -744,7 +766,6 @@ class HuygensTemplate {
      \return      The Tcl-compliant nested list with subtask names.
     */
     private function getImgProcessTasks( ) {
-
         $taskList = "";
         foreach ($this->imgProcessTasksArray as $key => $value) {
             switch ( $key ) {
@@ -755,6 +776,7 @@ class HuygensTemplate {
             case 'adjustBaseline':
             case 'ZStabilization':
             case 'algorithms':
+            case 'chromatic':
             case 'colocalization':
             case '2Dhistogram':    
             case 'XYXZRawAtSrcDir':
@@ -819,6 +841,9 @@ class HuygensTemplate {
                 break;
             case 'algorithms':
                 $taskList .= $this->getImgProcessAlgorithms();
+                break;
+            case 'chromatic':
+                $taskList .= $this->getImgProcessChromatic();
                 break;
             case 'colocalization':
                 $taskList .= $this->getImgProcessColoc();
@@ -974,6 +999,95 @@ class HuygensTemplate {
 
         return $imgAdjbl;
     }
+
+    /*!
+      \brief
+      \return
+    */
+    private function getChansForChromaticCorrection( ) {
+        $channelsArray = array();
+        
+        $chanCnt = $this->getNumberOfChannels();
+        if ($chanCnt < 2) {
+            return $channelsArray;
+        }
+
+        $chromaticParam = $this->deconSetting->parameter("ChromaticAberration");
+
+        for ($chan = 0; $chan < $chanCnt; $chan++) {
+            $chromaticChan = $chromaticParam->chanValue( $chan );
+            
+            foreach ($chromaticChan as $component => $value) {
+                if (isset($value) && $value > 0) {
+                    array_push($channelsArray, $chan);
+                    break;
+                }
+            }
+        }
+        
+        return $channelsArray;
+    }
+    
+
+    /*!
+     \brief       Gets options for the 'chromatic aberration correction' task.
+     \return      Tcl list with the 'chromatic aberration' task and its options.
+    */
+    private function getImgProcessChromatic( ) {
+        $allTasksDescr = "";
+        
+        $channelsArray = $this->getChansForChromaticCorrection();
+        if (empty($channelsArray)) {
+            return $allTasksDescr;
+        }
+
+        $chromaticParam = $this->deconSetting->parameter("ChromaticAberration");
+        foreach ($channelsArray as $chanKey => $chan) {
+            $taskDescr = "";
+            $chanVector = implode(' ', $chromaticParam->chanValue( $chan ));
+            
+            foreach ($this->chromaticArray as $chromKey => $chromValue) {
+                if ($chromKey != "listID") {
+                    $taskDescr .= " " . $chromKey . " ";
+                }
+                
+                switch( $chromKey ) {
+                case 'q':
+                case 'lambdaEm':
+                case 'lambdaEx':
+                case 'lambdaSted':
+                case 'mType':
+                case 'estMethod':
+                    $taskDescr .= $chromValue;
+                    break;
+                case 'channel':
+                    $taskDescr .= $chan;
+                    break;
+                case 'vector':
+                    $taskDescr .= $this->string2tcllist($chanVector);
+                    break;
+                case 'reference':
+                    if ($chanVector == "0 0 0 0 1") {
+                        $reference = 1;
+                    } else {
+                        $reference = 0;
+                    }
+                    $taskDescr .= $reference;
+                    break;
+                case 'listID':
+                    $taskDescr = $this->string2tcllist($taskDescr);
+                    $allTasksDescr .= $chromValue . ":$chanKey ";
+                    $allTasksDescr .= $taskDescr . " ";
+                    break;
+                default:
+                    error_log("Image shift option $chromKey not yet implemented.");
+                }
+            }
+        }
+        
+        return $allTasksDescr;
+    }
+
 
 
     /*!
@@ -2329,9 +2443,12 @@ class HuygensTemplate {
         case 'previewGen':
             $task = $this->parsePreviewGen($key,$task);
             break;
+        case 'shift':
+            $task = $this->parseChromatic($task);
+            break;
         case '':
-            if ($key == "algorithms") {
-                $task = $this->parseAlgorithm();                    
+            if ($key == 'algorithms') {
+                $task = $this->parseAlgorithm();
             }
             break;
         default:
@@ -2339,6 +2456,26 @@ class HuygensTemplate {
         }
         
         return $task;            
+    }
+
+    /*!
+      \brief
+      \return
+    */
+    private function parseChromatic($task) {
+        $chromaticTasks = "";
+
+        $channelsArray = $this->getChansForChromaticCorrection();
+
+        if (empty($channelsArray)) {
+            return $chromaticTasks;
+        }
+
+        foreach ($channelsArray as $chanKey => $chan) {
+            $chromaticTasks .= $task.":$chanKey ";
+        }
+        
+        return trim($chromaticTasks);
     }
 
     /*!
