@@ -3380,8 +3380,8 @@ class ChromaticAberration {
     /*!
       \brief
     */
-    public function displayString( ) {
-        for ($i = 0; $i < $this->chanCnt; $i++) {
+    public function displayString( $chanCnt ) {
+        for ($i = 0; $i < $chanCnt; $i++) {
             $result .= $this->value[$i]->displayString();
         }
         
