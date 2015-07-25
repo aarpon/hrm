@@ -415,15 +415,13 @@ class JobQueue(object):
         if len(self.cats) == 0:
             return None
         cat = self.cats[0]
-        jobid = self.queue[cat][0]
+        jobid = self.queue[cat].popleft()
+        # put it into the list of currently processing jobs:
+        self.processing.append(jobid)
         logi("Retrieving next job: category '%s', uid '%s'." % (cat, jobid))
-        if len(self.queue[cat]) >= 1:
-            logd("Shifting category list.")
-            self.cats.rotate(-1)  # move the first element to last position
-        else:
-            logd("Queue for category '%s' now empty, removing it." % cat)
-            self.cats.popleft()  # remove it from the categories list
-            del self.queue[cat]  # delete the category from the queue dict
+        if not self._check_queue_empty(cat):
+            # push the current category to the last position in the queue:
+            self.cats.rotate(-1)
         logd("Current queue categories: %s" % self.cats)
         logd("Current contents of all queues: %s" % self.queue)
         return self.jobs[jobid]
