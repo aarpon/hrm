@@ -442,10 +442,8 @@ class JobQueue(object):
     def remove(self, uid):
         """Remove a job with a given UID from the queue.
 
-        Take a job UID, look up the corresponding category for this job and
-        remove the job from this category's queue. If this queue is empty
-        afterwards, clean up by removing the job's category from the categories
-        list and deleting the category deque from the queue dict.
+        Take a job UID and remove the job from the list of currently processing
+        jobs or its category's queue, cleaning up the queue if necessary.
 
         Parameters
         ----------
@@ -457,36 +455,25 @@ class JobQueue(object):
             The JobDescription dict of the job that was removed (on success).
         """
         logd("Trying to remove job with uid '%s'." % uid)
-        try:
-            cat = self.jobs[uid].get_category()
-        except KeyError as err:
-            logd("No job with uid '%s' was found!" % err)
-            return
-        logd("Category of job to remove: '%s'." % cat)
-        try:
+        if not self.jobs.has_key(uid):
+            logw("No job with uid '%s' was found!" % uid)
+            return None
+        job = self.jobs[uid]   # remember the job for returning it later
+        cat = job.get_category()
+        del self.jobs[uid]     # remove the job from the jobs dict
+        if self.queue.has_key(cat) and uid in self.queue[cat]:
+            logd("Removing job '%s' from queue '%s'." % (uid, cat))
             self.queue[cat].remove(uid)
-        except KeyError as err:
-            logd("No queue for category %s was found!" % err)
-            return
-        except ValueError as err:
-            logd("No job with uid '%s' in queue! (%s)" % (uid, err))
-            return
-        try:
-            # remember the job as we want to return it below:
-            job = self.jobs[uid]
-            # then remove it from the jobs dict:
-            del self.jobs[uid]
-            logd("Current joblist: %s" % self.jobs)
-        except KeyError as err:
-            logd("No job with uid '%s' in joblist! (%s)" % (uid, err))
+            self._is_queue_empty(cat)
+        elif uid in self.processing:
+            logd("Removing job '%s' from currently processing jobs." % uid)
+            self.processing.remove(uid)
+        else:
+            logw("Can't find job '%s' in any of our queues!" % uid)
+            return None
+        logd("Current joblist: %s" % self.jobs)
         logd("Current queue categories: %s" % self.cats)
         logd("Current contents of all queues: %s" % self.queue)
-        if len(self.queue[cat]) < 1:
-            logd("Queue for category '%s' now empty, removing it." % cat)
-            self.cats.remove(cat)  # remove it from the categories list
-            del self.queue[cat]    # delete the category from the queue dict
-            logd("Current queue categories: %s" % self.cats)
-            logd("Current contents of all queues: %s" % self.queue)
         return job
 
     def set_jobstatus(self, job, status):
