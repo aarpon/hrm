@@ -401,6 +401,19 @@ class JobQueue(object):
         self.set_jobstatus(job, 'queued')
         info("Queue for category '%s': %s" % (cat, self.queue[cat]))
 
+    def _is_queue_empty(self, cat):
+        """Clean up if a queue of a given category is empty.
+
+        Return True if the queue was empty and removed, False otherwise.
+        """
+        if len(self.queue[cat]) == 0:
+            logd("Queue for category '%s' now empty, removing it." % cat)
+            self.cats.remove(cat)  # remove it from the categories list
+            del self.queue[cat]    # delete the category from the queue dict
+            return True
+        else:
+            return False
+
     def next_job(self):
         """Return the next job description for processing.
 
@@ -419,7 +432,7 @@ class JobQueue(object):
         # put it into the list of currently processing jobs:
         self.processing.append(jobid)
         logi("Retrieving next job: category '%s', uid '%s'." % (cat, jobid))
-        if not self._check_queue_empty(cat):
+        if not self._is_queue_empty(cat):
             # push the current category to the last position in the queue:
             self.cats.rotate(-1)
         logd("Current queue categories: %s" % self.cats)
