@@ -346,13 +346,16 @@ class JobQueue(object):
         cats : deque
             categories (users), used by the scheduler
         jobs : dict(JobDescription)
-            holding job descriptions using their UID as key
+            holding job descriptions (key: UID)
+        processing : list
+            UID's of jobs being processed currently
         queue : dict(deque)
             queues of each category (user)
         """
         self.statusfile = None
         self.cats = deque('')
         self.jobs = dict()
+        self.processing = list()
         self.queue = dict()
 
     def __len__(self):
