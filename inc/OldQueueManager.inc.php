@@ -13,8 +13,9 @@ populated the database on the first Queue Manager run. Other functions
 related to notifications and emails can still be found below for
 future reference. */
 
-
-require_once ("JobQueue.inc.php");
+require_once("System.inc.php");
+require_once("Database.inc.php");
+require_once("JobQueue.inc.php");
 
 
 /*!
