@@ -115,7 +115,7 @@ include("header.inc.php");
         correct images for chromatic aberration?
     </legend>
 
-    <p>Chromatic aberrations are often present in multi-channel images.
+    <p>Multi-channel images often display chromatic aberrations.
        Correcting for this is crucial for image visualization and analysis.</p> 
 
     
@@ -177,12 +177,13 @@ for ($chan = 0; $chan < $chanCnt; $chan++) {
 ?>
 
 </table>
-
+<p class="info">The correction is optional: leave empty for skipping.</p>
                                  
 </div> <!-- ChromaticAberrationCorrector -->
 
-            <div><input name="OK" type="hidden" /></div>
-
+                                 
+<div><input name="OK" type="hidden" /></div>
+                                 
             <div id="controls"
                  onmouseover="javascript:changeQuickHelp( 'default' )">
               <input type="button" value="" class="icon previous"
@@ -201,10 +202,9 @@ for ($chan = 0; $chan < $chanCnt; $chan++) {
             </div>
                                  
        </form>
-    </div> <!-- content -->
+</div> <!-- content -->
 
-    <div id="rightpanel" onmouseover="javascript:changeQuickHelp( 'default' )">
-
+<div id="rightpanel" onmouseover="javascript:changeQuickHelp( 'default' )">
       <div id="info">
       <h3>Quick help</h3>
         <div id="contextHelp">
@@ -215,19 +215,20 @@ for ($chan = 0; $chan < $chanCnt; $chan++) {
         </div>
      </div>
 
-      <div id="message">
+    <div id="message">
 <?php
 
 echo "<p>$message</p>";
 
 ?>
-        </div>
+    </div>
 
-    </div> <!-- rightpanel -->
+</div> <!-- rightpanel -->
 
-    <script type="text/javascript">
-    initChromaticChannelReference();                
-    </script>
+                                 
+<script type="text/javascript">
+initChromaticChannelReference();                
+</script>
 
 <?php
 include("footer.inc.php");
