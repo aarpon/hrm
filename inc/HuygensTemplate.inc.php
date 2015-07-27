@@ -153,7 +153,6 @@ class HuygensTemplate {
     */
     private $chromaticArray;
 
-
     /*!
      \var    $algArray;
      \brief  Array with information on the image cmle/qmle subtask.
@@ -502,7 +501,6 @@ class HuygensTemplate {
                     'mType'                     =>  'generic',
                     'estMethod'                 =>  '2',
                     'listID'                    =>  'shift');
-
 
         /* Options for the 'execute deconvolution' action */
         $this->algArray   = 
@@ -991,7 +989,6 @@ class HuygensTemplate {
         return $taskDescr;
     }
     
-
     /*!
      \brief       Gets options for the 'chromatic aberration correction' task.
      \return      Tcl list with the 'chromatic aberration' task and its options.
@@ -1014,7 +1011,9 @@ class HuygensTemplate {
                 if ($chromKey != "listID") {
                     $taskDescr .= " " . $chromKey . " ";
                 }
-                
+
+                /* Notice that we force a 'sorted' channel correction, i.e.,
+                   there's no matching done based on wavelengths, etc. */ 
                 switch( $chromKey ) {
                 case 'q':
                 case 'lambdaEm':
@@ -1052,8 +1051,6 @@ class HuygensTemplate {
         return $allTasksDescr;
     }
 
-
-
     /*!
       \brief      Get options for the 'Autocrop' task. 
       \return     Tcl list with the 'autocrop' task and its options.
@@ -1085,7 +1082,6 @@ class HuygensTemplate {
         return $taskDescr;
     }
     
-
     /*!
       \brief      Get options for the 'ZStabilize' task. 
       \return     Tcl list with the 'ZStabilize' task and its options.

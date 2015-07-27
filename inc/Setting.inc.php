@@ -2591,7 +2591,7 @@ class TaskSetting extends Setting {
     /*!
       \brief   Checks whether the restoration should allow for CAC.
       \param   $paramSetting  An instance of the ParameterSetting class.
-      \return  Boolean: TRUE to enalbe CAC, FALSE otherwise.
+      \return  Boolean: TRUE to enable CAC, FALSE otherwise.
     */
     public function isEligibleForCAC(ParameterSetting $paramSetting) {
         if ($this->numberOfChannels() == 1) {
