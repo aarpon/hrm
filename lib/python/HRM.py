@@ -599,7 +599,7 @@ class JobQueue(object):
                        for roundlist in queues
                            for jobid in roundlist
                                if jobid is not None]
-        return joblist
+        return self.processing + joblist
 
 
 class JobSpooler(object):
