@@ -424,6 +424,10 @@ class JobQueue(object):
         queue.
         This implements a very simple round-robin (token based) scheduler that
         is going one-by-one through the existing categories.
+
+        Returns
+        -------
+        job : JobDescription
         """
         if len(self.cats) == 0:
             return None
