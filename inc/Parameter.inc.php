@@ -868,7 +868,8 @@ class NumericalVectorParameter extends NumericalParameter {
     }
 
     /*!
-
+      \brief  Function for retrieving a string with the numerical parameter.
+      \return A '#'-separated string denoting the vector componenents.
      */
     public function value( ) {
         for ( $i = 0; $i < $this->componentCnt; $i++ ) {
@@ -3305,17 +3306,32 @@ class ZStabilization extends ChoiceParameter {
 
 /*!
   \class   ChromaticAberration
-  \brief   A vector parameter to characterize the chromatic aberration.
+  \brief   A multi-channel, vector parameter to characterize the
+           chromatic aberration.
 */
 
 class ChromaticAberration {
 
+    /*!
+      \brief  The aberration value. An array with one element per channel
+              and vector component.
+    */ 
     public $value;
 
+    /*!
+      \brief  A tag with a name for the parameter.
+    */
     public $name;
-    
+
+    /*!
+      \brief  The number of channels for which a vector is needed.
+    */
     public $chanCnt;
 
+    /*!
+      \brief  The numer of vector components used to describe the CA.
+              Currently 5.
+    */
     public $componentCnt;
 
     /*!
@@ -3338,10 +3354,18 @@ class ChromaticAberration {
         }
     }
 
+    /*!
+      \brief    A function returning the name of the parameter.
+      \return   The parameter name.
+    */
     public function name( ) {
         return $this->name;
     }
 
+    /*!
+      \brief   A function for retrieving the number of elements of the vector.
+      \return  The number of vector elements.
+    */
     public function componentCnt( ) {
         return $this->componentCnt;
     }
@@ -3356,7 +3380,7 @@ class ChromaticAberration {
 
     /*!
       \brief  Confirms that the Parameter can have a variable number of channels
-      This overloads the base function.
+              This overloads the base function.
       \return true
     */
     public function isVariableChannel() {
@@ -3364,9 +3388,17 @@ class ChromaticAberration {
     }
 
     /*!
-      \brief
+        \brief  The string representation of the Parameter.
+        \param  $chanCnt  The number of channels.
+        \return String representation of the Parameter
     */
     public function displayString( $chanCnt ) {
+
+        if (!is_numeric($chanCnt)) {
+            $db = new DatabaseConnection;
+            $chanCnt = $db->getMaxChanCnt();
+        }
+
         for ($i = 0; $i < $chanCnt; $i++) {
             $result .= $this->value[$i]->displayString();
         }
@@ -3375,8 +3407,9 @@ class ChromaticAberration {
     }
 
     /*!
-      \param   $value A '#' formatted string or an array with the CA components.
-      \brief
+      \brief   A function to set the parameter value from the browser session
+      or from the database.
+      \param   $values A '#' formatted string or an array with the CA components.
     */
     public function setValue( $values ) {     
         
@@ -3400,7 +3433,8 @@ class ChromaticAberration {
     }
 
     /*!
-      \brief  Returns the parameter value.
+      \brief  A function for retrieving the parameter value.
+      \return An array with one component per channel and vector element.
     */
     public function value( ) {
         $valuesArray = explode('#', $this->internalValue());
@@ -3412,6 +3446,12 @@ class ChromaticAberration {
         return array_values($valuesArray);
     }
 
+    /*!
+      \brief   Same as above (function 'value') but only for the demanded
+      channel.
+      \param   $chan The demanded channel.
+      \return  An array with one component per vector element.
+    */
     public function chanValue( $chan ) {
         $valuesArray = $this->value();
         $offset = $chan * $this->componentCnt;
@@ -3420,6 +3460,10 @@ class ChromaticAberration {
         return $chanArray;
     }
 
+    /*!
+      \brief   A function to set the number of channels for the correction.
+      \param   $chanCnt The number of channels.
+    */
     public function setNumberOfChannels( $chanCnt ) {
         $this->chanCnt = $chanCnt;
     }
@@ -3427,10 +3471,7 @@ class ChromaticAberration {
     /*!
       \brief  Returns the default value for the Parameters that have a default
       value ot NULL for those that don't
-      
-        This function should be <b>overloaded</b> by the subclasses
-        
-        \return tyhe default value or NULL
+      \return the default value or NULL
     */
     public function defaultValue() {
         $db = new DatabaseConnection;
