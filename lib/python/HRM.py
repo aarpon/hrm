@@ -53,7 +53,7 @@ except ImportError:
 
 from gc3libs.config import Configuration
 
-from hrm_logger import warn, info, debug, set_loglevel
+from hrm_logger import set_loglevel
 
 import logging
 # we set a default loglevel and add some shortcuts for logging:
@@ -224,7 +224,7 @@ class JobDescription(dict):
         # levels of waiting time to avoid this race condition:
         for snooze in [0, 0.001, 0.1, 1, 5]:
             if not self._sections and snooze > 0:
-                info("Sections are empty, re-trying in %is." % snooze)
+                logd("Sections are empty, re-trying in %is." % snooze)
             time.sleep(snooze)
             try:
                 parsed = self.jobparser.read(self.fname)
@@ -386,10 +386,10 @@ class JobQueue(object):
         # TODO: should we catch duplicate jobs? Currently they are enqueued.
         cat = job.get_category()
         uid = job['uid']
-        info("Enqueueing job '%s' into category '%s'." % (uid, cat))
+        logi("Enqueueing job '%s' into category '%s'." % (uid, cat))
         self.jobs[uid] = job  # store the job in the global dict
         if not cat in self.cats:
-            warn("Adding a new queue for '%s' to the JobQueue." % cat)
+            logi("Adding a new queue for '%s' to the JobQueue." % cat)
             self.cats.append(cat)
             self.queue[cat] = deque()
             logd("Current queue categories: %s" % self.cats)
@@ -399,7 +399,7 @@ class JobQueue(object):
             logd("JobQueue already contains a queue for '%s'." % cat)
         self.queue[cat].append(uid)
         self.set_jobstatus(job, 'queued')
-        info("Queue for category '%s': %s" % (cat, self.queue[cat]))
+        logi("Queue for category '%s': %s" % (cat, self.queue[cat]))
 
     def _is_queue_empty(self, cat):
         """Clean up if a queue of a given category is empty.
