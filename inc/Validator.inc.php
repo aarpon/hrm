@@ -51,7 +51,8 @@ class Validator
             return false;
         }
 
-        if (strlen($tmp) > 20) {
+        // Set the max length to 255 to match the max length in the database
+        if (strlen($tmp) > 255) {
             return false;
         }
 
