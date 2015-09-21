@@ -20,6 +20,10 @@ if ( !isset( $_SESSION[ 'user' ] ) || !$_SESSION[ 'user' ]->isLoggedIn() ) {
   header("Location: " . "login.php"); exit();
 }
 
+if (isset($_GET['home'])) {
+    header("Location: " . "home.php"); exit();
+}
+
 if ( !isset( $_SESSION[ 'setting' ] ) ) {
   $_SESSION['setting'] = new ParameterSetting();
 }
@@ -107,7 +111,6 @@ include("header.inc.php");
         <ul>
             <?php
                 include("./inc/nav/user.inc.php");
-                ### FIXME: the "home" link does not work on this page!!
                 include("./inc/nav/home.inc.php");
             ?>
         </ul>
