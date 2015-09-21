@@ -103,7 +103,7 @@ $loggedIn = ( isset($_SESSION['user'] ) && $_SESSION['user']->isLoggedIn( ) );
                 "olivier.burri@epfl.ch",
                 "aaron.ponti@bsse.ethz.ch");
             } else {
-                $email_list = array_pad(array(""), 7, "");
+                $email_list = array_pad(array(""), count($name_list), "");
             }
             echo addDevelopers($name_list, $email_list);
         ?>
