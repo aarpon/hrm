@@ -3806,15 +3806,15 @@ echo '</body></html>';
     */
     private function getFileNameExtension($filename) {
         $info = pathinfo($filename);
-        $info_ext = pathinfo($info["filename"]);
-        if ($info_ext["extension"] == "") {
+        $info_ext = pathinfo($info["filename"], PATHINFO_EXTENSION);
+        if ($info_ext == "") {
             return $info["extension"];
         } else {
-            if (strlen($info_ext["extension"]) > 4) {
+            if (strlen($info_ext) > 4) {
                 // Avoid pathological cases with dots somewhere in the file name.
                 return $info["extension"];
             }
-            return $info_ext["extension"] . "." . $info["extension"];
+            return $info_ext . "." . $info["extension"];
         }
     }
 
