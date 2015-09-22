@@ -1913,7 +1913,7 @@ echo '</body></html>';
       }
 
       echo "\n<div class=\"menuEntry\" onclick=\"javascript:openWindow(".
-          "'http://support.svi.nl/wiki/HuygensRemoteManagerHelpCompareResult')\" ".
+          "'https://svi.nl/HRMHelp#Result_comparison')\" ".
              "onmouseover=\"Tip('Open a pop up with help about this window')\" onmouseout=\"UnTip()\">".
           "<a href=\"#\"><img src=\"images/help.png\" alt=\"help\" />".
           "</a></div>";
@@ -1922,7 +1922,7 @@ echo '</body></html>';
 
       switch ($op) {
           case "close":
-             echo "onclick=\"window.close()\"".
+              echo "onclick=\"document.location.href='file_management.php?folder=dest'\" ".
              "onmouseover=\"Tip('Close this window and go back to your results')\" onmouseout=\"UnTip()\">".
              "<a href=\"#\">".
              "<img src=\"images/results_small.png\" alt=\"back\" />".
@@ -2155,13 +2155,13 @@ echo '</body></html>';
       echo "</div>\n";
       echo "<div>\n";
       echo "\n<br /><br /><a href=\"javascript:openWindow(".
-          "'http://support.svi.nl/wiki/HuygensRemoteManagerHelpCompareResult')\">".
+          "'https://svi.nl/HRMHelp#Result_comparison')\">".
           "<img src=\"images/help.png\" alt=\"help\" />".
           "</a>";
 
       switch ($op) {
           case "close":
-             echo " <a href=\"#\" onclick=\"window.close()\" ".
+             echo " <a href=\"#\" onclick=\"window.location='file_management.php?folder=dest'\" ".
              "onmouseover=\"Tip('Close this window and go back to your results')\" onmouseout=\"UnTip()\">".
              "<img src=\"images/results_small.png\" alt=\"back\" />".
              "</a>\n";
