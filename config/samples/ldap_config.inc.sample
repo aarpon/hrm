@@ -11,7 +11,7 @@ $ldap_port="389";
 // Use SSL (LDAPS)
 $ldap_use_ssl = false;
 
-// Use TLS: if you wish to use TLS you should ensure that $ldap_use_ssl is 
+// Use TLS: if you wish to use TLS you should ensure that $ldap_use_ssl is
 // set to false and vice-versa
 $ldap_use_tls = false;
 
@@ -36,10 +36,19 @@ $ldap_manager_ou="ou=special_user";
 // User search DN (without ldap root)
 $ldap_user_search_DN="cn=users";
 
+// List of groups that are authorized to log in to HRM. The groups returned
+// from LDAP for the users are checked against the list of authorized
+// groups set here. Leave this to empty array if you do not want to restrict
+// log in by group.
+$ldap_authorized_groups = array();
+
 // Users often belong to more than one group. To filter for the desired one,
 // fill the $ldap_valid_groups array with the ones to be filtered against.
 // If more than one group fits, the first will be taken.
 // Fill the array as follows: $ldap_valid_groups = array( "group1", "group2" )
 // with as many groups as you need.
+// Please mind that this is only a filter for the returned groups. If you want
+// to restrict user log in by group membership, use $ldap_authorized_groups
+// above.
 $ldap_valid_groups = array( );
 ?>

@@ -9,7 +9,7 @@
     $ACCOUNT_SUFFIX = "@mydomain.local";
 
     // The base dn for your domain
-    $BASE_DN = "DC=mydomain,DC=local"; 
+    $BASE_DN = "DC=mydomain,DC=local";
 
     // Array of domain controllers. Specifiy multiple controllers if you would
     // like the class to balance the LDAP queries amongst multiple servers
@@ -39,12 +39,18 @@
     // Use SSL (LDAPS)
     $USE_SSL = false;
 
-    // Use TLS: if you wish to use TLS you should ensure that $USE_SSL is 
+    // Use TLS: if you wish to use TLS you should ensure that $USE_SSL is
     // set to false and vice-versa
     $USE_TLS = false;
 
-    // When querying group memberships, do it recursively 
+    // When querying group memberships, do it recursively
     $RECURSIVE_GROUPS = true;
+
+    // List of groups that are authorized to log in to HRM. The groups returned
+    // from Active Directory for the users are checked against the list of
+    // authorized groups set here. Leave this to empty array if you do not want
+    // to restrict log in by group.
+    $AUTHORIZED_GROUPS = array();
 
     // Users usually belong to several groups. GROUP_INDEX defines
     // which level of the hierarchy to consider (starts by 0). This
@@ -64,6 +70,10 @@
     // no match is found, all groups will be returned.
     // Fill the array as follows: $VALID_GROUPS = array( "group1", "group2" )
     // with as many groups as you need.
-    $VALID_GROUPS = array( );    
+    // Please mind that this is only a filter for the returned groups. If you
+    // want to restrict user log in by group membership, use $AUTHORIZED_GROUPS
+    // above.
+    $VALID_GROUPS = array( );
+
 
 ?>
