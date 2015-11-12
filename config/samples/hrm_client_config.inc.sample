@@ -67,15 +67,6 @@ $image_destination = "huygens_dst";
 // File server base folder as seen from the Huygens server machines (with trailing /)
 $huygens_server_image_folder = "/path/to/hrm_data/";
 
-// This is a temporary flag to change ownership of the generated files
-// and folders to the $SUSER use (see config/samples/hrm.com.sample) and force
-// permissions to 777 to prevent issues in the case the various components of
-// the HRM (web server and Queue Manager) are run by different users with
-// different access rights to the file server area.
-//
-// THIS WILL BE REMOVED IN HRM 3.3!
-$change_ownership = false;
-
 // Allow HTTP transfer of the restored (download) images
 $allowHttpTransfer = true;
 
