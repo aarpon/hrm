@@ -1575,14 +1575,12 @@ class HuygensTemplate {
     private function getBrMode( ) {
         $SAcorr = $this->getSAcorr();
 
-        $brMode = "one";
+        $brMode = "auto";
 
         if ( $SAcorr[ 'AberrationCorrectionNecessary' ] == 1 
              &&  $SAcorr[ 'PerformAberrationCorrection' ] != 0 ) {
 
-            if ($SAcorr[ 'AberrationCorrectionMode' ] == 'automatic' ) {
-                $brMode = "auto";
-            } else {
+            if ($SAcorr[ 'AberrationCorrectionMode' ] != 'automatic' ) {
                 if ( $SAcorr[ 'AdvancedCorrectionOptions' ] == 'slice' ) {
                     $brMode = 'sliceBySlice';
                 } elseif ( $SAcorr[ 'AdvancedCorrectionOptions' ] == 'few' ) {
