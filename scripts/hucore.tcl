@@ -500,6 +500,25 @@ proc estimateSnrFromImage {} {
 }
 
 
+proc toggleGPU { } {
+
+    set gpuState [huOpt gpu -query enabled]
+
+    if {$gpuState} {
+        huOpt gpuSet -enabled 0
+        set gpuState "GPU processing has been disabled."
+    } else {
+        huOpt gpuSet -enabled 1
+        set gpuState "GPU processing has been enabled."
+    }
+    
+    puts "KEY"
+    puts "GPUSTATE"
+    puts "VALUE"
+    puts "$gpuState"
+}
+
+
 
 
 # ----------------   MAIN routine -----------------
