@@ -256,6 +256,32 @@ include("header.inc.php");
 			  </td>
 
 		    </tr>
+			<tr class="separator"><td></td><td></td><td></td><td></td></tr>
+			<tr>
+
+              <td class="icon">
+				<a href="./gpu.php">
+				<img alt="GPU" src="./images/gpu.png" />
+				</a>
+			  </td>
+
+			  <td class="text"><div class="cell">
+                <a href="./gpu.php">GPU switch</a>
+                <br />
+				<p>Enable/Disable GPU deconvolution on all processing machines.</p>
+                </div>
+			  </td>
+
+
+			  <td class="icon">
+                </div>
+			  </td>
+
+			  <td class="text"><div class="cell">
+                </div>
+			  </td>
+
+		    </tr>
 
 		  </tbody>
 
