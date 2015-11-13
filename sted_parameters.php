@@ -569,7 +569,7 @@ if ($_SESSION['setting']->isSted3D()) {
 
                 <legend>
                     <a href="javascript:openWindow(
-                       'http://www.svi.nl/STED')">
+                       'http://www.svi.nl/HuygensRemoteManagerHelpSTED')">
                         <img src="images/help.png" alt="?" />
                     </a>
     STED 3D (%)
