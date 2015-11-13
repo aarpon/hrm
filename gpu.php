@@ -22,11 +22,10 @@ if ( ( !isset( $_SESSION[ 'user' ] ) ) ||
 $message = "";
 
 if (isset($_GET["action"])) {
-    if ($_GET["action"] == "gpuswitch") {
-        $interface = "hrm";
-        include("setup/gpuswitch.php");
+    if ($_GET["action"] == "togglegpu") {
+        $message = askHuCore( "toggleGPU", "");
+        $message = $message['GPUSTATE'];
     }
-
 }
 
 include("header.inc.php");
@@ -37,7 +36,7 @@ include("header.inc.php");
     <div id="navleft">
         <ul>
             <?php
-                wiki_link('HuygensRemoteManagerHelpUpdate');
+                wiki_link('HuygensGPU');
             ?>
         </ul>
     </div>
@@ -56,14 +55,6 @@ include("header.inc.php");
 
         <h3><img alt="SwitchGPU" src="./images/gpu.png"
                  width="40"/>&nbsp;&nbsp;Switch GPU</h3>
-
-    <?php
-    // if ( System::isGPUOn( ) == true ) {
-    // 	echo "<h4>GPU processing is enabled.</h4>";
-    // } else {
-    //     echo "<h4>GPU processing is disabled.</h4>";
-    // }
-    ?>
 
         <fieldset>
             <legend>log</legend>
@@ -96,18 +87,13 @@ echo $message;
                 <input type="hidden" name="action" value="togglegpu">
             </form>
 
-            <input type="button" name="" value="update"
-                   onclick="document.forms['dbupdate'].submit()" />
+            <input type="button" name="" value="toggle"
+                   onclick="document.forms['togglegpu'].submit()" />
 
         </div>
 
         <div id="message">
-<?php
-
-//echo $message;
-
-?>
-        </div>
+      </div>
 
     </div> <!-- rightpanel -->
 
