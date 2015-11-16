@@ -82,8 +82,13 @@ echo $message;
                 This page allows you to toggle the GPU option in Huygens.
                 Please visit <a href="https://svi.nl/HuygensGPU">Huygens GPU</a>
                 for detailed instructions on how to install CUDA.
+            </p>
 
-                                             
+            <p>                                 
+                Each deconvolution job has a log that can be reached via
+                <b>'Results' -> 'Select an image' -> 'Detailed view' -> 'log'.</b>
+                The log shows whether the image has been processed on the CPU
+                or on the GPU.
             </p>
 
             <br>
