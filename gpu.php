@@ -21,12 +21,15 @@ if ( ( !isset( $_SESSION[ 'user' ] ) ) ||
 
 $message = "";
 
-if (isset($_GET["action"])) {
-    if ($_GET["action"] == "togglegpu") {
-        $message = askHuCore( "toggleGPU", "");
-        $message = $message['GPUSTATE'];
-    }
+if (isset($_GET["enable"])) {
+    $message = askHuCore( "toggleGPU", "-newState \"enable\"");
+    $message = $message['GPUSTATE'];
 }
+if (isset($_GET["disable"])) {
+    $message = askHuCore( "toggleGPU", "-newState \"disable\"");
+    $message = $message['GPUSTATE'];
+}
+
 
 include("header.inc.php");
 
@@ -79,16 +82,20 @@ echo $message;
                 This page allows you to toggle the GPU option in Huygens.
                 Please visit <a href="https://svi.nl/HuygensGPU">Huygens GPU</a>
                 for detailed instructions on how to install CUDA.
+
+                                             
             </p>
 
             <br>
 
-            <form method="GET" action="" id="togglegpu">
-                <input type="hidden" name="action" value="togglegpu">
+            <form method="GET" action="" id="GPU">
+              <input type="submit" name="enable" value="enable"
+                   onclick="document.forms['GPU'].submit()" />
+
+              <input type="submit" name="disable" value="disable"
+                   onclick="document.forms['GPU'].submit()" />
             </form>
 
-            <input type="button" name="" value="toggle"
-                   onclick="document.forms['togglegpu'].submit()" />
 
         </div>
 
