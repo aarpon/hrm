@@ -522,10 +522,10 @@ proc toggleGPU { } {
     }
     
     if {$newState eq "enable"} {
-        huOpt gpuSet -enabled 1
+        ::Preferences::setPreference "gpu,enabled" 1
         set msg "GPU processing has been enabled."
     } elseif {$newState eq "disable"} {
-        huOpt gpuSet -enabled 0
+        ::Preferences::setPreference "gpu,enabled" 0
         set msg "GPU processing has been disabled."
     } else {
         set msg "Unknown GPU state."
