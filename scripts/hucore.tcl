@@ -502,20 +502,36 @@ proc estimateSnrFromImage {} {
 
 proc toggleGPU { } {
 
-    set gpuState [huOpt gpu -query enabled]
+    # Mandatory arguments:
+    set error [ getInputVariables {
+        newState
+    } ]
+    if { $error } { exit 1 }
 
-    if {$gpuState} {
-        huOpt gpuSet -enabled 0
-        set gpuState "GPU processing has been disabled."
-    } else {
-        huOpt gpuSet -enabled 1
-        set gpuState "GPU processing has been enabled."
+    if { $newState eq "enable" && ![huOpt gpu -query available] } {
+        set msg "Impossible to enable GPU processing. No suitable card or\
+                 CUDA library found."
+        reportKeyValue "GPUSTATE" $msg
+        return
+    }
+
+    if { $newState eq "enable" && ![huOpt gpu -query license] } {
+        set msg "Impossible to enable GPU processing. No GPU license."
+        reportKeyValue "GPUSTATE" $msg
+        return
     }
     
-    puts "KEY"
-    puts "GPUSTATE"
-    puts "VALUE"
-    puts "$gpuState"
+    if {$newState eq "enable"} {
+        huOpt gpuSet -enabled 1
+        set msg "GPU processing has been enabled."
+    } elseif {$newState eq "disable"} {
+        huOpt gpuSet -enabled 0
+        set msg "GPU processing has been disabled."
+    } else {
+        set msg "Unknown GPU state."
+    }
+
+    reportKeyValue "GPUSTATE" $msg
 }
 
 
