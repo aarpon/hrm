@@ -239,7 +239,7 @@ class JobQueue {
     }
 
     /*!
-       \brief	Stops and removes a Job fro mthe Queue and the database
+       \brief	Stops and removes a Job from the Queue and the database
        \param   $job Job object
        \return	true if the Job were removed, false otherwise
      */
