@@ -2272,6 +2272,28 @@ class DatabaseConnection {
 
     }
 
+
+    public function switchGPUState( $newState ) {
+       if ( $newState == "On" ) {
+           $value = TRUE;
+       } else if ( $newState == "Off" ) {
+           $value = FALSE;
+       } else {
+           return "Impossible to change the GPU configuration. Unknown value.";
+       }
+               
+        $query = "UPDATE global_variables SET value = '". $value ."' " .
+                 "WHERE name = 'GPUenabled';";
+
+        $result = $this->execute($query);
+        if ( $result ) {
+            return "GPU processing has been turned " .
+                strtolower($newState) . ".";
+        } else {
+            return "Impossible to change the GPU configuration.";
+        }
+    }
+
     /*
                                 PRIVATE FUNCTIONS
     */

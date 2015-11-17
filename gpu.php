@@ -21,13 +21,13 @@ if ( ( !isset( $_SESSION[ 'user' ] ) ) ||
 
 $message = "";
 
-if (isset($_GET["enable"])) {
-    $message = askHuCore( "toggleGPU", "-newState \"enable\"");
-    $message = $message['GPUSTATE'];
+if (isset($_GET["turnon"])) {
+    $db = new DatabaseConnection();
+    $message = $db->SwitchGPUState( "On" );
 }
-if (isset($_GET["disable"])) {
-    $message = askHuCore( "toggleGPU", "-newState \"disable\"");
-    $message = $message['GPUSTATE'];
+if (isset($_GET["turnoff"])) {
+    $db = new DatabaseConnection();
+    $message = $db->SwitchGPUState( "Off" );
 }
 
 
@@ -85,8 +85,9 @@ echo $message;
             </p>
 
             <p>                                 
-                Each deconvolution job has a log that can be reached via
-                <b>'Results' -> 'Select an image' -> 'Detailed view' -> 'log'.</b>
+                Each deconvolution job has a log that can be reached via the
+                user account: <b>'Results' -> 'Select an image' ->
+                'Detailed view' -> 'log'.</b>
                 The log shows whether the image has been processed on the CPU
                 or on the GPU.
             </p>
@@ -94,10 +95,10 @@ echo $message;
             <br>
 
             <form method="GET" action="" id="GPU">
-              <input type="submit" name="enable" value="enable"
+              <input type="submit" name="turnon" value="ON"
                    onclick="document.forms['GPU'].submit()" />
 
-              <input type="submit" name="disable" value="disable"
+              <input type="submit" name="turnoff" value="OFF"
                    onclick="document.forms['GPU'].submit()" />
             </form>
 
