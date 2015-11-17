@@ -704,9 +704,14 @@ class Fileserver {
           $basename = basename($pdir."/".$file);
 
           if ( $dir == "src") {
-              $path = preg_replace("/(.*)\.(.{3,4})/","\\1.*",
-                                   $dirname."/".$basename);
-              $path_preview = dirname($path) . "/hrm_previews/" . $basename;
+              $pattern = "/(\.([^\..]+))*\.([A-Za-z0-9]+)(\s\(.*\))*$/";
+              preg_match($pattern, $basename, $matches);
+
+              $pattern = "/$matches[0]$/";
+              $basename = preg_replace($pattern,"\\1.*", $basename);
+
+              $path = $dirname . "/" . $basename;
+              $path_preview = $dirname . "/hrm_previews/" . $basename;
           } else {
               $filePattern = $this->getFilePattern($basename);
               $path = $dirname . "/" . $filePattern;
