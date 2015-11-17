@@ -2282,6 +2282,17 @@ class DatabaseConnection {
         }
     }
 
+
+    public function getGPUStateAsString( ) {
+        $query = "SELECT value FROM global_variables " .
+            "WHERE name = 'GPUenabled';";
+        if ($this->queryLastValue($query)) {
+            return "true"; 
+        } else {
+            return "false";
+        }
+    }
+
     /*
                                 PRIVATE FUNCTIONS
     */
