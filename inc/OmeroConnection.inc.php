@@ -48,7 +48,11 @@ class OmeroConnection {
         $this->omeroPass = $omeroPass;
 
         $this->checkOmeroCredentials();
-        omelog("Successfully connected to OMERO!", 2);
+        if ($this->loggedIn == TRUE) {
+            omelog("Successfully connected to OMERO!", 2);
+        } else {
+            omelog("ERROR connecting to OMERO!", 2);
+        }
     }
 
 
