@@ -172,6 +172,17 @@ abstract class Parameter {
     }
 
     /*!
+        \brief  Checks whether the Parameter is a Spim Parameter
+
+        This function should be <b>overloaded</b> by the subclasses
+
+        \return true if the Parameter is a Spim Parameter, false otherwise
+    */
+    public function isForSpim() {
+        return False;
+    }
+    
+    /*!
         \brief  Checks whether the Parameter is a Variable Channel Parameter
 
         This function should be <b>overloaded</b> by the subclasses

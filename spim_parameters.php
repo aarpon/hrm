@@ -31,7 +31,7 @@ $chanCnt = $_SESSION['setting']->numberOfChannels();
  **************************************************************************** */
 
 $fileFormat = $_SESSION['setting']->parameter( "ImageFileFormat" );
-$parameterNames = $_SESSION['setting']->stedParameterNames();
+$parameterNames = $_SESSION['setting']->spimParameterNames();
 $db = new DatabaseConnection();
 foreach ( $parameterNames as $name ) {
   $parameter = $_SESSION['setting']->parameter( $name );
@@ -48,16 +48,16 @@ foreach ( $parameterNames as $name ) {
  *
  **************************************************************************** */
 
-$spimExcParam = $_SESSION['setting']->parameter("SpimExcMode");
-$spimExc = $spimExcParam->value();
+$spimExcModeParam = $_SESSION['setting']->parameter("SpimExcMode");
+$spimExcMode = $spimExcModeParam->value();
 for ($i=0; $i < $chanCnt; $i++) {
-  $spimExcKey = "SpimExc{$i}";
-  if (isset($_POST[$spimExcKey])) {
-    $spimExc[$i] = $_POST[$spimExcKey];
+  $spimExcModeKey = "SpimExcMode{$i}";
+  if (isset($_POST[$spimExcModeKey])) {
+    $spimExcMode[$i] = $_POST[$spimExcModeKey];
   }
 }
-$spimExcParam->setValue($spimExc);
-$_SESSION['setting']->set($spimExcParam);
+$spimExcModeParam->setValue($spimExcMode);
+$_SESSION['setting']->set($spimExcModeParam);
 
 /* *****************************************************************************
  *
