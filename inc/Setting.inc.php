@@ -394,6 +394,13 @@ class ParameterSetting extends Setting {
         foreach ($this->parameter as $objName => $objInstance) {
 
             switch ( $objName ) {
+                case 'SpimExcMode':
+                case 'SpimGaussWidth':
+                case 'SpimFocusOffset':
+                case 'SpimCenterOffset':
+                case 'SpimNA':
+                case 'SpimFill':
+                case 'SpimDir':
                 case "StedDepletionMode" :
                 case "StedWavelength" :
                 case "StedSaturationFactor" :
@@ -440,6 +447,12 @@ class ParameterSetting extends Setting {
 
         if ($ok) {
             if ( !$this->checkPostedStedParameters($postedParams) )  {
+                $ok = False;
+            }
+        }
+
+        if ($ok) {
+            if ( !$this->checkPostedSpimParameters($postedParams) )  {
                 $ok = False;
             }
         }
