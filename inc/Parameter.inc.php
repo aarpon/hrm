@@ -3696,7 +3696,7 @@ class SpimGaussWidth extends NumericalArrayParameter {
  \class SpimGaussWidth
  \brief A NumericalParameter to represent the focus offset of the SPIM light sheet
 */
-class SpimFocusOffet extends NumericalArrayParameter {
+class SpimFocusOffset extends NumericalArrayParameter {
 
     /*!
         \brief  Constructor: creates an empty Parameter

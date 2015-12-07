@@ -78,6 +78,8 @@ $MICR = $_SESSION['setting']->parameter("MicroscopeType")->value( );
 
 if ($MICR == "STED" || $MICR == 'STED 3D') {
     $pageToGo = 'sted_parameters.php';
+} elseif($MICR == "SPIM") {
+    $pageToGo = 'spim_parameters.php';
 } elseif ($PSF == 'measured' ) {
   $pageToGo = 'select_psf.php';
   // Make sure to turn off the correction
