@@ -4486,11 +4486,11 @@ if ($current_revision < $n) {
     }
 
     $record = array();
-    $record["parameter"] = "SpimExc";
+    $record["parameter"] = "SpimExcMode";
     $record["value"] = "Gaussian light sheet";
     $record["translation"] = "gauss";
     $record["isDefault"] = "f";
-    $record["parameter_key"] = "SpimExc1";
+    $record["parameter_key"] = "SpimExcMode1";
 
         // Skip it if the row is already there.
     $query = "SELECT * FROM " . $tabname .
@@ -4508,11 +4508,11 @@ if ($current_revision < $n) {
     }
 
     $record = array();
-    $record["parameter"] = "SpimExc";
+    $record["parameter"] = "SpimExcMode";
     $record["value"] = "Gaussian MultiView light sheet";
     $record["translation"] = "gaussMuVi";
     $record["isDefault"] = "f";
-    $record["parameter_key"] = "SpimExc2";
+    $record["parameter_key"] = "SpimExcMode2";
 
         // Skip it if the row is already there.
     $query = "SELECT * FROM " . $tabname .
@@ -4530,11 +4530,11 @@ if ($current_revision < $n) {
     }
 
     $record = array();
-    $record["parameter"] = "SpimExc";
+    $record["parameter"] = "SpimExcMode";
     $record["value"] = "High fill factor, scanning beam ";
     $record["translation"] = "scanning";
     $record["isDefault"] = "t";
-    $record["parameter_key"] = "SpimExc3";
+    $record["parameter_key"] = "SpimExcMode3";
 
         // Skip it if the row is already there.
     $query = "SELECT * FROM " . $tabname .
@@ -4552,11 +4552,11 @@ if ($current_revision < $n) {
     }
 
     $record = array();
-    $record["parameter"] = "SpimExc";
+    $record["parameter"] = "SpimExcMode";
     $record["value"] = "High fill factor, cylinder ";
     $record["translation"] = "cylinder";
     $record["isDefault"] = "f";
-    $record["parameter_key"] = "SpimExc4";
+    $record["parameter_key"] = "SpimExcMode4";
 
         // Skip it if the row is already there.
     $query = "SELECT * FROM " . $tabname .
