@@ -1508,6 +1508,8 @@ class MicroscopeType extends ChoiceParameter {
                 return $db->hasLicense("sted");
             case 'STED 3D':
                 return $db->hasLicense("sted3D");
+            case 'SPIM':
+                return $db->hasLicense("spim");
             default:
                 return false;
         }
