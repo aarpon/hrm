@@ -649,7 +649,7 @@ if ( $i == 3 ) {
 
                 <div class="bottom">
                 <p class="message_confidence_<?php
-                echo $parameterNA->confidenceLevel(); ?>">&nbsp;
+                echo $parameterSpimNA->confidenceLevel(); ?>">&nbsp;
                 </p>
             </div>
             </fieldset>

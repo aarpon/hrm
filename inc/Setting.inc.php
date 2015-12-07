@@ -2311,6 +2311,18 @@ class ParameterSetting extends Setting {
     }
 
     /*!
+      \brief   Checks whether the currently selected microscope type is spim.
+      \return  true if the currently selected microscope type is spim, false
+               otherwise.
+    */
+    public function isSpim() {
+        $parameter = $this->parameter('MicroscopeType');
+        $value = $parameter->value();
+        return ($value === 'SPIM');
+    }
+
+
+    /*!
       \brief	Checks whether the currently selected microscope type is spinning
               (Nipkow) disk confocal
       \return	true if the currently selected microscope type is spinning (Nipkow)
