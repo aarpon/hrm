@@ -2018,6 +2018,20 @@ class ParameterSetting extends Setting {
                 continue;
             if ($parameter->name() == 'Sted3D' && !$this->isSted3D())
                 continue;
+            if ($parameter->name() == 'SpimExcMode' && !$this->isSpim())
+                continue;
+            if ($parameter->name() == 'SpimGaussWidth' && !$this->isSpim())
+                continue;
+            if ($parameter->name() == 'SpimFocusOffset' && !$this->isSpim())
+                continue;
+            if ($parameter->name() == 'SpimCenterOffset' && !$this->isSpim())
+                continue;
+            if ($parameter->name() == 'SpimNA' && !$this->isSpim())
+                continue;
+            if ($parameter->name() == 'SpimFill' && !$this->isSpim())
+                continue;
+            if ($parameter->name() == 'SpimDir' && !$this->isSpim())
+                continue;
             if ($parameter->name() == 'PSF' && $PSFmode == 'measured') {
 
                 // If this is a shared template, process the PSF file paths
