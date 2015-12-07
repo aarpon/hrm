@@ -15,16 +15,34 @@ to an OMERO server for listing available images, transferring data, etc.
 
 
 import sys
-import argparse
-import os
-import json
-import re
 import hrm_config
 
-# put OMERO into our PYTHONPATH:
-OMERO_LIB = '%s/lib/python' % hrm_config.CONFIG['OMERO_PKG']
-sys.path.insert(0, OMERO_LIB)
-from omero.gateway import BlitzGateway
+# optionally put EXT_LIB into our PYTHONPATH:
+if 'PYTHON_EXTLIB' in hrm_config.CONFIG:
+    sys.path.insert(0, hrm_config.CONFIG['PYTHON_EXTLIB'])
+
+try:
+    import argparse
+    import os
+    import json
+    import re
+except ImportError:
+    print "ERROR importing required Python packages!"
+    print "Current PYTHONPATH: ", sys.path
+    sys.exit(1)
+
+# try to put OMERO into our PYTHONPATH:
+if 'OMERO_PKG' in hrm_config.CONFIG:
+    OMERO_LIB = '%s/lib/python' % hrm_config.CONFIG['OMERO_PKG']
+    sys.path.insert(0, OMERO_LIB)
+else:
+    print "Could not find configuration value 'OMERO_PKG', omitting."
+try:
+    from omero.gateway import BlitzGateway
+except ImportError:
+    print "ERROR importing Python bindings for OMERO!"
+    print "Current PYTHONPATH: ", sys.path
+    sys.exit(2)
 
 # the connection values
 HOST = hrm_config.CONFIG['OMERO_HOSTNAME']
