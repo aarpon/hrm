@@ -1742,10 +1742,6 @@ div.StedDeplModeValues {
 	background: url("../images/param_default.png") repeat-y left;
 }
 
-.provided {
-    background: url("../images/param_provided.png") repeat-y left;
-}
-
 .message_confidence_asIs {
     border: none;
     height: 30px;
@@ -1789,22 +1785,6 @@ div.StedDeplModeValues {
     margin-bottom: -5px;
     background: url("../images/text_default.png") no-repeat bottom;
     color: #009C89;
-}
-
-.message_confidence_provided {
-    border: none;
-    height: 30px;
-    margin-top: 5px;
-    margin-bottom: -5px;
-    background: url("../images/text_provided.png") no-repeat bottom;
-    color: #555A43;
-}
-
-.message_confidence_override {
-    border: none;
-    height: 15px;
-    margin-top: 5px;
-    margin-bottom: -5px;
 }
 
 #login_user {
