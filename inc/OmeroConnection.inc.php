@@ -196,6 +196,9 @@ class OmeroConnection {
         // build a temporary array with the command elements, starting with the
         // connector/wrapper itself:
         $tmp = array($this->omeroWrapper);
+        // Use this if the executable should be specified explicitly:
+        //// $tmp = array("/usr/bin/python");
+        //// array_push($tmp, $this->omeroWrapper);
         // user/password must be given first:
         array_push($tmp, "--user", escapeshellarg($this->omeroUser));
         array_push($tmp, "--password", escapeshellarg($this->omeroPass));
