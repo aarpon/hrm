@@ -437,7 +437,7 @@ $parameterSpimGaussWidth =
                        'http://www.svi.nl/HuygensRemoteManagerHelpSPIM')">
                         <img src="images/help.png" alt="?" />
                     </a>
-    SPIM Gauss Width
+    SPIM Gauss Width (&#956;m)
                 </legend>
 
 
@@ -496,7 +496,7 @@ $parameterSpimFocusOffset =
                        'http://www.svi.nl/HuygensRemoteManagerHelpSPIM')">
                         <img src="images/help.png" alt="?" />
                     </a>
-    SPIM Focus Offset
+    SPIM Focus Offset (&#956;m)
                 </legend>
 
 
@@ -556,7 +556,7 @@ $parameterSpimCenterOffset =
                        'http://www.svi.nl/HuygensRemoteManagerHelpSPIM')">
                         <img src="images/help.png" alt="?" />
                     </a>
-    SPIM Center Offset
+    SPIM Center Offset (&#956;m)
                 </legend>
 
 

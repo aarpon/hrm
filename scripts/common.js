@@ -315,8 +315,7 @@ function setStedEntryProperties( ) {
 // Grey out the SPIM input fields of a specific channel if the
 // corresponding excitation mode is set to 'Gaussian'.
 function changeSpimEntryProperties(selectObj, channel) {
-    var gaussBanTagArray = ["SpimNA",
-                            "SpimFill"];
+    var gaussBanTagArray = ["SpimNA", "SpimFill"];
 
     for (var i = 0; i < gaussBanTagArray.length; i++) {
         var tag = gaussBanTagArray[i];
