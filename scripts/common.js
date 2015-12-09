@@ -335,10 +335,10 @@ function changeSpimEntryProperties(selectObj, channel) {
         }
     }
 
-    var fillBanTagArray = ["SpimGaussWidth"];
+    var excFillBanTagArray = ["SpimGaussWidth"];
 
-    for (var i = 0; i < fillBanTagArray.length; i++) {
-        var tag = fillBanTagArray[i];
+    for (var i = 0; i < excFillBanTagArray.length; i++) {
+        var tag = excFillBanTagArray[i];
         var id = tag.concat(channel);
 
         inputElement = document.getElementById(id);

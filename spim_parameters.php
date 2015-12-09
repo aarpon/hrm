@@ -855,7 +855,7 @@ echo "<p>$message</p>";
     </div> <!-- rightpanel -->
 
     <script type="text/javascript">
-    setStedEntryProperties();
+    setSpimEntryProperties();
     </script>
 
 <?php
