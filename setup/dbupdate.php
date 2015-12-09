@@ -4640,11 +4640,11 @@ if ($current_revision < $n) {
     }
 
     $record = array();
-    $record["parameter"] = "SpimDirection";
+    $record["parameter"] = "SpimDir";
     $record["value"] = "From right";
     $record["translation"] = "0.0";
-    $record["isDefault"] = "f";
-    $record["parameter_key"] = "SpimDirection1";
+    $record["isDefault"] = "t";
+    $record["parameter_key"] = "SpimDir1";
 
         // Skip it if the row is already there.
     $query = "SELECT * FROM " . $tabname .
@@ -4662,11 +4662,11 @@ if ($current_revision < $n) {
     }
 
     $record = array();
-    $record["parameter"] = "SpimDirection";
+    $record["parameter"] = "SpimDir";
     $record["value"] = "From top";
     $record["translation"] = "90.0";
     $record["isDefault"] = "f";
-    $record["parameter_key"] = "SpimDirection2";
+    $record["parameter_key"] = "SpimDir2";
 
         // Skip it if the row is already there.
     $query = "SELECT * FROM " . $tabname .
@@ -4684,11 +4684,11 @@ if ($current_revision < $n) {
     }
 
     $record = array();
-    $record["parameter"] = "SpimDirection";
+    $record["parameter"] = "SpimDir";
     $record["value"] = "From left";
     $record["translation"] = "180.0";
     $record["isDefault"] = "f";
-    $record["parameter_key"] = "SpimDirection3";
+    $record["parameter_key"] = "SpimDir3";
 
         // Skip it if the row is already there.
     $query = "SELECT * FROM " . $tabname .
@@ -4706,11 +4706,11 @@ if ($current_revision < $n) {
     }
 
     $record = array();
-    $record["parameter"] = "SpimDirection";
+    $record["parameter"] = "SpimDir";
     $record["value"] = "From bottom";
     $record["translation"] = "270.0";
     $record["isDefault"] = "f";
-    $record["parameter_key"] = "SpimDirection4";
+    $record["parameter_key"] = "SpimDir4";
 
         // Skip it if the row is already there.
     $query = "SELECT * FROM " . $tabname .
@@ -4728,11 +4728,11 @@ if ($current_revision < $n) {
     }
 
     $record = array();
-    $record["parameter"] = "SpimDirection";
+    $record["parameter"] = "SpimDir";
     $record["value"] = "Top + bottom";
     $record["translation"] = "90.0";
     $record["isDefault"] = "f";
-    $record["parameter_key"] = "SpimDirection5";
+    $record["parameter_key"] = "SpimDir5";
 
         // Skip it if the row is already there.
     $query = "SELECT * FROM " . $tabname .
@@ -4750,11 +4750,11 @@ if ($current_revision < $n) {
     }
 
     $record = array();
-    $record["parameter"] = "SpimDirection";
+    $record["parameter"] = "SpimDir";
     $record["value"] = "Right + left";
     $record["translation"] = "0.0";
     $record["isDefault"] = "f";
-    $record["parameter_key"] = "SpimDirection6";
+    $record["parameter_key"] = "SpimDir6";
 
         // Skip it if the row is already there.
     $query = "SELECT * FROM " . $tabname .

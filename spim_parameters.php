@@ -375,7 +375,6 @@ for ($chan = 0; $chan < $chanCnt; $chan++) {
 
     <td>
     <select name="SpimExcMode<?php echo $chan;?>"
-    onclick="javascript:changeSpimEntryProperties(this,<?php echo $chan;?>)"
     onchange="javascript:changeSpimEntryProperties(this,<?php echo $chan;?>)">
 
 <?php
@@ -734,34 +733,59 @@ if ( $i == 3 ) {
     SPIM Illumination Direction
                 </legend>
 
+                       
+                <div class="SpimDirValues">
+                <table class="SpimDirValues">
 
-                    <div class="multichannel">
 <?php
+$possibleValues = $parameterSpimDir->possibleValues();
 
-for ($i = 0; $i < $chanCnt; $i++) {
-
-// Add a line break after 3 entries
-if ( $i == 3 ) {
-    echo "<br />";
+/* Make sure the mix top-left option is the last one. */
+for ($i = 0; $i < count($possibleValues); $i++) {
+    $arrValue = array_shift($possibleValues);
+    array_push($possibleValues,$arrValue);
+    if (strstr($arrValue,"top-left")) {
+        break;
+    }
 }
+                        /* Loop on rows. */
+
+for ($chan = 0; $chan < $chanCnt; $chan++) {
 ?>
-	<span class="nowrap">
-        Ch<?php echo $i ?>:&nbsp;&nbsp;&nbsp;
-        <span class="multichannel">
-            <input name="SpimDir<?php echo $i ?>"
-                   id="SpimDir<?php echo $i ?>"
-                   type="text"
-                   size="6"
-                   value="<?php
-                    if ($i <= sizeof($spimDir)) {
-                        echo $spimDir[$i];
-                    } ?>"
-                   class="multichannelinput" />
-        </span>&nbsp;
-    </span>
+    <tr><td>Ch<?php echo $chan; ?>:</td>
+
+    <td>
+    <select id="SpimDir<?php echo $chan;?>">
+
 <?php
-}
+                        /* Loop for select options. */
+
+    foreach($possibleValues as $possibleValue) {
+        $translatedValue =
+        $parameterSpimDir->translatedValueFor($possibleValue);
+
+        if ($translatedValue == $spimDir[$chan]) {
+            $selected = " selected=\"selected\"";
+        } else {
+            $selected = "";
+        }
 ?>
+        <option value=<?php echo $translatedValue; echo $selected;?>>
+            <?php echo $possibleValue; ?>
+            </option>
+<?php
+    }                    /* End of loop for select options. */
+?>
+    </select>
+    </td>
+
+    </tr>
+<?php
+}                        /* End of loop on rows. */
+?>
+
+                </table> <!-- SpimDirValues -->
+                </div> <!-- SpimDirValues -->
 
                 <div class="bottom">
                 <p class="message_confidence_<?php
