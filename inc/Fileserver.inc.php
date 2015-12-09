@@ -1596,9 +1596,13 @@ echo '</body></html>';
           <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 
           <head>
-          <title>HRM - ' . $file . ' - results preview</title>
-          <link rel="SHORTCUT ICON" href="images/hrm.ico"/>
-          <script type="text/javascript" src="scripts/common.js"></script>
+          <title>HRM - ' . $file . ' - results preview</title>';
+      $ico = 'images/hrm_custom.ico';
+      if ! (file_exists($ico)) {
+          $ico = 'images/hrm.ico';
+      }
+      echo '    <link rel="SHORTCUT ICON" href="' . $ico . '"/>';
+      echo '          <script type="text/javascript" src="scripts/common.js"></script>
           <style type="text/css">
           @import "css/default.css";
       </style>
