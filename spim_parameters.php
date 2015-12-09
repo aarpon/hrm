@@ -280,7 +280,7 @@ if ($_SESSION[ 'setting' ]->checkPostedSpimParameters( $_POST ) ) {
 
 // Javascript includes
 $script = array( "settings.js", "quickhelp/help.js",
-                 "quickhelp/stedParameters.js");
+                 "quickhelp/spimParameters.js");
 include("header.inc.php");
 ?>
 
@@ -549,7 +549,7 @@ $parameterSpimCenterOffset =
 
             <fieldset class="setting <?php
             echo $parameterSpimCenterOffset->confidenceLevel(); ?>"
-            onmouseover="javascript:changeQuickHelp( 'focusOffset' );" >
+            onmouseover="javascript:changeQuickHelp( 'centerOffset' );" >
 
                 <legend>
                     <a href="javascript:openWindow(
