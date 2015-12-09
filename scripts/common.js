@@ -312,6 +312,60 @@ function setStedEntryProperties( ) {
     }
 }
 
+// Grey out the SPIM input fields of a specific channel if the
+// corresponding excitation mode is set to 'Gaussian'.
+function changeSpimEntryProperties(selectObj, channel) {
+    var gaussBanTagArray = ["SpimNA",
+                            "SpimFill"];
+
+    for (var i = 0; i < gaussBanTagArray.length; i++) {
+        var tag = gaussBanTagArray[i];
+        var id = tag.concat(channel);
+
+        inputElement = document.getElementById(id);
+        
+        if ( selectObj.value == 'gauss' || selectObj.value == 'gaussMuVi') {
+            inputElement.readOnly = true;
+            inputElement.style.color="#000";
+            inputElement.style.backgroundColor="#888";
+        } else {
+            inputElement.readOnly = false;
+            inputElement.style.color="#000";
+            inputElement.style.backgroundColor="";
+        }
+    }
+
+    var fillBanTagArray = ["SpimGaussWidth"];
+
+    for (var i = 0; i < fillBanTagArray.length; i++) {
+        var tag = fillBanTagArray[i];
+        var id = tag.concat(channel);
+
+        inputElement = document.getElementById(id);
+        
+        if ( selectObj.value == 'gauss' || selectObj.value == 'gaussMuVi') {
+            inputElement.readOnly = false;
+            inputElement.style.color="#000";
+            inputElement.style.backgroundColor="";
+        } else {
+            inputElement.readOnly = true;
+            inputElement.style.color="#000";
+            inputElement.style.backgroundColor="#888";
+        }
+    }
+}
+
+function setSpimEntryProperties( ) {
+    var tag = "SpimExcMode";
+    
+    for (var chan = 0; chan < 5; chan++) {
+        var name = tag.concat(chan);
+
+        inputElement = document.getElementsByName(name);
+        changeSpimEntryProperties(inputElement[0], chan);
+    }
+}
+
 function checkAgainstFormat(file, selectedFormat) {
 
         // Both variables as in the 'file_extension' table.
