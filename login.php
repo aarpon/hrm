@@ -209,14 +209,18 @@ if (System::isDBUpToDate() == false) {
   				  "until this issue has been fixed.</p>";
 	echo "<p>Only the administrator can login.</p></div>";
 }
-// Check that HuCore has a valid license
-if (System::hucoreHasValidLicense() == false) {
-	echo "<div class=\"dbOutDated\">Warning: no valid HuCore license found!\n";
-	echo "<p>Please contact the administrator.</p></div>";
-    echo "</div>\n";
-	include("footer.inc.php");
-	return;
+
+// Check that HuCore has a valid license, unless this is a development setup
+if (file_exists('.hrm_devel_version') == false) {
+    if (System::hucoreHasValidLicense() == false) {
+        echo "<div class=\"dbOutDated\">Warning: no valid HuCore license found!\n";
+        echo "<p>Please contact the administrator.</p></div>";
+        echo "</div>\n";
+        include("footer.inc.php");
+        return;
+    }
 }
+
 ?>
 <h2>Welcome</h2>
 
