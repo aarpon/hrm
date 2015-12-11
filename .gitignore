@@ -4,6 +4,10 @@ config/hrm.conf
 resources/hrmd.plist
 user/login_user.inc
 
+# Customization files
+images/hrm_custom.ico
+images/logo_custom.png
+
 # IDE project settings
 /nbproject/
 /.idea/
