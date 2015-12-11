@@ -69,6 +69,7 @@ class OmeroConnection {
         $cmd = $this->buildCmd("checkCredentials");
 
             /* Authenticate against the OMERO server. */
+        // omelog($cmd, 0);
         $loggedIn = shell_exec($cmd);
 
             /* Returns NULL if an error occurred or no output was produced. */
@@ -196,7 +197,6 @@ class OmeroConnection {
         // build a temporary array with the command elements, starting with the
         // connector/wrapper itself:
         $tmp = array($this->omeroWrapper);
-        // Use this if the executable should be specified explicitly:
         //// $tmp = array("/usr/bin/python");
         //// array_push($tmp, $this->omeroWrapper);
         // user/password must be given first:
