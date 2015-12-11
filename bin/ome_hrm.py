@@ -340,7 +340,10 @@ def gen_parameter_summary(fname):
         try:
             from BeautifulSoup import BeautifulSoup
         except ImportError:
-            return 'HRM: BeautifulSoup module required for parameter summary!'
+            return """This file was imported via the HRM-OMERO connector.
+                   For a parameter summary, the 'BeautifulSoup' package for
+                   Python is required at import time on the HRM system.
+                   """
     try:
         soup = BeautifulSoup(open(fname, 'r'))
     except IOError:
