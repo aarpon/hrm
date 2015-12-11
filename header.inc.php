@@ -26,7 +26,7 @@ if (using_IE()) {
   <title>Huygens Remote Manager</title>
 <?php
     $ico = 'images/hrm_custom.ico';
-    if ! (file_exists($ico)) {
+    if (!file_exists($ico)) {
         $ico = 'images/hrm.ico';
     }
     echo '    <link rel="SHORTCUT ICON" href="' . $ico . '"/>';
