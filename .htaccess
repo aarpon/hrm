@@ -1,1 +1,5 @@
+# if nothing is requested explicitly, go to the login page:
 DirectoryIndex login.php
+
+# prevent serving git stuff:
+RedirectMatch 404 /\.git

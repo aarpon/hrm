@@ -6,53 +6,41 @@ require_once( "User.inc.php" );
 require_once( "Fileserver.inc.php" );
 
 
+// simple wrapper function to unify log messages from this module:
+function omelog($text, $level=0) {
+    report("OMERO connector: " . $text, $level);
+}
+
+
 class OmeroConnection {
 
-    /*!
-      \var    $omeroTree
-      \brief  The contents of the user's OMERO tree.
-    */
-    private $omeroTree;
+    private $omeroUser; //!< The OMERO username for authentication + logging.
 
-    /*!
-      \var    $omeroUser
-      \brief  The OMERO user name for authentication and logging purposes.
-    */
-    private $omeroUser;
+    private $omeroPass; //!< The OMERO user password.
 
-    /*!
-      \var    $omeroPass
-      \brief  The OMERO user password for authentication and logging purposes.
-    */
-    private $omeroPass;
+    public $loggedIn;   //!< Boolean to know if the login was successful.
 
-   /*!
-      \var    $loggedIn
-      \brief  Boolean to know whether the login was successful.
-    */
-    public $loggedIn;
+    private $omeroWrapper = "bin/ome_hrm.py"; //!< OMERO connector executable.
 
-   /*!
-      \var    $omeroWrapper
-      \brief  The shell wrapper to OMERO's command line tool.
-    */
-    private $omeroWrapper = "bin/ome_hrm";
+    /*! \brief Array map to hold children in JSON format.
+        \var   $nodeChildren
+
+        Associative array that is used to cache children in JSON strings so
+        they don't have to be re-requested from the OMERO server. The key to
+        access entries is of the form 'OMERO_CLASS:int', e.g. 'Dataset:23'.
+     */
+    private $nodeChildren = array();
 
 
-        /* ----------------------- Constructor ---------------------------- */
-
-    /*!
-     \brief   Constructor
-    */
+    /* ----------------------- Constructor ---------------------------- */
     public function __construct( $omeroUser, $omeroPass ) {
-
         if (empty($omeroUser)) {
-            report("No OMERO user name provided, cannot login.", 2);
+            omelog("No OMERO user name provided, cannot login.", 2);
             return;
         }
 
         if (empty($omeroPass)) {
-            report("No OMERO password provided, cannot login.", 2);
+            omelog("No OMERO password provided, cannot login.", 2);
             return;
         }
 
@@ -60,439 +48,197 @@ class OmeroConnection {
         $this->omeroPass = $omeroPass;
 
         $this->checkOmeroCredentials();
+        if ($this->loggedIn == TRUE) {
+            omelog("Successfully connected to OMERO!", 2);
+        } else {
+            omelog("ERROR connecting to OMERO!", 2);
+        }
     }
 
-        /* -------------------- General OMERO processes -------------------- */
 
-    /*!
-     \brief   Try to establish communication with the OMERO server using the
-              login credentials provided by the user.
-    */
+    /* -------------------- General OMERO processes -------------------- */
+
+    /*! \brief  Check to authenticate to OMERO using given credentials.
+        \return Noting, sets the $this->loggedIn class variable.
+
+        Try to establish communication with the OMERO server using the login
+        credentials provided by the user.
+     */
     private function checkOmeroCredentials() {
-
-        report("Attempting to log on to OMERO, user=[" . $this->omeroUser .
-               "], password=[********].", 2);
-        $cmd = $this->buildCredentialsCmd();
+        omelog("attempting to log on to OMERO.", 2);
+        $cmd = $this->buildCmd("checkCredentials");
 
             /* Authenticate against the OMERO server. */
+        // omelog($cmd, 0);
         $loggedIn = shell_exec($cmd);
 
             /* Returns NULL if an error occurred or no output was produced. */
         if ($loggedIn == NULL) {
-            report("ERROR logging on to OMERO.", 0);
+            omelog("ERROR logging on to OMERO.", 0);
             return;
         }
 
             /* Check whether the attempt was successful. */
         if (strstr($loggedIn, '-1')) {
             $this->loggedIn = FALSE;
-            report("Attempt to log on to OMERO server failed.", 1);
+            omelog("Attempt to log on to OMERO server failed.", 0);
         } else {
             $this->loggedIn = TRUE;
         }
     }
 
-    /*!
-     \brief   Retrieve the OMERO data tree as returned by the ome_hrm script.
-     \return  The XML string with the OMERO data tree.
-    */
-    private function getRawOmeroDataTree () {
+    /*! \brief   Retrieve selected images from the OMERO server.
+        \param   $images - JSON object with IDs and names of selected images.
+        \param   $fileServer Instance of the Fileserver class.
+        \return  A human readable string reporting success and failed images.
+     */
+    public function downloadFromOMERO($images, $fileServer) {
+        $selected = json_decode($images, true);
+        $fail = "";
+        $done = "";
+        foreach ($selected as $img) {
+            $fileAndPath = $fileServer->sourceFolder() . "/" . $img['name'];
+            $param = array("--imageid", $img{'id'}, "--dest", $fileAndPath);
+            $cmd = $this->buildCmd("OMEROtoHRM", $param);
 
-        $cmd = $this->buildTreeCmd();
-
-        $omeroData = shell_exec($cmd);
-        if ($omeroData == NULL) {
-            report("Retrieving OMERO data failed.", 1);
-            return "Retrieving OMERO data failed.";
-        }
-
-            /* Filter out any OMERO output that is not XML. */
-        preg_match("/<(.*)/",$omeroData,$matches);
-        $omeroData = "<" . end($matches);
-
-        return $omeroData;
-    }
-
-    /*!
-     \brief   Retrieve one image from the OMERO server.
-     \param   $postedParams Alias of $_POST with the user selection.
-     \param   $fileServer Instance of the Fileserver class.
-     \return  Ocassionally, an error message.
-     \todo    Should we return "true" in case of success?
-    */
-    public function importImage($postedParams, $fileServer) {
-
-        if (isset($postedParams['OmeImageName'])) {
-            $imgName = basename($postedParams['OmeImageName']);
-            $imgName = str_replace("Image: ","",$imgName);
-        } else {
-            return "No files selected.";
-        }
-
-        if (isset($postedParams['OmeImageId'])) {
-            $imgId = $postedParams['OmeImageId'];
-        } else {
-            return "No files selected.";
-        }
-
-        $cmd = $this->buildImportCmd($imgName, $fileServer, $imgId);
-
-        if (shell_exec($cmd) == NULL) {
-            report("Importing image from OMERO failed.", 1);
-            return "Importing image from OMERO failed.";
-        }
-    }
-
-    /*!
-     \brief   Attach a deconvolved image to an OMERO dataset.
-     \param   $postedParams An alias of $_POST with names of selected files.
-     \param   $fileServer   An instance of the Fileserver class.
-     \return  Ocassionally an error message.
-     \todo    Should we return "true" in case of success?
-    */
-    public function exportImage($postedParams, $fileServer) {
-
-        if (isset($postedParams['selectedFiles'])) {
-            $selectedFiles = explode(" ",trim($postedParams['selectedFiles']));
-        } else {
-            return "No files selected.";
-        }
-
-        if (isset($postedParams['OmeDatasetId'])) {
-            $datasetId = $postedParams['OmeDatasetId'];
-        } else {
-            return "No destination dataset selected.";
-        }
-
-            /* Export all the selected files. */
-        foreach ($selectedFiles as $file) {
-
-            $cmd = $this->buildExportCmd($file, $fileServer, $datasetId);
-
-            if (shell_exec($cmd) == NULL) {
-                report("Exporting image to OMERO failed.", 1);
-                return "Exporting image to OMERO failed.";
+            omelog('requesting ' . $img['id'] . ' to ' . $fileAndPath);
+            exec($cmd, $out, $retval);
+            if ($retval != 0) {
+                omelog("failed retrieving " . $img['id'], 1);
+                $fail .= " " . $img['id'];
+            } else {
+                omelog("successfully retrieved " . $img['id'], 1);
+                $done .= " " . $img['id'];
             }
         }
+        // build the return message:
+        $msg = "";
+        if ($done != "") {
+            $msg = "Successfully retrieved" . $done . ". ";
+        }
+        if ($fail != "") {
+            $msg .= "Failed retrieving" . $fail . ".";
+        }
+        return $msg;
     }
 
-        /* ---------------------- Command builders--------------------------- */
+    /*! \brief   Attach a deconvolved image to an OMERO dataset.
+        \param   $postedParams An alias of $_POST with names of selected files.
+        \param   $fileServer   An instance of the Fileserver class.
+        \return  A human readable string reporting success and failed images.
+     */
+    public function uploadToOMERO($postedParams, $fileServer) {
+        $selectedFiles = json_decode($postedParams['selectedFiles']);
 
-    /*!
-     \brief   Generic command builder for the OMERO wrapper script, adding the
-              credentials and making sure all parameters are properly quoted.
-     \param   $command - The command to be run by the wrapper.
-     \param   $parameters (optional) - An array of additional parameters
-              required by the wrapper to run the requested command.
-     \return  A string with the complete command.
-    */
-    private function buildCmd($command, $parameters="") {
+        if (sizeof($selectedFiles) < 1) {
+            $msg = "No files selected for upload.";
+            omelog($msg);
+            return $msg;
+        }
+
+        if (! isset($postedParams['OmeDatasetId'])) {
+            $msg = "No destination dataset selected.";
+            omelog($msg);
+            return $msg;
+        }
+
+        $datasetId = $postedParams['OmeDatasetId'];
+
+        /* Export all the selected files. */
+        $fail = "";
+        $done = "";
+        foreach ($selectedFiles as $file) {
+            // TODO: check if $file may contain relative paths!
+            $fileAndPath = $fileServer->destinationFolder() . "/" . $file;
+            $param = array("--file", $fileAndPath, "--dset", $datasetId);
+            $cmd = $this->buildCmd("HRMtoOMERO", $param);
+
+            omelog('uploading "' . $fileAndPath . '" to dataset ' . $datasetId);
+            if (shell_exec($cmd) == NULL) {
+                omelog("exporting '" . $file . "' to OMERO failed.", 1);
+                $fail .= " " . $file;
+            } else {
+                omelog("successfully uploaded " . $file, 1);
+                $done .= " " . $file;
+            }
+        }
+        // reload the OMERO tree:
+        $this->resetNodes();
+        // build the return message:
+        $msg = "";
+        if ($done != "") {
+            $msg = "Successfully uploaded" . $done . ". ";
+        }
+        if ($fail != "") {
+            $msg .= "Failed uploading" . $fail . ".";
+        }
+        return $msg;
+    }
+
+
+    /* ---------------------- Command builder --------------------------- */
+
+    /*! \brief   Generic command builder for the OMERO connector.
+        \param   $command - The command to be run by the wrapper.
+        \param   $parameters (optional) - An array of additional parameters
+                 required by the wrapper to run the requested command.
+        \return  A string with the complete command.
+
+        This is the generic command builder that is called by the various
+        functions using the connector executable and takes care of all the
+        common tasks that are independent of the specific command, like adding
+        the credentials, making sure all parameters are properly quoted, etc.
+     */
+    private function buildCmd($command, $parameters=array()) {
         // escape all shell arguments
         foreach($parameters as &$param) {
             $param = escapeshellarg($param);
         }
-        // now we assemble the full shell command
-        $cmd  = $this->omeroWrapper . " ";
-        $cmd .= $command . " ";
-        $cmd .= escapeshellarg($this->omeroUser) . " ";
-        $cmd .= escapeshellarg($this->omeroPass) . " ";
-        $cmd .= join(" ", $parameters);
+        // build a temporary array with the command elements, starting with the
+        // connector/wrapper itself:
+        $tmp = array($this->omeroWrapper);
+        //// $tmp = array("/usr/bin/python");
+        //// array_push($tmp, $this->omeroWrapper);
+        // user/password must be given first:
+        array_push($tmp, "--user", escapeshellarg($this->omeroUser));
+        array_push($tmp, "--password", escapeshellarg($this->omeroPass));
+        // next the *actual* command:
+        array_push($tmp, escapeshellarg($command));
+        // and finally the parameters (if any):
+        $tmp = array_merge($tmp, $parameters);
+        // now we can assemble the full command string:
+        $cmd = join(" ", $tmp);
+        // and and intermediate one for logging w/o password:
+        $tmp[4] = "[********]";
+        omelog("> " . join(" ", $tmp), 1);
         return $cmd;
     }
 
-    /*!
-     \brief   Build the command to check whether the user can log on to OMERO.
-     \return  A string with the complete command.
-    */
-    private function buildCredentialsCmd() {
-        return $this->buildCmd("checkCredentials");
-    }
 
-    /*!
-     \brief   Build the command to retrieve the user's OMERO data tree.
-     \return  A string with the complete command.
-    */
-    private function buildTreeCmd() {
-        return $this->buildCmd("retrieveUserTree");
-    }
+    /* ---------------------- OMERO Tree Assemblers ------------------- */
 
-    /*!
-     \brief   Build the command to export one image to the OMERO server.
-     \param   $file - The name and relative path of the image file.
-     \param   $fileServer - An instance of the Fileserver class.
-     \param   $datasetId - The OMERO ID of the dataset to export the image to.
-     \return  A string with the complete command.
-    */
-    private function buildExportCmd($file, $fileServer, $datasetId) {
-        // FIXME: previous documentation said "$file may contain relative
-        // paths" - is this always true? Otherwise this method of constructing
-        // the absolute path will fail!
-        $fileAndPath = $fileServer->destinationFolder() . "/" . $file;
-        return $this->buildCmd("HRMtoOMERO",
-            array($datasetId, $fileAndPath,
-                  $this->getOriginalName($file),
-                  $this->getDeconParameterSummary($fileAndPath)));
-    }
-
-    /*!
-     \brief   Build the command to import one image from the OMERO server.
-     \param   $imgName - The name of the image in the OMERO server.
-     \param   $fileServer - An instance of the Fileserver class.
-     \param   $imgId - The ID of the image in the OMERO server.
-     \return  A string with the complete command.
-    */
-    private function buildImportCmd($imgName, $fileServer, $imgId) {
-        // FIXME: previous documentation said "$file may contain relative
-        // paths" - is this always true? Otherwise this method of constructing
-        // the absolute path will fail!
-        $fileAndPath = $fileServer->sourceFolder() . "/" . $imgName;
-        return $this->buildCmd("OMEROtoHRM ", array($imgId, $fileAndPath));
-    }
-
-        /* ---------------------- OMERO Tree Assemblers ------------------- */
-
-    /*!
-     \brief  Get the last requested JSON version of the user's OMERO tree.
-     \return The string with the JSON information.
-    */
-    public function getLastOmeroTree() {
-
-        if (!isset($this->omeroTree)) {
-            $this->getUpdatedOmeroTree();
+    /*! \brief   Get the children of a given node.
+        \param   $id - The id string of the node, e.g. 'Project:23'
+        \return  JSON string with the child-nodes.
+     */
+    public function getChildren($id) {
+        if (!isset($this->nodeChildren[$id])) {
+            $param = array('--id', $id);
+            $cmd = $this->buildCmd("retrieveChildren", $param);
+            $this->nodeChildren[$id] = shell_exec($cmd);
         }
-
-        return $this->omeroTree;
+        return $this->nodeChildren[$id];
     }
 
-    /*!
-     \brief  Get an updated JSON version of the user's OMERO tree.
-     \return The string with the JSON information.
-    */
-    public function getUpdatedOmeroTree() {
+    /*! \brief   Reset the array keeping the node data.
 
-        $omeroTree = array();
-
-        $omeroData = $this->getRawOmeroDataTree();
-
-        $pattern = "/<Project>(.*?)<\/Project>/";
-        preg_match_all($pattern, $omeroData, $allProjects);
-
-            /* Loop over the projects. */
-        foreach ($allProjects[1] as $key => $project) {
-
-                /* Get the project details. */
-            $pattern = "/(.*?)<id>(.*?)<\/id>/";
-            if (preg_match($pattern, $project, $projectInfo)) {
-
-                    /* Look for project children. */
-                $projectDatasets = $this->getProjectDatasets($project);
-
-                    /* If the project has no children. */
-                if (empty($projectDatasets)) {
-                    $omeroTree[$key] = "Project: " . $projectInfo[1];
-
-                } else {
-
-                        /* Project name. */
-                    $omeroTree[$key][(string) "label" ]
-                        = (string) "Project: " . $projectInfo[1];
-
-                        /* Project id. */
-                    $omeroTree[$key][(string) "id" ] = $projectInfo[2];
-
-                        /* Children. */
-                    $omeroTree[$key][(string) "children" ] = $projectDatasets;
-                }
-            }
-        }
-
-        $this->omeroTree = json_encode($omeroTree);
-
-        return $this->omeroTree;
-    }
-
-    /*!
-     \brief  Get the OMERO project info in a multidimensional array.
-     \param  $project The XML string with the project information.
-     \return The multidimensional array with the project information.
-    */
-    private function getProjectDatasets( $project ) {
-
-        $projectDatasets = array();
-
-            /* Get the project datasets. */
-        $pattern = "/<Dataset>(.*?)<\/Dataset>/";
-        preg_match_all($pattern, $project, $allDatasets);
-
-            /* Loop over the datasets. */
-        foreach ($allDatasets[1] as $key => $dataset) {
-
-                /* Get the dataset details. */
-            $pattern = "/(.*?)<id>(.*?)<\/id>/";
-            if (preg_match($pattern, $dataset, $datasetInfo)) {
-
-                    /* Look for dataset children. */
-                $datasetImages = $this->getDatasetImages($dataset);
-
-                    /* If the dataset has no children. */
-                if (empty($datasetImages)) {
-                    $projectDatasets[$key] = "Dataset: " . $datasetInfo[1];
-                } else {
-
-                        /* Dataset name. */
-                    $projectDatasets[$key][(string) "label" ]
-                        = "Dataset: " . $datasetInfo[1];
-
-                        /* Dataset id. */
-                    $projectDatasets[$key][(string) "id" ] = $datasetInfo[2];
-
-                        /* Children. */
-                    $projectDatasets[$key][(string) "children" ]
-                        = $datasetImages;
-                }
-            }
-        }
-
-        return $projectDatasets;
-    }
-
-    /*!
-     \brief  Get the OMERO image of a dataset in a multidimensional array.
-     \param  $dataset An XML string with the dataset information.
-     \return The multidimensional array with the image names and their id's.
-    */
-    private function getDatasetImages( $dataset ) {
-
-            /* Initizalize the array. */
-        $datasetImages = array();
-
-
-        $pattern = "/<Image>(.*?)<id>(.*?)<\/id>/";
-        if (!preg_match_all($pattern, $dataset, $allImages)) {
-
-                /* If the dataset contains no data we'll say so. */
-            $datasetImages[0][(string) "id"]    = "-1";
-            $datasetImages[0][(string) "label"] = "No archived data.";
-
-
-        } else {
-
-                /* If the dataset does contains images we'll loop over them. */
-            foreach ($allImages[1] as $key => $imageName) {
-
-                    /* Image name. */
-                $datasetImages[$key][(string) "label"] = "Image: " . $imageName;
-
-                    /* The image 'id' is located in a sub-array within
-                     'allImages', which can be accessed with the current 'key'.*/
-                $datasetImages[$key][(string) "id"] = $allImages[2][$key];
-            }
-        }
-
-        return $datasetImages;
-    }
-
-        /* ------------------------- Parsers ------------------------------ */
-    /*!
-     \brief   Parse the HRM job parameters (html) file into a plain string to
-              be used as OMERO annotation.
-     \param   $file The path and file name of the HRM deconvolution result.
-     \return  The plain string with the parameter summary.
-    */
-    private function getDeconParameterSummary($file) {
-
-            /* A summary title. */
-        $summary  = "'[Report of deconvolution parameters from the ";
-        $summary .= "Huygens Remote Manager for file ";
-        $summary .= basename($file) . " ]: ";
-
-            /* Get the parameter summary (HTML text) of the HRM job. */
-        $extension      = pathinfo($file, PATHINFO_EXTENSION);
-        $parametersFile = str_replace($extension,"parameters.txt",$file);
-        $parameters     = file_get_contents($parametersFile);
-
-        if (!$parameters) {
-            $summary .= "Parameters not available.'";
-            return $summary;
-        }
-
-            /* Loop over the parameter tables. */
-        $parameterSets = explode("<table>",$parameters);
-        foreach ($parameterSets as $key => $parameterSet) {
-
-                /* Irrelevant information. */
-            if ($key == 0) {
-                continue;
-            }
-
-                /* Loop over the table rows. */
-            $rows = explode("<tr>",$parameterSet);
-            foreach ($rows as $key => $row) {
-
-                    /* Irrelevant information. */
-                if ($key == 1 || $key == 2) {
-                    continue;
-                }
-
-                    /* Loop over the row columns. */
-                $columns = explode("<td",$row);
-                foreach ($columns as $key => $column) {
-
-                        /* Irrelevant information. */
-                    if ($key == 3) {
-                        continue;
-                    }
-
-                    $column = strip_tags($column);
-                    $column = explode(">",$column);
-
-                    if (isset($column[1])) {
-                        if ($key == 1) {
-                            $summary .=
-                                str_replace("(&mu;m)","(mu)",$column[1]);
-                        }
-
-                        if ($key == 2) {
-                            $summary .=
-                                " (ch. " . strtolower($column[1]) . "): ";
-                        }
-
-                        if ($key == 4) {
-                            $summary .= $column[1] . " | ";
-                        }
-                    }
-                }
-            }
-        }
-
-        return $summary . "'";
-    }
-
-    /*!
-     \brief   Remove the deconvolution suffix to find the original file name.
-     \param   The name of the deconvolved dataset.
-     \return  The name of the raw dataset.
-    */
-    private function getOriginalName($file) {
-
-            /* Remove any relative paths that may exist. */
-        $file = pathinfo($file, PATHINFO_BASENAME);
-
-            /* Remove the HRM deconvolution suffix and file extension. */
-        $replaceThis  = "/_([a-z0-9]{13,13})_hrm\.(.*)$/";
-        $replaceWith  = "";
-        $originalName = preg_replace($replaceThis,$replaceWith,$file);
-
-            /* In case of error just return the name of the deconvolved file. */
-        if ($originalName != NULL) {
-            return $originalName;
-        } else {
-            return $file;
-        }
+        This is useful to refresh the tree, as all calls to getChildren() will
+        then request up-to-date information from OMERO.
+     */
+    public function resetNodes() {
+        $this->nodeChildren = array();
     }
 
 }
-
-
 
 ?>

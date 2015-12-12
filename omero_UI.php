@@ -1,11 +1,11 @@
 <?php
 
-  // This file is part of the Huygens Remote Manager
-  // Copyright and license notice: see license.txt
+// This file is part of the Huygens Remote Manager
+// Copyright and license notice: see license.txt
 
-        // Dialog to ask for the OMERO credentials.
-      if (isset($_POST['getOmeroData']) && !isset($omeroConnection)) {
-          ?>
+// Dialog to ask for the OMERO credentials.
+if (isset($_POST['getOmeroData']) && !isset($omeroConnection)) {
+?>
     <div id="floatingCredentialsDialog" title="OMERO login credentials">
 
       <p>Your OMERO username and password are needed for
@@ -28,7 +28,6 @@
     <script>
 
       $(function() {
-
             // Workaround to bind the 'Enter' button to the 'Submit' action.
             $( "#floatingCredentialsDialog" ).keypress(function(e){
                 if(e.keyCode == $.ui.keyCode.ENTER) {
@@ -60,11 +59,17 @@
     </form> <!-- omeroCheckCredentials !-->
 
     </div> <!-- floatingCredentialsDialog !-->
-   <?php }
+<?php
+}   // endif (isset($_POST['getOmeroData']) && !isset($omeroConnection))
 
 
+// TODO:
+// - block web frontend with an overlay to signalize upload/download
 
-      if (isset($omeroTree)) {?>
+
+// if we are connected to an OMERO server, always show the tree by default:
+if (isset($omeroConnection)) {
+?>
 
     <div id="omeroSelection">
 
@@ -81,14 +86,14 @@
               ?>
                   <input name="importFromOmero" type="submit"
                   value="" class="icon remove"
-                  onmouseover="Tip('Transfer selected files')"
+                  onmouseover="Tip('Transfer selected files from OMERO')"
                   onmouseout="UnTip()"/>
               <?php
               } else {
                   ?>
                   <input name="exportToOmero" type="submit"
                       value="" class="icon down"
-                      onmouseover="Tip('Transfer selected files')"
+                      onmouseover="Tip('Transfer selected files to OMERO')"
                       onmouseout="UnTip()" />
               <?php
               }
@@ -96,7 +101,7 @@
 
               <input type="button" class="icon abort"
                    onclick="UnTip(); cancelOmeroSelection()"
-                   onmouseover="Tip('Cancel data transfer!')"
+                   onmouseover="Tip('Reset OMERO selection.')"
                    onmouseout="UnTip()"/>
 
               <input name="refreshOmero" type="submit"
@@ -114,47 +119,56 @@
               <?php
               }
               ?>
-              <input name="OmeImageId" type="hidden">
-              <input name="OmeImageName" type="hidden">
+              <input name="OmeImages" type="hidden">
               <input name="OmeDatasetId" type="hidden">
               <input name="selectedFiles" type="hidden">
 
          </div> <!-- omeroActions !-->
 
-     </form> <!-- omeroForm !-->
+    </form> <!-- omeroForm !-->
 
      <fieldset>
      <legend>Your OMERO data</legend>
 
-     <div id="omeroTree">
+     <div id="omeroTree" data-url="omero_treeloader.php">
         <br /> <br />
 
-        <?php
+        <script>
+            // the global variable _GET is a (JSON) representation of the
+            // browser _GET variable that tells us which folder we are showing
+            // and we use to derive which nodes of the tree will be selectable:
+            var _GET = <?php echo json_encode($_GET); ?>;
+        </script>
 
-          if ($omeroTree != null) {?>
+        <?php
+          if ($omeroConnection->loggedIn) {
+        ?>
 
             <script>
-            $(function() {
-                  var data = <?php echo $omeroTree; ?>;
 
-                  $('#omeroTree').tree({
-                        data: data,
+            $(function() {
+                var oTree = $('#omeroTree');
+
+                if (_GET['folder'] == "src") {
+                    // for downloading from OMERO we allow multi-selection:
+                    oTree.bind('tree.click', handleMultiSelectClick);
+                    oTree.tree({
                         saveState: true,
                         selectable: true,
-                        onCanSelectNode: function(node) {
+                        onCreateLi: processNodeHTML
+                    });
 
-                            if (node.id == "-1") {
-
-                               // Not selectable.
-                               return false;
-                            } else {
-
-                               // Selectable
-                               return true;
-                            }
-                         }
-                      });
-              });
+                } else {
+                    // we are in the "dest" folder (upload to OMERO), so we
+                    // only allow *single* selection of an image or dataset:
+                    oTree.tree({
+                        saveState: true,
+                        selectable: true,
+                        onCreateLi: processNodeHTML,
+                        onCanSelectNode: allowNodeSelect
+                    });
+                }
+            });
             </script>
 
         <?php
@@ -169,6 +183,6 @@
      </div> <!-- omeroSelection -->
 
 
-        <?php
-            }
-  ?>
+<?php
+}  // endif (isset($omeroConnection))
+?>
