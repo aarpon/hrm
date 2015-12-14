@@ -500,8 +500,6 @@ proc estimateSnrFromImage {} {
 }
 
 
-
-
 # ----------------   MAIN routine -----------------
 # Execute selected procedure
 
