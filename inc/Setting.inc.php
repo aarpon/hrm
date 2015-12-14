@@ -251,7 +251,7 @@ abstract class Setting {
 
       All variable channels Parameter objects in the Setting will updated.
 
-      \param	$channels	Number of channels (between 1 and 5)
+      \param	$channels	Number of channels (between 1 and 6)
     */
     public function setNumberOfChannels($channels) {
         $this->numberOfChannels = $channels;
@@ -512,6 +512,8 @@ class ParameterSetting extends Setting {
       \return	true if all Paraneters are defined and valid, false otherwise
     */
     public function checkPostedMicroscopyParameters($postedParameters) {
+        $db = new DatabaseConnection;
+        $maxChanCnt = $db->getMaxChanCnt();
 
         if (count($postedParameters) == 0) {
             $this->message = '';
@@ -534,8 +536,8 @@ class ParameterSetting extends Setting {
         // We handle multi-value parameters differently than single-valued ones
 
         // Excitation wavelengths
-        $value = array(null, null, null, null, null);
-        for ($i = 0; $i < 5; $i++) {
+        for ($i = 0; $i < $maxChanCnt; $i++) {
+            $value[$i] = null;
             if (isset($postedParameters["ExcitationWavelength$i"])) {
                 $value[$i] = $postedParameters["ExcitationWavelength$i"];
                 unset($postedParameters["ExcitationWavelength$i"]);
@@ -578,8 +580,8 @@ class ParameterSetting extends Setting {
         }
 
         // Emission wavelengths
-        $value = array(null, null, null, null, null);
-        for ($i = 0; $i < 5; $i++) {
+        for ($i = 0; $i < $maxChanCnt; $i++) {
+            $value[$i] = null;
             if (isset($postedParameters["EmissionWavelength$i"])) {
                 $value[$i] = $postedParameters["EmissionWavelength$i"];
                 unset($postedParameters["EmissionWavelength$i"]);
@@ -725,8 +727,8 @@ class ParameterSetting extends Setting {
         $noErrorsFound = True;
 
         // Depletion Mode
-        $value = array(null, null, null, null, null);
-        for ($i = 0; $i < 5; $i++) {
+        for ($i = 0; $i < $maxChanCnt; $i++) {
+            $value[$i] = null;
             if (isset($postedParameters["StedDepletionMode$i"])) {
                 $value[$i] = $postedParameters["StedDepletionMode$i"];
                 unset($postedParameters["StedDepletionMode$i"]);
@@ -770,9 +772,8 @@ class ParameterSetting extends Setting {
 
 
         // Saturation Factor
-        $value = array(null, null, null, null, null);
-
-        for ($i = 0; $i < 5; $i++) {
+        for ($i = 0; $i < $maxChanCnt; $i++) {
+            $value[$i] = null;
             if (isset($postedParameters["StedSaturationFactor$i"])) {
                 $value[$i] = $postedParameters["StedSaturationFactor$i"];
                 unset($postedParameters["StedSaturationFactor$i"]);
@@ -822,8 +823,8 @@ class ParameterSetting extends Setting {
 
 
         // Sted Wavelength
-        $value = array(null, null, null, null, null);
-        for ($i = 0; $i < 5; $i++) {
+        for ($i = 0; $i < $maxChanCnt; $i++) {
+            $value[$i] = null;
             if (isset($postedParameters["StedWavelength$i"])) {
                 $value[$i] = $postedParameters["StedWavelength$i"];
                 unset($postedParameters["StedWavelength$i"]);
@@ -873,8 +874,8 @@ class ParameterSetting extends Setting {
 
 
         // Sted Immunity Fraction
-        $value = array(null, null, null, null, null);
-        for ($i = 0; $i < 5; $i++) {
+        for ($i = 0; $i < $maxChanCnt; $i++) {
+            $value[$i] = null;
             if (isset($postedParameters["StedImmunity$i"])) {
                 $value[$i] = $postedParameters["StedImmunity$i"];
                 unset($postedParameters["StedImmunity$i"]);
@@ -925,8 +926,8 @@ class ParameterSetting extends Setting {
 
         // Sted 3D
         if ($this->isSted3D()) {
-            $value = array(null, null, null, null, null);
-            for ($i = 0; $i < 5; $i++) {
+            for ($i = 0; $i < $maxChanCnt; $i++) {
+                $value[$i] = null;
                 if (isset($postedParameters["Sted3D$i"])) {
                     $value[$i] = $postedParameters["Sted3D$i"];
                     unset($postedParameters["Sted3D$i"]);
@@ -1091,8 +1092,8 @@ class ParameterSetting extends Setting {
         if ($this->hasPinhole()) {
 
             // Pinhole sizes
-            $value = array(null, null, null, null, null);
-            for ($i = 0; $i < 5; $i++) {
+            for ($i = 0; $i < $maxChanCnt; $i++) {
+                $value[$i] = null;
                 if (isset($postedParameters["PinholeSize$i"])) {
                     $value[$i] = $postedParameters["PinholeSize$i"];
                     unset($postedParameters["PinholeSize$i"]);
@@ -2156,6 +2157,8 @@ class TaskSetting extends Setting {
       \param	$postedParameters	The $_POST array
     */
     public function checkPostedTaskParameters($postedParameters) {
+        $db = new DatabaseConnection;
+        $maxChanCnt = $db->getMaxChanCnt();
 
         if (count($postedParameters) == 0) {
             $this->message = '';
@@ -2189,8 +2192,8 @@ class TaskSetting extends Setting {
         // Signal-To-Noise Ratio
         // Depending on the choice of the deconvolution algorithm, we will
         // check only the relevant entries
-        $value = array(null, null, null, null, null);
-        for ($i = 0; $i < 5; $i++) {
+        for ($i = 0; $i < $maxChanCnt; $i++) {
+            $value[$i] = null;
             $name = "SignalNoiseRatio" . $algorithm . "$i";
             if (isset($postedParameters[$name])) {
                 $value[$i] = $postedParameters[$name];
@@ -2224,7 +2227,8 @@ class TaskSetting extends Setting {
 
                 case 'manual' :
 
-                    for ($i = 0; $i < 5; $i++) {
+                    for ($i = 0; $i < $maxChanCnt; $i++) {
+                        $value[$i] = null;
                         $name = "BackgroundOffsetPercent$i";
                         if (isset($postedParameters[$name])) {
                             $value[$i] = $postedParameters[$name];
@@ -2480,6 +2484,9 @@ class AnalysisSetting extends Setting {
       \param	$postedParameters	The $_POST array
     */
     public function checkPostedAnalysisParameters($postedParameters) {
+        $db = new DatabaseConnection;
+        $maxChanCnt = $db->getMaxChanCnt();
+
         if (count($postedParameters) == 0) {
             $this->message = '';
             return False;
@@ -2539,7 +2546,8 @@ class AnalysisSetting extends Setting {
 
                 case 'manual' :
 
-                    for ($i = 0; $i < 5; $i++) {
+                    for ($i = 0; $i < $maxChanCnt; $i++) {
+                        $value[$i] = null;
                         $name = "ColocThreshold$i";
                         if (isset($postedParameters[$name])) {
                             $value[$i] = $postedParameters[$name];
