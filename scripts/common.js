@@ -56,6 +56,7 @@ function openTool(url) {
 }
 
 function changeDiv(div, html) {
+    // try to update the inner HTML for a specific <div> element
     try { document.getElementById(div).innerHTML= html; } catch(err) {}
 }
 
