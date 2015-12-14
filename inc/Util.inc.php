@@ -308,9 +308,9 @@ function askHuCore($tool, $options = "") {
           (defined in the HRM configuration files). If logfile becomes to big
           it is renamed and a new one is started.
   \param  $text The text to be logged
-  \param  $level  The log level of the text (0, 1, or 2)
+  \param  $level (optional) The log level of the text (0 (default), 1, or 2)
 */
-function report($text, $level) {
+function report($text, $level=0) {
     global $log_verbosity;
     global $hrm_path;
     global $logdir;
