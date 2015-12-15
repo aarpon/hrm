@@ -178,7 +178,7 @@ abstract class Setting {
         foreach ($setting->parameterNames() as $name) {
             $parameter = $this->parameter[$name];
             $otherParameter = $setting->parameter($name);
-            $newValue = $otherParameter->internalValue();
+            $newValue = $otherParameter->internalValue();    
             $parameter->setValue($newValue);
             $this->parameter[$name] = $parameter;
         }
@@ -251,7 +251,7 @@ abstract class Setting {
 
       All variable channels Parameter objects in the Setting will updated.
 
-      \param	$channels	Number of channels (between 1 and 5)
+      \param	$channels	Number of channels (between 1 and 6)
     */
     public function setNumberOfChannels($channels) {
         $this->numberOfChannels = $channels;
@@ -437,12 +437,6 @@ class ParameterSetting extends Setting {
             }
         }
 
-        if ($ok) {
-            if (!$this->checkPostedAberrationCorrectionParameters($postedParams)) {
-                $ok = False;
-            }
-        }
-
         if ( !$ok ) {
             $this->message  = "The selected parameter set contains empty values ";
             $this->message .= "which the $imageFormat format misses in its ";
@@ -519,15 +513,16 @@ class ParameterSetting extends Setting {
       \return	true if all Paraneters are defined and valid, false otherwise
     */
     public function checkPostedMicroscopyParameters($postedParameters) {
-
         if (count($postedParameters) == 0) {
             $this->message = '';
             return False;
         }
 
+        $db = new DatabaseConnection;
+        $maxChanCnt = $db->getMaxChanCnt();
+
         $this->message = '';
         $noErrorsFound = True;
-
 
         // Get the names of the relevant parameters
         $names = $this->microscopeParameterNames();
@@ -541,8 +536,8 @@ class ParameterSetting extends Setting {
         // We handle multi-value parameters differently than single-valued ones
 
         // Excitation wavelengths
-        $value = array(null, null, null, null, null);
-        for ($i = 0; $i < 5; $i++) {
+        for ($i = 0; $i < $maxChanCnt; $i++) {
+            $value[$i] = null;
             if (isset($postedParameters["ExcitationWavelength$i"])) {
                 $value[$i] = $postedParameters["ExcitationWavelength$i"];
                 unset($postedParameters["ExcitationWavelength$i"]);
@@ -585,8 +580,8 @@ class ParameterSetting extends Setting {
         }
 
         // Emission wavelengths
-        $value = array(null, null, null, null, null);
-        for ($i = 0; $i < 5; $i++) {
+        for ($i = 0; $i < $maxChanCnt; $i++) {
+            $value[$i] = null;
             if (isset($postedParameters["EmissionWavelength$i"])) {
                 $value[$i] = $postedParameters["EmissionWavelength$i"];
                 unset($postedParameters["EmissionWavelength$i"]);
@@ -719,8 +714,6 @@ class ParameterSetting extends Setting {
       \return	true if all Paraneters are defined and valid, false otherwise
     */
     public function checkPostedStedParameters($postedParameters) {
-        $this->message = '';
-
         if (count($postedParameters) == 0) {
             return False;
         }
@@ -728,12 +721,16 @@ class ParameterSetting extends Setting {
         if (!$this->isSted() && !$this->isSted3D()) {
             return True;
         }
-
+        
+        $db = new DatabaseConnection;
+        $maxChanCnt = $db->getMaxChanCnt();
+        
+        $this->message = '';
         $noErrorsFound = True;
 
         // Depletion Mode
-        $value = array(null, null, null, null, null);
-        for ($i = 0; $i < 5; $i++) {
+        for ($i = 0; $i < $maxChanCnt; $i++) {
+            $value[$i] = null;
             if (isset($postedParameters["StedDepletionMode$i"])) {
                 $value[$i] = $postedParameters["StedDepletionMode$i"];
                 unset($postedParameters["StedDepletionMode$i"]);
@@ -777,9 +774,8 @@ class ParameterSetting extends Setting {
 
 
         // Saturation Factor
-        $value = array(null, null, null, null, null);
-
-        for ($i = 0; $i < 5; $i++) {
+        for ($i = 0; $i < $maxChanCnt; $i++) {
+            $value[$i] = null;
             if (isset($postedParameters["StedSaturationFactor$i"])) {
                 $value[$i] = $postedParameters["StedSaturationFactor$i"];
                 unset($postedParameters["StedSaturationFactor$i"]);
@@ -829,8 +825,8 @@ class ParameterSetting extends Setting {
 
 
         // Sted Wavelength
-        $value = array(null, null, null, null, null);
-        for ($i = 0; $i < 5; $i++) {
+        for ($i = 0; $i < $maxChanCnt; $i++) {
+            $value[$i] = null;
             if (isset($postedParameters["StedWavelength$i"])) {
                 $value[$i] = $postedParameters["StedWavelength$i"];
                 unset($postedParameters["StedWavelength$i"]);
@@ -880,8 +876,8 @@ class ParameterSetting extends Setting {
 
 
         // Sted Immunity Fraction
-        $value = array(null, null, null, null, null);
-        for ($i = 0; $i < 5; $i++) {
+        for ($i = 0; $i < $maxChanCnt; $i++) {
+            $value[$i] = null;
             if (isset($postedParameters["StedImmunity$i"])) {
                 $value[$i] = $postedParameters["StedImmunity$i"];
                 unset($postedParameters["StedImmunity$i"]);
@@ -932,8 +928,8 @@ class ParameterSetting extends Setting {
 
         // Sted 3D
         if ($this->isSted3D()) {
-            $value = array(null, null, null, null, null);
-            for ($i = 0; $i < 5; $i++) {
+            for ($i = 0; $i < $maxChanCnt; $i++) {
+                $value[$i] = null;
                 if (isset($postedParameters["Sted3D$i"])) {
                     $value[$i] = $postedParameters["Sted3D$i"];
                     unset($postedParameters["Sted3D$i"]);
@@ -994,11 +990,13 @@ class ParameterSetting extends Setting {
       \return	true if all Paraneters are defined and valid, false otherwise
     */
     public function checkPostedCapturingParameters($postedParameters) {
-
         if (count($postedParameters) == 0) {
             $this->message = '';
             return False;
         }
+
+        $db = new DatabaseConnection;
+        $maxChanCnt = $db->getMaxChanCnt();
 
         $this->message = '';
         $noErrorsFound = True;
@@ -1098,8 +1096,8 @@ class ParameterSetting extends Setting {
         if ($this->hasPinhole()) {
 
             // Pinhole sizes
-            $value = array(null, null, null, null, null);
-            for ($i = 0; $i < 5; $i++) {
+            for ($i = 0; $i < $maxChanCnt; $i++) {
+                $value[$i] = null;
                 if (isset($postedParameters["PinholeSize$i"])) {
                     $value[$i] = $postedParameters["PinholeSize$i"];
                     unset($postedParameters["PinholeSize$i"]);
@@ -1179,6 +1177,7 @@ class ParameterSetting extends Setting {
 
         return $noErrorsFound;
     }
+
 
     /*!
       \brief	Checks that the posted Aberration Correction Parameters are all
@@ -1374,6 +1373,7 @@ class ParameterSetting extends Setting {
         return $noErrorsFound;
     }
 
+    
     /*!
       \brief	Checks that the posted Calculate Pixel Size Parameters are all defined
               and valid
@@ -2252,6 +2252,7 @@ class TaskSetting extends Setting {
     */
     public function TaskSetting() {
         parent::__construct();
+
         $parameterClasses = array(
             'Autocrop',
             'SignalNoiseRatio',
@@ -2261,11 +2262,13 @@ class TaskSetting extends Setting {
             'MultiChannelOutput',
             'QualityChangeStoppingCriterion',
             'DeconvolutionAlgorithm',
-            'ZStabilization');
+            'ZStabilization',
+            'ChromaticAberration');
 
         foreach ($parameterClasses as $class) {
             $param = new $class;
             $name = $param->name();
+
             $this->parameter[$name] = $param;
             $this->numberOfChannels = NULL;
         }
@@ -2318,11 +2321,13 @@ class TaskSetting extends Setting {
       \param	$postedParameters	The $_POST array
     */
     public function checkPostedTaskParameters($postedParameters) {
-
         if (count($postedParameters) == 0) {
             $this->message = '';
             return False;
         }
+
+        $db = new DatabaseConnection;
+        $maxChanCnt = $db->getMaxChanCnt();
 
         $this->message = '';
         $noErrorsFound = True;
@@ -2351,8 +2356,8 @@ class TaskSetting extends Setting {
         // Signal-To-Noise Ratio
         // Depending on the choice of the deconvolution algorithm, we will
         // check only the relevant entries
-        $value = array(null, null, null, null, null);
-        for ($i = 0; $i < 5; $i++) {
+        for ($i = 0; $i < $maxChanCnt; $i++) {
+            $value[$i] = null;
             $name = "SignalNoiseRatio" . $algorithm . "$i";
             if (isset($postedParameters[$name])) {
                 $value[$i] = $postedParameters[$name];
@@ -2386,7 +2391,8 @@ class TaskSetting extends Setting {
 
                 case 'manual' :
 
-                    for ($i = 0; $i < 5; $i++) {
+                    for ($i = 0; $i < $maxChanCnt; $i++) {
+                        $value[$i] = null;
                         $name = "BackgroundOffsetPercent$i";
                         if (isset($postedParameters[$name])) {
                             $value[$i] = $postedParameters[$name];
@@ -2459,6 +2465,54 @@ class TaskSetting extends Setting {
     }
 
     /*!
+      \brief   Checks that the posted Aberration Correction Parameters are 
+               defined. This correction is optional.
+      \param   $postedParameters    The $_POST array
+      \return  true if all Parameters are defined and valid, false otherwise.
+    */
+    public function checkPostedChromaticAberrationParameters($postedParameters) {
+
+        if (count($postedParameters) == 0) {
+            $this->message = '';
+            return False;
+        }
+
+        $this->message = '';
+        $noErrorsFound = True;
+
+        foreach ($postedParameters as $param) {
+            if ($param != "" && !is_numeric($param)) {
+                $noErrorsFound = False;
+                $this->message = "Value must be numeric";
+                break;
+            }
+        }
+
+        if (!$noErrorsFound) {
+            return $noErrorsFound;
+        }
+
+        $parameter = $this->parameter("ChromaticAberration");
+
+        /* The posted parameters are received in increasing 'chan component'
+           order. */
+        $i = 0;
+        foreach ($postedParameters as $name => $param) {
+            if (strpos($name, 'ChromaticAberration') === false) {
+                continue;
+            }
+
+            $valuesArray[$i] = $param;
+            $i++;
+        }
+        
+        $parameter->setValue($valuesArray);
+        
+        return $noErrorsFound;
+    }
+    
+    
+    /*!
       \brief	Returns all Task Parameter names
       \return array of Task Parameter names
     */
@@ -2511,7 +2565,7 @@ class TaskSetting extends Setting {
 
     /*!
       \brief   Checks whether the restoration should allow for stabilization.
-      \param   $paramSetting An instance of the ParameterSetting clase.
+      \param   $paramSetting An instance of the ParameterSetting class.
       \return  Boolean: TRUE to enable stabilization option, FALSE otherwise.
     */
     public function isEligibleForStabilization(ParameterSetting $paramSetting) {
@@ -2531,6 +2585,22 @@ class TaskSetting extends Setting {
         if (!System::hasLicense("sted3d")) {
             return FALSE;
         }
+        return TRUE;
+    }
+
+    /*!
+      \brief   Checks whether the restoration should allow for CAC.
+      \param   $paramSetting  An instance of the ParameterSetting class.
+      \return  Boolean: TRUE to enable CAC, FALSE otherwise.
+    */
+    public function isEligibleForCAC(ParameterSetting $paramSetting) {
+        if ($this->numberOfChannels() == 1) {
+            return FALSE;
+        }
+        if (!System::hasLicense("chromaticS")) {
+            return FALSE;
+        }
+
         return TRUE;
     }
 
@@ -2657,6 +2727,9 @@ class AnalysisSetting extends Setting {
             return False;
         }
 
+        $db = new DatabaseConnection;
+        $maxChanCnt = $db->getMaxChanCnt();
+
         $this->message = '';
         $noErrorsFound = True;
 
@@ -2711,7 +2784,8 @@ class AnalysisSetting extends Setting {
 
                 case 'manual' :
 
-                    for ($i = 0; $i < 5; $i++) {
+                    for ($i = 0; $i < $maxChanCnt; $i++) {
+                        $value[$i] = null;
                         $name = "ColocThreshold$i";
                         if (isset($postedParameters[$name])) {
                             $value[$i] = $postedParameters[$name];

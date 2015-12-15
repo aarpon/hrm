@@ -4001,6 +4001,68 @@ if ($current_revision < $n) {
     write_to_log($msg);
 }
 
+// -----------------------------------------------------------------------------
+// Update to revision 15
+// Description: Add NumberOfChannels = 6 into possible_values
+// -----------------------------------------------------------------------------
+$n = 15;
+if ($current_revision < $n) {
+
+    // Add NumberOfChannels = 6 into possible_values
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "NumberOfChannels";
+    $record["value"] = "6";
+    $record["translation"] = "";
+    $record["isDefault"] = "f";
+    $rs = $db->Execute("SELECT * FROM " . $tabname .
+                       " WHERE parameter='" . $record["parameter"] .
+                       "' AND value='" . $record["value"] . "'");
+    if ($rs->EOF) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    // Values for parameter 'ChromaticAberration'.
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "ChromaticAberration";
+    $record["value"] = "#0#0#0#0#1#";
+    $record["translation"] = "";
+    $record["isDefault"] = "T";
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" .
+                       $record["parameter"] . "' AND value='" .
+                       $record["value"] . "' AND translation='" .
+                       $record["translation"] . "' AND isDefault='" .
+                       $record["isDefault"] . "'");
+    if ($rs->EOF) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating the database to revision ".
+                $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+
+    //Update revision
+    if(!update_dbrevision($n))
+        return;
+
+    $current_revision = $n;
+    $msg = "Database successfully updated to revision " . $current_revision . ".";
+    write_message($msg);
+    write_to_log($msg);
+    // ******************************************************************* //
+}
+
 
 fclose($fh);
 
