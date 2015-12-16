@@ -783,6 +783,130 @@ class NumericalParameter extends Parameter {
 */
 
 /*!
+  \class  NumericalVectorParameter
+  \brief  Class for a channel Parameter consisting of a N components.
+*/
+class NumericalVectorParameter extends NumericalParameter {
+    
+    /*!
+      \var    $componentCnt
+      \brief  Number of components in the vector.
+    */
+    public $componentCnt;
+
+    /*!
+      \brief  Constructor:   creates an empty Parameter.
+      \param  $name          Name of the new Parameter
+      \param  $componentCnt  Number of components for the vector parameter.
+    */
+    public function __construct($name, $componentCnt) {
+        parent::__construct($name);
+        $this->reset($componentCnt);
+    }
+
+    /*!
+      \brief  Sets the Parameter value(s) to empty.
+      \param  $components Number of components for the vector parameter.
+    */
+    public function reset($componentCnt) {
+        $this->componentCnt = $componentCnt;
+        for ($i = 1; $i <= $componentCnt; $i++ ) {
+            $this->value[$i] = NULL;
+        }
+    }
+
+    /*!
+      \brief  Checks whether all values in the array are valid.
+      
+      Each value in the array must be a number and might optionally
+      have to be larger than or equal to a given minimum value and smaller than
+      or equal to a given maximum.
+      \return True if all values are valid, false otherwise.
+    */
+    public function check() {
+        $this->message = '';
+        $result = True;
+       
+        
+        /* First check that all values are set. */
+        if (array_search("", array_slice($this->value,
+                                         0, $this->componentCnt)) !== FALSE) {
+            if ($this->mustProvide()) {
+                $this->message = 'Some of the values are missing!';
+            } else {
+                $this->message = 'You can omit typing values for this ' .
+                    'parameter. If you decide to provide them, though, ' .
+                        'you must provide them all.';
+            }
+            return false;
+        }
+        
+        /* Now check the values themselves. */
+        for ( $i = 0; $i < $this->componentCnt; $i++ ) {
+            $result &= parent::check( $this->value[ $i ] );
+        }
+        
+        return $result;
+    }
+
+    /*!
+      \brief  Sets the value of the parameter
+      
+      The value must be an array with as many components as $componentCnt
+      
+      \param  $value  Array of values for the parameter
+    */
+    public function setValue($value) {
+        $n = count( $value );
+        for ( $i = 0; $i < $this->componentCnt; $i++ ) {
+            if ( $i < $n ) {
+                $this->value[ $i ] = $value[ $i ];
+            } else {
+                $this->value[ $i ] = null;
+            }
+        }
+    }
+
+    /*!
+      \brief  Function for retrieving a string with the numerical parameter.
+      \return A '#'-separated string denoting the vector componenents.
+     */
+    public function value( ) {
+        for ( $i = 0; $i < $this->componentCnt; $i++ ) {
+            $result .= "#";
+            $result .= $this->value[$i];
+        }
+    
+        return $result;
+    }
+    
+    /*!
+      \brief  Returns the string representation of the Parameter
+      \return string representation of the Parameter
+    */
+    public function displayString( ) {
+        ksort($this->value);
+        $value = array_slice( $this->value, 0, $this->componentCnt );
+        $value = implode( $value, ', ' );
+        $result = $this->formattedName( );
+        if ( $this->notSet() ) {
+            $result = $result . "*not set*" . "\n";
+        } else {
+            $result = $result . $value . "\n";
+        }
+        
+        return $result;
+    }
+
+}
+
+/*
+    ============================================================================
+*/
+
+
+
+/*!
     \class  NumericalArrayParameter
     \brief  Class for a Parameter that has an array of numbers as possible value,
             where each entry represents a channel.
@@ -979,7 +1103,7 @@ class AnyTypeArrayParameter extends NumericalArrayParameter {
         \return the internal value of the Parameter
     */
     public function internalValue() {
-        return $this->value;
+       return $this->value;
     }
 
 }
@@ -3179,6 +3303,203 @@ class ZStabilization extends ChoiceParameter {
 /*
     ============================================================================
 */
+
+/*!
+  \class   ChromaticAberration
+  \brief   A multi-channel, vector parameter to characterize the
+           chromatic aberration.
+*/
+
+class ChromaticAberration {
+
+    /*!
+      \brief  The aberration value. An array with one element per channel
+              and vector component.
+    */ 
+    public $value;
+
+    /*!
+      \brief  A tag with a name for the parameter.
+    */
+    public $name;
+
+    /*!
+      \brief  The number of channels for which a vector is needed.
+    */
+    public $chanCnt;
+
+    /*!
+      \brief  The numer of vector components used to describe the CA.
+              Currently 5.
+    */
+    public $componentCnt;
+
+    /*!
+      \brief   Constructor: creates an empty Parameter
+      \param   $chanCnt  The number of channels of the data set.
+    */
+    public function __construct( ) {
+        
+        $this->name = "ChromaticAberration";
+
+        /* 5 components for shift x, y, z, rotation and scale. */
+        $this->componentCnt = 5;
+        
+        $db = new DatabaseConnection;
+        $this->chanCnt = $db->getMaxChanCnt();
+        
+        for ($chan = 0; $chan < $this->chanCnt; $chan++) {
+            $this->value[$chan] = new NumericalVectorParameter(
+                $this->name() . "Ch" . $chan, $this->componentCnt());
+        }
+    }
+
+    /*!
+      \brief    A function returning the name of the parameter.
+      \return   The parameter name.
+    */
+    public function name( ) {
+        return $this->name;
+    }
+
+    /*!
+      \brief   A function for retrieving the number of elements of the vector.
+      \return  The number of vector elements.
+    */
+    public function componentCnt( ) {
+        return $this->componentCnt;
+    }
+
+    /*!
+      \brief  Checks whether the Parameter is a Task Parameter
+      \return true if the Parameter is a Task Parameter, false otherwise
+    */
+    public function isTaskParameter() {
+        return True;
+    }
+
+    /*!
+      \brief  Confirms that the Parameter can have a variable number of channels
+              This overloads the base function.
+      \return true
+    */
+    public function isVariableChannel() {
+        return True;
+    }
+
+    /*!
+        \brief  The string representation of the Parameter.
+        \param  $chanCnt  The number of channels.
+        \return String representation of the Parameter
+    */
+    public function displayString( $chanCnt ) {
+
+        if (!is_numeric($chanCnt)) {
+            $db = new DatabaseConnection;
+            $chanCnt = $db->getMaxChanCnt();
+        }
+
+        for ($i = 0; $i < $chanCnt; $i++) {
+            $result .= $this->value[$i]->displayString();
+        }
+        
+        return $result;
+    }
+
+    /*!
+      \brief   A function to set the parameter value from the browser session
+      or from the database.
+      \param   $values A '#' formatted string or an array with the CA components.
+    */
+    public function setValue( $values ) {     
+        
+        if (!is_array($values)) {
+            /* The first element of the array will be empty due to the explode. */
+            $valuesArray = explode('#', $values);
+            unset($valuesArray[0]);            
+        } else {
+            $valuesArray = $values;
+        }
+        
+        if (empty($valuesArray) || is_null($valuesArray)) {
+            return;
+        }
+
+        for ($chan = 0; $chan < $this->chanCnt; $chan++) {
+            $offset = $chan * $this->componentCnt;
+            $chanArray = array_slice($valuesArray, $offset, $this->componentCnt);
+            $this->value[$chan]->setValue( $chanArray );   
+        }
+    }
+
+    /*!
+      \brief  A function for retrieving the parameter value.
+      \return An array with one component per channel and vector element.
+    */
+    public function value( ) {
+        $valuesArray = explode('#', $this->internalValue());
+
+        /* The first element of the array will be empty due to the explode. */
+        unset($valuesArray[0]);            
+
+        /* Re-index with array_values. */
+        return array_values($valuesArray);
+    }
+
+    /*!
+      \brief   Same as above (function 'value') but only for the demanded
+      channel.
+      \param   $chan The demanded channel.
+      \return  An array with one component per vector element.
+    */
+    public function chanValue( $chan ) {
+        $valuesArray = $this->value();
+        $offset = $chan * $this->componentCnt;
+        $chanArray = array_slice($valuesArray, $offset, $this->componentCnt);
+   
+        return $chanArray;
+    }
+
+    /*!
+      \brief   A function to set the number of channels for the correction.
+      \param   $chanCnt The number of channels.
+    */
+    public function setNumberOfChannels( $chanCnt ) {
+        $this->chanCnt = $chanCnt;
+    }
+
+    /*!
+      \brief  Returns the default value for the Parameters that have a default
+      value ot NULL for those that don't
+      \return the default value or NULL
+    */
+    public function defaultValue() {
+        $db = new DatabaseConnection;
+        $name = $this->name( );
+        $default = $db->defaultValue( $name );
+        return ( $default );
+    }
+
+    /*!
+      \brief  Returns the internal value of the ChromaticAberration      
+      \return the internal value of the Parameter. A # formatted string.
+    */
+    public function internalValue() {
+        for ($i = 0; $i < $this->chanCnt; $i++) {
+            $result .= $this->value[$i]->value();
+        }
+
+        return $result;
+    }
+
+
+}
+
+
+/*
+    ============================================================================
+*/
+
 
 /*!
  \class Autocrop

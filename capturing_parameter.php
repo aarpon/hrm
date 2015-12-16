@@ -444,12 +444,17 @@ if ($_SESSION['setting']->hasPinhole()) {
 
   // manage one pinhole radius per channel
   for ($i = 0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
-
-  // Add a line break after 3 entries
-  if ( $i == 3 ) {
-      echo "<br />";
-  }
-
+      
+    /* Add a line break after a number of entries. */
+    if ( $_SESSION['setting']->numberOfChannels() == 4 ) {
+        if ($i == 2) {
+            echo "<br />";
+        }
+    } else {
+        if ($i == 3) {
+            echo "<br />";
+        }
+    }
 ?>
 	<span class="nowrap">
         Ch<?php echo $i ?>:&nbsp;&nbsp;&nbsp;

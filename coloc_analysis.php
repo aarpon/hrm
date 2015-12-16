@@ -328,15 +328,21 @@ if ($colocThreshold[0] != "" && $colocThreshold[0] != "auto") {
             $threshold = $colocThreshold[$chan];
         }
 
-            /* Add a line break after 3 entries. */
-        if ( $chan == 3 ) {
-            echo "<br />";
+        /* Add a line break after a number of entries. */
+        if ( $_SESSION['analysis_setting']->numberOfChannels() == 4 ) {
+            if ($chan == 2) {
+                echo "<br />";
+            }
+        } else {
+            if ($chan == 3) {
+                echo "<br />";
+            }
         }
-?>
-        <span class="nowrap">
-        Ch<?php echo $chan ?>:&nbsp;&nbsp;&nbsp;
-        <span class="multichannel">
 
+?>
+        <span class="nowrap">Ch<?php echo $chan ?>:
+        &nbsp;&nbsp;&nbsp;
+        <span class="multichannel">
         <input id="ColocThreshold<?php echo $chan ?>"
         name="ColocThreshold<?php echo $chan ?>"
         type="text"
@@ -344,11 +350,10 @@ if ($colocThreshold[0] != "" && $colocThreshold[0] != "auto") {
         value="<?php echo $threshold ?>"
         class="multichannelinput"
         onclick="document.forms[0].ColocThresholdManual.checked=true"/>
-
         </span>&nbsp;
         </span>
 
-<?php
+<?php    
 }
 ?>
 </div><!--multichannel-->

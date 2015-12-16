@@ -136,6 +136,144 @@ function smoothChangeDiv(div, html, time) {
     }
 }
 
+function isChromaticTableEmpty( ) {
+    var tag = "ChromaticAberration";
+    
+    table = document.getElementById(tag);
+    
+    channelCnt = table.rows.length - 1;
+    componentCnt = table.rows[0].cells.length - 1;
+    
+    var allEmpty = true;
+    for (var chan = 0; chan < channelCnt; chan++) {
+        for (var component = 0; component < componentCnt; component++) {
+            var id = tag + "Ch";
+            id = id.concat(chan);
+            id += "_";
+            id = id.concat(component);
+            inputElement = document.getElementById(id);
+            
+            if (inputElement.value != "") {
+                allEmpty = false;
+                break;
+            }
+        }
+        if (allEmpty == false) {
+            break;
+        }
+    }
+
+    return allEmpty;
+}
+
+function initChromaticChannelReference() {
+
+    emptyTable = isChromaticTableEmpty();
+    
+    if (emptyTable == true) {
+        chan = 0;
+    } else {
+        chan = searchChromaticChannelReference();
+    }
+    
+    setChromaticChannelReference( chan );
+}
+
+function searchChromaticChannelReference( ) {
+    var tag = "ChromaticAberration";
+    
+    table = document.getElementById(tag);
+    
+    channelCnt = table.rows.length - 1;
+    componentCnt = table.rows[0].cells.length - 1;
+    
+    for (var chan = 0; chan < channelCnt; chan++) {
+        var isReference = false;
+        
+        for (var component = 0; component < componentCnt; component++) {
+            var id = tag + "Ch";
+            id = id.concat(chan);
+            id += "_";
+            id = id.concat(component);
+            inputElement = document.getElementById(id);
+            
+            if (inputElement.value != 0 && component < 4) {
+                break;
+            }
+            if (inputElement.value == 1 && component == 4) {
+                isReference = true;
+                break;
+            }
+        }
+        if (isReference == true) {
+            break;
+        }
+    }
+
+    if (isReference == true) {
+        return chan;
+    }
+}
+
+// The reference always contains values 0, 0, 0, 0, 1. */
+function setChromaticChannelReference( chan ) {
+    var tag = "ChromaticAberration";
+
+    table = document.getElementById(tag);
+    
+    componentCnt = table.rows[0].cells.length - 1;
+    
+    for (var component = 0; component < componentCnt; component++) {
+        var id = tag + "Ch";
+        id = id.concat(chan);
+        id += "_";
+        id = id.concat(component);
+        
+        inputElement = document.getElementById(id);
+        inputElement.readOnly = true;
+        inputElement.style.color="#000";
+        inputElement.style.backgroundColor="#888";
+        
+        if (component == 4) {
+            inputElement.value = 1;
+        } else {
+            inputElement.value = 0;
+        } 
+    }
+    
+    var tag = "ReferenceChannel";
+    inputElement = document.getElementById(tag);
+    inputElement.value = chan;
+}
+
+function removeChromaticChannelReference( ) {
+    var tag = "ChromaticAberration";
+
+    table = document.getElementById(tag);
+    
+    channelCnt = table.rows.length - 1;
+    componentCnt = table.rows[0].cells.length - 1;
+    
+    for (var chan = 0; chan < channelCnt; chan++) {
+        for (var component = 0; component < componentCnt; component++) {
+            var id = tag + "Ch";
+            id = id.concat(chan);
+            id += "_";
+            id = id.concat(component);
+
+            inputElement = document.getElementById(id);
+            inputElement.readOnly = false;
+            inputElement.style.color="#000";
+            inputElement.style.backgroundColor="";    
+        }
+    }
+}
+
+function changeChromaticChannelReference(selectObj) {
+    removeChromaticChannelReference( );
+    setChromaticChannelReference( selectObj.value );
+}
+
 // Grey out the STED input fields of a specific channel if the
 // corresponding depletion mode is set to 'confocal'.
 function changeStedEntryProperties(selectObj, channel) {

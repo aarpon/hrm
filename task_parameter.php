@@ -61,15 +61,22 @@ if ( ! ( strpos( $_SERVER[ 'HTTP_REFERER' ],
 
 
 if ( $_SESSION[ 'task_setting' ]->checkPostedTaskParameters( $_POST ) ) {
-  $saved = $_SESSION['task_setting']->save();
-  if ($saved) {
-    header("Location: " . "select_task_settings.php"); exit();
-  } else {
-    $message = $_SESSION['task_setting']->message();
-  }
+
+    if ( $_SESSION[ 'task_setting' ]->numberOfChannels() > 1) {
+        header("Location: " . "chromatic_aberration.php"); exit();
+    } else {
+    
+        $saved = $_SESSION['task_setting']->save();
+        if ($saved) {
+            header("Location: " . "select_task_settings.php"); exit();
+        } else {
+            $message = $_SESSION['task_setting']->message();
+        }
+    }
 } else {
-  $message = $_SESSION['task_setting']->message();
+    $message = $_SESSION['task_setting']->message();
 }
+
 
 /* *****************************************************************************
  *
@@ -103,6 +110,7 @@ include("header.inc.php");
     
     <?php
     } else {
+
     ?>
     <span class="toolTip" id="ttSpanForward">
         Continue to next page.
@@ -236,25 +244,31 @@ for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
     if ($selectedMode == "cmle")
         $value = $signalNoiseRatioValue[$i];
 
-        // Add a line break after 3 entries
-        if ( $i == 3 ) {
+    /* Add a line break after a number of entries. */
+    if ( $_SESSION['task_setting']->numberOfChannels() == 4 ) {
+        if ($i == 2) {
             echo "<br />";
         }
+    } else {
+        if ($i == 3) {
+            echo "<br />";
+        }
+    }
 
 
 ?>
-                          <span class="nowrap">Ch<?php echo $i ?>:
-                              &nbsp;&nbsp;&nbsp;
+        <span class="nowrap">Ch<?php echo $i; ?>:
+        &nbsp;&nbsp;&nbsp;
                               <span class="multichannel">
                                   <input
-                                    id="SignalNoiseRatioCMLE<?php echo $i ?>"
-                                    name="SignalNoiseRatioCMLE<?php echo $i ?>"
+                                    id="SignalNoiseRatioCMLE<?php echo $i; ?>"
+                                    name="SignalNoiseRatioCMLE<?php echo $i; ?>"
                                     type="text"
                                     size="8"
-                                    value="<?php echo $value ?>"
+                                    value="<?php echo $value; ?>"
                                     class="multichannelinput" />
-                              </span>&nbsp;
-                          </span>
+                                        </span>&nbsp;
+                                    </span>
 <?php
 
 }
@@ -465,10 +479,17 @@ for ($i=0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
       $val = $backgroundOffset[$i];
   }
 
-    // Add a line break after 3 entries
-    if ( $i == 3 ) {
-        echo "<br />";
-    }
+  /* Add a line break after a number of entries. */
+  if ( $_SESSION['task_setting']->numberOfChannels() == 4 ) {
+      if ($i == 2) {
+          echo "<br />";
+      }
+  } else {
+      if ($i == 3) {
+          echo "<br />";
+      }
+  }
+
 
 ?>
                         <span class="nowrap">
@@ -582,7 +603,7 @@ $value = $parameter->value();
                        'http://www.svi.nl/ObjectStabilizer')">
                         <img src="images/help.png" alt="?" />
         </a>
-    stabilize the dataset in the Z direction?
+    stabilize data sets in the Z direction?
     </legend>
 
             <p>STED images often need to be stabilized in the Z direction before they
@@ -631,7 +652,6 @@ $selectedMode  = $parameterStabilization->value();
 </div> <!-- Stabilization -->
 
 
-
             <div><input name="OK" type="hidden" /></div>
 
             <div id="controls"
@@ -641,12 +661,29 @@ $selectedMode  = $parameterStabilization->value();
                 onmouseover="TagToTip('ttSpanCancel' )"
                 onmouseout="UnTip()"
                 onclick="javascript:deleteValuesAndRedirect('select_task_settings.php' );" />
-    
+
+    <?php
+    /* Don't proceed to the chromatic aberration page. */
+    if ($_SESSION['task_setting']->numberOfChannels() == 1) {
+    ?>
               <input type="submit" value=""
                 class="icon save"
                 onmouseover="TagToTip('ttSpanSave')"
                 onmouseout="UnTip()"
                 onclick="process()" />
+    
+    <?php
+    } else {
+    ?>
+                  <input type="submit" value="" class="icon next"
+                  onmouseover="TagToTip('ttSpanForward' )"
+                  onmouseout="UnTip()"
+                  onclick="process()" />    
+    <?php
+    }
+    ?>
+
+    
 
             </div>
         

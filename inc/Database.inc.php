@@ -398,7 +398,8 @@ class DatabaseConnection {
             $standard = "f";
         $result = True;
         if (!$this->existsSetting($settings)) {
-            $query = "insert into $settingTable values ('" . $user."', '" . $name . "', '" .$standard . "')";
+            $query  = "insert into $settingTable values ('" . $user."', '";
+            $query .= $name . "', '" .$standard . "')";
             $result = $result && $this->execute($query);
         }
         $existsAlready = $this->existsParametersFor($settings);
@@ -408,12 +409,13 @@ class DatabaseConnection {
             $parameterValue = $parameter->internalValue();
 
             if (is_array($parameterValue)) {
-                // Before, # was used as a separator, but the first element with
-                // index zero was always NULL because channels started their indexing
-                // at one. To keep backwards compatibility with the database, we use
-                // # now as a channel marker, and even the first channel has a # in
-                // front of its value.
-                // "/" separator is used to mark range values for signal to noise ratio
+                /*! Before, # was used as a separator, but the first element
+                  with index zero was always NULL because channels started
+                  their indexing at one. To keep backwards compatibility with
+                  the database, we use # now as a channel marker, and even the
+                  first channel has a # in front of its value "/" separator is
+                  used to mark range values for signal to noise ratio.
+                */
 
                 /*!
                   \todo Currently there are not longer "range values" (values
@@ -424,26 +426,40 @@ class DatabaseConnection {
                     $maxChanCnt = $this->getMaxChanCnt();
                     for ($i = 0; $i < $maxChanCnt; $i++) {
                         if ($parameterValue[$i] != null) {
-                            $parameterValue[$i] = implode("/", array_filter($parameterValue[$i]));
+                            $parameterValue[$i] =
+                                implode("/", array_filter($parameterValue[$i]));
                         }
                     }
                 }
                 $parameterValue = "#".implode("#", $parameterValue);
             }
+
             if (!$existsAlready) {
-                $query = "insert into $table values ('" . $user . "', '" . $name . "', '" . $parameterName . "', '" . $parameterValue . "')";
+                $query  = "INSERT INTO $table VALUES ('" . $user . "', '";
+                $query .= $name . "', '" . $parameterName . "', '";
+                $query .= $parameterValue . "')";
             } else {
-                // Check that the parameter itself exists
-                $query = "select name from $table where owner='" . $user . "' and setting='" . $name . "' and name='" . $parameterName . "' limit 1";
+                /* Check that the parameter itself exists. */
+                $query  = "SELECT name FROM $table WHERE owner='" . $user;
+                $query .= "' AND setting='" . $name;
+                $query .= "' AND name='" . $parameterName . "' LIMIT 1";
                 $newValue = $this->queryLastValue($query);
+
                 if ( $newValue != NULL ) {
-                    $query = "update $table set value = '" . $parameterValue . "' where owner='" . $user . "' and setting='" . $name . "' and name='" . $parameterName . "'";
+                    $query  = "UPDATE $table SET value = '" . $parameterValue;
+                    $query .= "' WHERE owner='" . $user;
+                    $query .= "' AND setting='" . $name;
+                    $query .= "' AND name='" . $parameterName . "'";
                 } else {
-                    $query = "insert into $table values ('" . $user . "', '" . $name . "', '" . $parameterName . "', '" . $parameterValue . "')";
+                    $query  = "INSERT INTO $table VALUES ('" . $user;
+                    $query .= "', '" . $name . "', '" . $parameterName;
+                    $query .= "', '" . $parameterValue . "')";
                 }
             }
-            $result = $result && $this->execute($query);
+
+            $result &= $this->execute($query);
         }
+
 
         return $result;
     }
@@ -557,22 +573,23 @@ class DatabaseConnection {
         $user = $user->name();
         $name = $settings->name();
         $table = $settings->parameterTable();
-        
+
         foreach ($settings->parameterNames() as $parameterName) {
             $parameter = $settings->parameter($parameterName);
-            $query = "select value from $table where owner='" . $user . "' and setting='" . $name . "' and name='" . $parameterName . "'";
+            $query  = "SELECT value FROM $table WHERE owner='" . $user;
+            $query .= "' AND setting='" . $name . "' AND name='";
+            $query .= $parameterName . "'";
             $newValue = $this->queryLastValue($query);
 
             if ($newValue == NULL) {
 
                 // See if the Parameter has a usable default
                 $newValue = $parameter->defaultValue( );
-
                 if ($newValue == NULL) {
                     continue;
                 }
             }
-            
+
             if ($newValue{0}=='#') {
                 switch($parameterName) {
                 case "ExcitationWavelength":
@@ -580,25 +597,16 @@ class DatabaseConnection {
                 case "SignalNoiseRatio":
                 case "BackgroundOffsetPercent":
                 case "ChromaticAberration":
+                    /* Extract and continue to explode. */
                     $newValue = substr($newValue,1);
-                default: 
+                default:
                     $newValues = explode("#", $newValue);
                 }
 
-                if (strcmp( $parameterName, "PSF" ) != 0 && strpos($newValue, "/")) {
+                if (strcmp( $parameterName, "PSF" ) != 0
+                    && strpos($newValue, "/")) {
                     $newValue = array();
                     for ($i = 0; $i < count($newValues); $i++) {
-                        //$val = explode("/", $newValues[$i]);
-                        //$range = array(NULL, NULL, NULL, NULL);
-                        //for ($j = 0; $j < count($val); $j++) {
-                        //  $range[$j] = $val[$j];
-                        //}
-                        //$newValue[] = $range;
-                        /*!
-                          \todo Currently there are not longer "range values" (values
-                                separated by /). In the future they will be reintroduced.
-                                We leave the code in place.
-                        */
                         if (strpos($newValues[$i], "/")) {
                             $newValue[] = explode("/", $newValues[$i]);
                         }
@@ -611,15 +619,6 @@ class DatabaseConnection {
                     $newValue = $newValues;
                 }
             }
-
-            //$shiftedNewValue = array(1 => NULL, 2 => NULL, 3 => NULL, 4 => NULL, 5 => NULL);
-            //if (is_array($newValue)) {
-            //  // start array at 1
-            //  for ($i = 1; $i <= count($newValue); $i++) {
-            //    $shiftedNewValue[$i] = $newValue[$i - 1];
-            //  }
-            //}
-            //else $shiftedNewValue = $newValue;
 
             $parameter->setValue($newValue);
             $settings->set($parameter);
@@ -700,6 +699,7 @@ class DatabaseConnection {
                 case "SignalNoiseRatio":
                 case "BackgroundOffsetPercent":
                 case "ChromaticAberration":
+                    /* Extract and continue to explode. */
                     $newValue = substr($newValue,1);
                 default: 
                     $newValues = explode("#", $newValue);
@@ -1472,7 +1472,8 @@ class DatabaseConnection {
       \return Default value
     */
     public function defaultValue($parameterName) {
-        $query = "select value from possible_values where parameter='" .$parameterName . "' and isDefault='t'";
+        $query = "SELECT value FROM possible_values WHERE parameter='";
+        $query .= $parameterName . "' AND isDefault='t'";
         $result = $this->queryLastValue($query);                
         if ($result === False) {
             return NULL;
