@@ -706,9 +706,14 @@ class Fileserver {
           $basename = basename($pdir."/".$file);
 
           if ( $dir == "src") {
-              $path = preg_replace("/(.*)\.(.{3,4})/","\\1.*",
-                                   $dirname."/".$basename);
-              $path_preview = dirname($path) . "/hrm_previews/" . $basename;
+              $pattern = "/(\.([^\..]+))*\.([A-Za-z0-9]+)(\s\(.*\))*$/";
+              preg_match($pattern, $basename, $matches);
+
+              $pattern = "/$matches[0]$/";
+              $basename = preg_replace($pattern,"\\1.*", $basename);
+
+              $path = $dirname . "/" . $basename;
+              $path_preview = $dirname . "/hrm_previews/" . $basename;
           } else {
               $filePattern = $this->getFilePattern($basename);
               $path = $dirname . "/" . $filePattern;
@@ -1911,7 +1916,7 @@ echo '</body></html>';
       }
 
       echo "\n<div class=\"menuEntry\" onclick=\"javascript:openWindow(".
-          "'http://support.svi.nl/wiki/HuygensRemoteManagerHelpCompareResult')\" ".
+          "'https://svi.nl/HRMHelp#Result_comparison')\" ".
              "onmouseover=\"Tip('Open a pop up with help about this window')\" onmouseout=\"UnTip()\">".
           "<a href=\"#\"><img src=\"images/help.png\" alt=\"help\" />".
           "</a></div>";
@@ -1920,7 +1925,7 @@ echo '</body></html>';
 
       switch ($op) {
           case "close":
-             echo "onclick=\"window.close()\"".
+              echo "onclick=\"document.location.href='file_management.php?folder=dest'\" ".
              "onmouseover=\"Tip('Close this window and go back to your results')\" onmouseout=\"UnTip()\">".
              "<a href=\"#\">".
              "<img src=\"images/results_small.png\" alt=\"back\" />".
@@ -2153,13 +2158,13 @@ echo '</body></html>';
       echo "</div>\n";
       echo "<div>\n";
       echo "\n<br /><br /><a href=\"javascript:openWindow(".
-          "'http://support.svi.nl/wiki/HuygensRemoteManagerHelpCompareResult')\">".
+          "'https://svi.nl/HRMHelp#Result_comparison')\">".
           "<img src=\"images/help.png\" alt=\"help\" />".
           "</a>";
 
       switch ($op) {
           case "close":
-             echo " <a href=\"#\" onclick=\"window.close()\" ".
+             echo " <a href=\"#\" onclick=\"window.location='file_management.php?folder=dest'\" ".
              "onmouseover=\"Tip('Close this window and go back to your results')\" onmouseout=\"UnTip()\">".
              "<img src=\"images/results_small.png\" alt=\"back\" />".
              "</a>\n";
@@ -3806,15 +3811,15 @@ echo '</body></html>';
     */
     private function getFileNameExtension($filename) {
         $info = pathinfo($filename);
-        $info_ext = pathinfo($info["filename"]);
-        if ($info_ext["extension"] == "") {
+        $info_ext = pathinfo($info["filename"], PATHINFO_EXTENSION);
+        if ($info_ext == "") {
             return $info["extension"];
         } else {
-            if (strlen($info_ext["extension"]) > 4) {
+            if (strlen($info_ext) > 4) {
                 // Avoid pathological cases with dots somewhere in the file name.
                 return $info["extension"];
             }
-            return $info_ext["extension"] . "." . $info["extension"];
+            return $info_ext . "." . $info["extension"];
         }
     }
 

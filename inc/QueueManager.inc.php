@@ -880,6 +880,22 @@ class QueueManager {
         }
     }
 
+
+    public function initializeServers( ) {
+         $queue = $this->queue;
+
+         $db = new DatabaseConnection();
+         
+        /* Retrieve the list of servers. */
+        $servers = $queue->availableServer();
+        
+        foreach ($servers as $server) {
+            $this->nping[$server] = 0;
+            $db->markServerAsFree($server);
+        }
+    }
+    
+
     /*!
  	\brief	Runs the QueueManager
  	*/
@@ -887,16 +903,9 @@ class QueueManager {
         global $imageProcessingIsOnQueueManager;
         global $logdir;
 
-        $queue = $this->queue;
 
-        // Make sure that we have access to the database
         $this->waitForDatabaseConnection();
-
-        $server = $queue->availableServer();
-        // TODO refactor this in order to manage error logs per job
-        foreach ($server as $name) {
-            $this->nping[$name] = 0;
-        }
+        $this->initializeServers();
 
         report("Huygens Remote Manager started on "
                 . date("Y-m-d H:i:s") . "\n", 1);
@@ -917,9 +926,9 @@ class QueueManager {
             return;
         }
 
+        $queue = $this->queue;
         while (!$this->shallStop()) {
             set_time_limit(0);
-            $this->queue = $queue;
             $result = True;
 
             // Reduce the used cycles by going to sleep for one second

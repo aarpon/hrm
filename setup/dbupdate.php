@@ -4001,6 +4001,7 @@ if ($current_revision < $n) {
     write_to_log($msg);
 }
 
+
 // -----------------------------------------------------------------------------
 // Update to revision 15
 // Description: Add NumberOfChannels = 6 into possible_values
@@ -4060,7 +4061,6 @@ if ($current_revision < $n) {
     $msg = "Database successfully updated to revision " . $current_revision . ".";
     write_message($msg);
     write_to_log($msg);
-    // ******************************************************************* //
 }
 
 

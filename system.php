@@ -75,7 +75,7 @@ include("header.inc.php");
         ?>
           <p class="noUpdateNotification">
             <img src="images/check_for_update.png" alt="Version check" />&nbsp;&nbsp
-            Congratulations, you are running the latest version of the HRM!</p>
+            Congratulations, you are running the latest version of HRM!</p>
         <?php
         }
         ?>
