@@ -24,8 +24,15 @@ if (using_IE()) {
 ?>
 
   <title>Huygens Remote Manager</title>
-    <link rel="SHORTCUT ICON" href="images/hrm.ico"/>
+<?php
+    $ico = 'images/hrm_custom.ico';
+    if (!file_exists($ico)) {
+        $ico = 'images/hrm.ico';
+    }
+    echo '    <link rel="SHORTCUT ICON" href="' . $ico . '"/>';
+?>
     <link rel="stylesheet" href="scripts/jqTree/jqtree.css">
+    <link rel="stylesheet" href="css/jqtree-custom.css">
     <link rel="stylesheet" href="scripts/jquery-ui/jquery-ui-1.9.1.custom.css">
 
     <!-- Include jQuery -->

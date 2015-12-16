@@ -9,8 +9,8 @@ require_once("OmeroConnection.inc.php");
 
 /*!
   \class Fileserver
-  \brief Takes care of all file handling to and from the image area and provides
-        commodity functions for creating and displaying previews
+  \brief Takes care of all file handling to and from the image area and
+         provides commodity functions for creating and displaying previews
 */
 class Fileserver {
 
@@ -67,33 +67,33 @@ class Fileserver {
   private $expandSubImages = true;
 
   /*!
-   \var     $validImageExtensions (array)
-   \brief   Array of valid image extensions
+    \var     $validImageExtensions (array)
+    \brief   Array of valid image extensions
   */
   private $validImageExtensions = array();
 
   /*!
-   \var     $validImageExtensionsExtras (array)
-   \brief   Array of additional valid image extensions
-   \todo    This information should also be in the database
+    \var     $validImageExtensionsExtras (array)
+    \brief   Array of additional valid image extensions
+    \todo    This information should also be in the database
   */
   private $validImageExtensionsExtras =  array("ids", "ids.gz");
 
   /*!
-   \var     $multiImageExtensions (array)
-   \brief   Array of extensions for multi-image file formats
+    \var     $multiImageExtensions (array)
+    \brief   Array of extensions for multi-image file formats
   */
   private $multiImageExtensions =  array();
 
   /*!
-   \var     $validArchiveExtensions (array)
-   \brief   Array of extensions for user-defined archive formats
+    \var     $validArchiveExtensions (array)
+    \brief   Array of extensions for user-defined archive formats
   */
   private $validArchiveExtensions =  array();
 
   /*!
-   \var     $previewBase
-   \brief   Part of the file name common to all preview files.
+    \var     $previewBase
+    \brief   Part of the file name common to all preview files.
   */
   private $previewBase;
 
@@ -201,10 +201,10 @@ class Fileserver {
   }
 
   /*!
-   \brief   Extracts the file extension, also if it's a subimage.
-   \param   $file The file name
-   \param   $selectedFormat The format selected at the select images stage.
-   \return  The file extension
+    \brief   Extracts the file extension, also if it's a subimage.
+    \param   $file The file name
+    \param   $selectedFormat The format selected at the select images stage.
+    \return  The file extension
   */
   public function checkAgainstFormat($file, $selectedFormat) {
 
@@ -358,8 +358,8 @@ class Fileserver {
   }
 
   /*!
-   \brief  Return the first file of each series.
-   \return The name of the first file of  the series.
+    \brief  Return the first file of each series.
+    \return The name of the first file of  the series.
   */
   public function condenseSeries( ) {
 
@@ -371,9 +371,9 @@ class Fileserver {
 
 
   /*!
-   \brief  Checks whether a file belongs to a file series.
-   \param  $file The file to be checked
-   \return Boolean: true or false.
+    \brief  Checks whether a file belongs to a file series.
+    \param  $file The file to be checked
+    \return Boolean: true or false.
   */
   public function isPartOfFileSeries($file) {
 
@@ -586,10 +586,10 @@ class Fileserver {
   }
 
   /*!
-   \brief      Builds a regular expression to be able to look for files.
-   \brief      based on ther job id.
-   \return     The regular expression.
-   \TODO       A new design and implementation of the file server is necessary.
+    \brief      Builds a regular expression to be able to look for files.
+    \brief      based on ther job id.
+    \return     The regular expression.
+    \TODO       A new design and implementation of the file server is necessary.
   */
   public function getFilePattern($fileName) {
 
@@ -745,13 +745,14 @@ class Fileserver {
   }
 
   /*!
-   \brief  Exports a deconvolved image to the OMERO server.
+    \brief  Exports a deconvolved image to the OMERO server.
   */
-  public function exportToOmero( ) {
+  public function exportToOmero() {
 
       if (!isset($_SESSION['omeroConnection'])) {
-          return "Impossible to reach your OMERO account.";
+          return "Your OMERO connection was interrupted, please try again!";
       }
+      // file_put_contents('/tmp/hrm_post.log', var_export($_POST, true));
 
       if (!isset($_POST['selectedFiles'])) {
           return "Please select a deconvolved image to export to OMERO.";
@@ -765,36 +766,27 @@ class Fileserver {
 
       $omeroConnection = $_SESSION['omeroConnection'];
 
-      $omeroConnection->exportImage($_POST, $this);
+      return $omeroConnection->uploadToOMERO($_POST, $this);
   }
 
   /*!
-   \brief  Imports a raw image from the OMERO server.
+    \brief  Imports a raw image from the OMERO server.
   */
   public function importFromOmero() {
 
       if (!isset($_SESSION['omeroConnection'])) {
-          return "Impossible to reach your OMERO account.";
+          return "Your OMERO connection was interrupted, please try again!";
       }
+      // file_put_contents('/tmp/hrm_post.log', var_export($_POST, true));
 
-      if (!isset($_POST['OmeImageId'])
-          || empty($_POST['OmeImageId'])) {
-          return "Please select an image within the OMERO data tree.";
-      }
-
-      if (!isset($_POST['OmeImageName'])
-          || empty($_POST['OmeImageName'])) {
-          return "Please select an image within the OMERO data tree.";
-      }
-
-      if (!isset($_POST['OmeDatasetId'])
-          || empty($_POST['OmeDatasetId'])) {
+      if (!isset($_POST['OmeImages'])
+          || empty($_POST['OmeImages'])) {
           return "Please select an image within the OMERO data tree.";
       }
 
       $omeroConnection = $_SESSION['omeroConnection'];
 
-      $omeroConnection->importImage($_POST, $this);
+      return $omeroConnection->downloadFromOMERO($_POST['OmeImages'], $this);
   }
 
   /*!
@@ -1684,9 +1676,13 @@ echo '</body></html>';
           <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 
           <head>
-          <title>HRM - ' . $file . ' - results preview</title>
-          <link rel="SHORTCUT ICON" href="images/hrm.ico"/>
-          <script type="text/javascript" src="scripts/common.js"></script>
+          <title>HRM - ' . $file . ' - results preview</title>';
+      $ico = 'images/hrm_custom.ico';
+      if (!file_exists($ico)) {
+          $ico = 'images/hrm.ico';
+      }
+      echo '    <link rel="SHORTCUT ICON" href="' . $ico . '"/>';
+      echo '          <script type="text/javascript" src="scripts/common.js"></script>
           <style type="text/css">
           @import "css/default.css";
       </style>
@@ -2439,11 +2435,11 @@ echo '</body></html>';
   }
 
   /*!
-   \brief Create hard links into the psf_sharing/buffer folder from the
+    \brief Create hard links into the psf_sharing/buffer folder from the
           folder of the sharing user and return an array of full paths
           created links.
-   \param $psfFiles array of psf files paths relatives to current user.
-   \return array of destination PSF paths.
+    \param $psfFiles array of psf files paths relatives to current user.
+    \return array of destination PSF paths.
    */
   public function createHardLinksToSharedPSFs($psfFiles, $targetUser) {
 
@@ -3451,10 +3447,10 @@ echo '</body></html>';
   }
 
   /*!
-   \brief   A form to allow the user to filter out coeffiecient values.
-   \param   $colocHtml A string with the html code of the tab so far.
-   \param   $threshold The value of a threshold typed by the user.
-   \return  An html string including the tab with the threshold form.
+    \brief   A form to allow the user to filter out coeffiecient values.
+    \param   $colocHtml A string with the html code of the tab so far.
+    \param   $threshold The value of a threshold typed by the user.
+    \return  An html string including the tab with the threshold form.
   */
   private function addThresholdForm($colocHtml, $threshold) {
 
@@ -3480,9 +3476,9 @@ echo '</body></html>';
 
 
   /*!
-   \brief    Inserts existing 2D histograms into the coloc coefficients tab.
-   \param    $coefficientsTab Html string containing the coefficients tab.
-   \return   The adapted coefficients tab html string with histograms.
+    \brief    Inserts existing 2D histograms into the coloc coefficients tab.
+    \param    $coefficientsTab Html string containing the coefficients tab.
+    \return   The adapted coefficients tab html string with histograms.
   */
   private function add2DHistograms($coefficientsTab)
   {
@@ -3531,10 +3527,10 @@ echo '</body></html>';
   }
 
   /*!
-   \brief  Marks coloc coefficient values above a threshold with a colour.
-   \param  $colocHtml A string with the tab html code so far.
-   \param  $threshold A numeric value for a threshold entered by the user.
-   \return A string with the html code of the tab and the highlighted values.
+    \brief  Marks coloc coefficient values above a threshold with a colour.
+    \param  $colocHtml A string with the tab html code so far.
+    \param  $threshold A numeric value for a threshold entered by the user.
+    \return A string with the html code of the tab and the highlighted values.
   */
   private function highlightCoefficients( $colocHtml, $threshold ) {
 
@@ -3565,9 +3561,9 @@ echo '</body></html>';
                      /* -------- Colocalization maps tab ------ */
 
   /*!
-   \brief   Creates html code specific for the colocalization maps tab.
-   \param   $colocHtml The pre-formatted html coloc page.
-   \return  String containing HTML code for the colocalization preview page.
+    \brief   Creates html code specific for the colocalization maps tab.
+    \param   $colocHtml The pre-formatted html coloc page.
+    \return  String containing HTML code for the colocalization preview page.
   */
   private function showColocMapsTab($colocHtml)
   {
@@ -3592,10 +3588,10 @@ echo '</body></html>';
   }
 
   /*!
-   \brief   Gathers all the coloc maps of a 2-channel combination.
-   \param   $chanR One of the channels of the colocalization map.
-   \param   $chanG The other channel of the colocalization map.
-   \return  An html string with the coloc maps of the 2 channels.
+    \brief   Gathers all the coloc maps of a 2-channel combination.
+    \param   $chanR One of the channels of the colocalization map.
+    \param   $chanG The other channel of the colocalization map.
+    \return  An html string with the coloc maps of the 2 channels.
   */
   private function addColocMaps($chanR, $chanG, $colocMapTab) {
 
@@ -3624,21 +3620,21 @@ echo '</body></html>';
   }
 
   /*!
-   \brief  Gets a headline to show on top of each coloc map.
-   \param  $mapFile Name and relative path to the coloc map.
-   \param  $chanR One of the channels of the colocalization map.
-   \param  $chanG The other channel of the colocalization map.
-   \return An html string with the title.
+    \brief  Gets a headline to show on top of each coloc map.
+    \param  $mapFile Name and relative path to the coloc map.
+    \param  $chanR One of the channels of the colocalization map.
+    \param  $chanG The other channel of the colocalization map.
+    \return An html string with the title.
   */
   private function getColocMapTitle( $mapFile, $chanR, $chanG ) {
       return $this->getHtmlForColocMap( "mapTitle", $chanR, $chanG, $mapFile );
   }
 
   /*!
-   \brief  Finds all the coloc maps of a job per combination of two channels.
-   \param  $chanR One of the channels of the colocalization map.
-   \param  $chanG The other channel of the colocalization map.
-   \return An array whose elements are the names of the found coloc maps.
+    \brief  Finds all the coloc maps of a job per combination of two channels.
+    \param  $chanR One of the channels of the colocalization map.
+    \param  $chanG The other channel of the colocalization map.
+    \return An array whose elements are the names of the found coloc maps.
   */
   private function findColocMaps( $chanR, $chanG ) {
 
@@ -3663,9 +3659,9 @@ echo '</body></html>';
 
 
   /*!
-   \brief   Removes the coefficient section from the pre-formatted coloc html.
-   \param   $colocHtml A string with the pre-formatted coloc html.
-   \return  The coloc html string with no coefficients.
+    \brief   Removes the coefficient section from the pre-formatted coloc html.
+    \param   $colocHtml A string with the pre-formatted coloc html.
+    \return  The coloc html string with no coefficients.
   */
   private function collapseColocCoefficients( $colocHtml ) {
 
@@ -3677,11 +3673,11 @@ echo '</body></html>';
   }
 
   /*!
-   \brief   Type of colocalization map based on the coefficient names.
-   \param   $colocMapFile Name and relative path to the coloc map.
-   \param   $chanR One of the two channels of a coloc map.
-   \param   $chanG The other channel of a coloc map.
-   \return  The type name of the colocalization map.
+    \brief   Type of colocalization map based on the coefficient names.
+    \param   $colocMapFile Name and relative path to the coloc map.
+    \param   $chanR One of the two channels of a coloc map.
+    \param   $chanG The other channel of a coloc map.
+    \return  The type name of the colocalization map.
   */
   private function getColocMapType( $colocMapFile, $chanR, $chanG ) {
 
@@ -3702,9 +3698,9 @@ echo '</body></html>';
   }
 
   /*!
-   \brief   Job previews may be located in subfolders, hence the need for
+    \brief   Job previews may be located in subfolders, hence the need for
             this function.
-   \return  The path to the previews.
+    \return  The path to the previews.
   */
   private function getPathToJobPreviews( ) {
 
@@ -3726,12 +3722,12 @@ echo '</body></html>';
   }
 
   /*!
-   \brief   It tries to centralize renderization of html code for coloc maps.
-   \param   $section Which type of html code for the  coloc maps.
-   \param   $chanR One of the two channels of a coloc map.
-   \param   $chanG The other channel of a coloc map.
-   \param   $map Name and relative path to the coloc map.
-   \return  String with the requested html code.
+    \brief   It tries to centralize renderization of html code for coloc maps.
+    \param   $section Which type of html code for the  coloc maps.
+    \param   $chanR One of the two channels of a coloc map.
+    \param   $chanG The other channel of a coloc map.
+    \param   $map Name and relative path to the coloc map.
+    \return  String with the requested html code.
   */
   private function getHtmlForColocMap( $section, $chanR, $chanG, $map = NULL) {
 
