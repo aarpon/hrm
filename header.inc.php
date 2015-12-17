@@ -85,7 +85,10 @@ if (isset($generatedScript)) {
 
 
 ?>
-    <link rel="stylesheet" href="css/default.css">
+    <style type="text/css">
+        @import "css/default.css";
+        @import "css/custom.css";
+    </style>
     <!--[if lt IE 9]>
     <h3>This browser is OBSOLETE and is known to have important issues with the HRM.
         Please upgrade to a later version of Internet Explorer or to a new

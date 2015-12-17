@@ -1689,6 +1689,7 @@ echo '</body></html>';
           <script type="text/javascript" src="scripts/common.js"></script>
           <style type="text/css">
           @import "css/default.css";
+          @import "css/custom.css";
       </style>
           </head>
           <body>
