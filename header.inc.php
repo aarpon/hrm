@@ -94,6 +94,7 @@ if (isset($generatedScript)) {
 ?>
     <style type="text/css">
         @import "css/default.css";
+        @import "css/custom.css";
     </style>
     <!--[if lt IE 9]>
     <h3>This browser is OBSOLETE and is known to have important issues with the HRM.
