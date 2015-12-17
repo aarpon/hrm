@@ -3812,14 +3812,14 @@ echo '</body></html>';
     private function getFileNameExtension($filename) {
         $info = pathinfo($filename);
         $info_ext = pathinfo($info["filename"], PATHINFO_EXTENSION);
-        if ($info_ext == "") {
-            return $info["extension"];
-        } else {
+        if (array_key_exists("extension", $info_ext)) {
             if (strlen($info_ext) > 4) {
                 // Avoid pathological cases with dots somewhere in the file name.
                 return $info["extension"];
             }
             return $info_ext . "." . $info["extension"];
+        } else {
+            return $info["extension"];
         }
     }
 
