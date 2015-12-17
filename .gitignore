@@ -7,6 +7,7 @@ user/login_user.inc
 # Customization files
 images/hrm_custom.ico
 images/logo_custom.png
+css/custom.css
 
 # IDE project settings
 /nbproject/
