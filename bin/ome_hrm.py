@@ -54,7 +54,8 @@ else:
 
 def omero_login(user, passwd, host, port):
     """Establish the connection to an OMERO server."""
-    conn = BlitzGateway(user, passwd, host=host, port=port)
+    conn = BlitzGateway(user, passwd, host=host, port=port, secure=True,
+                        useragent="HRM-OMERO.connector")
     conn.connect()
     return conn
 
