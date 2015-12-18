@@ -63,13 +63,30 @@ if (isset($_POST['getOmeroData']) && !isset($omeroConnection)) {
 }   // endif (isset($_POST['getOmeroData']) && !isset($omeroConnection))
 
 
-// TODO:
-// - block web frontend with an overlay to signalize upload/download
-
-
 // if we are connected to an OMERO server, always show the tree by default:
 if (isset($omeroConnection)) {
 ?>
+
+    <div id="activeTransfer" title="OMERO transfer in progress">
+      <p>An OMERO transfer is currently running, please wait
+      until has finished.</p>
+      <p>This message will automatically close upon completion.</p>
+    </div>
+
+    <script>
+
+      // Hide the "activeTransfer" div in the beginning
+      $(document).ready(function() {
+          $("#activeTransfer").hide();
+      });
+
+      function activeTransferDialog() {
+            $( "#activeTransfer" ).dialog({
+                  modal: true,
+            })
+      };
+
+    </script>
 
     <div id="omeroSelection">
 
@@ -85,6 +102,7 @@ if (isset($omeroConnection)) {
               if ($browse_folder == "src") {
               ?>
                   <input name="importFromOmero" type="submit"
+                  onclick="activeTransferDialog();"
                   value="" class="icon remove"
                   onmouseover="Tip('Transfer selected files from OMERO')"
                   onmouseout="UnTip()"/>
@@ -92,6 +110,7 @@ if (isset($omeroConnection)) {
               } else {
                   ?>
                   <input name="exportToOmero" type="submit"
+                      onclick="activeTransferDialog();"
                       value="" class="icon down"
                       onmouseover="Tip('Transfer selected files to OMERO')"
                       onmouseout="UnTip()" />
