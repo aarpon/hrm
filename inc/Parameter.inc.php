@@ -2619,7 +2619,7 @@ class ColocChannel extends NumericalArrayParameter {
             return $result;
     }
 
-        /*!
+    /*!
         \brief  Returns the string representation of the Parameter
         \return string representation of the Parameter
     */
@@ -3623,6 +3623,22 @@ class SpimExcMode extends AnyTypeArrayParameter {
       }
       return True;
     }
+
+    /*!
+        \brief  Returns the string representation of the Parameter
+        \return string representation of the Parameter
+    */
+    public function displayString( $numberOfChannels = 0 ) {
+      $result = $this->formattedName( );
+
+      /* Do not count empty elements. Do count channel '0'. */
+      $channels = array_filter($this->value, 'strlen');
+      $value = implode(", ", $channels);
+      $result = $result . $value . "\n";
+      
+      return $result;
+    }
+
 }
 
 /*
@@ -3662,7 +3678,6 @@ class SpimGaussWidth extends NumericalArrayParameter {
         return True;
     }
 
-
     /*!
         \brief  Checks whether the Parameter is valid
         \return true if the Parameter is valid, false otherwise
@@ -3695,6 +3710,21 @@ class SpimGaussWidth extends NumericalArrayParameter {
         }
 
         return $result;
+    }
+    
+    /*!
+        \brief  Returns the string representation of the Parameter
+        \return string representation of the Parameter
+    */
+    public function displayString( $numberOfChannels = 0 ) {
+      $result = $this->formattedName( );
+
+      /* Do not count empty elements. Do count channel '0'. */
+      $channels = array_filter($this->value, 'strlen');
+      $value = implode(", ", $channels);
+      $result = $result . $value . "\n";
+      
+      return $result;
     }
 }
 
@@ -3770,6 +3800,21 @@ class SpimFocusOffset extends NumericalArrayParameter {
 
         return $result;
     }
+
+    /*!
+        \brief  Returns the string representation of the Parameter
+        \return string representation of the Parameter
+    */
+    public function displayString( $numberOfChannels = 0 ) {
+      $result = $this->formattedName( );
+
+      /* Do not count empty elements. Do count channel '0'. */
+      $channels = array_filter($this->value, 'strlen');
+      $value = implode(", ", $channels);
+      $result = $result . $value . "\n";
+      
+      return $result;
+    }
 }
 
 /*
@@ -3842,6 +3887,21 @@ class SpimCenterOffset extends NumericalArrayParameter {
         }
 
         return $result;
+    }
+
+    /*!
+        \brief  Returns the string representation of the Parameter
+        \return string representation of the Parameter
+    */
+    public function displayString( $numberOfChannels = 0 ) {
+      $result = $this->formattedName( );
+
+      /* Do not count empty elements. Do count channel '0'. */
+      $channels = array_filter($this->value, 'strlen');
+      $value = implode(", ", $channels);
+      $result = $result . $value . "\n";
+      
+      return $result;
     }
 }
 
@@ -3917,6 +3977,21 @@ class SpimNA extends NumericalArrayParameter {
 
         return $result;
     }
+
+    /*!
+        \brief  Returns the string representation of the Parameter
+        \return string representation of the Parameter
+    */
+    public function displayString( $numberOfChannels = 0 ) {
+      $result = $this->formattedName( );
+
+      /* Do not count empty elements. Do count channel '0'. */
+      $channels = array_filter($this->value, 'strlen');
+      $value = implode(", ", $channels);
+      $result = $result . $value . "\n";
+      
+      return $result;
+    }
 }
 
 /*
@@ -3990,6 +4065,21 @@ class SpimFill extends NumericalArrayParameter {
 
         return $result;
     }
+
+    /*!
+        \brief  Returns the string representation of the Parameter
+        \return string representation of the Parameter
+    */
+    public function displayString( $numberOfChannels = 0 ) {
+      $result = $this->formattedName( );
+
+      /* Do not count empty elements. Do count channel '0'. */
+      $channels = array_filter($this->value, 'strlen');
+      $value = implode(", ", $channels);
+      $result = $result . $value . "\n";
+      
+      return $result;
+    }
 }
 
 
@@ -4057,5 +4147,20 @@ class SpimDir extends AnyTypeArrayParameter {
           }
       }
       return True;
+    }
+
+    /*!
+        \brief  Returns the string representation of the Parameter
+        \return string representation of the Parameter
+    */
+    public function displayString( $numberOfChannels = 0 ) {
+      $result = $this->formattedName( );
+
+      /* Do not count empty elements. Do count channel '0'. */
+      $channels = array_filter($this->value, 'strlen');
+      $value = implode(", ", $channels);
+      $result = $result . $value . "\n";
+      
+      return $result;
     }
 }
