@@ -3599,8 +3599,7 @@ class SpimExcMode extends AnyTypeArrayParameter {
         \brief  Returns the Parameter translated value
 
         The translated form of the Parameter value is then one used in
-        the Tcl script. The translation of the sted depletion mode is read from
-        the database.
+        the Tcl script.
 
         \return translated value
     */
@@ -4124,8 +4123,7 @@ class SpimDir extends AnyTypeArrayParameter {
         \brief  Returns the Parameter translated value
 
         The translated form of the Parameter value is then one used in
-        the Tcl script. The translation of the sted depletion mode is read from
-        the database.
+        the Tcl script.
 
         \return translated value
     */
