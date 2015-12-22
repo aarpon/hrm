@@ -63,6 +63,8 @@ if ( $_SESSION['setting']->checkPostedAberrationCorrectionParameters( $_POST ) )
 
 if ( $_SESSION['setting']->isSted() || $_SESSION['setting']->isSted3D()) {
     $back = "sted_parameters.php";
+} else if ( $_SESSION['setting']->isSpim()) {
+    $back = "spim_parameters.php";
 } else {
     $back = "capturing_parameter.php";
 }
