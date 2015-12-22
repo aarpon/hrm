@@ -1406,7 +1406,32 @@ class HuygensTemplate {
     private function getSpimDir($channel) {
         $microSetting = $this->microSetting;
         $spimDir = $microSetting->parameter("SpimDir")->value();
-        return $spimDir[$channel];
+        $direction = $spimDir[$channel];
+
+        switch($direction) {
+        case 'right':
+            $angle = 0.0;
+            break;
+        case 'left':
+            $angle = 180.0;
+            break;
+        case 'top':
+            $angle = 90.0;
+            break;
+        case 'bottom':
+            $angle = 270.0;
+            break;
+        case 'left+right':
+            $angle = 0.0;
+            break;
+        case 'top+bottom':
+            $angle = 90.0;
+            break;
+        default:
+            error_log("Unknown SPIM direction: $direction");
+        }
+
+        return $angle;
     }
 
     /*!
