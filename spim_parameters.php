@@ -755,7 +755,7 @@ for ($chan = 0; $chan < $chanCnt; $chan++) {
     <tr><td>Ch<?php echo $chan; ?>:</td>
 
     <td>
-    <select id="SpimDir<?php echo $chan;?>">
+    <select name="SpimDir<?php echo $chan;?>" id="SpimDir<?php echo $chan;?>">
 
 <?php
                         /* Loop for select options. */
