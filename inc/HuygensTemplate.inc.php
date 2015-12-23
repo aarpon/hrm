@@ -1430,7 +1430,7 @@ class HuygensTemplate {
         default:
             error_log("Unknown SPIM direction: $direction");
         }
-
+        
         return $angle;
     }
 
@@ -2394,7 +2394,8 @@ class HuygensTemplate {
     private function getConfidenceLevel($parameter,$channel) {
 
         /* Parameter not set by the user, should be read from the metadata. */
-        if ($this->getParameterValue($parameter,$channel) == "*") {
+        $parameterValue = $this->getParameterValue($parameter,$channel);
+        if (strpos($parameterValue, '*') !== FALSE) {
             return "default";
         }
  
@@ -2570,7 +2571,8 @@ class HuygensTemplate {
             $parameterValue = "";
         }
 
-        if ($parameterValue == "" || $parameterValue == "{}") {
+        if ($parameterValue != 0
+            && ($parameterValue == "" || $parameterValue == "{}")) {
             $parameterValue = "*";
         }
 
