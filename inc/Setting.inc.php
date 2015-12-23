@@ -2018,6 +2018,10 @@ class ParameterSetting extends Setting {
                 continue;
             if ($parameter->name() == 'Sted3D' && !$this->isSted3D())
                 continue;
+            
+            // To avoid confusion it would be desirable to filter SPIM
+            // parameters on a per channel basis, but we don't do that yet
+            // for any HRM parameters.
             if ($parameter->name() == 'SpimExcMode' && !$this->isSpim())
                 continue;
             if ($parameter->name() == 'SpimGaussWidth' && !$this->isSpim())
@@ -2032,6 +2036,7 @@ class ParameterSetting extends Setting {
                 continue;
             if ($parameter->name() == 'SpimDir' && !$this->isSpim())
                 continue;
+            
             if ($parameter->name() == 'PSF' && $PSFmode == 'measured') {
 
                 // If this is a shared template, process the PSF file paths
