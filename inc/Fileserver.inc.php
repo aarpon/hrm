@@ -246,6 +246,9 @@ class Fileserver {
               case 'zvi':
               case 'czi':
               case 'nd2':
+              case 'tf2':
+              case 'tf8':
+              case 'btf':
                   $fileFormat = $fileExtension;
                   break;
               case 'h5':
@@ -299,6 +302,12 @@ class Fileserver {
       }
 
       if ($selectedFormat != '' && $selectedFormat == $fileFormat) {
+          return true;
+      } else if ($selectedFormat == 'big-tiff' && $fileFormat == 'tf2') {
+          return true;
+      } else if ($selectedFormat == 'big-tiff' && $fileFormat == 'tf8') {
+          return true;
+      } else if ($selectedFormat == 'big-tiff' && $fileFormat == 'btf') {
           return true;
       } else {
           return false;
