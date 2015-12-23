@@ -4053,6 +4053,114 @@ if ($current_revision < $n) {
     }
 
 
+    // Add Big TIFF file extensions.
+    $tabname = "file_extension";
+    $record = array();
+    $record["file_format"] = "btf";
+    $record["extension"] = "btf";
+
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+             " WHERE file_format='" . $record['file_format'] .
+             "' AND extension='" . $record['extension'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+       if(!$db->Execute($insertSQL)) {
+           $msg = "An error occurred while updating " .
+                  "the database to revision " . $n . ".";
+           write_message($msg);
+           write_to_error($msg);
+           return;
+       }
+    }
+
+    $tabname = "file_extension";
+    $record = array();
+    $record["file_format"] = "tf2";
+    $record["extension"] = "tf2";
+
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+             " WHERE file_format='" . $record['file_format'] .
+             "' AND extension='" . $record['extension'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+       if(!$db->Execute($insertSQL)) {
+           $msg = "An error occurred while updating " .
+                  "the database to revision " . $n . ".";
+           write_message($msg);
+           write_to_error($msg);
+           return;
+       }
+    }
+
+    
+    $tabname = "file_extension";
+    $record = array();
+    $record["file_format"] = "tf8";
+    $record["extension"] = "tf8";
+
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+             " WHERE file_format='" . $record['file_format'] .
+             "' AND extension='" . $record['extension'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+       if(!$db->Execute($insertSQL)) {
+           $msg = "An error occurred while updating " .
+                  "the database to revision " . $n . ".";
+           write_message($msg);
+           write_to_error($msg);
+           return;
+       }
+    }
+    
+
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "ImageFileFormat";
+    $record["value"] = "big-tiff";
+    $record["translation"] = "Big TIFF (*.tf2, *.tf8, *.btf)";
+    $record["isDefault"] = "f";
+    // Check if it already exists
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" .
+            $record["parameter"] . "' AND value='" .
+            $record["value"] . "' AND translation='" .
+            $record["translation"] . "' AND isDefault='" .
+            $record["isDefault"] . "'");
+
+    if ($rs->EOF) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    
+    $tabname = "file_format";
+    $record = array();
+    $record["name"] = "big-tiff";
+    $record["hucorename"] = "";
+
+    // Check if it already exists
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE name='" .
+            $record["name"] . "' AND hucorename='" .
+            $record["hucorename"] . "'");
+
+    if ($rs->EOF) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    
     //Update revision
     if(!update_dbrevision($n))
         return;
