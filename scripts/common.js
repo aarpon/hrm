@@ -639,11 +639,9 @@ function uploadImages(maxFile, maxPost, archiveExt) {
 function createFileSelection(fileList) {
 
     html = '<div><select id="fileselection" name="fileselection" width="253" style="width: 253px" onchange="showOrHideFileChooser()">'
-    html += '<option>Choose a file or upload a template</option>';
+    html += '<option>Choose a file</option>';
 
     for (i=0; i<fileList.length; i++) html += '<option>' + fileList[i] + '</option>';
-
-    html += '<option>Upload a Template</option>';
 
     html += '</select></div>';
     return html;
@@ -685,6 +683,23 @@ function selectFileOrTemplate(selectedFiles) {
         +   'onmouseover="Tip(\'Create Image Template\')" onmouseout="UnTip()"/>'
         + '<input type="button" class="icon abort" onclick="UnTip(); cancelFileOrTemplateSelection()" '
         +        'onmouseover="Tip(\'Cancel\')" onmouseout="UnTip()"/>');
+
+    changeDiv('upfile', '');
+}
+
+function image2template(selectedFiles) {
+    control = document.getElementById('actions').innerHTML;
+
+    changeDiv('upMsg', 'Select a file to create an image template from');
+    changeDiv('actions',
+         '<input type="hidden" name="imageTotemplate" /> '
+        +  createFileSelection((selectedFiles))
+        + '<input name="submit" type="submit" class="icon apply" '
+        + 'onclick="UnTip(); '
+        + 'onmouseover="Tip(\'Submit\')" onmouseout="UnTip()"/>'
+        + '<input type="button" class="icon abort" onclick="UnTip();'
+        + 'cancelFileOrTemplateSelection()" '
+        + 'onmouseover="Tip(\'Cancel\')" onmouseout="UnTip()"/>');
 
     changeDiv('upfile', '');
 }

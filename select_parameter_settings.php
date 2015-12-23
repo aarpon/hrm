@@ -102,7 +102,7 @@ else if (isset($_POST['copy'])) {
     $_SESSION['editor']->copySelectedSetting($_POST['new_setting']);
     $message = $_SESSION['editor']->message();
 }
-else if(isset($_POST['generate']) && isset($_POST['fileselection'])) {
+else if(isset($_POST['imageTotemplate']) && isset($_POST['fileselection'])) {
     // Check whether we are going to work with an image or just a template upload
     $setting = NULL;
     if($_POST['fileselection']=='Upload a Template') {
@@ -119,7 +119,7 @@ else if(isset($_POST['generate']) && isset($_POST['fileselection'])) {
             $message = 'You did not upload a template file';
         }
 
-    } elseif ($_POST['fileselection']!='Choose a file or upload a template') {
+    } elseif ($_POST['fileselection']!='Choose a file') {
         $filestring = $_POST['fileselection'];
         $path_parts = pathinfo($filestring);
         $hrmtemplatename = 'Based on '.$path_parts['filename'];
@@ -223,8 +223,8 @@ include("header.inc.php");
     <span class="toolTip" id="ttSpanEdit">
         Edit the selected image template.
     </span>
-    <span class="toolTip" id="ttSpanGenerate">
-        Generate template from file.
+    <span class="toolTip" id="ttSpanImageToTemplate">
+        Generate template from image file.
     </span>
     <span class="toolTip" id="ttSpanClone">
         Copy the selected image template to a new one with the
@@ -467,24 +467,31 @@ else {
                        class="icon create"
                        onmouseover="TagToTip('ttSpanCreate' )"
                        onmouseout="UnTip()" />
+                    <input name="imageTotemplate"
+                       type="button"
+                       value=""
+                       class="icon imageTotemplate"
+                       onmouseover="TagToTip('ttSpanImageToTemplate')"
+                       onmouseout="UnTip()"
+                       onclick='UnTip(); image2template(<?php echo json_encode( $_SESSION['fileserver']->selectedFiles()); ?>)' />
+               <input name="huygens"
+                       type="button"
+                       value=""
+                       class="icon huygens"
+                       onmouseover="TagToTip('ttSpanHuygens' )"
+                       onmouseout="UnTip()"
+                       onclick='UnTip(); selectFileOrTemplate(<?php echo json_encode( $_SESSION['fileserver']->selectedFiles()); ?>)' />
+               <input name="copy"
+                       type="submit"
+                       value=""
+                       class="icon clone"
+                       onmouseover="TagToTip('ttSpanClone' )"
+                       onmouseout="UnTip()" />
                 <input name="edit"
                        type="submit"
                        value=""
                        class="icon edit"
                        onmouseover="TagToTip('ttSpanEdit' )"
-                       onmouseout="UnTip()" />
-                <input name="generate"
-                       type="button"
-                       value=""
-                       class="icon generate"
-                       onmouseover="TagToTip('ttSpanGenerate' )"
-                       onmouseout="UnTip()"
-                       onclick='UnTip(); selectFileOrTemplate(<?php echo json_encode( $_SESSION['fileserver']->selectedFiles()); ?>)' />
-                <input name="copy"
-                       type="submit"
-                       value=""
-                       class="icon clone"
-                       onmouseover="TagToTip('ttSpanClone' )"
                        onmouseout="UnTip()" />
 
 

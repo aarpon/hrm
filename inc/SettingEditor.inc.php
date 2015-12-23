@@ -189,12 +189,13 @@ abstract class BaseSettingEditor {
     */
     public function generateTemplateFromImageFile($setting, $filestring)
     {
-        /* It should not matter whether it works or not, in case there is no param just
-           do the same as create new
+        /* It should not matter whether it works or not, in case there is no
+           param just do the same as create new.
         */
         if ($setting != NULL) {
 
-            $opts = "-path \"" . $_SESSION['fileserver']->sourceFolder() . "\" -filename " . $filestring;
+            $opts = "-path \"" . $_SESSION['fileserver']->sourceFolder() .
+                "\" -filename " . $filestring;
 
             $data = askHuCore('getDataFromFile', $opts);
             $setting->parseParamsFromHuCore($data);
