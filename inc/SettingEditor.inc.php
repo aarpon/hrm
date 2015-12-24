@@ -181,13 +181,14 @@ abstract class BaseSettingEditor {
     }
 
     /*!
-      \brief	Creates a new setting based on parsing
+      \brief    Creates a new setting based on parsing
                 the given file through HuCore
-      \param  $setting    The setting object to fill
-      \return	true if the new template creation was successful,
+      \param    $setting  The setting object to fill
+      \param    $filename File name without path
+      \return   True if the new template creation was successful,
                 false otherwise
     */
-    public function generateTemplateFromImageFile($setting, $filestring)
+    public function generateTemplateFromImageFile($setting, $filename)
     {
         /* It should not matter whether it works or not, in case there is no
            param just do the same as create new.
@@ -195,9 +196,10 @@ abstract class BaseSettingEditor {
         if ($setting != NULL) {
 
             $opts = "-path \"" . $_SESSION['fileserver']->sourceFolder() .
-                "\" -filename " . $filestring;
+                "\" -filename \"$filename\"";
 
             $data = askHuCore('getDataFromFile', $opts);
+
             $setting->parseParamsFromHuCore($data);
             $result = $setting->save();
             $this->message = $setting->message();
