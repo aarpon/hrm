@@ -2092,12 +2092,12 @@ class ParameterSetting extends Setting {
                                  explode(' ', $hucoreArray['sampleSizes']));
 
         if (strpos($hucoreArray['parState,dx'], "default") === FALSE) {
-            $sampleSizes[0] = round($sammpleSizes[0] * 1000);
+            $sampleSizes[0] = round($sampleSizes[0] * 1000);
             $this->parameter['CCDCaptorSizeX']->setValue($sampleSizes[0]);
         }
         if (strpos($hucoreArray['parState,dz'], "default") === FALSE) {
             $sampleSizes[2] = round($sampleSizes[2] * 1000);
-            $this->parameter['ZStepSize']->setValue($samplesSizes[2]);
+            $this->parameter['ZStepSize']->setValue($sampleSizes[2]);
         }
         if (strpos($hucoreArray['parState,dt'], "default") === FALSE) {
             $this->parameter['TimeInterval']->setValue($sampleSizes[3]);
@@ -2105,7 +2105,7 @@ class ParameterSetting extends Setting {
 
         // Microscope Type.
         if (strpos($hucoreArray['parState,mType'], "default") === FALSE) {
-            $huMicrType = explode(" ", $hucorearray['mType'], 5);
+            $huMicrType = explode(" ", $hucoreArray['mType'], 5);
             $hrmMicrType = $this->parameter['MicroscopeType'];
 
             //By default, take the first value.
