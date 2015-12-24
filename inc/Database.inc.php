@@ -594,9 +594,16 @@ class DatabaseConnection {
                 switch($parameterName) {
                 case "ExcitationWavelength":
                 case "EmissionWavelength":
+                case "PinholeSize":
+                case "PinholeSpacing":
                 case "SignalNoiseRatio":
                 case "BackgroundOffsetPercent":
                 case "ChromaticAberration":
+                case "StedDepletionMode":
+                case "StedWavelength":
+                case "StedSaturationFactor":
+                case "StedImmunity":
+                case "Sted3D":
                     /* Extract and continue to explode. */
                     $newValue = substr($newValue,1);
                 default:
