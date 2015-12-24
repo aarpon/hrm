@@ -2091,20 +2091,20 @@ class ParameterSetting extends Setting {
         $sampleSizes = array_map('floatval',
                                  explode(' ', $hucoreArray['sampleSizes']));
 
-        if ( !strpos($hucoreArray['parState,sampleSizes'], "default") ) {
+        if (strpos($hucoreArray['parState,dx'], "default") === FALSE) {
             $sampleSizes[0] = round($sammpleSizes[0] * 1000);
             $this->parameter['CCDCaptorSizeX']->setValue($sampleSizes[0]);
         }
-        if ( !strpos($hucoreArray['parState,sampleSizes'], "default") ) {
+        if (strpos($hucoreArray['parState,dz'], "default") === FALSE) {
             $sampleSizes[2] = round($sampleSizes[2] * 1000);
             $this->parameter['ZStepSize']->setValue($samplesSizes[2]);
         }
-        if ( !strpos($hucoreArray['parState,sampleSizes'], "default") ) {
+        if (strpos($hucoreArray['parState,dt'], "default") === FALSE) {
             $this->parameter['TimeInterval']->setValue($sampleSizes[3]);
         }
 
         // Microscope Type.
-        if ( !strpos($hucoreArray['parState,mType'], "default") ) {
+        if (strpos($hucoreArray['parState,mType'], "default") === FALSE) {
             $huMicrType = explode(" ", $hucorearray['mType'], 5);
             $hrmMicrType = $this->parameter['MicroscopeType'];
 
@@ -2123,55 +2123,55 @@ class ParameterSetting extends Setting {
         }
 
         // Numerical Aperture.
-        if ( !strpos($hucoreArray['parState,NA'], "default") ) {
+        if (strpos($hucoreArray['parState,NA'], "default") === FALSE) {
             $na = explode(" ", $hucoreArray['NA'], 5);
             $this->parameter['NumericalAperture']->setValue($na[0]);
         }
 
         // Objective Type.
-        if ( !strpos($hucoreArray['parState,RILens'], "default") ) {
+        if (strpos($hucoreArray['parState,RILens'], "default") === FALSE) {
             $lensImm = array_map('floatval',
                                  explode(' ', $hucoreArray['RILens']));
             $this->parameter['ObjectiveType']->setValue($lensImm[0]);
         }
 
         // Sample Medium.
-        if ( !strpos($hucoreArray['parState,RIMedia'], "default") ) {
+        if (strpos($hucoreArray['parState,RIMedia'], "default") === FALSE) {
             $embMedium = array_map('floatval',
                                    explode(' ', $hucoreArray['RIMedia']));
             $this->parameter['SampleMedium']->setValue($embMedium[0]);
         }
 
         // Excitation Wavelength.
-        if ( !strpos($hucoreArray['parState,lambdaEx'], "default") ) {
+        if (strpos($hucoreArray['parState,lambdaEx'], "default") === FALSE) {
             $lambdaEx = array_map('intval',
                                   explode(' ', $hucoreArray['lambdaEx']));
             $this->parameter['ExcitationWavelength']->setValue($lambdaEx);
         }
         
         // Emission Wavelength.
-        if ( !strpos($hucoreArray['parState,lambdaEm'], "default") ) {
+        if (strpos($hucoreArray['parState,lambdaEm'], "default") === FALSE) {
             $lambdaEm = array_map('intval',
                                   explode(' ', $hucoreArray['lambdaEm']));
             $this->parameter['EmissionWavelength']->setValue($lambdaEm);
         }
 
         // Pinhole size.
-        if ( !strpos($hucoreArray['parState,pinhole'], "default") ) {
+        if (strpos($hucoreArray['parState,pinhole'], "default") === FALSE) {
             $pinhole = array_map('intval',
                                  explode(' ', $hucoreArray['pinhole']));
             $this->parameter['PinholeSize']->setValue($pinhole);
         }
 
         // Pinhole spacing.
-        if ( !strpos($hucorearray['parState,pinholeSpacing'], "default") ) {
+        if (strpos($hucorearray['parState,pinholeSpacing'], "default") === FALSE) {
             $phSpacing = array_map('floatval',
                                    explode(' ', $hucoreArray['pinholeSpacing']));
             $this->parameter['PinholeSpacing']->setValue($phSpacing[0]);
         }
 
         // Coverslip Relative Position.
-        if ( !strpos($hucoreArray['parState,imagingDir'], "default") ) {
+        if (strpos($hucoreArray['parState,imagingDir'], "default") === FALSE) {
             // Downward is closest.
             $imagingDir   = explode(' ', $hucoreArray['imagingDir']);
             $coversPos = "farthest";
@@ -2182,7 +2182,7 @@ class ParameterSetting extends Setting {
         }
 
         // STED Depletion Mode.
-        if ( !strpos($hucoreArray['parState,stedMode'], "default") ) {
+        if (strpos($hucoreArray['parState,stedMode'], "default") === FALSE) {
             $stedMode = explode(' ', $hucoreArray['stedMode']);
 
             // Rename some modes if the mType is set to confocal.
@@ -2195,30 +2195,80 @@ class ParameterSetting extends Setting {
         }
 
         // STED Saturation Factor.
-        if ( !strpos($hucoreArray['parState,stedSatFact'], "default") ) {
+        if (strpos($hucoreArray['parState,stedSatFact'], "default") === FALSE) {
             $stedSatFact = array_map('floatval',
                                      explode(' ', $hucoreArray['stedSatFact']));
             $this->parameter['StedSaturationFactor']->setValue($stedSatFact);
         }
 
         // STED Wavelength.
-        if ( !strpos($hucorearray['parState,stedLambda'], "default") ) {
+        if (strpos($hucorearray['parState,stedLambda'], "default") === FALSE) {
             $stedLambda = array_map('floatval',
                                     explode(' ', $hucoreArray['stedLambda']));
             $this->parameter['StedWavelength']->setValue($stedLambda);
         }
+        
         // STED Immunity Fraction.
-        if ( !strpos($hucorearray['parState,stedImmunity'], "default") ) {
+        if (strpos($hucorearray['parState,stedImmunity'], "default") === FALSE) {
             $stedImmunity = array_map('floatval',
                                       explode(' ', $hucoreArray['stedImmunity']));
             $this->parameter['StedImmunity']->setValue($stedImmunity);
         }
 
         // Whether STED is STED3D.
-        if ( !strpos($hucoreArray['parState,sted3D'], "default") ) {
+        if (strpos($hucoreArray['parState,sted3D'], "default") === FALSE) {
             $sted3d = array_map('floatval',
                                 explode(' ', $hucoreArray['sted3D']));
             $this->parameter['Sted3D']->setValue($sted3d);
+        }
+
+        // SPIM Excitation Mode.
+        if (strpos($hucoreArray['parState,spimExc'], "default") === FALSE) {
+            $spimExcMode = array_map('floatval',
+                                     explode(' ', $hucoreArray['spimExc']));
+            $this->parameter['SpimExcMode']->setValue($spimExcMode);
+        }
+
+        // SPIM Gaussian Width.
+        if (strpos($hucoreArray['parState,spimGaussWidth'], "default") === FALSE) {
+            $spimGaussWidth = array_map('floatval',
+                                     explode(' ', $hucoreArray['spimGaussWidth']));
+            $this->parameter['SpimGaussWidth']->setValue($spimGaussWidth);
+        }
+
+        // SPIM Center Offset.
+        if (strpos($hucoreArray['parState,spimCenterOff'], "default") === FALSE) {
+            $spimCenterOff = array_map('floatval',
+                                       explode(' ', $hucoreArray['spimCenterOff']));
+            $this->parameter['SpimCenterOffset']->setValue($spimCenterOff);
+        }
+
+        // SPIM Focus Offset.
+        if (strpos($hucoreArray['parState,spimFocusOff'], "default") === FALSE) {
+            $spimFocusOff = array_map('floatval',
+                                      explode(' ', $hucoreArray['spimFocusOff']));
+            $this->parameter['SpimFocusOffset']->setValue($spimFocusOff);
+        }
+
+        // SPIM NA.
+        if (strpos($hucoreArray['parState,spimNA'], "default") === FALSE) {
+            $spimNA = array_map('floatval',
+                                explode(' ', $hucoreArray['spimNA']));
+            $this->parameter['SpimNA']->setValue($spimNA);
+        }
+        
+        // SPIM Fill Factor.
+        if (strpos($hucoreArray['parState,spimFill'], "default") === FALSE) {
+            $spimFill = array_map('floatval',
+                                explode(' ', $hucoreArray['spimFill']));
+            $this->parameter['SpimFill']->setValue($spimFill);
+        }
+
+        // SPIM Imaging Direction.
+        if (strpos($hucoreArray['parState,spimDir'], "default") === FALSE) {
+            $spimDir = array_map('floatval',
+                                 explode(' ', $hucoreArray['spimDir']));
+            $this->parameter['SpimDir']->setValue($spimDir);
         }
     }
 }
