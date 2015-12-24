@@ -638,12 +638,16 @@ function uploadImages(maxFile, maxPost, archiveExt) {
 }
 function createFileSelection(fileList) {
 
-    html = '<div><select id="fileselection" name="fileselection" width="253" style="width: 253px" onchange="showOrHideFileChooser()">'
-    html += '<option>Choose a file</option>';
+    html = '<div><select id="fileselection" name="fileselection" width="253" '
+        + 'style="width: 253px" onchange="showOrHideFileChooser()">'
+        + '<option>Choose a file</option>';
 
-    for (i=0; i<fileList.length; i++) html += '<option>' + fileList[i] + '</option>';
+    for (i = 0; i < fileList.length; i++) {
+        html += '<option>' + fileList[i] + '</option>';
+    }
 
     html += '</select></div>';
+    
     return html;
 }
 
