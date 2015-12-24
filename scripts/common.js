@@ -688,18 +688,21 @@ function selectFileOrTemplate(selectedFiles) {
 }
 
 function image2template(selectedFiles) {
+    
     control = document.getElementById('actions').innerHTML;
 
     changeDiv('upMsg', 'Select a file to create an image template from');
     changeDiv('actions',
-         '<input type="hidden" name="imageTotemplate" /> '
-        +  createFileSelection((selectedFiles))
-        + '<input name="submit" type="submit" class="icon apply" '
-        + 'onclick="UnTip(); '
-        + 'onmouseover="Tip(\'Submit\')" onmouseout="UnTip()"/>'
-        + '<input type="button" class="icon abort" onclick="UnTip();'
-        + 'cancelFileOrTemplateSelection()" '
-        + 'onmouseover="Tip(\'Cancel\')" onmouseout="UnTip()"/>');
+              '<input type="hidden" name="imageTotemplate" /> '
+              +  createFileSelection((selectedFiles))
+              + '<div id="buttonUpload">'
+              + '<input name="submit" type="submit" value="" '
+              + 'class="icon apply" onclick="UnTip(); '
+              + 'onmouseover="Tip(\'Submit\')" onmouseout="UnTip()"/>'
+              + '<input type="button" class="icon abort" onclick="UnTip();'
+              + 'cancelFileOrTemplateSelection()" '
+              + 'onmouseover="Tip(\'Cancel\')" onmouseout="UnTip()"/>'
+              + '</div>');
 
     changeDiv('upfile', '');
 }
