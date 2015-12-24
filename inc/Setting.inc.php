@@ -2076,157 +2076,148 @@ class ParameterSetting extends Setting {
         return $result;
     }
 
-    public function parseParamsFromHuCore($hucorearray){
-        /* Things to look at
-            'NumberOfChannels', chanCnt
-            'MicroscopeType', mType
-            'NumericalAperture', NA
-            'ObjectiveType', RILens
-            'SampleMedium', RIMedia
-            'ExcitationWavelength', lambdaEm
-            'EmissionWavelength', lambdaEx
-            'ZStepSize', dz
-            'TimeInterval', dt
-            'PinholeSize', pinhole
-            'PinholeSpacing', pinholeSpacing
-            'CoverslipRelativePosition', imagingDir
-            'StedDepletionMode', stedMode
-            'StedSaturationFactor', stedSatFact
-            'StedWavelength', sted
-            'StedImmunity', stedImmunity
-            'Sted3D', sted3D
-        */
+    /*!
+      \brief Huygens parameters to HRM parameters.
+      \param $hucoreArray An array with the result of 'image setp -tclReturn'.
+    */
+    public function parseParamsFromHuCore($hucoreArray){
 
-        // Get number of channels
-        $mtypes = explode(' ', $hucorearray['mType']);
-        $nchannels = count($mtypes);
-        if ($nchannels > 5) $nchannels=5;
-        $this->parameter['NumberOfChannels']->setValue($nchannels);
+        // Number of channels.
+        $chanCnt = $hucoreArray['chanCnt'];
+        if ($chanCnt > 5) $chanCnt =5;
+        $this->parameter['NumberOfChannels']->setValue($chanCnt);
 
+        // Sampling sizes.
+        $sampleSizes = array_map('floatval',
+                                 explode(' ', $hucoreArray['sampleSizes']));
 
-        $dims = array_map('intval', explode(' ', $hucorearray['dims']));
-
-        // Use this to get the sizes of x y z t
-        $sampleSizes = array_map('floatval', explode(' ', $hucorearray['sampleSizes']));
-
-
-        // Get Microscope Type
-        if ( !strpos($hucorearray['parState,mType'], "default") ) {
-            $mictype = explode(" ", $hucorearray['mType'], 5);
-
-            //By default, take the first value
-            $hrmmic = $this->parameter['MicroscopeType']->translateHucore($mictype[0]);
-
-            // If there is STED, just make sure that it's the right one.
-            if(array_search('sted', $mictype)) $hrmmic = $this->parameter['MicroscopeType']->translateHucore('sted');
-            if(array_search('sted3d', $mictype)) $hrmmic = $this->parameter['MicroscopeType']->translateHucore('sted3d');
-
-            $this->parameter['MicroscopeType']->setValue($hrmmic);
+        if ( !strpos($hucoreArray['parState,sampleSizes'], "default") ) {
+            $sampleSizes[0] = round($sammpleSizes[0] * 1000);
+            $this->parameter['CCDCaptorSizeX']->setValue($sampleSizes[0]);
+        }
+        if ( !strpos($hucoreArray['parState,sampleSizes'], "default") ) {
+            $sampleSizes[2] = round($sampleSizes[2] * 1000);
+            $this->parameter['ZStepSize']->setValue($samplesSizes[2]);
+        }
+        if ( !strpos($hucoreArray['parState,sampleSizes'], "default") ) {
+            $this->parameter['TimeInterval']->setValue($sampleSizes[3]);
         }
 
-        // Get Numerical Aperture
-        if ( !strpos($hucorearray['parState,NA'], "default") ) {
-            $na = explode(" ", $hucorearray['NA'], 5);
+        // Microscope Type.
+        if ( !strpos($hucoreArray['parState,mType'], "default") ) {
+            $huMicrType = explode(" ", $hucorearray['mType'], 5);
+            $hrmMicrType = $this->parameter['MicroscopeType'];
+
+            //By default, take the first value.
+            $micrVal = $hrmMicrType->translateHucore($huMicrType[0]);
+
+            // If there is STED, just make sure that it's the right one.
+            if(array_search('sted', $huMicrType)) {
+                $micrVal = $hrmMicrType->translateHucore('sted');
+            }
+            if(array_search('sted3d', $huMicrType)) {
+                $micrVal = $hrmMicrType->translateHucore('sted3d');
+            }
+
+            $hrmMicrType->setValue($micrVal);
+        }
+
+        // Numerical Aperture.
+        if ( !strpos($hucoreArray['parState,NA'], "default") ) {
+            $na = explode(" ", $hucoreArray['NA'], 5);
             $this->parameter['NumericalAperture']->setValue($na[0]);
         }
 
-        // Get Objective Type
-        if ( !strpos($hucorearray['parState,RILens'], "default") ) {
-            $lens_imm = array_map('floatval', explode(' ', $hucorearray['RILens']));
-            $this->parameter['ObjectiveType']->setValue($lens_imm[0]);
+        // Objective Type.
+        if ( !strpos($hucoreArray['parState,RILens'], "default") ) {
+            $lensImm = array_map('floatval',
+                                 explode(' ', $hucoreArray['RILens']));
+            $this->parameter['ObjectiveType']->setValue($lensImm[0]);
         }
 
-        // Get Sample Medium
-        if ( !strpos($hucorearray['parState,RIMedia'], "default") ) {
-            $med = array_map('floatval', explode(' ', $hucorearray['RIMedia']));
-            $this->parameter['SampleMedium']->setValue($med[0]);
+        // Sample Medium.
+        if ( !strpos($hucoreArray['parState,RIMedia'], "default") ) {
+            $embMedium = array_map('floatval',
+                                   explode(' ', $hucoreArray['RIMedia']));
+            $this->parameter['SampleMedium']->setValue($embMedium[0]);
         }
 
-        // Get Excitation Wavelength
-        if ( !strpos($hucorearray['parState,lambdaEm'], "default") ) {
-            $lambda_em = array_map('intval', explode(' ', $hucorearray['lambdaEm']));
-            $this->parameter['ExcitationWavelength']->setValue($lambda_em);
+        // Excitation Wavelength.
+        if ( !strpos($hucoreArray['parState,lambdaEx'], "default") ) {
+            $lambdaEx = array_map('intval',
+                                  explode(' ', $hucoreArray['lambdaEx']));
+            $this->parameter['ExcitationWavelength']->setValue($lambdaEx);
+        }
+        
+        // Emission Wavelength.
+        if ( !strpos($hucoreArray['parState,lambdaEm'], "default") ) {
+            $lambdaEm = array_map('intval',
+                                  explode(' ', $hucoreArray['lambdaEm']));
+            $this->parameter['EmissionWavelength']->setValue($lambdaEm);
         }
 
-        // Get Emission Wavelength
-        if ( !strpos($hucorearray['parState,lambdaEx'], "default") ) {
-            $lambda_ex = array_map('intval', explode(' ', $hucorearray['lambdaEx']));
-            $this->parameter['EmissionWavelength']->setValue($lambda_ex);
-        }
-
-        // Get X step Size
-        if ( !strpos($hucorearray['parState,sampleSizes'], "default") ) {
-            $this->parameter['CCDCaptorSizeX']->setValue(round($sampleSizes[0]*1000));
-        }
-
-        // Get Z step Size
-        if ( !strpos($hucorearray['parState,sampleSizes'], "default") ) {
-            $dz= $sampleSizes[2]*1000;
-            $this->parameter['ZStepSize']->setValue(round($dz));
-        }
-
-        // Get Time interval
-        if ( !strpos($hucorearray['parState,sampleSizes'], "default") ) {
-
-            $dt = $sampleSizes[3];
-
-            $this->parameter['TimeInterval']->setValue($dt);
-        }
-
-        // Get Pinhole size Wavelength
-        if ( !strpos($hucorearray['parState,pinhole'], "default") ) {
-            $pinhole = array_map('intval', explode(' ', $hucorearray['pinhole']));
+        // Pinhole size.
+        if ( !strpos($hucoreArray['parState,pinhole'], "default") ) {
+            $pinhole = array_map('intval',
+                                 explode(' ', $hucoreArray['pinhole']));
             $this->parameter['PinholeSize']->setValue($pinhole);
         }
 
-        // Get Pinhole spacing
+        // Pinhole spacing.
         if ( !strpos($hucorearray['parState,pinholeSpacing'], "default") ) {
-            $pinhole_spacing = array_map('floatval', explode(' ', $hucorearray['pinholeSpacing']));
-            $this->parameter['PinholeSpacing']->setValue($pinhole_spacing[0]);
+            $phSpacing = array_map('floatval',
+                                   explode(' ', $hucoreArray['pinholeSpacing']));
+            $this->parameter['PinholeSpacing']->setValue($phSpacing[0]);
         }
 
-        // Get Coverslip Relative Position
-        if ( !strpos($hucorearray['parState,imagingDir'], "default") ) {
-            // downward is closest
-            $imaging_direction = explode(' ', $hucorearray['imagingDir']);
-            $cov_pos = "farthest";
-            if (strcmp("downward", $imaging_direction[0])) {
-                $cov_pos = "closest";
+        // Coverslip Relative Position.
+        if ( !strpos($hucoreArray['parState,imagingDir'], "default") ) {
+            // Downward is closest.
+            $imagingDir   = explode(' ', $hucoreArray['imagingDir']);
+            $coversPos = "farthest";
+            if (strcmp("downward", $imagingDir[0])) {
+                $coversPos = "closest";
             }
-            $this->parameter['CoverslipRelativePosition']->setValue($cov_pos);
+            $this->parameter['CoverslipRelativePosition']->setValue($coversPos);
         }
 
-        // Get STED Depletion Mode
-        if ( !strpos($hucorearray['parState,stedMode'], "default") ) {
-            $sted_mode = explode(' ', $hucorearray['stedMode']);
+        // STED Depletion Mode.
+        if ( !strpos($hucoreArray['parState,stedMode'], "default") ) {
+            $stedMode = explode(' ', $hucoreArray['stedMode']);
 
-            // rename some modes if the mType is set to confocal
-            for($i=0; $i<count($sted_mode); $i++) {
-                if($mtypes[$i] == 'confocal') $sted_mode[$i] = 'off-confocal';
+            // Rename some modes if the mType is set to confocal.
+            for($i = 0; $i < count($stedMmode); $i++) {
+                if($huMicrType[$i] == 'confocal') {
+                    $stedMode[$i] = 'off-confocal';
+                }
             }
-            $this->parameter['StedDepletionMode']->setValue($sted_mode);
+            $this->parameter['StedDepletionMode']->setValue($stedMode);
         }
 
-        // Get STED Saturation Factor
-        if ( !strpos($hucorearray['parState,stedSatFact'], "default") ) {
-            $sted_sat_fact = array_map('floatval', explode(' ', $hucorearray['stedSatFact']));
-            $this->parameter['StedSaturationFactor']->setValue($sted_sat_fact);
+        // STED Saturation Factor.
+        if ( !strpos($hucoreArray['parState,stedSatFact'], "default") ) {
+            $stedSatFact = array_map('floatval',
+                                     explode(' ', $hucoreArray['stedSatFact']));
+            $this->parameter['StedSaturationFactor']->setValue($stedSatFact);
         }
 
-        // Get STED Wavelength
+        // STED Wavelength.
         if ( !strpos($hucorearray['parState,stedLambda'], "default") ) {
-            $sted_lambda = array_map('floatval', explode(' ', $hucorearray['stedLambda']));
-            $this->parameter['StedWavelength']->setValue($sted_lambda);
+            $stedLambda = array_map('floatval',
+                                    explode(' ', $hucoreArray['stedLambda']));
+            $this->parameter['StedWavelength']->setValue($stedLambda);
         }
-        // Get STED Immunity Fraction
+        // STED Immunity Fraction.
         if ( !strpos($hucorearray['parState,stedImmunity'], "default") ) {
-            $sted_immunity = array_map('floatval', explode(' ', $hucorearray['stedImmunity']));
-            $this->parameter['StedImmunity']->setValue($sted_immunity);
+            $stedImmunity = array_map('floatval',
+                                      explode(' ', $hucoreArray['stedImmunity']));
+            $this->parameter['StedImmunity']->setValue($stedImmunity);
         }
 
-        // Get whether it is STED3D
-        if ( !strpos($hucorearray['parState,sted3D'], "default") ) {
-            $sted3d = array_map('floatval', explode(' ', $hucorearray['sted3D']));
+        // Whether STED is STED3D.
+        if ( !strpos($hucoreArray['parState,sted3D'], "default") ) {
+            $sted3d = array_map('floatval',
+                                explode(' ', $hucoreArray['sted3D']));
             $this->parameter['Sted3D']->setValue($sted3d);
         }
     }
