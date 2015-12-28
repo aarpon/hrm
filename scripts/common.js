@@ -639,7 +639,7 @@ function uploadImages(maxFile, maxPost, archiveExt) {
 function createFileSelection(fileList) {
 
     html = '<div><select id="fileselection" name="fileselection" width="253" '
-        + 'style="width: 253px" onchange="showOrHideFileChooser()">'
+        + 'style="width: 253px"">'
         + '<option>Choose a file</option>';
 
     for (i = 0; i < fileList.length; i++) {
@@ -651,35 +651,18 @@ function createFileSelection(fileList) {
     return html;
 }
 
-function hideFileChooser() {
-}
-
-function showFileChooser() {
-}
-
-function showOrHideFileChooser() {
-    selectBox = document.getElementById("fileselection");
-    selectedValue = selectBox.options[selectBox.selectedIndex].value;
-
-    if (selectedValue=="Upload a Template") {
-        changeDiv('upfile', filemenu);
-    } else {
-        changeDiv('upfile', '');
-
-    }
-}
-function selectFileOrTemplate(selectedFiles) {
+function hu2template(selectedFiles) {
 
     control = document.getElementById('actions').innerHTML;
     action = 'upload';
     upsubmitted = false;
     fileInputs = 0;
-    changeDiv('upMsg', 'Select a file to create image template from <strong>OR</strong> <br />Upload a Huygens Template. Accepted Extensions are (.hgsm, .hgst)');
+    changeDiv('upMsg', 'Upload a Huygens template '
+              + ' (extensions <b>.hgsm, .hgsb</b>).');
     changeDiv('actions',
          '<input type="hidden" name="generate" /> '
-        +  createFileSelection((selectedFiles))
         +  '<div id="upfile">'
-        +  filemenu
+
         +  '</div>'
         +  '<div id="buttonUpload">'
         +  '<input name="submit" type="submit" value="" '
