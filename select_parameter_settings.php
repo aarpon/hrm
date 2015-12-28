@@ -480,7 +480,7 @@ else {
                        class="icon huygens"
                        onmouseover="TagToTip('ttSpanHuygens' )"
                        onmouseout="UnTip()"
-                       onclick='UnTip(); selectFileOrTemplate(<?php echo json_encode( $_SESSION['fileserver']->selectedFiles()); ?>)' />
+                       onclick='UnTip(); hu2template(<?php echo json_encode( $_SESSION['fileserver']->selectedFiles()); ?>)' />
                <input name="copy"
                        type="submit"
                        value=""
