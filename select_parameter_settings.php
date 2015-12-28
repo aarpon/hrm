@@ -474,7 +474,7 @@ else {
                        onmouseover="TagToTip('ttSpanImageToTemplate')"
                        onmouseout="UnTip()"
                        onclick='UnTip(); image2template(<?php echo json_encode( $_SESSION['fileserver']->selectedFiles()); ?>)' />
-               <input name="huygens"
+               <input name="huTotemplate"
                        type="button"
                        value=""
                        class="icon huygens"
