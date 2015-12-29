@@ -458,7 +458,7 @@ proc getMetaDataFromHuTemplate {} {
 
     # Stick to the channels from the original template. Discard the rest.
     dict map {key value} [dict get $templDict params setp] {
-        reportKeyValue $key [lrange $value 0 $chanCnt]
+        reportKeyValue $key [lrange $value 0 [expr {$chanCnt - 1}]]
     }
 }
 
