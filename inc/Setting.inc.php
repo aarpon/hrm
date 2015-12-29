@@ -2082,33 +2082,12 @@ class ParameterSetting extends Setting {
     */
     public function parseParamsFromHuCore($huArray){
 
-        // Number of channels.
-        $chanCnt = $huArray['chanCnt'];
-        if ($chanCnt > 5) $chanCnt =5;
-        $this->parameter['NumberOfChannels']->setValue($chanCnt);
-
-        // Sampling sizes.
-        $sampleSizes = array_map('floatval',
-                                 explode(' ', $huArray['sampleSizes']));
-
-        if (strpos($huArray['parState,dx'], "default") === FALSE) {
-            $sampleSizes[0] = round($sampleSizes[0] * 1000);
-            $this->parameter['CCDCaptorSizeX']->setValue($sampleSizes[0]);
-        }
-        if (strpos($huArray['parState,dz'], "default") === FALSE) {
-            $sampleSizes[2] = round($sampleSizes[2] * 1000);
-            $this->parameter['ZStepSize']->setValue($sampleSizes[2]);
-        }
-        if (strpos($huArray['parState,dt'], "default") === FALSE) {
-            $this->parameter['TimeInterval']->setValue($sampleSizes[3]);
-        }
-
         // Microscope Type.
-        if (strpos($huArray['parState,mType'], "default") === FALSE) {
-            $huMicrType = explode(" ", $huArray['mType'], 5);
+        if (strpos($huArray['parState,micr'], "default") === FALSE) {
+            $huMicrType = explode(" ", $huArray['micr'], 5);
             $hrmMicrType = $this->parameter['MicroscopeType'];
 
-            //By default, take the first value.
+            // By default, take the first value.
             $micrVal = $hrmMicrType->translateHucore($huMicrType[0]);
 
             // If there is STED, just make sure that it's the right one.
@@ -2120,53 +2099,71 @@ class ParameterSetting extends Setting {
             }
 
             $hrmMicrType->setValue($micrVal);
+        } 
+
+        // Number of channels.
+        if (isset($huMicrType)) {
+            $chanCnt = count($huMicrType);
+        } else {
+            $chanCnt = 1;
         }
 
+        // Sampling sizes: the confidence level is not always present.
+        $sampleSizes = array_map('floatval',  explode(' ', $huArray['s']));
+        $sampleSizes[0] = round($sampleSizes[0] * 1000);
+        $sampleSizes[2] = round($sampleSizes[2] * 1000);
+        $this->parameter['CCDCaptorSizeX']->setValue($sampleSizes[0]);
+        $this->parameter['ZStepSize']->setValue($sampleSizes[2]);
+        $this->parameter['TimeInterval']->setValue($sampleSizes[3]);
+        
+        if ($chanCnt > 5) $chanCnt =5;
+        $this->parameter['NumberOfChannels']->setValue($chanCnt);
+
         // Numerical Aperture.
-        if (strpos($huArray['parState,NA'], "default") === FALSE) {
-            $na = explode(" ", $huArray['NA'], 5);
+        if (strpos($huArray['parState,na'], "default") === FALSE) {
+            $na = explode(" ", $huArray['na'], 5);
             $this->parameter['NumericalAperture']->setValue($na[0]);
         }
 
         // Objective Type.
-        if (strpos($huArray['parState,RILens'], "default") === FALSE) {
+        if (strpos($huArray['parState,ril'], "default") === FALSE) {
             $lensImm = array_map('floatval',
-                                 explode(' ', $huArray['RILens']));
+                                 explode(' ', $huArray['ril']));
             $this->parameter['ObjectiveType']->setValue($lensImm[0]);
         }
 
         // Sample Medium.
-        if (strpos($huArray['parState,RIMedia'], "default") === FALSE) {
+        if (strpos($huArray['parState,ri'], "default") === FALSE) {
             $embMedium = array_map('floatval',
-                                   explode(' ', $huArray['RIMedia']));
+                                   explode(' ', $huArray['ri']));
             $this->parameter['SampleMedium']->setValue($embMedium[0]);
         }
 
         // Excitation Wavelength.
-        if (strpos($huArray['parState,lambdaEx'], "default") === FALSE) {
+        if (strpos($huArray['parState,ex'], "default") === FALSE) {
             $lambdaEx = array_map('intval',
-                                  explode(' ', $huArray['lambdaEx']));
+                                  explode(' ', $huArray['ex']));
             $this->parameter['ExcitationWavelength']->setValue($lambdaEx);
         }
         
         // Emission Wavelength.
-        if (strpos($huArray['parState,lambdaEm'], "default") === FALSE) {
+        if (strpos($huArray['parState,em'], "default") === FALSE) {
             $lambdaEm = array_map('intval',
-                                  explode(' ', $huArray['lambdaEm']));
+                                  explode(' ', $huArray['em']));
             $this->parameter['EmissionWavelength']->setValue($lambdaEm);
         }
 
         // Pinhole size.
-        if (strpos($huArray['parState,pinhole'], "default") === FALSE) {
+        if (strpos($huArray['parState,pr'], "default") === FALSE) {
             $pinhole = array_map('intval',
-                                 explode(' ', $huArray['pinhole']));
+                                 explode(' ', $huArray['pr']));
             $this->parameter['PinholeSize']->setValue($pinhole);
         }
 
         // Pinhole spacing.
-        if (strpos($huArray['parState,pinholeSpacing'], "default") === FALSE) {
+        if (strpos($huArray['parState,ps'], "default") === FALSE) {
             $phSpacing = array_map('floatval',
-                                   explode(' ', $huArray['pinholeSpacing']));
+                                   explode(' ', $huArray['ps']));
             $this->parameter['PinholeSpacing']->setValue($phSpacing[0]);
         }
 
