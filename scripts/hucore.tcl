@@ -97,25 +97,6 @@ proc isMultiImgFile { filename } {
     return $isMulti
 }   
 
-# Script for reading in a file and output template data
-proc getDataFromFile {} {
-    set error [ getInputVariables {path filename} ]
-
-    if { $error } { exit 1 }
-    set file [ hrmImgOpen $path $filename ]
-    set dims [ $file getdims ]
-    reportKeyValue "dims" $dims
-
-    array set output [ $file setp -tclReturn ]
-
-    $file del
-
-    foreach key [ array names output ] {
-        reportKeyValue $key $output($key)
-    }
-
-}
-
 # Script for Huygens Core to explore multi-image files and return their
 # subimages. Currently valid for Leica LIF and Zeiss CZI files.
 proc reportSubImages {} {
@@ -364,6 +345,7 @@ proc reportVersionNumberAsInteger { } {
 }
 
 
+# Metadata reporter based on Huygens' preOpen operation.
 proc getMetaData { } {
 
     set imgCount [Hu_getOpt -count]
@@ -424,6 +406,46 @@ proc getMetaData { } {
             }
         }
         puts "END IMG"
+    }
+}
+
+
+# Script for reading in an image and output data in template form.
+proc getMetaDataFromImage {} {
+    
+    set error [ getInputVariables {path filename} ]
+    if { $error } { exit 1 }
+    
+    set img  [ hrmImgOpen $path $filename ]
+    set dims [ $img getdims ]
+    reportKeyValue "dims" $dims
+
+    set templateStr [::Template::Micr::params2TemplateStr $img]    
+    dict set templateDict params $templateStr
+    
+    dict map {key value} [dict get $templateDict params setp] {
+        reportKeyValue $key $value
+    }
+
+    catch { $img del }
+}
+
+
+# Script for reading in a Huygens microscopy template and output template data.
+proc getMetaDataFromHuTemplate {} {
+    
+    set error [ getInputVariables {huTemplate} ]
+    if { $error } { exit 1 }
+
+    # Get Huygenss interpretation of the template.
+    set templateList [::Template::loadCommon "micr" $huTemplate outArr]
+
+    # Convert it to a dict.
+    dict set templDict params $templateList
+
+    # Report values from the template.
+    dict map {key value} [dict get $templDict params setp] {
+        reportKeyValue $key $value
     }
 }
 

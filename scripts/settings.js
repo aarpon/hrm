@@ -241,11 +241,14 @@ function deleteValuesAndRedirect(page) {
 function hu2template(selectedFiles) {
 
     control = document.getElementById('actions').innerHTML;
+    action = 'upload';
+    upsubmitted = false;
 
+    changeDiv('actions','');
     changeDiv('upMsg', 'Upload a Huygens template '
-              + ' (extensions <b>.hgsm, .hgsb</b>).');
-    changeDiv('actions',
-              '<form id="uploadForm" enctype="multipart/form-data" '
+              + ' (extensions <b>.hgsm, .hgsb</b>).'
+              + '<div id="up_form">'
+              + '<form id="uploadForm" enctype="multipart/form-data" '
               + 'action="?folder=src&upload=1" method="POST" '
               + 'onsubmit="return confirmUpload()" >'
               + '<input type="hidden" name="uploadForm" value="1"> '
@@ -253,14 +256,15 @@ function hu2template(selectedFiles) {
               + '<div id="upfile_0"></div>'
               + '<div id="addanotherfile"></div></div>'
               + '<div id="buttonUpload">'
-              + '<input name="upload" type="submit" value="" '
+              + '<input name="huTotemplate" type="submit" value="" '
               + 'class="icon upload" '
               + 'onmouseover="Tip(\'Upload selected files\')" '
               + 'onmouseout="UnTip()"/>'
               + '<input type="button" class="icon abort" onclick="UnTip(); '
               + 'cancelFileSelection()" '
               + 'onmouseover="Tip(\'Cancel\')" onmouseout="UnTip()"/></div>'
-              + ' </form>' );
+              + ' </form>'
+              + '</div>');
 
     addTemplateFile();
 
