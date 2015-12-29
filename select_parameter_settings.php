@@ -127,7 +127,7 @@ else if (isset($_POST['huTotemplate'])) {
     $fileName = pathinfo($file[0], PATHINFO_BASENAME);
     $extension = pathinfo($file[0], PATHINFO_EXTENSION);
     
-    if ($extension == "hgsb" || $extension == "hgsm") {
+    if ($extension == "hgsm") {
         if($fileName != '') {
             $hrmTemplateName = 'From ' . $fileName;
             $setting = $_SESSION['editor']->createNewSetting($hrmTemplateName);
@@ -136,8 +136,8 @@ else if (isset($_POST['huTotemplate'])) {
             $_SESSION['editor']->huTemplate2hrmTemplate($setting, $tmpName[0]);
             $message = $_SESSION['editor']->message();  
         } else {
-            $message = "Please upload a valid Huygens template " .
-                "(extension .hgsb or .hgsm)";
+            $message = "Please upload a valid Huygens microscopy template " .
+                "(extension .hgsm)";
         }
         
         if ($setting != NULL) {
@@ -146,8 +146,8 @@ else if (isset($_POST['huTotemplate'])) {
             header("Location: " . "image_format.php"); exit();
         }
     } else {
-        $message = "Please upload a valid Huygens template " .
-            "(extension .hgsb or .hgsm)";
+        $message = "Please upload a valid Huygens microscopy template " .
+            "(extension .hgsm)";
     }
 }
 else if (isset($_POST['edit'])) {

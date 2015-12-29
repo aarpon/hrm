@@ -7,7 +7,7 @@ var popup;
 var generated = new Array();
 var debug = '';
 var control = '';
-var filemenu = '<div class="inputFile" name="inputFile"><input type="file" name="upfile" size="30" accept=" .HGSM,.hgsm,.hgst,.HGST" ></div>';
+var filemenu = '<div class="inputFile" name="inputFile"><input type="file" name="upfile" size="30" accept=" .HGSM,.hgsm" ></div>';
 ;
 function clean() {
     if (popup != null) {

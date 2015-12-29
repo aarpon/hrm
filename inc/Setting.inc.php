@@ -2112,6 +2112,9 @@ class ParameterSetting extends Setting {
         } else {
             $chanCnt = 1;
         }
+        
+        if ($chanCnt > 5) $chanCnt = 5;
+        $this->parameter['NumberOfChannels']->setValue($chanCnt);
 
         // Sampling sizes: the confidence level is not always present.
         if (strpos($huArray['parState,s'], "default") === FALSE) {
@@ -2126,8 +2129,6 @@ class ParameterSetting extends Setting {
             $this->parameter['TimeInterval']->setValue($sampleSizes[3]);
         }
         
-        if ($chanCnt > 5) $chanCnt = 5;
-        $this->parameter['NumberOfChannels']->setValue($chanCnt);
 
         // Numerical Aperture.
         if (strpos($huArray['parState,na'], "default") === FALSE) {

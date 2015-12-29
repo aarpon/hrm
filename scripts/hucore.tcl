@@ -422,7 +422,7 @@ proc getMetaDataFromImage {} {
 
     set templateStr [::Template::Micr::params2TemplateStr $img]    
     dict set templateDict params $templateStr
-    
+
     dict map {key value} [dict get $templateDict params setp] {
         reportKeyValue $key $value
     }
@@ -436,16 +436,29 @@ proc getMetaDataFromHuTemplate {} {
     
     set error [ getInputVariables {huTemplate} ]
     if { $error } { exit 1 }
+    
+    set fp [open $huTemplate]
+    set contents [read $fp]
+    close $fp
 
-    # Get Huygenss interpretation of the template.
+    # The number of channels is not reported, extract it from the template.
+    set pattern {^(.*) micr \{([a-z|\s]*)\}*}
+    if { [regexp $pattern $contents match dummy1 micrList dummy2] } {
+        set chanCnt [llength $micrList]
+    } else {
+        set chanCnt 1
+    }
+    
+    # Let Huygens' interpret the template. Notice that info up to 32 channels
+    # is added automatically.
     set templateList [::Template::loadCommon "micr" $huTemplate outArr]
 
-    # Convert it to a dict.
+    # Convert the result to a dict.
     dict set templDict params $templateList
 
-    # Report values from the template.
+    # Stick to the channels from the original template. Discard the rest.
     dict map {key value} [dict get $templDict params setp] {
-        reportKeyValue $key $value
+        reportKeyValue $key [lrange $value 0 $chanCnt]
     }
 }
 
