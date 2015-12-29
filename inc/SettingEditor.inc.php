@@ -181,80 +181,59 @@ abstract class BaseSettingEditor {
     }
 
     /*!
-      \brief    Creates a new setting based on parsing
-                the given file through HuCore
-      \param    $setting  The setting object to fill
-      \param    $filename File name without path
+      \brief    Creates a new setting based on parsing the given file
+                through HuCore.
+      \param    $setting  The setting object to fill.
+      \param    $fileName File name without path.
       \return   True if the new template creation was successful,
-                false otherwise
+                false otherwise.
     */
-    public function generateTemplateFromImageFile($setting, $filename)
+    public function image2hrmTemplate($setting, $fileName)
     {
-        /* It should not matter whether it works or not, in case there is no
-           param just do the same as create new.
-        */
-        if ($setting != NULL) {
-
-            $opts = "-path \"" . $_SESSION['fileserver']->sourceFolder() .
-                "\" -filename \"$filename\"";
-
-            $data = askHuCore('getDataFromFile', $opts);
-
-            $setting->parseParamsFromHuCore($data);
-            $result = $setting->save();
-            $this->message = $setting->message();
+        $result = False;
+        
+        if ($setting == NULL) {
             return $result;
         }
+        
+        /* If it doesn't work, just do the same as create new. */
+        $opts = "-path \"" . $_SESSION['fileserver']->sourceFolder() .
+            "\" -filename \"$fileName\"";
+        
+        $data = askHuCore('getMetaDataFromImage', $opts);
+        
+        $setting->parseParamsFromHuCore($data);
+        $result = $setting->save();
+        $this->message = $setting->message();
+        
+        return $result;
     }
 
-        /*!
-      \brief	populates a setting based on parsing
-                the raw file string of a Huygens template
-      \param    $setting    The setting object to fill
-      \param    $rawstring    The raw contents of the template file
-      \return	true if the new template creation was successful,
-                false otherwise
+    /*!
+      \brief    Populates a setting based on parsing the raw file string of
+                a Huygens template.
+      \param    $setting    The setting object to fill.
+      \param    $rawString  The raw contents of the template file.
+      \return   True if the new template creation was successful,
+                false otherwise.
     */
-    public function generateTemplateFromHuygensTemplate($setting, $rawstring) {
-        /*
-        Basically we need to make it the same format as $data in generateTemplateFromImageFile()
-        For this we will use some regexp to find the key value pairs we need
-        */
+    public function huTemplate2hrmTemplate($setting, $huTemplate) {
 
-        if ($setting != NULL) {
-            // First only grab the contents of the setp element
-            preg_match("/.*setp {(.+)}/", $rawstring, $data);
-            preg_match_all("/([^ ]+) { ?([^}]+)}/", $data[1], $r);
-            $result = array_combine($r[1], $r[2]);
+       $result = False;
 
-            // Rename them so that they match their counterparts
-            // for parseParamsFromHuCore
-            $renaming = array (
-                's' => 'sampleSizes',
-                'micr' => 'mType',
-                'pr' => 'pinhole',
-                'ex' => 'lambdaEx',
-                'em' => 'lambdaEm',
-                'na' => 'NA',
-                'ri' => 'RIMedia',
-                'ril' => 'RILens',
-                'ps' => 'pinholeSpacing'
-            );
-            $final = $result;
-            foreach ($renaming as $currentKey => $newKey) {
-                $final[$newKey] = $final[$currentKey];
-                unset($final[$currentKey]);
-            }
+       if ($setting == NULL) {
+           return $result;
+       }
 
-            // Make sure that all settings are set to verified.
-            foreach ($final as $key => $value) {
-                $final['parState,' . $key] = 'verified';
-            }
-            $setting->parseParamsFromHuCore($final);
-            $result = $setting->save();
-            $this->message = $setting->message();
-            return $result;
-        }
+       $opts = "-huTemplate \"" . $huTemplate . "\"";
+       
+       $data = askHuCore('getMetaDataFromHuTemplate', $opts);
+
+       $setting->parseParamsFromHuCore($data);
+       $result = $setting->save();
+       $this->message = $setting->message();
+       
+       return $result;
     }
 
     /*!

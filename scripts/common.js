@@ -526,6 +526,7 @@ function confirmUpload() {
 
     alert('returning');
     */
+
     return true;
 }
 

@@ -103,43 +103,52 @@ else if (isset($_POST['copy'])) {
     $message = $_SESSION['editor']->message();
 }
 else if(isset($_POST['imageTotemplate']) && isset($_POST['fileselection'])) {
-    // Check whether we are going to work with an image or just a template upload
     $setting = NULL;
-    if($_POST['fileselection']=='Upload a Template') {
-        // Get the file
-        $path_parts = pathinfo($_FILES["upfile"]["name"]);
-        if($path_parts['filename'] != '') {
-            $hrmtemplatename = 'From ' . $path_parts['filename'];
-            $setting = $_SESSION['editor']->createNewSetting($hrmtemplatename);
-            $filecontents = file_get_contents($_FILES["upfile"]["tmp_name"]);
-            $_SESSION['editor']->generateTemplateFromHuygensTemplate($setting, $filecontents);
-            $message = $_SESSION['editor']->message();
 
-        } else {
-            $message = 'You did not upload a template file';
-        }
-
-    } elseif ($_POST['fileselection']!='Choose a file') {
+    if ($_POST['fileselection'] != 'Choose a file') {
         $filestring = $_POST['fileselection'];
         $path_parts = pathinfo($filestring);
         $hrmtemplatename = 'Based on '.$path_parts['filename'];
-
         $setting = $_SESSION['editor']->createNewSetting($hrmtemplatename);
-
-        $result = $_SESSION['editor']->generateTemplateFromImageFile($setting, $filestring);
+        $result  = $_SESSION['editor']->image2hrmTemplate($setting, $filestring);
         $message = $_SESSION['editor']->message();
-
     }
 
-    if ($setting != NULL) {
-        // Need to set ImageFileFormat here, as for the template creation above
-        // Oli: I mostly copy-pasted this bit.
+     if ($setting != NULL) {
+        // Need to set ImageFileFormat here, as for the template creation above.
         $setting->parameter("ImageFileFormat")->setValue($fileFormat);
         $_SESSION['setting'] = $setting;
         header("Location: " . "image_format.php"); exit();
     }
+}
+else if (isset($_POST['huTotemplate'])) {
+    $setting = NULL;
+    $file = $_FILES["upfile"]["name"];
+    $fileName = pathinfo($file[0], PATHINFO_BASENAME);
+    $extension = pathinfo($file[0], PATHINFO_EXTENSION);
+    
+    if ($extension == "hgsb" || $extension == "hgsm") {
+        if($fileName != '') {
+            $hrmTemplateName = 'From ' . $fileName;
+            $setting = $_SESSION['editor']->createNewSetting($hrmTemplateName);
 
-
+            $tmpName = $_FILES["upfile"]["tmp_name"];
+            $_SESSION['editor']->huTemplate2hrmTemplate($setting, $tmpName[0]);
+            $message = $_SESSION['editor']->message();  
+        } else {
+            $message = "Please upload a valid Huygens template " .
+                "(extension .hgsb or .hgsm)";
+        }
+        
+        if ($setting != NULL) {
+            $setting->parameter("ImageFileFormat")->setValue($fileFormat);
+            $_SESSION['setting'] = $setting;
+            header("Location: " . "image_format.php"); exit();
+        }
+    } else {
+        $message = "Please upload a valid Huygens template " .
+            "(extension .hgsb or .hgsm)";
+    }
 }
 else if (isset($_POST['edit'])) {
     $setting = $_SESSION['editor']->loadSelectedSetting();
@@ -209,7 +218,8 @@ else if (isset($_POST['OK']) && $_POST['OK']=="OK" ) {
   }
 }
 
-$script = array( "settings.js", "common.js", "json-rpc-client.js", "shared.js", "ajax_utils.js" );
+$script = array( "settings.js", "common.js",
+                 "json-rpc-client.js", "shared.js", "ajax_utils.js" );
 
 include("header.inc.php");
 
