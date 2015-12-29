@@ -2082,6 +2082,11 @@ class ParameterSetting extends Setting {
     */
     public function parseParamsFromHuCore($huArray){
 
+         // Sanity checks: remove trailing spaces.
+        foreach ($huArray as $key => $value) {
+            $huArray[$key] = trim($value, " ");
+        }
+
         // Microscope Type.
         if (strpos($huArray['parState,micr'], "default") === FALSE) {
             $huMicrType = explode(" ", $huArray['micr'], 5);
@@ -2109,14 +2114,19 @@ class ParameterSetting extends Setting {
         }
 
         // Sampling sizes: the confidence level is not always present.
-        $sampleSizes = array_map('floatval',  explode(' ', $huArray['s']));
-        $sampleSizes[0] = round($sampleSizes[0] * 1000);
-        $sampleSizes[2] = round($sampleSizes[2] * 1000);
-        $this->parameter['CCDCaptorSizeX']->setValue($sampleSizes[0]);
-        $this->parameter['ZStepSize']->setValue($sampleSizes[2]);
-        $this->parameter['TimeInterval']->setValue($sampleSizes[3]);
+        if (strpos($huArray['parState,s'], "default") === FALSE) {
+            $sampleSizes = array_map('floatval',  explode(' ', $huArray['s']));
+            
+            $sampleSizes[0] = round($sampleSizes[0] * 1000);
+            $this->parameter['CCDCaptorSizeX']->setValue($sampleSizes[0]);
+            
+            $sampleSizes[2] = round($sampleSizes[2] * 1000);
+            $this->parameter['ZStepSize']->setValue($sampleSizes[2]);
+            
+            $this->parameter['TimeInterval']->setValue($sampleSizes[3]);
+        }
         
-        if ($chanCnt > 5) $chanCnt =5;
+        if ($chanCnt > 5) $chanCnt = 5;
         $this->parameter['NumberOfChannels']->setValue($chanCnt);
 
         // Numerical Aperture.
