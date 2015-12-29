@@ -245,8 +245,8 @@ function hu2template(selectedFiles) {
     upsubmitted = false;
 
     changeDiv('actions','');
-    changeDiv('upMsg', 'Upload a Huygens template '
-              + ' (extensions <b>.hgsm, .hgsb</b>).'
+    changeDiv('upMsg', 'Upload a Huygens microscopy template '
+              + ' (extension <b>.hgsm</b>).'
               + '<div id="up_form">'
               + '<form id="uploadForm" enctype="multipart/form-data" '
               + 'action="?folder=src&upload=1" method="POST" '
