@@ -236,25 +236,35 @@ function deleteValuesAndRedirect(page) {
 }
 
 
-// ------------- Functions for importing image parameters. ----------------
+// ------------- Functions for importing parameters. ----------------
 
-function hu2template(selectedFiles) {
+
+function hu2template(type) {
 
     control = document.getElementById('actions').innerHTML;
     action = 'upload';
     upsubmitted = false;
 
+    if (type == "micr") {
+        var msg = 'Upload a Huygens microscopy template '
+            + ' (extension <b>.hgsm</b>).'
+    } else if (type == "decon") {
+        var msg = 'Upload a Huygens deconvolution template '
+            + ' (extension <b>.hgsd</b>).'
+    } else {
+        return;
+    }
+    
     changeDiv('actions','');
-    changeDiv('upMsg', 'Upload a Huygens microscopy template '
-              + ' (extension <b>.hgsm</b>).'
+    changeDiv('upMsg', msg 
               + '<div id="up_form">'
               + '<form id="uploadForm" enctype="multipart/form-data" '
-              + 'action="?folder=src&upload=1" method="POST" '
-              + 'onsubmit="return confirmUpload()" >'
+              + 'action="?folder=src&upload=1" method="POST"'
+              + 'onsubmit="return confirmUpload()">'
               + '<input type="hidden" name="uploadForm" value="1"> '
               + '<div id="upload_list">'
               + '<div id="upfile_0"></div>'
-              + '<div id="addanotherfile"></div></div>'
+              + '</div>'
               + '<div id="buttonUpload">'
               + '<input name="huTotemplate" type="submit" value="" '
               + 'class="icon upload" '
@@ -308,7 +318,6 @@ function createImageSelection(fileList) {
 
 
 function addTemplateFile() {
-
     content = '<div class="inputFile" name="inputFile">'
         + '<input type="file" name="upfile[]" size="3">'
         + '</div>';

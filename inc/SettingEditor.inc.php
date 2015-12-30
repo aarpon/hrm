@@ -501,6 +501,34 @@ class TaskSettingEditor extends BaseSettingEditor {
     function newSettingObject() {
         return (new TaskSetting());
     }
+
+        /*!
+      \brief    Populates a setting based on parsing the raw file string of
+                a Huygens template.
+      \param    $setting    The task setting object to fill.
+      \param    $rawString  The raw contents of the template file.
+      \return   True if the new template creation was successful,
+                false otherwise.
+    */
+    public function huTemplate2hrmTemplate($setting, $huTemplate) {
+
+       $result = False;
+
+       if ($setting == NULL) {
+           return $result;
+       }
+
+       $opts = "-huTemplate \"" . $huTemplate . "\"";
+       
+       // $data = askHuCore('getMetaDataFromHuTemplate', $opts);
+
+       // $setting->parseParamsFromHuCore($data);
+       // $result = $setting->save();
+       // $this->message = $setting->message();
+       
+       return $result;
+    }
+
 }
 
 
