@@ -2679,6 +2679,19 @@ class TaskSetting extends Setting {
     }
 
 
+    /*!
+      \brief Huygens parameters to HRM parameters.
+      \param $huArray An array with the result of 'image setp -tclReturn'.
+    */
+    public function parseParamsFromHuCore($huArray){
+
+         // Sanity checks: remove trailing spaces.
+        foreach ($huArray as $key => $value) {
+            $huArray[$key] = trim($value, " ");
+        }
+    }
+
+    
 } // End of class taskSetting
 
 /*

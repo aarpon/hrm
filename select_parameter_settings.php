@@ -71,6 +71,12 @@ if (!isset($_SESSION['fileserver'])) {
 
 $message = "";
 
+/* *****************************************************************************
+ *
+ * PROCESS THE POSTED PARAMETERS
+ *
+ **************************************************************************** */
+
 if (isset($_POST['setting'])) {
   $_SESSION['editor']->setSelected($_POST['setting']);
 }
@@ -235,6 +241,9 @@ include("header.inc.php");
     </span>
     <span class="toolTip" id="ttSpanImageToTemplate">
         Generate template from image file.
+    </span>
+    <span class="toolTip" id="ttSpanHuygens">
+        Import a Huygens template.
     </span>
     <span class="toolTip" id="ttSpanClone">
         Copy the selected image template to a new one with the
@@ -477,7 +486,7 @@ else {
                        class="icon create"
                        onmouseover="TagToTip('ttSpanCreate' )"
                        onmouseout="UnTip()" />
-                    <input name="imageTotemplate"
+                <input name="imageTotemplate"
                        type="button"
                        value=""
                        class="icon imageTotemplate"
@@ -490,7 +499,7 @@ else {
                        class="icon huygens"
                        onmouseover="TagToTip('ttSpanHuygens' )"
                        onmouseout="UnTip()"
-                       onclick='UnTip(); hu2template(<?php echo json_encode( $_SESSION['fileserver']->selectedFiles()); ?>)' />
+                       onclick="UnTip(); hu2template('micr');" />
                <input name="copy"
                        type="submit"
                        value=""
