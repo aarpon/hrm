@@ -110,7 +110,6 @@ else if (isset($_POST['huTotemplate'])) {
         }
         
         if ($task_setting != NULL) {
-            $task_setting->parameter("ImageFileFormat")->setValue($fileFormat);
             $_SESSION['task_setting'] = $task_setting;
             header("Location: " . "task_parameter.php"); exit();
         }
