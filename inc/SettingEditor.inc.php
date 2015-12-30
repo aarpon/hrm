@@ -520,11 +520,11 @@ class TaskSettingEditor extends BaseSettingEditor {
 
        $opts = "-huTemplate \"" . $huTemplate . "\"";
        
-       // $data = askHuCore('getMetaDataFromHuTemplate', $opts);
+       $data = askHuCore('getDeconDataFromHuTemplate', $opts);
 
-       // $setting->parseParamsFromHuCore($data);
-       // $result = $setting->save();
-       // $this->message = $setting->message();
+       $setting->parseParamsFromHuCore($data);
+       $result = $setting->save();
+       $this->message = $setting->message();
        
        return $result;
     }
