@@ -479,13 +479,20 @@ proc getDeconDataFromHuTemplate {} {
     close $fp
 
     # The number of channels is not reported, extract it from the template.
-    set pattern {^(.*) micr \{([a-z|\s]*)\}*}
-    if { [regexp $pattern $contents match dummy1 micrList dummy2] } {
-        set chanCnt [llength $micrList]
+    set pattern {^(.*)taskList \{([a-z|\:|0-9|\s]*)\}*}
+    if { [regexp $pattern $contents match dummy1 taskList dummy2] } {
+        set chanCnt 0
+        foreach item $taskList {
+            if { [string first "qmle" $item] >= 0
+                 || [string first "cmle" $item] >= 0} {
+                incr chanCnt
+            }
+        }
+        if {$chanCnt == 0} incr chanCnt
     } else {
         set chanCnt 1
     }
-    
+
     # Let Huygens' interpret the template. Notice that info up to 32 channels
     # is added automatically.
     set templateList [::Template::loadCommon "decon" $huTemplate outArr]
