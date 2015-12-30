@@ -468,6 +468,37 @@ proc getMetaDataFromHuTemplate {} {
     }
 }
 
+# Script for reading in a Huygens deconvolution template and output template data.
+proc getDeconDataFromHuTemplate {} {
+    
+    set error [ getInputVariables {huTemplate} ]
+    if { $error } { exit 1 }
+    
+    set fp [open $huTemplate]
+    set contents [read $fp]
+    close $fp
+
+    # The number of channels is not reported, extract it from the template.
+    set pattern {^(.*) micr \{([a-z|\s]*)\}*}
+    if { [regexp $pattern $contents match dummy1 micrList dummy2] } {
+        set chanCnt [llength $micrList]
+    } else {
+        set chanCnt 1
+    }
+    
+    # Let Huygens' interpret the template. Notice that info up to 32 channels
+    # is added automatically.
+    set templateList [::Template::loadCommon "decon" $huTemplate outArr]
+
+    # Convert the result to a dict.
+    dict set templDict params $templateList
+
+    # Stick to the channels from the original template. Discard the rest.
+    dict map {key value} [dict get $templDict params setp] {
+        reportKeyValue $key [lrange $value 0 [expr {$chanCnt - 1}]]
+    }
+}
+
 
 proc estimateSnrFromImage {} {
 
