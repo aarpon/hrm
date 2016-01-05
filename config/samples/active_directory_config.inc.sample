@@ -11,7 +11,7 @@
     // The base dn for your domain
     $BASE_DN = "DC=mydomain,DC=local";
 
-    // Array of domain controllers. Specifiy multiple controllers if you would
+    // Array of domain controllers. Specify multiple controllers if you would
     // like the class to balance the LDAP queries amongst multiple servers
     $DOMAIN_CONTROLLERS = array ("dc01.mydomain.local");
 
