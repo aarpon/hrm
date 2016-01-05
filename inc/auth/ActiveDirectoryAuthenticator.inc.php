@@ -37,7 +37,7 @@ class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
     private $m_ValidGroups;
 
     /*!
-      \var      $m_ValidGroups
+      \var      $m_AuthorizedGroups
       \brief	Array of authorized groups
 
       If $m_AuthorizedGroups is not empty, the groups array returned by
