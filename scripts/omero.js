@@ -13,6 +13,9 @@ function omeroLogin() {
 function cancelOmeroSelection() {
     oTree = $('#omeroTree');
     selected_nodes = oTree.tree('getSelectedNodes');
+    if (selected_nodes == null) {
+        return;
+    }
     selected_nodes.forEach(function(node) {
         oTree.tree('removeFromSelection', node);
     });
