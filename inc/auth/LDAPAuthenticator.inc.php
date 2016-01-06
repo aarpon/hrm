@@ -296,12 +296,14 @@ class LDAPAuthenticator extends AbstractAuthenticator {
                 for ($i = 0; $i < count($groups); $i++) {
                     for ($j = 0; $j < count($this->m_LDAP_Authorized_Groups); $j++) {
                         if (strpos($groups[$i], $this->m_LDAP_Authorized_Groups[$j])) {
+                            report("User $uid: group authentication succeeded.", 0);
                             return true;
                         }
                     }
                 }
 
                 // Not found
+                report("User $uid: user rejected by failed group authentication.", 0);
                 return false;
             }
 
