@@ -157,49 +157,41 @@ class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
         $b = $this->m_AdLDAP->user()->authenticate(
             strtolower($username), $password);
 
-        // Do we need to check for group authorization?
-        if (count($this->m_AuthorizedGroups) == 0) {
-
-            // No, we don't
+        // If authentication failed, we can return here.
+        if ($b === false) {
             $this->m_AdLDAP->close();
-            return $b;
-
-        } else {
-
-            // If authentication failed, we can return here.
-            if ($b === false) {
-
-                $this->m_AdLDAP->close();
-                return false;
-            }
-
-            // We need to retrieve the groups and compare them.
-
-            // If needed, process the user name suffix for subdomains
-            $username .= $this->m_UsernameSuffix;
-            if ($this->m_UsernameSuffixReplaceMatch != '') {
-                $pattern = "/$this->m_UsernameSuffixReplaceMatch/";
-                $username = preg_replace($pattern,
-                    $this->m_UsernameSuffixReplaceString,
-                    $username);
-            }
-
-            // Get the user groups from AD
-            $userGroups = $this->m_AdLDAP->user()->groups($username);
-            $this->m_AdLDAP->close();
-
-            // Test for intersection
-            if (count($this->m_ValidGroups) > 0) {
-                $b = count(array_intersect(
-                        $userGroups, $this->m_AuthorizedGroups)) > 0;
-                if ($b === true) {
-                    report("User $username: group authentication succeeded.", 0);
-                } else {
-                    report("User $username: user rejected by failed group authentication.", 0);
-                }
-                return $b;
-            }
+            return false;
         }
+
+        // If if succeeded, do we need to check for group authorization?
+        if (count($this->m_AuthorizedGroups) == 0) {
+            // No, we don't.
+            return true;
+        }
+
+        // We need to retrieve the groups and compare them.
+
+        // If needed, process the user name suffix for subdomains
+        $username .= $this->m_UsernameSuffix;
+        if ($this->m_UsernameSuffixReplaceMatch != '') {
+            $pattern = "/$this->m_UsernameSuffixReplaceMatch/";
+            $username = preg_replace($pattern,
+                $this->m_UsernameSuffixReplaceString,
+                $username);
+        }
+
+        // Get the user groups from AD
+        $userGroups = $this->m_AdLDAP->user()->groups($username);
+        $this->m_AdLDAP->close();
+
+        // Test for intersection
+        $b = count(array_intersect($userGroups, $this->m_AuthorizedGroups)) > 0;
+        if ($b === true) {
+            report("User $username: group authentication succeeded.", 0);
+        } else {
+            report("User $username: user rejected by failed group authentication.", 0);
+        }
+        return $b;
     }
 
     /*!

@@ -225,8 +225,8 @@ class LDAPAuthenticator extends AbstractAuthenticator {
     \param  $password String Password for authentication.
     \return boolean: True if authentication succeeded, false otherwise.
     */
-    public function authenticate($uid, $userPassword) {
-
+    public function authenticate($uid, $userPassword)
+    {
         if (!$this->isConnected()) {
             report("[LDAP] ERROR: Authenticate -- not connected!", 0);
             return false;
@@ -265,6 +265,7 @@ class LDAPAuthenticator extends AbstractAuthenticator {
             return false;
         }
         if (@ldap_count_entries($this->m_Connection, $sr) != 1) {
+            report("[LDAP] ERROR: Authenticate -- user not found!", 0);
             return false;
         }
 
@@ -275,48 +276,34 @@ class LDAPAuthenticator extends AbstractAuthenticator {
             // If this succeeds, the user is authenticated
             $b = @ldap_bind($this->m_Connection, $result[0]['dn'], $userPassword);
 
-            // Do we need to check for group authorization?
-            if (count($this->m_LDAP_Authorized_Groups) == 0) {
+            // If authentication failed, we can return here.
+            if ($b === false) {
+                return false;
+            }
 
+            // If it succeeded, fo we need to check for group authorization?
+            if (count($this->m_LDAP_Authorized_Groups) == 0) {
                 // No, we don't
                 return $b;
+            }
 
-            } else {
-
-                // If authentication failed, we can return here.
-                if ($b === false) {
-
-                    return false;
-
-                }
-
-                // Test whether at least one of the user groups is contained in
-                // the list of authorize groups.
-                $groups = $result[0]["memberof"];
-                for ($i = 0; $i < count($groups); $i++) {
-                    for ($j = 0; $j < count($this->m_LDAP_Authorized_Groups); $j++) {
-                        if (strpos($groups[$i], $this->m_LDAP_Authorized_Groups[$j])) {
-                            report("User $uid: group authentication succeeded.", 0);
-                            return true;
-                        }
+            // Test whether at least one of the user groups is contained in
+            // the list of authorize groups.
+            $groups = $result[0]["memberof"];
+            for ($i = 0; $i < count($groups); $i++) {
+                for ($j = 0; $j < count($this->m_LDAP_Authorized_Groups); $j++) {
+                    if (strpos($groups[$i], $this->m_LDAP_Authorized_Groups[$j])) {
+                        report("User $uid: group authentication succeeded.", 0);
+                        return true;
                     }
                 }
-
-                // Not found
-                report("User $uid: user rejected by failed group authentication.", 0);
-                return false;
             }
 
-            if (@ldap_bind($this->m_Connection,
-                $result[0]['dn'], $userPassword)) {
-                return true;
-            } else {
-                // Wrong password
-                return false;
-            }
-        } else {
+            // Not found
+            report("User $uid: user rejected by failed group authentication.", 0);
             return false;
         }
+        return false;
     }
 
     /*!
