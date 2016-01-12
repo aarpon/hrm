@@ -2963,7 +2963,7 @@ if ($current_revision < $n) {
 // ------------------ Add entries to 'job_files' -------------------------
     $tabname   = "job_files";
     $newcolumn = "autoseries";
-    $yype = "VARCHAR(1)";
+    $type = "VARCHAR(1)";
 
     // Does the column exist already?
     $columns = $db->MetaColumnNames( $tabname );
