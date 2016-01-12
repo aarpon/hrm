@@ -449,7 +449,7 @@ proc getMetaDataFromHuTemplate {} {
         set chanCnt 1
     }
     
-    # Let Huygens' interpret the template. Notice that info up to 32 channels
+    # Let Huygens interpret the template. Notice that info up to 32 channels
     # is added automatically.
     set templateList [::Template::loadCommon "micr" $huTemplate outArr]
 
@@ -483,26 +483,34 @@ proc getDeconDataFromHuTemplate {} {
     if { [regexp $pattern $contents match dummy1 taskList dummy2] } {
         set chanCnt 0
         foreach item $taskList {
-            if { [string first "qmle" $item] >= 0
-                 || [string first "cmle" $item] >= 0} {
-                incr chanCnt
-            }
+            set item [::Template::Decon::stripSuffix $item]
+            if {$item ni {"cmle" "qmle"}} continue
+            incr chanCnt
         }
-        if {$chanCnt == 0} incr chanCnt
+        if {$chanCnt == 0} {
+            incr chanCnt
+        }
     } else {
         set chanCnt 1
     }
 
-    # Let Huygens' interpret the template. Notice that info up to 32 channels
+    # Let Huygens interpret the template. Notice that info up to 32 channels
     # is added automatically.
     set templateList [::Template::loadCommon "decon" $huTemplate outArr]
-
+    
     # Convert the result to a dict.
     dict set templDict params $templateList
 
     # Stick to the channels from the original template. Discard the rest.
-    dict map {key value} [dict get $templDict params setp] {
-        reportKeyValue $key [lrange $value 0 [expr {$chanCnt - 1}]]
+    dict map {dictKey dictValue} [dict get $templDict params] {
+
+        set item [::Template::Decon::stripSuffix $dictKey]
+        if {$item ni {"cmle" "qmle" "stabilize" "shift" "autocrop"}} continue
+        reportKeyValue $dictKey $dictValue
+        
+        foreach {param value} $dictValue {
+            reportKeyValue "$dictKey $param" [lindex $value 0]
+        }
     }
 }
 
