@@ -509,7 +509,10 @@ proc getDeconDataFromHuTemplate {} {
         reportKeyValue $dictKey $dictValue
         
         foreach {param value} $dictValue {
-            reportKeyValue "$dictKey $param" [lindex $value 0]
+            if {$param ne "vector"} {
+                set value [lindex $value 0]
+            }
+            reportKeyValue "$dictKey $param" $value
         }
     }
 }
