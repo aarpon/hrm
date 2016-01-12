@@ -2690,6 +2690,9 @@ class TaskSetting extends Setting {
             $huArray[$key] = trim($value, " ");
         }
 
+        $db = new DatabaseConnection;
+        $maxChanCnt = $db->getMaxChanCnt();
+
         // We only look at the first channel for the decon algorithm.
         if (strpos($huArray['cmle:0'], "") === FALSE) {
             $algorithm = $this->parameter('DeconvolutionAlgorithm');
@@ -2700,7 +2703,7 @@ class TaskSetting extends Setting {
         }
 
         // SNR.
-        for ($chan = 0; $chan < 6; $chan++) {
+        for ($chan = 0; $chan < $maxChanCnt; $chan++) {
             if ($this->parameter('DeconvolutionAlgorithm')->value() == "cmle") {
                 $key = "cmle:" . $chan . " sn";
             } else {
@@ -2722,7 +2725,7 @@ class TaskSetting extends Setting {
         }
 
         // Iterations.
-        for ($chan = 0; $chan < 6; $chan++) {
+        for ($chan = 0; $chan < $maxChanCnt; $chan++) {
             if ($this->parameter('DeconvolutionAlgorithm')->value() == "cmle") {
                 $key = "cmle:" . $chan . " it";
             } else {
@@ -2739,7 +2742,7 @@ class TaskSetting extends Setting {
         }
 
         // Quality factor.
-        for ($chan = 0; $chan < 6; $chan++) {
+        for ($chan = 0; $chan < $maxChanCnt; $chan++) {
             if ($this->parameter('DeconvolutionAlgorithm')->value() == "cmle") {
                 $key = "cmle:" . $chan . " q";
             } else {
@@ -2756,11 +2759,40 @@ class TaskSetting extends Setting {
             }
         }
 
-        // Stabilize.
+        // Stabilization.
         if (strpos($huArray['stabilize enabled'],"") === FALSE) {
             $stabilize = $huArray['stabilize enabled'];
             $this->parameter['ZStabilization']->setValue($stabilize);
-        }        
+        }
+
+        // Chromatic Aberration.
+        $compCnt = 5;
+        for ($chan = 0; $chan < $maxChanCnt; $chan++) {
+            $key = "shift:" . $chan . " vector";
+
+            unset($vector);
+            if (isset($huArray[$key])) {
+                $vector = explode(" ", $huArray[$key], $compCnt);
+            }
+            
+            for ($comp = 0; $comp < $compCnt; $comp++) {
+                $compKey = $chan * $compCnt + $comp;
+                
+                if (isset($vector[$comp])) {
+                    $aberration[$compKey] = $vector[$comp];
+                } else {
+                    if ($comp < $compCnt - 1) {
+                        $aberration[$compKey] = 0.;
+                    } else {
+                        // Scale component.
+                        $aberration[$compKey] = 1.;
+                    }
+                }
+            }
+        }
+        if (isset($aberration)) {
+            $this->parameter['ChromaticAberration']->setValue($aberration);
+        }
     }
 
     
