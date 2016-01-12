@@ -4448,6 +4448,35 @@ if ($current_revision < $n) {
         return;
     }
 
+
+    // ------- Enable longer server names in the queue manager. ------
+    
+    $tabname = "server";
+    $column  = "name";
+    $type    = "VARCHAR(255)";
+
+    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
+    if(!$db->Execute($SQLquery)) {
+        $msg = "An error occurred while updating the database to revision " .
+            $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $tabname = "job_queue";
+    $column  = "server";
+    $type    = "VARCHAR(255)";
+
+    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
+    if(!$db->Execute($SQLquery)) {
+        $msg = "An error occurred while updating the database to revision " .
+            $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
     
     //Update revision
     if(!update_dbrevision($n))
