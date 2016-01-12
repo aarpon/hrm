@@ -2724,6 +2724,46 @@ class TaskSetting extends Setting {
             $this->parameter['Autocrop']->setValue($autocrop);
         }
 
+        // Background.
+        // Set it to manual only if all channels are specified.
+        // Otherwise set it to the first other mode encountered.
+        for ($chan = 0; $chan < $maxChanCnt; $chan++) {
+            $keyCmleBgMode = "cmle:" . $chan . " bgMode";
+            $keyQmleBgMode = "qmle:" . $chan . " bgMode";
+            $keyCmleBgVal  = "cmle:" . $chan . " bg";
+            $keyQmleBgVal  = "qmle:" . $chan . " bg";
+
+            if (isset($huArray[$keyCmleBgMode])) {
+                $bgMode = $huArray[$keyCmleBgMode];
+            } else if (isset($huArray[$keyQmleBgMode])) {
+                $bgMode = $huArray[$keyQmleBgMode];
+            } else {
+                $bgMode = "auto";
+            }
+
+            if (isset($huArray[$keyCmleBgVal])) {
+                $bgVal = $huArray[$keyCmleBgVal];
+            } else if (isset($huArray[$keyQmleBgVal])) {
+                $bgVal = $huArray[$keyQmleBgVal];
+            } else {
+                $bgVal = 0.;
+            }
+
+            if ($bgMode == "auto" || $bgMode == "object") {
+                $bgArr = array_fill(0, $maxChanCnt, $bgMode);
+                break;
+            } else if ($bgMode == "lowest" || $bgMode == "widefield") {
+                $bgArr = array_fill(0, $maxChanCnt, "auto");
+                break;
+            } else if ($bgMode == "manual") {
+                $bgArr[$chan] = $bgVal;
+            } else {
+                $bgArr = array_fill(0, $maxChanCnt, "auto");
+                break;
+            }
+        }
+        $this->parameter['BackgroundOffsetPercent']->setValue($bgArr);
+
         // Iterations.
         for ($chan = 0; $chan < $maxChanCnt; $chan++) {
             if ($this->parameter('DeconvolutionAlgorithm')->value() == "cmle") {
