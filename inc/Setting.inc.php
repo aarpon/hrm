@@ -2428,7 +2428,7 @@ class TaskSetting extends Setting {
             $this->message = 'Please choose a background estimation mode!';
             $noErrorsFound = False;
         } else {
-            $value = array(null, null, null, null, null);
+            $value = array_fill(0, $maxChanCnt, null);
             switch ($postedParameters["BackgroundEstimationMode"]) {
                 case 'auto':
 
@@ -2934,7 +2934,7 @@ class AnalysisSetting extends Setting {
             $this->message = 'Please choose a colocalization threshold mode!';
             $noErrorsFound = False;
         } else {
-            $value = array(null, null, null, null, null);
+            $value = array_fill(0, $maxChanCnt, null);
             switch ($postedParameters["ColocThresholdMode"]) {
                 case 'auto':
 
