@@ -2689,6 +2689,78 @@ class TaskSetting extends Setting {
         foreach ($huArray as $key => $value) {
             $huArray[$key] = trim($value, " ");
         }
+
+        // We only look at the first channel for the decon algorithm.
+        if (strpos($huArray['cmle:0'], "") === FALSE) {
+            $algorithm = $this->parameter('DeconvolutionAlgorithm');
+            $algorithm->setValue("cmle");
+        } else if (strpos($huArray['qmle:0'], "") === FALSE) {
+            $algorithm = $this->parameter('DeconvolutionAlgorithm');
+            $algorithm->setValue("qmle");
+        }
+
+        // SNR.
+        for ($chan = 0; $chan < 6; $chan++) {
+            if ($this->parameter('DeconvolutionAlgorithm')->value() == "cmle") {
+                $key = "cmle:" . $chan . " sn";
+            } else {
+                $key = "qmle:" . $chan . " sn";
+            }
+
+            if (strpos($huArray[$key], "") === FALSE) {
+                $snr[$chan] = $huArray[$key];
+            }
+        }
+        if (isset($snr)) {
+            $this->parameter['SignalNoiseRatio']->setValue($snr);
+        }
+
+        // Autocrop.
+        if (strpos($huArray['autocrop enabled'],"") === FALSE) {
+            $autocrop = $huArray['autocrop enabled'];
+            $this->parameter['Autocrop']->setValue($autocrop);
+        }
+
+        // Iterations.
+        for ($chan = 0; $chan < 6; $chan++) {
+            if ($this->parameter('DeconvolutionAlgorithm')->value() == "cmle") {
+                $key = "cmle:" . $chan . " it";
+            } else {
+                $key = "qmle:" . $chan . " it";
+            }
+
+            if (strpos($huArray[$key], "") === FALSE) {
+                $it = $huArray[$key];
+                $itOld = $this->parameter['NumberOfIterations']->value();
+                if ($it > $itOld) {
+                    $this->parameter['NumberOfIterations']->setValue($it);
+                }
+            }
+        }
+
+        // Quality factor.
+        for ($chan = 0; $chan < 6; $chan++) {
+            if ($this->parameter('DeconvolutionAlgorithm')->value() == "cmle") {
+                $key = "cmle:" . $chan . " q";
+            } else {
+                $key = "qmle:" . $chan . " q";
+            }
+            
+            if (strpos($huArray[$key], "") === FALSE) {
+                $q = $huArray[$key];
+                $key = 'QualityChangeStoppingCriterion';
+                $qOld = $this->parameter[$key]->value();
+                if ($q > $qOld) {
+                    $this->parameter[$key]->setValue($q);
+                }
+            }
+        }
+
+        // Stabilize.
+        if (strpos($huArray['stabilize enabled'],"") === FALSE) {
+            $stabilize = $huArray['stabilize enabled'];
+            $this->parameter['ZStabilization']->setValue($stabilize);
+        }        
     }
 
     
