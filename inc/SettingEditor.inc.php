@@ -203,7 +203,6 @@ abstract class BaseSettingEditor {
         $data = askHuCore('getMetaDataFromImage', $opts);
         
         $setting->parseParamsFromHuCore($data);
-        $result = $setting->save();
         $this->message = $setting->message();
         
         return $result;
@@ -230,7 +229,6 @@ abstract class BaseSettingEditor {
        $data = askHuCore('getMetaDataFromHuTemplate', $opts);
 
        $setting->parseParamsFromHuCore($data);
-       $result = $setting->save();
        $this->message = $setting->message();
        
        return $result;
@@ -523,7 +521,6 @@ class TaskSettingEditor extends BaseSettingEditor {
        $data = askHuCore('getDeconDataFromHuTemplate', $opts);
 
        $setting->parseParamsFromHuCore($data);
-       $result = $setting->save();
        $this->message = $setting->message();
        
        return $result;
