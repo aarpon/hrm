@@ -3969,6 +3969,7 @@ if ($current_revision < $n) {
 // -----------------------------------------------------------------------------
 // Update to revision 14
 // Description: Add GPU to globals
+//              Add NumberOfChannels = 6 into possible_values
 // -----------------------------------------------------------------------------
 $n = 14;
 if ($current_revision < $n) {
