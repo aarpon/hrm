@@ -26,27 +26,25 @@ class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
     private $m_AdLDAP;
 
     /*!
-      \var      $m_GroupIndex
-      \brief	Index (level) of the group to consider
-
-      Users usually belong to several groups, m_GroupIndex defines which
-      level of the hierarchy to consider.
-      If $m_GroupIndex is -1 and the $m_ValidGroups array is empty,
-      ActiveDirectoryAuthenticator::getGroup() will return an array with all groups.
-     */
-    private $m_GroupIndex;
-
-    /*!
       \var      $m_ValidGroups
       \brief	Array of valid groups
 
-      If $m_GroupIndex is set to -1 and $m_ValidGroups is not empty,
-      the groups array returned by adLDAP->user_groups will be compared
-      with $m_ValidGroups and only the first group in the intersection
-      will be returned (ideally, the intersection should contain only
-      one group).
+      If $m_ValidGroups is not empty, the groups array returned by
+      adLDAP->user_groups will be compared with $m_ValidGroups and
+      only the first group in the intersection will be returned
+      (ideally, the intersection should contain only one group).
      */
     private $m_ValidGroups;
+
+    /*!
+      \var      $m_AuthorizedGroups
+      \brief	Array of authorized groups
+
+      If $m_AuthorizedGroups is not empty, the groups array returned by
+      adLDAP->user_groups will be intersected with $m_AuthorizedGroups.
+      If the intersection is empty, the user will not be allowed to log in.
+     */
+    private $m_AuthorizedGroups;
 
     /*!
     \var    $m_UsernameSuffix
@@ -75,7 +73,7 @@ class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
 
         global $ACCOUNT_SUFFIX, $AD_PORT, $BASE_DN, $DOMAIN_CONTROLLERS,
                $AD_USERNAME, $AD_PASSWORD, $REAL_PRIMARY_GROUP, $USE_SSL,
-               $USE_TLS, $RECURSIVE_GROUPS, $GROUP_INDEX, $VALID_GROUPS,
+               $USE_TLS, $RECURSIVE_GROUPS, $AUTHORIZED_GROUPS, $VALID_GROUPS,
                $AD_USERNAME_SUFFIX, $AD_USERNAME_SUFFIX_PATTERN,
                $AD_USERNAME_SUFFIX_REPLACE;
 
@@ -85,19 +83,32 @@ class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
 
         // Set up the adLDAP object
         $options = array(
-            'account_suffix'     => $ACCOUNT_SUFFIX,
-            'ad_port'            => $AD_PORT,
-            'base_dn'            => $BASE_DN,
-            'domain_controllers' => $DOMAIN_CONTROLLERS,
-            'admin_username'     => $AD_USERNAME,
-            'admin_password'     => $AD_PASSWORD,
-            'real_primarygroup'  => $REAL_PRIMARY_GROUP,
-            'use_ssl'            => $USE_SSL,
-            'use_tls'            => $USE_TLS,
-            'recursive_groups'   => $RECURSIVE_GROUPS);
+            'account_suffix'      => $ACCOUNT_SUFFIX,
+            'ad_port'             => $AD_PORT,
+            'base_dn'             => $BASE_DN,
+            'domain_controllers'  => $DOMAIN_CONTROLLERS,
+            'admin_username'      => $AD_USERNAME,
+            'admin_password'      => $AD_PASSWORD,
+            'real_primarygroup'   => $REAL_PRIMARY_GROUP,
+            'use_ssl'             => $USE_SSL,
+            'use_tls'             => $USE_TLS,
+            'recursive_groups'    => $RECURSIVE_GROUPS);
 
-        $this->m_GroupIndex      =  $GROUP_INDEX;
-        $this->m_ValidGroups     =  $VALID_GROUPS;
+        // Check group filters
+        if ($VALID_GROUPS === null) {
+            report('VALID_GROUPS not set for Active Directory authentication!', 0);
+            $VALID_GROUPS = array();
+        }
+        if ($AUTHORIZED_GROUPS === null) {
+            report('AUTHORIZED_GROUPS not set for Active Directory authentication!', 0);
+            $AUTHORIZED_GROUPS = array();
+        }
+        if (count($VALID_GROUPS) == 0 && count($AUTHORIZED_GROUPS) > 0) {
+            // Copy the array
+            $VALID_GROUPS = $AUTHORIZED_GROUPS;
+        }
+        $this->m_ValidGroups      =  $VALID_GROUPS;
+        $this->m_AuthorizedGroups =  $AUTHORIZED_GROUPS;
 
         $this->m_UsernameSuffix = $AD_USERNAME_SUFFIX;
         $this->m_UsernameSuffixReplaceMatch = $AD_USERNAME_SUFFIX_PATTERN;
@@ -141,10 +152,45 @@ class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
         if (!$this->isActive($username)) {
             return false;
         }
+
         // Authenticate against AD
         $b = $this->m_AdLDAP->user()->authenticate(
             strtolower($username), $password);
+
+        // If authentication failed, we can return here.
+        if ($b === false) {
+            $this->m_AdLDAP->close();
+            return false;
+        }
+
+        // If if succeeded, do we need to check for group authorization?
+        if (count($this->m_AuthorizedGroups) == 0) {
+            // No, we don't.
+            return true;
+        }
+
+        // We need to retrieve the groups and compare them.
+
+        // If needed, process the user name suffix for subdomains
+        $username .= $this->m_UsernameSuffix;
+        if ($this->m_UsernameSuffixReplaceMatch != '') {
+            $pattern = "/$this->m_UsernameSuffixReplaceMatch/";
+            $username = preg_replace($pattern,
+                $this->m_UsernameSuffixReplaceString,
+                $username);
+        }
+
+        // Get the user groups from AD
+        $userGroups = $this->m_AdLDAP->user()->groups($username);
         $this->m_AdLDAP->close();
+
+        // Test for intersection
+        $b = count(array_intersect($userGroups, $this->m_AuthorizedGroups)) > 0;
+        if ($b === true) {
+            report("User $username: group authentication succeeded.", 0);
+        } else {
+            report("User $username: user rejected by failed group authentication.", 0);
+        }
         return $b;
     }
 
@@ -199,7 +245,7 @@ class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
 
         // If no groups found, return ""
         if (!$userGroups) {
-            report('No groups found for username "' . $username . '"', 2);
+            report('No groups found for username "' . $username . '"', 0);
             return "";
         }
 
@@ -216,15 +262,14 @@ class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
                 $userGroups, $this->m_ValidGroups));
         }
 
-        // If an explicit index is set in the configuration file, return the
-        // group at that position; otherwise, just return the first entry in
-        // the (filtered or original) group array.
-        if ($this->m_GroupIndex >= 0 &&
-            $this->m_GroupIndex < count($userGroups)) {
-            $group = $userGroups[$this->m_GroupIndex];
+        // Now return the first entry
+        if (count($userGroups) == 0) {
+            report("Group for username $username not found in the list of valid groups!", 0);
+            $group = "";
         } else {
             $group = $userGroups[0];
         }
+
         report('Group for username "' . $username . '": ' . $group, 2);
         return $group;
 

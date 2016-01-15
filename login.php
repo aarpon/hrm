@@ -135,7 +135,7 @@ if (isset($_POST['password']) && isset($_POST['username'])) {
 				$message = "Your account has been suspended, please " .
                 "contact the administrator";
 			} else {
-				$message = "Sorry, wrong user name or password";
+				$message = "Sorry, wrong user name or password, or not authorized.";
 			}
 		}
 	} else {

@@ -9,9 +9,9 @@
     $ACCOUNT_SUFFIX = "@mydomain.local";
 
     // The base dn for your domain
-    $BASE_DN = "DC=mydomain,DC=local"; 
+    $BASE_DN = "DC=mydomain,DC=local";
 
-    // Array of domain controllers. Specifiy multiple controllers if you would
+    // Array of domain controllers. Specify multiple controllers if you would
     // like the class to balance the LDAP queries amongst multiple servers
     $DOMAIN_CONTROLLERS = array ("dc01.mydomain.local");
 
@@ -39,31 +39,100 @@
     // Use SSL (LDAPS)
     $USE_SSL = false;
 
-    // Use TLS: if you wish to use TLS you should ensure that $USE_SSL is 
+    // Use TLS: if you wish to use TLS you should ensure that $USE_SSL is
     // set to false and vice-versa
     $USE_TLS = false;
 
-    // When querying group memberships, do it recursively 
+    // When querying group memberships, do it recursively
     $RECURSIVE_GROUPS = true;
 
-    // Users usually belong to several groups. GROUP_INDEX defines
-    // which level of the hierarchy to consider (starts by 0). This
-    // obviously assumes that the sequence of groups memberships is
-    // constant among users. Set $GROUP_INDEX to -1 to get an array
-    // with all groups for the user. Please notice that this can also
-    // be used in combination with the next parameter.
-    $GROUP_INDEX = 0;
+    // Group filtering and authorization.
+    //
+    // Users in Active Directory usually belong to several groups. Many of those groups
+    // will not be relevant for the administrator of the HRM (groups like 'Domain Users',
+    // 'Building 12', 'Staff') and the important ones, like the research group, are hidden
+    // somewhere in this list.
+    //
+    // The $VALID_GROUPS array can be used to specify only those groups that are interesting
+    // for the HRM and that will be used as the user group in the HRM and will show up in the
+    // usage statistics. For example, only the research groups at the institution might be included
+    // in this list.
+    //
+    // Additionally, not all research groups might be allowed to use the HRM. The $AUTHORIZED_GROUPS
+    // array can be used to specify those groups that are allowed to use the HRM.
+    //
+    // Please notice that $AUTHORIZED_GROUPS must not strictly be a subset of $VALID_GROUPS.
+    //
+    // Example 1
+    // =========
+    //
+    // $AUTHORIZED_GROUPS = array('group_einstein', 'group_bohr');
+    // $VALID_GROUPS = array('group_einstein', 'group_bohr');
+    //
+    // User 'john' has groups {'Domain Users', 'Building 12', 'Staff', 'group_einstein'}
+    //
+    // 'john' is allowed to log in and the group used in HRM is 'group_einstein'.
+    //
+    // User 'stephanie' has groups {'Domain Users', 'Building 12', 'Staff', 'group_bohr'}
+    //
+    // 'stephanie' is allowed to log in and the group used in HRM is 'group_bohr'.
+    //
+    // User 'jeff' has groups {'Domain Users', 'Building 1', 'Admin Staff', 'group_admin'}
+    //
+    // 'jeff' is not allowed to log in ('group_admin' is not in $AUTHORIZED_GROUPS)'.
+    //
+    // Example 2
+    // =========
+    //
+    // $AUTHORIZED_GROUPS = array('hrm');
+    // $VALID_GROUPS = array('group_einstein', 'group_bohr');
+    //
+    // User 'john' has groups {'Domain Users', 'Building 12', 'Staff', 'group_einstein', 'hrm'}
+    //
+    // 'john' is allowed to log in and the group used in HRM is 'group_einstein'.
+    //
+    // User 'stephanie' has groups {'Domain Users', 'Building 12', 'Staff', 'group_bohr'}
+    //
+    // 'stephanie' is not allowed to log in (she does not belong to group 'hrm').
+    //
+    // User 'jeff' has groups {'Domain Users', 'Building 1', ''Admin Staff', 'group_admin'}
+    //
+    // 'jeff' is not allowed to log in (she does not belong to group 'hrm').
+    //
+    // Example 3
+    // =========
+    //
+    // $AUTHORIZED_GROUPS = array();
+    // $VALID_GROUPS = array('group_einstein', 'group_bohr');
+    //
+    // No restriction on which groups can log in to HRM. Group filtering works as in Examples 1 and 2.
+    //
+    // Example 4
+    // =========
+    //
+    // $AUTHORIZED_GROUPS = array();
+    // $VALID_GROUPS = array();
+    //
+    // If neither valid nor authorized groups are defined, all groups are allowed to log in and the first returned
+    // group will be used in HRM.
+    //
+    // User 'john' has groups {'Domain Users', 'Building 12', 'Staff', 'group_einstein', 'hrm'}
+    //
+    // john's group in HRM will be 'Domain Users'.
+    //
+    // Example 5
+    // =========
+    //
+    // $AUTHORIZED_GROUPS = array(... any number of entries ...);
+    // $VALID_GROUPS = array();
+    //
+    // If $VALID_GROUPS is empty and $AUTHORIZED_GROUPS contains one or more entries, $VALID_GROUPS
+    // will be reset to be the same as $AUTHORIZED_GROUPS (the end behavior will be as in Example 1).
 
-    // If there is no way to get the desired group by using $GROUP_INDEX,
-    // this is an additional little trick. For this to work, $GROUP_INDEX
-    // MUST be set to -1, and the following array must contain the list of
-    // valid groups to be considered. This way, for each user the complete
-    // list of groups will be returned from the Active Directory, and of
-    // those, the one that is contained in the following array will be picked.
-    // If more than one matching group is found, the first will be taken. If
-    // no match is found, all groups will be returned.
-    // Fill the array as follows: $VALID_GROUPS = array( "group1", "group2" )
-    // with as many groups as you need.
-    $VALID_GROUPS = array( );    
+    // Groups to use in HRM (filter)
+    $VALID_GROUPS = array();
+
+    // Groups authorized to log in to HRM.
+    $AUTHORIZED_GROUPS = array();
 
 ?>
