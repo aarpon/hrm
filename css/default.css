@@ -117,12 +117,6 @@ table {
     color: white;
 }
 
-/* Added by Oli for the image name */
-
-#title h2 {
-    position: relative;
-    margin-top: -20px;
-}
 #logo {
     position: absolute;
     top: 0px;
@@ -528,6 +522,14 @@ input.create {
 
 input.edit {
     background: url("../images/edit.png") no-repeat center;
+}
+
+input.imageTotemplate {
+    background: url("../images/template_from_file.png") no-repeat center;
+}
+
+input.huygens {
+    background: url("../images/huygens_template.png") no-repeat center;   
 }
 
 input.clone {

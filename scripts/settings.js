@@ -234,3 +234,99 @@ function deleteValuesAndRedirect(page) {
     deleteValues();
     window.location = page;
 }
+
+
+// ------------- Functions for importing parameters. ----------------
+
+
+function hu2template(type) {
+
+    control = document.getElementById('actions').innerHTML;
+    action = 'upload';
+    upsubmitted = false;
+
+    if (type == "micr") {
+        var msg = 'Upload a Huygens microscopy template '
+            + ' (extension <b>.hgsm</b>).'
+    } else if (type == "decon") {
+        var msg = 'Upload a Huygens deconvolution template '
+            + ' (extension <b>.hgsd</b>).'
+    } else {
+        return;
+    }
+    
+    changeDiv('actions','');
+    changeDiv('upMsg', msg 
+              + '<div id="up_form">'
+              + '<form id="uploadForm" enctype="multipart/form-data" '
+              + 'action="?folder=src&upload=1" method="POST"'
+              + 'onsubmit="return confirmUpload()">'
+              + '<input type="hidden" name="uploadForm" value="1"> '
+              + '<div id="upload_list">'
+              + '<div id="upfile_0"></div>'
+              + '</div>'
+              + '<div id="buttonUpload">'
+              + '<input name="huTotemplate" type="submit" value="" '
+              + 'class="icon upload" '
+              + 'onmouseover="Tip(\'Upload selected files\')" '
+              + 'onmouseout="UnTip()"/>'
+              + '<input type="button" class="icon abort" onclick="UnTip(); '
+              + 'cancelFileSelection()" '
+              + 'onmouseover="Tip(\'Cancel\')" onmouseout="UnTip()"/></div>'
+              + ' </form>'
+              + '</div>');
+
+    addTemplateFile();
+
+    changeDiv('upfile', '');
+}
+
+function image2template(selectedFiles) {
+    
+    control = document.getElementById('actions').innerHTML;
+
+    changeDiv('upMsg', 'Select a file to create an image template from');
+    changeDiv('actions',
+              '<input type="hidden" name="imageTotemplate" /> '
+              +  createImageSelection((selectedFiles))
+              + '<div id="buttonUpload">'
+              + '<input name="submit" type="submit" value="" '
+              + 'class="icon apply" onclick="UnTip(); '
+              + 'onmouseover="Tip(\'Submit\')" onmouseout="UnTip()"/>'
+              + '<input type="button" class="icon abort" onclick="UnTip();'
+              + 'cancelFileSelection()" '
+              + 'onmouseover="Tip(\'Cancel\')" onmouseout="UnTip()"/>'
+              + '</div>');
+
+    changeDiv('upfile', '');
+}
+
+function createImageSelection(fileList) {
+
+    html = '<div><select id="fileselection" name="fileselection" width="253" '
+        + 'style="width: 253px"">'
+        + '<option>Choose a file</option>';
+
+    for (i = 0; i < fileList.length; i++) {
+        html += '<option>' + fileList[i] + '</option>';
+    }
+
+    html += '</select></div>';
+    
+    return html;
+}
+
+
+function addTemplateFile() {
+    content = '<div class="inputFile" name="inputFile">'
+        + '<input type="file" name="upfile[]" size="3">'
+        + '</div>';
+
+    changeDiv('upfile_0', content);
+}
+
+function cancelFileSelection() {
+    action = '';
+    changeDiv('actions', control);
+    changeDiv('upMsg', '');
+}

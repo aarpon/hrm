@@ -263,6 +263,13 @@ abstract class Setting {
         }
     }
 
+    /*!
+  \brief	parses an array retuned by hucore after it has read a file
+    This is an abstract function and must
+  be reimplemented.
+*/
+ //   abstract public function ($hucorearray);
+
 } // End of Setting class
 
 /*
@@ -2068,6 +2075,212 @@ class ParameterSetting extends Setting {
         $result = $db->getTemplatesSharedBy($username, self::sharedTable());
         return $result;
     }
+
+    /*!
+      \brief Huygens parameters to HRM parameters.
+      \param $huArray An array with the result of 'image setp -tclReturn'.
+    */
+    public function parseParamsFromHuCore($huArray){
+
+         // Sanity checks: remove trailing spaces.
+        foreach ($huArray as $key => $value) {
+            $huArray[$key] = trim($value, " ");
+        }
+
+        // Microscope Type.
+        if (strpos($huArray['parState,micr'], "default") === FALSE) {
+            $huMicrType = explode(" ", $huArray['micr'], 5);
+            $hrmMicrType = $this->parameter['MicroscopeType'];
+
+            // By default, take the first value.
+            $micrVal = $hrmMicrType->translateHucore($huMicrType[0]);
+
+            // If there is STED, just make sure that it's the right one.
+            if(array_search('sted', $huMicrType)) {
+                $micrVal = $hrmMicrType->translateHucore('sted');
+            }
+            if(array_search('sted3d', $huMicrType)) {
+                $micrVal = $hrmMicrType->translateHucore('sted3d');
+            }
+
+            $hrmMicrType->setValue($micrVal);
+        } 
+
+        // Number of channels.
+        if (isset($huMicrType)) {
+            $chanCnt = count($huMicrType);
+        } else {
+            $chanCnt = 1;
+        }
+        
+        if ($chanCnt > 5) $chanCnt = 5;
+        $this->parameter['NumberOfChannels']->setValue($chanCnt);
+
+        // Sampling sizes.
+        if (strpos($huArray['parState,s'], "default") === FALSE) {
+            $sampleSizes = array_map('floatval',  explode(' ', $huArray['s']));
+            
+            $sampleSizes[0] = round($sampleSizes[0] * 1000);
+            $this->parameter['CCDCaptorSizeX']->setValue($sampleSizes[0]);
+            
+            $sampleSizes[2] = round($sampleSizes[2] * 1000);
+            $this->parameter['ZStepSize']->setValue($sampleSizes[2]);
+            
+            $this->parameter['TimeInterval']->setValue($sampleSizes[3]);
+        }
+        
+        // Numerical Aperture.
+        if (strpos($huArray['parState,na'], "default") === FALSE) {
+            $na = explode(" ", $huArray['na'], 5);
+            $this->parameter['NumericalAperture']->setValue($na[0]);
+        }
+
+        // Objective Type.
+        if (strpos($huArray['parState,ril'], "default") === FALSE) {
+            $lensImm = array_map('floatval',
+                                 explode(' ', $huArray['ril']));
+            $this->parameter['ObjectiveType']->setValue($lensImm[0]);
+        }
+
+        // Sample Medium.
+        if (strpos($huArray['parState,ri'], "default") === FALSE) {
+            $embMedium = array_map('floatval',
+                                   explode(' ', $huArray['ri']));
+            $this->parameter['SampleMedium']->setValue($embMedium[0]);
+        }
+
+        // Excitation Wavelength.
+        if (strpos($huArray['parState,ex'], "default") === FALSE) {
+            $lambdaEx = array_map('intval',
+                                  explode(' ', $huArray['ex']));
+            $this->parameter['ExcitationWavelength']->setValue($lambdaEx);
+        }
+        
+        // Emission Wavelength.
+        if (strpos($huArray['parState,em'], "default") === FALSE) {
+            $lambdaEm = array_map('intval',
+                                  explode(' ', $huArray['em']));
+            $this->parameter['EmissionWavelength']->setValue($lambdaEm);
+        }
+
+        // Pinhole size.
+        if (strpos($huArray['parState,pr'], "default") === FALSE) {
+            $pinhole = array_map('intval',
+                                 explode(' ', $huArray['pr']));
+            $this->parameter['PinholeSize']->setValue($pinhole);
+        }
+
+        // Pinhole spacing.
+        if (strpos($huArray['parState,ps'], "default") === FALSE) {
+            $phSpacing = array_map('floatval',
+                                   explode(' ', $huArray['ps']));
+            $this->parameter['PinholeSpacing']->setValue($phSpacing[0]);
+        }
+
+        // Coverslip Relative Position.
+        if (strpos($huArray['parState,imagingDir'], "default") === FALSE) {
+            // Downward is closest.
+            $imagingDir   = explode(' ', $huArray['imagingDir']);
+            $coversPos = "farthest";
+            if (strcmp("downward", $imagingDir[0])) {
+                $coversPos = "closest";
+            }
+            $this->parameter['CoverslipRelativePosition']->setValue($coversPos);
+        }
+
+        // STED Depletion Mode.
+        if (strpos($huArray['parState,stedMode'], "default") === FALSE) {
+            $stedMode = explode(' ', $huArray['stedMode']);
+
+            // Rename some modes if the mType is set to confocal.
+            for($i = 0; $i < count($stedMmode); $i++) {
+                if($huMicrType[$i] == 'confocal') {
+                    $stedMode[$i] = 'off-confocal';
+                }
+            }
+            $this->parameter['StedDepletionMode']->setValue($stedMode);
+        }
+
+        // STED Saturation Factor.
+        if (strpos($huArray['parState,stedSatFact'], "default") === FALSE) {
+            $stedSatFact = array_map('floatval',
+                                     explode(' ', $huArray['stedSatFact']));
+            $this->parameter['StedSaturationFactor']->setValue($stedSatFact);
+        }
+
+        // STED Wavelength.
+        if (strpos($huArray['parState,stedLambda'], "default") === FALSE) {
+            $stedLambda = array_map('floatval',
+                                    explode(' ', $huArray['stedLambda']));
+            $this->parameter['StedWavelength']->setValue($stedLambda);
+        }
+        
+        // STED Immunity Fraction.
+        if (strpos($huArray['parState,stedImmunity'], "default") === FALSE) {
+            $stedImmunity = array_map('floatval',
+                                      explode(' ', $huArray['stedImmunity']));
+            $this->parameter['StedImmunity']->setValue($stedImmunity);
+        }
+
+        // Whether STED is STED3D.
+        if (strpos($huArray['parState,sted3D'], "default") === FALSE) {
+            $sted3d = array_map('floatval',
+                                explode(' ', $huArray['sted3D']));
+            $this->parameter['Sted3D']->setValue($sted3d);
+        }
+
+
+        /* Comment out after merging with SPIM branch. */
+        
+        // // SPIM Excitation Mode.
+        // if (strpos($huArray['parState,spimExc'], "default") === FALSE) {
+        //     $spimExcMode = array_map('floatval',
+        //                              explode(' ', $huArray['spimExc']));
+        //     $this->parameter['SpimExcMode']->setValue($spimExcMode);
+        // }
+
+        // // SPIM Gaussian Width.
+        // if (strpos($huArray['parState,spimGaussWidth'], "default") === FALSE) {
+        //     $spimGaussWidth = array_map('floatval',
+        //                              explode(' ', $huArray['spimGaussWidth']));
+        //     $this->parameter['SpimGaussWidth']->setValue($spimGaussWidth);
+        // }
+
+        // // SPIM Center Offset.
+        // if (strpos($huArray['parState,spimCenterOff'], "default") === FALSE) {
+        //     $spimCenterOff = array_map('floatval',
+        //                                explode(' ', $huArray['spimCenterOff']));
+        //     $this->parameter['SpimCenterOffset']->setValue($spimCenterOff);
+        // }
+
+        // // SPIM Focus Offset.
+        // if (strpos($huArray['parState,spimFocusOff'], "default") === FALSE) {
+        //     $spimFocusOff = array_map('floatval',
+        //                               explode(' ', $huArray['spimFocusOff']));
+        //     $this->parameter['SpimFocusOffset']->setValue($spimFocusOff);
+        // }
+
+        // // SPIM NA.
+        // if (strpos($huArray['parState,spimNA'], "default") === FALSE) {
+        //     $spimNA = array_map('floatval',
+        //                         explode(' ', $huArray['spimNA']));
+        //     $this->parameter['SpimNA']->setValue($spimNA);
+        // }
+        
+        // // SPIM Fill Factor.
+        // if (strpos($huArray['parState,spimFill'], "default") === FALSE) {
+        //     $spimFill = array_map('floatval',
+        //                         explode(' ', $huArray['spimFill']));
+        //     $this->parameter['SpimFill']->setValue($spimFill);
+        // }
+
+        // // SPIM Imaging Direction.
+        // if (strpos($huArray['parState,spimDir'], "default") === FALSE) {
+        //     $spimDir = array_map('floatval',
+        //                          explode(' ', $huArray['spimDir']));
+        //     $this->parameter['SpimDir']->setValue($spimDir);
+        // }
+    }
 }
 
 /*
@@ -2215,7 +2428,7 @@ class TaskSetting extends Setting {
             $this->message = 'Please choose a background estimation mode!';
             $noErrorsFound = False;
         } else {
-            $value = array(null, null, null, null, null);
+            $value = array_fill(0, $maxChanCnt, null);
             switch ($postedParameters["BackgroundEstimationMode"]) {
                 case 'auto':
 
@@ -2465,6 +2678,164 @@ class TaskSetting extends Setting {
         return $result;
     }
 
+
+    /*!
+      \brief Huygens parameters to HRM parameters.
+      \param $huArray An array with the result of 'image setp -tclReturn'.
+    */
+    public function parseParamsFromHuCore($huArray){
+
+         // Sanity checks: remove trailing spaces.
+        foreach ($huArray as $key => $value) {
+            $huArray[$key] = trim($value, " ");
+        }
+
+        $db = new DatabaseConnection;
+        $maxChanCnt = $db->getMaxChanCnt();
+
+        // We only look at the first channel for the decon algorithm.
+        if (strpos($huArray['cmle:0'], "") === FALSE) {
+            $algorithm = $this->parameter('DeconvolutionAlgorithm');
+            $algorithm->setValue("cmle");
+        } else if (strpos($huArray['qmle:0'], "") === FALSE) {
+            $algorithm = $this->parameter('DeconvolutionAlgorithm');
+            $algorithm->setValue("qmle");
+        }
+
+        // SNR.
+        for ($chan = 0; $chan < $maxChanCnt; $chan++) {
+            if ($this->parameter('DeconvolutionAlgorithm')->value() == "cmle") {
+                $key = "cmle:" . $chan . " sn";
+            } else {
+                $key = "qmle:" . $chan . " sn";
+            }
+
+            if (strpos($huArray[$key], "") === FALSE) {
+                $snr[$chan] = $huArray[$key];
+            }
+        }
+        if (isset($snr)) {
+            $this->parameter['SignalNoiseRatio']->setValue($snr);
+        }
+
+        // Autocrop.
+        if (strpos($huArray['autocrop enabled'],"") === FALSE) {
+            $autocrop = $huArray['autocrop enabled'];
+            $this->parameter['Autocrop']->setValue($autocrop);
+        }
+
+        // Background.
+        // Set it to manual only if all channels are specified.
+        // Otherwise set it to the first other mode encountered.
+        for ($chan = 0; $chan < $maxChanCnt; $chan++) {
+            $keyCmleBgMode = "cmle:" . $chan . " bgMode";
+            $keyQmleBgMode = "qmle:" . $chan . " bgMode";
+            $keyCmleBgVal  = "cmle:" . $chan . " bg";
+            $keyQmleBgVal  = "qmle:" . $chan . " bg";
+
+            if (isset($huArray[$keyCmleBgMode])) {
+                $bgMode = $huArray[$keyCmleBgMode];
+            } else if (isset($huArray[$keyQmleBgMode])) {
+                $bgMode = $huArray[$keyQmleBgMode];
+            } else {
+                $bgMode = "auto";
+            }
+
+            if (isset($huArray[$keyCmleBgVal])) {
+                $bgVal = $huArray[$keyCmleBgVal];
+            } else if (isset($huArray[$keyQmleBgVal])) {
+                $bgVal = $huArray[$keyQmleBgVal];
+            } else {
+                $bgVal = 0.;
+            }
+
+            if ($bgMode == "auto" || $bgMode == "object") {
+                $bgArr = array_fill(0, $maxChanCnt, $bgMode);
+                break;
+            } else if ($bgMode == "lowest" || $bgMode == "widefield") {
+                $bgArr = array_fill(0, $maxChanCnt, "auto");
+                break;
+            } else if ($bgMode == "manual") {
+                $bgArr[$chan] = $bgVal;
+            } else {
+                $bgArr = array_fill(0, $maxChanCnt, "auto");
+                break;
+            }
+        }
+        $this->parameter['BackgroundOffsetPercent']->setValue($bgArr);
+
+        // Iterations.
+        for ($chan = 0; $chan < $maxChanCnt; $chan++) {
+            if ($this->parameter('DeconvolutionAlgorithm')->value() == "cmle") {
+                $key = "cmle:" . $chan . " it";
+            } else {
+                $key = "qmle:" . $chan . " it";
+            }
+
+            if (strpos($huArray[$key], "") === FALSE) {
+                $it = $huArray[$key];
+                $itOld = $this->parameter['NumberOfIterations']->value();
+                if ($it > $itOld) {
+                    $this->parameter['NumberOfIterations']->setValue($it);
+                }
+            }
+        }
+
+        // Quality factor.
+        for ($chan = 0; $chan < $maxChanCnt; $chan++) {
+            if ($this->parameter('DeconvolutionAlgorithm')->value() == "cmle") {
+                $key = "cmle:" . $chan . " q";
+            } else {
+                $key = "qmle:" . $chan . " q";
+            }
+            
+            if (strpos($huArray[$key], "") === FALSE) {
+                $q = $huArray[$key];
+                $key = 'QualityChangeStoppingCriterion';
+                $qOld = $this->parameter[$key]->value();
+                if ($q > $qOld) {
+                    $this->parameter[$key]->setValue($q);
+                }
+            }
+        }
+
+        // Stabilization.
+        if (strpos($huArray['stabilize enabled'],"") === FALSE) {
+            $stabilize = $huArray['stabilize enabled'];
+            $this->parameter['ZStabilization']->setValue($stabilize);
+        }
+
+        // Chromatic Aberration.
+        $compCnt = 5;
+        for ($chan = 0; $chan < $maxChanCnt; $chan++) {
+            $key = "shift:" . $chan . " vector";
+
+            unset($vector);
+            if (isset($huArray[$key])) {
+                $vector = explode(" ", $huArray[$key], $compCnt);
+            }
+            
+            for ($comp = 0; $comp < $compCnt; $comp++) {
+                $compKey = $chan * $compCnt + $comp;
+                
+                if (isset($vector[$comp])) {
+                    $aberration[$compKey] = $vector[$comp];
+                } else {
+                    if ($comp < $compCnt - 1) {
+                        $aberration[$compKey] = 0.;
+                    } else {
+                        // Scale component.
+                        $aberration[$compKey] = 1.;
+                    }
+                }
+            }
+        }
+        if (isset($aberration)) {
+            $this->parameter['ChromaticAberration']->setValue($aberration);
+        }
+    }
+
+    
 } // End of class taskSetting
 
 /*
@@ -2603,7 +2974,7 @@ class AnalysisSetting extends Setting {
             $this->message = 'Please choose a colocalization threshold mode!';
             $noErrorsFound = False;
         } else {
-            $value = array(null, null, null, null, null);
+            $value = array_fill(0, $maxChanCnt, null);
             switch ($postedParameters["ColocThresholdMode"]) {
                 case 'auto':
 

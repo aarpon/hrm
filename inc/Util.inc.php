@@ -210,8 +210,6 @@ function huCoreTools($tool, $options) {
 
     $answer = exec($cmd, $output, $result);
 
-    # printDebug ($cmd, $output, "res: $result ans: $answer");
-
     if ($result == 0) {
         $begin = array_search("BEGIN PROC", $output);
         if ($begin) {
@@ -254,7 +252,6 @@ function askHuCore($tool, $options = "") {
 
     if (!$answer)
         return "(nothing)";
-    # printDebug ($answer);
 
     $lines = count($answer);
     $msg = "";

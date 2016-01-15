@@ -88,6 +88,36 @@ else if (isset($_POST['copy'])) {
   $_SESSION['taskeditor']->copySelectedSetting($_POST['new_setting']);
   $message = $_SESSION['taskeditor']->message();
 }
+else if (isset($_POST['huTotemplate'])) {
+    $task_setting = NULL;
+    $file = $_FILES["upfile"]["name"];
+    $fileName = pathinfo($file[0], PATHINFO_BASENAME);
+    $extension = pathinfo($file[0], PATHINFO_EXTENSION);
+    
+    if ($extension == "hgsd") {
+        if($fileName != '') {
+            $hrmTemplateName = 'From ' . $fileName;
+            $task_setting =
+                $_SESSION['taskeditor']->createNewSetting($hrmTemplateName);
+            
+            $tmpName = $_FILES["upfile"]["tmp_name"];
+            $_SESSION['taskeditor']->huTemplate2hrmTemplate($task_setting,
+                                                            $tmpName[0]);
+            $message = $_SESSION['taskeditor']->message();  
+        } else {
+            $message = "Please upload a valid Huygens deconvolution template " .
+                "(extension .hgsd)";
+        }
+        
+        if ($task_setting != NULL) {
+            $_SESSION['task_setting'] = $task_setting;
+            header("Location: " . "task_parameter.php"); exit();
+        }
+    } else {
+        $message = "Please upload a valid Huygens deconvolution template " .
+            "(extension .hgsd)";
+    }
+}
 else if (isset($_POST['edit'])) {
   $task_setting = $_SESSION['taskeditor']->loadSelectedSetting();
   if ($task_setting) {
@@ -150,7 +180,8 @@ else if (isset($_POST['OK']) && $_POST['OK']=="OK" ) {
   }
 }
 
-$script = array( "settings.js", "common.js", "json-rpc-client.js", "shared.js", "ajax_utils.js" );
+$script = array( "settings.js", "common.js",
+                 "json-rpc-client.js", "shared.js", "ajax_utils.js" );
 
 include("header.inc.php");
 
@@ -160,6 +191,9 @@ include("header.inc.php");
     -->
     <span class="toolTip" id="ttSpanCreate">
         Create a new restoration template with the specified name.
+    </span>
+    <span class="toolTip" id="ttSpanHuygens">
+        Import a Huygens template.
     </span>
     <span class="toolTip" id="ttSpanEdit">
         Edit the selected restoration template.
@@ -345,7 +379,7 @@ if (!$_SESSION['user']->isAdmin()) {
 
 ?>
 
-        <form method="post" action="" id="select">
+        <form method="post" action="" enctype="multipart/form-data" id="select">
 
             <fieldset>
 
@@ -398,7 +432,7 @@ else {
                 </div>
 
             </fieldset>
-
+            <div id="upMsg"></div>
             <div id="actions"
                  class="taskselection">
                 <input name="create"
@@ -407,6 +441,13 @@ else {
                        class="icon create"
                        onmouseover="TagToTip('ttSpanCreate' )"
                        onmouseout="UnTip()" />
+                <input name="huTotemplate"
+                       type="button"
+                       value=""
+                       class="icon huygens"
+                       onmouseover="TagToTip('ttSpanHuygens' )"
+                       onmouseout="UnTip()"
+                       onclick="UnTip(); hu2template('decon')" />
                 <input name="edit"
                        type="submit"
                        value=""

@@ -2963,7 +2963,7 @@ if ($current_revision < $n) {
 // ------------------ Add entries to 'job_files' -------------------------
     $tabname   = "job_files";
     $newcolumn = "autoseries";
-    $yype = "VARCHAR(1)";
+    $type = "VARCHAR(1)";
 
     // Does the column exist already?
     $columns = $db->MetaColumnNames( $tabname );
@@ -4158,6 +4158,323 @@ if ($current_revision < $n) {
             write_to_error($msg);
             return;
         }
+    }
+
+    // ------- Enable longer user names in the template infrastructure. ------
+    
+    $tabname = "parameter";
+    $column  = "owner";
+    $type    = "VARCHAR(255)";
+
+    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
+    if(!$db->Execute($SQLquery)) {
+        $msg = "An error occurred while updating the database to revision " .
+            $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+    
+    $tabname = "parameter_setting";
+    $column  = "owner";
+    $type    = "VARCHAR(255)";
+
+    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
+    if(!$db->Execute($SQLquery)) {
+        $msg = "An error occurred while updating the database to revision " .
+            $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $tabname = "task_parameter";
+    $column  = "owner";
+    $type    = "VARCHAR(255)";
+
+    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
+    if(!$db->Execute($SQLquery)) {
+        $msg = "An error occurred while updating the database to revision " .
+            $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }    
+
+    $tabname = "task_setting";
+    $column  = "owner";
+    $type    = "VARCHAR(255)";
+
+    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
+    if(!$db->Execute($SQLquery)) {
+        $msg = "An error occurred while updating the database to revision " .
+            $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+    
+    $tabname = "analysis_parameter";
+    $column  = "owner";
+    $type    = "VARCHAR(255)";
+
+    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
+    if(!$db->Execute($SQLquery)) {
+        $msg = "An error occurred while updating the database to revision " .
+            $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $tabname = "analysis_setting";
+    $column  = "owner";
+    $type    = "VARCHAR(255)";
+
+    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
+    if(!$db->Execute($SQLquery)) {
+        $msg = "An error occurred while updating the database to revision " .
+            $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $tabname = "job_parameter";
+    $column  = "owner";
+    $type    = "VARCHAR(255)";
+
+    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
+    if(!$db->Execute($SQLquery)) {
+        $msg = "An error occurred while updating the database to revision " .
+            $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $tabname = "job_parameter_setting";
+    $column  = "owner";
+    $type    = "VARCHAR(255)";
+
+    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
+    if(!$db->Execute($SQLquery)) {
+        $msg = "An error occurred while updating the database to revision " .
+            $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $tabname = "job_task_parameter";
+    $column  = "owner";
+    $type    = "VARCHAR(255)";
+
+    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
+    if(!$db->Execute($SQLquery)) {
+        $msg = "An error occurred while updating the database to revision " .
+            $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $tabname = "job_task_setting";
+    $column  = "owner";
+    $type    = "VARCHAR(255)";
+
+    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
+    if(!$db->Execute($SQLquery)) {
+        $msg = "An error occurred while updating the database to revision " .
+            $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $tabname = "job_analysis_parameter";
+    $column  = "owner";
+    $type    = "VARCHAR(255)";
+
+    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
+    if(!$db->Execute($SQLquery)) {
+        $msg = "An error occurred while updating the database to revision " .
+            $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $tabname = "job_analysis_setting";
+    $column  = "owner";
+    $type    = "VARCHAR(255)";
+
+    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
+    if(!$db->Execute($SQLquery)) {
+        $msg = "An error occurred while updating the database to revision " .
+            $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $tabname = "job_files";
+    $column  = "owner";
+    $type    = "VARCHAR(255)";
+
+    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
+    if(!$db->Execute($SQLquery)) {
+        $msg = "An error occurred while updating the database to revision " .
+            $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $tabname = "job_queue";
+    $column  = "username";
+    $type    = "VARCHAR(255)";
+
+    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
+    if(!$db->Execute($SQLquery)) {
+        $msg = "An error occurred while updating the database to revision " .
+            $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $tabname = "shared_parameter";
+    $column  = "owner";
+    $type    = "VARCHAR(255)";
+
+    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
+    if(!$db->Execute($SQLquery)) {
+        $msg = "An error occurred while updating the database to revision " .
+            $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $tabname = "shared_parameter_setting";
+    $column  = "previous_owner";
+    $type    = "VARCHAR(255)";
+
+    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
+    if(!$db->Execute($SQLquery)) {
+        $msg = "An error occurred while updating the database to revision " .
+            $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $tabname = "shared_task_parameter";
+    $column  = "owner";
+    $type    = "VARCHAR(255)";
+
+    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
+    if(!$db->Execute($SQLquery)) {
+        $msg = "An error occurred while updating the database to revision " .
+            $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $tabname = "shared_task_setting";
+    $column  = "previous_owner";
+    $type    = "VARCHAR(255)";
+
+    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
+    if(!$db->Execute($SQLquery)) {
+        $msg = "An error occurred while updating the database to revision " .
+            $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $tabname = "shared_analysis_parameter";
+    $column  = "owner";
+    $type    = "VARCHAR(255)";
+
+    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
+    if(!$db->Execute($SQLquery)) {
+        $msg = "An error occurred while updating the database to revision " .
+            $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $tabname = "shared_analysis_setting";
+    $column  = "previous_owner";
+    $type    = "VARCHAR(255)";
+
+    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
+    if(!$db->Execute($SQLquery)) {
+        $msg = "An error occurred while updating the database to revision " .
+            $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $tabname = "statistics";
+    $column  = "owner";
+    $type    = "VARCHAR(255)";
+
+    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
+    if(!$db->Execute($SQLquery)) {
+        $msg = "An error occurred while updating the database to revision " .
+            $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $tabname = "username";
+    $column  = "name";
+    $type    = "VARCHAR(255)";
+
+    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
+    if(!$db->Execute($SQLquery)) {
+        $msg = "An error occurred while updating the database to revision " .
+            $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+
+    // ------- Enable longer server names in the queue manager. ------
+    
+    $tabname = "server";
+    $column  = "name";
+    $type    = "VARCHAR(255)";
+
+    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
+    if(!$db->Execute($SQLquery)) {
+        $msg = "An error occurred while updating the database to revision " .
+            $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $tabname = "job_queue";
+    $column  = "server";
+    $type    = "VARCHAR(255)";
+
+    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
+    if(!$db->Execute($SQLquery)) {
+        $msg = "An error occurred while updating the database to revision " .
+            $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
     }
 
     

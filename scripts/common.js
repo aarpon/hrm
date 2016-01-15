@@ -7,7 +7,8 @@ var popup;
 var generated = new Array();
 var debug = '';
 var control = '';
-
+var filemenu = '<div class="inputFile" name="inputFile"><input type="file" name="upfile" size="30" accept=" .HGSM,.hgsm" ></div>';
+;
 function clean() {
     if (popup != null) {
         popup.close();
@@ -525,6 +526,7 @@ function confirmUpload() {
 
     alert('returning');
     */
+
     return true;
 }
 
@@ -581,9 +583,9 @@ function disableAddMore() {
 }
 
 function uploadImages(maxFile, maxPost, archiveExt) {
-        // + '<iframe id="target_upload" name="target_upload" src="" style="width:1px;height:1px;border:0"></iframe>'
+    // + '<iframe id="target_upload" name="target_upload" src="" style="width:1px;height:1px;border:0"></iframe>'
 
-  cancelOmeroSelection();
+    cancelOmeroSelection();
 
     control = document.getElementById('selection').innerHTML;
     action = 'upload';
@@ -591,44 +593,44 @@ function uploadImages(maxFile, maxPost, archiveExt) {
     changeDiv('selection','');
     changeDiv('message', '');
     changeDiv('upMsg', 'Select a file to upload. Multiple files in a series '
-            + 'can also be uploaded in a single archive ('+archiveExt+'). '
-            + 'Maximum single file size is <b>' + maxFile
-            +'</b>, maximum total transfer size is <b>' + maxPost + '</b>. '
-            +'<br /><br /><img alt =\"Warning!\" src=\"./images/note.png\" /> '
-            +'<b>If you upload .ics files, do not forget the matching .ids</b>!' );
+    + 'can also be uploaded in a single archive ('+archiveExt+'). '
+    + 'Maximum single file size is <b>' + maxFile
+    +'</b>, maximum total transfer size is <b>' + maxPost + '</b>. '
+    +'<br /><br /><img alt =\"Warning!\" src=\"./images/note.png\" /> '
+    +'<b>If you upload .ics files, do not forget the matching .ids</b>!' );
     changeDiv('up_form',
         '<form id="uploadForm" enctype="multipart/form-data" action="?folder=src&upload=1" method="POST" onsubmit="return confirmUpload()" >'
-       + '<input type="hidden" name="uploadForm" value="1"> '
-       + '<div id="upload_list">'
-       +      '<div id="upfile_0"></div>'
-       +      '<div id="upfile_1"></div>'
-       +      '<div id="upfile_2"></div>'
-       +      '<div id="upfile_3"></div>'
-       +      '<div id="upfile_4"></div>'
-       +      '<div id="upfile_5"></div>'
-       +      '<div id="upfile_6"></div>'
-       +      '<div id="upfile_7"></div>'
-       +      '<div id="upfile_8"></div>'
-       +      '<div id="upfile_9"></div>'
-       +      '<div id="upfile_10"></div>'
-       +      '<div id="upfile_11"></div>'
-       +      '<div id="upfile_12"></div>'
-       +      '<div id="upfile_13"></div>'
-       +      '<div id="upfile_14"></div>'
-       +      '<div id="upfile_15"></div>'
-       +      '<div id="upfile_16"></div>'
-       +      '<div id="upfile_17"></div>'
-       +      '<div id="upfile_18"></div>'
-       +      '<div id="upfile_19"></div>'
-       +      '<div id="upfile_20"></div>'
-       + '<div id="addanotherfile"></div></div>'
-       +  '<div id="buttonUpload">'
-       +  '<input name="upload" type="submit" value="" '
-       + 'class="icon upload" '
-       +   'onmouseover="Tip(\'Upload selected files\')" onmouseout="UnTip()"/>'
-       + '<input type="button" class="icon abort" onclick="UnTip(); cancelSelection()" '
-       +        'onmouseover="Tip(\'Cancel\')" onmouseout="UnTip()"/></div>'
-       + ' </form>' );
+        + '<input type="hidden" name="uploadForm" value="1"> '
+        + '<div id="upload_list">'
+        +      '<div id="upfile_0"></div>'
+        +      '<div id="upfile_1"></div>'
+        +      '<div id="upfile_2"></div>'
+        +      '<div id="upfile_3"></div>'
+        +      '<div id="upfile_4"></div>'
+        +      '<div id="upfile_5"></div>'
+        +      '<div id="upfile_6"></div>'
+        +      '<div id="upfile_7"></div>'
+        +      '<div id="upfile_8"></div>'
+        +      '<div id="upfile_9"></div>'
+        +      '<div id="upfile_10"></div>'
+        +      '<div id="upfile_11"></div>'
+        +      '<div id="upfile_12"></div>'
+        +      '<div id="upfile_13"></div>'
+        +      '<div id="upfile_14"></div>'
+        +      '<div id="upfile_15"></div>'
+        +      '<div id="upfile_16"></div>'
+        +      '<div id="upfile_17"></div>'
+        +      '<div id="upfile_18"></div>'
+        +      '<div id="upfile_19"></div>'
+        +      '<div id="upfile_20"></div>'
+        + '<div id="addanotherfile"></div></div>'
+        +  '<div id="buttonUpload">'
+        +  '<input name="upload" type="submit" value="" '
+        + 'class="icon upload" '
+        +   'onmouseover="Tip(\'Upload selected files\')" onmouseout="UnTip()"/>'
+        + '<input type="button" class="icon abort" onclick="UnTip(); cancelSelection()" '
+        +        'onmouseover="Tip(\'Cancel\')" onmouseout="UnTip()"/></div>'
+        + ' </form>' );
 
     fileInputs = 0;
 

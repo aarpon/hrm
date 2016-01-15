@@ -46,7 +46,6 @@ proc reportMsg {msg} {
     puts $msg
 }
 
-
 proc reportHuCoreLicense { } {
     reportKeyValue "license" [huOpt license]
 }
@@ -97,7 +96,6 @@ proc isMultiImgFile { filename } {
     }
     return $isMulti
 }   
-
 
 # Script for Huygens Core to explore multi-image files and return their
 # subimages. Currently valid for Leica LIF and Zeiss CZI files.
@@ -347,6 +345,7 @@ proc reportVersionNumberAsInteger { } {
 }
 
 
+# Metadata reporter based on Huygens' preOpen operation.
 proc getMetaData { } {
 
     set imgCount [Hu_getOpt -count]
@@ -407,6 +406,114 @@ proc getMetaData { } {
             }
         }
         puts "END IMG"
+    }
+}
+
+
+# Script for reading in an image and output data in template form.
+proc getMetaDataFromImage {} {
+    
+    set error [ getInputVariables {path filename} ]
+    if { $error } { exit 1 }
+    
+    set img  [ hrmImgOpen $path $filename ]
+    set dims [ $img getdims ]
+    reportKeyValue "dims" $dims
+
+    set templateStr [::Template::Micr::params2TemplateStr $img]    
+    dict set templateDict params $templateStr
+
+    dict map {key value} [dict get $templateDict params setp] {
+        reportKeyValue $key $value
+    }
+
+    catch { $img del }
+}
+
+
+# Script for reading in a Huygens microscopy template and output template data.
+proc getMetaDataFromHuTemplate {} {
+    
+    set error [ getInputVariables {huTemplate} ]
+    if { $error } { exit 1 }
+    
+    set fp [open $huTemplate]
+    set contents [read $fp]
+    close $fp
+
+    # The number of channels is not reported, extract it from the template.
+    set pattern {^(.*) micr \{([a-z|\s]*)\}*}
+    if { [regexp $pattern $contents match dummy1 micrList dummy2] } {
+        set chanCnt [llength $micrList]
+    } else {
+        set chanCnt 1
+    }
+    
+    # Let Huygens interpret the template. Notice that info up to 32 channels
+    # is added automatically.
+    set templateList [::Template::loadCommon "micr" $huTemplate outArr]
+
+    # Convert the result to a dict.
+    dict set templDict params $templateList
+
+    # Stick to the channels from the original template. Discard the rest.
+    dict map {key value} [dict get $templDict params setp] {
+
+        # The sampling is the same for all channels.
+        if {$key eq "s"} {
+            reportKeyValue $key $value
+        } else {
+            reportKeyValue $key [lrange $value 0 [expr {$chanCnt - 1}]]
+        }
+    }
+}
+
+# Script for reading in a Huygens deconvolution template and output template data.
+proc getDeconDataFromHuTemplate {} {
+    
+    set error [ getInputVariables {huTemplate} ]
+    if { $error } { exit 1 }
+    
+    set fp [open $huTemplate]
+    set contents [read $fp]
+    close $fp
+
+    # The number of channels is not reported, extract it from the template.
+    set pattern {^(.*)taskList \{([a-z|\:|0-9|\s]*)\}*}
+    if { [regexp $pattern $contents match dummy1 taskList dummy2] } {
+        set chanCnt 0
+        foreach item $taskList {
+            set item [::Template::Decon::stripSuffix $item]
+            if {$item ni {"cmle" "qmle"}} continue
+            incr chanCnt
+        }
+        if {$chanCnt == 0} {
+            incr chanCnt
+        }
+    } else {
+        set chanCnt 1
+    }
+
+    # Let Huygens interpret the template. Notice that info up to 32 channels
+    # is added automatically.
+    set templateList [::Template::loadCommon "decon" $huTemplate outArr]
+    
+    # Convert the result to a dict.
+    dict set templDict params $templateList
+
+    # Stick to the channels from the original template. Discard the rest.
+    dict map {dictKey dictValue} [dict get $templDict params] {
+
+        set item [::Template::Decon::stripSuffix $dictKey]
+        if {$item ni {"cmle" "qmle" "stabilize" "shift" "autocrop"}} continue
+        reportKeyValue $dictKey $dictValue
+        
+        foreach {param value} $dictValue {
+            if {$param ne "vector"} {
+                set value [lindex $value 0]
+            }
+            reportKeyValue "$dictKey $param" $value
+        }
     }
 }
 
