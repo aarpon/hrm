@@ -287,7 +287,7 @@ function changeStedEntryProperties(selectObj, channel) {
         var tag = tagArray[i];
         var id = tag.concat(channel);
 
-        inputElement = document.getElementById(id);
+        var inputElement = document.getElementById(id);
         
         if ( selectObj.value == 'off-confocal' ) {
             inputElement.readOnly = true;
@@ -307,8 +307,90 @@ function setStedEntryProperties( ) {
     for (var chan = 0; chan < 5; chan++) {
         var name = tag.concat(chan);
 
-        inputElement = document.getElementsByName(name);
+        var inputElement = document.getElementsByName(name);
         changeStedEntryProperties(inputElement[0], chan);
+    }
+}
+
+// Grey out the SPIM input fields of a specific channel if the
+// corresponding excitation mode is set to 'Gaussian'.
+function changeSpimEntryProperties(selectObj, channel) {
+    var gaussBanTagArray = ["SpimNA", "SpimFill"];
+
+    for (var i = 0; i < gaussBanTagArray.length; i++) {
+        var tag = gaussBanTagArray[i];
+        var id = tag.concat(channel);
+
+        var inputElement = document.getElementById(id);
+        
+        if ( selectObj.value == 'gauss' || selectObj.value == 'gaussMuVi') {
+            inputElement.readOnly = true;
+            inputElement.style.color="#000";
+            inputElement.style.backgroundColor="#888";
+        } else {
+            inputElement.readOnly = false;
+            inputElement.style.color="#000";
+            inputElement.style.backgroundColor="";
+        }
+    }
+
+    var excFillBanTagArray = ["SpimGaussWidth"];
+
+    for (var i = 0; i < excFillBanTagArray.length; i++) {
+        var tag = excFillBanTagArray[i];
+        var id = tag.concat(channel);
+
+        var inputElement = document.getElementById(id);
+        
+        if ( selectObj.value == 'gauss' || selectObj.value == 'gaussMuVi') {
+            inputElement.readOnly = false;
+            inputElement.style.color="#000";
+            inputElement.style.backgroundColor="";
+        } else {
+            inputElement.readOnly = true;
+            inputElement.style.color="#000";
+            inputElement.style.backgroundColor="#888";
+        }
+    }
+
+    var dirBanTagArray = ["SpimDir"];
+
+    for (var i = 0; i < dirBanTagArray.length; i++) {
+        var tag = dirBanTagArray[i];
+        var id = tag.concat(channel);
+
+        var inputElement = document.getElementById(id);
+        var length = inputElement.options.length;
+        
+        if ( selectObj.value == 'gaussMuVi') {
+            var option = new Option("Left + right", "left+right");
+            inputElement.add(option);
+            var option = new Option("Top + bottom", "top+bottom");
+            inputElement.add(option);            
+        } else {
+            var option = new Option("From left", "left");
+            inputElement.add(option);
+            var option = new Option("From right", "right");
+            inputElement.add(option);
+            var option = new Option("From top", "top");
+            inputElement.add(option);
+            var option = new Option("From bottom", "bottom");
+            inputElement.add(option);            
+        }
+        for (var j = length - 1; j >= 0; j--) {
+            inputElement.remove(j);
+        }
+    }
+}
+
+function setSpimEntryProperties( ) {
+    var tag = "SpimExcMode";
+    
+    for (var chan = 0; chan < 5; chan++) {
+        var name = tag.concat(chan);
+
+        inputElement = document.getElementsByName(name);
+        changeSpimEntryProperties(inputElement[0], chan);
     }
 }
 

@@ -604,6 +604,13 @@ class DatabaseConnection {
                 case "StedSaturationFactor":
                 case "StedImmunity":
                 case "Sted3D":
+                case "SpimExcMode":
+                case "SpimGaussWidth":
+                case "SpimCenterOffset":
+                case "SpimFocusOffset":
+                case "SpimNA":
+                case "SpimFill":
+                case "SpimDir":
                     /* Extract and continue to explode. */
                     $newValue = substr($newValue,1);
                 default:

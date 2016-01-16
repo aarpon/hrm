@@ -320,7 +320,14 @@ class ParameterSetting extends Setting {
             'StedSaturationFactor',
             'StedWavelength',
             'StedImmunity',
-            'Sted3D'
+            'Sted3D',
+            'SpimExcMode',
+            'SpimGaussWidth',
+            'SpimFocusOffset',
+            'SpimCenterOffset',
+            'SpimNA',
+            'SpimFill',
+            'SpimDir'
         );
         foreach ($parameterClasses as $class) {
             $param = new $class;
@@ -387,6 +394,13 @@ class ParameterSetting extends Setting {
         foreach ($this->parameter as $objName => $objInstance) {
 
             switch ( $objName ) {
+                case 'SpimExcMode':
+                case 'SpimGaussWidth':
+                case 'SpimFocusOffset':
+                case 'SpimCenterOffset':
+                case 'SpimNA':
+                case 'SpimFill':
+                case 'SpimDir':
                 case "StedDepletionMode" :
                 case "StedWavelength" :
                 case "StedSaturationFactor" :
@@ -433,6 +447,12 @@ class ParameterSetting extends Setting {
 
         if ($ok) {
             if ( !$this->checkPostedStedParameters($postedParams) )  {
+                $ok = False;
+            }
+        }
+
+        if ($ok) {
+            if ( !$this->checkPostedSpimParameters($postedParams) )  {
                 $ok = False;
             }
         }
@@ -705,7 +725,370 @@ class ParameterSetting extends Setting {
         return $noErrorsFound;
     }
 
+    /*!
+      \brief	Checks that the posted SPIM Parameters are all defined
+              and valid
+      \param	$postedParameters	The $_POST array
+      \return	true if all Paraneters are defined and valid, false otherwise
+    */
+    public function checkPostedSpimParameters($postedParameters) {
+        $this->message = '';
 
+        if (count($postedParameters) == 0) {
+            return False;
+        }
+
+        if (!$this->isSpim()) {
+            return True;
+        }
+
+        $noErrorsFound = True;
+
+        // Excitation Mode
+        $value = array(null, null, null, null, null);
+        for ($i = 0; $i < 5; $i++) {
+            if (isset($postedParameters["SpimExcMode$i"])) {
+                $value[$i] = $postedParameters["SpimExcMode$i"];
+                unset($postedParameters["SpimExcMode$i"]);
+            }
+        }
+        $name = 'SpimExcMode';
+        $valueSet = count(array_filter($value)) > 0;
+
+        if ($valueSet) {
+
+            // Set the value
+            $parameter = $this->parameter($name);
+            $parameter->setValue($value);
+            $this->set($parameter);
+
+            // Keep the 'excModes' so that it can be checked below if any SPIM
+            // parameters need to be forced, e.g when 'excMode' is 'High NA'.
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = False;
+            } else {
+                $excModes = $parameter->value();
+            }
+        } else {
+
+            // In this case it is important to know whether the Parameter
+            // must have a value or not
+            $parameter = $this->parameter($name);
+            $mustProvide = $parameter->mustProvide();
+
+            // Reset the Parameter
+            $parameter->reset();
+            $this->set($parameter);
+
+            // If the Parameter value must be provided, we return an error
+            if ($mustProvide) {
+                $this->message = "Please set the SPIM excitation mode!";
+                $noErrorsFound = False;
+            }
+        }
+        
+
+        // Gaussian Width
+        $value = array(null, null, null, null, null);
+
+        for ($i = 0; $i < 5; $i++) {
+            if (isset($postedParameters["SpimGaussWidth$i"])) {
+                $value[$i] = $postedParameters["SpimGaussWidth$i"];
+                unset($postedParameters["SpimGaussWidth$i"]);
+
+                // Fallback to '0' if no value was provided and
+                // the channel is 'High NA'.
+                if (empty($value[$i])
+                    && isset($excModes[$i])
+                    && $excModes[$i] == "High NA") {
+                    $value[$i] = 0;
+                }
+            }
+        }
+        $name = 'SpimGaussWidth';
+
+        // Do not filter '0'. Thus, use 'strlen' as callback for filtering.
+        $valueSet = count(array_filter($value, 'strlen')) > 0;
+        if ($valueSet) {
+
+            // Set the value
+            $parameter = $this->parameter($name);
+            $parameter->setValue($value);
+            $this->set($parameter);
+
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = False;
+            }
+
+        } else {
+
+            // In this case it is important to know whether the Parameter
+            // must have a value or not
+            $parameter = $this->parameter($name);
+            $mustProvide = $parameter->mustProvide();
+
+            // Reset the Parameter
+            $parameter->reset();
+            $this->set($parameter);
+
+            // If the Parameter value must be provided, we return an error
+            if ($mustProvide) {
+                $this->message = "Please set the Spim Gaussian Width!";
+                $noErrorsFound = False;
+            }
+        }
+
+
+        // Spim Sheet Focus Offset
+        $value = array(null, null, null, null, null);
+        for ($i = 0; $i < 5; $i++) {
+            if (isset($postedParameters["SpimFocusOffset$i"])) {
+                $value[$i] = $postedParameters["SpimFocusOffset$i"];
+                unset($postedParameters["SpimFocusOffset$i"]);
+
+                // Fallback to '0' if no value was provided and
+                // the channel is 'High NA'.
+                if (empty($value[$i])
+                    && isset($excModes[$i])
+                    && $excModes[$i] == "High NA") {
+                    $value[$i] = 0;
+                }
+            }
+        }
+        $name = 'SpimFocusOffset';
+
+        // Do not filter '0'. Thus, use 'strlen' as callback for filtering.
+        $valueSet = count(array_filter($value, 'strlen')) > 0;
+        if ($valueSet) {
+
+            // Set the value
+            $parameter = $this->parameter($name);
+            $parameter->setValue($value);
+            $this->set($parameter);
+
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = False;
+            }
+
+        } else {
+
+            // In this case it is important to know whether the Parameter
+            // must have a value or not
+            $parameter = $this->parameter($name);
+            $mustProvide = $parameter->mustProvide();
+
+            // Reset the Parameter
+            $parameter->reset();
+            $this->set($parameter);
+
+            // If the Parameter value must be provided, we return an error
+            if ($mustProvide) {
+                $this->message = "Please set the Spim Focus Offset!";
+                $noErrorsFound = False;
+            }
+        }
+
+
+        // Spim Sheet Center Offset
+        $value = array(null, null, null, null, null);
+        for ($i = 0; $i < 5; $i++) {
+            if (isset($postedParameters["SpimCenterOffset$i"])) {
+                $value[$i] = $postedParameters["SpimCenterOffset$i"];
+                unset($postedParameters["SpimCenterOffset$i"]);
+
+                // Fallback to '0' if no value was provided and
+                // the channel is 'High NA'.
+                if (empty($value[$i])
+                    && isset($excModes[$i])
+                    && $excModes[$i] == "High NA") {
+                    $value[$i] = 0;
+                }
+            }
+        }
+        $name = 'SpimCenterOffset';
+
+        // Do not filter '0'. Thus, use 'strlen' as callback for filtering.
+        $valueSet = count(array_filter($value, 'strlen')) > 0;
+        if ($valueSet) {
+
+            // Set the value
+            $parameter = $this->parameter($name);
+            $parameter->setValue($value);
+            $this->set($parameter);
+
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = False;
+            }
+
+        } else {
+
+            // In this case it is important to know whether the Parameter
+            // must have a value or not
+            $parameter = $this->parameter($name);
+            $mustProvide = $parameter->mustProvide();
+
+            // Reset the Parameter
+            $parameter->reset();
+            $this->set($parameter);
+
+            // If the Parameter value must be provided, we return an error
+            if ($mustProvide) {
+                $this->message = "Please set the Spim Center Offset!";
+                $noErrorsFound = False;
+            }
+        }
+        
+
+        // Spim NA
+        $value = array(null, null, null, null, null);
+        for ($i = 0; $i < 5; $i++) {
+            if (isset($postedParameters["SpimNA$i"])) {
+                $value[$i] = $postedParameters["SpimNA$i"];
+                unset($postedParameters["SpimNA$i"]);
+
+                // Fallback to '0' if no value was provided and
+                // the channel is not 'High NA'.
+                if (empty($value[$i])
+                    && isset($excModes[$i])
+                    && $excModes[$i] != "High NA") {
+                    $value[$i] = 0;
+                }
+            }
+        }
+        $name = 'SpimNA';
+
+        // Do not filter '0'. Thus, use 'strlen' as callback for filtering.
+        $valueSet = count(array_filter($value, 'strlen')) > 0;
+        if ($valueSet) {
+
+            // Set the value
+            $parameter = $this->parameter($name);
+            $parameter->setValue($value);
+            $this->set($parameter);
+
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = False;
+            }
+
+        } else {
+
+            // In this case it is important to know whether the Parameter
+            // must have a value or not
+            $parameter = $this->parameter($name);
+            $mustProvide = $parameter->mustProvide();
+
+            // Reset the Parameter
+            $parameter->reset();
+            $this->set($parameter);
+
+            // If the Parameter value must be provided, we return an error
+            if ($mustProvide) {
+                $this->message = "Please set the Spim NA!";
+                $noErrorsFound = False;
+            }
+        }
+
+
+        // Spim Fill Factor
+        $value = array(null, null, null, null, null);
+        for ($i = 0; $i < 5; $i++) {
+            if (isset($postedParameters["SpimFill$i"])) {
+                $value[$i] = $postedParameters["SpimFill$i"];
+                unset($postedParameters["SpimFill$i"]);
+                
+                // Fallback to '0' if no value was provided and
+                // the channel is not 'High NA'.
+                if (empty($value[$i])
+                    && isset($excModes[$i])
+                    && $excModes[$i] != "High NA") {
+                    $value[$i] = 0;
+                }
+            }
+        }
+        $name = 'SpimFill';
+        
+        // Do not filter '0'. Thus, use 'strlen' as callback for filtering.
+        $valueSet = count(array_filter($value, 'strlen')) > 0;
+        if ($valueSet) {
+            
+            // Set the value
+            $parameter = $this->parameter($name);
+            $parameter->setValue($value);
+            $this->set($parameter);
+            
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = False;
+            }
+            
+        } else {
+            
+            // In this case it is important to know whether the Parameter
+            // must have a value or not
+            $parameter = $this->parameter($name);
+            $mustProvide = $parameter->mustProvide();
+            
+            // Reset the Parameter
+            $parameter->reset();
+            $this->set($parameter);
+            
+            // If the Parameter value must be provided, we return an error
+            if ($mustProvide) {
+                $this->message = "Please set the Spim Fill Factor!";
+                $noErrorsFound = False;
+            }
+        }
+
+
+        // Spim Direction
+        $value = array(null, null, null, null, null);
+        for ($i = 0; $i < 5; $i++) {
+            if (isset($postedParameters["SpimDir$i"])) {
+                $value[$i] = $postedParameters["SpimDir$i"];
+                unset($postedParameters["SpimDir$i"]);
+            }
+        }
+        $name = 'SpimDir';
+        
+        // Do not filter '0'. Thus, use 'strlen' as callback for filtering.
+        $valueSet = count(array_filter($value, 'strlen')) > 0;
+        if ($valueSet) {
+            
+            // Set the value
+            $parameter = $this->parameter($name);
+            $parameter->setValue($value);
+            $this->set($parameter);
+            
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = False;
+            }
+            
+        } else {
+            
+            // In this case it is important to know whether the Parameter
+            // must have a value or not
+            $parameter = $this->parameter($name);
+            $mustProvide = $parameter->mustProvide();
+            
+            // Reset the Parameter
+            $parameter->reset();
+            $this->set($parameter);
+            
+            // If the Parameter value must be provided, we return an error
+            if ($mustProvide) {
+                $this->message = "Please set the Spim Direction!";
+                $noErrorsFound = False;
+            }
+        }       
+
+        return $noErrorsFound;
+    }
 
     /*!
       \brief	Checks that the posted STED Parameters are all defined
@@ -980,8 +1363,7 @@ class ParameterSetting extends Setting {
 
 
         return $noErrorsFound;
-    }
-
+    }   
 
     /*!
       \brief	Checks that the posted Capturing Parameters are all defined
@@ -1502,6 +1884,22 @@ class ParameterSetting extends Setting {
     }
 
     /*!
+      \brief	Returns all Spim Parameter names
+      \return array of Spim Parameter names
+    */
+    public function spimParameterNames() {
+        $names = array();
+
+        foreach ($this->parameter as $parameter) {
+            if ($parameter->isForSpim()) {
+                $names[] = $parameter->name();
+            }
+        }
+
+        return $names;
+    }
+
+    /*!
       \brief	Returns all Capture Parameter names
       \return array of Capture Parameter names
      */
@@ -1620,6 +2018,25 @@ class ParameterSetting extends Setting {
                 continue;
             if ($parameter->name() == 'Sted3D' && !$this->isSted3D())
                 continue;
+            
+            // To avoid confusion it would be desirable to filter SPIM
+            // parameters on a per channel basis, but we don't do that yet
+            // for any HRM parameters.
+            if ($parameter->name() == 'SpimExcMode' && !$this->isSpim())
+                continue;
+            if ($parameter->name() == 'SpimGaussWidth' && !$this->isSpim())
+                continue;
+            if ($parameter->name() == 'SpimFocusOffset' && !$this->isSpim())
+                continue;
+            if ($parameter->name() == 'SpimCenterOffset' && !$this->isSpim())
+                continue;
+            if ($parameter->name() == 'SpimNA' && !$this->isSpim())
+                continue;
+            if ($parameter->name() == 'SpimFill' && !$this->isSpim())
+                continue;
+            if ($parameter->name() == 'SpimDir' && !$this->isSpim())
+                continue;
+            
             if ($parameter->name() == 'PSF' && $PSFmode == 'measured') {
 
                 // If this is a shared template, process the PSF file paths
@@ -1924,6 +2341,18 @@ class ParameterSetting extends Setting {
         $value = $parameter->value();
         return ($value === 'STED 3D');
     }
+
+    /*!
+      \brief   Checks whether the currently selected microscope type is spim.
+      \return  true if the currently selected microscope type is spim, false
+               otherwise.
+    */
+    public function isSpim() {
+        $parameter = $this->parameter('MicroscopeType');
+        $value = $parameter->value();
+        return ($value === 'SPIM');
+    }
+
 
     /*!
       \brief	Checks whether the currently selected microscope type is spinning

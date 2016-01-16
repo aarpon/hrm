@@ -456,6 +456,13 @@ class HuygensTemplate {
                     'stedSatFact'               => '',
                     'stedImmunity'              => '',
                     'sted3D'                    => '',
+                    'spimExcMode'               => '',
+                    'spimGaussWidth'            => '',
+                    'spimCenterOffset'          => '',
+                    'spimFocusOffset'           => '',
+                    'spimNA'                    => '',
+                    'spimFill'                  => '',
+                    'spimDir'                   => '',
                     'listID'                    => 'setp' );
 
         /* Options for the 'set image pararmeter' action */
@@ -481,6 +488,13 @@ class HuygensTemplate {
                     'stedSatFact'               =>  'parState,stedSatFact',
                     'stedImmunity'              =>  'parState,stedImmunity',
                     'sted3D'                    =>  'parState,sted3D',
+                    'spimExcMode'               =>  'parState,spimExcMode',
+                    'spimGaussWidth'            =>  'parState,spimGaussWidth',
+                    'spimCenterOffset'          =>  'parState,spimCenterOffset',
+                    'spimFocusOffset'           =>  'parState,spimFocusOffset',
+                    'spimNA'                    =>  'parState,spimNA',
+                    'spimFill'                  =>  'parState,spimFill',
+                    'spimDir'                   =>  'parState,spimDir',
                     'listID'                    =>  'setp' );
 
         /* Options for the 'adjust baseline' action */
@@ -941,6 +955,13 @@ class HuygensTemplate {
             case 'stedSatFact':
             case 'stedImmunity':
             case 'sted3D':
+            case 'spimExcMode':
+            case 'spimGaussWidth':
+            case 'spimCenterOffset':
+            case 'spimFocusOffset':
+            case 'spimNA':
+            case 'spimFill':
+            case 'spimDir':
                 break;
             case 'listID':
                 $taskDescr = $this->string2tcllist($taskDescr);
@@ -1308,6 +1329,110 @@ class HuygensTemplate {
     }
 
     /* -------------------------- Setp task ---------------------------------- */
+
+    /*!
+      \brief     Gets the SPIM excitation mode. One channel.
+      \param     $channel A channel
+      \return    The SPIM excitation mode.
+    */
+    private function getSpimExcMode($channel) {
+        $microSetting = $this->microSetting;
+        $spimExcMode = $microSetting->parameter("SpimExcMode")->value();
+        $spimExcMode = $spimExcMode[$channel];
+
+        return $spimExcMode;
+    }
+
+    /*!
+      \brief     Gets the SPIM Gauss Width. One channel.
+      \param     $channel A channel
+      \return    The SPIM Gauss Width.
+    */
+    private function getSpimGaussWidth($channel) {
+        $microSetting = $this->microSetting;
+        $spimGaussWidth = $microSetting->parameter("SpimGaussWidth")->value();
+        return $spimGaussWidth[$channel];
+    }
+
+    /*!
+      \brief     Gets the SPIM Center Offset. One channel.
+      \param     $channel A channel
+      \return    The SPIM Center Offset.
+    */
+    private function getSpimCenterOffset($channel) {
+        $microSetting = $this->microSetting;
+        $spimCenterOffset = $microSetting->parameter("SpimCenterOffset")->value();
+        return $spimCenterOffset[$channel];
+    }
+
+    /*!
+      \brief     Gets the SPIM Focus Offset. One channel.
+      \param     $channel A channel
+      \return    The SPIM Focus Offset.
+    */
+    private function getSpimFocusOffset($channel) {
+        $microSetting = $this->microSetting;
+        $spimFocusOffset = $microSetting->parameter("SpimFocusOffset")->value();
+        return $spimFocusOffset[$channel];
+    }
+
+    /*!
+      \brief     Gets the SPIM NA. One channel.
+      \param     $channel A channel
+      \return    The SPIM NA.
+    */
+    private function getSpimNA($channel) {
+        $microSetting = $this->microSetting;
+        $spimNA = $microSetting->parameter("SpimNA")->value();
+        return $spimNA[$channel];
+    }
+
+    /*!
+      \brief     Gets the SPIM Fill Factor. One channel.
+      \param     $channel A channel
+      \return    The SPIM Fill Factor.
+    */
+    private function getSpimFill($channel) {
+        $microSetting = $this->microSetting;
+        $spimFill = $microSetting->parameter("SpimFill")->value();
+        return $spimFill[$channel];
+    }
+
+    /*!
+      \brief     Gets the SPIM Direction. One channel.
+      \param     $channel A channel
+      \return    The SPIM Direction.
+    */
+    private function getSpimDir($channel) {
+        $microSetting = $this->microSetting;
+        $spimDir = $microSetting->parameter("SpimDir")->value();
+        $direction = $spimDir[$channel];
+
+        switch($direction) {
+        case 'right':
+            $angle = 0.0;
+            break;
+        case 'left':
+            $angle = 180.0;
+            break;
+        case 'top':
+            $angle = 90.0;
+            break;
+        case 'bottom':
+            $angle = 270.0;
+            break;
+        case 'left+right':
+            $angle = 0.0;
+            break;
+        case 'top+bottom':
+            $angle = 90.0;
+            break;
+        default:
+            error_log("Unknown SPIM direction: $direction");
+        }
+        
+        return $angle;
+    }
 
     /*!
       \brief     Gets the STED depletion mode. One channel.
@@ -2225,6 +2350,13 @@ class HuygensTemplate {
         case 'stedSatFact':
         case 'stedImmunity':
         case 'sted3D':
+        case 'spimExcMode':
+        case 'spimGaussWidth':
+        case 'spimCenterOffset':
+        case 'spimFocusOffset':
+        case 'spimNA':
+        case 'spimFill':
+        case 'spimDir':
             $chanCnt = $this->getChanCnt();
             $cList = "";
 
@@ -2262,7 +2394,8 @@ class HuygensTemplate {
     private function getConfidenceLevel($parameter,$channel) {
 
         /* Parameter not set by the user, should be read from the metadata. */
-        if ($this->getParameterValue($parameter,$channel) == "*") {
+        $parameterValue = $this->getParameterValue($parameter,$channel);
+        if (strpos($parameterValue, '*') !== FALSE) {
             return "default";
         }
  
@@ -2315,6 +2448,13 @@ class HuygensTemplate {
         case 'stedSatFact':
         case 'stedImmunity':
         case 'sted3D':
+        case 'spimExcMode':
+        case 'spimGaussWidth':
+        case 'spimCenterOffset':
+        case 'spimFocusOffset':
+        case 'spimNA':
+        case 'spimFill':
+        case 'spimDir':
             $chanCnt = $this->getChanCnt();
             $param = "";
             for($chan = 0; $chan < $chanCnt; $chan++) {
@@ -2406,11 +2546,33 @@ class HuygensTemplate {
         case 'sted3D':
             $parameterValue = $this->getSted3D($channel);
             break;
+        case 'spimExcMode':
+            $parameterValue = $this->getSpimExcMode($channel);
+            break;
+        case 'spimGaussWidth':
+            $parameterValue = $this->getSpimGaussWidth($channel);
+            break;
+        case 'spimCenterOffset':
+            $parameterValue = $this->getSpimCenterOffset($channel);
+            break;
+        case 'spimFocusOffset':
+            $parameterValue = $this->getSpimFocusOffset($channel);
+            break;
+        case 'spimNA':
+            $parameterValue = $this->getSpimNA($channel);
+            break;
+        case 'spimFill':
+            $parameterValue = $this->getSpimFill($channel);
+            break;
+        case 'spimDir':
+            $parameterValue = $this->getSpimDir($channel);
+            break;
         default:
             $parameterValue = "";
         }
 
-        if ($parameterValue == "" || $parameterValue == "{}") {
+        if ($parameterValue != 0
+            && ($parameterValue == "" || $parameterValue == "{}")) {
             $parameterValue = "*";
         }
 

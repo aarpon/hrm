@@ -3970,6 +3970,7 @@ if ($current_revision < $n) {
 // Update to revision 14
 // Description: Add GPU to globals
 //              Add NumberOfChannels = 6 into possible_values
+//              Support for SPIM microscopy
 // -----------------------------------------------------------------------------
 $n = 14;
 if ($current_revision < $n) {
@@ -4458,6 +4459,425 @@ if ($current_revision < $n) {
         write_message($msg);
         write_to_error($msg);
         return;
+    }
+
+    $tabname = "possible_values";
+    
+    $record = array();
+    $record["parameter"] = "MicroscopeType";
+    $record["value"] = "SPIM";
+    $record["translation"] = "spim";
+    $record["isDefault"] = "f";
+    $record["parameter_key"] = "MicroscopeType7";
+
+        // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+             " WHERE parameter='" . $record['parameter'] .
+             "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                   "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $record = array();
+    $record["parameter"] = "SpimExcMode";
+    $record["value"] = "Gaussian light sheet";
+    $record["translation"] = "gauss";
+    $record["isDefault"] = "f";
+    $record["parameter_key"] = "SpimExcMode1";
+
+        // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+             " WHERE parameter='" . $record['parameter'] .
+             "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                   "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $record = array();
+    $record["parameter"] = "SpimExcMode";
+    $record["value"] = "Gaussian MultiView light sheet";
+    $record["translation"] = "gaussMuVi";
+    $record["isDefault"] = "f";
+    $record["parameter_key"] = "SpimExcMode2";
+
+        // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+             " WHERE parameter='" . $record['parameter'] .
+             "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                   "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $record = array();
+    $record["parameter"] = "SpimExcMode";
+    $record["value"] = "High fill factor, scanning beam ";
+    $record["translation"] = "scanning";
+    $record["isDefault"] = "t";
+    $record["parameter_key"] = "SpimExcMode3";
+
+        // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+             " WHERE parameter='" . $record['parameter'] .
+             "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                   "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $record = array();
+    $record["parameter"] = "SpimExcMode";
+    $record["value"] = "High fill factor, cylinder ";
+    $record["translation"] = "cylinder";
+    $record["isDefault"] = "f";
+    $record["parameter_key"] = "SpimExcMode4";
+
+        // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+             " WHERE parameter='" . $record['parameter'] .
+             "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                   "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $record = array();
+    $record["parameter"] = "SpimGaussWidth";
+    $record["value"] = "Width of Gaussian light sheet";
+    $record["translation"] = "spimGaussWidth";
+    $record["isDefault"] = "f";
+    $record["parameter_key"] = "SpimGaussWidth";
+
+        // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+             " WHERE parameter='" . $record['parameter'] .
+             "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                   "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $record = array();
+    $record["parameter"] = "SpimFocusOffset";
+    $record["value"] = "Light sheet focus offset (microns)";
+    $record["translation"] = "spimFocusOff";
+    $record["isDefault"] = "f";
+    $record["parameter_key"] = "SpimFocusOffset";
+
+        // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+             " WHERE parameter='" . $record['parameter'] .
+             "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                   "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $record = array();
+    $record["parameter"] = "SpimCenterOffset";
+    $record["value"] = "Sheet lateral offset (microns)";
+    $record["translation"] = "spimCenterOff";
+    $record["isDefault"] = "f";
+    $record["parameter_key"] = "SpimCenterOffset";
+
+        // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+             " WHERE parameter='" . $record['parameter'] .
+             "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                   "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $record = array();
+    $record["parameter"] = "SpimDir";
+    $record["value"] = "From right";
+    $record["translation"] = "0.0";
+    $record["isDefault"] = "t";
+    $record["parameter_key"] = "SpimDir1";
+
+        // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+             " WHERE parameter='" . $record['parameter'] .
+             "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                   "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $record = array();
+    $record["parameter"] = "SpimDir";
+    $record["value"] = "From top";
+    $record["translation"] = "90.0";
+    $record["isDefault"] = "f";
+    $record["parameter_key"] = "SpimDir2";
+
+        // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+             " WHERE parameter='" . $record['parameter'] .
+             "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                   "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $record = array();
+    $record["parameter"] = "SpimDir";
+    $record["value"] = "From left";
+    $record["translation"] = "180.0";
+    $record["isDefault"] = "f";
+    $record["parameter_key"] = "SpimDir3";
+
+        // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+             " WHERE parameter='" . $record['parameter'] .
+             "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                   "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $record = array();
+    $record["parameter"] = "SpimDir";
+    $record["value"] = "From bottom";
+    $record["translation"] = "270.0";
+    $record["isDefault"] = "f";
+    $record["parameter_key"] = "SpimDir4";
+
+        // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+             " WHERE parameter='" . $record['parameter'] .
+             "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                   "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $record = array();
+    $record["parameter"] = "SpimDir";
+    $record["value"] = "Top + bottom";
+    $record["translation"] = "90.0";
+    $record["isDefault"] = "f";
+    $record["parameter_key"] = "SpimDir5";
+
+        // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+             " WHERE parameter='" . $record['parameter'] .
+             "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                   "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $record = array();
+    $record["parameter"] = "SpimDir";
+    $record["value"] = "Right + left";
+    $record["translation"] = "0.0";
+    $record["isDefault"] = "f";
+    $record["parameter_key"] = "SpimDir6";
+
+        // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+             " WHERE parameter='" . $record['parameter'] .
+             "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                   "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $record = array();
+    $record["parameter"] = "SpimNA";
+    $record["value"] = "Numerical aperture of the light sheet lens";
+    $record["translation"] = "spimNA";
+    $record["isDefault"] = "f";
+    $record["parameter_key"] = "SpimNA";
+
+        // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+             " WHERE parameter='" . $record['parameter'] .
+             "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                   "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $record = array();
+    $record["parameter"] = "SpimFill";
+    $record["value"] = "Fill factor of the light sheet lens";
+    $record["translation"] = "spimFill";
+    $record["isDefault"] = "f";
+    $record["parameter_key"] = "SpimFill";
+
+        // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+             " WHERE parameter='" . $record['parameter'] .
+             "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                   "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    
+// ------------------ Add columns to 'confidence_levels' ----------------------
+    $tabname   = "confidence_levels";
+    $newcolumns = array("stedMode",
+                        "stedLambda",
+                        "stedSatFact",
+                        "stedImmunity",
+                        "sted3D");
+    $type = "C(16)";
+
+    $allcolumns = $db->MetaColumnNames( 'confidence_levels' );
+    foreach ($newcolumns as $newcolumn) {
+        if (array_key_exists( strtoupper($newcolumn), $allcolumns) ) {
+            continue;
+        }
+        if ( !insert_column($tabname, $newcolumn . " " . $type) ) {
+            $msg = "An error occurred while updating " .
+                "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_log($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+// -------------------- Add limits to percentage values ------------------------
+
+    $tabname = "boundary_values";
+
+    $record = array();
+    $record["parameter"] = "StedImmunity";
+    $record["min"] = "0";
+    $record["max"] = "100";
+    $record["min_included"] = "T";
+    $record["max_included"] = "T";
+    $record["standard"] = "0";
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND min='" . $record["min"] . "' AND max='" . $record["max"] . "' AND min_included='" . $record["min_included"] . "' AND max_included='" . $record["max_included"] . "' AND standard='" . $record["standard"] . "'");
+    if ($rs->EOF) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $record = array();
+    $record["parameter"] = "Sted3D";
+    $record["min"] = "0";
+    $record["max"] = "100";
+    $record["min_included"] = "T";
+    $record["max_included"] = "T";
+    $record["standard"] = "0";
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND min='" . $record["min"] . "' AND max='" . $record["max"] . "' AND min_included='" . $record["min_included"] . "' AND max_included='" . $record["max_included"] . "' AND standard='" . $record["standard"] . "'");
+    if ($rs->EOF) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
     }
 
     
