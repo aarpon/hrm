@@ -358,6 +358,7 @@ class HuygensTemplate {
                     'OMP_DYNAMIC'               => '1',
                     'timeOut'                   => '10000',
                     'exportFormat'              => '',
+		    'attemptGpu'                => '',
                     'listID'                    => 'setEnv' );
 
         $this->expFormatArray = 
@@ -676,6 +677,10 @@ class HuygensTemplate {
             case 'exportFormat':
                 $list .= $this->getExportFormat();
                 break;
+		case 'attemptGpu':
+		$db = new DatabaseConnection();
+		$list .= $db->getGpuStateAsString();
+		break;		
             case 'listID':
                 $list = $this->string2tcllist($list);
                 $this->envList = $value . " " . $list;
