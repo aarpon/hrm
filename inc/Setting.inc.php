@@ -2663,58 +2663,55 @@ class ParameterSetting extends Setting {
                                 explode(' ', $huArray['sted3D']));
             $this->parameter['Sted3D']->setValue($sted3d);
         }
-
-
-        /* Comment out after merging with SPIM branch. */
         
-        // // SPIM Excitation Mode.
-        // if (strpos($huArray['parState,spimExc'], "default") === FALSE) {
-        //     $spimExcMode = array_map('floatval',
-        //                              explode(' ', $huArray['spimExc']));
-        //     $this->parameter['SpimExcMode']->setValue($spimExcMode);
-        // }
+        // SPIM Excitation Mode.
+        if (strpos($huArray['parState,spimExc'], "default") === FALSE) {
+            $spimExcMode = array_map('floatval',
+                                     explode(' ', $huArray['spimExc']));
+            $this->parameter['SpimExcMode']->setValue($spimExcMode);
+        }
 
-        // // SPIM Gaussian Width.
-        // if (strpos($huArray['parState,spimGaussWidth'], "default") === FALSE) {
-        //     $spimGaussWidth = array_map('floatval',
-        //                              explode(' ', $huArray['spimGaussWidth']));
-        //     $this->parameter['SpimGaussWidth']->setValue($spimGaussWidth);
-        // }
+        // SPIM Gaussian Width.
+        if (strpos($huArray['parState,spimGaussWidth'], "default") === FALSE) {
+            $spimGaussWidth = array_map('floatval',
+                                     explode(' ', $huArray['spimGaussWidth']));
+            $this->parameter['SpimGaussWidth']->setValue($spimGaussWidth);
+        }
 
-        // // SPIM Center Offset.
-        // if (strpos($huArray['parState,spimCenterOff'], "default") === FALSE) {
-        //     $spimCenterOff = array_map('floatval',
-        //                                explode(' ', $huArray['spimCenterOff']));
-        //     $this->parameter['SpimCenterOffset']->setValue($spimCenterOff);
-        // }
+        // SPIM Center Offset.
+        if (strpos($huArray['parState,spimCenterOff'], "default") === FALSE) {
+            $spimCenterOff = array_map('floatval',
+                                       explode(' ', $huArray['spimCenterOff']));
+            $this->parameter['SpimCenterOffset']->setValue($spimCenterOff);
+        }
 
-        // // SPIM Focus Offset.
-        // if (strpos($huArray['parState,spimFocusOff'], "default") === FALSE) {
-        //     $spimFocusOff = array_map('floatval',
-        //                               explode(' ', $huArray['spimFocusOff']));
-        //     $this->parameter['SpimFocusOffset']->setValue($spimFocusOff);
-        // }
+        // SPIM Focus Offset.
+        if (strpos($huArray['parState,spimFocusOff'], "default") === FALSE) {
+            $spimFocusOff = array_map('floatval',
+                                      explode(' ', $huArray['spimFocusOff']));
+            $this->parameter['SpimFocusOffset']->setValue($spimFocusOff);
+        }
 
-        // // SPIM NA.
-        // if (strpos($huArray['parState,spimNA'], "default") === FALSE) {
-        //     $spimNA = array_map('floatval',
-        //                         explode(' ', $huArray['spimNA']));
-        //     $this->parameter['SpimNA']->setValue($spimNA);
-        // }
+        // SPIM NA.
+        if (strpos($huArray['parState,spimNA'], "default") === FALSE) {
+            $spimNA = array_map('floatval',
+                                explode(' ', $huArray['spimNA']));
+            $this->parameter['SpimNA']->setValue($spimNA);
+        }
         
-        // // SPIM Fill Factor.
-        // if (strpos($huArray['parState,spimFill'], "default") === FALSE) {
-        //     $spimFill = array_map('floatval',
-        //                         explode(' ', $huArray['spimFill']));
-        //     $this->parameter['SpimFill']->setValue($spimFill);
-        // }
+        // SPIM Fill Factor.
+        if (strpos($huArray['parState,spimFill'], "default") === FALSE) {
+            $spimFill = array_map('floatval',
+                                explode(' ', $huArray['spimFill']));
+            $this->parameter['SpimFill']->setValue($spimFill);
+        }
 
-        // // SPIM Imaging Direction.
-        // if (strpos($huArray['parState,spimDir'], "default") === FALSE) {
-        //     $spimDir = array_map('floatval',
-        //                          explode(' ', $huArray['spimDir']));
-        //     $this->parameter['SpimDir']->setValue($spimDir);
-        // }
+        // SPIM Imaging Direction.
+        if (strpos($huArray['parState,spimDir'], "default") === FALSE) {
+            $spimDir = array_map('floatval',
+                                 explode(' ', $huArray['spimDir']));
+            $this->parameter['SpimDir']->setValue($spimDir);
+        }
     }
 }
 
