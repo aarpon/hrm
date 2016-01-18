@@ -478,6 +478,15 @@ else {
                 </div>
 
             </fieldset>
+
+<?php
+if ($_SESSION['user']->isAdmin()) {
+    $validFiles = $_SESSION['fileserver']->listFiles(TRUE);
+} else {
+    $validFiles = $_SESSION['fileserver']->selectedFiles();
+}
+?>
+
             <div id="upMsg"></div>
             <div id="actions" class="parameterselection">
                 <input name="create"
@@ -492,7 +501,7 @@ else {
                        class="icon imageTotemplate"
                        onmouseover="TagToTip('ttSpanImageToTemplate')"
                        onmouseout="UnTip()"
-                       onclick='UnTip(); image2template(<?php echo json_encode( $_SESSION['fileserver']->selectedFiles()); ?>)' />
+                       onclick='UnTip(); image2template(<?php echo json_encode( $validFiles);?>)' />
                <input name="huTotemplate"
                        type="button"
                        value=""
