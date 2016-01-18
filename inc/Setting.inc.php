@@ -446,6 +446,12 @@ class ParameterSetting extends Setting {
         }
 
         if ($ok) {
+            if (!$this->checkPostedAberrationCorrectionParameters($postedParams)) {
+                $ok = False;
+            }
+        }
+
+        if ($ok) {
             if ( !$this->checkPostedStedParameters($postedParams) )  {
                 $ok = False;
             }
