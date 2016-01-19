@@ -1692,13 +1692,18 @@ echo '</body></html>';
       echo '    <link rel="SHORTCUT ICON" href="' . $ico . '"/>';
       echo '          <script type="text/javascript" src="scripts/common.js"></script>
           <style type="text/css">
-          @import "css/default.css";
-          @import "css/custom.css";
-      </style>
+              @import "css/default.css";
+          </style>
           </head>
           <body>
           <script type="text/javascript" src="./scripts/wz_tooltip/wz_tooltip.js"></script>
           ';
+
+      $custom_css = "css/custom.css";
+      if (file_exists($custom_css)) {
+          echo '    <link rel="stylesheet" href="' . $custom_css . '">' . "\n";
+      }
+
 
       echo '
       <div id="prevBasket"> <!--basket-->
