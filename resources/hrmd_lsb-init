@@ -53,17 +53,18 @@ force_reload() {
 }
 
 status() {
+    daemon_wrapper="${HRM_HOME}/bin/hrm_queuemanager"
     # print the current status of the service
-    pidofproc -p $HRMD_PID "${HRM_HOME}/bin/hrm_queuemanager"
+    pidofproc -p $HRMD_PID "$daemon_wrapper"
     status=$?
     if [ "$status" = 0 ]; then
-        log_success_msg "$name is running"
+        log_success_msg "HRM is running ($daemon_wrapper)"
         return 0
     elif [ "$status" = 4 ]; then
-        log_failure_msg "could not access PID file for $name"
+        log_failure_msg "could not access PID file for HRM ($daemon_wrapper)"
         return $status
     else
-        log_failure_msg "$name is not running"
+        log_failure_msg "HRM is not running ($daemon_wrapper)"
         return $status
     fi
 }
