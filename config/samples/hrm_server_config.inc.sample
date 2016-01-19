@@ -29,8 +29,8 @@ $db_password = "dbpasswd";
 //==============================================================================
 
 // Huygens server default user
-$huygens_user = "huygens";
-$huygens_group = "huygens";
+$huygens_user = "hrm";
+$huygens_group = "hrm";
 
 // Path to a local Huygens Core executable, to handle image information and
 // thumbnails. This installation of hucore doesn't require a full license
@@ -52,8 +52,8 @@ $local_huygens_core = "/usr/local/bin/hucore";
 $image_host = "localhost";
 
 // File server default user
-$image_user = "apache";
-$image_group = "apache";
+$image_user = "hrm";
+$image_group = "hrm";
 
 // File server base folder (without trailing /)
 $image_folder = "/scratch/hrm_data";
