@@ -4205,9 +4205,33 @@ if ($current_revision < $n) {
         write_to_error($msg);
         return;
     }
+    
+    $tabname = "analysis_parameter";
+    $column  = "setting";
+    $type    = "VARCHAR(255)";
+
+    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
+    if(!$db->Execute($SQLquery)) {
+        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
 
     $tabname = "analysis_setting";
     $column  = "owner";
+    $type    = "VARCHAR(255)";
+
+    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
+    if(!$db->Execute($SQLquery)) {
+        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $tabname = "analysis_setting";
+    $column  = "name";
     $type    = "VARCHAR(255)";
 
     $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
@@ -4230,8 +4254,32 @@ if ($current_revision < $n) {
         return;
     }
 
+    $tabname = "job_parameter";
+    $column  = "setting";
+    $type    = "VARCHAR(255)";
+
+    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
+    if(!$db->Execute($SQLquery)) {
+        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
     $tabname = "job_parameter_setting";
     $column  = "owner";
+    $type    = "VARCHAR(255)";
+
+    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
+    if(!$db->Execute($SQLquery)) {
+        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $tabname = "job_parameter_setting";
+    $column  = "name";
     $type    = "VARCHAR(255)";
 
     $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
@@ -4254,8 +4302,32 @@ if ($current_revision < $n) {
         return;
     }
 
+    $tabname = "job_task_parameter";
+    $column  = "setting";
+    $type    = "VARCHAR(255)";
+
+    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
+    if(!$db->Execute($SQLquery)) {
+        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
     $tabname = "job_task_setting";
     $column  = "owner";
+    $type    = "VARCHAR(255)";
+
+    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
+    if(!$db->Execute($SQLquery)) {
+        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $tabname = "job_task_setting";
+    $column  = "name";
     $type    = "VARCHAR(255)";
 
     $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
@@ -4278,6 +4350,18 @@ if ($current_revision < $n) {
         return;
     }
 
+    $tabname = "job_analysis_parameter";
+    $column  = "setting";
+    $type    = "VARCHAR(255)";
+
+    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
+    if(!$db->Execute($SQLquery)) {
+        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
     $tabname = "job_analysis_setting";
     $column  = "owner";
     $type    = "VARCHAR(255)";
@@ -4290,6 +4374,18 @@ if ($current_revision < $n) {
         return;
     }
 
+    $tabname = "job_analysis_setting";
+    $column  = "name";
+    $type    = "VARCHAR(255)";
+
+    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
+    if(!$db->Execute($SQLquery)) {
+        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+    
     $tabname = "job_files";
     $column  = "owner";
     $type    = "VARCHAR(255)";
@@ -4326,6 +4422,42 @@ if ($current_revision < $n) {
         return;
     }
 
+    $tabname = "shared_parameter";
+    $column  = "setting";
+    $type    = "VARCHAR(255)";
+
+    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
+    if(!$db->Execute($SQLquery)) {
+        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $tabname = "shared_parameter_setting";
+    $column  = "name";
+    $type    = "VARCHAR(255)";
+
+    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
+    if(!$db->Execute($SQLquery)) {
+        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+    
+    $tabname = "shared_parameter_setting";
+    $column  = "owner";
+    $type    = "VARCHAR(255)";
+
+    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
+    if(!$db->Execute($SQLquery)) {
+        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
     $tabname = "shared_parameter_setting";
     $column  = "previous_owner";
     $type    = "VARCHAR(255)";
@@ -4350,8 +4482,44 @@ if ($current_revision < $n) {
         return;
     }
 
+    $tabname = "shared_task_parameter";
+    $column  = "setting";
+    $type    = "VARCHAR(255)";
+
+    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
+    if(!$db->Execute($SQLquery)) {
+        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $tabname = "shared_task_setting";
+    $column  = "owner";
+    $type    = "VARCHAR(255)";
+
+    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
+    if(!$db->Execute($SQLquery)) {
+        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+    
     $tabname = "shared_task_setting";
     $column  = "previous_owner";
+    $type    = "VARCHAR(255)";
+
+    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
+    if(!$db->Execute($SQLquery)) {
+        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $tabname = "shared_task_setting";
+    $column  = "name";
     $type    = "VARCHAR(255)";
 
     $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
@@ -4374,8 +4542,44 @@ if ($current_revision < $n) {
         return;
     }
 
+    $tabname = "shared_analysis_parameter";
+    $column  = "setting";
+    $type    = "VARCHAR(255)";
+
+    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
+    if(!$db->Execute($SQLquery)) {
+        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $tabname = "shared_analysis_setting";
+    $column  = "owner";
+    $type    = "VARCHAR(255)";
+
+    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
+    if(!$db->Execute($SQLquery)) {
+        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
     $tabname = "shared_analysis_setting";
     $column  = "previous_owner";
+    $type    = "VARCHAR(255)";
+
+    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
+    if(!$db->Execute($SQLquery)) {
+        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $tabname = "shared_analysis_setting";
+    $column  = "name";
     $type    = "VARCHAR(255)";
 
     $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
