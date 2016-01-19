@@ -93,8 +93,8 @@ echo $message;
             </p>
 
             <p>                                 
-                GPU deconvolution is available in Huygens since version
-                 <b>15.10.</b>
+                GPU deconvolution is available in Huygens from version
+                 <b>15.10</b> onwards.
             </p>
 
             <br>
