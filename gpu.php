@@ -92,6 +92,11 @@ echo $message;
                 or on the GPU.
             </p>
 
+            <p>                                 
+                GPU deconvolution is available in Huygens since version
+                 <b>15.10.</b>
+            </p>
+
             <br>
 
             <form method="GET" action="" id="GPU">
