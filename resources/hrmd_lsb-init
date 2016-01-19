@@ -27,16 +27,16 @@ set -e
 . /etc/hrm.conf
 
 # global variables:
-HRMD_PID="${HRM_LOG}/hrmd.pid"
+PID_FILE="${HRM_LOG}/hrmd.pid"
 
 start() {
     # start the service
-    start_daemon -p $HRMD_PID "${HRM_HOME}/bin/hrm_queuemanager" --detach
+    start_daemon -p $PID_FILE "${HRM_HOME}/bin/hrm_queuemanager" --detach
 }
 
 stop() {
     # stop the service
-    killproc -p $HRMD_PID "${HRM_HOME}/bin/hrm_queuemanager"
+    killproc -p $PID_FILE "${HRM_HOME}/bin/hrm_queuemanager"
 }
 
 restart() {
@@ -55,13 +55,13 @@ force_reload() {
 status() {
     daemon_wrapper="${HRM_HOME}/bin/hrm_queuemanager"
     # print the current status of the service
-    pidofproc -p $HRMD_PID "$daemon_wrapper"
+    pidofproc -p $PID_FILE "$daemon_wrapper"
     status=$?
     if [ "$status" = 0 ]; then
         log_success_msg "HRM is running ($daemon_wrapper)"
         return 0
     elif [ "$status" = 4 ]; then
-        log_failure_msg "could not access PID file for HRM ($daemon_wrapper)"
+        log_failure_msg "could not access PID file for HRM ($PID_FILE)"
         return $status
     else
         log_failure_msg "HRM is not running ($daemon_wrapper)"
