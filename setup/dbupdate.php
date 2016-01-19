@@ -3975,6 +3975,10 @@ if ($current_revision < $n) {
 $n = 14;
 if ($current_revision < $n) {
 
+    $msg = "Trying to update the DB to revision " . $n . ".";
+    write_message($msg);
+    write_to_error($msg);
+
     // Add GPUenabled = 0 into global_variables
     $tabname = "global_variables";
     $record = array();
@@ -3986,7 +3990,7 @@ if ($current_revision < $n) {
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
         if(!$db->Execute($insertSQL)) {
-            $msg = "An error occurred while updating the database to revision " . $n . ".";
+            $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
             write_message($msg);
             write_to_error($msg);
             return;
@@ -4006,7 +4010,7 @@ if ($current_revision < $n) {
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
         if(!$db->Execute($insertSQL)) {
-            $msg = "An error occurred while updating the database to revision " . $n . ".";
+            $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
             write_message($msg);
             write_to_error($msg);
             return;
@@ -4028,8 +4032,7 @@ if ($current_revision < $n) {
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
         if(!$db->Execute($insertSQL)) {
-            $msg = "An error occurred while updating the database to revision ".
-                $n . ".";
+            $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
             write_message($msg);
             write_to_error($msg);
             return;
@@ -4050,8 +4053,7 @@ if ($current_revision < $n) {
     if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
        $insertSQL = $db->GetInsertSQL($tabname, $record);
        if(!$db->Execute($insertSQL)) {
-           $msg = "An error occurred while updating " .
-                  "the database to revision " . $n . ".";
+           $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
            write_message($msg);
            write_to_error($msg);
            return;
@@ -4070,8 +4072,7 @@ if ($current_revision < $n) {
     if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
        $insertSQL = $db->GetInsertSQL($tabname, $record);
        if(!$db->Execute($insertSQL)) {
-           $msg = "An error occurred while updating " .
-                  "the database to revision " . $n . ".";
+           $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
            write_message($msg);
            write_to_error($msg);
            return;
@@ -4091,8 +4092,7 @@ if ($current_revision < $n) {
     if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
        $insertSQL = $db->GetInsertSQL($tabname, $record);
        if(!$db->Execute($insertSQL)) {
-           $msg = "An error occurred while updating " .
-                  "the database to revision " . $n . ".";
+           $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
            write_message($msg);
            write_to_error($msg);
            return;
@@ -4116,7 +4116,7 @@ if ($current_revision < $n) {
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
         if(!$db->Execute($insertSQL)) {
-            $msg = "An error occurred while updating the database to revision " . $n . ".";
+            $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
             write_message($msg);
             write_to_error($msg);
             return;
@@ -4137,7 +4137,7 @@ if ($current_revision < $n) {
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
         if(!$db->Execute($insertSQL)) {
-            $msg = "An error occurred while updating the database to revision " . $n . ".";
+            $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
             write_message($msg);
             write_to_error($msg);
             return;
@@ -4152,8 +4152,7 @@ if ($current_revision < $n) {
 
     $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
     if(!$db->Execute($SQLquery)) {
-        $msg = "An error occurred while updating the database to revision " .
-            $n . ".";
+        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -4165,8 +4164,7 @@ if ($current_revision < $n) {
 
     $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
     if(!$db->Execute($SQLquery)) {
-        $msg = "An error occurred while updating the database to revision " .
-            $n . ".";
+        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -4178,8 +4176,7 @@ if ($current_revision < $n) {
 
     $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
     if(!$db->Execute($SQLquery)) {
-        $msg = "An error occurred while updating the database to revision " .
-            $n . ".";
+        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -4191,8 +4188,7 @@ if ($current_revision < $n) {
 
     $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
     if(!$db->Execute($SQLquery)) {
-        $msg = "An error occurred while updating the database to revision " .
-            $n . ".";
+        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -4204,8 +4200,7 @@ if ($current_revision < $n) {
 
     $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
     if(!$db->Execute($SQLquery)) {
-        $msg = "An error occurred while updating the database to revision " .
-            $n . ".";
+        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -4217,8 +4212,7 @@ if ($current_revision < $n) {
 
     $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
     if(!$db->Execute($SQLquery)) {
-        $msg = "An error occurred while updating the database to revision " .
-            $n . ".";
+        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -4230,8 +4224,7 @@ if ($current_revision < $n) {
 
     $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
     if(!$db->Execute($SQLquery)) {
-        $msg = "An error occurred while updating the database to revision " .
-            $n . ".";
+        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -4243,8 +4236,7 @@ if ($current_revision < $n) {
 
     $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
     if(!$db->Execute($SQLquery)) {
-        $msg = "An error occurred while updating the database to revision " .
-            $n . ".";
+        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -4256,8 +4248,7 @@ if ($current_revision < $n) {
 
     $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
     if(!$db->Execute($SQLquery)) {
-        $msg = "An error occurred while updating the database to revision " .
-            $n . ".";
+        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -4269,8 +4260,7 @@ if ($current_revision < $n) {
 
     $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
     if(!$db->Execute($SQLquery)) {
-        $msg = "An error occurred while updating the database to revision " .
-            $n . ".";
+        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -4282,8 +4272,7 @@ if ($current_revision < $n) {
 
     $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
     if(!$db->Execute($SQLquery)) {
-        $msg = "An error occurred while updating the database to revision " .
-            $n . ".";
+        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -4295,8 +4284,7 @@ if ($current_revision < $n) {
 
     $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
     if(!$db->Execute($SQLquery)) {
-        $msg = "An error occurred while updating the database to revision " .
-            $n . ".";
+        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -4308,8 +4296,7 @@ if ($current_revision < $n) {
 
     $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
     if(!$db->Execute($SQLquery)) {
-        $msg = "An error occurred while updating the database to revision " .
-            $n . ".";
+        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -4321,8 +4308,7 @@ if ($current_revision < $n) {
 
     $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
     if(!$db->Execute($SQLquery)) {
-        $msg = "An error occurred while updating the database to revision " .
-            $n . ".";
+        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -4334,8 +4320,7 @@ if ($current_revision < $n) {
 
     $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
     if(!$db->Execute($SQLquery)) {
-        $msg = "An error occurred while updating the database to revision " .
-            $n . ".";
+        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -4347,8 +4332,7 @@ if ($current_revision < $n) {
 
     $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
     if(!$db->Execute($SQLquery)) {
-        $msg = "An error occurred while updating the database to revision " .
-            $n . ".";
+        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -4360,8 +4344,7 @@ if ($current_revision < $n) {
 
     $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
     if(!$db->Execute($SQLquery)) {
-        $msg = "An error occurred while updating the database to revision " .
-            $n . ".";
+        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -4373,8 +4356,7 @@ if ($current_revision < $n) {
 
     $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
     if(!$db->Execute($SQLquery)) {
-        $msg = "An error occurred while updating the database to revision " .
-            $n . ".";
+        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -4386,8 +4368,7 @@ if ($current_revision < $n) {
 
     $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
     if(!$db->Execute($SQLquery)) {
-        $msg = "An error occurred while updating the database to revision " .
-            $n . ".";
+        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -4399,8 +4380,7 @@ if ($current_revision < $n) {
 
     $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
     if(!$db->Execute($SQLquery)) {
-        $msg = "An error occurred while updating the database to revision " .
-            $n . ".";
+        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -4412,8 +4392,7 @@ if ($current_revision < $n) {
 
     $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
     if(!$db->Execute($SQLquery)) {
-        $msg = "An error occurred while updating the database to revision " .
-            $n . ".";
+        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -4425,8 +4404,7 @@ if ($current_revision < $n) {
 
     $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
     if(!$db->Execute($SQLquery)) {
-        $msg = "An error occurred while updating the database to revision " .
-            $n . ".";
+        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -4441,8 +4419,7 @@ if ($current_revision < $n) {
 
     $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
     if(!$db->Execute($SQLquery)) {
-        $msg = "An error occurred while updating the database to revision " .
-            $n . ".";
+        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -4454,8 +4431,7 @@ if ($current_revision < $n) {
 
     $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
     if(!$db->Execute($SQLquery)) {
-        $msg = "An error occurred while updating the database to revision " .
-            $n . ".";
+        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -4477,8 +4453,7 @@ if ($current_revision < $n) {
     if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
        $insertSQL = $db->GetInsertSQL($tabname, $record);
         if(!$db->Execute($insertSQL)) {
-            $msg = "An error occurred while updating " .
-                   "the database to revision " . $n . ".";
+            $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
             write_message($msg);
             write_to_error($msg);
             return;
@@ -4499,8 +4474,7 @@ if ($current_revision < $n) {
     if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
        $insertSQL = $db->GetInsertSQL($tabname, $record);
         if(!$db->Execute($insertSQL)) {
-            $msg = "An error occurred while updating " .
-                   "the database to revision " . $n . ".";
+            $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
             write_message($msg);
             write_to_error($msg);
             return;
@@ -4521,8 +4495,7 @@ if ($current_revision < $n) {
     if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
        $insertSQL = $db->GetInsertSQL($tabname, $record);
         if(!$db->Execute($insertSQL)) {
-            $msg = "An error occurred while updating " .
-                   "the database to revision " . $n . ".";
+            $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
             write_message($msg);
             write_to_error($msg);
             return;
@@ -4543,8 +4516,7 @@ if ($current_revision < $n) {
     if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
        $insertSQL = $db->GetInsertSQL($tabname, $record);
         if(!$db->Execute($insertSQL)) {
-            $msg = "An error occurred while updating " .
-                   "the database to revision " . $n . ".";
+            $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
             write_message($msg);
             write_to_error($msg);
             return;
@@ -4565,8 +4537,7 @@ if ($current_revision < $n) {
     if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
        $insertSQL = $db->GetInsertSQL($tabname, $record);
         if(!$db->Execute($insertSQL)) {
-            $msg = "An error occurred while updating " .
-                   "the database to revision " . $n . ".";
+            $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
             write_message($msg);
             write_to_error($msg);
             return;
@@ -4587,8 +4558,7 @@ if ($current_revision < $n) {
     if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
        $insertSQL = $db->GetInsertSQL($tabname, $record);
         if(!$db->Execute($insertSQL)) {
-            $msg = "An error occurred while updating " .
-                   "the database to revision " . $n . ".";
+            $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
             write_message($msg);
             write_to_error($msg);
             return;
@@ -4609,8 +4579,7 @@ if ($current_revision < $n) {
     if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
        $insertSQL = $db->GetInsertSQL($tabname, $record);
         if(!$db->Execute($insertSQL)) {
-            $msg = "An error occurred while updating " .
-                   "the database to revision " . $n . ".";
+            $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
             write_message($msg);
             write_to_error($msg);
             return;
@@ -4631,8 +4600,7 @@ if ($current_revision < $n) {
     if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
        $insertSQL = $db->GetInsertSQL($tabname, $record);
         if(!$db->Execute($insertSQL)) {
-            $msg = "An error occurred while updating " .
-                   "the database to revision " . $n . ".";
+            $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
             write_message($msg);
             write_to_error($msg);
             return;
@@ -4653,8 +4621,7 @@ if ($current_revision < $n) {
     if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
        $insertSQL = $db->GetInsertSQL($tabname, $record);
         if(!$db->Execute($insertSQL)) {
-            $msg = "An error occurred while updating " .
-                   "the database to revision " . $n . ".";
+            $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
             write_message($msg);
             write_to_error($msg);
             return;
@@ -4675,8 +4642,7 @@ if ($current_revision < $n) {
     if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
        $insertSQL = $db->GetInsertSQL($tabname, $record);
         if(!$db->Execute($insertSQL)) {
-            $msg = "An error occurred while updating " .
-                   "the database to revision " . $n . ".";
+            $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
             write_message($msg);
             write_to_error($msg);
             return;
@@ -4697,8 +4663,7 @@ if ($current_revision < $n) {
     if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
        $insertSQL = $db->GetInsertSQL($tabname, $record);
         if(!$db->Execute($insertSQL)) {
-            $msg = "An error occurred while updating " .
-                   "the database to revision " . $n . ".";
+            $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
             write_message($msg);
             write_to_error($msg);
             return;
@@ -4719,8 +4684,7 @@ if ($current_revision < $n) {
     if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
        $insertSQL = $db->GetInsertSQL($tabname, $record);
         if(!$db->Execute($insertSQL)) {
-            $msg = "An error occurred while updating " .
-                   "the database to revision " . $n . ".";
+            $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
             write_message($msg);
             write_to_error($msg);
             return;
@@ -4741,8 +4705,7 @@ if ($current_revision < $n) {
     if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
        $insertSQL = $db->GetInsertSQL($tabname, $record);
         if(!$db->Execute($insertSQL)) {
-            $msg = "An error occurred while updating " .
-                   "the database to revision " . $n . ".";
+            $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
             write_message($msg);
             write_to_error($msg);
             return;
@@ -4763,8 +4726,7 @@ if ($current_revision < $n) {
     if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
        $insertSQL = $db->GetInsertSQL($tabname, $record);
         if(!$db->Execute($insertSQL)) {
-            $msg = "An error occurred while updating " .
-                   "the database to revision " . $n . ".";
+            $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
             write_message($msg);
             write_to_error($msg);
             return;
@@ -4785,8 +4747,7 @@ if ($current_revision < $n) {
     if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
        $insertSQL = $db->GetInsertSQL($tabname, $record);
         if(!$db->Execute($insertSQL)) {
-            $msg = "An error occurred while updating " .
-                   "the database to revision " . $n . ".";
+            $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
             write_message($msg);
             write_to_error($msg);
             return;
@@ -4807,8 +4768,7 @@ if ($current_revision < $n) {
     if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
        $insertSQL = $db->GetInsertSQL($tabname, $record);
         if(!$db->Execute($insertSQL)) {
-            $msg = "An error occurred while updating " .
-                   "the database to revision " . $n . ".";
+            $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
             write_message($msg);
             write_to_error($msg);
             return;
@@ -4831,8 +4791,7 @@ if ($current_revision < $n) {
             continue;
         }
         if ( !insert_column($tabname, $newcolumn . " " . $type) ) {
-            $msg = "An error occurred while updating " .
-                "the database to revision " . $n . ".";
+            $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
             write_message($msg);
             write_to_log($msg);
             write_to_error($msg);
@@ -4855,7 +4814,7 @@ if ($current_revision < $n) {
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
         if(!$db->Execute($insertSQL)) {
-            $msg = "An error occurred while updating the database to revision " . $n . ".";
+            $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
             write_message($msg);
             write_to_error($msg);
             return;
@@ -4873,7 +4832,7 @@ if ($current_revision < $n) {
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
         if(!$db->Execute($insertSQL)) {
-            $msg = "An error occurred while updating the database to revision " . $n . ".";
+            $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
             write_message($msg);
             write_to_error($msg);
             return;
