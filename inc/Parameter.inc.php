@@ -883,6 +883,8 @@ class NumericalVectorParameter extends NumericalParameter {
       \return A '#'-separated string denoting the vector componenents.
      */
     public function value( ) {
+        $result = "";
+               
         for ( $i = 0; $i < $this->componentCnt; $i++ ) {
             $result .= "#";
             $result .= $this->value[$i];
@@ -3420,7 +3422,8 @@ class ChromaticAberration {
         \return String representation of the Parameter
     */
     public function displayString( $chanCnt ) {
-
+        $result = "";       
+               
         if (!is_numeric($chanCnt)) {
             $db = new DatabaseConnection;
             $chanCnt = $db->getMaxChanCnt();
@@ -3512,6 +3515,8 @@ class ChromaticAberration {
       \return the internal value of the Parameter. A # formatted string.
     */
     public function internalValue() {
+        $result = "";
+               
         for ($i = 0; $i < $this->chanCnt; $i++) {
             $result .= $this->value[$i]->value();
         }
