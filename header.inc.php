@@ -86,15 +86,11 @@ if (isset($generatedScript)) {
     <script type="text/javascript"><?php echo $generatedScript ?></script>
 
 <?php
-
 }
-
-
-
 ?>
+
     <style type="text/css">
         @import "css/default.css";
-        @import "css/custom.css";
     </style>
     <!--[if lt IE 9]>
     <h3>This browser is OBSOLETE and is known to have important issues with the HRM.
@@ -102,6 +98,13 @@ if (isset($generatedScript)) {
         broswer altogether.</h3>
     <link rel="stylesheet" href="css/default_ie.css">
     <![endif]-->
+
+<?php
+    $custom_css = "css/custom.css";
+    if (file_exists($custom_css)) {
+        echo '    <link rel="stylesheet" href="' . $custom_css . '">' . "\n";
+    }
+?>
 
 </head>
 
