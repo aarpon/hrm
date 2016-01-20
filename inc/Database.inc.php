@@ -457,7 +457,10 @@ class DatabaseConnection {
                 }
             }
 
-            $result &= $this->execute($query);
+            // Accumulate the successes (or failures) of the queries. If a query
+            // fails, the return of $this->execute() will be === false; otherwise
+            // it is an ADORecordSet.
+            $result &= ($this->execute($query) !== false);
         }
 
 
@@ -715,10 +718,10 @@ class DatabaseConnection {
                 case "ChromaticAberration":
                     /* Extract and continue to explode. */
                     $newValue = substr($newValue,1);
-                default: 
+                default:
                     $newValues = explode("#", $newValue);
                 }
-                
+
                 if (strcmp( $parameterName, "PSF" ) != 0 && strpos($newValue, "/")) {
                     $newValue = array();
                     for ($i = 0; $i < count($newValues); $i++) {
@@ -1500,11 +1503,11 @@ class DatabaseConnection {
     public function defaultValue($parameterName) {
         $query = "SELECT value FROM possible_values WHERE parameter='";
         $query .= $parameterName . "' AND isDefault='t'";
-        $result = $this->queryLastValue($query);                
+        $result = $this->queryLastValue($query);
         if ($result === False) {
             return NULL;
         }
-        
+
         return $result;
     }
 
@@ -2039,10 +2042,10 @@ class DatabaseConnection {
         if (!is_numeric($result)) {
             $result = 5;
         }
-        
+
         return $result;
     }
-    
+
 
     /*!
       \brief  Get the list of Setting's for the User
@@ -2316,7 +2319,7 @@ class DatabaseConnection {
        } else {
            return "Impossible to change the GPU configuration. Unknown value.";
        }
-               
+
         $query = "UPDATE global_variables SET value = '". $value ."' " .
                  "WHERE name = 'GPUenabled';";
 
@@ -2334,7 +2337,7 @@ class DatabaseConnection {
             "WHERE name = 'GPUenabled';";
 
         if ($this->queryLastValue($query)) {
-            return "true"; 
+            return "true";
         } else {
             return "false";
         }
