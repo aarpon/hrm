@@ -1714,8 +1714,8 @@ echo '</body></html>';
       echo '
       <div id="prevBasket"> <!--basket-->
       <div id="title">
-      <h1>HRM image preview</h1>
-      <h2>'.$file.'</h2>
+      <h2>HRM image preview</h2>
+      <h3>'.$file.'</h3>
       <div id="logo"></div>
       </div>';
 
