@@ -89,7 +89,7 @@ $loggedIn = ( isset($_SESSION['user'] ) && $_SESSION['user']->isLoggedIn( ) );
 
         and released under the terms of the
         <a href="http://www.huygens-rm.org/wp/?page_id=81">CeCILL license</a>
-		<br />extended 2006-2015 by
+		<br />extended 2006-2016 by
 		<?php
             $name_list = array("Asheesh Gulati", "Alessandra Griffa",
                 "Jos&eacute; Vi&ntilde;a", "Daniel Sevilla",
