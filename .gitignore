@@ -1,4 +1,5 @@
 # Configuration files
+config.local/
 config/*_config.inc
 config/hrm.conf
 resources/hrmd.plist
