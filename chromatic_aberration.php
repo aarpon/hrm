@@ -161,8 +161,8 @@ for ($chan = 0; $chan < $chanCnt; $chan++) {
 ?>
     
 <td><input
-        id="ChromaticAberrationCh<?php echo $chan . _ . $component;?>"
-        name="ChromaticAberrationCh<?php echo $chan . _ . $component;?>"
+        id="ChromaticAberrationCh<?php echo $chan . '_' . $component;?>"
+        name="ChromaticAberrationCh<?php echo $chan . '_' . $component;?>"
         type="text"
         size="6"
         value="<?php echo $chromaticArray[$offset]; ?>"
