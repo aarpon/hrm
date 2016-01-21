@@ -887,7 +887,9 @@ class NumericalVectorParameter extends NumericalParameter {
                
         for ( $i = 0; $i < $this->componentCnt; $i++ ) {
             $result .= "#";
-            $result .= $this->value[$i];
+            if (isset($this->value[$i])) {
+                $result .= $this->value[$i];
+            }
         }
     
         return $result;
