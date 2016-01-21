@@ -2626,9 +2626,9 @@ class ParameterSetting extends Setting {
         // STED Depletion Mode.
         if (strpos($huArray['parState,stedMode'], "default") === FALSE) {
             $stedMode = explode(' ', $huArray['stedMode']);
-
+            
             // Rename some modes if the mType is set to confocal.
-            for($i = 0; $i < count($stedMmode); $i++) {
+            for($i = 0; $i < count($stedMode); $i++) {
                 if($huMicrType[$i] == 'confocal') {
                     $stedMode[$i] = 'off-confocal';
                 }
