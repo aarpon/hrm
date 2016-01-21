@@ -2551,8 +2551,8 @@ class ParameterSetting extends Setting {
         if ($chanCnt > 5) $chanCnt = 5;
         $this->parameter['NumberOfChannels']->setValue($chanCnt);
 
-        // Sampling sizes.
-        if (strpos($huArray['parState,s'], "default") === FALSE) {
+        // Sampling sizes. Exceptionally, no CL is checked here.
+        if (isset($huArray['s'])) {
             $sampleSizes = array_map('floatval',  explode(' ', $huArray['s']));
             
             $sampleSizes[0] = round($sampleSizes[0] * 1000);
