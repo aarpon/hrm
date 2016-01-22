@@ -125,6 +125,9 @@ function smoothChangeDiv(div, html, time) {
     var t3 = tout * 1.05;
 
     var elem = document.getElementById(div);
+    if (null === elem) {
+        return;
+    }
 
     if (undefined === elem.style.opacity) {
         // fading a <div> in IE doesn't work very well.
