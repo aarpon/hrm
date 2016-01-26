@@ -187,7 +187,18 @@ def gen_group_tree(conn, group=None):
 
 
 def check_credentials(conn):
-    """Check if supplied credentials are valid."""
+    """Check if supplied credentials are valid.
+
+    Parameters
+    ==========
+    conn : omero.gateway.BlitzGateway
+
+    Returns
+    =======
+    conntected : bool
+        True if connecting was successful (i.e. credentials are correct), False
+        otherwise. In addition, a corresponding message is printed.
+    """
     connected = conn.connect()
     if connected:
         print('Success logging into OMERO with user ID %s' % conn.getUserId())
