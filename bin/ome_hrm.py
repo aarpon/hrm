@@ -12,6 +12,7 @@ to an OMERO server for listing available images, transferring data, etc.
 # - trees for different groups
 # - proper logging, separate logfile for the connector
 # - redirect logging of CLI
+# - offer download of OME-TIFFs?
 
 
 import sys
@@ -249,6 +250,8 @@ def omero_to_hrm(conn, id_str, dest):
     # original file is not available. However, it was possible to upload with
     # the "archive" option, we should check if such archived files are
     # retrieved with the above query.
+    # TODO II (issue #398): in case no archived file is available, we could
+    # fall back to downloading the OME-TIFF instead.
     try:
         file_id = unwrap(query_res[0])[0].id.val
     except IndexError:
