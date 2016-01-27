@@ -4151,7 +4151,7 @@ if ($current_revision < $n) {
                                                 'owner VARCHAR(255)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
-        $msg = "Could not extend column in table 1.";
+        $msg = "Could not extend column in table.";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -4161,7 +4161,7 @@ if ($current_revision < $n) {
                                                 'owner VARCHAR(255)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
-        $msg = "Could not extend column in table 2.";
+        $msg = "Could not extend column in table.";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -4171,7 +4171,7 @@ if ($current_revision < $n) {
                                                 'owner VARCHAR(255)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
-        $msg = "Could not extend column in table 3.";
+        $msg = "Could not extend column in table.";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -4181,7 +4181,7 @@ if ($current_revision < $n) {
                                                 'owner VARCHAR(255)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
-        $msg = "Could not extend column in table 4.";
+        $msg = "Could not extend column in table.";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -4191,7 +4191,7 @@ if ($current_revision < $n) {
                                                 'owner VARCHAR(255)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
-        $msg = "Could not extend column in table 5.";
+        $msg = "Could not extend column in table.";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -4201,7 +4201,7 @@ if ($current_revision < $n) {
                                                 'setting VARCHAR(255)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
-        $msg = "Could not extend column in table 6.";
+        $msg = "Could not extend column in table.";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -4211,7 +4211,7 @@ if ($current_revision < $n) {
                                                 'owner VARCHAR(255)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
-        $msg = "Could not extend column in table 7.";
+        $msg = "Could not extend column in table.";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -4221,7 +4221,7 @@ if ($current_revision < $n) {
                                                 'name VARCHAR(255)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
-        $msg = "Could not extend column in table 8.";
+        $msg = "Could not extend column in table.";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -4231,7 +4231,7 @@ if ($current_revision < $n) {
                                                 'owner VARCHAR(255)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
-        $msg = "Could not extend column in table 9.";
+        $msg = "Could not extend column in table.";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -4241,7 +4241,7 @@ if ($current_revision < $n) {
                                                 'setting VARCHAR(255)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
-        $msg = "Could not extend column in table";
+        $msg = "Could not extend column in table.";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -4251,7 +4251,7 @@ if ($current_revision < $n) {
                                                 'owner VARCHAR(255)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
-        $msg = "Could not extend column in table";
+        $msg = "Could not extend column in table.";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -4261,7 +4261,7 @@ if ($current_revision < $n) {
                                                 'name VARCHAR(255)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
-        $msg = "Could not extend column in table";
+        $msg = "Could not extend column in table.";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -4271,7 +4271,7 @@ if ($current_revision < $n) {
                                                 'owner VARCHAR(255)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
-        $msg = "Could not extend column in table";
+        $msg = "Could not extend column in table.";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -4281,7 +4281,7 @@ if ($current_revision < $n) {
                                                 'setting VARCHAR(255)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
-        $msg = "Could not extend column in table";
+        $msg = "Could not extend column in table.";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -4291,7 +4291,7 @@ if ($current_revision < $n) {
                                                 'setting VARCHAR(255)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
-        $msg = "Could not extend column in table";
+        $msg = "Could not extend column in table.";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -4301,7 +4301,7 @@ if ($current_revision < $n) {
                                                 'owner VARCHAR(255)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
-        $msg = "Could not extend column in table";
+        $msg = "Could not extend column in table.";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -4311,7 +4311,7 @@ if ($current_revision < $n) {
                                                 'name VARCHAR(255)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
-        $msg = "Could not extend column in table";
+        $msg = "Could not extend column in table.";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -4321,7 +4321,7 @@ if ($current_revision < $n) {
                                                 'owner VARCHAR(255)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
-        $msg = "Could not extend column in table";
+        $msg = "Could not extend column in table.";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -4331,7 +4331,7 @@ if ($current_revision < $n) {
                                                 'setting VARCHAR(255)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
-        $msg = "Could not extend column in table";
+        $msg = "Could not extend column in table.";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -4341,7 +4341,7 @@ if ($current_revision < $n) {
                                                 'owner VARCHAR(255)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
-        $msg = "Could not extend column in table";
+        $msg = "Could not extend column in table.";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -4351,7 +4351,7 @@ if ($current_revision < $n) {
                                                 'name VARCHAR(255)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
-        $msg = "Could not extend column in table";
+        $msg = "Could not extend column in table.";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -4361,7 +4361,7 @@ if ($current_revision < $n) {
                                                 'owner VARCHAR(255)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
-        $msg = "Could not extend column in table";
+        $msg = "Could not extend column in table.";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -4371,7 +4371,7 @@ if ($current_revision < $n) {
                                                 'username VARCHAR(255)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
-        $msg = "Could not extend column in table";
+        $msg = "Could not extend column in table.";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -4381,7 +4381,7 @@ if ($current_revision < $n) {
                                                 'owner VARCHAR(255)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
-        $msg = "Could not extend column in table";
+        $msg = "Could not extend column in table.";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -4391,7 +4391,7 @@ if ($current_revision < $n) {
                                                 'setting VARCHAR(255)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
-        $msg = "Could not extend column in table";
+        $msg = "Could not extend column in table.";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -4401,7 +4401,7 @@ if ($current_revision < $n) {
                                                 'name VARCHAR(255)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
-        $msg = "Could not extend column in table";
+        $msg = "Could not extend column in table.";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -4411,7 +4411,7 @@ if ($current_revision < $n) {
                                                 'owner VARCHAR(255)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
-        $msg = "Could not extend column in table";
+        $msg = "Could not extend column in table.";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -4421,7 +4421,7 @@ if ($current_revision < $n) {
                                                 'previous_owner VARCHAR(255)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
-        $msg = "Could not extend column in table";
+        $msg = "Could not extend column in table.";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -4431,7 +4431,7 @@ if ($current_revision < $n) {
                                                 'owner VARCHAR(255)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
-        $msg = "Could not extend column in table";
+        $msg = "Could not extend column in table.";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -4441,7 +4441,7 @@ if ($current_revision < $n) {
                                                 'setting VARCHAR(255)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
-        $msg = "Could not extend column in table";
+        $msg = "Could not extend column in table.";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -4451,7 +4451,7 @@ if ($current_revision < $n) {
                                                 'owner VARCHAR(255)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
-        $msg = "Could not extend column in table";
+        $msg = "Could not extend column in table.";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -4461,7 +4461,7 @@ if ($current_revision < $n) {
                                                 'owner VARCHAR(255)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
-        $msg = "Could not extend column in table";
+        $msg = "Could not extend column in table.";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -4471,7 +4471,7 @@ if ($current_revision < $n) {
                                                 'previous_owner VARCHAR(255)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
-        $msg = "Could not extend column in table";
+        $msg = "Could not extend column in table.";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -4481,7 +4481,7 @@ if ($current_revision < $n) {
                                                 'name VARCHAR(255)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
-        $msg = "Could not extend column in table";
+        $msg = "Could not extend column in table.";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -4491,7 +4491,7 @@ if ($current_revision < $n) {
                                                 'owner VARCHAR(255)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
-        $msg = "Could not extend column in table";
+        $msg = "Could not extend column in table.";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -4501,7 +4501,7 @@ if ($current_revision < $n) {
                                                 'setting VARCHAR(255)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
-        $msg = "Could not extend column in table";
+        $msg = "Could not extend column in table.";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -4511,7 +4511,7 @@ if ($current_revision < $n) {
                                                 'owner VARCHAR(255)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
-        $msg = "Could not extend column in table";
+        $msg = "Could not extend column in table.";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -4521,7 +4521,7 @@ if ($current_revision < $n) {
                                                 'previous_owner VARCHAR(255)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
-        $msg = "Could not extend column in table";
+        $msg = "Could not extend column in table.";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -4531,7 +4531,7 @@ if ($current_revision < $n) {
                                                 'name VARCHAR(255)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
-        $msg = "Could not extend column in table";
+        $msg = "Could not extend column in table.";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -4541,7 +4541,7 @@ if ($current_revision < $n) {
                                                 'owner VARCHAR(255)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
-        $msg = "Could not extend column in table";
+        $msg = "Could not extend column in table.";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -4551,7 +4551,7 @@ if ($current_revision < $n) {
                                                 'name VARCHAR(255)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
-        $msg = "Could not extend column in table";
+        $msg = "Could not extend column in table.";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -4564,7 +4564,7 @@ if ($current_revision < $n) {
                                                 'name VARCHAR(255)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
-        $msg = "Could not extend column in table";
+        $msg = "Could not extend column in table.";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -4574,7 +4574,7 @@ if ($current_revision < $n) {
                                                 'server VARCHAR(255)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
-        $msg = "Could not extend column in table";
+        $msg = "Could not extend column in table.";
         write_message($msg);
         write_to_error($msg);
         return;
