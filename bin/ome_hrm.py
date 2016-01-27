@@ -248,7 +248,10 @@ def omero_to_hrm(conn, id_str, dest):
         " join uf.originalFile as f" \
         " where i.id = :iid"
     query_res = query.projection(sql, params, {'omero.group': '-1'})
-    file_id = unwrap(query_res[0])[0].id.val
+    try:
+        file_id = unwrap(query_res[0])[0].id.val
+    except IndexError:
+        print('ERROR: unable to find original file for ID: %s' % image_id)
     # print('Downloading original file with ID: %s' % file_id)
     orig_file = OriginalFileI(file_id)
     conn.c.download(orig_file, dest)
