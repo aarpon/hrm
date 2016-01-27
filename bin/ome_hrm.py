@@ -67,8 +67,14 @@ def tree_to_json(obj_tree):
                       indent=4, separators=(',', ': '))
 
 
-def get_children_json(conn, id_str):
-    """Gets the child nodes of the given ID and returns them in JSON format."""
+def print_children_json(conn, id_str):
+    """Print the child nodes of the given ID in JSON format.
+
+    Parameters
+    ==========
+    conn : omero.gateway._BlitzGateway
+    id_str : str - OMERO object ID string (e.g. "G:23:Image:42")
+    """
     print(tree_to_json(gen_children(conn, id_str)))
 
 
@@ -480,7 +486,7 @@ def main():
     if args.action == 'checkCredentials':
         return check_credentials(conn)
     elif args.action == 'retrieveChildren':
-        get_children_json(conn, args.id)
+        print_children_json(conn, args.id)
     elif args.action == 'OMEROtoHRM':
         return omero_to_hrm(conn, args.imageid, args.dest)
     elif args.action == 'HRMtoOMERO':
