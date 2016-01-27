@@ -4145,502 +4145,443 @@ if ($current_revision < $n) {
     }
 
     // ------- Enable longer user names in the template infrastructure. ------
-    
-    $tabname = "parameter";
-    $column  = "owner";
-    $type    = "VARCHAR(255)";
 
-    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
-    if(!$db->Execute($SQLquery)) {
-        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
-        write_message($msg);
-        write_to_error($msg);
-        return;
-    }
-    
-    $tabname = "parameter_setting";
-    $column  = "owner";
-    $type    = "VARCHAR(255)";
 
-    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
-    if(!$db->Execute($SQLquery)) {
-        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
+    $alterColumnSQL = $datadict->AlterColumnSQL('parameter',
+                                                'owner VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not extend column in table 1.";
         write_message($msg);
         write_to_error($msg);
         return;
     }
 
-    $tabname = "task_parameter";
-    $column  = "owner";
-    $type    = "VARCHAR(255)";
+    $alterColumnSQL = $datadict->AlterColumnSQL('parameter_setting',
+                                                'owner VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not extend column in table 2.";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
 
-    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
-    if(!$db->Execute($SQLquery)) {
-        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
+    $alterColumnSQL = $datadict->AlterColumnSQL('task_parameter',
+                                                'owner VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not extend column in table 3.";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+    
+    $alterColumnSQL = $datadict->AlterColumnSQL('task_setting',
+                                                'owner VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not extend column in table 4.";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $alterColumnSQL = $datadict->AlterColumnSQL('analysis_parameter',
+                                                'owner VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not extend column in table 5.";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $alterColumnSQL = $datadict->AlterColumnSQL('analysis_parameter',
+                                                'setting VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not extend column in table 6.";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $alterColumnSQL = $datadict->AlterColumnSQL('analysis_setting',
+                                                'owner VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not extend column in table 7.";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+    
+    $alterColumnSQL = $datadict->AlterColumnSQL('analysis_setting',
+                                                'name VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not extend column in table 8.";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+    
+    $alterColumnSQL = $datadict->AlterColumnSQL('job_parameter',
+                                                'owner VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not extend column in table 9.";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $alterColumnSQL = $datadict->AlterColumnSQL('job_parameter',
+                                                'setting VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not extend column in table";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $alterColumnSQL = $datadict->AlterColumnSQL('job_parameter_setting',
+                                                'owner VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not extend column in table";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+    
+    $alterColumnSQL = $datadict->AlterColumnSQL('job_parameter_setting',
+                                                'name VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not extend column in table";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $alterColumnSQL = $datadict->AlterColumnSQL('job_task_parameter',
+                                                'owner VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not extend column in table";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $alterColumnSQL = $datadict->AlterColumnSQL('job_task_parameter',
+                                                'setting VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not extend column in table";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $alterColumnSQL = $datadict->AlterColumnSQL('job_task_parameter',
+                                                'setting VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not extend column in table";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $alterColumnSQL = $datadict->AlterColumnSQL('job_task_setting',
+                                                'owner VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not extend column in table";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $alterColumnSQL = $datadict->AlterColumnSQL('job_task_setting',
+                                                'name VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not extend column in table";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $alterColumnSQL = $datadict->AlterColumnSQL('job_analysis_parameter',
+                                                'owner VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not extend column in table";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+    
+    $alterColumnSQL = $datadict->AlterColumnSQL('job_analysis_parameter',
+                                                'setting VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not extend column in table";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $alterColumnSQL = $datadict->AlterColumnSQL('job_analysis_setting',
+                                                'owner VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not extend column in table";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $alterColumnSQL = $datadict->AlterColumnSQL('job_analysis_setting',
+                                                'name VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not extend column in table";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $alterColumnSQL = $datadict->AlterColumnSQL('job_files',
+                                                'owner VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not extend column in table";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $alterColumnSQL = $datadict->AlterColumnSQL('job_queue',
+                                                'username VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not extend column in table";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $alterColumnSQL = $datadict->AlterColumnSQL('shared_parameter',
+                                                'owner VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not extend column in table";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $alterColumnSQL = $datadict->AlterColumnSQL('shared_parameter',
+                                                'setting VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not extend column in table";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $alterColumnSQL = $datadict->AlterColumnSQL('shared_parameter_setting',
+                                                'name VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not extend column in table";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $alterColumnSQL = $datadict->AlterColumnSQL('shared_parameter_setting',
+                                                'owner VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not extend column in table";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $alterColumnSQL = $datadict->AlterColumnSQL('shared_parameter_setting',
+                                                'previous_owner VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not extend column in table";
         write_message($msg);
         write_to_error($msg);
         return;
     }    
 
-    $tabname = "task_setting";
-    $column  = "owner";
-    $type    = "VARCHAR(255)";
-
-    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
-    if(!$db->Execute($SQLquery)) {
-        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
+    $alterColumnSQL = $datadict->AlterColumnSQL('shared_task_parameter',
+                                                'owner VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not extend column in table";
         write_message($msg);
         write_to_error($msg);
         return;
-    }
+    }    
+
+    $alterColumnSQL = $datadict->AlterColumnSQL('shared_task_parameter',
+                                                'setting VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not extend column in table";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }    
     
-    $tabname = "analysis_parameter";
-    $column  = "owner";
-    $type    = "VARCHAR(255)";
-
-    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
-    if(!$db->Execute($SQLquery)) {
-        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
+    $alterColumnSQL = $datadict->AlterColumnSQL('shared_task_setting',
+                                                'owner VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not extend column in table";
         write_message($msg);
         write_to_error($msg);
         return;
-    }
+    }    
+
+    $alterColumnSQL = $datadict->AlterColumnSQL('shared_task_setting',
+                                                'owner VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not extend column in table";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }    
+
+    $alterColumnSQL = $datadict->AlterColumnSQL('shared_task_setting',
+                                                'previous_owner VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not extend column in table";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }    
+
+    $alterColumnSQL = $datadict->AlterColumnSQL('shared_task_setting',
+                                                'name VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not extend column in table";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }    
     
-    $tabname = "analysis_parameter";
-    $column  = "setting";
-    $type    = "VARCHAR(255)";
-
-    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
-    if(!$db->Execute($SQLquery)) {
-        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
+    $alterColumnSQL = $datadict->AlterColumnSQL('shared_analysis_parameter',
+                                                'owner VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not extend column in table";
         write_message($msg);
         write_to_error($msg);
         return;
-    }
-
-    $tabname = "analysis_setting";
-    $column  = "owner";
-    $type    = "VARCHAR(255)";
-
-    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
-    if(!$db->Execute($SQLquery)) {
-        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
-        write_message($msg);
-        write_to_error($msg);
-        return;
-    }
-
-    $tabname = "analysis_setting";
-    $column  = "name";
-    $type    = "VARCHAR(255)";
-
-    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
-    if(!$db->Execute($SQLquery)) {
-        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
-        write_message($msg);
-        write_to_error($msg);
-        return;
-    }
-
-    $tabname = "job_parameter";
-    $column  = "owner";
-    $type    = "VARCHAR(255)";
-
-    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
-    if(!$db->Execute($SQLquery)) {
-        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
-        write_message($msg);
-        write_to_error($msg);
-        return;
-    }
-
-    $tabname = "job_parameter";
-    $column  = "setting";
-    $type    = "VARCHAR(255)";
-
-    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
-    if(!$db->Execute($SQLquery)) {
-        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
-        write_message($msg);
-        write_to_error($msg);
-        return;
-    }
-
-    $tabname = "job_parameter_setting";
-    $column  = "owner";
-    $type    = "VARCHAR(255)";
-
-    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
-    if(!$db->Execute($SQLquery)) {
-        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
-        write_message($msg);
-        write_to_error($msg);
-        return;
-    }
-
-    $tabname = "job_parameter_setting";
-    $column  = "name";
-    $type    = "VARCHAR(255)";
-
-    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
-    if(!$db->Execute($SQLquery)) {
-        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
-        write_message($msg);
-        write_to_error($msg);
-        return;
-    }
-
-    $tabname = "job_task_parameter";
-    $column  = "owner";
-    $type    = "VARCHAR(255)";
-
-    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
-    if(!$db->Execute($SQLquery)) {
-        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
-        write_message($msg);
-        write_to_error($msg);
-        return;
-    }
-
-    $tabname = "job_task_parameter";
-    $column  = "setting";
-    $type    = "VARCHAR(255)";
-
-    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
-    if(!$db->Execute($SQLquery)) {
-        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
-        write_message($msg);
-        write_to_error($msg);
-        return;
-    }
-
-    $tabname = "job_task_setting";
-    $column  = "owner";
-    $type    = "VARCHAR(255)";
-
-    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
-    if(!$db->Execute($SQLquery)) {
-        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
-        write_message($msg);
-        write_to_error($msg);
-        return;
-    }
-
-    $tabname = "job_task_setting";
-    $column  = "name";
-    $type    = "VARCHAR(255)";
-
-    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
-    if(!$db->Execute($SQLquery)) {
-        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
-        write_message($msg);
-        write_to_error($msg);
-        return;
-    }
-
-    $tabname = "job_analysis_parameter";
-    $column  = "owner";
-    $type    = "VARCHAR(255)";
-
-    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
-    if(!$db->Execute($SQLquery)) {
-        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
-        write_message($msg);
-        write_to_error($msg);
-        return;
-    }
-
-    $tabname = "job_analysis_parameter";
-    $column  = "setting";
-    $type    = "VARCHAR(255)";
-
-    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
-    if(!$db->Execute($SQLquery)) {
-        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
-        write_message($msg);
-        write_to_error($msg);
-        return;
-    }
-
-    $tabname = "job_analysis_setting";
-    $column  = "owner";
-    $type    = "VARCHAR(255)";
-
-    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
-    if(!$db->Execute($SQLquery)) {
-        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
-        write_message($msg);
-        write_to_error($msg);
-        return;
-    }
-
-    $tabname = "job_analysis_setting";
-    $column  = "name";
-    $type    = "VARCHAR(255)";
-
-    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
-    if(!$db->Execute($SQLquery)) {
-        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
-        write_message($msg);
-        write_to_error($msg);
-        return;
-    }
+    }    
     
-    $tabname = "job_files";
-    $column  = "owner";
-    $type    = "VARCHAR(255)";
+    $alterColumnSQL = $datadict->AlterColumnSQL('shared_analysis_parameter',
+                                                'setting VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not extend column in table";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }    
 
-    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
-    if(!$db->Execute($SQLquery)) {
-        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
+    $alterColumnSQL = $datadict->AlterColumnSQL('shared_analysis_setting',
+                                                'owner VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not extend column in table";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }    
+
+    $alterColumnSQL = $datadict->AlterColumnSQL('shared_analysis_setting',
+                                                'previous_owner VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not extend column in table";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }    
+
+    $alterColumnSQL = $datadict->AlterColumnSQL('shared_analysis_setting',
+                                                'name VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not extend column in table";
         write_message($msg);
         write_to_error($msg);
         return;
     }
 
-    $tabname = "job_queue";
-    $column  = "username";
-    $type    = "VARCHAR(255)";
-
-    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
-    if(!$db->Execute($SQLquery)) {
-        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
+    $alterColumnSQL = $datadict->AlterColumnSQL('statistics',
+                                                'owner VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not extend column in table";
         write_message($msg);
         write_to_error($msg);
         return;
-    }
+    }    
 
-    $tabname = "shared_parameter";
-    $column  = "owner";
-    $type    = "VARCHAR(255)";
-
-    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
-    if(!$db->Execute($SQLquery)) {
-        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
+    $alterColumnSQL = $datadict->AlterColumnSQL('username',
+                                                'name VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not extend column in table";
         write_message($msg);
         write_to_error($msg);
         return;
-    }
-
-    $tabname = "shared_parameter";
-    $column  = "setting";
-    $type    = "VARCHAR(255)";
-
-    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
-    if(!$db->Execute($SQLquery)) {
-        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
-        write_message($msg);
-        write_to_error($msg);
-        return;
-    }
-
-    $tabname = "shared_parameter_setting";
-    $column  = "name";
-    $type    = "VARCHAR(255)";
-
-    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
-    if(!$db->Execute($SQLquery)) {
-        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
-        write_message($msg);
-        write_to_error($msg);
-        return;
-    }
-    
-    $tabname = "shared_parameter_setting";
-    $column  = "owner";
-    $type    = "VARCHAR(255)";
-
-    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
-    if(!$db->Execute($SQLquery)) {
-        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
-        write_message($msg);
-        write_to_error($msg);
-        return;
-    }
-
-    $tabname = "shared_parameter_setting";
-    $column  = "previous_owner";
-    $type    = "VARCHAR(255)";
-
-    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
-    if(!$db->Execute($SQLquery)) {
-        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
-        write_message($msg);
-        write_to_error($msg);
-        return;
-    }
-
-    $tabname = "shared_task_parameter";
-    $column  = "owner";
-    $type    = "VARCHAR(255)";
-
-    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
-    if(!$db->Execute($SQLquery)) {
-        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
-        write_message($msg);
-        write_to_error($msg);
-        return;
-    }
-
-    $tabname = "shared_task_parameter";
-    $column  = "setting";
-    $type    = "VARCHAR(255)";
-
-    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
-    if(!$db->Execute($SQLquery)) {
-        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
-        write_message($msg);
-        write_to_error($msg);
-        return;
-    }
-
-    $tabname = "shared_task_setting";
-    $column  = "owner";
-    $type    = "VARCHAR(255)";
-
-    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
-    if(!$db->Execute($SQLquery)) {
-        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
-        write_message($msg);
-        write_to_error($msg);
-        return;
-    }
-    
-    $tabname = "shared_task_setting";
-    $column  = "previous_owner";
-    $type    = "VARCHAR(255)";
-
-    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
-    if(!$db->Execute($SQLquery)) {
-        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
-        write_message($msg);
-        write_to_error($msg);
-        return;
-    }
-
-    $tabname = "shared_task_setting";
-    $column  = "name";
-    $type    = "VARCHAR(255)";
-
-    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
-    if(!$db->Execute($SQLquery)) {
-        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
-        write_message($msg);
-        write_to_error($msg);
-        return;
-    }
-
-    $tabname = "shared_analysis_parameter";
-    $column  = "owner";
-    $type    = "VARCHAR(255)";
-
-    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
-    if(!$db->Execute($SQLquery)) {
-        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
-        write_message($msg);
-        write_to_error($msg);
-        return;
-    }
-
-    $tabname = "shared_analysis_parameter";
-    $column  = "setting";
-    $type    = "VARCHAR(255)";
-
-    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
-    if(!$db->Execute($SQLquery)) {
-        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
-        write_message($msg);
-        write_to_error($msg);
-        return;
-    }
-
-    $tabname = "shared_analysis_setting";
-    $column  = "owner";
-    $type    = "VARCHAR(255)";
-
-    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
-    if(!$db->Execute($SQLquery)) {
-        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
-        write_message($msg);
-        write_to_error($msg);
-        return;
-    }
-
-    $tabname = "shared_analysis_setting";
-    $column  = "previous_owner";
-    $type    = "VARCHAR(255)";
-
-    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
-    if(!$db->Execute($SQLquery)) {
-        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
-        write_message($msg);
-        write_to_error($msg);
-        return;
-    }
-
-    $tabname = "shared_analysis_setting";
-    $column  = "name";
-    $type    = "VARCHAR(255)";
-
-    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
-    if(!$db->Execute($SQLquery)) {
-        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
-        write_message($msg);
-        write_to_error($msg);
-        return;
-    }
-
-    $tabname = "statistics";
-    $column  = "owner";
-    $type    = "VARCHAR(255)";
-
-    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
-    if(!$db->Execute($SQLquery)) {
-        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
-        write_message($msg);
-        write_to_error($msg);
-        return;
-    }
-
-    $tabname = "username";
-    $column  = "name";
-    $type    = "VARCHAR(255)";
-
-    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
-    if(!$db->Execute($SQLquery)) {
-        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
-        write_message($msg);
-        write_to_error($msg);
-        return;
-    }
+    }    
 
 
     // ------- Enable longer server names in the queue manager. ------
+
+    $alterColumnSQL = $datadict->AlterColumnSQL('server',
+                                                'name VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not extend column in table";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $alterColumnSQL = $datadict->AlterColumnSQL('job_queue',
+                                                'server VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not extend column in table";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    // ------- Add SPIM microscopy. ------
     
-    $tabname = "server";
-    $column  = "name";
-    $type    = "VARCHAR(255)";
-
-    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
-    if(!$db->Execute($SQLquery)) {
-        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
-        write_message($msg);
-        write_to_error($msg);
-        return;
-    }
-
-    $tabname = "job_queue";
-    $column  = "server";
-    $type    = "VARCHAR(255)";
-
-    $SQLquery  = "ALTER TABLE " . $tabname . " MODIFY " . $column . " " . $type;
-    if(!$db->Execute($SQLquery)) {
-        $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
-        write_message($msg);
-        write_to_error($msg);
-        return;
-    }
-
     $tabname = "possible_values";
     
     $record = array();
