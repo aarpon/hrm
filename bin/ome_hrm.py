@@ -389,6 +389,20 @@ def gen_parameter_summary(fname):
     return summary
 
 
+def bool_to_exitstatus(value):
+    """Convert a boolean to a POSIX process exit code.
+
+    As boolean values in Python are a subset of int, True will be converted to
+    the int value '1', which is the opposite of a successful process return
+    code on POSIX systems. Therefore, we simply invert the boolean value to
+    turn it into a proper exit code.
+    """
+    if type(value) is bool:
+        return not value
+    else:
+        return value
+
+
 def parse_arguments():
     """Parse the commandline arguments."""
     argparser = argparse.ArgumentParser(
