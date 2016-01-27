@@ -223,6 +223,9 @@ def omero_to_hrm(conn, id_str, dest):
     id_str: str - the ID of the OMERO image (e.g. "G:23:Image:42")
     dest: str - destination filename (incl. path)
 
+    Returns
+    =======
+    True in case the download was successful, False otherwise.
     """
     # FIXME: group switching required!!
     _, gid, obj_type, image_id = id_str.split(':')
@@ -256,11 +259,13 @@ def omero_to_hrm(conn, id_str, dest):
         file_id = unwrap(query_res[0])[0].id.val
     except IndexError:
         print('ERROR: unable to find original file for ID: %s' % image_id)
+        return False
     # print('Downloading original file with ID: %s' % file_id)
     orig_file = OriginalFileI(file_id)
     conn.c.download(orig_file, dest)
     download_thumb(conn, image_id, dest)
     # print('Download complete.')
+    return True
 
 
 def download_thumb(conn, image_id, dest):
