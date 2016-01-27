@@ -222,10 +222,6 @@ def omero_to_hrm(conn, id_str, dest):
     id_str: str - the ID of the OMERO image (e.g. "G:23:Image:42")
     dest: str - destination filename (incl. path)
 
-    TODO
-    ====
-    we should check if older ones could have such a file if they were uploaded
-    with the "archive" option.
     """
     # FIXME: group switching required!!
     _, gid, obj_type, image_id = id_str.split(':')
@@ -248,6 +244,11 @@ def omero_to_hrm(conn, id_str, dest):
         " join uf.originalFile as f" \
         " where i.id = :iid"
     query_res = query.projection(sql, params, {'omero.group': '-1'})
+    # TODO I (issue #438): in case the query fails, this means most likely that
+    # a file was uploaded in an older version of OMERO and therefore the
+    # original file is not available. However, it was possible to upload with
+    # the "archive" option, we should check if such archived files are
+    # retrieved with the above query.
     try:
         file_id = unwrap(query_res[0])[0].id.val
     except IndexError:
