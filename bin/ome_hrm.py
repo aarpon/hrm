@@ -319,8 +319,13 @@ def hrm_to_omero(conn, id_str, image_file):
     ==========
     id_str: str - the ID of the target dataset in OMERO (e.g. "G:7:Dataset:23")
     image_file: str - the local image file including the full path
+
+    Returns
+    =======
+    success : bool - True in case of success, False otherwise.
     """
-    # FIXME: group switching required!!
+    # TODO I: group switching required!!
+    # TODO II: error handling and reporting (return values)
     _, gid, obj_type, dset_id = id_str.split(':')
     # we have to create the annotations *before* we actually upload the image
     # data itself and link them to the image during the upload - the other way
@@ -359,6 +364,8 @@ def hrm_to_omero(conn, id_str, image_file):
     import_args.append(image_file)
     # print("import_args: " + str(import_args))
     cli.invoke(import_args)
+    # TODO: this is a dummy return for now, see error-handling TODO above!
+    return True
 
 
 def gen_parameter_summary(fname):
@@ -513,7 +520,7 @@ def main():
     elif args.action == 'OMEROtoHRM':
         return omero_to_hrm(conn, args.imageid, args.dest)
     elif args.action == 'HRMtoOMERO':
-        hrm_to_omero(conn, args.dset, args.file)
+        return hrm_to_omero(conn, args.dset, args.file)
     else:
         raise Exception('Huh, how could this happen?!')
 
