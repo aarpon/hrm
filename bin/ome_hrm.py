@@ -103,8 +103,9 @@ def print_children_json(conn, id_str):
 def gen_obj_dict(obj, id_pfx=''):
     """Create a dict from an OMERO object.
 
-    Structure
-    =========
+    Returns
+    =======
+    obj_dict : dict - dictionary with the following structure:
     {
         'children': [],
         'id': 'Project:1154',
