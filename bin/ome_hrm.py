@@ -74,8 +74,18 @@ def print_children_json(conn, id_str):
     ==========
     conn : omero.gateway._BlitzGateway
     id_str : str - OMERO object ID string (e.g. "G:23:Image:42")
+
+    Returns
+    =======
+    bool - True in case printing the nodes was successful, False otherwise.
     """
-    print(tree_to_json(gen_children(conn, id_str)))
+    children = gen_children(conn, id_str)
+    if children:
+        print tree_to_json(children)
+        return True
+    else:
+        print "ERROR generating OMERO tree!"
+        return False
 
 
 def gen_obj_dict(obj, id_pfx=''):
@@ -486,7 +496,7 @@ def main():
     if args.action == 'checkCredentials':
         return check_credentials(conn)
     elif args.action == 'retrieveChildren':
-        print_children_json(conn, args.id)
+        return print_children_json(conn, args.id)
     elif args.action == 'OMEROtoHRM':
         return omero_to_hrm(conn, args.imageid, args.dest)
     elif args.action == 'HRMtoOMERO':
