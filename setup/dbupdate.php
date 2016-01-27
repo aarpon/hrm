@@ -4287,16 +4287,6 @@ if ($current_revision < $n) {
         return;
     }
 
-    $alterColumnSQL = $datadict->AlterColumnSQL('job_task_parameter',
-                                                'setting VARCHAR(255)');
-    $rs = $db->Execute($alterColumnSQL[0]);
-    if (!$rs) {
-        $msg = "Could not extend column in table.";
-        write_message($msg);
-        write_to_error($msg);
-        return;
-    }
-
     $alterColumnSQL = $datadict->AlterColumnSQL('job_task_setting',
                                                 'owner VARCHAR(255)');
     $rs = $db->Execute($alterColumnSQL[0]);
@@ -4447,16 +4437,6 @@ if ($current_revision < $n) {
         return;
     }    
     
-    $alterColumnSQL = $datadict->AlterColumnSQL('shared_task_setting',
-                                                'owner VARCHAR(255)');
-    $rs = $db->Execute($alterColumnSQL[0]);
-    if (!$rs) {
-        $msg = "Could not extend column in table.";
-        write_message($msg);
-        write_to_error($msg);
-        return;
-    }    
-
     $alterColumnSQL = $datadict->AlterColumnSQL('shared_task_setting',
                                                 'owner VARCHAR(255)');
     $rs = $db->Execute($alterColumnSQL[0]);
