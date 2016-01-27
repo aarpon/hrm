@@ -478,11 +478,11 @@ def main():
     # TODO: implement requesting groups via cmdline option
 
     if args.action == 'checkCredentials':
-        check_credentials(conn)
+        return check_credentials(conn)
     elif args.action == 'retrieveChildren':
         get_children_json(conn, args.id)
     elif args.action == 'OMEROtoHRM':
-        omero_to_hrm(conn, args.imageid, args.dest)
+        return omero_to_hrm(conn, args.imageid, args.dest)
     elif args.action == 'HRMtoOMERO':
         hrm_to_omero(conn, args.dset, args.file)
     else:
@@ -490,4 +490,4 @@ def main():
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    sys.exit(bool_to_exitstatus(main()))
