@@ -91,13 +91,13 @@ def print_children_json(conn, id_str):
     =======
     bool - True in case printing the nodes was successful, False otherwise.
     """
-    children = gen_children(conn, id_str)
-    if children:
-        print tree_to_json(children)
-        return True
-    else:
-        print "ERROR generating OMERO tree!"
+    try:
+        children = gen_children(conn, id_str)
+    except:
+        print "ERROR generating OMERO tree / node!"
         return False
+    print tree_to_json(children)
+    return True
 
 
 def gen_obj_dict(obj, id_pfx=''):
