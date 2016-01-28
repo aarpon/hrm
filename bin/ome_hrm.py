@@ -325,7 +325,6 @@ def hrm_to_omero(conn, id_str, image_file):
     success : bool - True in case of success, False otherwise.
     """
     # TODO I: group switching required!!
-    # TODO II: error handling and reporting (return values)
     _, gid, obj_type, dset_id = id_str.split(':')
     # we have to create the annotations *before* we actually upload the image
     # data itself and link them to the image during the upload - the other way
@@ -363,8 +362,11 @@ def hrm_to_omero(conn, id_str, image_file):
     ####     import_args.extend(['--annotation_link', str(ann_id)])
     import_args.append(image_file)
     # print("import_args: " + str(import_args))
-    cli.invoke(import_args)
-    # TODO: this is a dummy return for now, see error-handling TODO above!
+    try:
+        cli.invoke(import_args, strict=True)
+    except:
+        print 'ERROR: uploading to OMERO failed!' + str(import_args)
+        return False
     return True
 
 
