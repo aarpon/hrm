@@ -69,19 +69,13 @@ class OmeroConnection {
         $cmd = $this->buildCmd("checkCredentials");
 
             /* Authenticate against the OMERO server. */
-        // omelog($cmd, 0);
-        $loggedIn = shell_exec($cmd);
+        exec($cmd, $out, $retval);
 
-            /* Returns NULL if an error occurred or no output was produced. */
-        if ($loggedIn == NULL) {
-            omelog("ERROR logging on to OMERO.", 0);
-            return;
-        }
-
-            /* Check whether the attempt was successful. */
-        if (strstr($loggedIn, '-1')) {
+            /* $retval is zero in case of success */
+        if ($retval != 0) {
             $this->loggedIn = FALSE;
-            omelog("Attempt to log on to OMERO server failed.", 0);
+            omelog("ERROR: checkCredentials(): " . implode(' ', $out), 1);
+            return;
         } else {
             $this->loggedIn = TRUE;
         }
@@ -105,6 +99,7 @@ class OmeroConnection {
             exec($cmd, $out, $retval);
             if ($retval != 0) {
                 omelog("failed retrieving " . $img['id'], 1);
+                omelog("ERROR: downloadFromOMERO(): " . implode(' ', $out), 2);
                 $fail .= " " . $img['id'];
             } else {
                 omelog("successfully retrieved " . $img['id'], 1);
@@ -154,11 +149,13 @@ class OmeroConnection {
             $cmd = $this->buildCmd("HRMtoOMERO", $param);
 
             omelog('uploading "' . $fileAndPath . '" to dataset ' . $datasetId);
-            if (shell_exec($cmd) == NULL) {
-                omelog("exporting '" . $file . "' to OMERO failed.", 1);
+            exec($cmd, $out, $retval);
+            if ($retval != 0) {
+                omelog("failed uploading file to OMERO: " . $file, 1);
+                omelog("ERROR: uploadToOMERO(): " . implode(' ', $out), 2);
                 $fail .= " " . $file;
             } else {
-                omelog("successfully uploaded " . $file, 1);
+                omelog("success uploading file to OMERO: " . $file, 2);
                 $done .= " " . $file;
             }
         }
@@ -225,7 +222,13 @@ class OmeroConnection {
         if (!isset($this->nodeChildren[$id])) {
             $param = array('--id', $id);
             $cmd = $this->buildCmd("retrieveChildren", $param);
-            $this->nodeChildren[$id] = shell_exec($cmd);
+            exec($cmd, $out, $retval);
+            if ($retval != 0) {
+                omelog("ERROR: getChildren(): " . implode(' ', $out), 1);
+                return FALSE;
+            } else {
+                $this->nodeChildren[$id] = implode(' ', $out);
+            }
         }
         return $this->nodeChildren[$id];
     }
