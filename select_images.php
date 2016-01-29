@@ -29,7 +29,7 @@ if (System::hasLicense("coloc")) {
 $currentStep = 1;
 $nextStep    = $currentStep + 1;
 $goNextMessage  = "Continue to step $nextStep/$numberSteps - ";
-$goNextMessage .= "Image parameters";
+$goNextMessage .= "Select image template.";
 
 if (!isset($_SESSION['fileserver'])) {
   # session_register("fileserver");
