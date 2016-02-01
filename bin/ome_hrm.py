@@ -315,6 +315,10 @@ def download_thumb(conn, image_id, dest):
 def hrm_to_omero(conn, id_str, image_file):
     """Upload an image into a specific dataset in OMERO.
 
+    In case we know from the suffix that a given file format is not supported
+    by OMERO, the upload will not be initiated at all (e.g. for SVI-HDF5,
+    having the suffix '.h5').
+
     Parameters
     ==========
     id_str: str - the ID of the target dataset in OMERO (e.g. "G:7:Dataset:23")
@@ -324,6 +328,9 @@ def hrm_to_omero(conn, id_str, image_file):
     =======
     success : bool - True in case of success, False otherwise.
     """
+    if image_file.lower().endswith(('.h5', '.hdf5')):
+        print 'ERROR: HDF5 files are not supported by OMERO!'
+        return False
     # TODO I: group switching required!!
     _, gid, obj_type, dset_id = id_str.split(':')
     # we have to create the annotations *before* we actually upload the image
@@ -365,7 +372,7 @@ def hrm_to_omero(conn, id_str, image_file):
     try:
         cli.invoke(import_args, strict=True)
     except:
-        print 'ERROR: uploading to OMERO failed!' + str(import_args)
+        print 'ERROR: uploading to OMERO failed! ' + str(import_args)
         return False
     return True
 
