@@ -149,14 +149,18 @@ class OmeroConnection {
             $cmd = $this->buildCmd("HRMtoOMERO", $param);
 
             omelog('uploading "' . $fileAndPath . '" to dataset ' . $datasetId);
+            // somehow exec() seems to append to $out instead of overwriting
+            // it, so we create an empty array for it explicitly:
+            $out = array();
             exec($cmd, $out, $retval);
             if ($retval != 0) {
                 omelog("failed uploading file to OMERO: " . $file, 1);
                 omelog("ERROR: uploadToOMERO(): " . implode(' ', $out), 2);
-                $fail .= " " . $file;
+                $fail .= "<br/>" . $file . "<br/>";
+                $fail .= "(" . implode('<br/>', $out) . ")<br/>";
             } else {
                 omelog("success uploading file to OMERO: " . $file, 2);
-                $done .= " " . $file;
+                $done .= "<br/>" . $file;
             }
         }
         // reload the OMERO tree:
@@ -164,10 +168,10 @@ class OmeroConnection {
         // build the return message:
         $msg = "";
         if ($done != "") {
-            $msg = "Successfully uploaded" . $done . ". ";
+            $msg = "Successfully uploaded:<br/>" . $done . "<br/>";
         }
         if ($fail != "") {
-            $msg .= "Failed uploading" . $fail . ".";
+            $msg .= "<br/>Failed uploading:<br/>" . $fail;
         }
         return $msg;
     }
