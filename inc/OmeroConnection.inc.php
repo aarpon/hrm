@@ -97,6 +97,7 @@ class OmeroConnection {
 
             omelog('requesting ' . $img['id'] . ' to ' . $fileAndPath);
             exec($cmd, $out, $retval);
+            omelog(implode(' ', $out));
             if ($retval != 0) {
                 omelog("failed retrieving " . $img['id'], 1);
                 omelog("ERROR: downloadFromOMERO(): " . implode(' ', $out), 2);
