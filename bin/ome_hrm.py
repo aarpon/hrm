@@ -238,19 +238,23 @@ def check_credentials(conn):
 
 
 def omero_to_hrm(conn, id_str, dest):
-    """Download the corresponding original file from an image ID.
+    """Download the corresponding original file(s) from an image ID.
 
     This works only for image ID's that were created with OMERO 5.0 or later as
     previous versions don't have an "original file" linked to an image.
 
-    In addition to the original file, it also downloads a thumbnail of the
+    Note that files will be downloaded with their original name, which is not
+    necessarily the name shown by OMERO, e.g. if an image name was changed in
+    OMERO. To keep filesets consistent, we have to preserve the original names!
+
+    In addition to the original file(s), it also downloads a thumbnail of the
     requested file from OMERO and puts it into the appropriate place so HRM
     will show it as a preview until the user hits "re-generate preview".
 
     Parameters
     ==========
     id_str: str - the ID of the OMERO image (e.g. "G:23:Image:42")
-    dest: str - destination filename (incl. path)
+    dest: str - destination directory
 
     Returns
     =======
@@ -258,25 +262,18 @@ def omero_to_hrm(conn, id_str, dest):
     """
     # FIXME: group switching required!!
     _, gid, obj_type, image_id = id_str.split(':')
-    # as we're downloading original files, we need to crop away the additional
-    # suffix that OMERO adds to the name in case the image belongs to a
-    # fileset, enclosed in rectangular brackets "[...]", e.g. the file with the
-    # OMERO name "foo.lsm [foo #2]" should become "foo.lsm"
-    dest = re.sub(r' \[[^[]*\]$', '', dest)
-    if os.path.exists(dest):
-        raise IOError('target file "%s" already existing!' % dest)
-    from omero.rtypes import unwrap
-    from omero.sys import ParametersI
+    # check if dest is a directory, rewrite it otherwise:
+    if not os.path.isdir(dest):
+        dest = os.path.dirname(dest)
     from omero_model_OriginalFileI import OriginalFileI
-    query = conn.c.getSession().getQueryService()
-    params = ParametersI()
-    params.addLong('iid', image_id)
-    sql = "select f from Image i" \
-        " left outer join i.fileset as fs" \
-        " join fs.usedFiles as uf" \
-        " join uf.originalFile as f" \
-        " where i.id = :iid"
-    query_res = query.projection(sql, params, {'omero.group': '-1'})
+    image_obj = conn.getObject("Image", image_id)
+    if not image_obj:
+        print("ERROR: can't find image with ID %s!" % image_id)
+        return False
+    fset = image_obj.getFileset()
+    if not fset:
+        print("ERROR: no original file(s) for image %s found!" % image_id)
+        return False
     # TODO I (issue #438): in case the query fails, this means most likely that
     # a file was uploaded in an older version of OMERO and therefore the
     # original file is not available. However, it was possible to upload with
@@ -284,16 +281,27 @@ def omero_to_hrm(conn, id_str, dest):
     # retrieved with the above query.
     # TODO II (issue #398): in case no archived file is available, we could
     # fall back to downloading the OME-TIFF instead.
-    try:
-        file_id = unwrap(query_res[0])[0].id.val
-    except IndexError:
-        print('ERROR: unable to find original file for ID: %s' % image_id)
-        return False
-    # print('Downloading original file with ID: %s' % file_id)
-    orig_file = OriginalFileI(file_id)
-    conn.c.download(orig_file, dest)
-    download_thumb(conn, image_id, dest)
-    # print('Download complete.')
+    downloads = []
+    # assemble a list of items to download, check if any files already exist:
+    for fset_file in fset.listFiles():
+        tgt = os.path.join(dest, fset_file.getName())
+        if os.path.exists(tgt):
+            print("ERROR: target file '%s' already existing!" % tgt)
+            return False
+        fset_id = fset_file.getId()
+        downloads.append((fset_id, tgt))
+    # now initiate the downloads for all original files:
+    for (fset_id, tgt) in downloads:
+        try:
+            conn.c.download(OriginalFileI(fset_id), tgt)
+        except:
+            print("ERROR: downloading %s to '%s' failed!" % (fset_id, tgt))
+            return False
+        print("Downloaded original file %s to '%s'." % (fset_id, tgt))
+    # NOTE: for filesets with a single file or e.g. ICS/IDS pairs it makes
+    # sense to use the target name of the first file to construct the name for
+    # the thumbnail, but it is unclear whether this is a universal approach:
+    download_thumb(conn, image_id, downloads[0][1])
     return True
 
 
