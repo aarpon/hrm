@@ -96,24 +96,32 @@ class OmeroConnection {
             $cmd = $this->buildCmd("OMEROtoHRM", $param);
 
             omelog('requesting ' . $img['id'] . ' to ' . $fileAndPath);
+            // somehow exec() seems to append to $out instead of overwriting
+            // it, so we create an empty array for it explicitly:
+            $out = array();
             exec($cmd, $out, $retval);
             omelog(implode(' ', $out));
             if ($retval != 0) {
                 omelog("failed retrieving " . $img['id'], 1);
                 omelog("ERROR: downloadFromOMERO(): " . implode(' ', $out), 2);
-                $fail .= " " . $img['id'];
+                $fail .= "<br/>" . $img['id'] . "&nbsp;&nbsp;&nbsp;&nbsp;";
+                $fail .= "[" . implode(' ', $out) . "]<br/>";
             } else {
                 omelog("successfully retrieved " . $img['id'], 1);
-                $done .= " " . $img['id'];
+                $done .= "<br/>" . implode('<br/>', $out) . "<br/>";
             }
         }
         // build the return message:
         $msg = "";
         if ($done != "") {
-            $msg = "Successfully retrieved" . $done . ". ";
+            $msg .= "<font color='green'>";
+            $msg .= "Successfully retrieved from OMERO:<br/>" . $done;
+            $msg .= "</font>";
         }
         if ($fail != "") {
-            $msg .= "Failed retrieving" . $fail . ".";
+            $msg .= "<font color='red'>";
+            $msg .= "<br/><br/>FAILED retrieving from OMERO:<br/>" . $fail;
+            $msg .= "</font>";
         }
         return $msg;
     }
