@@ -267,6 +267,9 @@ def omero_to_hrm(conn, id_str, dest):
     if not os.path.isdir(dest):
         dest = os.path.dirname(dest)
     from omero_model_OriginalFileI import OriginalFileI
+    # use image objects and getFileset() methods to determine original files,
+    # see the following OME forum thread for some more details:
+    # https://www.openmicroscopy.org/community/viewtopic.php?f=6&t=7563
     image_obj = conn.getObject("Image", image_id)
     if not image_obj:
         print("ERROR: can't find image with ID %s!" % image_id)
