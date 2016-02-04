@@ -321,12 +321,16 @@ def download_thumb(conn, image_id, dest):
     conn : omero.gateway.BlitzGateway
     image_id: str - an OMERO object ID of an image (e.g. '102')
     dest: str - destination filename
+
+    Returns
+    =======
+    True in case the download was successful, False otherwise.
     """
     try:
         import Image
         import StringIO
     except ImportError:
-        return
+        return False
     image_obj = conn.getObject("Image", image_id)
     image_data = image_obj.getThumbnail()
     thumbnail = Image.open(StringIO.StringIO(image_data))
