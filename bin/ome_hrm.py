@@ -301,7 +301,7 @@ def omero_to_hrm(conn, id_str, dest):
         except:
             print("ERROR: downloading %s to '%s' failed!" % (fset_id, tgt))
             return False
-        print("Downloaded original file %s to '%s'." % (fset_id, tgt))
+        print("ID %s downloaded as '%s'" % (fset_id, os.path.basename(tgt)))
     # NOTE: for filesets with a single file or e.g. ICS/IDS pairs it makes
     # sense to use the target name of the first file to construct the name for
     # the thumbnail, but it is unclear whether this is a universal approach:
@@ -335,11 +335,11 @@ def download_thumb(conn, image_id, dest):
     image_data = image_obj.getThumbnail()
     thumbnail = Image.open(StringIO.StringIO(image_data))
     base_dir, fname = os.path.split(dest)
-    target = base_dir + "/hrm_previews/" + fname + ".preview_xy.jpg"
+    target = "/hrm_previews/" + fname + ".preview_xy.jpg"
     try:
-        thumbnail.save(target)
+        thumbnail.save(base_dir + target)
         # TODO: os.chown() to fix permissions, see #457!
-        print("Downloaded thumbnail to '%s'." % target)
+        print("Thumbnail downloaded to '%s'." % target)
         return True
     except:
         print("ERROR downloading thumbnail to '%s'." % target)
