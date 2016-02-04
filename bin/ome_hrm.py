@@ -253,6 +253,7 @@ def omero_to_hrm(conn, id_str, dest):
 
     Parameters
     ==========
+    conn : omero.gateway.BlitzGateway
     id_str: str - the ID of the OMERO image (e.g. "G:23:Image:42")
     dest: str - destination directory
 
@@ -306,8 +307,18 @@ def omero_to_hrm(conn, id_str, dest):
 
 
 def download_thumb(conn, image_id, dest):
-    """Download the thumbnail of a given image from OMERO."""
-    # in case PIL is installed, download the thumbnail as a preview:
+    """Download the thumbnail of a given image from OMERO.
+
+    In case PIL (Python Imaging Library) is installed, download the thumbnail
+    of a given OMERO image and place it as preview in the corresponding HRM
+    directory.
+
+    Parameters
+    ==========
+    conn : omero.gateway.BlitzGateway
+    image_id: str - an OMERO object ID of an image (e.g. '102')
+    dest: str - destination filename
+    """
     try:
         import Image
         import StringIO
@@ -337,7 +348,7 @@ def hrm_to_omero(conn, id_str, image_file):
 
     Returns
     =======
-    success : bool - True in case of success, False otherwise.
+    True in case of success, False otherwise.
     """
     if image_file.lower().endswith(('.h5', '.hdf5')):
         print 'ERROR: HDF5 files are not supported by OMERO!'
