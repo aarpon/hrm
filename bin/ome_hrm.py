@@ -313,11 +313,14 @@ def download_thumb(conn, image_id, dest):
         import StringIO
     except ImportError:
         return
-    image = conn.getObject("Image", image_id)
-    img_data = image.getThumbnail()
-    thumbnail = Image.open(StringIO.StringIO(img_data))
-    tgt, name = os.path.split(dest)
-    thumbnail.save(tgt + "/hrm_previews/" + name + ".preview_xy.jpg")
+    image_obj = conn.getObject("Image", image_id)
+    image_data = image_obj.getThumbnail()
+    thumbnail = Image.open(StringIO.StringIO(image_data))
+    base_dir, fname = os.path.split(dest)
+    target = base_dir + "/hrm_previews/" + fname + ".preview_xy.jpg"
+    thumbnail.save(target)
+    # TODO: os.chown() to fix permissions, see #457!
+    print("Downloaded thumbnail to '%s'." % target)
 
 
 def hrm_to_omero(conn, id_str, image_file):
