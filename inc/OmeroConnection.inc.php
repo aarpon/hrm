@@ -165,8 +165,8 @@ class OmeroConnection {
             if ($retval != 0) {
                 omelog("failed uploading file to OMERO: " . $file, 1);
                 omelog("ERROR: uploadToOMERO(): " . implode(' ', $out), 2);
-                $fail .= "<br/>" . $file . "<br/>";
-                $fail .= "(" . implode('<br/>', $out) . ")<br/>";
+                $fail .= "<br/>" . $file . "&nbsp;&nbsp;&nbsp;&nbsp;";
+                $fail .= "[" . implode(' ', $out) . "]<br/>";
             } else {
                 omelog("success uploading file to OMERO: " . $file, 2);
                 $done .= "<br/>" . $file;
@@ -177,10 +177,14 @@ class OmeroConnection {
         // build the return message:
         $msg = "";
         if ($done != "") {
-            $msg = "Successfully uploaded:<br/>" . $done . "<br/>";
+            $msg .= "<font color='green'>";
+            $msg .= "Successfully uploaded to OMERO:<br/>" . $done . "<br/>";
+            $msg .= "</font>";
         }
         if ($fail != "") {
-            $msg .= "<br/>Failed uploading:<br/>" . $fail;
+            $msg .= "<font color='red'>";
+            $msg .= "<br/><br/>FAILED uploading to OMERO:<br/>" . $fail;
+            $msg .= "</font>";
         }
         return $msg;
     }
