@@ -69,7 +69,7 @@ if (isset($omeroConnection)) {
 
     <div id="activeTransfer" title="OMERO transfer in progress">
       <p>An OMERO transfer is currently running, please wait
-      until has finished.</p>
+      until it has finished.</p>
       <p>This message will automatically close upon completion.</p>
     </div>
 
