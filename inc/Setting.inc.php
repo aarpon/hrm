@@ -189,19 +189,22 @@ abstract class Setting {
               Setting names are stored.
 
       Besides the name, the table contains the Setting's name, owner and
-      the standard (default) flag. This is an abstract function and must
-      be reimplemented.
+      the standard (default) flag. This method must be reimplemented.
     */
-    abstract static function table();
+    static function table() {
+        throw new Exception('This method must be reimplemented!');
+    }
 
     /*!
       \brief	Returns the name of the database table in which all the Parameters
               for the Settings stored in the table specified in table()
 
-      This is an abstract function and must be reimplemented.
+      This method must be reimplemented.
       \see table()
     */
-    abstract static function parameterTable();
+    static function parameterTable() {
+        throw new Exception('This method must be reimplemented!');
+    }
 
     /*!
       \brief  Loads the Parameter values into current Setting
