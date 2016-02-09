@@ -416,6 +416,7 @@ class ParameterSetting extends Setting {
                             $postedParams["$objName$chan"] = $value;
                         }
                     }
+                    break;
                 default:
                     $postedParams[$objName] = $objInstance->value();
             }
