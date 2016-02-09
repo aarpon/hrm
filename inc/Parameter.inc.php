@@ -256,6 +256,19 @@ abstract class Parameter {
     }
 
     /*!
+    \brief  Returns the possible values for the parameter.
+
+    This function should be <b>overloaded</b> by the subclasses if the
+    internal and external representations differ.
+
+    \return the possibles values of the Parameter in their internal
+            representation
+*/
+    public function possibleValues() {
+        return null;
+    }
+
+    /*!
         \brief  Returns the possible values for the parameter in their
                 internal representation.
 

@@ -1956,6 +1956,11 @@ class ParameterSetting extends Setting {
               their values
     */
     public function displayString($numberOfChannels = 0, $micrType = NULL) {
+        /**
+         * Please notice: the input arguments $numberOfChannels and $micrType
+         * are ignored.
+         */
+
         $result = '';
 
 
