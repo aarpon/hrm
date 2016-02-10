@@ -582,8 +582,9 @@ class DatabaseConnection {
             $query  = "SELECT value FROM $table WHERE owner='" . $user;
             $query .= "' AND setting='" . $name . "' AND name='";
             $query .= $parameterName . "'";
+            
             $newValue = $this->queryLastValue($query);
-
+            
             if ($newValue == NULL) {
 
                 // See if the Parameter has a usable default
@@ -593,7 +594,8 @@ class DatabaseConnection {
                 }
             }
 
-            if ($newValue{0}=='#') {
+
+            if ($newValue{0} == '#') {
                 switch($parameterName) {
                 case "ExcitationWavelength":
                 case "EmissionWavelength":
@@ -614,6 +616,9 @@ class DatabaseConnection {
                 case "SpimNA":
                 case "SpimFill":
                 case "SpimDir":
+                case "ColocChannel":
+                case "ColocThreshold":
+                case "ColocCoefficient":
                     /* Extract and continue to explode. */
                     $newValue = substr($newValue,1);
                 default:
@@ -636,7 +641,7 @@ class DatabaseConnection {
                     $newValue = $newValues;
                 }
             }
-
+            
             $parameter->setValue($newValue);
             $settings->set($parameter);
         }
