@@ -1412,6 +1412,7 @@ class HuygensTemplate {
         $microSetting = $this->microSetting;
         $spimDir = $microSetting->parameter("SpimDir")->value();
         $direction = $spimDir[$channel];
+        $angle = 0.0;
 
         switch($direction) {
         case 'right':
