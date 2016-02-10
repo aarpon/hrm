@@ -73,6 +73,45 @@ test_writable_create() {
     fi
 }
 
+
+lsb_check_for_running_queuemanager() {
+    # use LSB functions to check if the QM is already running,
+    # if that is true -> exit
+    LSB_INITFUNCTIONS="/lib/lsb/init-functions"
+    if ! [ -r "$LSB_INITFUNCTIONS" ] ; then
+        echo "WARNING: missing the LSB init functions ($LSB_INITFUNCTIONS)!"
+        echo "--> CANNOT check if the Queue Manager is already running!"
+        return 1
+    fi
+    source /lib/lsb/init-functions
+    RUNNING_PID=$(pidofproc -p "$PID_FILE" "$0")
+    RUNNING_STATUS=$?
+    # NOTE: see the LSB specification for return values of "pidofproc"
+    if [ -n "$RUNNING_PID" ] ; then
+        echo "The Queue Manager seems to be running already ($RUNNING_PID)."
+        echo "NOT starting a second instance!"
+        echo
+        exit 1
+    fi
+    if [ "$RUNNING_STATUS" = "1" ] ; then
+        echo "NOTE: leftover pid file '$PID_FILE' (no Queue Manager running)."
+    fi
+    if [ "$RUNNING_STATUS" = "4" ] ; then
+        echo "ERROR: unable to determine status from pid file '$PID_FILE'."
+        echo "       Please manually check if another instance is running"
+        echo "       and remove the file if not."
+        exit 1
+    fi
+}
+
+
+we_are_on_systemd() {
+    # try to find out whether we are run as a systemd service by checking if
+    # the parent process has "systemd" in its name:
+    ps -p $PPID -o command | grep -qs systemd
+}
+
+
 warn_daemon_user() {
     cat << EOF
 WARNING *** WARNING *** WARNING *** WARNING *** WARNING *** WARNING *** WARNING
@@ -225,35 +264,20 @@ test_writable "${HRM_LOG}"
 test_writable_create "${LOG_OUT}"
 test_writable_create "${LOG_ERR}"
 
-# check if a Queue Manager is already running:
-set -e
-. /lib/lsb/init-functions
-set +e
-RUNNING_PID=$(pidofproc -p "$PID_FILE" "$0")
-RUNNING_STATUS=$?
-# NOTE: see the LSB specification for return values of "pidofproc"
-if [ -n "$RUNNING_PID" ] ; then
-    echo "The Queue Manager seems to be running already ($RUNNING_PID)."
-    echo "NOT starting a second instance!"
-    echo
-    exit 1
-fi
-if [ "$RUNNING_STATUS" = "1" ] ; then
-    echo "NOTE: leftover pid file '$PID_FILE' (no Queue Manager running)."
-fi
-if [ "$RUNNING_STATUS" = "4" ] ; then
-    echo "ERROR: unable to determine status from pid file '$PID_FILE'."
-    echo "       Please manually check if another instance is running"
-    echo "       and remove the file if not."
-    exit 1
-fi
-
 # detach into background if requested
 if [ "$1" = "--detach" ] ; then
     shift
-    echo "Forking background process..."
+    echo "HRM Queue Manager: forking background process."
     "$0" "$@" &
     exit 0
+fi
+
+# check for a running QM unless we are operated by systemd (in which case we
+# simply assume that we are well taken care of!)
+if we_are_on_systemd ; then
+    echo "HRM Queue Manager: running as a systemd service."
+else
+    lsb_check_for_running_queuemanager
 fi
 
 # install the signal handler (runs the function "cleanup_exit" when either of
