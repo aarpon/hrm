@@ -1,0 +1,15 @@
+[Unit]
+Description=HRM (Huygens Remote Manager) Queue Manager Service
+Requires=mariadb.service
+After=mariadb.service
+
+[Service]
+User=hrmuser
+Group=hrm
+ExecStart=/var/www/html/hrm/bin/hrm_queuemanager --detach
+Type=forking
+PIDFile=/var/log/hrm/hrmd.pid
+
+[Install]
+WantedBy=multi-user.target
+
