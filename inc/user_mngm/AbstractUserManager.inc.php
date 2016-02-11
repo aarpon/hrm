@@ -24,14 +24,14 @@ abstract class AbstractUserManager {
            database.
     \return true if the UserManager can create and delete users, false otherwise.
     */
-    abstract public static function canCreateUsers();
+    public static function canCreateUsers() { return false; }
 
     /*!
     \brief Return true if the UserManager can delete users.
     \see AbstractUserManager::canCreateUsers() for the concept.
     \return true if the UserManager can delete users, false otherwise.
      */
-    abstract public static function canModifyUsers();
+    public static function canModifyUsers()  { return false; }
 
     /*!
     \param User $user User to be stored (updated) in the database.
