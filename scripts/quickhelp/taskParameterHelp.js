@@ -48,14 +48,23 @@ window.helpText[ "zstabilization" ] =
   '<p>It is <b>strongly recommended</b> to stabilize STED images ' +
   'along the Z direction.</p>';
 
-window.helpText[ "autocrop"] =
+window.helpText[ "autocrop" ] =
   '<p>The time needed to deconvolve an image increases more than ' +
   'proportionally with its volume. Therefore, deconvolution <b>can be ' +
   'accelerated</b> considerably by cropping the image.</p>' +
   '<p>Huygens will automatically survey the image to find a reasonable ' +
   'proposal for the crop region. In computing this initial proposal the ' +
   'Microscopic Parameters are taken into account, making sure that ' +
-  'cropping will not have a negative impact on the deconvolution result.</p>' ;
+    'cropping will not have a negative impact on the deconvolution result.</p>';
+
+window.helpText[ "chromatic" ] =
+    '<p>For the estimation of the chromatic aberration parameters it is ' +
+    'recommended to open an image of multi channel beads in the ' +
+    '<b>Chromatic Aberration Corrector</b> in <b>Huygens Professional</b> ' +
+    'or <b>Huygens Essential</b>. The values estimated by Huygens can ' +
+    'be used in this table to correct the images for chromatic aberration ' +
+    'in batch mode.</p><p>To <b>skip</b> this step just leave the table ' +
+    'fields empty.';
 window.helpText[ "default" ] =
   '<p>On this page you specify the parameters for restoration.</p>' +
   '<p>These parameters comprise the deconvolution algorithm, the ' +

@@ -34,7 +34,7 @@
             return;
          }
 
-         echo "Check against HRM v3.2.x." . PHP_EOL;
+         echo "Check against HRM v3.3.x." . PHP_EOL;
 
          require_once($configFile);
 
@@ -61,7 +61,8 @@
 		$variablesRemoved = array("internal_link", "external_link",
 			"adodb", "enableUserAdmin", "allow_reservation_users",
 			"resultImagesOwnedByUser", "resultImagesRenamed",
-			"runningLocation", "convertBin", "enable_code_for_huygens");
+			"runningLocation", "convertBin", "enable_code_for_huygens",
+			"change_ownership");
 
 		// Check for variables that must exist
 		$numMissingVariables = 0;

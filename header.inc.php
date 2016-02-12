@@ -24,8 +24,15 @@ if (using_IE()) {
 ?>
 
   <title>Huygens Remote Manager</title>
-    <link rel="SHORTCUT ICON" href="images/hrm.ico"/>
+<?php
+    $ico = 'images/hrm_custom.ico';
+    if (!file_exists($ico)) {
+        $ico = 'images/hrm.ico';
+    }
+    echo '    <link rel="SHORTCUT ICON" href="' . $ico . '"/>';
+?>
     <link rel="stylesheet" href="scripts/jqTree/jqtree.css">
+    <link rel="stylesheet" href="css/jqtree-custom.css">
     <link rel="stylesheet" href="scripts/jquery-ui/jquery-ui-1.9.1.custom.css">
 
     <!-- Include jQuery -->
@@ -79,19 +86,25 @@ if (isset($generatedScript)) {
     <script type="text/javascript"><?php echo $generatedScript ?></script>
 
 <?php
-
 }
-
-
-
 ?>
-    <link rel="stylesheet" href="css/default.css">
+
+    <style type="text/css">
+        @import "css/default.css";
+    </style>
     <!--[if lt IE 9]>
     <h3>This browser is OBSOLETE and is known to have important issues with the HRM.
         Please upgrade to a later version of Internet Explorer or to a new
         broswer altogether.</h3>
     <link rel="stylesheet" href="css/default_ie.css">
     <![endif]-->
+
+<?php
+    $custom_css = "css/custom.css";
+    if (file_exists($custom_css)) {
+        echo '    <link rel="stylesheet" href="' . $custom_css . '">' . "\n";
+    }
+?>
 
 </head>
 

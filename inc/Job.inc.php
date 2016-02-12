@@ -112,30 +112,39 @@ class Job {
                                       'out'        => '_out.txt',
                                       'error'      => '_error.txt' );
 
-        $this->imgParam = array ( 'dx'             => 'X pixel size (&mu;m)',
-                                  'dy'             => 'Y pixel size (&mu;m)',
-                                  'dz'             => 'Z step size  (&mu;m)',
-                                  'dt'             => 'Time interval (s)',
-                                  'iFacePrim'      => '',
-                                  'iFaceScnd'      => '',
-                                  'objQuality'     => '',
-                                  'exBeamFill'     => '',
-                                  'imagingDir'     => '',
-                                  'pcnt'           => '',
-                                  'na'             => 'Numerical aperture',
-                                  'ri'             => 'Sample refractive index',
-                                  'ril'            => 'Lens refractive index',
-                                  'pr'             => 'Pinhole size (nm)',
-                                  'ps'             => 'Pinhole spacing (&mu;m)',
-                                  'ex'             => 'Excitation wavelength (nm)',
-                                  'em'             => 'Emission wavelength (nm)',
-                                  'micr'           => 'Microscope type',
-                                  'stedMode'       => 'STED depletion mode',
-                                  'stedLambda'     => 'STED wavelength',
-                                  'stedSatFact'    => 'STED saturation factor (%)',
-                                  'stedImmunity'   => 'STED immunity (%)',
-                                  'sted3D'         => 'STED 3D (%)' );
-
+        $this->imgParam = array (
+            'dx'               => 'X pixel size (&mu;m)',
+            'dy'               => 'Y pixel size (&mu;m)',
+            'dz'               => 'Z step size  (&mu;m)',
+            'dt'               => 'Time interval (s)',
+            'iFacePrim'        => '',
+            'iFaceScnd'        => '',
+            'objQuality'       => '',
+            'exBeamFill'       => '',
+            'imagingDir'       => '',
+            'pcnt'             => '',
+            'na'               => 'Numerical aperture',
+            'ri'               => 'Sample refractive index',
+            'ril'              => 'Lens refractive index',
+            'pr'               => 'Pinhole size (nm)',
+            'ps'               => 'Pinhole spacing (&mu;m)',
+            'ex'               => 'Excitation wavelength (nm)',
+            'em'               => 'Emission wavelength (nm)',
+            'micr'             => 'Microscope type',
+            'stedMode'         => 'STED depletion mode',
+            'stedLambda'       => 'STED wavelength',
+            'stedSatFact'      => 'STED saturation factor (%)',
+            'stedImmunity'     => 'STED immunity (%)',
+            'sted3D'           => 'STED 3D (%)',
+            'spimExcMode'      => 'SPIM excitation mode',
+            'spimGaussWidth'   => 'SPIM Gauss Width (&mu;m)',
+            'spimCenterOffset' => 'SPIM Center Offset (&mu;m)',
+            'spimFocusOffset'  => 'SPIM Focus Offset (&mu;m)',
+            'spimNA'           => 'SPIM NA',
+            'spimFill'         => 'SPIM Fill Factor',
+            'spimDir'          => 'SPIM Direction (degrees)'
+            );
+        
         $this->restParam = array( 'algorithm'      =>'Deconvolution algorithm',
                                   'iterations'     =>'Number of iterations',
                                   'quality'        =>'Quality stop criterion',
@@ -770,7 +779,14 @@ class Job {
                     }
                 }
             }
-
+            if (strpos($paramName, 'spim') !== false) {
+                if (isset($micrType[$channel])) {
+                    if ($micrType[$channel] != "spim") {
+                        continue;
+                    }
+                }
+            }
+            
             /* The remaining parameters do make sense, report them. */
             if ($source == "template") {
                 $source = "User defined";

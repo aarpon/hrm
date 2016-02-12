@@ -155,29 +155,11 @@ if ($omero_transfers) {
     }
 }
 
-if (isset($_POST['getOmeroData']) || isset($_POST['exportToOmero'])) {
-
-    if (isset($omeroConnection)) {
-        if ($omeroConnection->loggedIn) {
-            $omeroTree = $omeroConnection->getLastOmeroTree();
-        }
-    }
-}
-
-if (isset($_POST['importFromOmero'])) {
-
-    if (isset($omeroConnection)) {
-        if ($omeroConnection->loggedIn) {
-            $omeroTree = $omeroConnection->getLastOmeroTree();
-        }
-    }
-}
 
 if (isset($_POST['refreshOmero'])) {
-
     if (isset($omeroConnection)) {
         if ($omeroConnection->loggedIn) {
-            $omeroTree = $omeroConnection->getUpdatedOmeroTree();
+            $omeroConnection->resetNodes();
         }
     }
 }
@@ -327,6 +309,8 @@ function imageAction (list) {
     switch ( val )
     {
 ";
+
+  # FIXME: this is broken with file names containing double quotes!
 
   # Generate at case for each of the available files, so that the
   # correspondent thumbnail and information is shown when the user clicks on

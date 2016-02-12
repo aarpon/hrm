@@ -229,11 +229,12 @@ function acceptSharedWithTemplate(template_index, type) {
 
         }
 
-        // Now reload the page to udpate everything
-        location.reload(true);
-
         // Inform
         $("#message").html("<p>Template accepted!</p>");
+
+        // Reload the page dropping all previously POSTed info but allow for a
+        // slight delay to allow for the message to be visible.
+        reloadPageAfterDelayWithNoPostedData(2000);
 
     });
 
@@ -270,11 +271,13 @@ function rejectSharedWithTemplate(template_index, type) {
 
         }
 
-        // Now reload the page to update everything
-        location.reload(true);
-
         // Inform
         $("#message").html("<p>Template rejected.</p>");
+
+        // Reload the page dropping all previously POSTed info but allow for a
+        // slight delay to allow for the message to be visible.
+        reloadPageAfterDelayWithNoPostedData(2000);
+
     });
 
 }
@@ -310,11 +313,13 @@ function rejectSharedByTemplate(template_index, type) {
 
         }
 
-        // Now reload the page to update everything
-        location.reload(true);
-
         // Inform
         $("#message").html("<p>Template sharing canceled.</p>");
+
+        // Reload the page dropping all previously POSTed info but allow for a
+        // slight delay to allow for the message to be visible.
+        reloadPageAfterDelayWithNoPostedData(2000);
+
     });
 
 }
@@ -380,4 +385,25 @@ function toggleSharedTemplatesDiv() {
 // Closes the shared templates div.
 function closeSharedTemplatesDiv() {
     $('#sharedTemplatePicker').hide();
+}
+
+// Reload the page dropping all previously POSTed after a slight delay.
+// Please notice that if an "#" is present in the URL, there will be no
+// redirection.
+//
+// @param delay Delay in milliseconds.
+function reloadPageAfterDelayWithNoPostedData(delay) {
+
+    // Reload the page dropping all previously POSTed info but allow for a
+    // slight delay. Please notice that if an "#" is present in the URL,
+    // there will be no redirection.
+    var current_url = window.location.href;
+    var posHash = current_url.indexOf("#");
+    if (posHash != -1) {
+        current_url = current_url.substr(0, posHash);
+    }
+    setTimeout(function() {
+        window.location.href = current_url;
+    }, delay);
+
 }

@@ -172,6 +172,17 @@ abstract class Parameter {
     }
 
     /*!
+        \brief  Checks whether the Parameter is a Spim Parameter
+
+        This function should be <b>overloaded</b> by the subclasses
+
+        \return true if the Parameter is a Spim Parameter, false otherwise
+    */
+    public function isForSpim() {
+        return False;
+    }
+    
+    /*!
         \brief  Checks whether the Parameter is a Variable Channel Parameter
 
         This function should be <b>overloaded</b> by the subclasses
@@ -242,6 +253,19 @@ abstract class Parameter {
     */
     public function internalValue() {
         return $this->value();
+    }
+
+    /*!
+    \brief  Returns the possible values for the parameter.
+
+    This function should be <b>overloaded</b> by the subclasses if the
+    internal and external representations differ.
+
+    \return the possibles values of the Parameter in their internal
+            representation
+*/
+    public function possibleValues() {
+        return null;
     }
 
     /*!
@@ -761,6 +785,7 @@ class NumericalParameter extends Parameter {
         $this->value = $value;
     }
 
+
     /*!
         \brief  Returns the string representation of the Parameter
         \return string representation of the Parameter
@@ -780,6 +805,134 @@ class NumericalParameter extends Parameter {
 /*
     ============================================================================
 */
+
+/*!
+  \class  NumericalVectorParameter
+  \brief  Class for a channel Parameter consisting of a N components.
+*/
+class NumericalVectorParameter extends NumericalParameter {
+    
+    /*!
+      \var    $componentCnt
+      \brief  Number of components in the vector.
+    */
+    public $componentCnt;
+
+    /*!
+      \brief  Constructor:   creates an empty Parameter.
+      \param  $name          Name of the new Parameter
+      \param  $componentCnt  Number of components for the vector parameter.
+    */
+    public function __construct($name, $componentCnt) {
+        parent::__construct($name);
+        $this->reset($componentCnt);
+    }
+
+    /*!
+      \brief  Sets the Parameter value(s) to empty.
+      \param  $components Number of components for the vector parameter.
+    */
+    public function reset($componentCnt) {
+        $this->componentCnt = $componentCnt;
+        for ($i = 1; $i <= $componentCnt; $i++ ) {
+            $this->value[$i] = NULL;
+        }
+    }
+
+    /*!
+      \brief  Checks whether all values in the array are valid.
+      
+      Each value in the array must be a number and might optionally
+      have to be larger than or equal to a given minimum value and smaller than
+      or equal to a given maximum.
+      \return True if all values are valid, false otherwise.
+    */
+    public function check() {
+        $this->message = '';
+        $result = True;
+       
+        
+        /* First check that all values are set. */
+        if (array_search("", array_slice($this->value,
+                                         0, $this->componentCnt)) !== FALSE) {
+            if ($this->mustProvide()) {
+                $this->message = 'Some of the values are missing!';
+            } else {
+                $this->message = 'You can omit typing values for this ' .
+                    'parameter. If you decide to provide them, though, ' .
+                        'you must provide them all.';
+            }
+            return false;
+        }
+        
+        /* Now check the values themselves. */
+        for ( $i = 0; $i < $this->componentCnt; $i++ ) {
+            $result &= parent::check( $this->value[ $i ] );
+        }
+        
+        return $result;
+    }
+
+    /*!
+      \brief  Sets the value of the parameter
+      
+      The value must be an array with as many components as $componentCnt
+      
+      \param  $value  Array of values for the parameter
+    */
+    public function setValue($value) {
+        $n = count( $value );
+        for ( $i = 0; $i < $this->componentCnt; $i++ ) {
+            if ( $i < $n ) {
+                $this->value[ $i ] = $value[ $i ];
+            } else {
+                $this->value[ $i ] = null;
+            }
+        }
+    }
+
+    /*!
+      \brief  Function for retrieving a string with the numerical parameter.
+      \return A '#'-separated string denoting the vector componenents.
+     */
+    public function value( ) {
+        $result = "";
+               
+        for ( $i = 0; $i < $this->componentCnt; $i++ ) {
+            $result .= "#";
+            if (isset($this->value[$i])) {
+                $result .= $this->value[$i];
+            }
+        }
+    
+        return $result;
+    }
+    
+    /*!
+      \brief  Returns the string representation of the Parameter
+      \return string representation of the Parameter
+    */
+    public function displayString( ) {
+        ksort($this->value);
+        $value = array_slice( $this->value, 0, $this->componentCnt );
+        $value = implode( $value, ', ' );
+        $result = $this->formattedName( );
+        if ( $this->notSet() ) {
+            $result = $result . "*not set*" . "\n";
+        } else {
+            $result = $result . $value . "\n";
+        }
+        
+        return $result;
+    }
+
+}
+
+/*
+    ============================================================================
+*/
+
+
 
 /*!
     \class  NumericalArrayParameter
@@ -817,12 +970,12 @@ class NumericalArrayParameter extends NumericalParameter {
         \brief  Sets the Parameter value(s) to empty
     */
     public function reset( ) {
-        $this->value = array (
-            0 => NULL,
-            1 => NULL,
-            2 => NULL,
-            3 => NULL,
-            4 => NULL );
+        $db = new DatabaseConnection;
+
+        for ($i = 0; $i < $db->getMaxChanCnt(); $i++) {
+            $this->value[$i] = NULL;
+        }
+        
         $this->numberOfChannels = 1;
     }
 
@@ -832,16 +985,19 @@ class NumericalArrayParameter extends NumericalParameter {
     */
     public function setNumberOfChannels($number) {
 
+        $db = new DatabaseConnection;
+        $maxChanCnt = $db->getMaxChanCnt();
+
         if ( $number == $this->numberOfChannels ) {
             return;
         }
         if ( $number < 1 ) {
             $number = 1;
         }
-        if ( $number > 5 ) {
-            $number = 5;
+        if ( $number > $maxChanCnt ) {
+            $number = $maxChanCnt;
         }
-        for ( $i = $number; $i < 5; $i++ ) {
+        for ( $i = $number; $i < $maxChanCnt; $i++ ) {
             $this->value[ $i ] = NULL;
         }
         $this->numberOfChannels = $number;
@@ -888,15 +1044,17 @@ class NumericalArrayParameter extends NumericalParameter {
     /*!
         \brief  Sets the value of the parameter
 
-        The value must be an array with 5 values (those who refer to
+        The value must be an array with 'maxChanCnt' values (those who refer to
         non-existing channels should be null).
 
         \param  $value  Array of values for the parameter
     */
     public function setValue($value) {
+        $db = new DatabaseConnection;
+        $maxChanCnt = $db->getMaxChanCnt();
 
         $n = count( $value );
-        for ( $i = 0; $i < 5; $i++ ) {
+        for ( $i = 0; $i < $maxChanCnt; $i++ ) {
             if ( $i < $n ) {
                 $this->value[ $i ] = $value[ $i ];
             } else {
@@ -973,7 +1131,7 @@ class AnyTypeArrayParameter extends NumericalArrayParameter {
         \return the internal value of the Parameter
     */
     public function internalValue() {
-        return $this->value;
+       return $this->value;
     }
 
 }
@@ -1343,6 +1501,20 @@ class MicroscopeType extends ChoiceParameter {
     }
 
     /*!
+    \brief  Returns the value expected by HRM based on the key from Huygens
+
+    The translated form of the Parameter value is then one used in
+    the Tcl script. The translated value of the microscope type is read from
+    the database.
+
+    \return translated value
+*/
+    public function translateHucore($hucoreval) {
+        $db = new DatabaseConnection();
+        $result = $db->hucoreTranslation($this->name, $hucoreval);
+        return $result;
+    }
+    /*!
         \brief  Returns true if the given microscope type has a license
 
         \param  $value Microscope type to check for a valid license; $value
@@ -1364,6 +1536,8 @@ class MicroscopeType extends ChoiceParameter {
                 return $db->hasLicense("sted");
             case 'STED 3D':
                 return $db->hasLicense("sted3D");
+            case 'SPIM':
+                return $db->hasLicense("spim");
             default:
                 return false;
         }
@@ -2462,7 +2636,7 @@ class ColocChannel extends NumericalArrayParameter {
             return $result;
     }
 
-        /*!
+    /*!
         \brief  Returns the string representation of the Parameter
         \return string representation of the Parameter
     */
@@ -2500,9 +2674,8 @@ class ColocCoefficient extends AnyTypeArrayParameter {
         public function setValue($value) {
 
                 /* The parent function links the number of channels and the
-                 allowed number of values for a parameter. Thus, a parameter
-                 can have 5 values, at most. This is clearly not enough for
-                 the 'ColocCoefficient' class. */
+                 allowed number of values for a parameter. This is clearly not
+                 enough for the 'ColocCoefficient' class. */
 
             $n = count( $value );
             $valueCnt = count($this->possibleValues);
@@ -2522,9 +2695,8 @@ class ColocCoefficient extends AnyTypeArrayParameter {
         public function setNumberOfChannels( )
         {
                 /* The parent function links the number of channels and the
-                 allowed number of values for a parameter. Thus, a parameter
-                 can have 5 values, at most. This is clearly not enough for
-                 the 'ColocCoefficient' class. */
+                 allowed number of values for a parameter. This is clearly
+                 not enough for the 'ColocCoefficient' class. */
             return;
         }
 
@@ -3177,6 +3349,206 @@ class ZStabilization extends ChoiceParameter {
 */
 
 /*!
+  \class   ChromaticAberration
+  \brief   A multi-channel, vector parameter to characterize the
+           chromatic aberration.
+*/
+
+class ChromaticAberration {
+
+    /*!
+      \brief  The aberration value. An array with one element per channel
+              and vector component.
+    */ 
+    public $value;
+
+    /*!
+      \brief  A tag with a name for the parameter.
+    */
+    public $name;
+
+    /*!
+      \brief  The number of channels for which a vector is needed.
+    */
+    public $chanCnt;
+
+    /*!
+      \brief  The numer of vector components used to describe the CA.
+              Currently 5.
+    */
+    public $componentCnt;
+
+    /*!
+      \brief   Constructor: creates an empty Parameter
+      \param   $chanCnt  The number of channels of the data set.
+    */
+    public function __construct( ) {
+        
+        $this->name = "ChromaticAberration";
+
+        /* 5 components for shift x, y, z, rotation and scale. */
+        $this->componentCnt = 5;
+        
+        $db = new DatabaseConnection;
+        $this->chanCnt = $db->getMaxChanCnt();
+        
+        for ($chan = 0; $chan < $this->chanCnt; $chan++) {
+            $this->value[$chan] = new NumericalVectorParameter(
+                $this->name() . "Ch" . $chan, $this->componentCnt());
+        }
+    }
+
+    /*!
+      \brief    A function returning the name of the parameter.
+      \return   The parameter name.
+    */
+    public function name( ) {
+        return $this->name;
+    }
+
+    /*!
+      \brief   A function for retrieving the number of elements of the vector.
+      \return  The number of vector elements.
+    */
+    public function componentCnt( ) {
+        return $this->componentCnt;
+    }
+
+    /*!
+      \brief  Checks whether the Parameter is a Task Parameter
+      \return true if the Parameter is a Task Parameter, false otherwise
+    */
+    public function isTaskParameter() {
+        return True;
+    }
+
+    /*!
+      \brief  Confirms that the Parameter can have a variable number of channels
+              This overloads the base function.
+      \return true
+    */
+    public function isVariableChannel() {
+        return True;
+    }
+
+    /*!
+        \brief  The string representation of the Parameter.
+        \param  $chanCnt  The number of channels.
+        \return String representation of the Parameter
+    */
+    public function displayString( $chanCnt ) {
+        $result = "";       
+               
+        if (!is_numeric($chanCnt)) {
+            $db = new DatabaseConnection;
+            $chanCnt = $db->getMaxChanCnt();
+        }
+
+        for ($i = 0; $i < $chanCnt; $i++) {
+            $result .= $this->value[$i]->displayString();
+        }
+        
+        return $result;
+    }
+
+    /*!
+      \brief   A function to set the parameter value from the browser session
+      or from the database.
+      \param   $values A '#' formatted string or an array with the CA components.
+    */
+    public function setValue( $values ) {     
+        
+        if (!is_array($values)) {
+            /* The first element of the array will be empty due to the explode. */
+            $valuesArray = explode('#', $values);
+            unset($valuesArray[0]);            
+        } else {
+            $valuesArray = $values;
+        }
+        
+        if (empty($valuesArray) || is_null($valuesArray)) {
+            return;
+        }
+
+        for ($chan = 0; $chan < $this->chanCnt; $chan++) {
+            $offset = $chan * $this->componentCnt;
+            $chanArray = array_slice($valuesArray, $offset, $this->componentCnt);
+            $this->value[$chan]->setValue( $chanArray );   
+        }
+    }
+
+    /*!
+      \brief  A function for retrieving the parameter value.
+      \return An array with one component per channel and vector element.
+    */
+    public function value( ) {
+        $valuesArray = explode('#', $this->internalValue());
+
+        /* The first element of the array will be empty due to the explode. */
+        unset($valuesArray[0]);            
+
+        /* Re-index with array_values. */
+        return array_values($valuesArray);
+    }
+
+    /*!
+      \brief   Same as above (function 'value') but only for the demanded
+      channel.
+      \param   $chan The demanded channel.
+      \return  An array with one component per vector element.
+    */
+    public function chanValue( $chan ) {
+        $valuesArray = $this->value();
+        $offset = $chan * $this->componentCnt;
+        $chanArray = array_slice($valuesArray, $offset, $this->componentCnt);
+   
+        return $chanArray;
+    }
+
+    /*!
+      \brief   A function to set the number of channels for the correction.
+      \param   $chanCnt The number of channels.
+    */
+    public function setNumberOfChannels( $chanCnt ) {
+        $this->chanCnt = $chanCnt;
+    }
+
+    /*!
+      \brief  Returns the default value for the Parameters that have a default
+      value ot NULL for those that don't
+      \return the default value or NULL
+    */
+    public function defaultValue() {
+        $db = new DatabaseConnection;
+        $name = $this->name( );
+        $default = $db->defaultValue( $name );
+        return ( $default );
+    }
+
+    /*!
+      \brief  Returns the internal value of the ChromaticAberration      
+      \return the internal value of the Parameter. A # formatted string.
+    */
+    public function internalValue() {
+        $result = "";
+               
+        for ($i = 0; $i < $this->chanCnt; $i++) {
+            $result .= $this->value[$i]->value();
+        }
+
+        return $result;
+    }
+
+
+}
+
+
+/*
+    ============================================================================
+*/
+
+
+/*!
  \class Autocrop
  \brief A BooleanParameter to indicate whether autocrop is enabled.
 */
@@ -3203,5 +3575,610 @@ class Autocrop extends ChoiceParameter {
         $result = $this->formattedName( );
         $result = $result . $value . "\n";
         return $result;
+    }
+}
+
+/*
+    ============================================================================
+*/
+
+/*!
+ \class SpimExcMode
+ \brief A ChoiceParameter to represent the SPIM excitation mode
+*/
+class SpimExcMode extends AnyTypeArrayParameter {
+
+    /*!
+        \brief  Constructor: creates an empty Parameter
+    */
+    public function __construct() {
+        parent::__construct("SpimExcMode");
+    }
+
+    /*!
+        \brief  Confirms that this is NOT a Microscope Parameter.
+        \brief  We make a distinction between SPIM parameters and
+                microscope parameters.
+        \return true
+    */
+    public function isForMicroscope() {
+        return False;
+    }
+
+    /*!
+      \brief  Confirms that this is a Spim Parameter.
+      \brief  We make a distinction between SPIM parameters and
+              microscope parameters.
+      \return true
+    */
+    public function isForSpim() {
+        return True;
+    }
+
+    /*!
+        \brief  Returns the Parameter translated value
+
+        The translated form of the Parameter value is then one used in
+        the Tcl script.
+
+        \return translated value
+    */
+    public function translatedValue() {
+        $db = new DatabaseConnection();
+        $result = $db->translationFor($this->name, $this->value);
+        return $result;
+    }
+
+    /*!
+        \brief  Checks whether the Parameter is valid
+        \return true if the Parameter is valid, false otherwise
+    */
+    public function check( ) {
+      for ( $i = 0; $i < $this->numberOfChannels(); $i++) {
+          if ( $this->value[ $i ] == NULL ) {
+            $this->message = "Please select an excitation mode for channel $i!";
+            return False;
+          }
+      }
+      return True;
+    }
+
+    /*!
+        \brief  Returns the string representation of the Parameter
+        \return string representation of the Parameter
+    */
+    public function displayString( $numberOfChannels = 0 ) {
+      $result = $this->formattedName( );
+
+      /* Do not count empty elements. Do count channel '0'. */
+      $channels = array_filter($this->value, 'strlen');
+      $value = implode(", ", $channels);
+      $result = $result . $value . "\n";
+      
+      return $result;
+    }
+
+}
+
+/*
+    ============================================================================
+*/
+
+/*!
+ \class SpimGaussWidth
+ \brief A NumericalParameter to represent the SPIM width of a Gaussian sheet
+*/
+class SpimGaussWidth extends NumericalArrayParameter {
+
+    /*!
+        \brief  Constructor: creates an empty Parameter
+    */
+    public function __construct() {
+        parent::__construct("SpimGaussWidth");
+    }
+
+    /*!
+        \brief  Confirms that this is NOT a Microscope Parameter.
+         \brief We make a distinction between SPIM parameters and
+                microscope parameters.
+        \return true
+    */
+    public function isForMicroscope() {
+        return False;
+    }
+
+    /*!
+      \brief  Confirms that this is a SPIM Parameter.
+      \brief  We make a distinction between SPIM parameters and
+              microscope parameters.
+      \return true
+    */
+    public function isForSpim() {
+        return True;
+    }
+
+    /*!
+        \brief  Checks whether the Parameter is valid
+        \return true if the Parameter is valid, false otherwise
+    */
+    public function check() {
+        $this->message = '';
+        $result = True;
+
+        $values = array_slice($this->value,0, $this->numberOfChannels);
+
+            // First check that all values are set.
+            // '0' is a valid entry. Thus, search in 'strict' mode.
+        if (array_search("",$values, true) !== FALSE) {
+            if ($this->mustProvide()) {
+                $this->message = 'Width of Gaussian light sheet: ' .
+                    'some of the values are missing!';
+            } else {
+                $this->message = 'You can omit typing values for this ' .
+                    'parameter. If you decide to provide them, though, ' .
+                        'you must provide them all.';
+            }
+            return false;
+        }
+        // Now check the values themselves
+        for ( $i = 0; $i < $this->numberOfChannels; $i++ ) {
+            $result = $result && parent::checkValue( $this->value[ $i ] );
+        }
+        if ( $result == false ) {
+            $this->message = "SPIM Gaussian Width: " . $this->message;
+        }
+
+        return $result;
+    }
+    
+    /*!
+        \brief  Returns the string representation of the Parameter
+        \return string representation of the Parameter
+    */
+    public function displayString( $numberOfChannels = 0 ) {
+      $result = $this->formattedName( );
+
+      /* Do not count empty elements. Do count channel '0'. */
+      $channels = array_filter($this->value, 'strlen');
+      $value = implode(", ", $channels);
+      $result = $result . $value . "\n";
+      
+      return $result;
+    }
+}
+
+
+/*
+    ============================================================================
+*/
+
+/*!
+ \class SpimGaussWidth
+ \brief A NumericalParameter to represent the focus offset of the SPIM light sheet
+*/
+class SpimFocusOffset extends NumericalArrayParameter {
+
+    /*!
+        \brief  Constructor: creates an empty Parameter
+    */
+    public function __construct() {
+        parent::__construct("SpimFocusOffset");
+    }
+
+    /*!
+        \brief  Confirms that this is NOT a Microscope Parameter.
+         \brief We make a distinction between SPIM parameters and
+                microscope parameters.
+        \return true
+    */
+    public function isForMicroscope() {
+        return False;
+    }
+
+    /*!
+      \brief  Confirms that this is a SPIM Parameter.
+      \brief  We make a distinction between SPIM parameters and
+              microscope parameters.
+      \return true
+    */
+    public function isForSpim() {
+        return True;
+    }
+
+
+    /*!
+        \brief  Checks whether the Parameter is valid
+        \return true if the Parameter is valid, false otherwise
+    */
+    public function check() {
+        $this->message = '';
+        $result = True;
+
+        $values = array_slice($this->value,0, $this->numberOfChannels);
+
+            // First check that all values are set.
+            // '0' is a valid entry. Thus, search in 'strict' mode.
+        if (array_search("",$values, true) !== FALSE) {
+            if ($this->mustProvide()) {
+                $this->message = 'Offset of Light Sheet Focus: ' .
+                    'some of the values are missing!';
+            } else {
+                $this->message = 'You can omit typing values for this ' .
+                    'parameter. If you decide to provide them, though, ' .
+                        'you must provide them all.';
+            }
+            return false;
+        }
+        // Now check the values themselves
+        for ( $i = 0; $i < $this->numberOfChannels; $i++ ) {
+            $result = $result && parent::checkValue( $this->value[ $i ] );
+        }
+        if ( $result == false ) {
+            $this->message = "SPIM Light Sheet Focus: " . $this->message;
+        }
+
+        return $result;
+    }
+
+    /*!
+        \brief  Returns the string representation of the Parameter
+        \return string representation of the Parameter
+    */
+    public function displayString( $numberOfChannels = 0 ) {
+      $result = $this->formattedName( );
+
+      /* Do not count empty elements. Do count channel '0'. */
+      $channels = array_filter($this->value, 'strlen');
+      $value = implode(", ", $channels);
+      $result = $result . $value . "\n";
+      
+      return $result;
+    }
+}
+
+/*
+    ============================================================================
+*/
+
+/*!
+ \class SpimCenterOffset
+ \brief A NumericalParameter to represent the Z offset of the light sheet center  
+*/
+class SpimCenterOffset extends NumericalArrayParameter {
+
+    /*!
+        \brief  Constructor: creates an empty Parameter
+    */
+    public function __construct() {
+        parent::__construct("SpimCenterOffset");
+    }
+
+    /*!
+        \brief  Confirms that this is NOT a Microscope Parameter.
+         \brief We make a distinction between SPIM parameters and
+                microscope parameters.
+        \return true
+    */
+    public function isForMicroscope() {
+        return False;
+    }
+
+    /*!
+      \brief  Confirms that this is a SPIM Parameter.
+      \brief  We make a distinction between SPIM parameters and
+              microscope parameters.
+      \return true
+    */
+    public function isForSpim() {
+        return True;
+    }
+
+
+    /*!
+        \brief  Checks whether the Parameter is valid
+        \return true if the Parameter is valid, false otherwise
+    */
+    public function check() {
+        $this->message = '';
+        $result = True;
+
+        $values = array_slice($this->value,0, $this->numberOfChannels);
+
+            // First check that all values are set.
+            // '0' is a valid entry. Thus, search in 'strict' mode.
+        if (array_search("",$values, true) !== FALSE) {
+            if ($this->mustProvide()) {
+                $this->message = 'Offset of light sheet center: ' .
+                    'some of the values are missing!';
+            } else {
+                $this->message = 'You can omit typing values for this ' .
+                    'parameter. If you decide to provide them, though, ' .
+                        'you must provide them all.';
+            }
+            return false;
+        }
+        // Now check the values themselves
+        for ( $i = 0; $i < $this->numberOfChannels; $i++ ) {
+            $result = $result && parent::checkValue( $this->value[ $i ] );
+        }
+        if ( $result == false ) {
+            $this->message = "Offset of Light Sheet Center: " . $this->message;
+        }
+
+        return $result;
+    }
+
+    /*!
+        \brief  Returns the string representation of the Parameter
+        \return string representation of the Parameter
+    */
+    public function displayString( $numberOfChannels = 0 ) {
+      $result = $this->formattedName( );
+
+      /* Do not count empty elements. Do count channel '0'. */
+      $channels = array_filter($this->value, 'strlen');
+      $value = implode(", ", $channels);
+      $result = $result . $value . "\n";
+      
+      return $result;
+    }
+}
+
+
+/*
+    ============================================================================
+*/
+
+/*!
+ \class SpimNA
+ \brief A NumericalParameter to represent the NA of the SPIM lens
+*/
+class SpimNA extends NumericalArrayParameter {
+
+    /*!
+        \brief  Constructor: creates an empty Parameter
+    */
+    public function __construct() {
+        parent::__construct("SpimNA");
+    }
+
+    /*!
+        \brief  Confirms that this is NOT a Microscope Parameter.
+         \brief We make a distinction between SPIM parameters and
+                microscope parameters.
+        \return true
+    */
+    public function isForMicroscope() {
+        return False;
+    }
+
+    /*!
+      \brief  Confirms that this is a SPIM Parameter.
+      \brief  We make a distinction between SPIM parameters and
+              microscope parameters.
+      \return true
+    */
+    public function isForSpim() {
+        return True;
+    }
+
+
+    /*!
+        \brief  Checks whether the Parameter is valid
+        \return true if the Parameter is valid, false otherwise
+    */
+    public function check() {
+        $this->message = '';
+        $result = True;
+
+        $values = array_slice($this->value,0, $this->numberOfChannels);
+
+            // First check that all values are set.
+            // '0' is a valid entry. Thus, search in 'strict' mode.
+        if (array_search("",$values, true) !== FALSE) {
+            if ($this->mustProvide()) {
+                $this->message = 'SPIM NA: ' .
+                    'some of the values are missing!';
+            } else {
+                $this->message = 'You can omit typing values for this ' .
+                    'parameter. If you decide to provide them, though, ' .
+                        'you must provide them all.';
+            }
+            return false;
+        }
+        // Now check the values themselves
+        for ( $i = 0; $i < $this->numberOfChannels; $i++ ) {
+            $result = $result && parent::checkValue( $this->value[ $i ] );
+        }
+        if ( $result == false ) {
+            $this->message = "SPIM NA: " . $this->message;
+        }
+
+        return $result;
+    }
+
+    /*!
+        \brief  Returns the string representation of the Parameter
+        \return string representation of the Parameter
+    */
+    public function displayString( $numberOfChannels = 0 ) {
+      $result = $this->formattedName( );
+
+      /* Do not count empty elements. Do count channel '0'. */
+      $channels = array_filter($this->value, 'strlen');
+      $value = implode(", ", $channels);
+      $result = $result . $value . "\n";
+      
+      return $result;
+    }
+}
+
+/*
+    ============================================================================
+*/
+
+/*!
+ \class SpimFill
+ \brief A NumericalParameter to represent the SPIM Fill Factor
+*/
+class SpimFill extends NumericalArrayParameter {
+
+    /*!
+        \brief  Constructor: creates an empty Parameter
+    */
+    public function __construct() {
+        parent::__construct("SpimFill");
+    }
+
+    /*!
+        \brief  Confirms that this is NOT a Microscope Parameter.
+         \brief We make a distinction between SPIM parameters and
+                microscope parameters.
+        \return true
+    */
+    public function isForMicroscope() {
+        return False;
+    }
+
+    /*!
+      \brief  Confirms that this is a SPIM Parameter.
+      \brief  We make a distinction between SPIM parameters and
+              microscope parameters.
+      \return true
+    */
+    public function isForSpim() {
+        return True;
+    }
+
+
+    /*!
+        \brief  Checks whether the Parameter is valid
+        \return true if the Parameter is valid, false otherwise
+    */
+    public function check() {
+        $this->message = '';
+        $result = True;
+
+        $values = array_slice($this->value,0, $this->numberOfChannels);
+
+            // First check that all values are set.
+            // '0' is a valid entry. Thus, search in 'strict' mode.
+        if (array_search("",$values, true) !== FALSE) {
+            if ($this->mustProvide()) {
+                $this->message = 'SPIM Fill Factor: ' .
+                    'some of the values are missing!';
+            } else {
+                $this->message = 'You can omit typing values for this ' .
+                    'parameter. If you decide to provide them, though, ' .
+                        'you must provide them all.';
+            }
+            return false;
+        }
+        // Now check the values themselves
+        for ( $i = 0; $i < $this->numberOfChannels; $i++ ) {
+            $result = $result && parent::checkValue( $this->value[ $i ] );
+        }
+        if ( $result == false ) {
+            $this->message = "SPIM Fill Factor: " . $this->message;
+        }
+
+        return $result;
+    }
+
+    /*!
+        \brief  Returns the string representation of the Parameter
+        \return string representation of the Parameter
+    */
+    public function displayString( $numberOfChannels = 0 ) {
+      $result = $this->formattedName( );
+
+      /* Do not count empty elements. Do count channel '0'. */
+      $channels = array_filter($this->value, 'strlen');
+      $value = implode(", ", $channels);
+      $result = $result . $value . "\n";
+      
+      return $result;
+    }
+}
+
+
+/*
+    ============================================================================
+*/
+
+/*!
+ \class SpimDir
+ \brief A ChoiceParameter to represent the SPIM direction
+*/
+class SpimDir extends AnyTypeArrayParameter {
+
+    /*!
+        \brief  Constructor: creates an empty Parameter
+    */
+    public function __construct() {
+        parent::__construct("SpimDir");
+    }
+
+    /*!
+        \brief  Confirms that this is NOT a Microscope Parameter.
+        \brief  We make a distinction between SPIM parameters and
+                microscope parameters.
+        \return true
+    */
+    public function isForMicroscope() {
+        return False;
+    }
+
+    /*!
+      \brief  Confirms that this is a Spim Parameter.
+      \brief  We make a distinction between SPIM parameters and
+              microscope parameters.
+      \return true
+    */
+    public function isForSpim() {
+        return True;
+    }
+
+    /*!
+        \brief  Returns the Parameter translated value
+
+        The translated form of the Parameter value is then one used in
+        the Tcl script.
+
+        \return translated value
+    */
+    public function translatedValue() {
+        $db = new DatabaseConnection();
+        $result = $db->translationFor($this->name, $this->value);
+        return $result;
+    }
+
+    /*!
+        \brief  Checks whether the Parameter is valid
+        \return true if the Parameter is valid, false otherwise
+    */
+    public function check( ) {
+      for ( $i = 0; $i < $this->numberOfChannels(); $i++) {
+          if ( $this->value[ $i ] == NULL ) {
+            $this->message = "Please select an illumination direction for channel $i!";
+            return False;
+          }
+      }
+      return True;
+    }
+
+    /*!
+        \brief  Returns the string representation of the Parameter
+        \return string representation of the Parameter
+    */
+    public function displayString( $numberOfChannels = 0 ) {
+      $result = $this->formattedName( );
+
+      /* Do not count empty elements. Do count channel '0'. */
+      $channels = array_filter($this->value, 'strlen');
+      $value = implode(", ", $channels);
+      $result = $result . $value . "\n";
+      
+      return $result;
     }
 }

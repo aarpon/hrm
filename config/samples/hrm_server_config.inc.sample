@@ -29,8 +29,8 @@ $db_password = "dbpasswd";
 //==============================================================================
 
 // Huygens server default user
-$huygens_user = "huygens";
-$huygens_group = "huygens";
+$huygens_user = "hrm";
+$huygens_group = "hrm";
 
 // Path to a local Huygens Core executable, to handle image information and
 // thumbnails. This installation of hucore doesn't require a full license
@@ -52,29 +52,20 @@ $local_huygens_core = "/usr/local/bin/hucore";
 $image_host = "localhost";
 
 // File server default user
-$image_user = "apache";
-$image_group = "apache";
+$image_user = "hrm";
+$image_group = "hrm";
 
 // File server base folder (without trailing /)
-$image_folder = "/path/to/hrm_data";
+$image_folder = "/scratch/hrm_data";
 
 // File server image source folder
-$image_source = "huygens_src";
+$image_source = "src";
 
 // File server image destination folder
-$image_destination = "huygens_dst";
+$image_destination = "dst";
 
 // File server base folder as seen from the Huygens server machines (with trailing /)
-$huygens_server_image_folder = "/path/to/hrm_data/";
-
-// This is a temporary flag to change ownership of the generated files
-// and folders to the $SUSER use (see config/samples/hrm.com.sample) and force
-// permissions to 777 to prevent issues in the case the various components of
-// the HRM (web server and Queue Manager) are run by different users with
-// different access rights to the file server area.
-//
-// THIS WILL BE REMOVED IN HRM 3.3!
-$change_ownership = false;
+$huygens_server_image_folder = "/scratch/hrm_data/";
 
 // Allow HTTP transfer of the restored (download) images
 $allowHttpTransfer = true;

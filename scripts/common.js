@@ -7,7 +7,8 @@ var popup;
 var generated = new Array();
 var debug = '';
 var control = '';
-
+var filemenu = '<div class="inputFile" name="inputFile"><input type="file" name="upfile" size="30" accept=" .HGSM,.hgsm" ></div>';
+;
 function clean() {
     if (popup != null) {
         popup.close();
@@ -56,6 +57,7 @@ function openTool(url) {
 }
 
 function changeDiv(div, html) {
+    // try to update the inner HTML for a specific <div> element
     try { document.getElementById(div).innerHTML= html; } catch(err) {}
 }
 
@@ -123,6 +125,9 @@ function smoothChangeDiv(div, html, time) {
     var t3 = tout * 1.05;
 
     var elem = document.getElementById(div);
+    if (null === elem) {
+        return;
+    }
 
     if (undefined === elem.style.opacity) {
         // fading a <div> in IE doesn't work very well.
@@ -133,6 +138,144 @@ function smoothChangeDiv(div, html, time) {
         setTimeout(changeDiv, t2, div, html);
         setTimeout(FadeOpacity, t3, div, 0, 100, tin, 12);
     }
+}
+
+function isChromaticTableEmpty( ) {
+    var tag = "ChromaticAberration";
+    
+    table = document.getElementById(tag);
+    
+    channelCnt = table.rows.length - 1;
+    componentCnt = table.rows[0].cells.length - 1;
+    
+    var allEmpty = true;
+    for (var chan = 0; chan < channelCnt; chan++) {
+        for (var component = 0; component < componentCnt; component++) {
+            var id = tag + "Ch";
+            id = id.concat(chan);
+            id += "_";
+            id = id.concat(component);
+            inputElement = document.getElementById(id);
+            
+            if (inputElement.value != "") {
+                allEmpty = false;
+                break;
+            }
+        }
+        if (allEmpty == false) {
+            break;
+        }
+    }
+
+    return allEmpty;
+}
+
+function initChromaticChannelReference() {
+
+    emptyTable = isChromaticTableEmpty();
+    
+    if (emptyTable == true) {
+        chan = 0;
+    } else {
+        chan = searchChromaticChannelReference();
+    }
+    
+    setChromaticChannelReference( chan );
+}
+
+function searchChromaticChannelReference( ) {
+    var tag = "ChromaticAberration";
+    
+    table = document.getElementById(tag);
+    
+    channelCnt = table.rows.length - 1;
+    componentCnt = table.rows[0].cells.length - 1;
+    
+    for (var chan = 0; chan < channelCnt; chan++) {
+        var isReference = false;
+        
+        for (var component = 0; component < componentCnt; component++) {
+            var id = tag + "Ch";
+            id = id.concat(chan);
+            id += "_";
+            id = id.concat(component);
+            inputElement = document.getElementById(id);
+            
+            if (inputElement.value != 0 && component < 4) {
+                break;
+            }
+            if (inputElement.value == 1 && component == 4) {
+                isReference = true;
+                break;
+            }
+        }
+        if (isReference == true) {
+            break;
+        }
+    }
+
+    if (isReference == true) {
+        return chan;
+    }
+}
+
+// The reference always contains values 0, 0, 0, 0, 1. */
+function setChromaticChannelReference( chan ) {
+    var tag = "ChromaticAberration";
+
+    table = document.getElementById(tag);
+    
+    componentCnt = table.rows[0].cells.length - 1;
+    
+    for (var component = 0; component < componentCnt; component++) {
+        var id = tag + "Ch";
+        id = id.concat(chan);
+        id += "_";
+        id = id.concat(component);
+        
+        inputElement = document.getElementById(id);
+        inputElement.readOnly = true;
+        inputElement.style.color="#000";
+        inputElement.style.backgroundColor="#888";
+        
+        if (component == 4) {
+            inputElement.value = 1;
+        } else {
+            inputElement.value = 0;
+        } 
+    }
+    
+    var tag = "ReferenceChannel";
+    inputElement = document.getElementById(tag);
+    inputElement.value = chan;
+}
+
+function removeChromaticChannelReference( ) {
+    var tag = "ChromaticAberration";
+
+    table = document.getElementById(tag);
+    
+    channelCnt = table.rows.length - 1;
+    componentCnt = table.rows[0].cells.length - 1;
+    
+    for (var chan = 0; chan < channelCnt; chan++) {
+        for (var component = 0; component < componentCnt; component++) {
+            var id = tag + "Ch";
+            id = id.concat(chan);
+            id += "_";
+            id = id.concat(component);
+
+            inputElement = document.getElementById(id);
+            inputElement.readOnly = false;
+            inputElement.style.color="#000";
+            inputElement.style.backgroundColor="";    
+        }
+    }
+}
+
+function changeChromaticChannelReference(selectObj) {
+    removeChromaticChannelReference( );
+    setChromaticChannelReference( selectObj.value );
 }
 
 // Grey out the STED input fields of a specific channel if the
@@ -147,7 +290,7 @@ function changeStedEntryProperties(selectObj, channel) {
         var tag = tagArray[i];
         var id = tag.concat(channel);
 
-        inputElement = document.getElementById(id);
+        var inputElement = document.getElementById(id);
         
         if ( selectObj.value == 'off-confocal' ) {
             inputElement.readOnly = true;
@@ -167,8 +310,90 @@ function setStedEntryProperties( ) {
     for (var chan = 0; chan < 5; chan++) {
         var name = tag.concat(chan);
 
-        inputElement = document.getElementsByName(name);
+        var inputElement = document.getElementsByName(name);
         changeStedEntryProperties(inputElement[0], chan);
+    }
+}
+
+// Grey out the SPIM input fields of a specific channel if the
+// corresponding excitation mode is set to 'Gaussian'.
+function changeSpimEntryProperties(selectObj, channel) {
+    var gaussBanTagArray = ["SpimNA", "SpimFill"];
+
+    for (var i = 0; i < gaussBanTagArray.length; i++) {
+        var tag = gaussBanTagArray[i];
+        var id = tag.concat(channel);
+
+        var inputElement = document.getElementById(id);
+        
+        if ( selectObj.value == 'gauss' || selectObj.value == 'gaussMuVi') {
+            inputElement.readOnly = true;
+            inputElement.style.color="#000";
+            inputElement.style.backgroundColor="#888";
+        } else {
+            inputElement.readOnly = false;
+            inputElement.style.color="#000";
+            inputElement.style.backgroundColor="";
+        }
+    }
+
+    var excFillBanTagArray = ["SpimGaussWidth"];
+
+    for (var i = 0; i < excFillBanTagArray.length; i++) {
+        var tag = excFillBanTagArray[i];
+        var id = tag.concat(channel);
+
+        var inputElement = document.getElementById(id);
+        
+        if ( selectObj.value == 'gauss' || selectObj.value == 'gaussMuVi') {
+            inputElement.readOnly = false;
+            inputElement.style.color="#000";
+            inputElement.style.backgroundColor="";
+        } else {
+            inputElement.readOnly = true;
+            inputElement.style.color="#000";
+            inputElement.style.backgroundColor="#888";
+        }
+    }
+
+    var dirBanTagArray = ["SpimDir"];
+
+    for (var i = 0; i < dirBanTagArray.length; i++) {
+        var tag = dirBanTagArray[i];
+        var id = tag.concat(channel);
+
+        var inputElement = document.getElementById(id);
+        var length = inputElement.options.length;
+        
+        if ( selectObj.value == 'gaussMuVi') {
+            var option = new Option("Left + right", "left+right");
+            inputElement.add(option);
+            var option = new Option("Top + bottom", "top+bottom");
+            inputElement.add(option);            
+        } else {
+            var option = new Option("From left", "left");
+            inputElement.add(option);
+            var option = new Option("From right", "right");
+            inputElement.add(option);
+            var option = new Option("From top", "top");
+            inputElement.add(option);
+            var option = new Option("From bottom", "bottom");
+            inputElement.add(option);            
+        }
+        for (var j = length - 1; j >= 0; j--) {
+            inputElement.remove(j);
+        }
+    }
+}
+
+function setSpimEntryProperties( ) {
+    var tag = "SpimExcMode";
+    
+    for (var chan = 0; chan < 5; chan++) {
+        var name = tag.concat(chan);
+
+        inputElement = document.getElementsByName(name);
+        changeSpimEntryProperties(inputElement[0], chan);
     }
 }
 
@@ -214,6 +439,9 @@ function checkAgainstFormat(file, selectedFormat) {
             case 'zvi':
             case 'czi':
             case 'nd2':
+            case 'tf2':
+            case 'tf8':
+            case 'btf':
                 fileFormat = fileExtension;
                 break;
             case 'h5':
@@ -263,6 +491,12 @@ function checkAgainstFormat(file, selectedFormat) {
     }
 
     if (selectedFormat != '' && selectedFormat == fileFormat) {
+        return true;
+    } else if (selectedFormat == 'big-tiff' && fileFormat == 'tf2') {
+        return true;
+    } else if (selectedFormat == 'big-tiff' && fileFormat == 'tf8') {
+        return true;
+    } else if (selectedFormat == 'big-tiff' && fileFormat == 'btf') {
         return true;
     } else {
         return false;
@@ -377,6 +611,7 @@ function confirmUpload() {
 
     alert('returning');
     */
+
     return true;
 }
 
@@ -433,9 +668,9 @@ function disableAddMore() {
 }
 
 function uploadImages(maxFile, maxPost, archiveExt) {
-        // + '<iframe id="target_upload" name="target_upload" src="" style="width:1px;height:1px;border:0"></iframe>'
+    // + '<iframe id="target_upload" name="target_upload" src="" style="width:1px;height:1px;border:0"></iframe>'
 
-  cancelOmeroSelection();
+    cancelOmeroSelection();
 
     control = document.getElementById('selection').innerHTML;
     action = 'upload';
@@ -443,44 +678,44 @@ function uploadImages(maxFile, maxPost, archiveExt) {
     changeDiv('selection','');
     changeDiv('message', '');
     changeDiv('upMsg', 'Select a file to upload. Multiple files in a series '
-            + 'can also be uploaded in a single archive ('+archiveExt+'). '
-            + 'Maximum single file size is <b>' + maxFile
-            +'</b>, maximum total transfer size is <b>' + maxPost + '</b>. '
-            +'<br /><br /><img alt =\"Warning!\" src=\"./images/note.png\" /> '
-            +'<b>If you upload .ics files, do not forget the matching .ids</b>!' );
+    + 'can also be uploaded in a single archive ('+archiveExt+'). '
+    + 'Maximum single file size is <b>' + maxFile
+    +'</b>, maximum total transfer size is <b>' + maxPost + '</b>. '
+    +'<br /><br /><img alt =\"Warning!\" src=\"./images/note.png\" /> '
+    +'<b>If you upload .ics files, do not forget the matching .ids</b>!' );
     changeDiv('up_form',
         '<form id="uploadForm" enctype="multipart/form-data" action="?folder=src&upload=1" method="POST" onsubmit="return confirmUpload()" >'
-       + '<input type="hidden" name="uploadForm" value="1"> '
-       + '<div id="upload_list">'
-       +      '<div id="upfile_0"></div>'
-       +      '<div id="upfile_1"></div>'
-       +      '<div id="upfile_2"></div>'
-       +      '<div id="upfile_3"></div>'
-       +      '<div id="upfile_4"></div>'
-       +      '<div id="upfile_5"></div>'
-       +      '<div id="upfile_6"></div>'
-       +      '<div id="upfile_7"></div>'
-       +      '<div id="upfile_8"></div>'
-       +      '<div id="upfile_9"></div>'
-       +      '<div id="upfile_10"></div>'
-       +      '<div id="upfile_11"></div>'
-       +      '<div id="upfile_12"></div>'
-       +      '<div id="upfile_13"></div>'
-       +      '<div id="upfile_14"></div>'
-       +      '<div id="upfile_15"></div>'
-       +      '<div id="upfile_16"></div>'
-       +      '<div id="upfile_17"></div>'
-       +      '<div id="upfile_18"></div>'
-       +      '<div id="upfile_19"></div>'
-       +      '<div id="upfile_20"></div>'
-       + '<div id="addanotherfile"></div></div>'
-       +  '<div id="buttonUpload">'
-       +  '<input name="upload" type="submit" value="" '
-       + 'class="icon upload" '
-       +   'onmouseover="Tip(\'Upload selected files\')" onmouseout="UnTip()"/>'
-       + '<input type="button" class="icon abort" onclick="UnTip(); cancelSelection()" '
-       +        'onmouseover="Tip(\'Cancel\')" onmouseout="UnTip()"/></div>'
-       + ' </form>' );
+        + '<input type="hidden" name="uploadForm" value="1"> '
+        + '<div id="upload_list">'
+        +      '<div id="upfile_0"></div>'
+        +      '<div id="upfile_1"></div>'
+        +      '<div id="upfile_2"></div>'
+        +      '<div id="upfile_3"></div>'
+        +      '<div id="upfile_4"></div>'
+        +      '<div id="upfile_5"></div>'
+        +      '<div id="upfile_6"></div>'
+        +      '<div id="upfile_7"></div>'
+        +      '<div id="upfile_8"></div>'
+        +      '<div id="upfile_9"></div>'
+        +      '<div id="upfile_10"></div>'
+        +      '<div id="upfile_11"></div>'
+        +      '<div id="upfile_12"></div>'
+        +      '<div id="upfile_13"></div>'
+        +      '<div id="upfile_14"></div>'
+        +      '<div id="upfile_15"></div>'
+        +      '<div id="upfile_16"></div>'
+        +      '<div id="upfile_17"></div>'
+        +      '<div id="upfile_18"></div>'
+        +      '<div id="upfile_19"></div>'
+        +      '<div id="upfile_20"></div>'
+        + '<div id="addanotherfile"></div></div>'
+        +  '<div id="buttonUpload">'
+        +  '<input name="upload" type="submit" value="" '
+        + 'class="icon upload" '
+        +   'onmouseover="Tip(\'Upload selected files\')" onmouseout="UnTip()"/>'
+        + '<input type="button" class="icon abort" onclick="UnTip(); cancelSelection()" '
+        +        'onmouseover="Tip(\'Cancel\')" onmouseout="UnTip()"/></div>'
+        + ' </form>' );
 
     fileInputs = 0;
 
