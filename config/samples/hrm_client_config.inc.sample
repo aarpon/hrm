@@ -29,7 +29,7 @@ $db_password = "dbpasswd";
 //==============================================================================
 
 // Huygens server default user
-$huygens_user = "hrm;
+$huygens_user = "hrm";
 $huygens_group = "hrm";
 
 // Path to a local Huygens Core executable, to handle image information and
