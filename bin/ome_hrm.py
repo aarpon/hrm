@@ -353,6 +353,12 @@ def hrm_to_omero(conn, id_str, image_file):
     by OMERO, the upload will not be initiated at all (e.g. for SVI-HDF5,
     having the suffix '.h5').
 
+    The import itself is done by instantiating the CLI class, assembling the
+    required arguments, and finally running cli.invoke(). This eventually
+    triggers the importer() method defined in OMERO's Python bindings in
+    <OMERO.server/lib/python/omero/plugins/import.py>, respectively (source)
+    <openmicroscopy.git/components/tools/OmeroPy/src/omero/plugins/import.py>.
+
     Parameters
     ==========
     id_str: str - the ID of the target dataset in OMERO (e.g. "G:7:Dataset:23")
