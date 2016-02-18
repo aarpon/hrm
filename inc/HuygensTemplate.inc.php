@@ -1415,6 +1415,7 @@ class HuygensTemplate {
         $angle = 0.0;
 
         switch($direction) {
+        case '':
         case 'right':
             $angle = 0.0;
             break;
