@@ -2040,9 +2040,9 @@ class DatabaseConnection {
       \return The number of channels.
     */
     public function getMaxChanCnt() {
-        $query  = "SELECT MAX(value) as \"\" FROM possible_values ";
-        $query .= "WHERE parameter='NumberOfChannels'";
-        $result = trim($this->execute($query));
+       $query  = "SELECT MAX(CAST(value AS unsigned)) as \"\"";
+       $query .= "FROM possible_values WHERE parameter='NumberOfChannels'";
+       $result = trim($this->execute($query));
 
         if (!is_numeric($result)) {
             $result = 5;
