@@ -27,8 +27,8 @@ try:
     import os
     import json
     import re
-except ImportError:
-    print "ERROR importing required Python packages!"
+except ImportError as err:
+    print "ERROR importing required Python packages:", err
     print "Current PYTHONPATH: ", sys.path
     sys.exit(1)
 
@@ -40,8 +40,8 @@ else:
     print "Could not find configuration value 'OMERO_PKG', omitting."
 try:
     from omero.gateway import BlitzGateway
-except ImportError:
-    print "ERROR importing Python bindings for OMERO!"
+except ImportError as err:
+    print "ERROR importing the OMERO Python bindings:", err
     print "Current PYTHONPATH: ", sys.path
     sys.exit(2)
 
