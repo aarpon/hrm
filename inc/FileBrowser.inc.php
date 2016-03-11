@@ -47,7 +47,7 @@ function fileButton($type) {
       $maxPost = "$max MB";
       $validExtensions =
               $_SESSION['fileserver']->getValidArchiveTypesAsString();
-      $onClick = "uploadImages('$maxFile', '$maxPost', " .
+      $onClick = "uploadImagesAlt('$maxFile', '$maxPost', " .
               "'$validExtensions')";
       $tip = 'Upload a file (or a compressed archive of files) to the ' .
               'server';
@@ -174,6 +174,7 @@ $script = array("settings.js",
                 "jqTree/tree.jquery.js",
                 "jquery-ui/jquery-ui-1.9.1.custom.js",
                 "jquery-ui/jquery.bgiframe-2.1.2.js",
+                "plupload-2.1.8/js/plupload.full.min.js",
                 "omero.js");
 
 if (!isset($operationResult)) {
@@ -492,8 +493,72 @@ include("header.inc.php");
 
 
   <div id="up_form" onmouseover="showInstructions()">
-      <!-- do not remove !-->
+      <div id="upload_list"></div>
+      <br />
+
+      <div id="container">
+          <a id="pick_files" href="javascript:;">[Select files]</a>
+          <a id="upload_files" href="javascript:;">[Upload files]</a>
+      </div>
   </div>
+
+        <script type="text/javascript">
+            $(function () {
+
+                // Set up the (hidden) file uploader
+                $("#up_form").hide();
+
+                var uploader = new plupload.Uploader({
+                    runtimes : 'html5',
+                    browse_button : 'pick_files',
+                    container: 'container',
+                    url : "inc/FileUploader.inc.php",
+                    filters : {
+                        max_file_size : '0',
+                        prevent_duplicates: false
+                    },
+                    init: {
+                        PostInit: function() {
+
+                            $("#upload_list").empty();
+                            $("#upload_files").click(function() {
+                                uploader.start();
+                                return false;
+                            })
+                        },
+                        FilesAdded: function(up, files) {
+                            plupload.each(files, function(file) {
+                                var liFile = $("<div>")
+                                    .attr("id", file.id)
+                                    .html(file.name + ' (' + plupload.formatSize(file.size) + ') <b></b>');
+                                $("#upload_list").append(liFile);
+                            });
+                        },
+                        UploadProgress: function(up, file) {
+                            var fileId = $("#" + file.id);
+                            if (fileId.length) {
+                                var prc = fileId.find('b');
+                                prc.html("<span>" + file.percent + "%</span>");
+                            }
+                        },
+                        Error: function(up, err) {
+                            $('#message').append($("<p>").html("Sorry: " + err.message));
+                        },
+                        FileUploaded: function(up, file, response) {
+                            $('#message').append($("<p>").html(response.status));
+                        },
+                        UploadComplete: function(up, files) {
+                            $('#message').html($("<p>").append("All files uploaded."));
+                        }
+                    }
+                });
+
+                // Initialize the uploader
+                uploader.init();
+
+            });
+        </script>
+
     </div> <!-- content -->
 
 

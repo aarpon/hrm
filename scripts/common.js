@@ -723,6 +723,25 @@ function uploadImages(maxFile, maxPost, archiveExt) {
 
 }
 
+/**
+ * This function uses the Plupload JS library to manage uploads to the HRM data server.
+ * @param maxFile max file size in MB.
+ * @param maxPost max post file in MB.
+ * @param archiveExt list of accepted archive extensions.
+ */
+function uploadImagesAlt(maxFile, maxPost, archiveExt) {
+
+    // Cancel the OMERO selection
+    cancelOmeroSelection();
+
+    // Show the uploader
+    var upFormID = $("#up_form");
+
+    // Clear the div
+    upFormID.show();
+
+}
+
 function downloadImages() {
 
     changeDiv('omeroSelection','');
