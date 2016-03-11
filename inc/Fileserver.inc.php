@@ -648,8 +648,14 @@ class Fileserver {
       // reading the file to serve is completed.
       set_time_limit(0);
 
+      // If the 'upload_tmp_dir' configuration option is defined in php.ini
+      // we use that, otherwise we fall back to /tmp.
+      $tmpDir = ini_get('upload_tmp_dir');
+      if ($tmpDir == null) {
+          $tmpDir = "/tmp";
+      }
       $date = date("Y-m-d_His");
-      $zipfile = "/tmp/download_".session_id().$date.$compressExt;
+      $zipfile = $tmpDir . "/download_" . session_id() . $date . $compressExt;
       $command = str_replace("%DEST%",
               $this->destinationFolder(), $compressBin);
       $command .= " ".$zipfile;
