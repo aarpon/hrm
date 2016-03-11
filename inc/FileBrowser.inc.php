@@ -335,6 +335,10 @@ function imageAction (list) {
       // The destination folder needs parsing to locate the previews.
       $pathAndFile = $pdir . "/" . $file;
       preg_match($pattern, $pathAndFile, $matches);
+      if (count($matches) == 0 ) {
+          unset($files[$key]);
+          continue;
+      }
       $filePreview = $matches[1] . "/hrm_previews/";
       $filePreview .= basename($file) . ".preview_xy.jpg";
 
