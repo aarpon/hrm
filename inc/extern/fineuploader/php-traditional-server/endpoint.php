@@ -49,7 +49,7 @@ $filesDir = "/tmp/files";
 
 $uploader = new UploadHandler();
 
-// Specify the list of valid extensions, ex. array("jpeg", "xml", "bmp")
+// TODO Specify the list of valid extensions, ex. array("jpeg", "xml", "bmp")
 $uploader->allowedExtensions = array(); // all files types allowed by default
 
 // Specify max file size in bytes.
@@ -68,7 +68,20 @@ if ($method == "POST") {
     // Assumes you have a chunking.success.endpoint set to point here with a query parameter of "done".
     // For example: /myserver/handlers/endpoint.php?done
     if (isset($_GET["done"])) {
+
+        // Combine chunks
         $result = $uploader->combineChunks($filesDir);
+
+        if ($result["success"] == true) {
+
+            // Retrieve the final destination for the file
+            $finalDir = $_SERVER["HTTP_DESTINATIONFOLDER"];
+
+            // TODO Move the files from $filesDir to $finalDir after all required validations
+            $fileToMove = $filesDir . "/" . $_POST["qqfilename"];
+
+        }
+
     }
     // Handles upload requests
     else {

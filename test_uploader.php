@@ -117,8 +117,10 @@
         $('#fine-uploader-manual-trigger').fineUploader({
             template: 'qq-template-manual-trigger',
             request: {
-                customHeaders: "destination-folder: /data/hrm/pontia/src",
-                endpoint: "/hrm/inc/extern/fineuploader/php-traditional-server/endpoint.php"
+                endpoint: "/hrm/inc/extern/fineuploader/php-traditional-server/endpoint.php",
+                customHeaders: {
+                    "DestinationFolder" : "/tmp" // This will be filled in by PHP ($_SESSION['fileServer']->sourceFolder())
+                }
             },
             chunking: {
                 enabled: true,
