@@ -14,6 +14,7 @@
 require_once( "inc/Util.inc.php" );
 require_once( "inc/OmeroConnection.inc.php");
 require_once( "inc/wiki_help.inc.php" );
+require_once( "inc/Util.inc.php" );
 
 /*!
   \brief  Generates basic buttons for the image file browser
@@ -174,7 +175,7 @@ $script = array("settings.js",
                 "jqTree/tree.jquery.js",
                 "jquery-ui/jquery-ui-1.9.1.custom.js",
                 "jquery-ui/jquery.bgiframe-2.1.2.js",
-                "plupload-2.1.8/js/plupload.full.min.js",
+                "fineuploader/jquery.fine-uploader.js",
                 "omero.js");
 
 if (!isset($operationResult)) {
@@ -376,7 +377,7 @@ if ($files == null) {
   $flag = " disabled=\"disabled\"";
 }
 
-include("header.inc.php");
+include("header_fb.inc.php");
 
 
 
@@ -488,74 +489,59 @@ include("header.inc.php");
       include("./omero_UI.php");
       ?>
 
+        <div id="upMsg">
+            <!-- Do not remove -->
+        </div>
 
-  <div id="upMsg"><!-- do not remove !--></div>
-
-
-  <div id="up_form" onmouseover="showInstructions()">
-      <div id="upload_list"></div>
-      <br />
-
-      <div id="container">
-          <a id="pick_files" href="javascript:;">[Select files]</a>
-          <a id="upload_files" href="javascript:;">[Upload files]</a>
-      </div>
-  </div>
-
+      <div id="up_form" onmouseover="showInstructions()">
+        <div id="fine-uploader-manual-trigger"></div>
+	  </div>
+	  
         <script type="text/javascript">
-            $(function () {
-
-                // Set up the (hidden) file uploader
-                $("#up_form").hide();
-
-                var uploader = new plupload.Uploader({
-                    runtimes : 'html5',
-                    browse_button : 'pick_files',
-                    container: 'container',
-                    url : "inc/FileUploader.inc.php",
-                    filters : {
-                        max_file_size : '0',
-                        prevent_duplicates: false
-                    },
-                    init: {
-                        PostInit: function() {
-
-                            $("#upload_list").empty();
-                            $("#upload_files").click(function() {
-                                uploader.start();
-                                return false;
-                            })
-                        },
-                        FilesAdded: function(up, files) {
-                            plupload.each(files, function(file) {
-                                var liFile = $("<div>")
-                                    .attr("id", file.id)
-                                    .html(file.name + ' (' + plupload.formatSize(file.size) + ') <b></b>');
-                                $("#upload_list").append(liFile);
-                            });
-                        },
-                        UploadProgress: function(up, file) {
-                            var fileId = $("#" + file.id);
-                            if (fileId.length) {
-                                var prc = fileId.find('b');
-                                prc.html("<span>" + file.percent + "%</span>");
-                            }
-                        },
-                        Error: function(up, err) {
-                            $('#message').append($("<p>").html("Sorry: " + err.message));
-                        },
-                        FileUploaded: function(up, file, response) {
-                            $('#message').append($("<p>").html(response.status));
-                        },
-                        UploadComplete: function(up, files) {
-                            $('#message').html($("<p>").append("All files uploaded."));
-                        }
+            $('#fine-uploader-manual-trigger').fineUploader({
+                template: 'qq-template-manual-trigger',
+                request: {
+                    endpoint: "/hrm/inc/extern/fineuploader/php-traditional-server/endpoint.php",
+                    forceMultipart: true,
+                    customHeaders: {
+                        "DestinationFolder" : "<?php echo($_SESSION['fileserver']->sourceFolder()); ?>",
+                        "ImageExtensions" : ['dv', 'ims', 'lif', 'lsm', 'oif', 'pic', 'r3d', 'stk',
+                            'zvi', 'czi', 'nd2', 'tf2', 'tf8', 'btf', 'h5', 'tif', 'tiff', 'ome.tif',
+                            'ome.tiff', 'ome', 'ics', 'ids']
                     }
-                });
+                },
+                chunking: {
+                    enabled: true,
+                    concurrent: {
+                        enabled: true
+                    },
+                    partSize: 4194304, // <- Util::getMaxSingleUploadSize()
+                    success: {
+                        endpoint: "/hrm/inc/extern/fineuploader/php-traditional-server/endpoint.php?done"
+                    }
+                },
+                validation: {
+                    acceptFiles: ".dv,.ims,.lif,.lsm,.oif,.pic,.3rd,.stk,.zvi,.czi,.nd2,.tf2,.tf8,.btf,.h5," +
+                        ".tif,.tiff,.ome.tif,.ome.tiff,.ics,.ids,.zip,.tgz,.tar,.tar.gz",
+                    allowedExtensions: ['dv', 'ims', 'lif', 'lsm', 'oif', 'pic', 'r3d', 'stk',
+                        'zvi', 'czi', 'nd2', 'tf2', 'tf8', 'btf', 'h5', 'tif', 'tiff', 'ome.tif',
+                        'ome.tiff', 'ome', 'ics', 'ids', 'zip', 'tgz', 'tar', 'tar.gz']
+                },
+                resume: {
+                    enabled: true
+                },
+                retry: {
+                    enableAuto: true,
+                    showButton: true
+                },
+                autoUpload: false,
+                display: {
+                    fileSizeOnSubmit: true
+                }
+            });
 
-                // Initialize the uploader
-                uploader.init();
-
+            $('#trigger-upload').click(function() {
+                $('#fine-uploader-manual-trigger').fineUploader('uploadStoredFiles');
             });
         </script>
 

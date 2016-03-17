@@ -26,31 +26,29 @@
  *    This will be called by Fine Uploader when all chunks for a file have been successfully uploaded, triggering the
  *    PHP server to combine all parts into one file. This is particularly useful for the concurrent chunking feature,
  *    but is now required in all cases if you are making use of this PHP example.
+ *
+ * Modified for use in HRM.
  */
 
 // Include the upload handler class
 require_once "handler.php";
+require_once "../../../FileserverV2.inc.php";
 
 // Required folders. Make sure they exist and have proper permissions.
+// TODO Fix this.
 $tmpDir = ini_get('upload_tmp_dir');
 if ($tmpDir == null) {
     $tmpDir = "/tmp";
 }
-//$chunksDir = $tmpDir . "/chunks";
-$chunksDir = "/tmp/chunks";
-//if (!is_dir($chunksDir)) {
-//    header("HTTP/1.0 500 Internal Server Error");
-//}
-//$filesDir = $tmpDir . "/files";
-$filesDir = "/tmp/files";
-//if (!is_dir($filesDir)) {
-//    header("HTTP/1.0 500 Internal Server Error");
-//}
+$chunksDir = $tmpDir . "/chunks";
+$filesDir = $tmpDir . "/files";
+
 
 $uploader = new UploadHandler();
 
-// TODO Specify the list of valid extensions, ex. array("jpeg", "xml", "bmp")
-$uploader->allowedExtensions = array(); // all files types allowed by default
+// Specify the list (array) of valid extensions
+// Aall files types allowed by default
+$uploader->allowedExtensions = FileserverV2::getAllValidExtensions();
 
 // Specify max file size in bytes.
 $uploader->sizeLimit = null;
@@ -77,8 +75,21 @@ if ($method == "POST") {
             // Retrieve the final destination for the file
             $finalDir = $_SERVER["HTTP_DESTINATIONFOLDER"];
 
-            // TODO Move the files from $filesDir to $finalDir after all required validations
-            $fileToMove = $filesDir . "/" . $_POST["qqfilename"];
+            // Retrieve the full file name of the uploaded file
+            $fileToMove = $filesDir . "/" . $_POST["qquuid"] . "/" . $_POST["qqfilename"];
+
+            // Move the files from $filesDir to $finalDir after all required validations
+            $errorMessage = "";
+            $b = FileserverV2::moveUploadedFile($fileToMove, $finalDir, $errorMessage);
+
+            if (! $b) {
+
+                // If moving failed, inform the client.
+                $result["success"] = false;
+            }
+
+            // Clean up
+            FileserverV2::removeDirAndContent($filesDir . "/" . $_POST["qquuid"]);
 
         }
 
