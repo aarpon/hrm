@@ -541,9 +541,12 @@ include("header_fb.inc.php");
                 },
                 callbacks: {
                     onAllComplete: function(succeeded, failed) {
-                        // Rescan the source folder
-                        setActionToUpdate();
-                        $("form#file_browser").submit();
+                        // Rescan the source folder only if everything was uploaded successfully.
+                        // If not the user can still interact with the files.
+                        if (failed.length == 0) {
+                            setActionToUpdate();
+                            $("form#file_browser").submit();
+                        }
                     }
                 }
             });
