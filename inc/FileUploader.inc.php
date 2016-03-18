@@ -34,15 +34,12 @@
 require_once "extern/fineuploader/php-traditional-server/handler.php";
 require_once "FileserverV2.inc.php";
 
-// Required folders. Make sure they exist and have proper permissions.
-// TODO Fix this.
-$tmpDir = ini_get('upload_tmp_dir');
-if ($tmpDir == null) {
-    $tmpDir = "/tmp";
-}
-$chunksDir = $tmpDir . "/chunks";
-$filesDir = $tmpDir . "/files";
+global $httpUploadTempChunksDir, $httpUploadTempFilesDir;
 
+// Required folders. Make sure they exist and have proper permissions.
+// The check is done by the Queue Manager on startup.
+$chunksDir = $httpUploadTempChunksDir;
+$filesDir = $httpUploadTempFilesDir;
 
 $uploader = new UploadHandler();
 

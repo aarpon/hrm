@@ -83,6 +83,14 @@ $allowHttpUpload = true;
 $max_upload_limit = 0; // Maximum file size for uploads in Mb
 $max_post_limit = 0;   // Maximum post size for uploads in Mb
 
+// Upload and download operations require a temporary folder. Using standard folders
+// as defined in PHP.ini when dealing with large files can cause the file system to
+// fill and the server to malfunction. It is recommended to create three folders in the
+// HRM data folder (with the same permissions as the data folder itself: see the documentation).
+$httpUploadTempChunksDir = "$image_folder/chunks";
+$httpUploadTempFilesDir = "$image_folder/files";
+$httpDownloadTempFilesDir = "$image_folder/downloads";
+
 // Archiver for downloading the results via the web browser:
 // $compressBin is the archiver, including options.  %DEST% will be replaced
 // with the user's destination path; can be used as an option or part of the

@@ -642,18 +642,21 @@ class Fileserver {
     \param $files  Array  List of files to be added.
   */
   public function downloadResults($files) {
-      global $compressBin, $compressExt, $dlMimeType, $packExcludePath;
+      global $compressBin, $compressExt, $dlMimeType, $packExcludePath, $httpDownloadTempFilesDir;
 
       // Make sure that the script doesn't timeout before zipping and
       // reading the file to serve is completed.
       set_time_limit(0);
 
-      // If the 'upload_tmp_dir' configuration option is defined in php.ini
-      // we use that, otherwise we fall back to /tmp.
-      $tmpDir = ini_get('upload_tmp_dir');
-      if ($tmpDir == null) {
+      // We use the $httpDownloadTempFilesDir property from the configuration files. If it is not
+      // defined, we fall back to /tmp (and inform).
+      if (isset($httpDownloadTempFilesDir)) {
+          $tmpDir = $httpDownloadTempFilesDir;
+      } else {
           $tmpDir = "/tmp";
+          report("The setting httpDownloadTempFilesDir is not defined! Falling back to /tmp.", 0);
       }
+
       $date = date("Y-m-d_His");
       $zipfile = $tmpDir . "/download_" . session_id() . $date . $compressExt;
       $command = str_replace("%DEST%",
