@@ -48,9 +48,8 @@ function fileButton($type) {
       $maxPost = "$max MB";
       $validExtensions =
               $_SESSION['fileserver']->getValidArchiveTypesAsString();
-      $onClick = "uploadImagesAlt('$maxFile', '$maxPost', " .
-              "'$validExtensions')";
-      $tip = 'Upload a file (or a compressed archive of files) to the ' .
+      $onClick = "uploadImagesAlt()";
+      $tip = 'Upload one or more files (or compressed archives of files) to the ' .
               'server';
       $name = "upload";
       break;
@@ -496,7 +495,7 @@ include("header_fb.inc.php");
       <div id="up_form" onmouseover="showInstructions()">
         <div id="fine-uploader-manual-trigger"></div>
 	  </div>
-	  
+
         <script type="text/javascript">
             $('#fine-uploader-manual-trigger').fineUploader({
                 template: 'qq-template-manual-trigger',
@@ -543,6 +542,9 @@ include("header_fb.inc.php");
             $('#trigger-upload').click(function() {
                 $('#fine-uploader-manual-trigger').fineUploader('uploadStoredFiles');
             });
+
+            // Hide the uploader until requested by the user
+            $("#up_form").hide();
         </script>
 
     </div> <!-- content -->
