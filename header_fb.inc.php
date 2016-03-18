@@ -33,6 +33,7 @@ if (using_IE()) {
     <link rel="stylesheet" href="css/jqtree-custom.css">
     <link rel="stylesheet" href="scripts/jquery-ui/jquery-ui-1.9.1.custom.css">
     <link rel="stylesheet" href="scripts/fineuploader/fine-uploader-new.css">
+    <link rel="stylesheet" href="css/custom_fineuploader.css">
 
     <!-- Include jQuery -->
     <script type="text/javascript" src="scripts/jquery-1.8.3.min.js"></script>
@@ -57,7 +58,7 @@ if (using_IE()) {
                     <div>Select files</div>
                 </div>
                 <button type="button" id="trigger-upload" class="btn btn-primary">
-                    <i class="icon-upload icon-white"></i> Upload
+                    <i class="icon-upload icon-white"></i>Upload
                 </button>
             </div>
             <span class="qq-drop-processing-selector qq-drop-processing">
@@ -107,28 +108,6 @@ if (using_IE()) {
             </dialog>
         </div>
     </script>
-
-    <style>
-        #trigger-upload {
-            color: white;
-            font-size: 14px;
-            padding: 7px 20px;
-            background: #00ABC7 none;
-        }
-
-        #fine-uploader-manual-trigger .qq-upload-button {
-            margin-right: 15px;
-        }
-
-        #fine-uploader-manual-trigger .buttons {
-            width: 18%;
-        }
-
-        #fine-uploader-manual-trigger .qq-uploader .qq-total-progress-bar-container {
-            width: 60%;
-        }
-    </style>
-
 
 <?php
 

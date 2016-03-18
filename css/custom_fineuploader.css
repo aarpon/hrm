@@ -1,0 +1,71 @@
+
+/* Override */
+.qq-uploader {
+    position: relative;
+    min-height: 200px;
+    /*max-height: 490px;*/
+    /* overflow-y: hidden; */
+    overflow-x: hidden;
+    /* width: inherit; */
+    border-radius: 6px;
+    /* background-color: #FDFDFD; */
+    border: 1px dashed #CCCCCC;
+    padding: 3px;
+}
+
+.qq-progress-bar {
+    display: block;
+    background: #4988de;
+    width: 0%;
+    height: 14px;
+    border-radius: 6px;
+    margin-bottom: 3px;
+}
+
+.qq-edit-filename-selector {
+    font-size: 12px;
+}
+
+.qq-upload-file-selector {
+    font-size: 11px;
+    text-align: left;
+    width: 280px;
+}
+
+.qq-upload-size-selector {
+    font-size: 11px;
+    text-align: right;
+}
+
+.qq-btn {
+    font-size: 10px;
+    margin: 3px;
+}
+
+#trigger-upload {
+    color: white;
+    font-size: 10px;
+    background: #4988de none;
+    width: 92px;
+    height: 26px;
+}
+
+.qq-upload-button {
+    color: white;
+    font-size: 10px;
+    padding: 7px 20px;
+    background: #4988de none;
+    width: 50px;
+}
+
+.qq-upload-status-text {
+    font-size: 11px;
+}
+
+#fine-uploader-manual-trigger .qq-uploader .qq-total-progress-bar-container {
+    width: 18%;
+}
+
+#fine-uploader-manual-trigger .qq-upload-button {
+    margin-right: 15px;
+}
