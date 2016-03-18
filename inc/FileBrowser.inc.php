@@ -500,7 +500,7 @@ include("header_fb.inc.php");
             $('#fine-uploader-manual-trigger').fineUploader({
                 template: 'qq-template-manual-trigger',
                 request: {
-                    endpoint: "/hrm/inc/extern/fineuploader/php-traditional-server/endpoint.php",
+                    endpoint: "/hrm/inc/FileUploader.inc.php",
                     forceMultipart: true,
                     customHeaders: {
                         "DestinationFolder" : "<?php echo($_SESSION['fileserver']->sourceFolder()); ?>",
@@ -516,7 +516,7 @@ include("header_fb.inc.php");
                     },
                     partSize: 4194304, // <- Util::getMaxSingleUploadSize()
                     success: {
-                        endpoint: "/hrm/inc/extern/fineuploader/php-traditional-server/endpoint.php?done"
+                        endpoint: "/hrm/inc/FileUploader.inc.php?done"
                     }
                 },
                 validation: {
