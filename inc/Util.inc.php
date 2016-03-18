@@ -352,8 +352,6 @@ function report($text, $level=0) {
 function notifyRuntimeError($subject, $message) {
     global $email_sender;
     global $email_admin;
-    $text = "Huygens Remote Manager warning:\n"
-            . $name . " could not be pinged on " . date("r", time());
     $mail = new Mail($email_sender);
     $mail->setReceiver($email_admin);
     $mail->setSubject('Huygens Remote Manager - ' . $subject);
