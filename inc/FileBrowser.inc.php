@@ -500,6 +500,7 @@ include("header_fb.inc.php");
             $('#fine-uploader-manual-trigger').fineUploader({
                 template: 'qq-template-manual-trigger',
                 maxConnections: 3,
+                folders: false,
                 request: {
                     endpoint: "/hrm/inc/FileUploader.inc.php",
                     forceMultipart: true,
@@ -537,6 +538,13 @@ include("header_fb.inc.php");
                 autoUpload: false,
                 display: {
                     fileSizeOnSubmit: true
+                },
+                callbacks: {
+                    onAllComplete: function(succeeded, failed) {
+                        // Rescan the source folder
+                        setActionToUpdate();
+                        $("form#file_browser").submit();
+                    }
                 }
             });
 
