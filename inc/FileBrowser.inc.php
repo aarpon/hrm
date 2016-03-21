@@ -502,7 +502,7 @@ include("header_fb.inc.php");
                 maxConnections: <?php echo(getNumberConcurrentUploads()); ?>,
                 folders: false,
                 request: {
-                    endpoint: "/hrm/inc/FileUploader.inc.php",
+                    endpoint: "<?php global $hrm_url; echo($hrm_url) . "/upload/FileUploader.inc.php" ?>",
                     forceMultipart: true,
                     customHeaders: {
                         "DestinationFolder" : "<?php echo($_SESSION['fileserver']->sourceFolder()); ?>",
@@ -519,7 +519,7 @@ include("header_fb.inc.php");
                     mandatory: true,
                     partSize: <?php echo(getMaxConcurrentUploadSize(getNumberConcurrentUploads())); ?>, // 4194304
                     success: {
-                        endpoint: "/hrm/inc/FileUploader.inc.php?done"
+                        endpoint: "<?php global $hrm_url; echo($hrm_url) . "/upload/FileUploader.inc.php?done" ?>"
                     }
                 },
                 validation: {

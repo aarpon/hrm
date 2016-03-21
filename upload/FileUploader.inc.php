@@ -31,8 +31,9 @@
  */
 
 // Include the upload handler class
-require_once "extern/fineuploader/php-traditional-server/handler.php";
-require_once "FileserverV2.inc.php";
+require_once "../inc/extern/fineuploader/php-traditional-server/handler.php";
+require_once "../inc/FileserverV2.inc.php";
+require_once "../inc/Util.inc.php";
 
 global $httpUploadTempChunksDir, $httpUploadTempFilesDir;
 
@@ -40,6 +41,9 @@ global $httpUploadTempChunksDir, $httpUploadTempFilesDir;
 // The check is done by the Queue Manager on startup.
 $chunksDir = $httpUploadTempChunksDir;
 $filesDir = $httpUploadTempFilesDir;
+
+report("Chunks dir is " . $httpUploadTempChunksDir, 0);
+report("Files dir is " . $httpUploadTempFilesDir, 0);
 
 $uploader = new UploadHandler();
 
