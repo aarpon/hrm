@@ -411,7 +411,7 @@ function getMaxSingleUploadSize() {
   \param int $nConcurrentUploads Maximum number of concurrent uploads.
   \return maximum upload size in bytes.
 */
-function getMaxConcurrentUploadSize($nConcurrentUploads = 3) {
+function getMaxConcurrentUploadSize($nConcurrentUploads = 4) {
 
     // Get max post size from php.ini
     $post_max_size = let_to_num(ini_get('post_max_size'));
@@ -420,6 +420,23 @@ function getMaxConcurrentUploadSize($nConcurrentUploads = 3) {
     $theoretical_limit = floor((floatval($post_max_size) / ($nConcurrentUploads + 1)));
 
     return $theoretical_limit;
+}
+
+/*!
+  \brief  Report maximum upload size, in bytes, for concurrent upload.
+  \param int $nConcurrentUploads Maximum number of concurrent uploads.
+  \return maximum upload size in bytes.
+*/
+function getNumberConcurrentUploads() {
+
+    global $httpNumberOfConcurrentUploads;
+
+    // Get the number of concurrent uploads from the configuration files
+    if (!isset($httpNumberOfConcurrentUploads)) {
+        $httpNumberOfConcurrentUploads = 4;
+    }
+
+    return $httpNumberOfConcurrentUploads;
 }
 
 /*!

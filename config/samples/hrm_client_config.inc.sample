@@ -75,8 +75,8 @@ $allowHttpTransfer = true;
 // $max_upload_limit AND $max_post_limit. If these are set to 0, they are
 // instead read from the PHP settings. If set to higher values, make sure
 // that the PHP settings allow for such transfer limits. These PHP settings
-// are normally located in php.ini, with the options upload_max filesize AND
-// post_max size.
+// are normally located in php.ini, with the options upload_max_filesize AND
+// post_max_size.
 // Unzipping large archives may also require high max_execution_time and
 // memory_limit variables.
 $allowHttpUpload = true;
@@ -90,6 +90,12 @@ $max_post_limit = 0;   // Maximum post size for uploads in Mb
 $httpUploadTempChunksDir = "$image_folder/chunks";
 $httpUploadTempFilesDir = "$image_folder/files";
 $httpDownloadTempFilesDir = "$image_folder/downloads";
+
+// Number of concurrent uploads. HRM uploads a file in chunks and in parallel. The number
+// of concurrent uploads multiplied by the chunk size should not exceed the max post size.
+// HRM internally calculated the chunk size as:
+//     max_post_size / ($httpNumberOfConcurrentUploads + 1).
+$httpNumberOfConcurrentUploads = 4;
 
 // Archiver for downloading the results via the web browser:
 // $compressBin is the archiver, including options.  %DEST% will be replaced

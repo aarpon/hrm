@@ -91,6 +91,12 @@ $httpUploadTempChunksDir = "$image_folder/chunks";
 $httpUploadTempFilesDir = "$image_folder/files";
 $httpDownloadTempFilesDir = "$image_folder/downloads";
 
+// Number of concurrent uploads. HRM uploads a file in chunks and in parallel. The number
+// of concurrent uploads multiplied by the chunk size should not exceed the max post size.
+// HRM internally calculated the chunk size as:
+//     max_post_size / ($httpNumberOfConcurrentUploads + 1).
+$httpNumberOfConcurrentUploads = 4;
+
 // Archiver for downloading the results via the web browser:
 // $compressBin is the archiver, including options.  %DEST% will be replaced
 // with the user's destination path; can be used as an option or part of the

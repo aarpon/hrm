@@ -499,7 +499,7 @@ include("header_fb.inc.php");
         <script type="text/javascript">
             $('#fine-uploader-manual-trigger').fineUploader({
                 template: 'qq-template-manual-trigger',
-                maxConnections: 3,
+                maxConnections: <?php echo(getNumberConcurrentUploads()); ?>,
                 folders: false,
                 request: {
                     endpoint: "/hrm/inc/FileUploader.inc.php",
@@ -516,7 +516,7 @@ include("header_fb.inc.php");
                     concurrent: {
                         enabled: true
                     },
-                    partSize: <?php echo(getMaxConcurrentUploadSize(3)); ?>, // 4194304
+                    partSize: <?php echo(getMaxConcurrentUploadSize(getNumberConcurrentUploads())); ?>, // 4194304
                     success: {
                         endpoint: "/hrm/inc/FileUploader.inc.php?done"
                     }
