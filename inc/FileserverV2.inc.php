@@ -265,7 +265,13 @@ class FileserverV2
                 // Avoid pathological cases with dots somewhere in the file name.
                 return $info["extension"];
             }
-            return $info_ext . "." . $info["extension"];
+            $allExtensions = FileserverV2::getAllValidExtensions();
+            $composedExt = $info_ext . "." . $info["extension"];
+            if (in_array($composedExt, $allExtensions)) {
+                return $composedExt;
+            } else {
+                return $info["extension"];
+            }
         }
     }
 
