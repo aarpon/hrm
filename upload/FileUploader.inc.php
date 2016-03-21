@@ -71,7 +71,7 @@ if ($method == "POST") {
         if ($totalParts > 1) {
             // Combine chunks
             $result = $uploader->combineChunks($filesDir);
-        s}
+        }
 
         if ($result["success"] == true) {
 
