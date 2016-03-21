@@ -42,9 +42,6 @@ global $httpUploadTempChunksDir, $httpUploadTempFilesDir;
 $chunksDir = $httpUploadTempChunksDir;
 $filesDir = $httpUploadTempFilesDir;
 
-report("Chunks dir is " . $httpUploadTempChunksDir, 0);
-report("Files dir is " . $httpUploadTempFilesDir, 0);
-
 $uploader = new UploadHandler();
 
 // Specify the list (array) of valid extensions (all files types allowed by default)
