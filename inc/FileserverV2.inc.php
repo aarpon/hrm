@@ -28,22 +28,22 @@ class FileserverV2
         }
 
         // Sanitize file name
-        $baseName = str_replace(" ", "_", basename($file));
+        $destBaseName = str_replace(" ", "_", basename($file));
 
         // Full path of destination file
-        $destFile = $destDir . "/" . $baseName;
+        $destFile = $destDir . "/" . $destBaseName;
 
         // Get the file extension
         $extension = FileserverV2::getFileNameExtension($destFile);
 
         // Get the file name body (base name without extension)
-        $bodyName = reset(explode('.', $baseName));
+        $destBodyName = FileserverV2::getFileBaseName($destBaseName);
 
         // Is the file an archive?
         if (FileserverV2::isArchiveFile($file)) {
 
             // Get the output folder where to store the archive
-            $destDecDir = FileserverV2::getValidFileOrDirName($destDir, $bodyName);
+            $destDecDir = FileserverV2::getValidFileOrDirName($destDir, $destBodyName);
 
             // Did we get a valid destination folder name?
             if ($destDecDir == "") {
@@ -67,7 +67,7 @@ class FileserverV2
         }
 
         // Now move the file over (but make sure not to overwrite anything)
-        $destDecFile = FileserverV2::getValidFileOrDirName($destDir, $bodyName, $extension);
+        $destDecFile = FileserverV2::getValidFileOrDirName($destDir, $destBodyName, $extension);
 
         // Did we get a valid destination file name?
         if ($destDecFile == "") {
@@ -81,7 +81,7 @@ class FileserverV2
         $status = rename($file, $destDecFile);
 
         if (! $status) {
-            $errorMessage = "Failed moving file $baseName to its final destination.";
+            $errorMessage = "Failed moving file $destBaseName to its final destination.";
         }
 
         return $status;
@@ -148,16 +148,14 @@ class FileserverV2
      */
     public static function getAllValidExtensions($withLeadingDot = false) {
 
-        global $decompressBin;
-
         // Image extensions
         $validImageExtensions = FileserverV2::getImageExtensions();
 
-        // Extras extensions TODO: Add them to the database
-        $extrasExtensions = array(".ids", '.idx.gz');
+        // Extras extensions
+        $extrasExtensions = FileserverV2::getImageExtrasExtensions();
 
         // Archive extensions
-        $archiveExtensions = array_keys($decompressBin);
+        $archiveExtensions = FileserverV2::getArchiveExtensions();
 
         // Merge them and return
         $allExtensions = array_merge($validImageExtensions, $extrasExtensions, $archiveExtensions);
@@ -187,6 +185,30 @@ class FileserverV2
     }
 
     /**
+     * Return all archive extensions.
+     * @return array of archive extensions.
+     */
+    public static function getArchiveExtensions() {
+
+        global $decompressBin;
+
+        // Archive extensions
+        return array_keys($decompressBin);
+    }
+
+    /**
+     * Return image extras extensions.
+     * @return array of image extras extensions.
+     *
+     * TODO: Add them to the database.
+     */
+    public static function getImageExtrasExtensions() {
+
+        // Return the image extras extensions
+        return array(".ids", '.idx.gz');
+    }
+
+    /**
      * Check whether the file is of supported format.
      * @param $filename File name to be checked.
      * @param bool $alsoExtras If true consider also "ids" and "ids.gx" as supported formats.
@@ -208,7 +230,7 @@ class FileserverV2
 
         // If the extension is not in the standard formats, we might have to check the extras.
         if ($alsoExtras) {
-            $extras = array(".ids", '.idx.gz');
+            $extras = FileserverV2::getImageExtrasExtensions();
             $status = in_array($extension, $extras);
         }
 
@@ -242,6 +264,32 @@ class FileserverV2
             }
             return $info_ext . "." . $info["extension"];
         }
+    }
+
+    /**
+     * Get file base name.
+     *
+     * @param $filename Filename to be processed.
+     * @return String Base name.
+     *
+     */
+    public static function getFileBaseName($filename) {
+
+        // Extract extension
+        $extension = FileserverV2::getFileNameExtension($filename);
+
+        $lenExt = strlen($extension);
+        if ($lenExt == 0) {
+            return $filename;
+        }
+
+        // Extract base name
+        $basename = substr($filename, 0, (strlen($filename) - $lenExt - 1));
+        if (strlen($basename) == 0) {
+            return $filename;
+        }
+
+        return $basename;
     }
 
     /**
