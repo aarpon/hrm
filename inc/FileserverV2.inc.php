@@ -57,6 +57,9 @@ class FileserverV2
             if (! FileserverV2::decompressArchive($file, $destDecDir)) {
                 $errorMessage = "Failed decompressing archive file $file.";
                 return false;
+            } else {
+                // We can return success here.
+                return true;
             }
         }
 
