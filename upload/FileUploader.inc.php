@@ -64,8 +64,14 @@ if ($method == "POST") {
     // For example: /myserver/handlers/endpoint.php?done
     if (isset($_GET["done"])) {
 
-        // Combine chunks
-        $result = $uploader->combineChunks($filesDir);
+        $result["success"] = true;
+
+        // Make sure that we actually had chunks
+        $totalParts = isset($_REQUEST['qqtotalparts']) ? (int)$_REQUEST['qqtotalparts'] : 1;
+        if ($totalParts > 1) {
+            // Combine chunks
+            $result = $uploader->combineChunks($filesDir);
+        s}
 
         if ($result["success"] == true) {
 
