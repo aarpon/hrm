@@ -1,14 +1,12 @@
+.buttons {
+    text-align: left;    
+}
 
-/* Override */
 .qq-uploader {
     position: relative;
     min-height: 200px;
-    /*max-height: 490px;*/
-    /* overflow-y: hidden; */
     overflow-x: hidden;
-    /* width: inherit; */
     border-radius: 6px;
-    /* background-color: #FDFDFD; */
     border: 1px dashed #CCCCCC;
     padding: 3px;
 }
@@ -16,7 +14,7 @@
 .qq-progress-bar {
     display: block;
     background: #4988de;
-    width: 0%;
+    width: 0;
     height: 14px;
     border-radius: 6px;
     margin-bottom: 3px;
@@ -63,7 +61,7 @@
 }
 
 #fine-uploader-manual-trigger .qq-uploader .qq-total-progress-bar-container {
-    width: 18%;
+    width: 50%;
 }
 
 #fine-uploader-manual-trigger .qq-upload-button {
