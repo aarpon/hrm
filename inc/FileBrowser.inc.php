@@ -516,6 +516,7 @@ include("header_fb.inc.php");
                     concurrent: {
                         enabled: true
                     },
+                    mandatory: true,
                     partSize: <?php echo(getMaxConcurrentUploadSize(getNumberConcurrentUploads())); ?>, // 4194304
                     success: {
                         endpoint: "/hrm/inc/FileUploader.inc.php?done"
