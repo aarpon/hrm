@@ -422,6 +422,23 @@ function getMaxConcurrentUploadSize($nConcurrentUploads = 4) {
     return $theoretical_limit;
 }
 
+/**
+ * Return the relative path to the file uploader.
+ * @return string relative path.
+ */
+function getRelativePathToFileUploader() {
+
+    global $hrm_url;
+
+    // Parse the URL to make sure we handle the relative HRM document path
+    $c = parse_url($hrm_url);
+    if (isset($c["path"])) {
+        return ($c["path"] . "/upload/FileUploader.inc.php");
+    } else {
+        return "/upload/FileUploader.inc.php";
+    }
+}
+
 /*!
   \brief  Report maximum upload size, in bytes, for concurrent upload.
   \param int $nConcurrentUploads Maximum number of concurrent uploads.

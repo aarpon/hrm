@@ -499,10 +499,14 @@ include("header_fb.inc.php");
         <script type="text/javascript">
             $('#fine-uploader-manual-trigger').fineUploader({
                 template: 'qq-template-manual-trigger',
+                cors: {
+                    expected: false,
+                    sendCredentials: false
+                },
                 maxConnections: <?php echo(getNumberConcurrentUploads()); ?>,
                 folders: false,
                 request: {
-                    endpoint: "<?php global $hrm_url; echo($hrm_url) . "/upload/FileUploader.inc.php" ?>",
+                    endpoint: "<?php echo(getRelativePathToFileUploader());?>",
                     forceMultipart: true,
                     customHeaders: {
                         "DestinationFolder" : "<?php echo($_SESSION['fileserver']->sourceFolder()); ?>",
@@ -519,7 +523,7 @@ include("header_fb.inc.php");
                     mandatory: true,
                     partSize: <?php echo(getMaxConcurrentUploadSize(getNumberConcurrentUploads())); ?>, // 4194304
                     success: {
-                        endpoint: "<?php global $hrm_url; echo($hrm_url) . "/upload/FileUploader.inc.php?done" ?>"
+                        endpoint: "<?php echo(getRelativePathToFileUploader() . "?done"); ?>"
                     }
                 },
                 validation: {
