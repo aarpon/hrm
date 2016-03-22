@@ -14,20 +14,20 @@ class FileserverV2
      *
      * If the file is an archive, it will also be decompressed.
      *
-     * @param $file Full path of the file to be moved.
-     * @param $destDir Full path to the destination directory.
-     * @param $errorMessage Reference to a string to store error messages.
+     * @param string $file Full path of the file to be moved.
+     * @param string $destDir Full path to the destination directory.
+     * @param string $errorMessage Reference to a string to store error messages.
      * @return bool True if moving was successful, false otherwise.
      */
     public static function moveUploadedFile($file, $destDir, &$errorMessage) {
 
         // Does the file exist?
         if (!is_file($file)) {
-            errorMessage("The file $file does not exist!");
+            $errorMessage = "The file $file does not exist!";
             return false;
         }
 
-        // Sanitize file name
+        // Drop path info and sanitize file name
         $destBaseName = str_replace(" ", "_", basename($file));
 
         // Full path of destination file
@@ -93,8 +93,8 @@ class FileserverV2
 
     /**
      * Extract files from supported archive.
-     * @param $file Archive file with full path.
-     * @param $destDir Destination folder where the archive will be extracted.
+     * @param string $file Archive file with full path.
+     * @param string $destDir Destination folder where the archive will be extracted.
      * @return bool True if the decompression was successful, false otherwise.
      */
     public static function decompressArchive($file, $destDir) {
@@ -126,7 +126,7 @@ class FileserverV2
      *
      * The recognized extensions are defined in the hrm_{servver}client}_config.inc files as $decompressBin.
      *
-     * @param $fileName Full file name of the file to check.
+     * @param string $fileName File Full file name of the file to check.
      * @return bool True if the file is an a supported archive, false otherwise.
      */
     public static function isArchiveFile($fileName) {
@@ -165,7 +165,7 @@ class FileserverV2
 
         // Should we append the leading dot?
         if ($withLeadingDot) {
-            array_walk($allExtensions, function(&$value, &$key) {
+            array_walk($allExtensions, function(&$value) {
                 $value = "." . $value;
             });
         }
@@ -213,7 +213,7 @@ class FileserverV2
 
     /**
      * Check whether the file is of supported format.
-     * @param $filename File name to be checked.
+     * @param string $filename File name to be checked.
      * @param bool $alsoExtras If true consider also "ids" and "ids.gx" as supported formats.
      * @return bool True if the file name is supported, false otherwise.
      */
@@ -249,8 +249,8 @@ class FileserverV2
      * is no support for longer, composite extensions because they do not
      * occur in practice.
      *
-     * @param $filename Filename to be processed.
-     * @return String Complete extension.
+     * @param string $filename Filename to be processed.
+     * @return string Complete extension.
      *
      */
     public static function getFileNameExtension($filename) {
@@ -278,11 +278,14 @@ class FileserverV2
     /**
      * Get file base name.
      *
-     * @param $filename Filename to be processed.
-     * @return String Base name.
+     * @param string $filename Filename to be processed.
+     * @return string Base name.
      *
      */
     public static function getFileBaseName($filename) {
+
+        // Drop path info
+        $filename = basename($filename);
 
         // Extract extension
         $extension = FileserverV2::getFileNameExtension($filename);
@@ -303,6 +306,7 @@ class FileserverV2
 
     /**
      * Recursively delete a folder and all its content.
+     * @param string $dir Directory to be deleted.
      */
     public static function removeDirAndContent($dir)
     {
@@ -311,7 +315,7 @@ class FileserverV2
             foreach ($objects as $object) {
                 if ($object != "." && $object != "..") {
                     if (is_dir($dir . "/" . $object))
-                        rrmdir($dir . "/" . $object);
+                        FileserverV2::removeDirAndContent($dir . "/" . $object);
                     else
                         unlink($dir . "/" . $object);
                 }
@@ -333,9 +337,9 @@ class FileserverV2
      *
      * Please mind that there is cap of 1000 attempts.
      *
-     * @param $destDir Parent directory for the file or folder to be tested.
-     * @param $fileOrDirBodyName Base body name for the file (i.e. without extension) or folder.
-     * @param $extension (optional) Extension for a file; omit for a folder.
+     * @param string $destDir Parent directory for the file or folder to be tested.
+     * @param string $fileOrDirBodyName Base body name for the file (i.e. without extension) or folder.
+     * @param string $extension (optional) Extension for a file; omit for a folder.
      * @return string full path to the file or folder or "" if all attempts failed.
      */
     private static function getValidFileOrDirName($destDir, $fileOrDirBodyName, $extension = "") {
