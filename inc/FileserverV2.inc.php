@@ -64,7 +64,8 @@ class FileserverV2
         }
 
         // The file was not an archive, check that it is a valid image
-        if (! FileserverV2::isValidImage($file)) {
+        // Consider also extras (ids, idx.gz)
+        if (! FileserverV2::isValidImage($file, true)) {
             $errorMessage = "The file $file is not a valid image.";
             return false;
         }
@@ -208,7 +209,7 @@ class FileserverV2
     public static function getImageExtrasExtensions() {
 
         // Return the image extras extensions
-        return array(".ids", '.idx.gz');
+        return array("ids", 'idx.gz');
     }
 
     /**
