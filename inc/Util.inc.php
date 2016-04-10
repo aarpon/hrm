@@ -407,7 +407,14 @@ function getMaxSingleUploadSize() {
 }
 
 /*!
-  \brief  Report maximum upload size, in bytes, for concurrent upload.
+  \brief  Report maximum upload size, in bytes, for concurrent uploads.
+
+          The maximum (chunk) concurrent upload file is calculated as a 
+          funcion of the max post size (from php.ini) and the configured
+          number of concurrent uploads. To avoid choking the server when
+          several users are uploading at the same size, the upload size is
+          capped to 16MB.
+
   \param int $nConcurrentUploads Maximum number of concurrent uploads.
   \return maximum upload size in bytes.
 */
@@ -419,6 +426,11 @@ function getMaxConcurrentUploadSize($nConcurrentUploads = 4) {
     // Divide it in (n+1) parts
     $theoretical_limit = floor((floatval($post_max_size) / ($nConcurrentUploads + 1)));
 
+    // Cap it
+    $capSize = 16777216;
+    if ($theoretical_limit > $capSize) {
+        $theoretical_limit = $capSize;
+    }
     return $theoretical_limit;
 }
 
