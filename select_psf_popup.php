@@ -33,12 +33,11 @@ $emSetting = $emSettingArr[$chan];
 
 ?>
 
-<!DOCTYPE html 
-    PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" 
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!DOCTYPE html>
+<html lang="en">
 
 <head>
+    <meta charset="utf-8">
     <title>Huygens Remote Manager</title>
     <script type="text/javascript">
     <!--
@@ -61,9 +60,9 @@ $emSetting = $emSettingArr[$chan];
   <form method="get" action="">
 
     <div id="box">
-    
+
       <fieldset>
-      
+
         <legend>available PSF files</legend>
 <?php
 $files = $_SESSION['fileserver']->getPSFiles();
@@ -84,7 +83,7 @@ foreach ($files as $file) {
   }
   $NA = $data[$file]['NA'][0];
   $pCnt = $data[$file]['photonCnt'][0];
-  if ($pCnt > 1) { 
+  if ($pCnt > 1) {
       $mType = "multiphoton";
   }
   $ex = $data[$file]['lambdaEx'][0];
@@ -107,7 +106,7 @@ foreach ($files as $file) {
   } elseif (abs($em - $emSetting) / $emSetting > .05 ) {
       $mismatch = true;
   }
-  
+
   if ($mismatch) {
       $showWarning = true;
       $style = "class=\"info\" ";
@@ -120,11 +119,11 @@ foreach ($files as $file) {
 ?>
           </select>
         </div>
-        
+
       </fieldset>
-        
+
       <div>
-        <input name="channel" 
+        <input name="channel"
                type="hidden"
                value="<?php echo $_GET["channel"] ?>" />
         <input name="update"
@@ -132,13 +131,13 @@ foreach ($files as $file) {
                value=""
                class="icon update" />
       </div>
-      
+
       <div>
         <input type="button" value="close" onclick="window.close()" />
       </div>
-      
+
     </div> <!-- box -->
-    
+
     <div id="message">
 <?php
 
@@ -160,11 +159,11 @@ $files = $_SESSION['fileserver']->files();
 
 ?>
     </div>
-    
+
   </form>
-    
+
 </div>
-  
+
 </body>
 
 </html>

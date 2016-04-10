@@ -79,7 +79,7 @@ if (isset($_POST['add'])) {
         if ($db->emailAddress($clean['username']) == "") {
           $password = get_rand_id(8);
           $result = $db->addNewUser( $clean["username"],
-                                     $password, $clean["email"], 
+                                     $password, $clean["email"],
                                      $clean["group"], 'a' );
 
           // TODO refactor
@@ -117,12 +117,11 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 
 ?>
 
-<!DOCTYPE html
-    PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!DOCTYPE html>
+<html lang="en">
 
 <head>
+    <meta charset="utf-8">
     <title>Huygens Remote Manager</title>
     <script type="text/javascript">
     <!--
@@ -154,7 +153,7 @@ else echo "        var added = false;\n";
         <div id="adduser">
 
           <label for="username">Username: </label>
-          <input type="text" 
+          <input type="text"
                  name="username"
                  id="username"
                  value=""
@@ -163,7 +162,7 @@ else echo "        var added = false;\n";
           <br />
 
           <label for="email">E-mail address: </label>
-          <input type="text" 
+          <input type="text"
                  name="email"
                  id="email"
                  value=""
@@ -172,7 +171,7 @@ else echo "        var added = false;\n";
           <br />
 
           <label for="group">Research group: </label>
-          <input type="text" 
+          <input type="text"
                  name="group"
                  id="group"
                  value=""
@@ -190,7 +189,7 @@ else echo "        var added = false;\n";
       </fieldset>
 
       <div>
-        <input type="button" 
+        <input type="button"
                value="close"
                onclick="window.close();" />
       </div>
