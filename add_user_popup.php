@@ -113,8 +113,6 @@ if (isset($_POST['add'])) {
   else $message = "Please fill in name field";
 }
 
-echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
-
 ?>
 
 <!DOCTYPE html>

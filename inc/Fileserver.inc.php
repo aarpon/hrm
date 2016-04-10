@@ -1688,8 +1688,6 @@ echo '</body></html>';
           /* All job previews share a common root name and relative path. */
       $this->previewBase = $file;
 
-      echo '<?xml version=\"1.0\" encoding=\"UTF-8\"?'.'>';
-
       echo ' <!DOCTYPE html>
           <html lang="en">
 

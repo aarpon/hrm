@@ -17,7 +17,7 @@ if (!isset($_SESSION['fileserver'])) {
   $_SESSION['fileserver'] = new Fileserver($name);
 }
 
-echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
+
 $mTypeSetting = $_SESSION['setting']->parameter(
     "MicroscopeType")->translatedValue();
 $twoPhoton = $_SESSION['setting']->isTwoPhoton();

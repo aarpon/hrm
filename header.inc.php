@@ -5,8 +5,6 @@
 require_once( "./inc/System.inc.php" );
 require_once( "./inc/Util.inc.php" );
 
-echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
-
 ?>
 
 <!DOCTYPE html>
