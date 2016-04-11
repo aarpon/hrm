@@ -15,6 +15,7 @@ require_once( "inc/Util.inc.php" );
 require_once( "inc/OmeroConnection.inc.php");
 require_once( "inc/wiki_help.inc.php" );
 require_once( "inc/Util.inc.php" );
+require_once( "inc/UtilV2.inc.php" );
 
 /*!
   \brief  Generates basic buttons for the image file browser
@@ -503,10 +504,10 @@ include("header_fb.inc.php");
                     expected: false,
                     sendCredentials: false
                 },
-                maxConnections: <?php echo(getNumberConcurrentUploads()); ?>,
+                maxConnections: <?php echo(UtilV2::getNumberConcurrentUploads()); ?>,
                 folders: false,
                 request: {
-                    endpoint: "<?php echo(getRelativePathToFileUploader());?>",
+                    endpoint: "<?php echo(UtilV2::getRelativePathToFileUploader());?>",
                     forceMultipart: true,
                     customHeaders: {
                         "DestinationFolder" : "<?php echo($_SESSION['fileserver']->sourceFolder()); ?>",
@@ -521,9 +522,10 @@ include("header_fb.inc.php");
                         enabled: true
                     },
                     mandatory: true,
-                    partSize: <?php echo(getMaxConcurrentUploadSize(getNumberConcurrentUploads())); ?>, // 4194304
+                    partSize: <?php echo(UtilV2::getMaxConcurrentUploadSize(
+                        UtilV2::getNumberConcurrentUploads())); ?>,
                     success: {
-                        endpoint: "<?php echo(getRelativePathToFileUploader() . "?done"); ?>"
+                        endpoint: "<?php echo(UtilV2::getRelativePathToFileUploader() . "?done"); ?>"
                     }
                 },
                 validation: {

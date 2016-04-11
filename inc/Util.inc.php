@@ -407,68 +407,6 @@ function getMaxSingleUploadSize() {
 }
 
 /*!
-  \brief  Report maximum upload size, in bytes, for concurrent uploads.
-
-          The maximum (chunk) concurrent upload file is calculated as a 
-          funcion of the max post size (from php.ini) and the configured
-          number of concurrent uploads. To avoid choking the server when
-          several users are uploading at the same size, the upload size is
-          capped to 16MB.
-
-  \param int $nConcurrentUploads Maximum number of concurrent uploads.
-  \return maximum upload size in bytes.
-*/
-function getMaxConcurrentUploadSize($nConcurrentUploads = 4) {
-
-    // Get max post size from php.ini
-    $post_max_size = let_to_num(ini_get('post_max_size'));
-
-    // Divide it in (n+1) parts
-    $theoretical_limit = floor((floatval($post_max_size) / ($nConcurrentUploads + 1)));
-
-    // Cap it
-    $capSize = 16777216;
-    if ($theoretical_limit > $capSize) {
-        $theoretical_limit = $capSize;
-    }
-    return $theoretical_limit;
-}
-
-/**
- * Return the relative path to the file uploader.
- * @return string relative path.
- */
-function getRelativePathToFileUploader() {
-
-    global $hrm_url;
-
-    // Parse the URL to make sure we handle the relative HRM document path
-    $c = parse_url($hrm_url);
-    if (isset($c["path"])) {
-        return ($c["path"] . "/upload/FileUploader.inc.php");
-    } else {
-        return "/upload/FileUploader.inc.php";
-    }
-}
-
-/*!
-  \brief  Report maximum upload size, in bytes, for concurrent upload.
-  \param int $nConcurrentUploads Maximum number of concurrent uploads.
-  \return maximum upload size in bytes.
-*/
-function getNumberConcurrentUploads() {
-
-    global $httpNumberOfConcurrentUploads;
-
-    // Get the number of concurrent uploads from the configuration files
-    if (!isset($httpNumberOfConcurrentUploads)) {
-        $httpNumberOfConcurrentUploads = 4;
-    }
-
-    return $httpNumberOfConcurrentUploads;
-}
-
-/*!
   \brief  Report maximum post size, in bytes
   \return maximum upload post in bytes
 */
