@@ -2,9 +2,8 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
-require_once(dirname(__FILE__) . "/hrm_config.inc.php" );
-require_once(dirname(__FILE__) . "/Util.inc.php" );
-require_once(dirname(__FILE__) . "/extern/adodb5/adodb.inc.php");
+require_once dirname(__FILE__) . "/../bootstrap/bootstrap.inc.php";
+require_once dirname(__FILE__) . "/Util.inc.php" ;
 
 /*!
     \class  DatabaseConnection
@@ -582,9 +581,9 @@ class DatabaseConnection {
             $query  = "SELECT value FROM $table WHERE owner='" . $user;
             $query .= "' AND setting='" . $name . "' AND name='";
             $query .= $parameterName . "'";
-            
+
             $newValue = $this->queryLastValue($query);
-            
+
             if ($newValue == NULL) {
 
                 // See if the Parameter has a usable default
@@ -641,7 +640,7 @@ class DatabaseConnection {
                     $newValue = $newValues;
                 }
             }
-            
+
             $parameter->setValue($newValue);
             $settings->set($parameter);
         }
