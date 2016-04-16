@@ -4,9 +4,60 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "40c3803a224dd38a6b5dbd3fccd8f2d0",
-    "content-hash": "b836581ff7dd4ff30478e2bdb22bff68",
+    "hash": "b67055fd05942b47ca6bd920310f1766",
+    "content-hash": "b5ce8daa8514f24ed30a5025eef0c658",
     "packages": [
+        {
+            "name": "adldap2/adldap2",
+            "version": "v4.0.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/adLDAP2/adLDAP2.git",
+                "reference": "41f3bcae33add7145e2c7b2782eb9a872bb29da7"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/adLDAP2/adLDAP2/zipball/41f3bcae33add7145e2c7b2782eb9a872bb29da7",
+                "reference": "41f3bcae33add7145e2c7b2782eb9a872bb29da7",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "suggest": {
+                "ext-ldap": "*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "": "lib/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-2.1"
+            ],
+            "authors": [
+                {
+                    "name": "Scott Barnett",
+                    "email": "scott@wiggumworld.com",
+                    "role": "Developer"
+                },
+                {
+                    "name": "Richard Hyland",
+                    "email": "adldap@richardhyland.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "adLDAP, PHP LDAP library for manipulating Active Directory",
+            "homepage": "http://adldap.sourceforge.net",
+            "keywords": [
+                "active directory",
+                "ldap",
+                "windows"
+            ],
+            "time": "2015-01-26 17:00:45"
+        },
         {
             "name": "adodb/adodb-php",
             "version": "v5.20.4",
@@ -1018,9 +1069,9 @@
         }
     ],
     "aliases": [],
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "stability-flags": [],
-    "prefer-stable": false,
+    "prefer-stable": true,
     "prefer-lowest": false,
     "platform": [],
     "platform-dev": []

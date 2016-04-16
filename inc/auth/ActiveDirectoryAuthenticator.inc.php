@@ -2,9 +2,13 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
-// Include adLDAP.php and the AbstractAuthenticator.
-require_once(dirname(__FILE__) . "/AbstractAuthenticator.inc.php");
-require_once(dirname(__FILE__) . "/../extern/adLDAP4/src/adLDAP.php");
+use adLDAP\adLDAP;
+use adLDAP\adLDAPException;
+
+require_once dirname(__FILE__) . "/../../bootstrap/bootstrap.inc.php";
+
+// Include the AbstractAuthenticator.
+require_once dirname(__FILE__) . "/AbstractAuthenticator.inc.php";
 
 /*!
   \class	ActiveDirectoryAuthenticator
@@ -84,7 +88,7 @@ class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
         // Set up the adLDAP object
         $options = array(
             'account_suffix'      => $ACCOUNT_SUFFIX,
-            'ad_port'             => $AD_PORT,
+            'ad_port'             => intval($AD_PORT),
             'base_dn'             => $BASE_DN,
             'domain_controllers'  => $DOMAIN_CONTROLLERS,
             'admin_username'      => $AD_USERNAME,
