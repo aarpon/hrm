@@ -3163,16 +3163,16 @@
         },
         {
             "name": "zendframework/zend-filter",
-            "version": "2.7.0",
+            "version": "2.7.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-filter.git",
-                "reference": "a236005581cd96a5d5940b37bec5efef1e87894d"
+                "reference": "84c50246428efb0a1e52868e162dab3e149d5b80"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/zend-filter/zipball/a236005581cd96a5d5940b37bec5efef1e87894d",
-                "reference": "a236005581cd96a5d5940b37bec5efef1e87894d",
+                "url": "https://api.github.com/repos/zendframework/zend-filter/zipball/84c50246428efb0a1e52868e162dab3e149d5b80",
+                "reference": "84c50246428efb0a1e52868e162dab3e149d5b80",
                 "shasum": ""
             },
             "require": {
@@ -3219,7 +3219,7 @@
                 "filter",
                 "zf2"
             ],
-            "time": "2016-04-06 14:04:38"
+            "time": "2016-04-18 18:32:43"
         },
         {
             "name": "zendframework/zend-hydrator",
@@ -3281,16 +3281,16 @@
         },
         {
             "name": "zendframework/zend-i18n",
-            "version": "2.7.1",
+            "version": "2.7.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-i18n.git",
-                "reference": "563499cdf4a2040fd933b586be28216305187137"
+                "reference": "d5ce2dca77a3e66777458f84acae06ce468bd6b7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/zend-i18n/zipball/563499cdf4a2040fd933b586be28216305187137",
-                "reference": "563499cdf4a2040fd933b586be28216305187137",
+                "url": "https://api.github.com/repos/zendframework/zend-i18n/zipball/d5ce2dca77a3e66777458f84acae06ce468bd6b7",
+                "reference": "d5ce2dca77a3e66777458f84acae06ce468bd6b7",
                 "shasum": ""
             },
             "require": {
@@ -3344,7 +3344,7 @@
                 "i18n",
                 "zf2"
             ],
-            "time": "2016-03-30 21:01:08"
+            "time": "2016-04-18 18:25:10"
         },
         {
             "name": "zendframework/zend-json",
@@ -3453,16 +3453,16 @@
         },
         {
             "name": "zendframework/zend-serializer",
-            "version": "2.7.0",
+            "version": "2.7.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-serializer.git",
-                "reference": "1dc6fab0f5f21f92bba8c5e74e2878b6e22a2c16"
+                "reference": "8b6ff840e19b5dd8eca40e20d635ff407053f7d8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/zend-serializer/zipball/1dc6fab0f5f21f92bba8c5e74e2878b6e22a2c16",
-                "reference": "1dc6fab0f5f21f92bba8c5e74e2878b6e22a2c16",
+                "url": "https://api.github.com/repos/zendframework/zend-serializer/zipball/8b6ff840e19b5dd8eca40e20d635ff407053f7d8",
+                "reference": "8b6ff840e19b5dd8eca40e20d635ff407053f7d8",
                 "shasum": ""
             },
             "require": {
@@ -3505,7 +3505,7 @@
                 "serializer",
                 "zf2"
             ],
-            "time": "2016-04-06 17:46:23"
+            "time": "2016-04-18 17:31:57"
         },
         {
             "name": "zendframework/zend-servicemanager",
