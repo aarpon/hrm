@@ -15,7 +15,6 @@ class Nav
      * Generate HTML code to link to a specific page in the SVI wiki.
      *
      * @param string $pageName The title of the page in the SVI wiki.
-     * @param string $text The string used for the link in the HTML.
      * @return string HTML code to link to the requested wiki page.
      */
     public static function linkWikiPage($pageName)
@@ -130,8 +129,8 @@ class Nav
      *
      * This function requires the URL of the current page. You can
      * use the getThisPageName() function from Util.inc.php to get it.
-     * 
-     * @param string $currentPage URL of the current page. 
+     *
+     * @param string $currentPage URL of the current page.
      * @return string HTML code to link to the home page.
      */
     public static function linkHome($currentPage)
