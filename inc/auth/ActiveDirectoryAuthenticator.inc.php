@@ -5,7 +5,7 @@
 use adLDAP\adLDAP;
 use adLDAP\adLDAPException;
 
-require_once dirname(__FILE__) . "/../../bootstrap/bootstrap.inc.php";
+require_once dirname(__FILE__) . "/../bootstrap.inc.php";
 
 // Include the AbstractAuthenticator.
 require_once dirname(__FILE__) . "/AbstractAuthenticator.inc.php";
