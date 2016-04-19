@@ -3,8 +3,10 @@
 // Copyright and license notice: see license.txt
 
 /**
- * Class Wiki Commodity class to link to help pages in the SVI wiki.
- * @package hrm
+ * Class Nav
+ * Commodity class to manage all links and actions of the navigation bar.
+ *
+ * All items are enclosed in <li> tags.
  */
 class Nav
 {
@@ -12,18 +14,15 @@ class Nav
     /**
      * Generate HTML code to link to a specific page in the SVI wiki.
      *
-     * Assemble an HTML link opening a new window/tab that points to a certain
-     * page in the SVI wiki. The link is enclosed in "list-item" tags and has
-     * the default label "Help" unless the linkname parameter is specified.
-     *
      * @param string $pageName The title of the page in the SVI wiki.
      * @param string $text The string used for the link in the HTML.
      * @return string HTML code to link to the requested wiki page.
      */
-    public static function linkWikiPage($pageName, $text = "Help")
+    public static function linkWikiPage($pageName)
     {
-        return self::buildLinkHTMLElement($text, "https://svi.nl/$pageName",
-            "images/help.png", $text, true);
+        return self::buildLinkHTMLElement("Help",
+            "https://svi.nl/$pageName", "images/help.png",
+            "Help", true);
 
     }
 
@@ -227,7 +226,8 @@ class Nav
      *                     false otherwise.
      * @return string HTML string to be echoed in the page.
      */
-    private static function buildLinkHTMLElement($text, $url, $img_url, $altText, $extern = false)
+    private static function buildLinkHTMLElement($text, $url, $img_url,
+                                                 $altText, $extern = false)
     {
         $onclick = "";
         if ($extern == true) {
@@ -249,7 +249,8 @@ class Nav
      * @param string $action Javascript call to be inserted in the onclick="" event.
      * @return string HTML string to be echoed in the page.
      */
-    private static function buildActionHTMLElement($text, $img_url, $altText, $action)
+    private static function buildActionHTMLElement($text, $img_url, $altText,
+                                                   $action)
     {
         $onclick = 'onclick="' . $action . '"';
         $html = '<li><a href="#" ' . $onclick . '>' .
