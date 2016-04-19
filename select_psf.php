@@ -4,7 +4,7 @@
 
 require_once("./inc/User.inc.php");
 require_once("./inc/Fileserver.inc.php");
-require_once("./inc/wiki_help.inc.php");
+require_once("./inc/Nav.inc.php");
 
 /* *****************************************************************************
  *
@@ -95,7 +95,7 @@ include("header.inc.php");
     <div id="navleft">
         <ul>
             <?php
-                wiki_link('HuygensRemoteManagerHelpSelectPSFFiles');
+                echo(Nav::linkWikiPage('HuygensRemoteManagerHelpSelectPSFFiles'));
             ?>
             <li> [ <?php  echo $_SESSION['setting']->name(); ?> ] </li>
         </ul>
@@ -103,7 +103,7 @@ include("header.inc.php");
     <div id="navright">
         <ul>
             <?php
-                include("./inc/nav/user.inc.php");
+                echo(Nav::textUser($_SESSION['user']->name()));
             ?>
         </ul>
     </div>

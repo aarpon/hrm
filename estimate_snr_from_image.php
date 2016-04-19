@@ -5,7 +5,7 @@
 require_once("./inc/Util.inc.php");
 require_once("./inc/User.inc.php");
 require_once("./inc/Fileserver.inc.php");
-require_once("./inc/wiki_help.inc.php");
+require_once("./inc/Nav.inc.php");
 
 // Two private functions, for the two tasks of this script:
 
@@ -20,7 +20,7 @@ function showFileBrowser() {
     $explanation_text = "Please choose an image and click on the calculator " .
     "button to estimate the SNR.";
     $form_title = "Available images";
-    $top_nav_left = get_wiki_link('HuygensRemoteManagerHelpSnrEstimator');
+    $top_nav_left = Nav::linkWikiPage('HuygensRemoteManagerHelpSnrEstimator');
     $top_nav_right = "";
     $multiple_files = false;
     // Number of displayed files.
@@ -143,7 +143,7 @@ function estimateSnrFromFile($file) {
 
     include("header.inc.php");
 
-    $top_nav_left = get_wiki_link('HuygensRemoteManagerHelpSnrEstimator');
+    $top_nav_left = Nav::linkWikiPage('HuygensRemoteManagerHelpSnrEstimator');
     $top_nav_right = "";
 
     // Noise estimations can be done only in raw images.

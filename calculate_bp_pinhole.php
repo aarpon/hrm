@@ -3,7 +3,7 @@
 // Copyright and license notice: see license.txt
 
 require_once ("./inc/User.inc.php");
-require_once("./inc/wiki_help.inc.php");
+require_once("./inc/Nav.inc.php");
 
 session_start();
 
@@ -568,14 +568,14 @@ include("header.inc.php");
     <div id="navleft">
         <ul>
             <?php
-                wiki_link('BackprojectedPinholeCalculator');
+                echo(Nav::linkWikiPage('BackprojectedPinholeCalculator'));
             ?>
         </ul>
     </div>
     <div id="navright">
         <ul>
             <?php
-                include("./inc/nav/user.inc.php");
+                echo(Nav::textUser($_SESSION['user']->name()));
             ?>
         </ul>
     </div>

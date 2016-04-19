@@ -3,7 +3,7 @@
 // Copyright and license notice: see license.txt
 
 require_once("./inc/User.inc.php");
-require_once("./inc/wiki_help.inc.php");
+require_once("./inc/Nav.inc.php");
 
 session_start();
 
@@ -48,16 +48,16 @@ $info = preg_replace('%<img border="0" src=%s', "<img src=", $info );
     <div id="navleft">
         <ul>
             <?php
-                wiki_link('HuygensRemoteManagerHelpSystemSummary');
+                echo(Nav::linkWikiPage('HuygensRemoteManagerHelpSystemSummary'));
             ?>
         </ul>
     </div>
     <div id="navright">
         <ul>
             <?php
-                include("./inc/nav/user.inc.php");
-                include("./inc/nav/back.inc.php");
-                include("./inc/nav/home.inc.php");
+                echo(Nav::textUser($_SESSION['user']->name()));
+                echo(Nav::linkBack($_SESSION['referer']));
+                echo(Nav::linkHome(getThisPageName()));
             ?>
         </ul>
     </div>

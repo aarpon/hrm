@@ -7,7 +7,7 @@ require_once("./inc/Fileserver.inc.php");
 require_once("./inc/Setting.inc.php");
 require_once("./inc/JobDescription.inc.php");
 require_once("./inc/System.inc.php");
-require_once("./inc/wiki_help.inc.php");
+require_once("./inc/Nav.inc.php");
 
 session_start();
 
@@ -89,17 +89,19 @@ include("header.inc.php");
     <div id="navleft">
         <ul>
             <?php
-                wiki_link('HuygensRemoteManagerHelpCreateJob');
+                echo(Nav::linkWikiPage('HuygensRemoteManagerHelpCreateJob'));
             ?>
         </ul>
     </div>
     <div id="navright">
         <ul>
             <?php
-                include("./inc/nav/user.inc.php");
-                include("./inc/nav/raw_images.inc.php");
-                include("./inc/nav/job_queue.inc.php");
-                include("./inc/nav/home.inc.php");
+                echo(Nav::textUser($_SESSION['user']->name()));
+                if ( !$_SESSION['user']->isAdmin()) {
+                    echo(Nav::linkRawImages());
+                }
+                echo(Nav::linkJobQueue());
+                echo(Nav::linkHome(getThisPageName()));
             ?>
         </ul>
     </div>

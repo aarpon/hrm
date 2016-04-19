@@ -9,7 +9,7 @@ require_once(dirname(__FILE__) . "/inc/hrm_config.inc.php");
 require_once(dirname(__FILE__) . "/inc/Fileserver.inc.php");
 require_once(dirname(__FILE__) . "/inc/System.inc.php");
 require_once(dirname(__FILE__) . "/inc/Validator.inc.php");
-require_once(dirname(__FILE__) . "/inc/wiki_help.inc.php");
+require_once(dirname(__FILE__) . "/inc/Nav.inc.php");
 
 global $email_admin;
 global $authenticateAgainst;
@@ -151,17 +151,17 @@ include("header.inc.php");
     <div id="navleft">
         <ul>
             <?php
-                wiki_link('HuygensRemoteManagerHelpLogin');
-                include("./inc/nav/mailing.inc.php");
+                echo(Nav::linkWikiPage('HuygensRemoteManagerHelpLogin'));
+                echo(Nav::linkMailingList());
             ?>
         </ul>
     </div>
     <div id="navright">
         <ul>
             <?php
-                include("./inc/nav/whats_new.inc.php");
-                include("./inc/nav/hrm_project_website.inc.php");
-                include("./inc/nav/svi_wiki.inc.php");
+                echo(Nav::linkWhatsNew());
+                echo(Nav::linkProjectWebsite());
+                echo(Nav::linkSVIWiki());
             ?>
         </ul>
     </div>

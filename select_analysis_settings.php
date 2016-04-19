@@ -7,7 +7,7 @@ require_once("./inc/Parameter.inc.php");
 require_once("./inc/Setting.inc.php");
 require_once("./inc/SettingEditor.inc.php");
 require_once("./inc/Util.inc.php");
-require_once("./inc/wiki_help.inc.php");
+require_once("./inc/Nav.inc.php");
 
 /* *****************************************************************************
  *
@@ -195,7 +195,7 @@ include("header.inc.php");
     <div id="navleft">
         <ul>
             <?php
-                wiki_link('HuygensRemoteManagerHelpSelectTaskSettings');
+                echo(Nav::linkWikiPage('HuygensRemoteManagerHelpSelectTaskSettings'));
 
             if ( ! $_SESSION["user"]->isAdmin()) {
             ?>
@@ -214,9 +214,11 @@ include("header.inc.php");
     <div id="navright">
         <ul>
             <?php
-                include("./inc/nav/user.inc.php");
-                include("./inc/nav/raw_images.inc.php");
-                include("./inc/nav/home.inc.php");
+                echo(Nav::textUser($_SESSION['user']->name()));
+                if ( !$_SESSION['user']->isAdmin()) {
+                    echo(Nav::linkRawImages());
+                }
+                echo(Nav::linkHome(getThisPageName()));
             ?>
         </ul>
     </div>

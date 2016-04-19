@@ -3,7 +3,7 @@
 // Copyright and license notice: see license.txt
 
 require_once ("./inc/User.inc.php");
-require_once("./inc/wiki_help.inc.php");
+require_once("./inc/Nav.inc.php");
 
 
 /* *****************************************************************************
@@ -94,14 +94,14 @@ include ("header.inc.php");
     <div id="navleft">
         <ul>
             <?php
-                wiki_link('HRMHelp#Calculate_pixel_size');
+                echo(Nav::linkWikiPage('HRMHelp#Calculate_pixel_size'));
             ?>
         </ul>
     </div>
     <div id="navright">
         <ul>
             <?php
-                include("./inc/nav/user.inc.php");
+                echo(Nav::textUser($_SESSION['user']->name()));
             ?>
         </ul>
     </div>

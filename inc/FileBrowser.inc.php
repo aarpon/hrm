@@ -13,7 +13,7 @@
 
 require_once( "inc/Util.inc.php" );
 require_once( "inc/OmeroConnection.inc.php");
-require_once( "inc/wiki_help.inc.php" );
+require_once( "inc/Nav.inc.php" );
 
 /*!
   \brief  Generates basic buttons for the image file browser
@@ -393,7 +393,7 @@ include("header.inc.php");
                 if (isset($top_nav_left)) {
                     echo $top_nav_left;
                 } else {
-                    wiki_link('HuygensRemoteManagerHelpFileManagement');
+                    echo(Nav::linkWikiPage('HuygensRemoteManagerHelpFileManagement'));
                 }
             ?>
             </ul>
@@ -407,16 +407,16 @@ include("header.inc.php");
                 // was not the dashboard (home.php) but e.g. the "Select
                 // images" when creating a new job.
                 if ( strpos( $referer, 'home.php' ) === False ) {
-                    include("./inc/nav/back.inc.php");
+                    echo(Nav::linkBack($referer));
                 }
             }
             if ( $browse_folder == "dest" ) {
-                include("./inc/nav/files_raw.inc.html");
+                echo(Nav::linkRawImages());
             } else {
-                include("./inc/nav/files_results.inc.html");
+                echo(Nav::linkResults());
             }
-            include("./inc/nav/user.inc.php");
-            include("./inc/nav/home.inc.php");
+            echo(Nav::textUser($_SESSION['user']->name()));
+            echo(Nav::linkHome(getThisPageName()));
             ?>
             </ul>
         </div>

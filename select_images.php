@@ -5,7 +5,7 @@
 require_once("./inc/User.inc.php");
 require_once("./inc/Fileserver.inc.php");
 require_once("./inc/System.inc.php");
-require_once("./inc/wiki_help.inc.php");
+require_once("./inc/Nav.inc.php");
 
 session_start();
 
@@ -336,16 +336,18 @@ $info = "<h3>Quick help</h3>" .
     <div id="navleft">
         <ul>
             <?php
-                wiki_link('HuygensRemoteManagerHelpSelectImages');
+                echo(Nav::linkWikiPage('HuygensRemoteManagerHelpSelectImages'));
             ?>
         </ul>
     </div>
     <div id="navright">
         <ul>
             <?php
-                include("./inc/nav/user.inc.php");
-                include("./inc/nav/raw_images.inc.php");
-                include("./inc/nav/home.inc.php");
+                echo(Nav::textUser($_SESSION['user']->name()));
+                if ( !$_SESSION['user']->isAdmin()) {
+                    echo(Nav::linkRawImages());
+                }
+                echo(Nav::linkHome(getThisPageName()));
             ?>
         </ul>
     </div>

@@ -6,7 +6,7 @@ require_once("./inc/User.inc.php");
 require_once("./inc/Parameter.inc.php");
 require_once("./inc/Setting.inc.php");
 require_once("./inc/Database.inc.php");
-require_once("./inc/wiki_help.inc.php");
+require_once("./inc/Nav.inc.php");
 
 /* *****************************************************************************
  *
@@ -18,6 +18,10 @@ session_start();
 
 if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
   header("Location: " . "login.php"); exit();
+}
+
+if (isset($_GET['home'])) {
+    header("Location: " . "home.php"); exit();
 }
 
 $message = "";
@@ -120,7 +124,7 @@ include("header.inc.php");
     <div id="navleft">
         <ul>
             <?php
-                wiki_link('HuygensRemoteManagerHelpOptics');
+                echo(Nav::linkWikiPage('HuygensRemoteManagerHelpOptics'));
             ?>
             <li> [ <?php  echo $_SESSION['setting']->name(); ?> ] </li>
         </ul>
@@ -128,9 +132,8 @@ include("header.inc.php");
     <div id="navright">
         <ul>
             <?php
-                include("./inc/nav/user.inc.php");
-                ### FIXME: the "home" link does not work on this page!!
-                include("./inc/nav/home.inc.php");
+                echo(Nav::textUser($_SESSION['user']->name()));
+                echo(Nav::linkHome(getThisPageName()));
             ?>
         </ul>
     </div>

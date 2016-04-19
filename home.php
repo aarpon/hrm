@@ -6,7 +6,7 @@ require_once("./inc/User.inc.php");
 require_once("./inc/hrm_config.inc.php");
 require_once("./inc/Fileserver.inc.php");
 require_once("./inc/System.inc.php");
-require_once("./inc/wiki_help.inc.php");
+require_once("./inc/Nav.inc.php");
 
 global $email_admin;
 global $authenticateAgainst;
@@ -40,18 +40,20 @@ include("header.inc.php");
     <div id="navleft">
         <ul>
             <?php
-                wiki_link('HuygensRemoteManager');
-                include("./inc/nav/manual.inc.php");
-                include("./inc/nav/report_issue.inc.php");
-                include("./inc/nav/check_updates.inc.php");
+                echo(Nav::linkWikiPage('HuygensRemoteManager'));
+                echo(Nav::linkManual());
+                echo(Nav::linkReportIssue());
+                if ($_SESSION['user']->isAdmin()) {
+                    echo(Nav::actionCheckForUpdates());
+                }
             ?>
         </ul>
     </div>
     <div id="navright">
         <ul>
             <?php
-                include("./inc/nav/user.inc.php");
-                include("./inc/nav/logout.inc.php");
+                echo(Nav::textUser($_SESSION['user']->name()));
+                echo(Nav::linkLogOut(getThisPageName()));
             ?>
         </ul>
     </div>

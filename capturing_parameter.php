@@ -7,7 +7,7 @@ require_once("./inc/Parameter.inc.php");
 require_once("./inc/Setting.inc.php");
 require_once("./inc/Util.inc.php");
 require_once("./inc/Database.inc.php");
-require_once("./inc/wiki_help.inc.php");
+require_once("./inc/Nav.inc.php");
 
 /* *****************************************************************************
  *
@@ -234,7 +234,7 @@ if ( $_SESSION['setting']->hasPinhole() ) {
     <div id="navleft">
         <ul>
             <?php
-                wiki_link('HuygensRemoteManagerHelpCaptor');
+                echo(Nav::linkWikiPage('HuygensRemoteManagerHelpCaptor'));
             ?>
             <li> [ <?php  echo $_SESSION['setting']->name(); ?> ] </li>
         </ul>
@@ -242,7 +242,7 @@ if ( $_SESSION['setting']->hasPinhole() ) {
     <div id="navright">
         <ul>
             <?php
-                include("./inc/nav/user.inc.php");
+                echo(Nav::textUser($_SESSION['user']->name()));
             ?>
         </ul>
     </div>

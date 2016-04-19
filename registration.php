@@ -8,7 +8,7 @@ require_once("./inc/hrm_config.inc.php");
 require_once("./inc/Mail.inc.php");
 require_once("./inc/Util.inc.php");
 require_once("./inc/Validator.inc.php");
-require_once("./inc/wiki_help.inc.php");
+require_once("./inc/Nav.inc.php");
 
 global $hrm_url;
 global $email_sender;
@@ -152,14 +152,14 @@ include("header.inc.php");
     <div id="navleft">
         <ul>
             <?php
-            wiki_link('HuygensRemoteManagerHelpRegistrationPage');
+            echo(Nav::linkWikiPage('HuygensRemoteManagerHelpRegistrationPage'));
             ?>
         </ul>
     </div>
     <div id="navright">
         <ul>
             <?php
-            include("./inc/nav/exit.inc.php");
+            echo(Nav::exit_to_login());
             ?>
         </ul>
     </div>

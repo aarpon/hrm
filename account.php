@@ -6,7 +6,7 @@ require_once(dirname(__FILE__) . "/inc/User.inc.php");
 require_once(dirname(__FILE__) . "/inc/hrm_config.inc.php");
 require_once(dirname(__FILE__) . "/inc/Util.inc.php");
 require_once(dirname(__FILE__) . "/inc/Validator.inc.php");
-require_once(dirname(__FILE__) . "/inc/wiki_help.inc.php");
+require_once(dirname(__FILE__) . "/inc/Nav.inc.php");
 require_once(dirname(__FILE__) . "/inc/user_mngm/UserManagerFactory.inc.php");
 
 global $email_sender;
@@ -169,15 +169,15 @@ include("header.inc.php");
     <div id="navleft">
         <ul>
             <?php
-                wiki_link('HuygensRemoteManagerHelpAccount');
+                echo(Nav::linkWikiPage('HuygensRemoteManagerHelpAccount'));
             ?>
         </ul>
     </div>
     <div id="navright">
         <ul>
             <?php
-                include("./inc/nav/user.inc.php");
-                include("./inc/nav/home.inc.php");
+                echo(Nav::textUser($_SESSION['user']->name()));
+                echo(Nav::linkHome(getThisPageName()));
             ?>
         </ul>
     </div>

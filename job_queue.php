@@ -5,7 +5,7 @@
 require_once("./inc/User.inc.php");
 require_once("./inc/JobDescription.inc.php");
 require_once("./inc/JobQueue.inc.php");
-require_once("./inc/wiki_help.inc.php");
+require_once("./inc/Nav.inc.php");
 
 session_start();
 
@@ -57,16 +57,16 @@ include("header.inc.php");
     <div id="navleft">
         <ul>
             <?php
-                wiki_link('HuygensRemoteManagerHelpQueue');
+                echo(Nav::linkWikiPage('HuygensRemoteManagerHelpQueue'));
             ?>
         </ul>
     </div>
     <div id="navright">
         <ul>
             <?php
-                include("./inc/nav/user.inc.php");
-                include("./inc/nav/back.inc.php");
-                include("./inc/nav/home.inc.php");
+                echo(Nav::textUser($_SESSION['user']->name()));
+                echo(Nav::linkBack($_SESSION['referer']));
+                echo(Nav::linkHome(getThisPageName()));
             ?>
         </ul>
     </div>

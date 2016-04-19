@@ -5,7 +5,7 @@
 require_once("./inc/User.inc.php");
 require_once("./inc/Util.inc.php");
 require_once("./inc/System.inc.php");
-require_once("./inc/wiki_help.inc.php");
+require_once("./inc/Nav.inc.php");
 
 session_start();
 
@@ -37,15 +37,15 @@ include("header.inc.php");
     <div id="navleft">
         <ul>
             <?php
-                wiki_link('HuygensRemoteManagerHelpUpdate');
+                echo(Nav::linkWikiPage('HuygensRemoteManagerHelpUpdate'));
             ?>
         </ul>
     </div>
     <div id="navright">
         <ul>
             <?php
-                include("./inc/nav/user.inc.php");
-                include("./inc/nav/home.inc.php");
+                echo(Nav::textUser($_SESSION['user']->name()));
+                echo(Nav::linkHome(getThisPageName()));
             ?>
         </ul>
     </div>
