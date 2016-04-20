@@ -2,9 +2,12 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
+use hrm\Mail;
+
+require_once dirname(__FILE__) . '/inc/bootstrap.inc.php';
+
 require_once(dirname(__FILE__) . "/inc/User.inc.php");
 require_once(dirname(__FILE__) . "/inc/hrm_config.inc.php");
-require_once(dirname(__FILE__) . "/inc/Mail.inc.php");
 require_once(dirname(__FILE__) . "/inc/Util.inc.php");
 require_once(dirname(__FILE__) . "/inc/Validator.inc.php");
 require_once(dirname(__FILE__) . "/inc/Nav.inc.php");

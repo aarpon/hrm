@@ -2,13 +2,16 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
+use hrm\Mail;
+
+require_once dirname(__FILE__) . '/bootstrap.inc.php';
+
 require_once ("Setting.inc.php");
 require_once ("Database.inc.php");
 require_once ("JobDescription.inc.php");
 require_once ("hrm_config.inc.php");
 require_once ("Fileserver.inc.php");
 require_once ("Shell.inc.php");
-require_once ("Mail.inc.php");
 require_once ("Job.inc.php");
 require_once ("JobQueue.inc.php");
 require_once ("System.inc.php");
@@ -190,7 +193,7 @@ class QueueManager {
         // Build a file pattern to look for the deconvolved images.
         $jobFilePattern = $jobFileDir . "/" .
             $desc->destinationImageName() . "*";
-        
+
         // Grant all permissions to the deconvolved images.
         $this->chmodFiles(glob($jobFilePattern),0777);
 
@@ -214,7 +217,7 @@ class QueueManager {
     \param  $permission The requested file permission.
     */
     private function chmodFiles($files, $permission) {
-        
+
         if (is_array($files)) {
             foreach ($files as $f) {
                 @chmod($f, $permission);
@@ -585,10 +588,10 @@ class QueueManager {
                 // Report information to statistics table
                 $db = new DatabaseConnection();
                 $db->updateStatistics($job, $startTime);
-                
+
                 // Clean up server
                 $this->cleanUpFileServer($job);
-                
+
                 // Reset server and remove job from the job queue
                 $this->stopTime = $queue->stopJob($job);
                 $this->assembleJobLogFile($job, $startTime, $logFile, $errorFile);
@@ -885,16 +888,16 @@ class QueueManager {
          $queue = $this->queue;
 
          $db = new DatabaseConnection();
-         
+
         /* Retrieve the list of servers. */
         $servers = $queue->availableServer();
-        
+
         foreach ($servers as $server) {
             $this->nping[$server] = 0;
             $db->markServerAsFree($server);
         }
     }
-    
+
 
     /*!
  	\brief	Runs the QueueManager

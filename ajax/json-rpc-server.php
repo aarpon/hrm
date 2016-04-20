@@ -3,6 +3,10 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
+use hrm\Mail;
+
+require_once dirname(__FILE__) . '/../inc/bootstrap.inc.php';
+
 /*
 
 Server implementing the JSON-RPC (version 2.0) protocol.
@@ -59,7 +63,6 @@ require_once(dirname(__FILE__) . '/../inc/User.inc.php');
 require_once(dirname(__FILE__) . '/../inc/JobQueue.inc.php');
 require_once(dirname(__FILE__) . '/../inc/Database.inc.php');
 require_once(dirname(__FILE__) . '/../inc/System.inc.php');
-require_once(dirname(__FILE__) . '/../inc/Mail.inc.php');
 require_once(dirname(__FILE__) . '/../inc/Parameter.inc.php');
 require_once(dirname(__FILE__) . '/../inc/SettingEditor.inc.php');
 require_once(dirname(__FILE__) . '/../inc/Setting.inc.php');

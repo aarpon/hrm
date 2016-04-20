@@ -2,59 +2,67 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
-/*!
-  \class	Mail
-  \brief	Commodity class to send e-mails
+namespace hrm;
 
-  The content of the email is also logged to disk.
-*/
+require_once dirname(__FILE__) . '/bootstrap.inc.php';
 
-class Mail {
+/**
+ * Mail
+ *
+ * Commodity class for sending e-mails.
+ */
+class Mail
+{
     private $sender;
     private $receiver;
     private $subject;
     private $message;
 
-    /*!
-      \brief  Constructor
-      \param  $sender Sender's e-mail address
-    */
-    public function __construct($sender) {
+    /**
+     * Mail constructor.
+     * @param string $sender Sender's e-mai address.
+     */
+    public function __construct($sender)
+    {
         $this->sender = $sender;
         $this->receiver = "";
         $this->subject = "";
         $this->message = "";
     }
 
-    /*!
-      \brief  Sets the e-mail address of the receiver
-      \param  $receiver Receiver's e-mail address
-    */
-    public function setReceiver($receiver) {
+    /**
+     * Sets the e-mail address of the receiver.
+     * @param string $receiver Receiver's e-mail address
+     */
+    public function setReceiver($receiver)
+    {
         $this->receiver = $receiver;
     }
 
-    /*!
-      \brief  Sets the subject of the e-mail
-      \param  $subject  Subject of the e-mail
-    */
-    public function setSubject($subject) {
+    /**
+     * Sets the subject of the e-mail.
+     * @param string $subject Subject of the e-mail.
+     */
+    public function setSubject($subject)
+    {
         $this->subject = $subject;
     }
 
-    /*!
-      \brief  Sets the message of the e-mail
-      \param  $message  Message of the e-mail
-    */
-    public function setMessage($message) {
+    /**
+     * Sets the message of the e-mail.
+     * @param string $message Message of the e-mail.
+     */
+    public function setMessage($message)
+    {
         $this->message = $message;
     }
 
-    /*!
-      \brief  Sends the e-mail
-      \return true if the e-mail was sent successfully, false otherwise
-    */
-    public function send() {
+    /**
+     * Sends the e-mail.
+     * @return bool True if the e-mail was sent successfully, false otherwise.
+     */
+    public function send()
+    {
 
         // Check for completeness
         if ($this->sender == "") {
@@ -93,5 +101,3 @@ class Mail {
 
     }
 }
-
-?>
