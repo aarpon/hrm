@@ -3,6 +3,7 @@
 // Copyright and license notice: see license.txt
 
 use hrm\Mail;
+use hrm\Nav;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.inc.php';
 
@@ -10,7 +11,6 @@ require_once(dirname(__FILE__) . "/inc/User.inc.php");
 require_once(dirname(__FILE__) . "/inc/hrm_config.inc.php");
 require_once(dirname(__FILE__) . "/inc/Util.inc.php");
 require_once(dirname(__FILE__) . "/inc/Validator.inc.php");
-require_once(dirname(__FILE__) . "/inc/Nav.inc.php");
 require_once(dirname(__FILE__) . "/inc/user_mngm/UserManagerFactory.inc.php");
 
 global $hrm_url;

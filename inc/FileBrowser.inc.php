@@ -11,9 +11,13 @@
   this can not be so easily used. This is an interface to the Fileserver.
 */
 
+use hrm\Nav;
+
+require_once dirname(__FILE__) . '/bootstrap.inc.php';
+
 require_once( "inc/Util.inc.php" );
 require_once( "inc/OmeroConnection.inc.php");
-require_once( "inc/Nav.inc.php" );
+
 
 /*!
   \brief  Generates basic buttons for the image file browser

@@ -2,8 +2,11 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
+use hrm\Nav;
+
+require_once dirname(__FILE__) . '/inc/bootstrap.inc.php';
+
 require_once ("./inc/User.inc.php");
-require_once("./inc/Nav.inc.php");
 
 session_start();
 
@@ -79,7 +82,7 @@ $microscopes = array (
     array("micro=Zeiss_LSM710&param=Pinhole+diameter+(microns)&a=1&b=0&na=0&wl=0&msys=1.9048&c=0.564&u=-6", "http://support.svi.nl/wiki/Zeiss_LSM710"),
     "Zeiss LSM780" =>
     array("micro=Zeiss_780&param=Pinhole+diameter+(microns)&a=1&b=0&na=0&wl=0&msys=1.9048&c=0.564&u=-6", "http://support.svi.nl/wiki/Zeiss_LSM780"),
-    "Not listed" => 
+    "Not listed" =>
     array ("micro=Not_listed_microscope&param=Pinhole+physical+diameter+(microns)&a=1&b=0&na=0&wl=0&u=-6", "http://support.svi.nl/wiki/ReportOtherMicroscope")
 );
 

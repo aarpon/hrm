@@ -2,10 +2,13 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
+use hrm\Nav;
+
+require_once dirname(__FILE__) . '/inc/bootstrap.inc.php';
+
 require_once("./inc/User.inc.php");
 require_once("./inc/JobDescription.inc.php");
 require_once("./inc/JobQueue.inc.php");
-require_once("./inc/Nav.inc.php");
 
 session_start();
 
@@ -75,9 +78,9 @@ include("header.inc.php");
 
    <div id="joblist">
    <h3><img alt="SelectImages" src="./images/queue_title.png" width="40"/>&nbsp;&nbsp;Queue status</h3>
-    
+
     <form method="post" action="" id="jobqueue">
-      
+
    <!-- Display total number and number of jobs owned by current user.
    This will be filled in by Ajax calls. -->
    <div id="summary">
@@ -94,7 +97,7 @@ include("header.inc.php");
     <div id="queue">&nbsp; </div> <!-- queue -->
 
         </form>
-  
+
     </div> <!-- joblist -->
 
 <?php
@@ -131,50 +134,50 @@ include("footer.inc.php");
                 // Make sure to work with integers
                 var numAllJobsInQueue =  parseInt(response.numAllJobsInQueue);
                 var numUserJobsInQueue = parseInt(response.numUserJobsInQueue);
-                
+
                 // Update the page
                 var message = "";
                 outer:
                 switch (numAllJobsInQueue) {
-                
+
                     case 0:
                         message = "There are <b>no jobs</b> in the queue."
                         break;
-                        
+
                     case 1:
                         switch (numUserJobsInQueue) {
-                            
+
                             case 0:
                                 message = "There is <b>1 job</b> owned by " +
                                     "another user in the queue.";
                                 break outer;
-                                
+
                             case 1:
                                  message = "<b>Yours is the only job</b> " +
                                          "in the queue.";
                                  break outer;
-                                 
+
                             default:
                                 message = "<b>Error: inconsistent job count!</b>";
                                 break outer;
                         }
                         break;
-                        
+
                     default:
                         switch (numUserJobsInQueue) {
-                            
+
                             case 0:
                                 message = "There are <b>" + numAllJobsInQueue +
                                         " jobs</b> in the queue, <b>none</b> " +
                                         "of which is yours.";
                                 break outer;
-                                
+
                             case 1:
                                 message = "There are <b>" + numAllJobsInQueue +
                                         " jobs</b> in the queue, <b>1</b> " +
                                         "of which is yours.";
                                 break outer;
-                                 
+
                             default:
                                 var insert = "";
                                 if (numAllJobsInQueue > 100) {
@@ -184,7 +187,7 @@ include("footer.inc.php");
                                     message = "There are <b>" + numAllJobsInQueue +
                                         " jobs</b> in the queue" + insert +
                                         ", <b>all</b> yours.";
-                                    
+
                                 } else if (numAllJobsInQueue > numUserJobsInQueue) {
                                     message = "There are <b>" + numAllJobsInQueue +
                                         " jobs</b> in the queue " + insert +
@@ -195,16 +198,16 @@ include("footer.inc.php");
                                 }
                                 break outer;
                         }
-                        
+
                         break;
                 }
                 $("#jobNumber").html(message);
-                
+
                 // Update the time as well
-                $("#lastUpdateTime").text("Last update: " + 
+                $("#lastUpdateTime").text("Last update: " +
                         response.lastUpdateTime);
             });
-            
+
             // Redraw the table
             ajaxGetJobQueueTable('queue');
         }

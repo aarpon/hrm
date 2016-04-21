@@ -2,6 +2,10 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
+use hrm\Nav;
+
+require_once dirname(__FILE__) . '/inc/bootstrap.inc.php';
+
 require_once(dirname(__FILE__) . "/inc/User.inc.php");
 require_once(dirname(__FILE__) . "/inc/user_mngm/UserManagerFactory.inc.php");
 require_once(dirname(__FILE__) . "/inc/Database.inc.php");
@@ -9,7 +13,6 @@ require_once(dirname(__FILE__) . "/inc/hrm_config.inc.php");
 require_once(dirname(__FILE__) . "/inc/Fileserver.inc.php");
 require_once(dirname(__FILE__) . "/inc/System.inc.php");
 require_once(dirname(__FILE__) . "/inc/Validator.inc.php");
-require_once(dirname(__FILE__) . "/inc/Nav.inc.php");
 
 global $email_admin;
 global $authenticateAgainst;

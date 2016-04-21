@@ -2,12 +2,15 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
+use hrm\Nav;
+
+require_once dirname(__FILE__) . '/inc/bootstrap.inc.php';
+
 require_once("./inc/User.inc.php");
 require_once("./inc/Parameter.inc.php");
 require_once("./inc/Setting.inc.php");
 require_once("./inc/Util.inc.php");
 require_once("./inc/Database.inc.php");
-require_once("./inc/Nav.inc.php");
 
 /* *****************************************************************************
  *
@@ -414,7 +417,7 @@ for ($i = 0; $i < $chanCnt; $i++) {
             echo "<br />";
         }
     }
-    
+
 ?>
 	<span class="nowrap">
         Ch<?php echo $i ?>:&nbsp;&nbsp;&nbsp;
@@ -468,7 +471,7 @@ $parameterStedLambda = $_SESSION['setting']->parameter("StedWavelength");
 <?php
 
 for ($i = 0; $i < $chanCnt; $i++) {
-    
+
     /* Add a line break after a number of entries. */
     if ( $_SESSION['setting']->numberOfChannels() == 4 ) {
         if ($i == 2) {
@@ -534,7 +537,7 @@ for ($i = 0; $i < $chanCnt; $i++) {
 <?php
 
 for ($i = 0; $i < $chanCnt; $i++) {
-    
+
     /* Add a line break after a number of entries. */
     if ( $_SESSION['setting']->numberOfChannels() == 4 ) {
         if ($i == 2) {

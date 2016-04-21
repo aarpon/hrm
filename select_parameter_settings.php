@@ -2,13 +2,16 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
+use hrm\Nav;
+
+require_once dirname(__FILE__) . '/inc/bootstrap.inc.php';
+
 require_once("./inc/User.inc.php");
 require_once("./inc/Parameter.inc.php");
 require_once("./inc/Setting.inc.php");
 require_once("./inc/SettingEditor.inc.php");
 require_once("./inc/Fileserver.inc.php");
 require_once("./inc/System.inc.php");
-require_once("./inc/Nav.inc.php");
 
 /* *****************************************************************************
  *
@@ -132,7 +135,7 @@ else if (isset($_POST['huTotemplate'])) {
     $file = $_FILES["upfile"]["name"];
     $fileName = pathinfo($file[0], PATHINFO_BASENAME);
     $extension = pathinfo($file[0], PATHINFO_EXTENSION);
-    
+
     if ($extension == "hgsm") {
         if($fileName != '') {
             $hrmTemplateName = 'From ' . $fileName;
@@ -140,12 +143,12 @@ else if (isset($_POST['huTotemplate'])) {
 
             $tmpName = $_FILES["upfile"]["tmp_name"];
             $_SESSION['editor']->huTemplate2hrmTemplate($setting, $tmpName[0]);
-            $message = $_SESSION['editor']->message();  
+            $message = $_SESSION['editor']->message();
         } else {
             $message = "Please upload a valid Huygens microscopy template " .
                 "(extension .hgsm)";
         }
-        
+
         if ($setting != NULL) {
             $setting->parameter("ImageFileFormat")->setValue($fileFormat);
             $_SESSION['setting'] = $setting;

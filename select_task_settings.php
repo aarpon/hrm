@@ -2,12 +2,15 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
+use hrm\Nav;
+
+require_once dirname(__FILE__) . '/inc/bootstrap.inc.php';
+
 require_once("./inc/User.inc.php");
 require_once("./inc/Parameter.inc.php");
 require_once("./inc/Setting.inc.php");
 require_once("./inc/SettingEditor.inc.php");
 require_once("./inc/System.inc.php");
-require_once("./inc/Nav.inc.php");
 
 /* *****************************************************************************
  *
@@ -93,22 +96,22 @@ else if (isset($_POST['huTotemplate'])) {
     $file = $_FILES["upfile"]["name"];
     $fileName = pathinfo($file[0], PATHINFO_BASENAME);
     $extension = pathinfo($file[0], PATHINFO_EXTENSION);
-    
+
     if ($extension == "hgsd") {
         if($fileName != '') {
             $hrmTemplateName = 'From ' . $fileName;
             $task_setting =
                 $_SESSION['taskeditor']->createNewSetting($hrmTemplateName);
-            
+
             $tmpName = $_FILES["upfile"]["tmp_name"];
             $_SESSION['taskeditor']->huTemplate2hrmTemplate($task_setting,
                                                             $tmpName[0]);
-            $message = $_SESSION['taskeditor']->message();  
+            $message = $_SESSION['taskeditor']->message();
         } else {
             $message = "Please upload a valid Huygens deconvolution template " .
                 "(extension .hgsd)";
         }
-        
+
         if ($task_setting != NULL) {
             $_SESSION['task_setting'] = $task_setting;
             header("Location: " . "task_parameter.php"); exit();

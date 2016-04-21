@@ -2,10 +2,13 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
+use hrm\Nav;
+
+require_once dirname(__FILE__) . '/inc/bootstrap.inc.php';
+
 require_once("./inc/User.inc.php");
 require_once("./inc/Util.inc.php");
 require_once("./inc/System.inc.php");
-require_once("./inc/Nav.inc.php");
 
 session_start();
 
@@ -84,7 +87,7 @@ echo $message;
                 for detailed instructions on how to install CUDA.
             </p>
 
-            <p>                                 
+            <p>
                 Each deconvolution job has a log that can be reached via the
                 user account: <b>'Results' -> 'Select an image' ->
                 'Detailed view' -> 'log'.</b>
@@ -92,7 +95,7 @@ echo $message;
                 or on the GPU.
             </p>
 
-            <p>                                 
+            <p>
                 GPU deconvolution is available in Huygens from version
                  <b>15.10</b> onwards.
             </p>

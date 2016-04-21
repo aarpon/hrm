@@ -2,11 +2,14 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
+use hrm\Nav;
+
+require_once dirname(__FILE__) . '/inc/bootstrap.inc.php';
+
 require_once("./inc/User.inc.php");
 require_once("./inc/Parameter.inc.php");
 require_once("./inc/Setting.inc.php");
 require_once("./inc/System.inc.php");
-require_once("./inc/Nav.inc.php");
 
 /* *****************************************************************************
  *
@@ -187,7 +190,7 @@ for ($i = 0; $i <= $db->getMaxChanCnt(); $i++) {
         value="<?php echo $i;?>"
 <?php check($parameterNumberOfChannels, $i) ?>    /> <?php echo $i;?>
 <?php
-    }    
+    }
 }
 ?>
 

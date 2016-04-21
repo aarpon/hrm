@@ -2,10 +2,13 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
+use hrm\Nav;
+
+require_once dirname(__FILE__) . '/inc/bootstrap.inc.php';
+
 require_once("./inc/Util.inc.php");
 require_once("./inc/User.inc.php");
 require_once("./inc/Fileserver.inc.php");
-require_once("./inc/Nav.inc.php");
 
 // Two private functions, for the two tasks of this script:
 

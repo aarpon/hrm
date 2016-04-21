@@ -2,11 +2,14 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
+use hrm\Nav;
+
+require_once dirname(__FILE__) . '/inc/bootstrap.inc.php';
+
 require_once("./inc/User.inc.php");
 require_once("./inc/Parameter.inc.php");
 require_once("./inc/Setting.inc.php");
 require_once("./inc/Database.inc.php");
-require_once("./inc/Nav.inc.php");
 
 /* *****************************************************************************
  *
@@ -50,7 +53,7 @@ if ($_SESSION[ 'task_setting' ]->checkPostedChromaticAberrationParameters( $_POS
 } else {
     $message = $_SESSION['task_setting']->message();
 }
-    
+
 
 /* *****************************************************************************
  *
@@ -102,11 +105,11 @@ include("header.inc.php");
     <div id="content">
         <h2>Restoration - Chromatic Aberration</h2>
     <div id="cac">
-    
+
 
     <fieldset class="setting provided"
     onmouseover="javascript:changeQuickHelp( 'chromatic' );" >
-    
+
     <legend>
         <a href="javascript:openWindow(
                        'http://www.svi.nl/ChromaticAberrationCorrector')">
@@ -116,9 +119,9 @@ include("header.inc.php");
     </legend>
 
     <p>Multi-channel images often display chromatic aberrations.
-       Correcting for this is crucial for image visualization and analysis.</p> 
+       Correcting for this is crucial for image visualization and analysis.</p>
 
-    
+
     Reference channel:
 
     <select name="ReferenceChannel"
@@ -131,12 +134,12 @@ for($chan = 0; $chan < $chanCnt; $chan++) {
     <option value=<?php echo $chan;?>>
     <?php echo $chan; ?>
     </option>
-<?php    
+<?php
 }
-?>  
+?>
     </select>
-    
-    
+
+
 <form method="post" action="" id="select">
 <table id="ChromaticAberration">
 <tr>
@@ -147,7 +150,7 @@ for($chan = 0; $chan < $chanCnt; $chan++) {
 <td class="header">Rotation<br />(degrees)</td>
 <td class="header">Scale<br />(ratio)</td>
 </tr>
-                                 
+
 <?php
 for ($chan = 0; $chan < $chanCnt; $chan++) {
     $offset = $chan * $componentCnt;
@@ -159,7 +162,7 @@ for ($chan = 0; $chan < $chanCnt; $chan++) {
 
     for ($component = 0; $component < $componentCnt; $component++) {
 ?>
-    
+
 <td><input
         id="ChromaticAberrationCh<?php echo $chan . '_' . $component;?>"
         name="ChromaticAberrationCh<?php echo $chan . '_' . $component;?>"
@@ -178,12 +181,12 @@ for ($chan = 0; $chan < $chanCnt; $chan++) {
 
 </table>
 <p class="info">The correction is optional: leave empty for skipping.</p>
-                                 
+
 </div> <!-- ChromaticAberrationCorrector -->
 
-                                 
+
 <div><input name="OK" type="hidden" /></div>
-                                 
+
             <div id="controls"
                  onmouseover="javascript:changeQuickHelp( 'default' )">
               <input type="button" value="" class="icon previous"
@@ -200,7 +203,7 @@ for ($chan = 0; $chan < $chanCnt; $chan++) {
                   onmouseout="UnTip()"
                   onclick="process()" />
             </div>
-                                 
+
        </form>
 </div> <!-- content -->
 
@@ -225,9 +228,9 @@ echo "<p>$message</p>";
 
 </div> <!-- rightpanel -->
 
-                                 
+
 <script type="text/javascript">
-initChromaticChannelReference();                
+initChromaticChannelReference();
 </script>
 
 <?php

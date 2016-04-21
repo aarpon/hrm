@@ -2,6 +2,10 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
+namespace hrm;
+
+require_once dirname(__FILE__) . '/bootstrap.inc.php';
+
 /**
  * Class Nav
  * Commodity class to manage all links and actions of the navigation bar.

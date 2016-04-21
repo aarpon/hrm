@@ -2,12 +2,15 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
+use hrm\Nav;
+
+require_once dirname(__FILE__) . '/inc/bootstrap.inc.php';
+
 require_once("./inc/User.inc.php");
 require_once("./inc/Fileserver.inc.php");
 require_once("./inc/Setting.inc.php");
 require_once("./inc/JobDescription.inc.php");
 require_once("./inc/System.inc.php");
-require_once("./inc/Nav.inc.php");
 
 session_start();
 
@@ -84,7 +87,7 @@ include("header.inc.php");
     <span class="toolTip" id="ttSpanCreateJob">
         Create job, add it to the queue, and go back to your home page.
     </span>
-    
+
 <div id="nav">
     <div id="navleft">
         <ul>
@@ -157,8 +160,8 @@ if ( $value == 'RGB TIFF 8-bit' ) {
   }
 }
 
-// Make sure that if we had Imaris Classic, TIFF 8, or TIFF 16 
-// as output file format and a time-series dataset, we reset 
+// Make sure that if we had Imaris Classic, TIFF 8, or TIFF 16
+// as output file format and a time-series dataset, we reset
 // the value to ics
 if (($value == 'IMS (Imaris Classic)') ||
         ($value == 'TIFF 18-bit') || ($value == 'TIFF 16-bit')) {
@@ -188,7 +191,7 @@ if ( $numberOfChannels > 1 ) {
   $possibleValues = array_values( $possibleValues );
 }
 
-// If the dataset is single-channel or has more than 3 channels, we remove 
+// If the dataset is single-channel or has more than 3 channels, we remove
 // the RGB TIFF 8-bit option from the list
 $nChannelsParameter = $_SESSION['setting']->parameter("NumberOfChannels");
 $numberOfChannels = $nChannelsParameter->value( );
@@ -288,14 +291,14 @@ $micrType = $_SESSION['setting']->microscopeType();
             </textarea>
         </fieldset>
 
-            
+
    <fieldset class="report">
             <legend>
                 <a href="javascript:openWindow(
                    'http://www.svi.nl/HuygensRemoteManagerHelpCreateJob')">
                     <img src="images/help.png" alt="?" />
                 </a>
-            
+
             <?php if (System::hasLicense("coloc")) { ?>
                 <a href="select_analysis_settings.php">
             <?php } else { ?>
@@ -316,7 +319,7 @@ echo $_SESSION['analysis_setting']->displayString();
             </textarea>
 
         </fieldset>
-            
+
 
         <fieldset class="report">
             <legend>
@@ -343,7 +346,7 @@ foreach ($files as $file) {
             </textarea>
 
         </fieldset>
-            
+
 
         <form method="post" action="">
 

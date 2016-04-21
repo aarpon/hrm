@@ -2,8 +2,11 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
+use hrm\Nav;
+
+require_once dirname(__FILE__) . '/inc/bootstrap.inc.php';
+
 require_once ("./inc/User.inc.php");
-require_once("./inc/Nav.inc.php");
 
 
 /* *****************************************************************************
@@ -34,7 +37,7 @@ if ( isset( $_SESSION['CCDCaptorSizeX_Calculated'] ) ) {
  *
  **************************************************************************** */
 if ( $_SESSION[ 'setting' ]->checkPostedCalculatePixelSizeParameters( $_POST ) ) {
-	
+
 	// Calculate and set the pixel size
 	$ccd = floatval( $_SESSION[ 'setting' ]->parameter(
         "CCDCaptorSize" )->value() );
@@ -47,7 +50,7 @@ if ( $_SESSION[ 'setting' ]->checkPostedCalculatePixelSizeParameters( $_POST ) )
 	$tbf = floatval( $_SESSION[ 'setting' ]->parameter(
         "TubeFactor" )->value() );
 	$pixelSize = ( $ccd * $bin ) / ( $obm * $cmf * $tbf );
-	
+
 	// Try
 	$parameter = new CCDCaptorSizeX();
 	$parameter->setValue( $pixelSize );
@@ -65,9 +68,9 @@ if ( $_SESSION[ 'setting' ]->checkPostedCalculatePixelSizeParameters( $_POST ) )
 		$message = "Please check your parameters!";
 	}
 } else {
-  
+
   $message = $_SESSION['setting']->message();
-	
+
 }
 
 /* *****************************************************************************
@@ -85,7 +88,7 @@ include ("header.inc.php");
 -->
 <span class="toolTip" id="ttSpanCancel">
     Go back to previous page without calculating the pixel size.
-</span>  
+</span>
 <span class="toolTip" id="ttSpanForward">
     Update the pixel size field on previous page with the calculated value.
 </span>
@@ -109,11 +112,11 @@ include ("header.inc.php");
 </div>
 
 <div id="content">
-    
+
     <h3>Calculate pixel size</h3>
 
     <form method="post" action="calculate_pixel_size.php" id="select">
-    
+
        <fieldset class="setting">
 
     <?php
@@ -122,7 +125,7 @@ $textForCaptorSize = "physical pixel size on CCD chip (nm)";
 $value = '';
 $parameter = $_SESSION['setting']->parameter("CCDCaptorSize");
 $value = $parameter->value();
-        
+
 ?>
     <a href="javascript:openWindow(
        'http://www.svi.nl/HuygensRemoteManagerHelpCCD')">
@@ -130,19 +133,19 @@ $value = $parameter->value();
     </a>
 
     <?php echo $textForCaptorSize ?>:
-    		 
+
     <input name="CCDCaptorSize"
            type="text"
            size="5"
            value="<?php echo $value ?>" />
-            
+
     <br />
-            
+
     <a href="javascript:openWindow('http://www.svi.nl/PixelBinning')">
         <img src="images/help.png" alt="?" />
     </a>
     binning:
-                
+
     <select style="width:20%;" name="Binning" size="1">
 <?php
 
@@ -172,14 +175,14 @@ foreach ($parameter->possibleValues() as $possibleValue) {
 
 $parameter = $_SESSION['setting']->parameter("CMount");
 $value = $parameter->value();
-?>                
+?>
 <?php echo "C-mount" ?>:
     <input name="CMount"
            type="text"
            size="5"
            value="<?php echo $value ?>" />
     <br />
-                        
+
     <a href="javascript:openWindow(
        'http://www.svi.nl/HuygensRemoteManagerHelpTubeFactor')">
         <img src="images/help.png" alt="?" />
@@ -188,20 +191,20 @@ $value = $parameter->value();
 
 $parameter = $_SESSION['setting']->parameter("TubeFactor");
 $value = $parameter->value();
-?>                
+?>
 <?php echo "tube factor" ?>:
     <input name="TubeFactor"
            type="text"
            size="5"
            value="<?php echo $value ?>" />
     <br />
-                        
+
     <a href="javascript:openWindow(
        'http://www.svi.nl/ObjectiveMagnification')">
         <img src="images/help.png" alt="?" />
     </a>
     objective magnification:
-                
+
     <select style="width:20%;" name="ObjectiveMagnification" size="1">
 <?php
 
@@ -221,10 +224,10 @@ foreach ( $sortedPossibleValues as $possibleValue) {
 ?>
     </select>
     X
-                        
+
     </fieldset>
-       
-    <div id="controls">      
+
+    <div id="controls">
         <input type="button" value="" class="icon up"
             onmouseover="TagToTip('ttSpanCancel' )"
             onmouseout="UnTip()"
@@ -236,34 +239,34 @@ foreach ( $sortedPossibleValues as $possibleValue) {
     </div>
 
     </form>
-    
+
  </div> <!-- content -->
- 
+
  <div id="rightpanel">
-    
+
         <div id="info">
 
-            <h3>Quick help</h3>           
+            <h3>Quick help</h3>
 
             <p>Here you can calculate the image pixel size from the physical
             attributes of your CCD chip element and some of the relevant
             microscope parameters.</p>
 			<p>Notice that the size of the CCD element must be in
 			<strong>nm</strong> (e.g. 6450).</p>
-            
+
         </div>
-        
+
         <div id="message">
-                
+
 <?php
 
 echo "<p>$message</p>";
 
 ?>
         </div>
-        
+
     </div> <!-- rightpanel -->
-    
+
 <?php
 
 include ("footer.inc.php");

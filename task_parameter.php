@@ -2,12 +2,15 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
+use hrm\Nav;
+
+require_once dirname(__FILE__) . '/inc/bootstrap.inc.php';
+
 require_once("./inc/User.inc.php");
 require_once("./inc/Parameter.inc.php");
 require_once("./inc/Setting.inc.php");
 require_once("./inc/Util.inc.php");
 require_once("./inc/System.inc.php");
-require_once("./inc/Nav.inc.php");
 
 /* *****************************************************************************
  *
@@ -65,7 +68,7 @@ if ( $_SESSION[ 'task_setting' ]->checkPostedTaskParameters( $_POST ) ) {
     if ( $_SESSION[ 'task_setting' ]->numberOfChannels() > 1) {
         header("Location: " . "chromatic_aberration.php"); exit();
     } else {
-    
+
         $saved = $_SESSION['task_setting']->save();
         if ($saved) {
             header("Location: " . "select_task_settings.php"); exit();
@@ -100,14 +103,14 @@ include("header.inc.php");
         Abort editing and go back to the Restoration parameters
         selection page. All changes will be lost!
     </span>
-    
+
     <?php
     if ($_SESSION['task_setting']->numberOfChannels() == 1) {
     ?>
     <span class="toolTip" id="ttSpanSave">
     Save and return to the processing parameters selection page.
     </span>
-    
+
     <?php
     } else {
 
@@ -118,7 +121,7 @@ include("header.inc.php");
     <?php
     }
     ?>
-    
+
     <span class="toolTip" id="ttEstimateSnr">
         Use a sample raw image to find a SNR estimate for each channel.
     </span>
@@ -587,7 +590,7 @@ $value = $parameter->value();
     </div>
 
 
-    
+
     <div id="ZStabilization">
 <?php
     if ($_SESSION['user']->isAdmin()
@@ -597,7 +600,7 @@ $value = $parameter->value();
 
     <fieldset class="setting provided"
     onmouseover="javascript:changeQuickHelp( 'zstabilization' );" >
-    
+
     <legend>
         <a href="javascript:openWindow(
                        'http://www.svi.nl/ObjectStabilizer')">
@@ -608,12 +611,12 @@ $value = $parameter->value();
 
             <p>STED images often need to be stabilized in the Z direction before they
        are deconvolved. Please note that skipping this step might affect the
-       quality of the deconvolution.</p> 
+       quality of the deconvolution.</p>
 
         <select id="ZStabilization"
         name="ZStabilization">
 <?php
-                    
+
 /*
       STABILIZATION
 */
@@ -656,7 +659,7 @@ $selectedMode  = $parameterStabilization->value();
 
             <div id="controls"
                  onmouseover="javascript:changeQuickHelp( 'default' )">
-              
+
               <input type="button" value="" class="icon up"
                 onmouseover="TagToTip('ttSpanCancel' )"
                 onmouseout="UnTip()"
@@ -671,24 +674,24 @@ $selectedMode  = $parameterStabilization->value();
                 onmouseover="TagToTip('ttSpanSave')"
                 onmouseout="UnTip()"
                 onclick="process()" />
-    
+
     <?php
     } else {
     ?>
                   <input type="submit" value="" class="icon next"
                   onmouseover="TagToTip('ttSpanForward' )"
                   onmouseout="UnTip()"
-                  onclick="process()" />    
+                  onclick="process()" />
     <?php
     }
     ?>
 
-    
+
 
             </div>
-        
+
         </form>
-    
+
     </div> <!-- content -->
 
     <div id="rightpanel" onmouseover="javascript:changeQuickHelp( 'default' )">
@@ -729,7 +732,7 @@ if ( !( strpos( $_SERVER[ 'HTTP_REFERER' ],
             $_SESSION['SNR_Calculated'] == 'true') {
 ?>
         <script type="text/javascript">
-        
+
         /* Consider the max chan cnt supported by Huygens. */
         snrArray = new Array();
         for (var i = 0; i < 32; i++) {
