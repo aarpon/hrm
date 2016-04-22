@@ -300,7 +300,7 @@ class Type {
           if ( $userNum == 1 ) {
             $groupEntry = $rowGroup[ 0 ];
           } else {
-            $groupEntry = $nbsp;
+            $groupEntry = "&nbsp;";
           }
           $script .= "<tr>
               <td>" . $groupEntry . "</td>
