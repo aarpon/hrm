@@ -2,24 +2,29 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
-/*!
-    \class  Validator
-    \brief  Validates and in very rare cases sanitizes relevant user input
+namespace hrm;
 
-    This <b>static</b> class checks user input through login forms, to avoid
-    attacks. Here, no SQL escape functions are (explicitly) called!
+require_once dirname(__FILE__) . '/bootstrap.inc.php';
 
-    This is the initial implementation and might require additional checks.
-*/
-
+/**
+ * Class Validator
+ *
+ * Validates and in very rare cases sanitizes relevant user input.
+ *
+ * This <b>static</b> class checks user input through login forms, to avoid
+ * attacks. Here, no SQL escape functions are (explicitly) called!
+ *
+ * This is the initial implementation and might require additional checks.
+ */
 class Validator
 {
 
-    /*!
-      \brief  Generic private function that checks whether the string is sanitized
-      \param  $string A string coming from a text field or the like that is not
-              meant to be input to the database.
-    */
+    /**
+     * Generic private function that checks whether the string is sanitized.
+     * @param string $string A string coming from a text field or the like that
+     * is not meant to be input to the database.
+     * @return bool True if the string is sanitized, false otherwise.
+     */
     private static function isStringSanitized($string)
     {
 
@@ -31,12 +36,13 @@ class Validator
 
     }
 
-    /*!
-      \brief  Validates the user name
-      \param  $inputUserName  User name input through some login form
-
-      The user name is forced to be lowercase. Only single words are accepted.
-    */
+    /**
+     * Validates the user name.
+     *
+     * The user name is forced to be lowercase. Only single words are accepted.
+     * @param string $inputUserName User name input through some login form.
+     * @return bool True if the user name is valid, false otherwise.
+     */
     public static function isUserNameValid($inputUserName)
     {
 
@@ -61,12 +67,13 @@ class Validator
 
     }
 
-    /*!
-      \brief  Validates the e-mail address
-      \param  $inputEmail E-mail input through some login form
-
-      It must be a valid e-mail address.
-    */
+    /**
+     * Validates the e-mail address.
+     *
+     * It must be a valid e-mail address.
+     * @param string $inputEmail E-mail input through some login form.
+     * @return mixed Returns the filtered e-mail, or false.
+     */
     public static function isEmailValid($inputEmail)
     {
 
@@ -74,12 +81,13 @@ class Validator
 
     }
 
-    /*!
-      \brief  Validates the group name
-      \param  $inputGroupName Group name input through some login form
-
-      The group name can be any (sane) string and can contain blank spaces.
-    */
+    /**
+     * Validates the group name.
+     *
+     * The group name can be any (sane) string and can contain blank spaces.
+     * @param string $inputGroupName Group name input through some login form.
+     * @return bool True if the group name is valid, false otherwise.
+     */
     public static function isGroupNameValid($inputGroupName)
     {
 
@@ -87,12 +95,13 @@ class Validator
 
     }
 
-    /*!
-      \brief  Validates the password
-      \param  $inputPassword  Password input through some login form
-
-      The password cannot contain spaces.
-    */
+    /**
+     * Validates the password.
+     *
+     * The password cannot contain spaces.
+     * @param string $inputPassword Password input through some login form.
+     * @return bool True if the group password is valid, false otherwise.
+     */
     public static function isPasswordValid($inputPassword)
     {
 
@@ -109,12 +118,13 @@ class Validator
 
     }
 
-    /*!
-      \brief  Validates the request note for new users
-      \param  $inputNote  Generic text input through some login form
-
-      The note can be any (sane) string.
-    */
+    /**
+     * Validates the request note for new users.
+     *
+     * The note can be any (sane) string.
+     * @param string $inputNote Generic text input through some login form.
+     * @return bool True if the group name is valid, false otherwise.
+     */
     public static function isNoteValid($inputNote)
     {
 
@@ -123,7 +133,3 @@ class Validator
     }
 
 }
-
-;
-
-?>

@@ -3,6 +3,7 @@
 // Copyright and license notice: see license.txt
 
 use hrm\Nav;
+use hrm\Validator;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.inc.php';
 
@@ -12,7 +13,6 @@ require_once(dirname(__FILE__) . "/inc/Database.inc.php");
 require_once(dirname(__FILE__) . "/inc/hrm_config.inc.php");
 require_once(dirname(__FILE__) . "/inc/Fileserver.inc.php");
 require_once(dirname(__FILE__) . "/inc/System.inc.php");
-require_once(dirname(__FILE__) . "/inc/Validator.inc.php");
 
 global $email_admin;
 global $authenticateAgainst;

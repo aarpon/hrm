@@ -4,13 +4,13 @@
 
 use hrm\Mail;
 use hrm\Nav;
+use hrm\Validator;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.inc.php';
 
 require_once(dirname(__FILE__) . "/inc/User.inc.php");
 require_once(dirname(__FILE__) . "/inc/hrm_config.inc.php");
 require_once(dirname(__FILE__) . "/inc/Util.inc.php");
-require_once(dirname(__FILE__) . "/inc/Validator.inc.php");
 require_once(dirname(__FILE__) . "/inc/user_mngm/UserManagerFactory.inc.php");
 
 global $hrm_url;

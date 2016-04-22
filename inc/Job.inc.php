@@ -8,7 +8,7 @@ require_once ("JobDescription.inc.php");
 require_once ("hrm_config.inc.php");
 require_once ("Fileserver.inc.php");
 require_once ("Shell.inc.php");
-require_once ("Mail.inc.php");
+require_once("Mail.inc.php");
 require_once ("HuygensTemplate.inc.php");
 require_once ("System.inc.php");
 
