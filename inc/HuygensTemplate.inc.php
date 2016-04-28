@@ -679,7 +679,7 @@ class HuygensTemplate {
                 break;
 		case 'attemptGpu':
 		$db = new DatabaseConnection();
-		$list .= $db->getGpuStateAsString();
+		$list .= $db->getGPUStateAsString();
 		break;		
             case 'listID':
                 $list = $this->string2tcllist($list);
