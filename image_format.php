@@ -2,14 +2,15 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
+use hrm\DatabaseConnection;
 use hrm\Nav;
-
+use hrm\ParameterSetting;
+use hrm\user\User;
+use hrm\Setting;
+use hrm\System;
 require_once dirname(__FILE__) . '/inc/bootstrap.inc.php';
 
-require_once("./inc/User.inc.php");
 require_once("./inc/Parameter.inc.php");
-require_once("./inc/Setting.inc.php");
-require_once("./inc/System.inc.php");
 
 /* *****************************************************************************
  *
@@ -144,10 +145,10 @@ include("header.inc.php");
 
             <fieldset id="channels" class="setting <?php
                 echo $parameterNumberOfChannels->confidenceLevel(); ?>"
-              onmouseover="javascript:changeQuickHelp( 'channels' );" >
+              onmouseover="changeQuickHelp( 'channels' );" >
 
                 <legend>
-                    <a href="javascript:openWindow(
+                    <a href="openWindow(
                        'http://www.svi.nl/NumberOfChannels')">
                         <img src="images/help.png" alt="?" />
                     </a>
@@ -227,10 +228,10 @@ for ($i = 0; $i <= $db->getMaxChanCnt(); $i++) {
 
             <fieldset class="setting <?php
                 echo $parameterPointSpreadFunction->confidenceLevel(); ?>"
-                onmouseover="javascript:changeQuickHelp( 'PSF' );" >
+                onmouseover="changeQuickHelp( 'PSF' );" >
 
                 <legend>
-                    <a href="javascript:openWindow(
+                    <a href="openWindow(
                        'http://www.svi.nl/PointSpreadFunction')">
                         <img src="images/help.png" alt="?" />
                     </a>
@@ -262,7 +263,7 @@ for ($i = 0; $i <= $db->getMaxChanCnt(); $i++) {
                            if ($parameterPointSpreadFunction->value() ==
                                 "theoretical")
                                     echo "checked=\"checked\""?> />
-                    <a href="javascript:openWindow(
+                    <a href="openWindow(
                        'http://www.svi.nl/TheoreticalPsf')">
                         <img src="images/help.png" alt="?" />
                     </a>
@@ -320,7 +321,7 @@ for ($i = 0; $i <= $db->getMaxChanCnt(); $i++) {
 
     </div> <!-- content -->
 
-    <div id="rightpanel" onmouseover="javascript:changeQuickHelp( 'default' )">
+    <div id="rightpanel" onmouseover="changeQuickHelp( 'default' )">
 
         <div id="info">
             <h3>Quick help</h3>

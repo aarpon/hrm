@@ -2,9 +2,9 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
-namespace hrm\user_mngm;
+namespace hrm\user\mngm;
 
-require_once dirname(__FILE__) . '/../bootstrap.inc.php';
+require_once dirname(__FILE__) . '/../../bootstrap.inc.php';
 
 /**
  * Class UserManagerFactory
@@ -33,7 +33,7 @@ class UserManagerFactory {
         // If the user is the Admin, we currently must return
         // an InternalAuthenticator
         if ($isAdmin) {
-            require_once(dirname(__FILE__) ."/InternalUserManager.inc.php");
+            require_once(dirname(__FILE__) . "/InternalUserManager.inc.php");
             return new InternalUserManager();
         }
 

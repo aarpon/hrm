@@ -2,10 +2,13 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
+namespace hrm;
+
+use hrm\user\User;
+
+require_once dirname(__FILE__) . '/bootstrap.inc.php';
+
 require_once ("Parameter.inc.php");
-require_once ("Database.inc.php");
-require_once ("User.inc.php");
-require_once ("hrm_config.inc.php");
 
 /*!
   \class    Setting
@@ -2742,7 +2745,7 @@ class TaskSetting extends Setting {
     /*!
       \brief	Constructor: constructs and initializes a TaskSetting
     */
-    public function TaskSetting() {
+    public function __construct() {
         parent::__construct();
 
         $parameterClasses = array(
@@ -3297,7 +3300,7 @@ class AnalysisSetting extends Setting {
     /*!
       \brief	Constructor: constructs and initializes an AnalysisSetting
     */
-    public function AnalysisSetting() {
+    public function __construct() {
         parent::__construct();
         $parameterClasses = array(
             'ColocAnalysis',

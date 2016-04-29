@@ -3,7 +3,8 @@
 // Copyright and license notice: see license.txt
 
 use hrm\Nav;
-use hrm\User;
+use hrm\ParameterSetting;
+use hrm\user\User;
 use hrm\System;
 
 
@@ -370,7 +371,7 @@ $info = "<h3>Quick help</h3>" .
                     <fieldset class="setting" >
 
                 <legend>
-                    <a href="javascript:openWindow(
+                    <a href="openWindow(
                        'http://www.svi.nl/FileFormats')">
                         <img src="images/help.png" alt="?" />
                     </a>
@@ -379,8 +380,8 @@ $info = "<h3>Quick help</h3>" .
 
                     <select name="ImageFileFormat" id="ImageFileFormat"
                      size="1"
-                     onclick="javascript:storeFileFormatSelection(this,autoseries)"
-                     onchange="javascript:storeFileFormatSelection(this,autoseries)"
+                     onclick="storeFileFormatSelection(this,autoseries)"
+                     onchange="storeFileFormatSelection(this,autoseries)"
                      onkeyup="this.blur();this.focus();" >
 
 
@@ -430,7 +431,7 @@ if ($allFiles == null) {
 
 ?>
 
-                    <select onchange="javascript:imageAction(this)"
+                    <select onchange="imageAction(this)"
                             id = "filesPerFormat"
                             name="userfiles[]"
                             size="10"
@@ -491,8 +492,8 @@ if ($allFiles == null) {
                                echo " checked=\"checked\" ";
                            }
                            ?>
-                           onclick="javascript:storeFileFormatSelection(ImageFileFormat,this)"
-                           onchange="javascript:storeFileFormatSelection(ImageFileFormat,this)"
+                           onclick="storeFileFormatSelection(ImageFileFormat,this)"
+                           onchange="storeFileFormatSelection(ImageFileFormat,this)"
     />
 
                     Automatically load file series if supported
@@ -532,8 +533,8 @@ if ($selectedFiles == null) {
 }
 
 ?>
-                    <select onclick="javascript:imageAction(this)"
-                            onchange="javascript:imageAction(this)"
+                    <select onclick="imageAction(this)"
+                            onchange="imageAction(this)"
                             id = "selectedimages"
                             name="selectedfiles[]"
                             size="5"

@@ -6,7 +6,6 @@ use hrm\Nav;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.inc.php';
 
-require_once("./inc/User.inc.php");
 require_once("./inc/JobDescription.inc.php");
 require_once("./inc/JobQueue.inc.php");
 
@@ -141,7 +140,7 @@ include("footer.inc.php");
                 switch (numAllJobsInQueue) {
 
                     case 0:
-                        message = "There are <b>no jobs</b> in the queue."
+                        message = "There are <b>no jobs</b> in the queue.";
                         break;
 
                     case 1:

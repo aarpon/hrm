@@ -3,76 +3,73 @@
 // Copyright and license notice: see license.txt
 
 use hrm\Nav;
+use hrm\System;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.inc.php';
 
-require_once("./inc/User.inc.php");
 require_once("./inc/Fileserver.inc.php");
-require_once("./inc/Setting.inc.php");
 require_once("./inc/JobDescription.inc.php");
-require_once("./inc/System.inc.php");
 
 session_start();
 
 if (isset($_GET['home'])) {
-  header("Location: " . "home.php"); exit();
+    header("Location: " . "home.php");
+    exit();
 }
 
 if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
-  header("Location: " . "login.php"); exit();
+    header("Location: " . "login.php");
+    exit();
 }
 
 if (!isset($_SESSION['fileserver'])) {
-  # session_register('fileserver');
-  $name = $_SESSION['user']->name();
-  $_SESSION['fileserver'] = new Fileserver($name);
+    $name = $_SESSION['user']->name();
+    $_SESSION['fileserver'] = new Fileserver($name);
 }
 
 if (System::hasLicense("coloc")) {
-    $currentStep   = 5;
-    $goBackLink    = "select_analysis_settings.php";
+    $currentStep = 5;
+    $goBackLink = "select_analysis_settings.php";
     $goBackMessage = "Analysis parameters.";
 } else {
-    $currentStep   = 4;
-    $goBackLink    = "select_task_settings.php";
+    $currentStep = 4;
+    $goBackLink = "select_task_settings.php";
     $goBackMessage = "Processing parameters.";
 }
 
-$previousStep   = $currentStep - 1;
-$goBackMessage  = "Go back to step $previousStep/$currentStep - " . $goBackMessage;
-
+$previousStep = $currentStep - 1;
+$goBackMessage = "Go back to step $previousStep/$currentStep - " . $goBackMessage;
 
 
 $message = "";
 
 if (isset($_POST['create'])) {
-  $parameter = $_SESSION['task_setting']->parameter("OutputFileFormat");
-  $parameter->setValue($_POST['OutputFileFormat']);
-  $_SESSION['task_setting']->set($parameter);
-  // save preferred output file format
-  if ($_SESSION['task_setting']->save()) {
-    // TODO source/destination folder names should be given to JobDescription
-    $job = new JobDescription();
-    $job->setParameterSetting($_SESSION['setting']);
-    $job->setTaskSetting($_SESSION['task_setting']);
-    $job->setAnalysisSetting($_SESSION['analysis_setting']);
-    $job->setFiles($_SESSION['fileserver']->selectedFiles(),$_SESSION['autoseries']);
+    /** @var OutputFileFormat $parameter */
+    $parameter = $_SESSION['task_setting']->parameter("OutputFileFormat");
+    $parameter->setValue($_POST['OutputFileFormat']);
+    $_SESSION['task_setting']->set($parameter);
+    // save preferred output file format
+    if ($_SESSION['task_setting']->save()) {
+        // TODO source/destination folder names should be given to JobDescription
+        $job = new JobDescription();
+        $job->setParameterSetting($_SESSION['setting']);
+        $job->setTaskSetting($_SESSION['task_setting']);
+        $job->setAnalysisSetting($_SESSION['analysis_setting']);
+        $job->setFiles($_SESSION['fileserver']->selectedFiles(), $_SESSION['autoseries']);
 
-    if ($job->addJob()) {
-      $_SESSION['jobcreated'] = True;
-      $_SESSION['numberjobadded'] = count( $job->files() );
-      header("Location: " . "home.php");
-      exit();
-    }
-    else {
-      $message = $job->message();
-    }
-  }
-  else $message = "An unknown error has occured. " .
-      "Please inform the administrator";
-}
-else if (isset($_POST['OK'])) {
-  header("Location: " . "select_parameter_settings.php"); exit();
+        if ($job->addJob()) {
+            $_SESSION['jobcreated'] = True;
+            $_SESSION['numberjobadded'] = count($job->files());
+            header("Location: " . "home.php");
+            exit();
+        } else {
+            $message = $job->message();
+        }
+    } else $message = "An unknown error has occured. " .
+        "Please inform the administrator";
+} else if (isset($_POST['OK'])) {
+    header("Location: " . "select_parameter_settings.php");
+    exit();
 }
 
 include("header.inc.php");
@@ -132,21 +129,24 @@ include("header.inc.php");
 
 <?php
 
+/** @var OutputFileFormat $parameter */
 $parameter = $_SESSION['task_setting']->parameter("OutputFileFormat");
 $value = $parameter->value();
 
+/** @var TimeInterval $timeParameter */
 $timeParameter = $_SESSION['setting']->parameter("TimeInterval");
 $timeValue = $timeParameter->value();
 
 // Make sure that if we had TIFF (8 or 16 bit) as output file format and a
 // multichannel dataset, we reset the value to ics
-if ( ( $value == 'TIFF 18-bit' ) || ( $value == 'TIFF 16-bit' ) ) {
-  $nChannelsParameter = $_SESSION['setting']->parameter("NumberOfChannels");
-  $numberOfChannels = $nChannelsParameter->value( );
-  if ( $numberOfChannels > 1 ) {
-    $parameter->setValue("ICS (Image Cytometry Standard)");
-    $_SESSION['first_visit'] = False;
-  }
+if (($value == 'TIFF 18-bit') || ($value == 'TIFF 16-bit')) {
+    /** @var NumberOfChannels $nChannelsParameter */
+    $nChannelsParameter = $_SESSION['setting']->parameter("NumberOfChannels");
+    $numberOfChannels = $nChannelsParameter->value();
+    if ($numberOfChannels > 1) {
+        $parameter->setValue("ICS (Image Cytometry Standard)");
+        $_SESSION['first_visit'] = False;
+    }
 }
 
 // Make sure that if we had RGB-TIFF 8 bit as output file format and a
@@ -172,7 +172,10 @@ if (($value == 'IMS (Imaris Classic)') ||
 }
 
 ?>
-                <select name="OutputFileFormat" id="OutputFileFormat" size="1">
+                <select name="OutputFileFormat"
+                        id="OutputFileFormat"
+                        title="Output file format"
+                        size="1">
 <?php
 
 // FILTER POSSIBLE OUTPUT FILE FORMATS
@@ -247,7 +250,7 @@ foreach ($possibleValues as $possibleValue) {
 
         <fieldset class="report">
             <legend>
-                <a href="javascript:openWindow('
+                <a href="openWindow('
                    http://www.svi.nl/HuygensRemoteManagerHelpCreateJob')">
                     <img src="images/help.png" alt="?" />
                 </a>
@@ -256,6 +259,7 @@ foreach ($possibleValues as $possibleValue) {
                 </a>: <?php print $_SESSION['setting']->name() ?>
             </legend>
             <textarea name="parameter_settings_report"
+                      title="Summary"
                       cols="50"
                       rows="5"
                       readonly="readonly">
@@ -278,6 +282,7 @@ echo $_SESSION['setting']->displayString();
                 </a>: <?php echo $_SESSION['task_setting']->name() ?>
             </legend>
             <textarea name="task_settings_report"
+                      title="Summary"
                       cols="50"
                       rows="5"
                       readonly="readonly">
@@ -308,6 +313,7 @@ $micrType = $_SESSION['setting']->microscopeType();
     </a>: <?php echo $_SESSION['analysis_setting']->name() ?>
             </legend>
             <textarea name="analysis_settings_report"
+                      title="Summary"
                       cols="50"
                       rows="5"
                       readonly="readonly">
@@ -323,8 +329,7 @@ echo $_SESSION['analysis_setting']->displayString();
 
         <fieldset class="report">
             <legend>
-                <a href="javascript:openWindow(
-                   'http://www.svi.nl/HuygensRemoteManagerHelpCreateJob')">
+                <a href="openWindow('http://www.svi.nl/HuygensRemoteManagerHelpCreateJob')">
                     <img src="images/help.png" alt="?" />
                 </a>
                 <a href="select_images.php">
@@ -332,6 +337,7 @@ echo $_SESSION['analysis_setting']->displayString();
                 </a>
             </legend>
             <textarea name="task_settings_report"
+                      title="Summary"
                       cols="50"
                       rows="3"
                       readonly="readonly">

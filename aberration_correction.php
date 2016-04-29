@@ -2,15 +2,13 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
+use hrm\DatabaseConnection;
 use hrm\Nav;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.inc.php';
 
-require_once("./inc/User.inc.php");
 require_once("./inc/Parameter.inc.php");
-require_once("./inc/Setting.inc.php");
 require_once("./inc/Util.inc.php");
-require_once("./inc/System.inc.php");
 
 /* *****************************************************************************
  *
@@ -35,7 +33,8 @@ $message = "";
 $parameterNames = $_SESSION['setting']->correctionParameterNames();
 $db = new DatabaseConnection();
 foreach ( $parameterNames as $name ) {
-  $parameter = $_SESSION['setting']->parameter( $name );
+    /** @var Parameter $parameter */
+    $parameter = $_SESSION['setting']->parameter( $name );
   $confidenceLevel = $db->getParameterConfidenceLevel( '', $name );
   $parameter->setConfidenceLevel( $confidenceLevel );
   $_SESSION['setting']->set( $parameter );
@@ -141,7 +140,8 @@ include("header.inc.php");
 
     ***************************************************************************/
 
-      $parameterPerformAberrationCorrection =
+    /** @var PerformAberrationCorrection $parameterPerformAberrationCorrection */
+    $parameterPerformAberrationCorrection =
         $_SESSION['setting']->parameter("PerformAberrationCorrection");
 
     ?>
@@ -149,10 +149,10 @@ include("header.inc.php");
         <fieldset class="setting <?php
             echo $parameterPerformAberrationCorrection->confidenceLevel();
             ?>"
-            onmouseover="javascript:changeQuickHelp( 'enable' );" >
+            onmouseover="changeQuickHelp( 'enable' );" >
 
             <legend>
-                <a href="javascript:openWindow(
+                <a href="openWindow(
                    'http://www.svi.nl/HuygensRemoteManagerHelpDepthDependentPsf')">
                     <img src="images/help.png" alt="?" />
                 </a>
@@ -161,7 +161,7 @@ include("header.inc.php");
 
             <select id="PerformAberrationCorrection"
                     name="PerformAberrationCorrection"
-                    onchange="javascript:switchCorrection();" >
+                    onchange="switchCorrection();" >
 
             <?php
 
@@ -231,6 +231,7 @@ if ($parameterPerformAberrationCorrection->value( ) == 1)
 
     ***************************************************************************/
 
+    /** @var CoverslipRelativePosition $parameterCoverslipRelativePosition */
     $parameterCoverslipRelativePosition =
         $_SESSION['setting']->parameter("CoverslipRelativePosition");
 
@@ -238,10 +239,10 @@ if ($parameterPerformAberrationCorrection->value( ) == 1)
 
         <fieldset class="setting <?php
             echo $parameterCoverslipRelativePosition->confidenceLevel(); ?>"
-            onmouseover="javascript:changeQuickHelp( 'orientation' );" >
+            onmouseover="changeQuickHelp( 'orientation' );" >
 
             <legend>
-                <a href="javascript:openWindow(
+                <a href="openWindow(
                    'http://www.svi.nl/HuygensRemoteManagerHelpSpecifySampleOrientation')">
                     <img src="images/help.png" alt="?" />
                 </a>
@@ -308,6 +309,7 @@ if ($parameterPerformAberrationCorrection->value( ) == 1)
 
     ***************************************************************************/
 
+    /** @var AberrationCorrectionMode $parameterAberrationCorrectionMode */
     $parameterAberrationCorrectionMode =
         $_SESSION['setting']->parameter("AberrationCorrectionMode");
 
@@ -321,10 +323,10 @@ if ($parameterPerformAberrationCorrection->value( ) == 1)
 
     <fieldset class="setting <?php
         echo $parameterAberrationCorrectionMode->confidenceLevel(); ?>"
-        onmouseover="javascript:changeQuickHelp( 'mode' );" >
+        onmouseover="changeQuickHelp( 'mode' );" >
 
         <legend>
-            <a href="javascript:openWindow(
+            <a href="openWindow(
                'http://www.svi.nl/HuygensRemoteManagerHelpSaCorrectionMode')">
                 <img src="images/help.png" alt="?" />
             </a>
@@ -333,7 +335,7 @@ if ($parameterPerformAberrationCorrection->value( ) == 1)
 
         <select id="AberrationCorrectionMode"
             name="AberrationCorrectionMode"
-            onchange="javascript:switchAdvancedCorrection();" >
+            onchange="switchAdvancedCorrection();" >
 
             <?php
 
@@ -394,6 +396,7 @@ if ( ($parameterPerformAberrationCorrection->value( ) == 1) &&
 
     ***************************************************************************/
 
+    /** @var AdvancedCorrectionOptions $parameterAdvancedCorrectionOptions */
     $parameterAdvancedCorrectionOptions =
         $_SESSION['setting']->parameter("AdvancedCorrectionOptions");
 
@@ -403,10 +406,10 @@ if ( ($parameterPerformAberrationCorrection->value( ) == 1) &&
 
     <fieldset class="setting <?php echo
         $parameterAdvancedCorrectionOptions->confidenceLevel(); ?>"
-        onmouseover="javascript:changeQuickHelp( 'advanced' );" >
+        onmouseover="changeQuickHelp( 'advanced' );" >
 
     <legend>
-        <a href="javascript:openWindow(
+        <a href="openWindow(
            'http://www.svi.nl/HuygensRemoteManagerHelpAdvancedSaCorrection')">
             <img src="images/help.png" alt="?" />
         </a>
@@ -415,7 +418,7 @@ if ( ($parameterPerformAberrationCorrection->value( ) == 1) &&
 
         <select id="AdvancedCorrectionOptions"
             name="AdvancedCorrectionOptions"
-            onchange="javascript:switchAdvancedCorrectionScheme();" >
+            onchange="switchAdvancedCorrectionScheme();" >
 
             <?php
 
@@ -458,9 +461,10 @@ if ( ($parameterPerformAberrationCorrection->value( ) == 1) &&
 
     ***************************************************************************/
 
+    /** @var PSFGenerationDepth $parameterPSFGenerationDepth */
     $parameterPSFGenerationDepth =
         $_SESSION['setting']->parameter("PSFGenerationDepth");
-    $selectedValue  = $parameterPSFGenerationDepth->value();
+    $selectedValue = $parameterPSFGenerationDepth->value();
 
 ?>
 
@@ -484,7 +488,7 @@ if ( ($parameterPerformAberrationCorrection->value( ) == 1) &&
 
     <div><input name="OK" type="hidden" /></div>
 
-    <div id="controls" onmouseover="javascript:changeQuickHelp( 'default' )">
+    <div id="controls" onmouseover="changeQuickHelp( 'default' )">
         <input type="button" value="" class="icon previous"
             onmouseover="TagToTip('ttSpanBack' )"
             onmouseout="UnTip()"
@@ -503,7 +507,7 @@ if ( ($parameterPerformAberrationCorrection->value( ) == 1) &&
 
     </div> <!-- content -->
 
-    <div id="rightpanel"  onmouseover="javascript:changeQuickHelp( 'default' )">
+    <div id="rightpanel"  onmouseover="changeQuickHelp( 'default' )">
 
         <div id="info">
 
@@ -527,6 +531,7 @@ if ( ($parameterPerformAberrationCorrection->value( ) == 1) &&
             <div class="requirements">
                Parameter requirements<br />adapted for <b>
                <?php
+               /** @var ImageFileFormat $fileFormat */
                $fileFormat = $_SESSION['setting']->parameter( "ImageFileFormat" );
                echo $fileFormat->value();
                ?>

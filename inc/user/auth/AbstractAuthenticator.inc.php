@@ -2,10 +2,10 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
-namespace hrm\auth;
+namespace hrm\user\auth;
 
 // Include the HRM configuration files.
-require_once dirname(__FILE__) . '/../bootstrap.inc.php';
+require_once dirname(__FILE__) . '/../../bootstrap.inc.php';
 
 /**
  * Class AbstractAuthenticator

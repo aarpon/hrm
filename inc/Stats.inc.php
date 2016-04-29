@@ -10,10 +10,10 @@
 
 namespace hrm;
 
+use hrm\user\User;
+
 require_once dirname(__FILE__) . '/bootstrap.inc.php';
 
-
-require_once("User.inc.php");
 require_once("Database.inc.php");
 require_once("Util.inc.php");
 

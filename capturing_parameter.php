@@ -2,15 +2,15 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
+use hrm\DatabaseConnection;
 use hrm\Nav;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.inc.php';
 
-require_once("./inc/User.inc.php");
 require_once("./inc/Parameter.inc.php");
 require_once("./inc/Setting.inc.php");
 require_once("./inc/Util.inc.php");
-require_once("./inc/Database.inc.php");
+
 
 /* *****************************************************************************
  *
@@ -31,13 +31,14 @@ $message = "";
  *
  **************************************************************************** */
 
+/** @var ImageFileFormat $fileFormat */
 $fileFormat = $_SESSION['setting']->parameter( "ImageFileFormat" );
 $parameterNames = $_SESSION['setting']->capturingParameterNames();
 $db = new DatabaseConnection();
 foreach ( $parameterNames as $name ) {
-  $parameter = $_SESSION['setting']->parameter( $name );
-  $confidenceLevel =
-    $db->getParameterConfidenceLevel( $fileFormat->value(), $name );
+    /** @var Parameter $parameter */
+    $parameter = $_SESSION['setting']->parameter( $name );
+  $confidenceLevel = $db->getParameterConfidenceLevel($fileFormat->value(), $name);
   $parameter->setConfidenceLevel( $confidenceLevel );
   $_SESSION['setting']->set( $parameter );
 }
@@ -49,6 +50,7 @@ foreach ( $parameterNames as $name ) {
  *
  **************************************************************************** */
 
+/** @var PinholeSize $pinholeParam */
 $pinholeParam = $_SESSION['setting']->parameter("PinholeSize");
 $pinhole = $pinholeParam->value();
 for ($i=0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
@@ -269,13 +271,14 @@ if ( $_SESSION['setting']->hasPinhole() ) {
 
     ***************************************************************************/
 
-      $parameterCCDCaptorSizeX =
+    /** @var CCDCaptorSizeX $parameterCCDCaptorSizeX */
+    $parameterCCDCaptorSizeX =
         $_SESSION['setting']->parameter("CCDCaptorSizeX");
 
     ?>
             <fieldset class="setting
                 <?php echo $parameterCCDCaptorSizeX->confidenceLevel(); ?>"
-              onmouseover="javascript:changeQuickHelp( 'voxel' );" >
+              onmouseover="changeQuickHelp( 'voxel' );" >
 
                 <legend>
                     <a href="javascript:openWindow(
@@ -333,7 +336,8 @@ $textForCaptorSize = "pixel size (nm)";
 
     ***************************************************************************/
 
-      $parameterZStepSize = $_SESSION['setting']->parameter("ZStepSize");
+    /** @var ZStepSize $parameterZStepSize */
+    $parameterZStepSize = $_SESSION['setting']->parameter("ZStepSize");
 
     ?>
                         <input id="ZStepSize"
@@ -375,15 +379,15 @@ $textForCaptorSize = "pixel size (nm)";
 
     ***************************************************************************/
 
-      $parameterTimeInterval = $_SESSION['setting']->parameter("TimeInterval");
+    /** @var TimeInterval $parameterTimeInterval */
+    $parameterTimeInterval = $_SESSION['setting']->parameter("TimeInterval");
 
     ?>
             <fieldset class="setting
                 <?php echo $parameterTimeInterval->confidenceLevel(); ?>"
-              onmouseover="javascript:changeQuickHelp( 'time' );" >
+              onmouseover="changeQuickHelp( 'time' );" >
            	<legend>
-                <a href="javascript:openWindow(
-                   'http://www.svi.nl/TimeSeries')">
+                <a href="openWindow('http://www.svi.nl/TimeSeries')">
                     <img src="images/help.png" alt="?" />
                 </a>
                 time interval
@@ -421,16 +425,16 @@ if ($_SESSION['setting']->hasPinhole()) {
 
     ***************************************************************************/
 
-      $parameterPinholeSize = $_SESSION['setting']->parameter("PinholeSize");
+    /** @var PinholeSize $parameterPinholeSize */
+    $parameterPinholeSize = $_SESSION['setting']->parameter("PinholeSize");
 
     ?>
             <fieldset class="setting
               <?php echo $parameterPinholeSize->confidenceLevel(); ?>"
-              onmouseover="javascript:changeQuickHelp( 'pinhole_radius' );" >
+              onmouseover="changeQuickHelp( 'pinhole_radius' );" >
 
               <legend>
-                <a href="javascript:openWindow(
-                  'http://www.svi.nl/PinholeRadius')">
+                <a href="openWindow('http://www.svi.nl/PinholeRadius')">
                     <img src="images/help.png" alt="?" />
                 </a>
                 pinhole radius
@@ -480,9 +484,9 @@ if ($_SESSION['setting']->hasPinhole()) {
                 <p>&nbsp;</p>
 
 				<?php
-				  $parameterNA =
-                    $_SESSION['setting']->parameter("NumericalAperture");
-				  $na = $parameterNA->value();
+                /** @var NumericalAperture $parameterNA */
+                $parameterNA = $_SESSION['setting']->parameter("NumericalAperture");
+                $na = $parameterNA->value();
 				?>
                 <a href="#"
                   onmouseover="TagToTip('ttSpanPinholeRadius' )"
@@ -518,16 +522,15 @@ if ($_SESSION['setting']->isNipkowDisk()) {
 
     ***************************************************************************/
 
-	$parameterPinholeSpacing =
-      $_SESSION['setting']->parameter('PinholeSpacing');
+    /** @var PinholeSpacing $parameterPinholeSpacing */
+    $parameterPinholeSpacing = $_SESSION['setting']->parameter('PinholeSpacing');
 
 ?>
             <fieldset class="setting
               <?php echo $parameterPinholeSpacing->confidenceLevel(); ?>"
-              onmouseover="javascript:changeQuickHelp( 'pinhole_spacing' );" >
+              onmouseover="changeQuickHelp( 'pinhole_spacing' );" >
               <legend>
-                <a href="javascript:openWindow(
-                   'http://www.svi.nl/PinholeSpacing')">
+                <a href="openWindow('http://www.svi.nl/PinholeSpacing')">
                     <img src="images/help.png" alt="?" />
                 </a>
                 backprojected pinhole spacing
@@ -570,21 +573,21 @@ if ($_SESSION['setting']->isNipkowDisk()) {
             <div><input name="OK" type="hidden" /></div>
 
             <div id="controls"
-                 onmouseover="javascript:changeQuickHelp( 'default' )">
+                 onmouseover="changeQuickHelp( 'default' )">
               <input type="button" value="" class="icon previous"
                   onmouseover="TagToTip('ttSpanBack' )"
                   onmouseout="UnTip()"
-                  onclick="javascript:deleteValuesAndRedirect(
+                  onclick="deleteValuesAndRedirect(
                     'microscope_parameter.php' );" />
               <input type="button" value="" class="icon up"
                   onmouseover="TagToTip('ttSpanCancel' )"
                   onmouseout="UnTip()"
-                  onclick="javascript:deleteValuesAndRedirect(
+                  onclick="deleteValuesAndRedirect(
                     'select_parameter_settings.php' );" />
               <input type="submit" value="" class="<?php echo $iconClass; ?>"
                   onmouseover="TagToTip('ttSpanForward' )"
                   onmouseout="UnTip()"
-                  onclick="javascript:deleteValuesAndProcess();" />
+                  onclick="deleteValuesAndProcess();" />
             </div>
 
         </form>
@@ -592,7 +595,7 @@ if ($_SESSION['setting']->isNipkowDisk()) {
     </div> <!-- content -->
 
     <div id="rightpanel"
-       onmouseover="javascript:changeQuickHelp( 'default' )">
+       onmouseover="changeQuickHelp( 'default' )">
 
         <div id="info">
 

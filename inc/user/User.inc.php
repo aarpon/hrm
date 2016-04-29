@@ -3,18 +3,20 @@
  * User
  *
  * @package hrm
+ * @subpackage user
  *
  * This file is part of the Huygens Remote Manager
  * Copyright and license notice: see license.txt
  */
 
-namespace hrm;
+namespace hrm\user;
 
-use hrm\auth\AuthenticatorFactory;
+use hrm\DatabaseConnection;
+use hrm\user\auth\AuthenticatorFactory;
 
-require_once dirname(__FILE__) . '/bootstrap.inc.php';
+require_once dirname(__FILE__) . '/../bootstrap.inc.php';
 
-require_once(dirname(__FILE__) . "/Setting.inc.php");
+require_once(dirname(__FILE__) . "/../Setting.inc.php");
 
 
 /**

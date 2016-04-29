@@ -2,12 +2,12 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
-namespace hrm\auth;
+namespace hrm\user\auth;
 
 use adLDAP\adLDAP;
 use adLDAP\adLDAPException;
 
-require_once dirname(__FILE__) . '/../bootstrap.inc.php';
+require_once dirname(__FILE__) . '/../../bootstrap.inc.php';
 
 /**
  * Class ActiveDirectoryAuthenticator
@@ -88,7 +88,7 @@ class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
 
 
         // Include configuration file
-        include(dirname(__FILE__) . "/../../config/active_directory_config.inc");
+        include(dirname(__FILE__) . "/../../../config/active_directory_config.inc");
 
         // Set up the adLDAP object
         $options = array(

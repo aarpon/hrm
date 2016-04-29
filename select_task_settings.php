@@ -2,15 +2,16 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
+use hrm\AnalysisSetting;
 use hrm\Nav;
+use hrm\System;
+use hrm\TaskSettingEditor;
+use hrm\user\User;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.inc.php';
 
-require_once("./inc/User.inc.php");
 require_once("./inc/Parameter.inc.php");
-require_once("./inc/Setting.inc.php");
-require_once("./inc/SettingEditor.inc.php");
-require_once("./inc/System.inc.php");
+
 
 /* *****************************************************************************
  *
@@ -346,7 +347,7 @@ if (!$_SESSION['user']->isAdmin()) {
   }
 
 ?>
-<select name="public_setting"
+<select name="public_setting" title="Public setting"
      onclick="ajaxGetParameterListForSet('task_setting', $(this).val(), true);"
      onchange="ajaxGetParameterListForSet('task_setting', $(this).val(), true);"
      size="5"<?php echo $flag ?>>
@@ -356,7 +357,8 @@ if (!$_SESSION['user']->isAdmin()) {
     echo "                        <option>&nbsp;</option>\n";
   }
   else {
-    foreach ($settings as $set) {
+      /** @var \hrm\TaskSetting $set */
+      foreach ($settings as $set) {
       echo "                        <option>".$set->name()."</option>\n";
     }
   }
@@ -402,6 +404,7 @@ if (!$_SESSION['user']->isAdmin()) {
               <div id="settings">
 <?php
 
+/** @var \hrm\TaskSetting $settings */
 $settings = $_SESSION['taskeditor']->settings();
 $size = "8";
 if ($_SESSION['user']->isAdmin()) $size = "12";
@@ -409,7 +412,7 @@ $flag = "";
 if (sizeof($settings) == 0) $flag = " disabled=\"disabled\"";
 
 ?>
-<select name="task_setting" id="setting"
+<select name="task_setting" id="setting" title="Task setting"
     onclick="ajaxGetParameterListForSet('task_setting', $(this).val(), false);"
     onchange="ajaxGetParameterListForSet('task_setting', $(this).val(), false);"
     size="<?php echo $size ?>"
@@ -420,7 +423,8 @@ if (sizeof($settings) == 0) {
   echo "                        <option>&nbsp;</option>\n";
 }
 else {
-  foreach ($settings as $set) {
+    /** @var \hrm\TaskSetting $set */
+    foreach ($settings as $set) {
     echo "                        <option";
     if ($set->isDefault()) {
       echo " class=\"default\"";
@@ -545,14 +549,15 @@ if (!$_SESSION['user']->isAdmin()) {
             <div id="users">
 
                 <select id="usernameselect" name="usernameselect[]"
-                        size="5" multiple="multiple">
+                        size="5" multiple="multiple" title="Select user names">
                     <option>&nbsp;</option>
                 </select>
             </div>
         </fieldset>
 
         <!-- Hidden input where to store the selected template -->
-        <input hidden id="templateToShare" name="templateToShare" value="">
+        <input hidden id="templateToShare" name="templateToShare" value=""
+               title="Template to share">
 
         <div id="actions" class="userSelection">
 

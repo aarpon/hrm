@@ -10,7 +10,7 @@
 
 namespace hrm;
 
-require_once( "User.inc.php" );
+require_once("user/User.inc.php");
 require_once( "JobDescription.inc.php" );
 require_once( "Fileserver.inc.php" );
 
@@ -2676,7 +2676,7 @@ class HuygensTemplate {
 
     /**
      * Gets the Huygens task name of a task run every two channels.
-     * @param string $key A task array key
+     * @param string $task A task array key
      * @return string The Huygens task name.
      */
     private function getNameTaskMultiChan($task) {

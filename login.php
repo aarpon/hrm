@@ -3,10 +3,10 @@
 // Copyright and license notice: see license.txt
 
 use hrm\Nav;
-use hrm\user_mngm\UserManagerFactory;
+use hrm\user\mngm\UserManagerFactory;
 use hrm\Validator;
 use hrm\DatabaseConnection;
-use hrm\User;
+use hrm\user\User;
 use hrm\System;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.inc.php';

@@ -2,14 +2,12 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
+use hrm\DatabaseConnection;
 use hrm\Nav;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.inc.php';
 
-require_once("./inc/User.inc.php");
 require_once("./inc/Parameter.inc.php");
-require_once("./inc/Setting.inc.php");
-require_once("./inc/Database.inc.php");
 
 /* *****************************************************************************
  *
@@ -35,15 +33,17 @@ $message = "";
  *
  **************************************************************************** */
 
-$fileFormat = $_SESSION['setting']->parameter( "ImageFileFormat" );
+$fileFormat = $_SESSION['setting']->parameter("ImageFileFormat");
 $parameterNames = $_SESSION['setting']->microscopeParameterNames();
 $db = new DatabaseConnection();
-foreach ( $parameterNames as $name ) {
-  $parameter = $_SESSION['setting']->parameter( $name );
-  $confidenceLevel =
-    $db->getParameterConfidenceLevel( $fileFormat->value(), $name );
-  $parameter->setConfidenceLevel( $confidenceLevel );
-  $_SESSION['setting']->set( $parameter );
+foreach ($parameterNames as $name) {
+    $parameter = $_SESSION['setting']->parameter($name);
+    /** @var ImageFileFormat $fileFormat */
+    $confidenceLevel = $db->getParameterConfidenceLevel(
+        $fileFormat->value(), $name);
+    /** @var Parameter $parameter */
+    $parameter->setConfidenceLevel($confidenceLevel);
+    $_SESSION['setting']->set($parameter);
 }
 
 /* *****************************************************************************
@@ -52,12 +52,14 @@ foreach ( $parameterNames as $name ) {
  *
  **************************************************************************** */
 
+/** @var ExcitationWavelength $excitationParam */
 $excitationParam = $_SESSION['setting']->parameter("ExcitationWavelength");
-$excitationParam->setNumberOfChannels(
-    $_SESSION['setting']->numberOfChannels() );
+$excitationParam->setNumberOfChannels($_SESSION['setting']->numberOfChannels());
+
+/** @var EmissionWavelength $emissionParam */
 $emissionParam =  $_SESSION['setting']->parameter("EmissionWavelength");
-$emissionParam->setNumberOfChannels(
-    $_SESSION['setting']->numberOfChannels( ) );
+$emissionParam->setNumberOfChannels($_SESSION['setting']->numberOfChannels());
+
 $excitation = $excitationParam->value();
 $emission = $emissionParam->value();
 for ($i=0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
@@ -160,16 +162,16 @@ include("header.inc.php");
 
     ***************************************************************************/
 
-    $parameterMicroscopeType =
-        $_SESSION['setting']->parameter("MicroscopeType");
+    /** @var MicroscopeType $parameterMicroscopeType */
+    $parameterMicroscopeType = $_SESSION['setting']->parameter("MicroscopeType");
 
     ?>
             <fieldset class="setting <?php
             echo $parameterMicroscopeType->confidenceLevel(); ?>"
-            onmouseover="javascript:changeQuickHelp( 'type' );" >
+            onmouseover="changeQuickHelp( 'type' );" >
 
                 <legend>
-                    <a href="javascript:openWindow(
+                    <a href="openWindow(
                        'http://www.svi.nl/MicroscopeType')">
                         <img src="images/help.png" alt="?" />
                     </a>
@@ -232,16 +234,17 @@ foreach($possibleValues as $possibleValue) {
 
     ***************************************************************************/
 
+    /** @var NumericalAperture $parameterNumericalAperture */
     $parameterNumericalAperture =
         $_SESSION['setting']->parameter("NumericalAperture");
 
     ?>
             <fieldset class="setting <?php
             echo $parameterNumericalAperture->confidenceLevel(); ?>"
-            onmouseover="javascript:changeQuickHelp( 'NA' );" >
+            onmouseover="changeQuickHelp( 'NA' );" >
 
               <legend>
-                <a href="javascript:openWindow(
+                <a href="openWindow(
                     'http://www.svi.nl/NumericalAperture')">
                     <img src="images/help.png" alt="?" />
                 </a>
@@ -271,6 +274,7 @@ foreach($possibleValues as $possibleValue) {
 
     ***************************************************************************/
 
+    /** @var EmissionWavelength $parameterEmissionWavelength */
     $parameterEmissionWavelength =
         $_SESSION['setting']->parameter("EmissionWavelength");
 
@@ -278,10 +282,10 @@ foreach($possibleValues as $possibleValue) {
 
             <fieldset class="setting <?php
             echo $parameterEmissionWavelength->confidenceLevel(); ?>"
-            onmouseover="javascript:changeQuickHelp( 'wavelengths' );" >
+            onmouseover="changeQuickHelp( 'wavelengths' );" >
 
                 <legend>
-                    <a href="javascript:openWindow(
+                    <a href="openWindow(
                        'http://www.svi.nl/WaveLength')">
                         <img src="images/help.png" alt="?" />
                     </a>
@@ -380,17 +384,17 @@ for ($i=0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
 
     ***************************************************************************/
 
-    $parameterObjectiveType =
-    $_SESSION['setting']->parameter("ObjectiveType");
+  /** @var ObjectiveType $parameterObjectiveType */
+  $parameterObjectiveType = $_SESSION['setting']->parameter("ObjectiveType");
 
   ?>
 
             <fieldset class="setting <?php
                 echo $parameterObjectiveType->confidenceLevel(); ?>"
-                onmouseover="javascript:changeQuickHelp( 'objective' );" >
+                onmouseover="changeQuickHelp( 'objective' );" >
 
                 <legend>
-                    <a href="javascript:openWindow(
+                    <a href="openWindow(
                        'http://www.svi.nl/LensImmersionMedium')">
                         <img src="images/help.png" alt="?" />
                     </a>
@@ -477,16 +481,17 @@ if (!$default) {
 
     ***************************************************************************/
 
-    $parameterSampleMedium = $_SESSION['setting']->parameter("SampleMedium");
+  /** @var SampleMedium $parameterSampleMedium */
+  $parameterSampleMedium = $_SESSION['setting']->parameter("SampleMedium");
 
   ?>
 
             <fieldset class="setting <?php
                 echo $parameterSampleMedium->confidenceLevel(); ?>"
-                onmouseover="javascript:changeQuickHelp( 'sample' );" >
+                onmouseover="changeQuickHelp( 'sample' );" >
 
                 <legend>
-                    <a href="javascript:openWindow(
+                    <a href="openWindow(
                        'http://www.svi.nl/SpecimenEmbeddingMedium')">
                         <img src="images/help.png" alt="?" />
                     </a>
@@ -568,7 +573,7 @@ if (!$default) {
             <div><input name="OK" type="hidden" /></div>
 
             <div id="controls"
-                 onmouseover="javascript:changeQuickHelp( 'default' )">
+                 onmouseover="changeQuickHelp( 'default' )">
               <input type="button" value="" class="icon previous"
                   onmouseover="TagToTip('ttSpanBack' )"
                   onmouseout="UnTip()"
@@ -598,7 +603,7 @@ if (!$default) {
     </div> <!-- content -->
 
     <div id="rightpanel"
-         onmouseover="javascript:changeQuickHelp( 'default' );" >
+         onmouseover="changeQuickHelp( 'default' );" >
 
         <div id="info">
 
@@ -621,6 +626,7 @@ if (!$default) {
             <div class="requirements">
                Parameter requirements<br />adapted for <b>
                <?php
+               /** @var ImageFileFormat $fileFormat */
                $fileFormat = $_SESSION['setting']->parameter( "ImageFileFormat" );
                echo $fileFormat->value();
                ?>

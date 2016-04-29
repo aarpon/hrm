@@ -1309,7 +1309,7 @@ class DatabaseConnection {
     /**
      * Returns the possible values for a given parameter.
      * @param Parameter $parameter Parameter object.
-     * @return Flattened array of possible values.
+     * @return array Flattened array of possible values.
      */
     public function readPossibleValues($parameter) {
         $name = $parameter->name();

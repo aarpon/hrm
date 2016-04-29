@@ -2,9 +2,9 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
-namespace hrm\auth;
+namespace hrm\user\auth;
 
-require_once dirname(__FILE__) . '/../bootstrap.inc.php';
+require_once dirname(__FILE__) . '/../../bootstrap.inc.php';
 
 /**
  * Class LDAPAuthenticator
@@ -121,7 +121,7 @@ class LDAPAuthenticator extends AbstractAuthenticator {
                $ldap_manager_ou, $ldap_valid_groups, $ldap_authorized_groups;
 
         // Include the configuration file
-        include(dirname(__FILE__) . "/../../config/ldap_config.inc");
+        include(dirname(__FILE__) . "/../../../config/ldap_config.inc");
 
         // Assign the variables
         $this->m_LDAP_Host = $ldap_host;
@@ -196,7 +196,7 @@ class LDAPAuthenticator extends AbstractAuthenticator {
 
     /**
      * Returna the email address of user with given username.
-     * @param string $username Username for which to query the email address.
+     * @param string $uid Username for which to query the email address.
      * @return string|null email address or null.
     */
     public function getEmailAddress($uid) {

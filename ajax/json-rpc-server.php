@@ -3,9 +3,18 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
+use hrm\AnalysisSetting;
+use hrm\DatabaseConnection;
 use hrm\Mail;
+use hrm\ParameterSetting;
+use hrm\System;
+use hrm\TaskSetting;
+use hrm\user\User;
 
 require_once dirname(__FILE__) . '/../inc/bootstrap.inc.php';
+
+require_once dirname(__FILE__) . '/../inc/Parameter.inc.php';
+
 
 /*
 
@@ -59,13 +68,8 @@ PHP:          $params[0] := "ExcitationWavelength"
 
 */
 
-require_once(dirname(__FILE__) . '/../inc/User.inc.php');
 require_once(dirname(__FILE__) . '/../inc/JobQueue.inc.php');
-require_once(dirname(__FILE__) . '/../inc/Database.inc.php');
-require_once(dirname(__FILE__) . '/../inc/System.inc.php');
 require_once(dirname(__FILE__) . '/../inc/Parameter.inc.php');
-require_once(dirname(__FILE__) . '/../inc/SettingEditor.inc.php');
-require_once(dirname(__FILE__) . '/../inc/Setting.inc.php');
 
 // This is not strictly necessary for the Ajax communication, but will be
 // necessary for accessing session data to create the response.
@@ -223,7 +227,7 @@ return true;
  * The two valid values for the property "success" are the strings (and not
  * booleans!) "true" and "false".
  *
- * @return Array (PHP) with "success" = "true" and "message" = "" properties.
+ * @return array (PHP) with "success" = "true" and "message" = "" properties.
  */
 function initJSONArray() {
 
@@ -235,7 +239,7 @@ function initJSONArray() {
  * Get the total number and the number of jobs owned by the specified user
  * currently in the queue.
  *
- * @return String JSON-encoded array with keys 'numAllJobsInQueue' and
+ * @return string JSON-encoded array with keys 'numAllJobsInQueue' and
  * 'numUserJobsInQueue'
  */
 function jsonGetUserAndTotalNumberOfJobsInQueue() {
@@ -267,7 +271,7 @@ function jsonGetUserAndTotalNumberOfJobsInQueue() {
 
 /**
  * Check whether there is an update for the HRM.
- * @return String JSON-encoded array with key 'newerVersionExist' and 'newVersion'
+ * @return string JSON-encoded array with key 'newerVersionExist' and 'newVersion'
  */
 function jsonCheckForUpdates() {
 
@@ -301,7 +305,7 @@ function jsonCheckForUpdates() {
 /**
  * Send a test email to the administrator to check that the email system is set
  * up properly.
- * @return String JSON-encoded array with key 'success' and 'message'
+ * @return string JSON-encoded array with key 'success' and 'message'
  */
 function jsonSendTestEmail() {
 
@@ -345,9 +349,9 @@ function jsonSendTestEmail() {
  * To retrieve a specific Parameter from current session use the
  * jsonGet*ParameterFromSession() methods instead.
  *
- * @param $parameterName Class name of the Parameter to be serialized
+ * @param string $parameterName Class name of the Parameter to be serialized
  *
- * @return String JSON-encoded Parameter string.
+ * @return string JSON-encoded Parameter string.
  */
 function jsonGetParameter($parameterName) {
 
@@ -382,9 +386,9 @@ function jsonGetParameter($parameterName) {
  * The Parameter is retrieved from the session, and therefore contains the
  * value(s) set by the user in the browser.
  *
- * @param $parameterName Class name of the Parameter to be serialized
+ * @param string $parameterName Class name of the Parameter to be serialized
  *
- * @return JSON-encoded Parameter.
+ * @return string JSON-encoded Parameter.
  *
  * @todo Implement corresponding method for restoration and processing Parameters.
  */
@@ -553,8 +557,8 @@ function jsonGetUserList($username) {
 
 /**
  * Return the list of shared templates with the given user.
- * @param  String Name of the user for which to query for shared templates.
- * @return String JSON-encoded array of shared templates.
+ * @param  string $username Name of the user for which to query for shared templates.
+ * @return string $type JSON-encoded array of shared templates.
  */
 function jsonGetSharedTemplateList($username, $type) {
 
@@ -562,6 +566,8 @@ function jsonGetSharedTemplateList($username, $type) {
     $json = initJSONArray();
 
     // Retrieve list of shared templates
+    $sharedTemplatesWith = "";
+    $sharedTemplatesBy = "";
     $success = True;
     switch ($type) {
 
@@ -611,9 +617,9 @@ function jsonGetSharedTemplateList($username, $type) {
 
 /**
  * Accept and copy a template to the target user.
- * @param  String Name of the user for which to query for shared templates.
- * @param  String Type of the template: 'parameter', 'task', 'analysis'.
- * @return String JSON-encoded array with 'success' and 'message' fields.
+ * @param  string $template Name of the user for which to query for shared templates.
+ * @param  string $type Type of the template: 'parameter', 'task', 'analysis'.
+ * @return string JSON-encoded array with 'success' and 'message' fields.
  */
 function jsonAcceptSharedTemplate($template, $type) {
 
@@ -677,9 +683,9 @@ function jsonAcceptSharedTemplate($template, $type) {
 
 /**
  * Delete a shared template without copying it.
- * @param  String Name of the user for which to query for shared templates.
- * @param  String Type of the template: 'parameter', 'task', 'analysis'.
- * @return String JSON-encoded array with 'success' and 'message' fields.
+ * @param  string $template Name of the user for which to query for shared templates.
+ * @param  string $type Type of the template: 'parameter', 'task', 'analysis'.
+ * @return string JSON-encoded array with 'success' and 'message' fields.
  */
 function jsonDeleteSharedTemplate($template, $type) {
 
@@ -738,9 +744,9 @@ function jsonDeleteSharedTemplate($template, $type) {
 
 /**
  * Preview the shared template.
- * @param  String Id of the template.
- * @param  String Type of the template: 'parameter', 'task', 'analysis'.
- * @return String JSON-encoded array with .
+ * @param  string $template Id of the template.
+ * @param  string $type Type of the template: 'parameter', 'task', 'analysis'.
+ * @return string JSON-encoded array with .
  */
 function jsonPreviewSharedTemplate($template, $type) {
 
@@ -754,6 +760,7 @@ function jsonPreviewSharedTemplate($template, $type) {
     $db = new DatabaseConnection();
 
     // Read the settings from the shared table and prepare the preview
+    /** @var hrm\ParameterSetting $settings */
     $settings = $db->loadSharedParameterSettings($template["id"], $type);
     if (! $settings) {
 
@@ -781,5 +788,3 @@ function jsonPreviewSharedTemplate($template, $type) {
     return (json_encode($json));
 
 }
-
-?>

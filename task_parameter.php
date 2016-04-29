@@ -2,13 +2,13 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
+use hrm\DatabaseConnection;
 use hrm\Nav;
+use hrm\TaskSetting;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.inc.php';
 
-require_once("./inc/User.inc.php");
 require_once("./inc/Parameter.inc.php");
-require_once("./inc/Setting.inc.php");
 require_once("./inc/Util.inc.php");
 require_once("./inc/System.inc.php");
 
@@ -163,17 +163,18 @@ include("header.inc.php");
 
             <!-- deconvolution algorithm -->
              <fieldset class="setting provided"
-              onmouseover="javascript:changeQuickHelp( 'method' );" >
+              onmouseover="changeQuickHelp( 'method' );" >
 
-                <legend>
-                    <a href="javascript:openWindow(
+                 <legend>
+                     <a href="openWindow(
                        'http://support.svi.nl/wiki/RestorationMethod')">
-                        <img src="images/help.png" alt="?" /></a>
-                    deconvolution algorithm
-                </legend>
+                         <img src="images/help.png" alt="?"/></a>
+                     deconvolution algorithm
+                 </legend>
 
-                <select name="DeconvolutionAlgorithm"
-                  onchange="javascript:switchSnrMode();" >
+                 <select name="DeconvolutionAlgorithm"
+                         title="Deconvolution algorithm"
+                         onchange="switchSnrMode();">
 
 <?php
 
@@ -181,6 +182,7 @@ include("header.inc.php");
                            DECONVOLUTION ALGORITHM
 */
 
+/** @var DeconvolutionAlgorithm $parameter */
 $parameter = $_SESSION['task_setting']->parameter("DeconvolutionAlgorithm");
 $possibleValues = $parameter->possibleValues();
 $selectedMode  = $parameter->value();
@@ -205,17 +207,16 @@ foreach($possibleValues as $possibleValue) {
 
             <!-- signal/noise ratio -->
             <fieldset class="setting provided"
-              onmouseover="javascript:changeQuickHelp( 'snr' );" >
+              onmouseover="changeQuickHelp( 'snr' );" >
 
                 <legend>
-                    <a href="javascript:openWindow(
-                       'http://www.svi.nl/SignalToNoiseRatio')">
+                    <a href="openWindow('http://www.svi.nl/SignalToNoiseRatio')">
                         <img src="images/help.png" alt="?" /></a>
                     signal/noise ratio
                 </legend>
 
                 <div id="snr"
-                     onmouseover="javascript:changeQuickHelp( 'snr' );">
+                     onmouseover="changeQuickHelp( 'snr' );">
 
 <?php
 
@@ -266,6 +267,7 @@ for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
                                   <input
                                     id="SignalNoiseRatioCMLE<?php echo $i; ?>"
                                     name="SignalNoiseRatioCMLE<?php echo $i; ?>"
+                                    title="Signal-to-noise ratio (CMLE)"
                                     type="text"
                                     size="8"
                                     value="<?php echo $value; ?>"
@@ -312,6 +314,7 @@ for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
                         <span class="nowrap">
                             Ch<?php echo $i ?>:&nbsp;&nbsp;&nbsp;
                             <select class="snrselect"
+                                    title="Signal-to-noise ration (QMLE)"
                                     name="SignalNoiseRatioQMLE<?php echo $i ?>">
 <?php
 
@@ -364,18 +367,18 @@ for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
 
  <div id="Autocrop">
     <fieldset class="setting provided"
-    onmouseover="javascript:changeQuickHelp( 'autocrop' );" >
+    onmouseover="changeQuickHelp( 'autocrop' );" >
 
-    <legend>
-    <a href="javascript:openWindow(
-                       'http://www.svi.nl/HelpCropper')">
-                        <img src="images/help.png" alt="?" />
-        </a>
-    crop surrounding background areas?
-    </legend>
+        <legend>
+            <a href="openWindow('http://www.svi.nl/HelpCropper')">
+                <img src="images/help.png" alt="?"/>
+            </a>
+            crop surrounding background areas?
+        </legend>
 
         <select id="Autocrop"
-        name="Autocrop">
+                title="Autocrop"
+                name="Autocrop">
 <?php
 
 /*
@@ -407,12 +410,11 @@ $selectedMode  = $parameterAutocrop->value();
 </div> <!-- Autocrop -->
             <!-- background mode -->
             <fieldset class="setting provided"
-              onmouseover="javascript:changeQuickHelp( 'background' );" >
+              onmouseover="changeQuickHelp( 'background' );" >
 
                 <legend>
-                    <a href="javascript:openWindow(
-                       'http://www.svi.nl/BackgroundMode')">
-                        <img src="images/help.png" alt="?" /></a>
+                    <a href="openWindow('http://www.svi.nl/BackgroundMode')">
+                        <img src="images/help.png" alt="?"/></a>
                     background mode
                 </legend>
 
@@ -437,9 +439,10 @@ if ($backgroundOffset[0] == "" || $backgroundOffset[0] == "auto") {
 
                     <p>
                         <input type="radio"
-                            id="BackgroundEstimationModeAuto"
-                            name="BackgroundEstimationMode"
-                            value="auto"<?php echo $flag ?> />
+                               title="Background estimation mode (auto)"
+                               id="BackgroundEstimationModeAuto"
+                               name="BackgroundEstimationMode"
+                               value="auto"<?php echo $flag ?> />
                         automatic background estimation
                     </p>
 
@@ -452,9 +455,10 @@ if ($backgroundOffset[0] == "object") $flag = " checked=\"checked\"";
 
                     <p>
                         <input type="radio"
-                            id="BackgroundEstimationModeObject"
-                            name="BackgroundEstimationMode"
-                            value="object"<?php echo $flag ?> />
+                               title="Background estimation mode (object)"
+                               id="BackgroundEstimationModeObject"
+                               name="BackgroundEstimationMode"
+                               value="object"<?php echo $flag ?> />
                         in/near object
                     </p>
 
@@ -468,6 +472,7 @@ if ($backgroundOffset[0] != "" && $backgroundOffset[0] != "auto" &&
 
 ?>
                     <input type="radio"
+                           title="Background estimation mode (absolute value)"
                            id="BackgroundEstimationModeAbsValue"
                            name="BackgroundEstimationMode"
                            value="manual"<?php echo $flag ?> />
@@ -494,22 +499,23 @@ for ($i=0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
   }
 
 
-?>
-                        <span class="nowrap">
+    ?>
+    <span class="nowrap">
                             Ch<?php echo $i ?>:&nbsp;&nbsp;&nbsp;
                             <span class="multichannel">
                                 <input
-                                   id="BackgroundOffsetPercent<?php echo $i ?>"
-                                   name="BackgroundOffsetPercent<?php echo $i ?>"
-                                   type="text"
-                                   size="8"
-                                   value="<?php echo $val ?>"
-                                   class="multichannelinput"
-                                   onclick="document.forms[0].BackgroundEstimationModeAbsValue.checked=true" />
+                                    id="BackgroundOffsetPercent<?php echo $i ?>"
+                                    name="BackgroundOffsetPercent<?php echo $i ?>"
+                                    title="Background offset percent"
+                                    type="text"
+                                    size="8"
+                                    value="<?php echo $val ?>"
+                                    class="multichannelinput"
+                                    onclick="document.forms[0].BackgroundEstimationModeAbsValue.checked=true"/>
                             </span>&nbsp;
                         </span>
 
-<?php
+    <?php
 
 }
 
@@ -537,7 +543,7 @@ for ($i=0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
 
             <!-- stopping criteria -->
             <fieldset class="setting provided"
-              onmouseover="javascript:changeQuickHelp( 'stopcrit' );" >
+              onmouseover="changeQuickHelp( 'stopcrit' );" >
 
                 <legend>
                     stopping criteria
@@ -545,8 +551,7 @@ for ($i=0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
 
                 <div id="criteria">
 
-                    <p><a href="javascript:openWindow(
-                          'http://www.svi.nl/MaxNumOfIterations')">
+                    <p><a href="openWindow('http://www.svi.nl/MaxNumOfIterations')">
                             <img src="images/help.png" alt="?" /></a>
                     number of iterations:
 
@@ -557,18 +562,19 @@ $value = $parameter->value();
 
 
 ?>
-                    <input id="NumberOfIterations"
-                           name="NumberOfIterations"
-                           type="text"
-                           size="8"
-                           value="<?php echo $value ?>" />
+                        <input id="NumberOfIterations"
+                               name="NumberOfIterations"
+                               title="Number of iterations"
+                               type="text"
+                               size="8"
+                               value="<?php echo $value ?>"/>
 
                     </p>
 
                     <p><a href="javascript:openWindow(
                           'http://www.svi.nl/QualityCriterion')">
-                            <img src="images/help.png" alt="?" /></a>
-                    quality change:
+                            <img src="images/help.png" alt="?"/></a>
+                        quality change:
 
 <?php
 
@@ -576,18 +582,19 @@ $parameter = $_SESSION['task_setting']->parameter("QualityChangeStoppingCriterio
 $value = $parameter->value();
 
 ?>
-                    <input id="QualityChangeStoppingCriterion"
-                           name="QualityChangeStoppingCriterion"
-                           type="text"
-                           size="3"
-                           value="<?php echo $value ?>" />
+                        <input id="QualityChangeStoppingCriterion"
+                               name="QualityChangeStoppingCriterion"
+                               title="Quality change stopping criterion"
+                               type="text"
+                               size="3"
+                               value="<?php echo $value ?>"/>
                     </p>
 
                 </div>
 
             </fieldset>
 
-    </div>
+            </div>
 
 
 
@@ -599,22 +606,24 @@ $value = $parameter->value();
     ?>
 
     <fieldset class="setting provided"
-    onmouseover="javascript:changeQuickHelp( 'zstabilization' );" >
+              onmouseover="changeQuickHelp( 'zstabilization' );" >
 
-    <legend>
-        <a href="javascript:openWindow(
-                       'http://www.svi.nl/ObjectStabilizer')">
-                        <img src="images/help.png" alt="?" />
-        </a>
-    stabilize data sets in the Z direction?
-    </legend>
+        <legend>
+            <a href="openWindow('http://www.svi.nl/ObjectStabilizer')">
+                <img src="images/help.png" alt="?"/>
+            </a>
+            stabilize data sets in the Z direction?
+        </legend>
 
-            <p>STED images often need to be stabilized in the Z direction before they
-       are deconvolved. Please note that skipping this step might affect the
-       quality of the deconvolution.</p>
+        <p>STED images often need to be stabilized in the Z direction before
+            they
+            are deconvolved. Please note that skipping this step might affect
+            the
+            quality of the deconvolution.</p>
 
         <select id="ZStabilization"
-        name="ZStabilization">
+                title="Z stabilization"
+                name="ZStabilization">
 <?php
 
 /*
@@ -658,12 +667,12 @@ $selectedMode  = $parameterStabilization->value();
             <div><input name="OK" type="hidden" /></div>
 
             <div id="controls"
-                 onmouseover="javascript:changeQuickHelp( 'default' )">
+                 onmouseover="changeQuickHelp( 'default' )">
 
               <input type="button" value="" class="icon up"
                 onmouseover="TagToTip('ttSpanCancel' )"
                 onmouseout="UnTip()"
-                onclick="javascript:deleteValuesAndRedirect('select_task_settings.php' );" />
+                onclick="deleteValuesAndRedirect('select_task_settings.php' );" />
 
     <?php
     /* Don't proceed to the chromatic aberration page. */
@@ -694,7 +703,7 @@ $selectedMode  = $parameterStabilization->value();
 
     </div> <!-- content -->
 
-    <div id="rightpanel" onmouseover="javascript:changeQuickHelp( 'default' )">
+    <div id="rightpanel" onmouseover="changeQuickHelp( 'default' )">
 
       <div id="info">
       <h3>Quick help</h3>
@@ -734,7 +743,7 @@ if ( !( strpos( $_SERVER[ 'HTTP_REFERER' ],
         <script type="text/javascript">
 
         /* Consider the max chan cnt supported by Huygens. */
-        snrArray = new Array();
+        snrArray = [];
         for (var i = 0; i < 32; i++) {
             snrArray.push('SignalNoiseRatioCMLE' + i);
         }

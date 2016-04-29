@@ -7,7 +7,6 @@ use hrm\Stats;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.inc.php';
 
-require_once("./inc/User.inc.php");
 require_once("./inc/Fileserver.inc.php");
 
 session_start();
@@ -122,7 +121,7 @@ include("header.inc.php");
         <fieldset>
 
           <legend>
-            <a href="javascript:openWindow('
+            <a href="openWindow('
                http://www.svi.nl/HuygensRemoteManagerHelpStatistics')">
                 <img src="images/help.png" alt="?" />
             </a>

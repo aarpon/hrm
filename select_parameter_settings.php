@@ -3,15 +3,15 @@
 // Copyright and license notice: see license.txt
 
 use hrm\Nav;
+use hrm\ParameterSetting;
+use hrm\SettingEditor;
+use hrm\System;
+use hrm\user\User;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.inc.php';
 
-require_once("./inc/User.inc.php");
 require_once("./inc/Parameter.inc.php");
-require_once("./inc/Setting.inc.php");
-require_once("./inc/SettingEditor.inc.php");
 require_once("./inc/Fileserver.inc.php");
-require_once("./inc/System.inc.php");
 
 /* *****************************************************************************
  *
@@ -51,7 +51,7 @@ if (!$_SESSION['user']->isAdmin()) {
 }
 
 if (System::hasLicense("coloc")) {
-    $numberSteps   = 5;
+    $numberSteps = 5;
 } else {
     $numberSteps = 4;
 }

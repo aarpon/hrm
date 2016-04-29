@@ -2,8 +2,12 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
-require_once '../inc/SettingEditor.inc.php';
-require_once '../inc/User.inc.php';
+use hrm\DatabaseConnection;
+use hrm\SettingEditor;
+use hrm\user\User;
+
+require_once dirname(__FILE__) . '/../inc/bootstrap.inc.php';
+
 require_once '../inc/JobQueue.inc.php';
 
 //
@@ -11,10 +15,10 @@ require_once '../inc/JobQueue.inc.php';
 
 /**
  * Get the summary for current template
- * @param SettingsEditor $editor  SettingsEditor
- * @param String $setName Parameter name
+ * @param SettingsEditor $editor SettingsEditor
+ * @param string $setName Parameter name
  * @param int $numChannels Number of channels
- * @return String parameter dump
+ * @return string parameter dump
  */
 function getParameters($editor, $setName, $numChannels, $micrType) {
   if ($setName == '') {
@@ -219,7 +223,8 @@ function getJobQueuetable() {
 
 /**
  * Set the selected image format in the $_SESSION
- * @param format Selected image file format
+ * @param string $format Selected image file format
+ * @return string Empty string "".
  */
 function setFileFormat($format) {
 
@@ -412,5 +417,3 @@ if ( act( $action, $data ) == true ) {
   // And write data for the post
   echo $data;
 }
-
-?>
