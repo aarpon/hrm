@@ -3,16 +3,15 @@
 // Copyright and license notice: see license.txt
 
 use hrm\Nav;
+use hrm\user_mngm\UserManagerFactory;
 use hrm\Validator;
+use hrm\DatabaseConnection;
+use hrm\User;
+use hrm\System;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.inc.php';
 
-require_once(dirname(__FILE__) . "/inc/User.inc.php");
-require_once(dirname(__FILE__) . "/inc/user_mngm/UserManagerFactory.inc.php");
-require_once(dirname(__FILE__) . "/inc/Database.inc.php");
-require_once(dirname(__FILE__) . "/inc/hrm_config.inc.php");
 require_once(dirname(__FILE__) . "/inc/Fileserver.inc.php");
-require_once(dirname(__FILE__) . "/inc/System.inc.php");
 
 global $email_admin;
 global $authenticateAgainst;
@@ -35,7 +34,7 @@ $clean = array(
 
 // Username
 if (isset($_POST["username"])) {
-	if (Validator::isUsernameValid($_POST["username"])) {
+	if (Validator::isUserNameValid($_POST["username"])) {
 		$clean["username"] = $_POST["username"];
 	}
 }
@@ -256,16 +255,16 @@ deconvolution and analysis.</p>
     <!-- Logos -->
     <tr>
       <td class="epfl"
-          onclick="javascript:openWindow('http://biop.epfl.ch')" >
+          onclick="openWindow('http://biop.epfl.ch')" >
       </td>
       <td class="fmi"
-          onclick="javascript:openWindow('http://www.fmi.ch')" >
+          onclick="openWindow('http://www.fmi.ch')" >
       </td>
       <td class="mri"
-          onclick="javascript:openWindow('http://www.mri.cnrs.fr')" >
+          onclick="openWindow('http://www.mri.cnrs.fr')" >
       </td>
       <td class="bsse"
-          onclick="javascript:openWindow('http://www.bsse.ethz.ch')" >
+          onclick="openWindow('http://www.bsse.ethz.ch')" >
       </td>
     </tr>
 
@@ -309,16 +308,16 @@ deconvolution and analysis.</p>
     <!-- Logos -->
     <tr>
       <td class="svi"
-          onclick="javascript:openWindow('http://www.svi.nl')" >
+          onclick="openWindow('http://www.svi.nl')" >
       </td>
       <td class="lin"
-          onclick="javascript:openWindow('http://www.lin-magdeburg.de')" >
+          onclick="openWindow('http://www.lin-magdeburg.de')" >
       </td>
       <td class="bio-basel"
-          onclick="javascript:openWindow('http://www.biozentrum.unibas.ch')" >
+          onclick="openWindow('http://www.biozentrum.unibas.ch')" >
       </td>
       <td class="cni"
-          onclick="javascript:openWindow('http://cni.ifn-magdeburg.de')" >
+          onclick="openWindow('http://cni.ifn-magdeburg.de')" >
       </td>
     </tr>
 
@@ -367,7 +366,7 @@ deconvolution and analysis.</p>
 <form method="post" action="">
     <fieldset>
         <legend>
-            <a href="javascript:openWindow(
+            <a href="openWindow(
                'http://www.svi.nl/HuygensRemoteManagerHelpLogin')">
                 <img src="images/help.png" alt="?" /></a> Login
         </legend>
@@ -389,7 +388,7 @@ deconvolution and analysis.</p>
     ?>
     <fieldset>
         <legend>
-            <a href="javascript:openWindow(
+            <a href="openWindow(
                'http://www.svi.nl/HuygensRemoteManagerHelpRegistration')">
                 <img src="images/help.png" alt="?" /></a> Registration
         </legend>

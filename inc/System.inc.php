@@ -1,10 +1,18 @@
 <?php
+/**
+ * System
+ *
+ * @package hrm
+ *
+ * This file is part of the Huygens Remote Manager
+ * Copyright and license notice: see license.txt
+ */
 
-// This file is part of the Huygens Remote Manager
-// Copyright and license notice: see license.txt
+namespace hrm;
+
+require_once dirname(__FILE__) . '/bootstrap.inc.php';
 
 require_once("Util.inc.php");
-require_once("Database.inc.php");
 
 /**
  * Class System
@@ -148,13 +156,13 @@ class System
      *
      * @return bool True if a newer HRM release exist, false otherwise; if no
      * version information could be retrieved, an Exception is thrown.
-     * @throws Exception If the remove server could not be reached.
+     * @throws \Exception If the remove server could not be reached.
      */
     public static function isThereNewHRMRelease()
     {
         $latestVersion = self::getLatestHRMVersionFromRemoteAsInteger();
         if ($latestVersion === -1) {
-            throw new Exception("Could not retrieve version information!");
+            throw new \Exception("Could not retrieve version information!");
         }
         if (self::getHRMVersionAsInteger() < $latestVersion) {
             return true;
@@ -204,7 +212,7 @@ class System
     public static function getHuCoreVersionAsInteger()
     {
         $db = new DatabaseConnection();
-        $query = "SELECT value FROM global_variables WHERE name= 'huversion'";
+        $query = "SELECT value FROM global_variables WHERE name= 'huversion';";
         $version = $db->queryLastValue($query);
         if ($version == false) {
             return 0;
@@ -249,7 +257,7 @@ class System
     public static function isMinHuCoreVersion()
     {
         $db = new DatabaseConnection();
-        $query = "SELECT value FROM global_variables WHERE name= 'huversion'";
+        $query = "SELECT value FROM global_variables WHERE name= 'huversion';";
         $version = $db->queryLastValue($query);
         if ($version == false) {
             return false;
@@ -266,11 +274,11 @@ class System
     public static function setHuCoreVersion($value)
     {
         $db = new DatabaseConnection();
-        $rs = $db->query("SELECT * FROM global_variables WHERE name = 'huversion'");
+        $rs = $db->query("SELECT * FROM global_variables WHERE name = 'huversion';");
         if (!$rs) {
-            $query = "INSERT INTO global_variables VALUES ('huversion', '" . $value . "')";
+            $query = "INSERT INTO global_variables VALUES ('huversion', '" . $value . "');";
         } else {
-            $query = "UPDATE global_variables SET value = '" . $value . "' WHERE name = 'huversion'";
+            $query = "UPDATE global_variables SET value = '" . $value . "' WHERE name = 'huversion';";
         }
         $rs = $db->execute($query);
         if (!$rs) {

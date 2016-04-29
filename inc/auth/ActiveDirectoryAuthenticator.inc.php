@@ -2,76 +2,81 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
+namespace hrm\auth;
+
 use adLDAP\adLDAP;
 use adLDAP\adLDAPException;
 
-require_once dirname(__FILE__) . "/../bootstrap.inc.php";
+require_once dirname(__FILE__) . '/../bootstrap.inc.php';
 
-// Include the AbstractAuthenticator.
-require_once dirname(__FILE__) . "/AbstractAuthenticator.inc.php";
-
-/*!
-  \class	ActiveDirectoryAuthenticator
-  \brief	Manages Active Directory connections through the adLDAP library.
-
-  The configuration file for the ActiveDirectoryAuthenticator class is
-  config/active_directory_config.inc. A sample configuration file is
-  config/samples/active_directory_config.inc.sample.
-  A user with read-access to Active Directory must be set up in the
-  configuration file for queries to be possible.
+/**
+ * Class ActiveDirectoryAuthenticator
+ *
+ * Manages Active Directory connections through the adLDAP library.
+ *
+ * The configuration file for the ActiveDirectoryAuthenticator class is
+ * config/active_directory_config.inc. A sample configuration file is
+ * config/samples/active_directory_config.inc.sample.
+ * A user with read-access to Active Directory must be set up in the
+ * configuration file for queries to be possible.
+ *
+ * @package hrm\auth
  */
-
 class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
 
-    /*!
-      \var      $m_AdLDAP
-      \brief	The adLDAP object
+    /**
+     * The adLDAP object.
+     * @var adLDAP
      */
     private $m_AdLDAP;
 
-    /*!
-      \var      $m_ValidGroups
-      \brief	Array of valid groups
-
-      If $m_ValidGroups is not empty, the groups array returned by
-      adLDAP->user_groups will be compared with $m_ValidGroups and
-      only the first group in the intersection will be returned
-      (ideally, the intersection should contain only one group).
+    /**
+     * Array of valid groups.
+     *
+     * If $m_ValidGroups is not empty, the groups array returned by
+     * adLDAP->user_groups will be compared with $m_ValidGroups and
+     * only the first group in the intersection will be returned
+     * (ideally, the intersection should contain only one group).
+     *
+     * @var array|null
      */
     private $m_ValidGroups;
 
-    /*!
-      \var      $m_AuthorizedGroups
-      \brief	Array of authorized groups
-
-      If $m_AuthorizedGroups is not empty, the groups array returned by
-      adLDAP->user_groups will be intersected with $m_AuthorizedGroups.
-      If the intersection is empty, the user will not be allowed to log in.
+    /**
+     * Array of authorized groups.
+     *
+     * If $m_AuthorizedGroups is not empty, the groups array returned by
+     * adLDAP->user_groups will be intersected with $m_AuthorizedGroups.
+     * If the intersection is empty, the user will not be allowed to log in.
+     *
+     * @var array|null
      */
     private $m_AuthorizedGroups;
 
-    /*!
-    \var    $m_UsernameSuffix
-    \brief  TODO Complete
-    */
+    /**
+     * User name suffix for Active Directory forests.
+     * @var string
+     */
     private $m_UsernameSuffix;
 
-    /*!
-    \var    $m_UsernameSuffixReplaceMatch
-    \brief  TODO Complete
-    */
+    /**
+     * User name suffix replace match for Active Directory forests.
+     * @var string
+     */
     private $m_UsernameSuffixReplaceMatch;
 
-    /*!
-    \var    $m_UsernameSuffixReplaceString
-    \brief  TODO Complete
-    */
+    /**
+     * User name suffix replace string for Active Directory forests.
+     * @var string
+     */
     private $m_UsernameSuffixReplaceString;
 
-    /*!
-      \brief	Constructor: instantiates an ActiveDirectoryAuthenticator object with
-      the settings specified in the configuration file. No
-      parameters are passed to the constructor.
+    /**
+     * ActiveDirectoryAuthenticator constructor: instantiates an
+     * ActiveDirectoryAuthenticator object with the settings specified in
+     * the configuration file.
+     *
+     * No parameters are passed to the constructor.
      */
     public function __construct() {
 
@@ -131,8 +136,8 @@ class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
         }
     }
 
-    /*!
-      \brief	Destructor. Closes the connection started by the adLDAP object.
+    /**
+     * Destructor. Closes the connection started by the adLDAP object.
      */
     public function __destruct() {
         // We ask the adLDAP object to close the connection. A check whether a
@@ -143,12 +148,12 @@ class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
         $this->m_AdLDAP->close();
     }
 
-    /*!
-    \brief  Authenticates the User with given username and password against
-            Active Directory.
-    \param  $username String Username for authentication.
-    \param  $password String Password for authentication.
-    \return boolean: True if authentication succeeded, false otherwise.
+    /**
+     * Authenticates the User with given username and password against Active
+     * Directory.
+     * @param string $username Username for authentication.
+     * @param string $password Plain password for authentication.
+     * @return bool True if authentication succeeded, false otherwise.
     */
     public function authenticate($username, $password) {
 
@@ -198,10 +203,10 @@ class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
         return $b;
     }
 
-    /*!
-    \brief  Return the email address of user with given username.
-    \param  $username String Username for which to query the email address.
-    \return String email address or NULL
+    /**
+     * Returns the email address of user with given username.
+     * @param string $username Username for which to query the email address.
+     * @return string email address or "".
     */
     public function getEmailAddress($username) {
 
@@ -215,8 +220,7 @@ class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
         }
 
         // Get the email from AD
-        $info = $this->m_AdLDAP->user()->infoCollection(
-            $username, array("mail"));
+        $info = $this->m_AdLDAP->user()->infoCollection($username, array("mail"));
 
         $this->m_AdLDAP->close();
         if (!$info) {
@@ -227,10 +231,10 @@ class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
         return $info->mail;
     }
 
-    /*!
-    \brief Return the group the user with given username belongs to.
-    \param $username String Username for which to query the group.
-    \return String Group or "" if not found.
+    /**
+     * Returns the group the user with given username belongs to.
+     * @param string $username Username for which to query the group.
+     * @return string Group or "" if not found.
     */
     public function getGroup($username) {
 
@@ -279,5 +283,4 @@ class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
 
     }
 
-}
-?>
+};

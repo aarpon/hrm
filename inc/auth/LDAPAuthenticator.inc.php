@@ -1,115 +1,118 @@
 <?php
-
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
-/*!
-  \class	LDAPAuthenticator
-  \brief	Manages LDAP connections through built-in PHP LDAP support
+namespace hrm\auth;
 
-  The configuration file for the LDAPAuthenticator class is config/ldap_config.inc.
-  A sample configuration file is config/samples/ldap_config.inc.sample.
-  A user with read-access to the LDAP server must be set up in the
-  configuration file for queries to be possible.
+require_once dirname(__FILE__) . '/../bootstrap.inc.php';
+
+/**
+ * Class LDAPAuthenticator
+ *
+ * Manages LDAP connections through built-in PHP LDAP support
+ *
+ * The configuration file for the LDAPAuthenticator class is config/ldap_config.inc.
+ * A sample configuration file is config/samples/ldap_config.inc.sample.
+ * A user with read-access to the LDAP server must be set up in the
+ * configuration file for queries to be possible.
+ *
+ * @package hrm\auth
  */
-
-// Include AbstractAuthenticator and Util.inc.php.
-require_once(dirname(__FILE__) . "/AbstractAuthenticator.inc.php");
-require_once(dirname(__FILE__) . "/../Util.inc.php");
-
-
 class LDAPAuthenticator extends AbstractAuthenticator {
 
-    /*!
-      \var    $m_Connection
-      \brief  LDAP connection object
+    /**
+     * LDAP connection object
+     * @var resource
      */
     private $m_Connection;
 
-    /*!
-      \var    $m_LDAP_Host
-      \brief  Machine on which the ldap server is running
+    /**
+     * Machine on which the ldap server is running.
+     * @var string
      */
     private $m_LDAP_Host;
 
-    /*!
-      \var    $m_LDAP_Port
-      \brief  Port for the ldap connection
+    /**
+     * Port for the ldap connection.
+     * @var int
      */
     private $m_LDAP_Port;
 
-    /*!
-      \var    $m_LDAP_Use_SSL
-      \brief  Set to true to use SSL (LDAPS)
+    /**
+     * Set to true to use SSL (LDAPS).
+     * @var bool
      */
     private $m_LDAP_Use_SSL;
 
-    /*!
-      \var    $m_LDAP_Use_TLS
-      \brief  Set to true to use TLS
-
-      If you wish to use TLS you should ensure that $m_LDAP_Use_SSL is
-      set to false and vice-versa
+    /**
+     * Set to true to use TLS.
+     *
+     * If you wish to use TLS you should ensure that $m_LDAP_Use_SSL is
+     * set to false and vice-versa
+     *
+     * @var bool
      */
     private $m_LDAP_Use_TLS;
 
-    /*!
-      \var    $m_LDAP_Root
-      \brief  Search root
+    /**
+     * Search root.
+     * @var string
      */
     private $m_LDAP_Root;
 
-    /*!
-      \var    $m_LDAP_Manager_Base_DN
-      \brief  Base for the manager DN
+    /**
+     * Base for the manager DN.
+     * @var string
      */
     private $m_LDAP_Manager_Base_DN;
 
-    /*!
-      \var    $m_LDAP_Manager
-      \brief  The ldap manager (user name only!)
+    /**
+     * The ldap manager (user name only!).
+     * @var string
      */
     private $m_LDAP_Manager;
 
-    /*!
-      \var    $m_LDAP_Password
-      \brief  The ldap password
+    /**
+     * The ldap password.
+     * @var string
      */
     private $m_LDAP_Password;
 
-    /*!
-      \var    $m_LDAP_User_Search_DN
-      \brief  User search DN (without ldap root)
+    /**
+     * User search DN (without ldap root).
+     * @var string
      */
     private $m_LDAP_User_Search_DN;
 
-    /*!
-      \var    $m_LDAP_Manager_OU
-      \brief  LDAPAuthenticator manager OU: used in case the Ldap_Manager is in some
-      special OU that distinguishes it from the other users
+    /**
+     * LDAPAuthenticator manager OU: used in case the Ldap_Manager is in some
+     * special OU that distinguishes it from the other users.
+     *
+     * @var string
      */
     private $m_LDAP_Manager_OU;
 
-    /*!
-      \var    $m_LDAP_Valid_Groups
-      \brief  Array of valid groups to be used to filter the groups to which
-      the user belongs
+    /**
+     * Array of valid groups to be used to filter the groups to which the user
+     * belongs or null to disable filtering.
+     * @var array|null
      */
     private $m_LDAP_Valid_Groups;
 
-    /*!
-      \var      $m_LDAP_Authorized_Groups
-      \brief	Array of authorized groups
-
-      If $m_LDAP_Authorized_Groups is not empty, the user groups array
-      will be intersected with $m_LDAP_Authorized_Groups.
-      If the intersection is empty, the user will not be allowed to log in.
+    /**
+     * Array of authorized groups or null to disable group authorization.
+     *
+     * If $m_LDAP_Authorized_Groups is not empty, the user groups array will
+     * be intersected with $m_LDAP_Authorized_Groups. If the intersection is
+     * empty, the user will not be allowed to log in.
+     *
+     * @var array|null
      */
     private $m_LDAP_Authorized_Groups;
 
-    /*!
-      \brief	Constructor: instantiates an LDAPAuthenticator object with the settings
-      specified in the configuration file.
+    /**
+     * LDAPAuthenticator constructor: : instantiates an LDAPAuthenticator object
+     * with the settings specified in the configuration file.
      */
     public function __construct() {
 
@@ -182,8 +185,8 @@ class LDAPAuthenticator extends AbstractAuthenticator {
         }
     }
 
-    /*!
-      \brief	Destructor: closes the connection.
+    /**
+     * Destructor: closes the connection.
      */
     public function __destruct() {
         if ($this->isConnected()) {
@@ -191,10 +194,10 @@ class LDAPAuthenticator extends AbstractAuthenticator {
         }
     }
 
-    /*!
-    \brief  Return the email address of user with given username.
-    \param  $username String Username for which to query the email address.
-    \return String email address or NULL
+    /**
+     * Returna the email address of user with given username.
+     * @param string $username Username for which to query the email address.
+     * @return string|null email address or null.
     */
     public function getEmailAddress($uid) {
 
@@ -219,11 +222,11 @@ class LDAPAuthenticator extends AbstractAuthenticator {
         return $email;
     }
 
-    /*!
-    \brief  Authenticates the User with given username and password against LDAP.
-    \param  $username String Username for authentication.
-    \param  $password String Password for authentication.
-    \return boolean: True if authentication succeeded, false otherwise.
+    /**
+     * Authenticates the User with given username and password against LDAP.
+     * @param string $uid Username for authentication.
+     * @param string $userPassword Plain password for authentication.
+     * @return bool True if authentication succeeded, false otherwise.
     */
     public function authenticate($uid, $userPassword)
     {
@@ -306,10 +309,10 @@ class LDAPAuthenticator extends AbstractAuthenticator {
         return false;
     }
 
-    /*!
-    \brief Return the group the user with given username belongs to.
-    \param $username String Username for which to query the group.
-    \return String Group or "" if not found.
+    /**
+     * Returns the group the user with given username belongs to.
+     * @param string $uid Username for which to query the group.
+     * @return string Group or "" if not found.
     */
     public function getGroup($uid) {
 
@@ -368,17 +371,17 @@ class LDAPAuthenticator extends AbstractAuthenticator {
         return "";
     }
 
-    /*!
-      \brief	Check whether there is a connection to LDAP
-      \return	true if the connection is up, false otherwise
+    /**
+     * Checks whether there is a connection to LDAP.
+     * @return bool True if the connection is up, false otherwise.
      */
     public function isConnected() {
         return ($this->m_Connection != null);
     }
 
-    /*!
-      \brief	Returns the last occurred error
-      \return	last ldap error
+    /**
+     * Returns the last occurred error.
+     * @return string Last LDAP error.
      */
     public function lastError() {
         if ($this->isConnected()) {
@@ -388,10 +391,9 @@ class LDAPAuthenticator extends AbstractAuthenticator {
         }
     }
 
-    /*!
-      \brief	Binds LDAP with the configured manager for queries to
-                be possible
-      \return	true if the manager could bind, false otherwise
+    /**
+     * Binds LDAP with the configured manager for queries to be possible.
+     * @return bool True if the manager could bind, false otherwise.
      */
 
     private function bindManager() {
@@ -415,20 +417,18 @@ class LDAPAuthenticator extends AbstractAuthenticator {
         return false;
     }
 
-    /*!
-      \brief	Create the search base string
-      \return	Search base string
+    /**
+     * Creates the search base string.
+     * @return string Search base string.
      */
-
     private function searchbaseStr() {
         return ($this->m_LDAP_User_Search_DN . "," . $this->m_LDAP_Root);
     }
 
-    /*!
-      \brief	Create the DN string
-      \return	DN string
+    /**
+     * Creates the DN string.
+     * @return string DN string.
      */
-
     private function dnStr() {
         $dn = $this->m_LDAP_Manager_Base_DN . "=" .
             $this->m_LDAP_Manager . "," .
@@ -441,6 +441,4 @@ class LDAPAuthenticator extends AbstractAuthenticator {
         return $dn;
     }
 
-}
-
-?>
+};

@@ -2,8 +2,10 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
-require_once("hrm_config.inc.php");
-require_once("Database.inc.php");
+use hrm\DatabaseConnection;
+
+require_once dirname(__FILE__) . '/bootstrap.inc.php';
+
 require_once("Util.inc.php");
 require_once("OmeroConnection.inc.php");
 

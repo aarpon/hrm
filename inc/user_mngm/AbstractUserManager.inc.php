@@ -2,59 +2,68 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
-require_once(dirname(__FILE__) . "/../System.inc.php");
-require_once(dirname(__FILE__) . "/../hrm_config.inc.php");
+namespace hrm\user_mngm;
 
-global $userManagerScript;
+use hrm\auth\AuthenticatorFactory;
+use hrm\DatabaseConnection;
+use hrm\System;
+use hrm\User;
 
-/*!
-  \class	AbstractUserManager
-  \brief	Abstract base UserManager class that provides an interface for
-            concrete classes to implement.
+require_once dirname(__FILE__) . '/../bootstrap.inc.php';
 
+
+/**
+ * Class AbstractUserManager
+ *
+ * Abstract base UserManager class that provides an interface for concrete
+ * classes to implement.
+ *
+ * @package hrm
  */
 abstract class AbstractUserManager {
 
-    /*!
-    \brief Return true if the UserManager can create users in the backing
-           user management system (e.g. Active Directory or LDAP). If false,
-           users will exist in the HRM as soon they are authenticated the
-           the first time (e.g. by Active Directory). If true, they will
-           be considered existing users only if they are stored in the HRM
-           database.
-    \return true if the UserManager can create and delete users, false otherwise.
-    */
+    /**
+     * Return true if the UserManager can create users in the backing user
+     * management system (e.g. Active Directory or LDAP).
+     *
+     * If false, users will exist in the HRM as soon they are authenticated the
+     * first time (e.g. by Active Directory). If true, they will be considered
+     * existing users only if they are stored in the HRM database.
+     * @return bool True if the UserManager can create and delete users, false
+     * otherwise.
+     */
     public static function canCreateUsers() { return false; }
 
-    /*!
-    \brief Return true if the UserManager can delete users.
-    \see AbstractUserManager::canCreateUsers() for the concept.
-    \return true if the UserManager can delete users, false otherwise.
+    /**
+     * Return true if the UserManager can delete users.
+     * @return bool True if the UserManager can delete users, false otherwise.
      */
     public static function canModifyUsers()  { return false; }
 
-    /*!
-    \param User $user User to be stored (updated) in the database.
-    \
-    \return true if storing the User was successful; false otherwise.
-    */
+    /**
+     * Store or update the User in the database.
+     * @param User $user User to be stored (updated) in the database.
+     * @return bool True if storing the User was successful; false otherwise.
+     */
     abstract public function storeUser(User $user);
 
-    /*!
-      \brief  Checks if user login is restricted to the administrator for
-              maintenance (e.g. in case the database has to be updated).
-      \return true if the user login is restricted to the administrator.
-    */
+    /**
+     * Checks if user login is restricted to the administrator for maintenance
+     * (e.g. in case the database has to be updated).
+     * @return bool True if the user login is restricted to the administrator.
+     */
     public function isLoginRestrictedToAdmin() {
         $result = !(System::isDBUpToDate());
         return $result;
     }
 
-    /*!
-    \brief  Checks whether the user has been suspended by the administrator.
-    \param User $user User to be checked.
-    \return true if the user was suspended by the administrator; false otherwise.
-    */
+    /**
+     * Checks whether the user has been suspended by the administrator.
+     * @param User $user User to be checked.
+     * @return bool True if the user was suspended by the administrator;
+     * false otherwise.
+     * @throws \Exception
+     */
     public function isSuspended(User $user)  {
 
         // The administrator is never suspended
@@ -67,11 +76,13 @@ abstract class AbstractUserManager {
         return $authenticator->isSuspended($user->name());
     }
 
-    /*!
-    \brief  Checks whether the user has been suspended by the administrator.
-    \param User $user User to be checked.
-    \return true if the user was suspended by the administrator; false otherwise.
-    */
+    /**
+     * Checks whether the user has been accepted by the administrator.
+     * @param User $user User to be checked.
+     * @return bool True if the user was suspended by the administrator;
+     * false otherwise.
+     * @throws \Exception
+     */
     public function isAccepted(User $user)  {
 
         // The administrator is always accepted
@@ -84,47 +95,46 @@ abstract class AbstractUserManager {
         return $authenticator->isAccepted($user->name());
     }
 
-    /*!
-    \brief  Checks whether a seed for a user creation request exists.
-
-    \param String $seed Seed to be compared.
-
-    This function returns false by default and must be reimplemented for those
-    user management implementations that support this.
-
-    \return true if a user with given seed exists, false otherwise
-    */
+    /**
+     * Checks whether a seed for a user creation request exists.
+     *
+     * This function returns false by default and must be reimplemented for
+     * those user management implementations that support this.
+     * @param string $seed Seed to be compared.
+     * @return bool True if a user with given seed exists, false otherwise.
+     */
     public function existsUserRequestWithSeed($seed = "ignored") {
         return false;
     }
 
-    /*!
-    \param User $user User for which to check for existence
-    \
-    \return true if the user exists; false otherwise.
-    */
+    /**
+     * Check whether the user exists in HRM.
+     * @param User $user User for which to check for existence.
+     * @return bool True if the user exists; false otherwise.
+     */
     public function existsInHRM(User $user) {
         $db = new DatabaseConnection();
         return ($db->checkUser($user->name()));
     }
 
-    /*!
-    \brief Create a new user.
-    \param $username String User login name.
-    \param $password String User password.
-    \param $email    String User e-mail address,
-    \param $group    String User group.
-    \param $status   Char   Status ('a' or 'd')
-    */
+    /**
+     * Creates a new user.
+     * @param string $username User login name.
+     * @param string $password User password.
+     * @param string $email User e-mail address.
+     * @param string $group User group.
+     * @param string $status User group (currently ignored: $status is always 'a')
+     * @todo Check why the status is ignored.
+     */
     public function createUser($username, $password, $email, $group, $status) {
         $db = new DatabaseConnection();
         $db->addNewUser($username, $password, $email, $group, 'a');
     }
 
-    /*!
-    \brief Create User data folders.
-    \@param User $user User for which to create the folders.
-    */
+    /**
+     * Creates the user data folders.
+     * @param string $username
+     */
     public function createUserFolders($username) {
 
         // TODO Use the Shell classes!
@@ -134,10 +144,10 @@ abstract class AbstractUserManager {
         report(shell_exec($userManagerScript . " create " . $username), 1);
     }
 
-    /*!
-    \brief Delete User data folders.
-    \@param User $user User whose folders are to be deleted.
-    */
+    /**
+     * Deletes the user data folders.
+     * @param string $username User name for which to create the folders.
+     */
     public function deleteUserFolders($username) {
 
         // TODO Use the Shell classes!

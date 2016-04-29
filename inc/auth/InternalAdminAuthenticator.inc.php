@@ -2,46 +2,46 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
-// Include AbstractAuthenticator and the HRM configuration files.
-require_once(dirname(__FILE__) . "/InternalAuthenticator.inc.php");
-require_once(dirname(__FILE__) . "/../hrm_config.inc.php");
+namespace hrm\auth;
 
-global $email_admin;
+require_once dirname(__FILE__) . '/../bootstrap.inc.php';
 
-/*!
-  \class	InternalAuthenticator
-  \brief	Manages authentication against the internal HRM user database.
-
+/**
+ * Class InternalAdminAuthenticator
+ *
+ * Manages authentication against the internal HRM user database.
+ *
+ * @package hrm\auth
  */
-
 class InternalAdminAuthenticator extends InternalAuthenticator {
 
-    /*!
-      \brief	Constructor: instantiates an AdminAuthenticator object.
-                No parameters are passed to the constructor.
+    /**
+     * InternalAdminAuthenticator constructor: instantiates an AdminAuthenticator
+     * object. No parameters are passed to the constructor.
      */
     public function __construct() {
         parent::__construct();
     }
 
-    /*!
-    \brief Return the admin e-mail address from the configuration file.
-    \return String Admin e-mail address.
-    */
+    /**
+     * Returns the admin e-mail address from the configuration file.
+     * @param string $username The user name is ignored since the admin username
+     * is currently fixed.
+     * @return String Admin e-mail address.
+     */
     public function getEmailAddress($username = "ignored") {
         global $email_admin;
         return $email_admin;
     }
 
-    /*!
-    \brief Return the group the user with given username belongs to.
-    \param $username String Username for which to query the group.
-    \return String Group or "" if not found.
+    /**
+     * Returns the group of the admin (curretly hardcoded to 'admin').
+     * @param string $username The user name is ignored since the admin username
+     * is currently fixed.
+     * @return string Always "admin".
     */
     public function getGroup($username = "ignored") {
         return "admin";
     }
 
-}
-
-?>
+};

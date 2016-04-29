@@ -2,22 +2,29 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
-// Include the HRM configuration files.
-require_once(dirname(__FILE__) . "/../hrm_config.inc.php");
+namespace hrm\auth;
 
-/*!
-\class  AuthenticatorFactory
-\brief  Return the Authenticator object to be used to manage the user based
-on the value of $authenticateAgainst from the configuration files.
-*/
+// Include the HRM configuration files.
+require_once dirname(__FILE__) . '/../bootstrap.inc.php';
+
+/**
+ * Class AuthenticatorFactory
+ *
+ * Returns the Authenticator object to be used to manage the user based on the
+ * value of $authenticateAgainst from the configuration files.
+ *
+ * @package hrm\auth
+ */
 class AuthenticatorFactory {
 
-    /*!
-    \brief	Return the correct authenticator object depending on the
-            value of the $authenticateAgainst variable in the configuration
-            files and whether or not the user is the administrator.
-    \param  $isAdmin (optional, default is False). True if the user is the
-            administrator, False otherwise.
+    /**
+     * Returns the correct authenticator object depending on the value of the
+     * $authenticateAgainst variable in the configuration files and whether
+     * or not the user is the administrator.
+     * @param bool $isAdmin (optional, default is False). True if the user is the
+     * administrator, False otherwise.
+     * @return ActiveDirectoryAuthenticator|InternalAdminAuthenticator|InternalAuthenticator|LDAPAuthenticator
+     * @throws \Exception
      */
     public static function getAuthenticator($isAdmin = false) {
 
@@ -52,9 +59,8 @@ class AuthenticatorFactory {
             default:
 
                 // Unknown authentication method.
-                throw new Exception("Bad value $authenticateAgainst.");
+                throw new \Exception("Bad value $authenticateAgainst.");
         }
 
     }
-}
-?>
+};

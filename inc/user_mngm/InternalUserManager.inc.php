@@ -2,61 +2,51 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
-require_once(dirname(__FILE__) . "/AbstractUserManager.inc.php");
-require_once(dirname(__FILE__) . "/../Database.inc.php");
-require_once(dirname(__FILE__) . "/../hrm_config.inc.php");
-require_once(dirname(__FILE__) . "/../Mail.inc.php");
+namespace hrm\user_mngm;
 
-global $hrm_url;
-global $email_sender;
-global $email_admin;
-global $image_host;
-global $image_folder;
-global $image_source;
-global $userManager;
+use hrm\DatabaseConnection;
+use hrm\User;
 
-/*!
-  \class   InternalUserManager
-  \brief   Manages the HRM users without relying on any external authentication
-           or management solution.
-*/
+require_once dirname(__FILE__) . '/../bootstrap.inc.php';
 
-class InternalUserManager extends AbstractUserManager {
+/**
+ * Class InternalUserManager
+ *
+ * Manages the HRM users without relying on any external authentication or
+ * management solution.
+ *
+ * @package hrm
+ */
+ class InternalUserManager extends AbstractUserManager {
 
-    /*!
-    \brief Return true since the HRM internal user management system
-           can create and delete users.
-    \return always true.
-    */
+    /**
+     * Return true since the HRM internal user management system can create
+     * and delete users.
+     * @return bool Always true.
+     */
     public static function canCreateUsers() { return true; }
 
-    /*!
-    \brief Return true since the HRM internal user management system
-           can modify users.
-    \return always true.
+    /**
+     * Return true since the HRM internal user management system can modify users.
+     * @return bool Always true.
      */
     public static function canModifyUsers() { return true; }
 
-    /*!
-    \brief  Checks whether a user with a given seed exists in the database.
-
-    \param User $user User to be checked for existing seed.
-    \param String $seed Seed to be compared.
-
-    If a user requests an account, his username is added to the database with
-    a random seed as status.
-
-    \return true if a user with given seed exists, false otherwise.
-    */
+    /**
+     * Checks whether a user with a given seed exists in the database.
+     * @param string $seed Seed to be compared.
+     * @return bool True if a user with given seed exists, false otherwise.
+     */
     public function existsUserRequestWithSeed($seed) {
         $db = new DatabaseConnection();
         return ($db->existsUserRequestWithSeed($seed));
     }
 
-    /*!
-    \brief Store (update) the user information.
-    \param User $user User to store in the database.
-    */
+    /**
+     * Stores (updates) the user information in the database.
+     * @param User $user User to store or update in the database.
+     * @return void.
+     */
     public function storeUser(User $user) {
 
         // Make sure the user is in the database, otherwise return immediately!
@@ -73,18 +63,19 @@ class InternalUserManager extends AbstractUserManager {
         $db->updateLastAccessDate($user->name());
     }
 
-    /*!
-    \brief Updates an existing user in the database
-
-    \TODO   This will need some refactoring (together with the corresponding
-            DatabaseConnection::updateExistingUser() method.
-
-    \param	$username  	The name of the user
-    \param	$password  	Password (plain, not encrypted)
-    \param	$email  	E-mail address
-    \param	$group  	Research group
-    \return	$success	True if success; false otherwise
-    */
+    /**
+     * Updates an existing user in the database.
+     *
+     * @todo This will need some refactoring (together with the corresponding
+     * @todo DatabaseConnection::updateExistingUser() method.)
+     *
+     * @param bool $isAdmin True if the user is the admin.
+     * @param string $username The name of the user.
+     * @param string $password The password (plain, not encrypted).
+     * @param string $email E-mail address.
+     * @param string $group Research group.
+     * @return bool True if the update was successful, false otherwise.
+     */
     public function updateUser($isAdmin, $username, $password, $email, $group) {
 
         // Update the user: in case $isAdmin is true, only the password can
@@ -95,58 +86,58 @@ class InternalUserManager extends AbstractUserManager {
 
     }
 
-    /*!
-    \brief Accepts user with given username.
-    \param $username Name of the user to accept.
-    \return True if the user could be accepted; false otherwise.
-    */
+    /**
+     * Accepts user with given username.
+     * @param string $username Name of the user to accept.
+     * @return bool True if the user could be accepted; false otherwise.
+     */
     public function acceptUser($username) {
         $db = new DatabaseConnection();
         return ($db->updateUserStatus($username, 'a'));
     }
 
-    /*!
-    \brief Enables user with given username.
-    \param $username Name of the user to enable.
-    \return True if the user could be enabled; false otherwise.
-    */
+    /**
+     * Enables user with given username.
+     * @param string $username Name of the user to enable.
+     * @return bool True if the user could be enabled; false otherwise.
+     */
     public function enableUser($username) {
         $db = new DatabaseConnection();
         return ($db->updateUserStatus($username, 'a'));
     }
 
-    /*!
-    \brief Enables all users.
-    \return True if all users could be enabled; false otherwise.
-    */
+    /**
+     * Enables all users.
+     * @return bool True if all users could be enabled, false otherwise.
+     */
     public function enableAllUsers() {
         $db = new DatabaseConnection();
         return ($db->updateAllUsersStatus('a'));
     }
 
-    /*!
-    \brief Disables user with given username.
-    \param $username Name of the user to disable.
-    \return True if the user could be disabled; false otherwise.
-    */
+    /**
+     * Disables user with given username.
+     * @param string $username Name of the user to disable.
+     * @return bool True if the user could be disabled; false otherwise.
+     */
     public function disableUser($username) {
         $db = new DatabaseConnection();
         return ($db->updateUserStatus($username, 'd'));
     }
 
-    /*!
-    \brief Disables all users.
-    \return True if all users could be disabled; false otherwise.
+    /**
+     * Disables all users.
+     * @return  bool True if all users could be disabled; false otherwise.
     */
     public function disableAllUsers() {
         $db = new DatabaseConnection();
         return ($db->updateAllUsersStatus('d'));
     }
 
-    /*!
-    \brief Deletes a user from the database
-    \param	User $user User to be deleted.
-    \return	bool True if success; false otherwise
+    /**
+     * Deletes a user from the database.
+     * @param string $username Name of the user to be deleted.
+     * @return bool True if success; false otherwise.
     */
     public function deleteUser($username) {
 
@@ -163,9 +154,9 @@ class InternalUserManager extends AbstractUserManager {
         return False;
     }
 
-    /*!
-    \brief Return all user rows from the database (sorted by user name).
-    \return Array of user rows sorted by user name.
+    /**
+     * Returns all user rows from the database (sorted by user name).
+     * @return array Array of user rows sorted by user name.
     */
     public function getAllUserDBRows() {
         $db = new DatabaseConnection();
@@ -173,9 +164,9 @@ class InternalUserManager extends AbstractUserManager {
         return $rows;
     }
 
-    /*!
-    \brief Return all active user rows from the database (sorted by user name).
-    \return Array of active user rows sorted by user name.
+    /**
+     * Returns all active user rows from the database (sorted by user name).
+     * @return array Array of active user rows sorted by user name.
     */
     public function getAllActiveUserDBRows() {
         $db = new DatabaseConnection();
@@ -183,11 +174,12 @@ class InternalUserManager extends AbstractUserManager {
         return $rows;
     }
 
-    /*!
-    \brief Return all user rows from the database for user names starting
-           by a given letter (sorted by user name).
-    \param $c First letter
-    \return Array of user rows filtered by first letter and sorted by user name.
+    /**
+     * Returns all user rows from the database for user names starting by a
+     * given letter (sorted by user name).
+     * @param string $c First letter
+     * @return array Array of user rows filtered by first letter and sorted by
+     * user name.
     */
     public function getAllUserDBRowsByInitialLetter($c) {
         $c = strtolower($c);
@@ -196,10 +188,10 @@ class InternalUserManager extends AbstractUserManager {
         return $rows;
     }
 
-    /*!
-     \brief Return the total number of users independent of their status (and counting
-            the administrator).
-     \return Number of users
+    /**
+     * Returns the total number of users independent of their status (and
+     * counting the administrator).
+     * @return int Number of users.
      */
     public function getTotalNumberOfUsers() {
         $db = new DatabaseConnection();
@@ -208,10 +200,10 @@ class InternalUserManager extends AbstractUserManager {
         return $count;
     }
 
-    /*!
-     \brief Return a vector of counts of how many users have names starting with
-            each of the letters of the alphabet.
-     \return array of counts
+    /**
+     * Returns a vector of counts of how many users have names starting with
+     * each of the letters of the alphabet.
+     * @return array Array of counts.
      */
     public function getNumberCountPerInitialLetter() {
 
@@ -238,4 +230,4 @@ class InternalUserManager extends AbstractUserManager {
 
         return $counts;
     }
-}
+};

@@ -2,47 +2,43 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
-require_once(dirname(__FILE__) . "/AbstractUserManager.inc.php");
-require_once(dirname(__FILE__) . "/../Database.inc.php");
-require_once(dirname(__FILE__) . "/../hrm_config.inc.php");
-require_once(dirname(__FILE__) . "/../Mail.inc.php");
+namespace hrm\user_mngm;
 
-global $hrm_url;
-global $email_sender;
-global $email_admin;
-global $image_host;
-global $image_folder;
-global $image_source;
-global $userManager;
+use hrm\DatabaseConnection;
+use hrm\User;
 
-/*!
-  \class   ExternalReadOnly
-  \brief   Manages the HRM users relying on an external authentication mechanism.
-           No user-related information can be modified using this Manager; for
-           instance, user password or e-mail address cannot be modified from
-           the HRM.
-*/
+require_once dirname(__FILE__) . '/../bootstrap.inc.php';
 
+/**
+ * Class ExternalReadOnlyUserManager
+ *
+ * Manages the HRM users relying on an external authentication mechanism.
+ *
+ * No user-related information can be modified using this Manager; for
+ * instance, user password or e-mail address cannot be modified from the HRM.
+ *
+ * @package hrm
+ */
 class ExternalReadOnlyUserManager extends AbstractUserManager {
 
-    /*!
-    \brief Return false since the external, read only manager can not
-           create or delete users.
-    \return always true.
-    */
+    /**
+     * Returns false since the external, read only manager can not create or
+     * delete users.
+     * @return bool Always false.
+     */
     public static function canCreateUsers() { return false; }
 
-    /*!
-    \brief Return false since the external, read only manager can not
-           modify users.
-    \return always true.
+    /**
+     * Returns false since the external, read only manager can not modify users.
+     * @return bool Always false.
      */
     public static function canModifyUsers() { return false; }
 
-    /*!
-    \brief Store (update) the user information.
-    \param User $user User to store in the database.
-    */
+    /**
+     * Stores (updates) the user information in the database.
+     * @param User $user User to store or update in the database.
+     * @return void
+     */
     public function storeUser(User $user) {
 
         // Make sure the user is in the database, otherwise add it
@@ -60,8 +56,6 @@ class ExternalReadOnlyUserManager extends AbstractUserManager {
 
         // Update last access time
         $db->updateLastAccessDate($user->name());
-
     }
+};
 
-
-}

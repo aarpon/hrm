@@ -1,284 +1,291 @@
 <?php
-  // This file is part of the Huygens Remote Manager
-  // Copyright and license notice: see license.txt
+/**
+ * UseHuygensTemplate
+ *
+ * @package hrm
+ *
+ * This file is part of the Huygens Remote Manager
+ * Copyright and license notice: see license.txt
+ */
 
-  /*!
-   \class  HuygensTemplate
-   \brief  Converts deconvolution parameters into a Huygens batch template.
-
-   This class builds Tcl-compliant nested lists which summarize the tasks and 
-   properties of the deconvolution job. Tasks describing the thumbnail products
-   of an HRM deconvolution job are also included. The resulting structure is 
-   a Huygens batch template formed by nested lists.
-
-   Template structure:
-
-   - 1 Job:
-       - Job info.
-       - Job tasks list:
-           - Set environment
-           - Set task ID
-       - Set environment: 
-           - resultDir
-           - perJobThreadCnt
-           - concurrentJobCnt
-           - exportFormat
-           - timeOut
-       - Set image processing list:
-           - Set image processing info:
-               - state
-               - tag
-               - timeStartAbs
-               - timeOut
-           - Set image processing subtasks:
-               - imgOpen
-               - setp
-               - deconvolution algorithm: one per channel
-               - previewGen (one per thumbnail type)
-               - imgSave
-           - Set subtasks details (imgOpen, setp,..)           
-  */
+namespace hrm;
 
 require_once( "User.inc.php" );
 require_once( "JobDescription.inc.php" );
 require_once( "Fileserver.inc.php" );
 
+/**
+ * class  HuygensTemplate
+ *
+ * Converts deconvolution parameters into a Huygens batch template.
+ *
+ * This class builds Tcl-compliant nested lists which summarize the tasks and
+ * properties of the deconvolution job. Tasks describing the thumbnail products
+ * of an HRM deconvolution job are also included. The resulting structure is
+ * a Huygens batch template formed by nested lists.
+ *
+ * Template structure:
+ * - 1 Job:
+ *     - Job info.
+ *     - Job tasks list:
+ *         - Set environment
+ *         - Set task ID
+ *     - Set environment:
+ *         - resultDir
+ *         - perJobThreadCnt
+ *         - concurrentJobCnt
+ *         - exportFormat
+ *         - timeOut
+ *     - Set image processing list:
+ *         - Set image processing info:
+ *             - state
+ *             - tag
+ *             - timeStartAbs
+ *             - timeOut
+ *         - Set image processing subtasks:
+ *             - imgOpen
+ *             - setp
+ *             - deconvolution algorithm: one per channel
+ *             - previewGen (one per thumbnail type)
+ *             - imgSave
+ *         - Set subtasks details (imgOpen, setp,..)
+*/
 class HuygensTemplate {
 
-    /*!
-     \var     $template
-     \brief   Batch template containing the deconvolution job + thumbnail tasks.
-    */
+    /**
+     * Batch template containing the deconvolution job + thumbnail tasks.
+     * @var string
+     */
     public $template;
 
-    /*!
-      \var    $jobInfoArray
-      \brief  Array with informaton on the template job info tag.
-    */
+    /**
+     * Array with informaton on the template job info tag.
+     * @var array
+     */
     private $jobInfoArray;
 
-    /*!
-     \var     $jobInfoList
-     \brief   A Tcl list with job information for the template info tag.
+    /**
+     * A Tcl list with job information for the template info tag.
+     * @var string
      */
     private $jobInfoList;
     
-    /*!
-      \var    $jobTasksArray
-      \brief  Array with information on the job's main tasks.
-    */
+    /**
+     * Array with information on the job's main tasks.
+     * @var array
+     */
     private $jobTasksArray;
 
-    /*!
-     \var     $jobTasksList
-     \brief   A Tcl list with information on the job's main tasks.
-    */
+    /**
+     * A Tcl list with information on the job's main tasks.
+     * @var string
+     */
     private $jobTasksList;
     
-    /*!
-      \var    $envArray
-      \brief  Array with information on the setEnv task.
-    */
+    /**
+     * Array with information on the setEnv task.
+     * @var array
+     */
     private $envArray;
 
-    /*!
-      \var    $envList
-      \brief  A Tcl list with environment data: number of cores, timeout, etc. 
-    */
+    /**
+     * A Tcl list with environment data: number of cores, timeout, etc.
+     * @var string
+     */
     private $envList;
 
-    /*!
-     \var     $imgProcessArray
-     \brief   Array with restoration and thumbnail-related operations.
-    */
+    /**
+     * Array with restoration and thumbnail-related operations.
+     * @var array
+     */
     private $imgProcessArray;
 
-    /*!
-     \var     $imgProcessList
-     \brief   A Tcl list with restoration and thumbnail operations.
-    */
+    /**
+     * A Tcl list with restoration and thumbnail operations.
+     * @var string
+     */
     private $imgProcessList;
 
-    /*!
-     \var     $imgProcessInfoArray
-     \brief   Array with information on the info tag of the img process task.
-    */
+    /**
+     * Array with information on the info tag of the img process task.
+     * @var array
+     */
     private $imgProcessInfoArray;
 
-    /*!
-     \var     $imgProcessTasksArray
-     \brief   Array with information on the subtasks of the img process task.
-    */
+    /**
+     * Array with information on the subtasks of the img process task.
+     * @var array
+     */
     private $imgProcessTasksArray;
 
-    /*!
-     \var     $expFormatArray
-     \brief   Array with information on export format tag of the setenv task.
-    */
+    /**
+     * Array with information on export format tag of the setenv task.
+     * @var array
+     */
     private $expFormatArray;
 
-    /*!
-     \var    $imgOpenArray
-     \brief  Array with information on the image open subtask.
-    */
+    /**
+     * Array with information on the image open subtask.
+     * @var array
+     */
     private $imgOpenArray;
 
-    /*!
-     \var    $imgSaveArray
-     \brief  Array with information on the image save subtask.
-    */
+    /**
+     * Array with information on the image save subtask.
+     * @var array
+     */
     private $imgSaveArray;
 
-    /*!
-     \var    $autocropArray
-     \brief  Array with information on the autocrop subtask.
-    */
+    /**
+     * Array with information on the autocrop subtask.
+     * @var array
+     */
     private $autocropArray;
 
-    /*!
-     \var    $ZStabilizeArray
-     \brief  Array with information on the Z stabilize subtask.
-    */
+    /**
+     * Array with information on the Z stabilize subtask.
+     * @var array
+     */
     private $ZStabilizeArray;
 
-    /*!
-     \var    $adjblArray;
-     \brief  Array with information on the image adjbl subtask.
-    */
+    /**
+     * Array with information on the image adjbl subtask.
+     * @var array
+     */
     private $adjblArray;
     
-    /*!
-     \var    $chromaticArray;
-     \brief  Array with information on the image chromatic aberration subtask.
-    */
+    /**
+     * Array with information on the image chromatic aberration subtask.
+     * @var array
+     */
     private $chromaticArray;
 
-    /*!
-     \var    $algArray;
-     \brief  Array with information on the image cmle/qmle subtask.
-    */
+    /**
+     * Array with information on the image cmle/qmle subtask.
+     * @var array
+     */
     private $algArray;
 
-    /*!
-     \var    $colocArray;
-     \brief  Array with information on the colocalization analysis subtask.
-    */
+    /**
+     * Array with information on the colocalization analysis subtask.
+     * @var  array
+     */
     private $colocArray;
 
-    /*!
-     \var    $histoArray;
-     \brief  Array with information on the 2D histogram subtask.
-    */
+    /**
+     * Array with information on the 2D histogram subtask.
+     * @var array
+     */
     private $histoArray;
 
-    /*!
-      \var    $setpArray
-      \brief  Array with information on the set parameter 'setp' subtask.
-    */
+    /**
+     * Array with information on the set parameter 'setp' subtask.
+     * @var array
+     */
     private $setpArray;
 
-    /*!
-      \var    $setpConfArray
-      \brief  Array with information on the parameter confidence levels.
-    */
+    /**
+     * Array with information on the parameter confidence levels.
+     * @var array
+     */
     private $setpConfArray;
 
-    /*!
-      \var    $thumbArray
-      \brief  Array with information on thumbnail projections.
-    */
+    /**
+     * Array with information on thumbnail projections.
+     * @var array
+     */
     private $thumbArray;
 
-    /*!
-      \var    $setpList
-      \brief  A Tcl list with information for the 'set parameter' subtask.
-    */
+    /**
+     * A Tcl list with information for the 'set parameter' subtask.
+     * @var string
+     */
     private $setpList;
 
-    /*!
-      \var    $srcImage
-      \brief  Path and name of the source 'raw' image.
-    */
+    /**
+     * Path and name of the source 'raw' image.
+     * @var string
+     */
     private $srcImage;
 
-    /*!
-      \var    $destImage
-      \brief  Path and name of the deconvolved image.
-    */
+    /**
+     * Path and name of the deconvolved image.
+     * @var string
+     */
     private $destImage;
 
-    /*!
-      \var    $jobDescription
-      \brief  JobDescription object: unformatted microscopic & restoration data
-    */
+    /**
+     * JobDescription object: unformatted microscopic & restoration data.
+     * @var JobDescription
+     */
     private $jobDescription;
 
-    /*!
-      \var    $microSetting
-      \brief  A ParametersSetting object: unformatted microscopic parameters.
-    */
+    /**
+     * A ParametersSetting object: unformatted microscopic parameters.
+     * @var ParameterSetting
+     */
     private $microSetting;
 
-    /*!
-      \var    $deconSetting
-      \brief  A TaskSetting object: unformatted restoration parameters.
-    */
+    /**
+     * A TaskSetting object: unformatted restoration parameters.
+     * @var TaskSetting
+     */
     private $deconSetting;
 
-    /*!
-      \var    $analysisSetting
-      \brief  An AnalysisSetting object: unformatted analysis parameters.
-    */
+    /**
+     * An AnalysisSetting object: unformatted analysis parameters.
+     * @var AnalysisSetting
+     */
     private $analysisSetting;
 
-    /*!
-     \var     $compareZviews
-     \brief   A boolean to know whether a Z slicer will be created.
-    */
+    /**
+     * A boolean to know whether a Z slicer will be created.
+     * @var bool
+     */
     public $compareZviews;
 
-    /*!
-     \var     $compareTviews
-     \brief   A boolean to know whether a T slicer will be created.
-    */
+    /**
+     * A boolean to know whether a T slicer will be created.
+     * @var bool
+     */
     public $compareTviews;
 
-    /*! 
-     \var     $thumbCnt
-     \brief   An integer that keeps track of the number of thumbnail tasks.
-    */
+    /**
+     * An integer that keeps track of the number of thumbnail tasks.
+     * @var int
+     */
     private $thumbCnt;
 
-    /*! 
-     \var     $thumbFrom
-     \brief   Whether to make a thumbnail from the raw or from the decon image.
-    */
+    /**
+     * Whether to make a thumbnail from the raw or from the decon image.
+     * @var string
+     */
     private $thumbFrom;
     
-    /*! 
-     \var     $thumbToDir
-     \brief   Whether the thumbnail is to be saved in the src or dest folder.
-    */
+    /**
+     * Whether the thumbnail is to be saved in the src or dest folder.
+     * @var string
+     */
     private $thumbToDir;
 
-    /*! 
-     \var     $thumbType
-     \brief   Whether to make an XYXZ, Ortho, SFP, Movie, etc, type of thumbnail.
-    */
+    /**
+     * Whether to make an XYXZ, Ortho, SFP, Movie, etc, type of thumbnail.
+     * @var string
+     */
     private $thumbType;
 
-    /*! 
-     \var     $thumbSubImg
-     \brief   Whether to make thumbnails for lif and czi sub images.
-    */
+    /**
+     * Whether to make thumbnails for lif and czi sub images.
+     * @var string
+     */
     private $thumbSubImg;
 
     /* -------------------------- Constructor ------------------------------- */
 
-    /*!
-     \brief       Constructor
-     \param       $jobDescription JobDescription object
-    */
+    /**
+     * Constructor
+     * @param JobDescription $jobDescription JobDescription object
+     */
     public function __construct($jobDescription) {
         $this->initialize($jobDescription);
         $this->setJobInfoList();
@@ -290,10 +297,10 @@ class HuygensTemplate {
 
     /* ------------------------- Initialization ------------------------------ */
 
-    /*!
-     \brief       Sets general class properties to initial values
-     \param       $jobDescription JobDescription object
-    */
+    /**
+     * Sets general class properties to initial values
+     * @param JobDescription $jobDescription JobDescription object.
+     */
     private function initialize($jobDescription) {
         $this->jobDescription  = $jobDescription;
         $this->microSetting    = $jobDescription->parameterSetting;
@@ -308,24 +315,24 @@ class HuygensTemplate {
         $this->initializeImgProcessing();
     }
 
-    /*!
-     \brief       Sets names and paths of the raw and deconvolved images.
-    */
+    /**
+     * Sets names and paths of the raw and deconvolved images.
+     */
     private function initializeImg( ) {
         $this->setSrcImage();
         $this->setDestImage();
     }
 
-    /*!
-     \brief       Resets the counter of thumbnail tasks
-    */
+    /**
+     * Resets the counter of thumbnail tasks.
+     */
     private function initializeThumbCounter( ) {
         $this->thumbCnt = 0;
     }
 
-    /*!
-     \brief       Loads an array containing information on the job info tag.
-    */
+    /**
+     * Loads an array containing information on the job info tag.
+     */
     private function initializeJobInfo() {
 
         $this->jobInfoArray = 
@@ -336,9 +343,9 @@ class HuygensTemplate {
                    'listID'                     => 'info');
     }
 
-    /*!
-     \brief       Loads an array containing information on the job's main tasks.
-    */
+    /**
+     * Loads an array containing information on the job's main tasks.
+     */
     private function initializeJobTasks() {
         
         $this->jobTasksArray = 
@@ -347,9 +354,9 @@ class HuygensTemplate {
                     'listID'                    => 'taskList' );
     }
 
-    /*!
-     \brief       Loads arrays with environment data: number cores, timeout, ..
-    */
+    /**
+     * Loads arrays with environment data: number cores, timeout, ..
+     */
     private function initializeEnvironment( ) {
         $this->envArray = 
             array ( 'resultDir'                 => '',
@@ -367,9 +374,9 @@ class HuygensTemplate {
                     'cmode'                     =>  'scale' );
     }
 
-    /*!
-     \brief       Loads arrays with the job's tasks and subtasks.
-    */
+    /**
+     * Loads arrays with the job's tasks and subtasks.
+     */
     private function initializeImgProcessing( ) {
 
         $this->imgProcessArray = 
@@ -584,9 +591,9 @@ class HuygensTemplate {
 
     /* --------------------- Main task list builders ------------------------- */
 
-    /*!
-     \brief       Puts the Huygens Batch template together.
-    */
+    /**
+     * Puts the Huygens Batch template together.
+     */
     private function assembleTemplate( ) {
         $this->template =  $this->jobInfoList . "\n";
         $this->template .= $this->jobTasksList . "\n";
@@ -594,9 +601,9 @@ class HuygensTemplate {
         $this->template .= $this->imgProcessList;
     }
 
-    /*!
-     \brief       Sets the template info tag.
-    */
+    /**
+     * Sets the template info tag.
+     */
     private function setJobInfoList( ) {
         
         $list = "";
@@ -630,9 +637,9 @@ class HuygensTemplate {
         }
     }
 
-    /*!
-     \brief       Sets the template's main tasks: setEnv and taskIDs.
-    */
+    /**
+     * Sets the template's main tasks: setEnv and taskIDs.
+     */
     private function setJobTasksList() {
 
         $list = "";
@@ -657,9 +664,9 @@ class HuygensTemplate {
         }
     }
 
-    /*!
-     \brief      Sets the job's environment task: number of cores, timeout, etc. 
-    */
+    /**
+     * Sets the job's environment task: number of cores, timeout, etc.
+     */
     private function setEnvList( ) {
 
         $list = "";
@@ -679,7 +686,7 @@ class HuygensTemplate {
                 break;
 		case 'attemptGpu':
 		$db = new DatabaseConnection();
-		$list .= $db->getGpuStateAsString();
+		$list .= $db->getGPUStateAsString();
 		break;		
             case 'listID':
                 $list = $this->string2tcllist($list);
@@ -696,10 +703,10 @@ class HuygensTemplate {
             }
         }
     }
-    
-    /*!
-     \brief       Sets the template's restoration and thumbnail operations.
-    */
+
+    /**
+     * Sets the template's restoration and thumbnail operations.
+     */
     private function setImgProcessList( ) {
         
         $list = "";
@@ -729,11 +736,11 @@ class HuygensTemplate {
     }
 
     /* ------------------- Secondary task list builders ---------------------- */
-    
-    /*!
-     \brief       Gets information on the template's only job.
-     \return      The Tcl-compliant nested list with the info details.
-    */
+
+    /**
+     * Gets information on the template's only job.
+     * @return string The Tcl-compliant nested list with the info details.
+     */
     private function getImgProcessInfoList( ) {
 
         $list = "";
@@ -766,10 +773,10 @@ class HuygensTemplate {
         return $list;
     }
 
-    /*!
-     \brief       Gets the Huygens subtask names of the deconvolution process.
-     \return      The Tcl-compliant nested list with subtask names.
-    */
+    /**
+     * Gets the Huygens subtask names of the deconvolution process.
+     * @return string The Tcl-compliant nested list with subtask names.
+     */
     private function getImgProcessTaskList( ) {
         
         $list = "";
@@ -816,10 +823,10 @@ class HuygensTemplate {
         return $list;
     }
 
-    /*!
-     \brief       Gets details of specific deconvolution subtasks. 
-     \return      The Tcl-compliant nested list with subtask details.
-    */
+    /**
+     * Gets details of specific deconvolution subtasks.
+     * @return string The Tcl-compliant nested list with subtask details.
+     */
     private function getImgProcessTasksDescr( ) {
 
         $tasksDescr = "";
@@ -883,11 +890,11 @@ class HuygensTemplate {
 
         return $tasksDescr;
     }
-    
-    /*!
-     \brief       Gets options for the 'image open' task.
-     \return      Tcl list with the'Image open' task and its options.
-    */
+
+    /**
+     * Gets options for the 'image open' task.
+     * @return string Tcl list with the'Image open' task and its options.
+     */
     private function getImgTaskDescrOpen( ) {
 
         $taskDescr = "";
@@ -926,10 +933,10 @@ class HuygensTemplate {
         return $taskDescr;
     }
 
-    /*!
-     \brief       Gets options for the 'set parameters' task.
-     \return      Tcl list with the 'Set parameters' task and its options.
-    */
+    /**
+     * Gets options for the 'set parameters' task.
+     * @return string Tcl list with the 'Set parameters' task and its options.
+     */
     private function getImgTaskDescrSetp( ) {
 
         $taskDescr = "";
@@ -984,10 +991,10 @@ class HuygensTemplate {
         return $this->setpList;
     }
 
-    /*!
-     \brief       Gets options for the 'adjust baseline' task.
-     \return      Tcl list with the 'Adjust baseline' task and its options.
-    */
+    /**
+     * Gets options for the 'adjust baseline' task.
+     * @return string Tcl list with the 'Adjust baseline' task and its options.
+     */
     private function getImgTaskDescrAdjbl( ) {
 
         $taskDescr = "";
@@ -1014,11 +1021,11 @@ class HuygensTemplate {
 
         return $taskDescr;
     }
-    
-    /*!
-     \brief       Gets options for the 'chromatic aberration correction' task.
-     \return      Tcl list with the 'chromatic aberration' task and its options.
-    */
+
+    /**
+     * Gets options for the 'chromatic aberration correction' task.
+     * @return string Tcl list with the 'chromatic aberration' task and its options.
+     */
     private function getImgTaskDescrChromatic( ) {
         
         $allTasksDescr = "";
@@ -1077,10 +1084,10 @@ class HuygensTemplate {
         return $allTasksDescr;
     }
 
-    /*!
-      \brief      Get options for the 'Autocrop' task. 
-      \return     Tcl list with the 'autocrop' task and its options.
-    */
+    /**
+     * Get options for the 'Autocrop' task.
+     * @return string Tcl list with the 'autocrop' task and its options.
+     */
     private function getImgTaskDescrAutocrop( ) {
         
         $taskDescr = "";
@@ -1107,11 +1114,11 @@ class HuygensTemplate {
 
         return $taskDescr;
     }
-    
-    /*!
-      \brief      Get options for the 'ZStabilize' task. 
-      \return     Tcl list with the 'ZStabilize' task and its options.
-    */
+
+    /**
+     * Get options for the 'ZStabilize' task.
+     * @return string Tcl list with the 'ZStabilize' task and its options.
+     */
     private function getImgTaskDescrZStabilize( ) {
         
         $taskDescr = "";
@@ -1153,10 +1160,10 @@ class HuygensTemplate {
         return $taskDescr;
     }
 
-    /*!
-     \brief       Gets options for the 'algorithm' task. All channels.
-     \return      Deconvolution 'algorithm' task string and its options.
-    */
+    /**
+     * Gets options for the 'algorithm' task. All channels.
+     * @return string Deconvolution 'algorithm' task string and its options.
+     */
     private function getImgTaskDescrAlgorithms( ) {
 
         $allTasksDescr = "";
@@ -1171,10 +1178,10 @@ class HuygensTemplate {
         return $allTasksDescr;
     }
 
-    /*!
-     \brief       Gets options for all the 'colocalization' tasks.
-     \return      Tcl list with the 'colocalization' tasks and their options.
-    */
+    /**
+     * Gets options for all the 'colocalization' tasks.
+     * @return string Tcl list with the 'colocalization' tasks and their options.
+     */
     private function getImgTaskDescrColocs( ) {
 
         $allTasksDescr = "";
@@ -1209,10 +1216,10 @@ class HuygensTemplate {
         return $allTasksDescr;
     }
 
-    /*!
-     \brief       Gets options for the '2Dhistogram' task.
-     \return      Tcl list with the '2Dhistogram' task and its options.
-    */
+    /**
+     * Gets options for the '2Dhistogram' task.
+     * @return string Tcl list with the '2Dhistogram' task and its options.
+     */
     private function getImgTaskDescrHistograms( ) {
         
         $allTasksDescr = "";
@@ -1248,12 +1255,12 @@ class HuygensTemplate {
         return $allTasksDescr;
     }
 
-    
-    /*!
-     \brief      Gets options for the thumbnail generation task.
-     \return     Tcl-compliant list with the thumbnail options.
-     \todo       Set thumbtypes in an array at initialization.
-    */
+
+    /**
+     * Gets options for the thumbnail generation task.
+     * @return string Tcl-compliant list with the thumbnail options.
+     * @todo Set thumbtypes in an array at initialization.
+     */
     private function getImgTaskDescrThumbnail($thumbType,$thumbID) {
 
         if (preg_match("/Raw/i",$thumbType)) {
@@ -1302,10 +1309,10 @@ class HuygensTemplate {
         return $taskDescr;
     }
 
-    /*!
-     \brief       Gets options for the 'image save' task.
-     \return      Tcl list with the 'Image save' task and its options.
-    */
+    /**
+     * Gets options for the 'image save' task.
+     * @return string Tcl list with the 'Image save' task and its options.
+     */
     private function getImgTaskDescrSave( ) {
 
         $taskDescr = "";
@@ -1335,11 +1342,11 @@ class HuygensTemplate {
 
     /* -------------------------- Setp task ---------------------------------- */
 
-    /*!
-      \brief     Gets the SPIM excitation mode. One channel.
-      \param     $channel A channel
-      \return    The SPIM excitation mode.
-    */
+    /**
+     * Gets the SPIM excitation mode. One channel.
+     * @param int $channel A channel.
+     * @return string The SPIM excitation mode.
+     */
     private function getSpimExcMode($channel) {
         $microSetting = $this->microSetting;
         $spimExcMode = $microSetting->parameter("SpimExcMode")->value();
@@ -1348,66 +1355,66 @@ class HuygensTemplate {
         return $spimExcMode;
     }
 
-    /*!
-      \brief     Gets the SPIM Gauss Width. One channel.
-      \param     $channel A channel
-      \return    The SPIM Gauss Width.
-    */
+    /**
+     * Gets the SPIM Gauss Width. One channel.
+     * @param int $channel A channel.
+     * @return float The SPIM Gauss Width.
+     */
     private function getSpimGaussWidth($channel) {
         $microSetting = $this->microSetting;
         $spimGaussWidth = $microSetting->parameter("SpimGaussWidth")->value();
         return $spimGaussWidth[$channel];
     }
 
-    /*!
-      \brief     Gets the SPIM Center Offset. One channel.
-      \param     $channel A channel
-      \return    The SPIM Center Offset.
-    */
+    /**
+     * Gets the SPIM Center Offset. One channel.
+     * @param int $channel A channel.
+     * @return float The SPIM Center Offset.
+     */
     private function getSpimCenterOffset($channel) {
         $microSetting = $this->microSetting;
         $spimCenterOffset = $microSetting->parameter("SpimCenterOffset")->value();
         return $spimCenterOffset[$channel];
     }
 
-    /*!
-      \brief     Gets the SPIM Focus Offset. One channel.
-      \param     $channel A channel
-      \return    The SPIM Focus Offset.
-    */
+    /**
+     * Gets the SPIM Focus Offset. One channel.
+     * @param  int $channel A channel.
+     * @return float The SPIM Focus Offset.
+     */
     private function getSpimFocusOffset($channel) {
         $microSetting = $this->microSetting;
         $spimFocusOffset = $microSetting->parameter("SpimFocusOffset")->value();
         return $spimFocusOffset[$channel];
     }
 
-    /*!
-      \brief     Gets the SPIM NA. One channel.
-      \param     $channel A channel
-      \return    The SPIM NA.
-    */
+    /**
+     * Gets the SPIM NA. One channel.
+     * @param int $channel A channel.
+     * @return float The SPIM NA.
+     */
     private function getSpimNA($channel) {
         $microSetting = $this->microSetting;
         $spimNA = $microSetting->parameter("SpimNA")->value();
         return $spimNA[$channel];
     }
 
-    /*!
-      \brief     Gets the SPIM Fill Factor. One channel.
-      \param     $channel A channel
-      \return    The SPIM Fill Factor.
-    */
+    /**
+     * Gets the SPIM Fill Factor. One channel.
+     * @param int $channel A channel
+     * @return float The SPIM Fill Factor.
+     */
     private function getSpimFill($channel) {
         $microSetting = $this->microSetting;
         $spimFill = $microSetting->parameter("SpimFill")->value();
         return $spimFill[$channel];
     }
 
-    /*!
-      \brief     Gets the SPIM Direction. One channel.
-      \param     $channel A channel
-      \return    The SPIM Direction.
-    */
+    /**
+     * Gets the SPIM Direction. One channel.
+     * @param int $channel A channel
+     * @return float The SPIM Direction.
+     */
     private function getSpimDir($channel) {
         $microSetting = $this->microSetting;
         $spimDir = $microSetting->parameter("SpimDir")->value();
@@ -1441,11 +1448,11 @@ class HuygensTemplate {
         return $angle;
     }
 
-    /*!
-      \brief     Gets the STED depletion mode. One channel.
-      \param     $channel A channel
-      \return    The STED depletion mode.
-    */
+    /**
+     * Gets the STED depletion mode. One channel.
+     * @param int $channel A channel
+     * @return string The STED depletion mode.
+     */
     private function getStedMode($channel, $parseConfocals = False) {
         $microSetting = $this->microSetting;
         $stedMode = $microSetting->parameter("StedDepletionMode")->value();
@@ -1462,22 +1469,22 @@ class HuygensTemplate {
         return $deplMode;        
     }
 
-    /*!
-      \brief     Gets the STED lambda. One channel.
-      \param     $channel A channel
-      \return    The STED lambda.
-    */
+    /**
+     * Gets the STED lambda. One channel.
+     * @param int $channel A channel
+     * @return int The STED lambda.
+     */
     private function getStedLambda($channel) {
         $microSetting = $this->microSetting;
         $stedLambda = $microSetting->parameter("StedWavelength")->value();       
         return $stedLambda[$channel];        
     }
 
-    /*!
-      \brief     Gets the STED saturation factor. One channel.
-      \param     $channel A channel
-      \return    The STED saturation factor.
-    */
+    /**
+     * Gets the STED saturation factor. One channel.
+     * @param int $channel A channel
+     * @return float The STED saturation factor.
+     */
     private function getStedSaturationFactor($channel) {
         $microSetting = $this->microSetting;
         $stedSatFact =
@@ -1485,44 +1492,44 @@ class HuygensTemplate {
         return $stedSatFact[$channel];        
     }
 
-    /*!
-      \brief     Gets the STED immunity factor. One channel.
-      \param     $channel A channel
-      \return    The STED immunity factor.
-    */
+    /**
+     * Gets the STED immunity factor. One channel.
+     * @param int $channel A channel
+     * @return float The STED immunity factor.
+     */
     private function getStedImmunity($channel) {
         $microSetting = $this->microSetting;
         $stedImmunity = $microSetting->parameter("StedImmunity")->value();
         return $stedImmunity[$channel];        
     }
 
-    /*!
-      \brief     Gets the STED lambda. One channel.
-      \param     $channel A channel
-      \return    The STED lambda.
-    */
+    /**
+     * Gets the STED lambda. One channel.
+     * @param int $channel A channel
+     * @return int The STED lambda.
+     */
     private function getSted3D($channel) {
         $microSetting = $this->microSetting;
         $sted3D = $microSetting->parameter("Sted3D")->value();       
         return $sted3D[$channel];        
     }
-    
-    /*!
-     \brief       Gets the pinhole radius. One channel.
-     \param       $channel A channel
-     \return      The pinhole radius.
-    */
+
+    /**
+     * Gets the pinhole radius. One channel.
+     * @param int $channel A channel
+     * @return float The pinhole radius.
+     */
     private function getPinholeRadius($channel) {
         $microSetting = $this->microSetting;
         $pinholeSize = $microSetting->parameter("PinholeSize")->value();       
         return $pinholeSize[$channel];
-    }      
+    }
 
-    /*!
-     \brief       Gets the microscope type.
-     \param       $channel A channel
-     \return      The microscope type.
-    */
+    /**
+     * Gets the microscope type.
+     * @param int $channel A channel
+     * @return string The microscope type.
+     */
     private function getMicroscopeType($channel) {
         $microChoice = $this->microSetting->parameter('MicroscopeType');
         $micrType = $microChoice->translatedValue();
@@ -1542,29 +1549,29 @@ class HuygensTemplate {
         return $micrType;
     }
 
-    /*!
-     \brief       Gets the objective's refractive index. Same for all channels.
-     \return      The objective's refractive index.
-    */
+    /**
+     * Gets the objective's refractive index. Same for all channels.
+     * @return float The objective's refractive index.
+     */
     private function getLensRefractiveIndex( ) {
         $microSetting = $this->microSetting;
         return $microSetting->parameter('ObjectiveType')->translatedValue();
     }
 
-    /*!
-     \brief       Gets the numerical aperture. Same for all channels.
-     \return      The numerical aperture.
-    */
+    /**
+     * Gets the numerical aperture. Same for all channels.
+     * @return float The numerical aperture.
+     */
     private function getNumericalAperture( ) {
         $microSetting = $this->microSetting;
         return $microSetting->parameter('NumericalAperture')->value();
     }
 
-    /*!
-     \brief       Gets the pinhole spacing. One channel.
-     \param       $channel A channel
-     \return      The pinhole spacing.
-    */
+    /**
+     * Gets the pinhole spacing. One channel.
+     * @param int $channel A channel
+     * @return float The pinhole spacing.
+     */
     private function getPinholeSpacing($channel) {
         if ($this->getParameterValue("micr",$channel) != "nipkow") {
             return "";
@@ -1574,19 +1581,19 @@ class HuygensTemplate {
         return $microSetting->parameter("PinholeSpacing")->value();
     }
 
-    /*!
-     \brief       Gets the Objective Quality. Same for all channels.
-     \return      The objective quality.
-     \todo        To be implemented in the GUI
-    */
+    /**
+     * Gets the Objective Quality. Same for all channels.
+     * @return string The objective quality.
+     * @todo To be implemented in the GUI
+     */
     private function getObjectiveQuality( ) {
         return $this->setpArray['objQuality'];
     }
 
-    /*!
-     \brief       Gets the excitation photon count. Same for all channels.
-     \return      The excitation photon count.
-    */
+    /**
+     * Gets the excitation photon count. Same for all channels.
+     * @return int The excitation photon count.
+     */
     private function getExcitationPhotonCount( ) {
         if ($this->microSetting->isTwoPhoton()) {
             return 2;
@@ -1595,11 +1602,11 @@ class HuygensTemplate {
         }
     }
 
-    /*!
-     \brief       Gets the excitation wavelength. One channel.
-     \param       $channel A channel
-     \return      The excitation wavelength.
-    */
+    /**
+     * Gets the excitation wavelength. One channel.
+     * @param int $channel A channel
+     * @return int The excitation wavelength.
+     */
     private function getExcitationWavelength($channel) {
         $microSetting = $this->microSetting;
         $excitationLambdas = $microSetting->parameter("ExcitationWavelength");
@@ -1607,19 +1614,19 @@ class HuygensTemplate {
         return $excitationLambda[$channel];
     }
 
-    /*!
-     \brief      Gets the excitation beam overfill factor. Same for all channels.
-     \return     The excitation beam factor.
-    */
+    /**
+     * Gets the excitation beam overfill factor. Same for all channels.
+     * @return float The excitation beam factor.
+     */
     private function getExcitationBeamFactor( ) {
         return $this->setpArray['exBeamFill'];
     }
 
-    /*!
-     \brief       Gets the emission wavelength. One channel.
-     \param       $channel A channel
-     \return      The emission wavelength.
-    */
+    /**
+     * Gets the emission wavelength. One channel.
+     * @param int $channel A channel
+     * @return int The emission wavelength.
+     */
     private function getEmissionWavelength($channel) {
         $microSetting = $this->microSetting;
         $emissionLambdas = $microSetting->parameter("EmissionWavelength");
@@ -1627,10 +1634,10 @@ class HuygensTemplate {
         return $emissionLambda[$channel];
     }
 
-    /*!
-     \brief       Gets the imaging direction. Same for all channels.
-     \return      Whether the imaging was carried out 'downwards' or 'upwards'.
-    */
+    /**
+     * Gets the imaging direction. Same for all channels.
+     * @return string Whether the imaging was carried out 'downwards' or 'upwards'.
+     */
     private function getImagingDirection( ) {
         $microSetting = $this->microSetting;
         $coverslip = $microSetting->parameter('CoverslipRelativePosition');
@@ -1642,20 +1649,21 @@ class HuygensTemplate {
         }
     }
 
-    /*!
-     \brief       Gets the medium refractive index. Same for all channels.
-     \return      The medium's refractive index.
-    */
+    /**
+     * Gets the medium refractive index. Same for all channels.
+     * @return float The medium's refractive index.
+     */
     private function getMediumRefractiveIndex( ) {
         $microSetting = $this->microSetting;
         $sampleMedium = $microSetting->parameter("SampleMedium");
         return $sampleMedium->translatedValue();
     }
 
-    /*!
-     \brief       Gets the sampling distance in the X direction.                 
-     \return      The sampling in the X direction, if specified by the user. 
-    */
+    /**
+     * Gets the sampling distance in the X direction.
+     * @return string|int The sampling in the X direction, if specified by
+     * the user.
+     */
     public function getSamplingSizeX( ) {
         if ($this->microSetting->sampleSizeX() != 0) {
             return $this->microSetting->sampleSizeX();
@@ -1664,10 +1672,11 @@ class HuygensTemplate {
         }
     }
 
-    /*!
-     \brief       Gets the sampling distance in the Y direction.                 
-     \return      The sampling in the Y direction, if specified by the user.
-    */
+    /**
+     * Gets the sampling distance in the Y direction.
+     * @return string|int The sampling in the Y direction, if specified by
+     * the user.
+     */
     public function getSamplingSizeY( ) {
         if ($this->microSetting->sampleSizeY() != 0) {
             return $this->microSetting->sampleSizeY();
@@ -1676,10 +1685,11 @@ class HuygensTemplate {
         }
     }
 
-    /*!
-     \brief       Gets the sampling distance in the Z direction.                 
-     \return      The sampling in the Z direction, if specified by the user.
-    */
+    /**
+     * Gets the sampling distance in the Z direction.
+     * @return string|int The sampling in the Z direction, if specified by
+     * the user.
+     */
     public function getSamplingSizeZ( ) {
         if ($this->microSetting->sampleSizeZ() != 0) {
             return $this->microSetting->sampleSizeZ();
@@ -1688,10 +1698,10 @@ class HuygensTemplate {
         }
     }
 
-    /*!
-     \brief       Gets the sampling interval in T.                   
-     \return      The sampling in T, if specified by the user.
-    */
+    /**
+     * Gets the sampling interval in T.
+     * @return string|float The sampling in T, if specified by the user.
+     */
     public function getSamplingSizeT( ) {
         if ($this->microSetting->sampleSizeT() != 0) {
             return $this->microSetting->sampleSizeT();
@@ -1700,10 +1710,10 @@ class HuygensTemplate {
         }
     }
 
-    /*!
-     \brief       Gets the sampling size of the 'raw' image.
-     \return      Tcl-list with the sampling sizes.
-    */
+    /**
+     * Gets the sampling size of the 'raw' image.
+     * @return string Tcl-list with the sampling sizes.
+     */
     private function getSamplingSizes( ) {
         $sampling = $this->getSamplingSizeX();
         $sampling .= " " . $this->getSamplingSizeY();
@@ -1715,11 +1725,12 @@ class HuygensTemplate {
 
     /* -------------------------- Algorithm task ----------------------------- */
 
-   /*!
-     \brief       Gets options for the 'algorithm' task. One channel.
-     \param       $channel A channel
-     \return      Tcl list with the deconvolution 'algorithm' task + its options.
-    */
+    /**
+     * Gets options for the 'algorithm' task. One channel.
+     * @param int $channel A channel.
+     * @return string Tcl list with the deconvolution 'algorithm' task + its
+     * options.
+     */
     private function getTaskDescrAlgorithm($channel) {
 
         $taskDescr = "";
@@ -1781,11 +1792,11 @@ class HuygensTemplate {
 
         return $this->string2tcllist($taskDescr);
     }
-    
-    /*!
-     \brief       Gets the brick mode.
-     \return      Brick mode.
-    */
+
+    /**
+     * Gets the brick mode.
+     * @return string Brick mode.
+     */
     private function getBrMode( ) {
         $SAcorr = $this->getSAcorr();
 
@@ -1806,10 +1817,10 @@ class HuygensTemplate {
         return $brMode;
     }
 
-    /*!
-     \brief       Gets the background mode.
-     \return      Background mode.
-    */
+    /**
+     * Gets the background mode.
+     * @return string Background mode.
+     */
     private function getBgMode( ) {
         $bgParam = $this->deconSetting->parameter("BackgroundOffsetPercent");
         $bgValue = $bgParam->value();
@@ -1824,11 +1835,12 @@ class HuygensTemplate {
         }
     }
 
-    /*!
-     \brief       Gets the background value. One channel.
-     \param       $channel A channel
-     \return      The background value.
-    */
+    /**
+     * Gets the background value. One channel.
+     * @param int $channel A channel
+     * @return string|float The background value.
+     * @todo Even in case of error, the function should return something usable!
+     */
     private function getBgValue($channel) {
         if ($this->getBgMode() == "auto" || $this->getBgMode() == "object") {
             return 0.0;
@@ -1843,11 +1855,11 @@ class HuygensTemplate {
         }
     }
 
-    /*!
-     \brief       Gets the SNR value. One channel.
-     \param       $channel A channel
-     \return      The SNR value.
-    */
+    /**
+     * Gets the SNR value. One channel.
+     * @param int $channel A channel
+     * @return int|string The SNR value.
+     */
     private function getSnrValue($channel) {
         $deconSetting = $this->deconSetting;
         $snrRate = $deconSetting->parameter("SignalNoiseRatio")->value();       
@@ -1862,10 +1874,10 @@ class HuygensTemplate {
         return $snrValue;
     }
 
-    /*!
-     \brief       Gets the PSF mode.
-     \return      PSF mode.
-    */
+    /**
+     * Gets the PSF mode.
+     * @return string PSF mode.
+     */
     private function getPsfMode( ) {
         $microSetting = $this->microSetting;
         $psfMode = $microSetting->parameter("PointSpreadFunction")->value();
@@ -1876,11 +1888,11 @@ class HuygensTemplate {
         }
     }
 
-    /*!
-     \brief       Gets the PSF path including subfolders created by the user.
-     \param       $channel A channel
-     \return      Psf path
-    */
+    /**
+     * Gets the PSF path including subfolders created by the user.
+     * @param int $channel A channel
+     * @return string Psf path
+     */
     private function getPsfPath($channel) {
         if ($this->getPsfMode() == "file") {
 
@@ -1897,46 +1909,46 @@ class HuygensTemplate {
         return $this->string2tcllist($psfPath);
     }
 
-    /*!
-     \brief       Gets the deconvolution quality factor.
-     \return      The quality factor
-    */
+    /**
+     * Gets the deconvolution quality factor.
+     * @return float The quality factor
+     */
     private function getQualityFactor( ) {
         $deconSetting = $this->deconSetting;
         $parameter = $deconSetting->parameter('QualityChangeStoppingCriterion');
         return $parameter->value();
     }
 
-    /*!
-     \brief       Gets the maximum number of iterations for the deconvolution.
-     \return      The maximum number of iterations.
-    */
+    /**
+     * Gets the maximum number of iterations for the deconvolution.
+     * @return int The maximum number of iterations.
+     */
     private function getIterations( ) {
         return $this->deconSetting->parameter('NumberOfIterations')->value();
     }
 
-    /*!
-     \brief       Gets the deconvolution algorithm.
-     \return      Deconvolution algorithm.
-    */
+    /**
+     * Gets the deconvolution algorithm.
+     * @return string Deconvolution algorithm.
+     */
     private function getAlgorithm( ) {
         return $this->deconSetting->parameter('DeconvolutionAlgorithm')->value();
     }
 
-    /*!
-     \brief       Gets the spherical aberration correction.
-     \return      Sperical aberration correction.
-    */
+    /**
+     * Gets the spherical aberration correction.
+     * @return string Sperical aberration correction.
+     */
     private function getSAcorr( ) {
         return $this->microSetting->getAberractionCorrectionParameters();
     }
 
     /* -------------- Chromatic Aberration correction tasks ------------------ */
-    
-    /*!
-      \brief    It creates an array with the target channels.
-      \return   The target array.
-    */
+
+    /**
+     * Creates an array with the target channels.
+     * @return array The target array.
+     */
     private function getChansForChromaticCorrection( ) {
         $channelsArray = array();
         
@@ -1964,13 +1976,13 @@ class HuygensTemplate {
     
     /* --------------------- Colocalization tasks ---------------------------- */
 
-    /*!
-     \brief       Gets options for the 'colocalization' task.
-     \param       $chanR A channel number acting as red channel.
-     \param       $chanG A channel number acting as green channel.
-     \param       $runCnt The number of colocalization tasks
-     \return      Tcl list with the 'colocalization' task and its options.
-    */
+    /**
+     * Gets options for the 'colocalization' task.
+     * @param int $chanR A channel number acting as red channel.
+     * @param int $chanG A channel number acting as green channel.
+     * @param int $runCnt The number of colocalization tasks
+     * @return string Tcl list with the 'colocalization' task and its options.
+     */
     private function getTaskDescrColoc($chanR, $chanG, $runCnt) {
         
         $taskDescr = "";
@@ -2031,19 +2043,19 @@ class HuygensTemplate {
         return $taskDescr;
     }
 
-    /*!
-     \brief       Gets the value of the boolean choice 'Colocalization Analysis'.
-     \return      Whether or not colocalization analysis should be performed.
-    */
+    /**
+     * Gets the value of the boolean choice 'Colocalization Analysis'.
+     * @return bool Whether or not colocalization analysis should be performed.
+     */
     private function getColocalization( ) 
     {    
         return $this->analysisSetting->parameter('ColocAnalysis')->value();
     }
 
-    /*!
-     \brief       Gets the channel choice for the colocalization analysis.
-     \return      Which channels to use in the colocalization analysis.
-    */
+    /**
+     * Gets the channel choice for the colocalization analysis.
+     * @return array Which channels to use in the colocalization analysis.
+     */
     private function getColocChannels( ) {
         $colocChannels = $this->analysisSetting->parameter('ColocChannel')->value();
         
@@ -2051,10 +2063,10 @@ class HuygensTemplate {
         return array_filter($colocChannels, 'strlen');
 }
 
-    /*!
-     \brief       Gets the value of the choice 'Colocalization Coefficients'.
-     \return      Which colocalization coefficients should be calculated.
-    */
+    /**
+     * Gets the value of the choice 'Colocalization Coefficients'.
+     * @return string Which colocalization coefficients should be calculated.
+     */
     private function getColocCoefficients( ) 
     {
         $colocCoefficients = "";
@@ -2066,20 +2078,20 @@ class HuygensTemplate {
 
         return $colocCoefficients;
     }
-    
-    /*!
-     \brief       Gets the value of the choice 'Colocalization Map'.
-     \return      Which colocalization map should be created.
-    */
+
+    /**
+     * Gets the value of the choice 'Colocalization Map'.
+     * @return string Which colocalization map should be created.
+     */
     private function getColocMap( ) 
     {    
         return $this->analysisSetting->parameter('ColocMap')->value();
     }
 
-    /*!
-     \brief       Gets the colocalization threshold mode.
-     \return      The colocalization threshold mode.
-    */
+    /**
+     * Gets the colocalization threshold mode.
+     * @return string The colocalization threshold mode.
+     */
     private function getColocThreshMode( ) {
         $bgParam = $this->analysisSetting->parameter("ColocThreshold");
         $bgValue = $bgParam->value();
@@ -2091,11 +2103,12 @@ class HuygensTemplate {
         }
     }
 
-    /*!
-     \brief       Gets the coloc background (threshold) value. One channel.
-     \param       $channel A channel
-     \return      The colocalization background (threshold) value.
-    */
+    /**
+     * Gets the coloc background (threshold) value. One channel.
+     * @param int $channel A channel
+     * @return int The colocalization background (threshold) value.
+     * @todo Even in case of error, this method should return something!
+     */
     private function getColocThreshValue($channel) {
         if ($this->getColocThreshMode() == "auto") {
             return 0.0;
@@ -2112,13 +2125,13 @@ class HuygensTemplate {
     
      /* --------------------- Histogram tasks ---------------------------- */
 
-     /*!
-     \brief       Gets options for the 'histogram' task.
-     \param       $chanR A channel number acting as red channel.
-     \param       $chanG A channel number acting as green channel.
-     \param       $runCnt The number of histogram tasks
-     \return      Tcl list with the 'histogram' task and its options.
-    */
+    /**
+     * Gets options for the 'histogram' task.
+     * @param int $chanR A channel number acting as red channel.
+     * @param int $chanG A channel number acting as green channel.
+     * @param int $runCnt The number of histogram tasks
+     * @return string Tcl list with the 'histogram' task and its options.
+     */
     private function getTaskDescrHistogram($chanR, $chanG, $runCnt) {
 
         $taskDescr = "";
@@ -2159,12 +2172,12 @@ class HuygensTemplate {
 
     /* ------------------------ Thumbnail tasks------------------------------- */
 
-    /*!
-     \brief       Gets options for each of the thumbnail tasks.
-     \param       $taskKey  A thumbnail type of task 
-     \param       $thumbID  The number of this thumbnail task.
-     \return      Tcl-compliant list with the thumbnail generation details.
-    */
+    /**
+     * Gets options for each of the thumbnail tasks.
+     * @param string $taskKey A thumbnail type of task
+     * @param int $thumbID The number of this thumbnail task.
+     * @return string Tcl-compliant list with the thumbnail generation details.
+     */
     private function getThumbnailTaskDescr($taskKey,$thumbID) {
 
         /* Get the Huygens task name of the thumbnail task */
@@ -2212,10 +2225,10 @@ class HuygensTemplate {
         return $taskDescr;
     }
 
-    /*!
-     \brief      Gets the destination file name of the thumbnail.
-     \return     A name for the thumbnail file.
-    */
+    /**
+     * Gets the destination file name of the thumbnail.
+     * @return string A name for the thumbnail file.
+     */
     private function getThumbnailName( ) {
 
         $destFile = $this->getThumbBaseName();
@@ -2275,11 +2288,11 @@ class HuygensTemplate {
         return $destFile;
     }
 
-    /*!
-     \brief       Gets the subimage name between parenthesis as suffix
-     \param       $subImg Whether or not a sub image is being dealt with
-     \return      The image suffix
-    */
+    /**
+     * Gets the subimage name between parenthesis as suffix
+     * @param  string $subImg Whether or not a sub image is being dealt with
+     * @return string The image suffix
+     */
     private function getSubImageSuffix($subImg) {
         if (isset($this->subImage) && $subImg != null) {
             $suffix = " (";
@@ -2293,10 +2306,10 @@ class HuygensTemplate {
 
     /* ----------------------------- Utilities ------------------------------- */
 
-    /*!
-     \brief       Gets the environment export format option
-     \return      Tcl-complaint nested list with the export format details
-    */
+    /**
+     * Gets the environment export format option.
+     * @return string Tcl-complaint nested list with the export format details
+     */
     private function getExportFormat( ) {
 
         $exportFormat = "";
@@ -2321,9 +2334,9 @@ class HuygensTemplate {
         return $this->string2tcllist($exportFormat);
     }
 
-    /*!
-     \brief       Gets the basic name that all thumbnails share, based on job id.
-     \return      The thumbnail basic name.
+    /**
+     * Gets the basic name that all thumbnails share, based on job id.
+     * @return string The thumbnail basic name.
      */
     private function getThumbBaseName( ) {
         $basename = basename($this->destImage);
@@ -2332,11 +2345,11 @@ class HuygensTemplate {
         return $matches[2] . "_" . $matches[3] . "." . $matches[4];
     }
 
-    /*!
-     \brief       Gets the parameter confidence level for all channels.
-     \param       $paramName The parameter name.
-     \return      The confidence level. 
-    */
+    /**
+     * Gets the parameter confidence level for all channels.
+     * @param string $paramName The parameter name.
+     * @return string The confidence level.
+     */
     private function getParameterConfidence($paramName) {
 
         switch ( $paramName ) {
@@ -2391,13 +2404,13 @@ class HuygensTemplate {
         return $paramConf;
     }
 
-    /*!
-     \brief      Gets the confidence level of one parameter and one channel.
-     \param      $parameter The parameter name
-     \param      $channel   The channel number
-     \return     'noMetaData' is the user entered a value for the parameter,
-     \return     'default' otherwise.
-    */
+    /**
+     * Gets the confidence level of one parameter and one channel.
+     * @param string $parameter The parameter name
+     * @param int $channel The channel number
+     * @return string 'noMetaData' if the user entered a value for the parameter,
+     * 'default' otherwise.
+     */
     private function getConfidenceLevel($parameter,$channel) {
 
         /* Parameter not set by the user, should be read from the metadata. */
@@ -2418,13 +2431,13 @@ class HuygensTemplate {
         return "noMetaData";
     }
 
-    /*!
-     \brief       Gets the value and confidence level of specific job parameters.
-     \param       $paramName The name of the parameter.
-     \param       $default   A default value for the parameter.
-     \return      A Tcl-compliant list with values and confidence levels.
-    */
-    private function getParameter($paramName,$default=null) {
+    /**
+     * Gets the value and confidence level of specific job parameters.
+     * @param string $paramName The name of the parameter.
+     * @param string $default A default value for the parameter.
+     * @return string A Tcl-compliant list with values and confidence levels.
+     */
+    private function getParameter($paramName, $default=null) {
 
         /* Start by adding the parameter name */
         $paramList = " " . $paramName . " ";
@@ -2485,12 +2498,12 @@ class HuygensTemplate {
         return $paramList;
     }
 
-    /*!
-     \brief      Gets the value of specific parameters.
-     \param      $paramName  The parameter name
-     \param      $channel    A channel number
-     \return     The parameter value when existing, '*' otherwise.
-    */
+    /**
+     * Gets the value of specific parameters.
+     * @param string $paramName The parameter name
+     * @param int $channel A channel number
+     * @return string|int|float The parameter value when existing, '*' otherwise.
+     */
     private function getParameterValue($paramName,$channel) {
         switch ( $paramName ) {
         case 'micr':
@@ -2586,13 +2599,15 @@ class HuygensTemplate {
         return $parameterValue;
     }
 
-    /*!
-     \brief       Gets the Huygens task name of a task.
-     \brief       Notice that integers often need to be appended to the names.
-     \param       $key   A task array key
-     \param       $task  A task compliant with the Huygens template task names
-     \return      The task name (includes channel number, preview number, etc.)
-    */
+    /**
+     * Gets the Huygens task name of a task.
+     *
+     * Notice that integers often need to be appended to the names.
+     *
+     * @param string $key A task array key
+     * @param string $task A task compliant with the Huygens template task names
+     * @return string The task name (includes channel number, preview number, etc.)
+     */
     private function getTaskName($key,$task) {
         switch ($task) {
         case 'imgOpen':
@@ -2624,10 +2639,11 @@ class HuygensTemplate {
         return $task;            
     }
 
-    /*!
-      \brief
-      \return
-    */
+    /**
+     * Gets the Huygens name for a chromatic task.
+     * @return string Task name.
+     * @todo Fix the documentation of this method!
+     */
     private function getNameTaskChromatic($task) {
         
         $chromaticTasks = "";
@@ -2645,10 +2661,10 @@ class HuygensTemplate {
         return trim($chromaticTasks);
     }
 
-    /*!
-     \brief       Gets the Huygens deconvolution task names of every channel
-     \return      The Huygens deconvolution task names
-    */
+    /**
+     * Gets the Huygens deconvolution task names of every channel
+     * @return string The Huygens deconvolution task names
+     */
     private function getNameTaskAlgorithm( ) {
         $chanCnt = $this->getChanCnt();
         $algorithms = "";
@@ -2658,10 +2674,10 @@ class HuygensTemplate {
         return trim($algorithms);
     }
 
-    /*!
-     \brief       Gets the Huygens task name of a task run every two channels.
-     \param       $key A task array key
-     \return      The Huygens task name.
+    /**
+     * Gets the Huygens task name of a task run every two channels.
+     * @param string $key A task array key
+     * @return string The Huygens task name.
      */
     private function getNameTaskMultiChan($task) {
         
@@ -2680,13 +2696,13 @@ class HuygensTemplate {
         
         return trim($tasks);
     }
-    
-    /*!
-     \brief       Gets the Huygens task name of a thumbnail task
-     \param       $key   A task array key
-     \param       $task  A task compliant with the Huygens template task names
-     \return      The Huygens preview task name
-    */
+
+    /**
+     * Gets the Huygens task name of a thumbnail task
+     * @param string $key A task array key
+     * @param string $task A task compliant with the Huygens template task names
+     * @return string The Huygens preview task name
+     */
     private function getNameTaskPreviewGen($key,$task) {
         global $useThumbnails;
         global $saveSfpPreviews;
@@ -2714,11 +2730,11 @@ class HuygensTemplate {
         return $task;
     }
 
-    /*!
-     \brief   Gets the number of colocalization runs as a result of combining
-              the choice of channels for colocalization analysis.
-     \return  The number of colocalization runs.
-    */
+    /**
+     * Gets the number of colocalization runs as a result of combining
+     * the choice of channels for colocalization analysis.
+     * @return int The number of colocalization runs.
+     */
     private function getNumberColocRuns ( ) {
 
         $colocRuns = 0;
@@ -2735,10 +2751,11 @@ class HuygensTemplate {
         return $colocRuns;
     }
 
-    /*!
-     \brief       Checks whether a JPEG can be made from the image.
-     \param       $image The image to be checked.
-    */
+    /**
+     * Checks whether a JPEG can be made from the image.
+     * @param string $image The image to be checked.
+     * @return void
+     */
     private function isEligibleForSlicers($image) {
         global $maxComparisonSize;
 
@@ -2798,10 +2815,10 @@ class HuygensTemplate {
         }
     }
 
-    /*
-     \brief       Gets the open image series mode for time series.
-     \return      The series mode: whether auto or off.
-    */
+    /**
+     * Gets the open image series mode for time series.
+     * @return string The series mode: whether auto or off.
+     */
     private function getSeriesMode( ) {
 
         if ($this->jobDescription->autoseries()) {
@@ -2813,10 +2830,10 @@ class HuygensTemplate {
         return $seriesMode;
     }
 
-    /*!
-     \brief       Whether or not an image has sub images. 
-     \return      Boolean 
-    */
+    /**
+     * Whether or not an image has sub images.
+     * @return bool True if the image has sub images, false otherwise.
+     */
     private function hasSubImage( ) {
         if (isset($this->subImage)) {
             return true;
@@ -2825,20 +2842,20 @@ class HuygensTemplate {
         }
     }
 
-    /*!
-     \brief       Gets the current date in format: Wed Feb 02 16:02:11 CET 2011
-     \return      The date
-    */
+    /**
+     * Gets the current date in format: Wed Feb 02 16:02:11 CET 2011
+     * @return string The date
+     */
     private function getTemplateDate( ) {
         $today = date("D M j G:i:s T Y");  
         $today = $this->string2tcllist($today);
         return $today;
     }
 
-    /*!
-     \brief       Gets the template name as batch_2011-02-02_16-02-08
-     \return      The template name
-    */
+    /**
+     * Gets the template name as batch_2011-02-02_16-02-08
+     * @return string The template name.
+     */
     private function getTemplateName( ) {
         $time = date('h-i-s');  
         $today = date('Y-m-d');  
@@ -2846,10 +2863,10 @@ class HuygensTemplate {
         return $templateName;
     }
 
-    /*!
-     \brief       Gets value for the multidir export format option.
-     \return      A boolean with the multidir option value.
-    */
+    /**
+     * Gets value for the multidir export format option.
+     * @return bool A boolean with the multidir option value.
+     */
     private function getMultiDirOpt( ) {
         $outputType = $this->getOutputFileType();
 
@@ -2860,38 +2877,38 @@ class HuygensTemplate {
         }
     }
 
-    /*!
-     \brief       Gets the number of channels selected by the user.
-     \return      Number of channels.
-    */
+    /**
+     * Gets the number of channels selected by the user.
+     * @return int Number of channels.
+     */
     private function getChanCnt( ) {
         return $this->microSetting->numberOfChannels();
     }
 
-    /*!
-     \brief       Wraps a string between curly braces to turn it into a Tcl list.
-     \param       $string A string
-     \return      A Tcl list.
-    */
+    /**
+     * Wraps a string between curly braces to turn it into a Tcl list.
+     * @param string $string A string
+     * @return string A Tcl list.
+     */
     private function string2tcllist($string) {
         $tcllist = trim($string);
         $tcllist = "{{$tcllist}}";
         return $tcllist;
     }
 
-    /*!
-     \brief       Removes the wrapping of a Tcl list to leave just a string.
-     \param       $tcllist A string acting as Tcl list
-     \return      A string.
-    */
+    /**
+     * Removes the wrapping of a Tcl list to leave just a string.
+     * @param string $tcllist A string acting as Tcl list
+     * @return string A string.
+     */
     private function tcllist2string($tcllist) {
         $string = str_replace("{","",$tcllist);
         $string = str_replace("}","",$string);
         return $string;
     }
 
-    /*!
-     \brief       Sets the name of the source image with subimages, if any.
+    /**
+     * Sets the name of the source image with subimages, if any.
     */
     private function setSrcImage( ) {
         $this->srcImage = $this->jobDescription->sourceImageName();
@@ -2905,36 +2922,36 @@ class HuygensTemplate {
         }
     }
 
-    /*!
-     \brief       Gets the directory of the source image.
-     \return      A file path.
-    */
+    /**
+     * Gets the directory of the source image.
+     * @return string A file path.
+     */
     private function getSrcDir( ) {
         return dirname($this->srcImage);
     }
 
-    /*!
-     \brief       Sets the name of the destination image.
-    */
+    /**
+     * Sets the name of the destination image.
+     */
     private function setDestImage ( ) {
         $this->destImage = $this->jobDescription->destinationImageFullName();
         $fileType = $this->getOutputFileExtension();
         $this->destImage = $this->destImage.".".$fileType;
     }
 
-    /*!
-     \brief      Gets a basic name for the deconvolved image.
-     \return     The image's basic name.
-    */
+    /**
+     * Gets a basic name for the deconvolved image.
+     * @return string The image's basic name.
+     */
     private function getDestImageBaseName( ) {
         $destInfo = pathinfo($this->destImage);
         return basename($this->destImage,'.'.$destInfo['extension']);
     }
 
-    /*!
-     \brief      Gets x, y, z, t and channel dimensions.
-     \return     An array with X,Y,Z,T,C dimensions.
-    */
+    /**
+     * Gets x, y, z, t and channel dimensions.
+     * @return array An array with X,Y,Z,T,C dimensions.
+     */
     private function getImageDimensions($image) {
 
         /* Get file path, name and time series option */
@@ -2948,34 +2965,31 @@ class HuygensTemplate {
         return askHuCore( "reportImageDimensions", $opt );
     }
 
-    /*!
-     \brief       Gets the directory of the destination image.
-     \return      A file path.
-    */
+    /**
+     * Gets the directory of the destination image.
+     * @return string A file path.
+     */
     private function getDestDir( ) {
         return dirname($this->destImage);
     }
 
-    /*!
-     \brief       Gets the file type of the destination image.
-     \return      A file type: whether imaris, ome, etc.
-    */
+    /**
+     * Gets the file type of the destination image.
+     * @return string A file type: whether imaris, ome, etc.
+     */
     private function getOutputFileType( ) {
         $outFileFormat = $this->deconSetting->parameter('OutputFileFormat');
         return $outFileFormat->translatedValue();
     }
 
-    /*!
-     \brief       Gets the file extension of the destination image.
-     \return      A file extension: whether ims, tif, etc.
-    */
+    /**
+     * Gets the file extension of the destination image.
+     * @return string A file extension: whether ims, tif, etc.
+     */
     private function getOutputFileExtension( ) {
         $outFileFormat = $this->deconSetting->parameter('OutputFileFormat');
         return $outFileFormat->extension();
     }
 
     /* ----------------------------------------------------------------------- */
-}
-
-
-?>
+};

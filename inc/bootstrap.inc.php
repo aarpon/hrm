@@ -4,5 +4,6 @@
 require_once dirname(__FILE__) . '/../vendor/autoload.php';
 
 // Load configuration
-require_once dirname(__FILE__) . '/../inc/hrm_config.inc.php';
+require_once dirname(__FILE__) . '/hrm_config.inc.php';
 
+// @todo Set up Monolog for logging

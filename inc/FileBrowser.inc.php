@@ -1,9 +1,19 @@
 <?php
-// This file is part of the Huygens Remote Manager
-// Copyright and license notice: see license.txt
+/**
+ * FileBrowser
+ *
+ * @package hrm
+ *
+ * This file is part of the Huygens Remote Manager
+ * Copyright and license notice: see license.txt
+ */
 
-/*!
-  \brief Image file browser
+namespace hrm;
+
+require_once dirname(__FILE__) . '/bootstrap.inc.php';
+
+/**
+  Image file browser
 
   This file is used to generate an image file browser in certain HRM tools,
   like in estimate_snr_from_image.php or file_management.php. When a file
@@ -11,21 +21,17 @@
   this can not be so easily used. This is an interface to the Fileserver.
 */
 
-use hrm\Nav;
-
-require_once dirname(__FILE__) . '/bootstrap.inc.php';
-
 require_once( "inc/Util.inc.php" );
 require_once( "inc/OmeroConnection.inc.php");
 
 
-/*!
-  \brief  Generates basic buttons for the image file browser
-
-  This function generates basic buttons depending on what the file browser
-  needs. This is specified with the input parameter $type.
-
-  \param  $type   One of 'download', 'upload', 'delete', or 'update'.
+/**
+ * Generates basic buttons for the image file browser
+ *
+ * This function generates basic buttons depending on what the file browser
+ * needs. This is specified with the input parameter $type.
+ * @param string $type One of 'download', 'upload', 'delete', or 'update'.
+ * @return string HTML code to be displayed in the page.
  */
 function fileButton($type) {
 
