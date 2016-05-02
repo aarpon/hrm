@@ -91,19 +91,19 @@ class Mail
 
         // Check for completeness
         if ($this->sender == "") {
-            report("Mail could not be sent because no sender was specified!", 1);
+            Log::error("Mail could not be sent because no sender was specified!");
             return false;
         }
         if ($this->receiver == "") {
-            report("Mail could not be sent because no receiver was specified!", 1);
+            Log::error("Mail could not be sent because no receiver was specified!");
             return false;
         }
         if ($this->subject == "") {
-            report("Mail could not be sent because no subject was specified!", 1);
+            Log::error("Mail could not be sent because no subject was specified!");
             return false;
         }
         if ($this->message == "") {
-            report("Mail could not be sent because no message was specified!", 1);
+            Log::error("Mail could not be sent because no message was specified!");
             return false;
         }
 
@@ -117,10 +117,10 @@ class Mail
         // if something is wrong with the configuration.
         set_time_limit(10);
         if (mail($this->receiver, $this->subject, $this->message, $header, $params)) {
-            report("Mail '" . $this->subject . "' sent to " . $this->receiver, 2);
+            Log::info("Mail '" . $this->subject . "' sent to " . $this->receiver);
             return true;
         } else {
-            report("Could not send mail '" . $this->subject . "' to " . $this->receiver, 1);
+            Log::error("Could not send mail '" . $this->subject . "' to " . $this->receiver);
             return false;
         }
 
