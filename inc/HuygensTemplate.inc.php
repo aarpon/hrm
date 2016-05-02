@@ -10,9 +10,9 @@
 
 namespace hrm;
 
-require_once("user/User.inc.php");
-require_once( "JobDescription.inc.php" );
-require_once( "Fileserver.inc.php" );
+use JobDescription;
+
+require_once dirname(__FILE__) . '/bootstrap.inc.php';
 
 /**
  * class  HuygensTemplate
@@ -1258,10 +1258,13 @@ class HuygensTemplate {
 
     /**
      * Gets options for the thumbnail generation task.
+     * @todo Document input arguments!
+     * @param $thumbType
+     * @param $thumbID
      * @return string Tcl-compliant list with the thumbnail options.
      * @todo Set thumbtypes in an array at initialization.
      */
-    private function getImgTaskDescrThumbnail($thumbType,$thumbID) {
+    private function getImgTaskDescrThumbnail($thumbType, $thumbID) {
 
         if (preg_match("/Raw/i",$thumbType)) {
             $this->thumbFrom = "raw";
@@ -1451,6 +1454,8 @@ class HuygensTemplate {
     /**
      * Gets the STED depletion mode. One channel.
      * @param int $channel A channel
+     * @param bool $parseConfocals True if the major microscope mode is confocal,
+     * false otherwise.
      * @return string The STED depletion mode.
      */
     private function getStedMode($channel, $parseConfocals = False) {
@@ -1850,6 +1855,7 @@ class HuygensTemplate {
                 $deconSetting->parameter("BackgroundOffsetPercent")->value();
             return $bgRate[$channel];
         } else {
+            // @todo Return something usable!
             error_log("Unknown background mode for channel $channel.");
             return;
         }
@@ -1929,9 +1935,13 @@ class HuygensTemplate {
 
     /**
      * Gets the deconvolution algorithm.
+     * @param int $chan Channel number. Currently ignored.
+     * @todo Use channel index.
      * @return string Deconvolution algorithm.
      */
-    private function getAlgorithm( ) {
+    private function getAlgorithm($chan = -1) {
+        // The argument $chan is currently ignored. Later, it will be possible
+        // to assign a different restoration algorithm to different channels!
         return $this->deconSetting->parameter('DeconvolutionAlgorithm')->value();
     }
 
@@ -2183,6 +2193,7 @@ class HuygensTemplate {
         /* Get the Huygens task name of the thumbnail task */
         $task = $this->getTaskName($taskKey,$thumbID);
         if ($task == "") {
+            // @todo Return something usable!
             return;
         }        
         
@@ -2398,6 +2409,7 @@ class HuygensTemplate {
             $paramConf = $this->getConfidenceLevel($paramName,0);
             break;
         default:
+            // @todo Return something usable in this case!
             error_log("Parameter $paramName not yet implemented");
         }
 
@@ -2641,6 +2653,8 @@ class HuygensTemplate {
 
     /**
      * Gets the Huygens name for a chromatic task.
+     * @todo Document this input argument!
+     * @param ?? $task ??
      * @return string Task name.
      * @todo Fix the documentation of this method!
      */
@@ -2709,6 +2723,7 @@ class HuygensTemplate {
         global $movieMaxSize;
 
         if (!$useThumbnails) {
+            // @todo Return something usable!
             return;
         }
  
@@ -2918,7 +2933,7 @@ class HuygensTemplate {
         if ( preg_match("/^(.*\.(lif|czi))\s\((.*)\)/i",
                         $this->srcImage, $match) ) {
             $this->srcImage = $match[1];
-            $this->subImage = $match[3];
+            $this->subImage = $match[3]; // @todo Is this correct?
         }
     }
 
@@ -2950,6 +2965,8 @@ class HuygensTemplate {
 
     /**
      * Gets x, y, z, t and channel dimensions.
+     * @todo Document input argument!
+     * @param ?? $image ??
      * @return array An array with X,Y,Z,T,C dimensions.
      */
     private function getImageDimensions($image) {
