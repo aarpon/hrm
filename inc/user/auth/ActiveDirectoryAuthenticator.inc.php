@@ -1,11 +1,19 @@
 <?php
-// This file is part of the Huygens Remote Manager
-// Copyright and license notice: see license.txt
+/**
+ * ActiveDirectoryAuthenticator
+ *
+ * @package hrm
+ * @subpackage user\auth
+ *
+ * This file is part of the Huygens Remote Manager
+ * Copyright and license notice: see license.txt
+ */
 
 namespace hrm\user\auth;
 
 use adLDAP\adLDAP;
 use adLDAP\adLDAPException;
+use hrm\Log;
 
 require_once dirname(__FILE__) . '/../../bootstrap.inc.php';
 
@@ -105,11 +113,11 @@ class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
 
         // Check group filters
         if ($VALID_GROUPS === null) {
-            report('VALID_GROUPS not set for Active Directory authentication!', 0);
+            Log::warning('VALID_GROUPS not set for Active Directory authentication!');
             $VALID_GROUPS = array();
         }
         if ($AUTHORIZED_GROUPS === null) {
-            report('AUTHORIZED_GROUPS not set for Active Directory authentication!', 0);
+            Log::warning('AUTHORIZED_GROUPS not set for Active Directory authentication!');
             $AUTHORIZED_GROUPS = array();
         }
         if (count($VALID_GROUPS) == 0 && count($AUTHORIZED_GROUPS) > 0) {
@@ -196,9 +204,9 @@ class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
         // Test for intersection
         $b = count(array_intersect($userGroups, $this->m_AuthorizedGroups)) > 0;
         if ($b === true) {
-            report("User $username: group authentication succeeded.", 0);
+            Log::info("User $username: group authentication succeeded.");
         } else {
-            report("User $username: user rejected by failed group authentication.", 0);
+            Log::info("User $username: user rejected by failed group authentication.");
         }
         return $b;
     }
@@ -224,10 +232,10 @@ class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
 
         $this->m_AdLDAP->close();
         if (!$info) {
-            report('No email address found for username "' . $username . '"', 2);
+            Log::warning('No email address found for username "' . $username . '"');
             return "";
         }
-        report('Email for username "' . $username . '": ' . $info->mail, 2);
+        Log::info('Email for username "' . $username . '": ' . $info->mail);
         return $info->mail;
     }
 
@@ -253,7 +261,7 @@ class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
 
         // If no groups found, return ""
         if (!$userGroups) {
-            report('No groups found for username "' . $username . '"', 0);
+            Log::info('No groups found for username "' . $username . '"');
             return "";
         }
 
@@ -272,13 +280,13 @@ class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
 
         // Now return the first entry
         if (count($userGroups) == 0) {
-            report("Group for username $username not found in the list of valid groups!", 0);
+            Log::info("Group for username $username not found in the list of valid groups!");
             $group = "";
         } else {
             $group = $userGroups[0];
         }
 
-        report('Group for username "' . $username . '": ' . $group, 2);
+        Log::info('Group for username "' . $username . '": ' . $group);
         return $group;
 
     }

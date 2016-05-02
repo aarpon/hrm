@@ -2,6 +2,8 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
+use hrm\Fileserver;
+use hrm\Log;
 use hrm\Nav;
 use hrm\user\mngm\UserManagerFactory;
 use hrm\Validator;
@@ -10,8 +12,6 @@ use hrm\user\User;
 use hrm\System;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.inc.php';
-
-require_once(dirname(__FILE__) . "/inc/Fileserver.inc.php");
 
 global $email_admin;
 global $authenticateAgainst;
@@ -91,7 +91,7 @@ if (isset($_POST['password']) && isset($_POST['username'])) {
 				$_SESSION['user'] = $tentativeUser;
 
                 // Make sure that the user source and destination folders exist
-                $fileServer = new FileServer($tentativeUser->name());
+                $fileServer = new Fileserver($tentativeUser->name());
                 if (! $fileServer->isReachable()) {
                     $userManager->createUserFolders($tentativeUser->name());
                 }
@@ -100,8 +100,8 @@ if (isset($_POST['password']) && isset($_POST['username'])) {
                 $userManager->storeUser($_SESSION['user']);
 
                 // Log successful logon
-                report("User " . $_SESSION['user']->name() . " (" .
-                    $_SESSION['user']->emailAddress() .") logged on.", 1);
+                Log::info("User " . $_SESSION['user']->name() . " (" .
+                    $_SESSION['user']->emailAddress() .") logged on.");
 
                 // If the database is not up-to-date go straight to the
                 // database update page

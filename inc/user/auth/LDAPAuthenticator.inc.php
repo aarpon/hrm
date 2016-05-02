@@ -1,8 +1,17 @@
 <?php
-// This file is part of the Huygens Remote Manager
-// Copyright and license notice: see license.txt
+/**
+ * LDAPAuthenticator
+ *
+ * @package hrm
+ * @subpackage user\auth
+ *
+ * This file is part of the Huygens Remote Manager
+ * Copyright and license notice: see license.txt
+ */
 
 namespace hrm\user\auth;
+
+use hrm\Log;
 
 require_once dirname(__FILE__) . '/../../bootstrap.inc.php';
 
@@ -137,11 +146,11 @@ class LDAPAuthenticator extends AbstractAuthenticator {
 
         // Check group filters
         if ($ldap_valid_groups === null) {
-            report('ldap_valid_groups not set for LDAP authentication!', 0);
+            Log::warning('ldap_valid_groups not set for LDAP authentication!');
             $ldap_valid_groups = array();
         }
         if ($ldap_authorized_groups === null) {
-            report('ldap_authorized_groups not set for LDAP authentication!', 0);
+            Log::warning('ldap_authorized_groups not set for LDAP authentication!');
             $ldap_authorized_groups = array();
         }
         if (count($ldap_valid_groups) == 0 && count($ldap_authorized_groups) > 0) {
@@ -170,18 +179,17 @@ class LDAPAuthenticator extends AbstractAuthenticator {
             // Set protocol (and check)
             if (!ldap_set_option($this->m_Connection,
                 LDAP_OPT_PROTOCOL_VERSION, 3)) {
-                report("[LDAP] ERROR: Could not set LDAP protocol version to 3.",
-                    0);
+                Log::error("[LDAP] ERROR: Could not set LDAP protocol version to 3.");
             }
 
             if ($this->m_LDAP_Use_TLS) {
                 if (!ldap_start_tls($ds)) {
-                    report("[LDAP] ERROR: Could not activate TLS.", 0);
+                    Log::error("[LDAP] ERROR: Could not activate TLS.");
                 }
             }
 
         } else {
-            report("[LDAP] ERROR: Could not connect to $this->m_LDAP_Host.", 0);
+            Log::error("[LDAP] ERROR: Could not connect to $this->m_LDAP_Host.");
         }
     }
 
@@ -231,7 +239,7 @@ class LDAPAuthenticator extends AbstractAuthenticator {
     public function authenticate($uid, $userPassword)
     {
         if (!$this->isConnected()) {
-            report("[LDAP] ERROR: Authenticate -- not connected!", 0);
+            Log::error("[LDAP] ERROR: Authenticate -- not connected!");
             return false;
         }
 
@@ -239,7 +247,7 @@ class LDAPAuthenticator extends AbstractAuthenticator {
         // binding succeeds!
         // Therefore we check in advance that the password is NOT empty!
         if (empty($userPassword)) {
-            report("[LDAP] ERROR: Authenticate: empty manager password!", 0);
+            Log::error("[LDAP] ERROR: Authenticate: empty manager password!");
             return false;
         }
 
@@ -263,12 +271,12 @@ class LDAPAuthenticator extends AbstractAuthenticator {
         $sr = @ldap_search(
             $this->m_Connection, $searchbase, $filter, array('uid', 'memberof'));
         if (!$sr) {
-            report("[LDAP] ERROR: Authenticate -- search failed! " .
-                "Search base: \"$searchbase\"", 0);
+            Log::error("[LDAP] ERROR: Authenticate -- search failed! " .
+                "Search base: \"$searchbase\"");
             return false;
         }
         if (@ldap_count_entries($this->m_Connection, $sr) != 1) {
-            report("[LDAP] ERROR: Authenticate -- user not found!", 0);
+            Log::error("[LDAP] ERROR: Authenticate -- user not found!");
             return false;
         }
 
@@ -296,14 +304,14 @@ class LDAPAuthenticator extends AbstractAuthenticator {
             for ($i = 0; $i < count($groups); $i++) {
                 for ($j = 0; $j < count($this->m_LDAP_Authorized_Groups); $j++) {
                     if (strpos($groups[$i], $this->m_LDAP_Authorized_Groups[$j])) {
-                        report("User $uid: group authentication succeeded.", 0);
+                        Log::info("User $uid: group authentication succeeded.");
                         return true;
                     }
                 }
             }
 
             // Not found
-            report("User $uid: user rejected by failed group authentication.", 0);
+            Log::info("User $uid: user rejected by failed group authentication.");
             return false;
         }
         return false;
@@ -327,7 +335,7 @@ class LDAPAuthenticator extends AbstractAuthenticator {
         $sr = @ldap_search($this->m_Connection, $searchbase, $filter,
             array('uid', 'memberof'));
         if (!$sr) {
-            report("[LDAP] WARNING: Group -- no group information found!", 0);
+            Log::warning("[LDAP] WARNING: Group -- no group information found!");
             return "";
         }
 
@@ -412,8 +420,8 @@ class LDAPAuthenticator extends AbstractAuthenticator {
         }
 
         // If binding failed, we report
-        report("[LDAP] ERROR: Binding: binding failed! " .
-            "Search DN: \"$dn\"", 0);
+        Log::error("[LDAP] ERROR: Binding: binding failed! " .
+            "Search DN: \"$dn\"");
         return false;
     }
 

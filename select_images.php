@@ -2,6 +2,7 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
+use hrm\Fileserver;
 use hrm\Nav;
 use hrm\ParameterSetting;
 use hrm\user\User;
@@ -9,8 +10,6 @@ use hrm\System;
 
 
 require_once dirname(__FILE__) . '/inc/bootstrap.inc.php';
-
-require_once("./inc/Fileserver.inc.php");
 
 session_start();
 

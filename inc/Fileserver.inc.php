@@ -2,7 +2,7 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
-use hrm\DatabaseConnection;
+namespace hrm;
 
 require_once dirname(__FILE__) . '/bootstrap.inc.php';
 
