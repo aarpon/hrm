@@ -10,6 +10,7 @@
 namespace hrm;
 
 // Set up logging
+use Monolog\Formatter\LineFormatter;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 
@@ -57,13 +58,17 @@ class Log
                 break;
         }
 
+        // Initialize and configure Monolog::StreamHandler
+        $handler = new StreamHandler($logdir . '/' . $logfile, $level);
+        $formatter = new LineFormatter(null, null, false, true);
+        $handler->setFormatter($formatter);
+
         // Instantiate Monolog::Logger
         self::$monologger = new Logger('hrm');
-        self::$monologger ->pushHandler(
-            new StreamHandler(
-                $logdir . '/' . $logfile,
-                $level)
-        );
+        self::$monologger->pushHandler($handler);
+
+        // Log initialization
+        self::$monologger->addInfo("Initialized logging.");
     }
 
     /**
@@ -76,6 +81,8 @@ class Log
         if (is_null(self::$instance) && is_null(self::$monologger)) {
             self::$instance = new self();
         }
+
+        // Return the logger instance
         return self::$monologger;
     }
 
@@ -84,7 +91,7 @@ class Log
      * @param string $message Info message.
      */
     public static function info($message) {
-        self::getMonoLogger()->info($message);
+        self::getMonoLogger()->addInfo($message);
     }
 
     /**
@@ -92,7 +99,7 @@ class Log
      * @param string $message Warning message.
      */
     public static function warning($message) {
-        self::getMonoLogger()->warning($message);
+        self::getMonoLogger()->addWarning($message);
     }
 
     /**
@@ -101,6 +108,6 @@ class Log
      */
     public static function error($message)
     {
-        self::getMonoLogger()->error($message);
+        self::getMonoLogger()->addError($message);
     }
 }
