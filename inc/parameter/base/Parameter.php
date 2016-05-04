@@ -1,49 +1,63 @@
 <?php
-// This file is part of the Huygens Remote Manager
-// Copyright and license notice: see license.txt
+/**
+ * Parameter
+ *
+ * @package hrm
+ * @subpackage param
+ *
+ * This file is part of the Huygens Remote Manager
+ * Copyright and license notice: see license.txt
+ */
+
+namespace hrm\param;
 
 use hrm\DatabaseConnection;
 
-/*!
- \class Parameter
- \brief Base class for all Parameter types in the HRM
-*/
+require_once dirname(__FILE__) . '/../bootstrap.inc.php';
+
+
+/**
+ * Class Parameter
+ *
+ * (Abstract) base class for all Parameter types in the HRM.
+ */
 abstract class Parameter {
 
-    /*!
-        \var    PADSIZE
-        \brief  The pad size for the Parameter names
-    */
+    /**
+     * The pad size for the Parameter names.
+     * const int
+     */
     const PADSIZE      = 38;
 
-    /*!
-        \var    $name
-        \brief  Name of the parameter
-    */
+    /**
+     * Name of the parameter.
+     * @var string
+     */
     protected $name;
 
-    /*!
-        \var    $value
-        \brief  Value of the parameter (object)
-    */
+    /**
+     * Value of the parameter.
+     * @var mixed
+     */
     protected $value;
 
-    /*!
-        \var    $message
-        \brief  Error message in case the check on the Parameter values fails
-    */
+    /**
+     * Error message in case the check on the Parameter values fails.
+     * @var string
+     */
     protected $message;
 
-    /*!
-        \brief  $confidenceLevel
-        \param  Confidence level for the Parameter
-    */
+    /**
+     * Confidence level for the Parameter.
+     * @var string
+     */
     protected $confidenceLevel;
 
-    /*!
-        \brief  Protected constructor: creates an empty Parameter
-        \param  $name   Name of the new Parameter
-    */
+    /**
+     * Parameter constructor.
+     * @param string $name Name of the Parameter (it must match the Parameter
+     * class name)
+     */
     protected function __construct($name) {
         $this->name            = $name;
         $this->value           = null;
@@ -51,58 +65,57 @@ abstract class Parameter {
         $this->confidenceLevel = '';
     }
 
-    /*!
-        \brief  Checks whether the Parameter is valid
-        \return true if the Parameter is valid, false otherwise
-    */
+    /**
+     * Checks whether the Parameter is valid.
+     * @return bool True if the Parameter is valid, false otherwise.
+     */
     abstract public function check();
 
-    /*!
-        \brief  Returns the error message that was set by check()
-        \return error message
-    */
+    /**
+     * Returns the error message that was set by check()
+     * @return string
+     */
     public function message() {
         return $this->message;
     }
 
-    /*!
-        \brief  Returns the confidence level for the Parameter
-        \return Confidence level for the Parameter
-    */
+    /**
+     * Returns the confidence level for the Parameter.
+     * @return string Confidence level for the Parameter.
+     */
     public function confidenceLevel( ) {
         return $this->confidenceLevel;
     }
 
-    /*!
-        \brief  Sets the confidence level for the Parameter
-        \param  Confidence level for the Parameter
-    */
-    public function setConfidenceLevel( $confidenceLevel ) {
+    /**
+     * Sets the confidence level for the Parameter.
+     * @param string $confidenceLevel
+     */
+    public function setConfidenceLevel($confidenceLevel) {
         $this->confidenceLevel = $confidenceLevel;
     }
 
-    /*!
-        \brief  Checks whether the Parameter must have a (valid) value
-        \return true if the confidence level is lower than 'reported'.
-    */
+    /**
+     * Checks whether the Parameter must have a (valid) value.
+     * @return bool True if the confidence level is lower than 'reported',
+     * false otherwise.
+     */
     public function mustProvide( ) {
         return !( $this->confidenceLevel == "reported"
                   || $this->confidenceLevel == "verified"
                   || $this->confidenceLevel == "asIs" );
     }
 
-
-    /*!
-        \brief  Sets the Parameter value(s) to empty
-    */
+    /**
+     * Sets the Parameter value(s) to empty.
+     */
     public function reset( ) {
         $this->value = null;
     }
 
-    /*!
-        \brief  Checks whether the value is not set
-        \return true if the value is *not set* (i.e. null)
-    */
+    /**
+     * @return bool True if the value is *not set* (i.e. null), false otherwise.
+     */
     public function notSet( ) {
         if (is_array($this->value)) {
             foreach ($this->value as $value) {
@@ -115,197 +128,202 @@ abstract class Parameter {
         return($this->value == null);
     }
 
-    /*!
-        \brief  Returns the default value for the Parameters that have a default
-                value ot NULL for those that don't
-
-        This function should be <b>overloaded</b> by the subclasses
-
-        \return tyhe default value or NULL
-    */
+    /**
+     * Returns the default value for the Parameters that have a default
+     * value or NULL for those that don't.
+     *
+     * This function should be <b>overloaded</b> by the subclasses
+     *
+     * @return null
+     */
     public function defaultValue() {
         return NULL;
     }
 
-    /*!
-        \brief  Checks whether the Parameter is an Image Parameter
-
-        This function should be <b>overloaded</b> by the subclasses
-
-        \return true if the Parameter is an Image Parameter, false otherwise
+    /**
+     * Checks whether the Parameter is an Image Parameter.
+     *
+     * This function should be <b>overloaded</b> by the subclasses.
+     *
+     * @return bool True if the Parameter is an Image Parameter, false otherwise.
     */
     public function isForImage() {
         return False;
     }
 
-    /*!
-        \brief  Checks whether the Parameter is a Microscope Parameter
-
-        This function should be <b>overloaded</b> by the subclasses
-
-        \return true if the Parameter is a Microscope Parameter, false otherwise
-    */
+    /**
+     * Checks whether the Parameter is a Microscope Parameter.
+     *
+     * This function should be <b>overloaded</b> by the subclasses.
+     *
+     * @return bool True if the Parameter is a Microscope Parameter, false otherwise.
+     */
     public function isForMicroscope() {
         return False;
     }
 
-    /*!
-        \brief  Checks whether the Parameter is a Capture Parameter
-
-        This function should be <b>overloaded</b> by the subclasses
-
-        \return true if the Parameter is a Capture Parameter, false otherwise
-    */
+    /**
+     * Checks whether the Parameter is a Capture Parameter.
+     *
+     * This function should be <b>overloaded</b> by the subclasses.
+     *
+     * @return bool True if the Parameter is a Capture Parameter, false otherwise.
+     */
     public function isForCapture() {
         return False;
     }
 
-    /*!
-        \brief  Checks whether the Parameter is a Sted Parameter
-
-        This function should be <b>overloaded</b> by the subclasses
-
-        \return true if the Parameter is a Sted Parameter, false otherwise
-    */
+    /**
+     * Checks whether the Parameter is a Sted Parameter.
+     *
+     * This function should be <b>overloaded</b> by the subclasses.
+     *
+     * @return bool True if the Parameter is a Sted Parameter, false otherwise.
+     */
     public function isForSted() {
         return False;
     }
 
-    /*!
-        \brief  Checks whether the Parameter is a Spim Parameter
-
-        This function should be <b>overloaded</b> by the subclasses
-
-        \return true if the Parameter is a Spim Parameter, false otherwise
-    */
+    /**
+     * Checks whether the Parameter is a Spim Parameter.
+     *
+     * This function should be <b>overloaded</b> by the subclasses.
+     *
+     * @return bool True if the Parameter is a Spim Parameter, false otherwise.
+     */
     public function isForSpim() {
         return False;
     }
     
-    /*!
-        \brief  Checks whether the Parameter is a Variable Channel Parameter
-
-        This function should be <b>overloaded</b> by the subclasses
-
-        \return true if the Parameter is a Variable Channel, false otherwise
-    */
+    /**
+     * Checks whether the Parameter is a Variable Channel Parameter.
+     *
+     * This function should be <b>overloaded</b> by the subclasses.
+     *
+     * @return bool True if the Parameter is a Variable Channel Parameter,
+     * false otherwise.
+     */
     public function isVariableChannel() {
         return False;
     }
 
-    /*!
-        \brief  Checks whether the Parameter is a Correction Parameter
-
-        This function should be <b>overloaded</b> by the subclasses
-
-        \return true if the Parameter is a Correction Parameter, false otherwise
-    */
+    /**
+     * Checks whether the Parameter is a Correction Parameter.
+     *
+     * This function should be <b>overloaded</b> by the subclasses.
+     *
+     * @return bool True if the Parameter is a Correction Parameter,
+     * false otherwise.
+     */
     public function isForCorrection() {
         return False;
     }
 
-    /*!
-        \brief  Checks whether the Parameter is used for calculating the Pixel
-                Size from the CCD pixel size and the toal microscope magnification
+    /**
+     * Checks whether the Parameter is used for calculating the Pixel Size from
+     * the CCD pixel size and the total microscope magnification.
+     *
+     * This function should be <b>overloaded</b> by the subclasses.
+     *
+     * @return bool True if the Parameter is a Calculation Parameter,
+     * false otherwise.
+     */
 
-        This function should be <b>overloaded</b> by the subclasses
-
-        \return true if the Parameter is a Calculation Parameter, false otherwise
-    */
     public function isForPixelSizeCalculation() {
         return False;
     }
 
-    /*!
-        \brief  Checks whether the Parameter is a Task Parameter
-
-        This function should be <b>overloaded</b> by the subclasses
-
-        \return true if the Parameter is a Task Parameter, false otherwise
-    */
+    /**
+     * Checks whether the Parameter is a Task Parameter.
+     *
+     * This function should be <b>overloaded</b> by the subclasses.
+     *
+     * @return bool True if the Parameter is a Task Parameter,
+     * false otherwise.
+     */
     public function isTaskParameter() {
         return False;
     }
 
-    /*!
-        \brief  Returns the name of the Parameter
-        \return the name of the Parameter
-    */
+    /**
+     * Returns the name of the Parameter.
+     * @return string The name of the Parameter.
+     */
     public function name() {
         return $this->name;
     }
 
-    /*!
-        \brief  Returns the value of the Parameter
-        \return the value of the Parameter
-    */
+    /**
+     * Returns the value of the Parameter.
+     * @return mixed The value of the Parameter.
+     */
     public function value() {
         return $this->value;
     }
 
-    /*!
-        \brief  Returns the internal value of the Parameter
-
-        This function should be <b>overloaded</b> by the subclasses if the
-        internal and external representations differ.
-
-        \return the internal value of the Parameter
+    /**
+     * Returns the internal value of the Parameter.
+     *
+     * This function should be <b>overloaded</b> by the subclasses if the
+     * internal and external representations differ.
+     *
+     * @return mixed The internal value of the Parameter
     */
     public function internalValue() {
         return $this->value();
     }
 
-    /*!
-    \brief  Returns the possible values for the parameter.
-
-    This function should be <b>overloaded</b> by the subclasses if the
-    internal and external representations differ.
-
-    \return the possibles values of the Parameter in their internal
-            representation
-*/
+    /**
+     * Returns the possible values for the Parameter.
+     *
+     * This function should be <b>overloaded</b> by the subclasses if the
+     * internal and external representations differ.
+     *
+     * @return array The possibles values of the Parameter in their internal
+     * representation.
+     */
     public function possibleValues() {
         return null;
     }
 
-    /*!
-        \brief  Returns the possible values for the parameter in their
-                internal representation.
-
-        This function should be <b>overloaded</b> by the subclasses if the
-        internal and external representations differ.
-
-        \return the possibles values of the Parameter in their internal
-                representation
+    /**
+     * Returns the possible values for the Parameter in their internal
+     * representation.
+     *
+     * This function should be <b>overloaded</b> by the subclasses if the
+     * internal and external representations differ.
+     *
+     * @return array The possibles values of the Parameter in their internal
+     * representation.
     */
     public function internalPossibleValues() {
         return $this->possibleValues();
     }
 
-    /*!
-        \brief  Sets the value of the parameter
-        \param  $value  Value for the parameter
+    /**
+     * Sets the value of the Parameter
+     * @param mixed $value Value for the Parameter.
     */
     public function setValue($value) {
         $this->value = $value;
     }
 
-    /*!
-        \brief  Returns true if boolean
-
-        This function should be <b>overloaded</b> by the subclasses
-
-        \return always false for a base Parameter
+    /**
+     * Returns true if boolean.
+     *
+     * This function should be <b>overloaded</b> by the subclasses.
+     *
+     * @return bool always false for a base Parameter.
     */
     public function isBoolean() {
         return False;
     }
 
-    /*!
-        \brief  Returns the formatted Parameter name to be used with displayString()
-        \param  $name (Optional) If specified, overrides the Parameter name;
-                                 if not, the actual Parameter name is used
-        \return formatted Parameter name
+    /**
+     * Returns the formatted Parameter name to be used with displayString()
+     * @param string|null $name (Optional) If specified, overrides the Parameter
+     * name; if not, the actual Parameter name is used.
+     * @return string Formatted Parameter name.
     */
     protected function formattedName(  $name = NULL ) {
         if ( $name === NULL ) {
@@ -319,37 +337,39 @@ abstract class Parameter {
         return $result;
     }
 
-    /*!
-        \brief  Returns the string representation of the Parameter
-
-        Each Parameter that inherits from this function should reimplement it.
-        The function is not abstract since some children will need the
-        $numberOfChannels input parameter, while others won't.
-
-        \param  $numberOfChannels Number of channels (default 0)
-        \return string representation of the Parameter
+    /**
+     * Returns the string representation of the Parameter.
+     *
+     * Each Parameter that inherits from this function should reimplement it.
+     * The function is not abstract since some children will need the
+     * $numberOfChannels input parameter, while others won't.
+     *
+     * @param int $numberOfChannels Number of channels (default 0).
+     * @return string String representation of the Parameter.
     */
-    protected function displayString( $numberOfChannels = 0 ) {
+    protected function displayString($numberOfChannels = 0) {
         // Reimplement this!
+        return "";
     }
 
-    /*!
-        \brief  Returns the value of the parameter in a translated form that
-                is in the form that is used in the Tcl script.
-
-        By default the translated value is just the value, but this can be
-        changed in subclasses when neccessary.
-
-        \return the translated value
+    /**
+     * Returns the value of the Parameter in the translated form that is used
+     * in the Tcl script.
+     *
+     * By default the translated value is just the value, but this can be
+     * changed in subclasses when necessary.
+     *
+     * @return mixed The translated value.
     */
     public function translatedValue() {
         return $this->value();
     }
 
-    /*!
-        \brief  Returns the translated value for a given possible value
-        \param  $possibleValue  The possible value for which a translation is needed
-        \return Translated possible value
+    /**
+     * Returns the translated value for a given possible value.
+     * @param mixed $possibleValue The possible value for which a translation is
+     * needed.
+     * @return mixed Translated possible value.
     */
     public function translatedValueFor( $possibleValue ) {
         $db = new DatabaseConnection();
@@ -357,14 +377,15 @@ abstract class Parameter {
     }
 
 
-    /*!
-        \brief  Separates composed in using camel-case notation into individual words
-
-        This function takes an input such a 'PointSpreadFunction' and returns ' point spread function'
-        (notice the initial blank space!)
-
-        \param  $string  String to be converted
-        \return $output Converted string
+    /**
+     * Breaks composed Parameter names (using camel-case notation) into
+     * individual words.
+     *
+     * This function takes an input such a 'PointSpreadFunction' and returns
+     * ' point spread function' (notice the initial blank space!)
+     *
+     * @param string $string String to be processed.
+     * @return string $output Processed string.
     */
     protected final function decomposeCamelCaseString( $string ) {
 
@@ -379,10 +400,9 @@ abstract class Parameter {
         return ( str_replace( $uppercase, $lowercase, $string ) );
     }
 
-    /*!
-        \brief    Serialized, JSON-encoded Parameter.
-
-        \return JSON-encoded Parameter string.
+    /**
+     * Serialized, JSON-encoded Parameter.
+     * @return string JSON-encoded Parameter string.
     */
     public function getJsonData(){
         $var = get_object_vars($this);
@@ -400,533 +420,533 @@ abstract class Parameter {
     ============================================================================
 */
 
-/*!
- \class    ChoiceParameter
- \brief    Base class for all ChoiceParameter types
+///*!
+// \class    ChoiceParameter
+// \brief    Base class for all ChoiceParameter types
+//
+// The ChoiceParameter can assume a limited number of possible values.
+//*/
+//abstract class ChoiceParameter extends Parameter {
+//
+//    /*!
+//        \var    $possibleValues
+//        \brief  Possible values for the ChoiceParameter
+//    */
+//    protected $possibleValues;
+//
+//    /*!
+//        \brief  Protected constructor: creates an empty Parameter
+//        \param  $name   Name of the new Parameter
+//    */
+//    protected function __construct($name) {
+//        parent::__construct($name);
+//
+//        // Get and set the Parameter possible values
+//        $db = new DatabaseConnection;
+//        $values = $db->readPossibleValues($this);
+//        $this->possibleValues = $values;
+//
+//        // Get and set the Parameter default value
+//        $defaultValue = $this->defaultValue();
+//        if ($defaultValue !== NULL) {
+//            $this->value = $defaultValue;
+//        }
+//    }
+//
+//    /*!
+//        \brief  Returns the possible values for the Parameter
+//        \return the possible values
+//    */
+//    public function possibleValues() {
+//        return $this->possibleValues;
+//    }
+//
+//    /*!
+//        \brief  Returns the possible values for the Parameter as a
+//                comma-separated string
+//        \return the possible values as a comma-separated string
+//    */
+//    public function possibleValuesString() {
+//        $string = '';
+//        $values = $this->possibleValues();
+//        foreach ($values as $each) {
+//            $string = $string . $each;
+//            if (end($values) != $each) {
+//                $string = $string . ", ";
+//            }
+//        }
+//        return $string;
+//    }
+//
+//    /*!
+//        \brief  Checks whether the Parameter is valid
+//        \return true if the Parameter is valid, false otherwise
+//    */
+//    public function check( ) {
+//        $this->message = '';
+//        $result = in_array( $this->value, $this->possibleValues() );
+//        if ( $result == False ) {
+//            $this->message = 'Bad value ' . $this->value() . ' for ' . $this->name();
+//        }
+//        return $result;
+//    }
+//
+//    /*!
+//        \brief  Returns the string representation of the Parameter
+//        \param  $numberOfChannels Number of channels (default 0)
+//        \return string representation of the Parameter
+//    */
+//    public function displayString( $numberOfChannels = 0 ) {
+//        $result = $this->formattedName( );
+//        if ( $this->notSet() ) {
+//            $result = $result . "*not set*" . "\n";
+//        } else {
+//            $result = $result . $this->value . "\n";
+//        }
+//        return $result;
+//    }
+//
+//    /*!
+//        \brief  Returns the default value for the Parameters that have a default
+//                value ot NULL for those that don't
+//
+//        This function should be <b>overloaded</b> by the subclasses
+//
+//        \return tyhe default value or NULL
+//    */
+//    public function defaultValue() {
+//        $db = new DatabaseConnection;
+//        $name = $this->name( );
+//        $default = $db->defaultValue( $name );
+//        return ( $default );
+//    }
+//
+//}
 
- The ChoiceParameter can assume a limited number of possible values.
+/*
+    ============================================================================
 */
-abstract class ChoiceParameter extends Parameter {
-
-    /*!
-        \var    $possibleValues
-        \brief  Possible values for the ChoiceParameter
-    */
-    protected $possibleValues;
-
-    /*!
-        \brief  Protected constructor: creates an empty Parameter
-        \param  $name   Name of the new Parameter
-    */
-    protected function __construct($name) {
-        parent::__construct($name);
-
-        // Get and set the Parameter possible values
-        $db = new DatabaseConnection;
-        $values = $db->readPossibleValues($this);
-        $this->possibleValues = $values;
-
-        // Get and set the Parameter default value
-        $defaultValue = $this->defaultValue();
-        if ($defaultValue !== NULL) {
-            $this->value = $defaultValue;
-        }
-    }
-
-    /*!
-        \brief  Returns the possible values for the Parameter
-        \return the possible values
-    */
-    public function possibleValues() {
-        return $this->possibleValues;
-    }
-
-    /*!
-        \brief  Returns the possible values for the Parameter as a
-                comma-separated string
-        \return the possible values as a comma-separated string
-    */
-    public function possibleValuesString() {
-        $string = '';
-        $values = $this->possibleValues();
-        foreach ($values as $each) {
-            $string = $string . $each;
-            if (end($values) != $each) {
-                $string = $string . ", ";
-            }
-        }
-        return $string;
-    }
-
-    /*!
-        \brief  Checks whether the Parameter is valid
-        \return true if the Parameter is valid, false otherwise
-    */
-    public function check( ) {
-        $this->message = '';
-        $result = in_array( $this->value, $this->possibleValues() );
-        if ( $result == False ) {
-            $this->message = 'Bad value ' . $this->value() . ' for ' . $this->name();
-        }
-        return $result;
-    }
-
-    /*!
-        \brief  Returns the string representation of the Parameter
-        \param  $numberOfChannels Number of channels (default 0)
-        \return string representation of the Parameter
-    */
-    public function displayString( $numberOfChannels = 0 ) {
-        $result = $this->formattedName( );
-        if ( $this->notSet() ) {
-            $result = $result . "*not set*" . "\n";
-        } else {
-            $result = $result . $this->value . "\n";
-        }
-        return $result;
-    }
-
-    /*!
-        \brief  Returns the default value for the Parameters that have a default
-                value ot NULL for those that don't
-
-        This function should be <b>overloaded</b> by the subclasses
-
-        \return tyhe default value or NULL
-    */
-    public function defaultValue() {
-        $db = new DatabaseConnection;
-        $name = $this->name( );
-        $default = $db->defaultValue( $name );
-        return ( $default );
-    }
-
-}
+//
+///*!
+// \class    BooleanParameter
+// \brief    Class for a Parameter that has only true and false as possible value
+//*/
+//class BooleanParameter extends ChoiceParameter {
+//
+//    /*!
+//        \brief  Constructor: creates an empty Parameter
+//        \param  $name   Name of the new Parameter
+//    */
+//    public function __construct($name) {
+//        parent::__construct($name);
+//        $this->possibleValues = array( 'True', 'False' );
+//        $this->value = 'False';
+//    }
+//
+//    /*!
+//        \brief  Checks whether the value is true
+//        \return true if the value of the BooleanParameter is "True", false otherwise
+//    */
+//    public function isTrue() {
+//        return ($this->value == "True");
+//    }
+//
+//    /*!
+//        \brief  Checks whether the Parameter is a BooleanParameter
+//        \return true if the Parameter is a BooleanParameter, false otherwise
+//    */
+//    public function isBoolean() {
+//        return True;
+//    }
+//
+//    /*!
+//        \brief  Returns the string representation of the BooleanParameter
+//        \return string representation of the Parameter
+//    */
+//    public function displayString() {
+//        if ($this->value() == True ) {
+//            $value = 'yes';
+//        } else {
+//            $value = 'no';
+//        }
+//        $result = $this->formattedName( );
+//        $result = $result . $value . "\n";
+//        return $result;
+//    }
+//
+//    /*!
+//        \brief  Checks whether the Parameter is valid
+//        \return true if the Parameter is valid, false otherwise
+//    */
+//    public function check( ) {
+//        $this->message = '';
+//        $result = in_array( $this->value, array( 'True', 'False' ) );
+//        if ( $result == False ) {
+//            $this->message = 'Bad value ' . $this->value() . ' for ' . $this->name();
+//        }
+//        return $result;
+//    }
+//
+//}
 
 /*
     ============================================================================
 */
 
-/*!
- \class    BooleanParameter
- \brief    Class for a Parameter that has only true and false as possible value
-*/
-class BooleanParameter extends ChoiceParameter {
-
-    /*!
-        \brief  Constructor: creates an empty Parameter
-        \param  $name   Name of the new Parameter
-    */
-    public function __construct($name) {
-        parent::__construct($name);
-        $this->possibleValues = array( 'True', 'False' );
-        $this->value = 'False';
-    }
-
-    /*!
-        \brief  Checks whether the value is true
-        \return true if the value of the BooleanParameter is "True", false otherwise
-    */
-    public function isTrue() {
-        return ($this->value == "True");
-    }
-
-    /*!
-        \brief  Checks whether the Parameter is a BooleanParameter
-        \return true if the Parameter is a BooleanParameter, false otherwise
-    */
-    public function isBoolean() {
-        return True;
-    }
-
-    /*!
-        \brief  Returns the string representation of the BooleanParameter
-        \return string representation of the Parameter
-    */
-    public function displayString() {
-        if ($this->value() == True ) {
-            $value = 'yes';
-        } else {
-            $value = 'no';
-        }
-        $result = $this->formattedName( );
-        $result = $result . $value . "\n";
-        return $result;
-    }
-
-    /*!
-        \brief  Checks whether the Parameter is valid
-        \return true if the Parameter is valid, false otherwise
-    */
-    public function check( ) {
-        $this->message = '';
-        $result = in_array( $this->value, array( 'True', 'False' ) );
-        if ( $result == False ) {
-            $this->message = 'Bad value ' . $this->value() . ' for ' . $this->name();
-        }
-        return $result;
-    }
-
-}
-
-/*
-    ============================================================================
-*/
-
-/*!
-    \class  NumericalParameter
-    \brief  Class for a Parameter that has a scalar number as possible value
-*/
-class NumericalParameter extends Parameter {
-
-    /*!
-        \var    $min
-        \brief  Minimum possible value for the NumericalParameter
-    */
-    protected $min;
-
-    /*!
-        \var    $max
-        \brief  maximum possible value for the NumericalParameter
-    */
-    protected $max;
-
-    /*!
-        \var    $checkMin
-        \brief  If true, the value must be checked against the minimum
-    */
-    protected $checkMin;
-
-    /*!
-        \var    $checkMax
-        \brief  If true, the value must be checked against the maximum
-    */
-    protected $checkMax;
-
-    /*!
-        \var    $isMinIncluded
-        \brief  If true, the value must be >= than the minimum value, otherwise
-                it must be > the minimum value
-    */
-    protected $isMinIncluded;
-
-    /*!
-        \var    $isMaxIncluded
-        \brief  If true, the value must be <= than the maximum value, otherwise
-                it must be < the maximum value
-    */
-    protected $isMaxIncluded;
-
-    /*!
-        \brief  Constructor: creates an empty Parameter
-        \param  $name   Name of the new Parameter
-    */
-    public function __construct($name) {
-        parent::__construct($name);
-        $this->min = NULL;
-        $this->max = NULL;
-        $this->checkMin = False;
-        $this->checkMax = False;
-        $this->isMinIncluded = True;
-        $this->isMaxIncluded = True;
-
-        // Gets the Parameter's possible values, default value and all
-        // boundary values from the database and sets them
-        $db = new DatabaseConnection;
-        $values = $db->readNumericalValueRestrictions($this);
-        $min = $values[0];
-        $max = $values[1];
-        $minIncluded = $values[2];
-        $maxIncluded = $values[3];
-        $default = $values[4];
-        if ($min != NULL) {
-            $this->setMin($min);
-        }
-        if ($max != NULL) {
-            $this->setMax($max);
-        }
-        if ($minIncluded == 't') {
-            $this->isMinIncluded = True;
-        } else {
-            $this->isMinIncluded = False;
-        }
-        if ($maxIncluded == 't') {
-            $this->isMaxIncluded = True;
-        } else {
-            $this->isMaxIncluded = False;
-        }
-        if ($default != NULL) {
-            $this->setValue($default);
-        }
-    }
-
-    /*!
-        \brief  Set the minimum allowed value for the NumericalParameter
-
-        The value itself may be allowed or not.
-    */
-    public function setMin($value) {
-        $this->min = $value;
-        $this->checkMin = True;
-    }
-
-    /*!
-        \brief  Set the maximum allowed value for the NumericalParameter
-
-        The value itself may be allowed or not.
-    */
-    public function setMax($value) {
-        $this->max = $value;
-        $this->checkMax = True;
-    }
-
-    /*!
-        \brief  Checks whether the NumericalParameter value should be checked
-                against its minimum value
-        \return true if the value has to be checked against its minimum value,
-                false otherwise
-    */
-    public function checkMin() {
-        return $this->checkMin;
-    }
-
-    /*!
-        \brief  Checks whether the NumericalParameter value should be checked
-                against its maximum value
-        \return true if the value has to be checked against its maximum value,
-                false otherwise
-    */
-    public function checkMax() {
-        return $this->checkMax;
-    }
-
-    /*!
-        \brief  Returns the minimum allowed value for the NumericalParameter
-        \return the minimum allowed value
-    */
-    public function min() {
-        return $this->min;
-    }
-
-    /*!
-        \brief  Returns the maximum allowed value for the NumericalParameter
-        \return the maximum allowed value
-    */
-    public function max() {
-        return $this->max;
-    }
-
-    /*!
-        \brief  Checks whether the Parameter is valid
-        \return true if the Parameter is valid, false otherwise
-    */
-    public function check( ) {
-        $this->message = '';
-        return ( $this->checkValue( $this->value ) );
-    }
-
-    /*!
-        \brief  Checks whether the value is valid
-
-        The value of a NumericalParameter must be a number and might optionally
-        have to be larger than or equal to a given minum value and smaller than
-        or equal to a given maximum.
-        \param  $value  Value to be checked
-        \return true if the value is valid, false otherwise
-    */
-    protected function checkValue($value) {
-        if ( is_array( $value ) )
-        {
-            $this->message = "Scalar expected.\n";
-            return False;
-        }
-        if ( is_numeric( $value ) == 0 ) {
-            $this->message = "The value must be numeric.\n";
-            return False;
-        }
-        if ($this->isMinIncluded) {
-            if ($this->checkMin && !((float) $value >= $this->min)) {
-                $this->message = "The value must be >= $this->min.";
-                return False;
-            }
-        }
-        if (!$this->isMinIncluded) {
-            if ($this->checkMin && !((float) $value > $this->min)) {
-                $this->message = "The value must be > $this->min.";
-                return False;
-            }
-        }
-        if ($this->isMaxIncluded) {
-            if ($this->checkMax && !((float) $value <= $this->max)) {
-                $this->message = "The value must be <= $this->max.";
-                return False;
-            }
-        }
-        if (!$this->isMaxIncluded) {
-            if ($this->checkMax && !((float) $value < $this->max)) {
-                $this->message = "The value must be < $this->max.";
-                return False;
-            }
-        }
-        return True;
-    }
-
-    /*!
-        \brief  Sets the value of the parameter
-
-        The value must be a scalar.
-
-        \param  $value  Value for the parameter
-    */
-    public function setValue($value) {
-        if ( is_array( $value ) ) {
-            $value = $value[ 0 ];
-        }
-        $this->value = $value;
-    }
-
-
-    /*!
-        \brief  Returns the string representation of the Parameter
-        \return string representation of the Parameter
-    */
-    public function displayString( $numberOfChannels = 0 ) {
-        $result = $this->formattedName( );
-        if ( $this->notSet() ) {
-            $result = $result . "*not set*" . "\n";
-        } else {
-            $result = $result . $this->value . "\n";
-        }
-        return $result;
-    }
-
-}
+///*!
+//    \class  NumericalParameter
+//    \brief  Class for a Parameter that has a scalar number as possible value
+//*/
+//class NumericalParameter extends Parameter {
+//
+//    /*!
+//        \var    $min
+//        \brief  Minimum possible value for the NumericalParameter
+//    */
+//    protected $min;
+//
+//    /*!
+//        \var    $max
+//        \brief  maximum possible value for the NumericalParameter
+//    */
+//    protected $max;
+//
+//    /*!
+//        \var    $checkMin
+//        \brief  If true, the value must be checked against the minimum
+//    */
+//    protected $checkMin;
+//
+//    /*!
+//        \var    $checkMax
+//        \brief  If true, the value must be checked against the maximum
+//    */
+//    protected $checkMax;
+//
+//    /*!
+//        \var    $isMinIncluded
+//        \brief  If true, the value must be >= than the minimum value, otherwise
+//                it must be > the minimum value
+//    */
+//    protected $isMinIncluded;
+//
+//    /*!
+//        \var    $isMaxIncluded
+//        \brief  If true, the value must be <= than the maximum value, otherwise
+//                it must be < the maximum value
+//    */
+//    protected $isMaxIncluded;
+//
+//    /*!
+//        \brief  Constructor: creates an empty Parameter
+//        \param  $name   Name of the new Parameter
+//    */
+//    public function __construct($name) {
+//        parent::__construct($name);
+//        $this->min = NULL;
+//        $this->max = NULL;
+//        $this->checkMin = False;
+//        $this->checkMax = False;
+//        $this->isMinIncluded = True;
+//        $this->isMaxIncluded = True;
+//
+//        // Gets the Parameter's possible values, default value and all
+//        // boundary values from the database and sets them
+//        $db = new DatabaseConnection;
+//        $values = $db->readNumericalValueRestrictions($this);
+//        $min = $values[0];
+//        $max = $values[1];
+//        $minIncluded = $values[2];
+//        $maxIncluded = $values[3];
+//        $default = $values[4];
+//        if ($min != NULL) {
+//            $this->setMin($min);
+//        }
+//        if ($max != NULL) {
+//            $this->setMax($max);
+//        }
+//        if ($minIncluded == 't') {
+//            $this->isMinIncluded = True;
+//        } else {
+//            $this->isMinIncluded = False;
+//        }
+//        if ($maxIncluded == 't') {
+//            $this->isMaxIncluded = True;
+//        } else {
+//            $this->isMaxIncluded = False;
+//        }
+//        if ($default != NULL) {
+//            $this->setValue($default);
+//        }
+//    }
+//
+//    /*!
+//        \brief  Set the minimum allowed value for the NumericalParameter
+//
+//        The value itself may be allowed or not.
+//    */
+//    public function setMin($value) {
+//        $this->min = $value;
+//        $this->checkMin = True;
+//    }
+//
+//    /*!
+//        \brief  Set the maximum allowed value for the NumericalParameter
+//
+//        The value itself may be allowed or not.
+//    */
+//    public function setMax($value) {
+//        $this->max = $value;
+//        $this->checkMax = True;
+//    }
+//
+//    /*!
+//        \brief  Checks whether the NumericalParameter value should be checked
+//                against its minimum value
+//        \return true if the value has to be checked against its minimum value,
+//                false otherwise
+//    */
+//    public function checkMin() {
+//        return $this->checkMin;
+//    }
+//
+//    /*!
+//        \brief  Checks whether the NumericalParameter value should be checked
+//                against its maximum value
+//        \return true if the value has to be checked against its maximum value,
+//                false otherwise
+//    */
+//    public function checkMax() {
+//        return $this->checkMax;
+//    }
+//
+//    /*!
+//        \brief  Returns the minimum allowed value for the NumericalParameter
+//        \return the minimum allowed value
+//    */
+//    public function min() {
+//        return $this->min;
+//    }
+//
+//    /*!
+//        \brief  Returns the maximum allowed value for the NumericalParameter
+//        \return the maximum allowed value
+//    */
+//    public function max() {
+//        return $this->max;
+//    }
+//
+//    /*!
+//        \brief  Checks whether the Parameter is valid
+//        \return true if the Parameter is valid, false otherwise
+//    */
+//    public function check( ) {
+//        $this->message = '';
+//        return ( $this->checkValue( $this->value ) );
+//    }
+//
+//    /*!
+//        \brief  Checks whether the value is valid
+//
+//        The value of a NumericalParameter must be a number and might optionally
+//        have to be larger than or equal to a given minum value and smaller than
+//        or equal to a given maximum.
+//        \param  $value  Value to be checked
+//        \return true if the value is valid, false otherwise
+//    */
+//    protected function checkValue($value) {
+//        if ( is_array( $value ) )
+//        {
+//            $this->message = "Scalar expected.\n";
+//            return False;
+//        }
+//        if ( is_numeric( $value ) == 0 ) {
+//            $this->message = "The value must be numeric.\n";
+//            return False;
+//        }
+//        if ($this->isMinIncluded) {
+//            if ($this->checkMin && !((float) $value >= $this->min)) {
+//                $this->message = "The value must be >= $this->min.";
+//                return False;
+//            }
+//        }
+//        if (!$this->isMinIncluded) {
+//            if ($this->checkMin && !((float) $value > $this->min)) {
+//                $this->message = "The value must be > $this->min.";
+//                return False;
+//            }
+//        }
+//        if ($this->isMaxIncluded) {
+//            if ($this->checkMax && !((float) $value <= $this->max)) {
+//                $this->message = "The value must be <= $this->max.";
+//                return False;
+//            }
+//        }
+//        if (!$this->isMaxIncluded) {
+//            if ($this->checkMax && !((float) $value < $this->max)) {
+//                $this->message = "The value must be < $this->max.";
+//                return False;
+//            }
+//        }
+//        return True;
+//    }
+//
+//    /*!
+//        \brief  Sets the value of the parameter
+//
+//        The value must be a scalar.
+//
+//        \param  $value  Value for the parameter
+//    */
+//    public function setValue($value) {
+//        if ( is_array( $value ) ) {
+//            $value = $value[ 0 ];
+//        }
+//        $this->value = $value;
+//    }
+//
+//
+//    /*!
+//        \brief  Returns the string representation of the Parameter
+//        \return string representation of the Parameter
+//    */
+//    public function displayString( $numberOfChannels = 0 ) {
+//        $result = $this->formattedName( );
+//        if ( $this->notSet() ) {
+//            $result = $result . "*not set*" . "\n";
+//        } else {
+//            $result = $result . $this->value . "\n";
+//        }
+//        return $result;
+//    }
+//
+//}
 
 /*
     ============================================================================
 */
 
-/*!
-  \class  NumericalVectorParameter
-  \brief  Class for a channel Parameter consisting of a N components.
-*/
-class NumericalVectorParameter extends NumericalParameter {
-    
-    /*!
-      \var    $componentCnt
-      \brief  Number of components in the vector.
-    */
-    public $componentCnt;
-
-    /*!
-      \brief  Constructor:   creates an empty Parameter.
-      \param  $name          Name of the new Parameter
-      \param  $componentCnt  Number of components for the vector parameter.
-    */
-    public function __construct($name, $componentCnt) {
-        parent::__construct($name);
-        $this->reset($componentCnt);
-    }
-
-    /*!
-      \brief  Sets the Parameter value(s) to empty.
-      \param  $components Number of components for the vector parameter.
-    */
-    public function reset($componentCnt) {
-        $this->componentCnt = $componentCnt;
-        for ($i = 1; $i <= $componentCnt; $i++ ) {
-            $this->value[$i] = NULL;
-        }
-    }
-
-    /*!
-      \brief  Checks whether all values in the array are valid.
-      
-      Each value in the array must be a number and might optionally
-      have to be larger than or equal to a given minimum value and smaller than
-      or equal to a given maximum.
-      \return True if all values are valid, false otherwise.
-    */
-    public function check() {
-        $this->message = '';
-        $result = True;
-       
-        
-        /* First check that all values are set. */
-        if (array_search("", array_slice($this->value,
-                                         0, $this->componentCnt)) !== FALSE) {
-            if ($this->mustProvide()) {
-                $this->message = 'Some of the values are missing!';
-            } else {
-                $this->message = 'You can omit typing values for this ' .
-                    'parameter. If you decide to provide them, though, ' .
-                        'you must provide them all.';
-            }
-            return false;
-        }
-        
-        /* Now check the values themselves. */
-        for ( $i = 0; $i < $this->componentCnt; $i++ ) {
-            $result &= parent::check( $this->value[ $i ] );
-        }
-        
-        return $result;
-    }
-
-    /*!
-      \brief  Sets the value of the parameter
-      
-      The value must be an array with as many components as $componentCnt
-      
-      \param  $value  Array of values for the parameter
-    */
-    public function setValue($value) {
-        $n = count( $value );
-        for ( $i = 0; $i < $this->componentCnt; $i++ ) {
-            if ( $i < $n ) {
-                $this->value[ $i ] = $value[ $i ];
-            } else {
-                $this->value[ $i ] = null;
-            }
-        }
-    }
-
-    /*!
-      \brief  Function for retrieving a string with the numerical parameter.
-      \return A '#'-separated string denoting the vector componenents.
-     */
-    public function value( ) {
-        $result = "";
-               
-        for ( $i = 0; $i < $this->componentCnt; $i++ ) {
-            $result .= "#";
-            if (isset($this->value[$i])) {
-                $result .= $this->value[$i];
-            }
-        }
-    
-        return $result;
-    }
-    
-    /*!
-      \brief  Returns the string representation of the Parameter
-      \return string representation of the Parameter
-    */
-    public function displayString( ) {
-        ksort($this->value);
-        $value = array_slice( $this->value, 0, $this->componentCnt );
-        $value = implode( $value, ', ' );
-        $result = $this->formattedName( );
-        if ( $this->notSet() ) {
-            $result = $result . "*not set*" . "\n";
-        } else {
-            $result = $result . $value . "\n";
-        }
-        
-        return $result;
-    }
-
-}
+///*!
+//  \class  NumericalVectorParameter
+//  \brief  Class for a channel Parameter consisting of a N components.
+//*/
+//class NumericalVectorParameter extends NumericalParameter {
+//
+//    /*!
+//      \var    $componentCnt
+//      \brief  Number of components in the vector.
+//    */
+//    public $componentCnt;
+//
+//    /*!
+//      \brief  Constructor:   creates an empty Parameter.
+//      \param  $name          Name of the new Parameter
+//      \param  $componentCnt  Number of components for the vector parameter.
+//    */
+//    public function __construct($name, $componentCnt) {
+//        parent::__construct($name);
+//        $this->reset($componentCnt);
+//    }
+//
+//    /*!
+//      \brief  Sets the Parameter value(s) to empty.
+//      \param  $components Number of components for the vector parameter.
+//    */
+//    public function reset($componentCnt) {
+//        $this->componentCnt = $componentCnt;
+//        for ($i = 1; $i <= $componentCnt; $i++ ) {
+//            $this->value[$i] = NULL;
+//        }
+//    }
+//
+//    /*!
+//      \brief  Checks whether all values in the array are valid.
+//
+//      Each value in the array must be a number and might optionally
+//      have to be larger than or equal to a given minimum value and smaller than
+//      or equal to a given maximum.
+//      \return True if all values are valid, false otherwise.
+//    */
+//    public function check() {
+//        $this->message = '';
+//        $result = True;
+//
+//
+//        /* First check that all values are set. */
+//        if (array_search("", array_slice($this->value,
+//                                         0, $this->componentCnt)) !== FALSE) {
+//            if ($this->mustProvide()) {
+//                $this->message = 'Some of the values are missing!';
+//            } else {
+//                $this->message = 'You can omit typing values for this ' .
+//                    'parameter. If you decide to provide them, though, ' .
+//                        'you must provide them all.';
+//            }
+//            return false;
+//        }
+//
+//        /* Now check the values themselves. */
+//        for ( $i = 0; $i < $this->componentCnt; $i++ ) {
+//            $result &= parent::check( $this->value[ $i ] );
+//        }
+//
+//        return $result;
+//    }
+//
+//    /*!
+//      \brief  Sets the value of the parameter
+//
+//      The value must be an array with as many components as $componentCnt
+//
+//      \param  $value  Array of values for the parameter
+//    */
+//    public function setValue($value) {
+//        $n = count( $value );
+//        for ( $i = 0; $i < $this->componentCnt; $i++ ) {
+//            if ( $i < $n ) {
+//                $this->value[ $i ] = $value[ $i ];
+//            } else {
+//                $this->value[ $i ] = null;
+//            }
+//        }
+//    }
+//
+//    /*!
+//      \brief  Function for retrieving a string with the numerical parameter.
+//      \return A '#'-separated string denoting the vector componenents.
+//     */
+//    public function value( ) {
+//        $result = "";
+//
+//        for ( $i = 0; $i < $this->componentCnt; $i++ ) {
+//            $result .= "#";
+//            if (isset($this->value[$i])) {
+//                $result .= $this->value[$i];
+//            }
+//        }
+//
+//        return $result;
+//    }
+//
+//    /*!
+//      \brief  Returns the string representation of the Parameter
+//      \return string representation of the Parameter
+//    */
+//    public function displayString( ) {
+//        ksort($this->value);
+//        $value = array_slice( $this->value, 0, $this->componentCnt );
+//        $value = implode( $value, ', ' );
+//        $result = $this->formattedName( );
+//        if ( $this->notSet() ) {
+//            $result = $result . "*not set*" . "\n";
+//        } else {
+//            $result = $result . $value . "\n";
+//        }
+//
+//        return $result;
+//    }
+//
+//}
 
 /*
     ============================================================================
@@ -934,152 +954,152 @@ class NumericalVectorParameter extends NumericalParameter {
 
 
 
-/*!
-    \class  NumericalArrayParameter
-    \brief  Class for a Parameter that has an array of numbers as possible value,
-            where each entry represents a channel.
-*/
-
-class NumericalArrayParameter extends NumericalParameter {
-
-    /*!
-        \var    $numberOfChannels
-        \brief  Number of channels for which to provide Parameter values
-    */
-    protected $numberOfChannels;
-
-    /*!
-        \brief  Constructor: creates an empty Parameter
-        \param  $name   Name of the new Parameter
-    */
-    public function __construct($name) {
-        parent::__construct($name);
-        $this->reset( );
-    }
-
-    /*!
-        \brief  Confirms that the Parameter can have a variable number of channels
-        This overloads the base function.
-        \return true
-    */
-    public function isVariableChannel() {
-        return True;
-    }
-
-    /*!
-        \brief  Sets the Parameter value(s) to empty
-    */
-    public function reset( ) {
-        $db = new DatabaseConnection;
-
-        for ($i = 0; $i < $db->getMaxChanCnt(); $i++) {
-            $this->value[$i] = NULL;
-        }
-        
-        $this->numberOfChannels = 1;
-    }
-
-    /*!
-        \brief   Sets the number of channels
-        \param  $number Number of channels
-    */
-    public function setNumberOfChannels($number) {
-
-        $db = new DatabaseConnection;
-        $maxChanCnt = $db->getMaxChanCnt();
-
-        if ( $number == $this->numberOfChannels ) {
-            return;
-        }
-        if ( $number < 1 ) {
-            $number = 1;
-        }
-        if ( $number > $maxChanCnt ) {
-            $number = $maxChanCnt;
-        }
-        for ( $i = $number; $i < $maxChanCnt; $i++ ) {
-            $this->value[ $i ] = NULL;
-        }
-        $this->numberOfChannels = $number;
-    }
-
-    /*!
-        \brief   Returns the number of channels
-        \return the umber of channels
-    */
-    public function numberOfChannels() {
-        return $this->numberOfChannels;
-    }
-
-    /*!
-        \brief  Checks whether all values in the array are valid
-
-        Each value in the array must be a number and might optionally
-        have to be larger than or equal to a given minum value and smaller than
-        or equal to a given maximum.
-        \return true if all values are valid, false otherwise
-    */
-    public function check() {
-        $this->message = '';
-        $result = True;
-        // First check that all values are set
-        if (array_search("", array_slice($this->value,
-                0, $this->numberOfChannels)) !== FALSE) {
-            if ($this->mustProvide()) {
-                $this->message = 'Some of the values are missing!';
-            } else {
-                $this->message = 'You can omit typing values for this ' .
-                    'parameter. If you decide to provide them, though, ' .
-                        'you must provide them all.';
-            }
-            return false;
-        }
-        // Now check the values themselves
-        for ( $i = 0; $i < $this->numberOfChannels; $i++ ) {
-            $result = $result && parent::checkValue( $this->value[ $i ] );
-        }
-        return $result;
-    }
-
-    /*!
-        \brief  Sets the value of the parameter
-
-        The value must be an array with 'maxChanCnt' values (those who refer to
-        non-existing channels should be null).
-
-        \param  $value  Array of values for the parameter
-    */
-    public function setValue($value) {
-        $db = new DatabaseConnection;
-        $maxChanCnt = $db->getMaxChanCnt();
-
-        $n = count( $value );
-        for ( $i = 0; $i < $maxChanCnt; $i++ ) {
-            if ( $i < $n ) {
-                $this->value[ $i ] = $value[ $i ];
-            } else {
-                $this->value[ $i ] = null;
-            }
-        }
-    }
-
-    /*!
-        \brief  Returns the string representation of the Parameter
-        \return string representation of the Parameter
-    */
-    public function displayString( $numberOfChannels = 0 ) {
-        $value = array_slice( $this->value, 0, $numberOfChannels );
-        $value = implode( $value, ', ' );
-        $result = $this->formattedName( );
-        if ( $this->notSet() ) {
-            $result = $result . "*not set*" . "\n";
-        } else {
-            $result = $result . $value . "\n";
-        }
-        return $result;
-    }
-
-}
+///*!
+//    \class  NumericalArrayParameter
+//    \brief  Class for a Parameter that has an array of numbers as possible value,
+//            where each entry represents a channel.
+//*/
+//
+//class NumericalArrayParameter extends NumericalParameter {
+//
+//    /*!
+//        \var    $numberOfChannels
+//        \brief  Number of channels for which to provide Parameter values
+//    */
+//    protected $numberOfChannels;
+//
+//    /*!
+//        \brief  Constructor: creates an empty Parameter
+//        \param  $name   Name of the new Parameter
+//    */
+//    public function __construct($name) {
+//        parent::__construct($name);
+//        $this->reset( );
+//    }
+//
+//    /*!
+//        \brief  Confirms that the Parameter can have a variable number of channels
+//        This overloads the base function.
+//        \return true
+//    */
+//    public function isVariableChannel() {
+//        return True;
+//    }
+//
+//    /*!
+//        \brief  Sets the Parameter value(s) to empty
+//    */
+//    public function reset( ) {
+//        $db = new DatabaseConnection;
+//
+//        for ($i = 0; $i < $db->getMaxChanCnt(); $i++) {
+//            $this->value[$i] = NULL;
+//        }
+//
+//        $this->numberOfChannels = 1;
+//    }
+//
+//    /*!
+//        \brief   Sets the number of channels
+//        \param  $number Number of channels
+//    */
+//    public function setNumberOfChannels($number) {
+//
+//        $db = new DatabaseConnection;
+//        $maxChanCnt = $db->getMaxChanCnt();
+//
+//        if ( $number == $this->numberOfChannels ) {
+//            return;
+//        }
+//        if ( $number < 1 ) {
+//            $number = 1;
+//        }
+//        if ( $number > $maxChanCnt ) {
+//            $number = $maxChanCnt;
+//        }
+//        for ( $i = $number; $i < $maxChanCnt; $i++ ) {
+//            $this->value[ $i ] = NULL;
+//        }
+//        $this->numberOfChannels = $number;
+//    }
+//
+//    /*!
+//        \brief   Returns the number of channels
+//        \return the umber of channels
+//    */
+//    public function numberOfChannels() {
+//        return $this->numberOfChannels;
+//    }
+//
+//    /*!
+//        \brief  Checks whether all values in the array are valid
+//
+//        Each value in the array must be a number and might optionally
+//        have to be larger than or equal to a given minum value and smaller than
+//        or equal to a given maximum.
+//        \return true if all values are valid, false otherwise
+//    */
+//    public function check() {
+//        $this->message = '';
+//        $result = True;
+//        // First check that all values are set
+//        if (array_search("", array_slice($this->value,
+//                0, $this->numberOfChannels)) !== FALSE) {
+//            if ($this->mustProvide()) {
+//                $this->message = 'Some of the values are missing!';
+//            } else {
+//                $this->message = 'You can omit typing values for this ' .
+//                    'parameter. If you decide to provide them, though, ' .
+//                        'you must provide them all.';
+//            }
+//            return false;
+//        }
+//        // Now check the values themselves
+//        for ( $i = 0; $i < $this->numberOfChannels; $i++ ) {
+//            $result = $result && parent::checkValue( $this->value[ $i ] );
+//        }
+//        return $result;
+//    }
+//
+//    /*!
+//        \brief  Sets the value of the parameter
+//
+//        The value must be an array with 'maxChanCnt' values (those who refer to
+//        non-existing channels should be null).
+//
+//        \param  $value  Array of values for the parameter
+//    */
+//    public function setValue($value) {
+//        $db = new DatabaseConnection;
+//        $maxChanCnt = $db->getMaxChanCnt();
+//
+//        $n = count( $value );
+//        for ( $i = 0; $i < $maxChanCnt; $i++ ) {
+//            if ( $i < $n ) {
+//                $this->value[ $i ] = $value[ $i ];
+//            } else {
+//                $this->value[ $i ] = null;
+//            }
+//        }
+//    }
+//
+//    /*!
+//        \brief  Returns the string representation of the Parameter
+//        \return string representation of the Parameter
+//    */
+//    public function displayString( $numberOfChannels = 0 ) {
+//        $value = array_slice( $this->value, 0, $numberOfChannels );
+//        $value = implode( $value, ', ' );
+//        $result = $this->formattedName( );
+//        if ( $this->notSet() ) {
+//            $result = $result . "*not set*" . "\n";
+//        } else {
+//            $result = $result . $value . "\n";
+//        }
+//        return $result;
+//    }
+//
+//}
 
 /*
     ============================================================================
@@ -1091,50 +1111,50 @@ class NumericalArrayParameter extends NumericalParameter {
           as possible value. It inherits from NumericalArrayParameter and
           relaxes the condition that the values must be integers.
 */
-class AnyTypeArrayParameter extends NumericalArrayParameter {
-
-        /*!
-         \var   $possibleValues
-         \brief Possible values for AnyTypeArrayParameter
-    */
-    protected $possibleValues;
-
-    /*!
-        \brief  Constructor: creates an empty Parameter
-        \param  $name   Name of the new Parameter
-    */
-    public function __construct($name) {
-
-        parent::__construct($name);
-
-                $possibleValues = array ();
-
-                    // Get and set the Parameter possible values
-                $db = new DatabaseConnection;
-                $this->possibleValues = $db->readPossibleValues($this);
-    }
-
-       /*!
-                \brief  Returns the possible values for the Parameter
-                \return the possible values
-    */
-    public function possibleValues() {
-            return $this->possibleValues;
-    }
-
-    /*!
-        \brief  Returns the internal value of the AnyTypeArrayParameter
-
-        This function should be <b>overloaded</b> by the subclasses if the
-        internal and external representations differ.
-
-        \return the internal value of the Parameter
-    */
-    public function internalValue() {
-       return $this->value;
-    }
-
-}
+//class AnyTypeArrayParameter extends NumericalArrayParameter {
+//
+//        /*!
+//         \var   $possibleValues
+//         \brief Possible values for AnyTypeArrayParameter
+//    */
+//    protected $possibleValues;
+//
+//    /*!
+//        \brief  Constructor: creates an empty Parameter
+//        \param  $name   Name of the new Parameter
+//    */
+//    public function __construct($name) {
+//
+//        parent::__construct($name);
+//
+//                $possibleValues = array ();
+//
+//                    // Get and set the Parameter possible values
+//                $db = new DatabaseConnection;
+//                $this->possibleValues = $db->readPossibleValues($this);
+//    }
+//
+//       /*!
+//                \brief  Returns the possible values for the Parameter
+//                \return the possible values
+//    */
+//    public function possibleValues() {
+//            return $this->possibleValues;
+//    }
+//
+//    /*!
+//        \brief  Returns the internal value of the AnyTypeArrayParameter
+//
+//        This function should be <b>overloaded</b> by the subclasses if the
+//        internal and external representations differ.
+//
+//        \return the internal value of the Parameter
+//    */
+//    public function internalValue() {
+//       return $this->value;
+//    }
+//
+//}
 
 /*
     ============================================================================
