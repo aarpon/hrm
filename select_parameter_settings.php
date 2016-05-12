@@ -118,7 +118,8 @@ else if(isset($_POST['imageTotemplate']) && isset($_POST['fileselection'])) {
         $path_parts = pathinfo($filestring);
         $hrmtemplatename = 'Based on '.$path_parts['filename'];
         $setting = $_SESSION['editor']->createNewSetting($hrmtemplatename);
-        $result  = $_SESSION['editor']->image2hrmTemplate($setting, $filestring);
+        $result  = $_SESSION['editor']->image2hrmTemplate($setting,
+            $_SESSION['fileserver']->sourceFolder(), $filestring);
         $message = $_SESSION['editor']->message();
     }
 

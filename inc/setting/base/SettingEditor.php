@@ -206,13 +206,13 @@ abstract class SettingEditor
      * Creates a new setting based on parsing the given file through HuCore.
      * @param Setting $setting The setting object to fill.
      * @param string $fileName File name without path.
+     * @param string $dirName Full path to the containing folder.
      * @return bool True if the new template creation was successful, false
      * otherwise.
-     * @todo The source folder must be passed as an input argument!
      * @todo Move this to ParameterSettingEditor!
      *
      */
-    public function image2hrmTemplate($setting, $fileName)
+    public function image2hrmTemplate($setting, $fileName, $dirName)
     {
         $result = False;
 
@@ -221,8 +221,7 @@ abstract class SettingEditor
         }
 
         /* If it doesn't work, just do the same as create new. */
-        $opts = "-path \"" . $_SESSION['fileserver']->sourceFolder() .
-            "\" -filename \"$fileName\"";
+        $opts = "-path \"" . $dirName . "\" -filename \"$fileName\"";
 
         $data = askHuCore('getMetaDataFromImage', $opts);
 
