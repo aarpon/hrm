@@ -4,13 +4,12 @@
 
 use hrm\Nav;
 use hrm\ParameterSetting;
-use hrm\SettingEditor;
+use hrm\ParameterSettingEditor;
 use hrm\System;
 use hrm\user\User;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.inc.php';
 
-require_once("./inc/Parameter.inc.php");
 require_once("./inc/Fileserver.inc.php");
 
 /* *****************************************************************************
@@ -30,7 +29,7 @@ if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
 }
 
 if (!isset($_SESSION['editor'])) {
-  $_SESSION['editor'] = new SettingEditor($_SESSION['user']);
+  $_SESSION['editor'] = new ParameterSettingEditor($_SESSION['user']);
 }
 
 // The admin will be  the only user who gets the freedom to omit parameters
@@ -46,7 +45,7 @@ if ($_SESSION['user']->isAdmin()) {
 if (!$_SESSION['user']->isAdmin()) {
   $admin = new User();
   $admin->setName("admin");
-  $admin_editor = new SettingEditor($admin);
+  $admin_editor = new ParameterSettingEditor($admin);
   $_SESSION['admin_editor'] = $admin_editor;
 }
 

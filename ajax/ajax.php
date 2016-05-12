@@ -3,7 +3,7 @@
 // Copyright and license notice: see license.txt
 
 use hrm\DatabaseConnection;
-use hrm\SettingEditor;
+use hrm\ParameterSettingEditor;
 use hrm\user\User;
 
 require_once dirname(__FILE__) . '/../inc/bootstrap.inc.php';
@@ -15,7 +15,7 @@ require_once '../inc/JobQueue.inc.php';
 
 /**
  * Get the summary for current template
- * @param SettingsEditor $editor SettingsEditor
+ * @param ParameterSettingEditor $editor ParameterSettingEditor
  * @param string $setName Parameter name
  * @param int $numChannels Number of channels
  * @return string parameter dump
