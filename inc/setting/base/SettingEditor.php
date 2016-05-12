@@ -205,14 +205,14 @@ abstract class SettingEditor
     /**
      * Creates a new setting based on parsing the given file through HuCore.
      * @param Setting $setting The setting object to fill.
-     * @param string $fileName File name without path.
      * @param string $dirName Full path to the containing folder.
+     * @param string $fileName File name without path.
      * @return bool True if the new template creation was successful, false
      * otherwise.
      * @todo Move this to ParameterSettingEditor!
      *
      */
-    public function image2hrmTemplate($setting, $fileName, $dirName)
+    public function image2hrmTemplate($setting, $dirName, $fileName)
     {
         $result = False;
 
