@@ -2450,4 +2450,4 @@ class DatabaseConnection {
         return $test;
     }
 
-};
+}

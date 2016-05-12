@@ -7,14 +7,14 @@ use hrm\Mail;
 require_once dirname(__FILE__) . '/bootstrap.inc.php';
 
 require_once ("Setting.inc.php");
-require_once ("Database.inc.php");
+require_once("Database.php");
 require_once ("JobDescription.inc.php");
 require_once ("hrm_config.inc.php");
 require_once ("Fileserver.inc.php");
 require_once ("Shell.inc.php");
 require_once ("Job.inc.php");
 require_once ("JobQueue.inc.php");
-require_once ("System.inc.php");
+require_once("System.php");
 
 /*!
  \class  QueueManager

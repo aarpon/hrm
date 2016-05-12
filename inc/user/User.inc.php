@@ -16,8 +16,6 @@ use hrm\user\auth\AuthenticatorFactory;
 
 require_once dirname(__FILE__) . '/../bootstrap.inc.php';
 
-require_once(dirname(__FILE__) . "/../Setting.inc.php");
-
 
 /**
  * @class   User
@@ -249,4 +247,5 @@ class User {
         }
     }
 
-};
+}
+

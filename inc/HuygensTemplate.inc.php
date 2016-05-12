@@ -10,6 +10,7 @@
 
 namespace hrm;
 
+use hrm\param\ChromaticAberration;
 use JobDescription;
 
 require_once dirname(__FILE__) . '/bootstrap.inc.php';
@@ -69,7 +70,7 @@ class HuygensTemplate {
      * @var string
      */
     private $jobInfoList;
-    
+
     /**
      * Array with information on the job's main tasks.
      * @var array
@@ -81,7 +82,7 @@ class HuygensTemplate {
      * @var string
      */
     private $jobTasksList;
-    
+
     /**
      * Array with information on the setEnv task.
      * @var array
@@ -153,7 +154,7 @@ class HuygensTemplate {
      * @var array
      */
     private $adjblArray;
-    
+
     /**
      * Array with information on the image chromatic aberration subtask.
      * @var array
@@ -261,7 +262,7 @@ class HuygensTemplate {
      * @var string
      */
     private $thumbFrom;
-    
+
     /**
      * Whether the thumbnail is to be saved in the src or dest folder.
      * @var string
@@ -335,7 +336,7 @@ class HuygensTemplate {
      */
     private function initializeJobInfo() {
 
-        $this->jobInfoArray = 
+        $this->jobInfoArray =
             array ('title'                      => 'Batch Processing template',
                    'version'                    => '2.3',
                    'templateName'               => '',
@@ -347,8 +348,8 @@ class HuygensTemplate {
      * Loads an array containing information on the job's main tasks.
      */
     private function initializeJobTasks() {
-        
-        $this->jobTasksArray = 
+
+        $this->jobTasksArray =
             array ( 'setEnv'                    => '',
                     'taskID:0'                  => '',
                     'listID'                    => 'taskList' );
@@ -358,7 +359,7 @@ class HuygensTemplate {
      * Loads arrays with environment data: number cores, timeout, ..
      */
     private function initializeEnvironment( ) {
-        $this->envArray = 
+        $this->envArray =
             array ( 'resultDir'                 => '',
                     'perJobThreadCnt'           => 'auto',
                     'concurrentJobCnt'          => '1',
@@ -368,7 +369,7 @@ class HuygensTemplate {
 		    'attemptGpu'                => '',
                     'listID'                    => 'setEnv' );
 
-        $this->expFormatArray = 
+        $this->expFormatArray =
             array ( 'type'                      =>  '',
                     'multidir'                  =>  '',
                     'cmode'                     =>  'scale' );
@@ -379,7 +380,7 @@ class HuygensTemplate {
      */
     private function initializeImgProcessing( ) {
 
-        $this->imgProcessArray = 
+        $this->imgProcessArray =
             array ( 'info'                      => '',
                     'taskList'                  => '',
                     'listID'                    => 'taskID:0' );
@@ -394,7 +395,7 @@ class HuygensTemplate {
 
         /* There are no specific names for the deconvolution and microscopy
          templates in the Tcl-lists, they will be set to general names. */
-        $this->imgProcessInfoArray = 
+        $this->imgProcessInfoArray =
             array ( 'state'                     => 'readyToRun',
                     'tag'                       => '{setp Micr decon Decon}',
                     'timeStartAbs'              => '',
@@ -407,7 +408,7 @@ class HuygensTemplate {
            thumbnail operations contain the destination directory as well as
            the thumbnail type and the image type. The thumbnail operation
            names code the type of action executed on the image.*/
-        $this->imgProcessTasksArray = 
+        $this->imgProcessTasksArray =
             array ('open'                       =>  'imgOpen',
                    'setParameters'              =>  'setp',
                    'autocrop'                   =>  'autocrop',
@@ -434,7 +435,7 @@ class HuygensTemplate {
                    'listID'                     =>  'taskList');
 
         /* Options for the 'open image' action */
-        $this->imgOpenArray = 
+        $this->imgOpenArray =
             array ( 'path'                      =>  '',
                     'subImg'                    =>  '',
                     'series'                    =>  '',
@@ -442,7 +443,7 @@ class HuygensTemplate {
                     'listID'                    =>  'imgOpen' );
 
         /* Options for the 'set image parameter' action */
-        $this->setpArray  = 
+        $this->setpArray  =
             array ( 'completeChanCnt'           => '',
                     'micr'                      => '',
                     's'                         => '',
@@ -506,13 +507,13 @@ class HuygensTemplate {
                     'listID'                    =>  'setp' );
 
         /* Options for the 'adjust baseline' action */
-        $this->adjblArray = 
+        $this->adjblArray =
             array ( 'enabled'                   =>  '0',
                     'ni'                        =>  '0',
                     'listID'                    =>  'adjbl' );
 
         /* Options for the 'chromatic aberration correction' action */
-        $this->chromaticArray = 
+        $this->chromaticArray =
             array ( 'q'                         =>  'standard',
                     'vector'                    =>  '',
                     'reference'                 =>  '',
@@ -525,7 +526,7 @@ class HuygensTemplate {
                     'listID'                    =>  'shift');
 
         /* Options for the 'execute deconvolution' action */
-        $this->algArray   = 
+        $this->algArray   =
             array ( 'q'                         =>  '',
                     'brMode'                    =>  '',
                     'it'                        =>  '',
@@ -570,7 +571,7 @@ class HuygensTemplate {
                    'chanG'                      =>  '',
                    'destDir'                    =>  '',
                    'destFile'                   =>  '',
-                   'listID'                     =>  'hist' );        
+                   'listID'                     =>  'hist' );
 
         /* Options for the 'create thumbnail from image' action. */
         $this->thumbArray =
@@ -579,9 +580,9 @@ class HuygensTemplate {
                    'destFile'                   =>  '',
                    'type'                       =>  '',
                    'size'                       =>  '400' );
-        
+
         /* Options for the 'save image' action. */
-        $this->imgSaveArray = 
+        $this->imgSaveArray =
             array ( 'rootName'                  =>  '',
                     'listID'                    =>  'imgSave' );
 
@@ -605,7 +606,7 @@ class HuygensTemplate {
      * Sets the template info tag.
      */
     private function setJobInfoList( ) {
-        
+
         $list = "";
 
         foreach ($this->jobInfoArray as $key => $value) {
@@ -613,7 +614,7 @@ class HuygensTemplate {
             if ($key != "listID") {
                 $list .= " " . $key . " ";
             }
-            
+
             switch ( $key ) {
             case 'version':
                 $list .= $value;
@@ -632,7 +633,7 @@ class HuygensTemplate {
                 $this->jobInfoList = $value . " " . $list;
                 break;
             default:
-                error_log("Job info field $key not yet implemented.");       
+                error_log("Job info field $key not yet implemented.");
             }
         }
     }
@@ -649,14 +650,14 @@ class HuygensTemplate {
             if ($key != "listID") {
                 $list .= " " . $key . " ";
             }
-            
+
             switch ( $key ) {
             case 'setEnv':
             case 'taskID:0':
                 break;
             case 'listID':
                 $list = $this->string2tcllist($list);
-                $this->jobTasksList = $value . " " . $list;       
+                $this->jobTasksList = $value . " " . $list;
                 break;
             default:
                 error_log("Job task $key not yet implemented.");
@@ -687,7 +688,7 @@ class HuygensTemplate {
 		case 'attemptGpu':
 		$db = new DatabaseConnection();
 		$list .= $db->getGPUStateAsString();
-		break;		
+		break;
             case 'listID':
                 $list = $this->string2tcllist($list);
                 $this->envList = $value . " " . $list;
@@ -708,15 +709,15 @@ class HuygensTemplate {
      * Sets the template's restoration and thumbnail operations.
      */
     private function setImgProcessList( ) {
-        
+
         $list = "";
-        
+
         foreach ($this->imgProcessArray as $key => $value) {
-            
+
             if ($key != "listID") {
                 $list .= " ";
             }
-          
+
             switch ( $key ) {
             case 'info':
                 $list .= $this->getImgProcessInfoList();
@@ -744,7 +745,7 @@ class HuygensTemplate {
     private function getImgProcessInfoList( ) {
 
         $list = "";
-        
+
         foreach ($this->imgProcessInfoArray as $key => $value) {
 
             if ($key != "listID") {
@@ -760,7 +761,7 @@ class HuygensTemplate {
                 break;
             case 'timeStartAbs':
                 $list .= time();
-                break;                
+                break;
             case 'listID':
                 $list = $this->string2tcllist($list);
                 $list = $value . " " . $list;
@@ -769,7 +770,7 @@ class HuygensTemplate {
                 error_log("Info option $key not yet implemented");
             }
         }
-        
+
         return $list;
     }
 
@@ -778,9 +779,9 @@ class HuygensTemplate {
      * @return string The Tcl-compliant nested list with subtask names.
      */
     private function getImgProcessTaskList( ) {
-        
+
         $list = "";
-        
+
         foreach ($this->imgProcessTasksArray as $key => $value) {
             switch ( $key ) {
             case 'open':
@@ -792,7 +793,7 @@ class HuygensTemplate {
             case 'algorithms':
             case 'chromatic':
             case 'colocalization':
-            case '2Dhistogram':    
+            case '2Dhistogram':
             case 'XYXZRawAtSrcDir':
             case 'XYXZRawSubImgAtSrcDir':
             case 'XYXZRawAtDstDir':
@@ -819,7 +820,7 @@ class HuygensTemplate {
                 error_log("Image process task $key not yet implemented");
             }
         }
-        
+
         return $list;
     }
 
@@ -830,9 +831,9 @@ class HuygensTemplate {
     private function getImgProcessTasksDescr( ) {
 
         $tasksDescr = "";
-        
+
         $this->initializeThumbCounter();
-        foreach ($this->imgProcessTasksArray as $key => $value) { 
+        foreach ($this->imgProcessTasksArray as $key => $value) {
             $tasksDescr .= " ";
             switch ( $key ) {
             case 'open':
@@ -898,7 +899,7 @@ class HuygensTemplate {
     private function getImgTaskDescrOpen( ) {
 
         $taskDescr = "";
-        
+
         foreach ($this->imgOpenArray as $key => $value) {
 
            if ($key != "subImg" && $key != 'listID') {
@@ -940,8 +941,8 @@ class HuygensTemplate {
     private function getImgTaskDescrSetp( ) {
 
         $taskDescr = "";
-        
-        foreach ($this->setpArray as $key => $value) { 
+
+        foreach ($this->setpArray as $key => $value) {
 
             switch ( $key ) {
             case 'completeChanCnt':
@@ -980,7 +981,7 @@ class HuygensTemplate {
                 $this->setpList = $value . " " . $taskDescr;
                 break;
             default:
-                error_log("Setp field $key not yet implemented.");       
+                error_log("Setp field $key not yet implemented.");
             }
 
             if ($key != "listID" && $key != "completeChanCnt") {
@@ -998,7 +999,7 @@ class HuygensTemplate {
     private function getImgTaskDescrAdjbl( ) {
 
         $taskDescr = "";
-        
+
         foreach ($this->adjblArray as $key => $value) {
 
             if ($key != "listID") {
@@ -1027,9 +1028,9 @@ class HuygensTemplate {
      * @return string Tcl list with the 'chromatic aberration' task and its options.
      */
     private function getImgTaskDescrChromatic( ) {
-        
+
         $allTasksDescr = "";
-        
+
         $channelsArray = $this->getChansForChromaticCorrection();
         if (empty($channelsArray)) {
             return $allTasksDescr;
@@ -1038,15 +1039,16 @@ class HuygensTemplate {
         $chromaticParam = $this->deconSetting->parameter("ChromaticAberration");
         foreach ($channelsArray as $chanKey => $chan) {
             $taskDescr = "";
+            /** @var ChromaticAberration $chromaticParam */
             $chanVector = implode(' ', $chromaticParam->chanValue( $chan ));
-            
+
             foreach ($this->chromaticArray as $chromKey => $chromValue) {
                 if ($chromKey != "listID") {
                     $taskDescr .= " " . $chromKey . " ";
                 }
 
                 /* Notice that we force a 'sorted' channel correction, i.e.,
-                   there's no matching done based on wavelengths, etc. */ 
+                   there's no matching done based on wavelengths, etc. */
                 switch( $chromKey ) {
                 case 'q':
                 case 'lambdaEm':
@@ -1080,7 +1082,7 @@ class HuygensTemplate {
                 }
             }
         }
-        
+
         return $allTasksDescr;
     }
 
@@ -1089,12 +1091,12 @@ class HuygensTemplate {
      * @return string Tcl list with the 'autocrop' task and its options.
      */
     private function getImgTaskDescrAutocrop( ) {
-        
+
         $taskDescr = "";
 
         $autocropParam = $this->deconSetting->parameter('Autocrop');
         foreach ($this->autocropArray as $key => $value) {
-            
+
             if ($key != "listID") {
                 $taskDescr .= " " . $key . " ";
             }
@@ -1120,7 +1122,7 @@ class HuygensTemplate {
      * @return string Tcl list with the 'ZStabilize' task and its options.
      */
     private function getImgTaskDescrZStabilize( ) {
-        
+
         $taskDescr = "";
 
         $stedData = False;
@@ -1134,7 +1136,7 @@ class HuygensTemplate {
 
         $ZStabilizeParam = $this->deconSetting->parameter('ZStabilization');
         foreach ($this->ZStabilizeArray as $key => $value) {
-            
+
             if ($key != "listID") {
                 $taskDescr .= " " . $key . " ";
             }
@@ -1167,7 +1169,7 @@ class HuygensTemplate {
     private function getImgTaskDescrAlgorithms( ) {
 
         $allTasksDescr = "";
-        
+
         $chanCnt = $this->getChanCnt();
         for($chan = 0; $chan < $chanCnt; $chan++) {
             $algorithm = $this->getAlgorithm($chan);
@@ -1185,7 +1187,7 @@ class HuygensTemplate {
     private function getImgTaskDescrColocs( ) {
 
         $allTasksDescr = "";
-        
+
         if (!$this->getColocalization()) {
             return $allTasksDescr;
         }
@@ -1195,16 +1197,16 @@ class HuygensTemplate {
 
             /* All the possible coloc runs combining the chosen channels. */
         $runCnt = 0;
-        
+
         for ($i = 0; $i < count($colocChannels) - 1; $i++) {
             for ($j = $i + 1; $j < count($colocChannels); $j++) {
 
                 $chanR = $colocChannels[$i];
                 $chanG = $colocChannels[$j];
-                
+
                 $allTasksDescr .=
                     $this->getTaskDescrColoc($chanR, $chanG, $runCnt);
-                
+
                 if ( $runCnt < $colocRuns ) {
                     $runCnt++;
                 } else {
@@ -1212,7 +1214,7 @@ class HuygensTemplate {
                 }
             }
         }
-        
+
         return $allTasksDescr;
     }
 
@@ -1221,7 +1223,7 @@ class HuygensTemplate {
      * @return string Tcl list with the '2Dhistogram' task and its options.
      */
     private function getImgTaskDescrHistograms( ) {
-        
+
         $allTasksDescr = "";
 
         /* There should be one 2D histogram per colocalization run. */
@@ -1234,16 +1236,16 @@ class HuygensTemplate {
 
             /* All the possible coloc runs combining the chosen channels. */
         $runCnt = 0;
-        
+
         for ($i = 0; $i < count($colocChannels) - 1; $i++) {
             for ($j = $i + 1; $j < count($colocChannels); $j++) {
 
                 $chanR = $colocChannels[$i];
                 $chanG = $colocChannels[$j];
-                
+
                 $allTasksDescr .=
                     $this->getTaskDescrHistogram($chanR, $chanG, $runCnt);
-                
+
                 if ( $runCnt < $colocRuns ) {
                     $runCnt++;
                 } else {
@@ -1319,7 +1321,7 @@ class HuygensTemplate {
     private function getImgTaskDescrSave( ) {
 
         $taskDescr = "";
-        
+
         foreach ($this->imgSaveArray as $key => $value) {
 
             if ($key != "listID") {
@@ -1447,7 +1449,7 @@ class HuygensTemplate {
         default:
             error_log("Unknown SPIM direction: $direction");
         }
-        
+
         return $angle;
     }
 
@@ -1470,8 +1472,8 @@ class HuygensTemplate {
                 $deplMode = "vortexPulsed";
             }
         }
-        
-        return $deplMode;        
+
+        return $deplMode;
     }
 
     /**
@@ -1481,8 +1483,8 @@ class HuygensTemplate {
      */
     private function getStedLambda($channel) {
         $microSetting = $this->microSetting;
-        $stedLambda = $microSetting->parameter("StedWavelength")->value();       
-        return $stedLambda[$channel];        
+        $stedLambda = $microSetting->parameter("StedWavelength")->value();
+        return $stedLambda[$channel];
     }
 
     /**
@@ -1493,8 +1495,8 @@ class HuygensTemplate {
     private function getStedSaturationFactor($channel) {
         $microSetting = $this->microSetting;
         $stedSatFact =
-            $microSetting->parameter("StedSaturationFactor")->value();       
-        return $stedSatFact[$channel];        
+            $microSetting->parameter("StedSaturationFactor")->value();
+        return $stedSatFact[$channel];
     }
 
     /**
@@ -1505,7 +1507,7 @@ class HuygensTemplate {
     private function getStedImmunity($channel) {
         $microSetting = $this->microSetting;
         $stedImmunity = $microSetting->parameter("StedImmunity")->value();
-        return $stedImmunity[$channel];        
+        return $stedImmunity[$channel];
     }
 
     /**
@@ -1515,8 +1517,8 @@ class HuygensTemplate {
      */
     private function getSted3D($channel) {
         $microSetting = $this->microSetting;
-        $sted3D = $microSetting->parameter("Sted3D")->value();       
-        return $sted3D[$channel];        
+        $sted3D = $microSetting->parameter("Sted3D")->value();
+        return $sted3D[$channel];
     }
 
     /**
@@ -1526,7 +1528,7 @@ class HuygensTemplate {
      */
     private function getPinholeRadius($channel) {
         $microSetting = $this->microSetting;
-        $pinholeSize = $microSetting->parameter("PinholeSize")->value();       
+        $pinholeSize = $microSetting->parameter("PinholeSize")->value();
         return $pinholeSize[$channel];
     }
 
@@ -1542,15 +1544,15 @@ class HuygensTemplate {
         if (strstr($micrType,'sted3d')) {
             $micrType = 'sted';
         }
-        
+
         if (strstr($micrType,'sted')) {
             $stedMode = $this->getStedMode($channel);
-            
+
             if (strstr($stedMode,'confocal')) {
                 $micrType = 'confocal';
             }
         }
-        
+
         return $micrType;
     }
 
@@ -1739,7 +1741,7 @@ class HuygensTemplate {
     private function getTaskDescrAlgorithm($channel) {
 
         $taskDescr = "";
-        
+
         foreach ($this->algArray as $key => $value) {
 
             if ($key != "mode" && $key != "itMode" && $key != 'listID') {
@@ -1807,7 +1809,7 @@ class HuygensTemplate {
 
         $brMode = "auto";
 
-        if ( $SAcorr[ 'AberrationCorrectionNecessary' ] == 1 
+        if ( $SAcorr[ 'AberrationCorrectionNecessary' ] == 1
              &&  $SAcorr[ 'PerformAberrationCorrection' ] != 0 ) {
 
             if ($SAcorr[ 'AberrationCorrectionMode' ] != 'automatic' ) {
@@ -1815,7 +1817,7 @@ class HuygensTemplate {
                     $brMode = 'sliceBySlice';
                 } elseif ( $SAcorr[ 'AdvancedCorrectionOptions' ] == 'few' ) {
                     $brMode = 'few';
-                }    
+                }
             }
         }
 
@@ -1868,9 +1870,9 @@ class HuygensTemplate {
      */
     private function getSnrValue($channel) {
         $deconSetting = $this->deconSetting;
-        $snrRate = $deconSetting->parameter("SignalNoiseRatio")->value();       
+        $snrRate = $deconSetting->parameter("SignalNoiseRatio")->value();
         $snrValue = $snrRate[$channel];
-         
+
         if ($this->getAlgorithm() == "qmle") {
             $indexValues = array  (1, 2, 3, 4, 5);
             $snrArray = array  ("low", "fair", "good", "inf", "auto");
@@ -1961,7 +1963,7 @@ class HuygensTemplate {
      */
     private function getChansForChromaticCorrection( ) {
         $channelsArray = array();
-        
+
         $chanCnt = $this->getChanCnt();
         if ($chanCnt < 2) {
             return $channelsArray;
@@ -1971,7 +1973,7 @@ class HuygensTemplate {
 
         for ($chan = 0; $chan < $chanCnt; $chan++) {
             $chromaticChan = $chromaticParam->chanValue( $chan );
-            
+
             foreach ($chromaticChan as $component => $value) {
                 if (isset($value) && $value > 0) {
                     array_push($channelsArray, $chan);
@@ -1979,11 +1981,11 @@ class HuygensTemplate {
                 }
             }
         }
-        
+
         return $channelsArray;
     }
 
-    
+
     /* --------------------- Colocalization tasks ---------------------------- */
 
     /**
@@ -1994,9 +1996,9 @@ class HuygensTemplate {
      * @return string Tcl list with the 'colocalization' task and its options.
      */
     private function getTaskDescrColoc($chanR, $chanG, $runCnt) {
-        
+
         $taskDescr = "";
-        
+
         foreach ($this->colocArray as $key => $value) {
 
             if ($key != "listID") {
@@ -2057,8 +2059,8 @@ class HuygensTemplate {
      * Gets the value of the boolean choice 'Colocalization Analysis'.
      * @return bool Whether or not colocalization analysis should be performed.
      */
-    private function getColocalization( ) 
-    {    
+    private function getColocalization( )
+    {
         return $this->analysisSetting->parameter('ColocAnalysis')->value();
     }
 
@@ -2068,7 +2070,7 @@ class HuygensTemplate {
      */
     private function getColocChannels( ) {
         $colocChannels = $this->analysisSetting->parameter('ColocChannel')->value();
-        
+
             /* Do not count empty elements. Do count channel '0'. */
         return array_filter($colocChannels, 'strlen');
 }
@@ -2077,7 +2079,7 @@ class HuygensTemplate {
      * Gets the value of the choice 'Colocalization Coefficients'.
      * @return string Which colocalization coefficients should be calculated.
      */
-    private function getColocCoefficients( ) 
+    private function getColocCoefficients( )
     {
         $colocCoefficients = "";
         $coefArr = $this->analysisSetting->parameter('ColocCoefficient')->value();
@@ -2093,8 +2095,8 @@ class HuygensTemplate {
      * Gets the value of the choice 'Colocalization Map'.
      * @return string Which colocalization map should be created.
      */
-    private function getColocMap( ) 
-    {    
+    private function getColocMap( )
+    {
         return $this->analysisSetting->parameter('ColocMap')->value();
     }
 
@@ -2132,7 +2134,7 @@ class HuygensTemplate {
         }
     }
 
-    
+
      /* --------------------- Histogram tasks ---------------------------- */
 
     /**
@@ -2145,13 +2147,13 @@ class HuygensTemplate {
     private function getTaskDescrHistogram($chanR, $chanG, $runCnt) {
 
         $taskDescr = "";
-        
+
         foreach ($this->histoArray as $key => $value) {
-            
+
             if ($key != "listID") {
                 $taskDescr .= " " . $key . " ";
             }
-            
+
             switch( $key ) {
             case 'chanR':
                 $taskDescr .= $chanR;
@@ -2162,7 +2164,7 @@ class HuygensTemplate {
             case 'destDir':
                 $destDir  = $this->getDestDir() . "/hrm_previews";
                 $taskDescr .= $this->string2tcllist($destDir);
-                break;        
+                break;
             case 'destFile':
                 $destFile  = $this->getThumbBaseName() . ".hist_chan" . $chanR;
                 $destFile .= "_" . "chan" . $chanG;
@@ -2195,8 +2197,8 @@ class HuygensTemplate {
         if ($task == "") {
             // @todo Return something usable!
             return;
-        }        
-        
+        }
+
         $taskDescr = "";
 
         foreach ($this->thumbArray as $key => $value) {
@@ -2262,8 +2264,8 @@ class HuygensTemplate {
             case 'SFP':
                 $suffix = ".original.sfp";
                 break;
-            default: 
-                error_log("Unknown thumbnail type");               
+            default:
+                error_log("Unknown thumbnail type");
             }
         }
 
@@ -2287,10 +2289,10 @@ class HuygensTemplate {
                 $suffix = ".tSeries.sfp";
                 break;
             default:
-                error_log("Unknown thumbnail type");                
+                error_log("Unknown thumbnail type");
             }
         }
-        
+
         if (isset($suffix)) {
             $destFile .= $suffix;
         }
@@ -2308,12 +2310,12 @@ class HuygensTemplate {
         if (isset($this->subImage) && $subImg != null) {
             $suffix = " (";
             $suffix .= $this->tcllist2string($this->subImage);
-            $suffix .= ")";                    
+            $suffix .= ")";
         } else {
             $suffix = "";
         }
         return $suffix;
-    } 
+    }
 
     /* ----------------------------- Utilities ------------------------------- */
 
@@ -2362,7 +2364,7 @@ class HuygensTemplate {
      * @return string The confidence level.
      */
     private function getParameterConfidence($paramName) {
-
+        
         switch ( $paramName ) {
         case 'pr':
         case 'micr':
@@ -2430,14 +2432,14 @@ class HuygensTemplate {
         if (strpos($parameterValue, '*') !== FALSE) {
             return "default";
         }
- 
-        /* Parameters initialized with a value in setpArray do not exist 
+
+        /* Parameters initialized with a value in setpArray do not exist
          in HRM yet. We should try to read them from the metadata. */
         if (array_key_exists($parameter, $this->setpArray)) {
             if ($this->setpArray[$parameter] != '' ) {
                 return "default";
-            } 
-        }             
+            }
+        }
 
         /* Parameter set by the user. */
         return "noMetaData";
@@ -2571,7 +2573,7 @@ class HuygensTemplate {
             break;
         case 'stedSatFact':
             $parameterValue = $this->getStedSaturationFactor($channel);
-            break;            
+            break;
         case 'stedImmunity':
             $parameterValue = $this->getStedImmunity($channel);
             break;
@@ -2647,8 +2649,8 @@ class HuygensTemplate {
         default:
             error_log("Huygens template task '$task' not yet implemented.");
         }
-        
-        return $task;            
+
+        return $task;
     }
 
     /**
@@ -2659,7 +2661,7 @@ class HuygensTemplate {
      * @todo Fix the documentation of this method!
      */
     private function getNameTaskChromatic($task) {
-        
+
         $chromaticTasks = "";
 
         $channelsArray = $this->getChansForChromaticCorrection();
@@ -2671,7 +2673,7 @@ class HuygensTemplate {
         foreach ($channelsArray as $chanKey => $chan) {
             $chromaticTasks .= $task.":$chanKey ";
         }
-        
+
         return trim($chromaticTasks);
     }
 
@@ -2694,7 +2696,7 @@ class HuygensTemplate {
      * @return string The Huygens task name.
      */
     private function getNameTaskMultiChan($task) {
-        
+
         $tasks = "";
 
         /* At the moment there are only coloc/hist tasks as multichannel task.
@@ -2702,12 +2704,12 @@ class HuygensTemplate {
         $runCnt = $this->getNumberColocRuns();
 
         if ($runCnt == 0) return $tasks;
-        
+
         /* The template task run counter starts at 0. */
         for ($run = 0; $run < $runCnt; $run++ ) {
             $tasks .= $task . ":$run ";
         }
-        
+
         return trim($tasks);
     }
 
@@ -2726,7 +2728,7 @@ class HuygensTemplate {
             // @todo Return something usable!
             return;
         }
- 
+
         if (strstr($key, 'SFP') && !$saveSfpPreviews) {
             $task = "";
         } elseif (strstr($key, 'SubImg') && !$this->hasSubImage()) {
@@ -2755,7 +2757,7 @@ class HuygensTemplate {
         $colocRuns = 0;
 
         if ($this->getColocalization() == "1") {
-            
+
             $chanCnt = count($this->getColocChannels());
 
                 /* The number of combinations between channels obeys the following
@@ -2782,7 +2784,7 @@ class HuygensTemplate {
             $this->compareTviews = FALSE;
             return;
         }
-        
+
         $imgDims = $this->getImageDimensions($image);
 
         $imgSizeX = $imgDims['sizeX'];
@@ -2810,21 +2812,21 @@ class HuygensTemplate {
         $slicerPixelsYZ = $imgSizeY * $imgSizeZ;
         $slicerPixelsYT = $imgSizeY * $imgSizeT;
 
-            /* The maximum number of pixels per dimension that the JPEG libraries 
+            /* The maximum number of pixels per dimension that the JPEG libraries
          can handle. If the image is larger than this, we won't be able to
          generate a slicer preview. */
         $maxPixelsPerDim = 65000;
 
         if ($slicerPixelsX >= $maxPixelsPerDim) {
             $this->compareZviews = FALSE;
-            $this->compareTviews = FALSE;            
+            $this->compareTviews = FALSE;
             return;
         }
 
         if ($slicerPixelsYZ >= $maxPixelsPerDim) {
             $this->compareZviews = FALSE;
         }
-            
+
         if ($slicerPixelsYT >= $maxPixelsPerDim) {
             $this->compareTviews = FALSE;
         }
@@ -2841,7 +2843,7 @@ class HuygensTemplate {
         } else {
             $seriesMode = "off";
         }
-        
+
         return $seriesMode;
     }
 
@@ -2862,7 +2864,7 @@ class HuygensTemplate {
      * @return string The date
      */
     private function getTemplateDate( ) {
-        $today = date("D M j G:i:s T Y");  
+        $today = date("D M j G:i:s T Y");
         $today = $this->string2tcllist($today);
         return $today;
     }
@@ -2872,8 +2874,8 @@ class HuygensTemplate {
      * @return string The template name.
      */
     private function getTemplateName( ) {
-        $time = date('h-i-s');  
-        $today = date('Y-m-d');  
+        $time = date('h-i-s');
+        $today = date('Y-m-d');
         $templateName = "batch_" . $today . "_" . $time;
         return $templateName;
     }
@@ -2977,7 +2979,7 @@ class HuygensTemplate {
         $filename = $pathInfo['basename'];
         $series = $this->getSeriesMode();
         $opt = "-path \"$path\" -filename \"$filename\" -series $series";
-        
+
         /* Retrieve the image dimensions */
         return askHuCore( "reportImageDimensions", $opt );
     }

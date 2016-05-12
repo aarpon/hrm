@@ -184,7 +184,7 @@ class Nav
     public static function textUser($userName)
     {
         return "<li><img src=\"images/user.png\" alt=\"User\" />" .
-            "&nbsp;" . $userName . "</li>";
+        "&nbsp;" . $userName . "</li>";
     }
 
     /**
@@ -196,7 +196,7 @@ class Nav
     public static function linkBack($toURL)
     {
         return self::buildLinkHTMLElement("Back", $toURL,
-            "images/back_small.png" , "Back", false);
+            "images/back_small.png", "Back", false);
     }
 
     /**
@@ -205,7 +205,7 @@ class Nav
     public static function exit_to_login()
     {
         return self::buildLinkHTMLElement("Exit", "login.php",
-            "images/exit.png" , "Exit", false);
+            "images/exit.png", "Exit", false);
     }
 
     /**
@@ -214,7 +214,7 @@ class Nav
     public static function actionCheckForUpdates()
     {
         return self::buildActionHTMLElement("Check for updates",
-            "images/check_for_update.png" , "Check for updates",
+            "images/check_for_update.png", "Check for updates",
             "checkForUpdates();");
     }
 

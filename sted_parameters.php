@@ -2,15 +2,19 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
+use hrm\DatabaseConnection;
 use hrm\Nav;
+use hrm\param\base\Parameter;
+use hrm\param\ImageFileFormat;
+use hrm\param\Sted3D;
+use hrm\param\StedDepletionMode;
+use hrm\param\StedImmunity;
+use hrm\param\StedSaturationFactor;
+use hrm\param\StedWavelength;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.inc.php';
 
-require_once("./inc/User.inc.php");
-require_once("./inc/Parameter.inc.php");
-require_once("./inc/Setting.inc.php");
 require_once("./inc/Util.inc.php");
-require_once("./inc/Database.inc.php");
 
 /* *****************************************************************************
  *
@@ -38,9 +42,11 @@ $parameterNames = $_SESSION['setting']->stedParameterNames();
 $db = new DatabaseConnection();
 foreach ( $parameterNames as $name ) {
   $parameter = $_SESSION['setting']->parameter( $name );
-  $confidenceLevel =
+    /** @var ImageFileFormat $fileFormat */
+    $confidenceLevel =
     $db->getParameterConfidenceLevel( $fileFormat->value(), $name );
-  $parameter->setConfidenceLevel( $confidenceLevel );
+    /** @var Parameter $parameter */
+    $parameter->setConfidenceLevel( $confidenceLevel );
   $_SESSION['setting']->set( $parameter );
 }
 
@@ -51,6 +57,7 @@ foreach ( $parameterNames as $name ) {
  *
  **************************************************************************** */
 
+/** @var StedDepletionMode $stedDeplParam */
 $stedDeplParam = $_SESSION['setting']->parameter("StedDepletionMode");
 $stedDepl = $stedDeplParam->value();
 for ($i=0; $i < $chanCnt; $i++) {
@@ -68,6 +75,7 @@ $_SESSION['setting']->set($stedDeplParam);
  *
  **************************************************************************** */
 
+/** @var StedSaturationFactor $stedSatFactParam */
 $stedSatFactParam = $_SESSION['setting']->parameter("StedSaturationFactor");
 $stedSatFactParam->setNumberOfChannels($chanCnt);
 $stedSatFact = $stedSatFactParam->value();
@@ -90,6 +98,7 @@ $_SESSION['setting']->set($stedSatFactParam);
  *
  **************************************************************************** */
 
+/** @var StedWavelength $stedLambdaParam */
 $stedLambdaParam = $_SESSION['setting']->parameter("StedWavelength");
 $stedLambdaParam->setNumberOfChannels($chanCnt);
 $stedLambda = $stedLambdaParam->value();
@@ -111,6 +120,7 @@ $_SESSION['setting']->set($stedLambdaParam);
  *
  **************************************************************************** */
 
+/** @var StedImmunity $stedImmunityParam */
 $stedImmunityParam = $_SESSION['setting']->parameter("StedImmunity");
 $stedImmunityParam->setNumberOfChannels($chanCnt);
 $stedImmunity = $stedImmunityParam->value();
@@ -133,6 +143,7 @@ $_SESSION['setting']->set($stedImmunityParam);
  **************************************************************************** */
 
 if ($_SESSION['setting']->isSted3D()) {
+    /** @var Sted3D $sted3DParam */
     $sted3DParam = $_SESSION['setting']->parameter("Sted3D");
     $sted3DParam->setNumberOfChannels($chanCnt);
     $sted3D = $sted3DParam->value();
@@ -299,12 +310,13 @@ include("header.inc.php");
 
 ***************************************************************************/
 
+/** @var StedDepletionMode $parameterStedDeplMode */
 $parameterStedDeplMode = $_SESSION['setting']->parameter("StedDepletionMode");
 ?>
 
             <fieldset class="setting <?php
             echo $parameterStedDeplMode->confidenceLevel(); ?>"
-            onmouseover="javascript:changeQuickHelp( 'deplMode' );" >
+            onmouseover="changeQuickHelp( 'deplMode' );" >
 
                 <legend>
                     <a href="javascript:openWindow(
@@ -337,8 +349,8 @@ for ($chan = 0; $chan < $chanCnt; $chan++) {
 
     <td>
     <select name="StedDepletionMode<?php echo $chan;?>"
-    onclick="javascript:changeStedEntryProperties(this,<?php echo $chan;?>)"
-    onchange="javascript:changeStedEntryProperties(this,<?php echo $chan;?>)">
+    onclick="changeStedEntryProperties(this,<?php echo $chan;?>)"
+    onchange="changeStedEntryProperties(this,<?php echo $chan;?>)">
 
 <?php
                         /* Loop for select options. */
@@ -386,15 +398,16 @@ for ($chan = 0; $chan < $chanCnt; $chan++) {
 
 ***************************************************************************/
 
+/** @var StedSaturationFactor $parameterStedSatFact */
 $parameterStedSatFact = $_SESSION['setting']->parameter("StedSaturationFactor");
 ?>
 
             <fieldset class="setting <?php
             echo $parameterStedSatFact->confidenceLevel(); ?>"
-            onmouseover="javascript:changeQuickHelp( 'satFact' );" >
+            onmouseover="changeQuickHelp( 'satFact' );" >
 
                 <legend>
-                    <a href="javascript:openWindow(
+                    <a href="openWindow(
                        'http://www.svi.nl/HuygensRemoteManagerHelpSTED')">
                         <img src="images/help.png" alt="?" />
                     </a>
@@ -451,15 +464,16 @@ for ($i = 0; $i < $chanCnt; $i++) {
 
 ***************************************************************************/
 
+/** @var StedWavelength $parameterStedLambda */
 $parameterStedLambda = $_SESSION['setting']->parameter("StedWavelength");
 ?>
 
             <fieldset class="setting <?php
             echo $parameterStedLambda->confidenceLevel(); ?>"
-            onmouseover="javascript:changeQuickHelp( 'lambda' );" >
+            onmouseover="changeQuickHelp( 'lambda' );" >
 
                 <legend>
-                    <a href="javascript:openWindow(
+                    <a href="openWindow(
                        'http://www.svi.nl/HuygensRemoteManagerHelpSTED')">
                         <img src="images/help.png" alt="?" />
                     </a>
@@ -517,15 +531,16 @@ for ($i = 0; $i < $chanCnt; $i++) {
 
     ***************************************************************************/
 
-    $parameterStedImmunity = $_SESSION['setting']->parameter("StedImmunity");
+/** @var StedImmunity $parameterStedImmunity */
+$parameterStedImmunity = $_SESSION['setting']->parameter("StedImmunity");
 ?>
 
             <fieldset class="setting <?php
             echo $parameterStedImmunity->confidenceLevel(); ?>"
-            onmouseover="javascript:changeQuickHelp( 'immunity' );" >
+            onmouseover="changeQuickHelp( 'immunity' );" >
 
                 <legend>
-                    <a href="javascript:openWindow(
+                    <a href="openWindow(
                        'http://www.svi.nl/HuygensRemoteManagerHelpSTED')">
                         <img src="images/help.png" alt="?" />
                     </a>
@@ -584,15 +599,16 @@ for ($i = 0; $i < $chanCnt; $i++) {
     ***************************************************************************/
 
 if ($_SESSION['setting']->isSted3D()) {
+    /** @var Sted3D $parameterSted3D */
     $parameterSted3D = $_SESSION['setting']->parameter("Sted3D");
 ?>
 
             <fieldset class="setting <?php
             echo $parameterSted3D->confidenceLevel(); ?>"
-            onmouseover="javascript:changeQuickHelp( '3d' );" >
+            onmouseover="changeQuickHelp( '3d' );" >
 
                 <legend>
-                    <a href="javascript:openWindow(
+                    <a href="openWindow(
                        'http://www.svi.nl/HuygensRemoteManagerHelpSTED')">
                         <img src="images/help.png" alt="?" />
                     </a>
@@ -656,7 +672,7 @@ if ($_SESSION['setting']->isSted3D()) {
            <div><input name="OK" type="hidden" /></div>
 
             <div id="controls"
-                 onmouseover="javascript:changeQuickHelp( 'default' )">
+                 onmouseover="changeQuickHelp( 'default' )">
               <input type="button" value="" class="icon previous"
                   onmouseover="TagToTip('ttSpanBack' )"
                   onmouseout="UnTip()"
@@ -689,14 +705,14 @@ if ($_SESSION['setting']->isSted3D()) {
 
 
    <div id="rightpanel"
-         onmouseover="javascript:changeQuickHelp( 'default' );" >
+         onmouseover="changeQuickHelp( 'default' );" >
 
         <div id="info">
 
           <h3>Quick help</h3>
 
             <div id="contextHelp"
-             onmouseover="javascript:changeQuickHelp( 'default' )">
+             onmouseover="changeQuickHelp( 'default' )">
             </div>
 
       <?php

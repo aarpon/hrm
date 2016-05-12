@@ -90,7 +90,8 @@ class Log
      * Log info message.
      * @param string $message Info message.
      */
-    public static function info($message) {
+    public static function info($message)
+    {
         self::getMonoLogger()->addInfo($message);
     }
 
@@ -98,7 +99,8 @@ class Log
      * Log warning message.
      * @param string $message Warning message.
      */
-    public static function warning($message) {
+    public static function warning($message)
+    {
         self::getMonoLogger()->addWarning($message);
     }
 

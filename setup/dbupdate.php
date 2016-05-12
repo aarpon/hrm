@@ -12,7 +12,7 @@
 //
 // When you want to change something in the database, that is, to create a new
 // database release, it is necessary to insert the modifications in the last part
-// of the script and to update the constant DB_LAST_REVISION in System.inc.php.
+// of the script and to update the constant DB_LAST_REVISION in System.php.
 //
 // When running the script, three situations are possible:
 // 1) a new user of HRM run the script from command line, the database does not
@@ -36,7 +36,7 @@
 
 // Include hrm_config.inc.php
 require_once( dirname( __FILE__ ) . "/../inc/hrm_config.inc.php" );
-require_once( dirname( __FILE__ ) . "/../inc/System.inc.php" );
+require_once(dirname(__FILE__) . "/../inc/System.php");
 
 // Database last revision
 $LAST_REVISION = System::getDBLastRevision( );

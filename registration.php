@@ -9,7 +9,7 @@ use hrm\Validator;
 require_once dirname(__FILE__) . '/inc/bootstrap.inc.php';
 
 require_once("./inc/User.inc.php");
-require_once("./inc/Database.inc.php");
+require_once("./inc/Database.php");
 require_once("./inc/hrm_config.inc.php");
 require_once("./inc/Util.inc.php");
 

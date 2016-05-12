@@ -4,10 +4,17 @@
 
 use hrm\DatabaseConnection;
 use hrm\Nav;
+use hrm\param\base\Parameter;
+use hrm\param\EmissionWavelength;
+use hrm\param\ExcitationWavelength;
+use hrm\param\ImageFileFormat;
+use hrm\param\MicroscopeType;
+use hrm\param\NumericalAperture;
+use hrm\param\ObjectiveType;
+use hrm\param\SampleMedium;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.inc.php';
 
-require_once("./inc/Parameter.inc.php");
 
 /* *****************************************************************************
  *
@@ -33,12 +40,12 @@ $message = "";
  *
  **************************************************************************** */
 
+/** @var ImageFileFormat $fileFormat */
 $fileFormat = $_SESSION['setting']->parameter("ImageFileFormat");
 $parameterNames = $_SESSION['setting']->microscopeParameterNames();
 $db = new DatabaseConnection();
 foreach ($parameterNames as $name) {
     $parameter = $_SESSION['setting']->parameter($name);
-    /** @var ImageFileFormat $fileFormat */
     $confidenceLevel = $db->getParameterConfidenceLevel(
         $fileFormat->value(), $name);
     /** @var Parameter $parameter */
