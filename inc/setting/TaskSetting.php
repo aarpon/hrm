@@ -445,7 +445,7 @@ class TaskSetting extends Setting
      * Parse Huygens parameters to HRM parameters.
      * @param array $huArray An array with the result of 'image setp -tclReturn'.
      */
-    public function parseParamsFromHuCore($huArray)
+    public function parseParamsFromHuCore(array $huArray)
     {
 
         // Sanity checks: remove trailing spaces.

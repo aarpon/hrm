@@ -203,36 +203,6 @@ abstract class SettingEditor
     }
 
     /**
-     * Creates a new setting based on parsing the given file through HuCore.
-     * @param Setting $setting The setting object to fill.
-     * @param string $dirName Full path to the containing folder.
-     * @param string $fileName File name without path.
-     * @return bool True if the new template creation was successful, false
-     * otherwise.
-     * @todo Move this to ParameterSettingEditor!
-     *
-     */
-    public function image2hrmTemplate($setting, $dirName, $fileName)
-    {
-        $result = False;
-
-        if ($setting == NULL) {
-            return $result;
-        }
-
-        /* If it doesn't work, just do the same as create new. */
-        $opts = "-path \"" . $dirName . "\" -filename \"$fileName\"";
-
-        $data = askHuCore('getMetaDataFromImage', $opts);
-
-        // @todo Not all settings have this method!
-        $setting->parseParamsFromHuCore($data);
-        $this->message = $setting->message();
-
-        return $result;
-    }
-
-    /**
      * Populates a setting based on parsing the raw file string of a Huygens
      * template.
      * @param Setting $setting The setting object to fill.

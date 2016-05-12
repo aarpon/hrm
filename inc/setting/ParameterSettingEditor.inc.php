@@ -52,4 +52,32 @@ class ParameterSettingEditor extends SettingEditor
         return (new ParameterSetting());
     }
 
+    /**
+     * Creates a new ParameterSetting based on parsing the given file through HuCore.
+     * @param ParameterSetting $setting The ParameterSetting object to fill.
+     * @param string $dirName Full path to the containing folder.
+     * @param string $fileName File name without path.
+     * @return bool True if the new template creation was successful, false
+     * otherwise.
+     *
+     */
+    public function image2hrmTemplate(ParameterSetting $setting, $dirName, $fileName)
+    {
+        $result = False;
+
+        if ($setting == NULL) {
+            return $result;
+        }
+
+        /* If it doesn't work, just do the same as create new. */
+        $opts = "-path \"" . $dirName . "\" -filename \"$fileName\"";
+
+        $data = askHuCore('getMetaDataFromImage', $opts);
+
+        $setting->parseParamsFromHuCore($data);
+        $this->message = $setting->message();
+
+        return $result;
+    }
+
 }
