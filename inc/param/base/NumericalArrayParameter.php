@@ -140,9 +140,13 @@ class NumericalArrayParameter extends NumericalParameter
      * The value must be an array with 'maxChanCnt' values (those who refer to
      * non-existing channels should be null).
      *
+     * @todo Notice that right now we do not force the input argument to
+     * be an array, since this requires a large refactoring that will be
+     * done in a later stage.
+     *
      * @param array $value Array of values for the NumericalArrayParameter.
      */
-    public function setValue(array $value)
+    public function setValue($value)
     {
         $db = new DatabaseConnection;
         $maxChanCnt = $db->getMaxChanCnt();

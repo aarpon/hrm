@@ -4,7 +4,7 @@
 
 use hrm\Fileserver;
 use hrm\Nav;
-use hrm\ParameterSetting;
+use hrm\setting\ParameterSetting;
 use hrm\user\User;
 use hrm\System;
 

@@ -7,7 +7,7 @@
  * This file is part of the Huygens Remote Manager
  * Copyright and license notice: see license.txt
  */
-namespace hrm;
+namespace hrm\setting\base;
 
 use hrm\param\base\Parameter;
 use hrm\user\User;
@@ -189,7 +189,7 @@ abstract class Setting {
         foreach ($setting->parameterNames() as $name) {
             $parameter = $this->parameter[$name];
             $otherParameter = $setting->parameter($name);
-            $newValue = $otherParameter->internalValue();    
+            $newValue = $otherParameter->internalValue();
             $parameter->setValue($newValue);
             $this->parameter[$name] = $parameter;
         }

@@ -69,6 +69,7 @@ class NumericalParameter extends Parameter
     public function __construct($name)
     {
         parent::__construct($name);
+
         $this->min = NULL;
         $this->max = NULL;
         $this->checkMin = False;
@@ -80,8 +81,8 @@ class NumericalParameter extends Parameter
         // boundary values from the database and sets them
         $db = new DatabaseConnection;
         $values = $db->readNumericalValueRestrictions($this);
-        $min = $values[0];
-        $max = $values[1];
+        $min = intval($values[0]);
+        $max = intval($values[1]);
         $minIncluded = $values[2];
         $maxIncluded = $values[3];
         $default = $values[4];
@@ -102,6 +103,12 @@ class NumericalParameter extends Parameter
             $this->isMaxIncluded = False;
         }
         if ($default != NULL) {
+            if (count($default) == 1) {
+                $default = intval($default);
+            }
+            // @todo The inheriting classes will call their setValue()
+            // method here. The value should be an array, but this is not
+            // the case for StedImmunity.
             $this->setValue($default);
         }
     }

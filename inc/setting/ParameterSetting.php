@@ -7,12 +7,14 @@
  * This file is part of the Huygens Remote Manager
  * Copyright and license notice: see license.txt
  */
-namespace hrm;
+namespace hrm\setting;
 
+use hrm\DatabaseConnection;
 use hrm\param\base\Parameter;
 use hrm\param\MicroscopeType;
 use hrm\param\PinholeSize;
 use hrm\param\PSF;
+use hrm\setting\base\Setting;
 
 require_once dirname(__FILE__) . '/../bootstrap.inc.php';
 
@@ -78,8 +80,10 @@ class ParameterSetting extends Setting {
         );
 
         // Instantiate the Parameter objects
+        // Please mind that the full class name with namespace must be provided.
         foreach ($parameterClasses as $class) {
-            $param = new $class;
+            $className = 'hrm\\param\\' . $class;
+            $param = new $className;
             /** @var Parameter $param */
             $name = $param->name();
             $this->parameter[$name] = $param;
@@ -553,7 +557,7 @@ class ParameterSetting extends Setting {
                 $noErrorsFound = False;
             }
         }
-        
+
 
         // Gaussian Width
         $value = array(null, null, null, null, null);
@@ -707,7 +711,7 @@ class ParameterSetting extends Setting {
                 $noErrorsFound = False;
             }
         }
-        
+
 
         // Spim NA
         $value = array(null, null, null, null, null);
@@ -766,7 +770,7 @@ class ParameterSetting extends Setting {
             if (isset($postedParameters["SpimFill$i"])) {
                 $value[$i] = $postedParameters["SpimFill$i"];
                 unset($postedParameters["SpimFill$i"]);
-                
+
                 // Fallback to '0' if no value was provided and
                 // the channel is not 'High NA'.
                 if (empty($value[$i])
@@ -777,32 +781,32 @@ class ParameterSetting extends Setting {
             }
         }
         $name = 'SpimFill';
-        
+
         // Do not filter '0'. Thus, use 'strlen' as callback for filtering.
         $valueSet = count(array_filter($value, 'strlen')) > 0;
         if ($valueSet) {
-            
+
             // Set the value
             $parameter = $this->parameter($name);
             $parameter->setValue($value);
             $this->set($parameter);
-            
+
             if (!$parameter->check()) {
                 $this->message = $parameter->message();
                 $noErrorsFound = False;
             }
-            
+
         } else {
-            
+
             // In this case it is important to know whether the Parameter
             // must have a value or not
             $parameter = $this->parameter($name);
             $mustProvide = $parameter->mustProvide();
-            
+
             // Reset the Parameter
             $parameter->reset();
             $this->set($parameter);
-            
+
             // If the Parameter value must be provided, we return an error
             if ($mustProvide) {
                 $this->message = "Please set the Spim Fill Factor!";
@@ -820,38 +824,38 @@ class ParameterSetting extends Setting {
             }
         }
         $name = 'SpimDir';
-        
+
         // Do not filter '0'. Thus, use 'strlen' as callback for filtering.
         $valueSet = count(array_filter($value, 'strlen')) > 0;
         if ($valueSet) {
-            
+
             // Set the value
             $parameter = $this->parameter($name);
             $parameter->setValue($value);
             $this->set($parameter);
-            
+
             if (!$parameter->check()) {
                 $this->message = $parameter->message();
                 $noErrorsFound = False;
             }
-            
+
         } else {
-            
+
             // In this case it is important to know whether the Parameter
             // must have a value or not
             $parameter = $this->parameter($name);
             $mustProvide = $parameter->mustProvide();
-            
+
             // Reset the Parameter
             $parameter->reset();
             $this->set($parameter);
-            
+
             // If the Parameter value must be provided, we return an error
             if ($mustProvide) {
                 $this->message = "Please set the Spim Direction!";
                 $noErrorsFound = False;
             }
-        }       
+        }
 
         return $noErrorsFound;
     }
@@ -871,10 +875,10 @@ class ParameterSetting extends Setting {
         if (!$this->isSted() && !$this->isSted3D()) {
             return True;
         }
-        
+
         $db = new DatabaseConnection;
         $maxChanCnt = $db->getMaxChanCnt();
-        
+
         $this->message = '';
         $noErrorsFound = True;
 
@@ -1131,7 +1135,7 @@ class ParameterSetting extends Setting {
 
 
         return $noErrorsFound;
-    }   
+    }
 
     /**
      * Checks that the posted Capturing Parameters are all defined and valid.
@@ -1802,7 +1806,7 @@ class ParameterSetting extends Setting {
                 continue;
             if ($parameter->name() == 'Sted3D' && !$this->isSted3D())
                 continue;
-            
+
             // To avoid confusion it would be desirable to filter SPIM
             // parameters on a per channel basis, but we don't do that yet
             // for any HRM parameters.
@@ -2340,7 +2344,7 @@ class ParameterSetting extends Setting {
             }
 
             $hrmMicrType->setValue($micrVal);
-        } 
+        }
 
         // Number of channels.
         if (isset($huMicrType)) {
@@ -2359,16 +2363,16 @@ class ParameterSetting extends Setting {
         // Sampling sizes. Exceptionally, no CL is checked here.
         if (isset($huArray['s'])) {
             $sampleSizes = array_map('floatval',  explode(' ', $huArray['s']));
-            
+
             $sampleSizes[0] = round($sampleSizes[0] * 1000);
             $this->parameter['CCDCaptorSizeX']->setValue($sampleSizes[0]);
-            
+
             $sampleSizes[2] = round($sampleSizes[2] * 1000);
             $this->parameter['ZStepSize']->setValue($sampleSizes[2]);
-            
+
             $this->parameter['TimeInterval']->setValue($sampleSizes[3]);
         }
-        
+
         // Numerical Aperture.
         if (strpos($huArray['parState,na'], "default") === FALSE) {
             $na = explode(" ", $huArray['na'], 5);
@@ -2395,7 +2399,7 @@ class ParameterSetting extends Setting {
                                   explode(' ', $huArray['ex']));
             $this->parameter['ExcitationWavelength']->setValue($lambdaEx);
         }
-        
+
         // Emission Wavelength.
         if (strpos($huArray['parState,em'], "default") === FALSE) {
             $lambdaEm = array_map('intval',
@@ -2431,7 +2435,7 @@ class ParameterSetting extends Setting {
         // STED Depletion Mode.
         if (strpos($huArray['parState,stedMode'], "default") === FALSE) {
             $stedMode = explode(' ', $huArray['stedMode']);
-            
+
             // Rename some modes if the mType is set to confocal.
             for($i = 0; $i < count($stedMode); $i++) {
                 if($huMicrType[$i] == 'confocal') {
@@ -2454,7 +2458,7 @@ class ParameterSetting extends Setting {
                                     explode(' ', $huArray['stedLambda']));
             $this->parameter['StedWavelength']->setValue($stedLambda);
         }
-        
+
         // STED Immunity Fraction.
         if (strpos($huArray['parState,stedImmunity'], "default") === FALSE) {
             $stedImmunity = array_map('floatval',
@@ -2468,7 +2472,7 @@ class ParameterSetting extends Setting {
                                 explode(' ', $huArray['sted3D']));
             $this->parameter['Sted3D']->setValue($sted3d);
         }
-        
+
         // SPIM Excitation Mode.
         if (strpos($huArray['parState,spimExc'], "default") === FALSE) {
             $spimExcMode = array_map('floatval',
@@ -2503,7 +2507,7 @@ class ParameterSetting extends Setting {
                                 explode(' ', $huArray['spimNA']));
             $this->parameter['SpimNA']->setValue($spimNA);
         }
-        
+
         // SPIM Fill Factor.
         if (strpos($huArray['parState,spimFill'], "default") === FALSE) {
             $spimFill = array_map('floatval',
