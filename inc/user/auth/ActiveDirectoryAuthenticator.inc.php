@@ -153,7 +153,9 @@ class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
         // This is a fallback to make sure to close any open sockets when the
         // object is deleted, since all methods of this class that access the
         // adLDAP object explicitly close the connection when done.
-        $this->m_AdLDAP->close();
+        if ($this->m_AdLDAP !== null) {
+            $this->m_AdLDAP->close();
+        }
     }
 
     /**
