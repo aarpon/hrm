@@ -58,9 +58,10 @@ class CCDCaptorSize extends NumericalParameter
 
     /**
      * This Parameter should not display anything.
+     * @param int $numberOfChannels Number of channels (ignored).
      * @return string Empty string.
      */
-    public function displayString()
+    public function displayString($numberOfChannels = 0)
     {
         $result = '';
         return $result;

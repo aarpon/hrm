@@ -4,13 +4,12 @@
 
 use hrm\DatabaseConnection;
 use hrm\Nav;
-use hrm\ParameterSetting;
+use hrm\setting\ParameterSetting;
 use hrm\user\User;
-use hrm\Setting;
+use hrm\setting\Setting;
 use hrm\System;
 require_once dirname(__FILE__) . '/inc/bootstrap.inc.php';
 
-require_once("./inc/Parameter.inc.php");
 
 /* *****************************************************************************
  *

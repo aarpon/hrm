@@ -3,18 +3,16 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
-use hrm\AnalysisSetting;
+use hrm\param\base\Parameter;
+use hrm\setting\AnalysisSetting;
 use hrm\DatabaseConnection;
 use hrm\Mail;
-use hrm\ParameterSetting;
+use hrm\setting\ParameterSetting;
 use hrm\System;
-use hrm\TaskSetting;
+use hrm\setting\TaskSetting;
 use hrm\user\User;
 
 require_once dirname(__FILE__) . '/../inc/bootstrap.inc.php';
-
-require_once dirname(__FILE__) . '/../inc/Parameter.inc.php';
-
 
 /*
 
@@ -69,7 +67,6 @@ PHP:          $params[0] := "ExcitationWavelength"
 */
 
 require_once(dirname(__FILE__) . '/../inc/JobQueue.inc.php');
-require_once(dirname(__FILE__) . '/../inc/Parameter.inc.php');
 
 // This is not strictly necessary for the Ajax communication, but will be
 // necessary for accessing session data to create the response.

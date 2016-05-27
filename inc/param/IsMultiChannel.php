@@ -35,9 +35,10 @@ class IsMultiChannel extends BooleanParameter
 
     /**
      * Returns the string representation of the isMultiChannel Parameter
+     * @param int $numberOfChannels Number of channels (ignored).
      * @return string String representation of the IsMultiChannel Parameter.
      */
-    public function displayString()
+    public function displayString($numberOfChannels = 0)
     {
         if ($this->value() == 'True') {
             $result = " multichannel image\n";

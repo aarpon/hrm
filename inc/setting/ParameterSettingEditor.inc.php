@@ -9,6 +9,7 @@
  */
 namespace hrm\setting;
 
+use hrm\setting\base\SettingEditor;
 use hrm\user\User;
 
 require_once dirname(__FILE__) . '/../bootstrap.inc.php';

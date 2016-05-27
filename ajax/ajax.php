@@ -3,7 +3,7 @@
 // Copyright and license notice: see license.txt
 
 use hrm\DatabaseConnection;
-use hrm\ParameterSettingEditor;
+use hrm\setting\ParameterSettingEditor;
 use hrm\user\User;
 
 require_once dirname(__FILE__) . '/../inc/bootstrap.inc.php';

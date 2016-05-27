@@ -54,9 +54,10 @@ class BooleanParameter extends ChoiceParameter
 
     /**
      * Returns the string representation of the BooleanParameter.
+     * @param int $numberOfChannels Number of channels (ignored).
      * @return string String representation of the BooleanParameter.
      */
-    public function displayString()
+    public function displayString($numberOfChannels = 0)
     {
         if ($this->value() == True) {
             $value = 'yes';

@@ -2,9 +2,10 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
+use hrm\Fileserver;
 use hrm\Nav;
-use hrm\ParameterSetting;
-use hrm\ParameterSettingEditor;
+use hrm\setting\ParameterSetting;
+use hrm\setting\ParameterSettingEditor;
 use hrm\System;
 use hrm\user\User;
 
@@ -160,6 +161,7 @@ else if (isset($_POST['huTotemplate'])) {
     }
 }
 else if (isset($_POST['edit'])) {
+    /** @var ParameterSetting $setting */
     $setting = $_SESSION['editor']->loadSelectedSetting();
     if ($setting) {
         $setting->parameter("ImageFileFormat")->setValue($fileFormat);
@@ -227,7 +229,7 @@ else if (isset($_POST['OK']) && $_POST['OK']=="OK" ) {
   }
 }
 
-$script = array( "settings.js", "common.js",
+ $script = array( "settings.js", "common.js",
                  "json-rpc-client.js", "shared.js", "ajax_utils.js" );
 
 include("header.inc.php");

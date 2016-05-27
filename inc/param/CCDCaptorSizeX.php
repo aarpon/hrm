@@ -42,9 +42,10 @@ class CCDCaptorSizeX extends NumericalParameter
 
     /**
      * Returns the string representation of the CCDCaptorSizeX Parameter.
+     * @param int $numberOfChannels Number of channels (ignored).
      * @return string String representation of the CCDCaptorSizeX Parameter.
      */
-    public function displayString()
+    public function displayString($numberOfChannels = 0)
     {
         $result = $this->formattedName('pixel size');
         if ($this->notSet()) {

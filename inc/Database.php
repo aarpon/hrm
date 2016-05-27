@@ -10,6 +10,9 @@
 
 namespace hrm;
 
+use ADODB_mysql;
+use hrm\setting\base\Setting;
+
 require_once dirname(__FILE__) . "/bootstrap.inc.php";
 
 require_once dirname(__FILE__) . "/Util.inc.php" ;
@@ -30,7 +33,7 @@ class DatabaseConnection {
 
     /**
      * Private ADOConnection object.
-     * @var ADOConnection
+     * @var ADODB_mysql
      */
     private $connection;
 
@@ -165,7 +168,7 @@ class DatabaseConnection {
     /**
      * Executes an SQL query.
      * @param string $query  SQL query.
-     * @return RecordSet|False Query result.
+     * @return \ADORecordSet_empty|\ADORecordSet_mysql|False Query result.
      */
     public function execute($query) {
         $connection = $this->connection();
@@ -389,10 +392,10 @@ class DatabaseConnection {
      * If the setting already exists, the old values are overwritten, otherwise
      * a new setting is created.
      *
-     * @param Setting $settings Settings object to be saved.
+     * @param \hrm\setting\base\Setting $settings Settings object to be saved.
      * @return bool True if saving was successful, false otherwise.
     */
-    public function saveParameterSettings($settings) {
+    public function saveParameterSettings(Setting $settings) {
         $owner = $settings->owner();
         $user = $owner->name();
         $name = $settings->name();

@@ -9,6 +9,7 @@
  */
 namespace hrm\setting\base;
 
+use hrm\DatabaseConnection;
 use hrm\param\base\Parameter;
 use hrm\user\User;
 
