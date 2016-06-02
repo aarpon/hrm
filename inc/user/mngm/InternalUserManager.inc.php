@@ -5,7 +5,7 @@
 namespace hrm\user\mngm;
 
 use hrm\DatabaseConnection;
-use hrm\User;
+use hrm\user\User;
 
 require_once dirname(__FILE__) . '/../../bootstrap.inc.php';
 

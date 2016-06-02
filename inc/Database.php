@@ -228,8 +228,9 @@ class DatabaseConnection {
      * @return bool True if the user was added successfully; false otherwise.
     */
     public function addNewUser($username, $password, $email, $group, $status) {
+        $cryptPass = md5($password);
         $query = "INSERT INTO username (name, password, email, research_group, status) " .
-            "VALUES ('$username', 'md5($password)', '$email', '$group', '$status');";
+            "VALUES ('$username', '$cryptPass', '$email', '$group', '$status');";
         $result = $this->execute($query);
         if ( $result ) {
             $query = "UPDATE username SET creation_date = CURRENT_TIMESTAMP WHERE name = '$username';";
@@ -256,12 +257,12 @@ class DatabaseConnection {
         // The admin user does not have a group and stores his password in the
         // configuration files. The only variable is the password.
         if ( $isadmin === True ) {
-            $query = "UPDATE username SET password = 'md5($password)' " .
+            $query = "UPDATE username SET password = '" . md5($password) ."' " .
                 "WHERE name = '$username';";
         } else {
             $query = "UPDATE username SET email ='$email', " .
                 "research_group ='$group', ".
-                "password = 'md5($password)' " .
+                "password = '" . md5($password) ."' " .
                 "WHERE name = '$username';";
         }
         $result = $this->execute($query);
